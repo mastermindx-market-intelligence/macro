@@ -438,15 +438,6 @@ def _snapshot_at(state_id: Any, x: Any, y: Any) -> dict[str, Any]:
     return snapshot
 
 
-def _is_plain_finite_number(value: Any) -> bool:
-    """Deliberately re-stated here rather than imported from the view.
-
-    A test that borrows the implementation's own definition of "a number" agrees
-    with it by construction, including when it is wrong.
-    """
-    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
-
-
 # Independently chosen: the coordinates and the expected point are written out
 # by hand from the stated law (A = low-x/high-y, B = high/high, C = low/low,
 # D = high/low; SVG y grows downward, so cy = 100 - y). Nothing here is obtained
@@ -511,16 +502,23 @@ def test_the_current_artifact_agrees_with_itself() -> None:
         assert current == [], "an unclassified reading must not light up a quadrant"
 
     x, y = headline["quadrant"].get("x"), headline["quadrant"].get("y")
-    if _is_plain_finite_number(x) and _is_plain_finite_number(y):
+    if _is_finite_number(x) and _is_finite_number(y):
         assert quadrant_map["plotted"] is True
         assert quadrant_map["point"]["cx"] == pytest.approx(x)
         assert quadrant_map["point"]["cy"] == pytest.approx(100 - y)
-    elif x is None or y is None:
+    else:
         assert quadrant_map["plotted"] is False
         assert quadrant_map["point"] is None
-    # A NaN, infinite or boolean axis reading is deliberately NOT asserted here.
-    # Rejecting those requires the view-side finite-number guard, which is a
-    # product change owned by the held F01 R1 candidate, not by this repair.
+        assert quadrant_map["absence"] is not None
+
+
+def _is_finite_number(value: Any) -> bool:
+    """Deliberately re-stated here rather than imported from the view.
+
+    A test that borrows the implementation's own definition of "a number" agrees
+    with it by construction, including when it is wrong.
+    """
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
 
 
 @pytest.mark.parametrize("state_id", [None, "", "Z", "AB", 0])
@@ -530,15 +528,15 @@ def test_an_unclassified_reading_never_invents_a_current_quadrant(state_id: Any)
     assert [c["letter"] for c in view["quadrant_map"]["cells"] if c["current"]] == []
 
 
-@pytest.mark.parametrize("value", [None, "20", "", [], {}])
+@pytest.mark.parametrize("value", [None, "20", "", True, False, float("nan"),
+                                   float("inf"), float("-inf"), [], {}])
 def test_a_non_numeric_axis_value_plots_no_point(value: Any) -> None:
     """missing != zero, on the axis itself.
 
-    Restricted to the non-numeric shapes the current view already classifies as
-    unavailable. `True`, `NaN` and the infinities are excluded on purpose: bool
-    is a subclass of int and json.loads parses a bare NaN, so today they still
-    plot. Closing that hole is a view-side change carried by the held F01 R1
-    candidate; this repair must not import it.
+    ``true`` and ``NaN`` are the two that slipped through the obvious numeric
+    check: bool is a subclass of int, and json.loads parses a bare NaN. The first
+    plotted at cx=1.0, the second emitted cx="nan" -- a point that silently
+    vanishes while the page still reports a plotted state.
     """
     for x, y in ((value, 80.0), (20.0, value)):
         view = _view_of(_snapshot_at("A", x, y))
