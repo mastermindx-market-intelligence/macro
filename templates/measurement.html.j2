@@ -2134,6 +2134,20 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
     {%- endif -%}
   {%- endmacro -%}
 
+  {%- macro ric_tier_label(t) -%}
+    {%- if t == 'DIAGNOSTIC' -%}<span class="l-en">Evidence: diagnostic run</span><span class="l-zh">证据：诊断性运行</span>
+    {%- elif t == 'EXPLORATORY_NON_GATED' -%}<span class="l-en">Exploratory — not gated</span><span class="l-zh">探索性 —— 未设门槛</span>
+    {%- else -%}<span class="l-en">{{ t }}</span><span class="l-zh">{{ t }}</span>
+    {%- endif -%}
+  {%- endmacro -%}
+
+  {%- macro ric_family_label(f) -%}
+    {%- if f == 'synthetic_control' -%}<span class="l-en">Synthetic control</span><span class="l-zh">合成控制</span>
+    {%- elif f == 'event_study' -%}<span class="l-en">Event study</span><span class="l-zh">事件研究</span>
+    {%- else -%}<span class="l-en">{{ f }}</span><span class="l-zh">{{ f }}</span>
+    {%- endif -%}
+  {%- endmacro -%}
+
   {%- macro ric_value(item) -%}
     {%- set v = item.get('value') -%}
     {%- set u = item.get('unit') -%}
@@ -2143,7 +2157,7 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
       {{ '%.2f'|format(v[0] * 100) }}% … {{ '%.2f'|format(v[2] * 100) }}%
       <span class="ric-fig-sub"><span class="l-en">bootstrap median</span><span class="l-zh">自助法中位数</span> {{ '%.2f'|format(v[1] * 100) }}%</span>
     {%- elif u == 'return_fraction' or u == 'fraction' -%}{{ '%.3f'|format(v * 100) }}%
-    {%- elif u == 'probability' and v is number and v == 0 -%}&lt; 0.001{{ ric_unit(u) }}
+    {%- elif u == 'probability' and v is number and v is not sameas true and v is not sameas false and v == 0 -%}&lt; 0.001{{ ric_unit(u) }}
     {%- elif u in ('months', 'events', 'episodes', 'draws', 'tickers') -%}{{ v }}{{ ric_unit(u) }}
     {%- elif u == 'probability' and v is number -%}
       {%- if v < 0.0001 -%}<span class="l-en">below 0.0001</span><span class="l-zh">小于 0.0001</span>{{ ric_unit(u) }}
@@ -2281,6 +2295,10 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
               <span class="l-en">{% if q == 'STALE' %}Out of date — receipt older than its window{% elif q in ric_quality_gloss %}{{ ric_quality_gloss[q][0] }}{% else %}State not recognised{% endif %}</span>
               <span class="l-zh">{% if q == 'STALE' %}已过期——回执早于其窗口{% elif q in ric_quality_gloss %}{{ ric_quality_gloss[q][1] }}{% else %}状态未识别{% endif %}</span>
             </span>
+            <details class="ric-state-detail">
+              <summary><span class="l-en">code</span><span class="l-zh">代码</span></summary>
+              <code class="ric-state-code">{{ q }}</code>
+            </details>
             {%- set ric_prereg = card.source_artifacts|selectattr('role', 'equalto', 'preregistration')|list -%}
             <span class="ric-prereg{{ '' if ric_prereg else ' is-absent' }}"
                   data-ric-prereg="{{ 'on-file' if ric_prereg else 'absent' }}">
@@ -2291,6 +2309,8 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
               <span class="l-en">No plan on file</span><span class="l-zh">无计划存档</span>
               {%- endif %}
             </span>
+            <span class="ric-tier">{{ ric_tier_label(card.evidence_tier) }}</span>
+            <span class="ric-fam">{{ ric_family_label(card.method_family) }}</span>
           </div>
 
           {%- set qen = card.question.en -%}
