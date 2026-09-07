@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-07T20:15:10.318672+00:00",
-  "count": 1947,
+  "generated_at": "2026-09-07T23:07:42.674091+00:00",
+  "count": 1955,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -93,6 +93,89 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-tglz6d8iuo6-c3a02d",
+      "title": "GS Garrett weekend prep 7 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-07T21:35:48Z",
+      "summary_points": [
+        "**Geopolitical & Fed Hike Risks**: Iran/Russia-Ukraine/China escalations dominate; 60% Fed hike probability (16 Sept) hinges on PPI/CPI data.",
+        "**Long-End Yield Shift**: 30Y yield at 5.5% (vs.",
+        "520 bps avg) signals Fed tightening, inflation reacceleration, and yield curve inversion risk.",
+        "**Volatility Regime Break**: Realized correlation at 11 (lowest 25yrs) indicates unsustainable low volatility, poised for sharp burst.",
+        "**SPX Volatility Asymmetry**: Rally moves twice as volatile as sell-offs (30-day lookback), critical for trend-following and risk management."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-4vue8rj2unw-bff00b",
+      "title": "GS Papai IG Credit Down the Stretch 7 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-07T21:35:47Z",
+      "summary_points": [
+        "**AI Debt Issuance Surge**: 2027 projected $340bn senior hyperscaler/chip debt (40% YoY rise), driven by CAPEX growth and reduced equity issuance, critical risk for credit quality as AI buildout accelerates.",
+        "**Hyperscaler Debt Maturities**: Limited senior hyperscaler/chip debt maturities (~$45bn in 2027/28) vs banks’ ~$180bn, eliminating yearly demand replenishment and critical for flow analysis.",
+        "**IG Supply Pressure**: Sept supply ~$230bn (non-AI majority), with AI vs.",
+        "non-AI technicals flipping in September; spreads widening (IG index 80bps vs 77 avg, GS100 99bps vs 96, AI spreads +50bps).",
+        "**Risk Transfer & Technicals**: Risk transfer (CDS, TRS, cash bonds) materially increasing; AI spreads widening while non-AI IG demand supported by yield-based buying (GSIG30NH)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-8zqtow50fl4-d3a0a1",
+      "title": "GS Luey EU Index Vol Commentary 4 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-07T21:35:46Z",
+      "summary_points": [
+        "**NFP Beat & Fed Hike Odds**: NFP beat consensus by 4 SD, lifting September Fed hike odds from 50% to 62%, signaling hawkish policy shift amid rising bond yields.",
+        "**FOMC Decision (15Sep26)**: Highest variance event for FX vol, driving significant market uncertainty ahead of key policy decision.",
+        "**EU Geopolitical & Energy Pressures**: EU gas at new highs, France election volatility (Le Pen/Melenchon 2nd round ~32%), and Russia/Ukraine tensions weigh on equities (SX5E/SPX ratio drifts lower).",
+        "**Volatility Compression & Mispricing**: Extreme ATM volatility compression in SX5E (Vol ATM Fwd Vol Chg -0.24) amid non-stressed markets, indicating aggressive short-term mispricing and downside risk.",
+        "**S&P 500 E-mini Blackout Risk**: 15.2% weight ($36.5bn) with Q3 blackout window starting ~15th Sep (40% S&P500 entering), posing critical liquidity/execution risk for large positions."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-iba2tmpt9z2-681633",
+      "title": "GS Saboureault Positioning Mondays Week 36 7 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-07T21:35:42Z",
+      "summary_points": [
+        "**US Fundamental HFs Leverage**: Net leverage at 4% (1-yr percentile), extremely low with no re-risking from Long Onlys/S&P Futures, signaling under-levered positioning and reduced \"non-fundamental bid\" support.",
+        "**Global Equity Flows & Tech Outflows**: $3bn net equity inflows (week ending 2 Sept), but US funds drive DM outflows for 2nd week; tech funds show largest net outflows, EM outflows driven by China/Taiwan.",
+        "**SPX Technical Triggers**: Critical levels at short-term 7641, medium-term 7384, long-term 6896; CTAs remain small buyers in flat markets, indicating potential momentum shifts.",
+        "**Q3 Blackout Timing**: ~40% of S&P 500 enters quiet period ahead of earnings (starting ~9/15), reducing liquidity and increasing volatility risk during Q3."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-iwthasz1ahh-866401",
       "title": "Higher Barriers to Trade",
@@ -360,6 +443,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-c6nvaayqo0v-c576e7",
+      "title": "European Daily A More Mixed Q3 Activity Picture After a Firm Q2",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-07T14:34:58Z",
+      "summary_points": [
+        "**Germany Industrial Weakness**: Industrial production growth missed expectations (-1.1% July), manufacturing revenues fell -1.5%, driven by auto sector disruptions and low Rhine levels, offsetting defense order tailwinds.",
+        "**Energy Price Inflation Risk**: Winter forward electricity prices rising (TTF/German Power Forward) threaten consumer budgets; energy volatility caused Q3 retail sales decline (-0.6% July, Germany -3.4% goods spending) and pressured durable spending.",
+        "**Spain Outperformance**: Spain grew +0.7% qoq (vs Eurozone average), driven by services PMIs, social security growth, and rebounding tourism, offering structural alpha amid Eurozone heterogeneity.",
+        "**Two-Sided Growth Risks**: Upside from periphery (Spain/Italy) consumption/firm investment; downside from natural gas prices above forecast pressuring consumers and threatening H2 durable spending."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-k5diy4g4rme-d091d4",
       "title": "16th Annual EMEA Credit and Leveraged Finance Conference",
       "institution": "Goldman Sachs",
@@ -500,6 +603,21 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-zddvddlkaf6-e36558",
+      "title": "GS Abbas GS US Daily Download 7 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-07T12:48:06Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-ixe0tohnab8-a5be87",
       "title": "FX Blog Guess who is buying Japan",
       "institution": "Deutsche Bank",
@@ -555,6 +673,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-gyzddeyojqp-c707cd",
+      "title": "DB Early Morning Reid Macro Strategy",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-07T10:35:30Z",
+      "summary_points": [
+        "**Geopolitical Risks**: Germany’s AfD secures 44% in Saxony-Anhalt (CDU down 17%), Iran conflict escalates (tanker incidents, Strait of Hormuz energy security concerns) - **Inflation & Yield Pressure**: Strong US jobs report (+162k vs +55k) + Brent crude +7.80% to $96.28/bbl push yields to multi-year highs (US 10yr: 4.78%, Germany 10yr: 3.34%); Fed hike odds rise to 62% by Sept close - **Policy Dominance**: ECB likely hikes 25bp to 2.50% (Thursday) with further tightening signals; US August CPI (Friday) expected +0.38% MoM core +0.21% drives rate expectations - **Market Data Shifts**: Brent Oil (+1.56%), 10yr Treasury (+4.78 bp), Dollar Index (+0.18%); Fed/ECB 2026 hikes priced (Fed +35 bp, ECB -1 bp)"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
@@ -758,6 +893,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 36,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-anxww4lqr0w-6ccc82",
+      "title": "XCCY Weekly 2026 09 04",
+      "institution": "Mizuho",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-06T21:11:07Z",
+      "summary_points": [
+        "**XCCY Basis Resilience Amid Macro Volatility**: Cross-currency basis stability persisted through Middle East strikes, energy volatility, and risk asset weakness, driven by Yankee issuance (Japanese issuers), GBP spillovers, and USDJPY Reverse Samurai dynamics.",
+        "**Japan-USTs Spread Narrowing**: Converging asset swap spreads across USD/GBP/JPY indicate tightening relative value, shifting cross-currency flows toward Japanese bonds or US Treasuries based on directional moves.",
+        "**Japan’s Divergence from Europe**: Japan’s upward trend toward USTs contrasts with persistently below-UST positioning in UK/Germany, creating critical hedging and allocation shifts for portfolio managers."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
