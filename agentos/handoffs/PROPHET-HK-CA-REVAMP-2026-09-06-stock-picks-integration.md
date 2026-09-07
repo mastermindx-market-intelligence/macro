@@ -4,164 +4,169 @@ session: sol/stock-picks-continuity-records-20260906
 model: sol
 ended_because: ci_handoff
 mission: >
-  Restore complete current-candidate visibility and truthful prior-pick continuity
-  under Macro6817, while completing the existing P0B prerequisite without another
-  source writer, false production acceptance, or a duplicate history owner.
+  Restore all current candidates and revision-safe prior-pick continuity under
+  Macro6817, preserving distinct Candidates and Plans and existing source owners.
+  The P0B first-frame prerequisite is not the complete product outcome.
 state_before: >
-  P0B79343d99 had a JS-only View-all defect. The incumbent committed its native
-  disclosure repair as148a34c1. Earlier continuation proved the committed fixture,
-  but persisted ledger coverage had not been independently read. Reviewer placement
-  was still unconsumed and restricted to one unavailable numbered signing account.
+  Published checkpoint ae118665 recorded148a native disclosure, incomplete graded
+  fossil coverage and an unplaced reviewer. A later unpublished draft recorded3fb
+  and an unconsumed prospective repair; those current-state claims are superseded.
 changed:
-  - path: research/PROPHET_COCKPIT_CONTINUITY_FORENSIC_2026_09_06.md
-    what: >
-      Preserves the earlier pinned forensic, shared-card owner and continuity
-      boundaries. Its earlier unverified-ledger-read qualification is superseded
-      only by the narrow successful persisted-data examination recorded below.
   - path: agentos/handoffs/PROPHET-HK-CA-REVAMP-2026-09-06-stock-picks-integration.md
     what: >
-      Records measured fossil/current membership disagreement, exact-owner browser
-      round trips, first-reviewer eligibility correction and actual CI progress.
-      This remains organizational evidence, not a runtime or source release.
+      Records published60f, accepted terminal independent review, new exact-source
+      red-to-green browser proof, revision-safe history findings and the separate
+      shared-card parser reproduction. Original research remains unchanged.
 verified:
-  - claim: The P0B native-disclosure repair exists on an immutable remote candidate.
-    command: >
-      Read PR6832 and its exact commit148a34c1a08dd2fa7b3a22aa8e8734fb920b8083.
+  - claim: The complete bounded P0B repair is published on the existing branch.
+    command: Read remote PR6832 plus literal local commit/tree/parent and Git status.
     result: >
-      Tree60f05c27461ba2e331491a124ee4fe8d341402c8; OPEN/DRAFT/HOLD, unmerged.
-      Prior exact-commit evidence remains151 tests/0 skips,16 browser cases and48
-      keyboard transitions, not newly rerun counts. PR comment5560528340 binds it.
-  - claim: Actual-owner candidate templates preserve settled source/view round trips.
-    command: >
-      Run probe_actual_owner_ui.py in the isolated exact148a34c1 export using owner
-      JSON from199d9002ce6b3939af653478aa7a39860cc5c7e3 and fixed auxiliary fixtures;
-      validate all recorded source/view/theme/language states against requests.
+      At2026-09-07T06:18:54Z, head60f64627f1bebcb83736b61037211d24b9b3f048,
+      tree719f4754f75c71275f5223993fa6045d3525ee22, sole parent3fb76ea810a8e9ef6a05fe808bb6eaee87eb1f86;
+      incumbent b3a7 checkout clean. OPEN/DRAFT/HOLD and unmerged; source-only.
+  - claim: The existing independent review is accepted and its finite child is terminal.
+    command: Read formal review5127927612 and original review root1788582146.262159.
     result: >
-      At2026-09-06T20:18:09.816394Z,16/16 Chromium cases cover HK/Canada,
-      390/1440,dark/light,EN/ZH. Eighty observed control states match; original
-      card objects survive. Buy cards restore3/10 after Top Picks2/5 and Table.
-      No overflow, console exceptions or missing local assets. External analytics
-      is refused locally. This is neither full table-content nor production proof.
-  - claim: The latest graded-ledger date is not the complete current candidate set.
+      APPROVED by non-author chriswong6031-creator/292968551 at03:57:05Z on60f.
+      Closure148a-to3fb-to60f; zero blockers/major findings. Actual RESULT3479,
+      Root ACCEPTED/STOP1788753594.628229 and STOP_CONSUMED1788753694.614919.
+      Review allowance spent. No source-builder STOP or writer release follows.
+  - claim: The original empty-copy falsifier now passes against exact60f.
     command: >
-      Run probe_ledger_membership_scope.py at Macro199d9002ce6b3939af653478aa7a39860cc5c7e3;
-      read only date,ticker,group,board_definition from the two immutable small
-      board-ledger parquets and compare the named current owner lanes.
+      Run unchanged probe_owner_empty_copy_compare.py --head
+      60f64627f1bebcb83736b61037211d24b9b3f048 in the isolated Web review export.
     result: >
-      At2026-09-06T20:08:59.503104Z,HK has671 rows/41 dates and CA593/33.
-      Latest2026-09-04 has HK14 unique ledger identities versus47 current:
-      12 overlap,35 current absent,2 ledger-only. Canada has22 ledger identities
-      versus18 current: all18 covered plus4 ledger-only. Both have zero duplicate
-      date/ticker keys. No ledger, collector, serving or product source was changed.
-  - claim: Prior-pick coverage and last-recorded dates need explicit qualification.
-    command: >
-      Compare retained provisional39d85b7ffbb9ea264538d122e8aa8f8f57f80fdd owner
-      identities with the same199d9002 current artifact and entire ledger identity set.
+      Process90366 exit0,23.07s. At06:19:50Z,16/16 copy and16/16 watch-preservation
+      predicates passed: HK/Canada,watch-only/null-row,390/1440,loaded/disabled.
+      The same recipe on3fb passed only8/16 copy predicates. Pinned local browser
+      evidence, not a rerun of the writer128 matrix or a production build.
+  - claim: Required execution is not yet complete despite accepted semantic review.
+    command: Read natural60f run34077516122 jobs and fences34077516008.
     result: >
-      Of14 absent HK identities,12 have some ledger record;0241.HK and0386.HK
-      have none.0880.HK is present in the retained September3 publication but its
-      latest ledger observation is July21. All6 absent Canada identities occur in
-      the ledger. Presence proves a recorded observation, not complete publication
-      coverage, a current exit reason, or the exact last published appearance.
-  - claim: The first independent reviewer no longer requires the M3 account specifically.
-    command: >
-      Fresh-read review root C0BSBM78V1N/1788582146.262159 and GitHub reviews[];
-      consume Secretary1788722917.526279 with Sol ruling1788724850.465269.
+      Four hosted planning/admission/contract jobs succeeded; all12 trusted packs
+      queued. Fences succeeded. A separate merge-queue-pilot authority failure
+      remains for the existing Root to classify, not silently flatten or bypass.
+  - claim: Graded fossils are not complete current publication membership.
+    command: Preserve the bounded immutable199d9002 ledger/current-owner comparison.
     result: >
-      Same operation/root/one unplaced slot. The original placement owner may bind
-      one genuinely independent authorized non-author signer through an approved
-      included-plan surface. M3 is eligible, not mandatory. No actual reviewer,
-      GitHub request replacement or reviewer execution is implied by delivery.
-      AuthorM2, source task and commissioning Sol remain ineligible reviewers.
-  - claim: The existing hosted run has begun executing rather than twelve packs all waiting.
-    command: >
-      Direct authenticated GitHub GET of actions/runs/34039819082/jobs at
-      2026-09-06T19:58:57Z; inspect child jobs instead of the aggregate queued label.
+      Latest2026-09-04: HK14 ledger identities versus47 current,12 overlap,35
+      current absent,2 ledger-only. Canada22 versus18 current,all18 plus4 extras.
+      Zero duplicate date/ticker keys; coverage/revision mismatch, not deduplication.
+  - claim: Same-date revisions invalidate both first-per-date and union selectors.
+    command: Compare the seven exact retained publications in6954 comment5562785199.
     result: >
-      Packs0,1,2 completed successfully on pc-ci-1/2. Nine packs remained queued;
-      owning stock-dashboard-first-frame pack10 had not run. The four hosted
-      planning/admission/contract jobs succeeded. This is not completed binding CI.
+      All declare September4. Four HK versions each contain47 names but identities
+      and lanes change. Canada changes17-to18-to18 with turnover. Union falsely
+      yields50/22 current names. Whole-publication revision/order is required;
+      repository versions do not prove intermediate user visibility or exit reasons.
+  - claim: The existing shared macro has a reproducible nested-anchor parser defect.
+    command: Read the retained exact-template Chromium diagnostic and verify its hash.
+    result: >
+      Original report at00:06:24Z has eight diagnostic controls and stable source.
+      Candidate/ordinary plan render one card; lifecycle.newer renders three nodes
+      with the same plan ID in document and fragment parsing. An in-memory inner
+      anchor-to-span ablation restores one, but removes navigation and is not a fix.
+      No independent-confirmation report exists; no second successful run is claimed.
 unverified:
-  - claim: P0B is release-ready or live.
+  - claim: P0B is current-main integrated, canonically built or production-proven.
     what_would_verify: >
-      Actual independent review, all required exact-head/current-integration checks,
-      lawful writer release, canonical build and entitled production matrix.
-  - claim: Complete all-stage historical membership and current exit reasons exist.
+      Existing Root's source-result adjudication, source STOP/writer release,
+      required current integration/CI, governed build and entitled production proof.
+  - claim: Full all-stage cards, prior-pick transitions and Plans are accepted.
     what_would_verify: >
-      Bind an adequate existing publication/snapshot owner or an approved extension
-      to every required visible lane, with proven empties and revision ordering.
-      A latest-date graded fossil is demonstrably insufficient at this source pin.
+      Existing market/card/history owners close identity, revision, navigation,
+      view/filter and two-successive-publication tests without inventing authority.
 unresolved:
-  - "Review placement is eligible but actual PICKUP_ACK/REVIEW_START/verdict remains unverified."
-  - "Hosted CI execution and current integrated-green proof remain incomplete."
-  - "HK35 current identities are absent from the latest graded date; do not fill this by corrupting rank-IC."
-  - "Canada latest fossil22 includes4 names outside current18; deduplication cannot repair this contract mismatch."
-  - "Existing public last-read HTML remained the old server documents, not the new P0B shell."
+  - "P0B semantic review is accepted, but source-writer release and integration/build/production remain open."
+  - "Natural current-head CI packs are queued; runner and CI control remain separately owned."
+  - "Full current-card convergence and revision-bound historical coverage remain unaccepted."
+  - "Shared plan-card parser defect is outside the P0B25-path correction and requires its existing owner."
 next_actions:
-  - "Finish the original one-slot independent placement under1788724850.465269; actual identity and ACK/START precede review."
-  - "Consume the exact-head semantic verdict and natural CI result in parallel; keep PR6832 Draft/HOLD."
-  - "After builder-result acceptance, terminal STOP and exact watcher-source removal, establish branch-writer release before a release maintainer."
-  - "Complete governed integration/build/production proof; only then admit the separately scoped current-population/card vertical after path release."
-  - "Freeze history coverage/revision and last-recorded-versus-last-published semantics before full continuity implementation."
-  - "Retain two-successive-publication and US/China identity-loss acceptance from6817 comment5549201543."
+  - "Existing Root/Cockpit adjudicates the published builder result and any remaining obligations before source STOP and writer release."
+  - "Preserve exact60f and accepted review5127927612; qualify required CI/current integration without an ancestry-only semantic rebuild."
+  - "Complete governed build/production proof; admit subsequent full-current card/history verticals only after their real prerequisites/path release."
+  - "Route the nested-anchor evidence to existing US Plans/shared-card ownership; do not expand P0B or create a second card implementation."
+  - "Bind complete publication coverage/revision and last-recorded-versus-last-published semantics before history construction."
+  - "Retain two-successive-publication and US/China identity-loss acceptance in6817 comment5549201543."
 do_not_redo:
-  - "Do not reopen the fixed native-disclosure defect without an exact new reproduction."
-  - "Do not duplicate a source worker, reviewer slot, branch, lifecycle, history ledger, watcher or transport."
-  - "Do not require an exact historic reviewer conversation that never existed; M3-only is no longer the gate."
-  - "Do not reopen Root's closed Y7 UI attempts, touch its draft or switch credentials for review."
-  - "Do not rewrite old graded ledger rows or treat their latest date as current membership."
-  - "Do not present the ledger's last observation as the last full-board publication or infer an exit reason."
-  - "Do not add ungraded HK display lanes to the ranked ledger or replace the existing pv_card primitive."
-  - "Do not reinterpret the old17-name Canada fixture as a current population constant."
-  - "Do not rewrite the historical August27 acceptance as September recovery completion."
+  - "Do not revive the terminal reviewer, repeat reviewer placement or transfer old148a review as60f evidence."
+  - "Do not duplicate the source worker, branch, carrier, candidate store, ledger, watcher or runtime."
+  - "Do not repeat the spent source-publication attempt or infer source-writer release from reviewer STOP."
+  - "Do not union corrected publications, rewrite graded rows or treat equal dates/counts as revision identity."
+  - "Do not present last graded observation as last full-board appearance or invent current omission reasons."
+  - "Do not remove newer-plan navigation, collapse real episodes by ticker or only deduplicate counts to hide parser damage."
+  - "Do not call old August27 V3.8 acceptance September recovery completion."
 danger_areas:
-  - "Source task01a06b41-96fc-7f20-a488-97743cefbb35 remains sticky to PR6832 and source root1788505459.148699."
-  - "Reviewer root1788582146.262159 is distinct; eligibility, delivery and execution are separate."
-  - "The actual-owner UI probe validates current buy-card round trips, not full47/18 shared-card convergence or table-content equality."
-  - "Provisional, missing, empty and corrected publications are distinct; prior39d85b7f is not a consecutive-final acceptance claim."
-  - "Runner recovery has its own host owner; do not restart, relabel, cancel or dispatch competing CI."
+  - "Source01a06b41-96fc-7f20-a488-97743cefbb35 stays sticky to PR6832/root1788505459.148699 until lawful release."
+  - "Reviewer01a046f7-a959-7440-821e-a8080ad8a47d is terminal for this child; source heartbeat remains independently active."
+  - "Native Root01a06f72 and Cockpit01a06f73-d4cf control source/release; this Web record grants no sibling authority."
+  - "Fixture hydration is not a real entitled session; static preview is not the entire hydrated population."
+  - "Historical raster variance/pixel replay remain UNKNOWN and are not waived by semantic approval."
 prs: [6832, 6954]
 ---
 
-# Recovery checkpoint: current membership is not a graded fossil
+# September 7: published repair, terminal review, product still open
 
-Current procedure: protected Mastermind `f9e46a72d6102b0e94c897590fc58bac89eb4ea6`,
-compatible Skillpack1.0.1/bootstrap1; required same-pin source laws are byte-identical
-to the earlier4fe4d6bc preparation pin. Current persisted-data examination:
-Macro `199d9002ce6b3939af653478aa7a39860cc5c7e3`. P0B source remains
-`148a34c1a08dd2fa7b3a22aa8e8734fb920b8083`; no product-source change follows.
+Protected procedure: Mastermind `6ce1e0104f43657b3d5fc333d848025e28a8173a`,
+Skillpack1.0.1/bootstrap1. This records-only amendment updates current state and
+next actions from `ae118665`; original research and historical proof remain intact.
 
-The older research record and prior version of this handoff remain historical
-proof. The successful bounded ledger read replaces the earlier statement that
-persisted counts were unverified; it does not erase that earlier tool failure.
+## Current source and exact next gate
 
-The latest HK ledger-only names are1057.HK and2888.HK. Canada's areNWC.TO,
-AIF.TO,MTL.TO andCSH-UN.TO. Keep them as historical recorded observations when
-appropriate, never silently reinsert them into the current board. The graded
-ledger's keep-first date/ticker semantics remain unchanged. Complete current
-membership comes from the current producer; historical coverage and omission
-reasons require their own proven contracts through existing owners.
+[Published60f supplemental browser proof](https://github.com/mastermindx-market-intelligence/macro/pull/6832#issuecomment-5565968223)
+records the unchanged prior falsifier's16/16 GREEN result, compared with8/16 on3fb.
+[Formal approval5127927612](https://github.com/mastermindx-market-intelligence/macro/pull/6832#pullrequestreview-5127927612)
+is a completed independent review of148a-to3fb-to60f, not a future placement task.
+[Root STOP](https://mastermindxgroup.slack.com/archives/C0BSBM78V1N/p1788753594628229)
+and actual3694 consumption close only that review child. The existing source
+worker remains under its own carrier; clean/published source alone is not release.
 
-Evidence below is under the isolated Mac review export, not a source worktree:
+The approval reconciled25 correction paths,61 declared bindings,21 receipt/image
+joins,128 recorded DOM cases and16 new PNGs. Those are inspected source-owned
+receipts, not tests rerun by the reviewer. Source-owned114/46 test results remain
+separately attributed. The new Web16-case run does not claim to reproduce128 cases,
+full builder output, historical pixels, production entitlement or a live rollout.
+HK mobile density is a nonblocking follow-up, not another P0B redesign mandate.
+
+## History and Plans must not lose their distinct authority
+
+[Seven retained publications](https://github.com/mastermindx-market-intelligence/macro/pull/6954#issuecomment-5562785199)
+prove equal date/count is not stable membership. Current truth comes from one
+complete ordered publication; history preserves earlier appearances without stale
+BUY/rank/quote or an invented exit. Graded keep-first date/ticker law is unchanged.
+HK0241.HK and0386.HK lack ledger history;0880.HK was published on September3 but
+its last graded-ledger observation is July21. Last recorded is not last published.
+
+The shared card's outer anchor contains a newer-plan anchor. Actual Chromium
+parsing splits that plan into three same-ID card nodes and detaches its zone.
+The isolated inert-span control proves the mechanism but is not a valid repair:
+both primary detail and newer-plan navigation must remain keyboard-operable.
+This defect is outside P0B's25 paths. Do not edit that shared template through the
+P0B worker or manufacture a plan identity for a candidate. The retained US hydrated
+baseline has398 plan nodes/380 unique plan IDs plus64 candidate nodes; nine IDs
+repeat three times. Both icon-control variants agree. The exact nine premium
+source-fragment relationships remain unjoined here; causal attribution to those
+nine is an inference, not a completed full-payload trace. The raw preview's six
+cards versus hydration is not itself candidate loss or entitlement proof.
+
+## Recoverable evidence
+
+Evidence root on the authorized Mac is the existing isolated review export:
 `/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/sol-pr6832-readonly-79343d99-20260906/final-148a34c1-20260906/review-results/`.
+It is not a registered source checkout. Each row below is relative to that root.
 
-| Evidence | SHA-256 |
+| Evidence | SHA256 |
 |---|---|
-| `ledger-membership-scope.json` | `3b77488018f2edc2c3df31224abd26c31941e5f92c31c0a5205b482f39111632` |
-| `probe_ledger_membership_scope.py` | `64dc3de148eee433fb5e6d120e85c64a77a6db5ca8f5c827760620663ca81432` |
-| HK ledger input | `06537e964c5f878ca26b7402d68c4aa8cfe36992bcf2f8311847415424f4be0c` |
-| Canada ledger input | `20f54f95ab3927b5817373d1858332aeea93cb689060710f9d355a39af6b0119` |
-| `actual-owner-ui.json` | `2da56f398cfc2b5e3011c63e7515b1f1836e3a94662fa4a7388c421f459e84c5` |
-| `probe_actual_owner_ui.py` | `9e09e80fde5939b9482d4c98a9c2cbb395d634737dac281b77703ceb9e0b2129` |
+| empty-copy-exact-60f64627f1be/copy-report.json | 84f135c7c4479c8ce01774ed9098c71c2e6d947ac94477f783540a9ae0db967a |
+| probe_owner_empty_copy_compare.py | 9ba74f11f6730bde333e229e229c48f5c3aadcd23a81d2abb89a60458f7374b8 |
+| empty-copy-exact-3fb76ea810a8/copy-report.json | 0a1996e5b2ef4ba3b60b9b0fe24270f7cde8d82bf264fbf6183ab04c4720109a |
+| ledger-membership-scope.json | 3b77488018f2edc2c3df31224abd26c31941e5f92c31c0a5205b482f39111632 |
+| same-session-publication-revisions-20260906.json | 744fa590acb4add1ba0828cb61631b79ca6050bc1572441d0e4462469e9ffa9e |
+| plan-anchor-parser-websol-20260907/report.json | 779736c9c51a8e0264b28688a1c63613b9758af7b9a1b9cf9ada2bc0fb982c56 |
+| probe_plan_anchor_parser_websol_20260907.py | e3c4b6416c690b5b25c67c13f1347af8e4e11a080e96e72297cf90ffebbcdd63 |
+| cross-market-shared-asset-3fb76ea8/report.json | d55be488e6d0d15dcbf1f9914ef9c610c1d1ef2bb97980382f938417064cbeec |
 
-[Review eligibility ruling](https://mastermindxgroup.slack.com/archives/C0BSBM78V1N/p1788724850465269?thread_ts=1788582146.262159&cid=C0BSBM78V1N)
-changes only pre-placement signer eligibility, preserving actual independence.
-The source task, PR author and commissioning Sol cannot supply their own
-independent verdict. No new reviewer request or bound session is claimed here.
-
-[Earlier exact-commit proof](https://github.com/mastermindx-market-intelligence/macro/pull/6832#issuecomment-5560528340),
-[actual-owner and public-baseline proof](https://github.com/mastermindx-market-intelligence/macro/pull/6832#issuecomment-5561287385),
-and [history-owner qualifications](https://github.com/mastermindx-market-intelligence/macro/pull/6954#issuecomment-5561289420)
-remain recoverable. Regime-history pages, Pick Lab feature snapshots and a
-performance popup are useful existing consumers, not substitutes for complete
-stock-pick continuity. This records-only checkpoint closes no product issue.
+The previously drafted independent-confirmation report is absent and is not
+cited as completed. No reset, duplicate test, publication, reviewer or source
+assignment follows from this correction. Root's remaining release/integration
+work and the complete current-candidate/history/Plans journey remain open.
