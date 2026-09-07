@@ -67,6 +67,13 @@ verified:
   result: MastermindX1 APPROVED on exact f902d19f3bbb16b79bf0507b39eb3755c65deb54; prior B1 registration finding
     closed. Natural behavioral CI and source-release/current-main fence remain outstanding; no new review or source
     edit is requested.
+- claim: The test-fixture CodeQL finding in531 is reproduced and locally corrected without changing production CSS.
+  command: Read exact check101804996737 annotation; run four closing-tag discriminator cases before correction,
+    then the complete geometry/fixture suite with browser required; commit only the test file.
+  result: Original3 expected failures/1pass; corrected39passes/0errors/0failures/0skips, including34 rendered layouts.
+    Local commit123ceecc3fef3290b7303226f454c597e7d9d0f5/tree06bab9ec9a3dc7c2aa5f37cb2131505bc197a06d, parent5b7f4041.
+    CSS unchanged. Subsequent push was platform-blocked; its intent absent, local clean and remote5b7 confirmed.
+    No retry or alternate source carrier.
 unverified:
 - claim: All required current-head hosted behavioral packs and guarded source release are complete.
   what_would_verify: Terminal applicable checks on f902 and action-time integration/source-release disposition.
@@ -103,7 +110,12 @@ unresolved:
   open.
 - Mastermind531 header correction is published and geometry-tested but remains Draft/Hold; the installed original
   header is not changed.
+- Mastermind531 published5b7 retains a real CodeQL test-filter finding. Exact correction is committed locally at123c
+  and passed39 tests, but its push was blocked before effect; no new-head CodeQL success or installation is claimed.
 next_actions:
+- For531 only, preserve clean local123c and remote5b7. At a genuinely permitted publication boundary reconcile those
+  identities and publish the existing one-path test correction; do not repackage the denied push. Then natural new-head
+  CI and independent review apply. Production CSS is already frozen and needs no rewrite.
 - Preserve approved/frozen latency source f902, consume its natural current-head CI, and then obtain the existing
   release-owner disposition. Do not edit, rerun completed source tests or request another reviewer.
 - Reconcile any outstanding native follow-up locally before reuse; do not push134c, force/reset shared refs, recreate
@@ -195,3 +207,9 @@ Overall connected-office status remains PARTIAL. This repair makes existing trut
 ## §6 Later review receipt consumed
 
 Direct review5133539134 is APPROVED on latency6976 headf902, and the existing parent now freezes those semantics while natural CI runs. The earlier record language requesting another full rereview is superseded for6976 only; independent review of the separate header531 remains owed. No additional compiler action, bot retry, worker restart, CI rerun/cancel or release authority follows.
+
+## §7 Test-only correction after initial531 publication
+
+The published531 CodeQL aggregate flagged the test fixture regex for not accepting whitespace before a script closing delimiter. Four new discriminator cases reproduced3 failures/1pass; the minimal correction then passed the full39-case selection with zero skips, including34 actual rendered layouts. It changed no production CSS. Local corrective commit123ceecc3fef3290b7303226f454c597e7d9d0f5 is clean and based on5b7; tree06bab9ec9a3dc7c2aa5f37cb2131505bc197a06d.
+
+The following native push request was blocked before its prospective intent existed. Remote remains5b7 at the direct read, so the old CodeQL finding is not cleared by local tests. No alternate source write or retry occurred. The exact existing correction, not a new patch/worktree, is the next source publication after a permitted same-operation reconciliation. Candidate visual-preview and screenshot requests also remain blocked/unrun; geometry proof is not installed acceptance.
