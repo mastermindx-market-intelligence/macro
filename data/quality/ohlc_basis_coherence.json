@@ -56,6 +56,16 @@
           "inverted_bars": 0
         },
         {
+          "ticker": "MCD",
+          "verdict": "noise",
+          "bad_bars": 1,
+          "bars": 76,
+          "bad_share": 0.0132,
+          "worst_excess": 0.007108,
+          "worst_date": "2026-08-03",
+          "inverted_bars": 0
+        },
+        {
           "ticker": "DUK",
           "verdict": "noise",
           "bad_bars": 2,
@@ -166,6 +176,16 @@
           "inverted_bars": 0
         },
         {
+          "ticker": "FOXA",
+          "verdict": "noise",
+          "bad_bars": 1,
+          "bars": 76,
+          "bad_share": 0.0132,
+          "worst_excess": 0.001851,
+          "worst_date": "2026-08-03",
+          "inverted_bars": 0
+        },
+        {
           "ticker": "BX",
           "verdict": "noise",
           "bad_bars": 1,
@@ -183,16 +203,6 @@
           "bad_share": 0.0132,
           "worst_excess": 0.001522,
           "worst_date": "2026-07-06",
-          "inverted_bars": 0
-        },
-        {
-          "ticker": "CBOE",
-          "verdict": "noise",
-          "bad_bars": 1,
-          "bars": 76,
-          "bad_share": 0.0132,
-          "worst_excess": 0.001318,
-          "worst_date": "2026-08-04",
           "inverted_bars": 0
         },
         {
@@ -223,6 +233,16 @@
           "bad_share": 0.0132,
           "worst_excess": 0.000814,
           "worst_date": "2026-07-17",
+          "inverted_bars": 0
+        },
+        {
+          "ticker": "CTVA",
+          "verdict": "noise",
+          "bad_bars": 1,
+          "bars": 76,
+          "bad_share": 0.0132,
+          "worst_excess": 0.000682,
+          "worst_date": "2026-08-03",
           "inverted_bars": 0
         },
         {
@@ -258,20 +278,10 @@
       ]
     },
     "midcap_breadth": {
-      "status": "split",
-      "split_tickers": 1,
-      "noise_tickers": 12,
+      "status": "coherent",
+      "split_tickers": 0,
+      "noise_tickers": 11,
       "findings": [
-        {
-          "ticker": "IESC",
-          "verdict": "split",
-          "bad_bars": 755,
-          "bars": 778,
-          "bad_share": 0.9704,
-          "worst_excess": 1.0,
-          "worst_date": "2023-09-13",
-          "inverted_bars": 0
-        },
         {
           "ticker": "SBRA",
           "verdict": "noise",
@@ -386,37 +396,17 @@
     },
     "russell_breadth": {
       "status": "split",
-      "split_tickers": 3,
-      "noise_tickers": 60,
+      "split_tickers": 1,
+      "noise_tickers": 56,
       "findings": [
         {
-          "ticker": "BRCC",
+          "ticker": "ETD",
           "verdict": "split",
           "bad_bars": 501,
           "bars": 524,
           "bad_share": 0.9561,
-          "worst_excess": 9.000001,
-          "worst_date": "2025-04-02",
-          "inverted_bars": 0
-        },
-        {
-          "ticker": "REAX",
-          "verdict": "split",
-          "bad_bars": 501,
-          "bars": 524,
-          "bad_share": 0.9561,
-          "worst_excess": 9.0,
-          "worst_date": "2024-12-24",
-          "inverted_bars": 0
-        },
-        {
-          "ticker": "WLFC",
-          "verdict": "split",
-          "bad_bars": 489,
-          "bars": 524,
-          "bad_share": 0.9332,
-          "worst_excess": 2.021718,
-          "worst_date": "2024-09-20",
+          "worst_excess": 0.169815,
+          "worst_date": "2025-11-12",
           "inverted_bars": 0
         },
         {
@@ -1089,7 +1079,7 @@
       ]
     }
   },
-  "splits": 5,
+  "splits": 2,
   "status": "split",
-  "noise_tickers": 118
+  "noise_tickers": 110
 }
