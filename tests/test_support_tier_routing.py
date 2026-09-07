@@ -195,9 +195,16 @@ def test_honeypot_receipt_carries_the_true_signed_in_state(wired, monkeypatch) -
     receipt path that fix did not reach. Pre-fix, ``_resolve_user`` is never even called
     ahead of the honeypot check, so this monkeypatch has no effect and the assertion
     fails against ``_NOTE_SIGNED_OUT``; post-fix, identity is resolved before the
-    honeypot branch and threaded into it.
+    honeypot branch and threaded into it. ``billing.read_entitlement`` is mocked to
+    succeed with no usable ``tier`` key (round-4 MINOR-1 also made the honeypot look up
+    the real tier, not force ``None``) so this stays the "signed in, unreadable plan"
+    scenario the original finding was about, deterministically, rather than depending on
+    whatever a live billing read would answer for a UID that does not exist.
     """
+    from app import billing
+
     monkeypatch.setattr(support, "_resolve_user", lambda auth: {"id": UID, "email": "ada@example.com"})
+    monkeypatch.setattr(billing, "read_entitlement", lambda uid: {})  # no "tier" key at all
     bt = BackgroundTasks()
     out = support.create_ticket(_body(website="http://spam.example"), _FakeRequest(), bt,
                                 authorization="Bearer signed-in-token")
@@ -216,6 +223,29 @@ def test_honeypot_receipt_still_files_anonymous_submitters_as_signed_out(wired, 
                                 authorization=None)
     assert out["ok"] is True
     assert out["routing"]["note_en"] == "You were not signed in, so this went to the general queue."
+
+
+def test_honeypot_receipt_for_a_paying_signed_in_user_carries_their_real_plan(wired, monkeypatch) -> None:
+    """Review finding B-F13-3 round-4 MINOR-1 (RED before the fix): the round-3 honeypot
+    fix threaded the true ``signed_in`` state into the fabricated receipt but still forced
+    ``tier=None`` unconditionally, so a signed-in PAYING user caught by the honeypot
+    (autofill is the honeypot's own documented false-positive mode) got the free-plan
+    promise plus the "we could not find a plan on your account" note -- a second false
+    sentence replacing the first. The fabricated receipt must carry the same plan/promise
+    the real path (below) would give this exact submitter: the real tier, and no note at
+    all, exactly like a genuine `pro` ticket gets.
+    """
+    from app import billing
+
+    monkeypatch.setattr(support, "_resolve_user", lambda auth: {"id": UID, "email": "ada@example.com"})
+    monkeypatch.setattr(billing, "read_entitlement", lambda uid: {"tier": "pro"})
+    bt = BackgroundTasks()
+    out = support.create_ticket(_body(website="http://spam.example"), _FakeRequest(), bt,
+                                authorization="Bearer signed-in-token")
+    assert out["ok"] is True
+    assert out["routing"]["plan"] == "pro"
+    assert out["routing"]["note_en"] is None
+    assert out["routing"]["note_zh"] is None
 
 
 def test_priority_ticket_labels_the_operator_mail(wired, monkeypatch) -> None:

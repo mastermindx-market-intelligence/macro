@@ -554,11 +554,18 @@ def create_ticket(body: TicketRequest, request: Request,
     # whole reason this returns 200 instead of 400. signed_in=bool(user_id) carries the
     # real identity state into the fabricated routing note, so a signed-in human caught by
     # the honeypot is never told the false "you were not signed in" sentence either
-    # (review finding B-F13-3 round-3 MINOR-1 — the real path's MAJOR-1 fix did not reach
-    # this branch).
+    # (review finding B-F13-3 round-3 MINOR-1). The tier itself is looked up the SAME way
+    # the real path looks it up below — not forced to None — so the fabricated receipt
+    # carries the same routing note the real path would give this exact submitter (review
+    # finding B-F13-3 round-4 MINOR-1: a signed-in paying user caught by the honeypot was
+    # getting the free-plan promise and the "no plan on file" note, a second false
+    # sentence). This still never reads billing for an anonymous bot: _tier_for_state is
+    # only called when user_id is set, i.e. the Bearer token already verified — the exact
+    # same condition that gates the real path's own lookup.
     if (body.website or "").strip():
         log.info("support: honeypot tripped — dropped")
-        fake_routing = route_for_tier(None, tier_known=True, signed_in=bool(user_id))
+        fake_tier, fake_tier_known = _tier_for_state(user_id) if user_id else (None, True)
+        fake_routing = route_for_tier(fake_tier, tier_known=fake_tier_known, signed_in=bool(user_id))
         return {"ok": True, "ticket_id": str(uuid.uuid4()),
                 "sent": _sent_stamp()[0], "mail": _mail_configured(),
                 "routing": {"plan": fake_routing["plan_id"],

@@ -1971,6 +1971,14 @@ jobs:
       - "site/options_structure/**"
       - "site/prophet/**"
       - "site/vol/**"
+      # F13-X1: build_site imports the source-bound help directory, whose
+      # fail-closed contract reads these exact existing owner templates.
+      - "templates/_navlinks.html.j2"
+      - "templates/_public_footer.html.j2"
+      - "templates/_public_nav.html.j2"
+      - "templates/measurement.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/support.html.j2"
       - "tests/test_build_chain_heat.py"
       - "tests/test_build_options_prophet.py"
       - "tests/test_build_options_screener.py"
@@ -7525,6 +7533,14 @@ jobs:
       - "site/master_brief.json"
       - "site/prophet/**"
       - "site/vol/**"
+      # F13-X1: build_site imports the source-bound help directory, whose
+      # fail-closed contract reads these exact existing owner templates.
+      - "templates/_navlinks.html.j2"
+      - "templates/_public_footer.html.j2"
+      - "templates/_public_nav.html.j2"
+      - "templates/measurement.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/support.html.j2"
       - "tests/test_biocatalyst_change_classification.py"
       - "tests/test_biocatalyst_change_tape_values.py"
       - "tests/test_biocatalyst_endpoint_alignment.py"
@@ -9311,6 +9327,14 @@ jobs:
       - "site/vol/**"
       - "templates/government-revenue-dossiers.js"
       - "templates/government_revenue.html.j2"
+      # F13-X1: build_site imports the source-bound help directory, whose
+      # fail-closed contract reads these exact existing owner templates.
+      - "templates/_navlinks.html.j2"
+      - "templates/_public_footer.html.j2"
+      - "templates/_public_nav.html.j2"
+      - "templates/measurement.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/support.html.j2"
     # Install-dominated like its former host; the two batteries themselves
     # are ~30s.
     timeout-minutes: 8
@@ -12706,6 +12730,14 @@ jobs:
       - "site/master_brief.json"
       - "site/prophet/**"
       - "site/vol/**"
+      # F13-X1: build_site imports the source-bound help directory, whose
+      # fail-closed contract reads these exact existing owner templates.
+      - "templates/_navlinks.html.j2"
+      - "templates/_public_footer.html.j2"
+      - "templates/_public_nav.html.j2"
+      - "templates/measurement.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/support.html.j2"
       - "tests/government_revenue_candidate_fixture.py"
       - "tests/test_government_revenue_candidate_api.py"
       - "tests/test_government_revenue_candidate_grader.py"
