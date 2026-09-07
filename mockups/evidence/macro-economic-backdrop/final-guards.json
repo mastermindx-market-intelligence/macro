@@ -1,0 +1,43 @@
+{
+  "at": "2026-09-07T06:33:32.906766+00:00",
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "scripts/check_design_system.py",
+        "--mode",
+        "enforce-added",
+        "--diff-file",
+        "/tmp/sol-economic-final-diff-20260907-continuation.diff"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_ui_visual_evidence.py",
+        "--diff-file",
+        "/tmp/sol-economic-final-diff-20260907-continuation.diff"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/agentos.py",
+        "validate",
+        "--quiet"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "exit": 0
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+COMMAND: python3 -m pytest tests/test_macro_economic_backdrop.py tests/test_dashboard_template_render.py tests/test_macro_suite_pages.py tests/test_macro_workspace_growth.py tests/test_macro_workspace_inflation.py tests/test_macro_workspace_financial_conditions.py -q -ra
+........................................................................ [ 34%]
+........................................................................ [ 69%]
+..............................................................           [100%]
+206 passed in 78.53s (0:01:18)

@@ -43,6 +43,7 @@ from engine.us_board_rank import (  # noqa: E402
 from lib import config, site_assets, store  # noqa: E402
 from lib.chat_allowance import chat_allowance_view_model  # noqa: E402
 from lib.help_directory import help_directory_view_model  # noqa: E402
+from lib.macro_economic_backdrop import build_economic_backdrop  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -6779,6 +6780,9 @@ def main() -> int:
         factor_season=factor_season,         # B4: seasonal-climate chip (display-only, page furniture)
         **_master_brief_vm(),
     )
+
+    # One read of the existing sealed workspaces; shared VM, macro-only template mount.
+    vm["economic_backdrop"] = build_economic_backdrop(site / "macrodata", page_built_at=generated)
 
     # DEV-ONLY fast-render cache: when MACRO_DUMP_VM is set, pickle the assembled
     # view-model so scripts/render_macro_fast.py can re-render macro.html /

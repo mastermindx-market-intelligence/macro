@@ -1,0 +1,14 @@
+{
+  "status": "MACRO_TARGET_WRITTEN",
+  "full_site_build": false,
+  "utc": "2026-09-07T01:38:43.538079+00:00",
+  "html_sha256": "d8e8a1f6d92fe03cf22b6a0c8f0101e9ab65591e826fcbf73f75ac569ffc3df8",
+  "source_hashes": {
+    "lib/macro_economic_backdrop.py": "0e5f679ebdbebab092ee0802aa03e308be261bc1f8548afc0785fd6f516aa332",
+    "scripts/build_site.py": "11d886fe54ff5feac54fa9dfca2da7dc9102668a031b015b7677a332753c8361",
+    "templates/dashboard.html.j2": "130b11ed7e189b15aa849e6a3a94297eb17abfb39869183eeaf3357cd0a924d1",
+    "templates/_macro_economic_backdrop.html.j2": "668194f1a1c1a8e3fa35da530e3c95f8e6f3f493d926cbb23b692f1b961d52bc",
+    "templates/_macro_economic_backdrop.css.j2": "3c9b61f215f238586ea6b3f2d500eb6ab0dfa2889c662664f107c1c432e06588"
+  },
+  "source_unchanged": true
+}

@@ -1,0 +1,194 @@
+  /* ============================================================================
+     ECONOMIC BACKDROP ROW (.ebd) — design prototype, 2026-09-07
+     Partner file: section.html.j2 (macro economic_backdrop(cards)).
+
+     HOUSE CONVENTION: this is a raw-CSS Jinja partial in the shape of
+     templates/_risk_radar_card.css.j2 — the page includes it INSIDE an existing
+     <style> block. It is not a runtime-injected stylesheet and mints no new :root
+     family: every value below is a theme.css token, a body.page-macro token, or a
+     local --ebd-* derivation bound to one of those at the .ebd scope (the
+     sanctioned pv/ms page-local token pattern, MASTER_PRODUCT_DESIGN_SYSTEM_V1 §2).
+     Fallbacks are present so the row survives outside body.page-macro.
+
+     ART DIRECTION — two directions, one semantic system:
+       DARK  = command centre. Graphite --panel card on the deepened page canvas;
+               depth comes from the LUMINANCE gap, so the hairline stays quiet and
+               the fact strip is separated by a rule alone. The tone spine is a
+               vertical gradient fading downward — the page's own h2-rail idiom
+               (dashboard.html.j2 .panel > h2::before). No glow, no new bloom.
+       LIGHT = research workspace. White --panel on the cool cool paper canvas, where
+               white-on-canvas is only ~1.19:1 — so the EDGE carries the card
+               (raised hairline + the page's two-stop --ms contact/ambient shadow),
+               the fact strip becomes a drawn --panel2 band because a hairline
+               alone leaves figures floating on white, and the tone spine is SOLID
+               because a fade-to-transparent rail reads as a print defect on paper.
+     Four mechanisms differ on purpose: spine rendering, fact-strip separation,
+     the unavailable card's fill, and the link hover. Everything else — hierarchy,
+     order, budgets, states, copy, geometry — is identical by construction.
+     ============================================================================ */
+
+  .ebd {
+    grid-column: 1 / -1;
+    order: 1; /* after the order-1 market ticker in DOM, before order-2 action cards */
+    /* local derivations — no new palette */
+    --ebd-hair: var(--hair, var(--line));
+    --ebd-spine: var(--hair-strong, var(--line));
+    --ebd-ink-1: var(--ink-1, var(--text));
+    --ebd-ink-2: var(--ink-2, var(--muted));
+    --ebd-ink-3: var(--ink-3, var(--muted));
+    --ebd-gap: var(--sp-4);
+    margin: var(--sp-5, 20px) 0 var(--sp-6, 24px);
+  }
+
+  /* ---- section header: lives on the CANVAS (design system §3), and carries the
+     page's shared regime rail so the row reads as part of one product ---------- */
+  .ebd-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 14px;
+    margin: 0 0 var(--sp-3, 12px); }
+  html body .ebd .ebd-h { margin: 0; display: flex; align-items: center; gap: 10px;
+    font-size: var(--fs-h2, 17px); font-weight: 700; letter-spacing: -.01em;
+    line-height: 1.3; text-transform: none; color: var(--ebd-ink-1); }
+  .ebd-head .ebd-h::before { content: ""; flex: none; width: 3px; height: 18px;
+    border-radius: var(--r-pill);
+    background: linear-gradient(180deg, var(--rail, var(--link)),
+      color-mix(in srgb, var(--rail, var(--link)) 35%, transparent)); }
+  html[data-theme="light"] .ebd-head .ebd-h::before { background: var(--rail, var(--link)); }
+  html[data-lang="zh"] .ebd .ebd-h { letter-spacing: 0; }
+  .ebd-sub { margin: 0; font-size: var(--fs-sm, 12.5px); line-height: 1.4;
+    color: var(--ebd-ink-2); }
+
+  /* ---- the row ------------------------------------------------------------- */
+  .ebd-row { display: grid; align-items: stretch; gap: var(--ebd-gap);
+    grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  /* 900px is this page's own collapse point (.span4 -> .span12). Below it we STACK
+     rather than squeeze: at 768 a third-width card is ~236px, which forces the
+     longest state label onto two lines and drops the fact pair below a legible
+     measure. Three readable cards beat three columns. */
+  @media (max-width: 899px) { .ebd-row { grid-template-columns: 1fr; } }
+
+  /* ---- the card: canonical .panel (E1) with a scoped composition class ------ */
+  html body .panel.ebd-card {
+    position: relative; overflow: hidden; min-width: 0;
+    display: flex; flex-direction: column; gap: var(--sp-1, 4px);
+    padding: var(--sp-3, 12px) var(--sp-4, 16px);               /* compact variant of the 16/18 panel pad */
+    border-radius: var(--r-panel, 14px);
+    border: 1px solid var(--ebd-hair);
+    box-shadow: var(--ms, var(--card-shadow));
+  }
+  html body .panel.ebd-card > * { min-width: 0; overflow-wrap: break-word; }
+
+  /* the spine — the row's one signature device. Achromatic when the read is clean;
+     it WARMS to --warn when the card carries a caveat and goes muted+dashed when the
+     read is unavailable. Health semantics only (never direction), so 红涨绿跌 does
+     not touch it. Deliberately 3px and neutral-by-default so it is not mistaken for
+     the .rrx risk alert (4px, always --rc-coloured). */
+  html body .panel.ebd-card::before { content: ""; position: absolute;
+    left: 0; top: 0; bottom: 0; width: 3px; pointer-events: none;
+    background: linear-gradient(180deg, var(--ebd-spine),
+      color-mix(in srgb, var(--ebd-spine) 12%, transparent)); }
+  html[data-theme="light"] body .panel.ebd-card::before { background: var(--ebd-spine); }
+
+  .ebd-card--warn { --ebd-spine: var(--warn); }
+  .ebd-card--unavailable { --ebd-spine: var(--hair); }
+  html body .panel.ebd-card--unavailable { border-style: dashed; }
+  /* dark keeps the graphite fill (the luminance gap already says "card"); light
+     RECESSES the unavailable card to --panel2 so a white empty card does not read
+     as a hole in the sheet */
+  html[data-theme="light"] body .panel.ebd-card--unavailable {
+    background: var(--panel2); box-shadow: none; }
+  .ebd-card--unavailable .ebd-state { color: var(--ebd-ink-2); }
+
+  /* ---- card type: the topic is the label, the state is the headline --------- */
+  html body .ebd-label { margin: 0; font-size: var(--fs-label, 11px); font-weight: 600;
+    line-height: 1.25; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ebd-ink-3); }
+  html[data-lang="zh"] body .ebd-label { letter-spacing: 0; text-transform: none;
+    font-size: var(--fs-sm, 12.5px); }
+
+  html body .ebd-state { margin: 0; font-size: var(--fs-md, 15px); font-weight: 600;
+    line-height: 1.3; letter-spacing: -.005em; color: var(--ebd-ink-1);
+    text-wrap: pretty; }
+  html[data-lang="zh"] body .ebd-state { letter-spacing: 0; }
+
+  html body .ebd-note { margin: 0; font-size: var(--fs-sm, 12.5px); line-height: 1.5;
+    color: var(--ebd-ink-2); }
+
+  /* ---- the two supporting facts -------------------------------------------- */
+  .ebd-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px 12px; margin-top: 2px; padding-top: 9px;
+    border-top: 1px solid var(--ebd-hair); }
+  /* LIGHT: a drawn band, not a rule — figures need a container on white */
+  html[data-theme="light"] .ebd-facts { margin: 3px -7px 0; padding: 7px 8px 8px;
+    border: 1px solid var(--ebd-hair); border-radius: var(--r-ctl, 8px);
+    background: var(--panel2); }
+  html[data-theme="light"] .ebd-card--unavailable .ebd-facts { background: var(--panel); }
+
+  .ebd-fact { min-width: 0; }
+  .ebd-fact-l { display: block; font-size: var(--fs-micro, 10px); font-weight: 600;
+    line-height: 1.3; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--ebd-ink-3); }
+  html[data-lang="zh"] .ebd-fact-l { letter-spacing: 0; text-transform: none;
+    font-size: 10.5px; }
+  .ebd-fact-p { font-weight: 500; }        /* the fact's own clock, beside its own label */
+  /* Figures take tabular UI type, NOT the page's --num mono face: by contract this
+     slot legitimately carries a reason sentence when a print is missing, and mono
+     is for figures, never words (design system §4). */
+  .ebd-fact-v { display: block; margin-top: 1px; font-size: var(--fs-sm, 12.5px); font-weight: 600;
+    line-height: 1.3; color: var(--ebd-ink-1);
+    font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; }
+
+  /* ---- footer: ONE calculation cut + data status, the receipt, the deep link -- */
+  .ebd-foot { margin-top: auto; padding-top: 9px; border-top: 1px solid var(--ebd-hair);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 4px 10px; }
+
+  .ebd-meta { font-size: var(--fs-label, 11px); line-height: 1.45; color: var(--ebd-ink-3);
+    font-variant-numeric: tabular-nums; }
+  .ebd-meta--plain { margin: 0; flex: 1 1 auto; min-width: 0; }
+  .ebd-dot { margin: 0 5px; opacity: .6; }
+
+  .ebd-rc { flex: 1 1 auto; min-width: 0; }
+  html body .ebd-rc > summary { list-style: none; cursor: pointer;
+    display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 7px; }
+  html body .ebd-rc > summary::-webkit-details-marker { display: none; }
+  .ebd-rc-cue { font-size: var(--fs-label, 11px); font-weight: 600;
+    color: var(--ebd-ink-2); border-bottom: 1px dotted currentColor; }
+  .ebd-rc-cue::after { content: "\203A"; margin-left: 4px; display: inline-block;
+    transition: transform var(--t-fast, .16s) ease; }
+  .ebd-rc[open] > summary .ebd-rc-cue::after { transform: rotate(90deg); }
+  .ebd-rc > summary:hover .ebd-rc-cue { color: var(--ink-link, var(--link)); }
+  html body .ebd-rc > summary:focus-visible { outline: 2px solid color-mix(in srgb, var(--link) 70%, transparent);
+    outline-offset: 3px; border-radius: var(--r-ctl); }
+  .ebd-rc-body { margin: 8px 0 0; font-size: var(--fs-sm, 12.5px); line-height: 1.55;
+    color: var(--ebd-ink-2); }
+
+  .ebd-go { flex: none; display: inline-flex; align-items: center; gap: 4px;
+    min-height: 44px; font-size: var(--fs-sm, 12.5px); font-weight: 600;
+    color: var(--ink-link, var(--link)); text-decoration: none;
+    transition: color var(--t-fast, .16s) ease; }
+  .ebd-go::after { content: "\203A"; font-weight: 700; }
+  .ebd-go:hover { text-decoration: underline; text-underline-offset: 3px; }
+  /* DARK: the ink brightens (luminance is the affordance). LIGHT: the rule thickens
+     (a brightened link on white is just a paler link — structure reads instead). */
+  html:not([data-theme="light"]) .ebd-go:hover { color: color-mix(in srgb, var(--link) 55%, var(--text)); }
+  html[data-theme="light"] .ebd-go:hover { text-decoration-thickness: 2px; }
+  .ebd-go:focus-visible { outline: 2px solid color-mix(in srgb, var(--link) 70%, transparent);
+    outline-offset: 2px; border-radius: var(--r-ctl); }
+
+  .ebd-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+
+  /* ---- 390 floor: stacked, and the action becomes a real 44px target -------- */
+  @media (max-width: 899px) {
+    .ebd { margin: var(--sp-4, 16px) 0 var(--sp-5, 20px); }
+    html body .panel.ebd-card { padding: var(--sp-3, 12px) var(--sp-4, 16px); }
+    .ebd-foot { align-items: center; }
+    .ebd-go { min-height: 44px; padding-inline: 2px; }
+  }
+  @media (max-width: 400px) {
+    .ebd-facts { gap: 8px 10px; }
+    .ebd-head { gap: 1px 10px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ebd-go, .ebd-rc-cue::after { transition: none; }
+  }

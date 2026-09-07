@@ -2208,6 +2208,7 @@
 </style>
 <style id="risk-envelope-band-css">
 {% include "_risk_envelope_band.css.j2" %}
+{% include "_macro_economic_backdrop.css.j2" %}
 </style>
 {% endif %}
 </head>
@@ -11394,6 +11395,9 @@ html[data-theme="light"] :is(
       <div id="heatmap-scorecard" style="min-height:120px"></div>
     </div>
   </div>{# /sx-markets-v2 #}
+
+  {% import "_macro_economic_backdrop.html.j2" as economic %}
+  {% if mode != 'stocks' %}{{ economic.economic_backdrop(economic_backdrop|default([])) }}{% endif %}
 
   {# ── 4. RISK row + tray (Stage B) ── #}
   {# Requires: market_state (MS.radar), latest.risk_radar (if present), froth_fragility, fear_euphoria, fear_greed #}
