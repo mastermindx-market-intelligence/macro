@@ -25,14 +25,16 @@ over its own local HTTP server. Output (PNGs + manifest.json + smells.json)
 goes only under mockups/evidence/debt_maturity/ -- already tracked, already
 this packet's own evidence directory.
 
-The four pages captured are the same four the prior evidence run captured
-(reported / not_loaded / no_filings / identity_mismatch) -- the four
-statuses that render a body with real content or a real disclosure
-sentence. `not_applicable` (no section at all) and `unresolved` (a one-line
-terminal sentence, see MAJOR-1's fix) are not visually interesting and are
-covered by tests/test_debt_maturity.py instead
-(test_etf_page_renders_no_chip_and_no_section,
-test_render_unresolved_status_no_promise).
+Round-3 review BLOCKER: MAJOR-1's fix introduced a new user-facing terminal
+branch (`unresolved`, its own EN/ZH copy) with zero dual-theme evidence --
+house theme law treats missing evidence for a material user-facing change as
+PARTIAL/BLOCKED, never PASS, so a text-only "tests cover it" argument does
+not satisfy the law. `no_maturity_facts` (inherited from round 2, its own
+copy too) was likewise never captured. Six pages are captured now: the four
+the prior evidence run captured (reported / not_loaded / no_filings /
+identity_mismatch) plus `unresolved` and `no_maturity_facts`. `not_applicable`
+alone renders NO section (nothing to crop) and stays covered by
+tests/test_debt_maturity.py's test_etf_page_renders_no_chip_and_no_section.
 
 Usage::
 
@@ -52,7 +54,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 TEMPLATES_DIR = REPO_ROOT / "templates"
 OUT_DIR = REPO_ROOT / "mockups" / "evidence" / "debt_maturity"
 
-STATUSES = ("reported", "not_loaded", "no_filings", "identity_mismatch")
+STATUSES = ("reported", "not_loaded", "no_filings", "identity_mismatch", "unresolved", "no_maturity_facts")
 
 # No baked data-theme/data-lang: scripts/capture_page_evidence.py's own
 # _APPLY_STATE_SCRIPT sets those attributes after load (falling back to a
@@ -99,14 +101,32 @@ def _status_contexts() -> dict[str, dict]:
     }
     # a mismatched cik on the SAME real facts -> engine's own identity_mismatch
     identity_mismatch = extract_maturity_ladder(fixture, cik="0000999999", as_of=as_of)
+    # Round-3 review BLOCKER: `unresolved` (a CIK lookup was attempted and
+    # found nothing -- scripts/build_stock_library.py's own shape, never
+    # produced by the pure engine, so built by hand exactly as that call
+    # site builds it) and `no_maturity_facts` (a real filing exists, via the
+    # engine, but none of the six tags carry an annual period -- an empty
+    # us-gaap facts block under the SAME cik).
+    unresolved = {
+        "schema": "debt_maturity.v1", "status": "unresolved", "cik": None,
+        "buckets": [], "total_reported_usd": None, "total_display": None,
+        "near_share_pct": None, "buckets_reported": 0, "buckets_total": 6,
+        "as_of": as_of.isoformat(),
+    }
+    no_maturity_facts = extract_maturity_ladder(
+        {"cik": "0000320193", "facts": {"us-gaap": {}}}, cik="0000320193", as_of=as_of,
+    )
     assert reported["status"] == "reported", reported["status"]
     assert no_filings["status"] == "no_filings", no_filings["status"]
     assert identity_mismatch["status"] == "identity_mismatch", identity_mismatch["status"]
+    assert no_maturity_facts["status"] == "no_maturity_facts", no_maturity_facts["status"]
     return {
         "reported": reported,
         "not_loaded": not_loaded,
         "no_filings": no_filings,
         "identity_mismatch": identity_mismatch,
+        "unresolved": unresolved,
+        "no_maturity_facts": no_maturity_facts,
     }
 
 
@@ -185,7 +205,7 @@ def main() -> int:
             "--viewports", "desktop,mobile",
             "--locales", "en,zh",
             "--themes", "dark,light",
-            "--max-pages", "4",
+            "--max-pages", str(len(STATUSES)),
         ]
         result = subprocess.run(cmd, cwd=REPO_ROOT)
         if result.returncode != 0:

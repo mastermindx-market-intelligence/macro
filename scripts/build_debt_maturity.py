@@ -301,6 +301,7 @@ def refresh_cache_for_cik(
     merged: dict[str, Any] = {"cik": int(cik), "facts": {"us-gaap": {}}}
     got_any = False
     any_clean_response = False
+    n_clean_responses = 0
     for tag in _TAGS:
         url = _SEC_COMPANYCONCEPT_URL.format(cik=cik, tag=tag)
         try:
@@ -317,6 +318,7 @@ def refresh_cache_for_cik(
         if resp.status_code not in (200, 404):
             continue
         any_clean_response = True
+        n_clean_responses += 1
         if resp.status_code != 200:
             continue
         try:
@@ -331,7 +333,16 @@ def refresh_cache_for_cik(
     if not any_clean_response:
         return False
     merged["fetched_at"] = _utc_now_iso()
-    if not got_any:
+    # Round-2 review MAJOR-2 (round 2 of the fix was still only a HALF fix):
+    # `confirmed_no_filings` is a positive claim the panel renders as "No SEC
+    # filings available for this listing." -- it must never be set off a
+    # PARTIAL cycle. The gate used to be `not got_any` alone, so one 404
+    # (routine -- SEC 404s a tag an issuer does not report) plus five 429s
+    # left `any_clean_response=True`, `got_any=False`, and wrote a fabricated
+    # confirmed_no_filings off five unanswered requests. Every one of the six
+    # tags must have completed (200 or 404) -- not merely at least one --
+    # before "found nothing" can be trusted as "asked and got nothing".
+    if not got_any and n_clean_responses == len(_TAGS):
         merged["confirmed_no_filings"] = True
     cache_dir = _cache_dir()
     cache_dir.mkdir(parents=True, exist_ok=True)

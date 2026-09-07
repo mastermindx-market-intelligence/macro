@@ -465,21 +465,22 @@ def test_debt_maturity_import_failure_never_kills_the_stockdata_build(monkeypatc
     before a single ticker was processed. Simulates that failure via the
     module's own `_dm_load is None` fallback (set when the guarded import at
     module load time raised) and asserts the per-ticker try/except still
-    degrades to `not_applicable` instead of propagating."""
+    degrades gracefully instead of propagating.
+
+    Round-3 review MAJOR-3: this ticker IS a candidate SEC filer (not
+    crypto/ETF), so the degraded status must be `not_loaded` -- never
+    `not_applicable`, which the taxonomy reserves for "no filer identity by
+    construction" and which renders no chip and no section, silently
+    swallowing a real filer's null disclosure."""
     import scripts.build_stock_library as bsl
 
     assert bsl._dm_load is not None, "sanity: import succeeded in this test env"
     monkeypatch.setattr(bsl, "_dm_load", None)
 
-    rec: dict = {}
-    try:
-        if bsl._dm_load is None:
-            raise RuntimeError("scripts.build_debt_maturity import failed at module load")
-        _dm_cik, _dm_facts, _dm_state = bsl._dm_load("AAPL")  # pragma: no cover - not reached
-    except Exception:  # noqa: BLE001 -- mirrors the production call site exactly
-        rec["debt_maturity"] = {"schema": "debt_maturity.v1", "status": "not_applicable"}
+    debt_maturity = bsl._resolve_debt_maturity("AAPL", "Technology", date(2025, 1, 1))
 
-    assert rec["debt_maturity"]["status"] == "not_applicable"
+    assert debt_maturity["status"] == "not_loaded"
+    assert debt_maturity["status"] != "not_applicable"
 
 
 def test_sections_gate_matches_nav_chip_gate():
@@ -810,10 +811,16 @@ def test_etf_page_renders_no_chip_and_no_section(monkeypatch):
     must resolve to `not_applicable` WITHOUT ever attempting a CIK lookup --
     the fabricated "catching up" promise the round-2 review measured across
     every ETF/ADR/crypto/foreign listing must be impossible by construction,
-    not merely absent because the lookup happened to fail. Exercises the
-    real per-ticker branch in scripts/build_stock_library.py directly (the
-    smallest slice that reproduces the production decision) rather than the
-    whole stockdata build."""
+    not merely absent because the lookup happened to fail.
+
+    Round-3 review MAJOR-2: the prior version of this test hand-copied the
+    `if ticker.endswith("-USD") or sector == "ETF / macro"` branch inline
+    instead of calling the real production code, so it passed identically
+    on the pre-fix parent head too (it was pinning its own re-implementation,
+    not scripts/build_stock_library.py's actual short-circuit). This calls
+    the extracted, directly-callable `bsl._resolve_debt_maturity()` -- the
+    ACTUAL function the per-ticker loop calls -- so a regression that
+    removes or narrows the short-circuit fails this test."""
     import scripts.build_stock_library as bsl
 
     def _boom(_ticker):  # pragma: no cover - must never be called for an ETF
@@ -821,16 +828,10 @@ def test_etf_page_renders_no_chip_and_no_section(monkeypatch):
 
     monkeypatch.setattr(bsl, "_dm_load", _boom)
 
-    ticker, sector = "SPY", "ETF / macro"
-    rec: dict = {}
-    _dm_asof = date(2025, 1, 1)
-    if ticker.endswith("-USD") or sector == "ETF / macro":
-        rec["debt_maturity"] = {"schema": "debt_maturity.v1", "status": "not_applicable"}
-    else:  # pragma: no cover - not this test's branch
-        raise AssertionError("unreachable")
+    debt_maturity = bsl._resolve_debt_maturity("SPY", "ETF / macro", date(2025, 1, 1))
 
-    assert rec["debt_maturity"]["status"] == "not_applicable"
-    html = _render_partial(rec["debt_maturity"])
+    assert debt_maturity["status"] == "not_applicable"
+    html = _render_partial(debt_maturity)
     assert html == "", "not_applicable must render no section at all"
 
 
@@ -839,7 +840,9 @@ def test_cikless_common_stock_is_unresolved_not_not_applicable(monkeypatch):
     "ETF / macro" sentinel, not crypto) whose CIK lookup finds nothing is
     `unresolved` -- an identity gap in OUR ledger, not a structural
     not-a-filer classification -- and its rendered panel must carry the
-    honest no-record sentence, never the not_loaded catching-up promise."""
+    honest no-record sentence, never the not_loaded catching-up promise.
+    Calls the real, extracted `bsl._resolve_debt_maturity()` (round-3
+    review MAJOR-2) rather than hand-building the expected dict."""
     import scripts.build_debt_maturity as bdm
     import scripts.build_stock_library as bsl
 
@@ -847,16 +850,9 @@ def test_cikless_common_stock_is_unresolved_not_not_applicable(monkeypatch):
     monkeypatch.setattr(bsl, "_dm_load", bdm.load_debt_maturity_facts)
 
     ticker, sector = "ZZZZNOPE", "Technology"
-    _dm_asof = date(2025, 1, 1)
     assert not (ticker.endswith("-USD") or sector == "ETF / macro")
-    _dm_cik, _dm_facts, _dm_state = bsl._dm_load(ticker)
-    assert _dm_state == "unresolved"
-    debt_maturity = {
-        "schema": "debt_maturity.v1", "status": "unresolved", "cik": None,
-        "buckets": [], "total_reported_usd": None, "total_display": None,
-        "near_share_pct": None, "buckets_reported": 0, "buckets_total": 6,
-        "as_of": _dm_asof.isoformat(),
-    }
+    debt_maturity = bsl._resolve_debt_maturity(ticker, sector, date(2025, 1, 1))
+    assert debt_maturity["status"] == "unresolved"
     html = _render_partial(debt_maturity)
     assert "We do not have an SEC filing record for this listing." in html
     assert "Debt schedule not loaded yet." not in html
@@ -919,6 +915,89 @@ def test_mixed_200_and_429_still_completes(tmp_path, monkeypatch):
     assert cached is not None
     assert cached.get("confirmed_no_filings") is not True
     assert tag in cached["facts"]["us-gaap"]
+
+
+def test_partial_throttle_with_one_404_never_writes_confirmed_no_filings(tmp_path, monkeypatch):
+    """Round-3 review MAJOR-1 RED-first: the previous fix gated
+    `confirmed_no_filings` on `any_clean_response` (at least one tag
+    answered), not on EVERY tag answering. A cycle where one of the six tags
+    gets a routine 404 (SEC's own "no data for this tag" answer -- common,
+    not an error) and the other five are throttled 429 sets
+    `any_clean_response=True`, `got_any=False`, and used to fabricate
+    `confirmed_no_filings: true` off five unanswered requests. Only when
+    ALL SIX tags have completed (200 or 404) and none found data may the
+    cache legitimately claim confirmed_no_filings."""
+    import scripts.build_debt_maturity as bdm
+
+    monkeypatch.setattr(bdm, "_cache_dir", lambda: tmp_path / "cache")
+    answered_tag = bdm._TAGS[0]
+
+    class _Resp:
+        def __init__(self, status_code):
+            self.status_code = status_code
+
+    class _OneFourOhFourRestThrottledSession:
+        def get(self, url, **k):
+            if answered_tag in url:
+                return _Resp(404)
+            return _Resp(429)
+
+    ok = bdm.refresh_cache_for_cik("0000888886", session=_OneFourOhFourRestThrottledSession())
+    # A single clean 404 with five throttled tags is still a genuinely
+    # partial cycle -- the cache write itself may proceed (there IS at least
+    # one completed answer), but it must never carry the positive
+    # `confirmed_no_filings` claim.
+    assert ok is True
+    cached = bdm.load_cached_facts("0000888886")
+    assert cached is not None
+    assert cached.get("confirmed_no_filings") is not True
+
+
+def test_all_six_tags_404_does_write_confirmed_no_filings(tmp_path, monkeypatch):
+    """Companion to the above: when every tag completes (all six 404s), the
+    fix must not regress the legitimate "asked every tag, got nothing"
+    case -- confirmed_no_filings is still the correct, honest claim there."""
+    import scripts.build_debt_maturity as bdm
+
+    monkeypatch.setattr(bdm, "_cache_dir", lambda: tmp_path / "cache")
+
+    class _Resp:
+        status_code = 404
+
+    class _AllFourOhFourSession:
+        def get(self, *a, **k):
+            return _Resp()
+
+    ok = bdm.refresh_cache_for_cik("0000888885", session=_AllFourOhFourSession())
+    assert ok is True
+    cached = bdm.load_cached_facts("0000888885")
+    assert cached is not None
+    assert cached.get("confirmed_no_filings") is True
+
+
+def test_debt_maturity_producer_fault_degrades_to_not_loaded_not_not_applicable(monkeypatch):
+    """Round-3 review MAJOR-3 RED-first: this listing IS a candidate SEC
+    filer (it is not crypto/ETF, so it reaches the CIK-lookup else branch).
+    A transient fault inside the lookup/extract path itself (a real,
+    non-None `_dm_load` that raises mid-call -- distinct from the
+    import-failure/`_dm_load is None` case pinned above) must degrade to
+    `not_loaded`, never `not_applicable`. Calls the ACTUAL production
+    function (`scripts.build_stock_library._dm_load`, monkeypatched to raise)
+    through the real `try/except` shape, not a hand-copied mirror."""
+    import scripts.build_stock_library as bsl
+
+    def _boom(_ticker):
+        raise RuntimeError("simulated producer fault")
+
+    monkeypatch.setattr(bsl, "_dm_load", _boom)
+
+    ticker, sector = "REALFILR", "Technology"
+    assert not (ticker.endswith("-USD") or sector == "ETF / macro")
+
+    debt_maturity = bsl._resolve_debt_maturity(ticker, sector, date(2025, 1, 1))
+
+    assert debt_maturity["status"] == "not_loaded"
+    assert debt_maturity["status"] != "not_applicable"
 
 
 def test_reported_lede_bucket_is_always_the_near_bucket():
