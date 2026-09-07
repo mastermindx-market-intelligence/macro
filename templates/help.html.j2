@@ -91,7 +91,6 @@ html[data-theme="light"] .help-card:hover,html[data-theme="light"] .help-card:fo
    empty-directory page) never shows an orphan line over the first row.
    JS below only restates the first visible row after a filter hides siblings. */
 .help-answers .help-a:nth-child(-n+2){border-top:0}
-.help-a.help-a-row-first{border-top:0}
 .help-answers .help-a.help-a-row-rest{border-top:1px solid color-mix(in srgb,var(--line) 62%,transparent)}
 .help-a[hidden]{display:none}
 .help-a dt{margin:0 0 6px;font:660 15.5px/1.35 var(--font-ui);letter-spacing:-.01em;color:var(--text)}
@@ -143,6 +142,9 @@ html[data-theme="light"] .help-support-cta{background:var(--panel);box-shadow:0 
   .help-answers .help-a:nth-child(1){border-top:0}
   .help-answers .help-a:nth-child(n+2){border-top:1px solid color-mix(in srgb,var(--line) 62%,transparent)}
 }
+/* JS-owned filtered first-row: must follow the 900px n+2 restore so
+   (0,3,0) plus source order beats `.help-answers .help-a:nth-child(n+2)`. */
+.help-answers .help-a.help-a-row-first{border-top:0}
 @media (max-width:760px){
   .help-controls{grid-template-columns:1fr}
   .help-count-wrap{padding-left:0}

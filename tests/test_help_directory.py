@@ -390,6 +390,33 @@ def test_answers_grid_static_first_row_has_no_top_hairline() -> None:
     assert 'class="help-a help-a-row-first"' not in html
 
 
+def test_filtered_first_row_beats_900px_nth_child_restore() -> None:
+    """Latest-review MAJOR: JS-owned filtered first-row must beat the 900px n+2 restore.
+
+    ``.help-a.help-a-row-first`` is specificity (0,2,0) and loses to
+    ``.help-answers .help-a:nth-child(n+2)`` at (0,3,0) inside
+    ``@media (max-width:900px)``. On a 1-column filter whose first visible
+    answer is not DOM child 1 (e.g. category account → nth-child(7)), JS
+    still adds ``help-a-row-first`` and the top hairline stays. The override
+    must be ``.help-answers .help-a.help-a-row-first`` and must follow that
+    media restore so (0,3,0) plus source order wins.
+    """
+    src = (ROOT / "templates" / "help.html.j2").read_text(encoding="utf-8")
+    override = ".help-answers .help-a.help-a-row-first{border-top:0}"
+    media = re.search(r"@media \(max-width:900px\)\{(.*?)\n\}", src, re.S)
+    assert media, "the 900px answers breakpoint must exist"
+    assert ".help-answers .help-a:nth-child(n+2)" in media.group(1)
+    override_at = src.rfind(override)
+    assert override_at != -1, (
+        "filtered first-row override must be "
+        ".help-answers .help-a.help-a-row-first{border-top:0}"
+    )
+    assert override_at > media.end(), (
+        "filtered first-row override must follow the 900px n+2 restore so "
+        f"source order wins (override at {override_at}, media ends {media.end()})"
+    )
+
+
 def test_no_raw_pr_or_slug_leaks_into_user_copy(tmp_path: Path) -> None:
     build_public_pages.build(tmp_path)
     html = (tmp_path / "help.html").read_text(encoding="utf-8")
