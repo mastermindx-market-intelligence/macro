@@ -1,3 +1,60 @@
+---
+workstream: WS:CHAIRMAN-CONTROL-ROOM
+session: sol/plugin-integration-handoffs-20260907
+model: sol
+ended_because: ci_handoff
+prs: [6977]
+operation_key: agentos-plugin-integration-handoffs-reconcile-20260907-sol-001
+mission: >
+  Route Airbyte, Make, and PostHog into thin bounded integrations without creating duplicate
+  data, automation, event, lifecycle, identity, or telemetry authorities.
+state_before: >
+  The assessment recorded connector/account reachability and proposed useful lanes, but the
+  document lacked canonical Agent OS handoff metadata.
+changed:
+  - path: agentos/handoffs/PLUGIN-HANDOFF-DATA-AUTOMATION-OBSERVABILITY-2026-09-07.md
+    what: >
+      Adds the required durable handoff contract while preserving the existing narrow
+      integration boundaries and proof requirements.
+verified:
+  - claim: >
+      This record changes only the plugin-integration handoff packet.
+    command: >
+      git diff --name-only against e9a4535f14275896222e7c6a3cc39484852395e5
+    result: >
+      No Airbyte connector, Make scenario, PostHog project, event, feature flag, credential, or
+      external automation is modified by this repair.
+unverified:
+  - claim: >
+      Airbyte, Make, and PostHog assessment-time availability remains current.
+    what_would_verify: >
+      Run the lane-specific read-only discovery calls in the assigned future session before any
+      write.
+unresolved:
+  - >
+    Airbyte has no accepted source-to-consumer slice.
+  - >
+    No Make scenario is accepted as a Mastermind production dependency.
+  - >
+    PostHog instrumentation completeness is not established.
+next_actions:
+  - >
+    Choose one named business-data, automation, or product-learning job and prove one thin
+    end-to-end slice.
+  - >
+    Keep the canonical owner and correction path explicit.
+do_not_redo:
+  - >
+    Do not build a second data lake, orchestrator, event bus, identity model, or product-truth
+    plane.
+  - >
+    Do not activate recurring automation before effect and retry behavior are proven.
+danger_areas:
+  - >
+    Account reachability is not integration completeness.
+  - >
+    Analytics interpretation and automation output have no lifecycle or trading authority.
+---
 # Plugin Integration Handoff — Data + Automation + Observability
 
 Date: 2026-09-07

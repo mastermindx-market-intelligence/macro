@@ -1,3 +1,61 @@
+---
+workstream: WS:CHAIRMAN-CONTROL-ROOM
+session: sol/plugin-integration-handoffs-20260907
+model: sol
+ended_because: ci_handoff
+prs: [6977]
+operation_key: agentos-plugin-integration-handoffs-reconcile-20260907-sol-001
+mission: >
+  Route research, documentation, design, browser, and authorized-host tools into bounded work
+  while preserving source rights, artifact ownership, and host safety.
+state_before: >
+  The assessment recorded useful connector states, but the handoff was not parseable by Agent
+  OS and its Remote Desktop Commander 401 blocker was already stale.
+changed:
+  - path: agentos/handoffs/PLUGIN-HANDOFF-RESEARCH-DESIGN-HOST-2026-09-07.md
+    what: >
+      Adds canonical handoff metadata and corrects Remote Desktop Commander to a current
+      device-scoped proven read while retaining mandatory per-session device verification.
+verified:
+  - claim: >
+      Remote Desktop Commander is currently usable on the intended authorized Mac.
+    command: >
+      Remote Desktop Commander list_devices then ping device
+      cfd09f03-2e6e-4a24-843c-8401d4a7169d
+    result: >
+      Mac-Studio.ts.net lan reported online with valid auth and returned pong at
+      2026-09-07T16:00:38.051Z; only harmless reads and isolated Git inspection were performed.
+unverified:
+  - claim: >
+      Firecrawl, Context7, Canva, Figma, and Opera assessment-time states remain current.
+    what_would_verify: >
+      Re-run the lane-specific harmless read-only smoke test in the exact future session.
+unresolved:
+  - >
+    Opera browser connection remains unverified in this reconciliation.
+  - >
+    Figma write capability remains unproven.
+  - >
+    No research/design/host connector is accepted as an end-to-end product integration from
+    this records PR.
+next_actions:
+  - >
+    At each host session start, discover schemas, list devices, select the intended device, and
+    ping before file or process work.
+  - >
+    Prove one named research, design, browser, or host workflow with a real consumer.
+do_not_redo:
+  - >
+    Do not create a second evidence store, design system, browser authority, or host-control
+    plane.
+  - >
+    Do not touch another worker worktree or process.
+danger_areas:
+  - >
+    Host capability does not grant organizational permission.
+  - >
+    Timeout or cancellation never proves no effect.
+---
 # Plugin Integration Handoff — Research + Design + Host Access
 
 Date: 2026-09-07
@@ -22,14 +80,16 @@ This family materially improves research depth, product/design execution, and th
 - Opera is browser transport/session control only.
 - Remote Desktop Commander is host capability only; host access never expands organizational permission.
 
-## Verified state
+## Dated assessment state and current correction
+
+Assessment rows are observations, not permanent currentness. Re-smoke the exact connector/account/device in every assigned session.
 
 - Firecrawl: `PROVEN_LIVE` connector; monitor list call succeeded; no monitors exist.
 - Context7: `PROVEN_LIVE`; current Next.js library resolution succeeded against a high-reputation library.
 - Canva: `PARTIAL`; account is connected, root includes a dedicated `Mastermind-X` folder, but no Brand Kit is exposed.
 - Figma: `PARTIAL`; authenticated account is visible, but current plan seat is **View** on Starter.
 - Opera Browser Connector: `DARK_OR_DISCONNECTED`; call reports browser not connected and requires browser-side **Allow AI connection** plus Opera sign-in.
-- Remote Desktop Commander: `DARK_OR_DISCONNECTED`; connector returned HTTP 401 Authentication failed during connectivity verification.
+- Remote Desktop Commander: `PROVEN_LIVE` in the current reconciliation; device `Mac-Studio.ts.net lan` (`cfd09f03-2e6e-4a24-843c-8401d4a7169d`) listed online with valid auth and returned pong at `2026-09-07T16:00:38.051Z`.
 
 ## Exact scope
 
@@ -123,9 +183,9 @@ Acceptance:
 
 ### Remote Desktop Commander
 
-Current blocker: HTTP 401 authentication failure. Do not ask Chris to relay shell commands while a reconnect could restore the authorized host bridge, but do not claim host access until verification succeeds.
+Historical assessment blocker: an earlier call returned HTTP 401. Current reconciliation supersedes that connection observation: exact-device discovery and ping succeeded. This does not create permanent availability, browser control, provider-session authority, or permission to touch another worker's state.
 
-Required startup sequence after reconnect:
+Required startup sequence at the start of every host-enabled session:
 
 1. Discover current Remote Desktop Commander schemas if needed.
 2. `list_devices`.

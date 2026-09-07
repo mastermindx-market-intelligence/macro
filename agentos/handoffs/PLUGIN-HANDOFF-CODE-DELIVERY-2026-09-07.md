@@ -1,3 +1,58 @@
+---
+workstream: WS:CHAIRMAN-CONTROL-ROOM
+session: sol/plugin-integration-handoffs-20260907
+model: sol
+ended_because: ci_handoff
+prs: [6977]
+operation_key: agentos-plugin-integration-handoffs-reconcile-20260907-sol-001
+mission: >
+  Route source-control and deployment connectors into explicit per-service delivery lanes while
+  preserving GitHub as implementation evidence authority.
+state_before: >
+  The assessment recorded connector reachability and delivery guidance, but the document lacked
+  canonical Agent OS handoff metadata.
+changed:
+  - path: agentos/handoffs/PLUGIN-HANDOFF-CODE-DELIVERY-2026-09-07.md
+    what: >
+      Adds the required durable handoff contract without changing repository, deployment,
+      service, domain, environment, or provider state.
+verified:
+  - claim: >
+      PR 6977 is a five-file records-only carrier.
+    command: >
+      GitHub list changed files and current PR head e9a4535f14275896222e7c6a3cc39484852395e5
+    result: >
+      Only the five Agent OS handoff paths are present; no application or deployment file is
+      changed.
+unverified:
+  - claim: >
+      Current service ownership across Vercel, Render, BasicDeploy, GitHub, and GitLab is fully
+      mapped.
+    what_would_verify: >
+      Perform repository-to-project/service/domain archaeology with harmless reads on each
+      relevant provider.
+unresolved:
+  - >
+    Two duplicate-looking GitLab projects require purpose reconciliation.
+  - >
+    No canonical per-service deployment ownership map is yet accepted.
+next_actions:
+  - >
+    Map one actual service from GitHub commit to its owning deployment carrier and production
+    proof.
+  - >
+    Keep BasicDeploy sandbox-only unless separately promoted.
+do_not_redo:
+  - >
+    Do not split canonical SCM or CI authority across GitHub and GitLab.
+  - >
+    Do not dual-own a production service across deployment platforms.
+danger_areas:
+  - >
+    CI green, merge, deployment, visible proof, and final acceptance are distinct.
+  - >
+    A connected deployment account does not establish service ownership.
+---
 # Plugin Integration Handoff — Code + Delivery
 
 Date: 2026-09-07
