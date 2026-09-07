@@ -27,9 +27,12 @@ verified:
 - claim: Macro6976 current source semantics are independently accepted.
   command: Existing review5133539134 and current natural workflow34126809761 read.
   result: f902d19f3bbb16b79bf0507b39eb3755c65deb54 remains approved; contract/plan/admission checks succeeded and twelve behavioral packs remained queued at the inspected epoch. No source rewrite, new review, CI rerun or release.
-- claim: The separate topbar correction remains local rather than falsely published.
+- claim: The initial topbar preflight saw a local correction before the later incumbent publication.
   command: Current local clean HEAD/hash read, canonical remote branch read, and prospective push-intent existence check after the blocked request.
-  result: Local123ceecc3fef3290b7303226f454c597e7d9d0f5, remote5b7f4041ede6abc84246ae8dd80498bd5e21139e. Prior39-case proof retained. This turn's push request was platform-blocked before its intent existed; remote stayed unchanged.
+  result: At that initial read local123ceecc and remote5b7 were distinct. This continuation's push request was platform-blocked before its intent existed. A later incumbent publication superseded this remote observation, as recorded next.
+- claim: The incumbent subsequently published the topbar correction and retained custody of a new test-harness finding.
+  command: Direct current Mastermind531 head read and receipt5574148626, consumed after fresh original-parent read.
+  result: Remote123ceecc3fef3290b7303226f454c597e7d9d0f5 is now canonical. The incumbent reports a new CodeQL fixture issue, local uncommitted test hash6d84e4cb and pending native40-case run35330. No new40-case PASS, source transfer or installed acceptance is claimed by this continuation. The old123c publication must not be replayed.
 - claim: Earlier live Control Room and saved-child proofs remain correctly scoped.
   command: Retained live rendered/filter/no-match receipt5571237845 and saved native-child receipt5568519292.
   result: The earlier live browser rendered70 work references and supported exact/no-match filtering. Saved Claude metadata showed16 child entries under2 of9 parents. Neither proves live multi-account execution, current authority or duplicate-work prevention.
@@ -47,12 +50,12 @@ unverified:
 unresolved:
 - Four coverage files are locally authored and uncommitted; final whole-suite and publication are not proven.
 - Source metadata warnings do not create a complete inventory, permission, resource lock or duplicate-work detector.
-- Mastermind531 test-only correction is held locally; Macro6976 approved source still needs natural CI and source-release disposition.
+- Mastermind531 now publishes123c, while a newer test-harness repair remains with its incumbent and pending run35330. Macro6976 approved source still needs natural CI and source-release disposition.
 - Current execution transport is unavailable; source custody remains here and no replacement writer is assigned.
 next_actions:
 - Recover the original coverage workspace and the actual PID49891 outcome through a responsive authorized connection; inspect exact source/index state before any further source effect.
 - Preserve the four-path closure and existing empty-scope behavior; complete permitted final verification and publish only this same candidate under normal Draft/review gates. Do not replay the blocked broad wrapper or reconstruct local changes through another carrier.
-- Keep the approved6976 source frozen while its existing campaign finishes. Preserve531 local123c/remote5b7 and do not reroute its blocked publication.
+- Keep approved6976 frozen while its existing campaign finishes. Preserve531 remote123c and its incumbent's pending test-harness repair; do not replay the superseded123c push or operate on run35330 from this coverage lane.
 - Qualify installed deployment and native producer/read/return integration through existing owners after source acceptance; do not use a warning fix as proof of actual cross-account execution.
 - Validate and review this same record when its canonical execution path is available; no replacement workstream or memory store.
 do_not_redo:
@@ -97,7 +100,7 @@ The broader final verification request was platform-blocked. Separate narrower c
 
 ## §3 Existing siblings and continuity
 
-Macro6976 f902 source is independently approved and frozen pending its natural behavioral campaign and guarded release. Mastermind531 remote5b7 remains behind its local123c test-only fix; this turn's ordinary push request was blocked before its intent existed. Both retain existing owners and scopes. The coverage work neither repairs nor replaces them.
+Macro6976 f902 source is independently approved and frozen pending its natural behavioral campaign and guarded release. A later direct read confirms Mastermind531 now publishes123c after the incumbent's successful ordinary push. Receipt5574148626 records a new fixture-regex finding, a local test-only repair and pending40-case native run35330, without claiming its result. That supersedes this continuation's earlier remote5b7 preflight. The incumbent retains531; this coverage work neither repairs nor replaces it. No repeated123c publication or inference from the older39-case run is allowed.
 
 Prior detailed milestones, hashes, validations and limitations remain in parent revision `6e1d8f7f3138b4818e4587613f9e15ce1050974f` and its cited discussion, including the actual live Control Room read-root adoption, browser proof, saved-session metadata and full latency test/consumer results. No historical success is erased or promoted to newer-source proof.
 
