@@ -2462,6 +2462,29 @@ def _valuation_scenario_view(blob: dict | None) -> dict | None:
 _VS_SCENARIO_TITLES_ZH = {"cautious": "保守", "base": "基准", "upbeat": "乐观"}
 
 
+def _vs_scenario_null_text(s: dict) -> tuple[str, str]:
+    """Plain-word reason a non-computable scenario shows in the Full-detail
+    dialog. Mirrors the vs_null_en/vs_null_zh Jinja macros in
+    templates/_valuation_scenario.html.j2 exactly -- same scenario-named
+    margin_too_thin sentence, same "first missing reason wins" priority (a
+    scenario carrying a more fundamental reason, e.g. "consistent period",
+    ahead of margin_too_thin in s["missing"] must not be described as merely
+    too-thin-margin) -- so the two render sites never disagree (review round
+    4 MINOR-1: this dialog printed a bare "Not computable"/"无法计算" with no
+    reason at all for a margin_too_thin scenario)."""
+    missing = s.get("missing") or []
+    key = s.get("key", "")
+    if missing and missing[0] == "margin_too_thin":
+        return (
+            f"Not computable — margins are too thin to run the {key} case",
+            f"无法计算——利润率过低，无法计算{_VS_SCENARIO_TITLES_ZH.get(key, key)}情景",
+        )
+    missing_plain = s.get("missing_plain") or []
+    reason_en = missing_plain[0]["en"] if missing_plain else "a reported input"
+    reason_zh = missing_plain[0]["zh"] if missing_plain else "一项披露数据"
+    return (f"Not computable — no {reason_en}", f"无法计算——缺少{reason_zh}")
+
+
 def _deep_valuation_scenario(blob: dict | None) -> dict | None:
     vscn = (blob or {}).get("valuation_scenario", {}).get("v1") if blob else None
     if not vscn:
@@ -2495,15 +2518,24 @@ def _deep_valuation_scenario(blob: dict | None) -> dict | None:
     for s in vscn.get("scenarios", []):
         a = s.get("assumptions", {})
         key = s.get("key", "")
+        # Review round 4 MINOR-1: this dialog is a fourth render site for
+        # per_share and used to gate on s.get("computable") alone, so the
+        # belt-and-braces defence in the Jinja partial (every render site
+        # requires computable AND per_share is not none AND per_share > 0)
+        # was one file short. Apply the same three-part check here.
+        _vs_ps = s.get("per_share")
+        _vs_ok = bool(s.get("computable")) and _vs_ps is not None and _vs_ps > 0
+        if _vs_ok:
+            _vs_v, _vs_v_en, _vs_v_zh = f"${_vs_ps:.2f}", "", ""
+        else:
+            _vs_v_en, _vs_v_zh = _vs_scenario_null_text(s)
+            _vs_v = ""
         srows = [
             {"k_en": "Sales growth", "k_zh": "销售增长", "v": f"{a.get('sales_growth_pct')}%", "v_en": "", "v_zh": ""},
             {"k_en": "Margin change", "k_zh": "利润率变化", "v": f"{a.get('margin_delta_pp')}pp", "v_en": "", "v_zh": ""},
             {"k_en": "Earnings multiple", "k_zh": "市盈率倍数", "v": f"{a.get('earnings_multiple')}x", "v_en": "", "v_zh": ""},
             {"k_en": "Per-share (computed)", "k_zh": "每股价值（计算值）",
-             "v": (f"${s['per_share']:.2f}" if s.get("computable")
-                   else ""),
-             "v_en": ("" if s.get("computable") else "Not computable"),
-             "v_zh": ("" if s.get("computable") else "无法计算")},
+             "v": _vs_v, "v_en": _vs_v_en, "v_zh": _vs_v_zh},
         ]
         panels.append({
             "kind": "kv",

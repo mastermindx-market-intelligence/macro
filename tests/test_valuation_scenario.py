@@ -256,6 +256,100 @@ def test_panel_renders_and_omits():
     assert vs.compute([]) is None
 
 
+def test_null_reason_prioritizes_consistent_period_over_margin_too_thin():
+    """Review round 4 MINOR-4: vs_null_en/vs_null_zh in
+    templates/_valuation_scenario.html.j2 used to test
+    `'margin_too_thin' in s.missing` (membership), so a scenario carrying
+    BOTH a more fundamental reason ("consistent period") and margin_too_thin
+    always got the scenario-named margin sentence, silently suppressing the
+    mixed-period reason. engine/valuation_scenario.py always appends
+    "consistent period" FIRST and "margin_too_thin" LAST to a scenario's
+    `missing` list (guard order), so testing s.missing[0] instead of
+    membership restores the correct priority: the more fundamental reason
+    wins whenever more than one applies."""
+    import jinja2
+
+    # margin=1.2% drives Cautious's own factor negative (margin_too_thin),
+    # same fixture as test_margin_1_2_percent_gates_cautious_only -- but this
+    # fixture ALSO breaks period consistency (a debt_lt row tagged to a
+    # different fiscal year), which the engine appends first and unconditionally.
+    revenue = 1.0e11
+    ni_1_2_pct = revenue * 0.012
+    blob = vs.compute(
+        _rows(ni=ni_1_2_pct, revenue=revenue, debt_lt_fy=2024), ticker="TEST"
+    )
+    by_key = {s["key"]: s for s in blob["scenarios"]}
+    cautious = by_key["cautious"]
+    assert cautious["missing"][0] == "consistent period", cautious["missing"]
+    assert "margin_too_thin" in cautious["missing"]  # still recorded, just not first
+
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(ROOT / "templates")))
+    env.globals["t"] = lambda en, zh: en
+    tmpl = env.from_string("{% include '_valuation_scenario.html.j2' %}")
+    html = tmpl.render(valuation_scenario=blob, deep_ids=[])
+    assert "Can't be computed without a consistent reporting period" in html
+    assert "Margins are too thin to run the cautious case" not in html
+
+
+def test_full_detail_dialog_requires_positive_per_share_not_just_computable():
+    """Review round 4 MINOR-1: scripts/build_ticker_pages.py's Full-detail
+    dialog (`_deep_valuation_scenario`) is a fourth render site for
+    `per_share` and used to gate on `s.get("computable")` alone -- the PR's
+    belt-and-braces claim (every render site requires computable AND
+    per_share is not none AND per_share > 0) was true of the Jinja partial
+    but one file short of true. Hand-craft a scenario dict the real engine
+    could never emit (computable=True, per_share<=0) to prove the dialog
+    itself refuses to print a dollar figure for it -- this is exactly the
+    defence a real engine regression would need. Also asserts a
+    margin_too_thin null now carries a plain-word reason instead of a bare
+    "Not computable" with no explanation."""
+    from scripts.build_ticker_pages import _deep_valuation_scenario
+
+    blob = {
+        "valuation_scenario": {
+            "v1": {
+                "fy": 2025,
+                "period_end": "2025-09-27",
+                "base": {
+                    "revenue": {"value": 1e11}, "op_income": {"value": 1e10},
+                    "net_income": {"value": 1e9},
+                    "share_count": {"value": 1e9, "identity": "outstanding"},
+                    "net_debt": {"value": None, "reported": False},
+                },
+                "scenarios": [
+                    # Adversarial: engine can never emit this (belt-and-braces
+                    # forecloses it), but the dialog must defend independently.
+                    {"key": "cautious", "assumptions": {"sales_growth_pct": -2, "margin_delta_pp": -1.5, "earnings_multiple": 14},
+                     "per_share": -4.12, "computable": True, "missing": [], "missing_plain": []},
+                    {"key": "base", "assumptions": {"sales_growth_pct": 3, "margin_delta_pp": 0, "earnings_multiple": 18},
+                     "per_share": None, "computable": False,
+                     "missing": ["margin_too_thin"],
+                     "missing_plain": [{"en": "a margin base wide enough for this case", "zh": "利润率基数不足以支撑该情景"}]},
+                    {"key": "upbeat", "assumptions": {"sales_growth_pct": 7, "margin_delta_pp": 1.5, "earnings_multiple": 22},
+                     "per_share": 55.0, "computable": True, "missing": [], "missing_plain": []},
+                ],
+            }
+        }
+    }
+    dialog = _deep_valuation_scenario(blob)
+    panels = dialog["panels"]
+    by_title = {p["title_en"]: p for p in panels if p.get("kind") == "kv" and p.get("title_en") in ("Cautious", "Base", "Upbeat")}
+
+    cautious_ps_row = next(r for r in by_title["Cautious"]["rows"] if r["k_en"] == "Per-share (computed)")
+    assert cautious_ps_row["v"] == "", cautious_ps_row  # never a dollar figure for per_share<=0
+    assert "$" not in cautious_ps_row["v_en"]
+
+    base_ps_row = next(r for r in by_title["Base"]["rows"] if r["k_en"] == "Per-share (computed)")
+    assert base_ps_row["v"] == ""
+    assert base_ps_row["v_en"] != "Not computable"  # a reason, not a bare unexplained label
+    assert "too thin" in base_ps_row["v_en"]
+    assert base_ps_row["v_zh"] != "无法计算"
+    assert "利润率过低" in base_ps_row["v_zh"]
+
+    upbeat_ps_row = next(r for r in by_title["Upbeat"]["rows"] if r["k_en"] == "Per-share (computed)")
+    assert upbeat_ps_row["v"] == "$55.00"
+
+
 def test_research_display_only_line_present():
     import jinja2
 

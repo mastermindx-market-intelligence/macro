@@ -102,10 +102,18 @@
 {#- Round-3 gate ruling plain-word null: a scenario gated by margin_too_thin
     gets its own honest sentence naming the scenario, never the generic
     "Can't be computed without <slug>" phrasing (that phrasing fits a missing
-    reported input, not a reported-but-too-thin margin). -#}
+    reported input, not a reported-but-too-thin margin).
+
+    Round-4 review MINOR-4: this used to test `'margin_too_thin' in s.missing`
+    (membership), so a scenario carrying BOTH a more fundamental reason (e.g.
+    "consistent period") and margin_too_thin always got the margin sentence,
+    suppressing the more fundamental one -- even though engine/valuation_scenario.py
+    appends margin_too_thin LAST (after every other reason). Test the FIRST
+    element of s.missing instead of membership, so the margin sentence only
+    wins when margin_too_thin is the sole (or most fundamental) reason. -#}
 {% set vs_key_zh = {'cautious': '保守', 'base': '基准', 'upbeat': '乐观'} %}
-{% macro vs_null_en(s) %}{% if 'margin_too_thin' in s.missing %}Margins are too thin to run the {{ s.key }} case{% else %}Can't be computed without {{ s.missing_plain[0].en if s.missing_plain else 'a reported input' }}{% endif %}{% endmacro %}
-{% macro vs_null_zh(s) %}{% if 'margin_too_thin' in s.missing %}利润率过低，无法计算{{ vs_key_zh[s.key] }}情景{% else %}缺少{{ s.missing_plain[0].zh if s.missing_plain else '一项披露数据' }}，无法计算{% endif %}{% endmacro %}
+{% macro vs_null_en(s) %}{% if s.missing and s.missing[0] == 'margin_too_thin' %}Margins are too thin to run the {{ s.key }} case{% else %}Can't be computed without {{ s.missing_plain[0].en if s.missing_plain else 'a reported input' }}{% endif %}{% endmacro %}
+{% macro vs_null_zh(s) %}{% if s.missing and s.missing[0] == 'margin_too_thin' %}利润率过低，无法计算{{ vs_key_zh[s.key] }}情景{% else %}缺少{{ s.missing_plain[0].zh if s.missing_plain else '一项披露数据' }}，无法计算{% endif %}{% endmacro %}
 <section class="mod rv" id="valuation-scenario" data-valuation-scenario="v1">
   <div class="mod-hd">
     <h2>{{ t('What could it be worth?', '可能值多少？') }}</h2>
