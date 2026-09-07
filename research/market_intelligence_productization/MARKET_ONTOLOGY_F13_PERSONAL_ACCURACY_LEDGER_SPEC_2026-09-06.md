@@ -27,7 +27,7 @@ A JSONL record, one line per claim, append-only. Frozen field table:
 | `status` | enum | `open` → `matured` → `resolved`; plus terminal `void_unscorable`, `withdrawn`. Typed states only — a correction is a new typed state, never an in-place edit |
 | `resolution` | obj\|null | `{"outcome": 1\|0\|null, "observed": <float\|null>, "resolved_at": <RFC-3339>, "resolver": "<module path>", "note": "<plain words>"}`. `outcome: null` = undetermined (data missing at maturity) and is EXCLUDED from both scores while still counting in the printed "not scorable" tally |
 
-Corrections: an amended claim is appended as a NEW record with `supersedes: "<claim_id>"`; the superseded record keeps its own row and its own verdict. Nothing is overwritten (`engine/trial_ledger.py:253` precedent: append, never overwrite).
+Corrections: an amended claim is appended as a NEW record with `supersedes: "<claim_id>"`; the superseded record keeps its own row and its own verdict. Nothing is overwritten (`engine/trial_ledger.py:150` precedent: `log_trial`'s row write opens the ledger file in append mode `"a"`, never `"w"` — append, never overwrite).
 
 ## §2 The score
 
@@ -35,7 +35,7 @@ Corrections: an amended claim is appended as a NEW record with `supersedes: "<cl
 - **Aggregate Brier** — computed by `engine.validation.brier_reliability(p, y)` (`engine/validation.py:525`) over the episode-level pairs above, which returns `{}` below **30** episode pairs; the display floor mirrors `_BRIER_MIN_PAIRS = 10` (`engine/explanation_memory.py:69`), so between 10 and 29 episode pairs the surface prints the null note, not a number.
 - **Hit-rate** — `resolved_hits / resolved_episodes`, episode-denominated (§3).
 - **Verdict vocabulary is REUSED, not reinvented**: the six strings at `engine/explanation_memory.py:32-39`. Attribution beyond hit/miss (right-for-right-reason vs right-wrong-reason) is detail tier only.
-- **No composite.** Brier and hit-rate are printed side by side, never blended into one "accuracy score" — `DNR:KILL-FUSED-COMPOSITE` (`research/DO_NOT_REBUILD.md`).
+- **No composite.** Brier and hit-rate are printed side by side, never blended into one "accuracy score" — `DNR:KILL-FUSED-COMPOSITE` (`research/DO_NOT_REBUILD.md`; that row's Amendment 2, operator override 2026-08-03, carves out one named exception, quoted verbatim: "the user-facing DISPLAY-TIER composite (Portfolio Health Score + sub-scores) on watchlist/portfolio surfaces + digest emails is now ALLOWED under `PORTFOLIO_SUPERINTELLIGENCE_MASTERPLAN_BY_FABLE.md` §3.1.2 (transparent printed legs, v0-equal weights, abstention, day-one grading; dissent on record)" — the row's authority half still FORBIDDEN in full outside that one exception: "Fused composite risk/health number in ANY scored path, board ordering, ranker, sizing, NW artifact, or alert escalation". This ledger is neither the Portfolio Health Score nor any scored/ranked/sized surface, so it sits inside what the row still forbids, not inside the Amendment 2 exception — it prints no composite of any kind, satisfying the stricter bar).
 
 do_not_redo (MO-DELTA-007): no universal analyst score conflating quality, retention, alpha, or P&L.
 
@@ -51,7 +51,7 @@ CEILING (learning_only): this score never feeds a signal, a rank, a size, or a g
 
 NO LEADERBOARD: no cross-user ranking, no percentile against other users, no team or company scoreboard, ever.
 
-DEFERRED, NOT KILLED: MO-DELTA-007's own row (`…F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv:126`) names a second, non-ranking capability — a team-accuracy rollup — distinct from cross-user ranking. This spec permanently forbids ranking/leaderboard use of *this ledger's data* within its own contract (forbidden use 6, above) — a prohibition scoped to this spec's own forbidden-uses list, not a codebase-wide `DNR:KILL-*` registry kill (no such row is minted by this packet, and none is owed for a prohibition that binds only this spec's own contract); it does NOT adjudicate the non-ranking rollup, which stays deferred pending a separate adjudication (a future `DEC-*` or an explicit `DNR:KILL-*` row) rather than being foreclosed by this frozen spec.
+DEFERRED, NOT KILLED: MO-DELTA-007's own row (`…F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv`, row key `MO-DELTA-007`) names a second, non-ranking capability — a team-accuracy rollup — distinct from cross-user ranking. This spec permanently forbids ranking/leaderboard use of *this ledger's data* within its own contract (forbidden use 6, above) — a prohibition scoped to this spec's own forbidden-uses list, not a codebase-wide `DNR:KILL-*` registry kill (no such row is minted by this packet, and none is owed for a prohibition that binds only this spec's own contract); it does NOT adjudicate the non-ranking rollup, which stays deferred pending a separate adjudication (a future `DEC-*` or an explicit `DNR:KILL-*` row) rather than being foreclosed by this frozen spec.
 
 DNR:KILL-LLM-CONFIDENCE — no LLM-originated number anywhere in this ledger: the model never states a probability, never grades an outcome, never adjusts a score. (That registry row's own scope is CHF surfaces, `research/DO_NOT_REBUILD.md`; this ledger applies the same A7 no-origination principle independently, not by extending that row's scope.)
 
@@ -127,6 +127,6 @@ Banned in the glance tier: `Brier`, `hit-rate`, any `%`, any p-value, any study 
 
 ## §8 Dependencies, and what this packet does NOT do
 
-- Blocking dependency — row key `MO-DELTA-007` (`…F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv:126`), `next_bounded_child` field, quoted verbatim: "DEFER — dependency the Thesis-object vertical (user claim authoring surface) before Eval OS can score it". Until it exists there is no producer, no store, and no number.
+- Blocking dependency — row key `MO-DELTA-007` (`…F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv`), `next_bounded_child` field, quoted verbatim: "DEFER — dependency the Thesis-object vertical (user claim authoring surface) before Eval OS can score it". Until it exists there is no producer, no store, and no number.
 - Explicitly out of scope here: any engine module, any template, any Supabase table, any nav row, any `site/` artifact.
 - Row state after this packet: MO-DELTA-007 stays `PROJECTION_ONLY` / `learning_only`; the packet closes the **contract** question for the personal ledger: within this spec's own contract, cross-user ranking/leaderboard use of this ledger's score is permanently forbidden (§4) — a prohibition scoped to this spec's own forbidden-uses list, not a `DNR:KILL-*` registry kill of the capability elsewhere in the codebase. The non-ranking team-accuracy rollup capability is explicitly DEFERRED, not killed here (§4) — a separate adjudication owns that question.

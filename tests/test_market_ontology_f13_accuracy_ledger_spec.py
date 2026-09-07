@@ -276,6 +276,65 @@ def test_dnr_llm_confidence_citation_does_not_overclaim_registry_scope():
     )
 
 
+def test_trial_ledger_append_precedent_cites_the_real_append_site():
+    # Review finding (round 4, minor-2): the spec cited engine/trial_ledger.py:253,
+    # which is the register_trials budget-declaration class, not an append site.
+    # It must cite the real "append, never overwrite" write (log_trial's row
+    # write, opened in mode "a") instead.
+    assert "engine/trial_ledger.py:253" not in TEXT
+    assert (
+        "`engine/trial_ledger.py:150` precedent: `log_trial`'s row write opens "
+        "the ledger file in append mode `\"a\"`, never `\"w\"`"
+        in TEXT
+    )
+    import ast
+    tree = ast.parse((ROOT / "engine" / "trial_ledger.py").read_text(encoding="utf-8"))
+    log_trial = next(
+        n for n in ast.walk(tree)
+        if isinstance(n, ast.FunctionDef) and n.name == "log_trial"
+    )
+    assert log_trial.lineno <= 150 <= log_trial.end_lineno, (
+        "cited line 150 must actually fall inside log_trial()"
+    )
+
+
+def test_dnr_fused_composite_citation_discloses_amendment_2_scope():
+    # Review finding (round 4, minor-1): DNR:KILL-FUSED-COMPOSITE carries an
+    # Amendment 2 (operator override 2026-08-03) narrow display-tier exception;
+    # the spec's citation must quote that exception verbatim and state what the
+    # row still forbids, the same disclosure pattern already applied to
+    # DNR:KILL-LLM-CONFIDENCE above.
+    assert (
+        "the user-facing DISPLAY-TIER composite (Portfolio Health Score + "
+        "sub-scores) on watchlist/portfolio surfaces + digest emails is now "
+        "ALLOWED under `PORTFOLIO_SUPERINTELLIGENCE_MASTERPLAN_BY_FABLE.md` "
+        "§3.1.2"
+        in TEXT
+    )
+    assert (
+        "still FORBIDDEN in full outside that one exception: \"Fused composite "
+        "risk/health number in ANY scored path, board ordering, ranker, "
+        "sizing, NW artifact, or alert escalation\""
+        in TEXT
+    )
+    dnr_row_text = (ROOT / "research" / "DO_NOT_REBUILD.md").read_text(encoding="utf-8")
+    assert (
+        "the user-facing DISPLAY-TIER composite (Portfolio Health Score + "
+        "sub-scores) on watchlist/portfolio surfaces + digest emails is now "
+        "ALLOWED under `PORTFOLIO_SUPERINTELLIGENCE_MASTERPLAN_BY_FABLE.md` "
+        "§3.1.2"
+        in dnr_row_text
+    ), "quoted Amendment 2 sentence must match the live registry row verbatim"
+
+
+def test_f00c_csv_citations_are_key_only_no_line_numbers():
+    # Review finding (round 4, minor-3): the F00C ledger CSV must be cited by
+    # row key MO-DELTA-007 only in spec sections 4 and 8 — no ":<line>" suffix
+    # on the CSV filename, mirroring the DNR-row citation-by-key house law.
+    assert re.search(r"GRANULAR_CLOSURE_LEDGER_2026-09-02\.csv:\d+", TEXT) is None
+    assert TEXT.count("row key `MO-DELTA-007`") >= 1
+
+
 def test_f00c_dependency_claim_cites_row_key_and_quotes_it():
     # Review gap: the blocking-dependency line must name the CSV row by its key
     # (MO-DELTA-007), not merely a line number, and quote the row's own words
