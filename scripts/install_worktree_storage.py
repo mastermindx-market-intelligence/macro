@@ -11,8 +11,12 @@ import os
 from pathlib import Path
 import shutil
 import stat
+import sys
 import tempfile
 from datetime import datetime, timezone
+
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
 try:
     from scripts import worktree_storage as storage
