@@ -127,9 +127,24 @@ def _selected_covenant_manifests(manifests: Sequence[Mapping[str, Any]]) -> list
     return selected
 
 
-def _load_existing_observations(path: Path, schema: Mapping[str, Any]) -> list[dict[str, Any]]:
+def _load_existing_observations(
+    path: Path, schema: Mapping[str, Any],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Return ``(observations, quarantined)``.
+
+    Ruling Minor-2: a historical row that fails validation against the
+    CURRENT contract is quarantined -- excluded from the compiled set and
+    reported with a reason -- rather than raising and failing the entire
+    compile. The contract is expected to evolve (this very PR changed
+    ``evidence.publication``'s shape and the relationships/version id
+    patterns); a schema edit must never turn every future nightly run into a
+    hard outage over ledger rows written under a prior shape. Malformed
+    on-disk bytes (bad columns, non-JSON, non-canonical encoding) remain a
+    hard failure -- that is disk corruption, not schema drift, and is never
+    silently dropped.
+    """
     if not path.exists():
-        return []
+        return [], []
     frame = pd.read_parquet(path)
     if frame.columns.tolist() != COVENANT_OBSERVATION_COLUMNS:
         raise ValueError(
@@ -137,6 +152,7 @@ def _load_existing_observations(path: Path, schema: Mapping[str, Any]) -> list[d
             f"{COVENANT_OBSERVATION_COLUMNS}; got {frame.columns.tolist()}"
         )
     observations: list[dict[str, Any]] = []
+    quarantined: list[dict[str, Any]] = []
     for index, row in frame.iterrows():
         raw = row["observation_json"]
         if not isinstance(raw, str) or not raw:
@@ -147,11 +163,20 @@ def _load_existing_observations(path: Path, schema: Mapping[str, Any]) -> list[d
             raise ValueError(f"covenant-term ledger row {index} has malformed observation_json") from exc
         if not isinstance(observation, Mapping):
             raise ValueError(f"covenant-term ledger row {index} observation_json must be an object")
-        _validate_schema(observation, schema, f"covenant-term ledger row {index}")
+        try:
+            _validate_schema(observation, schema, f"covenant-term ledger row {index}")
+        except ValueError as exc:
+            quarantined.append({
+                "index": int(index),
+                "observation_id": observation.get("observation_id"),
+                "logical_observation_id": observation.get("logical_observation_id"),
+                "reason": str(exc),
+            })
+            continue
         if raw != _canonical_json(observation):
             raise ValueError(f"covenant-term ledger row {index} observation_json is not canonical")
         observations.append(dict(observation))
-    return observations
+    return observations, quarantined
 
 
 def _validate_observation_lineage(
@@ -263,7 +288,7 @@ def compile_from_disk(
     validate_manifest_ledger(all_manifests)
 
     manifests = _selected_covenant_manifests(all_manifests)
-    existing = _load_existing_observations(ledger_path, observation_schema)
+    existing, quarantined = _load_existing_observations(ledger_path, observation_schema)
     existing_by_logical: dict[str, list[dict[str, Any]]] = {}
     for obs in existing:
         existing_by_logical.setdefault(str(obs.get("logical_observation_id")), []).append(obs)
@@ -304,6 +329,11 @@ def compile_from_disk(
         "eligible_manifests": len(manifests),
         "deferred": deferred,
         "observations": len(observations),
+        # Ruling Minor-2: rows quarantined this run (excluded from the
+        # compiled set because they fail the CURRENT contract) are counted
+        # and listed with reasons, never silently dropped and never fatal.
+        "quarantined": len(quarantined),
+        "quarantined_rows": quarantined,
         "path": str(ledger_path),
     }
 
@@ -351,6 +381,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         root = _data_root()
         result = compile_from_disk(root)
+        # Minor-1 (round-4 review): this call used to sit OUTSIDE the try
+        # block, so an OSError/PermissionError from path.unlink() on an
+        # otherwise-successful run would still propagate straight out of
+        # main() -- the exact "never propagates an exception" contract this
+        # docstring promises. It now shares the same catch-all below.
+        _clear_failure_marker(root)
     except Exception as exc:  # noqa: BLE001 -- deliberate catch-all, see docstring
         reason = f"{type(exc).__name__}: {exc}"
         try:
@@ -365,7 +401,6 @@ def main(argv: Sequence[str] | None = None) -> int:
             "marker": str(marker_path) if marker_path is not None else None,
         }, sort_keys=True))
         return 0
-    _clear_failure_marker(root)
     print(json.dumps(result, sort_keys=True))
     return 0
 

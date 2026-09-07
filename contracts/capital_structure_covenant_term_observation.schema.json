@@ -390,13 +390,18 @@
       "properties": {
         "amends": {
           "type": "array",
-          "maxItems": 0
+          "items": {
+            "type": "string",
+            "pattern": "^covenant-term:cs:[a-f0-9]{64}$"
+          },
+          "uniqueItems": true,
+          "maxItems": 1
         },
         "supersedes": {
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^document-term:cs:[a-f0-9]{24}$"
+            "pattern": "^covenant-term:cs:[a-f0-9]{64}$"
           },
           "uniqueItems": true,
           "maxItems": 1
@@ -427,7 +432,7 @@
           "oneOf": [
             {
               "type": "string",
-              "pattern": "^document-term:cs:[a-f0-9]{24}$"
+              "pattern": "^covenant-term:cs:[a-f0-9]{64}$"
             },
             {
               "type": "null"

@@ -13,14 +13,17 @@ this fixture exercises end to end.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import pytest
+from jsonschema import Draft202012Validator, FormatChecker
 
 from engine.capital_structure import covenant_terms as ct
 from engine.capital_structure.ingestion_health import covenant_extraction_coverage
 
 FIXTURES = Path(__file__).parent / "fixtures" / "capital_structure"
+CONTRACTS = Path(__file__).parent.parent / "contracts"
 
 
 def _manifest() -> dict:
@@ -33,6 +36,21 @@ def _amended_manifest() -> dict:
 
 def _text() -> str:
     return (FIXTURES / "covenant_credit_agreement_submission.txt").read_text(encoding="utf-8")
+
+
+def _observation_schema() -> dict:
+    return json.loads(
+        (CONTRACTS / "capital_structure_covenant_term_observation.schema.json").read_text(encoding="utf-8")
+    )
+
+
+def _assert_validates(schema: dict, record: dict) -> None:
+    validator = Draft202012Validator(schema, format_checker=FormatChecker())
+    errors = list(validator.iter_errors(record))
+    assert errors == [], [
+        (".".join(str(part) for part in e.absolute_path) or "<root>", e.message)
+        for e in errors
+    ]
 
 
 def test_covenant_enum_is_closed_and_unknown_term_names_are_refused():
@@ -358,6 +376,147 @@ def test_direct_observations_validate_against_the_covenant_term_observation_cont
             (".".join(str(part) for part in e.absolute_path) or "<root>", e.message)
             for e in errors
         ]
+
+
+def test_correction_minted_through_the_real_compile_path_validates_against_the_contract():
+    """RED-first (round-4 review BLOCKER, ruling item (a)): the round-3 fix
+    validated only version-1 DIRECT records. `_materialize_observation`'s
+    correction branch mints `version.correction_of` and
+    `relationships.supersedes` from `observation_id_for`, which emits
+    `covenant-term:cs:<64 hex>` -- but the contract's `supersedes`/
+    `correction_of` patterns were copied verbatim from the `document_terms`
+    precedent (`^document-term:cs:[a-f0-9]{24}$`), the wrong prefix AND the
+    wrong length. Reproduced by the reviewer directly against head e81f319
+    with the same 3.00->3.10 edit this test performs. Fails RED against the
+    unfixed contract; the fix is to the CONTRACT (match the producer's own
+    id grammar), never to the producer."""
+    manifest = _manifest()
+    text = _text()
+    v1 = ct.compile_observations(manifest, text, generated_at="2026-09-06T00:00:00Z")
+    text_v2 = text.replace("3.00 to 1.00", "3.10 to 1.00", 1)
+    v2 = ct.compile_observations(manifest, text_v2, generated_at="2026-09-07T00:00:00Z",
+                                  prior_observations=v1)
+    corrected = [o for o in v2 if o["version"]["correction_version"] == 2]
+    assert len(corrected) >= 1
+    schema = _observation_schema()
+    for obs in corrected:
+        _assert_validates(schema, obs)
+
+
+def test_amendment_record_produced_by_link_amendment_validates_against_the_contract():
+    """RED-first (round-4 review MAJOR, ruling item (b)): `link_amendment`
+    appends exactly one id to `relationships.amends`, but the contract fixed
+    `amends` at `maxItems: 0` (also copied from the document_terms precedent,
+    where amendment linkage does not exist in this producer's own shape).
+    The fix is to the CONTRACT: allow exactly one id of this producer's own
+    grammar, matching what `link_amendment` actually mints."""
+    manifest = _manifest()
+    amended = _amended_manifest()
+    text = _text()
+    prior_obs = ct.compile_observations(manifest, text, generated_at="2026-09-06T00:00:00Z")
+    prior_direct = next(o for o in prior_obs if o["state"]["disposition"] == "direct")
+    new_candidate = next(
+        c for c in ct.extract_candidates(amended, text) if c["term"]["name"] == prior_direct["term"]["name"]
+    )
+    amendment = ct.link_amendment(new_candidate, prior_direct["observation_id"],
+                                   generated_at="2026-12-09T16:30:00Z")
+    schema = _observation_schema()
+    _assert_validates(schema, amendment)
+
+
+def _schema_pattern_fields(schema: dict) -> list[tuple[tuple[str, ...], str]]:
+    """Walk the schema's OWN properties/items/oneOf graph (never `$defs` --
+    this contract carries two unreferenced `$defs` entries, `decimal` and
+    `span`, copied from the document_terms precedent and never `$ref`'d by
+    any real field; those are dead schema, not fields any instance is ever
+    validated against) and collect every (instance_path, pattern) pair a
+    real observation is actually checked against."""
+    found: list[tuple[tuple[str, ...], str]] = []
+
+    def walk(node: object, path: tuple[str, ...]) -> None:
+        if not isinstance(node, dict):
+            return
+        pattern = node.get("pattern")
+        if isinstance(pattern, str):
+            found.append((path, pattern))
+        properties = node.get("properties")
+        if isinstance(properties, dict):
+            for key, sub in properties.items():
+                walk(sub, path + (key,))
+        items = node.get("items")
+        if isinstance(items, dict):
+            walk(items, path + ("*",))
+        for branch in node.get("oneOf") or ():
+            walk(branch, path)
+
+    walk(schema, ())
+    return found
+
+
+def _values_at(instance: object, path: tuple[str, ...]) -> list[object]:
+    if not path:
+        return [instance]
+    key, rest = path[0], path[1:]
+    if key == "*":
+        if not isinstance(instance, list):
+            return []
+        out: list[object] = []
+        for item in instance:
+            out.extend(_values_at(item, rest))
+        return out
+    if not isinstance(instance, dict) or key not in instance:
+        return []
+    return _values_at(instance[key], rest)
+
+
+def test_every_contract_pattern_field_matches_the_producer_minted_id_shape():
+    """Completeness test (ruling item (c)): the BLOCKER above was one
+    specific pair of id-shaped fields (relationships.supersedes /
+    version.correction_of) where the contract's copied-precedent pattern and
+    this producer's own id grammar disagreed -- caught only because a test
+    happened to validate a correction record end to end. This test instead
+    walks EVERY field the contract's own properties graph gives a regex
+    "pattern" to, and checks the producer's ACTUAL minted value at that
+    field -- across a direct v1 record, a correction v2, and an amendment --
+    against the contract's pattern. A future field where the two disagree
+    fails here even if no other test happens to construct that exact record
+    shape ("the next level-deeper drift")."""
+    manifest = _manifest()
+    text = _text()
+    v1 = ct.compile_observations(manifest, text, generated_at="2026-09-06T00:00:00Z")
+    text_v2 = text.replace("3.00 to 1.00", "3.10 to 1.00", 1)
+    v2 = ct.compile_observations(manifest, text_v2, generated_at="2026-09-07T00:00:00Z",
+                                  prior_observations=v1)
+    corrected = next(o for o in v2 if o["version"]["correction_version"] == 2)
+    prior_direct = next(o for o in v1 if o["state"]["disposition"] == "direct")
+    amended = _amended_manifest()
+    new_candidate = next(
+        c for c in ct.extract_candidates(amended, text) if c["term"]["name"] == prior_direct["term"]["name"]
+    )
+    amendment = ct.link_amendment(new_candidate, prior_direct["observation_id"],
+                                   generated_at="2026-12-09T16:30:00Z")
+
+    direct_records = [o for o in v1 if o["state"]["disposition"] == "direct"]
+    records = direct_records + [corrected, amendment]
+
+    schema = _observation_schema()
+    pattern_fields = _schema_pattern_fields(schema)
+    assert pattern_fields  # the walk itself must find something, or this test is vacuous
+
+    hits: dict[tuple[str, ...], int] = {path: 0 for path, _ in pattern_fields}
+    for path, pattern in pattern_fields:
+        compiled = re.compile(pattern)
+        for record in records:
+            for value in _values_at(record, path):
+                if isinstance(value, str):
+                    assert compiled.match(value), (path, pattern, value)
+                    hits[path] += 1
+
+    # every id-shaped field this producer actually mints must be exercised at
+    # least once by this record set, or the walk above would pass vacuously
+    # on a field none of these records ever populate.
+    unexercised = [path for path, count in hits.items() if count == 0]
+    assert unexercised == [], f"contract pattern fields never exercised by a real record: {unexercised}"
 
 
 def test_current_step_selection_is_a_step_function_of_the_row_start_dates():
