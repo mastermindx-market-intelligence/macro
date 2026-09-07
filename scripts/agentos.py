@@ -70,6 +70,8 @@ import os
 import re
 import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor
+from itertools import islice
 from pathlib import Path
 from typing import Any, Callable, Iterable
 
@@ -612,6 +614,29 @@ def git_dates(path: Path) -> tuple[str | None, str | None]:
     last = (updated or "").strip().splitlines()
     first = [ln for ln in (added or "").strip().splitlines() if ln]
     return (first[-1] if first else None), (last[0] if last else None)
+
+
+_GIT_DATE_BATCH_SIZE = 4
+
+
+def git_dates_batch(paths: Iterable[Path]) -> dict[Path, tuple[str | None, str | None]]:
+    """Read canonical per-path dates with a bounded, invocation-local I/O fan-out.
+
+    Keep git_dates semantics, input order and None results unchanged. Submit only
+    one small batch at a time, and join every thread before return or failure.
+    There is no persisted cache, new history policy or cross-call executor.
+    """
+    iterator = iter(paths)
+    batch = list(islice(iterator, _GIT_DATE_BATCH_SIZE))
+    if not batch:
+        return {}
+    result: dict[Path, tuple[str | None, str | None]] = {}
+    with ThreadPoolExecutor(max_workers=_GIT_DATE_BATCH_SIZE,
+                            thread_name_prefix="agentos-git-dates") as executor:
+        while batch:
+            result.update(zip(batch, executor.map(git_dates, batch)))
+            batch = list(islice(iterator, _GIT_DATE_BATCH_SIZE))
+    return result
 
 
 def _cycle(graph: dict[str, list[str]]) -> list[str] | None:
@@ -1572,11 +1597,12 @@ def build_records(
     merged_truncated = bool((builds or {}).get("merged_truncated"))
     live_branches = set(worktrees.get("branches") or [])
 
+    dates = git_dates_batch(store.paths[f"WS/{key}"] for key in sorted(ws))
     out: list[dict[str, Any]] = []
     for key in sorted(ws):
         rec = ws[key]
         path = store.paths[f"WS/{key}"]
-        created, updated = git_dates(path)
+        created, updated = dates[path]
         status = rec.get("status")
         waves = [w for w in (rec.get("waves") or []) if isinstance(w, dict)]
         rollup = {name: 0 for name in sorted(WAVE_STATUS)}
