@@ -94,9 +94,10 @@ from typing import Any
 from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Request
 from pydantic import BaseModel, Field
 
+from lib.help_directory import route_for_tier
+
 log = logging.getLogger("macro.support")
 
-from lib.help_directory import route_for_tier
 router = APIRouter()
 
 # --------------------------------------------------------------------------- #
@@ -541,13 +542,23 @@ def create_ticket(body: TicketRequest, request: Request,
         log.info("support: rate limit hit")
         raise HTTPException(429, "too many requests — please try again later")
 
+    # ---- identity: resolved BEFORE the honeypot so a genuinely signed-in submitter who
+    # trips it (autofill/password managers are the known false-positive mode) still gets
+    # the same true signed_in state as the real path below — see the honeypot block.
+    user = _resolve_user(authorization)
+    user_id = (user or {}).get("id") or None
+
     # ---- honeypot: answer like a success, write nothing -----------------------
     # The body must be SHAPE-IDENTICAL to a real one, every key included: a drop that is
     # distinguishable from a success teaches the bot which field betrayed it, which is the
-    # whole reason this returns 200 instead of 400.
+    # whole reason this returns 200 instead of 400. signed_in=bool(user_id) carries the
+    # real identity state into the fabricated routing note, so a signed-in human caught by
+    # the honeypot is never told the false "you were not signed in" sentence either
+    # (review finding B-F13-3 round-3 MINOR-1 — the real path's MAJOR-1 fix did not reach
+    # this branch).
     if (body.website or "").strip():
         log.info("support: honeypot tripped — dropped")
-        fake_routing = route_for_tier(None, tier_known=True)
+        fake_routing = route_for_tier(None, tier_known=True, signed_in=bool(user_id))
         return {"ok": True, "ticket_id": str(uuid.uuid4()),
                 "sent": _sent_stamp()[0], "mail": _mail_configured(),
                 "routing": {"plan": fake_routing["plan_id"],
@@ -582,8 +593,7 @@ def create_ticket(body: TicketRequest, request: Request,
         raise HTTPException(400, f"lang must be one of {list(LANGS)} or omitted")
 
     # ---- identity: a valid Bearer OVERRIDES the body email --------------------
-    user = _resolve_user(authorization)
-    user_id = (user or {}).get("id") or None
+    # (user/user_id already resolved above, ahead of the honeypot check.)
     verified_email = ((user or {}).get("email") or "").strip()
     email = verified_email or (body.email or "").strip()
     if not _EMAIL_RE.match(email):

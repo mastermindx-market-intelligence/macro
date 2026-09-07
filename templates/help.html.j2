@@ -87,7 +87,12 @@ html[data-theme="light"] .help-card:hover,html[data-theme="light"] .help-card:fo
 
 .help-answers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:44px;row-gap:0;margin:0}
 .help-a{min-width:0;padding:18px 0;border-top:1px solid color-mix(in srgb,var(--line) 62%,transparent)}
-.help-a:nth-child(-n+2){border-top:0}
+/* Which answers sit in the top visual row depends on which rows are HIDDEN (category
+   filter/search) and how many columns the grid currently has (2 desktop, 1 mobile below)
+   -- :nth-child counts hidden siblings too, so a static nth-child rule leaves an orphan
+   hairline over whichever row lands first after a filter thins the grid (review finding
+   B-F13-3 round-3 MINOR-3). The JS below recomputes this class on every paint(). */
+.help-a.help-a-row-first{border-top:0}
 .help-a[hidden]{display:none}
 .help-a dt{margin:0 0 6px;font:660 15.5px/1.35 var(--font-ui);letter-spacing:-.01em;color:var(--text)}
 .help-a dd{margin:0;color:var(--muted);font-size:14px;line-height:1.55}
@@ -135,7 +140,6 @@ html[data-theme="light"] .help-support-cta{background:var(--panel);box-shadow:0 
 
 @media (max-width:900px){
   .help-answers{grid-template-columns:1fr;column-gap:0}
-  .help-a:nth-child(2){border-top:1px solid color-mix(in srgb,var(--line) 62%,transparent)}
 }
 @media (max-width:760px){
   .help-controls{grid-template-columns:1fr}
@@ -275,23 +279,32 @@ html[data-theme="light"] .help-support-cta{background:var(--panel);box-shadow:0 
   var count=document.getElementById('help-result-count');
   var empty=root.querySelector('[data-empty-state]');
   var cards=Array.prototype.slice.call(root.querySelectorAll('[data-help-card],[data-answer]'));
+  var answers=Array.prototype.slice.call(root.querySelectorAll('[data-answer]'));
   var buttons=Array.prototype.slice.call(root.querySelectorAll('.help-filter[data-category]'));
+  var narrow=window.matchMedia('(max-width:900px)');
   var category='all';
   function normal(value){return (value||'').toLocaleLowerCase().trim();}
   function paint(){
-    var needle=normal(query.value), visible=0, completeVisible=0;
+    var needle=normal(query.value), visible=0, completeVisible=0, visibleAnswers=[];
     cards.forEach(function(card){
       var categoryMatch=category==='all'||card.getAttribute('data-category')===category;
       var searchMatch=!needle||normal(card.getAttribute('data-search')).indexOf(needle)!==-1;
       card.hidden=!(categoryMatch&&searchMatch);
       if(!card.hidden){
         visible+=1;
+        if(card.hasAttribute('data-answer'))visibleAnswers.push(card);
         if(card.getAttribute('data-entry-state')==='complete')completeVisible+=1;
       }
     });
     count.textContent=String(visible);
     empty.hidden=visible!==0;
     root.setAttribute('data-directory-state',visible?(completeVisible?'complete':'unknown'):'empty');
+    // First visible row of the answers grid never carries a top hairline -- :nth-child
+    // can't do this once hidden rows are in the mix (MINOR-3), so this class is the only
+    // source of truth for it, recomputed against the CURRENT visible set and column count.
+    var rowSize=narrow.matches?1:2;
+    answers.forEach(function(a){a.classList.remove('help-a-row-first');});
+    visibleAnswers.slice(0,rowSize).forEach(function(a){a.classList.add('help-a-row-first');});
   }
   buttons.forEach(function(button){button.addEventListener('click',function(){
     category=button.getAttribute('data-category');
@@ -299,6 +312,8 @@ html[data-theme="light"] .help-support-cta{background:var(--panel);box-shadow:0 
     paint();
   });});
   query.addEventListener('input',paint);
+  if(narrow.addEventListener)narrow.addEventListener('change',paint);
+  else if(narrow.addListener)narrow.addListener(paint);
   function paintLanguage(){
     var zh=document.documentElement.getAttribute('data-lang')==='zh';
     query.setAttribute('placeholder',query.getAttribute(zh?'data-ph-zh':'data-ph-en'));
@@ -306,6 +321,7 @@ html[data-theme="light"] .help-support-cta{background:var(--panel);box-shadow:0 
   }
   document.addEventListener('langchange',paintLanguage);
   paintLanguage();
+  paint();
 })();
 </script>
 </body>

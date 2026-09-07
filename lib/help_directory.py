@@ -547,6 +547,13 @@ _NOTE_NO_PLAN = ("We could not find a plan on your account, so this went to the 
                  "\u56e0\u6b64\u8fd9\u6761\u4fe1\u606f\u8fdb\u5165\u4e86\u666e\u901a\u961f\u5217\u3002"
                  "\u5982\u679c\u4f60\u5df2\u4ed8\u8d39\uff0c\u8bf7\u56de\u590d\u6536\u636e\u90ae\u4ef6\uff0c"
                  "\u6211\u4eec\u4f1a\u8f6c\u5230\u4f18\u5148\u961f\u5217\u3002")
+# Review finding B-F13-3 round-3 MINOR-2: the module docstring claims the plain-language
+# vocabulary law "applies to every user-facing sentence produced by this module", but only
+# _NOTE_NO_PLAN was actually run through the checker at import -- the other three support
+# notes (all user-facing, both languages) were never gated. All four run now.
+_check_banned_vocabulary("support note (signed out)", *_NOTE_SIGNED_OUT)
+_check_banned_vocabulary("support note (plan read failed)", *_NOTE_READ_FAILED)
+_check_banned_vocabulary("support note (plan unrecognised)", *_NOTE_UNRECOGNISED)
 _check_banned_vocabulary("support note (signed in, no plan on account)", *_NOTE_NO_PLAN)
 
 

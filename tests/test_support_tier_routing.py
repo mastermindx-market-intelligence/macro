@@ -185,6 +185,39 @@ def test_signed_in_ticket_is_never_told_it_was_not_signed_in_when_plan_is_unread
     assert out["routing"]["note_en"] and out["routing"]["note_zh"]
 
 
+def test_honeypot_receipt_carries_the_true_signed_in_state(wired, monkeypatch) -> None:
+    """Review finding B-F13-3 round-3 MINOR-1 (RED before the fix): the honeypot branch
+    built its fabricated routing via ``route_for_tier(None, tier_known=True)`` with no
+    ``signed_in=`` argument, so it always used ``_NOTE_SIGNED_OUT`` regardless of who was
+    actually submitting. Autofill/password managers filling a hidden field is the
+    honeypot's own documented false-positive mode, so a genuinely signed-in human could
+    receive the exact falsehood MAJOR-1 removed from the real path — this is the one
+    receipt path that fix did not reach. Pre-fix, ``_resolve_user`` is never even called
+    ahead of the honeypot check, so this monkeypatch has no effect and the assertion
+    fails against ``_NOTE_SIGNED_OUT``; post-fix, identity is resolved before the
+    honeypot branch and threaded into it.
+    """
+    monkeypatch.setattr(support, "_resolve_user", lambda auth: {"id": UID, "email": "ada@example.com"})
+    bt = BackgroundTasks()
+    out = support.create_ticket(_body(website="http://spam.example"), _FakeRequest(), bt,
+                                authorization="Bearer signed-in-token")
+    assert out["ok"] is True
+    assert out["routing"]["note_en"] != "You were not signed in, so this went to the general queue."
+    assert "signed in" not in (out["routing"]["note_en"] or "").lower()
+    assert out["routing"]["note_en"] and out["routing"]["note_zh"]
+
+
+def test_honeypot_receipt_still_files_anonymous_submitters_as_signed_out(wired, monkeypatch) -> None:
+    """The other half of the same fix: an honeypot trip with no resolvable identity must
+    still get the ordinary anonymous note, not the signed-in-no-plan one."""
+    monkeypatch.setattr(support, "_resolve_user", lambda auth: None)
+    bt = BackgroundTasks()
+    out = support.create_ticket(_body(website="http://spam.example"), _FakeRequest(), bt,
+                                authorization=None)
+    assert out["ok"] is True
+    assert out["routing"]["note_en"] == "You were not signed in, so this went to the general queue."
+
+
 def test_priority_ticket_labels_the_operator_mail(wired, monkeypatch) -> None:
     from app import billing, mailer
 

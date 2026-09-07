@@ -312,6 +312,27 @@ def test_search_covers_answers_and_links(tmp_path: Path) -> None:
     assert "[data-help-card],[data-answer]" in html
 
 
+def test_initial_result_count_matches_the_elements_the_filter_js_counts(tmp_path: Path) -> None:
+    """templates/help.html.j2 prints the initial ``help-result-count`` statically as
+    ``(entries|length) + (answers|length)``; the filter JS recomputes the same number
+    from ``root.querySelectorAll('[data-help-card],[data-answer]')`` on every ``paint()``
+    call. Nothing previously asserted the two agree (review finding B-F13-3 round-3
+    MINOR-4) -- a future template change touching either list, or either selector, could
+    silently desync the number shown before the visitor's first keystroke from the number
+    the JS would actually compute.
+    """
+    build_public_pages.build(tmp_path)
+    html = (tmp_path / "help.html").read_text(encoding="utf-8")
+
+    static_count = int(re.search(r'id="help-result-count">(\d+)<', html).group(1))
+    selector_count = (
+        len(re.findall(r"\sdata-help-card(?:\s|>)", html))
+        + len(re.findall(r"\sdata-answer(?:\s|>)", html))
+    )
+    assert static_count > 0
+    assert static_count == selector_count
+
+
 def test_still_one_nav_family(tmp_path: Path) -> None:
     build_public_pages.build(tmp_path)
     html = (tmp_path / "help.html").read_text(encoding="utf-8")
