@@ -1028,3 +1028,58 @@ def test_admission_open_epoch_has_no_invented_expiry() -> None:
         decision, cohort=cohort, epoch=epoch, repo_root=ROOT,
     ) == decision
     assert (epoch, run, cohort) == before
+
+
+# Review regression: accepted fractional precision must survive the new bound.
+@pytest.mark.parametrize("closure", ["withdrawn", "superseded"])
+@pytest.mark.parametrize("entrypoint", ["builder", "bound_validator"])
+@pytest.mark.parametrize("closed_at,decided_at,allowed", [
+    ("2026-08-04T00:00:00.123456789Z", "2026-08-04T00:00:00.123456788Z", True),
+    ("2026-08-04T00:00:00.123456789Z", "2026-08-04T00:00:00.123456789000Z", False),
+    ("2026-08-04T00:00:00.123456789Z", "2026-08-04T00:00:00.123456789001Z", False),
+    ("2026-08-04T00:00:00.123456789Z", "2026-08-04T05:30:00.123456788+05:30", True),
+    ("2026-08-04T00:00:00.123456789Z", "2026-08-03T19:00:00.123456789-05:00", False),
+    ("2026-08-04T00:00:00.123456789Z", "2026-08-03T23:59:59.999999999999Z", True),
+    ("2026-08-04T00:00:00.123456789Z", "2026-08-04T00:00:01.000000000001Z", False),
+    ("2026-08-04T00:00:00.120000000Z", "2026-08-04T00:00:00.12Z", False),
+    ("2026-08-04T05:30:00.123456789+05:30", "2026-08-04T00:00:00.123456788Z", True),
+    ("2026-08-04T00:00:00Z", "2026-08-04T00:00:00.000000000000Z", False),
+])
+def test_admission_closure_preserves_declared_fraction(
+    closure: str, entrypoint: str, closed_at: str, decided_at: str, allowed: bool,
+) -> None:
+    run = _run()
+    epoch = _closed_admission_epoch(run, closure)
+    epoch["transaction_to"] = closed_at
+    if closure == "withdrawn":
+        epoch["lifecycle"]["withdrawn_at"] = closed_at
+    epoch = validate_attested_coverage_epoch(_rehash_epoch(epoch), runs=[run])
+    cohort = _cohort()
+    decision = build_cohort_admission_decision(
+        epoch=epoch, runs=[run], cohort=cohort, candidates=["NCT00000001"],
+        decided_at="2026-08-03T01:00:00Z", repo_root=ROOT,
+    )
+    decision["decided_at"] = decided_at
+    decision["transaction_from"] = decided_at
+    _rehash_decision(decision)
+    before = copy.deepcopy((epoch, run, cohort, decision))
+    # An unbound check may not invent the epoch's closing boundary.
+    assert validate_cohort_admission_decision(decision, repo_root=ROOT) == decision
+
+    def invoke() -> dict:
+        if entrypoint == "builder":
+            return build_cohort_admission_decision(
+                epoch=epoch, runs=[run], cohort=cohort,
+                candidates=["NCT00000001"], decided_at=decided_at, repo_root=ROOT,
+            )
+        return validate_cohort_admission_decision(
+            decision, cohort=cohort, epoch=epoch, repo_root=ROOT,
+        )
+
+    if allowed:
+        assert invoke()["admitted_nct_ids"] == ["NCT00000001"]
+    else:
+        with pytest.raises(ContractValidationError) as caught:
+            invoke()
+        assert "cohort_admission.coverage_inactive" in _codes(caught)
+    assert (epoch, run, cohort, decision) == before

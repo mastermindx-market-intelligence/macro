@@ -169,6 +169,28 @@ def _parse_datetime(value: object) -> datetime | None:
     return parsed if parsed.tzinfo is not None else None
 
 
+def _closure_time_key(value: object) -> tuple[int, str] | None:
+    """Order schema-validated closure clocks without discarding fractional digits.
+
+    RFC3339 offsets here have whole-minute precision. Normalize whole seconds
+    with integer arithmetic; trailing-zero-free decimal digit strings preserve
+    exact fractional order without float/Decimal rounding or a precision cap.
+    Other timing/budget semantics deliberately keep their existing parser.
+    """
+    parsed = _parse_datetime(value)
+    if parsed is None or not isinstance(value, str):
+        return None
+    offset = parsed.utcoffset()
+    if offset is None:
+        return None
+    seconds = (
+        parsed.toordinal() * 86400 + parsed.hour * 3600
+        + parsed.minute * 60 + parsed.second - offset // timedelta(seconds=1)
+    )
+    fractional = re.search(r"\.([0-9]+)", value)
+    return seconds, fractional.group(1).rstrip("0") if fractional else ""
+
+
 def _elapsed_ms(start: object, end: object, *, code: str) -> int:
     first, second = _parse_datetime(start), _parse_datetime(end)
     if first is None or second is None or second < first:
@@ -1051,8 +1073,8 @@ def validate_cohort_admission_decision(
                     "the decision must bind the exact attested coverage epoch",
                 )
             )
-        decided = _parse_datetime(normalized.get("decided_at"))
-        coverage_to = _parse_datetime(bound_epoch.get("transaction_to"))
+        decided = _closure_time_key(normalized.get("decided_at"))
+        coverage_to = _closure_time_key(bound_epoch.get("transaction_to"))
         if decided is not None and coverage_to is not None and decided >= coverage_to:
             issues.append(
                 _issue(
