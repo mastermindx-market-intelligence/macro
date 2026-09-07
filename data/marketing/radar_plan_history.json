@@ -2,6 +2,58 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-09-07",
+      "tickers": [
+        "EZPW",
+        "GPRO",
+        "GS",
+        "HON",
+        "NEM",
+        "OMC",
+        "RNR",
+        "SPNT",
+        "SW",
+        "TGTX",
+        "UPS",
+        "UTHR",
+        "VRSN",
+        "VRT"
+      ]
+    },
+    {
+      "as_of": "2026-09-06",
+      "tickers": [
+        "ADBE",
+        "AEO",
+        "ATRA",
+        "CE",
+        "DIS",
+        "EIX",
+        "EQPT",
+        "F",
+        "FDXF",
+        "GEN",
+        "GLXY",
+        "HD",
+        "HST",
+        "HWKN",
+        "HWM",
+        "ICLR",
+        "KVYO",
+        "LAUR",
+        "MSCI",
+        "NBIX",
+        "NOVT",
+        "PFLEX",
+        "TXN",
+        "UGI",
+        "UTHR",
+        "WMB",
+        "XLE",
+        "XME"
+      ]
+    },
+    {
       "as_of": "2026-09-05",
       "tickers": [
         "ALGM",
@@ -144,43 +196,6 @@
         "TDC",
         "TMUS",
         "YUM"
-      ]
-    },
-    {
-      "as_of": "2026-08-20",
-      "tickers": [
-        "AGNT",
-        "AIN",
-        "ASND",
-        "ASST",
-        "ATXG",
-        "AXP",
-        "BL",
-        "BWA",
-        "CAVA",
-        "CE",
-        "EZPW",
-        "FBRT",
-        "FIZZ",
-        "LBRT",
-        "MBC",
-        "MPWR",
-        "NRGV",
-        "QUBT",
-        "SGI",
-        "STZ",
-        "VSEC",
-        "XEL"
-      ]
-    },
-    {
-      "as_of": "2026-08-19",
-      "tickers": [
-        "BWA",
-        "GILD",
-        "QUBT",
-        "UEC",
-        "WS"
       ]
     }
   ]
