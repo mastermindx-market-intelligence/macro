@@ -1,3 +1,9 @@
+> **Reading guide — September 7, 2026:** Sections 1–7 below are the original
+> September 6 forensic snapshot, preserved byte-for-byte as historical evidence.
+> Section 8 records the recovered terminal P0D/P0E results, the later exact
+> Plans identity join, and the current next-admission boundary. Do not treat
+> the old head, reviewer-placement or unverified-ledger statements as live status.
+
 # Stock-picks restoration: current-owner and continuity forensic
 
 ## Status, scope and authority
@@ -239,3 +245,205 @@ including proven empty and corrected publications. That would close the
 coverage uncertainty without a new store. Until then, expose known history
 honestly, preserve the full ambition, and do not accept a spec or a partial
 fossil as the finished continuity experience.
+
+## 8. September 7 recovery: stop repeating completed forensics
+
+This dated amendment is evidence and a proposed implementation boundary, not
+a new commission or permission to change product source. Current protected
+procedure was read at Mastermind
+`6ce1e0104f43657b3d5fc333d848025e28a8173a`, compatible Skillpack 1.0.1/bootstrap 1.
+The original baseline above is preserved. The authored organizational handoff
+on records PR #6954 at `fd319c38e0b4458ee40ac80f383f64118506debe` supersedes its
+old P0B and ledger-status claims. The additional recovery below supersedes only
+the later assumption that the original P0D/P0E investigations were still owed.
+
+The complete parent recovery and proposed sequence are recorded in
+[#6817 comment 5567319120](https://github.com/mastermindx-market-intelligence/macro/issues/6817#issuecomment-5567319120).
+The current action-authoritative native P0B Integrator remains
+`01a06f72-aaae-77f1-a3fb-28f5d05c107a`, with its existing Cockpit controller.
+This observing Web Sol does not replace that binding.
+
+### 8.1 The original investigations already returned and were accepted
+
+The actual original Slack carriers were fully read in this continuation:
+
+| Child | Canonical carrier in C0BSBM78V1N | Actual result | Accepted terminal edge |
+|---|---|---|---|
+| P0D Canada coverage | 1788505505.982989 | 1788507642.579759 | 1788510302.671019 |
+| P0E US Plans runtime | 1788505544.946309 | 1788507499.890559 | 1788510302.148709 |
+
+Both STOPs are dated September 4. They close the finite read-only forensic
+children, not the product recovery. Both explicitly defer the proposed source
+repairs behind P0B's occupied presentation paths. Do not revive those tasks,
+create duplicate forensics or assume their STOPs granted a repair START.
+
+The P0E receiver is
+`01a06b41-96fc-7f20-a488-9792337e46fa` in worktree `58a1`. It is not the P0B
+source task `01a06b41-96fc-7f20-a488-97743cefbb35` in `b3a7`. Shared prefixes
+or Slack credentials cannot join these two identities.
+
+The accepted P0E operator report binds Macro
+`ce976afadf132e55aebc3ca1734808590d4d60c8`, an existing lawful signed-in Chrome
+session, desktop and 390px, source-matching HTML/assets and successful entitled
+payload reads. It reports **64 candidates and 356 real plans**, with eight
+successor-bearing plan IDs appearing three times after parsing: **372 card
+nodes = 356 plans + 16 broken fragments**. It also reports orphan card bodies
+and zones, misleading show-more totals and incomplete resolved-plan cards.
+This is recovered, accepted production evidence at its original date, not a
+new production browser run by this continuation.
+
+The same accepted report preserves additional boundaries: the provisional
+candidate identity probe included the CSS-hidden Plans grid; a selector-only
+repair would expose an existing hydration/replacement race; switching into
+Plans destroyed Candidate Table preference; `?life=` and Back/Forward could
+restore a hidden lifecycle filter while showing Candidates; mobile card
+internals overlapped despite no page-level overflow; and ARIA/status semantics
+were incomplete. Plans Table was explicitly NOT_BUILT. These facts must not
+disappear merely because the nested-anchor reproduction is easier to explain.
+
+### 8.2 Canada selectivity and health are different questions
+
+The accepted P0D report binds the September 3 Toronto session and the matching
+served page. Its measured equation is 216 expected/observed quote columns,
+215 fresh plus one stale, zero missing/invalid, 216 calculable equities,
+five strictly aligned plus four near-aligned board names, nine serialized
+and server-rendered cards, five intentionally highlighted cards and eight
+independent watch names. The 231 library analyses include 15 separate
+ETF/index records. Recent healthy board sizes were 6–10, so nine was not
+evidence of a broad universe collapse.
+
+The ledger path received 17 proposed calls, but the canonical off-nightly
+guard exited before iterating them. Zero write attempts and zero writes were
+expected; accepted/rejected counts were not represented and must remain N/A.
+The caller incorrectly mapped that no-op to ERROR. At current source pin
+`5029a7dc32cb153b8909bb87df0efd839ff67b50`, the bounded read of
+`scripts/build_canada.py::_canada_board_ledger` still shows the unconditional
+append and `n <= 0` ERROR classification. The earlier root cause is not a
+reason to change `engine/board_ledger.py` lane authority.
+
+The original exact per-name alignment/deduplication inputs for 207 non-board
+equities were not retained. That evidence gap survived acceptance. Do not
+invent mutually exclusive historical reasons, backfill model explanations or
+call overlapping descriptive flags an exact exclusion decomposition.
+
+The proposed health correction remains bounded: use the existing lane guard,
+keep actual nightly append failures loud, preserve read-only scorecard display,
+and report coverage separately from opportunity selectivity. Future per-reason
+receipts belong to the existing producer/artifact contract, not a new ledger.
+
+### 8.3 The later nine-plan source attribution is now complete
+
+The later exact source/DOM join is recorded in
+[#6185 comment 5567182354](https://github.com/mastermindx-market-intelligence/macro/issues/6185#issuecomment-5567182354).
+It binds retained publication
+`dadf85738b25e870d712ae8a7354fff8fe9db0ed`, the actual published US HTML and
+premium payload, and four existing Chromium observations. It does not run
+another browser or simulate an entitled production user.
+
+The source has three plan previews plus 377 paid remainder cards, yielding
+**380 unique plan IDs**; three candidate previews plus 61 remainder cards,
+yielding **64 distinct candidates**. Exactly nine source plans contain the
+nested successor anchor, and every named successor exists in the complete
+380-plan source.
+
+In all four retained US browser cases, no unique plan identity is lost or
+invented. The set of triplicated plan IDs exactly equals those nine source
+plans. Every other plan occurs once. Hence **398 = 380 + 18**; all 64 candidate
+identity vectors are unchanged and carry no invented plan ID or lifecycle.
+Both HLI predecessor episodes remain distinct, although they name one ticker.
+
+| Existing plan | Existing successor |
+|---|---|
+| EZPW-BULL-20260819 | EZPW-BULL-20260826 |
+| SGI-BULL-20260819 | SGI-BULL-20260831 |
+| ARES-BULL-20260709 | ARES-BULL-20260722 |
+| PI-BULL-20260703 | PI-BULL-20260730 |
+| HLI-BULL-20260702 | HLI-BULL-20260813 |
+| HLI-BULL-20260630 | HLI-BULL-20260813 |
+| COIN-BULL-20260702 | COIN-BULL-20260818 |
+| LRN-BULL-20260605 | LRN-BULL-20260821 |
+| TEL-BULL-20260717 | TEL-BULL-20260903 |
+
+The join process 22700 completed with exit 0 in 1.88 seconds. Its report is
+`review-results/us-plan-exact-nine-source-join-20260907.json`, SHA256
+`6e88311bda0003d4926ef20bcb2f7c694c65cc13e8ae49856492030dd87f721d`,
+under the existing isolated Web review export named above. The exact input
+premium payload SHA256 is
+`acdb6e97ce221de91595295c7eff5d3efa12aeba66e17dc1f958a7e395e2071e`.
+The retained browser report SHA256 is
+`d55be488e6d0d15dcbf1f9914ef9c610c1d1ef2bb97980382f938417064cbeec`.
+
+The September 4 live 356/eight/372 observation and the later 380/nine/398
+comparison are different publications of the same defect, not conflicting
+counts. The exact shared macro was unchanged between the later publication
+and current source pin 5029. This closes the previous nine-row attribution
+qualification; it does not claim that every possible Plans defect is explained.
+
+### 8.4 Existing owners and the smallest complete navigation repair
+
+The observed production owners at 5029 are:
+
+| Concern | Existing owner to preserve |
+|---|---|
+| Preview and paid plan-card rendering | `templates/_us_prophet_plan_cards.html.j2` and shared `pv_card()` |
+| Predecessor/successor identity | `scripts/build_site.py::_us_prophet_episode_map`, derived from the full unsliced book |
+| Candidate/Plan source selection | Existing `USProphetSource` in `templates/dashboard.html.j2` |
+| Plan lifecycle filtering | Existing `setLife` and `data-lifef` owner in that same page |
+| Tail visibility and paid insertion | Existing show-more and entitled hydration paths |
+| Candidate provisional identity and quotes | Existing Candidate-only identity/mount/teardown path; never the Plans grid |
+
+The shared macro nests the successor anchor inside the outer card anchor.
+The existing non-production reference already uses an article card and
+independent primary/successor links, with filter clearing and target reveal.
+Its tested 32 successor transitions and eight missing-target controls are
+reference evidence, not production implementation. Do not copy its entire
+application, historical fixture population or state controller.
+
+The production generic hash-flash handler only scrolls/highlights a currently
+present element. It does not itself select Plans, clear an excluding lifecycle
+filter, reveal the hidden tail or await the existing entitled payload.
+Consequently, legal markup alone is not the complete user job.
+
+After a real source grant, the coherent repair sequence is: pin owners and
+failing parser/identity tests; fix the plan variant's markup while preserving
+the shared primitive and candidate behavior; compose successor intent through
+the existing source/filter/expansion/hydration owners; preserve Candidate view
+preference and meaningful URL history; reconcile the accepted provisional
+identity/hydration race; then prove keyboard/touch/mobile/status behavior.
+Do not fix the identity probe alone while leaving the replacement race active.
+
+Discriminating acceptance must cover a present but hidden successor, a
+still-loading entitled target, a missing target after complete delivery,
+failed/refused entitlement without paid-row leakage, and a later user action
+superseding an earlier pending navigation. Each real plan keeps one coherent
+card, intact header/lifecycle/zone ancestry and both independent navigation
+jobs. Two episodes of one ticker remain two plans. Candidates retain their
+own record-kind counts and quote behavior. No new router/store/observer plane,
+fake plan identity, ranking change or Plans Table is implied.
+
+### 8.5 Current admission is a concrete parent decision, not more research
+
+P0B is now published at
+`60f64627f1bebcb83736b61037211d24b9b3f048`, with independent approval 5127927612
+and accepted terminal review-child receipts 3594/3694. The unchanged Web
+empty-copy falsifier passes 16/16 at this head. Its required CI/current-base,
+source-builder release, canonical build and production gates remain distinct.
+See [exact source proof5565968223](https://github.com/mastermindx-market-intelligence/macro/pull/6832#issuecomment-5565968223)
+and [integration qualification5566237036](https://github.com/mastermindx-market-intelligence/macro/pull/6832#issuecomment-5566237036).
+
+The complete current 160-file P0B inventory does not directly modify the shared
+plan macro, `_us_prophet_plan_cards.html.j2`, `dashboard.html.j2` or
+`build_site.py`. This is not an all-writer or dependency clearance: shared CSS,
+tests, CI and affected consumers still require current collision assessment.
+
+The existing parent must either reconcile source-builder completion/path
+release separately from pending release proof, or explicitly qualify a
+disjoint next Plans boundary. The original September 4 deferral remains
+binding until that decision. Do not mistake an unqualified general dashboard
+overlap for an immutable prohibition, or silently waive a real current gate.
+
+Web proposal `1788768083.810359` was delivered on the existing P0B source
+carrier. Delivery is not parent consumption or a source grant. No new worker,
+forensic, reviewer, branch, source edit, CI control, merge or deployment was
+created by this amendment. Full current-card visibility and revision-safe
+prior-pick history remain the parent outcome after the bounded prerequisite.
