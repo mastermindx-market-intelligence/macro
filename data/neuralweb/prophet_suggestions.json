@@ -1,13 +1,13 @@
 {
   "schema": "prophet.suggestions/v1",
-  "as_of": "2026-09-07T00:36:05+00:00",
+  "as_of": "2026-09-07T17:45:55+00:00",
   "built_by": "engine.neuralweb.prophet_governor",
   "suggestions": [
     {
       "code": "stale_us_audit_scoreboard_us",
       "kind": "staleness",
       "severity": "medium",
-      "detail": "us-audit-scoreboard is 721h old (SLA 48.0h) [US]",
+      "detail": "us-audit-scoreboard is 738h old (SLA 48.0h) [US]",
       "market": "us",
       "first_seen": "2026-08-10",
       "asof": "2026-09-07"
@@ -16,7 +16,7 @@
       "code": "stale_us_board_outcomes_us",
       "kind": "staleness",
       "severity": "medium",
-      "detail": "us-board-outcomes is 73h old (SLA 48h) [US]",
+      "detail": "us-board-outcomes is 90h old (SLA 48h) [US]",
       "market": "us",
       "first_seen": "2026-09-06",
       "asof": "2026-09-07"
