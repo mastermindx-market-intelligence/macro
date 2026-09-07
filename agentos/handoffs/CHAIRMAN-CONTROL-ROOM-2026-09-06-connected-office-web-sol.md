@@ -2,17 +2,17 @@
 workstream: WS:CHAIRMAN-CONTROL-ROOM
 session: claude/agentos-brief-bounded-dates-20260907-sol
 model: sol
-ended_because: ci_handoff
-mission: Advance the existing connected office by removing the measured Agent OS brief bottleneck, proving the real
-  MCP read consumer, and preserving canonical Runtime/session ownership and the original Control Room deployment.
-state_before: The Control Room organizational read-root adoption was live, Mastermind516 temporary four-read source
-  was merged, but real organizational state/inbox calls timed out. The existing two-file latency candidate was local
-  and uncommitted with an interrupted regression receipt after a transport outage.
+ended_because: blocked
+mission: Continue the existing connected-office source and installation readiness work while preserving exact ownership,
+  read-only evidence and the current Runtime authority.
+state_before: Macro6976 latency source was published atad44 with useful real-input MCP proof, but B1 test relocation
+  remained local and the Mac was offline. The pending handoff still described an unconsumed initial review and lacked
+  the current disabled-controller preflight.
 changed:
 - path: agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-09-06-connected-office-web-sol.md
-  what: Update this same continuation with published two-file latency repair6976,199 passing cases, exact brief
-    parity, real-input MCP success and unproven review/hosted/installed gates. Earlier deployment evidence remains
-    historical.
+  what: Refresh the same pending handoff with accepted relocation, recovered exact 199-case proof, pre-effect blocked
+    commit, and current disabled-controller/configuration permission evidence; retain earlier source/deployment
+    history.
 verified:
 - claim: 'Historical first checkpoint: The existing workstream remains the organizational home; no new workstream
     was made.'
@@ -194,40 +194,58 @@ verified:
     tests; compare actual source hash before/after.
   result: All three mutant subprocesses exit1 on discriminating assertions; source SHA256986468f0eeb0fc7a14998bcfcb41ecbeed9dddfb4067649b23a431e8401b04a5
     unchanged. This is author verification, not independent review.
+- claim: The approved two-path local relocation is recovered at the exact tested bytes without a new commit.
+  command: Direct git HEAD/status/index reads; SHA256 and function-AST comparisons; parse latency-wired-regression.xml
+    and saved mutation results.
+  result: At11:06Z HEADad44; no staged files, index lock or matching active process. Compiler986468f0 and relocated
+    test3ead69d6 match; 50 existing functions and11 moved definitions unchanged. Saved199 cases/0errors/0failures/0skips
+    and3 mutation kills. No tests rerun.
+- claim: The source publication request was refused before staging or commit.
+  command: One Remote Desktop Commander commit request; then read relocation-commit-intent.json and read-only git
+    status/rev-parse/diff --cached.
+  result: Platform safety block; no returned process ID. Prospective intent absent, HEADad44 retained, staging empty,
+    only original local test relocation. No retry or alternate source carrier.
+- claim: The current installed controller is disabled and its dedicated configuration is not readable by this normal-user
+    session.
+  command: Parse com.mastermind.executive.control.plist; launchctl print and print-disabled system; normal config
+    read and lstat with no privileged escalation.
+  result: At11:17–11:19Z label disabled, print exit113, a6fde004 release, _mastermind_exec principal. PlistSHA462f92ae85b5e1c09b32dbfaf61b5222130672cde42ba35e5698726d5646c790.
+    Config PermissionError, uid0/gid450/mode0440. No Runtime or service change.
 unverified:
-- claim: Macro6976 has independent exact-head approval and completed applicable hosted current-base checks.
-  what_would_verify: Actual non-author review and terminal applicable CI bound to ad44cd0ee7e3a37c4ab6348ab0bc88537e1054e7
-    plus its current merge candidate. A single review request was posted at6976 comment5568131791; pickup/completion
-    are not inferred.
-- claim: The latency repair is adopted in the installed organizational read service or actual Personal seat.
-  what_would_verify: Accepted source protection followed by the retained deployment/read owner qualifying the maintained
-    read checkout and observing actual authenticated read success; the candidate proof did not change an installed
-    source.
-- claim: Native cross-account parent/child visibility, acknowledged communication and conflict prevention are complete.
-  what_would_verify: The real end-to-end office contract through qualified Executive Runtime identity/authentication,
-    enrolled provider observations, the existing plural read, exact parent return and conflict checks. Current cards,
-    saved-session metadata and source tests are insufficient.
+- claim: B1 relocation is remotely published and accepted.
+  what_would_verify: A genuinely permitted same-carrier source publication with exact hashes, natural new-head CI
+    and retained reviewer full re-review. This turn the commit was blocked before effect; no new head exists.
+- claim: The controller and actual authenticated Personal seat can read canonical Runtime state.
+  what_would_verify: Existing host-security/Runtime owners qualify current release, principal, config access, identity
+    and read-source gates, then execute the actual authorized seat read. No permission weakening or copied database.
+- claim: The timed-out differential-check temporary worktree was cleaned up.
+  what_would_verify: A separately permitted owner-scoped reconciliation and cleanup receipt for exact /tmp/contract-delta-base-32cy9k6i.
+    It was observed locked initializing without a matching active process; not removed.
+- claim: The connected office has live cross-account/native-child visibility and safe communication.
+  what_would_verify: Real enrolled observations through the canonical Runtime and authenticated shared reader, exact
+    parent return and conflicting-work tests across actual accounts/hosts. Saved metadata and source proofs are
+    insufficient.
 unresolved:
-- Macro6976 independent review, current-base hosted checks and source release are not yet accepted.
-- No installed latency adoption, actual Personal-seat Runtime read, native child visibility or cross-account conflict
-  prevention is established.
-- Existing508 plural read, browser rendering, upstream completeness projection and C1/W3C effect gates remain separately
-  owned.
+- Source commit is platform-blocked; accepted tested relocation remains local on the original branch.
+- Remote6976 remainsad44 with the old-head test-registration failure; head-only findings are not differential hosted
+  success.
+- The installed controller is disabled; dedicated config access denied to the current normal-user session.
+- Known isolated temporary checkout residue remains uncleaned.
+- 'Full native live visibility, cross-account return/conflict prevention, #508 adoption and installed seat proof
+  remain open.'
 next_actions:
-- Preserve Macro6976 at ad44cd0ee7e3a37c4ab6348ab0bc88537e1054e7 on the original latency branch. Consume its actual
-  non-author review and current-base hosted checks; repair only substantiated scoped findings. Do not create another
-  compiler writer or merge on author tests alone.
-- After accepted source release, the existing deployment/Runtime/Cockpit owners qualify organizational read-source
-  adoption and actual seat success under the unchanged Runtime identity and authentication boundaries. Do not change
-  installed-root fences or copy SQLite to make the temporary profile work.
-- Preserve the completed Control Room Macro5812 adoption, original live configuration and exact rollback preimage.
-  Keep unproven browser rendering and completeness-warning loss visible; no replay of completed restart/cache refresh
-  or blocked actions.
-- The retained Mastermind508 release owner handles its independent current-base and versioned plural-read adoption.
-  Mastermind516 is terminal protected source, not work to restart. C1/Slack/CeoIngress and their effect holds are
-  separate from optional rich MCP reads.
-- Review this same Macro6946 one-file continuation at its actual new head, with canonical validator proof. It is
-  a pending record until merged; no new organizational store or workstream.
+- Preserve the original unpublished relocation; do not retry the denied commit through another command/tool/account.
+  At a genuinely permitted publication boundary, reconcile exact source/index/effects and publish only the accepted
+  two-path candidate on the retained branch.
+- After a new head exists, consume natural CI and full re-review through the retained reviewer, then obtain a separate
+  release/adoption disposition. No CI manifest edit, new reviewer or repeated completed tests solely for freshness.
+- Existing host-security/Runtime/Integration qualify current controller/config/read-root and proper principal before
+  any activation. Keep optional rich-MCP work separate from the primary Relay/CeoIngress path and preserve old C1
+  terminality.
+- Resolve the isolated temporary-checkout residue only through an owner-scoped permitted operation; do not repeat
+  its timed-out materialization.
+- Review and validate this same pending handoff, preserving the original Control Room adoption and complete connected-office
+  acceptance requirements.
 do_not_redo:
 - No new office workstream, runtime, task/identity/memory/transcript store, router, queue, lease or watcher plane.
 - Do not redo the original first-read addendum or make Business publication a predecessor to constructing its Personal
@@ -254,32 +272,42 @@ discoveries: []
 
 ## §0 State — what is true right now
 
-Macro PR6976 publishes the connected-office brief latency repair at `ad44cd0ee7e3a37c4ab6348ab0bc88537e1054e7`, tree `3b9e23447d047db12bb548b5f35dbd98648f70d8`, on the original `claude/agentos-brief-bounded-dates-20260907-sol` branch. It is Draft/Hold, not installed. All199 targeted native tests pass with zero skips; the entire real brief is identical before and after; real-input state and inbox calls through the protected Mastermind516 MCP composition succeed inside the unchanged30-second deadline. These are executed source/consumer results, not production Runtime or Personal-seat proof.
+The connected office remains PARTIAL. Macro PR6976 is still Draft/Hold at published head `ad44cd0ee7e3a37c4ab6348ab0bc88537e1054e7`. Its real-input state/inbox success, exact complete-brief parity and original 199-case proof remain valid at their recorded source. The independent review's B1 test-registration finding is not yet closed on a new published head.
 
-The existing Control Room's verified Macro5812 organizational source adoption remains unchanged. Mastermind516 source is protected at6ce1e0104f43657b3d5fc333d848025e28a8173a; its historical Task1/Task2 worker is terminal and must not be restarted. Overall connected-office capability remains PARTIAL. This file supersedes the previous preparation-unreconciled/local-unpublished/Task2-next descriptions only; it does not erase the prior dated tests, deployment receipts or held capabilities.
+Sol ruling5568903834 accepted the already-tested two-path relocation into the existing status test module, preserving the compiler and avoiding the CI-manifest hunk owned by6971. On September7 at11:06 UTC, the source owner recovered that exact local state after the Mac reconnected: compiler SHA256986468f0eeb0fc7a14998bcfcb41ecbeed9dddfb4067649b23a431e8401b04a5; relocated test SHA2563ead69d677c178cd01852a08061b01495a40e2c92ddf4a51f4155db7d1b65fa8; no staged files, index lock or matching active process. Saved JUnit contains199 cases with no failures, errors or skips; all three mutation controls were killed. These were recovered completed results, not repeated tests.
+
+The same-branch commit request was subsequently blocked by the platform before its prospective intent was created. Direct head/index/status readback confirms no staging or commit occurred. The exact relocation stays local and uncommitted. No alternate source carrier, reconstructed GitHub commit or replacement worker was used.
+
+An independent current-host preflight found `com.mastermind.executive.control` disabled and not loaded, still naming the a6fde004 release. Its root-owned control configuration has mode0440 and rejected this session's normal read with PermissionError. No configuration contents, live Runtime, credentials, service, group, account or permission was changed. This is a current activation prerequisite, not a reason to weaken privilege separation.
 
 ## §1 What is LEFT — in order
 
-First consume Macro6976's actual independent review and hosted checks at the exact current head. One bounded review request is comment5568131791; a comment or reaction is not approval, and no reviewer execution is claimed. The current source contains two authored files only; the compiler change preserves the existing per-path Git functions, output schema, nulls and all authority boundaries. No source self-approval or release follows from the test suite.
+The immediate source-publication gap is platform permission for the retained operation, not another design decision. At a genuinely permitted future publication boundary, reconcile this same local branch and exact two-path candidate before any effect. Do not repeat the denied request through another command, connector or account. Once a new immutable candidate exists, natural current-head contract/pack execution and full re-review through the retained reviewer are required; source release and installed acceptance remain distinct.
 
-After a qualified source release, the retained organizational-read deployment owner selects and verifies a maintained clean checkout, then proves actual authenticated-seat reads. Installed Runtime connection identity/schema/root selection remains with the existing Runtime owner. The temporary MCP profile's production-coordinate fence must not be removed or evaded. The existing508 owner separately settles plural-read release and versioned consumer integration. Actual native parent/child observations, cross-account communication and conflicting-work prevention remain the full end-state.
+The original local carrier is `macro-main/.claude/worktrees/agentos-brief-bounded-dates-20260907-sol`. The published operation is `connected-office-agentos-brief-latency-20260907-sol-001`. The final candidate consists of unchanged `scripts/agentos.py` and relocated `tests/test_agentos_status.py`; the standalone bounded-date test file is absent. Do not modify the shared CI manifest or start a second compiler writer.
 
-The existing coordination carrier is D0BTAKPHX8S/1788689346.571769. Integration Root01a06f72-aaae-77f1-a3fb-28f5d05c107a, Runtime01a06f73-1dba-7951-9f1e-cded7b563cef and Cockpit01a06f73-d4cf-7933-8268-d3c9644bc63d remain coordination references, not newly verified RuntimeBindings. Sending evidence to that parent does not create or assign another worker.
+In parallel, the existing Integration/Runtime/host-security owners retain current-host activation. They must qualify the service release, intended dedicated principal, configuration access, read-root/schema/identity and rollback before an actual seat read. Rich MCP performance is not a universal predecessor to the primary Relay/CeoIngress path. Preserve the recorded terminal disposition of the old C1 child; this preflight neither resumes it nor grants a fresh activation.
 
 ## §2 What will bite you
 
-The date batching limit is four paths per invocation, not a fleet-wide resource governor. The unchanged per-path Git queries retain rename/delete/re-add and null semantics; a combined-path history walk is not automatically equivalent. Each batch and its threads finish before another is submitted or the call returns. There is no persistent cache and a new read observes current Git state. No guarantee of a single Git-ref snapshot is newly asserted.
+The initial source contract-delta failure remains real at publishedad44: the standalone suite is unwired. Local head-only findings now report no closure or unrun-suite issue, but that is not a completed differential hosted check. Do not relabel old-head CI as repaired.
 
-Test fixtures depend on actual checkout completeness. The original broad run lost its terminal receipt, then a named existing test failed on unrelated whole-store phantom-artifact warnings. Supported sibling-root isolation removed foreign-checkout warnings; the sparse Macro checkout still omitted committed artifacts. The existing assertion passed after the repository's canonical full-checkout command materialized the real inputs. The final199-case run uses a full checkout, no excluded tests and no assertion weakening. Both failed diagnostics remain evidence, not green results.
+The earlier diagnostic's temporary checkout `/tmp/contract-delta-base-32cy9k6i` exists at1d5fc573 with registry state `locked initializing`. No matching active process was observed during recovery. It was not removed or restarted; exact cleanup remains pending its own supported reconciliation. The source worktree's index was separately verified unlocked and unstaged.
 
-The candidate real-input MCP proof uses ephemeral synthetic credentials, in-process ASGI, real organizational records and a deliberately absent temporary Runtime. State26.385s and inbox22.799s are one successful pair, not a production latency guarantee. Both still report Runtime degradation. The full brief parity run used one fixed observation time and same input root:24.323s parent versus16.272s candidate, with identical332162-byte documents. Neither result installs a service or establishes live agents.
+Online presence and pong are not proof of forwarded execution readiness. This session recovered actual file/process access, but a later platform-denied commit is a different failure class; do not call both permission loss or both effect unknown. The denied commit's pre-effect status is known from direct readback. The normal-user PermissionError on the dedicated service configuration is another distinct boundary and must not be defeated with chmod, group mutation or copied state.
+
+Saved native metadata established nine parent files and sixteen child entries under two parents in one bounded Claude project scope. It did not establish running agents, account identities, current ownership, permission or global coverage. Keep those counts out of a live fleet-health claim.
 
 ## §3 What was decided and found
 
-Reuse the existing compiler; do not create a cache, collector, scheduler or a larger request deadline to hide serial history cost. The source operation remains `connected-office-agentos-brief-latency-20260907-sol-001`. Its own initial preparation was reconciled before the original workspace was materialized; no fetch was blindly replayed. Later transport failures were distinct from write permission: native tools worked again, the exact candidate files were recovered unchanged, and the completed source now exists remotely in6976.
+The exact accepted layout decision is6976 comment5568903834, reinforced by current-main preflight5569247266. It supersedes the initial proposed CI-manifest edit without changing the bounded per-path date algorithm. The original non-author review5130211834 is Request Changes, not approval of an unpublished relocation.
 
-All commands, source hashes, JUnit, mutation logs, full-document comparison and raw-free MCP results are retained under `exec-prestage-receipts/office-post516-u6lm32_i/`. The actual source/tests and full evidence narrative are in Macro6976. The three in-memory mutants caught serial acquisition, eager queuing and bypassed consumer wiring; they are not independent review. Prior discoveries about saved Claude metadata remain valid: saved sessions are not live worker/account/child proof, and response limits do not necessarily bound SDK scan I/O.
+Protected Mastermind source at recovery was `f869cb229bc99de5344e3a83292b9c53e157f879`, with compatible same-commit Skillpack1.0.1/bootstrap1. Current required procedural blobs match the previously full-read sources. Protected #517 and #519 are architecture/read-component source releases; neither installs a live office.
+
+New evidence is retained in `exec-prestage-receipts/office-post516-u6lm32_i/recovered-relocation-state-20260907.json` and `current-installed-preflight-20260907.json`. The former binds actual source/index/process state to saved JUnit and mutation receipts. The latter binds launchctl/config metadata to an explicit no-runtime-read/no-service-change ceiling. The source PR's leading metadata checkpoint `CONNECTED_OFFICE_6976_RECOVERED_PRECOMMIT_BLOCK_20260907` was updated and read back without changing its head or Draft state.
 
 ## §4 Not in scope — do not adopt
 
-No production Control Room source, Runtime database, tunnel, account, provider session, launch configuration, authority map, schema, queue, registry, watcher or admission was changed by the latency repair. Keep the prior live source-adoption preimage and deployed runtime lookup intact. No second Agent OS record project or workstream is created; this is the original6946 one-file continuation. Do not touch the old shared checkout's staged source, the separately proposed objective-field lane, or another worker's process/worktree. Cross-account office completion, browser acceptance, lost upstream completeness warnings and the C1/W3C effect gates are not cleared by a green source PR.
+No new source commit or push, CI-manifest change, review approval, Ready/merge, controller enable/start, config permission change, database copy, tunnel/account/provider action, registry, queue, watcher or source transfer occurred in this recovery. The existing Control Room Macro5812 read-root adoption was not modified. Pending #508 plural-read release, native live observation, actual authenticated-seat reads, acknowledged cross-agent returns and conflicting-work prevention remain independently owned and unproven.
+
+This is the same one-file pending Agent OS handoff, not a new workstream or protected-main state. The historical source and deployment results retained in frontmatter remain evidence of their own epochs. This recovery supersedes only the stale layout-decision, offline-source-unknown and awaiting-first-review descriptions; it does not promote implementation or saved metadata to production completion.
