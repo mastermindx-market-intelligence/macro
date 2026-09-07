@@ -37,6 +37,11 @@ from collectors.edgar_facts import _get_json
 from collectors.edgar_fts import _parse_hit, _theme_universe
 from lib import config
 
+try:  # falsy-but-not-None "SEC positively returned 404" sentinel (edgar_facts, #6921)
+    from collectors.edgar_facts import _CONFIRMED_ABSENT
+except ImportError:  # pre-#6921 edgar_facts: a confirmed 404 is still plain None
+    _CONFIRMED_ABSENT = None
+
 log = logging.getLogger("edgar_guidance")
 
 FTS_URL = "https://efts.sec.gov/LATEST/search-index"
@@ -109,7 +114,7 @@ def fetch_guidance_hits(force: bool = False,
                    f"&startdt={startdt}&enddt={enddt}&from={page * 10}")
             data = _get_json(url, retries=1 if first_request else 3)
             # network down on the very first call -> abort the whole sweep, keep any cache
-            if data is None and first_request:
+            if (data is None or data is _CONFIRMED_ABSENT) and first_request:
                 log.warning("edgar_guidance: EDGAR unreachable; keeping existing cache")
                 return pd.read_parquet(p) if p.exists() else None
             first_request = False

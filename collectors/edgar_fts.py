@@ -38,6 +38,11 @@ import pandas as pd
 from collectors.edgar_facts import _get_json
 from lib import config
 
+try:  # falsy-but-not-None "SEC positively returned 404" sentinel (edgar_facts, #6921)
+    from collectors.edgar_facts import _CONFIRMED_ABSENT
+except ImportError:  # pre-#6921 edgar_facts: a confirmed 404 is still plain None
+    _CONFIRMED_ABSENT = None
+
 log = logging.getLogger("edgar_fts")
 
 FTS_URL = "https://efts.sec.gov/LATEST/search-index"
@@ -174,7 +179,7 @@ def _sweep_phrases(
             data = _get_json(url, retries=1 if first_request else 3)
             # network down / endpoint unreachable on the very first call -> abort the whole
             # sweep (don't grind through dozens of 40s timeouts) and keep any existing cache.
-            if data is None and first_request:
+            if (data is None or data is _CONFIRMED_ABSENT) and first_request:
                 log.warning("edgar_fts: EDGAR unreachable; keeping existing cache (%s)",
                             cache_path.name)
                 return pd.read_parquet(cache_path) if cache_path.exists() else None
