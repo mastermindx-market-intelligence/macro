@@ -147,13 +147,51 @@ def test_load_existing_observations_quarantines_a_row_that_fails_the_current_con
     frame = compile_script._to_frame([valid, stale_shape])
     ledger_path = tmp_path / "covenant_term_observations.parquet"
     frame.to_parquet(ledger_path, index=False)
+    quarantine_path = tmp_path / "covenant_term_observations.quarantined.parquet"
 
-    observations, quarantined = compile_script._load_existing_observations(ledger_path, schema)
+    observations, quarantined = compile_script._load_existing_observations(
+        ledger_path, quarantine_path, schema,
+    )
 
     assert [o["observation_id"] for o in observations] == [valid["observation_id"]]
     assert len(quarantined) == 1
     assert quarantined[0]["observation_id"] == stale_shape["observation_id"]
     assert "document_type" in quarantined[0]["reason"]
+    assert quarantined[0]["observation_json"]  # retained verbatim, not just a reason string
+
+
+def test_load_existing_observations_recovers_a_quarantined_row_from_the_sidecar(tmp_path):
+    """RED-first (round-5 review MAJOR): a row quarantined on a PRIOR run
+    (and therefore absent from the main ledger, present only in the
+    quarantine sidecar) must still be re-loaded and re-validated -- the
+    round-4 shape only ever read the main ledger, so once a row fell out of
+    it (the very first rewrite after it was quarantined) it was gone from
+    every future run's input, sidecar or not. Here the row lives ONLY in
+    the sidecar (simulating the second nightly after it was first
+    quarantined) and must come back as quarantined again, not vanish."""
+    direct = _real_direct_observations()
+    stale_shape = json.loads(json.dumps(direct[1]))
+    del stale_shape["document"]["document_type"]
+
+    schema = compile_script._load_contract("capital_structure_covenant_term_observation.schema.json")
+    ledger_path = tmp_path / "covenant_term_observations.parquet"
+    quarantine_path = tmp_path / "covenant_term_observations.quarantined.parquet"
+    quarantine_path.parent.mkdir(parents=True, exist_ok=True)
+    sidecar_frame = compile_script._to_quarantine_frame([{
+        "observation_id": stale_shape["observation_id"],
+        "logical_observation_id": stale_shape["logical_observation_id"],
+        "reason": "document_type missing (prior shape)",
+        "observation_json": compile_script._canonical_json(stale_shape),
+    }])
+    sidecar_frame.to_parquet(quarantine_path, index=False)
+
+    observations, quarantined = compile_script._load_existing_observations(
+        ledger_path, quarantine_path, schema,
+    )
+
+    assert observations == []
+    assert len(quarantined) == 1
+    assert quarantined[0]["observation_id"] == stale_shape["observation_id"]
 
 
 def test_compile_from_disk_quarantines_a_prior_shape_row_and_reports_it_in_the_receipt(
@@ -209,9 +247,131 @@ def test_compile_from_disk_quarantines_a_prior_shape_row_and_reports_it_in_the_r
     assert result["quarantined"] == 1
     assert result["quarantined_rows"][0]["observation_id"] == stale_shape["observation_id"]
     assert result["observations"] == 1  # only the still-valid row is re-persisted
+    assert result["orphaned_lineage"] == []  # neither row here has a correction/supersedes link
 
     persisted = pd.read_parquet(ledger_path)
     assert persisted["observation_id"].tolist() == [valid["observation_id"]]
+
+    # Round-5 review MAJOR fix: the quarantined row is retained verbatim on
+    # disk in a sidecar file, never deleted by the main ledger's rewrite.
+    quarantine_path = tmp_path / "covenant_term_observations.quarantined.parquet"
+    assert quarantine_path.exists()
+    sidecar = pd.read_parquet(quarantine_path)
+    assert sidecar["observation_id"].tolist() == [stale_shape["observation_id"]]
+    recovered = json.loads(sidecar.iloc[0]["observation_json"])
+    assert recovered["observation_id"] == stale_shape["observation_id"]
+
+
+def test_quarantined_row_is_retained_on_disk_across_runs_never_deleted(tmp_path, monkeypatch):
+    """RED-first (round-5 review MAJOR): the round-4 shape excluded a
+    quarantined row from `observations` and then unconditionally rewrote the
+    WHOLE ledger file via `_atomic_write`'s `os.replace` -- so the very
+    first nightly after any contract edit permanently deleted every
+    historical row that failed the new shape, with no sidecar and no way to
+    recover it (the reviewer's measured shape). A quarantined row must
+    survive a SECOND run untouched, proving it is retained rather than
+    dropped the moment it falls out of the main ledger."""
+    direct = _real_direct_observations()
+    valid = direct[0]
+    stale_shape = json.loads(json.dumps(direct[1]))
+    del stale_shape["document"]["document_type"]
+
+    frame = compile_script._to_frame([valid, stale_shape])
+    ledger_path = tmp_path / "covenant_term_observations.parquet"
+    ledger_path.parent.mkdir(parents=True, exist_ok=True)
+    frame.to_parquet(ledger_path, index=False)
+    manifest_path = source_ledger_path(tmp_path)
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    manifest_path.write_bytes(encode_source_ledger([_real_manifest()]))
+
+    real_load_contract = compile_script._load_contract
+
+    def _load_contract_stub(name):
+        if name == "capital_structure_source_manifest.schema.json":
+            return {}
+        return real_load_contract(name)
+
+    monkeypatch.setattr(compile_script, "_load_contract", _load_contract_stub)
+    monkeypatch.setattr(compile_script, "validate_manifest_content_binding", lambda manifest: None)
+    monkeypatch.setattr(compile_script, "validate_manifest_ledger", lambda manifests: None)
+
+    first = compile_script.compile_from_disk(root=tmp_path, generated_at="2026-09-08T00:00:00Z", source_store={})
+    assert first["quarantined"] == 1
+    quarantine_path = tmp_path / "covenant_term_observations.quarantined.parquet"
+    assert quarantine_path.exists()
+
+    # a SECOND run (e.g. the next nightly): the round-4 shape read only the
+    # main ledger, which no longer names the quarantined row at all, so it
+    # would silently vanish from every future run's quarantine reporting
+    # forever. With the sidecar re-loaded, it must still be reported.
+    second = compile_script.compile_from_disk(root=tmp_path, generated_at="2026-09-09T00:00:00Z", source_store={})
+    assert second["quarantined"] == 1
+    assert second["quarantined_rows"][0]["observation_id"] == stale_shape["observation_id"]
+    sidecar_again = pd.read_parquet(quarantine_path)
+    assert sidecar_again["observation_id"].tolist() == [stale_shape["observation_id"]]
+
+
+def test_orphaned_lineage_is_reported_when_a_corrections_parent_is_quarantined(tmp_path, monkeypatch):
+    """RED-first (round-5 review MAJOR): if a correction's PARENT
+    observation fails the CURRENT contract and gets quarantined, the
+    correction itself (a different record shape) still validates and would
+    previously be re-persisted with a `version.correction_of` /
+    `relationships.supersedes` pointer to an id no longer present in the
+    valid/compiled ledger -- silently, per the reviewer's measured shape.
+    compile_from_disk() must name this in the receipt rather than write it
+    unnoticed."""
+    manifest = _real_manifest()
+    text = (FIXTURES / "covenant_credit_agreement_submission.txt").read_text(encoding="utf-8")
+    v1 = ct.compile_observations(manifest, text, generated_at="2026-09-06T00:00:00Z")
+    text_v2 = text.replace("3.00 to 1.00", "3.10 to 1.00", 1)
+    v2 = ct.compile_observations(
+        manifest, text_v2, generated_at="2026-09-07T00:00:00Z", prior_observations=v1,
+    )
+    v2_corrected = next(o for o in v2 if o["version"]["correction_version"] == 2)
+    # the corrected TERM's own v1 record (not just "the first direct record"
+    # -- the fixture mints two direct terms and only one of them changed).
+    v1_direct = next(o for o in v1 if o["observation_id"] == v2_corrected["version"]["correction_of"])
+    assert v2_corrected["version"]["correction_of"] == v1_direct["observation_id"]
+    assert v1_direct["observation_id"] in v2_corrected["relationships"]["supersedes"]
+
+    stale_parent = json.loads(json.dumps(v1_direct))
+    del stale_parent["document"]["document_type"]  # quarantines the parent this run
+
+    frame = compile_script._to_frame([stale_parent, v2_corrected])
+    ledger_path = tmp_path / "covenant_term_observations.parquet"
+    ledger_path.parent.mkdir(parents=True, exist_ok=True)
+    frame.to_parquet(ledger_path, index=False)
+    manifest_path = source_ledger_path(tmp_path)
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    manifest_path.write_bytes(encode_source_ledger([manifest]))
+
+    real_load_contract = compile_script._load_contract
+
+    def _load_contract_stub(name):
+        if name == "capital_structure_source_manifest.schema.json":
+            return {}
+        return real_load_contract(name)
+
+    monkeypatch.setattr(compile_script, "_load_contract", _load_contract_stub)
+    monkeypatch.setattr(compile_script, "validate_manifest_content_binding", lambda manifest: None)
+    monkeypatch.setattr(compile_script, "validate_manifest_ledger", lambda manifests: None)
+
+    result = compile_script.compile_from_disk(
+        root=tmp_path, generated_at="2026-09-08T00:00:00Z", source_store={},
+    )
+
+    assert result["quarantined"] == 1
+    assert result["quarantined_rows"][0]["observation_id"] == stale_parent["observation_id"]
+    assert result["orphaned_lineage"], "an orphaned correction must be reported, never silently written"
+    orphan = result["orphaned_lineage"][0]
+    assert orphan["observation_id"] == v2_corrected["observation_id"]
+    assert orphan["missing_parent_id"] == stale_parent["observation_id"]
+    assert orphan["parent_quarantined"] is True
+
+    # the correction is still persisted (never fatal) -- but the dangling
+    # pointer is now VISIBLE in the receipt, not merely absent.
+    persisted = pd.read_parquet(ledger_path)
+    assert v2_corrected["observation_id"] in persisted["observation_id"].tolist()
 
 
 def test_covenant_extraction_coverage_reports_failed_state_with_a_reason():

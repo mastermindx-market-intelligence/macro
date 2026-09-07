@@ -425,31 +425,60 @@ def test_amendment_record_produced_by_link_amendment_validates_against_the_contr
 
 
 def _schema_pattern_fields(schema: dict) -> list[tuple[tuple[str, ...], str]]:
-    """Walk the schema's OWN properties/items/oneOf graph (never `$defs` --
-    this contract carries two unreferenced `$defs` entries, `decimal` and
-    `span`, copied from the document_terms precedent and never `$ref`'d by
-    any real field; those are dead schema, not fields any instance is ever
-    validated against) and collect every (instance_path, pattern) pair a
-    real observation is actually checked against."""
+    """Walk the schema's FULL reachable graph -- properties, items, oneOf,
+    anyOf, allOf, patternProperties, schema-valued additionalProperties, and
+    `$ref` (resolved against `$defs`) -- and collect every (instance_path,
+    pattern) pair a real observation is actually checked against.
+
+    RED-first fix (round-5 review Minor-1): the round-4 shape of this walk
+    stopped at `properties`/`items`/`oneOf` and explicitly never followed
+    `$ref`, so a pattern added anywhere under a `$ref`'d `$defs` entry would
+    be enforced at validation time yet invisible to this test -- exactly the
+    "next level-deeper drift" the completeness walk exists to catch.
+    `$defs/value` IS live (`$ref: "#/$defs/value"` at `reported` and
+    `normalized`), so this was a real hole, latent only because
+    `$defs/value` happens to carry no `pattern` today. `$defs/decimal` and
+    `$defs/span` remain correctly unreached -- not because this walk skips
+    `$defs` by name, but because nothing in the live schema ever `$ref`s
+    them, which is exactly the distinction a `$ref`-following walk is able
+    to draw and a `$defs`-blind one could not."""
+    defs = schema.get("$defs") or {}
     found: list[tuple[tuple[str, ...], str]] = []
 
-    def walk(node: object, path: tuple[str, ...]) -> None:
+    def walk(node: object, path: tuple[str, ...], seen_refs: frozenset[str]) -> None:
         if not isinstance(node, dict):
             return
         pattern = node.get("pattern")
         if isinstance(pattern, str):
             found.append((path, pattern))
+
+        ref = node.get("$ref")
+        if isinstance(ref, str) and ref.startswith("#/$defs/") and ref not in seen_refs:
+            walk(defs.get(ref[len("#/$defs/"):]) or {}, path, seen_refs | {ref})
+
         properties = node.get("properties")
         if isinstance(properties, dict):
             for key, sub in properties.items():
-                walk(sub, path + (key,))
+                walk(sub, path + (key,), seen_refs)
+
+        pattern_properties = node.get("patternProperties")
+        if isinstance(pattern_properties, dict):
+            for sub in pattern_properties.values():
+                walk(sub, path + ("*",), seen_refs)
+
+        additional_properties = node.get("additionalProperties")
+        if isinstance(additional_properties, dict):
+            walk(additional_properties, path + ("*",), seen_refs)
+
         items = node.get("items")
         if isinstance(items, dict):
-            walk(items, path + ("*",))
-        for branch in node.get("oneOf") or ():
-            walk(branch, path)
+            walk(items, path + ("*",), seen_refs)
 
-    walk(schema, ())
+        for keyword in ("oneOf", "anyOf", "allOf"):
+            for branch in node.get(keyword) or ():
+                walk(branch, path, seen_refs)
+
+    walk(schema, (), frozenset())
     return found
 
 
@@ -458,12 +487,21 @@ def _values_at(instance: object, path: tuple[str, ...]) -> list[object]:
         return [instance]
     key, rest = path[0], path[1:]
     if key == "*":
-        if not isinstance(instance, list):
-            return []
-        out: list[object] = []
-        for item in instance:
-            out.extend(_values_at(item, rest))
-        return out
+        # "*" covers both `items` (array elements) and `patternProperties`/
+        # schema-valued `additionalProperties` (object member values) --
+        # both collapse an unbounded set of instance keys into one schema
+        # branch, so both are walked here.
+        if isinstance(instance, list):
+            out: list[object] = []
+            for item in instance:
+                out.extend(_values_at(item, rest))
+            return out
+        if isinstance(instance, dict):
+            out = []
+            for item in instance.values():
+                out.extend(_values_at(item, rest))
+            return out
+        return []
     if not isinstance(instance, dict) or key not in instance:
         return []
     return _values_at(instance[key], rest)
@@ -517,6 +555,23 @@ def test_every_contract_pattern_field_matches_the_producer_minted_id_shape():
     # on a field none of these records ever populate.
     unexercised = [path for path, count in hits.items() if count == 0]
     assert unexercised == [], f"contract pattern fields never exercised by a real record: {unexercised}"
+
+
+def test_schema_pattern_fields_follows_ref_into_defs():
+    """RED-first, unit-level (round-5 review Minor-1): the round-4 walk
+    stopped at properties/items/oneOf and never followed `$ref`, so a
+    `pattern` living under a `$ref`'d `$defs` entry -- exactly the shape
+    `$defs/value` has in the real contract, `$ref`'d at `reported` and
+    `normalized` -- would be enforced by the validator yet invisible to the
+    completeness walk. Synthetic minimal schema, independent of the real
+    contract's current field set, so this stays RED/GREEN on the walk logic
+    alone regardless of whether the live contract ever grows such a
+    pattern."""
+    schema = {
+        "properties": {"example": {"$ref": "#/$defs/thing"}},
+        "$defs": {"thing": {"properties": {"id": {"pattern": "^x-[0-9]+$"}}}},
+    }
+    assert (("example", "id"), "^x-[0-9]+$") in _schema_pattern_fields(schema)
 
 
 def test_current_step_selection_is_a_step_function_of_the_row_start_dates():

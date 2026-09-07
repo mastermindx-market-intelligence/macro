@@ -53,6 +53,13 @@ COVENANT_OBSERVATION_COLUMNS = [
     "correction_version", "observation_json",
 ]
 
+# Round-5 review MAJOR fix: a row that fails the CURRENT contract is never
+# deleted. It is retained verbatim (its exact canonical bytes) in this
+# sidecar ledger, re-loaded and re-validated on every subsequent run
+# alongside the main ledger, so a later contract fix can recover it and no
+# run's _atomic_write of the main ledger can make it unrecoverable.
+QUARANTINE_COLUMNS = ["observation_id", "logical_observation_id", "reason", "observation_json"]
+
 
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
@@ -127,56 +134,124 @@ def _selected_covenant_manifests(manifests: Sequence[Mapping[str, Any]]) -> list
     return selected
 
 
-def _load_existing_observations(
-    path: Path, schema: Mapping[str, Any],
-) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
-    """Return ``(observations, quarantined)``.
-
-    Ruling Minor-2: a historical row that fails validation against the
-    CURRENT contract is quarantined -- excluded from the compiled set and
-    reported with a reason -- rather than raising and failing the entire
-    compile. The contract is expected to evolve (this very PR changed
-    ``evidence.publication``'s shape and the relationships/version id
-    patterns); a schema edit must never turn every future nightly run into a
-    hard outage over ledger rows written under a prior shape. Malformed
-    on-disk bytes (bad columns, non-JSON, non-canonical encoding) remain a
-    hard failure -- that is disk corruption, not schema drift, and is never
-    silently dropped.
-    """
+def _load_parquet_json_rows(
+    path: Path, columns: Sequence[str], label: str,
+) -> list[tuple[str, dict[str, Any]]]:
+    """Read a parquet ledger of ``{..., "observation_json": <canonical json>}``
+    rows and return ``(raw_json, observation)`` pairs. Malformed on-disk
+    bytes (bad columns, non-JSON, non-canonical encoding) are always a hard
+    failure -- that is disk corruption, not schema drift."""
     if not path.exists():
-        return [], []
+        return []
     frame = pd.read_parquet(path)
-    if frame.columns.tolist() != COVENANT_OBSERVATION_COLUMNS:
-        raise ValueError(
-            "covenant-term ledger columns must exactly equal "
-            f"{COVENANT_OBSERVATION_COLUMNS}; got {frame.columns.tolist()}"
-        )
-    observations: list[dict[str, Any]] = []
-    quarantined: list[dict[str, Any]] = []
+    if frame.columns.tolist() != list(columns):
+        raise ValueError(f"{label} columns must exactly equal {list(columns)}; got {frame.columns.tolist()}")
+    rows: list[tuple[str, dict[str, Any]]] = []
     for index, row in frame.iterrows():
         raw = row["observation_json"]
         if not isinstance(raw, str) or not raw:
-            raise ValueError(f"covenant-term ledger row {index} lacks canonical observation_json")
+            raise ValueError(f"{label} row {index} lacks canonical observation_json")
         try:
             observation = json.loads(raw)
         except json.JSONDecodeError as exc:
-            raise ValueError(f"covenant-term ledger row {index} has malformed observation_json") from exc
+            raise ValueError(f"{label} row {index} has malformed observation_json") from exc
         if not isinstance(observation, Mapping):
-            raise ValueError(f"covenant-term ledger row {index} observation_json must be an object")
+            raise ValueError(f"{label} row {index} observation_json must be an object")
+        rows.append((raw, dict(observation)))
+    return rows
+
+
+def _load_existing_observations(
+    ledger_path: Path, quarantine_path: Path, schema: Mapping[str, Any],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Return ``(observations, quarantined)``.
+
+    Ruling Minor-2 (round-4) + round-5 review MAJOR fix: a historical row
+    that fails validation against the CURRENT contract is quarantined --
+    excluded from the compiled/valid set and reported with a reason --
+    rather than raising and failing the entire compile. The contract is
+    expected to evolve (this very PR changed ``evidence.publication``'s
+    shape, the relationships/version id patterns, and added a required
+    ``period_start``); a schema edit must never turn every future nightly
+    run into a hard outage over ledger rows written under a prior shape.
+
+    Unlike the round-4 shape, a quarantined row is never permanently
+    deleted: it is retained verbatim (its exact canonical bytes) in the
+    sidecar ``quarantine_path`` ledger, so it is re-loaded and re-validated
+    here on every subsequent run alongside the main ledger -- a later
+    contract fix can recover it, and no run's ``_atomic_write`` of the main
+    ledger (an unconditional full-file rewrite) can make a quarantined row
+    unrecoverable. Malformed on-disk bytes in either file remain a hard
+    failure -- that is disk corruption, not schema drift, and is never
+    silently dropped.
+    """
+    combined: list[tuple[str, dict[str, Any]]] = []
+    combined.extend(_load_parquet_json_rows(ledger_path, COVENANT_OBSERVATION_COLUMNS, "covenant-term ledger"))
+    combined.extend(_load_parquet_json_rows(quarantine_path, QUARANTINE_COLUMNS, "covenant-term quarantine"))
+
+    observations: list[dict[str, Any]] = []
+    quarantined: list[dict[str, Any]] = []
+    for raw, observation in combined:
         try:
-            _validate_schema(observation, schema, f"covenant-term ledger row {index}")
+            _validate_schema(observation, schema, "covenant-term ledger row")
         except ValueError as exc:
             quarantined.append({
-                "index": int(index),
                 "observation_id": observation.get("observation_id"),
                 "logical_observation_id": observation.get("logical_observation_id"),
                 "reason": str(exc),
+                "observation_json": raw,
             })
             continue
         if raw != _canonical_json(observation):
-            raise ValueError(f"covenant-term ledger row {index} observation_json is not canonical")
-        observations.append(dict(observation))
+            raise ValueError("covenant-term ledger row observation_json is not canonical")
+        observations.append(observation)
     return observations, quarantined
+
+
+def _find_orphaned_lineage(
+    observations: Sequence[Mapping[str, Any]], quarantined: Sequence[Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    """Round-5 review MAJOR fix: report (never silently write) a correction
+    or supersession whose referenced PARENT observation is not present in
+    the valid/compiled set -- e.g. because that parent was just quarantined
+    (excluded from the current contract) while the child still validates and
+    would otherwise be re-persisted pointing at an id nothing else names."""
+    valid_ids = {str(obs.get("observation_id")) for obs in observations}
+    quarantined_ids = {str(row.get("observation_id")) for row in quarantined}
+    orphaned: list[dict[str, Any]] = []
+    for obs in observations:
+        version = obs.get("version") or {}
+        correction_of = version.get("correction_of")
+        if correction_of and str(correction_of) not in valid_ids:
+            orphaned.append({
+                "observation_id": obs.get("observation_id"),
+                "relation": "version.correction_of",
+                "missing_parent_id": correction_of,
+                "parent_quarantined": str(correction_of) in quarantined_ids,
+            })
+        relationships = obs.get("relationships") or {}
+        for parent_id in relationships.get("supersedes") or []:
+            if str(parent_id) not in valid_ids:
+                orphaned.append({
+                    "observation_id": obs.get("observation_id"),
+                    "relation": "relationships.supersedes",
+                    "missing_parent_id": parent_id,
+                    "parent_quarantined": str(parent_id) in quarantined_ids,
+                })
+    return orphaned
+
+
+def _to_quarantine_frame(quarantined: Sequence[Mapping[str, Any]]) -> pd.DataFrame:
+    rows = [
+        {
+            "observation_id": row.get("observation_id"),
+            "logical_observation_id": row.get("logical_observation_id"),
+            "reason": row.get("reason"),
+            "observation_json": row["observation_json"],
+        }
+        for row in quarantined
+    ]
+    return pd.DataFrame(rows, columns=QUARANTINE_COLUMNS)
 
 
 def _validate_observation_lineage(
@@ -279,6 +354,7 @@ def compile_from_disk(
     root = root or _data_root()
     manifest_path = source_ledger_path(root)
     ledger_path = root / "covenant_term_observations.parquet"
+    quarantine_path = root / "covenant_term_observations.quarantined.parquet"
     manifest_schema = _load_contract("capital_structure_source_manifest.schema.json")
     observation_schema = _load_contract("capital_structure_covenant_term_observation.schema.json")
     all_manifests = read_source_ledger(manifest_path)
@@ -288,7 +364,7 @@ def compile_from_disk(
     validate_manifest_ledger(all_manifests)
 
     manifests = _selected_covenant_manifests(all_manifests)
-    existing, quarantined = _load_existing_observations(ledger_path, observation_schema)
+    existing, quarantined = _load_existing_observations(ledger_path, quarantine_path, observation_schema)
     existing_by_logical: dict[str, list[dict[str, Any]]] = {}
     for obs in existing:
         existing_by_logical.setdefault(str(obs.get("logical_observation_id")), []).append(obs)
@@ -322,7 +398,17 @@ def compile_from_disk(
                 observations.append(obs)
 
     _validate_observation_lineage(observations, all_manifests, observation_schema)
+    # Round-5 review MAJOR fix: a correction/supersession whose PARENT is not
+    # in the valid set (typically because that parent was just quarantined)
+    # is reported here, never silently re-persisted with a dangling pointer.
+    orphaned_lineage = _find_orphaned_lineage(observations, quarantined)
     _atomic_write(_to_frame(observations), ledger_path)
+    # Round-5 review MAJOR fix: the quarantine sidecar is written every run
+    # (even when empty, mirroring the main ledger) so it always reflects the
+    # CURRENT quarantine state -- a row that heals under a later contract
+    # fix disappears from here because it is re-loaded into `observations`
+    # above, never because this file silently dropped it.
+    _atomic_write(_to_quarantine_frame(quarantined), quarantine_path)
     return {
         "status": "ok",
         "schema": COVENANT_TERM_SCHEMA,
@@ -330,11 +416,25 @@ def compile_from_disk(
         "deferred": deferred,
         "observations": len(observations),
         # Ruling Minor-2: rows quarantined this run (excluded from the
-        # compiled set because they fail the CURRENT contract) are counted
-        # and listed with reasons, never silently dropped and never fatal.
+        # compiled/valid set because they fail the CURRENT contract) are
+        # counted and listed with reasons, never silently dropped and never
+        # fatal. Round-5 review MAJOR fix: they are also retained verbatim
+        # on disk in `quarantine_path`, not deleted -- see
+        # `_load_existing_observations`.
         "quarantined": len(quarantined),
-        "quarantined_rows": quarantined,
+        "quarantined_rows": [
+            {
+                "observation_id": row.get("observation_id"),
+                "logical_observation_id": row.get("logical_observation_id"),
+                "reason": row.get("reason"),
+            }
+            for row in quarantined
+        ],
+        # Round-5 review MAJOR fix: never silent -- a correction/supersession
+        # pointing at an id absent from the valid set is named here.
+        "orphaned_lineage": orphaned_lineage,
         "path": str(ledger_path),
+        "quarantine_path": str(quarantine_path),
     }
 
 
