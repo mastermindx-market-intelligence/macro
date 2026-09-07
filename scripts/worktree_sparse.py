@@ -49,9 +49,10 @@ not in it is omitted. The emptiness heuristic is only the non-cone fallback.
 
 Usage:
     python3 scripts/worktree_sparse.py status        # what is / is not materialized
+                                                      # (also reclaims a confirmed-stale lock)
+    python3 scripts/worktree_sparse.py status --no-heal  # same, but never clears a stale lock
     python3 scripts/worktree_sparse.py status --json # machine-readable, for fleet census
-    python3 scripts/worktree_sparse.py status --json --no-heal  # same, but read-only:
-                                                      # never clears a stale lock as a side effect
+    python3 scripts/worktree_sparse.py status --json --no-heal  # census, read-only
     python3 scripts/worktree_sparse.py auto          # new linked worktree: apply profile
     python3 scripts/worktree_sparse.py full          # opt IN to a full checkout
     python3 scripts/worktree_sparse.py sparse        # re-apply the configured profile
@@ -63,6 +64,7 @@ Exit codes: 0 = success · 1 = failure (not a git worktree, git error, bad dir).
 from __future__ import annotations
 
 import json
+import os
 import platform
 import shutil
 import subprocess
@@ -232,23 +234,47 @@ def _lock_age_desc_from_seconds(age_s: float | None) -> str:
     return f"{age_s / 60:.0f}m old"
 
 
+# One non-recursive lsof call on a busy host can take tens of seconds; 60s is
+# the META-CEO B r3 floor. Any timeout or other surprise => None (fail closed).
+LSOF_TIMEOUT_S = 60
+
+
+def _path_under(path: str, root: Path) -> bool:
+    """True when ``path`` is ``root`` or a descendant — prefix match that
+    refuses a sibling like ``/tmp/wt-other`` against root ``/tmp/wt``."""
+    if not path:
+        return False
+    try:
+        root_s = str(root.resolve())
+    except OSError:
+        root_s = str(root)
+    cand = path.rstrip("/")
+    root_s = root_s.rstrip("/")
+    return cand == root_s or cand.startswith(root_s + "/")
+
+
 def _run_lsof(args: list[str]) -> str | None:
     """Run ``lsof`` with ``args``; return stdout, or None when the call could
-    not be trusted at all (missing binary, hung, or any other surprise).
+    not be trusted at all (missing binary, hung, timeout, or any other surprise).
 
     ``lsof`` exits 1 when it simply found no matching processes — that is a
-    trustworthy (empty) answer, not a failure, so only other exit codes and
-    outright exceptions map to None.
+    trustworthy (empty) answer ONLY when stderr is also empty. Any stderr
+    text (``WARNING``, ``can't stat``) means the probe aborted or errored
+    mid-walk and must be treated as unconfirmed (None), never as "nobody
+    holds it". Other exit codes and outright exceptions also map to None.
     """
     try:
         out = subprocess.run(
-            ["lsof", *args], capture_output=True, text=True, timeout=10, check=False,
+            ["lsof", *args],
+            capture_output=True, text=True, timeout=LSOF_TIMEOUT_S, check=False,
         )
     except Exception:  # noqa: BLE001 — lsof missing/hung/anything else
         return None
-    if out.returncode not in (0, 1):
-        return None
-    return out.stdout
+    if out.returncode == 0:
+        return out.stdout
+    if out.returncode == 1 and not (out.stderr or "").strip():
+        return out.stdout
+    return None
 
 
 def _parse_lsof_pn(text: str) -> list[dict]:
@@ -272,10 +298,13 @@ def _parse_lsof_pn(text: str) -> list[dict]:
 
 
 def gather_live_processes(
-    worktree_root: Path, git_dir: Path | None, *, proc_root: Path = Path("/proc"),
+    worktree_root: Path, git_dir: Path | None, *,
+    lock_paths: list[Path] | None = None,
+    proc_root: Path = Path("/proc"),
 ) -> list[dict] | None:
     """Best-effort snapshot of live processes holding ``worktree_root`` (as
-    cwd) or ``git_dir`` (as any open file), for ``lock_is_stale`` to consume.
+    cwd) or ``git_dir`` / ``lock_paths`` (as a specific open file), for
+    ``lock_is_stale`` to consume.
 
     Returns ``[{"pid": int, "cwd": str|None, "open_files": [str, ...]}, ...]``.
     Returns ``None`` when the probe itself could not be trusted — no platform
@@ -287,35 +316,44 @@ def gather_live_processes(
     confirmed-empty (or confirmed-partial) result while the other half — the
     one that might have found the actual holder — was never really checked.
 
-    macOS: ``lsof -a -d cwd -F pn +D <worktree_root>`` (processes whose cwd is
-    under the worktree — ``+D`` recurses into subdirectories, so a process
-    whose cwd is a subdirectory of the worktree is caught too) plus
-    ``lsof -F pn +D <git_dir>`` (any open file under the git-dir — catches a
-    process with the lock file open even when its cwd is elsewhere, and also
-    covers a live git process still touching the lock itself). Both checks
-    must succeed for the result to be trusted; either failing makes the whole
-    probe unconfirmed. Linux: ``/proc/*/cwd`` symlinks for the worktree scope,
-    plus ``/proc/*/fd/*`` symlinks for the git-dir scope (the same two-check
-    shape as macOS, so the "gitdir open, cwd elsewhere" case is covered on
-    both platforms) — ``proc_root`` is injectable so tests can point this at a
-    synthetic tree without a real Linux host.
+    macOS (META-CEO B r3): NEVER ``lsof +D`` (a recursive directory scan on a
+    full checkout timed out at 10s and made this probe permanently
+    unconfirmed). One non-recursive ``lsof -F pn -d cwd`` lists every
+    process cwd; Python keeps only paths under ``worktree_root`` (and drops
+    this process's own pid — the healer is not a lock holder). Plus one
+    ``lsof -F pn`` on the specific lock file(s) and the git-dir path (no
+    ``+D``). Timeout ``LSOF_TIMEOUT_S`` (60s); any timeout or error => None.
+    Linux: ``/proc/*/cwd`` symlinks for the worktree scope, plus
+    ``/proc/*/fd/*`` symlinks for the git-dir scope (the same two-check
+    shape as macOS) — ``proc_root`` is injectable so tests can point this at
+    a synthetic tree without a real Linux host.
     """
     system = platform.system()
     if system == "Darwin":
         by_pid: dict[int, dict] = {}
-        cwd_out = _run_lsof(["-a", "-d", "cwd", "-F", "pn", "+D", str(worktree_root)])
+        self_pid = os.getpid()
+        cwd_out = _run_lsof(["-F", "pn", "-d", "cwd"])
         if cwd_out is None:
             return None  # cwd probe untrustworthy — cannot confirm liveness at all
         for rec in _parse_lsof_pn(cwd_out):
+            if rec["pid"] == self_pid:
+                continue  # the healer itself is not a live holder of the lock
+            cwd_path = rec["paths"][0] if rec["paths"] else ""
+            if not _path_under(cwd_path, worktree_root):
+                continue
             entry = by_pid.setdefault(
                 rec["pid"], {"pid": rec["pid"], "cwd": None, "open_files": []},
             )
-            if rec["paths"]:
-                entry["cwd"] = rec["paths"][0]
+            entry["cwd"] = cwd_path
+        file_targets: list[str] = []
+        if lock_paths:
+            file_targets.extend(str(p) for p in lock_paths)
         if git_dir is not None:
-            file_out = _run_lsof(["-F", "pn", "+D", str(git_dir)])
+            file_targets.append(str(git_dir))
+        if file_targets:
+            file_out = _run_lsof(["-F", "pn", *file_targets])
             if file_out is None:
-                return None  # git-dir probe untrustworthy — same fail-closed rule
+                return None  # file probe untrustworthy — same fail-closed rule
             for rec in _parse_lsof_pn(file_out):
                 entry = by_pid.setdefault(
                     rec["pid"], {"pid": rec["pid"], "cwd": None, "open_files": []},
@@ -403,11 +441,17 @@ def lock_is_stale(
     return len(procs) == 0
 
 
-def _clear_stale_locks(root: Path = ROOT) -> tuple[list[dict], list[Path]]:
+def _clear_stale_locks(
+    root: Path = ROOT, *, annotation_file=None,
+) -> tuple[list[dict], list[Path]]:
     """Remove any ``index.lock``/``info/sparse-checkout.lock`` in this
     worktree's git-dir that ``lock_is_stale`` confirms is stale, printing a
     line-starting ``::warning`` naming the lock, its age, and the tree for
     each one removed.
+
+    ``annotation_file`` defaults to stdout so GitHub annotations start the
+    line. ``status --json`` (and any ``--json`` mode) passes ``sys.stderr``
+    so stdout stays pure JSON.
 
     Returns ``(removed, still_locked)``:
       * ``removed`` — ``[{"path": str, "age_s": float | None}, ...]`` for
@@ -416,6 +460,7 @@ def _clear_stale_locks(root: Path = ROOT) -> tuple[list[dict], list[Path]]:
         stale (live holder, unconfirmed probe, or the removal itself failed)
         — callers refuse while this is non-empty.
     """
+    warn_file = sys.stdout if annotation_file is None else annotation_file
     candidates = [index_lock_path(root), sparse_checkout_lock_path(root)]
     locks = [lock for lock in candidates if lock is not None and lock.exists()]
     removed: list[dict] = []
@@ -437,19 +482,27 @@ def _clear_stale_locks(root: Path = ROOT) -> tuple[list[dict], list[Path]]:
         return removed, still_locked
     git_dir = Path(git_dir_raw)
     now = time.time()
+    old_enough: list[tuple[Path, float]] = []
     for lock in locks:
         try:
-            age_s: float | None = max(0.0, now - lock.stat().st_mtime)
+            age_s = max(0.0, now - lock.stat().st_mtime)
         except OSError:
-            age_s = None
+            still_locked.append(lock)
+            continue
         # Skip the (real, subprocess-shelling) live-process probe entirely for
         # a lock that is not old enough to qualify regardless — the common
         # case (a lock created moments ago by the very operation about to
         # run) never needs to shell out to `lsof`/`/proc`.
-        if age_s is None or age_s < STALE_LOCK_MIN_AGE_S:
+        if age_s < STALE_LOCK_MIN_AGE_S:
             still_locked.append(lock)
             continue
-        procs = gather_live_processes(root, git_dir)
+        old_enough.append((lock, age_s))
+    if not old_enough:
+        return removed, still_locked
+    procs = gather_live_processes(
+        root, git_dir, lock_paths=[lock for lock, _age in old_enough],
+    )
+    for lock, age_s in old_enough:
         if lock_is_stale(lock, now, procs):
             try:
                 lock.unlink()
@@ -463,7 +516,7 @@ def _clear_stale_locks(root: Path = ROOT) -> tuple[list[dict], list[Path]]:
                 f"{STALE_LOCK_MIN_AGE_S}s) with no live process holding {root} "
                 f"or its git-dir as cwd or an open file — removed as stale "
                 f"before running `git sparse-checkout`",
-                flush=True,
+                file=warn_file, flush=True,
             )
         else:
             still_locked.append(lock)
@@ -1384,7 +1437,9 @@ def clean_stray(root: Path = ROOT, force: bool = False) -> int:
     return 0
 
 
-def status(root: Path = ROOT) -> int:
+def status(root: Path = ROOT, heal: bool = True) -> int:
+    if heal:
+        _clear_stale_locks(root)
     absent = missing_dirs(root)
     if not absent:
         print("worktree-sparse: FULL checkout — every tracked directory is present")
@@ -1438,7 +1493,7 @@ def status_json(root: Path = ROOT, heal: bool = True) -> dict:
     """
     missing = missing_dirs(root)
     if heal:
-        removed, _still_locked = _clear_stale_locks(root)
+        removed, _still_locked = _clear_stale_locks(root, annotation_file=sys.stderr)
         removed_paths = [r["path"] for r in removed]
     else:
         removed_paths = []
@@ -1459,11 +1514,11 @@ def status_json(root: Path = ROOT, heal: bool = True) -> dict:
 def main(argv: list[str]) -> int:
     cmd = argv[0] if argv else "status"
     if cmd == "status":
+        heal = "--no-heal" not in argv[1:]
         if "--json" in argv[1:]:
-            heal = "--no-heal" not in argv[1:]
             print(json.dumps(status_json(heal=heal)))
             return 0
-        return status()
+        return status(heal=heal)
     if cmd == "auto":
         return auto_profile()
     if cmd == "full":

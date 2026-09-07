@@ -230,6 +230,8 @@ def load_profile(repo_root: Path) -> dict:
 # (census 2026-09-06: 97/267 session worktrees found FULL instead of sparse,
 # root-caused to a lock refusal that got swallowed upstream).
 STALE_LOCK_MIN_AGE_S = 600
+# META-CEO B r3: one non-recursive lsof; 60s floor; timeout/error => None.
+LSOF_TIMEOUT_S = 60
 
 
 def _lock_candidates(dest: Path) -> list[Path]:
@@ -248,21 +250,41 @@ def _lock_candidates(dest: Path) -> list[Path]:
     return [git_dir / "index.lock", git_dir / "info" / "sparse-checkout.lock"]
 
 
+def _path_under(path: str, root: Path) -> bool:
+    """True when ``path`` is ``root`` or a descendant — prefix match that
+    refuses a sibling like ``/tmp/wt-other`` against root ``/tmp/wt``.
+    Duplicated from scripts/worktree_sparse.py for the same import-
+    independence reason as ``load_profile``."""
+    if not path:
+        return False
+    try:
+        root_s = str(root.resolve())
+    except OSError:
+        root_s = str(root)
+    cand = path.rstrip("/")
+    root_s = root_s.rstrip("/")
+    return cand == root_s or cand.startswith(root_s + "/")
+
+
 def _run_lsof(args: list[str]) -> str | None:
     """Best-effort ``lsof`` call; None when it could not be trusted at all
-    (missing binary, hung, or any other surprise). Exit 1 (no matches) is a
-    trustworthy empty answer, not a failure — duplicated from
+    (missing binary, hung, timeout, or any other surprise). Exit 1 (no
+    matches) is a trustworthy empty answer ONLY when stderr is also empty —
+    any stderr text (WARNING, can't stat) is unconfirmed. Duplicated from
     scripts/worktree_sparse.py deliberately: this hook must not depend on the
     repo's import surface being intact (see ``load_profile`` above)."""
     try:
         out = subprocess.run(
-            ["lsof", *args], capture_output=True, text=True, timeout=10, check=False,
+            ["lsof", *args],
+            capture_output=True, text=True, timeout=LSOF_TIMEOUT_S, check=False,
         )
     except Exception:  # noqa: BLE001
         return None
-    if out.returncode not in (0, 1):
-        return None
-    return out.stdout
+    if out.returncode == 0:
+        return out.stdout
+    if out.returncode == 1 and not (out.stderr or "").strip():
+        return out.stdout
+    return None
 
 
 def _parse_lsof_pn(text: str) -> list[tuple[int, list[str]]]:
@@ -285,8 +307,10 @@ def _parse_lsof_pn(text: str) -> list[tuple[int, list[str]]]:
     return records
 
 
-def _live_pids_holding(worktree_root: Path, git_dir: Path) -> set[int] | None:
-    """PIDs with ``worktree_root`` as cwd or any open file under ``git_dir``.
+def _live_pids_holding(
+    worktree_root: Path, git_dir: Path, lock_paths: list[Path] | None = None,
+) -> set[int] | None:
+    """PIDs with ``worktree_root`` as cwd or the lock / git-dir open.
 
     None when the probe itself could not be trusted — no lsof on this
     platform, or EITHER required call failed (not just both) — the caller
@@ -298,17 +322,30 @@ def _live_pids_holding(worktree_root: Path, git_dir: Path) -> set[int] | None:
     never really checked (mirrors scripts.worktree_sparse.gather_live_processes,
     duplicated here for the same import-independence reason as
     ``load_profile``).
+
+    META-CEO B r3: NEVER ``lsof +D``. One ``lsof -F pn -d cwd`` filtered in
+    Python by worktree prefix (this process's own pid dropped — the healer
+    is not a lock holder), plus one ``lsof -F pn`` on the lock file(s) and
+    git-dir path. Timeout ``LSOF_TIMEOUT_S`` (60s); any timeout or error
+    => None.
     """
     if platform.system() != "Darwin":
         return None  # this host is macOS; no Linux /proc fallback needed here
     pids: set[int] = set()
-    cwd_out = _run_lsof(["-a", "-d", "cwd", "-F", "pn", "+D", str(worktree_root)])
+    self_pid = os.getpid()
+    cwd_out = _run_lsof(["-F", "pn", "-d", "cwd"])
     if cwd_out is None:
         return None  # cwd probe untrustworthy — cannot confirm liveness at all
-    pids.update(pid for pid, _paths in _parse_lsof_pn(cwd_out))
-    file_out = _run_lsof(["-F", "pn", "+D", str(git_dir)])
+    for pid, paths in _parse_lsof_pn(cwd_out):
+        if pid == self_pid:
+            continue
+        if any(_path_under(p, worktree_root) for p in paths):
+            pids.add(pid)
+    file_targets = [str(p) for p in (lock_paths or [])]
+    file_targets.append(str(git_dir))
+    file_out = _run_lsof(["-F", "pn", *file_targets])
     if file_out is None:
-        return None  # git-dir probe untrustworthy — same fail-closed rule
+        return None  # file probe untrustworthy — same fail-closed rule
     pids.update(pid for pid, _paths in _parse_lsof_pn(file_out))
     return pids
 
@@ -340,7 +377,10 @@ def _clear_stale_locks(dest: Path) -> tuple[list[str], list[Path]]:
         if age_s < STALE_LOCK_MIN_AGE_S:
             still_locked.append(lock)
             continue
-        pids = _live_pids_holding(dest, git_dir) if git_dir is not None else None
+        pids = (
+            _live_pids_holding(dest, git_dir, lock_paths=locks)
+            if git_dir is not None else None
+        )
         if pids is None or pids:
             still_locked.append(lock)
             continue

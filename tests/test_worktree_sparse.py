@@ -988,6 +988,33 @@ def test_hook_and_script_probe_fail_closed_identically_on_partial_lsof(monkeypat
         assert hook_result is None, (
             f"{label}: hook must fail closed (None), got {hook_result}")
 
+    # Extended to the new non-recursive probe (META-CEO B r3 MAJOR-1/2):
+    # timeout, exit-1-with-stderr, and never `+D` must also match in both copies.
+    assert hook.LSOF_TIMEOUT_S == WS.LSOF_TIMEOUT_S == 60, (
+        "hook and script must share the 60s lsof timeout")
+
+    seen_script: list[list[str]] = []
+    seen_hook: list[list[str]] = []
+
+    def capture_script(args):
+        seen_script.append(list(args))
+        return ""
+
+    def capture_hook(args):
+        seen_hook.append(list(args))
+        return ""
+
+    monkeypatch.setattr(WS, "_run_lsof", capture_script)
+    monkeypatch.setattr(hook, "_run_lsof", capture_hook)
+    assert WS.gather_live_processes(worktree_root, git_dir) is not None
+    assert hook._live_pids_holding(worktree_root, git_dir) is not None
+    for args in (*seen_script, *seen_hook):
+        assert "+D" not in args, f"new probe must never recurse with +D: {args}"
+    assert any("-d" in a and "cwd" in a for a in seen_script)
+    assert any("-d" in a and "cwd" in a for a in seen_hook)
+    assert any(str(git_dir) in a and "-d" not in a for a in seen_script)
+    assert any(str(git_dir) in a and "-d" not in a for a in seen_hook)
+
 
 # ── Minor-2 (ruling r2): a failed lock probe must fail closed, never proceed
 #    with no lock check at all ────────────────────────────────────────────
@@ -1020,3 +1047,237 @@ def test_hook_lock_probe_failure_refuses_with_error_never_proceeds_unchecked(
     assert any(ln.startswith("::error") for ln in error_lines), (
         f"::error annotation does not start its line:\n{blob}")
     assert "lock-probe-failed" in blob
+
+
+# ── META-CEO B r3 (2026-09-07) — non-recursive lsof probe + json stdout ────
+# MAJOR-1: never `lsof +D` on a checkout; one `lsof -F pn -d cwd` filtered by
+# worktree prefix, plus one `lsof -F pn` on the lock file and git-dir path;
+# timeout 60s; any timeout/error => None (fail closed).
+# MAJOR-2: lsof exit 1 is an empty answer ONLY when stderr is empty.
+# MAJOR-3: `--json` annotations go to stderr so stdout is parseable JSON.
+# Minor-1: `--no-heal` is honored on human `status`, not only `--json`.
+
+
+def test_darwin_probe_never_uses_recursive_plus_d(monkeypatch, tmp_path):
+    """RED-first (MAJOR-1): the Darwin probe must never pass `+D` to lsof."""
+    seen: list[list[str]] = []
+
+    def capture(args):
+        seen.append(list(args))
+        return ""
+
+    monkeypatch.setattr(WS.platform, "system", lambda: "Darwin")
+    monkeypatch.setattr(WS, "_run_lsof", capture)
+    worktree = tmp_path / "wt"
+    worktree.mkdir()
+    gitdir = tmp_path / "gitdir"
+    gitdir.mkdir()
+    lock = gitdir / "index.lock"
+    lock.write_bytes(b"")
+
+    result = WS.gather_live_processes(worktree, gitdir, lock_paths=[lock])
+
+    assert result is not None
+    assert seen, "probe must invoke lsof"
+    for args in seen:
+        assert "+D" not in args, f"recursive +D is forbidden: {args}"
+        assert str(worktree) not in args, (
+            f"cwd scan must not take the worktree path (filter in Python): {args}")
+    assert any("-d" in a and "cwd" in a for a in seen), seen
+    assert any(str(lock) in a and str(gitdir) in a for a in seen), seen
+
+
+def test_darwin_cwd_probe_filters_by_worktree_prefix(monkeypatch, tmp_path):
+    """A global cwd scan must keep only processes whose cwd is the worktree
+    or a descendant — not a sibling that merely shares a string prefix."""
+    worktree = tmp_path / "wt"
+    worktree.mkdir()
+    (worktree / "sub").mkdir()
+    sibling = tmp_path / "wt-other"
+    sibling.mkdir()
+    elsewhere = tmp_path / "elsewhere"
+    elsewhere.mkdir()
+    gitdir = tmp_path / "gitdir"
+    gitdir.mkdir()
+
+    def fake_lsof(args):
+        if "cwd" in args:
+            return (
+                f"p111\nn{worktree}\n"
+                f"p222\nn{worktree / 'sub'}\n"
+                f"p333\nn{sibling}\n"
+                f"p444\nn{elsewhere}\n"
+            )
+        return ""
+
+    monkeypatch.setattr(WS.platform, "system", lambda: "Darwin")
+    monkeypatch.setattr(WS, "_run_lsof", fake_lsof)
+
+    procs = WS.gather_live_processes(worktree, gitdir)
+    pids = {p["pid"] for p in procs}
+
+    assert 111 in pids and 222 in pids, f"missed worktree-cwd holders: {procs}"
+    assert 333 not in pids, f"sibling prefix must not match: {procs}"
+    assert 444 not in pids, f"unrelated cwd must not match: {procs}"
+
+
+def test_darwin_file_probe_detects_lock_holder_with_cwd_elsewhere(monkeypatch, tmp_path):
+    """The specific-file lsof (no +D) must still see a process that has the
+    lock or git-dir open even when its cwd is elsewhere."""
+    worktree = tmp_path / "wt"
+    worktree.mkdir()
+    gitdir = tmp_path / "gitdir"
+    gitdir.mkdir()
+    lock = gitdir / "index.lock"
+    lock.write_bytes(b"")
+
+    def fake_lsof(args):
+        if "cwd" in args:
+            return f"p999\nn{tmp_path / 'elsewhere'}\n"
+        return f"p888\nn{lock}\n"
+
+    monkeypatch.setattr(WS.platform, "system", lambda: "Darwin")
+    monkeypatch.setattr(WS, "_run_lsof", fake_lsof)
+
+    procs = WS.gather_live_processes(worktree, gitdir, lock_paths=[lock])
+    pids = {p["pid"] for p in procs}
+    assert 888 in pids, f"missed lock-file holder: {procs}"
+    assert 999 not in pids, f"unrelated cwd leaked in: {procs}"
+
+
+def test_lsof_that_sleeps_past_timeout_yields_none_and_keeps_the_lock(
+    repo, monkeypatch, tmp_path,
+):
+    """RED-first (MAJOR-1 ruling): a fake lsof that sleeps past the timeout
+    yields None and the lock is kept. Production timeout is 60s; the test
+    pins the same constant to 0.25s so the sleep is observable without a
+    minute-long wait."""
+    fake_dir = tmp_path / "fakelsof"
+    fake_dir.mkdir()
+    fake = fake_dir / "lsof"
+    fake.write_text("#!/bin/sh\nsleep 5\nexit 0\n", encoding="utf-8")
+    fake.chmod(0o755)
+    monkeypatch.setenv("PATH", f"{fake_dir}{os.pathsep}{os.environ.get('PATH', '')}")
+    monkeypatch.setattr(WS, "LSOF_TIMEOUT_S", 0.25)
+    monkeypatch.setattr(WS.platform, "system", lambda: "Darwin")
+
+    gitdir = _real_git_dir(repo)
+    lock = gitdir / "index.lock"
+    lock.write_bytes(b"")
+    _backdate(lock, WS.STALE_LOCK_MIN_AGE_S + 60)
+
+    t0 = time.monotonic()
+    removed, still_locked = WS._clear_stale_locks(repo)
+    elapsed = time.monotonic() - t0
+
+    assert removed == [], "a timed-out probe must fail closed, never unlink"
+    assert still_locked == [lock]
+    assert lock.exists()
+    assert elapsed < 3.0, (
+        f"timeout must fire well under the 5s fake-lsof sleep, got {elapsed:.1f}s")
+
+
+def test_run_lsof_exit_1_empty_stderr_is_empty_answer(monkeypatch):
+    """RED-first (MAJOR-2): lsof exit 1 with empty stderr is a trustworthy
+    empty match set."""
+    class Fake:
+        returncode = 1
+        stdout = ""
+        stderr = ""
+
+    monkeypatch.setattr(subprocess, "run", lambda *a, **k: Fake())
+    assert WS._run_lsof(["-F", "pn"]) == ""
+
+
+def test_run_lsof_exit_1_with_stderr_is_untrusted(monkeypatch):
+    """RED-first (MAJOR-2): lsof exit 1 with any stderr text (WARNING, can't
+    stat) is untrusted — None, never an empty answer."""
+    class Fake:
+        returncode = 1
+        stdout = ""
+        stderr = "lsof: WARNING: can't stat(/tmp/definitely-missing-6971)\n"
+
+    monkeypatch.setattr(subprocess, "run", lambda *a, **k: Fake())
+    assert WS._run_lsof(["-F", "pn"]) is None
+
+
+def test_hook_run_lsof_exit_1_empty_and_stderr_match_the_script(monkeypatch):
+    """Both copies must apply MAJOR-2 identically."""
+    hook = _load_hook()
+
+    class Empty:
+        returncode = 1
+        stdout = ""
+        stderr = ""
+
+    class Warned:
+        returncode = 1
+        stdout = ""
+        stderr = "lsof: WARNING: can't stat(/tmp/x)\n"
+
+    monkeypatch.setattr(subprocess, "run", lambda *a, **k: Empty())
+    assert WS._run_lsof(["-F", "pn"]) == ""
+    assert hook._run_lsof(["-F", "pn"]) == ""
+
+    monkeypatch.setattr(subprocess, "run", lambda *a, **k: Warned())
+    assert WS._run_lsof(["-F", "pn"]) is None
+    assert hook._run_lsof(["-F", "pn"]) is None
+
+
+def test_status_json_stdout_is_pure_json_after_stale_lock_removal(
+    repo, monkeypatch, capsys,
+):
+    """RED-first (MAJOR-3): after a stale-lock removal in `--json` mode,
+    stdout is parseable JSON and the `::warning` lands on stderr."""
+    gitdir = _real_git_dir(repo)
+    lock = gitdir / "index.lock"
+    lock.write_bytes(b"")
+    _backdate(lock, WS.STALE_LOCK_MIN_AGE_S + 30)
+    monkeypatch.setattr(WS, "gather_live_processes", lambda *a, **k: [])
+    real_status_json = WS.status_json
+    monkeypatch.setattr(
+        WS, "status_json", lambda heal=True: real_status_json(repo, heal=heal),
+    )
+
+    rc = WS.main(["status", "--json"])
+    captured = capsys.readouterr()
+
+    assert rc == 0
+    payload = json.loads(captured.out)
+    assert payload["stale_locks_removed"] == [str(lock)]
+    assert "::warning" not in captured.out
+    assert any(ln.startswith("::warning") for ln in captured.err.splitlines())
+    assert not lock.exists()
+
+
+def test_stale_lock_warning_stays_on_stdout_outside_json(repo, monkeypatch, capsys):
+    """Outside `--json`, the same `::warning` stays on stdout at line start."""
+    gitdir = _real_git_dir(repo)
+    lock = gitdir / "index.lock"
+    lock.write_bytes(b"")
+    _backdate(lock, WS.STALE_LOCK_MIN_AGE_S + 30)
+    monkeypatch.setattr(WS, "gather_live_processes", lambda *a, **k: [])
+
+    WS._clear_stale_locks(repo)
+    captured = capsys.readouterr()
+    assert any(ln.startswith("::warning") for ln in captured.out.splitlines())
+    assert "::warning" not in captured.err
+
+
+def test_main_status_no_heal_without_json_skips_lock_clearing(repo, monkeypatch, capsys):
+    """Minor-1 (r2 review): `status --no-heal` without `--json` must not be
+    silently ignored — it skips the stale-lock side effect, same as
+    `status --json --no-heal`."""
+    gitdir = _real_git_dir(repo)
+    lock = gitdir / "index.lock"
+    lock.write_bytes(b"")
+    _backdate(lock, WS.STALE_LOCK_MIN_AGE_S + 30)
+    monkeypatch.setattr(WS, "gather_live_processes", lambda *a, **k: [])
+    real_status = WS.status
+    monkeypatch.setattr(WS, "status", lambda heal=True: real_status(repo, heal=heal))
+
+    assert WS.main(["status", "--no-heal"]) == 0
+    assert lock.exists(), "status --no-heal must stay read-only even without --json"
+
+    assert WS.main(["status"]) == 0
+    assert not lock.exists(), "bare status heals, matching status --json"
