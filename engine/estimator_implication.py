@@ -170,8 +170,8 @@ def compose_synthetic_control_implication(root: Path = REPO_ROOT, *, ledger=None
     point_value = arm["mean"]
     point_estimate = {
         "code": "sc_nnls_caar_0_5_mean",
-        "label": {"en": "Synthetic-control CAAR[0,5], sc_nnls arm, event-weighted mean",
-                   "zh": "合成对照 CAAR[0,5]，sc_nnls 组，事件加权均值"},
+        "label": {"en": "Synthetic-control CAAR[0,5], NNLS-weighted arm, event-weighted mean",
+                   "zh": "合成对照 CAAR[0,5]，NNLS 加权组，事件加权均值"},
         "value": point_value,
         "unit": "return_fraction",
         "source": "#/families/sp_pure_adds/arms/sc_nnls/real/0_5/mean",
@@ -189,27 +189,59 @@ def compose_synthetic_control_implication(root: Path = REPO_ROOT, *, ledger=None
 
     null_reasons = []
 
-    # Genuine EN/ZH parity: each detail is a real translation of that code's
-    # gate_eval reason (pinned to the SC_RESULT_SHA256 artifact), never a
-    # pointer to an internal artifact key.
-    zh_detail = {
+    # Genuine EN/ZH parity: each detail is a plain-language paraphrase of that
+    # code's gate_eval reason (pinned to the SC_RESULT_SHA256 artifact), never
+    # a raw pointer to an internal artifact key AND never the artifact's own
+    # reason text quoted verbatim (that text uses raw engine slugs —
+    # sc_nnls/sp_pure_adds/phase3_start/matched_k — as identifiers, which are
+    # internal identifiers, not plain words, once they land in a user-facing
+    # string; round-5 review, MAJOR). Both dicts name the same real values
+    # (means, t-stats, p-value) the artifact carries, just in plain words.
+    en_detail = {
         "PC1_positive_control_survives": (
-            "sc_nnls 标普纯增组 CAAR[0,5]=3.015%（事件加权）／4.907%（月度加权），"
-            "月度聚类 NW t=8.291（要求均值大于零且 t 大于 2）"
+            "S&P pure-adds synthetic-control (NNLS) arm: CAAR[0,5]=3.015% "
+            "event-weighted / 4.907% month-weighted, monthly-clustered NW "
+            "t=8.291 (requires mean greater than zero and t greater than 2)"
         ),
         "PC2_estimators_unbiased": (
-            "sp_pure_adds/matched_k 均值=0.190% t=4.316 未通过；"
-            "sp_pure_adds/sc_nnls 均值=0.197% t=4.535 未通过；"
-            "phase3_start/matched_k 均值=0.143% t=15.429 未通过；"
-            "phase3_start/sc_nnls 均值=0.137% t=15.431 未通过"
+            "S&P pure-adds placebo family, matched-K arm: mean=0.190% "
+            "t=4.316 fails; S&P pure-adds, synthetic-control (NNLS) arm: "
+            "mean=0.197% t=4.535 fails; phase-3-start placebo family, "
+            "matched-K arm: mean=0.143% t=15.429 fails; phase-3-start "
+            "placebo family, synthetic-control (NNLS) arm: mean=0.137% "
+            "t=15.431 fails (requires |mean| under 0.3% and |t| under 2 on "
+            "both placebo families)"
+        ),
+        "PC3_sc_not_noisier": (
+            "Synthetic-control (NNLS) placebo standard deviation=0.614% vs "
+            "the SPY-CAR incumbent placebo standard deviation=0.650% "
+            "(requires the synthetic-control standard deviation not to "
+            "exceed the incumbent's)"
+        ),
+        "F1_falsifier_holds": (
+            "Phase-3 synthetic-control (NNLS) arm: CAAR[0,20]=0.496%, "
+            "monthly-clustered NW t=1.662, empirical p=0.731 (requires |t| "
+            "under 2 and p over 0.05)"
+        ),
+    }
+    zh_detail = {
+        "PC1_positive_control_survives": (
+            "标普纯增族合成对照（NNLS）组 CAAR[0,5]=3.015%（事件加权）／"
+            "4.907%（月度加权），月度聚类 NW t=8.291（要求均值大于零且 t 大于 2）"
+        ),
+        "PC2_estimators_unbiased": (
+            "标普纯增安慰剂族，匹配-K 组：均值=0.190% t=4.316 未通过；"
+            "标普纯增安慰剂族，合成对照（NNLS）组：均值=0.197% t=4.535 未通过；"
+            "第三阶段起点安慰剂族，匹配-K 组：均值=0.143% t=15.429 未通过；"
+            "第三阶段起点安慰剂族，合成对照（NNLS）组：均值=0.137% t=15.431 未通过"
             "（要求两族的 |均值| 均小于 0.3% 且 |t| 均小于 2）"
         ),
         "PC3_sc_not_noisier": (
-            "sc_nnls 安慰剂标准差=0.614%，SPY-CAR 安慰剂标准差=0.650%"
+            "合成对照（NNLS）安慰剂标准差=0.614%，SPY-CAR 基准安慰剂标准差=0.650%"
             "（要求合成对照标准差不高于基准）"
         ),
         "F1_falsifier_holds": (
-            "phase3 sc_nnls CAAR[0,20]=0.496%，月度聚类 NW t=1.662，"
+            "第三阶段合成对照（NNLS）组 CAAR[0,20]=0.496%，月度聚类 NW t=1.662，"
             "经验 p 值=0.731（要求 |t| 小于 2 且 p 大于 0.05）"
         ),
     }
@@ -221,32 +253,35 @@ def compose_synthetic_control_implication(root: Path = REPO_ROOT, *, ledger=None
         ("F1_falsifier_holds", "Falsifier window holds", "证伪窗口成立"),
     ]:
         gate_prefix = code.split("_")[0]
-        en_reason = data["gate_eval"]["reasons"].get(gate_prefix)
-        if en_reason is None:
+        reason_recorded = data["gate_eval"]["reasons"].get(gate_prefix) is not None
+        if reason_recorded:
+            en_text = en_detail[code]
+        else:
             # No cross-gate fallback: substituting another gate's prose here
             # (e.g. PC2's) would silently mislabel this diagnostic's caption
             # and break EN/ZH parity, since zh_detail is always this code's own
             # translation. An explicit missing-reason note is honest instead.
-            en_reason = f"no {gate_prefix} reason recorded in gate_eval for this artifact"
+            en_text = f"no {gate_prefix} reason recorded in gate_eval for this artifact"
         diagnostics.append({
             "code": code,
             "label": {"en": label_en, "zh": label_zh},
             "passed": gates.get(code),
-            "detail": {"en": en_reason,
+            "detail": {"en": en_text,
                        "zh": zh_detail[code]},
             "source": f"#/gate_eval/gates/{code}",
         })
 
     limitations = [{
-        "en": "PC2 (estimators unbiased) FAILS on both placebo families "
-              "(sp_pure_adds and phase3_start, matched_k and sc_nnls arms all "
-              "|t|>2 on a placebo where the true effect should be zero); the "
-              "estimator is diagnostically biased and this payload is marked "
-              "DIAGNOSTIC_FAILED accordingly.",
-        "zh": "PC2（估计量无偏）在两个安慰剂族上均未通过（sp_pure_adds 与 "
-              "phase3_start，matched_k 与 sc_nnls 组的 |t| 均大于 2，而安慰剂的"
-              "真实效应本应为零）；该估计量存在诊断性偏差，本载荷相应标记为 "
-              "DIAGNOSTIC_FAILED。",
+        "en": "PC2 (estimators unbiased) fails on both placebo families "
+              "(the S&P pure-adds and phase-3-start families, on both the "
+              "matched-K and synthetic-control (NNLS) arms, all with |t| "
+              "over 2 on a placebo where the true effect should be zero); "
+              "the estimator is diagnostically biased and this payload is "
+              "marked as a diagnostic failure accordingly.",
+        "zh": "PC2（估计量无偏）在两个安慰剂族上均未通过（标普纯增族与第三阶段"
+              "起点族，匹配-K 组与合成对照（NNLS）组的 |t| 均大于 2，而安慰剂的"
+              "真实效应本应为零）；该估计量存在诊断性偏差，本载荷相应标记为"
+              "诊断失败。",
     }]
 
     sc_module_sha256 = sha256_file(root / SC_MODULE_PATH)
@@ -281,15 +316,15 @@ def compose_synthetic_control_implication(root: Path = REPO_ROOT, *, ledger=None
         "honest_n": {
             "sample_n": int(fam["n_fitted"]),
             "episode_n": int(arm["n_months"]),
-            "basis": {"en": f"sample_n counts fitted event-window observations "
-                            f"(n_fitted={fam['n_fitted']}, after dropping "
-                            f"{fam['n_dropped_unfitted']} unfitted); episode_n counts "
-                            f"the monthly clusters used for the reported clustered "
-                            f"t-stat (n_months={arm['n_months']})",
-                      "zh": f"sample_n 为已拟合事件窗口观测数（n_fitted="
-                            f"{fam['n_fitted']}，已剔除 {fam['n_dropped_unfitted']} "
-                            f"个未能拟合的事件）；episode_n 为所报告聚类 t 统计量所用的"
-                            f"月度聚类数（n_months={arm['n_months']}）"},
+            "basis": {"en": f"the sample count reflects fitted event-window "
+                            f"observations ({fam['n_fitted']}, after dropping "
+                            f"{fam['n_dropped_unfitted']} unfitted); the episode "
+                            f"count reflects the monthly clusters used for the "
+                            f"reported clustered t-statistic ({arm['n_months']})",
+                      "zh": f"样本计数为已拟合的事件窗口观测数（{fam['n_fitted']}，"
+                            f"已剔除 {fam['n_dropped_unfitted']} 个未能拟合的事件）；"
+                            f"事件计数为所报告聚类 t 统计量所用的月度聚类数"
+                            f"（{arm['n_months']}）"},
         },
         "diagnostics": diagnostics,
         "quality": "DIAGNOSTIC_FAILED",
@@ -495,6 +530,19 @@ def validate_payload(payload: Mapping[str, Any]) -> dict:
         raise ImplicationContractError(
             f"payload_id mismatch: recomputed {recomputed!r} != stored "
             f"{payload['payload_id']!r}"
+        )
+
+    # Structural floor for the honest-N invariant (round-4 review, MAJOR; this
+    # round's MINOR-1): episode_n may never exceed sample_n, enforced here so
+    # a future composer path or an external producer emitting this schema
+    # cannot reintroduce a fabricated denominator and still pass validation —
+    # not only a test that enumerates today's payloads.
+    sample_n = payload["honest_n"]["sample_n"]
+    episode_n = payload["honest_n"]["episode_n"]
+    if episode_n is not None and (sample_n is None or episode_n > sample_n):
+        raise ImplicationContractError(
+            f"honest_n.episode_n ({episode_n!r}) exceeds honest_n.sample_n "
+            f"({sample_n!r}) — episode_n may never exceed sample_n"
         )
 
     null_codes = {nr["code"] for nr in payload.get("null_reasons", [])}

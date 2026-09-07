@@ -28,6 +28,73 @@ from engine.estimator_implication import (
 )
 from engine.seasonality.event_study import UnregisteredSearchFamily
 
+# --- Generic plain-language walker (Meta-CEO B ruling r4, round-6 MAJOR) ---
+# The ruling scopes the plain-language requirement to EVERY user-facing
+# string in the emitted envelope, not to specific fields hand-picked after
+# each review. A payload's user-facing prose always lives in a "localized"
+# {en, zh} pair (the shape contracts/estimator_implication.v1.schema.json's
+# $defs/localized enforces) -- point_estimate.label, uncertainty[].label,
+# honest_n.basis, diagnostics[].label/.detail, null_reasons[].reason/.detail,
+# limitations[] entries, refusals[].detail. Walking the whole envelope for
+# every {en, zh} pair (rather than hand-listing paths) means a *future*
+# payload/refusal this composer emits is covered automatically, not only
+# today's SC payload.
+_SNAKE_CASE_IDENTIFIER_RE = re.compile(r"\b[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b")
+_ALLCAPS_TOKEN_RE = re.compile(r"\b[A-Z][A-Z0-9_]{1,}\b")
+_ASCII_LETTER_RUN_RE = re.compile(r"[A-Za-z]+")
+
+# Domain units/tickers/abbreviations that are legitimate plain-language
+# vocabulary, not internal identifiers -- e.g. "NNLS" (a real estimator
+# name), "CAAR" (a named statistic), "SPY"/"CAR" (a ticker/benchmark name),
+# "t"/"p" (the conventional single-letter stat notation), "K" (matched-K
+# arm name), "PC1"/"PC2"/"PC3"/"F1" (the gate labels' own short codes, used
+# identically in the EN prose these ZH strings translate). Anything NOT in
+# this list is presumed to be a leaked internal identifier or enum token.
+_ALLOWED_ALLCAPS_TOKENS = frozenset({
+    "NNLS", "CAAR", "NW", "SPY", "CAR", "PC1", "PC2", "PC3", "F1", "SC",
+})
+_ALLOWED_ASCII_LETTER_RUNS = frozenset({
+    "NNLS", "CAAR", "NW", "SPY", "CAR", "PC", "K", "t", "p", "SC",
+})
+
+
+def _find_localized_pairs(obj, path=""):
+    """Recursively yield (path, en, zh) for every {"en": str, "zh": str}
+    pair anywhere under ``obj`` -- the schema's one shape for user-facing
+    prose, wherever in the envelope it appears."""
+    pairs = []
+    if isinstance(obj, dict):
+        if (
+            isinstance(obj.get("en"), str)
+            and isinstance(obj.get("zh"), str)
+        ):
+            pairs.append((path or "<root>", obj["en"], obj["zh"]))
+        for key, value in obj.items():
+            pairs.extend(_find_localized_pairs(value, f"{path}.{key}" if path else key))
+    elif isinstance(obj, list):
+        for i, item in enumerate(obj):
+            pairs.extend(_find_localized_pairs(item, f"{path}[{i}]"))
+    return pairs
+
+
+def _assert_pair_is_plain_language(path, en, zh):
+    for m in _SNAKE_CASE_IDENTIFIER_RE.finditer(en):
+        raise AssertionError(f"snake_case identifier {m.group()!r} leaked into {path}.en: {en!r}")
+    for m in _SNAKE_CASE_IDENTIFIER_RE.finditer(zh):
+        raise AssertionError(f"snake_case identifier {m.group()!r} leaked into {path}.zh: {zh!r}")
+    for m in _ALLCAPS_TOKEN_RE.finditer(en):
+        if m.group() not in _ALLOWED_ALLCAPS_TOKENS:
+            raise AssertionError(f"ALL_CAPS token {m.group()!r} leaked into {path}.en: {en!r}")
+    for m in _ALLCAPS_TOKEN_RE.finditer(zh):
+        if m.group() not in _ALLOWED_ALLCAPS_TOKENS:
+            raise AssertionError(f"ALL_CAPS token {m.group()!r} leaked into {path}.zh: {zh!r}")
+    for m in _ASCII_LETTER_RUN_RE.finditer(zh):
+        if m.group() not in _ALLOWED_ASCII_LETTER_RUNS:
+            raise AssertionError(
+                f"raw ASCII {m.group()!r} (not a recognized unit/ticker) leaked into "
+                f"{path}.zh: {zh!r}"
+            )
+
 
 class _StubLedger:
     """A duck-typed ledger. Empty by default (refusal test); pass ``registered``
@@ -148,6 +215,42 @@ def test_episode_n_never_exceeds_sample_n_for_any_emitted_payload():
     assert episode_n is None or (sample_n is not None and episode_n <= sample_n)
 
 
+def test_validate_payload_rejects_episode_n_exceeding_sample_n():
+    # Regression (this round's review, MINOR-1): the rule "episode_n may
+    # never exceed sample_n" used to live only in a test enumerating today's
+    # payloads, with no floor in validate_payload itself -- so a future
+    # composer path or an external producer of this schema could reintroduce
+    # a fabricated denominator and still pass validation. validate_payload
+    # must reject it directly, not merely a test.
+    payload = compose_synthetic_control_implication()
+    bad = copy.deepcopy(payload)
+    bad["honest_n"]["episode_n"] = bad["honest_n"]["sample_n"] + 1
+    with pytest.raises(ImplicationContractError, match="episode_n"):
+        validate_payload(bad)
+
+    # episode_n == sample_n and episode_n < sample_n both remain valid.
+    ok_equal = copy.deepcopy(payload)
+    ok_equal["honest_n"]["episode_n"] = ok_equal["honest_n"]["sample_n"]
+    validate_payload(ok_equal)
+    validate_payload(payload)
+
+
+def test_schema_documents_the_episode_n_never_exceeds_sample_n_rule():
+    # Regression (this round's review, MINOR-1, second half): the ruling asks
+    # for the rule in TWO places -- validate_payload's runtime enforcement
+    # (tested above) AND the schema itself carrying a description of the
+    # rule, so a consumer reading only contracts/estimator_implication.v1.
+    # schema.json (never touching this Python module) still learns the
+    # invariant exists, even though Draft 2020-12 cannot express the
+    # cross-field relation itself without a $data extension.
+    contract = load_contract()
+    honest_n_schema = contract["properties"]["honest_n"]
+    description = honest_n_schema.get("description", "")
+    assert description.strip(), "honest_n schema must document the episode_n/sample_n rule"
+    assert "episode_n" in description and "sample_n" in description
+    assert "exceed" in description.lower() or "never" in description.lower()
+
+
 def test_event_study_episode_n_is_null_never_fabricated_from_roster_add_events():
     # Regression (round-4 review, MAJOR): episode_n used to be the raw
     # roster_add_events count (466 in the pinned artifact), which exceeds
@@ -211,6 +314,90 @@ def test_event_study_limitations_text_has_no_raw_identifiers_or_exception_names(
             for token in banned:
                 assert token not in text, f"{token!r} leaked into limitations text: {text!r}"
         assert lim["zh"].strip() and lim["zh"] != lim["en"]
+
+
+def test_synthetic_control_payload_has_no_raw_identifiers_in_user_facing_strings():
+    # Regression (round-5 review, MAJOR): the previous fix removed raw
+    # internal identifiers (JSON field names, the DIAGNOSTIC_FAILED enum
+    # token, engine slugs) from the event-study payload's strings only, but
+    # the SC payload -- the ONE payload the composer actually emits against
+    # the real pinned artifacts today (the event-study family is
+    # unregistered, so it always degrades to a refusal) -- still carried them
+    # in honest_n.basis, point_estimate.label, limitations, and every
+    # diagnostic's detail, in both EN and ZH. Plain words only, in both
+    # languages, everywhere a human reads this payload.
+    payload = compose_synthetic_control_implication()
+    banned = ("sample_n", "episode_n", "n_fitted", "n_months",
+              "DIAGNOSTIC_FAILED", "sc_nnls", "sp_pure_adds", "phase3_start",
+              "matched_k")
+
+    def _check(text, where):
+        for token in banned:
+            assert token not in text, f"{token!r} leaked into {where}: {text!r}"
+
+    _check(payload["point_estimate"]["label"]["en"], "point_estimate.label.en")
+    _check(payload["point_estimate"]["label"]["zh"], "point_estimate.label.zh")
+    _check(payload["honest_n"]["basis"]["en"], "honest_n.basis.en")
+    _check(payload["honest_n"]["basis"]["zh"], "honest_n.basis.zh")
+    for lim in payload["limitations"]:
+        _check(lim["en"], "limitations.en")
+        _check(lim["zh"], "limitations.zh")
+    for d in payload["diagnostics"]:
+        _check(d["detail"]["en"], f"diagnostics[{d['code']}].detail.en")
+        _check(d["detail"]["zh"], f"diagnostics[{d['code']}].detail.zh")
+
+    # Same facts must still be present in plain words, not merely absent
+    # tokens (a stub that just deletes the numbers would pass the banned
+    # check above but be useless): the real values remain, spelled out.
+    assert "303" in payload["honest_n"]["basis"]["en"]
+    assert "52" in payload["honest_n"]["basis"]["en"]
+    assert "monthly cluster" in payload["honest_n"]["basis"]["en"]
+    assert "3.015" in payload["diagnostics"][0]["detail"]["en"]
+    assert "3.015" in payload["diagnostics"][0]["detail"]["zh"]
+
+
+def test_localized_pair_walker_catches_an_injected_violation():
+    # Proves the walker itself is not vacuous (RED-first evidence for the
+    # generic test below): a no-op checker would silently pass everything.
+    # Each of the three rule classes must independently raise on a planted
+    # violation, and each must NOT raise on the corresponding clean string.
+    with pytest.raises(AssertionError, match="snake_case identifier"):
+        _assert_pair_is_plain_language(
+            "fixture.snake", "the sample_n count is fine", "样本数没问题"
+        )
+    with pytest.raises(AssertionError, match="ALL_CAPS token"):
+        _assert_pair_is_plain_language(
+            "fixture.allcaps", "marked DIAGNOSTIC_FAILED accordingly", "已标记"
+        )
+    with pytest.raises(AssertionError, match="raw ASCII"):
+        _assert_pair_is_plain_language(
+            "fixture.ascii_in_zh", "the arm fitted cleanly",
+            "the arm fitted cleanly (raw untranslated English)"
+        )
+    # Plain prose using only allowed domain vocabulary must not raise.
+    _assert_pair_is_plain_language(
+        "fixture.clean",
+        "Synthetic-control (NNLS) CAAR mean, monthly-clustered NW t-statistic",
+        "合成对照（NNLS）CAAR 均值，月度聚类 NW t 统计量",
+    )
+
+
+def test_no_internal_identifiers_or_allcaps_or_raw_ascii_across_every_emitted_payload_and_refusal():
+    # Regression (Meta-CEO B ruling r4, round-6 MAJOR): the ruling scopes the
+    # plain-language requirement to EVERY user-facing string in the emitted
+    # envelope, not to hand-picked fields fixed one review at a time (round 4
+    # fixed the event-study payload's strings; round 5's review found the SC
+    # payload -- the one payload actually emitted today -- still leaking raw
+    # identifiers in the exact same fields). This test walks the REAL
+    # envelope build_estimator_implications() returns against the pinned
+    # artifacts -- every payload AND every refusal -- rather than one
+    # hand-selected payload, so a future payload/refusal this composer emits
+    # is covered without a new test having to be written for it.
+    envelope = build_estimator_implications()
+    pairs = _find_localized_pairs(envelope)
+    assert len(pairs) >= 10, "sanity: the walker must find the payload's real localized pairs"
+    for path, en, zh in pairs:
+        _assert_pair_is_plain_language(path, en, zh)
 
 
 def test_diagnostics_zh_detail_is_a_genuine_translation_not_a_pointer():

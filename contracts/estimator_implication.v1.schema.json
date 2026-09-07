@@ -94,6 +94,7 @@
     "uncertainty": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/uncertainty"}},
     "honest_n": {
       "type": "object", "additionalProperties": false,
+      "description": "episode_n, when not null, must never exceed sample_n — the clustered/episode-level count cannot honestly exceed the underlying fitted-observation count it is drawn from. This schema cannot express the cross-field relation in Draft 2020-12 without a $data extension, so it is enforced structurally in Python by validate_payload(), which raises ImplicationContractError when episode_n > sample_n; this description documents that invariant for any consumer validating against the schema alone.",
       "required": ["sample_n", "episode_n", "basis"],
       "properties": {
         "sample_n": {"type": ["integer", "null"]},
