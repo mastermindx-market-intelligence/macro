@@ -235,11 +235,16 @@ STALE_LOCK_MIN_AGE_S = 600
 def _lock_candidates(dest: Path) -> list[Path]:
     """``index.lock`` and ``info/sparse-checkout.lock`` for ``dest``'s own
     (freshly created, `--no-checkout`) git-dir — never the shared common
-    `.git`, which this hook never locks for a sparse-checkout operation."""
-    try:
-        git_dir = Path(git(dest, "rev-parse", "--path-format=absolute", "--git-dir"))
-    except RuntimeError:
-        return []
+    `.git`, which this hook never locks for a sparse-checkout operation.
+
+    Lets a ``git rev-parse`` failure PROPAGATE as ``RuntimeError`` rather than
+    swallowing it into an empty list: an empty list here reads to
+    ``_clear_stale_locks`` as "no lock files exist", which is
+    indistinguishable from "the git-dir could not even be determined" — the
+    caller must fail closed on the latter (refuse with ``::error``), never
+    silently proceed with no lock check at all, which is fail-OPEN in a
+    function whose contract everywhere else is fail-closed."""
+    git_dir = Path(git(dest, "rev-parse", "--path-format=absolute", "--git-dir"))
     return [git_dir / "index.lock", git_dir / "info" / "sparse-checkout.lock"]
 
 
@@ -355,12 +360,64 @@ def _clear_stale_locks(dest: Path) -> tuple[list[str], list[Path]]:
     return removed, still_locked
 
 
+def _tracked_entries_present(dest: Path, name: str) -> list[str]:
+    """Same distinction as scripts.worktree_sparse._tracked_entries_present,
+    duplicated for the same import-independence reason as ``load_profile``:
+    relative paths under ``dest/name`` that are BOTH tracked at HEAD and
+    physically present on disk.
+
+    Uses ``git ls-tree -r --name-only HEAD -- <name>`` — the commit tree
+    object, not the index — for a reason specific to THIS hook's call order:
+    ``apply_sparse`` runs `git sparse-checkout set` on a freshly created
+    `--no-checkout` worktree, whose index is empty until the caller's
+    `git read-tree -mu HEAD` runs AFTER `apply_sparse` returns. ``git
+    ls-files`` reads the index, so at the moment this postcondition check
+    runs it would report NOTHING tracked at all — silently defeating the
+    check for exactly the population (fresh session-worktree mints) MAJOR-2
+    was raised against. `dest`'s `HEAD` already resolves to the same commit
+    `apply_sparse`'s ``base`` was created from (the branch `worktree add -b`
+    made points there before `--no-checkout` skips only the working-tree
+    populate step), so ``ls-tree HEAD`` is correct here without needing
+    ``base`` threaded through."""
+    try:
+        listed = git(dest, "ls-tree", "-r", "--name-only", "HEAD", "--", name)
+    except RuntimeError:
+        return []
+    if not listed:
+        return []
+    tracked = [ln.strip() for ln in listed.splitlines() if ln.strip()]
+    return [rel for rel in tracked if (dest / rel).exists()]
+
+
+def _untracked_entries_present(dest: Path, name: str) -> int:
+    """Count of files physically present under ``dest/name`` that git does
+    not track at all — a stray artifact rather than partially materialized
+    tracked content. ``git sparse-checkout set`` never touches untracked
+    content, so this can survive an otherwise-correct sparsify; reported as
+    a warning, never a failure."""
+    path = dest / name
+    if not path.exists():
+        return 0
+    tracked = set(_tracked_entries_present(dest, name))
+    count = 0
+    try:
+        for entry in path.rglob("*"):
+            if entry.is_file() and str(entry.relative_to(dest)) not in tracked:
+                count += 1
+    except OSError:
+        return 0
+    return count
+
+
 def _verify_sparse_postcondition(dest: Path, include: list[str], excludes: list[str]) -> str | None:
     """Same check as scripts.worktree_sparse.verify_sparse_postcondition,
     duplicated for the same import-independence reason as ``load_profile``:
     `git sparse-checkout list` must equal ``include`` exactly, and every
-    excluded directory must be an empty husk on disk, never partially
-    materialized content a killed operation left behind."""
+    excluded directory must hold no TRACKED file that is also physically
+    present on disk (see ``_tracked_entries_present``) — never partially
+    materialized content a killed operation left behind. Surviving
+    UNTRACKED content is deliberately not a failure here (see
+    ``_untracked_entries_present``); ``apply_sparse`` warns on it instead."""
     try:
         listed = [
             ln.strip() for ln in git(dest, "sparse-checkout", "list").splitlines() if ln.strip()
@@ -370,17 +427,12 @@ def _verify_sparse_postcondition(dest: Path, include: list[str], excludes: list[
     if set(listed) != set(include):
         return f"sparse-checkout list mismatch — expected {sorted(include)}, got {sorted(listed)}"
     for name in excludes:
-        path = dest / name
-        try:
-            if not path.exists():
-                continue
-            entries = list(path.iterdir())
-        except OSError:
-            continue
-        if entries:
+        tracked = _tracked_entries_present(dest, name)
+        if tracked:
             return (
-                f"{name} is excluded but not a husk on disk "
-                f"({len(entries)} entries present)"
+                f"{name} is excluded but still holds {len(tracked)} TRACKED "
+                f"file{'s' if len(tracked) != 1 else ''} on disk (e.g. "
+                f"{tracked[0]})"
             )
     return None
 
@@ -398,7 +450,20 @@ def apply_sparse(dest: Path, repo_root: Path, base: str, exclude: set[str]) -> N
     include = [d for d in tracked if d not in exclude]
     if not include:
         raise RuntimeError("no sparse-checkout directories were selected")
-    _removed, still_locked = _clear_stale_locks(dest)
+    try:
+        _removed, still_locked = _clear_stale_locks(dest)
+    except RuntimeError as exc:
+        # `_lock_candidates` could not even determine `dest`'s git-dir, so no
+        # lock check happened at all — fail closed exactly like a
+        # live/young/unconfirmed lock (spec item 2), never proceed into
+        # `git sparse-checkout` having skipped the lock check entirely.
+        reason = f"could not determine {dest}'s git-dir to check for a lock: {exc}"
+        print(
+            f"::error title=worktree-sparse-lock-probe-failed::refusing to "
+            f"run `git sparse-checkout` — {reason}",
+            file=sys.stderr, flush=True,
+        )
+        raise RuntimeError(f"refusing to run `git sparse-checkout` — {reason}") from exc
     if still_locked:
         named = ", ".join(str(p) for p in still_locked)
         reason = (
@@ -427,6 +492,17 @@ def apply_sparse(dest: Path, repo_root: Path, base: str, exclude: set[str]) -> N
     problem = _verify_sparse_postcondition(dest, include, omitted)
     if problem:
         raise RuntimeError(f"sparse postcondition failed: {problem}")
+    for name in omitted:
+        stray = _untracked_entries_present(dest, name)
+        if stray:
+            print(
+                f"::warning title=worktree-sparse-untracked-survivor::{name} "
+                f"still holds {stray} untracked file{'s' if stray != 1 else ''} "
+                f"on disk after sparsify — `git sparse-checkout set` never "
+                f"touches untracked content, so this is not a failure, but "
+                f"the dir is not a clean husk",
+                file=sys.stderr, flush=True,
+            )
 
 
 def _warn_if_reused_worktree_looks_full(dest: Path, repo_root: Path) -> None:

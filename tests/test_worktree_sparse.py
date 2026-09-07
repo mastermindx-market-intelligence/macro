@@ -40,6 +40,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import platform
 import subprocess
 import time
 from pathlib import Path
@@ -320,14 +321,34 @@ def test_verify_sparse_postcondition_passes_when_matched(repo):
     assert WS.verify_sparse_postcondition(repo, ["scripts"], ["big"]) is None
 
 
-def test_verify_sparse_postcondition_detects_non_husk_excluded_dir(repo):
+def test_verify_sparse_postcondition_fails_on_a_tracked_file_re_materialized(repo):
+    """MAJOR-2 (Meta-CEO B ruling r2 on macro #6971): a TRACKED file
+    physically reappearing in an excluded dir — the partial-materialization
+    failure mode this postcondition exists to catch — must still fail loud.
+    `big/other.txt` is committed in the `repo` fixture, so this is genuinely
+    tracked content, not stray junk."""
+    (repo / "big").mkdir(exist_ok=True)
+    (repo / "big" / "other.txt").write_text("reappeared\n", encoding="utf-8")
+
+    problem = WS.verify_sparse_postcondition(repo, ["scripts"], ["big"])
+
+    assert problem is not None
+    assert "big" in problem and "TRACKED" in problem
+
+
+def test_verify_sparse_postcondition_ignores_untracked_survivor(repo):
+    """MAJOR-2 (ruling r2, amending the frozen spec): surviving UNTRACKED
+    content is NOT a postcondition failure — `git sparse-checkout set` never
+    touches untracked content, so an otherwise-correct sparsify must not be
+    reported as failed over it. RED-first: before this ruling, ANY entry in
+    an excluded dir (tracked or not) failed the postcondition."""
     (repo / "big").mkdir(exist_ok=True)
     (repo / "big" / "stray.txt").write_text("oops\n", encoding="utf-8")
 
     problem = WS.verify_sparse_postcondition(repo, ["scripts"], ["big"])
 
-    assert problem is not None
-    assert "big" in problem
+    assert problem is None, (
+        f"an untracked-only survivor must not fail the postcondition: {problem}")
 
 
 def test_verify_sparse_postcondition_detects_include_set_mismatch(repo):
@@ -350,6 +371,29 @@ def test_postcondition_mismatch_fails_apply_profile_loudly(repo, monkeypatch, ca
     assert any(ln.startswith("::error") for ln in blob.splitlines())
     assert "profile applied" not in blob, (
         "the success message must never print alongside a failed postcondition")
+
+
+def test_apply_profile_warns_on_untracked_survivor_but_still_succeeds(repo, capsys):
+    """MAJOR-2 (ruling r2): an untracked stray file left in the excluded dir
+    must not fail `apply_profile` — it emits a line-starting ::warning naming
+    the dir and count, and the success message still prints."""
+    rc = WS.apply_profile(repo, exclude_dirs=["big"])
+    assert rc == 0
+    capsys.readouterr()  # drain the first apply's output
+
+    (repo / "big").mkdir(exist_ok=True)
+    (repo / "big" / "stray.txt").write_text("oops\n", encoding="utf-8")
+
+    rc = WS.apply_profile(repo, exclude_dirs=["big"])
+    blob = "".join(capsys.readouterr())
+
+    assert rc == 0, f"an untracked survivor must not fail apply_profile:\n{blob}"
+    warning_lines = [ln for ln in blob.splitlines() if "::warning" in ln]
+    assert warning_lines, f"no ::warning emitted for the untracked survivor:\n{blob}"
+    assert any(ln.startswith("::warning") for ln in warning_lines), (
+        f"annotation did not open the line, so GitHub will drop it: {warning_lines}")
+    assert "big" in blob and "1 untracked file" in blob
+    assert "profile applied" in blob, "success message must still print"
 
 
 def test_add_dirs_postcondition_catches_a_falsely_successful_materialize(repo, monkeypatch, capsys):
@@ -388,6 +432,7 @@ def test_status_json_shape(repo):
 
     assert set(out.keys()) == {
         "sparse", "missing_dirs", "stale_locks_removed", "full_bytes_estimate",
+        "untracked_survivors",
     }
     assert out["sparse"] is True
     assert out["missing_dirs"] == ["big"]
@@ -395,6 +440,35 @@ def test_status_json_shape(repo):
     assert isinstance(out["full_bytes_estimate"], int)
     assert out["full_bytes_estimate"] >= len(_BIG_CONTENT), (
         "full_bytes_estimate should at least cover big/data.json's committed size")
+    assert out["untracked_survivors"] == {}
+
+
+def test_status_json_reports_untracked_survivors(repo):
+    """MAJOR-2 (ruling r2): status --json lists a currently-excluded dir's
+    untracked survivor count — the same non-blocking signal apply_profile
+    warns on — so a census over many worktrees can see it without applying."""
+    (repo / "big").mkdir(exist_ok=True)
+    (repo / "big" / "stray1.txt").write_text("a\n", encoding="utf-8")
+    (repo / "big" / "stray2.txt").write_text("b\n", encoding="utf-8")
+
+    out = WS.status_json(repo)
+
+    assert out["untracked_survivors"] == {"big": 2}
+
+
+def test_status_json_no_heal_skips_lock_clearing(repo, monkeypatch):
+    """Minor-5 (ruling): `heal=False` keeps the census read-only — it must
+    never delete a stale lock as a side effect."""
+    gitdir = _real_git_dir(repo)
+    lock = gitdir / "index.lock"
+    lock.write_bytes(b"")
+    _backdate(lock, WS.STALE_LOCK_MIN_AGE_S + 30)
+    monkeypatch.setattr(WS, "gather_live_processes", lambda *a, **k: [])
+
+    out = WS.status_json(repo, heal=False)
+
+    assert out["stale_locks_removed"] == []
+    assert lock.exists(), "heal=False must never delete a lock as a side effect"
 
 
 def test_status_json_reports_and_clears_a_stale_lock(repo, monkeypatch):
@@ -421,15 +495,34 @@ def test_status_json_full_checkout_shape(repo):
 def test_main_status_json_flag_prints_valid_json(monkeypatch, capsys):
     fake = {
         "sparse": False, "missing_dirs": [], "stale_locks_removed": [],
-        "full_bytes_estimate": 0,
+        "full_bytes_estimate": 0, "untracked_survivors": {},
     }
-    monkeypatch.setattr(WS, "status_json", lambda: fake)
+    monkeypatch.setattr(WS, "status_json", lambda heal=True: fake)
 
     rc = WS.main(["status", "--json"])
     out = capsys.readouterr().out.strip()
 
     assert rc == 0
     assert json.loads(out) == fake
+
+
+def test_main_status_json_no_heal_flag_passes_heal_false(monkeypatch):
+    """Minor-5 (ruling): `status --json --no-heal` on the CLI must reach
+    `status_json` as `heal=False`; the bare `--json` flag keeps `heal=True`."""
+    seen: dict = {}
+
+    def fake_status_json(heal=True):
+        seen["heal"] = heal
+        return {"sparse": False, "missing_dirs": [], "stale_locks_removed": [],
+                "full_bytes_estimate": 0, "untracked_survivors": {}}
+
+    monkeypatch.setattr(WS, "status_json", fake_status_json)
+
+    assert WS.main(["status", "--json", "--no-heal"]) == 0
+    assert seen["heal"] is False
+
+    assert WS.main(["status", "--json"]) == 0
+    assert seen["heal"] is True
 
 
 # ── the WorktreeCreate hook duplicates its own stale-lock check ─────────────
@@ -551,16 +644,38 @@ def test_hook_live_pids_holding_fails_closed_when_gitdir_probe_is_untrustworthy(
     assert result is None
 
 
-def test_hook_fails_loud_on_a_postcondition_mismatch(hook_worktree):
-    """`big/` holds a stray (untracked) file before the sparse-checkout ever
-    runs — `git sparse-checkout set` never touches untracked content outside
-    the index, so it survives, and the excluded dir is no longer a husk."""
+def test_hook_postcondition_fails_on_a_tracked_file_re_materialized(hook_worktree):
+    """MAJOR-2 (Meta-CEO B ruling r2 on macro #6971): `big/data.json` is
+    committed in the `hook_worktree` fixture, so a copy of it reappearing on
+    disk after sparsify is a genuine partial-materialization failure and
+    must still fail loud."""
+    hook = _load_hook()
+    (hook_worktree / "big").mkdir(exist_ok=True)
+    (hook_worktree / "big" / "data.json").write_bytes(_BIG_CONTENT)
+
+    with pytest.raises(RuntimeError, match="sparse postcondition failed"):
+        hook.apply_sparse(hook_worktree, hook_worktree, "HEAD", {"big"})
+
+
+def test_hook_postcondition_ignores_untracked_survivor_but_warns(hook_worktree, capsys):
+    """MAJOR-2 (ruling r2, amending the frozen spec): `big/` holds a stray
+    (untracked) file before the sparse-checkout ever runs — `git
+    sparse-checkout set` never touches untracked content outside the index,
+    so it survives, and the excluded dir is no longer a husk — but this must
+    only warn, never fail apply_sparse. RED-first: before this ruling, ANY
+    entry in an excluded dir failed the postcondition here too."""
     hook = _load_hook()
     (hook_worktree / "big").mkdir(exist_ok=True)
     (hook_worktree / "big" / "stray.txt").write_text("oops\n", encoding="utf-8")
 
-    with pytest.raises(RuntimeError, match="sparse postcondition failed"):
-        hook.apply_sparse(hook_worktree, hook_worktree, "HEAD", {"big"})
+    hook.apply_sparse(hook_worktree, hook_worktree, "HEAD", {"big"})  # must not raise
+
+    blob = "".join(capsys.readouterr())
+    warning_lines = [ln for ln in blob.splitlines() if "::warning" in ln]
+    assert any("untracked-survivor" in ln for ln in warning_lines), (
+        f"no untracked-survivor ::warning emitted:\n{blob}")
+    assert any(ln.startswith("::warning") for ln in warning_lines), (
+        f"annotation did not open the line:\n{blob}")
 
 
 def test_hook_reuse_warns_but_never_blocks_on_a_full_looking_worktree(
@@ -588,3 +703,74 @@ def test_hook_reuse_warning_never_raises_even_on_internal_error(hook_worktree, m
         hook, "load_profile", lambda repo_root: (_ for _ in ()).throw(RuntimeError("boom")),
     )
     hook._warn_if_reused_worktree_looks_full(hook_worktree, hook_worktree)  # must not raise
+
+
+# ── Minor-1 (ruling r2): hook/script probe behavioural parity ──────────────
+
+def test_hook_and_script_probe_fail_closed_identically_on_partial_lsof(monkeypatch):
+    """The same partial-lsof scenarios must fail closed IDENTICALLY through
+    both copies of the live-process probe — the script's
+    `gather_live_processes` and the hook's duplicated `_live_pids_holding` —
+    not just each pinned separately against its own expectation. Linux's
+    `/proc` fallback is script-only (the hook is Darwin-only by design, per
+    its own docstring/early return) and is deliberately not exercised here."""
+    hook = _load_hook()
+    monkeypatch.setattr(WS.platform, "system", lambda: "Darwin")
+    monkeypatch.setattr(hook.platform, "system", lambda: "Darwin")
+
+    worktree_root = Path("/tmp/some-worktree")
+    git_dir = Path("/tmp/some-worktree/.git")
+
+    scenarios = {
+        "cwd probe untrustworthy, gitdir probe clean":
+            lambda args: (None if "cwd" in args else ""),
+        "cwd probe clean, gitdir probe untrustworthy":
+            lambda args: ("" if "cwd" in args else None),
+        "both probes untrustworthy":
+            lambda args: None,
+    }
+
+    for label, fake_lsof in scenarios.items():
+        monkeypatch.setattr(WS, "_run_lsof", fake_lsof)
+        monkeypatch.setattr(hook, "_run_lsof", fake_lsof)
+
+        script_result = WS.gather_live_processes(worktree_root, git_dir)
+        hook_result = hook._live_pids_holding(worktree_root, git_dir)
+
+        assert script_result is None, (
+            f"{label}: script must fail closed (None), got {script_result}")
+        assert hook_result is None, (
+            f"{label}: hook must fail closed (None), got {hook_result}")
+
+
+# ── Minor-2 (ruling r2): a failed lock probe must fail closed, never proceed
+#    with no lock check at all ────────────────────────────────────────────
+
+def test_hook_lock_probe_failure_refuses_with_error_never_proceeds_unchecked(
+    hook_worktree, monkeypatch, capsys,
+):
+    """`_lock_candidates` used to swallow a `git rev-parse --git-dir` failure
+    into `[]`, which `_clear_stale_locks` cannot tell apart from "no lock
+    files exist" — so `apply_sparse` proceeded straight into
+    `git sparse-checkout` with NO lock check at all. It must instead refuse
+    with a line-starting ::error, exactly like a live/young/unconfirmed
+    lock."""
+    hook = _load_hook()
+    real_git = hook.git
+
+    def selective_fake_git(root, *args, **kwargs):
+        if args and args[0] == "rev-parse" and "--git-dir" in args:
+            raise RuntimeError("git rev-parse --git-dir failed: boom")
+        return real_git(root, *args, **kwargs)
+
+    monkeypatch.setattr(hook, "git", selective_fake_git)
+
+    with pytest.raises(RuntimeError, match="refusing to run"):
+        hook.apply_sparse(hook_worktree, hook_worktree, "HEAD", {"big"})
+
+    blob = "".join(capsys.readouterr())
+    error_lines = [ln for ln in blob.splitlines() if "::error" in ln]
+    assert error_lines, f"a failed lock probe must emit a ::error annotation:\n{blob}"
+    assert any(ln.startswith("::error") for ln in error_lines), (
+        f"::error annotation does not start its line:\n{blob}")
+    assert "lock-probe-failed" in blob

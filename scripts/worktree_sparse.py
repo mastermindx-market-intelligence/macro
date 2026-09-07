@@ -50,6 +50,8 @@ not in it is omitted. The emptiness heuristic is only the non-cone fallback.
 Usage:
     python3 scripts/worktree_sparse.py status        # what is / is not materialized
     python3 scripts/worktree_sparse.py status --json # machine-readable, for fleet census
+    python3 scripts/worktree_sparse.py status --json --no-heal  # same, but read-only:
+                                                      # never clears a stale lock as a side effect
     python3 scripts/worktree_sparse.py auto          # new linked worktree: apply profile
     python3 scripts/worktree_sparse.py full          # opt IN to a full checkout
     python3 scripts/worktree_sparse.py sparse        # re-apply the configured profile
@@ -787,6 +789,61 @@ def _drop_husks(root: Path, dirs: list[str]) -> list[str]:
     return dropped
 
 
+def _tracked_entries_present(root: Path, name: str) -> list[str]:
+    """Relative paths (repo-root-relative) under ``root/name`` that are BOTH
+    tracked at HEAD and physically present on disk.
+
+    Reads via ``git ls-tree -r --name-only HEAD -- <name>`` — straight from
+    the commit tree object — rather than ``git ls-files``, for two reasons
+    verified empirically, not just theoretically: (1) ``git ls-files``
+    lists a tracked path regardless of the index's skip-worktree bit, so a
+    correctly-EXCLUDED cone dir still shows its tracked paths — tracked-ness
+    from ``ls-files`` alone cannot answer "did the sparsify leave real
+    content behind", only the intersection with what is actually
+    materialized can; (2) ``git ls-files`` reads the INDEX, which is empty
+    until ``git read-tree`` populates it — on the `--no-checkout` worktree
+    the WorktreeCreate hook creates, its duplicate of this check runs
+    `git sparse-checkout set` BEFORE `read-tree`, so ``ls-files`` would
+    report nothing tracked at all at that point, silently defeating this
+    check for the exact population (session-worktree mints) MAJOR-2 was
+    raised against. ``ls-tree HEAD`` reads the tree object directly and is
+    correct in both call orders. Non-empty here means a prior operation left
+    (or re-created) tracked content on disk instead of removing it — the
+    partial-materialization failure mode `verify_sparse_postcondition` exists
+    to catch.
+    """
+    listed = _git(root, "ls-tree", "-r", "--name-only", "HEAD", "--", name)
+    if not listed:
+        return []
+    tracked = [ln.strip() for ln in listed.splitlines() if ln.strip()]
+    return [rel for rel in tracked if (root / rel).exists()]
+
+
+def _untracked_entries_present(root: Path, name: str) -> int:
+    """Count of files physically present under ``root/name`` that git does
+    not track at all — a stray artifact (a Finder ``.DS_Store``, an engine
+    temp file) rather than partially materialized tracked content.
+
+    ``git sparse-checkout set`` only ever manages tracked entries; it never
+    touches untracked content, so this can survive an otherwise-correct
+    sparsification. That is why it is counted separately from
+    :func:`_tracked_entries_present` and reported as a warning, not a
+    failure.
+    """
+    path = root / name
+    if not path.exists():
+        return 0
+    tracked = set(_tracked_entries_present(root, name))
+    count = 0
+    try:
+        for entry in path.rglob("*"):
+            if entry.is_file() and str(entry.relative_to(root)) not in tracked:
+                count += 1
+    except OSError:
+        return 0
+    return count
+
+
 def verify_sparse_postcondition(
     root: Path, include: list[str], excludes: list[str],
 ) -> str | None:
@@ -798,10 +855,17 @@ def verify_sparse_postcondition(
     process or a partial write the exit code did not surface can leave it
     inconsistent. Two things are checked: (1) `git sparse-checkout list`
     (the authoritative cone-mode include set) equals ``include`` exactly, and
-    (2) every directory in ``excludes`` is either absent or an empty husk on
-    disk — never holding real materialized content. Callers that get a
-    non-None result here must treat the operation as FAILED (loud, non-zero
-    exit) rather than reporting the success message they were about to print.
+    (2) every directory in ``excludes`` holds no TRACKED file that is also
+    physically present on disk (see :func:`_tracked_entries_present`) — i.e.
+    it is never partially materialized. Callers that get a non-None result
+    here must treat the operation as FAILED (loud, non-zero exit) rather than
+    reporting the success message they were about to print.
+
+    Surviving UNTRACKED content in an excluded dir (a stray file
+    `git sparse-checkout set` never touches, since it only manages tracked
+    entries) is deliberately NOT a failure here — the sparsify itself
+    succeeded. See :func:`_untracked_entries_present`; ``apply_profile``
+    reports it as a non-blocking ``::warning`` instead.
     """
     listed = set(_cone_included(root))
     expected = set(include)
@@ -811,18 +875,13 @@ def verify_sparse_postcondition(
             f"{sorted(expected)}, got {sorted(listed)}"
         )
     for name in excludes:
-        path = root / name
-        try:
-            if not path.exists():
-                continue
-            entries = list(path.iterdir())
-        except OSError:
-            continue
-        if entries:
+        tracked = _tracked_entries_present(root, name)
+        if tracked:
             return (
-                f"{name} is excluded by the profile but not a husk on disk "
-                f"({len(entries)} entr{'y' if len(entries) == 1 else 'ies'} "
-                f"present) — a prior operation may have partially materialized it"
+                f"{name} is excluded by the profile but still holds "
+                f"{len(tracked)} TRACKED file{'s' if len(tracked) != 1 else ''} "
+                f"on disk (e.g. {tracked[0]}) — a prior operation may have "
+                f"partially materialized it"
             )
     return None
 
@@ -865,6 +924,17 @@ def apply_profile(root: Path = ROOT, exclude_dirs: list[str] | None = None) -> i
             flush=True,
         )
         return 1
+    for name in sorted(excludes):
+        stray = _untracked_entries_present(root, name)
+        if stray:
+            print(
+                f"::warning title=worktree-sparse-untracked-survivor::{name} "
+                f"still holds {stray} untracked file{'s' if stray != 1 else ''} "
+                f"on disk after sparsify — `git sparse-checkout set` never "
+                f"touches untracked content, so this is not a failure, but "
+                f"the dir is not a clean husk",
+                flush=True,
+            )
     print(f"worktree-sparse: profile applied — omitting {', '.join(sorted(excludes))}")
     return 0
 
@@ -1316,7 +1386,7 @@ def _full_bytes_estimate(root: Path, missing: list[str]) -> int:
     return total
 
 
-def status_json(root: Path = ROOT) -> dict:
+def status_json(root: Path = ROOT, heal: bool = True) -> dict:
     """Machine-readable status for fleet census scripts.
 
     As a side effect (the same self-heal `refuse_if_locked` performs), any
@@ -1325,14 +1395,34 @@ def status_json(root: Path = ROOT) -> dict:
     the moment to reclaim locks a killed sibling process left behind, rather
     than requiring a separate mutating pass. A live/young lock is left alone
     and simply not reported here (it does not block a read-only status).
+
+    ``heal=False`` (the CLI's ``--no-heal``) skips that lock-clearing side
+    effect entirely, for a caller that wants a strictly read-only census over
+    many worktrees without mutating any of them; the default stays ``True``
+    so existing callers see unchanged behavior.
+
+    ``untracked_survivors`` maps each currently-excluded dir that holds
+    untracked-but-not-tracked content (see ``_untracked_entries_present``) to
+    that count — the same non-blocking condition ``apply_profile`` reports as
+    a ``::warning``, surfaced here for a census that never calls ``apply``.
     """
     missing = missing_dirs(root)
-    removed, _still_locked = _clear_stale_locks(root)
+    if heal:
+        removed, _still_locked = _clear_stale_locks(root)
+        removed_paths = [r["path"] for r in removed]
+    else:
+        removed_paths = []
+    untracked_survivors: dict[str, int] = {}
+    for name in missing:
+        count = _untracked_entries_present(root, name)
+        if count:
+            untracked_survivors[name] = count
     return {
         "sparse": bool(missing),
         "missing_dirs": missing,
-        "stale_locks_removed": [r["path"] for r in removed],
+        "stale_locks_removed": removed_paths,
         "full_bytes_estimate": _full_bytes_estimate(root, missing),
+        "untracked_survivors": untracked_survivors,
     }
 
 
@@ -1340,7 +1430,8 @@ def main(argv: list[str]) -> int:
     cmd = argv[0] if argv else "status"
     if cmd == "status":
         if "--json" in argv[1:]:
-            print(json.dumps(status_json()))
+            heal = "--no-heal" not in argv[1:]
+            print(json.dumps(status_json(heal=heal)))
             return 0
         return status()
     if cmd == "auto":
