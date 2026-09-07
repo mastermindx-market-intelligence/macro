@@ -61,6 +61,13 @@
     <p class="dmw-nullwhy">{{ t('This panel is still catching up to the SEC filings for this listing. Check back soon — nothing is being estimated in its place.',
                                '本面板仍在同步该证券的 SEC 文件，请稍后再查看；此处不作任何估算替代。') }}</p>
 
+  {% elif debt_maturity.status == 'unresolved' %}
+    {# Round-2 review MAJOR-1: an identity gap is not fetch lag -- this branch
+       must never promise a catch-up that has no fetch behind it. #}
+    <p class="dmw-null">{{ t('We do not have an SEC filing record for this listing.', '我们目前没有该证券的 SEC 备案记录。') }}</p>
+    <p class="dmw-nullwhy">{{ t('This panel only reads filings an issuer makes with the SEC, and this listing has not been matched to one.',
+                               '本面板仅读取发行人向 SEC 提交的文件，该证券尚未匹配到对应的备案主体。') }}</p>
+
   {% elif debt_maturity.status == 'identity_mismatch' %}
     <p class="dmw-null">{{ t('We could not confirm which company filed for this listing, so the debt schedule is not shown.',
                             '我们无法确认是哪家公司为该证券提交了文件，因此未显示到期债务信息。') }}</p>

@@ -876,8 +876,14 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
        other visible status (not_loaded / no_filings / no_maturity_facts /
        identity_mismatch) rendered in the body with real null-disclosure text
        but unreachable from the jump nav, an orphaned section a reader could
-       only find by scrolling past it. #}
-    {% if debt_maturity and debt_maturity.status != 'not_applicable' %}<a href="#debt-maturity">{{ t('Debt', '债务') }}</a>{% endif %}
+       only find by scrolling past it.
+       Round-2-fix-round MAJOR-1: `unresolved` (an identity gap the panel can
+       never resolve into content — see the partial's own `unresolved` branch)
+       is deliberately excluded from the chip too, alongside `not_applicable` —
+       nothing pending is behind that dead end, so it is not worth a jump link,
+       even though the partial still renders its honest one-line answer for a
+       reader who scrolls to it. #}
+    {% if debt_maturity and debt_maturity.status not in ('not_applicable', 'unresolved') %}<a href="#debt-maturity">{{ t('Debt', '债务') }}</a>{% endif %}
     {% if options %}<a href="#options">{{ t('Options', '期权') }}</a>{% endif %}
     {% if ownership %}<a href="#ownership">{{ t('Holders', '持仓') }}</a>{% endif %}
     {% if news %}<a href="#news">{{ t('News', '新闻') }}</a>{% endif %}

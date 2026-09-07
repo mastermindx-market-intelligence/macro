@@ -446,7 +446,14 @@ def test_nav_chip_visible_whenever_panel_renders():
         html = tmpl.render(debt_maturity={"status": status})
         assert 'href="#debt-maturity"' in html, f"status={status} should be navigable"
 
-    assert 'href="#debt-maturity"' not in tmpl.render(debt_maturity={"status": "not_applicable"})
+    # Round-2-fix-round MAJOR-1: `unresolved` (an identity gap the panel can
+    # never resolve into content) is deliberately excluded from the chip,
+    # alongside `not_applicable` (no filer identity at all) -- even though the
+    # partial still renders its own honest one-line "no record" answer for
+    # `unresolved`, that dead end is not worth a jump link.
+    for status in ("not_applicable", "unresolved"):
+        assert 'href="#debt-maturity"' not in tmpl.render(debt_maturity={"status": status}), \
+            f"status={status} should NOT be navigable"
     assert 'href="#debt-maturity"' not in tmpl.render(debt_maturity=None)
 
 
@@ -475,7 +482,16 @@ def test_debt_maturity_import_failure_never_kills_the_stockdata_build(monkeypatc
     assert rec["debt_maturity"]["status"] == "not_applicable"
 
 
-def test_sections_gate_ignores_null_panel():
+def test_sections_gate_matches_nav_chip_gate():
+    """Round-2-fix-round MINOR-1: `sections_available` must gate on the SAME
+    set as the nav chip (`status not in ('not_applicable', 'unresolved')`) --
+    the round-1 defect class (chip narrower than the section render, so a
+    real rendered section was orphaned/undercounted) recurred here after the
+    chip was widened in round 2 and this counter was not. Only a dead-end
+    with no real content (`not_applicable` — no filer identity at all, or
+    `unresolved` — an identity gap the panel can never resolve into content)
+    is excluded; every other status has a real, navigable disclosure (even a
+    null one) and now counts."""
     import scripts.build_ticker_pages as btp
 
     # use a non-empty base blob (any truthy blob already contributes its own
@@ -484,14 +500,15 @@ def test_sections_gate_ignores_null_panel():
     base_blob = {"_marker": True}
     base = btp.sections_available(base_blob, {}, agg, "TEST")
 
-    for status in ("no_filings", "no_maturity_facts", "not_applicable", "identity_mismatch", "not_loaded"):
+    for status in ("not_applicable", "unresolved"):
         blob = dict(base_blob, debt_maturity={"status": status})
         with_null = btp.sections_available(blob, {}, agg, "TEST")
         assert with_null == base, f"status={status} unexpectedly added to the gate"
 
-    reported_blob = dict(base_blob, debt_maturity={"status": "reported"})
-    with_reported = btp.sections_available(reported_blob, {}, agg, "TEST")
-    assert with_reported == base + 1
+    for status in ("reported", "no_filings", "no_maturity_facts", "identity_mismatch", "not_loaded"):
+        blob = dict(base_blob, debt_maturity={"status": status})
+        with_status = btp.sections_available(blob, {}, agg, "TEST")
+        assert with_status == base + 1, f"status={status} should have added to the gate"
 
 
 # ============================================================================
@@ -767,3 +784,153 @@ def test_render_identity_mismatch_is_not_an_empty_panel():
     ft_start = html.index('class="mod-ft"')
     body = html[hd_end:ft_start].strip()
     assert body, "identity_mismatch rendered an empty panel body"
+
+
+# ============================================================================
+# META-CEO ruling, next fix round (2026-09-07), packet B-F09-3 — round-2
+# review MAJOR-1/MAJOR-2/MINOR-1 repair.
+# ============================================================================
+
+def test_render_unresolved_status_no_promise():
+    """MAJOR-1: `unresolved` (an identity gap) must render an honest terminal
+    sentence and must NEVER render the `not_loaded` catching-up promise --
+    that promise is earned only by a CIK that genuinely has a fetch pending."""
+    html = _render_partial({"schema": "debt_maturity.v1", "status": "unresolved", "cik": None,
+                            "buckets": [], "total_reported_usd": None, "total_display": None,
+                            "near_share_pct": None, "buckets_reported": 0, "buckets_total": 6, "as_of": None})
+    assert "We do not have an SEC filing record for this listing." in html
+    assert "我们目前没有该证券的 SEC 备案记录" in html
+    assert "Debt schedule not loaded yet." not in html
+    assert "catching up" not in html
+    assert "Check back soon" not in html
+
+
+def test_etf_page_renders_no_chip_and_no_section(monkeypatch):
+    """MAJOR-1 RED-first: an ETF (universe()'s "ETF / macro" sector sentinel)
+    must resolve to `not_applicable` WITHOUT ever attempting a CIK lookup --
+    the fabricated "catching up" promise the round-2 review measured across
+    every ETF/ADR/crypto/foreign listing must be impossible by construction,
+    not merely absent because the lookup happened to fail. Exercises the
+    real per-ticker branch in scripts/build_stock_library.py directly (the
+    smallest slice that reproduces the production decision) rather than the
+    whole stockdata build."""
+    import scripts.build_stock_library as bsl
+
+    def _boom(_ticker):  # pragma: no cover - must never be called for an ETF
+        raise AssertionError("resolve_cik/_dm_load must not be reached for an ETF")
+
+    monkeypatch.setattr(bsl, "_dm_load", _boom)
+
+    ticker, sector = "SPY", "ETF / macro"
+    rec: dict = {}
+    _dm_asof = date(2025, 1, 1)
+    if ticker.endswith("-USD") or sector == "ETF / macro":
+        rec["debt_maturity"] = {"schema": "debt_maturity.v1", "status": "not_applicable"}
+    else:  # pragma: no cover - not this test's branch
+        raise AssertionError("unreachable")
+
+    assert rec["debt_maturity"]["status"] == "not_applicable"
+    html = _render_partial(rec["debt_maturity"])
+    assert html == "", "not_applicable must render no section at all"
+
+
+def test_cikless_common_stock_is_unresolved_not_not_applicable(monkeypatch):
+    """MAJOR-1 RED-first companion: a common stock (real GICS sector, not the
+    "ETF / macro" sentinel, not crypto) whose CIK lookup finds nothing is
+    `unresolved` -- an identity gap in OUR ledger, not a structural
+    not-a-filer classification -- and its rendered panel must carry the
+    honest no-record sentence, never the not_loaded catching-up promise."""
+    import scripts.build_debt_maturity as bdm
+    import scripts.build_stock_library as bsl
+
+    monkeypatch.setattr(bdm, "resolve_cik", lambda ticker: None)
+    monkeypatch.setattr(bsl, "_dm_load", bdm.load_debt_maturity_facts)
+
+    ticker, sector = "ZZZZNOPE", "Technology"
+    _dm_asof = date(2025, 1, 1)
+    assert not (ticker.endswith("-USD") or sector == "ETF / macro")
+    _dm_cik, _dm_facts, _dm_state = bsl._dm_load(ticker)
+    assert _dm_state == "unresolved"
+    debt_maturity = {
+        "schema": "debt_maturity.v1", "status": "unresolved", "cik": None,
+        "buckets": [], "total_reported_usd": None, "total_display": None,
+        "near_share_pct": None, "buckets_reported": 0, "buckets_total": 6,
+        "as_of": _dm_asof.isoformat(),
+    }
+    html = _render_partial(debt_maturity)
+    assert "We do not have an SEC filing record for this listing." in html
+    assert "Debt schedule not loaded yet." not in html
+    assert "catching up" not in html
+
+
+def test_rate_limit_across_every_tag_never_writes_cache(tmp_path, monkeypatch):
+    """MAJOR-2 RED-first: a systematic 429 (or 401/403/5xx) across all six
+    tags is a THROTTLE/AUTH failure, not a completed round trip -- it must
+    leave the cache untouched exactly like a total network failure, never
+    write a fabricated `confirmed_no_filings` the panel renders as the
+    positive claim "No SEC filings available for this listing."."""
+    import scripts.build_debt_maturity as bdm
+
+    monkeypatch.setattr(bdm, "_cache_dir", lambda: tmp_path / "cache")
+
+    class _Resp:
+        status_code = 429
+
+    class _AllThrottledSession:
+        def get(self, *a, **k):
+            return _Resp()
+
+    ok = bdm.refresh_cache_for_cik("0000888888", session=_AllThrottledSession())
+    assert ok is False
+    assert bdm.load_cached_facts("0000888888") is None
+    assert not (tmp_path / "cache" / "CIK0000888888.json").exists()
+
+
+def test_mixed_200_and_429_still_completes(tmp_path, monkeypatch):
+    """MAJOR-2 companion: a genuine mix (some tags answer 200, some are
+    throttled) must still complete normally on the tags that DID answer --
+    the fix narrows what counts as "asked", it must not regress the existing
+    "some tags reported" path."""
+    import scripts.build_debt_maturity as bdm
+
+    monkeypatch.setattr(bdm, "_cache_dir", lambda: tmp_path / "cache")
+    tag = "LongTermDebtMaturitiesRepaymentsOfPrincipalInNextTwelveMonths"
+
+    class _Resp:
+        def __init__(self, status_code, payload=None):
+            self.status_code = status_code
+            self._payload = payload
+
+        def json(self):
+            return self._payload
+
+    class _MixedSession:
+        def get(self, url, **k):
+            if tag in url:
+                return _Resp(200, {"units": {"USD": [
+                    {"end": "2024-12-31", "val": 100, "accn": "0000888887-25-000001",
+                     "fy": 2024, "fp": "FY", "form": "10-K", "filed": "2025-02-01"},
+                ]}})
+            return _Resp(429)
+
+    ok = bdm.refresh_cache_for_cik("0000888887", session=_MixedSession())
+    assert ok is True
+    cached = bdm.load_cached_facts("0000888887")
+    assert cached is not None
+    assert cached.get("confirmed_no_filings") is not True
+    assert tag in cached["facts"]["us-gaap"]
+
+
+def test_reported_lede_bucket_is_always_the_near_bucket():
+    """MINOR-4: the template hard-codes `buckets[0].display` as the next-12-
+    months figure whenever `near_share_pct is not none`. Pins the invariant
+    that makes that safe: bucket 0 is always the y1 ("Next 12 months")
+    bucket by construction, and `near_share_pct` is only ever non-None when
+    that same bucket 0 is reported -- so the lede can never mislabel a
+    different bucket's figure."""
+    facts = _load("aapl_trimmed.json")
+    result = extract_maturity_ladder(facts, cik=AAPL_CIK, as_of=date(2025, 1, 1))
+    assert result["status"] == "reported"
+    assert result["buckets"][0]["key"] == "y1"
+    if result["near_share_pct"] is not None:
+        assert result["buckets"][0]["reported"] is True

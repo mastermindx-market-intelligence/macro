@@ -41,11 +41,13 @@ name: debt-maturity-drip
 # sweep carries those writes on its next run, same as edgar_flow_ops.yml.
 on:
   schedule:
-    # 02:50 UTC -- after filing-forensics-sec (02:30, macstudio-light, a
-    # DIFFERENT host, so no queue contention) and well before daily.yml's
-    # `engine` job reaches its own EDGAR/companyfacts steps (~05:00-06:30
-    # UTC) on this SAME `macstudio` runner -- sequential, not concurrent, so
-    # this bounded 25m job never competes with the render-path job's budget.
+    # 02:50 UTC -- this job and daily.yml's `engine` job now run on the SAME
+    # `macstudio` host (see the BLOCKER-2 comment above), so the separation
+    # that matters is TIME, not host: well before daily.yml's `engine` job
+    # reaches its own EDGAR/companyfacts steps (~05:00-06:30 UTC) so this
+    # bounded 25m job finishes and releases the runner before `engine` needs
+    # it -- sequential on one host, never concurrent, so this job never
+    # competes with the render-path job's budget.
     - cron: "50 2 * * *"
   workflow_dispatch:
     inputs:
@@ -63,7 +65,7 @@ concurrency:
 
 jobs:
   drip:
-    runs-on: [self-hosted, macstudio-light]
+    runs-on: [self-hosted, macstudio]
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4

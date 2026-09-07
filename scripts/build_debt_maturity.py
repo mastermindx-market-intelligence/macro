@@ -284,7 +284,12 @@ def refresh_cache_for_cik(
       by the render path. Best-effort: a total network failure across every
       tag leaves the existing cache (if any) untouched and returns False; a
       completed round trip (even one that found nothing) always writes,
-      distinguishing "asked and got nothing" from "never asked".
+      distinguishing "asked and got nothing" from "never asked". Only a 200
+      (a real payload) or a 404 (SEC's own "no data for this tag" answer)
+      counts as a completed round trip (round-2 review MAJOR-2) -- a 401/403/
+      429/5xx is a THROTTLE or AUTH failure, not an answer, and must never be
+      allowed to manufacture a false ``confirmed_no_filings`` the way a real
+      completed-and-empty cycle legitimately does.
     """
     if full_companyfacts is not _UNSET:
         return _write_cache_from_full_companyfacts(cik, full_companyfacts)
@@ -302,11 +307,15 @@ def refresh_cache_for_cik(
             resp = sess.get(url, timeout=timeout, headers={"User-Agent": "mastermind-x debt-maturity/1.0"})
         except Exception:  # noqa: BLE001 -- a transient failure never overwrites the existing cache
             continue
-        # Any HTTP response at all (200, 404, ...) means the round trip to SEC
-        # completed -- this is what lets "asked every tag and found nothing"
-        # be told apart from "every single tag request failed" (network down),
-        # which must leave the existing cache untouched, not confirm a false
-        # negative.
+        # Only 200 (a real payload) or 404 (SEC's own "no data for this tag"
+        # answer) counts as a completed round trip -- round-2 review MAJOR-2.
+        # A 401/403/429/5xx is a throttle/auth failure, not an answer: it must
+        # fall through exactly like a network exception (never set
+        # any_clean_response), or a systematic rate-limit across all six tags
+        # would satisfy `not got_any` below and write a fabricated
+        # confirmed_no_filings the panel renders as a positive claim.
+        if resp.status_code not in (200, 404):
+            continue
         any_clean_response = True
         if resp.status_code != 200:
             continue

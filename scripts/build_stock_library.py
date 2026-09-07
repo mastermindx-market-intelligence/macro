@@ -4065,31 +4065,58 @@ def main() -> int:
         # Top-level block in each stockdata JSON: engine.debt_maturity.v1.
         # Identity is CIK-only via scripts/build_debt_maturity.py's committed
         # ticker->CIK ledger + issuer_master fallback (GATE 0, fixed 2026-09-06).
-        # Three distinct null states (META-CEO ruling round 2, B2) -- an
-        # unresolved ticker and a resolved-but-never-fetched CIK are BOTH
-        # "not_loaded" (we simply do not know yet, never a positive claim);
-        # only a completed fetch cycle that positively found nothing earns
-        # "no_filings" (passed through as companyfacts=None so the engine's
-        # own status derivation is the single source of truth for that
-        # string). Never a network call here -- the cache is warmed off the
-        # render path by collectors/edgar_facts.py (B1 wiring).
+        #
+        # FOUR distinct statuses, never conflated (META-CEO ruling round 2,
+        # MAJOR-1) -- an identity GAP is not fetch LAG:
+        #   * "not_applicable" -- this listing has no SEC filer identity by
+        #     CONSTRUCTION (crypto, or an ETF/commodity/FX/factor/credit macro
+        #     proxy carried under the "ETF / macro" sector sentinel `universe()`
+        #     itself stamps for every non-named curated_extras ticker -- see
+        #     `universe()`'s "an ETF / macro proxy" branch). No chip, no
+        #     section: a promise this listing could NEVER keep must never be
+        #     made, so it is decided here, before any CIK lookup at all.
+        #   * "unresolved" -- a CIK lookup was attempted (this IS a candidate
+        #     common-stock/ADR identity) and found nothing. An identity gap in
+        #     OUR ledger, not evidence the filer doesn't exist -- but also not
+        #     a "come back soon" promise, since there is no fetch pending to
+        #     resolve it. Its own terminal branch in the template.
+        #   * "not_loaded" -- a CIK exists but this producer has never
+        #     completed a fetch cycle for it (cache file absent). The ONLY
+        #     status that earns the "still catching up, check back soon" copy
+        #     -- a real fetch is genuinely pending for this one.
+        #   * everything else (engine.debt_maturity.extract_maturity_ladder's
+        #     own "reported" / "no_maturity_facts" / "no_filings" /
+        #     "identity_mismatch") -- unchanged, a completed fetch cycle.
         try:
-            if _dm_load is None:
-                raise RuntimeError("scripts.build_debt_maturity import failed at module load")
-            _dm_cik, _dm_facts, _dm_state = _dm_load(ticker)
-            from engine.debt_maturity import extract_maturity_ladder as _dm_extract  # noqa: PLC0415
             _dm_asof = _dt.date.today()
-            if _dm_state in ("unresolved", "not_loaded"):
-                rec["debt_maturity"] = {
-                    "schema": "debt_maturity.v1", "status": "not_loaded", "cik": _dm_cik,
-                    "buckets": [], "total_reported_usd": None, "total_display": None,
-                    "near_share_pct": None, "buckets_reported": 0, "buckets_total": 6,
-                    "as_of": _dm_asof.isoformat(),
-                }
-            elif _dm_state == "confirmed_no_filings":
-                rec["debt_maturity"] = _dm_extract(None, cik=_dm_cik, as_of=_dm_asof)
+            if ticker.endswith("-USD") or sector == "ETF / macro":
+                # Structural non-filer: crypto and every ETF/macro proxy this
+                # universe carries. Never attempts a CIK lookup for these --
+                # there is no filer identity to look up.
+                rec["debt_maturity"] = {"schema": "debt_maturity.v1", "status": "not_applicable"}
             else:
-                rec["debt_maturity"] = _dm_extract(_dm_facts, cik=_dm_cik, as_of=_dm_asof)
+                if _dm_load is None:
+                    raise RuntimeError("scripts.build_debt_maturity import failed at module load")
+                _dm_cik, _dm_facts, _dm_state = _dm_load(ticker)
+                from engine.debt_maturity import extract_maturity_ladder as _dm_extract  # noqa: PLC0415
+                if _dm_state == "unresolved":
+                    rec["debt_maturity"] = {
+                        "schema": "debt_maturity.v1", "status": "unresolved", "cik": None,
+                        "buckets": [], "total_reported_usd": None, "total_display": None,
+                        "near_share_pct": None, "buckets_reported": 0, "buckets_total": 6,
+                        "as_of": _dm_asof.isoformat(),
+                    }
+                elif _dm_state == "not_loaded":
+                    rec["debt_maturity"] = {
+                        "schema": "debt_maturity.v1", "status": "not_loaded", "cik": _dm_cik,
+                        "buckets": [], "total_reported_usd": None, "total_display": None,
+                        "near_share_pct": None, "buckets_reported": 0, "buckets_total": 6,
+                        "as_of": _dm_asof.isoformat(),
+                    }
+                elif _dm_state == "confirmed_no_filings":
+                    rec["debt_maturity"] = _dm_extract(None, cik=_dm_cik, as_of=_dm_asof)
+                else:
+                    rec["debt_maturity"] = _dm_extract(_dm_facts, cik=_dm_cik, as_of=_dm_asof)
         except Exception:  # noqa: BLE001 -- additive; must not break the stockdata build
             rec["debt_maturity"] = {"schema": "debt_maturity.v1", "status": "not_applicable"}
         # ---- confluence block (frozen Terminal contract, 2026-07-06) ---------------
