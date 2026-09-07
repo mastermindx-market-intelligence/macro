@@ -1,14 +1,14 @@
 {
   "kind": "ACTUAL_LOCAL_CANONICAL_TARGET",
   "production": false,
-  "at": "2026-09-07T06:27:55.418119+00:00",
-  "html_sha256": "d8e8a1f6d92fe03cf22b6a0c8f0101e9ab65591e826fcbf73f75ac569ffc3df8",
+  "at": "2026-09-07T07:20:18.362285+00:00",
+  "html_sha256": "e93ed968875eae9803286b083d58ffb70f5f87e6af4816735e8fb90ecc8485b9",
   "source_hashes": {
-    "lib/macro_economic_backdrop.py": "0e5f679ebdbebab092ee0802aa03e308be261bc1f8548afc0785fd6f516aa332",
+    "lib/macro_economic_backdrop.py": "575c1bcfd9a1d1bad6e956d804f45f777bc983ecbc2d21ed24877e4796988ab7",
     "scripts/build_site.py": "11d886fe54ff5feac54fa9dfca2da7dc9102668a031b015b7677a332753c8361",
     "templates/dashboard.html.j2": "130b11ed7e189b15aa849e6a3a94297eb17abfb39869183eeaf3357cd0a924d1",
-    "templates/_macro_economic_backdrop.html.j2": "668194f1a1c1a8e3fa35da530e3c95f8e6f3f493d926cbb23b692f1b961d52bc",
-    "templates/_macro_economic_backdrop.css.j2": "3c9b61f215f238586ea6b3f2d500eb6ab0dfa2889c662664f107c1c432e06588"
+    "templates/_macro_economic_backdrop.html.j2": "eb08ff11b2605188a7a7bcafbfaa5b52db611299f235d57ceb6688115614daec",
+    "templates/_macro_economic_backdrop.css.j2": "2c1437ac11f590b66df7407a50f28d4cc4fb12926ea63c4ad7c0ef90bcde095b"
   },
   "cases": [
     {
@@ -23,6 +23,11 @@
         "actions_top": 1489.703125
       },
       "keyboard_receipt": true,
+      "source_receipt_heights": [
+        44,
+        44,
+        44
+      ],
       "page_errors": []
     },
     {
@@ -37,6 +42,11 @@
         "actions_top": 1497.703125
       },
       "keyboard_receipt": true,
+      "source_receipt_heights": [
+        44,
+        44,
+        44
+      ],
       "page_errors": []
     },
     {
@@ -51,6 +61,11 @@
         "actions_top": 1470.96875
       },
       "keyboard_receipt": true,
+      "source_receipt_heights": [
+        44,
+        44,
+        44
+      ],
       "page_errors": []
     },
     {
@@ -65,6 +80,11 @@
         "actions_top": 1478.96875
       },
       "keyboard_receipt": true,
+      "source_receipt_heights": [
+        44,
+        44,
+        44
+      ],
       "page_errors": []
     },
     {
@@ -79,6 +99,11 @@
         "actions_top": 2319.75
       },
       "keyboard_receipt": true,
+      "source_receipt_heights": [
+        44,
+        44,
+        44
+      ],
       "page_errors": []
     },
     {
@@ -93,6 +118,11 @@
         "actions_top": 2343.75
       },
       "keyboard_receipt": true,
+      "source_receipt_heights": [
+        44,
+        44,
+        44
+      ],
       "page_errors": []
     },
     {
@@ -107,6 +137,11 @@
         "actions_top": 2310.171875
       },
       "keyboard_receipt": true,
+      "source_receipt_heights": [
+        44,
+        44,
+        44
+      ],
       "page_errors": []
     },
     {
@@ -121,6 +156,11 @@
         "actions_top": 2334.171875
       },
       "keyboard_receipt": true,
+      "source_receipt_heights": [
+        44,
+        44,
+        44
+      ],
       "page_errors": []
     },
     {
@@ -135,6 +175,11 @@
         "actions_top": 2522.515625
       },
       "keyboard_receipt": true,
+      "source_receipt_heights": [
+        44,
+        44,
+        44
+      ],
       "page_errors": []
     },
     {
@@ -149,6 +194,11 @@
         "actions_top": 2546.515625
       },
       "keyboard_receipt": true,
+      "source_receipt_heights": [
+        44,
+        44,
+        44
+      ],
       "page_errors": []
     },
     {
@@ -163,6 +213,11 @@
         "actions_top": 2337.125
       },
       "keyboard_receipt": true,
+      "source_receipt_heights": [
+        44,
+        44,
+        44
+      ],
       "page_errors": []
     },
     {
@@ -177,6 +232,11 @@
         "actions_top": 2361.125
       },
       "keyboard_receipt": true,
+      "source_receipt_heights": [
+        44,
+        44,
+        44
+      ],
       "page_errors": []
     }
   ],

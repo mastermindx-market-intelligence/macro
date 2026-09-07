@@ -3,4 +3,4 @@ changed_paths:
   - templates/_macro_economic_backdrop.css.j2
   - templates/_macro_economic_backdrop.html.j2
   - templates/dashboard.html.j2
-manifest: mockups/evidence/macro-economic-backdrop/canonical/manifest.json
+manifest: mockups/evidence/macro-economic-backdrop/canonical-repaired/manifest.json

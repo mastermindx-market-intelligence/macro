@@ -1,5 +1,17 @@
 {
-  "at": "2026-09-07T06:33:32.906766+00:00",
+  "diff_base": "3405309de9adf19c3fc7115a7a06a4b327772c92",
+  "source_commit": "cdb5a7a27dd83f5a6afd9c9e8bd748bd5937affb",
+  "diff_sha256": "05921fb5f7fd13ea022f590ddf582caf3c4bfee312692c8f3accf9533caad62d",
+  "guarded_sources": {
+    "lib/macro_economic_backdrop.py": "575c1bcfd9a1d1bad6e956d804f45f777bc983ecbc2d21ed24877e4796988ab7",
+    "templates/_macro_economic_backdrop.html.j2": "eb08ff11b2605188a7a7bcafbfaa5b52db611299f235d57ceb6688115614daec",
+    "templates/_macro_economic_backdrop.css.j2": "2c1437ac11f590b66df7407a50f28d4cc4fb12926ea63c4ad7c0ef90bcde095b",
+    "templates/dashboard.html.j2": "130b11ed7e189b15aa849e6a3a94297eb17abfb39869183eeaf3357cd0a924d1",
+    "scripts/build_site.py": "11d886fe54ff5feac54fa9dfca2da7dc9102668a031b015b7677a332753c8361",
+    "tests/test_macro_economic_backdrop.py": "d16e29bb139059760bfc0cb56c0c798fad4900e9669d029b5e0fb70e13f8ca67",
+    "tests/test_dashboard_template_render.py": "b0b26f3759cef803601f35aa18022597388284d5730c8b747dc82cd9a8f74e9c",
+    ".github/ci/legacy-jobs.yml": "e082ca024cbc907fd25691dd27aa9b1b39ace10595fe292676d71aaedd215c21"
+  },
   "checks": [
     {
       "command": [
@@ -8,7 +20,7 @@
         "--mode",
         "enforce-added",
         "--diff-file",
-        "/tmp/sol-economic-final-diff-20260907-continuation.diff"
+        "/Volumes/Mastermind/agent-workspaces/audit/sol-economic-release-20260907/repair-full-pr.diff"
       ],
       "exit": 0
     },
@@ -17,7 +29,14 @@
         "python3",
         "scripts/check_ui_visual_evidence.py",
         "--diff-file",
-        "/tmp/sol-economic-final-diff-20260907-continuation.diff"
+        "/Volumes/Mastermind/agent-workspaces/audit/sol-economic-release-20260907/repair-full-pr.diff"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_runtime_style_injection.py"
       ],
       "exit": 0
     },

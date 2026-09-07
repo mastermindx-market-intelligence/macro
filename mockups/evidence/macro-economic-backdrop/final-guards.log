@@ -1,7 +1,9 @@
-COMMAND: python3 scripts/check_design_system.py --mode enforce-added --diff-file /tmp/sol-economic-final-diff-20260907-continuation.diff
+COMMAND: python3 scripts/check_design_system.py --mode enforce-added --diff-file /Volumes/Mastermind/agent-workspaces/audit/sol-economic-release-20260907/repair-full-pr.diff
 ::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (19015 further pre-existing, non-blocking finding(s) in the estate — run --mode report for the full census)
 design-system ratchet — mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 19015)
-COMMAND: python3 scripts/check_ui_visual_evidence.py --diff-file /tmp/sol-economic-final-diff-20260907-continuation.diff
+COMMAND: python3 scripts/check_ui_visual_evidence.py --diff-file /Volumes/Mastermind/agent-workspaces/audit/sol-economic-release-20260907/repair-full-pr.diff
+COMMAND: python3 scripts/check_runtime_style_injection.py
+runtime style injection guard OK (195 .js files scanned, 45 injecting, 91 total hits — all within frozen allowances)
 COMMAND: python3 scripts/agentos.py validate --quiet
-agentos: 1066 records (69 workstreams, 305 decisions, 252 discoveries, 440 handoffs) — 0 error(s), 57 warning(s)
+agentos: 1066 records (69 workstreams, 305 decisions, 253 discoveries, 439 handoffs) — 0 error(s), 57 warning(s)
 COMMAND: git diff --cached --check

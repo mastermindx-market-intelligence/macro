@@ -1,5 +1,21 @@
 # US Macro economic backdrop — bounded implementation
 
+## Current proof epoch — reviewed-source repairs
+This section supersedes earlier source-date wording and proof counts below.
+The repaired production source is cdb5a7a27dd83f5a6afd9c9e8bd748bd5937affb.
+First independent review was REQUEST_CHANGES; all three material findings plus the
+optional-estimate false-negative were repaired with14failing discriminators first.
+The full existing owner set now passes222tests, with no skips and no data-guard waiver.
+The real normal-builder target is e93ed968875eae9803286b083d58ffb70f5f87e6af4816735e8fb90ecc8485b9.
+Eight refreshed capture cells bind to cdb5a7a2. Twelve actual-page cases and three
+investigation journeys pass, including visible model basis and44px source receipts.
+Current EVIDENCE.yml owns canonical-repaired/manifest.json; d50 captures are historical.
+The receipt distinguishes CPI reference month from source as-of. A missing/unsupported
+fact date is explicitly Date unavailable, not silently omitted. Includes estimates is
+shown for a present positive-weight simulated component, without changing owner math.
+Full details are in REVIEW_REPAIR.md and CONTINUATION.md. Current-head hosted checks,
+checkpoint obligations, review and release remain separate; this is not production.
+
 Operation: `macro-briefing-economic-backdrop-20260907-sol-001`.
 Source owner: Sol, under the current live Chairman instruction to finish the US Macro Briefing upgrade.
 Protected procedural pin: Mastermind `ef02058ba9356808e41937dab054f00043f89c1e`, Skillpack 1.0.1/bootstrap 1.

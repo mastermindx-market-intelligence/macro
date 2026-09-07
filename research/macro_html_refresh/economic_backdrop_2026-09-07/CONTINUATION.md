@@ -1,105 +1,79 @@
-# US Macro economic backdrop — continuation
+# US Macro economic backdrop — exact continuation
 
-No lawful program workstream is currently established for this bounded homepage
+Operation: `macro-briefing-economic-backdrop-20260907-sol-001`; existing PR **6974**.
+Source/release owner remains Sol under the live Chairman continuation.
+Branch: `claude/ssd-sol-macro-economic-backdrop-20260907-afc3f1512bdbd93e`.
+Worktree: `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/sol-macro-economic-backdrop-20260907-afc3f1512bdbd93e`.
+Protected procedure: Mastermind `6ce1e0104f43657b3d5fc333d848025e28a8173a`,
+compatible Skillpack1.0.1/bootstrap1, all required companions loaded at that SHA.
+
+## Outcome and boundary
+Let a pro-retail reader see Growth, Inflation and Financial conditions without
+opening three dialogs. Reuse existing sealed workspace outputs, owner state labels,
+two dated facts and real investigation links. No new data producer, classifier,
+score, forecast, trading authority, authentication, controller or publication lane.
+The broader briefing upgrade is not complete merely because this row works.
+
+There is no established organizational workstream for this bounded homepage
 consumer. WS:MARKET-OS is the separate portfolio/security investing-OS program;
-the `engine/market_os/` path name does not make that organizational parent true.
-Do not infer an approximate WS, Linear issue or Executive Job. This record extends
-the existing macro_html_refresh product authority. Agent OS discovery
-DSC:MACRO-ECONOMIC-BACKDROP-PUBLISHED-CONSUMER points here without inventing a parent.
+the engine directory name does not make that parent true. Do not invent a WS,
+Linear issue or Executive Job. Agent OS discovery
+DSC:MACRO-ECONOMIC-BACKDROP-PUBLISHED-CONSUMER points to this research home.
 
-```yaml
-session: sol-macro-economic-backdrop-20260907-afc3f1512bdbd93e
-model: sol
-ended_because: ci_handoff
-prs: []
-mission: Add one useful economic-backdrop row to the US Macro briefing using existing sealed workspace readers,
-  owner state labels, two dated facts and real investigation links; preserve the broader homepage upgrade.
-state_before: The homepage had no economic-backdrop row. Compact public risk context remains independently reviewed
-  on PR6685. Growth period fidelity is reviewed on PR6969. Both are not production-proven; the broader Macro Command
-  chain retains its shared-view ownership.
-changed:
-- path: lib/macro_economic_backdrop.py
-  what: Read three existing published workspaces; withhold failed/stale/ambiguous inputs without a new state or
-    score.
-- path: templates/_macro_economic_backdrop.html.j2
-  what: Three semantic cards with bilingual states, dated facts, native source receipts and real links.
-- path: templates/_macro_economic_backdrop.css.j2
-  what: Governed dark and light materials; compact desktop, stacked mobile, 44px actions.
-- path: scripts/build_site.py
-  what: Attach the existing-publication view once to the normal VM before its developer cache.
-- path: templates/dashboard.html.j2
-  what: Mount only in macro mode after the order-1 market ticker.
-- path: tests/test_macro_economic_backdrop.py
-  what: Real composer/manifest fixtures test health, integrity, clocks, zero/null and duplicate identities.
-- path: tests/test_dashboard_template_render.py
-  what: The existing full-dashboard owner retains the macro-only mount assertion.
-- path: .github/ci/legacy-jobs.yml
-  what: Extend existing suite-page and intelligence-registry scopes, not a new job or global invalidator.
-- path: research/macro_html_refresh/economic_backdrop_2026-09-07/
-  what: Design return/disposition, source report and reproducible preview/canonical-target evidence.
-verified:
-- claim: Final isolated dashboard and component suites pass after the duplicate-identity repair and ownership split.
-  command: python3 -m pytest tests/test_macro_economic_backdrop.py tests/test_dashboard_template_render.py tests/test_macro_suite_pages.py
-    -q -ra
-  result: 127 passed; no data-guard failure after stopping the separate full builder and restoring its tracked byproducts.
-- claim: The compact combined design has actual visual placement and negative-state proof.
-  command: python3 research/macro_html_refresh/economic_backdrop_2026-09-07/capture_preview.py --canvas-root <retained-6685-worktree>
-    --out <new-audit-directory> [--scenario stale-growth]
-  result: 12 normal + 4 stale-growth cases passed. Actual ticker->economic row->action-card geometry, 44px targets,
-    keyboard receipts and no horizontal overflow. Design composition, not a canonical build.
-- claim: Exact current source produced the real macro target and the real unchanged page passes layout, keyboard,
-    fact and three investigation journeys.
-  command: python3 research/macro_html_refresh/economic_backdrop_2026-09-07/build_macro_target.py; python3 scripts/capture_page_evidence.py
-    --site-dir site --routes /macro.html; python3 research/macro_html_refresh/economic_backdrop_2026-09-07/verify_canonical.py
-    --out <new-audit-directory>
-  result: Canonical target d8e8a1f6d92fe03cf22b6a0c8f0101e9ab65591e826fcbf73f75ac569ffc3df8; all five source hashes
-    match. Eight canonical evidence cells, twelve actual-page interaction cases and three real destination journeys
-    pass. Production remains unverified.
-- claim: Final source and its existing dashboard/suite/three composer owners pass together without skips or data-guard
-    exceptions.
-  command: python3 -m pytest tests/test_macro_economic_backdrop.py tests/test_dashboard_template_render.py tests/test_macro_suite_pages.py
-    tests/test_macro_workspace_growth.py tests/test_macro_workspace_inflation.py tests/test_macro_workspace_financial_conditions.py
-    -q -ra
-  result: 206 passed in78.53s, exit0, source hashes unchanged; final-owner-tests.json/log.
-unverified:
-- claim: Exact-head independent review, hosted checks, current-main integration and production acceptance are complete.
-  what_would_verify: One Draft/Hold PR on this branch, current proof/review, normal source release and the actual
-    published homepage journey.
-unresolved:
-- The first full builder was intentionally interrupted after its macro target while doing unrelated work. A later
-  exact-source macro-target observer exited0 and its twelve browser cases plus three detail journeys passed. Neither
-  is full-site or production acceptance.
-- 'The initial CI scope edit was repaired without dropping its mount test: the existing dashboard owner now carries
-  it. Contract-delta R2 returned0 introduced/0inherited; full fresh checks are run before the source freeze.'
-- 'Do not claim a formal Source Continuity checkpoint: the protected verifier has an observed 100-open-PR cap against
-  a larger estate. Existing Mastermind issue346 owns that prerequisite.'
-- No source or release responsibility is transferred by this handoff; Sol retains this branch and local effects.
-next_actions:
-- Consume the final proof/checkpoint and sole branch PR readbacks; preserve this exact source candidate. No renderer,
-  reviewer or branch replacement.
-- Finalize source-scoped CI closure and canonical output/browser evidence, freeze one commit, and create the sole
-  Draft/Hold PR on the existing branch.
-- Obtain independent exact-head review and reconcile source checkpoint/current integration gates. Serialize generated-page
-  reconciliation with PR6685; no old hero may overwrite its accepted compact risk context.
-do_not_redo:
-- Do not restart the completed design child or call its empty structured result PASS; parent consumed its actual
-  files, corrected the CSS parser defect and owns integration.
-- Do not duplicate Macro Command P2 state maps, acquisition, risk engines, workstreams, auth, queues or publication
-  planes.
-- 'Do not rerun/cancel CI or restart healthy runners: direct host journals now prove all three natural cleanup/restart/pickup
-  cycles.'
-danger_areas:
-- Never run repo-data-guard tests concurrently with an actual builder in this same tree; the first overlap correctly
-  reported live builder writes.
-- Do not broadly clean data/site or mutate foreign worktrees. Only the exact own builder byproducts with known preimages
-  may be restored after process exit.
-- Prototype compositions are not production screenshots. The main-based canonical page still awaits integration
-  with the separate compact-risk PR.
-```
+## Implementation and adjudication
+Initial candidate d50deee6479e0820587456b0d2b5505c1f61af19 was pushed and opened
+as Draft/Hold PR6974. Its independent Opus review returned PARTIAL/REQUEST_CHANGES.
+That finite read-only child was consumed and STOPped in comment5566312130.
+No watcher remains and no source-writer transfer occurred. The full public report
+and parent disposition are `independent-review-d50.md` and `REVIEW_REPAIR.md`.
 
+Repaired production source is frozen in commit
+`cdb5a7a27dd83f5a6afd9c9e8bd748bd5937affb` (evidence-only commits may follow).
+It fixes misleading clock semantics, visibly discloses unknown dates, labels a
+contributing optional estimate, and gives the native receipt a measured44px target.
+Existing owner state/math and the released-CPI fact slots are unchanged.
+The source-date explanation distinguishes CPI reference month from source as-of;
+page generation and calculation time do not claim economic freshness.
 
-Protected procedure: Mastermind `ef02058ba9356808e41937dab054f00043f89c1e`, compatible Skillpack1.0.1/bootstrap1.
-This is a product-consumer continuation record, not a new Market OS program owner or Executive lifecycle.
+## What was actually verified
+- `python3 -m pytest tests/test_macro_economic_backdrop.py tests/test_dashboard_template_render.py tests/test_macro_suite_pages.py tests/test_macro_workspace_growth.py tests/test_macro_workspace_inflation.py tests/test_macro_workspace_financial_conditions.py -q -ra`:222passed, zero skips, exit0. All new14discriminators were RED first.
+- `python3 scripts/check_runtime_style_injection.py`:195JSfiles,45injecting,91hits, unchanged allowance; exit0.
+- Real `build_macro_target.py` observer completed2026-09-07T07:16:05Z with source hashes unchanged and normal writer output
+  `e93ed968875eae9803286b083d58ffb70f5f87e6af4816735e8fb90ecc8485b9`.
+- Existing canonical screenshot capturer:8/8cells in `canonical-repaired/manifest.json`, bound to repaired source commitcdb5a7a2.
+- `verify_canonical.py`:12actual-page cases and3real topic-to-workspace journeys pass; both receipt and investigation targets≥44px, model labels match the input, dates/facts/placement/keyboard behaviour checked.
 
-## September7 live continuation
-Current protected procedure reloaded at `6ce1e0104f43657b3d5fc333d848025e28a8173a`; required same-commit skill blobs match the already fully read laws. The prior chat final that claimed no implementation or readable results was inaccurate; the real source, completed command receipts and browser artifacts establish the work.
+The actual generated page is archived at
+`/Volumes/Mastermind/agent-workspaces/audit/sol-economic-repaired-target-preserved-20260907/macro.html`.
+Own builder byproducts were restored only after completion and exact target preservation.
+A new-day cache-name mismatch refused the first cleanup before moving either cache;
+the exact two September7cache files were subsequently identified and archived.
+The worktree's restored `site/macro.html` is baseline, NOT the proof target.
+Do not run the proof probe against it and misdiagnose the intentional hash refusal.
+
+## Still not true
+Capability is BUILT_NOT_PROVEN, not deployed. A fresh anonymous production browser
+at06:52:50Z received200 and still saw the giant Three Reads panel and no economic
+row. The earlier unauthenticated401 was a failed request, not a general browser outage.
+No credentials, profile, cookie import or authentication changes were used.
+
+PR6685 remains the separate reviewed compact-risk candidate at2d5133eacf8d.
+Its latest06:49CIread had3successful packs and9queued. PR6969's independent period
+correction remains held separately. Shared Macro Command #6873/#6930/#6937 keeps
+its existing owner; do not duplicate its maps or absorb its source work.
+Normal publication must compose accepted source: never commit a main-based generated
+page over #6685. Canonical row proof and combined-design previews are distinct.
+
+The formal Source Continuity checkpoint is unverified. Fresh adapter preparation
+was platform-blocked before execution; no successful fresh receipt is claimed.
+The earlier100-open-PR cap refusal belongs to the existing Mastermind issue346,
+not a waiver or a second checkpoint implementation. No writer transfer is authorized.
+
+## Exact next action
+Freeze the repaired candidate plus its evidence on this same PR, obtain the bounded
+independent review of that immutable head, and reconcile real findings. Only after
+current checks, compatibility/checkpoint obligations and explicit Sol release may
+normal publication proceed. Then verify the actual anonymous homepage and depth
+journey in production. No extra design approval is requested from the Chairman.
+Do not restart healthy CI listeners, cancel/rerun tests, weaken gates, rebase/reset,
+create a replacement PR, or treat a metadata/merge/proof receipt as the others.

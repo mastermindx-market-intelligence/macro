@@ -46,3 +46,10 @@ The model-presence, date-gap and target-size changes require fresh canonical bro
 and immutable-head review proof; earlier d50 captures remain historical, not reused as
 proof of the changed UI. The target-size repair is a product usability improvement,
 not a claim that this bounded review is a complete WCAG audit.
+
+## Fresh browser result
+The real target completed2026-09-07T07:16:05Z with all source hashes unchanged.
+The current canonical-interaction receipt passes12cases and3real journeys; every
+source-receipt target is44px or larger. Refreshed screenshots use the existing
+8-cell capture schema at repaired source commitcdb5a7a2. The earlier d50 snapshots
+remain distinguishable and are not the proof of this repair.
