@@ -59,12 +59,16 @@ def main() -> int:
                         for card in cards:
                             node = row.locator("article").filter(has=tab.locator("#ebd-t-" + card["id"]))
                             assert card["state"][lang] in node.inner_text()
+                            if card.get("basis"):
+                                assert card["basis"][lang] in node.locator(".ebd-label").inner_text()
                             for fact in card["facts"]:
                                 assert fact["value"][lang] in node.inner_text()
                                 assert not fact["period"] or fact["period"] in node.inner_text()
                             assert node.locator("a.ebd-go").get_attribute("href") == card["href"]
                             assert node.locator("a.ebd-go").bounding_box()["height"] >= 44
                         row.screenshot(path=str(out / f"row-{width}-{theme}-{lang}.png"))
+                        summary_heights = row.locator("summary").evaluate_all("els=>els.map(e=>e.getBoundingClientRect().height)")
+                        assert len(summary_heights) == 3 and min(summary_heights) >= 44
                         control = row.locator("summary").first
                         control.focus()
                         tab.keyboard.press("Enter")
@@ -74,7 +78,7 @@ def main() -> int:
                         assert not errors, errors
                         report["cases"].append({"width": width, "theme": theme, "lang": lang,
                                                 "row_height": height, "placement": positions,
-                                                "keyboard_receipt": True, "page_errors": errors})
+                                                "keyboard_receipt": True, "source_receipt_heights": summary_heights, "page_errors": errors})
                         if width == 1440 and lang == "en" and theme == "dark":
                             for card in cards:
                                 tab.locator(f"#ebd-t-{card['id']}").locator("..").locator("a.ebd-go").click()

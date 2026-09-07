@@ -192,3 +192,85 @@ def test_duplicate_metric_identity_never_silently_selects_a_fact(tmp_path, wid):
     assert disputed["tone"] == "unavailable"
     assert disputed["facts"] == []
     assert all(c["facts"] for c in cards if c["id"] != wid)
+
+
+@pytest.mark.parametrize("wid", IDS)
+@pytest.mark.parametrize("period", (None, "2026-09-05T13:00:00Z", "2026Q3"))
+def test_usable_fact_with_unresolved_date_discloses_that_gap(tmp_path, wid, period):
+    snapshots = _snapshots()
+    ids = {"growth_real_economy": "gdpnow_growth", "inflation_system": "headline_cpi_yoy_pct", "financial_conditions": "real_10y"}
+    metric = next(m for m in snapshots[wid]["metrics"]["items"] if m["metric_id"] == ids[wid])
+    metric["reference_period"] = period
+    card = next(c for c in _read(tmp_path, snapshots) if c["id"] == wid)
+    fact = next(f for f in card["facts"] if f["metric_id"] == ids[wid])
+    assert fact["value"]["en"] != "Not provided"
+    assert fact["period"] is None
+    assert fact.get("date_note") == {"en": "Date unavailable", "zh": "日期不明"}
+
+
+def test_receipt_does_not_turn_source_asof_into_economic_reference_period(tmp_path):
+    for card in _read(tmp_path):
+        assert "reference month" in card["receipt"]["en"]
+        assert "source as-of" in card["receipt"]["en"]
+        assert "not the period of economic activity" in card["receipt"]["en"]
+        assert "Fact dates identify their reference periods" not in card["receipt"]["en"]
+
+
+def test_absent_required_leg_cannot_have_current_as_refusal_reason(tmp_path):
+    snapshots = _snapshots()
+    snapshots[IDS[0]]["availability"]["required"][0]["status"] = "ABSENT"
+    card = _read(tmp_path, snapshots)[0]
+    assert card["tone"] == "unavailable"
+    assert card["source"]["reason"] == "SOURCE_FAILED"
+
+
+def test_optional_nowcast_in_headline_is_labelled_without_reclassification(tmp_path):
+    source = inflation_owner()
+    source["current_month_proxy_pressure"]["core_model_pressure"] = {
+        "available": True, "period": "2026-09", "release_radar_projection": {"point": 0.2}}
+    snapshot = contract.finalize(inflation.compose(source, built_at=BUILT))
+    assert snapshot["availability"]["state"] == "LATE_WITHIN_TOLERANCE"
+    assert any(c["freshness"] == "SIMULATED" and c["standardized_value"] is not None
+               for a in snapshot["axes"]["items"] for c in a["components"])
+    snapshots = _snapshots()
+    snapshots["inflation_system"] = snapshot
+    card = _read(tmp_path, snapshots)[1]
+    assert card["state"] == snapshot["headline"]["state_label"]
+    assert card.get("basis") == {"en": "Includes estimates", "zh": "含预估"}
+    assert all(f["metric_id"] in ("headline_cpi_yoy_pct", "core_cpi_yoy_pct") for f in card["facts"])
+
+
+def test_no_unavailable_optional_model_is_claimed_as_contributing(tmp_path):
+    card = _read(tmp_path)[1]
+    assert card.get("basis") is None
+
+
+def test_all_six_happy_path_facts_really_resolve(tmp_path):
+    cards = _read(tmp_path)
+    assert len(cards) == 3
+    assert all(len(c["facts"]) == 2 for c in cards)
+    assert all(f["value"]["en"] != "Not provided" for c in cards for f in c["facts"])
+    assert all(f["period"] for c in cards for f in c["facts"])
+
+
+def test_model_basis_and_missing_date_are_visible_before_receipt(tmp_path):
+    from jinja2 import Environment, FileSystemLoader, StrictUndefined
+    root = Path(__file__).resolve().parents[1]
+    cards = _read(tmp_path)
+    cards[0]["basis"] = {"en": "Includes estimates", "zh": "含预估"}
+    cards[0]["facts"][0]["period"] = None
+    cards[0]["facts"][0]["date_note"] = {"en": "Date unavailable", "zh": "日期不明"}
+    env = Environment(loader=FileSystemLoader(root / "templates"), autoescape=True, undefined=StrictUndefined)
+    html = env.from_string('{% import "_macro_economic_backdrop.html.j2" as row %}{{ row.economic_backdrop(cards) }}').render(cards=cards)
+    assert "Includes estimates" in html and "含预估" in html
+    assert "Date unavailable" in html and "日期不明" in html
+    assert html.index("Includes estimates") < html.index('class="ebd-state"')
+    assert html.index("Date unavailable") < html.index('<details')
+
+
+def test_receipt_control_has_same_minimum_target_as_investigation():
+    import re
+    root = Path(__file__).resolve().parents[1]
+    css = (root / "templates/_macro_economic_backdrop.css.j2").read_text()
+    block = re.search(r"html body \.ebd-rc > summary\s*\{([^}]*)\}", css, re.S)
+    assert block and "min-height: 44px" in block.group(1)

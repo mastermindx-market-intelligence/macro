@@ -60,7 +60,7 @@
 
       {# topic label — the card's NAME, deliberately quiet: the state sentence is
          the headline, not the category (design system §9.3, answer outweighs support) #}
-      <h3 class="ebd-label" id="ebd-t-{{ _cid }}"><span class="l-en">{{ c.title.en }}</span><span class="l-zh">{{ c.title.zh }}</span></h3>
+      <h3 class="ebd-label" id="ebd-t-{{ _cid }}"><span class="l-en">{{ c.title.en }}</span><span class="l-zh">{{ c.title.zh }}</span>{% if c.basis|default(none) %}<span class="ebd-basis"> · <span class="l-en">{{ c.basis.en }}</span><span class="l-zh">{{ c.basis.zh }}</span></span>{% endif %}</h3>
 
       {# THE ANSWER — owner-supplied state label, passed through verbatim. Wraps
          freely; never truncated, never ellipsised, never recoloured by direction. #}
@@ -77,7 +77,7 @@
         {%- for f in c.facts[:2] %}
         <div class="ebd-fact">
           <span class="ebd-fact-l"><span class="l-en">{{ f.label.en }}</span><span class="l-zh">{{ f.label.zh }}</span>
-            {%- if f.period %}<span class="ebd-fact-p" aria-hidden="false"> · {{ f.period }}</span>{% endif -%}
+            {%- if f.period %}<span class="ebd-fact-p"> · {{ f.period }}</span>{% elif f.date_note|default(none) %}<span class="ebd-fact-p"> · <span class="l-en">{{ f.date_note.en }}</span><span class="l-zh">{{ f.date_note.zh }}</span></span>{% endif -%}
           </span>
           <span class="ebd-fact-v"><span class="l-en">{{ f.value.en }}</span><span class="l-zh">{{ f.value.zh }}</span></span>
         </div>

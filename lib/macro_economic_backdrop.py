@@ -55,7 +55,7 @@ def _empty(wid: str, title: dict[str, str], href: str, reason: str) -> dict:
             if reason == "STALE_SOURCE" else
             _pair("This read could not be verified. Inspect the source details.", "暂无法核实此读数，请查看来源详情。"))
     return {"id": wid, "title": title, "state": _pair("Read unavailable", "暂无法读取"),
-            "note": note, "facts": [], "asof": None, "tone": "unavailable",
+            "note": note, "facts": [], "asof": None, "tone": "unavailable", "basis": None,
             "availability": _pair("Source check needed", "需核对来源"), "href": href,
             "link": _pair("Investigate", "查看详情"), "receipt": note,
             "source": {"digest": None, "authority": None, "reason": reason}}
@@ -72,8 +72,22 @@ def _fact(raw: Mapping[str, Any] | None, spec: tuple) -> dict:
     display = (_pair(f"{text}{unit['en']}" if unit['en'].startswith('%') else f"{text} {unit['en']}",
                      f"{text}{unit['zh']}" if unit['zh'].startswith('%') else f"{text} {unit['zh']}")
                if text is not None else _pair("Not provided", "暂未提供"))
-    return {"metric_id": mid, "label": title, "value": display,
-            "period": _period(raw.get("reference_period")) if usable else None}
+    period = _period(raw.get("reference_period")) if usable else None
+    return {"metric_id": mid, "label": title, "value": display, "period": period,
+            "date_note": _pair("Date unavailable", "日期不明") if usable and period is None else None}
+
+
+def _includes_estimates(snapshot: Mapping[str, Any]) -> bool:
+    """Disclose a present model input without reclassifying the owner's state."""
+    for axis in snapshot["axes"]["items"]:
+        for component in axis["components"]:
+            value, weight = component.get("standardized_value"), component.get("weight")
+            if (component.get("freshness") == "SIMULATED"
+                    and isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
+                    and isinstance(weight, (int, float)) and not isinstance(weight, bool)
+                    and math.isfinite(weight) and weight > 0):
+                return True
+    return False
 
 
 def _note(snapshot: Mapping[str, Any]) -> dict[str, str]:
@@ -101,8 +115,8 @@ def build_economic_backdrop(data_root: Path, *, page_built_at: str) -> list[dict
             availability = snapshot["availability"]
             required = availability.get("required") or []
             health = availability.get("state")
-            failed_leg = next((r.get("freshness") for r in required
-                               if r.get("freshness") not in _USABLE or r.get("status") not in _VALUE_STATUS), None)
+            failed_leg = next((r.get("freshness") if r.get("freshness") not in _USABLE else "SOURCE_FAILED"
+                               for r in required if r.get("freshness") not in _USABLE or r.get("status") not in _VALUE_STATUS), None)
             if health not in _USABLE or availability.get("worst_freshness") not in _USABLE or not required or failed_leg:
                 cards.append(_empty(wid, title, href, failed_leg or health or "SOURCE_FAILED"))
                 continue
@@ -127,10 +141,11 @@ def build_economic_backdrop(data_root: Path, *, page_built_at: str) -> list[dict
                 "facts": [_fact(metrics.get(spec[0]), spec) for spec in selected],
                 "asof": asof, "tone": "warn" if has_tension else "neutral",
                 "availability": None,
+                "basis": _pair("Includes estimates", "含预估") if _includes_estimates(snapshot) else None,
                 "href": href, "link": _pair("Investigate", "查看详情"),
                 "receipt": _pair(
-                    "This is the existing workspace reading. Fact dates identify their reference periods; the footer is the calculation cut. A page build does not make inputs fresh. Estimates are labeled; no trade instruction is generated.",
-                    "此处沿用现有工作区读数。分项日期表示参考期，页脚表示计算截止；页面生成不会让数据变新。预估已标明，不产生交易指令。"),
+                    "Dates are supplied by the source. CPI dates label a reference month; other fact dates are the source as-of, not the period of economic activity. Calculated is the workspace calculation cut, not fresh data. A page build does not refresh inputs. Estimates are identified; this read is not a trade instruction.",
+                    "日期由来源提供。CPI日期表示参考月份；其他分项日期表示来源截止，并非经济活动的统计期间。计算截止和页面生成不代表数据更新。预估会明确标注，此读数不是交易指令。"),
                 "source": {"digest": artifact["sha256"], "authority": snapshot["authority"]["class"],
                            "generation_id": snapshot["generation"]["generation_id"], "availability_state": health, "reason": None},
             })

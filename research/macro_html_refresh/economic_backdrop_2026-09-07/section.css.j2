@@ -108,6 +108,8 @@
     line-height: 1.3; letter-spacing: -.005em; color: var(--ebd-ink-1);
     text-wrap: pretty; }
   html[data-lang="zh"] body .ebd-state { letter-spacing: 0; }
+  .ebd-basis { margin-inline-start: var(--sp-2); font-weight: 500;
+    letter-spacing: 0; text-transform: none; }
 
   html body .ebd-note { margin: 0; font-size: var(--fs-sm, 12.5px); line-height: 1.5;
     color: var(--ebd-ink-2); }
@@ -128,7 +130,7 @@
     color: var(--ebd-ink-3); }
   html[data-lang="zh"] .ebd-fact-l { letter-spacing: 0; text-transform: none;
     font-size: 10.5px; }
-  .ebd-fact-p { font-weight: 500; }        /* the fact's own clock, beside its own label */
+  .ebd-fact-p { font-weight: 500; white-space: nowrap; }        /* the fact's own clock, beside its own label */
   /* Figures take tabular UI type, NOT the page's --num mono face: by contract this
      slot legitimately carries a reason sentence when a print is missing, and mono
      is for figures, never words (design system §4). */
@@ -147,8 +149,8 @@
   .ebd-dot { margin: 0 5px; opacity: .6; }
 
   .ebd-rc { flex: 1 1 auto; min-width: 0; }
-  html body .ebd-rc > summary { list-style: none; cursor: pointer;
-    display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 7px; }
+  html body .ebd-rc > summary { list-style: none; cursor: pointer; min-height: 44px;
+    display: flex; align-items: center; flex-wrap: wrap; gap: 2px 7px; }
   html body .ebd-rc > summary::-webkit-details-marker { display: none; }
   .ebd-rc-cue { font-size: var(--fs-label, 11px); font-weight: 600;
     color: var(--ebd-ink-2); border-bottom: 1px dotted currentColor; }
