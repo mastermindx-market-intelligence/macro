@@ -12,6 +12,23 @@
 #     reason: <why this construction is forbidden>
 #     source: <PR/ruling reference from DO_NOT_REBUILD.md>
 
+# Hand-curated per-key pattern overrides (DO_NOT_REBUILD.md `Key` column ->
+# literal regex list). Read by scripts/compile_loop_blocklists.py at compile
+# time: when a key here matches a DNR row's Key column, this list replaces
+# that row's derived three-word `.{0,30}`-joined signature VERBATIM in the
+# matching BL-G### entry's `any_of` (PR #6925 review r1 major-1 — the derived
+# signature is conjunctive and single-phrase proposer text never trips it).
+# Never hand-edit generated BL-G### entries directly; edit here and rerun
+# `python3 scripts/compile_loop_blocklists.py`.
+pattern_overrides:
+  LAW-F12-PUBLIC-API-V0-REFUSED:
+    - '\bapi key\b'
+    - '\bapi_key\b'
+    - '\bpublic api\b'
+    - '\bwebhook\b'
+    - '\bsecond quota meter\b'
+    - '\bkeyed endpoint\b'
+
 entries:
 
   # ------------------------------------------------------------------ #
@@ -335,7 +352,6 @@ entries:
       ILLEGAL — **Amendment 1 (CEO ruling 2026-08-14,
       `DEC:PROPHET-ZERO-AUTHORITY-SUPERSEDED-BY-EARNED-CONDITIONAL-AUTHORITY`):**
       for the Prophet US conditional-fusion arena ONLY
-      (`research/PROPHET_CONDITIO
     source: 'Signal Commons rulings (2026-07-05); Amendment 1: CEO ruling 2026-08-14, recorded in the DEC record above'
 
   - id: BL-G004
@@ -362,7 +378,6 @@ entries:
       RETIRED — operator overruled the extant 0%-BTC calendar gate on
       2026-08-20 after the live 2026 tape contradicted its forced-cash
       stance. The historical rule and its forward ledger may remain for
-      attri
     source: 'Chairman ruling 2026-08-20; `DEC:BTC-MIDTERM-BLACKOUT-AUTHORITY-RETIRED`; `DNR:KILL-ELECTION-CYCLE`; `DNR:KILL-LAUNDERED-OVERRIDE-GATES`'
 
   - id: BL-G007
@@ -405,7 +420,6 @@ entries:
       FORBIDDEN — gate 5: nightly is the sole advancer, intraday lanes
       discard writes. Built independently by TWO sessions on 2026-07-26
       before the law caught both; the catalog-outruns-store gap is an
-      ASSER
     source: 'Chronicle masterplan §0 gate 5; #3643 revert 90050eb535f + #3647 drop eb769be108c (2026-07-26)'
 
   - id: BL-G012
@@ -442,7 +456,6 @@ entries:
       FORBIDDEN — the authority half of PRD-R2 stands in full.
       **Amendment 2 (operator override 2026-08-03)**: the user-facing
       DISPLAY-TIER composite (Portfolio Health Score + sub-scores) on
-      watchlist/portf
     source: 'PRD-R2 + Amendments 1–3, `PORTFOLIO_RISK_DESK_MASTERPLAN_BY_FABLE.md` §13; PSI §3.1, `PORTFOLIO_SUPERINTELLIGENCE_MASTERPLAN_BY_FABLE.md`; UWP-R1..R7; Amendment 3: CEO ruling 2026-08-14 + DEC record'
 
   - id: BL-G016
@@ -477,7 +490,7 @@ entries:
       FORBIDDEN — contaminates the `us_board_ledger` graded population
       (track record + landing showcase); re-opens the Phase-0
       timing-blend null (`reports/setup-score-phase0.md`); `top_setups`
-      is a governed
+      is a
     source: 'Operator-ratified adjudication 2026-07-24, `PROPHET_TOPSETUPS_PRESENTATION_MERGE_MASTERPLAN.md` §2'
 
   - id: BL-G020
@@ -538,7 +551,7 @@ entries:
       FORBIDDEN — reverts the ratified `if: always()` resilience law
       (partial output beats shipping nothing; salvage-push covers the
       push-race). Staleness is handled by disclosure (CSP-W5) +
-      heartbeat detec
+      heartbeat
     source: 'CSP-R1, `CONTAGION_SENSING_PROPAGATION_MASTERPLAN_BY_FABLE.md` (2026-07-17)'
 
   - id: BL-G026
@@ -549,7 +562,7 @@ entries:
       REJECT-REDUNDANT + FORBIDDEN fusion path — duplicates the
       risk_radar→market_state→regime_vector authority chain and the
       strategies allocation layer (SPVector); fusing positioning keys
-      into a regime sc
+      into a regime
     source: 'MSP-R2, `IVORY_HILL_MARKET_STRUCTURE_MASTERPLAN_BY_FABLE.md` (2026-07-18)'
 
   - id: BL-G027
@@ -560,7 +573,7 @@ entries:
       **OVERRULED 2026-08-12 by Chairman ruling** ("this is an old law
       and we overrule it") — the kill is LIFTED, and lifted as a whole
       rather than narrowed to one program. Authored knowledge records
-      are pe
+      are
     source: 'CXI-R12, `MACRO_CONTEXT_INDEX_ADJUDICATION_BY_FABLE.md` (2026-07-18)'
 
   - id: BL-G028
@@ -571,7 +584,6 @@ entries:
       FORBIDDEN — public-audience answers come only from what the site
       ships (Tier-2 receipts, on-page help) or a separately curated
       public FAQ; CXI retrieval is operator/agent-audience only. SOLE
-      exception
     source: 'CXI-R23, `MACRO_CONTEXT_INDEX_ADJUDICATION_BY_FABLE.md` Amendment 2 (2026-07-20, operator ruling)'
 
   - id: BL-G029
@@ -581,8 +593,7 @@ entries:
     reason: >
       FORBIDDEN — it manufactures nulls inside a live preregistered
       evidence family. The sparse-selector prereg binds `owner_binding
-      = campaign_v2_final_member_episode/v1` with `publication_binding
-      = authen
+      = campaign_v2_final_member_episode/v1` with
     source: '`research/options_estate/OPTIONS_CONTEXT_AUDIT_LEDGER_BOUND_ADJUDICATION_2026-08-13.md` §4-§5; raised by PR #5524'
 
   - id: BL-G030
@@ -643,7 +654,6 @@ entries:
       KILLED, TWO-RULER — zero OOS persistence at panel scale under
       BOTH the fwd63 apparatus (FIT-best in TEST top-2 33.2% vs 33.3%
       chance, Spearman −0.03, (a)−(d) −0.26% [−0.79, +0.11]) AND the §7
-      bottom-p
     source: 'PTT-W1 §6 + PTT-W1-T §8, `PERSONALITY_TIMING_TAILORING_HANDOFF_FOR_FABLE.md`; `reports/ptt_w1_persistence_of_fit.md` + `reports/ptt_w1_timing_regrade.md` (families `personality_timing_w1`/`_w1t`, 2026'
 
   - id: BL-G036
@@ -665,7 +675,7 @@ entries:
       KILLED — three independent failures under the §7 timing ruler.
       (1) No MAE edge: U_MAE vs all-days [−1.49,+0.74] includes 0. (2)
       Fires LESS near-low than the name's own base rate: U_W5
-      [−5.66,−0.98] ex
+      [−5.66,−0.98]
     source: 'PSS-F2, `PSS_WSIG_SHORTLIST_BY_FABLE.md` §F2; `reports/pss_f2_overnight.md` (family `pss_f2_overnight`, 2026-07-26)'
 
   - id: BL-G038
@@ -687,7 +697,7 @@ entries:
       KILLED as a standalone timer — fails pre-stated falsifier prong 2
       (collapses into a later-than-incumbent confirmer with no
       earliness gain). F4 fires at td_to_trough −9td — LATER than the
-      incumbent Sto
+      incumbent
     source: 'PSS-F4, `PSS_WSIG_SHORTLIST_BY_FABLE.md` §F4; `reports/pss_f4_semivar.md` (family `pss_f4_semivar`, 2026-07-26)'
 
   - id: BL-G040
@@ -698,7 +708,7 @@ entries:
       KILLED as a hard gate — causal rejection, terminality,
       volume/range exhaustion, relative/systemic repair, survival,
       structure-break, and frozen hazard variants were tested on 1,300
-      names / 25,343 incu
+      names / 25,343
     source: '`reports/pss_f4_repair.md`; `reports/pss_f4_hazard.md`; `PSS_WSIG_SHORTLIST_BY_FABLE.md` §F4 repair wave (2026-07-26)'
 
   - id: BL-G041
@@ -709,7 +719,6 @@ entries:
       KILLED — the frozen challenge–response construction failed every
       promotion layer. It produced 236 treatments across only 200 names
       (one name with ≥3 fires), versus the frozen 500-name / 100-repeat
-      flo
     source: '`research/PSS_SR1_STRESS_ELASTICITY_PREREG.md`; `reports/pss_sr1_stress_elasticity.md` (family `pss_sr1_stress_elasticity`, 2026-07-27)'
 
   - id: BL-G042
@@ -720,7 +729,7 @@ entries:
       KILLED — the exact externally-labeled construction solved SR1's
       coverage and safe-late problems but failed in the opposite
       direction on every outcome layer. The frozen tape contains 3,586
-      treatments a
+      treatments
     source: '`research/PSS_SR2_PEER_DIFFUSION_PREREG.md`; `reports/pss_sr2_peer_diffusion.md` (family `pss_sr2_peer_diffusion`, 2026-07-27)'
 
   - id: BL-G043
@@ -731,7 +740,7 @@ entries:
       KILLED — the affirmative-demand repair solved both prior
       objections (coverage and subject-laggard selection) and still
       failed in the opposite direction across every era and outcome
-      layer. The frozen t
+      layer. The frozen
     source: '`research/PSS_SR3_PARTICIPATION_RECOVERY_PREREG.md`; `reports/pss_sr3_participation_recovery.md` (family `pss_sr3_participation_recovery`, 2026-07-27)'
 
   - id: BL-G044
@@ -939,7 +948,7 @@ entries:
       FALSIFIED phase-0 — construction-scoped kill (predicate
       anti-persistent, EDGAR Q4-gap row-adjacency, episode MDE ≈6–8pp
       vs 5pp floor); margin-direction retained as confluence input;
-      revival needs a NE
+      revival needs a
     source: 'S10 phase-0 adjudication (#2396), research/species/W5_S10_REPORT.md §12'
 
   - id: BL-G069
@@ -968,7 +977,7 @@ entries:
       CLOSED — Stage-0 falsifier dead in both 减持新规 regimes at the
       frozen ruler (EW +1.1pp/21d, t_NW 1.91/1.77 < 2; overlap-lag
       sensitivity confirms); construct kill (price-only absorption ≡
-      momentum) stands
+      momentum)
     source: 'D4-01b Stage 0, `reports/d4-cn-supply-absorption-d401b-stage0.md`; Day-4 adjudication §D4-01 reassessment'
 
   - id: BL-G072
@@ -1045,7 +1054,7 @@ entries:
       KILLED (construction-scoped) — PSF-H1/H2 FAIL on the primary
       month-block bootstrap DIFFERENCE CI (B−A and C−B straddle 0 at
       effective n≈49–54 monthly blocks), negative (win_B−win_A) delta
-      persisted at
+      persisted
     source: 'PSF-H1/H2, `PROPHET_STAGE_FUSION_PREREG.md` §5; `research/reports/PROPHET_STAGE_FUSION_RESULTS.md`'
 
   - id: BL-G080
@@ -1056,7 +1065,7 @@ entries:
       REFUTED / TAUTOLOGICAL (W3 census, construction-scoped) — F2
       gap-hold is an algebraic consequence of the `clean_hold` label +
       onset new-high (100% by construction; ineligible vs current
-      labels — any e
+      labels — any
     source: 'WA-R8, `research/winners/FINGERPRINT_CENSUS_W3.md` (#3161)'
 
   - id: BL-G081
@@ -1078,7 +1087,7 @@ entries:
       KILLED phase-0 (construction-scoped) — 6 of 7 gates FAIL (sole
       PASS = same-sign split-half, and both halves are NEGATIVE).
       Headline 12-1m L/S net Sharpe −0.23 (CAGR −3.01%, MaxDD −65%,
-      2002–2026) LOSE
+      2002–2026)
     source: 'Phase-0 + adversarial refute (2026-07-22): reports/commodity-xsec-mom-phase0.md; reports/commodity-xsec-mom-refute.md'
 
   - id: BL-G083
@@ -1089,7 +1098,7 @@ entries:
       KILLED (process class + this surface) — the program was
       operator-initiated 2026-07-11 ("MAG 7 is on the run … our
       dashboard does not reflect any of this") OVERRIDING the engines'
-      contemporaneous reads
+      contemporaneous
     source: 'Operator ruling 2026-07-23 + `POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md`; context `MAG7_COMMAND_MASTERPLAN_BY_FABLE.md` §0 + `POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md`; Amendmen'
 
   - id: BL-G084
@@ -1111,7 +1120,7 @@ entries:
       KILLED (construction-scoped, THIRD look) — #4546 frozen replay
       (pinned 2026-07-31; 1,540×777 panel; S-B table reproduced
       exactly; 939,611-cell leg equality vs tier_stream):
-      full-population tick walk 0
+      full-population tick walk
     source: '#4546 (`research/prophet_us_audit/fresh_ticks_extension_replay.py` + results JSON + `FRESH_TICKS_EXTENSION_PREREG.md`); #4547 battery §2; `data/trial_ledger.jsonl` family `provisional_fresh_ticks_us`'
 
   - id: BL-G086
@@ -1133,7 +1142,7 @@ entries:
       REJECT-REDUNDANT + FORBIDDEN fusion path — restates MSP-R2 on a
       wider input list; all 16 inputs already ship (`vol_regime`,
       `dispersion`, `contagion`, `live_breadth`, `bond_compass`,
-      `bonds`, `active_
+      `bonds`,
     source: 'RRC-R1, `REGIME_RELIABILITY_FACTOR_CROWDING_ADJUDICATION.md` §2 (2026-08-05)'
 
   - id: BL-G088
@@ -1144,7 +1153,7 @@ entries:
       KILLED (construction-scoped) — the claim requires a family×regime
       INTERACTION, and on the only multi-regime graded record
       (`track_record.parquet`, 57,642 matured signals, 763 months,
-      1962–2026) the in
+      1962–2026) the
     source: 'RRC-R2, `REGIME_RELIABILITY_FACTOR_CROWDING_ADJUDICATION.md` §4; `reports/regime-reliability-phase0.md` (2026-08-05)'
 
   - id: BL-G089
@@ -1155,7 +1164,7 @@ entries:
       KILLED phase-0 (construction-scoped) — all three pre-registered
       gates FAIL on 16,315 firewall-covered shocks (4,281-name
       tradeable panel, 1,274 covered names × 1,191 dates,
-      2021-09..2026-07, date-clus
+      2021-09..2026-07,
     source: 'LSR-P0 (2026-08-05): `research/LIQUIDITY_SHOCK_REVERSAL_PHASE0.md`; `reports/liquidity-shock-reversal-phase0.md`; `scripts/research_liquidity_shock_reversal.py` + `scripts/research_lsr_reopeners.py` ('
 
   - id: BL-G090
@@ -1166,7 +1175,7 @@ entries:
       REJECTED-ON-MEASUREMENT (operator-delegated ruling 2026-08-05) —
       pooled packet read favours the veto (refused fires −4.54pp @21,
       173 losers saved vs 91 winners cost, no drawdown band positive at
-      any h
+      any
     source: '`research/prophet_us_audit/RECLAIM_VETO_PACKET_2026-08-05.md` §9 + frozen JSON (#4607)'
 
   - id: BL-G091
@@ -1229,7 +1238,7 @@ entries:
       FORBIDDEN construction. A run clock in the identity makes every
       run mint new evidence bytes on unchanged content, so artifact
       COUNT measures our cadence rather than the world, the retention
-      clock sile
+      clock
     source: '`research/FILING_FORENSICS_SEC_STORE_MINT_ADJUDICATION_2026-08-08.md`; diagnosed PR #4986 (2026-08-08); conforms to the pre-registered `first_observed_at` + single "latest retrieval receipt" contract '
 
   - id: BL-G098
@@ -1246,12 +1255,17 @@ entries:
   - id: BL-G099
     match:
       any_of:
-        - 'keyed.{0,30}webhook.{0,30}quota'
+        - '\bapi key\b'
+        - '\bapi_key\b'
+        - '\bpublic api\b'
+        - '\bwebhook\b'
+        - '\bsecond quota meter\b'
+        - '\bkeyed endpoint\b'
     reason: >
       No keyed public API, webhook, or API key in v0; admission
       requires G1-G4 (spec §Admission gate G1-G4) and a new DEC. Gates:
-      G1 contract acceptance, G2 tenancy scope owner (Terminal
-      migration `0014_ten
+      G1 contract acceptance; G2 tenancy scope owner — the tenancy
+      migration
     source: '`research/market_intelligence_productization/MARKET_ONTOLOGY_F12_PUBLIC_API_ADMISSION_2026-09-06.md`; `agentos/decisions/DEC-F12-PUBLIC-API-V0-ADMISSION-2026-09-06.md`; Meta-CEO B ruling r3 2026-09-07'
 
   - id: BL-G100
@@ -1262,7 +1276,7 @@ entries:
       PROSPECTIVE-ONLY ACCRUAL — lawful use of the SR3 mechanism
       inversion, but historical SR3 rows count as zero and the
       2026-07-24 boundary is absolute. Frozen 799-name membership; one
-      exact configuration
+      exact
     source: '`research/PSS_RH1_RELIEF_HAZARD_PROSPECTIVE_CHARTER.md`; `data/personality_timing/relief_hazard_manifest_v1.json` (family `pss_rh1_relief_hazard_prospective`, frozen 2026-07-27)'
 
   - id: BL-G101
@@ -1273,7 +1287,7 @@ entries:
       PROSPECTIVE-ONLY ACCRUAL — future RH1 relief-hazard rows only;
       first peer pullback completion B+5:B+20 against a q20 threshold
       frozen at B; same frozen recovery required; top-quartile and
-      +0.50-ATR re
+      +0.50-ATR
     source: '`research/PSS_CR1_CHALLENGE_RESILIENCE_PROSPECTIVE_CHARTER.md`; `data/personality_timing/challenge_resilience_manifest_v1.json` (family `pss_cr1_challenge_resilience_prospective`, frozen 2026-07-27)'
 
   - id: BL-G102
@@ -1421,7 +1435,7 @@ entries:
       HELD — pre-registration required (charter §11), NOT a config
       bump. `composite_rank` is the **board TIEBREAK**
       (`build_stock_library.py:2188`, `build_site.py:3797`) so this is
-      rank AUTHORITY, not displ
+      rank AUTHORITY, not
     source: 'FUW charter `research/FACTOR_UNIVERSE_WIDENING_CHARTER.md` §3–§11; harness `scripts/factor_universe_widening_phase0.py`; tripwire `tests/test_factor_universe_hold.py` (2026-08-06)'
 
   - id: BL-G118
@@ -1432,7 +1446,7 @@ entries:
       **PROMOTION CLOCK FROZEN — de-escalation only, 2026-08-06.** The
       provisional grant (PSQ-H1 PASS, 2026-07-20) was conditioned on a
       ~2026-12 forward-shadow read that **structurally cannot occur**.
-      Its s
+      Its
     source: 'PR #4781 (severance + `ec_source_state`/`ec_coverage` disclosure); `research/PROPHET_STAGE_QUALITY_PREREG.md` §6 auto-demote clause; `research/reports/PROPHET_STAGE_QUALITY_RESULTS.md` §Adjudication; '
 
   - id: BL-G119
@@ -1443,7 +1457,7 @@ entries:
       HELD — NOT an inconsistency to refactor away. The same
       `detector_id`, carrying the same numeric constants, therefore
       MEANS "quarterly YoY" on `site/fundamental_forensics.html` and
-      "annual YoY" on `sit
+      "annual YoY" on
     source: 'PR #4961; pinned by `tests/test_forensic_detector_crosspin.py` §7 `test_period_and_point_in_time_models_are_pinned_as_unresolved_divergences` (2026-08-07)'
 
   - id: BL-G120
@@ -1454,7 +1468,7 @@ entries:
       HELD — closing the gap in either direction is an ESCALATION,
       which is promotion-gauntlet territory, not a bug fix. Aligning A
       with its siblings makes the Filing Forensics workbench fire on
-      pairs it ha
+      pairs it
     source: 'PR #4961; pinned row-by-row with rationale in `tests/test_forensic_detector_crosspin.py` §6b `PINNED_THREE_WAY_DISAGREEMENTS` family "negative prior denominator" (2026-08-07)'
 
   - id: BL-G121

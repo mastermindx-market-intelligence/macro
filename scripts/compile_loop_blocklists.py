@@ -263,8 +263,49 @@ def _topic_to_pattern(topic: str) -> str:
     return ".{0,30}".join(re.escape(w.lower()) for w in sig)
 
 
-def _build_sf_generated_block(entries: list[dict[str, Any]]) -> str:
-    """Build the generated YAML block for signal_foundry_blocklist.yml."""
+def _truncate_reason(text: str, limit: int = 200) -> str:
+    """Truncate ``text`` to at most ``limit`` chars without splitting a word or
+    leaving an unbalanced inline-code backtick (PR #6925 review r1 minor-2:
+    plain ``verdict[:200]`` used to cut mid-token and mid-backtick).
+
+    Backs off to the last whitespace boundary first (never split a word), then
+    — if that still leaves an odd number of backticks, meaning the cut point
+    landed inside an inline-code span — backs off further to just before the
+    last opening backtick.
+    """
+    if len(text) <= limit:
+        return text
+    cut = text[:limit]
+    if " " in cut:
+        cut = cut[: cut.rfind(" ")]
+    while cut.count("`") % 2 == 1:
+        last_tick = cut.rfind("`")
+        if last_tick == -1:
+            break
+        cut = cut[:last_tick]
+        if " " in cut:
+            cut = cut[: cut.rfind(" ") + 1]
+    return cut.rstrip()
+
+
+def _build_sf_generated_block(
+    entries: list[dict[str, Any]],
+    pattern_overrides: dict[str, list[str]] | None = None,
+) -> str:
+    """Build the generated YAML block for signal_foundry_blocklist.yml.
+
+    ``pattern_overrides`` maps a DO_NOT_REBUILD.md ``Key`` column value to a
+    literal list of regex patterns. When an entry's key has an override, the
+    override list is emitted VERBATIM as that entry's ``any_of`` — replacing
+    the derived three-word signature — because a signature built from the
+    topic's first three >=4-char words is a conjunctive `.{0,30}`-joined
+    pattern that can miss real proposer phrasings entirely (PR #6925 review
+    r1 major-1: BL-G099's derived pattern matched none of the six phrasings
+    the ruling named — "api key", "api_key", "public api", "webhook",
+    "second quota meter", "keyed endpoint" — because none of those six ever
+    co-occur with each other inside a 30-char window).
+    """
+    pattern_overrides = pattern_overrides or {}
     lines: list[str] = [
         "",
         START_MARKER,
@@ -276,14 +317,16 @@ def _build_sf_generated_block(entries: list[dict[str, Any]]) -> str:
     # Assign generated IDs starting from BL-G001
     for i, entry in enumerate(entries, start=1):
         entry_id = f"BL-G{i:03d}"
-        pattern = _topic_to_pattern(entry["topic"])
-        reason_short = entry["verdict"][:200] if entry["verdict"] else "DO_NOT_REBUILD entry"
+        override = pattern_overrides.get(entry.get("key") or "")
+        any_of_patterns = list(override) if override else [_topic_to_pattern(entry["topic"])]
+        reason_short = _truncate_reason(entry["verdict"]) if entry["verdict"] else "DO_NOT_REBUILD entry"
         source_short = entry["source"][:200] if entry["source"] else "DO_NOT_REBUILD.md"
         lines.append("")
         lines.append(f"  - id: {entry_id}")
         lines.append(f"    match:")
         lines.append(f"      any_of:")
-        lines.append(f"        - {_yaml_str(pattern)}")
+        for pattern in any_of_patterns:
+            lines.append(f"        - {_yaml_str(pattern)}")
         lines.append(f"    reason: >")
         # Wrap reason at ~72 chars with 6-space indent
         reason_wrapped = _wrap_yaml_block(reason_short, indent="      ")
@@ -311,6 +354,33 @@ def _wrap_yaml_block(text: str, indent: str = "      ", width: int = 72) -> str:
     return "\n".join(result_lines)
 
 
+def _load_pattern_overrides(bl_path: Path) -> dict[str, list[str]]:
+    """Read the hand-curated ``pattern_overrides:`` map from an existing
+    signal_foundry_blocklist.yml, if any (DNR Key -> literal regex list).
+
+    This is "the blocklist source [the compiler] reads" per the amended
+    ruling (PR #6925 review r1 major-1): the override lives in the consumer
+    file itself, above the generated block, so it round-trips through every
+    recompile without touching DO_NOT_REBUILD.md's table arity. Never
+    raises — a missing file, missing key, or unparsable YAML yields {}.
+    """
+    if not bl_path.exists():
+        return {}
+    try:
+        import yaml  # local import: keep this module runnable without pyyaml
+        data = yaml.safe_load(bl_path.read_text(encoding="utf-8")) or {}
+    except Exception:
+        return {}
+    overrides = data.get("pattern_overrides") if isinstance(data, dict) else None
+    if not isinstance(overrides, dict):
+        return {}
+    return {
+        str(key): [str(p) for p in patterns]
+        for key, patterns in overrides.items()
+        if isinstance(patterns, list) and patterns
+    }
+
+
 def _update_signal_foundry_blocklist(
     entries: list[dict[str, Any]],
     bl_path: Path,
@@ -319,7 +389,8 @@ def _update_signal_foundry_blocklist(
 
     Hand-curated entries outside the generated block are never modified.
     """
-    generated_block = _build_sf_generated_block(entries)
+    pattern_overrides = _load_pattern_overrides(bl_path)
+    generated_block = _build_sf_generated_block(entries, pattern_overrides)
 
     if not bl_path.exists():
         # Nothing to preserve — write a minimal wrapper + generated block

@@ -10,6 +10,9 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 RULING_PATH = REPO_ROOT / "research/market_intelligence_productization/MARKET_ONTOLOGY_F12_PUBLIC_API_ADMISSION_2026-09-06.md"
 DEC_PATH = REPO_ROOT / "agentos/decisions/DEC-F12-PUBLIC-API-V0-ADMISSION-2026-09-06.md"
 CSV_PATH = REPO_ROOT / "research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv"
+DNR_PATH = REPO_ROOT / "research/DO_NOT_REBUILD.md"
+LEGACY_JOBS_PATH = REPO_ROOT / ".github/ci/legacy-jobs.yml"
+SF_BLOCKLIST_PATH = REPO_ROOT / "config/signal_foundry_blocklist.yml"
 
 SEVEN_IDS = [
     "MO-PAID-055",
@@ -218,3 +221,104 @@ def test_dec_record_shape():
         assert "option" in alt and "why_not" in alt
     assert "created" not in frontmatter
     assert "updated" not in frontmatter
+
+
+# ---------------------------------------------------------------------------
+# PR #6925 review round 1 — RED-first pins (minor-3) + MAJOR-3 G2 locator fix
+# ---------------------------------------------------------------------------
+
+def _dnr_text():
+    return DNR_PATH.read_text(encoding="utf-8")
+
+
+def test_dnr_key_is_refused_not_scoped():
+    """A silent revert of the DNR row's Key column back to the withdrawn
+    r2 name (`...-SCOPED`) must be caught here, not just by format-only
+    checks (tests/test_dnr_registry_keys.py validates key *shape*, not
+    *identity* — review r1 minor-3)."""
+    text = _dnr_text()
+    assert "LAW-F12-PUBLIC-API-V0-REFUSED" in text
+    assert "LAW-F12-PUBLIC-API-V0-SCOPED" not in text
+
+
+def test_dnr_row_g2_locator_names_the_open_terminal_migration():
+    """MAJOR-3 (ruling r4): the G2 locator must name the actual open Terminal
+    migration + tracking issue the spec's own G2 wording gates on, and must
+    NOT claim macro's own DDL ledger is the locator (review r1: no such row
+    exists past macro's `0008`)."""
+    text = _dnr_text()
+    start = text.index("LAW-F12-PUBLIC-API-V0-REFUSED")
+    end = text.index("\n", start)
+    row = text[start:end]
+    for needle in [
+        "0014_tenancy_foundation.sql",
+        "charting-app",
+        "supabase/migrations",
+        "terminal#514",
+        "open at the time of writing",
+        "posted readback",
+        "B-F12-1",
+        "WS:MARKET-OS A2-A6",
+    ]:
+        assert needle in row, f"G2 locator missing {needle!r}: {row[:400]}"
+    assert "macro's own DDL ledger" not in row, (
+        "G2 locator must not claim macro's own DDL ledger is the locator (ruling r4 MAJOR-3)"
+    )
+
+
+def test_self_mod_fence_paths_include_the_three_f12_artifacts():
+    """The self-mod-fence job's `paths:` must list the DEC record, the ledger
+    CSV, and the ruling doc beyond a `run_ci_pack --validate-only` probe
+    (review r1 minor-3) — a silent removal here would desync the fence from
+    the artifacts it is meant to guard."""
+    text = LEGACY_JOBS_PATH.read_text(encoding="utf-8")
+    header = "\n  self-mod-fence:\n"
+    header_start = text.index(header)
+    body_start = header_start + len(header)
+    # Bound the search to this job block: up to the next top-level job key
+    # at the same 2-space indent (a bare "  <name>:" line).
+    next_job = re.search(r"\n  [a-zA-Z][\w-]*:\n", text[body_start:])
+    block = text[header_start: body_start + next_job.start()] if next_job else text[header_start:]
+    for path in [
+        "agentos/decisions/DEC-F12-PUBLIC-API-V0-ADMISSION-2026-09-06.md",
+        "research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv",
+        "research/market_intelligence_productization/MARKET_ONTOLOGY_F12_PUBLIC_API_ADMISSION_2026-09-06.md",
+    ]:
+        assert path in block, f"self-mod-fence paths missing {path}"
+
+
+def test_bl_g099_reason_has_no_unbalanced_backtick():
+    """Review r1 minor-2: the 200-char reason truncation used to cut mid-token
+    and mid-backtick. Pins the fixed behavior against the real compiled
+    artifact (not just a hermetic fixture)."""
+    data = yaml.safe_load(SF_BLOCKLIST_PATH.read_text(encoding="utf-8"))
+    entry = next(e for e in data["entries"] if e["id"] == "BL-G099")
+    reason = entry["reason"]
+    assert reason.count("`") % 2 == 0, f"unbalanced backtick in BL-G099 reason: {reason!r}"
+    # No mid-word cut: the reason must not end with a truncated fragment
+    # glued to the next word — every wrapped reason in this file ends on a
+    # real word boundary once truncated at all.
+    assert not reason.rstrip().endswith(("-", "/", "_")), reason
+
+
+def test_bl_g099_any_of_matches_all_six_ruling_phrasings():
+    """MAJOR-1 (ruling r4, amended): BL-G099's `any_of` must match each of the
+    six real proposer phrasings the ruling named, standalone — the derived
+    single conjunctive `.{0,30}` signature matched none of them (review r1
+    major-1, falsified against `scripts/compile_loop_blocklists.py`).
+    Mirrors the runtime match in `engine/signal_foundry/screen.py`
+    (`re.search(pattern, combined_text, re.IGNORECASE)`)."""
+    data = yaml.safe_load(SF_BLOCKLIST_PATH.read_text(encoding="utf-8"))
+    entry = next(e for e in data["entries"] if e["id"] == "BL-G099")
+    patterns = entry["match"]["any_of"]
+    phrasings = [
+        "we want to ship an api key for partners",
+        "add an api_key column to the users table",
+        "expose a public api for this",
+        "send a webhook when the trade closes",
+        "we need a second quota meter for this tier",
+        "add a keyed endpoint for read access",
+    ]
+    for phrase in phrasings:
+        hit = any(re.search(pat, phrase, re.IGNORECASE) for pat in patterns)
+        assert hit, f"phrase {phrase!r} did not match any BL-G099 pattern: {patterns}"
