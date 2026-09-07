@@ -2306,7 +2306,12 @@ html[data-theme="light"] .mx-ladder--board .mx-cell { background:var(--panel); }
   border-top:1px solid color-mix(in srgb,var(--text) 38%,transparent);}
 .dmr-val{font-family:var(--num);font-variant-numeric:tabular-nums;font-size:13px;font-weight:700;text-align:right;}
 .dmr.na .dmr-tr{background:transparent;border:1px dashed color-mix(in srgb,var(--prov) 55%,transparent);}
-.dmr.na .dmr-val{font-family:var(--font-ui);font-size:11.5px;font-weight:600;color:var(--prov-ink);}
+/* Adjudication (r4 MINOR-1): "not reported" / "未披露" is a non-interactive
+   absence, not a provenance link. --prov-ink is the TEXT-grade provenance
+   hue and reads as interactive/link blue in both themes. --muted is the
+   estate's quiet-absence ink (labels, footnotes, hints). The --prov hue
+   stays on the dashed/hatched TRACK — that is the sanctioned null texture. */
+.dmr.na .dmr-val{font-family:var(--font-ui);font-size:11.5px;font-weight:600;color:var(--muted);}
 /* Round-2 review MINOR-4: a REPORTED zero (real "$0", a zero-width bar) and
    an UNREPORTED bucket (dashed/hatched track, no bar) read as near-identical
    empty boxes at a glance. This tick is the one thing that says "a number

@@ -870,19 +870,12 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
     {% if earnings %}<a href="#earnings">{{ t('Earnings', '财报') }}</a>{% endif %}
     {% if valuation %}<a href="#valuation">{{ t('Valuation', '估值') }}</a>{% endif %}
     {% if financials %}<a href="#financials">{{ t('Financials', '财务') }}</a>{% endif %}
-    {# Round-2 review MAJOR-1: this nav chip must gate on the SAME condition as
-       the partial's own top-level render gate (`_debt_maturity.html.j2:1`,
-       `status != 'not_applicable'`) — gating on `== 'reported'` here left every
-       other visible status (not_loaded / no_filings / no_maturity_facts /
-       identity_mismatch) rendered in the body with real null-disclosure text
-       but unreachable from the jump nav, an orphaned section a reader could
-       only find by scrolling past it.
-       Round-2-fix-round MAJOR-1: `unresolved` (an identity gap the panel can
-       never resolve into content — see the partial's own `unresolved` branch)
-       is deliberately excluded from the chip too, alongside `not_applicable` —
-       nothing pending is behind that dead end, so it is not worth a jump link,
-       even though the partial still renders its honest one-line answer for a
-       reader who scrolls to it. #}
+    {# META-CEO B r4 MAJOR-1 (amended to match the panel, with one ruled
+       asymmetry). Chip AND section for: reported (the loaded/success status),
+       no_filings, not_loaded, identity_mismatch, no_maturity_facts.
+       unresolved: the section's no-record sentence WITHOUT a chip (ruled
+       asymmetry — an identity gap has nothing pending to jump to).
+       not_applicable: neither chip nor section. Tests pin all seven. #}
     {% if debt_maturity and debt_maturity.status not in ('not_applicable', 'unresolved') %}<a href="#debt-maturity">{{ t('Debt', '债务') }}</a>{% endif %}
     {% if options %}<a href="#options">{{ t('Options', '期权') }}</a>{% endif %}
     {% if ownership %}<a href="#ownership">{{ t('Holders', '持仓') }}</a>{% endif %}

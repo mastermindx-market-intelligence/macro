@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import ast
+import hashlib
 import json
 import re
 from datetime import date
@@ -419,42 +420,50 @@ def test_stock_page_wiring():
     assert '"debt_maturity"' in build_pages_src
 
 
-def test_nav_chip_visible_whenever_panel_renders():
-    """Round-2 review MAJOR-1: gating the sticky-nav jump chip on
-    `status == 'reported'` while the panel's own top-level gate
-    (`_debt_maturity.html.j2:1`) renders on `status != 'not_applicable'` left
-    every other visible status (not_loaded / no_filings / no_maturity_facts /
-    identity_mismatch) rendered in the body with real null-disclosure text but
-    unreachable from the jump nav -- an orphaned section a reader could only
-    find by scrolling past it. Extracts the LIVE nav line from ticker.html.j2
-    (never a hand-copied snippet), so a future regression in either gate fails
-    this test the moment the two diverge."""
-    import re as _re
+def test_chip_and_section_gates_pin_all_seven_statuses():
+    """META-CEO B r4 MAJOR-1: pin chip AND section for all seven statuses
+    against the LIVE ticker template (not a hand-copied nav snippet).
 
-    from jinja2 import Environment
+    reported (the loaded/success status), no_filings, not_loaded,
+    identity_mismatch, no_maturity_facts → BOTH chip and section.
+    unresolved → section's no-record sentence WITHOUT a chip (ruled asymmetry).
+    not_applicable → neither.
+    """
+    from tests.test_ticker_pages import _jinja_env, _rich_ctx
 
-    ticker_tmpl = Path("templates/ticker.html.j2").read_text()
-    m = _re.search(r'.*href="#debt-maturity".*', ticker_tmpl)
-    assert m, "nav chip line not found in ticker.html.j2"
-    nav_line = m.group(0).strip()
+    tmpl = _jinja_env().get_template("ticker.html.j2")
 
-    env = Environment(autoescape=True)
-    env.globals["t"] = lambda en, zh="": en
-    tmpl = env.from_string(nav_line)
+    both = ("reported", "no_filings", "not_loaded", "identity_mismatch", "no_maturity_facts")
+    for status in both:
+        ctx = _rich_ctx()
+        if status == "reported":
+            ctx["debt_maturity"] = extract_maturity_ladder(
+                _load("aapl_trimmed.json"), cik=AAPL_CIK, as_of=date(2025, 1, 1)
+            )
+        else:
+            ctx["debt_maturity"] = {"status": status, "cik": None, "buckets": []}
+        html = tmpl.render(**ctx)
+        assert 'href="#debt-maturity"' in html, f"status={status} must render the chip"
+        assert 'id="debt-maturity"' in html, f"status={status} must render the section"
 
-    for status in ("reported", "not_loaded", "no_filings", "no_maturity_facts", "identity_mismatch"):
-        html = tmpl.render(debt_maturity={"status": status})
-        assert 'href="#debt-maturity"' in html, f"status={status} should be navigable"
+    ctx = _rich_ctx()
+    ctx["debt_maturity"] = {"status": "unresolved", "cik": None, "buckets": []}
+    html = tmpl.render(**ctx)
+    assert 'href="#debt-maturity"' not in html, "unresolved must not render a chip"
+    assert 'id="debt-maturity"' in html, "unresolved must still render the section"
+    assert "We do not have an SEC filing record for this listing." in html
 
-    # Round-2-fix-round MAJOR-1: `unresolved` (an identity gap the panel can
-    # never resolve into content) is deliberately excluded from the chip,
-    # alongside `not_applicable` (no filer identity at all) -- even though the
-    # partial still renders its own honest one-line "no record" answer for
-    # `unresolved`, that dead end is not worth a jump link.
-    for status in ("not_applicable", "unresolved"):
-        assert 'href="#debt-maturity"' not in tmpl.render(debt_maturity={"status": status}), \
-            f"status={status} should NOT be navigable"
-    assert 'href="#debt-maturity"' not in tmpl.render(debt_maturity=None)
+    ctx = _rich_ctx()
+    ctx["debt_maturity"] = {"status": "not_applicable"}
+    html = tmpl.render(**ctx)
+    assert 'href="#debt-maturity"' not in html
+    assert 'id="debt-maturity"' not in html
+
+    ctx = _rich_ctx()
+    ctx["debt_maturity"] = None
+    html = tmpl.render(**ctx)
+    assert 'href="#debt-maturity"' not in html
+    assert 'id="debt-maturity"' not in html
 
 
 def test_debt_maturity_import_failure_never_kills_the_stockdata_build(monkeypatch):
@@ -1013,3 +1022,65 @@ def test_reported_lede_bucket_is_always_the_near_bucket():
     assert result["buckets"][0]["key"] == "y1"
     if result["near_share_pct"] is not None:
         assert result["buckets"][0]["reported"] is True
+
+
+def test_unreported_bucket_value_is_muted_not_link_blue():
+    """r4 MINOR-1: 'not reported' / '未披露' must not use --prov-ink (link-blue)."""
+    css = Path("templates/theme.css").read_text()
+    m = re.search(r"\.dmr\.na \.dmr-val\{[^}]+\}", css)
+    assert m, "missing .dmr.na .dmr-val rule"
+    rule = m.group(0)
+    assert "--prov-ink" not in rule
+    assert "color:var(--muted)" in rule
+
+
+def test_content_address_png_sha256_matches_bytes(tmp_path):
+    """MAJOR-3 RED-first: content_address_png hashes the bytes it writes.
+
+    On parent head 33fc01d5 the capture script cropped after hashing, so
+    every committed cell's manifest sha256 described pre-trim bytes. This
+    helper is the post-shot path; a mismatch here is the same defect.
+    """
+    from scripts.capture_debt_maturity_evidence import content_address_png
+    from scripts.capture_page_evidence import _tiny_png
+
+    png = _tiny_png(8, 6, 90)
+    name, digest, width, height = content_address_png(png, tmp_path)
+    assert digest == hashlib.sha256(png).hexdigest()
+    assert name == f"{digest[:16]}.png"
+    assert (tmp_path / name).read_bytes() == png
+    assert (width, height) == (8, 6)
+
+
+def test_evidence_manifest_sha256_matches_file_digest():
+    """MAJOR-3: every committed cell's manifest sha256 equals the file digest."""
+    root = Path("mockups/evidence/debt_maturity")
+    manifest_path = root / "manifest.json"
+    if not manifest_path.is_file():
+        pytest.skip("mockups/evidence/debt_maturity not checked out")
+    manifest = json.loads(manifest_path.read_text())
+    cells = 0
+    for page in manifest.get("pages", []):
+        for state in page.get("states", []):
+            if not state.get("captured"):
+                continue
+            cells += 1
+            png_path = root / state["file"]
+            digest = hashlib.sha256(png_path.read_bytes()).hexdigest()
+            assert state["sha256"] == digest, (
+                f"{state['file']}: manifest sha256 {state['sha256'][:16]} "
+                f"!= file digest {digest[:16]}"
+            )
+            assert Path(state["file"]).name.startswith(digest[:16])
+    assert cells >= 48, f"expected 48 captured cells, got {cells}"
+
+
+def test_capture_script_uses_real_ticker_page_and_element_screenshot():
+    """BLOCKER: capture must shoot #debt-maturity on ticker.html.j2, not a fixture."""
+    src = Path("scripts/capture_debt_maturity_evidence.py").read_text()
+    assert "ticker.html.j2" in src
+    assert 'locator("#debt-maturity")' in src or "locator('#debt-maturity')" in src
+    assert "content_address_png" in src
+    assert "_SHELL" not in src
+    assert "body::before {{ display:none" not in src
+    assert "render_ticker_page" in src

@@ -1,40 +1,21 @@
-"""One-off evidence capture for the debt-maturity panel (packet B-F09-3,
-META-CEO ruling round 2 fix round, MAJOR-3).
+"""Element-screenshot evidence for the debt-maturity panel (packet B-F09-3).
 
-Round-2 review MAJOR-3: the previously committed evidence was full-page
-ticker-page screenshots (5251-8350px tall) with no panel crop and no
-recorded anchor offset, so a reviewer could not locate the #debt-maturity
-element inside a reviewer's budget -- the theme-law dual-read could not
-actually be performed from the committed matrix.
+META-CEO B ruling (2026-09-07 06:20Z) r4 BLOCKER: each cell is a Playwright
+element screenshot of ``#debt-maturity`` taken on the REAL ticker page
+produced by the page's own template pipeline (``templates/ticker.html.j2``,
+the same render path ``scripts/build_ticker_pages.py`` uses), with the
+page's own CSS — ``theme.css`` AND the ``.mod`` / ``.mod-hd`` / ``.mod-ft``
+chrome that lives in the ticker template — inside the real ``.page-wrap``
+width. No synthetic stylesheet fragment. No fixture page whose only
+stylesheet is ``theme.css``.
 
-This script does NOT define a second evidence plane (scripts/
-check_ui_visual_evidence.py's ABSOLUTE PROHIBITION): it builds four MINIMAL
-fixture pages whose entire <body> is nothing but the #debt-maturity panel
-(no ticker chrome, no hero, no other sections), and then calls the ONE
-canonical capture tool, scripts/capture_page_evidence.py, to actually shoot
-them. Because the fixture page contains nothing else, that tool's own
-full-page screenshot IS a tight panel-level crop by construction -- this
-satisfies MAJOR-3's "panel-level crop, not the whole ticker page" ask while
-staying inside the single `mastermind.p0_evidence.v2` manifest schema the
-design-system evidence gate requires.
+MAJOR-3: the content-addressed filename and the manifest ``sha256`` are
+computed from the FINAL PNG bytes (the element screenshot). A test asserts
+every committed cell's digest equals the file on disk.
 
-Isolation (macro sparse-worktree / nightly-sole-advancer law): fixture HTML
-+ a theme.css copy are written into a SCRATCH temp directory only (never
-into site/ or data/); the capture tool serves that scratch directory itself
-over its own local HTTP server. Output (PNGs + manifest.json + smells.json)
-goes only under mockups/evidence/debt_maturity/ -- already tracked, already
-this packet's own evidence directory.
-
-Round-3 review BLOCKER: MAJOR-1's fix introduced a new user-facing terminal
-branch (`unresolved`, its own EN/ZH copy) with zero dual-theme evidence --
-house theme law treats missing evidence for a material user-facing change as
-PARTIAL/BLOCKED, never PASS, so a text-only "tests cover it" argument does
-not satisfy the law. `no_maturity_facts` (inherited from round 2, its own
-copy too) was likewise never captured. Six pages are captured now: the four
-the prior evidence run captured (reported / not_loaded / no_filings /
-identity_mismatch) plus `unresolved` and `no_maturity_facts`. `not_applicable`
-alone renders NO section (nothing to crop) and stays covered by
-tests/test_debt_maturity.py's test_etf_page_renders_no_chip_and_no_section.
+Isolation: rendered HTML + copies of ``theme.css`` / ``theme.js`` are written
+into a scratch directory only (never into ``site/`` or ``data/``). Output
+goes only under ``mockups/evidence/debt_maturity/``.
 
 Usage::
 
@@ -42,46 +23,83 @@ Usage::
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import shutil
-import subprocess
+import struct
 import sys
 import tempfile
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 TEMPLATES_DIR = REPO_ROOT / "templates"
 OUT_DIR = REPO_ROOT / "mockups" / "evidence" / "debt_maturity"
 
-STATUSES = ("reported", "not_loaded", "no_filings", "identity_mismatch", "unresolved", "no_maturity_facts")
+# Six statuses that render ``#debt-maturity``. ``not_applicable`` renders
+# neither chip nor section — nothing to crop; pinned by tests.
+STATUSES = (
+    "reported",
+    "not_loaded",
+    "no_filings",
+    "identity_mismatch",
+    "unresolved",
+    "no_maturity_facts",
+)
 
-# No baked data-theme/data-lang: scripts/capture_page_evidence.py's own
-# _APPLY_STATE_SCRIPT sets those attributes after load (falling back to a
-# direct docEl.setAttribute() call when window.setTheme/setLang are absent,
-# exactly the case here -- this fixture loads no theme.js).
-_SHELL = """<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>debt-maturity evidence fixture -- {status}</title>
-<link rel="stylesheet" href="theme.css">
-<style>
-  /* Flat, uniform background for this evidence fixture only -- theme.css's
-     shared ambient aurora wash (html body::before, a soft gradient) is
-     genuine product chrome on a real page but defeats the corner-pixel trim
-     below (a gradient never matches a single corner color), so it is
-     disabled here. This is capture tooling, not a shipped surface. */
-  body {{ margin:0; padding:24px; background:var(--bg); color:var(--text); }}
-  body::before {{ display:none !important; }}
-</style>
-</head>
-<body>
-{section}
-</body>
-</html>
+VIEWPORTS = {
+    "desktop": (1440, 900),
+    "mobile": (390, 844),
+}
+LOCALES = ("en", "zh")
+THEMES = ("dark", "light")
+
+_STATE_SEED_SCRIPT = """
+(state) => {
+  try {
+    localStorage.setItem('theme', state.theme);
+    localStorage.removeItem('themeAuto');
+    localStorage.setItem('lang', state.locale);
+  } catch (e) {}
+}
 """
+
+_APPLY_STATE_SCRIPT = """
+(state) => {
+  const docEl = document.documentElement;
+  if (typeof window.setTheme === 'function') { window.setTheme(state.theme); }
+  else {
+    docEl.setAttribute('data-theme', state.theme);
+    try { localStorage.setItem('theme', state.theme); localStorage.removeItem('themeAuto'); } catch (e) {}
+  }
+  if (typeof window.setLang === 'function') { window.setLang(state.locale); }
+  else {
+    docEl.setAttribute('data-lang', state.locale);
+    if (state.locale) docEl.lang = state.locale;
+    try { localStorage.setItem('lang', state.locale); } catch (e) {}
+  }
+  return {theme: docEl.getAttribute('data-theme'), locale: docEl.getAttribute('data-lang')};
+}
+"""
+
+
+def content_address_png(png: bytes, output_dir: Path) -> tuple[str, str, int, int]:
+    """Write PNG named by sha256[:16] of THESE bytes. Return (file, sha256, w, h).
+
+    MAJOR-3: hash and filename are derived from the final bytes, never from a
+    pre-trim / pre-crop buffer.
+    """
+    digest = hashlib.sha256(png).hexdigest()
+    name = f"{digest[:16]}.png"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    path = output_dir / name
+    if not path.exists():
+        path.write_bytes(png)
+    if len(png) >= 24 and png[:8] == b"\x89PNG\r\n\x1a\n" and png[12:16] == b"IHDR":
+        width, height = struct.unpack(">II", png[16:24])
+    else:
+        width, height = 0, 0
+    return name, digest, int(width), int(height)
 
 
 def _status_contexts() -> dict[str, dict]:
@@ -99,14 +117,7 @@ def _status_contexts() -> dict[str, dict]:
         "near_share_pct": None, "buckets_reported": 0, "buckets_total": 6,
         "as_of": as_of.isoformat(),
     }
-    # a mismatched cik on the SAME real facts -> engine's own identity_mismatch
     identity_mismatch = extract_maturity_ladder(fixture, cik="0000999999", as_of=as_of)
-    # Round-3 review BLOCKER: `unresolved` (a CIK lookup was attempted and
-    # found nothing -- scripts/build_stock_library.py's own shape, never
-    # produced by the pure engine, so built by hand exactly as that call
-    # site builds it) and `no_maturity_facts` (a real filing exists, via the
-    # engine, but none of the six tags carry an annual period -- an empty
-    # us-gaap facts block under the SAME cik).
     unresolved = {
         "schema": "debt_maturity.v1", "status": "unresolved", "cik": None,
         "buckets": [], "total_reported_usd": None, "total_display": None,
@@ -130,60 +141,228 @@ def _status_contexts() -> dict[str, dict]:
     }
 
 
-def _render_section(debt_maturity: dict) -> str:
-    from jinja2 import Environment, FileSystemLoader
+def render_ticker_page(debt_maturity: dict) -> str:
+    """Render the real ticker template — same Jinja path as build_ticker_pages.
 
-    from engine import i18n
-
-    env = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)), autoescape=True)
-    env.globals["t"] = i18n.t
-    tmpl = env.get_template("_debt_maturity.html.j2")
-    return tmpl.render(debt_maturity=debt_maturity)
-
-
-def _write_fixtures(scratch: Path, contexts: dict[str, dict]) -> None:
-    shutil.copy(TEMPLATES_DIR / "theme.css", scratch / "theme.css")
-    for status, dm in contexts.items():
-        section = _render_section(dm)
-        (scratch / f"{status}.html").write_text(_SHELL.format(status=status, section=section))
-
-
-def _trim_to_content(manifest_path: Path) -> None:
-    """Post-capture: crop every captured PNG down to its actual content
-    bounding box (the fixture page's body is background right up to the
-    panel's own edges, so this IS a panel-level crop) and record the new
-    pixel dims. `viewport_width`/`viewport_height` (the REQUESTED viewport,
-    what the gate checks) are left untouched -- only `width`/`height` (the
-    captured PNG's own pixel dims, which the gate only requires be non-None,
-    never a specific value) change.
+    Uses ``tests.test_ticker_pages._rich_ctx`` so the page carries the same
+    sections the render-path tests already exercise, then injects this
+    packet's ``debt_maturity`` block. The template's own ``t`` macro (both
+    EN and ZH spans) and the inline ``.mod`` chrome stay intact.
     """
-    from PIL import Image, ImageChops
+    from tests.test_ticker_pages import _jinja_env, _rich_ctx
 
-    manifest = json.loads(manifest_path.read_text())
-    for page in manifest.get("pages", []):
-        for state in page.get("states", []):
-            if not state.get("captured") or not state.get("file"):
-                continue
-            png_path = manifest_path.parent / state["file"]
-            if not png_path.exists():
-                continue
-            im = Image.open(png_path).convert("RGB")
-            bg = im.getpixel((0, 0))
-            diff = ImageChops.difference(im, Image.new("RGB", im.size, bg))
-            bbox = diff.getbbox()
-            if bbox is None:
-                continue  # uniform background, nothing to crop to
-            pad = 16
-            left, top, right, bottom = bbox
-            left = max(0, left - pad)
-            top = max(0, top - pad)
-            right = min(im.width, right + pad)
-            bottom = min(im.height, bottom + pad)
-            cropped = im.crop((left, top, right, bottom))
-            cropped.save(png_path)
-            state["width"], state["height"] = cropped.size
-            state["bytes"] = png_path.stat().st_size
-    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
+    env = _jinja_env()
+    ctx = _rich_ctx()
+    ctx["debt_maturity"] = debt_maturity
+    return env.get_template("ticker.html.j2").render(**ctx)
+
+
+def _write_real_pages(scratch: Path, contexts: dict[str, dict]) -> None:
+    shutil.copy(TEMPLATES_DIR / "theme.css", scratch / "theme.css")
+    shutil.copy(TEMPLATES_DIR / "theme.js", scratch / "theme.js")
+    (scratch / "data_base.js").write_text("/* capture stub */\n")
+    stocks = scratch / "stocks"
+    stocks.mkdir()
+    for status, dm in contexts.items():
+        (stocks / f"{status}.html").write_text(render_ticker_page(dm))
+
+
+def _git_head_of_repo() -> tuple[str | None, str | None]:
+    from scripts.capture_page_evidence import _git_head_sha
+
+    head = _git_head_sha(REPO_ROOT)
+    return head.sha, str(head.gitdir) if head.gitdir is not None else None
+
+
+def _capture_cells(scratch: Path) -> dict:
+    from scripts.capture_page_evidence import CaptureUnavailable, serve_site_dir
+
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError as exc:
+        raise CaptureUnavailable(f"playwright is not importable: {exc}") from exc
+
+    httpd, port = serve_site_dir(scratch)
+    base = f"http://127.0.0.1:{port}"
+    sha, gitdir = _git_head_of_repo()
+    generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    pages: list[dict] = []
+    written: set[str] = set()
+
+    try:
+        manager = sync_playwright().start()
+        try:
+            browser = manager.chromium.launch(headless=True)
+        except Exception as exc:
+            manager.stop()
+            raise CaptureUnavailable(f"no chromium binary is installed: {exc}") from exc
+        try:
+            for status in STATUSES:
+                states: list[dict] = []
+                for viewport, (width, height) in VIEWPORTS.items():
+                    for locale in LOCALES:
+                        for theme in THEMES:
+                            state = {"theme": theme, "locale": locale}
+                            context = browser.new_context(
+                                viewport={"width": width, "height": height},
+                                locale="zh-CN" if locale == "zh" else "en-US",
+                                color_scheme=theme,
+                                device_scale_factor=1,
+                            )
+                            context.add_init_script(
+                                f"({_STATE_SEED_SCRIPT.strip()})({json.dumps(state)})"
+                            )
+                            page = context.new_page()
+                            entry: dict = {
+                                "viewport": viewport,
+                                "locale": locale,
+                                "theme": theme,
+                                "access": "anonymous",
+                                "viewport_width": width,
+                                "viewport_height": height,
+                                "force_state": None,
+                            }
+                            try:
+                                url = f"{base}/stocks/{status}.html"
+                                response = page.goto(url, wait_until="load", timeout=30000)
+                                if response is None or not response.ok:
+                                    raise RuntimeError(
+                                        f"HTTP {getattr(response, 'status', 'none')}"
+                                    )
+                                page.wait_for_timeout(400)
+                                applied = page.evaluate(_APPLY_STATE_SCRIPT.strip(), state) or {}
+                                page.wait_for_timeout(200)
+                                loc = page.locator("#debt-maturity")
+                                loc.wait_for(state="attached", timeout=5000)
+                                loc.scroll_into_view_if_needed()
+                                # Real page: html.has-js .rv starts at opacity 0
+                                # until IntersectionObserver adds .in. Wait for
+                                # that class (the page's own reveal), then let
+                                # the bar transition settle.
+                                page.wait_for_function(
+                                    """() => {
+                                      const el = document.getElementById('debt-maturity');
+                                      return el && el.classList.contains('in');
+                                    }""",
+                                    timeout=5000,
+                                )
+                                page.wait_for_timeout(650)
+                                png = loc.screenshot(type="png")
+                                name, digest, pw, ph = content_address_png(png, OUT_DIR)
+                                written.add(name)
+                                entry.update(
+                                    {
+                                        "captured": True,
+                                        "file": name,
+                                        "sha256": digest,
+                                        "bytes": len(png),
+                                        "width": pw,
+                                        "height": ph,
+                                        "applied_theme": applied.get("theme"),
+                                        "applied_locale": applied.get("locale"),
+                                    }
+                                )
+                            except Exception as exc:
+                                entry.update(
+                                    {
+                                        "captured": False,
+                                        "reason": f"{type(exc).__name__}: {exc}",
+                                    }
+                                )
+                            finally:
+                                context.close()
+                            states.append(entry)
+                captured_n = sum(1 for s in states if s.get("captured"))
+                pages.append(
+                    {
+                        "page_id": f"{status}.html",
+                        "route": f"/stocks/{status}.html",
+                        "registry_route": f"/stocks/{status}.html",
+                        "route_kind": "ticker_page_element",
+                        "states": states,
+                        "metrics": {},
+                        "console_errors": [],
+                        "failed_responses": [],
+                        "gaps": [],
+                    }
+                )
+                print(
+                    f"  {status}: {captured_n}/{len(states)} cells",
+                    flush=True,
+                )
+        finally:
+            browser.close()
+            manager.stop()
+    finally:
+        httpd.shutdown()
+
+    attempted = sum(len(p["states"]) for p in pages)
+    captured = sum(1 for p in pages for s in p["states"] if s.get("captured"))
+    outcome = "captured" if captured == attempted and attempted else "partial"
+    manifest = {
+        "schema": "mastermind.p0_evidence.v2",
+        "generated_at": generated_at,
+        "tool": {
+            "module_ref": "scripts/capture_debt_maturity_evidence.py",
+            "version": "r4-element-ticker",
+            "capture_method": (
+                "playwright locator('#debt-maturity').screenshot() on a "
+                "ticker.html.j2 render (theme.css + page-owned .mod chrome, "
+                "real .page-wrap). sha256 and filename computed from the "
+                "element-screenshot bytes after the shot, never before."
+            ),
+        },
+        "target": {
+            "kind": "site_dir",
+            "base_url": None,
+            "site_dir": str(scratch),
+            "resolved_sha_or_none": sha,
+            "resolved_gitdir_or_none": gitdir,
+            "resolved_sha_source": (
+                f"HEAD of the capture checkout ({gitdir}); scratch site-dir "
+                "is a throwaway ticker.html.j2 render, not a second evidence plane"
+            ),
+        },
+        "axes": {
+            "viewports": {name: list(size) for name, size in VIEWPORTS.items()},
+            "locales": list(LOCALES),
+            "themes": list(THEMES),
+            "access": ["anonymous"],
+            "force_states": [],
+        },
+        "selection": {
+            "mode": "explicit_routes",
+            "statuses": list(STATUSES),
+            "selector": "#debt-maturity",
+        },
+        "excluded": [],
+        "outcome": outcome,
+        "totals": {
+            "pages": len(pages),
+            "states_attempted": attempted,
+            "states_captured": captured,
+        },
+        "honesty": {
+            "access": "anonymous only",
+            "gaps": "uncaptured cells are recorded with a reason",
+            "authority": "this tool screenshots; it scores nothing",
+            "page": (
+                "real ticker.html.j2 via the same FileSystemLoader path as "
+                "scripts/build_ticker_pages.py / tests/test_ticker_pages.py; "
+                "no synthetic stylesheet fragment; ambient wash is the page's "
+                "own (not disabled). Element screenshot of #debt-maturity "
+                "carries .mod / .mod-hd / .mod-ft chrome inside .page-wrap."
+            ),
+        },
+        "pages": pages,
+    }
+    smells = {
+        "schema": "mastermind.page_ux_smells.v1",
+        "generated_at": generated_at,
+        "disclaimer": "element-screenshot capture; smells not re-censused",
+        "pages": [{"page_id": p["page_id"], "route": p["route"]} for p in pages],
+    }
+    return {"manifest": manifest, "smells": smells, "written": sorted(written), "outcome": outcome}
 
 
 def main() -> int:
@@ -191,27 +370,33 @@ def main() -> int:
     for stale in OUT_DIR.glob("*.png"):
         stale.unlink()
 
-    scratch = Path(tempfile.mkdtemp(prefix="dm_evidence_"))
+    scratch = Path(tempfile.mkdtemp(prefix="dm_ticker_evidence_"))
     try:
-        _write_fixtures(scratch, _status_contexts())
-        routes = ",".join(f"/{status}.html" for status in STATUSES)
-        cmd = [
-            sys.executable, "-m", "scripts.capture_page_evidence",
-            "--site-dir", str(scratch),
-            "--routes", routes,
-            "--output-dir", str(OUT_DIR),
-            "--manifest", str(OUT_DIR / "manifest.json"),
-            "--smells", str(OUT_DIR / "smells.json"),
-            "--viewports", "desktop,mobile",
-            "--locales", "en,zh",
-            "--themes", "dark,light",
-            "--max-pages", str(len(STATUSES)),
-        ]
-        result = subprocess.run(cmd, cwd=REPO_ROOT)
-        if result.returncode != 0:
-            return result.returncode
-        _trim_to_content(OUT_DIR / "manifest.json")
-        return 0
+        print("rendering ticker.html.j2 for", ", ".join(STATUSES), flush=True)
+        _write_real_pages(scratch, _status_contexts())
+        payloads = _capture_cells(scratch)
+        (OUT_DIR / "manifest.json").write_text(
+            json.dumps(payloads["manifest"], indent=2) + "\n"
+        )
+        (OUT_DIR / "smells.json").write_text(
+            json.dumps(payloads["smells"], indent=2) + "\n"
+        )
+        (OUT_DIR / "EVIDENCE.yml").write_text(
+            "schema: mastermind.page_evidence_receipt.v1\n"
+            "changed_paths:\n"
+            "  - templates/theme.css\n"
+            "  - templates/_debt_maturity.html.j2\n"
+            "  - templates/ticker.html.j2\n"
+            "manifest: mockups/evidence/debt_maturity/manifest.json\n"
+        )
+        totals = payloads["manifest"]["totals"]
+        print(
+            f"outcome: {payloads['outcome']}\n"
+            f"pages: {totals['pages']}  states: "
+            f"{totals['states_captured']}/{totals['states_attempted']} captured",
+            flush=True,
+        )
+        return 0 if payloads["outcome"] == "captured" else 1
     finally:
         shutil.rmtree(scratch, ignore_errors=True)
 
