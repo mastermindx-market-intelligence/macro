@@ -1,6 +1,6 @@
 {
 "filter":"idx_ndx",
-"as_of":"2026-09-05 05:40 UTC",
+"as_of":"2026-09-07 04:28 UTC",
 "n":102,
 "total_reported":102,
 "unmapped_industries":[],
@@ -19,15 +19,7 @@
 "industry":"Consumer Electronics",
 "sector":"Technology",
 "country":"USA",
-"market_cap_b":4669.7
-},
-{
-"ticker":"GOOG",
-"company":"Alphabet Inc",
-"industry":"Internet Content & Information",
-"sector":"Communication Services",
-"country":"USA",
-"market_cap_b":4123.38
+"market_cap_b":4669.71
 },
 {
 "ticker":"GOOGL",
@@ -35,7 +27,15 @@
 "industry":"Internet Content & Information",
 "sector":"Communication Services",
 "country":"USA",
-"market_cap_b":4120.79
+"market_cap_b":4139.37
+},
+{
+"ticker":"GOOG",
+"company":"Alphabet Inc",
+"industry":"Internet Content & Information",
+"sector":"Communication Services",
+"country":"USA",
+"market_cap_b":4100.84
 },
 {
 "ticker":"MSFT",
@@ -259,7 +259,7 @@
 "industry":"Computer Hardware",
 "sector":"Technology",
 "country":"Singapore",
-"market_cap_b":192.48
+"market_cap_b":192.49
 },
 {
 "ticker":"PEP",
@@ -366,20 +366,20 @@
 "market_cap_b":110.29
 },
 {
-"ticker":"ABNB",
-"company":"Airbnb Inc",
-"industry":"Travel Services",
-"sector":"Consumer Cyclical",
-"country":"USA",
-"market_cap_b":108.94
-},
-{
 "ticker":"APP",
 "company":"Applovin Corp",
 "industry":"Advertising Agencies",
 "sector":"Communication Services",
 "country":"USA",
 "market_cap_b":107.28
+},
+{
+"ticker":"ABNB",
+"company":"Airbnb Inc",
+"industry":"Travel Services",
+"sector":"Consumer Cyclical",
+"country":"USA",
+"market_cap_b":107.27
 },
 {
 "ticker":"ADBE",
@@ -459,7 +459,7 @@
 "industry":"Biotechnology",
 "sector":"Healthcare",
 "country":"USA",
-"market_cap_b":85.22
+"market_cap_b":85.21
 },
 {
 "ticker":"CDNS",
@@ -507,7 +507,7 @@
 "industry":"Software - Infrastructure",
 "sector":"Technology",
 "country":"USA",
-"market_cap_b":75.47
+"market_cap_b":75.48
 },
 {
 "ticker":"ROST",
@@ -730,7 +730,7 @@
 "company":"Ferrovial N. V",
 "industry":"Engineering & Construction",
 "sector":"Industrials",
-"country":"Netherlands",
+"country":"Spain",
 "market_cap_b":42.11
 },
 {
@@ -742,20 +742,20 @@
 "market_cap_b":41.89
 },
 {
+"ticker":"MCHP",
+"company":"Microchip Technology Inc",
+"industry":"Semiconductors",
+"sector":"Technology",
+"country":"USA",
+"market_cap_b":40.28
+},
+{
 "ticker":"ROP",
 "company":"Roper Technologies Inc",
 "industry":"Software - Application",
 "sector":"Technology",
 "country":"USA",
 "market_cap_b":40.28
-},
-{
-"ticker":"MCHP",
-"company":"Microchip Technology Inc",
-"industry":"Semiconductors",
-"sector":"Technology",
-"country":"USA",
-"market_cap_b":40.27
 },
 {
 "ticker":"TTWO",
