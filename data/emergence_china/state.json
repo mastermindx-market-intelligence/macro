@@ -1,32 +1,32 @@
 {
-  "003013f7a43b": {
-    "name_en": "Cross-sector cluster \u00b7 Industrials + Technology",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Technology",
-    "score": 57.8
-  },
-  "3a59ae439b08": {
-    "name_en": "Cross-sector cluster \u00b7 Utilities + Industrials",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Utilities + Industrials",
-    "score": 53.7
-  },
-  "65ba76410161": {
+  "155f734a4816": {
     "name_en": "Cross-sector cluster \u00b7 Industrials + Consumer Cyclical",
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Consumer Cyclical",
-    "score": 55.0
+    "score": 59.1
   },
-  "bfba2e4c6ed4": {
-    "name_en": "Emerging Industrials cluster",
-    "name_zh": "\u65b0\u5174 Industrials \u96c6\u7fa4",
-    "score": 53.1
+  "c2a23868e3bb": {
+    "name_en": "Cross-sector cluster \u00b7 Basic Materials + Consumer Defensive",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Basic Materials + Consumer Defensive",
+    "score": 57.3
   },
-  "cd7cb3d74bc6": {
-    "name_en": "Cross-sector cluster \u00b7 Consumer Cyclical + Communication Services",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Cyclical + Communication Services",
-    "score": 54.6
+  "c86a037236f2": {
+    "name_en": "Cross-sector cluster \u00b7 Basic Materials + A-share",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Basic Materials + A-share",
+    "score": 48.8
   },
-  "e50c4e5719a2": {
+  "c9b77f9fdd8c": {
     "name_en": "Cross-sector cluster \u00b7 Industrials + Technology",
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Technology",
-    "score": 74.4
+    "score": 70.2
+  },
+  "ee1ed9f0d9df": {
+    "name_en": "Cross-sector cluster \u00b7 Consumer Cyclical + Industrials",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Cyclical + Industrials",
+    "score": 49.4
+  },
+  "f9f60f144abf": {
+    "name_en": "Cross-sector cluster \u00b7 Consumer Defensive + Basic Materials",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Defensive + Basic Materials",
+    "score": 50.7
   }
 }
