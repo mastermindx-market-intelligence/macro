@@ -1,6 +1,6 @@
 {
   "schema": "prophet_arena.scoreboard/v1",
-  "as_of": "2026-09-06",
+  "as_of": "2026-09-07",
   "tier": "display",
   "authority": {
     "tier": "display",
@@ -294,7 +294,7 @@
     }
   ],
   "tonight": {
-    "asof": "2026-09-06",
+    "asof": "2026-09-07",
     "standouts_as_of": "2026-09-04",
     "price_through": "2026-09-04",
     "source_delayed": false,
@@ -305,7 +305,7 @@
     "dispersion": {
       "mode": "not_lean_in",
       "state": "neutral",
-      "artifact_as_of": "2026-09-06",
+      "artifact_as_of": "2026-09-07",
       "stale_sessions": 0,
       "cap": 6,
       "path": "data/dispersion/regime.json"
@@ -334,7 +334,7 @@
           "2B",
           "3B"
         ],
-        "runtime_s": 23.4
+        "runtime_s": 21.6
       }
     },
     "policies": {
@@ -342,7 +342,6 @@
         "selected_tickers": [
           "KMI",
           "ETR",
-          "PG",
           "AEP",
           "F",
           "WFC",
@@ -359,6 +358,7 @@
           "AEO",
           "VST",
           "MC",
+          "PG",
           "ACM",
           "ASTH",
           "MO",
@@ -394,24 +394,24 @@
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-06",
+          "recorded_at": "2026-09-07",
           "price_basis_date": "2026-09-04",
           "clock_errors": [],
           "validation_failures": [
-            {
-              "ticker": "PG",
-              "id": "PG-BULL-20260903",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-09-03' postdates tier_event_date '2026-09-02'"
-              ]
-            },
             {
               "ticker": "PCRX",
               "id": "PCRX-BULL-20260903",
               "stage": "clock_provenance",
               "errors": [
                 "formation_date '2026-09-03' postdates tier_event_date '2026-08-31'"
+              ]
+            },
+            {
+              "ticker": "PG",
+              "id": "PG-BULL-20260903",
+              "stage": "clock_provenance",
+              "errors": [
+                "formation_date '2026-09-03' postdates tier_event_date '2026-09-02'"
               ]
             },
             {
@@ -457,7 +457,6 @@
         "selected_tickers": [
           "KMI",
           "ETR",
-          "PG",
           "AEP",
           "F",
           "WFC",
@@ -466,7 +465,8 @@
           "SMP",
           "NX",
           "PLMR",
-          "PCRX"
+          "PCRX",
+          "VRT"
         ],
         "plan_ids": [],
         "n_plans": 0,
@@ -479,24 +479,16 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 8,
+          "skipped_duplicate_id": 9,
           "skipped_open_plan": 2,
-          "skipped_clock_provenance": 2,
+          "skipped_clock_provenance": 1,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-06",
+          "recorded_at": "2026-09-07",
           "price_basis_date": "2026-09-04",
           "clock_errors": [],
           "validation_failures": [
-            {
-              "ticker": "PG",
-              "id": "PG-BULL-20260903",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-09-03' postdates tier_event_date '2026-09-02'"
-              ]
-            },
             {
               "ticker": "PCRX",
               "id": "PCRX-BULL-20260903",
@@ -507,7 +499,7 @@
             }
           ],
           "originated": 0,
-          "validation_failed": 2
+          "validation_failed": 1
         },
         "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
@@ -516,12 +508,12 @@
         "selected_tickers": [
           "KMI",
           "ETR",
-          "PG",
           "AEP",
           "F",
           "WFC",
           "LEA",
           "SPNT",
+          "SMP",
           "CCJ",
           "IREN",
           "ALM",
@@ -544,27 +536,18 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 5,
+          "skipped_duplicate_id": 6,
           "skipped_open_plan": 4,
-          "skipped_clock_provenance": 1,
+          "skipped_clock_provenance": 0,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-06",
+          "recorded_at": "2026-09-07",
           "price_basis_date": "2026-09-04",
           "clock_errors": [],
-          "validation_failures": [
-            {
-              "ticker": "PG",
-              "id": "PG-BULL-20260903",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-09-03' postdates tier_event_date '2026-09-02'"
-              ]
-            }
-          ],
+          "validation_failures": [],
           "originated": 2,
-          "validation_failed": 1
+          "validation_failed": 0
         },
         "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
@@ -573,10 +556,10 @@
         "selected_tickers": [
           "KMI",
           "ETR",
-          "PG",
           "AEP",
           "F",
-          "WFC"
+          "WFC",
+          "LEA"
         ],
         "plan_ids": [],
         "n_plans": 0,
@@ -588,26 +571,17 @@
         "origination": {
           "offered": 6,
           "skipped_duplicate_id": 5,
-          "skipped_open_plan": 0,
-          "skipped_clock_provenance": 1,
+          "skipped_open_plan": 1,
+          "skipped_clock_provenance": 0,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-06",
+          "recorded_at": "2026-09-07",
           "price_basis_date": "2026-09-04",
           "clock_errors": [],
-          "validation_failures": [
-            {
-              "ticker": "PG",
-              "id": "PG-BULL-20260903",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-09-03' postdates tier_event_date '2026-09-02'"
-              ]
-            }
-          ],
+          "validation_failures": [],
           "originated": 0,
-          "validation_failed": 1
+          "validation_failed": 0
         },
         "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
@@ -650,7 +624,7 @@
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-06",
+          "recorded_at": "2026-09-07",
           "price_basis_date": "2026-09-04",
           "clock_errors": [],
           "validation_failures": [
@@ -681,7 +655,6 @@
         "selected_tickers": [
           "KMI",
           "ETR",
-          "PG",
           "AEP",
           "F",
           "WFC",
@@ -698,6 +671,7 @@
           "AEO",
           "VST",
           "MC",
+          "PG",
           "ACM",
           "ASTH",
           "MO",
@@ -733,24 +707,24 @@
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-06",
+          "recorded_at": "2026-09-07",
           "price_basis_date": "2026-09-04",
           "clock_errors": [],
           "validation_failures": [
-            {
-              "ticker": "PG",
-              "id": "PG-BULL-20260903",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-09-03' postdates tier_event_date '2026-09-02'"
-              ]
-            },
             {
               "ticker": "PCRX",
               "id": "PCRX-BULL-20260903",
               "stage": "clock_provenance",
               "errors": [
                 "formation_date '2026-09-03' postdates tier_event_date '2026-08-31'"
+              ]
+            },
+            {
+              "ticker": "PG",
+              "id": "PG-BULL-20260903",
+              "stage": "clock_provenance",
+              "errors": [
+                "formation_date '2026-09-03' postdates tier_event_date '2026-09-02'"
               ]
             },
             {
@@ -797,7 +771,6 @@
           "AN",
           "KMI",
           "ETR",
-          "PG",
           "AEP",
           "F",
           "WFC",
@@ -805,7 +778,8 @@
           "SPNT",
           "SMP",
           "NX",
-          "PLMR"
+          "PLMR",
+          "PCRX"
         ],
         "plan_ids": [
           "AN-BULL-20260903"
@@ -829,16 +803,16 @@
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-06",
+          "recorded_at": "2026-09-07",
           "price_basis_date": "2026-09-04",
           "clock_errors": [],
           "validation_failures": [
             {
-              "ticker": "PG",
-              "id": "PG-BULL-20260903",
+              "ticker": "PCRX",
+              "id": "PCRX-BULL-20260903",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-03' postdates tier_event_date '2026-09-02'"
+                "formation_date '2026-09-03' postdates tier_event_date '2026-08-31'"
               ]
             }
           ],
