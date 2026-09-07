@@ -921,3 +921,110 @@ def test_coverage_epoch_module_opens_no_transport_service_route_or_publication()
     ):
         assert not hasattr(coverage_module, forbidden_entrypoint)
     assert "def main" not in source
+
+
+# Coverage remains historical evidence after closure, not new admission authority.
+def _closed_admission_epoch(run: dict, closure: str) -> dict:
+    epoch = _epoch(runs=[run])
+    epoch["transaction_to"] = "2026-08-04T00:00:00Z"
+    if closure == "withdrawn":
+        epoch["lifecycle"]["withdrawn_at"] = epoch["transaction_to"]
+        epoch["lifecycle"]["withdrawal_reason_code"] = "source_correction"
+    else:
+        assert closure == "superseded"
+        epoch["lifecycle"]["superseded_by_coverage_epoch_id"] = (
+            "ctgov_discovery_coverage_b1s4_successor"
+        )
+    return validate_attested_coverage_epoch(_rehash_epoch(epoch), runs=[run])
+
+
+@pytest.mark.parametrize("closure", ["withdrawn", "superseded"])
+@pytest.mark.parametrize("decided_at", [
+    "2026-08-04T00:00:00Z",
+    "2026-08-04T00:00:00.000001Z",
+    "2026-08-03T19:00:00-05:00",
+])
+def test_admission_builder_refuses_closed_epoch(closure: str, decided_at: str) -> None:
+    run = _run()
+    epoch = _closed_admission_epoch(run, closure)
+    cohort = _cohort()
+    before = copy.deepcopy((epoch, run, cohort))
+    with pytest.raises(ContractValidationError) as caught:
+        build_cohort_admission_decision(
+            epoch=epoch, runs=[run], cohort=cohort,
+            candidates=["NCT00000001"], decided_at=decided_at, repo_root=ROOT,
+        )
+    assert "cohort_admission.coverage_inactive" in _codes(caught)
+    assert (epoch, run, cohort) == before
+
+
+@pytest.mark.parametrize("closure", ["withdrawn", "superseded"])
+@pytest.mark.parametrize("decided_at", [
+    "2026-08-04T00:00:00Z",
+    "2026-08-04T00:00:00.000001Z",
+    "2026-08-03T19:00:00-05:00",
+])
+def test_bound_admission_validator_refuses_closed_epoch(
+    closure: str, decided_at: str,
+) -> None:
+    run = _run()
+    epoch = _closed_admission_epoch(run, closure)
+    cohort = _cohort()
+    decision = build_cohort_admission_decision(
+        epoch=epoch, runs=[run], cohort=cohort,
+        candidates=["NCT00000001"],
+        decided_at="2026-08-03T01:00:00Z", repo_root=ROOT,
+    )
+    decision["decided_at"] = decided_at
+    decision["transaction_from"] = decided_at
+    _rehash_decision(decision)
+    before = copy.deepcopy((decision, epoch, cohort))
+    # Without a supplied epoch the validator must not invent its closure time.
+    assert validate_cohort_admission_decision(decision, cohort=cohort, repo_root=ROOT) == decision
+    with pytest.raises(ContractValidationError) as caught:
+        validate_cohort_admission_decision(
+            decision, cohort=cohort, epoch=epoch, repo_root=ROOT,
+        )
+    assert "cohort_admission.coverage_inactive" in _codes(caught)
+    assert (decision, epoch, cohort) == before
+
+
+@pytest.mark.parametrize("closure", ["withdrawn", "superseded"])
+@pytest.mark.parametrize("decided_at", [
+    "2026-08-03T23:59:59.999999Z",
+    "2026-08-04T01:59:59.999999+02:00",
+])
+def test_admission_preserves_history_before_epoch_closure(
+    closure: str, decided_at: str,
+) -> None:
+    run = _run()
+    epoch = _closed_admission_epoch(run, closure)
+    cohort = _cohort()
+    before = copy.deepcopy((epoch, run, cohort))
+    decision = build_cohort_admission_decision(
+        epoch=epoch, runs=[run], cohort=cohort,
+        candidates=["NCT00000001"], decided_at=decided_at, repo_root=ROOT,
+    )
+    assert decision["admitted_nct_ids"] == ["NCT00000001"]
+    assert validate_cohort_admission_decision(
+        decision, cohort=cohort, epoch=epoch, repo_root=ROOT,
+    ) == decision
+    assert (epoch, run, cohort) == before
+
+
+def test_admission_open_epoch_has_no_invented_expiry() -> None:
+    run = _run()
+    epoch = _epoch(runs=[run])
+    cohort = _cohort()
+    before = copy.deepcopy((epoch, run, cohort))
+    decision = build_cohort_admission_decision(
+        epoch=epoch, runs=[run], cohort=cohort,
+        candidates=["NCT00000001"],
+        decided_at="2026-08-05T01:00:00Z", repo_root=ROOT,
+    )
+    assert epoch["transaction_to"] is None
+    assert decision["admitted_nct_ids"] == ["NCT00000001"]
+    assert validate_cohort_admission_decision(
+        decision, cohort=cohort, epoch=epoch, repo_root=ROOT,
+    ) == decision
+    assert (epoch, run, cohort) == before

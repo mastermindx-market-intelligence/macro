@@ -859,7 +859,9 @@ def build_cohort_admission_decision(
     identity = canonical_json_sha256(payload)
     payload["decision_id"] = f"biocatalyst_cohort_admission_{identity[:24]}"
     payload["decision_payload_sha256"] = canonical_json_sha256(payload)
-    return validate_cohort_admission_decision(payload, cohort=cohort, repo_root=repo_root)
+    return validate_cohort_admission_decision(
+        payload, cohort=cohort, epoch=normalized_epoch, repo_root=repo_root
+    )
 
 
 def cohort_admission_decision_semantic_issues(
@@ -1047,6 +1049,16 @@ def validate_cohort_admission_decision(
                     "$.coverage_epoch_ref",
                     "cohort_admission.coverage_binding",
                     "the decision must bind the exact attested coverage epoch",
+                )
+            )
+        decided = _parse_datetime(normalized.get("decided_at"))
+        coverage_to = _parse_datetime(bound_epoch.get("transaction_to"))
+        if decided is not None and coverage_to is not None and decided >= coverage_to:
+            issues.append(
+                _issue(
+                    "$.decided_at",
+                    "cohort_admission.coverage_inactive",
+                    "an admission must precede the bound coverage epoch's closure",
                 )
             )
     if issues:
