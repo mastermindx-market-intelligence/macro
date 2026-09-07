@@ -1,61 +1,48 @@
 {
-  "ts": "2026-09-06T22:22:57+00:00",
-  "main_sha": "f896de57049a8cfbd6b7b256e5dfe35aad1c95b5",
+  "ts": "2026-09-07T12:54:33+00:00",
+  "main_sha": "b89a9b6479769c7de8056cfc4c785c7a2ffb6f02",
   "red_required": [
     {
       "name": "publish",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34058309106/job/101554174364"
-    },
-    {
-      "name": "sweep",
-      "conclusion": "cancelled",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34058168361/job/101553792367"
-    },
-    {
-      "name": "engine-render-guards",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34057979888/job/101553256350"
-    },
-    {
-      "name": "font-ui-defined",
-      "conclusion": "cancelled",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34057979888/job/101553256343"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34122943179/job/101744942601"
     },
     {
       "name": "free-content-estate",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34057979888/job/101553256341"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34122940393/job/101744934182"
+    },
+    {
+      "name": "engine-render-guards",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34122940393/job/101744934128"
     },
     {
       "name": "tier-gate",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34057979888/job/101553256340"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34122940393/job/101744934071"
+    },
+    {
+      "name": "font-ui-defined",
+      "conclusion": "cancelled",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34122940393/job/101744934047"
     },
     {
       "name": "template-site-sync",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34057979888/job/101553256144"
-    },
-    {
-      "name": "health",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34057177472/job/101551086523"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34122940393/job/101744933952"
     }
   ],
   "green": false,
-  "consecutive_failures": 108,
+  "consecutive_failures": 110,
   "sensed_shas": [
-    "f896de57049a8cfbd6b7b256e5dfe35aad1c95b5",
-    "199d9002ce6b3939af653478aa7a39860cc5c7e3"
+    "b89a9b6479769c7de8056cfc4c785c7a2ffb6f02"
   ],
   "heartbeat_degraded": false
 }

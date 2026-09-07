@@ -1,12 +1,16 @@
 {
   "as_of": "2026-09-07",
   "coverage": {
-    "end": "2026-09-06",
-    "note": "daily rollup covers 10 session-date(s) from 2026-08-26 to 2026-09-06; chronicle event store begins 2013-05-21; trimmed lowest-salience events to fit the display budget",
-    "start": "2026-08-26"
+    "end": "2026-09-07",
+    "note": "daily rollup covers 10 session-date(s) from 2026-08-27 to 2026-09-07; chronicle event store begins 2013-05-21; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-08-27"
   },
   "schema": "chronicle.rollup.daily/v1",
   "sessions": [
+    {
+      "date": "2026-09-07",
+      "events": []
+    },
     {
       "date": "2026-09-06",
       "events": []
@@ -165,105 +169,101 @@
     },
     {
       "date": "2026-08-27",
-      "events": []
-    },
-    {
-      "date": "2026-08-26",
       "events": [
         {
-          "date": "2026-08-26",
-          "id": "cev-earnings_call-ca68fc7932a3",
+          "date": "2026-08-27",
+          "id": "cev-earnings_call-f478ea58c26d",
           "kind": "earnings",
           "source": "earnings_call",
-          "source_ref": "defeatbeta:KSS:2027Q2",
+          "source_ref": "defeatbeta:BZUN:2026Q2",
           "tickers": [
-            "KSS"
+            "BZUN"
           ],
-          "title": "Earnings call: KSS Q2 FY2027 — steady",
+          "title": "Earnings call: BZUN Q2 FY2026 — confident",
           "weight_hint": 2
         },
         {
-          "date": "2026-08-26",
-          "id": "cev-earnings_call-d567ef034b6c",
+          "date": "2026-08-27",
+          "id": "cev-earnings_call-fa2306b9eb01",
           "kind": "earnings",
           "source": "earnings_call",
-          "source_ref": "defeatbeta:HPQ:2026Q3",
+          "source_ref": "defeatbeta:HQY:2027Q2",
           "tickers": [
-            "HPQ"
+            "HQY"
           ],
-          "title": "Earnings call: HPQ Q3 FY2026 — confident",
+          "title": "Earnings call: HQY Q2 FY2027 — confident",
           "weight_hint": 2
         },
         {
-          "date": "2026-08-26",
-          "id": "cev-earnings_call-da6413252c4c",
+          "date": "2026-08-27",
+          "id": "cev-earnings_call-fe55aec82ca5",
           "kind": "earnings",
           "source": "earnings_call",
-          "source_ref": "defeatbeta:WSM:2027Q2",
+          "source_ref": "defeatbeta:STDN:2026Q2",
           "tickers": [
-            "WSM"
+            "STDN"
           ],
-          "title": "Earnings call: WSM Q2 FY2027 — confident",
+          "title": "Earnings call: STDN Q2 FY2026 — confident",
           "weight_hint": 2
         },
         {
-          "date": "2026-08-26",
-          "id": "cev-earnings_call-ea9e03453410",
-          "kind": "earnings",
-          "source": "earnings_call",
-          "source_ref": "defeatbeta:PLAB:2026Q3",
-          "tickers": [
-            "PLAB"
-          ],
-          "title": "Earnings call: PLAB Q3 FY2026 — steady",
-          "weight_hint": 2
-        },
-        {
-          "date": "2026-08-26",
-          "id": "cev-earnings_call-eb73ae022f9c",
-          "kind": "earnings",
-          "source": "earnings_call",
-          "source_ref": "defeatbeta:P:2027Q2",
-          "tickers": [
-            "P"
-          ],
-          "title": "Earnings call: P Q2 FY2027 — confident",
-          "weight_hint": 2
-        },
-        {
-          "date": "2026-08-26",
-          "id": "cev-earnings_call-f0274e1326b8",
-          "kind": "earnings",
-          "source": "earnings_call",
-          "source_ref": "defeatbeta:HEI:2026Q3",
-          "tickers": [
-            "HEI"
-          ],
-          "title": "Earnings call: HEI Q3 FY2026 — confident",
-          "weight_hint": 2
-        },
-        {
-          "date": "2026-08-26",
-          "id": "cev-earnings_call-f93f92404085",
-          "kind": "earnings",
-          "source": "earnings_call",
-          "source_ref": "defeatbeta:CRM:2027Q2",
-          "tickers": [
-            "CRM"
-          ],
-          "title": "Earnings call: CRM Q2 FY2027 — confident",
-          "weight_hint": 2
-        },
-        {
-          "date": "2026-08-26",
-          "id": "cev-prophet_ledger-050fd6c4e75c",
+          "date": "2026-08-27",
+          "id": "cev-prophet_ledger-02aff3d6053f",
           "kind": "signal_close",
           "source": "prophet_ledger",
-          "source_ref": "WSO-BULL-20260625",
+          "source_ref": "TPR-BULL-20260722",
           "tickers": [
-            "WSO"
+            "TPR"
           ],
-          "title": "Prophet close: WSO BULL → INVALIDATED (+0.8% in 5d)",
+          "title": "Prophet close: TPR BULL → INVALIDATED (-18.3% in 30d)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-08-27",
+          "id": "cev-prophet_ledger-2844d4731abe",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "VCYT-BULL-20260821",
+          "tickers": [
+            "VCYT"
+          ],
+          "title": "Prophet close: VCYT BULL → T1_HIT (+6.9% in 6d)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-08-27",
+          "id": "cev-prophet_ledger-64d50a1117a7",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "PATH-BULL-20260626",
+          "tickers": [
+            "PATH"
+          ],
+          "title": "Prophet close: PATH BULL → T1_HIT (+43.7% in 27d)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-08-27",
+          "id": "cev-prophet_ledger-78be8f49fb6e",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "MMS-BULL-20260414",
+          "tickers": [
+            "MMS"
+          ],
+          "title": "Prophet close: MMS BULL → INVALIDATED (+2.3% in 6d)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-08-27",
+          "id": "cev-prophet_ledger-aabf395497d1",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "BL-BULL-20260318",
+          "tickers": [
+            "BL"
+          ],
+          "title": "Prophet close: BL BULL → T2_HIT (+7.3% in 8d)",
           "weight_hint": 2
         }
       ]
