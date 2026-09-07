@@ -38,6 +38,7 @@ Run: python3 -m pytest tests/test_worktree_sparse.py -q
 from __future__ import annotations
 
 import importlib.util
+import io
 import json
 import os
 import platform
@@ -138,6 +139,55 @@ def test_stale_lock_removal_also_applies_to_the_sparse_checkout_lock(repo, monke
     assert rc == 0, f"a confirmed-stale sparse-checkout.lock must not block the op:\n{blob}"
     assert not lock.exists()
     assert "::warning" in blob and str(lock) in blob
+
+
+# ── Minor (round-3 review of macro #6971): `_clear_stale_locks`'s own
+#    git-dir re-probe must fail CLOSED, not silently skip half the liveness
+#    check (the script-side twin of the hook's `_lock_candidates` fix) ──────
+
+def test_clear_stale_locks_fails_closed_when_gitdir_reprobe_fails(repo, monkeypatch):
+    """`_clear_stale_locks` re-probes `git rev-parse --git-dir` (separately
+    from `index_lock_path`/`sparse_checkout_lock_path`, which already
+    succeeded to produce ``locks``) to scope `gather_live_processes`. RED-
+    first: before this fix, a failure on that SECOND probe set
+    ``git_dir = None`` and called `gather_live_processes(root, None)` anyway
+    — the Darwin/Linux probes both read `git_dir=None` as "no git-dir check
+    needed" and skip that half silently, so a lock a live process holds only
+    via an open file (not cwd) could be reported confirmed-empty and
+    removed. This lock must instead be left `still_locked` (fail closed),
+    and `gather_live_processes` must never even be called with an unknown
+    git_dir."""
+    gitdir = _real_git_dir(repo)
+    lock = gitdir / "index.lock"
+    lock.write_bytes(b"")
+    _backdate(lock, WS.STALE_LOCK_MIN_AGE_S + 60)
+
+    real_git = WS._git
+    calls = {"git_dir_probes": 0}
+
+    def flaky_git(root, *args, **kwargs):
+        if args == ("rev-parse", "--path-format=absolute", "--git-dir"):
+            calls["git_dir_probes"] += 1
+            if calls["git_dir_probes"] > 2:  # the two lock-path helpers go first
+                return None
+        return real_git(root, *args, **kwargs)
+
+    monkeypatch.setattr(WS, "_git", flaky_git)
+
+    def must_not_be_called(*_a, **_k):
+        raise AssertionError(
+            "gather_live_processes must never be called with an unknown "
+            "git_dir — that silently downgrades the two-check probe to a "
+            "cwd-only one")
+
+    monkeypatch.setattr(WS, "gather_live_processes", must_not_be_called)
+
+    removed, still_locked = WS._clear_stale_locks(repo)
+
+    assert removed == []
+    assert still_locked == [lock], (
+        "a lock must fail closed when its own git-dir cannot be determined, "
+        "never silently proceed with a partial liveness check")
 
 
 # ── (2) a young lock, a live-held lock, and an unconfirmed probe all refuse ─
@@ -355,6 +405,52 @@ def test_verify_sparse_postcondition_detects_include_set_mismatch(repo):
     problem = WS.verify_sparse_postcondition(repo, ["scripts", "big"], [])
     assert problem is not None
     assert "mismatch" in problem.lower()
+
+
+# ── Minor (round-3 review of macro #6971): _tracked_entries_present must ────
+#    fail CLOSED on its own probe failure, never silently as "nothing tracked"
+
+def test_tracked_entries_present_raises_on_a_failed_ls_tree(repo, monkeypatch):
+    """A failed `git ls-tree` (``_git`` returning ``None``) must propagate as
+    ``RuntimeError``, never be swallowed into ``[]`` — an empty list here is
+    indistinguishable from a genuinely empty tree to every caller, which
+    would let a broken git invocation silently pass the postcondition it
+    exists to enforce."""
+    monkeypatch.setattr(WS, "_git", lambda *a, **k: None)
+    with pytest.raises(RuntimeError):
+        WS._tracked_entries_present(repo, "big")
+
+
+def test_verify_sparse_postcondition_fails_loud_when_tracked_probe_fails(repo, monkeypatch):
+    """The postcondition must not read a failed tracked-entries probe as a
+    clean pass. RED-first: before this fix, `_tracked_entries_present`
+    caught the `_git` failure and returned `[]`, so this returned `None`
+    (success) even though the check never actually ran."""
+    real_git = WS._git
+
+    def flaky_git(root, *args, **kwargs):
+        if args[:1] == ("ls-tree",):
+            return None
+        return real_git(root, *args, **kwargs)
+
+    monkeypatch.setattr(WS, "_git", flaky_git)
+
+    problem = WS.verify_sparse_postcondition(repo, ["scripts"], ["big"])
+
+    assert problem is not None, (
+        "a failed tracked-entries probe must fail the postcondition, not pass silently")
+
+
+def test_untracked_entries_present_degrades_to_zero_on_a_failed_probe(repo, monkeypatch):
+    """The untracked-survivor count is best-effort and non-blocking, so a
+    `_tracked_entries_present` failure here must degrade to 0 (skip the
+    warning) rather than crash `apply_profile` after the (real) blocking
+    check already succeeded."""
+    (repo / "big").mkdir(exist_ok=True)
+    (repo / "big" / "stray.txt").write_text("oops\n", encoding="utf-8")
+    monkeypatch.setattr(WS, "_git", lambda *a, **k: None)
+
+    assert WS._untracked_entries_present(repo, "big") == 0
 
 
 def test_postcondition_mismatch_fails_apply_profile_loudly(repo, monkeypatch, capsys):
@@ -644,31 +740,86 @@ def test_hook_live_pids_holding_fails_closed_when_gitdir_probe_is_untrustworthy(
     assert result is None
 
 
-def test_hook_postcondition_fails_on_a_tracked_file_re_materialized(hook_worktree):
-    """MAJOR-2 (Meta-CEO B ruling r2 on macro #6971): `big/data.json` is
-    committed in the `hook_worktree` fixture, so a copy of it reappearing on
-    disk after sparsify is a genuine partial-materialization failure and
-    must still fail loud."""
+def test_hook_apply_sparse_no_longer_verifies_before_populate(hook_worktree):
+    """MAJOR-1 (2026-09-07 round-2 review of macro #6971): `apply_sparse`
+    itself must not verify the postcondition any more — `dest` is a freshly
+    created `--no-checkout` worktree at this point, so nothing is physically
+    present on disk yet regardless of what was selected. A tracked file
+    re-materialized in the excluded dir BEFORE `apply_sparse` runs is
+    therefore invisible to `apply_sparse` alone (it never inspects the
+    filesystem for `big/`, only `git sparse-checkout set`'s own state) —
+    demonstrating why the check had to move to `_verify_after_populate`,
+    called only once `git read-tree -mu HEAD` has actually populated the
+    tree (see the next two tests)."""
     hook = _load_hook()
     (hook_worktree / "big").mkdir(exist_ok=True)
     (hook_worktree / "big" / "data.json").write_bytes(_BIG_CONTENT)
 
+    include, omitted = hook.apply_sparse(hook_worktree, hook_worktree, "HEAD", {"big"})
+
+    assert omitted == ["big"]
+    assert include == ["scripts"]
+
+
+def test_hook_postcondition_after_populate_catches_a_tracked_file_reappearing(hook_worktree):
+    """MAJOR-1 fix, RED-first against the real production call order: this
+    drives the hook's actual sequence — `apply_sparse` (sparse-checkout
+    set), then `git read-tree -mu HEAD` (exactly as `main()` does it) — and
+    only THEN re-creates a tracked file (`big/data.json`, committed in the
+    `hook_worktree` fixture) in the excluded dir, the shape a partial or
+    interrupted prior materialize attempt would leave. Before the MAJOR-1
+    fix, the postcondition ran inside `apply_sparse`, before `read-tree`
+    populated anything, and could not see this at all — see
+    `test_hook_apply_sparse_no_longer_verifies_before_populate` above, and
+    `test_hook_postcondition_pre_populate_cannot_see_reintroduced_content`
+    below, which pins that blind spot directly."""
+    hook = _load_hook()
+    include, omitted = hook.apply_sparse(hook_worktree, hook_worktree, "HEAD", {"big"})
+    _git(hook_worktree, "read-tree", "-mu", "HEAD")
+    assert not (hook_worktree / "big").exists(), (
+        "fixture precondition: big/ is a clean husk immediately after read-tree")
+
+    (hook_worktree / "big").mkdir(exist_ok=True)
+    (hook_worktree / "big" / "data.json").write_bytes(_BIG_CONTENT)
+
     with pytest.raises(RuntimeError, match="sparse postcondition failed"):
-        hook.apply_sparse(hook_worktree, hook_worktree, "HEAD", {"big"})
+        hook._verify_after_populate(hook_worktree, include, omitted)
+
+
+def test_hook_postcondition_pre_populate_cannot_see_reintroduced_content(hook_worktree):
+    """Pins the exact blind spot MAJOR-1 fixed: calling the raw postcondition
+    predicate BEFORE `read-tree` (the old call order, when the check lived
+    inside `apply_sparse`) cannot detect a tracked file that is about to
+    reappear, because `_tracked_entries_present` only looks at what is
+    physically on disk RIGHT NOW, and at this point in the sequence nothing
+    is materialized yet — the same file that
+    `test_hook_postcondition_after_populate_catches_a_tracked_file_reappearing`
+    proves is caught once the check runs at the correct, post-`read-tree`
+    point."""
+    hook = _load_hook()
+    include, omitted = hook.apply_sparse(hook_worktree, hook_worktree, "HEAD", {"big"})
+    # Deliberately do NOT read-tree yet — this is the pre-fix call order.
+    problem = hook._verify_sparse_postcondition(hook_worktree, include, omitted)
+    assert problem is None, (
+        f"pre-populate, the postcondition is structurally blind to any "
+        f"re-materialized content — got a problem anyway: {problem!r}")
 
 
 def test_hook_postcondition_ignores_untracked_survivor_but_warns(hook_worktree, capsys):
     """MAJOR-2 (ruling r2, amending the frozen spec): `big/` holds a stray
-    (untracked) file before the sparse-checkout ever runs — `git
-    sparse-checkout set` never touches untracked content outside the index,
-    so it survives, and the excluded dir is no longer a husk — but this must
-    only warn, never fail apply_sparse. RED-first: before this ruling, ANY
-    entry in an excluded dir failed the postcondition here too."""
+    (untracked) file after sparsify — `git sparse-checkout set` never
+    touches untracked content outside the index, so it survives, and the
+    excluded dir is no longer a husk — but this must only warn, never fail.
+    RED-first: before this ruling, ANY entry in an excluded dir failed the
+    postcondition here too. Drives the real call order: apply_sparse then
+    read-tree then _verify_after_populate, exactly as `main()` does."""
     hook = _load_hook()
+    include, omitted = hook.apply_sparse(hook_worktree, hook_worktree, "HEAD", {"big"})
+    _git(hook_worktree, "read-tree", "-mu", "HEAD")
     (hook_worktree / "big").mkdir(exist_ok=True)
     (hook_worktree / "big" / "stray.txt").write_text("oops\n", encoding="utf-8")
 
-    hook.apply_sparse(hook_worktree, hook_worktree, "HEAD", {"big"})  # must not raise
+    hook._verify_after_populate(hook_worktree, include, omitted)  # must not raise
 
     blob = "".join(capsys.readouterr())
     warning_lines = [ln for ln in blob.splitlines() if "::warning" in ln]
@@ -676,6 +827,101 @@ def test_hook_postcondition_ignores_untracked_survivor_but_warns(hook_worktree, 
         f"no untracked-survivor ::warning emitted:\n{blob}")
     assert any(ln.startswith("::warning") for ln in warning_lines), (
         f"annotation did not open the line:\n{blob}")
+
+
+def test_hook_main_verifies_postcondition_after_read_tree_not_before(tmp_path, monkeypatch):
+    """MAJOR-1: pins the call ORDER inside the hook's real `main()` sequence
+    directly (independent of any specific postcondition scenario) — the
+    postcondition check must fire strictly after `git read-tree -mu HEAD`,
+    never before."""
+    hook = _load_hook()
+    donor = tmp_path / "donor"
+    donor.mkdir()
+    _git(donor, "init", "-q", "-b", "main")
+    _git(donor, "config", "user.email", "t@example.com")
+    _git(donor, "config", "user.name", "t")
+    (donor / "scripts").mkdir()
+    (donor / "scripts" / "keep.txt").write_text("keep\n", encoding="utf-8")
+    (donor / "big").mkdir()
+    (donor / "big" / "data.json").write_bytes(_BIG_CONTENT)
+    _git(donor, "add", "-A")
+    _git(donor, "commit", "-qm", "base")
+    _git(donor, "remote", "add", "origin", str(donor))  # self-remote: main() fetches origin/main
+
+    monkeypatch.setattr(
+        hook, "resolve_host", lambda toplevel, common, primary: donor,
+    )
+    monkeypatch.setattr(hook, "load_profile", lambda repo_root: {
+        "enabled": True, "exclude_dirs": ["big"],
+    })
+
+    calls: list[str] = []
+    real_git = hook.git
+
+    def tracking_git(root, *args, **kwargs):
+        if args and args[0] == "read-tree":
+            calls.append("read-tree")
+        return real_git(root, *args, **kwargs)
+
+    real_verify = hook._verify_sparse_postcondition
+
+    def tracking_verify(*a, **k):
+        calls.append("verify")
+        return real_verify(*a, **k)
+
+    monkeypatch.setattr(hook, "git", tracking_git)
+    monkeypatch.setattr(hook, "_verify_sparse_postcondition", tracking_verify)
+    monkeypatch.setattr(
+        hook.sys, "stdin",
+        io.StringIO(json.dumps({"name": "pt6-order", "cwd": str(donor)})),
+    )
+
+    rc = hook.main()
+
+    assert rc == 0, f"mint must succeed: calls so far {calls}"
+    assert calls == ["read-tree", "verify"], (
+        f"postcondition must run strictly after read-tree, got order {calls}")
+
+
+# ── Minor (round-3 review of macro #6971): the hook's `_tracked_entries_present`
+#    twin must also fail CLOSED on its own probe failure ────────────────────
+
+def test_hook_tracked_entries_present_raises_on_a_failed_ls_tree(hook_worktree, monkeypatch):
+    """Same fail-closed requirement as the script's copy: a failed
+    `git ls-tree` must propagate, never be swallowed into `[]`."""
+    hook = _load_hook()
+    real_git = hook.git
+
+    def flaky_git(root, *args, **kwargs):
+        if args and args[0] == "ls-tree":
+            raise RuntimeError("git ls-tree failed: boom")
+        return real_git(root, *args, **kwargs)
+
+    monkeypatch.setattr(hook, "git", flaky_git)
+
+    with pytest.raises(RuntimeError):
+        hook._tracked_entries_present(hook_worktree, "big")
+
+
+def test_hook_postcondition_fails_loud_when_tracked_probe_fails(hook_worktree, monkeypatch):
+    """RED-first: before this fix, the hook's `_tracked_entries_present`
+    caught the `git` failure and returned `[]`, so `_verify_after_populate`
+    read that as a clean pass instead of failing loud on a broken probe."""
+    hook = _load_hook()
+    include, omitted = hook.apply_sparse(hook_worktree, hook_worktree, "HEAD", {"big"})
+    _git(hook_worktree, "read-tree", "-mu", "HEAD")
+
+    real_git = hook.git
+
+    def flaky_git(root, *args, **kwargs):
+        if args and args[0] == "ls-tree":
+            raise RuntimeError("git ls-tree failed: boom")
+        return real_git(root, *args, **kwargs)
+
+    monkeypatch.setattr(hook, "git", flaky_git)
+
+    with pytest.raises(RuntimeError, match="sparse postcondition failed"):
+        hook._verify_after_populate(hook_worktree, include, omitted)
 
 
 def test_hook_reuse_warns_but_never_blocks_on_a_full_looking_worktree(

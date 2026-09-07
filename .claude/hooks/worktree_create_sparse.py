@@ -367,22 +367,20 @@ def _tracked_entries_present(dest: Path, name: str) -> list[str]:
     physically present on disk.
 
     Uses ``git ls-tree -r --name-only HEAD -- <name>`` — the commit tree
-    object, not the index — for a reason specific to THIS hook's call order:
-    ``apply_sparse`` runs `git sparse-checkout set` on a freshly created
-    `--no-checkout` worktree, whose index is empty until the caller's
-    `git read-tree -mu HEAD` runs AFTER `apply_sparse` returns. ``git
-    ls-files`` reads the index, so at the moment this postcondition check
-    runs it would report NOTHING tracked at all — silently defeating the
-    check for exactly the population (fresh session-worktree mints) MAJOR-2
-    was raised against. `dest`'s `HEAD` already resolves to the same commit
-    `apply_sparse`'s ``base`` was created from (the branch `worktree add -b`
-    made points there before `--no-checkout` skips only the working-tree
-    populate step), so ``ls-tree HEAD`` is correct here without needing
-    ``base`` threaded through."""
-    try:
-        listed = git(dest, "ls-tree", "-r", "--name-only", "HEAD", "--", name)
-    except RuntimeError:
-        return []
+    object, not the index — matching the script's copy, and is called (see
+    ``_verify_after_populate`` below) only AFTER ``main()`` has run
+    `git read-tree -mu HEAD`, so both the index and the working tree are
+    fully populated by the time this runs; ``ls-tree`` remains the choice
+    here for parity with the script and because it needs no index at all.
+
+    Raises ``RuntimeError`` when the ``ls-tree`` call itself fails, rather
+    than swallowing that into ``[]`` — an empty list here reads to every
+    caller as "nothing tracked, so nothing to worry about", which would
+    silently let a broken git invocation pass the postcondition it exists to
+    enforce (the same fail-OPEN shape ``_lock_candidates`` used to have on a
+    failed `rev-parse`). Callers must catch this and treat it as a FAILED
+    check."""
+    listed = git(dest, "ls-tree", "-r", "--name-only", "HEAD", "--", name)
     if not listed:
         return []
     tracked = [ln.strip() for ln in listed.splitlines() if ln.strip()]
@@ -394,11 +392,16 @@ def _untracked_entries_present(dest: Path, name: str) -> int:
     not track at all — a stray artifact rather than partially materialized
     tracked content. ``git sparse-checkout set`` never touches untracked
     content, so this can survive an otherwise-correct sparsify; reported as
-    a warning, never a failure."""
+    a warning, never a failure. Best-effort: a ``_tracked_entries_present``
+    failure here is swallowed to ``0`` (skip the warning) — the blocking
+    check lives in ``_verify_sparse_postcondition``, which propagates it."""
     path = dest / name
     if not path.exists():
         return 0
-    tracked = set(_tracked_entries_present(dest, name))
+    try:
+        tracked = set(_tracked_entries_present(dest, name))
+    except RuntimeError:
+        return 0
     count = 0
     try:
         for entry in path.rglob("*"):
@@ -417,7 +420,17 @@ def _verify_sparse_postcondition(dest: Path, include: list[str], excludes: list[
     present on disk (see ``_tracked_entries_present``) — never partially
     materialized content a killed operation left behind. Surviving
     UNTRACKED content is deliberately not a failure here (see
-    ``_untracked_entries_present``); ``apply_sparse`` warns on it instead."""
+    ``_untracked_entries_present``); the caller warns on it instead.
+
+    MUST be called only after ``git read-tree -mu HEAD`` has populated the
+    worktree (see ``_verify_after_populate``) — on the freshly created
+    `--no-checkout` worktree ``apply_sparse`` runs in, nothing is physically
+    present on disk yet, so calling this earlier makes the tracked-file
+    check structurally unable to observe anything regardless of how it reads
+    tracked-ness (this was MAJOR-1 in the 2026-09-07 round-2 review of macro
+    #6971: the check used to live inside ``apply_sparse``, before
+    `read-tree` ever ran, so it could never catch the exact
+    partial-materialization failure it exists to catch)."""
     try:
         listed = [
             ln.strip() for ln in git(dest, "sparse-checkout", "list").splitlines() if ln.strip()
@@ -427,7 +440,10 @@ def _verify_sparse_postcondition(dest: Path, include: list[str], excludes: list[
     if set(listed) != set(include):
         return f"sparse-checkout list mismatch — expected {sorted(include)}, got {sorted(listed)}"
     for name in excludes:
-        tracked = _tracked_entries_present(dest, name)
+        try:
+            tracked = _tracked_entries_present(dest, name)
+        except RuntimeError as exc:
+            return f"could not determine whether {name} still holds tracked content: {exc}"
         if tracked:
             return (
                 f"{name} is excluded but still holds {len(tracked)} TRACKED "
@@ -437,14 +453,23 @@ def _verify_sparse_postcondition(dest: Path, include: list[str], excludes: list[
     return None
 
 
-def apply_sparse(dest: Path, repo_root: Path, base: str, exclude: set[str]) -> None:
-    """Select every tracked top-level dir except ``exclude``, then populate.
+def apply_sparse(dest: Path, repo_root: Path, base: str, exclude: set[str]) -> tuple[list[str], list[str]]:
+    """Select every tracked top-level dir except ``exclude`` and run
+    `git sparse-checkout set`. Returns ``(include, omitted)`` so the caller
+    can verify the result after populating the working tree.
 
     Refuses up front on a lock in ``dest``'s git-dir that is not confirmed
-    stale (see ``_clear_stale_locks``), and verifies afterward that the
-    working tree actually ended up in the requested state (see
-    ``_verify_sparse_postcondition``) — both raise ``RuntimeError``, which
+    stale (see ``_clear_stale_locks``) — raises ``RuntimeError``, which
     ``main`` already turns into a removed worktree plus a loud hook failure.
+
+    Does NOT verify the postcondition itself: ``dest`` is a freshly created
+    `--no-checkout` worktree at this point, so nothing is physically present
+    on disk yet regardless of what `git sparse-checkout set` selected —
+    checking here would be structurally unable to observe a partially
+    materialized excluded dir (MAJOR-1, 2026-09-07 round-2 review of macro
+    #6971). ``main`` calls ``_verify_after_populate`` with this function's
+    return value only after `git read-tree -mu HEAD` has actually populated
+    the tree.
     """
     tracked = [ln for ln in git(repo_root, "ls-tree", "-d", "--name-only", base).splitlines() if ln]
     include = [d for d in tracked if d not in exclude]
@@ -489,6 +514,16 @@ def apply_sparse(dest: Path, repo_root: Path, base: str, exclude: set[str]) -> N
     git(dest, "sparse-checkout", "set", "--cone", "--", *include)
     omitted = sorted(set(tracked) & exclude)
     log(f"sparse profile: omitting {', '.join(omitted) if omitted else '(nothing)'}")
+    return include, omitted
+
+
+def _verify_after_populate(dest: Path, include: list[str], omitted: list[str]) -> None:
+    """Postcondition check + untracked-survivor warning, run by ``main``
+    AFTER `git read-tree -mu HEAD` has populated ``dest`` — see
+    ``_verify_sparse_postcondition``'s docstring for why the call order is
+    load-bearing. Raises ``RuntimeError`` (which ``main`` turns into a
+    removed worktree plus a loud hook failure) on a genuine postcondition
+    failure; a surviving untracked file only warns."""
     problem = _verify_sparse_postcondition(dest, include, omitted)
     if problem:
         raise RuntimeError(f"sparse postcondition failed: {problem}")
@@ -610,10 +645,18 @@ def main() -> int:
         log(f"creating {'sparse' if sparse else 'full'} worktree at {dest}")
         git(repo_root, "worktree", "add", "--no-checkout", "-b", branch, str(dest), base)
         created = True
+        include: list[str] | None = None
+        omitted: list[str] | None = None
         if sparse:
-            apply_sparse(dest, repo_root, base, set(profile.get("exclude_dirs") or ()))
+            include, omitted = apply_sparse(dest, repo_root, base, set(profile.get("exclude_dirs") or ()))
         # `--no-checkout` leaves an empty index; populate only the selected paths.
         git(dest, "read-tree", "-mu", "HEAD")
+        if sparse:
+            # MAJOR-1 (2026-09-07 round-2 review of macro #6971): this check
+            # must run AFTER read-tree populates the tree, not inside
+            # apply_sparse before it — see _verify_sparse_postcondition's
+            # docstring.
+            _verify_after_populate(dest, include, omitted)
     except RuntimeError as exc:
         if created:
             subprocess.run(("git", "-C", str(repo_root), "worktree", "remove", "--force",

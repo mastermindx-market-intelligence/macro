@@ -423,7 +423,19 @@ def _clear_stale_locks(root: Path = ROOT) -> tuple[list[dict], list[Path]]:
     if not locks:
         return removed, still_locked
     git_dir_raw = _git(root, "rev-parse", "--path-format=absolute", "--git-dir")
-    git_dir = Path(git_dir_raw) if git_dir_raw else None
+    if git_dir_raw is None:
+        # Could not determine root's own git-dir to scope the liveness probe.
+        # Passing `git_dir=None` into `gather_live_processes` reads as "no
+        # git-dir check applies" (it simply skips that half), not "the
+        # git-dir is unknown" — which would silently downgrade the required
+        # two-check probe to a cwd-only check and could return a confirmed
+        # (partial) result for a lock a live process still holds via an open
+        # file elsewhere. Fail closed: every existing lock is left
+        # still_locked, exactly like an unconfirmed liveness probe, rather
+        # than calling gather_live_processes with a git_dir it never had.
+        still_locked.extend(locks)
+        return removed, still_locked
+    git_dir = Path(git_dir_raw)
     now = time.time()
     for lock in locks:
         try:
@@ -794,25 +806,31 @@ def _tracked_entries_present(root: Path, name: str) -> list[str]:
     tracked at HEAD and physically present on disk.
 
     Reads via ``git ls-tree -r --name-only HEAD -- <name>`` — straight from
-    the commit tree object — rather than ``git ls-files``, for two reasons
-    verified empirically, not just theoretically: (1) ``git ls-files``
-    lists a tracked path regardless of the index's skip-worktree bit, so a
-    correctly-EXCLUDED cone dir still shows its tracked paths — tracked-ness
-    from ``ls-files`` alone cannot answer "did the sparsify leave real
-    content behind", only the intersection with what is actually
-    materialized can; (2) ``git ls-files`` reads the INDEX, which is empty
-    until ``git read-tree`` populates it — on the `--no-checkout` worktree
-    the WorktreeCreate hook creates, its duplicate of this check runs
-    `git sparse-checkout set` BEFORE `read-tree`, so ``ls-files`` would
-    report nothing tracked at all at that point, silently defeating this
-    check for the exact population (session-worktree mints) MAJOR-2 was
-    raised against. ``ls-tree HEAD`` reads the tree object directly and is
-    correct in both call orders. Non-empty here means a prior operation left
-    (or re-created) tracked content on disk instead of removing it — the
-    partial-materialization failure mode `verify_sparse_postcondition` exists
-    to catch.
+    the commit tree object — rather than ``git ls-files``, because ``git
+    ls-files`` lists a tracked path regardless of the index's skip-worktree
+    bit, so a correctly-EXCLUDED cone dir still shows its tracked paths in
+    ``ls-files`` output: tracked-ness from ``ls-files`` alone can never
+    distinguish "correctly excluded" from "partially materialized", only the
+    intersection with what is actually present on disk can. Non-empty here
+    means a prior operation left (or re-created) tracked content on disk
+    instead of removing it — the partial-materialization failure mode
+    `verify_sparse_postcondition` exists to catch.
+
+    Raises ``RuntimeError`` when the ``ls-tree`` call itself fails (``_git``
+    returns ``None``) — this must NOT be conflated with "the tree object
+    holds nothing under ``name``" (a trustworthy empty answer, ``_git``
+    returning ``""``). Swallowing a command failure into ``[]`` here reads to
+    every caller as "nothing tracked, so nothing to worry about" — the same
+    fail-OPEN shape as an unconfirmed lock-liveness probe being read as
+    "confirmed empty" — and would silently let a broken git invocation pass
+    the very postcondition it exists to enforce. Callers must catch this and
+    treat it as a FAILED check, never as a clean pass.
     """
     listed = _git(root, "ls-tree", "-r", "--name-only", "HEAD", "--", name)
+    if listed is None:
+        raise RuntimeError(
+            f"`git ls-tree -r --name-only HEAD -- {name}` failed or timed out"
+        )
     if not listed:
         return []
     tracked = [ln.strip() for ln in listed.splitlines() if ln.strip()]
@@ -828,12 +846,18 @@ def _untracked_entries_present(root: Path, name: str) -> int:
     touches untracked content, so this can survive an otherwise-correct
     sparsification. That is why it is counted separately from
     :func:`_tracked_entries_present` and reported as a warning, not a
-    failure.
+    failure. This warning is best-effort and non-blocking, so a
+    :func:`_tracked_entries_present` failure here is swallowed to ``0``
+    (skip the warning) rather than propagated — the blocking check lives in
+    :func:`verify_sparse_postcondition`, which does propagate it.
     """
     path = root / name
     if not path.exists():
         return 0
-    tracked = set(_tracked_entries_present(root, name))
+    try:
+        tracked = set(_tracked_entries_present(root, name))
+    except RuntimeError:
+        return 0
     count = 0
     try:
         for entry in path.rglob("*"):
@@ -875,7 +899,13 @@ def verify_sparse_postcondition(
             f"{sorted(expected)}, got {sorted(listed)}"
         )
     for name in excludes:
-        tracked = _tracked_entries_present(root, name)
+        try:
+            tracked = _tracked_entries_present(root, name)
+        except RuntimeError as exc:
+            # A failed probe is not a clean pass — treat it exactly like a
+            # detected mismatch (loud, non-zero), never silently as "nothing
+            # tracked" (see _tracked_entries_present's docstring).
+            return f"could not determine whether {name} still holds tracked content: {exc}"
         if tracked:
             return (
                 f"{name} is excluded by the profile but still holds "
