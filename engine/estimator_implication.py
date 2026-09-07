@@ -256,18 +256,25 @@ def compose_synthetic_control_implication(root: Path = REPO_ROOT, *, ledger=None
         reason_recorded = data["gate_eval"]["reasons"].get(gate_prefix) is not None
         if reason_recorded:
             en_text = en_detail[code]
+            zh_text = zh_detail[code]
         else:
             # No cross-gate fallback: substituting another gate's prose here
             # (e.g. PC2's) would silently mislabel this diagnostic's caption
             # and break EN/ZH parity, since zh_detail is always this code's own
-            # translation. An explicit missing-reason note is honest instead.
-            en_text = f"no {gate_prefix} reason recorded in gate_eval for this artifact"
+            # translation. An explicit missing-reason note is honest instead —
+            # in BOTH languages (round-6 review, MAJOR: the earlier version of
+            # this branch degraded only the EN text to "no reason recorded"
+            # while ZH kept showing the full statistics, so a ZH reader was
+            # given numbers an EN reader was told were unrecorded). Plain
+            # words only, no raw internal identifier ("gate_eval") in either.
+            en_text = f"no explanation was recorded for the \"{label_en}\" check on this artifact"
+            zh_text = f"该产物未记录“{label_zh}”这项检查的说明文字"
         diagnostics.append({
             "code": code,
             "label": {"en": label_en, "zh": label_zh},
             "passed": gates.get(code),
             "detail": {"en": en_text,
-                       "zh": zh_detail[code]},
+                       "zh": zh_text},
             "source": f"#/gate_eval/gates/{code}",
         })
 
@@ -377,8 +384,19 @@ def compose_event_study_implication(root: Path = REPO_ROOT, *, ledger=None,
 
     point_estimate = {
         "code": "hincl2_announce_caar_h20_mean",
-        "label": {"en": "HINCL2 announcement-window CAAR at h=20, DSR-selected arm",
-                   "zh": "HINCL2 公告窗口 h=20 处的 CAAR，DSR 选定组"},
+        # Plain language, no internal identifiers (round-6 review, MAJOR): the
+        # earlier text named the raw family shorthand ("HINCL2") and the
+        # search-method acronym ("DSR") directly; both are internal
+        # identifiers, not tickers or units, so they are described in words
+        # instead. "CAAR" (cumulative average abnormal return) is kept — it
+        # is an allowed named statistic, used identically elsewhere in this
+        # payload's EN/ZH prose.
+        "label": {"en": "Cumulative average abnormal return (CAAR) around the "
+                        "roster-add announcement, at the 20-trading-day "
+                        "horizon, for the arm chosen by the deflated "
+                        "Sharpe-ratio search",
+                   "zh": "股票池调整公告前后的累计平均异常收益（CAAR），窗口为20个"
+                        "交易日，使用经缩水夏普比率筛选的组别"},
         "value": point_value,
         "unit": "return_fraction",
         "source": "#/event_curve_announce/20/0",
@@ -392,13 +410,19 @@ def compose_event_study_implication(root: Path = REPO_ROOT, *, ledger=None,
         "code": "hincl2_announce_caar_h20_t",
         "reason": {"en": "No t-statistic recorded for this horizon",
                    "zh": "该窗口未记录 t 统计量"},
-        "detail": {"en": "The hincl2 event-study artifact records the DSR-selected "
-                         "mean and its supporting count at h=20 but no accompanying "
-                         "t-statistic, so uncertainty is left null rather than "
-                         "fabricated.",
-                   "zh": "hincl2 事件研究产物记录了 h=20 处 DSR 选定的均值及其支持"
-                         "样本数，但未记录相应的 t 统计量，因此不确定性字段保留为"
-                         "空，而非伪造。"},
+        # Plain language, no internal identifiers (round-6 review, MAJOR): the
+        # earlier text named the artifact's own raw family shorthand and
+        # search-method acronym directly, and carried them untranslated into
+        # the ZH string too.
+        "detail": {"en": "This event-study artifact records the mean return "
+                         "and its supporting observation count at the "
+                         "20-trading-day horizon, for the arm chosen by the "
+                         "deflated Sharpe-ratio search, but no accompanying "
+                         "t-statistic — so uncertainty is left null rather "
+                         "than fabricated.",
+                   "zh": "该事件研究产物记录了经缩水夏普比率筛选后20个交易日窗口的"
+                         "均值收益及其支持观测数，但未记录相应的 t 统计量，因此"
+                         "不确定性字段保留为空，而非伪造。"},
     }, {
         # honest_n.episode_n regression (round-4 review, MAJOR): episode_n
         # may never exceed sample_n. This artifact records 466 roster-add
@@ -420,8 +444,14 @@ def compose_event_study_implication(root: Path = REPO_ROOT, *, ledger=None,
     uncertainty = [{
         "code": "hincl2_announce_caar_h20_t",
         "kind": "student_t_p",
-        "label": {"en": "t-statistic on the h=20 CAAR (not recorded)",
-                  "zh": "h=20 处 CAAR 的 t 统计量（未记录）"},
+        # "h=20" notation dropped from ZH (round-6 review, MAJOR): a bare "h"
+        # letter is not a recognized unit or ticker, unlike "CAAR"/"t"; spelled
+        # out as "20 个交易日" instead. EN keeps the horizon spelled out too,
+        # for consistency with the plain-language rewrite of this payload's
+        # other strings.
+        "label": {"en": "t-statistic on the CAAR at the 20-trading-day horizon "
+                        "(not recorded)",
+                  "zh": "20 个交易日处 CAAR 的 t 统计量（未记录）"},
         "value": None,
         "unit": "t_stat",
         "source": "#/event_curve_announce/20",
@@ -429,15 +459,22 @@ def compose_event_study_implication(root: Path = REPO_ROOT, *, ledger=None,
 
     diagnostics = [{
         "code": "DSR_search_registered",
-        "label": {"en": "DSR search family registered before this read",
-                  "zh": "DSR 搜索族在本次读取前已登记"},
+        # Plain language, no internal identifiers (round-6 review, MAJOR): the
+        # earlier label/detail named the search-method acronym ("DSR"), the
+        # raw family id, and the internal registry module path
+        # ("engine.trial_ledger") directly, in both languages.
+        "label": {"en": "the search family behind this pick was registered "
+                        "before this read",
+                  "zh": "该结果所属的搜索族在此次读取前已完成登记"},
         "passed": True,
-        "detail": {"en": f"family {family_id!r} carries effective_n={effective_n} "
-                         "in engine.trial_ledger, so the 32-config search this "
-                         "h=20 pick came from is deflated for multiple testing.",
-                   "zh": f"族 {family_id!r} 在 engine.trial_ledger 中的 "
-                         f"effective_n={effective_n}，因此该 h=20 结果所来自的 "
-                         "32 组搜索已针对多重检验进行了折算。"},
+        "detail": {"en": f"this pick's search family was already registered, "
+                         f"with an effective sample size of {effective_n} "
+                         "after adjusting for the 32 horizons it was chosen "
+                         "from, so the multiple-testing budget spent finding "
+                         "it is accounted for.",
+                   "zh": f"该结果所属的搜索族已完成登记，调整后有效样本量为 "
+                         f"{effective_n}（已扣除从 32 个候选窗口中挑选所耗费的"
+                         "多重检验代价），因此不存在未登记的检验预算。"},
         "source": "#/n_trials_dsr",
     }]
 
@@ -481,11 +518,17 @@ def compose_event_study_implication(root: Path = REPO_ROOT, *, ledger=None,
         "honest_n": {
             "sample_n": int(curve_n),
             "episode_n": None,
-            "basis": {"en": "sample_n counts the h=20 curve's supporting "
-                            "observations; episode_n is left null because this "
-                            "artifact does not record which distinct roster-add "
-                            "episodes contribute at that horizon",
-                      "zh": "sample_n 为 h=20 曲线的支持观测数；episode_n 留空，"
+            # Plain language, no field identifiers (round-6 review, MAJOR):
+            # the earlier text named the JSON field names "sample_n"/
+            # "episode_n" directly, in both languages — the same defect class
+            # already fixed on the synthetic-control payload's honest_n.basis
+            # above, left uncorrected here.
+            "basis": {"en": "the sample count reflects the 20-trading-day "
+                            "curve's supporting observations; the episode "
+                            "count is left null because this artifact does "
+                            "not record which distinct roster-add episodes "
+                            "contribute at that horizon",
+                      "zh": "样本计数为20个交易日窗口的支持观测数；事件计数留空，"
                             "因为该产物未记录到达该窗口的具体独立事件"},
         },
         "diagnostics": diagnostics,
@@ -506,15 +549,23 @@ def compose_event_study_implication(root: Path = REPO_ROOT, *, ledger=None,
     }
 
 
-def validate_payload(payload: Mapping[str, Any]) -> dict:
-    """Validate ``payload`` against the contract plus the extra structural checks."""
+def validate_payload(payload: Mapping[str, Any], root: Path = REPO_ROOT) -> dict:
+    """Validate ``payload`` against the contract plus the extra structural checks.
+
+    ``root`` selects which checkout's contract file to validate against
+    (round-6 review, MINOR): it used to be silently ignored — every call
+    validated against the module-level ``REPO_ROOT`` regardless of the
+    ``root`` a composer (and ``build_estimator_implications``) was called
+    with, so a payload composed against a non-default ``root`` was validated
+    against a different checkout's schema.
+    """
     forbidden_hit = FORBIDDEN_KEYS.intersection(payload)
     if forbidden_hit:
         raise ImplicationContractError(
             f"payload carries forbidden promotion field(s): {sorted(forbidden_hit)}"
         )
 
-    contract = load_contract()
+    contract = load_contract(root)
     Draft202012Validator(contract).validate(payload)
 
     recomputed = compute_payload_id(
@@ -584,7 +635,7 @@ def build_estimator_implications(root: Path = REPO_ROOT, *, ledger=None) -> dict
     refusals = []
 
     sc_payload = compose_synthetic_control_implication(root, ledger=ledger)
-    validate_payload(sc_payload)
+    validate_payload(sc_payload, root)
     payloads.append(sc_payload)
 
     # NOTE (round-2 review, MAJOR): validate_payload(es_payload) must sit
@@ -647,7 +698,7 @@ def build_estimator_implications(root: Path = REPO_ROOT, *, ledger=None) -> dict
             "source": ES_RESULT_PATH,
         })
     else:
-        validate_payload(es_payload)
+        validate_payload(es_payload, root)
         payloads.append(es_payload)
 
     return {

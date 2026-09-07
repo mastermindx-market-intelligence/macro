@@ -114,6 +114,32 @@ def test_contract_file_is_a_valid_draft_2020_12_schema():
     Draft202012Validator.check_schema(load_contract())
 
 
+def test_validate_payload_validates_against_the_root_it_is_given(tmp_path):
+    # Regression (this round's review, MINOR-2): validate_payload used to
+    # call load_contract() with no argument, so it always validated against
+    # the module-level REPO_ROOT's contract file regardless of the `root`
+    # the payload was actually composed against -- a payload composed
+    # against a non-default root was silently checked against a DIFFERENT
+    # checkout's schema. Point `root` at a tmp checkout carrying a contract
+    # that rejects everything, and prove validate_payload actually reads it.
+    payload = compose_synthetic_control_implication()
+
+    fake_root = tmp_path
+    (fake_root / "contracts").mkdir()
+    (fake_root / "contracts" / "estimator_implication.v1.schema.json").write_text(
+        '{"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object", "additionalProperties": false}',
+        encoding="utf-8",
+    )
+    with pytest.raises(ValidationError):
+        validate_payload(payload, fake_root)
+
+    # The real REPO_ROOT contract (the default) still accepts the same
+    # payload -- proving the failure above came from actually reading
+    # fake_root's contract, not from the payload itself being invalid.
+    validate_payload(payload, REPO_ROOT)
+    validate_payload(payload)
+
+
 def test_synthetic_control_payload_validates_against_the_contract():
     payload = compose_synthetic_control_implication()
     validate_payload(payload)
@@ -400,6 +426,31 @@ def test_no_internal_identifiers_or_allcaps_or_raw_ascii_across_every_emitted_pa
         _assert_pair_is_plain_language(path, en, zh)
 
 
+def test_plain_language_walker_also_covers_the_registered_event_study_payload():
+    # Regression (this round's review, MAJOR-2): the test above walks ONLY
+    # the default envelope, which is SC-payload-plus-refusal because the real
+    # engine.trial_ledger never registers the event-study search family --
+    # so it never exercised the one payload (the event-study positive-compose
+    # path) that a round-4 "fix" had actually left leaking raw identifiers.
+    # The claim "a generic walker test covering every {en, zh} pair in the
+    # full emitted envelope" is true only once the walk also covers the
+    # registered-ledger envelope where BOTH payloads compose -- exactly the
+    # envelope this test walks. This becomes the production payload the day
+    # the family is registered, with no code change, so it must be covered
+    # today, not only once that registration happens.
+    stub = _StubLedger(registered=[eimp.SC_FAMILY, ES_FAMILY])
+    envelope = build_estimator_implications(ledger=stub)
+    estimator_ids = {p["estimator_id"] for p in envelope["payloads"]}
+    assert estimator_ids == {"engine.synthetic_control", "engine.seasonality.event_study"}, \
+        "sanity: both payloads must actually compose under a registered ledger"
+    assert envelope["refusals"] == []
+
+    pairs = _find_localized_pairs(envelope)
+    assert len(pairs) >= 20, "sanity: the two-payload envelope has more localized pairs than the one-payload default"
+    for path, en, zh in pairs:
+        _assert_pair_is_plain_language(path, en, zh)
+
+
 def test_diagnostics_zh_detail_is_a_genuine_translation_not_a_pointer():
     payload = compose_synthetic_control_implication()
     for d in payload["diagnostics"]:
@@ -534,9 +585,21 @@ def test_missing_gate_reason_gets_an_explicit_note_not_another_gates_prose():
         payload = compose_synthetic_control_implication()
 
     pc3 = next(d for d in payload["diagnostics"] if d["code"] == "PC3_sc_not_noisier")
-    assert pc3["detail"]["en"] == "no PC3 reason recorded in gate_eval for this artifact"
+    # Regression (round-6 review, MAJOR): the earlier "no reason recorded"
+    # branch degraded EN to a plain note while ZH kept showing the full
+    # placebo statistics unchanged -- a ZH reader was given numbers an EN
+    # reader was told were unrecorded, and the EN text itself leaked the raw
+    # internal identifier "gate_eval". Both languages must now say the same
+    # (missing-explanation) thing, and neither may name "gate_eval".
+    assert "gate_eval" not in pc3["detail"]["en"]
+    assert "gate_eval" not in pc3["detail"]["zh"]
     assert pc3["detail"]["zh"] != pc3["detail"]["en"]
     assert pc3["detail"]["zh"].strip()
+    # Both languages state the same "no explanation recorded" fact -- ZH no
+    # longer carries PC3's full statistics text (0.614%, 0.650%) once EN says
+    # the explanation is missing.
+    assert "0.614" not in pc3["detail"]["zh"]
+    _assert_pair_is_plain_language("fixture.pc3_missing_reason", pc3["detail"]["en"], pc3["detail"]["zh"])
 
 
 def test_es_artifact_digest_mismatch_degrades_to_a_typed_refusal_not_a_crash(monkeypatch):
