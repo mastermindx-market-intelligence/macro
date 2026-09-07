@@ -3252,6 +3252,8 @@ jobs:
         run: python -m pytest tests/test_edgar_quarterly_tags.py -q
       - name: edgar fundamentals universe widening (W2-A — R2000 via committed constituents)
         run: python -m pytest tests/test_edgar_universe_widening.py -q
+      - name: edgar FTS first-request abort guard fires on _CONFIRMED_ABSENT too (no network)
+        run: python -m pytest tests/test_edgar_fts_confirmed_absent_first_request.py -q
       - name: symbol-directory archival collector tests (LHB-W2c / LHB-R8)
         run: >-
           python -m pytest
