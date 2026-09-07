@@ -296,14 +296,46 @@ def test_trial_ledger_append_precedent_cites_the_real_append_site():
     assert log_trial.lineno <= 150 <= log_trial.end_lineno, (
         "cited line 150 must actually fall inside log_trial()"
     )
+    # Review finding (round 5, minor-1): the range check above is too weak on
+    # its own -- any insertion inside log_trial() that shifts the append call
+    # off line 150 would still pass it. Bind the citation to the line's own
+    # content, not merely to the enclosing function's span, so a drift breaks
+    # this test rather than silently going stale.
+    source_lines = (ROOT / "engine" / "trial_ledger.py").read_text(
+        encoding="utf-8"
+    ).splitlines()
+    cited_line = source_lines[149]  # 1-indexed line 150
+    assert '.open("a"' in cited_line, (
+        "line 150 must itself be the append-mode open() call the spec cites "
+        f"-- found instead: {cited_line!r}"
+    )
 
 
 def test_dnr_fused_composite_citation_discloses_amendment_2_scope():
-    # Review finding (round 4, minor-1): DNR:KILL-FUSED-COMPOSITE carries an
-    # Amendment 2 (operator override 2026-08-03) narrow display-tier exception;
-    # the spec's citation must quote that exception verbatim and state what the
-    # row still forbids, the same disclosure pattern already applied to
-    # DNR:KILL-LLM-CONFIDENCE above.
+    # Review finding (round 4, minor-1; corrected round 5): DNR:KILL-FUSED-
+    # COMPOSITE carries an Amendment 2 (operator override 2026-08-03) narrow
+    # display-tier exception; the spec's citation must quote that exception
+    # verbatim and state what the row still forbids, the same disclosure
+    # pattern already applied to DNR:KILL-LLM-CONFIDENCE above.
+    #
+    # Round-5 review found the round-4 fix itself defective two ways: (a) it
+    # claimed the row forbids the composite "in full outside that one
+    # exception" when the live row also carries Amendment 3 (CEO ruling
+    # 2026-08-14) -- a second, live carve-out for the Prophet US conditional-
+    # fusion challenger -- so "one exception" is false; (b) the quoted
+    # forbidden text was truncated mid-sentence with no ellipsis, dropping the
+    # row's "-- and any user-facing composite that violates the PSI §3.1.2
+    # construction law ..." clause. Both are re-guarded here.
+    forbidden_text_full = (
+        "Fused composite risk/health number in ANY scored path, board "
+        "ordering, ranker, sizing, NW artifact, or alert escalation — and "
+        "any user-facing composite that violates the PSI §3.1.2 construction "
+        "law (hidden inputs, fitted/unversioned weights, LLM legs, no "
+        "coverage abstention, no forward grading)"
+    )
+    assert forbidden_text_full in TEXT, (
+        "the forbidden-text quote must be complete, not truncated mid-sentence"
+    )
     assert (
         "the user-facing DISPLAY-TIER composite (Portfolio Health Score + "
         "sub-scores) on watchlist/portfolio surfaces + digest emails is now "
@@ -311,13 +343,25 @@ def test_dnr_fused_composite_citation_discloses_amendment_2_scope():
         "§3.1.2"
         in TEXT
     )
+    assert "two live carve-outs, not one" in TEXT
+    assert "**Amendment 3**" in TEXT
     assert (
-        "still FORBIDDEN in full outside that one exception: \"Fused composite "
-        "risk/health number in ANY scored path, board ordering, ranker, "
-        "sizing, NW artifact, or alert escalation\""
+        "DEC:PROPHET-ZERO-AUTHORITY-SUPERSEDED-BY-EARNED-CONDITIONAL-AUTHORITY"
         in TEXT
     )
+    assert (
+        "the Prophet US conditional-fusion challenger of "
+        "`research/PROPHET_CONDITIONAL_FUSION_MASTERPLAN_BY_FABLE.md`"
+        in TEXT
+    )
+    assert "§8.6 promotion gate" in TEXT
+    # Must not still claim the false single-exception exclusivity.
+    assert "outside that one exception" not in TEXT
+
     dnr_row_text = (ROOT / "research" / "DO_NOT_REBUILD.md").read_text(encoding="utf-8")
+    assert forbidden_text_full in dnr_row_text, (
+        "quoted forbidden text must match the live registry row verbatim and in full"
+    )
     assert (
         "the user-facing DISPLAY-TIER composite (Portfolio Health Score + "
         "sub-scores) on watchlist/portfolio surfaces + digest emails is now "
@@ -325,6 +369,15 @@ def test_dnr_fused_composite_citation_discloses_amendment_2_scope():
         "§3.1.2"
         in dnr_row_text
     ), "quoted Amendment 2 sentence must match the live registry row verbatim"
+    assert (
+        "the Prophet US conditional-fusion challenger of "
+        "`research/PROPHET_CONDITIONAL_FUSION_MASTERPLAN_BY_FABLE.md`"
+        in dnr_row_text
+    ), "Amendment 3 disclosure anchor must match the live registry row"
+    assert (
+        "DEC:PROPHET-ZERO-AUTHORITY-SUPERSEDED-BY-EARNED-CONDITIONAL-AUTHORITY"
+        in dnr_row_text
+    ), "Amendment 3 DEC key must match the live registry row"
 
 
 def test_f00c_csv_citations_are_key_only_no_line_numbers():
