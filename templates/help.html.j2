@@ -87,12 +87,12 @@ html[data-theme="light"] .help-card:hover,html[data-theme="light"] .help-card:fo
 
 .help-answers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:44px;row-gap:0;margin:0}
 .help-a{min-width:0;padding:18px 0;border-top:1px solid color-mix(in srgb,var(--line) 62%,transparent)}
-/* Which answers sit in the top visual row depends on which rows are HIDDEN (category
-   filter/search) and how many columns the grid currently has (2 desktop, 1 mobile below)
-   -- :nth-child counts hidden siblings too, so a static nth-child rule leaves an orphan
-   hairline over whichever row lands first after a filter thins the grid (review finding
-   B-F13-3 round-3 MINOR-3). The JS below recomputes this class on every paint(). */
+/* Default first-row hairline is STATIC so the unfiltered grid (and the JS-dead
+   empty-directory page) never shows an orphan line over the first row.
+   JS below only restates the first visible row after a filter hides siblings. */
+.help-answers .help-a:nth-child(-n+2){border-top:0}
 .help-a.help-a-row-first{border-top:0}
+.help-answers .help-a.help-a-row-rest{border-top:1px solid color-mix(in srgb,var(--line) 62%,transparent)}
 .help-a[hidden]{display:none}
 .help-a dt{margin:0 0 6px;font:660 15.5px/1.35 var(--font-ui);letter-spacing:-.01em;color:var(--text)}
 .help-a dd{margin:0;color:var(--muted);font-size:14px;line-height:1.55}
@@ -140,6 +140,8 @@ html[data-theme="light"] .help-support-cta{background:var(--panel);box-shadow:0 
 
 @media (max-width:900px){
   .help-answers{grid-template-columns:1fr;column-gap:0}
+  .help-answers .help-a:nth-child(1){border-top:0}
+  .help-answers .help-a:nth-child(n+2){border-top:1px solid color-mix(in srgb,var(--line) 62%,transparent)}
 }
 @media (max-width:760px){
   .help-controls{grid-template-columns:1fr}
@@ -299,12 +301,12 @@ html[data-theme="light"] .help-support-cta{background:var(--panel);box-shadow:0 
     count.textContent=String(visible);
     empty.hidden=visible!==0;
     root.setAttribute('data-directory-state',visible?(completeVisible?'complete':'unknown'):'empty');
-    // First visible row of the answers grid never carries a top hairline -- :nth-child
-    // can't do this once hidden rows are in the mix (MINOR-3), so this class is the only
-    // source of truth for it, recomputed against the CURRENT visible set and column count.
+    // Filtered state only: static nth-child owns the default; these classes restated
+    // the first visible row after hide, and put the hairline back on the rest.
     var rowSize=narrow.matches?1:2;
-    answers.forEach(function(a){a.classList.remove('help-a-row-first');});
+    answers.forEach(function(a){a.classList.remove('help-a-row-first','help-a-row-rest');});
     visibleAnswers.slice(0,rowSize).forEach(function(a){a.classList.add('help-a-row-first');});
+    visibleAnswers.slice(rowSize).forEach(function(a){a.classList.add('help-a-row-rest');});
   }
   buttons.forEach(function(button){button.addEventListener('click',function(){
     category=button.getAttribute('data-category');

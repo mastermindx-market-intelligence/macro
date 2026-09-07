@@ -18,6 +18,7 @@ from lib.help_directory import (
     help_directory_view_model,
     help_answers_view_model,
     product_changelog,
+    support_routing_view_model,
 )
 from scripts import build_public_pages
 
@@ -140,8 +141,6 @@ def test_mixed_unknown_entry_renders_beside_complete_owner_without_a_link() -> N
     vm = help_directory_view_model(ROOT, entries=(HELP_LINKS[0], unknown))
     vm.update(help_answers_view_model(ROOT))
     vm["changelog"] = product_changelog(ROOT)
-    from lib.help_directory import support_routing_view_model
-
     vm.update(support_routing_view_model())
     env = Environment(loader=FileSystemLoader(ROOT / "templates"), autoescape=True)
 
@@ -338,6 +337,57 @@ def test_still_one_nav_family(tmp_path: Path) -> None:
     html = (tmp_path / "help.html").read_text(encoding="utf-8")
     assert 'class="public-nav"' in html
     assert "_site_nav" not in html
+
+
+def test_answers_grid_static_first_row_has_no_top_hairline() -> None:
+    """META-CEO B r6 REQUIRED 1 (RED before the static-rule restore): the first
+    visible answer row must carry no top hairline without JavaScript.
+
+    ``#help-search`` is rendered only inside ``{% if entries %}``, so the page
+    script returns at ``if(!query)return;`` and never applies
+    ``.help-a-row-first``. The two-column and 900px static rules own that
+    default; JS only restates the first visible row after a filter.
+    """
+    src = (ROOT / "templates" / "help.html.j2").read_text(encoding="utf-8")
+    assert ".help-answers .help-a:nth-child(-n+2){border-top:0}" in src
+    media = re.search(
+        r"@media \(max-width:900px\)\{(.*?)\n\}",
+        src,
+        re.S,
+    )
+    assert media, "the 900px answers breakpoint must exist"
+    assert ".help-answers .help-a:nth-child(1){border-top:0}" in media.group(1)
+    assert "if(!query)return;" in src
+
+    answers_vm = help_answers_view_model(ROOT)
+    assert len(answers_vm["answers"]) == 14
+    env = Environment(loader=FileSystemLoader(ROOT / "templates"), autoescape=True)
+
+    empty_entries = {
+        "entries": [],
+        "categories": [],
+        "directory_state": "empty",
+        "changelog": product_changelog(ROOT),
+    }
+    empty_entries.update(answers_vm)
+    empty_entries.update(support_routing_view_model())
+    degraded = env.get_template("help.html.j2").render(
+        generated_utc="test", **empty_entries
+    )
+    assert 'id="help-search"' not in degraded
+    assert "if(!query)return;" in degraded
+    assert ".help-answers .help-a:nth-child(-n+2){border-top:0}" in degraded
+    assert ".help-answers .help-a:nth-child(1){border-top:0}" in degraded
+
+    populated = help_directory_view_model(ROOT, entries=(HELP_LINKS[0],))
+    populated.update(answers_vm)
+    populated["changelog"] = product_changelog(ROOT)
+    populated.update(support_routing_view_model())
+    html = env.get_template("help.html.j2").render(generated_utc="test", **populated)
+    rows = re.findall(r'<div class="help-a"[^>]*>', html)
+    assert len(rows) == 14
+    assert ".help-answers .help-a:nth-child(-n+2){border-top:0}" in html
+    assert 'class="help-a help-a-row-first"' not in html
 
 
 def test_no_raw_pr_or_slug_leaks_into_user_copy(tmp_path: Path) -> None:

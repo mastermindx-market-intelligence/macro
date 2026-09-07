@@ -542,36 +542,25 @@ def create_ticket(body: TicketRequest, request: Request,
         log.info("support: rate limit hit")
         raise HTTPException(429, "too many requests — please try again later")
 
-    # ---- identity: resolved BEFORE the honeypot so a genuinely signed-in submitter who
-    # trips it (autofill/password managers are the known false-positive mode) still gets
-    # the same true signed_in state as the real path below — see the honeypot block.
-    user = _resolve_user(authorization)
-    user_id = (user or {}).get("id") or None
-
     # ---- honeypot: answer like a success, write nothing -----------------------
+    # honeypot returns before identity or billing is touched
     # The body must be SHAPE-IDENTICAL to a real one, every key included: a drop that is
     # distinguishable from a success teaches the bot which field betrayed it, which is the
-    # whole reason this returns 200 instead of 400. signed_in=bool(user_id) carries the
-    # real identity state into the fabricated routing note, so a signed-in human caught by
-    # the honeypot is never told the false "you were not signed in" sentence either
-    # (review finding B-F13-3 round-3 MINOR-1). The tier itself is looked up the SAME way
-    # the real path looks it up below — not forced to None — so the fabricated receipt
-    # carries the same routing note the real path would give this exact submitter (review
-    # finding B-F13-3 round-4 MINOR-1: a signed-in paying user caught by the honeypot was
-    # getting the free-plan promise and the "no plan on file" note, a second false
-    # sentence). This still never reads billing for an anonymous bot: _tier_for_state is
-    # only called when user_id is set, i.e. the Bearer token already verified — the exact
-    # same condition that gates the real path's own lookup.
+    # whole reason this returns 200 instead of 400. The copy is NEUTRAL — it asserts
+    # nothing about sign-in or plan — so a junk-Bearer bot costs zero outbound I/O.
     if (body.website or "").strip():
         log.info("support: honeypot tripped — dropped")
-        fake_tier, fake_tier_known = _tier_for_state(user_id) if user_id else (None, True)
-        fake_routing = route_for_tier(fake_tier, tier_known=fake_tier_known, signed_in=bool(user_id))
         return {"ok": True, "ticket_id": str(uuid.uuid4()),
                 "sent": _sent_stamp()[0], "mail": _mail_configured(),
-                "routing": {"plan": fake_routing["plan_id"],
-                            "promise_en": fake_routing["promise_en"],
-                            "promise_zh": fake_routing["promise_zh"],
-                            "note_en": fake_routing["note_en"], "note_zh": fake_routing["note_zh"]}}
+                "routing": {"plan": None,
+                            "promise_en": "Thanks — your message was received.",
+                            "promise_zh": "感谢，我们已收到您的留言。",
+                            "note_en": None, "note_zh": None}}
+
+    # ---- identity: resolved AFTER the honeypot so a honeypot hit performs
+    # no require_user / Supabase call and no billing.read_entitlement.
+    user = _resolve_user(authorization)
+    user_id = (user or {}).get("id") or None
 
     # ---- time-to-fill ---------------------------------------------------------
     # Optional by contract (the W2 form always sends it). A t0 in the FUTURE is clock
@@ -600,7 +589,7 @@ def create_ticket(body: TicketRequest, request: Request,
         raise HTTPException(400, f"lang must be one of {list(LANGS)} or omitted")
 
     # ---- identity: a valid Bearer OVERRIDES the body email --------------------
-    # (user/user_id already resolved above, ahead of the honeypot check.)
+    # (user/user_id already resolved above, after the honeypot check.)
     verified_email = ((user or {}).get("email") or "").strip()
     email = verified_email or (body.email or "").strip()
     if not _EMAIL_RE.match(email):
