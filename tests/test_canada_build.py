@@ -142,7 +142,7 @@ def test_canada_stocks_template_renders():
     assert "momentum screen · unproven" not in html    # never per-card again (Law 4)
     assert 'class="nb-cscore' not in html               # composite score chip is gone
     assert 'data-showmore-rows=' not in html            # no generic shared show-more owner
-    assert 'class="anv2-lst lst-collapse lst-cap3 is-collapsed"' in html
+    assert html.count('class="anv2-lst ca-v36-an-list"') == 4  # four native action lanes
     assert "Commodity / CAD" not in html                # overlay hero is macro-only
     assert "Housing & household-debt" not in html       # housing is macro-only
     # ── W6 UX overhaul (§7): consolidated desk-header + accruing track-record panel +
