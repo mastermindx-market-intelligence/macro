@@ -96,26 +96,47 @@ def _uk_labels(iso: object, *, with_time: bool = False) -> tuple[str, str]:
     return en, zh
 
 
+# Must match engine.uk_policy_brain._STATES — pinned by test_view_states_match_engine.
+_UK_VIEW_STATES = frozenset({"ok", "no_new", "source_outage", "stale", "gate_off", "model_unavailable"})
+_UK_VIEW_STANCES = frozenset({"supportive", "restrictive", "mixed", "routine"})
+
+
+def _uk_doc_version_labels(raw: object) -> tuple[str | None, str | None]:
+    """Plain-word document-update labels. Raw content_id@iso never reaches the page."""
+    s = str(raw or "").strip()
+    if not s:
+        return None, None
+    ts = s.split("@", 1)[-1] if "@" in s else s
+    en, zh = _uk_labels(ts)
+    if not en:
+        return None, None
+    return f"Updated {en}", f"更新于{zh}"
+
+
 def _uk_desk_view(raw: dict | None) -> dict:
     """Always returns a renderable view. Absent artifact -> the gate-off state.
 
     Every branch here is on a TYPED value (state / stance / None), never on a
     formatted display string: a formatted label can be an em dash (truthy) or
     \'0\' (falsey) and would decide the wrong way.
+    Unknown states collapse to gate_off. Unknown or missing stance stays None —
+    never a fabricated 'routine' the model did not produce.
     """
     if not isinstance(raw, dict):
-        return {"state": "gate_off", "stance": "routine",
+        return {"state": "gate_off", "stance": None,
                 "jurisdiction_en": "United Kingdom", "jurisdiction_zh": "\u82f1\u56fd",
                 "body_en": "HM Treasury", "body_zh": "\u82f1\u56fd\u8d22\u653f\u90e8",
-                "source_label": "GOV.UK", "headline": None}
+                "source_label": "GOV.UK", "headline": None,
+                "doc_version_en": None, "doc_version_zh": None}
     view = dict(raw)
     view.pop("raw_text", None)
     state = view.get("state")
-    view["state"] = state if state in {"ok", "no_new", "source_outage", "stale", "gate_off"} else "gate_off"
+    view["state"] = state if state in _UK_VIEW_STATES else "gate_off"
     stance = view.get("stance")
-    view["stance"] = stance if stance in {"supportive", "restrictive", "mixed", "routine"} else "routine"
+    view["stance"] = stance if stance in _UK_VIEW_STANCES else None
     view["published_label_en"], view["published_label_zh"] = _uk_labels(view.get("published_iso"))
     view["known_at_label_en"], view["known_at_label_zh"] = _uk_labels(view.get("known_at_iso"), with_time=True)
+    view["doc_version_en"], view["doc_version_zh"] = _uk_doc_version_labels(view.get("doc_version"))
     return view
 
 

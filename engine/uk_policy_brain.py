@@ -51,6 +51,7 @@ FALLBACK_ATOM_URL = (
 GATE_ENV = "UK_POLICY_DESK_ENABLED"
 
 _STANCES = frozenset({"supportive", "restrictive", "mixed", "routine"})
+_STATES = frozenset({"ok", "no_new", "source_outage", "stale", "gate_off", "model_unavailable"})
 
 # GOV.UK content_store_document_type -> (EN label, ZH label). Explicit map — never a
 # single hardcoded ZH constant across differing document types.
@@ -79,13 +80,25 @@ def _doc_type_zh(doc_type_en: str | None) -> str:
     if not doc_type_en:
         return "新闻稿"
     return _DOC_TYPE_ZH.get(doc_type_en, f"{doc_type_en}（原文）")
-_STATES = frozenset({"ok", "no_new", "source_outage", "stale", "gate_off", "model_unavailable"})
+
+
+def _typed_state(name: str) -> str:
+    """Load-bearing clamp: only a declared desk state may leave this function."""
+    return name if name in _STATES else "gate_off"
+
 
 _BANNED_TERMS = (
     "sanction", "sanctions", "score", "rank", "buy", "sell", "overweight",
     "underweight", "target", "causes", "because of", "will cause",
 )
-_TICKER_RE = re.compile(r"\b[A-Z]{1,5}\b")
+# 2–5 caps: 1-letter tokens ("I") are ordinary English, not tickers.
+_TICKER_RE = re.compile(r"\b[A-Z]{2,5}\b")
+# Policy acronyms that appear in HM Treasury prose; never treated as invented tickers.
+_POLICY_ACRONYMS = frozenset({
+    "UK", "GB", "EU", "US", "UN", "IMF", "OECD", "OBR", "HMRC", "GDP", "CPI",
+    "RPI", "MPC", "BOE", "VAT", "ISA", "HMT", "FCA", "PRA", "NHS", "MOD",
+    "G7", "G20", "FSCS", "DBT", "DWP",
+})
 _DIGIT_RUN_RE = re.compile(r"\d[\d,.]*")
 
 _DEFAULTS = {
@@ -141,9 +154,10 @@ def provider_label(cfg: dict | None = None) -> str:
     prov = _provider(cfg or _cfg())
     if prov is None:
         return ""
-    name, _cred, model = prov
-    labels = {"oauth": "Claude (subscription)", "anthropic": "Claude API", "deepseek": "DeepSeek"}
-    return f"{labels.get(name, name)} · {model}"
+    name, _cred, _model = prov
+    # Customer surface never prints a model slug; truthiness only.
+    labels = {"oauth": "assistant", "anthropic": "assistant", "deepseek": "assistant"}
+    return labels.get(name, "assistant")
 
 
 # --------------------------------------------------------------------------- #
@@ -364,13 +378,20 @@ def _no_new_numbers(text: object, excerpt: str) -> bool:
 
 
 def _ban_terms(text: object, excerpt: str) -> bool:
-    """True if `text` is safe: no banned term, no ticker-shaped token absent from excerpt."""
+    """True if `text` is safe: no banned term or ticker-shaped token the excerpt lacks.
+
+    Terms already in the quoted excerpt are allowed — the model may restate
+    'inflation target' when the source said it. It may not introduce one.
+    """
     t = str(text or "")
     low = t.lower()
+    excerpt_low = excerpt.lower()
     for term in _BANNED_TERMS:
-        if term in low:
+        if term in low and term not in excerpt_low:
             return False
     for tok in _TICKER_RE.findall(t):
+        if tok in _POLICY_ACRONYMS:
+            continue
         if tok not in excerpt:
             return False
     return True
@@ -408,7 +429,7 @@ Reply with strict JSON only:
 def _call_model(item: dict, excerpt: str, cfg: dict, call=None) -> dict:
     """Runs the model call (or the injected `call` stub) and returns a raw dict.
     Never raises — any failure returns an empty dict, which evaluate() treats as
-    'routine, no summary'."""
+    model_unavailable (stance stays None; no fabricated routine)."""
     prompt = _PROMPT_TEMPLATE.format(
         title=item.get("title", ""), excerpt=excerpt,
         sum_en=cfg.get("summary_max_en", 150), sum_zh=cfg.get("summary_max_zh", 70),
@@ -460,16 +481,10 @@ def _call_anthropic_like(prov: tuple[str, str, str], prompt: str, cfg: dict) -> 
         return ""
 
 
-def evaluate(item: dict, cfg: dict | None = None, root=None, call=None) -> dict:
-    """Engine facts + model restate/classify, clamped in code. Never raises."""
+def _base_record(item: dict, cfg: dict | None = None) -> dict:
+    """Engine-derived facts only — no model call, stance stays None."""
     cfg = cfg or _cfg()
     excerpt = _clean(item.get("body_text") or item.get("title") or "", limit=cfg.get("excerpt_max", 400))
-    raw = _call_model(item, excerpt, cfg, call=call)
-    stance = _norm_stance(raw.get("stance")) if raw else None
-    summary_en = _sanitize_field(raw.get("summary_en"), excerpt)
-    summary_zh = _sanitize_field(raw.get("summary_zh"), excerpt)
-    watch_en = _sanitize_field(raw.get("watch_en"), excerpt)
-    watch_zh = _sanitize_field(raw.get("watch_zh"), excerpt)
     now = datetime.now(timezone.utc)
     try:
         pub_dt = datetime.fromisoformat(item["published"]) if item.get("published") else now
@@ -489,14 +504,33 @@ def evaluate(item: dict, cfg: dict | None = None, root=None, call=None) -> dict:
         "published_iso": item.get("published"),
         "known_at_iso": now.isoformat(),
         "age_days": round(age_days, 2),
-        "stance": stance,
-        "model_unavailable": not bool(raw),
-        "summary_en": summary_en, "summary_zh": summary_zh,
-        "watch_en": watch_en, "watch_zh": watch_zh,
+        "stance": None,
+        "model_unavailable": False,
+        "summary_en": None, "summary_zh": None,
+        "watch_en": None, "watch_zh": None,
         "excerpt": excerpt,
-        "provider_label": provider_label(cfg),
+        "provider_label": "",
         "generated_utc": now.strftime("%Y-%m-%d %H:%M UTC"),
     }
+
+
+def evaluate(item: dict, cfg: dict | None = None, root=None, call=None) -> dict:
+    """Engine facts + model restate/classify, clamped in code. Never raises."""
+    cfg = cfg or _cfg()
+    record = _base_record(item, cfg)
+    excerpt = record["excerpt"]
+    raw = _call_model(item, excerpt, cfg, call=call)
+    if not raw:
+        record["model_unavailable"] = True
+        record["provider_label"] = provider_label(cfg)
+        return record
+    record["stance"] = _norm_stance(raw.get("stance"))
+    record["summary_en"] = _sanitize_field(raw.get("summary_en"), excerpt)
+    record["summary_zh"] = _sanitize_field(raw.get("summary_zh"), excerpt)
+    record["watch_en"] = _sanitize_field(raw.get("watch_en"), excerpt)
+    record["watch_zh"] = _sanitize_field(raw.get("watch_zh"), excerpt)
+    record["provider_label"] = provider_label(cfg)
+    return record
 
 
 # --------------------------------------------------------------------------- #
@@ -540,14 +574,15 @@ def run(persist: bool = True, root=None, force: bool = False, call=None) -> dict
         if not items:
             record = dict(prior) if prior else None
             if record is not None:
-                record["state"] = "source_outage"
+                record["state"] = _typed_state("source_outage")
             if persist and record is not None:
                 _persist(record, root)
             return record
         fresh = new_items(items, state)
         if not fresh:
-            record = dict(prior) if prior else evaluate(items[0], cfg, root, call=call)
-            record["state"] = "no_new"
+            # Do not spend a model call to label "no new announcement".
+            record = dict(prior) if prior else _base_record(items[0], cfg)
+            record["state"] = _typed_state("no_new")
             if persist:
                 _persist(record, root)
             return record
@@ -560,9 +595,11 @@ def run(persist: bool = True, root=None, force: bool = False, call=None) -> dict
         record = evaluate(item, cfg, root, call=call)
         stale_after = cfg.get("stale_after_days", 3.0)
         if record.get("stance") is None:
-            record["state"] = "model_unavailable"
+            record["state"] = _typed_state("model_unavailable")
         else:
-            record["state"] = "stale" if record.get("age_days", 0.0) > stale_after else "ok"
+            record["state"] = _typed_state(
+                "stale" if record.get("age_days", 0.0) > stale_after else "ok"
+            )
         mark_seen(state, item)
         if persist:
             save_processed(root, state)
@@ -574,7 +611,7 @@ def run(persist: bool = True, root=None, force: bool = False, call=None) -> dict
             prior = latest(root)
             if prior is not None:
                 prior = dict(prior)
-                prior["state"] = "source_outage"
+                prior["state"] = _typed_state("source_outage")
                 if persist:
                     _persist(prior, root)
                 return prior
