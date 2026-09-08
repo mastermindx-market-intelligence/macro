@@ -191,3 +191,24 @@ The China consumer candidate is UNTESTED and uninstalled. A platform-blocked
 harness append is preserved as an explicitly incomplete text draft, not a green
 suite. This does not change the separately verified 40-case arithmetic candidate,
 its 12-case module compatibility evidence, or any existing release/authority gate.
+
+## 16. Independent-review refinement of the first integrity slice
+
+The recovered Opus static review judged the arithmetic correct but not releasable
+as a standalone line change. Sol accepted the composition/consumer gap and tested
+several reviewer claims rather than adopting them wholesale. The governing decision
+is `DEC:RRU-ARITHMETIC-NEEDS-COMPOSITION-TRUTH`; detailed dispositions and real
+module-call/negative-control evidence are in `RRU1A_INDEPENDENT_REVIEW_ADJUDICATION_2026-09-08.md`.
+
+RRU-1A release now includes actual group AND sub-leg availability, calibration
+applicability and affected trajectory/recovery/UI proof through existing owners.
+It does not add numerical thresholds, a confidence score, a second engine or policy.
+Falling phantom numerator weight does not guarantee a falling percentile: a complete
+current row can rank higher when historical partial rows are corrected downward.
+No current-market numerical effect is claimed from the synthetic demonstration.
+
+The existing online tuner reads graded history; it does not automatically rerun the
+offline constructor-based calibrator. Definition/correction compatibility still
+needs an explicit release disposition. The first native review interruption is
+closed without result; the second review was recovered completed after reconnection.
+No forecast promotion, live UI upgrade or production source change is implied.

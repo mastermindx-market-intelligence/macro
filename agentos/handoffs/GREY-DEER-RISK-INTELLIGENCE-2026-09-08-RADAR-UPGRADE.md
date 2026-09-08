@@ -51,7 +51,7 @@ unverified:
     what_would_verify: Bounded implementation and entitled production browser/machine proof under the frozen program contract.
   - claim: The current forward-log maturity and source coverage have been measured in this continuation.
     what_would_verify: Read-only canonical log census; the attempted combined read was platform-blocked and is not retried through another carrier.
-  - claim: New worker execution or Executive admission exists for this upgrade.
+  - claim: New implementation-worker execution or Executive admission exists for this upgrade.
     what_would_verify: A real current admission/placement and receiver pickup/start receipt; none is claimed here.
 unresolved:
   - Production engine, generated site and runtime are unchanged; the candidate is research evidence only.
@@ -59,7 +59,7 @@ unresolved:
   - PR 6685 remains the incumbent compact-homepage implementation; its release hold is not removed here.
   - No policy authority, new forecast promotion, automatic exit or worker placement is created by these records.
 next_actions:
-  - Publish and independently review this exact records/research package; retain Draft/HOLD until its checks and record review conclude.
+  - Consume the recovered independent review and DEC:RRU-ARITHMETIC-NEEDS-COMPOSITION-TRUTH; prepare the existing-field coverage and calibration-consumer contract before a source release.
   - Resolve the RRU-1A source-owner/collision gate lawfully, then bind one bounded arithmetic repair under current procedure.
   - Run pinned real-data and consumer impact before releasing corrected aggregation; preserve all original issued forecasts.
   - Proceed to separate time/null hardening and the existing recovery-to-UI linkage with current-validity semantics.
@@ -78,6 +78,7 @@ danger_areas:
   - Sparse-checkout warnings and omitted artifacts are not proof that the full repository is broken or absent.
 decisions:
   - "DEC:RRU-ONE-EXPERIENCE-SEPARATE-TRUTHS"
+  - "DEC:RRU-ARITHMETIC-NEEDS-COMPOSITION-TRUTH"
 discoveries:
   - "DSC:RRU-INTL-MISSING-WEIGHT-INFLATES-BLEND"
   - "DSC:RRU-CURRENT-RADAR-CAN-MASK-MISSING-OBSERVATIONS"
@@ -161,3 +162,57 @@ Receipt: `research/grey_deer/RRU_FOLLOWUP_VALIDATION_2026_09_08.txt`.
 The command chain ended exit 0, including a zero diff against pickup base for
 engine/, templates/, scripts/, site/, data/ and .github/. These receipts do not
 validate the unfinished China candidate harness or prove deployment.
+
+## Later continuation: real-input execution and recovered independent review
+
+Local commit12a5cf9289b510170ea021dbc6fa454511f46b0c freezes the real-input diagnostic
+spec and driver before its execution. Native process40728 returned exit0 after
+all ten profile computations and source-integrity checks. This is current-vintage
+arithmetic sensitivity, not PIT forecast validation. Its numerical-output read was
+platform-blocked; no numerical impact/calibration result is inferred or published.
+The exact unread results and run files remain local/untracked, not silently lost.
+
+The first text-only native review child ended without a recovered result during a
+Desktop Commander connection change. Its terminal/no-result reconciliation remains
+`RRU1A_REVIEW_INTERRUPTION_RECONCILIATION_2026-09-08.md`; no first-child PASS exists.
+After that reconciliation, a separate finite same-carrier review2 child was invoked.
+The subsequent offline checkpoint is Macro6989 comment5585726496, projected to
+MAS-258; caller transport evidence was reported to existing DC507 at5585764563.
+
+The Mac reappeared under registration3f5ce987-e3eb-40a3-af9f-4b0ae54919cc,
+connection10f3758b-59f6-4b00-8c09-0f9299a6b55c. Discovery/ping and hostname/user/arm64,
+owned root/branch/head checks preceded recovery. The original second-review JSON
+was recovered completed/success, actual model claude-opus-5, one turn, no subagents,
+no permission denials. No review was relaunched on the new registration.
+Second-review result SHA256568ff68104dcb122b904d95cdd04bda71d0d827e02370a0d828c9c0f025ab692.
+
+SOL ACCEPTED REVIEW / STOP closes that finite child; no watcher existed. The
+review's PARTIAL verdict is accepted as evidence, not source-release authority.
+The child is no longer effect-unknown. The main program remains PARTIAL.
+
+Sol's six executed adjudication probes accepted the missing-weight bias and the
+conditional complete-row rank effect, rejected an invalid positive-scaling mutant,
+rejected a universal variance claim and corrected the asserted online-tuner flow.
+Actual module discrimination observed8 candidate calls with binding preserved and
+12/12 pass. A zero-composite mutant produced2 expected failures/10 passes, also
+8 calls and unchanged source. This suite reaches CN/HK/CA/KR; the six remaining
+markets are not silently counted as actual-module proof. Results are in the
+named REVIEW_ADJUDICATION and MODULE_DISCRIMINATION artifacts.
+
+New decision: `DEC:RRU-ARITHMETIC-NEEDS-COMPOSITION-TRUTH`. Do not ship the
+arithmetic alone. The first source release must expose group and within-group
+availability, calibration applicability and effects on trajectory/recovery and UI
+through the existing projection. No invented floor, confidence score, policy,
+new engine or ledger. The older one-line-only release scope is amended explicitly;
+its historical tests/candidate remain valid for their actual narrower scope.
+
+Current source-owner coordination is #6657 comment5585688682. It requests only the
+incumbent's intended ownership boundary, not another execution of the denied census.
+No source-collision clearance is fabricated. PR6685 remains separately owned.
+
+Exact next action: prepare/review the existing-field composition-to-consumer contract,
+resolve lawful source custody and the unreviewed real-input implications, then one
+bounded source implementation with actual consumer proof. No implementation worker
+or production change is claimed. The new review packet, actual return, adjudication,
+proofs and decision must remain on the same6989 research branch; unread diagnostic
+outputs and interrupted empty receipts stay local and explicitly excluded.

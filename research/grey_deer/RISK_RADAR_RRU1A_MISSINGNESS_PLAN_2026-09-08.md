@@ -94,3 +94,25 @@ Candidate source SHA256: `d33e7425be4981f731fa5ec5d6bac6f70a117c419cbd1bfdac4c4d
 Evidence formatting: the baseline unittest log retains every failure and assertion;
 only trailing whitespace on its 20 `AssertionError:` lines was normalized for the
 repository whitespace check. No result, comparison, count or traceback was removed.
+
+## 8. Current release ruling after independent review
+
+`DEC:RRU-ARITHMETIC-NEEDS-COMPOSITION-TRUTH` amends the earlier one-line-only
+source-release scope. The arithmetic candidate is correct for the tested common-index
+missing-group construction, but may not ship alone. The release must carry group
+and within-group evidence availability, calibration applicability and recovery/UI
+consequences through the existing producer and projection. A missingness repair is
+not permission to invent a confidence score or minimum-coverage threshold.
+
+The new independent review and Sol's accepted/rejected findings are in
+`RRU1A_INDEPENDENT_REVIEW_ADJUDICATION_2026-09-08.md`.
+Actual module witness: eight calls, preserved binding,12/12 pass; a zero-composite
+negative control produces two expected failures. CN/HK/CA/KR were reached by that
+suite; do not generalize its scope to all ten profiles. A global doubling is not a
+valid rank-level negative control because positive rescaling preserves percentiles.
+
+A separate real-input diagnostic was frozen and executed, but its output read was
+platform-blocked. It supplies no reviewed impact or calibration conclusion yet.
+Different-index missingness, import-time test pinning and actual source availability
+must be covered in the prepared source tests. No production source was changed by
+this amendment. Exact writer/collision and ordinary release gates remain open.
