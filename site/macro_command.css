@@ -493,7 +493,7 @@ a.mc-move-name:hover { color: var(--mq-accent); text-decoration: underline; }
 .mc-move-state { margin: 0 0 10px; font-size: 12.5px; line-height: 1.5; color: var(--mq-muted); }
 .mc-move-asof { font-size: 11.5px; color: var(--mq-muted); font-variant-numeric: normal; }
 .mc-move-words {
-  display: block; font-family: inherit; font-size: 12px; font-weight: 400;
+  display: block; font-size: 12px; font-weight: 400;
   line-height: 1.4; color: var(--mq-muted); font-variant-numeric: tabular-nums;
   text-align: right; max-width: 28ch;
 }
@@ -733,7 +733,6 @@ html[data-theme="light"] .mc-empty {
     white-space: nowrap;
     overflow: visible;
     padding: 7px 12px;
-    border-radius: 999px;
   }
   /* same overflow + edge mask as the rail — a hard-clipped tab row
      ("利率与收:") has no scroll affordance without it. */

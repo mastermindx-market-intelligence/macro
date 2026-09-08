@@ -429,7 +429,7 @@ def test_desktop_rail_link_rules_exclude_analyst(
     assert block
     body = _strip_css_comments(block.group(1))
     assert re.search(
-        r'\.mc-rail-link\s*\{[^}]*border-radius:\s*999px', body, re.S)
+        r'\.mc-rail-link\s*\{[^}]*white-space:\s*nowrap', body, re.S)
 
 
 @pytest.mark.needs_full_checkout("site")
