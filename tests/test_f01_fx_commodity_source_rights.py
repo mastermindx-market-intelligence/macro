@@ -1,11 +1,16 @@
 """Pins the F01 FX/commodity rights record against the citations it claims.
 
-Each assertion is a value check (exact posture string, cited file:line contents),
-not an existence tautology. Findings: PR #6908 Opus review BLOCKER-1/2, MAJOR-1/2,
-MINOR-2/3.
+Each assertion is a value check (exact posture string, cited contents),
+not an existence tautology. Cross-file assertions are content-anchored:
+they search the cited file for a string, then — when the record cites
+file:N — check that the RECORD's own N resolves to a line containing
+that string. A drift fails with a message naming the record line to
+update, never by equal-comparing an absolute line number of a file
+outside this PR.
 """
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
@@ -44,20 +49,103 @@ COLLECT = REPO / "scripts" / "collect.py"
 BUILD_SPR = REPO / "scripts" / "build_spr.py"
 DISLOCATION = REPO / "engine" / "dislocation.py"
 
+YAHOO_BLOCKED = (
+    "rights_blocked (basis: vendor_terms_personal_use, config/dataset_registry.yml)"
+)
+FRED_BLOCKED = "rights_blocked (FRED clause (q); IMCE Round-3 freeze :189)"
+
 
 def _text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def _line(path: Path, n: int) -> str:
-    lines = _text(path).splitlines()
-    assert n >= 1, f"{path} line {n} is not 1-indexed"
-    assert n <= len(lines), f"{path} has {len(lines)} lines; cannot read :{n}"
-    return lines[n - 1]
+def _linelist(path: Path) -> list[str]:
+    return _text(path).splitlines()
+
+
+def _first_lineno(path: Path, needle: str) -> int:
+    for i, line in enumerate(_linelist(path), 1):
+        if needle in line:
+            return i
+    raise AssertionError(f"{path} has no line containing {needle!r}")
+
+
+def _assert_present(path: Path, needle: str) -> int:
+    n = _first_lineno(path, needle)
+    assert needle in _linelist(path)[n - 1]
+    return n
+
+
+def _assert_record_citation_resolves(
+    record: Path,
+    cited: Path,
+    path_token: str,
+    needle: str,
+) -> None:
+    """Parse path_token:N citations from the record. At least one must
+    resolve to a line of `cited` containing `needle`. Failure names the
+    record line(s) to update, not the pack."""
+    pattern = re.compile(rf"{re.escape(path_token)}:(\d+)")
+    matches: list[tuple[int, int]] = []
+    for i, line in enumerate(_linelist(record), 1):
+        for m in pattern.finditer(line):
+            matches.append((i, int(m.group(1))))
+    assert matches, f"{record.name} does not cite {path_token}:N"
+    lines = _linelist(cited)
+    for rec_n, cited_n in matches:
+        if 1 <= cited_n <= len(lines) and needle in lines[cited_n - 1]:
+            return
+    details = []
+    for rec_n, cited_n in matches:
+        loc = f"{record.name}:{rec_n}"
+        if not (1 <= cited_n <= len(lines)):
+            details.append(
+                f"{loc} cites {path_token}:{cited_n} but {cited.name} has "
+                f"{len(lines)} lines"
+            )
+            continue
+        details.append(
+            f"{loc} cites {path_token}:{cited_n} = {lines[cited_n - 1]!r}"
+        )
+    raise AssertionError(
+        f"no {record.name} citation of {path_token}:N contains {needle!r} — "
+        f"update {'; '.join(details)}"
+    )
+
+
+def _assert_and_continuation_resolves(
+    record: Path,
+    cited: Path,
+    after_token: str,
+    needle: str,
+) -> None:
+    """Parse `after_token:N and :M` and require cited:M contain needle."""
+    pattern = re.compile(
+        rf"{re.escape(after_token)}:(\d+)\s+and\s+:(\d+)"
+    )
+    for i, line in enumerate(_linelist(record), 1):
+        m = pattern.search(line)
+        if m is None:
+            continue
+        cited_n = int(m.group(2))
+        lines = _linelist(cited)
+        loc = f"{record.name}:{i}"
+        assert 1 <= cited_n <= len(lines), (
+            f"{loc} cites and :{cited_n} but {cited.name} has "
+            f"{len(lines)} lines — update {loc}"
+        )
+        assert needle in lines[cited_n - 1], (
+            f"{loc} cites and :{cited_n} but that line is "
+            f"{lines[cited_n - 1]!r}, expected {needle!r} — update {loc}"
+        )
+        return
+    raise AssertionError(
+        f"{record.name} has no '{after_token}:N and :M' continuation citation"
+    )
 
 
 # ---------------------------------------------------------------------------
-# BLOCKER-1 — DSC claim is recorded-and-adverse, not UNRULED
+# BLOCKER-1 — DSC claim is recorded-adverse prose, not UNRULED
 # ---------------------------------------------------------------------------
 
 
@@ -99,34 +187,92 @@ def test_dsc_falsifier_covers_config_and_research() -> None:
 def test_dsc_verified_by_cites_the_two_research_records() -> None:
     text = _text(DSC_PATH)
     verified = text.split("verified_by:", 1)[1].split("scope:", 1)[0]
-    assert "research/MASTERMIND_DATA_CONTRACTS.md:103" in verified
-    assert "research/IMCE_ROUND3_ARCHITECTURE_FREEZE_BY_FABLE.md:189" in verified
-    assert "config/dataset_registry.yml:63" in verified
+    assert "research/MASTERMIND_DATA_CONTRACTS.md:" in verified
+    assert "research/IMCE_ROUND3_ARCHITECTURE_FREEZE_BY_FABLE.md:" in verified
+    assert "config/dataset_registry.yml:" in verified
+    _assert_record_citation_resolves(
+        DSC_PATH,
+        CONTRACTS,
+        "research/MASTERMIND_DATA_CONTRACTS.md",
+        "yfinance-sourced and republished to a paid product",
+    )
+    _assert_record_citation_resolves(
+        DSC_PATH,
+        IMCE,
+        "research/IMCE_ROUND3_ARCHITECTURE_FREEZE_BY_FABLE.md",
+        "CANONICAL_PRICE_TAPE (REUSE; yfinance exposure documented in-repo)",
+    )
+    _assert_record_citation_resolves(
+        DSC_PATH,
+        REGISTRY,
+        "config/dataset_registry.yml",
+        "licensing: vendor_terms_personal_use",
+    )
 
 
-def test_dsc_so_what_forbids_typing_the_spine_unknown() -> None:
+def test_dsc_so_what_types_spine_rights_blocked() -> None:
     text = _text(DSC_PATH)
     so_what = text.split("so_what:", 1)[1].split("kind:", 1)[0]
-    assert "must not type the spine `unknown`" in so_what
-    assert "recorded-and-adverse (vendor_terms_personal_use)" in so_what
+    assert "rights_blocked" in so_what
+    assert "recorded basis" in so_what
+    assert "`unknown`" in so_what
+    assert "unrecorded" in so_what
+    assert "recorded-and-adverse" not in so_what
+    assert "underlying Yahoo vendor terms text was not read" in so_what
+
+
+def test_dsc_confidence_is_probable() -> None:
+    text = _text(DSC_PATH)
+    conf = next(
+        line for line in text.splitlines() if line.startswith("confidence:")
+    )
+    assert conf.strip() == "confidence: probable"
 
 
 def test_yahoo_registry_row_is_personal_use_vendor_terms() -> None:
     """Ground the DSC in the live registry, not in a self-citation."""
-    assert _line(REGISTRY, 59).strip() == "vendor: yahoo"
-    assert _line(REGISTRY, 63).strip() == "licensing: vendor_terms_personal_use"
-    assert _line(REGISTRY, 104).strip() == "licensing: vendor_terms_personal_use"
+    _assert_present(REGISTRY, "vendor: yahoo")
+    _assert_present(REGISTRY, "licensing: vendor_terms_personal_use")
+    _assert_record_citation_resolves(
+        DSC_PATH,
+        REGISTRY,
+        "config/dataset_registry.yml",
+        "licensing: vendor_terms_personal_use",
+    )
+    _assert_and_continuation_resolves(
+        DSC_PATH,
+        REGISTRY,
+        "config/dataset_registry.yml",
+        "licensing: vendor_terms_personal_use",
+    )
 
 
 def test_data_contracts_record_paid_republication_of_yfinance() -> None:
-    line = _line(CONTRACTS, 103)
-    assert "yfinance-sourced and republished to a paid product" in line
-    assert "licensing: vendor_terms_personal_use" in line
+    _assert_present(CONTRACTS, "yfinance-sourced and republished to a paid product")
+    _assert_present(CONTRACTS, "licensing: vendor_terms_personal_use")
+    _assert_record_citation_resolves(
+        DSC_PATH,
+        CONTRACTS,
+        "research/MASTERMIND_DATA_CONTRACTS.md",
+        "yfinance-sourced and republished to a paid product",
+    )
+    _assert_record_citation_resolves(
+        DSC_PATH,
+        CONTRACTS,
+        "research/MASTERMIND_DATA_CONTRACTS.md",
+        "licensing: vendor_terms_personal_use",
+    )
 
 
 def test_imce_canonical_price_tape_documents_yfinance_exposure() -> None:
-    line = _line(IMCE, 189)
-    assert "CANONICAL_PRICE_TAPE (REUSE; yfinance exposure documented in-repo)" in line
+    needle = "CANONICAL_PRICE_TAPE (REUSE; yfinance exposure documented in-repo)"
+    _assert_present(IMCE, needle)
+    _assert_record_citation_resolves(
+        DSC_PATH,
+        IMCE,
+        "research/IMCE_ROUND3_ARCHITECTURE_FREEZE_BY_FABLE.md",
+        needle,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -135,33 +281,53 @@ def test_imce_canonical_price_tape_documents_yfinance_exposure() -> None:
 
 
 def test_imce_fred_clause_q_is_do_not_ingest() -> None:
-    line_111 = _line(IMCE, 111)
-    assert "FRED = DO_NOT_INGEST" in line_111
-    assert "Prohibition (q)" in line_111
-    assert "storing/caching/archiving FRED content" in line_111
-    line_189 = _line(IMCE, 189)
-    assert (
+    _assert_present(IMCE, "FRED = DO_NOT_INGEST")
+    _assert_present(IMCE, "Prohibition (q)")
+    _assert_present(IMCE, "storing/caching/archiving FRED content")
+    clause_q = (
         "DO_NOT_INGEST — FRED_API_SITE (clause (q): no store/cache/archive/database "
         "incorporation; binds all use classes)"
-    ) in line_189
+    )
+    _assert_present(IMCE, clause_q)
+    _assert_record_citation_resolves(
+        F01,
+        IMCE,
+        "IMCE_ROUND3_ARCHITECTURE_FREEZE_BY_FABLE.md",
+        "FRED = DO_NOT_INGEST",
+    )
+    _assert_record_citation_resolves(
+        F01,
+        IMCE,
+        "IMCE_ROUND3_ARCHITECTURE_FREEZE_BY_FABLE.md",
+        clause_q,
+    )
 
 
 def test_fred_legs_are_stored_fred_content() -> None:
-    line_45 = _line(FOREX_INPUTS, 45)
-    assert "fx_rates_short" in line_45
-    assert "fx_rates_long" in line_45
-    assert "fx_reer" in line_45
-    line_150 = _line(COLLECT, 150)
-    assert '("fred", "collectors.fred", "FredAdapter")' in line_150
+    _assert_present(FOREX_INPUTS, "fx_rates_short")
+    _assert_present(FOREX_INPUTS, "fx_rates_long")
+    _assert_present(FOREX_INPUTS, "fx_reer")
+    fred_adapter = '("fred", "collectors.fred", "FredAdapter")'
+    _assert_present(COLLECT, fred_adapter)
+    _assert_record_citation_resolves(
+        F01,
+        FOREX_INPUTS,
+        "engine/forex_inputs.py",
+        "fx_rates_short",
+    )
+    _assert_record_citation_resolves(
+        F01,
+        COLLECT,
+        "scripts/collect.py",
+        fred_adapter,
+    )
 
 
 def test_f01_fred_rows_are_rights_blocked_clause_q() -> None:
     text = _text(F01)
-    blocked = "rights_blocked (FRED clause (q); IMCE Round-3 freeze :189)"
-    assert text.count(blocked) >= 5
+    assert text.count(FRED_BLOCKED) >= 5
     assert "IMCE binds" in text or "IMCE freeze binds" in text
     assert "unreconciled practice" in text
-    # The three FRED-group inventory rows must not reuse the forbidden unknown typing.
     inventory = text.split("## 3.")[0]
     for needle in (
         "| policy/short rates |",
@@ -169,26 +335,32 @@ def test_f01_fred_rows_are_rights_blocked_clause_q() -> None:
         "| REER |",
     ):
         row = next(line for line in inventory.splitlines() if line.startswith(needle))
-        assert blocked in row, f"{needle} is not typed rights_blocked: {row}"
+        assert FRED_BLOCKED in row, f"{needle} is not typed rights_blocked: {row}"
         assert "unknown (rights-posture-unrecorded)" not in row
 
 
 def test_f01_v2_cites_imce_111_and_189() -> None:
     text = _text(F01)
     v2 = text.split("**V-2 basis", 1)[1].split("**V-3", 1)[0]
-    assert "IMCE_ROUND3_ARCHITECTURE_FREEZE_BY_FABLE.md:111" in v2
-    assert ":189" in v2
+    assert "IMCE_ROUND3_ARCHITECTURE_FREEZE_BY_FABLE.md:" in v2
     assert "DO_NOT_INGEST" in v2
     assert "clause (q)" in v2
-    assert "scripts/collect.py:150" in v2
+    assert "scripts/collect.py:" in v2
+    assert "underlying FRED terms text has not been re-read" in v2
+    _assert_record_citation_resolves(
+        F01,
+        COLLECT,
+        "scripts/collect.py",
+        '("fred", "collectors.fred", "FredAdapter")',
+    )
 
 
 def test_f01_section7_does_not_certify_fred_as_unknown() -> None:
     closure = _text(F01).split("## 7. Ledger closure statement", 1)[1]
-    assert "rights_blocked (FRED clause (q); IMCE Round-3 freeze :189)" in closure
+    assert FRED_BLOCKED in closure
     assert "the IMCE freeze binds the rights reading" in closure
-    # Yahoo is no longer lumped into the unknown bucket either.
-    assert "Yahoo typed `recorded-and-adverse (vendor_terms_personal_use)`" in closure
+    assert f"Yahoo typed `{YAHOO_BLOCKED}`" in closure
+    assert "recorded-and-adverse" not in closure
     assert (
         "every vendor (Yahoo, CFTC, EIA) typed `unknown (rights-posture-unrecorded)`"
         not in closure
@@ -209,11 +381,41 @@ def test_f01_v_rows_state_widened_search_scope_and_date() -> None:
         assert "2026-09-07" in section, f"{marker} still carries the old 2026-09-05 scope date"
 
 
-def test_f01_headline_does_not_claim_yahoo_is_unrecorded() -> None:
+def test_f01_headline_types_yahoo_rights_blocked_on_registry_basis() -> None:
     headline = _text(F01).split("## 2.")[0]
     assert "no rights ruling" not in headline
     assert "vendor_terms_personal_use" in headline
-    assert "recorded and adverse, never cleared" in headline
+    assert YAHOO_BLOCKED in headline
+    assert "the registry row is the ruling" not in headline
+    assert "underlying Yahoo vendor terms text was not read" in headline
+    assert "recorded-and-adverse" not in headline
+
+
+def test_f01_section0_has_no_seventh_taxonomy_state() -> None:
+    section0 = _text(F01).split("## 1.")[0]
+    assert "| `recorded-and-adverse` |" not in section0
+    for state in (
+        "`unknown`",
+        "`not_yet_available`",
+        "`stale`",
+        "`source_failed`",
+        "`rights_blocked`",
+        "`measured-zero`",
+    ):
+        assert state in section0
+    assert section0.count("| `") == 6
+
+
+def test_f01_yahoo_inventory_rows_use_existing_taxonomy() -> None:
+    text = _text(F01)
+    inventory = text.split("## 4.")[0]
+    for needle in (
+        "| FX spot & DXY",
+        "| commodity futures/spot closes |",
+    ):
+        row = next(line for line in inventory.splitlines() if line.startswith(needle))
+        assert YAHOO_BLOCKED in row, f"{needle} is not typed rights_blocked: {row}"
+        assert "recorded-and-adverse" not in row
 
 
 # ---------------------------------------------------------------------------
@@ -244,7 +446,14 @@ def test_spr_store_group_is_eia() -> None:
     )
     assert "| `eia` |" in row
     assert "data/eia/spr_stocks" not in row.split("|")[2]
-    assert 'store.read("eia", "spr_stocks")' in _line(BUILD_SPR, 214)
+    spr_read = 'store.read("eia", "spr_stocks")'
+    _assert_present(BUILD_SPR, spr_read)
+    _assert_record_citation_resolves(
+        F01,
+        BUILD_SPR,
+        "scripts/build_spr.py",
+        spr_read,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -258,7 +467,12 @@ def test_charter_names_master_switch_frame() -> None:
     assert "FED-PUT MASTER SWITCH" in acceptance
     assert "master_switch_frame" in acceptance
     assert "Gate-1 switch" not in acceptance
-    assert _line(DISLOCATION, 260).startswith("def master_switch_frame(")
-    assert "FED-PUT MASTER SWITCH:" in "\n".join(
-        _line(DISLOCATION, n) for n in range(29, 35)
+    _assert_present(DISLOCATION, "def master_switch_frame(")
+    _assert_present(DISLOCATION, "FED-PUT MASTER SWITCH:")
+    _assert_record_citation_resolves(
+        CHARTER,
+        DISLOCATION,
+        "engine/dislocation.py",
+        "def master_switch_frame(",
     )
+    assert "recorded-and-adverse" not in text

@@ -36,7 +36,7 @@ No BUY/SELL collapse of any FX-dislocation read. No LLM-originated signal, score
 
 A future build packet under this charter must satisfy, before it starts:
 
-1. At least one CIP/basis series with a named, rights-cleared source. Today this is `not_yet_available` — §3 finds no basis collector, and even if one existed it would inherit the same recorded-and-adverse Yahoo-spine posture (`vendor_terms_personal_use`) recorded in `F01_FX_COMMODITY_SOURCE_RIGHTS_AND_DEPTH_2026-09.md` §4 V-1 for any yfinance-sourced leg.
+1. At least one CIP/basis series with a named, rights-cleared source. Today this is `not_yet_available` — §3 finds no basis collector, and even if one existed it would inherit the same `rights_blocked (basis: vendor_terms_personal_use, config/dataset_registry.yml)` Yahoo-spine posture recorded in `F01_FX_COMMODITY_SOURCE_RIGHTS_AND_DEPTH_2026-09.md` §4 V-1 for any yfinance-sourced leg.
 2. An owner workstream. MO-PAID-025's `current_owner` literally reads "no FX desk owner" — that gap is unresolved by this charter.
 3. A pre-registered promotion gate (per the epistemics standing law: gauntlet applies at promotion to authority, not at build).
 4. Explicit authority above `research_only` for the specific build packet.
