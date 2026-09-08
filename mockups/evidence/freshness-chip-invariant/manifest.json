@@ -1,0 +1,519 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "generated_at": "2026-09-08T08:44:24Z",
+  "head_sha": "069ce08c7fb7ec8007fc623aa90fc95f5a311465",
+  "capture_command": "python3 mockups/evidence/freshness-chip-invariant/capture_freshness_chips.py",
+  "browser": "playwright chromium",
+  "scale": 2,
+  "prefers_reduced_motion": "reduce",
+  "theme_seed": "localStorage.theme + data-theme set in add_init_script before navigation; never mid-toggle",
+  "lang_seed": "localStorage.lang + data-lang set in add_init_script before navigation",
+  "render_note": "Rendered japan.html to a temp dir from committed test inputs (tests/test_international_macro_dashboards._record/_history, today=2026-09-08) with templates/theme.css + theme.js copied beside it; the repository builder needs data/intl/latest.json and writes data/international_macro/*.json, which this packet must not touch. Each frame is an element clip of the data-health receipt block (.imd-cols carrying .imd-chip.fresh / .imd-chip.stale) inside the dlg-health receipt dialog, opened through the page's own opener button — no forced class or attribute.",
+  "honesty": {
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "a frame that fails verification is captured:false with a reason; nothing is inferred for it",
+    "render": "Rendered japan.html to a temp dir from committed test inputs (tests/test_international_macro_dashboards._record/_history, today=2026-09-08) with templates/theme.css + theme.js copied beside it; the repository builder needs data/intl/latest.json and writes data/international_macro/*.json, which this packet must not touch. Each frame is an element clip of the data-health receipt block (.imd-cols carrying .imd-chip.fresh / .imd-chip.stale) inside the dlg-health receipt dialog, opened through the page's own opener button — no forced class or attribute."
+  },
+  "axes": {
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    },
+    "force_states": []
+  },
+  "outcome": "captured",
+  "invariance": {
+    "rule": "freshness chips resolve to the same colour in EN and ZH while --up differs (the swap was active; the chips ignored it)",
+    "pass": true,
+    "checks": [
+      {
+        "theme": "dark",
+        "viewport": "desktop",
+        "fresh_chip_en": {
+          "text": "fresh",
+          "color": "color(srgb 0.239216 0.647059 0.392157)",
+          "borderColor": "color(srgb 0.379342 0.712066 0.504113 / 0.42902)",
+          "backgroundColor": "color(srgb 0.239216 0.647059 0.392157 / 0.09)"
+        },
+        "fresh_chip_zh": {
+          "text": "fresh",
+          "color": "color(srgb 0.239216 0.647059 0.392157)",
+          "borderColor": "color(srgb 0.379342 0.712066 0.504113 / 0.42902)",
+          "backgroundColor": "color(srgb 0.239216 0.647059 0.392157 / 0.09)"
+        },
+        "stale_chip_en": {
+          "text": "stale",
+          "color": "color(srgb 0.878431 0.627451 0.188235)",
+          "borderColor": "color(srgb 0.898553 0.689115 0.322597 / 0.455373)",
+          "backgroundColor": "color(srgb 0.878431 0.627451 0.188235 / 0.09)"
+        },
+        "stale_chip_zh": {
+          "text": "stale",
+          "color": "color(srgb 0.878431 0.627451 0.188235)",
+          "borderColor": "color(srgb 0.898553 0.689115 0.322597 / 0.455373)",
+          "backgroundColor": "color(srgb 0.878431 0.627451 0.188235 / 0.09)"
+        },
+        "up_token_en": "#45b873",
+        "up_token_zh": "#e06464",
+        "chips_identical_en_zh": true,
+        "zh_swap_active": true,
+        "pass": true
+      },
+      {
+        "theme": "dark",
+        "viewport": "mobile",
+        "fresh_chip_en": {
+          "text": "fresh",
+          "color": "color(srgb 0.239216 0.647059 0.392157)",
+          "borderColor": "color(srgb 0.379342 0.712066 0.504113 / 0.42902)",
+          "backgroundColor": "color(srgb 0.239216 0.647059 0.392157 / 0.09)"
+        },
+        "fresh_chip_zh": {
+          "text": "fresh",
+          "color": "color(srgb 0.239216 0.647059 0.392157)",
+          "borderColor": "color(srgb 0.379342 0.712066 0.504113 / 0.42902)",
+          "backgroundColor": "color(srgb 0.239216 0.647059 0.392157 / 0.09)"
+        },
+        "stale_chip_en": {
+          "text": "stale",
+          "color": "color(srgb 0.878431 0.627451 0.188235)",
+          "borderColor": "color(srgb 0.898553 0.689115 0.322597 / 0.455373)",
+          "backgroundColor": "color(srgb 0.878431 0.627451 0.188235 / 0.09)"
+        },
+        "stale_chip_zh": {
+          "text": "stale",
+          "color": "color(srgb 0.878431 0.627451 0.188235)",
+          "borderColor": "color(srgb 0.898553 0.689115 0.322597 / 0.455373)",
+          "backgroundColor": "color(srgb 0.878431 0.627451 0.188235 / 0.09)"
+        },
+        "up_token_en": "#45b873",
+        "up_token_zh": "#e06464",
+        "chips_identical_en_zh": true,
+        "zh_swap_active": true,
+        "pass": true
+      },
+      {
+        "theme": "light",
+        "viewport": "desktop",
+        "fresh_chip_en": {
+          "text": "fresh",
+          "color": "color(srgb 0.183137 0.445882 0.319216)",
+          "borderColor": "color(srgb 0.165746 0.476472 0.296812 / 0.408627)",
+          "backgroundColor": "color(srgb 0.184314 0.541176 0.321569 / 0.09)"
+        },
+        "fresh_chip_zh": {
+          "text": "fresh",
+          "color": "color(srgb 0.183137 0.445882 0.319216)",
+          "borderColor": "color(srgb 0.165746 0.476472 0.296812 / 0.408627)",
+          "backgroundColor": "color(srgb 0.184314 0.541176 0.321569 / 0.09)"
+        },
+        "stale_chip_en": {
+          "text": "stale",
+          "color": "color(srgb 0.518353 0.379137 0.182431)",
+          "borderColor": "color(srgb 0.639465 0.425209 0.107998 / 0.435922)",
+          "backgroundColor": "color(srgb 0.72549 0.47451 0.101961 / 0.09)"
+        },
+        "stale_chip_zh": {
+          "text": "stale",
+          "color": "color(srgb 0.518353 0.379137 0.182431)",
+          "borderColor": "color(srgb 0.639465 0.425209 0.107998 / 0.435922)",
+          "backgroundColor": "color(srgb 0.72549 0.47451 0.101961 / 0.09)"
+        },
+        "up_token_en": "#1f9a55",
+        "up_token_zh": "#cf4040",
+        "chips_identical_en_zh": true,
+        "zh_swap_active": true,
+        "pass": true
+      },
+      {
+        "theme": "light",
+        "viewport": "mobile",
+        "fresh_chip_en": {
+          "text": "fresh",
+          "color": "color(srgb 0.183137 0.445882 0.319216)",
+          "borderColor": "color(srgb 0.165746 0.476472 0.296812 / 0.408627)",
+          "backgroundColor": "color(srgb 0.184314 0.541176 0.321569 / 0.09)"
+        },
+        "fresh_chip_zh": {
+          "text": "fresh",
+          "color": "color(srgb 0.183137 0.445882 0.319216)",
+          "borderColor": "color(srgb 0.165746 0.476472 0.296812 / 0.408627)",
+          "backgroundColor": "color(srgb 0.184314 0.541176 0.321569 / 0.09)"
+        },
+        "stale_chip_en": {
+          "text": "stale",
+          "color": "color(srgb 0.518353 0.379137 0.182431)",
+          "borderColor": "color(srgb 0.639465 0.425209 0.107998 / 0.435922)",
+          "backgroundColor": "color(srgb 0.72549 0.47451 0.101961 / 0.09)"
+        },
+        "stale_chip_zh": {
+          "text": "stale",
+          "color": "color(srgb 0.518353 0.379137 0.182431)",
+          "borderColor": "color(srgb 0.639465 0.425209 0.107998 / 0.435922)",
+          "backgroundColor": "color(srgb 0.72549 0.47451 0.101961 / 0.09)"
+        },
+        "up_token_en": "#1f9a55",
+        "up_token_zh": "#cf4040",
+        "chips_identical_en_zh": true,
+        "zh_swap_active": true,
+        "pass": true
+      }
+    ]
+  },
+  "pages": [
+    {
+      "page_id": "japan.html",
+      "registry_route": "/japan.html",
+      "route": "/japan.html",
+      "route_kind": "explicit_override",
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": [],
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "health-chips-dark-en-1440.png",
+          "force_state": null,
+          "height": 398,
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1716,
+          "bytes": 67534,
+          "css_width": 858,
+          "css_height": 198.1,
+          "clip_target": "#dlg-health .imd-cols:has(.imd-chip.fresh)",
+          "verified_how": "data-theme/data-lang read back after load; element clip of #dlg-health .imd-cols:has(.imd-chip.fresh) at scale 2; getComputedStyle of the fresh/stale chips recorded",
+          "capture_command": "python3 mockups/evidence/freshness-chip-invariant/capture_freshness_chips.py",
+          "head_sha": "069ce08c7fb7ec8007fc623aa90fc95f5a311465",
+          "captured_at": "2026-09-08T08:44:24Z",
+          "state": "rest",
+          "computed": {
+            "up_token": "#45b873",
+            "ok_token": "#3da564",
+            "fresh_chip": {
+              "text": "fresh",
+              "color": "color(srgb 0.239216 0.647059 0.392157)",
+              "borderColor": "color(srgb 0.379342 0.712066 0.504113 / 0.42902)",
+              "backgroundColor": "color(srgb 0.239216 0.647059 0.392157 / 0.09)"
+            },
+            "stale_chip": {
+              "text": "stale",
+              "color": "color(srgb 0.878431 0.627451 0.188235)",
+              "borderColor": "color(srgb 0.898553 0.689115 0.322597 / 0.455373)",
+              "backgroundColor": "color(srgb 0.878431 0.627451 0.188235 / 0.09)"
+            }
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "health-chips-light-en-1440.png",
+          "force_state": null,
+          "height": 398,
+          "locale": "en",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1716,
+          "bytes": 58390,
+          "css_width": 858,
+          "css_height": 198.1,
+          "clip_target": "#dlg-health .imd-cols:has(.imd-chip.fresh)",
+          "verified_how": "data-theme/data-lang read back after load; element clip of #dlg-health .imd-cols:has(.imd-chip.fresh) at scale 2; getComputedStyle of the fresh/stale chips recorded",
+          "capture_command": "python3 mockups/evidence/freshness-chip-invariant/capture_freshness_chips.py",
+          "head_sha": "069ce08c7fb7ec8007fc623aa90fc95f5a311465",
+          "captured_at": "2026-09-08T08:44:24Z",
+          "state": "rest",
+          "computed": {
+            "up_token": "#1f9a55",
+            "ok_token": "#2f8a52",
+            "fresh_chip": {
+              "text": "fresh",
+              "color": "color(srgb 0.183137 0.445882 0.319216)",
+              "borderColor": "color(srgb 0.165746 0.476472 0.296812 / 0.408627)",
+              "backgroundColor": "color(srgb 0.184314 0.541176 0.321569 / 0.09)"
+            },
+            "stale_chip": {
+              "text": "stale",
+              "color": "color(srgb 0.518353 0.379137 0.182431)",
+              "borderColor": "color(srgb 0.639465 0.425209 0.107998 / 0.435922)",
+              "backgroundColor": "color(srgb 0.72549 0.47451 0.101961 / 0.09)"
+            }
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "health-chips-dark-zh-1440.png",
+          "force_state": null,
+          "height": 398,
+          "locale": "zh",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1716,
+          "bytes": 60756,
+          "css_width": 858,
+          "css_height": 198.1,
+          "clip_target": "#dlg-health .imd-cols:has(.imd-chip.fresh)",
+          "verified_how": "data-theme/data-lang read back after load; element clip of #dlg-health .imd-cols:has(.imd-chip.fresh) at scale 2; getComputedStyle of the fresh/stale chips recorded",
+          "capture_command": "python3 mockups/evidence/freshness-chip-invariant/capture_freshness_chips.py",
+          "head_sha": "069ce08c7fb7ec8007fc623aa90fc95f5a311465",
+          "captured_at": "2026-09-08T08:44:24Z",
+          "state": "rest",
+          "computed": {
+            "up_token": "#e06464",
+            "ok_token": "#3da564",
+            "fresh_chip": {
+              "text": "fresh",
+              "color": "color(srgb 0.239216 0.647059 0.392157)",
+              "borderColor": "color(srgb 0.379342 0.712066 0.504113 / 0.42902)",
+              "backgroundColor": "color(srgb 0.239216 0.647059 0.392157 / 0.09)"
+            },
+            "stale_chip": {
+              "text": "stale",
+              "color": "color(srgb 0.878431 0.627451 0.188235)",
+              "borderColor": "color(srgb 0.898553 0.689115 0.322597 / 0.455373)",
+              "backgroundColor": "color(srgb 0.878431 0.627451 0.188235 / 0.09)"
+            }
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "health-chips-light-zh-1440.png",
+          "force_state": null,
+          "height": 398,
+          "locale": "zh",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1716,
+          "bytes": 52564,
+          "css_width": 858,
+          "css_height": 198.1,
+          "clip_target": "#dlg-health .imd-cols:has(.imd-chip.fresh)",
+          "verified_how": "data-theme/data-lang read back after load; element clip of #dlg-health .imd-cols:has(.imd-chip.fresh) at scale 2; getComputedStyle of the fresh/stale chips recorded",
+          "capture_command": "python3 mockups/evidence/freshness-chip-invariant/capture_freshness_chips.py",
+          "head_sha": "069ce08c7fb7ec8007fc623aa90fc95f5a311465",
+          "captured_at": "2026-09-08T08:44:24Z",
+          "state": "rest",
+          "computed": {
+            "up_token": "#cf4040",
+            "ok_token": "#2f8a52",
+            "fresh_chip": {
+              "text": "fresh",
+              "color": "color(srgb 0.183137 0.445882 0.319216)",
+              "borderColor": "color(srgb 0.165746 0.476472 0.296812 / 0.408627)",
+              "backgroundColor": "color(srgb 0.184314 0.541176 0.321569 / 0.09)"
+            },
+            "stale_chip": {
+              "text": "stale",
+              "color": "color(srgb 0.518353 0.379137 0.182431)",
+              "borderColor": "color(srgb 0.639465 0.425209 0.107998 / 0.435922)",
+              "backgroundColor": "color(srgb 0.72549 0.47451 0.101961 / 0.09)"
+            }
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "health-chips-dark-en-390.png",
+          "force_state": null,
+          "height": 818,
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 696,
+          "bytes": 73078,
+          "css_width": 348,
+          "css_height": 408.1,
+          "clip_target": "#dlg-health .imd-cols:has(.imd-chip.fresh)",
+          "verified_how": "data-theme/data-lang read back after load; element clip of #dlg-health .imd-cols:has(.imd-chip.fresh) at scale 2; getComputedStyle of the fresh/stale chips recorded",
+          "capture_command": "python3 mockups/evidence/freshness-chip-invariant/capture_freshness_chips.py",
+          "head_sha": "069ce08c7fb7ec8007fc623aa90fc95f5a311465",
+          "captured_at": "2026-09-08T08:44:24Z",
+          "state": "rest",
+          "computed": {
+            "up_token": "#45b873",
+            "ok_token": "#3da564",
+            "fresh_chip": {
+              "text": "fresh",
+              "color": "color(srgb 0.239216 0.647059 0.392157)",
+              "borderColor": "color(srgb 0.379342 0.712066 0.504113 / 0.42902)",
+              "backgroundColor": "color(srgb 0.239216 0.647059 0.392157 / 0.09)"
+            },
+            "stale_chip": {
+              "text": "stale",
+              "color": "color(srgb 0.878431 0.627451 0.188235)",
+              "borderColor": "color(srgb 0.898553 0.689115 0.322597 / 0.455373)",
+              "backgroundColor": "color(srgb 0.878431 0.627451 0.188235 / 0.09)"
+            }
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "health-chips-light-en-390.png",
+          "force_state": null,
+          "height": 818,
+          "locale": "en",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 696,
+          "bytes": 66937,
+          "css_width": 348,
+          "css_height": 408.1,
+          "clip_target": "#dlg-health .imd-cols:has(.imd-chip.fresh)",
+          "verified_how": "data-theme/data-lang read back after load; element clip of #dlg-health .imd-cols:has(.imd-chip.fresh) at scale 2; getComputedStyle of the fresh/stale chips recorded",
+          "capture_command": "python3 mockups/evidence/freshness-chip-invariant/capture_freshness_chips.py",
+          "head_sha": "069ce08c7fb7ec8007fc623aa90fc95f5a311465",
+          "captured_at": "2026-09-08T08:44:24Z",
+          "state": "rest",
+          "computed": {
+            "up_token": "#1f9a55",
+            "ok_token": "#2f8a52",
+            "fresh_chip": {
+              "text": "fresh",
+              "color": "color(srgb 0.183137 0.445882 0.319216)",
+              "borderColor": "color(srgb 0.165746 0.476472 0.296812 / 0.408627)",
+              "backgroundColor": "color(srgb 0.184314 0.541176 0.321569 / 0.09)"
+            },
+            "stale_chip": {
+              "text": "stale",
+              "color": "color(srgb 0.518353 0.379137 0.182431)",
+              "borderColor": "color(srgb 0.639465 0.425209 0.107998 / 0.435922)",
+              "backgroundColor": "color(srgb 0.72549 0.47451 0.101961 / 0.09)"
+            }
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "health-chips-dark-zh-390.png",
+          "force_state": null,
+          "height": 818,
+          "locale": "zh",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 696,
+          "bytes": 71924,
+          "css_width": 348,
+          "css_height": 408.1,
+          "clip_target": "#dlg-health .imd-cols:has(.imd-chip.fresh)",
+          "verified_how": "data-theme/data-lang read back after load; element clip of #dlg-health .imd-cols:has(.imd-chip.fresh) at scale 2; getComputedStyle of the fresh/stale chips recorded",
+          "capture_command": "python3 mockups/evidence/freshness-chip-invariant/capture_freshness_chips.py",
+          "head_sha": "069ce08c7fb7ec8007fc623aa90fc95f5a311465",
+          "captured_at": "2026-09-08T08:44:24Z",
+          "state": "rest",
+          "computed": {
+            "up_token": "#e06464",
+            "ok_token": "#3da564",
+            "fresh_chip": {
+              "text": "fresh",
+              "color": "color(srgb 0.239216 0.647059 0.392157)",
+              "borderColor": "color(srgb 0.379342 0.712066 0.504113 / 0.42902)",
+              "backgroundColor": "color(srgb 0.239216 0.647059 0.392157 / 0.09)"
+            },
+            "stale_chip": {
+              "text": "stale",
+              "color": "color(srgb 0.878431 0.627451 0.188235)",
+              "borderColor": "color(srgb 0.898553 0.689115 0.322597 / 0.455373)",
+              "backgroundColor": "color(srgb 0.878431 0.627451 0.188235 / 0.09)"
+            }
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "health-chips-light-zh-390.png",
+          "force_state": null,
+          "height": 818,
+          "locale": "zh",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 696,
+          "bytes": 63657,
+          "css_width": 348,
+          "css_height": 408.1,
+          "clip_target": "#dlg-health .imd-cols:has(.imd-chip.fresh)",
+          "verified_how": "data-theme/data-lang read back after load; element clip of #dlg-health .imd-cols:has(.imd-chip.fresh) at scale 2; getComputedStyle of the fresh/stale chips recorded",
+          "capture_command": "python3 mockups/evidence/freshness-chip-invariant/capture_freshness_chips.py",
+          "head_sha": "069ce08c7fb7ec8007fc623aa90fc95f5a311465",
+          "captured_at": "2026-09-08T08:44:24Z",
+          "state": "rest",
+          "computed": {
+            "up_token": "#cf4040",
+            "ok_token": "#2f8a52",
+            "fresh_chip": {
+              "text": "fresh",
+              "color": "color(srgb 0.183137 0.445882 0.319216)",
+              "borderColor": "color(srgb 0.165746 0.476472 0.296812 / 0.408627)",
+              "backgroundColor": "color(srgb 0.184314 0.541176 0.321569 / 0.09)"
+            },
+            "stale_chip": {
+              "text": "stale",
+              "color": "color(srgb 0.518353 0.379137 0.182431)",
+              "borderColor": "color(srgb 0.639465 0.425209 0.107998 / 0.435922)",
+              "backgroundColor": "color(srgb 0.72549 0.47451 0.101961 / 0.09)"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "tool": {
+    "module_ref": "mockups/evidence/freshness-chip-invariant/capture_freshness_chips.py",
+    "version": "1.0.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 8,
+    "states_captured": 8
+  }
+}
