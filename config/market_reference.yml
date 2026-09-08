@@ -1734,8 +1734,8 @@ entries:
   - id: sue-earnings-surprise
     kind: indicator
     family: calendar-events
-    label_en: SUE Earnings Surprise
-    label_zh: SUE 盈余惊喜
+    label_en: Earnings Surprise (SUE)
+    label_zh: 盈余惊喜 (SUE)
     aliases_en: [standardized unexpected earnings]
     aliases_zh: [标准化未预期盈余]
     short_definition_en: >
@@ -1805,6 +1805,11 @@ entries:
     authority_ceiling: reference_only
     status: active
 
+# A-MO-W2-1 coverage ledger. No `not_covered` row in this wave: every
+# US-stocks / command-center face enumerated here is either not a measure
+# (`not_an_indicator`) or already explained under an existing library entry
+# (`covered_by`). A later wave that finds a face with no library home must
+# add a `not_covered` exception rather than omit it.
 coverage_exceptions:
   - element_en: Prophet Stock Signals Board
     element_zh: 个股信号看板

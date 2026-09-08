@@ -549,13 +549,22 @@ def validate_coverage_exceptions(raw: dict, entries: list[dict]) -> list[dict]:
         if not (c.get("element_zh") or "").strip():
             errors.append(f"{where}: element_zh must be non-empty")
         see_ids = c.get("see_ids") or []
+        if see_ids and not isinstance(see_ids, list):
+            errors.append(f"{where}: see_ids must be a list")
+            see_ids = []
+        reason_en = (c.get("reason_en") or "").strip()
+        reason_zh = (c.get("reason_zh") or "").strip()
+        # Both-or-neither for every state: a lone reason_en would print the
+        # string "None" into the ZH span (Jinja {{ None }} → "None").
+        if bool(reason_en) != bool(reason_zh):
+            errors.append(f"{where}: reason_en and reason_zh must both be present or both empty")
         if state == "covered_by":
             if not see_ids:
                 errors.append(f"{where}: state:covered_by requires non-empty see_ids")
         elif state in ("not_an_indicator", "not_covered"):
-            if not (c.get("reason_en") or "").strip():
+            if not reason_en:
                 errors.append(f"{where}: state:{state} requires non-empty reason_en")
-            if not (c.get("reason_zh") or "").strip():
+            if not reason_zh:
                 errors.append(f"{where}: state:{state} requires non-empty reason_zh")
         for sid in see_ids:
             if sid not in seen_ids:

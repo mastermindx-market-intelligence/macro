@@ -35,12 +35,15 @@ REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 
 from scripts.build_market_reference import (  # noqa: E402
+    KNOWN_OWNER_PAGES,
     RegistryError,
+    build_coverage_view_model,
     build_view_model,
     check_anchor_liveness,
     initial_of,
     search_key,
     validate,
+    validate_coverage_exceptions,
 )
 
 REGISTRY_PATH = REPO / "config" / "market_reference.yml"
@@ -425,9 +428,20 @@ def test_present_interpretation_with_zh_sibling_is_accepted():
 # ---------------------------------------------------------------------------
 
 @pytest.fixture(scope="module")
-def real_entries():
-    raw = yaml.safe_load(REGISTRY_PATH.read_text(encoding="utf-8"))
-    return validate(raw)
+def real_raw():
+    return yaml.safe_load(REGISTRY_PATH.read_text(encoding="utf-8"))
+
+
+@pytest.fixture(scope="module")
+def real_entries(real_raw):
+    return validate(real_raw)
+
+
+@pytest.fixture(scope="module")
+def real_coverage(real_raw, real_entries):
+    return build_coverage_view_model(
+        validate_coverage_exceptions(real_raw, real_entries), real_entries
+    )
 
 
 def test_real_registry_validates_clean(real_entries):
@@ -482,13 +496,19 @@ def test_initial_of_handles_ascii_and_none():
 # 3 & 4 · rendered page: anchor stability + EN/ZH parity
 # ---------------------------------------------------------------------------
 
-@pytest.fixture(scope="module")
-def rendered_html(real_entries):
-    entries_vm, families_vm, letters = build_view_model(real_entries)
+def _render_page(entries_vm, families_vm, letters, coverage=None,
+                 generated_at="2026-09-02 00:00 UTC"):
     env = Environment(loader=FileSystemLoader(str(TEMPLATE_DIR)), autoescape=True)
     return env.get_template("reference.html.j2").render(
-        entries=entries_vm, families=families_vm, letters=letters, generated_at="2026-09-02 00:00 UTC",
+        entries=entries_vm, families=families_vm, letters=letters,
+        generated_at=generated_at, coverage=coverage or [],
     )
+
+
+@pytest.fixture(scope="module")
+def rendered_html(real_entries, real_coverage):
+    entries_vm, families_vm, letters = build_view_model(real_entries)
+    return _render_page(entries_vm, families_vm, letters, coverage=real_coverage)
 
 
 def test_every_entry_id_is_a_real_anchor(real_entries, rendered_html):
@@ -559,3 +579,290 @@ def test_unknown_anchor_state_and_search_input_are_server_rendered(rendered_html
     # them, so a JS-disabled reader never sees a blank page or a broken filter.
     assert 'class="rf-miss mx-empty"' in rendered_html
     assert 'id="rf-q"' in rendered_html
+
+
+# ---------------------------------------------------------------------------
+# 5 · A-MO-W2-1 coverage ledger + owner block + dashboard chips
+# ---------------------------------------------------------------------------
+
+# Frozen census of faces this wave accounted for. A silent drop (or an
+# undeclared extra) fails the floor-pin rather than vanishing from the page.
+DOCUMENTED_COVERAGE_ELEMENTS = (
+    "Prophet Stock Signals Board",
+    "Sector Act-Now Board",
+    "Regime Badge",
+    "Posture Chip",
+)
+
+DASHBOARD_LOOKUP_IDS = (
+    "market-state-score",
+    "regime-quadrant",
+    "transition-state",
+    "risk-radar",
+    "evidence-matrix",
+    "sector-heat",
+)
+
+US_STOCKS_OWNER_ANCHORS = (
+    "action-board",
+    "equity-scoreboard",
+    "advanced-breadth",
+    "dash-mtf-section",
+)
+
+
+def _coverage_exc(**overrides) -> dict:
+    row = {
+        "element_en": "Sample Face",
+        "element_zh": "示例面板",
+        "surface": "us_stocks.html",
+        "state": "not_an_indicator",
+        "reason_en": "A board, not a measure.",
+        "reason_zh": "这是看板，不是指标。",
+        "see_ids": [],
+    }
+    row.update(overrides)
+    return row
+
+
+def test_coverage_floor_pins_documented_elements(real_coverage):
+    """Lead-line census: the committed ledger lists exactly the documented
+    faces, so an undocumented drop cannot hide behind a shrinking count."""
+    names = tuple(c["element_en"] for c in real_coverage)
+    assert names == DOCUMENTED_COVERAGE_ELEMENTS
+    assert len(real_coverage) == 4
+
+
+def test_every_documented_element_is_accounted_for(real_raw, real_entries, real_coverage):
+    """Every coverage_exceptions row is either not_an_indicator or covered_by
+    a real registry id; no documented face is silently absent."""
+    raw_list = real_raw["coverage_exceptions"]
+    assert len(raw_list) == len(real_coverage) == 4
+    known = {e["id"] for e in real_entries}
+    for row in raw_list:
+        assert row["element_en"] in DOCUMENTED_COVERAGE_ELEMENTS
+        assert (row.get("element_zh") or "").strip()
+        assert row["state"] in ("not_an_indicator", "covered_by")
+        for sid in row.get("see_ids") or []:
+            assert sid in known, f"{row['element_en']}: see_ids {sid!r} is not a registry id"
+
+
+def test_wave_has_no_not_covered_exceptions_yet(real_coverage):
+    """Documented reason the not_covered CSS is unused against committed data:
+    this wave only enumerated faces that are not-a-measure or already covered.
+    A future face with no library home must add a not_covered row, not omit it."""
+    states = {c["state"] for c in real_coverage}
+    assert "not_covered" not in states
+    assert states == {"not_an_indicator", "covered_by"}
+
+
+def test_coverage_exceptions_unknown_state_fails_closed():
+    raw = _registry(_base_entry())
+    raw["coverage_exceptions"] = [_coverage_exc(state="invented")]
+    with pytest.raises(RegistryError) as exc:
+        validate_coverage_exceptions(raw, raw["entries"])
+    assert "state must be one of" in _errors(exc.value)
+
+
+def test_coverage_exceptions_covered_by_requires_see_ids():
+    raw = _registry(_base_entry())
+    raw["coverage_exceptions"] = [_coverage_exc(state="covered_by", see_ids=[])]
+    with pytest.raises(RegistryError) as exc:
+        validate_coverage_exceptions(raw, raw["entries"])
+    assert "state:covered_by requires non-empty see_ids" in _errors(exc.value)
+
+
+def test_coverage_exceptions_not_covered_requires_both_reasons():
+    raw = _registry(_base_entry())
+    raw["coverage_exceptions"] = [_coverage_exc(
+        state="not_covered", reason_en="", reason_zh="",
+    )]
+    with pytest.raises(RegistryError) as exc:
+        validate_coverage_exceptions(raw, raw["entries"])
+    assert "state:not_covered requires non-empty reason_en" in _errors(exc.value)
+    assert "state:not_covered requires non-empty reason_zh" in _errors(exc.value)
+
+
+def test_coverage_exceptions_reason_both_or_neither_for_every_state():
+    """MAJOR 1: a covered_by row with only reason_en used to pass validation
+    and print the literal string 'None' into the ZH page."""
+    raw = _registry(_base_entry())
+    raw["coverage_exceptions"] = [_coverage_exc(
+        state="covered_by",
+        see_ids=["sample-term"],
+        reason_en="Explained under Sample Term.",
+        reason_zh="",
+    )]
+    with pytest.raises(RegistryError) as exc:
+        validate_coverage_exceptions(raw, raw["entries"])
+    assert "reason_en and reason_zh must both be present or both empty" in _errors(exc.value)
+
+
+def test_coverage_exceptions_see_ids_scalar_is_a_type_error():
+    """MINOR 2: a string see_ids used to iterate per character and emit one
+    'unknown id' error per letter. Fail-closed with a type error instead."""
+    raw = _registry(_base_entry())
+    raw["coverage_exceptions"] = [_coverage_exc(
+        state="covered_by", see_ids="sample-term",
+    )]
+    with pytest.raises(RegistryError) as exc:
+        validate_coverage_exceptions(raw, raw["entries"])
+    msg = _errors(exc.value)
+    assert "see_ids must be a list" in msg
+    assert "unknown id 's'" not in msg
+
+
+def test_coverage_exceptions_unknown_see_id_fails_closed():
+    raw = _registry(_base_entry())
+    raw["coverage_exceptions"] = [_coverage_exc(
+        state="covered_by", see_ids=["ghost-entry"],
+    )]
+    with pytest.raises(RegistryError) as exc:
+        validate_coverage_exceptions(raw, raw["entries"])
+    assert "see_ids references unknown id 'ghost-entry'" in _errors(exc.value)
+
+
+def test_coverage_ledger_renders_every_exception(real_coverage, rendered_html):
+    from markupsafe import escape
+
+    assert 'id="coverage"' in rendered_html
+    assert f'<span class="tnum">{len(real_coverage)}</span>' in rendered_html
+    assert "dashboard elements are listed here instead of above" in rendered_html
+    assert "项看板元素列在此处而非上方" in rendered_html
+    for c in real_coverage:
+        assert str(escape(c["element_en"])) in rendered_html
+        assert str(escape(c["element_zh"])) in rendered_html
+        assert f'rf-cov-row--{c["state"]}' in rendered_html
+        if c["state"] == "covered_by":
+            assert "Explained under another name" in rendered_html
+            assert "已在其他条目中说明" in rendered_html
+        if c["state"] == "not_an_indicator":
+            assert "Not a measure" in rendered_html
+            assert "不是一项指标" in rendered_html
+        for ref in c["see"]:
+            assert f'href="#{ref["id"]}"' in rendered_html
+
+
+def test_not_covered_ledger_row_renders_still_missing_state():
+    """The not_covered branch (and its only theme-divergent CSS class) is
+    dead against committed data; this fixture is the live proof it executes."""
+    entries = [_base_entry()]
+    raw = _registry(*entries)
+    raw["coverage_exceptions"] = [_coverage_exc(
+        state="not_covered",
+        element_en="Future Face",
+        element_zh="未来面板",
+        reason_en="This face is not in the library yet.",
+        reason_zh="该面板尚未收入词库。",
+    )]
+    coverage = build_coverage_view_model(
+        validate_coverage_exceptions(raw, entries), entries,
+    )
+    vm, families, letters = build_view_model(entries)
+    html = _render_page(vm, families, letters, coverage=coverage)
+    assert "rf-cov-row--not_covered" in html
+    assert "Not in the library yet" in html
+    assert "尚未收录" in html
+    assert "This face is not in the library yet." in html
+    assert "该面板尚未收入词库。" in html
+    assert ">None<" not in html
+
+
+def test_coverage_reason_zh_none_does_not_print_literal_none():
+    """Template guard: a malformed VM with reason_en and reason_zh=None
+    must not print the machine string 'None' into the ZH span."""
+    entries = [_base_entry()]
+    vm, families, letters = build_view_model(entries)
+    coverage = [{
+        "state": "covered_by",
+        "element_en": "Regime Badge",
+        "element_zh": "市场状态徽标",
+        "reason_en": "Explained under Market Regime.",
+        "reason_zh": None,
+        "surface_label_en": "US Stocks",
+        "surface_label_zh": "美股",
+        "see": [{"id": "sample-term", "label_en": "Sample Term", "label_zh": "示例术语"}],
+    }]
+    html = _render_page(vm, families, letters, coverage=coverage)
+    assert "Explained under Market Regime." in html
+    assert ">None<" not in html
+    assert "None</span>" not in html
+
+
+def test_owner_block_always_renders_and_unlinked_note_matches_page_level_refs(
+        real_entries, rendered_html):
+    unlinked = 0
+    linked = 0
+    for e in real_entries:
+        m = re.search(
+            r'<article class="rf-e" id="%s".*?</article>' % re.escape(e["id"]),
+            rendered_html, re.DOTALL,
+        )
+        assert m, f"no <article> block found for entry {e['id']!r}"
+        block = m.group(0)
+        assert "Where you’ll see this" in block or "Where you'll see this" in block
+        assert "在哪里出现" in block
+        if "#" in e["owner_ref"]:
+            assert f'href="{e["owner_ref"]}"' in block
+            assert "We can’t link straight to it on that page yet" not in block
+            linked += 1
+        else:
+            assert f'href="{e["owner_ref"]}"' in block
+            assert "We can’t link straight to it on that page yet" in block
+            assert "暂时无法直接跳转到该页面上的位置" in block
+            unlinked += 1
+    assert unlinked == 4  # the four page-level aibrief.html owner_refs
+    assert linked == 42
+    assert "Not on a page we can link to yet." not in rendered_html
+
+
+def test_no_owner_branch_renders_printed_null():
+    """The empty-owner_refs branch never fires against committed data
+    (owner_ref is required). Fixture proves the printed-null copy exists."""
+    entries = [_base_entry()]
+    vm, families, letters = build_view_model(entries)
+    vm[0]["owner_refs"] = []
+    html = _render_page(vm, families, letters, coverage=[])
+    assert "Not on a page we can link to yet." in html
+    assert "暂时还没有可跳转的页面。" in html
+    assert "Where you’ll see this" in html or "Where you'll see this" in html
+
+
+def test_owner_unlinked_flag_is_true_iff_owner_ref_has_no_fragment(real_entries):
+    vm, _, _ = build_view_model(real_entries)
+    by_id = {row["id"]: row for row in vm}
+    for e in real_entries:
+        row = by_id[e["id"]]
+        assert row["owner_unlinked"] == ("#" not in e["owner_ref"])
+        assert row["owner_refs"], f"{e['id']}: owner_refs must be non-empty"
+
+
+def test_dashboard_lookup_chip_ids_resolve(real_entries):
+    text = (REPO / "templates" / "dashboard.html.j2").read_text(encoding="utf-8")
+    ids = re.findall(r'class="mx5-deep-chip mx5-ref-chip" href="reference\.html#([a-z0-9-]+)"', text)
+    known = {e["id"] for e in real_entries}
+    assert tuple(ids) == DASHBOARD_LOOKUP_IDS
+    missing = [i for i in ids if i not in known]
+    assert missing == [], f"Look-up chips point at unknown registry ids: {missing}"
+
+
+def test_us_stocks_owner_anchors_are_allowlisted_and_live():
+    assert set(US_STOCKS_OWNER_ANCHORS) == KNOWN_OWNER_PAGES["us_stocks.html"]
+    site_page = REPO / "site" / "us_stocks.html"
+    if not site_page.exists():
+        pytest.skip("site/us_stocks.html not materialized in this checkout")
+    html = site_page.read_text(encoding="utf-8", errors="replace")
+    for frag in US_STOCKS_OWNER_ANCHORS:
+        assert f'id="{frag}"' in html, f"us_stocks.html missing id={frag!r}"
+        is_live, note = check_anchor_liveness(REPO, "us_stocks.html", frag)
+        assert is_live, f"us_stocks.html#{frag} is not live: {note}"
+
+
+def test_sue_label_leads_with_plain_words(real_entries, rendered_html):
+    """MINOR 3: the quant acronym no longer leads the customer-facing label."""
+    sue = next(e for e in real_entries if e["id"] == "sue-earnings-surprise")
+    assert sue["label_en"] == "Earnings Surprise (SUE)"
+    assert sue["label_zh"] == "盈余惊喜 (SUE)"
+    assert "SUE Earnings Surprise" not in rendered_html
+    assert "Earnings Surprise (SUE)" in rendered_html
+    assert "盈余惊喜 (SUE)" in rendered_html

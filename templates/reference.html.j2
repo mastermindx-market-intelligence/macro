@@ -556,12 +556,12 @@ html[data-theme="light"] .rf-cov-row--not_covered .rf-cov-state { background:var
                  state, never a dropped block — the reader must never wonder whether we looked. #}
             <div class="rf-blk">
               <h3 class="eyebrow rf-eb">{{ t('Where you’ll see this', '在哪里出现') }}</h3>
-              {% if e.owner_refs and not e.owner_unlinked %}
+              {% if e.owner_refs %}
               <p class="rf-links">{% for o in e.owner_refs %}<a class="rf-owner" href="{{ o.href }}">{{ t(o.label_en, o.label_zh) }}</a>{% endfor %}</p>
-              {% elif e.owner_refs %}
-              <p class="rf-links">{% for o in e.owner_refs %}<a class="rf-owner" href="{{ o.href }}">{{ t(o.label_en, o.label_zh) }}</a>{% endfor %}</p>
+              {% if e.owner_unlinked %}
               <p class="rf-unlinked">{{ t('We can’t link straight to it on that page yet — open the page and look for this name.',
                                           '暂时无法直接跳转到该页面上的位置——打开页面后按名称查找。') }}</p>
+              {% endif %}
               {% else %}
               <p class="rf-unlinked">{{ t('Not on a page we can link to yet.', '暂时还没有可跳转的页面。') }}</p>
               {% endif %}
@@ -610,7 +610,8 @@ html[data-theme="light"] .rf-cov-row--not_covered .rf-cov-state { background:var
             {% else %}{{ t('Not in the library yet', '尚未收录') }}{% endif %}
           </span>
           <span class="rf-cov-why">
-            {% if c.reason_en %}<span class="l-en">{{ c.reason_en }}</span><span class="l-zh">{{ c.reason_zh }}</span>{% endif %}
+            {% if c.reason_en %}<span class="l-en">{{ c.reason_en }}</span>{% endif %}
+            {% if c.reason_zh %}<span class="l-zh">{{ c.reason_zh }}</span>{% endif %}
             {% if c.see %}<span class="rf-cov-see">{{ eyebrow('See', '见') }}{% for r in c.see %}<a href="#{{ r.id }}">{{ t(r.label_en, r.label_zh) }}</a>{% endfor %}</span>{% endif %}
           </span>
         </li>
