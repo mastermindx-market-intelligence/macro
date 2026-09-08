@@ -1132,6 +1132,10 @@ pages:
   macro:support:
     archetype: "utility"
 
+  macro:help:
+    archetype: "utility"
+    why: "public help directory over existing product owners — a utility surface, not a product board"
+
   macro:terms:
     archetype: "utility"
 
@@ -1168,6 +1172,10 @@ pages:
     access_shell: "anonymous"
     payload_tier: "public"
     evidence: [terminal/app/login/page.tsx]
+
+  macro:macro_monetary:
+    archetype: "command_center"
+    why: "Macro & Monetary suite hub — the single entry point to the fourteen workspaces"
 
   macro:macro_liquidity_regime:
     archetype: "regime_dashboard"

@@ -2483,6 +2483,7 @@ lanes:
           cl_markets:
             - scripts.build_commodities
             - scripts.build_spr
+            - scripts.build_sanctions_map
             - scripts.build_forex
             - scripts.build_bonds
             - scripts.build_crossasset
@@ -2722,6 +2723,7 @@ lanes:
           cl_markets:
             - scripts.build_commodities
             - scripts.build_spr
+            - scripts.build_sanctions_map
             - scripts.build_forex
             - scripts.build_bonds
             - scripts.build_crossasset

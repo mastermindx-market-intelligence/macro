@@ -389,7 +389,7 @@ jobs:
           wait
 
           # Replay each builder's output GROUPED in a stable order (post-barrier)
-          ORDER="commodities spr forex bonds crossasset transmission discovery gex_board vol_regime darkpool options_flow flow_desk options_skew options_ivspread options_dislocation options_screener options_entry intraday_flow"
+          ORDER="commodities spr sanctions_map forex bonds crossasset transmission discovery gex_board vol_regime darkpool options_flow flow_desk options_skew options_ivspread options_dislocation options_screener options_entry intraday_flow"
           echo "### ⏱ closing-bell parallel band — per-builder wall-time" >> "$GITHUB_STEP_SUMMARY"
           for slug in $ORDER; do
             [ -f "$ART/$slug.log" ] || continue
