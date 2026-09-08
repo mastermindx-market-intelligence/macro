@@ -510,16 +510,16 @@
     "fab-light-zh-1440"
   ],
   "excluded": [],
-  "generated_at": "2026-09-08T16:08:19Z",
-  "generated_at_start": "2026-09-08T15:57:42Z",
-  "generated_at_end": "2026-09-08T16:08:19Z",
-  "head_sha": "a7a4ca7af0edea438f1c5f13bc88795721bd8887",
-  "capture_sha": "a7a4ca7af0edea438f1c5f13bc88795721bd8887",
-  "head_start": "a7a4ca7af0edea438f1c5f13bc88795721bd8887",
-  "head_end": "a7a4ca7af0edea438f1c5f13bc88795721bd8887",
+  "generated_at": "2026-09-08T17:09:31Z",
+  "generated_at_start": "2026-09-08T16:58:57Z",
+  "generated_at_end": "2026-09-08T17:09:31Z",
+  "head_sha": "ea02819b157472d4eb92cc3d5b3e11b2137d3966",
+  "capture_sha": "ea02819b157472d4eb92cc3d5b3e11b2137d3966",
+  "head_start": "ea02819b157472d4eb92cc3d5b3e11b2137d3966",
+  "head_end": "ea02819b157472d4eb92cc3d5b3e11b2137d3966",
   "tree_clean_start": true,
   "tree_clean_end": true,
-  "commit_time_of_capture_sha": "2026-09-08T08:57:31-07:00",
+  "commit_time_of_capture_sha": "2026-09-08T09:58:36-07:00",
   "pre_commit": false,
   "honesty": {
     "access": "anonymous only; no credential is entered, stored, or synthesized",
@@ -529,7 +529,7 @@
   },
   "outcome": "captured",
   "target": {
-    "resolved_sha_source": "committed HEAD of this worktree (a7a4ca7af0edea438f1c5f13bc88795721bd8887); tree_clean_start=True from `git status --short` at start (empty=True); tree_clean_end=True from `git status --short -- templates scripts lib site` at end (empty=True); head_start=a7a4ca7af0edea438f1c5f13bc88795721bd8887; head_end=a7a4ca7af0edea438f1c5f13bc88795721bd8887; generated_at_start=2026-09-08T15:57:42Z; generated_at_end=2026-09-08T16:08:19Z; commit_time_of_capture_sha=2026-09-08T08:57:31-07:00 (git show -s --format=%cI). gaps generated as declared \u2212 captured."
+    "resolved_sha_source": "committed HEAD of this worktree (ea02819b157472d4eb92cc3d5b3e11b2137d3966); tree_clean_start=True from `git status --short` at start (empty=True); tree_clean_end=True from `git status --short -- templates scripts lib site` at end (empty=True); head_start=ea02819b157472d4eb92cc3d5b3e11b2137d3966; head_end=ea02819b157472d4eb92cc3d5b3e11b2137d3966; generated_at_start=2026-09-08T16:58:57Z; generated_at_end=2026-09-08T17:09:31Z; commit_time_of_capture_sha=2026-09-08T09:58:36-07:00 (git show -s --format=%cI). gaps generated as declared \u2212 captured."
   },
   "pages": [
     {
@@ -545,14 +545,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 831625,
+          "bytes": 831394,
           "captured": true,
           "file": "comp-growth-dark-en-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "en",
-          "sha256": "97c03e4e2b115b2818fe59459f86c96dd55ad14658efa0a0c12d648c1af4b474",
+          "sha256": "e515c24c95b5440049050e6754162cb93941ff975fe2b31cf185834354a8dd12",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -581,14 +581,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 858237,
+          "bytes": 858059,
           "captured": true,
           "file": "comp-growth-dark-zh-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "zh",
-          "sha256": "a9e79930f9be126b2052ce332fc0160005d1e92e3e6b71e27eff631dffab5ffc",
+          "sha256": "acacbe02c7458e37ee52c358767849ce15f55b3de3632f248fc4866fcaba5f01",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -617,14 +617,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 666599,
+          "bytes": 666339,
           "captured": true,
           "file": "comp-growth-light-en-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "en",
-          "sha256": "96513219d2527520b95c99f0ae98dc00aee5ff6c261cfbd7eb1cc18e988d7c78",
+          "sha256": "f068eb80af5913676f94592eea39eb2491b0b9ef77eb3b720b640d1b8e94c9c7",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -653,14 +653,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 675476,
+          "bytes": 675253,
           "captured": true,
           "file": "comp-growth-light-zh-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "zh",
-          "sha256": "8bedd58feb63a4ab5548f99f89d3fae35b44f14935a4f3c59ecbf74fa13b9c11",
+          "sha256": "b5b367d855cc09c885398819e2c40cc541aa9a05cf0ee6defd54c2ba7b9a5365",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -689,14 +689,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 481137,
+          "bytes": 481643,
           "captured": true,
           "file": "tab-growth-dark-en-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "en",
-          "sha256": "23d9eab013508ef2ff597bb0986d4dd5e2f8ca04eab17e64bea5e969fcb33896",
+          "sha256": "b7a3722dd729295b1b4ed345a3c6e22f13528bb69bfe7979d08ef47fb76715f8",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -725,14 +725,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 513648,
+          "bytes": 514641,
           "captured": true,
           "file": "tab-growth-dark-zh-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "zh",
-          "sha256": "09456d0b4320d07d3aa6c963245551ee65c700b1b0adbf4d18f7907a2ef669b4",
+          "sha256": "38a2fd6cbd2f33e7b5d91030a68b2c6d544df158d70da0e2edf41756f225b851",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -761,14 +761,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 441872,
+          "bytes": 442405,
           "captured": true,
           "file": "tab-growth-light-en-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "en",
-          "sha256": "b179a1a683144728f99e9f271e33971d3379e86d6099ee71e18d376359e6b435",
+          "sha256": "bbca381d80de642543807b3315a990b2aca5e4a3e57bc1ac1fc6ce06d3b165ee",
           "theme": "light",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -797,14 +797,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 483763,
+          "bytes": 484403,
           "captured": true,
           "file": "tab-growth-light-zh-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "zh",
-          "sha256": "3da0772f3e5971f098dc9c24daf63c7858b914ffd1dafe9015f3edb98637bf64",
+          "sha256": "575c25206f19402cd303535999117067da4b191de92c04fa47b8e6fce60c7c20",
           "theme": "light",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -977,14 +977,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 1507813,
+          "bytes": 1507619,
           "captured": true,
           "file": "comp-growth-dark-en-1440-full.png",
           "force_state": null,
           "height": 2898,
           "width": 2880,
           "locale": "en",
-          "sha256": "59866e6722466337b2e425c83528245a007e9f78ab76a4a3f8200de9d47d64d9",
+          "sha256": "84719cc265edda390b9e09a0d495deedddf3f90f87a5b3c4dccae1f4d1589b82",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -1013,14 +1013,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 1443610,
+          "bytes": 1443406,
           "captured": true,
           "file": "comp-growth-dark-zh-1440-full.png",
           "force_state": null,
           "height": 2702,
           "width": 2880,
           "locale": "zh",
-          "sha256": "e8ea1e12b2c9c513612422993ef1ff61280ed4ba272a58de25e81e643a6cbe04",
+          "sha256": "312db520b6c74f826da1192919ddaf03692b17a22578a58390b021fbf7d62566",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -1049,14 +1049,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 1217205,
+          "bytes": 1216986,
           "captured": true,
           "file": "comp-growth-light-en-1440-full.png",
           "force_state": null,
           "height": 2910,
           "width": 2880,
           "locale": "en",
-          "sha256": "b2cbe49f87b0b1b6c05f7512956f5952f1a2c24c7b3aca496e2c1799e7946d5c",
+          "sha256": "272a6fa686cab09e95ea0ff7e8f80c66be290fcfaca2c05c106e1d371da14f5f",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -1085,14 +1085,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 1205345,
+          "bytes": 1153898,
           "captured": true,
           "file": "comp-growth-light-zh-1440-full.png",
           "force_state": null,
           "height": 2714,
           "width": 2880,
           "locale": "zh",
-          "sha256": "e06f3c03ef33cd10bfeb272208bb8b32f383c6e56fb7aecdb2088ec6d3d016de",
+          "sha256": "91d878fa928dccd91880a55594bdb20efe4bc5e2c1772f97167c15aaf43f59f4",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -1121,14 +1121,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 933086,
+          "bytes": 933154,
           "captured": true,
           "file": "comp-jobs-dark-en-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "en",
-          "sha256": "7f297d200266aff48d87a72d8d542ced6e374fba7bc46407bd4c9cf6cd9643dd",
+          "sha256": "4909398830d2fa1454d1e044b22442e37ffae654e1f5165d125a1d3999231d98",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -1157,14 +1157,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 952797,
+          "bytes": 952592,
           "captured": true,
           "file": "comp-jobs-dark-zh-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "zh",
-          "sha256": "cae1c40286794f87e27117fbbb19f92f984a990d36488be731f0ee3b32d331b7",
+          "sha256": "db5758ccc1ca57d1091f14aa5e59479413df56338d31b4b37d1ff68c7a8639a5",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -1193,14 +1193,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 649968,
+          "bytes": 649817,
           "captured": true,
           "file": "comp-jobs-light-en-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "en",
-          "sha256": "698fcfac41eeaf632a79a8e53b5767c403f8aadfb84fbefcbf703f5e0298312d",
+          "sha256": "e512e16ec57f03dc779132d416389b72340bd734c72e938a6321eb15c7079f09",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -1229,14 +1229,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 674119,
+          "bytes": 673916,
           "captured": true,
           "file": "comp-jobs-light-zh-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "zh",
-          "sha256": "3d7496b56733df98f5334b6e151dfc71aee43249c2851215c39e55c7e9a73db4",
+          "sha256": "98326f02eadd95f85edd072ea2649df7ecd2cc3c7154599352eee7899d33e514",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -1265,14 +1265,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 500438,
+          "bytes": 500996,
           "captured": true,
           "file": "tab-jobs-dark-en-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "en",
-          "sha256": "d8f4bb80f9ed143d50cddb7bc9ab46341662062548a1fe25997c85c89e007863",
+          "sha256": "7c05d4ec841c045d87e615c8609b4f6cc40d3b70b5ca29b845eb3a04e44bb792",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -1301,14 +1301,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 601151,
+          "bytes": 601238,
           "captured": true,
           "file": "tab-jobs-dark-zh-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "zh",
-          "sha256": "2a9c2aa46de336de0236f45d4b6535d0471264c97348734cbb874d9b57c7f92e",
+          "sha256": "a092cf6b3078a0a59edb19b8826ad41a6bab0cb54a02cd8c668c4ac58ecbed31",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -1337,14 +1337,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 463469,
+          "bytes": 464038,
           "captured": true,
           "file": "tab-jobs-light-en-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "en",
-          "sha256": "b2f9ac23fd723b5bc6601f829ad44e0817d80b5e8d77d5171ebc8902adbe9bc7",
+          "sha256": "f8ace78d734eaf171e795eda529d9751d147f5f64e8f797e44370edfbcd1d7a0",
           "theme": "light",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -1373,14 +1373,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 547489,
+          "bytes": 547575,
           "captured": true,
           "file": "tab-jobs-light-zh-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "zh",
-          "sha256": "14664aff986e39eec0cfad4bb9edff34d8aedd71f4efb5265f0c7c651ba3cc19",
+          "sha256": "dfa185fe96d8e915d1e72091338c449d5071d737c95d99e226cfffeed352aae0",
           "theme": "light",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -1553,14 +1553,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 1496971,
+          "bytes": 1496872,
           "captured": true,
           "file": "comp-jobs-dark-en-1440-full.png",
           "force_state": null,
           "height": 2696,
           "width": 2880,
           "locale": "en",
-          "sha256": "d4755fe1f910eaf5d34eefcac096677539f9ff3b94c84fdb86ba11cd53135863",
+          "sha256": "ba12babcc797cc16118653aac70ad5a1e9f4097c21b21f035a50062e97fac247",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -1589,14 +1589,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 1427965,
+          "bytes": 1427771,
           "captured": true,
           "file": "comp-jobs-dark-zh-1440-full.png",
           "force_state": null,
           "height": 2540,
           "width": 2880,
           "locale": "zh",
-          "sha256": "d5c79706e96bcc0feba8c3c576dbe76883f0563f0f15f2e11c957652c5385a05",
+          "sha256": "a28b4efba8916f5a28b3a50dc0e53aa149fca64532b7a8a6990795d58aef4cb4",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -1625,14 +1625,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 1167537,
+          "bytes": 1167401,
           "captured": true,
           "file": "comp-jobs-light-en-1440-full.png",
           "force_state": null,
           "height": 2708,
           "width": 2880,
           "locale": "en",
-          "sha256": "47df25aca4cd3daee3d46f4d96cef635f58d2502ff373d35996a24d9054bb2b4",
+          "sha256": "81d0fc1667a44aeb51d4e04d910567001591c486deefe03b84e14f5f58538a30",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -1661,14 +1661,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 1135065,
+          "bytes": 1134936,
           "captured": true,
           "file": "comp-jobs-light-zh-1440-full.png",
           "force_state": null,
           "height": 2552,
           "width": 2880,
           "locale": "zh",
-          "sha256": "ad5022ece14b5e3b537d50f0453d460c4e872d964f69470dc7d1bd1454fb9357",
+          "sha256": "4455c126e6c1f9c8b650fe3dc585e6af9be6d0965de172eab3cd73ff2d0f71fe",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -1697,14 +1697,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 795090,
+          "bytes": 795030,
           "captured": true,
           "file": "comp-housing-dark-en-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "en",
-          "sha256": "edc54dbc2f6ef91f7d6e118b3d59dc97400317f758efd1f954c48c2facfa6bee",
+          "sha256": "b7d0d451e7cf13a005b01408790dfa4e87e0c36954558a2b56c5b9ba80c1f6b0",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -1733,14 +1733,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 821953,
+          "bytes": 821796,
           "captured": true,
           "file": "comp-housing-dark-zh-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "zh",
-          "sha256": "cc4c3439dc4c16c1a371a71f5f34a3da27a65e67186e722f875e9bfbc6ac4722",
+          "sha256": "10e01d2ff95780a72f62985b814ac53a29b0db56970214b44e3a796557879dd4",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -1769,14 +1769,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 648288,
+          "bytes": 648155,
           "captured": true,
           "file": "comp-housing-light-en-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "en",
-          "sha256": "575aabaf783fdc07232de82d9fc24d7a968a0787e1acb4ff0f43200f31c86be8",
+          "sha256": "856d3e4d65ff4074d5082b7447a1a080f4c7c81351ff5827a67da74baea3275c",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -1805,14 +1805,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 649560,
+          "bytes": 649419,
           "captured": true,
           "file": "comp-housing-light-zh-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "zh",
-          "sha256": "5bf3df826fad46213a9acacba6fe43dd53c1d0d350cbb02c4e7fd16ccbba3316",
+          "sha256": "8870f834fd6b6187d13641d2ce62a7d490a9cce5c054a20397ae68616331d0ec",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -1841,14 +1841,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 467722,
+          "bytes": 468237,
           "captured": true,
           "file": "tab-housing-dark-en-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "en",
-          "sha256": "5f9d8fba34a161bd66649938efba93542228ec0a08b91faa1dd2a25a2920786d",
+          "sha256": "50458a5d1994cf6d43b5e9a7c2a5a8b56db36854f32d880f29c1c37621c90d88",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -1877,14 +1877,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 476527,
+          "bytes": 476617,
           "captured": true,
           "file": "tab-housing-dark-zh-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "zh",
-          "sha256": "1bbc32970a20bfa96cc850f7dc720a98dbbddb52042681ab81d4212ebdc4cf28",
+          "sha256": "2996f50f2c6bf130ce53cedea4907bf05af11b7a811125559442c6e6d4aba1e9",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -1913,14 +1913,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 431328,
+          "bytes": 431796,
           "captured": true,
           "file": "tab-housing-light-en-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "en",
-          "sha256": "cdb7f86d135efa4df1c84fd1e21630b1240756bc25a055f7a3239b19f8787c90",
+          "sha256": "71e23c25842e7a4f536a5adeafd50d4a0ff775c4c0f428f620ad1a9be5fb0047",
           "theme": "light",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -1949,14 +1949,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 431189,
+          "bytes": 431266,
           "captured": true,
           "file": "tab-housing-light-zh-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "zh",
-          "sha256": "32fc9b206bd9a1df667d51a2f3e59ce219dba5d00b124b94fe06c9b55adc9a74",
+          "sha256": "f98cda46ec8e6f2c0c2b2719ff8308e484b7ad3bce347ff28cc41da330ed2875",
           "theme": "light",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -2129,14 +2129,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 1487940,
+          "bytes": 1487844,
           "captured": true,
           "file": "comp-housing-dark-en-1440-full.png",
           "force_state": null,
           "height": 2930,
           "width": 2880,
           "locale": "en",
-          "sha256": "df79848057cf82c2558622ec691308a1c72c77eec848a08d323c160f00bbea8f",
+          "sha256": "dca97ceed6181bdba3adf82731ca3c97a4e4d71947eabe4132dae7e321011bb2",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -2165,14 +2165,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 1417565,
+          "bytes": 1433754,
           "captured": true,
           "file": "comp-housing-dark-zh-1440-full.png",
           "force_state": null,
           "height": 2730,
           "width": 2880,
           "locale": "zh",
-          "sha256": "086afbc24aebfb8e196f1579d6813f7b5755714765efc320a167080aa38511e1",
+          "sha256": "3ebd69d19e49f2c9f616ba5a39c392f70760865f50b412bb14268c9d2bd6980e",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -2201,14 +2201,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 1210312,
+          "bytes": 1210202,
           "captured": true,
           "file": "comp-housing-light-en-1440-full.png",
           "force_state": null,
           "height": 2942,
           "width": 2880,
           "locale": "en",
-          "sha256": "928f8005e995362809f846b668ac3c19167c5807732687557ba97d57725f6ae5",
+          "sha256": "61f82cd1e13b81c9b19803e928be99c7af34b9451791a3c00a7a71f05c4ee6ba",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -2237,14 +2237,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 1184120,
+          "bytes": 1134836,
           "captured": true,
           "file": "comp-housing-light-zh-1440-full.png",
           "force_state": null,
           "height": 2742,
           "width": 2880,
           "locale": "zh",
-          "sha256": "cacd9f239af12883245c9c302866ccc0945e865c5b6b2904c70427d5ba9bc57f",
+          "sha256": "0b8224ef58665468e8704decc2c487df986c54bccc7a91b6191e3c5819fb8bcc",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -2273,14 +2273,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 717459,
+          "bytes": 717359,
           "captured": true,
           "file": "comp-consumer-dark-en-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "en",
-          "sha256": "3d41dd645672e8f5678bd98be399afb3235b89a4e1157d36e9ff1db4f0580ec5",
+          "sha256": "54595a9ee9f91e05f6af1d0544f22c95eba108365048a554002336b52b0abf74",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -2309,14 +2309,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 734067,
+          "bytes": 733891,
           "captured": true,
           "file": "comp-consumer-dark-zh-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "zh",
-          "sha256": "71cfcbb3709564add7a24fba488b11a23b0b1c9ed75806e3a3dc582c48ed6e8f",
+          "sha256": "6f0a6697e144dd8178e46c77d93cf6dffda44c1b96327b4050f24d6af035683a",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -2345,14 +2345,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 598006,
+          "bytes": 597855,
           "captured": true,
           "file": "comp-consumer-light-en-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "en",
-          "sha256": "d9894497cdf15d218c7980676f37fb3826aa0557dcef733f4b9b021ded4da2cb",
+          "sha256": "3252c21dbcc377d2965f4615120e6c44aacd66079f10ed80e54db95f5d36ed60",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -2381,14 +2381,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 615501,
+          "bytes": 615302,
           "captured": true,
           "file": "comp-consumer-light-zh-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "zh",
-          "sha256": "2e7ae13138e3667d9f6f51d9a011d02d60f9fe5bbebd093642b7cb4bba75d85b",
+          "sha256": "a4f87b0c8e4d5235554d9b2bb33e1b8af001a71244abd1674e23f71865ffa230",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -2417,14 +2417,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 397360,
+          "bytes": 397806,
           "captured": true,
           "file": "tab-consumer-dark-en-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "en",
-          "sha256": "4d93e74395d2aa04e5c8b3d0d0c3ddb6fdc58701c51c7f4e67e6e88d8320368d",
+          "sha256": "251d9e49653f02979ae051de0cb0485295d56803e1ca148d450de5490f5c4e12",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -2453,14 +2453,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 414919,
+          "bytes": 415017,
           "captured": true,
           "file": "tab-consumer-dark-zh-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "zh",
-          "sha256": "087e56912bddb96e2da65f04357c7aeedc9acc82a4fcf8a62a0b757e871b30f9",
+          "sha256": "57b98ba0e94bdaa7c96574881d0feaf257e1963b896428118c0649448ab6df13",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -2489,14 +2489,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 382805,
+          "bytes": 383290,
           "captured": true,
           "file": "tab-consumer-light-en-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "en",
-          "sha256": "b346ddc3bf16fe25619dc3c6d0440edf97dcdad9f7d8d8f506818d5ddabdf61e",
+          "sha256": "556a642491cbdf99dc09527f8cb1e6d91159091e130112aa8381a0301aeebe4c",
           "theme": "light",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -2525,14 +2525,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 405226,
+          "bytes": 405308,
           "captured": true,
           "file": "tab-consumer-light-zh-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "zh",
-          "sha256": "bbd98f9b32656b619f614a5f94407a19ecdcf6cdf60a5e0a21b64e7b0d1237d5",
+          "sha256": "253678fa024a328fa5bf61d7a376e4328c8e2728f3e99cdebc9b002f77c795fa",
           "theme": "light",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -2705,14 +2705,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 1451556,
+          "bytes": 1451453,
           "captured": true,
           "file": "comp-consumer-dark-en-1440-full.png",
           "force_state": null,
           "height": 3244,
           "width": 2880,
           "locale": "en",
-          "sha256": "ac933d9c175dc3d54871850a080473e631bc4e9bb809c0ae7f35d5cdbf3a3434",
+          "sha256": "f3102565e8dbc0b08b093b7c5d01cc945a8213a5f789d1fea26454c49a5948d6",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -2741,14 +2741,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 1391365,
+          "bytes": 1391150,
           "captured": true,
           "file": "comp-consumer-dark-zh-1440-full.png",
           "force_state": null,
           "height": 3088,
           "width": 2880,
           "locale": "zh",
-          "sha256": "0300cf166ff018af2b63440ee73c23683c6b3447bcd458069907b6456410fa1e",
+          "sha256": "135a23f1aa147da315d489faa1fbb895d718fa71e8c18f068f42deb398786cef",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -2777,14 +2777,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 1190460,
+          "bytes": 1190343,
           "captured": true,
           "file": "comp-consumer-light-en-1440-full.png",
           "force_state": null,
           "height": 3256,
           "width": 2880,
           "locale": "en",
-          "sha256": "61b7dd483bd274da6afa7c2f89f0f377b4f7dba5d63cc7c353dd2d5d97f13e0a",
+          "sha256": "cbdea86da6007006f1fab77961bbca314d24435c7994f46dd701cf7342d627b6",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -2813,14 +2813,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 1157148,
+          "bytes": 1141348,
           "captured": true,
           "file": "comp-consumer-light-zh-1440-full.png",
           "force_state": null,
           "height": 3100,
           "width": 2880,
           "locale": "zh",
-          "sha256": "830ea8cd62fa926ce58d0404660b0c57746d8e4cc5618599d693df88bd9eee10",
+          "sha256": "fcc8ad4caf4164f2a9b3b735d9ec5ff168b3dafa154c3421a3e91999c8ec69aa",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -2849,14 +2849,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 863681,
+          "bytes": 863622,
           "captured": true,
           "file": "comp-credit-dark-en-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "en",
-          "sha256": "b2cbea697b292132131ad76aaaff950ade0d5a9de7124c571887ae98d448bb3d",
+          "sha256": "ad906b81298a1f9f6565ff4cada974c1663b241a1392c0dca8eee410251f9a6f",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -2885,14 +2885,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 902655,
+          "bytes": 902715,
           "captured": true,
           "file": "comp-credit-dark-zh-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "zh",
-          "sha256": "4eb9779e5ad1a8769c8738b42080c247ec6f3ffae16bed140d4979d21f1ede42",
+          "sha256": "3aa17b6ec280b2c25d703063c76d95f862dbed15ac6dd148fd0c405f60d6e9c0",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -2921,14 +2921,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 663325,
+          "bytes": 663210,
           "captured": true,
           "file": "comp-credit-light-en-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "en",
-          "sha256": "3ded6dfaa6e481e3c9b2c2afcc1769261586825cdb719b01ed31aa4f3ddc6d86",
+          "sha256": "0f04935a0f2d546a059a738887bfa4483bc6a3933de55800db520349803a2eda",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -2957,14 +2957,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 674873,
+          "bytes": 674668,
           "captured": true,
           "file": "comp-credit-light-zh-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "zh",
-          "sha256": "16d87328b058e946eda617c00921d121b5111f6061dccbcc83454da8becacd94",
+          "sha256": "8c7f5de9c3842aebb6d2d2d1d0d9034040ebc16e1dd9295a474c7951c0c012e5",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -2993,14 +2993,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 489232,
+          "bytes": 489636,
           "captured": true,
           "file": "tab-credit-dark-en-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "en",
-          "sha256": "84bcf530214d60c66822f194bfe08b96d61a8fc9c2450d6717b9a5027dc565c0",
+          "sha256": "d35ac477717e965b260fd1c9f81c668bae5cfce70468b92676085be2e016524a",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -3029,14 +3029,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 525114,
+          "bytes": 525191,
           "captured": true,
           "file": "tab-credit-dark-zh-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "zh",
-          "sha256": "505a923304c6a86a9a919b3c3f9484e01289755e1f6a8c4a5e0882d6bec216b4",
+          "sha256": "8361ce0af8fa53196d848a76c9cf441f10d1e7ded31ff054914499bb5b2ab63b",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -3065,14 +3065,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 448575,
+          "bytes": 449120,
           "captured": true,
           "file": "tab-credit-light-en-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "en",
-          "sha256": "00715c248a7aad5add572b9d4c63f649abfe7a73544cef310d3a5089862b97e4",
+          "sha256": "e821c42a3df9d3c0a4c6fcb20601f28629bd3f0966eed9946e709a11d648df02",
           "theme": "light",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -3101,14 +3101,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 489468,
+          "bytes": 489544,
           "captured": true,
           "file": "tab-credit-light-zh-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "zh",
-          "sha256": "6f77516c5e0748e6715d27fb939e25ba2b9dbcdc9e9d61f6412d85cf07cd9374",
+          "sha256": "ca39f8fc794cadd5c340670a5f84f34abb05130dd68d98879760e5de6a8af659",
           "theme": "light",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -3281,14 +3281,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 1524652,
+          "bytes": 1524554,
           "captured": true,
           "file": "comp-credit-dark-en-1440-full.png",
           "force_state": null,
           "height": 2834,
           "width": 2880,
           "locale": "en",
-          "sha256": "47ec2847849bede28f68d6c3335b3b7ae017e298e188abc572612ffe6ea2707f",
+          "sha256": "3eb6b0299104da18183b3118fb6d77b323ae17c18ce1e2ed9aa3e1cc826487b6",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -3317,14 +3317,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 1452875,
+          "bytes": 1452649,
           "captured": true,
           "file": "comp-credit-dark-zh-1440-full.png",
           "force_state": null,
           "height": 2638,
           "width": 2880,
           "locale": "zh",
-          "sha256": "6805dda38988910d2a1d46a45e9a54d719f2ec2cf11a50b6a127ac2cf4154627",
+          "sha256": "7aae262c96bc591970c3e3383c5104ff6babe6beed9ef68f1cc29ed86b0dd740",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -3353,14 +3353,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 1208557,
+          "bytes": 1208404,
           "captured": true,
           "file": "comp-credit-light-en-1440-full.png",
           "force_state": null,
           "height": 2846,
           "width": 2880,
           "locale": "en",
-          "sha256": "ae22ee14c02bb0312828aa87ac5850d20134459ec57a6333ae4edb84422fafff",
+          "sha256": "b2a9cbc3ae231c3388a316f87cf956ece2d8051842bbcee4f01635287d1da310",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -3389,14 +3389,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 1137756,
+          "bytes": 1137590,
           "captured": true,
           "file": "comp-credit-light-zh-1440-full.png",
           "force_state": null,
           "height": 2650,
           "width": 2880,
           "locale": "zh",
-          "sha256": "a89a04d4aad2ae1b4bd583dcd0b726f4ab2307fa0cf2742764d9463be28698be",
+          "sha256": "79853a85af961f04a798cec53e151633dbe74a0945fa53f3fae04255a6ac39a2",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -3425,14 +3425,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 775029,
+          "bytes": 774923,
           "captured": true,
           "file": "comp-debt-dark-en-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "en",
-          "sha256": "269c0d4494bc5d8befb47a65e095ef4a85213fb5782f4faa56a84a49ea939c41",
+          "sha256": "1e1c380f7546cf0e330239248d0d04bffa9a6d3c7f2eeafbd6787419a8ba5dbb",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -3461,14 +3461,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 803326,
+          "bytes": 803112,
           "captured": true,
           "file": "comp-debt-dark-zh-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "zh",
-          "sha256": "4e5fd49fa7a1101619f6195f432a61330cf44f37b7621665885d773920e256e7",
+          "sha256": "93685d6665b0d91421f6773f7664d0f3b5a62d8a20cdf337bfebf846f7503a32",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -3497,14 +3497,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 643777,
+          "bytes": 643623,
           "captured": true,
           "file": "comp-debt-light-en-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "en",
-          "sha256": "3885e860c386af86a9b64627d3720352abdec9d75e35b937927a446d1701ccb4",
+          "sha256": "4e7683ccfb16d26028024d2fe3489eaaf55c6c60a2a431d814285d95fa98a786",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -3533,14 +3533,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 669749,
+          "bytes": 669561,
           "captured": true,
           "file": "comp-debt-light-zh-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "zh",
-          "sha256": "8dc401ae51b48f5ece26dc2ed338f35d890714454e0192ce641a43e6493cc7b5",
+          "sha256": "cf410b4c89a0064e877d002b291809d7818d86dcd9e60f66436d55e1531fa9c4",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -3569,14 +3569,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 453106,
+          "bytes": 453612,
           "captured": true,
           "file": "tab-debt-dark-en-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "en",
-          "sha256": "9d83c310fd5f305a3b4929f9616a1c3d4b5a24691a608f8d40ec31c7ba9ec7ff",
+          "sha256": "77f9e3ec0707babb30697c879c57a239d8a36fd29f1be1c04ee5c5a59ac8b84a",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -3605,14 +3605,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 483817,
+          "bytes": 483892,
           "captured": true,
           "file": "tab-debt-dark-zh-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "zh",
-          "sha256": "389c3445f2355e9c8a040076db6361d4c7668685f317d03dcb10abbdf32f0f64",
+          "sha256": "ff0eb0bab2d29ca6b04197e131cc91980833aef58d6d78ca0343e8a1362a0aa5",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -3641,14 +3641,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 420052,
+          "bytes": 420504,
           "captured": true,
           "file": "tab-debt-light-en-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "en",
-          "sha256": "bffd99a39cb976cd685380313f18a9c2b572c280ab208a790eff1da786edea42",
+          "sha256": "17912e402ca9d5d66fc9bc55d9e09f1a7ae39041b51784af52c23dcf9c97663c",
           "theme": "light",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -3677,14 +3677,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 458085,
+          "bytes": 458168,
           "captured": true,
           "file": "tab-debt-light-zh-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "zh",
-          "sha256": "598614809fbd3a4fc65f24a925c14f8b48befb7a1d2039b6c329c3c818583d5f",
+          "sha256": "0afba22664a846608e69becd9831d3082c86912a536454689d84cf55be2e35a9",
           "theme": "light",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -3857,14 +3857,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 1463749,
+          "bytes": 1463641,
           "captured": true,
           "file": "comp-debt-dark-en-1440-full.png",
           "force_state": null,
           "height": 3052,
           "width": 2880,
           "locale": "en",
-          "sha256": "68520c707ebb93015143acde7c440ffde67026756e442c4913066eba46269f3c",
+          "sha256": "c8c9b404b9d5e04cca71928a0f558023dec0194c4f0ea0f3ce3293f674c3a8cc",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -3893,14 +3893,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 1421121,
+          "bytes": 1420894,
           "captured": true,
           "file": "comp-debt-dark-zh-1440-full.png",
           "force_state": null,
           "height": 2852,
           "width": 2880,
           "locale": "zh",
-          "sha256": "553412528d1ffcb299a79fbabe5a226b51bd46e49c9cad13f5b1fb886c80cc4b",
+          "sha256": "f5020bab4c893243c60a25bc146dc289fee3c364bab710987fa2d8b7bfe6d34f",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -3929,14 +3929,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 1199785,
+          "bytes": 1199647,
           "captured": true,
           "file": "comp-debt-light-en-1440-full.png",
           "force_state": null,
           "height": 3064,
           "width": 2880,
           "locale": "en",
-          "sha256": "300d9b499ad6a4ce84f70e4affc9dd3a20bbb9b4eab080dad5dfc2d15e0478fb",
+          "sha256": "c30d92c3caaf1877912293d0a729473315dac73f7135b7397b70ddf3641d615c",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -3965,14 +3965,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 1167823,
+          "bytes": 1214180,
           "captured": true,
           "file": "comp-debt-light-zh-1440-full.png",
           "force_state": null,
           "height": 2864,
           "width": 2880,
           "locale": "zh",
-          "sha256": "62b9753a5c34df4a6a02731a49589b2bb73a79cd011c2adede033714dacd2c75",
+          "sha256": "687fb73d214121a04312e63e8e1a11f59ac756ef08381210abc958940092f2ac",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -4001,14 +4001,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 819609,
+          "bytes": 819511,
           "captured": true,
           "file": "comp-trade-dark-en-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "en",
-          "sha256": "e1520fb5ce0a187834e951677906e7a5b3beab78f9b961f30c538c0cb569cfa4",
+          "sha256": "bc58b0e8839ae895321f2db96b718860fcf547e2258ffacf018d721890304add",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -4037,14 +4037,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 834505,
+          "bytes": 834301,
           "captured": true,
           "file": "comp-trade-dark-zh-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "zh",
-          "sha256": "98f8af51e4903b27fec244602aef3b3e4e33f91b03c6faa546d6e1a221cc676a",
+          "sha256": "d29e4e4ac2a00632dfb8499c1f0df8157527e93ce773c2a30d6f12c88b46f850",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -4073,14 +4073,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 647726,
+          "bytes": 647567,
           "captured": true,
           "file": "comp-trade-light-en-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "en",
-          "sha256": "246506bc4c4dcfabb780f0eb3e5db8f046574da11a07729fda7148da16b32eb9",
+          "sha256": "6bb8bd4219a40890692a213ef25df4a3c1f17d451d2f644ac87a4de9e36693cc",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -4109,14 +4109,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 661394,
+          "bytes": 661195,
           "captured": true,
           "file": "comp-trade-light-zh-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "zh",
-          "sha256": "afb14af2563f609a85d7360565bb797fb5312d4656ec7b6dff2f945ea4748dff",
+          "sha256": "bb6745f82741bd0e3ef18f592507f41169408f9c0599562b2bc046cee08f9638",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -4145,14 +4145,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 460509,
+          "bytes": 461017,
           "captured": true,
           "file": "tab-trade-dark-en-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "en",
-          "sha256": "097500ae8f0f1ee39b94c1257d2c710e1f2f4e7564c937329e0c44fc4b8cb671",
+          "sha256": "b3c1ba12a50bc5f399d8bb1b72a463adfbc7fb2a584cb2bee6d0a7071b9400b1",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -4181,14 +4181,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 487243,
+          "bytes": 487317,
           "captured": true,
           "file": "tab-trade-dark-zh-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "zh",
-          "sha256": "ece780a8fe3fb7103cf44b7b1478d8330ab42547242fc2f25d651181a162e72e",
+          "sha256": "f87dc752af7eb0be9a1db363ca0f60ccdd305ba032bfe0dd080cb45b7dfbb8c5",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -4217,14 +4217,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 425846,
+          "bytes": 426318,
           "captured": true,
           "file": "tab-trade-light-en-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "en",
-          "sha256": "70a05d473deb03941f9dd93fe1659099dd4c4acb2c402b6a9a06cc180893b70b",
+          "sha256": "3879d36650eeaeef833ce92f346930d9438b4c6d72e4c57acb7da9ba9e43acc4",
           "theme": "light",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -4253,14 +4253,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 443324,
+          "bytes": 443405,
           "captured": true,
           "file": "tab-trade-light-zh-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "zh",
-          "sha256": "0073006129be4f58037f9da4bfb12b043b75aefddb0a0c44d461f41ab88abf95",
+          "sha256": "99d8f69228c2676b63d0aef64d9875fc75e0ce16c156103b4f583a57a271e843",
           "theme": "light",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -4433,14 +4433,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 1491526,
+          "bytes": 1491456,
           "captured": true,
           "file": "comp-trade-dark-en-1440-full.png",
           "force_state": null,
           "height": 2886,
           "width": 2880,
           "locale": "en",
-          "sha256": "8f0d8a70da2b58503b1268941233530ebad874a1d48e10aca9435ae48023345f",
+          "sha256": "55025394ff6f2a55a06444be2a115f3020cf6eab46f8b6ff33bc7859ee55f798",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -4469,14 +4469,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 1429856,
+          "bytes": 1429698,
           "captured": true,
           "file": "comp-trade-dark-zh-1440-full.png",
           "force_state": null,
           "height": 2730,
           "width": 2880,
           "locale": "zh",
-          "sha256": "8552d95e81bd003b19db6808fa59cf214e2997e16e5f7d37d650f4241d1e36fd",
+          "sha256": "2d6fd8537b8ebaead7a3b9f6e5f15c86a2d6e8c142723c1e948c0cf952b6de49",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -4505,14 +4505,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 1197501,
+          "bytes": 1197230,
           "captured": true,
           "file": "comp-trade-light-en-1440-full.png",
           "force_state": null,
           "height": 2898,
           "width": 2880,
           "locale": "en",
-          "sha256": "7a32f3d141db61a9858a857a136dafadc7221e7c109c6cca27f00c621a87a7a2",
+          "sha256": "3a4527e91d240f32808222752d7ce30d6ddf89c1de2c3d5bd38e329841b0dd36",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -4541,14 +4541,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 1148592,
+          "bytes": 1148354,
           "captured": true,
           "file": "comp-trade-light-zh-1440-full.png",
           "force_state": null,
           "height": 2742,
           "width": 2880,
           "locale": "zh",
-          "sha256": "bdc33277424e1844e97a4e1fd6153b4ed27d390bc2980383602f537929c6ab67",
+          "sha256": "f5d1ded97cc350a8692264a7c053dfb82a294d5b14c198b206332a3b9773149d",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -4577,14 +4577,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 764976,
+          "bytes": 764743,
           "captured": true,
           "file": "rest-dark-en-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "en",
-          "sha256": "7d8f5eebd2882147215367a0269ab22810c6fa7b97f518b7c7bd49a28fd00101",
+          "sha256": "2428fa316c7808544d084c171f431c4cbab92459daeec8a8115ec19d89213a88",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -4613,14 +4613,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 788571,
+          "bytes": 788376,
           "captured": true,
           "file": "rest-dark-zh-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "zh",
-          "sha256": "bd36a6b11be168b57abf7b6412b6806d3e96a32387f866fd8b282f718483556c",
+          "sha256": "d4fce3c0a6885f66765176a0899f92cde3054540f02ed448ced45400bd200897",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -4649,14 +4649,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 633406,
+          "bytes": 633222,
           "captured": true,
           "file": "rest-light-en-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "en",
-          "sha256": "618200f59d8f413c960cc0d5014b7cacbaa54b7edceb5badf6e6ad9d50a5a3f5",
+          "sha256": "4b40172734bfc396fd8a14e4b611a6ede4f94be37801711f155c55754225302d",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -4685,14 +4685,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 655248,
+          "bytes": 655079,
           "captured": true,
           "file": "rest-light-zh-1440.png",
           "force_state": null,
           "height": 1800,
           "width": 2880,
           "locale": "zh",
-          "sha256": "5792160d8ef0954069f837e5f5660cff88fc5f2beef88981197481baf2a12e10",
+          "sha256": "810a9b09b80de4165502c5fb4a20ae548ff74149b004273db01977b94b1c0e47",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -4721,14 +4721,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 466331,
+          "bytes": 466830,
           "captured": true,
           "file": "rest-dark-en-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "en",
-          "sha256": "9b7b1e508f9bbff857477ac560020f6925fa133ad61fdd462b55bca0f1dd0957",
+          "sha256": "c8adb54c6eeca73faeea1b8cd1fe0fbfaa372d5f0376fabbbebac0148ccad836",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -4757,14 +4757,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 482749,
+          "bytes": 482851,
           "captured": true,
           "file": "rest-dark-zh-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "zh",
-          "sha256": "a141308d5b6235d91df914efe6f3555fe2f934abe134596c049138fa4f0ea977",
+          "sha256": "d6b7a080c2ae999e093218bbce7d1d38a4e50c2078f89629db6a50e3f2b87d79",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -4793,14 +4793,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 462293,
+          "bytes": 462905,
           "captured": true,
           "file": "rest-light-en-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "en",
-          "sha256": "49afc099bd6aa666d083d4a66a5b4791813fe88eb4a7d8ecdbc9f0482bbec07b",
+          "sha256": "1155122d58496f6e92f2e06a7a37af6685abfe4f5af0a9617ac208c2706ab784",
           "theme": "light",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -4829,14 +4829,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 476945,
+          "bytes": 477084,
           "captured": true,
           "file": "rest-light-zh-768.png",
           "force_state": null,
           "height": 2800,
           "width": 1536,
           "locale": "zh",
-          "sha256": "268595198693c2271689440d91b75d329319295a22a5d8f9baa0ead7eccd5e10",
+          "sha256": "6a94945bcbac22e554a3d8486bba6f5b90b799f9728822c1025dd05a913f54ab",
           "theme": "light",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -5056,8 +5056,12 @@
           "device_px_span": {
             "x0": 664,
             "x1": 2160,
-            "y0": 433,
-            "y1": 1803
+            "y0": 432,
+            "y1": 1802
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -5113,6 +5117,10 @@
             "x1": 2160,
             "y0": 474,
             "y1": 1800
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -5166,8 +5174,12 @@
           "device_px_span": {
             "x0": 664,
             "x1": 2160,
-            "y0": 471,
-            "y1": 1803
+            "y0": 470,
+            "y1": 1802
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -5223,6 +5235,10 @@
             "x1": 2160,
             "y0": 512,
             "y1": 1800
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -5276,8 +5292,12 @@
           "device_px_span": {
             "x0": 664,
             "x1": 2160,
-            "y0": 175,
-            "y1": 1843
+            "y0": 174,
+            "y1": 1842
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -5333,6 +5353,10 @@
             "x1": 2160,
             "y0": 176,
             "y1": 1802
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -5386,8 +5410,12 @@
           "device_px_span": {
             "x0": 664,
             "x1": 2160,
-            "y0": 175,
-            "y1": 1805
+            "y0": 174,
+            "y1": 1804
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -5443,6 +5471,10 @@
             "x1": 2160,
             "y0": 214,
             "y1": 1802
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -5496,8 +5528,12 @@
           "device_px_span": {
             "x0": 714,
             "x1": 2110,
-            "y0": 1379,
-            "y1": 1417
+            "y0": 1378,
+            "y1": 1416
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -5553,6 +5589,10 @@
             "x1": 2110,
             "y0": 1378,
             "y1": 1416
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -5606,8 +5646,12 @@
           "device_px_span": {
             "x0": 714,
             "x1": 2110,
-            "y0": 1379,
-            "y1": 1417
+            "y0": 1378,
+            "y1": 1416
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -5663,6 +5707,10 @@
             "x1": 2110,
             "y0": 1378,
             "y1": 1416
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -5716,8 +5764,12 @@
           "device_px_span": {
             "x0": 714,
             "x1": 2110,
-            "y0": 1693,
-            "y1": 1731
+            "y0": 1692,
+            "y1": 1730
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -5773,6 +5825,10 @@
             "x1": 2110,
             "y0": 1694,
             "y1": 1730
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -5826,8 +5882,12 @@
           "device_px_span": {
             "x0": 714,
             "x1": 2110,
-            "y0": 1697,
-            "y1": 1735
+            "y0": 1696,
+            "y1": 1734
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -5883,6 +5943,10 @@
             "x1": 2110,
             "y0": 1698,
             "y1": 1734
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -5938,6 +6002,10 @@
             "x1": 2798,
             "y0": 802,
             "y1": 998
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -5993,6 +6061,10 @@
             "x1": 2798,
             "y0": 802,
             "y1": 998
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -6048,6 +6120,10 @@
             "x1": 2798,
             "y0": 804,
             "y1": 998
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -6103,6 +6179,10 @@
             "x1": 2798,
             "y0": 804,
             "y1": 998
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -6158,6 +6238,10 @@
             "x1": 2798,
             "y0": 804,
             "y1": 998
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -6213,6 +6297,10 @@
             "x1": 2798,
             "y0": 804,
             "y1": 998
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -6268,6 +6356,10 @@
             "x1": 2798,
             "y0": 802,
             "y1": 998
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -6323,6 +6415,10 @@
             "x1": 2798,
             "y0": 802,
             "y1": 998
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -6376,8 +6472,12 @@
           "device_px_span": {
             "x0": 82,
             "x1": 2798,
-            "y0": 803,
-            "y1": 999
+            "y0": 802,
+            "y1": 998
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -6431,8 +6531,12 @@
           "device_px_span": {
             "x0": 82,
             "x1": 2798,
-            "y0": 803,
-            "y1": 999
+            "y0": 802,
+            "y1": 998
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -6486,8 +6590,12 @@
           "device_px_span": {
             "x0": 82,
             "x1": 2798,
-            "y0": 803,
-            "y1": 999
+            "y0": 802,
+            "y1": 998
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -6541,8 +6649,12 @@
           "device_px_span": {
             "x0": 82,
             "x1": 2798,
-            "y0": 803,
-            "y1": 999
+            "y0": 802,
+            "y1": 998
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -6596,8 +6708,12 @@
           "device_px_span": {
             "x0": 82,
             "x1": 2798,
-            "y0": 803,
-            "y1": 999
+            "y0": 802,
+            "y1": 998
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -6651,8 +6767,12 @@
           "device_px_span": {
             "x0": 82,
             "x1": 2798,
-            "y0": 803,
-            "y1": 999
+            "y0": 802,
+            "y1": 998
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -6706,8 +6826,12 @@
           "device_px_span": {
             "x0": 82,
             "x1": 2798,
-            "y0": 803,
-            "y1": 999
+            "y0": 802,
+            "y1": 998
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -6761,8 +6885,12 @@
           "device_px_span": {
             "x0": 82,
             "x1": 2798,
-            "y0": 803,
-            "y1": 999
+            "y0": 802,
+            "y1": 998
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -6816,8 +6944,12 @@
           "device_px_span": {
             "x0": 82,
             "x1": 2798,
-            "y0": 803,
-            "y1": 999
+            "y0": 802,
+            "y1": 998
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -6871,8 +7003,12 @@
           "device_px_span": {
             "x0": 82,
             "x1": 2798,
-            "y0": 803,
-            "y1": 999
+            "y0": 802,
+            "y1": 998
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -6928,6 +7064,10 @@
             "x1": 2798,
             "y0": 802,
             "y1": 998
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -6983,6 +7123,10 @@
             "x1": 2798,
             "y0": 802,
             "y1": 998
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -7038,6 +7182,10 @@
             "x1": 2798,
             "y0": 802,
             "y1": 998
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -7093,6 +7241,10 @@
             "x1": 2798,
             "y0": 802,
             "y1": 998
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -7146,8 +7298,12 @@
           "device_px_span": {
             "x0": 82,
             "x1": 2798,
-            "y0": 803,
-            "y1": 999
+            "y0": 802,
+            "y1": 998
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -7201,22 +7357,26 @@
           "device_px_span": {
             "x0": 82,
             "x1": 2798,
-            "y0": 803,
-            "y1": 999
+            "y0": 802,
+            "y1": 998
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 135900,
+          "bytes": 125250,
           "captured": true,
           "file": "empty-e1-dark-en-1440.png",
           "force_state": "e1",
-          "height": 1088,
+          "height": 966,
           "width": 1496,
           "locale": "en",
-          "sha256": "5f99ecc440c7107dca238129997e50bcc01eca0db1719a9d0b3ced86b3e00c56",
+          "sha256": "876baa277c9aae83645fe92761e7e376f6d5af7da767566f54392937800e2023",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -7224,12 +7384,12 @@
           "viewport_css_width": 1440,
           "dpr": 2.0,
           "css_width": 748,
-          "css_height": 542.453125,
+          "css_height": 481.953125,
           "clip": {
             "x": 332,
-            "y": 223.75,
+            "y": 283.75,
             "width": 748,
-            "height": 542.453125
+            "height": 481.953125
           },
           "section": "housing",
           "verified_how": "real builder render from injected fixture; clip of panel",
@@ -7241,37 +7401,41 @@
           "crop_selector": "section#housing",
           "crop_box": {
             "x": 332,
-            "y": 223.75,
+            "y": 283.75,
             "width": 748,
-            "height": 542.453125
+            "height": 481.953125
           },
           "crop_box_doc": {
             "x": 332,
             "y": 652.75,
             "width": 748,
-            "height": 542.453125
+            "height": 481.953125
           },
-          "scroll_y_at_shot": 429.0,
+          "scroll_y_at_shot": 369.0,
           "element_text_head": "You opened Macro Command at Housing. Read today's overview \u2192  Housing  What does",
           "device_px_span": {
             "x0": 664,
             "x1": 2160,
-            "y0": 447,
-            "y1": 1535
+            "y0": 566,
+            "y1": 1532
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 135834,
+          "bytes": 129092,
           "captured": true,
           "file": "empty-e1-dark-zh-1440.png",
           "force_state": "e1",
-          "height": 1086,
+          "height": 966,
           "width": 1496,
           "locale": "zh",
-          "sha256": "0235de014aedb1f0d8640f10345177ae1014c36ea0f6bedba34a62936cbb5323",
+          "sha256": "f60ab81db0e321c8753b6bb4ca0a0c23eac3952d4392b5ee5d04e99cd65106dd",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -7279,12 +7443,12 @@
           "viewport_css_width": 1440,
           "dpr": 2.0,
           "css_width": 748,
-          "css_height": 542.453125,
+          "css_height": 481.953125,
           "clip": {
             "x": 332,
-            "y": 223.1875,
+            "y": 284.1875,
             "width": 748,
-            "height": 542.453125
+            "height": 481.953125
           },
           "section": "housing",
           "verified_how": "real builder render from injected fixture; clip of panel",
@@ -7296,37 +7460,41 @@
           "crop_selector": "section#housing",
           "crop_box": {
             "x": 332,
-            "y": 223.1875,
+            "y": 284.1875,
             "width": 748,
-            "height": 542.453125
+            "height": 481.953125
           },
           "crop_box_doc": {
             "x": 332,
             "y": 575.1875,
             "width": 748,
-            "height": 542.453125
+            "height": 481.953125
           },
-          "scroll_y_at_shot": 352.0,
-          "element_text_head": "\u4f60\u4ece\u8fd9\u91cc\u8fdb\u5165\u5b8f\u89c2\u6307\u6325\u53f0\uff1a\u623f\u5730\u4ea7\u3002 \u67e5\u770b\u4eca\u65e5\u603b\u89c8 \u2192  \u623f\u5730\u4ea7  \u4e70\u623f\u3001\u5efa\u623f\u4e0e\u6301\u6709\u4f4f\u623f\u7684\u6210\u672c\u662f\u591a\u5c11\uff1f  \u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48: \u8be5\u8bfb\u6570\u6682\u4e0d\u53ef\u7528  \u7b2c\u4e00\u6b21\u770b\uff1f30 \u79d2\u8bfb",
+          "scroll_y_at_shot": 291.0,
+          "element_text_head": "\u4f60\u4ece\u8fd9\u91cc\u8fdb\u5165\u5b8f\u89c2\u6307\u6325\u53f0\uff1a\u623f\u5730\u4ea7\u3002 \u67e5\u770b\u4eca\u65e5\u603b\u89c8 \u2192  \u623f\u5730\u4ea7  \u4e70\u623f\u3001\u5efa\u623f\u4e0e\u6301\u6709\u4f4f\u623f\u7684\u6210\u672c\u662f\u591a\u5c11\uff1f  \u7b2c\u4e00\u6b21\u770b\uff1f30 \u79d2\u8bfb\u61c2  \u8be5\u8bfb\u6570\u6682\u4e0d\u53ef\u7528  \u672c\u677f\u5757\u6240\u4f9d\u636e\u7684",
           "device_px_span": {
             "x0": 664,
             "x1": 2160,
-            "y0": 446,
-            "y1": 1532
+            "y0": 568,
+            "y1": 1534
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 133670,
+          "bytes": 122200,
           "captured": true,
           "file": "empty-e1-light-en-1440.png",
           "force_state": "e1",
-          "height": 1092,
+          "height": 970,
           "width": 1496,
           "locale": "en",
-          "sha256": "695968191cd7408b55e5270c981289034310212acd29c418556fbdf4e5a54903",
+          "sha256": "b92ed33c01cb52885f48c219055ed64a95d2456ccfe65dee3a76a6f294048cc8",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -7334,12 +7502,12 @@
           "viewport_css_width": 1440,
           "dpr": 2.0,
           "css_width": 748,
-          "css_height": 544.453125,
+          "css_height": 483.953125,
           "clip": {
             "x": 332,
-            "y": 221.75,
+            "y": 281.75,
             "width": 748,
-            "height": 544.453125
+            "height": 483.953125
           },
           "section": "housing",
           "verified_how": "real builder render from injected fixture; clip of panel",
@@ -7351,37 +7519,41 @@
           "crop_selector": "section#housing",
           "crop_box": {
             "x": 332,
-            "y": 221.75,
+            "y": 281.75,
             "width": 748,
-            "height": 544.453125
+            "height": 483.953125
           },
           "crop_box_doc": {
             "x": 332,
             "y": 656.75,
             "width": 748,
-            "height": 544.453125
+            "height": 483.953125
           },
-          "scroll_y_at_shot": 435.0,
+          "scroll_y_at_shot": 375.0,
           "element_text_head": "You opened Macro Command at Housing. Read today's overview \u2192  Housing  What does",
           "device_px_span": {
             "x0": 664,
             "x1": 2160,
-            "y0": 443,
-            "y1": 1535
+            "y0": 562,
+            "y1": 1532
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 134584,
+          "bytes": 127443,
           "captured": true,
           "file": "empty-e1-light-zh-1440.png",
           "force_state": "e1",
-          "height": 1090,
+          "height": 970,
           "width": 1496,
           "locale": "zh",
-          "sha256": "320333aa95c30696c0215e6aad44731ba12d48bbad96fd7ce21bf2a70a88e119",
+          "sha256": "5d0d43711bbe3e9cc8bb18fb4bf6d3cbdffe1a8a5e47ee41bf56e68c7315e2a2",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -7389,12 +7561,12 @@
           "viewport_css_width": 1440,
           "dpr": 2.0,
           "css_width": 748,
-          "css_height": 544.453125,
+          "css_height": 483.953125,
           "clip": {
             "x": 332,
-            "y": 221.1875,
+            "y": 282.1875,
             "width": 748,
-            "height": 544.453125
+            "height": 483.953125
           },
           "section": "housing",
           "verified_how": "real builder render from injected fixture; clip of panel",
@@ -7406,37 +7578,41 @@
           "crop_selector": "section#housing",
           "crop_box": {
             "x": 332,
-            "y": 221.1875,
+            "y": 282.1875,
             "width": 748,
-            "height": 544.453125
+            "height": 483.953125
           },
           "crop_box_doc": {
             "x": 332,
             "y": 579.1875,
             "width": 748,
-            "height": 544.453125
+            "height": 483.953125
           },
-          "scroll_y_at_shot": 358.0,
-          "element_text_head": "\u4f60\u4ece\u8fd9\u91cc\u8fdb\u5165\u5b8f\u89c2\u6307\u6325\u53f0\uff1a\u623f\u5730\u4ea7\u3002 \u67e5\u770b\u4eca\u65e5\u603b\u89c8 \u2192  \u623f\u5730\u4ea7  \u4e70\u623f\u3001\u5efa\u623f\u4e0e\u6301\u6709\u4f4f\u623f\u7684\u6210\u672c\u662f\u591a\u5c11\uff1f  \u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48: \u8be5\u8bfb\u6570\u6682\u4e0d\u53ef\u7528  \u7b2c\u4e00\u6b21\u770b\uff1f30 \u79d2\u8bfb",
+          "scroll_y_at_shot": 297.0,
+          "element_text_head": "\u4f60\u4ece\u8fd9\u91cc\u8fdb\u5165\u5b8f\u89c2\u6307\u6325\u53f0\uff1a\u623f\u5730\u4ea7\u3002 \u67e5\u770b\u4eca\u65e5\u603b\u89c8 \u2192  \u623f\u5730\u4ea7  \u4e70\u623f\u3001\u5efa\u623f\u4e0e\u6301\u6709\u4f4f\u623f\u7684\u6210\u672c\u662f\u591a\u5c11\uff1f  \u7b2c\u4e00\u6b21\u770b\uff1f30 \u79d2\u8bfb\u61c2  \u8be5\u8bfb\u6570\u6682\u4e0d\u53ef\u7528  \u672c\u677f\u5757\u6240\u4f9d\u636e\u7684",
           "device_px_span": {
             "x0": 664,
             "x1": 2160,
-            "y0": 442,
-            "y1": 1532
+            "y0": 564,
+            "y1": 1534
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 200354,
+          "bytes": 205701,
           "captured": true,
           "file": "empty-e1-dark-en-390.png",
           "force_state": "e1",
           "height": 1688,
           "width": 780,
           "locale": "en",
-          "sha256": "9035ebd790e1f68629df44e832c4bac3fee6b51948815c7fd64bbf84c6cfa17f",
+          "sha256": "58e249a7d14d8a761fe59627b6cdcf85290594151cf99d9cd739b66ce0b00bce",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -7465,14 +7641,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 212063,
+          "bytes": 216766,
           "captured": true,
           "file": "empty-e1-dark-zh-390.png",
           "force_state": "e1",
           "height": 1688,
           "width": 780,
           "locale": "zh",
-          "sha256": "bff586d88d27510ed662dd2320db5311af40396f5274f11cd7c179e49263d856",
+          "sha256": "dd3dc827981d7c17c5c31ee6645d771ac44ec8eff732b69b3b3fa5705a853437",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -7501,14 +7677,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 192911,
+          "bytes": 201065,
           "captured": true,
           "file": "empty-e1-light-en-390.png",
           "force_state": "e1",
           "height": 1688,
           "width": 780,
           "locale": "en",
-          "sha256": "88b0b3e91bcb731ae3b8eadda08aec2088e689e6fe40da78bf3336382d9a9f02",
+          "sha256": "0e218051557767b8625daf522adc1736d78b86c2f07cd3c4fb708aff8a3201f7",
           "theme": "light",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -7537,14 +7713,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 199144,
+          "bytes": 206937,
           "captured": true,
           "file": "empty-e1-light-zh-390.png",
           "force_state": "e1",
           "height": 1688,
           "width": 780,
           "locale": "zh",
-          "sha256": "61f000cc661a0c25213ae5dcfc9e83764382a6d3d258b63b5ed99d233575a931",
+          "sha256": "90a898dde8cbbac9cf6b85089c080471f8890f05bc5eb1382ba1d1d3a188ad64",
           "theme": "light",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -7573,14 +7749,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 134419,
+          "bytes": 125318,
           "captured": true,
           "file": "empty-e2-dark-en-1440.png",
           "force_state": "e2",
-          "height": 1072,
+          "height": 950,
           "width": 1496,
           "locale": "en",
-          "sha256": "8b0b2a2fc175429683da968cb82d781cf2eb29d24a2941048a90fdd708aca547",
+          "sha256": "b368989cb4d2405e2dbb637957d7284a2723c80bdd0252cb02e2d730cf06b8e5",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -7588,12 +7764,12 @@
           "viewport_css_width": 1440,
           "dpr": 2.0,
           "css_width": 748,
-          "css_height": 534.453125,
+          "css_height": 473.953125,
           "clip": {
             "x": 332,
-            "y": 231.75,
+            "y": 291.75,
             "width": 748,
-            "height": 534.453125
+            "height": 473.953125
           },
           "section": "housing",
           "verified_how": "real builder render from injected fixture; clip of panel",
@@ -7605,37 +7781,41 @@
           "crop_selector": "section#housing",
           "crop_box": {
             "x": 332,
-            "y": 231.75,
+            "y": 291.75,
             "width": 748,
-            "height": 534.453125
+            "height": 473.953125
           },
           "crop_box_doc": {
             "x": 332,
             "y": 652.75,
             "width": 748,
-            "height": 534.453125
+            "height": 473.953125
           },
-          "scroll_y_at_shot": 421.0,
+          "scroll_y_at_shot": 361.0,
           "element_text_head": "You opened Macro Command at Housing. Read today's overview \u2192  Housing  What does",
           "device_px_span": {
             "x0": 664,
             "x1": 2160,
-            "y0": 463,
-            "y1": 1535
+            "y0": 582,
+            "y1": 1532
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 139122,
+          "bytes": 129872,
           "captured": true,
           "file": "empty-e2-dark-zh-1440.png",
           "force_state": "e2",
-          "height": 1070,
+          "height": 950,
           "width": 1496,
           "locale": "zh",
-          "sha256": "81aec7d3b7ddbee9a179b7d682a3651799b146e622a20a510ec871e667c56f1c",
+          "sha256": "7205c4aeb7a82795a8f98e8275ed3f1ba5d0a946b9c5f3fc7b507b8f407ad872",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -7643,12 +7823,12 @@
           "viewport_css_width": 1440,
           "dpr": 2.0,
           "css_width": 748,
-          "css_height": 534.453125,
+          "css_height": 473.953125,
           "clip": {
             "x": 332,
-            "y": 231.1875,
+            "y": 292.1875,
             "width": 748,
-            "height": 534.453125
+            "height": 473.953125
           },
           "section": "housing",
           "verified_how": "real builder render from injected fixture; clip of panel",
@@ -7660,37 +7840,41 @@
           "crop_selector": "section#housing",
           "crop_box": {
             "x": 332,
-            "y": 231.1875,
+            "y": 292.1875,
             "width": 748,
-            "height": 534.453125
+            "height": 473.953125
           },
           "crop_box_doc": {
             "x": 332,
             "y": 575.1875,
             "width": 748,
-            "height": 534.453125
+            "height": 473.953125
           },
-          "scroll_y_at_shot": 344.0,
-          "element_text_head": "\u4f60\u4ece\u8fd9\u91cc\u8fdb\u5165\u5b8f\u89c2\u6307\u6325\u53f0\uff1a\u623f\u5730\u4ea7\u3002 \u67e5\u770b\u4eca\u65e5\u603b\u89c8 \u2192  \u623f\u5730\u4ea7  \u4e70\u623f\u3001\u5efa\u623f\u4e0e\u6301\u6709\u4f4f\u623f\u7684\u6210\u672c\u662f\u591a\u5c11\uff1f  \u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48: \u4eca\u5929\u7684\u6570\u636e\u672a\u80fd\u9001\u8fbe  \u7b2c\u4e00\u6b21\u770b\uff1f30 ",
+          "scroll_y_at_shot": 283.0,
+          "element_text_head": "\u4f60\u4ece\u8fd9\u91cc\u8fdb\u5165\u5b8f\u89c2\u6307\u6325\u53f0\uff1a\u623f\u5730\u4ea7\u3002 \u67e5\u770b\u4eca\u65e5\u603b\u89c8 \u2192  \u623f\u5730\u4ea7  \u4e70\u623f\u3001\u5efa\u623f\u4e0e\u6301\u6709\u4f4f\u623f\u7684\u6210\u672c\u662f\u591a\u5c11\uff1f  \u7b2c\u4e00\u6b21\u770b\uff1f30 \u79d2\u8bfb\u61c2  \u4eca\u5929\u6ca1\u6709\u65b0\u7684\u8bfb\u6570\u3002  \u6570\u636e\u63d0\u4f9b\u65b9",
           "device_px_span": {
             "x0": 664,
             "x1": 2160,
-            "y0": 462,
-            "y1": 1532
+            "y0": 584,
+            "y1": 1534
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 132308,
+          "bytes": 122838,
           "captured": true,
           "file": "empty-e2-light-en-1440.png",
           "force_state": "e2",
-          "height": 1076,
+          "height": 954,
           "width": 1496,
           "locale": "en",
-          "sha256": "7e8b95d9e88d76ab50b09a897d013a7982f3e05144854112287f65d354151f6c",
+          "sha256": "9bf161665cf5974d603a595f21701a3ff6fcfd9a4d4e0e0ce2e470886b068390",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -7698,12 +7882,12 @@
           "viewport_css_width": 1440,
           "dpr": 2.0,
           "css_width": 748,
-          "css_height": 536.453125,
+          "css_height": 475.953125,
           "clip": {
             "x": 332,
-            "y": 229.75,
+            "y": 289.75,
             "width": 748,
-            "height": 536.453125
+            "height": 475.953125
           },
           "section": "housing",
           "verified_how": "real builder render from injected fixture; clip of panel",
@@ -7715,37 +7899,41 @@
           "crop_selector": "section#housing",
           "crop_box": {
             "x": 332,
-            "y": 229.75,
+            "y": 289.75,
             "width": 748,
-            "height": 536.453125
+            "height": 475.953125
           },
           "crop_box_doc": {
             "x": 332,
             "y": 656.75,
             "width": 748,
-            "height": 536.453125
+            "height": 475.953125
           },
-          "scroll_y_at_shot": 427.0,
+          "scroll_y_at_shot": 367.0,
           "element_text_head": "You opened Macro Command at Housing. Read today's overview \u2192  Housing  What does",
           "device_px_span": {
             "x0": 664,
             "x1": 2160,
-            "y0": 459,
-            "y1": 1535
+            "y0": 578,
+            "y1": 1532
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 137929,
+          "bytes": 128558,
           "captured": true,
           "file": "empty-e2-light-zh-1440.png",
           "force_state": "e2",
-          "height": 1074,
+          "height": 954,
           "width": 1496,
           "locale": "zh",
-          "sha256": "412b8013eb7b2e61fb3c7e1ab01d8fe1159e35c20dc6faf7647211248ccdbb2c",
+          "sha256": "7023c1c8b00aca86b7b6b66f255629267158647eae8dd1e0dd6dcd65e54a9eba",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -7753,12 +7941,12 @@
           "viewport_css_width": 1440,
           "dpr": 2.0,
           "css_width": 748,
-          "css_height": 536.453125,
+          "css_height": 475.953125,
           "clip": {
             "x": 332,
-            "y": 229.1875,
+            "y": 290.1875,
             "width": 748,
-            "height": 536.453125
+            "height": 475.953125
           },
           "section": "housing",
           "verified_how": "real builder render from injected fixture; clip of panel",
@@ -7770,37 +7958,41 @@
           "crop_selector": "section#housing",
           "crop_box": {
             "x": 332,
-            "y": 229.1875,
+            "y": 290.1875,
             "width": 748,
-            "height": 536.453125
+            "height": 475.953125
           },
           "crop_box_doc": {
             "x": 332,
             "y": 579.1875,
             "width": 748,
-            "height": 536.453125
+            "height": 475.953125
           },
-          "scroll_y_at_shot": 350.0,
-          "element_text_head": "\u4f60\u4ece\u8fd9\u91cc\u8fdb\u5165\u5b8f\u89c2\u6307\u6325\u53f0\uff1a\u623f\u5730\u4ea7\u3002 \u67e5\u770b\u4eca\u65e5\u603b\u89c8 \u2192  \u623f\u5730\u4ea7  \u4e70\u623f\u3001\u5efa\u623f\u4e0e\u6301\u6709\u4f4f\u623f\u7684\u6210\u672c\u662f\u591a\u5c11\uff1f  \u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48: \u4eca\u5929\u7684\u6570\u636e\u672a\u80fd\u9001\u8fbe  \u7b2c\u4e00\u6b21\u770b\uff1f30 ",
+          "scroll_y_at_shot": 289.0,
+          "element_text_head": "\u4f60\u4ece\u8fd9\u91cc\u8fdb\u5165\u5b8f\u89c2\u6307\u6325\u53f0\uff1a\u623f\u5730\u4ea7\u3002 \u67e5\u770b\u4eca\u65e5\u603b\u89c8 \u2192  \u623f\u5730\u4ea7  \u4e70\u623f\u3001\u5efa\u623f\u4e0e\u6301\u6709\u4f4f\u623f\u7684\u6210\u672c\u662f\u591a\u5c11\uff1f  \u7b2c\u4e00\u6b21\u770b\uff1f30 \u79d2\u8bfb\u61c2  \u4eca\u5929\u6ca1\u6709\u65b0\u7684\u8bfb\u6570\u3002  \u6570\u636e\u63d0\u4f9b\u65b9",
           "device_px_span": {
             "x0": 664,
             "x1": 2160,
-            "y0": 458,
-            "y1": 1532
+            "y0": 580,
+            "y1": 1534
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 200363,
+          "bytes": 211258,
           "captured": true,
           "file": "empty-e2-dark-en-390.png",
           "force_state": "e2",
           "height": 1688,
           "width": 780,
           "locale": "en",
-          "sha256": "172205a443774aa9fe0d5d0581d471379b033d2904758d038b7c7da3da28f15a",
+          "sha256": "663dcfdf4de8e0e265624fb405ca0e0d53ca4d6419a8afbdca0f2dbf20cb0817",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -7829,14 +8021,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 211259,
+          "bytes": 217854,
           "captured": true,
           "file": "empty-e2-dark-zh-390.png",
           "force_state": "e2",
           "height": 1688,
           "width": 780,
           "locale": "zh",
-          "sha256": "4f4ec435a09f2ca6b37f0451f54723ad6fd67fab135ae651c9d920370946a6e8",
+          "sha256": "eb72f2e4a3edad3262115c4276afc90d01cf31ece72d1b5308ed2154f0aba2c8",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -7865,14 +8057,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 194154,
+          "bytes": 202569,
           "captured": true,
           "file": "empty-e2-light-en-390.png",
           "force_state": "e2",
           "height": 1688,
           "width": 780,
           "locale": "en",
-          "sha256": "c7013047ded7cc9cd0f647833ff51ba0a7f62b91b06a5c610a7aa00e5f6cfdf5",
+          "sha256": "2efc3767c7d9f345c31b14e2cc627b27627a796cceb03e856408fc3133bf0a34",
           "theme": "light",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -7901,14 +8093,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 211003,
+          "bytes": 210569,
           "captured": true,
           "file": "empty-e2-light-zh-390.png",
           "force_state": "e2",
           "height": 1688,
           "width": 780,
           "locale": "zh",
-          "sha256": "41fae29cdc62665677059b9bd22d0348d47652e7d8df32fcd9903f0ee7aae210",
+          "sha256": "a2f1539d9ce1b793dbf55082d0934a71b5d681dd4efc1504643cf8077fc57e5b",
           "theme": "light",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -7937,14 +8129,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 132803,
+          "bytes": 122031,
           "captured": true,
           "file": "empty-e3-dark-en-1440.png",
           "force_state": "e3",
-          "height": 1072,
+          "height": 950,
           "width": 1496,
           "locale": "en",
-          "sha256": "1d85f27bc3ac6aaeccbfb24d4ddf37c53fad2f45ce80a297bc44e9a7592582f6",
+          "sha256": "4f180321a9d5b699ca9a87592ea4ec8c4e485a71ca200939e7ed6ec86c1acc00",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -7952,12 +8144,12 @@
           "viewport_css_width": 1440,
           "dpr": 2.0,
           "css_width": 748,
-          "css_height": 534.453125,
+          "css_height": 473.953125,
           "clip": {
             "x": 332,
-            "y": 231.75,
+            "y": 291.75,
             "width": 748,
-            "height": 534.453125
+            "height": 473.953125
           },
           "section": "housing",
           "verified_how": "real builder render from injected fixture; clip of panel",
@@ -7969,37 +8161,41 @@
           "crop_selector": "section#housing",
           "crop_box": {
             "x": 332,
-            "y": 231.75,
+            "y": 291.75,
             "width": 748,
-            "height": 534.453125
+            "height": 473.953125
           },
           "crop_box_doc": {
             "x": 332,
             "y": 652.75,
             "width": 748,
-            "height": 534.453125
+            "height": 473.953125
           },
-          "scroll_y_at_shot": 421.0,
+          "scroll_y_at_shot": 361.0,
           "element_text_head": "You opened Macro Command at Housing. Read today's overview \u2192  Housing  What does",
           "device_px_span": {
             "x0": 664,
             "x1": 2160,
-            "y0": 463,
-            "y1": 1535
+            "y0": 582,
+            "y1": 1532
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 127172,
+          "bytes": 120728,
           "captured": true,
           "file": "empty-e3-dark-zh-1440.png",
           "force_state": "e3",
-          "height": 1028,
+          "height": 908,
           "width": 1496,
           "locale": "zh",
-          "sha256": "6dc3e11890a09888e8f8987ec63d3413142a51d948edff9dcc53ab797cbe1e13",
+          "sha256": "8c485686c7fe06cac9b65e15b4c820e36f31814e66d87efee99296013ba2ca39",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -8007,12 +8203,12 @@
           "viewport_css_width": 1440,
           "dpr": 2.0,
           "css_width": 748,
-          "css_height": 513.53125,
+          "css_height": 453.03125,
           "clip": {
             "x": 332,
-            "y": 252.1875,
+            "y": 313.1875,
             "width": 748,
-            "height": 513.53125
+            "height": 453.03125
           },
           "section": "housing",
           "verified_how": "real builder render from injected fixture; clip of panel",
@@ -8024,37 +8220,41 @@
           "crop_selector": "section#housing",
           "crop_box": {
             "x": 332,
-            "y": 252.1875,
+            "y": 313.1875,
             "width": 748,
-            "height": 513.53125
+            "height": 453.03125
           },
           "crop_box_doc": {
             "x": 332,
             "y": 575.1875,
             "width": 748,
-            "height": 513.53125
+            "height": 453.03125
           },
-          "scroll_y_at_shot": 323.0,
-          "element_text_head": "\u4f60\u4ece\u8fd9\u91cc\u8fdb\u5165\u5b8f\u89c2\u6307\u6325\u53f0\uff1a\u623f\u5730\u4ea7\u3002 \u67e5\u770b\u4eca\u65e5\u603b\u89c8 \u2192  \u623f\u5730\u4ea7  \u4e70\u623f\u3001\u5efa\u623f\u4e0e\u6301\u6709\u4f4f\u623f\u7684\u6210\u672c\u662f\u591a\u5c11\uff1f  \u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48: \u6682\u65f6\u65e0\u6cd5\u663e\u793a\u53d8\u5316  \u7b2c\u4e00\u6b21\u770b\uff1f30 \u79d2",
+          "scroll_y_at_shot": 262.0,
+          "element_text_head": "\u4f60\u4ece\u8fd9\u91cc\u8fdb\u5165\u5b8f\u89c2\u6307\u6325\u53f0\uff1a\u623f\u5730\u4ea7\u3002 \u67e5\u770b\u4eca\u65e5\u603b\u89c8 \u2192  \u623f\u5730\u4ea7  \u4e70\u623f\u3001\u5efa\u623f\u4e0e\u6301\u6709\u4f4f\u623f\u7684\u6210\u672c\u662f\u591a\u5c11\uff1f  \u7b2c\u4e00\u6b21\u770b\uff1f30 \u79d2\u8bfb\u61c2  \u6682\u65f6\u65e0\u6cd5\u663e\u793a\u53d8\u5316  \u4e0d\u5b58\u5728\u4ee5\u76f8\u540c",
           "device_px_span": {
             "x0": 664,
             "x1": 2160,
-            "y0": 504,
-            "y1": 1532
+            "y0": 626,
+            "y1": 1534
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 130364,
+          "bytes": 119519,
           "captured": true,
           "file": "empty-e3-light-en-1440.png",
           "force_state": "e3",
-          "height": 1076,
+          "height": 954,
           "width": 1496,
           "locale": "en",
-          "sha256": "d797de7fccccb66dca01716c2f8ff079c12f2d353ae7991b2c4092f67113edbe",
+          "sha256": "15c1e54d9f4d9dfde295fe49b576005bd62e4c92ed85eaeed89ecf7fa1d42398",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -8062,12 +8262,12 @@
           "viewport_css_width": 1440,
           "dpr": 2.0,
           "css_width": 748,
-          "css_height": 536.453125,
+          "css_height": 475.953125,
           "clip": {
             "x": 332,
-            "y": 229.75,
+            "y": 289.75,
             "width": 748,
-            "height": 536.453125
+            "height": 475.953125
           },
           "section": "housing",
           "verified_how": "real builder render from injected fixture; clip of panel",
@@ -8079,37 +8279,41 @@
           "crop_selector": "section#housing",
           "crop_box": {
             "x": 332,
-            "y": 229.75,
+            "y": 289.75,
             "width": 748,
-            "height": 536.453125
+            "height": 475.953125
           },
           "crop_box_doc": {
             "x": 332,
             "y": 656.75,
             "width": 748,
-            "height": 536.453125
+            "height": 475.953125
           },
-          "scroll_y_at_shot": 427.0,
+          "scroll_y_at_shot": 367.0,
           "element_text_head": "You opened Macro Command at Housing. Read today's overview \u2192  Housing  What does",
           "device_px_span": {
             "x0": 664,
             "x1": 2160,
-            "y0": 459,
-            "y1": 1535
+            "y0": 578,
+            "y1": 1532
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 123966,
+          "bytes": 117019,
           "captured": true,
           "file": "empty-e3-light-zh-1440.png",
           "force_state": "e3",
-          "height": 1032,
+          "height": 912,
           "width": 1496,
           "locale": "zh",
-          "sha256": "05d67402f49402e0afe41b2068a1c7cf54561c72fcee6fe7fdb3293f286a65d3",
+          "sha256": "fc8d7a5c7e63537b70f38fb9c1d3a5e9139ecacd88851cba38939ef598a1335d",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -8117,12 +8321,12 @@
           "viewport_css_width": 1440,
           "dpr": 2.0,
           "css_width": 748,
-          "css_height": 515.53125,
+          "css_height": 455.03125,
           "clip": {
             "x": 332,
-            "y": 250.1875,
+            "y": 311.1875,
             "width": 748,
-            "height": 515.53125
+            "height": 455.03125
           },
           "section": "housing",
           "verified_how": "real builder render from injected fixture; clip of panel",
@@ -8134,37 +8338,41 @@
           "crop_selector": "section#housing",
           "crop_box": {
             "x": 332,
-            "y": 250.1875,
+            "y": 311.1875,
             "width": 748,
-            "height": 515.53125
+            "height": 455.03125
           },
           "crop_box_doc": {
             "x": 332,
             "y": 579.1875,
             "width": 748,
-            "height": 515.53125
+            "height": 455.03125
           },
-          "scroll_y_at_shot": 329.0,
-          "element_text_head": "\u4f60\u4ece\u8fd9\u91cc\u8fdb\u5165\u5b8f\u89c2\u6307\u6325\u53f0\uff1a\u623f\u5730\u4ea7\u3002 \u67e5\u770b\u4eca\u65e5\u603b\u89c8 \u2192  \u623f\u5730\u4ea7  \u4e70\u623f\u3001\u5efa\u623f\u4e0e\u6301\u6709\u4f4f\u623f\u7684\u6210\u672c\u662f\u591a\u5c11\uff1f  \u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48: \u6682\u65f6\u65e0\u6cd5\u663e\u793a\u53d8\u5316  \u7b2c\u4e00\u6b21\u770b\uff1f30 \u79d2",
+          "scroll_y_at_shot": 268.0,
+          "element_text_head": "\u4f60\u4ece\u8fd9\u91cc\u8fdb\u5165\u5b8f\u89c2\u6307\u6325\u53f0\uff1a\u623f\u5730\u4ea7\u3002 \u67e5\u770b\u4eca\u65e5\u603b\u89c8 \u2192  \u623f\u5730\u4ea7  \u4e70\u623f\u3001\u5efa\u623f\u4e0e\u6301\u6709\u4f4f\u623f\u7684\u6210\u672c\u662f\u591a\u5c11\uff1f  \u7b2c\u4e00\u6b21\u770b\uff1f30 \u79d2\u8bfb\u61c2  \u6682\u65f6\u65e0\u6cd5\u663e\u793a\u53d8\u5316  \u4e0d\u5b58\u5728\u4ee5\u76f8\u540c",
           "device_px_span": {
             "x0": 664,
             "x1": 2160,
-            "y0": 500,
-            "y1": 1532
+            "y0": 622,
+            "y1": 1534
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 200555,
+          "bytes": 206315,
           "captured": true,
           "file": "empty-e3-dark-en-390.png",
           "force_state": "e3",
           "height": 1688,
           "width": 780,
           "locale": "en",
-          "sha256": "350f91f980cc4cfa3735b2bde986115ba2e7c11e5632bacdc5f77f34bafd90aa",
+          "sha256": "a78f91829a93ca51029fee7ef65e0a02f810cdc485f693b1529a942b16d51bd9",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -8193,14 +8401,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 210407,
+          "bytes": 212950,
           "captured": true,
           "file": "empty-e3-dark-zh-390.png",
           "force_state": "e3",
           "height": 1688,
           "width": 780,
           "locale": "zh",
-          "sha256": "856f942f8d27c9c115e6327fae666277dbdd189f6c770d1fbb3c120d3998e0fa",
+          "sha256": "112ea5640e4815557b121e31abf9e53591e7a145728d2a47c93aab5e19c69b7d",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -8229,14 +8437,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 191467,
+          "bytes": 198773,
           "captured": true,
           "file": "empty-e3-light-en-390.png",
           "force_state": "e3",
           "height": 1688,
           "width": 780,
           "locale": "en",
-          "sha256": "6988ab6cd5920c4aa2fa964dbf93cc6d105051b637e154de4d9108176f07e784",
+          "sha256": "8824d1392dcf278b0b861270b778d0431a425033d1b48d01b436739d9565663b",
           "theme": "light",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -8265,14 +8473,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 201166,
+          "bytes": 202979,
           "captured": true,
           "file": "empty-e3-light-zh-390.png",
           "force_state": "e3",
           "height": 1688,
           "width": 780,
           "locale": "zh",
-          "sha256": "d68b093306cab62495a4eed7ea4121623a83e64b0450316a581e45575e90f86d",
+          "sha256": "309c4358a2d9e06baabfaa3e2c4ff2bdbd7d89b308c88cf3a1db19e3a04db3fc",
           "theme": "light",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -8348,8 +8556,12 @@
           "device_px_span": {
             "x0": 664,
             "x1": 2160,
-            "y0": 541,
-            "y1": 1803
+            "y0": 540,
+            "y1": 1802
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -8405,6 +8617,10 @@
             "x1": 2160,
             "y0": 582,
             "y1": 1800
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -8458,8 +8674,12 @@
           "device_px_span": {
             "x0": 664,
             "x1": 2160,
-            "y0": 579,
-            "y1": 1803
+            "y0": 578,
+            "y1": 1802
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -8515,6 +8735,10 @@
             "x1": 2160,
             "y0": 620,
             "y1": 1800
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -8665,14 +8889,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 106605,
+          "bytes": 104752,
           "captured": true,
           "file": "empty-e6-dark-en-1440.png",
           "force_state": "e6",
-          "height": 1060,
+          "height": 1048,
           "width": 1496,
           "locale": "en",
-          "sha256": "b45ee90509a237f470916efcf93dfabf5a741bff563fda23620df78229eb0146",
+          "sha256": "0cfe4a73ecf40ce3e7d83c2cb24e219b72477f606d24fdc03aa20abc8060587b",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -8680,12 +8904,12 @@
           "viewport_css_width": 1440,
           "dpr": 2.0,
           "css_width": 748,
-          "css_height": 528.765625,
+          "css_height": 522.40625,
           "clip": {
             "x": 332,
-            "y": 370.75,
+            "y": 377.75,
             "width": 748,
-            "height": 528.765625
+            "height": 522.40625
           },
           "section": "redit",
           "verified_how": "real builder render from injected fixture; clip of panel",
@@ -8697,37 +8921,41 @@
           "crop_selector": "section#credit",
           "crop_box": {
             "x": 332,
-            "y": 370.75,
+            "y": 377.75,
             "width": 748,
-            "height": 528.765625
+            "height": 522.40625
           },
           "crop_box_doc": {
             "x": 332,
             "y": 652.75,
             "width": 748,
-            "height": 528.765625
+            "height": 522.40625
           },
-          "scroll_y_at_shot": 282.0,
+          "scroll_y_at_shot": 275.0,
           "element_text_head": "You opened Macro Command at Borrowing costs. Read today's overview \u2192  Borrowing ",
           "device_px_span": {
             "x0": 664,
             "x1": 2160,
-            "y0": 741,
-            "y1": 1801
+            "y0": 754,
+            "y1": 1802
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 98431,
+          "bytes": 97569,
           "captured": true,
           "file": "empty-e6-dark-zh-1440.png",
           "force_state": "e6",
-          "height": 1058,
+          "height": 1046,
           "width": 1496,
           "locale": "zh",
-          "sha256": "39d74c1433dd261bf424645a3d257d09496fc9a91550557dcec05e6d9a1521af",
+          "sha256": "84ecb875d3db6a9b8d4e76a3e6ba63bd9115810ea1adc9f28ea6fa23b15515da",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -8735,12 +8963,12 @@
           "viewport_css_width": 1440,
           "dpr": 2.0,
           "css_width": 748,
-          "css_height": 528.765625,
+          "css_height": 522.40625,
           "clip": {
             "x": 332,
-            "y": 371.1875,
+            "y": 377.1875,
             "width": 748,
-            "height": 528.765625
+            "height": 522.40625
           },
           "section": "redit",
           "verified_how": "real builder render from injected fixture; clip of panel",
@@ -8752,37 +8980,41 @@
           "crop_selector": "section#credit",
           "crop_box": {
             "x": 332,
-            "y": 371.1875,
+            "y": 377.1875,
             "width": 748,
-            "height": 528.765625
+            "height": 522.40625
           },
           "crop_box_doc": {
             "x": 332,
             "y": 575.1875,
             "width": 748,
-            "height": 528.765625
+            "height": 522.40625
           },
-          "scroll_y_at_shot": 204.0,
-          "element_text_head": "\u4f60\u4ece\u8fd9\u91cc\u8fdb\u5165\u5b8f\u89c2\u6307\u6325\u53f0\uff1a\u878d\u8d44\u73af\u5883\u3002 \u67e5\u770b\u4eca\u65e5\u603b\u89c8 \u2192  \u878d\u8d44\u73af\u5883  \u501f\u94b1\u6709\u591a\u8d35\uff1f\u53c8\u6709\u591a\u96be\uff1f  \u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48: \u5347\u7ea7\u540e\u53ef\u67e5\u770b\u8be5\u8bfb\u6570\u3002  \u7b2c\u4e00\u6b21\u770b\uff1f30 \u79d2\u8bfb\u61c2",
+          "scroll_y_at_shot": 198.0,
+          "element_text_head": "\u4f60\u4ece\u8fd9\u91cc\u8fdb\u5165\u5b8f\u89c2\u6307\u6325\u53f0\uff1a\u878d\u8d44\u73af\u5883\u3002 \u67e5\u770b\u4eca\u65e5\u603b\u89c8 \u2192  \u878d\u8d44\u73af\u5883  \u501f\u94b1\u6709\u591a\u8d35\uff1f\u53c8\u6709\u591a\u96be\uff1f  \u7b2c\u4e00\u6b21\u770b\uff1f30 \u79d2\u8bfb\u61c2 \u878d\u8d44\u96be\u6613 \u4f01\u4e1a\u878d\u8d44\u7ed3\u6784  \u5305\u542b\u5728\u66f4\u9ad8\u65b9\u6848\u4e2d",
           "device_px_span": {
             "x0": 664,
             "x1": 2160,
-            "y0": 742,
+            "y0": 754,
             "y1": 1800
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 105352,
+          "bytes": 103232,
           "captured": true,
           "file": "empty-e6-light-en-1440.png",
           "force_state": "e6",
-          "height": 1022,
+          "height": 1010,
           "width": 1496,
           "locale": "en",
-          "sha256": "7f471e22b6544200cf1858aa23e662cc76232bb899be46bdab929c2fe3d960c6",
+          "sha256": "1445f28af549a6e128b709c78ce164df5204ec45a7e633751f641390afb59225",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -8790,12 +9022,12 @@
           "viewport_css_width": 1440,
           "dpr": 2.0,
           "css_width": 748,
-          "css_height": 509.765625,
+          "css_height": 503.40625,
           "clip": {
             "x": 332,
-            "y": 389.75,
+            "y": 396.75,
             "width": 748,
-            "height": 509.765625
+            "height": 503.40625
           },
           "section": "redit",
           "verified_how": "real builder render from injected fixture; clip of panel",
@@ -8807,37 +9039,41 @@
           "crop_selector": "section#credit",
           "crop_box": {
             "x": 332,
-            "y": 389.75,
+            "y": 396.75,
             "width": 748,
-            "height": 509.765625
+            "height": 503.40625
           },
           "crop_box_doc": {
             "x": 332,
             "y": 656.75,
             "width": 748,
-            "height": 509.765625
+            "height": 503.40625
           },
-          "scroll_y_at_shot": 267.0,
+          "scroll_y_at_shot": 260.0,
           "element_text_head": "You opened Macro Command at Borrowing costs. Read today's overview \u2192  Borrowing ",
           "device_px_span": {
             "x0": 664,
             "x1": 2160,
-            "y0": 779,
-            "y1": 1801
+            "y0": 792,
+            "y1": 1802
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 95836,
+          "bytes": 93742,
           "captured": true,
           "file": "empty-e6-light-zh-1440.png",
           "force_state": "e6",
-          "height": 1020,
+          "height": 1008,
           "width": 1496,
           "locale": "zh",
-          "sha256": "f833f4f35e27d1909a895595276e1ba5f56bcc3f7eb5c144e0837169d03bb313",
+          "sha256": "d70727ac25bbd9b177ca2482fd9c3d3b9b7eaf89178311180ec8e246d4d99ce7",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -8845,12 +9081,12 @@
           "viewport_css_width": 1440,
           "dpr": 2.0,
           "css_width": 748,
-          "css_height": 509.765625,
+          "css_height": 503.40625,
           "clip": {
             "x": 332,
-            "y": 390.1875,
+            "y": 396.1875,
             "width": 748,
-            "height": 509.765625
+            "height": 503.40625
           },
           "section": "redit",
           "verified_how": "real builder render from injected fixture; clip of panel",
@@ -8862,37 +9098,41 @@
           "crop_selector": "section#credit",
           "crop_box": {
             "x": 332,
-            "y": 390.1875,
+            "y": 396.1875,
             "width": 748,
-            "height": 509.765625
+            "height": 503.40625
           },
           "crop_box_doc": {
             "x": 332,
             "y": 579.1875,
             "width": 748,
-            "height": 509.765625
+            "height": 503.40625
           },
-          "scroll_y_at_shot": 189.0,
-          "element_text_head": "\u4f60\u4ece\u8fd9\u91cc\u8fdb\u5165\u5b8f\u89c2\u6307\u6325\u53f0\uff1a\u878d\u8d44\u73af\u5883\u3002 \u67e5\u770b\u4eca\u65e5\u603b\u89c8 \u2192  \u878d\u8d44\u73af\u5883  \u501f\u94b1\u6709\u591a\u8d35\uff1f\u53c8\u6709\u591a\u96be\uff1f  \u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48: \u5347\u7ea7\u540e\u53ef\u67e5\u770b\u8be5\u8bfb\u6570\u3002  \u7b2c\u4e00\u6b21\u770b\uff1f30 \u79d2\u8bfb\u61c2",
+          "scroll_y_at_shot": 183.0,
+          "element_text_head": "\u4f60\u4ece\u8fd9\u91cc\u8fdb\u5165\u5b8f\u89c2\u6307\u6325\u53f0\uff1a\u878d\u8d44\u73af\u5883\u3002 \u67e5\u770b\u4eca\u65e5\u603b\u89c8 \u2192  \u878d\u8d44\u73af\u5883  \u501f\u94b1\u6709\u591a\u8d35\uff1f\u53c8\u6709\u591a\u96be\uff1f  \u7b2c\u4e00\u6b21\u770b\uff1f30 \u79d2\u8bfb\u61c2 \u878d\u8d44\u96be\u6613 \u4f01\u4e1a\u878d\u8d44\u7ed3\u6784  \u5305\u542b\u5728\u66f4\u9ad8\u65b9\u6848\u4e2d",
           "device_px_span": {
             "x0": 664,
             "x1": 2160,
-            "y0": 780,
+            "y0": 792,
             "y1": 1800
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 375851,
+          "bytes": 376085,
           "captured": true,
           "file": "empty-e6-dark-en-390.png",
           "force_state": "e6",
           "height": 1688,
           "width": 780,
           "locale": "en",
-          "sha256": "918408a576c374b9f7684d93e511e47c22cbea81e815f2f98d27c7068d3facc4",
+          "sha256": "3bbd8a026ae2f1f18ac76b7060e9d898dea3406000acf192ea60ac8c1e7b430e",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -8921,14 +9161,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 385843,
+          "bytes": 385807,
           "captured": true,
           "file": "empty-e6-dark-zh-390.png",
           "force_state": "e6",
           "height": 1688,
           "width": 780,
           "locale": "zh",
-          "sha256": "3bcb0988343caf51ad715e27ecd9b0f58c6b182d1ed044908fd56136ba4cdb10",
+          "sha256": "ae5df73044be03b32c24fb255c65a32768aa142d96c36636123320713723370c",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -8957,14 +9197,14 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 342319,
+          "bytes": 342401,
           "captured": true,
           "file": "empty-e6-light-en-390.png",
           "force_state": "e6",
           "height": 1688,
           "width": 780,
           "locale": "en",
-          "sha256": "0b8dc8bcab362781343ef76443ea039ff2f49414caba70d536d5bc2bf29de9f0",
+          "sha256": "271aa9056f9f1d195acbb7ca92154aad804c9293a5ffadae42ac55c9568039a7",
           "theme": "light",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -8993,14 +9233,14 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 356730,
+          "bytes": 356725,
           "captured": true,
           "file": "empty-e6-light-zh-390.png",
           "force_state": "e6",
           "height": 1688,
           "width": 780,
           "locale": "zh",
-          "sha256": "557a3322d7d0aaf49cc5efab1a6757cb2041288c278984005b34a2d051a96109",
+          "sha256": "68c8ea8f31da9e4e5b07d80c20157441146ac0212853f207b9a9596c45b8d009",
           "theme": "light",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -9052,7 +9292,7 @@
             "height": 146.3125
           },
           "section": "growth",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8069 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8029 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -9076,8 +9316,12 @@
           "device_px_span": {
             "x0": 742,
             "x1": 2082,
-            "y0": 1013,
-            "y1": 1309
+            "y0": 1012,
+            "y1": 1308
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -9107,7 +9351,7 @@
             "height": 146.3125
           },
           "section": "growth",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8060 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8050 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -9133,6 +9377,10 @@
             "x1": 2082,
             "y0": 1054,
             "y1": 1348
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -9162,7 +9410,7 @@
             "height": 146.3125
           },
           "section": "growth",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8055 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8080 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -9186,8 +9434,12 @@
           "device_px_span": {
             "x0": 714,
             "x1": 2110,
-            "y0": 1011,
-            "y1": 1307
+            "y0": 1010,
+            "y1": 1306
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -9217,7 +9469,7 @@
             "height": 146.3125
           },
           "section": "growth",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8094 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8088 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -9243,6 +9495,10 @@
             "x1": 2110,
             "y0": 1052,
             "y1": 1346
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -9272,7 +9528,7 @@
             "height": 166.453125
           },
           "section": "growth",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8062 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8012 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -9298,6 +9554,10 @@
             "x1": 682,
             "y0": 986,
             "y1": 1320
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -9327,7 +9587,7 @@
             "height": 166.453125
           },
           "section": "growth",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8018 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8041 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -9351,8 +9611,12 @@
           "device_px_span": {
             "x0": 98,
             "x1": 682,
-            "y0": 1029,
-            "y1": 1365
+            "y0": 1028,
+            "y1": 1364
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -9382,7 +9646,7 @@
             "height": 166.453125
           },
           "section": "growth",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8090 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8039 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -9406,8 +9670,12 @@
           "device_px_span": {
             "x0": 82,
             "x1": 698,
-            "y0": 973,
-            "y1": 1307
+            "y0": 972,
+            "y1": 1306
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -9437,7 +9705,7 @@
             "height": 146.3125
           },
           "section": "growth",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8069 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8070 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -9461,8 +9729,12 @@
           "device_px_span": {
             "x0": 82,
             "x1": 698,
-            "y0": 1015,
-            "y1": 1311
+            "y0": 1014,
+            "y1": 1310
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -9492,7 +9764,7 @@
             "height": 146.3125
           },
           "section": "jobs",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8069 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8077 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -9516,8 +9788,12 @@
           "device_px_span": {
             "x0": 742,
             "x1": 2082,
-            "y0": 1119,
-            "y1": 1415
+            "y0": 1118,
+            "y1": 1414
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -9547,7 +9823,7 @@
             "height": 146.3125
           },
           "section": "jobs",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8067 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8048 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -9573,6 +9849,10 @@
             "x1": 2082,
             "y0": 1118,
             "y1": 1412
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -9602,7 +9882,7 @@
             "height": 146.3125
           },
           "section": "jobs",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8093 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8062 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -9626,8 +9906,12 @@
           "device_px_span": {
             "x0": 714,
             "x1": 2110,
-            "y0": 1117,
-            "y1": 1413
+            "y0": 1116,
+            "y1": 1412
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -9657,7 +9941,7 @@
             "height": 146.3125
           },
           "section": "jobs",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8090 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8046 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -9683,6 +9967,10 @@
             "x1": 2110,
             "y0": 1116,
             "y1": 1410
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -9712,7 +10000,7 @@
             "height": 166.453125
           },
           "section": "jobs",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8073 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8011 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -9736,8 +10024,12 @@
           "device_px_span": {
             "x0": 98,
             "x1": 682,
-            "y0": 1093,
-            "y1": 1429
+            "y0": 1092,
+            "y1": 1428
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -9767,7 +10059,7 @@
             "height": 166.453125
           },
           "section": "jobs",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8083 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8008 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -9791,8 +10083,12 @@
           "device_px_span": {
             "x0": 98,
             "x1": 682,
-            "y0": 1093,
-            "y1": 1429
+            "y0": 1092,
+            "y1": 1428
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -9822,7 +10118,7 @@
             "height": 166.453125
           },
           "section": "jobs",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8041 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8010 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -9848,6 +10144,10 @@
             "x1": 698,
             "y0": 1078,
             "y1": 1412
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -9877,7 +10177,7 @@
             "height": 146.3125
           },
           "section": "jobs",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8012 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8040 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -9901,8 +10201,12 @@
           "device_px_span": {
             "x0": 82,
             "x1": 698,
-            "y0": 1079,
-            "y1": 1375
+            "y0": 1078,
+            "y1": 1374
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -9932,7 +10236,7 @@
             "height": 146.3125
           },
           "section": "housing",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8085 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8011 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -9958,6 +10262,10 @@
             "x1": 2082,
             "y0": 1170,
             "y1": 1464
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -9987,7 +10295,7 @@
             "height": 146.3125
           },
           "section": "housing",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8102 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8034 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -10013,6 +10321,10 @@
             "x1": 2082,
             "y0": 1170,
             "y1": 1464
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -10042,7 +10354,7 @@
             "height": 146.3125
           },
           "section": "housing",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8088 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8030 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -10068,6 +10380,10 @@
             "x1": 2110,
             "y0": 1168,
             "y1": 1462
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -10097,7 +10413,7 @@
             "height": 146.3125
           },
           "section": "housing",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8069 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8045 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -10123,6 +10439,10 @@
             "x1": 2110,
             "y0": 1168,
             "y1": 1462
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -10152,7 +10472,7 @@
             "height": 166.453125
           },
           "section": "housing",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8104 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8016 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -10178,6 +10498,10 @@
             "x1": 682,
             "y0": 1186,
             "y1": 1520
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -10207,7 +10531,7 @@
             "height": 166.453125
           },
           "section": "housing",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8012 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8029 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -10231,8 +10555,12 @@
           "device_px_span": {
             "x0": 98,
             "x1": 682,
-            "y0": 1187,
-            "y1": 1523
+            "y0": 1186,
+            "y1": 1522
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -10262,7 +10590,7 @@
             "height": 166.453125
           },
           "section": "housing",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8053 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8022 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -10286,8 +10614,12 @@
           "device_px_span": {
             "x0": 82,
             "x1": 698,
-            "y0": 1173,
-            "y1": 1509
+            "y0": 1172,
+            "y1": 1508
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -10317,7 +10649,7 @@
             "height": 146.3125
           },
           "section": "housing",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8059 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8080 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -10341,8 +10673,12 @@
           "device_px_span": {
             "x0": 82,
             "x1": 698,
-            "y0": 1173,
-            "y1": 1469
+            "y0": 1172,
+            "y1": 1468
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -10372,7 +10708,7 @@
             "height": 146.3125
           },
           "section": "consumer",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8015 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8099 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -10396,8 +10732,12 @@
           "device_px_span": {
             "x0": 742,
             "x1": 2082,
-            "y0": 1055,
-            "y1": 1351
+            "y0": 1054,
+            "y1": 1350
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -10427,7 +10767,7 @@
             "height": 146.3125
           },
           "section": "consumer",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8068 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8081 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -10453,6 +10793,10 @@
             "x1": 2082,
             "y0": 1054,
             "y1": 1348
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -10482,7 +10826,7 @@
             "height": 146.3125
           },
           "section": "consumer",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8007 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8055 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -10506,8 +10850,12 @@
           "device_px_span": {
             "x0": 714,
             "x1": 2110,
-            "y0": 1053,
-            "y1": 1349
+            "y0": 1052,
+            "y1": 1348
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -10537,7 +10885,7 @@
             "height": 146.3125
           },
           "section": "consumer",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8013 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8093 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -10563,6 +10911,10 @@
             "x1": 2110,
             "y0": 1052,
             "y1": 1346
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -10592,7 +10944,7 @@
             "height": 166.453125
           },
           "section": "consumer",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8074 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8030 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -10618,6 +10970,10 @@
             "x1": 682,
             "y0": 1028,
             "y1": 1362
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -10647,7 +11003,7 @@
             "height": 166.453125
           },
           "section": "consumer",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8034 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8068 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -10671,8 +11027,12 @@
           "device_px_span": {
             "x0": 98,
             "x1": 682,
-            "y0": 1029,
-            "y1": 1365
+            "y0": 1028,
+            "y1": 1364
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -10702,7 +11062,7 @@
             "height": 166.453125
           },
           "section": "consumer",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8033 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8036 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -10726,8 +11086,12 @@
           "device_px_span": {
             "x0": 82,
             "x1": 698,
-            "y0": 1015,
-            "y1": 1351
+            "y0": 1014,
+            "y1": 1350
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -10757,7 +11121,7 @@
             "height": 146.3125
           },
           "section": "consumer",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8006 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8087 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -10781,8 +11145,12 @@
           "device_px_span": {
             "x0": 82,
             "x1": 698,
-            "y0": 1015,
-            "y1": 1311
+            "y0": 1014,
+            "y1": 1310
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -10812,7 +11180,7 @@
             "height": 146.3125
           },
           "section": "credit",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8041 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8023 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -10836,8 +11204,12 @@
           "device_px_span": {
             "x0": 742,
             "x1": 2082,
-            "y0": 1077,
-            "y1": 1373
+            "y0": 1076,
+            "y1": 1372
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -10867,7 +11239,7 @@
             "height": 146.3125
           },
           "section": "credit",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8100 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8047 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -10893,6 +11265,10 @@
             "x1": 2082,
             "y0": 1118,
             "y1": 1412
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -10922,7 +11298,7 @@
             "height": 146.3125
           },
           "section": "credit",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8031 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8056 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -10946,8 +11322,12 @@
           "device_px_span": {
             "x0": 714,
             "x1": 2110,
-            "y0": 1075,
-            "y1": 1371
+            "y0": 1074,
+            "y1": 1370
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -10977,7 +11357,7 @@
             "height": 146.3125
           },
           "section": "credit",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8066 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8015 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -11003,6 +11383,10 @@
             "x1": 2110,
             "y0": 1116,
             "y1": 1410
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -11032,7 +11416,7 @@
             "height": 166.453125
           },
           "section": "credit",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8032 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8025 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -11056,8 +11440,12 @@
           "device_px_span": {
             "x0": 98,
             "x1": 682,
-            "y0": 1051,
-            "y1": 1387
+            "y0": 1050,
+            "y1": 1386
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -11087,7 +11475,7 @@
             "height": 166.453125
           },
           "section": "credit",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8021 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8039 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -11111,8 +11499,12 @@
           "device_px_span": {
             "x0": 98,
             "x1": 682,
-            "y0": 1093,
-            "y1": 1429
+            "y0": 1092,
+            "y1": 1428
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -11142,7 +11534,7 @@
             "height": 166.453125
           },
           "section": "credit",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8033 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8046 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -11168,6 +11560,10 @@
             "x1": 698,
             "y0": 1036,
             "y1": 1370
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -11197,7 +11593,7 @@
             "height": 146.3125
           },
           "section": "credit",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8054 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8044 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -11221,8 +11617,12 @@
           "device_px_span": {
             "x0": 82,
             "x1": 698,
-            "y0": 1079,
-            "y1": 1375
+            "y0": 1078,
+            "y1": 1374
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -11252,7 +11652,7 @@
             "height": 146.3125
           },
           "section": "debt",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8051 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8070 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -11278,6 +11678,10 @@
             "x1": 2082,
             "y0": 1170,
             "y1": 1464
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -11307,7 +11711,7 @@
             "height": 146.3125
           },
           "section": "debt",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8094 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8010 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -11333,6 +11737,10 @@
             "x1": 2082,
             "y0": 1170,
             "y1": 1464
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -11362,7 +11770,7 @@
             "height": 146.3125
           },
           "section": "debt",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8028 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8054 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -11388,6 +11796,10 @@
             "x1": 2110,
             "y0": 1168,
             "y1": 1462
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -11417,7 +11829,7 @@
             "height": 146.3125
           },
           "section": "debt",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8015 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8024 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -11443,6 +11855,10 @@
             "x1": 2110,
             "y0": 1168,
             "y1": 1462
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -11472,7 +11888,7 @@
             "height": 166.453125
           },
           "section": "debt",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8065 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8020 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -11496,8 +11912,12 @@
           "device_px_span": {
             "x0": 98,
             "x1": 682,
-            "y0": 1185,
-            "y1": 1521
+            "y0": 1184,
+            "y1": 1520
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -11527,7 +11947,7 @@
             "height": 166.453125
           },
           "section": "debt",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8031 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8071 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -11551,8 +11971,12 @@
           "device_px_span": {
             "x0": 98,
             "x1": 682,
-            "y0": 1187,
-            "y1": 1523
+            "y0": 1186,
+            "y1": 1522
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -11582,7 +12006,7 @@
             "height": 166.453125
           },
           "section": "debt",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8043 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8016 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -11608,6 +12032,10 @@
             "x1": 698,
             "y0": 1172,
             "y1": 1506
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -11637,7 +12065,7 @@
             "height": 146.3125
           },
           "section": "debt",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8063 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8053 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -11661,8 +12089,12 @@
           "device_px_span": {
             "x0": 82,
             "x1": 698,
-            "y0": 1173,
-            "y1": 1469
+            "y0": 1172,
+            "y1": 1468
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -11692,7 +12124,7 @@
             "height": 146.3125
           },
           "section": "trade",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8091 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8077 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -11716,8 +12148,12 @@
           "device_px_span": {
             "x0": 742,
             "x1": 2082,
-            "y0": 1171,
-            "y1": 1467
+            "y0": 1170,
+            "y1": 1466
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -11747,7 +12183,7 @@
             "height": 146.3125
           },
           "section": "trade",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8085 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8060 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -11773,6 +12209,10 @@
             "x1": 2082,
             "y0": 1170,
             "y1": 1464
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -11802,7 +12242,7 @@
             "height": 146.3125
           },
           "section": "trade",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8068 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8050 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -11826,8 +12266,12 @@
           "device_px_span": {
             "x0": 714,
             "x1": 2110,
-            "y0": 1169,
-            "y1": 1465
+            "y0": 1168,
+            "y1": 1464
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -11857,7 +12301,7 @@
             "height": 146.3125
           },
           "section": "trade",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8089 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8041 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -11883,6 +12327,10 @@
             "x1": 2110,
             "y0": 1168,
             "y1": 1462
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -11912,7 +12360,7 @@
             "height": 166.453125
           },
           "section": "trade",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8028 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8048 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -11936,8 +12384,12 @@
           "device_px_span": {
             "x0": 98,
             "x1": 682,
-            "y0": 1187,
-            "y1": 1523
+            "y0": 1186,
+            "y1": 1522
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -11967,7 +12419,7 @@
             "height": 166.453125
           },
           "section": "trade",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8058 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8041 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -11993,6 +12445,10 @@
             "x1": 682,
             "y0": 1186,
             "y1": 1520
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -12022,7 +12478,7 @@
             "height": 166.453125
           },
           "section": "trade",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8037 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8046 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -12048,6 +12504,10 @@
             "x1": 698,
             "y0": 1172,
             "y1": 1506
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         },
         {
@@ -12077,7 +12537,7 @@
             "height": 146.3125
           },
           "section": "trade",
-          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8053 locator.screenshot of cloned template",
+          "verified_how": "P3 stall of macro/fragments/*; elapsedMs=8078 locator.screenshot of cloned template",
           "fixture": "builder-payload",
           "trigger": "page.route never-fulfils macro/fragments/*; 8000ms client timeout cloned template",
           "crop": true,
@@ -12103,6 +12563,10 @@
             "x1": 698,
             "y0": 1172,
             "y1": 1466
+          },
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
           }
         }
       ]
