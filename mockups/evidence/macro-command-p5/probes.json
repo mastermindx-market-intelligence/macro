@@ -1,0 +1,158 @@
+{
+  "copy_15": {
+    "ok": true,
+    "rows": [
+      {
+        "string": "Details, methods and sources",
+        "in_page": true,
+        "inside": true,
+        "outside": false
+      },
+      {
+        "string": "Published reading",
+        "in_page": false,
+        "inside": true,
+        "outside": false
+      },
+      {
+        "string": "\u7ec6\u8282\u3001\u65b9\u6cd5\u4e0e\u6765\u6e90",
+        "in_page": false,
+        "inside": true,
+        "outside": false
+      }
+    ]
+  },
+  "copy_16": {
+    "ok": true,
+    "rows": [
+      {
+        "string": "Details, methods and sources",
+        "in_page": true,
+        "inside": true,
+        "outside": false
+      },
+      {
+        "string": "Published reading",
+        "in_page": false,
+        "inside": true,
+        "outside": false
+      },
+      {
+        "string": "\u7ec6\u8282\u3001\u65b9\u6cd5\u4e0e\u6765\u6e90",
+        "in_page": false,
+        "inside": true,
+        "outside": false
+      }
+    ]
+  },
+  "read_word_17": {
+    "ok": true,
+    "text": "Money\u8d44\u91d1",
+    "backgroundImage": "radial-gradient(closest-side, color(srgb 0.878431 0.627451 0.188235 / 0.12), rgba(0, 0, 0, 0))",
+    "halo_token": 0.12,
+    "halo": true,
+    "borderBottomWidth": "0px",
+    "borderBottomStyle": "solid",
+    "underline_px": 0,
+    "color": "color(srgb 0.878431 0.627451 0.188235)"
+  },
+  "read_word_17b": {
+    "ok": true,
+    "text": "Money\u8d44\u91d1",
+    "backgroundImage": "radial-gradient(closest-side, color(srgb 0 0 0 / 0), rgba(0, 0, 0, 0))",
+    "halo_token": 0,
+    "halo": false,
+    "borderBottomWidth": "2px",
+    "borderBottomStyle": "solid",
+    "underline_px": 2,
+    "color": "color(srgb 0.518353 0.379137 0.182431)"
+  },
+  "read_word_contrast_ok": true,
+  "i2_390": {
+    "ok": true,
+    "value": {
+      "x": 242.796875,
+      "y": 709.515625,
+      "w": 50.578125,
+      "h": 21.6875,
+      "in_view": true
+    },
+    "delta": {
+      "x": 301.375,
+      "y": 710.515625,
+      "w": 37.625,
+      "h": 19.375,
+      "in_view": true
+    },
+    "pill": {
+      "x": 232.734375,
+      "y": 745.859375,
+      "w": 141.265625,
+      "h": 42.140625
+    },
+    "overlap_value": false,
+    "overlap_delta": false
+  },
+  "copy_15_ok": true,
+  "copy_16_ok": true,
+  "copy_workspace": {
+    "ok": true,
+    "rows": [
+      {
+        "string": "Last accepted source cut",
+        "in_page": false,
+        "inside": false,
+        "outside": false
+      },
+      {
+        "string": "Calculation as-of",
+        "in_page": false,
+        "inside": false,
+        "outside": false
+      },
+      {
+        "string": "Page built",
+        "in_page": false,
+        "inside": false,
+        "outside": false
+      },
+      {
+        "string": "Method version",
+        "in_page": false,
+        "inside": false,
+        "outside": false
+      },
+      {
+        "string": "Authority ceiling",
+        "in_page": false,
+        "inside": true,
+        "outside": false
+      },
+      {
+        "string": "Source receipt",
+        "in_page": false,
+        "inside": true,
+        "outside": false
+      },
+      {
+        "string": "Content hash",
+        "in_page": false,
+        "inside": true,
+        "outside": false
+      },
+      {
+        "string": "Deterministic text from the accepted snapshot. No language model writes here.",
+        "in_page": false,
+        "inside": false,
+        "outside": false
+      }
+    ]
+  },
+  "i2_ok": true,
+  "gaps": [
+    "E5 remains a disclosed gap: the empty-e5 node is a <template> the client mounts on fragment failure, not a builder-triggerable fixture.",
+    "head_sha 729d4593a16ba2af13f9f12a0c4d1906b8885ab1 is the pre-commit tip at capture; P5 commits land after.",
+    "Frame 18: live hub has omitted=True null_chips=2; E2/E6 not builder-triggerable (e2=False e6=False).",
+    "Frame 19: live hub has omitted=True null_chips=2; E2/E6 not builder-triggerable (e2=False e6=False)."
+  ]
+}
