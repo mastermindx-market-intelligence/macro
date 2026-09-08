@@ -24,7 +24,7 @@
     }
   },
   "excluded": [],
-  "generated_at": "2026-09-08T08:32:06Z",
+  "generated_at": "2026-09-08T09:36:55Z",
   "honesty": {
     "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
     "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
@@ -35,50 +35,106 @@
     {
       "console_errors": [
         {
-          "source_url": "http://127.0.0.1:58076/navigation-refresh.css",
+          "source_url": "http://127.0.0.1:63096/logo_config.js",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:58076/stock-logos.js",
+          "source_url": "http://127.0.0.1:63096/stock-logos.js",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:58076/logo_config.js",
+          "source_url": "http://127.0.0.1:63096/live_config.js",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:58076/measurementdata/measurement_data.js",
+          "source_url": "http://127.0.0.1:63096/live.js",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:58076/live_config.js",
+          "source_url": "http://127.0.0.1:63096/measurementdata/measurement_data.js",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:58076/measurement.html",
+          "source_url": "http://127.0.0.1:63096/measurement.html",
           "text": "measurement.html: window.MEASUREMENT not loaded — check measurementdata/measurement_data.js"
+        },
+        {
+          "source_url": "http://127.0.0.1:63096/fonts/Inter-600.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:63096/account.js?v=20260814-sf-inter-font-upgrade",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:63096/fonts/Inter-700.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:63096/fonts/Inter-400.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:63096/terminal_overlay.js",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:63096/fonts/Inter-500.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:63096/fonts/Inter-800.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         }
       ],
       "failed_responses": [
         {
           "status": 404,
-          "url": "http://127.0.0.1:58076/navigation-refresh.css"
+          "url": "http://127.0.0.1:63096/logo_config.js"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:58076/stock-logos.js"
+          "url": "http://127.0.0.1:63096/stock-logos.js"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:58076/logo_config.js"
+          "url": "http://127.0.0.1:63096/live_config.js"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:58076/measurementdata/measurement_data.js"
+          "url": "http://127.0.0.1:63096/live.js"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:58076/live_config.js"
+          "url": "http://127.0.0.1:63096/measurementdata/measurement_data.js"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63096/fonts/Inter-600.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63096/account.js?v=20260814-sf-inter-font-upgrade"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63096/fonts/Inter-700.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63096/fonts/Inter-400.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63096/terminal_overlay.js"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63096/fonts/Inter-500.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63096/fonts/Inter-800.woff2"
         }
       ],
       "gaps": [
@@ -129,18 +185,18 @@
         "asof_present": false,
         "by_viewport": {
           "desktop": {
-            "document_height_px": 8800,
+            "document_height_px": 4568,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 7528,
+            "document_height_px": 7094,
             "elements_wider_than_viewport": 4,
             "horizontal_overflow": false
           }
         },
         "console_error_count": 2,
-        "document_height_px": 8800,
+        "document_height_px": 4568,
         "duplicate_heading_texts": [],
         "elements_wider_than_viewport": 0,
         "heading_counts": {
@@ -160,7 +216,7 @@
           "viewport": "desktop"
         },
         "panel_count": 3,
-        "payload_bytes_total": 572339,
+        "payload_bytes_total": 392742,
         "raw_slug_hit_count": 4,
         "raw_slug_hits": [
           "etf_board_track",
@@ -174,7 +230,7 @@
         "source_present": true,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 1296
+        "visible_word_count": 1294
       },
       "page_id": "measurement.html",
       "registry_route": "/measurement.html",
@@ -185,13 +241,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 928155,
+          "bytes": 948314,
           "captured": true,
-          "file": "e96b2d4b41933de6.png",
+          "file": "2b5a31816457b58c.png",
           "force_state": null,
-          "height": 8800,
+          "height": 4568,
           "locale": "en",
-          "sha256": "e96b2d4b41933de6b1045f4c30c4367978bb7f6c016376e7a7eda63c6b598f61",
+          "sha256": "2b5a31816457b58cb3c1cb7c29309b3e255f0fee79406532c0bb09ae2a8aa271",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -202,13 +258,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 912853,
+          "bytes": 932718,
           "captured": true,
-          "file": "0d6fa2773c8957a9.png",
+          "file": "dd58be98a850d72d.png",
           "force_state": null,
-          "height": 8800,
+          "height": 4568,
           "locale": "en",
-          "sha256": "0d6fa2773c8957a9a014fcc0eaa18687c8b3bcbbcf83aee9350d3b13f253de6b",
+          "sha256": "dd58be98a850d72d7d34f40a2fe54cbc8287fe0673ea1fa90bfb37b6cc3d9739",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -219,13 +275,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 1009920,
+          "bytes": 1019120,
           "captured": true,
-          "file": "1702adebc0c23fb9.png",
+          "file": "7f5311ff9df58e98.png",
           "force_state": null,
-          "height": 6613,
+          "height": 4410,
           "locale": "zh",
-          "sha256": "1702adebc0c23fb952ecef420bd1f7ea97ddc6925897fb906638e0091dcc9819",
+          "sha256": "7f5311ff9df58e98d172bf2a973b1131e00a9da75b27dc47b760a1a1b31ba266",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -236,13 +292,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 994866,
+          "bytes": 1006763,
           "captured": true,
-          "file": "3ec92b3cebbbc8cd.png",
+          "file": "bd795ee2e393751e.png",
           "force_state": null,
-          "height": 6613,
+          "height": 4410,
           "locale": "zh",
-          "sha256": "3ec92b3cebbbc8cd22b6e354228d75771bac92aad5d017cbd5aa8b391d3a7b8f",
+          "sha256": "bd795ee2e393751eaf02883971c12ac610f918e951522b8337e9797996e5ec5c",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -253,13 +309,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 741592,
+          "bytes": 771442,
           "captured": true,
-          "file": "a170d71886547419.png",
+          "file": "ac9467459b77caec.png",
           "force_state": null,
-          "height": 7535,
+          "height": 7094,
           "locale": "en",
-          "sha256": "a170d7188654741983b66d7d7755315ae563c17ffe12ffd668269475d51d050f",
+          "sha256": "ac9467459b77caec3d00dde4feab0d069b629cab451df21d2388927017fb9c93",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -270,13 +326,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 739580,
+          "bytes": 767176,
           "captured": true,
-          "file": "b8a7889818b4fca3.png",
+          "file": "72ab2cf914badd7e.png",
           "force_state": null,
-          "height": 7535,
+          "height": 7094,
           "locale": "en",
-          "sha256": "b8a7889818b4fca3f6b67087f9460ac6a506234c4755b55388d44a84b1b11eb3",
+          "sha256": "72ab2cf914badd7e9b4d46a2d84a0e9ce748e800ff137e087f138525951ee6cc",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -287,13 +343,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 823587,
+          "bytes": 841134,
           "captured": true,
-          "file": "adf8b181a38cfce9.png",
+          "file": "ebee61dad67202e2.png",
           "force_state": null,
-          "height": 6859,
+          "height": 6410,
           "locale": "zh",
-          "sha256": "adf8b181a38cfce9fb97b9971b017dec33784185aeb55ef5f8b6e0c292ffd56a",
+          "sha256": "ebee61dad67202e2c36481606f1ac20e062476ce3fea657c71418b9e7f35e329",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -304,13 +360,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 823950,
+          "bytes": 840361,
           "captured": true,
-          "file": "9abe20faf73ca9cf.png",
+          "file": "88fde670fdba6ac1.png",
           "force_state": null,
-          "height": 6859,
+          "height": 6410,
           "locale": "zh",
-          "sha256": "9abe20faf73ca9cf20afa1110c75857571e14328deee2736b9a0a71b897fe43d",
+          "sha256": "88fde670fdba6ac1bc7ea6ab19cf627b448b9b04fe275d82cedc8710057f8777",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -322,46 +378,102 @@
     {
       "console_errors": [
         {
-          "source_url": "http://127.0.0.1:58076/navigation-refresh.css",
+          "source_url": "http://127.0.0.1:63096/logo_config.js",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:58076/logo_config.js",
+          "source_url": "http://127.0.0.1:63096/stock-logos.js",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:58076/stock-logos.js",
+          "source_url": "http://127.0.0.1:63096/live_config.js",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:58076/live_config.js",
+          "source_url": "http://127.0.0.1:63096/live.js",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:58076/assets/js/intelligence-hub-market-pulse.js?v=20260902a",
+          "source_url": "http://127.0.0.1:63096/assets/js/intelligence-hub-market-pulse.js?v=20260902a",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:63096/fonts/Inter-700.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:63096/fonts/Inter-600.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:63096/account.js?v=20260814-sf-inter-font-upgrade",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:63096/fonts/Inter-400.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:63096/terminal_overlay.js",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:63096/fonts/Inter-500.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:63096/fonts/Inter-800.woff2",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         }
       ],
       "failed_responses": [
         {
           "status": 404,
-          "url": "http://127.0.0.1:58076/navigation-refresh.css"
+          "url": "http://127.0.0.1:63096/logo_config.js"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:58076/logo_config.js"
+          "url": "http://127.0.0.1:63096/stock-logos.js"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:58076/stock-logos.js"
+          "url": "http://127.0.0.1:63096/live_config.js"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:58076/live_config.js"
+          "url": "http://127.0.0.1:63096/live.js"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:58076/assets/js/intelligence-hub-market-pulse.js?v=20260902a"
+          "url": "http://127.0.0.1:63096/assets/js/intelligence-hub-market-pulse.js?v=20260902a"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63096/fonts/Inter-700.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63096/fonts/Inter-600.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63096/account.js?v=20260814-sf-inter-font-upgrade"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63096/fonts/Inter-400.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63096/terminal_overlay.js"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63096/fonts/Inter-500.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63096/fonts/Inter-800.woff2"
         }
       ],
       "gaps": [
@@ -412,18 +524,18 @@
         "asof_present": false,
         "by_viewport": {
           "desktop": {
-            "document_height_px": 8790,
+            "document_height_px": 944,
             "elements_wider_than_viewport": 0,
-            "horizontal_overflow": true
+            "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 1795,
+            "document_height_px": 1389,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           }
         },
         "console_error_count": 1,
-        "document_height_px": 8790,
+        "document_height_px": 944,
         "duplicate_heading_texts": [],
         "elements_wider_than_viewport": 0,
         "heading_counts": {
@@ -434,7 +546,7 @@
           "h5": 0,
           "h6": 0
         },
-        "horizontal_overflow": true,
+        "horizontal_overflow": false,
         "long_paragraph_count": 0,
         "measured_in": {
           "access": "anonymous",
@@ -443,7 +555,7 @@
           "viewport": "desktop"
         },
         "panel_count": 3,
-        "payload_bytes_total": 534406,
+        "payload_bytes_total": 352422,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 15,
@@ -452,7 +564,7 @@
         "source_present": false,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 205
+        "visible_word_count": 206
       },
       "page_id": "intelligence_hub.html",
       "registry_route": "/intelligence_hub.html",
@@ -463,47 +575,47 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 366569,
+          "bytes": 328802,
           "captured": true,
-          "file": "73c389d030fc3a59.png",
+          "file": "611de1aebbb044fb.png",
           "force_state": null,
-          "height": 8790,
+          "height": 944,
           "locale": "en",
-          "sha256": "73c389d030fc3a592ab9107af6c18b10163c5dfc1b1dd55eba8ee7504f49afee",
+          "sha256": "611de1aebbb044fb6d9c779cc3773aebf07ee3644efeeda330d0ae5f3feb8857",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
           "viewport_width": 1440,
-          "width": 1496
+          "width": 1440
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 353022,
+          "bytes": 311283,
           "captured": true,
-          "file": "5c60b22b63595aba.png",
+          "file": "d6528c309fedcae5.png",
           "force_state": null,
-          "height": 8790,
+          "height": 944,
           "locale": "en",
-          "sha256": "5c60b22b63595aba773cba30d50b51e68bc67f3d344d3ae1e2dc1c08dd0fede5",
+          "sha256": "d6528c309fedcae5246eeebd3953e5062d3ab2077f883a001147ba86d83eb890",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
           "viewport_width": 1440,
-          "width": 1496
+          "width": 1440
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 357445,
+          "bytes": 333103,
           "captured": true,
-          "file": "d966581695ed8f62.png",
+          "file": "85e631b55184e511.png",
           "force_state": null,
-          "height": 6603,
+          "height": 949,
           "locale": "zh",
-          "sha256": "d966581695ed8f628ac5b20fda573e8668f767cdb2712a71c56f15015b08d686",
+          "sha256": "85e631b55184e5111c7b5518bfb53d13a900d518988c3906cbfaf3a3f0d49a93",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -514,13 +626,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 344151,
+          "bytes": 318274,
           "captured": true,
-          "file": "71decdda29782d66.png",
+          "file": "51ce51faa8b1d750.png",
           "force_state": null,
-          "height": 6603,
+          "height": 949,
           "locale": "zh",
-          "sha256": "71decdda29782d661826de7bf23c677d52b8136a5c5f3584f1900ba3a19e9f69",
+          "sha256": "51ce51faa8b1d750de3fcd2207758ecd7ba49fafa67725b65e46799950520945",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -531,13 +643,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 195583,
+          "bytes": 210766,
           "captured": true,
-          "file": "7ea641e78b84f3f8.png",
+          "file": "08d1265bf2944439.png",
           "force_state": null,
-          "height": 1795,
+          "height": 1389,
           "locale": "en",
-          "sha256": "7ea641e78b84f3f871129117c1e8efc63e9b61d709cc364dbe4f8624e54ab725",
+          "sha256": "08d1265bf2944439acab27034c562b2f9e959228124b868f1e2cba0fccb19fb9",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -548,13 +660,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 192523,
+          "bytes": 206037,
           "captured": true,
-          "file": "61710728ab5fdc55.png",
+          "file": "0c19744fc334a7b5.png",
           "force_state": null,
-          "height": 1795,
+          "height": 1389,
           "locale": "en",
-          "sha256": "61710728ab5fdc55beffbccccc36ebf372ee9d2506dfb58758d28f1fa3e3b439",
+          "sha256": "0c19744fc334a7b5490356665922aa3029bede43631047fcc636c71509da9f8b",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -565,13 +677,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 200805,
+          "bytes": 207335,
           "captured": true,
-          "file": "42c5c45f6f52b7b7.png",
+          "file": "1c0d0a83a320fab5.png",
           "force_state": null,
-          "height": 1674,
+          "height": 1268,
           "locale": "zh",
-          "sha256": "42c5c45f6f52b7b7fbc1a21948d5ebd1029145705951f7684bfe379286029a7b",
+          "sha256": "1c0d0a83a320fab5764a84559bb758fa50f7c5e7e11aca6709b3825d5b0f5ea4",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -582,13 +694,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 198229,
+          "bytes": 204112,
           "captured": true,
-          "file": "9737a2022bf5d0be.png",
+          "file": "20109d4ec01a74c1.png",
           "force_state": null,
-          "height": 1681,
+          "height": 1268,
           "locale": "zh",
-          "sha256": "9737a2022bf5d0be96eece268b28af89e1bc19e1bcb8e2f1683e6c54a52f5f08",
+          "sha256": "20109d4ec01a74c1e32067b689ef3a92d157547da4821a8e5f021bdad83b7efe",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -617,7 +729,7 @@
     "base_url": null,
     "kind": "site_dir",
     "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/wf_a2c8132e-faa-8",
-    "resolved_sha_or_none": "45b5b20d37ded41f5cabbb2df6c2e8bb25d5a270",
+    "resolved_sha_or_none": "1ce9bf9a700217bc29319ec03866528167ccdde3",
     "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/wf_a2c8132e-faa-8 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
     "site_dir": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-8/mockups/evidence/_f10a1_capture_site"
   },
@@ -631,5 +743,7 @@
     "pages": 2,
     "states_attempted": 16,
     "states_captured": 16
-  }
+  },
+  "capture_sha": "1ce9bf9a700217bc29319ec03866528167ccdde3",
+  "mobile_width_truth": "All 8 mobile PNGs are 390px by PNG IHDR (viewport_width 390). measurement.html mobile reports elements_wider_than_viewport=4 and horizontal_overflow=false; the captured frames stay 390. Frames are full-page viewport shots of Jinja-rendered pages with theme.css, not element clips, so no clip: field."
 }

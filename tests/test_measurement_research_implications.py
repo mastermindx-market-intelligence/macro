@@ -1663,6 +1663,13 @@ def test_f10a1_evidence_is_full_viewport_and_theme_differentiated():
     assert "templates/measurement.html.j2" in body["changed_paths"]
     assert "templates/intelligence_hub.html.j2" in body["changed_paths"]
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    capture_sha = manifest.get("capture_sha") or (manifest.get("target") or {}).get(
+        "resolved_sha_or_none"
+    )
+    assert isinstance(capture_sha, str) and re.fullmatch(r"[0-9a-f]{40}", capture_sha), (
+        "manifest must bind frames to a committed code sha"
+    )
+    assert manifest.get("generated_at"), "manifest must record generated_at"
     pages = {page["page_id"]: page for page in manifest["pages"]}
     assert set(pages) == {"measurement.html", "intelligence_hub.html"}
 
@@ -1684,6 +1691,16 @@ def test_f10a1_evidence_is_full_viewport_and_theme_differentiated():
             assert png.is_file(), f"missing {png.name}"
             assert state.get("applied_theme") == state["theme"]
             assert state.get("applied_locale") == state["locale"]
+            header = png.read_bytes()[:24]
+            assert header[12:16] == b"IHDR"
+            ihdr_w = int.from_bytes(header[16:20], "big")
+            ihdr_h = int.from_bytes(header[20:24], "big")
+            assert state["width"] == ihdr_w, (
+                f"{png.name} manifest width {state['width']} != IHDR {ihdr_w}"
+            )
+            assert state["height"] == ihdr_h, (
+                f"{png.name} manifest height {state['height']} != IHDR {ihdr_h}"
+            )
             if state["viewport"] == "desktop":
                 assert state["viewport_width"] == 1440
                 assert state["width"] >= 1400, (
@@ -1698,6 +1715,11 @@ def test_f10a1_evidence_is_full_viewport_and_theme_differentiated():
                 assert state["viewport_width"] == 390
                 assert state["width"] >= 360
                 assert state["height"] >= 700
+                if state["width"] != 390:
+                    note = manifest.get("mobile_width_truth") or ""
+                    assert note and (
+                        "clip:" in note or str(state["width"]) in note
+                    )
 
     meas = pages["measurement.html"]
     dark = next(
