@@ -176,15 +176,13 @@ def _expected_metric_value(metric: dict) -> str:
             return f"&lt; {floor:.4f}"
         if isinstance(draws, (int, float)) and not isinstance(draws, bool) and draws > 0 and value == 0:
             return f"&lt; {1 / (draws + 1):.4f}"
-        return f"{value:.4f}"
-    if unit in {"months", "events", "episodes", "draws", "tickers"}:
-        return str(value)
-    if unit == "probability" and isinstance(value, (int, float)) and not isinstance(value, bool):
         if value < 0.0001:
             return "below 0.0001"
         if value > 0.9999:
             return "above 0.9999"
         return f"{value:.4f}"
+    if unit in {"months", "events", "episodes", "draws", "tickers"}:
+        return str(value)
     if isinstance(value, (int, float)) and not isinstance(value, bool):
         return f"{value:.4f}"
     return str(value)
@@ -1457,7 +1455,7 @@ def test_missing_confidence_interval_is_printed_for_synthetic_control(contract, 
 
 
 def test_honest_zero_probability_is_printed_not_invented_floor(real_section):
-    """A stored 0 without display_floor/draws is printed as 0.0000, not < 0.001."""
+    """A stored 0 without display_floor/draws uses the parent floor, never 0.0000 or < 0.001."""
     card_html = _isolate_card(real_section, "synthetic_control")
     fig = re.search(
         r'data-ric-code="monthly_newey_west_p".*?</div>',
@@ -1465,7 +1463,9 @@ def test_honest_zero_probability_is_printed_not_invented_floor(real_section):
         flags=re.DOTALL,
     )
     assert fig, "monthly_newey_west_p fig missing"
-    assert "0.0000" in fig.group(0)
+    assert "below 0.0001" in fig.group(0)
+    assert "小于 0.0001" in fig.group(0)
+    assert "0.0000" not in fig.group(0)
     assert "&lt; 0.001" not in fig.group(0)
     assert "< 0.001" not in fig.group(0)
 
@@ -1546,25 +1546,53 @@ def test_probability_floor_comes_from_contract_precision_or_draws():
 
 
 def test_glance_header_uses_review_plain_word_labels(contract, real_section):
-    family_gloss = {
-        "synthetic_control": ("Synthetic control", "合成控制"),
-        "event_study": ("Event study", "事件研究"),
+    """MAJOR 3: glance header is the parent's one state chip; method/tier live in Receipts."""
+    family_rows = {
+        "synthetic_control": ("Method: synthetic control", "方法：合成对照"),
+        "event_study": ("Method: event study", "方法：事件研究"),
     }
     for card in contract["cards"]:
-        header = _isolate_header(_isolate_card(real_section, card["method_family"]))
-        assert "Evidence: diagnostic run" in header
-        assert "证据：诊断性运行" in header
-        en, zh = family_gloss[card["method_family"]]
-        assert en in header
-        assert zh in header
+        card_html = _isolate_card(real_section, card["method_family"])
+        header = _isolate_header(card_html)
+        receipts = _isolate_receipts(card_html)
+        glance = _glance_outside_details(card_html)
+        assert 'class="ric-state"' in header
+        assert "Evidence: diagnostic run" not in header
+        assert "证据：诊断性运行" not in header
         assert "tier: DIAGNOSTIC" not in header
-        glance = _glance_outside_details(
-            _isolate_card(real_section, card["method_family"])
-        )
+        assert 'class="ric-tier"' not in header
+        assert 'class="ric-fam"' not in header
+        assert 'class="ric-state-code"' not in header
+        en, zh = family_rows[card["method_family"]]
+        assert en not in header
+        assert zh not in header
+        assert en in receipts
+        assert zh in receipts
+        assert "Evidence tier: diagnostic — not used for decisions" in receipts
+        assert "证据层级：诊断——不用于决策" in receipts
+        assert "Authority: none — exploratory, not gated" in receipts
+        assert "权限：无——探索性，未经门控" in receipts
+        assert card["quality"] in receipts
+        assert card["evidence_tier"] in receipts
+        assert card["method_family"] in receipts
         assert "Watch — do not trade off this card." in glance
         assert "观望 — 不要据此交易。" in glance
         assert "forecast_authority=false" not in glance
         assert "EXPLORATORY_NON_GATED" not in glance
+
+
+def test_machine_strings_stay_inside_receipts(real_section):
+    """Zero ric-state-code / ric-tier / _authority= strings outside .ric-receipts."""
+    without = re.sub(
+        r"<details\b[^>]*\bric-receipts\b[^>]*>.*?</details>",
+        "",
+        real_section,
+        flags=re.DOTALL,
+    )
+    assert "ric-state-code" not in without
+    assert 'class="ric-tier"' not in without
+    assert "_authority=" not in without
+    assert real_section.count("ric-receipts") >= 2
 
 
 def test_zero_result_filter_copy_is_not_the_showing_zero_line():

@@ -2132,18 +2132,21 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
     {%- endif -%}
   {%- endmacro -%}
 
-  {%- macro ric_tier_label(t) -%}
-    {%- if t == 'DIAGNOSTIC' -%}<span class="l-en">Evidence: diagnostic run</span><span class="l-zh">证据：诊断性运行</span>
-    {%- elif t == 'EXPLORATORY_NON_GATED' -%}<span class="l-en">Exploratory — not gated</span><span class="l-zh">探索性 —— 未设门槛</span>
-    {%- else -%}<span class="l-en">{{ t }}</span><span class="l-zh">{{ t }}</span>
+  {%- macro ric_method_receipt(f) -%}
+    {%- if f == 'synthetic_control' -%}<span class="l-en">Method: synthetic control</span><span class="l-zh">方法：合成对照</span>
+    {%- elif f == 'event_study' -%}<span class="l-en">Method: event study</span><span class="l-zh">方法：事件研究</span>
+    {%- else -%}<span class="l-en">Method: {{ f|replace('_', ' ') }}</span><span class="l-zh">方法：{{ f }}</span>
     {%- endif -%}
   {%- endmacro -%}
 
-  {%- macro ric_family_label(f) -%}
-    {%- if f == 'synthetic_control' -%}<span class="l-en">Synthetic control</span><span class="l-zh">合成控制</span>
-    {%- elif f == 'event_study' -%}<span class="l-en">Event study</span><span class="l-zh">事件研究</span>
-    {%- else -%}<span class="l-en">{{ f }}</span><span class="l-zh">{{ f }}</span>
+  {%- macro ric_tier_receipt(t) -%}
+    {%- if t == 'DIAGNOSTIC' -%}<span class="l-en">Evidence tier: diagnostic — not used for decisions</span><span class="l-zh">证据层级：诊断——不用于决策</span>
+    {%- else -%}<span class="l-en">Evidence tier: {{ t|replace('_', ' ')|lower }}</span><span class="l-zh">证据层级：{{ t }}</span>
     {%- endif -%}
+  {%- endmacro -%}
+
+  {%- macro ric_authority_receipt() -%}
+    <span class="l-en">Authority: none — exploratory, not gated</span><span class="l-zh">权限：无——探索性，未经门控</span>
   {%- endmacro -%}
 
   {%- macro ric_value(item) -%}
@@ -2166,15 +2169,14 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
         {%- set resample_floor = 1 / (draws + 1) -%}
         &lt; {{ '%.4f'|format(resample_floor) }}{{ ric_unit(u) }}
         <span class="ric-fig-sub"><span class="l-en">resampling floor 1/(draws+1)</span><span class="l-zh">重抽样下限 1/(次数+1)</span></span>
+      {%- elif v < 0.0001 -%}
+        <span class="l-en">below 0.0001</span><span class="l-zh">小于 0.0001</span>{{ ric_unit(u) }}
+      {%- elif v > 0.9999 -%}
+        <span class="l-en">above 0.9999</span><span class="l-zh">大于 0.9999</span>{{ ric_unit(u) }}
       {%- else -%}
         {{ '%.4f'|format(v) }}{{ ric_unit(u) }}
       {%- endif -%}
     {%- elif u in ('months', 'events', 'episodes', 'draws', 'tickers') -%}{{ v }}{{ ric_unit(u) }}
-    {%- elif u == 'probability' and v is number -%}
-      {%- if v < 0.0001 -%}<span class="l-en">below 0.0001</span><span class="l-zh">小于 0.0001</span>{{ ric_unit(u) }}
-      {%- elif v > 0.9999 -%}<span class="l-en">above 0.9999</span><span class="l-zh">大于 0.9999</span>{{ ric_unit(u) }}
-      {%- else -%}{{ '%.4f'|format(v) }}{{ ric_unit(u) }}
-      {%- endif -%}
     {%- elif v is number -%}{{ '%.4f'|format(v) }}{{ ric_unit(u) }}
     {%- else -%}{{ v|e }}
     {%- endif -%}
@@ -2265,7 +2267,7 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
         <span class="l-en">All</span><span class="l-zh">全部</span></button>
       {% for fam in ric_cards|map(attribute='method_family')|unique|list %}
       <button type="button" class="ric-fbtn" data-ric-f="fam:{{ fam }}" aria-pressed="false">
-        <span class="l-en">{{ fam|replace('_', ' ')|title }}</span><span class="l-zh">{{ '合成控制' if fam == 'synthetic_control' else ('事件研究' if fam == 'event_study' else fam) }}</span></button>
+        <span class="l-en">{{ fam|replace('_', ' ')|title }}</span><span class="l-zh">{{ '合成对照' if fam == 'synthetic_control' else ('事件研究' if fam == 'event_study' else fam) }}</span></button>
       {% endfor %}
       {% set ns = namespace(other_emitted=false) %}
       {% for q in ric_cards|map(attribute='quality')|unique|list %}
@@ -2316,8 +2318,6 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
               <span class="l-en">No plan on file</span><span class="l-zh">无计划存档</span>
               {%- endif %}
             </span>
-            <span class="ric-tier">{{ ric_tier_label(card.evidence_tier) }}</span>
-            <span class="ric-fam">{{ ric_family_label(card.method_family) }}</span>
           </div>
 
           {%- set qen = card.question.en -%}
@@ -2552,19 +2552,28 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
           </details>
 {% endif %}
 
-          <details class="ric-more">
+          <details class="ric-more ric-receipts">
             <summary><span class="l-en">Receipts</span><span class="l-zh">凭证</span></summary>
             <div class="ric-more-b">
               <dl class="ric-rc">
                 <dt><span class="l-en">Card</span><span class="l-zh">卡片</span></dt><dd>{{ card.card_id }}</dd>
-                <dt><span class="l-en">State code</span><span class="l-zh">状态代码</span></dt><dd>{{ q }}</dd>
-                <dt><span class="l-en">Evidence tier</span><span class="l-zh">证据层级代码</span></dt><dd>{{ card.evidence_tier }}</dd>
-                <dt><span class="l-en">Method family</span><span class="l-zh">方法族</span></dt><dd>{{ card.method_family }}</dd>
-                {% if card.ordered_effect_path and card.ordered_effect_path.evidence_status %}
-                <dt><span class="l-en">Path status</span><span class="l-zh">路径状态代码</span></dt><dd>{{ card.ordered_effect_path.evidence_status }}</dd>
-                {% endif %}
-                <dt><span class="l-en">Authority flags</span><span class="l-zh">授权标记</span></dt>
-                <dd>{% for k, v in card.authority|dictsort %}{{ k }}={{ 'true' if v else 'false' }}{% if not loop.last %} {% endif %}{% endfor %}</dd>
+                <dt><span class="l-en">State</span><span class="l-zh">状态</span></dt>
+                <dd>
+                  <span class="l-en">{{ ric_quality_gloss[q][0] if q in ric_quality_gloss else 'State reported by the owner' }}</span>
+                  <span class="l-zh">{{ ric_quality_gloss[q][1] if q in ric_quality_gloss else '所有者报告的状态' }}</span>
+                  <code>{{ q }}</code>
+                </dd>
+                <dt><span class="l-en">Method</span><span class="l-zh">方法</span></dt>
+                <dd>{{ ric_method_receipt(card.method_family) }} <code>{{ card.method_family }}</code></dd>
+                <dt><span class="l-en">Evidence tier</span><span class="l-zh">证据层级</span></dt>
+                <dd>{{ ric_tier_receipt(card.evidence_tier) }} <code>{{ card.evidence_tier }}</code></dd>
+                <dt><span class="l-en">Authority</span><span class="l-zh">权限</span></dt>
+                <dd>{{ ric_authority_receipt() }}
+                  {% if card.ordered_effect_path and card.ordered_effect_path.evidence_status %}
+                  <code>{{ card.ordered_effect_path.evidence_status }}</code>
+                  {% endif %}
+                  {% for k, v in card.authority|dictsort %}{{ k }}={{ 'true' if v else 'false' }}{% if not loop.last %} {% endif %}{% endfor %}
+                </dd>
                 {% for g in gates %}
                 {%- set gid = (g.code.split('_')|first) if g.code else '' -%}
                 <dt><span class="l-en">Gate {{ gid }}</span><span class="l-zh">门槛 {{ gid }}</span></dt>
@@ -2575,7 +2584,7 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
                 <dt><span class="l-en">Adapter</span><span class="l-zh">适配器</span></dt><dd>{{ card.adapter_version }}</dd>
                 <dt><span class="l-en">Owner question</span><span class="l-zh">所有者问题</span></dt>
                 <dd><span class="l-en">{{ card.question.en|e }}</span> / <span class="l-zh">{{ (card.question.zh or card.question.en)|e }}</span></dd>
-                <dt><span class="l-en">Method</span><span class="l-zh">方法版本</span></dt><dd>{{ card.method_revision }}</dd>
+                <dt><span class="l-en">Method revision</span><span class="l-zh">方法版本</span></dt><dd>{{ card.method_revision }}</dd>
                 {% for a in card.source_artifacts + card.code_identity %}
                 <dt>
                   <span class="l-en">{{ {'result':'Result artifact','report':'Research report','event_roster':'Event roster','benchmark':'Benchmark series','preregistration':'Preregistration','generator':'Generator','estimator':'Estimator'}.get(a.role, a.role|replace('_', ' ')|title) }}</span>
