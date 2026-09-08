@@ -293,7 +293,7 @@ jobs:
     if: ${{ false }}
     gate: code
     # AM Edition premarket producer contract (A-MO-W2-3): per-source clocks,
-    # exactly five states, no generated_at laundering. Disabled from direct
+    # six states (incl. CLOSED), no generated_at laundering. Disabled from direct
     # execution like every sibling job in this family — contract-delta's
     # differential gate refuses a head that would let GitHub allocate a
     # duplicate runner alongside the packed trusted-executor dispatch
@@ -305,7 +305,7 @@ jobs:
         with: { python-version: "3.12" }
       - name: install test deps
         run: pip install pytest
-      - name: AM Edition producer contract (per-source clocks, five states, no laundering)
+      - name: AM Edition producer contract (per-source clocks, six states, no laundering)
         run: python -m pytest tests/test_am_edition_producer.py -q
 
   all-exports-resolve:

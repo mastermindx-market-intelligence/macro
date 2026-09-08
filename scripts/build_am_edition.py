@@ -34,7 +34,14 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_am_edition")
 
 SCHEMA = "am_edition.v1"
-STATES = ("CURRENT", "STALE_WITH_LAST_KNOWN", "UNAVAILABLE", "NOT_COVERED", "NOT_YET_OPEN")
+STATES = (
+    "CURRENT",
+    "STALE_WITH_LAST_KNOWN",
+    "UNAVAILABLE",
+    "NOT_COVERED",
+    "NOT_YET_OPEN",
+    "CLOSED",
+)
 CLASSIFICATIONS = (
     "owner_fact",
     "deterministic_derived_comparison",
@@ -49,10 +56,30 @@ _TAPE_SYMBOLS = (
     ("^RUT", "Russell 2000", "罗素2000指数"),
 )
 
-# US regular session opens 09:30 America/New_York on a weekday (DST-aware).
+# US regular session: 09:30–16:00 America/New_York on a weekday (DST-aware).
 _US_OPEN_HOUR_LOCAL = 9
 _US_OPEN_MINUTE_LOCAL = 30
+_US_CLOSE_HOUR_LOCAL = 16
+_US_CLOSE_MINUTE_LOCAL = 0
 _NY_TZ = ZoneInfo("America/New_York")
+
+# Deterministic calendar titles — display copy only. Keys match
+# data/release_forecast/latest.json `release` / `release_type`. Unknown
+# codes never surface the raw slug; they get a generic plain-word pair.
+_RELEASE_TITLES = {
+    "cpi": ("CPI (consumer prices)", "消费者物价指数（CPI）"),
+    "cpi_headline": ("Headline CPI (consumer prices)", "CPI 总体（消费者物价）"),
+    "cpi_core": ("Core CPI (consumer prices)", "CPI 核心（消费者物价）"),
+    "ppi": ("PPI (producer prices)", "生产者物价指数（PPI）"),
+    "ppi_finaldemand": ("PPI (producer prices)", "生产者物价指数（PPI）"),
+    "nfp": ("Jobs report (nonfarm payrolls)", "非农就业报告"),
+    "claims": ("Initial jobless claims", "初请失业金"),
+    "pce": ("PCE / personal income", "PCE 物价指数"),
+    "pce_headline": ("Headline PCE", "PCE 总体物价指数"),
+    "pce_core": ("Core PCE", "PCE 核心物价指数"),
+    "retail_sales": ("Retail sales", "零售销售"),
+    "gdp": ("GDP (BEA estimate)", "GDP 数据"),
+}
 
 # Regime quad code -> plain-word EN/ZH label (engine/regime.py:25-26 is the
 # authoritative code->name map; this is display copy only, never re-derived).
@@ -107,13 +134,74 @@ def _norm_clock(raw: str | None) -> tuple[str | None, str]:
         return None, "day"
 
 
+def _humanize_age(age_minutes: int) -> tuple[str, str]:
+    """Plain-word EN/ZH age with real singular/plural — never `hour(s)`."""
+    minutes = max(0, int(age_minutes))
+    if minutes < 60:
+        if minutes == 1:
+            return "1 minute", "1分钟"
+        return f"{minutes} minutes", f"{minutes}分钟"
+    hours = minutes // 60
+    if hours < 24:
+        if hours == 1:
+            return "1 hour", "1小时"
+        return f"{hours} hours", f"{hours}小时"
+    days = hours // 24
+    if days < 7:
+        if days == 1:
+            return "1 day", "1天"
+        return f"{days} days", f"{days}天"
+    weeks = days // 7
+    if weeks < 8:
+        if weeks == 1:
+            return "1 week", "1周"
+        return f"{weeks} weeks", f"{weeks}周"
+    months = days // 30
+    if months < 24:
+        if months == 1:
+            return "1 month", "1个月"
+        return f"{months} months", f"{months}个月"
+    years = days // 365
+    if years == 1:
+        return "1 year", "1年"
+    return f"{years} years", f"{years}年"
+
+
+def _plain_day_en(d: date) -> str:
+    return f"{d.day} {d.strftime('%b')}"
+
+
+def _plain_day_zh(d: date) -> str:
+    return f"{d.month}月{d.day}日"
+
+
+def _as_of_ny_date(as_of_iso: str | None) -> date | None:
+    """NY calendar date of a UTC-normalised ISO instant."""
+    if not as_of_iso:
+        return None
+    try:
+        dt = datetime.fromisoformat(as_of_iso)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(_NY_TZ).date()
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _release_title(entry: dict) -> tuple[str, str]:
+    """Whitelist a calendar row to a plain-word EN/ZH pair. Never return a slug."""
+    for key in (entry.get("release_type"), entry.get("release")):
+        if isinstance(key, str) and key in _RELEASE_TITLES:
+            return _RELEASE_TITLES[key]
+    return ("US economic release", "美国经济数据发布")
+
+
 def _classify(
     source_as_of: str | None,
     generated_at: str,
     max_age_minutes: int | None,
     *,
     covered: bool = True,
-    session_open: bool = True,
 ) -> tuple[str, int | None]:
     """Pure. -> (state, age_minutes). NEVER returns CURRENT when age > max_age,
     and NEVER returns CURRENT for a future-stamped (negative-age) source."""
@@ -155,7 +243,6 @@ def _block(
     reason_en: str | None = None,
     reason_zh: str | None = None,
     covered: bool = True,
-    session_open: bool = True,
     precision: str | None = None,
 ) -> dict:
     """Builds ONE contract-shaped block. `precision` MUST be the precision
@@ -165,7 +252,7 @@ def _block(
     silently upgrades a day-precision source into a false-precise one."""
     assert classification in CLASSIFICATIONS, f"invalid classification: {classification}"
     state, age_minutes = _classify(
-        source_as_of, generated_at, max_age_minutes, covered=covered, session_open=session_open
+        source_as_of, generated_at, max_age_minutes, covered=covered
     )
     if precision is None:
         _, precision = _norm_clock(source_as_of) if source_as_of else (None, "day")
@@ -182,17 +269,17 @@ def _block(
         "max_age_minutes": max_age_minutes,
         "classification": classification,
     }
-    if state in ("UNAVAILABLE", "NOT_COVERED", "NOT_YET_OPEN"):
+    if state in ("UNAVAILABLE", "NOT_COVERED", "NOT_YET_OPEN", "CLOSED"):
         out["state_reason_en"] = reason_en or "Not available yet."
         out["state_reason_zh"] = reason_zh or "暂不可用。"
     elif state == "STALE_WITH_LAST_KNOWN" and not reason_en:
-        hours = (age_minutes or 0) // 60
-        if hours >= 1:
-            out["state_reason_en"] = f"Last updated {hours} hour(s) ago — showing the last known reading, not a fresh one."
-            out["state_reason_zh"] = f"最近一次更新在{hours}小时前——展示的是最新已知读数，而非最新数据。"
-        else:
-            out["state_reason_en"] = f"Last updated {age_minutes} minute(s) ago — showing the last known reading, not a fresh one."
-            out["state_reason_zh"] = f"最近一次更新在{age_minutes}分钟前——展示的是最新已知读数，而非最新数据。"
+        age_en, age_zh = _humanize_age(age_minutes or 0)
+        out["state_reason_en"] = (
+            f"Last updated {age_en} ago — showing the last known reading, not a fresh one."
+        )
+        out["state_reason_zh"] = (
+            f"最近更新于{age_zh}前——展示的是最新已知读数，而非最新数据。"
+        )
     else:
         out["state_reason_en"] = reason_en
         out["state_reason_zh"] = reason_zh
@@ -201,15 +288,29 @@ def _block(
     return out
 
 
-def _is_session_open_now(now: datetime) -> bool:
-    """True once the US regular session (09:30 America/New_York, DST-aware)
-    has opened for the given UTC instant on a weekday (exchange holiday
-    calendar not modelled here -> weekday-only gate)."""
+def _session_phase(now: datetime) -> str:
+    """weekend | preopen | open | closed. Exchange holiday calendar is not
+    modelled here -> weekday-only gate."""
     local = now.astimezone(_NY_TZ)
     if local.weekday() >= 5:
-        return False
-    open_local = local.replace(hour=_US_OPEN_HOUR_LOCAL, minute=_US_OPEN_MINUTE_LOCAL, second=0, microsecond=0)
-    return local >= open_local
+        return "weekend"
+    open_local = local.replace(
+        hour=_US_OPEN_HOUR_LOCAL, minute=_US_OPEN_MINUTE_LOCAL, second=0, microsecond=0
+    )
+    close_local = local.replace(
+        hour=_US_CLOSE_HOUR_LOCAL, minute=_US_CLOSE_MINUTE_LOCAL, second=0, microsecond=0
+    )
+    if local < open_local:
+        return "preopen"
+    if local >= close_local:
+        return "closed"
+    return "open"
+
+
+def _is_session_open_now(now: datetime) -> bool:
+    """True only during the US regular session (09:30–16:00 America/New_York,
+    DST-aware) on a weekday."""
+    return _session_phase(now) == "open"
 
 
 def _previous_trading_day(d: date) -> date:
@@ -222,18 +323,23 @@ def _previous_trading_day(d: date) -> date:
 
 
 def _session_clock_block(generated_at: str, now: datetime) -> dict:
-    is_weekend = now.weekday() >= 5
-    session_open = _is_session_open_now(now)
-    if is_weekend:
+    phase = _session_phase(now)
+    if phase == "weekend":
+        state = "NOT_YET_OPEN"
         reason_en = "Markets are closed for the weekend."
         reason_zh = "周末休市。"
-    elif not session_open:
+    elif phase == "preopen":
+        state = "NOT_YET_OPEN"
         reason_en = "US markets have not opened yet today."
         reason_zh = "美股今日尚未开盘。"
+    elif phase == "closed":
+        state = "CLOSED"
+        reason_en = "US markets have closed for the day."
+        reason_zh = "美股今日已收盘。"
     else:
+        state = "CURRENT"
         reason_en = None
         reason_zh = None
-    state = "NOT_YET_OPEN" if (is_weekend or not session_open) else "CURRENT"
     return {
         "key": "session_clock",
         "title_en": "Session clock",
@@ -252,7 +358,7 @@ def _session_clock_block(generated_at: str, now: datetime) -> dict:
 
 
 def _tape_block(site: Path, generated_at: str, now: datetime, prior_close_date: str) -> dict:
-    session_open = _is_session_open_now(now)
+    phase = _session_phase(now)
     try:
         quotes = _load_json_safe(site / "live" / "quotes.json")
         if not quotes or not isinstance(quotes, dict):
@@ -271,20 +377,35 @@ def _tape_block(site: Path, generated_at: str, now: datetime, prior_close_date: 
                 reason_zh="暂无实时行情读数。",
             )
         as_of_iso, precision = _norm_clock(quotes.get("asof"))
+        quote_session = _as_of_ny_date(as_of_iso)
+        try:
+            intended_close = date.fromisoformat(prior_close_date)
+        except Exception:  # noqa: BLE001
+            intended_close = None
+        implied_baseline = _previous_trading_day(quote_session) if quote_session else None
+        baseline_mismatch = (
+            intended_close is None
+            or implied_baseline is None
+            or implied_baseline != intended_close
+        )
         rows = []
         qmap = quotes.get("quotes") or {}
         for sym, label_en, label_zh in _TAPE_SYMBOLS:
             q = qmap.get(sym)
             if not q:
                 continue
+            change_pct = (
+                None
+                if baseline_mismatch
+                else (round(float(q.get("changePct")), 4) if q.get("changePct") is not None else None)
+            )
             rows.append({
                 "label_en": label_en,
                 "label_zh": label_zh,
                 "symbol": sym,
                 "prior_close": round(float(q.get("prevClose")), 4) if q.get("prevClose") is not None else None,
                 "last": round(float(q.get("price")), 4) if q.get("price") is not None else None,
-                "change_pct": round(float(q.get("changePct")), 4) if q.get("changePct") is not None else None,
-                "basis": q.get("basis"),
+                "change_pct": change_pct,
                 "quote_as_of": as_of_iso,
             })
         blk = _block(
@@ -298,15 +419,30 @@ def _tape_block(site: Path, generated_at: str, now: datetime, prior_close_date: 
             max_age_minutes=240,
             generated_at=generated_at,
             rows=rows,
-            session_open=session_open,
             precision=precision,
         )
-        if blk["state"] == "CURRENT" and not session_open:
+        if baseline_mismatch and implied_baseline is not None:
+            day_en = _plain_day_en(implied_baseline)
+            day_zh = _plain_day_zh(implied_baseline)
+            baseline_en = (
+                f"Compared with the close of {day_en} — no newer close has been captured."
+            )
+            baseline_zh = f"对比的是{day_zh}收盘——尚未捕获更新的收盘价。"
+            if blk["state"] == "STALE_WITH_LAST_KNOWN" and blk.get("state_reason_en"):
+                blk["state_reason_en"] = f"{baseline_en} {blk['state_reason_en']}"
+                blk["state_reason_zh"] = f"{baseline_zh}{blk['state_reason_zh']}"
+            else:
+                blk["state_reason_en"] = baseline_en
+                blk["state_reason_zh"] = baseline_zh
+        elif blk["state"] == "CURRENT" and phase == "preopen":
             # Premarket is a real reading window (intraday-fastpath runs
             # */30 11-21 UTC) — a fresh reading before the cash open is not
             # stale, but it IS worth disclosing as premarket, not a live tape.
             blk["state_reason_en"] = "Premarket reading — the regular session has not opened yet."
             blk["state_reason_zh"] = "盘前读数——正式交易时段尚未开始。"
+        elif blk["state"] == "CURRENT" and phase == "closed":
+            blk["state_reason_en"] = "After the close — the regular session has ended."
+            blk["state_reason_zh"] = "已收盘——正式交易时段已经结束。"
         return blk
     except Exception as exc:  # noqa: BLE001
         log.debug("am_edition: tape block failed (%s)", exc)
@@ -375,14 +511,36 @@ def _regime_block(site: Path, data_dir: Path, generated_at: str) -> dict:
         as_of_raw = d.get("asof") or d.get("date")
         as_of_iso, precision = _norm_clock(as_of_raw)
         quad_code = d.get("label")  # internal slug e.g. "Q2" — never surfaced raw
-        label_en, label_zh = _QUAD_LABELS.get(quad_code, (d.get("quad_name"), d.get("quad_name")))
+        mapped = _QUAD_LABELS.get(quad_code)
+        extra_reason_en = None
+        extra_reason_zh = None
+        if mapped:
+            label_en, label_zh = mapped
+        else:
+            # Never copy English into the ZH field. A missing map is a typed
+            # null with a plain-word reason, not a silent EN fallback.
+            label_en = d.get("quad_name")
+            label_zh = None
+            extra_reason_en = (
+                "No Chinese label is on file for this regime — "
+                "the English name was not copied into the Chinese field."
+            )
+            extra_reason_zh = "宏观周期名称尚无中文对照，英文名未写入中文栏。"
         rows = [{"quad_name_en": label_en, "quad_name_zh": label_zh}]
-        return _block(
+        blk = _block(
             "regime", title_en="Regime", title_zh="宏观周期",
             source_ref="data/regime/latest.json", source_owner="nightly",
             classification="owner_fact", source_as_of=as_of_iso, max_age_minutes=1440,
             generated_at=generated_at, rows=rows, precision=precision,
         )
+        if extra_reason_zh and not blk.get("state_reason_zh"):
+            blk["state_reason_en"] = extra_reason_en
+            blk["state_reason_zh"] = extra_reason_zh
+        elif extra_reason_zh:
+            # Keep freshness/unavailability copy; attach the ZH-null note.
+            blk["state_reason_en"] = f"{blk['state_reason_en']} {extra_reason_en}".strip()
+            blk["state_reason_zh"] = f"{blk['state_reason_zh']}{extra_reason_zh}"
+        return blk
     except Exception as exc:  # noqa: BLE001
         log.debug("am_edition: regime block failed (%s)", exc)
         return _block(
@@ -419,12 +577,35 @@ def _plane_block(site: Path, data_dir: Path, generated_at: str) -> dict:
             }
         else:
             verdict_val = verdict_raw
+        count = d.get("contradiction_count")
+        if count is None:
+            contradictions_en = contradictions_zh = None
+        elif count == 0:
+            contradictions_en = "No disagreements across the plane."
+            contradictions_zh = "各资产读数一致，无分歧。"
+        elif count == 1:
+            contradictions_en = "1 disagreement across the plane."
+            contradictions_zh = "各资产读数有1处分歧。"
+        else:
+            contradictions_en = f"{int(count)} disagreements across the plane."
+            contradictions_zh = f"各资产读数有{int(count)}处分歧。"
+        stale_flag = d.get("stale")
+        if stale_flag is True:
+            freshness_en = "This plane reading is stale."
+            freshness_zh = "该全景读数已过时。"
+        elif stale_flag is False:
+            freshness_en = "This plane reading is current."
+            freshness_zh = "该全景读数是最新的。"
+        else:
+            freshness_en = freshness_zh = None
         rows = [{
             "verdict": verdict_val,
-            "contradiction_count": d.get("contradiction_count"),
-            "stale": d.get("stale"),
-            # "gaps" carries internal component slugs (e.g. "options_structure")
-            # with no bilingual plain-word pair -> dropped, never surfaced raw.
+            "contradictions_en": contradictions_en,
+            "contradictions_zh": contradictions_zh,
+            "freshness_en": freshness_en,
+            "freshness_zh": freshness_zh,
+            # Raw contradiction_count / stale / gaps are machine fields —
+            # never shipped. gaps also carry internal component slugs.
         }]
         return _block(
             "cross_asset_plane", title_en="Cross-asset plane", title_zh="跨资产全景",
@@ -457,12 +638,27 @@ def _calendar_block(site: Path, data_dir: Path, generated_at: str, session_date:
             )
         as_of_iso, precision = _norm_clock(d.get("asof"))
         upcoming = d.get("upcoming") or []
-        rows = [u for u in upcoming if isinstance(u, dict) and str(u.get("date", "")).startswith(session_date)]
+        rows = []
+        for u in upcoming:
+            if not isinstance(u, dict):
+                continue
+            # Production upcoming rows carry `release_date`, never `date`.
+            if not str(u.get("release_date") or "").startswith(session_date):
+                continue
+            title_en, title_zh = _release_title(u)
+            rows.append({
+                "release_date": str(u.get("release_date")),
+                "title_en": title_en,
+                "title_zh": title_zh,
+            })
+        empty_reason_en = "No scheduled US releases today." if not rows else None
+        empty_reason_zh = "今日无美国经济数据发布。" if not rows else None
         return _block(
             "todays_calendar", title_en="Today's calendar", title_zh="今日日程",
             source_ref="data/release_forecast/latest.json", source_owner="nightly",
             classification="deterministic_calendar", source_as_of=as_of_iso, max_age_minutes=1440,
             generated_at=generated_at, rows=rows, precision=precision,
+            reason_en=empty_reason_en, reason_zh=empty_reason_zh,
         )
     except Exception as exc:  # noqa: BLE001
         log.debug("am_edition: calendar block failed (%s)", exc)
@@ -489,8 +685,6 @@ def _prior_brief_ref_block(site: Path, data_dir: Path, generated_at: str) -> dic
         as_of_iso, precision = _norm_clock(d.get("generated_at"))
         rows = [{
             "generated_at": as_of_iso,
-            "state_asof": d.get("state_asof"),
-            "lens": d.get("lens"),
             "link": "/aibrief.html",
         }]
         return _block(
@@ -562,7 +756,6 @@ def build_payload(site: Path, data_dir: Path, *, now: datetime | None = None) ->
     prior_close_date = _previous_trading_day(now.date()).strftime("%Y-%m-%d")
     # Prior-close cut: 20:00 UTC (4pm ET, approx) on the prior trading date.
     prior_close_cut = f"{prior_close_date}T20:00:00+00:00"
-    session_open = _is_session_open_now(now)
 
     blocks = []
     blocks.append(_session_clock_block(generated_at, now))
@@ -578,9 +771,24 @@ def build_payload(site: Path, data_dir: Path, *, now: datetime | None = None) ->
         tape, prior_close_cut
     )
     if feasibility_cause_internal:
-        log.debug("am_edition: feasibility=%s cause=%s", feasibility, feasibility_cause_internal)
+        log.info("am_edition: feasibility=%s cause=%s", feasibility, feasibility_cause_internal)
 
-    null_count = sum(1 for b in blocks if b["state"] in ("UNAVAILABLE", "NOT_COVERED"))
+    def _counts_as_null(b: dict) -> bool:
+        if b["state"] in ("UNAVAILABLE", "NOT_COVERED", "NOT_YET_OPEN", "CLOSED"):
+            return True
+        if b.get("key") == "todays_calendar" and not b.get("rows"):
+            return True
+        return False
+
+    null_count = sum(1 for b in blocks if _counts_as_null(b))
+
+    phase = _session_phase(now)
+    if phase == "open":
+        session_state = "OPEN"
+    elif phase == "closed":
+        session_state = "CLOSED"
+    else:
+        session_state = "NOT_YET_OPEN"
 
     payload = {
         "schema": SCHEMA,
@@ -588,7 +796,7 @@ def build_payload(site: Path, data_dir: Path, *, now: datetime | None = None) ->
         "authority": "display_only",
         "generated_at": generated_at,
         "session_date": session_date,
-        "session_state": "NOT_YET_OPEN" if not session_open else "OPEN",
+        "session_state": session_state,
         "prior_close_date": prior_close_date,
         "morning_source_feasibility": feasibility,
         "morning_source_feasibility_cause_en": feasibility_cause_en,
