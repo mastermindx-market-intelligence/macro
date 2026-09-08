@@ -2,15 +2,15 @@
 
 Scope: MO-PAID-025's `next_bounded_child` ("DEFER — no FX-dislocation spec exists; charter before build").
 Authority ceiling: research_only. This document authorizes NOTHING to be built; a later build packet needs its own Sol/Chairman authority.
-Verified in: /Users/chriswong/Documents/Cluade/macro-main @ 16b3734c9d87, 2026-09-05.
+Verified in: this worktree after rebase onto `origin/main`, 2026-09-07.
 
 ## 1. Purpose & authority
 
-This is a charter, not a build. It names what an FX-scoped dislocation gauge would be, distinguishes it from the existing cross-asset Gate-1 switch, and lists the preconditions a future build packet must clear. It contains no code, no gauge, and no thresholds tuned against data. Authority ceiling: `research_only`. Nothing in this document may be read as approval to build; a build packet must obtain its own explicit authority above this ceiling.
+This is a charter, not a build. It names what an FX-scoped dislocation gauge would be, distinguishes it from the existing FED-PUT MASTER SWITCH (`engine/dislocation.py:260` `master_switch_frame`), and lists the preconditions a future build packet must clear. It contains no code, no gauge, and no thresholds tuned against data. Authority ceiling: `research_only`. Nothing in this document may be read as approval to build; a build packet must obtain its own explicit authority above this ceiling.
 
 ## 2. The one-line distinction (MO-PAID-025's literal acceptance test)
 
-> The cross-asset Gate-1 switch in `engine/dislocation.py:260` decides whether the US policy PUT is present, from `sahm` + `breakeven_10y` + `SPY` — three US macro/equity inputs and zero FX inputs — whereas an FX-scoped dislocation gauge would measure whether the FX plumbing itself is priced away from its own no-arbitrage anchors (covered-interest-parity basis, cross-currency basis, forward-points vs the rate differential), so the two answer different questions on different inputs and neither can substitute for the other.
+> The FED-PUT MASTER SWITCH (`engine/dislocation.py:260` `master_switch_frame`) decides whether the US policy PUT is present, from `sahm` + `breakeven_10y` + `SPY` — three US macro/equity inputs and zero FX inputs — whereas an FX-scoped dislocation gauge would measure whether the FX plumbing itself is priced away from its own no-arbitrage anchors (covered-interest-parity basis, cross-currency basis, forward-points vs the rate differential), so the two answer different questions on different inputs and neither can substitute for the other.
 
 ## 3. What an FX dislocation IS (candidate measurable objects, named, NOT built)
 
@@ -36,7 +36,7 @@ No BUY/SELL collapse of any FX-dislocation read. No LLM-originated signal, score
 
 A future build packet under this charter must satisfy, before it starts:
 
-1. At least one CIP/basis series with a named, rights-cleared source. Today this is `not_yet_available` — §3 finds no basis collector, and even if one existed it would inherit the same unresolved Yahoo-spine rights posture recorded in `F01_FX_COMMODITY_SOURCE_RIGHTS_AND_DEPTH_2026-09.md` §4 V-1 for any yfinance-sourced leg.
+1. At least one CIP/basis series with a named, rights-cleared source. Today this is `not_yet_available` — §3 finds no basis collector, and even if one existed it would inherit the same recorded-and-adverse Yahoo-spine posture (`vendor_terms_personal_use`) recorded in `F01_FX_COMMODITY_SOURCE_RIGHTS_AND_DEPTH_2026-09.md` §4 V-1 for any yfinance-sourced leg.
 2. An owner workstream. MO-PAID-025's `current_owner` literally reads "no FX desk owner" — that gap is unresolved by this charter.
 3. A pre-registered promotion gate (per the epistemics standing law: gauntlet applies at promotion to authority, not at build).
 4. Explicit authority above `research_only` for the specific build packet.
