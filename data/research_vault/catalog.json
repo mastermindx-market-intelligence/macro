@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-08T15:33:34.851035+00:00",
-  "count": 2003,
+  "generated_at": "2026-09-08T19:05:07.584384+00:00",
+  "count": 2013,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -97,6 +97,25 @@
   ],
   "items": [
     {
+      "id": "marketdesk-2gcilgpovqo-7eee1c",
+      "title": "DB CoTD Make Bonds Boring Again",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T16:45:49Z",
+      "summary_points": [
+        "**Yield-Normalization Risk**: 10yr US Treasury yield (4.80%) 180bps below Q2-2026 NGDP (6.6%), exceeding historical 70bps spread, signaling structural bond market dislocation.",
+        "**ECB Rate Hikes**: ECB likely to hike rates twice in 2024, confirming post-2010s normalization trajectory, not a regime shift.",
+        "**Policy & Election Catalysts**: US mid-term elections, Q2 earnings strength, and AI sector implications demand immediate portfolio monitoring for tactical adjustments."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-2qvaq32eesa-878130",
       "title": "GS Sharkey TMT Conference Essentials 8 Sep 2026",
       "institution": "S&T",
@@ -139,6 +158,25 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-gxlm8cvloqo-1a8f8e",
+      "title": "GS Ranganath Share Repurchase Weekly Recap 8 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T14:06:31Z",
+      "summary_points": [
+        "**Authorization Scale**: $1.1T YTD 2026 with Info Tech (39%) dominating new authorizations, signaling concentrated capital allocation priorities.",
+        "**Execution Shift**: 33% OMR vs 67% 10b5-1 programs ahead of Q3 blackout window, indicating strategic repurchase structuring.",
+        "**Blackout Window Impact**: 13% of S&P 500 in blackout windows (40% entering quiet periods), constraining near-term buyback activity ahead of earnings."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-4ae2wu9eqii-444c50",
       "title": "Hawks Doves Federal Reserve September 2026 3",
       "institution": "Other",
@@ -173,6 +211,47 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xcibikzuxyx-acedec",
+      "title": "Whirlpool Corp. (WHR) Appliances Labor Day 2026 Pricing Update",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T13:17:32Z",
+      "summary_points": [
+        "**Pricing Momentum Deceleration**: Whirlpool’s net price growth slowed to 501bps YOY (vs 702bps at Fourth of July), driven by rising discounts (226bps vs July) and tepid demand, with 3Q26 NA margin forecast at 5.7% (up 78bps YOY) amid cost pressures.",
+        "**Cost Pressure Exposure**: $374mn raw material/tariff exposure in 2026; modeled $209mn price/mix tailwinds vs $125mn cost reductions, leading to 4.0% EBIT margin forecast (down 72bps YOY).",
+        "**Geopolitical Chemical Volatility**: Middle East conflict sustained elevated polyethylene (29% YOY) and propylene (27% YOY) prices; prices projected to remain 14% above pre-conflict levels through 2026 unless conflict escalates or Gulf weather disrupts supply.",
+        "**Category-Specific Discount Disparities**: Washers/dishwashers face 24.2% discounts (down 36bps YOY), while freezers are least discounted at 11.6%; Whirlpool’s 20.5% discount is below LG (27.6%) but above Samsung (21.7%).",
+        "**Valuation Risk & Sentiment Shift**: Neutral rating ($48, 7.2x EBITDA) with downside risks from competitive promotions and raw material costs; target price plummeted from $160 (Oct 2023) to $48 (Jul 2026), signaling deteriorating analyst sentiment despite current Buy ratings."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-yn3nzkia3x5-f718d9",
+      "title": "Novartis (NOVN.S) Del desiran misses, potentially removing delaying a blockbuster asset",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T13:17:27Z",
+      "summary_points": [
+        "**Phase 3 Failure**: Del-desiran Phase 3 primary endpoint miss eliminates $3.3bn blockbuster asset (5.5% DCF downside), with secondary endpoints showing limited clinical activity and no regulatory path forward.",
+        "**Valuation Disconnect**: Target prices ($139 NVS / $113 NOVN.S) below current levels ($153.08 / $125.34) signal overvaluation despite Buy ratings, with P/E (13.3→14.5) and EV/EBITDA (10.9→11.6) indicating limited upside.",
+        "**Pipeline Growth Risk**: Post-2030 M&A ambitions threatened by recent trial failures, with 5-6% CAGR guidance at risk due to weak pipeline innovation and low innovation cadence (e.g., Avidity acquisition value at stake).",
+        "**Sell Rating Pressure**: 16% Sell rating distribution and 9.9% (NOVN.S) / 13.1% (NVS) downside potential reflect strong bearish sentiment, overriding YTD stock outperformance (+14% vs S&P 500)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
@@ -219,6 +298,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-yuqxzwqy7vg-c93e9f",
+      "title": "Europe Paper & Forest Products Updating Estimates post 2Q26 and Marking to Market for Latest Commodity Price Movements",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T13:17:07Z",
+      "summary_points": [
+        "**Containerboard Pricing Dynamics**: EU containerboard players (SCA, Mondi, Stora Enso) benefit from elevated gas prices supporting testliner/kraftliner pricing vs.",
+        "cost, driving strong 2026–2027 earnings; US market tightness and consolidation (2025) sustain pricing momentum.",
+        "**Smurfit Westrock vs.",
+        "Stora Enso Contrast**: Smurfit (Buy, $53 target, 16% upside) favored over Stora Enso (Sell, €9 target, 12% downside) due to structural US containerboard exposure vs.",
+        "Stora’s pulp/consumerboard headwinds from Chinese export pressure and oversupply."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 22,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-vr3h6pwokba-9516da",
       "title": "Horizon Robotics (9660.HK) Asia Leaders Conference 2026 Takeaways Founder CEO Fireside Chat Spec upgrade on rising NOA pe...",
       "institution": "Goldman Sachs",
@@ -235,6 +335,90 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-dj1jliahnzk-f9c9cd",
+      "title": "CrowdStrike (CRWD) Fal.con 2026 New AI products may drive a paradigm shift for cyber defenders",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T13:16:24Z",
+      "summary_points": [
+        "**Goldman Target Collapse**: Goldman Sachs slashed CRWD price target from $726 to $208 (71% drop), signaling severe bearish sentiment on growth expectations, critical for valuation reassessment.",
+        "**SafeMind Cost Advantage**: SafeMind AI security product cuts costs to $0.03/query (vs.",
+        "$10 for frontier models), enabling outsized budget capture in AI-driven threat landscape and direct monetization via Falcon Flex token packs.",
+        "**ARR/TAM Expansion**: Raised ARR targets to $10bn (FY30) and $20bn (FY35), with AI security TAM estimated at $36bn-$291bn, supported by $115bn Agentic Security, $52bn SOC, and $48bn Identity segments.",
+        "**Price vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-39xwxoq0ugr-d07c41",
+      "title": "Americas Transportation The Monthly Mosaic August 2026",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T13:16:05Z",
+      "summary_points": [
+        "**US Manufacturing Slowdown**: ISM Manufacturing Index at 54.6 (down 1.0 MoM from 55.6), New Orders at 53.7, signaling cooling industrial activity despite expansionary readings.",
+        "**China PMI Acceleration**: China Manufacturing PMI rose to 51.5 (Aug) from 50.9 (Jul), with new orders expanding at 52, critical for global supply chain dynamics.",
+        "**Ocean Freight Surge**: Ocean container rates spiked +294% YoY (Aug), indicating extreme supply chain bottlenecks and pricing pressure.",
+        "**Trucking Demand-Order Mismatch**: Dry Van Demand Index +76% YoY vs.",
+        "Class 8 orders down -35% MoM, signaling weakening demand despite tight capacity."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 23,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-1pvfipj1gjm-91373f",
+      "title": "Americas Retail Takeaways from IR management",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T13:15:59Z",
+      "summary_points": [
+        "**Gross Margin Structural Drivers**: 43.5% Q2 gross margin driven by supply chain efficiencies (tariff refunds +380bp, shrink improvements), indicating sustainable resilience beyond temporary factors.",
+        "**Tariff Accounting Divergence**: Retailers exhibit inconsistent tariff refund accounting (Included/Excluded/Partial) post-IEEPA ruling, directly impacting Non-GAAP cash flow modeling and earnings comparability.",
+        "**K-Shaped Economy Risk**: Persistent inflation and macro uncertainty (housing, energy) amplify demand constraints for lower-income segments, threatening discretionary spending while higher-income growth persists.",
+        "**Sector-Specific Traffic Flows**: Home improvement/auto parts retailers (FND, TSCO, LOW, HD, AAP, AZO) show negative YoY traffic; dollar stores/discounters (DG, DLTR, FIVE) exhibit positive traffic, signaling capital reallocation.",
+        "**Consumer Behavior Shift**: Inflation-driven prioritization of value/affordability reduces discretionary spending, accelerates geographic consolidation (shopping closer to home), and heightens stress for lower-income consumers."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-a0affuafhb9-de396e",
+      "title": "Oppenheimer Northern Data Acquisition Closed Company Focused on Data Center Execution",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T13:15:52Z",
+      "summary_points": [
+        "**Northern Data Acquisition & Growth**: Closed 85% acquisition, Q2 revenue +61% y/y (vs.",
+        "Q1 +7%), Q3 revenue guidance $90M (+263% y/y); 250MW unmonetized data center capacity at 85% utilization.",
+        "**Profitability Contraction Risk**: Gross Profit guidance ($9.760k) 74% lower than prior Opco ($35.405k) despite revenue guidance ($87k) only 1% below prior, signaling severe margin erosion.",
+        "**Valuation Gap vs.",
+        "Peers**: Rumble EV/Sales (13.4x) 1.9x below datacenter peers (15.3x), but CAGR (146%) 31% below peers (177%), indicating undervaluation with slower growth trajectory."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
@@ -315,6 +499,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vqzzrxs50ma-075e06",
+      "title": "Brazil Minor Uptick in 2027 Inflation Expectations",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T11:51:38Z",
+      "summary_points": [
+        "**Brazil Inflation & Fiscal Outlook**: Persistent inflation above target (4.29% 2027 vs 3% goal) coupled with deep medium-term fiscal deficit (>7% nominal deficit), primary balance negative through 2029 - **Inflation & Policy Rate Expectations**: Inflation expectations remain elevated above target (2026-2028), with Selic rate expected to stay elevated at ~12% in 2026 signaling potential tightening - **Fiscal & Growth Outlook**: Deteriorating fiscal position (primary balance turns negative 2027, worsening deficit) amid slowing growth (GDP decelerating from 2.30% 2026 to 1.80% 2028) - **Growth & Currency**: Real GDP growth slowing (1.93% 2026 → 1.50% 2027) with BRL/USD strengthening to 5.30 (2027), reflecting currency depreciation pressure"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
