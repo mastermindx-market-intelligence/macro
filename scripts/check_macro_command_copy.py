@@ -98,6 +98,10 @@ _DOT_SYMBOL_PAIR_RE = re.compile(
     r"(?<![A-Za-z\u4e00-\u9fff])[ΔA-Za-z][A-Za-z0-9]*(?:\s+\S+)*\s*·\s*[ΔA-Za-z]"
 )
 _SKIP_TAGS = frozenset({"script", "style", "template"})
+_VOID_TAGS = frozenset({
+    "area", "base", "br", "col", "embed", "hr", "img", "input",
+    "link", "meta", "source", "track", "wbr",
+})
 _GLANCE_CLASS_TOKENS = frozenset({
     "mq-axis-cell", "mq-axis-value", "mq-axis-name", "mq-axis-direction",
     "mq-headline", "mc-read", "mc-stance", "mq-glance-value", "mq-glance-row",
@@ -153,6 +157,20 @@ class _VisibleTextParser(HTMLParser):
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         hidden = self._hidden(tag, attrs)
+        if tag in _VOID_TAGS:
+            if hidden or self._skip:
+                return
+            ad = {key: (value or "") for key, value in attrs}
+            for key in ("title", "aria-label"):
+                text = (ad.get(key) or "").strip()
+                if text:
+                    self.nodes.append({
+                        "kind": f"attr:{key}",
+                        "tag": tag,
+                        "text": text,
+                        "glance": "1" if self._glance and not self._in_details else "0",
+                    })
+            return
         self._skip_stack.append(hidden)
         if hidden or self._skip:
             self._skip += 1
@@ -180,6 +198,11 @@ class _VisibleTextParser(HTMLParser):
                     "glance": "1" if self._glance and not self._in_details else "0",
                 })
         self._tag_stack.append(tag)
+
+    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        self.handle_starttag(tag, attrs)
+        if tag not in _VOID_TAGS:
+            self.handle_endtag(tag)
 
     def handle_endtag(self, tag: str) -> None:
         if not self._tag_stack:
@@ -370,22 +393,65 @@ def machine_copy_hits(text: str, *, glance: bool = False) -> list[str]:
     return hits
 
 
+def _allowlist_covers(text: str, start: int, end: int) -> str | None:
+    """Return the allowlisted sentence that covers [start, end), if any."""
+    for allowed in _READING_PATH_ALLOW:
+        idx = 0
+        while True:
+            pos = text.find(allowed, idx)
+            if pos < 0:
+                break
+            if pos <= start and end <= pos + len(allowed):
+                return allowed
+            idx = pos + 1
+    return None
+
+
+def find_exceptions(html: str) -> list[str]:
+    """Allowlisted reading-path sentences, matched on the node / span."""
+    found: list[str] = []
+    path = reading_path_text(html)
+    for allowed in _READING_PATH_ALLOW:
+        if allowed in path:
+            found.append(allowed)
+    for node in visible_text_nodes(html):
+        text = node.get("text") or ""
+        for allowed in _READING_PATH_ALLOW:
+            if allowed == text or allowed in text:
+                tag = node.get("tag") or "?"
+                found.append(f"node <{tag}> {allowed!r}")
+    # Preserve order, drop duplicates.
+    seen: set[str] = set()
+    unique: list[str] = []
+    for item in found:
+        if item not in seen:
+            seen.add(item)
+            unique.append(item)
+    return unique
+
+
 def find_violations(html: str) -> list[str]:
     """Return every copy-law violation found in `html`'s reading path. An
-    empty list means the page is clean."""
+    empty list means the page is clean. Allowlisted sentences are matched
+    in place and never deleted from the scan text."""
     text = reading_path_text(html)
-    for allowed in _READING_PATH_ALLOW:
-        text = text.replace(allowed, "")
     violations: list[str] = []
 
     banned = BANNED_SUBSTRINGS + FALSIFIER_SUBSTRINGS + _closed_vocabulary_tokens()
     for phrase in banned:
-        if phrase in text:
-            violations.append(
-                f"banned phrase {phrase!r} found in the reading path (outside "
-                "mc-details/mc-primer) — move it into <details class=\"mc-details\"> "
-                "or replace it with the plain-word copy from spec §5"
-            )
+        start = 0
+        while True:
+            idx = text.find(phrase, start)
+            if idx < 0:
+                break
+            if _allowlist_covers(text, idx, idx + len(phrase)) is None:
+                violations.append(
+                    f"banned phrase {phrase!r} found in the reading path (outside "
+                    "mc-details/mc-primer) — move it into <details class=\"mc-details\"> "
+                    "or replace it with the plain-word copy from spec §5"
+                )
+                break
+            start = idx + 1
 
     for match in _BARE_DATE_RE.finditer(text):
         violations.append(
@@ -449,7 +515,12 @@ def main(argv: list[str] | None = None) -> int:
     paths = [Path(item) for item in args.targets] if args.targets else default_targets()
     scanned = [str(path) for path in paths]
     violations: list[str] = []
+    exceptions: list[str] = []
     for path in paths:
+        if path.exists():
+            html = path.read_text(encoding="utf-8")
+            for allowed in find_exceptions(html):
+                exceptions.append(f"{path.name}: {allowed}")
         for item in check_file(path):
             violations.append(f"{path.name}: {item}")
     if violations:
@@ -465,6 +536,11 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 1
 
+    if exceptions:
+        print(
+            f"macro command copy guard: {len(exceptions)} allowlisted exception(s) "
+            f"matched on the node: {'; '.join(exceptions)}"
+        )
     print(
         f"macro command copy guard: clean "
         f"({len(scanned)} pages: {', '.join(Path(p).name for p in scanned)})"

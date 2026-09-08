@@ -3452,6 +3452,7 @@ jobs:
       - "lib/hk_calendar.py"
       # F01 R1B closure widening 2026-09-04 (contract-delta): via build_site's
       # macro-suite hook — see the contracts/market_os entry above.
+      - "lib/macro_suite_disclosure.py"
       - "lib/macro_suite_labels.py"
       - "lib/macro_suite_view.py"
       - "lib/macro_suite_zh_parity.py"
@@ -13813,6 +13814,7 @@ jobs:
       - "templates/macro_suite_boot.js"
       - "lib/__init__.py"
       - "lib/config.py"
+      - "lib/macro_suite_disclosure.py"
       - "lib/macro_suite_labels.py"
       - "lib/macro_suite_view.py"
       - "lib/macro_suite_zh_parity.py"

@@ -23,6 +23,7 @@ import math
 
 from typing import Any, Mapping, Sequence
 
+from lib import macro_suite_disclosure as D
 from lib import macro_suite_labels as L
 
 # Reading orders the shell can compose. The grammar order is merged architecture
@@ -209,7 +210,7 @@ def _implications(snapshot: Mapping[str, Any]) -> dict[str, Any]:
 
 # --- headline state band ------------------------------------------------------
 
-def _axis_view(axis: Mapping[str, Any]) -> dict[str, Any]:
+def _axis_view(axis: Mapping[str, Any], *, published: str | None = None) -> dict[str, Any]:
     value = axis.get("value")
     thresholds = axis.get("thresholds") or {}
     components = []
@@ -220,6 +221,9 @@ def _axis_view(axis: Mapping[str, Any]) -> dict[str, Any]:
                       or _bilingual(component.get("label"))),
             "owner_field": component.get("owner_field"),
             "owner_ref": component.get("owner_ref"),
+            "owner_name": (
+                D.owner_display_pair(component.get("owner_ref"))
+                if component.get("owner_ref") else None),
             "raw": L.value_pair(component.get("raw_value")),
             "raw_absence": None if component.get("raw_value") is not None else _absence(component.get("null_reason")),
             "standardized": L.fmt_number(component.get("standardized_value")),
@@ -270,14 +274,21 @@ def _axis_view(axis: Mapping[str, Any]) -> dict[str, Any]:
         "components": components,
         "components_available": axis.get("components_available"),
         "min_components": axis.get("min_components"),
-        "coverage_floor": L.fmt_ratio_pct(axis.get("coverage_floor")),
-        "weights_law": axis.get("weights_law"),
-        "transformation": axis.get("transformation"),
-        "frequency_alignment": axis.get("frequency_alignment"),
-        "revision_behavior": axis.get("revision_behavior"),
-        "definition_version": axis.get("definition_version"),
+        "coverage_floor": D.coverage_floor_pair(axis.get("coverage_floor")),
+        "weights_law": D.composition_law_pair(
+            axis.get("axis_id"), "weights_law", axis.get("weights_law")),
+        "transformation": D.composition_law_pair(
+            axis.get("axis_id"), "transformation", axis.get("transformation")),
+        "frequency_alignment": D.composition_law_pair(
+            axis.get("axis_id"), "frequency_alignment",
+            axis.get("frequency_alignment")),
+        "revision_behavior": D.composition_law_pair(
+            axis.get("axis_id"), "revision_behavior",
+            axis.get("revision_behavior")),
+        "definition_version": D.definition_version_pair(
+            axis.get("definition_version"), published),
         "data_version": axis.get("data_version"),
-        "authority_ceiling": axis.get("authority_ceiling"),
+        "authority_ceiling": D.authority_ceiling_pair(axis.get("authority_ceiling")),
     }
 
 
@@ -335,9 +346,15 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
     boundary_axis = axis_by_id.get(boundary.get("axis"))
 
     vector_present = vector.get("status") == "PRESENT" and vector.get("dx") is not None
-    axis_list = list(axes)
-    x_axis = axis_list[0] if axis_list else {}
-    y_axis = axis_list[1] if len(axis_list) > 1 else {}
+    x_axis, y_axis = {}, {}
+    x_id = vector.get("x_axis_id")
+    y_id = vector.get("y_axis_id")
+    if len(axes) >= 2:
+        resolved_x, resolved_y = D.resolve_vector_axes(axes, vector)
+        x_axis, y_axis = resolved_x, resolved_y
+        x_id = x_axis.get("axis_id")
+        y_id = y_axis.get("axis_id")
+    published = L.date_or_none(headline.get("effective_date"))
     return {
         "state_id": headline.get("state_id"),
         "state_label": _bilingual(headline.get("state_label")),
@@ -345,6 +362,8 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
         "status": headline.get("status"),
         "absence": None if headline.get("state_id") else _absence(headline.get("null_reason")),
         "method_version": headline.get("method_version"),
+        "method_version_label": D.method_version_pair(
+            headline.get("method_version"), published),
         "effective_date": L.date_or_none(headline.get("effective_date")),
         "x": quadrant.get("x"),
         "y": quadrant.get("y"),
@@ -379,6 +398,8 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
             "move": (L.vector_move_pair(vector.get("dx"), vector.get("dy"),
                                         x_axis, y_axis)
                      if vector_present else None),
+            "x_axis_id": x_id,
+            "y_axis_id": y_id,
             "absence": None if vector_present else _absence(vector.get("null_reason")),
             "status": L.label("presence", vector.get("status")),
         },
@@ -386,7 +407,7 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
             "band": L.fmt_number(hysteresis.get("band")),
             "applied": bool(hysteresis.get("applied")),
             "held_prior": bool(hysteresis.get("held_prior")),
-            "note": hysteresis.get("note"),
+            "note": D.hysteresis_note_pair(hysteresis),
         },
     }
 
@@ -396,6 +417,13 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
 # 10 are x/y state models, so the map is shell furniture rather than a
 # liquidity-only widget. The letter grid follows the producer's classification
 # law: A = low-x/high-y, B = high-x/high-y, C = low-x/low-y, D = high-x/low-y.
+
+def resolve_vector_axes(axes: Sequence[Mapping[str, Any]],
+                        vector: Mapping[str, Any] | None
+                        ) -> tuple[Mapping[str, Any], Mapping[str, Any]]:
+    """Bind dx/dy to axes by id. Test pin: swapped list order still maps by name."""
+    return D.resolve_vector_axes(axes, vector)
+
 
 def _finite(value: Any) -> bool:
     """A plottable coordinate: numeric, not a bool, and actually a number.
@@ -526,7 +554,7 @@ def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
 
 # --- component metrics --------------------------------------------------------
 
-def _metrics(snapshot: Mapping[str, Any]) -> list[dict[str, Any]]:
+def _metrics(snapshot: Mapping[str, Any], *, published: str | None = None) -> list[dict[str, Any]]:
     rows = []
     for metric in (snapshot.get("metrics") or {}).get("items") or []:
         value = metric.get("value")
@@ -545,11 +573,16 @@ def _metrics(snapshot: Mapping[str, Any]) -> list[dict[str, Any]]:
             "reference_id": metric.get("reference_id"),
             "definition_id": metric.get("definition_id"),
             "definition_version": metric.get("definition_version"),
+            "definition_label": D.definition_version_pair(
+                metric.get("definition_version"),
+                metric.get("reference_period") or published),
             "owner_ref": metric.get("owner_ref"),
+            "owner_name": D.owner_display_pair(metric.get("owner_ref")),
             "model_version": metric.get("model_version"),
             "transformation": metric.get("transformation"),
             "coverage": L.fmt_ratio_pct(metric.get("coverage")),
-            "authority_ceiling": metric.get("authority_ceiling"),
+            "authority_ceiling": D.authority_ceiling_pair(
+                metric.get("authority_ceiling")),
             "clocks": _clock_rows(metric),
             "reference_period": L.date_or_none(metric.get("reference_period")),
             "source_refs": list(metric.get("source_refs") or []),
@@ -803,7 +836,13 @@ def _evidence(snapshot: Mapping[str, Any], context: Mapping[str, Any],
             "state": L.label("correction_state", corrections.get("correction_state")),
             "predecessor": corrections.get("predecessor_generation_id"),
             "changed_fingerprints": list(corrections.get("changed_fingerprints") or []),
-            "note": corrections.get("note"),
+            "changed_sources": D.changed_sources_pair(
+                corrections.get("changed_fingerprints")),
+            "note": D.lineage_note_pair(corrections.get("note")),
+            "predecessor_label": (
+                _pair("A prior published generation is on file.",
+                      "已有上一已发布代次存档。")
+                if corrections.get("predecessor_generation_id") else None),
         },
     }
 
@@ -1023,7 +1062,9 @@ def build_view(snapshot: Mapping[str, Any], *, page_built_at: str,
     """
     if layout not in _LAYOUTS:
         raise ValueError(f"unknown layout {layout!r}; expected one of {sorted(_LAYOUTS)}")
-    axes = [_axis_view(a) for a in (snapshot.get("axes") or {}).get("items") or []]
+    published = L.date_or_none((snapshot.get("headline") or {}).get("effective_date"))
+    axes = [_axis_view(a, published=published)
+            for a in (snapshot.get("axes") or {}).get("items") or []]
     context = _context(snapshot, page_built_at)
     headline = _headline(snapshot, axes)
     changes = _changes(snapshot)
@@ -1059,7 +1100,7 @@ def build_view(snapshot: Mapping[str, Any], *, page_built_at: str,
         "quadrant_map": _quadrant_map(headline, axes),
         "diagnostics": _diagnostics(snapshot, context, changes, series),
         "changes": changes,
-        "metrics": _metrics(snapshot),
+        "metrics": _metrics(snapshot, published=published),
         "series": series,
         "drivers": _drivers(snapshot, axes),
         "evidence": _evidence(snapshot, context, page_built_at, artifact),

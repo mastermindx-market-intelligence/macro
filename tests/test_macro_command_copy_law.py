@@ -1680,20 +1680,15 @@ def test_chipmat_containment_from_manifest_alone() -> None:
 
 def test_vector_move_pair_zero_and_nonzero_are_plain_words() -> None:
     from lib.macro_suite_labels import vector_move_pair
-    x_axis = {
-        "label": {"en": "Tightness of borrowing conditions", "zh": "融资条件的紧张程度"},
-        "direction_token": "higher_tighter",
-    }
-    y_axis = {
-        "label": {"en": "Direction of borrowing conditions", "zh": "融资条件的变化方向"},
-        "direction_token": "higher_tighter",
-    }
+    x_axis = {"axis_id": "financial_conditions_level"}
+    y_axis = {"axis_id": "financial_conditions_impulse"}
     zero = vector_move_pair(0, 0, x_axis, y_axis)
     assert zero["en"] == "No change on either axis this month."
     assert zero["zh"] == "本月两轴均无变化。"
     moved = vector_move_pair(0.4, -0.2, x_axis, y_axis)
-    assert "Tighter on funding" in moved["en"]
-    assert "Easier on the change in conditions" in moved["en"]
+    assert moved["en"] == "Tighter on funding, easier on financial conditions."
+    assert moved["zh"] == "融资收紧，金融条件放松。"
+    assert "Moved on" not in moved["en"]
     assert "Δ" not in moved["en"] and "·" not in moved["en"]
 
 
@@ -1737,8 +1732,10 @@ def test_details_use_locale_pairing_not_lang_attributes() -> None:
             lang_hits.append(f"{path.name}:{match.group(0)[:80]}")
     assert lang_hits == [], lang_hits
     pages = [HUB_PAGE.output] + [page.output for page in SUITE_PAGES]
+    present = [name for name in pages if (ROOT / "site" / name).is_file()]
+    assert len(present) >= 14, present
     unpaired = []
-    for name in pages:
+    for name in present:
         path = ROOT / "site" / name
         if not path.is_file():
             continue
@@ -1763,3 +1760,123 @@ def test_machine_copy_hits_flag_glance_delta_notation() -> None:
     assert guard.machine_copy_hits("Δx 0 · Δy 0", glance=False) == []
     assert guard.machine_copy_hits(
         "No change on either axis this month.", glance=True) == []
+
+
+_RATIFIED_ZH_ASCII = re.compile(
+    r"\b(VIX|FRED|OFR|NFCI|CPI|GDP|SOFR|FOMC|HICP|TIPS|OECD|NBER|BLS|TGA|USD|US|EU|JP|CN|GB|ECB|BOJ|GLT|HY|IG|NAR|BEA|EIA)\b"
+)
+_REPEAT_TOKEN = re.compile(r"(\S{2,})\1")
+COMPOSITION_DISCLOSURE_ROWS = (
+    ("Weights law", "权重法则"),
+    ("Transformation", "变换"),
+    ("Frequency alignment", "频率对齐"),
+    ("Revision behaviour", "修订行为"),
+    ("Coverage floor", "覆盖下限"),
+    ("Definition version", "定义版本"),
+    ("Authority ceiling", "权限上限"),
+)
+
+
+def test_axis_move_clauses_cover_every_axis_and_direction() -> None:
+    from lib.macro_suite_disclosure import (
+        AXIS_MOVE_CLAUSES, axis_move_clause, required_axis_ids,
+    )
+    from lib.macro_suite_labels import vector_move_pair
+    axes = required_axis_ids()
+    assert axes, "clause table is empty"
+    for axis_id in axes:
+        for direction in ("up", "down", "flat"):
+            clause = axis_move_clause(axis_id, direction)
+            zh = clause["zh"]
+            leftover = _RATIFIED_ZH_ASCII.sub("", zh)
+            assert not re.search(r"[A-Za-z]", leftover), (axis_id, direction, zh)
+            assert not _REPEAT_TOKEN.search(zh), (axis_id, direction, zh)
+            assert "Moved on" not in clause["en"]
+            assert (axis_id, direction) in AXIS_MOVE_CLAUSES
+    zero = vector_move_pair(0, 0, {"axis_id": axes[0]}, {"axis_id": axes[1]})
+    assert zero["en"] == "No change on either axis this month."
+    assert zero["zh"] == "本月两轴均无变化。"
+    moved = vector_move_pair(0.4, -0.2, {"axis_id": "funding_pressure"},
+                             {"axis_id": "balance_sheet_support"})
+    assert moved["en"][0].isupper()
+    assert ", " in moved["en"]
+    right = moved["en"].split(", ", 1)[1]
+    assert right[0].islower() or right.split()[0] in {
+        "GLT", "US", "CPI", "FRED", "OFR", "NFCI"}
+    assert "Moved on" not in moved["en"]
+
+
+def test_vector_axes_resolve_by_id_not_list_order() -> None:
+    from lib.macro_suite_disclosure import resolve_vector_axes
+    from lib.macro_suite_labels import vector_move_pair
+    x = {"axis_id": "funding_pressure"}
+    y = {"axis_id": "balance_sheet_support"}
+    got_x, got_y = resolve_vector_axes(
+        [y, x],
+        {"x_axis_id": "funding_pressure", "y_axis_id": "balance_sheet_support"},
+    )
+    assert got_x["axis_id"] == "funding_pressure"
+    assert got_y["axis_id"] == "balance_sheet_support"
+    moved = vector_move_pair(0.4, -0.2, got_x, got_y)
+    assert moved["en"].startswith("Tighter funding pressure")
+    assert "weaker balance-sheet support" in moved["en"]
+
+
+def test_visible_text_parser_treats_void_elements_as_self_closing() -> None:
+    html = (
+        '<main class="mc-shell">'
+        '<meta name="robots" hidden>'
+        '<meta charset="utf-8">'
+        "<p>engine.owner_field leak</p>"
+        "</main>"
+    )
+    nodes = guard.visible_text_nodes(html)
+    assert any("engine.owner_field leak" in (node.get("text") or "") for node in nodes)
+    hits = guard.find_violations(html)
+    assert any("snake" in hit or "machine-text" in hit for hit in hits), hits
+
+
+def test_copy_guard_reports_allowlist_without_deleting_input() -> None:
+    src = (ROOT / "scripts" / "check_macro_command_copy.py").read_text(
+        encoding="utf-8")
+    assert "text.replace(allowed, \"\")" not in src
+    html = (
+        '<main class="mc-shell">'
+        "<p>No change on either axis this month.</p>"
+        "</main>"
+    )
+    assert guard.find_violations(html) == []
+    exceptions = guard.find_exceptions(html)
+    assert any("No change on either axis this month." in item for item in exceptions)
+
+
+@pytest.mark.needs_full_checkout("site")
+def test_composites_disclose_composition_law_in_plain_words() -> None:
+    """M1: every composite on the 15 pages paints the N disclosure rows, EN+ZH."""
+    from scripts.build_macro_suite_pages import HUB_PAGE, SUITE_PAGES
+    pages = [HUB_PAGE.output] + [page.output for page in SUITE_PAGES]
+    present = [name for name in pages if (ROOT / "site" / name).is_file()]
+    assert len(present) >= 14, present
+    composites = 0
+    missing: list[str] = []
+    machine: list[str] = []
+    for name in present:
+        html = (ROOT / "site" / name).read_text(encoding="utf-8")
+        blocks = re.findall(
+            r'<div class="mc-details-body mq-axis-method">(.*?)</div>\s*</details>',
+            html, re.S)
+        for body in blocks:
+            composites += 1
+            for en, zh in COMPOSITION_DISCLOSURE_ROWS:
+                if en not in body:
+                    missing.append(f"{name}: missing EN {en!r}")
+                if zh not in body:
+                    missing.append(f"{name}: missing ZH {zh!r}")
+            wrapped = f"<div>{body}</div>"
+            for node in guard.visible_text_nodes(wrapped):
+                hits = guard.machine_copy_hits(node.get("text") or "")
+                if hits:
+                    machine.append(f"{name}:{hits}:{node.get('text','')[:80]}")
+    assert composites >= 1, present
+    assert missing == [], missing
+    assert machine == [], machine

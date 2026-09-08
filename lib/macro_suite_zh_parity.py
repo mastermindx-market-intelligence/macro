@@ -27,7 +27,7 @@ ZH_PARITY: dict[str, str] = {
     "Issuers": "发行主体",
     "Owner disclosed unavailable": "所有者已披露为不可用",
     "Owner native categorical": "所有者原生分类",
-    "Higher tightening impulse": "收紧脉冲上升",
+    "Higher tightening impulse": "收紧脉冲更强",
     "Higher broader": "数值越高＝覆盖越广",
     "Pct yoy": "同比百分比",
     "Trailing 13w pct change": "过去13周百分比变化",
