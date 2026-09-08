@@ -25,6 +25,19 @@ from scripts import check_macro_command_copy as guard
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_ROOT = ROOT / "site" / "macrodata"
+
+
+def _manifest_pages(manifest: dict) -> list[dict]:
+    pages = list(manifest.get("pages") or [])
+    assert pages, "manifest has no pages"
+    return pages
+
+
+def _manifest_states(manifest: dict) -> list[dict]:
+    states: list[dict] = []
+    for page in _manifest_pages(manifest):
+        states.extend(page.get("states") or [])
+    return states
 BUILT_AT = "2026-09-06T00:00:00Z"
 P3_IDS = ("overview", "money", "policy", "rates", "inflation")
 P4_IDS = ("growth", "jobs", "housing", "consumer", "credit", "debt", "trade")
@@ -609,7 +622,7 @@ def test_empty_state_evidence_names_fixture_and_trigger() -> None:
     manifest = json.loads(
         (ROOT / "mockups" / "evidence" / "macro-command-p3" / "manifest.json")
         .read_text(encoding="utf-8"))
-    states = {state.get("file"): state for state in manifest["pages"][0]["states"]}
+    states = {state.get("file"): state for state in _manifest_states(manifest)}
     for empty_id in ("e1", "e2", "e3", "e4", "e5", "e6"):
         for theme in ("dark", "light"):
             for name in (
@@ -792,8 +805,12 @@ def test_p3_clearance_probes_are_real_geometry() -> None:
             assert isinstance(pos.get("excused"), list), (key, pos_name)
             assert isinstance(pos.get("hits"), list), (key, pos_name)
             assert "mmbBootDisplay" in pos, (key, pos_name)
+            assert "mmbBootInDom" in pos, (key, pos_name)
+            assert "mmbBootVisible" in pos, (key, pos_name)
         if key.startswith("clearance_390_") or key.startswith("clearance_768_"):
             assert row.get("mmbBootDisplay") == "none", (key, row)
+            assert row.get("mmbBootInDom") is True, (key, row)
+            assert row.get("mmbBootVisible") is False, (key, row)
             for pos_name, pos in positions.items():
                 names = [ov.get("name") for ov in pos.get("overlays") or []]
                 assert "mmb-boot" not in names, (key, names)
@@ -814,6 +831,8 @@ def test_p3_clearance_probes_are_real_geometry() -> None:
                                    - float(exposed)) < 0.01, (key, pos_name, item)
         if key.startswith("clearance_1440_"):
             assert row.get("mmbBootDisplay") not in (None, "none"), (key, row)
+            assert row.get("mmbBootInDom") is True, (key, row)
+            assert row.get("mmbBootVisible") is True, (key, row)
             assert row.get("mmbBootBox"), (key, row)
             for pos_name, pos in positions.items():
                 names = [ov.get("name") for ov in pos.get("overlays") or []]
@@ -865,7 +884,7 @@ def test_r9_default_390_frames_are_scroll_zero() -> None:
     manifest = json.loads(
         (ROOT / "mockups" / "evidence" / "macro-command-p3" / "manifest.json")
         .read_text(encoding="utf-8"))
-    states = {state.get("file"): state for state in manifest["pages"][0]["states"]}
+    states = {state.get("file"): state for state in _manifest_states(manifest)}
     for name in (
         "09-dark-en-390.png", "10-dark-zh-390.png",
         "11-light-en-390.png", "12-light-zh-390.png",
@@ -894,7 +913,7 @@ def test_p3_evidence_frames_are_not_byte_duplicates() -> None:
         (ROOT / "mockups" / "evidence" / "macro-command-p3" / "manifest.json")
         .read_text(encoding="utf-8"))
     by_sha: dict[str, list[str]] = {}
-    for state in manifest["pages"][0]["states"]:
+    for state in _manifest_states(manifest):
         if state.get("captured") and state.get("sha256") and state.get("file"):
             by_sha.setdefault(state["sha256"], []).append(state["file"])
     dupes = {sha: names for sha, names in by_sha.items() if len(names) > 1}
@@ -906,7 +925,7 @@ def test_e2_evidence_names_fixture_and_trigger() -> None:
     manifest = json.loads(
         (ROOT / "mockups" / "evidence" / "macro-command-p3" / "manifest.json")
         .read_text(encoding="utf-8"))
-    states = {state.get("file"): state for state in manifest["pages"][0]["states"]}
+    states = {state.get("file"): state for state in _manifest_states(manifest)}
     for theme in ("dark", "light"):
         row = states[f"empty-e2-{theme}.png"]
         assert row["captured"] is True
@@ -1132,7 +1151,7 @@ def test_p3_manifest_axes_match_every_force_state_and_tablet_bucket() -> None:
     assert manifest["axes"]["viewports"]["tablet"] == [768, 1400]
     assert "desktop" in manifest["axes"]["viewports"]
     seen: set[str] = set()
-    for state in manifest["pages"][0]["states"]:
+    for state in _manifest_states(manifest):
         assert state.get("reduced_motion") is True, state.get("file")
         fs = state.get("force_state")
         if fs:
@@ -1413,6 +1432,10 @@ def test_r7_m2_strip_void_probe_has_no_filled_slab() -> None:
         assert row.get("canvasRgb"), (key, row)
         assert row.get("canvasSource"), (key, row)
         assert "strip-inter-chip-gap" in str(row.get("canvasSource")), (key, row)
+        assert "css" in str(row.get("canvasSource")), (key, row)
+        assert row.get("bgTokenRgb"), (key, row)
+        assert row.get("delta") is not None, (key, row)
+        assert all(int(channel) <= 2 for channel in row["delta"]), (key, row)
     assert "strip_void_probe" not in probes
 
 
@@ -1509,6 +1532,50 @@ def test_pixel_scan_rejects_in_chip_sample(tmp_path) -> None:
     assert canvas == (13, 16, 24)
 
 
+def test_pixel_scan_gap_matches_bg_token(tmp_path) -> None:
+    """MINOR-3: a gap sample must match --bg ±2 and name the CSS point."""
+    from PIL import Image
+
+    from scripts import capture_macro_command_p3 as capture
+
+    image = Image.new("RGB", (80, 20), (13, 16, 24))
+    path = tmp_path / "strip.png"
+    image.save(path)
+    probe = {
+        "stripBox": {"left": 0, "right": 40, "top": 0, "bottom": 10},
+        "chipBoxes": [
+            {"left": 0, "right": 10, "top": 0, "bottom": 10},
+            {"left": 20, "right": 30, "top": 0, "bottom": 10},
+        ],
+        "bgToken": "#0d1018",
+    }
+    row = capture._pixel_scan_strip_void(path, probe, scale=2)
+    assert "15.00css" in str(row.get("canvasSource"))
+    assert row.get("canvasRgb") == [13, 16, 24]
+    assert row.get("bgTokenRgb") == [13, 16, 24]
+    assert row.get("delta") == [0, 0, 0]
+
+
+def test_pixel_scan_raises_when_gap_mismatches_bg(tmp_path) -> None:
+    from PIL import Image
+
+    from scripts import capture_macro_command_p3 as capture
+
+    image = Image.new("RGB", (80, 20), (200, 10, 10))
+    path = tmp_path / "strip.png"
+    image.save(path)
+    probe = {
+        "stripBox": {"left": 0, "right": 40, "top": 0, "bottom": 10},
+        "chipBoxes": [
+            {"left": 0, "right": 10, "top": 0, "bottom": 10},
+            {"left": 20, "right": 30, "top": 0, "bottom": 10},
+        ],
+        "bgToken": "#0d1018",
+    }
+    with pytest.raises(RuntimeError, match="!= --bg"):
+        capture._pixel_scan_strip_void(path, probe, scale=2)
+
+
 def test_pixel_scan_raises_when_bg_token_does_not_parse(tmp_path) -> None:
     """r11-n2: fallback token that does not parse is a hard error."""
     from PIL import Image
@@ -1597,8 +1664,8 @@ def test_r12_clearance_js_has_no_target_zero_gate() -> None:
     assert "exposedAtScrollY" in capture.CLEARANCE_AT_JS
 
 
-def test_r12_synthetic_clearance_runs_shipped_js() -> None:
-    """MINOR-C1: receipts come from CLEARANCE_AT_JS, not a Python twin."""
+def test_r12_synthetic_clearance_manifest_consistency() -> None:
+    """Manifest-consistency only — does not claim to test the hit rule."""
     from scripts import capture_macro_command_p3 as capture
 
     assert not hasattr(capture, "_synthetic_clearance_page")
@@ -1608,14 +1675,15 @@ def test_r12_synthetic_clearance_runs_shipped_js() -> None:
     row = probes["synthetic_clearance"]
     positions = row["positions"]
     assert set(positions) >= {"0", "50", "max"}
-    pos0 = positions["0"]
-    inside = [h for h in pos0.get("hits") or []
-              if "inside" in str(h.get("text") or "")]
-    assert inside, pos0.get("hits")
-    assert inside[0]["reason"] == "sticky-rail-full-cover-unexposable"
-    assert inside[0]["exposedAtScrollY"] < 0
-    assert abs(float(inside[0]["docTop"]) - float(inside[0]["ovBottom"])
-               - float(inside[0]["exposedAtScrollY"])) < 0.01
+    receipts = row.get("synthetic_hit_rule") or {}
+    assert set(receipts) >= {"inside zone", "below zone", "under pill"}
+    for station in ("0", "50", "max"):
+        assert receipts["inside zone"][station]["verdict"] == "hit", station
+    assert any(
+        row.get("verdict") == "excused"
+        and row.get("exposedAtScrollY") is not None
+        for row in receipts["below zone"].values())
+    assert any(row.get("verdict") == "hit" for row in receipts["under pill"].values())
     for pos in positions.values():
         for item in list(pos.get("excused") or []) + list(pos.get("hits") or []):
             if "exposedAtScrollY" not in item:
@@ -1625,31 +1693,41 @@ def test_r12_synthetic_clearance_runs_shipped_js() -> None:
                        - float(item["exposedAtScrollY"])) < 0.01
 
 
-def test_r12_excused_unreachable_exposed_raises() -> None:
+def test_r14_clearance_hit_rule_runs_shipped_js_in_playwright() -> None:
+    """MINOR-B: live Playwright run of the shipped CLEARANCE_AT_JS."""
     from scripts import capture_macro_command_p3 as capture
 
-    class _Page:
-        def evaluate(self, _js, target):
-            return {
-                "ok": True,
-                "textCount": 1,
-                "maxScrollMatched": True,
-                "maxScroll": 100,
-                "excused": [{
-                    "reason": "rail_fully_covered",
-                    "exposedAtScrollY": 999,
-                    "docTop": 80,
-                    "ovHeight": 56,
-                }],
-                "hits": [],
-                "analystPosition": "static",
-                "mmbBootPresent": False,
-                "mmbBootDisplay": "none",
-                "mmbBootBox": None,
-            }
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        pytest.skip("Playwright not installed")
 
-    with pytest.raises(RuntimeError, match="unreachable"):
-        capture._run_clearance(_Page())
+    try:
+        playwright_cm = sync_playwright().start()
+    except Exception as exc:
+        pytest.skip(f"Playwright runtime unavailable: {exc}")
+    try:
+        try:
+            browser = playwright_cm.chromium.launch(headless=True, channel="chrome")
+        except Exception:
+            try:
+                browser = playwright_cm.chromium.launch(headless=True)
+            except Exception as exc:
+                pytest.skip(f"Chromium unavailable: {exc}")
+        try:
+            page = browser.new_page(viewport={"width": 1440, "height": 900})
+            row = capture._run_synthetic_clearance(page)
+        finally:
+            browser.close()
+    finally:
+        playwright_cm.stop()
+    receipts = row["synthetic_hit_rule"]
+    for station in ("0", "50", "max"):
+        assert receipts["inside zone"][station]["verdict"] == "hit", station
+    excused = [item for item in receipts["below zone"].values()
+               if item.get("verdict") == "excused"]
+    assert excused and excused[0].get("exposedAtScrollY") is not None
+    assert any(item.get("verdict") == "hit" for item in receipts["under pill"].values())
 
 
 def test_r12_manifest_shot_schema() -> None:
@@ -1677,6 +1755,14 @@ def test_r12_manifest_shot_schema() -> None:
             }
             capture._assert_shot_geometry(
                 dest, extra, state["viewport_width"], state["viewport_height"])
+            if state.get("crop"):
+                assert state.get("crop_box_doc"), state.get("file")
+                assert "scroll_y_at_shot" in state, state.get("file")
+                assert state.get("element_text_head") is not None, state.get("file")
+                span = state.get("device_px_span") or {}
+                assert set(span) >= {"x0", "x1", "y0", "y1"}, state.get("file")
+                assert state["width"] == span["x1"] - span["x0"], state.get("file")
+                assert state["height"] == span["y1"] - span["y0"], state.get("file")
 
 
 def test_r12_gaps_are_computed_from_declared_minus_captured() -> None:
@@ -1693,6 +1779,7 @@ def test_r12_gaps_are_computed_from_declared_minus_captured() -> None:
     expected_families = {
         "force_states", "empty_states", "clearance", "chip_opens_chat",
         "strip_void", "rail_viewport", "e5", "fab",
+        "rest_views", "full_page", "movement_row",
     }
     assert set(declared) == expected_families
     for family, cells in declared.items():
@@ -1706,8 +1793,9 @@ def test_r12_gaps_are_computed_from_declared_minus_captured() -> None:
     assert computed == []
     empty_declared = capture._declared_empty_cells()
     assert len(empty_declared) == 6 * 2 * 2 * 2
-    empty_gaps = capture._compute_gaps(empty_declared, manifest["pages"][0]["states"])
-    assert empty_gaps == manifest["pages"][0]["gaps"]
+    for page in _manifest_pages(manifest):
+        empty_gaps = capture._compute_gaps(empty_declared, page.get("states") or [])
+        assert empty_gaps == page.get("gaps")
 
 
 def test_r12_no_orphan_strip_void_probe() -> None:
@@ -1731,13 +1819,13 @@ def test_r12_e5_timeout_receipts() -> None:
                 key = f"e5_timeout_{theme}_{locale}_{vw}"
                 row = probes[key]
                 assert row.get("elapsedMs") >= 8000, (key, row)
-                assert row.get("requestSeenAt") is not None, (key, row)
-                assert row.get("cloneSeenAt") is not None, (key, row)
-                assert float(row["cloneSeenAt"]) > float(row["requestSeenAt"]), (
+                assert row.get("requestSeenAtMs") is not None, (key, row)
+                assert row.get("cloneSeenAtMs") is not None, (key, row)
+                assert float(row["cloneSeenAtMs"]) > float(row["requestSeenAtMs"]), (
                     key, row)
-                assert abs(
-                    (float(row["cloneSeenAt"]) - float(row["requestSeenAt"]))
-                    * 1000 - float(row["elapsedMs"])) < 1.0, (key, row)
+                assert float(row["elapsedMs"]) == (
+                    float(row["cloneSeenAtMs"]) - float(row["requestSeenAtMs"])
+                ), (key, row)
                 assert row.get("templatePresent") is True, (key, row)
                 assert row.get("clonePresent") is True, (key, row)
                 assert row.get("headline"), (key, row)
@@ -1772,8 +1860,13 @@ def test_r12_rail_viewport_receipts() -> None:
                 assert row.get("fadeWidth", 0) >= 24 - 0.5, (key, row)
                 assert row.get("fadeBeginsBeforeAnalyst", 0) >= 24 - 0.5, (
                     key, row)
-                mask = row.get("maskImage") or row.get("webkitMaskImage")
+                mask = row.get("maskRaw") or row.get("maskImage") or row.get(
+                    "webkitMaskImage")
                 assert mask and mask != "none", (key, row)
+                assert "calc(100%" in str(mask) or "%" in str(mask), (key, mask)
+                assert row.get("fadeVisualStartX") is not None, (key, row)
+                assert abs(float(row["fadeVisualStartX"]) - float(row["fadeLeft"])) <= 4, (
+                    key, row)
                 assert row.get("chips"), (key, row)
                 for chip in row["chips"]:
                     assert chip.get("fullyVisible") is True, (key, chip)
@@ -1804,3 +1897,21 @@ def test_r12_chip_material_receipts() -> None:
                 ):
                     assert row["analyst"][prop] == row["sibling"][prop], (
                         key, prop, row)
+
+
+def test_r14_movement_row_element_shots() -> None:
+    """NIT-8: four element shots of a movement row, value + unit + phrase."""
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p3" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    states = {state.get("file"): state for state in _manifest_states(manifest)}
+    for theme in ("dark", "light"):
+        for locale in ("en", "zh"):
+            name = f"movement-row-{theme}-{locale}.png"
+            row = states[name]
+            assert row.get("crop") is True, name
+            assert row.get("crop_selector") == (
+                "#inflation .mc-move-row:not(.mc-move-current-only)"), name
+            head = str(row.get("element_text_head") or "")
+            assert re.search(r"\d", head), (name, head)
+            assert len(head) > 12, (name, head)

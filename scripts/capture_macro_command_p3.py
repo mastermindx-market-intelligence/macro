@@ -192,7 +192,9 @@ CLEARANCE_AT_JS = """(target) => {
     hits,
     excused,
     analystPosition: analystCs ? analystCs.position : null,
-    mmbBootPresent: Boolean(boot),
+    mmbBootInDom: Boolean(boot),
+    mmbBootVisible: Boolean(boot && bootDisplay && bootDisplay !== 'none'
+      && bootCs && bootCs.visibility !== 'hidden'),
     mmbBootBox: bootBox ? {
       top: bootBox.top, bottom: bootBox.bottom,
       left: bootBox.left, right: bootBox.right,
@@ -363,22 +365,41 @@ HAIRLINE_JS = """() => {
 RAIL_VIEWPORT_JS = """() => {
   /* BLOCKER-E1: measure the RAIL VIEWPORT, not each chip's own box.
      Content-sized chips have scrollWidth==clientWidth by construction;
-     truncation is the list scroller + fade + pinned analyst. */
+     truncation is the list scroller + fade + pinned analyst.
+     MAJOR-A: fadeWidth is parsed from the computed mask-image, never
+     a harness constant echoing itself. */
   const list = document.querySelector('.mc-rail-list');
   const analyst = document.querySelector('.mc-analyst');
   const content = [...document.querySelectorAll('.mc-rail-link:not(.mc-analyst)')];
   if (!list || !analyst || !content.length) {
     return {ok: false, reason: 'missing rail-list/analyst/chips'};
   }
-  const fadeCss = 24;
+  const fadeMin = 24;
   const listCs = getComputedStyle(list);
   const maskImage = listCs.maskImage;
   const webkitMaskImage = listCs.webkitMaskImage;
-  const mask = (webkitMaskImage && webkitMaskImage !== 'none')
+  const maskRaw = (webkitMaskImage && webkitMaskImage !== 'none')
     ? webkitMaskImage
     : (maskImage || 'none');
-  const maskOk = mask !== 'none' && mask !== '';
+  const maskOk = maskRaw !== 'none' && maskRaw !== '';
   const maxScrollLeft = Math.max(0, list.scrollWidth - list.clientWidth);
+
+  const parseFadeWidth = (raw, listWidth) => {
+    const text = String(raw || '').trim();
+    if (!text || text === 'none') {
+      throw new Error('rail fade mask-image is none/empty: ' + JSON.stringify(raw));
+    }
+    const calc = [...text.matchAll(/calc\\(\\s*100%\\s*-\\s*([\\d.]+)px\\s*\\)/g)];
+    if (calc.length) {
+      return Number(calc[calc.length - 1][1]);
+    }
+    const stops = [...text.matchAll(/(-?[\\d.]+)%/g)].map((m) => Number(m[1]));
+    const opaque = stops.filter((p) => p < 100);
+    if (opaque.length) {
+      return (opaque[opaque.length - 1] / 100) * listWidth;
+    }
+    throw new Error('unparsable mask-image: ' + text);
+  };
 
   const chipOwn = (el) => {
     const cs = getComputedStyle(el);
@@ -391,9 +412,8 @@ RAIL_VIEWPORT_JS = """() => {
     };
   };
 
-  const visibleFraction = (el, listBox, analystBox) => {
+  const visibleFraction = (el, listBox, analystBox, fadeLeft) => {
     const box = el.getBoundingClientRect();
-    const fadeLeft = listBox.right - fadeCss;
     const visibleRight = Math.min(listBox.right, fadeLeft, analystBox.left);
     const visibleLeft = listBox.left;
     const left = Math.max(box.left, visibleLeft);
@@ -415,8 +435,8 @@ RAIL_VIEWPORT_JS = """() => {
     list.scrollLeft = scrollLeft;
     const listBox = list.getBoundingClientRect();
     const analystBox = analyst.getBoundingClientRect();
-    const fadeLeft = listBox.right - fadeCss;
-    const fadeWidth = listBox.right - fadeLeft;
+    const fadeWidth = parseFadeWidth(maskRaw, listBox.width);
+    const fadeLeft = listBox.right - fadeWidth;
     const fadeBeginsBeforeAnalyst = analystBox.left - fadeLeft;
     return {
       scrollLeft: list.scrollLeft,
@@ -427,7 +447,8 @@ RAIL_VIEWPORT_JS = """() => {
       fadeWidth,
       fadeLeft,
       fadeBeginsBeforeAnalyst,
-      chips: content.map((el) => visibleFraction(el, listBox, analystBox)),
+      maskRaw,
+      chips: content.map((el) => visibleFraction(el, listBox, analystBox, fadeLeft)),
     };
   };
 
@@ -440,7 +461,7 @@ RAIL_VIEWPORT_JS = """() => {
   const fullyVisibleAt = [];
   for (let i = 0; i < content.length; i += 1) {
     const el = content[i];
-    const visibleW = Math.max(1, list.clientWidth - fadeCss);
+    const visibleW = Math.max(1, list.clientWidth - at0.fadeWidth);
     const lo = Math.max(0, el.offsetLeft + el.offsetWidth - visibleW);
     const candidates = [0, lo, el.offsetLeft, maxScrollLeft];
     for (let d = -24; d <= 24; d += 4) {
@@ -474,8 +495,8 @@ RAIL_VIEWPORT_JS = """() => {
     });
   }
 
-  const fadeBandOk = at0.fadeWidth >= fadeCss - 0.5
-    && at0.fadeBeginsBeforeAnalyst >= fadeCss - 0.5
+  const fadeBandOk = at0.fadeWidth >= fadeMin - 0.5
+    && at0.fadeBeginsBeforeAnalyst >= fadeMin - 0.5
     && maskOk;
   const everyReachable = fullyVisibleAt.every((row) => row.fullyVisible);
   const ownLabelOk = fullyVisibleAt.every(
@@ -492,7 +513,9 @@ RAIL_VIEWPORT_JS = """() => {
     ownLabelOk,
     maskImage,
     webkitMaskImage,
+    maskRaw,
     fadeWidth: at0.fadeWidth,
+    fadeLeft: at0.fadeLeft,
     fadeBeginsBeforeAnalyst: at0.fadeBeginsBeforeAnalyst,
     maxScrollLeft,
     at0,
@@ -561,7 +584,8 @@ def _run_clearance(page) -> dict[str, Any]:
         "textCount": positions["0"].get("textCount"),
         "positions": positions,
         "analystPosition": positions["0"].get("analystPosition"),
-        "mmbBootPresent": positions["0"].get("mmbBootPresent"),
+        "mmbBootInDom": positions["0"].get("mmbBootInDom"),
+        "mmbBootVisible": positions["0"].get("mmbBootVisible"),
         "mmbBootDisplay": positions["0"].get("mmbBootDisplay"),
         "mmbBootBox": positions["0"].get("mmbBootBox"),
         "excusedCounts": {
@@ -645,6 +669,11 @@ def _pixel_scan_strip_void(path: Path, probe: dict[str, Any],
 
     canvas, canvas_source = _choose_strip_canvas(
         image, row_boxes, scale, in_chip, probe.get("bgToken"))
+    bg_token_rgb = _rgb_token((probe.get("bgToken") or "").strip())
+    canvas_delta = (
+        [abs(int(a) - int(b)) for a, b in zip(canvas, bg_token_rgb)]
+        if bg_token_rgb is not None else None
+    )
 
     threshold = 40 * scale
     voids: list[dict[str, Any]] = []
@@ -677,6 +706,8 @@ def _pixel_scan_strip_void(path: Path, probe: dict[str, Any],
         "pixelVoidCount": len(voids),
         "canvasRgb": list(canvas),
         "canvasSource": canvas_source,
+        "bgTokenRgb": list(bg_token_rgb) if bg_token_rgb is not None else None,
+        "delta": canvas_delta,
         "band": {"x0": x0, "x1": x1, "y0": y0, "y1": y1},
     }
 
@@ -695,21 +726,192 @@ def _choose_strip_canvas(image, row_boxes, scale: int, in_chip,
         gap_left = row_boxes_sorted[0]["right"]
         gap_right = row_boxes_sorted[1]["left"]
         gap_css = gap_right - gap_left
-        sample_x = int(((gap_left + gap_right) / 2) * scale)
-        sample_y = int(((min(box["top"] for box in row_boxes)
-                         + max(box["bottom"] for box in row_boxes)) / 2) * scale)
+        sample_x_css = (gap_left + gap_right) / 2
+        sample_y_css = (
+            min(box["top"] for box in row_boxes)
+            + max(box["bottom"] for box in row_boxes)
+        ) / 2
+        sample_x = int(sample_x_css * scale)
+        sample_y = int(sample_y_css * scale)
         sample_x = min(max(0, sample_x), image.width - 1)
         sample_y = min(max(0, sample_y), image.height - 1)
         if gap_css >= 8 and not in_chip(sample_x, sample_y):
-            return image.getpixel((sample_x, sample_y)), (
-                f"strip-inter-chip-gap ({sample_x},{sample_y}) "
-                f"gapCss={gap_css:.2f}")
+            sampled = image.getpixel((sample_x, sample_y))
+            token = (bg_token or "").strip()
+            parsed = _rgb_token(token)
+            if parsed is None:
+                raise RuntimeError(
+                    "strip-void canvas: gap sample has no parsable --bg token")
+            delta = [abs(int(a) - int(b)) for a, b in zip(sampled, parsed)]
+            if any(channel > 2 for channel in delta):
+                raise RuntimeError(
+                    f"strip-void canvas sample {list(sampled)} != --bg "
+                    f"{list(parsed)} delta={delta} at "
+                    f"({sample_x_css:.2f}css,{sample_y_css:.2f}css)")
+            return sampled, (
+                f"strip-inter-chip-gap ({sample_x_css:.2f}css,"
+                f"{sample_y_css:.2f}css) gapCss={gap_css:.2f}")
     token = (bg_token or "").strip()
     parsed = _rgb_token(token)
     if parsed is None:
         raise RuntimeError(
             "strip-void canvas: gap <8px or in_chip and --bg did not parse")
     return parsed, "--bg custom property"
+
+
+def _paint_alpha(pixel: tuple[int, ...], paint: tuple[int, ...],
+                 canvas: tuple[int, ...]) -> float:
+    """Recover paint fraction assuming P = a*C + (1-a)*B."""
+    num = sum((int(p) - int(b)) * (int(c) - int(b))
+              for p, c, b in zip(pixel, paint, canvas))
+    den = sum((int(c) - int(b)) ** 2 for c, b in zip(paint, canvas))
+    if den <= 0:
+        return 0.0
+    return max(0.0, min(1.0, num / den))
+
+
+def _confirm_rail_fade_visual(page, viewport: dict[str, Any]) -> dict[str, Any]:
+    """MAJOR-A: pixel-scan the fade band and compare to the parsed fadeLeft."""
+    from PIL import Image
+
+    fade_left = float(viewport.get("fadeLeft") or (viewport.get("at0") or {}).get("fadeLeft"))
+    fade_width = float(viewport.get("fadeWidth") or (viewport.get("at0") or {}).get("fadeWidth"))
+    live = page.evaluate(
+        """(fadeWidth) => {
+      const list = document.querySelector('.mc-rail-list');
+      const content = [...document.querySelectorAll('.mc-rail-link:not(.mc-analyst)')];
+      if (!list || !content.length) return {ok: false, reason: 'missing'};
+      const listBox = list.getBoundingClientRect();
+      const fadeLeft = listBox.right - fadeWidth;
+      const maxSL = Math.max(0, list.scrollWidth - list.clientWidth);
+      let placed = false;
+      for (const el of content) {
+        const target = el.offsetLeft + el.offsetWidth * 0.35
+          - (fadeLeft - listBox.left);
+        list.scrollLeft = Math.max(0, Math.min(maxSL, target));
+        const box = el.getBoundingClientRect();
+        if (box.left < fadeLeft - 12 && box.right > fadeLeft + 8) {
+          placed = true;
+          break;
+        }
+      }
+      if (!placed) {
+        list.scrollLeft = maxSL;
+      }
+      const chips = content.map((node) => {
+        const box = node.getBoundingClientRect();
+        return {left: box.left, right: box.right, top: box.top, bottom: box.bottom};
+      });
+      return {
+        ok: true,
+        fadeLeft,
+        listBox: {left: listBox.left, right: listBox.right,
+                  width: listBox.width, height: listBox.height},
+        chips,
+      };
+    }""",
+        fade_width,
+    )
+    if not live.get("ok"):
+        raise RuntimeError(f"fade visual: live rail geometry failed: {live}")
+    fade_left = float(live["fadeLeft"])
+    list_box = live.get("listBox") or {}
+    chips = live.get("chips") or []
+    page.wait_for_timeout(80)
+    dpr = float(page.evaluate("window.devicePixelRatio"))
+    bg_token = page.evaluate(
+        "getComputedStyle(document.documentElement).getPropertyValue('--bg')")
+    canvas = _rgb_token((bg_token or "").strip())
+    if canvas is None:
+        raise RuntimeError(f"fade visual: --bg did not parse: {bg_token!r}")
+    paint_box = None
+    for box in chips:
+        if float(box.get("left") or 0) < fade_left and float(box.get("right") or 0) > fade_left - 8:
+            paint_box = box
+            break
+    if paint_box is None:
+        paint_box = chips[-1] if chips else None
+    if not paint_box:
+        raise RuntimeError("fade visual: no chip box after scroll")
+    tmp = Path(os.environ.get("TMPDIR", "/tmp")) / f"mc-fade-{os.getpid()}.png"
+    page.screenshot(path=str(tmp), type="png", full_page=False)
+    try:
+        image = Image.open(tmp).convert("RGB")
+        y0 = max(0, int(float(paint_box["top"]) * dpr))
+        y1 = min(image.height, int(float(paint_box["bottom"]) * dpr))
+        sample_right = min(float(paint_box["right"]), fade_left - 2)
+        x0 = max(0, int(float(paint_box["left"]) * dpr))
+        x1 = min(image.width, int(sample_right * dpr))
+        paint = None
+        best = -1
+        for y in range(y0, max(y0 + 1, y1)):
+            for x in range(x0, max(x0 + 1, x1)):
+                pixel = image.getpixel((x, y))
+                dist = sum((int(a) - int(b)) ** 2 for a, b in zip(pixel, canvas))
+                if dist > best:
+                    best = dist
+                    paint = pixel
+        if paint is None or best < 20:
+            raise RuntimeError(
+                f"fade visual: no chip/label paint distinct from canvas "
+                f"{canvas} in {paint_box}")
+
+        def column_alpha(x_css: float) -> float:
+            xd = int(x_css * dpr)
+            if xd < 0 or xd >= image.width:
+                return 0.0
+            values = [
+                _paint_alpha(image.getpixel((xd, y)), paint, canvas)
+                for y in range(y0, max(y0 + 1, y1))
+                if 0 <= y < image.height
+            ]
+            return max(values) if values else 0.0
+
+        start = fade_left - 16
+        end = float(list_box.get("right") or fade_left + fade_width)
+        xs = [start + step for step in range(int(math.ceil(end - start)) + 1)]
+        raw = [column_alpha(x) for x in xs]
+        # Glyph gaps are not the fade. Take a 3-css-px max so a letter
+        # hole cannot look like the mask.
+        smooth = []
+        for i, alpha in enumerate(raw):
+            window = raw[max(0, i - 1): i + 2]
+            smooth.append(max(window))
+        opaque_run = 0
+        fade_visual = None
+        fade_half = None
+        for x_css, alpha in zip(xs, smooth):
+            if alpha >= 0.92:
+                opaque_run += 1
+            if opaque_run >= 3 and fade_visual is None and alpha < 0.92:
+                fade_visual = x_css
+            if opaque_run >= 3 and fade_half is None and alpha < 0.5:
+                fade_half = x_css
+                break
+        if fade_visual is None or fade_half is None:
+            # No chip paint in the band (list does not overflow). The
+            # mask still applies; the band is canvas-on-canvas, so the
+            # parsed stop is the visual start.
+            band_paint = max(raw) if raw else 0.0
+            if band_paint >= 0.5:
+                raise RuntimeError(
+                    f"fade visual: paint in the band never crossed 50% "
+                    f"[{start}, {end}] fadeLeft={fade_left} maxAlpha={band_paint}")
+            fade_visual = fade_left
+            fade_half = fade_left
+        if abs(fade_visual - fade_left) > 4:
+            raise RuntimeError(
+                f"fade visual start {fade_visual:.2f} != fadeLeft "
+                f"{fade_left:.2f} (tol 4 css px) half={fade_half}")
+        return {
+            "fadeVisualStartX": fade_visual,
+            "fadeVisualHalfX": fade_half,
+            "fadeLeft": fade_left,
+            "fadeWidth": fade_width,
+            "maskRaw": viewport.get("maskRaw") or (viewport.get("at0") or {}).get("maskRaw"),
+        }
+    finally:
+        tmp.unlink(missing_ok=True)
 
 
 def _sticky_cover_verdict(doc_top: float, ov_bottom: float,
@@ -732,34 +934,113 @@ def _sticky_cover_verdict(doc_top: float, ov_bottom: float,
 SYNTHETIC_CLEARANCE_HTML = """<!doctype html>
 <html><head><meta charset="utf-8">
 <style>
-  body { margin: 0; font: 16px/20px sans-serif; }
+  body { margin: 0; font: 16px/20px sans-serif; padding-top: 60px; }
+  .site-nav {
+    position: fixed; top: 0; left: 0; right: 0; height: 60px;
+    background: #222; color: #fff; z-index: 5;
+  }
   .mc-rail {
-    position: sticky; top: 0; z-index: 4; height: 80px;
+    position: sticky; top: 60px; z-index: 4; height: 200px;
     background: #c00; color: #fff;
   }
   .mc-panels { margin-top: -80px; }
-  .stuck { height: 20px; padding-top: 10px; margin: 0; }
-  .below { margin: 400px 0 0; height: 20px; }
-  .spacer { height: 2200px; }
+  .stuck { height: 20px; margin: 0; padding: 0; }
+  .below { height: 20px; margin: 80px 0 0; }
+  .under-pill { height: 20px; margin: 570px 0 0; }
+  .spacer { height: 110px; }
+  #mmb-boot {
+    position: fixed; bottom: 0; left: 0; right: 0; height: 40px;
+    background: #00c; color: #fff; z-index: 6;
+  }
 </style></head>
 <body>
+  <div class="site-nav">NAV</div>
   <div class="mc-rail">RAIL</div>
   <div class="mc-panels">
     <p class="stuck">inside zone</p>
     <p class="below">below zone</p>
+    <p class="under-pill">under pill</p>
     <div class="spacer"></div>
   </div>
+  <div id="mmb-boot">PILL</div>
 </body></html>
 """
 
 
+def _synthetic_node_receipts(
+        positions: dict[str, Any], needle: str) -> dict[str, Any]:
+    out: dict[str, Any] = {}
+    for station, pos in positions.items():
+        hits = [row for row in (pos.get("hits") or [])
+                if needle in str(row.get("text") or "")]
+        excused = [row for row in (pos.get("excused") or [])
+                   if needle in str(row.get("text") or "")]
+        if hits:
+            row = hits[0]
+            out[station] = {
+                "verdict": "hit",
+                "reason": row.get("reason"),
+                "exposedAtScrollY": row.get("exposedAtScrollY"),
+                "docTop": row.get("docTop"),
+                "ovBottom": row.get("ovBottom"),
+                "scrollY": pos.get("scrollY"),
+                "maxScroll": pos.get("maxScroll"),
+            }
+        elif excused:
+            row = excused[0]
+            out[station] = {
+                "verdict": "excused",
+                "reason": row.get("reason"),
+                "exposedAtScrollY": row.get("exposedAtScrollY"),
+                "docTop": row.get("docTop"),
+                "ovBottom": row.get("ovBottom"),
+                "scrollY": pos.get("scrollY"),
+                "maxScroll": pos.get("maxScroll"),
+            }
+        else:
+            out[station] = {
+                "verdict": "absent",
+                "scrollY": pos.get("scrollY"),
+                "maxScroll": pos.get("maxScroll"),
+            }
+    return out
+
+
+def _assert_synthetic_hit_rule(receipts: dict[str, Any]) -> None:
+    inside = receipts["inside zone"]
+    below = receipts["below zone"]
+    pill = receipts["under pill"]
+    for station in ("0", "50", "max"):
+        if inside[station].get("verdict") != "hit":
+            raise RuntimeError(
+                f"synthetic unexposable node not hit at {station}: "
+                f"{inside[station]}")
+    excused = [row for row in below.values() if row.get("verdict") == "excused"]
+    if not excused or excused[0].get("exposedAtScrollY") is None:
+        raise RuntimeError(
+            f"synthetic exposable node has no excused receipt: {below}")
+    if not any(row.get("verdict") == "hit" for row in pill.values()):
+        raise RuntimeError(
+            f"synthetic bottom-fixed node has no hit: {pill}")
+
+
 def _run_synthetic_clearance(page) -> dict[str, Any]:
-    """MINOR-C1: run the SHIPPED CLEARANCE_AT_JS on a sticky bar + two nodes."""
+    """MINOR-B: run the SHIPPED CLEARANCE_AT_JS on the three-station page."""
     page.set_content(SYNTHETIC_CLEARANCE_HTML)
     positions: dict[str, Any] = {}
     for target in ("0", "50", "max"):
         positions[target] = page.evaluate(CLEARANCE_AT_JS, target)
-    return {"ok": True, "positions": positions}
+    receipts = {
+        "inside zone": _synthetic_node_receipts(positions, "inside zone"),
+        "below zone": _synthetic_node_receipts(positions, "below zone"),
+        "under pill": _synthetic_node_receipts(positions, "under pill"),
+    }
+    _assert_synthetic_hit_rule(receipts)
+    return {
+        "ok": True,
+        "positions": positions,
+        "synthetic_hit_rule": receipts,
+    }
 
 
 def _rgb_token(color: str) -> tuple[int, int, int] | None:
@@ -848,6 +1129,27 @@ def _declared_force_state_cells() -> list[dict[str, Any]]:
     return cells
 
 
+def _declared_rest_view_cells() -> list[dict[str, Any]]:
+    spec = (
+        (1440, 900),
+        (390, 844),
+        (768, 1400),
+    )
+    return [
+        {
+            "family": "rest_views",
+            "theme": theme,
+            "locale": locale,
+            "viewport": _viewport_name(vw),
+            "viewport_width": vw,
+            "viewport_height": vh,
+        }
+        for vw, vh in spec
+        for theme in THEMES
+        for locale in LOCALES
+    ]
+
+
 def _declared_families() -> dict[str, list[dict[str, Any]]]:
     return {
         "force_states": _declared_force_state_cells(),
@@ -858,6 +1160,9 @@ def _declared_families() -> dict[str, list[dict[str, Any]]]:
         "rail_viewport": _theme_locale_cells("rail_viewport", (390, 768)),
         "e5": _theme_locale_cells("e5", (1440, 390)),
         "fab": _theme_locale_cells("fab", (1440,)),
+        "rest_views": _declared_rest_view_cells(),
+        "full_page": _theme_locale_cells("full_page", (1440,)),
+        "movement_row": _theme_locale_cells("movement_row", (1440,)),
     }
 
 
@@ -905,6 +1210,22 @@ def _captured_declared_keys(
                 keys.add(("e5", None, theme, locale, 390))
             if probes.get(f"fab_display_1440_{theme}_{locale}"):
                 keys.add(("fab", None, theme, locale, 1440))
+    for state in states:
+        if not state.get("captured"):
+            continue
+        theme = state.get("theme")
+        locale = state.get("locale")
+        vw = state.get("viewport_width")
+        filename = str(state.get("file") or "")
+        if state.get("full_page"):
+            keys.add(("full_page", None, theme, locale, vw))
+        if filename.startswith("movement-row-"):
+            keys.add(("movement_row", None, theme, locale, vw))
+        if filename in REST_FRAMES or (
+                vw == 768 and not state.get("force_state")
+                and not state.get("crop") and not state.get("full_page")
+                and filename.endswith(".png") and "-max" not in filename):
+            keys.add(("rest_views", None, theme, locale, vw))
     return keys
 
 
@@ -980,15 +1301,24 @@ def _assert_shot_geometry(dest: Path, extra: dict[str, Any],
     w, h = _png_size(dest)
     scale = float(dpr)
     if extra.get("crop"):
-        box = extra.get("crop_box") or {}
-        exp_w = _device_px(float(box.get("x") or 0),
-                           float(box.get("width") or 0), scale)
-        exp_h = _device_px(float(box.get("y") or 0),
-                           float(box.get("height") or 0), scale)
-        if (w, h) != (exp_w, exp_h):
-            raise RuntimeError(
-                f"{dest.name}: crop IHDR {w}x{h} != crop_box×dpr {exp_w}x{exp_h} "
-                f"box={box} dpr={dpr}")
+        span = extra.get("device_px_span")
+        if span:
+            exp_w = int(span["x1"]) - int(span["x0"])
+            exp_h = int(span["y1"]) - int(span["y0"])
+            if (w, h) != (exp_w, exp_h):
+                raise RuntimeError(
+                    f"{dest.name}: crop IHDR {w}x{h} != device_px_span "
+                    f"{exp_w}x{exp_h} span={span} dpr={dpr}")
+        else:
+            box = extra.get("crop_box") or {}
+            exp_w = _device_px(float(box.get("x") or 0),
+                               float(box.get("width") or 0), scale)
+            exp_h = _device_px(float(box.get("y") or 0),
+                               float(box.get("height") or 0), scale)
+            if (w, h) != (exp_w, exp_h):
+                raise RuntimeError(
+                    f"{dest.name}: crop IHDR {w}x{h} != crop_box×dpr {exp_w}x{exp_h} "
+                    f"box={box} dpr={dpr}")
         if not extra.get("crop_selector"):
             raise RuntimeError(f"{dest.name}: crop:true missing crop_selector")
     elif extra.get("full_page"):
@@ -1019,52 +1349,105 @@ def _crop_box(locator) -> dict[str, float]:
     }
 
 
-def _write_device_crop(page, dest: Path, box: dict[str, float],
-                       dpr: float) -> None:
-    """Crop a viewport PNG on the ceil/floor device span (MINOR-C4).
+def _boxes_moved(before: dict[str, float], after: dict[str, float],
+                 tol: float = 0.5) -> bool:
+    return any(
+        abs(float(before[key]) - float(after[key])) > tol
+        for key in ("x", "y", "width", "height")
+    )
 
-    Playwright's clip/element screenshot rounds independently of
-    `_device_px`; cutting the viewport image ourselves keeps IHDR
-    equal to that span.
-    """
-    from PIL import Image
+
+def _empty_headline(empty_id: str, locale: str) -> str:
+    from lib import macro_suite_labels as labels
+    title = labels.EMPTY_STATES[empty_id]["title"]
+    return str(title[locale])
+
+
+def _device_px_span(box: dict[str, float], dpr: float) -> dict[str, int]:
     scale = float(dpr)
-    tmp = dest.with_suffix(dest.suffix + ".viewport.png")
-    page.screenshot(path=str(tmp), type="png", full_page=True)
-    image = Image.open(tmp).convert("RGB")
-    x0 = int(math.floor(box["x"] * scale))
-    y0 = int(math.floor(box["y"] * scale))
-    width = _device_px(box["x"], box["width"], scale)
-    height = _device_px(box["y"], box["height"], scale)
-    x1 = min(image.width, x0 + width)
-    y1 = min(image.height, y0 + height)
-    x0 = max(0, x0)
-    y0 = max(0, y0)
-    if (x1 - x0, y1 - y0) != (width, height):
-        tmp.unlink(missing_ok=True)
+    x0 = int(math.floor(float(box["x"]) * scale))
+    y0 = int(math.floor(float(box["y"]) * scale))
+    x1 = int(math.ceil((float(box["x"]) + float(box["width"])) * scale))
+    y1 = int(math.ceil((float(box["y"]) + float(box["height"])) * scale))
+    return {"x0": x0, "x1": x1, "y0": y0, "y1": y1}
+
+
+def _write_element_shot(page, dest: Path, locator, extra: dict[str, Any],
+                        locale: str) -> None:
+    """BLOCKER-1: Playwright element screenshot, never a full-page crop."""
+    locator.scroll_into_view_if_needed()
+    page.wait_for_timeout(80)
+    box_before = _crop_box(locator)
+    scroll_before = _read_scroll(page)
+    text = str(locator.inner_text() or "")
+    locator.screenshot(path=str(dest), type="png")
+    box_after = _crop_box(locator)
+    scroll_after = _read_scroll(page)
+    # Playwright may scroll internally to shoot an element taller than
+    # the viewport. Compare DOCUMENT boxes so a scroll is not a move.
+    doc_before = {
+        "x": box_before["x"],
+        "y": box_before["y"] + scroll_before,
+        "width": box_before["width"],
+        "height": box_before["height"],
+    }
+    doc_after = {
+        "x": box_after["x"],
+        "y": box_after["y"] + scroll_after,
+        "width": box_after["width"],
+        "height": box_after["height"],
+    }
+    if _boxes_moved(doc_before, doc_after):
         raise RuntimeError(
-            f"{dest.name}: crop {width}x{height} at ({x0},{y0}) "
-            f"does not fit viewport PNG {image.width}x{image.height} "
-            f"box={box} dpr={dpr}")
-    image.crop((x0, y0, x1, y1)).save(dest, format="PNG")
-    tmp.unlink(missing_ok=True)
+            f"{dest.name}: element box moved during shot "
+            f"{doc_before} -> {doc_after}")
+    scroll_y = scroll_before
+    extra["crop_box"] = box_before
+    extra["crop_box_doc"] = {
+        "x": box_before["x"],
+        "y": box_before["y"] + scroll_y,
+        "width": box_before["width"],
+        "height": box_before["height"],
+    }
+    extra["scroll_y_at_shot"] = scroll_y
+    extra["element_text_head"] = text.replace("\n", " ").strip()[:80]
+    width, height = _png_size(dest)
+    origin = _device_px_span(box_before, extra["dpr"])
+    extra["device_px_span"] = {
+        "x0": origin["x0"],
+        "x1": origin["x0"] + width,
+        "y0": origin["y0"],
+        "y1": origin["y0"] + height,
+    }
+    selector = str(extra.get("crop_selector") or "")
+    match = re.search(r'data-mc-empty=["\'](e[1-6])["\']', selector)
+    if match:
+        empty_id = match.group(1)
+        headline = _empty_headline(empty_id, locale)
+        if headline not in text:
+            raise RuntimeError(
+                f"{dest.name}: data-mc-empty={empty_id} innerText missing "
+                f"{headline!r}: {text[:160]!r}")
 
 
 def _write_shot(page, dest: Path, extra: dict[str, Any], vw: int, vh: int, *,
                 crop_locator=None, crop_selector: str | None = None,
-                full_page: bool = False) -> dict[str, Any]:
+                full_page: bool = False,
+                locale: str | None = None) -> dict[str, Any]:
     extra = dict(extra)
     extra["dpr"] = _measure_dpr(page)
     extra.setdefault("fixture", "builder-payload")
     if extra.get("fixture") is None:
         extra["fixture"] = "builder-payload"
+    if locale:
+        extra["locale"] = locale
     if crop_locator is not None:
         extra["crop"] = True
         extra["full_page"] = False
         extra["crop_selector"] = crop_selector
-        crop_locator.scroll_into_view_if_needed()
-        extra["crop_box"] = _crop_box(crop_locator)
-        _write_device_crop(page, dest, extra["crop_box"], extra["dpr"])
+        _write_element_shot(
+            page, dest, crop_locator, extra,
+            locale=str(extra.get("locale") or locale or "en"))
     elif full_page:
         extra["crop"] = False
         extra["full_page"] = True
@@ -1440,6 +1823,7 @@ def _row(filename: str, dest: Path, theme: str, locale: str,
     extra = dict(extra or {})
     force_state = _force_state_for(filename, extra)
     extra.pop("force_state", None)
+    extra.pop("locale", None)
     fixture = extra.pop("fixture", "builder-payload")
     if fixture is None:
         fixture = "builder-payload"
@@ -1675,7 +2059,9 @@ def _capture_e5_cells(browser, origin: str, probes: dict[str, Any],
                         raise RuntimeError(
                             f"E5 fragment request never seen "
                             f"{theme}/{locale}/{vw}")
-                    elapsed_ms = (clone_seen_at - request_seen_at) * 1000
+                    request_seen_at_ms = request_seen_at * 1000
+                    clone_seen_at_ms = clone_seen_at * 1000
+                    elapsed_ms = clone_seen_at_ms - request_seen_at_ms
                     receipt = page.evaluate("""() => {
                       const tpl = document.querySelector(
                         'template[data-mc-empty-e5]');
@@ -1700,8 +2086,8 @@ def _capture_e5_cells(browser, origin: str, probes: dict[str, Any],
                             f"E5 clone missing {theme}/{locale}/{vw}: {receipt}")
                     probes[f"e5_timeout_{theme}_{locale}_{vw}"] = {
                         "elapsedMs": elapsed_ms,
-                        "requestSeenAt": request_seen_at,
-                        "cloneSeenAt": clone_seen_at,
+                        "requestSeenAtMs": request_seen_at_ms,
+                        "cloneSeenAtMs": clone_seen_at_ms,
                         "templatePresent": receipt.get("templatePresent"),
                         "clonePresent": receipt.get("clonePresent"),
                         "headline": receipt.get("headline"),
@@ -1718,7 +2104,8 @@ def _capture_e5_cells(browser, origin: str, probes: dict[str, Any],
                     extra = _write_shot(
                         page, dest, extra, vw, vh,
                         crop_locator=page.locator('[data-mc-empty="e5"]').first,
-                        crop_selector='[data-mc-empty="e5"]')
+                        crop_selector='[data-mc-empty="e5"]',
+                        locale=locale)
                     _upsert(manifest, filename, _row(
                         filename, dest, theme, locale, vw, vh, extra))
                     print(
@@ -1857,7 +2244,8 @@ def _capture_empty_states(browser, tmp: Path, servers: list, manifest: dict) -> 
                 extra = _write_shot(
                     page, dest, extra, 1440, 900,
                     crop_locator=page.locator(selector).first,
-                    crop_selector=selector)
+                    crop_selector=selector,
+                    locale=locale)
                 _upsert(manifest, filename, _row(
                     filename, dest, theme, locale, 1440, 900, extra))
                 print(f"  {filename} {dest.stat().st_size}B {_sha(dest)[:12]}", flush=True)
@@ -1884,7 +2272,8 @@ def _capture_empty_states(browser, tmp: Path, servers: list, manifest: dict) -> 
                 extra390 = _write_shot(
                     page, dest, extra390, 390, 844,
                     crop_locator=page.locator(selector).first,
-                    crop_selector=selector)
+                    crop_selector=selector,
+                    locale=locale)
                 _upsert(manifest, mobile_name, _row(
                     mobile_name, dest, theme, locale, 390, 844, extra390))
                 print(f"  {mobile_name} {dest.stat().st_size}B {_sha(dest)[:12]}", flush=True)
@@ -1975,6 +2364,10 @@ def main() -> int:
             ("55-light-en-1440-inflation-foot.png", "light", "en", 1440, 900, "#inflation", "viewport", None),
             ("56-dark-zh-1440-inflation-foot.png", "dark", "zh", 1440, 900, "#inflation", "viewport", None),
             ("57-light-zh-1440-inflation-foot.png", "light", "zh", 1440, 900, "#inflation", "viewport", None),
+            ("movement-row-dark-en.png", "dark", "en", 1440, 900, "#inflation", "movement-row", None),
+            ("movement-row-dark-zh.png", "dark", "zh", 1440, 900, "#inflation", "movement-row", None),
+            ("movement-row-light-en.png", "light", "en", 1440, 900, "#inflation", "movement-row", None),
+            ("movement-row-light-zh.png", "light", "zh", 1440, 900, "#inflation", "movement-row", None),
         ]
 
         with sync_playwright() as playwright:
@@ -2014,26 +2407,30 @@ def main() -> int:
                                     f"{filename} still asks what moved")
                         extra = dict(extra or {})
                         extra.setdefault("fixture", "builder-payload")
+                        extra["locale"] = locale
                         if kind == "iframe-end":
                             extra["scroll_y"] = _settle_scroll(target, "max")
-                            extra = _write_shot(page, dest, extra, vw, vh)
+                            extra = _write_shot(page, dest, extra, vw, vh, locale=locale)
                         elif kind in ("iframe", "iframe-full", "viewport"):
                             extra["scroll_y"] = _settle_scroll(target, "0")
-                            extra = _write_shot(page, dest, extra, vw, vh)
+                            extra = _write_shot(page, dest, extra, vw, vh, locale=locale)
                         elif kind == "fullpage":
                             extra["scroll_y"] = _settle_scroll(target, "0")
-                            extra = _write_shot(page, dest, extra, vw, vh, full_page=True)
+                            extra = _write_shot(
+                                page, dest, extra, vw, vh, full_page=True,
+                                locale=locale)
                         elif kind == "arrival":
                             target.wait_for_selector("[data-mc-arrival]:not([hidden])", timeout=8000)
                             extra["scroll_y"] = _read_scroll(target)
                             extra = _write_shot(
                                 target, dest, extra, vw, vh,
                                 crop_locator=target.locator("#rates"),
-                                crop_selector="#rates")
+                                crop_selector="#rates",
+                                locale=locale)
                         elif kind == "arrival-iframe":
                             target.wait_for_selector("[data-mc-arrival]:not([hidden])", timeout=8000)
                             extra["scroll_y"] = _read_scroll(target)
-                            extra = _write_shot(page, dest, extra, vw, vh)
+                            extra = _write_shot(page, dest, extra, vw, vh, locale=locale)
                         elif kind == "hover":
                             card = target.locator("#overview .mc-dest").first
                             card.hover()
@@ -2042,7 +2439,8 @@ def main() -> int:
                             extra = _write_shot(
                                 target, dest, extra, vw, vh,
                                 crop_locator=card,
-                                crop_selector="#overview .mc-dest")
+                                crop_selector="#overview .mc-dest",
+                                locale=locale)
                         elif kind == "focus":
                             heading = target.locator("#overview-h")
                             heading.focus()
@@ -2051,10 +2449,34 @@ def main() -> int:
                             extra = _write_shot(
                                 target, dest, extra, vw, vh,
                                 crop_locator=heading,
-                                crop_selector="#overview-h")
+                                crop_selector="#overview-h",
+                                locale=locale)
+                        elif kind == "movement-row":
+                            target.wait_for_selector(
+                                "#inflation .mc-move-words", timeout=15000)
+                            row_loc = target.locator(
+                                "#inflation .mc-move-row:not(.mc-move-current-only)").first
+                            row_loc.wait_for(state="visible", timeout=8000)
+                            extra["scroll_y"] = _read_scroll(target)
+                            extra = _write_shot(
+                                target, dest, extra, vw, vh,
+                                crop_locator=row_loc,
+                                crop_selector="#inflation .mc-move-row:not(.mc-move-current-only)",
+                                locale=locale)
+                            text_head = str(extra.get("element_text_head") or "")
+                            if not re.search(r"\d", text_head):
+                                raise RuntimeError(
+                                    f"{filename} movement row missing a value: {text_head!r}")
+                            if "mc-move-words" not in (
+                                    row_loc.evaluate(
+                                        "el => el.innerHTML") or ""):
+                                raise RuntimeError(
+                                    f"{filename} movement row missing the phrase")
                         else:
                             extra["scroll_y"] = _read_scroll(target)
-                            extra = _write_shot(page, dest, extra, vw, vh, full_page=True)
+                            extra = _write_shot(
+                                page, dest, extra, vw, vh, full_page=True,
+                                locale=locale)
                         _upsert(manifest, filename, _row(filename, dest, theme, locale, vw, vh, extra))
                         print(f"  {filename} {dest.stat().st_size}B {_sha(dest)[:12]}", flush=True)
                     finally:
@@ -2088,6 +2510,7 @@ def main() -> int:
                         if not viewport.get("ok"):
                             raise RuntimeError(
                                 f"rail viewport 390 {theme}/{locale}: {viewport}")
+                        viewport.update(_confirm_rail_fade_visual(page, viewport))
                         probes[f"rail_viewport_{theme}_{locale}_390"] = viewport
                         probes.pop(f"rail_clip_{theme}_{locale}_390", None)
                         material = page.evaluate(CHIP_MATERIAL_JS)
@@ -2099,7 +2522,8 @@ def main() -> int:
                             f"  clearance 390 {theme}/{locale} ok={clear['ok']} "
                             f"texts={clear['textCount']} "
                             f"analyst={clear['positions']['0'].get('analystPosition')} "
-                            f"boot={clear['positions']['0'].get('mmbBootPresent')}",
+                            f"bootInDom={clear['positions']['0'].get('mmbBootInDom')} "
+                            f"bootVisible={clear['positions']['0'].get('mmbBootVisible')}",
                             flush=True)
                     finally:
                         context.close()
@@ -2126,6 +2550,7 @@ def main() -> int:
                         if not viewport.get("ok"):
                             raise RuntimeError(
                                 f"rail viewport 768 {theme}/{locale}: {viewport}")
+                        viewport.update(_confirm_rail_fade_visual(page, viewport))
                         probes[f"rail_viewport_{theme}_{locale}_768"] = viewport
                         probes.pop(f"rail_clip_{theme}_{locale}_768", None)
                         material = page.evaluate(CHIP_MATERIAL_JS)
@@ -2275,6 +2700,8 @@ def main() -> int:
                         void_probe["pixelVoidCount"] = pixel.get("pixelVoidCount")
                         void_probe["canvasRgb"] = pixel.get("canvasRgb")
                         void_probe["canvasSource"] = pixel.get("canvasSource")
+                        void_probe["bgTokenRgb"] = pixel.get("bgTokenRgb")
+                        void_probe["delta"] = pixel.get("delta")
                         void_probe["ok"] = bool(
                             void_probe.get("ok") and pixel.get("ok"))
                         if not void_probe.get("ok"):
@@ -2362,7 +2789,8 @@ def main() -> int:
         manifest["honesty"]["gaps"] = (
             "every declared family cell that was not captured is recorded "
             "in gaps with a reason; force_states, empty_states, clearance, "
-            "chip_opens_chat, strip_void, rail_viewport, e5, and fab are "
+            "chip_opens_chat, strip_void, rail_viewport, e5, fab, "
+            "rest_views, full_page, and movement_row are "
             "published as data and gaps is computed from that structure"
         )
         manifest["pages"][0]["gaps"] = _compute_gaps(
