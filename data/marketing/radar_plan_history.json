@@ -4,20 +4,24 @@
     {
       "as_of": "2026-09-07",
       "tickers": [
-        "EZPW",
-        "GPRO",
-        "GS",
+        "ACM",
+        "ALV",
+        "BTG",
+        "CXT",
+        "EMXC",
+        "HOG",
         "HON",
-        "NEM",
-        "OMC",
-        "RNR",
-        "SPNT",
-        "SW",
-        "TGTX",
-        "UPS",
-        "UTHR",
-        "VRSN",
-        "VRT"
+        "HWKN",
+        "KEX",
+        "LAUR",
+        "LEA",
+        "LRN",
+        "OHI",
+        "PCG",
+        "POST",
+        "PPC",
+        "PRDO",
+        "SEDG"
       ]
     },
     {

@@ -1,18 +1,18 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "TEL-BULL-20260903",
-  "asof": "2026-09-06",
+  "asof": "2026-09-07",
   "phase": "pre_trigger",
   "detection_phase": "pre_trigger",
   "management_confidence": 67.9,
-  "raw_confidence": 67.9,
+  "raw_confidence": 67.8,
   "delta_vs_base": 7.9,
   "recommended_action": "wait",
   "human_state": "Awaiting Trigger",
   "components": {
     "validity": 100.0,
     "progress": 0.6,
-    "pace": 100.0,
+    "pace": 99.9,
     "retention": 50.0,
     "overlay": 55.0
   },
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 1.003,
     "dist_to_t1_r": 1.497,
     "dist_to_t2_r": 2.997,
-    "horizon_pct_used": 4.4,
+    "horizon_pct_used": 6.7,
     "p1": 0.0017,
     "p2": 0.0009,
     "p3": null,
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 2,
-  "tau": 0.0444
+  "days_elapsed": 3,
+  "tau": 0.0667
 }
