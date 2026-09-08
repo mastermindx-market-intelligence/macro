@@ -260,6 +260,35 @@ def _axis_view(axis: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
+def _parse_iso_date(value: Any):
+    """Parse an ISO date (or longer timestamp) to ``datetime.date``, or None."""
+    raw = L.date_or_none(value)
+    if not raw or len(str(raw)) < 10:
+        return None
+    from datetime import date as _date  # noqa: PLC0415 — local, like labels
+    try:
+        return _date.fromisoformat(str(raw)[:10])
+    except ValueError:
+        return None
+
+
+def prior_publication_is_earlier(prior_effective_date: Any,
+                                 headline_effective_date: Any) -> bool:
+    """True only when the prior date parses and is strictly earlier than now.
+
+    Missing, unparseable, or equal dates are False. Any exception is False
+    (fail-closed: never treat a same-publication prior as movement).
+    """
+    try:
+        prior = _parse_iso_date(prior_effective_date)
+        current = _parse_iso_date(headline_effective_date)
+        if prior is None or current is None:
+            return False
+        return prior < current
+    except Exception:
+        return False
+
+
 def _sign(value: Any) -> str | None:
     # None, never "flat". An absent value that renders as no-change is the whole
     # defect: the reader cannot tell "we measured, nothing moved" from "we have
@@ -409,6 +438,16 @@ def _quadrant_map(headline: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]
 def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
     changes = snapshot.get("changes") or {}
     comparability = changes.get("comparability")
+    headline_date = (snapshot.get("headline") or {}).get("effective_date")
+    prior_date = changes.get("prior_effective_date")
+    # I4: a same-publication prior (previous BUILD of this print) is not
+    # movement. Fail-closed — missing/unparseable/equal → not earlier.
+    prior_is_earlier = prior_publication_is_earlier(prior_date, headline_date)
+    unit_by_metric = {
+        item.get("metric_id"): item.get("unit")
+        for item in (snapshot.get("metrics") or {}).get("items") or []
+        if item.get("metric_id")
+    }
     deltas = []
     for delta in changes.get("deltas") or []:
         prior_raw, current_raw = delta.get("prior_value"), delta.get("current_value")
@@ -421,6 +460,7 @@ def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         current_present = _finite(current_raw)
         delta_present = _finite(delta_raw)
         comparable_row = prior_present and current_present and delta_present
+        is_movement = bool(prior_is_earlier and comparable_row)
         deltas.append({
             "metric_id": delta.get("metric_id"),
             "label": L.label("metric", delta.get("metric_id")),
@@ -431,12 +471,14 @@ def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
             "current_present": current_present,
             "delta_present": delta_present,
             "comparable": comparable_row,
+            "is_movement": is_movement,
             # A real zero keeps its "0" and its flat class; an absent value gets
             # neither a number nor a class that reads as success.
             "prior": L.fmt_number(prior_raw) if prior_present else None,
             "current": L.fmt_number(current_raw) if current_present else None,
             "delta": L.fmt_signed(delta_raw) if delta_present else None,
             "sign": _sign(delta_raw),
+            "unit": unit_by_metric.get(delta.get("metric_id")),
             "absence": None if comparable_row else _absence(delta.get("null_reason")),
             "note": delta.get("note"),
         })
@@ -445,6 +487,7 @@ def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         "comparability": comparability,
         "comparability_label": L.label("comparability", comparability),
         "comparable": comparable,
+        "prior_is_earlier": prior_is_earlier,
         "deltas": deltas,
         "prior_generation_id": changes.get("prior_generation_id"),
         "prior_effective_date": L.date_or_none(changes.get("prior_effective_date")),
@@ -1041,6 +1084,20 @@ def degraded_view(*, workspace_id: str, title: Mapping[str, str],
 #: How many change lines the hub prints before it defers to the workspaces.
 HUB_CHANGE_LIMIT = 5
 
+def _rail_section_count() -> int:
+    """The customer-facing rail length — derive, never hardcode fourteen."""
+    from scripts.build_macro_suite_pages import SECTIONS  # noqa: PLC0415
+    return len(SECTIONS)
+
+
+def _deck_copy(section_count: int) -> dict[str, str]:
+    """Overview primer: the rail's section count, digits in both languages."""
+    src = L.PRIMERS["overview"]
+    return {
+        "en": src["en"].format(n=section_count),
+        "zh": src["zh"].format(n=section_count),
+    }
+
 #: Freshness tokens that mean a reader must not treat the row as settled.
 _ATTENTION_FRESHNESS = frozenset({
     "SOURCE_FAILED", "STALE_SOURCE", "RIGHTS_BLOCKED", "SIMULATED",
@@ -1105,6 +1162,7 @@ def build_hub_view(entries: Sequence[Mapping[str, Any]], *,
     """
     rows: list[dict[str, Any]] = []
     changes_pool: list[dict[str, Any]] = []
+    unmapped_metrics: list[str] = []
     attention: list[dict[str, Any]] = []
     unavailable: list[dict[str, Any]] = []
     effective_dates: list[str] = []
@@ -1172,26 +1230,42 @@ def build_hub_view(entries: Sequence[Mapping[str, Any]], *,
 
         # Changes are pooled in registry order and truncated in registry order.
         # No magnitude comparison decides what a reader sees first.
+        as_of_month = L.month_display_pair(str(headline.get("effective_date") or ""))
         for delta in changes.get("deltas") or []:
-            # A row the producer published with no prior, no current and no delta
-            # is not a change — it is a metric that could not be compared. Putting
-            # it here would spend one of the few slots saying nothing, and would
-            # print a bare em dash where the reader expects a move. The workspace's
-            # own what-changed table still carries the row and its typed reason.
-            # The typed flag, not the formatted strings: an em dash is truthy
-            # and a formatted "0" is not, so the string test both admitted
-            # unavailable rows and dropped real no-change ones.
-            if not delta.get("comparable"):
+            # I4: a same-publication prior is not a movement row. Keep the
+            # current reading when it is present so the hub still shows a
+            # number; never emit sign=flat / delta 0 from that prior.
+            is_movement = bool(changes.get("prior_is_earlier") and delta.get("comparable"))
+            if is_movement:
+                pass
+            elif delta.get("current_present"):
+                pass
+            else:
+                continue
+            metric_id = str(delta.get("metric_id") or "")
+            if metric_id not in L.METRIC:
+                # Collect every miss, then raise — a silent drop would move
+                # changes.total while the page still claimed a full pool.
+                unmapped_metrics.append(metric_id)
                 continue
             changes_pool.append({
                 "workspace_id": entry["workspace_id"],
                 "workspace_title": dict(entry["title"]),
                 "href": entry["output"],
-                "label": delta.get("label"),
-                "prior": delta.get("prior"),
+                "metric_id": metric_id,
+                "label": dict(L.METRIC[metric_id]),
+                "kind": "movement" if is_movement else "current",
+                "prior": delta.get("prior") if is_movement else None,
                 "current": delta.get("current"),
-                "delta": delta.get("delta"),
-                "sign": delta.get("sign"),
+                "delta": delta.get("delta") if is_movement else None,
+                "sign": delta.get("sign") if is_movement else None,
+                "unit": delta.get("unit"),
+                "scale": L.figure_scale(delta.get("unit")),
+                "move_words": (
+                    L.fmt_move_words(
+                        delta.get("delta_raw"), delta.get("sign"), delta.get("unit"))
+                    if is_movement else None),
+                "as_of_month": dict(as_of_month) if (not is_movement and as_of_month) else None,
             })
 
         reason = _hub_attention_reason(context, changes)
@@ -1202,15 +1276,21 @@ def build_hub_view(entries: Sequence[Mapping[str, Any]], *,
                               "reason": reason,
                               "tone": reason["tone"]})
 
-    available = [r for r in rows if r.get("available")]
+    if unmapped_metrics:
+        ids = ", ".join(sorted(set(unmapped_metrics)))
+        print(f"::error title=macro-command-unmapped-metric::{ids}", flush=True)
+        raise ValueError(
+            f"unmapped metric id(s) in hub pool: {ids}"
+        )
+
     shown = changes_pool[:HUB_CHANGE_LIMIT]
+    sections_available, sections_total = section_coverage_tally(entries)
 
     return {
         "page_built_at": page_built_at,
         "kicker": _pair("Macro & Monetary", "宏观与货币"),
         "title": _pair("Macro & Monetary", "宏观与货币"),
-        "deck": _pair("Fourteen research workspaces, one current read.",
-                      "十四个研究工作区，一个当前读数。"),
+        "deck": _deck_copy(_rail_section_count()),
         "as_of": {
             # The suite is only as current as its oldest accepted print.
             "effective_date": min(effective_dates) if effective_dates else None,
@@ -1220,11 +1300,12 @@ def build_hub_view(entries: Sequence[Mapping[str, Any]], *,
                 "The suite is dated by its oldest accepted workspace print, never its newest.",
                 "套件日期取自最旧的已接受工作区读数，而非最新读数。"),
         },
+        # Same (available, total) the DATA COVERAGE chip uses — never a
+        # second 14-workspace completeness flag (N0).
         "coverage": {
-            "available": len(available),
-            "total": len(rows),
-            "complete": len(available) == len(rows),
-            "label": _pair("Workspaces readable", "可读取工作区"),
+            "available": sections_available,
+            "total": sections_total,
+            "label": _pair("Sections with today's data", "今日有数据的板块"),
         },
         "workspaces": rows,
         "changes": {
@@ -1307,10 +1388,48 @@ _COVERAGE_WORKSPACES: tuple[str, ...] = (
 )
 
 
+def section_coverage_tally(
+        entries: Sequence[Mapping[str, Any]]) -> tuple[int, int]:
+    """The DATA COVERAGE chip's (available, total) — the page's one completeness.
+
+    Overview is always counted current (it is built at ``page_built_at``).
+    Each of the eleven representative section workspaces counts only when
+    its snapshot is readable and ``availability.state == CURRENT``.
+    """
+    by_workspace = {e["workspace_id"]: e for e in entries}
+    available = 1
+    for workspace_id in _COVERAGE_WORKSPACES:
+        entry = by_workspace.get(workspace_id)
+        if entry and entry.get("snapshot") and _freshness_state(entry["snapshot"]) == "CURRENT":
+            available += 1
+    return available, len(_COVERAGE_WORKSPACES) + 1
+
+
 def _freshness_state(snapshot: Mapping[str, Any] | None) -> str | None:
     if not snapshot:
         return None
     return (snapshot.get("availability") or {}).get("state")
+
+
+def _snapshot_figure_populated(snapshot: Mapping[str, Any] | None) -> bool:
+    """True when P3 would render movement rows, not an E2/E3 empty slot.
+
+    SOURCE_FAILED / STALE_SOURCE force E2 even when deltas exist. Comparable
+    rows are what make a NOT_APPLICABLE section a real figure (M6).
+    """
+    if not snapshot:
+        return False
+    freshness = _freshness_state(snapshot)
+    if freshness in ("SOURCE_FAILED", "STALE_SOURCE"):
+        return False
+    changes = snapshot.get("changes") or {}
+    if changes.get("comparability") != "COMPARABLE":
+        return False
+    for delta in changes.get("deltas") or []:
+        if (_finite(delta.get("prior_value")) and _finite(delta.get("current_value"))
+                and _finite(delta.get("delta"))):
+            return True
+    return False
 
 
 def _chip_null_cause(entry: Mapping[str, Any] | None, null_reason: Any) -> str:
@@ -1358,10 +1477,26 @@ def _chip_and_clause(chip_id: str, workspace_id: str, section_id: str,
                       else L.FRESHNESS_NOTE.get(str(freshness)))
 
     if state_id is None:
+        if (headline.get("null_reason") == "NOT_APPLICABLE"
+                and _snapshot_figure_populated(snapshot)):
+            cause = "see_curve"
+            chip = {
+                "id": chip_id, "section": section_id, "label": label,
+                "value": None, "tone": "neutral", "null": True,
+                "cause": cause,
+                "as_of": effective_date,
+                "as_of_display": (
+                    L.date_display_pair(effective_date) if effective_date else None),
+                "as_of_omitted": False,
+                "note": None,
+                "meaning": meaning,
+            }
+            return chip, None
         cause = _chip_null_cause(entry, headline.get("null_reason"))
         chip = {
             "id": chip_id, "section": section_id, "label": label,
             "value": None, "tone": "neutral", "null": True,
+            "cause": cause,
             "as_of": None, "as_of_display": None, "as_of_omitted": False,
             "note": dict(L.CHIP_NULL_NOTE[cause]),
             "meaning": meaning,
@@ -1391,6 +1526,7 @@ def _chip_and_clause(chip_id: str, workspace_id: str, section_id: str,
         chip = {
             "id": chip_id, "section": section_id, "label": label,
             "value": producer_label, "tone": "neutral", "null": False,
+            "cause": None,
             "as_of": effective_date,
             "as_of_display": L.date_display_pair(effective_date) if effective_date else None,
             "as_of_omitted": False,
@@ -1402,6 +1538,7 @@ def _chip_and_clause(chip_id: str, workspace_id: str, section_id: str,
     chip = {
         "id": chip_id, "section": section_id, "label": label,
         "value": dict(word_table[key]), "tone": tone_table[key], "null": False,
+        "cause": None,
         "as_of": effective_date,
         "as_of_display": L.date_display_pair(effective_date) if effective_date else None,
         "as_of_omitted": False,
@@ -1443,6 +1580,7 @@ def _coverage_chip(available: int, total: int) -> dict[str, Any]:
     return {
         "id": "coverage", "section": "overview", "label": dict(L.CHIP_LABEL["coverage"]),
         "value": dict(value), "tone": "ok" if complete else "warn", "null": False,
+        "cause": None,
         "as_of": None, "as_of_display": None, "as_of_omitted": True,
         "note": note,
         "meaning": dict(L.CHIP_MEANING["coverage"]),
@@ -1483,16 +1621,8 @@ def build_command_header(entries: Sequence[Mapping[str, Any]], *,
     for clause in clauses:
         del clause["_effective_date"]
 
-    # Coverage tally: `overview` (this page itself, always current) plus the
-    # eleven representative section workspaces that are readable AND CURRENT
-    # today. Freshness is the same conservative signal `_context` states the
-    # page's own header with — never inferred from whether a state_id exists.
-    sections_available = 1
-    for workspace_id in _COVERAGE_WORKSPACES:
-        entry = by_workspace.get(workspace_id)
-        if entry and entry.get("snapshot") and _freshness_state(entry["snapshot"]) == "CURRENT":
-            sections_available += 1
-    sections_total = len(_COVERAGE_WORKSPACES) + 1
+    # Coverage tally: the same (available, total) the Overview stance uses.
+    sections_available, sections_total = section_coverage_tally(entries)
     chips.append(_coverage_chip(sections_available, sections_total))
 
     # Header date + meaning are derived from the SAME set: strip chips that

@@ -159,6 +159,12 @@
       if (settled) return;
       settled = true;
       clearTimeout(timer);
+      var tpl = panel.querySelector('template[data-mc-empty-e5]');
+      if (tpl) {
+        figure.innerHTML = '';
+        figure.appendChild(tpl.content.cloneNode(true));
+        return;
+      }
       restoreOffer();
     }
 
@@ -175,6 +181,11 @@
           settled = true;
           clearTimeout(timer);
           figure.innerHTML = text;
+          /* The assignment above destroys the [data-mc-tabbody] wrappers this
+             panel's roving tab state lives on, so re-apply the selection that
+             was resolved from the hash before the fetch started (P3, A13). */
+          var selected = panel.querySelector('[data-mc-subtab][aria-selected="true"]');
+          if (selected) activateSubtab(panel, selected.getAttribute('data-mc-subtab'));
         });
       })
       .catch(function () { fail(); });
@@ -214,22 +225,28 @@
   /* ── analyst control — §8, R8: existing sitewide entry points only ─────── */
   var analystBtn = document.querySelector('[data-mc-analyst]');
   if (analystBtn) {
-    analystBtn.addEventListener('click', function () {
+    analystBtn.addEventListener('click', function (event) {
       var sectionId = 'overview';
       var current = content.querySelector('[data-mc-panel]:not([hidden])');
       if (current) sectionId = current.getAttribute('data-mc-panel');
       var railLink = railLinkById(sectionId);
       var label = railLink ? railLink.textContent.trim() : 'Macro Command';
       if (window.MMBrain && window.MMBrain.mounted) {
+        event.preventDefault();
         if (typeof window.MMBrain.explain === 'function') window.MMBrain.explain(sectionId, label);
         else if (typeof window.MMBrain.open === 'function') window.MMBrain.open();
         return;
       }
       /* Not yet mounted: activate the sitewide launcher stub theme.js already
          renders on this page (`#mmb-boot`) — its own click handler owns the
-         load-then-open flow. No new endpoint, no new query string. */
+         load-then-open flow. No new endpoint, no new query string. The
+         control is an <a href="chat.html">; if the stub is missing we
+         leave the navigation in place (r10-m1 no-JS fallback). */
       var boot = document.getElementById('mmb-boot');
-      if (boot) boot.click();
+      if (boot) {
+        event.preventDefault();
+        boot.click();
+      }
     });
   }
 
@@ -239,4 +256,19 @@
      panel with no user interaction (Meta-CEO review, PR 6930 BLOCKER
      boot-focus ring). Rail clicks and hashchange still focus (default). */
   activateSection(initial.section, initial.subtab, false);
+  /* Deep-link arrival line (P3, D12). Server-rendered per panel and `hidden`
+     in the document, so bilingual copy is never generated here (G6) and a
+     no-JS reader never sees it. Shown once, on a hash arrival only. */
+  if ((location.hash || '').length > 1) {
+    var arrivalPanel = document.querySelector(
+      '[data-mc-panel="' + (location.hash.slice(1).split('/')[0]) + '"]');
+    var arrival = arrivalPanel && arrivalPanel.querySelector('[data-mc-arrival]');
+    if (arrival) arrival.hidden = false;
+  }
+  document.querySelectorAll('[data-mc-section]').forEach(function (link) {
+    link.addEventListener('click', function () {
+      var open = document.querySelector('[data-mc-arrival]:not([hidden])');
+      if (open) open.hidden = true;
+    });
+  });
 })();

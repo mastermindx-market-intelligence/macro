@@ -37,14 +37,15 @@ BUILT_AT = "2026-09-06T08:00:00Z"
 # Fixed reading order — frozen Macro Command spec §1.1 (customer's question
 # order), never the producer registry order and never re-sorted with data.
 EXPECTED_SECTION_ORDER = (
-    "overview", "money", "policy", "rates", "inflation", "growth",
-    "jobs", "housing", "consumer", "credit", "debt", "trade",
+    "overview", "money", "policy", "rates", "inflation",
 )
-SUBTABBED_SECTIONS = ("money", "growth", "credit")
+SUBTABBED_SECTIONS = ("money",)
 
 _TEMPLATE_NAMES = (
     "macro_monetary.html.j2",
     "_macro_command_macros.html.j2",
+    "_macro_command_figures.html.j2",
+    "_macro_command_fragment.html.j2",
     "_macro_suite_nav.html.j2",
     "macro_liquidity_regime.html.j2",
     "macro_growth_real_economy.html.j2",
@@ -144,14 +145,16 @@ def test_the_hub_uses_the_macro_command_shell(hub: str) -> None:
 # twelve rail sections — fixed order, EN + ZH, hash routing, sub-tabs
 # --------------------------------------------------------------------------
 
-def test_the_rail_has_exactly_twelve_sections_in_the_fixed_reading_order(hub: str) -> None:
+def test_the_rail_has_exactly_the_populated_sections_in_reading_order(hub: str) -> None:
     order = re.findall(r'data-mc-section="([a-z]+)"', hub)
     assert order == list(EXPECTED_SECTION_ORDER)
 
 
 def test_every_rail_section_has_matching_en_and_zh_labels(hub: str) -> None:
     rail = hub[hub.index('id="mc-rail"'):hub.index('id="mc-content"')]
-    for section in builder.SECTIONS:
+    populated = [section for section in builder.SECTIONS
+                 if section.id in EXPECTED_SECTION_ORDER]
+    for section in populated:
         assert f'data-mc-section="{section.id}"' in rail
         # Jinja/autoescape turns `&` into `&amp;` in the served markup.
         assert f'<span class="l-en">{html.escape(section.label_en)}</span>' in rail
@@ -160,13 +163,13 @@ def test_every_rail_section_has_matching_en_and_zh_labels(hub: str) -> None:
 
 def test_every_hash_href_has_a_matching_bare_id(hub: str) -> None:
     targets = re.findall(r'href="#([^"]+)"', hub)
-    assert targets, "expected at least the twelve rail links"
+    assert targets, "expected the populated rail links"
     ids = set(re.findall(r'\bid="([^"]+)"', hub))
     for target in targets:
         assert target in ids, f'href="#{target}" has no matching id="{target}"'
 
 
-def test_the_twelve_panels_ship_unhidden_with_hash_routing_markup(hub: str) -> None:
+def test_the_populated_panels_ship_unhidden_with_hash_routing_markup(hub: str) -> None:
     sections = re.findall(r'<section class="mc-panel" id="([a-z]+)"[^>]*>', hub)
     assert sections == list(EXPECTED_SECTION_ORDER)
     for block in re.finditer(r'<section class="mc-panel" id="[a-z]+"[^>]*>', hub):
@@ -174,7 +177,7 @@ def test_the_twelve_panels_ship_unhidden_with_hash_routing_markup(hub: str) -> N
         assert 'data-mc-panel="' in block.group(0)
 
 
-def test_the_three_subtabbed_sections_carry_money_growth_credit_tablists(hub: str) -> None:
+def test_the_populated_subtabbed_section_carries_money_tablist(hub: str) -> None:
     for section_id in SUBTABBED_SECTIONS:
         match = re.search(
             r'<section class="mc-panel" id="' + section_id + r'".*?(?=<section class="mc-panel"|</main>)',
@@ -282,12 +285,19 @@ def test_coverage_absence_is_typed_and_has_screen_reader_text(hub: str) -> None:
         or "Today's read is not available yet" in authored
         or "Today&#39;s read is not available yet" in authored
         or "See each workspace below" in authored
+        or "Some desks have not reported yet" in authored
+        or "Every desk reported today" in authored
+        or "This section didn't load" in authored
+        or "This section didn&#39;t load" in authored
     )
     assert (
         "暂无带日期的读数" in authored
         or "今日读数不完整" in authored
         or "今日读数暂不可用" in authored
         or "各工作区下方各自展示" in authored
+        or "部分小组今天尚未发布" in authored
+        or "今天每个小组都有读数" in authored
+        or "本板块未能载入" in authored
     )
     for match in re.finditer(r'<span class="mq-dash"[^>]*>—</span>(.{0,80})', authored, re.S):
         assert 'class="mq-sr"' in match.group(1), \
@@ -390,7 +400,11 @@ def test_build_hub_view_is_not_the_macro_command_renderer() -> None:
     assert "build_hub_view" not in inspect.getsource(builder.build_hub)
     view = build_hub_view([], page_built_at=BUILT_AT)
     assert view["as_of"]["effective_date"] is None
-    assert view["coverage"]["total"] == 0
+    # N0: coverage is the 12-section tally (Overview always counted), never
+    # the 14 workspace rows. An empty entry list still has a denominator.
+    assert view["coverage"]["total"] == 12
+    assert view["coverage"]["available"] == 1
+    assert "complete" not in view["coverage"]
 
 
 def test_the_hub_carries_no_executable_inline_script(hub: str) -> None:

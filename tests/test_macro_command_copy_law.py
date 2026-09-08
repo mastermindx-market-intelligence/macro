@@ -21,6 +21,7 @@ runs against a moving target.
 """
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import pytest
@@ -161,6 +162,42 @@ def test_raw_iso_time_fragment_always_fails() -> None:
 
 def test_the_real_built_page_is_clean(built_hub: str) -> None:
     assert guard.find_violations(built_hub) == []
+
+
+def test_mc_figure_text_is_never_a_bare_number(built_hub: str) -> None:
+    """E-m10: every Overview / section figure reading carries a scale word."""
+    from html.parser import HTMLParser
+
+    class _FigureTexts(HTMLParser):
+        def __init__(self) -> None:
+            super().__init__()
+            self._depth = 0
+            self.texts: list[str] = []
+
+        def handle_starttag(self, tag, attrs):
+            cls = dict(attrs).get("class", "")
+            if self._depth:
+                self._depth += 1
+            elif "mc-figure" in cls.split() or "mc-move" in cls.split():
+                self._depth = 1
+
+        def handle_endtag(self, tag):
+            if self._depth:
+                self._depth -= 1
+
+        def handle_data(self, data):
+            if not self._depth:
+                return
+            text = " ".join(data.split())
+            if text:
+                self.texts.append(text)
+
+    parser = _FigureTexts()
+    parser.feed(built_hub)
+    assert parser.texts
+    bare = re.compile(r"^[-−]?\d+(?:\.\d+)?$")
+    for text in parser.texts:
+        assert not bare.match(text), text
 
 
 def test_guard_script_exits_zero_on_the_real_built_page(built_hub: str, tmp_path: Path) -> None:

@@ -40,6 +40,8 @@ BUILT_AT = "2026-09-04T12:00:00Z"
 _TEMPLATE_NAMES = (
     "macro_monetary.html.j2",
     "_macro_command_macros.html.j2",
+    "_macro_command_figures.html.j2",
+    "_macro_command_fragment.html.j2",
     "_macro_suite_nav.html.j2",
     "macro_liquidity_regime.html.j2",
     "macro_growth_real_economy.html.j2",

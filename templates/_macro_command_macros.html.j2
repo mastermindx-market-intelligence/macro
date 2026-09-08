@@ -67,7 +67,9 @@
   reviewed state, joined by fixed connectives (G3). `clause.punct` is a
   BILINGUAL pair: EN joins with ", " / ", and " / "."; ZH joins with "；" and
   ends "。" and never carries a coordinating word (a calqued "，和" is not
-  Chinese). Fewer than three clauses suppresses the sentence entirely.
+  Chinese). Fewer than two clauses suppresses the sentence entirely
+  (R6-M3: after the populated-only filter the live Read has two
+  clauses; a three-clause floor would hide a true sentence).
 
   NO whitespace is emitted inside <p class="mc-read"> — not between the anchor
   and its predicate, not between clauses. EN's word space is a CSS margin on
@@ -76,10 +78,10 @@
   space in Chinese and as a leading indent before the first word (F-10).
 #}
 {% macro read_block(read) -%}
-{%- if read.clauses|length >= 3 %}
+{%- if read.clauses|length >= 2 %}
 <p class="mc-read" data-mc-read>
 {%- for clause in read.clauses -%}
-<span class="mc-read-clause"><a class="mc-read-topic mq-tone-{{ clause.tone }}" href="#{{ clause.section }}" data-mc-topic="{{ clause.id }}">{{ bl(clause.topic) }}</a><span class="l-en"> </span><span class="l-zh"></span><span class="mc-read-state">{{ bl(clause.predicate) }}</span>{{ bl(clause.punct) }}</span>
+<span class="mc-read-clause"><a class="mc-read-topic mq-tone-{{ clause.tone }}" href="#{{ clause.href_section or clause.section }}" data-mc-topic="{{ clause.id }}">{{ bl(clause.topic) }}</a><span class="l-en"> </span><span class="l-zh"></span><span class="mc-read-state">{{ bl(clause.predicate) }}</span>{{ bl(clause.punct) }}</span>
 {%- endfor -%}
 </p>
 {%- if read.omitted %}
@@ -107,7 +109,7 @@
 <ul class="mc-strip" data-mc-strip aria-labelledby="mc-strip-h">
   {%- for chip in strip %}
   <li class="mc-chip{{ ' is-null' if chip.null else '' }}" data-mc-topic="{{ chip.id }}">
-    <a class="mc-chip-link" href="#{{ chip.section }}" aria-describedby="{{ chip.id }}-help">
+    <a class="mc-chip-link" href="#{{ chip.href_section or chip.section }}" aria-describedby="{{ chip.id }}-help">
       <span class="mc-chip-top">
         <span class="mc-chip-label">{{ bl(chip.label) }}</span>
         {#- F-12 / MJ-2: a fully null chip renders NO as-of. A coverage
@@ -127,7 +129,8 @@
         {%- endif %}
       </span>
       <strong class="mc-chip-value mq-tone-{{ chip.tone }}">
-        {%- if chip.null %}{{ t('Not available yet', '暂不可用') }}
+        {%- if chip.null and chip.cause == 'see_curve' %}{{ t('See the curve below', '见下方曲线') }}
+        {%- elif chip.null %}{{ t('Not available yet', '暂不可用') }}
         {%- else %}{{ bl(chip.value) }}{% endif -%}
       </strong>
       {%- if chip.note %}

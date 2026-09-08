@@ -27,7 +27,8 @@ governs everywhere the pin does not speak. This file proves:
 9. ``--mc-stance-wash`` stays a percentage in both themes (0% dark / 6%
    light) — the frozen constraint this packet must not disturb.
 10. The real built page against the live artifact renders the expected
-    shape: >=3 clauses, exactly 8 chips, and the copy guard is green.
+    shape: >=2 clauses after the populated-only filter, five chips
+    (four market + coverage), and the copy guard is green.
 """
 from __future__ import annotations
 
@@ -252,6 +253,26 @@ def test_no_axes_workspace_that_also_failed_today_gets_the_late_cause() -> None:
     assert chip["note"] == L.CHIP_NULL_NOTE["late"]
 
 
+def test_populated_not_applicable_chip_reads_see_the_curve() -> None:
+    """M6: a NOT_APPLICABLE section whose figure has rows is not 'hasn't
+    arrived' — the chip names the curve and keeps the figure's as-of."""
+    entries = [_entry("monetary_policy", state_id=None, freshness="CURRENT",
+                      effective_date="2026-09-04", null_reason="NOT_APPLICABLE")]
+    entries[0]["snapshot"]["changes"] = {
+        "comparability": "COMPARABLE",
+        "deltas": [{
+            "metric_id": "fed_funds_rate",
+            "prior_value": 4.33, "current_value": 4.33, "delta": 0.0,
+        }],
+    }
+    header = macro_suite_view.build_command_header(entries, page_built_at=BUILT_AT)
+    chip = next(c for c in header["strip"] if c["id"] == "policy")
+    assert chip["null"] is True
+    assert chip["cause"] == "see_curve"
+    assert chip["as_of"] == "2026-09-04"
+    assert chip["note"] is None
+
+
 # --------------------------------------------------------------------------
 # 5b — an unknown (workspace_id, state_id) never blocks the build
 # --------------------------------------------------------------------------
@@ -446,12 +467,35 @@ def built_hub(tmp_path_factory: pytest.TempPathFactory) -> str:
     return hub[0].read_text(encoding="utf-8")
 
 
-def test_the_real_page_renders_at_least_five_chips_and_exactly_eight_total(built_hub: str) -> None:
+@pytest.mark.needs_full_checkout("site")
+def test_the_real_page_renders_populated_chips_only(built_hub: str) -> None:
+    """R6-M3: chips whose section is not rendered are not rendered."""
     chip_ids = re.findall(r'<li class="mc-chip[^"]*" data-mc-topic="([a-z]+)"', built_hub)
-    assert chip_ids == ["money", "policy", "rates", "inflation", "growth", "jobs",
-                        "credit", "coverage"]
+    assert chip_ids == ["money", "policy", "rates", "inflation", "coverage"]
 
 
+@pytest.mark.needs_full_checkout("site")
+def test_r7_m2_strip_has_exactly_populated_plus_coverage_and_no_empty_children(
+        built_hub: str) -> None:
+    """R7-M2: strip children = populated chips + coverage; no empty cells."""
+    match = re.search(r'<ul class="mc-strip"[^>]*>(.*?)</ul>', built_hub, re.S)
+    assert match, "state strip missing from the built hub"
+    body = match.group(1)
+    children = re.findall(r"<li\b", body)
+    topics = re.findall(r'data-mc-topic="([^"]+)"', body)
+    populated = [topic for topic in topics if topic != "coverage"]
+    assert "coverage" in topics
+    assert len(children) == len(populated) + 1
+    assert len(children) == len(topics)
+    assert not re.search(r"<li[^>]*>\s*</li>", body)
+    css = (TEMPLATES / "macro_command.css").read_text(encoding="utf-8")
+    assert "repeat(4, minmax(0, 1fr))" not in css
+    assert "display: flex" in css
+    assert "flex-wrap: wrap" in css
+    assert re.search(r"--mc-strip-bg:\s*transparent", css)
+
+
+@pytest.mark.needs_full_checkout("site")
 def test_coverage_chip_omits_asof_and_does_not_borrow_nulled(built_hub: str) -> None:
     """MJ-2: a coverage counter is not a dated topic reading."""
     match = re.search(
@@ -474,6 +518,7 @@ def test_read_fallback_uses_p1_honest_copy() -> None:
     assert "今日读数不完整" not in macros
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_the_real_page_carries_no_bare_iso_timestamp_in_visible_text(built_hub: str) -> None:
     """G2b, restated for the header specifically: `<time datetime=...>` is
     fine; a bare ISO date in the surrounding text is not."""
@@ -481,6 +526,7 @@ def test_the_real_page_carries_no_bare_iso_timestamp_in_visible_text(built_hub: 
     assert not re.search(r">\s*\d{4}-\d{2}-\d{2}\s*<", visible)
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_the_real_built_page_passes_the_copy_guard(built_hub: str, tmp_path: Path) -> None:
     from scripts import check_macro_command_copy as guard
     assert guard.find_violations(built_hub) == []

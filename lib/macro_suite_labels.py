@@ -28,10 +28,35 @@ from typing import Any, Iterable, Mapping
 _UNKNOWN: set[str] = set()
 
 EM_DASH = "—"
+TRUE_MINUS = "\u2212"
 
 
 def _pair(en: str, zh: str) -> dict[str, str]:
     return {"en": en, "zh": zh}
+
+
+# Short figure-scale words for Overview / section movement rows (E-m10).
+# Distinct from UNIT, which is the longer details-table label.
+FIGURE_SCALE: dict[str, dict[str, str]] = {
+    "score": _pair("pts", "点"),
+    "USD_bn": _pair("bn", "十亿"),
+    "pct": _pair("%", "%"),
+    "percent": _pair("%", "%"),
+    "pct_pts": _pair("pts", "点"),
+    "pct_saar": _pair("%", "%"),
+    "pct_mom": _pair("%", "%"),
+    "pct_yoy": _pair("%", "%"),
+    "bp": _pair("pts", "点"),
+    "stddev": _pair("index", "指数"),
+    "index": _pair("index", "指数"),
+    "count": _pair("count", "个"),
+    "ratio": _pair("index", "指数"),
+    "percentile": _pair("index", "指数"),
+    "z_score": _pair("index", "指数"),
+    "categorical": _pair("index reading", "指数读数"),
+    "business_days": _pair("days", "日"),
+}
+FIGURE_SCALE_FALLBACK = _pair("index reading", "指数读数")
 
 
 # --- section 7.6 freshness vocabulary ---------------------------------------
@@ -259,6 +284,352 @@ METRIC: dict[str, dict[str, str]] = {
     "ofr_fsi": _pair("OFR financial stress", "OFR 金融压力指数"),
     "hy_oas_pct": _pair("High-yield credit spread", "高收益信用利差"),
     "rates_scare_score": _pair("Rates scare score", "利率恐慌评分"),
+    # F01 Macro Command P3 §F.1 — the fifteen ids the hub actually renders.
+    # curve_2s10s / curve_2s10s_level carry the owner suffix on purpose (D10).
+    "glt_monetary_impulse": _pair("Central-bank money impulse", "央行货币投放力度"),
+    "glt_monetary_impulse_z": _pair(
+        "Central-bank money impulse, against its own history",
+        "央行货币投放力度（对比自身历史）"),
+    "glt_usd_funding_impulse": _pair("Dollar funding conditions", "美元融资状况"),
+    "glt_liquidity_breadth": _pair("How widely liquidity is improving", "流动性改善的广度"),
+    "cb_fed_balance_sheet_impulse_13w": _pair(
+        "Fed balance sheet, 13-week change", "美联储资产负债表（13周变化）"),
+    "fed_funds_rate": _pair("Policy rate", "政策利率"),
+    "market_implied_path_12m_bp": _pair(
+        "What markets price for the next year", "市场对未来一年的定价"),
+    "curve_2s10s": _pair(
+        "Two-year to ten-year gap, policy reading", "2年期与10年期利差（政策读数）"),
+    "dots_vs_market_gap_bp": _pair(
+        "Fed's path versus the market's", "美联储路径与市场预期之差"),
+    "us2y_level": _pair("Two-year Treasury yield", "两年期美债收益率"),
+    "us10y_level": _pair("Ten-year Treasury yield", "十年期美债收益率"),
+    "curve_2s10s_level": _pair(
+        "Two-year to ten-year gap, curve reading", "2年期与10年期利差（曲线读数）"),
+    "term_premium_10y_level": _pair(
+        "Extra yield for lending ten years", "持有十年期债券的额外收益"),
+    "inflation_impulse": _pair("Speed of price rises", "物价上涨速度"),
+    "persistence_breadth": _pair("Spread of price rises", "涨价的广度"),
+    # Hub-pool candidates (every id `build_hub_view` can print). A missing
+    # key is dropped, never de-slugged — see `_macro_command_sections`.
+    "growth_momentum": _pair("Growth momentum (6-month)", "增长动能（6个月）"),
+    "growth_level_breadth": _pair(
+        "How many growth gauges are rising", "上升的增长指标数量"),
+    "coincident_tier_momentum_6m": _pair(
+        "Current-activity momentum (6-month)", "当前活动动能（6个月）"),
+    "leading_tier_momentum_6m": _pair(
+        "Leading-activity momentum (6-month)", "领先活动动能（6个月）"),
+    "lagging_tier_momentum_6m": _pair(
+        "Lagging-activity momentum (6-month)", "滞后活动动能（6个月）"),
+    "coincident_lagging_ratio_momentum_6m": _pair(
+        "Current-to-lagging activity gap (6-month)", "当前与滞后活动差距（6个月）"),
+    "financial_conditions_level": _pair(
+        "How tight financial conditions are", "金融状况松紧程度"),
+    "financial_conditions_impulse": _pair(
+        "Whether financial conditions are tightening", "金融状况是否在收紧"),
+    "labor_demand": _pair(
+        "How many jobs employers want to fill", "企业想填补的岗位数量"),
+    "labor_supply_tightness": _pair(
+        "How scarce available workers are", "可用劳动力的稀缺程度"),
+    "mortgage_30y_rate_level": _pair("Thirty-year mortgage rate", "三十年期房贷利率"),
+    "housing_starts_yoy": _pair("Housing starts, year over year", "新屋开工同比"),
+    "building_permits_yoy": _pair("Building permits, year over year", "营建许可同比"),
+    "case_shiller_national_hpi_yoy": _pair(
+        "National house prices, year over year", "全国房价同比"),
+    "retail_sales_level": _pair("Retail sales", "零售销售"),
+    "retail_sales_yoy": _pair("Retail sales, year over year", "零售销售同比"),
+    "consumer_sentiment_level": _pair(
+        "How households feel about the economy", "家庭对经济的感受"),
+    "consumer_sentiment_yoy": _pair(
+        "Household sentiment, year over year", "家庭感受同比"),
+    "cash_flow_momentum": _pair("Household cash-flow momentum", "家庭现金流动能"),
+    "credit_stress": _pair("Household credit stress", "家庭信贷压力"),
+    "cs_issuer_count": _pair(
+        "How many issuers came to market", "来市场发债的主体数量"),
+    "cs_event_count": _pair("How many financing events happened", "融资事件数量"),
+    "cs_classified_event_count": _pair(
+        "How many events we could classify", "已分类的事件数量"),
+    "cs_deferred_event_count": _pair(
+        "How many events are still being reviewed", "仍在审阅的事件数量"),
+    "cs_review_count": _pair("Events awaiting a second look", "待复核的事件"),
+    "tga_level": _pair("Treasury cash balance", "财政部现金余额"),
+    "net_issuance_sum_13w": _pair(
+        "Net government issuance, 13 weeks", "政府净发行（13周）"),
+    "auction_bid_to_cover_recent_avg": _pair("Recent auction demand", "近期拍卖需求"),
+    "household_debt_service_ratio_level": _pair(
+        "Share of income going to debt payments", "收入中用于还债的比重"),
+    "bond_desk_health_score_level": _pair(
+        "How healthy the government-bond desk is", "国债交易台健康程度"),
+    "trade_balance_level": _pair("Trade balance", "贸易差额"),
+    "exports_level": _pair("Exports", "出口"),
+    "imports_level": _pair("Imports", "进口"),
+    "export_import_coverage_ratio": _pair(
+        "How much exports cover imports", "出口对进口的覆盖程度"),
+}
+
+# F01 Macro Command P3 — reviewed panel copy. Keyed (section_id, state_key).
+# Overview stances carry no count (addendum DELTA 16 / C10); the strip owns
+# the only integer. A missing key is a build defect — the builder raises.
+_UNAVAILABLE = _pair(
+    "This desk could not be read today. Nothing is shown rather than yesterday's number dressed as today's.",
+    "本组今天无法读取。我们宁可不显示，也不会把昨天的数字当作今天的。",
+)
+_UNSTATED_GENERIC = _pair(
+    "We publish no single reading for this desk. Read the moves below, then open its workspace.",
+    "本组我们不发布单一读数。请先看下方变化，再进入其工作区。",
+)
+
+# N5-M1: Overview question is derived from figure mode so the deck never
+# asks "what moved" when the figure has no earlier reading to compare.
+OVERVIEW_QUESTIONS: dict[str, dict[str, str]] = {
+    "movement": _pair(
+        "What is macro saying today, and what moved?",
+        "今天宏观在说什么？有什么变化？"),
+    "current": _pair(
+        "What is macro saying today?",
+        "今天宏观在说什么？"),
+}
+
+STANCES: dict[str, dict[str, dict[str, str]]] = {
+    "overview": {
+        "all_read": _pair(
+            "Every desk reported today. Start with what moved, then open the section you care about.",
+            "今天每个小组都有读数。先看变化，再进入你关心的板块。"),
+        "some_unread": _pair(
+            "Some desks have not reported yet. What moved below is what we do have.",
+            "部分小组今天尚未发布。下方的变化就是我们目前掌握的内容。"),
+        # N5-M1: current-only figure mode. One voice — the figure state line
+        # is suppressed when this sentence is the panel stance.
+        "all_read_current": _pair(
+            "Every desk reported today. The latest readings are below — there is no earlier reading to compare yet.",
+            "今天每个小组都有读数。最新读数如下——暂无更早读数可比。"),
+        "some_unread_current": _pair(
+            "Some desks have not reported yet. The latest readings are below — there is no earlier reading to compare yet.",
+            "部分小组今天尚未发布。最新读数如下——暂无更早读数可比。"),
+        # R6-M2 / R7-M1: mixed figure — some rows compare, some do not.
+        # The question stays "what moved". The stance carries the mixed
+        # pair; Overview drops the figure state line so the sentence
+        # appears once. Section figures print the pair as their state line.
+        "all_read_mixed": _pair(
+            "Every desk reported today. Some readings have no earlier print to compare yet.",
+            "今天每个小组都有读数。部分读数暂无更早读数可比。"),
+        "some_unread_mixed": _pair(
+            "Some desks have not reported yet. Some readings have no earlier print to compare yet.",
+            "部分小组今天尚未发布。部分读数暂无更早读数可比。"),
+    },
+    "money": {
+        "A": _pair(
+            "Money is easy and support is strong. No action needed today; the thing to watch is funding tightening.",
+            "资金宽松且支持强劲。今天无需行动，要盯的是融资是否收紧。"),
+        "B": _pair(
+            "Funding is tight despite strong support. Watch closely — this combination rarely lasts long.",
+            "支持强劲但融资仍偏紧。密切观察 — 这种组合通常持续不久。"),
+        "C": _pair(
+            "Money is easy to borrow, but the cushion behind it is thin. Watch — don't read the calm as safety.",
+            "资金容易借到，但背后的缓冲很薄。观察为主 — 别把平静当成安全。"),
+        "D": _pair(
+            "Funding is tight and the cushion is thin. Read this section closely before anything else.",
+            "融资偏紧且缓冲很薄。请先仔细读本板块，再看其他。"),
+        "unstated": _UNSTATED_GENERIC,
+        "unavailable": _UNAVAILABLE,
+    },
+    "policy": {
+        "unstated": _pair(
+            "No single reading is published here. The gap between the Fed's path and the market's is the line to watch.",
+            "此处不发布单一状态读数。要盯的是美联储路径与市场预期之间的差距。"),
+        "unavailable": _UNAVAILABLE,
+    },
+    "rates": {
+        "unstated": _pair(
+            "No single reading is published here. Watch the two-year and ten-year together, not either one alone.",
+            "此处不发布单一状态读数。请把两年期与十年期一起看，不要只看其一。"),
+        "unavailable": _UNAVAILABLE,
+    },
+    "inflation": {
+        "A": _pair(
+            "The headline is cooling, but the increases underneath are broad and sticky. Watch — don't call it over.",
+            "总体在降温，但底层上涨仍广泛顽固。观察为主，别急着宣布结束。"),
+        "B": _pair(
+            "Prices are rising fast and the rise is broad. Read this section before anything else today.",
+            "物价上涨快且范围广。今天请先读本板块，再看其他。"),
+        "C": _pair(
+            "Prices are cooling and the cooling is broad. No action needed; watch for a re-acceleration.",
+            "物价在降温且范围广。无需行动，留意是否重新加速。"),
+        "D": _pair(
+            "Prices are rising fast but only in a few places. Watch — narrow rises usually fade.",
+            "物价上涨快，但只集中在少数项目。观察为主，范围窄的涨势通常会退去。"),
+        "unstated": _UNSTATED_GENERIC,
+        "unavailable": _UNAVAILABLE,
+    },
+}
+
+PRIMERS: dict[str, dict[str, str]] = {
+    "overview": _pair(
+        "Macro is not one number. {n} research sections each publish their own reading, and this page puts them side by side. Nothing here is blended into a score.",
+        "宏观不是一个数字。{n} 个研究板块各自发布自己的读数，本页把它们并排呈现。这里不会把它们混合成一个分数。"),
+    "money": _pair(
+        "Money here means how easily cash moves through the banking system. When it moves freely, borrowing is cheap and markets are calm; when it jams, everything gets harder.",
+        "这里的「资金」指现金在银行体系中流动的顺畅程度。流动顺畅时借贷便宜、市场平静；一旦堵塞，一切都会变难。"),
+    "policy": _pair(
+        "The policy rate is the price the central bank sets for overnight money. Everything else — mortgages, company loans, savings — is priced off it, so its direction matters more than its level.",
+        "政策利率是央行为隔夜资金设定的价格。房贷、企业贷款、存款利率都以它为基准，所以它的方向比水平更重要。"),
+    "rates": _pair(
+        "A yield curve is just the government's borrowing cost at different lengths of time, drawn side by side. When short costs more than long, lenders are being paid to wait — which is unusual.",
+        "收益率曲线就是把政府在不同期限上的借贷成本并排画出来。当短端高于长端时，出借人被支付以等待 — 这并不寻常。"),
+    "inflation": _pair(
+        "Inflation is two questions, not one: how fast prices are rising right now, and how many things are rising together. A fast rise in a few items fades; a slow rise in everything does not.",
+        "通胀其实是两个问题：当前物价上涨有多快，以及有多少东西在一起涨。少数商品的快速上涨会退去，而所有东西一起慢慢涨则不会。"),
+}
+
+CAPTIONS: dict[str, dict[str, str]] = {
+    "overview": _pair(
+        "Each row is one desk's own measurement, before and after. A flat change means measured and unchanged.",
+        "每一行都是某个小组自己的读数，前后对照。变化为零表示已测量且未变动。"),
+    "money": _pair(
+        "Each row shows the last two readings. Lower funding pressure means money is easier to get.",
+        "每行显示最近两次读数。融资压力越低，表示资金越容易获得。"),
+    "policy": _pair(
+        "Each row shows the last two readings. A rising market path means markets expect higher rates.",
+        "每行显示最近两次读数。市场预期路径上行，表示市场预计利率更高。"),
+    "rates": _pair(
+        "Each row shows the last two readings. The gap between two-year and ten-year is the curve's shape.",
+        "每行显示最近两次读数。两年期与十年期之间的差就是曲线的形状。"),
+    "inflation": _pair(
+        "Each row shows the last two readings. Higher means faster or more widespread price rises.",
+        "每行显示最近两次读数。数值更高表示涨价更快或更广泛。"),
+}
+
+WATCHING: dict[str, tuple[dict[str, str], ...]] = {
+    "overview": (
+        _pair("If a desk stops publishing, its row disappears here before anything else changes.",
+              "若某小组停止发布，其行会先于其他变化在此消失。"),
+        _pair("If several desks move the same way on one day, the read is broadening.",
+              "若多个小组同日朝同一方向变动，说明读数正在扩散。"),
+    ),
+    "money": (
+        _pair("If the overnight buffer stays at its floor, new government borrowing drains bank reserves.",
+              "若隔夜缓冲一直贴在下限，新增政府举债将直接消耗银行准备金。"),
+        _pair("If funding pressure rises while support stays weak, the calm has run out.",
+              "若融资压力上升而支持仍然疲弱，说明平静已经结束。"),
+    ),
+    "policy": (
+        _pair("If the market's path and the Fed's own path keep separating, one of them will move.",
+              "若市场预期路径与美联储自身路径持续背离，其中一方终将调整。"),
+        _pair("If the policy rate moves before the market path does, the change was not priced.",
+              "若政策利率先于市场预期路径变动，说明这次变化并未被计入价格。"),
+    ),
+    "rates": (
+        _pair("If the two-year falls faster than the ten-year, markets are pricing cuts.",
+              "若两年期比十年期下行更快，说明市场在为降息定价。"),
+        _pair("If the gap turns negative again, short money is costing more than long.",
+              "若该差值再度转负，表示短期资金比长期资金更贵。"),
+    ),
+    "inflation": (
+        _pair("If the broad measure keeps rising while the headline falls, the cooling is not finished.",
+              "若广度指标继续上行而总体读数下行，说明降温尚未完成。"),
+        _pair("If both fall together, the cooling has reached the stickier part of the basket.",
+              "若两者同时下行，说明降温已触及篮子中较顽固的部分。"),
+    ),
+}
+
+# Derived lines (pin §I.6) — format strings, never reviewed variants.
+COUNT = {
+    "overview": _pair(
+        "{shown} of {total} compared readings, in reading order — not a ranking.",
+        "{total} 项可比读数中的 {shown} 项，按阅读顺序排列 — 并非重要性排序。"),
+    "section": _pair(
+        "{n} readings compared against the previous publication.",
+        "与上一次发布相比，共对比 {n} 项读数。"),
+    "remaining": _pair(
+        "{remaining} more changes are on the workspace pages.",
+        "还有 {remaining} 项变化，可在各工作区页面查看。"),
+    # I4: same-publication "prior" is the previous build of this print, not
+    # an earlier reading. One typed line; never a fabricated 0 delta.
+    "same_publication": _pair(
+        "Only one reading is published so far — nothing earlier to compare yet.",
+        "目前只有一次读数——暂无更早读数可比。"),
+    # N5-M1: Overview deck/stance sentence when the figure is current-only.
+    # Distinct from same_publication so the panel can speak this once and
+    # drop the figure state line (one null voice).
+    "overview_current": _pair(
+        "The latest readings are below — there is no earlier reading to compare yet.",
+        "最新读数如下——暂无更早读数可比。"),
+    # R6-M2 / R7-M1: mixed-figure sentence. Overview speaks it in the
+    # stance and drops the figure state line. Section figures print it
+    # as their state line. Distinct from same_publication (current-only)
+    # and from overview_current (every row is current-only).
+    "overview_mixed": _pair(
+        "Some readings have no earlier print to compare yet.",
+        "部分读数暂无更早读数可比。"),
+}
+
+BOUNDARY_LINE = _pair(
+    "Closest to a different reading: {axis}, about {distance} away.",
+    "距离另一种读数最近的是：{axis}，约差 {distance}。",
+)
+
+# Spec §7 empty-state copy, verbatim. Markup + firing conditions are pin §G.
+EMPTY_STATES: dict[str, dict[str, Any]] = {
+    "e1": {
+        "id": "e1",
+        "title": _pair("We don't have this reading yet", "该读数暂不可用"),
+        "why": _pair(
+            "The source this section is built from has not published a dated reading.",
+            "本板块所依据的数据源尚未发布带日期的读数。"),
+        "unlock": _pair(
+            "It appears here the first time that source publishes.",
+            "该数据源首次发布后即会出现在此处。"),
+        "next": _pair("Checked again in tonight's update.", "今晚的更新会再次检查。"),
+    },
+    "e2": {
+        "id": "e2",
+        "title": _pair("Today's number didn't arrive", "今天的数据未能送达"),
+        "why": _pair(
+            "The data provider did not deliver in time. We show nothing rather than yesterday's number dressed as today's.",
+            "数据提供方未能及时送达。我们宁可不显示，也不会把昨天的数字当作今天的。"),
+        "unlock": _pair(
+            "It returns as soon as the provider publishes; checked every night.",
+            "数据源恢复发布后即会显示；每晚检查。"),
+        "next": None,
+    },
+    "e3": {
+        "id": "e3",
+        "title": _pair("We can't show the change yet", "暂时无法显示变化"),
+        "why": _pair(
+            "There is no earlier reading measured the same way, so any arrow would be invented.",
+            "不存在以相同方法测得的历史读数，任何箭头都会是臆造的。"),
+        "next": _pair(
+            "The first comparable reading appears after the next publication.",
+            "下一次发布后将出现首个可对比读数。"),
+    },
+    "e4": {
+        "id": "e4",
+        "title": _pair("Not open yet", "尚未开放"),
+        "why": _pair(
+            "This part is built but not switched on for customers.",
+            "该功能已建成，但尚未对客户开放。"),
+        "unlock": _pair(
+            "It appears here when it is turned on. There is nothing you need to do.",
+            "开放后会自动出现，无需操作。"),
+    },
+    "e5": {
+        "id": "e5",
+        "title": _pair("This section didn't load", "本板块未能载入"),
+        "why": _pair("The page couldn't fetch it just now.", "页面此刻未能取回该板块。"),
+        "cta_label": _pair(
+            "Reload the page, or open the full workspace →",
+            "请重新载入页面，或打开完整工作区 →"),
+    },
+    "e6": {
+        "id": "e6",
+        "title": _pair("Included in a higher plan", "包含在更高方案中"),
+        "why": _pair("This section is part of {plan}.", "本板块属于{plan}。"),
+        "stance": _pair(
+            "The reading is available on upgrade.",
+            "升级后可查看该读数。"),
+        "unlock": _pair("See it with an upgrade.", "升级即可查看。"),
+        "cta_href": "plans.html",
+        "cta_label": _pair("Upgrade to see it", "查看升级方案"),
+    },
 }
 
 # --- implication horizons ----------------------------------------------------
@@ -486,6 +857,11 @@ CHIP_NULL_NOTE: dict[str, dict[str, str]] = {
     "plan": _pair(
         "This section is part of a higher plan.",
         "本板块属于更高级别方案。"),
+    # M6: populated figure + no headline number. The chip VALUE is rewritten
+    # to this pair; the date rides `as_of` (P2 strip null branch).
+    "see_curve": _pair(
+        "See the curve below",
+        "见下方曲线"),
 }
 
 # Chip 8 (`coverage`) value word (pin §6.5) — digit-free, per §3.0 bullet 1.
@@ -521,6 +897,20 @@ def date_display_pair(iso_date: str) -> dict[str, str] | None:
     month_en = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
                 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")[d.month - 1]
     return _pair(f"{d.day} {month_en} {d.year}", f"{d.year}年{d.month}月{d.day}日")
+
+
+def month_display_pair(iso_date: str) -> dict[str, str] | None:
+    """Month + year only (I4 current-only rows). Never a raw ISO string."""
+    if not isinstance(iso_date, str) or len(iso_date) < 10:
+        return None
+    from datetime import date as _date  # noqa: PLC0415
+    try:
+        d = _date.fromisoformat(iso_date[:10])
+    except ValueError:
+        return None
+    month_en = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")[d.month - 1]
+    return _pair(f"{month_en} {d.year}", f"{d.year}年{d.month}月")
 
 
 _VOCABULARIES: dict[str, dict[str, dict[str, str]]] = {
@@ -612,6 +1002,44 @@ def known(vocabulary: str) -> tuple[str, ...]:
 
 # --- value formatting --------------------------------------------------------
 
+def figure_scale(unit: Any) -> dict[str, str]:
+    """Short scale word for a figure reading. Unknown / missing → 'index reading'."""
+    key = str(unit).strip() if unit else ""
+    if key and key in FIGURE_SCALE:
+        return dict(FIGURE_SCALE[key])
+    return dict(FIGURE_SCALE_FALLBACK)
+
+
+def fmt_true_minus(text: str | None) -> str | None:
+    if text is None:
+        return None
+    if text.startswith("-"):
+        return TRUE_MINUS + text[1:]
+    return text
+
+
+def fmt_move_words(delta_raw: Any, sign: str | None, unit: Any) -> dict[str, str] | None:
+    """Plain-word movement under an Overview / section figure."""
+    if not isinstance(delta_raw, (int, float)) or isinstance(delta_raw, bool):
+        return None
+    scale = figure_scale(unit)
+    magnitude = abs(float(delta_raw))
+    mag_text = fmt_true_minus(fmt_number(magnitude)) or "0"
+    if sign == "flat" or magnitude == 0:
+        return _pair("unchanged since the last reading", "较上次读数持平")
+    if sign == "up":
+        return _pair(
+            f"up {mag_text} {scale['en']} since the last reading",
+            f"较上次读数上升 {mag_text} {scale['zh']}",
+        )
+    if sign == "down":
+        return _pair(
+            f"down {mag_text} {scale['en']} since the last reading",
+            f"较上次读数下降 {mag_text} {scale['zh']}",
+        )
+    return None
+
+
 def fmt_number(value: Any) -> str | None:
     """Format a numeric cell WITHOUT changing its basis or unit.
 
@@ -628,12 +1056,14 @@ def fmt_number(value: Any) -> str | None:
         return None
     magnitude = abs(float(value))
     if magnitude >= 1000:
-        return f"{value:,.1f}"
-    if magnitude >= 1:
-        return f"{value:,.2f}"
-    if magnitude == 0:
-        return "0"
-    return f"{value:.4g}"
+        text = f"{value:,.1f}"
+    elif magnitude >= 1:
+        text = f"{value:,.2f}"
+    elif magnitude == 0:
+        text = "0"
+    else:
+        text = f"{value:.4g}"
+    return fmt_true_minus(text) if float(value) < 0 else text
 
 
 def fmt_signed(value: Any) -> str | None:
