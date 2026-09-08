@@ -1752,6 +1752,7 @@ def test_r12_manifest_shot_schema() -> None:
                 "full_page": state.get("full_page"),
                 "crop_box": state.get("crop_box"),
                 "crop_selector": state.get("crop_selector"),
+                "device_px_span": state.get("device_px_span"),
             }
             capture._assert_shot_geometry(
                 dest, extra, state["viewport_width"], state["viewport_height"])
