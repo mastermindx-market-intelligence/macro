@@ -58,6 +58,8 @@ def test_e1_through_e6_render_the_spec_sentences_verbatim() -> None:
     e6 = _render_empty(builder._empty_state("e6", plan="Pro"))
     assert "Included in a higher plan" in e6
     assert "包含在更高方案中" in e6
+    assert "This section is included in a higher plan." not in e6
+    assert "本板块包含在更高方案中。" not in e6
     assert "本板块属于Pro。" in e6
     assert "The reading is available on upgrade." in e6
     assert "升级后可查看该读数。" in e6

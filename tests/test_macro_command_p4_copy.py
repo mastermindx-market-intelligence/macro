@@ -870,6 +870,36 @@ def test_overview_current_only_emits_no_figure_state_line(built: tuple[str, Path
     assert '<p class="mc-move-state">' not in overview
 
 
+def _e6_slot_texts() -> dict[str, dict[str, str]]:
+    spec = L.EMPTY_STATES["e6"]
+    texts = {}
+    for key in ("title", "stance", "why", "unlock", "cta_label"):
+        pair = spec[key]
+        texts[key] = {
+            "en": pair["en"].replace("{plan}", "Research"),
+            "zh": pair["zh"].replace("{plan}", "Research"),
+        }
+    return texts
+
+
+def _strip_sentence(text: str) -> str:
+    return text.strip().rstrip(".—。")
+
+
+def test_e6_slots_share_no_sentence_or_prefix() -> None:
+    """r5 MINOR-1: no two E6 slots share a sentence or a sentence prefix."""
+    slots = _e6_slot_texts()
+    for locale in ("en", "zh"):
+        items = [(key, _strip_sentence(pair[locale])) for key, pair in slots.items()]
+        for i, (key_a, text_a) in enumerate(items):
+            for key_b, text_b in items[i + 1:]:
+                assert text_a, (locale, key_a)
+                assert text_b, (locale, key_b)
+                assert text_a != text_b, (locale, key_a, key_b, text_a)
+                assert not text_b.startswith(text_a), (locale, key_a, key_b, text_a, text_b)
+                assert not text_a.startswith(text_b), (locale, key_a, key_b, text_a, text_b)
+
+
 def test_entitlement_walled_section_uses_plan_stance_and_drops_watching() -> None:
     """N-D: a walled section never issues a read-now instruction; WATCHING is off."""
     entries = copy.deepcopy(_live_entries())
@@ -915,3 +945,35 @@ def test_p4_probes_name_panel_ok_and_doc_ok_separately() -> None:
         assert "mmbBootDisplay" in row, row
         if row["width"] <= 768:
             assert row["mmbBootDisplay"] == "none", row
+
+
+def test_declared_matrix_gaps_are_generated_not_hand_written() -> None:
+    """r5 MAJ-A: gaps = declared − captured; only E5 when the matrix is complete."""
+    from scripts import capture_macro_command_p4 as capture
+
+    blast = [f"workspace_{i}" for i in range(9)]
+    declared = capture.declared_cells(blast_keys=blast)
+    assert declared[-1] == "empty-e5"
+    assert declared.count("empty-e5") == 1
+    assert len(declared) == (
+        7 * 3 * 4  # sections × widths × theme/locale
+        + 5 * 2 * 4  # empties E1–E4/E6 × (1440, 390) × cells
+        + 4 * 4  # state kinds × theme/locale
+        + 9 * 2 * 4  # blast pages × before/after × four axes
+        + 1  # E5
+    )
+    captured = {cell for cell in declared if cell != "empty-e5"}
+    gaps = capture.generate_gaps(declared, captured)
+    assert gaps == [capture.E5_GAP]
+    excluded = capture.generate_excluded(gaps)
+    assert excluded == [{
+        "id": "empty-e5",
+        "captured": False,
+        "reason": capture.E5_REASON,
+    }]
+    missing = capture.generate_gaps(
+        declared, captured - {"empty-e1-light-zh-390", "mob-growth-dark-en-390"})
+    stems = {gap.split(":", 1)[0] for gap in missing}
+    assert "empty-e1-light-zh-390" in stems
+    assert "mob-growth-dark-en-390" in stems
+    assert "empty-e5" in stems

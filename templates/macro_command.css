@@ -683,7 +683,9 @@ html[data-theme="light"] .mc-shell :focus-visible { box-shadow: 0 0 0 1px var(--
      sticky at the top). Reserve only the home-indicator inset. */
   .mc-panels {
     order: 3;
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    /* r12-M2: a modest end spacer so the last dest-card line can
+       sit below the sticky rail at max scroll. */
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
   }
   .mc-rail {
     position: sticky; top: 60px; z-index: 4;

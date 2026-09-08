@@ -319,13 +319,21 @@ def _capture_clip(*, browser, url: str, hash_path: str, theme: str, locale: str,
     }
 
 
+def _viewport_dims(viewport: str) -> tuple[int, int]:
+    if viewport == "desktop":
+        return 1440, 2200
+    if viewport == "tablet":
+        return 768, 1400
+    return 390, 844
+
+
 def _state_row(filename: str, theme: str, locale: str, viewport: str,
                info: dict[str, Any], *, fixture: str | None = None,
                trigger: str | None = None, verified_how: str,
                section: str | None = None, crop: bool = False,
                selector: str | None = None,
                force_state: str | None = None) -> dict[str, Any]:
-    vw, vh = (1440, 2200) if viewport == "desktop" else (390, 844)
+    vw, vh = _viewport_dims(viewport)
     row = {
         "access": "anonymous",
         "applied_locale": info["applied_locale"],
@@ -359,7 +367,137 @@ def _state_row(filename: str, theme: str, locale: str, viewport: str,
 
 
 P3_PARENT = "origin/claude/marketontology-macro-command-p3-20260908"
-BLAST_AXES = (("dark", "en"), ("light", "zh"))
+SECTIONS = ("growth", "jobs", "housing", "consumer", "credit", "debt", "trade")
+THEMES = ("dark", "light")
+LOCALES = ("en", "zh")
+EMPTY_IDS = ("e1", "e2", "e3", "e4", "e6")
+STATE_KEYS = (
+    "growth-business", "credit-funding", "growth-foot", "consumer-foot",
+)
+BLAST_AXES = (("dark", "en"), ("light", "zh"), ("dark", "zh"), ("light", "en"))
+E5_REASON = (
+    "not reproducible under the capture harness (client fail() of a "
+    "fragment fetch; Playwright abort is not a dual-theme/EN-ZH product "
+    "empty the harness can pin)"
+)
+E5_GAP = f"empty-e5: captured:false — {E5_REASON}."
+
+
+def declared_cells(*, blast_keys: list[str]) -> list[str]:
+    """DECLARED matrix: sections × widths × theme × locale + empties + states + blast."""
+    cells: list[str] = []
+    for section in SECTIONS:
+        for width, prefix in ((1440, "comp"), (768, "tab"), (390, "mob")):
+            for theme in THEMES:
+                for locale in LOCALES:
+                    cells.append(f"{prefix}-{section}-{theme}-{locale}-{width}")
+    for empty_id in EMPTY_IDS:
+        for width in (1440, 390):
+            for theme in THEMES:
+                for locale in LOCALES:
+                    cells.append(f"empty-{empty_id}-{theme}-{locale}-{width}")
+    for key in STATE_KEYS:
+        for theme in THEMES:
+            for locale in LOCALES:
+                cells.append(f"state-{key}-{theme}-{locale}-1440")
+    for key in blast_keys:
+        for side in ("before", "after"):
+            for theme, locale in BLAST_AXES:
+                cells.append(f"blast-radius/{side}-{key}-{theme}-{locale}-1440")
+    cells.append("empty-e5")
+    return cells
+
+
+def captured_stems(states: list[dict[str, Any]]) -> set[str]:
+    stems: set[str] = set()
+    for row in states:
+        name = str(row.get("file") or "")
+        if name.endswith(".png"):
+            name = name[:-4]
+        if name:
+            stems.add(name)
+    return stems
+
+
+def generate_gaps(declared: list[str], captured: set[str]) -> list[str]:
+    """gaps = declared − captured. Never hand-written."""
+    gaps: list[str] = []
+    for cell in declared:
+        if cell == "empty-e5":
+            if not any(item == "empty-e5" or item.startswith("empty-e5-")
+                       for item in captured):
+                gaps.append(E5_GAP)
+            continue
+        if cell not in captured:
+            gaps.append(
+                f"{cell}: captured:false — declared cell missing from this run")
+    return gaps
+
+
+def generate_excluded(gaps: list[str]) -> list[dict[str, Any]]:
+    excluded: list[dict[str, Any]] = []
+    for gap in gaps:
+        cell = gap.split(":", 1)[0]
+        reason = gap.split(" — ", 1)[-1].rstrip(".")
+        excluded.append({"id": cell, "captured": False, "reason": reason})
+    return excluded
+
+
+def _head_sha() -> str:
+    return subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+
+
+def _git_status_short(*paths: str) -> str:
+    cmd = ["git", "status", "--short"]
+    if paths:
+        cmd += ["--", *paths]
+    return subprocess.check_output(cmd, cwd=ROOT, text=True)
+
+
+def _require_clean_tree(*, when: str, paths: tuple[str, ...] = ()) -> dict[str, Any]:
+    status = _git_status_short(*paths)
+    head = _head_sha()
+    clean = status.strip() == ""
+    measured = {
+        "when": when,
+        "status": status,
+        "clean": clean,
+        "head": head,
+        "paths": list(paths),
+    }
+    if not clean:
+        scope = " ".join(paths) if paths else "(whole tree)"
+        raise RuntimeError(
+            f"capture refused: dirty worktree at {when} {scope}:\n{status}")
+    return measured
+
+
+def _assert_head_unmoved(head_start: str) -> str:
+    head_end = _head_sha()
+    if head_end != head_start:
+        raise RuntimeError(
+            f"capture refused: HEAD moved during the run "
+            f"{head_start} -> {head_end}")
+    return head_end
+
+
+def _derive_resolved_sha_source(protocol: dict[str, Any]) -> str:
+    return (
+        f"committed HEAD of this worktree ({protocol['head_start']}); "
+        f"tree_clean_start={protocol['tree_clean_start']} from "
+        f"`git status --short` at start "
+        f"(empty={protocol['tree_clean_start']}); "
+        f"tree_clean_end={protocol['tree_clean_end']} from "
+        f"`git status --short -- templates scripts lib` at end "
+        f"(empty={protocol['tree_clean_end']}); "
+        f"head_start={protocol['head_start']}; "
+        f"head_end={protocol['head_end']}; "
+        f"generated_at_start={protocol['generated_at_start']}; "
+        f"generated_at_end={protocol['generated_at_end']}; "
+        f"commit_time_of_capture_sha={protocol['commit_time_of_capture_sha']} "
+        f"(git show -s --format=%cI). gaps generated as declared − captured."
+    )
 
 
 def _p3_parent_sha() -> str:
@@ -426,7 +564,26 @@ def _capture_metric_table(*, browser, origin: str, page_name: str,
         " && (document.documentElement.getAttribute('data-lang') || 'en') === locale",
         arg=[theme, locale],
     )
-    page.wait_for_selector(selector, timeout=15000)
+    page.wait_for_selector(selector, state="attached", timeout=15000)
+    page.evaluate(
+        """(sel) => {
+            const table = document.querySelector(sel);
+            if (!table) return;
+            let el = table;
+            while (el && el !== document.documentElement) {
+                if (el.tagName === 'DETAILS') el.open = true;
+                el.hidden = false;
+                el.removeAttribute('hidden');
+                if (el.style) {
+                    if (el.style.display === 'none') el.style.display = '';
+                    if (el.style.visibility === 'hidden') el.style.visibility = 'visible';
+                }
+                el = el.parentElement;
+            }
+        }""",
+        selector,
+    )
+    page.wait_for_selector(selector, state="visible", timeout=8000)
     table = page.locator(selector).first
     table.scroll_into_view_if_needed()
     page.wait_for_timeout(150)
@@ -470,19 +627,18 @@ def main() -> int:
     tmp = Path(os.environ.get("TMPDIR", "/tmp")) / f"mc-p4-{os.getpid()}"
     tmp.mkdir(parents=True, exist_ok=True)
 
-    head = subprocess.check_output(
-        ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    start_tree = _require_clean_tree(when="start")
+    generated_at_start = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    head = start_tree["head"]
     commit_time = subprocess.check_output(
         ["git", "show", "-s", "--format=%cI", head], cwd=ROOT, text=True).strip()
-    captured_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     print(f"rebuilding suite pages at {head}", flush=True)
     builder.render(ROOT, data_root=DATA, out_dir=SITE,
                    page_built_at="2026-09-06T00:00:00Z")
 
     states: list[dict[str, Any]] = []
-    gaps: list[str] = []
-    excluded: list[dict[str, Any]] = []
-    for stale in list(EVIDENCE.glob("empty-*.png")) + list(EVIDENCE.glob("state-*.png")):
+    p19_notes: list[str] = []
+    for stale in list(EVIDENCE.glob("*.png")) + list(BLAST.glob("*.png")):
         stale.unlink()
     try:
         proc, origin = _serve(SITE)
@@ -490,54 +646,47 @@ def main() -> int:
         with sync_playwright() as playwright:
             browser = playwright.chromium.launch(headless=True)
 
-            # §4.1 — 28 composition frames
-            for section in ("growth", "jobs", "housing", "consumer",
-                            "credit", "debt", "trade"):
-                for theme in ("dark", "light"):
-                    for locale in ("en", "zh"):
-                        name = f"comp-{section}-{theme}-{locale}-1440.png"
-                        print(f"capture {name}", flush=True)
-                        info = _capture_clip(
-                            browser=browser, url=url, hash_path=f"#{section}",
-                            theme=theme, locale=locale,
-                            dest=EVIDENCE / name,
-                            sel=f"section.mc-panel#{section}",
-                            wait_sel=f"section.mc-panel#{section} .mc-stance")
-                        states.append(_state_row(
-                            name, theme, locale, "desktop", info,
-                            section=section,
-                            verified_how=(
-                                "Playwright clip of section.mc-panel at 1440×2200 "
-                                "dpr=2; theme/lang set before load; panel box "
-                                "inside clip; language axis from .l-en/.l-zh text"
-                            ),
-                        ))
-
-            # §4.2 — 8 mobile first-screen frames
-            for section in ("consumer", "credit"):
-                for theme in ("dark", "light"):
-                    for locale in ("en", "zh"):
-                        name = f"mob-{section}-{theme}-{locale}-390.png"
-                        print(f"capture {name}", flush=True)
-                        info = _capture_clip(
-                            browser=browser, url=url, hash_path=f"#{section}",
-                            theme=theme, locale=locale,
-                            dest=EVIDENCE / name,
-                            sel=f"section.mc-panel#{section}",
-                            wait_sel=f"section.mc-panel#{section} .mc-stance",
-                            width=390, height=844, first_screen=True)
-                        psw, pcw = info["scroll"]["panel_sw"], info["scroll"]["panel_cw"]
-                        if psw is not None and psw > pcw + 1:
-                            raise RuntimeError(
-                                f"panel overflow at 390 {section} {theme} {locale}: {info['scroll']}")
-                        states.append(_state_row(
-                            name, theme, locale, "mobile", info,
-                            section=section,
-                            verified_how=(
-                                "true Playwright viewport 390×844 dpr=2, first "
-                                "screen, no iframe gutter; scrollWidth<=clientWidth"
-                            ),
-                        ))
+            # §4.1 — 7 sections × (1440, 768, 390) × dark/light × EN/ZH
+            section_viewports = (
+                ("desktop", 1440, 2200, "comp", False),
+                ("tablet", 768, 1400, "tab", True),
+                ("mobile", 390, 844, "mob", True),
+            )
+            for section in SECTIONS:
+                for viewport, width, height, prefix, first_screen in section_viewports:
+                    for theme in THEMES:
+                        for locale in LOCALES:
+                            name = f"{prefix}-{section}-{theme}-{locale}-{width}.png"
+                            print(f"capture {name}", flush=True)
+                            info = _capture_clip(
+                                browser=browser, url=url, hash_path=f"#{section}",
+                                theme=theme, locale=locale,
+                                dest=EVIDENCE / name,
+                                sel=f"section.mc-panel#{section}",
+                                wait_sel=f"section.mc-panel#{section} .mc-stance",
+                                width=width, height=height,
+                                first_screen=first_screen)
+                            if first_screen:
+                                psw = info["scroll"]["panel_sw"]
+                                pcw = info["scroll"]["panel_cw"]
+                                if psw is not None and pcw is not None and psw > pcw + 1:
+                                    raise RuntimeError(
+                                        f"panel overflow at {width} {section} "
+                                        f"{theme} {locale}: {info['scroll']}")
+                            how = (
+                                f"Playwright clip of section.mc-panel at "
+                                f"{width}×{height} dpr=2"
+                                if not first_screen else
+                                f"true Playwright viewport {width}×{height} "
+                                f"dpr=2, first screen; scrollWidth<=clientWidth"
+                            )
+                            states.append(_state_row(
+                                name, theme, locale, viewport, info,
+                                section=section,
+                                crop=not first_screen,
+                                selector=f"section.mc-panel#{section}",
+                                verified_how=how,
+                            ))
 
             # §4.3 — state frames, both art directions × both locales
             state_specs = (
@@ -562,7 +711,7 @@ def main() -> int:
                             sel=clip_sel, wait_sel=wait_sel)
                         states.append(_state_row(
                             name, theme, locale, "desktop", info,
-                            section=section, selector=clip_sel,
+                            section=section, crop=True, selector=clip_sel,
                             verified_how="Playwright clip; hash/tab or foot sentence visible",
                         ))
 
@@ -612,7 +761,7 @@ def main() -> int:
                             raise RuntimeError(f"P-19 panel overflow {row}")
             bad_doc = [row for row in probes["p19"] if not row["doc_ok"]]
             if bad_doc:
-                gaps.append(
+                p19_notes.append(
                     "P-19 doc_ok false at "
                     + ", ".join(
                         f"{row['width']} {row['theme']}/{row['locale']} "
@@ -726,43 +875,41 @@ def main() -> int:
                  "in-memory entitlement=Research on capital_structure → E6"),
             )
             served: dict[Path, str] = {}
+            empty_viewports = (
+                ("desktop", 1440, 2200, False),
+                ("mobile", 390, 844, True),
+            )
             for (empty_id, site_root, hash_path, wait_sel, clip_sel,
                  fixture, trigger) in empty_specs:
                 if site_root not in served:
                     _p, origin_fix = _serve(site_root)
                     served[site_root] = origin_fix + "/macro_monetary.html"
-                for theme in ("dark", "light"):
-                    for locale in ("en", "zh"):
-                        name = f"empty-{empty_id}-{theme}-{locale}-1440.png"
-                        print(f"capture {name}", flush=True)
-                        info = _capture_clip(
-                            browser=browser, url=served[site_root],
-                            hash_path=hash_path, theme=theme, locale=locale,
-                            dest=EVIDENCE / name, sel=clip_sel,
-                            wait_sel=wait_sel)
-                        states.append(_state_row(
-                            name, theme, locale, "desktop", info,
-                            fixture=fixture, trigger=trigger,
-                            section=clip_sel.lstrip("section#").split()[0],
-                            selector=clip_sel,
-                            verified_how="real builder render from injected fixture; clip of panel",
-                        ))
-
-            # E5 — client fail() of a fragment fetch. Not a dual-theme
-            # product empty P4 ships for review. Recorded, not photographed.
-            excluded: list[dict[str, Any]] = [{
-                "id": "empty-e5",
-                "captured": False,
-                "reason": (
-                    "E5 is a client fail() of macro/fragments/*.html; "
-                    "Playwright abort is not a dual-theme/EN-ZH product "
-                    "state P4 ships as a reviewable empty."
-                ),
-            }]
-            gaps.append(
-                "empty-e5: captured:false — client fragment abort, not a "
-                "dual-theme/EN-ZH product empty (see manifest.excluded)."
-            )
+                for viewport, width, height, first_screen in empty_viewports:
+                    for theme in THEMES:
+                        for locale in LOCALES:
+                            name = f"empty-{empty_id}-{theme}-{locale}-{width}.png"
+                            print(f"capture {name}", flush=True)
+                            info = _capture_clip(
+                                browser=browser, url=served[site_root],
+                                hash_path=hash_path, theme=theme, locale=locale,
+                                dest=EVIDENCE / name, sel=clip_sel,
+                                wait_sel=wait_sel, width=width, height=height,
+                                first_screen=first_screen)
+                            how = (
+                                "real builder render from injected fixture; "
+                                + ("first-screen 390 viewport"
+                                   if first_screen else
+                                   "clip of panel")
+                            )
+                            states.append(_state_row(
+                                name, theme, locale, viewport, info,
+                                fixture=fixture, trigger=trigger,
+                                section=clip_sel.lstrip("section#").split()[0],
+                                crop=not first_screen,
+                                selector=clip_sel,
+                                force_state=empty_id,
+                                verified_how=how,
+                            ))
 
             browser.close()
 
@@ -773,33 +920,78 @@ def main() -> int:
                                 "violations": violations}
         if violations:
             raise RuntimeError(f"copy guard: {violations}")
+
+        blast_keys = [
+            name.removeprefix("macro_").removesuffix(".html")
+            for name in probes.get("blast_pages") or []
+        ]
+        declared = declared_cells(blast_keys=blast_keys)
+        captured = captured_stems(states)
+        gaps = generate_gaps(declared, captured)
+        excluded = generate_excluded(gaps)
+
+        head_end = _assert_head_unmoved(head)
+        end_tree = _require_clean_tree(
+            when="end", paths=("templates", "scripts", "lib"))
+        generated_at_end = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        protocol = {
+            "tree_clean_start": start_tree["clean"],
+            "tree_clean_end": end_tree["clean"],
+            "head_start": head,
+            "head_end": head_end,
+            "generated_at_start": generated_at_start,
+            "generated_at_end": generated_at_end,
+            "commit_time_of_capture_sha": commit_time,
+        }
         probes["head_sha_at_capture"] = head
-        probes["captured_at"] = captured_at
+        probes["captured_at"] = generated_at_end
+        probes["generated_at_start"] = generated_at_start
+        probes["generated_at_end"] = generated_at_end
         probes["pre_commit"] = False
         probes["capture_sha"] = head
+        probes["commit_time_of_capture_sha"] = commit_time
+        probes["tree_clean_start"] = start_tree["clean"]
+        probes["tree_clean_end"] = end_tree["clean"]
+        probes["p19_notes"] = p19_notes
+        probes["declared_count"] = len(declared)
+        probes["captured_count"] = len(captured)
+        probes["gaps"] = gaps
         PROBES.write_text(json.dumps(probes, indent=2) + "\n", encoding="utf-8")
 
         manifest = {
             "schema": "mastermind.p0_evidence.v2",
             "axes": {
                 "access": ["anonymous"],
-                "force_states": [],
+                "force_states": list(EMPTY_IDS) + ["blast-radius"],
                 "locales": ["en", "zh"],
                 "themes": ["dark", "light"],
-                "viewports": {"desktop": [1440, 2200], "mobile": [390, 844]},
+                "viewports": {
+                    "desktop": [1440, 2200],
+                    "tablet": [768, 1400],
+                    "mobile": [390, 844],
+                },
             },
             "excluded": excluded,
-            "generated_at": captured_at,
+            "generated_at": generated_at_end,
+            "generated_at_start": generated_at_start,
+            "generated_at_end": generated_at_end,
             "head_sha": head,
             "capture_sha": head,
+            "head_start": head,
+            "head_end": head_end,
+            "tree_clean_start": start_tree["clean"],
+            "tree_clean_end": end_tree["clean"],
             "commit_time_of_capture_sha": commit_time,
             "pre_commit": False,
             "honesty": {
                 "access": "anonymous only; no credential is entered, stored, or synthesized",
                 "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
-                "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them",
+                "gaps": "gaps is generated as declared − captured; nothing is inferred for a missing cell",
             },
             "outcome": "captured",
+            "target": {
+                "resolved_sha_source": _derive_resolved_sha_source(protocol),
+            },
             "pages": [{
                 "console_errors": [],
                 "failed_responses": [],
@@ -819,7 +1011,13 @@ def main() -> int:
             "manifest: mockups/evidence/macro-command-p4/manifest.json\n",
             encoding="utf-8",
         )
-        print(f"wrote {len(states)} frames under {EVIDENCE}", flush=True)
+        print(
+            f"wrote {len(states)} frames under {EVIDENCE} "
+            f"generated_at_start={generated_at_start} "
+            f"generated_at_end={generated_at_end} head={head} "
+            f"gaps={len(gaps)}",
+            flush=True,
+        )
         return 0
     finally:
         _kill_all()

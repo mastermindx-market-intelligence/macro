@@ -806,14 +806,18 @@ EMPTY_STATES: dict[str, dict[str, Any]] = {
     },
     "e6": {
         "id": "e6",
-        # P3 v16 + P4: title is the suite-law ZH; stance/why/unlock each add one fact.
+        # r5 MINOR-1 / P3 v16: one proposition per slot. Title names the wall
+        # (suite-law ZH 包含在更高方案中); stance, why, unlock and the button
+        # each add one different fact.
         "title": _pair("Included in a higher plan", "包含在更高方案中"),
         # N-D: a walled section never issues a read-now instruction.
         "stance": _pair(
             "The reading is available on upgrade.",
             "升级后可查看该读数。"),
         "why": _pair("This section is part of {plan}.", "本板块属于{plan}。"),
-        "unlock": _pair("See it with an upgrade.", "升级即可查看。"),
+        "unlock": _pair(
+            "See it with an upgrade.",
+            "升级即可查看。"),
         "cta_href": "plans.html",
         "cta_label": _pair("Upgrade to see it", "查看升级方案"),
     },
