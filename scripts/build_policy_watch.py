@@ -89,6 +89,81 @@ def _verified_labels(as_of: object) -> tuple[str, str]:
     return parsed.strftime("%b %-d, %Y"), f"{parsed.year}年{parsed.month}月{parsed.day}日"
 
 
+_MONTH_FULL = (
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December",
+)
+_MONTH_ABBR = (
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+)
+_STOP_EN = {"proposed": "Proposed", "passed": "Passed", "in_force": "In force", "enforced": "Enforced"}
+_STOP_ZH = {"proposed": "提出", "passed": "通过", "in_force": "生效", "enforced": "执行"}
+
+
+def format_lifecycle_date(raw: object, precision: str = "day") -> tuple[str, str]:
+    """Plain EN/ZH lifecycle date. Day → 'May 1, 2026' / '2026年5月1日';
+    month → 'Nov 2025' / '2025年11月'; undated → 'date not published' /
+    '日期未公布'. Locale-free; ISO stays only in data-*."""
+    if precision == "undated":
+        return "date not published", "日期未公布"
+    text = str(raw or "").strip()[:10]
+    if not text:
+        return "", ""
+    try:
+        parsed = datetime.strptime(text, "%Y-%m-%d")
+    except ValueError:
+        return text, text
+    month_i = parsed.month - 1
+    if precision == "month":
+        return f"{_MONTH_ABBR[month_i]} {parsed.year}", f"{parsed.year}年{parsed.month}月"
+    return (
+        f"{_MONTH_FULL[month_i]} {parsed.day}, {parsed.year}",
+        f"{parsed.year}年{parsed.month}月{parsed.day}日",
+    )
+
+
+def decorate_lifecycle_view(lifecycle: dict | None) -> dict | None:
+    """Attach EN/ZH plain dates and the section-level shared-gap line."""
+    if not isinstance(lifecycle, dict):
+        return lifecycle
+    items = [dict(it) for it in (lifecycle.get("items") or [])]
+    as_of_prec = lifecycle.get("as_of_precision") or "day"
+    if not lifecycle.get("as_of_precision") and lifecycle.get("as_of"):
+        for it in items:
+            ka = str(it.get("known_at") or "")[:10]
+            sa = str(it.get("state_asof") or "")[:10]
+            if ka == lifecycle["as_of"] or sa == lifecycle["as_of"]:
+                as_of_prec = it.get("date_precision") or "day"
+                break
+    as_of_en, as_of_zh = format_lifecycle_date(lifecycle.get("as_of"), as_of_prec)
+    intel_en, intel_zh = format_lifecycle_date(lifecycle.get("intel_as_of"), "day")
+    decorated = []
+    for it in items:
+        prec = it.get("date_precision") or "day"
+        en, zh = format_lifecycle_date(it.get("state_asof"), prec)
+        it["state_asof_en"] = en
+        it["state_asof_zh"] = zh
+        decorated.append(it)
+    gap_tuples = [tuple(it.get("gaps") or []) for it in decorated]
+    shared = None
+    if decorated and len(set(gap_tuples)) == 1 and gap_tuples[0]:
+        shared = list(gap_tuples[0])
+    shared_en = ", ".join(_STOP_EN.get(g, g) for g in shared) if shared else ""
+    shared_zh = "、".join(_STOP_ZH.get(g, g) for g in shared) if shared else ""
+    out = dict(lifecycle)
+    out["items"] = decorated
+    out["as_of_en"] = as_of_en
+    out["as_of_zh"] = as_of_zh
+    out["as_of_precision"] = as_of_prec
+    out["intel_as_of_en"] = intel_en
+    out["intel_as_of_zh"] = intel_zh
+    out["shared_gap_set"] = shared
+    out["shared_gap_en"] = shared_en
+    out["shared_gap_zh"] = shared_zh
+    return out
+
+
 def _featured_predictions(preds: list[dict], dates: object, limit: int = 6) -> list[dict]:
     """Put overdue and open calls ahead of the long technical ledger."""
     date_rows = (dates or {}).get("predictions", {}) if isinstance(dates, dict) else {}
@@ -217,6 +292,15 @@ def main() -> int:
     except Exception as e:  # noqa: BLE001
         log.warning("scorecard skipped: %s", e)
 
+    # deterministic policy lifecycle (no LLM) — owner: engine.policy_intent_desk
+    lifecycle = None
+    try:
+        from engine import policy_intent_desk as _pid
+        _pid.ingest_lifecycle(config.ROOT)      # nightly-gated, idempotent
+        lifecycle = decorate_lifecycle_view(_pid.lifecycle_view(config.ROOT))
+    except Exception as e:  # noqa: BLE001
+        log.warning("policy lifecycle skipped: %s", e)
+
     verified_en, verified_zh = _verified_labels(intel.get("as_of"))
     source_links = [{"url": url, "label": source_label(url)} for url in intel.get("sources", [])]
     featured_predictions = _featured_predictions(preds, dates)
@@ -228,6 +312,7 @@ def main() -> int:
         generated_utc=built, verified_en=verified_en, verified_zh=verified_zh,
         source_links=source_links, featured_predictions=featured_predictions, brief=brief,
         active_section="research", active_page="policy_watch",
+        lifecycle=lifecycle,
     )
     # Jinja's language branches leave indentation on otherwise-empty lines.
     # Normalize it here so the committed artifact stays diff-clean after every build.
