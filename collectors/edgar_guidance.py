@@ -33,14 +33,17 @@ from datetime import date, timedelta
 
 import pandas as pd
 
+from collectors import edgar_facts as _edgar_facts
 from collectors.edgar_facts import _get_json
 from collectors.edgar_fts import _parse_hit, _theme_universe
 from lib import config
 
-try:  # falsy-but-not-None "SEC positively returned 404" sentinel (edgar_facts, #6921)
-    from collectors.edgar_facts import _CONFIRMED_ABSENT
-except ImportError:  # pre-#6921 edgar_facts: a confirmed 404 is still plain None
-    _CONFIRMED_ABSENT = None
+# Falsy-but-not-None "SEC positively returned 404" sentinel minted by edgar_facts (#6921).
+# Read as a module attribute, never imported by name: while edgar_facts predates #6921
+# the name does not exist and a confirmed 404 is plain None, so the first-request guard
+# below collapses to `is None`; once it lands this binds the real object (identity is
+# pinned by tests/test_edgar_fts_confirmed_absent_first_request.py).
+_CONFIRMED_ABSENT = getattr(_edgar_facts, "_CONFIRMED_ABSENT", None)
 
 log = logging.getLogger("edgar_guidance")
 
