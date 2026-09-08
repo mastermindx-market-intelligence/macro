@@ -104,3 +104,12 @@ tests/test_f01_credit_wiring_trace.py: >-
   (.github/ci/legacy-jobs.yml is out of this packet's owned paths). Owner:
   Meta-CEO B, lane F01. Delete this row and wire the file into the
   research-resident F01/credit signal-contract step when one exists.
+
+tests/test_market_ontology_half_a_k_chain_docket.py: >-
+  Packet B-A-F04-K1 (records-only): pins the Half-A K-chain gate docket + its DEC
+  record against MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv. Not
+  wired into .github/ci/legacy-jobs.yml because that file is a global CI invalidator
+  (full 194-job suite, a ci-authority hit) and this suite only reads two static
+  research/agentos markdown files plus one CSV — no engine or signal-contract path.
+  Owner: Meta-CEO B, lane F04 (+F05 spillover). Adopted by a market-ontology-records
+  CI job when one is commissioned (Meta-CEO B, B-PLAT-5); delete this row then.
