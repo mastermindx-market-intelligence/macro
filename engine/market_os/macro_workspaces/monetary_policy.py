@@ -73,6 +73,7 @@ from hashlib import sha256
 from typing import Any, Mapping
 
 from engine.market_os.macro_workspaces.publication_prior import (
+    apply_headline_publication_fields,
     no_earlier_publication,
     resolve_publication_prior,
 )
@@ -316,7 +317,9 @@ def compose(rates_command: Mapping[str, Any], cb_desk: Mapping[str, Any],
     }
 
     effective_date = rc_asof or cbd_asof or rt_asof
-    headline = _headline(effective_date, prior_snapshot)
+    publication_prior = resolve_publication_prior(prior_snapshot, effective_date)
+    headline = _headline(effective_date, publication_prior)
+    apply_headline_publication_fields(headline, publication_prior, raw_prior=prior_snapshot)
     changes = _changes(metrics_by_id, prior_snapshot, effective_date)
 
     snapshot = {

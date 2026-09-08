@@ -712,7 +712,7 @@ def test_equal_values_are_no_change_not_an_absence() -> None:
 
 
 @pytest.mark.parametrize("poison", [
-    {"prior": None}, {"current": None}, {"delta": None},
+    {"prior": None}, {"current": None},
     {"prior": "1.0"}, {"delta": float("nan")}, {"delta": True},
 ])
 def test_one_absent_cell_makes_the_row_incomparable_and_never_flat(poison: dict) -> None:

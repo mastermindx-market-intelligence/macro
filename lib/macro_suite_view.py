@@ -284,7 +284,16 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
     axis_by_id = {a["axis_id"]: a for a in axes}
     boundary_axis = axis_by_id.get(boundary.get("axis"))
 
-    vector_present = vector.get("status") == "PRESENT" and vector.get("dx") is not None
+    movement_state = headline.get("movement_state")
+    raw_vector = headline.get("one_month_vector")
+    no_earlier_move = (
+        raw_vector is None or movement_state == "NO_EARLIER_PUBLICATION"
+    )
+    vector_present = (
+        not no_earlier_move
+        and vector.get("status") == "PRESENT"
+        and vector.get("dx") is not None
+    )
     return {
         "state_id": headline.get("state_id"),
         "state_label": _bilingual(headline.get("state_label")),
@@ -323,7 +332,11 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
             "dy": L.fmt_signed(vector.get("dy")),
             "dx_raw": vector.get("dx"),
             "dy_raw": vector.get("dy"),
-            "absence": None if vector_present else _absence(vector.get("null_reason")),
+            "absence": (
+                None if vector_present
+                else (_no_earlier_absence(vector.get("null_reason")) if no_earlier_move
+                      else _absence(vector.get("null_reason")))
+            ),
             "status": L.label("presence", vector.get("status")),
         },
         "hysteresis": {
@@ -421,6 +434,16 @@ def _no_earlier_absence(null_reason: Any = None) -> dict[str, Any]:
     }
 
 
+def _current_unavailable_absence(null_reason: Any = None) -> dict[str, Any]:
+    """Plain-word typed absence when the earlier reading exists but this one does not."""
+    return {
+        "token": "CURRENT_UNAVAILABLE",
+        "label": _pair("Current reading not available", "当前读数不可用"),
+        "display": EM_DASH,
+        "null_reason": null_reason,
+    }
+
+
 def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
     changes = snapshot.get("changes") or {}
     comparability = changes.get("comparability")
@@ -436,14 +459,18 @@ def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         prior_present = _finite(prior_raw)
         current_present = _finite(current_raw)
         delta_present = _finite(delta_raw)
+        if prior_present and current_present and delta_raw is None and not no_earlier:
+            # Both readings exist under a genuine COMPARABLE block: a missing
+            # delta is a computation defect, not an absence. Compute it.
+            delta_raw = float(current_raw) - float(prior_raw)
+            delta_present = True
         comparable_row = prior_present and current_present and delta_present
         row_absence = None
         if not comparable_row:
-            # A null prior/delta is "no earlier reading", never None/nan/0.
-            if prior_raw is None or delta_raw is None or no_earlier:
+            if no_earlier or not prior_present:
                 row_absence = _no_earlier_absence(delta.get("null_reason"))
             else:
-                row_absence = _absence(delta.get("null_reason"))
+                row_absence = _current_unavailable_absence(delta.get("null_reason"))
         deltas.append({
             "metric_id": delta.get("metric_id"),
             "label": L.label("metric", delta.get("metric_id")),
@@ -931,8 +958,16 @@ def _glance(changes: Mapping[str, Any],
             # rather than an empty section the reader has to interpret.
             "comparable_count": len(comparable),
             "total_count": len(deltas),
-            "absence": (None if comparable
-                        else (changes.get("absence") or _no_earlier_absence())),
+            "absence": (
+                None if comparable
+                else (
+                    (changes.get("absence") or _no_earlier_absence())
+                    if changes.get("comparability") in (
+                        "NO_EARLIER_PUBLICATION", "NO_PRIOR",
+                    )
+                    else _current_unavailable_absence()
+                )
+            ),
         },
         "meaning": {
             "present": lead_implication is not None,

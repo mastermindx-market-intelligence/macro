@@ -83,6 +83,7 @@ from hashlib import sha256
 from typing import Any, Mapping
 
 from engine.market_os.macro_workspaces.publication_prior import (
+    apply_headline_publication_fields,
     no_earlier_publication,
     resolve_publication_prior,
 )
@@ -759,7 +760,9 @@ def compose(regime_latest: Mapping[str, Any], *, built_at: str,
     if contradiction["present"]:
         reasons.append(f"contradiction={contradiction['kind']}")
 
-    headline = _headline(asof, prior_snapshot)
+    publication_prior = resolve_publication_prior(prior_snapshot, asof)
+    headline = _headline(asof, publication_prior)
+    apply_headline_publication_fields(headline, publication_prior, raw_prior=prior_snapshot)
     changes = _changes(metrics_by_id, asof, prior_snapshot)
 
     snapshot = {

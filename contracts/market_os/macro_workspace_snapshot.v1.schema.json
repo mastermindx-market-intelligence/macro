@@ -131,6 +131,10 @@
           }
         },
         "transition_distance": { "type": ["number", "null"] },
+        "movement_state": {
+          "type": ["string", "null"],
+          "enum": ["NO_EARLIER_PUBLICATION", null]
+        },
         "nearest_boundary": {
           "type": "object",
           "additionalProperties": false,
@@ -142,7 +146,7 @@
           }
         },
         "one_month_vector": {
-          "type": "object",
+          "type": ["object", "null"],
           "additionalProperties": false,
           "required": ["dx", "dy", "status", "null_reason"],
           "properties": {

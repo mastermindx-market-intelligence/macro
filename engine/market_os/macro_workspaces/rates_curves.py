@@ -214,6 +214,7 @@ from hashlib import sha256
 from typing import Any, Mapping, Sequence
 
 from engine.market_os.macro_workspaces.publication_prior import (
+    apply_headline_publication_fields,
     no_earlier_publication,
     resolve_publication_prior,
 )
@@ -697,7 +698,9 @@ def compose(curve_frames: Mapping[str, Any] | None, *, built_at: str,
             dates.append(latest[0])
     effective_date = _iso(max(dates)) if dates else None
 
-    headline = _headline(effective_date, prior_snapshot)
+    publication_prior = resolve_publication_prior(prior_snapshot, effective_date)
+    headline = _headline(effective_date, publication_prior)
+    apply_headline_publication_fields(headline, publication_prior, raw_prior=prior_snapshot)
     changes = _changes(metrics_by_id, prior_snapshot, effective_date)
 
     snapshot = {
