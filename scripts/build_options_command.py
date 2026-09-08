@@ -254,13 +254,13 @@ _AIB_DEGRADED_FALLBACK_ZH = "本次收盘该板块暂不可用。"
 # PR #6932). The honest-null law requires the why to be TRUE for the state
 # actually shown, not merely present.
 _AIB_DEGRADED_WHY_EN = {
-    "STALE_SOURCE": "This is a data gap, not a quiet market — we are holding the last good session while the source catches up.",
+    "STALE_SOURCE": "This is a data gap, not a quiet market — the source has not caught up yet.",
     "ELIGIBILITY_COLLAPSE": "This is a data gap, not a quiet market — too few names cleared today's coverage bar to show cards.",
     "MIXED_VINTAGE": "This is a data gap, not a quiet market — the evidence dates on file disagree, so cards are withheld until they settle.",
     "NO_SETTLED_OI_PAIR": "This is a data gap, not a quiet market — the next position count has not settled yet.",
 }
 _AIB_DEGRADED_WHY_ZH = {
-    "STALE_SOURCE": "这是数据缺口，并非市场平静——数据源补齐前，暂时保留最近一个有效交易日。",
+    "STALE_SOURCE": "这是数据缺口，并非市场平静——数据源尚未补齐。",
     "ELIGIBILITY_COLLAPSE": "这是数据缺口，并非市场平静——今日达到完整数据标准的名称过少，暂不展示卡片。",
     "MIXED_VINTAGE": "这是数据缺口，并非市场平静——现有证据日期不一致，待结算后再展示。",
     "NO_SETTLED_OI_PAIR": "这是数据缺口，并非市场平静——下一次持仓统计尚未结算。",
@@ -324,11 +324,11 @@ _AIB_WEEKDAY_EN = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
 # Age vocabulary — exact strings, no others (packet A-F03-W2-2 §3.3 table).
 _AIB_AGE_EN = {
-    "current": "Current", "one": "1 day behind", "n": "{d} days behind",
+    "current": "Current", "one": "1 trading day behind", "n": "{d} trading days behind",
     "unknown": "As-of date not recorded",
 }
 _AIB_AGE_ZH = {
-    "current": "最新", "one": "落后 1 天", "n": "落后 {d} 天",
+    "current": "最新", "one": "落后 1 个交易日", "n": "落后 {d} 个交易日",
     "unknown": "未记录数据日期",
 }
 
@@ -351,7 +351,6 @@ def _aib_freshness(as_of_session: str | None, built_at_utc: str | None,
     clock = now or datetime.now(timezone.utc)
     if clock.tzinfo is None:
         clock = clock.replace(tzinfo=timezone.utc)
-    today_et = clock.astimezone(ZoneInfo("America/New_York")).date()
 
     asof_date = None
     if as_of_session:
@@ -400,6 +399,9 @@ def _aib_freshness(as_of_session: str | None, built_at_utc: str | None,
             built_dt = None
 
     if built_dt is not None:
+        if built_dt.tzinfo is None:
+            built_dt = built_dt.replace(tzinfo=timezone.utc)
+        built_dt = built_dt.astimezone(timezone.utc)
         out["built_raw"] = built_at_utc
         mon = _AIB_MONTH_EN[built_dt.month - 1]
         out["built_en"] = f"Updated {built_dt.day} {mon}, {built_dt.strftime('%H:%M')} UTC"
@@ -707,20 +709,22 @@ def build_aib(intel_brief: dict | None, *, now: datetime | None = None) -> dict:
     # else (STALE_SOURCE / DEGRADED / INSUFFICIENT_COVERAGE) is degraded.
     healthy = board_state in ("OK", "NO_SIGNAL")
     empty_kind = degraded_en = degraded_zh = degraded_why_en = degraded_why_zh = None
-    if not cards:
-        if healthy:
-            empty_kind = "quiet"
+    # Degraded copy is a property of the board, not of an empty card list —
+    # an unhealthy payload that still carries cards must not render a blank
+    # lead (the template's degraded branch is `{% if available and healthy %}`
+    # else, which is reachable with cards present).
+    if not healthy:
+        if board_state == "STALE_SOURCE":
+            degraded_en, degraded_zh = _AIB_DEGRADED_EN["STALE_SOURCE"], _AIB_DEGRADED_ZH["STALE_SOURCE"]
+            degraded_why_en, degraded_why_zh = _AIB_DEGRADED_WHY_EN["STALE_SOURCE"], _AIB_DEGRADED_WHY_ZH["STALE_SOURCE"]
+        elif board_reason in _AIB_DEGRADED_EN:
+            degraded_en, degraded_zh = _AIB_DEGRADED_EN[board_reason], _AIB_DEGRADED_ZH[board_reason]
+            degraded_why_en, degraded_why_zh = _AIB_DEGRADED_WHY_EN[board_reason], _AIB_DEGRADED_WHY_ZH[board_reason]
         else:
-            empty_kind = "degraded"
-            if board_state == "STALE_SOURCE":
-                degraded_en, degraded_zh = _AIB_DEGRADED_EN["STALE_SOURCE"], _AIB_DEGRADED_ZH["STALE_SOURCE"]
-                degraded_why_en, degraded_why_zh = _AIB_DEGRADED_WHY_EN["STALE_SOURCE"], _AIB_DEGRADED_WHY_ZH["STALE_SOURCE"]
-            elif board_reason in _AIB_DEGRADED_EN:
-                degraded_en, degraded_zh = _AIB_DEGRADED_EN[board_reason], _AIB_DEGRADED_ZH[board_reason]
-                degraded_why_en, degraded_why_zh = _AIB_DEGRADED_WHY_EN[board_reason], _AIB_DEGRADED_WHY_ZH[board_reason]
-            else:
-                degraded_en, degraded_zh = _AIB_DEGRADED_FALLBACK_EN, _AIB_DEGRADED_FALLBACK_ZH
-                degraded_why_en, degraded_why_zh = _AIB_DEGRADED_WHY_FALLBACK_EN, _AIB_DEGRADED_WHY_FALLBACK_ZH
+            degraded_en, degraded_zh = _AIB_DEGRADED_FALLBACK_EN, _AIB_DEGRADED_FALLBACK_ZH
+            degraded_why_en, degraded_why_zh = _AIB_DEGRADED_WHY_FALLBACK_EN, _AIB_DEGRADED_WHY_FALLBACK_ZH
+    if not cards:
+        empty_kind = "quiet" if healthy else "degraded"
 
     # A-F03-W2-2 · glance-tier lede key.  Closed vocabulary keyed on the
     # payload's own board_state (via `healthy`) and card count — no scoring.
@@ -800,7 +804,7 @@ def build_aib(intel_brief: dict | None, *, now: datetime | None = None) -> dict:
         "lede_stance_en": lede_stance_en, "lede_stance_zh": lede_stance_zh,
         "lede_stance_word_en": lede_stance_word_en, "lede_stance_word_zh": lede_stance_word_zh,
         "freshness": freshness,
-        "built_at": built_at_utc if isinstance(intel_brief, dict) else None,
+        "built_at": built_at_utc,
     }
 
 

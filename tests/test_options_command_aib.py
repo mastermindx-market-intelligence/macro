@@ -16,10 +16,13 @@ Run: python3 -m pytest tests/test_options_command_aib.py -q
 """
 from __future__ import annotations
 
+import json
 import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+
+import yaml
 
 REPO = Path(__file__).resolve().parent.parent
 if str(REPO) not in sys.path:
@@ -33,9 +36,10 @@ from tests.test_build_options_command import EMPTY_STORES  # noqa: E402
 # close+settle cutoff) -> nyse_calendar.expected_last_session(NOW) ==
 # 2026-09-04, so an as_of of that same Friday close is genuinely CURRENT
 # (0 sessions behind). A brief carrying the PRIOR session (Thursday
-# 2026-09-03) is then correctly "1 day behind" — trading-session math, not
-# calendar-day math (Major finding, review of PR #6932: calendar-day math
-# mislabelled the freshest possible close as "behind"). No wall-clock read
+# 2026-09-03) is then correctly "1 trading day behind" — trading-session
+# math, not calendar-day math (Major finding, review of PR #6932:
+# calendar-day math mislabelled the freshest possible close as "behind",
+# and the chip used to say "day" for a session count). No wall-clock read
 # anywhere in this file.
 NOW = datetime(2026, 9, 4, 22, 0, tzinfo=timezone.utc)
 
@@ -119,8 +123,8 @@ def test_populated_lede_renders_headline_stance_and_freshness():
     panel = _aib_panel(page)
     assert _esc("3 names are worth a look after today's close.") in panel
     assert "今日收盘后有 3 个名称值得关注。" in panel
-    assert "1 day behind" in panel
-    assert "落后 1 天" in panel
+    assert "1 trading day behind" in panel
+    assert "落后 1 个交易日" in panel
     lede_start = panel.index('class="oew-aib-lede')
     lede_end = panel.index("</div>", panel.index('class="oew-aib-fresh"'))
     lede = panel[lede_start:lede_end]
@@ -168,7 +172,7 @@ def test_degraded_why_is_true_for_each_board_reason_not_one_hardcoded_line():
     must vary with board_state/board_reason exactly like the headline does,
     and must never assert a counting delay when the true cause differs."""
     cases = [
-        ("STALE_SOURCE", None, "holding the last good session"),
+        ("STALE_SOURCE", None, "the source has not caught up yet"),
         ("DEGRADED", "ELIGIBILITY_COLLAPSE", "too few names cleared today's coverage bar"),
         ("DEGRADED", "MIXED_VINTAGE", "evidence dates on file disagree"),
         ("DEGRADED", "NO_SETTLED_OI_PAIR", "next position count has not settled"),
@@ -182,7 +186,13 @@ def test_degraded_why_is_true_for_each_board_reason_not_one_hardcoded_line():
         assert "This is a data gap, not a quiet market" in panel
         why_start = panel.index('class="oew-aib-degraded-why"')
         why_end = panel.index("</p>", why_start)
-        seen.add(panel[why_start:why_end])
+        why = panel[why_start:why_end]
+        seen.add(why)
+        if board_state == "STALE_SOURCE":
+            # MINOR 3: the why must not repeat the headline's
+            # "holding the last good session" clause.
+            assert "holding the last good session" not in why
+            assert "the source has not caught up yet" in why
     assert len(seen) == len(cases), "each board_reason must render a DISTINCT why sentence"
 
 
@@ -232,7 +242,8 @@ def test_post_labor_day_tuesday_reads_the_newest_close_as_lagging_not_stale():
     assert out["freshness"]["level"] == "lagging"
     page = render(REPO, stores=dict(EMPTY_STORES), intel_brief=brief, now=tuesday_eve)
     panel = _aib_panel(page)
-    assert "1 day behind" in panel
+    assert "1 trading day behind" in panel
+    assert "1 day behind" not in panel
     assert "lvl-stale" not in panel
 
 
@@ -275,9 +286,132 @@ def test_every_new_string_is_bilingual_and_no_title_attribute():
         ("What to do", "该怎么做"),
         ("Read these first — none is a trade on its own.", "建议优先阅读——均非独立交易信号。"),
         ("As of", "数据截至"),
-        ("1 day behind", "落后 1 天"),
+        ("1 trading day behind", "落后 1 个交易日"),
     ]
     for en, zh in pairs:
         assert en in panel, en
         assert zh in panel, zh
     assert "title=" not in panel
+
+
+def test_degraded_receipt_prints_plain_word_built_and_truncated_id():
+    """MINOR 2: the details receipt must not dump a raw ISO stamp or the
+    full hex id — the lede already carries built_en/built_zh, and the
+    panel attribute already truncates receipt_id to 12."""
+    receipt = "e5bd3f474eabff7904574b8c8abccd1d45f1bb57210eac2d4073e61915ad51"
+    brief = _brief(board_state="STALE_SOURCE", opportunities=[], receipt_id=receipt,
+                   built_at_utc="2026-09-06T05:12:44Z")
+    page = render(REPO, stores=dict(EMPTY_STORES), intel_brief=brief, now=NOW)
+    panel = _aib_panel(page)
+    rcp_start = panel.index('class="oew-aib-degraded-rcp"')
+    rcp = panel[rcp_start:]
+    assert "Updated 6 Sep, 05:12 UTC" in rcp
+    assert "更新于 9月6日 05:12 UTC" in rcp
+    assert "2026-09-06T05:12:44Z" not in rcp
+    assert "e5bd3f474eab" in rcp
+    assert receipt not in rcp
+
+
+def test_unhealthy_board_with_cards_still_prints_degraded_lead():
+    """MINOR 4: degraded_en used to be set only when cards were empty, so an
+    unhealthy board that still carried cards rendered a blank lead. The
+    producer can emit STALE_SOURCE with leftover cards; the lead must still
+    be the STALE_SOURCE sentence, not None."""
+    brief = _brief(board_state="STALE_SOURCE", opportunities=[_card("AAA")])
+    out = build_aib(brief, now=NOW)
+    assert out["healthy"] is False
+    assert out["cards"], "fixture must carry a card so this is the leftover-card path"
+    assert out["degraded_en"] == "Source data is stale — holding the last good session."
+    assert out["degraded_zh"] == "数据源过期——保留最近有效交易日。"
+    page = render(REPO, stores=dict(EMPTY_STORES), intel_brief=brief, now=NOW)
+    panel = _aib_panel(page)
+    lead_start = panel.index('class="oew-aib-degraded-lead"')
+    lead_end = panel.index("</p>", lead_start)
+    lead = panel[lead_start:lead_end]
+    assert "Source data is stale" in lead
+    assert "None" not in lead
+
+
+def test_built_at_non_utc_offset_is_printed_as_utc():
+    """MINOR 5: a +08:00 stamp must convert to UTC before the chip says UTC.
+    2026-09-06T13:12:44+08:00 is 05:12 UTC, not 13:12 UTC."""
+    brief = _brief(board_state="OK", opportunities=[_card("AAA")],
+                   built_at_utc="2026-09-06T13:12:44+08:00")
+    out = build_aib(brief, now=NOW)
+    assert out["freshness"]["built_en"] == "Updated 6 Sep, 05:12 UTC"
+    assert out["freshness"]["built_zh"] == "更新于 9月6日 05:12 UTC"
+    page = render(REPO, stores=dict(EMPTY_STORES), intel_brief=brief, now=NOW)
+    panel = _aib_panel(page)
+    assert "05:12 UTC" in panel
+    assert "13:12 UTC" not in panel
+
+
+def test_built_at_is_the_payload_stamp_not_a_guarded_none():
+    """MINOR 7: built_at sits inside the dict-only branch; it is the
+    payload's own built_at_utc, never a dead ternary that could yield None
+    on a dict that already passed the isinstance gate."""
+    brief = _brief(board_state="OK", opportunities=[_card("AAA")],
+                   built_at_utc="2026-09-06T05:12:44Z")
+    out = build_aib(brief, now=NOW)
+    assert out["built_at"] == "2026-09-06T05:12:44Z"
+
+
+def test_two_sessions_behind_uses_plural_trading_days():
+    """MAJOR 1 n-form: two completed sessions is '{d} trading days behind',
+    never the calendar-day '2 days behind'."""
+    brief = _brief(board_state="OK", as_of="2026-09-02", opportunities=[_card("AAA")])
+    # NOW is Friday 2026-09-04 22:00 UTC → expected last session 2026-09-04;
+    # as_of Wed 2026-09-02 is two completed sessions behind (Thu + Fri).
+    out = build_aib(brief, now=NOW)
+    assert out["freshness"]["days_behind"] == 2
+    assert out["freshness"]["age_en"] == "2 trading days behind"
+    assert out["freshness"]["age_zh"] == "落后 2 个交易日"
+    page = render(REPO, stores=dict(EMPTY_STORES), intel_brief=brief, now=NOW)
+    panel = _aib_panel(page)
+    assert "2 trading days behind" in panel
+    assert "落后 2 个交易日" in panel
+    assert "2 days behind" not in panel
+
+
+def test_visual_evidence_receipt_covers_sixteen_rest_cells():
+    """BLOCKER 1: the committed receipt must own the template and carry
+    populated + degraded × desktop/mobile × en/zh × dark/light, each
+    actually captured with the requested theme/locale/viewport applied.
+    Sixteen rest cells, no tautology — every cell names a real PNG."""
+    receipt_path = REPO / "mockups/evidence/pr6932-aib-lede/EVIDENCE.yml"
+    if not receipt_path.is_file():
+        import pytest
+        pytest.skip("sparse checkout omitted mockups")
+    receipt = yaml.safe_load(receipt_path.read_text(encoding="utf-8"))
+    assert receipt["schema"] == "mastermind.page_evidence_receipt.v1"
+    assert receipt["changed_paths"] == ["templates/options.html.j2"]
+    manifest_path = REPO / receipt["manifest"]
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert manifest["schema"] == "mastermind.p0_evidence.v2"
+    page_ids = {page["page_id"] for page in manifest["pages"]}
+    assert page_ids == {"pr6932_aib_populated.html", "pr6932_aib_degraded.html"}
+    required = {
+        (viewport, locale, theme)
+        for viewport in ("desktop", "mobile")
+        for locale in ("en", "zh")
+        for theme in ("dark", "light")
+    }
+    expected_width = {"desktop": 1440, "mobile": 390}
+    for page in manifest["pages"]:
+        got = set()
+        for state in page["states"]:
+            if state.get("force_state") is not None:
+                continue
+            key = (state["viewport"], state["locale"], state["theme"])
+            assert state["captured"] is True, (page["page_id"], key)
+            assert state["applied_theme"] == state["theme"], (page["page_id"], key)
+            assert state["applied_locale"] == state["locale"], (page["page_id"], key)
+            assert state["viewport_width"] == expected_width[state["viewport"]], (
+                page["page_id"], key, state.get("viewport_width"),
+            )
+            png = manifest_path.parent / state["file"]
+            assert png.is_file(), (page["page_id"], key, state["file"])
+            assert png.stat().st_size > 10_000, (page["page_id"], key, png.stat().st_size)
+            got.add(key)
+        assert got == required, (page["page_id"], required - got)
+    assert sum(len(page["states"]) for page in manifest["pages"]) == 16

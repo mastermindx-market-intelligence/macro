@@ -1307,7 +1307,7 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
 
       {% else %}
       <div class="oew-aib-degraded">
-        <p class="oew-aib-degraded-lead">{{ t(aib.degraded_en, aib.degraded_zh) }}</p>
+        <p class="oew-aib-degraded-lead">{{ t(aib.degraded_en or 'This board is unavailable for this close.', aib.degraded_zh or '本次收盘该板块暂不可用。') }}</p>
         <p class="oew-aib-degraded-why">{{ t(aib.degraded_why_en or 'This is a data gap, not a quiet market.',
                                               aib.degraded_why_zh or '这是数据缺口，并非市场平静。') }}</p>
         <details class="oew-aib-degraded-rcp">
@@ -1315,8 +1315,8 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
           <div class="oew-aib-detailbody">
             <div class="oew-aib-dline"><span class="k">{{ t('Last settled close', '最近结算收盘') }}</span><span class="v mono">{{ aib.as_of_session or t('not recorded', '未记录') }}</span></div>
             <div class="oew-aib-dline"><span class="k">{{ t('Positions counted', '持仓统计于') }}</span><span class="v mono">{{ aib.oi_counted_date or t('not recorded', '未记录') }}</span></div>
-            <div class="oew-aib-dline"><span class="k">{{ t('Built', '生成于') }}</span><span class="v mono">{{ aib.freshness.built_raw or t('not recorded', '未记录') }}</span></div>
-            <div class="oew-aib-dline"><span class="k">{{ t('Receipt', '回执') }}</span><span class="v mono">{{ aib.receipt_id or t('not recorded', '未记录') }}</span></div>
+            <div class="oew-aib-dline"><span class="k">{{ t('Built', '生成于') }}</span><span class="v">{% if aib.freshness.built_en %}{{ t(aib.freshness.built_en, aib.freshness.built_zh) }}{% else %}{{ t('not recorded', '未记录') }}{% endif %}</span></div>
+            <div class="oew-aib-dline"><span class="k">{{ t('Receipt', '回执') }}</span><span class="v mono">{{ (aib.receipt_id or '')[:12] or t('not recorded', '未记录') }}</span></div>
           </div>
         </details>
       </div>
