@@ -448,22 +448,24 @@ def test_shape_classification_is_descriptive_only():
         return _leg(right, strike, expiration, qty)
 
     known_cases = [
-        [leg("C", 100.0, "2026-12-18", 1)],
-        [leg("C", 100.0, "2026-12-18", 1), leg("C", 110.0, "2026-12-18", -1)],
-        [leg("C", 100.0, "2026-12-18", 1), leg("C", 100.0, "2027-01-15", -1)],
-        [leg("C", 100.0, "2026-12-18", 1), leg("C", 110.0, "2027-01-15", -1)],
-        [leg("C", 100.0, "2026-12-18", 1), leg("P", 100.0, "2026-12-18", 1)],
-        [leg("C", 105.0, "2026-12-18", 1), leg("P", 95.0, "2026-12-18", 1)],
-        [leg("P", 95.0, "2026-12-18", 1), leg("C", 105.0, "2026-12-18", -1)],
-        [
-            leg("C", 95.0, "2026-12-18", 1),
-            leg("C", 100.0, "2026-12-18", -2),
-            leg("C", 105.0, "2026-12-18", 1),
-        ],
+        ([leg("C", 100.0, "2026-12-18", 1)], "single"),
+        ([leg("C", 100.0, "2026-12-18", 1), leg("C", 110.0, "2026-12-18", -1)], "vertical"),
+        ([leg("C", 100.0, "2026-12-18", 1), leg("C", 100.0, "2027-01-15", -1)], "calendar"),
+        ([leg("C", 100.0, "2026-12-18", 1), leg("C", 110.0, "2027-01-15", -1)], "diagonal"),
+        ([leg("C", 100.0, "2026-12-18", 1), leg("P", 100.0, "2026-12-18", 1)], "straddle"),
+        ([leg("C", 105.0, "2026-12-18", 1), leg("P", 95.0, "2026-12-18", 1)], "strangle"),
+        ([leg("P", 95.0, "2026-12-18", 1), leg("C", 105.0, "2026-12-18", -1)], "risk_reversal"),
+        (
+            [
+                leg("C", 95.0, "2026-12-18", 1),
+                leg("C", 100.0, "2026-12-18", -2),
+                leg("C", 105.0, "2026-12-18", 1),
+            ],
+            "butterfly",
+        ),
     ]
-    for legs in known_cases:
-        shape = op.classify_shape(legs)
-        assert shape in op.SHAPES
+    for legs, expected in known_cases:
+        assert op.classify_shape(legs) == expected
 
     # unknown geometry -> "custom", never a raise
     unknown = [
@@ -473,3 +475,149 @@ def test_shape_classification_is_descriptive_only():
     ]
     assert op.classify_shape(unknown) == "custom"
     assert op.classify_shape([]) == "custom"
+
+
+# ── 15 B1 ────────────────────────────────────────────────────────────────────────────
+def test_incomplete_legs_null_every_numeric_field():
+    # C100 long @4.00 + C110 short with no quote — the common QUOTE_MISSING path.
+    # A concrete 1600 / 400 here is the naked long call, not the vertical.
+    legs = [
+        _leg("C", 100.0, "2026-12-18", 1, entry=4.0),
+        _leg("C", 110.0, "2026-12-18", -1, entry=None),
+    ]
+    structure = op.structure_from_legs(legs, root="TEST", asof_date="2026-09-01")
+    spots = [80.0, 100.0, 120.0]
+    curve = op.expiry_payoff(structure, spots)
+
+    assert curve.pnl == (None, None, None)
+    assert curve.pnl_per_unit == (None, None, None)
+    assert curve.cost is None
+    assert curve.cost_per_unit is None
+    assert curve.max_gain is None
+    assert curve.max_loss is None
+    assert curve.breakevens == ()
+    codes = {s.code for s in curve.states}
+    assert "INCOMPLETE_LEGS" in codes
+    assert "QUOTE_MISSING" in codes
+    assert 1600.0 not in curve.pnl
+    assert 400.0 not in (curve.cost, curve.cost_per_unit)
+
+    summary = op.structure_summary(structure, base_spot=120.0, evaluation_date="2026-09-01")
+    assert summary.cost is None
+    assert summary.prerequisites_met is False
+
+
+# ── 16 M1 ────────────────────────────────────────────────────────────────────────────
+def test_has_underlying_emits_unsupported_and_does_not_mint_a_collar():
+    leg = _leg("P", 95.0, "2026-12-18", 1, entry=2.0)
+    structure = op.structure_from_legs(
+        [leg], root="TEST", asof_date="2026-09-01", has_underlying=True
+    )
+    assert structure.shape == "single"
+    assert structure.shape != "collar"
+    assert any(s.code == "UNSUPPORTED_STRATEGY" and s.scope == "structure" for s in structure.states)
+    assert any(s.receipt.get("has_underlying") is True for s in structure.states)
+
+    summary = op.structure_summary(structure, base_spot=100.0, evaluation_date="2026-09-01")
+    assert summary.prerequisites_met is False
+    assert any(s.code == "UNSUPPORTED_STRATEGY" for s in summary.states)
+
+    # Option-only math is still the lone long put (not a stock+put collar).
+    curve = op.expiry_payoff(structure, [120.0])
+    assert curve.pnl[0] == pytest.approx(-200.0)
+
+
+# ── 17 M2 ────────────────────────────────────────────────────────────────────────────
+def test_scenario_grid_rejects_negative_spot_and_nulls_nonfinite_price(monkeypatch):
+    leg = _leg("C", 100.0, "2026-12-18", 1, entry=5.0)
+    structure = op.structure_from_legs([leg], root="TEST", asof_date="2026-09-01")
+
+    with pytest.raises(ValueError, match="spot_shocks"):
+        op.scenario_grid(
+            structure,
+            base_spot=100.0,
+            spot_shocks=[-1.5, 0.0],
+            vol_shocks=[0.0],
+            days_forward=5,
+            evaluation_date="2026-09-01",
+        )
+
+    monkeypatch.setattr(op, "bs_price", lambda *args, **kwargs: float("nan"))
+    grid = op.scenario_grid(
+        structure,
+        base_spot=100.0,
+        spot_shocks=[0.0],
+        vol_shocks=[0.0],
+        days_forward=5,
+        evaluation_date="2026-09-01",
+    )
+    assert grid.pnl == ((None,),)
+    assert grid.value == ((None,),)
+    assert "MODEL_INPUT_ABSENT" in grid.cell_states[0][0]
+    assert any(s.code == "MODEL_INPUT_ABSENT" and s.receipt for s in grid.states)
+    flat = [v for row in grid.pnl for v in row]
+    assert not any(isinstance(v, float) and math.isnan(v) for v in flat)
+
+
+# ── 18 M3 ────────────────────────────────────────────────────────────────────────────
+def test_evidence_recipe_dedup_rules_match_carried_duplicate_legs():
+    legs = [
+        _leg("C", 100.0, "2026-12-18", 1, entry=4.0),
+        _leg("C", 100.0, "2026-12-18", 1, entry=4.0),
+    ]
+    structure = op.structure_from_legs(legs, root="TEST", asof_date="2026-09-01")
+    assert len(structure.legs) == 2
+    assert structure.legs[0].qty == 1
+    assert structure.legs[1].qty == 1
+
+    recipe = op.evidence_recipe(structure, r=op.DEFAULT_R, q=op.DEFAULT_Q)
+    rules = recipe["dedup_rules"]
+    assert len(rules) == 1
+    assert "not deduplicated" in rules[0]
+    assert "summed" not in rules[0].lower()
+
+
+# ── 19 minor: missing chain identity ─────────────────────────────────────────────────
+def test_leg_from_chain_row_missing_identity_emits_typed_null():
+    row = _chain_row()
+    del row["strike"]
+    del row["expiration"]
+    leg = op.leg_from_chain_row(row, qty=1, multiplier=100.0)
+    codes = [s.code for s in leg.states]
+    assert codes.count("IDENTITY_MISMATCH") == 2
+    receipts = [s.receipt for s in leg.states if s.code == "IDENTITY_MISMATCH"]
+    assert any("strike" in r and r["strike"] is None for r in receipts)
+    assert any("expiration" in r and r["expiration"] is None for r in receipts)
+
+
+# ── 20 minor: multiplier null is visible on the drift point ──────────────────────────
+def test_greeks_drift_point_states_carry_multiplier_unknown():
+    legs = [_leg("C", 100.0, "2026-12-18", 1, entry=5.0, multiplier=None)]
+    structure = op.structure_from_legs(legs, root="TEST", asof_date="2026-09-01")
+    drift = op.greeks_drift(
+        structure, base_spot=100.0, days_forward=[0], evaluation_date="2026-09-01"
+    )
+    assert "MULTIPLIER_UNKNOWN" in drift.points[0].states
+    assert "MULTIPLIER_UNKNOWN" in drift.points[0].net.states
+    assert drift.points[0].net.delta is None
+
+
+# ── 21 minor: horizon expiry is a receipted NullState ────────────────────────────────
+def test_scenario_grid_horizon_expiry_is_a_receipted_null_state():
+    leg = _leg("C", 100.0, "2026-12-18", 1, entry=5.0)
+    structure = op.structure_from_legs([leg], root="TEST", asof_date="2026-09-01")
+    grid = op.scenario_grid(
+        structure,
+        base_spot=100.0,
+        spot_shocks=[0.0],
+        vol_shocks=[0.0],
+        days_forward=200,
+        evaluation_date="2026-09-01",
+    )
+    assert "EXPIRY_PASSED_AT_HORIZON" in grid.cell_states[0][0]
+    matched = [s for s in grid.states if s.code == "EXPIRY_PASSED_AT_HORIZON"]
+    assert len(matched) == 1
+    assert matched[0].receipt
+    # Horizon past expiry uses intrinsic: long call at S=100, K=100 is worth 0, cost=500.
+    assert grid.value[0][0] == pytest.approx(0.0)
+    assert grid.pnl[0][0] == pytest.approx(-500.0)

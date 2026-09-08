@@ -162,9 +162,9 @@ class AssumptionBlock:
 class PayoffCurve:
     spots: tuple[float, ...]
     pnl: tuple[float | None, ...]
-    pnl_per_unit: tuple[float, ...]
+    pnl_per_unit: tuple[float | None, ...]
     cost: float | None
-    cost_per_unit: float
+    cost_per_unit: float | None
     max_gain: float | str | None
     max_loss: float | str | None
     breakevens: tuple[float, ...]
@@ -243,7 +243,7 @@ def _finite_or_none(x: object) -> float | None:
         xf = float(x)
     except (TypeError, ValueError):
         return None
-    if math.isnan(xf):
+    if _is_nan(xf) or not math.isfinite(xf):
         return None
     return xf
 
@@ -321,6 +321,22 @@ def classify_shape(legs: Sequence[Leg]) -> str:
     return "custom"
 
 
+def _unsupported_underlying_state() -> NullState:
+    return NullState(
+        code="UNSUPPORTED_STRATEGY",
+        scope="structure",
+        reason="has_underlying=True but no underlying leg is modeled in payoff or greeks",
+        receipt={"has_underlying": True},
+    )
+
+
+def _structure_shape(
+    legs: Sequence[Leg], has_underlying: bool
+) -> tuple[str, tuple[NullState, ...]]:
+    extra: tuple[NullState, ...] = (_unsupported_underlying_state(),) if has_underlying else ()
+    return classify_shape(legs), extra
+
+
 # ── 5.2 construction ─────────────────────────────────────────────────────────────────
 def _mid_from_quote(bid: float | None, ask: float | None, scope: str) -> tuple[float | None, list[NullState]]:
     states: list[NullState] = []
@@ -393,8 +409,32 @@ def leg_from_chain_row(row: Mapping[str, object], *, qty: int, multiplier: float
             )
         )
 
-    strike = float(row.get("strike"))
-    expiration = str(row.get("expiration"))
+    strike_raw = row.get("strike")
+    strike = _finite_or_none(strike_raw)
+    if strike is None:
+        states.append(
+            NullState(
+                code="IDENTITY_MISMATCH",
+                scope=scope_placeholder,
+                reason="strike absent/NaN/non-numeric",
+                receipt={"strike": strike_raw},
+            )
+        )
+        strike = 0.0
+
+    expiration_raw = row.get("expiration")
+    if expiration_raw is None or str(expiration_raw).strip() in ("", "None", "nan"):
+        states.append(
+            NullState(
+                code="IDENTITY_MISMATCH",
+                scope=scope_placeholder,
+                reason="expiration absent",
+                receipt={"expiration": expiration_raw},
+            )
+        )
+        expiration = ""
+    else:
+        expiration = str(expiration_raw)
 
     bid = _finite_or_none(row.get("bid_eod"))
     ask = _finite_or_none(row.get("ask_eod"))
@@ -567,7 +607,8 @@ def structure_from_chain(
                     receipt={"n_legs": len(legs), "max_legs": MAX_LEGS},
                 )
             )
-        shape = classify_shape(legs) if not has_underlying else "collar"
+        shape, extra = _structure_shape(legs, has_underlying)
+        struct_states.extend(extra)
         return Structure(
             root=root,
             legs=tuple(legs),
@@ -658,7 +699,8 @@ def structure_from_chain(
             )
         )
 
-    shape = classify_shape(legs) if not has_underlying else "collar"
+    shape, extra = _structure_shape(legs, has_underlying)
+    struct_states.extend(extra)
     return Structure(
         root=root,
         legs=tuple(legs),
@@ -757,7 +799,8 @@ def structure_from_legs(
             )
         )
 
-    shape = classify_shape(rescoped) if not has_underlying else "collar"
+    shape, extra = _structure_shape(rescoped, has_underlying)
+    struct_states.extend(extra)
     return Structure(
         root=root,
         legs=tuple(rescoped),
@@ -791,20 +834,7 @@ def expiry_payoff(structure: Structure, spots: Sequence[float]) -> PayoffCurve:
         )
 
     missing_mult_idx = {i for i, leg in enumerate(legs) if leg.multiplier is None}
-
-    pnl_per_unit: list[float] = []
-    for S in spots:
-        total_unit = 0.0
-        for i, leg in enumerate(legs):
-            if i in abstained_idx:
-                continue
-            intrinsic = _intrinsic(leg.right, leg.strike, S)
-            total_unit += leg.qty * (intrinsic - leg.entry_price)
-        pnl_per_unit.append(total_unit)
-
     if missing_mult_idx:
-        pnl: tuple[float | None, ...] = tuple([None] * len(spots))
-        cost: float | None = None
         states.append(
             NullState(
                 code="MULTIPLIER_UNKNOWN",
@@ -813,120 +843,125 @@ def expiry_payoff(structure: Structure, spots: Sequence[float]) -> PayoffCurve:
                 receipt={"legs_missing_multiplier": sorted(missing_mult_idx)},
             )
         )
-        max_gain: float | str | None = None
-        max_loss: float | str | None = None
-        breakevens: tuple[float, ...] = ()
-        cost_per_unit = sum(
-            leg.qty * leg.entry_price for i, leg in enumerate(legs) if i not in abstained_idx
+
+    if abstained_idx:
+        states.append(
+            NullState(
+                code="INCOMPLETE_LEGS",
+                scope="structure",
+                reason="pnl/cost/bounds withheld because one or more legs have no entry price",
+                receipt={"abstained_legs": sorted(abstained_idx)},
+            )
         )
+        n = len(spots)
         return PayoffCurve(
             spots=spots,
-            pnl=pnl,
+            pnl=tuple(None for _ in range(n)),
+            pnl_per_unit=tuple(None for _ in range(n)),
+            cost=None,
+            cost_per_unit=None,
+            max_gain=None,
+            max_loss=None,
+            breakevens=(),
+            assumptions=assumption_block(structure, r=DEFAULT_R, q=DEFAULT_Q),
+            states=_dedup_sorted_states(states),
+        )
+
+    pnl_per_unit: list[float] = []
+    for S in spots:
+        total_unit = 0.0
+        for leg in legs:
+            intrinsic = _intrinsic(leg.right, leg.strike, S)
+            total_unit += leg.qty * (intrinsic - leg.entry_price)
+        pnl_per_unit.append(total_unit)
+
+    if missing_mult_idx:
+        return PayoffCurve(
+            spots=spots,
+            pnl=tuple(None for _ in spots),
             pnl_per_unit=tuple(pnl_per_unit),
-            cost=cost,
-            cost_per_unit=cost_per_unit,
-            max_gain=max_gain,
-            max_loss=max_loss,
-            breakevens=breakevens,
+            cost=None,
+            cost_per_unit=sum(leg.qty * leg.entry_price for leg in legs),
+            max_gain=None,
+            max_loss=None,
+            breakevens=(),
             assumptions=assumption_block(structure, r=DEFAULT_R, q=DEFAULT_Q),
             states=_dedup_sorted_states(states),
         )
 
     pnl_list: list[float] = []
-    for j, S in enumerate(spots):
+    for S in spots:
         total = 0.0
-        for i, leg in enumerate(legs):
-            if i in abstained_idx:
-                continue
+        for leg in legs:
             intrinsic = _intrinsic(leg.right, leg.strike, S)
             total += leg.qty * leg.multiplier * (intrinsic - leg.entry_price)
         pnl_list.append(total)
 
-    cost_terms = [
-        leg.qty * leg.multiplier * leg.entry_price for i, leg in enumerate(legs) if i not in abstained_idx
-    ]
-    cost = sum(cost_terms) if cost_terms or not abstained_idx else sum(cost_terms)
-    cost_per_unit = sum(
-        leg.qty * leg.entry_price for i, leg in enumerate(legs) if i not in abstained_idx
-    )
+    cost = sum(leg.qty * leg.multiplier * leg.entry_price for leg in legs)
+    cost_per_unit = sum(leg.qty * leg.entry_price for leg in legs)
 
-    active_legs = [(i, leg) for i, leg in enumerate(legs) if i not in abstained_idx]
+    strikes = sorted({leg.strike for leg in legs})
 
-    if abstained_idx:
-        max_gain = None
-        max_loss = None
-        breakevens = ()
+    def pnl_at(S: float) -> float:
+        total = 0.0
+        for leg in legs:
+            intrinsic = _intrinsic(leg.right, leg.strike, S)
+            total += leg.qty * leg.multiplier * (intrinsic - leg.entry_price)
+        return total
+
+    eval_points = [0.0] + strikes
+    values_at_points = [pnl_at(S) for S in eval_points]
+
+    # Tail slope as S -> inf: puts are flat above the top strike (intrinsic -> 0),
+    # so only CALL legs contribute. Domain is [0, inf), so the downside is always
+    # finite at S=0 (a put's intrinsic there is the finite value K) — the only tail
+    # that can be unbounded is S -> inf, governed entirely by slope_high.
+    slope_high = sum(leg.qty * leg.multiplier for leg in legs if leg.right == "C")
+
+    if slope_high > _TOL:
+        max_gain: float | str | None = UNBOUNDED
+    else:
+        max_gain = max(values_at_points)
+
+    if slope_high < -_TOL:
+        max_loss: float | str | None = UNBOUNDED
+    else:
+        max_loss = min(values_at_points)
+
+    breakeven_list: list[float] = []
+    for idx in range(len(eval_points)):
+        lo = eval_points[idx]
+        lo_val = values_at_points[idx]
+        if idx + 1 < len(eval_points):
+            hi = eval_points[idx + 1]
+            hi_val = values_at_points[idx + 1]
+            if hi == lo:
+                continue
+            slope = (hi_val - lo_val) / (hi - lo)
+            if abs(slope) > _TOL and (lo_val <= 0 <= hi_val or hi_val <= 0 <= lo_val):
+                root = lo - lo_val / slope
+                if lo - 1e-9 <= root <= hi + 1e-9:
+                    breakeven_list.append(root)
+        else:
+            if abs(slope_high) > _TOL:
+                root = lo - lo_val / slope_high
+                if root >= lo - 1e-9:
+                    breakeven_list.append(root)
+
+    dedup: list[float] = []
+    for b in sorted(breakeven_list):
+        if not dedup or abs(b - dedup[-1]) > 1e-6:
+            dedup.append(b)
+    breakevens = tuple(dedup)
+    if not breakevens:
         states.append(
             NullState(
-                code="INCOMPLETE_LEGS",
+                code="NO_BREAKEVEN",
                 scope="structure",
-                reason="bounds/breakevens withheld because one or more legs abstained",
-                receipt={"abstained_legs": sorted(abstained_idx)},
+                reason="pnl(S) never crosses zero",
+                receipt={"eval_points": eval_points, "values": values_at_points},
             )
         )
-    else:
-        strikes = sorted({leg.strike for _, leg in active_legs})
-
-        def pnl_at(S: float) -> float:
-            total = 0.0
-            for _, leg in active_legs:
-                intrinsic = _intrinsic(leg.right, leg.strike, S)
-                total += leg.qty * leg.multiplier * (intrinsic - leg.entry_price)
-            return total
-
-        eval_points = [0.0] + strikes
-        values_at_points = [pnl_at(S) for S in eval_points]
-
-        # Tail slope as S -> inf: puts are flat above the top strike (intrinsic -> 0),
-        # so only CALL legs contribute. Domain is [0, inf), so the downside is always
-        # finite at S=0 (a put's intrinsic there is the finite value K) — the only tail
-        # that can be unbounded is S -> inf, governed entirely by slope_high.
-        slope_high = sum(leg.qty * leg.multiplier for _, leg in active_legs if leg.right == "C")
-
-        if slope_high > _TOL:
-            max_gain = UNBOUNDED
-        else:
-            max_gain = max(values_at_points)
-
-        if slope_high < -_TOL:
-            max_loss = UNBOUNDED
-        else:
-            max_loss = min(values_at_points)
-
-        breakeven_list: list[float] = []
-        for idx in range(len(eval_points)):
-            lo = eval_points[idx]
-            lo_val = values_at_points[idx]
-            if idx + 1 < len(eval_points):
-                hi = eval_points[idx + 1]
-                hi_val = values_at_points[idx + 1]
-                if hi == lo:
-                    continue
-                slope = (hi_val - lo_val) / (hi - lo)
-                if abs(slope) > _TOL and (lo_val <= 0 <= hi_val or hi_val <= 0 <= lo_val):
-                    root = lo - lo_val / slope
-                    if lo - 1e-9 <= root <= hi + 1e-9:
-                        breakeven_list.append(root)
-            else:
-                if abs(slope_high) > _TOL:
-                    root = lo - lo_val / slope_high
-                    if root >= lo - 1e-9:
-                        breakeven_list.append(root)
-
-        dedup: list[float] = []
-        for b in sorted(breakeven_list):
-            if not dedup or abs(b - dedup[-1]) > 1e-6:
-                dedup.append(b)
-        breakevens = tuple(dedup)
-        if not breakevens:
-            states.append(
-                NullState(
-                    code="NO_BREAKEVEN",
-                    scope="structure",
-                    reason="pnl(S) never crosses zero",
-                    receipt={"eval_points": eval_points, "values": values_at_points},
-                )
-            )
 
     return PayoffCurve(
         spots=spots,
@@ -963,6 +998,8 @@ def scenario_grid(
     vol_shocks = tuple(float(v) for v in vol_shocks)
     if len(spot_shocks) == 0 or len(vol_shocks) == 0:
         raise ValueError("spot_shocks and vol_shocks must be non-empty")
+    if any(s < -1.0 for s in spot_shocks):
+        raise ValueError("spot_shocks must be >= -1.0 (S = base_spot*(1+shock) cannot be negative)")
 
     legs = structure.legs
     states: list[NullState] = list(structure.states)
@@ -1000,6 +1037,7 @@ def scenario_grid(
     pnl_grid: list[list[float | None]] = []
     value_grid: list[list[float | None]] = []
     cell_states_grid: list[list[tuple[str, ...]]] = []
+    leg_missing_iv = [i for i, leg in enumerate(legs) if leg.iv is None]
 
     for vi, vshock in enumerate(vol_shocks):
         pnl_row: list[float | None] = []
@@ -1009,7 +1047,6 @@ def scenario_grid(
             S = base_spot * (1.0 + sshock)
             cell_codes: list[str] = []
 
-            leg_missing_iv = [i for i, leg in enumerate(legs) if leg.iv is None]
             if leg_missing_iv:
                 cell_codes.append("LEG_IV_MISSING")
                 value_row.append(None)
@@ -1021,6 +1058,7 @@ def scenario_grid(
                 cell_codes.append("EXPIRY_PASSED_AT_HORIZON")
 
             value = 0.0
+            cell_unusable = False
             for i, leg in enumerate(legs):
                 if leg.multiplier is None:
                     continue
@@ -1031,9 +1069,13 @@ def scenario_grid(
                     price = _intrinsic(leg.right, leg.strike, S)
                 else:
                     price = float(bs_price(S, leg.strike, T, sigma, is_call, r, q))
+                if _is_nan(price) or not math.isfinite(price):
+                    cell_codes.append("MODEL_INPUT_ABSENT")
+                    cell_unusable = True
+                    break
                 value += leg.qty * leg.multiplier * price
 
-            if missing_mult_idx:
+            if missing_mult_idx or cell_unusable:
                 value_row.append(None)
                 pnl_row.append(None)
             else:
@@ -1043,6 +1085,26 @@ def scenario_grid(
         pnl_grid.append(pnl_row)
         value_grid.append(value_row)
         cell_states_grid.append(state_row)
+
+    seen_cell_codes = {code for row in cell_states_grid for cell in row for code in cell}
+    if "MODEL_INPUT_ABSENT" in seen_cell_codes:
+        states.append(
+            NullState(
+                code="MODEL_INPUT_ABSENT",
+                scope="structure",
+                reason="scenario cell produced a non-finite model price",
+                receipt={"code": "MODEL_INPUT_ABSENT"},
+            )
+        )
+    if "EXPIRY_PASSED_AT_HORIZON" in seen_cell_codes:
+        states.append(
+            NullState(
+                code="EXPIRY_PASSED_AT_HORIZON",
+                scope="structure",
+                reason="one or more legs expire on or before the scenario horizon",
+                receipt={"code": "EXPIRY_PASSED_AT_HORIZON"},
+            )
+        )
 
     return ScenarioGrid(
         spot_shocks=spot_shocks,
@@ -1151,12 +1213,14 @@ def greeks_drift(
 
         missing_mult = any(leg.multiplier is None for leg in legs)
         missing_iv = any(leg.iv is None for leg in legs)
+        if missing_mult:
+            point_states.append("MULTIPLIER_UNKNOWN")
 
         if missing_mult or missing_iv:
             net = LegGreeks(
                 delta=None, gamma=None, vanna=None, charm_per_day=None,
                 vega=None, theta_per_day=None,
-                states=tuple(sorted(set(point_states + (["MULTIPLIER_UNKNOWN"] if missing_mult else [])))),
+                states=tuple(sorted(set(point_states))),
             )
         else:
             net_delta = _net_greek_field(per_leg, legs, "delta")
@@ -1182,6 +1246,16 @@ def greeks_drift(
                 per_leg=tuple(per_leg),
                 net=net,
                 states=tuple(sorted(set(point_states))),
+            )
+        )
+
+    if any("MODEL_INPUT_ABSENT" in pt.states or any("MODEL_INPUT_ABSENT" in lg.states for lg in pt.per_leg) for pt in points):
+        struct_states.append(
+            NullState(
+                code="MODEL_INPUT_ABSENT",
+                scope="structure",
+                reason="one or more greeks-drift points produced a non-finite model greek",
+                receipt={"code": "MODEL_INPUT_ABSENT"},
             )
         )
 
@@ -1438,7 +1512,7 @@ def evidence_recipe(
         },
         "refusal_rules": sorted(NULL_STATES),
         "dedup_rules": [
-            "legs deduplicated on (right, strike, expiration); duplicate specs are summed into one qty"
+            "legs are not deduplicated; duplicate specs are carried as separate positions"
         ],
         "output_field_map": {
             "cost": "PayoffCurve.cost / StructureSummary.cost",
