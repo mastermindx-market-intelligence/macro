@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/options.html.j2
+manifest: mockups/evidence/pr6932-aib-lede/manifest.json

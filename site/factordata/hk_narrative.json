@@ -1,8 +1,8 @@
 {
   "display_only": true,
   "organ": "hk_narrative",
-  "as_of": "2026-09-06",
-  "generated_utc": "2026-09-06T12:44:25+00:00",
+  "as_of": "2026-09-08",
+  "generated_utc": "2026-09-08T15:09:53+00:00",
   "freshness": "degraded",
   "entities": [
     {
@@ -40,15 +40,15 @@
       "ticker": "3690.HK",
       "name_en": "Meituan",
       "name_zh": "\u7f8e\u56e2",
-      "attention_shock_z": 1.193,
-      "tone_pctile": 21.2,
-      "narrative_state": "tone_negative_shift",
-      "young": false,
-      "n_obs": 86,
-      "as_of_date": "2026-09-04",
-      "no_data_reason": null,
-      "state_en": "tone souring",
-      "state_zh": "\u8206\u60c5\u8f6c\u5f31"
+      "attention_shock_z": null,
+      "tone_pctile": null,
+      "narrative_state": null,
+      "young": true,
+      "n_obs": 0,
+      "as_of_date": null,
+      "no_data_reason": "young series: 0 < 20 obs",
+      "state_en": null,
+      "state_zh": null
     },
     {
       "slug": "xiaomi",
@@ -146,21 +146,6 @@
       "state_zh": "\u5e73\u9759"
     },
     {
-      "slug": "meituan",
-      "ticker": "3690.HK",
-      "name_en": "Meituan",
-      "name_zh": "\u7f8e\u56e2",
-      "attention_shock_z": 1.193,
-      "tone_pctile": 21.2,
-      "narrative_state": "tone_negative_shift",
-      "young": false,
-      "n_obs": 86,
-      "as_of_date": "2026-09-04",
-      "no_data_reason": null,
-      "state_en": "tone souring",
-      "state_zh": "\u8206\u60c5\u8f6c\u5f31"
-    },
-    {
       "slug": "baidu",
       "ticker": "9888.HK",
       "name_en": "Baidu",
@@ -207,7 +192,7 @@
     }
   ],
   "n_watched": 8,
-  "n_live": 5,
+  "n_live": 4,
   "warming_up": false,
   "is_stale": true
 }
