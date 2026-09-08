@@ -125,3 +125,39 @@ blob identities remain identical to the previously fully read compatible source.
 The new protected commit is WSX-F2 test work, not a change to this risk program.
 The original pickup pin above remains historical; the publication preflight uses
 this current identity without changing the candidate or its evidence.
+
+## Same-carrier continuation: China gauge identity
+
+The initial 17-file package was published as Draft/HOLD PR #6989 at
+`af4642bfaba371b893e256ed3ff5fd4729b7f73c`, projected by existing MAS-258.
+Do not create a duplicate issue, branch or PR. The same source owner continued
+with the previously untracked China gauge probe; no incumbent was replaced.
+
+New verified claim: the summary row labelled Deep-drawdown gauge reads the
+slowdown score and old 60/40 thresholds, unlike the detail's drawdown score and
+own band. Command: `python3 research/grey_deer/RRU_CN_GAUGE_PROBE_2026_09_08.py`.
+Result: all four declared controlled renders disagreed, including 43/17 showing
+Elevated instead of Calm and the inverse 17/84 showing Calm instead of High.
+Receipt: `research/grey_deer/RRU_CN_GAUGE_RESULTS_2026_09_08.json`.
+Discovery: `DSC:RRU-CN-SUMMARY-USES-WRONG-GAUGE`.
+Boundary: `research/grey_deer/RRU_CN_GAUGE_REPAIR_BOUNDARY_2026-09-08.md`.
+
+The research Jinja candidate consumes the existing `radar_dlg.gauges` VM and is
+UNTESTED. A subsequent expanded test-harness append was platform-blocked with
+safety-status-undetermined. It was not retried or moved to another write carrier.
+Its 29-line partial source was preserved unchanged under the explicit text name
+`RRU_CN_GAUGE_CANDIDATE_TEST_DRAFT_2026_09_08.txt`; no test success is claimed.
+No production template or builder was edited. Original issued forecasts survive.
+
+The first pending product repairs remain the source-ownership/collision-gated
+arithmetic correction and this independently bounded summary identity correction.
+The exact next CEO action is independent review of the published evidence and
+lawful resolution of those source gates; a prepared candidate is not shipped.
+
+Follow-up verification at 2026-09-08T11:28:57Z repeated all six baseline mechanisms,
+40/40 arithmetic candidate cases, 12/12 actual-module compatibility cases and
+four China summary discrepancies. Agent OS: 1082 records, zero errors, 163 warnings.
+Receipt: `research/grey_deer/RRU_FOLLOWUP_VALIDATION_2026_09_08.txt`.
+The command chain ended exit 0, including a zero diff against pickup base for
+engine/, templates/, scripts/, site/, data/ and .github/. These receipts do not
+validate the unfinished China candidate harness or prove deployment.

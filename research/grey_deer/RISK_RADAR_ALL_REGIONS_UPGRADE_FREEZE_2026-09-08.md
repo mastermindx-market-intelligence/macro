@@ -176,3 +176,18 @@ Scikit-learn's calibration documentation distinguishes probability reliability f
 ## 14. Source supersession boundary
 
 This record rejects the oversized separate homepage presentation as the long-run product and consolidates the user journey under Risk Radar. It does not repeal `DEC:RISK-STATE-HAZARD-POLICY-SEPARATION`, `DEC:REPAIR-IS-ORTHOGONAL-AND-FIRST-CLASS`, the canonical envelope/history ownership decisions, historical promotion results, or the explicit no-auto-exit boundary. A shared experience is not shared unearned authority.
+
+## 15. Subsequent same-input China projection proof
+
+The China Deep-drawdown summary/detail discrepancy in section 3 is now reproduced,
+not merely a screenshot lead. `DSC:RRU-CN-SUMMARY-USES-WRONG-GAUGE` and
+`RRU_CN_GAUGE_REPAIR_BOUNDARY_2026-09-08.md` bind the exact source, four controlled
+renders and the minimal consumer correction. The summary reads slowdown instead
+of drawdown and reinvents thresholds; this can both overstate risk and falsely
+show Calm when the actual drawdown band is High. Consume the existing dialog VM.
+The other screenshot discrepancies remain unverified; this proof does not settle them.
+
+The China consumer candidate is UNTESTED and uninstalled. A platform-blocked
+harness append is preserved as an explicitly incomplete text draft, not a green
+suite. This does not change the separately verified 40-case arithmetic candidate,
+its 12-case module compatibility evidence, or any existing release/authority gate.
