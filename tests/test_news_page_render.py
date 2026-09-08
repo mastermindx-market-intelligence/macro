@@ -255,6 +255,22 @@ def test_disclaimer_renders():
     assert "display-only" in html.lower()
 
 
+def test_consequence_section_is_single_column_not_nx_cols():
+    """MAJOR 4 ruling: #nxConsequence is a full-width single column, not nx-cols."""
+    html = _render_full()
+    assert 'class="nx-consequence" id="nxConsequence"' in html
+    assert 'class="nx-cols" id="nxConsequence"' not in html
+    # The releases board may still use nx-cols; only this section left that grid.
+    assert "#nxConsequence{ margin-top:26px; }" in html
+    assert "#nxConsequence .nx-rel-grid{ grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; }" in html
+    assert "html[data-theme=\"light\"] #nxConsequence .nx-rel{" in html
+    assert "var(--card-shadow)" in html and "var(--popover-shadow)" in html
+    # No <main> wrapper inside the consequence section.
+    start = html.index('id="nxConsequence"')
+    end = html.index("</section>", start)
+    assert "<main>" not in html[start:end]
+
+
 # --------------------------------------------------------------------------- #
 # degrade-safety — schema-violating side-artifacts must not raise
 # --------------------------------------------------------------------------- #

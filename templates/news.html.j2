@@ -266,6 +266,14 @@ a.nx-tk:hover{ color:var(--ink-link, var(--link)); border-color:currentColor; }
 .nx-rel-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; }
 .nx-rel{ padding:13px 14px; border-radius:12px; background:var(--nx-card); border:1px solid var(--nx-hair); }
 .nx-rel-top{ display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin-bottom:8px; }
+/* F05-1 consequence panel — full-width single column (not the releases nx-cols
+   grid). Dark: 1px top highlight + inset ring. Light: white plane + ambient
+   elevation. Tokens only; no new colour family. */
+#nxConsequence{ margin-top:26px; }
+#nxConsequence .nx-rel-grid{ grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; }
+#nxConsequence .nx-rel{ box-shadow: var(--card-shadow), inset 0 0 0 1px color-mix(in srgb, var(--line) 55%, transparent); }
+html[data-theme="light"] #nxConsequence .nx-rel{ background: var(--panel); box-shadow: var(--card-shadow), 0 8px 24px rgba(20,30,50,.06); }
+html[data-theme="light"] #nxConsequence .nx-rel:hover{ box-shadow: var(--popover-shadow); }
 .nx-rel-name{ font-size:13px; font-weight:700; }
 .nx-rel-read{ font-size:11px; font-weight:700; }
 .nx-rel-read.up{ color:var(--ink-up, var(--up)); } .nx-rel-read.down{ color:var(--ink-down, var(--down)); }
@@ -805,11 +813,10 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
 </section>
 
 {# F05/MO-PAID-017 consequence glance — News Feed entry point, not Market-Feed.
-   Reuses existing nx-* classes (dark command-center / light research-workspace
-   tokens already on this page). No new <style> block. #}
+   Single-column wrapper (not nx-cols). Reuses existing .nx-rel cards.
+   Dark/light treatments live in the page stylesheet above. #}
 {% set CI = chronicle_impact if chronicle_impact is mapping else none %}
-<section class="nx-cols" id="nxConsequence" aria-label="Event consequences">
-  <main>
+<section class="nx-consequence" id="nxConsequence" aria-label="Event consequences">
     <h2 class="nx-sec-hd">{{ t('Event consequences','事件影响') }}</h2>
     {% if CI and CI.stance_en %}
     <p class="nx-sub">{{ t(CI.stance_en, CI.stance_zh or CI.stance_en) }}</p>
@@ -862,7 +869,6 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
       — {{ t('No chronicle events in this window yet.', '此窗口尚无大事记事件。') }}{% endif %}
     </div>
     {% endif %}
-  </main>
 </section>
 
 {% if FEED %}
