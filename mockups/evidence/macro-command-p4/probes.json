@@ -203,9 +203,10 @@
     "macro_labor_markets.html"
   ],
   "e5_timeout_growth_dark_en_1440": {
-    "elapsedMs": 8028.600708961487,
-    "requestSeenAtMs": 846861689.239791,
-    "cloneSeenAtMs": 846869717.8405,
+    "elapsedMs": 8091.786250114441,
+    "requestSeenAtMs": 849361345.764416,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/growth.html",
+    "cloneSeenAtMs": 849369437.5506661,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/growth.html",
@@ -213,9 +214,10 @@
     "section": "growth"
   },
   "e5_timeout_growth_dark_zh_1440": {
-    "elapsedMs": 8049.883457899094,
-    "requestSeenAtMs": 846870107.15275,
-    "cloneSeenAtMs": 846878157.0362079,
+    "elapsedMs": 8067.4952919483185,
+    "requestSeenAtMs": 849369744.572208,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/growth.html",
+    "cloneSeenAtMs": 849377812.0675,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/growth.html",
@@ -223,9 +225,10 @@
     "section": "growth"
   },
   "e5_timeout_growth_light_en_1440": {
-    "elapsedMs": 8079.6239579916,
-    "requestSeenAtMs": 846878440.277125,
-    "cloneSeenAtMs": 846886519.901083,
+    "elapsedMs": 8092.793084025383,
+    "requestSeenAtMs": 849378125.376541,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/growth.html",
+    "cloneSeenAtMs": 849386218.169625,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/growth.html",
@@ -233,9 +236,10 @@
     "section": "growth"
   },
   "e5_timeout_growth_light_zh_1440": {
-    "elapsedMs": 8087.618332862854,
-    "requestSeenAtMs": 846886833.1962501,
-    "cloneSeenAtMs": 846894920.814583,
+    "elapsedMs": 8096.802125096321,
+    "requestSeenAtMs": 849386503.2577499,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/growth.html",
+    "cloneSeenAtMs": 849394600.059875,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/growth.html",
@@ -243,9 +247,10 @@
     "section": "growth"
   },
   "e5_timeout_growth_dark_en_390": {
-    "elapsedMs": 8012.139125108719,
-    "requestSeenAtMs": 846895201.067833,
-    "cloneSeenAtMs": 846903213.206958,
+    "elapsedMs": 8034.718541026115,
+    "requestSeenAtMs": 849394863.813625,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/growth.html",
+    "cloneSeenAtMs": 849402898.532166,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/growth.html",
@@ -253,9 +258,10 @@
     "section": "growth"
   },
   "e5_timeout_growth_dark_zh_390": {
-    "elapsedMs": 8040.928915977478,
-    "requestSeenAtMs": 846903499.901875,
-    "cloneSeenAtMs": 846911540.830791,
+    "elapsedMs": 8055.856333017349,
+    "requestSeenAtMs": 849403185.3975,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/growth.html",
+    "cloneSeenAtMs": 849411241.253833,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/growth.html",
@@ -263,9 +269,10 @@
     "section": "growth"
   },
   "e5_timeout_growth_light_en_390": {
-    "elapsedMs": 8039.070875048637,
-    "requestSeenAtMs": 846911818.241333,
-    "cloneSeenAtMs": 846919857.312208,
+    "elapsedMs": 8021.557165980339,
+    "requestSeenAtMs": 849411504.259875,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/growth.html",
+    "cloneSeenAtMs": 849419525.817041,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/growth.html",
@@ -273,9 +280,10 @@
     "section": "growth"
   },
   "e5_timeout_growth_light_zh_390": {
-    "elapsedMs": 8069.597874999046,
-    "requestSeenAtMs": 846920138.827458,
-    "cloneSeenAtMs": 846928208.425333,
+    "elapsedMs": 8056.263791918755,
+    "requestSeenAtMs": 849419824.3469161,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/growth.html",
+    "cloneSeenAtMs": 849427880.610708,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/growth.html",
@@ -283,9 +291,10 @@
     "section": "growth"
   },
   "e5_timeout_jobs_dark_en_1440": {
-    "elapsedMs": 8076.818249940872,
-    "requestSeenAtMs": 846928560.471541,
-    "cloneSeenAtMs": 846936637.289791,
+    "elapsedMs": 8090.542666912079,
+    "requestSeenAtMs": 849428246.117791,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/jobs.html",
+    "cloneSeenAtMs": 849436336.660458,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/jobs.html",
@@ -293,9 +302,10 @@
     "section": "jobs"
   },
   "e5_timeout_jobs_dark_zh_1440": {
-    "elapsedMs": 8048.177667021751,
-    "requestSeenAtMs": 846937045.342791,
-    "cloneSeenAtMs": 846945093.520458,
+    "elapsedMs": 8027.896250009537,
+    "requestSeenAtMs": 849436682.584375,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/jobs.html",
+    "cloneSeenAtMs": 849444710.480625,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/jobs.html",
@@ -303,9 +313,10 @@
     "section": "jobs"
   },
   "e5_timeout_jobs_light_en_1440": {
-    "elapsedMs": 8062.14216697216,
-    "requestSeenAtMs": 846945367.394791,
-    "cloneSeenAtMs": 846953429.536958,
+    "elapsedMs": 8069.825667023659,
+    "requestSeenAtMs": 849444999.367041,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/jobs.html",
+    "cloneSeenAtMs": 849453069.192708,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/jobs.html",
@@ -313,9 +324,10 @@
     "section": "jobs"
   },
   "e5_timeout_jobs_light_zh_1440": {
-    "elapsedMs": 8046.102916002274,
-    "requestSeenAtMs": 846953796.477,
-    "cloneSeenAtMs": 846961842.579916,
+    "elapsedMs": 8025.4467079639435,
+    "requestSeenAtMs": 849453380.729333,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/jobs.html",
+    "cloneSeenAtMs": 849461406.176041,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/jobs.html",
@@ -323,9 +335,10 @@
     "section": "jobs"
   },
   "e5_timeout_jobs_dark_en_390": {
-    "elapsedMs": 8010.926458001137,
-    "requestSeenAtMs": 846962166.516583,
-    "cloneSeenAtMs": 846970177.443041,
+    "elapsedMs": 8014.09420800209,
+    "requestSeenAtMs": 849461831.538583,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/jobs.html",
+    "cloneSeenAtMs": 849469845.632791,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/jobs.html",
@@ -333,9 +346,10 @@
     "section": "jobs"
   },
   "e5_timeout_jobs_dark_zh_390": {
-    "elapsedMs": 8008.210708022118,
-    "requestSeenAtMs": 846970619.729,
-    "cloneSeenAtMs": 846978627.939708,
+    "elapsedMs": 8019.670457959175,
+    "requestSeenAtMs": 849470129.6545,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/jobs.html",
+    "cloneSeenAtMs": 849478149.324958,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/jobs.html",
@@ -343,9 +357,10 @@
     "section": "jobs"
   },
   "e5_timeout_jobs_light_en_390": {
-    "elapsedMs": 8010.4099580049515,
-    "requestSeenAtMs": 846978933.156833,
-    "cloneSeenAtMs": 846986943.566791,
+    "elapsedMs": 8013.88912498951,
+    "requestSeenAtMs": 849478423.8402079,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/jobs.html",
+    "cloneSeenAtMs": 849486437.7293329,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/jobs.html",
@@ -353,9 +368,10 @@
     "section": "jobs"
   },
   "e5_timeout_jobs_light_zh_390": {
-    "elapsedMs": 8040.4870409965515,
-    "requestSeenAtMs": 846987288.40675,
-    "cloneSeenAtMs": 846995328.893791,
+    "elapsedMs": 8047.036334037781,
+    "requestSeenAtMs": 849486718.896166,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/jobs.html",
+    "cloneSeenAtMs": 849494765.9325,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/jobs.html",
@@ -363,9 +379,10 @@
     "section": "jobs"
   },
   "e5_timeout_housing_dark_en_1440": {
-    "elapsedMs": 8010.870500087738,
-    "requestSeenAtMs": 846995677.132833,
-    "cloneSeenAtMs": 847003688.0033331,
+    "elapsedMs": 8106.352375030518,
+    "requestSeenAtMs": 849495064.4422499,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/housing.html",
+    "cloneSeenAtMs": 849503170.7946249,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/housing.html",
@@ -373,9 +390,10 @@
     "section": "housing"
   },
   "e5_timeout_housing_dark_zh_1440": {
-    "elapsedMs": 8033.841917037964,
-    "requestSeenAtMs": 847004047.143708,
-    "cloneSeenAtMs": 847012080.985625,
+    "elapsedMs": 8031.745333075523,
+    "requestSeenAtMs": 849503448.2803329,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/housing.html",
+    "cloneSeenAtMs": 849511480.025666,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/housing.html",
@@ -383,9 +401,10 @@
     "section": "housing"
   },
   "e5_timeout_housing_light_en_1440": {
-    "elapsedMs": 8029.556333065033,
-    "requestSeenAtMs": 847012424.4893329,
-    "cloneSeenAtMs": 847020454.045666,
+    "elapsedMs": 8069.648874998093,
+    "requestSeenAtMs": 849511829.496791,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/housing.html",
+    "cloneSeenAtMs": 849519899.145666,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/housing.html",
@@ -393,9 +412,10 @@
     "section": "housing"
   },
   "e5_timeout_housing_light_zh_1440": {
-    "elapsedMs": 8045.133917093277,
-    "requestSeenAtMs": 847020817.1275829,
-    "cloneSeenAtMs": 847028862.2615,
+    "elapsedMs": 8100.930166006088,
+    "requestSeenAtMs": 849520195.846625,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/housing.html",
+    "cloneSeenAtMs": 849528296.776791,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/housing.html",
@@ -403,9 +423,10 @@
     "section": "housing"
   },
   "e5_timeout_housing_dark_en_390": {
-    "elapsedMs": 8016.098417043686,
-    "requestSeenAtMs": 847029126.363208,
-    "cloneSeenAtMs": 847037142.4616251,
+    "elapsedMs": 8020.755666971207,
+    "requestSeenAtMs": 849528571.345708,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/housing.html",
+    "cloneSeenAtMs": 849536592.101375,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/housing.html",
@@ -413,9 +434,10 @@
     "section": "housing"
   },
   "e5_timeout_housing_dark_zh_390": {
-    "elapsedMs": 8028.51308298111,
-    "requestSeenAtMs": 847037425.819208,
-    "cloneSeenAtMs": 847045454.332291,
+    "elapsedMs": 8057.673332929611,
+    "requestSeenAtMs": 849536914.9773331,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/housing.html",
+    "cloneSeenAtMs": 849544972.650666,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/housing.html",
@@ -423,9 +445,10 @@
     "section": "housing"
   },
   "e5_timeout_housing_light_en_390": {
-    "elapsedMs": 8021.658875107765,
-    "requestSeenAtMs": 847045748.551541,
-    "cloneSeenAtMs": 847053770.2104161,
+    "elapsedMs": 8038.783333063126,
+    "requestSeenAtMs": 849545254.398958,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/housing.html",
+    "cloneSeenAtMs": 849553293.182291,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/housing.html",
@@ -433,9 +456,10 @@
     "section": "housing"
   },
   "e5_timeout_housing_light_zh_390": {
-    "elapsedMs": 8079.540624976158,
-    "requestSeenAtMs": 847054089.29575,
-    "cloneSeenAtMs": 847062168.836375,
+    "elapsedMs": 8024.219624996185,
+    "requestSeenAtMs": 849553578.006791,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/housing.html",
+    "cloneSeenAtMs": 849561602.226416,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/housing.html",
@@ -443,9 +467,10 @@
     "section": "housing"
   },
   "e5_timeout_consumer_dark_en_1440": {
-    "elapsedMs": 8099.43845808506,
-    "requestSeenAtMs": 847062470.472875,
-    "cloneSeenAtMs": 847070569.9113331,
+    "elapsedMs": 8019.791415929794,
+    "requestSeenAtMs": 849561901.9701251,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/consumer.html",
+    "cloneSeenAtMs": 849569921.761541,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/consumer.html",
@@ -453,9 +478,10 @@
     "section": "consumer"
   },
   "e5_timeout_consumer_dark_zh_1440": {
-    "elapsedMs": 8080.53208398819,
-    "requestSeenAtMs": 847070851.8704159,
-    "cloneSeenAtMs": 847078932.4024999,
+    "elapsedMs": 8027.098250031471,
+    "requestSeenAtMs": 849570293.652166,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/consumer.html",
+    "cloneSeenAtMs": 849578320.750416,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/consumer.html",
@@ -463,9 +489,10 @@
     "section": "consumer"
   },
   "e5_timeout_consumer_light_en_1440": {
-    "elapsedMs": 8055.391999959946,
-    "requestSeenAtMs": 847079283.801916,
-    "cloneSeenAtMs": 847087339.193916,
+    "elapsedMs": 8104.569458961487,
+    "requestSeenAtMs": 849578624.9247911,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/consumer.html",
+    "cloneSeenAtMs": 849586729.49425,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/consumer.html",
@@ -473,9 +500,10 @@
     "section": "consumer"
   },
   "e5_timeout_consumer_light_zh_1440": {
-    "elapsedMs": 8093.077040910721,
-    "requestSeenAtMs": 847087661.8655001,
-    "cloneSeenAtMs": 847095754.942541,
+    "elapsedMs": 8021.976250052452,
+    "requestSeenAtMs": 849587012.424583,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/consumer.html",
+    "cloneSeenAtMs": 849595034.400833,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/consumer.html",
@@ -483,9 +511,10 @@
     "section": "consumer"
   },
   "e5_timeout_consumer_dark_en_390": {
-    "elapsedMs": 8030.448374867439,
-    "requestSeenAtMs": 847096019.577375,
-    "cloneSeenAtMs": 847104050.0257499,
+    "elapsedMs": 8045.228249907494,
+    "requestSeenAtMs": 849595310.680958,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/consumer.html",
+    "cloneSeenAtMs": 849603355.9092079,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/consumer.html",
@@ -493,9 +522,10 @@
     "section": "consumer"
   },
   "e5_timeout_consumer_dark_zh_390": {
-    "elapsedMs": 8067.76579105854,
-    "requestSeenAtMs": 847104340.9935,
-    "cloneSeenAtMs": 847112408.759291,
+    "elapsedMs": 8057.24883389473,
+    "requestSeenAtMs": 849603709.112416,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/consumer.html",
+    "cloneSeenAtMs": 849611766.3612499,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/consumer.html",
@@ -503,9 +533,10 @@
     "section": "consumer"
   },
   "e5_timeout_consumer_light_en_390": {
-    "elapsedMs": 8035.933666944504,
-    "requestSeenAtMs": 847112704.208708,
-    "cloneSeenAtMs": 847120740.142375,
+    "elapsedMs": 8074.350417017937,
+    "requestSeenAtMs": 849612073.279958,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/consumer.html",
+    "cloneSeenAtMs": 849620147.630375,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/consumer.html",
@@ -513,9 +544,10 @@
     "section": "consumer"
   },
   "e5_timeout_consumer_light_zh_390": {
-    "elapsedMs": 8086.7085419893265,
-    "requestSeenAtMs": 847121021.219916,
-    "cloneSeenAtMs": 847129107.928458,
+    "elapsedMs": 8084.577499985695,
+    "requestSeenAtMs": 849620429.4747081,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/consumer.html",
+    "cloneSeenAtMs": 849628514.0522081,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/consumer.html",
@@ -523,9 +555,10 @@
     "section": "consumer"
   },
   "e5_timeout_credit_dark_en_1440": {
-    "elapsedMs": 8023.148083090782,
-    "requestSeenAtMs": 847129456.847875,
-    "cloneSeenAtMs": 847137479.9959581,
+    "elapsedMs": 8074.167250156403,
+    "requestSeenAtMs": 849628793.3027079,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/credit.html",
+    "cloneSeenAtMs": 849636867.4699581,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/credit.html",
@@ -533,9 +566,10 @@
     "section": "credit"
   },
   "e5_timeout_credit_dark_zh_1440": {
-    "elapsedMs": 8047.332500100136,
-    "requestSeenAtMs": 847137772.8184999,
-    "cloneSeenAtMs": 847145820.151,
+    "elapsedMs": 8051.147082924843,
+    "requestSeenAtMs": 849637251.8192501,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/credit.html",
+    "cloneSeenAtMs": 849645302.966333,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/credit.html",
@@ -543,9 +577,10 @@
     "section": "credit"
   },
   "e5_timeout_credit_light_en_1440": {
-    "elapsedMs": 8056.377666950226,
-    "requestSeenAtMs": 847146090.5610831,
-    "cloneSeenAtMs": 847154146.93875,
+    "elapsedMs": 8094.772834062576,
+    "requestSeenAtMs": 849645583.360541,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/credit.html",
+    "cloneSeenAtMs": 849653678.133375,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/credit.html",
@@ -553,9 +588,10 @@
     "section": "credit"
   },
   "e5_timeout_credit_light_zh_1440": {
-    "elapsedMs": 8014.668709039688,
-    "requestSeenAtMs": 847154499.4387909,
-    "cloneSeenAtMs": 847162514.1075,
+    "elapsedMs": 8079.63908302784,
+    "requestSeenAtMs": 849653957.853375,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/credit.html",
+    "cloneSeenAtMs": 849662037.492458,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/credit.html",
@@ -563,9 +599,10 @@
     "section": "credit"
   },
   "e5_timeout_credit_dark_en_390": {
-    "elapsedMs": 8024.67587518692,
-    "requestSeenAtMs": 847162812.8208749,
-    "cloneSeenAtMs": 847170837.4967501,
+    "elapsedMs": 8029.4710829257965,
+    "requestSeenAtMs": 849662373.978958,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/credit.html",
+    "cloneSeenAtMs": 849670403.4500409,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/credit.html",
@@ -573,9 +610,10 @@
     "section": "credit"
   },
   "e5_timeout_credit_dark_zh_390": {
-    "elapsedMs": 8038.531582951546,
-    "requestSeenAtMs": 847171134.5237501,
-    "cloneSeenAtMs": 847179173.055333,
+    "elapsedMs": 8017.298959136009,
+    "requestSeenAtMs": 849670760.4090409,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/credit.html",
+    "cloneSeenAtMs": 849678777.7080001,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/credit.html",
@@ -583,9 +621,10 @@
     "section": "credit"
   },
   "e5_timeout_credit_light_en_390": {
-    "elapsedMs": 8045.801957845688,
-    "requestSeenAtMs": 847179478.6411251,
-    "cloneSeenAtMs": 847187524.4430829,
+    "elapsedMs": 8051.586583018303,
+    "requestSeenAtMs": 849679081.4732081,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/credit.html",
+    "cloneSeenAtMs": 849687133.0597911,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/credit.html",
@@ -593,9 +632,10 @@
     "section": "credit"
   },
   "e5_timeout_credit_light_zh_390": {
-    "elapsedMs": 8044.359042048454,
-    "requestSeenAtMs": 847187814.648291,
-    "cloneSeenAtMs": 847195859.007333,
+    "elapsedMs": 8007.151749968529,
+    "requestSeenAtMs": 849687406.280625,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/credit.html",
+    "cloneSeenAtMs": 849695413.432375,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/credit.html",
@@ -603,9 +643,10 @@
     "section": "credit"
   },
   "e5_timeout_debt_dark_en_1440": {
-    "elapsedMs": 8069.707332968712,
-    "requestSeenAtMs": 847196143.509125,
-    "cloneSeenAtMs": 847204213.216458,
+    "elapsedMs": 8087.0624170303345,
+    "requestSeenAtMs": 849695705.234208,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/debt.html",
+    "cloneSeenAtMs": 849703792.296625,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/debt.html",
@@ -613,9 +654,10 @@
     "section": "debt"
   },
   "e5_timeout_debt_dark_zh_1440": {
-    "elapsedMs": 8009.579707980156,
-    "requestSeenAtMs": 847204544.1425,
-    "cloneSeenAtMs": 847212553.722208,
+    "elapsedMs": 8048.152458906174,
+    "requestSeenAtMs": 849704143.7829161,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/debt.html",
+    "cloneSeenAtMs": 849712191.935375,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/debt.html",
@@ -623,9 +665,10 @@
     "section": "debt"
   },
   "e5_timeout_debt_light_en_1440": {
-    "elapsedMs": 8053.927791953087,
-    "requestSeenAtMs": 847212841.520041,
-    "cloneSeenAtMs": 847220895.447833,
+    "elapsedMs": 8040.131583929062,
+    "requestSeenAtMs": 849712538.200041,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/debt.html",
+    "cloneSeenAtMs": 849720578.331625,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/debt.html",
@@ -633,9 +676,10 @@
     "section": "debt"
   },
   "e5_timeout_debt_light_zh_1440": {
-    "elapsedMs": 8024.477291941643,
-    "requestSeenAtMs": 847221229.091958,
-    "cloneSeenAtMs": 847229253.56925,
+    "elapsedMs": 8064.009500026703,
+    "requestSeenAtMs": 849720919.118541,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/debt.html",
+    "cloneSeenAtMs": 849728983.128041,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/debt.html",
@@ -643,9 +687,10 @@
     "section": "debt"
   },
   "e5_timeout_debt_dark_en_390": {
-    "elapsedMs": 8020.478500008583,
-    "requestSeenAtMs": 847229596.004208,
-    "cloneSeenAtMs": 847237616.482708,
+    "elapsedMs": 8045.232333064079,
+    "requestSeenAtMs": 849729320.704375,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/debt.html",
+    "cloneSeenAtMs": 849737365.9367081,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/debt.html",
@@ -653,9 +698,10 @@
     "section": "debt"
   },
   "e5_timeout_debt_dark_zh_390": {
-    "elapsedMs": 8071.042208075523,
-    "requestSeenAtMs": 847237904.736458,
-    "cloneSeenAtMs": 847245975.778666,
+    "elapsedMs": 8079.230125069618,
+    "requestSeenAtMs": 849737654.7673329,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/debt.html",
+    "cloneSeenAtMs": 849745733.997458,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/debt.html",
@@ -663,9 +709,10 @@
     "section": "debt"
   },
   "e5_timeout_debt_light_en_390": {
-    "elapsedMs": 8015.774083018303,
-    "requestSeenAtMs": 847246262.370875,
-    "cloneSeenAtMs": 847254278.144958,
+    "elapsedMs": 8007.9200830459595,
+    "requestSeenAtMs": 849746011.2954999,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/debt.html",
+    "cloneSeenAtMs": 849754019.215583,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/debt.html",
@@ -673,9 +720,10 @@
     "section": "debt"
   },
   "e5_timeout_debt_light_zh_390": {
-    "elapsedMs": 8053.2681671381,
-    "requestSeenAtMs": 847254565.5690409,
-    "cloneSeenAtMs": 847262618.837208,
+    "elapsedMs": 8069.907624959946,
+    "requestSeenAtMs": 849754316.113833,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/debt.html",
+    "cloneSeenAtMs": 849762386.0214579,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/debt.html",
@@ -683,9 +731,10 @@
     "section": "debt"
   },
   "e5_timeout_trade_dark_en_1440": {
-    "elapsedMs": 8077.124999880791,
-    "requestSeenAtMs": 847262906.4636251,
-    "cloneSeenAtMs": 847270983.588625,
+    "elapsedMs": 8063.074542045593,
+    "requestSeenAtMs": 849762740.624041,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/trade.html",
+    "cloneSeenAtMs": 849770803.698583,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/trade.html",
@@ -693,9 +742,10 @@
     "section": "trade"
   },
   "e5_timeout_trade_dark_zh_1440": {
-    "elapsedMs": 8060.256000041962,
-    "requestSeenAtMs": 847271291.002541,
-    "cloneSeenAtMs": 847279351.258541,
+    "elapsedMs": 8078.306833028793,
+    "requestSeenAtMs": 849771171.473083,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/trade.html",
+    "cloneSeenAtMs": 849779249.779916,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/trade.html",
@@ -703,9 +753,10 @@
     "section": "trade"
   },
   "e5_timeout_trade_light_en_1440": {
-    "elapsedMs": 8050.469125032425,
-    "requestSeenAtMs": 847279612.4532499,
-    "cloneSeenAtMs": 847287662.922375,
+    "elapsedMs": 8089.879792094231,
+    "requestSeenAtMs": 849779523.129583,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/trade.html",
+    "cloneSeenAtMs": 849787613.0093751,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/trade.html",
@@ -713,9 +764,10 @@
     "section": "trade"
   },
   "e5_timeout_trade_light_zh_1440": {
-    "elapsedMs": 8041.448874950409,
-    "requestSeenAtMs": 847288024.073833,
-    "cloneSeenAtMs": 847296065.5227079,
+    "elapsedMs": 8014.096915960312,
+    "requestSeenAtMs": 849787906.4505,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/trade.html",
+    "cloneSeenAtMs": 849795920.547416,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/trade.html",
@@ -723,9 +775,10 @@
     "section": "trade"
   },
   "e5_timeout_trade_dark_en_390": {
-    "elapsedMs": 8048.106624960899,
-    "requestSeenAtMs": 847296361.164708,
-    "cloneSeenAtMs": 847304409.271333,
+    "elapsedMs": 8065.650583028793,
+    "requestSeenAtMs": 849796202.0674579,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/trade.html",
+    "cloneSeenAtMs": 849804267.718041,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/trade.html",
@@ -733,9 +786,10 @@
     "section": "trade"
   },
   "e5_timeout_trade_dark_zh_390": {
-    "elapsedMs": 8041.208415985107,
-    "requestSeenAtMs": 847304699.8215,
-    "cloneSeenAtMs": 847312741.0299159,
+    "elapsedMs": 8019.028542041779,
+    "requestSeenAtMs": 849804549.012291,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/trade.html",
+    "cloneSeenAtMs": 849812568.040833,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/trade.html",
@@ -743,9 +797,10 @@
     "section": "trade"
   },
   "e5_timeout_trade_light_en_390": {
-    "elapsedMs": 8045.904083013535,
-    "requestSeenAtMs": 847313018.981,
-    "cloneSeenAtMs": 847321064.885083,
+    "elapsedMs": 8073.833665966988,
+    "requestSeenAtMs": 849812866.5145,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/trade.html",
+    "cloneSeenAtMs": 849820940.348166,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/trade.html",
@@ -753,9 +808,10 @@
     "section": "trade"
   },
   "e5_timeout_trade_light_zh_390": {
-    "elapsedMs": 8078.363291025162,
-    "requestSeenAtMs": 847321340.064,
-    "cloneSeenAtMs": 847329418.427291,
+    "elapsedMs": 8008.693958044052,
+    "requestSeenAtMs": 849821222.127375,
+    "requestUrl": "http://127.0.0.1:63842/macro/fragments/trade.html",
+    "cloneSeenAtMs": 849829230.821333,
     "templatePresent": true,
     "clonePresent": true,
     "fragmentTarget": "macro/fragments/trade.html",
@@ -13126,10 +13182,10 @@
     "maskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "webkitMaskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
-    "fadeWidth": 24,
+    "fadeWidth": 24.0,
     "fadeLeft": 186.9375,
     "fadeBeginsBeforeAnalyst": 56,
-    "maxScrollLeft": 1176,
+    "maxScrollLeft": 1176.0,
     "at0": {
       "scrollLeft": 0,
       "listBox": {
@@ -13750,6 +13806,12 @@
         "selfClips": false
       }
     ],
+    "fadeVisualApplicable": true,
+    "fadeVisualReason": null,
+    "fadeOnsetX": 185.9375,
+    "fadeVisualStartX": 185.9375,
+    "fadeVisualHalfX": 185.9375,
+    "fadeHalfDelta": -1.0,
     "maskImageRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))"
   },
   "rail_viewport-dark-zh-390": {
@@ -13762,10 +13824,10 @@
     "maskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "webkitMaskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
-    "fadeWidth": 24,
+    "fadeWidth": 24.0,
     "fadeLeft": 226.90625,
     "fadeBeginsBeforeAnalyst": 56,
-    "maxScrollLeft": 921,
+    "maxScrollLeft": 921.0,
     "at0": {
       "scrollLeft": 0,
       "listBox": {
@@ -14386,6 +14448,12 @@
         "selfClips": false
       }
     ],
+    "fadeVisualApplicable": true,
+    "fadeVisualReason": null,
+    "fadeOnsetX": 222.90625,
+    "fadeVisualStartX": 240.90625,
+    "fadeVisualHalfX": 240.90625,
+    "fadeHalfDelta": 14.0,
     "maskImageRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))"
   },
   "rail_viewport-light-en-390": {
@@ -14398,10 +14466,10 @@
     "maskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "webkitMaskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
-    "fadeWidth": 24,
+    "fadeWidth": 24.0,
     "fadeLeft": 186.9375,
     "fadeBeginsBeforeAnalyst": 56,
-    "maxScrollLeft": 1176,
+    "maxScrollLeft": 1176.0,
     "at0": {
       "scrollLeft": 0,
       "listBox": {
@@ -15022,6 +15090,12 @@
         "selfClips": false
       }
     ],
+    "fadeVisualApplicable": true,
+    "fadeVisualReason": null,
+    "fadeOnsetX": 185.9375,
+    "fadeVisualStartX": 185.9375,
+    "fadeVisualHalfX": 185.9375,
+    "fadeHalfDelta": -1.0,
     "maskImageRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))"
   },
   "rail_viewport-light-zh-390": {
@@ -15034,10 +15108,10 @@
     "maskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "webkitMaskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
-    "fadeWidth": 24,
+    "fadeWidth": 24.0,
     "fadeLeft": 226.90625,
     "fadeBeginsBeforeAnalyst": 56,
-    "maxScrollLeft": 921,
+    "maxScrollLeft": 921.0,
     "at0": {
       "scrollLeft": 0,
       "listBox": {
@@ -15658,6 +15732,12 @@
         "selfClips": false
       }
     ],
+    "fadeVisualApplicable": true,
+    "fadeVisualReason": null,
+    "fadeOnsetX": 222.90625,
+    "fadeVisualStartX": 240.90625,
+    "fadeVisualHalfX": 240.90625,
+    "fadeHalfDelta": 14.0,
     "maskImageRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))"
   },
   "rail_viewport-dark-en-768": {
@@ -15670,10 +15750,10 @@
     "maskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "webkitMaskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
-    "fadeWidth": 24,
+    "fadeWidth": 24.0,
     "fadeLeft": 560.9375,
     "fadeBeginsBeforeAnalyst": 56,
-    "maxScrollLeft": 806,
+    "maxScrollLeft": 806.0,
     "at0": {
       "scrollLeft": 0,
       "listBox": {
@@ -16294,6 +16374,12 @@
         "selfClips": false
       }
     ],
+    "fadeVisualApplicable": true,
+    "fadeVisualReason": null,
+    "fadeOnsetX": 564.9375,
+    "fadeVisualStartX": 573.9375,
+    "fadeVisualHalfX": 573.9375,
+    "fadeHalfDelta": 13.0,
     "maskImageRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))"
   },
   "rail_viewport-dark-zh-768": {
@@ -16306,10 +16392,10 @@
     "maskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "webkitMaskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
-    "fadeWidth": 24,
+    "fadeWidth": 24.0,
     "fadeLeft": 600.90625,
     "fadeBeginsBeforeAnalyst": 56,
-    "maxScrollLeft": 551,
+    "maxScrollLeft": 551.0,
     "at0": {
       "scrollLeft": 0,
       "listBox": {
@@ -16930,6 +17016,12 @@
         "selfClips": false
       }
     ],
+    "fadeVisualApplicable": true,
+    "fadeVisualReason": null,
+    "fadeOnsetX": 598.90625,
+    "fadeVisualStartX": 610.90625,
+    "fadeVisualHalfX": 610.90625,
+    "fadeHalfDelta": 10.0,
     "maskImageRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))"
   },
   "rail_viewport-light-en-768": {
@@ -16942,10 +17034,10 @@
     "maskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "webkitMaskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
-    "fadeWidth": 24,
+    "fadeWidth": 24.0,
     "fadeLeft": 560.9375,
     "fadeBeginsBeforeAnalyst": 56,
-    "maxScrollLeft": 806,
+    "maxScrollLeft": 806.0,
     "at0": {
       "scrollLeft": 0,
       "listBox": {
@@ -17566,6 +17658,12 @@
         "selfClips": false
       }
     ],
+    "fadeVisualApplicable": true,
+    "fadeVisualReason": null,
+    "fadeOnsetX": 564.9375,
+    "fadeVisualStartX": 573.9375,
+    "fadeVisualHalfX": 573.9375,
+    "fadeHalfDelta": 13.0,
     "maskImageRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))"
   },
   "rail_viewport-light-zh-768": {
@@ -17578,10 +17676,10 @@
     "maskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "webkitMaskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
-    "fadeWidth": 24,
+    "fadeWidth": 24.0,
     "fadeLeft": 600.90625,
     "fadeBeginsBeforeAnalyst": 56,
-    "maxScrollLeft": 551,
+    "maxScrollLeft": 551.0,
     "at0": {
       "scrollLeft": 0,
       "listBox": {
@@ -18202,6 +18300,12 @@
         "selfClips": false
       }
     ],
+    "fadeVisualApplicable": true,
+    "fadeVisualReason": null,
+    "fadeOnsetX": 598.90625,
+    "fadeVisualStartX": 598.90625,
+    "fadeVisualHalfX": 598.90625,
+    "fadeHalfDelta": -2.0,
     "maskImageRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))"
   },
   "fab-dark-en-1440": {
@@ -18264,13 +18368,363 @@
     "hits": [],
     "valueCount": 9
   },
-  "head_sha_at_capture": "ea02819b157472d4eb92cc3d5b3e11b2137d3966",
-  "captured_at": "2026-09-08T17:09:31Z",
-  "generated_at_start": "2026-09-08T16:58:57Z",
-  "generated_at_end": "2026-09-08T17:09:31Z",
+  "synthetic_clearance": {
+    "ok": true,
+    "positions": {
+      "0": {
+        "ok": false,
+        "textCount": 3,
+        "hits": [
+          {
+            "text": "inside zone",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 181,
+              "left": 0,
+              "right": 80.953125,
+              "bottom": 199
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 0,
+              "right": 1440,
+              "bottom": 260
+            },
+            "reason": "sticky-rail-full-cover-unexposable",
+            "docTop": 181,
+            "ovHeight": 200,
+            "ovBottom": 260,
+            "exposedAtScrollY": -79
+          },
+          {
+            "text": "under pill",
+            "overlay": "mmb-boot",
+            "overlayPos": "fixed",
+            "box": {
+              "top": 871,
+              "left": 0,
+              "right": 64.9375,
+              "bottom": 889
+            },
+            "ovBox": {
+              "top": 860,
+              "left": 0,
+              "right": 1440,
+              "bottom": 900
+            },
+            "reason": "fixed-overlay-intersects-text"
+          }
+        ],
+        "excused": [],
+        "analystPosition": null,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
+        "mmbBootBox": {
+          "top": 860,
+          "bottom": 900,
+          "left": 0,
+          "right": 1440
+        },
+        "scrollHeight": 1000,
+        "innerHeight": 900,
+        "target": "0",
+        "scrollY": 0,
+        "scrollWanted": 0,
+        "maxScroll": 100,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "block",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 0,
+            "right": 1440,
+            "bottom": 260,
+            "width": 1440,
+            "height": 200
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 860,
+            "left": 0,
+            "right": 1440,
+            "bottom": 900,
+            "width": 1440,
+            "height": 40
+          }
+        ]
+      },
+      "50": {
+        "ok": false,
+        "textCount": 3,
+        "hits": [
+          {
+            "text": "inside zone",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 131,
+              "left": 0,
+              "right": 80.953125,
+              "bottom": 149
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 0,
+              "right": 1440,
+              "bottom": 260
+            },
+            "reason": "sticky-rail-full-cover-unexposable",
+            "docTop": 181,
+            "ovHeight": 200,
+            "ovBottom": 260,
+            "exposedAtScrollY": -79
+          }
+        ],
+        "excused": [
+          {
+            "text": "below zone",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 231,
+              "left": 0,
+              "right": 80.953125,
+              "bottom": 249
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 0,
+              "right": 1440,
+              "bottom": 260
+            },
+            "reason": "rail_fully_covered",
+            "docTop": 281,
+            "ovHeight": 200,
+            "ovBottom": 260,
+            "exposedAtScrollY": 21
+          }
+        ],
+        "analystPosition": null,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
+        "mmbBootBox": {
+          "top": 860,
+          "bottom": 900,
+          "left": 0,
+          "right": 1440
+        },
+        "scrollHeight": 1000,
+        "innerHeight": 900,
+        "target": "50",
+        "scrollY": 50,
+        "scrollWanted": 50,
+        "maxScroll": 100,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "block",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 0,
+            "right": 1440,
+            "bottom": 260,
+            "width": 1440,
+            "height": 200
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 860,
+            "left": 0,
+            "right": 1440,
+            "bottom": 900,
+            "width": 1440,
+            "height": 40
+          }
+        ]
+      },
+      "max": {
+        "ok": false,
+        "textCount": 3,
+        "hits": [
+          {
+            "text": "inside zone",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 81,
+              "left": 0,
+              "right": 80.953125,
+              "bottom": 99
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 0,
+              "right": 1440,
+              "bottom": 260
+            },
+            "reason": "sticky-rail-full-cover-unexposable",
+            "docTop": 181,
+            "ovHeight": 200,
+            "ovBottom": 260,
+            "exposedAtScrollY": -79
+          }
+        ],
+        "excused": [
+          {
+            "text": "below zone",
+            "overlay": "rail",
+            "overlayPos": "sticky",
+            "box": {
+              "top": 181,
+              "left": 0,
+              "right": 80.953125,
+              "bottom": 199
+            },
+            "ovBox": {
+              "top": 60,
+              "left": 0,
+              "right": 1440,
+              "bottom": 260
+            },
+            "reason": "rail_fully_covered",
+            "docTop": 281,
+            "ovHeight": 200,
+            "ovBottom": 260,
+            "exposedAtScrollY": 21
+          }
+        ],
+        "analystPosition": null,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
+        "mmbBootBox": {
+          "top": 860,
+          "bottom": 900,
+          "left": 0,
+          "right": 1440
+        },
+        "scrollHeight": 1000,
+        "innerHeight": 900,
+        "target": "max",
+        "scrollY": 100,
+        "scrollWanted": 100,
+        "maxScroll": 100,
+        "maxScrollMatched": true,
+        "mmbBootDisplay": "block",
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 0,
+            "right": 1440,
+            "bottom": 260,
+            "width": 1440,
+            "height": 200
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 860,
+            "left": 0,
+            "right": 1440,
+            "bottom": 900,
+            "width": 1440,
+            "height": 40
+          }
+        ]
+      }
+    },
+    "synthetic_hit_rule": {
+      "inside zone": {
+        "0": {
+          "verdict": "hit",
+          "reason": "sticky-rail-full-cover-unexposable",
+          "exposedAtScrollY": -79,
+          "docTop": 181,
+          "ovBottom": 260,
+          "scrollY": 0,
+          "maxScroll": 100
+        },
+        "50": {
+          "verdict": "hit",
+          "reason": "sticky-rail-full-cover-unexposable",
+          "exposedAtScrollY": -79,
+          "docTop": 181,
+          "ovBottom": 260,
+          "scrollY": 50,
+          "maxScroll": 100
+        },
+        "max": {
+          "verdict": "hit",
+          "reason": "sticky-rail-full-cover-unexposable",
+          "exposedAtScrollY": -79,
+          "docTop": 181,
+          "ovBottom": 260,
+          "scrollY": 100,
+          "maxScroll": 100
+        }
+      },
+      "below zone": {
+        "0": {
+          "verdict": "absent",
+          "scrollY": 0,
+          "maxScroll": 100
+        },
+        "50": {
+          "verdict": "excused",
+          "reason": "rail_fully_covered",
+          "exposedAtScrollY": 21,
+          "docTop": 281,
+          "ovBottom": 260,
+          "scrollY": 50,
+          "maxScroll": 100
+        },
+        "max": {
+          "verdict": "excused",
+          "reason": "rail_fully_covered",
+          "exposedAtScrollY": 21,
+          "docTop": 281,
+          "ovBottom": 260,
+          "scrollY": 100,
+          "maxScroll": 100
+        }
+      },
+      "under pill": {
+        "0": {
+          "verdict": "hit",
+          "reason": "fixed-overlay-intersects-text",
+          "exposedAtScrollY": null,
+          "docTop": null,
+          "ovBottom": null,
+          "scrollY": 0,
+          "maxScroll": 100
+        },
+        "50": {
+          "verdict": "absent",
+          "scrollY": 50,
+          "maxScroll": 100
+        },
+        "max": {
+          "verdict": "absent",
+          "scrollY": 100,
+          "maxScroll": 100
+        }
+      }
+    }
+  },
+  "head_sha_at_capture": "544cdb47331fa2e20347dc55499571f8becfad4a",
+  "captured_at": "2026-09-08T17:51:14Z",
+  "generated_at_start": "2026-09-08T17:40:37Z",
+  "generated_at_end": "2026-09-08T17:51:14Z",
   "pre_commit": false,
-  "capture_sha": "ea02819b157472d4eb92cc3d5b3e11b2137d3966",
-  "commit_time_of_capture_sha": "2026-09-08T09:58:36-07:00",
+  "capture_sha": "544cdb47331fa2e20347dc55499571f8becfad4a",
+  "commit_time_of_capture_sha": "2026-09-08T10:39:49-07:00",
   "tree_clean_start": true,
   "tree_clean_end": true,
   "p19_notes": [],
