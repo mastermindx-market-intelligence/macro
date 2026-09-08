@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import shutil
 import socket
 import subprocess
@@ -48,10 +49,18 @@ ASSETS = (
 )
 
 CLEARANCE_AT_JS = """(target) => {
-  /* R8-M1: at scroll 0 / 50% / max, no .mc-panels text node may
-     intersect a fixed overlay (#mmb-boot, a leftover fixed .mc-analyst)
-     or — at scroll 0 — be fully covered by the sticky rail. An empty
-     text-node set is a fail. Never scrollBy to satisfy the assertion. */
+  /* R9: at scroll 0 / 50% / max, no .mc-panels text node may
+     intersect a *displayed* fixed overlay, or — at scroll 0 — be
+     fully covered by the sticky rail.
+     Overlay set = rail strip + chips + #mmb-boot ONLY when
+     getComputedStyle(#mmb-boot).display is not 'none' (at ≤768 on
+     this page the FAB is hidden; do not invent a box for it).
+     Destination-card text under #mmb-boot is a HIT. There is no
+     blanket .mc-dest* exemption. A node is excused only when it is
+     fully hidden by an opaque element by design, or when a sticky
+     rail partially clips it mid-scroll (normal sticky header).
+     Every exemption is recorded in excused[] (text, box, reason).
+     An empty text-node set is a fail. Never scrollBy. */
   const maxY = Math.max(0,
     document.documentElement.scrollHeight - window.innerHeight);
   let want = 0;
@@ -77,12 +86,19 @@ CLEARANCE_AT_JS = """(target) => {
   addBox(document.querySelector('.mc-rail'), 'rail');
   document.querySelectorAll('.mc-rail-link').forEach((el) => addBox(el, 'rail-chip'));
   addBox(document.querySelector('.mc-analyst'), 'analyst');
-  addBox(document.getElementById('mmb-boot'), 'mmb-boot');
+  const boot = document.getElementById('mmb-boot');
+  const bootCs = boot ? getComputedStyle(boot) : null;
+  const bootDisplay = bootCs ? bootCs.display : null;
+  if (bootDisplay && bootDisplay !== 'none') addBox(boot, 'mmb-boot');
   const root = document.querySelector('.mc-panels');
+  const base = {
+    target, scrollY: reached, scrollWanted: want, maxScroll: maxY,
+    maxScrollMatched: Math.abs(reached - want) < 2,
+    mmbBootDisplay: bootDisplay, overlays,
+  };
   if (!root) {
-    return {ok: false, reason: 'missing .mc-panels', target, scrollY: reached,
-            maxScroll: maxY, maxScrollMatched: Math.abs(reached - want) < 2,
-            textCount: 0, hits: [], overlays};
+    return Object.assign({ok: false, reason: 'missing .mc-panels',
+            textCount: 0, hits: [], excused: []}, base);
   }
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
     acceptNode(node) {
@@ -93,9 +109,8 @@ CLEARANCE_AT_JS = """(target) => {
   const texts = [];
   while (walker.nextNode()) texts.push(walker.currentNode);
   if (texts.length === 0) {
-    return {ok: false, reason: 'empty text-node set', target, scrollY: reached,
-            maxScroll: maxY, maxScrollMatched: Math.abs(reached - want) < 2,
-            textCount: 0, hits: [], overlays};
+    return Object.assign({ok: false, reason: 'empty text-node set',
+            textCount: 0, hits: [], excused: []}, base);
   }
   const intersects = (a, b) => !(a.right <= b.left || a.left >= b.right
     || a.bottom <= b.top || a.top >= b.bottom);
@@ -103,25 +118,21 @@ CLEARANCE_AT_JS = """(target) => {
     && text.bottom <= ov.bottom + 0.5
     && text.left >= ov.left - 0.5
     && text.right <= ov.right + 0.5;
-  const readingAncestor = (node) => {
-    let el = node.parentElement;
-    while (el && el !== root) {
-      const cls = el.className || '';
-      if (/(?:^|\\s)(?:mc-figure|mc-move|mc-stance|mc-panel-title|mc-caption|mc-watch|mc-read|mc-chip)(?:\\s|$)/.test(cls)) {
-        return true;
-      }
-      if (/(?:^|\\s)(?:mc-dest|mc-dests|mc-dest-go)(?:\\s|$)/.test(cls)) {
-        return false;
-      }
-      el = el.parentElement;
-    }
-    return true;
-  };
   const hits = [];
+  const excused = [];
+  const note = (list, node, rect, ov, reason) => {
+    list.push({
+      text: String(node.nodeValue || '').trim().slice(0, 80),
+      overlay: ov.name,
+      overlayPos: ov.pos,
+      box: {top: rect.top, left: rect.left, right: rect.right, bottom: rect.bottom},
+      ovBox: {top: ov.top, left: ov.left, right: ov.right, bottom: ov.bottom},
+      reason,
+    });
+  };
   for (const node of texts) {
     const range = document.createRange();
     range.selectNodeContents(node);
-    const inReading = readingAncestor(node);
     for (const rect of range.getClientRects()) {
       if (rect.width < 1 || rect.height < 1) continue;
       if (rect.bottom < 0 || rect.top > window.innerHeight) continue;
@@ -130,34 +141,24 @@ CLEARANCE_AT_JS = """(target) => {
         const fixed = ov.pos === 'fixed';
         const railFull = ov.pos === 'sticky' && target === '0'
           && fullyCovered(rect, ov);
-        if (!fixed && !railFull) continue;
-        if (ov.name === 'mmb-boot' && !inReading) continue;
-        hits.push({
-          text: String(node.nodeValue || '').trim().slice(0, 80),
-          overlay: ov.name,
-          overlayPos: ov.pos,
-          textTop: rect.top,
-          textBottom: rect.bottom,
-          ovTop: ov.top,
-          ovBottom: ov.bottom,
-        });
+        if (!fixed && !railFull) {
+          note(excused, node, rect, ov, 'sticky-rail-partial-clip');
+          continue;
+        }
+        note(hits, node, rect, ov,
+          fixed ? 'fixed-overlay-intersects-text' : 'sticky-rail-full-cover-at-0');
       }
     }
   }
   const analyst = document.querySelector('.mc-analyst');
-  const boot = document.getElementById('mmb-boot');
   const analystCs = analyst ? getComputedStyle(analyst) : null;
-  const bootBox = boot ? boot.getBoundingClientRect() : null;
-  return {
+  const bootBox = (boot && bootDisplay && bootDisplay !== 'none')
+    ? boot.getBoundingClientRect() : null;
+  return Object.assign({
     ok: hits.length === 0,
-    target,
-    scrollY: reached,
-    scrollWanted: want,
-    maxScroll: maxY,
-    maxScrollMatched: Math.abs(reached - want) < 2,
     textCount: texts.length,
     hits,
-    overlays,
+    excused,
     analystPosition: analystCs ? analystCs.position : null,
     mmbBootPresent: Boolean(boot),
     mmbBootBox: bootBox ? {
@@ -166,7 +167,7 @@ CLEARANCE_AT_JS = """(target) => {
     } : null,
     scrollHeight: document.documentElement.scrollHeight,
     innerHeight: window.innerHeight,
-  };
+  }, base);
 }"""
 
 RAIL_JS = """() => {
@@ -247,8 +248,11 @@ STRIP_VOID_JS = """() => {
       if (gap > 40) voids.push({top: Number(top), width: gap, side: 'between'});
     }
   }
-  const stripBg = getComputedStyle(strip).backgroundColor;
-  const stripFilled = parseAlpha(stripBg) > 0.05;
+    const stripBg = getComputedStyle(strip).backgroundColor;
+    const stripFilled = parseAlpha(stripBg) > 0.05;
+    const bgResolved = getComputedStyle(document.body).backgroundColor;
+    const bgToken = getComputedStyle(document.documentElement)
+      .getPropertyValue('--bg').trim();
   /* R8-m1: filledOutsideWiderThan40 is NOT gated on stripFilled.
      A >40px run outside a chip is a void whether the container paints. */
   const filledOutsideWiderThan40 = voids.some((v) => v.width > 40);
@@ -261,6 +265,8 @@ STRIP_VOID_JS = """() => {
     emptyChildren,
     stripBg,
     stripFilled,
+    bgResolved,
+    bgToken,
     voids,
     maxVoidWidth: voids.length ? Math.max(...voids.map((v) => v.width)) : 0,
     filledOutsideWiderThan40,
@@ -325,15 +331,17 @@ HAIRLINE_JS = """() => {
 
 
 def _run_clearance(page) -> dict[str, Any]:
-    """R8-M1: measure at scroll 0, 50%, max. Fail on any hit or empty text."""
+    """R9: measure at scroll 0, 50%, max. Fail on any hit, empty text,
+    or scrollReached != target at every position (r9-m2)."""
     positions: dict[str, Any] = {}
     for target in ("0", "50", "max"):
         row = page.evaluate(CLEARANCE_AT_JS, target)
         positions[target] = row
         if row.get("textCount", 0) == 0:
             raise RuntimeError(f"clearance empty text-node set at {target}: {row}")
-        if target == "max" and not row.get("maxScrollMatched"):
-            raise RuntimeError(f"clearance max scroll not reached: {row}")
+        if not row.get("maxScrollMatched"):
+            raise RuntimeError(
+                f"clearance scrollReached != target at {target}: {row}")
         if not row.get("ok"):
             raise RuntimeError(f"clearance hits at {target}: {row.get('hits')}")
     return {
@@ -342,7 +350,11 @@ def _run_clearance(page) -> dict[str, Any]:
         "positions": positions,
         "analystPosition": positions["0"].get("analystPosition"),
         "mmbBootPresent": positions["0"].get("mmbBootPresent"),
+        "mmbBootDisplay": positions["0"].get("mmbBootDisplay"),
         "mmbBootBox": positions["0"].get("mmbBootBox"),
+        "excusedCounts": {
+            key: len(pos.get("excused") or []) for key, pos in positions.items()
+        },
     }
 
 
@@ -373,7 +385,28 @@ def _pixel_scan_strip_void(path: Path, probe: dict[str, Any],
     y1 = min(image.height, y1)
     x0 = max(0, x0)
     x1 = min(image.width, x1)
-    canvas = image.getpixel((min(8, image.width - 1), min(8, image.height - 1)))
+    # r9-m4: sample the canvas from the strip's own inter-chip gap,
+    # never page pixel (8,8) under the radial-wash / site-nav band.
+    row_boxes_sorted = sorted(row_boxes, key=lambda box: box["left"])
+    canvas_source = "strip-inter-chip-gap"
+    if len(row_boxes_sorted) >= 2:
+        gap_left = row_boxes_sorted[0]["right"]
+        gap_right = row_boxes_sorted[1]["left"]
+        sample_x = int(((gap_left + gap_right) / 2) * scale)
+        sample_y = int(((min(box["top"] for box in row_boxes)
+                         + max(box["bottom"] for box in row_boxes)) / 2) * scale)
+        sample_x = min(max(0, sample_x), image.width - 1)
+        sample_y = min(max(0, sample_y), image.height - 1)
+        canvas = image.getpixel((sample_x, sample_y))
+        canvas_source = f"strip-inter-chip-gap ({sample_x},{sample_y})"
+    else:
+        token = (probe.get("bgResolved") or "").strip()
+        parsed = _rgb_token(token)
+        if parsed is None:
+            raise RuntimeError(
+                "strip-void canvas: no inter-chip gap and --bg did not resolve")
+        canvas = parsed
+        canvas_source = f"getComputedStyle --bg {token}"
     chip_dev = [
         (int(box["left"] * scale) - 1, int(box["right"] * scale) + 1,
          int(box["top"] * scale) - 1, int(box["bottom"] * scale) + 1)
@@ -413,8 +446,21 @@ def _pixel_scan_strip_void(path: Path, probe: dict[str, Any],
         "pixelVoids": voids[:12],
         "pixelVoidCount": len(voids),
         "canvasRgb": list(canvas),
+        "canvasSource": canvas_source,
         "band": {"x0": x0, "x1": x1, "y0": y0, "y1": y1},
     }
+
+
+def _rgb_token(color: str) -> tuple[int, int, int] | None:
+    """Parse a computed rgb/rgba() colour into an 8-bit triple."""
+    if not color:
+        return None
+    match = re.search(
+        r"rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)", color)
+    if not match:
+        return None
+    return (int(float(match.group(1))), int(float(match.group(2))),
+            int(float(match.group(3))))
 
 
 def _png_size(path: Path) -> tuple[int, int]:
@@ -430,6 +476,36 @@ def _head_sha() -> str:
     out = subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True)
     return out.strip()
+
+
+def _commit_iso(sha: str) -> str:
+    return subprocess.check_output(
+        ["git", "show", "-s", "--format=%cI", sha], cwd=ROOT, text=True
+    ).strip()
+
+
+def _read_scroll(page) -> float:
+    return float(page.evaluate(
+        "window.scrollY || document.documentElement.scrollTop || 0"))
+
+
+def _settle_scroll(page, mode: str) -> float:
+    """Hold the page at scroll 0 or max. Hash navigation to #overview
+    otherwise leaves the rail pinned (R9-M1)."""
+    if mode == "max":
+        page.evaluate(
+            "window.scrollTo(0, document.documentElement.scrollHeight)")
+    else:
+        page.evaluate("window.scrollTo(0, 0)")
+    page.wait_for_timeout(200)
+    reached = _read_scroll(page)
+    if mode == "0" and abs(reached) >= 2:
+        page.evaluate("window.scrollTo(0, 0)")
+        page.wait_for_timeout(200)
+        reached = _read_scroll(page)
+        if abs(reached) >= 2:
+            raise RuntimeError(f"failed to hold scroll 0: {reached}")
+    return reached
 
 
 def _free_port() -> int:
@@ -611,10 +687,17 @@ def _force_state_for(filename: str, extra: dict[str, Any] | None) -> str | None:
         "06-dark-zh-1440-rates.png": "rates",
         "07-light-en-1440-rates.png": "rates",
         "08-light-zh-1440-rates.png": "rates",
-        "13-dark-en-390-end.png": "page_end",
-        "14-light-zh-390-end.png": "page_end",
+        "44-dark-en-390-max.png": "scroll_max",
+        "45-dark-zh-390-max.png": "scroll_max",
+        "46-light-en-390-max.png": "scroll_max",
+        "47-light-zh-390-max.png": "scroll_max",
         "23-dark-en-1440-money-central-banks.png": "money_central_banks",
+        "48-dark-zh-1440-money-central-banks.png": "money_central_banks",
+        "49-light-zh-1440-money-central-banks.png": "money_central_banks",
         "24-dark-en-1440-inflation-foot.png": "inflation_foot",
+        "55-light-en-1440-inflation-foot.png": "inflation_foot",
+        "56-dark-zh-1440-inflation-foot.png": "inflation_foot",
+        "57-light-zh-1440-inflation-foot.png": "inflation_foot",
         "25-dark-en-1440-e3.png": "e3",
         "26-light-en-1440-e3.png": "e3",
         "40-dark-zh-1440-e3.png": "e3",
@@ -649,6 +732,7 @@ def _row(filename: str, dest: Path, theme: str, locale: str,
         "height": h,
         "locale": locale,
         "reduced_motion": True,
+        "scroll_y": extra.pop("scroll_y", 0),
         "sha256": _sha(dest),
         "theme": theme,
         "viewport": _viewport_name(vw),
@@ -933,6 +1017,8 @@ def _capture_empty_states(browser, tmp: Path, servers: list, manifest: dict) -> 
                     context, _origin + "/macro_monetary.html",
                     hash_path, theme, locale)
                 page.wait_for_selector(selector, timeout=15000)
+                extra = dict(extra)
+                extra["scroll_y"] = _read_scroll(page)
                 page.locator(selector).first.screenshot(path=str(dest), type="png")
                 _assert_png(dest)
                 _upsert(manifest, filename, _row(
@@ -972,12 +1058,14 @@ def main() -> int:
             ("06-dark-zh-1440-rates.png", "dark", "zh", 1440, 2200, "#rates", "full", None),
             ("07-light-en-1440-rates.png", "light", "en", 1440, 2200, "#rates", "full", None),
             ("08-light-zh-1440-rates.png", "light", "zh", 1440, 2200, "#rates", "full", None),
-            ("09-dark-en-390.png", "dark", "en", 390, 844, "#overview", "iframe", None),
-            ("10-dark-zh-390.png", "dark", "zh", 390, 844, "#overview", "iframe", None),
-            ("11-light-en-390.png", "light", "en", 390, 844, "#overview", "iframe", None),
-            ("12-light-zh-390.png", "light", "zh", 390, 844, "#overview", "iframe", None),
-            ("13-dark-en-390-end.png", "dark", "en", 390, 844, "#overview", "iframe-end", None),
-            ("14-light-zh-390-end.png", "light", "zh", 390, 844, "#overview", "iframe-end", None),
+            ("09-dark-en-390.png", "dark", "en", 390, 844, "#overview", "iframe", {"scroll": 0}),
+            ("10-dark-zh-390.png", "dark", "zh", 390, 844, "#overview", "iframe", {"scroll": 0}),
+            ("11-light-en-390.png", "light", "en", 390, 844, "#overview", "iframe", {"scroll": 0}),
+            ("12-light-zh-390.png", "light", "zh", 390, 844, "#overview", "iframe", {"scroll": 0}),
+            ("44-dark-en-390-max.png", "dark", "en", 390, 844, "#overview", "iframe-end", {"scroll": "max"}),
+            ("45-dark-zh-390-max.png", "dark", "zh", 390, 844, "#overview", "iframe-end", {"scroll": "max"}),
+            ("46-light-en-390-max.png", "light", "en", 390, 844, "#overview", "iframe-end", {"scroll": "max"}),
+            ("47-light-zh-390-max.png", "light", "zh", 390, 844, "#overview", "iframe-end", {"scroll": "max"}),
             ("15-dark-en-768.png", "dark", "en", 768, 1400, "#overview", "iframe-full", None),
             ("16-light-en-768.png", "light", "en", 768, 1400, "#overview", "iframe-full", None),
             ("28-dark-zh-768.png", "dark", "zh", 768, 1400, "#overview", "iframe-full", None),
@@ -999,8 +1087,13 @@ def main() -> int:
             ("34-dark-zh-1440-heading-focus.png", "dark", "zh", 1440, 2200, "#overview", "focus", None),
             ("35-light-zh-1440-heading-focus.png", "light", "zh", 1440, 2200, "#overview", "focus", None),
             ("23-dark-en-1440-money-central-banks.png", "dark", "en", 1440, 2200, "#money/central_banks", "full", None),
-            ("24-dark-en-1440-inflation-foot.png", "dark", "en", 1440, 2200, "#inflation", "full", None),
             ("27-light-en-1440-money-central-banks.png", "light", "en", 1440, 2200, "#money/central_banks", "full", None),
+            ("48-dark-zh-1440-money-central-banks.png", "dark", "zh", 1440, 2200, "#money/central_banks", "full", None),
+            ("49-light-zh-1440-money-central-banks.png", "light", "zh", 1440, 2200, "#money/central_banks", "full", None),
+            ("24-dark-en-1440-inflation-foot.png", "dark", "en", 1440, 2200, "#inflation", "full", None),
+            ("55-light-en-1440-inflation-foot.png", "light", "en", 1440, 2200, "#inflation", "full", None),
+            ("56-dark-zh-1440-inflation-foot.png", "dark", "zh", 1440, 2200, "#inflation", "full", None),
+            ("57-light-zh-1440-inflation-foot.png", "light", "zh", 1440, 2200, "#inflation", "full", None),
         ]
 
         with sync_playwright() as playwright:
@@ -1038,29 +1131,38 @@ def main() -> int:
                             if "and what moved?" in html:
                                 raise RuntimeError(
                                     f"{filename} still asks what moved")
+                        extra = dict(extra or {})
                         if kind == "iframe-end":
-                            target.evaluate("window.scrollTo(0, document.documentElement.scrollHeight)")
-                            target.wait_for_timeout(200)
+                            extra["scroll_y"] = _settle_scroll(target, "max")
                             page.screenshot(path=str(dest), type="png", full_page=False)
-                        elif kind in ("iframe-full", "iframe"):
+                        elif kind == "iframe":
+                            extra["scroll_y"] = _settle_scroll(target, "0")
+                            page.screenshot(path=str(dest), type="png", full_page=False)
+                        elif kind == "iframe-full":
+                            extra["scroll_y"] = _settle_scroll(target, "0")
                             page.screenshot(path=str(dest), type="png", full_page=False)
                         elif kind == "arrival":
                             target.wait_for_selector("[data-mc-arrival]:not([hidden])", timeout=8000)
+                            extra["scroll_y"] = _read_scroll(target)
                             target.locator("#rates").screenshot(path=str(dest), type="png")
                         elif kind == "arrival-iframe":
                             target.wait_for_selector("[data-mc-arrival]:not([hidden])", timeout=8000)
+                            extra["scroll_y"] = _read_scroll(target)
                             page.screenshot(path=str(dest), type="png", full_page=False)
                         elif kind == "hover":
                             card = target.locator("#overview .mc-dest").first
                             card.hover()
                             target.wait_for_timeout(150)
+                            extra["scroll_y"] = _read_scroll(target)
                             card.screenshot(path=str(dest), type="png")
                         elif kind == "focus":
                             heading = target.locator("#overview-h")
                             heading.focus()
                             target.wait_for_timeout(150)
+                            extra["scroll_y"] = _read_scroll(target)
                             heading.screenshot(path=str(dest), type="png")
                         else:
+                            extra["scroll_y"] = _read_scroll(target)
                             page.screenshot(path=str(dest), type="png", full_page=True)
                         _assert_png(dest)
                         _upsert(manifest, filename, _row(filename, dest, theme, locale, vw, vh, extra))
@@ -1126,6 +1228,28 @@ def main() -> int:
                     finally:
                         context.close()
 
+                # R9-M2: FAB computed display at desktop — must stay visible.
+                context = _new_context(browser, "dark", "en", 1440, 2200)
+                try:
+                    page = _open_direct(
+                        context, origin + "/macro_monetary.html",
+                        "#overview", "dark", "en")
+                    page.wait_for_selector("#mmb-boot", timeout=15000)
+                    fab = page.evaluate("""() => {
+                      const el = document.getElementById('mmb-boot');
+                      if (!el) return {present: false, display: null};
+                      const cs = getComputedStyle(el);
+                      return {present: true, display: cs.display,
+                              position: cs.position};
+                    }""")
+                    if not fab.get("present") or fab.get("display") == "none":
+                        raise RuntimeError(
+                            f"R9-M2 FAB must stay visible at 1440: {fab}")
+                    probes["fab_display_1440_dark_en"] = fab
+                    print(f"  fab_display_1440_dark_en {fab}", flush=True)
+                finally:
+                    context.close()
+
                 # RIDER M2: one hairline on a populated light sub-tab.
                 context = _new_context(browser, "light", "en", 1440, 2200)
                 try:
@@ -1182,6 +1306,7 @@ def main() -> int:
                         void_probe["pixelVoids"] = pixel.get("pixelVoids")
                         void_probe["pixelVoidCount"] = pixel.get("pixelVoidCount")
                         void_probe["canvasRgb"] = pixel.get("canvasRgb")
+                        void_probe["canvasSource"] = pixel.get("canvasSource")
                         void_probe["ok"] = bool(
                             void_probe.get("ok") and pixel.get("ok"))
                         if not void_probe.get("ok"):
@@ -1196,6 +1321,8 @@ def main() -> int:
                             f"  strip_void {key} chips={void_probe['chipCount']} "
                             f"maxVoid={void_probe.get('maxVoidWidth')} "
                             f"pixelVoids={pixel.get('pixelVoidCount')} "
+                            f"canvas={pixel.get('canvasRgb')} "
+                            f"src={pixel.get('canvasSource')} "
                             f"ok={void_probe['ok']}",
                             flush=True)
                     finally:
@@ -1233,6 +1360,7 @@ def main() -> int:
                 "builder emits only the hidden <template data-mc-empty-e5>"
             ),
             "theme": "dark",
+            "scroll_y": None,
             "viewport": "desktop",
             "viewport_height": 2200,
             "viewport_width": 1440,
@@ -1244,6 +1372,8 @@ def main() -> int:
             if state.get("file") not in {
                 "rates-curves-zh-after.png",
                 "27-light-en-1440-growth-business.png",
+                "13-dark-en-390-end.png",
+                "14-light-zh-390-end.png",
             }
             and state.get("force_state") not in {
                 "addendum:rates-curves-zh-after.png",
@@ -1254,6 +1384,8 @@ def main() -> int:
         for stray_name in (
             "rates-curves-zh-after.png",
             "27-light-en-1440-growth-business.png",
+            "13-dark-en-390-end.png",
+            "14-light-zh-390-end.png",
         ):
             stray = EVIDENCE / stray_name
             if stray.exists():
@@ -1285,20 +1417,29 @@ def main() -> int:
             "tablet": [768, 1400],
             "mobile": [390, 844],
         }
+        commit_time = _commit_iso(head)
         manifest["generated_at"] = generated_at
+        manifest["capture_sha"] = head
+        manifest["commit_time_of_capture_sha"] = commit_time
         manifest["strip_void_probe"] = probes.get("strip_void_probe")
         manifest["strip_void_probes"] = probes.get("strip_void_probes")
         manifest.setdefault("target", {})
         manifest["target"]["resolved_sha_or_none"] = head
         manifest["target"]["resolved_sha_source"] = (
             f"committed HEAD of this worktree ({head}); the capture ran on "
-            "that exact sha after one scripts/build_macro_suite_pages.py "
-            "rebuild. Every composition, state and empty frame was recaptured "
-            "in this run (R6-B1). No retained PNG bytes. E5 stays "
-            "captured:false — client fetch-timeout, not builder-triggerable."
+            "that exact committed sha after git status --short was empty and "
+            "after one scripts/build_macro_suite_pages.py rebuild. "
+            f"capture_sha={head}; commit_time_of_capture_sha={commit_time} "
+            f"(git show -s --format=%cI); generated_at={generated_at} is the "
+            "capture clock and is later than that commit time. Every "
+            "composition, state and empty frame was recaptured in this run "
+            "(R6-B1). No retained PNG bytes. E5 stays captured:false — "
+            "client fetch-timeout, not builder-triggerable."
         )
         MANIFEST.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
         probes["generated_at"] = generated_at
+        probes["capture_sha"] = head
+        probes["commit_time_of_capture_sha"] = commit_time
         probes["resolved_sha_or_none"] = head
         PROBES.write_text(json.dumps(probes, indent=2) + "\n", encoding="utf-8")
         print(f"wrote {MANIFEST} generated_at={generated_at} head={head}", flush=True)

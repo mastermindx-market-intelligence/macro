@@ -247,24 +247,27 @@ def test_le768_rail_is_opaque_flat_bg_like_the_shell(macro_command_css: str) -> 
         body, re.S)
 
 
-def test_le768_panel_column_reserves_the_mmb_boot_band(
+def test_le768_panel_column_reserves_only_what_is_still_fixed(
         macro_command_css: str) -> None:
-    """R8-M1: the reserved band is for #mmb-boot only. The ask pill is
-    gone at ≤768, so the 84+44+16 stack must not return. ≤480 148px
-    mid-panel hacks stay gone."""
+    """R9-M2/M3: FAB is hidden at ≤768 on this page, so the panels
+    band shrinks to the home-indicator inset. The 84+44+16 and
+    70+16 stacks must not return. ≤480 148px mid-panel hacks stay gone."""
     block = re.search(r'@media \(max-width: 768px\) \{(.*?)(?=\n@media|\Z)',
                       macro_command_css, re.S)
     assert block
     body = _strip_css_comments(block.group(1))
     assert re.search(
-        r'\.mc-panels\s*\{[^}]*padding-bottom:\s*calc\(70px \+ 16px \+ env\(safe-area-inset-bottom, 0px\)\)',
+        r'\.mc-panels\s*\{[^}]*padding-bottom:\s*env\(safe-area-inset-bottom, 0px\)',
         body, re.S)
+    assert "70px + 16px" not in body
     assert "84px + 44px + 16px" not in body
     analyst = re.search(r'\.mc-analyst\s*\{([^}]+)\}', body)
     assert analyst, "missing ≤768 .mc-analyst"
     assert "position: static" in analyst.group(1)
     assert "position: fixed" not in analyst.group(1)
     assert "bottom:" not in analyst.group(1)
+    assert "border-radius" not in analyst.group(1)
+    assert "1px solid" not in analyst.group(1)
     le480 = re.search(r'@media \(max-width: 480px\) \{(.*?)(?=\n@media|\Z)',
                       macro_command_css, re.S)
     assert le480
@@ -272,6 +275,36 @@ def test_le768_panel_column_reserves_the_mmb_boot_band(
     assert "padding-bottom: 148px" not in small
     assert "#overview .mc-caption" not in small
     assert ".mc-analyst" not in _strip_css_comments(small)
+
+
+def test_le768_hides_mmb_boot_on_mc_page_only(macro_command_css: str) -> None:
+    """R9-M2/M3: page-scoped FAB hide. Sibling pages lack body.mc-page."""
+    block = re.search(r'@media \(max-width: 768px\) \{(.*?)(?=\n@media|\Z)',
+                      macro_command_css, re.S)
+    assert block
+    body = _strip_css_comments(block.group(1))
+    assert re.search(
+        r'body\.mc-page\s+#mmb-boot\s*\{[^}]*display:\s*none', body, re.S)
+    outside = _strip_css_comments(
+        re.sub(r'@media \(max-width: 768px\) \{.*?(?=\n@media|\Z)', '',
+               macro_command_css, flags=re.S))
+    assert not re.search(r'body\.mc-page\s+#mmb-boot', outside)
+    for path in (TEMPLATES / "macro_rates_curves.html.j2",
+                 TEMPLATES / "macro_inflation_system.html.j2",
+                 TEMPLATES / "macro_liquidity_central_banks.html.j2"):
+        assert path.is_file(), path
+        assert "mc-page" not in path.read_text(encoding="utf-8")
+
+
+def test_le768_rail_mask_ends_24px_before_the_analyst(
+        macro_command_css: str) -> None:
+    """r9-m3 evidence: fade finishes ≥24px before the analyst chip."""
+    block = re.search(r'@media \(max-width: 768px\) \{(.*?)(?=\n@media|\Z)',
+                      macro_command_css, re.S)
+    assert block
+    body = _strip_css_comments(block.group(1))
+    assert "margin-right: 24px" in body
+    assert "calc(100% - 24px)" in body
 
 
 def test_i1_rail_list_scrolls_inside_its_own_box(macro_command_css: str) -> None:
@@ -357,11 +390,23 @@ def test_exactly_one_analyst_control(built_hub: str) -> None:
     # The button variant carries the attribute twice (data-mc-analyst plus the
     # two label attributes on the SAME element) only once per element; count
     # distinct control OPENINGS instead.
-    openings = len(re.findall(r'<(?:button|a)[^>]*class="mc-analyst"', main_html))
+    openings = len(re.findall(
+        r'<(?:button|a)[^>]*class="[^"]*\bmc-analyst\b', main_html))
     assert openings == 1, f"expected exactly one .mc-analyst control, found {openings}"
+    assert re.search(
+        r'<(?:button|a)[^>]*class="[^"]*\bmc-rail-link\b[^"]*\bmc-analyst\b',
+        main_html), "≤768 pill material is the shared .mc-rail-link class"
     assert "Ask the analyst" in main_html
     assert "问分析师" in main_html
     assert "向分析师提问" not in main_html
+
+
+def test_analyst_chip_boots_the_same_chat_as_mmb_boot(
+        macro_command_js: str) -> None:
+    """R9-M2: the rail chip is the ≤768 chat entry — same boot as #mmb-boot."""
+    assert "data-mc-analyst" in macro_command_js
+    assert "getElementById('mmb-boot')" in macro_command_js
+    assert "boot.click()" in macro_command_js
 
 
 @pytest.mark.needs_full_checkout("site")

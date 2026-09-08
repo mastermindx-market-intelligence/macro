@@ -762,8 +762,9 @@ def test_one_null_voice_for_every_section_level_empty() -> None:
 
 
 def test_p3_clearance_probes_are_real_geometry() -> None:
-    """R8-M1: 390 (4 cells) + 768 (2 cells) at scroll 0 / 50% / max.
-    ok is false on any text-vs-fixed-overlay hit or an empty text set."""
+    """R9: 390 (4 cells) + 768 (2 cells) at scroll 0 / 50% / max.
+    ok is false on any text-vs-fixed-overlay hit or an empty text set.
+    excused[] is always present; scrollReached == target at every stop."""
     probes = json.loads(
         (ROOT / "mockups" / "evidence" / "macro-command-p3" / "probes.json")
         .read_text(encoding="utf-8"))
@@ -782,12 +783,63 @@ def test_p3_clearance_probes_are_real_geometry() -> None:
             assert pos.get("ok") is True, (key, pos_name, pos.get("hits"))
             assert pos.get("textCount", 0) > 0, (key, pos_name)
             assert "scrollY" in pos, (key, pos_name)
-            if pos_name == "max":
-                assert pos.get("maxScrollMatched") is True, (key, pos)
-        # Back-compat aliases used by the 390 body table.
+            assert pos.get("maxScrollMatched") is True, (key, pos_name, pos)
+            assert isinstance(pos.get("excused"), list), (key, pos_name)
+            assert isinstance(pos.get("hits"), list), (key, pos_name)
+            assert "mmbBootDisplay" in pos, (key, pos_name)
+        if key.startswith("clearance_390_") or key.startswith("clearance_768_"):
+            assert row.get("mmbBootDisplay") == "none", (key, row)
+            for pos in positions.values():
+                names = [ov.get("name") for ov in pos.get("overlays") or []]
+                assert "mmb-boot" not in names, (key, names)
         if key.startswith("clearance_390_"):
             alias = key.replace("clearance_390_", "clearance_")
             assert probes[alias]["ok"] is True, alias
+
+
+def test_r9_fab_hidden_at_390_visible_at_1440() -> None:
+    """DOM receipt: getComputedStyle(#mmb-boot).display is none at ≤768
+    on this page and not none at 1440."""
+    probes = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p3" / "probes.json")
+        .read_text(encoding="utf-8"))
+    for key in (
+        "clearance_390_dark_en", "clearance_390_dark_zh",
+        "clearance_390_light_en", "clearance_390_light_zh",
+        "clearance_768_dark_en", "clearance_768_light_en",
+    ):
+        assert probes[key]["mmbBootDisplay"] == "none", key
+    fab = probes["fab_display_1440_dark_en"]
+    assert fab.get("present") is True, fab
+    assert fab.get("display") not in (None, "none"), fab
+
+
+def test_r9_default_390_frames_are_scroll_zero() -> None:
+    """R9-M1: default 390 cells are captured at scroll 0; max twins exist."""
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p3" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    states = {state.get("file"): state for state in manifest["pages"][0]["states"]}
+    for name in (
+        "09-dark-en-390.png", "10-dark-zh-390.png",
+        "11-light-en-390.png", "12-light-zh-390.png",
+    ):
+        row = states[name]
+        assert row.get("captured") is True, name
+        assert abs(float(row.get("scroll_y") or 0)) < 2, (name, row.get("scroll_y"))
+        assert row.get("scroll") in (0, "0", None) or row.get("scroll") == 0
+    for name in (
+        "44-dark-en-390-max.png", "45-dark-zh-390-max.png",
+        "46-light-en-390-max.png", "47-light-zh-390-max.png",
+    ):
+        row = states[name]
+        assert row.get("captured") is True, name
+        assert row.get("scroll") == "max", (name, row.get("scroll"))
+        assert float(row.get("scroll_y") or 0) > 100, (name, row.get("scroll_y"))
+    assert "capture_sha" in manifest
+    assert "commit_time_of_capture_sha" in manifest
+    assert "generated_at" in manifest
+    assert "scroll_y" in states["01-dark-en-1440.png"]
 
 
 def test_p3_evidence_frames_are_not_byte_duplicates() -> None:
@@ -1306,6 +1358,9 @@ def test_r7_m2_strip_void_probe_has_no_filled_slab() -> None:
         assert row.get("emptyChildren") == 0, (key, row)
         assert row.get("chipCount") == row.get("childCount"), (key, row)
         assert row.get("pixelVoidWiderThan40") is False, (key, row)
+        assert row.get("canvasRgb"), (key, row)
+        assert row.get("canvasSource"), (key, row)
+        assert "strip-inter-chip-gap" in str(row.get("canvasSource")), (key, row)
     # Back-compat alias is the light EN cell.
     alias = probes["strip_void_probe"]
     assert alias.get("ok") is True, alias
