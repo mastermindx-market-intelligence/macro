@@ -350,6 +350,80 @@ def _state_row(filename: str, theme: str, locale: str, viewport: str,
     }
 
 
+P3_PARENT = "origin/claude/marketontology-macro-command-p3-20260908"
+BLAST_AXES = (("dark", "en"), ("light", "zh"))
+
+
+def _p3_parent_sha() -> str:
+    return subprocess.check_output(
+        ["git", "rev-parse", P3_PARENT], cwd=ROOT, text=True).strip()
+
+
+def _l_strings(html: str) -> tuple[set[str], set[str]]:
+    import re
+    en = set(re.findall(r'<span class="l-en">([^<]*)</span>', html))
+    zh = set(re.findall(r'<span class="l-zh">([^<]*)</span>', html))
+    return en, zh
+
+
+def _blast_workspace_pages() -> list[str]:
+    """Workspace pages whose committed-or-rebuilt copy changed vs the P3 parent."""
+    parent = _p3_parent_sha()
+    names = subprocess.check_output(
+        ["git", "diff", "--name-only", parent, "--", "site/"],
+        cwd=ROOT, text=True)
+    pages: list[str] = []
+    for rel in names.splitlines():
+        path = Path(rel)
+        if path.parent != Path("site"):
+            continue
+        if not path.name.startswith("macro_") or not path.name.endswith(".html"):
+            continue
+        if path.name in {"macro_monetary.html", "macro_command.html"}:
+            continue
+        after = (ROOT / rel).read_text(encoding="utf-8") if (ROOT / rel).exists() else ""
+        try:
+            before = subprocess.check_output(
+                ["git", "show", f"{parent}:{rel}"], cwd=ROOT, text=True)
+        except subprocess.CalledProcessError:
+            before = ""
+        after_en, after_zh = _l_strings(after)
+        before_en, before_zh = _l_strings(before)
+        if after_en != before_en or after_zh != before_zh:
+            pages.append(path.name)
+    pages.sort()
+    return pages
+
+
+def _extract_parent_site(tmp: Path, pages: list[str]) -> Path:
+    dest = tmp / "p3-parent-site"
+    dest.mkdir(parents=True, exist_ok=True)
+    _copy_chrome(dest)
+    parent = _p3_parent_sha()
+    for name in pages:
+        html = subprocess.check_output(
+            ["git", "show", f"{parent}:site/{name}"], cwd=ROOT)
+        (dest / name).write_bytes(html)
+    return dest
+
+
+def _capture_metric_table(*, browser, origin: str, page_name: str,
+                          theme: str, locale: str, dest: Path) -> None:
+    ctx, page = _open_page(
+        browser=browser, url=f"{origin}/{page_name}", hash_path="",
+        theme=theme, locale=locale, width=1440, height=2200)
+    page.wait_for_function(
+        "([theme, locale]) => document.documentElement.getAttribute('data-theme') === theme"
+        " && (document.documentElement.getAttribute('data-lang') || 'en') === locale",
+        arg=[theme, locale],
+    )
+    page.wait_for_selector("section.mq-changed table.mq-table", timeout=15000)
+    table = page.locator("section.mq-changed table.mq-table").first
+    table.scroll_into_view_if_needed()
+    table.screenshot(path=str(dest), type="png")
+    ctx.close()
+
+
 def main() -> int:
     from playwright.sync_api import sync_playwright
     from scripts import build_macro_suite_pages as builder
@@ -509,25 +583,29 @@ def main() -> int:
                         for row in bad_doc)
                     + ". panel_ok holds in every cell.")
 
-            for key, page_name in (
-                ("financial_conditions", "macro_financial_conditions.html"),
-                ("growth_real_economy", "macro_growth_real_economy.html"),
-                ("labor_markets", "macro_labor_markets.html"),
-            ):
-                dest = BLAST / f"after-{key}-zh.png"
-                print(f"capture {dest.name}", flush=True)
-                ctx, page = _open_page(
-                    browser=browser, url=url, hash_path="",
-                    theme="dark", locale="zh", width=1440, height=2200)
-                page.goto(f"{origin}/{page_name}", wait_until="domcontentloaded",
-                          timeout=30000)
-                page.wait_for_function(
-                    "() => document.documentElement.getAttribute('data-lang') === 'zh'")
-                page.wait_for_selector("section.mq-changed table.mq-table", timeout=15000)
-                table = page.locator("section.mq-changed table.mq-table").first
-                table.scroll_into_view_if_needed()
-                table.screenshot(path=str(dest), type="png")
-                ctx.close()
+            blast_pages = _blast_workspace_pages()
+            probes["blast_pages"] = blast_pages
+            if not blast_pages:
+                raise RuntimeError("M1: no workspace page changed l-en/l-zh vs P3 parent")
+            for stale in BLAST.glob("*.png"):
+                stale.unlink()
+            parent_site = _extract_parent_site(tmp, blast_pages)
+            _p, parent_origin = _serve(parent_site)
+            for page_name in blast_pages:
+                key = page_name.removeprefix("macro_").removesuffix(".html")
+                for theme, locale in BLAST_AXES:
+                    before = BLAST / f"before-{key}-{theme}-{locale}-1440.png"
+                    after = BLAST / f"after-{key}-{theme}-{locale}-1440.png"
+                    print(f"capture {before.name}", flush=True)
+                    _capture_metric_table(
+                        browser=browser, origin=parent_origin,
+                        page_name=page_name, theme=theme, locale=locale,
+                        dest=before)
+                    print(f"capture {after.name}", flush=True)
+                    _capture_metric_table(
+                        browser=browser, origin=origin,
+                        page_name=page_name, theme=theme, locale=locale,
+                        dest=after)
 
             # §4.4 empty states
             print("building E1/E3 housing fixtures", flush=True)
@@ -646,7 +724,8 @@ def main() -> int:
             raise RuntimeError(f"copy guard: {violations}")
         probes["head_sha_at_capture"] = head
         probes["captured_at"] = captured_at
-        probes["pre_commit"] = True
+        probes["pre_commit"] = False
+        probes["capture_sha"] = head
         PROBES.write_text(json.dumps(probes, indent=2) + "\n", encoding="utf-8")
 
         manifest = {
@@ -662,7 +741,7 @@ def main() -> int:
             "generated_at": captured_at,
             "head_sha": head,
             "capture_sha": head,
-            "pre_commit": True,
+            "pre_commit": False,
             "honesty": {
                 "access": "anonymous only; no credential is entered, stored, or synthesized",
                 "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",

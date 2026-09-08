@@ -784,6 +784,49 @@ def test_p4_mixed_section_figure_uses_mixed_pair_not_current_only() -> None:
     assert seen >= 1
 
 
+def test_p4_mixed_section_routes_through_macro_command_sections() -> None:
+    """N10: a mixed P4 section through the real builder path, not _figure_block."""
+    entries = copy.deepcopy(_live_entries())
+    mixed_en = L.COUNT["overview_mixed"]["en"]
+    mixed_zh = L.COUNT["overview_mixed"]["zh"]
+    current_en = L.COUNT["same_publication"]["en"]
+    current_zh = L.COUNT["same_publication"]["zh"]
+    victim = None
+    for entry in entries:
+        if entry["workspace_id"] != "labor_markets":
+            continue
+        snap = entry["snapshot"] or {}
+        headline = snap.setdefault("headline", {})
+        changes = snap.setdefault("changes", {})
+        deltas = list(changes.get("deltas") or [])
+        assert len(deltas) >= 2, "labor_markets needs two deltas to mix"
+        headline["effective_date"] = "2026-09-04"
+        changes["prior_effective_date"] = "2026-08-04"
+        first, extra = deltas[0], deltas[1]
+        first["prior_value"] = first.get("prior_value") if first.get("prior_value") is not None else 1.0
+        first["current_value"] = first.get("current_value") if first.get("current_value") is not None else 1.1
+        first["delta"] = first.get("delta") if first.get("delta") is not None else 0.1
+        extra["prior_value"] = None
+        extra["delta"] = None
+        extra["current_value"] = extra.get("current_value") if extra.get("current_value") is not None else 2.0
+        changes["deltas"] = [first, extra]
+        victim = entry
+        break
+    assert victim is not None
+    sections = builder._macro_command_sections(entries, page_built_at=BUILT_AT)
+    jobs = next(section for section in sections if section["id"] == "jobs")
+    figure = jobs["figure"]
+    assert figure is not None
+    kinds = {row["kind"] for row in figure["rows"]}
+    assert kinds == {"current", "movement"}
+    assert figure["count_text"] is None
+    assert figure["state_line"]["en"] == mixed_en
+    assert figure["state_line"]["zh"] == mixed_zh
+    assert current_en not in figure["state_line"]["en"]
+    assert current_zh not in figure["state_line"]["zh"]
+    assert current_en not in (jobs.get("stance") or {}).get("text", {}).get("en", "")
+
+
 def test_p4_live_hub_html_prints_the_i4_state_line(built: tuple[str, Path]) -> None:
     html, out = built
     state_en = L.COUNT["same_publication"]["en"]
