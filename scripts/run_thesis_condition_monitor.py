@@ -15,8 +15,12 @@ from __future__ import annotations
 import argparse
 import os
 import sys
+from pathlib import Path
 
-from engine import thesis_condition_monitor as monitor
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
+
+from engine import thesis_condition_monitor as monitor  # noqa: E402
 
 
 def main(argv: list[str] | None = None) -> int:

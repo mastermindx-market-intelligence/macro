@@ -1268,6 +1268,14 @@ lanes:
           B6 Watchlist buy-zone sentinel — operator Supabase watchlist x buy-zone
           enter-detection -> alert JSONL + Discord dispatch.  Fail-soft (missing
           creds/table/network -> one log line, exit 0).  Same-day idempotent.
+      - id: thesis_condition_monitor
+        module: scripts.run_thesis_condition_monitor
+        note: >
+          F11 thesis condition monitor — reads committed falsifiers.json +
+          tripwire_state.json and enqueues public.alert_outbox rows for newly
+          latched windows. Fail-soft (absent creds/tables -> typed
+          READ_UNAVAILABLE, 0 rows, exit 0). Dormant unless
+          THESIS_MONITOR_ENABLE=1. Delivery is F08's drain, never this step.
       - id: notify
         module: scripts.notify
       - id: push_alerts
