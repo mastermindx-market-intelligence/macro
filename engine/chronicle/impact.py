@@ -108,13 +108,16 @@ SECOND_ORDER_CAPPED_REASON = SECOND_ORDER_AMBIGUOUS_REASON
 # Glance-tier surface bound (News Feed consequence panel). Bounded so render
 # never runs the full-corpus projection. A glance row must carry a consequence
 # (direct ticker or second-order ticker) AND belong to a public market-event
-# family. prophet_ledger rows are the product's own trade-plan closes — they
+# family. Every glance row must carry a named exposure — no family is
+# exempt. prophet_ledger rows are the product's own trade-plan closes — they
 # are not market events and never appear on the anonymous News glance
 # (typed exclusion). The window is the last 7 days as-of the newest
 # parseable event date in the input — no wall-clock on the render path. If
 # that window is empty (undated / unparseable corpus), fall back to the
 # newest 200 events. Zero qualifying rows prints a typed empty state;
-# one or more qualifying rows render (capped at 8).
+# one or more qualifying rows render (capped at 8). A regime_flip /
+# risk_band series that flips two or more times in the window collapses
+# to its latest state plus a plain-word unstable note.
 GLANCE_WINDOW_DAYS = 7
 GLANCE_FALLBACK_LIMIT = 200
 GLANCE_ROW_CAP = 8
@@ -132,20 +135,20 @@ GLANCE_ELIGIBLE_FAMILIES = frozenset({
     "risk_band",
     "research_vault",
 })
-# Earnings / calls / vault notes are about a name. Macro prints and
-# regime/risk shifts are market events even when they name no ticker.
-GLANCE_NAMED_EXPOSURE_FAMILIES = frozenset({
-    "earnings",
-    "earnings_call",
-    "research_vault",
-})
-
 EMPTY_NO_EXPOSURE_EN = "No event with a named market exposure in the last 7 days."
 EMPTY_NO_EXPOSURE_ZH = "近7天没有带明确市场敞口的事件。"
 WINDOW_FALLBACK_LABEL_EN = "Latest 200 recorded events"
 WINDOW_FALLBACK_LABEL_ZH = "最近记录的200个事件"
-SIZE_UNAVAILABLE_EN = "Size not available yet"
-SIZE_UNAVAILABLE_ZH = "暂无幅度"
+GLANCE_STANCE_EN = (
+    "Recent market events and the names they touch — shown only when an "
+    "event maps to a named exposure."
+)
+GLANCE_STANCE_ZH = "近期市场事件及其涉及的标的——仅在事件对应到明确标的时显示。"
+FLIP_UNSTABLE_EN = "changed direction twice this week — unstable"
+FLIP_UNSTABLE_ZH = "本周两度转向——尚不稳定"
+# Families that can whipsaw inside one window. Two or more flips of the
+# same series collapse to the latest state plus the unstable note.
+GLANCE_FLIP_FAMILIES = frozenset({"regime_flip", "risk_band"})
 
 _MONTH_EN = (
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -586,6 +589,47 @@ def _glance_window_labels(
     return _plain_window_span(cutoff, as_of)
 
 
+def _glance_series_key(family: str, raw_title: str, event_id: str) -> str | None:
+    """Stable series identity for in-window flip collapse. None = do not collapse."""
+    if family == "regime_flip":
+        m = _REGIME_FLIP_RE.match(raw_title or "")
+        if m:
+            return f"regime_flip:{m.group(1).strip().lower()}"
+        return f"regime_flip:{event_id or raw_title}"
+    if family == "risk_band":
+        return "risk_band:radar"
+    return None
+
+
+def _collapse_flip_series(rows: list[dict]) -> list[dict]:
+    """Keep one row per regime/risk series; tag 2+ flips as unstable."""
+    groups: dict[str, list[dict]] = {}
+    passthrough: list[dict] = []
+    for row in rows:
+        key = _glance_series_key(
+            row.get("family") or "",
+            row.get("title") or "",
+            row.get("event_id") or "",
+        )
+        if key is None:
+            passthrough.append(row)
+            continue
+        groups.setdefault(key, []).append(row)
+    out = list(passthrough)
+    for members in groups.values():
+        members.sort(
+            key=lambda r: (r.get("event_time") or "", r.get("event_id") or ""),
+            reverse=True,
+        )
+        latest = members[0]
+        if len(members) >= 2:
+            latest = dict(latest)
+            latest["note_en"] = FLIP_UNSTABLE_EN
+            latest["note_zh"] = FLIP_UNSTABLE_ZH
+        out.append(latest)
+    return out
+
+
 def _plain_state(token: str) -> tuple[str, str]:
     key = (token or "").strip().lower()
     mapped = _STATE_PLAIN.get(key)
@@ -842,10 +886,9 @@ def glance_consequence_surface(
     """Bounded, plain-word consequence surface for the News Feed panel.
 
     A glance row must belong to a public market-event family (earnings,
-    earnings_call, macro_release, regime/risk shifts, or a research_vault
-    row with a named exposure). Earnings, earnings-call, and vault rows
-    also need a direct or second-order ticker. Macro prints and regime/risk
-    shifts are market events even when they name no ticker.
+    earnings_call, macro_release, regime/risk shifts, or research_vault)
+    and carry at least one direct or second-order ticker. There is no
+    family exemption — rows without a named exposure never render.
     ``prophet_ledger`` is a typed exclusion — those rows are the product's
     own trade ledger, not market events, and never appear on the anonymous
     News glance.
@@ -860,12 +903,13 @@ def glance_consequence_surface(
     as-of (``window_label_en`` / ``window_label_zh``), or the fallback label
     when the newest-200 path fires.
 
-    Calibrated impact stays null + reason. A card with no size prints the
-    typed null (``size_en`` / ``size_zh`` are None). Empty / missing input
+    Calibrated impact stays null + reason. Size is not part of this
+    surface — the glance names exposures only. Empty / missing input
     prints an honest null state rather than fabricating rows. Row titles are
     dual-locale plain-word (``title_en`` / ``title_zh``); the raw spine
     ``title`` is kept for diagnostics only and must not be rendered on the
-    glance surface.
+    glance surface. A regime/risk series that flipped twice or more in the
+    window collapses to its latest row and carries ``note_en`` / ``note_zh``.
     """
     if not events:
         return {
@@ -905,7 +949,7 @@ def glance_consequence_surface(
             continue
         direct = [e["ticker"] for e in proj["exposures"] if e.get("materiality") == MATERIALITY_DIRECT]
         second = [e["ticker"] for e in proj["exposures"] if e.get("materiality") == MATERIALITY_SECOND_ORDER]
-        if family in GLANCE_NAMED_EXPOSURE_FAMILIES and not direct and not second:
+        if not direct and not second:
             continue
         title_en, title_zh = plain_glance_titles(proj)
         if not title_en or not title_zh:
@@ -926,13 +970,15 @@ def glance_consequence_surface(
             "second_order_truncated": bool(proj.get("second_order_truncated")),
             "second_order_candidate_count": proj.get("second_order_candidate_count", 0),
             "second_order_dropped_count": proj.get("second_order_dropped_count", 0),
-            "size_en": None,
-            "size_zh": None,
+            "note_en": None,
+            "note_zh": None,
             "calibrated_impact": None,
             "calibrated_impact_reason": CALIBRATED_IMPACT_GATE_REASON,
             "causal_label": CAUSAL_LABEL,
         })
-    # Glance order: newest first, cap at the row limit.
+    # Collapse a regime/risk series that flipped both ways in this window,
+    # then newest-first, cap at the row limit.
+    rows = _collapse_flip_series(rows)
     rows.sort(key=lambda r: (r.get("event_time") or "", r.get("event_id") or ""), reverse=True)
     cap = max(1, int(limit))
     rows = rows[:cap]
@@ -960,8 +1006,8 @@ def glance_consequence_surface(
     return {
         "served_as_market_feed": False,
         "market_feed_disposition": "explicitly_does_not_serve_market_feed",
-        "stance_en": "Recent market events and the names they touch — watch, don\u2019t chase.",
-        "stance_zh": "近期市场事件及其涉及的标的——观察为主，不必追高。",
+        "stance_en": GLANCE_STANCE_EN,
+        "stance_zh": GLANCE_STANCE_ZH,
         "reason_en": None,
         "reason_zh": None,
         "empty_kind": None,

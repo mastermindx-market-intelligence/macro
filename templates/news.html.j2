@@ -825,9 +825,8 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
     <p class="nx-sub">{{ t(CI.stance_en, CI.stance_zh or CI.stance_en) }}</p>
     {% endif %}
     {% if CI and CI.rows %}
-    {#- NM-1: sizes are associations from similar past episodes, never a
-        forecast. A card with no size prints the typed null below. -#}
-    <p class="nx-sub">{{ t('Sizes come from similar past episodes — an association, not a forecast.', '幅度来自相似历史情景——仅为关联，非预测。') }}</p>
+    {#- NM-4: this panel names exposures only — it does not size. -#}
+    <p class="nx-sub">{{ t('Named exposures only — no sizing, not a forecast.', '仅列出相关标的——不做幅度推算，非预测。') }}</p>
     {% endif %}
     {% if CI and CI.rows %}
     <div class="nx-rel-grid">
@@ -850,13 +849,11 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
             <span>{{ t('No named ticker','未点名标的') }}</span>
           {% endif %}
         </div>
+        {% if row.note_en %}
         <div class="nx-meta">
-          {% if row.size_en %}
-            <span>{{ t(row.size_en, row.size_zh or row.size_en) }}</span>
-          {% else %}
-            <span>{{ t('Size not available yet','暂无幅度') }}</span>
-          {% endif %}
+          <span>{{ t(row.note_en, row.note_zh or row.note_en) }}</span>
         </div>
+        {% endif %}
         {% if row.second_order_tickers %}
         <div class="nx-meta">
           <span>{{ t('Also watching','同时关注') }}</span>

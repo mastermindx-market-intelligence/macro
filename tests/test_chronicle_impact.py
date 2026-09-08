@@ -710,8 +710,8 @@ def test_zh_glance_strings_have_no_internal_cjk_spaces():
     assert " " not in surface["rows"][0]["title_zh"]
 
 
-def test_macro_and_regime_qualify_without_named_ticker():
-    """NM-2: macro/regime/risk are market events even with no ticker."""
+def test_macro_regime_risk_without_exposure_yield_typed_empty():
+    """NB-2: a corpus of only macro/regime/risk with no named exposure is empty."""
     macro = _ev("m-claims", "2026-09-04", source="macro_release", tickers=[])
     macro["title"] = "Macro print: claims = +206 (2026-09-03)"
     regime = _ev("r-ca", "2026-09-03", source="regime_flip", tickers=[])
@@ -721,10 +721,12 @@ def test_macro_and_regime_qualify_without_named_ticker():
     vault = _ev("v-empty", "2026-09-07", source="research_vault", tickers=[])
     vault["title"] = "UBS: weekly note"
     surface = impact.glance_consequence_surface([macro, regime, risk, vault])
-    families = {r["family"] for r in surface["rows"]}
-    assert families == {"macro_release", "regime_flip", "risk_band"}
-    assert all(r["family"] != "research_vault" for r in surface["rows"])
-    assert len(surface["rows"]) == 3
+    assert surface["rows"] == []
+    assert surface["empty_kind"] == "no_named_exposure"
+    assert surface["reason_en"] == impact.EMPTY_NO_EXPOSURE_EN
+    assert surface["reason_zh"] == impact.EMPTY_NO_EXPOSURE_ZH
+    assert surface["stance_en"] is None
+    assert not hasattr(impact, "GLANCE_NAMED_EXPOSURE_FAMILIES")
 
 
 def test_prophet_ledger_is_typed_exclusion_from_glance():
@@ -750,7 +752,9 @@ def test_glance_one_qualifying_row_renders():
     assert surface["empty_kind"] is None
     assert len(surface["rows"]) == 1
     assert surface["rows"][0]["direct_tickers"] == ["SOLO"]
-    assert surface["rows"][0]["size_en"] is None
+    assert "size_en" not in surface["rows"][0]
+    assert "size_zh" not in surface["rows"][0]
+    assert surface["rows"][0]["note_en"] is None
     assert surface["window_label_en"] == "Events from 31 Aug to 7 Sep 2026"
     assert surface["window_label_zh"] == "2026年8月31日至9月7日的事件"
 
@@ -787,3 +791,44 @@ def test_glance_fallback_carries_latest_200_label():
     assert surface["window_label_en"] == "Latest 200 recorded events"
     assert surface["window_label_zh"] == "最近记录的200个事件"
     assert len(surface["rows"]) == 8
+
+
+def test_glance_earnings_row_with_ticker_has_no_size_slot():
+    """NM-4: an earnings row with a ticker is one card and carries no size fields."""
+    ev = _ev("earn-aapl", "2026-09-07", source="earnings", tickers=["AAPL"])
+    ev["title"] = "Earnings: AAPL actual vs est"
+    surface = impact.glance_consequence_surface([ev])
+    assert surface["empty_kind"] is None
+    assert len(surface["rows"]) == 1
+    row = surface["rows"][0]
+    assert row["direct_tickers"] == ["AAPL"]
+    assert row["family"] == "earnings"
+    assert "size_en" not in row
+    assert "size_zh" not in row
+    assert not hasattr(impact, "SIZE_UNAVAILABLE_EN")
+    assert not hasattr(impact, "SIZE_UNAVAILABLE_ZH")
+    assert surface["stance_en"] == impact.GLANCE_STANCE_EN
+    assert surface["stance_zh"] == impact.GLANCE_STANCE_ZH
+
+
+def test_glance_flip_series_collapses_to_latest_with_unstable_note():
+    """NM-5: two flips of one series in the window collapse to the latest + note."""
+    older = _ev("ca-old", "2026-08-31", source="regime_flip", tickers=["EWC"])
+    older["title"] = "CANADA regime: Q1 Goldilocks → Q3 Stagflation"
+    newer = _ev("ca-new", "2026-09-04", source="regime_flip", tickers=["EWC"])
+    newer["title"] = "CANADA regime: Q3 Stagflation → Q2 Reflation"
+    other = _ev("hk-one", "2026-09-03", source="regime_flip", tickers=["EWH"])
+    other["title"] = "HK regime: Q2 Goldilocks → Q3 GrowthScare"
+    surface = impact.glance_consequence_surface([older, newer, other])
+    assert surface["empty_kind"] is None
+    ca = [r for r in surface["rows"] if "Canada" in (r.get("title_en") or "")]
+    hk = [r for r in surface["rows"] if "Hong Kong" in (r.get("title_en") or "")]
+    assert len(ca) == 1
+    assert len(hk) == 1
+    assert ca[0]["event_time"] == "2026-09-04"
+    assert ca[0]["note_en"] == impact.FLIP_UNSTABLE_EN
+    assert ca[0]["note_zh"] == impact.FLIP_UNSTABLE_ZH
+    assert ca[0]["note_en"] == "changed direction twice this week — unstable"
+    assert ca[0]["note_zh"] == "本周两度转向——尚不稳定"
+    assert hk[0]["note_en"] is None
+    assert "size_en" not in ca[0]
