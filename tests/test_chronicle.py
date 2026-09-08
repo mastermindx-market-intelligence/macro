@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import sys
 from datetime import datetime, timezone
@@ -2792,17 +2793,40 @@ def test_market_feed_alias_served_requires_supported_direction(tmp_path):
     assert receipt["projection"]["support"]["impact_magnitude"]["sample_n"] == 3
 
 
-def _append_co_occurring_impact_events(root: Path, n: int = 2) -> None:
-    """Write n events that each carry a valid direction + numeric magnitude."""
+def _append_co_occurring_impact_events(root: Path, n: int | None = None) -> int:
+    """Write n events that each carry a valid direction + numeric magnitude.
+
+    When n is omitted, size from the live census so SERVED tests still clear
+    SERVED_MIN_SHARE_OF_TICKER_EVENTS after fixture growth (MINOR-3). Each
+    appended row is ticker-bearing, so the post-append share is
+    n / (tickers_before + n); n is the smallest integer that meets both the
+    absolute floor and that share.
+    """
+    from engine.chronicle.market_feed_alias import (
+        market_feed_field_coverage,
+        SERVED_MIN_CO_OCCURRENCE,
+        SERVED_MIN_SHARE_OF_TICKER_EVENTS,
+    )
+
+    if n is None:
+        coverage = market_feed_field_coverage(root=root)
+        assert coverage["readable"] is True
+        tickers = coverage["events_with_tickers"]
+        assert isinstance(tickers, int) and tickers >= 0
+        share = SERVED_MIN_SHARE_OF_TICKER_EVENTS
+        # n / (tickers + n) >= share  =>  n >= share * tickers / (1 - share)
+        need_share = math.ceil(share * tickers / (1.0 - share)) if share < 1 else tickers + 1
+        n = max(SERVED_MIN_CO_OCCURRENCE, need_share)
     with open(root / "data" / "chronicle" / "events.jsonl", "a", encoding="utf-8") as fh:
         for i in range(n):
             fh.write(json.dumps({
                 "id": f"co-occur-{i}",
-                "date": f"2026-08-{i + 2:02d}",
+                "date": f"2026-08-{(i % 28) + 1:02d}",
                 "tickers": [f"T{i}"],
                 "direction": "up" if i % 2 == 0 else "down",
                 "impact_magnitude": 0.5 + (0.1 * i),
             }) + "\n")
+    return n
 
 
 def test_market_feed_alias_census_counts_value_not_key_presence(tmp_path):
@@ -2938,7 +2962,7 @@ def test_market_feed_alias_served_when_store_has_direction_and_magnitude(tmp_pat
 
     root = _make_fixture_root(tmp_path)
     build_and_write(root=root, rebuild=True)
-    _append_co_occurring_impact_events(root, n=2)
+    _append_co_occurring_impact_events(root)
 
     projection = {
         "name": "x",
@@ -3063,10 +3087,79 @@ def test_market_feed_alias_no_projection_reflects_store_direction_data(tmp_path)
     receipt = resolve_market_feed_alias(root=root, projection=None)
     assert receipt["state"] == "PARTIALLY_SERVED"
     assert "store_has_direction_data_no_declared_projection" in receipt["flags"]
+    assert "store_has_magnitude_data_no_declared_projection" not in receipt["flags"]
     assert "no_declared_projection" in receipt["flags"]
-    assert "We don't publish a market feed yet" in receipt["disclosure_en"]
-    assert "Part of the market feed is live" not in receipt["disclosure_en"]
-    assert "我们暂未发布市场事件流" in receipt["disclosure_zh"]
+    assert receipt["disclosure_en"] == (
+        "We don't publish a market feed yet. We've started recording which "
+        "way some events pushed a stock, but nothing is published until "
+        "that page is live."
+    )
+    assert receipt["disclosure_zh"] == (
+        "我们暂未发布市场事件流。部分事件的方向影响已开始记录，但相关页面上线前不会发布。"
+    )
+    assert "how large some events were" not in receipt["disclosure_en"]
+    assert "影响幅度已开始记录" not in receipt["disclosure_zh"]
+
+
+def test_market_feed_alias_no_projection_reflects_store_magnitude_data(tmp_path):
+    """MAJOR-2: a magnitude-only store must not claim direction recording."""
+    from engine.chronicle.market_feed_alias import resolve_market_feed_alias
+    from engine.chronicle.governor import build_and_write
+
+    root = _make_fixture_root(tmp_path)
+    build_and_write(root=root, rebuild=True)
+
+    with open(root / "data" / "chronicle" / "events.jsonl", "a", encoding="utf-8") as fh:
+        fh.write(json.dumps({
+            "id": "synthetic-magnitude-1", "date": "2026-08-01",
+            "tickers": ["TEST"], "impact_magnitude": 0.4,
+        }) + "\n")
+
+    receipt = resolve_market_feed_alias(root=root, projection=None)
+    assert receipt["state"] == "PARTIALLY_SERVED"
+    assert "store_has_magnitude_data_no_declared_projection" in receipt["flags"]
+    assert "store_has_direction_data_no_declared_projection" not in receipt["flags"]
+    assert receipt["coverage"]["events_with_direction_field"] == 0
+    assert receipt["coverage"]["events_with_magnitude_field"] == 1
+    assert receipt["disclosure_en"] == (
+        "We don't publish a market feed yet. We've started recording how "
+        "large some events were, but nothing is published until that page "
+        "is live."
+    )
+    assert receipt["disclosure_zh"] == (
+        "我们暂未发布市场事件流。部分事件的影响幅度已开始记录，但相关页面上线前不会发布。"
+    )
+    assert "which way some events pushed a stock" not in receipt["disclosure_en"]
+    assert "方向影响已开始记录" not in receipt["disclosure_zh"]
+
+
+def test_market_feed_alias_no_projection_reflects_store_direction_and_magnitude(tmp_path):
+    """MAJOR-2: both-present store must name both measurements, not direction only."""
+    from engine.chronicle.market_feed_alias import resolve_market_feed_alias
+    from engine.chronicle.governor import build_and_write
+
+    root = _make_fixture_root(tmp_path)
+    build_and_write(root=root, rebuild=True)
+
+    with open(root / "data" / "chronicle" / "events.jsonl", "a", encoding="utf-8") as fh:
+        fh.write(json.dumps({
+            "id": "synthetic-both-1", "date": "2026-08-01",
+            "tickers": ["TEST"], "direction": "up", "impact_magnitude": 0.4,
+        }) + "\n")
+
+    receipt = resolve_market_feed_alias(root=root, projection=None)
+    assert receipt["state"] == "PARTIALLY_SERVED"
+    assert "store_has_direction_and_magnitude_data_no_declared_projection" in receipt["flags"]
+    assert receipt["coverage"]["events_with_direction_field"] == 1
+    assert receipt["coverage"]["events_with_magnitude_field"] == 1
+    assert receipt["disclosure_en"] == (
+        "We don't publish a market feed yet. We've started recording which "
+        "way some events pushed a stock and how large that move was, but "
+        "nothing is published until that page is live."
+    )
+    assert receipt["disclosure_zh"] == (
+        "我们暂未发布市场事件流。部分事件的方向与幅度影响已开始记录，但相关页面上线前不会发布。"
+    )
 
 
 def test_market_feed_alias_disclosure_cause_claim_unsupported(tmp_path):
@@ -3158,7 +3251,7 @@ def test_market_feed_alias_disclosure_is_plain_words_both_languages(tmp_path):
 
     root = _make_fixture_root(tmp_path)
     build_and_write(root=root, rebuild=True)
-    _append_co_occurring_impact_events(root, n=2)
+    _append_co_occurring_impact_events(root)
 
     forbidden = [
         "falsif", "证伪", "refut", "mo-delta", "mo-paid", "impact_direction",
@@ -3214,3 +3307,119 @@ def test_market_feed_alias_receipt_is_deterministic_and_json_serializable(tmp_pa
     proxy_fields = {p["field"] for p in r1["rejected_proxies"]}
     assert "weight_hint" in proxy_fields
     assert "impact_magnitude" not in r1["served_fields"]
+
+
+def test_market_feed_alias_served_copy_does_not_claim_live_without_route_receipt(tmp_path):
+    """MINOR-1: SERVED is store+declaration readiness, not a live-page claim.
+    An unverified route must not print 'the market feed is live'."""
+    from engine.chronicle.market_feed_alias import (
+        resolve_market_feed_alias, MARKET_FEED_REQUIRED_FIELDS,
+    )
+    from engine.chronicle.governor import build_and_write
+
+    root = _make_fixture_root(tmp_path)
+    build_and_write(root=root, rebuild=True)
+    _append_co_occurring_impact_events(root)
+
+    receipt = resolve_market_feed_alias(
+        root=root,
+        projection={
+            "name": "anything",
+            "route": "/does/not/exist",
+            "fields": list(MARKET_FEED_REQUIRED_FIELDS),
+        },
+    )
+    assert receipt["state"] == "SERVED"
+    assert receipt["projection"]["route"] == "/does/not/exist"
+    assert receipt["disclosure_en"] == (
+        "The market feed is ready to publish: each event, the tickers it "
+        "touches, which way it pushed them, and how large that move was."
+    )
+    assert receipt["disclosure_zh"] == "市场事件流已可发布：事件、所涉个股、影响方向与影响幅度。"
+    assert "is live" not in receipt["disclosure_en"]
+    assert "已上线" not in receipt["disclosure_zh"]
+
+
+def test_market_feed_alias_mixed_date_types_do_not_unread_store(tmp_path):
+    """MINOR-2: one non-string date must not collapse the whole census."""
+    from engine.chronicle.market_feed_alias import (
+        market_feed_field_coverage, resolve_market_feed_alias,
+    )
+    from engine.chronicle.governor import build_and_write
+
+    root = _make_fixture_root(tmp_path)
+    build_and_write(root=root, rebuild=True)
+
+    with open(root / "data" / "chronicle" / "events.jsonl", "a", encoding="utf-8") as fh:
+        fh.write(json.dumps({
+            "id": "good-date", "date": "2026-09-01", "tickers": ["A"],
+        }) + "\n")
+        fh.write(json.dumps({
+            "id": "int-date", "date": 20260101, "tickers": ["B"],
+        }) + "\n")
+
+    coverage = market_feed_field_coverage(root=root)
+    assert coverage["readable"] is True
+    assert coverage["reason"] is None
+    assert coverage["events_total"] >= 2
+    assert coverage["events_with_tickers"] >= 2
+    assert coverage["coverage_start"] == "2026-07-09" or coverage["coverage_start"] <= "2026-09-01"
+    assert coverage["coverage_end"] == "2026-09-01"
+    assert isinstance(coverage["coverage_start"], str)
+    assert isinstance(coverage["coverage_end"], str)
+
+    receipt = resolve_market_feed_alias(root=root, projection=None)
+    assert receipt["state"] != "UNKNOWN"
+    assert "store_unreadable" not in receipt["flags"]
+    assert "read_failed" not in (receipt["coverage"]["reason"] or "")
+
+
+def test_market_feed_alias_served_helper_clears_coverage_on_large_ticker_store(tmp_path):
+    """MINOR-3: SERVED helper must size n from the census, not a hardcoded 2.
+    A store with 102 ticker-bearing events and only 2 co-occurring rows is
+    PARTIALLY_SERVED (2/102 < 0.10); auto-sized append must still reach SERVED."""
+    from engine.chronicle.market_feed_alias import (
+        resolve_market_feed_alias, MARKET_FEED_REQUIRED_FIELDS,
+        market_feed_field_coverage, SERVED_MIN_SHARE_OF_TICKER_EVENTS,
+        SERVED_MIN_CO_OCCURRENCE,
+    )
+    from engine.chronicle.governor import build_and_write
+
+    root = _make_fixture_root(tmp_path)
+    build_and_write(root=root, rebuild=True)
+
+    with open(root / "data" / "chronicle" / "events.jsonl", "a", encoding="utf-8") as fh:
+        for i in range(100):
+            fh.write(json.dumps({
+                "id": f"pad-ticker-{i}",
+                "date": "2026-07-01",
+                "tickers": [f"P{i}"],
+            }) + "\n")
+
+    before = market_feed_field_coverage(root=root)
+    assert before["events_with_tickers"] >= 100
+    under = resolve_market_feed_alias(
+        root=root,
+        projection={"name": "x", "route": "/x", "fields": list(MARKET_FEED_REQUIRED_FIELDS)},
+    )
+    # Two hardcoded rows would be below the share gate on this store.
+    hardcoded_share = 2 / before["events_with_tickers"]
+    assert hardcoded_share < SERVED_MIN_SHARE_OF_TICKER_EVENTS
+
+    n = _append_co_occurring_impact_events(root)
+    after = market_feed_field_coverage(root=root)
+    assert n >= SERVED_MIN_CO_OCCURRENCE
+    assert n > 2
+    assert after["events_with_direction_and_magnitude"] == n
+    assert (
+        after["events_with_direction_and_magnitude"]
+        / after["events_with_tickers"]
+        >= SERVED_MIN_SHARE_OF_TICKER_EVENTS
+    )
+
+    receipt = resolve_market_feed_alias(
+        root=root,
+        projection={"name": "x", "route": "/x", "fields": list(MARKET_FEED_REQUIRED_FIELDS)},
+    )
+    assert receipt["state"] == "SERVED"
+    assert under["state"] != "SERVED"

@@ -118,8 +118,12 @@ _DIRECTION_ENUM: frozenset[str] = frozenset({
 SERVED_MIN_CO_OCCURRENCE = 2
 SERVED_MIN_SHARE_OF_TICKER_EVENTS = 0.10
 
-# Cause-keyed disclosures (Front-End Clarity Law). PARTIALLY_SERVED has three
-# distinct causes; state-alone copy falsely claimed a live published feed.
+# Cause-keyed disclosures (Front-End Clarity Law). PARTIALLY_SERVED copy
+# must name the measurement that is actually present — a single
+# no_declared_projection string that always claimed "direction" was false
+# on a magnitude-only store (MAJOR-2, PR #6897). SERVED copy is a
+# store+declaration readiness statement, not a publish-receipt claim
+# (MINOR-1): this module never verifies that the declared route exists.
 _DISCLOSURE_EN: dict[tuple[str, str | None], str] = {
     ("NOT_SERVED", None): (
         "We don't publish a market feed yet. We track the events and which "
@@ -131,9 +135,23 @@ _DISCLOSURE_EN: dict[tuple[str, str | None], str] = {
         "either way — this note updates when the record is back."
     ),
     ("PARTIALLY_SERVED", "no_declared_projection"): (
+        "We don't publish a market feed yet. Nothing is published until "
+        "that page is live."
+    ),
+    ("PARTIALLY_SERVED", "store_has_direction_data_no_declared_projection"): (
         "We don't publish a market feed yet. We've started recording which "
         "way some events pushed a stock, but nothing is published until "
         "that page is live."
+    ),
+    ("PARTIALLY_SERVED", "store_has_magnitude_data_no_declared_projection"): (
+        "We don't publish a market feed yet. We've started recording how "
+        "large some events were, but nothing is published until that page "
+        "is live."
+    ),
+    ("PARTIALLY_SERVED", "store_has_direction_and_magnitude_data_no_declared_projection"): (
+        "We don't publish a market feed yet. We've started recording which "
+        "way some events pushed a stock and how large that move was, but "
+        "nothing is published until that page is live."
     ),
     ("PARTIALLY_SERVED", "claim_unsupported_by_store"): (
         "We don't publish a market feed yet — we don't yet measure which "
@@ -149,8 +167,8 @@ _DISCLOSURE_EN: dict[tuple[str, str | None], str] = {
         "coverage is solid."
     ),
     ("SERVED", None): (
-        "The market feed is live: each event, the tickers it touches, "
-        "which way it pushed them, and how large that move was."
+        "The market feed is ready to publish: each event, the tickers it "
+        "touches, which way it pushed them, and how large that move was."
     ),
 }
 
@@ -161,7 +179,16 @@ _DISCLOSURE_ZH: dict[tuple[str, str | None], str] = {
     ),
     ("UNKNOWN", None): "目前无法读取事件记录，因此暂不作判断；记录恢复后此处会更新。",
     ("PARTIALLY_SERVED", "no_declared_projection"): (
+        "我们暂未发布市场事件流。相关页面上线前不会发布。"
+    ),
+    ("PARTIALLY_SERVED", "store_has_direction_data_no_declared_projection"): (
         "我们暂未发布市场事件流。部分事件的方向影响已开始记录，但相关页面上线前不会发布。"
+    ),
+    ("PARTIALLY_SERVED", "store_has_magnitude_data_no_declared_projection"): (
+        "我们暂未发布市场事件流。部分事件的影响幅度已开始记录，但相关页面上线前不会发布。"
+    ),
+    ("PARTIALLY_SERVED", "store_has_direction_and_magnitude_data_no_declared_projection"): (
+        "我们暂未发布市场事件流。部分事件的方向与幅度影响已开始记录，但相关页面上线前不会发布。"
     ),
     ("PARTIALLY_SERVED", "claim_unsupported_by_store"): (
         "我们暂未发布市场事件流——每个事件对个股的方向影响尚未测量。"
@@ -172,7 +199,7 @@ _DISCLOSURE_ZH: dict[tuple[str, str | None], str] = {
     ("PARTIALLY_SERVED", "below_coverage_threshold"): (
         "我们暂未发布市场事件流。方向与幅度数据仅覆盖少量事件，覆盖达标前不会发布。"
     ),
-    ("SERVED", None): "市场事件流已上线：事件、所涉个股、影响方向与影响幅度。",
+    ("SERVED", None): "市场事件流已可发布：事件、所涉个股、影响方向与影响幅度。",
 }
 
 
@@ -274,17 +301,32 @@ def _meets_served_coverage(coverage: Mapping[str, object]) -> bool:
 
 
 def _disclosure_cause(state: str, flags: set[str] | frozenset[str]) -> str | None:
-    """Map receipt flags to the disclosure cause key for PARTIALLY_SERVED."""
+    """Map receipt flags to the disclosure cause key for PARTIALLY_SERVED.
+
+    Direction-only and magnitude-only stores must not share one copy string:
+    a magnitude-only census that printed "which way some events pushed a
+    stock" was a false measurement claim (MAJOR-2, PR #6897).
+    """
     if state != "PARTIALLY_SERVED":
         return None
     for key in (
         "below_coverage_threshold",
         "claim_unsupported_by_store",
-        "no_declared_projection",
-        "projection_incomplete",
     ):
         if key in flags:
             return key
+    has_direction = "store_has_direction_data_no_declared_projection" in flags
+    has_magnitude = "store_has_magnitude_data_no_declared_projection" in flags
+    if has_direction and has_magnitude:
+        return "store_has_direction_and_magnitude_data_no_declared_projection"
+    if has_direction:
+        return "store_has_direction_data_no_declared_projection"
+    if has_magnitude:
+        return "store_has_magnitude_data_no_declared_projection"
+    if "no_declared_projection" in flags:
+        return "no_declared_projection"
+    if "projection_incomplete" in flags:
+        return "projection_incomplete"
     return "projection_incomplete"
 
 
@@ -355,7 +397,7 @@ def market_feed_field_coverage(root: Path | str | None = None) -> dict:
             and _event_has_valid_magnitude(e)
         )
         dates = sorted(
-            d for e in events if (d := e.get("date"))
+            d for e in events if isinstance((d := e.get("date")), str)
         )
         out.update(
             {
@@ -467,6 +509,10 @@ def resolve_market_feed_alias(
                         flags.add("store_has_direction_data_no_declared_projection")
                     if store_has_magnitude:
                         flags.add("store_has_magnitude_data_no_declared_projection")
+                    if store_has_direction and store_has_magnitude:
+                        flags.add(
+                            "store_has_direction_and_magnitude_data_no_declared_projection"
+                        )
                     reason = (
                         "store_has_impact_data_no_declared_projection: the store "
                         "carries direction/magnitude-bearing field(s) but no "
