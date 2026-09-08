@@ -373,11 +373,90 @@ def test_two_sessions_behind_uses_plural_trading_days():
     assert "2 days behind" not in panel
 
 
-def test_visual_evidence_receipt_covers_sixteen_rest_cells():
-    """BLOCKER 1: the committed receipt must own the template and carry
-    populated + degraded × desktop/mobile × en/zh × dark/light, each
-    actually captured with the requested theme/locale/viewport applied.
-    Sixteen rest cells, no tautology — every cell names a real PNG."""
+_LEDE_STATES = (
+    ("many", _brief(board_state="OK", opportunities=[_card("AAA", r=1), _card("BBB", r=2), _card("CCC", r=3)])),
+    ("one", _brief(board_state="OK", opportunities=[_card("AAA", r=1)])),
+    ("quiet", _brief(board_state="NO_SIGNAL", opportunities=[])),
+    ("degraded", _brief(board_state="STALE_SOURCE", opportunities=[])),
+)
+
+_POSTURE_WORDS = (
+    "Stand aside", "暂时观望", "Watch — don't chase", "观察—勿追高",
+    "Act", "Get ready", "Protect gains", "Ignore",
+    "行动", "准备", "保护收益", "忽略",
+)
+
+
+def _lede_block(panel: str) -> str:
+    lede_start = panel.index('class="oew-aib-lede')
+    lede_end = panel.index("</div>", panel.index('class="oew-aib-fresh"'))
+    return panel[lede_start:lede_end]
+
+
+def _span_lang(block: str, cls: str, lang: str) -> str:
+    # Class may carry extras (`oew-stance st-watch`); match the token prefix.
+    start = block.index(f'class="{cls}')
+    marker = f'class="l-{lang}"'
+    inner_start = block.index(marker, start)
+    inner = block[inner_start:]
+    open_end = inner.index(">") + 1
+    close = inner.index("</span>")
+    return inner[open_end:close]
+
+
+def _lede_chip_and_said(panel: str) -> tuple[str, str, str, str]:
+    lede = _lede_block(panel)
+    chip_cls = "oew-aib-lede-chip" if 'class="oew-aib-lede-chip"' in lede else "oew-stance"
+    return (
+        _span_lang(lede, chip_cls, "en"),
+        _span_lang(lede, "oew-aib-lede-said", "en"),
+        _span_lang(lede, chip_cls, "zh"),
+        _span_lang(lede, "oew-aib-lede-said", "zh"),
+    )
+
+
+def test_lede_chip_word_is_not_the_stance_sentence():
+    """Round-2 MAJOR 1: the quiet lede used to print the doctrine phrase as
+    both the chip and the stance sentence. Every lede state must keep those
+    two spans distinct."""
+    for name, brief in _LEDE_STATES:
+        page = render(REPO, stores=dict(EMPTY_STORES), intel_brief=brief, now=NOW)
+        chip_en, said_en, chip_zh, said_zh = _lede_chip_and_said(_aib_panel(page))
+        assert chip_en != said_en, (name, "en", chip_en, said_en)
+        assert chip_zh != said_zh, (name, "zh", chip_zh, said_zh)
+
+
+def test_degraded_emits_no_posture_word():
+    """Round-2 MINOR 1 / pinned fix (b): a data outage is not a market
+    posture. The degraded chip is a freshness word, never Stand aside."""
+    brief = _brief(board_state="STALE_SOURCE", opportunities=[])
+    page = render(REPO, stores=dict(EMPTY_STORES), intel_brief=brief, now=NOW)
+    lede = _lede_block(_aib_panel(page))
+    for word in _POSTURE_WORDS:
+        assert word not in lede, word
+    chip_en, said_en, chip_zh, said_zh = _lede_chip_and_said(_aib_panel(page))
+    assert chip_en == "Data behind"
+    assert chip_zh == "数据滞后"
+    assert said_en == "Not enough fresh data to give a stance."
+    assert said_zh == "数据不足，暂不给出立场。"
+    assert 'class="oew-aib-lede-chip"' in lede
+    assert "oew-stance" not in lede
+
+
+def test_quiet_chip_is_the_one_word_doctrine():
+    brief = _brief(board_state="NO_SIGNAL", opportunities=[])
+    page = render(REPO, stores=dict(EMPTY_STORES), intel_brief=brief, now=NOW)
+    chip_en, said_en, chip_zh, said_zh = _lede_chip_and_said(_aib_panel(page))
+    assert chip_en == "Watch"
+    assert chip_zh == "观察"
+    assert said_en == _esc("Watch — don't chase.")
+    assert said_zh == "观察—勿追高。"
+
+
+def test_visual_evidence_receipt_covers_four_lede_states_and_stale():
+    """Round-2 MAJOR 1/2: the committed receipt must own the template and
+    carry many + one + quiet + degraded + the plural is-stale path, each
+    × desktop/mobile × en/zh × dark/light. Forty rest cells, no tautology."""
     receipt_path = REPO / "mockups/evidence/pr6932-aib-lede/EVIDENCE.yml"
     if not receipt_path.is_file():
         import pytest
@@ -389,7 +468,18 @@ def test_visual_evidence_receipt_covers_sixteen_rest_cells():
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     assert manifest["schema"] == "mastermind.p0_evidence.v2"
     page_ids = {page["page_id"] for page in manifest["pages"]}
-    assert page_ids == {"pr6932_aib_populated.html", "pr6932_aib_degraded.html"}
+    assert page_ids == {
+        "pr6932_aib_many.html",
+        "pr6932_aib_one.html",
+        "pr6932_aib_quiet.html",
+        "pr6932_aib_degraded.html",
+        "pr6932_aib_stale.html",
+    }
+    fixtures = REPO / "mockups/evidence/pr6932-aib-lede/fixtures"
+    for page_id in page_ids:
+        assert (fixtures / page_id).is_file(), page_id
+    manifest_text = manifest_path.read_text(encoding="utf-8")
+    assert "/Users/" not in manifest_text
     required = {
         (viewport, locale, theme)
         for viewport in ("desktop", "mobile")
@@ -414,4 +504,4 @@ def test_visual_evidence_receipt_covers_sixteen_rest_cells():
             assert png.stat().st_size > 10_000, (page["page_id"], key, png.stat().st_size)
             got.add(key)
         assert got == required, (page["page_id"], required - got)
-    assert sum(len(page["states"]) for page in manifest["pages"]) == 16
+    assert sum(len(page["states"]) for page in manifest["pages"]) == 40

@@ -299,8 +299,8 @@ _AIB_LEDE = {
     "degraded": (
         "Today's brief isn't ready yet.",
         "今日简报尚未就绪。",
-        "aside", "Nothing to act on here — this fills in after the next close.",
-        "此处暂无可执行内容——将在下次收盘后填充。",
+        "data", "Not enough fresh data to give a stance.",
+        "数据不足，暂不给出立场。",
     ),
 }
 
@@ -311,10 +311,17 @@ _AIB_LEDE = {
 # word verbatim (transcribed from this same template's existing
 # `st-watch`/`st-aside` usage, e.g. templates/options.html.j2:1354), the
 # label sits beside it, and the lede's own sentence is a third, separate span.
+# `data` is NOT a market-posture slug — it is a plumbing/outage chip and the
+# template renders it as `.oew-aib-lede-chip`, never `.oew-stance`.
+# Quiet keeps slug `watch` (doctrine class) but overrides the chip to the
+# ONE-word doctrine so the chip and the stance sentence are never the same
+# six words twice.
 _AIB_LEDE_STANCE_WORD = {
     "watch": ("Watch — don't chase", "观察—勿追高"),
     "aside": ("Stand aside", "暂时观望"),
+    "data": ("Data behind", "数据滞后"),
 }
+_AIB_LEDE_QUIET_CHIP = ("Watch", "观察")
 
 # Static EN month/weekday abbreviations for the freshness "as of" phrase —
 # NEVER strftime("%a")/strftime("%b"), whose output is locale-dependent.
@@ -741,6 +748,8 @@ def build_aib(intel_brief: dict | None, *, now: datetime | None = None) -> dict:
         lede_head_en = lede_head_en.format(n=len(cards))
         lede_head_zh = lede_head_zh.format(n=len(cards))
     lede_stance_word_en, lede_stance_word_zh = _AIB_LEDE_STANCE_WORD[lede_stance_slug]
+    if lede_key == "quiet":
+        lede_stance_word_en, lede_stance_word_zh = _AIB_LEDE_QUIET_CHIP
     built_at_utc = intel_brief.get("built_at_utc")
     freshness = _aib_freshness(intel_brief.get("as_of_session"), built_at_utc, now)
 
