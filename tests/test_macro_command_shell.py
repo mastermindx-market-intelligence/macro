@@ -297,7 +297,8 @@ def test_le768_panel_column_reserves_only_what_is_still_fixed(
 
 
 def test_le768_hides_mmb_boot_on_mc_page_only(macro_command_css: str) -> None:
-    """R9-M2/M3: page-scoped FAB hide. Sibling pages lack body.mc-page."""
+    """R9-M2/M3 / P5 M3: page-scoped FAB hide at ≤768. Hub + workspaces
+    carry body.mc-page so the same rule covers all five P5 pages."""
     block = re.search(r'@media \(max-width: 768px\) \{(.*?)(?=\n@media|\Z)',
                       macro_command_css, re.S)
     assert block
@@ -309,10 +310,12 @@ def test_le768_hides_mmb_boot_on_mc_page_only(macro_command_css: str) -> None:
                macro_command_css, flags=re.S))
     assert not re.search(r'body\.mc-page\s+#mmb-boot', outside)
     for path in (TEMPLATES / "macro_rates_curves.html.j2",
-                 TEMPLATES / "macro_inflation_system.html.j2",
-                 TEMPLATES / "macro_liquidity_central_banks.html.j2"):
-        assert path.is_file(), path
-        assert "mc-page" not in path.read_text(encoding="utf-8")
+                 TEMPLATES / "macro_financial_conditions.html.j2",
+                 TEMPLATES / "macro_housing_real_estate.html.j2",
+                 TEMPLATES / "macro_business_activity.html.j2"):
+        text = path.read_text(encoding="utf-8")
+        assert "mc-page" in text
+        assert "macro_command.css" in text
 
 
 def test_le768_rail_mask_ends_24px_before_the_analyst(
@@ -639,3 +642,37 @@ def test_hash_of_a_tabpanel_id_is_resolved_to_its_section(
     """m4: #funding must activate credit/funding, not early-return."""
     assert "function tabbodyOwner(" in macro_command_js
     assert "data-mc-tabbody" in macro_command_js
+
+
+WORKSPACE_P5 = (
+    "macro_rates_curves.html.j2",
+    "macro_financial_conditions.html.j2",
+    "macro_housing_real_estate.html.j2",
+    "macro_business_activity.html.j2",
+)
+
+
+def test_workspace_pages_carry_analyst_chip_and_page_class() -> None:
+    """M3 / M-E14: one law for hub + four workspaces."""
+    nav = (TEMPLATES / "_macro_suite_nav.html.j2").read_text(encoding="utf-8")
+    assert "data-mc-analyst" in nav
+    assert nav.rindex("data-mc-analyst") > nav.rindex("nav.entries")
+    css = (TEMPLATES / "macro_command.css").read_text(encoding="utf-8")
+    mobile = css.split("@media (max-width: 768px)")[1].split("@media (max-width: 480px)")[0]
+    assert "body.mc-page #mmb-boot" in mobile
+    assert "html:has(.mc-shell)" not in css
+    suite = (TEMPLATES / "macro_suite.css").read_text(encoding="utf-8")
+    assert "calc(100% - 24px)" in suite
+    for name in WORKSPACE_P5:
+        text = (TEMPLATES / name).read_text(encoding="utf-8")
+        assert 'class="mq-page mc-page"' in text
+        assert "macro_command.css" in text
+        assert "macro_command.js" in text
+
+
+def test_workspace_tab_strip_never_cuts_mid_word() -> None:
+    suite = (TEMPLATES / "macro_suite.css").read_text(encoding="utf-8")
+    block = suite.split("@media (max-width: 768px)")[1].split("@media (max-width: 760px)")[0]
+    assert "calc(100% - 24px)" in block
+    assert "overflow-x: auto" in suite
+    assert "white-space: nowrap" in block

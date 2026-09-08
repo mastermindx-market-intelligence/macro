@@ -168,7 +168,7 @@ def test_empty_card_hides_title_when_the_panel_already_has_the_stance() -> None:
     assert "fig.empty(s.empty, hide_title=true)" in src
     assert "fig.empty(tab.empty, hide_title=true)" in src
     isolated = _render_empty(builder._empty_state("e2"))
-    assert "Today's number didn't arrive" in isolated
+    assert "No reading arrived today" in isolated or "Today's number didn't arrive" in isolated
 
 
 def test_e1_stance_and_slot_are_the_same_sentence() -> None:

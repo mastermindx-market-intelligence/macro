@@ -55,10 +55,13 @@
 {#- P5 §5: technical copy lives in <details class="mc-details">. The summary
     is the §5 Details-summary plain pair when the spec gives one, else
     Details / 详情 (R1). The caller keeps the cited string verbatim. -#}
-{%- macro mc_details(summary_en='Details', summary_zh='详情') -%}
+{%- macro mc_details(summary_en='Technical notes', summary_zh='技术说明') -%}
 <details class="mc-details">
   <summary>{{ t(summary_en, summary_zh) }}</summary>
-  <div class="mc-details-body">{{ caller() }}</div>
+  <div class="mc-details-body">
+  <p class="mc-details-tier">{{ t('Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.', '给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。') }}</p>
+  {{ caller() }}
+  </div>
 </details>
 {%- endmacro -%}
 

@@ -160,8 +160,27 @@ code { font-family: var(--font-mono); font-size: 10.5px; word-break: break-all; 
   border-radius: var(--mq-radius); background: var(--mq-surface); box-shadow: var(--mq-shadow);
 }
 .mq-ribbon-list { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
-.mq-implication { padding: 14px 16px; border: 1px solid var(--mq-line); border-radius: 12px; background: var(--mq-raised); }
-.mq-implication-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 9px; }
+.mq-ribbon-list { list-style: none; margin: 0; padding: 0; counter-reset: mq-imp; }
+.mq-implication {
+  padding: 14px 16px;
+  border: 1px solid var(--mq-line);
+  border-radius: 12px;
+  background: var(--mq-raised);
+  counter-increment: mq-imp;
+}
+.mq-implication + .mq-implication {
+  margin-top: 10px;
+  border-top: 1px solid var(--mq-line);
+}
+.mq-implication-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 9px; align-items: baseline; }
+.mq-implication-badges::before {
+  content: counter(mq-imp);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  color: var(--mq-muted);
+  min-width: 1.25em;
+}
 .mq-implication-text { max-width: 82ch; margin: 0; font-size: 13.5px; line-height: 1.5; }
 .mq-implication-claim { max-width: 78ch; margin: 7px 0 9px; color: var(--mq-muted); font-size: 10.5px; }
 .mq-implication-contra { margin: 8px 0 0; color: var(--ink-warn); font-size: 11px; }
@@ -355,9 +374,15 @@ code { font-family: var(--font-mono); font-size: 10.5px; word-break: break-all; 
 .mq-suitenav-rail {
   display: flex; gap: 6px; margin: 0; padding: 4px 2px;
   list-style: none; overflow-x: auto;
-  scrollbar-width: thin;
+  scrollbar-width: none;
   /* The rail is the only horizontally scrolling thing here; the page body is not. */
   overscroll-behavior-x: contain;
+}
+.mq-suitenav-rail::-webkit-scrollbar { display: none; }
+.mq-suitenav-analyst { flex: 0 0 auto; list-style: none; }
+.mq-suitenav-analyst .mc-analyst {
+  appearance: none; cursor: pointer; font: inherit;
+  background: transparent;
 }
 .mq-suitenav-pill {
   display: inline-flex; align-items: center;
@@ -628,6 +653,24 @@ html[data-theme="light"] .mq-hub-absent {
   .mq-map { grid-template-columns: 1fr; }
 }
 
+@media (max-width: 768px) {
+  /* Same ≤768 law as the hub: sticky strip, fade mask, page-scoped FAB hide
+     lives on body.mc-page in macro_command.css. */
+  .mq-suitenav {
+    position: sticky; top: 60px; z-index: 4;
+    background: var(--bg);
+    border-bottom: 1px solid var(--mq-line);
+    padding-bottom: 8px;
+  }
+  .mq-suitenav-rail {
+    flex-wrap: nowrap;
+    min-width: 0;
+    margin-right: 24px;
+    mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
+  }
+  .mq-suitenav-pill { white-space: nowrap; }
+}
 @media (max-width: 760px) {
   body.mq-page { padding: 14px; }
   .mq-shell { margin: 14px auto 56px; }

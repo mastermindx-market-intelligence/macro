@@ -71,11 +71,10 @@
   (R6-M3: after the populated-only filter the live Read has two
   clauses; a three-clause floor would hide a true sentence).
 
-  NO whitespace is emitted inside <p class="mc-read"> — not between the anchor
-  and its predicate, not between clauses. EN's word space is a CSS margin on
-  `.mc-read-topic` and ZH's near-zero gap is the same token; inter-clause
-  separation is `punct` alone. Template whitespace here renders as a Latin word
-  space in Chinese and as a leading indent before the first word (F-10).
+  EN's one word space is the explicit <span class="l-en"> </span> after the
+  topic; ZH emits no space character. Do not also add a CSS margin on EN —
+  that read as a double space after every colour token (M-E12). Inter-clause
+  separation is `punct` alone.
 #}
 {% macro read_block(read) -%}
 {%- if read.clauses|length >= 2 %}

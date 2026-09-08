@@ -51,6 +51,12 @@
          {%- if item.current %} aria-current="page"{% endif %}>{{ bl(item.title) }}</a>
     </li>
     {%- endfor %}
+    <li class="mq-suitenav-analyst">
+      <button type="button" class="mq-suitenav-pill mc-analyst" data-mc-analyst
+              data-mc-analyst-label-en="this workspace" data-mc-analyst-label-zh="本工作区">
+        <span class="mc-analyst-text">{{ t('Ask the analyst', '问分析师') }}</span>
+      </button>
+    </li>
   </ul>
 </nav>
 {%- endmacro -%}

@@ -372,6 +372,26 @@ METRIC: dict[str, dict[str, str]] = {
     "export_import_coverage_ratio": _pair(
         "How much exports cover imports", "出口对进口的覆盖程度"),
     "growth_axis_score": _pair("Growth score", "增长评分"),
+    "nfci_pctile": _pair(
+        "Chicago Fed financial-conditions percentile", "芝加哥联储金融条件分位"),
+    "nfci_change_13w": _pair(
+        "13-week change in financial conditions", "金融条件的13周变化"),
+    "nfci_credit_subindex": _pair(
+        "Credit slice of financial conditions", "金融条件中的信贷分项"),
+    "move_pctile": _pair(
+        "Bond-volatility percentile", "债券波动率分位"),
+    "national_rent_zori": _pair("National rent index", "全国租金指数"),
+    "us5y_real": _pair("5-year real yield", "5年期实际收益率"),
+    "us10y_real": _pair("10-year real yield", "10年期实际收益率"),
+    "breakeven_10y": _pair("10-year inflation break-even", "10年期通胀盈亏平衡"),
+    "breakeven_5y5y": _pair(
+        "5-year, 5-year forward inflation", "5年后再5年的远期通胀"),
+    "term_premium_10y": _pair("10-year term premium", "10年期期限溢价"),
+    "consumer_sentiment": _pair("Consumer sentiment", "消费者信心"),
+    "glt_monetary_impulse": _pair("Global money impulse", "全球货币脉冲"),
+    "glt_liquidity_breadth": _pair("Global liquidity breadth", "全球流动性广度"),
+    "glt_usd_funding_impulse": _pair("Dollar-funding impulse", "美元融资脉冲"),
+    "iorb": _pair("Interest on reserves", "准备金利息"),
 }
 
 # F01 Macro Command P3 — reviewed panel copy. Keyed (section_id, state_key).
@@ -1329,6 +1349,7 @@ _LOCALE_SUFFIX_RE = re.compile(r"_(en|zh)\b")
 # Customer-facing brand / market words that match the state-token shape.
 _STATE_TOKEN_ALLOW: frozenset[str] = frozenset({
     "MASTERMINDX", "HICP", "FRED", "SOFR", "TIPS", "OECD", "NBER",
+    "FOMC", "VIX", "CPI",
 })
 
 _SCHEMA_PATH = (
@@ -1591,6 +1612,115 @@ PLAIN_PRODUCER: tuple[tuple[str, dict[str, str]], ...] = (
         _pair(
             "This channel is permanently marked as not covered — not treated as calm.",
             "该渠道被永久标记为未覆盖 — 不会当作平静。",
+        ),
+    ),
+    (
+        "NFCI percentile",
+        _pair(
+            "Chicago Fed financial-conditions percentile",
+            "芝加哥联储金融条件分位",
+        ),
+    ),
+    (
+        "NFCI 13-week change",
+        _pair(
+            "13-week change in financial conditions",
+            "金融条件的13周变化",
+        ),
+    ),
+    (
+        "NFCI credit subindex",
+        _pair(
+            "Credit slice of financial conditions",
+            "金融条件中的信贷分项",
+        ),
+    ),
+    (
+        "MOVE (bond vol) percentile",
+        _pair(
+            "Bond-volatility percentile",
+            "债券波动率分位",
+        ),
+    ),
+    (
+        "National rent index (Zillow ZORI)",
+        _pair("National rent index", "全国租金指数"),
+    ),
+    (
+        "5-year node (us5y_real)",
+        _pair("5-year real yield", "5年期实际收益率"),
+    ),
+    (
+        "10-year node (us10y_real)",
+        _pair("10-year real yield", "10年期实际收益率"),
+    ),
+    (
+        "10-year node (breakeven_10y)",
+        _pair("10-year inflation break-even", "10年期通胀盈亏平衡"),
+    ),
+    (
+        "5-year, 5-year forward node (breakeven_5y5y)",
+        _pair("5-year, 5-year forward inflation", "5年后再5年的远期通胀"),
+    ),
+    (
+        "10-year node (term_premium_10y)",
+        _pair("10-year term premium", "10年期期限溢价"),
+    ),
+    (
+        "SOFR minus IORB",
+        _pair(
+            "SOFR minus interest on reserves",
+            "SOFR 减准备金利息",
+        ),
+    ),
+    (
+        "EFFR minus IORB",
+        _pair(
+            "Fed funds minus interest on reserves",
+            "联邦基金利率减准备金利息",
+        ),
+    ),
+    (
+        "SOFR-IORB spread",
+        _pair(
+            "SOFR minus interest on reserves",
+            "SOFR 减准备金利息的利差",
+        ),
+    ),
+    (
+        "Next CPI print is scheduled 2026-09-11",
+        _pair(
+            "The next CPI print is due 11 Sep 2026; the path shown is a model "
+            "estimate, not the official number.",
+            "下一次 CPI 预计于 2026 年 9 月 11 日公布；图上路径是模型估计，不是官方数字。",
+        ),
+    ),
+    (
+        "This is a market PRICE (futures-implied)",
+        _pair(
+            "At the end of 2026 the market prices 3.89% against the Fed's 3.8% "
+            "median dot (9 basis points — almost the same). That is a futures "
+            "price, not a Fed forecast or a stated plan.",
+            "2026 年末，市场定价 3.89%，对比美联储 3.8% 的中位点（相差 9 个基点，几乎一致）。"
+            "这是期货价格，不是美联储预测或既定计划。",
+        ),
+    ),
+    (
+        "capital-structure EVENT and FILING",
+        _pair(
+            "No two-sided refinancing-pressure state is published today — the "
+            "source only classifies financing events and filings. The real event "
+            "and issuer counts sit below as numbers.",
+            "今天没有发布双边再融资压力状态 — 数据源只对融资事件与文件分类。"
+            "真实的事件与发行人数以下方数字呈现。",
+        ),
+    ),
+    (
+        "thousand units SAAR",
+        _pair(
+            "Starts are down 13.5% from a year ago and permits are up 2.4%. "
+            "Permits minus starts is +194 thousand homes at an annual rate.",
+            "开工同比下降 13.5%，许可同比上升 2.4%。许可减开工为年化 +194 千套。",
         ),
     ),
 )

@@ -284,13 +284,21 @@ def _copy_probe(page, needles: tuple[str, ...]) -> dict[str, Any]:
 
 _CLEARANCE_JS = """(el, arg) => {
     const position = Number(arg.position);
+    const vw = window.innerWidth, vh = window.innerHeight;
     const overlap = (a, b) => !(a.right <= b.left || a.left >= b.right
         || a.bottom <= b.top || a.top >= b.bottom);
+    const clipView = (r) => {
+        const left = Math.max(r.left, 0), right = Math.min(r.right, vw);
+        const top = Math.max(r.top, 0), bottom = Math.min(r.bottom, vh);
+        if (right <= left || bottom <= top) return null;
+        return {left, right, top, bottom, x: left, y: top,
+                w: right - left, h: bottom - top};
+    };
     const elBox = (node) => {
         const r = node.getBoundingClientRect();
         return {tag: node.tagName || 'TEXT',
                 id: node.id || '',
-                cls: node.className || '',
+                cls: String(node.className || ''),
                 x: r.x, y: r.y, w: r.width, h: r.height,
                 top: r.top, bottom: r.bottom, left: r.left, right: r.right};
     };
@@ -302,22 +310,49 @@ _CLEARANCE_JS = """(el, arg) => {
                 x: r.x, y: r.y, w: r.width, h: r.height,
                 top: r.top, bottom: r.bottom, left: r.left, right: r.right};
     };
+    const painted = (node) => {
+        let cur = node.nodeType === 3 ? node.parentElement : node;
+        while (cur && cur !== document.documentElement) {
+            const cs = getComputedStyle(cur);
+            if (cs.display === 'none' || cs.visibility === 'hidden') return false;
+            if (Number(cs.opacity) === 0) return false;
+            if (cs.clipPath && cs.clipPath !== 'none') return false;
+            cur = cur.parentElement;
+        }
+        return true;
+    };
+    const isTopChrome = (box) => box.top >= -2 && box.top <= 90 && box.bottom <= 240;
+    const isBottomChrome = (box) => box.bottom >= vh - 8 && box.top > vh * 0.55;
     const maxY = Math.max(0,
         document.documentElement.scrollHeight - window.innerHeight);
     const target = position >= 1 ? maxY : maxY * position;
     window.scrollTo(0, target);
     const reached = window.scrollY || document.documentElement.scrollTop || 0;
+    const scrollMatched = Math.abs(reached - target) < 2;
     const maxScrollMatched = Math.abs(reached - maxY) < 2;
-    const occluderEls = Array.from(document.querySelectorAll(
-        '.mc-rail, .mc-rail-list, .mc-analyst, #mmb-boot'));
-    const occluders = occluderEls
-        .map(node => ({el: node, cs: getComputedStyle(node), r: node.getBoundingClientRect()}))
-        .filter(x => x.cs.display !== 'none' && x.cs.visibility !== 'hidden'
-                     && (x.cs.position === 'fixed' || x.cs.position === 'sticky')
-                     && x.r.width > 0 && x.r.height > 0)
-        .map(x => ({el: x.el, id: x.el.id || x.el.className,
-                    position: x.cs.position, ...elBox(x.el)}));
-    const root = document.querySelector('.mc-panels, .mq-body, main, .mc-shell')
+    const roots = Array.from(document.querySelectorAll('*')).filter(node => {
+        const cs = getComputedStyle(node);
+        const r = node.getBoundingClientRect();
+        return (cs.position === 'fixed' || cs.position === 'sticky')
+            && cs.display !== 'none' && cs.visibility !== 'hidden'
+            && r.width > 0 && r.height > 0;
+    });
+    const occluders = [];
+    for (const node of roots) {
+        const boxes = [elBox(node)];
+        node.querySelectorAll('*').forEach(child => {
+            const r = child.getBoundingClientRect();
+            if (r.width > 0 && r.height > 0) boxes.push(elBox(child));
+        });
+        occluders.push({
+            el: node,
+            id: node.id || String(node.className || ''),
+            position: getComputedStyle(node).position,
+            boxes,
+            ...elBox(node),
+        });
+    }
+    const root = document.querySelector('.mc-panels, .mq-body, main, .mc-shell, .mq-shell')
         || document.body;
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
         acceptNode(node) {
@@ -330,76 +365,118 @@ _CLEARANCE_JS = """(el, arg) => {
     while ((node = walker.nextNode())) {
         const box = textBox(node);
         if (box.w <= 0 || box.h <= 0) continue;
+        if (!painted(node)) continue;
         texts.push({node, parent: node.parentElement, ...box});
     }
     const hits = [];
+    const scrollUnder = [];
     for (const t of texts) {
+        const tv = clipView(t);
+        if (!tv) continue;
         for (const f of occluders) {
             if (f.el.contains(t.node)) continue;
-            if (overlap(t, f)) {
-                hits.push({text: t.text, occluder: f.id,
-                           occluder_position: f.position});
+            for (const box of f.boxes) {
+                const bv = clipView(box);
+                if (!bv || !overlap(tv, bv)) continue;
+                const rec = {text: t.text, occluder: f.id,
+                             occluder_position: f.position};
+                if (!isBottomChrome(f) && isTopChrome(f) && position > 0) {
+                    scrollUnder.push(rec);
+                } else {
+                    hits.push(rec);
+                }
+                break;
             }
         }
     }
     const analyst = document.querySelector('.mc-analyst');
     const analystBox = analyst ? elBox(analyst) : null;
+    const analystView = analystBox ? clipView(analystBox) : null;
     const stance = document.querySelector('.mc-panel .mc-stance, .mc-stance');
     const stanceBox = stance ? elBox(stance) : null;
     const callouts = Array.from(document.querySelectorAll(
         '.mc-arrival, .mc-watch, .mc-primer, .mq-callout, .mc-callout'))
         .map(elBox);
     let analystHits = [];
-    if (analystBox) {
-        if (stanceBox && overlap(stanceBox, analystBox)) {
-            analystHits.push({kind: 'stance'});
-        }
+    if (analystView && !(position > 0 && isTopChrome(analystBox))) {
+        const sv = stanceBox ? clipView(stanceBox) : null;
+        if (sv && overlap(sv, analystView)) analystHits.push({kind: 'stance'});
         for (const c of callouts) {
-            if (overlap(c, analystBox)) analystHits.push({kind: 'callout'});
+            const cv = clipView(c);
+            if (cv && overlap(cv, analystView)) analystHits.push({kind: 'callout'});
         }
         for (const t of texts) {
             if (analyst.contains(t.node)) continue;
-            if (overlap(t, analystBox)) analystHits.push({kind: 'text', text: t.text});
+            const host = t.parent && t.parent.closest
+                ? t.parent.closest('.mc-rail, .mq-suitenav') : null;
+            if (host) continue;
+            const tv = clipView(t);
+            if (tv && overlap(tv, analystView)) {
+                analystHits.push({kind: 'text', text: t.text});
+            }
         }
     }
     const fab = document.getElementById('mmb-boot');
-    const fabBox = fab && getComputedStyle(fab).position === 'fixed' ? elBox(fab) : null;
+    const fabCs = fab ? getComputedStyle(fab) : null;
+    const fabBox = fab && fabCs && fabCs.position === 'fixed'
+        && fabCs.display !== 'none' ? elBox(fab) : null;
     const atMax = position >= 1;
+    const width = window.innerWidth;
+    let reason = '';
+    if (width <= 768 && occluders.length === 0) reason = 'no_occluders_found';
     const ok = texts.length > 0 && hits.length === 0 && analystHits.length === 0
-        && (!atMax || maxScrollMatched);
+        && scrollMatched && reason === '';
     return {
         at_max: atMax,
         position,
+        width,
         scrollReached: reached,
+        scrollTarget: target,
         maxScroll: maxY,
+        scrollMatched,
         maxScrollMatched: atMax ? maxScrollMatched : null,
-        occluders: occluders.map(({el, ...rest}) => rest),
+        occluders: occluders.map(({el, boxes, ...rest}) => ({
+            ...rest,
+            boxes: boxes.map(b => ({tag: b.tag, id: b.id, cls: b.cls,
+                                    x: b.x, y: b.y, w: b.w, h: b.h})),
+        })),
         text_count: texts.length,
         intersections: hits,
+        scroll_under_top_chrome: scrollUnder,
         analyst: analystBox,
         analyst_hits: analystHits,
         stance: stanceBox,
         fab: fabBox,
+        mmbBootDisplay: fabCs ? fabCs.display : 'missing',
         analyst_fixed: !!(analyst && getComputedStyle(analyst).position === 'fixed'),
+        reason,
         ok,
     };
 }"""
 
 
 def clearance_probe_ok(row: Mapping[str, Any] | None) -> bool:
-    """Empty text set, any hit, or unmatched max-scroll → not ok."""
+    """Empty text set, any hit, empty occluders at ≤768, or unmatched scroll → not ok."""
     if not row:
         return False
     texts = int(row.get("text_count") or 0)
     hits = list(row.get("intersections") or [])
     analyst_hits = list(row.get("analyst_hits") or [])
+    occluders = list(row.get("occluders") or [])
+    width = float(row.get("width") or 0)
     if texts <= 0:
         return False
     if hits or analyst_hits:
         return False
+    if width <= 768 and not occluders:
+        return False
+    if row.get("reason") == "no_occluders_found":
+        return False
+    if row.get("scrollMatched") is False:
+        return False
     if row.get("at_max") and not row.get("maxScrollMatched"):
         return False
-    return bool(row.get("ok"))
+    return bool(row.get("ok")) and not row.get("reason")
 
 
 def _clearance_probe(locator, *, position: float) -> dict[str, Any]:
@@ -447,14 +524,19 @@ def main() -> int:
     from playwright.sync_api import sync_playwright
 
     EVIDENCE.mkdir(parents=True, exist_ok=True)
-    status = subprocess.check_output(
+    status_start = subprocess.check_output(
         ["git", "status", "--short"], cwd=ROOT, text=True).strip()
-    if status:
-        raise RuntimeError(f"tree not clean before capture:\n{status}")
-    head = subprocess.check_output(
+    tree_clean_start = status_start == ""
+    head_start = subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
-    captured_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    print(f"capturing committed site at {head} (no rebuild — C2)", flush=True)
+    commit_time = subprocess.check_output(
+        ["git", "log", "-1", "--format=%cI", head_start],
+        cwd=ROOT, text=True).strip()
+    generated_at_start = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    print(
+        f"capturing site at head {head_start} tree_clean_start={tree_clean_start}",
+        flush=True,
+    )
 
     states: list[dict[str, Any]] = []
     gaps: list[str] = [
@@ -547,8 +629,11 @@ def main() -> int:
                 ))
                 ctx.close()
 
-            # 13–14 768 + two-segment hash caption
-            for n, theme, locale in (("13", "dark", "en"), ("14", "light", "zh")):
+            # 13–14 768 + two-segment hash caption — full dark/light × EN/ZH
+            for n, theme, locale in (
+                ("13", "dark", "en"), ("13b", "dark", "zh"),
+                ("14", "light", "en"), ("14b", "light", "zh"),
+            ):
                 name = f"{n}-{theme}-{locale}-768.png"
                 print(f"capture {name}", flush=True)
                 ctx, page, frame = _open(
@@ -619,47 +704,52 @@ def main() -> int:
                 and (not light_s.get("halo")) and light_s.get("underline_px", 0) >= 1.5
             )
 
-            # B2 clearance at 390 and 768 × dark/light × EN/ZH
+            # B2 clearance at 390 and 768 × dark/light × EN/ZH on all five pages
             clearance_ok = True
             i2_ok = True
-            for width in (390, 768):
-                for theme, locale in (
-                    ("dark", "en"), ("dark", "zh"),
-                    ("light", "en"), ("light", "zh"),
-                ):
-                    key = f"clear_{width}_{theme}_{locale}"
-                    print(f"probe clearance {key}", flush=True)
-                    ctx, page, frame = _open(
-                        browser=browser, origin=origin,
-                        path="/macro_monetary.html", theme=theme, locale=locale,
-                        width=1440, height=900, iframe_width=width)
-                    frame.locator(".mc-analyst, .mc-stance").first.wait_for(
-                        timeout=15000)
-                    loc = frame.locator("html")
-                    boot = _clearance_probe(loc, position=0.0)
-                    mid = _clearance_probe(loc, position=0.5)
-                    mx = _clearance_probe(loc, position=1.0)
-                    i2 = _i2_probe(loc)
-                    row = {
-                        "boot": boot, "mid": mid, "max": mx, "i2": i2,
-                        "ok": bool(clearance_probe_ok(boot)
-                                   and clearance_probe_ok(mid)
-                                   and clearance_probe_ok(mx)),
-                    }
-                    probes[key] = row
-                    clearance_ok = clearance_ok and row["ok"]
-                    i2_ok = i2_ok and bool(i2.get("ok"))
-                    if width == 390 and theme == "dark" and locale == "en":
-                        i2_name = "i2-dark-en-390.png"
+            clear_pages = ("macro_monetary.html",) + WORKSPACE_PAGES
+            for page_name in clear_pages:
+                for width in (390, 768):
+                    for theme, locale in (
+                        ("dark", "en"), ("dark", "zh"),
+                        ("light", "en"), ("light", "zh"),
+                    ):
+                        slug = page_name.replace(".html", "")
+                        key = f"clear_{slug}_{width}_{theme}_{locale}"
+                        print(f"probe clearance {key}", flush=True)
+                        wait = ".mc-analyst" if page_name == "macro_monetary.html" else ".mq-suitenav .mc-analyst, .mq-implication-text"
+                        ctx, page, frame = _open(
+                            browser=browser, origin=origin,
+                            path=f"/{page_name}", theme=theme, locale=locale,
+                            width=1440, height=900, iframe_width=width)
+                        frame.locator(wait).first.wait_for(timeout=15000)
+                        loc = frame.locator("html")
+                        boot = _clearance_probe(loc, position=0.0)
+                        mid = _clearance_probe(loc, position=0.5)
+                        mx = _clearance_probe(loc, position=1.0)
+                        i2 = _i2_probe(loc)
+                        row = {
+                            "boot": boot, "mid": mid, "max": mx, "i2": i2,
+                            "ok": bool(clearance_probe_ok(boot)
+                                       and clearance_probe_ok(mid)
+                                       and clearance_probe_ok(mx)),
+                            "page": page_name,
+                        }
+                        probes[key] = row
+                        clearance_ok = clearance_ok and row["ok"]
+                        i2_ok = i2_ok and bool(i2.get("ok"))
+                        i2_name = f"i2-{slug}-{theme}-{locale}-{width}.png"
                         print(f"capture {i2_name}", flush=True)
                         info = _shot(EVIDENCE / i2_name, page.locator("#mc-p5-frame"))
-                        states.append(_state(
-                            i2_name, "dark", "en", "mobile", info,
-                            viewport_width=390,
-                            verified_how="390 iframe; clearance at 0 / 50% / max; analyst is a rail chip",
+                        dest_states = states if page_name == "macro_monetary.html" else ws_states[page_name]
+                        dest_states.append(_state(
+                            i2_name, theme, locale,
+                            "mobile" if width == 390 else "tablet", info,
+                            viewport_width=width,
+                            verified_how=f"{page_name} {width} iframe; clearance at 0 / 50% / max",
                             force_state="clearance_i2",
                         ))
-                    ctx.close()
+                        ctx.close()
             probes["i2_ok"] = bool(i2_ok and clearance_ok)
 
             # 18–19 half-null fixture (read.omitted + null chips + E2 + E6)
@@ -888,6 +978,29 @@ def main() -> int:
                             force_state="details_open" if mode == "open" else None,
                         ))
                         ctx.close()
+                for theme, locale in (
+                    ("dark", "en"), ("dark", "zh"),
+                    ("light", "en"), ("light", "zh"),
+                ):
+                    name = (
+                        f"ws-{page_name.replace('.html','')}-"
+                        f"{theme}-{locale}-768.png"
+                    )
+                    print(f"capture {name}", flush=True)
+                    ctx, page, frame = _open(
+                        browser=browser, origin=origin,
+                        path=f"/{page_name}", theme=theme, locale=locale,
+                        width=1440, height=1100, iframe_width=768)
+                    frame.locator(".mq-implication-text").first.wait_for(
+                        timeout=15000)
+                    info = _shot(EVIDENCE / name, page.locator("#mc-p5-frame"))
+                    ws_states[page_name].append(_state(
+                        name, theme, locale, "tablet", info, viewport_width=768,
+                        viewport_height=844,
+                        verified_how=f"{page_name} 768 iframe; first screen",
+                        force_state="tablet_768",
+                    ))
+                    ctx.close()
 
             probes["copy_15_ok"] = bool((probes.get("copy_15") or {}).get("ok"))
             probes["copy_16_ok"] = bool((probes.get("copy_16") or {}).get("ok"))
@@ -942,6 +1055,12 @@ def main() -> int:
             for st in page["states"]
             if st.get("force_state")
         })
+        generated_at_end = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        status_end = subprocess.check_output(
+            ["git", "status", "--short"], cwd=ROOT, text=True).strip()
+        tree_clean_end = status_end == ""
+        head_end = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
         MANIFEST.write_text(json.dumps({
             "schema": "mastermind.p0_evidence.v2",
             "axes": {
@@ -956,18 +1075,28 @@ def main() -> int:
                 },
             },
             "excluded": [],
-            "generated_at": captured_at,
-            "head_sha": head,
-            "capture_sha": head,
-            "tree_clean": True,
+            "generated_at": generated_at_start,
+            "generated_at_start": generated_at_start,
+            "generated_at_end": generated_at_end,
+            "head_sha": head_start,
+            "head_start": head_start,
+            "head_end": head_end,
+            "capture_sha": head_start,
+            "tree_clean_start": tree_clean_start,
+            "tree_clean_end": tree_clean_end,
+            "commit_time_of_capture_sha": commit_time,
             "pre_commit": False,
             "honesty": {
                 "access": "anonymous only; no credential is entered, stored, or synthesized",
                 "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
                 "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them",
                 "capture": (
-                    f"committed tree {head} was clean; no templates/scripts/lib/site "
-                    "file changed after this capture"
+                    f"tree_clean_start={tree_clean_start}; "
+                    f"tree_clean_end={tree_clean_end}; "
+                    f"head_start={head_start}; head_end={head_end}; "
+                    f"generated_at_start={generated_at_start}; "
+                    f"generated_at_end={generated_at_end}; "
+                    f"commit_time_of_capture_sha={commit_time}"
                 ),
             },
             "outcome": "captured",

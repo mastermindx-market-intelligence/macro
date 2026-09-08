@@ -55,8 +55,9 @@
 <script src="macro_suite_boot.js"></script>
 <link rel="stylesheet" href="theme.css">
 <link rel="stylesheet" href="macro_suite.css">
+<link rel="stylesheet" href="macro_command.css">
 </head>
-<body class="mq-page" data-mq-workspace="capital_structure" data-mq-region="US">
+<body class="mq-page mc-page" data-mq-workspace="capital_structure" data-mq-region="US">
 
 
 
@@ -380,6 +381,12 @@
          href="macro_trade_flows.html"
          data-mq-workspace="trade_flows"><span class="l-en">Trade Flows</span><span class="l-zh">贸易流动</span></a>
     </li>
+    <li class="mq-suitenav-analyst">
+      <button type="button" class="mq-suitenav-pill mc-analyst" data-mc-analyst
+              data-mc-analyst-label-en="this workspace" data-mc-analyst-label-zh="本工作区">
+        <span class="mc-analyst-text"><span class="l-en">Ask the analyst</span><span class="l-zh">问分析师</span></span>
+      </button>
+    </li>
   </ul>
 </nav>
 <main class="mq-shell" id="mq-shell">
@@ -405,8 +412,10 @@
     </dl>
     <p class="mq-context-caveat"><span class="l-en">Updated once a night — not live.</span><span class="l-zh">每晚更新一次 — 非实时。</span></p>
     <details class="mc-details">
-  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
   <div class="mc-details-body">
+  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
+
       <p><span class="l-en">Conservative over the required set — a degraded optional leg cannot turn this green.</span><span class="l-zh">在必需分项集合上取最保守值 — 可选分项降级不会让此处转绿。</span></p>
       <p><span class="l-en">Owner cadence, daily republish</span><span class="l-zh">按所有者节奏，每日重新发布</span> · <span class="l-en">Latest accepted print</span><span class="l-zh">最新已接受读数</span></p>
       <p><span class="l-en">Required-source availability</span><span class="l-zh">必需数据源可用性</span></p>
@@ -417,9 +426,10 @@
         <div><dt><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></dt>
              <dd><time>2026-09-06T17:43:05.999077Z</time></dd></div>
         <div class="mq-nonclock"><dt><span class="l-en">Page built</span><span class="l-zh">页面生成</span></dt>
-             <dd><time>2026-09-08T10:41:18Z</time></dd></div>
+             <dd><time>2026-09-08T11:46:26Z</time></dd></div>
       </dl>
-    </div>
+
+  </div>
 </details>
   </div>
 
@@ -456,11 +466,14 @@
   <div class="mq-section-head">
     <h2 id="mq-ribbon-title"><span class="l-en">What this means for you</span><span class="l-zh">这对你意味着什么</span></h2>
     <details class="mc-details">
-  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
   <div class="mc-details-body">
+  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
+
       <p><span class="l-en">What this state implies</span><span class="l-zh">该状态意味着什么</span></p>
       <p><span class="l-en">Deterministic text from the accepted snapshot. No language model writes here.</span><span class="l-zh">文本由已接受快照确定性生成，此处不由语言模型撰写。</span></p>
-    </div>
+
+  </div>
 </details>
   </div>
   <ul class="mq-ribbon-list">
@@ -468,11 +481,14 @@
       <div class="mq-implication-badges">
         <span class="mq-chip mq-chip-evidence"><span class="l-en">Descriptive</span><span class="l-zh">描述性</span></span><span class="mq-chip"><span class="l-en">Horizon</span><span class="l-zh">时间跨度</span> · <span class="l-en">Current reading</span><span class="l-zh">当前读数</span></span><span class="mq-chip mq-chip-channel"><span class="l-en">Financing</span><span class="l-zh">Financing</span></span><span class="mq-chip mq-chip-channel"><span class="l-en">Credit markets</span><span class="l-zh">Credit markets</span></span>
       </div>
-      <p class="mq-implication-text"><span class="l-en">Details for this reading are being prepared.</span><span class="l-zh">该读数的说明正在整理中。</span></p>
+      <p class="mq-implication-text"><span class="l-en">No two-sided refinancing-pressure state is published today — the source only classifies financing events and filings. The real event and issuer counts sit below as numbers.</span><span class="l-zh">今天没有发布双边再融资压力状态 — 数据源只对融资事件与文件分类。真实的事件与发行人数以下方数字呈现。</span></p>
 
 <details class="mc-details">
-  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
-  <div class="mc-details-body"><span class="l-en">No refinancing-pressure x balance-sheet-resilience/market-access state is asserted: the scoped owner projection publishes capital-structure EVENT and FILING classification metadata only, and explicitly discloses the instrument-level terms both axes would need (maturity/refinancing capacity, cash runway) as not currently published. Rather than estimate a fabricated score, the real event and issuer census is published as metrics instead.</span><span class="l-zh">未给出再融资压力 × 资产负债表韧性/市场准入状态：所设定的所有者投影仅发布资本结构事件与文件分类元数据，并明确披露两轴所需的工具层面条款（到期/再融资能力、现金续航）目前尚未发布。为避免虚构评分，改以指标形式发布真实的事件与发行人普查数据。</span></div>
+  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
+  <div class="mc-details-body">
+  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
+  <span class="l-en">No refinancing-pressure x balance-sheet-resilience/market-access state is asserted: the scoped owner projection publishes capital-structure EVENT and FILING classification metadata only, and explicitly discloses the instrument-level terms both axes would need (maturity/refinancing capacity, cash runway) as not currently published. Rather than estimate a fabricated score, the real event and issuer census is published as metrics instead.</span><span class="l-zh">未给出再融资压力 × 资产负债表韧性/市场准入状态：所设定的所有者投影仅发布资本结构事件与文件分类元数据，并明确披露两轴所需的工具层面条款（到期/再融资能力、现金续航）目前尚未发布。为避免虚构评分，改以指标形式发布真实的事件与发行人普查数据。</span>
+  </div>
 </details>
       <p class="mq-implication-claim"><span class="l-en">States what the accepted data shows.</span><span class="l-zh">陈述已接受数据所显示的事实。</span></p>
       <details class="mc-details">
@@ -543,9 +559,12 @@
   </ul>
   <p class="mq-ribbon-more"><span class="l-en">More published notes sit in Details — this page shows at most three.</span><span class="l-zh">更多已发布说明见详情 — 本页最多展示三条。</span></p>
   <details class="mc-details">
-  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
   <div class="mc-details-body">
+  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
+
     <p><span class="l-en">Additional implications are carried by the snapshot but not shown here; the core surface shows at most three.</span><span class="l-zh">快照中还有其他推论，此处未展示；核心界面最多展示三条。</span></p>
+
   </div>
 </details>
 </section>
@@ -560,8 +579,10 @@
            <dd></dd></div>
     </dl>
     <details class="mc-details">
-  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
   <div class="mc-details-body">
+  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
+
       <dl class="mq-headline-meta">
         <div><dt><span class="l-en">Method version</span><span class="l-zh">方法版本</span></dt><dd><code>capital_structure.compose.v1</code></dd></div>
         <div><dt><span class="l-en">Prior accepted print</span><span class="l-zh">上一已接受读数</span></dt>
@@ -571,7 +592,8 @@
       <p><span class="l-en">Nearest boundary</span><span class="l-zh">最近分界</span> / <span class="l-en">Score points to</span><span class="l-zh">距下列坐标轴分界</span></p>
       <p><span class="l-en">Movement since the prior accepted print</span><span class="l-zh">相对上一已接受读数的位移</span></p>
       <p><span class="l-en">No vector is drawn: there is no method-comparable prior print to move from.</span><span class="l-zh">不绘制向量：不存在方法可比的历史读数作为起点。</span></p>
-    </div>
+
+  </div>
 </details>
   </div>
 
@@ -617,11 +639,14 @@
   <div class="mq-section-head">
     <h3 id="mq-diagnostics-title"><span class="l-en">Data problems</span><span class="l-zh">数据问题</span></h3>
     <details class="mc-details">
-  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
   <div class="mc-details-body">
+  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
+
       <p><span class="l-en">Diagnostics</span><span class="l-zh">诊断</span></p>
       <p><span class="l-en">Constraints, missing components, source issues and method warnings.</span><span class="l-zh">约束、缺失分项、数据源问题与方法警示。</span></p>
-    </div>
+
+  </div>
 </details>
   </div>
   <ul class="mq-diag-list">
@@ -645,10 +670,13 @@
     <span class="mq-section-note"><span class="l-en">Today against last time, measured the same way.</span><span class="l-zh">以相同方法将今天与上次对比。</span></span>
   </div>
   <details class="mc-details">
-  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
   <div class="mc-details-body">
+  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
+
     <p><span class="l-en">Current accepted snapshot against the prior accepted snapshot, under the same method version.</span><span class="l-zh">在相同方法版本下，将当前已接受快照与上一已接受快照对比。</span></p>
     <p><span class="l-en">No numeric comparison is shown. A change table would have to invent a baseline that does not exist, and a method-version change is reported as a method change — never as a delta.</span><span class="l-zh">此处不展示任何数值对比。展示变化表将不得不虚构一个并不存在的基准；方法版本变更只按方法变更呈现，绝不伪装成数值变化。</span></p>
+
   </div>
 </details>
   <p class="mq-changed-verdict mq-tone-ok"><span class="l-en">Comparable with the last reading</span><span class="l-zh">与上次读数可比</span></p>
@@ -2316,12 +2344,15 @@
   <div class="mq-section-head">
     <h3 id="mq-drivers-title"><span class="l-en">What&#39;s pushing it</span><span class="l-zh">推动因素</span></h3>
     <details class="mc-details">
-  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
   <div class="mc-details-body">
+  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
+
       <p><span class="l-en">Drivers</span><span class="l-zh">驱动因子</span></p>
       <p><span class="l-en">Signed push toward each axis high side. A driver is a disclosed contribution, not a cause.</span><span class="l-zh">各分项推向坐标轴高值一侧的有符号推力。驱动因子是已披露的贡献，而非因果。</span></p>
       <p><span class="l-en">Push</span><span class="l-zh">推力</span></p>
-    </div>
+
+  </div>
 </details>
   </div>
   <div class="mq-driver-group">
@@ -2351,19 +2382,24 @@
     <span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Insufficient history</span><span class="l-zh">历史数据不足</span></span></span>
     <p><span class="l-en">No chart yet — we don&#39;t have enough history for this one.</span><span class="l-zh">暂无图表 — 该项历史数据不足。</span></p>
     <details class="mc-details">
-  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
   <div class="mc-details-body">
+  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
+
       <p><span class="l-en">This snapshot publishes no chart-ready history. An empty chart frame would read as a flat line at zero, so none is drawn.</span><span class="l-zh">本快照未发布可绘图的历史序列。空白图框会被误读为零值水平线，因此不予绘制。</span></p>
       <p><span class="l-en">Freshness</span><span class="l-zh">新鲜度</span></p>
-    </div>
+
+  </div>
 </details>
   </div>
 </section>
       <section class="mq-lineage" aria-labelledby="mq-lineage-title">
   <h3 id="mq-lineage-title"><span class="l-en">How this reading was revised</span><span class="l-zh">本读数如何被修订</span></h3>
   <details class="mc-details">
-  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
   <div class="mc-details-body">
+  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
+
   <p><span class="l-en">Correction and method lineage</span><span class="l-zh">更正与方法沿革</span></p>
   <dl class="mq-method-grid">
     <div><dt><span class="l-en">Correction state</span><span class="l-zh">更正状态</span></dt><dd><span class="l-en">No correction recorded</span><span class="l-zh">无更正记录</span></dd></div>
@@ -2374,6 +2410,7 @@
     <div><dt><span class="l-en">Hysteresis</span><span class="l-zh">滞回</span></dt><dd>architecture section 10.3 names a refinancing-pressure x balance-sheet-resilience/market-access quadrant, but the scoped owner artifact for this composer (data/capital_structure/projection.json) is an event/filing classification projection only -- it explicitly types the instrument-level substance both axes would need (maturity/refinancing terms, cash runway, financing capacity) as not currently published, at both the whole-projection level and every individual issuer record. No quadrant score is estimated from event-classification metadata alone; the real, honestly-aggregable coverage and event census is published under metrics instead.</dd></div>
   </dl>
   <p class="mq-lineage-note">Reference period differs from the predecessor print (a new observation, not a revision of the same period); no correction asserted.</p>
+
   </div>
 </details>
 </section>
@@ -2385,11 +2422,14 @@
   <div class="mq-section-head">
     <h3 id="mq-withheld-title"><span class="l-en">Not open yet</span><span class="l-zh">尚未开放</span></h3>
     <details class="mc-details">
-  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
   <div class="mc-details-body">
+  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
+
       <p><span class="l-en">Declared but not offered</span><span class="l-zh">已声明但尚未开放</span></p>
       <p><span class="l-en">These are named here rather than shown as tabs. A tab that cannot do its job is a dead destination.</span><span class="l-zh">这些能力在此列出，而非以标签页形式呈现。无法履行职责的标签页就是一个死入口。</span></p>
-    </div>
+
+  </div>
 </details>
   </div>
   <div class="mq-withheld-grid">
@@ -2555,7 +2595,7 @@
         </div>
         <div class="mq-clock">
           <dt><span class="mq-clock-name"><span class="l-en">Page refreshed</span><span class="l-zh">页面更新于</span></span><span class="mq-clock-meaning"><span class="l-en">Static page render time. Not an economic clock.</span><span class="l-zh">静态页面渲染时间，并非经济时钟。</span></span></dt>
-          <dd><time>2026-09-08T10:41:18Z</time></dd>
+          <dd><time>2026-09-08T11:46:26Z</time></dd>
         </div>
       </dl>
     </section>
@@ -2582,5 +2622,6 @@
 
 <script src="theme.js" defer></script>
 <script src="macro_suite.js" defer></script>
+<script src="macro_command.js" defer></script>
 </body>
 </html>

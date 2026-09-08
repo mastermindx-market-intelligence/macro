@@ -302,7 +302,7 @@ def test_built_hub_has_exactly_one_analyst_control_and_zero_endpoint_literals(
         built_hub: str) -> None:
     import re
     main = built_hub[built_hub.index('<main class="mc-shell"'):]
-    openings = len(re.findall(r'<(?:button|a)[^>]*class="mc-analyst"', main))
+    openings = len(re.findall(r'<(?:button|a)[^>]*class="[^"]*mc-analyst', main))
     assert openings == 1
     js = (ROOT / "templates" / "macro_command.js").read_text(encoding="utf-8")
     for forbidden in ("?topic=", "&section=", "/api/"):
@@ -451,6 +451,47 @@ def test_production_key_space_has_no_machine_text_on_rendered_output(
     assert dirty == [], dirty
 
 
+def test_committed_payloads_have_zero_plain_fallbacks(tmp_path_factory) -> None:
+    """M1: the fallback is a tripwire. Today's key space ships reviewed pairs."""
+    from lib.macro_suite_labels import PLAIN_FALLBACK
+    out = tmp_path_factory.mktemp("macro_command_fallback") / "site"
+    pages = builder.render(ROOT, data_root=DATA_ROOT, out_dir=out,
+                           page_built_at=BUILT_AT)
+    leftover: list[str] = []
+    fallback_count = 0
+    for path in pages:
+        html = path.read_text(encoding="utf-8")
+        start = html.find('class="mq-context"')
+        if start < 0:
+            start = html.find('class="mc-shell"')
+        if start < 0:
+            start = 0
+        text = guard.reading_path_text(html[start:])
+        n = text.count(PLAIN_FALLBACK["en"])
+        fallback_count += n
+        if n:
+            leftover.append(f"{path.name}:{n}")
+    assert fallback_count == 0, leftover
+
+
+def test_read_stance_has_one_space_after_each_topic(tmp_path_factory) -> None:
+    """M-E12: the H1 stance join is one word space, never two."""
+    out = tmp_path_factory.mktemp("macro_command_stance") / "site"
+    pages = {p.name: p.read_text(encoding="utf-8")
+             for p in builder.render(ROOT, data_root=DATA_ROOT, out_dir=out,
+                                     page_built_at=BUILT_AT)}
+    hub = pages["macro_monetary.html"]
+    start = hub.find('class="mc-read"')
+    assert start > 0
+    chunk = hub[start:start + 4000]
+    en = guard.reading_path_text(
+        chunk.replace('class="l-zh"', 'class="l-zh" hidden'))
+    zh = guard.reading_path_text(
+        chunk.replace('class="l-en"', 'class="l-en" hidden'))
+    assert "  " not in en, en
+    assert "  " not in zh, zh
+
+
 def test_synthetic_slug_renders_the_fallback_pair() -> None:
     import json
     from lib.macro_suite_labels import PLAIN_FALLBACK
@@ -555,6 +596,13 @@ def test_clearance_probe_js_binds_locator_element_then_arg() -> None:
     assert "texts.length > 0" in _CLEARANCE_JS
     assert "maxScrollMatched" in _CLEARANCE_JS
     assert "NodeFilter.SHOW_TEXT" in _CLEARANCE_JS
+    assert "querySelectorAll('*')" in _CLEARANCE_JS
+    assert "no_occluders_found" in _CLEARANCE_JS
+    assert "mmbBootDisplay" in _CLEARANCE_JS
+    assert "clipView" in _CLEARANCE_JS
+    assert "scroll_under_top_chrome" in _CLEARANCE_JS
+    assert "closest('.mc-rail, .mq-suitenav')" in _CLEARANCE_JS
+    assert ".mc-rail, .mc-rail-list" not in _CLEARANCE_JS
 
 
 def test_capture_relocated_needles_are_locale_visible_and_must_be_inside() -> None:
@@ -589,15 +637,27 @@ def test_clearance_probe_ok_fails_on_empty_or_hits() -> None:
     assert clearance_probe_ok({"text_count": 0, "intersections": [], "ok": True}) is False
     assert clearance_probe_ok({
         "text_count": 3, "intersections": [{"text": "x"}], "ok": True,
+        "occluders": [{"position": "sticky"}],
     }) is False
     assert clearance_probe_ok({
         "text_count": 3, "intersections": [], "at_max": True,
         "maxScrollMatched": False, "ok": True,
+        "occluders": [{"position": "sticky"}],
     }) is False
     assert clearance_probe_ok({
         "text_count": 3, "intersections": [], "analyst_hits": [],
         "at_max": True, "maxScrollMatched": True, "ok": True,
+        "occluders": [{"position": "sticky"}], "width": 390,
     }) is True
+    assert clearance_probe_ok({
+        "text_count": 3, "intersections": [], "analyst_hits": [],
+        "ok": True, "occluders": [], "width": 390,
+    }) is False
+    assert clearance_probe_ok({
+        "text_count": 3, "intersections": [], "analyst_hits": [],
+        "scrollMatched": False, "ok": True,
+        "occluders": [{"position": "sticky"}], "width": 390,
+    }) is False
 
 
 def test_p5_manifest_viewport_identity() -> None:

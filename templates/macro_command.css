@@ -170,7 +170,7 @@ html[data-theme="light"] .mc-read-topic { border-bottom-width: 2px; }
 .mc-read-topic.mq-tone-neutral { color: var(--mq-ink); }
 /* F-10: the gap between a topic word and its predicate is CSS, never
    template whitespace. EN needs a word space; ZH must not have one. */
-.mc-read-topic { margin-inline-end: .24em; }
+.mc-read-topic { margin-inline-end: 0; }
 html[data-lang="zh"] .mc-read-topic { margin-inline-end: .06em; }
 .mc-read-state { color: var(--mq-ink); }
 .mc-read-omitted, .mc-read-fallback {
@@ -591,6 +591,7 @@ html[data-theme="light"] .mc-dest:focus-visible { background: var(--panel); }
 .mc-details > summary { cursor: pointer; font-size: 12.5px; color: var(--mq-muted); }
 .mc-details[open] > summary { color: var(--mq-ink); margin-bottom: 10px; }
 .mc-details-body { border-top: 1px solid var(--mq-line); padding-top: 12px; overflow-x: auto; }
+.mc-details-tier { margin: 0 0 10px; font-size: 12.5px; color: var(--mq-muted); }
 .mc-details-state, .mc-details-asof { margin: 0 0 8px; font-size: 12.5px; color: var(--mq-muted); }
 /* 11px literal, NOT `--fs-micro`: theme.css sets it to 10px, which is below
    the reading-path floor P1 §4 pinned for this page. */
@@ -676,10 +677,9 @@ html[data-theme="light"] .mc-shell :focus-visible { box-shadow: 0 0 0 1px var(--
     max-width: min(230px, calc(100vw - 32px));
   }
   .mc-rail { order: 2; }
-  /* R9-M2 / R9-M3: at ≤768 the rail's analyst chip IS the chat entry
-     (macro_command.js clicks #mmb-boot / MMBrain.explain). The global
-     FAB is redundant on this page only — hide it. ≥769 is untouched.
-     Sibling pages do not carry body.mc-page. */
+  /* R9-M2 / R9-M3 / P5 M3: at ≤768 the in-page analyst chip IS the chat
+     entry. The global FAB is redundant on every page that carries
+     body.mc-page (hub + workspace family). ≥769 is untouched. */
   body.mc-page #mmb-boot { display: none; }
   /* No bottom-fixed overlay remains (FAB display:none; the rail is
      sticky at the top). Reserve only the home-indicator inset. */

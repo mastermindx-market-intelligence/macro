@@ -106,8 +106,10 @@ def _context(snapshot: Mapping[str, Any], page_built_at: str) -> dict[str, Any]:
             cuts.append(asof)
         required.append({
             "component_id": item.get("component_id"),
-            "label": _bilingual(item.get("label")) or _pair(L.deslug(item.get("component_id") or ""),
-                                                            L.deslug(item.get("component_id") or "")),
+            "label": (L.METRIC.get(str(item.get("component_id") or ""))
+                      or _bilingual(item.get("label"))
+                      or _pair(L.deslug(item.get("component_id") or ""),
+                               L.deslug(item.get("component_id") or ""))),
             "required": bool(item.get("required")),
             "freshness": L.label("freshness", item.get("freshness")),
             "freshness_tone": L.tone("freshness", item.get("freshness")),
@@ -213,7 +215,8 @@ def _axis_view(axis: Mapping[str, Any]) -> dict[str, Any]:
     for component in axis.get("components") or []:
         components.append({
             "component_id": component.get("component_id"),
-            "label": _bilingual(component.get("label")),
+            "label": (L.METRIC.get(str(component.get("component_id") or ""))
+                      or _bilingual(component.get("label"))),
             "owner_field": component.get("owner_field"),
             "owner_ref": component.get("owner_ref"),
             "raw": L.value_pair(component.get("raw_value")),
@@ -647,12 +650,23 @@ def _diagnostics(snapshot: Mapping[str, Any], context: Mapping[str, Any],
             })
 
     if context.get("degraded"):
-        joined = ", ".join(str(d) for d in context["degraded"])
+        names = []
+        names_zh = []
+        for token in context["degraded"]:
+            reviewed = L.METRIC.get(str(token)) or L.lookup_plain_producer(str(token))
+            if reviewed:
+                names.append(reviewed["en"])
+                names_zh.append(reviewed["zh"])
+            else:
+                names.append(L.deslug(str(token)))
+                names_zh.append(L.deslug(str(token)))
+        joined = ", ".join(names)
+        joined_zh = "、".join(names_zh)
         out.append({
             "tone": "warn",
             "title": _pair("Optional legs degraded", "可选分项已降级"),
             "body": _pair(f"Shown separately, and excluded from the page state: {joined}.",
-                          f"单独呈现，且不计入本页状态：{joined}。"),
+                          f"单独呈现，且不计入本页状态：{joined_zh}。"),
         })
 
     if not changes.get("comparable"):
