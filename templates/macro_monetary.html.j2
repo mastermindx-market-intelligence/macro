@@ -73,7 +73,8 @@
            href="#{{ s.id }}" data-mc-section="{{ s.id }}"
            {%- if s.first %} aria-current="page"{% endif %}>
           <span class="mc-rail-bar" aria-hidden="true"></span>
-          <span class="mc-rail-text">{{ bl(s.label) }}</span>
+          <span class="mc-rail-text mc-rail-full">{{ bl(s.label) }}</span>
+          <span class="mc-rail-text mc-rail-short">{{ bl(s.short_label or s.label) }}</span>
           {%- if s.tone %}<span class="mc-rail-dot mq-tone-{{ s.tone }}" aria-hidden="true"></span>{% endif %}
         </a>
       </li>

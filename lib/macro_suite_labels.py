@@ -20,6 +20,9 @@ at a time via the site's ``.l-en`` / ``.l-zh`` toggle; a page never shows both.
 """
 from __future__ import annotations
 
+import json
+import re
+from pathlib import Path
 from typing import Any, Iterable, Mapping
 
 # Tokens seen by this process that had no reviewed label. Tests assert this is
@@ -1312,18 +1315,100 @@ def is_bilingual(node: Any) -> bool:
     return isinstance(node, Mapping) and "en" in node
 
 
-# P5 r2 — reviewed one-sentence rewrites for producer strings that trip the
-# copy guard. Keyed by a unique EN prefix of the original. The original is
-# never deleted: the view keeps it for <details class="mc-details">.
-# A banned string with no row here is a build defect (fail closed).
-_PLAIN_PRODUCER_BANNED: tuple[str, ...] = (
-    "accepted print", "accepted snapshot", "method version", "method-comparable",
-    "hysteresis", "axis", "Axis", "authority ceiling", "content hash",
-    "generation id", "producer", "artifact", "manifest", "trace_ref",
-    "definition_id", "owner_ref", "standardized", "Diagnostics", "Vector",
-    "vector", "snapshot", "deterministic", "schema", "Regime map", "Freshness",
-    "Presence", "coverage_ratio", "null_reason", "NOT_COVERED",
+# P5 r3 — machine-text predicate (not a phrase list). Applied at build time
+# to every ribbon / disclosure / reading-path string in both locales.
+# A hit renders the reviewed pair for its key, else the typed fallback.
+# Relocated originals stay in <details class="mc-details"> only.
+_SLUG_RE = re.compile(r"[a-z0-9]+_[a-z0-9_]+")
+_STATE_TOKEN_RE = re.compile(r"\b[A-Z][A-Z0-9_]{3,}\b")
+_SET_LITERAL_RE = re.compile(r"\{[^}]*\}")
+_ISO_RE = re.compile(r"\d{4}-\d{2}-\d{2}(T[\d:]+)?")
+_PZ_RE = re.compile(r"\b[pz]\s*=")
+_LOCALE_SUFFIX_RE = re.compile(r"_(en|zh)\b")
+
+# Customer-facing brand / market words that match the state-token shape.
+_STATE_TOKEN_ALLOW: frozenset[str] = frozenset({
+    "MASTERMINDX", "HICP", "FRED", "SOFR", "TIPS", "OECD", "NBER",
+})
+
+_SCHEMA_PATH = (
+    Path(__file__).resolve().parents[1]
+    / "contracts" / "market_os" / "macro_workspace_snapshot.v1.schema.json"
 )
+_NAMED_PAYLOAD_FIELDS: frozenset[str] = frozenset({
+    "owner_field", "rate_side", "balance_sheet", "sticky_led", "rrp_floor",
+    "insufficient_comparable_pit_coverage", "coverage_ratio", "null_reason",
+    "trace_ref", "definition_id", "owner_ref", "state_id", "workspace_id",
+    "content_hash", "generation_id", "method_version",
+})
+
+
+def _schema_field_names(node: Any, out: set[str]) -> None:
+    if isinstance(node, Mapping):
+        props = node.get("properties")
+        if isinstance(props, Mapping):
+            for key in props:
+                if isinstance(key, str) and "_" in key:
+                    out.add(key)
+            for child in props.values():
+                _schema_field_names(child, out)
+        for key in ("$defs", "definitions", "items", "additionalProperties",
+                    "if", "then", "else"):
+            if key in node:
+                _schema_field_names(node[key], out)
+        for key in ("allOf", "anyOf", "oneOf"):
+            for child in node.get(key) or []:
+                _schema_field_names(child, out)
+    elif isinstance(node, list):
+        for child in node:
+            _schema_field_names(child, out)
+
+
+def payload_field_names() -> frozenset[str]:
+    names = set(_NAMED_PAYLOAD_FIELDS)
+    try:
+        schema = json.loads(_SCHEMA_PATH.read_text(encoding="utf-8"))
+    except OSError:
+        return frozenset(names)
+    _schema_field_names(schema, names)
+    return frozenset(names)
+
+
+_PAYLOAD_FIELDS: frozenset[str] = payload_field_names()
+
+PLAIN_FALLBACK: dict[str, str] = _pair(
+    "Details for this reading are being prepared.",
+    "该读数的说明正在整理中。",
+)
+
+
+def machine_text_hits(text: str) -> list[str]:
+    """Return every predicate hit in ``text``. Empty means the string is plain."""
+    if not text:
+        return []
+    hits: list[str] = []
+    for match in _SLUG_RE.finditer(text):
+        hits.append(f"slug:{match.group(0)}")
+    for match in _STATE_TOKEN_RE.finditer(text):
+        token = match.group(0)
+        if token not in _STATE_TOKEN_ALLOW:
+            hits.append(f"state:{token}")
+    if _SET_LITERAL_RE.search(text):
+        hits.append("set_literal")
+    if _ISO_RE.search(text):
+        hits.append("iso")
+    if _PZ_RE.search(text):
+        hits.append("pz")
+    if _LOCALE_SUFFIX_RE.search(text):
+        hits.append("locale_suffix")
+    for field in _PAYLOAD_FIELDS:
+        if field and field in text:
+            hits.append(f"field:{field}")
+    return hits
+
+
+def producer_trips_copy_guard(text: str) -> bool:
+    return bool(machine_text_hits(text))
 
 PLAIN_PRODUCER: tuple[tuple[str, dict[str, str]], ...] = (
     (
@@ -1455,13 +1540,57 @@ PLAIN_PRODUCER: tuple[tuple[str, dict[str, str]], ...] = (
             "本页第二组驱动是走廊利差与曲线形态 — 不是资产负债表。组名沿用共享模板。",
         ),
     ),
-    (
+        (
         "The drivers.balance_sheet bucket in this snapshot carries the dollar-flow legs",
         _pair(
             "The driver groups on this page are trade flows and prices, not "
             "policy rates or a balance sheet. The group names are reused from a "
             "shared template.",
             "本页驱动组是贸易流动与价格，不是政策利率或资产负债表。组名沿用共享模板。",
+        ),
+    ),
+    (
+        "sticky_led",
+        _pair(
+            "Sticky prices are leading the underlying price mix.",
+            "黏性价格正在主导潜在价格结构。",
+        ),
+    ),
+    (
+        "rrp_floor",
+        _pair(
+            "The one-billion descriptive floor is a note, not a traded level.",
+            "十亿的描述性下限是说明，不是可交易水平。",
+        ),
+    ),
+    (
+        "insufficient_comparable_pit_coverage",
+        _pair(
+            "Global credit context is thin: not enough comparable readings "
+            "taken at the same moment.",
+            "全球信贷背景偏薄：缺少同一时点可比较的读数。",
+        ),
+    ),
+    (
+        "{rate_side, balance_sheet}",
+        _pair(
+            "The shared drivers block is closed to the two named groups. "
+            "Each driver's own label and note carries the reading.",
+            "共享驱动区块只开放两个已命名的组别。各驱动自己的标签与说明承载读数。",
+        ),
+    ),
+    (
+        "owner_field",
+        _pair(
+            "Each driver's own label and note carries the reading.",
+            "各驱动自己的标签与说明承载读数。",
+        ),
+    ),
+    (
+        "NOT_COVERED",
+        _pair(
+            "This channel is permanently marked as not covered — not treated as calm.",
+            "该渠道被永久标记为未覆盖 — 不会当作平静。",
         ),
     ),
 )
@@ -1472,52 +1601,87 @@ PLAIN_LABEL: dict[str, dict[str, str]] = {
 }
 
 
-def producer_trips_copy_guard(en: str) -> bool:
-    return any(phrase in en for phrase in _PLAIN_PRODUCER_BANNED)
-
-
-def lookup_plain_producer(en: str) -> dict[str, str] | None:
-    hits = [(prefix, pair) for prefix, pair in PLAIN_PRODUCER if en.startswith(prefix)]
+def lookup_plain_producer(text: str) -> dict[str, str] | None:
+    """Longest key that is a prefix of ``text`` or that appears inside it."""
+    hits = [
+        (key, pair) for key, pair in PLAIN_PRODUCER
+        if text.startswith(key) or (key and key in text)
+    ]
     if not hits:
         return None
     hits.sort(key=lambda item: len(item[0]), reverse=True)
     return dict(hits[0][1])
 
 
-def apply_plain_producer(node: Mapping[str, str] | None) -> tuple[dict[str, str] | None, dict[str, str] | None]:
-    """Return ``(reading, original_or_none)``.
+def apply_plain_pair(node: Mapping[str, str] | None) -> tuple[dict[str, str] | None, dict[str, str] | None]:
+    """Sanitize one bilingual pair. Hits render a reviewed pair or the fallback.
 
-    A banned producer string without a reviewed rewrite raises — never a
-    substring pointer such as "A published note is in Details".
+    Never returns the raw machine string. The original is kept for Details.
     """
     if not node:
         return None, None
     en = str(node.get("en") or "")
-    if not en or not producer_trips_copy_guard(en):
+    zh = str(node.get("zh") or "")
+    if not en and not zh:
         return dict(node), None
-    rewrite = lookup_plain_producer(en)
+    rewrite = lookup_plain_producer(en) or lookup_plain_producer(zh)
+    hits = bool(machine_text_hits(en) or machine_text_hits(zh))
+    if rewrite is None and not hits:
+        return {"en": en, "zh": zh or en}, None
     if rewrite is None:
-        raise ValueError(
-            "producer text trips the copy guard and has no reviewed rewrite: "
-            f"{en[:160]!r}"
-        )
+        rewrite = dict(PLAIN_FALLBACK)
+    if machine_text_hits(rewrite.get("en") or "") or machine_text_hits(rewrite.get("zh") or ""):
+        rewrite = dict(PLAIN_FALLBACK)
     return rewrite, dict(node)
 
 
+def apply_plain_producer(node: Mapping[str, str] | None) -> tuple[dict[str, str] | None, dict[str, str] | None]:
+    return apply_plain_pair(node)
+
+
 def apply_plain_label(node: Mapping[str, str] | None) -> tuple[dict[str, str] | None, dict[str, str] | None]:
-    """Rewrite a short label. No generic fallback. Fail closed if banned."""
     if not node:
         return None, None
     en = str(node.get("en") or "")
-    if not en or not producer_trips_copy_guard(en):
+    zh = str(node.get("zh") or "")
+    rewrite = PLAIN_LABEL.get(en) or lookup_plain_producer(en) or lookup_plain_producer(zh)
+    hits = bool(machine_text_hits(en) or machine_text_hits(zh))
+    if rewrite is None and not hits:
         return dict(node), None
-    rewrite = PLAIN_LABEL.get(en)
     if rewrite is None:
-        raise ValueError(
-            "label trips the copy guard and has no reviewed pair: "
-            f"{en[:160]!r}"
-        )
+        rewrite = dict(PLAIN_FALLBACK)
+    if machine_text_hits(rewrite.get("en") or "") or machine_text_hits(rewrite.get("zh") or ""):
+        rewrite = dict(PLAIN_FALLBACK)
     return dict(rewrite), dict(node)
+
+
+_SKIP_SANITIZE_KEYS = frozenset({
+    "text_original", "label_original", "token", "owner_field", "owner_ref",
+    "trace_ref", "implication_id", "id", "href", "workspace_id", "component_id",
+    "driver_id", "metric_id", "state_id", "as_of", "page_built_at",
+    "calculation_as_of", "artifact_built_at", "last_source_cut", "datetime",
+    # Evidence drawer is the technical receipt (series ids, providers).
+    "evidence", "generation_id", "content_sha256", "provider",
+})
+
+
+def sanitize_view_pairs(obj: Any, *, skip: bool = False) -> Any:
+    """Walk a view tree and sanitize every bilingual pair except originals."""
+    if isinstance(obj, Mapping):
+        keys = set(obj.keys())
+        if keys <= {"en", "zh"} and "en" in keys and not skip:
+            reading, _original = apply_plain_pair(obj)
+            return reading
+        return {
+            key: sanitize_view_pairs(
+                value,
+                skip=skip or key in _SKIP_SANITIZE_KEYS or str(key).endswith("_original"),
+            )
+            for key, value in obj.items()
+        }
+    if isinstance(obj, list):
+        return [sanitize_view_pairs(item, skip=skip) for item in obj]
+    return obj
 
 
 def copy_probe_row_ok(row: Mapping[str, Any]) -> bool:

@@ -999,7 +999,7 @@ def build_view(snapshot: Mapping[str, Any], *, page_built_at: str,
         {"tab_id": "history", "name": _pair("History", "历史")},
     ]
 
-    return {
+    view = {
         "ok": True,
         "layout": layout,
         "decision_first": layout == LAYOUT_DECISION_FIRST,
@@ -1029,6 +1029,7 @@ def build_view(snapshot: Mapping[str, Any], *, page_built_at: str,
         "learning_events": list((snapshot.get("learning") or {}).get("event_names") or []),
         "page_built_at": page_built_at,
     }
+    return L.sanitize_view_pairs(view)
 
 
 def degraded_view(*, workspace_id: str, title: Mapping[str, str],

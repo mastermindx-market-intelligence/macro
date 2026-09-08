@@ -303,6 +303,8 @@ class Section:
     subtabs: tuple[SubTab, ...] = ()
     question_en: str | None = None
     question_zh: str | None = None
+    short_label_en: str | None = None
+    short_label_zh: str | None = None
 
 
 # Macro Command left-rail sections — twelve, in the FIXED reading order a
@@ -315,6 +317,7 @@ SECTIONS: tuple[Section, ...] = (
             question_en="What is macro saying today, and what moved?",
             question_zh="今天宏观在说什么？有什么变化？"),
     Section(id="money", label_en="Money & liquidity", label_zh="资金与流动性",
+            short_label_en="Money", short_label_zh="资金",
             question_en="Is money getting easier or harder to come by?",
             question_zh="资金是变得更容易还是更难获得？", subtabs=(
         SubTab(id="liquidity", label_en="How much money is around", label_zh="市场资金",
@@ -525,11 +528,15 @@ _REGION_NAMES = {"US": "United States"}
 
 
 def _environment(root: Path) -> Environment:
-    return Environment(
+    env = Environment(
         loader=FileSystemLoader(str(root / "templates")),
         autoescape=True,
         undefined=StrictUndefined,
     )
+    env.filters["date_pair"] = (
+        lambda value: L.date_display_pair(str(value)) if value else None
+    )
+    return env
 
 
 def render_page(env: Environment, page: SuitePage, view: Mapping[str, Any]) -> str:
@@ -1330,6 +1337,11 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
         sections.append({
             "id": section.id,
             "label": {"en": section.label_en, "zh": section.label_zh},
+            "short_label": (
+                {"en": section.short_label_en, "zh": section.short_label_zh}
+                if section.short_label_en else
+                {"en": section.label_en, "zh": section.label_zh}
+            ),
             "first": is_overview,
             "tone": (stance or {}).get("tone") if stance else None,
             "question": question,

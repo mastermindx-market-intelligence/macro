@@ -405,11 +405,73 @@ def test_copy_probe_ok_is_the_conjunction_of_every_row() -> None:
     assert copy_probe_ok([]) is False
 
 
-def test_apply_plain_producer_fail_closed_without_a_reviewed_pair() -> None:
-    from lib.macro_suite_labels import apply_plain_producer
-    import pytest
-    with pytest.raises(ValueError, match="no reviewed rewrite"):
-        apply_plain_producer({"en": "A dual-axis snapshot with no reviewed pair", "zh": "无"})
+def test_apply_plain_producer_unreviewed_machine_text_uses_fallback() -> None:
+    from lib.macro_suite_labels import PLAIN_FALLBACK, apply_plain_producer
+    reading, original = apply_plain_producer(
+        {"en": "raw_unreviewed_slug has no pair", "zh": "无"})
+    assert reading == PLAIN_FALLBACK
+    assert original["en"].startswith("raw_unreviewed_slug")
+
+
+def test_machine_text_predicate_catches_slugs_tokens_and_iso() -> None:
+    from lib.macro_suite_labels import machine_text_hits
+    assert machine_text_hits("sticky_led in the mix")
+    assert machine_text_hits("typed NOT_COVERED forever")
+    assert machine_text_hits("closed to {rate_side, balance_sheet}")
+    assert machine_text_hits("as of 2026-09-06T17:33:16")
+    assert machine_text_hits("p = 0.04")
+    assert machine_text_hits("label_en is a field")
+    assert not machine_text_hits("Sticky prices are leading the mix.")
+
+
+def test_production_key_space_has_no_machine_text_on_rendered_output(
+        tmp_path_factory) -> None:
+    from lib.macro_suite_labels import machine_text_hits
+    out = tmp_path_factory.mktemp("macro_command_predicate") / "site"
+    pages = builder.render(ROOT, data_root=DATA_ROOT, out_dir=out,
+                           page_built_at=BUILT_AT)
+    dirty: list[str] = []
+    for path in pages:
+        html = path.read_text(encoding="utf-8")
+        # Suite shell only — site chrome (nav, brand) is out of this packet.
+        start = html.find('class="mq-context"')
+        if start < 0:
+            start = html.find('class="mc-shell"')
+        if start < 0:
+            start = 0
+        shell = html[start:]
+        en = guard.reading_path_text(
+            shell.replace('class="l-zh"', 'class="l-zh" hidden'))
+        zh = guard.reading_path_text(
+            shell.replace('class="l-en"', 'class="l-en" hidden'))
+        for locale, text in (("en", en), ("zh", zh)):
+            hits = machine_text_hits(text)
+            if hits:
+                dirty.append(f"{path.name}:{locale}:{hits[:8]}")
+    assert dirty == [], dirty
+
+
+def test_synthetic_slug_renders_the_fallback_pair() -> None:
+    import json
+    from lib.macro_suite_labels import PLAIN_FALLBACK
+    from lib.macro_suite_view import build_view
+    workspace = DATA_ROOT / "workspaces" / "rates_curves" / "US" / "latest.json"
+    if not workspace.is_file():
+        pytest.skip("rates_curves snapshot is not in this checkout")
+    body = json.loads(workspace.read_text(encoding="utf-8"))
+    items = (((body.get("implications") or {}).get("items")) or [])
+    if not items:
+        pytest.skip("rates_curves snapshot carries no implications")
+    items[0]["text"] = {"en": "raw_slug_token has no reviewed pair",
+                        "zh": "raw_slug_token 无审定"}
+    view = build_view(
+        body, page_built_at=BUILT_AT,
+        artifact={"path": "x", "manifest_path": "y", "sha256": "z", "bytes": 1},
+    )
+    lead = view["implications"]["entries"][0]["text"]
+    assert lead == PLAIN_FALLBACK
+    assert "raw_slug_token" not in lead["en"]
+    assert "raw_slug_token" not in lead["zh"]
 
 
 def test_b1_rewrites_are_in_the_reading_path_and_originals_are_in_details(
@@ -491,7 +553,8 @@ def test_clearance_probe_js_binds_locator_element_then_arg() -> None:
     from scripts.capture_macro_command_p5 import _CLEARANCE_JS
     assert _CLEARANCE_JS.lstrip().startswith("(el, arg)")
     assert "texts.length > 0" in _CLEARANCE_JS
-    assert "fabInBand === true" in _CLEARANCE_JS
+    assert "maxScrollMatched" in _CLEARANCE_JS
+    assert "NodeFilter.SHOW_TEXT" in _CLEARANCE_JS
 
 
 def test_capture_relocated_needles_are_locale_visible_and_must_be_inside() -> None:
@@ -517,3 +580,61 @@ def test_analyst_is_last_rail_child_and_not_fixed_at_768() -> None:
     assert "position: fixed" not in mobile
     assert "position: static" in mobile
     assert "84px + 16px + 16px + 16px" not in css
+    assert "84px + 44px + 16px" not in css
+
+
+def test_clearance_probe_ok_fails_on_empty_or_hits() -> None:
+    from scripts.capture_macro_command_p5 import clearance_probe_ok
+    assert clearance_probe_ok({}) is False
+    assert clearance_probe_ok({"text_count": 0, "intersections": [], "ok": True}) is False
+    assert clearance_probe_ok({
+        "text_count": 3, "intersections": [{"text": "x"}], "ok": True,
+    }) is False
+    assert clearance_probe_ok({
+        "text_count": 3, "intersections": [], "at_max": True,
+        "maxScrollMatched": False, "ok": True,
+    }) is False
+    assert clearance_probe_ok({
+        "text_count": 3, "intersections": [], "analyst_hits": [],
+        "at_max": True, "maxScrollMatched": True, "ok": True,
+    }) is True
+
+
+def test_p5_manifest_viewport_identity() -> None:
+    import json
+    from pathlib import Path as _Path
+    manifest_path = ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json"
+    if not manifest_path.is_file():
+        pytest.skip("P5 evidence manifest is not in this checkout")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    dirty: list[str] = []
+    for page in manifest.get("pages") or []:
+        for state in page.get("states") or []:
+            if not state.get("captured"):
+                continue
+            name = state.get("file")
+            dpr = float(state.get("dpr") or 0)
+            css = state.get("viewport_css_width")
+            width = state.get("width")
+            declared = state.get("viewport_width")
+            if not dpr or css is None or width is None:
+                dirty.append(f"{name}: missing dpr/viewport_css_width/width")
+                continue
+            expected = width / dpr
+            if abs(float(css) - expected) > 0.51:
+                dirty.append(f"{name}: css {css} != ihdr {width}/{dpr}")
+            if abs(float(declared) - expected) > 0.51:
+                dirty.append(f"{name}: viewport_width {declared} != {expected}")
+            if state.get("crop"):
+                if not state.get("selector"):
+                    dirty.append(f"{name}: crop without selector")
+            png = manifest_path.parent / name
+            if png.is_file():
+                data = png.read_bytes()
+                ihdr_w = int.from_bytes(data[16:20], "big")
+                if ihdr_w != width:
+                    dirty.append(f"{name}: recorded width {width} != IHDR {ihdr_w}")
+    orphan = manifest_path.parent / "16-light-en-1440.png"
+    if orphan.is_file():
+        dirty.append("orphan 16-light-en-1440.png still committed")
+    assert dirty == [], dirty

@@ -66,7 +66,8 @@
     a second Details toggle per cell (m4) is not emitted. -#}
 {%- macro vis_time(value) -%}
 {%- if value -%}
-<time datetime="{{ value }}">{{ value.split('T')[0] }}</time>
+{%- set face = value|date_pair -%}
+<time datetime="{{ value }}">{% if face %}{{ t(face.en, face.zh) }}{% else %}{{ value.split('T')[0] }}{% endif %}</time>
 {%- endif -%}
 {%- endmacro -%}
 
@@ -83,7 +84,7 @@
   {%- for row in rows %}
   <div class="mq-clock{{ ' is-absent' if row.absent else '' }}">
     <dt><span class="mq-clock-name">{{ bl(row.name) }}</span><span class="mq-clock-meaning">{{ bl(row.meaning) }}</span></dt>
-    <dd>{% if row.absent %}<span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr">{{ t('not carried by this source', '该数据源未提供') }}</span>{% else %}<time>{{ row.value }}</time>{% endif %}</dd>
+    <dd>{% if row.absent %}<span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr">{{ t('not carried by this source', '该数据源未提供') }}</span>{% else %}{{ vis_time(row.value) }}{% endif %}</dd>
   </div>
   {%- endfor %}
 </dl>

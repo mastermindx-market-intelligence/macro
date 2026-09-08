@@ -272,6 +272,8 @@ def test_le768_panel_column_reserves_only_what_is_still_fixed(
                       macro_command_css, re.S)
     assert block
     body = _strip_css_comments(block.group(1))
+    assert "padding-bottom: calc(56px + 16px" not in body
+    assert "padding-bottom: 144px" not in body
     assert re.search(
         r'\.mc-panels\s*\{[^}]*padding-bottom:\s*env\(safe-area-inset-bottom, 0px\)',
         body, re.S)

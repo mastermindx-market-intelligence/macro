@@ -16,7 +16,7 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -131,7 +131,7 @@ def _write_harness(root: Path, *, src: str, width: int, height: int,
 
 def _open(*, browser, origin: str, path: str, theme: str, locale: str,
           width: int, height: int, iframe_width: int | None = None,
-          caption: str | None = None):
+          caption: str | None = None, harness_root: Path | None = None):
     context = browser.new_context(
         viewport={"width": width, "height": height},
         device_scale_factor=2,
@@ -149,8 +149,8 @@ def _open(*, browser, origin: str, path: str, theme: str, locale: str,
     page = context.new_page()
     if iframe_width:
         harness = _write_harness(
-            SITE, src=path, width=iframe_width, height=height - 28,
-            caption=caption)
+            harness_root or SITE, src=path, width=iframe_width,
+            height=height - 28, caption=caption)
         page.goto(origin + "/" + harness, wait_until="domcontentloaded",
                   timeout=30000)
         frame = page.frame_locator("#mc-p5-frame")
@@ -186,7 +186,15 @@ def _shot(dest: Path, locator) -> dict[str, Any]:
 
 def _state(filename: str, theme: str, locale: str, viewport: str,
            info: dict[str, Any], *, verified_how: str,
-           viewport_width: int, fixture: str | None = None) -> dict[str, Any]:
+           viewport_width: int, fixture: bool | str | None = None,
+           force_state: str | None = None, crop: bool = False,
+           selector: str | None = None, dpr: float = 2.0,
+           viewport_height: int | None = None,
+           trigger: str | None = None) -> dict[str, Any]:
+    ihdr_w = int(info["width"])
+    ihdr_h = int(info["height"])
+    css_w = ihdr_w / float(dpr)
+    declared = int(round(css_w)) if crop else int(viewport_width)
     return {
         "access": "anonymous",
         "applied_locale": locale,
@@ -194,18 +202,25 @@ def _state(filename: str, theme: str, locale: str, viewport: str,
         "bytes": info["bytes"],
         "captured": True,
         "file": filename,
-        "force_state": None,
-        "height": info["height"],
-        "width": info["width"],
+        "force_state": force_state,
+        "height": ihdr_h,
+        "width": ihdr_w,
         "locale": locale,
         "sha256": info["sha256"],
         "theme": theme,
         "viewport": viewport,
-        "viewport_width": viewport_width,
-        "viewport_height": 2200 if viewport == "desktop" else 844,
+        "viewport_width": declared,
+        "viewport_css_width": css_w,
+        "viewport_height": (
+            viewport_height if viewport_height is not None
+            else (2200 if viewport == "desktop" else 844)
+        ),
+        "dpr": dpr,
+        "crop": crop,
+        "selector": selector,
         "verified_how": verified_how,
-        "fixture": fixture,
-        "trigger": None,
+        "fixture": True if fixture else False,
+        "trigger": trigger,
     }
 
 
@@ -268,78 +283,129 @@ def _copy_probe(page, needles: tuple[str, ...]) -> dict[str, Any]:
 
 
 _CLEARANCE_JS = """(el, arg) => {
-    const textSel = arg.textSel;
-    const atMax = arg.atMax;
+    const position = Number(arg.position);
     const overlap = (a, b) => !(a.right <= b.left || a.left >= b.right
         || a.bottom <= b.top || a.top >= b.bottom);
-    const box = (el) => {
-        const r = el.getBoundingClientRect();
-        return {tag: el.tagName, cls: el.className || '',
+    const elBox = (node) => {
+        const r = node.getBoundingClientRect();
+        return {tag: node.tagName || 'TEXT',
+                id: node.id || '',
+                cls: node.className || '',
                 x: r.x, y: r.y, w: r.width, h: r.height,
                 top: r.top, bottom: r.bottom, left: r.left, right: r.right};
     };
-    if (atMax) {
-        window.scrollTo(0, document.documentElement.scrollHeight);
-    } else {
-        window.scrollTo(0, 0);
+    const textBox = (node) => {
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        const r = range.getBoundingClientRect();
+        return {text: (node.textContent || '').trim().slice(0, 80),
+                x: r.x, y: r.y, w: r.width, h: r.height,
+                top: r.top, bottom: r.bottom, left: r.left, right: r.right};
+    };
+    const maxY = Math.max(0,
+        document.documentElement.scrollHeight - window.innerHeight);
+    const target = position >= 1 ? maxY : maxY * position;
+    window.scrollTo(0, target);
+    const reached = window.scrollY || document.documentElement.scrollTop || 0;
+    const maxScrollMatched = Math.abs(reached - maxY) < 2;
+    const occluderEls = Array.from(document.querySelectorAll(
+        '.mc-rail, .mc-rail-list, .mc-analyst, #mmb-boot'));
+    const occluders = occluderEls
+        .map(node => ({el: node, cs: getComputedStyle(node), r: node.getBoundingClientRect()}))
+        .filter(x => x.cs.display !== 'none' && x.cs.visibility !== 'hidden'
+                     && (x.cs.position === 'fixed' || x.cs.position === 'sticky')
+                     && x.r.width > 0 && x.r.height > 0)
+        .map(x => ({el: x.el, id: x.el.id || x.el.className,
+                    position: x.cs.position, ...elBox(x.el)}));
+    const root = document.querySelector('.mc-panels, .mq-body, main, .mc-shell')
+        || document.body;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+        acceptNode(node) {
+            return (node.textContent || '').trim()
+                ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+        }
+    });
+    const texts = [];
+    let node;
+    while ((node = walker.nextNode())) {
+        const box = textBox(node);
+        if (box.w <= 0 || box.h <= 0) continue;
+        texts.push({node, parent: node.parentElement, ...box});
     }
-    const fixed = Array.from(document.querySelectorAll('.mc-analyst, #mmb-boot'))
-        .map(el => ({el, cs: getComputedStyle(el), r: el.getBoundingClientRect()}))
-        .filter(x => x.cs.position === 'fixed' && x.r.width > 0 && x.r.height > 0)
-        .map(x => ({id: x.el.id || x.el.className, ...box(x.el)}));
-    const texts = Array.from(document.querySelectorAll(textSel))
-        .map(el => ({el, r: el.getBoundingClientRect()}))
-        .filter(x => x.r.width > 0 && x.r.height > 0)
-        .map(x => box(x.el));
     const hits = [];
     for (const t of texts) {
-        for (const f of fixed) {
-            if (overlap(t, f)) hits.push({text: t, fixed: f});
+        for (const f of occluders) {
+            if (f.el.contains(t.node)) continue;
+            if (overlap(t, f)) {
+                hits.push({text: t.text, occluder: f.id,
+                           occluder_position: f.position});
+            }
         }
     }
+    const analyst = document.querySelector('.mc-analyst');
+    const analystBox = analyst ? elBox(analyst) : null;
     const stance = document.querySelector('.mc-panel .mc-stance, .mc-stance');
-    const stanceBox = stance ? box(stance) : null;
-    const stanceHits = [];
-    if (stanceBox && !atMax) {
-        for (const f of fixed) {
-            if (overlap(stanceBox, f)) stanceHits.push({stance: stanceBox, fixed: f});
+    const stanceBox = stance ? elBox(stance) : null;
+    const callouts = Array.from(document.querySelectorAll(
+        '.mc-arrival, .mc-watch, .mc-primer, .mq-callout, .mc-callout'))
+        .map(elBox);
+    let analystHits = [];
+    if (analystBox) {
+        if (stanceBox && overlap(stanceBox, analystBox)) {
+            analystHits.push({kind: 'stance'});
+        }
+        for (const c of callouts) {
+            if (overlap(c, analystBox)) analystHits.push({kind: 'callout'});
+        }
+        for (const t of texts) {
+            if (analyst.contains(t.node)) continue;
+            if (overlap(t, analystBox)) analystHits.push({kind: 'text', text: t.text});
         }
     }
     const fab = document.getElementById('mmb-boot');
-    const fabBox = fab && getComputedStyle(fab).position === 'fixed' ? box(fab) : null;
-    const panels = document.querySelector('.mc-panels');
-    let fabInBand = null;
-    if (fabBox && panels && atMax) {
-        const pr = panels.getBoundingClientRect();
-        const cs = getComputedStyle(panels);
-        const pad = parseFloat(cs.paddingBottom) || 0;
-        const contentBottom = pr.bottom - pad;
-        fabInBand = fabBox.top >= contentBottom - 1 && fabBox.bottom <= pr.bottom + 8;
-    }
-    const analyst = document.querySelector('.mc-analyst');
-    const analystFixed = !!(analyst && getComputedStyle(analyst).position === 'fixed');
+    const fabBox = fab && getComputedStyle(fab).position === 'fixed' ? elBox(fab) : null;
+    const atMax = position >= 1;
+    const ok = texts.length > 0 && hits.length === 0 && analystHits.length === 0
+        && (!atMax || maxScrollMatched);
     return {
         at_max: atMax,
-        fixed,
+        position,
+        scrollReached: reached,
+        maxScroll: maxY,
+        maxScrollMatched: atMax ? maxScrollMatched : null,
+        occluders: occluders.map(({el, ...rest}) => rest),
         text_count: texts.length,
         intersections: hits,
+        analyst: analystBox,
+        analyst_hits: analystHits,
         stance: stanceBox,
-        stance_hits: stanceHits,
         fab: fabBox,
-        fab_in_reserved_band: fabInBand,
-        analyst_fixed: analystFixed,
-        ok: texts.length > 0
-            && !analystFixed
-            && (atMax
-                ? (hits.length === 0 && fabInBand === true)
-                : stanceHits.length === 0),
+        analyst_fixed: !!(analyst && getComputedStyle(analyst).position === 'fixed'),
+        ok,
     };
 }"""
 
 
-def _clearance_probe(locator, *, at_max: bool) -> dict[str, Any]:
-    return locator.evaluate(
-        _CLEARANCE_JS, {"textSel": CLEARANCE_TEXT, "atMax": at_max})
+def clearance_probe_ok(row: Mapping[str, Any] | None) -> bool:
+    """Empty text set, any hit, or unmatched max-scroll → not ok."""
+    if not row:
+        return False
+    texts = int(row.get("text_count") or 0)
+    hits = list(row.get("intersections") or [])
+    analyst_hits = list(row.get("analyst_hits") or [])
+    if texts <= 0:
+        return False
+    if hits or analyst_hits:
+        return False
+    if row.get("at_max") and not row.get("maxScrollMatched"):
+        return False
+    return bool(row.get("ok"))
+
+
+def _clearance_probe(locator, *, position: float) -> dict[str, Any]:
+    row = locator.evaluate(_CLEARANCE_JS, {"position": position})
+    row["ok"] = clearance_probe_ok(row)
+    return row
 
 
 def _topic_styles(page) -> dict[str, Any]:
@@ -366,54 +432,34 @@ def _topic_styles(page) -> dict[str, Any]:
         }""")
 
 
-def _i2_probe(page) -> dict[str, Any]:
-    return page.evaluate(
-        """() => {
-            const rows = Array.from(document.querySelectorAll('.mc-move-row'));
-            const last = rows[rows.length - 1];
-            const pill = document.querySelector('.mc-analyst');
-            if (!last || !pill) {
-                return {ok: false, reason: 'missing last row or pill'};
-            }
-            const value = last.querySelector('.mc-move-current, .mc-move-delta');
-            const delta = last.querySelector('.mc-move-delta');
-            const current = last.querySelector('.mc-move-current');
-            const vr = (current || value).getBoundingClientRect();
-            const dr = (delta || current).getBoundingClientRect();
-            const pr = pill.getBoundingClientRect();
-            const vw = window.innerWidth, vh = window.innerHeight;
-            const vis = (r) => r.top >= 0 && r.left >= 0
-                && r.bottom <= vh + 0.5 && r.right <= vw + 0.5;
-            const overlap = (a, b) => !(a.right <= b.left || a.left >= b.right
-                || a.bottom <= b.top || a.top >= b.bottom);
-            return {
-                ok: vis(vr) && vis(dr) && !overlap(vr, pr) && !overlap(dr, pr),
-                value: {x: vr.x, y: vr.y, w: vr.width, h: vr.height, in_view: vis(vr)},
-                delta: {x: dr.x, y: dr.y, w: dr.width, h: dr.height, in_view: vis(dr)},
-                pill: {x: pr.x, y: pr.y, w: pr.width, h: pr.height},
-                overlap_value: overlap(vr, pr),
-                overlap_delta: overlap(dr, pr),
-            };
-        }""")
+def _i2_probe(locator) -> dict[str, Any]:
+    samples = []
+    for position in (0.0, 0.5, 1.0):
+        row = _clearance_probe(locator, position=position)
+        samples.append(row)
+    return {
+        "ok": bool(samples) and all(clearance_probe_ok(row) for row in samples),
+        "samples": samples,
+    }
 
 
 def main() -> int:
     from playwright.sync_api import sync_playwright
-    from scripts import build_macro_suite_pages as builder
 
     EVIDENCE.mkdir(parents=True, exist_ok=True)
+    status = subprocess.check_output(
+        ["git", "status", "--short"], cwd=ROOT, text=True).strip()
+    if status:
+        raise RuntimeError(f"tree not clean before capture:\n{status}")
     head = subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     captured_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    print(f"rebuilding hub + 14 pages at {head}", flush=True)
-    builder.render(ROOT, data_root=SITE / "macrodata", out_dir=SITE,
-                   page_built_at="2026-09-06T00:00:00Z")
+    print(f"capturing committed site at {head} (no rebuild — C2)", flush=True)
 
     states: list[dict[str, Any]] = []
     gaps: list[str] = [
         "E5 remains a disclosed gap: the empty-e5 node is a <template> the "
         "client mounts on fragment failure, not a builder-triggerable fixture.",
-        f"head_sha {head} is the pre-commit tip at capture; P5 commits land after.",
     ]
     probes: dict[str, Any] = {}
     harness_files: list[Path] = []
@@ -478,6 +524,7 @@ def main() -> int:
                 states.append(_state(
                     name, theme, locale, "desktop", info, viewport_width=1440,
                     verified_how="clip section#rates; primer forced open; details closed",
+                    crop=True, selector="section#rates", force_state="rates_panel",
                 ))
                 ctx.close()
 
@@ -511,10 +558,12 @@ def main() -> int:
                     width=1440, height=1100, iframe_width=768,
                     caption="/macro_monetary.html#credit/funding")
                 frame.locator("section#credit").wait_for(timeout=15000)
-                info = _shot(EVIDENCE / name, page.locator("body"))
+                info = _shot(EVIDENCE / name, page.locator("#mc-p5-frame"))
                 states.append(_state(
                     name, theme, locale, "tablet", info, viewport_width=768,
-                    verified_how="768 iframe + visible caption bar with #credit/funding",
+                    viewport_height=844,
+                    verified_how="768 iframe crop of #mc-p5-frame; #credit/funding caption",
+                    force_state="tablet_768",
                 ))
                 ctx.close()
 
@@ -533,17 +582,21 @@ def main() -> int:
                 ws_states["macro_rates_curves.html"].append(_state(
                     name, theme, locale, "desktop", info, viewport_width=1440,
                     verified_how="macro_rates_curves relocated implication details.open; §5 strings readable",
+                    crop=True, selector=".mq-ribbon", force_state="details_open",
                 ))
                 ctx.close()
 
-            # 17 / 17b Read-word computed styles
+            # 17 / 17b / 17c / 17d Read-word computed styles (dark/light × EN/ZH)
             style_rows = {}
-            for n, theme in (("17", "dark"), ("17b", "light")):
-                name = f"{n}-{theme}-en-1440.png"
+            for n, theme, locale in (
+                ("17", "dark", "en"), ("17b", "light", "en"),
+                ("17c", "dark", "zh"), ("17d", "light", "zh"),
+            ):
+                name = f"{n}-{theme}-{locale}-1440.png"
                 print(f"capture {name}", flush=True)
                 ctx, page, _ = _open(
                     browser=browser, origin=origin,
-                    path="/macro_monetary.html", theme=theme, locale="en",
+                    path="/macro_monetary.html", theme=theme, locale=locale,
                     width=1440, height=2200)
                 page.wait_for_selector(".mc-read-topic", timeout=15000)
                 styles = _topic_styles(page)
@@ -551,12 +604,15 @@ def main() -> int:
                 topic = page.locator(".mc-read-topic").first
                 info = _shot(EVIDENCE / name, topic)
                 states.append(_state(
-                    name, theme, "en", "desktop", info, viewport_width=1440,
+                    name, theme, locale, "desktop", info, viewport_width=1440,
                     verified_how="element clip of the same .mc-read-topic; computed style in probes.json",
+                    crop=True, selector=".mc-read-topic", force_state="read_word",
                 ))
                 ctx.close()
             probes["read_word_17"] = style_rows.get("17")
             probes["read_word_17b"] = style_rows.get("17b")
+            probes["read_word_17c"] = style_rows.get("17c")
+            probes["read_word_17d"] = style_rows.get("17d")
             dark_s, light_s = style_rows["17"], style_rows["17b"]
             probes["read_word_contrast_ok"] = bool(
                 dark_s.get("halo") and dark_s.get("underline_px", 1) < 0.5
@@ -565,6 +621,7 @@ def main() -> int:
 
             # B2 clearance at 390 and 768 × dark/light × EN/ZH
             clearance_ok = True
+            i2_ok = True
             for width in (390, 768):
                 for theme, locale in (
                     ("dark", "en"), ("dark", "zh"),
@@ -578,12 +635,20 @@ def main() -> int:
                         width=1440, height=900, iframe_width=width)
                     frame.locator(".mc-analyst, .mc-stance").first.wait_for(
                         timeout=15000)
-                    boot = _clearance_probe(frame.locator("html"), at_max=False)
-                    mx = _clearance_probe(frame.locator("html"), at_max=True)
-                    row = {"boot": boot, "max": mx,
-                           "ok": bool(boot.get("ok") and mx.get("ok"))}
+                    loc = frame.locator("html")
+                    boot = _clearance_probe(loc, position=0.0)
+                    mid = _clearance_probe(loc, position=0.5)
+                    mx = _clearance_probe(loc, position=1.0)
+                    i2 = _i2_probe(loc)
+                    row = {
+                        "boot": boot, "mid": mid, "max": mx, "i2": i2,
+                        "ok": bool(clearance_probe_ok(boot)
+                                   and clearance_probe_ok(mid)
+                                   and clearance_probe_ok(mx)),
+                    }
                     probes[key] = row
                     clearance_ok = clearance_ok and row["ok"]
+                    i2_ok = i2_ok and bool(i2.get("ok"))
                     if width == 390 and theme == "dark" and locale == "en":
                         i2_name = "i2-dark-en-390.png"
                         print(f"capture {i2_name}", flush=True)
@@ -591,10 +656,11 @@ def main() -> int:
                         states.append(_state(
                             i2_name, "dark", "en", "mobile", info,
                             viewport_width=390,
-                            verified_how="390 iframe; B2 clearance at boot+max scroll; analyst is a rail chip",
+                            verified_how="390 iframe; clearance at 0 / 50% / max; analyst is a rail chip",
+                            force_state="clearance_i2",
                         ))
                     ctx.close()
-            probes["i2_ok"] = clearance_ok
+            probes["i2_ok"] = bool(i2_ok and clearance_ok)
 
             # 18–19 half-null fixture (read.omitted + null chips + E2 + E6)
             from scripts import capture_macro_command_p4 as p4cap
@@ -628,21 +694,41 @@ def main() -> int:
                 _hp, half_origin = _serve(site_half)
                 half_ok = False
                 last_markers: dict[str, Any] = {}
-                for n, theme in (("18", "dark"), ("19", "light")):
-                    name = f"{n}-{theme}-en-1440.png"
+                half_jobs = [
+                    ("18-dark-en-1440.png", "dark", "en", 1440),
+                    ("18b-dark-zh-1440.png", "dark", "zh", 1440),
+                    ("19-light-en-1440.png", "light", "en", 1440),
+                    ("19b-light-zh-1440.png", "light", "zh", 1440),
+                    ("half-dark-en-390.png", "dark", "en", 390),
+                    ("half-dark-zh-390.png", "dark", "zh", 390),
+                    ("half-light-en-390.png", "light", "en", 390),
+                    ("half-light-zh-390.png", "light", "zh", 390),
+                ]
+                for name, theme, locale, width in half_jobs:
                     dest = EVIDENCE / name
                     if dest.exists():
                         dest.unlink()
                     print(f"capture {name} (half-null fixture)", flush=True)
-                    ctx, page, _ = _open(
-                        browser=browser, origin=half_origin,
-                        path="/macro_monetary.html#housing", theme=theme,
-                        locale="en", width=1440, height=2800)
-                    page.wait_for_selector(".mc-read", timeout=15000)
-                    page.wait_for_selector('[data-mc-empty="e2"]', timeout=15000)
-                    page.evaluate("location.hash = '#credit/funding'")
-                    page.wait_for_selector('[data-mc-empty="e6"]', timeout=15000)
-                    page.evaluate(
+                    if width == 390:
+                        ctx, page, frame = _open(
+                            browser=browser, origin=half_origin,
+                            path="/macro_monetary.html#housing", theme=theme,
+                            locale=locale, width=1440, height=900,
+                            iframe_width=390, harness_root=site_half)
+                        target = frame
+                    else:
+                        ctx, page, _ = _open(
+                            browser=browser, origin=half_origin,
+                            path="/macro_monetary.html#housing", theme=theme,
+                            locale=locale, width=1440, height=2800)
+                        target = page
+                    host = target if width == 390 else page
+                    js = host if hasattr(host, "evaluate") else host.locator(":root")
+                    host.locator(".mc-read").wait_for(timeout=15000)
+                    host.locator('[data-mc-empty="e2"]').wait_for(timeout=15000)
+                    js.evaluate("location.hash = '#credit/funding'")
+                    host.locator('[data-mc-empty="e6"]').wait_for(timeout=15000)
+                    js.evaluate(
                         """() => {
                             document.querySelectorAll('[data-mc-panel]').forEach(p => {
                                 const id = p.getAttribute('data-mc-panel');
@@ -655,7 +741,7 @@ def main() -> int:
                             if (funding) funding.hidden = false;
                         }""")
                     page.wait_for_timeout(400)
-                    markers = page.evaluate(
+                    markers = js.evaluate(
                         """() => ({
                             omitted: !!document.querySelector('.mc-read-omitted'),
                             null_chips: document.querySelectorAll('.mc-chip.is-null').length,
@@ -672,41 +758,58 @@ def main() -> int:
                     needed = (markers["omitted"] and markers["null_chips"] >= 2
                               and markers["e2"] and markers["e6"]
                               and markers["e2_visible"] and markers["e6_visible"])
+                    viewport_name = "mobile" if width == 390 else "desktop"
                     if not needed:
                         reason = (
                             "half-null fixture missing a named cell: "
                             f"{markers}"
                         )
                         states.append(_gap_state(
-                            name, theme, "en", "desktop", reason, 1440))
-                        gaps.append(f"Frame {n}: {reason}")
+                            name, theme, locale, viewport_name, reason, width))
+                        gaps.append(f"Frame {name}: {reason}")
                     else:
-                        page.screenshot(path=str(dest), type="png",
-                                        full_page=True)
-                        png = dest.read_bytes()
-                        info = {
-                            "bytes": len(png),
-                            "sha256": hashlib.sha256(png).hexdigest(),
-                            "width": _png_size(dest)[0],
-                            "height": _png_size(dest)[1],
-                        }
+                        if width == 390:
+                            info = _shot(dest, page.locator("#mc-p5-frame"))
+                        else:
+                            page.screenshot(path=str(dest), type="png",
+                                            full_page=False)
+                            png = dest.read_bytes()
+                            info = {
+                                "bytes": len(png),
+                                "sha256": hashlib.sha256(png).hexdigest(),
+                                "width": _png_size(dest)[0],
+                                "height": _png_size(dest)[1],
+                            }
                         states.append(_state(
-                            name, theme, "en", "desktop", info,
-                            viewport_width=1440,
+                            name, theme, locale, viewport_name, info,
+                            viewport_width=width,
                             verified_how="in-memory half-null: read.omitted + ≥2 null chips + E2 housing + E6 credit",
-                            fixture="half-null",
+                            fixture=True, force_state="half-null",
+                            trigger="in-memory: housing SOURCE_FAILED + capital_structure entitlement=Research",
                         ))
                         half_ok = True
                     ctx.close()
                 probes["half_null_markers"] = last_markers
                 probes["half_null_ok"] = half_ok
             except Exception as exc:
-                for n, theme in (("18", "dark"), ("19", "light")):
-                    name = f"{n}-{theme}-en-1440.png"
+                already = {st.get("file") for st in states if st.get("captured")}
+                for name, theme, locale, width in (
+                    ("18-dark-en-1440.png", "dark", "en", 1440),
+                    ("18b-dark-zh-1440.png", "dark", "zh", 1440),
+                    ("19-light-en-1440.png", "light", "en", 1440),
+                    ("19b-light-zh-1440.png", "light", "zh", 1440),
+                    ("half-dark-en-390.png", "dark", "en", 390),
+                    ("half-dark-zh-390.png", "dark", "zh", 390),
+                    ("half-light-en-390.png", "light", "en", 390),
+                    ("half-light-zh-390.png", "light", "zh", 390),
+                ):
+                    if name in already:
+                        continue
                     states.append(_gap_state(
-                        name, theme, "en", "desktop",
-                        f"half-null fixture build failed: {exc}", 1440))
-                    gaps.append(f"Frame {n}: half-null fixture failed ({exc}).")
+                        name, theme, locale,
+                        "desktop" if width == 1440 else "mobile",
+                        f"half-null fixture build failed: {exc}", width))
+                    gaps.append(f"Frame {name}: half-null fixture failed ({exc}).")
 
             # Workspace extension: closed + open at 1440, dark EN + light ZH at 390
             for page_name in WORKSPACE_PAGES:
@@ -732,34 +835,59 @@ def main() -> int:
                             details = page.locator(".mq-implication .mc-details")
                             if details.count():
                                 details.first.evaluate("el => { el.open = true; }")
-                        info = _shot(EVIDENCE / name, block)
-                        ws_states[page_name].append(_state(
-                            name, theme, locale, "desktop", info,
-                            viewport_width=1440,
-                            verified_how=f"{page_name} ribbon; details {mode}",
-                        ))
+                        if mode == "open":
+                            info = _shot(EVIDENCE / name, block)
+                            ws_states[page_name].append(_state(
+                                name, theme, locale, "desktop", info,
+                                viewport_width=1440,
+                                verified_how=f"{page_name} ribbon; details {mode}",
+                                crop=True, selector=".mq-ribbon",
+                                force_state="details_open",
+                            ))
+                        else:
+                            page.screenshot(path=str(EVIDENCE / name), type="png",
+                                            full_page=False)
+                            png = (EVIDENCE / name).read_bytes()
+                            info = {
+                                "bytes": len(png),
+                                "sha256": hashlib.sha256(png).hexdigest(),
+                                "width": _png_size(EVIDENCE / name)[0],
+                                "height": _png_size(EVIDENCE / name)[1],
+                            }
+                            ws_states[page_name].append(_state(
+                                name, theme, locale, "desktop", info,
+                                viewport_width=1440,
+                                verified_how=f"{page_name} first screen; details {mode}",
+                            ))
                         ctx.close()
                 for theme, locale in (
                     ("dark", "en"), ("dark", "zh"),
                     ("light", "en"), ("light", "zh"),
                 ):
-                    name = (
-                        f"ws-{page_name.replace('.html','')}-"
-                        f"{theme}-{locale}-390.png"
-                    )
-                    print(f"capture {name}", flush=True)
-                    ctx, page, frame = _open(
-                        browser=browser, origin=origin,
-                        path=f"/{page_name}", theme=theme, locale=locale,
-                        width=1440, height=900, iframe_width=390)
-                    frame.locator(".mq-implication-text").first.wait_for(
-                        timeout=15000)
-                    info = _shot(EVIDENCE / name, page.locator("#mc-p5-frame"))
-                    ws_states[page_name].append(_state(
-                        name, theme, locale, "mobile", info, viewport_width=390,
-                        verified_how=f"{page_name} 390 iframe; relocated block in view",
-                    ))
-                    ctx.close()
+                    for mode in ("closed", "open"):
+                        suffix = "" if mode == "closed" else "-open"
+                        name = (
+                            f"ws-{page_name.replace('.html','')}-"
+                            f"{theme}-{locale}-390{suffix}.png"
+                        )
+                        print(f"capture {name}", flush=True)
+                        ctx, page, frame = _open(
+                            browser=browser, origin=origin,
+                            path=f"/{page_name}", theme=theme, locale=locale,
+                            width=1440, height=900, iframe_width=390)
+                        frame.locator(".mq-implication-text").first.wait_for(
+                            timeout=15000)
+                        if mode == "open":
+                            details = frame.locator(".mq-implication .mc-details")
+                            if details.count():
+                                details.first.evaluate("el => { el.open = true; }")
+                        info = _shot(EVIDENCE / name, page.locator("#mc-p5-frame"))
+                        ws_states[page_name].append(_state(
+                            name, theme, locale, "mobile", info, viewport_width=390,
+                            verified_how=f"{page_name} 390 iframe; details {mode}",
+                            force_state="details_open" if mode == "open" else None,
+                        ))
+                        ctx.close()
 
             probes["copy_15_ok"] = bool((probes.get("copy_15") or {}).get("ok"))
             probes["copy_16_ok"] = bool((probes.get("copy_16") or {}).get("ok"))
@@ -796,6 +924,7 @@ def main() -> int:
                 f"{mode}-{theme}-{locale}-1440.png"
             )
             leftover.unlink(missing_ok=True)
+        (EVIDENCE / "16-light-en-1440.png").unlink(missing_ok=True)
 
         shas = [
             st["sha256"]
@@ -807,23 +936,39 @@ def main() -> int:
         if dups:
             raise RuntimeError(f"manifest repeats sha256: {sorted(dups)}")
 
+        force_states = sorted({
+            str(st.get("force_state"))
+            for page in pages_out
+            for st in page["states"]
+            if st.get("force_state")
+        })
         MANIFEST.write_text(json.dumps({
             "schema": "mastermind.p0_evidence.v2",
             "axes": {
                 "access": ["anonymous"],
-                "force_states": [],
+                "force_states": force_states,
                 "locales": ["en", "zh"],
                 "themes": ["dark", "light"],
-                "viewports": {"desktop": [1440, 2200], "mobile": [390, 844]},
+                "viewports": {
+                    "desktop": [1440, 2200],
+                    "mobile": [390, 844],
+                    "tablet": [768, 844],
+                },
             },
             "excluded": [],
             "generated_at": captured_at,
             "head_sha": head,
-            "pre_commit": True,
+            "capture_sha": head,
+            "tree_clean": True,
+            "pre_commit": False,
             "honesty": {
                 "access": "anonymous only; no credential is entered, stored, or synthesized",
                 "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
                 "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them",
+                "capture": (
+                    f"committed tree {head} was clean; no templates/scripts/lib/site "
+                    "file changed after this capture"
+                ),
             },
             "outcome": "captured",
             "pages": pages_out,
