@@ -10,6 +10,8 @@
       "panel_cw": 746,
       "rail_sw": 232,
       "rail_cw": 232,
+      "mmbBootInDom": true,
+      "mmbBootVisible": true,
       "mmbBootDisplay": "flex",
       "panel_ok": true,
       "doc_ok": true
@@ -24,6 +26,8 @@
       "panel_cw": 746,
       "rail_sw": 232,
       "rail_cw": 232,
+      "mmbBootInDom": true,
+      "mmbBootVisible": true,
       "mmbBootDisplay": "flex",
       "panel_ok": true,
       "doc_ok": true
@@ -38,6 +42,8 @@
       "panel_cw": 746,
       "rail_sw": 232,
       "rail_cw": 232,
+      "mmbBootInDom": true,
+      "mmbBootVisible": true,
       "mmbBootDisplay": "flex",
       "panel_ok": true,
       "doc_ok": true
@@ -52,6 +58,8 @@
       "panel_cw": 746,
       "rail_sw": 232,
       "rail_cw": 232,
+      "mmbBootInDom": true,
+      "mmbBootVisible": true,
       "mmbBootDisplay": "flex",
       "panel_ok": true,
       "doc_ok": true
@@ -66,6 +74,8 @@
       "panel_cw": 694,
       "rail_sw": 1371,
       "rail_cw": 549,
+      "mmbBootInDom": true,
+      "mmbBootVisible": false,
       "mmbBootDisplay": "none",
       "panel_ok": true,
       "doc_ok": true
@@ -80,6 +90,8 @@
       "panel_cw": 694,
       "rail_sw": 1156,
       "rail_cw": 589,
+      "mmbBootInDom": true,
+      "mmbBootVisible": false,
       "mmbBootDisplay": "none",
       "panel_ok": true,
       "doc_ok": true
@@ -94,6 +106,8 @@
       "panel_cw": 694,
       "rail_sw": 1371,
       "rail_cw": 549,
+      "mmbBootInDom": true,
+      "mmbBootVisible": false,
       "mmbBootDisplay": "none",
       "panel_ok": true,
       "doc_ok": true
@@ -108,6 +122,8 @@
       "panel_cw": 694,
       "rail_sw": 1156,
       "rail_cw": 589,
+      "mmbBootInDom": true,
+      "mmbBootVisible": false,
       "mmbBootDisplay": "none",
       "panel_ok": true,
       "doc_ok": true
@@ -122,6 +138,8 @@
       "panel_cw": 324,
       "rail_sw": 1371,
       "rail_cw": 179,
+      "mmbBootInDom": true,
+      "mmbBootVisible": false,
       "mmbBootDisplay": "none",
       "panel_ok": true,
       "doc_ok": true
@@ -136,6 +154,8 @@
       "panel_cw": 324,
       "rail_sw": 1156,
       "rail_cw": 219,
+      "mmbBootInDom": true,
+      "mmbBootVisible": false,
       "mmbBootDisplay": "none",
       "panel_ok": true,
       "doc_ok": true
@@ -150,6 +170,8 @@
       "panel_cw": 324,
       "rail_sw": 1371,
       "rail_cw": 179,
+      "mmbBootInDom": true,
+      "mmbBootVisible": false,
       "mmbBootDisplay": "none",
       "panel_ok": true,
       "doc_ok": true
@@ -164,6 +186,8 @@
       "panel_cw": 324,
       "rail_sw": 1156,
       "rail_cw": 219,
+      "mmbBootInDom": true,
+      "mmbBootVisible": false,
       "mmbBootDisplay": "none",
       "panel_ok": true,
       "doc_ok": true
@@ -178,6 +202,566 @@
     "macro_growth_real_economy.html",
     "macro_labor_markets.html"
   ],
+  "e5_timeout_growth_dark_en_1440": {
+    "elapsedMs": 8069.246166944504,
+    "requestSeenAtMs": 843188377.683958,
+    "cloneSeenAtMs": 843196446.930125,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/growth.html",
+    "headline": "This section didn't load",
+    "section": "growth"
+  },
+  "e5_timeout_growth_dark_zh_1440": {
+    "elapsedMs": 8059.880666971207,
+    "requestSeenAtMs": 843196758.613458,
+    "cloneSeenAtMs": 843204818.494125,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/growth.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "growth"
+  },
+  "e5_timeout_growth_light_en_1440": {
+    "elapsedMs": 8055.432833075523,
+    "requestSeenAtMs": 843205083.245708,
+    "cloneSeenAtMs": 843213138.6785411,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/growth.html",
+    "headline": "This section didn't load",
+    "section": "growth"
+  },
+  "e5_timeout_growth_light_zh_1440": {
+    "elapsedMs": 8093.940249919891,
+    "requestSeenAtMs": 843213496.283875,
+    "cloneSeenAtMs": 843221590.2241249,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/growth.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "growth"
+  },
+  "e5_timeout_growth_dark_en_390": {
+    "elapsedMs": 8062.038249969482,
+    "requestSeenAtMs": 843221870.695541,
+    "cloneSeenAtMs": 843229932.733791,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/growth.html",
+    "headline": "This section didn't load",
+    "section": "growth"
+  },
+  "e5_timeout_growth_dark_zh_390": {
+    "elapsedMs": 8017.826416015625,
+    "requestSeenAtMs": 843230229.675,
+    "cloneSeenAtMs": 843238247.501416,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/growth.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "growth"
+  },
+  "e5_timeout_growth_light_en_390": {
+    "elapsedMs": 8090.278499960899,
+    "requestSeenAtMs": 843238570.076625,
+    "cloneSeenAtMs": 843246660.355125,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/growth.html",
+    "headline": "This section didn't load",
+    "section": "growth"
+  },
+  "e5_timeout_growth_light_zh_390": {
+    "elapsedMs": 8069.403916954994,
+    "requestSeenAtMs": 843246982.210041,
+    "cloneSeenAtMs": 843255051.613958,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/growth.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "growth"
+  },
+  "e5_timeout_jobs_dark_en_1440": {
+    "elapsedMs": 8069.454708099365,
+    "requestSeenAtMs": 843255407.9257079,
+    "cloneSeenAtMs": 843263477.380416,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/jobs.html",
+    "headline": "This section didn't load",
+    "section": "jobs"
+  },
+  "e5_timeout_jobs_dark_zh_1440": {
+    "elapsedMs": 8067.481917023659,
+    "requestSeenAtMs": 843263868.773708,
+    "cloneSeenAtMs": 843271936.255625,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/jobs.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "jobs"
+  },
+  "e5_timeout_jobs_light_en_1440": {
+    "elapsedMs": 8092.981124997139,
+    "requestSeenAtMs": 843272238.112875,
+    "cloneSeenAtMs": 843280331.094,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/jobs.html",
+    "headline": "This section didn't load",
+    "section": "jobs"
+  },
+  "e5_timeout_jobs_light_zh_1440": {
+    "elapsedMs": 8089.792584061623,
+    "requestSeenAtMs": 843280621.7129159,
+    "cloneSeenAtMs": 843288711.5055,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/jobs.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "jobs"
+  },
+  "e5_timeout_jobs_dark_en_390": {
+    "elapsedMs": 8072.799458026886,
+    "requestSeenAtMs": 843288980.735458,
+    "cloneSeenAtMs": 843297053.534916,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/jobs.html",
+    "headline": "This section didn't load",
+    "section": "jobs"
+  },
+  "e5_timeout_jobs_dark_zh_390": {
+    "elapsedMs": 8083.492415904999,
+    "requestSeenAtMs": 843297338.245,
+    "cloneSeenAtMs": 843305421.7374159,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/jobs.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "jobs"
+  },
+  "e5_timeout_jobs_light_en_390": {
+    "elapsedMs": 8041.227542042732,
+    "requestSeenAtMs": 843305763.629083,
+    "cloneSeenAtMs": 843313804.8566251,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/jobs.html",
+    "headline": "This section didn't load",
+    "section": "jobs"
+  },
+  "e5_timeout_jobs_light_zh_390": {
+    "elapsedMs": 8011.661708950996,
+    "requestSeenAtMs": 843314083.7952911,
+    "cloneSeenAtMs": 843322095.457,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/jobs.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "jobs"
+  },
+  "e5_timeout_housing_dark_en_1440": {
+    "elapsedMs": 8085.12683403492,
+    "requestSeenAtMs": 843322394.720791,
+    "cloneSeenAtMs": 843330479.847625,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/housing.html",
+    "headline": "This section didn't load",
+    "section": "housing"
+  },
+  "e5_timeout_housing_dark_zh_1440": {
+    "elapsedMs": 8102.350709080696,
+    "requestSeenAtMs": 843330750.058291,
+    "cloneSeenAtMs": 843338852.409,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/housing.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "housing"
+  },
+  "e5_timeout_housing_light_en_1440": {
+    "elapsedMs": 8087.857707977295,
+    "requestSeenAtMs": 843339199.349625,
+    "cloneSeenAtMs": 843347287.207333,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/housing.html",
+    "headline": "This section didn't load",
+    "section": "housing"
+  },
+  "e5_timeout_housing_light_zh_1440": {
+    "elapsedMs": 8068.993584036827,
+    "requestSeenAtMs": 843347627.737541,
+    "cloneSeenAtMs": 843355696.731125,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/housing.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "housing"
+  },
+  "e5_timeout_housing_dark_en_390": {
+    "elapsedMs": 8103.831459164619,
+    "requestSeenAtMs": 843355995.3824159,
+    "cloneSeenAtMs": 843364099.213875,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/housing.html",
+    "headline": "This section didn't load",
+    "section": "housing"
+  },
+  "e5_timeout_housing_dark_zh_390": {
+    "elapsedMs": 8012.050500035286,
+    "requestSeenAtMs": 843364373.612833,
+    "cloneSeenAtMs": 843372385.663333,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/housing.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "housing"
+  },
+  "e5_timeout_housing_light_en_390": {
+    "elapsedMs": 8053.114958047867,
+    "requestSeenAtMs": 843372675.451,
+    "cloneSeenAtMs": 843380728.565958,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/housing.html",
+    "headline": "This section didn't load",
+    "section": "housing"
+  },
+  "e5_timeout_housing_light_zh_390": {
+    "elapsedMs": 8059.159458875656,
+    "requestSeenAtMs": 843381000.6854161,
+    "cloneSeenAtMs": 843389059.844875,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/housing.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "housing"
+  },
+  "e5_timeout_consumer_dark_en_1440": {
+    "elapsedMs": 8015.494958043098,
+    "requestSeenAtMs": 843389486.893625,
+    "cloneSeenAtMs": 843397502.3885831,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/consumer.html",
+    "headline": "This section didn't load",
+    "section": "consumer"
+  },
+  "e5_timeout_consumer_dark_zh_1440": {
+    "elapsedMs": 8068.130208015442,
+    "requestSeenAtMs": 843397875.03175,
+    "cloneSeenAtMs": 843405943.161958,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/consumer.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "consumer"
+  },
+  "e5_timeout_consumer_light_en_1440": {
+    "elapsedMs": 8006.943208098412,
+    "requestSeenAtMs": 843406246.457875,
+    "cloneSeenAtMs": 843414253.4010831,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/consumer.html",
+    "headline": "This section didn't load",
+    "section": "consumer"
+  },
+  "e5_timeout_consumer_light_zh_1440": {
+    "elapsedMs": 8013.011917114258,
+    "requestSeenAtMs": 843414645.132291,
+    "cloneSeenAtMs": 843422658.1442081,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/consumer.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "consumer"
+  },
+  "e5_timeout_consumer_dark_en_390": {
+    "elapsedMs": 8074.128957986832,
+    "requestSeenAtMs": 843423054.08225,
+    "cloneSeenAtMs": 843431128.211208,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/consumer.html",
+    "headline": "This section didn't load",
+    "section": "consumer"
+  },
+  "e5_timeout_consumer_dark_zh_390": {
+    "elapsedMs": 8034.096999883652,
+    "requestSeenAtMs": 843431492.039,
+    "cloneSeenAtMs": 843439526.1359999,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/consumer.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "consumer"
+  },
+  "e5_timeout_consumer_light_en_390": {
+    "elapsedMs": 8033.0715000629425,
+    "requestSeenAtMs": 843439790.170708,
+    "cloneSeenAtMs": 843447823.242208,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/consumer.html",
+    "headline": "This section didn't load",
+    "section": "consumer"
+  },
+  "e5_timeout_consumer_light_zh_390": {
+    "elapsedMs": 8006.497291088104,
+    "requestSeenAtMs": 843448118.4942499,
+    "cloneSeenAtMs": 843456124.991541,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/consumer.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "consumer"
+  },
+  "e5_timeout_credit_dark_en_1440": {
+    "elapsedMs": 8040.654500007629,
+    "requestSeenAtMs": 843456409.4278749,
+    "cloneSeenAtMs": 843464450.0823749,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/credit.html",
+    "headline": "This section didn't load",
+    "section": "credit"
+  },
+  "e5_timeout_credit_dark_zh_1440": {
+    "elapsedMs": 8100.12504196167,
+    "requestSeenAtMs": 843464735.4675831,
+    "cloneSeenAtMs": 843472835.592625,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/credit.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "credit"
+  },
+  "e5_timeout_credit_light_en_1440": {
+    "elapsedMs": 8031.184624910355,
+    "requestSeenAtMs": 843473119.0775,
+    "cloneSeenAtMs": 843481150.2621249,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/credit.html",
+    "headline": "This section didn't load",
+    "section": "credit"
+  },
+  "e5_timeout_credit_light_zh_1440": {
+    "elapsedMs": 8066.39145886898,
+    "requestSeenAtMs": 843481511.7776661,
+    "cloneSeenAtMs": 843489578.169125,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/credit.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "credit"
+  },
+  "e5_timeout_credit_dark_en_390": {
+    "elapsedMs": 8032.077709078789,
+    "requestSeenAtMs": 843489864.584541,
+    "cloneSeenAtMs": 843497896.66225,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/credit.html",
+    "headline": "This section didn't load",
+    "section": "credit"
+  },
+  "e5_timeout_credit_dark_zh_390": {
+    "elapsedMs": 8020.6130830049515,
+    "requestSeenAtMs": 843498156.768458,
+    "cloneSeenAtMs": 843506177.381541,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/credit.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "credit"
+  },
+  "e5_timeout_credit_light_en_390": {
+    "elapsedMs": 8033.154375076294,
+    "requestSeenAtMs": 843506461.613416,
+    "cloneSeenAtMs": 843514494.767791,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/credit.html",
+    "headline": "This section didn't load",
+    "section": "credit"
+  },
+  "e5_timeout_credit_light_zh_390": {
+    "elapsedMs": 8054.141374945641,
+    "requestSeenAtMs": 843514781.707458,
+    "cloneSeenAtMs": 843522835.848833,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/credit.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "credit"
+  },
+  "e5_timeout_debt_dark_en_1440": {
+    "elapsedMs": 8050.913207888603,
+    "requestSeenAtMs": 843523170.957625,
+    "cloneSeenAtMs": 843531221.8708329,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/debt.html",
+    "headline": "This section didn't load",
+    "section": "debt"
+  },
+  "e5_timeout_debt_dark_zh_1440": {
+    "elapsedMs": 8093.785750031471,
+    "requestSeenAtMs": 843531510.73725,
+    "cloneSeenAtMs": 843539604.523,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/debt.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "debt"
+  },
+  "e5_timeout_debt_light_en_1440": {
+    "elapsedMs": 8027.925290942192,
+    "requestSeenAtMs": 843540015.197625,
+    "cloneSeenAtMs": 843548043.122916,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/debt.html",
+    "headline": "This section didn't load",
+    "section": "debt"
+  },
+  "e5_timeout_debt_light_zh_1440": {
+    "elapsedMs": 8014.504832983017,
+    "requestSeenAtMs": 843548382.532125,
+    "cloneSeenAtMs": 843556397.036958,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/debt.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "debt"
+  },
+  "e5_timeout_debt_dark_en_390": {
+    "elapsedMs": 8064.933500051498,
+    "requestSeenAtMs": 843556693.656333,
+    "cloneSeenAtMs": 843564758.589833,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/debt.html",
+    "headline": "This section didn't load",
+    "section": "debt"
+  },
+  "e5_timeout_debt_dark_zh_390": {
+    "elapsedMs": 8031.323250055313,
+    "requestSeenAtMs": 843565061.701666,
+    "cloneSeenAtMs": 843573093.024916,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/debt.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "debt"
+  },
+  "e5_timeout_debt_light_en_390": {
+    "elapsedMs": 8042.746333956718,
+    "requestSeenAtMs": 843573400.372416,
+    "cloneSeenAtMs": 843581443.11875,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/debt.html",
+    "headline": "This section didn't load",
+    "section": "debt"
+  },
+  "e5_timeout_debt_light_zh_390": {
+    "elapsedMs": 8063.107165932655,
+    "requestSeenAtMs": 843581718.994375,
+    "cloneSeenAtMs": 843589782.1015409,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/debt.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "debt"
+  },
+  "e5_timeout_trade_dark_en_1440": {
+    "elapsedMs": 8091.041290998459,
+    "requestSeenAtMs": 843590081.335625,
+    "cloneSeenAtMs": 843598172.376916,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/trade.html",
+    "headline": "This section didn't load",
+    "section": "trade"
+  },
+  "e5_timeout_trade_dark_zh_1440": {
+    "elapsedMs": 8084.7605410814285,
+    "requestSeenAtMs": 843598464.50225,
+    "cloneSeenAtMs": 843606549.262791,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/trade.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "trade"
+  },
+  "e5_timeout_trade_light_en_1440": {
+    "elapsedMs": 8068.125874996185,
+    "requestSeenAtMs": 843606893.862625,
+    "cloneSeenAtMs": 843614961.9885,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/trade.html",
+    "headline": "This section didn't load",
+    "section": "trade"
+  },
+  "e5_timeout_trade_light_zh_1440": {
+    "elapsedMs": 8088.6182498931885,
+    "requestSeenAtMs": 843615352.817458,
+    "cloneSeenAtMs": 843623441.4357079,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/trade.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "trade"
+  },
+  "e5_timeout_trade_dark_en_390": {
+    "elapsedMs": 8027.803583979607,
+    "requestSeenAtMs": 843623709.798666,
+    "cloneSeenAtMs": 843631737.60225,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/trade.html",
+    "headline": "This section didn't load",
+    "section": "trade"
+  },
+  "e5_timeout_trade_dark_zh_390": {
+    "elapsedMs": 8058.240625023842,
+    "requestSeenAtMs": 843632021.846916,
+    "cloneSeenAtMs": 843640080.087541,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/trade.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "trade"
+  },
+  "e5_timeout_trade_light_en_390": {
+    "elapsedMs": 8036.974083065987,
+    "requestSeenAtMs": 843640347.6159999,
+    "cloneSeenAtMs": 843648384.590083,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/trade.html",
+    "headline": "This section didn't load",
+    "section": "trade"
+  },
+  "e5_timeout_trade_light_zh_390": {
+    "elapsedMs": 8053.112457871437,
+    "requestSeenAtMs": 843648667.694208,
+    "cloneSeenAtMs": 843656720.8066659,
+    "templatePresent": true,
+    "clonePresent": true,
+    "fragmentTarget": "macro/fragments/trade.html",
+    "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
+    "section": "trade"
+  },
   "clearance-growth-dark-en-390": {
     "ok": true,
     "textCount": 665,
@@ -188,7 +772,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1892,
         "innerHeight": 844,
@@ -217,7 +802,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1892,
         "innerHeight": 844,
@@ -335,7 +921,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1892,
         "innerHeight": 844,
@@ -360,7 +947,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -379,7 +967,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1747,
         "innerHeight": 844,
@@ -408,7 +997,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1747,
         "innerHeight": 844,
@@ -548,7 +1138,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1747,
         "innerHeight": 844,
@@ -573,7 +1164,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -592,7 +1184,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1931,
         "innerHeight": 844,
@@ -621,7 +1214,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1931,
         "innerHeight": 844,
@@ -739,7 +1333,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1931,
         "innerHeight": 844,
@@ -764,7 +1359,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -783,7 +1379,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1769,
         "innerHeight": 844,
@@ -812,7 +1409,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1769,
         "innerHeight": 844,
@@ -930,7 +1528,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1769,
         "innerHeight": 844,
@@ -955,7 +1554,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -974,7 +1574,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1584,
         "innerHeight": 1400,
@@ -1003,7 +1604,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1584,
         "innerHeight": 1400,
@@ -1032,7 +1634,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1584,
         "innerHeight": 1400,
@@ -1057,7 +1660,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -1076,7 +1680,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1508,
         "innerHeight": 1400,
@@ -1105,7 +1710,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1508,
         "innerHeight": 1400,
@@ -1134,7 +1740,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1508,
         "innerHeight": 1400,
@@ -1159,7 +1766,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -1178,7 +1786,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1594,
         "innerHeight": 1400,
@@ -1207,7 +1816,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1594,
         "innerHeight": 1400,
@@ -1236,7 +1846,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1594,
         "innerHeight": 1400,
@@ -1261,7 +1872,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -1280,7 +1892,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1518,
         "innerHeight": 1400,
@@ -1309,7 +1922,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1518,
         "innerHeight": 1400,
@@ -1338,7 +1952,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1518,
         "innerHeight": 1400,
@@ -1363,7 +1978,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -1382,7 +1998,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -1426,7 +2043,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -1470,7 +2088,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -1510,7 +2129,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -1534,7 +2154,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -1578,7 +2199,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -1622,7 +2244,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -1662,7 +2285,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -1686,7 +2310,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -1730,7 +2355,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -1774,7 +2400,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -1814,7 +2441,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -1838,7 +2466,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -1882,7 +2511,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -1926,7 +2556,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -1966,7 +2597,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -1990,7 +2622,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1791,
         "innerHeight": 844,
@@ -2019,7 +2652,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1791,
         "innerHeight": 844,
@@ -2159,7 +2793,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1791,
         "innerHeight": 844,
@@ -2184,7 +2819,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -2203,7 +2839,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1667,
         "innerHeight": 844,
@@ -2232,7 +2869,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1667,
         "innerHeight": 844,
@@ -2261,7 +2899,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1667,
         "innerHeight": 844,
@@ -2286,7 +2925,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -2305,7 +2945,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1830,
         "innerHeight": 844,
@@ -2334,7 +2975,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1830,
         "innerHeight": 844,
@@ -2474,7 +3116,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1830,
         "innerHeight": 844,
@@ -2499,7 +3142,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -2518,7 +3162,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1689,
         "innerHeight": 844,
@@ -2547,7 +3192,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1689,
         "innerHeight": 844,
@@ -2576,7 +3222,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1689,
         "innerHeight": 844,
@@ -2601,7 +3248,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -2620,7 +3268,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1506,
         "innerHeight": 1400,
@@ -2649,7 +3298,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1506,
         "innerHeight": 1400,
@@ -2678,7 +3328,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1506,
         "innerHeight": 1400,
@@ -2703,7 +3354,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -2722,7 +3374,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1428,
         "innerHeight": 1400,
@@ -2751,7 +3404,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1428,
         "innerHeight": 1400,
@@ -2780,7 +3434,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1428,
         "innerHeight": 1400,
@@ -2805,7 +3460,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -2824,7 +3480,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1516,
         "innerHeight": 1400,
@@ -2853,7 +3510,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1516,
         "innerHeight": 1400,
@@ -2882,7 +3540,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1516,
         "innerHeight": 1400,
@@ -2907,7 +3566,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -2926,7 +3586,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1438,
         "innerHeight": 1400,
@@ -2955,7 +3616,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1438,
         "innerHeight": 1400,
@@ -2984,7 +3646,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1438,
         "innerHeight": 1400,
@@ -3009,7 +3672,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -3028,7 +3692,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -3072,7 +3737,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -3116,7 +3782,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -3156,7 +3823,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -3180,7 +3848,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -3224,7 +3893,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -3268,7 +3938,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -3308,7 +3979,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -3332,7 +4004,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -3376,7 +4049,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -3420,7 +4094,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -3460,7 +4135,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -3484,7 +4160,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -3528,7 +4205,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -3572,7 +4250,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -3612,7 +4291,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -3636,7 +4316,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1945,
         "innerHeight": 844,
@@ -3665,7 +4346,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1945,
         "innerHeight": 844,
@@ -3805,7 +4487,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1945,
         "innerHeight": 844,
@@ -3830,7 +4513,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -3849,7 +4533,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1799,
         "innerHeight": 844,
@@ -3878,7 +4563,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1799,
         "innerHeight": 844,
@@ -4018,7 +4704,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1799,
         "innerHeight": 844,
@@ -4043,7 +4730,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -4062,7 +4750,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1984,
         "innerHeight": 844,
@@ -4091,7 +4780,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1984,
         "innerHeight": 844,
@@ -4187,7 +4877,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1984,
         "innerHeight": 844,
@@ -4212,7 +4903,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -4231,7 +4923,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1821,
         "innerHeight": 844,
@@ -4260,7 +4953,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1821,
         "innerHeight": 844,
@@ -4400,7 +5094,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1821,
         "innerHeight": 844,
@@ -4425,7 +5120,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -4444,7 +5140,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1601,
         "innerHeight": 1400,
@@ -4473,7 +5170,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1601,
         "innerHeight": 1400,
@@ -4502,7 +5200,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1601,
         "innerHeight": 1400,
@@ -4527,7 +5226,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -4546,7 +5246,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1523,
         "innerHeight": 1400,
@@ -4575,7 +5276,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1523,
         "innerHeight": 1400,
@@ -4604,7 +5306,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1523,
         "innerHeight": 1400,
@@ -4629,7 +5332,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -4648,7 +5352,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1611,
         "innerHeight": 1400,
@@ -4677,7 +5382,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1611,
         "innerHeight": 1400,
@@ -4706,7 +5412,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1611,
         "innerHeight": 1400,
@@ -4731,7 +5438,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -4750,7 +5458,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1533,
         "innerHeight": 1400,
@@ -4779,7 +5488,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1533,
         "innerHeight": 1400,
@@ -4808,7 +5518,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1533,
         "innerHeight": 1400,
@@ -4833,7 +5544,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -4852,7 +5564,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -4896,7 +5609,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -4940,7 +5654,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -4980,7 +5695,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -5004,7 +5720,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -5048,7 +5765,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -5092,7 +5810,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -5132,7 +5851,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -5156,7 +5876,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -5200,7 +5921,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -5244,7 +5966,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -5284,7 +6007,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -5308,7 +6032,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -5352,7 +6077,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -5396,7 +6122,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -5436,7 +6163,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -5460,7 +6188,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 2200,
         "innerHeight": 844,
@@ -5489,7 +6218,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 2200,
         "innerHeight": 844,
@@ -5563,7 +6293,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 2200,
         "innerHeight": 844,
@@ -5588,7 +6319,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -5607,7 +6339,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 2056,
         "innerHeight": 844,
@@ -5636,7 +6369,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 2056,
         "innerHeight": 844,
@@ -5710,7 +6444,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 2056,
         "innerHeight": 844,
@@ -5735,7 +6470,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -5754,7 +6490,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 2239,
         "innerHeight": 844,
@@ -5783,7 +6520,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 2239,
         "innerHeight": 844,
@@ -5857,7 +6595,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 2239,
         "innerHeight": 844,
@@ -5882,7 +6621,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -5901,7 +6641,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 2078,
         "innerHeight": 844,
@@ -5930,7 +6671,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 2078,
         "innerHeight": 844,
@@ -6004,7 +6746,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 2078,
         "innerHeight": 844,
@@ -6029,7 +6772,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -6048,7 +6792,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1780,
         "innerHeight": 1400,
@@ -6077,7 +6822,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1780,
         "innerHeight": 1400,
@@ -6106,7 +6852,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1780,
         "innerHeight": 1400,
@@ -6131,7 +6878,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -6150,7 +6898,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1702,
         "innerHeight": 1400,
@@ -6179,7 +6928,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1702,
         "innerHeight": 1400,
@@ -6208,7 +6958,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1702,
         "innerHeight": 1400,
@@ -6233,7 +6984,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -6252,7 +7004,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1790,
         "innerHeight": 1400,
@@ -6281,7 +7034,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1790,
         "innerHeight": 1400,
@@ -6310,7 +7064,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1790,
         "innerHeight": 1400,
@@ -6335,7 +7090,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -6354,7 +7110,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1712,
         "innerHeight": 1400,
@@ -6383,7 +7140,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1712,
         "innerHeight": 1400,
@@ -6412,7 +7170,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1712,
         "innerHeight": 1400,
@@ -6437,7 +7196,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -6456,7 +7216,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -6500,7 +7261,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -6544,7 +7306,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -6584,7 +7347,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -6608,7 +7372,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -6652,7 +7417,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -6696,7 +7462,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -6736,7 +7503,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -6760,7 +7528,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -6804,7 +7573,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -6848,7 +7618,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -6888,7 +7659,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -6912,7 +7684,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -6956,7 +7729,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -7000,7 +7774,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -7040,7 +7815,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -7064,7 +7840,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1879,
         "innerHeight": 844,
@@ -7093,7 +7870,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1879,
         "innerHeight": 844,
@@ -7167,7 +7945,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1879,
         "innerHeight": 844,
@@ -7192,7 +7971,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -7211,7 +7991,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1715,
         "innerHeight": 844,
@@ -7240,7 +8021,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1715,
         "innerHeight": 844,
@@ -7380,7 +8162,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1715,
         "innerHeight": 844,
@@ -7405,7 +8188,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -7424,7 +8208,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1918,
         "innerHeight": 844,
@@ -7453,7 +8238,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1918,
         "innerHeight": 844,
@@ -7527,7 +8313,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1918,
         "innerHeight": 844,
@@ -7552,7 +8339,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -7571,7 +8359,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1737,
         "innerHeight": 844,
@@ -7600,7 +8389,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1737,
         "innerHeight": 844,
@@ -7740,7 +8530,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1737,
         "innerHeight": 844,
@@ -7765,7 +8556,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -7784,7 +8576,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1575,
         "innerHeight": 1400,
@@ -7813,7 +8606,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1575,
         "innerHeight": 1400,
@@ -7842,7 +8636,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1575,
         "innerHeight": 1400,
@@ -7867,7 +8662,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -7886,7 +8682,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1476,
         "innerHeight": 1400,
@@ -7915,7 +8712,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1476,
         "innerHeight": 1400,
@@ -7944,7 +8742,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1476,
         "innerHeight": 1400,
@@ -7969,7 +8768,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -7988,7 +8788,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1585,
         "innerHeight": 1400,
@@ -8017,7 +8818,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1585,
         "innerHeight": 1400,
@@ -8046,7 +8848,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1585,
         "innerHeight": 1400,
@@ -8071,7 +8874,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -8090,7 +8894,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1486,
         "innerHeight": 1400,
@@ -8119,7 +8924,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1486,
         "innerHeight": 1400,
@@ -8148,7 +8954,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1486,
         "innerHeight": 1400,
@@ -8173,7 +8980,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -8192,7 +9000,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -8236,7 +9045,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -8280,7 +9090,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -8320,7 +9131,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -8344,7 +9156,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -8388,7 +9201,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -8432,7 +9246,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -8472,7 +9287,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -8496,7 +9312,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -8540,7 +9357,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -8584,7 +9402,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -8624,7 +9443,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -8648,7 +9468,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -8692,7 +9513,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -8736,7 +9558,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -8776,7 +9599,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -8800,7 +9624,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 2050,
         "innerHeight": 844,
@@ -8829,7 +9654,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 2050,
         "innerHeight": 844,
@@ -8903,7 +9729,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 2050,
         "innerHeight": 844,
@@ -8928,7 +9755,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -8947,7 +9775,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1888,
         "innerHeight": 844,
@@ -8976,7 +9805,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1888,
         "innerHeight": 844,
@@ -9050,7 +9880,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1888,
         "innerHeight": 844,
@@ -9075,7 +9906,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -9094,7 +9926,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 2090,
         "innerHeight": 844,
@@ -9123,7 +9956,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 2090,
         "innerHeight": 844,
@@ -9197,7 +10031,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 2090,
         "innerHeight": 844,
@@ -9222,7 +10057,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -9241,7 +10077,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1910,
         "innerHeight": 844,
@@ -9270,7 +10107,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1910,
         "innerHeight": 844,
@@ -9322,7 +10160,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1910,
         "innerHeight": 844,
@@ -9347,7 +10186,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -9366,7 +10206,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1661,
         "innerHeight": 1400,
@@ -9395,7 +10236,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1661,
         "innerHeight": 1400,
@@ -9424,7 +10266,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1661,
         "innerHeight": 1400,
@@ -9449,7 +10292,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -9468,7 +10312,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1583,
         "innerHeight": 1400,
@@ -9497,7 +10342,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1583,
         "innerHeight": 1400,
@@ -9526,7 +10372,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1583,
         "innerHeight": 1400,
@@ -9551,7 +10398,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -9570,7 +10418,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1671,
         "innerHeight": 1400,
@@ -9599,7 +10448,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1671,
         "innerHeight": 1400,
@@ -9628,7 +10478,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1671,
         "innerHeight": 1400,
@@ -9653,7 +10504,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -9672,7 +10524,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1593,
         "innerHeight": 1400,
@@ -9701,7 +10554,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1593,
         "innerHeight": 1400,
@@ -9730,7 +10584,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1593,
         "innerHeight": 1400,
@@ -9755,7 +10610,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -9774,7 +10630,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -9818,7 +10675,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -9862,7 +10720,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -9902,7 +10761,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -9926,7 +10786,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -9970,7 +10831,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -10014,7 +10876,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -10054,7 +10917,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -10078,7 +10942,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -10122,7 +10987,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -10166,7 +11032,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -10206,7 +11073,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -10230,7 +11098,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -10274,7 +11143,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -10318,7 +11188,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -10358,7 +11229,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -10382,7 +11254,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1922,
         "innerHeight": 844,
@@ -10411,7 +11284,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1922,
         "innerHeight": 844,
@@ -10529,7 +11403,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1922,
         "innerHeight": 844,
@@ -10554,7 +11429,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -10573,7 +11449,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1821,
         "innerHeight": 844,
@@ -10602,7 +11479,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1821,
         "innerHeight": 844,
@@ -10742,7 +11620,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1821,
         "innerHeight": 844,
@@ -10767,7 +11646,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -10786,7 +11666,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1962,
         "innerHeight": 844,
@@ -10815,7 +11696,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1962,
         "innerHeight": 844,
@@ -10955,7 +11837,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1962,
         "innerHeight": 844,
@@ -10980,7 +11863,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -10999,7 +11883,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1843,
         "innerHeight": 844,
@@ -11028,7 +11913,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1843,
         "innerHeight": 844,
@@ -11146,7 +12032,8 @@
           }
         ],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1843,
         "innerHeight": 844,
@@ -11171,7 +12058,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -11190,7 +12078,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1601,
         "innerHeight": 1400,
@@ -11219,7 +12108,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1601,
         "innerHeight": 1400,
@@ -11248,7 +12138,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1601,
         "innerHeight": 1400,
@@ -11273,7 +12164,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -11292,7 +12184,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1523,
         "innerHeight": 1400,
@@ -11321,7 +12214,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1523,
         "innerHeight": 1400,
@@ -11350,7 +12244,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1523,
         "innerHeight": 1400,
@@ -11375,7 +12270,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -11394,7 +12290,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1611,
         "innerHeight": 1400,
@@ -11423,7 +12320,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1611,
         "innerHeight": 1400,
@@ -11452,7 +12350,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1611,
         "innerHeight": 1400,
@@ -11477,7 +12376,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -11496,7 +12396,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1533,
         "innerHeight": 1400,
@@ -11525,7 +12426,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1533,
         "innerHeight": 1400,
@@ -11554,7 +12456,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": false,
         "mmbBootBox": null,
         "scrollHeight": 1533,
         "innerHeight": 1400,
@@ -11579,7 +12482,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": false,
     "mmbBootDisplay": "none",
     "mmbBootBox": null,
     "excusedCounts": {
@@ -11598,7 +12502,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -11642,7 +12547,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -11686,7 +12592,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -11726,7 +12633,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -11750,7 +12658,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -11794,7 +12703,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -11838,7 +12748,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -11878,7 +12789,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -11902,7 +12814,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -11946,7 +12859,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -11990,7 +12904,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -12030,7 +12945,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -12054,7 +12970,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -12098,7 +13015,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -12142,7 +13060,8 @@
         "hits": [],
         "excused": [],
         "analystPosition": "static",
-        "mmbBootPresent": true,
+        "mmbBootInDom": true,
+        "mmbBootVisible": true,
         "mmbBootBox": {
           "top": 822,
           "bottom": 878,
@@ -12182,7 +13101,8 @@
       }
     },
     "analystPosition": "static",
-    "mmbBootPresent": true,
+    "mmbBootInDom": true,
+    "mmbBootVisible": true,
     "mmbBootDisplay": "flex",
     "mmbBootBox": {
       "top": 822,
@@ -12205,7 +13125,9 @@
     "ownLabelOk": true,
     "maskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "webkitMaskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "fadeWidth": 24,
+    "fadeLeft": 186.9375,
     "fadeBeginsBeforeAnalyst": 56,
     "maxScrollLeft": 1192,
     "at0": {
@@ -12225,6 +13147,7 @@
       "fadeWidth": 24,
       "fadeLeft": 186.9375,
       "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
       "chips": [
         {
           "label": "Overview",
@@ -12461,6 +13384,7 @@
       "fadeWidth": 24,
       "fadeLeft": 186.9375,
       "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
       "chips": [
         {
           "label": "Overview",
@@ -12825,7 +13749,8 @@
         "clientWidth": 72,
         "selfClips": false
       }
-    ]
+    ],
+    "maskImageRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))"
   },
   "rail_viewport-dark-zh-390": {
     "ok": true,
@@ -12836,7 +13761,9 @@
     "ownLabelOk": true,
     "maskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "webkitMaskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "fadeWidth": 24,
+    "fadeLeft": 226.90625,
     "fadeBeginsBeforeAnalyst": 56,
     "maxScrollLeft": 937,
     "at0": {
@@ -12856,6 +13783,7 @@
       "fadeWidth": 24,
       "fadeLeft": 226.90625,
       "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
       "chips": [
         {
           "label": "\u603b\u89c8",
@@ -13092,6 +14020,7 @@
       "fadeWidth": 24,
       "fadeLeft": 226.90625,
       "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
       "chips": [
         {
           "label": "\u603b\u89c8",
@@ -13456,7 +14385,8 @@
         "clientWidth": 91,
         "selfClips": false
       }
-    ]
+    ],
+    "maskImageRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))"
   },
   "rail_viewport-light-en-390": {
     "ok": true,
@@ -13467,7 +14397,9 @@
     "ownLabelOk": true,
     "maskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "webkitMaskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "fadeWidth": 24,
+    "fadeLeft": 186.9375,
     "fadeBeginsBeforeAnalyst": 56,
     "maxScrollLeft": 1192,
     "at0": {
@@ -13487,6 +14419,7 @@
       "fadeWidth": 24,
       "fadeLeft": 186.9375,
       "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
       "chips": [
         {
           "label": "Overview",
@@ -13723,6 +14656,7 @@
       "fadeWidth": 24,
       "fadeLeft": 186.9375,
       "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
       "chips": [
         {
           "label": "Overview",
@@ -14087,7 +15021,8 @@
         "clientWidth": 72,
         "selfClips": false
       }
-    ]
+    ],
+    "maskImageRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))"
   },
   "rail_viewport-light-zh-390": {
     "ok": true,
@@ -14098,7 +15033,9 @@
     "ownLabelOk": true,
     "maskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "webkitMaskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "fadeWidth": 24,
+    "fadeLeft": 226.90625,
     "fadeBeginsBeforeAnalyst": 56,
     "maxScrollLeft": 937,
     "at0": {
@@ -14118,6 +15055,7 @@
       "fadeWidth": 24,
       "fadeLeft": 226.90625,
       "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
       "chips": [
         {
           "label": "\u603b\u89c8",
@@ -14354,6 +15292,7 @@
       "fadeWidth": 24,
       "fadeLeft": 226.90625,
       "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
       "chips": [
         {
           "label": "\u603b\u89c8",
@@ -14718,7 +15657,8 @@
         "clientWidth": 91,
         "selfClips": false
       }
-    ]
+    ],
+    "maskImageRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))"
   },
   "rail_viewport-dark-en-768": {
     "ok": true,
@@ -14729,7 +15669,9 @@
     "ownLabelOk": true,
     "maskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "webkitMaskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "fadeWidth": 24,
+    "fadeLeft": 560.9375,
     "fadeBeginsBeforeAnalyst": 56,
     "maxScrollLeft": 822,
     "at0": {
@@ -14749,6 +15691,7 @@
       "fadeWidth": 24,
       "fadeLeft": 560.9375,
       "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
       "chips": [
         {
           "label": "Overview",
@@ -14985,6 +15928,7 @@
       "fadeWidth": 24,
       "fadeLeft": 560.9375,
       "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
       "chips": [
         {
           "label": "Overview",
@@ -15349,7 +16293,8 @@
         "clientWidth": 72,
         "selfClips": false
       }
-    ]
+    ],
+    "maskImageRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))"
   },
   "rail_viewport-dark-zh-768": {
     "ok": true,
@@ -15360,7 +16305,9 @@
     "ownLabelOk": true,
     "maskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "webkitMaskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "fadeWidth": 24,
+    "fadeLeft": 600.90625,
     "fadeBeginsBeforeAnalyst": 56,
     "maxScrollLeft": 567,
     "at0": {
@@ -15380,6 +16327,7 @@
       "fadeWidth": 24,
       "fadeLeft": 600.90625,
       "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
       "chips": [
         {
           "label": "\u603b\u89c8",
@@ -15616,6 +16564,7 @@
       "fadeWidth": 24,
       "fadeLeft": 600.90625,
       "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
       "chips": [
         {
           "label": "\u603b\u89c8",
@@ -15980,7 +16929,8 @@
         "clientWidth": 91,
         "selfClips": false
       }
-    ]
+    ],
+    "maskImageRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))"
   },
   "rail_viewport-light-en-768": {
     "ok": true,
@@ -15991,7 +16941,9 @@
     "ownLabelOk": true,
     "maskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "webkitMaskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "fadeWidth": 24,
+    "fadeLeft": 560.9375,
     "fadeBeginsBeforeAnalyst": 56,
     "maxScrollLeft": 822,
     "at0": {
@@ -16011,6 +16963,7 @@
       "fadeWidth": 24,
       "fadeLeft": 560.9375,
       "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
       "chips": [
         {
           "label": "Overview",
@@ -16247,6 +17200,7 @@
       "fadeWidth": 24,
       "fadeLeft": 560.9375,
       "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
       "chips": [
         {
           "label": "Overview",
@@ -16611,7 +17565,8 @@
         "clientWidth": 72,
         "selfClips": false
       }
-    ]
+    ],
+    "maskImageRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))"
   },
   "rail_viewport-light-zh-768": {
     "ok": true,
@@ -16622,7 +17577,9 @@
     "ownLabelOk": true,
     "maskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "webkitMaskImage": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+    "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
     "fadeWidth": 24,
+    "fadeLeft": 600.90625,
     "fadeBeginsBeforeAnalyst": 56,
     "maxScrollLeft": 567,
     "at0": {
@@ -16642,6 +17599,7 @@
       "fadeWidth": 24,
       "fadeLeft": 600.90625,
       "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
       "chips": [
         {
           "label": "\u603b\u89c8",
@@ -16878,6 +17836,7 @@
       "fadeWidth": 24,
       "fadeLeft": 600.90625,
       "fadeBeginsBeforeAnalyst": 56,
+      "maskRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
       "chips": [
         {
           "label": "\u603b\u89c8",
@@ -17242,7 +18201,8 @@
         "clientWidth": 91,
         "selfClips": false
       }
-    ]
+    ],
+    "maskImageRaw": "linear-gradient(to right, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))"
   },
   "fab-dark-en-1440": {
     "ok": true,
@@ -17304,51 +18264,79 @@
     "hits": [],
     "valueCount": 9
   },
-  "head_sha_at_capture": "d8336490b556db63ed06c7ec81db56c7bb68e72d",
-  "captured_at": "2026-09-08T15:16:19Z",
-  "generated_at_start": "2026-09-08T15:12:50Z",
-  "generated_at_end": "2026-09-08T15:16:19Z",
+  "head_sha_at_capture": "a7a4ca7af0edea438f1c5f13bc88795721bd8887",
+  "captured_at": "2026-09-08T16:08:19Z",
+  "generated_at_start": "2026-09-08T15:57:42Z",
+  "generated_at_end": "2026-09-08T16:08:19Z",
   "pre_commit": false,
-  "capture_sha": "d8336490b556db63ed06c7ec81db56c7bb68e72d",
-  "commit_time_of_capture_sha": "2026-09-08T08:12:42-07:00",
+  "capture_sha": "a7a4ca7af0edea438f1c5f13bc88795721bd8887",
+  "commit_time_of_capture_sha": "2026-09-08T08:57:31-07:00",
   "tree_clean_start": true,
   "tree_clean_end": true,
   "p19_notes": [],
-  "declared_count": 288,
-  "captured_count": 288,
+  "declared_count": 356,
+  "captured_count": 356,
   "gaps": [],
   "e5_applicability": {
-    "templates/macro_growth_real_economy.html.j2": {
-      "fragments": false,
-      "template": false
+    "overview": {
+      "templatePresent": false,
+      "fragmentTarget": "macro/fragments/overview.html",
+      "fragments": true
     },
-    "templates/macro_labor_markets.html.j2": {
-      "fragments": false,
-      "template": false
+    "money": {
+      "templatePresent": true,
+      "fragmentTarget": "macro/fragments/money.html",
+      "fragments": true
     },
-    "templates/macro_housing_real_estate.html.j2": {
-      "fragments": false,
-      "template": false
+    "policy": {
+      "templatePresent": true,
+      "fragmentTarget": "macro/fragments/policy.html",
+      "fragments": true
     },
-    "templates/macro_consumer_payments.html.j2": {
-      "fragments": false,
-      "template": false
+    "rates": {
+      "templatePresent": true,
+      "fragmentTarget": "macro/fragments/rates.html",
+      "fragments": true
     },
-    "templates/macro_financial_conditions.html.j2": {
-      "fragments": false,
-      "template": false
+    "inflation": {
+      "templatePresent": true,
+      "fragmentTarget": "macro/fragments/inflation.html",
+      "fragments": true
     },
-    "templates/macro_national_debt_liabilities.html.j2": {
-      "fragments": false,
-      "template": false
+    "growth": {
+      "templatePresent": true,
+      "fragmentTarget": "macro/fragments/growth.html",
+      "fragments": true
     },
-    "templates/macro_trade_flows.html.j2": {
-      "fragments": false,
-      "template": false
+    "jobs": {
+      "templatePresent": true,
+      "fragmentTarget": "macro/fragments/jobs.html",
+      "fragments": true
     },
-    "templates/_macro_suite_shell.html.j2": {
-      "fragments": false,
-      "template": false
+    "housing": {
+      "templatePresent": true,
+      "fragmentTarget": "macro/fragments/housing.html",
+      "fragments": true
+    },
+    "consumer": {
+      "templatePresent": true,
+      "fragmentTarget": "macro/fragments/consumer.html",
+      "fragments": true
+    },
+    "credit": {
+      "templatePresent": true,
+      "fragmentTarget": "macro/fragments/credit.html",
+      "fragments": true
+    },
+    "debt": {
+      "templatePresent": true,
+      "fragmentTarget": "macro/fragments/debt.html",
+      "fragments": true
+    },
+    "trade": {
+      "templatePresent": true,
+      "fragmentTarget": "macro/fragments/trade.html",
+      "fragments": true
     }
   },
   "probe_stems": [
