@@ -113,6 +113,24 @@ CI_LEVEL = 0.95
 SCHEMA = "engine.local_projections.irf.v1"
 ABSTENTION_SCHEMA = "engine.local_projections.abstention.v1"
 HAC_LAG_RULE = "h + 1"  # Newey-West truncation at horizon h; documented, not tunable
+# Historical one-off FWER labels (head 66f414ac2b3, before finite_sample=n/dof).
+# Not live-recomputed; the regenerating simulation is not in-repo.
+GLOBAL_NULL_FWER_VINTAGE = "historical_pre_finite_sample_66f414ac2b3"
+
+# Customer sentences for the plain-word layer. Slugs stay on irf[].reason.
+_REASON_PLAIN = {
+    "insufficient_observations": "we do not have enough history yet",
+    "degenerate_shock": "the event we measured never actually varied",
+    "rank_deficient_design": (
+        "the inputs repeat each other, so the maths has nothing left to measure"
+    ),
+    "insufficient_dof": (
+        "the inputs repeat each other, so the maths has nothing left to measure"
+    ),
+    "misaligned_lengths": "the two series do not line up",
+    "non_finite_input": "the data has gaps we could not fill",
+    "horizon_exceeds_sample": "the window runs past the end of the data",
+}
 
 
 # ---------------------------------------------------------------- small pure helpers
@@ -229,24 +247,89 @@ def _ols(X: np.ndarray, yv: np.ndarray) -> tuple:
     return beta, resid, xtx_pinv
 
 
-def _hac_sandwich(X: np.ndarray, resid: np.ndarray, lags: int) -> np.ndarray:
+def _hac_sandwich(X: np.ndarray, resid: np.ndarray, lags: int,
+                  time_index: np.ndarray | None = None) -> np.ndarray:
     """Newey-West Bartlett sandwich covariance for OLS coefficients.
 
     Uses the identical normalization and Bartlett weight `1 - j/(L+1)` as
     engine.validation.newey_west_tstat, so on an intercept-only X the diagonal
     entry reproduces that helper's se to 5 decimal places (see module docstring
-    for the measured check; tests/test_local_projections.py pins it)."""
+    for the measured check; tests/test_local_projections.py pins it).
+
+    The lag-j meat term is time-indexed: only pairs whose original time stamps
+    differ by exactly j enter Gamma_j. A positional `G[j:].T @ G[:-j]` treats
+    surviving rows as adjacent in time, so a dropped interior print (a NaN
+    target) would pair observations many periods apart as if they were j
+    apart, attenuating the autocovariance and collapsing the HAC se toward
+    the naive se. `time_index=None` uses 0..n-1 (contiguous / positional).
+    `time_index` must be aligned with the rows of X and sorted ascending.
+    """
     xtx_pinv = np.linalg.pinv(X.T @ X)
     G = X * resid[:, None]           # T x k, g_t rows
     meat = G.T @ G
     L = max(int(lags), 0)
     n = X.shape[0]
     L = min(L, max(n - 1, 0))
+    if time_index is None:
+        idx = np.arange(n, dtype=int)
+    else:
+        idx = np.asarray(time_index)
+        if idx.shape[0] != n:
+            raise ValueError(
+                f"time_index length must match rows of X: "
+                f"len(time_index)={idx.shape[0]}, n={n}"
+            )
     for j in range(1, L + 1):
         w = 1.0 - j / (L + 1)
-        Gj = G[j:].T @ G[:-j]        # sum_t outer(g_t, g_{t-j})
+        target = idx - j
+        locs = np.searchsorted(idx, target)
+        in_range = locs < n
+        locs_safe = np.where(in_range, locs, 0)
+        valid = in_range & (idx[locs_safe] == target)
+        i_idx = np.flatnonzero(valid)
+        if i_idx.size == 0:
+            continue
+        k_idx = locs[valid]
+        Gj = G[i_idx].T @ G[k_idx]
         meat += w * (Gj + Gj.T)
     return xtx_pinv @ meat @ xtx_pinv
+
+
+def _rows_contiguous(idx: np.ndarray) -> bool:
+    if len(idx) <= 1:
+        return True
+    return bool(np.all(np.diff(idx) == 1))
+
+
+def _targets_dropped_at_tail(n_by_horizon: dict, horizons: int) -> dict:
+    """Usable-row loss vs the largest estimated panel, not the first non-zero n.
+
+    An early horizon can abstain or come in unusually small (gapped targets).
+    Using that n as the baseline zeroes later real tail losses
+    (`max(0, small_n - later_n) == 0` even when a later horizon lost rows
+    against the true peak panel).
+    """
+    ns = [int(n_by_horizon.get(str(h), 0)) for h in range(horizons + 1)]
+    base_n = max(ns) if ns else 0
+    return {str(h): int(max(0, base_n - ns[h])) for h in range(horizons + 1)}
+
+
+def _plain_reason_texts(reasons: list[str]) -> list[str]:
+    """Map abstention slugs to customer sentences; keep first-seen order.
+
+    Distinct slugs that share a sentence (rank_deficient_design /
+    insufficient_dof) collapse to one sentence so the line does not repeat.
+    """
+    seen_slugs: list[str] = []
+    texts: list[str] = []
+    for reason in reasons:
+        if not reason or reason in seen_slugs:
+            continue
+        seen_slugs.append(reason)
+        text = _REASON_PLAIN.get(reason, "a data problem")
+        if text not in texts:
+            texts.append(text)
+    return texts
 
 
 def estimate_horizon(y, shock, h: int, *, lags: int = LAGS, embargo: int = EMBARGO,
@@ -342,7 +425,7 @@ def estimate_horizon(y, shock, h: int, *, lags: int = LAGS, embargo: int = EMBAR
     hac_lags_requested = int(hac_lags) if hac_lags is not None else int(h + 1)
     hac_lags_effective = int(min(hac_lags_requested, max(n - 1, 0)))
 
-    V = _hac_sandwich(X, resid, hac_lags_effective)
+    V = _hac_sandwich(X, resid, hac_lags_effective, time_index=mask_idx)
     # Finite-sample factor n/dof: _hac_sandwich is HC0-style (no n/(n-k));
     # se_naive already divides RSS by dof. Without this factor every published
     # hac_inflation is biased low by sqrt((n-k)/n) — material at the small n
@@ -357,6 +440,7 @@ def estimate_horizon(y, shock, h: int, *, lags: int = LAGS, embargo: int = EMBAR
     p = _two_sided_p(t_stat)
     z = 1.959963984540054  # CI_LEVEL = 0.95 two-sided normal critical value
     hac_inflation = float(se / se_naive) if se_naive > 0 else float("nan")
+    hac_rows_contiguous = _rows_contiguous(mask_idx)
 
     return {
         "schema": SCHEMA,
@@ -371,6 +455,7 @@ def estimate_horizon(y, shock, h: int, *, lags: int = LAGS, embargo: int = EMBAR
         "n_dropped_non_finite": n_dropped_non_finite,
         "hac_lags": hac_lags_effective,
         "hac_lags_requested": hac_lags_requested,
+        "hac_rows_contiguous": hac_rows_contiguous,
         "se_naive": se_naive,
         "hac_inflation": hac_inflation,
     }
@@ -422,20 +507,28 @@ def _empty_irf_result(rows, *, horizons, fdr_alpha, family, effective_n,
             "effective_n": effective_n,
             "global_null_fwer_bh_measured": GLOBAL_NULL_FWER_BH,
             "global_null_fwer_by_measured": GLOBAL_NULL_FWER_BY,
+            "global_null_fwer_vintage": GLOBAL_NULL_FWER_VINTAGE,
             "note": (
                 "every horizon abstained before the panel correction ran; "
                 "q is undefined. effective_n=None means no specification search "
-                "was registered."
+                "was registered. BY would correct over n_horizons_tested "
+                "(horizons that produced a p-value), not n_horizons_declared; "
+                "abstentions therefore shrink the multiplicity penalty. "
+                "BH/BY global-null any-reject rates are historical labels "
+                f"({GLOBAL_NULL_FWER_VINTAGE}), not live-recomputed."
             ),
         },
         "inference": {
             "se_kind": "newey_west_bartlett",
             "lag_rule": HAC_LAG_RULE,
+            "reference_distribution": "normal",
+            "ci_level": CI_LEVEL,
             "why": (
                 "targets at horizon h overlap across t, so the residual is MA(h) "
                 "by construction; Newey-West Bartlett HAC at lag h+1 is the se. "
                 "Read per-row hac_inflation (HAC/naive) for the measured "
-                "direction — it is often near 1.0 and can land below 1.0"
+                "direction — it is often near 1.0 and can land below 1.0. "
+                "p-values and CIs use a normal reference, not Student-t."
             ),
             "measured_inflation_by_h": {},
         },
@@ -531,18 +624,10 @@ def impulse_response(y, shock, *, horizons: int = HORIZONS, lags: int = LAGS,
         for row in rows
     }
     abstained_horizons = [row["h"] for row in rows if row.get("abstained")]
-    # Measured tail drop: how many usable rows are lost vs the h=0 panel size
-    # (or vs the first non-abstained horizon). Identity map {h: h} was data-
-    # independent and identical even when every horizon abstained.
-    base_n = 0
-    for h in range(horizons + 1):
-        if n_by_horizon.get(str(h), 0) > 0:
-            base_n = n_by_horizon[str(h)]
-            break
-    targets_dropped_at_tail = {
-        str(h): int(max(0, base_n - n_by_horizon.get(str(h), 0)))
-        for h in range(horizons + 1)
-    }
+    # Measured tail drop vs the largest estimated panel — not vs the first
+    # non-abstained n, which can be unusually small on a gapped series and
+    # then zero out later real tail losses.
+    targets_dropped_at_tail = _targets_dropped_at_tail(n_by_horizon, horizons)
 
     rejecting_horizons = sorted(int(h) for h, v in fdr.items() if v["reject"])
 
@@ -562,11 +647,16 @@ def impulse_response(y, shock, *, horizons: int = HORIZONS, lags: int = LAGS,
             "effective_n": effective_n,
             "global_null_fwer_bh_measured": GLOBAL_NULL_FWER_BH,
             "global_null_fwer_by_measured": GLOBAL_NULL_FWER_BY,
+            "global_null_fwer_vintage": GLOBAL_NULL_FWER_VINTAGE,
             "note": (
                 "q is Benjamini-Yekutieli-adjusted across the horizon panel "
                 "(dependence-robust; plain BH overshoots under overlapping "
-                f"targets — measured global-null any-reject {GLOBAL_NULL_FWER_BH} "
-                f"vs BY {GLOBAL_NULL_FWER_BY} at alpha={FDR_ALPHA}). "
+                f"targets — historical global-null any-reject {GLOBAL_NULL_FWER_BH} "
+                f"vs BY {GLOBAL_NULL_FWER_BY} at alpha={FDR_ALPHA}; vintage "
+                f"{GLOBAL_NULL_FWER_VINTAGE}, not live-recomputed). "
+                "BY corrects over n_horizons_tested (horizons that produced a "
+                "p-value), not n_horizons_declared; abstentions shrink the "
+                "multiplicity penalty. "
                 "effective_n=None means no specification search was registered, "
                 "so any search over lag length, shock definition or sample is "
                 "UNPRICED - register the family with engine.trial_ledger before "
@@ -576,11 +666,14 @@ def impulse_response(y, shock, *, horizons: int = HORIZONS, lags: int = LAGS,
         "inference": {
             "se_kind": "newey_west_bartlett",
             "lag_rule": HAC_LAG_RULE,
+            "reference_distribution": "normal",
+            "ci_level": CI_LEVEL,
             "why": (
                 "targets at horizon h overlap across t, so the residual is MA(h) "
                 "by construction; Newey-West Bartlett HAC at lag h+1 is the se. "
                 "Read per-row hac_inflation (HAC/naive) for the measured "
-                "direction — it is often near 1.0 and can land below 1.0"
+                "direction — it is often near 1.0 and can land below 1.0. "
+                "p-values and CIs use a normal reference, not Student-t."
             ),
             "measured_inflation_by_h": inflation_by_h,
         },
@@ -609,13 +702,14 @@ def impulse_response(y, shock, *, horizons: int = HORIZONS, lags: int = LAGS,
 
 
 def plain_words(result: dict) -> str:
-    """One sentence, <= 30 words, no jargon.
+    """One or two short sentences, no jargon, no internal state names.
 
     MUST distinguish an honest null (every horizon was tested and none
     survived correction) from an abstention (nothing could be tested at
     all, or only some horizons could be) - collapsing both into the same
     sentence publishes "no effect" for a case where no measurement was
-    ever taken."""
+    ever taken. Every distinct abstention reason is mapped to a customer
+    sentence; the raw slug stays on irf[].reason."""
     null = result.get("null", {})
     rejecting = null.get("rejecting_horizons") or []
     if rejecting:
@@ -628,11 +722,14 @@ def plain_words(result: dict) -> str:
     declared = int(mt.get("n_horizons_declared") or 0)
     if tested == 0:
         rows = result.get("irf", [])
-        reasons = sorted({
-            row.get("reason") for row in rows
-            if row.get("abstained") and row.get("reason")
-        })
-        reason_txt = reasons[0].replace("_", " ") if reasons else "a data problem"
+        # First-seen order, not sorted: sorting hid every reason after the
+        # alphabetically-first slug (e.g. degenerate_shock beat rank_deficient).
+        reasons = []
+        for row in rows:
+            reason = row.get("reason")
+            if row.get("abstained") and reason and reason not in reasons:
+                reasons.append(reason)
+        reason_txt = "; ".join(_plain_reason_texts(reasons)) or "a data problem"
         return (
             "Not available yet - we could not measure any time-step after the "
             f"shock ({reason_txt})."

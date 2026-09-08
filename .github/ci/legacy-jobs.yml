@@ -978,8 +978,11 @@ jobs:
   # --gate code only (scripts/run_ci_pack.py filters data-gate jobs out). The only
   # --gate data caller is data-health.yml (workflow_run/daily + cron + dispatch),
   # which never runs on pull_request. Naming the suite only under trial-budgets
-  # therefore made contract-delta pass while the 26 acceptance tests executed on
-  # no PR check. Same pip line as the trial-budgets/outcome-spine family so the
+  # therefore made contract-delta pass while the suite (29 test functions at
+  # the job's introduction; later review cycles added more) executed on
+  # no PR check. The suite is named only under this gate:code job — it was
+  # never removed from trial-budgets because it was never added there.
+  # Same pip line as the trial-budgets/outcome-spine family so the
   # pack runner can share a venv; numpy+pandas cover the lazy
   # engine.seasonality.event_study import in test_registered_family_reports_effective_n.
   local-projections:

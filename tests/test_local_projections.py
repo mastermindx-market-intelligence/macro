@@ -387,17 +387,93 @@ def test_pre_registered_constants_are_frozen():
     assert lp.SCHEMA == "engine.local_projections.irf.v1"
     assert lp.ABSTENTION_SCHEMA == "engine.local_projections.abstention.v1"
     assert lp.HAC_LAG_RULE == "h + 1"
+    assert lp.GLOBAL_NULL_FWER_VINTAGE == "historical_pre_finite_sample_66f414ac2b3"
+
+
+_PLAIN_WORDS_BANNED = [
+    "p-value", "p =", "beta", "hac", "newey", "horizon h", "schema", "engine.", "q =",
+    "rank deficient", "insufficient dof", "misaligned lengths", "non finite",
+    "degenerate shock", "insufficient observations", "horizon exceeds",
+    "rank_deficient", "insufficient_dof", "misaligned_lengths", "non_finite",
+    "degenerate_shock", "insufficient_observations", "horizon_exceeds_sample",
+]
+
+
+def _assert_plain_words_customer_facing(words, *, max_words=30):
+    assert len(words.split()) <= max_words, words
+    low = words.lower()
+    for banned in _PLAIN_WORDS_BANNED:
+        assert banned not in low, f"{banned!r} leaked into {words!r}"
 
 
 def test_plain_words_has_no_jargon_and_fits_the_budget():
-    banned = ["p-value", "p =", "beta", "hac", "newey", "horizon h", "schema", "engine.", "q ="]
     for rejecting in ([], [1, 4, 7]):
         fake = {"null": {"rejecting_horizons": rejecting}}
-        words = lp.plain_words(fake)
-        assert len(words.split()) <= 30
-        low = words.lower()
-        for b in banned:
-            assert b not in low
+        _assert_plain_words_customer_facing(lp.plain_words(fake))
+
+    # Drive every typed abstention through the real estimator, then through
+    # impulse_response so the reason branch (irf + n_horizons_tested=0) runs.
+    rng = np.random.default_rng(0)
+    cases = {
+        "insufficient_observations": lp.estimate_horizon(
+            rng.standard_normal(30), rng.standard_normal(30), 0, min_obs=1000,
+        ),
+        "degenerate_shock": lp.estimate_horizon(
+            rng.standard_normal(200), np.ones(200) * 5.0, 0, min_obs=10,
+        ),
+        "rank_deficient_design": None,  # filled below with the y-as-control fixture
+        "insufficient_dof": lp.estimate_horizon(
+            rng.standard_normal(3), rng.standard_normal(3), 0,
+            lags=0, embargo=1, min_obs=1,
+        ),
+        "misaligned_lengths": lp.estimate_horizon(
+            rng.standard_normal(50), rng.standard_normal(30), 0, min_obs=1,
+        ),
+        "non_finite_input": lp.estimate_horizon(
+            np.full(80, np.nan), rng.standard_normal(80), 0, min_obs=10,
+        ),
+        "horizon_exceeds_sample": lp.estimate_horizon(
+            rng.standard_normal(8), rng.standard_normal(8), 20, min_obs=1,
+        ),
+    }
+    # controls=y is the rank-deficiency fixture used elsewhere; rebuild it.
+    y_rank = rng.standard_normal(200)
+    cases["rank_deficient_design"] = lp.estimate_horizon(
+        y_rank, rng.standard_normal(200), 0, controls=y_rank, min_obs=10,
+    )
+    expected_phrase = {
+        "insufficient_observations": "enough history",
+        "degenerate_shock": "never actually varied",
+        "rank_deficient_design": "inputs repeat each other",
+        "insufficient_dof": "inputs repeat each other",
+        "misaligned_lengths": "do not line up",
+        "non_finite_input": "gaps we could not fill",
+        "horizon_exceeds_sample": "past the end of the data",
+    }
+    for reason, row in cases.items():
+        assert row.get("abstained") is True, reason
+        assert row["reason"] == reason
+        payload = {
+            "null": {"rejecting_horizons": []},
+            "multiple_testing": {"n_horizons_tested": 0, "n_horizons_declared": 1},
+            "irf": [row],
+        }
+        words = lp.plain_words(payload)
+        _assert_plain_words_customer_facing(words)
+        assert expected_phrase[reason] in words.lower(), (reason, words)
+        assert reason not in words
+        assert reason.replace("_", " ") not in words.lower()
+
+    # Two distinct reasons must both appear; sorted()[0] used to hide the rest.
+    multi = {
+        "null": {"rejecting_horizons": []},
+        "multiple_testing": {"n_horizons_tested": 0, "n_horizons_declared": 2},
+        "irf": [cases["degenerate_shock"], cases["rank_deficient_design"]],
+    }
+    words = lp.plain_words(multi)
+    _assert_plain_words_customer_facing(words, max_words=50)
+    assert "never actually varied" in words
+    assert "inputs repeat each other" in words
 
 
 def test_cli_demo_runs_in_process_and_reports_recovery(capsys):
@@ -514,12 +590,9 @@ def test_targets_dropped_at_tail_is_measured_not_identity():
     result = lp.impulse_response(y, shock, horizons=10)
     dropped = result["pit"]["targets_dropped_at_tail"]
     n_by = result["diagnostics"]["n_by_horizon"]
-    # Measured: drop[h] == base_n - n_h (not a hardcoded identity map).
-    base_n = 0
-    for h in range(11):
-        if n_by.get(str(h), 0) > 0:
-            base_n = n_by[str(h)]
-            break
+    # Property: drop[h] == max_panel_n - n_h, not first-nonzero-n - n_h and
+    # not a hardcoded identity map {h: h}.
+    base_n = max(n_by.get(str(h), 0) for h in range(11))
     for h in range(11):
         assert dropped[str(h)] == max(0, base_n - n_by.get(str(h), 0))
     # Fully-abstained path must report zeros, never the identity map {h: h}.
@@ -527,6 +600,15 @@ def test_targets_dropped_at_tail_is_measured_not_identity():
     short_shock = rng.standard_normal(5)  # misaligned -> every horizon abstains
     empty = lp.impulse_response(short_y, short_shock, horizons=5, min_obs=1)
     assert empty["pit"]["targets_dropped_at_tail"] == {str(h): 0 for h in range(6)}
+
+
+def test_targets_dropped_at_tail_uses_largest_panel_not_first_nonzero():
+    # Early horizon n=10, later n=80 then n=60: the old first-nonzero formula
+    # reported drop[1]=0 and drop[2]=0 (max(0, 10-80), max(0, 10-60)).
+    n_by = {"0": 10, "1": 80, "2": 60}
+    dropped = lp._targets_dropped_at_tail(n_by, 2)
+    assert dropped == {"0": 70, "1": 0, "2": 20}
+    assert dropped["2"] == 20
 
 
 def test_shock_variance_ignores_nan_and_survives_finite_input():
@@ -560,6 +642,8 @@ def test_plain_words_distinguishes_abstention_from_tested_null():
     assert result["multiple_testing"]["n_horizons_tested"] == 0
     words = result["null"]["plain_words"]
     assert "not available" in words.lower()
+    assert "do not line up" in words.lower()
+    assert "misaligned" not in words.lower()
     assert "no time-step after the shock showed an effect" not in words.lower()
 
 
@@ -581,3 +665,97 @@ def test_single_nan_target_does_not_abstain_the_whole_horizon():
     measured = [row for row in result["irf"] if not row.get("abstained")]
     assert measured
     assert any(row.get("n_dropped_non_finite", 0) > 0 for row in measured)
+
+
+def _horizon_arrays(y, shock, h, *, lags=lp.LAGS, embargo=lp.EMBARGO):
+    """Same row selection as estimate_horizon, so tests can swap HAC kernels."""
+    y = np.asarray(y, dtype=float)
+    shock = np.asarray(shock, dtype=float)
+    T = len(y)
+    dm = lp.design_matrix(y, shock, lags=lags, embargo=embargo)
+    t_idx = np.arange(T)
+    mask = dm["valid"] & (t_idx + h < T) & (t_idx - 1 >= 0)
+    mask_idx = t_idx[mask]
+    yv = y[mask_idx + h] - y[mask_idx - 1]
+    finite = np.isfinite(yv)
+    mask_idx = mask_idx[finite]
+    yv = yv[finite]
+    X = dm["X"][mask_idx]
+    return X, yv, mask_idx
+
+
+def test_gapped_panel_hac_se_differs_from_positional_contiguous_assumption():
+    # MAJOR 1: dropping interior NaN rows leaves gaps in original time. A
+    # positional Bartlett kernel treats those survivors as adjacent and
+    # attenuates the HAC se. Time-indexed Gamma_j must disagree with that
+    # contiguous-assumption se, and the published row must use the time
+    # kernel and disclose the gap.
+    y, shock, _ = lp.demo_series(seed=11, n=800)
+    y = y.copy()
+    y[300:340] = np.nan
+    h = 5
+    X, yv, idx = _horizon_arrays(y, shock, h)
+    assert not lp._rows_contiguous(idx)
+    assert int(np.max(np.diff(idx))) > 1
+    beta, resid, _ = lp._ols(X, yv)
+    n, k = X.shape
+    dof = n - k
+    lags = h + 1
+    V_time = lp._hac_sandwich(X, resid, lags, time_index=idx)
+    V_pos = lp._hac_sandwich(X, resid, lags)
+    se_time = math.sqrt(max(V_time[1, 1] * n / dof, 0.0))
+    se_pos = math.sqrt(max(V_pos[1, 1] * n / dof, 0.0))
+    assert abs(se_time - se_pos) > 1e-8
+    row = lp.estimate_horizon(y, shock, h, min_obs=100)
+    assert row.get("abstained") is not True
+    assert row["hac_rows_contiguous"] is False
+    assert row["n_dropped_non_finite"] > 0
+    assert abs(row["se"] - se_time) < 1e-12
+    assert abs(row["se"] - se_pos) > 1e-8
+
+
+def test_contiguous_panel_time_indexed_hac_matches_positional():
+    y, shock, _ = lp.demo_series(seed=11, n=800)
+    h = 5
+    X, yv, idx = _horizon_arrays(y, shock, h)
+    assert lp._rows_contiguous(idx)
+    beta, resid, _ = lp._ols(X, yv)
+    n, k = X.shape
+    dof = n - k
+    lags = h + 1
+    V_time = lp._hac_sandwich(X, resid, lags, time_index=idx)
+    V_pos = lp._hac_sandwich(X, resid, lags)
+    se_time = math.sqrt(max(V_time[1, 1] * n / dof, 0.0))
+    se_pos = math.sqrt(max(V_pos[1, 1] * n / dof, 0.0))
+    assert abs(se_time - se_pos) < 1e-12
+    row = lp.estimate_horizon(y, shock, h)
+    assert row["hac_rows_contiguous"] is True
+    assert abs(row["se"] - se_time) < 1e-12
+
+
+def test_inference_discloses_normal_reference_and_ci_level():
+    y, shock, _ = lp.demo_series(seed=11)
+    result = lp.impulse_response(y, shock, horizons=2)
+    inf = result["inference"]
+    assert inf["reference_distribution"] == "normal"
+    assert inf["ci_level"] == lp.CI_LEVEL
+    row = result["irf"][0]
+    z = 1.959963984540054
+    width = row["ci_high"] - row["ci_low"]
+    assert abs(width - 2.0 * z * row["se"]) < 1e-12
+
+
+def test_multiple_testing_note_caveats_fwer_vintage_and_tested_denominator():
+    y, shock, _ = lp.demo_series(seed=11)
+    result = lp.impulse_response(y, shock, horizons=2)
+    mt = result["multiple_testing"]
+    note = mt["note"]
+    assert mt["global_null_fwer_vintage"] == lp.GLOBAL_NULL_FWER_VINTAGE
+    assert "historical" in note.lower()
+    assert "not live-recomputed" in note
+    assert "n_horizons_tested" in note
+    assert "n_horizons_declared" in note
+    assert mt["n_horizons_declared"] == 3
+    assert mt["n_horizons_tested"] == 3
+    # The note must name the tested-not-declared choice, not just echo keys.
+    assert "shrink the multiplicity penalty" in note
