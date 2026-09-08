@@ -10,7 +10,8 @@
       "panel_cw": 1006,
       "rail_sw": 232,
       "rail_cw": 232,
-      "ok": true
+      "panel_ok": true,
+      "doc_ok": true
     },
     {
       "width": 1440,
@@ -22,7 +23,8 @@
       "panel_cw": 1006,
       "rail_sw": 232,
       "rail_cw": 232,
-      "ok": true
+      "panel_ok": true,
+      "doc_ok": true
     },
     {
       "width": 1440,
@@ -34,7 +36,8 @@
       "panel_cw": 1006,
       "rail_sw": 232,
       "rail_cw": 232,
-      "ok": true
+      "panel_ok": true,
+      "doc_ok": true
     },
     {
       "width": 1440,
@@ -46,7 +49,8 @@
       "panel_cw": 1006,
       "rail_sw": 232,
       "rail_cw": 232,
-      "ok": true
+      "panel_ok": true,
+      "doc_ok": true
     },
     {
       "width": 768,
@@ -58,7 +62,8 @@
       "panel_cw": 694,
       "rail_sw": 1395,
       "rail_cw": 696,
-      "ok": true
+      "panel_ok": true,
+      "doc_ok": true
     },
     {
       "width": 768,
@@ -70,7 +75,8 @@
       "panel_cw": 694,
       "rail_sw": 1180,
       "rail_cw": 696,
-      "ok": true
+      "panel_ok": true,
+      "doc_ok": true
     },
     {
       "width": 768,
@@ -82,7 +88,8 @@
       "panel_cw": 694,
       "rail_sw": 1395,
       "rail_cw": 696,
-      "ok": true
+      "panel_ok": true,
+      "doc_ok": true
     },
     {
       "width": 768,
@@ -94,62 +101,67 @@
       "panel_cw": 694,
       "rail_sw": 1180,
       "rail_cw": 696,
-      "ok": true
+      "panel_ok": true,
+      "doc_ok": true
     },
     {
       "width": 390,
       "theme": "dark",
       "locale": "en",
-      "sw": 430,
+      "sw": 390,
       "cw": 390,
       "panel_sw": 324,
       "panel_cw": 324,
       "rail_sw": 1395,
       "rail_cw": 326,
-      "ok": true
+      "panel_ok": true,
+      "doc_ok": true
     },
     {
       "width": 390,
       "theme": "dark",
       "locale": "zh",
-      "sw": 430,
+      "sw": 390,
       "cw": 390,
       "panel_sw": 324,
       "panel_cw": 324,
       "rail_sw": 1180,
       "rail_cw": 326,
-      "ok": true
+      "panel_ok": true,
+      "doc_ok": true
     },
     {
       "width": 390,
       "theme": "light",
       "locale": "en",
-      "sw": 426,
+      "sw": 390,
       "cw": 390,
       "panel_sw": 324,
       "panel_cw": 324,
       "rail_sw": 1395,
       "rail_cw": 326,
-      "ok": true
+      "panel_ok": true,
+      "doc_ok": true
     },
     {
       "width": 390,
       "theme": "light",
       "locale": "zh",
-      "sw": 426,
+      "sw": 390,
       "cw": 390,
       "panel_sw": 324,
       "panel_cw": 324,
       "rail_sw": 1180,
       "rail_cw": 326,
-      "ok": true
+      "panel_ok": true,
+      "doc_ok": true
     }
   ],
   "copy_guard": {
     "exit": 0,
     "violations": []
   },
-  "head_sha_at_capture": "9e562f63f670f9c0dd6dffd817dca05dcb036e55",
-  "captured_at": "2026-09-08T06:38:41Z",
+  "head_sha_at_capture": "d37874e17f896dbf9161ef455b6c2808bb6781ae",
+  "captured_at": "2026-09-08T08:35:56Z",
   "pre_commit": true
 }

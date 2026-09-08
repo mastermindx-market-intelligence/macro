@@ -604,8 +604,8 @@ CAPTIONS: dict[str, dict[str, str]] = {
         "Each row shows the last two readings. Higher means faster or more widespread price rises.",
         "每行显示最近两次读数。数值更高表示涨价更快或更广泛。"),
     "growth": _pair(
-        "Each row shows the last two readings. Higher means faster activity.",
-        "每行显示最近两次读数。数值更高表示活动更快。"),
+        "Each row shows the last two readings. The tabs are not on one scale.",
+        "每行显示最近两次读数。两个标签页衡量的不是同一件事。"),
     "jobs": _pair(
         "Each row shows the last two readings. Higher means a tighter job market.",
         "每行显示最近两次读数。数值更高表示就业市场更紧。"),

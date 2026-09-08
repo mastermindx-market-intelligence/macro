@@ -268,7 +268,7 @@ def test_deck_count_changes_when_the_rail_length_changes() -> None:
 def test_built_page_has_one_section_count_matching_the_rail(
         built: tuple[str, Path]) -> None:
     html, _ = built
-    n = len(P3_IDS)
+    n = len(P3_IDS) + len(P4_IDS)
     assert html.count("Fourteen research") == 0
     assert html.count("十四个研究") == 0
     assert html.count(f"{n} research sections") == 1
@@ -488,8 +488,8 @@ def test_dests_heading_names_destination_pages_not_research_sections(
     """n4: 12 and 14 are labelled as different counts."""
     html, _ = built
     overview = unescape(_panel(html, "overview"))
-    assert "5 research sections" in overview
-    assert "5 个研究板块" in overview
+    assert "12 research sections" in overview
+    assert "12 个研究板块" in overview
     assert "Where to go next — 14 destination pages" in overview
     assert "接下来去哪里——14 个目标页面" in overview
 
@@ -715,7 +715,7 @@ def test_dec_stance_is_guidance_record_exists() -> None:
 @pytest.mark.needs_full_checkout("site")
 def test_arrival_ships_hidden_on_non_overview_panels(built: tuple[str, Path]) -> None:
     html, _ = built
-    assert html.count("data-mc-arrival hidden") == len(P3_IDS) - 1
+    assert html.count("data-mc-arrival hidden") == len(P3_IDS) + len(P4_IDS) - 1
     overview = _panel(html, "overview")
     assert "data-mc-arrival" not in overview
 
@@ -726,9 +726,15 @@ def test_fragments_carry_the_authenticity_marker(built: tuple[str, Path]) -> Non
     frag_dir = out / "macro" / "fragments"
     names = sorted(p.name for p in frag_dir.glob("*.html"))
     assert "overview.html" not in names
-    assert names == ["inflation.html", "money.html", "policy.html", "rates.html"]
+    expected = sorted(
+        f"{section_id}.html"
+        for section_id in (*P3_IDS, *P4_IDS)
+        if section_id != "overview"
+    )
+    assert names == expected
     assert "money.html" in names
     assert "rates.html" in names
+    assert "growth.html" in names
     money = (frag_dir / "money.html").read_text(encoding="utf-8")
     assert "data-mc-fragment" in money
     assert "data-mc-tabbody=\"liquidity\"" in money

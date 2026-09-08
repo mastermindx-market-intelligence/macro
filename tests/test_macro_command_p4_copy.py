@@ -60,8 +60,8 @@ _PINNED = {
         "这里的「增长」指经济扩张的速度，以及有多少领域在同步扩张。",
     ),
     ("growth", "caption"): (
-        "Each row shows the last two readings. Higher means faster activity.",
-        "每行显示最近两次读数。数值更高表示活动更快。",
+        "Each row shows the last two readings. The tabs are not on one scale.",
+        "每行显示最近两次读数。两个标签页衡量的不是同一件事。",
     ),
     ("growth", "watch.1"): (
         "If the pace slows while most gauges still rise, the slowdown is not broad yet.",
@@ -390,19 +390,38 @@ def test_consumer_payments_tone_row() -> None:
 
 
 def test_financial_conditions_a_c_match_composer_quadrants() -> None:
-    """Q2: P2's A/C swap is pinned to the composer's own classify."""
+    """Q2 / M5: all four keys, both locales, pinned to the composer's tables."""
     assert _classify(0.0, 0.0) == "A"
     assert _classify(BOUNDARY, BOUNDARY) == "B"
     assert _classify(0.0, BOUNDARY) == "C"
     assert _classify(BOUNDARY, 0.0) == "D"
-    assert _QUADRANTS["A"]["en"] == "Easy conditions / Easing impulse"
-    assert _QUADRANTS["C"]["en"] == "Easy conditions / Tightening impulse"
-    assert L.STATE_WORD["financial_conditions"]["A"]["en"] == "Easy and easing"
-    assert L.STATE_WORD["financial_conditions"]["C"]["en"] == "Easy but tightening"
-    assert L.PREDICATE_FORM["financial_conditions"]["A"]["en"] == "is cheap and getting cheaper"
-    assert L.PREDICATE_FORM["financial_conditions"]["C"]["en"] == "is still cheap but getting less so"
-    assert L.STATE_TONE["financial_conditions"]["A"] == "ok"
-    assert L.STATE_TONE["financial_conditions"]["C"] == "warn"
+    expected_word = {
+        "A": ("Easy and easing", "宽松且续松"),
+        "B": ("Tight and tightening", "偏紧且续紧"),
+        "C": ("Easy but tightening", "宽松但转紧"),
+        "D": ("Tight but easing", "偏紧但转松"),
+    }
+    expected_predicate = {
+        "A": ("is cheap and getting cheaper", "便宜，而且还在变便宜"),
+        "B": ("is expensive and getting harder", "成本偏高，而且越来越难"),
+        "C": ("is still cheap but getting less so", "仍然便宜，但正在变贵"),
+        "D": ("is expensive but easing", "成本仍高，但正在放松"),
+    }
+    expected_tone = {"A": "ok", "B": "bad", "C": "warn", "D": "warn"}
+    expected_quadrant = {
+        "A": ("Easy conditions / Easing impulse", "宽松条件 / 边际放松"),
+        "B": ("Tight conditions / Tightening impulse", "紧张条件 / 边际收紧"),
+        "C": ("Easy conditions / Tightening impulse", "宽松条件 / 边际收紧"),
+        "D": ("Tight conditions / Easing impulse", "紧张条件 / 边际放松"),
+    }
+    for key in QUADRANTS:
+        assert _QUADRANTS[key]["en"] == expected_quadrant[key][0], key
+        assert _QUADRANTS[key]["zh"] == expected_quadrant[key][1], key
+        assert L.STATE_WORD["financial_conditions"][key]["en"] == expected_word[key][0], key
+        assert L.STATE_WORD["financial_conditions"][key]["zh"] == expected_word[key][1], key
+        assert L.PREDICATE_FORM["financial_conditions"][key]["en"] == expected_predicate[key][0], key
+        assert L.PREDICATE_FORM["financial_conditions"][key]["zh"] == expected_predicate[key][1], key
+        assert L.STATE_TONE["financial_conditions"][key] == expected_tone[key], key
 
 
 def test_live_page_carries_every_emitted_p4_string(built: tuple[str, Path]) -> None:
@@ -419,10 +438,19 @@ def test_live_page_carries_every_emitted_p4_string(built: tuple[str, Path]) -> N
     }
     for section_id, stance_key in live.items():
         panel = unescape(_panel(plain, section_id))
-        for key in ("question", stance_key, "primer", "caption", "watch.1", "watch.2"):
+        keys = ["question", stance_key, "primer", "watch.1", "watch.2"]
+        # I4 drops the caption on current-only figures; the state line lives
+        # in the fragment for sub-tabbed sections, so do not require caption
+        # on the hub panel. The I4 tests pin the drop.
+        if 'class="mc-caption' in panel:
+            keys.append("caption")
+        for key in keys:
             en, zh = _PINNED[(section_id, key)]
             assert en in panel, (section_id, key, en)
             assert zh in panel, (section_id, key, zh)
+        if 'class="mc-caption' not in panel:
+            assert "Each row shows the last two readings" not in panel
+            assert "compared against the previous publication" not in panel
     assert _PINNED[("FOOT", "disagree")][0] in unescape(_panel(plain, "growth"))
     assert _PINNED[("FOOT", "disagree")][1] in unescape(_panel(plain, "growth"))
     assert _PINNED[("FOOT", "stale")][0] in unescape(_panel(plain, "consumer"))
@@ -629,3 +657,112 @@ def test_not_applicable_trade_is_unstated_not_e1(built: tuple[str, Path]) -> Non
     assert 'data-mc-empty="e1"' not in trade
     assert _PINNED[("trade", "stance.unstated")][0] in trade
     assert "This desk could not be read today" not in trade
+
+
+def test_credit_funding_e4_needs_the_capture_fixture_flag() -> None:
+    """P3 v5: withheld_command_tabs is fixture-only; credit/funding E4 needs the flag."""
+    entries = copy.deepcopy(_live_entries())
+    for entry in entries:
+        if entry["workspace_id"] == "capital_structure":
+            entry["snapshot"]["withheld_command_tabs"] = ["funding"]
+    closed = builder._macro_command_sections(entries, page_built_at=BUILT_AT)
+    closed_credit = next(s for s in closed if s["id"] == "credit")
+    closed_funding = next(t for t in closed_credit["subtabs"] if t["id"] == "funding")
+    assert closed_funding["empty"] is None
+    open_ = builder._macro_command_sections(
+        entries, page_built_at=BUILT_AT, allow_empty_state_fixture=True)
+    credit = next(s for s in open_ if s["id"] == "credit")
+    funding = next(t for t in credit["subtabs"] if t["id"] == "funding")
+    assert funding["empty"]["id"] == "e4"
+    assert funding["empty"]["title"]["en"] == L.EMPTY_STATES["e4"]["title"]["en"]
+    assert funding["empty"]["title"]["zh"] == L.EMPTY_STATES["e4"]["title"]["zh"]
+    assert funding["figure"] is None
+    assert credit["caption"] is None
+
+
+def test_growth_caption_matches_credit_scale_disclaimer() -> None:
+    """M4: growth uses the credit pattern — tabs are not on one scale."""
+    assert L.CAPTIONS["growth"] == L.CAPTIONS["credit"]
+    assert L.CAPTIONS["growth"]["en"] == (
+        "Each row shows the last two readings. The tabs are not on one scale.")
+    assert L.CAPTIONS["growth"]["zh"] == "每行显示最近两次读数。两个标签页衡量的不是同一件事。"
+
+
+def test_p4_live_figures_follow_i4_same_publication_contract() -> None:
+    """I4: a same-publication prior is a current-only row, both locales."""
+    sections = builder._macro_command_sections(_live_entries(), page_built_at=BUILT_AT)
+    state_en = L.COUNT["same_publication"]["en"]
+    state_zh = L.COUNT["same_publication"]["zh"]
+    assert state_en == (
+        "Only one reading is published so far — nothing earlier to compare yet.")
+    assert state_zh == "目前只有一次读数——暂无更早读数可比。"
+    seen = 0
+    for section in sections:
+        if section["id"] not in P4_IDS:
+            continue
+        figures = []
+        if section.get("figure"):
+            figures.append(section["figure"])
+        for tab in section.get("subtabs") or []:
+            if tab.get("figure"):
+                figures.append(tab["figure"])
+        for figure in figures:
+            kinds = {row["kind"] for row in figure["rows"]}
+            if "current" not in kinds:
+                continue
+            seen += 1
+            assert figure["count_text"] is None
+            assert figure["state_line"]["en"] == state_en
+            assert figure["state_line"]["zh"] == state_zh
+            for row in figure["rows"]:
+                if row["kind"] != "current":
+                    continue
+                assert row["prior"] is None
+                assert row["delta"] is None
+                assert row["sign"] is None
+                assert row["current"]
+    assert seen >= 1
+
+
+def test_p4_live_hub_html_prints_the_i4_state_line(built: tuple[str, Path]) -> None:
+    html, out = built
+    state_en = L.COUNT["same_publication"]["en"]
+    state_zh = L.COUNT["same_publication"]["zh"]
+    seen = 0
+    for section_id in P4_IDS:
+        fragment = (out / "macro" / "fragments" / f"{section_id}.html")
+        body = unescape(fragment.read_text(encoding="utf-8")
+                        if fragment.exists()
+                        else _panel(html, section_id))
+        if "mc-move-current-only" not in body:
+            continue
+        seen += 1
+        assert state_en in body, section_id
+        assert state_zh in body, section_id
+        assert "compared against the previous publication" not in body
+        assert "与上一次发布相比" not in body
+        assert "mc-move-prior" not in body
+        assert "mq-delta-flat" not in body
+        assert 'class="mc-caption' not in body
+    assert seen >= 1
+
+
+def test_p4_probes_name_panel_ok_and_doc_ok_separately() -> None:
+    """M1: the 390 probe flag is not a lie about document overflow."""
+    probes = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p4" / "probes.json")
+        .read_text(encoding="utf-8"))
+    rows = probes["p19"]
+    assert len(rows) == 12
+    for row in rows:
+        assert "ok" not in row, row
+        assert isinstance(row["panel_ok"], bool)
+        assert isinstance(row["doc_ok"], bool)
+        assert row["panel_ok"] is True
+        assert row["panel_sw"] <= row["panel_cw"]
+        assert row["doc_ok"] is (row["sw"] <= row["cw"])
+    mobile = [row for row in rows if row["width"] == 390]
+    assert len(mobile) == 4
+    for row in mobile:
+        assert row["cw"] == 390
+        assert row["sw"] >= 390

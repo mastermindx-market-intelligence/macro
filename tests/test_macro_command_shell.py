@@ -30,9 +30,10 @@ BUILT_AT = "2026-09-06T00:00:00Z"
 # The fixed reading order, frozen spec §1.1 — a customer's question order,
 # never the producer registry order, and never re-sorted with the data (G3).
 EXPECTED_SECTION_ORDER = (
-    "overview", "money", "policy", "rates", "inflation",
+    "overview", "money", "policy", "rates", "inflation", "growth",
+    "jobs", "housing", "consumer", "credit", "debt", "trade",
 )
-SUBTABBED_SECTIONS = ("money",)
+SUBTABBED_SECTIONS = ("money", "growth", "credit")
 
 
 @pytest.fixture(scope="module")

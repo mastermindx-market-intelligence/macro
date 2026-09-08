@@ -168,10 +168,25 @@ def _build_memory_hub(tmp: Path, empty_id: str, mutate_entries) -> Path:
     entries = _live_entries()
     mutate_entries(entries)
     env = builder._environment(ROOT)
+    # P3 v5: withheld_command_tabs / entitlement are fixture-only keys.
     builder.build_hub(entries, out_dir=out, env=env, root=ROOT,
-                      page_built_at="2026-09-06T00:00:00Z")
+                      page_built_at="2026-09-06T00:00:00Z",
+                      allow_empty_state_fixture=True)
     for asset in builder.SHARED_ASSETS:
         shutil.copy2(ROOT / "templates" / asset, out / asset)
+    if empty_id == "e4":
+        frag = (out / "macro" / "fragments" / "credit.html").read_text(
+            encoding="utf-8")
+    elif empty_id == "e6":
+        frag = (out / "macro" / "fragments" / "credit.html").read_text(
+            encoding="utf-8")
+    elif empty_id == "e2":
+        frag = (out / "macro" / "fragments" / "housing.html").read_text(
+            encoding="utf-8")
+    else:
+        frag = ""
+    if frag and f'data-mc-empty="{empty_id}"' not in frag:
+        raise RuntimeError(f"{empty_id} fragment missing typed empty: {frag[:400]}")
     return out
 
 
@@ -470,15 +485,29 @@ def main() -> int:
                                 };
                             }""")
                         ctx.close()
-                        # Document scrollWidth includes the horizontal rail
-                        # scroller at ≤720 (P3 `.mc-rail-list { overflow-x: auto }`).
-                        # P-19 for this packet is the panel: copy must not widen it.
+                        # M1: panel_ok is the P4-owned criterion (the panel
+                        # P4 authored). doc_ok is documentElement.scrollWidth
+                        # <= clientWidth — the pin §4.5(e) / P-19 page check.
+                        # After the P3 v5 rail fix, doc_ok should be true at
+                        # 390; record the real numbers either way.
+                        panel_ok = (metrics["panel_sw"] or 0) <= (metrics["panel_cw"] or 0)
+                        doc_ok = (metrics["sw"] or 0) <= (metrics["cw"] or 0)
                         row = {"width": width, "theme": theme, "locale": locale,
                                **metrics,
-                               "ok": (metrics["panel_sw"] or 0) <= (metrics["panel_cw"] or 0) + 1}
+                               "panel_ok": panel_ok,
+                               "doc_ok": doc_ok}
                         probes["p19"].append(row)
-                        if not row["ok"]:
+                        if not panel_ok:
                             raise RuntimeError(f"P-19 panel overflow {row}")
+            bad_doc = [row for row in probes["p19"] if not row["doc_ok"]]
+            if bad_doc:
+                gaps.append(
+                    "P-19 doc_ok false at "
+                    + ", ".join(
+                        f"{row['width']} {row['theme']}/{row['locale']} "
+                        f"sw={row['sw']} cw={row['cw']}"
+                        for row in bad_doc)
+                    + ". panel_ok holds in every cell.")
 
             for key, page_name in (
                 ("financial_conditions", "macro_financial_conditions.html"),
