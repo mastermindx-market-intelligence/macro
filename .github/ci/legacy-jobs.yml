@@ -13830,6 +13830,9 @@ jobs:
       - "templates/macro_command.css"
       - "templates/macro_command.js"
       - "scripts/check_macro_command_copy.py"
+      # r10-M1: test_macro_command_panels.py imports the capture script
+      # to feed a fake dirty `git status --short` and assert it refuses.
+      - "scripts/capture_macro_command_p3.py"
       - "tests/test_macro_command_shell.py"
       - "tests/test_macro_command_copy_law.py"
       - "tests/test_macro_command_read_strip.py"

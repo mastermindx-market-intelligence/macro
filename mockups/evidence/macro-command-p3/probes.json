@@ -122,412 +122,6 @@
   },
   "m5_caption_contrast": 5.7342770734687685,
   "m5_count_contrast": 5.7342770734687685,
-  "clearance_dark_en": {
-    "ok": true,
-    "textCount": 314,
-    "positions": {
-      "0": {
-        "ok": true,
-        "textCount": 314,
-        "hits": [],
-        "excused": [],
-        "analystPosition": "static",
-        "mmbBootPresent": true,
-        "mmbBootBox": null,
-        "scrollHeight": 3203,
-        "innerHeight": 844,
-        "target": "0",
-        "scrollY": 0,
-        "scrollWanted": 0,
-        "maxScroll": 2359,
-        "maxScrollMatched": true,
-        "mmbBootDisplay": "none",
-        "overlays": [
-          {
-            "name": "rail",
-            "pos": "sticky",
-            "top": 733.09375,
-            "left": 14,
-            "right": 376,
-            "bottom": 784.234375,
-            "width": 362,
-            "height": 51.140625
-          }
-        ]
-      },
-      "50": {
-        "ok": true,
-        "textCount": 314,
-        "hits": [],
-        "excused": [
-          {
-            "text": "Liquidity Regime Monitor",
-            "overlay": "rail",
-            "overlayPos": "sticky",
-            "box": {
-              "top": 53.625,
-              "left": 51,
-              "right": 181.421875,
-              "bottom": 66.625
-            },
-            "ovBox": {
-              "top": 60,
-              "left": 14,
-              "right": 376,
-              "bottom": 111.140625
-            },
-            "reason": "sticky-rail-partial-clip"
-          },
-          {
-            "text": "45.39",
-            "overlay": "rail",
-            "overlayPos": "sticky",
-            "box": {
-              "top": 78.671875,
-              "left": 233.453125,
-              "right": 275.609375,
-              "bottom": 94.671875
-            },
-            "ovBox": {
-              "top": 60,
-              "left": 14,
-              "right": 376,
-              "bottom": 111.140625
-            },
-            "reason": "sticky-rail-partial-clip"
-          },
-          {
-            "text": "Sep 2026",
-            "overlay": "rail",
-            "overlayPos": "sticky",
-            "box": {
-              "top": 80.671875,
-              "left": 283.609375,
-              "right": 339,
-              "bottom": 94.671875
-            },
-            "ovBox": {
-              "top": 60,
-              "left": 14,
-              "right": 376,
-              "bottom": 111.140625
-            },
-            "reason": "sticky-rail-partial-clip"
-          }
-        ],
-        "analystPosition": "static",
-        "mmbBootPresent": true,
-        "mmbBootBox": null,
-        "scrollHeight": 3203,
-        "innerHeight": 844,
-        "target": "50",
-        "scrollY": 1180,
-        "scrollWanted": 1179.5,
-        "maxScroll": 2359,
-        "maxScrollMatched": true,
-        "mmbBootDisplay": "none",
-        "overlays": [
-          {
-            "name": "rail",
-            "pos": "sticky",
-            "top": 60,
-            "left": 14,
-            "right": 376,
-            "bottom": 111.140625,
-            "width": 362,
-            "height": 51.140625
-          }
-        ]
-      },
-      "max": {
-        "ok": true,
-        "textCount": 314,
-        "hits": [],
-        "excused": [
-          {
-            "text": "What companies are making, ordering and investing.",
-            "overlay": "rail",
-            "overlayPos": "sticky",
-            "box": {
-              "top": 52.34375,
-              "left": 65,
-              "right": 294.5,
-              "bottom": 68.34375
-            },
-            "ovBox": {
-              "top": 60,
-              "left": 14,
-              "right": 376,
-              "bottom": 111.140625
-            },
-            "reason": "sticky-rail-partial-clip"
-          },
-          {
-            "text": "What companies are making, ordering and investing.",
-            "overlay": "rail",
-            "overlayPos": "sticky",
-            "box": {
-              "top": 71.1875,
-              "left": 65,
-              "right": 149.140625,
-              "bottom": 87.1875
-            },
-            "ovBox": {
-              "top": 60,
-              "left": 14,
-              "right": 376,
-              "bottom": 111.140625
-            },
-            "reason": "sticky-rail-partial-clip"
-          }
-        ],
-        "analystPosition": "static",
-        "mmbBootPresent": true,
-        "mmbBootBox": null,
-        "scrollHeight": 3203,
-        "innerHeight": 844,
-        "target": "max",
-        "scrollY": 2359,
-        "scrollWanted": 2359,
-        "maxScroll": 2359,
-        "maxScrollMatched": true,
-        "mmbBootDisplay": "none",
-        "overlays": [
-          {
-            "name": "rail",
-            "pos": "sticky",
-            "top": 60,
-            "left": 14,
-            "right": 376,
-            "bottom": 111.140625,
-            "width": 362,
-            "height": 51.140625
-          }
-        ]
-      }
-    },
-    "analystPosition": "static",
-    "mmbBootPresent": true,
-    "mmbBootDisplay": "none",
-    "mmbBootBox": null,
-    "excusedCounts": {
-      "0": 0,
-      "50": 3,
-      "max": 2
-    }
-  },
-  "clearance_light_zh": {
-    "ok": true,
-    "textCount": 314,
-    "positions": {
-      "0": {
-        "ok": true,
-        "textCount": 314,
-        "hits": [],
-        "excused": [],
-        "analystPosition": "static",
-        "mmbBootPresent": true,
-        "mmbBootBox": null,
-        "scrollHeight": 2854,
-        "innerHeight": 844,
-        "target": "0",
-        "scrollY": 0,
-        "scrollWanted": 0,
-        "maxScroll": 2010,
-        "maxScrollMatched": true,
-        "mmbBootDisplay": "none",
-        "overlays": [
-          {
-            "name": "rail",
-            "pos": "sticky",
-            "top": 676.703125,
-            "left": 14,
-            "right": 376,
-            "bottom": 727.84375,
-            "width": 362,
-            "height": 51.140625
-          }
-        ]
-      },
-      "50": {
-        "ok": true,
-        "textCount": 314,
-        "hits": [],
-        "excused": [
-          {
-            "text": "18.83",
-            "overlay": "rail",
-            "overlayPos": "sticky",
-            "box": {
-              "top": 64.734375,
-              "left": 238.71875,
-              "right": 280.875,
-              "bottom": 80.734375
-            },
-            "ovBox": {
-              "top": 60,
-              "left": 14,
-              "right": 376,
-              "bottom": 111.140625
-            },
-            "reason": "sticky-rail-partial-clip"
-          },
-          {
-            "text": "2026\u5e749\u6708",
-            "overlay": "rail",
-            "overlayPos": "sticky",
-            "box": {
-              "top": 66.734375,
-              "left": 288.875,
-              "right": 347,
-              "bottom": 80.734375
-            },
-            "ovBox": {
-              "top": 60,
-              "left": 14,
-              "right": 376,
-              "bottom": 111.140625
-            },
-            "reason": "sticky-rail-partial-clip"
-          },
-          {
-            "text": "\u8d44\u4ea7\u8d1f\u503a\u8868\u652f\u6301",
-            "overlay": "rail",
-            "overlayPos": "sticky",
-            "box": {
-              "top": 103.421875,
-              "left": 43,
-              "right": 137.5,
-              "bottom": 122.421875
-            },
-            "ovBox": {
-              "top": 60,
-              "left": 14,
-              "right": 376,
-              "bottom": 111.140625
-            },
-            "reason": "sticky-rail-partial-clip"
-          }
-        ],
-        "analystPosition": "static",
-        "mmbBootPresent": true,
-        "mmbBootBox": null,
-        "scrollHeight": 2854,
-        "innerHeight": 844,
-        "target": "50",
-        "scrollY": 1005,
-        "scrollWanted": 1005,
-        "maxScroll": 2010,
-        "maxScrollMatched": true,
-        "mmbBootDisplay": "none",
-        "overlays": [
-          {
-            "name": "rail",
-            "pos": "sticky",
-            "top": 60,
-            "left": 14,
-            "right": 376,
-            "bottom": 111.140625,
-            "width": 362,
-            "height": 51.140625
-          }
-        ]
-      },
-      "max": {
-        "ok": true,
-        "textCount": 314,
-        "hits": [],
-        "excused": [
-          {
-            "text": "\u589e\u957f\u4e0e\u5b9e\u4f53\u7ecf\u6d4e",
-            "overlay": "rail",
-            "overlayPos": "sticky",
-            "box": {
-              "top": 75.140625,
-              "left": 65,
-              "right": 170,
-              "bottom": 96.140625
-            },
-            "ovBox": {
-              "top": 60,
-              "left": 14,
-              "right": 376,
-              "bottom": 111.140625
-            },
-            "reason": "sticky-rail-partial-clip"
-          },
-          {
-            "text": "\u7ecf\u6d4e\u662f\u5728\u52a0\u901f\u8fd8\u662f\u5728\u653e\u7f13\u3002",
-            "overlay": "rail",
-            "overlayPos": "sticky",
-            "box": {
-              "top": 100.640625,
-              "left": 65,
-              "right": 224.125,
-              "bottom": 118.640625
-            },
-            "ovBox": {
-              "top": 60,
-              "left": 14,
-              "right": 376,
-              "bottom": 111.140625
-            },
-            "reason": "sticky-rail-partial-clip"
-          },
-          {
-            "text": "\u2192",
-            "overlay": "rail",
-            "overlayPos": "sticky",
-            "box": {
-              "top": 76.890625,
-              "left": 315,
-              "right": 328,
-              "bottom": 94.890625
-            },
-            "ovBox": {
-              "top": 60,
-              "left": 14,
-              "right": 376,
-              "bottom": 111.140625
-            },
-            "reason": "sticky-rail-partial-clip"
-          }
-        ],
-        "analystPosition": "static",
-        "mmbBootPresent": true,
-        "mmbBootBox": null,
-        "scrollHeight": 2854,
-        "innerHeight": 844,
-        "target": "max",
-        "scrollY": 2010,
-        "scrollWanted": 2010,
-        "maxScroll": 2010,
-        "maxScrollMatched": true,
-        "mmbBootDisplay": "none",
-        "overlays": [
-          {
-            "name": "rail",
-            "pos": "sticky",
-            "top": 60,
-            "left": 14,
-            "right": 376,
-            "bottom": 111.140625,
-            "width": 362,
-            "height": 51.140625
-          }
-        ]
-      }
-    },
-    "analystPosition": "static",
-    "mmbBootPresent": true,
-    "mmbBootDisplay": "none",
-    "mmbBootBox": null,
-    "excusedCounts": {
-      "0": 0,
-      "50": 3,
-      "max": 3
-    }
-  },
   "scroll_matrix": {
     "1440_dark_en": {
       "sw": 1440,
@@ -711,218 +305,6 @@
     "listMaxWidth": "none",
     "listContain": "inline-size"
   },
-  "clearance_dark_zh": {
-    "ok": true,
-    "textCount": 314,
-    "positions": {
-      "0": {
-        "ok": true,
-        "textCount": 314,
-        "hits": [],
-        "excused": [],
-        "analystPosition": "static",
-        "mmbBootPresent": true,
-        "mmbBootBox": null,
-        "scrollHeight": 2834,
-        "innerHeight": 844,
-        "target": "0",
-        "scrollY": 0,
-        "scrollWanted": 0,
-        "maxScroll": 1990,
-        "maxScrollMatched": true,
-        "mmbBootDisplay": "none",
-        "overlays": [
-          {
-            "name": "rail",
-            "pos": "sticky",
-            "top": 670.703125,
-            "left": 14,
-            "right": 376,
-            "bottom": 721.84375,
-            "width": 362,
-            "height": 51.140625
-          }
-        ]
-      },
-      "50": {
-        "ok": true,
-        "textCount": 314,
-        "hits": [],
-        "excused": [
-          {
-            "text": "18.83",
-            "overlay": "rail",
-            "overlayPos": "sticky",
-            "box": {
-              "top": 61.734375,
-              "left": 230.71875,
-              "right": 272.875,
-              "bottom": 77.734375
-            },
-            "ovBox": {
-              "top": 60,
-              "left": 14,
-              "right": 376,
-              "bottom": 111.140625
-            },
-            "reason": "sticky-rail-partial-clip"
-          },
-          {
-            "text": "2026\u5e749\u6708",
-            "overlay": "rail",
-            "overlayPos": "sticky",
-            "box": {
-              "top": 63.734375,
-              "left": 280.875,
-              "right": 339,
-              "bottom": 77.734375
-            },
-            "ovBox": {
-              "top": 60,
-              "left": 14,
-              "right": 376,
-              "bottom": 111.140625
-            },
-            "reason": "sticky-rail-partial-clip"
-          },
-          {
-            "text": "\u8d44\u4ea7\u8d1f\u503a\u8868\u652f\u6301",
-            "overlay": "rail",
-            "overlayPos": "sticky",
-            "box": {
-              "top": 100.421875,
-              "left": 51,
-              "right": 145.5,
-              "bottom": 119.421875
-            },
-            "ovBox": {
-              "top": 60,
-              "left": 14,
-              "right": 376,
-              "bottom": 111.140625
-            },
-            "reason": "sticky-rail-partial-clip"
-          }
-        ],
-        "analystPosition": "static",
-        "mmbBootPresent": true,
-        "mmbBootBox": null,
-        "scrollHeight": 2834,
-        "innerHeight": 844,
-        "target": "50",
-        "scrollY": 995,
-        "scrollWanted": 995,
-        "maxScroll": 1990,
-        "maxScrollMatched": true,
-        "mmbBootDisplay": "none",
-        "overlays": [
-          {
-            "name": "rail",
-            "pos": "sticky",
-            "top": 60,
-            "left": 14,
-            "right": 376,
-            "bottom": 111.140625,
-            "width": 362,
-            "height": 51.140625
-          }
-        ]
-      },
-      "max": {
-        "ok": true,
-        "textCount": 314,
-        "hits": [],
-        "excused": [
-          {
-            "text": "\u589e\u957f\u4e0e\u5b9e\u4f53\u7ecf\u6d4e",
-            "overlay": "rail",
-            "overlayPos": "sticky",
-            "box": {
-              "top": 75.140625,
-              "left": 65,
-              "right": 170,
-              "bottom": 96.140625
-            },
-            "ovBox": {
-              "top": 60,
-              "left": 14,
-              "right": 376,
-              "bottom": 111.140625
-            },
-            "reason": "sticky-rail-partial-clip"
-          },
-          {
-            "text": "\u7ecf\u6d4e\u662f\u5728\u52a0\u901f\u8fd8\u662f\u5728\u653e\u7f13\u3002",
-            "overlay": "rail",
-            "overlayPos": "sticky",
-            "box": {
-              "top": 100.640625,
-              "left": 65,
-              "right": 224.125,
-              "bottom": 118.640625
-            },
-            "ovBox": {
-              "top": 60,
-              "left": 14,
-              "right": 376,
-              "bottom": 111.140625
-            },
-            "reason": "sticky-rail-partial-clip"
-          },
-          {
-            "text": "\u2192",
-            "overlay": "rail",
-            "overlayPos": "sticky",
-            "box": {
-              "top": 76.890625,
-              "left": 315,
-              "right": 328,
-              "bottom": 94.890625
-            },
-            "ovBox": {
-              "top": 60,
-              "left": 14,
-              "right": 376,
-              "bottom": 111.140625
-            },
-            "reason": "sticky-rail-partial-clip"
-          }
-        ],
-        "analystPosition": "static",
-        "mmbBootPresent": true,
-        "mmbBootBox": null,
-        "scrollHeight": 2834,
-        "innerHeight": 844,
-        "target": "max",
-        "scrollY": 1990,
-        "scrollWanted": 1990,
-        "maxScroll": 1990,
-        "maxScrollMatched": true,
-        "mmbBootDisplay": "none",
-        "overlays": [
-          {
-            "name": "rail",
-            "pos": "sticky",
-            "top": 60,
-            "left": 14,
-            "right": 376,
-            "bottom": 111.140625,
-            "width": 362,
-            "height": 51.140625
-          }
-        ]
-      }
-    },
-    "analystPosition": "static",
-    "mmbBootPresent": true,
-    "mmbBootDisplay": "none",
-    "mmbBootBox": null,
-    "excusedCounts": {
-      "0": 0,
-      "50": 3,
-      "max": 3
-    }
-  },
   "rail_light_en": {
     "ok": true,
     "railBg": "rgb(232, 235, 241)",
@@ -937,200 +319,6 @@
     "listOverflowX": "auto",
     "listMaxWidth": "none",
     "listContain": "inline-size"
-  },
-  "clearance_light_en": {
-    "ok": true,
-    "textCount": 314,
-    "positions": {
-      "0": {
-        "ok": true,
-        "textCount": 314,
-        "hits": [],
-        "excused": [],
-        "analystPosition": "static",
-        "mmbBootPresent": true,
-        "mmbBootBox": null,
-        "scrollHeight": 3240,
-        "innerHeight": 844,
-        "target": "0",
-        "scrollY": 0,
-        "scrollWanted": 0,
-        "maxScroll": 2396,
-        "maxScrollMatched": true,
-        "mmbBootDisplay": "none",
-        "overlays": [
-          {
-            "name": "rail",
-            "pos": "sticky",
-            "top": 756.59375,
-            "left": 14,
-            "right": 376,
-            "bottom": 807.734375,
-            "width": 362,
-            "height": 51.140625
-          }
-        ]
-      },
-      "50": {
-        "ok": true,
-        "textCount": 314,
-        "hits": [],
-        "excused": [
-          {
-            "text": "Liquidity Regime Monitor",
-            "overlay": "rail",
-            "overlayPos": "sticky",
-            "box": {
-              "top": 66.125,
-              "left": 43,
-              "right": 173.421875,
-              "bottom": 79.125
-            },
-            "ovBox": {
-              "top": 60,
-              "left": 14,
-              "right": 376,
-              "bottom": 111.140625
-            },
-            "reason": "sticky-rail-partial-clip"
-          },
-          {
-            "text": "45.39",
-            "overlay": "rail",
-            "overlayPos": "sticky",
-            "box": {
-              "top": 91.171875,
-              "left": 241.453125,
-              "right": 283.609375,
-              "bottom": 107.171875
-            },
-            "ovBox": {
-              "top": 60,
-              "left": 14,
-              "right": 376,
-              "bottom": 111.140625
-            },
-            "reason": "sticky-rail-partial-clip"
-          },
-          {
-            "text": "Sep 2026",
-            "overlay": "rail",
-            "overlayPos": "sticky",
-            "box": {
-              "top": 93.171875,
-              "left": 291.609375,
-              "right": 347,
-              "bottom": 107.171875
-            },
-            "ovBox": {
-              "top": 60,
-              "left": 14,
-              "right": 376,
-              "bottom": 111.140625
-            },
-            "reason": "sticky-rail-partial-clip"
-          }
-        ],
-        "analystPosition": "static",
-        "mmbBootPresent": true,
-        "mmbBootBox": null,
-        "scrollHeight": 3240,
-        "innerHeight": 844,
-        "target": "50",
-        "scrollY": 1198,
-        "scrollWanted": 1198,
-        "maxScroll": 2396,
-        "maxScrollMatched": true,
-        "mmbBootDisplay": "none",
-        "overlays": [
-          {
-            "name": "rail",
-            "pos": "sticky",
-            "top": 60,
-            "left": 14,
-            "right": 376,
-            "bottom": 111.140625,
-            "width": 362,
-            "height": 51.140625
-          }
-        ]
-      },
-      "max": {
-        "ok": true,
-        "textCount": 314,
-        "hits": [],
-        "excused": [
-          {
-            "text": "What companies are making, ordering and investing.",
-            "overlay": "rail",
-            "overlayPos": "sticky",
-            "box": {
-              "top": 52.84375,
-              "left": 65,
-              "right": 294.5,
-              "bottom": 68.84375
-            },
-            "ovBox": {
-              "top": 60,
-              "left": 14,
-              "right": 376,
-              "bottom": 111.140625
-            },
-            "reason": "sticky-rail-partial-clip"
-          },
-          {
-            "text": "What companies are making, ordering and investing.",
-            "overlay": "rail",
-            "overlayPos": "sticky",
-            "box": {
-              "top": 71.6875,
-              "left": 65,
-              "right": 149.140625,
-              "bottom": 87.6875
-            },
-            "ovBox": {
-              "top": 60,
-              "left": 14,
-              "right": 376,
-              "bottom": 111.140625
-            },
-            "reason": "sticky-rail-partial-clip"
-          }
-        ],
-        "analystPosition": "static",
-        "mmbBootPresent": true,
-        "mmbBootBox": null,
-        "scrollHeight": 3240,
-        "innerHeight": 844,
-        "target": "max",
-        "scrollY": 2396,
-        "scrollWanted": 2396,
-        "maxScroll": 2396,
-        "maxScrollMatched": true,
-        "mmbBootDisplay": "none",
-        "overlays": [
-          {
-            "name": "rail",
-            "pos": "sticky",
-            "top": 60,
-            "left": 14,
-            "right": 376,
-            "bottom": 111.140625,
-            "width": 362,
-            "height": 51.140625
-          }
-        ]
-      }
-    },
-    "analystPosition": "static",
-    "mmbBootPresent": true,
-    "mmbBootDisplay": "none",
-    "mmbBootBox": null,
-    "excusedCounts": {
-      "0": 0,
-      "50": 3,
-      "max": 2
-    }
   },
   "rail_light_zh": {
     "ok": true,
@@ -1177,8 +365,8 @@
     "listMaxWidth": "none",
     "listContain": "inline-size"
   },
-  "generated_at": "2026-09-08T10:49:47Z",
-  "resolved_sha_or_none": "a2d0e84de898db7d4688940a876e7b0d20aa73d5",
+  "generated_at": "2026-09-08T11:40:55Z",
+  "resolved_sha_or_none": "7a2bcf3eec398a307935e44170ded6d0ed62f33b",
   "m2_hairline_light_en": {
     "populated": true,
     "hairlineCount": 1,
@@ -1207,8 +395,7 @@
     "bgToken": "#e8ebf1",
     "voids": [],
     "maxVoidWidth": 0,
-    "filledOutsideWiderThan40": false,
-    "holeWiderThan40": false,
+    "voidWiderThan40": false,
     "chipBoxes": [
       {
         "left": 332,
@@ -1271,7 +458,7 @@
       235,
       241
     ],
-    "canvasSource": "strip-inter-chip-gap (1164,824)"
+    "canvasSource": "strip-inter-chip-gap (1164,824) gapCss=8.00"
   },
   "clearance_390_dark_en": {
     "ok": true,
@@ -1285,12 +472,12 @@
         "analystPosition": "static",
         "mmbBootPresent": true,
         "mmbBootBox": null,
-        "scrollHeight": 3203,
+        "scrollHeight": 3206,
         "innerHeight": 844,
         "target": "0",
         "scrollY": 0,
         "scrollWanted": 0,
-        "maxScroll": 2359,
+        "maxScroll": 2362,
         "maxScrollMatched": true,
         "mmbBootDisplay": "none",
         "overlays": [
@@ -1300,9 +487,9 @@
             "top": 733.09375,
             "left": 14,
             "right": 376,
-            "bottom": 784.234375,
+            "bottom": 787.640625,
             "width": 362,
-            "height": 51.140625
+            "height": 54.546875
           }
         ]
       },
@@ -1316,65 +503,65 @@
             "overlay": "rail",
             "overlayPos": "sticky",
             "box": {
-              "top": 53.625,
+              "top": 56.03125,
               "left": 51,
               "right": 181.421875,
-              "bottom": 66.625
+              "bottom": 69.03125
             },
             "ovBox": {
               "top": 60,
               "left": 14,
               "right": 376,
-              "bottom": 111.140625
+              "bottom": 114.546875
             },
-            "reason": "sticky-rail-partial-clip"
+            "reason": "rail_partially_covered"
           },
           {
             "text": "45.39",
             "overlay": "rail",
             "overlayPos": "sticky",
             "box": {
-              "top": 78.671875,
+              "top": 81.078125,
               "left": 233.453125,
               "right": 275.609375,
-              "bottom": 94.671875
+              "bottom": 97.078125
             },
             "ovBox": {
               "top": 60,
               "left": 14,
               "right": 376,
-              "bottom": 111.140625
+              "bottom": 114.546875
             },
-            "reason": "sticky-rail-partial-clip"
+            "reason": "rail_fully_covered"
           },
           {
             "text": "Sep 2026",
             "overlay": "rail",
             "overlayPos": "sticky",
             "box": {
-              "top": 80.671875,
+              "top": 83.078125,
               "left": 283.609375,
               "right": 339,
-              "bottom": 94.671875
+              "bottom": 97.078125
             },
             "ovBox": {
               "top": 60,
               "left": 14,
               "right": 376,
-              "bottom": 111.140625
+              "bottom": 114.546875
             },
-            "reason": "sticky-rail-partial-clip"
+            "reason": "rail_fully_covered"
           }
         ],
         "analystPosition": "static",
         "mmbBootPresent": true,
         "mmbBootBox": null,
-        "scrollHeight": 3203,
+        "scrollHeight": 3206,
         "innerHeight": 844,
         "target": "50",
-        "scrollY": 1180,
-        "scrollWanted": 1179.5,
-        "maxScroll": 2359,
+        "scrollY": 1181,
+        "scrollWanted": 1181,
+        "maxScroll": 2362,
         "maxScrollMatched": true,
         "mmbBootDisplay": "none",
         "overlays": [
@@ -1384,9 +571,9 @@
             "top": 60,
             "left": 14,
             "right": 376,
-            "bottom": 111.140625,
+            "bottom": 114.546875,
             "width": 362,
-            "height": 51.140625
+            "height": 54.546875
           }
         ]
       },
@@ -1400,47 +587,47 @@
             "overlay": "rail",
             "overlayPos": "sticky",
             "box": {
-              "top": 52.34375,
+              "top": 52.75,
               "left": 65,
               "right": 294.5,
-              "bottom": 68.34375
+              "bottom": 68.75
             },
             "ovBox": {
               "top": 60,
               "left": 14,
               "right": 376,
-              "bottom": 111.140625
+              "bottom": 114.546875
             },
-            "reason": "sticky-rail-partial-clip"
+            "reason": "rail_partially_covered"
           },
           {
             "text": "What companies are making, ordering and investing.",
             "overlay": "rail",
             "overlayPos": "sticky",
             "box": {
-              "top": 71.1875,
+              "top": 71.59375,
               "left": 65,
               "right": 149.140625,
-              "bottom": 87.1875
+              "bottom": 87.59375
             },
             "ovBox": {
               "top": 60,
               "left": 14,
               "right": 376,
-              "bottom": 111.140625
+              "bottom": 114.546875
             },
-            "reason": "sticky-rail-partial-clip"
+            "reason": "rail_fully_covered"
           }
         ],
         "analystPosition": "static",
         "mmbBootPresent": true,
         "mmbBootBox": null,
-        "scrollHeight": 3203,
+        "scrollHeight": 3206,
         "innerHeight": 844,
         "target": "max",
-        "scrollY": 2359,
-        "scrollWanted": 2359,
-        "maxScroll": 2359,
+        "scrollY": 2362,
+        "scrollWanted": 2362,
+        "maxScroll": 2362,
         "maxScrollMatched": true,
         "mmbBootDisplay": "none",
         "overlays": [
@@ -1450,9 +637,9 @@
             "top": 60,
             "left": 14,
             "right": 376,
-            "bottom": 111.140625,
+            "bottom": 114.546875,
             "width": 362,
-            "height": 51.140625
+            "height": 54.546875
           }
         ]
       }
@@ -1479,12 +666,12 @@
         "analystPosition": "static",
         "mmbBootPresent": true,
         "mmbBootBox": null,
-        "scrollHeight": 2834,
+        "scrollHeight": 2838,
         "innerHeight": 844,
         "target": "0",
         "scrollY": 0,
         "scrollWanted": 0,
-        "maxScroll": 1990,
+        "maxScroll": 1994,
         "maxScrollMatched": true,
         "mmbBootDisplay": "none",
         "overlays": [
@@ -1494,9 +681,9 @@
             "top": 670.703125,
             "left": 14,
             "right": 376,
-            "bottom": 721.84375,
+            "bottom": 725.25,
             "width": 362,
-            "height": 51.140625
+            "height": 54.546875
           }
         ]
       },
@@ -1510,65 +697,65 @@
             "overlay": "rail",
             "overlayPos": "sticky",
             "box": {
-              "top": 61.734375,
+              "top": 63.140625,
               "left": 230.71875,
               "right": 272.875,
-              "bottom": 77.734375
+              "bottom": 79.140625
             },
             "ovBox": {
               "top": 60,
               "left": 14,
               "right": 376,
-              "bottom": 111.140625
+              "bottom": 114.546875
             },
-            "reason": "sticky-rail-partial-clip"
+            "reason": "rail_fully_covered"
           },
           {
             "text": "2026\u5e749\u6708",
             "overlay": "rail",
             "overlayPos": "sticky",
             "box": {
-              "top": 63.734375,
+              "top": 65.140625,
               "left": 280.875,
               "right": 339,
-              "bottom": 77.734375
+              "bottom": 79.140625
             },
             "ovBox": {
               "top": 60,
               "left": 14,
               "right": 376,
-              "bottom": 111.140625
+              "bottom": 114.546875
             },
-            "reason": "sticky-rail-partial-clip"
+            "reason": "rail_fully_covered"
           },
           {
             "text": "\u8d44\u4ea7\u8d1f\u503a\u8868\u652f\u6301",
             "overlay": "rail",
             "overlayPos": "sticky",
             "box": {
-              "top": 100.421875,
+              "top": 101.828125,
               "left": 51,
               "right": 145.5,
-              "bottom": 119.421875
+              "bottom": 120.828125
             },
             "ovBox": {
               "top": 60,
               "left": 14,
               "right": 376,
-              "bottom": 111.140625
+              "bottom": 114.546875
             },
-            "reason": "sticky-rail-partial-clip"
+            "reason": "rail_partially_covered"
           }
         ],
         "analystPosition": "static",
         "mmbBootPresent": true,
         "mmbBootBox": null,
-        "scrollHeight": 2834,
+        "scrollHeight": 2838,
         "innerHeight": 844,
         "target": "50",
-        "scrollY": 995,
-        "scrollWanted": 995,
-        "maxScroll": 1990,
+        "scrollY": 997,
+        "scrollWanted": 997,
+        "maxScroll": 1994,
         "maxScrollMatched": true,
         "mmbBootDisplay": "none",
         "overlays": [
@@ -1578,9 +765,9 @@
             "top": 60,
             "left": 14,
             "right": 376,
-            "bottom": 111.140625,
+            "bottom": 114.546875,
             "width": 362,
-            "height": 51.140625
+            "height": 54.546875
           }
         ]
       },
@@ -1594,65 +781,65 @@
             "overlay": "rail",
             "overlayPos": "sticky",
             "box": {
-              "top": 75.140625,
+              "top": 74.546875,
               "left": 65,
               "right": 170,
-              "bottom": 96.140625
+              "bottom": 95.546875
             },
             "ovBox": {
               "top": 60,
               "left": 14,
               "right": 376,
-              "bottom": 111.140625
+              "bottom": 114.546875
             },
-            "reason": "sticky-rail-partial-clip"
+            "reason": "rail_fully_covered"
           },
           {
             "text": "\u7ecf\u6d4e\u662f\u5728\u52a0\u901f\u8fd8\u662f\u5728\u653e\u7f13\u3002",
             "overlay": "rail",
             "overlayPos": "sticky",
             "box": {
-              "top": 100.640625,
+              "top": 100.046875,
               "left": 65,
               "right": 224.125,
-              "bottom": 118.640625
+              "bottom": 118.046875
             },
             "ovBox": {
               "top": 60,
               "left": 14,
               "right": 376,
-              "bottom": 111.140625
+              "bottom": 114.546875
             },
-            "reason": "sticky-rail-partial-clip"
+            "reason": "rail_partially_covered"
           },
           {
             "text": "\u2192",
             "overlay": "rail",
             "overlayPos": "sticky",
             "box": {
-              "top": 76.890625,
+              "top": 76.296875,
               "left": 315,
               "right": 328,
-              "bottom": 94.890625
+              "bottom": 94.296875
             },
             "ovBox": {
               "top": 60,
               "left": 14,
               "right": 376,
-              "bottom": 111.140625
+              "bottom": 114.546875
             },
-            "reason": "sticky-rail-partial-clip"
+            "reason": "rail_fully_covered"
           }
         ],
         "analystPosition": "static",
         "mmbBootPresent": true,
         "mmbBootBox": null,
-        "scrollHeight": 2834,
+        "scrollHeight": 2838,
         "innerHeight": 844,
         "target": "max",
-        "scrollY": 1990,
-        "scrollWanted": 1990,
-        "maxScroll": 1990,
+        "scrollY": 1994,
+        "scrollWanted": 1994,
+        "maxScroll": 1994,
         "maxScrollMatched": true,
         "mmbBootDisplay": "none",
         "overlays": [
@@ -1662,9 +849,9 @@
             "top": 60,
             "left": 14,
             "right": 376,
-            "bottom": 111.140625,
+            "bottom": 114.546875,
             "width": 362,
-            "height": 51.140625
+            "height": 54.546875
           }
         ]
       }
@@ -1691,12 +878,12 @@
         "analystPosition": "static",
         "mmbBootPresent": true,
         "mmbBootBox": null,
-        "scrollHeight": 3240,
+        "scrollHeight": 3244,
         "innerHeight": 844,
         "target": "0",
         "scrollY": 0,
         "scrollWanted": 0,
-        "maxScroll": 2396,
+        "maxScroll": 2400,
         "maxScrollMatched": true,
         "mmbBootDisplay": "none",
         "overlays": [
@@ -1706,9 +893,9 @@
             "top": 756.59375,
             "left": 14,
             "right": 376,
-            "bottom": 807.734375,
+            "bottom": 811.140625,
             "width": 362,
-            "height": 51.140625
+            "height": 54.546875
           }
         ]
       },
@@ -1722,65 +909,65 @@
             "overlay": "rail",
             "overlayPos": "sticky",
             "box": {
-              "top": 66.125,
+              "top": 67.53125,
               "left": 43,
               "right": 173.421875,
-              "bottom": 79.125
+              "bottom": 80.53125
             },
             "ovBox": {
               "top": 60,
               "left": 14,
               "right": 376,
-              "bottom": 111.140625
+              "bottom": 114.546875
             },
-            "reason": "sticky-rail-partial-clip"
+            "reason": "rail_fully_covered"
           },
           {
             "text": "45.39",
             "overlay": "rail",
             "overlayPos": "sticky",
             "box": {
-              "top": 91.171875,
+              "top": 92.578125,
               "left": 241.453125,
               "right": 283.609375,
-              "bottom": 107.171875
+              "bottom": 108.578125
             },
             "ovBox": {
               "top": 60,
               "left": 14,
               "right": 376,
-              "bottom": 111.140625
+              "bottom": 114.546875
             },
-            "reason": "sticky-rail-partial-clip"
+            "reason": "rail_fully_covered"
           },
           {
             "text": "Sep 2026",
             "overlay": "rail",
             "overlayPos": "sticky",
             "box": {
-              "top": 93.171875,
+              "top": 94.578125,
               "left": 291.609375,
               "right": 347,
-              "bottom": 107.171875
+              "bottom": 108.578125
             },
             "ovBox": {
               "top": 60,
               "left": 14,
               "right": 376,
-              "bottom": 111.140625
+              "bottom": 114.546875
             },
-            "reason": "sticky-rail-partial-clip"
+            "reason": "rail_fully_covered"
           }
         ],
         "analystPosition": "static",
         "mmbBootPresent": true,
         "mmbBootBox": null,
-        "scrollHeight": 3240,
+        "scrollHeight": 3244,
         "innerHeight": 844,
         "target": "50",
-        "scrollY": 1198,
-        "scrollWanted": 1198,
-        "maxScroll": 2396,
+        "scrollY": 1200,
+        "scrollWanted": 1200,
+        "maxScroll": 2400,
         "maxScrollMatched": true,
         "mmbBootDisplay": "none",
         "overlays": [
@@ -1790,9 +977,9 @@
             "top": 60,
             "left": 14,
             "right": 376,
-            "bottom": 111.140625,
+            "bottom": 114.546875,
             "width": 362,
-            "height": 51.140625
+            "height": 54.546875
           }
         ]
       },
@@ -1806,47 +993,47 @@
             "overlay": "rail",
             "overlayPos": "sticky",
             "box": {
-              "top": 52.84375,
+              "top": 52.25,
               "left": 65,
               "right": 294.5,
-              "bottom": 68.84375
+              "bottom": 68.25
             },
             "ovBox": {
               "top": 60,
               "left": 14,
               "right": 376,
-              "bottom": 111.140625
+              "bottom": 114.546875
             },
-            "reason": "sticky-rail-partial-clip"
+            "reason": "rail_partially_covered"
           },
           {
             "text": "What companies are making, ordering and investing.",
             "overlay": "rail",
             "overlayPos": "sticky",
             "box": {
-              "top": 71.6875,
+              "top": 71.09375,
               "left": 65,
               "right": 149.140625,
-              "bottom": 87.6875
+              "bottom": 87.09375
             },
             "ovBox": {
               "top": 60,
               "left": 14,
               "right": 376,
-              "bottom": 111.140625
+              "bottom": 114.546875
             },
-            "reason": "sticky-rail-partial-clip"
+            "reason": "rail_fully_covered"
           }
         ],
         "analystPosition": "static",
         "mmbBootPresent": true,
         "mmbBootBox": null,
-        "scrollHeight": 3240,
+        "scrollHeight": 3244,
         "innerHeight": 844,
         "target": "max",
-        "scrollY": 2396,
-        "scrollWanted": 2396,
-        "maxScroll": 2396,
+        "scrollY": 2400,
+        "scrollWanted": 2400,
+        "maxScroll": 2400,
         "maxScrollMatched": true,
         "mmbBootDisplay": "none",
         "overlays": [
@@ -1856,9 +1043,9 @@
             "top": 60,
             "left": 14,
             "right": 376,
-            "bottom": 111.140625,
+            "bottom": 114.546875,
             "width": 362,
-            "height": 51.140625
+            "height": 54.546875
           }
         ]
       }
@@ -1885,12 +1072,12 @@
         "analystPosition": "static",
         "mmbBootPresent": true,
         "mmbBootBox": null,
-        "scrollHeight": 2854,
+        "scrollHeight": 2858,
         "innerHeight": 844,
         "target": "0",
         "scrollY": 0,
         "scrollWanted": 0,
-        "maxScroll": 2010,
+        "maxScroll": 2014,
         "maxScrollMatched": true,
         "mmbBootDisplay": "none",
         "overlays": [
@@ -1900,9 +1087,9 @@
             "top": 676.703125,
             "left": 14,
             "right": 376,
-            "bottom": 727.84375,
+            "bottom": 731.25,
             "width": 362,
-            "height": 51.140625
+            "height": 54.546875
           }
         ]
       },
@@ -1916,65 +1103,65 @@
             "overlay": "rail",
             "overlayPos": "sticky",
             "box": {
-              "top": 64.734375,
+              "top": 66.140625,
               "left": 238.71875,
               "right": 280.875,
-              "bottom": 80.734375
+              "bottom": 82.140625
             },
             "ovBox": {
               "top": 60,
               "left": 14,
               "right": 376,
-              "bottom": 111.140625
+              "bottom": 114.546875
             },
-            "reason": "sticky-rail-partial-clip"
+            "reason": "rail_fully_covered"
           },
           {
             "text": "2026\u5e749\u6708",
             "overlay": "rail",
             "overlayPos": "sticky",
             "box": {
-              "top": 66.734375,
+              "top": 68.140625,
               "left": 288.875,
               "right": 347,
-              "bottom": 80.734375
+              "bottom": 82.140625
             },
             "ovBox": {
               "top": 60,
               "left": 14,
               "right": 376,
-              "bottom": 111.140625
+              "bottom": 114.546875
             },
-            "reason": "sticky-rail-partial-clip"
+            "reason": "rail_fully_covered"
           },
           {
             "text": "\u8d44\u4ea7\u8d1f\u503a\u8868\u652f\u6301",
             "overlay": "rail",
             "overlayPos": "sticky",
             "box": {
-              "top": 103.421875,
+              "top": 104.828125,
               "left": 43,
               "right": 137.5,
-              "bottom": 122.421875
+              "bottom": 123.828125
             },
             "ovBox": {
               "top": 60,
               "left": 14,
               "right": 376,
-              "bottom": 111.140625
+              "bottom": 114.546875
             },
-            "reason": "sticky-rail-partial-clip"
+            "reason": "rail_partially_covered"
           }
         ],
         "analystPosition": "static",
         "mmbBootPresent": true,
         "mmbBootBox": null,
-        "scrollHeight": 2854,
+        "scrollHeight": 2858,
         "innerHeight": 844,
         "target": "50",
-        "scrollY": 1005,
-        "scrollWanted": 1005,
-        "maxScroll": 2010,
+        "scrollY": 1007,
+        "scrollWanted": 1007,
+        "maxScroll": 2014,
         "maxScrollMatched": true,
         "mmbBootDisplay": "none",
         "overlays": [
@@ -1984,9 +1171,9 @@
             "top": 60,
             "left": 14,
             "right": 376,
-            "bottom": 111.140625,
+            "bottom": 114.546875,
             "width": 362,
-            "height": 51.140625
+            "height": 54.546875
           }
         ]
       },
@@ -2000,65 +1187,65 @@
             "overlay": "rail",
             "overlayPos": "sticky",
             "box": {
-              "top": 75.140625,
+              "top": 74.546875,
               "left": 65,
               "right": 170,
-              "bottom": 96.140625
+              "bottom": 95.546875
             },
             "ovBox": {
               "top": 60,
               "left": 14,
               "right": 376,
-              "bottom": 111.140625
+              "bottom": 114.546875
             },
-            "reason": "sticky-rail-partial-clip"
+            "reason": "rail_fully_covered"
           },
           {
             "text": "\u7ecf\u6d4e\u662f\u5728\u52a0\u901f\u8fd8\u662f\u5728\u653e\u7f13\u3002",
             "overlay": "rail",
             "overlayPos": "sticky",
             "box": {
-              "top": 100.640625,
+              "top": 100.046875,
               "left": 65,
               "right": 224.125,
-              "bottom": 118.640625
+              "bottom": 118.046875
             },
             "ovBox": {
               "top": 60,
               "left": 14,
               "right": 376,
-              "bottom": 111.140625
+              "bottom": 114.546875
             },
-            "reason": "sticky-rail-partial-clip"
+            "reason": "rail_partially_covered"
           },
           {
             "text": "\u2192",
             "overlay": "rail",
             "overlayPos": "sticky",
             "box": {
-              "top": 76.890625,
+              "top": 76.296875,
               "left": 315,
               "right": 328,
-              "bottom": 94.890625
+              "bottom": 94.296875
             },
             "ovBox": {
               "top": 60,
               "left": 14,
               "right": 376,
-              "bottom": 111.140625
+              "bottom": 114.546875
             },
-            "reason": "sticky-rail-partial-clip"
+            "reason": "rail_fully_covered"
           }
         ],
         "analystPosition": "static",
         "mmbBootPresent": true,
         "mmbBootBox": null,
-        "scrollHeight": 2854,
+        "scrollHeight": 2858,
         "innerHeight": 844,
         "target": "max",
-        "scrollY": 2010,
-        "scrollWanted": 2010,
-        "maxScroll": 2010,
+        "scrollY": 2014,
+        "scrollWanted": 2014,
+        "maxScroll": 2014,
         "maxScrollMatched": true,
         "mmbBootDisplay": "none",
         "overlays": [
@@ -2068,9 +1255,9 @@
             "top": 60,
             "left": 14,
             "right": 376,
-            "bottom": 111.140625,
+            "bottom": 114.546875,
             "width": 362,
-            "height": 51.140625
+            "height": 54.546875
           }
         ]
       }
@@ -2097,12 +1284,12 @@
         "analystPosition": "static",
         "mmbBootPresent": true,
         "mmbBootBox": null,
-        "scrollHeight": 2026,
+        "scrollHeight": 2030,
         "innerHeight": 1400,
         "target": "0",
         "scrollY": 0,
         "scrollWanted": 0,
-        "maxScroll": 626,
+        "maxScroll": 630,
         "maxScrollMatched": true,
         "mmbBootDisplay": "none",
         "overlays": [
@@ -2112,9 +1299,9 @@
             "top": 674.625,
             "left": 18,
             "right": 750,
-            "bottom": 725.765625,
+            "bottom": 729.171875,
             "width": 732,
-            "height": 51.140625
+            "height": 54.546875
           }
         ]
       },
@@ -2126,24 +1313,24 @@
         "analystPosition": "static",
         "mmbBootPresent": true,
         "mmbBootBox": null,
-        "scrollHeight": 2026,
+        "scrollHeight": 2030,
         "innerHeight": 1400,
         "target": "50",
-        "scrollY": 313,
-        "scrollWanted": 313,
-        "maxScroll": 626,
+        "scrollY": 315,
+        "scrollWanted": 315,
+        "maxScroll": 630,
         "maxScrollMatched": true,
         "mmbBootDisplay": "none",
         "overlays": [
           {
             "name": "rail",
             "pos": "sticky",
-            "top": 361.625,
+            "top": 359.625,
             "left": 18,
             "right": 750,
-            "bottom": 412.765625,
+            "bottom": 414.171875,
             "width": 732,
-            "height": 51.140625
+            "height": 54.546875
           }
         ]
       },
@@ -2155,12 +1342,12 @@
         "analystPosition": "static",
         "mmbBootPresent": true,
         "mmbBootBox": null,
-        "scrollHeight": 2026,
+        "scrollHeight": 2030,
         "innerHeight": 1400,
         "target": "max",
-        "scrollY": 626,
-        "scrollWanted": 626,
-        "maxScroll": 626,
+        "scrollY": 630,
+        "scrollWanted": 630,
+        "maxScroll": 630,
         "maxScrollMatched": true,
         "mmbBootDisplay": "none",
         "overlays": [
@@ -2170,9 +1357,9 @@
             "top": 60,
             "left": 18,
             "right": 750,
-            "bottom": 111.140625,
+            "bottom": 114.546875,
             "width": 732,
-            "height": 51.140625
+            "height": 54.546875
           }
         ]
       }
@@ -2199,12 +1386,12 @@
         "analystPosition": "static",
         "mmbBootPresent": true,
         "mmbBootBox": null,
-        "scrollHeight": 2034,
+        "scrollHeight": 2038,
         "innerHeight": 1400,
         "target": "0",
         "scrollY": 0,
         "scrollWanted": 0,
-        "maxScroll": 634,
+        "maxScroll": 638,
         "maxScrollMatched": true,
         "mmbBootDisplay": "none",
         "overlays": [
@@ -2214,9 +1401,9 @@
             "top": 680.625,
             "left": 18,
             "right": 750,
-            "bottom": 731.765625,
+            "bottom": 735.171875,
             "width": 732,
-            "height": 51.140625
+            "height": 54.546875
           }
         ]
       },
@@ -2228,24 +1415,24 @@
         "analystPosition": "static",
         "mmbBootPresent": true,
         "mmbBootBox": null,
-        "scrollHeight": 2034,
+        "scrollHeight": 2038,
         "innerHeight": 1400,
         "target": "50",
-        "scrollY": 317,
-        "scrollWanted": 317,
-        "maxScroll": 634,
+        "scrollY": 319,
+        "scrollWanted": 319,
+        "maxScroll": 638,
         "maxScrollMatched": true,
         "mmbBootDisplay": "none",
         "overlays": [
           {
             "name": "rail",
             "pos": "sticky",
-            "top": 363.625,
+            "top": 361.625,
             "left": 18,
             "right": 750,
-            "bottom": 414.765625,
+            "bottom": 416.171875,
             "width": 732,
-            "height": 51.140625
+            "height": 54.546875
           }
         ]
       },
@@ -2257,12 +1444,12 @@
         "analystPosition": "static",
         "mmbBootPresent": true,
         "mmbBootBox": null,
-        "scrollHeight": 2034,
+        "scrollHeight": 2038,
         "innerHeight": 1400,
         "target": "max",
-        "scrollY": 634,
-        "scrollWanted": 634,
-        "maxScroll": 634,
+        "scrollY": 638,
+        "scrollWanted": 638,
+        "maxScroll": 638,
         "maxScrollMatched": true,
         "mmbBootDisplay": "none",
         "overlays": [
@@ -2272,9 +1459,9 @@
             "top": 60,
             "left": 18,
             "right": 750,
-            "bottom": 111.140625,
+            "bottom": 114.546875,
             "width": 732,
-            "height": 51.140625
+            "height": 54.546875
           }
         ]
       }
@@ -2301,8 +1488,7 @@
       "bgToken": "#0d1018",
       "voids": [],
       "maxVoidWidth": 0,
-      "filledOutsideWiderThan40": false,
-      "holeWiderThan40": false,
+      "voidWiderThan40": false,
       "chipBoxes": [
         {
           "left": 332,
@@ -2365,7 +1551,7 @@
         16,
         24
       ],
-      "canvasSource": "strip-inter-chip-gap (1164,822)"
+      "canvasSource": "strip-inter-chip-gap (1164,822) gapCss=8.00"
     },
     "dark_zh": {
       "ok": true,
@@ -2378,8 +1564,7 @@
       "bgToken": "#0d1018",
       "voids": [],
       "maxVoidWidth": 0,
-      "filledOutsideWiderThan40": false,
-      "holeWiderThan40": false,
+      "voidWiderThan40": false,
       "chipBoxes": [
         {
           "left": 332,
@@ -2442,7 +1627,7 @@
         16,
         24
       ],
-      "canvasSource": "strip-inter-chip-gap (1164,687)"
+      "canvasSource": "strip-inter-chip-gap (1164,687) gapCss=8.00"
     },
     "light_en": {
       "ok": true,
@@ -2455,8 +1640,7 @@
       "bgToken": "#e8ebf1",
       "voids": [],
       "maxVoidWidth": 0,
-      "filledOutsideWiderThan40": false,
-      "holeWiderThan40": false,
+      "voidWiderThan40": false,
       "chipBoxes": [
         {
           "left": 332,
@@ -2519,7 +1703,7 @@
         235,
         241
       ],
-      "canvasSource": "strip-inter-chip-gap (1164,824)"
+      "canvasSource": "strip-inter-chip-gap (1164,824) gapCss=8.00"
     },
     "light_zh": {
       "ok": true,
@@ -2532,8 +1716,7 @@
       "bgToken": "#e8ebf1",
       "voids": [],
       "maxVoidWidth": 0,
-      "filledOutsideWiderThan40": false,
-      "holeWiderThan40": false,
+      "voidWiderThan40": false,
       "chipBoxes": [
         {
           "left": 332,
@@ -2596,7 +1779,7 @@
         235,
         241
       ],
-      "canvasSource": "strip-inter-chip-gap (1164,689)"
+      "canvasSource": "strip-inter-chip-gap (1164,689) gapCss=8.00"
     }
   },
   "fab_display_1440_dark_en": {
@@ -2604,6 +1787,45 @@
     "display": "flex",
     "position": "fixed"
   },
-  "capture_sha": "a2d0e84de898db7d4688940a876e7b0d20aa73d5",
-  "commit_time_of_capture_sha": "2026-09-08T03:49:37-07:00"
+  "capture_sha": "7a2bcf3eec398a307935e44170ded6d0ed62f33b",
+  "commit_time_of_capture_sha": "2026-09-08T04:39:54-07:00",
+  "fab_display_1440_dark_zh": {
+    "present": true,
+    "display": "flex",
+    "position": "fixed"
+  },
+  "fab_display_1440_light_en": {
+    "present": true,
+    "display": "flex",
+    "position": "fixed"
+  },
+  "fab_display_1440_light_zh": {
+    "present": true,
+    "display": "flex",
+    "position": "fixed"
+  },
+  "chip_opens_chat_390_dark_en": {
+    "ok": true,
+    "clicked": "data-mc-analyst",
+    "href": "chat.html",
+    "mountedId": "mmb-root",
+    "mountedClass": "",
+    "mmbPanelPresent": true,
+    "mmBrainMounted": true
+  },
+  "chip_opens_chat_390_light_en": {
+    "ok": true,
+    "clicked": "data-mc-analyst",
+    "href": "chat.html",
+    "mountedId": "mmb-root",
+    "mountedClass": "",
+    "mmbPanelPresent": true,
+    "mmBrainMounted": true
+  },
+  "generated_at_start": "2026-09-08T11:39:59Z",
+  "generated_at_end": "2026-09-08T11:40:55Z",
+  "tree_clean_start": true,
+  "tree_clean_end": true,
+  "head_start": "7a2bcf3eec398a307935e44170ded6d0ed62f33b",
+  "head_end": "7a2bcf3eec398a307935e44170ded6d0ed62f33b"
 }
