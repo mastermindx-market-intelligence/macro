@@ -22,6 +22,19 @@ answer: >
   is idempotent, carries a "-- down:" block and a "-- readback:" catalog query; application
   stays an out-of-band operator/Meta-CEO act whose pre/post catalog readback is posted on the
   PR before the README application table is updated.
+
+  Application mechanism (Meta-CEO B, 2026-09-06/07): migrations are applied by the
+  owning Meta-CEO after the carrying PR merges, in ledger-number order (0014 after
+  terminal#514, 0015 after #526, 0016 after #527; a later number is never applied
+  before an earlier one is on master AND applied), through the Supabase Management
+  API POST /v1/projects/{ref}/database/query (the CLI db push path is not used: no
+  history table, see DSC:TERMINAL-HAS-NO-MIGRATION-LEDGER), with a pre/post catalog
+  readback (to_regclass, pg_class.relrowsecurity, pg_indexes, pg_policy, pg_proc)
+  captured as a receipt JSON and posted as a PR comment before the README
+  application table row is edited. The request must carry a browser/curl User-Agent:
+  the python-urllib default UA is rejected by the Cloudflare edge with HTTP 403
+  "error code: 1010" (already recorded for scripts/geo_enrich.py and
+  scripts/ad_ingest_run.py in DSC:SUPABASE-MANAGEMENT-PAT-EXPIRES-AT-30-DAYS).
 rationale: >
   There is no migration runner and no supabase_migrations schema (DSC:TERMINAL-HAS-NO-MIGRATION-LEDGER),
   so a file name is the only ledger the estate has; a second "0011" makes "what has been
@@ -46,6 +59,10 @@ evidence:
   - "GraphQL census of 16 open mastermind-terminal PRs: only #502 (0011_thesis_objects.sql) and #507 (0011_analytics_eid.sql) add migration files"
   - "supabase/migrations/README.md on origin/master: no remote migration history; 0009 applied before 0008"
   - "Charter research/MARKET_ONTOLOGY_META_CEO_CHARTER_2026_09_06.md §5 and §10.4 assign the settlement to Meta-CEO B"
+  - "research/market_intelligence_productization/receipts/supabase_receipt_0012_thesis_objects_2026-09-06.json (0012 thesis_objects applied 2026-09-06)"
+  - "research/market_intelligence_productization/receipts/supabase_receipt_0013_alert_runs_outbox_2026-09-06.json (0013 alert_runs_outbox applied 2026-09-07)"
+  - "terminal#513 comment (0012)"
+  - "terminal#514 comment id 5563321750 (0013 receipt)"
 affects:
   - "WS:MARKET-OS"
   - "charting-app supabase/migrations/**"
