@@ -80,6 +80,13 @@ OUTCOME_COLUMNS: tuple[str, ...] = (
 OUTCOME_STATES: tuple[str, ...] = (
     "known", "pending_resolution", "censored", "unknowable",
 )
+# Source-contract error: resolution_known_date is on or before asof but
+# strictly before end_date (or end_date is missing). Typed-null reason on
+# the returned row; not a machine key with underscores in customer text.
+RESOLUTION_BEFORE_END_REASON: str = (
+    "the source listed a resolution date before the episode finished"
+)
+CENSORED_ON_KNOWN: str = "normalized_to_false"
 EPISODE_TYPE_PRECEDENCE: tuple[str, ...] = (
     "reset_decline", "reclaim", "failed_breakdown",
 )
@@ -129,15 +136,29 @@ def normalize_catalog(catalog: pd.DataFrame) -> pd.DataFrame:
 
 
 def outcome_state(catalog: pd.DataFrame, asof: pd.Timestamp) -> pd.Series:
-    """Per-row PIT outcome-knowability state, one of OUTCOME_STATES."""
+    """Per-row PIT outcome-knowability state, one of OUTCOME_STATES.
+
+    ``known`` requires ``resolution_known_date <= asof`` AND
+    ``resolution_known_date >= end_date``. A known date before the
+    episode end (or a visible known date with a missing end) is a
+    source-contract error and is scored ``unknowable``, not ``known``.
+    The ``rkd > asof`` pending branch does not inspect ``end_date`` —
+    that would peek at a not-yet-knowable known date.
+    """
     asof = _to_asof(asof)
     rkd = pd.to_datetime(catalog["resolution_known_date"], errors="coerce")
+    if "end_date" in catalog.columns:
+        end = pd.to_datetime(catalog["end_date"], errors="coerce")
+    else:
+        end = pd.Series(pd.NaT, index=catalog.index)
     censored_src = catalog["censored"].astype("boolean") if "censored" in catalog.columns else pd.Series(False, index=catalog.index)
 
-    known_mask = rkd.notna() & (rkd <= asof)
+    rkd_visible = rkd.notna() & (rkd <= asof)
+    known_order_ok = end.notna() & (rkd >= end)
+    known_mask = rkd_visible & known_order_ok
     pending_mask = rkd.notna() & (rkd > asof)
     censored_mask = rkd.isna() & (censored_src == True)  # noqa: E712
-    unknowable_mask = rkd.isna() & ~censored_mask
+    unknowable_mask = ~(known_mask | pending_mask | censored_mask)
 
     state = pd.Series("unknowable", index=catalog.index, dtype=object)
     state[known_mask] = "known"
@@ -173,7 +194,19 @@ def _mask_outcomes(frame: pd.DataFrame, mask_rows: pd.Series) -> pd.DataFrame:
 
 def admit_as_of(catalog: pd.DataFrame, *, asof
                  ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Admit rows whose start_date <= asof; mask non-knowable outcomes."""
+    """Admit rows whose start_date <= asof; mask non-knowable outcomes.
+
+    ``known`` requires ``resolution_known_date <= asof`` and
+    ``resolution_known_date >= end_date``. A known date before the
+    episode end is a typed null (source-contract error) with
+    ``RESOLUTION_BEFORE_END_REASON``, not ``known``.
+
+    ``censored`` on the returned frame is PIT-normalized, not a source
+    pass-through: every non-known row is ``True``; every known row is
+    ``False``. The source flag is never kept on a known row
+    (``censored`` is not in ``OUTCOME_COLUMNS``, so masking would not
+    clear it). Receipt field ``censored_on_known`` records the rule.
+    """
     asof_ts = _to_asof(asof)
     frame = normalize_catalog(catalog)
 
@@ -214,6 +247,19 @@ def admit_as_of(catalog: pd.DataFrame, *, asof
     if not admitted.empty and known_mask.any():
         admitted.loc[known_mask, "outcome_state"] = "known"
         admitted.loc[known_mask, "outcome_missing_reason"] = None
+    rkd_before_end = pd.Series(False, index=admitted.index)
+    if not admitted.empty:
+        rkd_admit = pd.to_datetime(admitted["resolution_known_date"], errors="coerce")
+        end_admit = pd.to_datetime(admitted["end_date"], errors="coerce")
+        rkd_before_end = (
+            rkd_admit.notna()
+            & (rkd_admit <= asof_ts)
+            & ~(end_admit.notna() & (rkd_admit >= end_admit))
+        )
+        if rkd_before_end.any():
+            admitted.loc[rkd_before_end, "outcome_missing_reason"] = (
+                RESOLUTION_BEFORE_END_REASON
+            )
     admitted["pit_asof"] = asof_ts
 
     admitted["pit_visible_end"] = pd.NaT
@@ -223,14 +269,19 @@ def admit_as_of(catalog: pd.DataFrame, *, asof
         admitted.loc[~known_mask, "pit_visible_end"] = asof_ts
     admitted["pit_visible_end"] = pd.to_datetime(admitted["pit_visible_end"], errors="coerce")
 
-    # censored flag on the returned frame reflects PIT-visible knowledge, not
-    # only the source flag: any non-"known" row is reported censored=True.
+    # censored is PIT-normalized, not a source pass-through. Non-known
+    # rows are censored=True (outcome not yet knowable). Known rows are
+    # always False — a source censored=True with a resolved date is a
+    # contract inconsistency and must not leak through (the flag is not
+    # in OUTCOME_COLUMNS, so _mask_outcomes would leave it in place).
     if "censored" in admitted.columns:
         admitted["censored"] = admitted["censored"].astype("boolean")
     else:
         admitted["censored"] = pd.array([pd.NA] * len(admitted), dtype="boolean")
     if not admitted.empty:
         admitted.loc[~known_mask, "censored"] = True
+        if known_mask.any():
+            admitted.loc[known_mask, "censored"] = False
 
     # Outcome masking is unconditional: there is no unmasked public path,
     # so the receipt's outcome_masked_rows/masked_columns fields can never
@@ -252,6 +303,10 @@ def admit_as_of(catalog: pd.DataFrame, *, asof
         "outcome_masked_rows": int((~known_mask).sum()) if not admitted.empty else 0,
         "masked_columns": masked_columns,
         "contract_violations": contract_violations,
+        "resolution_known_before_end": (
+            int(rkd_before_end.sum()) if not admitted.empty else 0
+        ),
+        "censored_on_known": CENSORED_ON_KNOWN,
         "existence_knowability_caveat": {
             "admitted_without_known_existence": int(len(admitted)),
             "note": (
@@ -410,10 +465,21 @@ def params_hash(**params: Any) -> str:
 
 
 def plain_null_lines(receipt: dict[str, Any]) -> list[dict[str, str]]:
+    """Customer-facing nulls. Every printed count is from the DELIVERED
+    (post-dedup) frame — ``output_rows`` / ``output_known`` — except the
+    dedup line, which keeps the dropped count. listed + dropped == the
+    pre-dedup ``admitted.total``.
+    """
     lines: list[dict[str, str]] = []
     states = receipt.get("outcome_states", {})
-    total = int(receipt.get("admitted", {}).get("total", 0) or 0)
-    known = int(states.get("known", 0) or 0)
+    if "output_rows" in receipt:
+        total = int(receipt.get("output_rows") or 0)
+    else:
+        total = int(receipt.get("admitted", {}).get("total", 0) or 0)
+    if "output_known" in receipt:
+        known = int(receipt.get("output_known") or 0)
+    else:
+        known = int(states.get("known", 0) or 0)
     unresolved = max(total - known, 0)
     if unresolved:
         lines.append({
@@ -425,6 +491,20 @@ def plain_null_lines(receipt: dict[str, Any]) -> list[dict[str, str]]:
             "plain_zh": f"截至该日期，{total} 段行情中有 {unresolved} 段尚未走完，结果暂不可得。",
             "why": "the outcome was not knowable on this date",
         })
+    before_end = int(receipt.get("resolution_known_before_end") or 0)
+    if before_end:
+        lines.append({
+            "what": "resolution_known_before_end",
+            "plain_en": (
+                f"{before_end} episodes listed a resolution date before the "
+                "stretch had finished — those outcomes are treated as not available."
+            ),
+            "plain_zh": (
+                f"列出的行情中有 {before_end} 段的结果日期早于该段结束，"
+                "这些结果按暂不可得处理。"
+            ),
+            "why": "the source row named a resolution date before the episode end",
+        })
     dropped = receipt.get("dedup", {}).get("dropped_total", 0)
     if dropped:
         lines.append({
@@ -433,22 +513,17 @@ def plain_null_lines(receipt: dict[str, Any]) -> list[dict[str, str]]:
             "plain_zh": f"已剔除 {dropped} 段重叠行情，避免同一段行情被重复计入。",
             "why": "the episodes shared the same knowable price-history window",
         })
-    admitted_without = int(
-        (receipt.get("existence_knowability_caveat") or {}).get(
-            "admitted_without_known_existence", 0,
-        ) or 0
-    )
-    if admitted_without:
+    if total:
         lines.append({
             "what": "existence_not_knowable_at_start",
             "plain_en": (
-                f"All {admitted_without} episodes listed were picked using the "
+                f"All {total} episodes listed were picked using the "
                 "full price record; on this date you could not yet have known "
                 "which stretches would become episodes. Read this as research "
                 "navigation, not a tradeable universe."
             ),
             "plain_zh": (
-                f"列出的 {admitted_without} 段行情均依据完整价格记录筛选；"
+                f"列出的 {total} 段行情均依据完整价格记录筛选；"
                 "在该日期你还无法知道哪些走势会成为行情段。"
                 "请当作研究导航，而不是可交易的股票池。"
             ),
@@ -488,6 +563,19 @@ def pit_universe(catalog: pd.DataFrame, *, asof, dedup: bool = True,
 
     output_hash = frame_hash(out)
     empty_reason = "no_qualifying_episodes_at_asof" if len(out) == 0 else None
+    delivered_known = (
+        int((out["outcome_state"] == "known").sum()) if len(out) else 0
+    )
+    delivered_before_end = 0
+    if len(out) and "outcome_missing_reason" in out.columns:
+        delivered_before_end = int(
+            (out["outcome_missing_reason"] == RESOLUTION_BEFORE_END_REASON).sum()
+        )
+    caveat = dict(admit_info["existence_knowability_caveat"])
+    # Printed existence count is the delivered (post-dedup) list, not the
+    # pre-dedup admission total — "All N episodes listed" must equal
+    # output_rows so it cannot contradict the dedup dropped line.
+    caveat["admitted_without_known_existence"] = int(len(out))
 
     ph = params_hash(
         gate=GATE_NAME, version=MODULE_VERSION, asof=asof_ts.date().isoformat(),
@@ -508,6 +596,7 @@ def pit_universe(catalog: pd.DataFrame, *, asof, dedup: bool = True,
         "input_rows": input_rows,
         "input_hash": input_hash,
         "output_rows": int(len(out)),
+        "output_known": delivered_known,
         "output_hash": output_hash,
         "params_hash": ph,
         "admitted": admit_info["admitted"],
@@ -517,7 +606,9 @@ def pit_universe(catalog: pd.DataFrame, *, asof, dedup: bool = True,
         "outcome_masked_rows": admit_info["outcome_masked_rows"],
         "masked_columns": admit_info["masked_columns"],
         "contract_violations": admit_info["contract_violations"],
-        "existence_knowability_caveat": admit_info["existence_knowability_caveat"],
+        "resolution_known_before_end": delivered_before_end,
+        "censored_on_known": admit_info.get("censored_on_known", CENSORED_ON_KNOWN),
+        "existence_knowability_caveat": caveat,
         "dedup": dedup_info,
         "authority": authority_block(),
         "authority_ceiling": AUTHORITY_CEILING,

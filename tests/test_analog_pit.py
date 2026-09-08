@@ -505,6 +505,115 @@ def test_existence_caveat_is_a_plain_word_null_line():
     assert "unresolved_outcomes" not in whats
 
 
+def test_plain_nulls_count_the_delivered_frame_not_pre_dedup():
+    """MAJOR A: customer-facing nulls count POST-dedup rows. The first
+    row is unresolved and kept; the second is known and dropped as an
+    overlap. Pre-dedup would print "1 of 2" / "All 2 listed"; the
+    delivered frame is 1 unresolved of 1 listed, plus 1 set aside.
+    listed + dropped == pre-dedup admitted total.
+    """
+    rows = [
+        _row(
+            start_date=pd.Timestamp("2020-01-02"),
+            resolution_known_date=pd.Timestamp("2020-12-01"),
+            end_date=pd.Timestamp("2020-12-01"),
+        ),
+        _row(
+            start_date=pd.Timestamp("2020-01-10"),
+            episode_type="failed_breakdown",
+            resolution_known_date=pd.Timestamp("2020-01-20"),
+            end_date=pd.Timestamp("2020-01-20"),
+            resolution="recovered",
+        ),
+    ]
+    result = pit.pit_universe(_frame(rows), asof="2020-06-01", dedup=True)
+    r = result.receipt
+    listed = len(result.frame)
+    dropped = r["dedup"]["dropped_total"]
+    assert listed == 1
+    assert dropped == 1
+    assert listed + dropped == r["admitted"]["total"]
+    assert r["output_rows"] == listed
+    assert r["admitted"]["total"] == 2
+    unresolved = next(
+        line for line in r["nulls"] if line["what"] == "unresolved_outcomes"
+    )
+    assert unresolved["plain_en"] == (
+        "1 of 1 episodes had not finished by this date — their outcome is not available yet."
+    )
+    assert unresolved["plain_zh"] == "截至该日期，1 段行情中有 1 段尚未走完，结果暂不可得。"
+    assert "1 of 2" not in unresolved["plain_en"]
+    existence = next(
+        line for line in r["nulls"] if line["what"] == "existence_not_knowable_at_start"
+    )
+    assert "All 1 episodes listed" in existence["plain_en"]
+    assert "1" in existence["plain_zh"]
+    assert "All 2 episodes listed" not in existence["plain_en"]
+    dedup_line = next(line for line in r["nulls"] if line["what"] == "dedup_drops")
+    assert "1 overlapping episodes were set aside" in dedup_line["plain_en"]
+    assert "1" in dedup_line["plain_zh"]
+
+
+def test_resolution_known_before_end_date_is_a_typed_null_not_known():
+    """MINOR (i): resolution_known_date < end_date is a source-contract
+    error — typed null with a plain-word reason, never silently known.
+    """
+    rows = [_row(
+        start_date=pd.Timestamp("2020-01-02"),
+        end_date=pd.Timestamp("2020-06-01"),
+        resolution_known_date=pd.Timestamp("2020-03-01"),
+        resolution="durable_low",
+        depth_pct=0.4237,
+        tier=1,
+        anchor_date=pd.Timestamp("2020-05-01"),
+    )]
+    # asof after the known date but before end — the leak shape
+    result = pit.pit_universe(_frame(rows), asof="2020-04-01", dedup=False)
+    row = result.frame.iloc[0]
+    assert row["outcome_state"] == "unresolved_at_asof"
+    assert row["outcome_missing_reason"] == pit.RESOLUTION_BEFORE_END_REASON
+    assert row["resolution"] is pd.NA
+    assert np.isnan(row["depth_pct"])
+    assert row["end_date"] is pd.NaT
+    assert row["anchor_date"] is pd.NaT
+    assert pd.Timestamp(row["pit_visible_end"]) == pd.Timestamp("2020-04-01")
+    assert result.receipt["outcome_states"]["known"] == 0
+    assert result.receipt["contract_violations"] == 1
+    assert result.receipt["resolution_known_before_end"] == 1
+    scanned = result.frame.astype(str).to_string()
+    assert "0.4237" not in scanned
+    assert "2020-06-01" not in scanned
+    before_end = next(
+        line for line in result.receipt["nulls"]
+        if line["what"] == "resolution_known_before_end"
+    )
+    assert "1 episodes listed a resolution date" in before_end["plain_en"]
+    assert "1" in before_end["plain_zh"]
+    assert before_end["plain_zh"] != before_end["plain_en"]
+    # same data error after both dates are in the past
+    later = pit.pit_universe(_frame(rows), asof="2020-07-01", dedup=False)
+    assert later.frame.iloc[0]["outcome_state"] == "unresolved_at_asof"
+    assert later.frame.iloc[0]["outcome_missing_reason"] == pit.RESOLUTION_BEFORE_END_REASON
+    assert later.receipt["outcome_states"]["known"] == 0
+
+
+def test_known_row_censored_flag_is_normalized_to_false():
+    """MINOR (ii): source censored=True on a known row is not passed through."""
+    rows = [_row(
+        start_date=pd.Timestamp("2020-01-02"),
+        end_date=pd.Timestamp("2020-03-01"),
+        resolution_known_date=pd.Timestamp("2020-03-01"),
+        resolution="durable_low",
+        censored=True,
+    )]
+    result = pit.pit_universe(_frame(rows), asof="2020-06-01", dedup=False)
+    row = result.frame.iloc[0]
+    assert row["outcome_state"] == "known"
+    assert row["resolution"] == "durable_low"
+    assert row["censored"] == False  # noqa: E712
+    assert result.receipt["censored_on_known"] == "normalized_to_false"
+
+
 def test_mask_outcomes_falls_back_when_integer_column_cannot_cast():
     """MINOR 7: a non-integral source column must become typed missing,
     not raise."""
@@ -550,9 +659,14 @@ def test_real_pilot_catalog_passes_the_gate():
     )
     assert int(leaked.sum()) == 0
     r = result.receipt
+    listed = len(result.frame)
+    dropped = r["dedup"]["dropped_total"]
     assert r["admitted"]["total"] == r["dedup"]["kept"] + r["dedup"]["dropped_total"]
     assert r["dedup"]["dropped_overlap"] > 0
+    assert listed + dropped == r["admitted"]["total"]
+    assert r["output_rows"] == listed
     existence = next(
         line for line in r["nulls"] if line["what"] == "existence_not_knowable_at_start"
     )
-    assert str(r["existence_knowability_caveat"]["admitted_without_known_existence"]) in existence["plain_en"]
+    assert f"All {listed} episodes listed" in existence["plain_en"]
+    assert str(listed) in existence["plain_zh"]
