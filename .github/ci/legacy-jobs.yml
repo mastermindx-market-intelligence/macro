@@ -4958,7 +4958,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pyyaml
       - name: design governance unit suites
-        run: python3 -m pytest tests/test_check_design_system.py tests/test_check_runtime_style_injection.py tests/test_check_ui_visual_evidence.py -q
+        run: python3 -m pytest tests/test_check_design_system.py tests/test_check_runtime_style_injection.py tests/test_check_ui_visual_evidence.py tests/test_freshness_chips_language_invariant.py -q
       - name: design-system ratchet selftest (each rule fires on its own fixture)
         run: python3 scripts/check_design_system.py --self-check
       - name: runtime-style injection guard selftest (gate fires on planted injection)
