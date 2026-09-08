@@ -290,12 +290,18 @@ def test_consequence_empty_exposure_state_is_typed_sentence_only():
     section = html[start:end]
     assert "No event with a named market exposure in the last 7 days." in section
     assert "近7天没有带明确市场敞口的事件。" in section
+    assert "Cards appear when an event maps to a named exposure." in section
+    assert "当事件对应到明确标的时，卡片会在此显示。" in section
     assert "Events from 31 Aug to 7 Sep 2026" in section
     assert "2026年8月31日至9月7日的事件" in section
+    assert "nx-empty-lead" in section
+    assert "nx-empty-next" in section
     assert "nx-rel-grid" not in section
     assert "We don’t size these yet" not in section
     assert "Sizes come from similar past episodes" not in section
     assert "Not available yet" not in section
+    assert "No named ticker" not in section
+    assert "未点名标的" not in section
 
 
 def test_consequence_card_date_is_plain_not_raw_iso():
@@ -539,6 +545,54 @@ def test_consequence_flip_note_renders_without_size_slot():
     assert "EWC" in section
     assert "Size not available yet" not in section
     assert "暂无幅度" not in section
+
+
+def test_template_and_built_page_omit_no_named_ticker_branch():
+    """NM-B: the selector guarantees a named exposure; the dead label is gone."""
+    template = (ROOT / "templates" / "news.html.j2").read_text(encoding="utf-8")
+    assert "No named ticker" not in template
+    assert "未点名标的" not in template
+    html = _render_full()
+    assert "No named ticker" not in html
+    assert "未点名标的" not in html
+
+
+def test_second_order_only_row_prints_also_watching_not_named():
+    """NM-B: a second-order-only row prints Also watching / 同时关注, never Named."""
+    vm = _full_vm()
+    vm["chronicle_impact"] = {
+        "stance_en": "Recent market events and the names they touch — shown only when an event maps to a named exposure.",
+        "stance_zh": "近期市场事件及其涉及的标的——仅在事件对应到明确标的时显示。",
+        "reason_en": None,
+        "reason_zh": None,
+        "empty_kind": None,
+        "window_label_en": "Events from 31 Aug to 7 Sep 2026",
+        "window_label_zh": "2026年8月31日至9月7日的事件",
+        "rows": [{
+            "event_id": "cev-so",
+            "event_time": "2026-09-07",
+            "event_time_en": "7 Sep 2026",
+            "event_time_zh": "2026年9月7日",
+            "title_en": "Research note on AI spending",
+            "title_zh": "关于人工智能开支的研究纪要",
+            "direct_tickers": [],
+            "second_order_tickers": ["NVDA"],
+            "second_order_truncated": False,
+            "note_en": None,
+            "note_zh": None,
+        }],
+    }
+    html = _env().get_template("news.html.j2").render(**vm)
+    start = html.index('id="nxConsequence"')
+    end = html.index("</section>", start)
+    section = html[start:end]
+    assert "Also watching" in section
+    assert "同时关注" in section
+    assert "NVDA" in section
+    assert '<span class="l-en">Named</span>' not in section
+    assert '<span class="l-zh">点名</span>' not in section
+    assert "No named ticker" not in section
+    assert "未点名标的" not in section
 
 
 def test_build_site_passes_unfiltered_event_spine_to_glance():

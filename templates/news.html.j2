@@ -272,8 +272,16 @@ a.nx-tk:hover{ color:var(--ink-link, var(--link)); border-color:currentColor; }
 #nxConsequence{ margin-top:26px; }
 #nxConsequence .nx-rel-grid{ grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; }
 #nxConsequence .nx-rel{ box-shadow: var(--card-shadow), inset 0 0 0 1px color-mix(in srgb, var(--line) 55%, transparent); }
-html[data-theme="light"] #nxConsequence .nx-rel{ background: var(--panel); box-shadow: var(--card-shadow), 0 8px 24px rgba(20,30,50,.06); }
+html[data-theme="light"] #nxConsequence .nx-rel{ background: var(--panel); box-shadow: var(--card-shadow), 0 8px 24px color-mix(in srgb, var(--text) 6%, transparent); }
 html[data-theme="light"] #nxConsequence .nx-rel:hover{ box-shadow: var(--popover-shadow); }
+/* Typed empty state — the shipping product on the current corpus. Dark:
+   command-center plane + inset ring, no glow. Light: research-workspace
+   white plane, hairline, one ambient shadow. Tokens only. */
+#nxConsequence .nx-empty{ text-align:left; padding:14px 16px; border-radius:var(--r-card,12px); background:transparent; box-shadow: var(--card-shadow), inset 0 0 0 1px color-mix(in srgb, var(--line) 55%, transparent); }
+#nxConsequence .nx-empty::before{ content:""; display:block; width:28px; height:2px; background:var(--line); margin:0 0 10px; }
+#nxConsequence .nx-empty-lead{ margin:0; font-size:13px; color:var(--muted); line-height:1.45; }
+#nxConsequence .nx-empty-next{ margin:6px 0 0; font-size:12px; color:var(--muted); line-height:1.45; }
+html[data-theme="light"] #nxConsequence .nx-empty{ background:var(--panel); border:1px solid var(--line); box-shadow: var(--card-shadow), 0 8px 24px color-mix(in srgb, var(--text) 6%, transparent); }
 .nx-rel-name{ font-size:13px; font-weight:700; }
 .nx-rel-read{ font-size:11px; font-weight:700; }
 .nx-rel-read.up{ color:var(--ink-up, var(--up)); } .nx-rel-read.down{ color:var(--ink-down, var(--down)); }
@@ -838,17 +846,17 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
               this surface (front-end clarity law). -#}
           <span class="nx-rel-name">{{ t((row.title_en or 'Chronicle event')|e, (row.title_zh or '大事记事件')|e) }}</span>
         </div>
+        {% if row.event_time_en or row.direct_tickers %}
         <div class="nx-meta">
           {% if row.event_time_en %}
-            <span class="num">{{ t(row.event_time_en, row.event_time_zh or row.event_time_en) }}</span><span class="sep">·</span>
+            <span class="num">{{ t(row.event_time_en, row.event_time_zh or row.event_time_en) }}</span>{% if row.direct_tickers %}<span class="sep">·</span>{% endif %}
           {% endif %}
           {% if row.direct_tickers %}
             <span>{{ t('Named','点名') }}</span>
             {% for tk in row.direct_tickers[:4] %}<a class="nx-tk" href="stock.html#{{ tk|e }}">{{ tk }}</a>{% endfor %}
-          {% else %}
-            <span>{{ t('No named ticker','未点名标的') }}</span>
           {% endif %}
         </div>
+        {% endif %}
         {% if row.note_en %}
         <div class="nx-meta">
           <span>{{ t(row.note_en, row.note_zh or row.note_en) }}</span>
@@ -871,7 +879,10 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
       {% endfor %}
     </div>
     {% elif CI and CI.empty_kind == 'no_named_exposure' %}
-    <div class="nx-empty">{{ t(CI.reason_en, CI.reason_zh or CI.reason_en) }}</div>
+    <div class="nx-empty">
+      <p class="nx-empty-lead">{{ t(CI.reason_en, CI.reason_zh or CI.reason_en) }}</p>
+      <p class="nx-empty-next">{{ t('Cards appear when an event maps to a named exposure.', '当事件对应到明确标的时，卡片会在此显示。') }}</p>
+    </div>
     {% else %}
     <div class="nx-empty">
       {{ t('Not available yet', '暂不可用') }}

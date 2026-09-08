@@ -3,13 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Also watching — dropped (fixture)</title>
+<title>Second-order-only exposure (fixture)</title>
 <link rel="stylesheet" href="theme.css">
 <style>
 body{ background:var(--bg); color:var(--text); font:14px/1.6 -apple-system,"Segoe UI",Roboto,Helvetica,sans-serif; margin:0; padding:18px; }
 .l-zh{ display:none; } html[data-lang="zh"] .l-en{ display:none; } html[data-lang="zh"] .l-zh{ display:inline; }
 .nx-sec-hd{ display:flex; align-items:center; gap:8px; margin:0 0 12px; font-size:15px; font-weight:800; letter-spacing:-.01em; }
 .nx-sec-hd::before{ content:""; width:3px; height:16px; border-radius:2px; background:var(--link); }
+.nx-sub{ color:var(--muted); font-size:13.5px; max-width:62ch; line-height:1.5; margin:0 0 8px; }
 .nx-rel-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; }
 .nx-rel{ padding:13px 14px; border-radius:12px; background:var(--nx-card,#1a1d24); border:1px solid var(--nx-hair,var(--line)); }
 .nx-rel-name{ font-size:13px; font-weight:700; }
@@ -22,21 +23,25 @@ html[data-theme="light"] #nxConsequence .nx-rel{ background: var(--panel); box-s
 </style>
 </head>
 <body>
-<section class="nx-consequence" id="nxConsequence" aria-label="Also watching dropped fixture">
-  <h2 class="nx-sec-hd"><span class="l-en">Also watching — dropped</span><span class="l-zh">同时关注——已剔除</span></h2>
+<section class="nx-consequence" id="nxConsequence" aria-label="Second-order-only fixture">
+  <h2 class="nx-sec-hd"><span class="l-en">Event consequences</span><span class="l-zh">事件影响</span></h2>
+  <p class="nx-sub"><span class="l-en">Events from 31 Aug to 7 Sep 2026</span><span class="l-zh">2026年8月31日至9月7日的事件</span></p>
+  <p class="nx-sub"><span class="l-en">Recent market events and the names they touch — shown only when an event maps to a named exposure.</span><span class="l-zh">近期市场事件及其涉及的标的——仅在事件对应到明确标的时显示。</span></p>
+  <p class="nx-sub"><span class="l-en">Named exposures only — no sizing, not a forecast.</span><span class="l-zh">仅列出相关标的——不做幅度推算，非预测。</span></p>
   <div class="nx-rel-grid">
     <div class="nx-rel">
-      <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">Research note on NVDA</span><span class="l-zh">关于NVDA的研究纪要</span></span></div>
+      <div class="nx-rel-top"><span class="nx-rel-name">
+        <span class="l-en">Research note on AI spending</span>
+        <span class="l-zh">关于人工智能开支的研究纪要</span>
+      </span></div>
       <div class="nx-meta">
-        <span class="num"><span class="l-en">1 Sep 2026</span><span class="l-zh">2026年9月1日</span></span><span class="sep">·</span>
-        <span><span class="l-en">Named</span><span class="l-zh">点名</span></span>
-        <a class="nx-tk" href="stock.html#NVDA">NVDA</a>
+        <span class="num"><span class="l-en">2 Sep 2026</span>
+        <span class="l-zh">2026年9月2日</span></span>
       </div>
       <div class="nx-meta">
-        <span><span class="l-en">Also-watching list not available yet</span><span class="l-zh">同时关注列表暂不可用</span></span>
-        <span class="sep">·</span>
-        <span><span class="l-en">too many weak matches were dropped</span><span class="l-zh">弱关联过多已全部剔除</span>
-          <span class="num">(12)</span></span>
+        <span><span class="l-en">Also watching</span><span class="l-zh">同时关注</span></span>
+        <a class="nx-tk" href="stock.html#NVDA">NVDA</a>
+        <a class="nx-tk" href="stock.html#AMD">AMD</a>
       </div>
     </div>
   </div>

@@ -115,9 +115,13 @@ SECOND_ORDER_CAPPED_REASON = SECOND_ORDER_AMBIGUOUS_REASON
 # parseable event date in the input — no wall-clock on the render path. If
 # that window is empty (undated / unparseable corpus), fall back to the
 # newest 200 events. Zero qualifying rows prints a typed empty state;
-# one or more qualifying rows render (capped at 8). A regime_flip /
-# risk_band series that flips two or more times in the window collapses
-# to its latest state plus a plain-word unstable note.
+# one or more qualifying rows render (capped at 8). Series identity and
+# latest-state are computed over the pre-filter projections inside the
+# window; the collapsed row carries the latest flip's state and date;
+# its named exposure is the union of direct / second-order tickers
+# across that series' in-window rows; the unstable note applies when
+# the series flipped two or more times regardless of which flips
+# carried tickers; an empty union renders no row.
 GLANCE_WINDOW_DAYS = 7
 GLANCE_FALLBACK_LIMIT = 200
 GLANCE_ROW_CAP = 8
@@ -601,8 +605,37 @@ def _glance_series_key(family: str, raw_title: str, event_id: str) -> str | None
     return None
 
 
+def _union_series_tickers(members: list[dict]) -> tuple[list[str], list[str]]:
+    """Union direct / second-order tickers across one series (overlap → direct)."""
+    direct: list[str] = []
+    second: list[str] = []
+    seen_direct: set[str] = set()
+    seen_second: set[str] = set()
+    for member in members:
+        for ticker in member.get("direct_tickers") or []:
+            if ticker and ticker not in seen_direct:
+                seen_direct.add(ticker)
+                direct.append(ticker)
+        for ticker in member.get("second_order_tickers") or []:
+            if ticker and ticker not in seen_second:
+                seen_second.add(ticker)
+                second.append(ticker)
+    second = [ticker for ticker in second if ticker not in seen_direct]
+    return direct, second
+
+
 def _collapse_flip_series(rows: list[dict]) -> list[dict]:
-    """Keep one row per regime/risk series; tag 2+ flips as unstable."""
+    """Collapse one regime/risk series over pre-filter in-window rows.
+
+    Series identity and latest-state are computed over every in-window
+    projection of the series, before the exposure filter. The collapsed
+    row carries the latest flip's state and date. Its named exposure is
+    the union of direct / second-order tickers across that series'
+    in-window rows (one series, one exposure semantics). The unstable
+    note applies whenever the series flipped two or more times in the
+    window, regardless of which flips carried tickers. An empty union
+    yields no row — never a stale direction.
+    """
     groups: dict[str, list[dict]] = {}
     passthrough: list[dict] = []
     for row in rows:
@@ -621,9 +654,13 @@ def _collapse_flip_series(rows: list[dict]) -> list[dict]:
             key=lambda r: (r.get("event_time") or "", r.get("event_id") or ""),
             reverse=True,
         )
-        latest = members[0]
+        latest = dict(members[0])
+        direct, second = _union_series_tickers(members)
+        if not direct and not second:
+            continue
+        latest["direct_tickers"] = direct
+        latest["second_order_tickers"] = second
         if len(members) >= 2:
-            latest = dict(latest)
             latest["note_en"] = FLIP_UNSTABLE_EN
             latest["note_zh"] = FLIP_UNSTABLE_ZH
         out.append(latest)
@@ -908,8 +945,14 @@ def glance_consequence_surface(
     prints an honest null state rather than fabricating rows. Row titles are
     dual-locale plain-word (``title_en`` / ``title_zh``); the raw spine
     ``title`` is kept for diagnostics only and must not be rendered on the
-    glance surface. A regime/risk series that flipped twice or more in the
-    window collapses to its latest row and carries ``note_en`` / ``note_zh``.
+    glance surface. Series identity and latest-state are computed over the
+    pre-filter projections inside the window. The collapsed row carries
+    the latest flip's state and date; its named exposure is the union of
+    direct / second-order tickers across that series' in-window rows
+    (one series, one exposure semantics). The unstable note applies
+    whenever the series flipped two or more times in the window
+    regardless of which flips carried tickers. If the union is empty the
+    series renders no row (never a stale direction).
     """
     if not events:
         return {
@@ -949,11 +992,18 @@ def glance_consequence_surface(
             continue
         direct = [e["ticker"] for e in proj["exposures"] if e.get("materiality") == MATERIALITY_DIRECT]
         second = [e["ticker"] for e in proj["exposures"] if e.get("materiality") == MATERIALITY_SECOND_ORDER]
-        if not direct and not second:
-            continue
+        series_key = _glance_series_key(
+            family, proj.get("title") or "", proj.get("event_id") or "",
+        )
         title_en, title_zh = plain_glance_titles(proj)
-        if not title_en or not title_zh:
-            continue
+        # Non-series rows still require a named exposure and a title now.
+        # Series members enter pre-filter so identity, latest-state, and
+        # the unstable count see every in-window flip.
+        if series_key is None:
+            if not direct and not second:
+                continue
+            if not title_en or not title_zh:
+                continue
         time_en, time_zh = _plain_event_date(proj["event_time"])
         rows.append({
             "event_id": proj["event_id"],
@@ -976,9 +1026,14 @@ def glance_consequence_surface(
             "calibrated_impact_reason": CALIBRATED_IMPACT_GATE_REASON,
             "causal_label": CAUSAL_LABEL,
         })
-    # Collapse a regime/risk series that flipped both ways in this window,
-    # then newest-first, cap at the row limit.
+    # Collapse a regime/risk series over the pre-filter in-window rows,
+    # drop any leftover empty-union / untitled series, then newest-first.
     rows = _collapse_flip_series(rows)
+    rows = [
+        row for row in rows
+        if (row.get("direct_tickers") or row.get("second_order_tickers"))
+        and row.get("title_en") and row.get("title_zh")
+    ]
     rows.sort(key=lambda r: (r.get("event_time") or "", r.get("event_id") or ""), reverse=True)
     cap = max(1, int(limit))
     rows = rows[:cap]

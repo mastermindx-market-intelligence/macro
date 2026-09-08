@@ -832,3 +832,34 @@ def test_glance_flip_series_collapses_to_latest_with_unstable_note():
     assert ca[0]["note_zh"] == "本周两度转向——尚不稳定"
     assert hk[0]["note_en"] is None
     assert "size_en" not in ca[0]
+
+
+def test_glance_flip_collapse_earlier_ticker_later_state():
+    """NM-A (c1): two flips, only the earlier carries a ticker → later state + note."""
+    older = _ev("ca-c1-old", "2026-09-02", source="regime_flip", tickers=["SPY"])
+    older["title"] = "CANADA regime: Q1 Goldilocks → Q3 Stagflation"
+    newer = _ev("ca-c1-new", "2026-09-05", source="regime_flip", tickers=[])
+    newer["title"] = "CANADA regime: Q3 Stagflation → Q2 Reflation"
+    surface = impact.glance_consequence_surface([older, newer])
+    assert surface["empty_kind"] is None
+    assert len(surface["rows"]) == 1
+    row = surface["rows"][0]
+    assert row["event_time"] == "2026-09-05"
+    assert "reflation" in (row["title_en"] or "").lower()
+    assert row["note_en"] == impact.FLIP_UNSTABLE_EN
+    assert row["note_zh"] == impact.FLIP_UNSTABLE_ZH
+    assert row["direct_tickers"] == ["SPY"]
+    assert "size_en" not in row
+
+
+def test_glance_flip_collapse_neither_ticker_yields_zero_rows():
+    """NM-A (c2): two flips, neither carries a ticker → zero rows."""
+    older = _ev("ca-c2-old", "2026-09-02", source="regime_flip", tickers=[])
+    older["title"] = "CANADA regime: Q1 Goldilocks → Q3 Stagflation"
+    newer = _ev("ca-c2-new", "2026-09-05", source="regime_flip", tickers=[])
+    newer["title"] = "CANADA regime: Q3 Stagflation → Q2 Reflation"
+    surface = impact.glance_consequence_surface([older, newer])
+    assert surface["rows"] == []
+    assert surface["empty_kind"] == "no_named_exposure"
+    assert surface["reason_en"] == impact.EMPTY_NO_EXPOSURE_EN
+    assert surface["reason_zh"] == impact.EMPTY_NO_EXPOSURE_ZH
