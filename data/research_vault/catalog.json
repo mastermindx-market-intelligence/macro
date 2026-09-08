@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-08T06:40:56.383416+00:00",
-  "count": 1977,
+  "generated_at": "2026-09-08T11:51:39.169788+00:00",
+  "count": 1983,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -97,6 +97,48 @@
   ],
   "items": [
     {
+      "id": "marketdesk-79epoobswtg-05d1d3",
+      "title": "JPM International Market Intelligence | Morning Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T07:13:34Z",
+      "summary_points": [
+        "**Energy Supply Shock**: Global oil/products inventories tightening (Figure 1) and European gas stocks 30pp below multi-year average (Figure 2) signal supply constraints, driving price increases; Iran-Oman deal details await amid falling US-Iran deal odds and JPM oil traders' long-term price outlook.",
+        "**BoJ Policy Volatility**: USD/JPY MATM volatility spiked in May 2025, with persistent JPY 10y MATM volatility indicating BoJ policy uncertainty driving cross-asset volatility; critical for FX/rates positioning and options strategies.",
+        "**EU Banks Valuation Pressure**: European banks' cost of equity (≈10.0%) exceeds post-GFC minimum (9.2%), reflecting elevated risk perception and potential valuation headwinds amid strong lending and capital markets.",
+        "**Energy Sector Profitability**: 2026 NWE refining margins and diesel cracks at record highs, indicating robust sector profitability amid tight supply-demand dynamics and global inventory constraints.",
+        "**Geopolitical Trade Erosion**: Iran’s trade share with Central Asia/Caucasus declining (both exports/imports post-2023), reflecting sanctions-driven geopolitical risks impacting regional trade flows."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-magad3oicth-26a43b",
+      "title": "Early Morning Reid Macro Strategy",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T07:05:43Z",
+      "summary_points": [
+        "**Geopolitical Oil Surge & Bond Yields**: Brent Oil at $97.64 (+1.28%) and 10yr Bund yield at 3.39% (post-2011 high) driven by Middle East tensions (Houthi attacks, US-Iran) and German wage growth (+2.4% real), signaling inflationary pressure and global growth momentum.",
+        "**ECB Tightening Expectations**: Traders price 48bps more ECB hikes (German 2Yr yield at 3.00%, 10Yr at 3.39%), amid rising bond yields and policy uncertainty from US mid-terms, impacting portfolio positioning.",
+        "**China Trade Data Strength**: Exports +25.0% y/y (vs +25.9% expected) and imports +28.2% y/y (vs +31.0% expected), reinforcing robust trade activity and growth outlook despite uneven domestic demand.",
+        "**Copper Inflation Signal**: LME copper hits all-time high ($14,415/ton, +0.57%) on supply constraints and US tariff risks, signaling persistent inflationary pressures for portfolios.",
+        "**Canada-US Trade Escalation**: Canada’s counter-tariffs on US imports take effect today, intensifying cross-border trade friction and policy risk amid global supply chain volatility."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-mgpwlri1w0k-d0a958",
       "title": "GS Papai IG Credit Down the Stretch 7 Sep 2026",
       "institution": "S&T",
@@ -188,6 +230,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 30,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ncrfvx5qchi-cd041e",
+      "title": "UBS An ESG View on Earnings Convergence 08 September 2026",
+      "institution": "Nuclear",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T02:11:16Z",
+      "summary_points": [
+        "**Grid Constraints as Critical Risk**: Global grid capacity limitations and aging infrastructure are the \"biggest bottleneck\" for data center construction (Uniper), hindering power demand and accelerating energy transition investments (batteries, grid, nuclear).",
+        "**Energy Transition Momentum**: Battery storage demand surging (Albemarle: 30% of 2026 lithium demand), grid investments accelerating (CLP: 240-320 GW renewable, 300 GW storage by 2030), and nuclear expansion (IHI) driving sector flows.",
+        "**Middle East Conflict Disruption**: 65% jet kerosene price surge (BOC Aviation), bunker prices up 44% YoY ($612M impact), Air France-KLM fuel costs up €900M, and supply chain bottlenecks concentrated at landside (Europe/South America/Middle East).",
+        "**US Policy-Driven Energy Demand**: Trump administration’s 2030 nuclear target (10+ GW plants), SMR contracts (Amentum/Westinghouse), and bipartisan biofuels mandate creating structural demand for nuclear, renewables, and grid infrastructure.",
+        "**Data Center Power Surge**: AI-driven demand (Caterpillar power gen up 72%, Ameresco $1.2B awards), F-Gas regulations (Carel HVAC up 24%), and supply constraints (Eaton: 307 GW backlog) creating near-term infrastructure tailwinds."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 63,
       "language": "en",
       "needs_metadata": false
     },
@@ -290,6 +353,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-tkxxjshycpc-69ca68",
+      "title": "Oil Analyst Ongoing Disruptions, More Adaptation Nudging Up Our Price Forecast",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T01:59:19Z",
+      "summary_points": [
+        "**Price Forecast Upgrade**: Brent/WTI forecasts raised to $85/80 (Dec 2026) and $80/75 (2027) due to persistent Mideast shipping disruptions, OECD inventory resilience, and Gulf supply adaptation (recovery by 2027H2).",
+        "**Gulf Supply Shock Risk**: Downside Gulf supply (4mb/d below pre-war) could push Brent above $120/bbl in 2027; base case assumes 0.5mb/d deficit, with $60s downside if Gulf output exceeds pre-war by 1mb/d.",
+        "**OECD Inventory Resilience**: OECD commercial inventories 119mb above July estimate, countering disruption fears; key predictor of crude prices remains intact despite global stock drawdowns.",
+        "**China Import Sensitivity**: Net crude imports down 30% YoY (2mb/d decline), driven by EV adoption and weak demand; moderates price upside in escalation scenarios and cushions downside.",
+        "**Geopolitical Hedging Strategy**: Recommend deferred Mar27-Dec27 European diesel timespreads; persistent refinery outages could drive 9-month spread up 100%+ (critical risk factor)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 20,
       "language": "en",
       "needs_metadata": false
     },
@@ -824,6 +908,23 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-xh9tefm8ksv-a77097",
+      "title": "This Week in Asia Pacific Macro 7 13 September (Audio)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-07T14:35:59Z",
+      "summary_points": [
+        "**Japan Q2 GDP Revision**: Critical fundamental indicator for regional economic health and policy trajectory - **China Trade/Inflation/Credit Data**: Key drivers for Asia-Pacific risk sentiment and capital flows - **AUS/NZ Economic Preview**: Forward-looking metrics impacting currency and asset allocation decisions"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-skzg5akbbve-3120df",
       "title": "Global Healthcare Pharmaceuticals Back to School Kickstart 10 High Level Themes; Selectively Constructive",
       "institution": "Goldman Sachs",
@@ -1134,6 +1235,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xrrfbnpsizk-94d2da",
+      "title": "UBS Credit Strategy Defaults Remain Low, But the Maturity Wall Is Drawing...",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-07T00:41:30Z",
+      "summary_points": [
+        "**Refinancing Pressures 2027**: Concentrated maturities for Software/CCC issuers; tactical shift to BB leveraged loans and low-refinancing-sensitivity sectors (Financials, Consumer Non-Cyclicals, Healthcare).",
+        "**US HY Default & Recovery**: 2.3% trailing 12-month issuer default rate (US HY) with recovery at 41%, but sector-specific defaults (Financials, Communications, Consumer Cyclical) driven by Bankruptcy/Distressed Exchange.",
+        "**EU Recovery Collapse**: EU LL recovery rate down 34% y/y to 30% (vs.",
+        "US HY 41%), signaling deteriorating credit quality and heightened loss potential in European leveraged loans.",
+        "**2028 Maturity Walls**: Concentrated refinancing risk in US/EU lower-rated leveraged loan cohorts (2028 maturities), amplifying default exposure if stress escalates."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
       "language": "en",
       "needs_metadata": false
     },
