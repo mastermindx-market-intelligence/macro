@@ -3252,6 +3252,8 @@ jobs:
         run: python -m pytest tests/test_edgar_quarterly_tags.py -q
       - name: edgar fundamentals universe widening (W2-A — R2000 via committed constituents)
         run: python -m pytest tests/test_edgar_universe_widening.py -q
+      - name: edgar FTS first-request abort guard fires on _CONFIRMED_ABSENT too (no network)
+        run: python -m pytest tests/test_edgar_fts_confirmed_absent_first_request.py -q
       - name: symbol-directory archival collector tests (LHB-W2c / LHB-R8)
         run: >-
           python -m pytest
@@ -13820,6 +13822,13 @@ jobs:
       - "scripts/build_macro_suite_pages.py"
       - "site/macrodata/workspaces/**"
       - "tests/test_macro_suite_pages.py"
+      # F01 R1 2026-09-05: the suite hub + shared in-suite navigation. Same job as
+      # the workspace pages because it is the same subject: one builder, one shell,
+      # one view model. A hub that disagreed with the pages it links to would be a
+      # defect neither suite could see alone.
+      - "templates/macro_monetary.html.j2"
+      - "templates/_macro_suite_nav.html.j2"
+      - "tests/test_macro_monetary_hub.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -13831,3 +13840,5 @@ jobs:
         run: pip install pytest jinja2 pyyaml jsonschema==4.26.0
       - name: Market OS macro suite pages — shell, labels, view model, builder
         run: python -m pytest tests/test_macro_suite_pages.py -q
+      - name: Market OS macro suite hub — discoverability, ordering, honest absence
+        run: python -m pytest tests/test_macro_monetary_hub.py -q
