@@ -301,7 +301,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
       - name: install test deps
-        run: pip install pytest pyyaml pandas jinja2
+        run: pip install pytest pyyaml pandas jinja2 requests
       - name: country policy dossier — schema, typed nulls and fail-closed contract
         run: python -m pytest tests/test_country_dossier.py tests/test_international_macro_dashboards.py -q
 
