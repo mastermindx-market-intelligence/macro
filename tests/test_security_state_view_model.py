@@ -22,6 +22,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+from html.parser import HTMLParser
 from pathlib import Path
 
 import pytest
@@ -36,6 +37,79 @@ from scripts.build_ticker_pages import build_security_state  # noqa: E402
 # ---------------------------------------------------------------------------
 # helpers
 # ---------------------------------------------------------------------------
+
+_VOID_TAGS = frozenset({
+    "area", "base", "br", "col", "embed", "hr", "img", "input",
+    "link", "meta", "param", "source", "track", "wbr",
+})
+
+
+class _HtmlNode:
+    """One element in a stdlib-parsed tree (class tokens + descendant text)."""
+
+    __slots__ = ("tag", "classes", "children", "text_parts")
+
+    def __init__(self, tag: str, classes: frozenset[str]) -> None:
+        self.tag = tag
+        self.classes = classes
+        self.children: list[_HtmlNode] = []
+        self.text_parts: list[str] = []
+
+    def get_text(self) -> str:
+        bits = list(self.text_parts)
+        for child in self.children:
+            bits.append(child.get_text())
+        return "".join(bits)
+
+    def find_class(self, name: str) -> _HtmlNode | None:
+        for child in self.children:
+            if name in child.classes:
+                return child
+            found = child.find_class(name)
+            if found is not None:
+                return found
+        return None
+
+    def find_all_class(self, name: str) -> list[_HtmlNode]:
+        out: list[_HtmlNode] = []
+        if name in self.classes:
+            out.append(self)
+        for child in self.children:
+            out.extend(child.find_all_class(name))
+        return out
+
+
+class _ClassTreeParser(HTMLParser):
+    """Minimal class-aware tree. Sealed CI has no bs4; do not import it."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.root = _HtmlNode("#root", frozenset())
+        self._stack = [self.root]
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        classes = frozenset((dict(attrs).get("class") or "").split())
+        node = _HtmlNode(tag, classes)
+        self._stack[-1].children.append(node)
+        if tag not in _VOID_TAGS:
+            self._stack.append(node)
+
+    def handle_endtag(self, tag: str) -> None:
+        for i in range(len(self._stack) - 1, 0, -1):
+            if self._stack[i].tag == tag:
+                del self._stack[i:]
+                return
+
+    def handle_data(self, data: str) -> None:
+        self._stack[-1].text_parts.append(data)
+
+
+def _parse_class_tree(html: str) -> _HtmlNode:
+    parser = _ClassTreeParser()
+    parser.feed(html)
+    parser.close()
+    return parser.root
+
 
 def _axis(view: dict, key: str) -> dict:
     for a in view["axes"]:
@@ -751,15 +825,15 @@ def test_dfoot_c_chip_scoping_is_structural_not_a_grep_count() -> None:
     element nested inside conditional Jinja branches, would not show up in a
     single-line grep at all.
 
-    This test instead parses the ACTUALLY RENDERED HTML with a real HTML
-    parser (BeautifulSoup) and asks, for every `.dfoot` element, whether it
+    This test instead parses the ACTUALLY RENDERED HTML with the standard
+    library HTML parser and asks, for every `.dfoot` element, whether it
     has a `.c`-classed descendant — the exact question the CSS selector
     answers in a browser — for two renders that between them exercise every
     `.dfoot` line in the template, including both new `.c`-chip lines
-    (identity refusals and identity disclosures).
+    (identity refusals and identity disclosures). Sealed CI has no bs4;
+    this assertion must stay stdlib-only.
     """
     import jinja2
-    from bs4 import BeautifulSoup
 
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader(str(REPO / "templates")),
@@ -791,16 +865,16 @@ def test_dfoot_c_chip_scoping_is_structural_not_a_grep_count() -> None:
         ("blocked shell (refusals + disclosures)", blocked_view, True),
     ):
         html = tmpl.render(security_state=view, ticker="MSFT", name="Microsoft Corp.")
-        soup = BeautifulSoup(html, "html.parser")
-        dfoots = soup.find_all(class_="dfoot")
+        tree = _parse_class_tree(html)
+        dfoots = tree.find_all_class("dfoot")
         assert len(dfoots) >= 8, f"{label}: expected at least 8 static+dynamic .dfoot blocks, found {len(dfoots)}"
 
-        carrying_ids = {id(d) for d in dfoots if d.find(class_="c") is not None}
+        carrying_ids = {id(d) for d in dfoots if d.find_class("c") is not None}
         carrying = [d for d in dfoots if id(d) in carrying_ids]
 
         found_refusals_dfoot = any("Held back" in d.get_text() or "暂不呈现" in d.get_text() for d in carrying)
         found_disclosures_dfoot = any(
-            d.find(class_="ss-id") is not None
+            d.find_class("ss-id") is not None
             and "Held back" not in d.get_text() and "暂不呈现" not in d.get_text()
             for d in carrying
         )
@@ -815,13 +889,13 @@ def test_dfoot_c_chip_scoping_is_structural_not_a_grep_count() -> None:
         assert len(carrying) == expected_carrying_count, (
             f"{label}: {len(carrying)} .dfoot blocks carry a .c descendant, "
             f"expected exactly {expected_carrying_count}: "
-            f"{[d.get_text(' ', strip=True)[:60] for d in carrying]!r}"
+            f"{[d.get_text().strip()[:60] for d in carrying]!r}"
         )
         for d in dfoots:
             if id(d) not in carrying_ids:
-                assert d.find(class_="c") is None, (
+                assert d.find_class("c") is None, (
                     f"{label}: an unaccounted .dfoot block unexpectedly carries a .c descendant: "
-                    f"{d.get_text(' ', strip=True)[:80]!r}"
+                    f"{d.get_text().strip()[:80]!r}"
                 )
 
 
