@@ -8846,7 +8846,7 @@ jobs:
       # dependency line (pytest pyyaml jinja2) with the help-directory suites
       # immediately above.
       - name: public glossary directory (view-model contract + rendered-page wiring)
-        run: python -m pytest tests/test_glossary.py tests/test_glossary_contract.py -q
+        run: python -m pytest tests/test_glossary.py tests/test_glossary_contract.py tests/test_glossary_letter_rail_js.py -q
 
   press-lane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
