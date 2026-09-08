@@ -175,6 +175,7 @@ def _render_specimen(site: Path) -> str:
 <head>
 <meta charset="utf-8">
 <link rel="stylesheet" href="theme.css">
+<script src="theme.js"></script>
 <style>{rrx_css}\n{igs_css}\n{extra_css}</style>
 </head>
 <body class="specimen">
@@ -422,6 +423,17 @@ def capture() -> dict:
                 page = context.new_page()
                 try:
                     page.goto(f"{origin}/{specimen_name}", wait_until="networkidle")
+                    page.evaluate(
+                        """([t, l]) => {
+                          document.documentElement.setAttribute('data-theme', t);
+                          document.documentElement.setAttribute('data-lang', l);
+                          try { localStorage.setItem('theme', t); localStorage.removeItem('themeAuto');
+                                localStorage.setItem('lang', l); } catch (e) {}
+                          if (typeof window.setTheme === 'function') window.setTheme(t);
+                          if (typeof window.setLang === 'function') window.setLang(l);
+                        }""",
+                        [theme, lang],
+                    )
                     page.wait_for_selector(surf["clip"], state="visible", timeout=15000)
                     page.wait_for_timeout(200)
                     m = page.evaluate(_measure_extra(surf["pick"]))
