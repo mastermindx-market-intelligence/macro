@@ -1,0 +1,14 @@
+{
+  "method": "scripts.build_site.write_page via build_macro_target.py; lib.pages.externalize_css_text + externalize_js_text + write_page; scripts.optimize_assets.make_optimizer + lib.pages.write_page",
+  "full_site_build": false,
+  "manual_splice": false,
+  "target": "site/macro.html",
+  "utc": "2026-09-08T06:12:10.972322+00:00",
+  "builder_raw_sha256": "1490abc9546659d6ab03013bd271521ec779ecde6719d2687ae7b9e0f29defe1",
+  "after_externalize_sha256": "a059a8b44b29666ec4755096d267028a0091e934a53f583f327ef2765ec3c1fc",
+  "after_optimize_sha256": "057628471cac5296d781a8e711ecc9ad9a53839cd34d3d047ada7318fb8e5cf7",
+  "git_blob_after": "40ce682d4c95ed5dc14b7bc0b06140413ae5c863",
+  "minted_css": [],
+  "minted_js": [],
+  "contains_public_rail": true
+}

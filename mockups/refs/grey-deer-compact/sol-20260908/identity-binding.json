@@ -1,0 +1,20 @@
+{
+  "classification": "LOCAL_CANONICAL_MACRO_TARGET_NOT_PRODUCTION",
+  "source_operation": "macro-gd-6685-sol-repair-20260906-001",
+  "hold": "5580065094",
+  "previous_integrated_head": "20edb97448d15eb7b668429e57b3b4c480641bed",
+  "previous_generated_git_blob": "1be7ac3c431faa3d0e2174e9cd807e852402c4bc",
+  "previous_generated_sha256": "538ed2e32f002a7ef4064b127f843c821e3d511c889de9454edf8fc89c097898",
+  "accepted_partial_blob": "b8d427b0eeae2a457e6f7377641a4add54950715",
+  "builder": "scripts.build_site.main via mockups/refs/grey-deer-compact/sol-20260906/build_macro_target.py",
+  "writer": "lib.pages.write_page",
+  "asset_processing": "lib.pages.externalize_css_text + externalize_js_text + scripts.optimize_assets.make_optimizer + lib.pages.write_page",
+  "manual_splice": false,
+  "full_site_build": false,
+  "builder_raw_sha256": "1490abc9546659d6ab03013bd271521ec779ecde6719d2687ae7b9e0f29defe1",
+  "after_externalize_sha256": "a059a8b44b29666ec4755096d267028a0091e934a53f583f327ef2765ec3c1fc",
+  "final_html_sha256": "057628471cac5296d781a8e711ecc9ad9a53839cd34d3d047ada7318fb8e5cf7",
+  "final_html_git_blob": "40ce682d4c95ed5dc14b7bc0b06140413ae5c863",
+  "css": "reused site/assets/css/033cfde9.css; no new sheet minted",
+  "historical_sept6_html_sha256": "b63e24b134deaa97598ce80db0435f24b2e48d65db00e606dcbb16af6bd24bc7"
+}
