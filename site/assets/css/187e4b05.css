@@ -134,6 +134,11 @@ html[data-lang="zh"] .oew-stamp-k{letter-spacing:.03em;text-transform:none}
   background:color-mix(in srgb,var(--oew-st-protect) 10%,var(--tile))}
 .st-aside{color:var(--oew-st-aside);border-color:var(--hair);background:transparent;opacity:.85}
 .st-ignore{color:var(--oew-st-ignore);border:1px solid transparent;background:transparent;opacity:.7}
+/* Data-outage chip — NOT a doctrine stance. Same geometry as .oew-stance so
+   the lede row does not jump; info tint, never the aside posture colour. */
+.oew-aib-lede-chip{display:inline-flex;align-items:center;gap:6px;flex:none;font-size:11.5px;font-weight:700;
+  letter-spacing:.01em;white-space:nowrap;padding:4px 11px;border-radius:var(--r-pill);
+  border:1px solid var(--hair);color:var(--ink-info, var(--info));background:var(--tile)}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    ★ THE SIGNATURE — THE CLOSE LINE ★
@@ -257,6 +262,69 @@ html[data-lang="zh"] .oew-stamp-k{letter-spacing:.03em;text-transform:none}
 .oew-aib-empty-lead{margin:0 0 4px}
 .oew-aib-empty-sub{margin:0;color:var(--muted);font-size:11px}
 .oew-aib-more{margin-left:auto;font-size:10.5px;color:var(--muted)}
+
+/* ── A-F03-W2-2 · BRIEF glance-tier lede ──────────────────────────────────
+   Dark (default, this page's bare selectors) = raised instrument slab —
+   luminance depth via an inner top highlight, no shadow. Light
+   (html[data-theme="light"], the page's own light-mode mechanism — see
+   html[data-theme="light"] .oew above) = white material on the cool canvas —
+   the highlight is deleted (a white-on-white bevel is a smudge) and a
+   hairline + one shallow shadow carry the depth instead. Same structure,
+   same semantics (lede -> evidence -> detail, stance vocabulary, EN/ZH
+   parity); only the material differs. Packet A-F03-W2-2 §6. */
+.oew-aib-lede{padding:var(--s3) var(--s4);border-bottom:1px solid var(--hair);
+  background:var(--tile);border-left:3px solid var(--hair);
+  box-shadow:inset 0 1px 0 color-mix(in srgb,var(--text) 6%,transparent)}
+.oew-aib-lede.is-current{border-left-color:var(--oew-accent)}
+.oew-aib-lede.is-lagging{border-left-color:var(--ink-info, var(--info))}
+.oew-aib-lede.is-stale,
+.oew-aib-lede.is-unknown{border-left-color:var(--ink-warn, var(--warn))}
+
+.oew-aib-lede-head{margin:0 0 6px;font-size:15.5px;line-height:1.35;font-weight:680;
+  letter-spacing:-.005em;color:var(--text)}
+.oew-aib-lede-stance{margin:0 0 7px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.oew-aib-lede-todo{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.oew-aib-lede-said{font-size:12.5px;line-height:1.45;color:var(--ink-2)}
+
+.oew-aib-fresh{margin:0;display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;
+  font-size:11px;color:var(--muted)}
+.oew-aib-fresh-age{padding:2px 8px;border-radius:var(--r-pill);
+  background:var(--tile);border:1px solid var(--hair);font-weight:600}
+.oew-aib-fresh-age.lvl-stale,
+.oew-aib-fresh-age.lvl-unknown{color:var(--ink-warn, var(--warn));
+  background:color-mix(in srgb,var(--warn) 12%,var(--tile));border-color:transparent}
+
+.oew-aib-degraded-lead{margin:0 0 4px;font-weight:620;color:var(--text)}
+.oew-aib-degraded-why{margin:0 0 8px;font-size:12px;color:var(--ink-2);line-height:1.5}
+.oew-aib-degraded-rcp{font-size:11.5px}
+.oew-aib-degraded-rcp>summary{cursor:pointer;color:var(--muted)}
+
+/* LIGHT — white material: delete the inner highlight, add a hairline (top +
+   right; bottom + left are already set above) and one shallow shadow — the
+   page's OWN shallow-shadow token (--card-shadow, already themed light/dark
+   at :theme.css), reused here rather than a new literal so this stays within
+   existing token discipline. The stale/unknown chip re-weights its fill down
+   (12% -> 8%) and gains a defined border, which the dark tile-fill version
+   does not need. */
+html[data-theme="light"] .oew-aib-lede{box-shadow:var(--card-shadow);
+  border-top:1px solid var(--hair);border-right:1px solid var(--hair)}
+html[data-theme="light"] .oew-aib-lede.is-current{border-left-color:var(--oew-accent)}
+html[data-theme="light"] .oew-aib-lede.is-lagging{border-left-color:var(--ink-info, var(--info))}
+html[data-theme="light"] .oew-aib-lede.is-stale,
+html[data-theme="light"] .oew-aib-lede.is-unknown{border-left-color:var(--ink-warn, var(--warn))}
+html[data-theme="light"] .oew-aib-lede-chip{background:transparent;border-color:var(--hair)}
+html[data-theme="light"] .oew-aib-fresh-age{background:transparent}
+html[data-theme="light"] .oew-aib-fresh-age.lvl-stale,
+html[data-theme="light"] .oew-aib-fresh-age.lvl-unknown{
+  background:color-mix(in srgb,var(--warn) 8%,transparent);
+  border-color:color-mix(in srgb,var(--warn) 35%,var(--hair))}
+
+@media (max-width:520px){
+  .oew-aib-lede{padding:var(--s3)}
+  .oew-aib-lede-head{font-size:14.5px}
+  .oew-aib-lede-stance{align-items:flex-start}
+  .oew-aib-fresh{gap:6px 10px}
+}
 
 /* ── AD-1 B5 band 2 · directional watch: a CONTINUATION of the ranked grid, so it
       reuses .oew-tkchip verbatim (incl. its data-goto jump) and adds only the
