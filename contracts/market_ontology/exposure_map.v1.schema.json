@@ -19,12 +19,12 @@
       "additionalProperties": false,
       "required": ["edge_reader", "identity_reader", "chain_reader", "store_meta", "engine_version", "belief_collapse"],
       "properties": {
-        "edge_reader": {"const": "engine.theme_graph.store.read_edges(latest_belief=True)"},
+        "edge_reader": {"const": "engine.theme_graph.store.read_edges(latest_belief=False)"},
         "identity_reader": {"const": "engine.theme_graph.store.read_identity_resolution(latest=True)"},
         "chain_reader": {"const": "engine.transmission_chains.load_chains()"},
         "store_meta": {"anyOf": [{"type": "null"}, {"type": "object"}]},
         "engine_version": {"const": "market_ontology.exposure_map.v1"},
-        "belief_collapse": {"const": "max belief_time <= asof per edge_id; ties on computed_at then edge_id"}
+        "belief_collapse": {"const": "max belief_time <= asof per edge_id; ties on computed_at then src then dst"}
       }
     }
   },
@@ -123,7 +123,7 @@
       "properties": {
         "company_node_id": {"type": "string"},
         "market_scope": {"anyOf": [{"type": "null"}, {"enum": ["us", "cn", "hk", "ca", "intl"]}]},
-        "rights_family": {"type": "null"},
+        "rights_family": {"type": ["string", "null"]},
         "identity": {"$ref": "#/$defs/identity"},
         "paths": {"type": "array", "items": {"$ref": "#/$defs/path"}}
       }

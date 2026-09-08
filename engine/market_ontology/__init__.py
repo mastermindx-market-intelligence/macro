@@ -1,10 +1,11 @@
 """Market Ontology: pure read-only projections over engine.theme_graph (GMI).
 
 A leaf consumer plane, not a graph owner. Every module here reads GMI only through
-``engine.theme_graph.store``'s public collapse functions (``read_edges(latest_belief=True)``,
-``read_identity_resolution(latest=True)``) and enforces rights only through
-``engine.theme_graph.rights`` — never a raw parquet read, never a second rights
-implementation. Nothing in the scoring path may import this package.
+``engine.theme_graph.store`` (exposure_map reads ``read_edges(latest_belief=False)``
+so it can re-collapse at a caller as-of; identity uses ``read_identity_resolution(latest=True)``)
+and enforces rights only through ``engine.theme_graph.rights`` — never a raw parquet
+read, never a second rights implementation. Nothing in the scoring path may import
+this package.
 
 No re-exports beyond the three public names below.
 """

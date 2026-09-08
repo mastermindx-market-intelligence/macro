@@ -437,3 +437,246 @@ def test_post_6809_fixture_needs_no_code_change():
     theme = m.themes[0]
     assert theme.state == "OK"
     assert theme.companies[0]["paths"][0]["path_kind"] == "direct_membership"
+
+
+def test_production_edge_reader_is_honest_about_history_read():
+    import inspect
+
+    from engine.market_ontology.exposure_map import _DefaultStoreView, _EDGE_READER
+
+    src = inspect.getsource(_DefaultStoreView.read_edges)
+    assert "read_edges(latest_belief=False)" in src
+    assert "latest_belief=True" not in src
+    assert _EDGE_READER == "engine.theme_graph.store.read_edges(latest_belief=False)"
+
+    m = _compose(
+        FakeStore([edge("e1", "MEMBER_OF", "co:us:A", "ltheme:finviz:x")]),
+        _spec(["ltheme:finviz:x"]),
+    )
+    assert m.provenance["edge_reader"] == _EDGE_READER
+    const = _schema()["properties"]["provenance"]["properties"]["edge_reader"]["const"]
+    assert const == _EDGE_READER
+    jsonschema.validate(to_json(m), _schema())
+
+
+def test_rights_blocked_companies_are_not_ok_empty_list():
+    def family(node_id):
+        nid = str(node_id or "")
+        if nid.startswith("co:"):
+            return "vendor_co"
+        from engine.theme_graph import rights
+
+        return rights.family_for_node_id(node_id)
+
+    edges = [
+        edge("e1", "MEMBER_OF", "co:us:A", "theme:gold"),
+        edge("e2", "MEMBER_OF", "co:us:B", "theme:gold"),
+    ]
+    m = _compose(
+        FakeStore(edges), _spec(["theme:gold"]),
+        family_resolver=family, assert_allowed=_refuse("vendor_co"),
+    )
+    theme = m.themes[0]
+    assert theme.state == "RIGHTS_SUPPRESSED"
+    assert theme.companies is None
+    assert theme.company_count is None
+    assert theme.unavailable["code"] == "RIGHTS_SUPPRESSED"
+    assert "cannot be shown" in theme.unavailable["reason"]["en"]
+    assert theme.unavailable["reason"]["zh"]
+    payload = to_json(m)
+    assert payload["themes"][0]["companies"] is None
+    assert payload["themes"][0]["company_count"] is None
+    subjects = {a["subject_id"] for a in theme.abstentions}
+    assert subjects == {"co:us:A", "co:us:B"}
+    jsonschema.validate(payload, _schema())
+
+
+def test_partial_company_rights_keeps_allowed_rows():
+    def family(node_id):
+        return "vendor_co" if str(node_id) == "co:us:SECRET" else None
+
+    edges = [
+        edge("e1", "MEMBER_OF", "co:us:A", "theme:gold"),
+        edge("e2", "MEMBER_OF", "co:us:SECRET", "theme:gold"),
+    ]
+    m = _compose(
+        FakeStore(edges), _spec(["theme:gold"]),
+        family_resolver=family, assert_allowed=_refuse("vendor_co"),
+    )
+    theme = m.themes[0]
+    assert theme.state == "OK"
+    assert [c["company_node_id"] for c in theme.companies] == ["co:us:A"]
+    assert theme.company_count == 1
+    assert any(
+        a["code"] == "RIGHTS_SUPPRESSED" and a["subject_id"] == "co:us:SECRET"
+        for a in theme.abstentions
+    )
+    assert "co:us:SECRET" not in json.dumps(theme.companies)
+
+
+def test_company_rights_family_string_validates():
+    def family(node_id):
+        return "finviz_themes" if str(node_id).startswith("co:") else None
+
+    edges = [edge("e1", "MEMBER_OF", "co:us:A", "theme:gold")]
+    m = _compose(FakeStore(edges), _spec(["theme:gold"]), family_resolver=family)
+    company = m.themes[0].companies[0]
+    assert company["rights_family"] == "finviz_themes"
+    jsonschema.validate(to_json(m), _schema())
+
+
+def test_owner_rights_gate_refuses_unresolved_vendor_families():
+    from engine.theme_graph.rights import RightsRefusal, assert_public_emission_allowed
+
+    with pytest.raises(RightsRefusal, match="finviz_themes"):
+        assert_public_emission_allowed("finviz_themes")
+    with pytest.raises(RightsRefusal, match="ths_concepts"):
+        assert_public_emission_allowed("ths_concepts")
+
+    edges = [edge("e1", "MEMBER_OF", "co:us:A", "ltheme:finviz:x")]
+    m = compose_exposure_map(
+        FakeStore(edges), _spec(["ltheme:finviz:x"]), asof="2026-06-01",
+        chain_loader=_chain_loader,
+    )
+    theme = m.themes[0]
+    assert theme.state == "RIGHTS_SUPPRESSED"
+    assert theme.companies is None
+    assert theme.rights_family == "finviz_themes"
+    assert theme.unavailable["code"] == "RIGHTS_SUPPRESSED"
+    assert "co:us:A" not in json.dumps(to_json(m))
+
+
+def test_owner_rights_gate_allows_house_curated_basket():
+    edges = [
+        edge("e1", "MEMBER_OF", "co:us:A", "basket:baskets:gold"),
+        edge("e2", "EXPRESSES", "basket:baskets:gold", "theme:gold"),
+    ]
+    m = compose_exposure_map(
+        FakeStore(edges), _spec(["theme:gold"]), asof="2026-06-01",
+        chain_loader=_chain_loader,
+    )
+    theme = m.themes[0]
+    assert theme.state == "OK"
+    assert [c["company_node_id"] for c in theme.companies] == ["co:us:A"]
+    assert theme.companies[0]["paths"][0]["path_kind"] == "basket_bridge"
+
+
+def test_rights_refused_bridge_is_not_no_membership_yet():
+    edges = [
+        edge("e1", "EXPRESSES", "ltheme:finviz:L", "theme:t1"),
+        edge("e2", "MEMBER_OF", "co:us:Z", "ltheme:finviz:L"),
+    ]
+    m = _compose(
+        FakeStore(edges), _spec(["theme:t1"]),
+        assert_allowed=_refuse("finviz_themes"),
+    )
+    theme = m.themes[0]
+    assert theme.state == "RIGHTS_SUPPRESSED"
+    assert theme.companies is None
+    assert theme.unavailable["code"] == "RIGHTS_SUPPRESSED"
+    assert "cannot be shown" in theme.unavailable["reason"]["en"]
+    assert "has not been recorded" not in theme.unavailable["reason"]["en"]
+    assert "尚未被记录" not in theme.unavailable["reason"]["zh"]
+
+    real = compose_exposure_map(
+        FakeStore(edges), _spec(["theme:t1"]), asof="2026-06-01",
+        chain_loader=_chain_loader,
+    )
+    assert real.themes[0].state == "RIGHTS_SUPPRESSED"
+    assert "has not been recorded" not in real.themes[0].unavailable["reason"]["en"]
+
+
+def test_null_src_member_of_is_typed_null_not_raise():
+    edges = [edge("e1", "MEMBER_OF", None, "ltheme:finviz:x")]
+    m = _compose(FakeStore(edges), _spec(["ltheme:finviz:x"]))
+    theme = m.themes[0]
+    assert theme.state == "NO_MEMBERSHIP_YET"
+    assert theme.companies is None
+    assert theme.unavailable["code"] == "NO_MEMBERSHIP_YET"
+
+
+def test_null_src_expresses_is_typed_null_not_raise():
+    edges = [edge("e1", "EXPRESSES", None, "theme:t1")]
+    m = _compose(FakeStore(edges), _spec(["theme:t1"]))
+    theme = m.themes[0]
+    assert theme.state == "NO_MEMBERSHIP_YET"
+    assert theme.companies is None
+    assert theme.unavailable["code"] == "NO_MEMBERSHIP_YET"
+
+
+def test_collapse_tie_on_same_belief_and_computed_at_is_deterministic():
+    a = edge(
+        "e1", "MEMBER_OF", "co:us:B", "ltheme:finviz:x",
+        belief_time="2026-01-01", computed_at="2026-01-01T00:00:00Z",
+    )
+    b = edge(
+        "e1", "MEMBER_OF", "co:us:A", "ltheme:finviz:x",
+        belief_time="2026-01-01", computed_at="2026-01-01T00:00:00Z",
+    )
+    m1 = _compose(FakeStore([a, b]), _spec(["ltheme:finviz:x"]))
+    m2 = _compose(FakeStore([b, a]), _spec(["ltheme:finviz:x"]))
+    assert json.dumps(to_json(m1)) == json.dumps(to_json(m2))
+    assert [c["company_node_id"] for c in m1.themes[0].companies] == ["co:us:B"]
+    law = "max belief_time <= asof per edge_id; ties on computed_at then src then dst"
+    assert m1.provenance["belief_collapse"] == law
+    const = _schema()["properties"]["provenance"]["properties"]["belief_collapse"]["const"]
+    assert const == law
+
+
+def test_later_belief_coexisting_with_eligible_row_is_not_silent():
+    edges = [
+        edge(
+            "e1", "MEMBER_OF", "co:us:A", "ltheme:finviz:x",
+            belief_time="2026-01-01", computed_at="2026-01-01T00:00:00Z",
+        ),
+        edge(
+            "e1", "MEMBER_OF", "co:us:A", "ltheme:finviz:x",
+            belief_time="2026-09-01", computed_at="2026-09-01T00:00:00Z",
+        ),
+    ]
+    m = _compose(FakeStore(edges), _spec(["ltheme:finviz:x"]), asof="2026-06-01")
+    theme = m.themes[0]
+    assert theme.state == "OK"
+    assert [c["company_node_id"] for c in theme.companies] == ["co:us:A"]
+    after = [a for a in theme.abstentions if a["code"] == "BELIEF_AFTER_ASOF"]
+    assert len(after) == 1
+    assert after[0]["subject_id"] == "e1"
+    assert "later update" in after[0]["reason"]["en"]
+
+
+def test_copied_helpers_match_theme_adapter_on_shared_inputs():
+    from engine.intelligence_workspace.adapters import theme as theme_ad
+    from engine.market_ontology import exposure_map as em
+
+    rows = [{"a": 1}, {"a": 2}]
+    assert em._records(rows) == theme_ad._records(rows)
+
+    class _Frame:
+        def to_dict(self, orient):
+            assert orient == "records"
+            return rows
+
+    assert em._records(_Frame()) == theme_ad._records(_Frame())
+
+    for bad in (None, "not-tabular", 12):
+        with pytest.raises(TypeError):
+            em._records(bad)
+        with pytest.raises(TypeError):
+            theme_ad._records(bad)
+
+    for value in (None, "", 0, "x", datetime.date(2026, 1, 1)):
+        assert em._is_null(value) is theme_ad._is_null(value)
+
+    for value in (
+        None,
+        datetime.date(2026, 1, 1),
+        datetime.datetime(2026, 1, 2, 15, 0),
+        "2026-03-04",
+    ):
+        assert em._date(value) == theme_ad._date(value)
+
+    # Totality law: a malformed date is data-availability, never a raise here.
+    # The theme adapter still raises — that divergence is pinned, not silent.
+    assert em._date("not-a-date") is None
+    with pytest.raises(ValueError):
+        theme_ad._date("not-a-date")

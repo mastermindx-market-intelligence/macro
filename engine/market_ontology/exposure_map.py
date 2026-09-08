@@ -36,9 +36,15 @@ SCHEMA_ID = "market_ontology.exposure_map/v1"
 ENGINE_VERSION = "market_ontology.exposure_map.v1"
 AUTHORITY_CEILING = "research_display_only"
 
-_EDGE_READER = "engine.theme_graph.store.read_edges(latest_belief=True)"
+# Production reads the append-only history. The owner's latest_belief=True view is
+# as-of-independent (one row per edge_id at max belief_time overall) and cannot
+# supply an earlier belief for a historical as-of; this module collapses itself.
+_EDGE_READER = "engine.theme_graph.store.read_edges(latest_belief=False)"
 _IDENTITY_READER = "engine.theme_graph.store.read_identity_resolution(latest=True)"
 _CHAIN_READER = "engine.transmission_chains.load_chains()"
+_BELIEF_COLLAPSE = (
+    "max belief_time <= asof per edge_id; ties on computed_at then src then dst"
+)
 
 # --- §3.1 id grammars (closed allowlist) -----------------------------------------
 
@@ -46,16 +52,16 @@ _COMPANY_ID_RE = re.compile(r"^co:(us|cn|hk|ca|intl):[A-Za-z0-9.\-]+(#[0-9]+)?$"
 _LOCAL_THEME_ID_RE = re.compile(r"^ltheme:(finviz|ths):[A-Za-z0-9_.\-]+$")
 
 
-def _is_company_id(node_id: str) -> bool:
-    return bool(_COMPANY_ID_RE.match(node_id))
+def _is_company_id(node_id: object) -> bool:
+    return isinstance(node_id, str) and bool(_COMPANY_ID_RE.match(node_id))
 
 
-def _is_local_theme_id(node_id: str) -> bool:
-    return bool(_LOCAL_THEME_ID_RE.match(node_id))
+def _is_local_theme_id(node_id: object) -> bool:
+    return isinstance(node_id, str) and bool(_LOCAL_THEME_ID_RE.match(node_id))
 
 
-def _is_canonical_theme_id(node_id: str) -> bool:
-    return node_id.startswith("theme:")
+def _is_canonical_theme_id(node_id: object) -> bool:
+    return isinstance(node_id, str) and node_id.startswith("theme:")
 
 
 def _is_known_theme_grammar(node_id: str) -> bool:
@@ -251,11 +257,6 @@ class _DefaultStoreView:
     def read_edges(self) -> Any:
         from engine.theme_graph.store import read_edges
 
-        # Full belief history, NOT latest_belief=True: this module performs its own
-        # as-of-aware collapse in _collapse_and_filter_edges (max belief_time <= asof
-        # per edge_id). The store's own latest_belief=True view is a single
-        # asof-independent row per edge_id (max belief_time overall) and can never
-        # supply an earlier belief for a historical as-of.
         return read_edges(latest_belief=False)
 
     def read_identity_resolution(self) -> Any:
@@ -364,18 +365,23 @@ def _collapse_and_filter_edges(
                 future.append(row)
             else:
                 eligible.append(row)
+        if future:
+            dst = str(future[0].get("dst") or "")
+            entry = _unavailable("BELIEF_AFTER_ASOF", subject_id=eid)
+            entry["_dst"] = dst
+            abstentions.append(entry)
         if not eligible:
-            if future:
-                dst = str(future[0].get("dst") or "")
-                entry = _unavailable("BELIEF_AFTER_ASOF", subject_id=eid)
-                entry["_dst"] = dst
-                abstentions.append(entry)
             continue
 
-        def _sort_key(row: Mapping[str, Any]) -> tuple[Any, Any]:
+        def _sort_key(row: Mapping[str, Any]) -> tuple[Any, ...]:
+            # Total order: same-edge_id rows can share belief_time and computed_at
+            # while differing on src/dst; edge_id is the group key so it cannot
+            # break that tie. Node ids are identifiers, never a magnitude (G0.11).
             belief = _date(row.get("belief_time")) or datetime.date.min
-            computed = row.get("computed_at") or ""
-            return (belief, str(computed))
+            computed = "" if _is_null(row.get("computed_at")) else str(row.get("computed_at"))
+            src = "" if _is_null(row.get("src")) else str(row.get("src"))
+            dst = "" if _is_null(row.get("dst")) else str(row.get("dst"))
+            return (belief, computed, src, dst)
 
         selected = sorted(eligible, key=_sort_key)[-1]
 
@@ -426,13 +432,14 @@ def _walk_theme(
 
     # Path A — direct_membership (1 hop).
     for edge in member_of_by_dst.get(theme_id, []):
-        if _is_company_id(edge["src"]):
-            hits.append(_PathHit(edge["src"], "direct_membership", 1, None, (edge["edge_id"],)))
+        src = edge.get("src")
+        if _is_company_id(src):
+            hits.append(_PathHit(src, "direct_membership", 1, None, (edge["edge_id"],)))
 
     # Path B — basket_bridge (2 hops).
     for edge in expresses_by_dst.get(theme_id, []):
-        basket = edge["src"]
-        if not basket.startswith("basket:"):
+        basket = edge.get("src")
+        if not isinstance(basket, str) or not basket.startswith("basket:"):
             continue
         family = family_resolver(basket)
         if family is not None:
@@ -452,7 +459,7 @@ def _walk_theme(
     # Path C — local_theme_bridge (2 hops), only for canonical theme:* ids.
     if _is_canonical_theme_id(theme_id):
         for edge in expresses_by_dst.get(theme_id, []):
-            ltheme = edge["src"]
+            ltheme = edge.get("src")
             if not _is_local_theme_id(ltheme):
                 continue
             family = family_resolver(ltheme)
@@ -585,6 +592,21 @@ def _compose_theme(
 
     if not hits:
         abstentions = sorted(path_abstentions, key=lambda a: (a["code"], a["subject_id"] or ""))
+        # A rights-refused bridge is not "membership not recorded yet": that sentence
+        # asserts a false data fact. When every walkable bridge was refused and no
+        # allowed path produced a company, the theme is rights-suppressed.
+        rights_blocked_every_bridge = (
+            any(a["code"] == "RIGHTS_SUPPRESSED" for a in path_abstentions)
+            and not baskets_used
+            and not lthemes_used
+        )
+        if rights_blocked_every_bridge:
+            return _with_clock({
+                **base, "state": "RIGHTS_SUPPRESSED",
+                "unavailable": _unavailable("RIGHTS_SUPPRESSED", subject_id=theme_id),
+                "companies": None, "company_count": None, "distinct_security_count": None,
+                "etf_proxies": None, "abstentions": abstentions,
+            }, {theme_id})
         return _with_clock({
             **base, "state": "NO_MEMBERSHIP_YET",
             "unavailable": _unavailable("NO_MEMBERSHIP_YET", subject_id=theme_id),
@@ -633,6 +655,20 @@ def _compose_theme(
             "paths": paths,
         })
 
+    if not company_rows and company_rights_abstentions:
+        # Hits existed but every company was rights-blocked. An empty companies
+        # list under state OK reads as "no exposure" — acceptance 7 forbids that.
+        all_abstentions = sorted(
+            path_abstentions + company_rights_abstentions,
+            key=lambda a: (a["code"], a["subject_id"] or ""),
+        )
+        return _with_clock({
+            **base, "state": "RIGHTS_SUPPRESSED",
+            "unavailable": _unavailable("RIGHTS_SUPPRESSED", subject_id=theme_id),
+            "companies": None, "company_count": None, "distinct_security_count": None,
+            "etf_proxies": None, "abstentions": all_abstentions,
+        }, bridge_dsts)
+
     # Identity collision (§3.6).
     by_security: dict[str, list[str]] = {}
     for row in company_rows:
@@ -661,7 +697,9 @@ def _compose_theme(
         any_tracks = False
         for basket in sorted(baskets_used):
             for tedge in tracks_by_dst.get(basket, []):
-                etf_id = tedge["src"]
+                etf_id = tedge.get("src")
+                if not isinstance(etf_id, str):
+                    continue
                 any_tracks = True
                 etf_family = family_resolver(etf_id)
                 if etf_family is not None:
@@ -734,7 +772,7 @@ def compose_exposure_map(
         "chain_reader": _CHAIN_READER,
         "store_meta": None,
         "engine_version": ENGINE_VERSION,
-        "belief_collapse": "max belief_time <= asof per edge_id; ties on computed_at then edge_id",
+        "belief_collapse": _BELIEF_COLLAPSE,
     }
 
     if chain is None:
