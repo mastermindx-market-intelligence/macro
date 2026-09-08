@@ -171,6 +171,10 @@ _REASONS: dict[str, tuple[str, str]] = {
         "Two different identifiers resolved to the same security here.",
         "此处两个不同的标识符指向了同一证券。",
     ),
+    "UNKNOWN_RIGHTS_FAMILY": (
+        "This source is not a reviewed family, so its company list cannot be shown here.",
+        "该来源不属于已审核的数据族，其公司名单在此处不可展示。",
+    ),
 }
 
 
@@ -303,6 +307,40 @@ def _default_assert_allowed(family: str) -> None:
     rights.assert_public_emission_allowed(family)
 
 
+def _is_rights_bearing_plane(node_id: object) -> bool:
+    """Vendor planes whose prefix must resolve to a reviewed family, or refuse."""
+    return isinstance(node_id, str) and (
+        node_id.startswith("basket:") or node_id.startswith("ltheme:")
+    )
+
+
+def _emission_refused(
+    node_id: object,
+    family: str | None,
+    assert_allowed: Callable[[str], None],
+) -> dict[str, Any] | None:
+    """Typed rights abstention, or None if this node may be emitted.
+
+    A ``basket:`` / ``ltheme:`` id whose prefix is not in the owner's
+    ``NODE_PREFIX_FAMILY`` table has no family — that is
+    ``UNKNOWN_RIGHTS_FAMILY``, fail closed, never assumed safe. A registered
+    family is checked through ``assert_allowed``. Company, canonical-theme and
+    ETF ids carry no family by construction and stay ungated unless a resolver
+    assigns one.
+    """
+    if family is None:
+        if _is_rights_bearing_plane(node_id):
+            return _unavailable("UNKNOWN_RIGHTS_FAMILY", subject_id=str(node_id))
+        return None
+    try:
+        assert_allowed(family)
+    except Exception:
+        return _unavailable(
+            "RIGHTS_SUPPRESSED", subject_id=str(node_id), detail=family,
+        )
+    return None
+
+
 # --- as-of parsing -----------------------------------------------------------------
 
 def _parse_asof(asof: datetime.date | str) -> datetime.date:
@@ -340,16 +378,31 @@ def _normalise_edge(row: Mapping[str, Any]) -> dict[str, Any]:
     return out
 
 
+def _edge_row_order_key(row: Mapping[str, Any]) -> tuple[str, str, str, str]:
+    """Total order for raw edge rows: (edge_id, computed_at, src, dst)."""
+    eid = "" if _is_null(row.get("edge_id")) else str(row.get("edge_id"))
+    computed = "" if _is_null(row.get("computed_at")) else str(row.get("computed_at"))
+    src = "" if _is_null(row.get("src")) else str(row.get("src"))
+    dst = "" if _is_null(row.get("dst")) else str(row.get("dst"))
+    return (eid, computed, src, dst)
+
+
 def _collapse_and_filter_edges(
     raw_rows: list[Mapping[str, Any]], asof: datetime.date,
 ) -> tuple[dict[str, dict[str, Any]], list[dict[str, Any]]]:
     """Group raw edge rows by edge_id, collapse to the belief in view at ``asof``,
     then apply the point-in-time filter (§3.4). Returns (in_view_by_edge_id,
-    clock_mismatch_abstentions)."""
+    clock_mismatch_abstentions).
+
+    Candidate rows are sorted by ``(edge_id, computed_at, src, dst)`` before any
+    grouping or first-wins logic so the BELIEF_AFTER_ASOF attribution set cannot
+    depend on input order. Every distinct future ``dst`` for an edge receives
+    the abstention — not whichever row happened to arrive first.
+    """
     by_id: dict[str, list[Mapping[str, Any]]] = {}
-    for row in raw_rows:
+    for row in sorted(raw_rows, key=_edge_row_order_key):
         eid = row.get("edge_id")
-        if eid is None:
+        if _is_null(eid):
             continue
         by_id.setdefault(str(eid), []).append(row)
 
@@ -366,10 +419,14 @@ def _collapse_and_filter_edges(
             else:
                 eligible.append(row)
         if future:
-            dst = str(future[0].get("dst") or "")
-            entry = _unavailable("BELIEF_AFTER_ASOF", subject_id=eid)
-            entry["_dst"] = dst
-            abstentions.append(entry)
+            dsts = sorted({
+                ("" if _is_null(row.get("dst")) else str(row.get("dst")))
+                for row in future
+            })
+            for dst in dsts:
+                entry = _unavailable("BELIEF_AFTER_ASOF", subject_id=eid)
+                entry["_dst"] = dst
+                abstentions.append(entry)
         if not eligible:
             continue
 
@@ -442,12 +499,10 @@ def _walk_theme(
         if not isinstance(basket, str) or not basket.startswith("basket:"):
             continue
         family = family_resolver(basket)
-        if family is not None:
-            try:
-                assert_allowed(family)
-            except Exception:
-                abstentions.append(_unavailable("RIGHTS_SUPPRESSED", subject_id=basket, detail=family))
-                continue
+        refused = _emission_refused(basket, family, assert_allowed)
+        if refused is not None:
+            abstentions.append(refused)
+            continue
         baskets_used.add(basket)
         for member_edge in member_of_by_dst.get(basket, []):
             if _is_company_id(member_edge["src"]):
@@ -463,12 +518,10 @@ def _walk_theme(
             if not _is_local_theme_id(ltheme):
                 continue
             family = family_resolver(ltheme)
-            if family is not None:
-                try:
-                    assert_allowed(family)
-                except Exception:
-                    abstentions.append(_unavailable("RIGHTS_SUPPRESSED", subject_id=ltheme, detail=family))
-                    continue
+            refused = _emission_refused(ltheme, family, assert_allowed)
+            if refused is not None:
+                abstentions.append(refused)
+                continue
             lthemes_used.add(ltheme)
             for member_edge in member_of_by_dst.get(ltheme, []):
                 if _is_company_id(member_edge["src"]):
@@ -562,16 +615,17 @@ def _compose_theme(
         "rights_family": theme_family, "name": theme_name,
     }
 
-    if theme_family is not None:
-        try:
-            assert_allowed(theme_family)
-        except Exception:
-            return {
-                **base, "state": "RIGHTS_SUPPRESSED",
-                "unavailable": _unavailable("RIGHTS_SUPPRESSED", subject_id=theme_id, detail=theme_family),
-                "companies": None, "company_count": None, "distinct_security_count": None,
-                "etf_proxies": None, "abstentions": [],
-            }
+    # Clock abstentions are omitted on a rights-refused theme so a later-belief
+    # edge cannot leak through the unavailable/abstention lists of a family we
+    # may not show. Sibling OK / NO_* returns call _with_clock; this one does not.
+    theme_refused = _emission_refused(theme_id, theme_family, assert_allowed)
+    if theme_refused is not None:
+        return {
+            **base, "state": "RIGHTS_SUPPRESSED",
+            "unavailable": theme_refused,
+            "companies": None, "company_count": None, "distinct_security_count": None,
+            "etf_proxies": None, "abstentions": [],
+        }
 
     has_any_edge = bool(member_of_by_dst.get(theme_id)) or bool(expresses_by_dst.get(theme_id)) or any(
         e["src"] == theme_id or e["dst"] == theme_id for e in edges_by_id.values()
@@ -596,14 +650,17 @@ def _compose_theme(
         # asserts a false data fact. When every walkable bridge was refused and no
         # allowed path produced a company, the theme is rights-suppressed.
         rights_blocked_every_bridge = (
-            any(a["code"] == "RIGHTS_SUPPRESSED" for a in path_abstentions)
+            any(a["code"] in ("RIGHTS_SUPPRESSED", "UNKNOWN_RIGHTS_FAMILY")
+                for a in path_abstentions)
             and not baskets_used
             and not lthemes_used
         )
         if rights_blocked_every_bridge:
+            unknown = any(a["code"] == "UNKNOWN_RIGHTS_FAMILY" for a in path_abstentions)
+            unavail_code = "UNKNOWN_RIGHTS_FAMILY" if unknown else "RIGHTS_SUPPRESSED"
             return _with_clock({
                 **base, "state": "RIGHTS_SUPPRESSED",
-                "unavailable": _unavailable("RIGHTS_SUPPRESSED", subject_id=theme_id),
+                "unavailable": _unavailable(unavail_code, subject_id=theme_id),
                 "companies": None, "company_count": None, "distinct_security_count": None,
                 "etf_proxies": None, "abstentions": abstentions,
             }, {theme_id})
@@ -623,17 +680,16 @@ def _compose_theme(
     company_rights_abstentions: list[dict[str, Any]] = []
     for company_id in sorted(by_company):
         # M2: the rights gate is node-id-based (owner-side, engine.theme_graph.rights)
-        # and applies to EVERY emitted node id, company ids included — never assumed
-        # safe merely because today's registry maps no co: prefix to a family.
+        # and applies to every emitted node id. A basket:/ltheme: prefix that
+        # family_for_node_id does not resolve is UNKNOWN_RIGHTS_FAMILY — fail
+        # closed, never assumed safe because today's table maps no such prefix.
+        # Company ids carry no family by construction and stay ungated unless a
+        # resolver assigns one; an assigned family is then checked like any other.
         company_family = family_resolver(company_id)
-        if company_family is not None:
-            try:
-                assert_allowed(company_family)
-            except Exception:
-                company_rights_abstentions.append(
-                    _unavailable("RIGHTS_SUPPRESSED", subject_id=company_id, detail=company_family)
-                )
-                continue
+        company_refused = _emission_refused(company_id, company_family, assert_allowed)
+        if company_refused is not None:
+            company_rights_abstentions.append(company_refused)
+            continue
         company_hits = by_company[company_id]
         paths: list[dict[str, Any]] = []
         for hit in company_hits:
@@ -702,14 +758,10 @@ def _compose_theme(
                     continue
                 any_tracks = True
                 etf_family = family_resolver(etf_id)
-                if etf_family is not None:
-                    try:
-                        assert_allowed(etf_family)
-                    except Exception:
-                        etf_abstentions.append(
-                            _unavailable("RIGHTS_SUPPRESSED", subject_id=etf_id, detail=etf_family)
-                        )
-                        continue
+                etf_refused = _emission_refused(etf_id, etf_family, assert_allowed)
+                if etf_refused is not None:
+                    etf_abstentions.append(etf_refused)
+                    continue
                 found.append({
                     "etf_node_id": etf_id, "via_basket_node_id": basket,
                     "rights_family": etf_family, "edges": [tedge],

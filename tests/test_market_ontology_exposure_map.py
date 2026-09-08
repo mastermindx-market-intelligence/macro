@@ -680,3 +680,83 @@ def test_copied_helpers_match_theme_adapter_on_shared_inputs():
     assert em._date("not-a-date") is None
     with pytest.raises(ValueError):
         theme_ad._date("not-a-date")
+
+
+def test_belief_after_asof_attribution_is_order_independent_across_themes():
+    """NM1: one edge_id with future rows on two themes must attribute both,
+    and the serialized payload must be byte-identical under input reversal."""
+    future_a = edge(
+        "e9", "MEMBER_OF", "co:us:NEW", "theme:a",
+        belief_time="2026-12-01", computed_at="2026-12-01T00:00:00Z",
+    )
+    future_b = edge(
+        "e9", "MEMBER_OF", "co:us:NEWER", "theme:b",
+        belief_time="2026-12-02", computed_at="2026-12-02T00:00:00Z",
+    )
+    eligible_a = edge(
+        "ea", "MEMBER_OF", "co:us:OLD", "theme:a",
+        belief_time="2026-01-01", computed_at="2026-01-01T00:00:00Z",
+    )
+    eligible_b = edge(
+        "eb", "MEMBER_OF", "co:us:OLD2", "theme:b",
+        belief_time="2026-01-01", computed_at="2026-01-01T00:00:00Z",
+    )
+    fwd = [future_a, future_b, eligible_a, eligible_b]
+    rev = list(reversed(fwd))
+    spec = _spec(["theme:a", "theme:b"])
+    m_fwd = _compose(FakeStore(fwd), spec, asof="2026-06-01")
+    m_rev = _compose(FakeStore(rev), spec, asof="2026-06-01")
+    payload_fwd = json.dumps(to_json(m_fwd), sort_keys=False)
+    payload_rev = json.dumps(to_json(m_rev), sort_keys=False)
+    assert payload_fwd == payload_rev
+
+    def attribution(payload_theme):
+        return {(a["code"], a["subject_id"]) for a in payload_theme.abstentions}
+
+    by_id_fwd = {t.theme_node_id: t for t in m_fwd.themes}
+    by_id_rev = {t.theme_node_id: t for t in m_rev.themes}
+    assert attribution(by_id_fwd["theme:a"]) == attribution(by_id_rev["theme:a"])
+    assert attribution(by_id_fwd["theme:b"]) == attribution(by_id_rev["theme:b"])
+    assert ("BELIEF_AFTER_ASOF", "e9") in attribution(by_id_fwd["theme:a"])
+    assert ("BELIEF_AFTER_ASOF", "e9") in attribution(by_id_fwd["theme:b"])
+    jsonschema.validate(to_json(m_fwd), _schema())
+
+
+def test_unknown_basket_prefix_fails_closed_on_real_gate():
+    """NM2: an unregistered basket: prefix must not emit through the production gate."""
+    edges = [
+        edge("e1", "EXPRESSES", "basket:newvendor:x", "theme:g"),
+        edge("e2", "MEMBER_OF", "co:us:LEAK", "basket:newvendor:x"),
+    ]
+    m = compose_exposure_map(
+        FakeStore(edges), _spec(["theme:g"]), asof="2026-06-01",
+        chain_loader=_chain_loader,
+    )
+    theme = m.themes[0]
+    assert theme.state == "RIGHTS_SUPPRESSED"
+    assert theme.companies is None
+    assert theme.company_count is None
+    assert theme.unavailable["code"] == "UNKNOWN_RIGHTS_FAMILY"
+    dumped = json.dumps(to_json(m))
+    assert "co:us:LEAK" not in dumped
+    src = MODULE_PATH.read_text()
+    assert "UNKNOWN_RIGHTS_FAMILY" in src
+    assert "never assumed safe because today's table maps no such prefix" in src
+    jsonschema.validate(to_json(m), _schema())
+
+
+def test_production_compose_has_no_allow_all_default():
+    """NM2: _allow_all is fixture-only; compose_exposure_map cannot reach it."""
+    import inspect
+
+    from engine.market_ontology import exposure_map as em
+
+    src = inspect.getsource(em.compose_exposure_map)
+    assert "_allow_all" not in src
+    assert "assert_allowed = assert_allowed or _default_assert_allowed" in src
+    sig = inspect.signature(em.compose_exposure_map)
+    assert sig.parameters["assert_allowed"].default is None
+    fallback = inspect.getsource(em._default_assert_allowed)
+    assert "assert_public_emission_allowed" in fallback
+    assert "_allow_all" not in fallback
+    assert "_allow_all" not in MODULE_PATH.read_text()

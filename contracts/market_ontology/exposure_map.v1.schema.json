@@ -44,7 +44,7 @@
           "enum": [
             "SHOCK_UNKNOWN", "NO_THEMES_DECLARED", "NO_THEME_EDGES", "NO_MEMBERSHIP_YET",
             "RIGHTS_SUPPRESSED", "IDENTITY_UNRESOLVED", "STORE_UNAVAILABLE", "NO_ETF_EDGES",
-            "BELIEF_AFTER_ASOF", "IDENTITY_COLLISION"
+            "BELIEF_AFTER_ASOF", "IDENTITY_COLLISION", "UNKNOWN_RIGHTS_FAMILY"
           ]
         },
         "reason": {"$ref": "#/$defs/bilingual"},
