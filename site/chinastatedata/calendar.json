@@ -1,57 +1,9 @@
 {
   "schema": "china_calendar.v1",
-  "asof": "2026-09-04",
-  "generated_at_utc": "2026-09-05T21:08:41.028449+00:00",
+  "asof": "2026-09-08",
+  "generated_at_utc": "2026-09-08T15:15:48.396639+00:00",
   "horizon_days": 45,
   "entries": [
-    {
-      "date": "2026-09-04",
-      "window_end": null,
-      "etype": "US_NFP",
-      "label_en": "US payrolls (NFP)",
-      "label_zh": "美国非农就业",
-      "region": "hk",
-      "impact": "high",
-      "source_class": "rule",
-      "source": "engine.hk_event_calendar",
-      "approx": false
-    },
-    {
-      "date": "2026-09-07",
-      "window_end": null,
-      "etype": "FXRES",
-      "label_en": "FX reserves (SAFE)",
-      "label_zh": "外汇储备（外管局）",
-      "region": "cn",
-      "impact": "medium",
-      "source_class": "rule",
-      "source": "engine.china_event_calendar",
-      "approx": true
-    },
-    {
-      "date": "2026-09-07",
-      "window_end": null,
-      "etype": "TRADE",
-      "label_en": "Customs trade (exports/imports)",
-      "label_zh": "海关进出口数据",
-      "region": "cn",
-      "impact": "high",
-      "source_class": "rule",
-      "source": "engine.china_event_calendar",
-      "approx": true
-    },
-    {
-      "date": "2026-09-07",
-      "window_end": null,
-      "etype": "omo_outright_repo_tender",
-      "label_en": "PBoC outright reverse repo tender — 3个月, RMB 500bn, matures 2026-12-05",
-      "label_zh": "央行买断式逆回购操作：3个月，5,000亿元，到期 2026-12-05",
-      "region": "cn",
-      "impact": "medium",
-      "source_class": "feed",
-      "source": "china_omo.operations",
-      "approx": false
-    },
     {
       "date": "2026-09-10",
       "window_end": null,
@@ -387,9 +339,46 @@
       "source_class": "static",
       "source": "engine.hk_event_calendar",
       "approx": false
+    },
+    {
+      "date": "2026-10-20",
+      "window_end": null,
+      "etype": "LPR",
+      "label_en": "LPR fix (loan prime rate)",
+      "label_zh": "LPR 报价（贷款市场报价利率）",
+      "region": "cn",
+      "impact": "high",
+      "source_class": "rule",
+      "source": "engine.china_event_calendar",
+      "approx": false
+    },
+    {
+      "date": "2026-10-20",
+      "window_end": "2026-12-15",
+      "etype": "politburo_econ",
+      "label_en": "Politburo / plenum window (autumn to year-end)",
+      "label_zh": "中央政治局会议／全会窗口（秋季至年末）",
+      "region": "cn",
+      "impact": "medium",
+      "source_class": "static",
+      "source": "china_calendar.political_windows",
+      "approx": true
+    },
+    {
+      "date": "2026-10-22",
+      "window_end": null,
+      "etype": "HK_CPI",
+      "label_en": "HK CPI (composite)",
+      "label_zh": "香港 CPI（综合）",
+      "region": "hk",
+      "impact": "high",
+      "source_class": "static",
+      "source": "engine.hk_event_calendar",
+      "approx": false
     }
   ],
   "data_gaps": [
+    "china_omo store holds no announced operation inside the horizon (the tape is present; the PBoC simply has nothing pending)",
     "china_earnings store holds no reporting month inside the horizon"
   ],
   "authority": {
