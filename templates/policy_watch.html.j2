@@ -504,7 +504,7 @@
     {# ── deterministic lifecycle ledger (engine.policy_intent_desk.lifecycle_view) ── #}
     {% if lifecycle %}
     <div class="pw-stage-glance">
-      {% if lifecycle.as_of %}<span class="pw-chip">{{ t('Stages as of','进程更新于') }} <strong>{{ lifecycle.as_of }}</strong></span>{% endif %}
+      {% if lifecycle.as_of %}<span class="pw-chip">{{ t('Newest dated stage','最新阶段日期') }} <strong>{{ lifecycle.as_of }}</strong></span>{% endif %}
       {% for key, en, zh in [('in_force','in force','已生效'),('passed','passed, not yet in force','已通过尚未生效'),('proposed','proposed','已提出'),('enforced','being enforced','正在执行'),('withdrawn','withdrawn','已撤回'),('struck_down','struck down','已被法院推翻'),('superseded','replaced','已被取代'),('unknown','not tracked yet','尚未跟踪')] %}
         {% if lifecycle.counts.get(key) %}<span class="pw-chip"><strong>{{ lifecycle.counts[key] }}</strong> {{ t(en, zh) }}</span>{% endif %}
       {% endfor %}
@@ -518,15 +518,19 @@
       <p class="pw-build-note">{{ t('Some logged stage rows do not match a tracked policy item and were skipped.','部分已登记的进程记录无法匹配跟踪中的政策项目，已跳过。') }}</p>
     {% endif %}
     {% if lifecycle['items'] and not lifecycle.null_reason %}
+    {% set ns_jur = namespace(any=false) %}
+    {% for _it in lifecycle['items'] %}{% if _it.jurisdiction_en %}{% set ns_jur.any = true %}{% endif %}{% endfor %}
     <div class="pw-stages">
       {% for it in lifecycle['items'] %}
       {% set copy = LEVER_COPY.get(it.id) %}
       {% set idx = it.stage_rank %}
+      {% set stage_en = STAGE_EN[it.state] if it.state in STAGE_EN else 'Not tracked yet' %}
+      {% set stage_zh = STAGE_ZH[it.state] if it.state in STAGE_ZH else '尚未跟踪' %}
       <article class="pw-stage{% if it.stalled %} is-stalled{% endif %}{% if it.state == 'unknown' %} is-unknown{% endif %}" data-policy-id="{{ it.id }}" data-state="{{ it.state }}">
         <div class="pw-stage-main">
           <h4 class="pw-stage-name">{{ bl(copy.title_en if copy else it.title_en, copy.title_zh if copy else it.title_zh) }}</h4>
           {% if it.jurisdiction_en %}<p class="pw-stage-jur">{{ bl(it.jurisdiction_en, it.jurisdiction_zh) }}</p>
-          {% else %}<p class="pw-stage-jur">{{ t('Jurisdiction not available yet','管辖范围暂不可用') }}</p>{% endif %}
+          {% elif ns_jur.any %}<p class="pw-stage-jur">{{ t('Jurisdiction not available yet','管辖范围暂不可用') }}</p>{% endif %}
           {% if it.detail_en %}<p class="pw-stage-detail">{{ bl(brief(it.detail_en, 220), brief(it.detail_zh, 110)) }}</p>{% endif %}
           {% if it.basis or it.confidence %}<div class="pw-meta-row">{{ basis_tags(it.basis) }}{% if it.confidence %}{{ confidence_tag(it.confidence) }}{% endif %}</div>{% endif %}
           {% if it.why == 'no_document' %}
@@ -534,13 +538,20 @@
           {% elif it.conflict %}
             <p class="pw-stage-why">{{ t('Records conflict — under review.','记录冲突，正在核实。') }}</p>
           {% elif it.next_step %}
-            <p class="pw-stage-next">{{ t('Next step to watch','下一步观察') }}: {{ bl(STAGE_EN[it.next_step.stage], STAGE_ZH[it.next_step.stage]) }} · {% if it.next_step.date %}<span class="pw-date">{{ it.next_step.date }}</span>{% else %}{{ t('No date published','未公布日期') }}{% endif %}</p>
+            <p class="pw-stage-next">{{ t('Next step to watch','下一步观察') }}: {{ bl(STOP_EN[it.next_step.stage], STOP_ZH[it.next_step.stage]) }} · {% if it.next_step.date %}<span class="pw-date">{{ it.next_step.date }}</span>{% else %}{{ t('No date published','未公布日期') }}{% endif %}</p>
           {% endif %}
-          {% if it.gaps %}<p class="pw-stage-why">{{ t('No published date for','未公布日期：') }} {% for gap in it.gaps %}{{ bl(STAGE_EN[gap], STAGE_ZH[gap]) }}{% if not loop.last %}, {% endif %}{% endfor %}</p>{% endif %}
+          {% if it.stalled %}
+            {% if lifecycle.intel_as_of %}
+            <p class="pw-stage-why">{{ bl("No movement for 45+ days as of " + lifecycle.intel_as_of + " — watch, don't chase.", "截至" + lifecycle.intel_as_of + "已超过 45 天没有推进——观察，不必追。") }}</p>
+            {% else %}
+            <p class="pw-stage-why">{{ t("No movement for 45+ days — watch, don't chase.",'超过 45 天没有推进——观察，不必追。') }}</p>
+            {% endif %}
+          {% endif %}
+          {% if it.gaps %}<p class="pw-stage-why">{{ t('No published date for','未公布日期：') }} {% for gap in it.gaps %}{{ bl(STOP_EN[gap], STOP_ZH[gap]) }}{% if not loop.last %}, {% endif %}{% endfor %}</p>{% endif %}
         </div>
         <div class="pw-stage-track">
           <div class="pw-stage-meter" role="img"
-               aria-label="Stage: {{ STAGE_EN[it.state] if it.state in STAGE_EN else 'Not tracked yet' }}{% if it.state_asof %} · {{ it.state_asof }}{% endif %}">
+               aria-label="{{ tp(stage_en, stage_zh) }}{% if it.stalled %} · {{ tp("No movement for 45+ days", "超过 45 天没有推进") }}{% endif %}{% if it.state_asof %} · {{ it.state_asof }}{% endif %}">
             {% for stop in ['proposed','passed','in_force','enforced'] %}
             <span class="pw-stage-seg{% if stop in it.reached %} is-reached{% endif %}{% if idx is not none and loop.index0 == idx %} is-current{% endif %}" aria-hidden="true"></span>
             {% endfor %}

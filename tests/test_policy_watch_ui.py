@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
@@ -173,3 +174,58 @@ def test_light_mode_changes_the_mechanism_not_only_the_token():
 def test_policy_watch_l1_section_count_is_unchanged():
     template = (ROOT / "templates" / "policy_watch.html.j2").read_text(encoding="utf-8")
     assert template.count('<section class="pw-section"') == 7
+
+
+def test_stalled_state_prints_plain_words(monkeypatch, tmp_path):
+    fixture = json.loads(json.dumps(LIFECYCLE_FIXTURE))
+    fixture["intel_as_of"] = "2026-07-13"
+    fixture["items"][1]["stalled"] = True
+    html = _render_policy_watch_with_lifecycle(fixture, monkeypatch, tmp_path)
+    assert "No movement for 45+ days as of 2026-07-13" in html
+    assert "截至2026-07-13已超过 45 天没有推进" in html
+    assert "is-stalled" in html
+    assert "No movement for 45+ days / 超过 45 天没有推进" in html
+
+
+def test_jurisdiction_eyebrow_suppressed_when_no_row_has_it(monkeypatch, tmp_path):
+    fixture = json.loads(json.dumps(LIFECYCLE_FIXTURE))
+    for it in fixture["items"]:
+        it["jurisdiction"] = None
+        it["jurisdiction_en"] = None
+        it["jurisdiction_zh"] = None
+    html = _render_policy_watch_with_lifecycle(fixture, monkeypatch, tmp_path)
+    assert "Jurisdiction not available yet" not in html
+    assert "管辖范围暂不可用" not in html
+    assert html.count('class="pw-stage"') + html.count('class="pw-stage is-unknown"') >= 3
+
+
+def test_jurisdiction_eyebrow_prints_only_on_the_missing_row(monkeypatch, tmp_path):
+    html = _render_policy_watch_with_lifecycle(LIFECYCLE_FIXTURE, monkeypatch, tmp_path)
+    assert html.count("Jurisdiction not available yet") == 1
+    assert "United States — federal" in html
+
+
+def test_newest_dated_stage_chip_is_not_a_last_checked_label(monkeypatch, tmp_path):
+    html = _render_policy_watch_with_lifecycle(LIFECYCLE_FIXTURE, monkeypatch, tmp_path)
+    assert "Newest dated stage" in html
+    assert "最新阶段日期" in html
+    assert "Stages as of" not in html
+    assert "进程更新于" not in html
+    assert "2026-09-01" in html
+
+
+def test_gap_and_next_step_use_short_stop_labels(monkeypatch, tmp_path):
+    fixture = json.loads(json.dumps(LIFECYCLE_FIXTURE))
+    fixture["items"][0]["gaps"] = ["proposed", "passed"]
+    html = _render_policy_watch_with_lifecycle(fixture, monkeypatch, tmp_path)
+    assert "No published date for" in html
+    assert "Passed, not yet in force" not in html.split("No published date for", 1)[1][:80]
+    assert "Next step to watch" in html
+    next_chunk = html.split("Next step to watch", 1)[1][:120]
+    assert "Passed, not yet in force" not in next_chunk
+
+
+def test_meter_aria_label_is_bilingual(monkeypatch, tmp_path):
+    html = _render_policy_watch_with_lifecycle(LIFECYCLE_FIXTURE, monkeypatch, tmp_path)
+    assert 'aria-label="In force / 已生效 · 2026-03-01"' in html
+    assert 'aria-label="Proposed / 已提出 · 2026-01-01"' in html

@@ -7,12 +7,15 @@ from __future__ import annotations
 import inspect
 import json
 import random
+import subprocess
 from pathlib import Path
 
+from engine import policy_intent_desk as _pid
 from engine.policy_intent_desk import (
     LIFECYCLE_EVENT_TYPES,
     LIFECYCLE_STAGES,
     STALL_DAYS,
+    _union_lifecycle_events,
     fold_lifecycle,
     ingest_lifecycle,
     lifecycle_events,
@@ -198,12 +201,16 @@ def test_seed_substrate_advances_real_shaped_levers(tmp_path):
     view = lifecycle_view(tmp_path)
     assert view["null_reason"] is None
     by_id = {it["id"]: it for it in view["items"]}
-    assert by_id["lever_issuance"]["state"] == "enforced"
-    assert by_id["lever_issuance"]["state_asof"]
-    assert by_id["lever_issuance"]["source"]["url"]
+    assert by_id["lever_issuance"]["state"] == "in_force"
+    assert by_id["lever_issuance"]["state_asof"] == "2026-05-01"
+    assert by_id["lever_issuance"]["source"]["url"] == (
+        "https://home.treasury.gov/news/press-releases/sb0539"
+    )
     assert by_id["lever_chips"]["state"] == "in_force"
-    # Full ladder for issuance was observed — no undocumented fill.
-    assert by_id["lever_issuance"]["reached"] == list(LIFECYCLE_STAGES)
+    assert by_id["lever_chips"]["state_asof"] == "2026-01-14"
+    # One document cannot mint a full ladder — only the observed stage is reached.
+    assert by_id["lever_issuance"]["reached"] == ["in_force"]
+    assert by_id["lever_chips"]["reached"] == ["in_force"]
 
 
 def test_proposal_is_never_conflated_with_enactment():
@@ -258,10 +265,134 @@ def test_fold_is_order_independent():
 
 
 def test_lifecycle_never_calls_the_llm():
-    for fn in (fold_lifecycle, lifecycle_view, ingest_lifecycle):
-        src = inspect.getsource(fn)
+    names = [
+        n for n in dir(_pid)
+        if callable(getattr(_pid, n, None))
+        and (
+            "lifecycle" in n.lower()
+            or n in ("_apply_ladder_state",)
+        )
+    ]
+    required = {
+        "fold_lifecycle", "lifecycle_view", "ingest_lifecycle",
+        "_apply_ladder_state", "_substrate_lifecycle_events",
+        "_lifecycle_seed_events", "_lifecycle_source_label",
+        "_union_lifecycle_events",
+    }
+    missing = required - set(names)
+    assert not missing, missing
+    for name in names:
+        src = inspect.getsource(getattr(_pid, name))
         for banned in ("synthesize", "call(", "_SYSTEM", "api_key"):
-            assert banned not in src, f"{fn.__name__} references {banned!r}"
+            assert banned not in src, f"{name} references {banned!r}"
+
+
+def test_reaffirmation_of_the_same_stage_is_not_a_conflict():
+    events = [
+        _ev("L1", "passed", "2026-02-01", "2026-02-02T00:00:00Z"),
+        _ev("L1", "passed", "2026-03-01", "2026-03-02T00:00:00Z",
+            url="https://www.federalregister.gov/y"),
+    ]
+    row = fold_lifecycle(events, REG)[0]
+    assert row["conflict"] is False
+    assert row["state"] == "passed"
+    assert row["state_asof"] == "2026-03-01"
+    assert row["source"]["url"] == "https://www.federalregister.gov/y"
+
+
+def test_seed_has_at_most_one_stage_per_cited_document():
+    seed = json.loads(Path("config/policy_lifecycle_seed.json").read_text())
+    events = seed["events"]
+    urls = [e["source"]["url"] for e in events]
+    assert len(urls) == len(set(urls)), urls
+    chips = [e for e in events if e["item_id"] == "lever_chips"]
+    assert len(chips) == 1
+    assert chips[0]["type"] == "in_force"
+    assert chips[0]["event_date"] == "2026-01-14"
+    issuance_urls = {e["source"]["url"] for e in events if e["item_id"] == "lever_issuance"}
+    assert issuance_urls == {
+        "https://home.treasury.gov/news/press-releases/sb0314",
+        "https://home.treasury.gov/news/press-releases/sb0539",
+    }
+    titles = [e["source"]["title"] for e in events if e["item_id"] == "lever_issuance"]
+    assert len(set(titles)) == len(titles)
+
+
+def test_partial_store_unions_seed_for_uncovered_items(tmp_path):
+    (tmp_path / "data" / "policy").mkdir(parents=True)
+    (tmp_path / "data" / "policy_lifecycle").mkdir(parents=True)
+    (tmp_path / "config").mkdir(parents=True)
+    levers = [
+        {"id": "lever_issuance", "title_en": "Issuance", "title_zh": "发债"},
+        {"id": "lever_chips", "title_en": "Chips", "title_zh": "芯片"},
+    ]
+    (tmp_path / "data" / "policy" / "intel.json").write_text(json.dumps({
+        "as_of": "2026-07-13",
+        "administration": {"verified_levers": levers},
+    }))
+    (tmp_path / "config" / "policy_lifecycle_seed.json").write_text(
+        Path("config/policy_lifecycle_seed.json").read_text()
+    )
+    store_row = {
+        "item_id": "lever_issuance", "type": "proposed",
+        "event_date": "2026-06-01", "known_at": "2026-06-01T00:00:00Z",
+        "source": {"url": "https://home.treasury.gov/news/press-releases/store-only"},
+    }
+    (tmp_path / "data" / "policy_lifecycle" / "events.jsonl").write_text(
+        json.dumps(store_row) + "\n"
+    )
+    view = lifecycle_view(tmp_path)
+    by_id = {it["id"]: it for it in view["items"]}
+    assert by_id["lever_issuance"]["state"] == "proposed"
+    assert by_id["lever_issuance"]["source"]["url"].endswith("store-only")
+    assert by_id["lever_chips"]["state"] == "in_force"
+    assert by_id["lever_chips"]["state_asof"] == "2026-01-14"
+
+
+def test_committed_seed_against_real_intel_registry(tmp_path):
+    """Folds the committed seed against origin/main's real verified_levers."""
+    raw = subprocess.check_output(
+        ["git", "show", "origin/main:data/policy/intel.json"],
+        cwd=Path(__file__).resolve().parent.parent,
+    )
+    intel = json.loads(raw)
+    levers = (intel.get("administration") or {}).get("verified_levers") or []
+    assert [L["id"] for L in levers] == [
+        "lever_dollar_bridge", "lever_issuance", "lever_intermediation",
+        "lever_fed_nexus", "lever_chips", "lever_nuclear",
+    ]
+    assert all(not L.get("jurisdiction_en") for L in levers)
+    (tmp_path / "data" / "policy").mkdir(parents=True)
+    (tmp_path / "config").mkdir(parents=True)
+    (tmp_path / "data" / "policy" / "intel.json").write_text(json.dumps(intel))
+    (tmp_path / "config" / "policy_lifecycle_seed.json").write_text(
+        Path("config/policy_lifecycle_seed.json").read_text()
+    )
+    view = lifecycle_view(tmp_path)
+    assert view["null_reason"] is None
+    assert len(view["items"]) == 6
+    assert all(not it.get("jurisdiction_en") for it in view["items"])
+    assert view["as_of"] == "2026-07-04"
+    assert view["intel_as_of"] == intel["as_of"] == "2026-07-13"
+    by_id = {it["id"]: it for it in view["items"]}
+    assert by_id["lever_chips"]["state"] == "in_force"
+    assert by_id["lever_chips"]["source"]["url"].startswith("https://www.whitehouse.gov/")
+    assert by_id["lever_nuclear"]["state"] == "enforced"
+    stalled_ids = {it["id"] for it in view["items"] if it["stalled"]}
+    assert "lever_chips" in stalled_ids
+    assert "lever_intermediation" in stalled_ids
+
+
+def test_union_lifecycle_events_store_wins_per_item():
+    store = [{"item_id": "A", "type": "proposed"}]
+    seed = [
+        {"item_id": "A", "type": "in_force"},
+        {"item_id": "B", "type": "passed"},
+    ]
+    merged = _union_lifecycle_events(store, seed)
+    assert [e["item_id"] for e in merged] == ["A", "B"]
+    assert merged[0]["type"] == "proposed"
+    assert merged[1]["type"] == "passed"
 
 
 def test_all_event_types_are_declared():

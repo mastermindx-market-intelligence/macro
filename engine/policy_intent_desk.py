@@ -583,6 +583,18 @@ def _substrate_lifecycle_events(intel: dict, root=None) -> list[dict]:
     return _lifecycle_seed_events(root)
 
 
+def _union_lifecycle_events(store_events, substrate) -> list[dict]:
+    """Store wins per item_id; seed/substrate fills items the store does not cover.
+
+    A single ingested row must not hide the committed seed for every other item.
+    """
+    store_events = [e for e in (store_events or []) if isinstance(e, dict)]
+    substrate = [e for e in (substrate or []) if isinstance(e, dict)]
+    store_ids = {e.get("item_id") for e in store_events if e.get("item_id")}
+    extra = [e for e in substrate if e.get("item_id") and e.get("item_id") not in store_ids]
+    return store_events + extra
+
+
 def lifecycle_events(root=None) -> list[dict]:
     """Read the append-only lifecycle event store. Missing file -> []. Never raises."""
     try:
@@ -809,6 +821,20 @@ def fold_lifecycle(events: list[dict], registry: list[dict], as_of_date: str | N
             cur = state_pack["stage_rank"]
             if cur is None or rank > cur:
                 _apply_ladder_state(state_pack, typ, ev, observed_ladder)
+            elif rank == cur:
+                # Same-stage re-affirmation is agreement, not a contradiction.
+                # Refresh the cited date/source when the later document is newer.
+                new_date = str(ev.get("event_date") or "")
+                if new_date > str(state_pack.get("state_asof") or ""):
+                    state_pack["state_asof"] = ev.get("event_date")
+                    state_pack["known_at"] = ev.get("known_at")
+                    src = ev.get("source") or {}
+                    state_pack["source"] = {
+                        "url": src.get("url"),
+                        "label": _lifecycle_source_label(src.get("url")),
+                        "title": src.get("title"),
+                        "doc_id": src.get("doc_id"),
+                    }
             else:
                 state_pack["conflict"] = True
 
@@ -861,9 +887,11 @@ def lifecycle_view(root=None) -> dict:
                 log.warning("policy_lifecycle: intel parse failed: %s", e)
 
         # rights_suppressed outranks empty-store no_coverage (MAJOR-5).
+        intel_as_of = intel.get("as_of")
         if intel.get("policy_lifecycle_suppressed"):
             return {
-                "schema": LIFECYCLE_SCHEMA, "as_of": intel.get("as_of"),
+                "schema": LIFECYCLE_SCHEMA, "as_of": intel_as_of,
+                "intel_as_of": intel_as_of,
                 "null_reason": "rights_suppressed",
                 "counts": {"proposed": 0, "passed": 0, "in_force": 0, "enforced": 0,
                            "other": 0, "unknown": 0, "withdrawn": 0, "struck_down": 0, "superseded": 0},
@@ -883,10 +911,9 @@ def lifecycle_view(root=None) -> dict:
 
         store_events = lifecycle_events(root_path)
         substrate = _substrate_lifecycle_events(intel, root_path)
-        # Prefer the append-only store when present; otherwise fold the substrate
-        # directly so the page advances without waiting on a nightly write.
-        events = store_events if store_events else substrate
-        items = fold_lifecycle(events, registry, as_of_date=intel.get("as_of"))
+        # Store wins per item; seed fills every other registered item.
+        events = _union_lifecycle_events(store_events, substrate)
+        items = fold_lifecycle(events, registry, as_of_date=intel_as_of)
         registry_ids = {r.get("id") for r in registry if r.get("id")}
         orphan_event_items = sorted({
             e.get("item_id") for e in events
@@ -906,19 +933,23 @@ def lifecycle_view(root=None) -> dict:
                 counts["other"] += 1
 
         known_ats = [it["known_at"] for it in items if it.get("known_at")]
-        as_of = max(known_ats).split("T")[0] if known_ats else intel.get("as_of")
+        as_of = max(known_ats).split("T")[0] if known_ats else intel_as_of
 
         null_reason = None
         if registry and not events:
             null_reason = "no_coverage"
+        if not items:
+            null_reason = null_reason or "no_coverage"
 
         return {
-            "schema": LIFECYCLE_SCHEMA, "as_of": as_of, "null_reason": null_reason,
+            "schema": LIFECYCLE_SCHEMA, "as_of": as_of, "intel_as_of": intel_as_of,
+            "null_reason": null_reason,
             "counts": counts, "items": items, "orphan_event_items": orphan_event_items,
         }
     except Exception as e:  # noqa: BLE001
         log.error("policy_lifecycle: view failed: %s", e)
-        return {"schema": LIFECYCLE_SCHEMA, "as_of": None, "null_reason": "no_coverage",
+        return {"schema": LIFECYCLE_SCHEMA, "as_of": None, "intel_as_of": None,
+                "null_reason": "no_coverage",
                 "counts": {"proposed": 0, "passed": 0, "in_force": 0, "enforced": 0,
                            "withdrawn": 0, "struck_down": 0, "superseded": 0,
                            "other": 0, "unknown": 0},
