@@ -24,7 +24,7 @@
     }
   },
   "excluded": [],
-  "generated_at": "2026-09-08T07:01:38Z",
+  "generated_at": "2026-09-08T08:00:00Z",
   "honesty": {
     "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
     "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
@@ -35,22 +35,22 @@
     {
       "console_errors": [
         {
-          "source_url": "http://127.0.0.1:53342/live/intelligence.json",
+          "source_url": "http://127.0.0.1:54010/live/intelligence.json",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:53342/live/wires.json",
+          "source_url": "http://127.0.0.1:54010/live/wires.json",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         }
       ],
       "failed_responses": [
         {
           "status": 404,
-          "url": "http://127.0.0.1:53342/live/intelligence.json"
+          "url": "http://127.0.0.1:54010/live/intelligence.json"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:53342/live/wires.json"
+          "url": "http://127.0.0.1:54010/live/wires.json"
         }
       ],
       "gaps": [
@@ -101,25 +101,25 @@
         "asof_present": false,
         "by_viewport": {
           "desktop": {
-            "document_height_px": 2276,
+            "document_height_px": 1926,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 3337,
+            "document_height_px": 2856,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           }
         },
         "console_error_count": 1,
-        "document_height_px": 2276,
+        "document_height_px": 1926,
         "duplicate_heading_texts": [],
         "elements_wider_than_viewport": 0,
         "heading_counts": {
           "h1": 1,
-          "h2": 2,
+          "h2": 1,
           "h3": 0,
-          "h4": 2,
+          "h4": 0,
           "h5": 0,
           "h6": 0
         },
@@ -131,17 +131,17 @@
           "theme": "light",
           "viewport": "desktop"
         },
-        "panel_count": 3,
-        "payload_bytes_total": 583674,
+        "panel_count": 1,
+        "payload_bytes_total": 582982,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 16,
         "screenshot_completion": 1.0,
-        "section_count": 2,
+        "section_count": 0,
         "source_present": false,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 399
+        "visible_word_count": 382
       },
       "page_id": "news.html#nxConsequence",
       "registry_route": "news.html#nxConsequence",
@@ -152,81 +152,81 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 69165,
+          "bytes": 71717,
           "captured": true,
-          "file": "9df5c5aba70a622a.png",
+          "file": "5c2ad8b60ce771e4.png",
           "force_state": null,
           "height": 422,
           "locale": "en",
-          "sha256": "9df5c5aba70a622a29ad61c1f9760a2fe4467b3d62bfaa03705e6c8cc91aa662",
+          "sha256": "5c2ad8b60ce771e483ef08579d5421e55ddc464ed09cde670877826fea8a3e3a",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
           "viewport_width": 1440,
-          "width": 1008
+          "width": 1007
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 66324,
+          "bytes": 69810,
           "captured": true,
-          "file": "3798bd7717657a8a.png",
+          "file": "4626ebe4a24936e4.png",
           "force_state": null,
           "height": 422,
           "locale": "en",
-          "sha256": "3798bd7717657a8a796efeb84eeb90fe42c8f53330ea5b8205d38bf7897d3cab",
+          "sha256": "4626ebe4a24936e4ff0869a253956bfcfa339ae0d3c874831dd9ef532c127dec",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
           "viewport_width": 1440,
-          "width": 1008
+          "width": 1007
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 71456,
+          "bytes": 78011,
           "captured": true,
-          "file": "725029bc65122d54.png",
+          "file": "59dc5e337383145e.png",
           "force_state": null,
-          "height": 380,
+          "height": 422,
           "locale": "zh",
-          "sha256": "725029bc65122d54755e4ba09a668764e54a8b3c94ffce7f03e7d95dd32ec296",
+          "sha256": "59dc5e337383145ef79da03b99a5b0b71eb17643e6083ee5ba5c0e8f71cfd413",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
           "viewport_width": 1440,
-          "width": 1008
+          "width": 1007
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 69410,
+          "bytes": 75782,
           "captured": true,
-          "file": "cfb870ca6dbba0f5.png",
+          "file": "f91968d40cb46fbf.png",
           "force_state": null,
-          "height": 380,
+          "height": 422,
           "locale": "zh",
-          "sha256": "cfb870ca6dbba0f5b7254bb1428c139c2f0d4da1ae6550441a2c46d36a094a1a",
+          "sha256": "f91968d40cb46fbf722e482fc27dcb8039a7589e288f31df97062aefbd735f38",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
           "viewport_width": 1440,
-          "width": 1008
+          "width": 1007
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 80264,
+          "bytes": 87161,
           "captured": true,
-          "file": "e226dd7f6b2172fe.png",
+          "file": "d15c1636d9af3c1d.png",
           "force_state": null,
-          "height": 950,
+          "height": 1014,
           "locale": "en",
-          "sha256": "e226dd7f6b2172fec14be6737a6facf802cdd86ca5654713d8c9d8f521d047d6",
+          "sha256": "d15c1636d9af3c1d2b27a5c0b7f8e489541ebb7cbec210159e8bf68652888d33",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -237,13 +237,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 78999,
+          "bytes": 85978,
           "captured": true,
-          "file": "0e6c5e91bae44cc3.png",
+          "file": "7472b2e033aec06b.png",
           "force_state": null,
-          "height": 950,
+          "height": 1014,
           "locale": "en",
-          "sha256": "0e6c5e91bae44cc3b1451ab98fa3ce6ea831542442b81692c30de8ca73ac1df7",
+          "sha256": "7472b2e033aec06bb21b631b2edca330880b2e5b49dfcc056924f7fd306c8365",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -254,13 +254,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 82475,
+          "bytes": 96630,
           "captured": true,
-          "file": "c1f74e938b7925df.png",
+          "file": "6f0c49319ed4ff59.png",
           "force_state": null,
-          "height": 847,
+          "height": 952,
           "locale": "zh",
-          "sha256": "c1f74e938b7925df38c1e699ed32337a9f0ac8b82023be3e16b590972bf81848",
+          "sha256": "6f0c49319ed4ff59bfd1465066dec996608c007f8f01289fa547958e8ae0ac94",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -271,18 +271,75 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 81023,
+          "bytes": 95511,
           "captured": true,
-          "file": "b6beeb8e621eb1fc.png",
+          "file": "f58c89becc17b432.png",
           "force_state": null,
-          "height": 847,
+          "height": 952,
           "locale": "zh",
-          "sha256": "b6beeb8e621eb1fc71610a89c36e881d7220637474653fb329a0a07b9e8e8998",
+          "sha256": "f58c89becc17b432edb182b17e84fb9e94316ad0d6d42e1c515197b507b88ca4",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
           "viewport_width": 390,
           "width": 320
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 62689,
+          "captured": true,
+          "file": "31057e53c4f37407.png",
+          "force_state": "also-watching-present",
+          "fixture": true,
+          "fixture_path": "mockups/evidence/a-f05-1-consequence/fixtures/also-watching-present.html",
+          "height": 139,
+          "locale": "en",
+          "sha256": "31057e53c4f37407d33442de8cbee1a7aaa691e2e4512dee3301cc7b059cb6f9",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1404
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 63385,
+          "captured": true,
+          "file": "52a4c4dde525103e.png",
+          "force_state": "also-watching-truncated",
+          "fixture": true,
+          "fixture_path": "mockups/evidence/a-f05-1-consequence/fixtures/also-watching-truncated.html",
+          "height": 139,
+          "locale": "en",
+          "sha256": "52a4c4dde525103e0e0c08a7e3345f79d78906a9558c9473eec260a364ba3fb0",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1404
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 71735,
+          "captured": true,
+          "file": "4a7fccbf4ae2840c.png",
+          "force_state": "also-watching-dropped",
+          "fixture": true,
+          "fixture_path": "mockups/evidence/a-f05-1-consequence/fixtures/also-watching-dropped.html",
+          "height": 164,
+          "locale": "en",
+          "sha256": "4a7fccbf4ae2840ca4b018a521fdde3520eb7cb59a6d06331022ccbdb47387c9",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1404
         }
       ]
     }
@@ -305,7 +362,7 @@
     "base_url": null,
     "kind": "site_dir",
     "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/wf_a2c8132e-faa-9",
-    "resolved_sha_or_none": "b44948fb95be0265bace4201cd70e1d183bf110e",
+    "resolved_sha_or_none": "576a2fc3e327d31d5d63c952cd4693dfdacbe087",
     "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/wf_a2c8132e-faa-9 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
     "site_dir": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-9/site"
   },
@@ -317,7 +374,7 @@
   },
   "totals": {
     "pages": 1,
-    "states_attempted": 8,
-    "states_captured": 8
+    "states_attempted": 11,
+    "states_captured": 11
   }
 }
