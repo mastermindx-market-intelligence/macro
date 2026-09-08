@@ -215,6 +215,7 @@ from typing import Any, Mapping, Sequence
 
 from engine.market_os.macro_workspaces.publication_prior import (
     apply_headline_publication_fields,
+    attach_prior_publication,
     no_earlier_publication,
     resolve_publication_prior,
 )
@@ -767,7 +768,7 @@ def compose(curve_frames: Mapping[str, Any] | None, *, built_at: str,
             "privacy_note": "Event definitions reuse the existing first-party analytics owner; no second analytics store, no user identity copied into the artifact.",
         },
     }
-    return snapshot
+    return attach_prior_publication(snapshot, publication_prior)
 
 
 # --------------------------------------------------------------------------- #

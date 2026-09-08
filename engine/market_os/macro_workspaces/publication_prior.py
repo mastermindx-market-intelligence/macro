@@ -1,16 +1,19 @@
-"""Prior PUBLICATION resolution for Macro workspace ``changes``.
+"""Prior PUBLICATION resolution for Macro workspace snapshots.
 
 The previously written ``latest.json`` is a build artifact, not automatically
 the previous publication. R1: "earlier" means a strictly earlier
 ``headline.effective_date`` (date-only), never an earlier ``built_at``.
 
 When this build's effective date equals the stored artifact's, the stored
-artifact's own ``changes.prior_*`` snapshot is the genuine earlier publication
-(if it had one). The stored current values become the prior only when the new
-effective date is strictly later.
+artifact's own ``prior_publication`` snapshot is the genuine earlier
+publication (if it had one). That snapshot is a verbatim copy of the earlier
+publication's full ``headline`` block plus its tracked ``metrics.items`` —
+never a reconstruction from ``changes.deltas``. The stored current values
+become the prior only when the new effective date is strictly later.
 """
 from __future__ import annotations
 
+import copy
 from typing import Any, Mapping
 
 COMPARABILITY_NO_EARLIER = "NO_EARLIER_PUBLICATION"
@@ -67,76 +70,45 @@ def no_earlier_publication() -> dict[str, Any]:
     }
 
 
-def _items_from_prior_deltas(changes: Mapping[str, Any]) -> list[dict[str, Any]]:
-    items: list[dict[str, Any]] = []
-    for delta in changes.get("deltas") or []:
-        if not isinstance(delta, Mapping):
-            continue
-        mid = delta.get("metric_id")
-        if mid:
-            items.append({"metric_id": mid, "value": delta.get("prior_value")})
-    return items
+def prior_publication_snapshot(
+    resolved: Mapping[str, Any] | None,
+) -> dict[str, Any] | None:
+    """Verbatim carry-forward of an earlier publication.
 
-
-# Axis metric_ids the five quadrant composers emit as (x, y) in ``changes.deltas``.
-# Keying by id keeps a reordered delta tuple from silently swapping the carried
-# prior quadrant (positional mapping was an unpinned invariant).
-_QUADRANT_X_METRIC_IDS = frozenset({
-    "growth_momentum",
-    "inflation_impulse",
-    "financial_conditions_level",
-    "labor_demand",
-    "funding_pressure",
-    "cash_flow_momentum",
-})
-_QUADRANT_Y_METRIC_IDS = frozenset({
-    "growth_level_breadth",
-    "persistence_breadth",
-    "financial_conditions_impulse",
-    "labor_supply_tightness",
-    "balance_sheet_support",
-    "credit_stress",
-})
-
-
-def _quadrant_from_prior_deltas(changes: Mapping[str, Any]) -> dict[str, Any]:
-    by_id: dict[str, Any] = {}
-    ordered: list[Any] = []
-    for delta in changes.get("deltas") or []:
-        if not isinstance(delta, Mapping):
-            continue
-        mid = delta.get("metric_id")
-        val = delta.get("prior_value")
-        ordered.append(val)
-        if mid:
-            by_id[str(mid)] = val
-    x = next((by_id[k] for k in by_id if k in _QUADRANT_X_METRIC_IDS), None)
-    y = next((by_id[k] for k in by_id if k in _QUADRANT_Y_METRIC_IDS), None)
-    if x is None and y is None and ordered:
-        x = ordered[0] if len(ordered) > 0 else None
-        y = ordered[1] if len(ordered) > 1 else None
-    return {"x": x, "y": y}
-
-
-def synthetic_prior_from_changes(stored: Mapping[str, Any]) -> dict[str, Any] | None:
-    """Rebuild a prior-publication snapshot from ``stored.changes.prior_*``."""
-    changes = stored.get("changes")
-    if not isinstance(changes, Mapping):
+    Persists the earlier publication's full ``headline`` (state_id, quadrant,
+    effective_date, held_prior / hysteresis inputs) and its ``metrics.items``.
+    A newly tracked metric that was never stored renders a typed
+    ``NO_EARLIER`` row later — it is not reconstructed from deltas.
+    """
+    if not isinstance(resolved, Mapping):
         return None
-    prior_eff = changes.get("prior_effective_date")
-    if date_key(prior_eff) is None:
+    headline = resolved.get("headline")
+    if not isinstance(headline, Mapping):
         return None
-    return {
-        "headline": {
-            "effective_date": prior_eff,
-            "method_version": changes.get("prior_method_version"),
-            "quadrant": _quadrant_from_prior_deltas(changes),
-        },
-        "generation": {
-            "generation_id": changes.get("prior_generation_id"),
-        },
-        "metrics": {"items": _items_from_prior_deltas(changes)},
+    if date_key(headline.get("effective_date")) is None:
+        return None
+    metrics = resolved.get("metrics")
+    raw_items = metrics.get("items") if isinstance(metrics, Mapping) else None
+    items: list[Any] = []
+    if isinstance(raw_items, list):
+        items = [copy.deepcopy(it) for it in raw_items if isinstance(it, Mapping)]
+    snap: dict[str, Any] = {
+        "headline": copy.deepcopy(dict(headline)),
+        "metrics": {"items": items},
     }
+    generation = resolved.get("generation")
+    if isinstance(generation, Mapping):
+        snap["generation"] = {"generation_id": generation.get("generation_id")}
+    return snap
+
+
+def attach_prior_publication(
+    snapshot: dict[str, Any],
+    resolved: Mapping[str, Any] | None,
+) -> dict[str, Any]:
+    """Stamp ``prior_publication`` on a composed body (null when none)."""
+    snapshot["prior_publication"] = prior_publication_snapshot(resolved)
+    return snapshot
 
 
 def resolve_publication_prior(
@@ -148,18 +120,19 @@ def resolve_publication_prior(
     * stored is None → None (first build)
     * stored.effective_date < current → stored (new publication; replace prior)
     * stored.effective_date == current (or stored is later / look-ahead) →
-      carry forward ``stored.changes`` when *that* prior date is strictly
-      earlier; otherwise None
+      return the stored verbatim ``prior_publication`` when *that* date is
+      strictly earlier; otherwise None. Never reconstruct from ``deltas``.
     """
     if not isinstance(stored, Mapping):
         return None
     stored_eff = effective_date_of(stored)
     if is_strictly_earlier(stored_eff, current_effective_date):
         return stored
-    changes = stored.get("changes")
-    carried_eff = changes.get("prior_effective_date") if isinstance(changes, Mapping) else None
-    if is_strictly_earlier(carried_eff, current_effective_date):
-        return synthetic_prior_from_changes(stored)
+    prior = stored.get("prior_publication")
+    if not isinstance(prior, Mapping):
+        return None
+    if is_strictly_earlier(effective_date_of(prior), current_effective_date):
+        return prior
     return None
 
 
@@ -178,7 +151,8 @@ def apply_headline_publication_fields(
     First print (``raw_prior is None``) keeps the composer's existing WARMUP /
     refusal vector object. A same-dated rebuild whose resolved prior is None
     is ``NO_EARLIER_PUBLICATION``: ``one_month_vector`` and
-    ``transition_distance`` become JSON null, never ``Δx 0.0``.
+    ``transition_distance`` become JSON null, never ``Δx 0.0``. A workspace
+    that already refused the computation keeps that typed refusal.
     """
     if resolved is None and raw_prior is not None:
         headline["one_month_vector"] = None
@@ -200,6 +174,15 @@ def _null_headline_movement(headline: dict[str, Any]) -> None:
             "effective_date": None,
             "method_version": None,
         }
+
+
+def _absent_headline_vector() -> dict[str, Any]:
+    return {
+        "dx": None,
+        "dy": None,
+        "status": "ABSENT",
+        "null_reason": COMPARABILITY_NO_EARLIER,
+    }
 
 
 def _metric_value_from_snapshot(snapshot: Mapping[str, Any], metric_id: Any) -> Any:
@@ -263,13 +246,18 @@ def _recompute_headline_from_resolved(
         }
         headline["transition_distance"] = round((dx * dx + dy * dy) ** 0.5, 2)
         headline["movement_state"] = None
-    prior_state = headline.get("prior_state")
-    if isinstance(prior_state, dict):
-        headline["prior_state"] = {
-            "state_id": prior_h.get("state_id"),
-            "effective_date": effective_date_of(resolved),
-            "method_version": prior_h.get("method_version"),
-        }
+        prior_state = headline.get("prior_state")
+        if isinstance(prior_state, dict):
+            headline["prior_state"] = {
+                "state_id": prior_h.get("state_id"),
+                "effective_date": effective_date_of(resolved),
+                "method_version": prior_h.get("method_version"),
+            }
+        return
+    headline["one_month_vector"] = _absent_headline_vector()
+    headline["transition_distance"] = None
+    # prior_state.effective_date is NOT rewritten: a non-numeric prior
+    # quadrant is not evidence of movement since the earlier publication.
 
 
 def apply_producer_prior_seal(
@@ -283,7 +271,8 @@ def apply_producer_prior_seal(
     strictly earlier than this build, either substitute the resolved earlier
     publication and recompute the deltas from it, or emit the typed null —
     never return the body unchanged (never a fabricated 0 delta against the
-    same publication).
+    same publication). A PRESENT headline vector is written only from the
+    stored earlier snapshot's numbers.
     """
     out = dict(body)
     current_eff = effective_date_of(out)
@@ -298,11 +287,13 @@ def apply_producer_prior_seal(
                 if headline:
                     _null_headline_movement(headline)
                     out["headline"] = headline
+                out["prior_publication"] = None
             else:
                 out["changes"] = _recompute_changes_from_resolved(changes, resolved)
                 if headline:
                     _recompute_headline_from_resolved(headline, resolved)
                     out["headline"] = headline
+                out["prior_publication"] = prior_publication_snapshot(resolved)
             return out
 
     headline = out.get("headline")
@@ -318,7 +309,9 @@ def apply_producer_prior_seal(
             stamped = dict(headline)
             if resolved is None:
                 _null_headline_movement(stamped)
+                out["prior_publication"] = None
             else:
                 _recompute_headline_from_resolved(stamped, resolved)
+                out["prior_publication"] = prior_publication_snapshot(resolved)
             out["headline"] = stamped
     return out

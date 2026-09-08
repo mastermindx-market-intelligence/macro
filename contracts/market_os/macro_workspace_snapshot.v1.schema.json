@@ -333,6 +333,30 @@
         "event_names": { "type": "array", "items": { "type": "string" } },
         "privacy_note": { "type": "string" }
       }
+    },
+    "prior_publication": {
+      "description": "Verbatim snapshot of the last strictly-earlier publication (full headline plus tracked metrics.items). Same-dated rebuilds resolve against this key; never reconstructed from changes.deltas.",
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["headline", "metrics"],
+      "properties": {
+        "headline": { "$ref": "#/properties/headline" },
+        "metrics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["items"],
+          "properties": {
+            "items": { "type": "array", "items": { "$ref": "#/$defs/metric" } }
+          }
+        },
+        "generation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "generation_id": { "type": ["string", "null"] }
+          }
+        }
+      }
     }
   },
   "$defs": {
@@ -357,7 +381,7 @@
         "UNKNOWN", "NOT_APPLICABLE", "NOT_YET_RELEASED", "SOURCE_FAILED",
         "RIGHTS_BLOCKED", "INSUFFICIENT_HISTORY", "WARMUP",
         "REVISION_PENDING_REBUILD", "DISAGREEMENT", "COMPUTATION_REFUSED",
-        "OUT_OF_REGION", "NOT_COVERED"
+        "OUT_OF_REGION", "NOT_COVERED", "NO_EARLIER_PUBLICATION"
       ]
     },
     "nullReasonOrNull": {
@@ -366,7 +390,7 @@
         "UNKNOWN", "NOT_APPLICABLE", "NOT_YET_RELEASED", "SOURCE_FAILED",
         "RIGHTS_BLOCKED", "INSUFFICIENT_HISTORY", "WARMUP",
         "REVISION_PENDING_REBUILD", "DISAGREEMENT", "COMPUTATION_REFUSED",
-        "OUT_OF_REGION", "NOT_COVERED", null
+        "OUT_OF_REGION", "NOT_COVERED", "NO_EARLIER_PUBLICATION", null
       ]
     },
     "presenceState": {

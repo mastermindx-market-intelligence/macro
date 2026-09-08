@@ -28,8 +28,10 @@ from engine.market_os.macro_workspaces import contract  # noqa: E402
 from engine.market_os.macro_workspaces.publication_prior import (  # noqa: E402
     apply_headline_publication_fields,
     apply_producer_prior_seal,
+    effective_date_of,
     is_strictly_earlier,
     no_earlier_publication,
+    prior_publication_snapshot,
     resolve_publication_prior,
 )
 from lib import macro_suite_view as V  # noqa: E402
@@ -197,18 +199,18 @@ def test_producer_seal_substitutes_resolved_earlier_publication() -> None:
         "headline": {"effective_date": "2026-07-01", "method_version": "v1",
                      "quadrant": {"x": 70.0, "y": 80.0}},
         "generation": {"generation_id": "july"},
-        "changes": {
-            "prior_effective_date": "2026-06-01",
-            "prior_generation_id": "june",
-            "prior_method_version": "v1",
-            "deltas": [
-                {"metric_id": "retail_sales_level", "prior_value": 680000.0,
-                 "current_value": 700000.0, "delta": 20000.0},
-                {"metric_id": "growth_momentum", "prior_value": 10.0,
-                 "current_value": 70.0, "delta": 60.0},
-                {"metric_id": "growth_level_breadth", "prior_value": 20.0,
-                 "current_value": 80.0, "delta": 60.0},
-            ],
+        "prior_publication": {
+            "headline": {
+                "effective_date": "2026-06-01",
+                "method_version": "v1",
+                "state_id": "B",
+                "quadrant": {"x": 10.0, "y": 20.0, "x_status": "PRESENT",
+                             "y_status": "PRESENT"},
+            },
+            "metrics": {"items": [
+                {"metric_id": "retail_sales_level", "value": 680000.0},
+            ]},
+            "generation": {"generation_id": "june"},
         },
     }
     sealed = apply_producer_prior_seal(body, stored)
@@ -324,7 +326,7 @@ def test_shell_null_vector_slot_prints_no_earlier_reading_both_locales() -> None
     assert "暂无更早读数" in html
     assert "Δx 0.0" not in html and "Δx +0" not in html
     assert "None" not in html
-    assert "Movement since the prior accepted print" in html
+    assert "No vector is drawn: there is no method-comparable prior print to move from." in html
 
 
 def _artifact() -> dict:
@@ -380,4 +382,213 @@ def test_view_absence_labels_three_cases_both_locales() -> None:
     assert computed["absence"] is None
     assert computed["delta_raw"] == pytest.approx(22500.0)
     assert computed["sign"] == "up"
+
+
+def test_growth_same_dated_rebuild_keeps_hysteresis_held_prior() -> None:
+    """Reviewer NB1: x=49, y=49 against a June B print must not flip B→C."""
+    from engine.market_os.macro_workspaces import growth as g
+
+    june = {
+        "headline": {
+            "state_id": "B",
+            "method_version": g.METHOD_VERSION,
+            "effective_date": "2026-06-01",
+            "quadrant": {"x": 58.0, "y": 53.0, "x_status": "PRESENT",
+                         "y_status": "PRESENT"},
+        },
+        "generation": {"generation_id": "june-gen"},
+        "metrics": {"items": []},
+    }
+    build1 = g._headline(49.0, "PRESENT", None, 49.0, "PRESENT", None,
+                         "2026-07-01", june)
+    july = {
+        "headline": {"effective_date": "2026-07-01",
+                     "method_version": g.METHOD_VERSION,
+                     "state_id": build1["state_id"],
+                     "quadrant": {"x": 49.0, "y": 49.0}},
+        "prior_publication": prior_publication_snapshot(june),
+        "metrics": {"items": []},
+        "generation": {"generation_id": "july-gen"},
+    }
+    resolved = resolve_publication_prior(july, "2026-07-01")
+    build2 = g._headline(49.0, "PRESENT", None, 49.0, "PRESENT", None,
+                         "2026-07-01", resolved)
+    assert build1["state_id"] == "B"
+    assert build2["state_id"] == "B"
+    assert build1["hysteresis"]["held_prior"] is True
+    assert build2["hysteresis"]["held_prior"] is True
+    assert build1["one_month_vector"] == build2["one_month_vector"]
+    assert build1["transition_distance"] == build2["transition_distance"]
+    assert build1["hysteresis"]["note"] == build2["hysteresis"]["note"]
+    assert build1["one_month_vector"]["dx"] == pytest.approx(-9.0)
+    assert build1["one_month_vector"]["dy"] == pytest.approx(-4.0)
+
+
+def test_consumer_payments_same_dated_rebuild_is_identical_publication() -> None:
+    fx = _frames()
+    june = _compose(fx["june"], fx["built_at"])
+    july = _compose(fx["july"], fx["built_at"], prior=june)
+    rebuilt = _compose(fx["july"], fx["built_at"], prior=july)
+    assert july["headline"]["state_id"] == rebuilt["headline"]["state_id"]
+    assert (july["headline"]["hysteresis"]["held_prior"]
+            == rebuilt["headline"]["hysteresis"]["held_prior"])
+    assert july["headline"]["one_month_vector"] == rebuilt["headline"]["one_month_vector"]
+    assert (july["headline"]["transition_distance"]
+            == rebuilt["headline"]["transition_distance"])
+    assert july["headline"]["hysteresis"]["note"] == rebuilt["headline"]["hysteresis"]["note"]
+    assert rebuilt["changes"] == july["changes"]
+    assert rebuilt["prior_publication"] == july["prior_publication"]
+    assert july["prior_publication"]["headline"]["effective_date"] == "2026-06-01"
+    assert july["prior_publication"]["headline"]["state_id"] == june["headline"]["state_id"]
+    contract.validate(july)
+    contract.validate(rebuilt)
+
+
+@pytest.mark.parametrize("wid", _COMPOSER_MODULES)
+def test_same_dated_rebuild_matches_first_build_headline(wid) -> None:
+    mod = importlib.import_module(f"engine.market_os.macro_workspaces.{wid}")
+    earlier = _stored(mod, _PRIOR_ASOF, x=10.0, y=20.0)
+    resolved1 = resolve_publication_prior(earlier, _ASOF)
+    assert resolved1 is earlier
+    build1 = apply_headline_publication_fields(
+        _call_headline(mod, resolved1), resolved1, raw_prior=earlier)
+
+    carried = {
+        "headline": {
+            "effective_date": _ASOF,
+            "method_version": mod.METHOD_VERSION,
+            "state_id": build1.get("state_id"),
+            "quadrant": {"x": 40.0, "y": 60.0},
+        },
+        "prior_publication": prior_publication_snapshot(earlier),
+        "metrics": {"items": []},
+        "generation": {"generation_id": "july-gen"},
+        "changes": {},
+    }
+    resolved2 = resolve_publication_prior(carried, _ASOF)
+    assert resolved2 is not None
+    assert effective_date_of(resolved2) == _PRIOR_ASOF
+    assert resolved2["headline"]["state_id"] == "B"
+    build2 = apply_headline_publication_fields(
+        _call_headline(mod, resolved2), resolved2, raw_prior=carried)
+    assert build1["state_id"] == build2["state_id"]
+    assert build1["one_month_vector"] == build2["one_month_vector"]
+    assert build1["transition_distance"] == build2["transition_distance"]
+    h1 = build1.get("hysteresis") or {}
+    h2 = build2.get("hysteresis") or {}
+    assert h1.get("held_prior") == h2.get("held_prior")
+    assert h1.get("note") == h2.get("note")
+
+
+def test_later_publication_computes_against_stored_earlier_snapshot() -> None:
+    fx = _frames()
+    june = _compose(fx["june"], fx["built_at"])
+    july = _compose(fx["july"], fx["built_at"], prior=june)
+    assert july["prior_publication"]["headline"]["effective_date"] == (
+        june["headline"]["effective_date"])
+    assert _retail(july)["prior_value"] == pytest.approx(680000.0)
+    resolved = resolve_publication_prior(july, "2026-08-01")
+    assert resolved is july
+
+
+def test_producer_seal_types_absent_vector_when_prior_quadrant_non_numeric() -> None:
+    body = {
+        "headline": {
+            "effective_date": "2026-07-01",
+            "quadrant": {"x": 70.0, "y": 80.0, "x_status": "PRESENT",
+                         "y_status": "PRESENT"},
+            "prior_state": {"state_id": "B", "effective_date": "2026-07-01",
+                            "method_version": "v1"},
+            "one_month_vector": {"dx": 0.0, "dy": 0.0, "status": "PRESENT",
+                                 "null_reason": None},
+            "transition_distance": 0.0,
+        },
+        "changes": {
+            "comparability": "COMPARABLE",
+            "prior_effective_date": "2026-07-01",
+            "prior_generation_id": "july",
+            "prior_method_version": "v1",
+            "deltas": [{"metric_id": "retail_sales_level", "prior_value": 700000.0,
+                        "current_value": 702500.0, "delta": 0.0, "note": "x"}],
+            "status": "PRESENT",
+            "null_reason": None,
+        },
+    }
+    stored = {
+        "headline": {"effective_date": "2026-07-01", "method_version": "v1"},
+        "prior_publication": {
+            "headline": {
+                "effective_date": "2026-06-01",
+                "method_version": "v1",
+                "state_id": "B",
+                "quadrant": {"x": None, "y": None, "x_status": "ABSENT",
+                             "y_status": "ABSENT"},
+            },
+            "metrics": {"items": []},
+            "generation": {"generation_id": "june"},
+        },
+    }
+    sealed = apply_producer_prior_seal(body, stored)
+    vec = sealed["headline"]["one_month_vector"]
+    assert vec["status"] == "ABSENT"
+    assert vec["null_reason"] == "NO_EARLIER_PUBLICATION"
+    assert vec["dx"] is None and vec["dy"] is None
+    assert sealed["headline"]["transition_distance"] is None
+    assert sealed["headline"]["prior_state"]["effective_date"] == "2026-07-01"
+
+
+def test_glance_preserves_method_changed_absence_from_real_composer() -> None:
+    fx = _frames()
+    june = _compose(fx["june"], fx["built_at"])
+    june["headline"]["method_version"] = "consumer_payments.compose.OLD"
+    july = _compose(fx["july"], fx["built_at"], prior=june)
+    assert july["changes"]["comparability"] == "METHOD_CHANGED"
+    view = V.build_view(
+        july, page_built_at="2026-09-04T00:00:00Z", artifact=_artifact())
+    block = view["changes"]["absence"]
+    glance = view["glance"]["change"]["absence"]
+    assert glance == block
+    assert glance["label"]["en"] == (
+        "Method version changed — shown as a method change, not a delta")
+    assert glance["label"]["zh"] == (
+        "方法版本已变更 — 按方法变更呈现，而非数值变化")
+    assert glance["label"]["en"] != "Current reading not available"
+
+
+def test_newly_tracked_metric_without_stored_prior_is_typed_no_earlier() -> None:
+    fx = _frames()
+    june = _compose(fx["june"], fx["built_at"])
+    july = _compose(fx["july"], fx["built_at"], prior=june)
+    snap = json.loads(json.dumps(july))
+    items = snap["prior_publication"]["metrics"]["items"]
+    snap["prior_publication"]["metrics"]["items"] = [
+        it for it in items if it.get("metric_id") != "retail_sales_level"
+    ]
+    rebuilt = _compose(fx["july"], fx["built_at"], prior=snap)
+    row = _retail(rebuilt)
+    assert row["prior_value"] is None
+    view = V.build_view(
+        rebuilt, page_built_at="2026-09-04T00:00:00Z", artifact=_artifact())
+    retail_view = next(
+        d for d in view["changes"]["deltas"] if d["metric_id"] == "retail_sales_level")
+    assert retail_view["absence"]["label"]["en"] == "No earlier reading yet"
+    assert retail_view["absence"]["label"]["zh"] == "暂无更早读数"
+
+
+def test_resolve_returns_stored_prior_publication_on_same_dated_rebuild() -> None:
+    stored = {
+        "headline": {"effective_date": "2026-07-01", "state_id": "C"},
+        "prior_publication": {
+            "headline": {"effective_date": "2026-06-01", "state_id": "B",
+                         "method_version": "v1",
+                         "quadrant": {"x": 58.0, "y": 53.0}},
+            "metrics": {"items": [{"metric_id": "growth_momentum", "value": 58.0}]},
+        },
+    }
+    resolved = resolve_publication_prior(stored, "2026-07-01")
+    assert resolved is stored["prior_publication"]
+    assert resolved["headline"]["state_id"] == "B"
+    assert resolve_publication_prior(
+        {"headline": {"effective_date": "2026-07-01"}}, "2026-07-01"
+    ) is None
 

@@ -493,6 +493,14 @@ def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
     comparable = comparability == "COMPARABLE"
     if no_earlier:
         block_absence = _no_earlier_absence(changes.get("null_reason"))
+    elif comparability in ("METHOD_CHANGED", "DEFINITION_INCOMPARABLE"):
+        block_absence = {
+            "token": comparability,
+            "label": L.label("comparability", comparability) or _pair(
+                str(comparability), str(comparability)),
+            "display": EM_DASH,
+            "null_reason": changes.get("null_reason"),
+        }
     elif not (comparable and deltas):
         block_absence = _absence(changes.get("null_reason"))
     else:
@@ -934,6 +942,38 @@ def _next_action(context: Mapping[str, Any],
     }
 
 
+def _rows_say_currents_missing(changes: Mapping[str, Any]) -> bool:
+    """True only when every non-comparable row has a prior and no current."""
+    deltas = list(changes.get("deltas") or [])
+    non_comp = [d for d in deltas if not d.get("comparable")]
+    if not non_comp:
+        return False
+    return all(
+        d.get("prior_present") and not d.get("current_present")
+        for d in non_comp
+    )
+
+
+def _glance_change_absence(
+    changes: Mapping[str, Any],
+    comparable_rows: list[Any],
+) -> dict[str, Any] | None:
+    """Preserve the block's reviewed absence pair; mint CURRENT_UNAVAILABLE
+    only when the rows themselves say the current reading is missing."""
+    if comparable_rows and changes.get("comparable"):
+        return None
+    block = changes.get("absence")
+    if _rows_say_currents_missing(changes):
+        return block or _current_unavailable_absence()
+    if block:
+        return block
+    for delta in changes.get("deltas") or []:
+        row_abs = delta.get("absence") if isinstance(delta, Mapping) else None
+        if row_abs:
+            return row_abs
+    return None
+
+
 def _glance(changes: Mapping[str, Any],
             implications: Mapping[str, Any]) -> dict[str, Any]:
     """The bounded brief: one change, one meaning, both owner-published.
@@ -958,16 +998,7 @@ def _glance(changes: Mapping[str, Any],
             # rather than an empty section the reader has to interpret.
             "comparable_count": len(comparable),
             "total_count": len(deltas),
-            "absence": (
-                None if comparable
-                else (
-                    (changes.get("absence") or _no_earlier_absence())
-                    if changes.get("comparability") in (
-                        "NO_EARLIER_PUBLICATION", "NO_PRIOR",
-                    )
-                    else _current_unavailable_absence()
-                )
-            ),
+            "absence": _glance_change_absence(changes, comparable),
         },
         "meaning": {
             "present": lead_implication is not None,
