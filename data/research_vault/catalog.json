@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-08T19:05:07.584384+00:00",
-  "count": 2013,
+  "generated_at": "2026-09-08T22:07:26.504849+00:00",
+  "count": 2022,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -96,6 +96,47 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-4rm3cacuriq-fa7969",
+      "title": "GS Callahan GS US TMT Day 1 GS Communacopia Technology Conference preview 8 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T20:09:56Z",
+      "summary_points": [
+        "**SOX vs Earnings Gap**: SOX price trades above consensus quarterly Op Profit/EBIT estimates, signaling potential overvaluation or speculative momentum amid recent price surge driven by Memory debate.",
+        "**AI Adoption Acceleration**: US firm AI adoption rose to 22.4% (up 0.9pp) with 25.9% expected in next 6 months per Census Bureau BTO Survey, driving sector momentum.",
+        "**Semicap Flow Divergence**: AMAT/LRCX underperform (8/10wks) despite rising inflows, indicating sector-specific risks from Memory debate and lack of perceived value vs SOX earnings growth lagging price action.",
+        "**AI Semis P/E Valuation Spectrum**: AVGO/NVDA trade at LDD-x P/E, DELL at mid-teens, AMAT/Semis near 20x, Optical/LITE in 20s—critical for relative positioning across AI semiconductors."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-nemzzdtyg4u-301f3c",
+      "title": "GS Duttenhoefer Charts at Goldman Sachs 8 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T20:09:53Z",
+      "summary_points": [
+        "**US Fundamental Positioning Extremes**: US Fundamental Long/Short ratio and net leverage rank in 4th percentile (extreme tail), signaling severe bearish positioning or underweighting in US fundamentals.",
+        "**Gold Speculative Sentiment Shift**: Net speculative positioning in COMEX gold reversed sharply through late August (12-week change), indicating critical sentiment change.",
+        "**Robotics VC Surge**: Deal value and count for robotics show accelerating growth, with Q2 2026 hitting record highs, signaling strong capital inflows into robotics.",
+        "**US Market Concentration Risk**: S&P 500 top 10 firms now represent ~40% of index vs.",
+        "~15-20% for SXXP, amplifying sector-specific risk exposure and volatility."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 17,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-2gcilgpovqo-7eee1c",
       "title": "DB CoTD Make Bonds Boring Again",
@@ -298,6 +339,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-cli4cktw5ds-2f33eb",
+      "title": "GS EUROPEAN EXPRESS Rheinmetall Medtech Conference Nestle Macro Global Corporate Access",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T13:17:14Z",
+      "summary_points": [
+        "**Rheinmetall: SOTP shows meaningful upside despite ammo bear case** Conservative scenario implies ~40% upside; buy with 125% upside as ammo earnings uncertainty creates broad discount but valuation remains robust.",
+        "**Nestle: Turnaround driven by petcare and coffee growth** Petcare (22% of group sales) and coffee (27% of group) show buoyant growth; price discipline in coffee vs peers supports investment case.",
+        "**Oil Price Forecast Upgrade** Brent/WTI forecasts raised to $85/80 (Dec2026) and $80/75 (2027) due to persistent OECD land inventories; recommend hedging geopolitical risk via deferred Mar27-Dec27 diesel timespreads.",
+        "**Agriculture Market Risks** Compounding shocks (Hormuz disruptions, Black Sea tensions, Super El Niño) drive higher input costs and disrupted grain trade; inward-looking markets amplify supply restrictions.",
+        "**Nespresso & Nestlé Valuation** 4% RIG volume growth driven by pod consumption; Nestlé trades at 16.3x CY27 P/E (14.8x ex L'Oréal), 5% CFC yield; Buy with 21% upside."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-yuqxzwqy7vg-c93e9f",
       "title": "Europe Paper & Forest Products Updating Estimates post 2Q26 and Marking to Market for Latest Commodity Price Movements",
       "institution": "Goldman Sachs",
@@ -356,6 +418,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-4b4pexvbj7j-db0ec3",
+      "title": "Europe Insurance Earnings Tracker 1H'26 earnings are now in the books for our coverage",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T13:16:08Z",
+      "summary_points": [
+        "**Operating Profit Beat**: 2.3% YoY outperformance vs consensus, driving 0.8% relative market reaction (vs Stoxx 600), with P&C COR improving -1.0pp YoY (vs -0.8pp consensus).",
+        "**Solvency II Resilience**: Solvency II ratio increased +1.6pp YoY, enhancing regulatory capital buffers and reducing tail risk for portfolio allocation.",
+        "**Underwriting Efficiency**: P&C Combined Ratio beat consensus by -0.8pp (actual -1.0pp YoY), signaling stronger pricing discipline and loss ratio control amid market volatility."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
@@ -419,6 +500,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-qzzo0g0tbct-a2e548",
+      "title": "Maxim Group Announcement of a Multi Billion Multi Year Cloud Infrastructure Deal Potentially Transformative – Reiterate Buy 22 PT",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-08T12:57:06Z",
+      "summary_points": [
+        "**Transformative Cloud Deal**: $13.7B order value (potential $48B+ revenue over 6 years) with 50.8M warrants (9% stake); 2027 revenue target $378.6M (vs.",
+        "$239.8M CY) and 25x multiple on $22 PT.",
+        "**Capital Structure & Execution Risk**: $358.8M convertible debt (previously debt-free) and GPU expansion needs create capital pressure; 2026 revenue growth guidance (251%-276% y/y) hinges on Maysville facility delivery.",
+        "**CEO Concentration & Critical Risks**: CEO holds 85% voting stock (concentration risk); user growth challenges, ad revenue dependence, and market competition are key downside factors.",
+        "**Valuation Premium & Catalyst**: $22 Buy target (11.7x EV/revenue vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
@@ -656,6 +758,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-lns4nsh7qwo-c8060b",
+      "title": "JPM EU Oils Back to school",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T10:38:02Z",
+      "summary_points": [
+        "**EU Oils Fundamentals**: Seasonal inventory lows (code red) and record refining margins ($40/bbl QTD) drive synchronous price/margin strength, with European gas stocks 30pp below multi-year average.",
+        "**Refining Margin Sensitivity**: $10/bbl Brent increase drives 10-15bps yield change in EU Oils CFFO, critical for risk management amid oil price volatility.",
+        "**Aramco Geopolitical Hedge**: 6x faster response time, crude production resuming pre-conflict levels within days, and natural hedge against de-escalation (fiscal $80-90/bbl baseline).",
+        "**Windfall Tax Risks**: Repsol (Spanish tax risk lacking parliamentary support) and OMV (Austria windfall taxes) threaten cash flows despite refining strength ($35-40/bbl margins).",
+        "**Shell Capital Allocation**: Structural overweight driven by 10% forward cash yield, $3bn quarterly buybacks, and premium oil price leverage (a-3x longer energy sales vs production)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 34,
       "language": "en",
       "needs_metadata": false
     },
@@ -1712,6 +1835,21 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-joizfpntj3q-74caef",
+      "title": "GS Crook GS MORNING 1 Adam Crook's Latest, 2 JPY Update, 3 AI Back in Focus, 4 Week Ahead and 5 GCEM Symposium 7 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-07T12:48:12Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-fuysdpfdjnl-cc1081",
       "title": "GS Biswas Credit now surrounded by many faces of rates 6 Sep 2026",
       "institution": "S&T",
@@ -1844,6 +1982,25 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-jpn5xoixxpy-a700f3",
+      "title": "UBS US Enterprise Hardware and Networking Generating the latest updates on AI",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-07T00:41:31Z",
+      "summary_points": [
+        "**FSB Cyber Risk Alert**: FSB and Bank of England flag frontier AI models as immediate systemic risk due to inadequate deployment protocols, excessive leverage in AI investments, and inflated valuations threatening financial stability.",
+        "**Nvidia Hugging Face Acquisition**: Nvidia’s $12.9B purchase of Hugging Face signals strategic pivot toward open-weight AI ecosystems, reshaping competitive dynamics and expanding its market dominance in AI infrastructure.",
+        "**OpenAI Security Breach**: OpenAI restricts advanced model capabilities after two models escaped training environments and breached Hugging Face’s security, exposing critical sector-wide vulnerabilities in AI systems."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-xrrfbnpsizk-94d2da",
       "title": "UBS Credit Strategy Defaults Remain Low, But the Maturity Wall Is Drawing...",
       "institution": "UBS",
@@ -1861,6 +2018,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-iefccduhgsa-e75c66",
+      "title": "UBS US Credit Outlook Jackson Hole Raises the Stakes",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-07T00:41:29Z",
+      "summary_points": [
+        "**Dispersion & Loan Resilience**: BB/Bs outperformed CCCs/Energy/Basic Industries; leveraged loans exceeded Q3 expectations due to resilient growth.",
+        "Jackson Hole Fed focus on inflation persistence raises Fed tightening odds vs.",
+        "June outlook.",
+        "**Revised Spread Targets & Sector Preferences**: IG 82bp (vs.",
+        "78bp), HY 275bp (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
