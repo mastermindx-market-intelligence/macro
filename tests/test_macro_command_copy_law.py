@@ -120,6 +120,26 @@ def test_timestamp_prefixed_by_a_plain_word_passes() -> None:
     assert guard.find_violations(html) == []
 
 
+def test_emitted_asof_markup_with_intervening_tags_passes() -> None:
+    """The page emits the G2b prefix and the date in sibling tags
+    (`templates/macro_monetary.html.j2` header :106 and chip :145). Tag
+    stripping must not insert a space that breaks the lookbehind."""
+    header = (
+        '<span class="mc-asof-word"><span class="l-en">Data to</span>'
+        '<span class="l-zh">数据截至</span></span> '
+        '<time datetime="2026-09-03">2026-09-03</time>'
+    )
+    chip = (
+        '<span class="mc-chip-asof">'
+        '<span class="mc-asof-word"><span class="l-en">Data to</span>'
+        '<span class="l-zh">数据截至</span></span> '
+        '<time datetime="2026-09-03">2026-09-03</time>'
+        '</span>'
+    )
+    assert guard.find_violations(f'<main class="mc-shell">{header}</main>') == []
+    assert guard.find_violations(f'<main class="mc-shell">{chip}</main>') == []
+
+
 def test_datetime_attribute_value_is_never_scanned() -> None:
     """The machine value legitimately lives in `datetime=`; tag-stripping
     removes the attribute along with the tag, so it never reaches the scan

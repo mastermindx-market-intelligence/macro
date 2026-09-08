@@ -335,3 +335,64 @@ def test_sections_constant_ids_are_bare_tokens_no_hash() -> None:
         assert "#" not in section.id
         for tab in section.subtabs:
             assert "#" not in tab.id
+
+
+def test_as_of_display_is_a_plain_date_in_both_languages() -> None:
+    """M1: never print a raw YYYY-MM-DD as the visible as-of."""
+    assert builder._plain_as_of_display("2026-07-01") == {
+        "en": "1 Jul 2026",
+        "zh": "2026年7月1日",
+    }
+    assert builder._plain_as_of_display("not-a-date") is None
+
+
+def test_the_hub_eyebrow_uses_plain_dates_and_states_the_oldest_print_rule(
+        built_hub: str) -> None:
+    authored = built_hub[built_hub.index('<main class="mc-shell"'):]
+    if "<time datetime=" not in authored:
+        pytest.skip("this checkout's macrodata has no dated workspace print")
+    glance = re.sub(r"<details\b.*?</details>", " ", authored, flags=re.S)
+    glance_text = re.sub(r"<[^>]+>", " ", glance)
+    assert not re.search(r"\b\d{4}-\d{2}-\d{2}\b", glance_text)
+    assert "Oldest of the fourteen workspaces" in authored
+    assert "取十四个工作区中最旧的最新读数" in authored
+
+
+def test_overview_offers_visible_workspace_links_and_honest_null_copy(
+        built_hub: str) -> None:
+    """M2: Overview content is a next-action list, not a 'being built' stub."""
+    match = re.search(
+        r'<section class="mc-panel" id="overview".*?(?=<section class="mc-panel")',
+        built_hub, re.S)
+    assert match
+    body = match.group(0)
+    assert "Today&#39;s read is not available yet" in body or "Today's read is not available yet" in body
+    assert "今日读数暂不可用" in body
+    assert "being built" not in body
+    assert 'class="mc-overview-links"' in body
+    for page in builder.SUITE_PAGES:
+        assert f'href="{page.output}"' in body, page.workspace_id
+
+
+def test_p1_shell_does_not_enable_fragment_fetch(
+        built_hub: str, macro_command_js: str) -> None:
+    """M3: P1 issues no request and does not assign innerHTML unguarded."""
+    assert "data-mc-fragments" not in built_hub
+    assert "data-mc-fragments" in macro_command_js
+    assert "hasAttribute" in macro_command_js
+    assert "data-mc-fragment" in macro_command_js
+    assert "content-type" in macro_command_js
+
+
+def test_subtab_tablist_uses_the_bilingual_heading(built_hub: str) -> None:
+    """m1: ZH screen readers hear the existing bilingual h2, not EN-only."""
+    for section_id in SUBTABBED_SECTIONS:
+        assert f'aria-labelledby="{section_id}-h"' in built_hub
+    assert "subtab_group_en" not in built_hub
+
+
+def test_hash_of_a_tabpanel_id_is_resolved_to_its_section(
+        macro_command_js: str) -> None:
+    """m4: #funding must activate credit/funding, not early-return."""
+    assert "function tabbodyOwner(" in macro_command_js
+    assert "data-mc-tabbody" in macro_command_js

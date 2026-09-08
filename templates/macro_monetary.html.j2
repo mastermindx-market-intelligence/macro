@@ -59,7 +59,7 @@
 <body class="mq-page mc-page">
 {% include "_site_nav.html.j2" %}
 
-<main class="mc-shell" id="mc-shell">
+<main class="mc-shell" id="mc-shell"{% if fragments_ready %} data-mc-fragments{% endif %}>
 
   <a class="mc-skip" href="#mc-content">{{ t("Skip to today's read", '跳到今日读数') }}</a>
 
@@ -110,6 +110,9 @@
         <span class="mc-eyebrow-asof mc-absent">{{ t('No dated reading yet', '暂无带日期的读数') }}</span>
         {%- endif %}
       </p>
+      {%- if read.as_of_meaning %}
+      <p class="mc-asof-meaning">{{ bl(read.as_of_meaning) }}</p>
+      {%- endif %}
       <h1 class="mc-title">{{ t('Macro Command', '宏观指挥台') }}</h1>
 
       {# THE READ — one sentence, deterministic, single-workspace pass-through only (G3) #}
@@ -181,7 +184,7 @@
       {%- endif %}
 
       {%- if s.subtabs %}
-      <div class="mc-subtabs" role="tablist" aria-label="{{ s.subtab_group_en }}">
+      <div class="mc-subtabs" role="tablist" aria-labelledby="{{ s.id }}-h">
         {%- for tab in s.subtabs %}
         <button type="button" class="mc-subtab" role="tab" id="{{ tab.id }}-t"
                 data-mc-subtab="{{ tab.id }}" aria-controls="{{ tab.id }}"
@@ -193,8 +196,15 @@
 
       <div class="mc-figure" data-mc-figure>
         {%- if s.first %}
-        <p class="mc-figure-building">{{ t('This overview is being built. Each section on the left opens its full workspace.',
-                                             '总览正在建设中。左侧每个板块均可打开其完整工作区。') }}</p>
+        <p class="mc-figure-building">{{ t("Today's read is not available yet. Open any section on the left for its full workspace.",
+                                             '今日读数暂不可用。点击左侧任一板块查看其完整工作区。') }}</p>
+        {# M2: the fourteen workspace deep links are the Overview's real
+           content — never hidden inside <details> as the only next action. #}
+        <ul class="mc-overview-links">
+          {%- for link in s.detail_links %}
+          <li><a href="{{ link.href }}">{{ bl(link.title) }}</a></li>
+          {%- endfor %}
+        </ul>
         {%- elif s.subtabs %}
         {# D8: the DEFAULT (no-JS) content is an honest null with a real destination, for EACH tab body.
            The pending line is hidden in the document and unhidden by JS at boot; both tab bodies ship

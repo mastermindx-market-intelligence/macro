@@ -110,8 +110,11 @@ html[data-theme="light"] {
 .mc-analyst:hover { border-color: var(--mq-accent); color: var(--mq-accent); }
 
 /* ── command header + THE READ ───────────────────────────────────────────── */
-.mc-eyebrow {
-  margin: 0 0 6px; font-size: var(--fs-micro, 11px);
+.mc-asof-meaning { margin: 6px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--mq-muted); max-width: 62ch; }
+.mc-figure-building { margin: 0; font-size: 14.5px; line-height: 1.55; color: var(--mq-ink); max-width: 62ch; }
+.mc-overview-links { margin: 14px 0 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14px; line-height: 1.5; }
+.mc-overview-links a { color: var(--mq-accent); }
+.mc-eyebrow {  margin: 0 0 6px; font-size: var(--fs-micro, 11px);
   letter-spacing: .08em; color: var(--mq-muted);
 }
 .mc-eyebrow time { font-family: var(--font-mono); }

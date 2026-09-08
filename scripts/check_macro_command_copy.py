@@ -66,8 +66,13 @@ FALSIFIER_SUBSTRINGS: tuple[str, ...] = ("falsifier", "refuted", "证伪")
 # "T\d\d:\d\d" fragment at all — the datetime separator has no legitimate
 # reason to reach visible text; the machine value belongs only in
 # `datetime=`, which tag-stripped visible text never sees in the first place.
-_BARE_DATE_RE = re.compile(r'(?<![A-Za-z\u4e00-\u9fff][ \u00a0])\d{4}-\d{2}-\d{2}')
+# One-or-more whitespace (space or NBSP) after a letter: the emitted markup
+# is `<span>Data to</span> <time>…</time>`, so after tags are stripped the
+# word and the date are still separated by whitespace. A single-character
+# lookbehind (`[A-Za-z一-鿿][ ]`) cannot see that shape.
+_BARE_DATE_RE = re.compile(r'(?<![A-Za-z\u4e00-\u9fff]\s)\d{4}-\d{2}-\d{2}')
 _ISO_TIME_RE = re.compile(r'T\d{2}:\d{2}')
+_WS_RE = re.compile(r'[\s\u00a0]+')
 
 _DETAILS_RE = re.compile(r'<details\s+class="mc-details"[^>]*>.*?</details>', re.S)
 _PRIMER_RE = re.compile(r'<details\s+class="mc-primer"[^>]*>.*?</details>', re.S)
@@ -102,10 +107,15 @@ def reading_path_text(html: str) -> str:
     attribute values (`id=`, `href=`, `datetime=`) never feed the
     banned-substring or bare-timestamp scan — only what a reader actually
     sees does."""
-    stripped = _SCRIPT_RE.sub(" ", html)
-    stripped = _DETAILS_RE.sub(" ", stripped)
-    stripped = _PRIMER_RE.sub(" ", stripped)
-    return _TAG_RE.sub(" ", stripped)
+    stripped = _SCRIPT_RE.sub("", html)
+    stripped = _DETAILS_RE.sub("", stripped)
+    stripped = _PRIMER_RE.sub("", stripped)
+    # Tags become empty, not a space: the page emits the plain word and the
+    # date in sibling elements (`<span class="mc-asof-word">Data to</span>
+    # <time>…</time>`), and a space-per-tag would break G2b's lookbehind
+    # between the word and the date (Opus review PR #6930 B2).
+    stripped = _TAG_RE.sub("", stripped)
+    return _WS_RE.sub(" ", stripped)
 
 
 def find_violations(html: str) -> list[str]:

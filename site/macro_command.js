@@ -36,13 +36,28 @@
     return null;
   }
 
+  function tabbodyOwner(id) {
+    var node = document.getElementById(id);
+    if (!node || !node.hasAttribute('data-mc-tabbody')) return null;
+    var owner = node.closest('[data-mc-panel]');
+    if (!owner) return null;
+    return {
+      section: owner.getAttribute('data-mc-panel'),
+      subtab: node.getAttribute('data-mc-tabbody')
+    };
+  }
+
   /* ── hash grammar (two segments) — §6.2 item 1 ─────────────────────────── */
   function parseHash() {
     var raw = (location.hash || '').replace(/^#/, '');
     var parts = raw.split('/');
     var sectionId = parts[0] || '';
     var subtabId = parts[1] || '';
-    if (!panelById(sectionId)) sectionId = 'overview';
+    if (!panelById(sectionId)) {
+      var owned = tabbodyOwner(sectionId);
+      if (owned) return owned;
+      sectionId = 'overview';
+    }
     return { section: sectionId, subtab: subtabId };
   }
 
@@ -118,6 +133,11 @@
 
   /* ── fragment fetch on first activation — §6.2 item 3 ──────────────────── */
   function maybeFetchFragment(panel, sectionId) {
+    /* P1 ships no fragments. The builder only sets data-mc-fragments when
+       fragment files exist; without that flag this function is a no-op so
+       P1 never issues a guaranteed-404 and never unhides the pending line
+       (Opus review, pull request 6930, M3). */
+    if (!shell.hasAttribute('data-mc-fragments')) return;
     if (sectionId === 'overview' || fetchedSections[sectionId]) return;
     fetchedSections[sectionId] = true;
     var figure = panel.querySelector('[data-mc-figure]');
@@ -140,8 +160,6 @@
       settled = true;
       clearTimeout(timer);
       restoreOffer();
-      /* Fragments do not exist in P1 (§9 P1, R7): the fetch always degrades to
-         the honest offer line, never a spinner that can spin forever. */
     }
 
     if (typeof fetch !== 'function') { fail(); return; }
@@ -149,8 +167,11 @@
       .then(function (resp) {
         if (settled) return;
         if (!resp.ok) { fail(); return; }
+        var ctype = (resp.headers.get('content-type') || '').toLowerCase();
+        if (ctype.indexOf('text/html') === -1) { fail(); return; }
         return resp.text().then(function (text) {
           if (settled) return;
+          if (text.indexOf('data-mc-fragment') === -1) { fail(); return; }
           settled = true;
           clearTimeout(timer);
           figure.innerHTML = text;
@@ -176,7 +197,14 @@
        review, PR 6930 MAJOR skip-link hijack). */
     var raw = (location.hash || '').replace(/^#/, '');
     var sectionId = raw.split('/')[0];
-    if (raw && !panelById(sectionId) && document.getElementById(raw)) return;
+    if (raw && !panelById(sectionId)) {
+      var owned = tabbodyOwner(sectionId);
+      if (owned) {
+        activateSection(owned.section, owned.subtab);
+        return;
+      }
+      if (document.getElementById(raw)) return;
+    }
     var parsed = parseHash();
     activateSection(parsed.section, parsed.subtab);
   });

@@ -638,7 +638,6 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]]) -> list[dict[s
             "watching": None,
             "deep_href": section.deep_href,
             "subtabs": subtabs,
-            "subtab_group_en": section.label_en if subtabs else None,
             "detail_links": detail_links,
         })
     return sections
@@ -656,13 +655,38 @@ def _macro_command_analyst(root: Path) -> dict[str, Any]:
 
 
 
+_MONTH_ABBR_EN = (
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+)
+
+
+def _plain_as_of_display(iso_date: str) -> dict[str, str] | None:
+    """Human dates for the hub eyebrow — never a raw ISO string (Front-End
+    Clarity Law / Opus review PR #6930 M1). EN is ``1 Jul 2026``; ZH is
+    ``2026年7月1日``. Returns None when the string is not a YYYY-MM-DD."""
+    try:
+        parsed = datetime.strptime(iso_date[:10], "%Y-%m-%d")
+    except (TypeError, ValueError):
+        return None
+    return {
+        "en": f"{parsed.day} {_MONTH_ABBR_EN[parsed.month - 1]} {parsed.year}",
+        "zh": f"{parsed.year}年{parsed.month}月{parsed.day}日",
+    }
+
+
 def _macro_command_read(entries: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     """Honest `read` context (R3: P1 computes no synthesized state/clause of
     its own -- `clauses` stays empty). `as_of` must never be fabricated
     absent when real dated readings exist: it is the OLDEST accepted
     effective_date across the fourteen workspace snapshots, matching
     `build_hub_view`'s own "dated by its oldest accepted print" convention
-    (Meta-CEO review, PR #6930 BLOCKER fabricated null)."""
+    (Meta-CEO review, PR #6930 BLOCKER fabricated null).
+
+    `lib.macro_suite_view.build_hub_view` is the R1 card-grid helper and is
+    deliberately not called here — P1 owns its own thin `read` dict. The
+    helper stays importable for later packets that may reuse its convention.
+    """
     effective_dates: list[str] = []
     any_unavailable = False
     for entry in entries:
@@ -675,17 +699,27 @@ def _macro_command_read(entries: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         if isinstance(effective_date, str) and effective_date.strip():
             effective_dates.append(effective_date.strip())
     as_of = min(effective_dates) if effective_dates else None
-    as_of_display = {"en": as_of, "zh": as_of} if as_of else None
+    as_of_display = _plain_as_of_display(as_of) if as_of else None
+    if as_of and not as_of_display:
+        as_of = None
+    as_of_meaning = {
+        "en": (
+            "Oldest of the fourteen workspaces' latest prints — newer "
+            "sections are dated on their own page."
+        ),
+        "zh": "取十四个工作区中最旧的最新读数 — 各板块自身日期见其页面。",
+    } if as_of else None
     return {
         "as_of": as_of,
         "as_of_display": as_of_display,
+        "as_of_meaning": as_of_meaning,
         "clauses": [],
         "omitted": any_unavailable,
     }
 
 
 def build_hub(entries: Sequence[Mapping[str, Any]], *, out_dir: Path,
-              env: Environment, page_built_at: str, root: Path) -> Path:
+              env: Environment, root: Path) -> Path:
     """Render the suite hub from what the fourteen pages just read.
 
     The hub reads NO artifact of its own. Every row is the snapshot (or the typed
@@ -695,9 +729,11 @@ def build_hub(entries: Sequence[Mapping[str, Any]], *, out_dir: Path,
 
     Macro Command (F01 Macro Command P1) supersedes the hub's prior markup
     entirely (frozen spec §2.7): `sections`, `analyst`, `read` and `strip` are
-    the new page's context. P1 ships no state computation (R3) — `read` and
-    `strip` are honest-empty so the page's own built-in fallback copy
-    ("Today's reading is incomplete...") renders rather than fabricated data.
+    the new page's context. P1 ships no state computation (R3) — `read.clauses`
+    and `strip` stay empty so the page's own honest-null copy renders rather
+    than fabricated data. `page_built_at` is not a hub argument: workspace
+    pages still stamp themselves; the hub no longer reprints that clock
+    (Opus review PR #6930 m2).
     """
     html = env.get_template(HUB_PAGE.template).render(
         page_title="Macro & Monetary",
@@ -711,6 +747,7 @@ def build_hub(entries: Sequence[Mapping[str, Any]], *, out_dir: Path,
         analyst=_macro_command_analyst(root),
         read=_macro_command_read(entries),
         strip=[],
+        fragments_ready=False,
     )
     html = "\n".join(line.rstrip() for line in html.splitlines()) + "\n"
 
@@ -744,7 +781,7 @@ def render(root: Path | str = _REPO_ROOT, *, data_root: Path | str | None = None
                                       page_built_at=stamp)
         written.append(path)
         entries.append(entry)
-    written.append(build_hub(entries, out_dir=site, env=env, page_built_at=stamp, root=root))
+    written.append(build_hub(entries, out_dir=site, env=env, root=root))
     for asset in SHARED_ASSETS:
         _atomic_copy(root / "templates" / asset, site / asset)
     return written

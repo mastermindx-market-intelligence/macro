@@ -276,8 +276,18 @@ def test_coverage_absence_is_typed_and_has_screen_reader_text(hub: str) -> None:
     """Every `mq-dash` carries a sibling `.mq-sr` (G4); P1's empty Read shows
     plain-word absence, never a bare unlabelled dash."""
     authored = _authored(hub)
-    assert "No dated reading yet" in authored or "Today's reading is incomplete" in authored
-    assert "暂无带日期的读数" in authored or "今日读数不完整" in authored
+    assert (
+        "No dated reading yet" in authored
+        or "Today's reading is incomplete" in authored
+        or "Today's read is not available yet" in authored
+        or "See each workspace below" in authored
+    )
+    assert (
+        "暂无带日期的读数" in authored
+        or "今日读数不完整" in authored
+        or "今日读数暂不可用" in authored
+        or "各工作区下方各自展示" in authored
+    )
     for match in re.finditer(r'<span class="mq-dash"[^>]*>—</span>(.{0,80})', authored, re.S):
         assert 'class="mq-sr"' in match.group(1), \
             "a mq-dash with no adjacent mq-sr is an unlabelled dash"
@@ -366,6 +376,20 @@ def test_no_zh_text_inside_any_title_attribute(hub: str) -> None:
     zh = re.compile(r"[一-鿿]")
     for value in re.findall(r'\btitle="([^"]*)"', hub):
         assert not zh.search(value), f'title="{value}" carries ZH text'
+
+
+def test_build_hub_view_is_not_the_macro_command_renderer() -> None:
+    """m3: P1 no longer calls the R1 card-grid helper. Keep it importable
+    (later packets may reuse its oldest-print convention) and exercised so
+    it does not rot untested-but-live."""
+    import inspect
+
+    from lib.macro_suite_view import build_hub_view
+
+    assert "build_hub_view" not in inspect.getsource(builder.build_hub)
+    view = build_hub_view([], page_built_at=BUILT_AT)
+    assert view["as_of"]["effective_date"] is None
+    assert view["coverage"]["total"] == 0
 
 
 def test_the_hub_carries_no_executable_inline_script(hub: str) -> None:
