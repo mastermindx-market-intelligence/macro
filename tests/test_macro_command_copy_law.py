@@ -443,7 +443,7 @@ def test_machine_copy_hits_catch_braces_snake_parquet_and_rule_ids() -> None:
 
 
 def test_copy_guard_defaults_to_every_suite_page_and_hub() -> None:
-    """n1: no-arg invocation scans every suite page + both hubs."""
+    """n1: no-arg invocation scans the Macro Command hub (macro_monetary.html) + the 14 suite pages."""
     from scripts.build_macro_suite_pages import HUB_PAGE, SUITE_PAGES
     from scripts.check_macro_command_copy import default_targets
     names = {path.name for path in default_targets()}
@@ -570,8 +570,8 @@ def test_b1_rewrites_are_in_the_reading_path_and_originals_are_in_details(
         assert needle in guard.reading_path_text(html), name
     for name, needle in _B1_ORIGINALS:
         html = pages[name]
-        assert needle in html
-        assert needle not in guard.reading_path_text(html), name
+        # v11: internal producer receipts are not rendered in Details.
+        assert needle not in html, name
 
 
 def test_no_details_has_a_p_or_span_ancestor_on_the_fifteen_pages(
@@ -733,10 +733,10 @@ def test_clearance_probe_js_binds_locator_element_then_arg() -> None:
 
 
 def test_capture_relocated_needles_are_locale_visible_and_must_be_inside() -> None:
-    """M2 / B3: 15/16 probe strings exist on the rates page and live in details."""
+    """M2 / B3: probe strings exist on the rates page and live in details."""
     from scripts.capture_macro_command_p5 import RELOCATED_EN, RELOCATED_ZH
     html = (ROOT / "site" / "macro_rates_curves.html").read_text(encoding="utf-8")
-    assert "This page publishes no dual-axis" in html
+    assert "mc-producer-receipt" not in html
     for needle in RELOCATED_EN:
         assert needle in html
         assert needle not in guard.reading_path_text(html)
@@ -1586,7 +1586,7 @@ def test_user_facing_numbers_have_no_machine_floats() -> None:
 
 @pytest.mark.needs_full_checkout("site")
 def test_zh_l_zh_spans_are_translated() -> None:
-    """M1: every .l-zh on suite pages + hubs is not ASCII-letters-only."""
+    """M1: every .l-zh on the Macro Command hub (macro_monetary.html) + the 14 suite pages is not ASCII-letters-only."""
     from scripts.build_macro_suite_pages import HUB_PAGE, SECTIONS, SUITE_PAGES
     ratified = {
         "US", "EU", "JP", "CN", "GB", "USD", "FRED", "SOFR", "TIPS", "OECD",
@@ -1604,13 +1604,17 @@ def test_zh_l_zh_spans_are_translated() -> None:
     found_sections = [sec.id for sec in SECTIONS if sec.id in hub]
     assert len(found_sections) >= 12, found_sections
     scanned = 0
+    raw_total = 0
     ascii_hits = []
     per_page: dict[str, int] = {}
     for name in present:
         html = (ROOT / "site" / name).read_text(encoding="utf-8")
-        zh_spans = re.findall(r'<span class="l-zh">(.*?)</span>', html, re.S)
+        zh_spans = guard.locale_class_texts(html, "l-zh")
+        raw = guard.raw_class_token_count(html, "l-zh")
         per_page[name] = len(zh_spans)
         scanned += len(zh_spans)
+        raw_total += raw
+        assert len(zh_spans) >= raw, (name, len(zh_spans), raw)
         for zh in zh_spans:
             text = re.sub(r"<[^>]+>", "", zh).strip()
             if not text or not _LETTERS.search(text):
@@ -1620,12 +1624,13 @@ def test_zh_l_zh_spans_are_translated() -> None:
             if not _CJK.search(text):
                 ascii_hits.append((name, text))
     assert scanned > 0
+    assert scanned >= raw_total
     assert ascii_hits == [], ascii_hits
 
 
 @pytest.mark.needs_full_checkout("site")
 def test_locale_spans_have_no_machine_text() -> None:
-    """E-m1: visible .l-en/.l-zh never carry braces, snake_case, parquet, R1A."""
+    """E-m1: every visible text node on the Macro Command hub + 14 suite pages is plain."""
     from scripts.build_macro_suite_pages import HUB_PAGE, SECTIONS, SUITE_PAGES
     pages = [HUB_PAGE.output] + [page.output for page in SUITE_PAGES]
     present = [name for name in pages if (ROOT / "site" / name).is_file()]
@@ -1636,10 +1641,12 @@ def test_locale_spans_have_no_machine_text() -> None:
     dirty = []
     for name in present:
         html = (ROOT / "site" / name).read_text(encoding="utf-8")
-        for locale, text in guard.locale_span_texts(html):
-            hits = guard.machine_copy_hits(text)
+        for node in guard.visible_text_nodes(html):
+            hits = guard.machine_copy_hits(
+                node["text"], glance=node.get("glance") == "1")
             if hits:
-                dirty.append(f"{name}:{locale}:{hits[:6]}:{text[:80]}")
+                dirty.append(
+                    f"{name}:{node.get('tag')}:{hits[:6]}:{node['text'][:80]}")
     assert dirty == [], dirty
 
 
@@ -1669,3 +1676,90 @@ def test_chipmat_containment_from_manifest_alone() -> None:
             assert chipmat_containment_holds(state), state.get("file")
             contained += 1
     assert contained == 48
+
+
+def test_vector_move_pair_zero_and_nonzero_are_plain_words() -> None:
+    from lib.macro_suite_labels import vector_move_pair
+    x_axis = {
+        "label": {"en": "Tightness of borrowing conditions", "zh": "融资条件的紧张程度"},
+        "direction_token": "higher_tighter",
+    }
+    y_axis = {
+        "label": {"en": "Direction of borrowing conditions", "zh": "融资条件的变化方向"},
+        "direction_token": "higher_tighter",
+    }
+    zero = vector_move_pair(0, 0, x_axis, y_axis)
+    assert zero["en"] == "No change on either axis this month."
+    assert zero["zh"] == "本月两轴均无变化。"
+    moved = vector_move_pair(0.4, -0.2, x_axis, y_axis)
+    assert "Tighter on funding" in moved["en"]
+    assert "Easier on the change in conditions" in moved["en"]
+    assert "Δ" not in moved["en"] and "·" not in moved["en"]
+
+
+def test_computation_refused_uses_e2_vocabulary() -> None:
+    from lib.macro_suite_labels import EMPTY_STATES, NULL_REASON
+    assert NULL_REASON["COMPUTATION_REFUSED"] == EMPTY_STATES["e2"]["title"]
+    assert "Computation refused" not in NULL_REASON["COMPUTATION_REFUSED"]["en"]
+    assert "拒绝计算" not in NULL_REASON["COMPUTATION_REFUSED"]["zh"]
+
+
+@pytest.mark.needs_full_checkout("site")
+def test_rendered_pages_use_ratified_null_vocabulary() -> None:
+    """E-m2: no refused/refusal phrase on the Macro Command hub + 14 suite pages."""
+    from scripts.build_macro_suite_pages import HUB_PAGE, SUITE_PAGES
+    pages = [HUB_PAGE.output] + [page.output for page in SUITE_PAGES]
+    banned = re.compile(r"refus(ed|al)|拒绝计算", re.I)
+    hits = []
+    for name in pages:
+        path = ROOT / "site" / name
+        if not path.is_file():
+            continue
+        html = path.read_text(encoding="utf-8")
+        for node in guard.visible_text_nodes(html):
+            if banned.search(node["text"]):
+                hits.append(f"{name}:{node['text'][:80]}")
+    assert hits == [], hits
+
+
+@pytest.mark.needs_full_checkout("site")
+def test_details_use_locale_pairing_not_lang_attributes() -> None:
+    """M2: Details text uses .l-en/.l-zh; suite templates have no lang= locale switch."""
+    from scripts.build_macro_suite_pages import HUB_PAGE, SUITE_PAGES
+    suite_templates = list((ROOT / "templates").glob("macro_*.html.j2"))
+    suite_templates.append(ROOT / "templates" / "_macro_suite_shell.html.j2")
+    lang_hits = []
+    for path in suite_templates:
+        text = path.read_text(encoding="utf-8")
+        for match in re.finditer(
+                r"<(?!html\b)([a-zA-Z0-9:-]+)([^>]*\blang=(['\"])(en|zh)\3)",
+                text):
+            lang_hits.append(f"{path.name}:{match.group(0)[:80]}")
+    assert lang_hits == [], lang_hits
+    pages = [HUB_PAGE.output] + [page.output for page in SUITE_PAGES]
+    unpaired = []
+    for name in pages:
+        path = ROOT / "site" / name
+        if not path.is_file():
+            continue
+        html = path.read_text(encoding="utf-8")
+        blocks = re.findall(
+            r'<details class="mc-details"[^>]*>(.*?)</details>', html, re.S)
+        for body in blocks:
+            if "mq-drawer" in body:
+                continue
+            en = len(re.findall(r'\bl-en\b', body))
+            zh = len(re.findall(r'\bl-zh\b', body))
+            if en == 0 and zh == 0:
+                continue
+            if en != zh:
+                unpaired.append(f"{name}:en={en}:zh={zh}")
+    assert unpaired == [], unpaired
+
+
+def test_machine_copy_hits_flag_glance_delta_notation() -> None:
+    assert "delta_axis" in guard.machine_copy_hits("Δx 0 · Δy 0", glance=True)
+    assert "dot_symbol_pair" in guard.machine_copy_hits("Δx 0 · Δy 0", glance=True)
+    assert guard.machine_copy_hits("Δx 0 · Δy 0", glance=False) == []
+    assert guard.machine_copy_hits(
+        "No change on either axis this month.", glance=True) == []

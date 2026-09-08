@@ -101,7 +101,9 @@ NULL_REASON: dict[str, dict[str, str]] = {
     "WARMUP": _pair("Warm-up: first reading", "预热期：首个读数"),
     "REVISION_PENDING_REBUILD": _pair("Revision pending rebuild", "修订待重建"),
     "DISAGREEMENT": _pair("Sources disagree", "数据源存在分歧"),
-    "COMPUTATION_REFUSED": _pair("Computation refused", "拒绝计算"),
+    # E2 via the shared absence renderer — a refusal is "no reading",
+    # never an internal "computation refused" phrase on a customer face.
+    "COMPUTATION_REFUSED": _pair("No reading arrived today.", "今天没有新的读数。"),
     "OUT_OF_REGION": _pair("Outside this region", "超出该地区范围"),
     "NOT_COVERED": _pair("Not covered", "未覆盖"),
 }
@@ -1390,6 +1392,87 @@ def fmt_signed(value: Any) -> str | None:
         return f"+{text}" if float(value) > 0 else text
     except (TypeError, ValueError):
         return text
+
+
+def _finite_number(value: Any) -> float | None:
+    if value is None or isinstance(value, bool):
+        return None
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    if number != number:  # NaN
+        return None
+    return number
+
+
+# Glance-tier move words. Positive follows the high side of direction_semantics.
+_MOVE_WORDS: dict[str, tuple[dict[str, str], dict[str, str]]] = {
+    "higher_tighter": (_pair("Tighter", "收紧"), _pair("Easier", "放松")),
+    "lower_tighter": (_pair("Easier", "放松"), _pair("Tighter", "收紧")),
+    "higher_stronger": (_pair("Stronger", "增强"), _pair("Weaker", "减弱")),
+    "higher_more_cushion": (_pair("More cushion", "缓冲加厚"), _pair("Less cushion", "缓冲变薄")),
+    "higher_more_stress": (_pair("More stress", "压力加大"), _pair("Less stress", "压力减轻")),
+    "higher_wider_spread": (_pair("Wider", "走阔"), _pair("Narrower", "收窄")),
+    "higher_weaker": (_pair("Weaker", "减弱"), _pair("Stronger", "增强")),
+}
+
+_AXIS_SHORT: dict[str, dict[str, str]] = {
+    "Tightness of borrowing conditions": _pair("funding", "融资"),
+    "Direction of borrowing conditions": _pair("the change in conditions", "条件变化"),
+}
+
+
+def _axis_short_name(axis: Mapping[str, Any] | None) -> dict[str, str]:
+    axis = axis or {}
+    label = axis.get("label") if isinstance(axis.get("label"), Mapping) else {}
+    en = str((label or {}).get("en") or "").strip()
+    zh = str((label or {}).get("zh") or "").strip()
+    known = _AXIS_SHORT.get(en)
+    if known:
+        return dict(known)
+    if en:
+        return _pair(en[0].lower() + en[1:] if len(en) > 1 else en.lower(),
+                     zh or en)
+    return _pair("this axis", "该轴")
+
+
+def _axis_move_clause(value: Any, axis: Mapping[str, Any] | None) -> dict[str, str]:
+    axis = axis or {}
+    name = _axis_short_name(axis)
+    number = _finite_number(value)
+    if number is None or abs(number) < 1e-12:
+        return _pair(f"no change on {name['en']}", f"{name['zh']}无变化")
+    token = str(axis.get("direction_token") or "")
+    words = _MOVE_WORDS.get(token)
+    if words:
+        word = words[0] if number > 0 else words[1]
+        return _pair(f"{word['en']} on {name['en']}", f"{name['zh']}{word['zh']}")
+    high = axis.get("high_label") if isinstance(axis.get("high_label"), Mapping) else None
+    low = axis.get("low_label") if isinstance(axis.get("low_label"), Mapping) else None
+    picked = high if number > 0 and high else low if number < 0 and low else None
+    if picked and picked.get("en"):
+        return _pair(f"{picked['en']} on {name['en']}",
+                     f"{name['zh']}{picked.get('zh') or picked['en']}")
+    return _pair(f"moved on {name['en']}", f"{name['zh']}有变化")
+
+
+def vector_move_pair(dx: Any, dy: Any, x_axis: Mapping[str, Any] | None,
+                     y_axis: Mapping[str, Any] | None) -> dict[str, str]:
+    """Glance-tier movement in words. Δx/Δy stay in the detail tier only."""
+    x_n = _finite_number(dx)
+    y_n = _finite_number(dy)
+    if (x_n is None or abs(x_n) < 1e-12) and (y_n is None or abs(y_n) < 1e-12):
+        return _pair(
+            "No change on either axis this month.",
+            "本月两轴均无变化。",
+        )
+    left = _axis_move_clause(dx, x_axis)
+    right = _axis_move_clause(dy, y_axis)
+    return apply_zh_parity(_pair(
+        f"{left['en'].rstrip('.').capitalize()}, {right['en']}.",
+        f"{left['zh']}，{right['zh']}。",
+    ))
 
 
 def fmt_ratio_pct(value: Any) -> str | None:

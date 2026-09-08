@@ -49,13 +49,11 @@ HUB_DETAILS = (
 # closed <details> and the inactive .l-en/.l-zh span, so each needle must
 # be present in the OPEN ribbon and in the active language.
 RELOCATED_EN = (
-    "This page publishes no dual-axis state and no headline quadrant",
     "What this state implies",
     "Deterministic text from the accepted snapshot. No language model writes here.",
     "Confidence basis",
 )
 RELOCATED_ZH = (
-    "本页不发布双轴状态,也不发布头条象限",
     "该状态意味着什么",
     "文本由已接受快照确定性生成，此处不由语言模型撰写。",
     "置信度依据",

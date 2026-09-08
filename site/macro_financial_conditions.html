@@ -427,7 +427,7 @@
         <div><dt><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></dt>
              <dd><time>2026-09-04</time></dd></div>
         <div class="mq-nonclock"><dt><span class="l-en">Page built</span><span class="l-zh">页面生成</span></dt>
-             <dd><time>2026-09-08T20:51:23Z</time></dd></div>
+             <dd><time>2026-09-08T21:53:53Z</time></dd></div>
       </dl>
 
   </div>
@@ -515,7 +515,7 @@
           <div><dt><span class="l-en">Evidence breadth</span><span class="l-zh">证据广度</span></dt><dd><span class="l-en">Medium</span><span class="l-zh">中</span></dd></div>
           <div><dt><span class="l-en">Contradiction</span><span class="l-zh">矛盾状态</span></dt><dd><span class="l-en">Absent</span><span class="l-zh">缺失</span></dd></div>
         </dl>
-        <p class="mq-trace"><span class="mq-trace-label"><span class="l-en">Trace</span><span class="l-zh">溯源</span></span><code>data/regime/latest.json#conditions</code>
+        <p class="mq-trace"><span class="mq-trace-label"><span class="l-en">Trace</span><span class="l-zh">溯源</span></span>
           <button type="button" class="mq-linkish" data-mq-open-evidence><span class="l-en">Open evidence</span><span class="l-zh">打开证据</span></button></p>
         </div>
       </details>
@@ -526,13 +526,6 @@
       </div>
       <p class="mq-implication-text"><span class="l-en">Shared drivers this week: the policy rate and the central-bank balance sheet.</span><span class="l-zh">本周共享驱动：政策利率与央行资产负债表。</span></p>
 
-<details class="mc-details">
-  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
-  <div class="mc-details-body">
-  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
-  <code class="mc-producer-receipt" lang="en">The shared drivers block is closed to exactly {rate_side, balance_sheet} (R1A&#39;s pair). This workspace maps rates+credit channel drivers into rate_side and dollar_funding+equities_vol channel drivers into balance_sheet; the bucket NAME is cosmetic reuse -- each driver&#39;s own label/owner_field/note carries its true identity.</code> <code class="mc-producer-receipt" lang="zh">共享的 drivers 结构固定为 {rate_side, balance_sheet}（源自流动性体制）。本工作区将利率+信用分项驱动因子归入 rate_side，将美元/融资+股票波动率分项驱动因子归入 balance_sheet；分桶名称仅为表面复用——每个驱动因子自身的标签/字段/说明才是其真实身份。</code>
-  </div>
-</details>
       <p class="mq-implication-claim"><span class="l-en">States what the accepted data shows.</span><span class="l-zh">陈述已接受数据所显示的事实。</span></p>
       <details class="mc-details">
         <summary><span class="l-en">How sure we are</span><span class="l-zh">把握程度</span></summary>
@@ -546,7 +539,7 @@
           <div><dt><span class="l-en">Evidence breadth</span><span class="l-zh">证据广度</span></dt><dd><span class="l-en">Medium</span><span class="l-zh">中</span></dd></div>
           <div><dt><span class="l-en">Contradiction</span><span class="l-zh">矛盾状态</span></dt><dd><span class="l-en">Absent</span><span class="l-zh">缺失</span></dd></div>
         </dl>
-        <p class="mq-trace"><span class="mq-trace-label"><span class="l-en">Trace</span><span class="l-zh">溯源</span></span><code>contracts/market_os/macro_workspace_snapshot.v1.schema.json#/$defs/driver</code>
+        <p class="mq-trace"><span class="mq-trace-label"><span class="l-en">Trace</span><span class="l-zh">溯源</span></span>
           <button type="button" class="mq-linkish" data-mq-open-evidence><span class="l-en">Open evidence</span><span class="l-zh">打开证据</span></button></p>
         </div>
       </details>
@@ -557,13 +550,6 @@
       </div>
       <p class="mq-implication-text"><span class="l-en">The lending channel has no source wired today, so it is marked uncovered — not treated as calm.</span><span class="l-zh">借贷渠道今天没有接入数据源，因此标记为未覆盖 — 不会当作平静。</span></p>
 
-<details class="mc-details">
-  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
-  <div class="mc-details-body">
-  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
-  <code class="mc-producer-receipt" lang="en">The lending channel (architecture 10.8&#39;s fifth Mastermind channel) has no owner source wired today. It is permanently typed NOT_COVERED, never defaulted to neutral/calm.</code> <code class="mc-producer-receipt" lang="zh">借贷分项（架构10.8的第五个Mastermind分项）目前没有接入数据源，永久标记为NOT_COVERED，不会默认为中性/平静。</code>
-  </div>
-</details>
       <p class="mq-implication-claim"><span class="l-en">States what the accepted data shows.</span><span class="l-zh">陈述已接受数据所显示的事实。</span></p>
       <details class="mc-details">
         <summary><span class="l-en">How sure we are</span><span class="l-zh">把握程度</span></summary>
@@ -577,7 +563,7 @@
           <div><dt><span class="l-en">Evidence breadth</span><span class="l-zh">证据广度</span></dt><dd><span class="l-en">Medium</span><span class="l-zh">中</span></dd></div>
           <div><dt><span class="l-en">Contradiction</span><span class="l-zh">矛盾状态</span></dt><dd><span class="l-en">Absent</span><span class="l-zh">缺失</span></dd></div>
         </dl>
-        <p class="mq-trace"><span class="mq-trace-label"><span class="l-en">Trace</span><span class="l-zh">溯源</span></span><code>data/regime/latest.json</code>
+        <p class="mq-trace"><span class="mq-trace-label"><span class="l-en">Trace</span><span class="l-zh">溯源</span></span>
           <button type="button" class="mq-linkish" data-mq-open-evidence><span class="l-en">Open evidence</span><span class="l-zh">打开证据</span></button></p>
         </div>
       </details>
@@ -600,7 +586,7 @@
   <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
 
       <dl class="mq-headline-meta">
-        <div><dt><span class="l-en">Method version</span><span class="l-zh">方法版本</span></dt><dd><code>financial_conditions.compose.v1</code></dd></div>
+        <div><dt><span class="l-en">Method version</span><span class="l-zh">方法版本</span></dt><dd><span class="l-en">The current published method.</span><span class="l-zh">当前已发布的方法。</span></dd></div>
         <div><dt><span class="l-en">Prior accepted print</span><span class="l-zh">上一已接受读数</span></dt>
              <dd><strong>B</strong> <time>2026-09-04</time></dd></div>
       </dl>
@@ -623,14 +609,23 @@
     <div class="mq-axis-cell">
       <span class="mq-axis-name"><span class="l-en">Direction of borrowing conditions</span><span class="l-zh">融资条件的变化方向</span></span>
       <strong class="mq-axis-value">49.67</strong>
-      <span class="mq-axis-direction"><span class="l-en">Higher tightening impulse</span><span class="l-zh">数值越高＝收紧冲量越大</span></span>
+      <span class="mq-axis-direction"><span class="l-en">Higher tightening impulse</span><span class="l-zh">收紧脉冲上升</span></span>
       <span class="mq-axis-clocks"><span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span></span>
     </div>
 
     <div class="mq-axis-cell mq-axis-cell-vector">
       <span class="mq-axis-name"><span class="l-en">Where it moved this month</span><span class="l-zh">本月的变化方向</span></span>
-      <strong class="mq-axis-value">Δx 0 · Δy 0</strong>
+      <strong class="mq-axis-value"><span class="l-en">No change on either axis this month.</span><span class="l-zh">本月两轴均无变化。</span></strong>
       <span class="mq-axis-direction"><span class="l-en">Change since the last reading</span><span class="l-zh">相对上次读数的变化</span></span>
+      <details class="mc-details">
+  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
+  <div class="mc-details-body">
+  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
+
+        <p><span class="l-en">Numeric move since the last reading</span><span class="l-zh">相对上次读数的数值位移</span>: Δx 0 · Δy 0</p>
+
+  </div>
+</details>
     </div>
 
     <div class="mq-axis-cell">
@@ -720,7 +715,7 @@
 
   <div class="mq-map-readout">
     <div><span><span class="l-en">Tightness of borrowing conditions</span><span class="l-zh">融资条件的紧张程度</span></span><strong>56.93</strong><em><span class="l-en">Higher = tighter funding</span><span class="l-zh">数值越高＝融资越紧</span></em></div>
-    <div><span><span class="l-en">Direction of borrowing conditions</span><span class="l-zh">融资条件的变化方向</span></span><strong>49.67</strong><em><span class="l-en">Higher tightening impulse</span><span class="l-zh">数值越高＝收紧冲量越大</span></em></div>
+    <div><span><span class="l-en">Direction of borrowing conditions</span><span class="l-zh">融资条件的变化方向</span></span><strong>49.67</strong><em><span class="l-en">Higher tightening impulse</span><span class="l-zh">收紧脉冲上升</span></em></div>
     <div><span><span class="l-en">Boundary</span><span class="l-zh">分界</span></span><strong>50.00 / 50.00</strong></div>
   </div>
   <details class="mc-details">
@@ -830,7 +825,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-28</time></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>conditions.financial_conditions.nfci</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -863,8 +857,6 @@
     <dd><time datetime="2026-08-28"><span class="l-en">28 Aug 2026</span><span class="l-zh">2026年8月28日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.conditions.financial_conditions</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -882,7 +874,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-28</time></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>conditions.financial_conditions.nfci_pctile</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -915,8 +906,6 @@
     <dd><time datetime="2026-08-28"><span class="l-en">28 Aug 2026</span><span class="l-zh">2026年8月28日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.conditions.financial_conditions</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -934,7 +923,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-02</time></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>conditions.systemic_stress.ofr_fsi</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -967,8 +955,6 @@
     <dd><time datetime="2026-09-02"><span class="l-en">2 Sep 2026</span><span class="l-zh">2026年9月2日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.conditions.systemic_stress</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -986,7 +972,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-02</time></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>conditions.systemic_stress.ofr_fsi_pctile</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -1019,8 +1004,6 @@
     <dd><time datetime="2026-09-02"><span class="l-en">2 Sep 2026</span><span class="l-zh">2026年9月2日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.conditions.systemic_stress</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -1038,7 +1021,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-03</time></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>liquidity_quality.stress_overlay.hy_oas_pct</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -1071,8 +1053,6 @@
     <dd><time datetime="2026-09-03"><span class="l-en">3 Sep 2026</span><span class="l-zh">2026年9月3日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.regime.liquidity_quality</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -1090,7 +1070,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-03</time></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>liquidity_quality.stress_overlay.hy_oas_z</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -1123,8 +1102,6 @@
     <dd><time datetime="2026-09-03"><span class="l-en">3 Sep 2026</span><span class="l-zh">2026年9月3日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.regime.liquidity_quality</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -1142,7 +1119,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-03</time></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>rate_inflation_transmission.state.rates.real_10y</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -1175,8 +1151,6 @@
     <dd><time datetime="2026-09-03"><span class="l-en">3 Sep 2026</span><span class="l-zh">2026年9月3日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.sector_rate_inflation.rate_inflation_transmission</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -1194,7 +1168,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-03</time></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>rate_inflation_transmission.state.rates.real_10y_pctile</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -1227,8 +1200,6 @@
     <dd><time datetime="2026-09-03"><span class="l-en">3 Sep 2026</span><span class="l-zh">2026年9月3日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.sector_rate_inflation.rate_inflation_transmission</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -1238,7 +1209,7 @@
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">22.00</span><span class="l-zh">22.00</span><span class="mq-metric-unit"><span class="l-en">bp</span><span class="l-zh">基点</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher tightening impulse</span><span class="l-zh">数值越高＝收紧冲量越大</span></p>
+      <p class="mq-metric-direction"><span class="l-en">Higher tightening impulse</span><span class="l-zh">收紧脉冲上升</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
@@ -1246,7 +1217,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-03</time></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Roc 63d</span><span class="l-zh">63 日变化率</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>rate_inflation_transmission.state.rates.real_10y_chg_63d_bp</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -1279,8 +1249,6 @@
     <dd><time datetime="2026-09-03"><span class="l-en">3 Sep 2026</span><span class="l-zh">2026年9月3日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.sector_rate_inflation.rate_inflation_transmission</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -1290,7 +1258,7 @@
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">−0.05</span><span class="l-zh">−0.05</span><span class="mq-metric-unit"><span class="l-en">Index pts</span><span class="l-zh">指数点</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher tightening impulse</span><span class="l-zh">数值越高＝收紧冲量越大</span></p>
+      <p class="mq-metric-direction"><span class="l-en">Higher tightening impulse</span><span class="l-zh">收紧脉冲上升</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
@@ -1298,7 +1266,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-28</time></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Roc 13w</span><span class="l-zh">13周变化率</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>conditions.financial_conditions.nfci_change_13w</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -1331,8 +1298,6 @@
     <dd><time datetime="2026-08-28"><span class="l-en">28 Aug 2026</span><span class="l-zh">2026年8月28日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.conditions.financial_conditions</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -1342,7 +1307,7 @@
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">−0.30</span><span class="l-zh">−0.30</span><span class="mq-metric-unit"><span class="l-en">Index pts</span><span class="l-zh">指数点</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher tightening impulse</span><span class="l-zh">数值越高＝收紧冲量越大</span></p>
+      <p class="mq-metric-direction"><span class="l-en">Higher tightening impulse</span><span class="l-zh">收紧脉冲上升</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
@@ -1350,7 +1315,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-02</time></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Roc 13w</span><span class="l-zh">13周变化率</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>conditions.systemic_stress.ofr_fsi_change_13w</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -1383,8 +1347,6 @@
     <dd><time datetime="2026-09-02"><span class="l-en">2 Sep 2026</span><span class="l-zh">2026年9月2日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.conditions.systemic_stress</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -1402,7 +1364,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-28</time></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>conditions.financial_conditions.subindices.nfci_credit</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -1435,8 +1396,6 @@
     <dd><time datetime="2026-08-28"><span class="l-en">28 Aug 2026</span><span class="l-zh">2026年8月28日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.conditions.financial_conditions</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -1454,7 +1413,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-02</time></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>conditions.systemic_stress.functional.funding</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -1487,8 +1445,6 @@
     <dd><time datetime="2026-09-02"><span class="l-en">2 Sep 2026</span><span class="l-zh">2026年9月2日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.conditions.systemic_stress</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -1506,7 +1462,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-04</time></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>vol_regime.vix</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -1539,8 +1494,6 @@
     <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.vol_regime</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -1558,7 +1511,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-04</time></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>vol_regime.risk_score</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -1591,8 +1543,6 @@
     <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.vol_regime</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -1610,7 +1560,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-04</time></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>vol_regime.move_pctile</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -1643,8 +1592,6 @@
     <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.vol_regime</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -1662,7 +1609,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-04</time></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>risk_state.score</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -1695,8 +1641,6 @@
     <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.risk_state</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -1714,7 +1658,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><span class="mq-dash">—</span></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>N/A</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -1747,8 +1690,6 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>N/A</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -1766,7 +1707,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><span class="mq-dash">—</span></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>N/A</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -1799,8 +1739,6 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>N/A</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -1818,7 +1756,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><span class="mq-dash">—</span></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Composite, prior-only inputs</span><span class="l-zh">复合指标（仅使用先验输入）</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>N/A</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -1851,8 +1788,6 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.market_os.macro_workspaces.financial_conditions</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -1870,7 +1805,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-04</time></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Composite, prior-only inputs</span><span class="l-zh">复合指标（仅使用先验输入）</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>N/A</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -1903,8 +1837,6 @@
     <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.market_os.macro_workspaces.financial_conditions</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -1922,7 +1854,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-04</time></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Composite, prior-only inputs</span><span class="l-zh">复合指标（仅使用先验输入）</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>N/A</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -1955,8 +1886,6 @@
     <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.market_os.macro_workspaces.financial_conditions</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -1974,7 +1903,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-04</time></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Composite, prior-only inputs</span><span class="l-zh">复合指标（仅使用先验输入）</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>N/A</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -2007,8 +1935,6 @@
     <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.market_os.macro_workspaces.financial_conditions</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -2026,7 +1952,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-04</time></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Composite, prior-only inputs</span><span class="l-zh">复合指标（仅使用先验输入）</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>N/A</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -2059,8 +1984,6 @@
     <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.market_os.macro_workspaces.financial_conditions</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -2078,7 +2001,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-04</time></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Composite, prior-only inputs</span><span class="l-zh">复合指标（仅使用先验输入）</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>N/A</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -2111,8 +2033,6 @@
     <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.market_os.macro_workspaces.financial_conditions</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -2122,7 +2042,7 @@
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">49.67</span><span class="l-zh">49.67</span><span class="mq-metric-unit"><span class="l-en">score (0-100)</span><span class="l-zh">评分（0–100）</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher tightening impulse</span><span class="l-zh">数值越高＝收紧冲量越大</span></p>
+      <p class="mq-metric-direction"><span class="l-en">Higher tightening impulse</span><span class="l-zh">收紧脉冲上升</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
@@ -2130,7 +2050,6 @@
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-04</time></dd></div>
           <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Composite, prior-only inputs</span><span class="l-zh">复合指标（仅使用先验输入）</span></dd></div>
-          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>N/A</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
@@ -2163,8 +2082,6 @@
     <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.market_os.macro_workspaces.financial_conditions</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
         </div>
       </details>
     </article>
@@ -2201,64 +2118,28 @@
       </tr></thead>
       <tbody>
         <tr>
-          <th scope="row"><span class="l-en">Real 10Y yield percentile</span><span class="l-zh">10年期实际收益率分位</span>
-            <details class="mc-details">
-  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
-  <div class="mc-details-body">
-  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
-
-              <span class="mq-owner-field"><code>rate_inflation_transmission.state.rates.real_10y_pctile</code></span>
-
-  </div>
-</details></th>
+          <th scope="row"><span class="l-en">Real 10Y yield percentile</span><span class="l-zh">10年期实际收益率分位</span></th>
           <td><span class="l-en">0.98</span><span class="l-zh">0.98</span></td>
           <td><span class="l-en">percentile (0-1)</span><span class="l-zh">分位（0–1）</span></td>
           <td class="mq-delta mq-delta-up">+48.00</td>
           <td><span class="mq-chip mq-tone-ok"><span class="l-en">Present</span><span class="l-zh">已具备</span></span></td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">HY OAS z-score (credit channel)</span><span class="l-zh">高收益利差 z 值（信用分项）</span>
-            <details class="mc-details">
-  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
-  <div class="mc-details-body">
-  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
-
-              <span class="mq-owner-field"><code>liquidity_quality.stress_overlay.hy_oas_z</code></span>
-
-  </div>
-</details></th>
+          <th scope="row"><span class="l-en">HY OAS z-score (credit channel)</span><span class="l-zh">高收益利差 z 值（信用分项）</span></th>
           <td><span class="l-en">−0.20</span><span class="l-zh">−0.20</span></td>
           <td><span class="l-en">z-score</span><span class="l-zh">z 值</span></td>
           <td class="mq-delta mq-delta-down">−1.80</td>
           <td><span class="mq-chip mq-tone-ok"><span class="l-en">Present</span><span class="l-zh">已具备</span></span></td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">Credit slice of financial conditions</span><span class="l-zh">金融条件中的信贷分项</span>
-            <details class="mc-details">
-  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
-  <div class="mc-details-body">
-  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
-  <code class="mc-producer-receipt" lang="en">NFCI credit subindex</code> <code class="mc-producer-receipt" lang="zh">NFCI 信用分项</code>
-              <span class="mq-owner-field"><code>conditions.financial_conditions.subindices.nfci_credit</code></span>
-
-  </div>
-</details></th>
+          <th scope="row"><span class="l-en">Credit slice of financial conditions</span><span class="l-zh">金融条件中的信贷分项</span></th>
           <td><span class="l-en">−0.06</span><span class="l-zh">−0.06</span></td>
           <td><span class="l-en">z-score</span><span class="l-zh">z 值</span></td>
           <td class="mq-delta mq-delta-down">−0.29</td>
           <td><span class="mq-chip mq-tone-ok"><span class="l-en">Present</span><span class="l-zh">已具备</span></span></td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">IG OAS (declared, not currently sourced)</span><span class="l-zh">投资级利差（已声明，暂无数据源）</span>
-            <details class="mc-details">
-  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
-  <div class="mc-details-body">
-  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
-
-              <span class="mq-owner-field"><code>N/A</code></span>
-
-  </div>
-</details></th>
+          <th scope="row"><span class="l-en">IG OAS (declared, not currently sourced)</span><span class="l-zh">投资级利差（已声明，暂无数据源）</span></th>
           <td><span class="mq-absent mq-absent-inline"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Unknown</span><span class="l-zh">未知</span></span></span></td>
           <td><span class="l-en">bp</span><span class="l-zh">基点</span></td>
           <td class="mq-delta mq-delta-unavailable"><span class="mq-absent mq-absent-inline"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Unknown</span><span class="l-zh">未知</span></span></span></td>
@@ -2279,64 +2160,28 @@
       </tr></thead>
       <tbody>
         <tr>
-          <th scope="row"><span class="l-en">OFR FSI funding functional leg</span><span class="l-zh">OFR 压力指数-融资功能分项</span>
-            <details class="mc-details">
-  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
-  <div class="mc-details-body">
-  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
-
-              <span class="mq-owner-field"><code>conditions.systemic_stress.functional.funding</code></span>
-
-  </div>
-</details></th>
+          <th scope="row"><span class="l-en">OFR FSI funding functional leg</span><span class="l-zh">OFR 压力指数-融资功能分项</span></th>
           <td><span class="l-en">−0.15</span><span class="l-zh">−0.15</span></td>
           <td><span class="l-en">z-score</span><span class="l-zh">z 值</span></td>
           <td class="mq-delta mq-delta-down">−1.51</td>
           <td><span class="mq-chip mq-tone-ok"><span class="l-en">Present</span><span class="l-zh">已具备</span></span></td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">Broad dollar index (declared, not currently sourced)</span><span class="l-zh">广义美元指数（已声明，暂无数据源）</span>
-            <details class="mc-details">
-  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
-  <div class="mc-details-body">
-  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
-
-              <span class="mq-owner-field"><code>N/A</code></span>
-
-  </div>
-</details></th>
+          <th scope="row"><span class="l-en">Broad dollar index (declared, not currently sourced)</span><span class="l-zh">广义美元指数（已声明，暂无数据源）</span></th>
           <td><span class="mq-absent mq-absent-inline"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Unknown</span><span class="l-zh">未知</span></span></span></td>
           <td><span class="l-en">%</span><span class="l-zh">%</span></td>
           <td class="mq-delta mq-delta-unavailable"><span class="mq-absent mq-absent-inline"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Unknown</span><span class="l-zh">未知</span></span></span></td>
           <td><span class="mq-chip mq-tone-neutral"><span class="l-en">Absent</span><span class="l-zh">缺失</span></span></td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">Vol-regime risk score</span><span class="l-zh">波动率体制风险评分</span>
-            <details class="mc-details">
-  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
-  <div class="mc-details-body">
-  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
-
-              <span class="mq-owner-field"><code>vol_regime.risk_score</code></span>
-
-  </div>
-</details></th>
+          <th scope="row"><span class="l-en">Vol-regime risk score</span><span class="l-zh">波动率体制风险评分</span></th>
           <td><span class="l-en">0.16</span><span class="l-zh">0.16</span></td>
           <td><span class="l-en">Ratio 0 1</span><span class="l-zh">比率（0–1）</span></td>
           <td class="mq-delta mq-delta-down">−20.46</td>
           <td><span class="mq-chip mq-tone-ok"><span class="l-en">Present</span><span class="l-zh">已具备</span></span></td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">Bond-volatility percentile</span><span class="l-zh">债券波动率分位</span>
-            <details class="mc-details">
-  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
-  <div class="mc-details-body">
-  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
-  <code class="mc-producer-receipt" lang="en">MOVE (bond vol) percentile</code> <code class="mc-producer-receipt" lang="zh">MOVE（债券波动率）分位</code>
-              <span class="mq-owner-field"><code>vol_regime.move_pctile</code></span>
-
-  </div>
-</details></th>
+          <th scope="row"><span class="l-en">Bond-volatility percentile</span><span class="l-zh">债券波动率分位</span></th>
           <td><span class="l-en">0.27</span><span class="l-zh">0.27</span></td>
           <td><span class="l-en">percentile (0-1)</span><span class="l-zh">分位（0–1）</span></td>
           <td class="mq-delta mq-delta-down">−9.36</td>
@@ -2357,14 +2202,7 @@
     <p><span class="l-en">A composite may only be shown when its full composition law is disclosed.</span><span class="l-zh">只有在完整披露构成法则的前提下，复合指标才可展示。</span></p>
     <dl class="mq-method-grid">
       <div><dt><span class="l-en">Direction</span><span class="l-zh">方向</span></dt><dd><span class="l-en">Higher = tighter funding</span><span class="l-zh">数值越高＝融资越紧</span></dd></div>
-      <div><dt><span class="l-en">Weights law</span><span class="l-zh">权重法则</span></dt><dd>weighted mean of 4 channel-score components, weights renormalized over available channels; rates_channel 0.30, credit_channel 0.30, dollar_funding_channel 0.20, equities_vol_channel 0.20 (a 5th declared channel, lending, is always ABSENT/NOT_COVERED and carries no weight here -- see the lending_channel_score metric for its own disclosure)</dd></div>
-      <div><dt><span class="l-en">Transformation</span><span class="l-zh">变换</span></dt><dd>weighted mean of 4 Mastermind channel scores (renormalized over available channels; the &#39;lending&#39; channel is declared but always ABSENT/NOT_COVERED -- no owner source exists): rates 0.30 (real-10y-yield percentile only, min_components=1/coverage_floor=1.0), credit 0.30 (HY OAS z 0.45 + NFCI credit subindex 0.25 + IG OAS declared-not-sourced 0.30, min_components=2/coverage_floor=0.5), dollar_funding 0.20 (OFR FSI funding functional leg 0.50 + broad-dollar-index declared-not-sourced 0.50, min_components=1/coverage_floor=0.5), equities_vol 0.20 (vol-regime risk score 0.60 + MOVE percentile 0.40, min_components=1/coverage_floor=0.5). boundary=50.0, hysteresis_band=5.0. NONE of these channel inputs is the blended official nfci/ofr_fsi value itself (those are published separately, unmodified, as their own metrics) -- no hidden blend (architecture 7.9/10.8).</dd></div>
-      <div><dt><span class="l-en">Frequency alignment</span><span class="l-zh">频率对齐</span></dt><dd>mixed: real-10y-yield daily, HY OAS/NFCI credit subindex ~weekly (NFCI Fri cadence), OFR FSI funding functional leg ~2-business-day lag, vol-regime risk score/MOVE percentile daily; each channel carries its own source clock (see the channel-score metrics)</dd></div>
-      <div><dt><span class="l-en">Revision behaviour</span><span class="l-zh">修订行为</span></dt><dd>recomputed each owner cadence from prior-only owner reads; a method-version change breaks comparability and is reported as such, never as a numeric delta</dd></div>
       <div><dt><span class="l-en">Components present</span><span class="l-zh">已具备分项</span></dt><dd>4 / <span class="l-en">minimum</span><span class="l-zh">最少</span> 2</dd></div>
-      <div><dt><span class="l-en">Coverage floor</span><span class="l-zh">覆盖下限</span></dt><dd>50.0%</dd></div>
-      <div><dt><span class="l-en">Definition version</span><span class="l-zh">定义版本</span></dt><dd><code>1.0.0</code></dd></div>
-      <div><dt><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></dt><dd><code>DESCRIPTIVE</code></dd></div>
     </dl>
     <table class="mq-table mq-table-compact">
       <thead><tr>
@@ -2376,28 +2214,28 @@
       </tr></thead>
       <tbody>
         <tr>
-          <th scope="row"><span class="l-en">Rates channel</span><span class="l-zh">利率分项</span><span class="mq-owner-field"><code>channels.rates_channel_score</code></span></th>
+          <th scope="row"><span class="l-en">Rates channel</span><span class="l-zh">利率分项</span></th>
           <td><span class="l-en">98.00</span><span class="l-zh">98.00</span></td>
           <td>98.00</td>
           <td>0.30</td>
           <td class="mq-delta mq-delta-up">+14.40</td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">Credit channel</span><span class="l-zh">信用分项</span><span class="mq-owner-field"><code>channels.credit_channel_score</code></span></th>
+          <th scope="row"><span class="l-en">Credit channel</span><span class="l-zh">信用分项</span></th>
           <td><span class="l-en">47.01</span><span class="l-zh">47.01</span></td>
           <td>47.01</td>
           <td>0.30</td>
           <td class="mq-delta mq-delta-down">−0.90</td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">Dollar/funding channel</span><span class="l-zh">美元/融资分项</span><span class="mq-owner-field"><code>channels.dollar_funding_channel_score</code></span></th>
+          <th scope="row"><span class="l-en">Dollar/funding channel</span><span class="l-zh">美元/融资分项</span></th>
           <td><span class="l-en">46.98</span><span class="l-zh">46.98</span></td>
           <td>46.98</td>
           <td>0.20</td>
           <td class="mq-delta mq-delta-down">−0.60</td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">Equities/volatility channel</span><span class="l-zh">股票/波动率分项</span><span class="mq-owner-field"><code>channels.equities_vol_channel_score</code></span></th>
+          <th scope="row"><span class="l-en">Equities/volatility channel</span><span class="l-zh">股票/波动率分项</span></th>
           <td><span class="l-en">20.18</span><span class="l-zh">20.18</span></td>
           <td>20.18</td>
           <td>0.20</td>
@@ -2413,15 +2251,8 @@
     <p><span class="l-en">Axis method receipts</span><span class="l-zh">坐标轴方法凭据</span></p>
     <p><span class="l-en">A composite may only be shown when its full composition law is disclosed.</span><span class="l-zh">只有在完整披露构成法则的前提下，复合指标才可展示。</span></p>
     <dl class="mq-method-grid">
-      <div><dt><span class="l-en">Direction</span><span class="l-zh">方向</span></dt><dd><span class="l-en">Higher tightening impulse</span><span class="l-zh">数值越高＝收紧冲量越大</span></dd></div>
-      <div><dt><span class="l-en">Weights law</span><span class="l-zh">权重法则</span></dt><dd>weighted mean of 3 owner-native momentum legs, weights renormalized over available; nfci_change_13w 0.35, ofr_fsi_change_13w 0.35, real_10y_chg_63d_bp 0.30</dd></div>
-      <div><dt><span class="l-en">Transformation</span><span class="l-zh">变换</span></dt><dd>weighted mean of 3 momentum legs (13-week/63-day rate-of-change, distinct from R1A&#39;s LEVEL-only funding_pressure axis, which never reads a _change field): NFCI 13w change 0.35 (scale=0.5 index-pt -&gt; full half-swing), OFR FSI 13w change 0.35 (scale=1.0), real-10y-yield 63d change 0.30 (scale=50bp). min_components=2/coverage_floor=0.5. boundary=50.0, hysteresis_band=5.0, positive move = tightening impulse (sign=+1 on all three legs).</dd></div>
-      <div><dt><span class="l-en">Frequency alignment</span><span class="l-zh">频率对齐</span></dt><dd>13-week (NFCI/OFR FSI) and 63-day (real-10y yield) rate-of-change windows; NFCI/OFR FSI ~weekly cadence, real-10y-yield daily</dd></div>
-      <div><dt><span class="l-en">Revision behaviour</span><span class="l-zh">修订行为</span></dt><dd>recomputed each owner cadence from prior-only owner reads; a method-version change breaks comparability and is reported as such, never as a numeric delta</dd></div>
+      <div><dt><span class="l-en">Direction</span><span class="l-zh">方向</span></dt><dd><span class="l-en">Higher tightening impulse</span><span class="l-zh">收紧脉冲上升</span></dd></div>
       <div><dt><span class="l-en">Components present</span><span class="l-zh">已具备分项</span></dt><dd>3 / <span class="l-en">minimum</span><span class="l-zh">最少</span> 2</dd></div>
-      <div><dt><span class="l-en">Coverage floor</span><span class="l-zh">覆盖下限</span></dt><dd>50.0%</dd></div>
-      <div><dt><span class="l-en">Definition version</span><span class="l-zh">定义版本</span></dt><dd><code>1.0.0</code></dd></div>
-      <div><dt><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></dt><dd><code>DESCRIPTIVE</code></dd></div>
     </dl>
     <table class="mq-table mq-table-compact">
       <thead><tr>
@@ -2433,21 +2264,21 @@
       </tr></thead>
       <tbody>
         <tr>
-          <th scope="row"><span class="l-en">13-week change in financial conditions</span><span class="l-zh">金融条件的13周变化</span><span class="mq-owner-field"><code>conditions.financial_conditions.nfci_change_13w</code></span></th>
+          <th scope="row"><span class="l-en">13-week change in financial conditions</span><span class="l-zh">金融条件的13周变化</span></th>
           <td><span class="l-en">−0.05</span><span class="l-zh">−0.05</span></td>
           <td>45.00</td>
           <td>0.35</td>
           <td class="mq-delta mq-delta-down">−1.75</td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">OFR FSI 13-week change</span><span class="l-zh">OFR 压力指数13周变化</span><span class="mq-owner-field"><code>conditions.systemic_stress.ofr_fsi_change_13w</code></span></th>
+          <th scope="row"><span class="l-en">OFR FSI 13-week change</span><span class="l-zh">OFR 压力指数13周变化</span></th>
           <td><span class="l-en">−0.30</span><span class="l-zh">−0.30</span></td>
           <td>35.20</td>
           <td>0.35</td>
           <td class="mq-delta mq-delta-down">−5.18</td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">Real 10Y yield 63-day change</span><span class="l-zh">10年期实际收益率63日变化</span><span class="mq-owner-field"><code>rate_inflation_transmission.state.rates.real_10y_chg_63d_bp</code></span></th>
+          <th scope="row"><span class="l-en">Real 10Y yield 63-day change</span><span class="l-zh">10年期实际收益率63日变化</span></th>
           <td><span class="l-en">22.00</span><span class="l-zh">22.00</span></td>
           <td>72.00</td>
           <td>0.30</td>
@@ -2493,12 +2324,10 @@
   <dl class="mq-method-grid">
     <div><dt><span class="l-en">Correction state</span><span class="l-zh">更正状态</span></dt><dd><span class="l-en">No correction recorded</span><span class="l-zh">无更正记录</span></dd></div>
     <div><dt><span class="l-en">Predecessor generation</span><span class="l-zh">前一代产物</span></dt>
-         <dd><code>financial_conditions-US-331e372f98b005f9</code></dd></div>
+         <dd><span class="l-en">A prior generation exists.</span><span class="l-zh">存在前一代产物。</span></dd></div>
     <div><dt><span class="l-en">Changed fingerprints</span><span class="l-zh">已变更指纹</span></dt>
          <dd><span class="mq-dash">—</span></dd></div>
-    <div><dt><span class="l-en">Hysteresis</span><span class="l-zh">滞回</span></dt><dd>prior quadrant held: no axis crossed the 50 boundary since the prior print but stayed within the 5.0-pt hysteresis band of ITS OWN boundary</dd></div>
   </dl>
-  <p class="mq-lineage-note">Same reference period as the predecessor print; no source value changed (no-change republication).</p>
 
   </div>
 </details>
@@ -2825,7 +2654,7 @@
         </div>
         <div class="mq-clock">
           <dt><span class="mq-clock-name"><span class="l-en">Page refreshed</span><span class="l-zh">页面更新于</span></span><span class="mq-clock-meaning"><span class="l-en">Static page render time. Not an economic clock.</span><span class="l-zh">静态页面渲染时间，并非经济时钟。</span></span></dt>
-          <dd><time>2026-09-08T20:51:23Z</time></dd>
+          <dd><time>2026-09-08T21:53:53Z</time></dd>
         </div>
       </dl>
     </section>

@@ -23,7 +23,9 @@ that copy and this guard is what keeps it honest as it lands.
 
 Usage:
     python3 scripts/check_macro_command_copy.py
-        # scan every suite page + both hubs; exit 1 on any violation
+        # scan the Macro Command hub (macro_monetary.html) + the 14 suite
+        # pages; exit 1 on any violation. macro_context.html and
+        # macro_signals.html are not Macro Command suite pages.
     python3 scripts/check_macro_command_copy.py path/to/some.html
         # scan one or more built HTML files (used by the test suite
         # against a freshly rendered page in a tmp_path)
@@ -33,6 +35,7 @@ from __future__ import annotations
 import argparse
 import re
 import sys
+from html.parser import HTMLParser
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -41,7 +44,7 @@ sys.path.insert(0, str(ROOT))
 
 
 def default_targets() -> list[Path]:
-    """Every suite page plus the Macro Command hub (n1)."""
+    """The Macro Command hub (macro_monetary.html) + the 14 suite pages."""
     from scripts.build_macro_suite_pages import HUB_PAGE, SUITE_PAGES
     names = [HUB_PAGE.output] + [page.output for page in SUITE_PAGES]
     return [ROOT / "site" / name for name in names]
@@ -84,17 +87,200 @@ _MACHINE_FLOAT_RE = re.compile(
     r'(?<![\d.])[+\u2212-]?\d+\.\d{4,}(?![\d])'
     r'|[+\u2212-]?\d+\.?\d*[eE][+\-]\d+'
 )
-# P5 v10 E-m1: painted bilingual copy may not leak slugs / study ids.
+# P5 v10/v11 E-m1: painted copy may not leak slugs / study ids.
 _SNAKE_RE = re.compile(r"[a-z]+_[a-z_]+")
 _RULE_ID_RE = re.compile(r"\bR\d[A-Z]?\b|\bF\d{2}\b")
 _BRACE_RE = re.compile(r"[{}]")
 _PARQUET_RE = re.compile(r"\bparquets?\b", re.I)
+# Glance-tier only (E-m1): axis letters and ·-joined symbol pairs.
+_DELTA_AXIS_RE = re.compile(r"Δ[A-Za-z]")
+_DOT_SYMBOL_PAIR_RE = re.compile(
+    r"(?<![A-Za-z\u4e00-\u9fff])[ΔA-Za-z][A-Za-z0-9]*(?:\s+\S+)*\s*·\s*[ΔA-Za-z]"
+)
+_SKIP_TAGS = frozenset({"script", "style", "template"})
+_GLANCE_CLASS_TOKENS = frozenset({
+    "mq-axis-cell", "mq-axis-value", "mq-axis-name", "mq-axis-direction",
+    "mq-headline", "mc-read", "mc-stance", "mq-glance-value", "mq-glance-row",
+})
 # Enumerated — no wildcard. Tickers / ISO / proper nouns that match a shape.
 MACHINE_TEXT_EXCEPTIONS: frozenset[str] = frozenset({
     "FRED", "FOMC", "SOFR", "TIPS", "OECD", "NBER", "HICP", "VIX",
     "CPI", "GDP", "NFCI", "OFR", "BLS", "ECB", "BOJ", "TGA", "USD",
     "US", "EU", "JP", "CN", "GB",
 })
+# Ruled glance sentence (E-m1) — "axis" here is the customer word, not a slug.
+_READING_PATH_ALLOW: tuple[str, ...] = (
+    "No change on either axis this month.",
+)
+
+class _VisibleTextParser(HTMLParser):
+    """Collect customer-visible text nodes and title=/aria-label= values.
+
+    Skips script/style/template and hidden/inert/aria-hidden subtrees
+    (the evidence drawer). Customer-openable <details> stay in scope.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.nodes: list[dict[str, str]] = []
+        self._skip = 0
+        self._in_details = 0
+        self._glance = 0
+        self._tag_stack: list[str] = []
+        self._skip_stack: list[bool] = []
+        self._details_stack: list[bool] = []
+        self._glance_stack: list[bool] = []
+
+    def _classes(self, attrs: list[tuple[str, str | None]]) -> list[str]:
+        for key, value in attrs:
+            if key == "class" and value:
+                return value.split()
+        return []
+
+    def _hidden(self, tag: str, attrs: list[tuple[str, str | None]]) -> bool:
+        ad = {key: (value or "") for key, value in attrs}
+        if tag in _SKIP_TAGS:
+            return True
+        if "hidden" in ad:
+            return True
+        if "inert" in ad:
+            return True
+        if ad.get("aria-hidden") == "true":
+            return True
+        if "mq-drawer" in (ad.get("class") or "").split():
+            return True
+        return False
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        hidden = self._hidden(tag, attrs)
+        self._skip_stack.append(hidden)
+        if hidden or self._skip:
+            self._skip += 1
+            self._tag_stack.append(tag)
+            self._details_stack.append(False)
+            self._glance_stack.append(False)
+            return
+        classes = self._classes(attrs)
+        in_details = tag == "details" or "mc-details" in classes
+        self._details_stack.append(in_details)
+        if in_details:
+            self._in_details += 1
+        glance = bool(_GLANCE_CLASS_TOKENS.intersection(classes))
+        self._glance_stack.append(glance)
+        if glance:
+            self._glance += 1
+        ad = {key: (value or "") for key, value in attrs}
+        for key in ("title", "aria-label"):
+            text = (ad.get(key) or "").strip()
+            if text:
+                self.nodes.append({
+                    "kind": f"attr:{key}",
+                    "tag": tag,
+                    "text": text,
+                    "glance": "1" if self._glance and not self._in_details else "0",
+                })
+        self._tag_stack.append(tag)
+
+    def handle_endtag(self, tag: str) -> None:
+        if not self._tag_stack:
+            return
+        self._tag_stack.pop()
+        skipped = self._skip_stack.pop() if self._skip_stack else False
+        if skipped or self._skip:
+            if self._skip:
+                self._skip -= 1
+            if self._details_stack:
+                self._details_stack.pop()
+            if self._glance_stack:
+                self._glance_stack.pop()
+            return
+        if self._details_stack.pop() if self._details_stack else False:
+            if self._in_details:
+                self._in_details -= 1
+        if self._glance_stack.pop() if self._glance_stack else False:
+            if self._glance:
+                self._glance -= 1
+
+    def handle_data(self, data: str) -> None:
+        if self._skip:
+            return
+        text = re.sub(r"\s+", " ", data).strip()
+        if not text:
+            return
+        tag = self._tag_stack[-1] if self._tag_stack else ""
+        self.nodes.append({
+            "kind": "text",
+            "tag": tag,
+            "text": text,
+            "glance": "1" if self._glance and not self._in_details else "0",
+        })
+
+
+def visible_text_nodes(html: str) -> list[dict[str, str]]:
+    """Every customer-visible text node and title=/aria-label= value."""
+    stripped = _SCRIPT_RE.sub("", html)
+    parser = _VisibleTextParser()
+    try:
+        parser.feed(stripped)
+        parser.close()
+    except Exception:
+        return []
+    return parser.nodes
+
+
+class _ClassTokenParser(HTMLParser):
+    """Collect text of every element whose class list contains ``token``."""
+
+    def __init__(self, token: str) -> None:
+        super().__init__(convert_charrefs=True)
+        self.token = token
+        self.texts: list[str] = []
+        self._depth = 0
+        self._buf: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if self._depth:
+            self._depth += 1
+            return
+        classes: list[str] = []
+        for key, value in attrs:
+            if key == "class" and value:
+                classes = value.split()
+        if self.token in classes:
+            self._depth = 1
+            self._buf = []
+
+    def handle_data(self, data: str) -> None:
+        if self._depth:
+            self._buf.append(data)
+
+    def handle_endtag(self, tag: str) -> None:
+        if not self._depth:
+            return
+        self._depth -= 1
+        if self._depth == 0:
+            self.texts.append("".join(self._buf))
+
+
+def locale_class_texts(html: str, token: str) -> list[str]:
+    """Text of every element whose class list contains ``token`` (any tag)."""
+    parser = _ClassTokenParser(token)
+    try:
+        parser.feed(html)
+        parser.close()
+    except Exception:
+        return []
+    return parser.texts
+
+
+def raw_class_token_count(html: str, token: str) -> int:
+    """Count class attributes that contain ``token`` as a class token."""
+    count = 0
+    for match in re.finditer(r'\bclass=(["\'])(.*?)\1', html, re.S):
+        if token in match.group(2).split():
+            count += 1
+    return count
+
 
 # Strip only the <details> BODY (children after <summary>). The summary
 # is painted while closed, so the predicate must see it (P5 r4 m-b).
@@ -159,7 +345,7 @@ def locale_span_texts(html: str) -> list[tuple[str, str]]:
     return found
 
 
-def machine_copy_hits(text: str) -> list[str]:
+def machine_copy_hits(text: str, *, glance: bool = False) -> list[str]:
     """Front-facing machine-text shapes (E-m1). Empty means the string is plain."""
     if not text:
         return []
@@ -176,6 +362,11 @@ def machine_copy_hits(text: str) -> list[str]:
         token = match.group(0)
         if token not in MACHINE_TEXT_EXCEPTIONS:
             hits.append(f"rule:{token}")
+    if glance:
+        if _DELTA_AXIS_RE.search(text):
+            hits.append("delta_axis")
+        if _DOT_SYMBOL_PAIR_RE.search(text):
+            hits.append("dot_symbol_pair")
     return hits
 
 
@@ -183,6 +374,8 @@ def find_violations(html: str) -> list[str]:
     """Return every copy-law violation found in `html`'s reading path. An
     empty list means the page is clean."""
     text = reading_path_text(html)
+    for allowed in _READING_PATH_ALLOW:
+        text = text.replace(allowed, "")
     violations: list[str] = []
 
     banned = BANNED_SUBSTRINGS + FALSIFIER_SUBSTRINGS + _closed_vocabulary_tokens()
@@ -223,11 +416,14 @@ def find_violations(html: str) -> list[str]:
             "with a unit at the builder/renderer boundary"
         )
 
-    for locale, span in locale_span_texts(html):
-        for hit in machine_copy_hits(span):
-            snippet = span[:80]
+    for node in visible_text_nodes(html):
+        text = node.get("text") or ""
+        glance = node.get("glance") == "1"
+        for hit in machine_copy_hits(text, glance=glance):
+            snippet = text[:80]
+            tag = node.get("tag") or "?"
             violations.append(
-                f"machine-text {hit!r} in .{locale} span {snippet!r} "
+                f"machine-text {hit!r} in <{tag}> {snippet!r} "
                 "(E-m1) — replace with plain words a customer can read"
             )
 
@@ -245,7 +441,8 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "targets", nargs="*",
-        help="built HTML pages to scan (default: every suite page + both hubs)",
+        help="built HTML pages to scan (default: the Macro Command hub "
+             "(macro_monetary.html) + the 14 suite pages)",
     )
     args = parser.parse_args(argv)
 

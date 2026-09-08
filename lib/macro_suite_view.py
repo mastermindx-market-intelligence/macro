@@ -170,7 +170,7 @@ def _implications(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         text = _bilingual(raw.get("text"))
         if text is None:
             continue
-        reading, original = L.apply_plain_producer(text)
+        reading, _original = L.apply_plain_producer(text)
         confidence = raw.get("confidence") or {}
         bands = []
         for key, name in L.CONFIDENCE_DIMENSION.items():
@@ -184,7 +184,8 @@ def _implications(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         items.append({
             "implication_id": raw.get("implication_id"),
             "text": reading,
-            "text_original": original,
+            # Internal producer receipt — probe artifacts only, never Details.
+            "text_original": None,
             "evidence_class": raw.get("evidence_class"),
             "evidence_label": L.label("evidence_class", raw.get("evidence_class")),
             "evidence_claim": L.label("evidence_claim", raw.get("evidence_class")),
@@ -254,6 +255,7 @@ def _axis_view(axis: Mapping[str, Any]) -> dict[str, Any]:
         "label": (L.METRIC.get(str(axis.get("axis_id") or ""))
                   or _bilingual(axis.get("label"))),
         "direction": L.label("direction", axis.get("direction_semantics")),
+        "direction_token": axis.get("direction_semantics"),
         "value": number,
         "value_with_unit": value_with_unit,
         "value_raw": value if isinstance(value, (int, float)) and not isinstance(value, bool) else None,
@@ -333,6 +335,9 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
     boundary_axis = axis_by_id.get(boundary.get("axis"))
 
     vector_present = vector.get("status") == "PRESENT" and vector.get("dx") is not None
+    axis_list = list(axes)
+    x_axis = axis_list[0] if axis_list else {}
+    y_axis = axis_list[1] if len(axis_list) > 1 else {}
     return {
         "state_id": headline.get("state_id"),
         "state_label": _bilingual(headline.get("state_label")),
@@ -371,6 +376,9 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
             "dy": L.fmt_signed(vector.get("dy")),
             "dx_raw": vector.get("dx"),
             "dy_raw": vector.get("dy"),
+            "move": (L.vector_move_pair(vector.get("dx"), vector.get("dy"),
+                                        x_axis, y_axis)
+                     if vector_present else None),
             "absence": None if vector_present else _absence(vector.get("null_reason")),
             "status": L.label("presence", vector.get("status")),
         },
@@ -592,11 +600,12 @@ def _drivers(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) -> 
             if isinstance(magnitude, (int, float)) and isinstance(sign, int):
                 signed = L.fmt_signed(magnitude * sign)
             raw_label = _bilingual(driver.get("label"))
-            label, label_original = L.apply_plain_label(raw_label)
+            label, _label_original = L.apply_plain_label(raw_label)
             rows.append({
                 "driver_id": driver.get("driver_id"),
                 "label": label,
-                "label_original": label_original,
+                # Internal producer receipt — not rendered in Details.
+                "label_original": None,
                 "owner_field": driver.get("owner_field"),
                 "value": L.value_pair(driver.get("value")),
                 "absence": None if driver.get("value") is not None else _absence(None),
