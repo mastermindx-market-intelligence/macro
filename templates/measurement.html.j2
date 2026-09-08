@@ -2119,6 +2119,22 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
 
   {% if research_implications and research_implications.get('cards') %}
   {% set ric_cards = research_implications.get('cards') %}
+  {# Plain-word glosses for glance/filter. Raw machine codes live in Receipts. #}
+  {% set ric_quality_gloss = {
+    'DIAGNOSTIC_FAILED': ('Diagnostic failed', '诊断未通过'),
+    'ARTIFACT_INCOMPLETE': ('Receipts incomplete', '凭证不完整'),
+    'ARTIFACT_MISSING': ('Receipts missing', '凭证缺失'),
+    'DIAGNOSTIC_ONLY': ('Diagnostic only', '仅诊断'),
+    'COMPLETE': ('Complete', '已完成'),
+    'STALE': ('Out of date', '已过期'),
+  } %}
+  {% set ric_tier_gloss = {
+    'DIAGNOSTIC': ('Diagnostic only', '仅诊断'),
+  } %}
+  {% set ric_path_status_gloss = {
+    'EXPLORATORY_NON_GATED': ('Exploratory — not gated', '探索性 — 未门控'),
+  } %}
+  {% set ric_en_months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] %}
 
   <section class="mh-section" id="ric-section">
     <div class="mh-sh">
@@ -2153,12 +2169,16 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
         <span class="l-en">{{ fam|replace('_', ' ')|title }}</span><span class="l-zh">{{ '合成控制' if fam == 'synthetic_control' else ('事件研究' if fam == 'event_study' else fam) }}</span></button>
       {% endfor %}
       {% for q in ric_cards|map(attribute='quality')|unique|list %}
+      {% if q in ric_quality_gloss %}
       <button type="button" class="ric-fbtn" data-ric-f="q:{{ q }}" aria-pressed="false">
-        <span class="l-en">{{ 'Diagnostic failed' if q == 'DIAGNOSTIC_FAILED' else ('Receipts incomplete' if q == 'ARTIFACT_INCOMPLETE' else q) }}</span><span class="l-zh">{{ '诊断未通过' if q == 'DIAGNOSTIC_FAILED' else ('凭证不完整' if q == 'ARTIFACT_INCOMPLETE' else q) }}</span></button>
+        <span class="l-en">{{ ric_quality_gloss[q][0] }}</span><span class="l-zh">{{ ric_quality_gloss[q][1] }}</span></button>
+      {% endif %}
       {% endfor %}
       {% for tier in ric_cards|map(attribute='evidence_tier')|unique|list %}
+      {% if tier in ric_tier_gloss %}
       <button type="button" class="ric-fbtn" data-ric-f="tier:{{ tier }}" aria-pressed="false">
-        <span class="l-en">Tier: {{ tier }}</span><span class="l-zh">证据层级：{{ tier }}</span></button>
+        <span class="l-en">{{ ric_tier_gloss[tier][0] }}</span><span class="l-zh">{{ ric_tier_gloss[tier][1] }}</span></button>
+      {% endif %}
       {% endfor %}
     </fieldset>
 
@@ -2177,12 +2197,9 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
 
           <div class="ric-hd">
             <span class="ric-state">
-              <span class="l-en">{{ 'Diagnostic failed' if q == 'DIAGNOSTIC_FAILED' else ('Receipts incomplete' if q == 'ARTIFACT_INCOMPLETE' else 'State reported by the owner') }}</span>
-              <span class="l-zh">{{ '诊断未通过' if q == 'DIAGNOSTIC_FAILED' else ('凭证不完整' if q == 'ARTIFACT_INCOMPLETE' else '所有者报告的状态') }}</span>
+              <span class="l-en">{{ ric_quality_gloss[q][0] if q in ric_quality_gloss else 'State reported by the owner' }}</span>
+              <span class="l-zh">{{ ric_quality_gloss[q][1] if q in ric_quality_gloss else '所有者报告的状态' }}</span>
             </span>
-            <code class="ric-state-code">{{ q }}</code>
-            <span class="ric-tier">tier: {{ card.evidence_tier }}</span>
-            <span class="ric-fam">{{ card.method_family }}</span>
           </div>
 
           <h3 class="ric-q">
@@ -2215,8 +2232,19 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
               {% endif %}
             </div>
             <div class="ric-fig" data-ric-code="cutoff">
-              <span class="ric-fig-l"><span class="l-en">Data cutoff</span><span class="l-zh">数据截止</span></span>
-              <span class="ric-fig-v">{{ card.cutoff }}</span>
+              <span class="ric-fig-l"><span class="l-en">Data through</span><span class="l-zh">数据截至</span></span>
+              <span class="ric-fig-v">
+                {%- set cutoff_iso = card.cutoff if card.cutoff is string else '' -%}
+                {%- if cutoff_iso|length >= 10 and cutoff_iso[4] == '-' and cutoff_iso[7] == '-' -%}
+                  {%- set _cy = cutoff_iso[:4] -%}
+                  {%- set _cm = cutoff_iso[5:7]|int -%}
+                  {%- set _cd = cutoff_iso[8:10]|int -%}
+                  <span class="l-en">{{ _cd }} {{ ric_en_months[_cm - 1] }} {{ _cy }}</span>
+                  <span class="l-zh">{{ _cy }}年{{ _cm }}月{{ _cd }}日</span>
+                {%- else -%}
+                  {{ card.cutoff }}
+                {%- endif -%}
+              </span>
             </div>
           </div>
 
@@ -2237,9 +2265,10 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
           {%- set headline_point = headline_points|first -%}
           {%- set W = 560 -%}{%- set H = 150 -%}{%- set PL = 34 -%}{%- set PR = 8 -%}{%- set PT = 10 -%}{%- set PB = 20 -%}
           <div class="ric-path">
+            {%- set es = card.ordered_effect_path.evidence_status -%}
             <div class="ric-path-t">
-              <span class="l-en"><strong>{{ card.ordered_effect_path.evidence_status }}</strong> · Recorded path, {{ card.ordered_effect_path.y_unit|replace('_', ' ') }} by {{ card.ordered_effect_path.x_unit|replace('_', ' ') }}. {{ card.ordered_effect_path.sample_basis.en|e }} {{ card.ordered_effect_path.comparison_note.en|e }} Descriptive — the owner did not identify a cause.</span>
-              <span class="l-zh"><strong>{{ card.ordered_effect_path.evidence_status }}</strong> · 记录路径：纵轴为{{ '累计异常收益' if card.ordered_effect_path.y_unit == 'cumulative_abnormal_return' else card.ordered_effect_path.y_unit }}，横轴为公告后交易日。{{ card.ordered_effect_path.sample_basis.zh|e }} {{ card.ordered_effect_path.comparison_note.zh|e }} 属描述性结果，所有者未识别成因。</span>
+              <span class="l-en"><strong>{{ ric_path_status_gloss[es][0] if es in ric_path_status_gloss else es }}</strong> · Recorded path, {{ card.ordered_effect_path.y_unit|replace('_', ' ') }} by {{ card.ordered_effect_path.x_unit|replace('_', ' ') }}. {{ card.ordered_effect_path.sample_basis.en|e }} {{ card.ordered_effect_path.comparison_note.en|e }} Descriptive — the owner did not identify a cause.</span>
+              <span class="l-zh"><strong>{{ ric_path_status_gloss[es][1] if es in ric_path_status_gloss else es }}</strong> · 记录路径：纵轴为{{ '累计异常收益' if card.ordered_effect_path.y_unit == 'cumulative_abnormal_return' else card.ordered_effect_path.y_unit }}，横轴为公告后交易日。{{ card.ordered_effect_path.sample_basis.zh|e }} {{ card.ordered_effect_path.comparison_note.zh|e }} 属描述性结果，所有者未识别成因。</span>
             </div>
             <svg viewBox="0 0 {{ W }} {{ H }}" role="img" aria-labelledby="{{ card_anchor }}-path-title" preserveAspectRatio="xMidYMid meet">
               <title id="{{ card_anchor }}-path-title">{{ card.ordered_effect_path.accessible_name.en|e }} / {{ card.ordered_effect_path.accessible_name.zh|e }}</title>
@@ -2260,7 +2289,6 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
               <text class="ric-path-ax" x="{{ W - PR }}" y="{{ H - 6 }}" text-anchor="end">{{ xmax }}</text>
             </svg>
             <div class="ric-path-callout">
-              <code>{{ card.ordered_effect_path.evidence_status }}</code>
               {% if headline_point %}
               <span class="l-en">Curve at selected +{{ selected_point.horizon }}-day horizon: {{ '%.2f'|format(selected_point.value * 100) }}% · n={{ selected_point.n }} events. This is not the {{ '%.3f'|format(headline_point.value * 100) }}% episode-clustered headline.</span>
               <span class="l-zh">曲线在所选 +{{ selected_point.horizon }} 日期限：{{ '%.2f'|format(selected_point.value * 100) }}% · n={{ selected_point.n }} 个事件；该数值并非按事件期聚类的 {{ '%.3f'|format(headline_point.value * 100) }}% 标题数值。</span>
@@ -2280,7 +2308,10 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
               <span class="ric-gate-m {{ 'ric-gate-pass' if g.passed else 'ric-gate-fail' }}">{{ 'PASS' if g.passed else 'FAIL' }}</span>
               <span class="ric-gate-b">
                 <span class="l-en">{{ g.label.en|e }}</span><span class="l-zh">{{ (g.label.zh or g.label.en)|e }}</span>
-                <span class="ric-gate-n"><span class="l-en">{{ g.detail.en|e }}</span><span class="l-zh">{{ (g.detail.zh or g.detail.en)|e }}</span></span>
+                <details>
+                  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+                  <span class="ric-gate-n"><span class="l-en">{{ g.detail.en|e }}</span><span class="l-zh">{{ (g.detail.zh or g.detail.en)|e }}</span></span>
+                </details>
               </span>
             </div>
             {% endfor %}
@@ -2342,6 +2373,14 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
             <div class="ric-more-b">
               <dl class="ric-rc">
                 <dt><span class="l-en">Card</span><span class="l-zh">卡片</span></dt><dd>{{ card.card_id }}</dd>
+                <dt><span class="l-en">State code</span><span class="l-zh">状态代码</span></dt><dd>{{ q }}</dd>
+                <dt><span class="l-en">Evidence tier</span><span class="l-zh">证据层级代码</span></dt><dd>{{ card.evidence_tier }}</dd>
+                <dt><span class="l-en">Method family</span><span class="l-zh">方法族</span></dt><dd>{{ card.method_family }}</dd>
+                {% if card.ordered_effect_path and card.ordered_effect_path.evidence_status %}
+                <dt><span class="l-en">Path status</span><span class="l-zh">路径状态代码</span></dt><dd>{{ card.ordered_effect_path.evidence_status }}</dd>
+                {% endif %}
+                <dt><span class="l-en">Authority flags</span><span class="l-zh">授权标记</span></dt>
+                <dd>{% for k, v in card.authority|dictsort %}{{ k }}={{ 'true' if v else 'false' }}{% if not loop.last %} {% endif %}{% endfor %}</dd>
                 <dt><span class="l-en">Run</span><span class="l-zh">运行</span></dt><dd>{{ card.study_run_id }}</dd>
                 <dt><span class="l-en">Result</span><span class="l-zh">选定结果</span></dt><dd>{{ card.selected_result_id }}</dd>
                 <dt><span class="l-en">Adapter</span><span class="l-zh">适配器</span></dt><dd>{{ card.adapter_version }}</dd>
@@ -2363,9 +2402,6 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
           <div class="ric-auth">
             <span class="l-en">This card carries no authority. It cannot forecast, rank, gate, size or trade, and nothing downstream reads it as permission.</span>
             <span class="l-zh">本卡片不具备任何授权：不可用于预测、排序、门控、仓位或交易，下游系统亦不会将其视为许可。</span>
-            <span class="ric-auth-f">
-              {% for k, v in card.authority|dictsort %}<code>{{ k }}={{ 'true' if v else 'false' }}</code>{% endfor %}
-            </span>
           </div>
 
         </div>

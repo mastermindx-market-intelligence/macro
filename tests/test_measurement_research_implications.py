@@ -10,7 +10,8 @@ here — these tests consume the frozen envelope, they never re-derive it.
 What is pinned:
 1.  Absent/empty envelope renders no section at all (no empty shell, no zero).
 2.  Both real frozen cards render with stable, card-unique semantic anchors.
-3.  The typed quality code is shown verbatim beside a plain-word gloss.
+3.  Glance shows a plain-word state; typed quality/tier/family/authority
+    codes live in Receipts, never as header chips.
 4.  The exact required stance line is present in EN and ZH.
 5.  All five authority booleans are disclosed as withheld; no ranking language.
 6.  A null is typed — never rendered as 0 — and carries its null reason.
@@ -199,6 +200,52 @@ def real_section(real_html) -> str:
 # ---------------------------------------------------------------------------
 
 
+def test_visual_evidence_receipt_binds_the_template_and_eight_rest_cells():
+    """BLOCKER 1/2: frames live in the governed receipt, bound to this template."""
+    import yaml
+
+    receipt_path = REPO / "mockups/evidence/f10x1-research-implication-card/EVIDENCE.yml"
+    assert receipt_path.is_file(), "governed EVIDENCE.yml receipt is missing"
+    receipt = yaml.safe_load(receipt_path.read_text(encoding="utf-8"))
+    assert set(receipt) == {"schema", "changed_paths", "manifest"}
+    assert receipt["schema"] == "mastermind.page_evidence_receipt.v1"
+    assert receipt["changed_paths"] == ["templates/measurement.html.j2"]
+    manifest_path = REPO / receipt["manifest"]
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert manifest["schema"] == "mastermind.p0_evidence.v2"
+    assert manifest["totals"]["states_captured"] == 40
+    assert len(manifest["pages"]) == 5
+    measurement = next(
+        page
+        for page in manifest["pages"]
+        if str(page.get("route", "")).endswith("measurement.html")
+    )
+    rest = [
+        state
+        for state in measurement["states"]
+        if state.get("force_state") is None and state.get("captured") is True
+    ]
+    keys = {(state["viewport"], state["locale"], state["theme"]) for state in rest}
+    required = {
+        (viewport, locale, theme)
+        for viewport in ("desktop", "mobile")
+        for locale in ("en", "zh")
+        for theme in ("dark", "light")
+    }
+    assert keys == required
+    for state in rest:
+        png = manifest_path.parent / state["file"]
+        assert png.is_file() and png.stat().st_size > 1000
+        assert state["applied_theme"] == state["theme"]
+        assert state["applied_locale"] == state["locale"]
+        assert state["viewport_width"] == (1440 if state["viewport"] == "desktop" else 390)
+
+
+def test_stale_ungoverned_ric_verify_shots_are_gone():
+    leftovers = sorted((REPO / "verify_shots").glob("ric_*.png"))
+    assert leftovers == [], f"stale ungoverned frames still tracked: {leftovers}"
+
+
 def test_empty_envelope_renders_no_section():
     """Zero cards must render nothing — not an empty shell promising content."""
     html = _render(
@@ -246,16 +293,20 @@ def test_anchor_is_semantic_not_card_digest(contract, real_section):
 
 
 def test_typed_quality_code_is_shown_verbatim(contract, real_section):
-    """The machine's own word must be visible — no re-labelling of state."""
+    """The machine's own word stays visible — in Receipts, not as a glance chip."""
     for card in contract["cards"]:
-        assert (
-            card["quality"] in real_section
-        ), f"typed quality {card['quality']} not surfaced verbatim"
+        receipts = _isolate_receipts(_isolate_card(real_section, card["method_family"]))
+        assert card["quality"] in receipts, (
+            f"typed quality {card['quality']} not surfaced in Receipts"
+        )
 
 
 def test_evidence_tier_is_disclosed(contract, real_section):
     for card in contract["cards"]:
-        assert card["evidence_tier"] in real_section
+        receipts = _isolate_receipts(_isolate_card(real_section, card["method_family"]))
+        assert card["evidence_tier"] in receipts, (
+            f"evidence_tier {card['evidence_tier']} not disclosed in Receipts"
+        )
 
 
 def test_card_ids_in_html_match_the_machine_contract(contract, real_section):
@@ -318,10 +369,14 @@ def test_all_five_authority_booleans_are_false_in_the_contract(contract):
             assert card["authority"][key] is False, f"{key} is not literal false"
 
 
-def test_authority_is_disclosed_as_withheld(real_section):
+def test_authority_is_disclosed_as_withheld(contract, real_section):
     """Zero authority is a claim the user must be able to read, not an omission."""
-    for key in AUTHORITY_KEYS:
-        assert key in real_section, f"{key} not disclosed in the human projection"
+    for card in contract["cards"]:
+        receipts = _isolate_receipts(_isolate_card(real_section, card["method_family"]))
+        for key in AUTHORITY_KEYS:
+            assert f"{key}=false" in receipts, (
+                f"{key} not disclosed as withheld in Receipts"
+            )
 
 
 def test_no_ranking_or_trade_language_in_section(real_section):
@@ -441,7 +496,9 @@ def test_ordered_path_preserves_exploratory_and_sample_semantics(
         if point["horizon"] == path["selected_horizon"]
     )
 
-    assert path["evidence_status"] in es_html
+    assert "Exploratory — not gated" in es_html
+    assert "探索性 — 未门控" in es_html
+    assert path["evidence_status"] in _isolate_receipts(es_html)
     assert path["sample_basis"]["en"] in es_html
     assert path["comparison_note"]["en"] in es_html
     assert f"{selected['value'] * 100:.2f}%" in es_html
@@ -567,16 +624,16 @@ def test_no_validated_claim_in_section(real_section):
     assert "已验证" not in real_section
 
 
-def test_no_falsifier_vocabulary_as_a_state_chip(real_section):
-    """Verdicts belong on this lab page, but the chip must use the typed code.
+def test_no_falsifier_vocabulary_as_a_state_chip(contract, real_section):
+    """Glance uses a plain-word state; typed codes stay in Receipts.
 
-    The contract's own words are DIAGNOSTIC_FAILED / ARTIFACT_INCOMPLETE; a chip
-    reading "FALSIFIED" would invent a state the adapter never emitted.
+    A chip reading "FALSIFIED" would invent a state the adapter never emitted.
     """
-    chips = re.findall(r'class="ric-state-code">([^<]+)<', real_section)
-    assert chips, "no typed state chip rendered"
-    for chip in chips:
-        assert chip.strip() in {"DIAGNOSTIC_FAILED", "ARTIFACT_INCOMPLETE"}
+    assert "FALSIFIED" not in real_section
+    assert 'class="ric-state-code"' not in real_section
+    for card in contract["cards"]:
+        receipts = _isolate_receipts(_isolate_card(real_section, card["method_family"]))
+        assert card["quality"] in receipts
 
 
 # ---------------------------------------------------------------------------
@@ -635,6 +692,96 @@ def test_dom_order_equals_contract_order(contract, real_section):
     ), "cards are not in the contract's fixed non-ranking order"
 
 
+def test_glance_header_is_plain_word_only(contract, real_section):
+    """FRONT-END CLARITY LAW: the glance chip is a sentence, not a slug."""
+    expected = {
+        "DIAGNOSTIC_FAILED": ("Diagnostic failed", "诊断未通过"),
+        "ARTIFACT_INCOMPLETE": ("Receipts incomplete", "凭证不完整"),
+    }
+    for card in contract["cards"]:
+        header = _isolate_header(_isolate_card(real_section, card["method_family"]))
+        en, zh = expected[card["quality"]]
+        assert en in header
+        assert zh in header
+        assert card["quality"] not in header
+        assert f'tier: {card["evidence_tier"]}' not in header
+        assert card["method_family"] not in header
+        assert "forecast_authority" not in header
+        assert 'class="ric-state-code"' not in header
+
+
+def test_machine_codes_live_only_in_receipts(contract, real_section):
+    """Quality, tier, family, and authority flags are receipt facts."""
+    for card in contract["cards"]:
+        card_html = _isolate_card(real_section, card["method_family"])
+        header = _isolate_header(card_html)
+        receipts = _isolate_receipts(card_html)
+        assert card["quality"] in receipts
+        assert card["evidence_tier"] in receipts
+        assert card["method_family"] in receipts
+        assert card["quality"] not in header
+        assert card["method_family"] not in header
+        for key in AUTHORITY_KEYS:
+            assert f"{key}=false" in receipts
+            assert key not in header
+
+
+def test_gate_quant_sits_inside_details(contract, real_section):
+    """Per-gate numbers are behind a details row; the glance keeps the label."""
+    found = 0
+    for card in contract["cards"]:
+        card_html = _isolate_card(real_section, card["method_family"])
+        for gate in card["diagnostics"]:
+            if "passed" not in gate:
+                continue
+            detail = gate["detail"]["en"]
+            assert detail, f"{card['method_family']} gate {gate['code']} has empty detail"
+            needle = (
+                detail.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace('"', "&#34;")
+                .replace("'", "&#39;")
+            )
+            idx = card_html.find(needle)
+            assert idx != -1, f"{gate['code']} detail missing from the card"
+            details_open = card_html.rfind("<details", 0, idx)
+            gate_open = card_html.rfind('class="ric-gate"', 0, idx)
+            assert details_open > gate_open, (
+                f"{gate['code']} quant sits in the glance gate row, not in <details>"
+            )
+            assert gate["label"]["en"] in card_html
+            found += 1
+    assert found >= 2, f"expected several gated diagnostics, found {found}"
+
+
+def test_tier_filter_uses_a_plain_word_gloss(real_section):
+    assert 'data-ric-f="tier:DIAGNOSTIC"' in real_section
+    start = real_section.find('data-ric-f="tier:DIAGNOSTIC"')
+    end = real_section.find("</button>", start)
+    button = real_section[start:end]
+    assert "Diagnostic only" in button
+    assert "仅诊断" in button
+    assert "Tier: DIAGNOSTIC" not in real_section
+    assert "证据层级：DIAGNOSTIC" not in real_section
+
+
+def test_cutoff_names_the_through_date(contract, real_section):
+    """A glance date is a through-date, not a bare ISO timestamp."""
+    for card in contract["cards"]:
+        fig = _metric_markup(
+            _isolate_card(real_section, card["method_family"]), "cutoff"
+        )
+        en, zh = _plain_cutoff(card["cutoff"])
+        assert en in fig, f"{card['method_family']} cutoff glance is not {en}"
+        assert zh in fig, f"{card['method_family']} cutoff glance is not {zh}"
+        assert card["cutoff"] not in fig, (
+            f"{card['method_family']} still prints the raw ISO {card['cutoff']}"
+        )
+        assert "Data through" in fig
+        assert "数据截至" in fig
+
+
 def test_filters_are_not_sort_controls(real_section):
     """No sort *control* may exist — but saying "never reordered" is required.
 
@@ -656,13 +803,20 @@ def test_filters_are_not_sort_controls(real_section):
 def test_unknown_quality_state_degrades_without_inventing_a_verdict():
     """An unrecognised typed state must still render, neutrally.
 
-    Fail-open on display, fail-closed on meaning: the reader sees the raw code
-    rather than a state the page made up.
+    Fail-open on display, fail-closed on meaning: the glance is a generic
+    owner-reported gloss and the raw code lives in Receipts. No filter
+    button is minted for an unglossed value.
     """
     card = _minimal_card(family="event_study", quality="SOMETHING_NEW")
     section = _section(_render(research_implications=_envelope([card])))
     assert section
-    assert "SOMETHING_NEW" in section
+    header = _isolate_header(_isolate_card(section, "event_study"))
+    assert "State reported by the owner" in header
+    assert "所有者报告的状态" in header
+    assert "SOMETHING_NEW" not in header
+    assert 'data-ric-f="q:SOMETHING_NEW"' not in section
+    receipts = _isolate_receipts(_isolate_card(section, "event_study"))
+    assert "SOMETHING_NEW" in receipts
 
 
 def test_card_with_no_outputs_renders_an_honest_empty_state():
@@ -767,3 +921,33 @@ def _isolate_card(section: str, family: str) -> str:
     end = section.find("</article>", start)
     assert end != -1, f"card {family} is not closed"
     return section[open_tag : end + len("</article>")]
+
+
+def _isolate_header(card_html: str) -> str:
+    start = card_html.find('class="ric-hd"')
+    assert start != -1, "card has no glance header"
+    open_tag = card_html.rfind("<", 0, start)
+    end = card_html.find("</div>", start)
+    assert end != -1
+    return card_html[open_tag : end + len("</div>")]
+
+
+def _isolate_receipts(card_html: str) -> str:
+    marker = 'class="ric-rc"'
+    start = card_html.find(marker)
+    assert start != -1, "card has no Receipts block"
+    open_tag = card_html.rfind("<", 0, start)
+    end = card_html.find("</dl>", start)
+    assert end != -1
+    return card_html[open_tag : end + len("</dl>")]
+
+
+def _plain_cutoff(iso: str) -> tuple[str, str]:
+    year, month, day = iso.split("-")
+    months = (
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+    )
+    en = f"{int(day)} {months[int(month) - 1]} {year}"
+    zh = f"{year}年{int(month)}月{int(day)}日"
+    return en, zh
