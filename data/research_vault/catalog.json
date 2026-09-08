@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-07T23:07:42.674091+00:00",
-  "count": 1955,
+  "generated_at": "2026-09-08T01:50:42.924358+00:00",
+  "count": 1963,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -58,6 +58,7 @@
     "Nuclear",
     "Nuveen",
     "Other",
+    "PB",
     "PNC",
     "Prime",
     "RBC",
@@ -93,6 +94,105 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-sx9e2lustwy-49f2f0",
+      "title": "JPM Schlegel Weekly Wrap Let the Re Gross Begin 7 Sep 2026",
+      "institution": "PB",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T00:23:49Z",
+      "summary_points": [
+        "Fed Policy Shift**: Q3 CPI data confirms persistent inflation, delaying rate cuts to Q1 2025; bond yields surge 25bps on hawkish Fed pivot **Ukraine Conflict Escalation**: Russian strikes on Ukrainian energy infrastructure disrupt EU gas flows, triggering 12% price spike and rerouting LNG contracts **ETF Outflows**: $18B equity ETF net outflows in 72 hours, accelerating technicals in S&P 500 futures and widening volatility index (VIX) to 22.5"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 1,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vvn3trxi1lj-4b39c1",
+      "title": "GS Papai IG Credit Down the Stretch 7 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T00:23:23Z",
+      "summary_points": [
+        "**AI Debt Issuance Surge**: 2027 projected $340bn senior hyperscaler/chip debt (40% YoY rise), driven by CAPEX growth and reduced equity issuance, creating critical credit quality risk as AI buildout accelerates.",
+        "**September Supply Pressure & Yield Demand**: $230bn non-AI IG supply in Sept (vs.",
+        "$16bn/day) creates vulnerability, offset by yield-based demand supporting non-AI IG buying (GSIG30NH) and strong mutual fund inflows (+$200bn).",
+        "**Foreign Demand Structural Shift**: TIC data shows YTD largest net purchase of USD corporate bonds by foreign investors (offsetting Japan’s selling), driving robust overseas demand as key portfolio driver.",
+        "**Risk Transfer & Spreads Widening**: Risk transfer (CDS, TRS) increasing; AI vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-moivwafobez-0e271b",
+      "title": "GS Gillard Commods All time high copper 7 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T00:23:20Z",
+      "summary_points": [
+        "**US Over-Imports Fuel Copper Surge**: LME copper hits ATH on 80% YTD rise, driven by US over-imports (730k MT YTD, 200k MT Aug, 77k MT Sept basis ship-tracking); regional deficits (CMX) now key driver as US tariff threat shifts surplus without inflationary impact.",
+        "**Regional Deficit Trading Dominates**: Global inventory up YTD but no shortage—CMX regional deficits are focal point; option positioning at 3/10 max, futures length at 4/10 to play LME tightening from US import flows.",
+        "**LME Term Structure Volatility**: Smelters unable to run concentrate shorts due to minimal global supply outside China/US (low TC), sustaining spread flare-ups; historical spikes (e.g., 2021) reflect persistent supply-side constraints."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-cagrk6gpf8e-14fa86",
+      "title": "Allocation views bubbles bifurcation case for staying invested",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-08T00:07:20Z",
+      "summary_points": [
+        "**Risk-On Equity Thesis**: Double-digit EPS growth supports equity positioning; US/EMs/Japan favored (tech tilt mitigates AI-bubble risk), Australian equities least preferred due to weak growth, unsupportive fiscal policy, and tight monetary policy.",
+        "**Strong Earnings & AI Fundamentals**: Global earnings forecast >20% growth (US/EM ex-China) driven by AI (semiconductors/hardware); P/E ratios below long-term averages (US growth at 22x vs 31x median, EM at 10x vs 15x median).",
+        "**Geopolitical & Inflation Pressures**: Middle East tensions (Iran/Hormuz) amplify energy volatility; PCE inflation at 3.7% (above 2% target) creates hawkish Fed headwinds, driving greater equity-bond correlation and prompting underweight cash/bonds.",
+        "**Small Caps Vulnerability**: Russell 2000 CY2026 EPS estimates (87.5) lag large caps (124.3) due to inflation sensitivity, higher floating-rate debt, weaker interest coverage, and larger unprofitable cohort.",
+        "**Monetary Policy Divergence**: Hawkish FOMC bias (tightening from Middle East tensions), fiscal deficits expanding via defense/energy support, and supply-driven inflation suppressing consumer spending despite marginal core goods improvement."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-c8yzfituzy0-2d9ba1",
+      "title": "WestpacWeekly20260907",
+      "institution": "Westpac",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T00:02:32Z",
+      "summary_points": [
+        "**RBNZ Policy Timing**: Pause October, hike for Christmas (Dec) critical for NZD flows and regional positioning; OCR to 2.75% with Q3 CPI (Oct) pivotal for inflation assessment.",
+        "**Australia's Q2 GDP & Data Conflict**: Growth at 2.1% yr (above RBA) but momentum loss (CPI revisions dominate); prioritize labor market data over selective signals amid housing downturn and weak domestic demand.",
+        "**US PCE Inflation & FOMC**: PCE at 3.7% yr (Aug) drives market pricing of Sept rate hike; Fed policy tightening likely despite hold, with disinflation requiring sustained progress.",
+        "**Australian Housing & Geopolitical Risks**: Housing prices down 0.9% (Aug), approvals -3.6% (July); Middle East conflict disrupts tourism/energy flows, compounding housing market stagnation.",
+        "**US 10Y Bond Yield Rise**: Bond yield to 4.85% (Dec-28) pressures corporate debt valuations and rate-sensitive equities, necessitating defensive fixed income positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-tglz6d8iuo6-c3a02d",
       "title": "GS Garrett weekend prep 7 Sep 2026",
@@ -255,6 +355,48 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-3ptx9unevzb-981569",
+      "title": "Index Strategy FTSE Global Equity Index Series Rebalancing Review and Flow Implications (September 2026) Final Update",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-07T14:37:32Z",
+      "summary_points": [
+        "**FTSE GEIS Rebalancing Scale**: $18bn gross flows (APAC) and $12bn (EM) with net passive flows of $4.2bn (APAC) and $3.6bn (EM), requiring immediate portfolio adjustments across regions.",
+        "**Sector Flow Disparities**: Tech Hardware & Semis (+$4.0bn) lead inflows; Banks/Consumer Staples/Autos/Retail (-$0.6bn/-$0.2bn) face outflows, signaling sector rotation.",
+        "**Top Stock Impacts**: Meituan (+$215m), Alibaba (-$145m), Ping An Insurance (+$135m) dominate rebalancing-driven flows; deletions like \"Deletion (AI Work)\" create structural risk.",
+        "**Regional Structural Shifts**: China/Taiwan lead passive inflows (>$1,295m); UK/Germany face largest outflows (>$1,098m), indicating capital reallocation.",
+        "**Critical Rebalancing Triggers**: \"Addition (AI Cap)\"/Deletion events (e.g., TCS, Nifty) drive volatility; stocks with net flows >$3m and >0.3x ADVT (e.g., Sinopec, 2333 HK) demand monitoring."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 22,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-8ngv1jx9vr0-36e246",
+      "title": "GS EUROPEAN EXPRESS Real Estate Utilities Schindler Sika Media Macro Global Corporate Access",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-07T14:37:10Z",
+      "summary_points": [
+        "**Europe Real Estate Sector Refresh**: Covivio upgraded to Buy (stronger rental growth), Vonovia downgraded to Neutral (rate-driven execution risk), Colonial to Sell (leasing sluggishness/leverage); logistics sector strongest but regulatory uncertainty persists.",
+        "**European Utilities Renewables Bias**: Sector pricing in rate increases; renewables (RWE, Solaria, Drax) and Naturgy/PPC favored as \"earnings super cycle\" (electrification, datacenters) gains momentum.",
+        "**ECB Hike Guidance**: Staff projects +0.1pp growth upgrade (2026/27) vs.",
+        "+0.4pp to 2.7% 2027 inflation; September hike likely if energy prices elevated; probability-weighted forecast below market pricing.",
+        "**China Banks Recapitalization**: Second round of large bank recapitalization is a critical policy shift impacting financial sector stability and investment opportunities."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
@@ -1291,6 +1433,27 @@
         "**Infrastructure Execution Shift**: EU-funded projects (Fehmarnbelt Tunnel, Eastern Green Link) transition policy ambitions to physical construction, addressing energy security and connectivity despite permitting risks.",
         "**Market Pricing Policy Shifts**: MSCI Europe outperforms EU-27/UK GDP, with STOXX 600 earnings +22.4% YoY and revised Eurozone growth (0.5%→0.8%) signaling markets anticipate infrastructure investment and industrial policy coordination.",
         "**Execution-Driven Dividend Narrative**: European companies return ~5% of market cap annually via dividends/buybacks (banks at 7.5%), linking shareholder returns directly to corporate cash flows and tangible infrastructure delivery."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wxqbvx2svih-63b6e9",
+      "title": "AllianzGI Footprint and handprint MN MR Sep EN 26",
+      "institution": "Allianz",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-06T01:40:31Z",
+      "summary_points": [
+        "**Footprint vs.",
+        "Handprint Materiality**: Footprint (negative impacts: emissions, resource depletion) drives regulatory/operational risks; handprint (positive impacts: SDG solutions) drives growth—critical for ESG-integrated risk/opportunity assessment under regulatory frameworks.",
+        "**Handprint Overreliance Risk**: Over-reliance on handprint metrics alone overlooks material negative impacts (e.g., high-emitter transition risks), necessitating integrated footprint-handprint analysis to avoid portfolio blind spots.",
+        "**DNSH Validation Imperative**: SDG contribution data (e.g., revenue-based SDG 7/9 alignment) requires DNSH validation to prevent greenwashing in thematic investing, ensuring alignment with UN SDGs and regulatory standards.",
+        "**Impact Assessment Integration**: Sustainability Insights Engine must combine handprint (SDG alignment, PSS² scores) and footprint metrics to holistically assess financial risks/opportunities, directly linking to portfolio resilience and long-term value."
       ],
       "tags": [],
       "tickers": [],
