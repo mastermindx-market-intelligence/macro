@@ -185,7 +185,7 @@ def _render_specimen(site: Path) -> str:
   </div>
 </section>
 <section id="surf-igs" class="igs igs-ignited">
-  <span class="igs-dots"><span class="igs-dot lit fresh"></span></span>
+  <span class="igs-dots"><span class="igs-dot fresh"></span></span>
 </section>
 <section id="surf-rrcov">
   <span class="rr-cov rr-cov-fresh">fresh coverage</span>

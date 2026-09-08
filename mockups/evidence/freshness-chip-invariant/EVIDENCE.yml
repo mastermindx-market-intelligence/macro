@@ -11,4 +11,6 @@ changed_paths:
   - templates/macro_context.html.j2
   - templates/sector_central_china.html.j2
   - templates/stage_analysis.html.j2
+  - templates/_risk_radar_card.css.j2
+  - templates/_ignition_radar_card.css.j2
 manifest: mockups/evidence/freshness-chip-invariant/manifest.json
