@@ -610,6 +610,8 @@ def test_clearance_probe_js_binds_locator_element_then_arg() -> None:
     assert "fonts.ready" in _CLEARANCE_JS
     assert "requestAnimationFrame" in _CLEARANCE_JS
     assert "mergedInto" in _CLEARANCE_JS
+    assert "analystMergedInto" in _CLEARANCE_JS
+    assert "position:static" in _CLEARANCE_JS
     assert "NodeFilter.SHOW_TEXT" in _CLEARANCE_JS
     assert "querySelectorAll('*')" in _CLEARANCE_JS
     assert "no_occluders_found" in _CLEARANCE_JS

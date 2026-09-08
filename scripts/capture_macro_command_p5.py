@@ -556,7 +556,20 @@ _CLEARANCE_JS = """async (el, arg) => {
         '.mc-arrival, .mc-watch, .mc-primer, .mq-callout, .mc-callout'))
         .map(elBox);
     let analystHits = [];
-    const analystMerged = occluders.some(
+    /* R1(b): a chip whose box sits inside enumerated top chrome (the
+       sticky rail) is rail material even when the chip itself is
+       position:static. Do not score it as an independent overlay. */
+    let analystMergedInto = null;
+    if (analystBox) {
+        const parent = occluders.find((f) => !f.skipIndependent && isTopChrome(f)
+            && (f.el.contains(analyst) || boxInside(analystBox, f)));
+        if (parent) {
+            analystMergedInto = /rail|suitenav/i.test(String(parent.id || parent.cls || ''))
+                ? 'rail' : (occluderName(parent) || 'rail');
+            parent.mergedChildren = (parent.mergedChildren || []).concat(['analyst']);
+        }
+    }
+    const analystMerged = Boolean(analystMergedInto) || occluders.some(
         (f) => f.el === analyst && f.skipIndependent);
     if (analystView && !analystMerged) {
         const sv = stanceBox ? clipView(stanceBox) : null;
@@ -606,6 +619,7 @@ _CLEARANCE_JS = """async (el, arg) => {
         scroll_under_top_chrome: scrollUnder,
         analyst: analystBox,
         analyst_hits: analystHits,
+        analystMergedInto,
         stance: stanceBox,
         fab: fabBox,
         mmbBootDisplay: fabCs ? fabCs.display : 'missing',
