@@ -460,6 +460,8 @@ def test_every_theme_differing_token_is_declared_at_least_twice(token: str) -> N
 
 @pytest.fixture(scope="module")
 def built_hub(tmp_path_factory: pytest.TempPathFactory) -> str:
+    if not (DATA_ROOT / "workspaces" / "manifest.json").is_file():
+        pytest.skip("site/macrodata tree not present")
     out = tmp_path_factory.mktemp("macro_command_read_strip") / "site"
     pages = builder.render(ROOT, data_root=DATA_ROOT, out_dir=out, page_built_at=BUILT_AT)
     hub = [p for p in pages if p.name == builder.HUB_PAGE.output]
@@ -471,6 +473,26 @@ def test_the_real_page_renders_populated_chips_only(built_hub: str) -> None:
     """R6-M3: chips whose section is not rendered are not rendered."""
     chip_ids = re.findall(r'<li class="mc-chip[^"]*" data-mc-topic="([a-z]+)"', built_hub)
     assert chip_ids == ["money", "policy", "rates", "inflation", "coverage"]
+
+
+def test_r7_m2_strip_has_exactly_populated_plus_coverage_and_no_empty_children(
+        built_hub: str) -> None:
+    """R7-M2: strip children = populated chips + coverage; no empty cells."""
+    match = re.search(r'<ul class="mc-strip"[^>]*>(.*?)</ul>', built_hub, re.S)
+    assert match, "state strip missing from the built hub"
+    body = match.group(1)
+    children = re.findall(r"<li\b", body)
+    topics = re.findall(r'data-mc-topic="([^"]+)"', body)
+    populated = [topic for topic in topics if topic != "coverage"]
+    assert "coverage" in topics
+    assert len(children) == len(populated) + 1
+    assert len(children) == len(topics)
+    assert not re.search(r"<li[^>]*>\s*</li>", body)
+    css = (TEMPLATES / "macro_command.css").read_text(encoding="utf-8")
+    assert "repeat(4, minmax(0, 1fr))" not in css
+    assert "display: flex" in css
+    assert "flex-wrap: wrap" in css
+    assert re.search(r"--mc-strip-bg:\s*transparent", css)
 
 
 def test_coverage_chip_omits_asof_and_does_not_borrow_nulled(built_hub: str) -> None:

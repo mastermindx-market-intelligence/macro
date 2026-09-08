@@ -83,11 +83,13 @@ html[data-theme="light"] {
   --mc-dest-border-hover: var(--mc-panel-border);
   --mc-dest-shadow: none;
 
-  /* P2 LIGHT TREATMENT — aliases only. The ledger-card geometry (1px gap,
-     hairline border, square corners) is on the component rules below. */
-  --mc-strip-bg: var(--mq-line);
-  --mc-strip-border: var(--mc-panel-border);
-  --mc-strip-shadow: var(--mc-rail-active-shadow);
+  /* P2 LIGHT TREATMENT — aliases only. R7-M2: the strip container
+     itself must not paint. Material lives on the chips (white + hairline
+     + shadow). A --mq-line fill here is what rendered the three-cell
+     grey void after the chip count dropped from 8 to 5. */
+  --mc-strip-bg: transparent;
+  --mc-strip-border: none;
+  --mc-strip-shadow: none;
   --mc-lit-halo: 0;
   --mc-lit-underline: var(--mc-underline);
   --mc-read-weight: 460;
@@ -211,21 +213,27 @@ html[data-lang="zh"] .mc-read-topic { margin-inline-end: .06em; }
   list-style: none;
   margin: 0 0 32px;
   padding: 0;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  /* R7-M2: flex, not a fixed 4-column grid. auto-fit still keeps every
+     column track alive once row 1 fills it, so a fifth chip left a
+     three-cell canvas hole — grey on light even with a transparent
+     container. Flex-grow lets the leftover chip fill the row. */
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   background: var(--mc-strip-bg);
   border: var(--mc-strip-border);
   border-radius: 0;
   box-shadow: var(--mc-strip-shadow);
 }
-html[data-theme="light"] .mc-strip { gap: 1px; }
+html[data-theme="light"] .mc-strip { gap: 8px; }
 /* D6: `display:grid` beats the UA `[hidden]{display:none}` rule, so an empty
    strip kept reserving 32px + a 4-column track above the fold. */
 .mc-strip[hidden] { display: none; }
 .mc-chip {
   position: relative;
   min-width: 0;
+  flex: 1 1 calc((100% - 24px) / 4);
+  box-sizing: border-box;
   padding: 10px 12px;
   border: 1px solid var(--mc-chip-border);
   border-radius: var(--r-btn);
@@ -234,8 +242,12 @@ html[data-theme="light"] .mc-strip { gap: 1px; }
 }
 html[data-theme="light"] .mc-chip {
   padding: 11px 13px;
-  border-width: 0;
+  /* R7-M2: hairline + shadow live on the chip. The container no longer
+     paints a ledger ground, so a 0-width border would leave white cards
+     floating with no edge. */
+  border-width: 1px;
   border-radius: 0;
+  box-shadow: var(--mc-rail-active-shadow);
 }
 .mc-chip-link {
   display: grid;
@@ -624,7 +636,7 @@ html[data-theme="light"] .mc-empty {
   .mc-shell { max-width: 1120px; padding: 24px 24px 80px; --mc-rail-w: 208px; }
 }
 @media (max-width: 1023px) {
-  .mc-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mc-chip { flex-basis: calc((100% - 8px) / 2); }
 }
 @media (max-width: 768px) {
   /* N-B1: the reserved band lives on `.mc-panels`, not on the shell.
@@ -725,7 +737,8 @@ html[data-theme="light"] .mc-empty {
   .mc-title { font-size: 24px; line-height: 1.2; }
   .mc-panel-title { font-size: 17px; }
   .mc-panel { padding: 16px; border-radius: 12px; }
-  .mc-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 24px; }
+  .mc-strip { margin-bottom: 24px; }
+  .mc-chip { flex-basis: calc((100% - 8px) / 2); }
   .mc-chip-top { flex-direction: column; align-items: flex-start; gap: 1px; }
   .mc-chip-value { font-size: 14px; }
   .mc-figure { padding: 8px 8px 8px; margin: 0 -8px; }

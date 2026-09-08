@@ -44,6 +44,8 @@ RAIL_WORKSPACES = (
 
 @pytest.fixture(scope="module")
 def built(tmp_path_factory) -> tuple[str, Path]:
+    if not (DATA_ROOT / "workspaces" / "manifest.json").is_file():
+        pytest.skip("site/macrodata tree not present")
     out = tmp_path_factory.mktemp("macro_command_panels") / "site"
     pages = builder.render(ROOT, data_root=DATA_ROOT, out_dir=out, page_built_at=BUILT_AT)
     hub = [p for p in pages if p.name == builder.HUB_PAGE.output]
@@ -887,7 +889,11 @@ def test_i4_mixed_rows_keep_both_kinds_and_one_state_line() -> None:
     kinds = [row["kind"] for row in figure["rows"]]
     assert kinds == ["movement", "current"]
     assert figure["count_text"] is None
-    assert figure["state_line"] == dict(L.COUNT["same_publication"])
+    # R7-M1: a section mixed figure prints the mixed pair, never the
+    # current-only "only one reading" sentence above a movement row.
+    assert figure["state_line"] == dict(L.COUNT["overview_mixed"])
+    assert figure["state_line"]["en"] == MIXED_DECK_EN
+    assert figure["state_line"]["zh"] == MIXED_DECK_ZH
     assert figure["rows"][0]["delta"] == "+1.0"
     assert figure["rows"][1]["delta"] is None
     assert figure["rows"][1]["sign"] is None
@@ -1041,16 +1047,12 @@ def test_r6_m2_figure_mode_pure_movement_current_and_mixed() -> None:
 
 def _overview_from_rows(rows: list[dict], *, available: int = 4,
                         total: int = 5) -> dict:
-    any_current = any(row.get("kind") == "current" for row in rows)
+    figure = builder._figure_block(
+        rows, overview=True, shown=len(rows), total=len(rows))
     section = {
         "id": "overview",
         "first": True,
-        "figure": {
-            "rows": rows,
-            "count_text": None,
-            "state_line": (
-                dict(L.COUNT["same_publication"]) if any_current else None),
-        },
+        "figure": figure,
         "question": None,
         "stance": None,
     }
@@ -1100,13 +1102,12 @@ def test_r6_m2_mixed_overview_keeps_state_line_and_mixed_sentence() -> None:
     assert MIXED_DECK_EN in section["stance"]["text"]["en"]
     assert MIXED_DECK_ZH in section["stance"]["text"]["zh"]
     assert CURRENT_ONLY_DECK_EN not in section["stance"]["text"]["en"]
-    assert section["figure"]["state_line"] == dict(L.COUNT["same_publication"])
+    # R7-M1: Overview mixed deck already carries the pair — state_line None.
+    assert section["figure"]["state_line"] is None
     kinds = [row["kind"] for row in section["figure"]["rows"]]
     assert kinds == ["movement", "current"]
     assert section["figure"]["rows"][0]["delta"] == "+1"
     assert section["figure"]["rows"][1]["prior"] is None
-    assert section["figure"]["state_line"]["en"] == (
-        "Only one reading is published so far — nothing earlier to compare yet.")
 
 
 def test_r6_m3_chip_and_read_hrefs_resolve_to_rendered_sections(
@@ -1166,3 +1167,105 @@ def test_r6_m2_stance_alone_is_not_populated() -> None:
 
 def test_r6_m1_unpopulated_ids_constant_is_gone() -> None:
     assert not hasattr(builder, "P3_UNPOPULATED_IDS")
+
+
+SAME_PUBLICATION_EN = (
+    "Only one reading is published so far — nothing earlier to compare yet.")
+SAME_PUBLICATION_ZH = "目前只有一次读数——暂无更早读数可比。"
+
+
+def test_r7_m1_overview_mixed_deck_mixed_state_line_none() -> None:
+    """R7-M1: Overview mixed → mixed pair in the deck, state_line None."""
+    section = _overview_from_rows([
+        {"kind": "movement", "prior": "1", "current": "2", "delta": "+1",
+         "sign": "up"},
+        {"kind": "current", "prior": None, "current": "4", "delta": None,
+         "sign": None},
+    ])
+    assert builder._figure_mode(section["figure"]["rows"]) == "mixed"
+    assert MIXED_DECK_EN in section["stance"]["text"]["en"]
+    assert MIXED_DECK_ZH in section["stance"]["text"]["zh"]
+    assert section["figure"]["state_line"] is None
+    assert section["figure"]["count_text"] is None
+    assert SAME_PUBLICATION_EN not in section["stance"]["text"]["en"]
+    assert SAME_PUBLICATION_ZH not in section["stance"]["text"]["zh"]
+
+
+def test_r7_m1_section_mixed_state_line_is_the_mixed_pair() -> None:
+    """R7-M1: section mixed → state_line is the mixed pair, EN and ZH."""
+    figure = builder._figure_block(
+        [
+            {"kind": "movement", "prior": "1", "current": "2", "delta": "+1",
+             "sign": "up"},
+            {"kind": "current", "prior": None, "current": "4", "delta": None,
+             "sign": None},
+        ],
+        overview=False, shown=2, total=2)
+    assert builder._figure_mode(figure["rows"]) == "mixed"
+    assert figure["state_line"] == dict(L.COUNT["overview_mixed"])
+    assert figure["state_line"]["en"] == MIXED_DECK_EN
+    assert figure["state_line"]["zh"] == MIXED_DECK_ZH
+    assert figure["count_text"] is None
+    assert SAME_PUBLICATION_EN not in figure["state_line"]["en"]
+    assert SAME_PUBLICATION_ZH not in figure["state_line"]["zh"]
+
+
+def test_r7_m1_current_prints_same_publication_exactly_once() -> None:
+    """R7-M1: current mode → same_publication once; no count; EN and ZH."""
+    figure = builder._figure_block(
+        [{"kind": "current", "prior": None, "current": "2", "delta": None,
+          "sign": None}],
+        overview=False, shown=1, total=1)
+    assert builder._figure_mode(figure["rows"]) == "current"
+    assert figure["state_line"] == dict(L.COUNT["same_publication"])
+    assert figure["state_line"]["en"] == SAME_PUBLICATION_EN
+    assert figure["state_line"]["zh"] == SAME_PUBLICATION_ZH
+    assert figure["count_text"] is None
+    overview = _overview_from_rows(list(figure["rows"]))
+    assert overview["figure"]["state_line"] is None
+    assert CURRENT_ONLY_DECK_EN in overview["stance"]["text"]["en"]
+    assert CURRENT_ONLY_DECK_ZH in overview["stance"]["text"]["zh"]
+    assert SAME_PUBLICATION_EN not in overview["stance"]["text"]["en"]
+    joined = (
+        (overview["stance"]["text"]["en"] or "")
+        + (overview["figure"].get("state_line") or {}).get("en", ""))
+    assert joined.count(SAME_PUBLICATION_EN) == 0
+    assert figure["state_line"]["en"].count(SAME_PUBLICATION_EN) == 1
+
+
+def test_r7_m1_movement_has_count_text_and_no_state_line() -> None:
+    """R7-M1: movement mode → count_text present, no state line, EN and ZH."""
+    rows = [
+        {"kind": "movement", "prior": "1", "current": "2", "delta": "+1",
+         "sign": "up"},
+        {"kind": "movement", "prior": "3", "current": "3", "delta": "0",
+         "sign": "flat"},
+    ]
+    section_fig = builder._figure_block(
+        rows, overview=False, shown=2, total=2)
+    assert builder._figure_mode(section_fig["rows"]) == "movement"
+    assert section_fig["state_line"] is None
+    assert section_fig["count_text"] is not None
+    assert "compared against the previous publication" in section_fig["count_text"]["en"]
+    assert "与上一次发布相比" in section_fig["count_text"]["zh"]
+    overview = _overview_from_rows(rows)
+    assert overview["figure"]["state_line"] is None
+    assert overview["figure"]["count_text"] is not None
+    assert "compared readings" in overview["figure"]["count_text"]["en"]
+    assert "可比读数" in overview["figure"]["count_text"]["zh"]
+    assert MIXED_DECK_EN not in overview["stance"]["text"]["en"]
+    assert SAME_PUBLICATION_EN not in (overview["figure"]["count_text"]["en"] or "")
+
+
+def test_r7_m2_strip_void_probe_has_no_filled_slab() -> None:
+    """R7-M2: 1440 light EN probe — no filled rectangle >40px outside a chip."""
+    probes = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p3" / "probes.json")
+        .read_text(encoding="utf-8"))
+    row = probes["strip_void_probe"]
+    assert row.get("ok") is True, row
+    assert row.get("filledOutsideWiderThan40") is False, row
+    assert row.get("holeWiderThan40") is False, row
+    assert row.get("emptyChildren") == 0, row
+    assert row.get("chipCount") == row.get("childCount"), row
+    assert row.get("stripFilled") is False, row

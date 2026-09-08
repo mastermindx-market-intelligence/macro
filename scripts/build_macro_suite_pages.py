@@ -795,6 +795,11 @@ def _apply_overview_deck(section: dict[str, Any], *,
     elif mode == "mixed":
         key = f"{key}_mixed"
         section["question"] = dict(L.OVERVIEW_QUESTIONS["movement"])
+        if section.get("figure"):
+            # R7-M1: the Overview `_mixed` deck already carries the mixed
+            # pair. Printing it again on the figure is the same sentence
+            # twice. Section figures keep the pair (they have no deck).
+            section["figure"]["state_line"] = None
     else:
         section["question"] = dict(L.OVERVIEW_QUESTIONS["movement"])
     table = L.STANCES.get("overview") or {}
@@ -858,10 +863,18 @@ def _restrict_header_to_populated(
 
 def _figure_block(rows: Sequence[Mapping[str, Any]], *, overview: bool,
                   shown: int, total: int) -> dict[str, Any]:
-    any_current = any(row.get("kind") == "current" for row in rows)
-    all_movement = bool(rows) and all(row.get("kind") != "current" for row in rows)
+    """Mode-driven figure chrome (R7-M1). Not `any_current`-driven.
+
+    movement → count_text, no state line.
+    current  → same_publication state line, no count.
+    mixed    → overview_mixed state line, no count. Overview then drops
+    the state line in `_apply_overview_deck` so the mixed pair is spoken
+    once (the deck already carries it).
+    """
+    mode = _figure_mode(rows)
     count = None
-    if all_movement:
+    state_line = None
+    if mode == "movement":
         if overview:
             count = {
                 "en": L.COUNT["overview"]["en"].format(shown=shown, total=total),
@@ -872,7 +885,10 @@ def _figure_block(rows: Sequence[Mapping[str, Any]], *, overview: bool,
                 "en": L.COUNT["section"]["en"].format(n=len(rows)),
                 "zh": L.COUNT["section"]["zh"].format(n=len(rows)),
             }
-    state_line = dict(L.COUNT["same_publication"]) if any_current else None
+    elif mode == "current":
+        state_line = dict(L.COUNT["same_publication"])
+    elif mode == "mixed":
+        state_line = dict(L.COUNT["overview_mixed"])
     return {"rows": list(rows), "count_text": count, "state_line": state_line}
 
 

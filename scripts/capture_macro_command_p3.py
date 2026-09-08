@@ -129,6 +129,70 @@ RAIL_JS = """() => {
   };
 }"""
 
+STRIP_VOID_JS = """() => {
+  /* R7-M2: at 1440 light EN, no filled rectangle wider than 40px may
+     sit in the strip row outside a chip box. The container itself must
+     not paint (material belongs to the chips). */
+  const strip = document.querySelector('.mc-strip');
+  if (!strip) return {ok: false, reason: 'missing strip'};
+  const parseAlpha = (color) => {
+    if (!color || color === 'transparent') return 0;
+    const slash = color.match(/\\/\\s*([\\d.]+)\\s*\\)/);
+    if (slash) return Number(slash[1]);
+    const rgba = color.match(/rgba?\\(([^)]+)\\)/);
+    if (rgba && rgba[1].split(',').length === 4) return Number(rgba[1].split(',')[3].trim());
+    return 1;
+  };
+  const stripBox = strip.getBoundingClientRect();
+  const chips = [...strip.querySelectorAll(':scope > .mc-chip')];
+  const children = [...strip.children];
+  const emptyChildren = children.filter((el) => {
+    const text = (el.textContent || '').trim();
+    return text.length === 0 && el.children.length === 0;
+  }).length;
+  const chipBoxes = chips.map((el) => {
+    const box = el.getBoundingClientRect();
+    return {left: box.left, right: box.right, top: box.top, bottom: box.bottom,
+            width: box.width, height: box.height};
+  });
+  const rows = {};
+  for (const box of chipBoxes) {
+    const key = String(Math.round(box.top));
+    (rows[key] = rows[key] || []).push(box);
+  }
+  const voids = [];
+  for (const [top, boxes] of Object.entries(rows)) {
+    boxes.sort((a, b) => a.left - b.left);
+    const rightGap = stripBox.right - boxes[boxes.length - 1].right;
+    if (rightGap > 40) voids.push({top: Number(top), width: rightGap, side: 'right'});
+    const leftGap = boxes[0].left - stripBox.left;
+    if (leftGap > 40) voids.push({top: Number(top), width: leftGap, side: 'left'});
+    for (let i = 0; i < boxes.length - 1; i += 1) {
+      const gap = boxes[i + 1].left - boxes[i].right;
+      if (gap > 40) voids.push({top: Number(top), width: gap, side: 'between'});
+    }
+  }
+  const stripBg = getComputedStyle(strip).backgroundColor;
+  const stripFilled = parseAlpha(stripBg) > 0.05;
+  const filledOutsideWiderThan40 = Boolean(stripFilled && voids.some((v) => v.width > 40));
+  const holeWiderThan40 = voids.some((v) => v.side !== 'between' && v.width > 40);
+  return {
+    ok: !filledOutsideWiderThan40 && !holeWiderThan40
+      && emptyChildren === 0 && chips.length === children.length,
+    chipCount: chips.length,
+    childCount: children.length,
+    emptyChildren,
+    stripBg,
+    stripFilled,
+    voids,
+    maxVoidWidth: voids.length ? Math.max(...voids.map((v) => v.width)) : 0,
+    filledOutsideWiderThan40,
+    holeWiderThan40,
+    viewport: {innerWidth: window.innerWidth, stripWidth: stripBox.width},
+  };
+}"""
+
+
 HAIRLINE_JS = """() => {
   /* RIDER M2: exactly one hairline between the pill row and the first
      populated row on a light deep-linked sub-tab. Measure rule rects. */
@@ -870,6 +934,31 @@ def main() -> int:
                         flush=True)
                 finally:
                     context.close()
+
+                # R7-M2: no filled void in the 1440 light EN strip.
+                context = _new_context(browser, "light", "en", 1440, 2200)
+                try:
+                    page = _open_direct(
+                        context, origin + "/macro_monetary.html",
+                        "#overview", "light", "en")
+                    page.wait_for_selector(".mc-strip .mc-chip", timeout=15000)
+                    void_probe = page.evaluate(STRIP_VOID_JS)
+                    if not void_probe.get("ok"):
+                        raise RuntimeError(f"R7-M2 strip void probe failed: {void_probe}")
+                    if void_probe.get("filledOutsideWiderThan40"):
+                        raise RuntimeError(
+                            f"R7-M2 filled slab outside a chip: {void_probe}")
+                    probes["strip_void_probe"] = void_probe
+                    print(
+                        f"  probe strip_void_probe chips={void_probe['chipCount']} "
+                        f"children={void_probe['childCount']} "
+                        f"empty={void_probe['emptyChildren']} "
+                        f"stripFilled={void_probe['stripFilled']} "
+                        f"maxVoid={void_probe.get('maxVoidWidth')} "
+                        f"ok={void_probe['ok']}",
+                        flush=True)
+                finally:
+                    context.close()
             finally:
                 _kill(proc)
                 if proc in servers:
@@ -954,6 +1043,7 @@ def main() -> int:
             "mobile": [390, 844],
         }
         manifest["generated_at"] = generated_at
+        manifest["strip_void_probe"] = probes.get("strip_void_probe")
         manifest.setdefault("target", {})
         manifest["target"]["resolved_sha_or_none"] = head
         manifest["target"]["resolved_sha_source"] = (

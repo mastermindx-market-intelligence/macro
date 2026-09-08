@@ -380,8 +380,10 @@ STANCES: dict[str, dict[str, dict[str, str]]] = {
         "some_unread_current": _pair(
             "Some desks have not reported yet. The latest readings are below — there is no earlier reading to compare yet.",
             "部分小组今天尚未发布。最新读数如下——暂无更早读数可比。"),
-        # R6-M2: mixed figure — some rows compare, some do not. The
-        # question stays "what moved"; the figure keeps its state line.
+        # R6-M2 / R7-M1: mixed figure — some rows compare, some do not.
+        # The question stays "what moved". The stance carries the mixed
+        # pair; Overview drops the figure state line so the sentence
+        # appears once. Section figures print the pair as their state line.
         "all_read_mixed": _pair(
             "Every desk reported today. Some readings have no earlier print to compare yet.",
             "今天每个小组都有读数。部分读数暂无更早读数可比。"),
@@ -526,9 +528,10 @@ COUNT = {
     "overview_current": _pair(
         "The latest readings are below — there is no earlier reading to compare yet.",
         "最新读数如下——暂无更早读数可比。"),
-    # R6-M2: mixed-figure deck sentence. Distinct from same_publication
-    # (the per-row typed null, printed once) and from overview_current
-    # (every row is current-only).
+    # R6-M2 / R7-M1: mixed-figure sentence. Overview speaks it in the
+    # stance and drops the figure state line. Section figures print it
+    # as their state line. Distinct from same_publication (current-only)
+    # and from overview_current (every row is current-only).
     "overview_mixed": _pair(
         "Some readings have no earlier print to compare yet.",
         "部分读数暂无更早读数可比。"),

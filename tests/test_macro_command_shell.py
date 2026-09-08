@@ -42,6 +42,8 @@ def built_hub(tmp_path_factory) -> str:
     assertions need the real `templates/theme.js` (for the analyst control's
     mount path) and the real `_site_nav.html.j2` (for G7's byte-unchanged
     proof), not a trimmed fixture tree."""
+    if not (DATA_ROOT / "workspaces" / "manifest.json").is_file():
+        pytest.skip("site/macrodata tree not present")
     out = tmp_path_factory.mktemp("macro_command_shell") / "site"
     pages = builder.render(ROOT, data_root=DATA_ROOT, out_dir=out, page_built_at=BUILT_AT)
     hub = [p for p in pages if p.name == builder.HUB_PAGE.output]
