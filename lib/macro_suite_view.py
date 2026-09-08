@@ -1416,6 +1416,25 @@ def _chip_and_clause(chip_id: str, workspace_id: str, section_id: str,
     return chip, clause
 
 
+def _as_of_meaning(n_dated: int, *, all_same: bool) -> dict[str, str] | None:
+    """Plain-word meaning for the header date. Derived from the dated-chip
+    count — never a hardcoded workspace total. n==0 emits no line (and the
+    caller emits no as-of, so the eyebrow stays off)."""
+    if n_dated == 0:
+        return None
+    n = str(n_dated)
+    if all_same:
+        return {
+            "en": f"All {n} dated readings in the strip below share this date.",
+            "zh": f"下方 {n} 项有日期读数均为此日期。",
+        }
+    return {
+        "en": (f"Oldest date among the {n} dated readings in the strip below; "
+               "each reading shows its own date."),
+        "zh": f"取下方 {n} 项有日期读数中最早的一项；各读数标注各自日期。",
+    }
+
+
 def _coverage_chip(available: int, total: int) -> dict[str, Any]:
     complete = available == total
     value = L.COVERAGE_WORD["complete" if complete else "partial"]
@@ -1461,8 +1480,6 @@ def build_command_header(entries: Sequence[Mapping[str, Any]], *,
             punct_key = "mid"
         clause["punct"] = dict(L.READ_PUNCT[punct_key])
 
-    dates = [c["_effective_date"] for c in clauses if c.get("_effective_date")]
-    read_as_of = min(dates) if dates else None
     for clause in clauses:
         del clause["_effective_date"]
 
@@ -1478,13 +1495,12 @@ def build_command_header(entries: Sequence[Mapping[str, Any]], *,
     sections_total = len(_COVERAGE_WORKSPACES) + 1
     chips.append(_coverage_chip(sections_available, sections_total))
 
-    as_of_meaning = {
-        "en": (
-            "Oldest of the fourteen workspaces' latest prints — newer "
-            "sections are dated on their own page."
-        ),
-        "zh": "取十四个工作区中最旧的最新读数 — 各板块自身日期见其页面。",
-    } if read_as_of else None
+    # Header date + meaning are derived from the SAME set: strip chips that
+    # carry a date. Coverage is as_of_omitted by design and never joins.
+    dated = [c["as_of"] for c in chips if c.get("as_of")]
+    n_dated = len(dated)
+    read_as_of = min(dated) if dated else None
+    as_of_meaning = _as_of_meaning(n_dated, all_same=bool(dated) and min(dated) == max(dated))
     return {
         "read": {
             "as_of": read_as_of,

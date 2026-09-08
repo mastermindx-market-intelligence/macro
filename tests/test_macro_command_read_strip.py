@@ -319,16 +319,53 @@ def test_the_page_still_builds_when_a_workspace_carries_an_unrecognised_state(tm
 # 6/7 — read.as_of and punctuation
 # --------------------------------------------------------------------------
 
-def test_read_as_of_is_the_oldest_effective_date_among_rendered_clauses() -> None:
+def _n_dated(header: dict[str, Any]) -> int:
+    """Same set `min()` runs over: strip chips that carry a date."""
+    return sum(1 for chip in header["strip"] if chip.get("as_of"))
+
+
+def test_read_as_of_is_the_oldest_effective_date_among_dated_strip_chips() -> None:
     entries = [
         _entry("liquidity_regime", state_id="A", effective_date="2026-09-06"),
         _entry("inflation_system", state_id="A", effective_date="2026-09-01"),
         _entry("growth_real_economy", state_id="A", effective_date="2026-09-05"),
     ]
     header = macro_suite_view.build_command_header(entries, page_built_at=BUILT_AT)
+    n = _n_dated(header)
     assert header["read"]["as_of"] == "2026-09-01"
-    assert header["read"]["as_of_meaning"]["en"].startswith("Oldest of the fourteen workspaces")
-    assert "取十四个工作区中最旧的最新读数" in header["read"]["as_of_meaning"]["zh"]
+    assert n >= 2
+    assert header["read"]["as_of_meaning"]["en"] == (
+        f"Oldest date among the {n} dated readings in the strip below; "
+        "each reading shows its own date."
+    )
+    assert header["read"]["as_of_meaning"]["zh"] == (
+        f"取下方 {n} 项有日期读数中最早的一项；各读数标注各自日期。"
+    )
+
+
+def test_as_of_meaning_when_every_dated_chip_shares_the_header_date() -> None:
+    entries = [
+        _entry("liquidity_regime", state_id="A", effective_date="2026-09-04"),
+        _entry("inflation_system", state_id="A", effective_date="2026-09-04"),
+        _entry("growth_real_economy", state_id="A", effective_date="2026-09-04"),
+    ]
+    header = macro_suite_view.build_command_header(entries, page_built_at=BUILT_AT)
+    n = _n_dated(header)
+    assert header["read"]["as_of"] == "2026-09-04"
+    assert n >= 1
+    assert header["read"]["as_of_meaning"]["en"] == (
+        f"All {n} dated readings in the strip below share this date."
+    )
+    assert header["read"]["as_of_meaning"]["zh"] == (
+        f"下方 {n} 项有日期读数均为此日期。"
+    )
+
+
+def test_as_of_meaning_and_eyebrow_date_are_absent_when_no_chip_is_dated() -> None:
+    header = macro_suite_view.build_command_header([], page_built_at=BUILT_AT)
+    assert _n_dated(header) == 0
+    assert header["read"]["as_of"] is None
+    assert header["read"]["as_of_meaning"] is None
 
 
 def test_punctuation_is_assigned_by_position_mid_penultimate_last() -> None:
@@ -385,8 +422,7 @@ def test_mc_stance_wash_is_zero_percent_dark_and_six_percent_light() -> None:
 # --------------------------------------------------------------------------
 
 _THEME_DIFFERING_TOKENS = (
-    "mc-strip-gap", "mc-strip-bg", "mc-strip-border", "mc-strip-shadow",
-    "mc-strip-radius", "mc-chip-border-w", "mc-chip-radius", "mc-chip-pad",
+    "mc-strip-bg", "mc-strip-border", "mc-strip-shadow",
     "mc-lit-halo", "mc-lit-underline", "mc-read-weight",
 )
 

@@ -109,14 +109,17 @@ html[data-theme="light"] .mc-rail-link.is-current {
 .mc-analyst:hover { border-color: var(--mq-accent); color: var(--mq-accent); }
 
 /* ── command header + THE READ ───────────────────────────────────────────── */
-.mc-asof-meaning { margin: 6px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--mq-muted); max-width: 62ch; }
+.mc-asof-meaning {
+  margin: -14px 0 18px; font-size: 12.5px; font-weight: 400;
+  line-height: 1.45; color: var(--mq-muted); max-width: 62ch;
+}
 .mc-figure-building { margin: 0; font-size: 14.5px; line-height: 1.55; color: var(--mq-ink); max-width: 62ch; }
 .mc-eyebrow {  margin: 0 0 6px; font-size: 11px; font-weight: 500;
   letter-spacing: .08em; color: var(--mq-muted);
 }
 /* F-7: the UI face with tabular figures, never mono — "4 Sep 2026" contains a
    word, and mono is reserved for figures, tickers, code and axis ticks. */
-.mc-eyebrow time { font-family: inherit; font-variant-numeric: tabular-nums; }
+.mc-eyebrow time { font-variant-numeric: tabular-nums; }
 .mc-asof-word { letter-spacing: 0; }
 .mc-title {
   /* D2: NOT `--fs-h2` — theme.css:56 sets it to 17px for panel titles, so the
@@ -225,7 +228,7 @@ html[data-theme="light"] .mc-chip {
   flex: none;
 }
 /* F-7: the UI face with tabular figures, never mono. */
-.mc-chip-asof time { font-family: inherit; font-variant-numeric: tabular-nums; }
+.mc-chip-asof time { font-variant-numeric: tabular-nums; }
 html[data-lang="zh"] .mc-chip-label { letter-spacing: 0; text-transform: none; }
 .mc-chip-value {
   font-size: 15px;
@@ -500,6 +503,15 @@ html[data-theme="light"] .mc-shell :focus-visible { box-shadow: 0 0 0 1px var(--
   .mc-rail-list { mask-image: linear-gradient(to right, black calc(100% - 26px), transparent);
                   -webkit-mask-image: linear-gradient(to right, black calc(100% - 26px), transparent); }
   .mc-rail-link { white-space: nowrap; padding: 7px 12px; border-radius: var(--r-pill, 999px); }
+  /* same overflow + edge mask as the rail — a hard-clipped tab row
+     ("利率与收:") has no scroll affordance without it. */
+  .mc-subtabs {
+    flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
+    mask-image: linear-gradient(to right, black calc(100% - 26px), transparent);
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 26px), transparent);
+  }
+  .mc-subtabs::-webkit-scrollbar { display: none; }
+  .mc-subtab { white-space: nowrap; flex: none; }
   .mc-title { font-size: 26px; line-height: 1.18; }
   .mc-dests { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
   .mc-rail-bar { display: none; }

@@ -110,13 +110,14 @@
         <span class="mc-eyebrow-asof mc-absent">{{ t('No dated reading yet', '暂无带日期的读数') }}</span>
         {%- endif %}
       </p>
-      {%- if read.as_of_meaning %}
-      <p class="mc-asof-meaning">{{ bl(read.as_of_meaning) }}</p>
-      {%- endif %}
       <h1 class="mc-title">{{ t('Macro Command', '宏观指挥台') }}</h1>
 
       {# THE READ — one sentence, deterministic, single-workspace pass-through only (G3) #}
       {{ m.read_block(read) }}
+
+      {%- if read.as_of_meaning %}
+      <p class="mc-asof-meaning">{{ bl(read.as_of_meaning) }}</p>
+      {%- endif %}
 
       {# THE STATE STRIP — the same seven readings in the scanning register, plus data coverage #}
       {{ m.state_strip(strip) }}
