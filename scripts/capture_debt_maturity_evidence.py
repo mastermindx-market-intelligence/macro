@@ -32,7 +32,11 @@ import tempfile
 from datetime import date, datetime, timezone
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+_HERE = Path(__file__).resolve().parent
+_ROOT = _HERE.parent
+sys.path.insert(0, str(_ROOT))
+
+REPO_ROOT = _ROOT
 TEMPLATES_DIR = REPO_ROOT / "templates"
 OUT_DIR = REPO_ROOT / "mockups" / "evidence" / "debt_maturity"
 
