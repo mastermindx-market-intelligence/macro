@@ -409,3 +409,55 @@ def test_real_builder_supplies_raw_universe_and_session_cut():
     assert isinstance(kwargs["raw_closes_by"], ast.DictComp)
     assert ast.unparse(kwargs["raw_closes_by"].generators[0].iter) == "uni"
     assert ast.unparse(kwargs["as_of"]) == "_board_asof"
+
+
+@pytest.mark.parametrize("kind", ["numpy_object", "numpy_dtype", "nullable_boolean"])
+def test_raw_boolean_representations_are_not_prices(raw_universe_prices, kind):
+    import numpy as np
+    import pandas as pd
+
+    prices, _ = raw_universe_prices
+    if kind == "numpy_object":
+        bad = prices.astype(object)
+        bad.iloc[-1] = np.bool_(True)
+    else:
+        dtype = bool if kind == "numpy_dtype" else "boolean"
+        bad = pd.Series(True, index=prices.index, dtype=dtype)
+    record = _interest_with_raw(bad)
+    assert record["basis"] == CII.BASIS_FALLBACK
+    assert record["score"] is None
+
+
+@pytest.mark.parametrize("dtype", ["int32", "int64", "float64", "Int64", "Float64"])
+def test_ordinary_numeric_prices_survive_boolean_guard(raw_universe_prices, dtype):
+    prices, _ = raw_universe_prices
+    numeric = (prices * 10).round().astype(dtype)
+    record = _interest_with_raw(numeric)
+    assert record["basis"] == CII.BASIS_MEASURED
+    assert record["score"] > 0
+
+
+@pytest.mark.parametrize("bad_first", [False, True])
+def test_unexpected_raw_failure_does_not_erase_other_trajectories(
+        raw_universe_prices, monkeypatch, bad_first):
+    import pandas as pd
+    from engine import china_intel_hub as hub
+
+    class UnreadableSeries(pd.Series):
+        def copy(self, deep=True):
+            raise RuntimeError("fixture: source copy failed")
+
+    prices, bench = raw_universe_prices
+    monkeypatch.setattr(hub, "_load_closes_and_benchmark",
+                        lambda: (prices.to_frame("GOOD.SS"), bench))
+    alt = {t: {"convergence": 0.6, "side": "accumulate"}
+           for t in ("GOOD.SS", "600038.SS")}
+    expected = CII.build_interest_map(
+        ["GOOD.SS"], altdata_by=alt, radar_by={}, special_by={})["GOOD.SS"]
+    tickers = ["600038.SS", "GOOD.SS"] if bad_first else ["GOOD.SS", "600038.SS"]
+    result = CII.build_interest_map(
+        tickers, altdata_by=alt, radar_by={}, special_by={},
+        raw_closes_by={"600038.SS": UnreadableSeries(prices)}, as_of="2026-09-07")
+    assert result["GOOD.SS"] == expected
+    assert result["600038.SS"]["basis"] == CII.BASIS_FALLBACK
+    assert result["600038.SS"]["score"] is None

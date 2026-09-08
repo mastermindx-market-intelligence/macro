@@ -472,10 +472,14 @@ def _trajectories(
         for ticker in tickers:
             traj = hub._price_trajectory(ticker, closes, bench)
             if not traj and isinstance(raw_closes_by, Mapping):
-                raw = _raw_close_at_cut(raw_closes_by.get(ticker), as_of)
-                if raw is not None:
-                    # Reuse the owner calculation; only its missing input is supplied.
-                    traj = hub._price_trajectory(ticker, raw.to_frame(ticker), bench)
+                try:
+                    raw = _raw_close_at_cut(raw_closes_by.get(ticker), as_of)
+                    if raw is not None:
+                        # Reuse the owner calculation; only its missing input is supplied.
+                        traj = hub._price_trajectory(ticker, raw.to_frame(ticker), bench)
+                except Exception as exc:  # noqa: BLE001 — isolate this optional input
+                    log.debug("china_intel_interest: raw price unavailable for %s (%s)",
+                              ticker, exc)
             if traj:
                 out[ticker] = traj
         return out
@@ -546,7 +550,8 @@ def _raw_close_at_cut(series: Any, as_of: str | None):
         prices = prices.dropna()
         if len(prices) < 21 or prices.index[-1] != cut:
             return None
-        if any(isinstance(value, bool) for value in prices):
+        if (pd.api.types.is_bool_dtype(prices.dtype)
+                or any(pd.api.types.is_bool(value) for value in prices)):
             return None
         prices = pd.to_numeric(prices, errors="raise")
         if not all(math.isfinite(float(value)) and float(value) > 0 for value in prices):
