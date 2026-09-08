@@ -1,6 +1,6 @@
 ---
 workstream: WS:MARKET-OS
-session: claude/marketontology-meta-ceo-b-20260906 (harness session 7cd4fae1-1ed9-41c2-adb4-1e5c6b0fbc5b, Claude3 account; seat transferred by the Chairman 2026-09-08 ~20:00Z)
+session: claude/marketontology-meta-ceo-b-20260906 (harness session 7cd4fae1-1ed9-41c2-adb4-1e5c6b0fbc5b, Claude3 account; seat transferred by the Chairman 2026-09-08; successor = harness session d640f3ef-1305-4b6c-aa5d-2d6d5e3dc515, bound on macro#6819 at 22:14Z; predecessor stood down 22:55Z)
 model: fable
 ended_because: context_budget
 mission: >
@@ -27,7 +27,7 @@ verified:
     result: "LANE_DONE m6981_r4 verdict=PASS checked_head=479f9725; LANE_DONE m_bb4_consol verdict=PASS pr=6997 checked_head=ecaf8f8e; #6997 draft=false labels=merge-on-green files=13"
   - claim: "Terminal #514 merged as cff58ee8 (22:14Z 2026-09-08) and Supabase migrations 0014 then 0015 are APPLIED in production in ledger order."
     command: "python3 ddl/raw_apply.py 0014_tenancy_foundation.sql receipt_0014.json 0014_tenancy_foundation; python3 ddl/raw_apply.py 0015_team_roles_invitations.sql receipt_0015.json 0015_team_roles_invitations (SQL fetched from origin/master via the contents API; the merge commit carries both files + RESERVATIONS.json)"
-    result: "0014: apply_status 201, tables teams/team_members/team_invites present with RLS, 5/5 indexes, 8/8 policies, 3/3 functions, MISSING=[]; 0015: 201, workspace_settings present, 1/1 index, 4/4 policies, accept_team_invite present, MISSING=[]; receipt comment posted on terminal#514; receipts contain no ref/token shapes. DISCLOSED on #514 (issuecomment-5592751149): the receipts' pre block shows every object already existed before this apply (to_regclass non-null), so this run was an idempotent confirmation, not the first application; first actor unknown"
+    result: "0014: apply_status 201, tables teams/team_members/team_invites present with RLS, 5/5 indexes, 8/8 policies, 3/3 functions, MISSING=[]; 0015: 201, workspace_settings present, 1/1 index, 4/4 policies, accept_team_invite present, MISSING=[]; receipt comment posted on terminal#514; receipts contain no ref/token shapes. DISCLOSED on #514 (issuecomment-5592751149): the receipts' pre block shows every object already existed before this apply (to_regclass non-null), so this run was an idempotent confirmation, not the first application. The first actor was the SUCCESSOR seat (session d640f3ef): its receipts on #514 at 22:24:47Z/22:25:03Z (applied 22:24:14Z and 22:24:42Z) are the receipts of record; the predecessor's later comments are edited as superseded"
   - claim: "Four concluded-green half-B macro PRs were squash-merged by hand at 19:35Z and are on origin/main: #6953 records T17 (be460cd7), #6961 B-A-F04-K1 docket (5dca9478), #6926 B-F09-6 commodity coverage matrix + policy chip (8e3bb1a4), #6919 B-F13-2 specs 057/058 (8ec42a8e)."
     command: "gh pr merge <n> --squash; gh pr list --state all --search '6953 6961 6963 6964 6965 6926 6919' --json number,state,mergeCommit; git cat-file -e origin/main:<a file from each PR>"
     result: "4 MERGED with the shas above; each PR's files present on origin/main b166c1f4. #6926 is code+templates: render.yml runs 34269887088 (8e3bb1a4) and 34269924888 (ad021359) were queued at 19:36Z; the successor confirms the covering render concludes success."
@@ -98,6 +98,12 @@ discoveries:
 ---
 
 # Meta-CEO B — seat transfer (2026-09-08 ~20:00Z)
+
+Successor bound at 22:14Z as harness session d640f3ef (macro#6819 issuecomment-5592587864). The
+predecessor stood down at 22:55Z after duplicating three of the successor's acts in the overlap
+(idempotent re-apply of 0014/0015, a second r4 ratification on #6981, a second #527 lane, killed);
+all are disclosed on the carriers. From here the successor owns every half-B act, including the
+merge of this record's own PR (macro#6995).
 
 Authority: the Chairman override of 2026-09-05/06 (memory record; the Meta-CEO charter is
 `research/MARKET_ONTOLOGY_META_CEO_CHARTER_2026_09_06.md`). The runner-pool discovery
