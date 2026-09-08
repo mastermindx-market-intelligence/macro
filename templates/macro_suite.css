@@ -164,7 +164,7 @@ code { font-family: var(--font-mono); font-size: 10.5px; word-break: break-all; 
 .mq-implication {
   padding: 14px 16px;
   border: 1px solid var(--mq-line);
-  border-radius: 12px;
+  border-radius: var(--r-card, 12px);
   background: var(--mq-raised);
   counter-increment: mq-imp;
 }

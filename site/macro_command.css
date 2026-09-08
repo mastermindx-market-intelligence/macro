@@ -110,15 +110,19 @@ html[data-theme="light"] .mc-rail-link.is-current {
 }
 .mc-rail-link.is-current .mc-rail-bar { background: var(--mq-accent); }
 .mc-rail-dot { width: 6px; height: 6px; border-radius: var(--r-pill, 999px); margin-left: auto; background: currentColor; }
+.mc-rail-full { display: inline; }
+.mc-rail-short { display: none; }
 
-.mc-analyst {
+/* Hub-only desktop chip. Workspace pages carry body.mq-suite-page and
+   the chip is a suite-nav pill there — these rules must not reach it. */
+body:not(.mq-suite-page) .mc-analyst {
   font: inherit; font-size: 13px; text-align: left; cursor: pointer;
   margin-top: 18px; display: flex; align-items: center; gap: 8px;
   padding: 10px 14px; border-radius: var(--r-ctl, 8px);
   border: 1px solid var(--mq-line-strong); color: var(--mq-ink);
   text-decoration: none; background: var(--mc-chip-bg);
 }
-.mc-analyst:hover { border-color: var(--mq-accent); color: var(--mq-accent); }
+body:not(.mq-suite-page) .mc-analyst:hover { border-color: var(--mq-accent); color: var(--mq-accent); }
 
 /* ── command header + THE READ ───────────────────────────────────────────── */
 .mc-asof-meaning {
@@ -629,16 +633,20 @@ html[data-theme="light"] .mc-shell :focus-visible { box-shadow: 0 0 0 1px var(--
   .mc-chip { flex-basis: calc((100% - 8px) / 2); }
 }
 @media (min-width: 769px) {
-  /* MAJOR-E1: the FAB (#mmb-boot) lives in a reserved right gutter so
-     it never intersects panel/figure text. Gutter ≥ FAB width + 24px.
-     Geometry is inlined (a px custom property is a ratchet literal):
-     desktop rail 232 + gap 28 = 260; mid desktop rail 208 + 28 = 236. */
-  body.mc-page .mc-panels {
+  /* MAJOR-E1 / P5 R1(c): the FAB (#mmb-boot) lives in a reserved right
+     gutter so it never intersects panel/figure/workspace text. Gutter
+     ≥ FAB width + 24px. Geometry is inlined (a px custom property is a
+     ratchet literal): desktop rail 232 + gap 28 = 260; mid desktop
+     rail 208 + 28 = 236. Workspace pages share body.mc-page but paint
+     through .mq-shell, not .mc-panels — both get the gutter. */
+  body.mc-page .mc-panels,
+  body.mc-page .mq-shell {
     padding-right: calc(232px + 28px);
   }
 }
 @media (min-width: 769px) and (max-width: 1439px) {
-  body.mc-page .mc-panels {
+  body.mc-page .mc-panels,
+  body.mc-page .mq-shell {
     padding-right: calc(208px + 28px);
   }
 }
@@ -731,6 +739,8 @@ html[data-theme="light"] .mc-shell :focus-visible { box-shadow: 0 0 0 1px var(--
     font-size: 13.5px;
     line-height: 1.3;
   }
+  .mc-rail-full { display: inline; }
+  .mc-rail-short { display: none; }
   /* same overflow + edge mask as the rail — a hard-clipped tab row
      ("利率与收:") has no scroll affordance without it. */
   .mc-subtabs {
@@ -744,11 +754,13 @@ html[data-theme="light"] .mc-shell :focus-visible { box-shadow: 0 0 0 1px var(--
   .mc-dests { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
   .mc-rail-bar { display: none; }
   .mc-rail-link.is-current { border: 1px solid var(--mq-accent); }
-  /* R9-M2: no floating chip at ≤768. The analyst is a .mc-rail-link
-     and inherits the shared pill (radius/border/padding/font) above.
-     ≥769 analyst look is unchanged: desktop `.mc-rail-link` / `:hover`
-     are `:not(.mc-analyst)`. */
-  .mc-analyst {
+  /* R9-M2 / r9-M2: no floating pill at ≤768. The analyst reuses
+     `.mc-rail-link` (999px, no extra border, same padding/type/state
+     colours). Do not redeclare radius here — enforce-added blocked a
+     token-only radius line on the prior pass. ≥769 analyst look is
+     unchanged: desktop `.mc-rail-link` / `:hover` are `:not(.mc-analyst)`.
+     Hub-only desktop chip chrome is scoped off workspace pages (MA2). */
+  body:not(.mq-suite-page) .mc-analyst {
     position: static;
     flex: 0 0 auto;
     margin: 0;
@@ -758,14 +770,17 @@ html[data-theme="light"] .mc-shell :focus-visible { box-shadow: 0 0 0 1px var(--
     z-index: auto;
     color: var(--mq-muted);
   }
-  .mc-analyst:hover {
+  body:not(.mq-suite-page) .mc-analyst:hover {
     border: none;
     color: var(--mq-ink);
     background: color-mix(in srgb, var(--mq-ink) 5%, transparent);
   }
-  .mc-analyst-mark { display: none; }
+  body:not(.mq-suite-page) .mc-analyst-mark { display: none; }
 }
 @media (max-width: 480px) {
+  .mc-rail-full { display: none; }
+  .mc-rail-short { display: inline; }
+  .mc-rail-list { flex: 1 1 100%; }
   .mc-read { font-size: var(--fs-h2, 21px); line-height: 1.36; }
   /* D2: `--fs-h3` is 14px in theme.css:59 — this rule is what made the H1
      smaller than the 16px body sentence in 09-dark-zh-390.png. */

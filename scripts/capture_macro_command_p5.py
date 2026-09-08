@@ -22,6 +22,14 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from scripts.capture_macro_command_p3 import (  # noqa: E402
+    RAIL_VIEWPORT_JS,
+    _device_px,
+    _device_px_span,
+    _measure_dpr,
+    _write_element_shot,
+)
+
 SITE = ROOT / "site"
 EVIDENCE = ROOT / "mockups" / "evidence" / "macro-command-p5"
 MANIFEST = EVIDENCE / "manifest.json"
@@ -170,67 +178,68 @@ def _open(*, browser, origin: str, path: str, theme: str, locale: str,
     return context, page, None
 
 
-def _assert_ihdr(path: Path, *, css_w: float, css_h: float,
-                 dpr: float = 2.0, slop: int = 0) -> tuple[int, int]:
-    pw, ph = _png_size(path)
-    expect_w = int(round(float(css_w) * dpr))
-    expect_h = int(round(float(css_h) * dpr))
-    if abs(pw - expect_w) > slop or abs(ph - expect_h) > slop:
-        raise RuntimeError(
-            f"{path.name} IHDR {pw}x{ph} != declared {css_w}x{css_h}×{dpr} "
-            f"({expect_w}x{expect_h}) slop={slop}")
-    return pw, ph
-
-
 def _viewport_shot(dest: Path, page, *, width: int, height: int,
-                   dpr: float = 2.0, full_page: bool = False) -> dict[str, Any]:
+                   full_page: bool = False) -> dict[str, Any]:
+    dpr = _measure_dpr(page)
     page.screenshot(path=str(dest), type="png", full_page=full_page)
     png = dest.read_bytes()
     if png[:8] != b"\x89PNG\r\n\x1a\n" or b"IEND" not in png:
         raise RuntimeError(f"{dest.name} is not a finished PNG")
+    pw, ph = _png_size(dest)
     if full_page:
-        pw, ph = _png_size(dest)
-        expect_w = int(round(width * dpr))
+        expect_w = _device_px(0.0, float(width), dpr)
         if pw != expect_w:
             raise RuntimeError(
-                f"{dest.name} IHDR width {pw} != declared {width}×{dpr}")
+                f"{dest.name} IHDR width {pw} != _device_px(0,{width},{dpr})={expect_w}")
     else:
-        pw, ph = _assert_ihdr(dest, css_w=width, css_h=height, dpr=dpr)
+        expect_w = _device_px(0.0, float(width), dpr)
+        expect_h = _device_px(0.0, float(height), dpr)
+        if (pw, ph) != (expect_w, expect_h):
+            raise RuntimeError(
+                f"{dest.name} IHDR {pw}x{ph} != _device_px {expect_w}x{expect_h} "
+                f"dpr={dpr}")
     return {
         "bytes": len(png),
         "sha256": hashlib.sha256(png).hexdigest(),
         "width": pw,
         "height": ph,
         "crop_box": None,
+        "crop_selector": None,
+        "dpr": dpr,
         "full_page": full_page,
+        "device_px_span": _device_px_span(
+            {"x": 0.0, "y": 0.0, "width": float(width),
+             "height": float(height if not full_page else ph / dpr)},
+            dpr),
     }
 
 
-def _shot(dest: Path, locator, *, dpr: float = 2.0,
-          declared_css: tuple[float, float] | None = None,
-          crop_box: dict[str, float] | None = None,
-          full_page: bool = False) -> dict[str, Any]:
-    box = locator.bounding_box()
-    locator.screenshot(path=str(dest), type="png")
+def _shot(dest: Path, page, locator, *, selector: str,
+          locale: str = "en") -> dict[str, Any]:
+    """Element shot via P3 v15 `_write_element_shot` — fields at shot time."""
+    extra: dict[str, Any] = {
+        "dpr": _measure_dpr(page),
+        "crop": True,
+        "full_page": False,
+        "crop_selector": selector,
+        "fixture": "builder-payload",
+        "locale": locale,
+    }
+    _write_element_shot(page, dest, locator, extra, locale)
     png = dest.read_bytes()
     if png[:8] != b"\x89PNG\r\n\x1a\n" or b"IEND" not in png:
         raise RuntimeError(f"{dest.name} is not a finished PNG")
-    if box and crop_box is None:
-        crop_box = {key: float(box[key]) for key in ("x", "y", "width", "height")}
-    if declared_css is None and box:
-        declared_css = (float(box["width"]), float(box["height"]))
     pw, ph = _png_size(dest)
-    if declared_css is not None:
-        pw, ph = _assert_ihdr(
-            dest, css_w=declared_css[0], css_h=declared_css[1], dpr=dpr,
-            slop=4 if box else 0)
     return {
         "bytes": len(png),
         "sha256": hashlib.sha256(png).hexdigest(),
         "width": pw,
         "height": ph,
-        "crop_box": crop_box,
-        "full_page": full_page,
+        "crop_box": extra.get("crop_box"),
+        "crop_selector": extra.get("crop_selector"),
+        "dpr": extra["dpr"],
+        "full_page": False,
+        "device_px_span": extra.get("device_px_span"),
     }
 
 
@@ -241,14 +250,18 @@ def _state(filename: str, theme: str, locale: str, viewport: str,
            selector: str | None = None, dpr: float = 2.0,
            viewport_height: int | None = None,
            trigger: str | None = None) -> dict[str, Any]:
+    measured_dpr = float(info.get("dpr") or dpr)
     ihdr_w = int(info["width"])
     ihdr_h = int(info["height"])
-    css_w = ihdr_w / float(dpr)
+    css_w = ihdr_w / measured_dpr
     is_crop = bool(crop or info.get("crop_box"))
     declared = int(round(css_w)) if is_crop else int(viewport_width)
-    crop_selector = selector if is_crop else None
-    if is_crop and not crop_selector:
-        crop_selector = "#mc-p5-frame"
+    crop_selector = info.get("crop_selector") if is_crop else None
+    if is_crop:
+        crop_selector = crop_selector or selector
+        if not crop_selector:
+            raise RuntimeError(
+                f"{filename}: crop:true missing crop_selector at shot time")
     return {
         "access": "anonymous",
         "applied_locale": locale,
@@ -269,12 +282,13 @@ def _state(filename: str, theme: str, locale: str, viewport: str,
             viewport_height if viewport_height is not None
             else (2200 if viewport == "desktop" else 844)
         ),
-        "dpr": dpr,
+        "dpr": measured_dpr,
         "crop": is_crop,
         "crop_selector": crop_selector,
         "crop_box": info.get("crop_box") if is_crop else None,
         "selector": selector,
         "full_page": bool(info.get("full_page")),
+        "device_px_span": info.get("device_px_span"),
         "verified_how": verified_how,
         "fixture": fixture if isinstance(fixture, str) else "builder-payload",
         "trigger": trigger,
@@ -339,11 +353,22 @@ def _copy_probe(page, needles: tuple[str, ...]) -> dict[str, Any]:
     return {"ok": copy_probe_ok(rows), "rows": rows}
 
 
-_CLEARANCE_JS = """(el, arg) => {
+_CLEARANCE_JS = """async (el, arg) => {
+    /* R1: HIT is document geometry after a per-station re-measure.
+       scrollTo + read-back + settle (two rAF + fonts.ready), then
+       maxScrollAtCheck and the CURRENT occluder box. Bound is
+       0 <= exposedAtScrollY <= maxScrollAtCheck. A past-max that
+       disappears under the re-measure was never a hit. Nested sticky
+       chips whose box lies inside another top-chrome box merge into
+       the parent (union, parent's ovBottom, mergedInto: "rail"). */
     const position = Number(arg.position);
     const vw = window.innerWidth, vh = window.innerHeight;
     const overlap = (a, b) => !(a.right <= b.left || a.left >= b.right
         || a.bottom <= b.top || a.top >= b.bottom);
+    const boxInside = (inner, outer) => inner.top >= outer.top - 0.5
+        && inner.bottom <= outer.bottom + 0.5
+        && inner.left >= outer.left - 0.5
+        && inner.right <= outer.right + 0.5;
     const clipView = (r) => {
         const left = Math.max(r.left, 0), right = Math.min(r.right, vw);
         const top = Math.max(r.top, 0), bottom = Math.min(r.bottom, vh);
@@ -380,13 +405,29 @@ _CLEARANCE_JS = """(el, arg) => {
     };
     const isTopChrome = (box) => box.top >= -2 && box.top <= 90 && box.bottom <= 240;
     const isBottomChrome = (box) => box.bottom >= vh - 8 && box.top > vh * 0.55;
-    const maxY = Math.max(0,
-        document.documentElement.scrollHeight - window.innerHeight);
-    const target = position >= 1 ? maxY : maxY * position;
-    window.scrollTo(0, target);
-    const reached = window.scrollY || document.documentElement.scrollTop || 0;
-    const scrollMatched = Math.abs(reached - target) < 2;
-    const maxScrollMatched = Math.abs(reached - maxY) < 2;
+    const scrolling = document.scrollingElement || document.documentElement;
+    const settle = async () => {
+        await new Promise((resolve) => {
+            requestAnimationFrame(() => requestAnimationFrame(resolve));
+        });
+        if (document.fonts && document.fonts.ready) await document.fonts.ready;
+    };
+    const measureMax = () => Math.max(0, scrolling.scrollHeight - window.innerHeight);
+    const firstMax = measureMax();
+    const want = position >= 1 ? firstMax : firstMax * position;
+    window.scrollTo(0, want);
+    await settle();
+    let reached = window.scrollY || document.documentElement.scrollTop || 0;
+    let maxScrollAtCheck = measureMax();
+    if (position >= 1 && Math.abs(reached - maxScrollAtCheck) >= 2) {
+        window.scrollTo(0, maxScrollAtCheck);
+        await settle();
+        reached = window.scrollY || document.documentElement.scrollTop || 0;
+        maxScrollAtCheck = measureMax();
+    }
+    const scrollMatched = Math.abs(reached - (position >= 1
+        ? maxScrollAtCheck : want)) < 2;
+    const maxScrollMatched = Math.abs(reached - maxScrollAtCheck) < 2;
     const roots = Array.from(document.querySelectorAll('*')).filter(node => {
         const cs = getComputedStyle(node);
         const r = node.getBoundingClientRect();
@@ -406,8 +447,26 @@ _CLEARANCE_JS = """(el, arg) => {
             id: node.id || String(node.className || ''),
             position: getComputedStyle(node).position,
             boxes,
+            mergedInto: null,
+            skipIndependent: false,
             ...elBox(node),
         });
+    }
+    const topChrome = occluders.filter((f) => isTopChrome(f));
+    for (const child of topChrome) {
+        const parent = topChrome.find((p) => p !== child && (
+            p.el.contains(child.el) || boxInside(child, p)));
+        if (!parent) continue;
+        parent.left = Math.min(parent.left, child.left);
+        parent.right = Math.max(parent.right, child.right);
+        parent.top = Math.min(parent.top, child.top);
+        parent.bottom = Math.max(parent.bottom, child.bottom);
+        parent.w = parent.right - parent.left;
+        parent.h = parent.bottom - parent.top;
+        const parentName = String(parent.id || parent.cls || '');
+        child.mergedInto = /rail|suitenav/i.test(parentName) ? 'rail' : (
+            parentName.split(/\\s+/)[0] || 'rail');
+        child.skipIndependent = true;
     }
     const root = document.querySelector('.mc-panels, .mq-body, main, .mc-shell, .mq-shell')
         || document.body;
@@ -429,24 +488,31 @@ _CLEARANCE_JS = """(el, arg) => {
         && text.bottom <= ov.bottom + 0.5
         && text.left >= ov.left - 0.5
         && text.right <= ov.right + 0.5;
-    /* A top-stuck full cover is a hit only when document geometry says the
-       text can never clear the stuck box (exposedAtScrollY < 0). */
     const occluderName = (f) => {
         const raw = String(f.id || f.cls || 'occluder').trim();
         return raw.split(/\\s+/)[0] || 'occluder';
     };
     const hits = [];
     const scrollUnder = [];
+    const excuseFields = (rec, docTop, ovBottom) => {
+        rec.docTop = docTop;
+        rec.ovBottom = ovBottom;
+        rec.exposedAtScrollY = docTop - ovBottom;
+        rec.maxScrollAtCheck = maxScrollAtCheck;
+        return rec;
+    };
     for (const t of texts) {
         const tv = clipView(t);
         if (!tv) continue;
         for (const f of occluders) {
+            if (f.skipIndependent) continue;
             if (f.el.contains(t.node)) continue;
             for (const box of f.boxes) {
                 const bv = clipView(box);
                 if (!bv || !overlap(tv, bv)) continue;
                 const rec = {text: t.text, occluder: f.id,
                              occluder_position: f.position,
+                             mergedInto: f.mergedInto,
                              box: {top: t.top, left: t.left, right: t.right,
                                    bottom: t.bottom},
                              ovBox: {top: box.top, left: box.left,
@@ -458,12 +524,10 @@ _CLEARANCE_JS = """(el, arg) => {
                     hits.push(rec);
                 } else if (isTopChrome(f) && fullyCovered(t, box)) {
                     const docTop = t.top + reached;
-                    const ovHeight = box.h;
-                    const exposedAtScrollY = docTop - ovHeight;
-                    rec.docTop = docTop;
-                    rec.ovHeight = ovHeight;
-                    rec.exposedAtScrollY = exposedAtScrollY;
-                    if (exposedAtScrollY < 0 || exposedAtScrollY > maxY) {
+                    const ovBottom = box.bottom;
+                    excuseFields(rec, docTop, ovBottom);
+                    if (rec.exposedAtScrollY < 0
+                            || rec.exposedAtScrollY > maxScrollAtCheck) {
                         rec.reason = 'top-chrome-full-cover-unexposable';
                         hits.push(rec);
                     } else {
@@ -471,6 +535,8 @@ _CLEARANCE_JS = """(el, arg) => {
                         scrollUnder.push(rec);
                     }
                 } else if (isTopChrome(f)) {
+                    const docTop = t.top + reached;
+                    excuseFields(rec, docTop, box.bottom);
                     rec.reason = name + '_partially_covered';
                     scrollUnder.push(rec);
                 } else {
@@ -490,7 +556,9 @@ _CLEARANCE_JS = """(el, arg) => {
         '.mc-arrival, .mc-watch, .mc-primer, .mq-callout, .mc-callout'))
         .map(elBox);
     let analystHits = [];
-    if (analystView) {
+    const analystMerged = occluders.some(
+        (f) => f.el === analyst && f.skipIndependent);
+    if (analystView && !analystMerged) {
         const sv = stanceBox ? clipView(stanceBox) : null;
         if (sv && overlap(sv, analystView)) analystHits.push({kind: 'stance'});
         for (const c of callouts) {
@@ -523,8 +591,9 @@ _CLEARANCE_JS = """(el, arg) => {
         position,
         width,
         scrollReached: reached,
-        scrollTarget: target,
-        maxScroll: maxY,
+        scrollTarget: want,
+        maxScroll: maxScrollAtCheck,
+        maxScrollAtCheck,
         scrollMatched,
         maxScrollMatched: atMax ? maxScrollMatched : null,
         occluders: occluders.map(({el, boxes, ...rest}) => ({
@@ -547,45 +616,45 @@ _CLEARANCE_JS = """(el, arg) => {
 }"""
 
 
-def classify_top_chrome_cover(*, doc_top: float, ov_height: float,
-                              max_scroll: float) -> dict[str, Any]:
-    """Document-geometry excuse for a top-stuck full cover.
+def classify_top_chrome_cover(*, doc_top: float, ov_bottom: float,
+                              max_scroll_at_check: float) -> dict[str, Any]:
+    """R1: exposedAtScrollY = docTop − ovBottom against the re-measured max.
 
-    exposedAtScrollY = docTop - ovHeight. Negative means the text can never
-    clear the stuck box (hit at every station). Otherwise the cover is
-    excused only when 0 <= exposedAtScrollY <= maxScroll.
+    A TOP-stuck full cover is a hit only when exposedAtScrollY < 0 (never
+    exposable) or when it is still past maxScrollAtCheck AFTER the
+    per-station re-measure. A stale maxScroll that made exposed look
+    past-max is not a hit.
     """
-    exposed = float(doc_top) - float(ov_height)
-    max_scroll = float(max_scroll)
-    if exposed < 0 or exposed > max_scroll:
-        return {
-            "hit": True,
-            "reason": "top-chrome-full-cover-unexposable",
-            "docTop": float(doc_top),
-            "ovHeight": float(ov_height),
-            "exposedAtScrollY": exposed,
-        }
-    return {
-        "hit": False,
-        "reason": "fully_covered",
+    exposed = float(doc_top) - float(ov_bottom)
+    max_at = float(max_scroll_at_check)
+    payload = {
         "docTop": float(doc_top),
-        "ovHeight": float(ov_height),
+        "ovBottom": float(ov_bottom),
         "exposedAtScrollY": exposed,
+        "maxScrollAtCheck": max_at,
     }
+    if exposed < 0 or exposed > max_at:
+        return {"hit": True, "reason": "top-chrome-full-cover-unexposable",
+                **payload}
+    return {"hit": False, "reason": "fully_covered", **payload}
 
 
 def _assert_excused_full_covers(row: Mapping[str, Any]) -> None:
-    max_scroll = float(row.get("maxScroll") or 0)
+    max_at = float(row.get("maxScrollAtCheck") or row.get("maxScroll") or 0)
     for rec in row.get("scroll_under_top_chrome") or []:
         reason = str(rec.get("reason") or "")
-        if not reason.endswith("_fully_covered"):
+        if not reason.endswith("_covered"):
             continue
+        for key in ("docTop", "ovBottom", "exposedAtScrollY",
+                    "maxScrollAtCheck"):
+            if key not in rec:
+                raise RuntimeError(f"excused {reason} missing {key}: {rec}")
         result = classify_top_chrome_cover(
             doc_top=float(rec["docTop"]),
-            ov_height=float(rec["ovHeight"]),
-            max_scroll=max_scroll,
+            ov_bottom=float(rec["ovBottom"]),
+            max_scroll_at_check=float(rec.get("maxScrollAtCheck") or max_at),
         )
-        if result["hit"]:
+        if reason.endswith("_fully_covered") and result["hit"]:
             raise RuntimeError(
                 f"excused full cover is not exposable: {rec} -> {result}")
 
@@ -621,12 +690,15 @@ def _clearance_probe(locator, *, position: float) -> dict[str, Any]:
 
 
 _CHIP_MATERIAL_JS = """() => {
-    const chip = document.querySelector('.mq-suitenav .mc-analyst');
-    if (!chip) return {ok: false, reason: 'no workspace chip'};
+    const chip = document.querySelector('.mc-analyst');
+    if (!chip) return {ok: false, reason: 'no analyst chip'};
     const item = chip.closest('li');
-    const prev = item && item.previousElementSibling
-        ? item.previousElementSibling.querySelector('.mq-suitenav-pill')
-        : null;
+    const prev = (item && item.previousElementSibling
+        ? item.previousElementSibling.querySelector(
+            '.mq-suitenav-pill, .mc-rail-link')
+        : null)
+        || document.querySelector('.mq-suitenav-pill:not(.mc-analyst)')
+        || document.querySelector('.mc-rail-link:not(.mc-analyst)');
     if (!prev) return {ok: false, reason: 'no previous sibling pill'};
     const keys = ['borderRadius', 'borderColor', 'minHeight', 'padding',
                   'fontSize', 'marginTop'];
@@ -640,6 +712,57 @@ _CHIP_MATERIAL_JS = """() => {
     }
     return {ok, props};
 }"""
+
+WORKSPACE_RAIL_VIEWPORT_JS = """() => {
+  const list = document.querySelector('.mq-suitenav-rail')
+    || document.querySelector('.mq-tabbar');
+  const analyst = document.querySelector('.mc-analyst');
+  const content = [...document.querySelectorAll(
+    '.mq-suitenav-pill:not(.mc-analyst), .mq-tab')];
+  if (!list || !content.length) {
+    return {ok: false, reason: 'missing workspace rail/tab strip'};
+  }
+  const fadeMin = 24;
+  const listCs = getComputedStyle(list);
+  const maskImage = listCs.maskImage;
+  const webkitMaskImage = listCs.webkitMaskImage;
+  const maskRaw = (webkitMaskImage && webkitMaskImage !== 'none')
+    ? webkitMaskImage : (maskImage || 'none');
+  const maskOk = maskRaw !== 'none' && maskRaw !== '';
+  const maxScrollLeft = Math.max(0, list.scrollWidth - list.clientWidth);
+  const parseFadeWidth = (raw, listWidth) => {
+    const text = String(raw || '').trim();
+    if (!text || text === 'none') return 0;
+    const calc = [...text.matchAll(/calc\\(\\s*100%\\s*-\\s*([\\d.]+)px\\s*\\)/g)];
+    if (calc.length) return Number(calc[calc.length - 1][1]);
+    const stops = [...text.matchAll(/(-?[\\d.]+)%/g)].map((m) => Number(m[1]));
+    const opaque = stops.filter((p) => p < 100);
+    if (opaque.length) return (opaque[opaque.length - 1] / 100) * listWidth;
+    return 0;
+  };
+  const listBox = list.getBoundingClientRect();
+  const fadeWidth = parseFadeWidth(maskRaw, listBox.width);
+  const analystBox = analyst ? analyst.getBoundingClientRect() : null;
+  return {
+    ok: maskOk && fadeWidth >= fadeMin - 0.5,
+    maskOk,
+    maskRaw,
+    fadeWidth,
+    maxScrollLeft,
+    listOverflowX: listCs.overflowX,
+    analystPresent: Boolean(analyst),
+    analystLeft: analystBox ? analystBox.left : null,
+    tabCount: content.length,
+  };
+}"""
+
+
+def e5_applicability_for_html(html: str) -> dict[str, Any]:
+    """R2: E5 is a page state only when the page can enter it."""
+    return {
+        "fragments": "data-mc-fragments" in html,
+        "template": "data-mc-empty-e5" in html,
+    }
 
 
 def _chip_material_probe(target) -> dict[str, Any]:
@@ -740,6 +863,13 @@ def declared_cells() -> list[str]:
             cells.append(f"ws-{slug}-closed-{theme}-{locale}-1440.png")
             cells.append(f"ws-{slug}-{theme}-{locale}-390.png")
             cells.append(f"ws-{slug}-{theme}-{locale}-768.png")
+    # Hub can enter E5 (fragment timeout). Workspace pages cannot.
+    for theme, locale in (
+        ("dark", "en"), ("dark", "zh"),
+        ("light", "en"), ("light", "zh"),
+    ):
+        for width in (1440, 390, 768):
+            cells.append(f"e5-{theme}-{locale}-{width}.png")
     return cells
 
 
@@ -884,7 +1014,9 @@ def main() -> int:
                 primer = page.locator("section#rates details.mc-primer")
                 if primer.count():
                     primer.first.evaluate("el => { el.open = true; }")
-                info = _shot(EVIDENCE / name, page.locator("section#rates"))
+                info = _shot(
+                    EVIDENCE / name, page, page.locator("section#rates"),
+                    selector="section#rates", locale=locale)
                 states.append(_state(
                     name, theme, locale, "desktop", info, viewport_width=1440,
                     verified_how="clip section#rates; primer forced open; details closed",
@@ -904,10 +1036,13 @@ def main() -> int:
                     path="/macro_monetary.html", theme=theme, locale=locale,
                     width=1440, height=900, iframe_width=390)
                 frame.locator(".mc-read").wait_for(timeout=15000)
-                info = _shot(EVIDENCE / name, page.locator("#mc-p5-frame"))
+                info = _shot(
+                    EVIDENCE / name, page, page.locator("#mc-p5-frame"),
+                    selector="#mc-p5-frame", locale=locale)
                 states.append(_state(
                     name, theme, locale, "mobile", info, viewport_width=390,
                     verified_how="390 CSS-wide iframe harness; crop to iframe content box",
+                    crop=True, selector="#mc-p5-frame",
                 ))
                 ctx.close()
 
@@ -925,11 +1060,14 @@ def main() -> int:
                     width=1440, height=1100, iframe_width=768,
                     caption="/macro_monetary.html#credit/funding")
                 frame.locator("section#credit").wait_for(timeout=15000)
-                info = _shot(EVIDENCE / name, page.locator("#mc-p5-frame"))
+                info = _shot(
+                    EVIDENCE / name, page, page.locator("#mc-p5-frame"),
+                    selector="#mc-p5-frame", locale=locale)
                 states.append(_state(
                     name, theme, locale, "tablet", info, viewport_width=768,
                     viewport_height=844,
                     verified_how="768 iframe crop of #mc-p5-frame; #credit/funding caption",
+                    crop=True, selector="#mc-p5-frame",
                     force_state="tablet_768",
                 ))
                 ctx.close()
@@ -945,7 +1083,9 @@ def main() -> int:
                 page.wait_for_selector(".mq-implication-text", timeout=15000)
                 _open_ribbon_details(page)
                 probes[f"copy_{n}"] = _copy_probe(page, _relocated_needles(locale))
-                info = _shot(EVIDENCE / name, page.locator(".mq-ribbon"))
+                info = _shot(
+                    EVIDENCE / name, page, page.locator(".mq-ribbon"),
+                    selector=".mq-ribbon", locale=locale)
                 ws_states["macro_rates_curves.html"].append(_state(
                     name, theme, locale, "desktop", info, viewport_width=1440,
                     verified_how="macro_rates_curves relocated implication details.open; §5 strings readable",
@@ -969,7 +1109,9 @@ def main() -> int:
                 styles = _topic_styles(page)
                 style_rows[n] = styles
                 topic = page.locator(".mc-read-topic").first
-                info = _shot(EVIDENCE / name, topic)
+                info = _shot(
+                    EVIDENCE / name, page, topic,
+                    selector=".mc-read-topic", locale=locale)
                 states.append(_state(
                     name, theme, locale, "desktop", info, viewport_width=1440,
                     verified_how="element clip of the same .mc-read-topic; computed style in probes.json",
@@ -1027,22 +1169,27 @@ def main() -> int:
                             "page": page_name,
                         }
                         probes[key] = row
+                        if width == 1440:
+                            probes[f"clearance_1440_{slug}_{theme}_{locale}"] = row
                         clearance_ok = clearance_ok and row["ok"]
                         i2_ok = i2_ok and bool(i2.get("ok"))
-                        if page_name in WORKSPACE_PAGES:
-                            host = frame.locator("html") if frame is not None else page
-                            probes[f"chip_material_{slug}_{theme}_{width}"] = (
-                                _chip_material_probe(host))
+                        host = frame.locator("html") if frame is not None else page
+                        probes[f"chip_material_{slug}_{theme}_{width}"] = (
+                            _chip_material_probe(host))
                         if width != 1440:
                             i2_name = f"i2-{slug}-{theme}-{locale}-{width}.png"
                             print(f"capture {i2_name}", flush=True)
-                            info = _shot(EVIDENCE / i2_name, page.locator("#mc-p5-frame"))
+                            info = _shot(
+                                EVIDENCE / i2_name, page,
+                                page.locator("#mc-p5-frame"),
+                                selector="#mc-p5-frame", locale=locale)
                             dest_states = states if page_name == "macro_monetary.html" else ws_states[page_name]
                             dest_states.append(_state(
                                 i2_name, theme, locale,
                                 "mobile" if width == 390 else "tablet", info,
                                 viewport_width=width,
                                 verified_how=f"{page_name} {width} iframe; clearance at 0 / 50% / max",
+                                crop=True, selector="#mc-p5-frame",
                                 force_state="clearance_i2",
                             ))
                         ctx.close()
@@ -1068,58 +1215,80 @@ def main() -> int:
                             page.frame_locator("#mc-p5-frame"))
                         ctx.close()
 
-            # E5 via the product's 8000 ms timeout on every hub cell;
-            # workspace pages have no fragment fetch — recorded as a gap.
-            for page_name in clear_pages:
-                for theme, locale in (
-                    ("dark", "en"), ("dark", "zh"),
-                    ("light", "en"), ("light", "zh"),
+            # R2: E5 only on pages that can enter it. Workspace pages
+            # carry neither data-mc-fragments nor template[data-mc-empty-e5]
+            # — they are not declared, not photographed, not gapped.
+            probes["e5_applicability"] = {
+                name: e5_applicability_for_html(
+                    (SITE / name).read_text(encoding="utf-8")
+                    if (SITE / name).is_file() else "")
+                for name in clear_pages
+            }
+            for theme, locale in (
+                ("dark", "en"), ("dark", "zh"),
+                ("light", "en"), ("light", "zh"),
+            ):
+                for width, viewport in (
+                    (1440, "desktop"), (390, "mobile"), (768, "tablet"),
                 ):
-                    for width, viewport in (
-                        (1440, "desktop"), (390, "mobile"), (768, "tablet"),
+                    key = f"e5_timeout_macro_monetary_{theme}_{locale}_{width}"
+                    print(f"probe {key}", flush=True)
+                    if width == 1440:
+                        ctx, page, _ = _open(
+                            browser=browser, origin=origin,
+                            path="/macro_monetary.html#rates",
+                            theme=theme, locale=locale,
+                            width=1440, height=900)
+                    else:
+                        ctx, page, _frame = _open(
+                            browser=browser, origin=origin,
+                            path="/macro_monetary.html#rates",
+                            theme=theme, locale=locale,
+                            width=1440, height=900, iframe_width=width)
+                    probes[key] = _run_e5_timeout(page, context=ctx)
+                    if probes[key].get("ok"):
+                        shot = f"e5-{theme}-{locale}-{width}.png"
+                        if width == 1440:
+                            info = _viewport_shot(
+                                EVIDENCE / shot, page, width=1440, height=900)
+                        else:
+                            info = _shot(
+                                EVIDENCE / shot, page,
+                                page.locator("#mc-p5-frame"),
+                                selector="#mc-p5-frame", locale=locale)
+                        states.append(_state(
+                            shot, theme, locale, viewport, info,
+                            viewport_width=width, viewport_height=900,
+                            verified_how="E5 cloned after stalled fragment ≥8000ms",
+                            force_state="empty-e5",
+                            crop=width != 1440,
+                            selector="#mc-p5-frame" if width != 1440 else None,
+                        ))
+                    ctx.close()
+
+            # Rail-viewport: hub uses P3's parsed-mask probe; workspace
+            # measures the suite-nav rail / tab strip at 390 and 768.
+            for page_name in clear_pages:
+                for width in (390, 768):
+                    for theme, locale in (
+                        ("dark", "en"), ("dark", "zh"),
+                        ("light", "en"), ("light", "zh"),
                     ):
                         slug = page_name.replace(".html", "")
-                        key = f"e5_timeout_{slug}_{theme}_{locale}_{width}"
+                        key = f"rail_viewport_{slug}_{theme}_{locale}_{width}"
                         print(f"probe {key}", flush=True)
-                        if page_name != "macro_monetary.html":
-                            probes[key] = {
-                                "ok": False,
-                                "reason": "no template[data-mc-empty-e5]; E5 is hub fragment-timeout only",
-                                "elapsedMs": 0,
-                                "clonePresent": False,
-                            }
-                            gaps.append(
-                                f"{key}: workspace pages have no fragment fetch")
-                            continue
-                        if width == 1440:
-                            ctx, page, _ = _open(
-                                browser=browser, origin=origin,
-                                path="/macro_monetary.html#rates",
-                                theme=theme, locale=locale,
-                                width=1440, height=900)
+                        ctx, page, frame = _open(
+                            browser=browser, origin=origin,
+                            path=f"/{page_name}", theme=theme, locale=locale,
+                            width=1440, height=900, iframe_width=width)
+                        host = frame.locator("html")
+                        if page_name == "macro_monetary.html":
+                            host.locator(".mc-rail-list").wait_for(timeout=15000)
+                            probes[key] = host.evaluate(RAIL_VIEWPORT_JS)
                         else:
-                            ctx, page, _frame = _open(
-                                browser=browser, origin=origin,
-                                path="/macro_monetary.html#rates",
-                                theme=theme, locale=locale,
-                                width=1440, height=900, iframe_width=width)
-                        probes[key] = _run_e5_timeout(page, context=ctx)
-                        if probes[key].get("ok"):
-                            shot = f"e5-{theme}-{locale}-{width}.png"
-                            if width == 1440:
-                                info = _viewport_shot(
-                                    EVIDENCE / shot, page, width=1440, height=900)
-                            else:
-                                info = _shot(
-                                    EVIDENCE / shot, page.locator("#mc-p5-frame"))
-                            states.append(_state(
-                                shot, theme, locale, viewport, info,
-                                viewport_width=width, viewport_height=900,
-                                verified_how="E5 cloned after stalled fragment ≥8000ms",
-                                force_state="empty-e5",
-                                crop=width != 1440,
-                                selector="#mc-p5-frame" if width != 1440 else None,
-                            ))
+                            host.locator(".mq-suitenav-rail, .mq-tabbar").first.wait_for(
+                                timeout=15000)
+                            probes[key] = host.evaluate(WORKSPACE_RAIL_VIEWPORT_JS)
                         ctx.close()
 
             # 18–19 half-null fixture (read.omitted + null chips + E2 + E6)
@@ -1229,7 +1398,9 @@ def main() -> int:
                         gaps.append(f"Frame {name}: {reason}")
                     else:
                         if width == 390:
-                            info = _shot(dest, page.locator("#mc-p5-frame"))
+                            info = _shot(
+                                dest, page, page.locator("#mc-p5-frame"),
+                                selector="#mc-p5-frame", locale=locale)
                         else:
                             info = _viewport_shot(
                                 dest, page, width=1440, height=2800)
@@ -1238,6 +1409,7 @@ def main() -> int:
                             viewport_width=width,
                             verified_how="in-memory half-null: read.omitted + ≥2 null chips + E2 housing + E6 credit",
                             fixture=True, force_state="half-null",
+                            crop=width == 390, selector="#mc-p5-frame" if width == 390 else None,
                             trigger="in-memory: housing SOURCE_FAILED + capital_structure entitlement=Research",
                         ))
                         half_ok = True
@@ -1289,7 +1461,9 @@ def main() -> int:
                             if details.count():
                                 details.first.evaluate("el => { el.open = true; }")
                         if mode == "open":
-                            info = _shot(EVIDENCE / name, block)
+                            info = _shot(
+                                EVIDENCE / name, page, block,
+                                selector=".mq-ribbon", locale=locale)
                             ws_states[page_name].append(_state(
                                 name, theme, locale, "desktop", info,
                                 viewport_width=1440,
@@ -1327,10 +1501,13 @@ def main() -> int:
                             details = frame.locator(".mq-implication .mc-details")
                             if details.count():
                                 details.first.evaluate("el => { el.open = true; }")
-                        info = _shot(EVIDENCE / name, page.locator("#mc-p5-frame"))
+                        info = _shot(
+                            EVIDENCE / name, page, page.locator("#mc-p5-frame"),
+                            selector="#mc-p5-frame", locale=locale)
                         ws_states[page_name].append(_state(
                             name, theme, locale, "mobile", info, viewport_width=390,
                             verified_how=f"{page_name} 390 iframe; details {mode}",
+                            crop=True, selector="#mc-p5-frame",
                             force_state="details_open" if mode == "open" else None,
                         ))
                         ctx.close()
@@ -1349,11 +1526,14 @@ def main() -> int:
                         width=1440, height=1100, iframe_width=768)
                     frame.locator(".mq-implication-text").first.wait_for(
                         timeout=15000)
-                    info = _shot(EVIDENCE / name, page.locator("#mc-p5-frame"))
+                    info = _shot(
+                        EVIDENCE / name, page, page.locator("#mc-p5-frame"),
+                        selector="#mc-p5-frame", locale=locale)
                     ws_states[page_name].append(_state(
                         name, theme, locale, "tablet", info, viewport_width=768,
                         viewport_height=844,
                         verified_how=f"{page_name} 768 iframe; first screen",
+                        crop=True, selector="#mc-p5-frame",
                         force_state="tablet_768",
                     ))
                     ctx.close()

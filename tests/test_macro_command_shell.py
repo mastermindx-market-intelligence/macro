@@ -472,16 +472,17 @@ def test_desktop_rail_link_rules_exclude_analyst(
 
 
 def test_ge769_panels_reserve_fab_gutter(macro_command_css: str) -> None:
-    """MAJOR-E1: ≥769 .mc-panels padding-right is inlined rail + gap
-    (232+28 desktop; 208+28 mid). A `--mc-rail-w` custom property is a
-    ratchet literal after the P1 heal."""
+    """MAJOR-E1 / P5 R1(c): ≥769 gutter is inlined rail + gap on both
+    .mc-panels (hub) and .mq-shell (workspace). A `--mc-rail-w` custom
+    property is a ratchet literal after the P1 heal."""
     assert re.search(
-        r'@media \(min-width: 769px\) \{[^}]*body\.mc-page\s+\.mc-panels\s*\{[^}]*'
+        r'@media \(min-width: 769px\) \{[^}]*body\.mc-page\s+\.mc-panels,\s*'
+        r'body\.mc-page\s+\.mq-shell\s*\{[^}]*'
         r'padding-right:\s*calc\(232px \+ 28px\)',
         macro_command_css, re.S)
     assert re.search(
         r'@media \(min-width: 769px\) and \(max-width: 1439px\) \{[^}]*'
-        r'body\.mc-page\s+\.mc-panels\s*\{[^}]*'
+        r'body\.mc-page\s+\.mc-panels,\s*body\.mc-page\s+\.mq-shell\s*\{[^}]*'
         r'padding-right:\s*calc\(208px \+ 28px\)',
         macro_command_css, re.S)
     assert "--mc-rail-w" not in macro_command_css

@@ -315,7 +315,6 @@ def test_row_62_footer_uses_the_exact_plain_strings(built_hub: str) -> None:
     assert "本页展示各工作区已发布的内容。它不产生自己的评分，也不做自己的排序。" in built_hub
     assert "never tells you what to do" not in built_hub
     assert "It produces no score and no ordering of its own" not in built_hub
->>>>>>> b5110b24fa45 (Macro Command P5: copy-law sweep, analyst wiring, evidence matrix)
 
 
 def test_guard_script_exits_zero_on_the_real_built_page(built_hub: str, tmp_path: Path) -> None:
@@ -605,9 +604,12 @@ def test_clearance_probe_js_binds_locator_element_then_arg() -> None:
     """Playwright locator.evaluate calls fn(element, arg). A one-arg
     function reads the HTMLElement and scores ok on zero text nodes."""
     from scripts.capture_macro_command_p5 import _CLEARANCE_JS
-    assert _CLEARANCE_JS.lstrip().startswith("(el, arg)")
+    assert _CLEARANCE_JS.lstrip().startswith("async (el, arg)")
     assert "texts.length > 0" in _CLEARANCE_JS
-    assert "maxScrollMatched" in _CLEARANCE_JS
+    assert "maxScrollAtCheck" in _CLEARANCE_JS
+    assert "fonts.ready" in _CLEARANCE_JS
+    assert "requestAnimationFrame" in _CLEARANCE_JS
+    assert "mergedInto" in _CLEARANCE_JS
     assert "NodeFilter.SHOW_TEXT" in _CLEARANCE_JS
     assert "querySelectorAll('*')" in _CLEARANCE_JS
     assert "no_occluders_found" in _CLEARANCE_JS
@@ -721,21 +723,31 @@ def test_p5_manifest_viewport_identity() -> None:
 
 
 def test_top_chrome_cover_uses_document_geometry() -> None:
-    """MA1: a node inside the stuck zone is a hit; one below is excused."""
+    """R1: inside the stuck zone is a hit; below is excused against the
+    re-measured max. A stale past-max that fits maxScrollAtCheck is not
+    a hit; one that survives the re-measure is."""
     from scripts.capture_macro_command_p5 import (
         classify_top_chrome_cover, _CLEARANCE_JS,
     )
-    inside = classify_top_chrome_cover(doc_top=40, ov_height=60, max_scroll=800)
+    inside = classify_top_chrome_cover(
+        doc_top=40, ov_bottom=60, max_scroll_at_check=800)
     assert inside["hit"] is True
     assert inside["reason"] == "top-chrome-full-cover-unexposable"
-    below = classify_top_chrome_cover(doc_top=200, ov_height=60, max_scroll=800)
+    below = classify_top_chrome_cover(
+        doc_top=200, ov_bottom=60, max_scroll_at_check=800)
     assert below["hit"] is False
     assert below["exposedAtScrollY"] == 140
-    past = classify_top_chrome_cover(doc_top=900, ov_height=60, max_scroll=800)
-    assert past["hit"] is True
-    assert past["reason"] == "top-chrome-full-cover-unexposable"
+    stale = classify_top_chrome_cover(
+        doc_top=900, ov_bottom=60, max_scroll_at_check=1200)
+    assert stale["hit"] is False
+    assert stale["maxScrollAtCheck"] == 1200
+    survives = classify_top_chrome_cover(
+        doc_top=900, ov_bottom=60, max_scroll_at_check=800)
+    assert survives["hit"] is True
+    assert survives["reason"] == "top-chrome-full-cover-unexposable"
     assert "position > 0" not in _CLEARANCE_JS
     assert "target ===" not in _CLEARANCE_JS
+    assert "slop" not in _CLEARANCE_JS
 
 
 def test_five_pages_have_one_analyst_entry_and_nojs_fallback(tmp_path_factory) -> None:
@@ -776,7 +788,7 @@ def test_five_pages_have_one_analyst_entry_and_nojs_fallback(tmp_path_factory) -
 
 
 def test_e6_on_five_pages_matches_p4_v6_slots(tmp_path_factory) -> None:
-    """MA5: verify P4 v6 E6 strings at this head; do not patch them here."""
+    """R4: verify P4's five E6 slots at this head; do not rewrite them."""
     from lib import macro_suite_labels as labels
     from tests.test_macro_command_empty_states import _render_empty
 
@@ -785,8 +797,12 @@ def test_e6_on_five_pages_matches_p4_v6_slots(tmp_path_factory) -> None:
     assert spec["title"]["zh"] == "包含在更高方案中"
     assert spec["stance"]["en"] == "The reading is available on upgrade."
     assert spec["stance"]["zh"] == "升级后可查看该读数。"
+    assert spec["why"]["en"] == "This section is part of {plan}."
+    assert spec["why"]["zh"] == "本板块属于{plan}。"
     assert spec["unlock"]["en"] == "See it with an upgrade."
     assert spec["unlock"]["zh"] == "升级即可查看。"
+    assert spec["cta_label"]["en"] == "Upgrade to see it"
+    assert spec["cta_label"]["zh"] == "查看升级方案"
     rendered = _render_empty(builder._empty_state("e6", plan="Research"))
     assert "Included in a higher plan" in rendered
     assert "包含在更高方案中" in rendered
@@ -794,11 +810,57 @@ def test_e6_on_five_pages_matches_p4_v6_slots(tmp_path_factory) -> None:
     assert "升级即可查看。" in rendered
     assert "This section is part of Research." in rendered
     assert "本板块属于Research。" in rendered
+    assert "Upgrade to see it" in rendered
+    assert "查看升级方案" in rendered
     assert "This section is included in a higher plan." not in rendered
     assert "本板块包含在更高方案中。" not in rendered
     assert rendered.count("Included in a higher plan") == 1
     assert "Read this section closely" not in rendered
     assert "请先仔细读本板块" not in rendered
+    from lib.macro_suite_labels import EMPTY_STATES as LIVE
+    assert LIVE["e6"]["cta_label"]["zh"] == "查看升级方案"
+    pages = builder.render(
+        ROOT, data_root=DATA_ROOT,
+        out_dir=tmp_path_factory.mktemp("e6five") / "site",
+        page_built_at=BUILT_AT)
+    names = {path.name for path in pages}
+    assert set(FIVE_COMMAND_PAGES) <= names
+
+
+def test_e5_is_not_a_workspace_declared_state() -> None:
+    """R2: workspace pages cannot enter E5; hub can."""
+    from scripts.capture_macro_command_p5 import (
+        declared_cells, e5_applicability_for_html, WORKSPACE_PAGES,
+    )
+    declared = declared_cells()
+    assert "e5-dark-en-1440.png" in declared
+    for page in WORKSPACE_PAGES:
+        slug = page.replace(".html", "")
+        assert not any(name.startswith(f"e5-{slug}") for name in declared)
+        assert f"empty-e5-{slug}" not in "".join(declared)
+    for page in WORKSPACE_PAGES:
+        path = ROOT / "site" / page
+        if not path.is_file():
+            pytest.skip("site/ omitted")
+        receipt = e5_applicability_for_html(path.read_text(encoding="utf-8"))
+        assert receipt == {"fragments": False, "template": False}, (page, receipt)
+    hub = ROOT / "site" / "macro_monetary.html"
+    if hub.is_file():
+        receipt = e5_applicability_for_html(hub.read_text(encoding="utf-8"))
+        assert receipt["fragments"] is True
+        assert receipt["template"] is True
+
+
+def test_p5_element_shot_imports_p3_device_span() -> None:
+    """R3: P5 uses P3's exact _device_px span; no 4-px slop."""
+    from scripts import capture_macro_command_p5 as p5
+    from scripts.capture_macro_command_p3 import _device_px, _write_element_shot
+    assert p5._device_px is _device_px
+    assert p5._write_element_shot is _write_element_shot
+    src = (ROOT / "scripts" / "capture_macro_command_p5.py").read_text(
+        encoding="utf-8")
+    assert "slop=4" not in src
+    assert "slop: int" not in src
 
 
 def test_copy_guard_keeps_details_summary() -> None:
