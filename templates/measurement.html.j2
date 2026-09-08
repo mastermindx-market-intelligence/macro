@@ -579,8 +579,16 @@ html[data-theme="light"] .ric-fbtn[aria-pressed="true"]{color:var(--panel)}
   background:var(--card)}
 .ric-card[hidden]{display:none}
 .ric-rail{background:var(--muted)}
+.ric-card.ric-s-complete .ric-rail{background:var(--ink-act)}
+.ric-card.ric-s-diagnostic .ric-rail{background:repeating-linear-gradient(180deg,var(--muted) 0 7px,transparent 7px 14px)}
+.ric-card.ric-s-stale .ric-rail{background:var(--muted)}
+.ric-card.ric-s-missing .ric-rail{background:var(--warn)}
 .ric-card.ric-s-failed  .ric-rail{background:var(--act)}
 .ric-card.ric-s-incomplete .ric-rail{background:var(--warn)}
+html[data-theme="dark"] .ric-card.ric-s-complete .ric-rail{box-shadow:0 0 12px 0 color-mix(in srgb,var(--ink-act) 55%,transparent)}
+html[data-theme="dark"] .ric-card.ric-s-diagnostic .ric-rail{box-shadow:0 0 12px 0 color-mix(in srgb,var(--muted) 40%,transparent)}
+html[data-theme="dark"] .ric-card.ric-s-stale .ric-rail{box-shadow:0 0 12px 0 color-mix(in srgb,var(--muted) 40%,transparent)}
+html[data-theme="dark"] .ric-card.ric-s-missing .ric-rail{box-shadow:0 0 12px 0 color-mix(in srgb,var(--warn) 55%,transparent)}
 html[data-theme="dark"] .ric-card.ric-s-failed  .ric-rail{box-shadow:0 0 12px 0 color-mix(in srgb,var(--act) 55%,transparent)}
 html[data-theme="dark"] .ric-card.ric-s-incomplete .ric-rail{box-shadow:0 0 12px 0 color-mix(in srgb,var(--warn) 55%,transparent)}
 /* Light: paper, not panel — the glow is removed outright and depth is a shadow. */
@@ -590,18 +598,16 @@ html[data-theme="light"] .ric-rail{box-shadow:none}
 .ric-body{padding:20px 22px;min-width:0}
 .ric-hd{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px}
 .ric-state{font-size:.78rem;font-weight:700;letter-spacing:.02em;color:var(--muted)}
+.ric-card.ric-s-complete .ric-state{color:var(--ink-act)}
+.ric-card.ric-s-missing .ric-state{color:var(--warn-ink)}
 .ric-card.ric-s-failed  .ric-state{color:var(--act-ink)}
 .ric-card.ric-s-incomplete .ric-state{color:var(--warn-ink)}
-.ric-state-code,.ric-tier,.ric-fam{font-family:var(--font-mono,ui-monospace,SFMono-Regular,Menlo,monospace);
-  font-size:.66rem;letter-spacing:.06em;padding:3px 7px;border-radius:var(--r-ctl,8px);
-  background:color-mix(in srgb,var(--text) 8%,transparent);color:var(--muted)}
 .ric-q{font-size:1rem;font-weight:700;line-height:1.45;margin:0 0 8px;color:var(--text)}
 .ric-estimand{font-size:.82rem;line-height:1.6;color:var(--muted);margin:0 0 16px;max-width:70ch}
 
-/* Figures: tabular, quiet, never competing with the state above them. */
-.ric-figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
-  gap:12px;margin:0 0 16px}
-.ric-fig{padding:10px 12px;border-radius:var(--r-ctl,8px);
+/* Figures: last row fills leftover columns instead of leaving empty tracks. */
+.ric-figs{display:flex;flex-wrap:wrap;gap:12px;margin:0 0 16px}
+.ric-fig{flex:1 1 190px;padding:10px 12px;border-radius:var(--r-ctl,8px);
   background:color-mix(in srgb,var(--text) 4%,transparent)}
 html[data-theme="light"] .ric-fig{background:color-mix(in srgb,var(--text) 5%,transparent)}
 .ric-fig-l{display:block;font-size:.7rem;color:var(--muted);margin-bottom:4px;line-height:1.35}
@@ -656,6 +662,8 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
 .ric-more>summary::before{content:"+";font-family:var(--font-mono,ui-monospace,monospace);
   font-size:.9rem;line-height:1;width:11px;color:var(--muted);transition:transform .18s}
 .ric-more[open]>summary::before{content:"−"}
+.ric-gate .ric-more{border-top:none;margin-top:2px}
+.ric-gate .ric-more>summary{padding:4px 0}
 .ric-more-b{padding:2px 0 16px;font-size:.79rem;line-height:1.65;color:var(--muted)}
 .ric-list{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:9px}
 .ric-list li{padding-left:13px;position:relative}
@@ -677,7 +685,8 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
 
 @media (max-width:640px){
   .ric-body{padding:16px 15px}
-  .ric-figs{grid-template-columns:1fr;gap:9px}
+  .ric-figs{gap:9px}
+  .ric-fig{flex-basis:100%}
   .ric-q{font-size:.94rem}
   .ric-rc{grid-template-columns:1fr;gap:2px 0}
   .ric-rc dt{margin-top:6px}
@@ -2128,6 +2137,14 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
     'COMPLETE': ('Complete', '已完成'),
     'STALE': ('Out of date', '已过期'),
   } %}
+  {% set ric_state_class = {
+    'DIAGNOSTIC_FAILED': 'ric-s-failed',
+    'ARTIFACT_INCOMPLETE': 'ric-s-incomplete',
+    'COMPLETE': 'ric-s-complete',
+    'DIAGNOSTIC_ONLY': 'ric-s-diagnostic',
+    'STALE': 'ric-s-stale',
+    'ARTIFACT_MISSING': 'ric-s-missing',
+  } %}
   {% set ric_tier_gloss = {
     'DIAGNOSTIC': ('Diagnostic only', '仅诊断'),
   } %}
@@ -2135,6 +2152,20 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
     'EXPLORATORY_NON_GATED': ('Exploratory — not gated', '探索性 — 未门控'),
   } %}
   {% set ric_en_months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] %}
+  {% set ric_n = ric_cards|length %}
+  {% set ric_k = ric_cards|selectattr('quality', 'equalto', 'COMPLETE')|list|length %}
+  {% set ric_usable_en = (
+    'The card below is usable today.' if ric_n == 1 and ric_k == 1 else
+    'The card below is not usable today.' if ric_n == 1 else
+    ('None of the ' ~ ric_n|string ~ ' cards below is usable today.') if ric_k == 0 else
+    (ric_k|string ~ ' of ' ~ ric_n|string ~ ' cards below are usable today.')
+  ) %}
+  {% set ric_usable_zh = (
+    '下方卡片今天可用。' if ric_n == 1 and ric_k == 1 else
+    '下方卡片今天不可用。' if ric_n == 1 else
+    ('下方 ' ~ ric_n|string ~ ' 张卡片今天均不可用。') if ric_k == 0 else
+    ('下方 ' ~ ric_n|string ~ ' 张卡片中有 ' ~ ric_k|string ~ ' 张今天可用。')
+  ) %}
 
   <section class="mh-section" id="ric-section">
     <div class="mh-sh">
@@ -2145,12 +2176,11 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
     <p class="mh-stand">
       <span class="l-en"><strong>Research context — do not use as a trading signal.</strong>
       Each card is a read-only projection of one already-committed result artifact: the owner's own
-      figures, its own missing pieces, and the state it earned. Neither card below is usable —
-      one failed its estimator-unbiasedness check, the other is missing an input receipt — and the cards say so
-      rather than rounding the gap away.</span>
+      figures, its own missing pieces, and the state it earned.
+      <span class="ric-usable-lede">{{ ric_usable_en }}</span></span>
       <span class="l-zh"><strong>研究背景 — 请勿作为交易信号使用。</strong>
       每张卡片都是对一份已提交结果文物的只读投影：所有者自己的数值、自己的缺口，以及它实际达到的状态。
-      下方两张卡片均不可用——其一未通过估计器无偏性检验，其二缺少输入凭证——卡片如实呈现，不做抹平。</span>
+      <span class="ric-usable-lede">{{ ric_usable_zh }}</span></span>
     </p>
     <p class="ric-lede">
       <span class="l-en">Values are printed in the unit the owner recorded. A quantity the owner did not
@@ -2169,10 +2199,12 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
         <span class="l-en">{{ fam|replace('_', ' ')|title }}</span><span class="l-zh">{{ '合成控制' if fam == 'synthetic_control' else ('事件研究' if fam == 'event_study' else fam) }}</span></button>
       {% endfor %}
       {% for q in ric_cards|map(attribute='quality')|unique|list %}
-      {% if q in ric_quality_gloss %}
       <button type="button" class="ric-fbtn" data-ric-f="q:{{ q }}" aria-pressed="false">
-        <span class="l-en">{{ ric_quality_gloss[q][0] }}</span><span class="l-zh">{{ ric_quality_gloss[q][1] }}</span></button>
-      {% endif %}
+        {% if q in ric_quality_gloss %}
+        <span class="l-en">{{ ric_quality_gloss[q][0] }}</span><span class="l-zh">{{ ric_quality_gloss[q][1] }}</span>
+        {% else %}
+        <span class="l-en">Other states</span><span class="l-zh">其他状态</span>
+        {% endif %}</button>
       {% endfor %}
       {% for tier in ric_cards|map(attribute='evidence_tier')|unique|list %}
       {% if tier in ric_tier_gloss %}
@@ -2185,7 +2217,7 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
     <div class="ric-cards" id="ric-cards">
       {% for card in ric_cards %}
       {%- set q = card.quality -%}
-      {%- set scls = 'ric-s-failed' if q == 'DIAGNOSTIC_FAILED' else ('ric-s-incomplete' if q == 'ARTIFACT_INCOMPLETE' else 'ric-s-other') -%}
+      {%- set scls = ric_state_class.get(q, 'ric-s-other') -%}
       {%- set gates = card.diagnostics|selectattr('passed', 'defined')|list -%}
       {%- set metrics = card.diagnostics|rejectattr('passed', 'defined')|list -%}
       {%- set card_anchor = ('ric-' ~ card.method_family ~ '-' ~ card.study_run_id ~ '-' ~ card.selected_result_id)|replace('_', '-')|replace('/', '-')|replace('@', '-') -%}
@@ -2304,11 +2336,13 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
           <div class="ric-gates-l"><span class="l-en">Gate outcomes</span><span class="l-zh">门槛结果</span></div>
           <div class="ric-gates">
             {% for g in gates %}
+            {%- set gid = (g.code.split('_')|first) if g.code else '' -%}
             <div class="ric-gate">
               <span class="ric-gate-m {{ 'ric-gate-pass' if g.passed else 'ric-gate-fail' }}">{{ 'PASS' if g.passed else 'FAIL' }}</span>
               <span class="ric-gate-b">
-                <span class="l-en">{{ g.label.en|e }}</span><span class="l-zh">{{ (g.label.zh or g.label.en)|e }}</span>
-                <details>
+                <span class="l-en">{{ gid }} {{ 'Condition met' if g.passed else 'Condition not met' }}</span>
+                <span class="l-zh">{{ gid }} {{ '条件成立' if g.passed else '条件未成立' }}</span>
+                <details class="ric-more">
                   <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
                   <span class="ric-gate-n"><span class="l-en">{{ g.detail.en|e }}</span><span class="l-zh">{{ (g.detail.zh or g.detail.en)|e }}</span></span>
                 </details>
@@ -2381,6 +2415,11 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
                 {% endif %}
                 <dt><span class="l-en">Authority flags</span><span class="l-zh">授权标记</span></dt>
                 <dd>{% for k, v in card.authority|dictsort %}{{ k }}={{ 'true' if v else 'false' }}{% if not loop.last %} {% endif %}{% endfor %}</dd>
+                {% for g in gates %}
+                {%- set gid = (g.code.split('_')|first) if g.code else '' -%}
+                <dt><span class="l-en">Gate {{ gid }}</span><span class="l-zh">门槛 {{ gid }}</span></dt>
+                <dd><span class="l-en">{{ g.label.en|e }}</span> / <span class="l-zh">{{ (g.label.zh or g.label.en)|e }}</span></dd>
+                {% endfor %}
                 <dt><span class="l-en">Run</span><span class="l-zh">运行</span></dt><dd>{{ card.study_run_id }}</dd>
                 <dt><span class="l-en">Result</span><span class="l-zh">选定结果</span></dt><dd>{{ card.selected_result_id }}</dd>
                 <dt><span class="l-en">Adapter</span><span class="l-zh">适配器</span></dt><dd>{{ card.adapter_version }}</dd>

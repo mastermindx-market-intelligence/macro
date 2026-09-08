@@ -239,6 +239,10 @@ def test_visual_evidence_receipt_binds_the_template_and_eight_rest_cells():
         assert state["applied_theme"] == state["theme"]
         assert state["applied_locale"] == state["locale"]
         assert state["viewport_width"] == (1440 if state["viewport"] == "desktop" else 390)
+    samples = manifest.get("rail_samples", {}).get("frames", [])
+    assert len(samples) == 4, "four fixture rails must be sampled"
+    colours = {tuple(row["mean_rgb"]) for row in samples}
+    assert len(colours) == 4, f"fixture rails must be four distinct colours, got {colours}"
 
 
 def test_stale_ungoverned_ric_verify_shots_are_gone():
@@ -625,15 +629,24 @@ def test_no_validated_claim_in_section(real_section):
 
 
 def test_no_falsifier_vocabulary_as_a_state_chip(contract, real_section):
-    """Glance uses a plain-word state; typed codes stay in Receipts.
-
-    A chip reading "FALSIFIED" would invent a state the adapter never emitted.
-    """
-    assert "FALSIFIED" not in real_section
+    """Glance never carries falsifier/refutation vocabulary; owner labels stay in Receipts."""
+    glance = _glance_outside_details(real_section)
+    for token in ("证伪", "falsif", "refut", "FALSIFIED"):
+        haystack = glance if token == "证伪" else glance.lower()
+        needle = token if token == "证伪" else token.lower()
+        assert needle not in haystack, f"{token!r} leaked onto the RIC glance tier"
     assert 'class="ric-state-code"' not in real_section
     for card in contract["cards"]:
         receipts = _isolate_receipts(_isolate_card(real_section, card["method_family"]))
         assert card["quality"] in receipts
+        for gate in card["diagnostics"]:
+            if "passed" not in gate:
+                continue
+            assert gate["label"]["en"] in receipts, (
+                f"{gate['code']} owner label missing from Receipts"
+            )
+            if gate["label"].get("zh"):
+                assert gate["label"]["zh"] in receipts
 
 
 # ---------------------------------------------------------------------------
@@ -656,28 +669,15 @@ def test_filter_controls_exist_for_evidence_tier(contract, real_section):
         )
 
 
-def test_lede_prose_matches_the_card_diagnostic_truth(contract, real_section):
-    """The section's honest-disclosure lede must name the diagnostic that actually
-    failed, not one that passed — pinned against the cards' own ``passed`` booleans
-    so a future edit cannot silently reintroduce the wrong claim.
-    """
-    sc_card = next(
-        card for card in contract["cards"] if card["method_family"] == "synthetic_control"
-    )
-    diagnostics = {d["code"]: d for d in sc_card["diagnostics"] if "passed" in d}
-    assert diagnostics["PC1_positive_control_survives"]["passed"] is True
-    assert diagnostics["PC2_estimators_unbiased"]["passed"] is False
-
-    lede_start = real_section.find('class="mh-stand"')
-    assert lede_start != -1
-    lede = real_section[lede_start : lede_start + 1200]
-
-    # The lede must not claim the positive control failed — it passed.
-    assert "failed its positive control" not in lede
-    assert "未通过正向对照" not in lede
-    # It must name the diagnostic that actually failed.
-    assert "estimator" in lede.lower() and "unbiased" in lede.lower()
-    assert "无偏" in lede
+def test_real_pair_lede_is_derived_from_card_states(contract, real_section):
+    """Production pair: two cards, neither COMPLETE — the lede must say so."""
+    n = len(contract["cards"])
+    k = sum(1 for card in contract["cards"] if card["quality"] == "COMPLETE")
+    assert n == 2 and k == 0
+    assert "None of the 2 cards below is usable today." in real_section
+    assert "下方 2 张卡片今天均不可用。" in real_section
+    assert "Neither card below is usable" not in real_section
+    assert "下方两张卡片均不可用" not in real_section
 
 
 def test_dom_order_equals_contract_order(contract, real_section):
@@ -804,8 +804,9 @@ def test_unknown_quality_state_degrades_without_inventing_a_verdict():
     """An unrecognised typed state must still render, neutrally.
 
     Fail-open on display, fail-closed on meaning: the glance is a generic
-    owner-reported gloss and the raw code lives in Receipts. No filter
-    button is minted for an unglossed value.
+    owner-reported gloss and the raw code lives in Receipts. An unglossed
+    quality still gets an Other-states filter chip so the bar cannot
+    silently under-count the card set.
     """
     card = _minimal_card(family="event_study", quality="SOMETHING_NEW")
     section = _section(_render(research_implications=_envelope([card])))
@@ -814,7 +815,12 @@ def test_unknown_quality_state_degrades_without_inventing_a_verdict():
     assert "State reported by the owner" in header
     assert "所有者报告的状态" in header
     assert "SOMETHING_NEW" not in header
-    assert 'data-ric-f="q:SOMETHING_NEW"' not in section
+    assert 'data-ric-f="q:SOMETHING_NEW"' in section
+    start = section.find('data-ric-f="q:SOMETHING_NEW"')
+    end = section.find("</button>", start)
+    button = section[start:end]
+    assert "Other states" in button
+    assert "其他状态" in button
     receipts = _isolate_receipts(_isolate_card(section, "event_study"))
     assert "SOMETHING_NEW" in receipts
 
@@ -844,6 +850,102 @@ def test_single_card_envelope_renders(contract):
     section = _section(_render(research_implications=one))
     assert f'id="{_stable_anchor(one["cards"][0])}"' in section
     assert "event-study-hincl2-event-study" not in section
+
+
+def test_derived_lede_n1_usable():
+    card = _minimal_card(family="event_study", quality="COMPLETE")
+    section = _section(_render(research_implications=_envelope([card])))
+    assert "The card below is usable today." in section
+    assert "下方卡片今天可用。" in section
+
+
+def test_derived_lede_n1_unusable():
+    card = _minimal_card(family="event_study", quality="STALE")
+    section = _section(_render(research_implications=_envelope([card])))
+    assert "The card below is not usable today." in section
+    assert "下方卡片今天不可用。" in section
+
+
+def test_derived_lede_n2_k0():
+    cards = [
+        _minimal_card(family="event_study", quality="STALE"),
+        _minimal_card(family="synthetic_control", quality="ARTIFACT_MISSING"),
+    ]
+    section = _section(_render(research_implications=_envelope(cards)))
+    assert "None of the 2 cards below is usable today." in section
+    assert "下方 2 张卡片今天均不可用。" in section
+
+
+def test_derived_lede_n2_k1():
+    cards = [
+        _minimal_card(family="event_study", quality="COMPLETE"),
+        _minimal_card(family="synthetic_control", quality="STALE"),
+    ]
+    section = _section(_render(research_implications=_envelope(cards)))
+    assert "1 of 2 cards below are usable today." in section
+    assert "下方 2 张卡片中有 1 张今天可用。" in section
+
+
+def test_derived_lede_n2_k2():
+    cards = [
+        _minimal_card(family="event_study", quality="COMPLETE"),
+        _minimal_card(family="synthetic_control", quality="COMPLETE"),
+    ]
+    section = _section(_render(research_implications=_envelope(cards)))
+    assert "2 of 2 cards below are usable today." in section
+    assert "下方 2 张卡片中有 2 张今天可用。" in section
+
+
+def test_card_state_class_maps_quality():
+    """Each typed quality gets its own rail class on the rendered card."""
+    mapping = {
+        "COMPLETE": "ric-s-complete",
+        "DIAGNOSTIC_ONLY": "ric-s-diagnostic",
+        "STALE": "ric-s-stale",
+        "ARTIFACT_MISSING": "ric-s-missing",
+        "DIAGNOSTIC_FAILED": "ric-s-failed",
+        "ARTIFACT_INCOMPLETE": "ric-s-incomplete",
+    }
+    for quality, cls in mapping.items():
+        card = _minimal_card(family="event_study", quality=quality)
+        section = _section(_render(research_implications=_envelope([card])))
+        article = _isolate_card(section, "event_study")
+        assert f'class="ric-card {cls}"' in article, (
+            f"{quality} must render class={cls!r}"
+        )
+        assert "ric-s-other" not in article
+
+
+def test_state_rail_css_uses_distinct_semantic_tokens():
+    """Rail colours come from existing theme tokens — never --up/--down."""
+    css = (REPO / "templates" / "measurement.html.j2").read_text(encoding="utf-8")
+    style_end = css.find("</style>")
+    ric_css = css[css.find(".ric-rail") : style_end]
+    assert ".ric-card.ric-s-complete .ric-rail{background:var(--ink-act)}" in ric_css
+    assert "repeating-linear-gradient" in ric_css
+    assert ".ric-card.ric-s-stale .ric-rail{background:var(--muted)}" in ric_css
+    assert ".ric-card.ric-s-missing .ric-rail{background:var(--warn)}" in ric_css
+    assert ".ric-card.ric-s-failed  .ric-rail{background:var(--act)}" in ric_css
+    assert ".ric-card.ric-s-incomplete .ric-rail{background:var(--warn)}" in ric_css
+    assert "var(--up)" not in ric_css
+    assert "var(--down)" not in ric_css
+    assert "var(--ink-up)" not in ric_css
+    assert "var(--ink-down)" not in ric_css
+
+
+def test_glance_gate_is_plain_word_result(contract, real_section):
+    """Glance shows short id + Condition met/not met; owner labels stay in Receipts."""
+    glance = _glance_outside_details(real_section)
+    assert "Condition met" in glance
+    assert "Condition not met" in glance
+    assert "条件成立" in glance
+    assert "条件未成立" in glance
+    assert "F1 falsifier holds" not in glance
+    assert "证伪条件成立" not in glance
+    sc = _isolate_card(real_section, "synthetic_control")
+    receipts = _isolate_receipts(sc)
+    assert "F1 falsifier holds" in receipts
+    assert "F1 证伪条件成立" in receipts
 
 
 # ---------------------------------------------------------------------------
@@ -930,6 +1032,19 @@ def _isolate_header(card_html: str) -> str:
     end = card_html.find("</div>", start)
     assert end != -1
     return card_html[open_tag : end + len("</div>")]
+
+
+def _glance_outside_details(section: str) -> str:
+    """The glance tier is everything in the RIC section outside <details>."""
+    html = section
+    innermost = re.compile(
+        r"<details\b[^>]*>((?:(?!<details\b).)*?)</details>", re.DOTALL
+    )
+    previous = None
+    while previous != html:
+        previous = html
+        html = innermost.sub("", html)
+    return html
 
 
 def _isolate_receipts(card_html: str) -> str:
