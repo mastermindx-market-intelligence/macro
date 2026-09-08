@@ -25,7 +25,7 @@
     }
   },
   "excluded": [],
-  "generated_at": "2026-09-08T05:02:07Z",
+  "generated_at": "2026-09-08T06:14:58Z",
   "honesty": {
     "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
     "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
@@ -131,13 +131,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 285792,
+          "bytes": 264896,
           "captured": true,
           "file": "10-dark-zh-390.png",
           "force_state": null,
           "height": 1688,
           "locale": "zh",
-          "sha256": "0bf720e65bd82a0956fe6ddf7efa4ed297737ea45c61fe7339d456376131842b",
+          "sha256": "cffaa2ec7840d2faad645fcb3d088bd5616dc4d0bdedd657e811e46559fd76be",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -301,13 +301,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 1093298,
+          "bytes": 1042504,
           "captured": true,
           "file": "16-light-en-768.png",
           "force_state": "addendum:16-light-en-768.png",
-          "height": 4780,
+          "height": 4668,
           "locale": "en",
-          "sha256": "51a9a5faa9f8d35965c6b1157eef3e6aed6bdf633e0c906fbb0f746505745169",
+          "sha256": "eed22a370ce67af84bf8b0ff3421df4afba726f3c8fa99b5cdf653f5e5b00ef2",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 1024,
@@ -488,18 +488,32 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 9955,
+          "bytes": 176457,
           "captured": true,
           "file": "empty-e1-dark.png",
           "force_state": "addendum:empty-e1-dark.png",
-          "height": 360,
+          "height": 1346,
           "locale": "en",
-          "sha256": "7975e55312bc1c113838198fa0f54ce58259cbc78758a8e00be4d84a7537839c",
+          "sha256": "21ab4d30c467bcb6ca4bfd88e3a49070332b89c2dd7ccfe78e272f1ffffb6c99",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 2200,
           "viewport_width": 1440,
-          "width": 1488
+          "width": 2016,
+          "fixture": "mockups/evidence/macro-command-p3/fixtures/e1_inflation_system.json",
+          "trigger": "Contract-legal inflation_system JSON: no date, no deltas \u2192 E1",
+          "empty_box": {
+            "x": 371,
+            "y": 830.625,
+            "width": 930,
+            "height": 156.015625
+          },
+          "panel_box": {
+            "x": 332,
+            "y": 604.609375,
+            "width": 1008,
+            "height": 671.734375
+          }
         },
         {
           "access": "anonymous",
@@ -522,43 +536,71 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 10479,
+          "bytes": 172624,
           "captured": true,
           "file": "empty-e3-dark.png",
           "force_state": "addendum:empty-e3-dark.png",
-          "height": 344,
+          "height": 1330,
           "locale": "en",
-          "sha256": "b29dde4be2067dfc70b7ca08e5e913817fd0e47ddb72b4c858776ccde8d05d1c",
+          "sha256": "ab1af865cd9c1edbbed186947a8a65606aa4b3dce5b650d71faa9b3f731abdc1",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 2200,
           "viewport_width": 1440,
-          "width": 1488
+          "width": 2016,
+          "fixture": "mockups/evidence/macro-command-p3/fixtures/e3_inflation_system.json",
+          "trigger": "Contract-legal inflation_system JSON: dated, no comparable deltas \u2192 E3",
+          "empty_box": {
+            "x": 371,
+            "y": 850.765625,
+            "width": 930,
+            "height": 148.015625
+          },
+          "panel_box": {
+            "x": 332,
+            "y": 624.75,
+            "width": 1008,
+            "height": 663.734375
+          }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 10163,
+          "bytes": 223547,
           "captured": true,
           "file": "empty-e4-dark.png",
           "force_state": "addendum:empty-e4-dark.png",
-          "height": 302,
+          "height": 1580,
           "locale": "en",
-          "sha256": "be5b34fc3af5820615cfb3b277c9cfcda77b939d82f25ce3b8db61a60834a01a",
+          "sha256": "1d5aa2f15c2a23a07e790f4845077bdbcf32fa87da0fccef91bd00352a3eaa86",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 2200,
           "viewport_width": 1440,
-          "width": 1488
+          "width": 2016,
+          "fixture": "mockups/evidence/macro-command-p3/fixtures/e4_central_banks.json",
+          "trigger": "In-memory withheld_command_tabs=['central_banks'] on liquidity_central_banks \u2192 E4",
+          "empty_box": {
+            "x": 371,
+            "y": 1025.078125,
+            "width": 930,
+            "height": 127.09375
+          },
+          "panel_box": {
+            "x": 332,
+            "y": 652.75,
+            "width": 1008,
+            "height": 789.125
+          }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
           "bytes": 29562,
-          "captured": true,
-          "file": "empty-e5-dark.png",
+          "captured": false,
+          "file": null,
           "force_state": "addendum:empty-e5-dark.png",
           "height": 340,
           "locale": "en",
@@ -567,24 +609,41 @@
           "viewport": "desktop",
           "viewport_height": 2200,
           "viewport_width": 1440,
-          "width": 1488
+          "width": 1488,
+          "fixture": null,
+          "trigger": "E5 is a client fetch-timeout of macro/fragments/<id>.html (PENDING_TIMEOUT_MS=8000). The builder only emits a hidden <template data-mc-empty-e5>; a visible E5 cannot be produced from workspace JSON through scripts/build_macro_suite_pages.py.",
+          "reason": "not builder-triggerable: client fetch-timeout of a fragment; builder emits only the hidden <template data-mc-empty-e5>"
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 10592,
+          "bytes": 162177,
           "captured": true,
           "file": "empty-e6-dark.png",
           "force_state": "addendum:empty-e6-dark.png",
-          "height": 398,
+          "height": 1384,
           "locale": "en",
-          "sha256": "fcc746f2c499288447cdcd5ded75406f531fcd6ead539b438f6d34b9f23904d6",
+          "sha256": "16a0a702d47d41a2901dc7bfe99ea253bc6f65a5a43867b951b0070e99a3b278",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 2200,
           "viewport_width": 1440,
-          "width": 1488
+          "width": 2016,
+          "fixture": "mockups/evidence/macro-command-p3/fixtures/e6_inflation_system.json",
+          "trigger": "In-memory entitlement='Research' on inflation_system \u2192 E6",
+          "empty_box": {
+            "x": 371,
+            "y": 850.765625,
+            "width": 930,
+            "height": 175.234375
+          },
+          "panel_box": {
+            "x": 332,
+            "y": 624.75,
+            "width": 1008,
+            "height": 690.953125
+          }
         },
         {
           "access": "anonymous",
@@ -607,18 +666,32 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 9422,
+          "bytes": 161697,
           "captured": true,
           "file": "empty-e6-light.png",
           "force_state": "addendum:empty-e6-light.png",
-          "height": 398,
+          "height": 1388,
           "locale": "en",
-          "sha256": "f20051211008b78e6d90059181b30c4d53faea9316130dd79700610684a06026",
+          "sha256": "a81e408b6926e0cc3a542b13a04df2aa61fe60d96c0ed8d6fb353783dc2bde75",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 2200,
           "viewport_width": 1440,
-          "width": 1488
+          "width": 2016,
+          "fixture": "mockups/evidence/macro-command-p3/fixtures/e6_inflation_system.json",
+          "trigger": "In-memory entitlement='Research' on inflation_system \u2192 E6",
+          "empty_box": {
+            "x": 357,
+            "y": 846.765625,
+            "width": 958,
+            "height": 175.234375
+          },
+          "panel_box": {
+            "x": 332,
+            "y": 619.75,
+            "width": 1008,
+            "height": 692.953125
+          }
         },
         {
           "access": "anonymous",
@@ -636,6 +709,99 @@
           "viewport_height": 1800,
           "viewport_width": 1440,
           "width": 2880
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 176338,
+          "captured": true,
+          "file": "empty-e1-light.png",
+          "force_state": "addendum:empty-e1-light.png",
+          "fixture": "mockups/evidence/macro-command-p3/fixtures/e1_inflation_system.json",
+          "trigger": "Contract-legal inflation_system JSON: no date, no deltas \u2192 E1",
+          "height": 1350,
+          "locale": "en",
+          "sha256": "343ec814351a2e02b4a68358814962a3db90a21748b29d11ec17d9a496f0595a",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 2200,
+          "viewport_width": 1440,
+          "width": 2016,
+          "empty_box": {
+            "x": 357,
+            "y": 826.625,
+            "width": 958,
+            "height": 156.015625
+          },
+          "panel_box": {
+            "x": 332,
+            "y": 599.609375,
+            "width": 1008,
+            "height": 673.734375
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 172946,
+          "captured": true,
+          "file": "empty-e3-light.png",
+          "force_state": "addendum:empty-e3-light.png",
+          "fixture": "mockups/evidence/macro-command-p3/fixtures/e3_inflation_system.json",
+          "trigger": "Contract-legal inflation_system JSON: dated, no comparable deltas \u2192 E3",
+          "height": 1334,
+          "locale": "en",
+          "sha256": "614a4d7128d4e06bad2893e3a5720973812f29eeedaf251167363246b41016ac",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 2200,
+          "viewport_width": 1440,
+          "width": 2016,
+          "empty_box": {
+            "x": 357,
+            "y": 846.765625,
+            "width": 958,
+            "height": 148.015625
+          },
+          "panel_box": {
+            "x": 332,
+            "y": 619.75,
+            "width": 1008,
+            "height": 665.734375
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 224051,
+          "captured": true,
+          "file": "empty-e4-light.png",
+          "force_state": "addendum:empty-e4-light.png",
+          "fixture": "mockups/evidence/macro-command-p3/fixtures/e4_central_banks.json",
+          "trigger": "In-memory withheld_command_tabs=['central_banks'] on liquidity_central_banks \u2192 E4",
+          "height": 1584,
+          "locale": "en",
+          "sha256": "0d4abea2416309bd18f8409f4799dd7e777c99739102902f9fd3fd81e2761444",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 2200,
+          "viewport_width": 1440,
+          "width": 2016,
+          "empty_box": {
+            "x": 357,
+            "y": 1021.078125,
+            "width": 958,
+            "height": 127.09375
+          },
+          "panel_box": {
+            "x": 332,
+            "y": 647.75,
+            "width": 1008,
+            "height": 791.125
+          }
         }
       ]
     }

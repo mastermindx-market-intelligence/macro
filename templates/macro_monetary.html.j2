@@ -228,7 +228,7 @@
          Only `link.href` and `link.title` are used. #}
       {%- if s.first %}
       <nav class="mc-dests-block" aria-labelledby="{{ s.id }}-dests-h">
-        <h3 class="mc-dests-title" id="{{ s.id }}-dests-h">{{ t('Where to go next', '接下来去哪里') }}</h3>
+        <h3 class="mc-dests-title" id="{{ s.id }}-dests-h">{{ bl(s.dests_title) if s.dests_title else t('Where to go next', '接下来去哪里') }}</h3>
         <ul class="mc-dests">
           {%- for link in s.detail_links %}
           <li>

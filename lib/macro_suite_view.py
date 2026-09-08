@@ -1200,7 +1200,8 @@ def build_hub_view(entries: Sequence[Mapping[str, Any]], *,
                 continue
             metric_id = str(delta.get("metric_id") or "")
             if metric_id not in L.METRIC:
-                # Fail-closed: never render a de-slugged / raw label on the hub.
+                # Collect every miss, then raise — a silent drop would move
+                # changes.total while the page still claimed a full pool.
                 unmapped_metrics.append(metric_id)
                 continue
             changes_pool.append({
@@ -1223,8 +1224,15 @@ def build_hub_view(entries: Sequence[Mapping[str, Any]], *,
                               "reason": reason,
                               "tone": reason["tone"]})
 
-    available = [r for r in rows if r.get("available")]
+    if unmapped_metrics:
+        ids = ", ".join(sorted(set(unmapped_metrics)))
+        print(f"::error title=macro-command-unmapped-metric::{ids}", flush=True)
+        raise ValueError(
+            f"unmapped metric id(s) in hub pool: {ids}"
+        )
+
     shown = changes_pool[:HUB_CHANGE_LIMIT]
+    sections_available, sections_total = section_coverage_tally(entries)
 
     return {
         "page_built_at": page_built_at,
@@ -1240,11 +1248,12 @@ def build_hub_view(entries: Sequence[Mapping[str, Any]], *,
                 "The suite is dated by its oldest accepted workspace print, never its newest.",
                 "套件日期取自最旧的已接受工作区读数，而非最新读数。"),
         },
+        # Same (available, total) the DATA COVERAGE chip uses — never a
+        # second 14-workspace completeness flag (N0).
         "coverage": {
-            "available": len(available),
-            "total": len(rows),
-            "complete": len(available) == len(rows),
-            "label": _pair("Workspaces readable", "可读取工作区"),
+            "available": sections_available,
+            "total": sections_total,
+            "label": _pair("Sections with today's data", "今日有数据的板块"),
         },
         "workspaces": rows,
         "changes": {
@@ -1252,8 +1261,6 @@ def build_hub_view(entries: Sequence[Mapping[str, Any]], *,
             "shown": len(shown),
             "remaining": max(0, len(changes_pool) - len(shown)),
             "total": len(changes_pool),
-            "unmapped_metrics": len(unmapped_metrics),
-            "unmapped_ids": list(unmapped_metrics),
             "heading": _pair("Recent changes", "近期变化"),
             # Named honestly: these are the first N in the suite's own order, not
             # a curated set of the N that matter most.
@@ -1327,6 +1334,23 @@ _COVERAGE_WORKSPACES: tuple[str, ...] = (
     "consumer_payments", "financial_conditions", "national_debt_liabilities",
     "trade_flows",
 )
+
+
+def section_coverage_tally(
+        entries: Sequence[Mapping[str, Any]]) -> tuple[int, int]:
+    """The DATA COVERAGE chip's (available, total) — the page's one completeness.
+
+    Overview is always counted current (it is built at ``page_built_at``).
+    Each of the eleven representative section workspaces counts only when
+    its snapshot is readable and ``availability.state == CURRENT``.
+    """
+    by_workspace = {e["workspace_id"]: e for e in entries}
+    available = 1
+    for workspace_id in _COVERAGE_WORKSPACES:
+        entry = by_workspace.get(workspace_id)
+        if entry and entry.get("snapshot") and _freshness_state(entry["snapshot"]) == "CURRENT":
+            available += 1
+    return available, len(_COVERAGE_WORKSPACES) + 1
 
 
 def _freshness_state(snapshot: Mapping[str, Any] | None) -> str | None:
@@ -1545,16 +1569,8 @@ def build_command_header(entries: Sequence[Mapping[str, Any]], *,
     for clause in clauses:
         del clause["_effective_date"]
 
-    # Coverage tally: `overview` (this page itself, always current) plus the
-    # eleven representative section workspaces that are readable AND CURRENT
-    # today. Freshness is the same conservative signal `_context` states the
-    # page's own header with — never inferred from whether a state_id exists.
-    sections_available = 1
-    for workspace_id in _COVERAGE_WORKSPACES:
-        entry = by_workspace.get(workspace_id)
-        if entry and entry.get("snapshot") and _freshness_state(entry["snapshot"]) == "CURRENT":
-            sections_available += 1
-    sections_total = len(_COVERAGE_WORKSPACES) + 1
+    # Coverage tally: the same (available, total) the Overview stance uses.
+    sections_available, sections_total = section_coverage_tally(entries)
     chips.append(_coverage_chip(sections_available, sections_total))
 
     # Header date + meaning are derived from the SAME set: strip chips that

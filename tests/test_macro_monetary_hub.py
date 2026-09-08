@@ -399,7 +399,11 @@ def test_build_hub_view_is_not_the_macro_command_renderer() -> None:
     assert "build_hub_view" not in inspect.getsource(builder.build_hub)
     view = build_hub_view([], page_built_at=BUILT_AT)
     assert view["as_of"]["effective_date"] is None
-    assert view["coverage"]["total"] == 0
+    # N0: coverage is the 12-section tally (Overview always counted), never
+    # the 14 workspace rows. An empty entry list still has a denominator.
+    assert view["coverage"]["total"] == 12
+    assert view["coverage"]["available"] == 1
+    assert "complete" not in view["coverage"]
 
 
 def test_the_hub_carries_no_executable_inline_script(hub: str) -> None:

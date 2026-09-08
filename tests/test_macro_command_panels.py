@@ -7,9 +7,14 @@ from the rail, never hardcoded as fourteen.
 """
 from __future__ import annotations
 
+import copy
+import json
 import re
+import shutil
 from html import unescape
 from pathlib import Path
+
+from engine.market_os.macro_workspaces import contract as workspace_contract
 
 import pytest
 
@@ -294,10 +299,8 @@ def test_populated_unstated_section_uses_see_curve_chip(
     assert "见下方曲线" in html
 
 
-def test_hub_drops_unmapped_metric_and_counts_it_in_the_receipt() -> None:
-    """B1: an unmapped hub-pool id is dropped, never de-slugged, and counted."""
-    from jinja2 import Environment, FileSystemLoader, StrictUndefined
-
+def test_hub_raises_on_unmapped_metric() -> None:
+    """N1: an unmapped hub-pool id is a build error, never a silent drop."""
     deltas = [{
         "metric_id": "not_a_reviewed_metric",
         "label": {"en": "Nope", "zh": "Nope"},
@@ -323,26 +326,229 @@ def test_hub_drops_unmapped_metric_and_counts_it_in_the_receipt() -> None:
             "subtitle": {"en": "", "zh": ""},
             "snapshot": snap, "failure": None if snap else {"kind": "NOT_COVERED"},
         })
-    hub = macro_suite_view.build_hub_view(entries, page_built_at=BUILT_AT)
-    assert hub["changes"]["entries"] == []
-    assert hub["changes"]["unmapped_metrics"] == 1
+    with pytest.raises(ValueError, match="not_a_reviewed_metric") as raised:
+        macro_suite_view.build_hub_view(entries, page_built_at=BUILT_AT)
+    assert "unmapped metric id" in str(raised.value)
+
+
+def test_built_hub_9_of_12_uses_some_unread_stance(built: tuple[str, Path]) -> None:
+    """N0: today's 9/12 chip and the Overview stance are one completeness."""
+    html, _ = built
+    overview = unescape(_panel(html, "overview"))
+    stance = re.search(
+        r'class="mc-stance mq-tone-(\w+)".*?class="mc-stance-text">(.*?)</span>',
+        overview, re.S)
+    assert stance, "Overview lost its stance"
+    assert stance.group(1) == "warn"
+    text = re.sub(r"<[^>]+>", "", stance.group(2))
+    assert "Some desks have not reported yet" in text
+    assert "Every desk reported today" not in overview
+    assert "Every desk reported today" not in html
+    plain = unescape(html)
+    note = re.search(r"(\d+) of (\d+) sections have today's data", plain)
+    assert note, "coverage chip lost its counted note"
+    available, total = int(note.group(1)), int(note.group(2))
+    assert available < total
+    assert (available, total) == macro_suite_view.section_coverage_tally(_live_entries())
+    opening = re.search(r'<p class="mc-stance[^"]*"', overview)
+    assert opening and "mq-tone-ok" not in opening.group(0)
+
+
+def _live_entries() -> list[dict]:
+    """The same hub entries `render()` assembled from site/macrodata."""
+    entries = []
+    for page in builder.SUITE_PAGES:
+        identity = builder._identity(page)
+        snapshot, _artifact = builder.read_workspace(DATA_ROOT, page)
+        entries.append({
+            "workspace_id": page.workspace_id,
+            "region": page.region,
+            "output": page.output,
+            "title": identity["title"],
+            "subtitle": identity["subtitle"],
+            "snapshot": snapshot,
+            "failure": None,
+        })
+    return entries
+
+
+def test_twelve_of_twelve_uses_all_read_stance() -> None:
+    """N0: only a full section tally may wear the complete / ok stance."""
+    entries = copy.deepcopy(_live_entries())
+    for entry in entries:
+        snap = entry.get("snapshot")
+        if snap is not None:
+            snap.setdefault("availability", {})["state"] = "CURRENT"
+    available, total = macro_suite_view.section_coverage_tally(entries)
+    assert (available, total) == (12, 12)
     sections = builder._macro_command_sections(entries, page_built_at=BUILT_AT)
     overview = next(s for s in sections if s["id"] == "overview")
-    assert overview["figure"] is None
-    assert overview["empty"] is not None
-    assert overview["empty"]["id"] == "e3"
-    assert overview["empty"]["unmapped_metrics"] == 1
-    env = Environment(
-        loader=FileSystemLoader(str(ROOT / "templates")),
-        autoescape=True, undefined=StrictUndefined)
-    html = env.from_string(
-        '{% import "_macro_command_figures.html.j2" as fig %}'
-        '{{ fig.empty(state) }}'
-    ).render(state=overview["empty"])
-    assert "not_a_reviewed_metric" not in html
-    assert "Nope" not in html
-    assert "Not a reviewed metric" not in html
-    assert 'data-unmapped-metrics="1"' in html
+    assert overview["stance"]["tone"] == "ok"
+    assert "Every desk reported today" in overview["stance"]["text"]["en"]
+    assert "今天每个小组都有读数" in overview["stance"]["text"]["zh"]
+
+
+def test_dests_heading_names_destination_pages_not_research_sections(
+        built: tuple[str, Path]) -> None:
+    """n4: 12 and 14 are labelled as different counts."""
+    html, _ = built
+    overview = unescape(_panel(html, "overview"))
+    assert "12 research sections" in overview
+    assert "12 个研究板块" in overview
+    assert "Where to go next — 14 destination pages" in overview
+    assert "接下来去哪里——14 个目标页面" in overview
+
+
+def test_unmapped_metrics_attribute_is_absent_from_the_dom(
+        built: tuple[str, Path]) -> None:
+    """n2: the diagnostic counter is gone from customer-facing markup."""
+    html, out = built
+    assert "data-unmapped-metrics" not in html
+    for fragment in (out / "macro" / "fragments").glob("*.html"):
+        assert "data-unmapped-metrics" not in fragment.read_text(encoding="utf-8")
+
+
+def test_e1_fires_when_a_section_has_no_date_and_no_deltas() -> None:
+    """N2: E1 is the typed empty the builder emits for a bare workspace."""
+    view = {
+        "headline": {"effective_date": None},
+        "changes": {"comparable": False, "deltas": []},
+        "context": {"state": "CURRENT"},
+    }
+    figure, empty = builder._figure_or_empty_for_workspace(
+        {"headline": {"effective_date": None, "null_reason": "NOT_YET_AVAILABLE"}},
+        view=view, href="macro_inflation_system.html")
+    assert figure is None
+    assert empty is not None
+    assert empty["id"] == "e1"
+    assert "We don't have this reading yet" in empty["title"]["en"]
+
+
+def test_e3_fires_when_a_dated_workspace_has_nothing_comparable() -> None:
+    view = {
+        "headline": {"effective_date": "2026-09-04"},
+        "changes": {"comparable": False, "deltas": []},
+        "context": {"state": "CURRENT"},
+    }
+    figure, empty = builder._figure_or_empty_for_workspace(
+        {"headline": {"effective_date": "2026-09-04", "null_reason": None}},
+        view=view, href="macro_inflation_system.html")
+    assert figure is None
+    assert empty["id"] == "e3"
+    assert "We can't show the change yet" in empty["title"]["en"]
+
+
+def test_e4_fires_when_a_command_subtab_is_withheld() -> None:
+    entries = copy.deepcopy(_live_entries())
+    for entry in entries:
+        if entry["workspace_id"] == "liquidity_central_banks":
+            entry["snapshot"]["withheld_command_tabs"] = ["central_banks"]
+    sections = builder._macro_command_sections(entries, page_built_at=BUILT_AT)
+    money = next(s for s in sections if s["id"] == "money")
+    withheld = next(t for t in money["subtabs"] if t["id"] == "central_banks")
+    assert withheld["empty"]["id"] == "e4"
+    assert "Not open yet" in withheld["empty"]["title"]["en"]
+    assert withheld["figure"] is None
+
+
+def test_e6_fires_when_the_in_memory_snapshot_names_a_plan() -> None:
+    snap = {
+        "workspace": {"id": "inflation_system"},
+        "availability": {"state": "CURRENT"},
+        "headline": {"status": "PRESENT", "state_id": "A",
+                     "effective_date": "2026-09-04"},
+        "entitlement": "Research",
+        "changes": {"comparability": "COMPARABLE", "deltas": []},
+    }
+    figure, empty = builder._figure_or_empty_for_workspace(
+        snap, view={"headline": {"effective_date": "2026-09-04"},
+                    "changes": {"comparable": True, "deltas": []},
+                    "context": {"state": "CURRENT"}},
+        href="macro_inflation_system.html",
+        entitlement=builder._entitlement_plan(snap))
+    assert figure is None
+    assert empty["id"] == "e6"
+    assert "Research" in empty["why"]["en"]
+    assert "Included in a higher plan" in empty["title"]["en"]
+
+
+def _write_inflation_fixture(data_root: Path, *, dated: bool) -> None:
+    """Contract-legal inflation_system mutation + remanifest (N2)."""
+    victim = data_root / "workspaces" / "inflation_system" / "US" / "latest.json"
+    snap = json.loads(victim.read_text(encoding="utf-8"))
+    if not dated:
+        snap["headline"]["effective_date"] = None
+        snap["headline"]["status"] = "ABSENT"
+        snap["headline"]["null_reason"] = "NOT_YET_RELEASED"
+    snap["changes"]["deltas"] = []
+    snap["changes"]["comparability"] = "NO_PRIOR"
+    snap["changes"]["status"] = "ABSENT"
+    snap["changes"]["null_reason"] = "INSUFFICIENT_HISTORY"
+    sealed = workspace_contract.finalize(snap)
+    raw = json.dumps(sealed, ensure_ascii=False).encode("utf-8")
+    victim.write_bytes(raw)
+    manifest_path = data_root / "workspaces" / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    entry = manifest["workspaces"]["inflation_system/US"]
+    entry["content_sha256"] = sealed["generation"]["content_sha256"]
+    entry["bytes"] = len(raw)
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+
+def test_e1_fixture_through_the_real_builder(tmp_path: Path) -> None:
+    """N2: E1 is the typed empty the real builder writes from a fixture."""
+    data_root = tmp_path / "macrodata"
+    shutil.copytree(DATA_ROOT, data_root)
+    _write_inflation_fixture(data_root, dated=False)
+    out = tmp_path / "site"
+    builder.render(ROOT, data_root=data_root, out_dir=out, page_built_at=BUILT_AT)
+    frag = unescape(
+        (out / "macro" / "fragments" / "inflation.html").read_text(encoding="utf-8"))
+    assert 'data-mc-empty="e1"' in frag
+    assert "We don't have this reading yet" in frag
+    assert "Empty e1" not in frag
+    assert "Today's number didn't arrive" not in frag
+
+
+def test_e3_fixture_through_the_real_builder(tmp_path: Path) -> None:
+    """N2: a dated workspace with nothing comparable is E3, not E1."""
+    data_root = tmp_path / "macrodata"
+    shutil.copytree(DATA_ROOT, data_root)
+    _write_inflation_fixture(data_root, dated=True)
+    out = tmp_path / "site"
+    builder.render(ROOT, data_root=data_root, out_dir=out, page_built_at=BUILT_AT)
+    frag = unescape(
+        (out / "macro" / "fragments" / "inflation.html").read_text(encoding="utf-8"))
+    assert 'data-mc-empty="e3"' in frag
+    assert "We can't show the change yet" in frag
+    assert "We don't have this reading yet" not in frag
+    assert "Empty e3" not in frag
+
+
+def test_empty_state_evidence_names_fixture_and_trigger() -> None:
+    """N2: every builder-triggerable empty frame names its fixture + trigger."""
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p3" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    states = {state.get("file"): state for state in manifest["pages"][0]["states"]}
+    for empty_id in ("e1", "e3", "e4", "e6"):
+        for theme in ("dark", "light"):
+            name = f"empty-{empty_id}-{theme}.png"
+            row = states[name]
+            assert row["captured"] is True, name
+            assert row.get("fixture"), name
+            assert (ROOT / row["fixture"]).is_file(), row["fixture"]
+            assert row.get("trigger"), name
+            png = ROOT / "mockups" / "evidence" / "macro-command-p3" / name
+            assert png.is_file(), name
+            data = png.read_bytes()
+            assert data[:8] == b"\x89PNG\r\n\x1a\n", name
+            assert b"IEND" in data, name
+            assert len(data) > 20000, (name, len(data))
+    e5 = next(s for s in manifest["pages"][0]["states"]
+              if s.get("force_state") == "addendum:empty-e5-dark.png")
+    assert e5["captured"] is False
+    assert "not builder-triggerable" in e5["reason"]
 
 
 def test_rendered_l_zh_spans_have_cjk_or_are_pure_symbols(

@@ -631,10 +631,9 @@ html[data-theme="light"] .mc-empty {
        `display: contents` so they need `min-width: 0` or the Read strip's
        min-content widens `documentElement.scrollWidth` at 390 (P-19). */
     padding: 8px 18px 140px;
-    overflow-x: hidden; /* P-19: rail + chip notes must not widen the page */
   }
   .mc-content { display: contents; }
-  .mc-command, .mc-panel { min-width: 0; }
+  .mc-command, .mc-panel, .mc-rail { min-width: 0; }
   .mc-command { order: 1; }
   .mc-rail { order: 2; }
   .mc-panel { order: 3; }
@@ -644,7 +643,8 @@ html[data-theme="light"] .mc-empty {
     align-self: start;
     height: auto;
     margin: 0 -18px; padding: 8px 18px;
-    background: var(--bg); border-bottom: 1px solid var(--mq-line);
+    /* n5: inherit the shell gradient — a solid --bg bar was a tonal seam. */
+    background: transparent; border-bottom: 1px solid var(--mq-line);
   }
   .mc-rail-label { display: none; }
   .mc-rail-list { flex-direction: row; overflow-x: auto; scrollbar-width: none; gap: 6px; }
@@ -686,10 +686,14 @@ html[data-theme="light"] .mc-empty {
   .mc-title { font-size: 24px; line-height: 1.2; }
   .mc-panel-title { font-size: 17px; }
   .mc-panel { padding: 16px; border-radius: 12px; }
+  /* n6: pill is ~40px tall at bottom:84px. Extra body padding keeps the
+     fifth movement row clear of it; the pill/brain collision itself is
+     P-13 (disclosed, not this packet). */
+  .mc-panel { padding-bottom: 56px; }
   .mc-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 24px; }
   .mc-chip-top { flex-direction: column; align-items: flex-start; gap: 1px; }
   .mc-chip-value { font-size: 14px; }
-  .mc-figure { padding: 8px; margin: 0 -8px; }
+  .mc-figure { padding: 8px 8px 48px; margin: 0 -8px; }
   /* .mx-chg-row already wraps at 640px (theme.css:1978-1981); the numeric group
      then needs its own line, right-aligned, never orphaned mid-row. */
   .mc-move-name { flex-basis: 100%; }
