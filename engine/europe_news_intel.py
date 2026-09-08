@@ -11,8 +11,12 @@ This is the EUROPE sibling of engine/china_news_intel.py's PIT event-bus leg —
 first-print, keep-FIRST accrual of official EU/UK press headlines, joined into
 the ONE event system via engine/qbus.py's public API (`append_items` /
 `assign_event_keys`). This module mints NO event_key and owns NO second event
-database: `data/europe_news_vector/events.parquet` stores `item_id` only, and
-`event_key` is read back from qbus by `item_id` (see §6.1 of the frozen spec).
+database. `data/europe_news_vector/events.parquet` is a desk artifact: it
+carries a locally-minted `event_id` plus title/url/provenance columns, and
+an `item_id` keyed on source|url|title (so same-title restatements stay
+distinct items). `event_key` lives only in qbus (minted by
+`qbus.assign_event_keys`). `read_events()` returns the desk parquet and
+never queries qbus.
 
 Resolves F02 owner-map UNRESOLVED-2 — research/market_intelligence_productization/
 MARKET_ONTOLOGY_F02_OWNER_SOURCE_RIGHTS_MAP_2026-09-05.md :73 ("non-China
@@ -45,7 +49,9 @@ printed null "SOURCE_OUTAGE" rather than a live network result.
 """
 from __future__ import annotations
 
+import hashlib
 import logging
+import re
 import xml.etree.ElementTree as ET
 import urllib.request
 from datetime import date, datetime, time, timedelta, timezone
@@ -66,6 +72,11 @@ COVERAGE_STATES = ("COVERED", "NO_COVERAGE", "SOURCE_OUTAGE", "DELAYED_SOURCE")
 JURISDICTIONS = ("EU", "EA", "UK", "EFTA", "AMBIGUOUS_JURISDICTION")
 RIGHTS_STATES = ("VERIFIED_PUBLIC_REUSE", "UNVERIFIED_EXCLUDED")
 
+# Desk artifact schema. `event_key` is intentionally absent — it lives only in
+# qbus. `body_sha256` here is a hash of the RSS <description> (summary), never
+# an article body: this desk does not fetch bodies (§3.4), so the column will
+# not join to another desk's article-body hash. Kept as `body_sha256` for
+# qbus-row field parity with china_news_intel, not as a cross-desk content key.
 _COLUMNS: tuple[str, ...] = (
     "event_id", "item_id", "first_seen_utc", "seendate", "fetch_clock_utc", "asof",
     "title", "url", "source", "domain", "source_tier", "lang", "theme",
@@ -160,6 +171,19 @@ def event_id(title: str, domain: str) -> str:
                             title=title or "", lang="en")
 
 
+def article_item_id(source: str, url: str, title: str) -> str:
+    """Per-article item_id for the qbus row. qkernel.item_id keys on host+title
+    only, so two same-title restatements on one host would collide and
+    qbus.append_items keep-FIRST would drop one. Include the full URL so both
+    items reach the bus and assign_event_keys can cluster them. PURE."""
+    basis = "|".join((
+        (source or "").lower().strip(),
+        (url or "").lower().strip(),
+        qkernel.norm_title(title or "", "en"),
+    ))
+    return hashlib.sha1(basis.encode("utf-8")).hexdigest()[:16]
+
+
 # Deterministic keyword buckets. Order matters (first hit wins). Never returns ""
 # — an empty theme would silently never cluster in qbus.assign_event_keys (qbus.py
 # :176 requires a SHARED entity or theme; this desk emits no entities).
@@ -173,7 +197,10 @@ _THEME_KEYWORDS: dict[str, tuple[str, ...]] = {
     "trade_policy": ("tariff", "trade agreement", "customs union",
                      "export control", "sanctions", "trade deal", "trade war"),
     "competition_antitrust": ("antitrust", "competition", "merger", "cartel",
-                              "dominance", "state aid", "compety"),
+                              "dominance", "state aid",
+                              # EC Press Corner category slug POLICY_AREA=COMPETY
+                              # (not English; "competition" already covers prose).
+                              "compety"),
     "fiscal_policy": ("budget", "fiscal", "deficit", "public spending", "tax "),
     "regulatory": ("regulation", "directive", "guideline", "compliance",
                    "supervisory", "legislat"),
@@ -191,14 +218,26 @@ def classify_theme(text: str) -> str:
 
 
 _JURISDICTION_KEYWORDS: dict[str, tuple[str, ...]] = {
-    "UK": ("united kingdom", "bank of england", "britain", "british", " uk ",
-          "uk ", "fca ", "hm treasury", "westminster", "sterling"),
+    "UK": ("united kingdom", "bank of england", "britain", "british", "uk",
+           "fca", "hm treasury", "westminster", "sterling"),
     "EA": ("euro area", "eurozone", "ecb", "european central bank"),
     "EU": ("european commission", "european union", "brussels", "member state",
-          "eu ", "eurocrat"),
+           "eu", "eurocrat"),
     "EFTA": ("efta", "european free trade association", "norway", "iceland",
              "liechtenstein", "switzerland"),
 }
+
+
+def _keyword_hit(blob: str, kw: str) -> bool:
+    """Word-boundary match for a single token; substring match for a phrase.
+    Stops unanchored 'uk ' / 'eu ' from matching any word that merely ends in
+    those two letters (luk, chuk, nouveau). PURE."""
+    token = (kw or "").strip()
+    if not token:
+        return False
+    if " " in token:
+        return token in blob
+    return re.search(rf"\b{re.escape(token)}\b", blob) is not None
 
 
 def jurisdiction_for(source_key: str, text: str) -> str:
@@ -212,7 +251,7 @@ def jurisdiction_for(source_key: str, text: str) -> str:
             break
     blob = (text or "").lower()
     matched = {j for j, kws in _JURISDICTION_KEYWORDS.items()
-              if any(k in blob for k in kws)}
+              if any(_keyword_hit(blob, k) for k in kws)}
     if not matched:
         return default
     if len(matched) == 1:
@@ -278,7 +317,6 @@ def build_records(articles: list[dict], crawled_at: str, asof: date,
     source_tier, fetch_clock_utc and coverage_state)."""
     src_by_key = {s["key"]: s for s in sources()}
     out: list[dict] = []
-    seen: set[str] = set()
     for a in (articles or []):
         title = (a.get("title") or "").strip()
         if not title:
@@ -290,10 +328,10 @@ def build_records(articles: list[dict], crawled_at: str, asof: date,
         summary = (a.get("description") or "").strip()
         category = (a.get("category") or "").strip()
         blob = f"{title} {summary} {category}"
+        # No intra-batch skip on event_id: same-title restatements with different
+        # URLs must all reach qbus so assign_event_keys can cluster them. Desk
+        # keep-FIRST on event_id happens only in accrue() / the desk parquet.
         eid = event_id(title, domain or source_key)
-        if eid in seen:
-            continue
-        seen.add(eid)
 
         pubdate_raw = a.get("pubDate", "")
         seendate = clean_time(pubdate_raw)
@@ -303,9 +341,10 @@ def build_records(articles: list[dict], crawled_at: str, asof: date,
         juris = jurisdiction_for(source_key, blob)
         cov_state = source_states.get(source_key, "SOURCE_OUTAGE")
 
-        # Missing-Tape baseline: body_sha256 for tier-1 rows only (a hash, never
-        # the body itself — §3.4 "full article bodies are not redistributed"),
-        # mirroring engine/china_news_intel.py:743-752.
+        # RSS-<description> hash for tier-1 rows only (never an article body —
+        # this desk does not fetch bodies; §3.4). Same column name as the china
+        # Missing-Tape field for qbus-row parity; it will not join to another
+        # desk's article-body hash. See _COLUMNS.
         bhash = ""
         if tier == 1 and summary:
             try:
@@ -316,7 +355,7 @@ def build_records(articles: list[dict], crawled_at: str, asof: date,
 
         out.append({
             "event_id": eid,
-            "item_id": "",
+            "item_id": article_item_id(source_key, url, title),
             "first_seen_utc": crawled_at,
             "seendate": seendate,
             "fetch_clock_utc": crawled_at,
@@ -356,10 +395,10 @@ def build_qbus_rows(records: list[dict], raw_articles: list[dict],
                     crawled_at: str) -> list[dict]:
     """qbus row mapping (spec §6.3). PURE given the injected crawled_at.
 
-    `raw_articles` is accepted for signature parity with the
-    engine/china_news_intel.py:720 precedent; it is not re-consulted here
-    because `build_records` already computed `body_sha256` (tier-1 only) from
-    the same article batch and that value is simply carried through on
+    `records` is the full pre-dedup article batch (same-title restatements
+    included). Desk keep-FIRST on event_id is accrue()'s job, not this
+    mapper's. `raw_articles` is accepted for signature parity with the
+    engine/china_news_intel.py:720 precedent; body_sha256 is already on
     `records`. item_id / event_key are LEFT UNSET — filled by
     qbus.normalize_row / qbus.assign_event_keys (engine/qbus.py:113, :176)."""
     del raw_articles  # kept for signature parity with the china precedent
@@ -369,6 +408,9 @@ def build_qbus_rows(records: list[dict], raw_articles: list[dict],
         theme = rec.get("theme") or "policy_geo_other"
         rows.append({
             "desk": DESK,
+            "item_id": rec.get("item_id") or article_item_id(
+                str(rec.get("source") or ""), str(rec.get("url") or ""),
+                str(rec.get("title") or "")),
             "source": rec.get("source", ""),
             "source_tier": tier,
             "lang": "en",
@@ -415,11 +457,18 @@ def fetch_rss(url: str, timeout: int = 20) -> list[dict] | None:
     return items
 
 
-def _is_delayed(newest_iso: str, asof: date, cadence_hours: int) -> bool:
-    """True when the newest item is older than expected_cadence_hours x 3,
-    anchored on the END of `asof`'s day (the nightly-once-per-day PIT anchor —
-    `asof` is the caller's injected temporal reference; no ambient clock read).
-    PURE."""
+def _is_delayed(newest_iso: str, asof: date, cadence_hours: int,
+                crawled_at: str | None = None) -> bool:
+    """True when the newest item is older than the source's staleness grace,
+    anchored on the injected fetch clock (`crawled_at`) when provided — never
+    on the end of `asof`'s day (that systematically mis-ages a mid-day
+    collect.py ingest by up to ~24h). When `crawled_at` is absent or
+    unparseable, fall back to the START of `asof`'s day. PURE.
+
+    Daily sources keep a 3x cadence grace (72h on a 24h cadence) so a weekend
+    gap is not DELAYED. Weekly-or-slower sources (cadence >= 168h) use 1x:
+    one missed cadence is DELAYED (a 168h cadence with 3x would hide an
+    8-day-stale BoE feed for 21 days)."""
     if not newest_iso:
         return False
     try:
@@ -428,16 +477,28 @@ def _is_delayed(newest_iso: str, asof: date, cadence_hours: int) -> bool:
         return False
     if newest_dt.tzinfo is None:
         newest_dt = newest_dt.replace(tzinfo=timezone.utc)
-    anchor = datetime.combine(asof, time(23, 59, 59), tzinfo=timezone.utc)
+    anchor = datetime.combine(asof, time(0, 0, 0), tzinfo=timezone.utc)
+    if crawled_at:
+        try:
+            parsed = datetime.fromisoformat(crawled_at)
+        except (ValueError, TypeError):
+            parsed = None
+        if parsed is not None:
+            if parsed.tzinfo is None:
+                parsed = parsed.replace(tzinfo=timezone.utc)
+            anchor = parsed
     age_hours = (anchor - newest_dt).total_seconds() / 3600.0
-    return age_hours > (cadence_hours * 3)
+    grace = 1 if cadence_hours >= 168 else 3
+    return age_hours > (cadence_hours * grace)
 
 
-def fetch_all(cfg: dict, asof: date) -> tuple[list[dict], dict[str, str]]:
+def fetch_all(cfg: dict, asof: date,
+              crawled_at: str | None = None) -> tuple[list[dict], dict[str, str]]:
     """-> (items, {source_key: coverage_state}); every configured source has a
     key in the state map, always (printed nulls, §7). A source whose
     rights_state is not VERIFIED_PUBLIC_REUSE is never fetched (§7:
-    "the source is never fetched") and reports SOURCE_OUTAGE."""
+    "the source is never fetched") and reports SOURCE_OUTAGE.
+    `crawled_at` is the injected fetch-clock for DELAYED_SOURCE (PIT)."""
     cap = int(cfg.get("max_per_source", 60))
     coverage: dict[str, str] = {}
     items: list[dict] = []
@@ -461,7 +522,8 @@ def fetch_all(cfg: dict, asof: date) -> tuple[list[dict], dict[str, str]]:
             if cleaned and (not newest_iso or cleaned > newest_iso):
                 newest_iso = cleaned
         cadence = int(s.get("expected_cadence_hours") or 24)
-        coverage[key] = ("DELAYED_SOURCE" if _is_delayed(newest_iso, asof, cadence)
+        coverage[key] = ("DELAYED_SOURCE" if _is_delayed(newest_iso, asof, cadence,
+                                                          crawled_at)
                          else "COVERED")
         items.extend(raw)
     return items, coverage
@@ -521,7 +583,7 @@ def ingest(asof: date, crawled_at: str | None = None) -> dict | None:
     try:
         import pandas as pd
         ts = crawled_at or datetime.now(timezone.utc).isoformat()
-        raw, cov = fetch_all(cfg, asof)
+        raw, cov = fetch_all(cfg, asof, ts)
         records = build_records(raw, ts, asof, cov)
         qbus_rows = build_qbus_rows(records, raw, ts)
 

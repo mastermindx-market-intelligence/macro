@@ -4763,7 +4763,9 @@ europe_news_intel:
       lang: en
       # Preflight 2026-09-06 observed this feed's newest item ~8 days stale at
       # fetch time (mixed cadence: statistical notices + FX surveys, not daily
-      # press); 168h (weekly) avoids a perpetually-flagged DELAYED_SOURCE.
+      # press). 168h is the weekly cadence; engine/_is_delayed uses 1x grace
+      # (not x3) for cadence >= 168h so an 8-day gap is DELAYED_SOURCE, not
+      # hidden for 21 days.
       expected_cadence_hours: 168
       rights_basis: "Open Government Licence v3.0 — https://www.bankofengland.co.uk/legal — 'commercial re-use of the Resources' explicitly named"
       rights_state: VERIFIED_PUBLIC_REUSE

@@ -16,6 +16,7 @@ import pytest
 
 from engine import europe_news_intel as eni
 from engine import qbus
+from engine import qkernel
 from lib import config
 
 
@@ -77,8 +78,22 @@ _ONE_ITEM_RSS = b"""<?xml version="1.0"?>
   <link>https://ec.europa.eu/commission/presscorner/detail/en/ip_26_1769</link>
   <description>The European Commission has adopted Guidelines on Article 102.</description>
   <category>POLICY_AREA=COMPETY,ANTITRUST</category>
-  <pubDate>Wed, 02 Sep 2026 22:00:00 GMT</pubDate>
+  <pubDate>Sat, 05 Sep 2026 22:00:00 GMT</pubDate>
 </item>
+</channel></rss>"""
+
+_FIVE_ITEM_RSS = b"""<?xml version="1.0"?>
+<rss version="2.0"><channel><title>Feed</title>
+<item><title>Item one antitrust guidance</title><link>https://ec.europa.eu/a1</link>
+  <description>One</description><pubDate>Sat, 05 Sep 2026 10:00:00 GMT</pubDate></item>
+<item><title>Item two merger clearance</title><link>https://ec.europa.eu/a2</link>
+  <description>Two</description><pubDate>Sat, 05 Sep 2026 11:00:00 GMT</pubDate></item>
+<item><title>Item three state aid decision</title><link>https://ec.europa.eu/a3</link>
+  <description>Three</description><pubDate>Sat, 05 Sep 2026 12:00:00 GMT</pubDate></item>
+<item><title>Item four cartel fine</title><link>https://ec.europa.eu/a4</link>
+  <description>Four</description><pubDate>Sat, 05 Sep 2026 13:00:00 GMT</pubDate></item>
+<item><title>Item five dominance ruling</title><link>https://ec.europa.eu/a5</link>
+  <description>Five</description><pubDate>Sat, 05 Sep 2026 14:00:00 GMT</pubDate></item>
 </channel></rss>"""
 
 
@@ -252,7 +267,18 @@ def test_no_llm_and_no_second_event_store():
     src_path = Path(inspect.getfile(eni))
     text = src_path.read_text()
     assert not re.search(r"openai|anthropic|deepseek|llm_", text, re.IGNORECASE)
+    # Desk artifact carries a locally-minted event_id + title/url; event_key
+    # lives only in qbus. read_events() is a parquet reader and never joins
+    # qbus (the previous "item_id-only + read-back" claim was false).
+    assert "event_id" in eni._COLUMNS
+    assert "item_id" in eni._COLUMNS
+    assert "title" in eni._COLUMNS
+    assert "url" in eni._COLUMNS
     assert "event_key" not in eni._COLUMNS
+    reader = inspect.getsource(eni.read_events)
+    assert "assign_event_keys" not in reader
+    assert "read_items" not in reader
+    assert "qbus" not in reader
 
 
 # --------------------------------------------------------------------------- #
@@ -291,15 +317,218 @@ def test_boe_news_fixture_parses_with_no_category(monkeypatch):
 # --------------------------------------------------------------------------- #
 # 9. isolation — nothing in the scoring path imports this module
 # --------------------------------------------------------------------------- #
+# Scoring-path denylist — modules that mint or consume ranks/scores/gates.
+# A later UI packet that mentions the string 'europe_news_intel' in a template
+# builder must not red this test; only an import into a scoring module does.
+_SCORING_PATH_MODULES: tuple[str, ...] = (
+    "engine/axes.py",
+    "engine/regime.py",
+    "engine/conditions.py",
+    "engine/transition.py",
+    "engine/run.py",
+    "engine/inputs.py",
+    "engine/cycles.py",
+    "engine/equity_alloc.py",
+    "engine/news_vector.py",
+    "engine/prophet_bridge.py",
+    "engine/prophet_stage_inputs.py",
+    "engine/us_board_rank.py",
+)
+
+_IMPORT_EUROPE = re.compile(
+    r"^\s*(?:from engine import europe_news_intel"
+    r"|from engine\.europe_news_intel"
+    r"|import engine\.europe_news_intel)\b",
+    re.MULTILINE,
+)
+
+
 def test_nothing_in_the_scoring_path_imports_this_module():
     root = config.ROOT
-    hits: set[str] = set()
-    for base in ("engine", "scripts"):
-        for path in (root / base).rglob("*.py"):
-            try:
-                text = path.read_text()
-            except (UnicodeDecodeError, OSError):
-                continue
-            if "europe_news_intel" in text:
-                hits.add(str(path.relative_to(root)))
-    assert hits == {"engine/europe_news_intel.py", "scripts/collect.py"}
+    offenders: list[str] = []
+    for rel in _SCORING_PATH_MODULES:
+        path = root / rel
+        assert path.is_file(), f"scoring-path denylist entry missing: {rel}"
+        text = path.read_text()
+        if _IMPORT_EUROPE.search(text):
+            offenders.append(rel)
+    assert offenders == []
+
+
+# --------------------------------------------------------------------------- #
+# MAJOR-2 — ingest() success path (item_id recovery, qbus emit, coverage)
+# --------------------------------------------------------------------------- #
+def test_ingest_success_persists_item_id_qbus_event_key_and_coverage(
+        monkeypatch, tmp_path):
+    monkeypatch.setattr(eni, "_cfg", lambda: _FAKE_CFG)
+    _redirect_data_paths(monkeypatch, tmp_path)
+    _patch_urlopen(monkeypatch, data=_ONE_ITEM_RSS)
+    crawled_at = "2026-09-06T12:00:00+00:00"
+
+    result = eni.ingest(asof=date(2026, 9, 6), crawled_at=crawled_at)
+
+    assert result is not None
+    assert result["n_new"] > 0
+    assert result["n_qbus"] > 0
+    assert result["coverage"]["ec_presscorner"] == "COVERED"
+
+    desk = eni.read_events()
+    assert desk is not None
+    assert len(desk) == result["n_new"]
+    assert desk["item_id"].astype(str).str.len().min() > 0
+    assert (desk["item_id"].astype(str) != "").all()
+    assert "event_key" not in desk.columns
+
+    qbus_path = tmp_path / "qbus_items.parquet"
+    assert qbus_path.exists()
+    qdf = qbus.read_items()
+    assert qdf is not None
+    assert len(qdf) >= 1
+    assert (qdf["event_key"].astype(str).str.len() > 0).all()
+    assert (qdf["event_key"].astype(str) != "").all()
+    assert set(qdf["desk"].unique()) == {eni.DESK}
+
+    cov_path = tmp_path / "europe_coverage.parquet"
+    assert cov_path.exists()
+    import pandas as pd
+    cov_df = pd.read_parquet(cov_path)
+    ec = cov_df[cov_df["source_key"] == "ec_presscorner"]
+    assert len(ec) == 1
+    assert int(ec.iloc[0]["n_items"]) > 0
+    assert ec.iloc[0]["coverage_state"] == "COVERED"
+
+
+# --------------------------------------------------------------------------- #
+# MAJOR-3 — max_per_source actually slices each feed
+# --------------------------------------------------------------------------- #
+def test_max_per_source_caps_items_per_source(monkeypatch):
+    cfg = {**_FAKE_CFG, "max_per_source": 2}
+    _patch_urlopen(monkeypatch, data=_FIVE_ITEM_RSS)
+    items, cov = eni.fetch_all(cfg, date(2026, 9, 6),
+                               crawled_at="2026-09-06T12:00:00+00:00")
+    by_source: dict[str, list] = {}
+    for it in items:
+        by_source.setdefault(it["source_key"], []).append(it)
+    assert len(by_source["ec_presscorner"]) == 2
+    assert len(by_source["boe_news"]) == 2
+    assert "ecb_press" not in by_source  # rights-excluded, never fetched
+    assert sum(len(v) for v in by_source.values()) == 4
+    assert cov["ec_presscorner"] == "COVERED"
+    # A silent no-op of the slice (cap applied after items.extend) would
+    # yield 5 items per verified source = 10.
+    assert len(items) == 4
+
+
+# --------------------------------------------------------------------------- #
+# MAJOR-4 — qbus keeps same-title restatements; desk keep-FIRST on event_id
+# --------------------------------------------------------------------------- #
+def test_qbus_keeps_same_title_restatements_desk_dedups_on_event_id(monkeypatch):
+    crawled_at = "2026-09-06T12:00:00+00:00"
+    asof = date(2026, 9, 6)
+    articles = [
+        {"title": "Daily News",
+         "link": "https://ec.europa.eu/commission/presscorner/detail/en/mex_26_1",
+         "description": "First print of the daily news.",
+         "category": "", "pubDate": "Sat, 05 Sep 2026 08:00:00 GMT",
+         "source_key": "ec_presscorner"},
+        {"title": "Daily News",
+         "link": "https://ec.europa.eu/commission/presscorner/detail/en/mex_26_2",
+         "description": "Restatement of the same daily news, different URL.",
+         "category": "", "pubDate": "Sat, 05 Sep 2026 09:00:00 GMT",
+         "source_key": "ec_presscorner"},
+    ]
+    cov = {"ec_presscorner": "COVERED", "boe_news": "COVERED",
+           "ecb_press": "SOURCE_OUTAGE"}
+
+    def _sources(cfg=None):  # noqa: ARG001
+        return _FAKE_CFG["sources"]
+
+    import unittest.mock as mock
+    with mock.patch.object(eni, "sources", side_effect=_sources):
+        records = eni.build_records(articles, crawled_at, asof, cov)
+        rows = eni.build_qbus_rows(records, articles, crawled_at)
+
+    assert len(records) == 2
+    assert records[0]["event_id"] == records[1]["event_id"]
+    assert records[0]["url"] != records[1]["url"]
+    assert records[0]["item_id"] != records[1]["item_id"]
+    # qkernel.item_id keys on host+title only — the collision this helper exists to avoid.
+    assert qkernel.item_id("ec_presscorner", articles[0]["link"], "Daily News", "en") == \
+        qkernel.item_id("ec_presscorner", articles[1]["link"], "Daily News", "en")
+    assert len(rows) == 2
+
+    keyed = qbus.assign_event_keys(rows)
+    assert keyed[0]["item_id"] != keyed[1]["item_id"]
+    assert keyed[0]["event_key"] == keyed[1]["event_key"]
+    assert keyed[0]["event_key"].startswith("ev_")
+
+    desk = eni.accrue(None, records)
+    assert len(desk) == 1
+    assert desk.iloc[0]["url"] == articles[0]["link"]
+
+    # Recurring exact title on a later day still reaches qbus (desk stays 1).
+    later = [{**articles[0],
+              "link": "https://ec.europa.eu/commission/presscorner/detail/en/mex_26_9",
+              "pubDate": "Mon, 07 Sep 2026 08:00:00 GMT"}]
+    with mock.patch.object(eni, "sources", side_effect=_sources):
+        later_recs = eni.build_records(later, "2026-09-07T12:00:00+00:00",
+                                       date(2026, 9, 7), cov)
+    assert len(later_recs) == 1
+    assert later_recs[0]["event_id"] == records[0]["event_id"]
+    desk2 = eni.accrue(desk, later_recs)
+    assert len(desk2) == 1
+    later_rows = eni.build_qbus_rows(later_recs, later, "2026-09-07T12:00:00+00:00")
+    assert len(later_rows) == 1
+    assert later_rows[0]["url"] == later[0]["link"]
+    assert later_rows[0]["title"] == "Daily News"
+
+
+# --------------------------------------------------------------------------- #
+# MINOR-1 — weekly cadence uses 1x grace, not x3
+# --------------------------------------------------------------------------- #
+def test_weekly_source_flags_delayed_after_one_cadence_not_three():
+    crawled_at = "2026-09-06T12:00:00+00:00"
+    asof = date(2026, 9, 6)
+    # 8 days stale — the preflight observation. 192h > 168h (1x) but
+    # 192h < 504h (3x), so the old multiplier would have stayed COVERED.
+    eight_day = "2026-08-29T12:00:00+00:00"
+    assert eni._is_delayed(eight_day, asof, 168, crawled_at) is True
+    two_day = "2026-09-04T12:00:00+00:00"
+    assert eni._is_delayed(two_day, asof, 168, crawled_at) is False
+    # Daily sources still use 3x (72h grace).
+    seventy = "2026-09-03T14:00:00+00:00"  # 70h before crawled_at
+    eighty = "2026-09-03T04:00:00+00:00"   # 80h before crawled_at
+    assert eni._is_delayed(seventy, asof, 24, crawled_at) is False
+    assert eni._is_delayed(eighty, asof, 24, crawled_at) is True
+
+
+# --------------------------------------------------------------------------- #
+# MINOR-2 — staleness anchors on crawled_at, not end-of-asof-day
+# --------------------------------------------------------------------------- #
+def test_staleness_uses_crawled_at_not_end_of_asof_day():
+    asof = date(2026, 9, 6)
+    crawled_at = "2026-09-06T12:00:00+00:00"
+    # 68h before crawled_at (COVERED under 72h grace) but 80h before
+    # 2026-09-06T23:59:59 (DELAYED if the old end-of-day anchor still ran).
+    newest = "2026-09-03T16:00:00+00:00"
+    assert eni._is_delayed(newest, asof, 24, crawled_at) is False
+    # Same item with no crawled_at falls back to start of asof (60h) — COVERED.
+    assert eni._is_delayed(newest, asof, 24, None) is False
+    # And with a crawl clock that makes it 80h old — DELAYED.
+    late_crawl = "2026-09-06T23:59:59+00:00"
+    assert eni._is_delayed(newest, asof, 24, late_crawl) is True
+
+
+# --------------------------------------------------------------------------- #
+# MINOR-4 — jurisdiction tokens are word-bounded
+# --------------------------------------------------------------------------- #
+def test_jurisdiction_uk_eu_tokens_use_word_boundaries(monkeypatch):
+    monkeypatch.setattr(eni, "sources", lambda cfg=None: _FAKE_CFG["sources"])
+    # Unanchored "uk " used to match any word ending in uk + space.
+    assert eni.jurisdiction_for("ec_presscorner", "the luk news update") == "EU"
+    assert eni.jurisdiction_for("ec_presscorner", "the chuk market opened") == "EU"
+    assert eni.jurisdiction_for("ec_presscorner", "the UK gilt auction") == "UK"
+    assert eni.jurisdiction_for("ec_presscorner", "Bank of England statement") == "UK"
+    # Unanchored "eu " used to match "nouveau ".
+    assert eni.jurisdiction_for("ecb_press", "nouveau framework published") == "EA"
+    assert eni.jurisdiction_for("boe_news", "EU member state consultation") == "EU"
