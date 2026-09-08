@@ -1040,15 +1040,31 @@ def _command_tab_withheld(snapshot: Mapping[str, Any] | None,
 
 
 def _apply_empty_voice(empty: Mapping[str, Any] | None) -> dict[str, Any] | None:
-    """MINOR-E6: the empty card is the one null voice.
+    """One null voice: the empty state's stance (or title, if no stance).
 
-    A section that already renders an empty card must not also print the
-    same title as a stance / status line under the heading. Date-only
-    chips stay; the sentence does not.
+    N-B/N-D: E2 and E6 keep a distinct card headline so the stance
+    sentence is never printed twice in the same panel.
     """
     if not empty:
         return None
-    return None
+    spec = L.EMPTY_STATES.get(str(empty.get("id") or ""))
+    if not spec:
+        return None
+    text = spec.get("stance") or spec["title"]
+    return {"text": dict(text), "tone": "neutral"}
+
+
+def _section_is_entitlement_walled(
+        empty: Mapping[str, Any] | None,
+        subtabs: Sequence[Mapping[str, Any]] | None) -> bool:
+    """N-D: any E6 slot on the section walls the whole section."""
+    if empty and empty.get("id") == "e6":
+        return True
+    for tab in subtabs or ():
+        tab_empty = tab.get("empty") or {}
+        if tab_empty.get("id") == "e6":
+            return True
+    return False
 
 
 def _figure_or_empty_for_workspace(snapshot: Mapping[str, Any] | None, *,
@@ -1305,6 +1321,13 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
             voiced = _apply_empty_voice(empty_for_voice)
             if voiced:
                 stance = voiced
+        # N-D: an entitlement-walled section never keeps a read-now
+        # stance or a WATCHING list. Any E6 slot walls the section.
+        if has_copy and _section_is_entitlement_walled(empty, subtabs):
+            walled = _apply_empty_voice(_empty_state("e6"))
+            if walled:
+                stance = walled
+            watching = None
 
         empty_e5 = None if is_overview else _empty_state(
             "e5", cta_href=section.deep_href or (

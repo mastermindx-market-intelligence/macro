@@ -322,16 +322,18 @@ def _capture_clip(*, browser, url: str, hash_path: str, theme: str, locale: str,
 def _state_row(filename: str, theme: str, locale: str, viewport: str,
                info: dict[str, Any], *, fixture: str | None = None,
                trigger: str | None = None, verified_how: str,
-               section: str | None = None) -> dict[str, Any]:
+               section: str | None = None, crop: bool = False,
+               selector: str | None = None,
+               force_state: str | None = None) -> dict[str, Any]:
     vw, vh = (1440, 2200) if viewport == "desktop" else (390, 844)
-    return {
+    row = {
         "access": "anonymous",
         "applied_locale": info["applied_locale"],
         "applied_theme": info["applied_theme"],
         "bytes": info["bytes"],
         "captured": True,
         "file": filename,
-        "force_state": None,
+        "force_state": force_state,
         "height": info["png_height"],
         "width": info["png_width"],
         "locale": locale,
@@ -340,6 +342,8 @@ def _state_row(filename: str, theme: str, locale: str, viewport: str,
         "viewport": viewport,
         "viewport_width": vw,
         "viewport_height": vh,
+        "viewport_css_width": vw,
+        "dpr": 2,
         "css_width": info["css_width"],
         "css_height": info["css_height"],
         "clip": info["clip"],
@@ -347,7 +351,11 @@ def _state_row(filename: str, theme: str, locale: str, viewport: str,
         "verified_how": verified_how,
         "fixture": fixture,
         "trigger": trigger,
+        "crop": crop,
     }
+    if selector:
+        row["selector"] = selector
+    return row
 
 
 P3_PARENT = "origin/claude/marketontology-macro-command-p3-20260908"
@@ -408,7 +416,8 @@ def _extract_parent_site(tmp: Path, pages: list[str]) -> Path:
 
 
 def _capture_metric_table(*, browser, origin: str, page_name: str,
-                          theme: str, locale: str, dest: Path) -> None:
+                          theme: str, locale: str, dest: Path) -> dict[str, Any]:
+    selector = "section.mq-changed table.mq-table"
     ctx, page = _open_page(
         browser=browser, url=f"{origin}/{page_name}", hash_path="",
         theme=theme, locale=locale, width=1440, height=2200)
@@ -417,11 +426,38 @@ def _capture_metric_table(*, browser, origin: str, page_name: str,
         " && (document.documentElement.getAttribute('data-lang') || 'en') === locale",
         arg=[theme, locale],
     )
-    page.wait_for_selector("section.mq-changed table.mq-table", timeout=15000)
-    table = page.locator("section.mq-changed table.mq-table").first
+    page.wait_for_selector(selector, timeout=15000)
+    table = page.locator(selector).first
     table.scroll_into_view_if_needed()
+    page.wait_for_timeout(150)
+    box = table.bounding_box()
+    if not box:
+        ctx.close()
+        raise RuntimeError(f"no bounding box for {page_name} {selector}")
     table.screenshot(path=str(dest), type="png")
+    png = dest.read_bytes()
+    if png[:8] != b"\x89PNG\r\n\x1a\n" or b"IEND" not in png:
+        ctx.close()
+        raise RuntimeError(f"{dest.name} is not a finished PNG")
+    pw, ph = _png_size(dest)
+    applied_theme = page.evaluate("document.documentElement.getAttribute('data-theme')")
+    applied_locale = page.evaluate(
+        "document.documentElement.getAttribute('data-lang') || 'en'")
     ctx.close()
+    if applied_theme != theme or applied_locale != locale:
+        raise RuntimeError(f"theme/lang mismatch {applied_theme}/{applied_locale}")
+    return {
+        "bytes": len(png),
+        "sha256": hashlib.sha256(png).hexdigest(),
+        "png_width": pw,
+        "png_height": ph,
+        "css_width": box["width"],
+        "css_height": box["height"],
+        "clip": box,
+        "applied_theme": applied_theme,
+        "applied_locale": applied_locale,
+        "selector": selector,
+    }
 
 
 def main() -> int:
@@ -436,6 +472,8 @@ def main() -> int:
 
     head = subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    commit_time = subprocess.check_output(
+        ["git", "show", "-s", "--format=%cI", head], cwd=ROOT, text=True).strip()
     captured_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     print(f"rebuilding suite pages at {head}", flush=True)
     builder.render(ROOT, data_root=DATA, out_dir=SITE,
@@ -443,6 +481,9 @@ def main() -> int:
 
     states: list[dict[str, Any]] = []
     gaps: list[str] = []
+    excluded: list[dict[str, Any]] = []
+    for stale in list(EVIDENCE.glob("empty-*.png")) + list(EVIDENCE.glob("state-*.png")):
+        stale.unlink()
     try:
         proc, origin = _serve(SITE)
         url = origin + "/macro_monetary.html"
@@ -498,42 +539,32 @@ def main() -> int:
                             ),
                         ))
 
-            # §4.3 — state frames
-            state_shots = (
-                ("state-growth-business-dark-en-1440.png", "growth",
-                 "#growth/business", "dark", "en",
+            # §4.3 — state frames, both art directions × both locales
+            state_specs = (
+                ("growth-business", "growth", "#growth/business",
                  '[data-mc-tabbody="business"] .mc-move, [data-mc-tabbody="business"] [data-mc-empty]'),
-                ("state-growth-business-light-en-1440.png", "growth",
-                 "#growth/business", "light", "en",
-                 '[data-mc-tabbody="business"] .mc-move, [data-mc-tabbody="business"] [data-mc-empty]'),
-                ("state-credit-funding-dark-en-1440.png", "credit",
-                 "#credit/funding", "dark", "en",
+                ("credit-funding", "credit", "#credit/funding",
                  '[data-mc-tabbody="funding"] .mc-move, [data-mc-tabbody="funding"] [data-mc-empty]'),
-                ("state-credit-funding-light-zh-1440.png", "credit",
-                 "#credit/funding", "light", "zh",
-                 '[data-mc-tabbody="funding"] .mc-move, [data-mc-tabbody="funding"] [data-mc-empty]'),
-                ("state-growth-foot-dark-en-1440.png", "growth",
-                 "#growth", "dark", "en", "section#growth .mc-foot"),
-                ("state-growth-foot-light-en-1440.png", "growth",
-                 "#growth", "light", "en", "section#growth .mc-foot"),
-                ("state-consumer-foot-dark-en-1440.png", "consumer",
-                 "#consumer", "dark", "en", "section#consumer .mc-foot"),
-                ("state-consumer-foot-light-en-1440.png", "consumer",
-                 "#consumer", "light", "en", "section#consumer .mc-foot"),
+                ("growth-foot", "growth", "#growth", "section#growth .mc-foot"),
+                ("consumer-foot", "consumer", "#consumer", "section#consumer .mc-foot"),
             )
-            for name, section, hash_path, theme, locale, wait_sel in state_shots:
-                print(f"capture {name}", flush=True)
-                clip_sel = ("section.mc-panel#" + section
-                            if "foot" not in name
-                            else wait_sel)
-                info = _capture_clip(
-                    browser=browser, url=url, hash_path=hash_path,
-                    theme=theme, locale=locale, dest=EVIDENCE / name,
-                    sel=clip_sel, wait_sel=wait_sel)
-                states.append(_state_row(
-                    name, theme, locale, "desktop", info, section=section,
-                    verified_how="Playwright clip; hash/tab or foot sentence visible",
-                ))
+            for key, section, hash_path, wait_sel in state_specs:
+                for theme in ("dark", "light"):
+                    for locale in ("en", "zh"):
+                        name = f"state-{key}-{theme}-{locale}-1440.png"
+                        print(f"capture {name}", flush=True)
+                        clip_sel = ("section.mc-panel#" + section
+                                    if "foot" not in key
+                                    else wait_sel)
+                        info = _capture_clip(
+                            browser=browser, url=url, hash_path=hash_path,
+                            theme=theme, locale=locale, dest=EVIDENCE / name,
+                            sel=clip_sel, wait_sel=wait_sel)
+                        states.append(_state_row(
+                            name, theme, locale, "desktop", info,
+                            section=section, selector=clip_sel,
+                            verified_how="Playwright clip; hash/tab or foot sentence visible",
+                        ))
 
             # §4.5 P-19 overflow probes + after-crops
             probes: dict[str, Any] = {"p19": [], "copy_guard": None}
@@ -545,17 +576,23 @@ def main() -> int:
                             theme=theme, locale=locale, width=width, height=height)
                         page.wait_for_selector("section#growth .mc-stance", timeout=12000)
                         page.wait_for_timeout(400)
+                        # P3 v10 hides #mmb-boot at ≤768 on body.mc-page.
+                        # Do not wait on the FAB — record computed display.
                         metrics = page.evaluate(
                             """() => {
                                 const de = document.documentElement;
                                 const panel = document.querySelector('section#growth');
                                 const rail = document.querySelector('.mc-rail-list');
+                                const boot = document.getElementById('mmb-boot');
                                 return {
                                     sw: de.scrollWidth, cw: de.clientWidth,
                                     panel_sw: panel && panel.scrollWidth,
                                     panel_cw: panel && panel.clientWidth,
                                     rail_sw: rail && rail.scrollWidth,
                                     rail_cw: rail && rail.clientWidth,
+                                    mmbBootDisplay: boot
+                                        ? getComputedStyle(boot).display
+                                        : null,
                                 };
                             }""")
                         ctx.close()
@@ -591,21 +628,42 @@ def main() -> int:
                 stale.unlink()
             parent_site = _extract_parent_site(tmp, blast_pages)
             _p, parent_origin = _serve(parent_site)
+            blast_selector = "section.mq-changed table.mq-table"
             for page_name in blast_pages:
                 key = page_name.removeprefix("macro_").removesuffix(".html")
                 for theme, locale in BLAST_AXES:
                     before = BLAST / f"before-{key}-{theme}-{locale}-1440.png"
                     after = BLAST / f"after-{key}-{theme}-{locale}-1440.png"
                     print(f"capture {before.name}", flush=True)
-                    _capture_metric_table(
+                    before_info = _capture_metric_table(
                         browser=browser, origin=parent_origin,
                         page_name=page_name, theme=theme, locale=locale,
                         dest=before)
+                    states.append(_state_row(
+                        f"blast-radius/{before.name}", theme, locale,
+                        "desktop", before_info, section=key,
+                        crop=True, selector=blast_selector,
+                        force_state="blast-radius",
+                        verified_how=(
+                            "Playwright crop of section.mq-changed table.mq-table "
+                            "on the P3 parent workspace page at 1440 dpr=2"
+                        ),
+                    ))
                     print(f"capture {after.name}", flush=True)
-                    _capture_metric_table(
+                    after_info = _capture_metric_table(
                         browser=browser, origin=origin,
                         page_name=page_name, theme=theme, locale=locale,
                         dest=after)
+                    states.append(_state_row(
+                        f"blast-radius/{after.name}", theme, locale,
+                        "desktop", after_info, section=key,
+                        crop=True, selector=blast_selector,
+                        force_state="blast-radius",
+                        verified_how=(
+                            "Playwright crop of section.mq-changed table.mq-table "
+                            "on this PR's rebuilt workspace page at 1440 dpr=2"
+                        ),
+                    ))
 
             # §4.4 empty states
             print("building E1/E3 housing fixtures", flush=True)
@@ -645,73 +703,66 @@ def main() -> int:
                 json.dumps({"entitlement": "Research"}, indent=2),
                 encoding="utf-8")
 
-            empty_jobs = (
-                ("empty-e1-dark.png", site_e1, "#housing", "dark", "en",
-                 '[data-mc-empty="e1"]', "section#housing",
+            empty_specs = (
+                ("e1", site_e1, "#housing", '[data-mc-empty="e1"]',
+                 "section#housing",
                  "mockups/evidence/macro-command-p4/fixtures/e1_housing_real_estate.json",
                  "remanifest housing_real_estate: no date, no deltas → E1"),
-                ("empty-e1-light.png", site_e1, "#housing", "light", "en",
-                 '[data-mc-empty="e1"]', "section#housing",
-                 "mockups/evidence/macro-command-p4/fixtures/e1_housing_real_estate.json",
-                 "remanifest housing_real_estate: no date, no deltas → E1"),
-                ("empty-e2-dark.png", site_e2, "#housing", "dark", "en",
-                 '[data-mc-empty="e2"]', "section#housing",
+                ("e2", site_e2, "#housing", '[data-mc-empty="e2"]',
+                 "section#housing",
                  "mockups/evidence/macro-command-p4/fixtures/e2_housing_real_estate.json",
                  "in-memory SOURCE_FAILED on housing_real_estate → E2"),
-                ("empty-e2-light.png", site_e2, "#housing", "light", "en",
-                 '[data-mc-empty="e2"]', "section#housing",
-                 "mockups/evidence/macro-command-p4/fixtures/e2_housing_real_estate.json",
-                 "in-memory SOURCE_FAILED on housing_real_estate → E2"),
-                ("empty-e3-dark.png", site_e3, "#housing", "dark", "en",
-                 '[data-mc-empty="e3"]', "section#housing",
+                ("e3", site_e3, "#housing", '[data-mc-empty="e3"]',
+                 "section#housing",
                  "mockups/evidence/macro-command-p4/fixtures/e3_housing_real_estate.json",
                  "remanifest housing_real_estate: dated, no comparable deltas → E3"),
-                ("empty-e4-dark.png", site_e4, "#credit/funding", "dark", "en",
-                 '[data-mc-empty="e4"]', "section#credit",
+                ("e4", site_e4, "#credit/funding", '[data-mc-empty="e4"]',
+                 "section#credit",
                  "mockups/evidence/macro-command-p4/fixtures/e4_credit_funding.json",
                  "in-memory withheld_command_tabs=['funding'] → E4"),
-                ("empty-e6-dark.png", site_e6, "#credit/funding", "dark", "en",
-                 '[data-mc-empty="e6"]', "section#credit",
-                 "mockups/evidence/macro-command-p4/fixtures/e6_credit_funding.json",
-                 "in-memory entitlement=Research on capital_structure → E6"),
-                ("empty-e6-light.png", site_e6, "#credit/funding", "light", "en",
-                 '[data-mc-empty="e6"]', "section#credit",
+                ("e6", site_e6, "#credit/funding", '[data-mc-empty="e6"]',
+                 "section#credit",
                  "mockups/evidence/macro-command-p4/fixtures/e6_credit_funding.json",
                  "in-memory entitlement=Research on capital_structure → E6"),
             )
             served: dict[Path, str] = {}
-            for (name, site_root, hash_path, theme, locale, wait_sel,
-                 clip_sel, fixture, trigger) in empty_jobs:
+            for (empty_id, site_root, hash_path, wait_sel, clip_sel,
+                 fixture, trigger) in empty_specs:
                 if site_root not in served:
                     _p, origin_fix = _serve(site_root)
                     served[site_root] = origin_fix + "/macro_monetary.html"
-                print(f"capture {name}", flush=True)
-                info = _capture_clip(
-                    browser=browser, url=served[site_root], hash_path=hash_path,
-                    theme=theme, locale=locale, dest=EVIDENCE / name,
-                    sel=clip_sel, wait_sel=wait_sel)
-                states.append(_state_row(
-                    name, theme, locale, "desktop", info,
-                    fixture=fixture, trigger=trigger,
-                    verified_how="real builder render from injected fixture; clip of panel",
-                ))
+                for theme in ("dark", "light"):
+                    for locale in ("en", "zh"):
+                        name = f"empty-{empty_id}-{theme}-{locale}-1440.png"
+                        print(f"capture {name}", flush=True)
+                        info = _capture_clip(
+                            browser=browser, url=served[site_root],
+                            hash_path=hash_path, theme=theme, locale=locale,
+                            dest=EVIDENCE / name, sel=clip_sel,
+                            wait_sel=wait_sel)
+                        states.append(_state_row(
+                            name, theme, locale, "desktop", info,
+                            fixture=fixture, trigger=trigger,
+                            section=clip_sel.lstrip("section#").split()[0],
+                            selector=clip_sel,
+                            verified_how="real builder render from injected fixture; clip of panel",
+                        ))
 
-            # E5 — abort the housing fragment fetch (real client trigger)
-            for theme, name in (("dark", "empty-e5-dark.png"),
-                                ("light", "empty-e5-light.png")):
-                print(f"capture {name}", flush=True)
-                info = _capture_clip(
-                    browser=browser, url=url, hash_path="#housing",
-                    theme=theme, locale="en", dest=EVIDENCE / name,
-                    sel="section#housing",
-                    wait_sel='[data-mc-empty="e5"]',
-                    abort_fragments=True)
-                states.append(_state_row(
-                    name, theme, "en", "desktop", info,
-                    fixture=None,
-                    trigger="Playwright abort of macro/fragments/housing.html → fail() clones template[data-mc-empty-e5]",
-                    verified_how="live rebuilt hub; fragment route aborted; E5 visible",
-                ))
+            # E5 — client fail() of a fragment fetch. Not a dual-theme
+            # product empty P4 ships for review. Recorded, not photographed.
+            excluded: list[dict[str, Any]] = [{
+                "id": "empty-e5",
+                "captured": False,
+                "reason": (
+                    "E5 is a client fail() of macro/fragments/*.html; "
+                    "Playwright abort is not a dual-theme/EN-ZH product "
+                    "state P4 ships as a reviewable empty."
+                ),
+            }]
+            gaps.append(
+                "empty-e5: captured:false — client fragment abort, not a "
+                "dual-theme/EN-ZH product empty (see manifest.excluded)."
+            )
 
             browser.close()
 
@@ -737,10 +788,11 @@ def main() -> int:
                 "themes": ["dark", "light"],
                 "viewports": {"desktop": [1440, 2200], "mobile": [390, 844]},
             },
-            "excluded": [],
+            "excluded": excluded,
             "generated_at": captured_at,
             "head_sha": head,
             "capture_sha": head,
+            "commit_time_of_capture_sha": commit_time,
             "pre_commit": False,
             "honesty": {
                 "access": "anonymous only; no credential is entered, stored, or synthesized",

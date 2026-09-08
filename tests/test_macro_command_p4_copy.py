@@ -591,7 +591,10 @@ def test_e2_on_housing_uses_the_empty_title(tmp_path: Path) -> None:
     sections = builder._macro_command_sections(entries, page_built_at=BUILT_AT)
     housing = next(s for s in sections if s["id"] == "housing")
     assert housing["empty"]["id"] == "e2"
-    assert housing["stance"]["text"]["en"] == L.EMPTY_STATES["e2"]["title"]["en"]
+    assert housing["empty"]["title"]["en"] == L.EMPTY_STATES["e2"]["title"]["en"]
+    assert housing["stance"]["text"]["en"] == L.EMPTY_STATES["e2"]["stance"]["en"]
+    assert housing["stance"]["text"]["zh"] == L.EMPTY_STATES["e2"]["stance"]["zh"]
+    assert housing["stance"]["text"]["en"] != housing["empty"]["title"]["en"]
     assert housing["stance"]["tone"] == "neutral"
     assert housing["caption"] is None
 
@@ -635,7 +638,8 @@ def test_credit_subtab_e2_uses_the_stance_tab_empty_title() -> None:
     credit = next(s for s in sections if s["id"] == "credit")
     borrowing = next(t for t in credit["subtabs"] if t["id"] == "borrowing")
     assert borrowing["empty"]["id"] == "e2"
-    assert credit["stance"]["text"]["en"] == L.EMPTY_STATES["e2"]["title"]["en"]
+    assert credit["stance"]["text"]["en"] == L.EMPTY_STATES["e2"]["stance"]["en"]
+    assert credit["stance"]["text"]["zh"] == L.EMPTY_STATES["e2"]["stance"]["zh"]
     assert credit["caption"] is None
 
 
@@ -850,6 +854,44 @@ def test_p4_live_hub_html_prints_the_i4_state_line(built: tuple[str, Path]) -> N
     assert seen >= 1
 
 
+def test_overview_current_only_emits_no_figure_state_line(built: tuple[str, Path]) -> None:
+    """MIN-2: all-current Overview speaks once via overview_current, never the figure line."""
+    html, _ = built
+    overview = unescape(_panel(html, "overview"))
+    assert "mc-move-current-only" in overview
+    current_en = L.COUNT["same_publication"]["en"]
+    current_zh = L.COUNT["same_publication"]["zh"]
+    stance_en = L.COUNT["overview_current"]["en"]
+    stance_zh = L.COUNT["overview_current"]["zh"]
+    assert current_en not in overview
+    assert current_zh not in overview
+    assert overview.count(stance_en) == 1
+    assert overview.count(stance_zh) == 1
+    assert '<p class="mc-move-state">' not in overview
+
+
+def test_entitlement_walled_section_uses_plan_stance_and_drops_watching() -> None:
+    """N-D: a walled section never issues a read-now instruction; WATCHING is off."""
+    entries = copy.deepcopy(_live_entries())
+    for entry in entries:
+        if entry["workspace_id"] == "capital_structure":
+            entry["snapshot"]["entitlement"] = "Research"
+    sections = builder._macro_command_sections(
+        entries, page_built_at=BUILT_AT, allow_empty_state_fixture=True)
+    credit = next(section for section in sections if section["id"] == "credit")
+    funding = next(tab for tab in credit["subtabs"] if tab["id"] == "funding")
+    assert funding["empty"]["id"] == "e6"
+    plan_en = L.EMPTY_STATES["e6"]["stance"]["en"]
+    plan_zh = L.EMPTY_STATES["e6"]["stance"]["zh"]
+    assert credit["stance"]["text"]["en"] == plan_en
+    assert credit["stance"]["text"]["zh"] == plan_zh
+    assert credit["watching"] is None
+    assert "Read this section closely" not in credit["stance"]["text"]["en"]
+    assert "请先仔细读本板块" not in credit["stance"]["text"]["zh"]
+    assert credit["stance"]["text"]["en"] != L.EMPTY_STATES["e6"]["title"]["en"]
+    assert credit["empty"] is None
+
+
 def test_p4_probes_name_panel_ok_and_doc_ok_separately() -> None:
     """M1: the 390 probe flag is not a lie about document overflow."""
     probes = json.loads(
@@ -869,3 +911,7 @@ def test_p4_probes_name_panel_ok_and_doc_ok_separately() -> None:
     for row in mobile:
         assert row["cw"] == 390
         assert row["sw"] >= 390
+    for row in rows:
+        assert "mmbBootDisplay" in row, row
+        if row["width"] <= 768:
+            assert row["mmbBootDisplay"] == "none", row

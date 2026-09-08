@@ -764,7 +764,10 @@ EMPTY_STATES: dict[str, dict[str, Any]] = {
     },
     "e2": {
         "id": "e2",
-        "title": _pair("Today's number didn't arrive", "今天的数据未能送达"),
+        # N-B: card headline and stance are one sentence each, never the
+        # same sentence twice in one panel.
+        "title": _pair("No reading arrived today.", "今天没有新的读数。"),
+        "stance": _pair("Today's number didn't arrive", "今天的数据未能送达"),
         "why": _pair(
             "The data provider did not deliver in time. We show nothing rather than yesterday's number dressed as today's.",
             "数据提供方未能及时送达。我们宁可不显示，也不会把昨天的数字当作今天的。"),
@@ -803,11 +806,13 @@ EMPTY_STATES: dict[str, dict[str, Any]] = {
     },
     "e6": {
         "id": "e6",
+        # P3 v16 + P4: title is the suite-law ZH; stance/why/unlock each add one fact.
         "title": _pair("Included in a higher plan", "包含在更高方案中"),
-        "why": _pair("This section is part of {plan}.", "本板块属于{plan}。"),
+        # N-D: a walled section never issues a read-now instruction.
         "stance": _pair(
             "The reading is available on upgrade.",
             "升级后可查看该读数。"),
+        "why": _pair("This section is part of {plan}.", "本板块属于{plan}。"),
         "unlock": _pair("See it with an upgrade.", "升级即可查看。"),
         "cta_href": "plans.html",
         "cta_label": _pair("Upgrade to see it", "查看升级方案"),

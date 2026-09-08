@@ -7,6 +7,7 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
+from lib import macro_suite_labels as L
 from scripts import build_macro_suite_pages as builder
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -34,7 +35,9 @@ def test_e1_through_e6_render_the_spec_sentences_verbatim() -> None:
 
     e2 = _render_empty(builder._empty_state("e2"))
     assert 'data-mc-empty="e2"' in e2
-    assert "Today's number didn't arrive" in e2
+    assert "No reading arrived today." in e2
+    assert "今天没有新的读数。" in e2
+    assert "Today's number didn't arrive" not in e2
     assert "昨天的数字当作今天的" in e2
     assert "mc-empty-next" not in e2  # unlock/next merged into unlock
 
@@ -63,6 +66,7 @@ def test_e1_through_e6_render_the_spec_sentences_verbatim() -> None:
     assert "Upgrade to see it" in e6
     assert "查看升级方案" in e6
     assert 'href="plans.html"' in e6
+    assert e6.count("Upgrade to see it") == 1
     assert "mc-empty-next" not in e6
     assert "包含于更高级别方案" not in e6
     assert "升级后即可查看" not in e6
@@ -101,10 +105,18 @@ def test_one_null_voice_drops_caption_and_matches_stance_for_e1_through_e6() -> 
             kwargs["plan"] = "Pro"
         empty = builder._empty_state(empty_id, **kwargs)
         voice = builder._apply_empty_voice(empty)
-        assert voice is None, empty_id
+        spec = L.EMPTY_STATES[empty_id]
+        expected = spec.get("stance") or spec["title"]
+        assert voice is not None, empty_id
+        assert voice["text"]["en"] == expected["en"]
+        assert voice["text"]["zh"] == expected["zh"]
         html = _render_empty(empty)
         assert "Each row shows the last two readings" not in html
         assert empty["title"]["en"] in html
+        if spec.get("stance"):
+            assert empty["title"]["en"] != voice["text"]["en"], empty_id
+            assert empty["title"]["zh"] != voice["text"]["zh"], empty_id
+            assert voice["text"]["en"] not in html, empty_id
 
 
 def test_empty_states_have_no_repeated_visible_string() -> None:

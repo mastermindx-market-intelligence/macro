@@ -809,7 +809,11 @@ def test_one_null_voice_for_every_section_level_empty() -> None:
     for empty_id in ("e1", "e2", "e3", "e6"):
         voice = builder._apply_empty_voice(builder._empty_state(
             empty_id, plan="Research" if empty_id == "e6" else None))
-        assert voice is None, empty_id
+        assert voice is not None
+        assert voice["tone"] == "neutral"
+        spec = L.EMPTY_STATES[empty_id]
+        expected = spec.get("stance") or spec["title"]
+        assert voice["text"]["en"] == expected["en"]
 
 
 def test_p3_clearance_probes_are_real_geometry() -> None:
