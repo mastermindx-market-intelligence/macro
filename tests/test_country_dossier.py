@@ -16,6 +16,7 @@ from engine.country_dossier import (
     STANCE_KEYS,
     build_dossier_block,
     dossier_path,
+    normalize_dossier,
 )
 from engine.international_macro_dashboard import (
     REGIONS,
@@ -177,67 +178,73 @@ def test_malformed_schema_fails_closed(tmp_path: Path) -> None:
             "duplicate_seat",
             lambda d: d["seats"].append(copy.deepcopy(d["seats"][0])),
         ),
-        (
-            "five_seats",
-            lambda d: d.update(
-                {
-                    "seats": [
-                        {**copy.deepcopy(d["seats"][0]), "key": k}
-                        for k in (
-                            "head_of_government",
-                            "central_bank",
-                            "finance",
-                            "legislature",
-                            "central_bank",
-                        )
-                    ]
-                }
-            ),
-        ),
         ("wrong_schema", lambda d: d.__setitem__("schema", "other.v1")),
         ("bad_tier", lambda d: d.__setitem__("tier", "authority")),
     ]
     for name, mut in cases:
         data = _minimal_ok_yaml()
-        # five_seats needs unique keys but >4 — rebuild carefully
-        if name == "five_seats":
-            seat0 = copy.deepcopy(data["seats"][0])
-            data["seats"] = []
-            for i, k in enumerate(
-                (
-                    "head_of_government",
-                    "central_bank",
-                    "finance",
-                    "legislature",
-                )
-            ):
-                s = copy.deepcopy(seat0)
-                s["key"] = k
-                data["seats"].append(s)
-            extra = copy.deepcopy(seat0)
-            extra["key"] = "central_bank"  # will also fail duplicate if 5th with dup — use 5 unique by adding a clone with same after pad
-            # Spec: 5 seats → invalid. Force length 5 with a duplicate key intentionally:
-            data["seats"].append(extra)
-        else:
-            mut(data)
+        mut(data)
         _write_yaml(tmp_path, "XX", data)
         block = build_dossier_block("XX", today=TODAY, root=tmp_path)
         assert block["state"] == "invalid", name
         assert block.get("reason"), name
+        assert block["degraded"] is True, name
 
     _write_yaml(tmp_path, "YY", "{ this is: [not: valid")
     bad = build_dossier_block("YY", today=TODAY, root=tmp_path)
     assert bad["state"] == "invalid"
     assert bad.get("reason")
+    assert bad["degraded"] is True
 
+
+def test_more_than_max_seats_fails_as_seats_reason(tmp_path: Path) -> None:
+    """SEAT_KEYS has four members, so a fifth seat cannot be unique.
+
+    The length rule fires before the duplicate-key walk, and that is the
+    rule this case exists to pin.
+    """
+    data = _minimal_ok_yaml()
+    seat0 = copy.deepcopy(data["seats"][0])
+    data["seats"] = []
+    for key in ("head_of_government", "central_bank", "finance", "legislature"):
+        seat = copy.deepcopy(seat0)
+        seat["key"] = key
+        data["seats"].append(seat)
+    extra = copy.deepcopy(seat0)
+    extra["key"] = "central_bank"
+    data["seats"].append(extra)
+    assert len(data["seats"]) == 5
+    _write_yaml(tmp_path, "XX", data)
+    block = build_dossier_block("XX", today=TODAY, root=tmp_path)
+    assert block["state"] == "invalid"
+    assert block["reason"] == "seats"
+
+
+def test_validate_view_warns_but_does_not_mutate_invalid(capsys) -> None:
     view = build_country_view(_jp_record(), today=TODAY)
-    view["dossier"] = bad
-    # A context-only dossier (never feeds a score/regime/rank/trade call) must not
-    # hard-fail the country build on a curator typo — it degrades to a typed null
-    # with the original reason preserved instead of raising.
+    broken = {
+        "schema": SCHEMA,
+        "state": "invalid",
+        "cc": "JP",
+        "reason": "unreadable",
+        "degraded": True,
+        "review_interval_days": None,
+        "stance": None,
+        "seats": [],
+    }
+    view["dossier"] = broken
+    before = copy.deepcopy(view["dossier"])
     validate_view(view)
-    assert view["dossier"]["state"] == "no_coverage"
-    assert view["dossier"]["reason"] == bad["reason"]
+    assert view["dossier"] == before
+    assert view["dossier"]["state"] == "invalid"
+    assert view["dossier"]["reason"] == "unreadable"
+    warning = next(
+        line
+        for line in capsys.readouterr().out.splitlines()
+        if "country-dossier-invalid" in line
+    )
+    assert warning.startswith("::warning title=country-dossier-invalid::")
+    assert "unreadable" in warning
 
 
 def test_stale_is_a_state_not_an_error(tmp_path: Path) -> None:
@@ -254,6 +261,8 @@ def test_rights_suppressed_drops_detail(tmp_path: Path) -> None:
     _write_yaml(tmp_path, "XX", data)
     block = build_dossier_block("XX", today=TODAY, root=tmp_path)
     assert block["state"] == "rights_suppressed"
+    assert block["review_interval_days"] == 180
+    assert block["degraded"] is False
     assert "holder" not in str(block)
 
     data2 = _minimal_ok_yaml()
@@ -350,3 +359,188 @@ def test_no_llm_and_no_network() -> None:
 
 def test_dossier_path_joins_region_stem() -> None:
     assert dossier_path("JP").name == "jp.yaml"
+
+
+def test_normalize_dossier_marks_invalid_without_mutating() -> None:
+    raw = {
+        "schema": SCHEMA,
+        "state": "invalid",
+        "cc": "XX",
+        "reason": "schema",
+        "degraded": False,
+    }
+    snapshot = copy.deepcopy(raw)
+    out = normalize_dossier(raw)
+    assert raw == snapshot
+    assert out is not raw
+    assert out["state"] == "invalid"
+    assert out["degraded"] is True
+    assert out["reason"] == "schema"
+    covered = normalize_dossier({"schema": SCHEMA, "state": "no_coverage"})
+    assert covered["degraded"] is False
+    assert covered["state"] == "no_coverage"
+
+
+def test_jp_chinese_holder_uses_han_not_kana() -> None:
+    data = yaml.safe_load(
+        (ROOT / "knowledge" / "policy_geo" / "country_dossier" / "jp.yaml").read_text(
+            encoding="utf-8"
+        )
+    )
+    finance = next(seat for seat in data["seats"] if seat["key"] == "finance")
+    assert finance["holder"]["zh"] == "片山皋月"
+    assert not re.search(r"[\u3040-\u30ff]", finance["holder"]["zh"])
+    assert not re.search(r"[\u3040-\u30ff]", finance["evidence"]["document"]["zh"])
+
+
+def _render_view(view: dict) -> str:
+    from jinja2 import Environment, FileSystemLoader
+
+    env = Environment(
+        loader=FileSystemLoader(str(ROOT / "templates")),
+        autoescape=False,
+        trim_blocks=True,
+        lstrip_blocks=True,
+    )
+    return env.get_template("international_macro.html.j2").render(D=view, RADAR=None)
+
+
+def _dossier_section(html: str) -> str:
+    return html.split('class="imd-section imd-dossier"', 1)[1].split(
+        'class="imd-section"', 1
+    )[0]
+
+
+def _assert_en_zh_balance(section: str) -> None:
+    en = re.findall(r'<span class="l-en">', section)
+    zh = re.findall(r'<span class="l-zh">', section)
+    assert len(en) == len(zh)
+    assert len(en) >= 2
+
+
+def test_typed_null_and_degraded_copy_renders_exact_sentences(tmp_path: Path) -> None:
+    view = build_country_view(_jp_record(), today=TODAY)
+
+    view["dossier"] = build_dossier_block("ZZ", today=TODAY, root=tmp_path)
+    section = _dossier_section(_render_view(view))
+    assert (
+        "Not tracked yet — we haven't published a policy dossier for this country."
+        in section
+    )
+    assert "尚未收录 — 我们还没有发布该国的政策档案。" in section
+    assert "Being re-checked" not in section
+    _assert_en_zh_balance(section)
+
+    _write_yaml(tmp_path, "YY", "{ this is: [not: valid")
+    view["dossier"] = normalize_dossier(
+        build_dossier_block("YY", today=TODAY, root=tmp_path)
+    )
+    section = _dossier_section(_render_view(view))
+    assert "Being re-checked — we're updating this dossier" in section
+    assert "正在复核 — 我们正在更新这份档案。" in section
+    assert "Not tracked yet" not in section
+    assert 'class="imd-card imd-dos-stance s-"' not in section
+    _assert_en_zh_balance(section)
+
+    rights = _minimal_ok_yaml(rights="suppressed")
+    _write_yaml(tmp_path, "XX", rights)
+    view["dossier"] = build_dossier_block("XX", today=TODAY, root=tmp_path)
+    section = _dossier_section(_render_view(view))
+    assert "We can't republish this source's detail — read it at the publisher." in section
+    assert "我们无权转载该来源的细节 — 请前往发布方查看。" in section
+    _assert_en_zh_balance(section)
+
+    view["dossier"] = {
+        "schema": SCHEMA,
+        "state": "mystery",
+        "degraded": False,
+        "stance": None,
+        "seats": [],
+    }
+    section = _dossier_section(_render_view(view))
+    assert "This policy brief isn't ready to show — we're not guessing." in section
+    assert "这份政策简报尚未可展示 — 我们不会臆造。" in section
+    assert 'class="imd-card imd-dos-stance s-"' not in section
+    _assert_en_zh_balance(section)
+
+
+def test_ambiguous_seat_and_null_since_render_exact_sentences(tmp_path: Path) -> None:
+    data = _minimal_ok_yaml()
+    data["seats"][0]["jurisdiction"] = "ambiguous"
+    _write_yaml(tmp_path, "XX", data)
+    view = build_country_view(_jp_record(), today=TODAY)
+    view["dossier"] = build_dossier_block("XX", today=TODAY, root=tmp_path)
+    section = _dossier_section(_render_view(view))
+    assert (
+        "Who holds this seat is unsettled right now — we're not naming one office."
+        in section
+    )
+    assert "目前该职位归属尚未明确 — 我们不指定单一机构。" in section
+    _assert_en_zh_balance(section)
+
+    legislature = _minimal_ok_yaml()
+    legislature["dossier"] = "xl"
+    legislature["region"] = "XL"
+    seat = copy.deepcopy(legislature["seats"][0])
+    seat["key"] = "legislature"
+    seat["since"] = None
+    legislature["seats"] = [seat]
+    _write_yaml(tmp_path, "XL", legislature)
+    view["dossier"] = build_dossier_block("XL", today=TODAY, root=tmp_path)
+    assert view["dossier"]["seats"][0]["since"] is None
+    section = _dossier_section(_render_view(view))
+    assert "Start date not published" in section
+    assert "未公布任职起始日期" in section
+    _assert_en_zh_balance(section)
+
+
+def test_stale_sentence_is_a_caption_not_a_pill(tmp_path: Path) -> None:
+    data = _minimal_ok_yaml(reviewed_at=(TODAY - timedelta(days=200)).isoformat())
+    _write_yaml(tmp_path, "XX", data)
+    view = build_country_view(_jp_record(), today=TODAY)
+    view["dossier"] = build_dossier_block("XX", today=TODAY, root=tmp_path)
+    assert view["dossier"]["state"] == "stale"
+    html = _render_view(view)
+    section = _dossier_section(html)
+    chips = section.split('class="imd-dos-chips"', 1)[1].split("</div>", 1)[0]
+    assert "Background only" in chips
+    assert "仅作背景" in chips
+    assert "read it as background" not in chips
+    assert "请仅作背景参考" not in chips
+    assert 'class="imd-chip fresh"' not in section
+    cap = section.split('class="imd-dos-stale-cap"', 1)[1].split("</p>", 1)[0]
+    assert "read it as background" in cap
+    assert "请仅作背景参考" in cap
+    _assert_en_zh_balance(section)
+
+
+def test_ok_confirmed_chip_keeps_fresh_class() -> None:
+    view = build_country_view(_jp_record(), today=TODAY)
+    if view["dossier"]["state"] != "ok":
+        pytest.skip("live JP dossier is not in the ok state on this pin date")
+    section = _dossier_section(_render_view(view))
+    assert 'class="imd-chip fresh"' in section
+    assert "Background only" not in section
+
+
+def test_new_dossier_css_has_no_blocking_literals() -> None:
+    text = (ROOT / "templates" / "international_macro.html.j2").read_text(encoding="utf-8")
+    start = text.index("/* Policy dossier")
+    end = text.index(".imd-calendar{")
+    chunk = text[start:end]
+    assert "#0b1220" not in chunk
+    assert "rgba(" not in chunk
+    assert "--dos-ink" not in chunk
+    assert "border-radius:4px" not in chunk
+    assert "border-radius:var(--imd-radius) var(--imd-radius)" not in chunk
+    import scripts.check_design_system as ds
+
+    blocking = [
+        finding
+        for finding in ds.scan_text("templates/international_macro.html.j2", chunk)
+        if finding.rule in ds.ADDED_BLOCKING_RULES
+    ]
+    assert blocking == [], blocking
+    assert "var(--r-" in chunk
+    assert "var(--imd-shadow)" in chunk
+    assert "var(--text)" in chunk

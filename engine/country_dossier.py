@@ -2,8 +2,10 @@
 
 Deterministic over a curated, source-cited YAML substrate under
 ``knowledge/policy_geo/country_dossier/``. Never raises into the build —
-malformed input returns ``state="invalid"``; ``validate_view`` is the
-fail-closed gate. No network I/O, no LLM, no scoring-core imports.
+malformed input returns ``state="invalid"`` with ``degraded=True``.
+``validate_view`` warns on that state but does not mutate the block; the
+template has its own typed-null card. No network I/O, no LLM, no
+scoring-core imports.
 """
 
 from __future__ import annotations
@@ -60,7 +62,7 @@ def build_dossier_block(
     try:
         path = dossier_path(cc_up, root=root)
     except Exception:  # noqa: BLE001 — total contract
-        return {**empty, "state": "invalid", "reason": "path_error"}
+        return {**empty, "state": "invalid", "reason": "path_error", "degraded": True}
 
     if not path.is_file():
         return {**empty, "state": "no_coverage", "reason": "file_absent"}
@@ -68,19 +70,34 @@ def build_dossier_block(
     try:
         raw_text = path.read_text(encoding="utf-8")
     except Exception:  # noqa: BLE001
-        return {**empty, "state": "invalid", "reason": "unreadable"}
+        return {**empty, "state": "invalid", "reason": "unreadable", "degraded": True}
 
     try:
         data = yaml.safe_load(raw_text)
     except yaml.YAMLError:
-        return {**empty, "state": "invalid", "reason": "unreadable"}
+        return {**empty, "state": "invalid", "reason": "unreadable", "degraded": True}
     except Exception:  # noqa: BLE001
-        return {**empty, "state": "invalid", "reason": "unreadable"}
+        return {**empty, "state": "invalid", "reason": "unreadable", "degraded": True}
 
     if not isinstance(data, dict):
-        return {**empty, "state": "invalid", "reason": "unreadable"}
+        return {**empty, "state": "invalid", "reason": "unreadable", "degraded": True}
 
     return _validate_and_build(data, path=path, cc_up=cc_up, today=today)
+
+
+def normalize_dossier(block: dict[str, Any]) -> dict[str, Any]:
+    """Return a render-ready copy. Never mutates ``block``.
+
+    An ``invalid`` curator payload stays ``invalid`` (the template has its own
+    typed-null card) and is marked ``degraded=True`` so the page can say
+    "being re-checked" instead of "not tracked yet".
+    """
+    out = dict(block)
+    if out.get("state") == "invalid":
+        out["degraded"] = True
+    else:
+        out.setdefault("degraded", False)
+    return out
 
 
 def _empty_block(cc_up: str) -> dict[str, Any]:
@@ -97,6 +114,7 @@ def _empty_block(cc_up: str) -> dict[str, Any]:
         "stance": None,
         "seats": [],
         "reason": None,
+        "degraded": False,
     }
 
 
@@ -110,7 +128,7 @@ def _validate_and_build(
     empty = _empty_block(cc_up)
 
     def fail(reason: str) -> dict[str, Any]:
-        return {**empty, "state": "invalid", "reason": reason}
+        return {**empty, "state": "invalid", "reason": reason, "degraded": True}
 
     stem = path.stem.lower()
     dossier_key = data.get("dossier")
@@ -159,9 +177,11 @@ def _validate_and_build(
             "reviewed_at_human_en": _human_en(reviewed_at),
             "reviewed_at_human_zh": _human_zh(reviewed_at),
             "age_days": (today - reviewed_at).days,
+            "review_interval_days": interval,
             "stance": None,
             "seats": [],
             "reason": "rights_suppressed",
+            "degraded": False,
         }
 
     stance_raw = data.get("stance")
@@ -203,6 +223,7 @@ def _validate_and_build(
         "stance": stance,
         "seats": seats,
         "reason": "stale" if state == "stale" else None,
+        "degraded": False,
     }
 
 

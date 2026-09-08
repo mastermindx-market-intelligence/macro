@@ -144,9 +144,10 @@ button.imd-face:focus-visible,.imd-close:focus-visible{outline:2px solid var(--l
 .imd-dos-stance.s-on_hold,.imd-dos-stance.s-not_stated{--dos:var(--muted)}
 .imd-dos-stance::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--dos)}
 .imd-dos-stance-top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
-.imd-dos-word{font:700 22px/1.1 var(--imd-num);letter-spacing:-.03em;color:var(--dos-ink,var(--dos))}
+.imd-dos-word{font:700 22px/1.1 var(--imd-num);letter-spacing:-.03em;color:var(--dos)}
 .imd-dos-chips{display:flex;gap:6px;flex-wrap:wrap}
 .imd-dos-mean{margin:8px 0 0;font-size:12px;color:var(--text)}
+.imd-dos-stale-cap{margin:6px 0 0;font-size:11px;line-height:1.45;color:var(--muted)}
 .imd-dos-seats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:10px}
 .imd-dos-seat{padding:16px}
 .imd-dos-plate{padding-bottom:8px;border-bottom:1px solid var(--imd-hair);font:600 9.5px/1.5 var(--imd-num);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
@@ -164,7 +165,7 @@ button.imd-face:focus-visible,.imd-close:focus-visible{outline:2px solid var(--l
 .imd-dos-src dt{color:var(--muted)}
 .imd-dos-src dd{margin:0;overflow-wrap:anywhere}
 .imd-dos-src a{text-decoration:underline;text-underline-offset:2px}
-.imd-dos-src summary:focus-visible,.imd-dos-src a:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-radius:4px}
+.imd-dos-src summary:focus-visible,.imd-dos-src a:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-radius:var(--r-xs,4px)}
 
 /* DARK — command center: the panel is translucent glass over the aurora, and the stance
    rail EMITS. The glow is on the 3px rail only, never on the type. */
@@ -172,7 +173,7 @@ button.imd-face:focus-visible,.imd-close:focus-visible{outline:2px solid var(--l
   box-shadow:var(--imd-shadow),inset 3px 0 12px -8px color-mix(in srgb,var(--dos) 60%,transparent);
 }
 .imd-dos-stance::before{box-shadow:0 0 14px -2px color-mix(in srgb,var(--dos) 62%,transparent)}
-.imd-dos-plate{background:linear-gradient(180deg,color-mix(in srgb,var(--text) 4%,transparent),transparent);margin:-16px -16px 0;padding:16px 16px 8px;border-radius:var(--imd-radius) var(--imd-radius) 0 0}
+.imd-dos-plate{background:linear-gradient(180deg,color-mix(in srgb,var(--text) 4%,transparent),transparent);margin:-16px -16px 0;padding:16px 16px 8px;border-radius:var(--r-card,var(--imd-radius)) var(--r-card,var(--imd-radius)) 0 0}
 
 /* LIGHT — research workspace: white material, hairline discipline, no emission anywhere.
    The rail stops glowing and becomes a solid ink bar with a darker edge; depth comes from a
@@ -180,17 +181,19 @@ button.imd-face:focus-visible,.imd-close:focus-visible{outline:2px solid var(--l
    at full strength (an amber --warn, a mint --up) is unreadable on white — this is the
    concrete reason a token swap alone would not have produced a light design here. */
 html[data-theme="light"] .imd-dos-stance{
-  --dos-ink:color-mix(in srgb,var(--dos) 74%,#0b1220);
-  box-shadow:0 1px 2px rgba(18,35,62,.06),0 10px 24px -14px rgba(18,35,62,.34);
+  box-shadow:var(--imd-shadow);
+}
+html[data-theme="light"] .imd-dos-word{
+  color:color-mix(in srgb,var(--dos) 74%,var(--text));
 }
 html[data-theme="light"] .imd-dos-stance::before{
-  box-shadow:none;background:color-mix(in srgb,var(--dos) 82%,#0b1220);
+  box-shadow:none;background:color-mix(in srgb,var(--dos) 82%,var(--text));
 }
 html[data-theme="light"] .imd-dos-plate{
   background:none;margin:0;padding:0 0 8px;border-radius:0;
-  border-bottom:1px solid var(--imd-border);color:color-mix(in srgb,var(--muted) 82%,#0b1220);
+  border-bottom:1px solid var(--imd-border);color:color-mix(in srgb,var(--muted) 82%,var(--text));
 }
-html[data-theme="light"] .imd-dos-seat{box-shadow:0 1px 2px rgba(18,35,62,.05),0 8px 18px -14px rgba(18,35,62,.30)}
+html[data-theme="light"] .imd-dos-seat{box-shadow:var(--imd-shadow)}
 .imd-calendar{display:grid;gap:8px}
 .imd-event{display:grid;grid-template-columns:105px 1fr auto;gap:14px;align-items:center;padding:13px 15px}
 .imd-event-date{font:750 12px var(--imd-num)}
@@ -452,29 +455,35 @@ body.imd-lock{overflow:hidden}
     'mixed': '官员释放的信号并不一致。',
     'not_stated': '官员未表明政策方向。'
   } %}
-  <section class="imd-section imd-dossier" aria-label="Who sets policy">
+  <section class="imd-section imd-dossier">
     <div class="imd-section-head">
       <h2>{{ t('Who sets policy here','谁在制定这里的政策') }}</h2>
       <p>{{ t("Context only — the people and institutions behind the policy calls, with the document each line comes from.",'仅作背景 — 政策决定背后的机构与人员，并附每一行的出处文件。') }}</p>
     </div>
 
-    {% if dos.state == 'no_coverage' %}
+    {% if dos.state == 'invalid' or dos.degraded %}
+    <div class="imd-card imd-dos-null na">{{ t("Being re-checked — we're updating this dossier",'正在复核 — 我们正在更新这份档案。') }}</div>
+
+    {% elif dos.state == 'no_coverage' %}
     <div class="imd-card imd-dos-null na">{{ t("Not tracked yet — we haven't published a policy dossier for this country.",'尚未收录 — 我们还没有发布该国的政策档案。') }}</div>
 
     {% elif dos.state == 'rights_suppressed' %}
     <div class="imd-card imd-dos-null na">{{ t("We can't republish this source's detail — read it at the publisher.",'我们无权转载该来源的细节 — 请前往发布方查看。') }}</div>
 
-    {% else %}
+    {% elif dos.state in ('ok', 'stale') %}
     <article class="imd-card imd-dos-stance s-{{ dos.stance.key }}">
       <div class="imd-dos-stance-top">
         <div class="imd-dos-word">{{ t(STANCE_EN[dos.stance.key], STANCE_ZH[dos.stance.key]) }}</div>
         <div class="imd-dos-chips">
-          <span class="imd-chip fresh">{{ t('Confirmed ' ~ dos.stance.known_at_human_en, '确认于 ' ~ dos.stance.known_at_human_zh) }}</span>
-          {% if dos.state == 'stale' %}<span class="imd-chip stale">{{ t('Last checked ' ~ dos.reviewed_at_human_en ~ ' — older than our ' ~ dos.review_interval_days ~ '-day review, so read it as background.','最近核对于 ' ~ dos.reviewed_at_human_zh ~ ' — 已超过我们的' ~ dos.review_interval_days ~ '天复核周期，请仅作背景参考。') }}</span>{% endif %}
+          <span class="imd-chip{% if dos.state != 'stale' %} fresh{% endif %}">{{ t('Confirmed ' ~ dos.stance.known_at_human_en, '确认于 ' ~ dos.stance.known_at_human_zh) }}</span>
+          {% if dos.state == 'stale' %}<span class="imd-chip stale">{{ t('Background only','仅作背景') }}</span>{% endif %}
           <span class="imd-chip">{{ t('Watch — don’t chase','观察，不追涨') }}</span>
         </div>
       </div>
       <p class="imd-dos-mean">{{ t(STANCE_MEAN_EN[dos.stance.key], STANCE_MEAN_ZH[dos.stance.key]) }}</p>
+      {% if dos.state == 'stale' %}
+      <p class="imd-dos-stale-cap">{{ t('Last checked ' ~ dos.reviewed_at_human_en ~ ' — older than our ' ~ dos.review_interval_days ~ '-day review, so read it as background.','最近核对于 ' ~ dos.reviewed_at_human_zh ~ ' — 已超过我们的' ~ dos.review_interval_days ~ '天复核周期，请仅作背景参考。') }}</p>
+      {% endif %}
       <details class="imd-dos-src">
         <summary>{{ t('Where this comes from','资料来源') }}</summary>
         <dl>
@@ -515,6 +524,9 @@ body.imd-lock{overflow:hidden}
       </article>
       {% endfor %}
     </div>
+
+    {% else %}
+    <div class="imd-card imd-dos-null na">{{ t("This policy brief isn't ready to show — we're not guessing.",'这份政策简报尚未可展示 — 我们不会臆造。') }}</div>
     {% endif %}
   </section>
 

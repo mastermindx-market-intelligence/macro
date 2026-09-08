@@ -22,7 +22,7 @@ from typing import Any
 import pandas as pd
 import yaml
 
-from engine.country_dossier import build_dossier_block
+from engine.country_dossier import build_dossier_block, normalize_dossier
 from lib import config
 
 SCHEMA = "international_macro_dashboard.v1"
@@ -1102,7 +1102,7 @@ def build_country_view(
         "sources": source_rows,
         "caveat_en": spec.caveat_en,
         "caveat_zh": spec.caveat_zh,
-        "dossier": build_dossier_block(cc, today=today),
+        "dossier": normalize_dossier(build_dossier_block(cc, today=today)),
         "navigation": [
             {
                 "cc": other.cc,
@@ -1145,15 +1145,20 @@ def validate_view(view: dict[str, Any]) -> None:
     if dossier.get("state") == "invalid":
         # A context-only dossier must never fail the whole country build (its own
         # module docstring promises "Never raises into the build" — a curator typo
-        # is not a liveness incident). Degrade to a typed null and warn instead.
+        # is not a liveness incident). Warn, leave the block untouched, and let
+        # the template's typed-null card print the honest "being re-checked" copy.
         reason = dossier.get("reason")
         print(
             f"::warning title=country-dossier-invalid::{view.get('cc')} {reason}",
             flush=True,
         )
-        dossier["state"] = "no_coverage"
-        dossier["reason"] = reason
-    if dossier.get("state") not in {"ok", "no_coverage", "stale", "rights_suppressed"}:
+    if dossier.get("state") not in {
+        "ok",
+        "no_coverage",
+        "stale",
+        "rights_suppressed",
+        "invalid",
+    }:
         raise ValueError("unknown country dossier state")
 
 

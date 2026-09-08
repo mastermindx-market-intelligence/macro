@@ -56,7 +56,7 @@ seats:
   - key: finance
     role: {en: "Minister of Finance", zh: "财务大臣"}
     institution: {en: "Ministry of Finance", zh: "财务省"}
-    holder: {en: "KATAYAMA Satsuki", zh: "片山さつき"}
+    holder: {en: "KATAYAMA Satsuki", zh: "片山皋月"}
     since: 2026-02-18
     note: {en: "Oversees the national budget, taxation and financial regulation policy.", zh: "负责国家预算、税收与金融监管政策。"}
     claim: FACT
@@ -66,5 +66,5 @@ seats:
     evidence:
       source_url: https://japan.kantei.go.jp/105/meibo/daijin/katayama_satsuki.html
       publisher: {en: "Prime Minister's Office of Japan", zh: "日本首相官邸"}
-      document: {en: "Cabinet member profile — Katayama Satsuki", zh: "内阁成员简介－片山さつき"}
+      document: {en: "Cabinet member profile — Katayama Satsuki", zh: "内阁成员简介－片山皋月"}
       version: "2026-02"

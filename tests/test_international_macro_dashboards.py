@@ -407,20 +407,21 @@ def test_view_carries_a_dossier_block() -> None:
     validate_view(view)
 
 
-def test_validate_view_degrades_an_invalid_dossier_to_no_coverage() -> None:
+def test_validate_view_leaves_an_invalid_dossier_untouched() -> None:
     # A context-only dossier (never feeds a score/regime/rank/trade call) must not
-    # be able to hard-fail the whole country build on a curator typo — it degrades
-    # to a typed null with the reason preserved, per country_dossier.py's own
-    # "Never raises into the build" contract.
+    # be able to hard-fail the whole country build on a curator typo. The
+    # validator warns and stays pure — the template owns the typed-null card.
     import copy
 
     view = build_country_view(_record("JP"), today=date(2026, 9, 6))
     broken = copy.deepcopy(view)
     broken["dossier"]["state"] = "invalid"
     broken["dossier"]["reason"] = "test"
+    broken["dossier"]["degraded"] = True
     validate_view(broken)  # must not raise
-    assert broken["dossier"]["state"] == "no_coverage"
+    assert broken["dossier"]["state"] == "invalid"
     assert broken["dossier"]["reason"] == "test"
+    assert broken["dossier"]["degraded"] is True
 
 
 def test_a_country_without_a_dossier_still_renders() -> None:
