@@ -17,6 +17,7 @@ import ast
 import hashlib
 import importlib.util
 import json
+import shutil
 import struct
 import subprocess
 import sys
@@ -1322,3 +1323,28 @@ def test_annotations_start_the_line_as_bare_prints():
 
     assert found >= 3, "the module should still carry its annotation emissions"
     assert "log.warning" not in source and "logger.warning" not in source
+
+
+def test_state_seed_source_is_a_terminated_statement_safe_to_concatenate():
+    """The seed init script is plain text that wrappers concatenate onto.
+
+    Shipped defect (sanctions_map evidence, 2026-09-08): the seed was emitted as an
+    unterminated ``(fn)(state)``; a capture wrapper appended its own IIFE after a
+    newline, and the two parsed as ONE call-of-a-call —
+    ``(intermediate value)(...) is not a function`` — thrown before the page's
+    first script and recorded in the manifest as a page console error with no
+    source URL. The fix is the terminating semicolon, never a try/catch.
+    """
+    module = _load_module()
+    seed = module.state_seed_source({"theme": "dark", "locale": "en"})
+    assert seed.rstrip().endswith(");"), seed[-40:]
+    wrapper_iifes = "\n(function(){ globalThis.__wrapped = 1; })();"
+    composed = seed + wrapper_iifes
+    # Two statements, not one: the seed's closing ')' is followed by ';' BEFORE the newline.
+    assert ");\n(function" in composed
+    assert ")\n(function" not in composed
+    node = shutil.which("node")
+    if node:  # behavioural proof when a JS engine is on PATH; the string assertions above bind regardless
+        probe = composed + "\nif (globalThis.__wrapped !== 1) throw new Error('wrapper IIFE never ran');"
+        run = subprocess.run([node, "-e", probe], capture_output=True, text=True, timeout=30)
+        assert run.returncode == 0, run.stderr
