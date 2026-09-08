@@ -5273,6 +5273,7 @@ jobs:
       - agentos/discoveries/DSC-COMMODITY-AND-FX-PRICE-SPINE-YAHOO-VENDOR-TERMS-ARE-RECORDED-ADVERSE.md
       - research/market_intelligence_productization/F01_FX_COMMODITY_SOURCE_RIGHTS_AND_DEPTH_2026-09.md
       - research/market_intelligence_productization/F01_FX_DISLOCATION_CHARTER_2026-09.md
+      - tests/test_f02_owner_map_receipts.py
       - tests/test_self_mod_fence.py
       - tests/test_ci_authority.py
       - tests/test_ci_semantic_proof.py
@@ -5395,7 +5396,7 @@ jobs:
           # out would otherwise pass as a skip. This line cannot skip.
           python3 scripts/agentos.py validate
           python -m pytest tests/test_agentos_schema.py tests/test_agentos_status.py \
-            tests/test_agentos_compile.py tests/test_f01_fx_commodity_source_rights.py -q
+            tests/test_agentos_compile.py tests/test_f01_fx_commodity_source_rights.py tests/test_f02_owner_map_receipts.py -q
 
   capability-broker:
     if: ${{ false }}
