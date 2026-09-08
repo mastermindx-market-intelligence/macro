@@ -332,8 +332,10 @@ def test_plain_glance_titles_strip_ledger_enums():
         "exposures": [],
     })
     assert "Q3" not in en2 and "Q2" not in en2
-    assert "regime shifted" in en2
-    assert "体制切换" in zh2
+    assert en2 == "Canada's macro backdrop turned from stagflation to reflation"
+    assert zh2 == "加拿大宏观环境由滞胀转向再通胀"
+    assert "regime" not in en2.lower()
+    assert "体制切换" not in zh2
 
     surface = impact.glance_consequence_surface([{
         **_ev("p-1", "2026-09-01", source="prophet_ledger", tickers=["FBRT"]),
@@ -369,3 +371,148 @@ def test_project_events_impact_scale_stays_subsecond_on_2k_events():
     elapsed = time.perf_counter() - t0
     assert len(out) == 2000
     assert elapsed < 2.0, f"projection took {elapsed:.3f}s on 2k events"
+
+
+def test_earnings_call_mapped_tone_and_unmapped_tone_omit_clause():
+    """BLOCKER 2: ZH must not assert 中性 when EN says a different tone."""
+    en, zh = impact.plain_glance_titles({
+        "title": "Earnings call: STDN Q2 FY2026 \u2014 confident",
+        "source": "earnings_call",
+        "exposures": [{"ticker": "STDN", "materiality": "direct"}],
+    })
+    assert en == "STDN earnings call — confident tone"
+    assert zh == "STDN 业绩电话会——基调有信心"
+    assert "中性" not in zh
+
+    en2, zh2 = impact.plain_glance_titles({
+        "title": "Earnings call: ZZQ Q1 FY2026 \u2014 unclassified",
+        "source": "earnings_call",
+        "exposures": [{"ticker": "ZZQ", "materiality": "direct"}],
+    })
+    assert en2 == "ZZQ earnings call"
+    assert zh2 == "ZZQ 业绩电话会"
+    assert "tone" not in en2.lower()
+    assert "基调" not in zh2
+    assert "中性" not in zh2
+    assert "unclassified" not in en2
+
+
+def test_macro_release_plain_series_labels_and_unmapped_fallback():
+    """MAJOR 1: no raw series slug; unit is printed; unknown series falls back."""
+    en, zh = impact.plain_glance_titles({
+        "title": "Macro print: claims = +203 (2026-09-04)",
+        "source": "macro_release",
+        "exposures": [],
+    })
+    assert en == "Weekly jobless claims came in at +203k"
+    assert zh == "每周初请失业金人数 公布为 +203k"
+
+    en_ppi, zh_ppi = impact.plain_glance_titles({
+        "title": "Macro print: ppi_finaldemand = -0.3 (2026-09-04)",
+        "source": "macro_release",
+        "exposures": [],
+    })
+    assert en_ppi == "Producer prices (final demand) came in at -0.3%"
+    assert zh_ppi == "PPI最终需求 公布为 -0.3%"
+    assert "ppi_finaldemand" not in en_ppi
+    assert "ppi_finaldemand" not in zh_ppi
+
+    en_unk, zh_unk = impact.plain_glance_titles({
+        "title": "Macro print: mystery_print = 1.2 (2026-09-04)",
+        "source": "macro_release",
+        "exposures": [],
+    })
+    assert en_unk == "Macro data release"
+    assert zh_unk == "宏观数据发布"
+    assert "mystery_print" not in en_unk
+    assert "mystery_print" not in zh_unk
+
+
+def test_regime_and_risk_glance_use_plain_word_states():
+    """MAJOR 2: title-case region; no Goldilocks/体制切换/金发女孩 leak."""
+    en_hk, zh_hk = impact.plain_glance_titles({
+        "title": "HK regime: Goldilocks → Growth-scare",
+        "source": "regime_flip",
+        "exposures": [],
+    })
+    assert en_hk == (
+        "Hong Kong's macro backdrop turned from mild growth with low inflation "
+        "to a growth scare"
+    )
+    assert zh_hk == "香港宏观环境由温和增长、低通胀转向增长担忧"
+    assert "Goldilocks" not in en_hk
+    assert "金发女孩" not in zh_hk
+    assert "体制切换" not in zh_hk
+
+    en_r, zh_r = impact.plain_glance_titles({
+        "title": "Risk radar: calm → watch",
+        "source": "risk_band",
+        "exposures": [],
+    })
+    assert en_r == "Risk radar moved from calm to watch — stay selective"
+    assert zh_r == "风险雷达由平静转为关注——保持谨慎选择"
+
+
+def test_research_vault_glance_carries_subject_or_is_dropped():
+    """MAJOR 3: ticker-less vault cards carry a subject or leave the surface."""
+    ev = _ev("rv-subj", "2026-09-01", source="research_vault", tickers=[],
+             themes=["china_property"])
+    ev["title"] = "GS: housing note"
+    surface = impact.glance_consequence_surface([ev])
+    assert len(surface["rows"]) == 1
+    assert surface["rows"][0]["title_en"] == "Research note — China property"
+    assert surface["rows"][0]["title_zh"] == "研究纪要——中国房地产"
+
+    empty = _ev("rv-empty", "2026-09-01", source="research_vault", tickers=[],
+                themes=[])
+    empty["title"] = "untitled blob with no house prefix"
+    surface2 = impact.glance_consequence_surface([empty])
+    assert surface2["rows"] == []
+    assert surface2["event_count"] == 1
+
+
+def test_project_family_impact_threads_corpus_eligible_themes():
+    """MINOR 1: window-only eligibility must not silently keep a broad theme."""
+    corpus = []
+    for i in range(45):
+        corpus.append(_ev(f"earn-fam-{i}", "2026-08-01", source="earnings",
+                           tickers=[f"G{i % 5}"], themes=["earnings"]))
+    report = _ev("rv-fam", "2026-09-01", source="research_vault", tickers=[],
+                 themes=["earnings"])
+    corpus.append(report)
+    window = [report]
+    eligible = impact._eligible_themes(corpus)
+    window_only = impact.project_family_impact(window)["research_vault"][0]
+    threaded = impact.project_family_impact(
+        window, eligible_themes=eligible)["research_vault"][0]
+    assert "earnings" not in window_only.get("second_order_theme_refused", [])
+    assert "earnings" in threaded.get("second_order_theme_refused", [])
+
+
+def test_idless_co_theme_source_is_skipped_not_crashed():
+    """MINOR 2: a missing source id must not TypeError at render time."""
+    a = _ev("a-id", "2026-08-01", source="earnings", tickers=["TTT"],
+            themes=["ai_capex"])
+    b = _ev("b-id", "2026-08-01", source="earnings", tickers=["TTT"],
+            themes=["ai_capex"])
+    b["id"] = None
+    target = _ev("t-id", "2026-09-01", tickers=[], themes=["ai_capex"])
+    out = impact.project_events_impact([a, b, target])
+    tgt = next(p for p in out if p["event_id"] == target["id"])
+    seconds = [e for e in tgt["exposures"] if e.get("materiality") == "second_order"]
+    assert seconds == []
+    assert all(None not in (e.get("source_event_ids") or []) for e in tgt["exposures"])
+
+
+def test_theme_keys_are_casefolded_for_support_floor():
+    """MINOR 3: McElligott / Mcelligott must count as one theme for support."""
+    a = _ev("mc-a", "2026-08-01", source="earnings", tickers=["NVDA"],
+            themes=["McElligott"])
+    b = _ev("mc-b", "2026-08-02", source="earnings", tickers=["NVDA"],
+            themes=["Mcelligott"])
+    c = _ev("mc-c", "2026-09-01", tickers=[], themes=["mcelligott"])
+    projs = impact.project_events_impact([a, b, c])
+    tgt = next(p for p in projs if p["event_id"] == c["id"])
+    seconds = [e["ticker"] for e in tgt["exposures"]
+               if e.get("materiality") == "second_order"]
+    assert seconds == ["NVDA"]

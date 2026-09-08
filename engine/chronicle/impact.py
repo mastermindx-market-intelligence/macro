@@ -212,19 +212,33 @@ def project_event_impact(
     }
 
 
-def _co_theme_index(events: list[dict]) -> dict[str, list[tuple[str, list[str], str | None]]]:
+def _theme_key(theme: object) -> str:
+    """Casefold a theme token so 'McElligott' and 'Mcelligott' share a bucket."""
+    return str(theme or "").strip().casefold()
+
+
+def _co_theme_index(events: list[dict]) -> dict[str, list[tuple[str, list[str], str]]]:
     """theme -> [(date, tickers, event_id), ...] for every event that
     directly names tickers under that theme -- one entry per event so
     callers can apply an as-of cutoff and a support-count eligibility test.
+
+    Theme keys are casefolded. Source events with no id are skipped — a
+    None id would later crash ``sorted({None, "cev-…"})`` at render time.
     """
-    out: dict[str, list[tuple[str, list[str], str | None]]] = {}
+    out: dict[str, list[tuple[str, list[str], str]]] = {}
     for ev in events:
+        src_id = ev.get("id")
+        if not src_id:
+            continue
         tickers = [t for t in (ev.get("tickers") or []) if t]
         date = ev.get("date") or ""
         if not tickers:
             continue
         for theme in (ev.get("themes") or []):
-            out.setdefault(theme, []).append((date, tickers, ev.get("id")))
+            key = _theme_key(theme)
+            if not key:
+                continue
+            out.setdefault(key, []).append((date, tickers, str(src_id)))
     return out
 
 
@@ -235,14 +249,20 @@ def _eligible_themes(events: list[dict]) -> set[str]:
     (``SECOND_ORDER_THEME_BROAD_MIN_COUNT``) AND appears on more than
     ``SECOND_ORDER_THEME_MAX_SHARE`` of the event set. Corpus-dominant themes
     like "earnings" (~82% of events.jsonl) fail closed; small fixtures and
-    genuinely narrow themes stay eligible.
+    genuinely narrow themes stay eligible. Keys are casefolded so spelling
+    variants do not split the support floor.
     """
     if not events:
         return set()
     counts: dict[str, int] = {}
     for ev in events:
-        for theme in set(ev.get("themes") or []):
-            counts[theme] = counts.get(theme, 0) + 1
+        seen: set[str] = set()
+        for theme in ev.get("themes") or []:
+            key = _theme_key(theme)
+            if key:
+                seen.add(key)
+        for key in seen:
+            counts[key] = counts.get(key, 0) + 1
     n = len(events)
     eligible: set[str] = set()
     for theme, count in counts.items():
@@ -284,7 +304,9 @@ def project_events_impact(
     ``SECOND_ORDER_THEME_BROAD_MIN_COUNT`` occurrences needed to refuse a
     corpus-dominant theme like "earnings" on its own.
     """
-    eligible = _eligible_themes(events) if eligible_themes is None else eligible_themes
+    eligible = _eligible_themes(events) if eligible_themes is None else {
+        _theme_key(t) for t in eligible_themes if _theme_key(t)
+    }
     by_theme = {
         theme: rows for theme, rows in _co_theme_index(events).items()
         if theme in eligible
@@ -293,7 +315,7 @@ def project_events_impact(
     for ev in events:
         own = set(ev.get("tickers") or [])
         own_date = ev.get("date") or ""
-        own_themes = list(ev.get("themes") or [])
+        own_themes = [_theme_key(t) for t in (ev.get("themes") or []) if _theme_key(t)]
         refused_themes = sorted({t for t in own_themes if t not in eligible})
 
         # ticker -> set of supporting (prior, on-or-before-date) event ids
@@ -302,6 +324,8 @@ def project_events_impact(
             if theme not in eligible:
                 continue
             for date, tickers, src_id in by_theme.get(theme, ()):
+                if not src_id:
+                    continue
                 if date > own_date:
                     continue
                 if src_id == ev.get("id"):
@@ -352,14 +376,20 @@ def project_events_impact(
     return projections
 
 
-def project_family_impact(events: list[dict]) -> dict[str, list[dict]]:
+def project_family_impact(
+    events: list[dict], *, eligible_themes: set[str] | None = None,
+) -> dict[str, list[dict]]:
     """Group projected impact by event family (``source``) -- the "consequence
     surface per event family" the ledger row's acceptance test names. Grouping
     only; the underlying event identity, dedup and correction lineage remain
     entirely spine.py's -- this never mutates or re-derives an event id.
+
+    ``eligible_themes`` is forwarded to :func:`project_events_impact` so a
+    windowed caller can apply corpus-level eligibility (same contract as the
+    glance surface). When omitted, eligibility is computed from ``events``.
     """
     families: dict[str, list[dict]] = {}
-    for proj in project_events_impact(events):
+    for proj in project_events_impact(events, eligible_themes=eligible_themes):
         families.setdefault(proj["source"] or "unknown", []).append(proj)
     return families
 
@@ -379,35 +409,77 @@ _SIDE_PLAIN: dict[str, tuple[str, str]] = {
     "BEAR": ("bearish plan", "偏空计划"),
 }
 
-# Common regime / risk-band tokens that otherwise leak English into ZH glance copy.
-_STATE_TOKEN_ZH: dict[str, str] = {
-    "stagflation": "滞胀",
-    "reflation": "再通胀",
-    "goldilocks": "金发女孩",
-    "growth-scare": "增长担忧",
-    "growth scare": "增长担忧",
-    "calm": "平静",
-    "watch": "关注",
-    "caution": "警惕",
-    "alarm": "警报",
+# Common regime / risk-band tokens → plain-word EN/ZH glance glosses.
+# Identity fallback is forbidden: Goldilocks/Growth-scare must never print as
+# machine state names, and 金发女孩 is a meaningless ZH transliteration.
+_STATE_PLAIN: dict[str, tuple[str, str]] = {
+    "stagflation": ("stagflation", "滞胀"),
+    "reflation": ("reflation", "再通胀"),
+    "goldilocks": ("mild growth with low inflation", "温和增长、低通胀"),
+    "growth-scare": ("a growth scare", "增长担忧"),
+    "growth scare": ("a growth scare", "增长担忧"),
+    "deflation": ("deflation", "通缩"),
+    "calm": ("calm", "平静"),
+    "watch": ("watch", "关注"),
+    "caution": ("caution", "警惕"),
+    "alarm": ("alarm", "警报"),
 }
 
-_REGION_ZH: dict[str, str] = {
-    "canada": "加拿大",
-    "hk": "香港",
-    "us": "美国",
-    "china": "中国",
+_REGION_PLAIN: dict[str, tuple[str, str]] = {
+    "canada": ("Canada", "加拿大"),
+    "hk": ("Hong Kong", "香港"),
+    "us": ("US", "美国"),
+    "usa": ("US", "美国"),
+    "china": ("China", "中国"),
 }
+
+# Macro-print series → (en_label, zh_label, unit). Unmapped series fall back
+# to a family-level sentence — never a raw slug on either locale.
+_MACRO_SERIES: dict[str, tuple[str, str, str]] = {
+    "claims": ("Weekly jobless claims", "每周初请失业金人数", "k"),
+    "cpi_headline": ("Headline CPI", "整体CPI", "%"),
+    "cpi_core": ("Core CPI", "核心CPI", "%"),
+    "ppi_finaldemand": ("Producer prices (final demand)", "PPI最终需求", "%"),
+    "pce_headline": ("Headline PCE", "整体PCE", "%"),
+    "pce_core": ("Core PCE", "核心PCE", "%"),
+    "nfp": ("Payrolls", "非农就业", "k"),
+}
+
+# Research-vault theme tags → glance subject. Unmapped tags are not printed
+# as slugs; ticker-less rows without a derivable subject are dropped.
+_THEME_GLANCE: dict[str, tuple[str, str]] = {
+    "earnings": ("Earnings", "业绩"),
+    "china_property": ("China property", "中国房地产"),
+    "china property": ("China property", "中国房地产"),
+    "ai_capex": ("AI spending", "人工智能开支"),
+    "narrow_supply": ("Supply tightness", "供给偏紧"),
+}
+
+
+def _plain_state(token: str) -> tuple[str, str]:
+    key = (token or "").strip().lower()
+    mapped = _STATE_PLAIN.get(key)
+    if mapped:
+        return mapped
+    cleaned = key.replace("-", " ").strip()
+    return (cleaned or "prior state", cleaned or "先前状态")
+
+
+def _plain_region(token: str) -> tuple[str, str]:
+    raw = (token or "").strip()
+    mapped = _REGION_PLAIN.get(raw.lower())
+    if mapped:
+        return mapped
+    titled = raw.title() or "Market"
+    return (titled, titled)
 
 
 def _zh_state(token: str) -> str:
-    key = (token or "").strip().lower()
-    return _STATE_TOKEN_ZH.get(key, (token or "").strip())
+    return _plain_state(token)[1]
 
 
 def _zh_region(token: str) -> str:
-    key = (token or "").strip().lower()
-    return _REGION_ZH.get(key, (token or "").strip())
+    return _plain_region(token)[1]
 
 
 def _zh_detail(detail: str | None) -> str:
@@ -449,6 +521,8 @@ _EARNINGS_TONE_ZH = {
     "negative": "偏弱", "upbeat": "乐观", "bearish": "看空",
     "bullish": "看多", "weak": "疲软", "strong": "强劲",
     "neutral": "中性",
+    "confident": "有信心", "guarded": "偏谨慎", "steady": "稳健",
+    "defensive": "偏防守", "downbeat": "偏弱", "reassuring": "安抚市场",
 }
 _ENUM_LEAK_RE = re.compile(r"\b(T[123]_HIT|INVALIDATED|EXPIRED|BULL|BEAR)\b")
 
@@ -463,6 +537,28 @@ def _sanitize(en: str, zh: str, *, fallback_en: str, fallback_zh: str) -> tuple[
 
 def _strip_quarter_prefix(token: str) -> str:
     return _QUARTER_PREFIX_RE.sub("", (token or "").strip()) or (token or "").strip()
+
+
+def _research_vault_subject(proj: dict) -> tuple[str, str] | None:
+    """Plain-word subject for a ticker-less research note, or None.
+
+    Prefers a mapped theme tag; otherwise the house/analyst prefix already
+    on the spine title (``{institution}: {raw_title}``). A raw unmapped
+    slug is not a subject — the glance caller drops the card.
+    """
+    for theme in proj.get("themes") or []:
+        key = _theme_key(theme)
+        mapped = _THEME_GLANCE.get(key)
+        if mapped:
+            return mapped
+    raw = (proj.get("title") or "").strip()
+    if ":" in raw:
+        house = raw.split(":", 1)[0].strip()
+        if house and len(house) <= 40 and " " not in house[:1]:
+            # Proper-name house code (GS, JPM, S&T) is bilingual as-is.
+            if house.lower() not in {"untitled", "report", "note"}:
+                return (house, house)
+    return None
 
 
 def plain_glance_titles(proj: dict) -> tuple[str, str]:
@@ -507,8 +603,11 @@ def plain_glance_titles(proj: dict) -> tuple[str, str]:
         else:
             region, frm, to = "Market", "prior state", "new state"
         frm_p, to_p = _strip_quarter_prefix(frm), _strip_quarter_prefix(to)
-        en = f"{region} regime shifted: {frm_p} → {to_p}"
-        zh = f"{_zh_region(region)}体制切换：{_zh_state(frm_p)} → {_zh_state(to_p)}"
+        region_en, region_zh = _plain_region(region)
+        frm_en, frm_zh = _plain_state(frm_p)
+        to_en, to_zh = _plain_state(to_p)
+        en = f"{region_en}'s macro backdrop turned from {frm_en} to {to_en}"
+        zh = f"{region_zh}宏观环境由{frm_zh}转向{to_zh}"
         return _sanitize(en, zh, fallback_en=fallback[0], fallback_zh=fallback[1])
 
     m = _RISK_BAND_RE.match(raw)
@@ -517,20 +616,26 @@ def plain_glance_titles(proj: dict) -> tuple[str, str]:
             frm, to = m.group(1).strip(), m.group(2).strip()
         else:
             frm, to = "prior", "new"
-        en = f"Risk radar moved: {frm} → {to}"
-        zh = f"风险雷达切换：{_zh_state(frm)} → {_zh_state(to)}"
+        frm_en, frm_zh = _plain_state(frm)
+        to_en, to_zh = _plain_state(to)
+        en = f"Risk radar moved from {frm_en} to {to_en} \u2014 stay selective"
+        zh = f"风险雷达由{frm_zh}转为{to_zh}——保持谨慎选择"
         return _sanitize(en, zh, fallback_en=fallback[0], fallback_zh=fallback[1])
 
     if source == "macro_release":
-        # BLOCKER 1(b): parse "Macro print: <series> = <value> (<date>)" into
-        # a plain-word dual-locale sentence instead of gluing a ZH prefix
-        # onto the untranslated stat slug (or doubling it in EN).
+        # Plain-word series label + unit. Unmapped slugs fall back to the
+        # family sentence rather than printing `ppi_finaldemand` / `claims`.
         mp = _MACRO_PRINT_RE.match(raw)
         if mp:
             series, value = mp.group(1), mp.group(2)
-            series_label = series.replace("_", " ")
-            en = f"{series_label} came in at {value}"
-            zh = f"{series_label} 公布为 {value}"
+            mapped = _MACRO_SERIES.get((series or "").strip().lower())
+            if mapped:
+                label_en, label_zh, unit = mapped
+                shown = value if (not unit or str(value).endswith(unit)) else f"{value}{unit}"
+                en = f"{label_en} came in at {shown}"
+                zh = f"{label_zh} 公布为 {shown}"
+            else:
+                en, zh = "Macro data release", "宏观数据发布"
         else:
             en, zh = "Macro data release", "宏观数据发布"
         return _sanitize(
@@ -552,30 +657,34 @@ def plain_glance_titles(proj: dict) -> tuple[str, str]:
         )
 
     if source == "earnings_call":
-        # BLOCKER 1(c): previously fell to the unknown-family fallback and
-        # returned the raw "Earnings call: FINV Q2 FY2026 — mixed" string as
-        # BOTH locales.
+        # Mapped tones print in both locales. An unmapped adapter token
+        # (or a missing tone) emits the tone-free pair — never a ZH 中性
+        # default that contradicts the EN surface.
         mc = _EARNINGS_CALL_RE.match(raw)
         ticker = mc.group(1) if mc else (direct[0] if direct else "Named name")
         tone_raw = (mc.group(3) if mc else "").strip().lower()
-        tone_en = tone_raw or "neutral"
-        tone_zh = _EARNINGS_TONE_ZH.get(tone_raw, "中性")
-        en = f"{ticker} earnings call — {tone_en} tone"
-        zh = f"{ticker} 业绩电话会——基调{tone_zh}"
+        tone_zh = _EARNINGS_TONE_ZH.get(tone_raw) if tone_raw else None
+        if tone_raw and tone_zh:
+            en = f"{ticker} earnings call — {tone_raw} tone"
+            zh = f"{ticker} 业绩电话会——基调{tone_zh}"
+        else:
+            en = f"{ticker} earnings call"
+            zh = f"{ticker} 业绩电话会"
         return _sanitize(
             en, zh,
             fallback_en="Earnings call", fallback_zh="业绩电话会",
         )
 
     if source == "research_vault":
-        # BLOCKER 1(c): previously fell to the unknown-family fallback and
-        # returned the raw analyst-note headline (e.g. "S&T: GS Duttenhoefer
-        # ...") as BOTH locales.
         who = direct[0] if direct else None
         if who:
             en, zh = f"Research note on {who}", f"关于 {who} 的研究纪要"
         else:
-            en, zh = "Market research note", "市场研究纪要"
+            subject = _research_vault_subject(proj)
+            if subject:
+                en, zh = f"Research note — {subject[0]}", f"研究纪要——{subject[1]}"
+            else:
+                return ("", "")
         return _sanitize(
             en, zh,
             fallback_en="Research note", fallback_zh="研究纪要",
@@ -628,17 +737,21 @@ def glance_consequence_surface(
         newest,
         key=lambda e: (e.get("date") or "", e.get("id") or ""),
     )
-    families = project_family_impact(window)
-    # MAJOR 1: eligibility must be computed over the FULL corpus, not the
-    # bounded glance window -- a 24-event window can never reach the
-    # SECOND_ORDER_THEME_BROAD_MIN_COUNT (40) needed to refuse a
-    # corpus-dominant theme like "earnings".
+    # Eligibility over the FULL corpus; one projection feeds both family
+    # counts and glance rows (MINOR 1 — do not re-project the window with
+    # a different eligibility set).
     eligible_themes = _eligible_themes(events)
+    projections = project_events_impact(window, eligible_themes=eligible_themes)
+    families: dict[str, list[dict]] = {}
+    for proj in projections:
+        families.setdefault(proj["source"] or "unknown", []).append(proj)
     rows = []
-    for proj in project_events_impact(window, eligible_themes=eligible_themes):
+    for proj in projections:
         direct = [e["ticker"] for e in proj["exposures"] if e.get("materiality") == MATERIALITY_DIRECT]
         second = [e["ticker"] for e in proj["exposures"] if e.get("materiality") == MATERIALITY_SECOND_ORDER]
         title_en, title_zh = plain_glance_titles(proj)
+        if not title_en or not title_zh:
+            continue
         rows.append({
             "event_id": proj["event_id"],
             "event_time": proj["event_time"],

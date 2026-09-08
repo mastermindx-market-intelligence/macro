@@ -10625,6 +10625,16 @@ jobs:
       - "engine/china_standout_track.py"
       - "engine/china_strategies.py"
       - "engine/china_validation.py"
+      # F05 glance consumer on News (PR #6896): build_site imports
+      # engine.chronicle.impact, so this exclusive job's closure now
+      # reaches the chronicle package. Widening is the safe direction.
+      - "engine/chronicle/__init__.py"
+      - "engine/chronicle/adapters.py"
+      - "engine/chronicle/earnings_calls.py"
+      - "engine/chronicle/impact.py"
+      - "engine/chronicle/schema.py"
+      - "engine/chronicle/spine.py"
+      - "engine/chronicle/state_log.py"
       - "engine/close_pass/**"
       - "engine/cn_ai_semis_confirmer.py"
       - "engine/cn_newswires.py"
@@ -10830,6 +10840,7 @@ jobs:
       - "engine/risk_sizing.py"
       - "engine/risk_state.py"
       - "engine/roc_blowoff.py"
+      - "engine/seasonality/contracts.py"
       - "engine/sector_cycles.py"
       - "engine/sector_ignition.py"
       - "engine/sector_legs.py"
