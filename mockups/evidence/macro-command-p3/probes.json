@@ -131,10 +131,10 @@
     "pillBottom": 760,
     "gap": 80.859375,
     "clear": true,
-    "scrollHeight": 3377,
+    "scrollHeight": 3346,
     "innerHeight": 844,
-    "maxScroll": 2533,
-    "scrollReached": 2533,
+    "maxScroll": 2502,
+    "scrollReached": 2502,
     "maxScrollMatched": true,
     "reservedBandCss": 207,
     "pad": "144px"
@@ -148,10 +148,10 @@
     "pillBottom": 760,
     "gap": 81.3125,
     "clear": true,
-    "scrollHeight": 2980,
+    "scrollHeight": 2998,
     "innerHeight": 844,
-    "maxScroll": 2136,
-    "scrollReached": 2136,
+    "maxScroll": 2154,
+    "scrollReached": 2154,
     "maxScrollMatched": true,
     "reservedBandCss": 207.453125,
     "pad": "144px"
@@ -380,10 +380,10 @@
     "pillBottom": 760,
     "gap": 81.359375,
     "clear": true,
-    "scrollHeight": 3366,
+    "scrollHeight": 3384,
     "innerHeight": 844,
-    "maxScroll": 2522,
-    "scrollReached": 2522,
+    "maxScroll": 2540,
+    "scrollReached": 2540,
     "maxScrollMatched": true,
     "reservedBandCss": 207.5,
     "pad": "144px"
@@ -433,23 +433,39 @@
     "listMaxWidth": "100%",
     "listContain": "inline-size"
   },
-  "generated_at": "2026-09-08T08:51:02Z",
-  "resolved_sha_or_none": "88da0c17255caa0278172ebdb00e458b3b238b72",
+  "generated_at": "2026-09-08T09:39:28Z",
+  "resolved_sha_or_none": "d1d5e188ecd32785b2528feb5420c6264c9dcf11",
   "m2_hairline_light_en": {
     "populated": true,
     "hairlineCount": 1,
     "rules": [
       {
         "className": "mc-figure",
-        "top": 940.78125,
+        "top": 949.78125,
         "borderTop": 1
       }
     ],
     "tabbodyBorderTopPx": 0,
     "figureBorderTopPx": 1,
     "firstRowClass": "mc-move",
-    "pillBottom": 926.78125,
-    "rowTop": 955.78125,
+    "pillBottom": 935.78125,
+    "rowTop": 964.78125,
     "visibleTab": "central_banks"
+  },
+  "strip_void_probe": {
+    "ok": true,
+    "chipCount": 5,
+    "childCount": 5,
+    "emptyChildren": 0,
+    "stripBg": "rgba(0, 0, 0, 0)",
+    "stripFilled": false,
+    "voids": [],
+    "maxVoidWidth": 0,
+    "filledOutsideWiderThan40": false,
+    "holeWiderThan40": false,
+    "viewport": {
+      "innerWidth": 1440,
+      "stripWidth": 1008
+    }
   }
 }
