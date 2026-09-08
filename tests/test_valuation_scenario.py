@@ -360,3 +360,36 @@ def test_research_display_only_line_present():
     html = tmpl.render(valuation_scenario=blob, deep_ids=[])
     assert "Research display only" in html
     assert "仅供研究展示" in html
+
+
+def test_sec_filings_zh_uses_disclosure_not_tax_declaration():
+    """Heal h1: 'SEC filings' must pair with 披露, never 申报.
+
+    申报 is a tax/customs self-declaration. An SEC 10-K this panel cites is a
+    披露 (disclosure). The zh-filing-term job failed on six unlicensed 申报
+    hits in this PR's own copy (5x the panel source line, 1x the Full-detail
+    dialog). RED-first against the pre-heal strings: those files used
+    'SEC申报文件' and this test fails on that phrasing.
+    """
+    import jinja2
+    from scripts.build_ticker_pages import _deep_valuation_scenario
+
+    banned = "申报"
+    expected_zh = "SEC披露文件"
+
+    partial = (ROOT / "templates" / "_valuation_scenario.html.j2").read_text(encoding="utf-8")
+    assert banned not in partial
+    assert f"t('Source: SEC filings','来源：{expected_zh}')" in partial
+
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(ROOT / "templates")))
+    env.globals["t"] = lambda en, zh: f"{en}|{zh}"
+    tmpl = env.from_string("{% include '_valuation_scenario.html.j2' %}")
+    blob = vs.compute(_rows(), price=319.97, asof="2026-09-05", ticker="AAPL")
+    html = tmpl.render(valuation_scenario=blob, deep_ids=[])
+    assert banned not in html
+    assert f"Source: SEC filings|来源：{expected_zh}" in html
+
+    dialog = _deep_valuation_scenario({"valuation_scenario": {"v1": blob}})
+    source_row = next(r for r in dialog["panels"][0]["rows"] if r["k_en"] == "Source")
+    assert source_row["v_zh"] == expected_zh
+    assert banned not in source_row["v_zh"]

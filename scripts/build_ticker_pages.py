@@ -2493,7 +2493,7 @@ def _deep_valuation_scenario(blob: dict | None) -> dict | None:
     rows = [
         {"k_en": "Fiscal year", "k_zh": "财年", "v": str(vscn.get("fy")), "v_en": "", "v_zh": ""},
         {"k_en": "Period end", "k_zh": "期末日期", "v": str(vscn.get("period_end")), "v_en": "", "v_zh": ""},
-        {"k_en": "Source", "k_zh": "来源", "v": "", "v_en": "SEC filings", "v_zh": "SEC申报文件"},
+        {"k_en": "Source", "k_zh": "来源", "v": "", "v_en": "SEC filings", "v_zh": "SEC披露文件"},
         {"k_en": "Tier", "k_zh": "层级", "v": "", "v_en": "Research display only, not advice",
          "v_zh": "仅供研究展示，非投资建议"},
         # Review B-F07-1 MAJOR-2: was "diluted share count" -- the loader has no

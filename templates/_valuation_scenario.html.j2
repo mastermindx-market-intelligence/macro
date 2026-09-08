@@ -195,15 +195,15 @@
 
   <div class="vs-base kv6">
     {% set b = vscn.base %}
-    <div class="r6"><span class="k6">{{ t('Revenue','营业收入') }}<small>{{ b.revenue.period }} · {{ t('Source: SEC filings','来源：SEC申报文件') }}</small></span>
+    <div class="r6"><span class="k6">{{ t('Revenue','营业收入') }}<small>{{ b.revenue.period }} · {{ t('Source: SEC filings','来源：SEC披露文件') }}</small></span>
       {% if b.revenue.reported %}<span class="v6 num">${{ '%.1f'|format(b.revenue.value / 1e9) }}B</span>{% else %}<span class="v6 v6-null">{{ t('not reported','未披露') }}</span>{% endif %}</div>
-    <div class="r6"><span class="k6">{{ t('Operating income','营业利润') }}<small>{{ b.op_income.period }} · {{ t('Source: SEC filings','来源：SEC申报文件') }}</small></span>
+    <div class="r6"><span class="k6">{{ t('Operating income','营业利润') }}<small>{{ b.op_income.period }} · {{ t('Source: SEC filings','来源：SEC披露文件') }}</small></span>
       {% if b.op_income.reported %}<span class="v6 num">${{ '%.1f'|format(b.op_income.value / 1e9) }}B</span>{% else %}<span class="v6 v6-null">{{ t('not reported','未披露') }}</span>{% endif %}</div>
-    <div class="r6"><span class="k6">{{ t('Net income','净利润') }}<small>{{ b.net_income.period }} · {{ t('Source: SEC filings','来源：SEC申报文件') }}</small></span>
+    <div class="r6"><span class="k6">{{ t('Net income','净利润') }}<small>{{ b.net_income.period }} · {{ t('Source: SEC filings','来源：SEC披露文件') }}</small></span>
       {% if b.net_income.reported %}<span class="v6 num">${{ '%.1f'|format(b.net_income.value / 1e9) }}B</span>{% else %}<span class="v6 v6-null">{{ t('not reported','未披露') }}</span>{% endif %}</div>
-    <div class="r6"><span class="k6">{{ t('Share count','股数') }}<small>{{ b.share_count.period }} · {{ t('Source: SEC filings','来源：SEC申报文件') }}</small></span>
+    <div class="r6"><span class="k6">{{ t('Share count','股数') }}<small>{{ b.share_count.period }} · {{ t('Source: SEC filings','来源：SEC披露文件') }}</small></span>
       {% if b.share_count.reported %}<span class="v6 num">{{ '%.2f'|format(b.share_count.value / 1e9) }}B<em>{% if b.share_count.identity == 'diluted' %}{{ t('Diluted, as reported','披露的摊薄股数') }}{% else %}{{ t('Shares outstanding, as reported','披露的流通股数') }}{% endif %}</em></span>{% else %}<span class="v6 v6-null">{{ t('not reported','未披露') }}</span>{% endif %}</div>
-    <div class="r6"><span class="k6">{{ t('Net cash / debt','净现金／净负债') }}<small>{{ b.net_debt.period }} · {{ t('Source: SEC filings','来源：SEC申报文件') }}</small></span>
+    <div class="r6"><span class="k6">{{ t('Net cash / debt','净现金／净负债') }}<small>{{ b.net_debt.period }} · {{ t('Source: SEC filings','来源：SEC披露文件') }}</small></span>
       {% if b.net_debt.reported %}<span class="v6 num">{% if b.net_debt.sign == 'net_cash' %}{{ t('Net cash','净现金') }} ${{ '%.1f'|format((-b.net_debt.value) / 1e9) }}B{% else %}{{ t('Net debt','净负债') }} ${{ '%.1f'|format(b.net_debt.value / 1e9) }}B{% endif %}</span>{% else %}<span class="v6 v6-null">{{ t('not reported','未披露') }}</span>{% endif %}</div>
   </div>
 
