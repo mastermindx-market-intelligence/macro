@@ -688,39 +688,99 @@ def test_growth_caption_matches_credit_scale_disclaimer() -> None:
     assert L.CAPTIONS["growth"]["zh"] == "每行显示最近两次读数。两个标签页衡量的不是同一件事。"
 
 
-def test_p4_live_figures_follow_i4_same_publication_contract() -> None:
-    """I4: a same-publication prior is a current-only row, both locales."""
-    sections = builder._macro_command_sections(_live_entries(), page_built_at=BUILT_AT)
-    state_en = L.COUNT["same_publication"]["en"]
-    state_zh = L.COUNT["same_publication"]["zh"]
-    assert state_en == (
-        "Only one reading is published so far — nothing earlier to compare yet.")
-    assert state_zh == "目前只有一次读数——暂无更早读数可比。"
-    seen = 0
+CURRENT_ONLY_EN = (
+    "Only one reading is published so far — nothing earlier to compare yet.")
+CURRENT_ONLY_ZH = "目前只有一次读数——暂无更早读数可比。"
+MIXED_PAIR_EN = "Some readings have no earlier print to compare yet."
+MIXED_PAIR_ZH = "部分读数暂无更早读数可比。"
+
+
+def _iter_p4_figures(sections: list[dict]) -> list[tuple[str, dict]]:
+    found: list[tuple[str, dict]] = []
     for section in sections:
         if section["id"] not in P4_IDS:
             continue
-        figures = []
         if section.get("figure"):
-            figures.append(section["figure"])
+            found.append((section["id"], section["figure"]))
         for tab in section.get("subtabs") or []:
             if tab.get("figure"):
-                figures.append(tab["figure"])
-        for figure in figures:
-            kinds = {row["kind"] for row in figure["rows"]}
-            if "current" not in kinds:
-                continue
-            seen += 1
-            assert figure["count_text"] is None
-            assert figure["state_line"]["en"] == state_en
-            assert figure["state_line"]["zh"] == state_zh
+                found.append((f"{section['id']}/{tab['id']}", tab["figure"]))
+    return found
+
+
+def test_p4_live_figures_follow_i4_mode_table() -> None:
+    """N3/N4: every P4 section figure selects chrome by mode, EN and ZH."""
+    sections = builder._macro_command_sections(_live_entries(), page_built_at=BUILT_AT)
+    current_en = L.COUNT["same_publication"]["en"]
+    current_zh = L.COUNT["same_publication"]["zh"]
+    mixed_en = L.COUNT["overview_mixed"]["en"]
+    mixed_zh = L.COUNT["overview_mixed"]["zh"]
+    assert current_en == CURRENT_ONLY_EN
+    assert current_zh == CURRENT_ONLY_ZH
+    assert mixed_en == MIXED_PAIR_EN
+    assert mixed_zh == MIXED_PAIR_ZH
+    seen_current = 0
+    figures = _iter_p4_figures(sections)
+    assert figures, "P4 sections published no figures"
+    for name, figure in figures:
+        kinds = {row["kind"] for row in figure["rows"]}
+        if kinds == {"current"}:
+            seen_current += 1
+            assert figure["count_text"] is None, name
+            assert figure["state_line"]["en"] == current_en, name
+            assert figure["state_line"]["zh"] == current_zh, name
+            assert figure["state_line"]["en"] != mixed_en, name
             for row in figure["rows"]:
-                if row["kind"] != "current":
-                    continue
-                assert row["prior"] is None
-                assert row["delta"] is None
-                assert row["sign"] is None
-                assert row["current"]
+                assert row["prior"] is None, name
+                assert row["delta"] is None, name
+                assert row["sign"] is None, name
+                assert row["current"], name
+        elif kinds == {"movement"}:
+            assert figure["state_line"] is None, name
+            assert figure["count_text"] is not None, name
+            assert current_en not in (figure["count_text"] or {}).get("en", "")
+        elif kinds == {"current", "movement"}:
+            assert figure["count_text"] is None, name
+            assert figure["state_line"]["en"] == mixed_en, name
+            assert figure["state_line"]["zh"] == mixed_zh, name
+            assert figure["state_line"]["en"] != current_en, name
+        else:
+            raise AssertionError(f"{name}: unexpected kinds {kinds}")
+    assert seen_current >= 1
+
+
+def test_p4_mixed_section_figure_uses_mixed_pair_not_current_only() -> None:
+    """N3: a mixed P4 section figure prints the mixed pair, never the current-only line."""
+    sections = builder._macro_command_sections(_live_entries(), page_built_at=BUILT_AT)
+    mixed_en = L.COUNT["overview_mixed"]["en"]
+    mixed_zh = L.COUNT["overview_mixed"]["zh"]
+    current_en = L.COUNT["same_publication"]["en"]
+    current_zh = L.COUNT["same_publication"]["zh"]
+    seen = 0
+    for name, figure in _iter_p4_figures(sections):
+        rows = copy.deepcopy(figure["rows"])
+        assert rows, name
+        kinds = {row["kind"] for row in rows}
+        if kinds == {"current"}:
+            rows[0]["kind"] = "movement"
+            rows[0]["prior"] = rows[0].get("current") or "1.00"
+            rows[0]["delta"] = "+0.10"
+            rows[0]["sign"] = "up"
+        elif kinds == {"movement"}:
+            rows[0]["kind"] = "current"
+            rows[0]["prior"] = None
+            rows[0]["delta"] = None
+            rows[0]["sign"] = None
+        mixed = builder._figure_block(
+            rows, overview=False, shown=len(rows), total=len(rows))
+        seen += 1
+        assert {row["kind"] for row in mixed["rows"]} == {"current", "movement"}, name
+        assert mixed["count_text"] is None, name
+        assert mixed["state_line"]["en"] == mixed_en, name
+        assert mixed["state_line"]["zh"] == mixed_zh, name
+        assert mixed["state_line"]["en"] != current_en, name
+        assert current_en not in mixed["state_line"]["en"]
+        assert current_zh not in mixed["state_line"]["zh"]
     assert seen >= 1
 
 

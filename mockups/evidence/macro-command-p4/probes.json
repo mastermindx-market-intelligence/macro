@@ -161,7 +161,7 @@
     "exit": 0,
     "violations": []
   },
-  "head_sha_at_capture": "d37874e17f896dbf9161ef455b6c2808bb6781ae",
-  "captured_at": "2026-09-08T08:35:56Z",
+  "head_sha_at_capture": "439515e738431e26b3e9b6c34f4dc971fdb21a9d",
+  "captured_at": "2026-09-08T10:05:27Z",
   "pre_commit": true
 }

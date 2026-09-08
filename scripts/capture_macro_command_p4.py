@@ -661,6 +661,7 @@ def main() -> int:
             "excluded": [],
             "generated_at": captured_at,
             "head_sha": head,
+            "capture_sha": head,
             "pre_commit": True,
             "honesty": {
                 "access": "anonymous only; no credential is entered, stored, or synthesized",

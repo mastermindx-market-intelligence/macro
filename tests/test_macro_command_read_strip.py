@@ -478,7 +478,12 @@ def built_hub(tmp_path_factory: pytest.TempPathFactory) -> str:
 def test_the_real_page_renders_populated_chips_only(built_hub: str) -> None:
     """R6-M3: chips whose section is not rendered are not rendered."""
     chip_ids = re.findall(r'<li class="mc-chip[^"]*" data-mc-topic="([a-z]+)"', built_hub)
-    assert chip_ids == ["money", "policy", "rates", "inflation", "coverage"]
+    panel_ids = set(re.findall(r'<section class="mc-panel" id="([^"]+)"', built_hub))
+    assert "coverage" in chip_ids
+    for chip_id in chip_ids:
+        if chip_id == "coverage":
+            continue
+        assert chip_id in panel_ids, chip_id
 
 
 @pytest.mark.needs_full_checkout("site")

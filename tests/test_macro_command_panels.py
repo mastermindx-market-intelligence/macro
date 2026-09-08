@@ -273,13 +273,12 @@ def test_built_page_has_one_section_count_matching_the_rail(
     assert html.count("十四个研究") == 0
     assert html.count(f"{n} research sections") == 1
     assert html.count(f"{n} 个研究板块") == 1
-    # R6-M1: one count truth — populated panels, never the P2 12-rail.
-    assert "of 12 sections" not in html
-    assert "of 12" not in unescape(html)
-    assert "12 个板块" not in html
-    assert "12个板块" not in html
-    assert re.search(r"\d+ of 5 sections have today's data", unescape(html))
-    assert re.search(r"5个板块中有\d+个有今日数据", unescape(html))
+    # R6-M1: one count truth — populated panels. P4 fills the remaining
+    # seven, so the coverage denominator is twelve, not the P3-only five.
+    assert re.search(rf"\d+ of {n} sections have today's data", unescape(html))
+    assert re.search(rf"{n}个板块中有\d+个有今日数据", unescape(html))
+    assert "Fourteen research" not in html
+    assert "十四个研究" not in html
 
 
 def test_copy_budgets_on_the_reviewed_tables() -> None:
@@ -430,10 +429,11 @@ def test_built_hub_coverage_uses_populated_tally_and_some_unread(
     note = re.search(r"(\d+) of (\d+) sections have today's data", plain)
     assert note, "coverage chip lost its counted note"
     available, total = int(note.group(1)), int(note.group(2))
-    assert total == len(P3_IDS)
+    populated_ids = set(P3_IDS + P4_IDS)
+    assert total == len(populated_ids)
     assert available < total
     assert (available, total) == builder.populated_section_coverage_tally(
-        _live_entries(), set(P3_IDS))
+        _live_entries(), populated_ids)
     opening = re.search(r'<p class="mc-stance[^"]*"', overview)
     assert opening and "mq-tone-ok" not in opening.group(0)
 
@@ -1310,29 +1310,27 @@ def test_r6_m3_chip_and_read_hrefs_resolve_to_rendered_sections(
         built: tuple[str, Path]) -> None:
     html, _ = built
     panel_ids = set(re.findall(r'<section class="mc-panel" id="([^"]+)"', html))
-    assert panel_ids == set(P3_IDS)
+    assert panel_ids == set(P3_IDS + P4_IDS)
     chips = re.findall(r'<a class="mc-chip-link" href="#([^"]+)"', html)
     assert chips
     assert len(chips) == len(set(chips)), chips
     for href in chips:
         assert href in panel_ids, href
-        assert href not in P4_IDS
     topics = re.findall(
         r'<li class="mc-chip[^"]*" data-mc-topic="([^"]+)"', html)
-    assert topics == ["money", "policy", "rates", "inflation", "coverage"]
+    assert "coverage" in topics
+    assert set(topics) - {"coverage"} <= panel_ids
     clauses = re.findall(
         r'<a class="mc-read-topic[^"]*" href="#([^"]+)"', html)
     assert clauses
     assert len(clauses) == len(set(clauses)), clauses
     for href in clauses:
         assert href in panel_ids, href
-        assert href not in P4_IDS
     note = re.search(
         r"(\d+) of (\d+) sections have today's data", unescape(html))
     assert note
-    assert int(note.group(2)) == len(topics)  # same populated set as the chips
-    # coverage is the extra chip; market chips + overview = N of 5
-    assert int(note.group(2)) == len(P3_IDS)
+    # Coverage denominator is populated panels (twelve), not chip count.
+    assert int(note.group(2)) == len(P3_IDS + P4_IDS)
 
 
 @pytest.mark.needs_full_checkout("site")
@@ -1343,14 +1341,17 @@ def test_r6_m1_hub_never_prints_twelve_as_a_section_count(
     visible = re.sub(r"<style[^>]*>.*?</style>", "", visible, flags=re.S)
     visible = re.sub(r'datetime="[^"]*"', "", visible)
     text = re.sub(r"<[^>]+>", " ", visible)
-    assert "of 12" not in text
-    assert "12 research" not in text
-    assert "12 个板块" not in text
-    assert "12个板块" not in text
-    assert "5 research sections" in text
-    assert "5 个研究板块" in text
-    assert re.search(r"\d+ of 5 sections have today's data", text)
-    assert re.search(r"5个板块中有\d+个有今日数据", text)
+    n = len(P3_IDS + P4_IDS)
+    # P3's lie was printing twelve while only five panels shipped. P4
+    # populates all twelve, so the coverage denominator is twelve; fourteen
+    # (the workspace count) remains the forbidden count.
+    assert "Fourteen research" not in text
+    assert "14 research" not in text
+    assert "十四个研究" not in text
+    assert f"{n} research sections" in text
+    assert f"{n} 个研究板块" in text
+    assert re.search(rf"\d+ of {n} sections have today's data", text)
+    assert re.search(rf"{n}个板块中有\d+个有今日数据", text)
 
 
 def test_r6_m2_stance_alone_is_not_populated() -> None:
