@@ -461,7 +461,7 @@ _CLEARANCE_JS = """(el, arg) => {
                     rec.docTop = docTop;
                     rec.ovHeight = ovHeight;
                     rec.exposedAtScrollY = exposedAtScrollY;
-                    if (exposedAtScrollY < 0) {
+                    if (exposedAtScrollY < 0 || exposedAtScrollY > maxY) {
                         rec.reason = 'top-chrome-full-cover-unexposable';
                         hits.push(rec);
                     } else {
@@ -554,7 +554,8 @@ def classify_top_chrome_cover(*, doc_top: float, ov_height: float,
     excused only when 0 <= exposedAtScrollY <= maxScroll.
     """
     exposed = float(doc_top) - float(ov_height)
-    if exposed < 0:
+    max_scroll = float(max_scroll)
+    if exposed < 0 or exposed > max_scroll:
         return {
             "hit": True,
             "reason": "top-chrome-full-cover-unexposable",
@@ -562,10 +563,6 @@ def classify_top_chrome_cover(*, doc_top: float, ov_height: float,
             "ovHeight": float(ov_height),
             "exposedAtScrollY": exposed,
         }
-    if not (0 <= exposed <= float(max_scroll)):
-        raise RuntimeError(
-            f"excused full cover exposedAtScrollY={exposed} outside "
-            f"[0, {max_scroll}]")
     return {
         "hit": False,
         "reason": "fully_covered",
@@ -581,11 +578,14 @@ def _assert_excused_full_covers(row: Mapping[str, Any]) -> None:
         reason = str(rec.get("reason") or "")
         if not reason.endswith("_fully_covered"):
             continue
-        classify_top_chrome_cover(
+        result = classify_top_chrome_cover(
             doc_top=float(rec["docTop"]),
             ov_height=float(rec["ovHeight"]),
             max_scroll=max_scroll,
         )
+        if result["hit"]:
+            raise RuntimeError(
+                f"excused full cover is not exposable: {rec} -> {result}")
 
 
 def clearance_probe_ok(row: Mapping[str, Any] | None) -> bool:

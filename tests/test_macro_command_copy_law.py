@@ -731,6 +731,9 @@ def test_top_chrome_cover_uses_document_geometry() -> None:
     below = classify_top_chrome_cover(doc_top=200, ov_height=60, max_scroll=800)
     assert below["hit"] is False
     assert below["exposedAtScrollY"] == 140
+    past = classify_top_chrome_cover(doc_top=900, ov_height=60, max_scroll=800)
+    assert past["hit"] is True
+    assert past["reason"] == "top-chrome-full-cover-unexposable"
     assert "position > 0" not in _CLEARANCE_JS
     assert "target ===" not in _CLEARANCE_JS
 
