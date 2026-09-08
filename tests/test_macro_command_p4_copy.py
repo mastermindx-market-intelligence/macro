@@ -982,20 +982,37 @@ def test_p4_probes_name_panel_ok_and_doc_ok_separately() -> None:
             assert row["mmbBootDisplay"] == "none", row
 
 
-def test_e5_not_applicable_on_workspace_templates() -> None:
-    """r6 BLOCKER: E5 exists only where fragments + template both exist."""
+def _synthetic_hub(*, missing_section: str | None = None) -> str:
+    panels = []
+    for section in ("overview", "growth", "jobs", "housing",
+                    "consumer", "credit", "debt", "trade"):
+        tpl = ""
+        if section != "overview" and section != missing_section:
+            tpl = '<template data-mc-empty-e5></template>'
+        panels.append(
+            f'<section class="mc-panel" id="{section}" '
+            f'data-mc-panel="{section}">{tpl}</section>')
+    return '<main class="mc-shell" data-mc-fragments>' + "".join(panels) + "</main>"
+
+
+def test_e5_applicability_is_per_hub_section() -> None:
+    """r7 SCOPE + MINOR-1: E5 is declared per hub section that carries the template."""
     from scripts import capture_macro_command_p4 as capture
 
-    receipt = capture.e5_applicability()
-    for rel, row in receipt.items():
-        if rel.endswith("macro_monetary.html.j2"):
-            continue
-        assert row == {"fragments": False, "template": False}, (rel, row)
-    assert "templates/_macro_suite_shell.html.j2" in receipt
-    families = capture.declared_families(blast_keys=["growth_real_economy"])
-    empty_ids = {cell.split("-")[1] for cell in families["empty_states"]}
-    assert empty_ids == {"e1", "e2", "e3", "e4", "e6"}
-    assert not any("e5" in cell for cell in capture.flatten_declared(families))
+    html = _synthetic_hub(missing_section="jobs")
+    receipt = capture.e5_applicability_from_html(html)
+    assert receipt["growth"]["templatePresent"] is True
+    assert receipt["jobs"]["templatePresent"] is False
+    assert receipt["growth"]["fragmentTarget"] == "macro/fragments/growth.html"
+    assert receipt["jobs"]["fragmentTarget"] == "macro/fragments/jobs.html"
+    assert capture.empty_ids_for_section(receipt["growth"])[-1] == "e5"
+    assert "e5" not in capture.empty_ids_for_section(receipt["jobs"])
+    families = capture.declared_families(
+        blast_keys=["growth_real_economy"], applicability=receipt)
+    e5 = [cell for cell in families["empty_states"] if cell.startswith("empty-e5-")]
+    assert any(cell.startswith("empty-e5-growth-") for cell in e5)
+    assert not any(cell.startswith("empty-e5-jobs-") for cell in e5)
+    assert len(e5) == 6 * 2 * 4  # six templated sections × 1440/390 × theme × locale
 
 
 def test_declared_matrix_gaps_are_generated_not_hand_written() -> None:
@@ -1003,9 +1020,16 @@ def test_declared_matrix_gaps_are_generated_not_hand_written() -> None:
     from scripts import capture_macro_command_p4 as capture
 
     blast = [f"workspace_{i}" for i in range(9)]
-    families = capture.declared_families(blast_keys=blast)
+    none_e5 = {
+        section: {
+            "templatePresent": False,
+            "fragmentTarget": f"macro/fragments/{section}.html",
+        }
+        for section in capture.SECTIONS
+    }
+    families = capture.declared_families(blast_keys=blast, applicability=none_e5)
     declared = capture.flatten_declared(families)
-    assert not any("e5" in cell for cell in declared)
+    assert not any(cell.startswith("empty-e5-") for cell in declared)
     assert len(families["empty_states"]) == 5 * 2 * 4
     assert len(families["sections"]) == 7 * 3 * 4 + 7 * 4  # widths + 1440 full
     assert len(families["states"]) == 4 * 4
@@ -1013,6 +1037,7 @@ def test_declared_matrix_gaps_are_generated_not_hand_written() -> None:
     assert len(families["clearance"]) == 7 * 3 * 4
     assert len(families["rail_viewport"]) == 2 * 4
     assert len(families["fab"]) == 4
+    assert len(families["rest_views"]) == 3 * 4
     captured = set(declared)
     assert capture.generate_gaps(declared, captured) == []
     missing = capture.generate_gaps(
@@ -1021,6 +1046,132 @@ def test_declared_matrix_gaps_are_generated_not_hand_written() -> None:
     assert stems == {"empty-e1-light-zh-390", "mob-growth-dark-en-390"}
     excluded = capture.generate_excluded(missing)
     assert {row["id"] for row in excluded} == stems
+
+
+def test_writer_emits_gaps_from_same_computation() -> None:
+    """r7 MAJOR-1: the writer emits gaps; key set includes gaps."""
+    from scripts import capture_macro_command_p4 as capture
+
+    families = {
+        "sections": ["mob-growth-dark-en-390"],
+        "empty_states": ["empty-e1-light-zh-390"],
+    }
+    declared = capture.flatten_declared(families)
+    captured = {"mob-growth-dark-en-390"}
+    gaps = capture.generate_gaps(declared, captured)
+    protocol = {
+        "tree_clean_start": True,
+        "tree_clean_end": True,
+        "head_start": "abc",
+        "head_end": "abc",
+        "generated_at_start": "2026-09-08T00:00:00Z",
+        "generated_at_end": "2026-09-08T00:01:00Z",
+        "commit_time_of_capture_sha": "2026-09-08T00:00:00+00:00",
+    }
+    manifest = capture.build_manifest(
+        families=families,
+        probe_stems=[],
+        excluded=capture.generate_excluded(gaps),
+        gaps=gaps,
+        states=[],
+        protocol=protocol,
+    )
+    assert "gaps" in manifest
+    assert manifest["gaps"] == capture.generate_gaps(declared, captured)
+    assert manifest["gaps"] == manifest["pages"][0]["gaps"]
+    assert manifest["gaps"] == [
+        "empty-e1-light-zh-390: captured:false — declared cell missing from this run"
+    ]
+
+
+def test_state_row_rejects_null_fixture() -> None:
+    """r7 MINOR-3: fixture is never null."""
+    from scripts import capture_macro_command_p4 as capture
+
+    info = {
+        "applied_locale": "en",
+        "applied_theme": "dark",
+        "bytes": 10,
+        "png_height": 10,
+        "png_width": 10,
+        "sha256": "a" * 64,
+        "css_width": 10,
+        "css_height": 10,
+        "clip": {"x": 0, "y": 0, "width": 10, "height": 10},
+        "dpr": 2,
+    }
+    try:
+        capture._state_row(
+            "x.png", "dark", "en", "desktop", info,
+            fixture=None, verified_how="test")
+    except ValueError as exc:
+        assert "fixture" in str(exc)
+    else:
+        raise AssertionError("expected ValueError for fixture=None")
+    try:
+        capture._state_row(
+            "x.png", "dark", "en", "desktop", info,
+            fixture="", verified_how="test")
+    except ValueError as exc:
+        assert "fixture" in str(exc)
+    else:
+        raise AssertionError("expected ValueError for empty fixture")
+    row = capture._state_row(
+        "x.png", "dark", "en", "desktop", info,
+        fixture="builder-payload", verified_how="test")
+    assert row["fixture"] == "builder-payload"
+
+
+def test_p3_clearance_and_rail_import_contract() -> None:
+    """r7 MINOR-2: P3 ladder/rail contract is pinned so a rename fails here."""
+    from scripts.capture_macro_command_p3 import RAIL_VIEWPORT_JS, _run_clearance
+
+    assert callable(_run_clearance)
+    assert "parseFadeWidth" in RAIL_VIEWPORT_JS
+    assert "maskRaw" in RAIL_VIEWPORT_JS
+    assert "mask-image" in RAIL_VIEWPORT_JS
+    assert "fadeWidth" in RAIL_VIEWPORT_JS
+
+    class _Page:
+        def evaluate(self, _js, target=None):
+            return {
+                "ok": True,
+                "textCount": 4,
+                "maxScrollMatched": True,
+                "maxScroll": 200,
+                "hits": [],
+                "excused": [{
+                    "reason": "rail_fully_covered",
+                    "docTop": 400,
+                    "ovBottom": 80,
+                    "exposedAtScrollY": 120,
+                    "maxScroll": 200,
+                }, {
+                    "reason": "chip_partially_covered",
+                    "docTop": 100,
+                    "ovBottom": 40,
+                    "exposedAtScrollY": 60,
+                    "maxScroll": 200,
+                }],
+                "overlays": [],
+                "mmbBootInDom": True,
+                "mmbBootVisible": False,
+            }
+
+    row = _run_clearance(_Page())
+    assert set(row["positions"]) == {"0", "50", "max"}
+    for pos in row["positions"].values():
+        assert pos["maxScrollMatched"] is True
+        assert pos["hits"] == []
+        assert pos["excused"]
+        for item in pos["excused"]:
+            assert "docTop" in item
+            assert "ovBottom" in item
+            assert "exposedAtScrollY" in item
+            assert "maxScroll" in item
+            reason = item["reason"]
+            assert reason.endswith("_fully_covered") or reason.endswith(
+                "_partially_covered")
 
 
 def test_manifest_gaps_recompute_from_declared() -> None:
@@ -1034,4 +1185,5 @@ def test_manifest_gaps_recompute_from_declared() -> None:
     flat = capture.flatten_declared(declared)
     captured = capture.captured_stems(manifest["pages"][0]["states"])
     captured.update(manifest.get("probe_stems") or [])
+    assert "gaps" in manifest
     assert capture.generate_gaps(flat, captured) == manifest["gaps"]

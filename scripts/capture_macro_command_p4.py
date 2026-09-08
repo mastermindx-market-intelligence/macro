@@ -8,6 +8,7 @@ import hashlib
 import json
 import math
 import os
+import re
 import shutil
 import socket
 import subprocess
@@ -95,15 +96,20 @@ def _assert_shot_geometry(dest: Path, extra: dict[str, Any],
     width, height = _png_size(dest)
     scale = float(dpr)
     if extra.get("crop"):
-        box = extra.get("crop_box") or {}
-        exp_w = _device_px(float(box.get("x") or 0),
-                           float(box.get("width") or 0), scale)
-        exp_h = _device_px(float(box.get("y") or 0),
-                           float(box.get("height") or 0), scale)
+        span = extra.get("device_px_span")
+        if not span:
+            raise RuntimeError(f"{dest.name}: crop missing device_px_span")
+        exp_w = int(span["x1"]) - int(span["x0"])
+        exp_h = int(span["y1"]) - int(span["y0"])
+        if width < exp_w or height < exp_h:
+            raise RuntimeError(
+                f"{dest.name}: element box exceeds what was shot "
+                f"IHDR {width}x{height} < device_px_span {exp_w}x{exp_h} "
+                f"span={span} dpr={dpr}")
         if (width, height) != (exp_w, exp_h):
             raise RuntimeError(
-                f"{dest.name}: crop IHDR {width}x{height} != crop_box×dpr "
-                f"{exp_w}x{exp_h} box={box} dpr={dpr}")
+                f"{dest.name}: crop IHDR {width}x{height} != device_px_span "
+                f"{exp_w}x{exp_h} span={span} dpr={dpr}")
         if not extra.get("crop_selector"):
             raise RuntimeError(f"{dest.name}: crop:true missing crop_selector")
     elif extra.get("full_page"):
@@ -120,38 +126,34 @@ def _assert_shot_geometry(dest: Path, extra: dict[str, Any],
                 f"({exp_w}x{exp_h})")
 
 
-def _write_viewport_crop(page, dest: Path, box: dict[str, float],
-                         dpr: float) -> dict[str, float]:
-    """Crop a viewport PNG on the ceil/floor device span.
+def _pin_element_span(dest: Path, extra: dict[str, Any]) -> None:
+    """NIT-2: refuse a partial element shot; record the PNG's device span.
 
-    A 1-device-px overhang at the viewport edge is clamped; the returned
-    box is the CSS rectangle that actually landed in the PNG so IHDR
-    still equals `_device_px`.
+    Playwright locator.screenshot() may add a device-pixel of rounding
+    beyond the CSS box. That is still a full element. A PNG smaller
+    than the element box is a clipped frame and is an error.
     """
-    from PIL import Image
-    scale = float(dpr)
-    tmp = dest.with_suffix(dest.suffix + ".viewport.png")
-    page.screenshot(path=str(tmp), type="png", full_page=False)
-    image = Image.open(tmp).convert("RGB")
-    x0 = max(0, int(math.floor(box["x"] * scale)))
-    y0 = max(0, int(math.floor(box["y"] * scale)))
-    width = _device_px(box["x"], box["width"], scale)
-    height = _device_px(box["y"], box["height"], scale)
-    x1 = min(image.width, x0 + width)
-    y1 = min(image.height, y0 + height)
-    if x1 <= x0 or y1 <= y0:
-        tmp.unlink(missing_ok=True)
+    from scripts.capture_macro_command_p3 import _device_px_span
+
+    box = extra.get("crop_box") or {}
+    expected = _device_px_span(box, float(extra["dpr"]))
+    width, height = _png_size(dest)
+    exp_w = expected["x1"] - expected["x0"]
+    exp_h = expected["y1"] - expected["y0"]
+    if width < exp_w or height < exp_h:
         raise RuntimeError(
-            f"{dest.name}: empty crop at ({x0},{y0}) "
-            f"viewport PNG {image.width}x{image.height} box={box} dpr={dpr}")
-    image.crop((x0, y0, x1, y1)).save(dest, format="PNG")
-    tmp.unlink(missing_ok=True)
-    return {
-        "x": x0 / scale,
-        "y": y0 / scale,
-        "width": (x1 - x0) / scale,
-        "height": (y1 - y0) / scale,
+            f"{dest.name}: element box exceeds what was shot "
+            f"IHDR {width}x{height} < element span {exp_w}x{exp_h} "
+            f"box={box} dpr={extra.get('dpr')}")
+    extra["element_device_px_span"] = expected
+    extra["device_px_span"] = {
+        "x0": expected["x0"],
+        "x1": expected["x0"] + width,
+        "y0": expected["y0"],
+        "y1": expected["y0"] + height,
     }
+    if not extra.get("element_text_head"):
+        raise RuntimeError(f"{dest.name}: empty element_text_head")
 
 
 def _copy_chrome(out: Path) -> None:
@@ -320,12 +322,11 @@ def _capture_clip(*, browser, url: str, hash_path: str, theme: str, locale: str,
                   wait_sel: str | None = None, width: int = 1440,
                   height: int = 900, first_screen: bool = False,
                   full_page: bool = False) -> dict[str, Any]:
-    # Crops need a tall viewport so the scrolled element fits the
-    # device-pixel span. Fold and full-page shots keep the declared size.
-    open_height = height if (first_screen or full_page) else max(height, 2200)
+    from scripts.capture_macro_command_p3 import _write_element_shot
+
     context, page = _open_page(
         browser=browser, url=url, hash_path=hash_path, theme=theme,
-        locale=locale, width=width, height=open_height)
+        locale=locale, width=width, height=height)
     if wait_sel:
         page.wait_for_selector(wait_sel, timeout=20000)
     else:
@@ -338,15 +339,13 @@ def _capture_clip(*, browser, url: str, hash_path: str, theme: str, locale: str,
         except Exception:
             pass
     target = page.locator(sel).first
-    if not first_screen and not full_page:
-        target.scroll_into_view_if_needed()
     page.wait_for_timeout(200)
     box = target.bounding_box()
     if not box:
         context.close()
         raise RuntimeError(f"no bounding box for {sel}")
     dpr = float(page.evaluate("window.devicePixelRatio"))
-    extra: dict[str, Any] = {"dpr": dpr}
+    extra: dict[str, Any] = {"dpr": dpr, "fixture": "builder-payload"}
     if full_page:
         page.screenshot(path=str(dest), type="png", full_page=True)
         clip = {"x": 0, "y": 0, "width": width, "height": height}
@@ -358,16 +357,14 @@ def _capture_clip(*, browser, url: str, hash_path: str, theme: str, locale: str,
         extra["crop"] = False
         extra["full_page"] = False
     else:
-        clip = {
-            "x": box["x"], "y": box["y"],
-            "width": box["width"], "height": box["height"],
-        }
         extra["crop"] = True
         extra["full_page"] = False
         extra["crop_selector"] = sel
-        clip = _write_viewport_crop(page, dest, clip, dpr)
-        extra["crop_box"] = clip
-    _assert_shot_geometry(dest, extra, width, open_height)
+        _write_element_shot(page, dest, target, extra, locale)
+        _pin_element_span(dest, extra)
+        clip = extra["crop_box"]
+        box = extra.get("crop_box") or box
+    _assert_shot_geometry(dest, extra, width, height)
     png = dest.read_bytes()
     if png[:8] != b"\x89PNG\r\n\x1a\n" or b"IEND" not in png:
         context.close()
@@ -412,6 +409,10 @@ def _capture_clip(*, browser, url: str, hash_path: str, theme: str, locale: str,
         "full_page": bool(extra.get("full_page")),
         "crop_selector": extra.get("crop_selector"),
         "crop_box": extra.get("crop_box"),
+        "crop_box_doc": extra.get("crop_box_doc"),
+        "scroll_y_at_shot": extra.get("scroll_y_at_shot"),
+        "element_text_head": extra.get("element_text_head"),
+        "device_px_span": extra.get("device_px_span"),
     }
 
 
@@ -430,6 +431,10 @@ def _state_row(filename: str, theme: str, locale: str, viewport: str,
                selector: str | None = None,
                force_state: str | None = None,
                full_page: bool = False) -> dict[str, Any]:
+    if fixture is None or not str(fixture).strip():
+        raise ValueError(
+            f"{filename}: fixture must be a path or the literal "
+            f"'builder-payload'")
     vw, vh = _viewport_dims(viewport)
     row = {
         "access": "anonymous",
@@ -464,6 +469,10 @@ def _state_row(filename: str, theme: str, locale: str, viewport: str,
         row["crop_selector"] = selector if crop else None
     if crop:
         row["crop_box"] = info.get("crop_box") or info.get("clip")
+        for key in ("crop_box_doc", "scroll_y_at_shot",
+                    "element_text_head", "device_px_span"):
+            if key in info:
+                row[key] = info[key]
     else:
         row["crop_selector"] = None
         row["crop_box"] = None
@@ -479,41 +488,55 @@ STATE_KEYS = (
     "growth-business", "credit-funding", "growth-foot", "consumer-foot",
 )
 BLAST_AXES = (("dark", "en"), ("light", "zh"), ("dark", "zh"), ("light", "en"))
-WORKSPACE_E5_PATHS = (
-    "templates/macro_growth_real_economy.html.j2",
-    "templates/macro_labor_markets.html.j2",
-    "templates/macro_housing_real_estate.html.j2",
-    "templates/macro_consumer_payments.html.j2",
-    "templates/macro_financial_conditions.html.j2",
-    "templates/macro_national_debt_liabilities.html.j2",
-    "templates/macro_trade_flows.html.j2",
-    "templates/_macro_suite_shell.html.j2",
-)
 CLEARANCE_WIDTHS = (390, 768, 1440)
 RAIL_VIEWPORT_WIDTHS = (390, 768)
+REST_VIEWPORT_WIDTHS = (1440, 768, 390)
+E5_VIEWPORT_WIDTHS = (1440, 390)
+CLEAN_END_PATHS = ("templates", "scripts", "lib", "site")
 
 
-def e5_applicability() -> dict[str, dict[str, bool]]:
-    """Per-page receipt: E5 exists only with data-mc-fragments AND the e5 template."""
-    receipt: dict[str, dict[str, bool]] = {}
-    for rel in WORKSPACE_E5_PATHS:
-        text = (ROOT / rel).read_text(encoding="utf-8")
-        receipt[rel] = {
-            "fragments": "data-mc-fragments" in text,
-            "template": 'data-mc-empty-e5' in text or "data-mc-empty-e5" in text,
+def e5_applicability_from_html(html: str) -> dict[str, dict[str, Any]]:
+    """Per hub-section receipt from the rendered hub (not standalone templates)."""
+    fragments = "data-mc-fragments" in html
+    receipt: dict[str, dict[str, Any]] = {}
+    for match in re.finditer(
+            r'<section[^>]*\bdata-mc-panel="([^"]+)"[^>]*>(.*?)</section>',
+            html, flags=re.DOTALL):
+        section_id = match.group(1)
+        body = match.group(2)
+        receipt[section_id] = {
+            "templatePresent": "data-mc-empty-e5" in body,
+            "fragmentTarget": f"macro/fragments/{section_id}.html",
+            "fragments": fragments,
         }
     return receipt
 
 
-def empty_ids_for_page(page_receipt: dict[str, bool]) -> tuple[str, ...]:
+def e5_applicability(html: str | None = None) -> dict[str, dict[str, Any]]:
+    """E5 is decided per section panel on the rendered hub page."""
+    if html is None:
+        path = SITE / "macro_monetary.html"
+        if not path.exists():
+            raise RuntimeError(
+                "hub page missing at site/macro_monetary.html; rebuild first")
+        html = path.read_text(encoding="utf-8")
+    return e5_applicability_from_html(html)
+
+
+def empty_ids_for_section(section_receipt: dict[str, Any]) -> tuple[str, ...]:
+    """Fixture empties always; E5 only when this hub section carries the template."""
     ids = list(EMPTY_IDS)
-    if page_receipt.get("fragments") and page_receipt.get("template"):
+    if section_receipt.get("templatePresent"):
         ids.append("e5")
     return tuple(ids)
 
 
-def declared_families(*, blast_keys: list[str]) -> dict[str, list[str]]:
-    """Complete declared matrix. E5 is omitted unless a page can enter it."""
+def declared_families(*, blast_keys: list[str],
+                      applicability: dict[str, dict[str, Any]] | None = None
+                      ) -> dict[str, list[str]]:
+    """Complete declared matrix. Per-section E5 is omitted unless the panel can enter it."""
+    if applicability is None:
+        applicability = e5_applicability()
     families: dict[str, list[str]] = {
         "sections": [],
         "empty_states": [],
@@ -522,6 +545,7 @@ def declared_families(*, blast_keys: list[str]) -> dict[str, list[str]]:
         "clearance": [],
         "rail_viewport": [],
         "fab": [],
+        "rest_views": [],
     }
     for section in SECTIONS:
         for width, prefix in ((1440, "comp"), (768, "tab"), (390, "mob")):
@@ -534,11 +558,20 @@ def declared_families(*, blast_keys: list[str]) -> dict[str, list[str]]:
                 families["sections"].append(
                     f"comp-{section}-{theme}-{locale}-1440-full")
     for empty_id in EMPTY_IDS:
-        for width in (1440, 390):
+        for width in E5_VIEWPORT_WIDTHS:
             for theme in THEMES:
                 for locale in LOCALES:
                     families["empty_states"].append(
                         f"empty-{empty_id}-{theme}-{locale}-{width}")
+    for section in SECTIONS:
+        ids = empty_ids_for_section(applicability.get(section) or {})
+        if "e5" not in ids:
+            continue
+        for width in E5_VIEWPORT_WIDTHS:
+            for theme in THEMES:
+                for locale in LOCALES:
+                    families["empty_states"].append(
+                        f"empty-e5-{section}-{theme}-{locale}-{width}")
     for key in STATE_KEYS:
         for theme in THEMES:
             for locale in LOCALES:
@@ -562,6 +595,11 @@ def declared_families(*, blast_keys: list[str]) -> dict[str, list[str]]:
     for theme in THEMES:
         for locale in LOCALES:
             families["fab"].append(f"fab-{theme}-{locale}-1440")
+    for width in REST_VIEWPORT_WIDTHS:
+        for theme in THEMES:
+            for locale in LOCALES:
+                families["rest_views"].append(
+                    f"rest-{theme}-{locale}-{width}")
     return families
 
 
@@ -603,6 +641,69 @@ def generate_excluded(gaps: list[str]) -> list[dict[str, Any]]:
         reason = gap.split(" — ", 1)[-1].rstrip(".")
         excluded.append({"id": cell, "captured": False, "reason": reason})
     return excluded
+
+
+def build_manifest(*, families: dict[str, list[str]],
+                   probe_stems: list[str],
+                   excluded: list[dict[str, Any]],
+                   gaps: list[str],
+                   states: list[dict[str, Any]],
+                   protocol: dict[str, Any]) -> dict[str, Any]:
+    """Writer: top-level gaps is the same list stamped on pages[0].gaps."""
+    generated_at_end = protocol["generated_at_end"]
+    head = protocol["head_start"]
+    return {
+        "schema": "mastermind.p0_evidence.v2",
+        "axes": {
+            "access": ["anonymous"],
+            "force_states": list(EMPTY_IDS) + ["e5", "blast-radius"],
+            "locales": ["en", "zh"],
+            "themes": ["dark", "light"],
+            "viewports": {
+                "desktop": [1440, 2200],
+                "tablet": [768, 1400],
+                "mobile": [390, 844],
+            },
+        },
+        "declared": families,
+        "gaps": gaps,
+        "probe_stems": probe_stems,
+        "excluded": excluded,
+        "generated_at": generated_at_end,
+        "generated_at_start": protocol["generated_at_start"],
+        "generated_at_end": generated_at_end,
+        "head_sha": head,
+        "capture_sha": head,
+        "head_start": head,
+        "head_end": protocol["head_end"],
+        "tree_clean_start": protocol["tree_clean_start"],
+        "tree_clean_end": protocol["tree_clean_end"],
+        "commit_time_of_capture_sha": protocol["commit_time_of_capture_sha"],
+        "pre_commit": False,
+        "honesty": {
+            "access": "anonymous only; no credential is entered, stored, or synthesized",
+            "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+            "gaps": "gaps is generated as declared − captured; nothing is inferred for a missing cell",
+            "served_from": (
+                "committed site/ (hub + workspace pages); empty-state "
+                "fixtures render to a temp build root"
+            ),
+        },
+        "outcome": "captured",
+        "target": {
+            "resolved_sha_source": _derive_resolved_sha_source(protocol),
+        },
+        "pages": [{
+            "console_errors": [],
+            "failed_responses": [],
+            "gaps": gaps,
+            "page_id": "macro_monetary.html",
+            "registry_route": "/macro_monetary.html",
+            "route": "/macro_monetary.html",
+            "route_kind": "explicit_override",
+            "states": states,
+        }],
+    }
 
 
 def _head_sha() -> str:
@@ -651,7 +752,7 @@ def _derive_resolved_sha_source(protocol: dict[str, Any]) -> str:
         f"`git status --short` at start "
         f"(empty={protocol['tree_clean_start']}); "
         f"tree_clean_end={protocol['tree_clean_end']} from "
-        f"`git status --short -- templates scripts lib` at end "
+        f"`git status --short -- templates scripts lib site` at end "
         f"(empty={protocol['tree_clean_end']}); "
         f"head_start={protocol['head_start']}; "
         f"head_end={protocol['head_end']}; "
@@ -717,10 +818,12 @@ def _extract_parent_site(tmp: Path, pages: list[str]) -> Path:
 
 def _capture_metric_table(*, browser, origin: str, page_name: str,
                           theme: str, locale: str, dest: Path) -> dict[str, Any]:
+    from scripts.capture_macro_command_p3 import _write_element_shot
+
     selector = "section.mq-changed table.mq-table"
     ctx, page = _open_page(
         browser=browser, url=f"{origin}/{page_name}", hash_path="",
-        theme=theme, locale=locale, width=1440, height=4000)
+        theme=theme, locale=locale, width=1440, height=900)
     page.wait_for_function(
         "([theme, locale]) => document.documentElement.getAttribute('data-theme') === theme"
         " && (document.documentElement.getAttribute('data-lang') || 'en') === locale",
@@ -747,24 +850,16 @@ def _capture_metric_table(*, browser, origin: str, page_name: str,
     )
     page.wait_for_selector(selector, state="visible", timeout=8000)
     table = page.locator(selector).first
-    table.scroll_into_view_if_needed()
-    page.wait_for_timeout(150)
-    box = table.bounding_box()
-    if not box:
-        ctx.close()
-        raise RuntimeError(f"no bounding box for {page_name} {selector}")
     dpr = float(page.evaluate("window.devicePixelRatio"))
-    clip = {
-        "x": box["x"], "y": box["y"],
-        "width": box["width"], "height": box["height"],
-    }
     extra = {
         "dpr": dpr, "crop": True, "full_page": False,
-        "crop_selector": selector,
+        "crop_selector": selector, "fixture": "builder-payload",
     }
-    clip = _write_viewport_crop(page, dest, clip, dpr)
-    extra["crop_box"] = clip
-    _assert_shot_geometry(dest, extra, 1440, 4000)
+    _write_element_shot(page, dest, table, extra, locale)
+    _pin_element_span(dest, extra)
+    clip = extra["crop_box"]
+    box = extra.get("crop_box") or {}
+    _assert_shot_geometry(dest, extra, 1440, 900)
     png = dest.read_bytes()
     if png[:8] != b"\x89PNG\r\n\x1a\n" or b"IEND" not in png:
         ctx.close()
@@ -792,7 +887,172 @@ def _capture_metric_table(*, browser, origin: str, page_name: str,
         "full_page": False,
         "crop_selector": selector,
         "crop_box": clip,
+        "crop_box_doc": extra.get("crop_box_doc"),
+        "scroll_y_at_shot": extra.get("scroll_y_at_shot"),
+        "element_text_head": extra.get("element_text_head"),
+        "device_px_span": extra.get("device_px_span"),
     }
+
+
+def _capture_hub_e5_cell(*, browser, origin: str, section: str,
+                         theme: str, locale: str, vw: int, vh: int,
+                         dest: Path) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Photograph one hub-section E5 via P3's stalled fragment request."""
+    from scripts.capture_macro_command_p3 import _write_element_shot
+
+    context = browser.new_context(
+        viewport={"width": vw, "height": vh},
+        device_scale_factor=2,
+        color_scheme=theme,
+        reduced_motion="reduce",
+        locale="zh-CN" if locale == "zh" else "en-US",
+    )
+    context.add_init_script(
+        f"localStorage.setItem('theme', {theme!r});"
+        "localStorage.removeItem('themeAuto');"
+        f"localStorage.setItem('lang', {locale!r});"
+        f"document.documentElement.setAttribute('data-theme', {theme!r});"
+        f"document.documentElement.setAttribute('data-lang', {locale!r});"
+    )
+    held: list = []
+    try:
+        page = context.new_page()
+        seen: dict[str, float] = {}
+
+        def _stall(route) -> None:
+            if "requestSeenAt" not in seen:
+                seen["requestSeenAt"] = time.monotonic()
+            held.append(route)
+
+        page.route("**/macro/fragments/**", _stall)
+        page.goto(
+            origin + f"/macro_monetary.html#{section}",
+            wait_until="domcontentloaded", timeout=30000)
+        page.wait_for_function(
+            """([theme, locale]) => {
+                const el = document.documentElement;
+                return el.getAttribute('data-theme') === theme
+                    && (el.getAttribute('data-lang') || 'en') === locale;
+            }""",
+            arg=[theme, locale],
+            timeout=10000,
+        )
+        clone_sel = f'section#{section} [data-mc-empty="e5"]'
+        deadline = time.monotonic() + 20.0
+        clone_seen_at: float | None = None
+        while time.monotonic() < deadline:
+            if page.query_selector(clone_sel):
+                clone_seen_at = time.monotonic()
+                break
+            page.wait_for_timeout(100)
+        if clone_seen_at is None:
+            raise RuntimeError(
+                f"E5 clone missing {section}/{theme}/{locale}/{vw}")
+        request_seen_at = seen.get("requestSeenAt")
+        if request_seen_at is None:
+            raise RuntimeError(
+                f"E5 fragment request never seen "
+                f"{section}/{theme}/{locale}/{vw}")
+        request_seen_at_ms = request_seen_at * 1000
+        clone_seen_at_ms = clone_seen_at * 1000
+        elapsed_ms = clone_seen_at_ms - request_seen_at_ms
+        receipt = page.evaluate(
+            """(sectionId) => {
+              const panel = document.querySelector(
+                '[data-mc-panel="' + sectionId + '"]');
+              const tpl = panel
+                ? panel.querySelector('template[data-mc-empty-e5]')
+                : document.querySelector(
+                    '[data-mc-panel="' + sectionId + '"] template[data-mc-empty-e5]');
+              const clone = panel
+                ? panel.querySelector('[data-mc-empty="e5"]')
+                : document.querySelector('[data-mc-empty="e5"]');
+              const title = clone
+                ? (clone.querySelector('.mc-empty-title') || clone)
+                : null;
+              return {
+                templatePresent: Boolean(tpl),
+                clonePresent: Boolean(clone),
+                fragmentTarget: 'macro/fragments/' + sectionId + '.html',
+                headline: title
+                  ? String(title.innerText || '').trim() : '',
+              };
+            }""",
+            section,
+        )
+        if elapsed_ms < 8000:
+            raise RuntimeError(
+                f"E5 elapsedMs {elapsed_ms:.0f} < 8000 "
+                f"{section}/{theme}/{locale}/{vw}")
+        if not receipt.get("clonePresent"):
+            raise RuntimeError(
+                f"E5 clone missing {section}/{theme}/{locale}/{vw}: {receipt}")
+        extra = {
+            "dpr": float(page.evaluate("window.devicePixelRatio")),
+            "force_state": "e5",
+            "fixture": "builder-payload",
+            "trigger": (
+                "page.route never-fulfils macro/fragments/*; "
+                "8000ms client timeout cloned template"
+            ),
+            "crop": True,
+            "full_page": False,
+            "crop_selector": clone_sel,
+        }
+        target = page.locator(clone_sel).first
+        _write_element_shot(page, dest, target, extra, locale)
+        _pin_element_span(dest, extra)
+        _assert_shot_geometry(dest, extra, vw, vh)
+        png = dest.read_bytes()
+        if png[:8] != b"\x89PNG\r\n\x1a\n" or b"IEND" not in png:
+            raise RuntimeError(f"{dest.name} is not a finished PNG")
+        pw, ph = _png_size(dest)
+        clip = extra.get("crop_box") or {}
+        applied_theme = page.evaluate(
+            "document.documentElement.getAttribute('data-theme')")
+        applied_locale = page.evaluate(
+            "document.documentElement.getAttribute('data-lang') || 'en'")
+        if applied_theme != theme or applied_locale != locale:
+            raise RuntimeError(
+                f"theme/lang mismatch {applied_theme}/{applied_locale}")
+        info = {
+            "bytes": len(png),
+            "sha256": hashlib.sha256(png).hexdigest(),
+            "png_width": pw,
+            "png_height": ph,
+            "css_width": clip.get("width"),
+            "css_height": clip.get("height"),
+            "clip": clip,
+            "applied_theme": applied_theme,
+            "applied_locale": applied_locale,
+            "dpr": extra["dpr"],
+            "crop": True,
+            "full_page": False,
+            "crop_selector": clone_sel,
+            "crop_box": extra.get("crop_box"),
+            "crop_box_doc": extra.get("crop_box_doc"),
+            "scroll_y_at_shot": extra.get("scroll_y_at_shot"),
+            "element_text_head": extra.get("element_text_head"),
+            "device_px_span": extra.get("device_px_span"),
+        }
+        probe = {
+            "elapsedMs": elapsed_ms,
+            "requestSeenAtMs": request_seen_at_ms,
+            "cloneSeenAtMs": clone_seen_at_ms,
+            "templatePresent": receipt.get("templatePresent"),
+            "clonePresent": receipt.get("clonePresent"),
+            "fragmentTarget": receipt.get("fragmentTarget"),
+            "headline": receipt.get("headline"),
+            "section": section,
+        }
+        return info, probe
+    finally:
+        for route in held:
+            try:
+                route.abort("timedout")
+            except Exception:
+                pass
+        context.close()
 
 
 def main() -> int:
@@ -858,6 +1118,7 @@ def main() -> int:
                             )
                             states.append(_state_row(
                                 name, theme, locale, viewport, info,
+                                fixture="builder-payload",
                                 section=section,
                                 crop=False,
                                 full_page=False,
@@ -877,9 +1138,39 @@ def main() -> int:
                             width=1440, height=900, full_page=True)
                         states.append(_state_row(
                             name, theme, locale, "desktop", info,
+                            fixture="builder-payload",
                             section=section, crop=False, full_page=True,
                             selector=f"section.mc-panel#{section}",
                             verified_how="Playwright full-page at 1440×900 dpr=2",
+                        ))
+
+            rest_heights = {1440: 900, 768: 1400, 390: 844}
+            for width in REST_VIEWPORT_WIDTHS:
+                height = rest_heights[width]
+                viewport = (
+                    "desktop" if width == 1440
+                    else ("tablet" if width == 768 else "mobile")
+                )
+                for theme in THEMES:
+                    for locale in LOCALES:
+                        name = f"rest-{theme}-{locale}-{width}.png"
+                        print(f"capture {name}", flush=True)
+                        info = _capture_clip(
+                            browser=browser, url=url, hash_path="#overview",
+                            theme=theme, locale=locale,
+                            dest=EVIDENCE / name,
+                            sel="section.mc-panel#overview",
+                            wait_sel="section.mc-panel#overview",
+                            width=width, height=height, first_screen=True)
+                        states.append(_state_row(
+                            name, theme, locale, viewport, info,
+                            fixture="builder-payload",
+                            section="overview", crop=False, full_page=False,
+                            selector="section.mc-panel#overview",
+                            verified_how=(
+                                f"rest view Playwright viewport {width}×{height} "
+                                f"dpr=2 at #overview"
+                            ),
                         ))
 
             # §4.3 — state frames, both art directions × both locales
@@ -906,8 +1197,9 @@ def main() -> int:
                             width=1440, height=900)
                         states.append(_state_row(
                             name, theme, locale, "desktop", info,
+                            fixture="builder-payload",
                             section=section, crop=True, selector=clip_sel,
-                            verified_how="Playwright clip; hash/tab or foot sentence visible",
+                            verified_how="Playwright element shot; hash/tab or foot sentence visible",
                         ))
 
             # §4.5 P-19 overflow probes + after-crops
@@ -929,15 +1221,18 @@ def main() -> int:
                                 const panel = document.querySelector('section#growth');
                                 const rail = document.querySelector('.mc-rail-list');
                                 const boot = document.getElementById('mmb-boot');
+                                const bootCs = boot ? getComputedStyle(boot) : null;
                                 return {
                                     sw: de.scrollWidth, cw: de.clientWidth,
                                     panel_sw: panel && panel.scrollWidth,
                                     panel_cw: panel && panel.clientWidth,
                                     rail_sw: rail && rail.scrollWidth,
                                     rail_cw: rail && rail.clientWidth,
-                                    mmbBootDisplay: boot
-                                        ? getComputedStyle(boot).display
-                                        : null,
+                                    mmbBootInDom: Boolean(boot),
+                                    mmbBootVisible: Boolean(
+                                        boot && bootCs && bootCs.display !== 'none'
+                                        && bootCs.visibility !== 'hidden'),
+                                    mmbBootDisplay: bootCs ? bootCs.display : null,
                                 };
                             }""")
                         ctx.close()
@@ -987,10 +1282,11 @@ def main() -> int:
                     states.append(_state_row(
                         f"blast-radius/{before.name}", theme, locale,
                         "desktop", before_info, section=key,
+                        fixture="builder-payload",
                         crop=True, selector=blast_selector,
                         force_state="blast-radius",
                         verified_how=(
-                            "Playwright crop of section.mq-changed table.mq-table "
+                            "Playwright element shot of section.mq-changed table.mq-table "
                             "on the P3 parent workspace page at 1440 dpr=2"
                         ),
                     ))
@@ -1002,10 +1298,11 @@ def main() -> int:
                     states.append(_state_row(
                         f"blast-radius/{after.name}", theme, locale,
                         "desktop", after_info, section=key,
+                        fixture="builder-payload",
                         crop=True, selector=blast_selector,
                         force_state="blast-radius",
                         verified_how=(
-                            "Playwright crop of section.mq-changed table.mq-table "
+                            "Playwright element shot of section.mq-changed table.mq-table "
                             "on this PR's rebuilt workspace page at 1440 dpr=2"
                         ),
                     ))
@@ -1107,6 +1404,46 @@ def main() -> int:
                                 verified_how=how,
                             ))
 
+            applicability = e5_applicability(
+                (SITE / "macro_monetary.html").read_text(encoding="utf-8"))
+            e5_heights = {1440: 900, 390: 844}
+            for section in SECTIONS:
+                if "e5" not in empty_ids_for_section(
+                        applicability.get(section) or {}):
+                    continue
+                for width in E5_VIEWPORT_WIDTHS:
+                    height = e5_heights[width]
+                    viewport = "desktop" if width == 1440 else "mobile"
+                    for theme in THEMES:
+                        for locale in LOCALES:
+                            name = (
+                                f"empty-e5-{section}-{theme}-{locale}-{width}.png"
+                            )
+                            print(f"capture {name}", flush=True)
+                            info, e5_probe = _capture_hub_e5_cell(
+                                browser=browser, origin=origin,
+                                section=section, theme=theme, locale=locale,
+                                vw=width, vh=height,
+                                dest=EVIDENCE / name)
+                            probes[f"e5_timeout_{section}_{theme}_{locale}_{width}"] = e5_probe
+                            states.append(_state_row(
+                                name, theme, locale, viewport, info,
+                                fixture="builder-payload",
+                                trigger=(
+                                    "page.route never-fulfils macro/fragments/*; "
+                                    "8000ms client timeout cloned template"
+                                ),
+                                section=section,
+                                crop=True,
+                                selector=f'section#{section} [data-mc-empty="e5"]',
+                                force_state="e5",
+                                verified_how=(
+                                    "P3 stall of macro/fragments/*; "
+                                    f"elapsedMs={e5_probe['elapsedMs']:.0f} "
+                                    "locator.screenshot of cloned template"
+                                ),
+                            ))
+
             from scripts.capture_macro_command_p3 import (
                 RAIL_VIEWPORT_JS,
                 _run_clearance,
@@ -1164,6 +1501,12 @@ def main() -> int:
                             raise RuntimeError(
                                 f"rail viewport {width} {theme}/{locale}: "
                                 f"{viewport}")
+                        viewport["maskImageRaw"] = viewport.get("maskRaw")
+                        if viewport.get("fadeWidth") is None:
+                            ctx.close()
+                            raise RuntimeError(
+                                f"rail viewport missing fadeWidth "
+                                f"{width} {theme}/{locale}: {viewport}")
                         stem = f"rail_viewport-{theme}-{locale}-{width}"
                         probes[stem] = viewport
                         probe_stems.append(stem)
@@ -1234,7 +1577,9 @@ def main() -> int:
             name.removeprefix("macro_").removesuffix(".html")
             for name in probes.get("blast_pages") or []
         ]
-        families = declared_families(blast_keys=blast_keys)
+        applicability = e5_applicability(hub_html)
+        families = declared_families(
+            blast_keys=blast_keys, applicability=applicability)
         declared = flatten_declared(families)
         captured = captured_stems(states)
         captured.update(probe_stems)
@@ -1242,8 +1587,7 @@ def main() -> int:
         excluded = generate_excluded(gaps)
 
         head_end = _assert_head_unmoved(head)
-        end_tree = _require_clean_tree(
-            when="end", paths=("templates", "scripts", "lib"))
+        end_tree = _require_clean_tree(when="end", paths=CLEAN_END_PATHS)
         generated_at_end = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         protocol = {
             "tree_clean_start": start_tree["clean"],
@@ -1267,57 +1611,18 @@ def main() -> int:
         probes["declared_count"] = len(declared)
         probes["captured_count"] = len(captured)
         probes["gaps"] = gaps
-        probes["e5_applicability"] = e5_applicability()
+        probes["e5_applicability"] = applicability
         probes["probe_stems"] = probe_stems
         PROBES.write_text(json.dumps(probes, indent=2) + "\n", encoding="utf-8")
 
-        manifest = {
-            "schema": "mastermind.p0_evidence.v2",
-            "axes": {
-                "access": ["anonymous"],
-                "force_states": list(EMPTY_IDS) + ["blast-radius"],
-                "locales": ["en", "zh"],
-                "themes": ["dark", "light"],
-                "viewports": {
-                    "desktop": [1440, 2200],
-                    "tablet": [768, 1400],
-                    "mobile": [390, 844],
-                },
-            },
-            "declared": families,
-            "probe_stems": probe_stems,
-            "excluded": excluded,
-            "generated_at": generated_at_end,
-            "generated_at_start": generated_at_start,
-            "generated_at_end": generated_at_end,
-            "head_sha": head,
-            "capture_sha": head,
-            "head_start": head,
-            "head_end": head_end,
-            "tree_clean_start": start_tree["clean"],
-            "tree_clean_end": end_tree["clean"],
-            "commit_time_of_capture_sha": commit_time,
-            "pre_commit": False,
-            "honesty": {
-                "access": "anonymous only; no credential is entered, stored, or synthesized",
-                "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
-                "gaps": "gaps is generated as declared − captured; nothing is inferred for a missing cell",
-            },
-            "outcome": "captured",
-            "target": {
-                "resolved_sha_source": _derive_resolved_sha_source(protocol),
-            },
-            "pages": [{
-                "console_errors": [],
-                "failed_responses": [],
-                "gaps": gaps,
-                "page_id": "macro_monetary.html",
-                "registry_route": "/macro_monetary.html",
-                "route": "/macro_monetary.html",
-                "route_kind": "explicit_override",
-                "states": states,
-            }],
-        }
+        manifest = build_manifest(
+            families=families,
+            probe_stems=probe_stems,
+            excluded=excluded,
+            gaps=gaps,
+            states=states,
+            protocol=protocol,
+        )
         MANIFEST.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
         (EVIDENCE / "EVIDENCE.yml").write_text(
             "schema: mastermind.page_evidence_receipt.v1\n"
