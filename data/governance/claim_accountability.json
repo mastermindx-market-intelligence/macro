@@ -1,11 +1,11 @@
 {
   "schema": "claim_accountability.v1",
-  "generated_at": "2026-09-07T14:47:58.980635+00:00",
+  "generated_at": "2026-09-08T02:52:00.695958+00:00",
   "global": {
-    "n_claims": 87659,
+    "n_claims": 87662,
     "n_grades": 111326,
-    "n_with_falsifier": 776,
-    "falsifier_coverage": 0.008852,
+    "n_with_falsifier": 779,
+    "falsifier_coverage": 0.008886,
     "falsifier_coverage_note": "~146/9069 = 1.6% global as of 2026-07-06; falsifier-starvation is a structural property of importance-signal and china_news desks, not a grader failure"
   },
   "by_desk": {
@@ -358,11 +358,11 @@
       }
     },
     "stock_desk": {
-      "n_claims": 26,
+      "n_claims": 29,
       "falsifier_coverage": 1.0,
-      "n_with_falsifier": 26,
+      "n_with_falsifier": 29,
       "hit_gradeable_share": 1.0,
-      "n_hit_gradeable": 26,
+      "n_hit_gradeable": 29,
       "hit_gradeable_note": "direction=0 claims are not hit-gradeable (graded on excess only); this does not contradict the R2 audit CLOSED verdict",
       "maturity_mix": {
         "graded_5d_count": 0,
@@ -382,7 +382,7 @@
         "channels_fill_rate": 0.0,
         "n_channels": 0,
         "source_id_fill_rate": 1.0,
-        "n_source_id": 26,
+        "n_source_id": 29,
         "note": "near-zero fill across most desks; per-source reliability curve unbuildable from current data (QI masterplan: >=500 graded labels gate)"
       }
     },
@@ -998,11 +998,11 @@
       }
     },
     "stock_desk": {
-      "n_claims": 26,
+      "n_claims": 29,
       "falsifier_coverage": 1.0,
-      "n_with_falsifier": 26,
+      "n_with_falsifier": 29,
       "hit_gradeable_share": 1.0,
-      "n_hit_gradeable": 26,
+      "n_hit_gradeable": 29,
       "hit_gradeable_note": "direction=0 claims are not hit-gradeable (graded on excess only); this does not contradict the R2 audit CLOSED verdict",
       "maturity_mix": {
         "graded_5d_count": 0,
@@ -1022,7 +1022,7 @@
         "channels_fill_rate": 0.0,
         "n_channels": 0,
         "source_id_fill_rate": 1.0,
-        "n_source_id": 26,
+        "n_source_id": 29,
         "note": "near-zero fill across most desks; per-source reliability curve unbuildable from current data (QI masterplan: >=500 graded labels gate)"
       }
     },
@@ -1144,7 +1144,7 @@
     }
   },
   "track_record_ref": {
-    "generated_at": "2026-09-07T14:45:12.867646+00:00",
+    "generated_at": "2026-09-08T02:49:26.984307+00:00",
     "grade_horizons": [
       5,
       21,

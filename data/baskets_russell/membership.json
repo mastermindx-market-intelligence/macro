@@ -4,7 +4,7 @@
  "index": "Russell-2000",
  "benchmark": "IWM",
  "benchmark_label": "Russell-2000 (IWM)",
- "as_of": "2026-09-07",
+ "as_of": "2026-09-08",
  "source": "finviz idx_rut (1889 names); sub-industry subsectors + sector amalgamations",
  "subsectors": {
   "advertising-agencies": {
@@ -5204,6 +5204,10 @@
      "name": "NextDecade Corp"
     },
     {
+     "ticker": "HOS",
+     "name": "Hornbeck Offshore Services Inc"
+    },
+    {
      "ticker": "AESI",
      "name": "Atlas Energy Solutions Inc"
     },
@@ -5214,10 +5218,6 @@
     {
      "ticker": "PUMP",
      "name": "ProPetro Holding Corp"
-    },
-    {
-     "ticker": "HOS",
-     "name": "Hornbeck Offshore Services Inc"
     },
     {
      "ticker": "VTOL",
@@ -5358,12 +5358,12 @@
    "sector": "Basic Materials",
    "members": [
     {
-     "ticker": "MTRN",
-     "name": "Materion Corp"
-    },
-    {
      "ticker": "USAR",
      "name": "USA Rare Earth Inc"
+    },
+    {
+     "ticker": "MTRN",
+     "name": "Materion Corp"
     },
     {
      "ticker": "CRML",
@@ -7786,6 +7786,10 @@
      "name": "SSR Mining Inc"
     },
     {
+     "ticker": "USAR",
+     "name": "USA Rare Earth Inc"
+    },
+    {
      "ticker": "SXT",
      "name": "Sensient Technologies Corp"
     },
@@ -7816,10 +7820,6 @@
     {
      "ticker": "CENX",
      "name": "Century Aluminum Co"
-    },
-    {
-     "ticker": "USAR",
-     "name": "USA Rare Earth Inc"
     },
     {
      "ticker": "CBT",
@@ -9642,6 +9642,10 @@
      "name": "NextDecade Corp"
     },
     {
+     "ticker": "HOS",
+     "name": "Hornbeck Offshore Services Inc"
+    },
+    {
      "ticker": "WKC",
      "name": "World Kinect Corp"
     },
@@ -9680,10 +9684,6 @@
     {
      "ticker": "NBR",
      "name": "Nabors Industries Ltd"
-    },
-    {
-     "ticker": "HOS",
-     "name": "Hornbeck Offshore Services Inc"
     },
     {
      "ticker": "VTOL",
