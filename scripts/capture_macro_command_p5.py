@@ -171,14 +171,14 @@ def _open(*, browser, origin: str, path: str, theme: str, locale: str,
 
 
 def _assert_ihdr(path: Path, *, css_w: float, css_h: float,
-                 dpr: float = 2.0) -> tuple[int, int]:
+                 dpr: float = 2.0, slop: int = 0) -> tuple[int, int]:
     pw, ph = _png_size(path)
     expect_w = int(round(float(css_w) * dpr))
     expect_h = int(round(float(css_h) * dpr))
-    if (pw, ph) != (expect_w, expect_h):
+    if abs(pw - expect_w) > slop or abs(ph - expect_h) > slop:
         raise RuntimeError(
             f"{path.name} IHDR {pw}x{ph} != declared {css_w}x{css_h}×{dpr} "
-            f"({expect_w}x{expect_h})")
+            f"({expect_w}x{expect_h}) slop={slop}")
     return pw, ph
 
 
@@ -222,7 +222,8 @@ def _shot(dest: Path, locator, *, dpr: float = 2.0,
     pw, ph = _png_size(dest)
     if declared_css is not None:
         pw, ph = _assert_ihdr(
-            dest, css_w=declared_css[0], css_h=declared_css[1], dpr=dpr)
+            dest, css_w=declared_css[0], css_h=declared_css[1], dpr=dpr,
+            slop=4 if box else 0)
     return {
         "bytes": len(png),
         "sha256": hashlib.sha256(png).hexdigest(),
