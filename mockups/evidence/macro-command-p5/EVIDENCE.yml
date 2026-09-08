@@ -1,14 +1,7 @@
 schema: mastermind.page_evidence_receipt.v1
 changed_paths:
   - templates/macro_command.css
-  - templates/macro_command.js
-  - templates/macro_suite.css
   - templates/_macro_suite_shell.html.j2
-  - templates/_macro_suite_nav.html.j2
-  - templates/_macro_command_macros.html.j2
   - templates/macro_monetary.html.j2
-  - templates/macro_rates_curves.html.j2
-  - templates/macro_business_activity.html.j2
-  - templates/macro_financial_conditions.html.j2
-  - templates/macro_housing_real_estate.html.j2
+  - templates/macro_command.js
 manifest: mockups/evidence/macro-command-p5/manifest.json
