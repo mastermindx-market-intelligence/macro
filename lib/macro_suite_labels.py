@@ -93,7 +93,7 @@ NULL_REASON: dict[str, dict[str, str]] = {
     "SOURCE_FAILED": _pair("Source failed", "数据源获取失败"),
     "RIGHTS_BLOCKED": _pair("Rights blocked", "授权受限"),
     "INSUFFICIENT_HISTORY": _pair("Insufficient history", "历史数据不足"),
-    "WARMUP": _pair("Warm-up: first accepted print", "预热期：首个已接受读数"),
+    "WARMUP": _pair("Warm-up: first reading", "预热期：首个读数"),
     "REVISION_PENDING_REBUILD": _pair("Revision pending rebuild", "修订待重建"),
     "DISAGREEMENT": _pair("Sources disagree", "数据源存在分歧"),
     "COMPUTATION_REFUSED": _pair("Computation refused", "拒绝计算"),
@@ -156,11 +156,11 @@ CONFIDENCE_DIMENSION: dict[str, dict[str, str]] = {
 
 # --- section 7.8 change comparability ---------------------------------------
 COMPARABILITY: dict[str, dict[str, str]] = {
-    "COMPARABLE": _pair("Comparable with the prior accepted print",
-                        "与上一已接受读数可比"),
-    "NO_PRIOR": _pair("No comparable prior print", "没有可比的历史读数"),
-    "METHOD_CHANGED": _pair("Method version changed — shown as a method change, not a delta",
-                            "方法版本已变更 — 按方法变更呈现，而非数值变化"),
+    "COMPARABLE": _pair("Comparable with the last reading",
+                        "与上次读数可比"),
+    "NO_PRIOR": _pair("No comparable earlier reading", "没有可对比的历史读数"),
+    "METHOD_CHANGED": _pair("The way we measure changed — shown as a method change, not a delta",
+                            "衡量方式已变更 — 按方法变更呈现，而非数值变化"),
     "DEFINITION_INCOMPARABLE": _pair("Definitions are not comparable — numeric comparison refused",
                                      "定义不可比 — 拒绝进行数值比较"),
 }
@@ -194,17 +194,17 @@ CLOCKS: tuple[tuple[str, dict[str, str], dict[str, str]], ...] = (
      _pair("When Mastermind received it.", "Mastermind 接收到该数据的时间。")),
     ("revised_at", _pair("Revised", "修订时间"),
      _pair("Provider correction or revision time.", "数据提供方的更正或修订时间。")),
-    ("calculation_as_of", _pair("Calculation as-of", "计算截止"),
+    ("calculation_as_of", _pair("Worked out on", "计算日期"),
      _pair("Cut-off used for the derived result.", "推导结果所使用的数据截止点。")),
 )
 
 # built_at / rendered_at are listed apart because they NEVER establish economic
 # freshness (section 7.5, final sentence).
 NON_ECONOMIC_CLOCKS: tuple[tuple[str, dict[str, str], dict[str, str]], ...] = (
-    ("built_at", _pair("Artifact built", "产物生成"),
+    ("built_at", _pair("Build stamp", "生成时间"),
      _pair("Producer generation time. Not an economic clock.",
            "生产端生成时间，并非经济时钟。")),
-    ("page_built_at", _pair("Page built", "页面生成"),
+    ("page_built_at", _pair("Page refreshed", "页面更新于"),
      _pair("Static page render time. Not an economic clock.",
            "静态页面渲染时间，并非经济时钟。")),
 )
@@ -368,6 +368,7 @@ METRIC: dict[str, dict[str, str]] = {
     "imports_level": _pair("Imports", "进口"),
     "export_import_coverage_ratio": _pair(
         "How much exports cover imports", "出口对进口的覆盖程度"),
+    "growth_axis_score": _pair("Growth score", "增长评分"),
 }
 
 # F01 Macro Command P3 — reviewed panel copy. Keyed (section_id, state_key).
@@ -859,7 +860,7 @@ CHANNEL: dict[str, dict[str, str]] = {
 # --- alert condition kinds (declared, not offered) ---------------------------
 ALERT_KIND: dict[str, dict[str, str]] = {
     "state_transition": _pair("Named state transition", "状态切换"),
-    "boundary_approach": _pair("Axis boundary approach", "接近坐标轴分界"),
+    "boundary_approach": _pair("Boundary approach", "接近分界"),
     "component_shock": _pair("Component shock", "分项冲击"),
     "source_stale_or_failed": _pair("Source stale or failed", "数据源过期或失败"),
     "source_revision": _pair("Material source revision", "数据源重大修订"),

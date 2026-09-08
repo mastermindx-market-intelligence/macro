@@ -222,31 +222,42 @@
 
   panels.forEach(wireSubtabKeyboard);
 
-  /* ── analyst control — §8, R8: existing sitewide entry points only ─────── */
+  /* ── analyst control — §8: existing sitewide open entry point only ───────
+     templates/mm_brain.js:3815 explain(key, title) is the callable that
+     accepts opening context. open() (line 3102) takes no context. No
+     query-topic, ampersand-section, or slash-api literal is introduced. */
   var analystBtn = document.querySelector('[data-mc-analyst]');
   if (analystBtn) {
-    analystBtn.addEventListener('click', function (event) {
+    analystBtn.addEventListener('click', function () {
+      var lang = (document.documentElement.getAttribute('data-lang') || 'en') === 'zh' ? 'zh' : 'en';
       var sectionId = 'overview';
       var current = content.querySelector('[data-mc-panel]:not([hidden])');
-      if (current) sectionId = current.getAttribute('data-mc-panel');
-      var railLink = railLinkById(sectionId);
-      var label = railLink ? railLink.textContent.trim() : 'Macro Command';
-      if (window.MMBrain && window.MMBrain.mounted) {
-        event.preventDefault();
-        if (typeof window.MMBrain.explain === 'function') window.MMBrain.explain(sectionId, label);
-        else if (typeof window.MMBrain.open === 'function') window.MMBrain.open();
+      if (current) sectionId = current.getAttribute('data-mc-panel') || 'overview';
+      var label;
+      if (sectionId === 'overview') {
+        label = lang === 'zh'
+          ? (analystBtn.getAttribute('data-mc-analyst-label-zh') || '宏观指挥台')
+          : (analystBtn.getAttribute('data-mc-analyst-label-en') || 'Macro Command');
+      } else {
+        var railLink = railLinkById(sectionId);
+        var span = railLink && railLink.querySelector(lang === 'zh' ? '.l-zh' : '.l-en');
+        label = (span && span.textContent.trim())
+          || (railLink && railLink.textContent.trim())
+          || (lang === 'zh' ? '宏观指挥台' : 'Macro Command');
+      }
+      if (window.MMBrain && typeof window.MMBrain.explain === 'function') {
+        window.MMBrain.explain(label, label);
         return;
       }
-      /* Not yet mounted: activate the sitewide launcher stub theme.js already
-         renders on this page (`#mmb-boot`) — its own click handler owns the
-         load-then-open flow. No new endpoint, no new query string. The
-         control is an <a href="chat.html">; if the stub is missing we
-         leave the navigation in place (r10-m1 no-JS fallback). */
-      var boot = document.getElementById('mmb-boot');
-      if (boot) {
-        event.preventDefault();
-        boot.click();
+      if (window.MMBrain && typeof window.MMBrain.open === 'function') {
+        window.MMBrain.open();
+        return;
       }
+      /* Degraded: the builder already emitted <a href="chat.html"> when the
+         widget is not mountable. If this button is present but the widget
+         has not booted, click the sitewide launcher stub. */
+      var boot = document.getElementById('mmb-boot');
+      if (boot) boot.click();
     });
   }
 

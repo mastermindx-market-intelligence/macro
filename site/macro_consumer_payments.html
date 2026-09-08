@@ -390,31 +390,43 @@
     <p class="mq-deck"><span class="l-en">Cash-flow/spending momentum x consumer credit stress</span><span class="l-zh">现金流/支出动能 × 消费信贷压力</span></p>
     <div class="mq-idchips">
       <span class="mq-chip mq-chip-key"><span class="l-en">Region</span><span class="l-zh">地区</span> · <span class="l-en">United States</span><span class="l-zh">美国</span></span>
-      <span class="mq-chip mq-chip-key"><span class="l-en">Frequency</span><span class="l-zh">频率</span> · <span class="l-en">Owner cadence, daily republish</span><span class="l-zh">按所有者节奏，每日重新发布</span></span>
-      <span class="mq-chip mq-chip-key"><span class="l-en">Window</span><span class="l-zh">窗口</span> · <span class="l-en">Latest accepted print</span><span class="l-zh">最新已接受读数</span></span>
+      <span class="mq-chip mq-chip-key"><span class="l-en">Frequency</span><span class="l-zh">频率</span> · <span class="l-en">Updates when the source updates</span><span class="l-zh">数据源更新时同步更新</span></span>
+      <span class="mq-chip mq-chip-key"><span class="l-en">Window</span><span class="l-zh">窗口</span> · <span class="l-en">Latest reading</span><span class="l-zh">最新读数</span></span>
     </div>
   </div>
 
   <div class="mq-context-state">
     <div class="mq-avail">
-      <span class="mq-avail-label"><span class="l-en">Required-source availability</span><span class="l-zh">必需数据源可用性</span></span>
+      <span class="mq-avail-label"><span class="l-en">Data we need today</span><span class="l-zh">今天需要的数据</span></span>
       <strong class="mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></strong>
-      <span class="mq-avail-note"><span class="l-en">Conservative over the required set — a degraded optional leg cannot turn this green.</span><span class="l-zh">在必需分项集合上取最保守值 — 可选分项降级不会让此处转绿。</span></span>
     </div>
     <dl class="mq-context-meta">
       <div><dt><span class="l-en">Coverage</span><span class="l-zh">覆盖率</span></dt><dd>100%</dd></div>
-      <div><dt><span class="l-en">Last accepted source cut</span><span class="l-zh">最近已接受数据截止</span></dt>
-           <dd><time>2026-07-01</time></dd></div>
-      <div><dt><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></dt>
-           <dd><time>2026-07-01</time></dd></div>
-      <div class="mq-nonclock"><dt><span class="l-en">Page built</span><span class="l-zh">页面生成</span></dt>
-           <dd><time>2026-09-06T00:00:00Z</time></dd></div>
     </dl>
-    <p class="mq-context-caveat"><span class="l-en">Page build time is not an economic clock and never makes a source fresh. This page is a static publication — it does not poll for live data.</span><span class="l-zh">页面生成时间并非经济时钟，不会使数据源变新。本页为静态发布 — 不会实时轮询数据。</span></p>
+    <p class="mq-context-caveat"><span class="l-en">Updated once a night — not live.</span><span class="l-zh">每晚更新一次 — 非实时。</span></p>
+    <details class="mc-details">
+  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <div class="mc-details-body">
+      <p><span class="l-en">Conservative over the required set — a degraded optional leg cannot turn this green.</span><span class="l-zh">在必需分项集合上取最保守值 — 可选分项降级不会让此处转绿。</span></p>
+      <p><span class="l-en">Owner cadence, daily republish</span><span class="l-zh">按所有者节奏，每日重新发布</span> · <span class="l-en">Latest accepted print</span><span class="l-zh">最新已接受读数</span></p>
+      <p><span class="l-en">Required-source availability</span><span class="l-zh">必需数据源可用性</span></p>
+      <p><span class="l-en">Page build time is not an economic clock and never makes a source fresh. This page is a static publication — it does not poll for live data.</span><span class="l-zh">页面生成时间并非经济时钟，不会使数据源变新。本页为静态发布 — 不会实时轮询数据。</span></p>
+      <dl class="mq-context-meta">
+        <div><dt><span class="l-en">Last accepted source cut</span><span class="l-zh">最近已接受数据截止</span></dt>
+             <dd><time>2026-07-01</time></dd></div>
+        <div><dt><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></dt>
+             <dd><time>2026-07-01</time></dd></div>
+        <div class="mq-nonclock"><dt><span class="l-en">Page built</span><span class="l-zh">页面生成</span></dt>
+             <dd><time>2026-09-06T00:00:00Z</time></dd></div>
+      </dl>
+    </div>
+</details>
   </div>
 
-  <details class="mq-sourcerow">
-    <summary><span class="l-en">Required components and their source clocks</span><span class="l-zh">必需分项及其数据源时钟</span></summary>
+  <details class="mc-details">
+    <summary><span class="l-en">Where these numbers come from</span><span class="l-zh">这些数字的来源</span></summary>
+    <div class="mc-details-body mq-sourcerow">
+    <p><span class="l-en">Required components and their source clocks</span><span class="l-zh">必需分项及其数据源时钟</span></p>
     <table class="mq-table mq-table-compact">
       <thead><tr>
         <th scope="col"><span class="l-en">Component</span><span class="l-zh">分项</span></th>
@@ -479,12 +491,19 @@
         </tr>
       </tbody>
     </table>
+    </div>
   </details>
 </header>
   <section class="mq-ribbon" aria-labelledby="mq-ribbon-title">
   <div class="mq-section-head">
-    <h2 id="mq-ribbon-title"><span class="l-en">What this state implies</span><span class="l-zh">该状态意味着什么</span></h2>
-    <span class="mq-section-note"><span class="l-en">Deterministic text from the accepted snapshot. No language model writes here.</span><span class="l-zh">文本由已接受快照确定性生成，此处不由语言模型撰写。</span></span>
+    <h2 id="mq-ribbon-title"><span class="l-en">What this means for you</span><span class="l-zh">这对你意味着什么</span></h2>
+    <details class="mc-details">
+  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <div class="mc-details-body">
+      <p><span class="l-en">What this state implies</span><span class="l-zh">该状态意味着什么</span></p>
+      <p><span class="l-en">Deterministic text from the accepted snapshot. No language model writes here.</span><span class="l-zh">文本由已接受快照确定性生成，此处不由语言模型撰写。</span></p>
+    </div>
+</details>
   </div>
   <ul class="mq-ribbon-list">
     <li class="mq-implication">
@@ -493,8 +512,11 @@
       </div>
       <p class="mq-implication-text"><span class="l-en">Consumer &amp; Payments reads B - Strong cash-flow momentum / High credit stress (cash-flow momentum x=67.54, credit stress y=51.14, boundary 50).</span><span class="l-zh">消费与支付读数为 B - 现金流动能强 / 信贷压力高（现金流动能 x=67.54，信贷压力 y=51.14，分界 50）。</span></p>
       <p class="mq-implication-claim"><span class="l-en">States what the accepted data shows.</span><span class="l-zh">陈述已接受数据所显示的事实。</span></p>
-      <details class="mq-confidence">
-        <summary><span class="l-en">Confidence basis</span><span class="l-zh">置信度依据</span></summary>
+      <p class="mq-implication-contra"></p>
+      <details class="mc-details">
+        <summary><span class="l-en">How sure we are</span><span class="l-zh">把握程度</span></summary>
+        <div class="mc-details-body mq-confidence">
+        <p><span class="l-en">Confidence basis</span><span class="l-zh">置信度依据</span></p>
         <dl class="mq-confidence-grid">
           <div><dt><span class="l-en">Data coverage</span><span class="l-zh">数据覆盖</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
           <div><dt><span class="l-en">Source health</span><span class="l-zh">数据源健康度</span></dt><dd><span class="l-en">Low</span><span class="l-zh">低</span></dd></div>
@@ -505,6 +527,7 @@
         </dl>
         <p class="mq-trace"><span class="mq-trace-label"><span class="l-en">Trace</span><span class="l-zh">溯源</span></span><code>engine.market_os.macro_workspaces.consumer_payments#headline</code>
           <button type="button" class="mq-linkish" data-mq-open-evidence><span class="l-en">Open evidence</span><span class="l-zh">打开证据</span></button></p>
+        </div>
       </details>
     </li>
     <li class="mq-implication">
@@ -513,8 +536,11 @@
       </div>
       <p class="mq-implication-text"><span class="l-en">Retail sales read +5.0% YoY (-0.6% MoM).</span><span class="l-zh">零售销售读数为同比+5.0%（环比-0.6%）。</span></p>
       <p class="mq-implication-claim"><span class="l-en">States what the accepted data shows.</span><span class="l-zh">陈述已接受数据所显示的事实。</span></p>
-      <details class="mq-confidence">
-        <summary><span class="l-en">Confidence basis</span><span class="l-zh">置信度依据</span></summary>
+      <p class="mq-implication-contra"></p>
+      <details class="mc-details">
+        <summary><span class="l-en">How sure we are</span><span class="l-zh">把握程度</span></summary>
+        <div class="mc-details-body mq-confidence">
+        <p><span class="l-en">Confidence basis</span><span class="l-zh">置信度依据</span></p>
         <dl class="mq-confidence-grid">
           <div><dt><span class="l-en">Data coverage</span><span class="l-zh">数据覆盖</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
           <div><dt><span class="l-en">Source health</span><span class="l-zh">数据源健康度</span></dt><dd><span class="l-en">Low</span><span class="l-zh">低</span></dd></div>
@@ -525,6 +551,7 @@
         </dl>
         <p class="mq-trace"><span class="mq-trace-label"><span class="l-en">Trace</span><span class="l-zh">溯源</span></span><code>data/fred/RSAFS.parquet</code>
           <button type="button" class="mq-linkish" data-mq-open-evidence><span class="l-en">Open evidence</span><span class="l-zh">打开证据</span></button></p>
+        </div>
       </details>
     </li>
     <li class="mq-implication">
@@ -533,8 +560,11 @@
       </div>
       <p class="mq-implication-text"><span class="l-en">University of Michigan consumer sentiment reads 55.2, -10.5% YoY.</span><span class="l-zh">密歇根大学消费者信心指数读数为55.2，同比-10.5%。</span></p>
       <p class="mq-implication-claim"><span class="l-en">States what the accepted data shows.</span><span class="l-zh">陈述已接受数据所显示的事实。</span></p>
-      <details class="mq-confidence">
-        <summary><span class="l-en">Confidence basis</span><span class="l-zh">置信度依据</span></summary>
+      <p class="mq-implication-contra"></p>
+      <details class="mc-details">
+        <summary><span class="l-en">How sure we are</span><span class="l-zh">把握程度</span></summary>
+        <div class="mc-details-body mq-confidence">
+        <p><span class="l-en">Confidence basis</span><span class="l-zh">置信度依据</span></p>
         <dl class="mq-confidence-grid">
           <div><dt><span class="l-en">Data coverage</span><span class="l-zh">数据覆盖</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
           <div><dt><span class="l-en">Source health</span><span class="l-zh">数据源健康度</span></dt><dd><span class="l-en">Low</span><span class="l-zh">低</span></dd></div>
@@ -545,10 +575,17 @@
         </dl>
         <p class="mq-trace"><span class="mq-trace-label"><span class="l-en">Trace</span><span class="l-zh">溯源</span></span><code>data/fred/UMCSENT.parquet</code>
           <button type="button" class="mq-linkish" data-mq-open-evidence><span class="l-en">Open evidence</span><span class="l-zh">打开证据</span></button></p>
+        </div>
       </details>
     </li>
   </ul>
-  <p class="mq-ribbon-more"><span class="l-en">Additional implications are carried by the snapshot but not shown here; the core surface shows at most three.</span><span class="l-zh">快照中还有其他推论，此处未展示；核心界面最多展示三条。</span></p>
+  <p class="mq-ribbon-more"><span class="l-en">More published notes sit in Details — this page shows at most three.</span><span class="l-zh">更多已发布说明见详情 — 本页最多展示三条。</span></p>
+  <details class="mc-details">
+  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <div class="mc-details-body">
+    <p><span class="l-en">Additional implications are carried by the snapshot but not shown here; the core surface shows at most three.</span><span class="l-zh">快照中还有其他推论，此处未展示；核心界面最多展示三条。</span></p>
+  </div>
+</details>
 </section>
   <section class="mq-headline" aria-labelledby="mq-headline-title">
   <div class="mq-headline-state">
@@ -556,11 +593,24 @@
     <h2 id="mq-headline-title"><span class="mq-state-letter" aria-hidden="true">B</span><span class="l-en">Strong cash-flow momentum / High credit stress</span><span class="l-zh">现金流动能强 / 信贷压力高</span></h2>
     <dl class="mq-headline-meta">
       <div><dt><span class="l-en">Effective date</span><span class="l-zh">生效日期</span></dt>
-           <dd><time>2026-07-01</time></dd></div>
-      <div><dt><span class="l-en">Method version</span><span class="l-zh">方法版本</span></dt><dd><code>consumer_payments.compose.v1</code></dd></div>
-      <div><dt><span class="l-en">Prior accepted print</span><span class="l-zh">上一已接受读数</span></dt>
-           <dd><strong>B</strong> <time>2026-07-01</time></dd></div>
+           <dd><time datetime="2026-07-01">2026-07-01</time></dd></div>
+      <div><dt><span class="l-en">Last reading</span><span class="l-zh">上次读数</span></dt>
+           <dd><strong>B</strong> <time datetime="2026-07-01">2026-07-01</time></dd></div>
     </dl>
+    <details class="mc-details">
+  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <div class="mc-details-body">
+      <dl class="mq-headline-meta">
+        <div><dt><span class="l-en">Method version</span><span class="l-zh">方法版本</span></dt><dd><code>consumer_payments.compose.v1</code></dd></div>
+        <div><dt><span class="l-en">Prior accepted print</span><span class="l-zh">上一已接受读数</span></dt>
+             <dd><strong>B</strong> <time>2026-07-01</time></dd></div>
+      </dl>
+      <p><span class="l-en">1-month vector</span><span class="l-zh">一个月位移向量</span></p>
+      <p><span class="l-en">Nearest boundary</span><span class="l-zh">最近分界</span> / <span class="l-en">Score points to</span><span class="l-zh">距下列坐标轴分界</span></p>
+      <p><span class="l-en">Movement since the prior accepted print</span><span class="l-zh">相对上一已接受读数的位移</span></p>
+      <p><span class="l-en">No vector is drawn: there is no method-comparable prior print to move from.</span><span class="l-zh">不绘制向量：不存在方法可比的历史读数作为起点。</span></p>
+    </div>
+</details>
   </div>
 
   <div class="mq-axis-cells">
@@ -578,15 +628,15 @@
     </div>
 
     <div class="mq-axis-cell mq-axis-cell-vector">
-      <span class="mq-axis-name"><span class="l-en">1-month vector</span><span class="l-zh">一个月位移向量</span></span>
+      <span class="mq-axis-name"><span class="l-en">Where it moved this month</span><span class="l-zh">本月的变化方向</span></span>
       <strong class="mq-axis-value">Δx 0 · Δy 0</strong>
-      <span class="mq-axis-direction"><span class="l-en">Movement since the prior accepted print</span><span class="l-zh">相对上一已接受读数的位移</span></span>
+      <span class="mq-axis-direction"><span class="l-en">Change since the last reading</span><span class="l-zh">相对上次读数的变化</span></span>
     </div>
 
     <div class="mq-axis-cell">
-      <span class="mq-axis-name"><span class="l-en">Nearest boundary</span><span class="l-zh">最近分界</span></span>
+      <span class="mq-axis-name"><span class="l-en">How close to a different reading</span><span class="l-zh">距离另一种读数还有多远</span></span>
       <strong class="mq-axis-value">1.14</strong>
-      <span class="mq-axis-direction"><span class="l-en">Score points to</span><span class="l-zh">距下列坐标轴分界</span> <span class="l-en">Consumer credit stress</span><span class="l-zh">消费信贷压力</span></span>
+      <span class="mq-axis-direction"><span class="l-en">Consumer credit stress</span><span class="l-zh">消费信贷压力</span></span>
     </div>
   </div>
 </section>
@@ -614,8 +664,8 @@
              aria-labelledby="mq-tab-current" data-mq-panel="current" tabindex="0">
       <figure class="mq-map" aria-labelledby="mq-map-title">
   <figcaption id="mq-map-title" class="mq-section-head">
-    <h3><span class="l-en">Regime map</span><span class="l-zh">体制地图</span></h3>
-    <span class="mq-section-note"><span class="l-en">Two disclosed descriptive axes. The grid is a description of the current reading, not a forecast.</span><span class="l-zh">两条已披露的描述性坐标轴。此网格描述当前读数，并非预测。</span></span>
+    <h3><span class="l-en">Where today sits</span><span class="l-zh">今天落在哪里</span></h3>
+    <span class="mq-section-note"><span class="l-en">This describes today. It is not a forecast.</span><span class="l-zh">这是对今天的描述，不是预测。</span></span>
   </figcaption>
 
   <svg class="mq-map-svg" viewBox="0 0 144 134" role="img"
@@ -671,15 +721,36 @@
   <div class="mq-map-readout">
     <div><span><span class="l-en">Cash-flow / spending momentum</span><span class="l-zh">现金流/支出动能</span></span><strong>67.54</strong><em><span class="l-en">Higher = stronger support</span><span class="l-zh">数值越高＝支持越强</span></em></div>
     <div><span><span class="l-en">Consumer credit stress</span><span class="l-zh">消费信贷压力</span></span><strong>51.14</strong><em><span class="l-en">Higher = more stress</span><span class="l-zh">数值越高＝压力越大</span></em></div>
-    <div><span><span class="l-en">Boundary</span><span class="l-zh">分界</span></span><strong>50.00 / 50.00</strong><em><span class="l-en">Fixed, disclosed threshold on each axis</span><span class="l-zh">每条坐标轴上固定且已披露的阈值</span></em></div>
-    <div><span><span class="l-en">Hysteresis band</span><span class="l-zh">滞回带</span></span><strong>±5.00</strong>
-         <em><span class="l-en">Applied against the prior print</span><span class="l-zh">已对照上一读数应用</span></em></div>
+    <div><span><span class="l-en">Boundary</span><span class="l-zh">分界</span></span><strong>50.00 / 50.00</strong></div>
   </div>
+  <details class="mc-details">
+  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <div class="mc-details-body">
+    <div>
+      <span><span class="l-en">Hysteresis band</span><span class="l-zh">滞回带</span></span>
+      <strong>±5.00</strong>
+      <em><span class="l-en">Applied against the prior print</span><span class="l-zh">已对照上一读数应用</span></em>
+    </div>
+    <p><span class="l-en">Regime map</span><span class="l-zh">体制地图</span></p>
+    <p><span class="l-en">Two disclosed descriptive axes. The grid is a description of the current reading, not a forecast.</span><span class="l-zh">两条已披露的描述性坐标轴。此网格描述当前读数，并非预测。</span></p>
+    <p><span class="l-en">Fixed, disclosed threshold on each axis</span><span class="l-zh">每条坐标轴上固定且已披露的阈值</span></p>
+    <p><span class="l-en">1-month vector</span><span class="l-zh">一个月位移向量</span></p>
+    <p><span class="l-en">Nearest boundary</span><span class="l-zh">最近分界</span> / <span class="l-en">Score points to</span><span class="l-zh">距下列坐标轴分界</span></p>
+    <p><span class="l-en">Movement since the prior accepted print</span><span class="l-zh">相对上一已接受读数的位移</span></p>
+    <p><span class="l-en">No vector is drawn: there is no method-comparable prior print to move from.</span><span class="l-zh">不绘制向量：不存在方法可比的历史读数作为起点。</span></p>
+  </div>
+</details>
 </figure>
       <section class="mq-diagnostics" aria-labelledby="mq-diagnostics-title">
   <div class="mq-section-head">
-    <h3 id="mq-diagnostics-title"><span class="l-en">Diagnostics</span><span class="l-zh">诊断</span></h3>
-    <span class="mq-section-note"><span class="l-en">Constraints, missing components, source issues and method warnings.</span><span class="l-zh">约束、缺失分项、数据源问题与方法警示。</span></span>
+    <h3 id="mq-diagnostics-title"><span class="l-en">Data problems</span><span class="l-zh">数据问题</span></h3>
+    <details class="mc-details">
+  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <div class="mc-details-body">
+      <p><span class="l-en">Diagnostics</span><span class="l-zh">诊断</span></p>
+      <p><span class="l-en">Constraints, missing components, source issues and method warnings.</span><span class="l-zh">约束、缺失分项、数据源问题与方法警示。</span></p>
+    </div>
+</details>
   </div>
   <ul class="mq-diag-list">
     <li class="mq-diag mq-tone-warn">
@@ -707,9 +778,16 @@
       <section class="mq-changed" aria-labelledby="mq-changed-title">
   <div class="mq-section-head">
     <h3 id="mq-changed-title"><span class="l-en">What changed</span><span class="l-zh">发生了什么变化</span></h3>
-    <span class="mq-section-note"><span class="l-en">Current accepted snapshot against the prior accepted snapshot, under the same method version.</span><span class="l-zh">在相同方法版本下，将当前已接受快照与上一已接受快照对比。</span></span>
+    <span class="mq-section-note"><span class="l-en">Today against last time, measured the same way.</span><span class="l-zh">以相同方法将今天与上次对比。</span></span>
   </div>
-  <p class="mq-changed-verdict mq-tone-ok"><span class="l-en">Comparable with the prior accepted print</span><span class="l-zh">与上一已接受读数可比</span></p>
+  <details class="mc-details">
+  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <div class="mc-details-body">
+    <p><span class="l-en">Current accepted snapshot against the prior accepted snapshot, under the same method version.</span><span class="l-zh">在相同方法版本下，将当前已接受快照与上一已接受快照对比。</span></p>
+    <p><span class="l-en">No numeric comparison is shown. A change table would have to invent a baseline that does not exist, and a method-version change is reported as a method change — never as a delta.</span><span class="l-zh">此处不展示任何数值对比。展示变化表将不得不虚构一个并不存在的基准；方法版本变更只按方法变更呈现，绝不伪装成数值变化。</span></p>
+  </div>
+</details>
+  <p class="mq-changed-verdict mq-tone-ok"><span class="l-en">Comparable with the last reading</span><span class="l-zh">与上次读数可比</span></p>
   <table class="mq-table">
     <thead><tr>
       <th scope="col"><span class="l-en">Metric</span><span class="l-zh">指标</span></th>
@@ -764,14 +842,16 @@
       </header>
       <strong class="mq-metric-value"><span class="l-en">763,602.0</span><span class="l-zh">763,602.0</span><span class="mq-metric-unit"><span class="l-en">Usd millions sa</span><span class="l-zh">Usd millions sa</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more spending</span><span class="l-zh">Higher more spending</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-07-01</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.RSAFS.retail_sales</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-07-01</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
+          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.RSAFS.retail_sales</code> · v1.0.0</dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
@@ -798,12 +878,13 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><time>2026-07-01</time></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>data/fred/RSAFS.parquet</code></p>
         <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
@@ -813,14 +894,16 @@
       </header>
       <strong class="mq-metric-value"><span class="l-en">−0.582</span><span class="l-zh">−0.582</span><span class="mq-metric-unit"><span class="l-en">%</span><span class="l-zh">%</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more spending</span><span class="l-zh">Higher more spending</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-07-01</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Mom pct change</span><span class="l-zh">Mom pct change</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.RSAFS.retail_sales</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-07-01</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Mom pct change</span><span class="l-zh">Mom pct change</span></dd></div>
+          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.RSAFS.retail_sales</code> · v1.0.0</dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
@@ -847,12 +930,13 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><time>2026-07-01</time></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>data/fred/RSAFS.parquet</code></p>
         <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
@@ -862,14 +946,16 @@
       </header>
       <strong class="mq-metric-value"><span class="l-en">5.01</span><span class="l-zh">5.01</span><span class="mq-metric-unit"><span class="l-en">%</span><span class="l-zh">%</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more spending</span><span class="l-zh">Higher more spending</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-07-01</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Yoy pct change</span><span class="l-zh">Yoy pct change</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.RSAFS.retail_sales</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-07-01</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Yoy pct change</span><span class="l-zh">Yoy pct change</span></dd></div>
+          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.RSAFS.retail_sales</code> · v1.0.0</dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
@@ -896,12 +982,13 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><time>2026-07-01</time></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>data/fred/RSAFS.parquet</code></p>
         <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
@@ -911,14 +998,16 @@
       </header>
       <strong class="mq-metric-value"><span class="l-en">55.20</span><span class="l-zh">55.20</span><span class="mq-metric-unit"><span class="l-en">Index 1966q1 100</span><span class="l-zh">Index 1966q1 100</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more confident</span><span class="l-zh">Higher more confident</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-07-01</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.UMCSENT.umich_sentiment</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-07-01</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
+          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.UMCSENT.umich_sentiment</code> · v1.0.0</dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
@@ -945,12 +1034,13 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><time>2026-07-01</time></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>data/fred/UMCSENT.parquet</code></p>
         <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
@@ -960,14 +1050,16 @@
       </header>
       <strong class="mq-metric-value"><span class="l-en">−10.53</span><span class="l-zh">−10.53</span><span class="mq-metric-unit"><span class="l-en">%</span><span class="l-zh">%</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more confident</span><span class="l-zh">Higher more confident</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-07-01</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Yoy pct change</span><span class="l-zh">Yoy pct change</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.UMCSENT.umich_sentiment</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-07-01</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Yoy pct change</span><span class="l-zh">Yoy pct change</span></dd></div>
+          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.UMCSENT.umich_sentiment</code> · v1.0.0</dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
@@ -994,12 +1086,13 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><time>2026-07-01</time></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>data/fred/UMCSENT.parquet</code></p>
         <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
@@ -1009,14 +1102,16 @@
       </header>
       <strong class="mq-metric-value"><span class="l-en">5,166,907.7</span><span class="l-zh">5,166,907.7</span><span class="mq-metric-unit"><span class="l-en">Usd billions sa</span><span class="l-zh">Usd billions sa</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more credit outstanding</span><span class="l-zh">Higher more credit outstanding</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-06-01</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.TOTALSL.consumer_credit_total</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-06-01</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
+          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.TOTALSL.consumer_credit_total</code> · v1.0.0</dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
@@ -1043,12 +1138,13 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><time>2026-06-01</time></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>data/fred/TOTALSL.parquet</code></p>
         <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
@@ -1058,14 +1154,16 @@
       </header>
       <strong class="mq-metric-value"><span class="l-en">2.43</span><span class="l-zh">2.43</span><span class="mq-metric-unit"><span class="l-en">%</span><span class="l-zh">%</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher faster credit growth</span><span class="l-zh">Higher faster credit growth</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-06-01</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Yoy pct change</span><span class="l-zh">Yoy pct change</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.TOTALSL.consumer_credit_total</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-06-01</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Yoy pct change</span><span class="l-zh">Yoy pct change</span></dd></div>
+          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.TOTALSL.consumer_credit_total</code> · v1.0.0</dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
@@ -1092,12 +1190,13 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><time>2026-06-01</time></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>data/fred/TOTALSL.parquet</code></p>
         <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
@@ -1107,14 +1206,16 @@
       </header>
       <strong class="mq-metric-value"><span class="l-en">1,351,069.1</span><span class="l-zh">1,351,069.1</span><span class="mq-metric-unit"><span class="l-en">Usd billions sa</span><span class="l-zh">Usd billions sa</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more credit outstanding</span><span class="l-zh">Higher more credit outstanding</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-06-01</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.REVOLSL.consumer_credit_revolving</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-06-01</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
+          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.REVOLSL.consumer_credit_revolving</code> · v1.0.0</dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
@@ -1141,12 +1242,13 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><time>2026-06-01</time></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>data/fred/REVOLSL.parquet</code></p>
         <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
@@ -1156,14 +1258,16 @@
       </header>
       <strong class="mq-metric-value"><span class="l-en">3.79</span><span class="l-zh">3.79</span><span class="mq-metric-unit"><span class="l-en">%</span><span class="l-zh">%</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher faster credit growth</span><span class="l-zh">Higher faster credit growth</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-06-01</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Yoy pct change</span><span class="l-zh">Yoy pct change</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.REVOLSL.consumer_credit_revolving</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-06-01</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Yoy pct change</span><span class="l-zh">Yoy pct change</span></dd></div>
+          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.REVOLSL.consumer_credit_revolving</code> · v1.0.0</dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
@@ -1190,12 +1294,13 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><time>2026-06-01</time></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>data/fred/REVOLSL.parquet</code></p>
         <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
@@ -1205,14 +1310,16 @@
       </header>
       <strong class="mq-metric-value"><span class="l-en">3,815,838.6</span><span class="l-zh">3,815,838.6</span><span class="mq-metric-unit"><span class="l-en">Usd billions sa</span><span class="l-zh">Usd billions sa</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more credit outstanding</span><span class="l-zh">Higher more credit outstanding</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-06-01</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.NONREVSL.consumer_credit_nonrevolving</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-06-01</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
+          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.NONREVSL.consumer_credit_nonrevolving</code> · v1.0.0</dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
@@ -1239,12 +1346,13 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><time>2026-06-01</time></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>data/fred/NONREVSL.parquet</code></p>
         <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
@@ -1254,14 +1362,16 @@
       </header>
       <strong class="mq-metric-value"><span class="l-en">1.96</span><span class="l-zh">1.96</span><span class="mq-metric-unit"><span class="l-en">%</span><span class="l-zh">%</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher faster credit growth</span><span class="l-zh">Higher faster credit growth</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-06-01</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Yoy pct change</span><span class="l-zh">Yoy pct change</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.NONREVSL.consumer_credit_nonrevolving</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-06-01</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Yoy pct change</span><span class="l-zh">Yoy pct change</span></dd></div>
+          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.NONREVSL.consumer_credit_nonrevolving</code> · v1.0.0</dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
@@ -1288,12 +1398,13 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><time>2026-06-01</time></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>data/fred/NONREVSL.parquet</code></p>
         <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
@@ -1303,14 +1414,16 @@
       </header>
       <strong class="mq-metric-value"><span class="l-en">3.00</span><span class="l-zh">3.00</span><span class="mq-metric-unit"><span class="l-en">%</span><span class="l-zh">%</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more precautionary saving</span><span class="l-zh">Higher more precautionary saving</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-07-01</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.PSAVERT.personal_saving_rate</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-07-01</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
+          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.PSAVERT.personal_saving_rate</code> · v1.0.0</dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
@@ -1337,12 +1450,13 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><time>2026-07-01</time></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>data/fred/PSAVERT.parquet</code></p>
         <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
@@ -1352,14 +1466,16 @@
       </header>
       <strong class="mq-metric-value"><span class="l-en">0.1</span><span class="l-zh">0.1</span><span class="mq-metric-unit"><span class="l-en">Pct pts</span><span class="l-zh">Pct pts</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more precautionary saving</span><span class="l-zh">Higher more precautionary saving</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-07-01</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Trailing 3m level change</span><span class="l-zh">Trailing 3m level change</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.PSAVERT.personal_saving_rate</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-07-01</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Trailing 3m level change</span><span class="l-zh">Trailing 3m level change</span></dd></div>
+          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.PSAVERT.personal_saving_rate</code> · v1.0.0</dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
@@ -1386,12 +1502,13 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><time>2026-07-01</time></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>data/fred/PSAVERT.parquet</code></p>
         <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
@@ -1401,14 +1518,16 @@
       </header>
       <strong class="mq-metric-value"><span class="l-en">18,122.5</span><span class="l-zh">18,122.5</span><span class="mq-metric-unit"><span class="l-en">Usd billions chained saar</span><span class="l-zh">Usd billions chained saar</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more income</span><span class="l-zh">Higher more income</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-07-01</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.DSPIC96.real_disposable_income</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-07-01</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
+          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.DSPIC96.real_disposable_income</code> · v1.0.0</dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
@@ -1435,12 +1554,13 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><time>2026-07-01</time></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>data/fred/DSPIC96.parquet</code></p>
         <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
@@ -1450,14 +1570,16 @@
       </header>
       <strong class="mq-metric-value"><span class="l-en">0.4523</span><span class="l-zh">0.4523</span><span class="mq-metric-unit"><span class="l-en">%</span><span class="l-zh">%</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more income growth</span><span class="l-zh">Higher more income growth</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-07-01</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Yoy pct change</span><span class="l-zh">Yoy pct change</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.DSPIC96.real_disposable_income</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-07-01</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Yoy pct change</span><span class="l-zh">Yoy pct change</span></dd></div>
+          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.DSPIC96.real_disposable_income</code> · v1.0.0</dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
@@ -1484,12 +1606,13 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><time>2026-07-01</time></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>data/fred/DSPIC96.parquet</code></p>
         <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
@@ -1499,14 +1622,16 @@
       </header>
       <strong class="mq-metric-value"><span class="l-en">2.85</span><span class="l-zh">2.85</span><span class="mq-metric-unit"><span class="l-en">%</span><span class="l-zh">%</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more delinquency stress</span><span class="l-zh">Higher more delinquency stress</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-04-01</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.DRCCLACBS.cc_delinquency_rate</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-04-01</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
+          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.DRCCLACBS.cc_delinquency_rate</code> · v1.0.0</dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
@@ -1533,12 +1658,13 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><time>2026-04-01</time></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>data/fred/DRCCLACBS.parquet</code></p>
         <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
@@ -1548,14 +1674,16 @@
       </header>
       <strong class="mq-metric-value"><span class="l-en">1.86</span><span class="l-zh">1.86</span><span class="mq-metric-unit"><span class="l-en">%</span><span class="l-zh">%</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more delinquency stress</span><span class="l-zh">Higher more delinquency stress</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-04-01</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.DRSFRMACBS.mortgage_delinquency_rate</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-04-01</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
+          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>fred.DRSFRMACBS.mortgage_delinquency_rate</code> · v1.0.0</dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
@@ -1582,12 +1710,13 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><time>2026-04-01</time></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>data/fred/DRSFRMACBS.parquet</code></p>
         <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
@@ -1597,14 +1726,16 @@
       </header>
       <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Rights blocked</span><span class="l-zh">授权受限</span></span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">N/a</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><span class="mq-dash">—</span></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">N/a</span><span class="l-zh">N/a</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>NONE</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><span class="mq-dash">—</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">N/a</span><span class="l-zh">N/a</span></dd></div>
+          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>NONE</code> · v1.0.0</dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
@@ -1631,12 +1762,13 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock is-absent">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>NONE -- card-network/processor panels are a standing rights-adjacent exclusion (docs/QUAL_DATA_COMPLIANCE.md section 2.3)</code></p>
         <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
@@ -1646,14 +1778,16 @@
       </header>
       <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Not covered</span><span class="l-zh">未覆盖</span></span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">N/a</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><span class="mq-dash">—</span></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">N/a</span><span class="l-zh">N/a</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>NONE</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><span class="mq-dash">—</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">N/a</span><span class="l-zh">N/a</span></dd></div>
+          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>NONE</code> · v1.0.0</dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
@@ -1680,12 +1814,13 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock is-absent">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>NONE -- no collector for the NY Fed Quarterly Report on Household Debt and Credit exists in this estate</code></p>
         <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
@@ -1695,14 +1830,16 @@
       </header>
       <strong class="mq-metric-value"><span class="l-en">67.54</span><span class="l-zh">67.54</span><span class="mq-metric-unit"><span class="l-en">score (0-100)</span><span class="l-zh">评分（0–100）</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher stronger momentum</span><span class="l-zh">Higher stronger momentum</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-07-01</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Composite, prior-only inputs</span><span class="l-zh">复合指标（仅使用先验输入）</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>axes.cash_flow_momentum</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-07-01</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Composite, prior-only inputs</span><span class="l-zh">复合指标（仅使用先验输入）</span></dd></div>
+          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>axes.cash_flow_momentum</code> · v1.0.0</dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
@@ -1729,12 +1866,13 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><time>2026-07-01</time></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.market_os.macro_workspaces.consumer_payments</code></p>
         <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
@@ -1744,14 +1882,16 @@
       </header>
       <strong class="mq-metric-value"><span class="l-en">51.14</span><span class="l-zh">51.14</span><span class="mq-metric-unit"><span class="l-en">score (0-100)</span><span class="l-zh">评分（0–100）</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher = more stress</span><span class="l-zh">数值越高＝压力越大</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-07-01</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Composite, prior-only inputs</span><span class="l-zh">复合指标（仅使用先验输入）</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>axes.credit_stress</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-07-01</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Composite, prior-only inputs</span><span class="l-zh">复合指标（仅使用先验输入）</span></dd></div>
+          <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>axes.credit_stress</code> · v1.0.0</dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
@@ -1778,12 +1918,13 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><time>2026-07-01</time></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.market_os.macro_workspaces.consumer_payments</code></p>
         <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        </div>
       </details>
     </article>
   </div>
@@ -1794,8 +1935,15 @@
              aria-labelledby="mq-tab-drivers" data-mq-panel="drivers" tabindex="0">
       <section class="mq-drivers" aria-labelledby="mq-drivers-title">
   <div class="mq-section-head">
-    <h3 id="mq-drivers-title"><span class="l-en">Drivers</span><span class="l-zh">驱动因子</span></h3>
-    <span class="mq-section-note"><span class="l-en">Signed push toward each axis high side. A driver is a disclosed contribution, not a cause.</span><span class="l-zh">各分项推向坐标轴高值一侧的有符号推力。驱动因子是已披露的贡献，而非因果。</span></span>
+    <h3 id="mq-drivers-title"><span class="l-en">What&#39;s pushing it</span><span class="l-zh">推动因素</span></h3>
+    <details class="mc-details">
+  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <div class="mc-details-body">
+      <p><span class="l-en">Drivers</span><span class="l-zh">驱动因子</span></p>
+      <p><span class="l-en">Signed push toward each axis high side. A driver is a disclosed contribution, not a cause.</span><span class="l-zh">各分项推向坐标轴高值一侧的有符号推力。驱动因子是已披露的贡献，而非因果。</span></p>
+      <p><span class="l-en">Push</span><span class="l-zh">推力</span></p>
+    </div>
+</details>
   </div>
   <div class="mq-driver-group">
     <h4><span class="l-en">Cash-flow / spending momentum</span><span class="l-zh">现金流/支出动能</span></h4>
@@ -1809,14 +1957,22 @@
       </tr></thead>
       <tbody>
         <tr>
-          <th scope="row"><span class="l-en">Retail sales YoY</span><span class="l-zh">零售销售同比</span><span class="mq-owner-field"><code>fred.RSAFS.retail_sales</code></span></th>
+          <th scope="row"><span class="l-en">Retail sales YoY</span><span class="l-zh">零售销售同比</span>
+            <details class="mc-details">
+  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <div class="mc-details-body"><span class="mq-owner-field"><code>fred.RSAFS.retail_sales</code></span></div>
+</details></th>
           <td><span class="l-en">5.01</span><span class="l-zh">5.01</span></td>
           <td><span class="l-en">%</span><span class="l-zh">%</span></td>
           <td class="mq-delta mq-delta-up">+5.01</td>
           <td><span class="mq-chip mq-tone-ok"><span class="l-en">Present</span><span class="l-zh">已具备</span></span></td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">Real disposable income YoY</span><span class="l-zh">实际可支配收入同比</span><span class="mq-owner-field"><code>fred.DSPIC96.real_disposable_income</code></span></th>
+          <th scope="row"><span class="l-en">Real disposable income YoY</span><span class="l-zh">实际可支配收入同比</span>
+            <details class="mc-details">
+  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <div class="mc-details-body"><span class="mq-owner-field"><code>fred.DSPIC96.real_disposable_income</code></span></div>
+</details></th>
           <td><span class="l-en">0.4523</span><span class="l-zh">0.4523</span></td>
           <td><span class="l-en">%</span><span class="l-zh">%</span></td>
           <td class="mq-delta mq-delta-up">+0.4523</td>
@@ -1837,28 +1993,44 @@
       </tr></thead>
       <tbody>
         <tr>
-          <th scope="row"><span class="l-en">Revolving credit YoY</span><span class="l-zh">循环信贷同比</span><span class="mq-owner-field"><code>fred.REVOLSL.consumer_credit_revolving</code></span></th>
+          <th scope="row"><span class="l-en">Revolving credit YoY</span><span class="l-zh">循环信贷同比</span>
+            <details class="mc-details">
+  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <div class="mc-details-body"><span class="mq-owner-field"><code>fred.REVOLSL.consumer_credit_revolving</code></span></div>
+</details></th>
           <td><span class="l-en">3.79</span><span class="l-zh">3.79</span></td>
           <td><span class="l-en">%</span><span class="l-zh">%</span></td>
           <td class="mq-delta mq-delta-up">+3.79</td>
           <td><span class="mq-chip mq-tone-ok"><span class="l-en">Present</span><span class="l-zh">已具备</span></span></td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">Personal saving rate</span><span class="l-zh">个人储蓄率</span><span class="mq-owner-field"><code>fred.PSAVERT.personal_saving_rate</code></span></th>
+          <th scope="row"><span class="l-en">Personal saving rate</span><span class="l-zh">个人储蓄率</span>
+            <details class="mc-details">
+  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <div class="mc-details-body"><span class="mq-owner-field"><code>fred.PSAVERT.personal_saving_rate</code></span></div>
+</details></th>
           <td><span class="l-en">3.00</span><span class="l-zh">3.00</span></td>
           <td><span class="l-en">%</span><span class="l-zh">%</span></td>
           <td class="mq-delta mq-delta-up">+3.00</td>
           <td><span class="mq-chip mq-tone-ok"><span class="l-en">Present</span><span class="l-zh">已具备</span></span></td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">Credit-card delinquency rate</span><span class="l-zh">信用卡拖欠率</span><span class="mq-owner-field"><code>fred.DRCCLACBS.cc_delinquency_rate</code></span></th>
+          <th scope="row"><span class="l-en">Credit-card delinquency rate</span><span class="l-zh">信用卡拖欠率</span>
+            <details class="mc-details">
+  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <div class="mc-details-body"><span class="mq-owner-field"><code>fred.DRCCLACBS.cc_delinquency_rate</code></span></div>
+</details></th>
           <td><span class="l-en">2.85</span><span class="l-zh">2.85</span></td>
           <td><span class="l-en">%</span><span class="l-zh">%</span></td>
           <td class="mq-delta mq-delta-up">+2.85</td>
           <td><span class="mq-chip mq-tone-ok"><span class="l-en">Present</span><span class="l-zh">已具备</span></span></td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">Mortgage delinquency rate</span><span class="l-zh">住房抵押贷款拖欠率</span><span class="mq-owner-field"><code>fred.DRSFRMACBS.mortgage_delinquency_rate</code></span></th>
+          <th scope="row"><span class="l-en">Mortgage delinquency rate</span><span class="l-zh">住房抵押贷款拖欠率</span>
+            <details class="mc-details">
+  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <div class="mc-details-body"><span class="mq-owner-field"><code>fred.DRSFRMACBS.mortgage_delinquency_rate</code></span></div>
+</details></th>
           <td><span class="l-en">1.86</span><span class="l-zh">1.86</span></td>
           <td><span class="l-en">%</span><span class="l-zh">%</span></td>
           <td class="mq-delta mq-delta-up">+1.86</td>
@@ -1870,11 +2042,13 @@
 </section>
       <section class="mq-method" aria-labelledby="mq-method-title">
   <div class="mq-section-head">
-    <h3 id="mq-method-title"><span class="l-en">Axis method receipts</span><span class="l-zh">坐标轴方法凭据</span></h3>
-    <span class="mq-section-note"><span class="l-en">A composite may only be shown when its full composition law is disclosed.</span><span class="l-zh">只有在完整披露构成法则的前提下，复合指标才可展示。</span></span>
+    <h3 id="mq-method-title"><span class="l-en">How this is calculated</span><span class="l-zh">计算方法</span></h3>
   </div>
-  <details class="mq-axis-method">
+  <details class="mc-details">
     <summary><span><span class="l-en">Cash-flow / spending momentum</span><span class="l-zh">现金流/支出动能</span></span><span class="mq-axis-method-value">67.54</span></summary>
+    <div class="mc-details-body mq-axis-method">
+    <p><span class="l-en">Axis method receipts</span><span class="l-zh">坐标轴方法凭据</span></p>
+    <p><span class="l-en">A composite may only be shown when its full composition law is disclosed.</span><span class="l-zh">只有在完整披露构成法则的前提下，复合指标才可展示。</span></p>
     <dl class="mq-method-grid">
       <div><dt><span class="l-en">Direction</span><span class="l-zh">方向</span></dt><dd><span class="l-en">Higher = stronger support</span><span class="l-zh">数值越高＝支持越强</span></dd></div>
       <div><dt><span class="l-en">Weights law</span><span class="l-zh">权重法则</span></dt><dd>weighted mean of standardized components, BOTH legs required present (coverage_floor=1.0, judgment call 6); retail sales YoY 0.50, real disposable income YoY 0.50</dd></div>
@@ -1911,9 +2085,13 @@
         </tr>
       </tbody>
     </table>
+    </div>
   </details>
-  <details class="mq-axis-method">
+  <details class="mc-details">
     <summary><span><span class="l-en">Consumer credit stress</span><span class="l-zh">消费信贷压力</span></span><span class="mq-axis-method-value">51.14</span></summary>
+    <div class="mc-details-body mq-axis-method">
+    <p><span class="l-en">Axis method receipts</span><span class="l-zh">坐标轴方法凭据</span></p>
+    <p><span class="l-en">A composite may only be shown when its full composition law is disclosed.</span><span class="l-zh">只有在完整披露构成法则的前提下，复合指标才可展示。</span></p>
     <dl class="mq-method-grid">
       <div><dt><span class="l-en">Direction</span><span class="l-zh">方向</span></dt><dd><span class="l-en">Higher = more stress</span><span class="l-zh">数值越高＝压力越大</span></dd></div>
       <div><dt><span class="l-en">Weights law</span><span class="l-zh">权重法则</span></dt><dd>weighted mean of standardized components, weights renormalized over present components (min 2 of 4, coverage_floor=0.5, judgment call 7); revolving-credit YoY 0.30, saving rate (inverted) 0.25, cc delinquency 0.25, mortgage delinquency 0.20</dd></div>
@@ -1964,6 +2142,7 @@
         </tr>
       </tbody>
     </table>
+    </div>
   </details>
 </section>
     </section>
@@ -1977,10 +2156,20 @@
   </div>
   <div class="mq-changed-empty">
     <span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Insufficient history</span><span class="l-zh">历史数据不足</span></span></span>
-    <p><span class="l-en">This snapshot publishes no chart-ready history. An empty chart frame would read as a flat line at zero, so none is drawn.</span><span class="l-zh">本快照未发布可绘图的历史序列。空白图框会被误读为零值水平线，因此不予绘制。</span></p>
+    <p><span class="l-en">No chart yet — we don&#39;t have enough history for this one.</span><span class="l-zh">暂无图表 — 该项历史数据不足。</span></p>
+    <details class="mc-details">
+  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <div class="mc-details-body">
+      <p><span class="l-en">This snapshot publishes no chart-ready history. An empty chart frame would read as a flat line at zero, so none is drawn.</span><span class="l-zh">本快照未发布可绘图的历史序列。空白图框会被误读为零值水平线，因此不予绘制。</span></p>
+      <p><span class="l-en">Freshness</span><span class="l-zh">新鲜度</span></p>
+    </div>
+</details>
   </div>
 </section>
       <section class="mq-lineage" aria-labelledby="mq-lineage-title">
+  <details class="mc-details">
+  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <div class="mc-details-body">
   <div class="mq-section-head">
     <h3 id="mq-lineage-title"><span class="l-en">Correction and method lineage</span><span class="l-zh">更正与方法沿革</span></h3>
   </div>
@@ -1993,6 +2182,8 @@
     <div><dt><span class="l-en">Hysteresis</span><span class="l-zh">滞回</span></dt><dd>raw classification already matches the prior print; no boundary crossing, hysteresis not engaged</dd></div>
   </dl>
   <p class="mq-lineage-note">Same reference period as the predecessor print; no tracked metric changed value (no-change republication).</p>
+  </div>
+</details>
 </section>
     </section>
   </div>
@@ -2000,8 +2191,14 @@
 
 <section class="mq-withheld" aria-labelledby="mq-withheld-title">
   <div class="mq-section-head">
-    <h3 id="mq-withheld-title"><span class="l-en">Declared but not offered</span><span class="l-zh">已声明但尚未开放</span></h3>
-    <span class="mq-section-note"><span class="l-en">These are named here rather than shown as tabs. A tab that cannot do its job is a dead destination.</span><span class="l-zh">这些能力在此列出，而非以标签页形式呈现。无法履行职责的标签页就是一个死入口。</span></span>
+    <h3 id="mq-withheld-title"><span class="l-en">Not open yet</span><span class="l-zh">尚未开放</span></h3>
+    <details class="mc-details">
+  <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+  <div class="mc-details-body">
+      <p><span class="l-en">Declared but not offered</span><span class="l-zh">已声明但尚未开放</span></p>
+      <p><span class="l-en">These are named here rather than shown as tabs. A tab that cannot do its job is a dead destination.</span><span class="l-zh">这些能力在此列出，而非以标签页形式呈现。无法履行职责的标签页就是一个死入口。</span></p>
+    </div>
+</details>
   </div>
   <div class="mq-withheld-grid">
     <article class="mq-withheld-card">
@@ -2027,7 +2224,7 @@
           <li><span class="l-en">Savings deterioration</span><span class="l-zh">储蓄恶化</span> <span class="mq-chip"><span class="l-en">Named state transition</span><span class="l-zh">状态切换</span></span></li>
           <li><span class="l-en">Revolving-credit acceleration</span><span class="l-zh">循环信贷加速</span> <span class="mq-chip"><span class="l-en">Component shock</span><span class="l-zh">分项冲击</span></span></li>
           <li><span class="l-en">Spending/income divergence</span><span class="l-zh">支出/收入背离</span> <span class="mq-chip"><span class="l-en">Contradiction appears or resolves</span><span class="l-zh">矛盾出现或消解</span></span></li>
-          <li><span class="l-en">Credit-stress boundary approach</span><span class="l-zh">信贷压力临界值临近</span> <span class="mq-chip"><span class="l-en">Axis boundary approach</span><span class="l-zh">接近坐标轴分界</span></span></li>
+          <li><span class="l-en">Credit-stress boundary approach</span><span class="l-zh">信贷压力临界值临近</span> <span class="mq-chip"><span class="l-en">Boundary approach</span><span class="l-zh">接近分界</span></span></li>
           <li><span class="l-en">Source stale or failed</span><span class="l-zh">数据源过期或失败</span> <span class="mq-chip"><span class="l-en">Source stale or failed</span><span class="l-zh">数据源过期或失败</span></span></li>
           <li><span class="l-en">Material source revision</span><span class="l-zh">数据源重大修订</span> <span class="mq-chip"><span class="l-en">Material source revision</span><span class="l-zh">数据源重大修订</span></span></li>
         </ul>
@@ -2040,14 +2237,19 @@
        aria-hidden="true" tabindex="-1" hidden inert>
   <header class="mq-drawer-head">
     <div>
-      <p class="mq-kicker"><span class="l-en">Source receipt</span><span class="l-zh">来源凭据</span></p>
-      <h2 id="mq-evidence-title"><span class="l-en">Evidence</span><span class="l-zh">证据</span></h2>
+      <p class="mq-kicker"><span class="l-en">Sources</span><span class="l-zh">数据来源</span></p>
+      <h2 id="mq-evidence-title"><span class="l-en">Sources</span><span class="l-zh">数据来源</span></h2>
     </div>
     <button class="mq-drawer-close" id="mq-close-evidence" type="button"
             data-label-en="Close evidence drawer" data-label-zh="关闭证据抽屉"
             aria-label="Close evidence drawer">×</button>
   </header>
   <div class="mq-drawer-body">
+  <details class="mc-details" open>
+    <summary><span class="l-en">Sources</span><span class="l-zh">数据来源</span></summary>
+    <div class="mc-details-body">
+      <p><span class="l-en">Source receipt</span><span class="l-zh">来源凭据</span></p>
+      <p><span class="l-en">Evidence</span><span class="l-zh">证据</span></p>
 
     <section class="mq-drawer-section">
       <h3><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></h3>
@@ -2105,7 +2307,7 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock is-absent">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
 </dl>
@@ -2151,7 +2353,7 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock is-absent">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
 </dl>
@@ -2197,7 +2399,7 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock is-absent">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
 </dl>
@@ -2243,7 +2445,7 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock is-absent">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
 </dl>
@@ -2289,7 +2491,7 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock is-absent">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
 </dl>
@@ -2335,7 +2537,7 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock is-absent">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
 </dl>
@@ -2381,7 +2583,7 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock is-absent">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
 </dl>
@@ -2427,7 +2629,7 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock is-absent">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
 </dl>
@@ -2473,7 +2675,7 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock is-absent">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
 </dl>
@@ -2519,7 +2721,7 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock is-absent">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
 </dl>
@@ -2565,7 +2767,7 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock is-absent">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
 </dl>
@@ -2576,11 +2778,11 @@
       <h3><span class="l-en">Non-economic clocks</span><span class="l-zh">非经济时钟</span></h3>
       <dl class="mq-clocks">
         <div class="mq-clock">
-          <dt><span class="mq-clock-name"><span class="l-en">Artifact built</span><span class="l-zh">产物生成</span></span><span class="mq-clock-meaning"><span class="l-en">Producer generation time. Not an economic clock.</span><span class="l-zh">生产端生成时间，并非经济时钟。</span></span></dt>
+          <dt><span class="mq-clock-name"><span class="l-en">Build stamp</span><span class="l-zh">生成时间</span></span><span class="mq-clock-meaning"><span class="l-en">Producer generation time. Not an economic clock.</span><span class="l-zh">生产端生成时间，并非经济时钟。</span></span></dt>
           <dd><time>2026-09-06T21:23:24Z</time></dd>
         </div>
         <div class="mq-clock">
-          <dt><span class="mq-clock-name"><span class="l-en">Page built</span><span class="l-zh">页面生成</span></span><span class="mq-clock-meaning"><span class="l-en">Static page render time. Not an economic clock.</span><span class="l-zh">静态页面渲染时间，并非经济时钟。</span></span></dt>
+          <dt><span class="mq-clock-name"><span class="l-en">Page refreshed</span><span class="l-zh">页面更新于</span></span><span class="mq-clock-meaning"><span class="l-en">Static page render time. Not an economic clock.</span><span class="l-zh">静态页面渲染时间，并非经济时钟。</span></span></dt>
           <dd><time>2026-09-06T00:00:00Z</time></dd>
         </div>
       </dl>
@@ -2600,6 +2802,8 @@
       </dl>
       <p class="mq-lineage-note"><span class="l-en">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mismatch renders a refusal page instead of a state.</span><span class="l-zh">本页在渲染前已按封闭 schema 校验该产物并重新计算其内容哈希。若不匹配，将呈现拒绝页面而非任何状态读数。</span></p>
     </section>
+    </div>
+  </details>
   </div>
 </aside>
 <div class="mq-scrim" id="mq-scrim" hidden></div>
