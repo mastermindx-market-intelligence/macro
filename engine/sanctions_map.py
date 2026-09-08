@@ -66,14 +66,18 @@ def rungs_for(vm: dict, all_iso3=None) -> dict:
       hatch — they are not country attributions.
     """
     rungs: dict = {}
-    coverage = vm.get("coverage") or {}
-    unresolved = int(coverage.get("unresolved") or 0)
-    if unresolved > 0:
+    coverage = vm.get("coverage")
+    if coverage is None:
         for iso3 in (all_iso3 or ()):
             rungs[iso3] = UNKNOWN_RUNG
     else:
-        for iso3 in (all_iso3 or ()):
-            rungs[iso3] = NOT_NAMED_RUNG
+        unresolved = int(coverage.get("unresolved") or 0)
+        if unresolved > 0:
+            for iso3 in (all_iso3 or ()):
+                rungs[iso3] = UNKNOWN_RUNG
+        else:
+            for iso3 in (all_iso3 or ()):
+                rungs[iso3] = NOT_NAMED_RUNG
     for c in vm.get("countries") or []:
         rungs[c["iso3"]] = c["rung"]
     return rungs
@@ -86,16 +90,27 @@ def _load_programs_config(path: Path = PROGRAMS_CONFIG) -> tuple[list[dict], set
         raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     except Exception:
         return [], set()
-    thematic = {
-        row["code"]
-        for row in (raw.get("thematic") or [])
-        if isinstance(row, dict) and row.get("code")
-    }
-    programs = [
-        row
-        for row in (raw.get("programs") or [])
-        if isinstance(row, dict) and row.get("code")
-    ]
+    seen: set[str] = set()
+    thematic: set[str] = set()
+    for row in (raw.get("thematic") or []):
+        if not isinstance(row, dict) or not row.get("code"):
+            continue
+        code = row["code"]
+        if code in seen:
+            print(f"::warning title=sanctions_map_duplicate_code::{code}", flush=True)
+            continue
+        seen.add(code)
+        thematic.add(code)
+    programs = []
+    for row in (raw.get("programs") or []):
+        if not isinstance(row, dict) or not row.get("code"):
+            continue
+        code = row["code"]
+        if code in seen:
+            print(f"::warning title=sanctions_map_duplicate_code::{code}", flush=True)
+            continue
+        seen.add(code)
+        programs.append(row)
     return programs, thematic
 
 

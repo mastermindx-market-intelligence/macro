@@ -39,6 +39,7 @@
   filter:drop-shadow(0 0 6px var(--ink-link))}
 
 html[data-theme="light"] .wm-c{fill:var(--panel);stroke:var(--line);stroke-width:.75}
+html[data-theme="light"] .wm-c[data-rung="x"]{fill:url(#sm-hatch);fill-opacity:1}
 html[data-theme="light"] .wm-c[data-rung="1"]{fill:var(--ink-act);fill-opacity:.16}
 html[data-theme="light"] .wm-c[data-rung="2"]{fill:var(--ink-act);fill-opacity:.30}
 html[data-theme="light"] .wm-c[data-rung="3"]{fill:var(--ink-act);fill-opacity:.48}
@@ -57,7 +58,7 @@ html[data-theme="light"] .sm-map[data-hi] .wm-c.is-hi{fill-opacity:.52;
 .sm-legend [data-rung="1"] i{background:var(--ink-act);opacity:.22}
 .sm-legend [data-rung="2"] i{background:var(--ink-act);opacity:.46}
 .sm-legend [data-rung="3"] i{background:var(--ink-act);opacity:.78}
-.sm-legend [data-rung="x"] i{background:repeating-linear-gradient(45deg,transparent 0 2px,var(--muted) 2px 2.6px);opacity:.30}
+.sm-legend [data-rung="x"] i{background:repeating-linear-gradient(45deg,transparent 0 4.4px,var(--muted) 4.4px 5px);opacity:.30}
 html[data-theme="light"] .sm-legend [data-rung="0"] i{background:var(--panel)}
 html[data-theme="light"] .sm-legend [data-rung="1"] i{opacity:.16}
 html[data-theme="light"] .sm-legend [data-rung="2"] i{opacity:.30}
@@ -66,9 +67,12 @@ html[data-theme="light"] .sm-legend [data-rung="x"] i{opacity:.45}
 
 .sm-null{margin:10px 0 0;font-size:var(--fs-sm);color:var(--muted)}
 
+.sm-modhead{padding:16px 18px 0}
+.sm-modhead .sm-stance{margin-bottom:4px}
 .sm-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px 18px}
 .sm-card{border:1px solid var(--line);border-radius:var(--r-card,12px);padding:12px}
 .sm-card .n{font-family:var(--num);font-variant-numeric:tabular-nums;font-weight:700}
+.sm-card .n .unit{font-size:var(--fs-sm);font-weight:600;color:var(--muted)}
 .sm-tbl{width:100%;border-collapse:collapse;font-size:var(--fs-sm)}
 .sm-tbl th{font-size:var(--fs-micro);letter-spacing:.08em;text-transform:uppercase;
   color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
@@ -134,6 +138,8 @@ html[data-theme="light"] .sm-legend [data-rung="x"] i{opacity:.45}
     {{ t('We could not verify a country for', '我们无法核实其国别的制裁计划有') }}
     <b class="tnum">{{ vm.coverage.unresolved }}</b>
     {{ t('country-scoped programmes — they are not on the map.', '项国别计划 — 未在图上显示。') }}
+    {{ t('Because of this we cannot show any country as clear today — the whole map is marked unknown.',
+         '因此今日我们无法确认任何国家未被制裁 — 整张地图标为未知。') }}
     {% if vm.coverage.thematic %}
     {{ t('Global (non-country) programmes are counted separately and do not hatch the map.',
          '全球（非国别）计划单独计数，不会把整张地图标为未知。') }}
@@ -143,11 +149,15 @@ html[data-theme="light"] .sm-legend [data-rung="x"] i{opacity:.45}
 </section>
 
 {% if vm.coverage is not none %}
+<div class="sm-modhead">
+  <div class="mx-sec"><h2>{{ t('Most-named countries','被点名最多的国家') }}</h2></div>
+  <p class="sm-stance">{{ t('These carry the most US sanctions programmes today. Read as country risk — not a trade.','这些国家目前涉及的美国制裁计划最多。用于判读国别风险，非交易信号。') }}</p>
+</div>
 <section class="sm-cards">
   {% for c in vm.countries[:6] %}
   <div class="sm-card">
     <div>{{ t(c.name_en, c.name_zh) }}</div>
-    <div class="n tnum">{{ c.n_programs }}</div>
+    <div class="n tnum">{{ c.n_programs }} <span class="unit">{{ t('programmes','项计划') }}</span></div>
     {% for p in c.programs[:2] %}
     <div><a href="{{ p.url }}" rel="noopener">{{ t(p.name_en, p.name_zh) }}</a></div>
     {% endfor %}
@@ -155,6 +165,9 @@ html[data-theme="light"] .sm-legend [data-rung="x"] i{opacity:.45}
   {% endfor %}
 </section>
 
+<div class="sm-modhead">
+  <div class="mx-sec"><h2>{{ t('All countries named','全部被点名国家') }}</h2></div>
+</div>
 <div class="sm-tblwrap">
 <table class="sm-tbl">
 <thead><tr><th>{{ t('Country','国家') }}</th><th>{{ t('Programmes','计划数') }}</th></tr></thead>
@@ -174,7 +187,7 @@ html[data-theme="light"] .sm-legend [data-rung="x"] i{opacity:.45}
           '本图不包含：航运咽喉、军事设施、卫星影像。这些数据的使用权我们尚未取得。') }}</p>
   <p>{{ t('Source', '来源') }}: {{ vm.source_url or t('unknown','未知') }} ·
      {{ t('As of', '截至') }}: {{ vm.as_of or t('unknown','未知') }} ·
-     {{ t('Fetched', '抓取时间') }}: {{ vm.fetched_at or t('unknown','未知') }} ·
+     {{ t('Last read','最近读取') }}: {{ (vm.fetched_at or '')[:10] or t('unknown','未知') }} ·
      {{ t('Unresolved country programmes', '未核实国别计划数') }}:
      <span class="tnum">{{ vm.coverage.unresolved if vm.coverage else (vm.unresolved|length) }}</span>
      {% if vm.coverage and vm.coverage.thematic %}

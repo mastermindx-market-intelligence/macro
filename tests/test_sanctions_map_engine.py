@@ -150,6 +150,16 @@ def test_rungs_for_not_named_when_coverage_complete():
     assert rungs["CHN"] == 0
 
 
+def test_rungs_for_unknown_when_coverage_is_none():
+    """MINOR 2: total read failure must not paint the world as 'not named'."""
+    rungs = rungs_for({"coverage": None}, {"USA", "CHN"})
+    assert rungs["USA"] == "x"
+    assert rungs["CHN"] == "x"
+    # Empty-dict coverage is "resolved with zero gaps", not "no read".
+    named = rungs_for({"coverage": {}}, {"USA"})
+    assert named["USA"] == 0
+
+
 def test_as_of_falls_back_to_fetched_at_date(tmp_path):
     sdn = tmp_path / "sdn.csv"
     sdn.write_text(_sdn_csv(["A"]), encoding="utf-8")
@@ -193,3 +203,40 @@ def test_config_iso3_subset_of_worldmap_no_parallel_country_master():
     }
     missing = sorted(cfg_iso3 - map_iso3)
     assert missing == [], f"config iso3 missing from worldmap: {missing}"
+
+
+def test_config_program_and_thematic_codes_are_unique():
+    """MINOR 4: a reused code would silently drop the first row from the map."""
+    cfg = yaml.safe_load(Path("config/sanctions_ofac_programs.yml").read_text(encoding="utf-8"))
+    codes = []
+    for section in ("programs", "thematic"):
+        for row in (cfg.get(section) or []):
+            if isinstance(row, dict) and row.get("code"):
+                codes.append(row["code"])
+    assert codes, "config must list at least one programme code"
+    dupes = sorted({c for c in codes if codes.count(c) > 1})
+    assert dupes == [], f"duplicate OFAC programme codes: {dupes}"
+    assert len(codes) == len(set(codes))
+
+
+def test_duplicate_code_emits_github_annotation(tmp_path, capsys):
+    """MINOR 4: a repeated code must start a GitHub warning line, and the
+    first row must be the one that survives."""
+    cfg = tmp_path / "cfg.yml"
+    cfg.write_text(_config(
+        [
+            {"code": "IRAN", "iso3": "IRN", "name_en": "Iran first", "name_zh": "伊朗甲"},
+            {"code": "IRAN", "iso3": "IRQ", "name_en": "Iran overwrite", "name_zh": "伊朗乙"},
+        ],
+        thematic=[{"code": "SDGT"}, {"code": "SDGT"}],
+    ), encoding="utf-8")
+    programs, thematic = sanctions_map._load_programs_config(cfg)
+    out = capsys.readouterr().out
+    lines = [ln for ln in out.splitlines() if ln.startswith("::")]
+    assert lines, "duplicate codes must emit a GitHub annotation"
+    assert all(ln.startswith("::warning title=sanctions_map_duplicate_code::") for ln in lines)
+    assert any(ln.endswith("IRAN") for ln in lines)
+    assert any(ln.endswith("SDGT") for ln in lines)
+    assert [row["code"] for row in programs] == ["IRAN"]
+    assert [row["iso3"] for row in programs] == ["IRN"]
+    assert thematic == {"SDGT"}

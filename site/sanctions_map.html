@@ -85,6 +85,7 @@
   filter:drop-shadow(0 0 6px var(--ink-link))}
 
 html[data-theme="light"] .wm-c{fill:var(--panel);stroke:var(--line);stroke-width:.75}
+html[data-theme="light"] .wm-c[data-rung="x"]{fill:url(#sm-hatch);fill-opacity:1}
 html[data-theme="light"] .wm-c[data-rung="1"]{fill:var(--ink-act);fill-opacity:.16}
 html[data-theme="light"] .wm-c[data-rung="2"]{fill:var(--ink-act);fill-opacity:.30}
 html[data-theme="light"] .wm-c[data-rung="3"]{fill:var(--ink-act);fill-opacity:.48}
@@ -103,7 +104,7 @@ html[data-theme="light"] .sm-map[data-hi] .wm-c.is-hi{fill-opacity:.52;
 .sm-legend [data-rung="1"] i{background:var(--ink-act);opacity:.22}
 .sm-legend [data-rung="2"] i{background:var(--ink-act);opacity:.46}
 .sm-legend [data-rung="3"] i{background:var(--ink-act);opacity:.78}
-.sm-legend [data-rung="x"] i{background:repeating-linear-gradient(45deg,transparent 0 2px,var(--muted) 2px 2.6px);opacity:.30}
+.sm-legend [data-rung="x"] i{background:repeating-linear-gradient(45deg,transparent 0 4.4px,var(--muted) 4.4px 5px);opacity:.30}
 html[data-theme="light"] .sm-legend [data-rung="0"] i{background:var(--panel)}
 html[data-theme="light"] .sm-legend [data-rung="1"] i{opacity:.16}
 html[data-theme="light"] .sm-legend [data-rung="2"] i{opacity:.30}
@@ -112,9 +113,12 @@ html[data-theme="light"] .sm-legend [data-rung="x"] i{opacity:.45}
 
 .sm-null{margin:10px 0 0;font-size:var(--fs-sm);color:var(--muted)}
 
+.sm-modhead{padding:16px 18px 0}
+.sm-modhead .sm-stance{margin-bottom:4px}
 .sm-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px 18px}
 .sm-card{border:1px solid var(--line);border-radius:var(--r-card,12px);padding:12px}
 .sm-card .n{font-family:var(--num);font-variant-numeric:tabular-nums;font-weight:700}
+.sm-card .n .unit{font-size:var(--fs-sm);font-weight:600;color:var(--muted)}
 .sm-tbl{width:100%;border-collapse:collapse;font-size:var(--fs-sm)}
 .sm-tbl th{font-size:var(--fs-micro);letter-spacing:.08em;text-transform:uppercase;
   color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
@@ -859,11 +863,15 @@ a.card:hover,a.actitem:hover,a.idx-alloc:hover{transform:translateY(-2px);
 </section>
 
 
+<div class="sm-modhead">
+  <div class="mx-sec"><h2><span class="l-en">Most-named countries</span><span class="l-zh">被点名最多的国家</span></h2></div>
+  <p class="sm-stance"><span class="l-en">These carry the most US sanctions programmes today. Read as country risk — not a trade.</span><span class="l-zh">这些国家目前涉及的美国制裁计划最多。用于判读国别风险，非交易信号。</span></p>
+</div>
 <section class="sm-cards">
   
   <div class="sm-card">
     <div><span class="l-en">Iran</span><span class="l-zh">伊朗</span></div>
-    <div class="n tnum">13</div>
+    <div class="n tnum">13 <span class="unit"><span class="l-en">programmes</span><span class="l-zh">项计划</span></span></div>
     
     <div><a href="https://ofac.treasury.gov/sanctions-programs-and-country-information/iran-sanctions" rel="noopener"><span class="l-en">Iran Sanctions</span><span class="l-zh">伊朗制裁</span></a></div>
     
@@ -873,7 +881,7 @@ a.card:hover,a.actitem:hover,a.idx-alloc:hover{transform:translateY(-2px);
   
   <div class="sm-card">
     <div><span class="l-en">Russia</span><span class="l-zh">俄罗斯</span></div>
-    <div class="n tnum">8</div>
+    <div class="n tnum">8 <span class="unit"><span class="l-en">programmes</span><span class="l-zh">项计划</span></span></div>
     
     <div><a href="https://ofac.treasury.gov/sanctions-programs-and-country-information/russia-related-sanctions" rel="noopener"><span class="l-en">Russia — Executive Order 14024</span><span class="l-zh">俄罗斯 — 第14024号行政命令</span></a></div>
     
@@ -883,7 +891,7 @@ a.card:hover,a.actitem:hover,a.idx-alloc:hover{transform:translateY(-2px);
   
   <div class="sm-card">
     <div><span class="l-en">North Korea</span><span class="l-zh">朝鲜</span></div>
-    <div class="n tnum">5</div>
+    <div class="n tnum">5 <span class="unit"><span class="l-en">programmes</span><span class="l-zh">项计划</span></span></div>
     
     <div><a href="https://ofac.treasury.gov/sanctions-programs-and-country-information/north-korea-sanctions" rel="noopener"><span class="l-en">North Korea — DPRK2</span><span class="l-zh">朝鲜 — DPRK2</span></a></div>
     
@@ -893,7 +901,7 @@ a.card:hover,a.actitem:hover,a.idx-alloc:hover{transform:translateY(-2px);
   
   <div class="sm-card">
     <div><span class="l-en">Sudan</span><span class="l-zh">苏丹</span></div>
-    <div class="n tnum">3</div>
+    <div class="n tnum">3 <span class="unit"><span class="l-en">programmes</span><span class="l-zh">项计划</span></span></div>
     
     <div><a href="https://ofac.treasury.gov/sanctions-programs-and-country-information/sudan-and-darfur-sanctions" rel="noopener"><span class="l-en">Sudan — Darfur</span><span class="l-zh">苏丹 — 达尔富尔</span></a></div>
     
@@ -903,7 +911,7 @@ a.card:hover,a.actitem:hover,a.idx-alloc:hover{transform:translateY(-2px);
   
   <div class="sm-card">
     <div><span class="l-en">Venezuela</span><span class="l-zh">委内瑞拉</span></div>
-    <div class="n tnum">3</div>
+    <div class="n tnum">3 <span class="unit"><span class="l-en">programmes</span><span class="l-zh">项计划</span></span></div>
     
     <div><a href="https://ofac.treasury.gov/sanctions-programs-and-country-information/venezuela-related-sanctions" rel="noopener"><span class="l-en">Venezuela-Related Sanctions</span><span class="l-zh">委内瑞拉相关制裁</span></a></div>
     
@@ -913,7 +921,7 @@ a.card:hover,a.actitem:hover,a.idx-alloc:hover{transform:translateY(-2px);
   
   <div class="sm-card">
     <div><span class="l-en">Cuba</span><span class="l-zh">古巴</span></div>
-    <div class="n tnum">2</div>
+    <div class="n tnum">2 <span class="unit"><span class="l-en">programmes</span><span class="l-zh">项计划</span></span></div>
     
     <div><a href="https://ofac.treasury.gov/sanctions-programs-and-country-information/cuba-sanctions" rel="noopener"><span class="l-en">Cuba Sanctions</span><span class="l-zh">古巴制裁</span></a></div>
     
@@ -923,6 +931,9 @@ a.card:hover,a.actitem:hover,a.idx-alloc:hover{transform:translateY(-2px);
   
 </section>
 
+<div class="sm-modhead">
+  <div class="mx-sec"><h2><span class="l-en">All countries named</span><span class="l-zh">全部被点名国家</span></h2></div>
+</div>
 <div class="sm-tblwrap">
 <table class="sm-tbl">
 <thead><tr><th><span class="l-en">Country</span><span class="l-zh">国家</span></th><th><span class="l-en">Programmes</span><span class="l-zh">计划数</span></th></tr></thead>
@@ -976,7 +987,7 @@ a.card:hover,a.actitem:hover,a.idx-alloc:hover{transform:translateY(-2px);
   <p><span class="l-en">Not on this map: shipping chokepoints, military sites, satellite imagery. Those need rights we do not hold.</span><span class="l-zh">本图不包含：航运咽喉、军事设施、卫星影像。这些数据的使用权我们尚未取得。</span></p>
   <p><span class="l-en">Source</span><span class="l-zh">来源</span>: https://www.treasury.gov/ofac/downloads/sdn.csv ·
      <span class="l-en">As of</span><span class="l-zh">截至</span>: 2026-09-06 ·
-     <span class="l-en">Fetched</span><span class="l-zh">抓取时间</span>: 2026-09-06T05:53:36Z ·
+     <span class="l-en">Last read</span><span class="l-zh">最近读取</span>: 2026-09-06 ·
      <span class="l-en">Unresolved country programmes</span><span class="l-zh">未核实国别计划数</span>:
      <span class="tnum">0</span>
      

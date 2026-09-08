@@ -119,6 +119,9 @@ def test_coverage_none_renders_degraded_and_hides_cards():
     meta = html.split('class="sm-meta"')[1].split("</p>")[0]
     assert ">0<" not in meta
     assert "sanctions programmes" not in meta
+    # MINOR 2: engine paints unknown, not a false 'not named' rung-0.
+    assert 'data-iso3="USA" data-rung="x"' in html
+    assert 'data-iso3="USA" data-rung="0"' not in html
 
 
 def test_no_banned_vocabulary():
@@ -155,11 +158,66 @@ def test_country_table_lists_all_rows_no_dangling_see_all():
 
 
 def test_legend_distinguishes_not_named_from_unknown():
-    """MAJOR 3: hatch swatch for rung x; explicit panel fill for rung 0."""
+    """MAJOR 3: hatch swatch for rung x; explicit panel fill for rung 0.
+    MINOR 3: the chip period matches the SVG #sm-hatch 5px / 0.6px stroke."""
     html = _render(VM_OK)
-    assert '.sm-legend [data-rung="x"] i{background:repeating-linear-gradient' in html
+    assert (
+        '.sm-legend [data-rung="x"] i{background:repeating-linear-gradient'
+        '(45deg,transparent 0 4.4px,var(--muted) 4.4px 5px)'
+    ) in html
     assert '.sm-legend [data-rung="0"] i{background:var(--panel2)}' in html
     assert 'html[data-theme="light"] .sm-legend [data-rung="0"] i{background:var(--panel)}' in html
+
+
+def test_light_theme_unknown_rung_keeps_hatch():
+    """BLOCKER 2: light base fill is more specific than data-rung=x unless a
+    light-scoped hatch rule follows it. Without that rule, unknown countries
+    render as panel-fill 'Not named'."""
+    html = _render(VM_OK)
+    light_x = 'html[data-theme="light"] .wm-c[data-rung="x"]{fill:url(#sm-hatch);fill-opacity:1}'
+    assert light_x in html
+    light_base = html.index('html[data-theme="light"] .wm-c{fill:var(--panel)')
+    assert html.index(light_x) > light_base
+
+
+def test_unresolved_copy_says_whole_map_is_unknown():
+    """MAJOR 1: unresolved country-scoped codes hatch the whole map — the
+    caption must say so, not only name the missing programme count."""
+    html = _render(VM_OK)
+    assert "we cannot show any country as clear today" in html
+    assert "整张地图标为未知" in html
+    resolved = dict(VM_OK, coverage={"resolved": 4, "unresolved": 0, "thematic": 1})
+    clean = _render(resolved)
+    assert "we cannot show any country as clear today" not in clean
+
+
+def test_cards_and_table_have_headings_and_programme_units():
+    """MAJOR 2: cards/table carry a heading + stance, and the card number
+    names its unit."""
+    html = _render(VM_OK)
+    assert "Most-named countries" in html
+    assert "被点名最多的国家" in html
+    assert "These carry the most US sanctions programmes today" in html
+    assert "用于判读国别风险，非交易信号" in html
+    assert "All countries named" in html
+    assert "全部被点名国家" in html
+    assert re.search(
+        r'<div class="n tnum">6 <span class="unit"><span class="l-en">programmes</span>'
+        r'<span class="l-zh">项计划</span></span></div>',
+        html,
+    )
+
+
+def test_method_disclosure_uses_date_not_iso_timestamp():
+    """MINOR 1: the method line prints YYYY-MM-DD, never the raw ISO stamp."""
+    html = _render(VM_OK)
+    assert "2026-09-05T02:11:00Z" not in html
+    details = html.split("<details", 1)[1]
+    assert "Last read" in details
+    assert "最近读取" in details
+    assert "2026-09-05" in details
+    assert "Fetched" not in details
+    assert "抓取时间" not in details
 
 
 def test_degraded_null_uses_date_not_iso_timestamp():
