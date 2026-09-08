@@ -488,6 +488,11 @@ COUNT = {
     "remaining": _pair(
         "{remaining} more changes are on the workspace pages.",
         "还有 {remaining} 项变化，可在各工作区页面查看。"),
+    # I4: same-publication "prior" is the previous build of this print, not
+    # an earlier reading. One typed line; never a fabricated 0 delta.
+    "same_publication": _pair(
+        "Only one reading is published so far — nothing earlier to compare yet.",
+        "目前只有一次读数——暂无更早读数可比。"),
 }
 
 BOUNDARY_LINE = _pair(
@@ -822,6 +827,20 @@ def date_display_pair(iso_date: str) -> dict[str, str] | None:
     month_en = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
                 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")[d.month - 1]
     return _pair(f"{d.day} {month_en} {d.year}", f"{d.year}年{d.month}月{d.day}日")
+
+
+def month_display_pair(iso_date: str) -> dict[str, str] | None:
+    """Month + year only (I4 current-only rows). Never a raw ISO string."""
+    if not isinstance(iso_date, str) or len(iso_date) < 10:
+        return None
+    from datetime import date as _date  # noqa: PLC0415
+    try:
+        d = _date.fromisoformat(iso_date[:10])
+    except ValueError:
+        return None
+    month_en = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")[d.month - 1]
+    return _pair(f"{month_en} {d.year}", f"{d.year}年{d.month}月")
 
 
 _VOCABULARIES: dict[str, dict[str, dict[str, str]]] = {

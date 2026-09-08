@@ -45,27 +45,49 @@ ASSETS = (
 )
 
 CLEARANCE_JS = """() => {
-  const last = document.querySelector('#overview .mc-caption')
-    || document.querySelector('#overview .mc-move-count')
-    || document.querySelector('#overview .mc-move-list li:last-child');
+  /* N-B1: measure at document maximum. Never scrollBy to satisfy the
+     assertion — the harness must not move the page to make itself true. */
+  const maxY = Math.max(0,
+    document.documentElement.scrollHeight - window.innerHeight);
+  window.scrollTo(0, maxY);
+  const reached = window.scrollY || document.documentElement.scrollTop;
+  const panels = [...document.querySelectorAll('.mc-panel')]
+    .filter((p) => !p.hidden && getComputedStyle(p).display !== 'none');
+  const lastPanel = panels[panels.length - 1];
+  let last = lastPanel && lastPanel.lastElementChild;
+  while (last && (last.hidden || last.tagName === 'TEMPLATE')) {
+    last = last.previousElementSibling;
+  }
   const pill = document.querySelector('.mc-analyst');
   if (!last || !pill) {
     return {lastBottom: null, pillTop: null, gap: null, clear: false,
-            reason: 'missing last or pill'};
+            reason: 'missing last or pill', maxScroll: maxY,
+            scrollReached: reached};
   }
-  const need = last.getBoundingClientRect().bottom - pill.getBoundingClientRect().top;
-  if (need > -2) window.scrollBy(0, Math.ceil(need) + 4);
-  const lastBottom = last.getBoundingClientRect().bottom;
-  const pillTop = pill.getBoundingClientRect().top;
+  const lastBox = last.getBoundingClientRect();
+  const pillBox = pill.getBoundingClientRect();
+  const lastAbsBottom = lastBox.bottom + (window.scrollY || 0);
+  const reservedBandCss = document.documentElement.scrollHeight - lastAbsBottom;
+  const lastBottom = lastBox.bottom;
+  const pillTop = pillBox.top;
   const present = lastBottom > 0 && pillTop > 0;
   return {
     lastBottom,
+    lastTop: lastBox.top,
+    lastTag: last.className || last.tagName,
     pillTop,
+    pillHeight: pillBox.height,
+    pillBottom: pillBox.bottom,
     gap: pillTop - lastBottom,
     clear: Boolean(present && lastBottom <= pillTop),
-    pad: getComputedStyle(document.querySelector('#overview') || last).paddingBottom,
-    pillBg: getComputedStyle(pill).backgroundColor,
-    lastTag: last.className,
+    scrollHeight: document.documentElement.scrollHeight,
+    innerHeight: window.innerHeight,
+    maxScroll: maxY,
+    scrollReached: reached,
+    maxScrollMatched: Math.abs(reached - maxY) < 2,
+    reservedBandCss,
+    pad: getComputedStyle(
+      document.querySelector('.mc-panels') || lastPanel).paddingBottom,
   };
 }"""
 
@@ -73,6 +95,7 @@ RAIL_JS = """() => {
   const rail = document.querySelector('.mc-rail');
   const shell = document.querySelector('.mc-shell');
   const stance = document.querySelector('#overview .mc-stance');
+  const list = document.querySelector('.mc-rail-list');
   if (!rail || !shell || !stance) return {ok: false, reason: 'missing'};
   stance.scrollIntoView({block: 'start'});
   window.scrollBy(0, -30);
@@ -85,6 +108,8 @@ RAIL_JS = """() => {
   };
   const railBg = getComputedStyle(rail).backgroundColor;
   const shellBg = getComputedStyle(shell).backgroundColor;
+  const doc = document.documentElement;
+  const listStyle = list ? getComputedStyle(list) : null;
   return {
     ok: true,
     railBg, shellBg,
@@ -92,6 +117,12 @@ RAIL_JS = """() => {
     equal: railBg === shellBg,
     position: getComputedStyle(rail).position,
     stanceText: (stance.innerText || '').slice(0, 160),
+    scrollWidth: doc.scrollWidth,
+    clientWidth: doc.clientWidth,
+    noDocOverflow: doc.scrollWidth === doc.clientWidth,
+    listOverflowX: listStyle ? listStyle.overflowX : null,
+    listMaxWidth: listStyle ? listStyle.maxWidth : null,
+    listContain: listStyle ? listStyle.contain : null,
   };
 }"""
 
@@ -231,9 +262,55 @@ def _open_iframe(context, origin: str, hash_path: str, theme: str, locale: str,
     return page, inner
 
 
+def _viewport_name(vw: int) -> str:
+    if vw <= 390:
+        return "mobile"
+    if vw <= 768:
+        return "tablet"
+    return "desktop"
+
+
+def _force_state_for(filename: str, extra: dict[str, Any] | None) -> str | None:
+    if extra and "force_state" in extra:
+        return extra["force_state"]
+    if filename in REST_FRAMES:
+        return None
+    named = {
+        "17-dark-en-1440-arrival.png": "arrival",
+        "18-light-en-1440-arrival.png": "arrival",
+        "19-dark-en-1440-dest-hover.png": "dest_hover",
+        "20-light-en-1440-dest-hover.png": "dest_hover",
+        "21-dark-en-1440-heading-focus.png": "heading_focus",
+        "22-light-en-1440-heading-focus.png": "heading_focus",
+        "05-dark-en-1440-rates.png": "rates",
+        "06-dark-zh-1440-rates.png": "rates",
+        "07-light-en-1440-rates.png": "rates",
+        "08-light-zh-1440-rates.png": "rates",
+        "13-dark-en-390-end.png": "page_end",
+        "14-light-zh-390-end.png": "page_end",
+        "23-dark-en-1440-money-central-banks.png": "money_central_banks",
+        "24-dark-en-1440-inflation-foot.png": "inflation_foot",
+        "25-dark-en-1440-e3.png": "e3",
+        "26-light-en-1440-e3.png": "e3",
+        "27-light-en-1440-growth-business.png": "growth_business",
+    }
+    if filename in named:
+        return named[filename]
+    empty = filename.startswith("empty-e")
+    if empty:
+        # empty-e1-dark.png → e1
+        parts = filename.split("-")
+        if len(parts) >= 2 and parts[1].startswith("e"):
+            return parts[1]
+    return None
+
+
 def _row(filename: str, dest: Path, theme: str, locale: str,
          vw: int, vh: int, extra: dict[str, Any] | None = None) -> dict[str, Any]:
     w, h = _png_size(dest)
+    extra = dict(extra or {})
+    force_state = _force_state_for(filename, extra)
+    extra.pop("force_state", None)
     row = {
         "access": "anonymous",
         "applied_locale": locale,
@@ -241,28 +318,31 @@ def _row(filename: str, dest: Path, theme: str, locale: str,
         "bytes": dest.stat().st_size,
         "captured": True,
         "file": filename,
-        "force_state": (
-            None if filename in REST_FRAMES else f"addendum:{filename}"
-        ),
+        "force_state": force_state,
         "height": h,
         "locale": locale,
+        "reduced_motion": True,
         "sha256": _sha(dest),
         "theme": theme,
-        "viewport": "mobile" if vw <= 390 else "desktop",
+        "viewport": _viewport_name(vw),
         "viewport_height": vh,
         "viewport_width": vw,
         "width": w,
     }
-    if extra:
-        row.update(extra)
+    row.update(extra)
     return row
 
 
 def _upsert(manifest: dict[str, Any], filename: str, row: dict[str, Any]) -> None:
     states = manifest["pages"][0]["states"]
     for i, state in enumerate(states):
-        if state.get("file") == filename or state.get("force_state") == f"addendum:{filename}":
-            states[i] = {**state, **row}
+        if state.get("file") == filename:
+            states[i] = row
+            return
+        if filename == "empty-e5-dark.png" and (
+                state.get("force_state") in ("e5", "addendum:empty-e5-dark.png")
+                and not state.get("captured")):
+            states[i] = row
             return
     states.append(row)
 
@@ -412,8 +492,8 @@ def main() -> int:
             ("12-light-zh-390.png", "light", "zh", 390, 844, "#overview", "iframe", None),
             ("13-dark-en-390-end.png", "dark", "en", 390, 844, "#overview", "iframe-end", None),
             ("14-light-zh-390-end.png", "light", "zh", 390, 844, "#overview", "iframe-end", None),
-            ("15-dark-en-768.png", "dark", "en", 768, 1024, "#overview", "iframe-full", None),
-            ("16-light-en-768.png", "light", "en", 768, 1024, "#overview", "iframe-full", None),
+            ("15-dark-en-768.png", "dark", "en", 768, 1400, "#overview", "iframe-full", None),
+            ("16-light-en-768.png", "light", "en", 768, 1400, "#overview", "iframe-full", None),
             ("17-dark-en-1440-arrival.png", "dark", "en", 1440, 2200, "#rates", "arrival", None),
             ("18-light-en-1440-arrival.png", "light", "en", 1440, 2200, "#rates", "arrival", None),
             ("19-dark-en-1440-dest-hover.png", "dark", "en", 1440, 2200, "#overview", "hover", None),
@@ -422,6 +502,7 @@ def main() -> int:
             ("22-light-en-1440-heading-focus.png", "light", "en", 1440, 2200, "#overview", "focus", None),
             ("23-dark-en-1440-money-central-banks.png", "dark", "en", 1440, 2200, "#money/central_banks", "full", None),
             ("24-dark-en-1440-inflation-foot.png", "dark", "en", 1440, 2200, "#inflation", "full", None),
+            ("27-light-en-1440-growth-business.png", "light", "en", 1440, 2200, "#growth/business", "full", None),
         ]
 
         with sync_playwright() as playwright:
@@ -485,19 +566,31 @@ def main() -> int:
                         page = _open_direct(
                             context, origin + "/macro_monetary.html",
                             "#overview", theme, locale)
-                        page.wait_for_selector("#overview .mc-caption", timeout=15000)
+                        page.wait_for_selector(".mc-analyst", timeout=15000)
+                        page.wait_for_selector(".mc-panels", timeout=15000)
                         rail = page.evaluate(RAIL_JS)
                         if not rail.get("ok") or rail.get("railAlpha") != 1 or not rail.get("equal"):
                             raise RuntimeError(f"B1 rail probe failed {theme}/{locale}: {rail}")
+                        if not rail.get("noDocOverflow"):
+                            raise RuntimeError(
+                                f"I1 document overflow {theme}/{locale}: "
+                                f"scrollWidth={rail.get('scrollWidth')} "
+                                f"clientWidth={rail.get('clientWidth')}")
                         probes[f"rail_{theme}_{locale}"] = rail
                         clear = page.evaluate(CLEARANCE_JS)
                         if clear.get("lastBottom") is None or clear.get("lastBottom") <= 0:
-                            raise RuntimeError(f"M1 lastBottom missing/negative {theme}/{locale}: {clear}")
+                            raise RuntimeError(f"N-B1 lastBottom missing/negative {theme}/{locale}: {clear}")
+                        if not clear.get("maxScrollMatched"):
+                            raise RuntimeError(
+                                f"N-B1 max scroll not reached {theme}/{locale}: {clear}")
                         if not clear.get("clear"):
-                            raise RuntimeError(f"M1 not clear {theme}/{locale}: {clear}")
+                            raise RuntimeError(f"N-B1 last content under pill {theme}/{locale}: {clear}")
                         probes[f"clearance_{theme}_{locale}"] = clear
                         print(f"  probe {theme}/{locale} lastBottom={clear['lastBottom']} "
-                              f"pillTop={clear['pillTop']} clear={clear['clear']}", flush=True)
+                              f"pillTop={clear['pillTop']} pillH={clear.get('pillHeight')} "
+                              f"gap={clear.get('gap')} reserved={clear.get('reservedBandCss')} "
+                              f"maxY={clear.get('maxScroll')} reached={clear.get('scrollReached')} "
+                              f"clear={clear['clear']}", flush=True)
                     finally:
                         context.close()
 
@@ -614,8 +707,9 @@ def main() -> int:
             "captured": False,
             "file": None,
             "sha256": None,
-            "force_state": "addendum:empty-e5-dark.png",
+            "force_state": "e5",
             "fixture": None,
+            "reduced_motion": True,
             "trigger": (
                 "E5 is a client fetch-timeout of macro/fragments/<id>.html "
                 "(PENDING_TIMEOUT_MS=8000). The builder only emits a hidden "
@@ -633,22 +727,53 @@ def main() -> int:
             "viewport_width": 1440,
         })
 
-        # Distinct-frame sha check
+        # Distinct-frame sha check; drop the r4 stray row.
+        states = [
+            state for state in manifest["pages"][0]["states"]
+            if state.get("file") != "rates-curves-zh-after.png"
+            and state.get("force_state") != "addendum:rates-curves-zh-after.png"
+        ]
+        manifest["pages"][0]["states"] = states
+        stray = EVIDENCE / "rates-curves-zh-after.png"
+        if stray.exists():
+            stray.unlink()
+
         by_sha: dict[str, list[str]] = {}
-        for state in manifest["pages"][0]["states"]:
+        force_states: set[str] = set()
+        for state in states:
+            fs = state.get("force_state")
+            if fs:
+                if str(fs).startswith("addendum:"):
+                    raise RuntimeError(f"N-M2 leftover addendum force_state: {fs}")
+                force_states.add(str(fs))
+            if not state.get("reduced_motion"):
+                raise RuntimeError(
+                    f"N-M2 missing reduced_motion on {state.get('file') or fs}")
+            if state.get("viewport_width") == 768 and state.get("viewport") != "tablet":
+                raise RuntimeError(
+                    f"N-M2 768 frame must be viewport=tablet: {state.get('file')}")
             if state.get("captured") and state.get("sha256") and state.get("file"):
                 by_sha.setdefault(state["sha256"], []).append(state["file"])
         dupes = {sha: names for sha, names in by_sha.items() if len(names) > 1}
         if dupes:
             raise RuntimeError(f"duplicate evidence blobs: {dupes}")
 
+        manifest["axes"]["force_states"] = sorted(force_states)
+        manifest["axes"]["viewports"] = {
+            "desktop": [1440, 2200],
+            "tablet": [768, 1400],
+            "mobile": [390, 844],
+        }
         manifest["generated_at"] = generated_at
         manifest.setdefault("target", {})
         manifest["target"]["resolved_sha_or_none"] = head
         manifest["target"]["resolved_sha_source"] = (
             f"pre-commit HEAD of this worktree ({head}); the capture ran on "
-            "this working tree after the r3 CSS/builder edits and one "
-            "scripts/build_macro_suite_pages.py rebuild"
+            "this working tree after the r4/v5 CSS/builder edits and one "
+            "scripts/build_macro_suite_pages.py rebuild. I4 composition "
+            "change: Overview + money/policy/inflation figures that had a "
+            "same-publication prior now render current-only rows + the typed "
+            "state line (frames 01–04, 09–16, 23, 24, 27)."
         )
         MANIFEST.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
         probes["generated_at"] = generated_at

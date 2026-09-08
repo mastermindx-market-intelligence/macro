@@ -123,22 +123,38 @@
   "m5_caption_contrast": 5.7342770734687685,
   "m5_count_contrast": 5.7342770734687685,
   "clearance_dark_en": {
-    "lastBottom": 713.125,
+    "lastBottom": 636.96875,
+    "lastTop": -758.25,
+    "lastTag": "mc-dests-block",
     "pillTop": 717.859375,
-    "gap": 4.734375,
+    "pillHeight": 42.140625,
+    "pillBottom": 760,
+    "gap": 80.890625,
     "clear": true,
-    "pad": "148px",
-    "pillBg": "rgb(13, 16, 24)",
-    "lastTag": "mc-caption"
+    "scrollHeight": 3609,
+    "innerHeight": 844,
+    "maxScroll": 2765,
+    "scrollReached": 2765,
+    "maxScrollMatched": true,
+    "reservedBandCss": 207.03125,
+    "pad": "144px"
   },
   "clearance_light_zh": {
-    "lastBottom": 713.46875,
+    "lastBottom": 636.53125,
+    "lastTop": -518.515625,
+    "lastTag": "mc-dests-block",
     "pillTop": 717.859375,
-    "gap": 4.390625,
+    "pillHeight": 42.140625,
+    "pillBottom": 760,
+    "gap": 81.328125,
     "clear": true,
-    "pad": "148px",
-    "pillBg": "rgb(255, 255, 255)",
-    "lastTag": "mc-caption"
+    "scrollHeight": 3152,
+    "innerHeight": 844,
+    "maxScroll": 2308,
+    "scrollReached": 2308,
+    "maxScrollMatched": true,
+    "reservedBandCss": 207.46875,
+    "pad": "144px"
   },
   "scroll_matrix": {
     "1440_dark_en": {
@@ -300,7 +316,13 @@
     "railAlpha": 1,
     "equal": true,
     "position": "sticky",
-    "stanceText": "What this means for you:\nSome desks have not reported yet. What moved below is what we do have."
+    "stanceText": "What this means for you:\nSome desks have not reported yet. What moved below is what we do have.",
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "noDocOverflow": true,
+    "listOverflowX": "auto",
+    "listMaxWidth": "100%",
+    "listContain": "inline-size"
   },
   "rail_dark_zh": {
     "ok": true,
@@ -309,16 +331,30 @@
     "railAlpha": 1,
     "equal": true,
     "position": "sticky",
-    "stanceText": "\u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48:\n\u90e8\u5206\u5c0f\u7ec4\u4eca\u5929\u5c1a\u672a\u53d1\u5e03\u3002\u4e0b\u65b9\u7684\u53d8\u5316\u5c31\u662f\u6211\u4eec\u76ee\u524d\u638c\u63e1\u7684\u5185\u5bb9\u3002"
+    "stanceText": "\u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48:\n\u90e8\u5206\u5c0f\u7ec4\u4eca\u5929\u5c1a\u672a\u53d1\u5e03\u3002\u4e0b\u65b9\u7684\u53d8\u5316\u5c31\u662f\u6211\u4eec\u76ee\u524d\u638c\u63e1\u7684\u5185\u5bb9\u3002",
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "noDocOverflow": true,
+    "listOverflowX": "auto",
+    "listMaxWidth": "100%",
+    "listContain": "inline-size"
   },
   "clearance_dark_zh": {
-    "lastBottom": 713.46875,
+    "lastBottom": 636.53125,
+    "lastTop": -518.515625,
+    "lastTag": "mc-dests-block",
     "pillTop": 717.859375,
-    "gap": 4.390625,
+    "pillHeight": 42.140625,
+    "pillBottom": 760,
+    "gap": 81.328125,
     "clear": true,
-    "pad": "148px",
-    "pillBg": "rgb(13, 16, 24)",
-    "lastTag": "mc-caption"
+    "scrollHeight": 3157,
+    "innerHeight": 844,
+    "maxScroll": 2313,
+    "scrollReached": 2313,
+    "maxScrollMatched": true,
+    "reservedBandCss": 207.46875,
+    "pad": "144px"
   },
   "rail_light_en": {
     "ok": true,
@@ -327,16 +363,30 @@
     "railAlpha": 1,
     "equal": true,
     "position": "sticky",
-    "stanceText": "What this means for you:\nSome desks have not reported yet. What moved below is what we do have."
+    "stanceText": "What this means for you:\nSome desks have not reported yet. What moved below is what we do have.",
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "noDocOverflow": true,
+    "listOverflowX": "auto",
+    "listMaxWidth": "100%",
+    "listContain": "inline-size"
   },
   "clearance_light_en": {
-    "lastBottom": 713.625,
+    "lastBottom": 637.46875,
+    "lastTop": -757.75,
+    "lastTag": "mc-dests-block",
     "pillTop": 717.859375,
-    "gap": 4.234375,
+    "pillHeight": 42.140625,
+    "pillBottom": 760,
+    "gap": 80.390625,
     "clear": true,
-    "pad": "148px",
-    "pillBg": "rgb(255, 255, 255)",
-    "lastTag": "mc-caption"
+    "scrollHeight": 3590,
+    "innerHeight": 844,
+    "maxScroll": 2746,
+    "scrollReached": 2746,
+    "maxScrollMatched": true,
+    "reservedBandCss": 206.53125,
+    "pad": "144px"
   },
   "rail_light_zh": {
     "ok": true,
@@ -345,7 +395,13 @@
     "railAlpha": 1,
     "equal": true,
     "position": "sticky",
-    "stanceText": "\u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48:\n\u90e8\u5206\u5c0f\u7ec4\u4eca\u5929\u5c1a\u672a\u53d1\u5e03\u3002\u4e0b\u65b9\u7684\u53d8\u5316\u5c31\u662f\u6211\u4eec\u76ee\u524d\u638c\u63e1\u7684\u5185\u5bb9\u3002"
+    "stanceText": "\u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48:\n\u90e8\u5206\u5c0f\u7ec4\u4eca\u5929\u5c1a\u672a\u53d1\u5e03\u3002\u4e0b\u65b9\u7684\u53d8\u5316\u5c31\u662f\u6211\u4eec\u76ee\u524d\u638c\u63e1\u7684\u5185\u5bb9\u3002",
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "noDocOverflow": true,
+    "listOverflowX": "auto",
+    "listMaxWidth": "100%",
+    "listContain": "inline-size"
   },
   "rail_768_dark_en": {
     "ok": true,
@@ -354,7 +410,13 @@
     "railAlpha": 1,
     "equal": true,
     "position": "sticky",
-    "stanceText": "What this means for you:\nSome desks have not reported yet. What moved below is what we do have."
+    "stanceText": "What this means for you:\nSome desks have not reported yet. What moved below is what we do have.",
+    "scrollWidth": 768,
+    "clientWidth": 768,
+    "noDocOverflow": true,
+    "listOverflowX": "auto",
+    "listMaxWidth": "100%",
+    "listContain": "inline-size"
   },
   "rail_768_light_en": {
     "ok": true,
@@ -363,8 +425,14 @@
     "railAlpha": 1,
     "equal": true,
     "position": "sticky",
-    "stanceText": "What this means for you:\nSome desks have not reported yet. What moved below is what we do have."
+    "stanceText": "What this means for you:\nSome desks have not reported yet. What moved below is what we do have.",
+    "scrollWidth": 768,
+    "clientWidth": 768,
+    "noDocOverflow": true,
+    "listOverflowX": "auto",
+    "listMaxWidth": "100%",
+    "listContain": "inline-size"
   },
-  "generated_at": "2026-09-08T06:49:09Z",
-  "resolved_sha_or_none": "9e562f63f670f9c0dd6dffd817dca05dcb036e55"
+  "generated_at": "2026-09-08T07:30:20Z",
+  "resolved_sha_or_none": "feb5f2ea8c1f6ef15d1adcfd6ebcf90b5e49c2d8"
 }

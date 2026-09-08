@@ -260,6 +260,35 @@ def _axis_view(axis: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
+def _parse_iso_date(value: Any):
+    """Parse an ISO date (or longer timestamp) to ``datetime.date``, or None."""
+    raw = L.date_or_none(value)
+    if not raw or len(str(raw)) < 10:
+        return None
+    from datetime import date as _date  # noqa: PLC0415 — local, like labels
+    try:
+        return _date.fromisoformat(str(raw)[:10])
+    except ValueError:
+        return None
+
+
+def prior_publication_is_earlier(prior_effective_date: Any,
+                                 headline_effective_date: Any) -> bool:
+    """True only when the prior date parses and is strictly earlier than now.
+
+    Missing, unparseable, or equal dates are False. Any exception is False
+    (fail-closed: never treat a same-publication prior as movement).
+    """
+    try:
+        prior = _parse_iso_date(prior_effective_date)
+        current = _parse_iso_date(headline_effective_date)
+        if prior is None or current is None:
+            return False
+        return prior < current
+    except Exception:
+        return False
+
+
 def _sign(value: Any) -> str | None:
     # None, never "flat". An absent value that renders as no-change is the whole
     # defect: the reader cannot tell "we measured, nothing moved" from "we have
@@ -409,6 +438,11 @@ def _quadrant_map(headline: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]
 def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
     changes = snapshot.get("changes") or {}
     comparability = changes.get("comparability")
+    headline_date = (snapshot.get("headline") or {}).get("effective_date")
+    prior_date = changes.get("prior_effective_date")
+    # I4: a same-publication prior (previous BUILD of this print) is not
+    # movement. Fail-closed — missing/unparseable/equal → not earlier.
+    prior_is_earlier = prior_publication_is_earlier(prior_date, headline_date)
     deltas = []
     for delta in changes.get("deltas") or []:
         prior_raw, current_raw = delta.get("prior_value"), delta.get("current_value")
@@ -421,6 +455,7 @@ def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         current_present = _finite(current_raw)
         delta_present = _finite(delta_raw)
         comparable_row = prior_present and current_present and delta_present
+        is_movement = bool(prior_is_earlier and comparable_row)
         deltas.append({
             "metric_id": delta.get("metric_id"),
             "label": L.label("metric", delta.get("metric_id")),
@@ -431,6 +466,7 @@ def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
             "current_present": current_present,
             "delta_present": delta_present,
             "comparable": comparable_row,
+            "is_movement": is_movement,
             # A real zero keeps its "0" and its flat class; an absent value gets
             # neither a number nor a class that reads as success.
             "prior": L.fmt_number(prior_raw) if prior_present else None,
@@ -445,6 +481,7 @@ def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         "comparability": comparability,
         "comparability_label": L.label("comparability", comparability),
         "comparable": comparable,
+        "prior_is_earlier": prior_is_earlier,
         "deltas": deltas,
         "prior_generation_id": changes.get("prior_generation_id"),
         "prior_effective_date": L.date_or_none(changes.get("prior_effective_date")),
@@ -1187,16 +1224,17 @@ def build_hub_view(entries: Sequence[Mapping[str, Any]], *,
 
         # Changes are pooled in registry order and truncated in registry order.
         # No magnitude comparison decides what a reader sees first.
+        as_of_month = L.month_display_pair(str(headline.get("effective_date") or ""))
         for delta in changes.get("deltas") or []:
-            # A row the producer published with no prior, no current and no delta
-            # is not a change — it is a metric that could not be compared. Putting
-            # it here would spend one of the few slots saying nothing, and would
-            # print a bare em dash where the reader expects a move. The workspace's
-            # own what-changed table still carries the row and its typed reason.
-            # The typed flag, not the formatted strings: an em dash is truthy
-            # and a formatted "0" is not, so the string test both admitted
-            # unavailable rows and dropped real no-change ones.
-            if not delta.get("comparable"):
+            # I4: a same-publication prior is not a movement row. Keep the
+            # current reading when it is present so the hub still shows a
+            # number; never emit sign=flat / delta 0 from that prior.
+            is_movement = bool(changes.get("prior_is_earlier") and delta.get("comparable"))
+            if is_movement:
+                pass
+            elif delta.get("current_present"):
+                pass
+            else:
                 continue
             metric_id = str(delta.get("metric_id") or "")
             if metric_id not in L.METRIC:
@@ -1210,10 +1248,12 @@ def build_hub_view(entries: Sequence[Mapping[str, Any]], *,
                 "href": entry["output"],
                 "metric_id": metric_id,
                 "label": dict(L.METRIC[metric_id]),
-                "prior": delta.get("prior"),
+                "kind": "movement" if is_movement else "current",
+                "prior": delta.get("prior") if is_movement else None,
                 "current": delta.get("current"),
-                "delta": delta.get("delta"),
-                "sign": delta.get("sign"),
+                "delta": delta.get("delta") if is_movement else None,
+                "sign": delta.get("sign") if is_movement else None,
+                "as_of_month": dict(as_of_month) if (not is_movement and as_of_month) else None,
             })
 
         reason = _hub_attention_reason(context, changes)

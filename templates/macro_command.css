@@ -111,6 +111,7 @@ html[data-theme="light"] {
   min-height: calc(100vh - 84px);
 }
 .mc-content { max-width: var(--mc-content-max); min-width: 0; }
+.mc-panels { min-width: 0; }
 .mc-skip { position: absolute; left: -9999px; }
 .mc-skip:focus { position: static; display: inline-block; margin: 8px 0; }
 
@@ -425,6 +426,15 @@ html[data-theme="light"] .mc-figure {
 .mc-figure-offer { margin: 0; font-size: 13.5px; line-height: 1.5; }
 .mc-figure-offer a { color: var(--mq-accent); }
 .mc-figure-tabbody + .mc-figure-tabbody { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--mq-line); }
+/* M2: light already fences the figure with top/bottom rules. The sibling
+   hairline doubles that fence on a deep-linked second tab (the first body
+   stays in the tree, so `+` still matches). */
+html[data-theme="light"] .mc-figure .mc-figure-tabbody + .mc-figure-tabbody {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+.mc-figure-tabbody[hidden] { display: none; }
 .mc-caption { margin: 10px 0 18px; font-size: 13px; line-height: 1.55; color: var(--mq-muted); max-width: 62ch; }
 
 /* ── movement rows: the page's ONE data device (P3) ───────────────────────────
@@ -464,6 +474,8 @@ a.mc-move-name:hover { color: var(--mq-accent); text-decoration: underline; }
 .mc-move-current { color: var(--mq-ink); font-weight: 700; font-size: 14px; }
 .mc-move-delta { min-width: 5ch; text-align: right; }
 .mc-move-count { margin: 10px 0 0; font-size: 11.5px; line-height: 1.5; color: var(--mq-muted); }
+.mc-move-state { margin: 0 0 10px; font-size: 12.5px; line-height: 1.5; color: var(--mq-muted); }
+.mc-move-asof { font-size: 11.5px; color: var(--mq-muted); font-variant-numeric: normal; }
 html[data-lang="zh"] .mc-move-name { letter-spacing: 0; }
 
 /* ── deep-link arrival line (P3 D12) ──────────────────────────────────────────
@@ -569,6 +581,9 @@ html[data-theme="light"] .mc-dest:focus-visible { background: var(--panel); }
 
 .mc-watch { margin: 0 0 14px; }
 .mc-watch-title { margin: 0 0 6px; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--mq-muted); }
+/* M3: when caption is dropped, the figure sits next to watching. Apply
+   the caption's former trailing margin so the gap does not collapse. */
+.mc-figure + .mc-watch .mc-watch-title { margin-top: 18px; }
 .mc-watch-list { margin: 0; padding-left: 18px; display: grid; gap: 5px; font-size: 14px; line-height: 1.5; color: var(--mq-ink); max-width: 62ch; }
 
 .mc-details > summary { cursor: pointer; font-size: 12.5px; color: var(--mq-muted); }
@@ -612,9 +627,7 @@ html[data-theme="light"] .mc-empty {
   .mc-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 768px) {
-  /* m4: the pill is fixed at bottom:84px and is ~40px tall, so it occupies the
-     bottom 124px of the viewport. 140px of tail padding keeps the last
-     destination card's bottom edge >=16px clear of it at full scroll.
+  /* N-B1: the reserved band lives on `.mc-panels`, not on the shell.
      M4: `min-height: calc(100vh - 84px)` + two auto rows stretched the
      rail track (~260 device-px void between the search bar and the
      eyebrow). Kill the viewport min-height, pack rows, and hoist the
@@ -630,7 +643,7 @@ html[data-theme="light"] .mc-empty {
        (M4 ≤ 24). `.mc-command`/`.mc-panel` are grid items under
        `display: contents` so they need `min-width: 0` or the Read strip's
        min-content widens `documentElement.scrollWidth` at 390 (P-19). */
-    padding: 8px 18px 140px;
+    padding: 8px 18px 8px;
     /* B1: one flat material with the sticky rail. The page body still
        paints radial washes over --bg; at ≤768 the shell canvas is the
        same opaque --bg as the rail so nothing reads through the chips. */
@@ -638,10 +651,24 @@ html[data-theme="light"] .mc-empty {
     background-image: none;
   }
   .mc-content { display: contents; }
-  .mc-command, .mc-panel, .mc-rail { min-width: 0; }
-  .mc-command { order: 1; }
+  .mc-command, .mc-panels, .mc-rail { min-width: 0; }
+  .mc-command { order: 1; overflow-x: clip; }
+  /* I1: chip-help is position:absolute and 230px wide. On a 2-col
+     strip at 390 the right-hand cell's help box sat at x=430 and
+     widened documentElement.scrollWidth. Keep it inside the chip. */
+  .mc-chip-help {
+    left: auto; right: 0; width: auto;
+    max-width: min(230px, calc(100vw - 32px));
+  }
   .mc-rail { order: 2; }
-  .mc-panel { order: 3; }
+  /* N-B1: one reserved band on the panel column so the last content can
+     scroll fully above the fixed ask pill. 84px is the existing
+     `.mc-analyst { bottom: 84px }` FAB offset; 44px is the measured pill
+     height; 16px is the gap. I2's duplicate rule is this one. */
+  .mc-panels {
+    order: 3;
+    padding-bottom: calc(84px + 44px + 16px + env(safe-area-inset-bottom, 0px));
+  }
   .mc-rail {
     position: sticky; top: 60px; z-index: 4;
     flex-direction: row; align-items: center; gap: 8px;
@@ -653,7 +680,13 @@ html[data-theme="light"] .mc-empty {
     background: var(--bg); border-bottom: 1px solid var(--mq-line);
   }
   .mc-rail-label { display: none; }
-  .mc-rail-list { flex-direction: row; overflow-x: auto; scrollbar-width: none; gap: 6px; }
+  /* I1: the chip row scrolls INSIDE the rail box. Without min-width:0 /
+     contain the nowrap labels expand documentElement.scrollWidth at 390. */
+  .mc-rail-list {
+    flex: 1 1 auto; min-width: 0; max-width: 100%;
+    flex-direction: row; overflow-x: auto; scrollbar-width: none; gap: 6px;
+    contain: inline-size;
+  }
   .mc-rail-list::-webkit-scrollbar { display: none; }
   /* the rail scrolls; without an affordance the fourth label just looked
      clipped ("利率与收:"). A mask is alpha-only, so it is theme-neutral. */
@@ -692,19 +725,11 @@ html[data-theme="light"] .mc-empty {
   .mc-title { font-size: 24px; line-height: 1.2; }
   .mc-panel-title { font-size: 17px; }
   .mc-panel { padding: 16px; border-radius: 12px; }
-  /* M1: pill is ~40px at bottom:84px (occupies the last ~124px). The
-     whole Overview panel body — fifth movement row, count line, and
-     caption — must sit above it. 148px clears the pill with a real gap. */
-  .mc-panel { padding-bottom: 148px; }
   .mc-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 24px; }
   .mc-chip-top { flex-direction: column; align-items: flex-start; gap: 1px; }
   .mc-chip-value { font-size: 14px; }
   .mc-figure { padding: 8px 8px 8px; margin: 0 -8px; }
   .mc-move-count { margin-bottom: 12px; }
-  /* Overview: keep the count line and caption above the pill when the
-     fifth row is in view. Other sections already have watching/details
-     below their caption. */
-  #overview .mc-caption { margin-bottom: 148px; }
   /* .mx-chg-row already wraps at 640px (theme.css:1978-1981); the numeric group
      then needs its own line, right-aligned, never orphaned mid-row. */
   .mc-move-name { flex-basis: 100%; }

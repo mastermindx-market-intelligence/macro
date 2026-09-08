@@ -263,16 +263,55 @@ def test_le768_rail_is_opaque_flat_bg_like_the_shell(macro_command_css: str) -> 
         body, re.S)
 
 
-def test_le480_panel_padding_clears_the_ask_pill(macro_command_css: str) -> None:
-    """M1: ≤480 panel tail padding is 148px so the whole Overview body
-    (fifth row, count, caption) can sit above the fixed pill."""
-    block = re.search(r'@media \(max-width: 480px\) \{(.*?)(?=\n@media|\Z)',
+def test_le768_panel_column_reserves_the_ask_pill_band(
+        macro_command_css: str) -> None:
+    """N-B1: one reserved band on the panel column at ≤768; the ≤480
+    148px mid-panel hacks are gone."""
+    block = re.search(r'@media \(max-width: 768px\) \{(.*?)(?=\n@media|\Z)',
                       macro_command_css, re.S)
     assert block
-    body = block.group(1)
-    assert re.search(r'\.mc-panel\s*\{[^}]*padding-bottom:\s*148px', body, re.S)
-    assert re.search(r'#overview\s+\.mc-caption\s*\{[^}]*margin-bottom:\s*148px',
-                     body, re.S)
+    body = _strip_css_comments(block.group(1))
+    assert re.search(
+        r'\.mc-panels\s*\{[^}]*padding-bottom:\s*calc\(84px \+ 44px \+ 16px \+ env\(safe-area-inset-bottom, 0px\)\)',
+        body, re.S)
+    le480 = re.search(r'@media \(max-width: 480px\) \{(.*?)(?=\n@media|\Z)',
+                      macro_command_css, re.S)
+    assert le480
+    small = le480.group(1)
+    assert "padding-bottom: 148px" not in small
+    assert "#overview .mc-caption" not in small
+
+
+def test_i1_rail_list_scrolls_inside_its_own_box(macro_command_css: str) -> None:
+    block = re.search(r'@media \(max-width: 768px\) \{(.*?)(?=\n@media|\Z)',
+                      macro_command_css, re.S)
+    assert block
+    body = _strip_css_comments(block.group(1))
+    rule = re.search(r'\.mc-rail-list\s*\{([^}]+)\}', body)
+    assert rule, "missing ≤768 .mc-rail-list"
+    text = rule.group(1)
+    assert "overflow-x: auto" in text
+    assert "max-width: 100%" in text
+    assert "contain: inline-size" in text
+
+
+def test_m3_captionless_figure_keeps_the_watch_gap(macro_command_css: str) -> None:
+    """M3: when caption is dropped, the watch title still gets the 18px gap."""
+    assert re.search(
+        r'\.mc-figure \+ \.mc-watch \.mc-watch-title\s*\{[^}]*margin-top:\s*18px',
+        macro_command_css)
+    assert re.search(r'\.mc-caption\s*\{[^}]*margin:[^}]*18px',
+                     macro_command_css)
+
+
+def test_m2_light_deep_link_does_not_double_the_figure_hairline(
+        macro_command_css: str) -> None:
+    """M2: light suppresses the sibling tab-body top hairline."""
+    assert re.search(
+        r'html\[data-theme="light"\] \.mc-figure \.mc-figure-tabbody \+ \.mc-figure-tabbody\s*\{[^}]*border-top:\s*0',
+        macro_command_css, re.S)
+    assert ".mc-figure-tabbody[hidden] { display: none; }" in _strip_css_comments(
+        macro_command_css)
 
 
 def test_stance_wash_is_a_percentage_in_both_themes(macro_command_css: str) -> None:

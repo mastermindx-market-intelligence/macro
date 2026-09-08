@@ -674,23 +674,46 @@ def _require_metric(metric_id: str) -> None:
 
 def _move_rows_from_deltas(deltas: Sequence[Mapping[str, Any]], *,
                            href: str | None, show_source: Mapping[str, str] | None,
+                           prior_is_earlier: bool = True,
+                           as_of_month: Mapping[str, str] | None = None,
                            ) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for delta in deltas:
-        if not (delta.get("prior_present") or delta.get("current_present")
-                or delta.get("delta_present")):
-            continue
         metric_id = str(delta.get("metric_id") or "")
         _require_metric(metric_id)
-        sign = delta.get("sign") if delta.get("delta_present") else "unavailable"
+        is_movement = bool(
+            prior_is_earlier
+            and (delta.get("is_movement") if "is_movement" in delta
+                 else (delta.get("prior_present") and delta.get("current_present")
+                       and delta.get("delta_present")))
+        )
+        if is_movement:
+            sign = delta.get("sign") if delta.get("delta_present") else "unavailable"
+            rows.append({
+                "kind": "movement",
+                "name": dict(delta["label"]) if delta.get("label") else dict(L.METRIC[metric_id]),
+                "source": dict(show_source) if show_source else None,
+                "href": href,
+                "prior": delta.get("prior") if delta.get("prior_present") else L.EM_DASH,
+                "current": delta.get("current") if delta.get("current_present") else L.EM_DASH,
+                "delta": delta.get("delta") if delta.get("delta_present") else L.EM_DASH,
+                "sign": sign or "unavailable",
+                "as_of_month": None,
+                "metric_id": metric_id,
+            })
+            continue
+        if not delta.get("current_present"):
+            continue
         rows.append({
+            "kind": "current",
             "name": dict(delta["label"]) if delta.get("label") else dict(L.METRIC[metric_id]),
             "source": dict(show_source) if show_source else None,
             "href": href,
-            "prior": delta.get("prior") if delta.get("prior_present") else L.EM_DASH,
-            "current": delta.get("current") if delta.get("current_present") else L.EM_DASH,
-            "delta": delta.get("delta") if delta.get("delta_present") else L.EM_DASH,
-            "sign": sign or "unavailable",
+            "prior": None,
+            "current": delta.get("current"),
+            "delta": None,
+            "sign": None,
+            "as_of_month": dict(as_of_month) if as_of_month else None,
             "metric_id": metric_id,
         })
     return rows
@@ -698,17 +721,22 @@ def _move_rows_from_deltas(deltas: Sequence[Mapping[str, Any]], *,
 
 def _figure_block(rows: Sequence[Mapping[str, Any]], *, overview: bool,
                   shown: int, total: int) -> dict[str, Any]:
-    if overview:
-        count = {
-            "en": L.COUNT["overview"]["en"].format(shown=shown, total=total),
-            "zh": L.COUNT["overview"]["zh"].format(shown=shown, total=total),
-        }
-    else:
-        count = {
-            "en": L.COUNT["section"]["en"].format(n=len(rows)),
-            "zh": L.COUNT["section"]["zh"].format(n=len(rows)),
-        }
-    return {"rows": list(rows), "count_text": count}
+    any_current = any(row.get("kind") == "current" for row in rows)
+    all_movement = bool(rows) and all(row.get("kind") != "current" for row in rows)
+    count = None
+    if all_movement:
+        if overview:
+            count = {
+                "en": L.COUNT["overview"]["en"].format(shown=shown, total=total),
+                "zh": L.COUNT["overview"]["zh"].format(shown=shown, total=total),
+            }
+        else:
+            count = {
+                "en": L.COUNT["section"]["en"].format(n=len(rows)),
+                "zh": L.COUNT["section"]["zh"].format(n=len(rows)),
+            }
+    state_line = dict(L.COUNT["same_publication"]) if any_current else None
+    return {"rows": list(rows), "count_text": count, "state_line": state_line}
 
 
 def _state_key(snapshot: Mapping[str, Any] | None) -> str:
@@ -824,15 +852,29 @@ def _figure_or_empty_for_workspace(snapshot: Mapping[str, Any] | None, *,
     changes = (view or {}).get("changes") or {}
     deltas = list(changes.get("deltas") or [])
     has_date = bool(headline.get("effective_date"))
-    comparable_rows = _move_rows_from_deltas(deltas, href=href, show_source=None)
     raw = (snapshot or {}).get("headline") or {}
     not_applicable = raw.get("null_reason") == "NOT_APPLICABLE"
-    if not has_date and not comparable_rows and not not_applicable:
+    try:
+        if "prior_is_earlier" in changes:
+            prior_is_earlier = bool(changes.get("prior_is_earlier"))
+        else:
+            prior_is_earlier = macro_suite_view.prior_publication_is_earlier(
+                changes.get("prior_effective_date"),
+                headline.get("effective_date") or raw.get("effective_date"),
+            )
+    except Exception:
+        prior_is_earlier = False
+    as_of = headline.get("effective_date") or raw.get("effective_date")
+    as_of_month = L.month_display_pair(str(as_of)) if as_of else None
+    rows = _move_rows_from_deltas(
+        deltas, href=href, show_source=None,
+        prior_is_earlier=prior_is_earlier, as_of_month=as_of_month)
+    if not has_date and not rows and not not_applicable:
         return None, _empty_state("e1")
-    if not changes.get("comparable") or not comparable_rows:
+    if not rows:
         return None, _empty_state("e3")
-    return _figure_block(comparable_rows, overview=False,
-                         shown=len(comparable_rows), total=len(comparable_rows)), None
+    return _figure_block(rows, overview=False,
+                         shown=len(rows), total=len(rows)), None
 
 
 def _boundary_watching(section_id: str, snapshot: Mapping[str, Any] | None,
@@ -881,16 +923,21 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
     rail_index = {workspace_id: index for index, workspace_id in enumerate(rail_ids)}
     shown = list(hub["changes"]["entries"])
     shown.sort(key=lambda row: rail_index.get(row.get("workspace_id"), 999))
-    overview_rows = [{
-        "name": dict(row["label"]) if row.get("label") else {"en": "", "zh": ""},
-        "source": dict(row["workspace_title"]) if row.get("workspace_title") else None,
-        "href": row.get("href"),
-        "prior": row.get("prior") or L.EM_DASH,
-        "current": row.get("current") or L.EM_DASH,
-        "delta": row.get("delta") or L.EM_DASH,
-        "sign": row.get("sign") or "unavailable",
-        "metric_id": row.get("metric_id"),
-    } for row in shown]
+    overview_rows = []
+    for row in shown:
+        kind = row.get("kind") or "movement"
+        overview_rows.append({
+            "kind": kind,
+            "name": dict(row["label"]) if row.get("label") else {"en": "", "zh": ""},
+            "source": dict(row["workspace_title"]) if row.get("workspace_title") else None,
+            "href": row.get("href"),
+            "prior": (row.get("prior") or L.EM_DASH) if kind == "movement" else None,
+            "current": row.get("current") or L.EM_DASH,
+            "delta": (row.get("delta") or L.EM_DASH) if kind == "movement" else None,
+            "sign": (row.get("sign") or "unavailable") if kind == "movement" else None,
+            "as_of_month": dict(row["as_of_month"]) if row.get("as_of_month") else None,
+            "metric_id": row.get("metric_id"),
+        })
 
     sections: list[dict[str, Any]] = []
     for section in SECTIONS:
@@ -1019,6 +1066,14 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
             slot_empty = empty or next(
                 (tab.get("empty") for tab in subtabs if tab.get("empty")), None)
         if has_copy and slot_empty:
+            caption = None
+        # I4: current-only rows already carry the typed state line. The
+        # "before and after / last two readings" caption would be a lie.
+        figure_rows = list((figure or {}).get("rows") or [])
+        if subtabs:
+            for tab in subtabs:
+                figure_rows.extend((tab.get("figure") or {}).get("rows") or [])
+        if has_copy and any(row.get("kind") == "current" for row in figure_rows):
             caption = None
         if has_copy and empty:
             voiced = _apply_empty_voice(empty)

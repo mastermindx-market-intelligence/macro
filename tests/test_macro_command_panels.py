@@ -102,7 +102,7 @@ def test_overview_has_one_figure_of_five_rows_outside_the_directory(
                        overview, re.S)
     assert figure, "Overview figure missing"
     assert 'class="mc-move"' in figure.group(0)
-    rows = re.findall(r'class="mx-chg-row mc-move-row"', figure.group(0))
+    rows = re.findall(r'class="mx-chg-row mc-move-row', figure.group(0))
     assert len(rows) == 5
     dests = re.search(r'<ul class="mc-dests">', overview)
     assert dests
@@ -113,10 +113,22 @@ def test_overview_has_one_figure_of_five_rows_outside_the_directory(
 def test_overview_dom_order_and_no_details_or_arrival(built: tuple[str, Path]) -> None:
     html, _ = built
     order = _child_classes(_panel(html, "overview"))
-    assert order == [
+    # I4: same-publication prior drops the comparison caption; the typed
+    # state line lives inside the figure, not as a sibling caption.
+    expected = [
         "mc-panel-head", "mc-stance", "mc-primer", "mc-figure",
-        "mc-caption", "mc-watch", "mc-dests-block",
+        "mc-watch", "mc-dests-block",
     ]
+    if "mc-caption" in order:
+        expected = [
+            "mc-panel-head", "mc-stance", "mc-primer", "mc-figure",
+            "mc-caption", "mc-watch", "mc-dests-block",
+        ]
+    assert order == expected
+    overview = unescape(_panel(html, "overview"))
+    if "Only one reading is published so far" in overview:
+        assert "mc-caption" not in order
+        assert "compared against the previous publication" not in overview
 
 
 def test_p3_non_overview_dom_order(built: tuple[str, Path]) -> None:
@@ -132,8 +144,13 @@ def test_p3_non_overview_dom_order(built: tuple[str, Path]) -> None:
         # M2: a section-level empty (live #rates is E2) drops the caption.
         # The hidden E5 <template> also carries data-mc-empty — ignore it.
         text = unescape(panel)
-        if "Today's number didn't arrive" in text:
-            assert "mc-caption" not in order
+        # Caption is a comparison claim. E2 (section empty) and I4
+        # (same-publication current-only, often only in the fragment)
+        # must not keep it.
+        if ("Today's number didn't arrive" in text
+                or "Only one reading is published so far" in text
+                or "Each row shows the last two readings" not in text):
+            assert "mc-caption" not in order, (section_id, order)
         else:
             assert "mc-caption" in order, (section_id, order)
         assert "mc-watch" in order
@@ -568,7 +585,7 @@ def test_empty_state_evidence_names_fixture_and_trigger() -> None:
             assert b"IEND" in data, name
             assert len(data) > 20000, (name, len(data))
     e5 = next(s for s in manifest["pages"][0]["states"]
-              if s.get("force_state") == "addendum:empty-e5-dark.png")
+              if s.get("force_state") == "e5")
     assert e5["captured"] is False
     assert "not builder-triggerable" in e5["reason"]
 
@@ -651,7 +668,12 @@ def test_production_path_ignores_contract_forbidden_fixture_keys() -> None:
     inflation = next(s for s in sections if s["id"] == "inflation")
     assert inflation["empty"] is None
     assert inflation["figure"] is not None
-    assert inflation["caption"] is not None
+    figure_rows = list((inflation["figure"] or {}).get("rows") or [])
+    if any(row.get("kind") == "current" for row in figure_rows):
+        assert inflation["caption"] is None
+        assert inflation["figure"].get("state_line")
+    else:
+        assert inflation["caption"] is not None
 
 
 def test_empty_state_fixture_flag_enables_e4_and_e6(tmp_path: Path) -> None:
@@ -690,7 +712,9 @@ def test_one_null_voice_for_every_section_level_empty() -> None:
 
 
 def test_p3_clearance_probes_are_real_geometry() -> None:
-    """M1: four 390 measurements; a negative/absent lastBottom is a failure."""
+    """N-B1: four 390 max-scroll measurements. The file records the numbers;
+    this test does not move the page. lastBottom <= pillTop, and the scroll
+    actually reached equals scrollHeight - innerHeight."""
     probes = json.loads(
         (ROOT / "mockups" / "evidence" / "macro-command-p3" / "probes.json")
         .read_text(encoding="utf-8"))
@@ -700,8 +724,13 @@ def test_p3_clearance_probes_are_real_geometry() -> None:
         assert row.get("lastBottom") is not None, key
         assert row["lastBottom"] > 0, (key, row)
         assert row.get("pillTop") is not None and row["pillTop"] > 0, (key, row)
+        assert row.get("pillHeight") is not None and row["pillHeight"] > 0, (key, row)
         assert row.get("clear") is True, (key, row)
         assert row["lastBottom"] <= row["pillTop"], (key, row)
+        max_scroll = row["scrollHeight"] - row["innerHeight"]
+        assert abs(row["maxScroll"] - max_scroll) < 2, (key, row)
+        assert abs(row["scrollReached"] - row["maxScroll"]) < 2, (key, row)
+        assert row.get("maxScrollMatched") is True, (key, row)
 
 
 def test_p3_evidence_frames_are_not_byte_duplicates() -> None:
@@ -730,3 +759,188 @@ def test_e2_evidence_names_fixture_and_trigger() -> None:
         assert (ROOT / row["fixture"]).is_file()
         assert row.get("trigger")
         assert "SOURCE_FAILED" in row["trigger"] or "STALE_SOURCE" in row["trigger"]
+
+
+def _i4_delta(metric_id: str, *, current: str = "2.0",
+              prior: str | None = "1.0", delta: str | None = "+1.0",
+              sign: str | None = "up", comparable: bool = True) -> dict:
+    return {
+        "metric_id": metric_id,
+        "label": dict(L.METRIC[metric_id]),
+        "prior_present": comparable and prior is not None,
+        "current_present": True,
+        "delta_present": comparable and delta is not None,
+        "prior": prior if comparable else None,
+        "current": current,
+        "delta": delta if comparable else None,
+        "sign": sign if comparable else None,
+        "is_movement": comparable,
+    }
+
+
+def _i4_view(*, prior_date: str | None, headline_date: str,
+             deltas: list[dict], prior_is_earlier: bool | None = None) -> dict:
+    changes: dict = {
+        "prior_effective_date": prior_date,
+        "deltas": deltas,
+    }
+    if prior_is_earlier is not None:
+        changes["prior_is_earlier"] = prior_is_earlier
+    return {
+        "headline": {"effective_date": headline_date},
+        "changes": changes,
+    }
+
+
+def test_i4_earlier_prior_is_a_movement_row() -> None:
+    """I4 (a): a strictly earlier prior_effective_date is a movement row."""
+    assert macro_suite_view.prior_publication_is_earlier(
+        "2026-07-01", "2026-08-01") is True
+    view = _i4_view(
+        prior_date="2026-07-01", headline_date="2026-08-01",
+        deltas=[_i4_delta("funding_pressure")],
+        prior_is_earlier=True)
+    figure, empty = builder._figure_or_empty_for_workspace(
+        {"headline": {"effective_date": "2026-08-01"}},
+        view=view, href="x.html")
+    assert empty is None
+    assert figure is not None
+    assert figure["state_line"] is None
+    assert "compared against the previous publication" in figure["count_text"]["en"]
+    assert len(figure["rows"]) == 1
+    row = figure["rows"][0]
+    assert row["kind"] == "movement"
+    assert row["prior"] == "1.0"
+    assert row["delta"] == "+1.0"
+    assert row["sign"] == "up"
+
+
+def test_i4_same_publication_is_current_only() -> None:
+    """I4 (b): equal dates → current reading + one typed state line; no count."""
+    assert macro_suite_view.prior_publication_is_earlier(
+        "2026-08-01", "2026-08-01") is False
+    view = _i4_view(
+        prior_date="2026-08-01", headline_date="2026-08-01",
+        deltas=[_i4_delta("funding_pressure", delta="0", sign="flat")],
+        prior_is_earlier=False)
+    figure, empty = builder._figure_or_empty_for_workspace(
+        {"headline": {"effective_date": "2026-08-01"}},
+        view=view, href="x.html")
+    assert empty is None
+    assert figure is not None
+    assert figure["count_text"] is None
+    assert figure["state_line"] == dict(L.COUNT["same_publication"])
+    assert figure["state_line"]["en"] == (
+        "Only one reading is published so far — nothing earlier to compare yet.")
+    assert figure["state_line"]["zh"] == "目前只有一次读数——暂无更早读数可比。"
+    row = figure["rows"][0]
+    assert row["kind"] == "current"
+    assert row["current"] == "2.0"
+    assert row["prior"] is None
+    assert row["delta"] is None
+    assert row["sign"] is None
+    assert row["as_of_month"] == {"en": "Aug 2026", "zh": "2026年8月"}
+
+
+def test_i4_mixed_rows_keep_both_kinds_and_one_state_line() -> None:
+    """I4 (c): genuine earlier prior + a current-only sibling; state line once."""
+    view = _i4_view(
+        prior_date="2026-07-01", headline_date="2026-08-01",
+        deltas=[
+            _i4_delta("funding_pressure"),
+            _i4_delta("nfci", prior=None, delta=None, sign=None, comparable=False),
+        ],
+        prior_is_earlier=True)
+    figure, empty = builder._figure_or_empty_for_workspace(
+        {"headline": {"effective_date": "2026-08-01"}},
+        view=view, href="x.html")
+    assert empty is None
+    assert figure is not None
+    kinds = [row["kind"] for row in figure["rows"]]
+    assert kinds == ["movement", "current"]
+    assert figure["count_text"] is None
+    assert figure["state_line"] == dict(L.COUNT["same_publication"])
+    assert figure["rows"][0]["delta"] == "+1.0"
+    assert figure["rows"][1]["delta"] is None
+    assert figure["rows"][1]["sign"] is None
+
+
+def test_i4_unparseable_or_exploding_compare_is_current_only(
+        monkeypatch) -> None:
+    """I4 (e): missing / unparseable / exception → current-only, never movement."""
+    assert macro_suite_view.prior_publication_is_earlier(
+        "not-a-date", "2026-08-01") is False
+    assert macro_suite_view.prior_publication_is_earlier(
+        None, "2026-08-01") is False
+
+    def _boom(*_a, **_k):
+        raise RuntimeError("date compare exploded")
+
+    monkeypatch.setattr(
+        macro_suite_view, "prior_publication_is_earlier", _boom)
+    view = _i4_view(
+        prior_date="2026-07-01", headline_date="2026-08-01",
+        deltas=[_i4_delta("funding_pressure", delta="0", sign="flat")])
+    # no prior_is_earlier key → the builder must call the comparer
+    figure, empty = builder._figure_or_empty_for_workspace(
+        {"headline": {"effective_date": "2026-08-01"}},
+        view=view, href="x.html")
+    assert empty is None
+    assert figure is not None
+    assert figure["rows"][0]["kind"] == "current"
+    assert figure["rows"][0]["sign"] is None
+    assert figure["rows"][0]["delta"] is None
+    assert figure["state_line"] == dict(L.COUNT["same_publication"])
+
+
+def test_i4_live_hub_does_not_claim_a_comparison_it_did_not_make(
+        built: tuple[str, Path]) -> None:
+    html, _ = built
+    overview = unescape(_panel(html, "overview"))
+    assert "Only one reading is published so far" in overview
+    assert overview.count("Only one reading is published so far") == 1
+    assert "compared against the previous publication" not in overview
+    assert "mq-delta-flat" not in overview
+
+
+def test_i3_arrival_punctuation_lives_inside_the_t_pair() -> None:
+    src = (ROOT / "templates" / "macro_monetary.html.j2").read_text(encoding="utf-8")
+    assert "{{ t('.', '。') }}" in src
+    assert "宏观指挥台：') }}<b>" in src
+    assert re.search(r"宏观指挥台：'\s*\)\s*\}\}<b>", src)
+    # the Latin period must not sit outside the pair
+    assert "</b>.</span>" not in src
+    assert "</b>.</" not in src
+
+
+def test_p3_manifest_axes_match_every_force_state_and_tablet_bucket() -> None:
+    """N-M2: axes list every force_state; 768 is tablet; every row reduced_motion."""
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p3" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    axes_states = set(manifest["axes"]["force_states"])
+    assert manifest["axes"]["viewports"]["tablet"] == [768, 1400]
+    assert "desktop" in manifest["axes"]["viewports"]
+    seen: set[str] = set()
+    for state in manifest["pages"][0]["states"]:
+        assert state.get("reduced_motion") is True, state.get("file")
+        fs = state.get("force_state")
+        if fs:
+            assert not str(fs).startswith("addendum:"), fs
+            seen.add(str(fs))
+        if state.get("viewport_width") == 768:
+            assert state.get("viewport") == "tablet", state.get("file")
+        if state.get("file") == "rates-curves-zh-after.png":
+            raise AssertionError("stray rates-curves-zh-after.png still in manifest")
+    assert seen == axes_states
+
+
+def test_i1_rail_probe_has_no_document_overflow() -> None:
+    probes = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p3" / "probes.json")
+        .read_text(encoding="utf-8"))
+    for key in ("rail_dark_en", "rail_dark_zh", "rail_light_en", "rail_light_zh"):
+        row = probes[key]
+        assert row["scrollWidth"] == row["clientWidth"], (key, row)
+        assert row.get("noDocOverflow") is True, (key, row)
+        assert row.get("listOverflowX") == "auto", (key, row)

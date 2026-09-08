@@ -28,15 +28,22 @@
 
 {% macro movement(block) -%}
 <div class="mc-move" data-mc-move data-mc-fragment>
+  {%- if block.state_line %}<p class="mc-move-state">{{ bl(block.state_line) }}</p>{% endif %}
   <ul class="mc-move-list">
     {%- for row in block.rows %}
-    <li class="mx-chg-row mc-move-row">
+    <li class="mx-chg-row mc-move-row{{ ' mc-move-current-only' if row.kind == 'current' else '' }}">
       {%- if row.href %}
       <a class="mx-chg-name mc-move-name" href="{{ row.href }}">{{ bl(row.name) }}</a>
       {%- else %}
       <span class="mx-chg-name mc-move-name">{{ bl(row.name) }}</span>
       {%- endif %}
       {%- if row.source %}<span class="mc-move-source">{{ bl(row.source) }}</span>{% endif %}
+      {%- if row.kind == 'current' %}
+      <span class="mx-chg-what mc-move-what">
+        <strong class="mc-move-current">{{ row.current }}</strong>
+        {%- if row.as_of_month %}<span class="mc-move-asof">{{ bl(row.as_of_month) }}</span>{% endif %}
+      </span>
+      {%- else %}
       <span class="mx-chg-what mc-move-what">
         <span class="mc-move-prior">{{ row.prior }}</span>
         <span class="mc-move-arrow" aria-hidden="true">&rarr;</span>
@@ -44,10 +51,11 @@
         <strong class="mc-move-current">{{ row.current }}</strong>
         <span class="mc-move-delta mq-delta mq-delta-{{ row.sign }}">{{ row.delta }}</span>
       </span>
+      {%- endif %}
     </li>
     {%- endfor %}
   </ul>
-  <p class="mc-move-count">{{ bl(block.count_text) }}</p>
+  {%- if block.count_text %}<p class="mc-move-count">{{ bl(block.count_text) }}</p>{% endif %}
 </div>
 {%- endmacro %}
 
