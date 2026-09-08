@@ -158,15 +158,20 @@ def test_country_table_lists_all_rows_no_dangling_see_all():
 
 
 def test_legend_distinguishes_not_named_from_unknown():
-    """MAJOR 3: hatch swatch for rung x; explicit panel fill for rung 0.
-    MINOR 3: the chip period matches the SVG #sm-hatch 5px / 0.6px stroke."""
+    """MAJOR 3: hatch swatch for rung x; rung-0 chip matches the token mix
+    used for unsanctioned country fill (not a raw --panel that equals the
+    canvas). MINOR 3: the chip period matches the SVG #sm-hatch 5px / 0.6px stroke."""
     html = _render(VM_OK)
     assert (
         '.sm-legend [data-rung="x"] i{background:repeating-linear-gradient'
         '(45deg,transparent 0 4.4px,var(--muted) 4.4px 5px)'
     ) in html
-    assert '.sm-legend [data-rung="0"] i{background:var(--panel2)}' in html
-    assert 'html[data-theme="light"] .sm-legend [data-rung="0"] i{background:var(--panel)}' in html
+    assert (
+        '.sm-legend [data-rung="0"] i{background:color-mix(in srgb, var(--text) 8%, var(--panel))}'
+    ) in html
+    assert (
+        'html[data-theme="light"] .sm-legend [data-rung="0"] i{background:color-mix(in srgb, var(--text) 6%, var(--panel))}'
+    ) in html
 
 
 def test_light_theme_unknown_rung_keeps_hatch():
@@ -176,8 +181,55 @@ def test_light_theme_unknown_rung_keeps_hatch():
     html = _render(VM_OK)
     light_x = 'html[data-theme="light"] .wm-c[data-rung="x"]{fill:url(#sm-hatch);fill-opacity:1}'
     assert light_x in html
-    light_base = html.index('html[data-theme="light"] .wm-c{fill:var(--panel)')
+    light_base = html.index(
+        'html[data-theme="light"] .wm-c{fill:color-mix(in srgb, var(--text) 6%, var(--panel))'
+    )
     assert html.index(light_x) > light_base
+
+
+def test_product_chrome_links_theme_family_and_site_nav():
+    """r2 BLOCKERS 1–3: authenticated product page uses the standard head +
+    `_site_nav` family, never `_vector_polish` (that partial is for pages
+    that do not link theme.css)."""
+    src = (ROOT / "templates" / "sanctions_map.html.j2").read_text(encoding="utf-8")
+    sibling = (ROOT / "templates" / "country_cycles.html.j2").read_text(encoding="utf-8")
+    include = '{% include "_site_nav.html.j2" %}'
+    assert include in src
+    assert include in sibling
+    assert '{% include "_vector_polish.html.j2" %}' not in src
+    html = _render(VM_OK)
+    assert 'href="theme.css"' in html
+    assert 'href="product-nav-icons.css"' in html
+    assert 'src="theme.js"' in html
+    assert 'data-theme' in src
+    assert 'data-lang' in src
+    assert html.count('class="l-en"') == html.count('class="l-zh"')
+    assert html.count('class="l-en"') > 0
+
+
+def test_theme_css_carries_language_gating_rules():
+    """r2 BLOCKER 3: .l-en/.l-zh gating lives in theme.css; the page must
+    link that sheet so a data-lang=en probe hides ZH twins."""
+    css = (ROOT / "templates" / "theme.css").read_text(encoding="utf-8")
+    assert 'html:not([data-lang="zh"]) .l-zh { display: none; }' in css
+    assert 'html[data-lang="zh"] .l-en { display: none; }' in css
+    html = _render(VM_OK)
+    assert 'href="theme.css"' in html
+
+
+def test_figure_ground_uses_token_color_mix():
+    """r2 MAJOR 2: canvas / panel / rung-0 must be distinguishable in both
+    themes via existing tokens only."""
+    html = _render(VM_OK)
+    assert "body{margin:0;background:var(--bg);color:var(--text)}" in html
+    assert ".panel{background:var(--panel);border:1px solid var(--line)}" in html
+    assert "html[data-theme=\"light\"] .panel{box-shadow:var(--card-shadow)}" in html
+    assert ".wm-c{fill:color-mix(in srgb, var(--text) 8%, var(--panel));" in html
+    assert "stroke:color-mix(in srgb, var(--text) 14%, transparent)" in html
+    assert (
+        'html[data-theme="light"] .wm-c{fill:color-mix(in srgb, var(--text) 6%, var(--panel));'
+    ) in html
+    assert "stroke:color-mix(in srgb, var(--text) 16%, transparent)" in html
 
 
 def test_unresolved_copy_says_whole_map_is_unknown():
@@ -232,6 +284,26 @@ def test_map_aria_label_has_zh():
     """MINOR 10: screen-reader label carries both EN and ZH."""
     html = _render(VM_OK)
     assert "现行美国 OFAC 制裁计划点名国家的世界地图" in html
+
+
+def test_unknown_rung_fixture_feeds_real_builder():
+    """r2 MAJOR 3: the committed OFAC fixture has unresolved > 0 and the
+    real builder paints unnamed countries as hatch, not a false clear."""
+    from engine import sanctions_map
+
+    fixture = ROOT / "tests" / "fixtures" / "sanctions_map"
+    vm = sanctions_map.build(
+        sdn_file=fixture / "unresolved_sdn.csv",
+        meta_file=fixture / "unresolved_meta.json",
+        programs_config=ROOT / "config" / "sanctions_ofac_programs.yml",
+    )
+    assert vm["coverage"] is not None
+    assert vm["coverage"]["unresolved"] > 0
+    assert any(c["iso3"] == "RUS" for c in vm["countries"])
+    html = _render(vm, all_iso3={"RUS", "USA", "CHN"})
+    assert 'data-iso3="RUS"' in html
+    assert 'data-iso3="USA" data-rung="x"' in html
+    assert 'data-iso3="CHN" data-rung="x"' in html
 
 
 def test_hover_row_has_leave_focus_blur_and_click_handlers():
