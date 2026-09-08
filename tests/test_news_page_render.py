@@ -271,6 +271,82 @@ def test_consequence_section_is_single_column_not_nx_cols():
     assert "<main>" not in html[start:end]
 
 
+def test_consequence_empty_exposure_state_is_typed_sentence_only():
+    """R1 fail-closed: fewer than 3 named-exposure events prints only the typed empty."""
+    vm = _full_vm()
+    vm["chronicle_impact"] = {
+        "stance_en": None,
+        "stance_zh": None,
+        "reason_en": "No event with a named market exposure in the last 7 days.",
+        "reason_zh": "近7天没有带明确市场敞口的事件。",
+        "empty_kind": "no_named_exposure",
+        "rows": [],
+    }
+    html = _env().get_template("news.html.j2").render(**vm)
+    start = html.index('id="nxConsequence"')
+    end = html.index("</section>", start)
+    section = html[start:end]
+    assert "No event with a named market exposure in the last 7 days." in section
+    assert "近7天没有带明确市场敞口的事件。" in section
+    assert "nx-rel-grid" not in section
+    assert "We don’t size these yet" not in section
+    assert "Not available yet" not in section
+
+
+def test_consequence_card_date_is_plain_not_raw_iso():
+    """R3: the card prints '7 Sep 2026' / '2026年9月7日', never 2026-09-07."""
+    vm = _full_vm()
+    vm["chronicle_impact"] = {
+        "stance_en": "Recent market events and the names they touch — watch, don’t chase.",
+        "stance_zh": "近期市场事件及其涉及的标的——观察为主，不必追高。",
+        "reason_en": None,
+        "reason_zh": None,
+        "empty_kind": None,
+        "rows": [
+            {
+                "event_id": "cev-a",
+                "event_time": "2026-09-07",
+                "event_time_en": "7 Sep 2026",
+                "event_time_zh": "2026年9月7日",
+                "title_en": "AAA reported earnings",
+                "title_zh": "AAA公布业绩",
+                "direct_tickers": ["AAA"],
+                "second_order_tickers": [],
+                "second_order_truncated": False,
+            },
+            {
+                "event_id": "cev-b",
+                "event_time": "2026-09-06",
+                "event_time_en": "6 Sep 2026",
+                "event_time_zh": "2026年9月6日",
+                "title_en": "BBB reported earnings",
+                "title_zh": "BBB公布业绩",
+                "direct_tickers": ["BBB"],
+                "second_order_tickers": [],
+                "second_order_truncated": False,
+            },
+            {
+                "event_id": "cev-c",
+                "event_time": "2026-09-05",
+                "event_time_en": "5 Sep 2026",
+                "event_time_zh": "2026年9月5日",
+                "title_en": "CCC reported earnings",
+                "title_zh": "CCC公布业绩",
+                "direct_tickers": ["CCC"],
+                "second_order_tickers": [],
+                "second_order_truncated": False,
+            },
+        ],
+    }
+    html = _env().get_template("news.html.j2").render(**vm)
+    start = html.index('id="nxConsequence"')
+    end = html.index("</section>", start)
+    section = html[start:end]
+    assert "7 Sep 2026" in section
+    assert "2026年9月7日" in section
+    assert "2026-09-07" not in section
+
+
 # --------------------------------------------------------------------------- #
 # degrade-safety — schema-violating side-artifacts must not raise
 # --------------------------------------------------------------------------- #

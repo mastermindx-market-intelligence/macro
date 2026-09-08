@@ -818,7 +818,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
 {% set CI = chronicle_impact if chronicle_impact is mapping else none %}
 <section class="nx-consequence" id="nxConsequence" aria-label="Event consequences">
     <h2 class="nx-sec-hd">{{ t('Event consequences','事件影响') }}</h2>
-    {% if CI and CI.stance_en %}
+    {% if CI and CI.rows and CI.stance_en %}
     <p class="nx-sub">{{ t(CI.stance_en, CI.stance_zh or CI.stance_en) }}</p>
     {% endif %}
     {% if CI and CI.rows %}
@@ -838,7 +838,9 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
           <span class="nx-rel-name">{{ t((row.title_en or 'Chronicle event')|e, (row.title_zh or '大事记事件')|e) }}</span>
         </div>
         <div class="nx-meta">
-          {% if row.event_time %}<span class="num">{{ row.event_time }}</span><span class="sep">·</span>{% endif %}
+          {% if row.event_time_en %}
+            <span class="num">{{ t(row.event_time_en, row.event_time_zh or row.event_time_en) }}</span><span class="sep">·</span>
+          {% endif %}
           {% if row.direct_tickers %}
             <span>{{ t('Named','点名') }}</span>
             {% for tk in row.direct_tickers[:4] %}<a class="nx-tk" href="stock.html#{{ tk|e }}">{{ tk }}</a>{% endfor %}
@@ -862,6 +864,8 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
       </div>
       {% endfor %}
     </div>
+    {% elif CI and CI.empty_kind == 'no_named_exposure' %}
+    <div class="nx-empty">{{ t(CI.reason_en, CI.reason_zh or CI.reason_en) }}</div>
     {% else %}
     <div class="nx-empty">
       {{ t('Not available yet', '暂不可用') }}

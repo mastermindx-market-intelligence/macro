@@ -63,6 +63,7 @@ at render or inspect time over a bounded event window.
 from __future__ import annotations
 
 import re
+from datetime import date, timedelta
 from typing import Iterable
 
 # Fixed by construction: this module performs no causal identification, so it
@@ -105,8 +106,28 @@ SECOND_ORDER_THEME_TOO_BROAD_REASON = "second_order_refused_theme_too_broad"
 SECOND_ORDER_CAPPED_REASON = SECOND_ORDER_AMBIGUOUS_REASON
 
 # Glance-tier surface bound (News Feed consequence panel). Bounded so render
-# never runs the full-corpus projection.
-GLANCE_EVENT_LIMIT = 24
+# never runs the full-corpus projection. A glance row must carry a consequence
+# (direct ticker or second-order ticker). The window is the last 7 days as-of
+# the newest parseable event date in the input — no wall-clock on the render
+# path. If that window is empty (undated / unparseable corpus), fall back to
+# the newest 200 events. Fewer than 3 qualifying rows prints a typed empty
+# state and no cards.
+GLANCE_WINDOW_DAYS = 7
+GLANCE_FALLBACK_LIMIT = 200
+GLANCE_ROW_CAP = 8
+GLANCE_MIN_QUALIFYING = 3
+# Backward-compatible alias: older callers passed this as the pre-filter cap.
+GLANCE_EVENT_LIMIT = GLANCE_ROW_CAP
+GLANCE_WINDOW_LAST_7 = "last_7_days"
+GLANCE_WINDOW_FALLBACK = "newest_200_fallback"
+
+EMPTY_NO_EXPOSURE_EN = "No event with a named market exposure in the last 7 days."
+EMPTY_NO_EXPOSURE_ZH = "近7天没有带明确市场敞口的事件。"
+
+_MONTH_EN = (
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+)
 
 
 def _midnight_of(date: str | None) -> str | None:
@@ -456,13 +477,61 @@ _THEME_GLANCE: dict[str, tuple[str, str]] = {
 }
 
 
+def _parse_event_date(raw: object) -> date | None:
+    """Parse a ledger date (YYYY-MM-DD prefix). None when absent or unparseable."""
+    if not raw:
+        return None
+    try:
+        return date.fromisoformat(str(raw)[:10])
+    except ValueError:
+        return None
+
+
+def _plain_event_date(raw: object) -> tuple[str | None, str | None]:
+    """Glance date pair: EN '7 Sep 2026' / ZH '2026年9月7日'. Never raw ISO."""
+    parsed = _parse_event_date(raw)
+    if parsed is None:
+        return None, None
+    en = f"{parsed.day} {_MONTH_EN[parsed.month - 1]} {parsed.year}"
+    zh = f"{parsed.year}年{parsed.month}月{parsed.day}日"
+    return en, zh
+
+
+def _as_of_event_date(events: list[dict]) -> date | None:
+    """Newest parseable event date in the input — as-of for the 7-day window.
+
+    Render path has no wall-clock; the ledger's own newest date is the as-of.
+    """
+    dates = [d for ev in events if (d := _parse_event_date(ev.get("date")))]
+    return max(dates) if dates else None
+
+
+def _select_glance_pool(events: list[dict]) -> tuple[list[dict], str]:
+    """Events in the last 7 days as-of the newest dated event, else newest 200."""
+    as_of = _as_of_event_date(events)
+    if as_of is not None:
+        cutoff = as_of - timedelta(days=GLANCE_WINDOW_DAYS)
+        window = [
+            ev for ev in events
+            if (d := _parse_event_date(ev.get("date"))) is not None and d >= cutoff
+        ]
+        if window:
+            return window, GLANCE_WINDOW_LAST_7
+    newest = sorted(
+        events,
+        key=lambda e: (e.get("date") or "", e.get("id") or ""),
+        reverse=True,
+    )
+    return newest[:GLANCE_FALLBACK_LIMIT], GLANCE_WINDOW_FALLBACK
+
+
 def _plain_state(token: str) -> tuple[str, str]:
     key = (token or "").strip().lower()
     mapped = _STATE_PLAIN.get(key)
     if mapped:
         return mapped
-    cleaned = key.replace("-", " ").strip()
-    return (cleaned or "prior state", cleaned or "先前状态")
+    # Unmapped token: typed pair in both locales — never echo English into ZH.
+    return ("a named macro state", "某一宏观状态")
 
 
 def _plain_region(token: str) -> tuple[str, str]:
@@ -488,7 +557,7 @@ def _zh_detail(detail: str | None) -> str:
         return ""
     m = re.match(r"^([+\-]?\d+(?:\.\d+)?%)\s+in\s+(\d+)d$", detail.strip(), re.IGNORECASE)
     if m:
-        return f"（{m.group(2)}日内 {m.group(1)}）"
+        return f"（{m.group(2)}日内{m.group(1)}）"
     return f"（{detail}）"
 
 # Strip ledger quarter prefixes from regime state tokens for glance copy.
@@ -593,15 +662,19 @@ def plain_glance_titles(proj: dict) -> tuple[str, str]:
         detail_en = f" ({detail})" if detail else ""
         detail_zh = _zh_detail(detail)
         en = f"{who} {side_en} closed · {out_en}{detail_en}"
-        zh = f"{who} {side_zh}已结 · {out_zh}{detail_zh}"
+        zh = f"{who}{side_zh}已结 · {out_zh}{detail_zh}"
         return _sanitize(en, zh, fallback_en=fallback[0], fallback_zh=fallback[1])
 
     m = _REGIME_FLIP_RE.match(raw)
     if m or source == "regime_flip":
-        if m:
-            region, frm, to = m.group(1).strip(), m.group(2), m.group(3)
-        else:
-            region, frm, to = "Market", "prior state", "new state"
+        if not m:
+            # Unparsed regime title: typed pair, never English placeholders in ZH.
+            return _sanitize(
+                "A regional macro backdrop changed",
+                "某一地区宏观环境发生变化",
+                fallback_en=fallback[0], fallback_zh=fallback[1],
+            )
+        region, frm, to = m.group(1).strip(), m.group(2), m.group(3)
         frm_p, to_p = _strip_quarter_prefix(frm), _strip_quarter_prefix(to)
         region_en, region_zh = _plain_region(region)
         frm_en, frm_zh = _plain_state(frm_p)
@@ -612,10 +685,13 @@ def plain_glance_titles(proj: dict) -> tuple[str, str]:
 
     m = _RISK_BAND_RE.match(raw)
     if m or source == "risk_band":
-        if m:
-            frm, to = m.group(1).strip(), m.group(2).strip()
-        else:
-            frm, to = "prior", "new"
+        if not m:
+            return _sanitize(
+                "Risk radar changed \u2014 stay selective",
+                "风险雷达已变化——保持谨慎选择",
+                fallback_en=fallback[0], fallback_zh=fallback[1],
+            )
+        frm, to = m.group(1).strip(), m.group(2).strip()
         frm_en, frm_zh = _plain_state(frm)
         to_en, to_zh = _plain_state(to)
         en = f"Risk radar moved from {frm_en} to {to_en} \u2014 stay selective"
@@ -633,7 +709,7 @@ def plain_glance_titles(proj: dict) -> tuple[str, str]:
                 label_en, label_zh, unit = mapped
                 shown = value if (not unit or str(value).endswith(unit)) else f"{value}{unit}"
                 en = f"{label_en} came in at {shown}"
-                zh = f"{label_zh} 公布为 {shown}"
+                zh = f"{label_zh}公布为 {shown}"
             else:
                 en, zh = "Macro data release", "宏观数据发布"
         else:
@@ -650,7 +726,7 @@ def plain_glance_titles(proj: dict) -> tuple[str, str]:
         # combined with earnings_call/research_vault).
         who = direct[0] if direct else "Named name"
         en = f"{who} reported earnings"
-        zh = f"{who} 公布业绩"
+        zh = f"{who}公布业绩"
         return _sanitize(
             en, zh,
             fallback_en="Earnings event", fallback_zh="业绩事件",
@@ -666,10 +742,10 @@ def plain_glance_titles(proj: dict) -> tuple[str, str]:
         tone_zh = _EARNINGS_TONE_ZH.get(tone_raw) if tone_raw else None
         if tone_raw and tone_zh:
             en = f"{ticker} earnings call — {tone_raw} tone"
-            zh = f"{ticker} 业绩电话会——基调{tone_zh}"
+            zh = f"{ticker}业绩电话会——基调{tone_zh}"
         else:
             en = f"{ticker} earnings call"
-            zh = f"{ticker} 业绩电话会"
+            zh = f"{ticker}业绩电话会"
         return _sanitize(
             en, zh,
             fallback_en="Earnings call", fallback_zh="业绩电话会",
@@ -678,7 +754,7 @@ def plain_glance_titles(proj: dict) -> tuple[str, str]:
     if source == "research_vault":
         who = direct[0] if direct else None
         if who:
-            en, zh = f"Research note on {who}", f"关于 {who} 的研究纪要"
+            en, zh = f"Research note on {who}", f"关于{who}的研究纪要"
         else:
             subject = _research_vault_subject(proj)
             if subject:
@@ -690,23 +766,30 @@ def plain_glance_titles(proj: dict) -> tuple[str, str]:
             fallback_en="Research note", fallback_zh="研究纪要",
         )
 
-    # Unknown family: prefer a short non-slug fallback over leaking raw ledger text.
-    if raw:
-        return _sanitize(raw, raw, fallback_en=fallback[0], fallback_zh=fallback[1])
-    return fallback
+    # Unknown family: typed pair in both locales — never the raw ledger title.
+    return _sanitize(
+        "Market event", "市场事件",
+        fallback_en=fallback[0], fallback_zh=fallback[1],
+    )
 
 
 def glance_consequence_surface(
     events: list[dict],
     *,
-    limit: int = GLANCE_EVENT_LIMIT,
+    limit: int = GLANCE_ROW_CAP,
 ) -> dict:
     """Bounded, plain-word consequence surface for the News Feed panel.
 
-    Reads spine events (most-recent first), projects impact over that window
-    only, and returns glance rows plus an explicit Market-Feed disposition:
-    this surface is served on the existing News Feed page and is NOT a
-    Market-Feed-branded product surface (MO-DELTA-001).
+    A glance row must carry a consequence: at least one direct ticker or at
+    least one second-order ticker. Research notes with no named exposure stay
+    in the feed and the vault; they are not glance cards.
+
+    Window: events dated within 7 days of the newest parseable event date in
+    the input (no wall-clock). If that window is empty — the corpus is undated
+    or older than 7 days in the sense that no event carries a parseable date
+    inside the as-of window — fall back to the newest 200 events. From the
+    chosen pool, keep the newest ``limit`` (default 8) exposure-bearing rows.
+    Fewer than 3 qualifying rows prints the typed empty state and no cards.
 
     Calibrated impact stays null + reason. Empty / missing input prints an
     honest null state rather than fabricating rows. Row titles are dual-locale
@@ -721,20 +804,17 @@ def glance_consequence_surface(
             "stance_zh": "暂不可用",
             "reason_en": "No chronicle events in this window yet.",
             "reason_zh": "此窗口尚无大事记事件。",
+            "empty_kind": None,
+            "window_mode": None,
             "families": {},
             "rows": [],
             "event_count": 0,
         }
 
-    # Most-recent window, then restore chronological order for projection
-    # (point-in-time second-order needs on-or-before semantics inside the window).
-    newest = sorted(
-        events,
-        key=lambda e: (e.get("date") or "", e.get("id") or ""),
-        reverse=True,
-    )[: max(1, int(limit))]
+    pool, window_mode = _select_glance_pool(events)
+    # Chronological order for projection (point-in-time second-order).
     window = sorted(
-        newest,
+        pool,
         key=lambda e: (e.get("date") or "", e.get("id") or ""),
     )
     # Eligibility over the FULL corpus; one projection feeds both family
@@ -742,19 +822,21 @@ def glance_consequence_surface(
     # a different eligibility set).
     eligible_themes = _eligible_themes(events)
     projections = project_events_impact(window, eligible_themes=eligible_themes)
-    families: dict[str, list[dict]] = {}
-    for proj in projections:
-        families.setdefault(proj["source"] or "unknown", []).append(proj)
     rows = []
     for proj in projections:
         direct = [e["ticker"] for e in proj["exposures"] if e.get("materiality") == MATERIALITY_DIRECT]
         second = [e["ticker"] for e in proj["exposures"] if e.get("materiality") == MATERIALITY_SECOND_ORDER]
+        if not direct and not second:
+            continue
         title_en, title_zh = plain_glance_titles(proj)
         if not title_en or not title_zh:
             continue
+        time_en, time_zh = _plain_event_date(proj["event_time"])
         rows.append({
             "event_id": proj["event_id"],
             "event_time": proj["event_time"],
+            "event_time_en": time_en,
+            "event_time_zh": time_zh,
             "known_at": proj["known_at"],
             "family": proj["source"] or "unknown",
             "title": proj.get("title") or "",  # raw spine title — diagnostics only
@@ -769,8 +851,29 @@ def glance_consequence_surface(
             "calibrated_impact_reason": CALIBRATED_IMPACT_GATE_REASON,
             "causal_label": CAUSAL_LABEL,
         })
-    # Glance order: newest first.
+    # Glance order: newest first, cap at the row limit.
     rows.sort(key=lambda r: (r.get("event_time") or "", r.get("event_id") or ""), reverse=True)
+    cap = max(1, int(limit))
+    rows = rows[:cap]
+    families: dict[str, int] = {}
+    for row in rows:
+        families[row["family"]] = families.get(row["family"], 0) + 1
+
+    if len(rows) < GLANCE_MIN_QUALIFYING:
+        return {
+            "served_as_market_feed": False,
+            "market_feed_disposition": "explicitly_does_not_serve_market_feed",
+            "stance_en": None,
+            "stance_zh": None,
+            "reason_en": EMPTY_NO_EXPOSURE_EN,
+            "reason_zh": EMPTY_NO_EXPOSURE_ZH,
+            "empty_kind": "no_named_exposure",
+            "window_mode": window_mode,
+            "families": {},
+            "rows": [],
+            "event_count": len(window),
+        }
+
     return {
         "served_as_market_feed": False,
         "market_feed_disposition": "explicitly_does_not_serve_market_feed",
@@ -778,7 +881,9 @@ def glance_consequence_surface(
         "stance_zh": "近期市场事件及其涉及的标的——观察为主，不必追高。",
         "reason_en": None,
         "reason_zh": None,
-        "families": {k: len(v) for k, v in families.items()},
+        "empty_kind": None,
+        "window_mode": window_mode,
+        "families": families,
         "rows": rows,
         "event_count": len(window),
     }
