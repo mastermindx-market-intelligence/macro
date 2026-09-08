@@ -4,7 +4,13 @@ import json
 import re
 from pathlib import Path
 
-from scripts.build_policy_watch import _featured_predictions, brief, source_label
+from scripts.build_policy_watch import (
+    _featured_predictions,
+    brief,
+    decorate_lifecycle_view,
+    format_lifecycle_date,
+    source_label,
+)
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -169,6 +175,12 @@ def test_light_mode_changes_the_mechanism_not_only_the_token():
     m2 = re.search(r'html\[data-theme="light"\]\s*\.pw-stage\.is-stalled\{([^}]*)\}', template)
     assert m2, "light stalled rule missing"
     assert "border-left" in m2.group(1)
+    assert "box-shadow:none" in m2.group(1)
+    assert (
+        ".pw-stage.is-stalled{border-left:3px solid var(--pw-amber);"
+        "background:color-mix(in srgb,var(--pw-amber) 9%,transparent);"
+        "box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--pw-amber) 38%,transparent)}"
+    ) in template
 
 
 def test_policy_watch_l1_section_count_is_unchanged():
@@ -181,8 +193,9 @@ def test_stalled_state_prints_plain_words(monkeypatch, tmp_path):
     fixture["intel_as_of"] = "2026-07-13"
     fixture["items"][1]["stalled"] = True
     html = _render_policy_watch_with_lifecycle(fixture, monkeypatch, tmp_path)
-    assert "No movement for 45+ days as of 2026-07-13" in html
-    assert "截至2026-07-13已超过 45 天没有推进" in html
+    assert "No movement for 45+ days as of July 13, 2026" in html
+    assert "截至2026年7月13日已超过 45 天没有推进" in html
+    assert 'data-intel-as-of="2026-07-13"' in html
     assert "is-stalled" in html
     assert "No movement for 45+ days / 超过 45 天没有推进" in html
 
@@ -211,7 +224,9 @@ def test_newest_dated_stage_chip_is_not_a_last_checked_label(monkeypatch, tmp_pa
     assert "最新阶段日期" in html
     assert "Stages as of" not in html
     assert "进程更新于" not in html
-    assert "2026-09-01" in html
+    assert 'data-as-of="2026-09-01"' in html
+    assert "September 1, 2026" in html
+    assert "2026年9月1日" in html
 
 
 def test_gap_and_next_step_use_short_stop_labels(monkeypatch, tmp_path):
@@ -227,5 +242,69 @@ def test_gap_and_next_step_use_short_stop_labels(monkeypatch, tmp_path):
 
 def test_meter_aria_label_is_bilingual(monkeypatch, tmp_path):
     html = _render_policy_watch_with_lifecycle(LIFECYCLE_FIXTURE, monkeypatch, tmp_path)
-    assert 'aria-label="In force / 已生效 · 2026-03-01"' in html
-    assert 'aria-label="Proposed / 已提出 · 2026-01-01"' in html
+    assert 'aria-label="In force / 已生效 · March 1, 2026 / 2026年3月1日"' in html
+    assert 'aria-label="Proposed / 已提出 · January 1, 2026 / 2026年1月1日"' in html
+
+
+def test_format_lifecycle_date_day_and_month_en_zh():
+    assert format_lifecycle_date("2026-05-01", "day") == ("May 1, 2026", "2026年5月1日")
+    assert format_lifecycle_date("2025-11-01", "month") == ("Nov 2025", "2025年11月")
+    assert format_lifecycle_date("2026-07-13", "day") == ("July 13, 2026", "2026年7月13日")
+    assert format_lifecycle_date("2026-07-01", "month") == ("Jul 2026", "2026年7月")
+
+
+def test_month_precision_row_renders_month_only_and_is_not_stalled(monkeypatch, tmp_path):
+    from engine.policy_intent_desk import fold_lifecycle
+
+    ev = {
+        "item_id": "L1", "type": "in_force", "event_date": "2026-05-01",
+        "date_precision": "month", "known_at": "2026-05-01T12:00:00Z",
+        "source": {"url": "https://www.federalregister.gov/x", "title": "doc", "doc_id": "1"},
+    }
+    row = fold_lifecycle(
+        [ev], [{"id": "L1", "title_en": "Lever One", "title_zh": "杠杆一"}],
+        as_of_date="2026-07-13",
+    )[0]
+    assert row["stalled"] is False
+    fixture = {
+        "schema": "policy_lifecycle.v1", "as_of": "2026-05-01", "as_of_precision": "month",
+        "intel_as_of": "2026-07-13", "null_reason": None,
+        "counts": {"in_force": 1, "proposed": 0, "passed": 0, "enforced": 0,
+                   "other": 0, "unknown": 0},
+        "items": [row],
+    }
+    html = _render_policy_watch_with_lifecycle(fixture, monkeypatch, tmp_path)
+    assert "May 2026" in html
+    assert "2026年5月" in html
+    assert "May 1, 2026" not in html
+    assert "2026年5月1日" not in html
+    assert 'class="pw-stage is-stalled' not in html
+    assert 'data-state-asof="2026-05-01"' in html
+    assert 'data-date-precision="month"' in html
+
+
+def test_identical_gap_set_prints_one_section_line(monkeypatch, tmp_path):
+    fixture = json.loads(json.dumps(LIFECYCLE_FIXTURE))
+    for it in fixture["items"]:
+        it["gaps"] = ["proposed", "passed"]
+    html = _render_policy_watch_with_lifecycle(fixture, monkeypatch, tmp_path)
+    assert "No published dates for" in html
+    assert "Proposed, Passed" in html
+    assert "提出、通过" in html
+    assert "No published date for Proposed" not in html
+    assert "No date published" not in html
+    assert "未公布日期：" not in html
+    assert "Next step to watch" in html
+
+
+def test_mixed_gap_sets_keep_per_row_null_lines(monkeypatch, tmp_path):
+    fixture = json.loads(json.dumps(LIFECYCLE_FIXTURE))
+    fixture["items"][0]["gaps"] = ["proposed", "passed"]
+    fixture["items"][1]["gaps"] = ["passed"]
+    html = _render_policy_watch_with_lifecycle(fixture, monkeypatch, tmp_path)
+    assert "No published dates for" not in html
+    assert "No published date for" in html
+    assert "No date published" in html
+    assert '<span class="l-en">, </span><span class="l-zh">、</span>' in html
+    decorated = decorate_lifecycle_view(fixture)
+    assert decorated["shared_gap_set"] is None

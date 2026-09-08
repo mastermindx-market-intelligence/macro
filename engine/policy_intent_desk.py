@@ -679,6 +679,35 @@ def ingest_lifecycle(root=None) -> int:
         return 0
 
 
+def _event_date_precision(ev: dict | None) -> str:
+    """Seed/store date_precision; absent rows default to day."""
+    raw = (ev or {}).get("date_precision") or "day"
+    return "month" if raw == "month" else "day"
+
+
+def _stall_anchor_date(event_date: str, precision: str):
+    """Day-precision uses the stated day; month-precision uses the last day of
+    that month so a 45-day stall never overstates a gap the source cannot pin."""
+    from calendar import monthrange
+    from datetime import date as _date
+    d0 = _date.fromisoformat(event_date[:10])
+    if precision == "month":
+        return _date(d0.year, d0.month, monthrange(d0.year, d0.month)[1])
+    return d0
+
+
+def _stamp_event_dating(state_pack: dict, ev: dict) -> None:
+    """Copy the cited date, knowability, source, and precision onto the pack."""
+    state_pack["state_asof"] = ev.get("event_date")
+    state_pack["known_at"] = ev.get("known_at")
+    state_pack["date_precision"] = _event_date_precision(ev)
+    src = ev.get("source") or {}
+    state_pack["source"] = {
+        "url": src.get("url"), "label": _lifecycle_source_label(src.get("url")),
+        "title": src.get("title"), "doc_id": src.get("doc_id"),
+    }
+
+
 def _apply_ladder_state(state_pack: dict, typ: str, ev: dict, observed_ladder: set[str]) -> None:
     """Mutate state_pack for a ladder stage. reached = observed only (never conflated)."""
     rank = _STAGE_RANK[typ]
@@ -690,13 +719,7 @@ def _apply_ladder_state(state_pack: dict, typ: str, ev: dict, observed_ladder: s
     state_pack["state"] = typ
     state_pack["reached"] = [s for s in LIFECYCLE_STAGES[: rank + 1] if s in observed_ladder]
     state_pack["gaps"] = [s for s in LIFECYCLE_STAGES[: rank + 1] if s not in observed_ladder]
-    state_pack["state_asof"] = ev.get("event_date")
-    state_pack["known_at"] = ev.get("known_at")
-    src = ev.get("source") or {}
-    state_pack["source"] = {
-        "url": src.get("url"), "label": _lifecycle_source_label(src.get("url")),
-        "title": src.get("title"), "doc_id": src.get("doc_id"),
-    }
+    _stamp_event_dating(state_pack, ev)
     state_pack["conflict"] = False
 
 
@@ -736,6 +759,7 @@ def fold_lifecycle(events: list[dict], registry: list[dict], as_of_date: str | N
                 "basis": reg.get("basis"), "confidence": reg.get("confidence"),
                 "state": "unknown", "stage_rank": None, "reached": [], "gaps": [],
                 "state_asof": None, "known_at": None, "source": None,
+                "date_precision": None,
                 "next_step": None, "stalled": False, "corrected": False,
                 "conflict": False, "why": "no_document",
             })
@@ -743,7 +767,8 @@ def fold_lifecycle(events: list[dict], registry: list[dict], as_of_date: str | N
 
         state_pack = {
             "state": "unknown", "stage_rank": None, "reached": [], "gaps": [],
-            "state_asof": None, "known_at": None, "source": None, "conflict": False,
+            "state_asof": None, "known_at": None, "source": None,
+            "date_precision": None, "conflict": False,
         }
         corrected = False
         terminal_frozen = False
@@ -773,16 +798,11 @@ def fold_lifecycle(events: list[dict], registry: list[dict], as_of_date: str | N
                         "reached": list(state_pack["reached"]),
                         "state_asof": state_pack["state_asof"], "known_at": state_pack["known_at"],
                         "source": state_pack["source"],
+                        "date_precision": state_pack.get("date_precision"),
                     }
                     state_pack["state"] = typ
                     terminal_frozen = True
-                    state_pack["state_asof"] = ev.get("event_date")
-                    state_pack["known_at"] = ev.get("known_at")
-                    src = ev.get("source") or {}
-                    state_pack["source"] = {
-                        "url": src.get("url"), "label": _lifecycle_source_label(src.get("url")),
-                        "title": src.get("title"), "doc_id": src.get("doc_id"),
-                    }
+                    _stamp_event_dating(state_pack, ev)
                     continue
                 _apply_ladder_state(state_pack, typ, ev, observed_ladder)
                 continue
@@ -794,6 +814,7 @@ def fold_lifecycle(events: list[dict], registry: list[dict], as_of_date: str | N
                     state_pack["state_asof"] = pre_terminal["state_asof"]
                     state_pack["known_at"] = pre_terminal["known_at"]
                     state_pack["source"] = pre_terminal["source"]
+                    state_pack["date_precision"] = pre_terminal.get("date_precision")
                 terminal_frozen = False
                 continue
             if terminal_frozen:
@@ -804,16 +825,11 @@ def fold_lifecycle(events: list[dict], registry: list[dict], as_of_date: str | N
                     "reached": list(state_pack["reached"]),
                     "state_asof": state_pack["state_asof"], "known_at": state_pack["known_at"],
                     "source": state_pack["source"],
+                    "date_precision": state_pack.get("date_precision"),
                 }
                 state_pack["state"] = typ
                 terminal_frozen = True
-                state_pack["state_asof"] = ev.get("event_date")
-                state_pack["known_at"] = ev.get("known_at")
-                src = ev.get("source") or {}
-                state_pack["source"] = {
-                    "url": src.get("url"), "label": _lifecycle_source_label(src.get("url")),
-                    "title": src.get("title"), "doc_id": src.get("doc_id"),
-                }
+                _stamp_event_dating(state_pack, ev)
                 continue
             rank = _STAGE_RANK.get(typ)
             if rank is None:
@@ -826,15 +842,7 @@ def fold_lifecycle(events: list[dict], registry: list[dict], as_of_date: str | N
                 # Refresh the cited date/source when the later document is newer.
                 new_date = str(ev.get("event_date") or "")
                 if new_date > str(state_pack.get("state_asof") or ""):
-                    state_pack["state_asof"] = ev.get("event_date")
-                    state_pack["known_at"] = ev.get("known_at")
-                    src = ev.get("source") or {}
-                    state_pack["source"] = {
-                        "url": src.get("url"),
-                        "label": _lifecycle_source_label(src.get("url")),
-                        "title": src.get("title"),
-                        "doc_id": src.get("doc_id"),
-                    }
+                    _stamp_event_dating(state_pack, ev)
             else:
                 state_pack["conflict"] = True
 
@@ -846,12 +854,13 @@ def fold_lifecycle(events: list[dict], registry: list[dict], as_of_date: str | N
         why = "no_document" if state_pack["state"] == "unknown" else None
 
         stalled = False
+        date_precision = state_pack.get("date_precision")
         if as_of_date and stage_rank is not None and not terminal_frozen and stage_rank + 1 < len(LIFECYCLE_STAGES):
             ref_date = state_pack["state_asof"] or (state_pack["known_at"] or "")[:10]
             if ref_date:
                 try:
                     from datetime import date as _date
-                    d0 = _date.fromisoformat(ref_date[:10])
+                    d0 = _stall_anchor_date(ref_date[:10], date_precision or "day")
                     d1 = _date.fromisoformat(as_of_date[:10])
                     stalled = (d1 - d0).days >= STALL_DAYS
                 except Exception:  # noqa: BLE001
@@ -867,6 +876,7 @@ def fold_lifecycle(events: list[dict], registry: list[dict], as_of_date: str | N
             "state": state_pack["state"], "stage_rank": stage_rank,
             "reached": state_pack["reached"], "gaps": state_pack["gaps"],
             "state_asof": state_pack["state_asof"], "known_at": state_pack["known_at"],
+            "date_precision": date_precision,
             "source": state_pack["source"],
             "next_step": next_step, "stalled": stalled, "corrected": corrected,
             "conflict": state_pack["conflict"], "why": why,
@@ -891,7 +901,7 @@ def lifecycle_view(root=None) -> dict:
         if intel.get("policy_lifecycle_suppressed"):
             return {
                 "schema": LIFECYCLE_SCHEMA, "as_of": intel_as_of,
-                "intel_as_of": intel_as_of,
+                "intel_as_of": intel_as_of, "as_of_precision": "day",
                 "null_reason": "rights_suppressed",
                 "counts": {"proposed": 0, "passed": 0, "in_force": 0, "enforced": 0,
                            "other": 0, "unknown": 0, "withdrawn": 0, "struck_down": 0, "superseded": 0},
@@ -932,8 +942,10 @@ def lifecycle_view(root=None) -> dict:
             else:
                 counts["other"] += 1
 
-        known_ats = [it["known_at"] for it in items if it.get("known_at")]
-        as_of = max(known_ats).split("T")[0] if known_ats else intel_as_of
+        dated = [it for it in items if it.get("known_at")]
+        newest = max(dated, key=lambda it: it["known_at"]) if dated else None
+        as_of = newest["known_at"].split("T")[0] if newest else intel_as_of
+        as_of_precision = (newest.get("date_precision") or "day") if newest else "day"
 
         null_reason = None
         if registry and not events:
@@ -943,12 +955,14 @@ def lifecycle_view(root=None) -> dict:
 
         return {
             "schema": LIFECYCLE_SCHEMA, "as_of": as_of, "intel_as_of": intel_as_of,
+            "as_of_precision": as_of_precision,
             "null_reason": null_reason,
             "counts": counts, "items": items, "orphan_event_items": orphan_event_items,
         }
     except Exception as e:  # noqa: BLE001
         log.error("policy_lifecycle: view failed: %s", e)
         return {"schema": LIFECYCLE_SCHEMA, "as_of": None, "intel_as_of": None,
+                "as_of_precision": "day",
                 "null_reason": "no_coverage",
                 "counts": {"proposed": 0, "passed": 0, "in_force": 0, "enforced": 0,
                            "withdrawn": 0, "struck_down": 0, "superseded": 0,

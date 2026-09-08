@@ -1,6 +1,6 @@
 {
   "schema": "policy_lifecycle_seed.v1",
-  "note": "Operator-signed lifecycle substrate for verified_levers when intel.json lacks policy_lifecycle. Every URL is drawn from data/policy/intel.json sources on main. One stage per cited document, at that document's own date (URL date, or the intel.json fact that names the document). Never a multi-stage ladder from a single URL.",
+  "note": "Operator-signed lifecycle substrate for verified_levers when intel.json lacks policy_lifecycle. Every URL is drawn from data/policy/intel.json sources on main. One stage per cited document. A seed row's event_date is the cited document's own date, at the precision the source actually supports. Optional date_precision is day (default) or month. Day when the URL or the intel.json fact that names the document states a calendar day. Month when only a month is attested: event_date is the first of that month, ordering uses that first, and the 45-day stall arithmetic uses the last day of the month so a gap is never overstated. Never a multi-stage ladder from a single URL.",
   "events": [
     {
       "item_id": "lever_dollar_bridge",
@@ -17,6 +17,7 @@
       "item_id": "lever_issuance",
       "type": "in_force",
       "event_date": "2025-11-01",
+      "date_precision": "month",
       "known_at": "2025-11-01T12:00:00Z",
       "source": {
         "url": "https://home.treasury.gov/news/press-releases/sb0314",
@@ -28,6 +29,7 @@
       "item_id": "lever_issuance",
       "type": "in_force",
       "event_date": "2026-05-01",
+      "date_precision": "month",
       "known_at": "2026-05-01T12:00:00Z",
       "source": {
         "url": "https://home.treasury.gov/news/press-releases/sb0539",
@@ -82,8 +84,9 @@
     {
       "item_id": "lever_nuclear",
       "type": "enforced",
-      "event_date": "2026-07-04",
-      "known_at": "2026-07-04T12:00:00Z",
+      "event_date": "2026-07-01",
+      "date_precision": "month",
+      "known_at": "2026-07-01T12:00:00Z",
       "source": {
         "url": "https://www.energy.gov/articles/us-department-energy-meets-president-trumps-goal-delivers-third-advanced-reactor",
         "title": "DOE — third advanced reactor delivered",

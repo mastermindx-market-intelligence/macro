@@ -372,7 +372,8 @@ def test_committed_seed_against_real_intel_registry(tmp_path):
     assert view["null_reason"] is None
     assert len(view["items"]) == 6
     assert all(not it.get("jurisdiction_en") for it in view["items"])
-    assert view["as_of"] == "2026-07-04"
+    assert view["as_of"] == "2026-07-01"
+    assert view["as_of_precision"] == "month"
     assert view["intel_as_of"] == intel["as_of"] == "2026-07-13"
     by_id = {it["id"]: it for it in view["items"]}
     assert by_id["lever_chips"]["state"] == "in_force"
@@ -393,6 +394,35 @@ def test_union_lifecycle_events_store_wins_per_item():
     assert [e["item_id"] for e in merged] == ["A", "B"]
     assert merged[0]["type"] == "proposed"
     assert merged[1]["type"] == "passed"
+
+
+def test_month_precision_uses_month_end_for_stall_and_does_not_overstate():
+    """MAJOR-A: stall arithmetic on a month-precision row uses the last day."""
+    month_ev = {**_ev("L1", "in_force", "2026-05-01", "2026-05-01T12:00:00Z"),
+                "date_precision": "month"}
+    # May 31 → Jul 13 is 43 days (< 45). May 1 → Jul 13 is 73 days.
+    month_row = fold_lifecycle([month_ev], REG, as_of_date="2026-07-13")[0]
+    assert month_row["date_precision"] == "month"
+    assert month_row["state_asof"] == "2026-05-01"
+    assert month_row["stalled"] is False
+    day_row = fold_lifecycle(
+        [_ev("L1", "in_force", "2026-05-01", "2026-05-01T12:00:00Z")],
+        REG, as_of_date="2026-07-13",
+    )[0]
+    assert (day_row.get("date_precision") or "day") == "day"
+    assert day_row["stalled"] is True
+
+
+def test_seed_month_precision_rows_match_attested_month_not_invented_day():
+    seed = json.loads(Path("config/policy_lifecycle_seed.json").read_text())
+    assert "date_precision is day (default) or month" in seed["note"]
+    by_key = {(e["item_id"], e["type"], e["event_date"]): e for e in seed["events"]}
+    nov = by_key[("lever_issuance", "in_force", "2025-11-01")]
+    may = by_key[("lever_issuance", "in_force", "2026-05-01")]
+    doe = by_key[("lever_nuclear", "enforced", "2026-07-01")]
+    assert nov["date_precision"] == may["date_precision"] == doe["date_precision"] == "month"
+    assert doe["type"] == "enforced"
+    assert "2026-07-04" not in {e["event_date"] for e in seed["events"]}
 
 
 def test_all_event_types_are_declared():

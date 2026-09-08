@@ -320,7 +320,7 @@
   /* -- policy lifecycle: deterministic stage ledger -------------------- */
   .pw-stage-glance{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 12px}
   .pw-stages{display:grid;gap:8px}
-  .pw-stage{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(190px,.72fr) auto;gap:10px 18px;align-items:start;padding:12px 14px;border:1px solid var(--pw-hair);border-radius:11px;background:var(--panel)}
+  .pw-stage{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(190px,.72fr) auto;gap:10px 18px;align-items:start;padding:12px 14px;border:1px solid var(--pw-hair);border-radius:var(--r-card,11px);background:var(--panel)}
   .pw-stage:hover{background:var(--pw-tile)}
   .pw-stage-name{margin:0;color:var(--text);font-family:var(--font-display);font-size:13px;font-weight:600;line-height:1.35;letter-spacing:-.01em}
   html[data-lang="zh"] .pw-stage-name{letter-spacing:0}
@@ -329,10 +329,11 @@
   .pw-stage-why,.pw-stage-next{margin:6px 0 0;color:var(--pw-ink-2);font-size:11.5px;line-height:1.45}
   .pw-stage-detail{margin:6px 0 0;color:var(--pw-ink-2);font-size:12px;line-height:1.45}
   .pw-stage-meter{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;align-items:end;min-height:8px}
-  .pw-stage-seg{height:6px;border-radius:3px;background:var(--pw-tile);border:1px solid var(--pw-hair)}
+  .pw-stage-seg{height:6px;border-radius:var(--r-ctl,3px);background:var(--pw-tile);border:1px solid var(--pw-hair)}
   .pw-stage-seg.is-reached{background:linear-gradient(90deg,var(--pw-purple),var(--pw-blue));border-color:transparent}
   .pw-stage-seg.is-current{box-shadow:0 0 0 1px color-mix(in srgb,var(--pw-blue) 55%,transparent),0 0 12px -4px color-mix(in srgb,var(--pw-blue) 70%,transparent)}
   .pw-stage.is-stalled .pw-stage-seg.is-current{box-shadow:none;border:1px dashed var(--pw-amber)}
+  .pw-stage.is-stalled{border-left:3px solid var(--pw-amber);background:color-mix(in srgb,var(--pw-amber) 9%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--pw-amber) 38%,transparent)}
   .pw-stage.is-unknown .pw-stage-seg{background:transparent}
   .pw-stage-labels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin-top:6px;color:var(--muted);font-family:var(--font-display);font-size:9.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;overflow-wrap:anywhere}
   html[data-lang="zh"] .pw-stage-labels{letter-spacing:0;text-transform:none;font-size:10.5px}
@@ -344,7 +345,7 @@
   html[data-theme="light"] .pw-stage-seg.is-reached{background:linear-gradient(90deg,color-mix(in srgb,var(--pw-purple) 82%,transparent),color-mix(in srgb,var(--pw-blue) 82%,transparent));border-color:transparent}
   html[data-theme="light"] .pw-stage-seg.is-current{box-shadow:none;outline:1.5px solid var(--pw-blue);outline-offset:1px;height:8px}
   html[data-theme="light"] .pw-stage-labels .is-current{font-weight:700}
-  html[data-theme="light"] .pw-stage.is-stalled{border-left:3px solid var(--pw-amber);background:color-mix(in srgb,var(--pw-amber) 6%,var(--panel))}
+  html[data-theme="light"] .pw-stage.is-stalled{border-left:3px solid var(--pw-amber);background:color-mix(in srgb,var(--pw-amber) 6%,var(--panel));box-shadow:none}
   html[data-theme="light"] .pw-stage.is-stalled .pw-stage-seg.is-current{border-style:solid;outline-color:var(--pw-amber)}
   html[data-theme="light"] .pw-stage.is-unknown .pw-stage-seg{background:var(--panel)}
   @media(max-width:1000px){.pw-hero{grid-template-columns:1fr}.pw-hero-side{border-left:0;border-top:1px solid var(--pw-hair);padding:18px 0 0}.pw-card-grid{grid-template-columns:1fr}.pw-monitor{grid-template-columns:repeat(2,minmax(0,1fr))}.pw-stage{grid-template-columns:minmax(0,1fr) minmax(160px,.6fr)}.pw-stage-side{grid-column:1/-1;justify-items:start;text-align:left;grid-auto-flow:column;justify-content:start;align-items:center}}
@@ -504,7 +505,7 @@
     {# ── deterministic lifecycle ledger (engine.policy_intent_desk.lifecycle_view) ── #}
     {% if lifecycle %}
     <div class="pw-stage-glance">
-      {% if lifecycle.as_of %}<span class="pw-chip">{{ t('Newest dated stage','最新阶段日期') }} <strong>{{ lifecycle.as_of }}</strong></span>{% endif %}
+      {% if lifecycle.as_of %}<span class="pw-chip" data-as-of="{{ lifecycle.as_of }}">{{ t('Newest dated stage','最新阶段日期') }} <strong>{{ bl(lifecycle.as_of_en or lifecycle.as_of, lifecycle.as_of_zh or lifecycle.as_of) }}</strong></span>{% endif %}
       {% for key, en, zh in [('in_force','in force','已生效'),('passed','passed, not yet in force','已通过尚未生效'),('proposed','proposed','已提出'),('enforced','being enforced','正在执行'),('withdrawn','withdrawn','已撤回'),('struck_down','struck down','已被法院推翻'),('superseded','replaced','已被取代'),('unknown','not tracked yet','尚未跟踪')] %}
         {% if lifecycle.counts.get(key) %}<span class="pw-chip"><strong>{{ lifecycle.counts[key] }}</strong> {{ t(en, zh) }}</span>{% endif %}
       {% endfor %}
@@ -517,6 +518,9 @@
     {% if lifecycle.orphan_event_items %}
       <p class="pw-build-note">{{ t('Some logged stage rows do not match a tracked policy item and were skipped.','部分已登记的进程记录无法匹配跟踪中的政策项目，已跳过。') }}</p>
     {% endif %}
+    {% if lifecycle.shared_gap_set %}
+      <p class="pw-build-note">{{ bl("No published dates for " + lifecycle.shared_gap_en + " on any item below; each item shows the stages that are dated.", "下方各项均未公布" + lifecycle.shared_gap_zh + "的日期；仅显示有日期的阶段。") }}</p>
+    {% endif %}
     {% if lifecycle['items'] and not lifecycle.null_reason %}
     {% set ns_jur = namespace(any=false) %}
     {% for _it in lifecycle['items'] %}{% if _it.jurisdiction_en %}{% set ns_jur.any = true %}{% endif %}{% endfor %}
@@ -526,7 +530,7 @@
       {% set idx = it.stage_rank %}
       {% set stage_en = STAGE_EN[it.state] if it.state in STAGE_EN else 'Not tracked yet' %}
       {% set stage_zh = STAGE_ZH[it.state] if it.state in STAGE_ZH else '尚未跟踪' %}
-      <article class="pw-stage{% if it.stalled %} is-stalled{% endif %}{% if it.state == 'unknown' %} is-unknown{% endif %}" data-policy-id="{{ it.id }}" data-state="{{ it.state }}">
+      <article class="pw-stage{% if it.stalled %} is-stalled{% endif %}{% if it.state == 'unknown' %} is-unknown{% endif %}" data-policy-id="{{ it.id }}" data-state="{{ it.state }}"{% if it.state_asof %} data-state-asof="{{ it.state_asof }}"{% endif %}{% if it.date_precision %} data-date-precision="{{ it.date_precision }}"{% endif %}>
         <div class="pw-stage-main">
           <h4 class="pw-stage-name">{{ bl(copy.title_en if copy else it.title_en, copy.title_zh if copy else it.title_zh) }}</h4>
           {% if it.jurisdiction_en %}<p class="pw-stage-jur">{{ bl(it.jurisdiction_en, it.jurisdiction_zh) }}</p>
@@ -538,20 +542,20 @@
           {% elif it.conflict %}
             <p class="pw-stage-why">{{ t('Records conflict — under review.','记录冲突，正在核实。') }}</p>
           {% elif it.next_step %}
-            <p class="pw-stage-next">{{ t('Next step to watch','下一步观察') }}: {{ bl(STOP_EN[it.next_step.stage], STOP_ZH[it.next_step.stage]) }} · {% if it.next_step.date %}<span class="pw-date">{{ it.next_step.date }}</span>{% else %}{{ t('No date published','未公布日期') }}{% endif %}</p>
+            <p class="pw-stage-next">{{ t('Next step to watch','下一步观察') }}: {{ bl(STOP_EN[it.next_step.stage], STOP_ZH[it.next_step.stage]) }}{% if it.next_step.date %} · <span class="pw-date" data-next-date="{{ it.next_step.date }}">{{ bl(it.next_step.date_en or it.next_step.date, it.next_step.date_zh or it.next_step.date) }}</span>{% elif not lifecycle.shared_gap_set %} · {{ t('No date published','未公布日期') }}{% endif %}</p>
           {% endif %}
           {% if it.stalled %}
             {% if lifecycle.intel_as_of %}
-            <p class="pw-stage-why">{{ bl("No movement for 45+ days as of " + lifecycle.intel_as_of + " — watch, don't chase.", "截至" + lifecycle.intel_as_of + "已超过 45 天没有推进——观察，不必追。") }}</p>
+            <p class="pw-stage-why" data-intel-as-of="{{ lifecycle.intel_as_of }}">{{ bl("No movement for 45+ days as of " + (lifecycle.intel_as_of_en or lifecycle.intel_as_of) + " — watch, don't chase.", "截至" + (lifecycle.intel_as_of_zh or lifecycle.intel_as_of) + "已超过 45 天没有推进——观察，不必追。") }}</p>
             {% else %}
             <p class="pw-stage-why">{{ t("No movement for 45+ days — watch, don't chase.",'超过 45 天没有推进——观察，不必追。') }}</p>
             {% endif %}
           {% endif %}
-          {% if it.gaps %}<p class="pw-stage-why">{{ t('No published date for','未公布日期：') }} {% for gap in it.gaps %}{{ bl(STOP_EN[gap], STOP_ZH[gap]) }}{% if not loop.last %}, {% endif %}{% endfor %}</p>{% endif %}
+          {% if it.gaps and not lifecycle.shared_gap_set %}<p class="pw-stage-why">{{ t('No published date for','未公布日期：') }} {% for gap in it.gaps %}{{ bl(STOP_EN[gap], STOP_ZH[gap]) }}{% if not loop.last %}<span class="l-en">, </span><span class="l-zh">、</span>{% endif %}{% endfor %}</p>{% endif %}
         </div>
         <div class="pw-stage-track">
           <div class="pw-stage-meter" role="img"
-               aria-label="{{ tp(stage_en, stage_zh) }}{% if it.stalled %} · {{ tp("No movement for 45+ days", "超过 45 天没有推进") }}{% endif %}{% if it.state_asof %} · {{ it.state_asof }}{% endif %}">
+               aria-label="{{ tp(stage_en, stage_zh) }}{% if it.stalled %} · {{ tp("No movement for 45+ days", "超过 45 天没有推进") }}{% endif %}{% if it.state_asof_en %} · {{ tp(it.state_asof_en, it.state_asof_zh) }}{% elif it.state_asof %} · {{ it.state_asof }}{% endif %}">
             {% for stop in ['proposed','passed','in_force','enforced'] %}
             <span class="pw-stage-seg{% if stop in it.reached %} is-reached{% endif %}{% if idx is not none and loop.index0 == idx %} is-current{% endif %}" aria-hidden="true"></span>
             {% endfor %}
@@ -566,7 +570,7 @@
           {% if it.state == 'unknown' %}<span class="pw-badge neutral">{{ t('Not tracked yet','尚未跟踪') }}</span>
           {% else %}<span class="pw-badge {{ 'warn' if it.stalled or it.conflict else ('fact' if it.basis and 'FACT' in it.basis else ('read' if it.basis and 'INFERENCE' in it.basis else 'neutral')) }}">{{ bl(STAGE_EN[it.state], STAGE_ZH[it.state]) }}</span>{% endif %}
           {% if it.corrected %}<span class="pw-badge updated">{{ t('Updated','已更正') }}</span>{% endif %}
-          {% if it.state_asof %}<span class="pw-stage-asof">{{ it.state_asof }}</span>{% endif %}
+          {% if it.state_asof %}<span class="pw-stage-asof" data-state-asof="{{ it.state_asof }}">{{ bl(it.state_asof_en or it.state_asof, it.state_asof_zh or it.state_asof) }}</span>{% endif %}
           {% if it.source and it.source.url %}<a class="pw-stage-src" href="{{ it.source.url }}" rel="nofollow noopener" target="_blank">{{ it.source.label }}</a>{% endif %}
         </div>
       </article>
