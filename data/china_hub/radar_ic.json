@@ -1,43 +1,43 @@
 {
   "schema": "china_radar_ic.v1",
-  "as_of": "2026-09-06",
-  "generated_at": "2026-09-06T12:51:00.410442+00:00",
-  "n_events": 38,
-  "n_matured": 27,
-  "ic_all": 0.0344,
-  "note": "ACCRUING / DORMANT \u2014 horizon=5d, 27 matured sector events. Daily-HAC: 0 dated cross-sections so far (need \u22656 each with \u226510 events). Pooled IC=0.0344 is PROVISIONAL (overlap-inflated; not used by governor). Governor stays at trust=1.0 until the HAC gate clears. CONTEXT-ONLY \u2014 never a trade signal.",
+  "as_of": "2026-09-08",
+  "generated_at": "2026-09-08T15:15:47.622837+00:00",
+  "n_events": 39,
+  "n_matured": 34,
+  "ic_all": -0.0866,
+  "note": "ACCRUING / DORMANT \u2014 horizon=5d, 34 matured sector events. Daily-HAC: 0 dated cross-sections so far (need \u22656 each with \u226510 events). Pooled IC=-0.0866 is PROVISIONAL (overlap-inflated; not used by governor). Governor stays at trust=1.0 until the HAC gate clears. CONTEXT-ONLY \u2014 never a trade signal.",
   "by_horizon": {
     "5": {
+      "n_matured": 34,
+      "ic_all": -0.0866,
+      "ic_daily_hac": {
+        "n_days": 0
+      },
+      "by_sign": {
+        "positive": {
+          "n": 22,
+          "dir_accuracy": 0.455,
+          "mean_signed_fwd_ret": -0.0099
+        },
+        "negative": {
+          "n": 12,
+          "dir_accuracy": 0.75,
+          "mean_signed_fwd_ret": 0.0212
+        }
+      },
+      "note": "ACCRUING / DORMANT \u2014 horizon=5d, 34 matured sector events. Daily-HAC: 0 dated cross-sections so far (need \u22656 each with \u226510 events). Pooled IC=-0.0866 is PROVISIONAL (overlap-inflated; not used by governor). Governor stays at trust=1.0 until the HAC gate clears. CONTEXT-ONLY \u2014 never a trade signal."
+    },
+    "10": {
       "n_matured": 27,
-      "ic_all": 0.0344,
+      "ic_all": -0.1384,
       "ic_daily_hac": {
         "n_days": 0
       },
       "by_sign": {
         "positive": {
           "n": 18,
-          "dir_accuracy": 0.389,
-          "mean_signed_fwd_ret": -0.0155
-        },
-        "negative": {
-          "n": 9,
-          "dir_accuracy": 0.778,
-          "mean_signed_fwd_ret": 0.028
-        }
-      },
-      "note": "ACCRUING / DORMANT \u2014 horizon=5d, 27 matured sector events. Daily-HAC: 0 dated cross-sections so far (need \u22656 each with \u226510 events). Pooled IC=0.0344 is PROVISIONAL (overlap-inflated; not used by governor). Governor stays at trust=1.0 until the HAC gate clears. CONTEXT-ONLY \u2014 never a trade signal."
-    },
-    "10": {
-      "n_matured": 25,
-      "ic_all": -0.0673,
-      "ic_daily_hac": {
-        "n_days": 0
-      },
-      "by_sign": {
-        "positive": {
-          "n": 16,
-          "dir_accuracy": 0.438,
-          "mean_signed_fwd_ret": -0.0189
+          "dir_accuracy": 0.444,
+          "mean_signed_fwd_ret": -0.018
         },
         "negative": {
           "n": 9,
@@ -45,7 +45,7 @@
           "mean_signed_fwd_ret": 0.0223
         }
       },
-      "note": "ACCRUING / DORMANT \u2014 horizon=10d, 25 matured sector events. Daily-HAC: 0 dated cross-sections so far (need \u22656 each with \u226510 events). Pooled IC=-0.0673 is PROVISIONAL (overlap-inflated; not used by governor). Governor stays at trust=1.0 until the HAC gate clears. CONTEXT-ONLY \u2014 never a trade signal."
+      "note": "ACCRUING / DORMANT \u2014 horizon=10d, 27 matured sector events. Daily-HAC: 0 dated cross-sections so far (need \u22656 each with \u226510 events). Pooled IC=-0.1384 is PROVISIONAL (overlap-inflated; not used by governor). Governor stays at trust=1.0 until the HAC gate clears. CONTEXT-ONLY \u2014 never a trade signal."
     },
     "21": {
       "n_matured": 25,
