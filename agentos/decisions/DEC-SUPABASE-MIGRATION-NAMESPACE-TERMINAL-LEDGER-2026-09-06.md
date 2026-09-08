@@ -35,6 +35,12 @@ answer: >
   the python-urllib default UA is rejected by the Cloudflare edge with HTTP 403
   "error code: 1010" (already recorded for scripts/geo_enrich.py and
   scripts/ad_ingest_run.py in DSC:SUPABASE-MANAGEMENT-PAT-EXPIRES-AT-30-DAYS).
+  Measured carrier (review r2, 2026-09-08): the parenthetical above is the original
+  allocation. terminal#514's files include both 0014_tenancy_foundation.sql and
+  0015_team_roles_invitations.sql; terminal#526 is already MERGED (2026-09-07) as
+  B-F12-3 app code over the 0014 foundation, not the 0015 SQL carrier. A successor
+  applies 0014 then 0015 after #514 merges (ledger-number order; one receipt each,
+  comments on #514), then 0016 after #527. Do not wait on #526 to apply 0015.
 rationale: >
   There is no migration runner and no supabase_migrations schema (DSC:TERMINAL-HAS-NO-MIGRATION-LEDGER),
   so a file name is the only ledger the estate has; a second "0011" makes "what has been
@@ -59,10 +65,9 @@ evidence:
   - "GraphQL census of 16 open mastermind-terminal PRs: only #502 (0011_thesis_objects.sql) and #507 (0011_analytics_eid.sql) add migration files"
   - "supabase/migrations/README.md on origin/master: no remote migration history; 0009 applied before 0008"
   - "Charter research/MARKET_ONTOLOGY_META_CEO_CHARTER_2026_09_06.md §5 and §10.4 assign the settlement to Meta-CEO B"
-  - "research/market_intelligence_productization/receipts/supabase_receipt_0012_thesis_objects_2026-09-06.json (0012 thesis_objects applied 2026-09-06)"
+  - "research/market_intelligence_productization/receipts/supabase_receipt_0012_thesis_objects_2026-09-06.json (0012 thesis_objects applied 2026-09-06; project_ref redacted to {ref})"
   - "research/market_intelligence_productization/receipts/supabase_receipt_0013_alert_runs_outbox_2026-09-06.json (0013 alert_runs_outbox applied 2026-09-07)"
-  - "terminal#513 comment (0012)"
-  - "terminal#514 comment id 5563321750 (0013 receipt)"
+  - "terminal#513 issuecomment-5563321750 is the 0013 receipt (html_url .../pull/513#issuecomment-5563321750; body is 'Supabase DDL readback receipt for 0013_alert_runs_outbox.sql'; gh api .../issues/513/comments --jq length = 1). Not on #514."
 affects:
   - "WS:MARKET-OS"
   - "charting-app supabase/migrations/**"

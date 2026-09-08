@@ -22,13 +22,21 @@ changed:
   - path: agentos/handoffs/MARKET-ONTOLOGY-META-CEO-B-2026-09-07.md
     what: "This checkpoint."
   - path: agentos/decisions/DEC-SUPABASE-MIGRATION-NAMESPACE-TERMINAL-LEDGER-2026-09-06.md
-    what: "Amended with the DDL application mechanism (raw_apply.py, curl UA, receipt per migration) and the 0013 receipt."
+    what: "Amended with the DDL application mechanism (raw_apply.py, curl UA, receipt per migration); 0013 receipt bound to terminal#513 issuecomment-5563321750 (not #514); measured-carrier correction that 0015 SQL lives on #514."
+  - path: tests/test_b_rec2_wave_boundary_records.py
+    what: "Review-r2 pins: 0013 receipt is #513 not #514; owed #6958/#6961/#6963; receipt project_ref is {ref}."
   - path: research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv
-    what: "Rows for shipped Terminal packets; MO-PAID-026 -> BUILT_NOT_PROVEN if #6905 merged (scenario object already ships there)."
+    what: "MO-PAID-083 -> PARTIAL (lib + DDL only, terminal#514 tenancy foundation; no user-visible surface yet). No other F00C row edited; #6905 still OPEN so MO-PAID-026 unchanged."
+  - path: research/market_intelligence_productization/receipts/supabase_receipt_0012_thesis_objects_2026-09-06.json
+    what: "0012 thesis_objects apply receipt (project_ref redacted to {ref} per spec item 1)."
+  - path: research/market_intelligence_productization/receipts/supabase_receipt_0013_alert_runs_outbox_2026-09-06.json
+    what: "0013 alert_runs_outbox apply receipt."
   - path: agentos/discoveries/DSC-MACRO-CI-LINUX-POOL-IS-THREE-RUNNERS-AND-STARVES-AT-FLEET-SCALE.md
     what: "Merge throughput on macro is runner-gated (3 org runners); the lever is a Chairman act."
   - path: agentos/discoveries/DSC-TERMINAL-N-BUBBLE-IN-390-CROPS-IS-THE-NEXTJS-DEV-INDICATOR.md
     what: "The 390 'N bubble' in crops is dev chrome, not a product launcher; B-PLAT-7 was re-scoped to exclude dev chrome from captures."
+  - path: agentos/discoveries/DSC-REMOTE-DESKTOP-COMMANDER-WHOLE-HOME-RIPGREPS-SATURATE-THE-HOST.md
+    what: "A remote Desktop Commander session can saturate the host with whole-home ripgreps; kill the rg children only."
 verified:
   - claim: "Terminal #524 (B-F08-4 holdings readout) and #533 (B-PLAT-8) are live at their master merges: efcd98aa (10:0xZ) and 27a55fd4 (09:3xZ), readback comments on each PR."
     command: "bash _post_merge.sh <pr> (ssh terminal-build.sh; curl data-dpl-id readback)"
@@ -42,6 +50,9 @@ verified:
   - claim: "Supabase migration 0013 is APPLIED in production with a receipt."
     command: "python3 ddl/raw_apply.py 0013 (curl user-agent; python-urllib is blocked by Cloudflare 1010)"
     result: "receipt ddl/receipt_0013.json; receipt comment on Terminal #513 = issuecomment-5563321750"
+  - claim: "The production 0013 receipt comment lives on terminal#513, not #514."
+    command: "gh api repos/mastermindx-market-intelligence/mastermind-terminal/issues/comments/5563321750 --jq .html_url; gh api .../issues/513/comments --jq length; gh api .../issues/514/comments"
+    result: "html_url .../pull/513#issuecomment-5563321750; body is the 0013 receipt; #513 comments length=1; #514 has no 0013 receipt"
   - claim: "Terminal #524's tablet-shard red (portfolio-unreadable.spec.ts:119, rows 0 after a 503 re-read) was head-only and is fixed at 8400bb1d."
     command: "external lane t524_r3 (Cursor/Grok): playwright tablet -g 'does not blank a book' 3x pre-fix head, 3x origin/master, 5x final head; reviewer 3x"
     result: "pre-fix 0/3, master 3/3, final 5/5, reviewer 3/3; RED-first unit test portfolioViewFailedReread.test.ts; ratification comment on #524"
@@ -57,13 +68,16 @@ unverified:
   - claim: "#533 (B-PLAT-8) cured the crosshair-price-label :160 case on hosted shards; the :323 case (ex-:310, stationary hover tag hidden / no laid-out box) is a separate race, commissioned as B-PLAT-10 stacked on #534."
     what_would_verify: "The :160 test passing on #435's refreshed head eab62500 (observed once, run 34105565661) holding across the next day of merge-ref runs; B-PLAT-10 reaching 10/10 with retries off and the :323 red disappearing from the armed-PR watcher after it merges."
 unresolved:
-  - "Production DDL 0014 then 0015 (both after Terminal #514 merges) and 0016 (after #527) are not applied; each is a separate Meta-CEO act with receipt."
+  - "Production DDL: apply 0014 then 0015 after Terminal #514 merges (the carrier of both SQL files; gh pr view 514 --json files includes 0014_tenancy_foundation.sql and 0015_team_roles_invitations.sql), then 0016 after #527. terminal#526 is already MERGED (2026-09-07) as B-F12-3 app code over the 0014 foundation, not the 0015 SQL carrier. Each apply is a separate Meta-CEO act with a receipt. DEC:SUPABASE-MIGRATION-NAMESPACE-TERMINAL-LEDGER-2026-09-06 keeps the original allocation parenthetical (0015 after #526) and the measured-carrier correction in the same answer."
+  - "Owed spec items 4-6 (carriers still OPEN at this head): macro #6958 (OPEN e0d39027) memo anchor at its line 39, count denominator label, and K1 'decisive corroboration' cell; macro #6961 (OPEN 96a0056c) docket note that the 'Sol acceptance' opener denotes the Meta-CEO seat under the Chairman override; macro #6963 (OPEN 75a47061) ZH counterparts for the three frozen plain-word strings plus a bilingual EN+ZH acceptance clause on each of the three Acceptance blocks. Edit those files only after the named PR merges into origin/main."
+  - "Owed spec item 11: macro #6971 (OPEN e220bc66) — rewrite DSC-SPARSE-MINT-FAILS-SILENTLY-ON-STALE-LOCKS falsifier/so_what to the shipped lsof probe, and correct the Linux git-dir comment in tests/test_worktree_sparse.py."
+  - "Owed spec item 12: macro #6905 (OPEN cc651114) — F00C row MO-PAID-026 to BUILT_NOT_PROVEN with the B-F07-1 state_delta / next_bounded_child."
   - "F07 follow-on = user-adjustable assumptions (design lane, after #6905 merges); NOT a rebuild of the scenario object."
   - "B-F06-3 waits on macro #6920 + #6831; B-PLAT-5 waits on the first tests/test_market_ontology_*.py on main."
   - "Chairman decisions pending: add ci-linux runners or throttle main baselines; arm the fleet worktree GC; ban isolation:'worktree' spawns."
 next_actions:
   - "DONE 11:1xZ: #533 and #534 merged and live (27a55fd4, 7c420f87). B-PLAT-10 = #535 ratified, ready, armed; its stacked-squash merge conflict onto master is being resolved by an external lane (round 2). On #535 merge: post-merge chain, then refresh the heads still red on crosshair :323 (#435, #522, #514, #520 as applicable)."
-  - "Terminal #514 (0014+0015) and #527 (0016) went DIRTY when B-PLAT-1 (#512) rewrote supabase/migrations/README.md: #514 is being merged onto master by an external lane (README law text from master + the 0014/0015 reservation rows; SQL bytes unchanged); #527 gets the same round only AFTER #514 merges so the README rows merge once. On #514 merge: deploy + live proof, then DDL 0014, then 0015, each via ddl/raw_apply.py with a receipt comment on #514 and the receipt file committed in the next records PR; on #527 merge: 0016 the same way."
+  - "Terminal #514 (0014+0015 SQL) and #527 (0016) went DIRTY when B-PLAT-1 (#512) rewrote supabase/migrations/README.md: #514 is being merged onto master by an external lane (README law text from master + the 0014/0015 reservation rows; SQL bytes unchanged); #527 gets the same round only AFTER #514 merges so the README rows merge once. On #514 merge: deploy + live proof, then apply DDL 0014, then 0015 (do not wait on already-merged #526), each via ddl/raw_apply.py with a receipt comment on #514 and the receipt file committed in the next records PR; on #527 merge: 0016 the same way."
   - "On every Terminal merge: post-merge chain + readback comment; foreign merges (#501 R1-C1, #497, #445, #429, #422) knock every armed head BEHIND, so refresh in batches of 4 and let the hosted queue drain."
   - "On macro #6903 merge: this records PR (B-REC-2) lands the handoff; post ONE wave comment on macro#6819 (never a second ACK)."
   - "Ratification follow-ups owed in later copy/test sweeps: #6918 ZH label marker; #6920 equalities text; #6925 BL test binding; #6906 queued-cause label; #6921 drop_reason EN/ZH gloss; #6959 answers-under-entries decision; #6964 spec §2 Amendment-2 attribution; T#517 ZH 390 drillback crops; T#519 unclassified fixture row; T#490 capture-log regen; T#532 flag test; T#524 EN overflow line as a sentence; T#534 'one repeated sample' comment wording."
@@ -72,7 +86,7 @@ do_not_redo:
   - "Do not re-review a PR whose latest ratification comment names its current head; the ratification is the visible marker (T#524 @8400bb1d, T#534 @2fe85871, T#490 r9, T#519 r3, T#520, T#522, T#533; macro #6962, #6964, #6971, #6921, #6959)."
   - "Do not build B-F07-2 (MO-PAID-026): #6905 already ships the cautious/base/upbeat scenario object; the true follow-on is user-adjustable assumptions through the design lane."
   - "Do not build B-F12-7 (public API/webhooks): refused for v0 in #6925."
-  - "Do not apply DDL out of ledger order or without a receipt: 0013 applied; 0014 -> 0015 -> 0016 in that order, after their carrier PRs merge (DEC:SUPABASE-MIGRATION-NAMESPACE-TERMINAL-LEDGER-2026-09-06)."
+  - "Do not apply DDL out of ledger order or without a receipt: 0013 applied; 0014 -> 0015 after terminal#514 merges (the SQL carrier of both), then 0016 after #527. Do not treat already-merged terminal#526 as the 0015 apply trigger (DEC:SUPABASE-MIGRATION-NAMESPACE-TERMINAL-LEDGER-2026-09-06)."
   - "Do not fix the chart pointer flakes per PR (crosshair-price-label :160 -> #533 merged; :323 ex-:310 -> B-PLAT-10; marker-tooltip :366 and indicator-prim-tooltip :287 -> #534): attribute, rerun, wait."
   - "Do not run Claude Agent/Workflow spawns for fix, review, build or census rounds: the Chairman (2026-09-07 06:00Z) routes them to Cursor CLI (Grok 4.6) and Grok CLI; the driver is the session scratchpad's ext/lane.py (cursor-agent -p needs --trust --force --sandbox disabled)."
   - "Do not refresh (update-branch) a Terminal head whose external lane is mid-flight; the lane's push would be non-fast-forward and the round is wasted."
@@ -94,10 +108,19 @@ prs:
   - 6903
   - 6905
   - 6955
+  - 6958
+  - 6961
+  - 6963
+  - 6971
+  - 6981
 decisions:
   - "DEC:SUPABASE-MIGRATION-NAMESPACE-TERMINAL-LEDGER-2026-09-06"
   - "DEC:TERMINAL-SHELL-IS-DARK-ONLY-EVIDENCE-MATRIX-2026-09-06"
   - "DEC:CHAIRMAN-FRONTEND-PLAIN-LANGUAGE-LAW-2026-09-06"
+discoveries:
+  - "DSC:MACRO-CI-LINUX-POOL-IS-THREE-RUNNERS-AND-STARVES-AT-FLEET-SCALE"
+  - "DSC:TERMINAL-N-BUBBLE-IN-390-CROPS-IS-THE-NEXTJS-DEV-INDICATOR"
+  - "DSC:REMOTE-DESKTOP-COMMANDER-WHOLE-HOME-RIPGREPS-SATURATE-THE-HOST"
 ---
 
 # Meta-CEO B — Wave 1 checkpoint (2026-09-07)
@@ -125,6 +148,9 @@ Filled 2026-09-08 01:15 UTC.
 | macro | #6962 | [MO-BB3c] B-F09-5: Filing-text covenant extraction producer (source-first slice) | OPEN 1824f418 |
 | macro | #6964 | [MO-BB4] B-F13-4: F13 personal accuracy ledger: how a user's own claims get scored, and what the number may never be used for | OPEN 1232d046 |
 | macro | #6971 | sparse mint: stale-lock fix | OPEN e220bc66 |
+| macro | #6958 | B-A-F04-3 identity archaeology memo (spec item 4 owed) | OPEN e0d39027 |
+| macro | #6961 | B-A-F04-K1 K-chain docket (spec item 5 owed) | OPEN 96a0056c |
+| macro | #6963 | B-F11-3 F11 post-vertical contract (spec item 6 owed) | OPEN 75a47061 |
 | terminal | #514 | B-F12-1 tenancy 0014 + 0015 + B-F12-3 code (r4 @d883dbcf; DDL after merge) | OPEN 2b47084c |
 | terminal | #527 | migration 0016 (DDL after merge) | OPEN 33030ee4 |
 | terminal | #524 | B-F08-4 holdings risk readout (r3 @8400bb1d) | MERGED efcd98aa |

@@ -2,7 +2,7 @@
  "file": "supabase/migrations/0012_thesis_objects.sql",
  "source_ref": "mastermind-terminal master d4556962 (PR #502)",
  "sha256": "1fe4450222ef646862002546b7dfc192af42c0f50434df1980553709a0ebe12a",
- "project_ref": "fsldfzlxyavsuwqbceod",
+ "project_ref": "{ref}",
  "apply_mode": "raw-management-api-fallback (README 'How DDL actually lands'); scripts/supabase_apply.py@618915c8 aborted at pre-readback parsing a prose comment line as SQL",
  "applied_at": "2026-09-06T19:20:32.240448Z",
  "readback_statements": [],
