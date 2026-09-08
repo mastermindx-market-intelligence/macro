@@ -22,9 +22,12 @@ changed:
   - path: agentos/handoffs/MARKET-ONTOLOGY-META-CEO-B-2026-09-08.md
     what: "This seat-transfer record."
 verified:
+  - claim: "Both detached lanes finished PASS: #6981 r4 at 479f9725 (legacy-jobs.yml conflict resolved: main's file + the one-line pin-suite wiring; contract-delta 0 introduced; B=M=m=0; ratified) and the docket consolidation is macro #6997 at ecaf8f8e (13 files = union of #6963 #6964 #6965 #6924; B=M=0, m=1; ready + merge-on-green)."
+    command: "cat ext/lanes/m6981_r4.json ext/lanes/m_bb4_consol.json (LANE_DONE lines); gh pr view 6981/6997 --json headRefOid,mergeStateStatus,isDraft,labels,files"
+    result: "LANE_DONE m6981_r4 verdict=PASS checked_head=479f9725; LANE_DONE m_bb4_consol verdict=PASS pr=6997 checked_head=ecaf8f8e; #6997 draft=false labels=merge-on-green files=13"
   - claim: "Terminal #514 merged as cff58ee8 (22:14Z 2026-09-08) and Supabase migrations 0014 then 0015 are APPLIED in production in ledger order."
     command: "python3 ddl/raw_apply.py 0014_tenancy_foundation.sql receipt_0014.json 0014_tenancy_foundation; python3 ddl/raw_apply.py 0015_team_roles_invitations.sql receipt_0015.json 0015_team_roles_invitations (SQL fetched from origin/master via the contents API; the merge commit carries both files + RESERVATIONS.json)"
-    result: "0014: apply_status 201, tables teams/team_members/team_invites present with RLS, 5/5 indexes, 8/8 policies, 3/3 functions, MISSING=[]; 0015: 201, workspace_settings present, 1/1 index, 4/4 policies, accept_team_invite present, MISSING=[]; receipt comment posted on terminal#514; receipts contain no ref/token shapes"
+    result: "0014: apply_status 201, tables teams/team_members/team_invites present with RLS, 5/5 indexes, 8/8 policies, 3/3 functions, MISSING=[]; 0015: 201, workspace_settings present, 1/1 index, 4/4 policies, accept_team_invite present, MISSING=[]; receipt comment posted on terminal#514; receipts contain no ref/token shapes. DISCLOSED on #514 (issuecomment-5592751149): the receipts' pre block shows every object already existed before this apply (to_regclass non-null), so this run was an idempotent confirmation, not the first application; first actor unknown"
   - claim: "Four concluded-green half-B macro PRs were squash-merged by hand at 19:35Z and are on origin/main: #6953 records T17 (be460cd7), #6961 B-A-F04-K1 docket (5dca9478), #6926 B-F09-6 commodity coverage matrix + policy chip (8e3bb1a4), #6919 B-F13-2 specs 057/058 (8ec42a8e)."
     command: "gh pr merge <n> --squash; gh pr list --state all --search '6953 6961 6963 6964 6965 6926 6919' --json number,state,mergeCommit; git cat-file -e origin/main:<a file from each PR>"
     result: "4 MERGED with the shas above; each PR's files present on origin/main b166c1f4. #6926 is code+templates: render.yml runs 34269887088 (8e3bb1a4) and 34269924888 (ad021359) were queued at 19:36Z; the successor confirms the covering render concludes success."
@@ -41,13 +44,13 @@ verified:
     command: "gh run list --workflow ci.yml --branch main --limit 3; gh run view 34254347989 --json jobs"
     result: "ci-pack-0 | ci-gate. Half-B PR reds are on other packs (5/7/9/10) and contract-delta, so they are not this red; classify each against main before healing."
 unverified:
-  - claim: "The two external lanes left running detached (m6981_r4 and m_bb4_consol) finish and push."
-    what_would_verify: "ext/lanes/m6981_r4.json and ext/lanes/m_bb4_consol.json exist with a verdict; gh pr view 6981 shows a new head that is conflict-free against main; a new PR titled '[MO-BB4] B-BB4-CONSOLIDATION ...' exists on branch claude/mo-b-bb4-docket-consolidation-20260908."
+  - claim: "Terminal #527 lane t527_r3 (launched detached 22:28Z: merge onto master + RESERVATIONS 0016 taken) finishes with a PASS and #527 merges; 0016 is then applied with a receipt."
+    what_would_verify: "ext/lanes/t527_r3.json verdict PASS; gh pr view 527 MERGED; ddl/receipt_0016.json with MISSING=[] and its pre block read (existing vs created)."
   - claim: "The render lane covering #6926 (8e3bb1a4 or a later main descendant) concludes success."
     what_would_verify: "gh run list --workflow render.yml --limit 3 shows success at a sha >= 8e3bb1a4; note run 34243540667 (15:15Z, df4029bb) failed BEFORE these merges and is not ours."
 unresolved:
-  - "macro#6981 (B-REC-2, CI-authority edit): lane m6981_r4 is resolving the legacy-jobs.yml conflict; on its PASS verdict post a ratification comment naming the new head, keep merge-on-green, wait for concluded checks, merge by hand on green. Merged head clears the Stop guard only via a green main ci.yml run on a descendant (authority_changed)."
-  - "Consolidation PR (lane m_bb4_consol, branch claude/mo-b-bb4-docket-consolidation-20260908): on PASS, mark ready, arm merge-on-green, merge on concluded green, then CLOSE #6963 #6964 #6965 #6924 as SUPERSEDED with a comment quoting the per-file 2-dot proof (git diff origin/<pr-branch> HEAD -- <file> empty). Never merge those four individually."
+  - "macro#6981 (B-REC-2, CI-authority edit): r4 PASS at 479f9725, ratified, armed; wait for concluded checks, merge by hand on green. Merged head clears the Stop guard only via a green main ci.yml run on a descendant (authority_changed)."
+  - "Consolidation PR = macro #6997 (ecaf8f8e, ready, armed): merge on concluded green, then CLOSE #6963 #6964 #6965 #6924 as SUPERSEDED with a comment quoting the per-file 2-dot proof (git diff origin/<pr-branch> HEAD -- <file> empty). Never merge those four individually."
   - "Red half-B macro PRs still owed a heal round each (classify against main first; a pack red that main's newest green run passed is yours): #6962 pack-10; #6959 pack-5; #6921 pack-7; #6920 pack-5; #6918 pack-7+pack-10; #6906 pack-7; #6905 pack-9; contract-delta on #6958 #6925(also DIRTY) #6909 #6904. Pending (CI queue): #6971 #6966 #6960 #6957. Drafts not armed: #6927 (B-F09-4), #6907 (B-F08-1a)."
   - "Production DDL: 0014 and 0015 APPLIED 22:27Z 2026-09-08 (receipts ddl/receipt_0014.json, receipt_0015.json in the kit; receipt comment on terminal#514). Remaining: after Terminal #527 merges (lane t527_r3 launched detached 22:29Z: merge onto master + RESERVATIONS 0016 taken), run _post_merge.sh 527 then apply 0016 with ddl/raw_apply.py the same way and post its receipt; the three redacted receipt files go in the next records PR."
   - "Owed later (unchanged from the 09-07 record): spec items 4-6/11/12 when #6958/#6963/#6971/#6905 merge; F07 follow-on (user-adjustable assumptions, design lane) after #6905; B-F06-3 after #6920 + #6831; B-PLAT-5 after the first tests/test_market_ontology_*.py on main; plain-language follow-ups listed there."
@@ -112,8 +115,8 @@ everything else while the host is up, but it is not durable.
 
 | Repo | PR | Head | State | Next act |
 |---|---|---|---|---|
-| macro | #6981 B-REC-2 records + Wave 1 handoff | e9d2e24e | DIRTY (legacy-jobs.yml), 9 pending | lane m6981_r4 running; ratify on PASS; merge on concluded green |
-| macro | consolidation of #6963 #6964 #6965 #6924 | (lane opens it) | lane m_bb4_consol running | ready + arm on PASS; merge; close the four as superseded |
+| macro | #6981 B-REC-2 records + Wave 1 handoff | 479f9725 | r4 PASS, armed, checks running | merge on concluded green |
+| macro | #6997 consolidation of #6963 #6964 #6965 #6924 | ecaf8f8e | PASS, ready, armed, checks running | merge on concluded green; then close the four as superseded (2-dot proof) |
 | macro | #6963 #6964 #6965 #6924 | 75a47061 1232d046 a7bd34c4 1ec36266 | DIRTY on waivers.yml | do not merge individually |
 | macro | #6962 #6959 #6921 #6920 #6918 #6906 #6905 | see PR | merge-blocked, pack reds | classify vs main, one heal round each on the Cursor lane |
 | macro | #6958 #6925 #6909 #6904 | see PR | merge-blocked, contract-delta | wire the new suite into legacy-jobs.yml (no waiver) |
