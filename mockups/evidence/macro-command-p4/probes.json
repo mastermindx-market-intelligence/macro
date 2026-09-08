@@ -10,6 +10,7 @@
       "panel_cw": 1006,
       "rail_sw": 232,
       "rail_cw": 232,
+      "mmbBootDisplay": "flex",
       "panel_ok": true,
       "doc_ok": true
     },
@@ -23,6 +24,7 @@
       "panel_cw": 1006,
       "rail_sw": 232,
       "rail_cw": 232,
+      "mmbBootDisplay": "flex",
       "panel_ok": true,
       "doc_ok": true
     },
@@ -36,6 +38,7 @@
       "panel_cw": 1006,
       "rail_sw": 232,
       "rail_cw": 232,
+      "mmbBootDisplay": "flex",
       "panel_ok": true,
       "doc_ok": true
     },
@@ -49,6 +52,7 @@
       "panel_cw": 1006,
       "rail_sw": 232,
       "rail_cw": 232,
+      "mmbBootDisplay": "flex",
       "panel_ok": true,
       "doc_ok": true
     },
@@ -61,7 +65,8 @@
       "panel_sw": 694,
       "panel_cw": 694,
       "rail_sw": 1395,
-      "rail_cw": 570,
+      "rail_cw": 548,
+      "mmbBootDisplay": "none",
       "panel_ok": true,
       "doc_ok": true
     },
@@ -74,7 +79,8 @@
       "panel_sw": 694,
       "panel_cw": 694,
       "rail_sw": 1180,
-      "rail_cw": 609,
+      "rail_cw": 587,
+      "mmbBootDisplay": "none",
       "panel_ok": true,
       "doc_ok": true
     },
@@ -87,7 +93,8 @@
       "panel_sw": 694,
       "panel_cw": 694,
       "rail_sw": 1395,
-      "rail_cw": 570,
+      "rail_cw": 548,
+      "mmbBootDisplay": "none",
       "panel_ok": true,
       "doc_ok": true
     },
@@ -100,7 +107,8 @@
       "panel_sw": 694,
       "panel_cw": 694,
       "rail_sw": 1180,
-      "rail_cw": 609,
+      "rail_cw": 587,
+      "mmbBootDisplay": "none",
       "panel_ok": true,
       "doc_ok": true
     },
@@ -113,7 +121,8 @@
       "panel_sw": 324,
       "panel_cw": 324,
       "rail_sw": 1395,
-      "rail_cw": 200,
+      "rail_cw": 178,
+      "mmbBootDisplay": "none",
       "panel_ok": true,
       "doc_ok": true
     },
@@ -126,7 +135,8 @@
       "panel_sw": 324,
       "panel_cw": 324,
       "rail_sw": 1180,
-      "rail_cw": 239,
+      "rail_cw": 217,
+      "mmbBootDisplay": "none",
       "panel_ok": true,
       "doc_ok": true
     },
@@ -139,7 +149,8 @@
       "panel_sw": 324,
       "panel_cw": 324,
       "rail_sw": 1395,
-      "rail_cw": 200,
+      "rail_cw": 178,
+      "mmbBootDisplay": "none",
       "panel_ok": true,
       "doc_ok": true
     },
@@ -152,7 +163,8 @@
       "panel_sw": 324,
       "panel_cw": 324,
       "rail_sw": 1180,
-      "rail_cw": 239,
+      "rail_cw": 217,
+      "mmbBootDisplay": "none",
       "panel_ok": true,
       "doc_ok": true
     }
@@ -172,8 +184,8 @@
     "macro_national_debt_liabilities.html",
     "macro_trade_flows.html"
   ],
-  "head_sha_at_capture": "4e49087cddf62c6f19c41b09dae8cc06fa22f1ae",
-  "captured_at": "2026-09-08T10:44:29Z",
+  "head_sha_at_capture": "5f7eba8d15a3b27935417f4304d9d53f4ef45305",
+  "captured_at": "2026-09-08T11:21:44Z",
   "pre_commit": false,
-  "capture_sha": "4e49087cddf62c6f19c41b09dae8cc06fa22f1ae"
+  "capture_sha": "5f7eba8d15a3b27935417f4304d9d53f4ef45305"
 }
