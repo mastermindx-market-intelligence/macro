@@ -245,6 +245,36 @@ def test_css_defines_both_root_and_light_for_every_theme_differing_token(macro_c
         f"light-only tokens with no dark default: {light_names - root_names}"
 
 
+def test_le768_rail_is_opaque_flat_bg_like_the_shell(macro_command_css: str) -> None:
+    """B1: the sticky ≤768 rail stays opaque --bg; the shell is the same
+    flat canvas (no gradient), so chips never paint over page text."""
+    block = re.search(r'@media \(max-width: 768px\) \{(.*?)(?=\n@media|\Z)',
+                      macro_command_css, re.S)
+    assert block, "missing ≤768 block"
+    body = block.group(1)
+    assert re.search(r'\.mc-shell\s*\{[^}]*background:\s*var\(--bg\)', body, re.S)
+    assert re.search(r'\.mc-shell\s*\{[^}]*background-image:\s*none', body, re.S)
+    sticky = re.search(
+        r'\.mc-rail\s*\{[^}]*position:\s*sticky[^}]*background:\s*var\(--bg\)',
+        body, re.S)
+    assert sticky, "sticky ≤768 rail must paint opaque var(--bg)"
+    assert not re.search(
+        r'\.mc-rail\s*\{[^}]*position:\s*sticky[^}]*background:\s*transparent',
+        body, re.S)
+
+
+def test_le480_panel_padding_clears_the_ask_pill(macro_command_css: str) -> None:
+    """M1: ≤480 panel tail padding is 148px so the whole Overview body
+    (fifth row, count, caption) can sit above the fixed pill."""
+    block = re.search(r'@media \(max-width: 480px\) \{(.*?)(?=\n@media|\Z)',
+                      macro_command_css, re.S)
+    assert block
+    body = block.group(1)
+    assert re.search(r'\.mc-panel\s*\{[^}]*padding-bottom:\s*148px', body, re.S)
+    assert re.search(r'#overview\s+\.mc-caption\s*\{[^}]*margin-bottom:\s*148px',
+                     body, re.S)
+
+
 def test_stance_wash_is_a_percentage_in_both_themes(macro_command_css: str) -> None:
     """D3: `--mc-stance-wash: transparent` would make the `color-mix(...)`
     declaration invalid at computed-value time and silently drop the rule."""

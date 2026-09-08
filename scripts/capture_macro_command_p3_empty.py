@@ -125,7 +125,8 @@ def _build_memory_hub(tmp: Path, empty_id: str, mutate_entries) -> Path:
     mutate_entries(entries)
     env = builder._environment(ROOT)
     builder.build_hub(entries, out_dir=out, env=env, root=ROOT,
-                      page_built_at="2026-09-06T00:00:00Z")
+                      page_built_at="2026-09-06T00:00:00Z",
+                      allow_empty_state_fixture=True)
     for asset in builder.SHARED_ASSETS:
         shutil.copy2(ROOT / "templates" / asset, out / asset)
     if empty_id == "e4":

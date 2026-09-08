@@ -765,11 +765,12 @@ def _input_note_from_view(view: Mapping[str, Any]) -> bool:
     return False
 
 
-def _entitlement_plan(snapshot: Mapping[str, Any] | None) -> str | None:
+def _entitlement_plan(snapshot: Mapping[str, Any] | None, *,
+                      allow_fixture_keys: bool = False) -> str | None:
     """Fixture-only plan name. Production snapshots never carry this key
-    (contract additionalProperties:false); tests and empty-state evidence
-    inject it on the in-memory entry after read."""
-    if not snapshot:
+    (contract additionalProperties:false). The production path ignores it
+    unless ``--empty-state-fixture`` (or ``allow_fixture_keys``) is set."""
+    if not allow_fixture_keys or not snapshot:
         return None
     raw = snapshot.get("entitlement")
     if isinstance(raw, str) and raw.strip():
@@ -781,17 +782,33 @@ def _entitlement_plan(snapshot: Mapping[str, Any] | None) -> str | None:
 
 def _command_tab_withheld(snapshot: Mapping[str, Any] | None,
                           view: Mapping[str, Any] | None,
-                          tab_id: str) -> bool:
+                          tab_id: str, *,
+                          allow_fixture_keys: bool = False) -> bool:
     """E4: a Command sub-tab whose withheld list names it.
 
     Production ``view.withheld_tabs`` uses workspace-page ids (scenario /
-    alerts). A fixture may also set ``withheld_command_tabs`` on the
-    in-memory snapshot so the real builder can emit E4.
+    alerts). Those ids are unioned with the Command tab id so a future
+    workspace that withholds a Command tab by the same token still fires
+    E4 (disclosed: today's withheld ids do not collide). The
+    contract-forbidden ``withheld_command_tabs`` snapshot key is read
+    only when ``--empty-state-fixture`` / ``allow_fixture_keys`` is set.
     """
     named = {str(item.get("tab_id") or "")
              for item in ((view or {}).get("withheld_tabs") or [])}
-    extra = {str(item) for item in ((snapshot or {}).get("withheld_command_tabs") or [])}
+    extra: set[str] = set()
+    if allow_fixture_keys:
+        extra = {str(item) for item in ((snapshot or {}).get("withheld_command_tabs") or [])}
     return bool(tab_id) and tab_id in (named | extra)
+
+
+def _apply_empty_voice(empty: Mapping[str, Any] | None) -> dict[str, Any] | None:
+    """One null voice: the empty state's own title is the section stance."""
+    if not empty:
+        return None
+    spec = L.EMPTY_STATES.get(str(empty.get("id") or ""))
+    if not spec:
+        return None
+    return {"text": dict(spec["title"]), "tone": "neutral"}
 
 
 def _figure_or_empty_for_workspace(snapshot: Mapping[str, Any] | None, *,
@@ -841,7 +858,9 @@ def _boundary_watching(section_id: str, snapshot: Mapping[str, Any] | None,
 
 
 def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
-                            page_built_at: str) -> list[dict[str, Any]]:
+                            page_built_at: str,
+                            allow_empty_state_fixture: bool = False,
+                            ) -> list[dict[str, Any]]:
     """Build the `sections` template context from the static SECTIONS constant.
 
     P3 populates question / stance / primer / caption / watching for the first
@@ -887,6 +906,7 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
         else:
             detail_links = [_detail_link(title_by_workspace, section.workspace_id, section.deep_href)]
 
+        snap = None
         stance = None
         primer = None
         caption = None
@@ -964,12 +984,16 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
                                 if tab_snap else None)
                     tab_figure = tab_empty = None
                     if has_copy:
-                        if _command_tab_withheld(tab_snap, tab_view, tab.id):
+                        if _command_tab_withheld(
+                                tab_snap, tab_view, tab.id,
+                                allow_fixture_keys=allow_empty_state_fixture):
                             tab_figure, tab_empty = None, _empty_state("e4")
                         else:
                             tab_figure, tab_empty = _figure_or_empty_for_workspace(
                                 tab_snap, view=tab_view, href=tab.deep_href,
-                                entitlement=_entitlement_plan(tab_snap))
+                                entitlement=_entitlement_plan(
+                                    tab_snap,
+                                    allow_fixture_keys=allow_empty_state_fixture))
                     if tab_view:
                         notes.append(_input_note_from_view(tab_view))
                     subtabs.append({
@@ -984,17 +1008,22 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
             elif has_copy:
                 figure, empty = _figure_or_empty_for_workspace(
                     snap, view=view, href=section.deep_href,
-                    entitlement=_entitlement_plan(snap))
+                    entitlement=_entitlement_plan(
+                        snap, allow_fixture_keys=allow_empty_state_fixture))
 
-        # M6: one null voice. E2 figure → E2 stance (never the structural
-        # "no single reading"). m1: an E2 slot has no rows, so drop the
-        # "each row shows…" caption.
-        if has_copy and empty and empty.get("id") == "e2":
-            stance = {
-                "text": dict(L.EMPTY_STATES["e2"]["title"]),
-                "tone": "neutral",
-            }
+        # M2: one null voice for every empty slot, not only E2. A figure
+        # with no rows drops the "each row shows…" caption; a section-level
+        # empty replaces the stance with that state's own title.
+        slot_empty = empty
+        if subtabs:
+            slot_empty = empty or next(
+                (tab.get("empty") for tab in subtabs if tab.get("empty")), None)
+        if has_copy and slot_empty:
             caption = None
+        if has_copy and empty:
+            voiced = _apply_empty_voice(empty)
+            if voiced:
+                stance = voiced
 
         empty_e5 = None if is_overview else _empty_state(
             "e5", cta_href=section.deep_href or (
@@ -1018,7 +1047,10 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
             "figure": figure,
             "empty": empty,
             "empty_e5": empty_e5,
-            "entitlement": _entitlement_plan(snap) if not is_overview else None,
+            "entitlement": (
+                _entitlement_plan(snap, allow_fixture_keys=allow_empty_state_fixture)
+                if not is_overview else None
+            ),
             "dests_title": (
                 {
                     "en": f"Where to go next — {len(overview_links)} destination pages",
@@ -1088,7 +1120,8 @@ def _plain_as_of_display(iso_date: str) -> dict[str, str] | None:
 
 
 def build_hub(entries: Sequence[Mapping[str, Any]], *, out_dir: Path,
-              env: Environment, root: Path, page_built_at: str) -> Path:
+              env: Environment, root: Path, page_built_at: str,
+              allow_empty_state_fixture: bool = False) -> Path:
     """Render the suite hub from what the fourteen pages just read.
 
     The hub reads NO artifact of its own. Every row is the snapshot (or the typed
@@ -1106,7 +1139,9 @@ def build_hub(entries: Sequence[Mapping[str, Any]], *, out_dir: Path,
     tally's "today" cut.
     """
     header = macro_suite_view.build_command_header(entries, page_built_at=page_built_at)
-    sections = _macro_command_sections(entries, page_built_at=page_built_at)
+    sections = _macro_command_sections(
+        entries, page_built_at=page_built_at,
+        allow_empty_state_fixture=allow_empty_state_fixture)
     fragment_paths = write_fragments(env, sections, out_dir)
     html = env.get_template(HUB_PAGE.template).render(
         page_title="Macro & Monetary",
@@ -1137,8 +1172,30 @@ def build_hub(entries: Sequence[Mapping[str, Any]], *, out_dir: Path,
     return destination
 
 
+def _apply_empty_state_fixture(entries: list[Mapping[str, Any]],
+                               fixture: Mapping[str, Any]) -> None:
+    """Mutate in-memory entries from a capture-only sidecar. Never a snapshot."""
+    workspace_id = fixture.get("workspace_id")
+    if not workspace_id:
+        return
+    for entry in entries:
+        if entry.get("workspace_id") != workspace_id:
+            continue
+        snap = entry.get("snapshot")
+        if not isinstance(snap, dict):
+            continue
+        empty_id = str(fixture.get("empty_id") or "")
+        if empty_id == "e4" or fixture.get("withheld_command_tabs"):
+            tabs = fixture.get("withheld_command_tabs") or [fixture.get("subtab")]
+            snap["withheld_command_tabs"] = [str(tab) for tab in tabs if tab]
+        if empty_id == "e6" or fixture.get("entitlement"):
+            plan = fixture.get("entitlement") or "Research"
+            snap["entitlement"] = str(plan)
+
+
 def render(root: Path | str = _REPO_ROOT, *, data_root: Path | str | None = None,
-           out_dir: Path | str | None = None, page_built_at: str | None = None) -> list[Path]:
+           out_dir: Path | str | None = None, page_built_at: str | None = None,
+           empty_state_fixture: Path | str | None = None) -> list[Path]:
     """Render every registered suite page plus the shared assets."""
     root = Path(root).resolve()
     site = Path(out_dir) if out_dir else root / "site"
@@ -1146,6 +1203,10 @@ def render(root: Path | str = _REPO_ROOT, *, data_root: Path | str | None = None
     data = Path(data_root) if data_root else root / "site" / "macrodata"
     stamp = page_built_at or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     env = _environment(root)
+    fixture_doc: Mapping[str, Any] | None = None
+    if empty_state_fixture:
+        fixture_path = Path(empty_state_fixture)
+        fixture_doc = json.loads(fixture_path.read_text(encoding="utf-8"))
 
     written: list[Path] = []
     entries: list[Mapping[str, Any]] = []
@@ -1154,8 +1215,11 @@ def render(root: Path | str = _REPO_ROOT, *, data_root: Path | str | None = None
                                       page_built_at=stamp)
         written.append(path)
         entries.append(entry)
+    if fixture_doc:
+        _apply_empty_state_fixture(entries, fixture_doc)
     written.append(build_hub(entries, out_dir=site, env=env, root=root,
-                            page_built_at=stamp))
+                            page_built_at=stamp,
+                            allow_empty_state_fixture=bool(fixture_doc)))
     for asset in SHARED_ASSETS:
         _atomic_copy(root / "templates" / asset, site / asset)
     return written
@@ -1168,9 +1232,15 @@ def main(argv: list[str] | None = None) -> int:
                         help="macrodata root holding workspaces/ (default: <root>/site/macrodata)")
     parser.add_argument("--out-dir", type=Path, default=None,
                         help="output directory (default: <root>/site)")
+    parser.add_argument(
+        "--empty-state-fixture", type=Path, default=None,
+        help="Capture-only sidecar JSON. Production builds omit this flag and "
+             "ignore contract-forbidden snapshot keys (entitlement, "
+             "withheld_command_tabs).")
     args = parser.parse_args(argv)
     try:
-        pages = render(args.root, data_root=args.data_root, out_dir=args.out_dir)
+        pages = render(args.root, data_root=args.data_root, out_dir=args.out_dir,
+                       empty_state_fixture=args.empty_state_fixture)
     except Exception as exc:  # noqa: BLE001 — a precise non-zero helps the shared render lane
         print(f"::error title=macro_suite_pages::build failed ({type(exc).__name__}: {exc})", flush=True)
         return 1

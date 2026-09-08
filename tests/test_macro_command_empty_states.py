@@ -79,3 +79,31 @@ def test_e6_interpolates_the_plan_name_in_both_languages() -> None:
     assert "Research" in state["why"]["en"]
     assert "Research" in state["why"]["zh"]
     assert "{plan}" not in state["why"]["en"]
+
+
+def test_one_null_voice_drops_caption_and_matches_stance_for_e1_through_e6() -> None:
+    """M2: every empty state's title is the stance; caption is not the explanation."""
+    from lib import macro_suite_labels as L
+    for empty_id in ("e1", "e2", "e3", "e4", "e5", "e6"):
+        kwargs = {}
+        if empty_id == "e5":
+            kwargs["cta_href"] = "macro_rates_curves.html"
+        if empty_id == "e6":
+            kwargs["plan"] = "Pro"
+        empty = builder._empty_state(empty_id, **kwargs)
+        voice = builder._apply_empty_voice(empty)
+        assert voice is not None, empty_id
+        assert voice["text"]["en"] == L.EMPTY_STATES[empty_id]["title"]["en"]
+        assert voice["text"]["zh"] == L.EMPTY_STATES[empty_id]["title"]["zh"]
+        html = _render_empty(empty)
+        assert "Each row shows the last two readings" not in html
+        assert empty["title"]["en"] in html
+
+
+def test_e1_stance_and_slot_are_the_same_sentence() -> None:
+    """m-a: E1 says one cause — stance title == slot title."""
+    empty = builder._empty_state("e1")
+    voice = builder._apply_empty_voice(empty)
+    assert voice["text"]["en"] == empty["title"]["en"]
+    assert voice["text"]["en"] == "We don't have this reading yet"
+    assert "could not be read today" not in voice["text"]["en"]

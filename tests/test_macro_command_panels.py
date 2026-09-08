@@ -129,9 +129,10 @@ def test_p3_non_overview_dom_order(built: tuple[str, Path]) -> None:
         assert "mc-stance" in order
         assert "mc-primer" in order
         assert "mc-figure" in order
-        # m1: an E2 figure has no rows, so the "each row shows…" caption is dropped.
-        if ('data-mc-empty="e2"' in panel
-                or "Today's number didn't arrive" in unescape(panel)):
+        # M2: a section-level empty (live #rates is E2) drops the caption.
+        # The hidden E5 <template> also carries data-mc-empty — ignore it.
+        text = unescape(panel)
+        if "Today's number didn't arrive" in text:
             assert "mc-caption" not in order
         else:
             assert "mc-caption" in order, (section_id, order)
@@ -443,12 +444,14 @@ def test_e4_fires_when_a_command_subtab_is_withheld() -> None:
     for entry in entries:
         if entry["workspace_id"] == "liquidity_central_banks":
             entry["snapshot"]["withheld_command_tabs"] = ["central_banks"]
-    sections = builder._macro_command_sections(entries, page_built_at=BUILT_AT)
+    sections = builder._macro_command_sections(
+        entries, page_built_at=BUILT_AT, allow_empty_state_fixture=True)
     money = next(s for s in sections if s["id"] == "money")
     withheld = next(t for t in money["subtabs"] if t["id"] == "central_banks")
     assert withheld["empty"]["id"] == "e4"
     assert "Not open yet" in withheld["empty"]["title"]["en"]
     assert withheld["figure"] is None
+    assert money["caption"] is None
 
 
 def test_e6_fires_when_the_in_memory_snapshot_names_a_plan() -> None:
@@ -465,7 +468,7 @@ def test_e6_fires_when_the_in_memory_snapshot_names_a_plan() -> None:
                     "changes": {"comparable": True, "deltas": []},
                     "context": {"state": "CURRENT"}},
         href="macro_inflation_system.html",
-        entitlement=builder._entitlement_plan(snap))
+        entitlement=builder._entitlement_plan(snap, allow_fixture_keys=True))
     assert figure is None
     assert empty["id"] == "e6"
     assert "Research" in empty["why"]["en"]
@@ -508,6 +511,16 @@ def test_e1_fixture_through_the_real_builder(tmp_path: Path) -> None:
     assert "We don't have this reading yet" in frag
     assert "Empty e1" not in frag
     assert "Today's number didn't arrive" not in frag
+    hub = unescape((out / "macro_monetary.html").read_text(encoding="utf-8"))
+    inflation = re.search(
+        r'<section class="mc-panel" id="inflation".*?(?=<section class="mc-panel"|</main>)',
+        hub, re.S)
+    assert inflation
+    body = inflation.group(0)
+    assert "We don't have this reading yet" in body
+    assert "This desk could not be read today" not in body
+    assert "Each row shows the last two readings" not in body
+    assert 'class="mc-caption"' not in body
 
 
 def test_e3_fixture_through_the_real_builder(tmp_path: Path) -> None:
@@ -523,6 +536,15 @@ def test_e3_fixture_through_the_real_builder(tmp_path: Path) -> None:
     assert "We can't show the change yet" in frag
     assert "We don't have this reading yet" not in frag
     assert "Empty e3" not in frag
+    hub = unescape((out / "macro_monetary.html").read_text(encoding="utf-8"))
+    inflation = re.search(
+        r'<section class="mc-panel" id="inflation".*?(?=<section class="mc-panel"|</main>)',
+        hub, re.S)
+    assert inflation
+    body = inflation.group(0)
+    assert "We can't show the change yet" in body
+    assert "Each row shows the last two readings" not in body
+    assert 'class="mc-caption"' not in body
 
 
 def test_empty_state_evidence_names_fixture_and_trigger() -> None:
@@ -531,7 +553,7 @@ def test_empty_state_evidence_names_fixture_and_trigger() -> None:
         (ROOT / "mockups" / "evidence" / "macro-command-p3" / "manifest.json")
         .read_text(encoding="utf-8"))
     states = {state.get("file"): state for state in manifest["pages"][0]["states"]}
-    for empty_id in ("e1", "e3", "e4", "e6"):
+    for empty_id in ("e1", "e2", "e3", "e4", "e6"):
         for theme in ("dark", "light"):
             name = f"empty-{empty_id}-{theme}.png"
             row = states[name]
@@ -603,3 +625,108 @@ def test_fragments_carry_the_authenticity_marker(built: tuple[str, Path]) -> Non
     assert "data-mc-tabbody=\"liquidity\"" in money
     assert "data-mc-tabbody=\"central_banks\"" in money
     assert "class=\"mc-move\"" in money
+
+
+def test_production_path_ignores_contract_forbidden_fixture_keys() -> None:
+    """m-e: without --empty-state-fixture the production builder ignores
+    entitlement and withheld_command_tabs exactly as additionalProperties:false
+    requires."""
+    entries = copy.deepcopy(_live_entries())
+    for entry in entries:
+        if entry["workspace_id"] == "liquidity_central_banks":
+            entry["snapshot"]["withheld_command_tabs"] = ["central_banks"]
+        if entry["workspace_id"] == "inflation_system":
+            entry["snapshot"]["entitlement"] = "Research"
+    assert builder._entitlement_plan(
+        {"entitlement": "Research"}, allow_fixture_keys=False) is None
+    assert builder._command_tab_withheld(
+        {"withheld_command_tabs": ["central_banks"]},
+        {"withheld_tabs": []}, "central_banks",
+        allow_fixture_keys=False) is False
+    sections = builder._macro_command_sections(entries, page_built_at=BUILT_AT)
+    money = next(s for s in sections if s["id"] == "money")
+    banks = next(t for t in money["subtabs"] if t["id"] == "central_banks")
+    assert banks["empty"] is None
+    assert banks["figure"] is not None
+    inflation = next(s for s in sections if s["id"] == "inflation")
+    assert inflation["empty"] is None
+    assert inflation["figure"] is not None
+    assert inflation["caption"] is not None
+
+
+def test_empty_state_fixture_flag_enables_e4_and_e6(tmp_path: Path) -> None:
+    """The capture flag is what turns the sidecar keys on."""
+    fixture = tmp_path / "e6.json"
+    fixture.write_text(json.dumps({
+        "empty_id": "e6",
+        "workspace_id": "inflation_system",
+        "entitlement": "Research",
+    }), encoding="utf-8")
+    out = tmp_path / "site"
+    builder.render(ROOT, data_root=DATA_ROOT, out_dir=out, page_built_at=BUILT_AT,
+                   empty_state_fixture=fixture)
+    frag = unescape(
+        (out / "macro" / "fragments" / "inflation.html").read_text(encoding="utf-8"))
+    hub = unescape((out / "macro_monetary.html").read_text(encoding="utf-8"))
+    assert 'data-mc-empty="e6"' in frag
+    inflation = re.search(
+        r'<section class="mc-panel" id="inflation".*?(?=<section class="mc-panel"|</main>)',
+        hub, re.S)
+    assert inflation
+    body = inflation.group(0)
+    assert "Included in a higher plan" in body
+    assert "Each row shows the last two readings" not in body
+    assert 'class="mc-caption"' not in body
+
+
+def test_one_null_voice_for_every_section_level_empty() -> None:
+    """M2: E1–E6 drop the row caption; section-level empties share the slot title."""
+    for empty_id in ("e1", "e2", "e3", "e6"):
+        voice = builder._apply_empty_voice(builder._empty_state(
+            empty_id, plan="Research" if empty_id == "e6" else None))
+        assert voice is not None
+        assert voice["tone"] == "neutral"
+        assert voice["text"]["en"] == L.EMPTY_STATES[empty_id]["title"]["en"]
+
+
+def test_p3_clearance_probes_are_real_geometry() -> None:
+    """M1: four 390 measurements; a negative/absent lastBottom is a failure."""
+    probes = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p3" / "probes.json")
+        .read_text(encoding="utf-8"))
+    for key in ("clearance_dark_en", "clearance_dark_zh",
+                "clearance_light_en", "clearance_light_zh"):
+        row = probes[key]
+        assert row.get("lastBottom") is not None, key
+        assert row["lastBottom"] > 0, (key, row)
+        assert row.get("pillTop") is not None and row["pillTop"] > 0, (key, row)
+        assert row.get("clear") is True, (key, row)
+        assert row["lastBottom"] <= row["pillTop"], (key, row)
+
+
+def test_p3_evidence_frames_are_not_byte_duplicates() -> None:
+    """m-d: a foot/detail frame must not be a copy of a composition frame."""
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p3" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    by_sha: dict[str, list[str]] = {}
+    for state in manifest["pages"][0]["states"]:
+        if state.get("captured") and state.get("sha256") and state.get("file"):
+            by_sha.setdefault(state["sha256"], []).append(state["file"])
+    dupes = {sha: names for sha, names in by_sha.items() if len(names) > 1}
+    assert dupes == {}, dupes
+
+
+def test_e2_evidence_names_fixture_and_trigger() -> None:
+    """m-c: E2 rows name fixture + trigger like the other empty states."""
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p3" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    states = {state.get("file"): state for state in manifest["pages"][0]["states"]}
+    for theme in ("dark", "light"):
+        row = states[f"empty-e2-{theme}.png"]
+        assert row["captured"] is True
+        assert row.get("fixture")
+        assert (ROOT / row["fixture"]).is_file()
+        assert row.get("trigger")
+        assert "SOURCE_FAILED" in row["trigger"] or "STALE_SOURCE" in row["trigger"]

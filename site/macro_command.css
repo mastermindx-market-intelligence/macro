@@ -631,6 +631,11 @@ html[data-theme="light"] .mc-empty {
        `display: contents` so they need `min-width: 0` or the Read strip's
        min-content widens `documentElement.scrollWidth` at 390 (P-19). */
     padding: 8px 18px 140px;
+    /* B1: one flat material with the sticky rail. The page body still
+       paints radial washes over --bg; at ≤768 the shell canvas is the
+       same opaque --bg as the rail so nothing reads through the chips. */
+    background: var(--bg);
+    background-image: none;
   }
   .mc-content { display: contents; }
   .mc-command, .mc-panel, .mc-rail { min-width: 0; }
@@ -643,8 +648,9 @@ html[data-theme="light"] .mc-empty {
     align-self: start;
     height: auto;
     margin: 0 -18px; padding: 8px 18px;
-    /* n5: inherit the shell gradient — a solid --bg bar was a tonal seam. */
-    background: transparent; border-bottom: 1px solid var(--mq-line);
+    /* B1: sticky + z-index 4 must stay OPAQUE. The ≤768 shell is the
+       same flat --bg, so this is one material, not a tonal seam. */
+    background: var(--bg); border-bottom: 1px solid var(--mq-line);
   }
   .mc-rail-label { display: none; }
   .mc-rail-list { flex-direction: row; overflow-x: auto; scrollbar-width: none; gap: 6px; }
@@ -686,14 +692,19 @@ html[data-theme="light"] .mc-empty {
   .mc-title { font-size: 24px; line-height: 1.2; }
   .mc-panel-title { font-size: 17px; }
   .mc-panel { padding: 16px; border-radius: 12px; }
-  /* n6: pill is ~40px tall at bottom:84px. Extra body padding keeps the
-     fifth movement row clear of it; the pill/brain collision itself is
-     P-13 (disclosed, not this packet). */
-  .mc-panel { padding-bottom: 56px; }
+  /* M1: pill is ~40px at bottom:84px (occupies the last ~124px). The
+     whole Overview panel body — fifth movement row, count line, and
+     caption — must sit above it. 148px clears the pill with a real gap. */
+  .mc-panel { padding-bottom: 148px; }
   .mc-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 24px; }
   .mc-chip-top { flex-direction: column; align-items: flex-start; gap: 1px; }
   .mc-chip-value { font-size: 14px; }
-  .mc-figure { padding: 8px 8px 48px; margin: 0 -8px; }
+  .mc-figure { padding: 8px 8px 8px; margin: 0 -8px; }
+  .mc-move-count { margin-bottom: 12px; }
+  /* Overview: keep the count line and caption above the pill when the
+     fifth row is in view. Other sections already have watching/details
+     below their caption. */
+  #overview .mc-caption { margin-bottom: 148px; }
   /* .mx-chg-row already wraps at 640px (theme.css:1978-1981); the numeric group
      then needs its own line, right-aligned, never orphaned mid-row. */
   .mc-move-name { flex-basis: 100%; }
