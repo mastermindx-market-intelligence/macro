@@ -1,15 +1,24 @@
-"""Point-in-time (PIT) admission wall for the stock-identity episode catalog.
+"""Start-date admission wall for the stock-identity episode catalog.
+
+Existence is not PIT-gated (slice 2 work). Outcome fields are still
+masked to what was knowable by the as-of date.
 
 The episode catalog built by ``engine.stock_identity.episodes`` labels
 episodes with **future data by design** (``episodes.py`` docstring: "first
 date on which each label was knowable, so a PIT consumer can honor it"). This
-module is that PIT consumer: it sits between the research-time catalog and
-any analog consumer and enforces two gates before a row may be used:
+module sits between the research-time catalog and any analog consumer. It
+enforces start-date admission and overlap dedup before a row may be used.
+Episode *existence* is not PIT-gated here (slice 2 work): a type such as
+``reset_decline`` is generally identifiable only after the move, so admission
+on ``start_date`` is research navigation, not a tradeable universe.
 
-1. **As-of admission** — a row is admitted only when it had *started* by the
-   as-of date, and any outcome/resolution field is exposed only when it was
-   *knowable* by the as-of date. Anything not yet knowable comes back as a
-   typed missing value, never a number.
+1. **Start-date admission** (existence not PIT-gated; slice 2 work) — a row
+   is admitted when it had *started* by the as-of date, and any
+   outcome/resolution field is exposed only when it was *knowable* by the
+   as-of date. Anything not yet knowable comes back as a typed missing
+   value, never a number. Returned-frame labels collapse every non-known
+   row to one PIT-visible state so a consumer cannot recover whether the
+   episode later resolves.
 2. **Overlap dedup** — overlapping/duplicate episodes for the same
    ``(symbol, price_plane_id[, episode_type])`` are collapsed by a documented,
    deterministic rule, with every dropped row counted in the receipt.
@@ -145,10 +154,13 @@ def _mask_outcomes(frame: pd.DataFrame, mask_rows: pd.Series) -> pd.DataFrame:
         if col not in frame.columns:
             continue
         if col in _INT_OUTCOME:
-            frame[col] = frame[col].astype("Int64")
+            try:
+                frame[col] = frame[col].astype("Int64")
+            except (TypeError, ValueError):
+                frame[col] = frame[col].astype(object)
             frame.loc[mask_rows, col] = pd.NA
         elif col in _DATETIME_OUTCOME:
-            frame[col] = pd.to_datetime(frame[col], errors="coerce")
+            frame[col] = pd.to_datetime(frame[col], errors="coerce").astype("datetime64[ns]")
             frame.loc[mask_rows, col] = pd.NaT
         elif col in _OBJECT_OUTCOME:
             frame[col] = frame[col].astype(object)
@@ -175,25 +187,40 @@ def admit_as_of(catalog: pd.DataFrame, *, asof
     admitted = candidate.loc[~not_started].copy()
 
     if admitted.empty:
-        states = pd.Series([], dtype=object)
+        research_states = pd.Series(dtype=object)
+        known_mask = pd.Series(dtype=bool)
     else:
-        states = outcome_state(admitted, asof_ts)
+        research_states = outcome_state(admitted, asof_ts)
+        known_mask = research_states == "known"
 
-    admitted["outcome_state"] = states.reindex(admitted.index)
-    reason_map = {
-        "known": None,
-        "pending_resolution": "not_yet_knowable_as_of_date",
-        "censored": "still_running_at_end_of_history",
-        "unknowable": "resolution_known_date_missing_source_contract_violation",
-    }
-    admitted["outcome_missing_reason"] = admitted["outcome_state"].map(reason_map)
+    # Receipt aggregates keep the research-time breakdown. The returned
+    # frame does not: pending vs censored vs unknowable is itself derived
+    # from resolution_known_date and would leak whether an unresolved
+    # episode later resolves.
+    outcome_states_counts = (
+        {s: int((research_states == s).sum()) for s in OUTCOME_STATES}
+        if not admitted.empty else {s: 0 for s in OUTCOME_STATES}
+    )
+    contract_violations = (
+        int((research_states == "unknowable").sum()) if not admitted.empty else 0
+    )
+
+    admitted["outcome_state"] = pd.Series(
+        "unresolved_at_asof", index=admitted.index, dtype=object,
+    )
+    admitted["outcome_missing_reason"] = pd.Series(
+        "outcome_not_knowable_on_this_date", index=admitted.index, dtype=object,
+    )
+    if not admitted.empty and known_mask.any():
+        admitted.loc[known_mask, "outcome_state"] = "known"
+        admitted.loc[known_mask, "outcome_missing_reason"] = None
     admitted["pit_asof"] = asof_ts
 
-    known_mask = admitted["outcome_state"] == "known"
     admitted["pit_visible_end"] = pd.NaT
-    if known_mask.any():
+    if not admitted.empty and known_mask.any():
         admitted.loc[known_mask, "pit_visible_end"] = admitted.loc[known_mask, "end_date"]
-    admitted.loc[~known_mask, "pit_visible_end"] = asof_ts
+    if not admitted.empty:
+        admitted.loc[~known_mask, "pit_visible_end"] = asof_ts
     admitted["pit_visible_end"] = pd.to_datetime(admitted["pit_visible_end"], errors="coerce")
 
     # censored flag on the returned frame reflects PIT-visible knowledge, not
@@ -202,18 +229,13 @@ def admit_as_of(catalog: pd.DataFrame, *, asof
         admitted["censored"] = admitted["censored"].astype("boolean")
     else:
         admitted["censored"] = pd.array([pd.NA] * len(admitted), dtype="boolean")
-    admitted.loc[~known_mask, "censored"] = True
-
-    contract_violations = int((admitted["outcome_state"] == "unknowable").sum())
+    if not admitted.empty:
+        admitted.loc[~known_mask, "censored"] = True
 
     # Outcome masking is unconditional: there is no unmasked public path,
     # so the receipt's outcome_masked_rows/masked_columns fields can never
     # self-certify a leak (see MAJOR finding on PR #6911).
-    admitted = _mask_outcomes(admitted, ~known_mask)
-
-    outcome_states_counts = {
-        s: int((admitted["outcome_state"] == s).sum()) for s in OUTCOME_STATES
-    } if not admitted.empty else {s: 0 for s in OUTCOME_STATES}
+    admitted = _mask_outcomes(admitted, ~known_mask if not admitted.empty else known_mask)
 
     by_type = (
         admitted["episode_type"].value_counts().to_dict() if not admitted.empty and "episode_type" in admitted.columns else {}
@@ -390,22 +412,18 @@ def params_hash(**params: Any) -> str:
 def plain_null_lines(receipt: dict[str, Any]) -> list[dict[str, str]]:
     lines: list[dict[str, str]] = []
     states = receipt.get("outcome_states", {})
-    total = receipt.get("admitted", {}).get("total", 0)
-    pending = states.get("pending_resolution", 0)
-    if pending:
+    total = int(receipt.get("admitted", {}).get("total", 0) or 0)
+    known = int(states.get("known", 0) or 0)
+    unresolved = max(total - known, 0)
+    if unresolved:
         lines.append({
-            "what": "pending_outcomes",
-            "plain_en": f"{pending} of {total} episodes had not finished yet on this date — their outcome is not available yet.",
-            "plain_zh": f"截至该日期，{total} 段行情中有 {pending} 段尚未走完，结果暂不可得。",
-            "why": "the outcome was only knowable after the as-of date",
-        })
-    censored = states.get("censored", 0)
-    if censored:
-        lines.append({
-            "what": "censored_episodes",
-            "plain_en": f"{censored} episodes were still running at the end of the available price history — no outcome was ever recorded.",
-            "plain_zh": f"{censored} 段行情在可用价格历史结束时仍在进行中，从未记录结果。",
-            "why": "price history ends before the episode resolved",
+            "what": "unresolved_outcomes",
+            "plain_en": (
+                f"{unresolved} of {total} episodes had not finished by this date "
+                "— their outcome is not available yet."
+            ),
+            "plain_zh": f"截至该日期，{total} 段行情中有 {unresolved} 段尚未走完，结果暂不可得。",
+            "why": "the outcome was not knowable on this date",
         })
     dropped = receipt.get("dedup", {}).get("dropped_total", 0)
     if dropped:
@@ -414,6 +432,27 @@ def plain_null_lines(receipt: dict[str, Any]) -> list[dict[str, str]]:
             "plain_en": f"{dropped} overlapping episodes were set aside so the same stretch of price history is not counted twice.",
             "plain_zh": f"已剔除 {dropped} 段重叠行情，避免同一段行情被重复计入。",
             "why": "the episodes shared the same knowable price-history window",
+        })
+    admitted_without = int(
+        (receipt.get("existence_knowability_caveat") or {}).get(
+            "admitted_without_known_existence", 0,
+        ) or 0
+    )
+    if admitted_without:
+        lines.append({
+            "what": "existence_not_knowable_at_start",
+            "plain_en": (
+                f"All {admitted_without} episodes listed were picked using the "
+                "full price record; on this date you could not yet have known "
+                "which stretches would become episodes. Read this as research "
+                "navigation, not a tradeable universe."
+            ),
+            "plain_zh": (
+                f"列出的 {admitted_without} 段行情均依据完整价格记录筛选；"
+                "在该日期你还无法知道哪些走势会成为行情段。"
+                "请当作研究导航，而不是可交易的股票池。"
+            ),
+            "why": "episode existence is identified only after the move has already happened",
         })
     return lines
 

@@ -1,9 +1,9 @@
 """Tests for engine.stock_identity.analog_pit (packet A-F10-W2-1).
 
 Synthetic frames only -- fast, offline, no committed-artifact dependency
-(idiom from tests/test_stock_identity_state_episodes.py). Test 22 binds to
-the real pilot catalog when present and skips cleanly when it is not
-(sparse checkout convention, .github/ci/legacy-jobs.yml:951).
+(idiom from tests/test_stock_identity_state_episodes.py). The real-catalog
+test runs in CI (the parquet is a committed artifact in a full checkout)
+and skips only when the file is absent (sparse local tree).
 """
 from __future__ import annotations
 
@@ -68,16 +68,20 @@ def test_lookahead_outcome_does_not_leak_when_resolution_known_date_is_after_aso
     assert row["tier"] is pd.NA
     assert row["anchor_date"] is pd.NaT
     assert row["censored"] == True  # noqa: E712
-    assert row["outcome_state"] == "pending_resolution"
+    assert row["outcome_state"] == "unresolved_at_asof"
+    assert row["outcome_missing_reason"] == "outcome_not_knowable_on_this_date"
     # LOOKAHEAD LEAK regression (PR #6911 blocker): resolution_known_date is
     # itself outcome-shaped information -- it reveals both THAT a pending
     # episode resolves and WHEN, ahead of the as-of date. It must be masked
-    # exactly like every other outcome column.
+    # exactly like every other outcome column. The returned-frame label must
+    # also not reveal pending vs censored (that split is the same leak).
     assert row["resolution_known_date"] is pd.NaT
     scanned = out.astype(str).to_string()
     assert "0.4237" not in scanned
     assert "61.5" not in scanned
     assert "2020-06-01" not in scanned
+    assert "pending_resolution" not in scanned
+    assert result.receipt["outcome_states"]["pending_resolution"] == 1
 
 
 def test_every_outcome_column_is_masked_for_every_pending_row():
@@ -158,10 +162,14 @@ def test_source_censored_episode_is_typed_missing_not_dropped():
         start_date=pd.Timestamp("2020-01-02"), censored=True,
         resolution_known_date=pd.NaT,
     )]
-    out = pit.pit_universe(_frame(rows), asof="2020-06-01", dedup=False).frame
+    result = pit.pit_universe(_frame(rows), asof="2020-06-01", dedup=False)
+    out = result.frame
     assert len(out) == 1
-    assert out.iloc[0]["outcome_state"] == "censored"
+    assert out.iloc[0]["outcome_state"] == "unresolved_at_asof"
+    assert out.iloc[0]["outcome_missing_reason"] == "outcome_not_knowable_on_this_date"
     assert out.iloc[0]["censored"] == True  # noqa: E712
+    assert result.receipt["outcome_states"]["censored"] == 1
+    assert "censored" not in out["outcome_state"].astype(str).tolist()
 
 
 def test_masked_integer_columns_are_pandas_NA_not_zero_and_not_float():
@@ -184,7 +192,9 @@ def test_unknowable_row_is_counted_as_contract_violation():
     )]
     result = pit.pit_universe(_frame(rows), asof="2020-06-01", dedup=False)
     assert result.receipt["contract_violations"] == 1
-    assert result.frame.iloc[0]["outcome_state"] == "unknowable"
+    assert result.receipt["outcome_states"]["unknowable"] == 1
+    assert result.frame.iloc[0]["outcome_state"] == "unresolved_at_asof"
+    assert result.frame.iloc[0]["outcome_missing_reason"] == "outcome_not_knowable_on_this_date"
 
 
 def test_dedup_drops_overlapping_episodes_and_reports_the_count():
@@ -392,8 +402,127 @@ def test_null_lines_are_plain_words_bilingual():
     for line in lines:
         assert line["plain_en"]
         assert line["plain_zh"]
+        assert line["plain_zh"] != line["plain_en"]
         for token in banned_substrings:
             assert token not in line["plain_en"]
+            assert token not in line["plain_zh"]
+
+
+def test_pending_and_censored_rows_are_identical_in_returned_frame():
+    """BLOCKER 1: a will-resolve row and a never-resolve row must be
+    indistinguishable in the returned frame at asof. Research-time
+    pending/censored stays only in receipt aggregates."""
+    pending = _row(
+        symbol="WILLRESOLVE",
+        start_date=pd.Timestamp("2020-01-02"),
+        end_date=pd.Timestamp("2020-12-01"),
+        resolution_known_date=pd.Timestamp("2020-12-01"),
+        resolution="durable_low",
+        depth_pct=0.4,
+        tier=1,
+        censored=False,
+    )
+    censored = _row(
+        symbol="NEVERRESOLVES",
+        start_date=pd.Timestamp("2020-01-02"),
+        end_date=pd.Timestamp("2020-12-01"),
+        resolution_known_date=pd.NaT,
+        resolution="durable_low",
+        depth_pct=0.4,
+        tier=1,
+        censored=True,
+    )
+    asof = "2020-06-01"
+    result_p = pit.pit_universe(_frame([pending]), asof=asof, dedup=False)
+    result_c = pit.pit_universe(_frame([censored]), asof=asof, dedup=False)
+    out_p = result_p.frame.drop(columns=["symbol"]).reset_index(drop=True)
+    out_c = result_c.frame.drop(columns=["symbol"]).reset_index(drop=True)
+    pd.testing.assert_frame_equal(out_p, out_c)
+    assert out_p.iloc[0]["outcome_state"] == "unresolved_at_asof"
+    assert out_p.iloc[0]["outcome_missing_reason"] == "outcome_not_knowable_on_this_date"
+    assert result_p.receipt["outcome_states"]["pending_resolution"] == 1
+    assert result_c.receipt["outcome_states"]["censored"] == 1
+    assert result_p.receipt["outcome_states"]["censored"] == 0
+    assert result_c.receipt["outcome_states"]["pending_resolution"] == 0
+
+
+def test_plain_nulls_do_not_split_pending_from_censored():
+    """BLOCKER 2: customer-facing nulls must not narrate the post-asof
+    pending-vs-censored split."""
+    pending = _row(
+        symbol="WILLRESOLVE",
+        start_date=pd.Timestamp("2020-01-02"),
+        resolution_known_date=pd.Timestamp("2020-12-01"),
+        end_date=pd.Timestamp("2020-12-01"),
+        resolution="durable_low",
+    )
+    censored = _row(
+        symbol="NEVERRESOLVES",
+        start_date=pd.Timestamp("2020-01-02"),
+        censored=True,
+        resolution_known_date=pd.NaT,
+    )
+    receipt = pit.pit_universe(
+        _frame([pending, censored]), asof="2020-06-01", dedup=False,
+    ).receipt
+    whats = [line["what"] for line in receipt["nulls"]]
+    assert "censored_episodes" not in whats
+    assert "pending_outcomes" not in whats
+    unresolved = next(
+        line for line in receipt["nulls"] if line["what"] == "unresolved_outcomes"
+    )
+    assert unresolved["plain_en"] == (
+        "2 of 2 episodes had not finished by this date — their outcome is not available yet."
+    )
+    assert unresolved["plain_zh"] == "截至该日期，2 段行情中有 2 段尚未走完，结果暂不可得。"
+    assert "available price history" not in unresolved["plain_en"]
+    assert receipt["outcome_states"]["pending_resolution"] == 1
+    assert receipt["outcome_states"]["censored"] == 1
+
+
+def test_existence_caveat_is_a_plain_word_null_line():
+    """MAJOR 3: the start-date existence caveat must be printed, not
+    buried in a receipt-only dict."""
+    rows = [_row(
+        start_date=pd.Timestamp("2020-01-02"),
+        resolution_known_date=pd.Timestamp("2020-02-01"),
+        end_date=pd.Timestamp("2020-02-01"),
+        resolution="durable_low",
+    )]
+    receipt = pit.pit_universe(_frame(rows), asof="2020-06-01", dedup=False).receipt
+    assert receipt["existence_knowability_caveat"]["admitted_without_known_existence"] == 1
+    existence = next(
+        line for line in receipt["nulls"] if line["what"] == "existence_not_knowable_at_start"
+    )
+    assert "All 1 episodes listed" in existence["plain_en"]
+    assert "research navigation" in existence["plain_en"]
+    assert "tradeable universe" in existence["plain_en"]
+    assert "1" in existence["plain_zh"]
+    assert "研究导航" in existence["plain_zh"]
+    assert existence["plain_zh"] != existence["plain_en"]
+    assert receipt["outcome_states"]["known"] == 1
+    whats = [line["what"] for line in receipt["nulls"]]
+    assert "unresolved_outcomes" not in whats
+
+
+def test_mask_outcomes_falls_back_when_integer_column_cannot_cast():
+    """MINOR 7: a non-integral source column must become typed missing,
+    not raise."""
+    rows = [_row(
+        start_date=pd.Timestamp("2020-01-02"),
+        resolution_known_date=pd.Timestamp("2020-06-01"),
+        resolution="durable_low",
+        tier="not-an-int",
+        duration_sessions="also-not-int",
+    )]
+    frame = _frame(rows)
+    frame["tier"] = frame["tier"].astype(object)
+    frame["duration_sessions"] = frame["duration_sessions"].astype(object)
+    out = pit.pit_universe(frame, asof="2020-03-01", dedup=False).frame
+    assert len(out) == 1
+    assert pd.isna(out.iloc[0]["tier"])
+    assert pd.isna(out.iloc[0]["duration_sessions"])
+    assert out.iloc[0]["outcome_state"] == "unresolved_at_asof"
 
 
 def test_frozen_episode_columns_match_the_catalog_owner():
@@ -410,11 +539,20 @@ def test_real_pilot_catalog_passes_the_gate():
         assert col in catalog.columns
     result = pit.pit_universe(catalog, asof="2015-01-02", dedup=True)
     assert 0 < len(result.frame) < len(catalog)
-    pending = result.frame[result.frame["outcome_state"] == "pending_resolution"]
+    unresolved = result.frame[result.frame["outcome_state"] == "unresolved_at_asof"]
+    assert len(unresolved) > 0
     for col in pit.OUTCOME_COLUMNS:
-        if col not in pending.columns:
+        if col not in unresolved.columns:
             continue
-        assert pending[col].isna().all() or (pending[col] is pd.NA).all()
+        assert unresolved[col].isna().all()
+    leaked = result.frame["outcome_state"].isin(
+        ["pending_resolution", "censored", "unknowable"]
+    )
+    assert int(leaked.sum()) == 0
     r = result.receipt
     assert r["admitted"]["total"] == r["dedup"]["kept"] + r["dedup"]["dropped_total"]
     assert r["dedup"]["dropped_overlap"] > 0
+    existence = next(
+        line for line in r["nulls"] if line["what"] == "existence_not_knowable_at_start"
+    )
+    assert str(r["existence_knowability_caveat"]["admitted_without_known_existence"]) in existence["plain_en"]
