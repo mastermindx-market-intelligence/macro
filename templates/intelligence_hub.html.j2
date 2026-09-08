@@ -805,11 +805,13 @@
   {% endif %}
 
   {# ── ENTRY: the study plane behind this band lives on the Calibration Lab ── #}
+  {%- set ric_cards = (research_implications.get('cards') if research_implications is defined and research_implications else []) -%}
+  {%- set ric_n = ric_cards|length -%}
   <a class="card rid" href="measurement.html#ric-section">
     <span class="rid-rail" aria-hidden="true"></span>
     <span class="rid-b">
       <span class="rid-k"><span class="l-en">Calibration Lab</span><span class="l-zh">校准实验室</span></span>
-      <span class="rid-t"><span class="l-en">Research implications — what two frozen studies actually produced</span><span class="l-zh">研究含义 —— 两项冻结研究的实际产出</span></span>
+      <span class="rid-t"><span class="l-en">Research implications — what {{ ric_n }} frozen {{ 'study' if ric_n == 1 else 'studies' }} actually produced</span><span class="l-zh">研究含义 —— {{ ric_n }} 项冻结研究的实际产出</span></span>
       <span class="rid-d"><span class="l-en">Research context, not a trading signal. Real sample counts, the gaps the study itself reports, and whether its plan was written first.</span><span class="l-zh">仅为研究背景，非交易信号。真实样本数、研究自述的缺口，以及计划是否先行写定。</span></span>
     </span>
     <span class="rid-a" aria-hidden="true">→</span>

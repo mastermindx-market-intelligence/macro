@@ -175,7 +175,10 @@ def _expected_metric_value(metric: dict) -> str:
         if isinstance(floor, (int, float)) and not isinstance(floor, bool) and value < floor:
             return f"&lt; {floor:.4f}"
         if isinstance(draws, (int, float)) and not isinstance(draws, bool) and draws > 0 and value == 0:
-            return f"&lt; {1 / (draws + 1):.4f}"
+            floor = 1 / (draws + 1)
+            if floor < 0.0001:
+                return "below 0.0001"
+            return f"&lt; {floor:.4f}"
         if value < 0.0001:
             return "below 0.0001"
         if value > 0.9999:
@@ -435,13 +438,13 @@ def test_all_five_authority_booleans_are_false_in_the_contract(contract):
 
 
 def test_authority_is_disclosed_as_withheld(contract, real_section):
-    """Zero authority is a claim the user must be able to read, not an omission."""
+    """Zero authority is a derived sentence, not a raw k=true/false dump."""
     for card in contract["cards"]:
         receipts = _isolate_receipts(_isolate_card(real_section, card["method_family"]))
+        assert "Authority: none — exploratory, not gated" in receipts
+        assert "权限：无——探索性，未经门控" in receipts
         for key in AUTHORITY_KEYS:
-            assert f"{key}=false" in receipts, (
-                f"{key} not disclosed as withheld in Receipts"
-            )
+            assert f"{key}=" not in receipts, f"raw authority dump leaked: {key}"
 
 
 def test_no_ranking_or_trade_language_in_section(real_section):
@@ -478,7 +481,8 @@ def test_null_effective_n_is_not_rendered_as_zero(contract, real_section):
     assert ">0<" not in card_html.replace(
         " ", ""
     ), "a null effective_n appears to have been rendered as 0"
-    assert "—" in card_html, "null not rendered with an explicit em-dash placeholder"
+    assert 'data-ric-null-code="effective_n"' in card_html
+    assert "Effective sample size" in card_html
 
 
 def test_null_reason_is_surfaced(contract, real_section):
@@ -783,7 +787,7 @@ def test_machine_codes_live_only_in_receipts(contract, real_section):
         assert card["quality"] not in header
         assert card["method_family"] not in header
         for key in AUTHORITY_KEYS:
-            assert f"{key}=false" in receipts
+            assert f"{key}=" not in receipts
             assert key not in header
 
 
@@ -1445,13 +1449,15 @@ def test_missing_confidence_interval_is_printed_for_synthetic_control(contract, 
     assert ci_nulls, "fixture must carry uncertainty_interval null reason"
 
     card_html = _isolate_card(real_section, "synthetic_control")
-    assert 'data-ric-code="uncertainty_interval"' in card_html
     assert "Not available yet" in card_html
     assert "置信区间" in card_html or "暂不可用" in card_html
     # The extreme t/p glance figures must not be the only story — nulls block present.
     assert 'data-ric-nulls' in card_html
     assert 'data-ric-null-code="uncertainty_interval"' in card_html
     assert 'data-ric-null-code="ticker_cluster_t"' in card_html
+    assert card_html.count("Confidence interval") == 1
+    glance = _glance_outside_details(card_html)
+    assert glance.count('data-ric-code="uncertainty_interval"') == 0
 
 
 def test_honest_zero_probability_is_printed_not_invented_floor(real_section):
@@ -1489,7 +1495,12 @@ def test_boolean_false_probability_does_not_claim_a_significance_floor():
     assert "&lt; 0.001" not in fig
     assert "< 0.001" not in fig
     assert "0.0000" not in fig
-    assert "False" in fig
+    value = re.search(r'class="ric-fig-v">(.*?)</span>\s*</div>', fig, flags=re.DOTALL)
+    assert value, "boolean fig is missing its value"
+    assert "False" not in value.group(1)
+    assert "True" not in value.group(1)
+    assert "No" in value.group(1)
+    assert "否" in value.group(1)
 
 
 def test_probability_floor_comes_from_contract_precision_or_draws():
@@ -1543,6 +1554,35 @@ def test_probability_floor_comes_from_contract_precision_or_draws():
     assert "重抽样下限 1/(次数+1)" in draws_html
     assert "&lt; 0.001" not in floor_html
     assert "&lt; 0.001" not in draws_html
+
+
+def test_resampling_floor_below_display_floor_uses_below_wording():
+    """NIT (c): 1/(draws+1) < 0.0001 must not print < 0.0000."""
+    card = _minimal_card(
+        family="event_study",
+        quality="DIAGNOSTIC_ONLY",
+        outputs=[
+            {
+                "code": "tiny_resample_p",
+                "label": {"en": "Tiny resample p", "zh": "极小重抽样 p"},
+                "source": "x",
+                "unit": "probability",
+                "value": 0.0,
+                "draws": 20000,
+            }
+        ],
+    )
+    fig = _metric_markup(
+        _isolate_card(
+            _section(_render(research_implications=_envelope([card]))),
+            "event_study",
+        ),
+        "tiny_resample_p",
+    )
+    assert "below 0.0001" in fig
+    assert "小于 0.0001" in fig
+    assert "0.0000" not in fig
+    assert "resampling floor 1/(draws+1)" in fig
 
 
 def test_glance_header_uses_review_plain_word_labels(contract, real_section):
@@ -1620,6 +1660,176 @@ def test_hub_template_links_to_research_implications_anchor():
     hub = (REPO / "templates" / "intelligence_hub.html.j2").read_text(encoding="utf-8")
     hrefs = re.findall(r'href="measurement\.html#ric-section"', hub)
     assert len(hrefs) == 1
+
+
+def _render_hub(research_implications=None) -> str:
+    """Render the hub template with a degrade-safe stub command view."""
+    from jinja2 import Environment, FileSystemLoader
+
+    env = Environment(
+        loader=FileSystemLoader(str(REPO / "templates")), autoescape=False
+    )
+    env.globals["region_for"] = lambda ticker: "us"
+    try:
+        from engine import i18n
+
+        env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t)
+    except Exception:
+        env.globals.update(td=lambda en: en, tr=lambda en: en, t=lambda en, zh="": en)
+    hub = {
+        "schema": "intel-hub-v3",
+        "n_universe": 0,
+        "n_actionable": 0,
+        "n_emerging": 0,
+        "n_discovery": 0,
+        "command": [],
+        "emerging": [],
+        "discovery": [],
+        "exhausted": [],
+        "catalysts": [],
+        "desks": {
+            k: {"live": False}
+            for k in ("news", "alt_data", "radar", "standout", "policy", "special")
+        },
+        "sector_heat": [],
+        "macro_context": {},
+        "counts": {},
+        "disclaimer": "Context only.",
+        "as_of": "2026-08-31",
+        "track_record": {"n_snapshots": 0},
+        "desk_grader": {},
+    }
+    ctx = {
+        "hub": hub,
+        "built": "2026-08-31T00:00:00+00:00",
+        "mode": "intel_hub",
+        "qledger_chips": {},
+        "china": None,
+        "market_pulse_roster": [],
+    }
+    if research_implications is not None:
+        ctx["research_implications"] = research_implications
+    return env.get_template("intelligence_hub.html.j2").render(**ctx)
+
+
+def _visible_locale_text(html: str, cls: str) -> str:
+    parts = re.findall(rf'<span class="{cls}">(.*?)</span>', html, flags=re.DOTALL)
+    return re.sub(r"<[^>]+>", " ", " ".join(parts))
+
+
+def test_null_labels_appear_at_most_once_per_locale(contract, real_section):
+    """MINOR 1: each null datum is disclosed once — the ric-nulls panel is home."""
+    labels = (
+        ("Confidence interval", "置信区间"),
+        ("Effective sample size", "有效样本量"),
+        ("Ticker-clustered t statistic", "按标的聚类的 t 统计量"),
+    )
+    for card in contract["cards"]:
+        card_html = _isolate_card(real_section, card["method_family"])
+        figs = re.search(r'<div class="ric-figs">.*?</div>\s*(?:<div class="ric-nulls"|<div class="ric-path"|<div class="ric-gates"|<details)', card_html, flags=re.DOTALL)
+        nulls = re.search(r'<div class="ric-nulls"[^>]*>.*?</div>\s*(?:<div class="ric-path"|<div class="ric-gates"|<details|<div class="ric-auth")', card_html, flags=re.DOTALL)
+        surface = (figs.group(0) if figs else "") + (nulls.group(0) if nulls else "")
+        en = _visible_locale_text(surface, "l-en")
+        zh = _visible_locale_text(surface, "l-zh")
+        for en_label, zh_label in labels:
+            assert len(re.findall(rf"(?<![A-Za-z]){re.escape(en_label)} —", en)) <= 1
+            assert surface.count(f'<span class="l-en">{en_label}') <= 1
+            assert surface.count(f'<span class="l-zh">{zh_label}') <= 1
+        if card["effective_n"] is None:
+            assert 'data-ric-code="effective_n"' not in card_html
+            assert 'data-ric-null-code="effective_n"' in card_html
+        else:
+            assert 'data-ric-code="effective_n"' in card_html
+            assert 'data-ric-null-code="effective_n"' not in card_html
+        assert card_html.count('data-ric-null-code="uncertainty_interval"') <= 1
+        for chunk in re.findall(
+            r'<details class="ric-more">.*?</details>', card_html, flags=re.DOTALL
+        ):
+            if "ric-receipts" in chunk:
+                continue
+            assert "Not available yet —" not in chunk
+            assert "暂不可用 —" not in chunk
+
+
+def test_ric_stance_rule_is_body_weight_and_last_line(real_section):
+    """MINOR 2: .ric-stance is the card verdict — body size, --text, last line."""
+    src = (REPO / "templates" / "measurement.html.j2").read_text(encoding="utf-8")
+    style = src[src.find("<style>") : src.find("</style>")]
+    m = re.search(r"\.ric-stance\{([^}]+)\}", style)
+    assert m, "missing .ric-stance rule"
+    body = m.group(1)
+    assert "font-weight:600" in body.replace(" ", "")
+    assert "color:var(--text)" in body.replace(" ", "")
+    assert "var(--line)" in body
+    assert ".74rem" not in body
+    assert "0.74rem" not in body
+    assert "font-size:1rem" in body.replace(" ", "")
+    assert 'html[data-theme="dark"] .ric-stance' in style
+    assert 'html[data-theme="light"] .ric-stance' in style
+    for card_html in _cards_html(real_section):
+        last = card_html.rfind('class="ric-stance"')
+        assert last != -1
+        assert card_html.rfind('class="ric-auth"') < last
+
+
+def test_hub_entry_count_matches_destination(contract, real_section):
+    """MINOR 3: hub title count is ric_cards|length, same data as the destination."""
+    dest_n = len(contract["cards"])
+    assert dest_n == real_section.count("<article")
+    hub_html = _render_hub(research_implications=contract)
+    m = re.search(
+        r'class="rid-t"><span class="l-en">(.*?)</span><span class="l-zh">(.*?)</span>',
+        hub_html,
+        flags=re.DOTALL,
+    )
+    assert m, "hub entry title missing"
+    en, zh = m.group(1), m.group(2)
+    assert f"what {dest_n} frozen" in en
+    assert ("study" in en and dest_n == 1) or ("studies" in en and dest_n != 1)
+    assert f"{dest_n} 项冻结研究的实际产出" in zh
+    one = _envelope([_minimal_card(family="event_study", quality="DIAGNOSTIC_ONLY")])
+    one_html = _render_hub(research_implications=one)
+    assert "what 1 frozen study actually produced" in one_html
+    assert "1 项冻结研究的实际产出" in one_html
+
+
+def test_authority_receipt_names_a_set_flag_and_does_not_print_none():
+    """MINOR 4: a set authority flag is named; the none sentence is withheld."""
+    card = _minimal_card(family="event_study", quality="DIAGNOSTIC_ONLY")
+    card["authority"]["forecast_authority"] = True
+    receipts = _isolate_receipts(
+        _isolate_card(
+            _section(_render(research_implications=_envelope([card]))),
+            "event_study",
+        )
+    )
+    assert "Authority: none" not in receipts
+    assert "权限：无" not in receipts
+    assert "Authority: forecast" in receipts
+    assert "权限：预测" in receipts
+    assert "forecast_authority=" not in receipts
+
+
+def test_path_status_is_its_own_receipts_row(contract, real_section):
+    """MINOR 4: Path status is a labelled dt/dd, not dissolved into Authority."""
+    for card in contract["cards"]:
+        path = card.get("ordered_effect_path") or {}
+        if not path.get("evidence_status"):
+            continue
+        receipts = _isolate_receipts(_isolate_card(real_section, card["method_family"]))
+        assert "Path status" in receipts
+        assert "路径状态" in receipts
+
+
+def test_rendered_card_has_no_snake_case_slug(contract, real_section):
+    """MINOR 5: customer-visible locale copy never prints a raw field slug."""
+    slug = re.compile(r"[a-z]+_[a-z_]+")
+    for card in contract["cards"]:
+        glance = _glance_outside_details(_isolate_card(real_section, card["method_family"]))
+        for cls in ("l-en", "l-zh"):
+            text = _visible_locale_text(glance, cls)
+            hit = slug.search(text)
+            assert hit is None, f"{card['method_family']} {cls} leaked {hit.group(0)!r}"
 
 
 def test_hub_entry_is_bilingual_and_inside_track_record_band():

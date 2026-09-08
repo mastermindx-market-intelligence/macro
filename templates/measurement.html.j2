@@ -708,6 +708,10 @@ html[data-theme="light"] .ric-prereg{background:var(--panel);
   border-color:color-mix(in srgb,var(--text) 22%,transparent);box-shadow:var(--card-shadow)}
 html[data-theme="light"] .ric-prereg:not(.is-absent) .ric-prereg-d{box-shadow:none}
 .ric-prereg-why{margin:-8px 0 16px;max-width:70ch;font-size:.74rem;line-height:1.6;color:var(--muted)}
+.ric-stance{margin:16px 0 0;padding-top:13px;border-top:1px solid var(--line);
+  font-size:1rem;line-height:1.5;font-weight:600;color:var(--text);max-width:70ch}
+html[data-theme="dark"] .ric-stance{box-shadow:none}
+html[data-theme="light"] .ric-stance{border-top-color:var(--line)}
 .ric-nulls{margin:0 0 16px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--r-card,12px);
   background:color-mix(in srgb,var(--text) 4%,transparent)}
 .ric-nulls-t{margin:0 0 8px;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
@@ -2135,18 +2139,37 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
   {%- macro ric_method_receipt(f) -%}
     {%- if f == 'synthetic_control' -%}<span class="l-en">Method: synthetic control</span><span class="l-zh">方法：合成对照</span>
     {%- elif f == 'event_study' -%}<span class="l-en">Method: event study</span><span class="l-zh">方法：事件研究</span>
-    {%- else -%}<span class="l-en">Method: {{ f|replace('_', ' ') }}</span><span class="l-zh">方法：{{ f }}</span>
+    {%- else -%}<span class="l-en">Method: {{ f|replace('_', ' ') }}</span><span class="l-zh">方法：{{ f|replace('_', ' ') }}</span>
     {%- endif -%}
   {%- endmacro -%}
 
   {%- macro ric_tier_receipt(t) -%}
     {%- if t == 'DIAGNOSTIC' -%}<span class="l-en">Evidence tier: diagnostic — not used for decisions</span><span class="l-zh">证据层级：诊断——不用于决策</span>
-    {%- else -%}<span class="l-en">Evidence tier: {{ t|replace('_', ' ')|lower }}</span><span class="l-zh">证据层级：{{ t }}</span>
+    {%- else -%}<span class="l-en">Evidence tier: {{ t|replace('_', ' ')|lower }}</span><span class="l-zh">证据层级：{{ t|replace('_', ' ')|lower }}</span>
     {%- endif -%}
   {%- endmacro -%}
 
-  {%- macro ric_authority_receipt() -%}
-    <span class="l-en">Authority: none — exploratory, not gated</span><span class="l-zh">权限：无——探索性，未经门控</span>
+  {%- macro ric_authority_receipt(card) -%}
+    {%- set ns = namespace(names_en=[], names_zh=[]) -%}
+    {%- set gloss = {
+      'forecast_authority': ('forecast', '预测'),
+      'gating_authority': ('gating', '门控'),
+      'ranking_authority': ('ranking', '排序'),
+      'sizing_authority': ('sizing', '仓位'),
+      'trading_authority': ('trading', '交易'),
+    } -%}
+    {%- for k, v in (card.authority or {})|dictsort -%}
+      {%- if v -%}
+        {%- set pair = gloss.get(k, (k|replace('_', ' '), k|replace('_', ' '))) -%}
+        {%- set ns.names_en = ns.names_en + [pair[0]] -%}
+        {%- set ns.names_zh = ns.names_zh + [pair[1]] -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- if ns.names_en -%}
+      <span class="l-en">Authority: {{ ns.names_en|join(', ') }}</span><span class="l-zh">权限：{{ ns.names_zh|join('、') }}</span>
+    {%- else -%}
+      <span class="l-en">Authority: none — exploratory, not gated</span><span class="l-zh">权限：无——探索性，未经门控</span>
+    {%- endif -%}
   {%- endmacro -%}
 
   {%- macro ric_value(item) -%}
@@ -2154,7 +2177,7 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
     {%- set u = item.get('unit') -%}
     {%- if v is none -%}<span class="ric-null">—</span>
     {%- elif u == 'boolean' -%}<span class="l-en">{{ 'Yes' if v else 'No' }}</span><span class="l-zh">{{ '是' if v else '否' }}</span>
-    {%- elif v is sameas true or v is sameas false -%}{{ v|e }}
+    {%- elif v is sameas true or v is sameas false -%}<span class="l-en">{{ 'Yes' if v else 'No' }}</span><span class="l-zh">{{ '是' if v else '否' }}</span>
     {%- elif u == 'return_fraction_interval' and v is sequence and v is not string and v|length == 3 -%}
       {{ '%.2f'|format(v[0] * 100) }}% … {{ '%.2f'|format(v[2] * 100) }}%
       <span class="ric-fig-sub"><span class="l-en">bootstrap median</span><span class="l-zh">自助法中位数</span> {{ '%.2f'|format(v[1] * 100) }}%</span>
@@ -2167,7 +2190,11 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
         <span class="ric-fig-sub"><span class="l-en">owner-supplied display floor</span><span class="l-zh">所有者给出的显示下限</span></span>
       {%- elif draws is number and draws is not sameas true and draws is not sameas false and draws > 0 and v == 0 -%}
         {%- set resample_floor = 1 / (draws + 1) -%}
+        {%- if resample_floor < 0.0001 -%}
+        <span class="l-en">below 0.0001</span><span class="l-zh">小于 0.0001</span>{{ ric_unit(u) }}
+        {%- else -%}
         &lt; {{ '%.4f'|format(resample_floor) }}{{ ric_unit(u) }}
+        {%- endif -%}
         <span class="ric-fig-sub"><span class="l-en">resampling floor 1/(draws+1)</span><span class="l-zh">重抽样下限 1/(次数+1)</span></span>
       {%- elif v < 0.0001 -%}
         <span class="l-en">below 0.0001</span><span class="l-zh">小于 0.0001</span>{{ ric_unit(u) }}
@@ -2343,10 +2370,6 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
             <span class="l-zh">本次运行之前没有写定任何内容，因此该结果应按探索性阅读 —— 问题可能是在看到数据之后才选定的。</span>
             {%- endif %}
           </p>
-          <p class="ric-prereg-why ric-stance">
-            <span class="l-en">Watch — do not trade off this card.</span>
-            <span class="l-zh">观望 — 不要据此交易。</span>
-          </p>
 
           <div class="ric-figs">
             {% for out in card.outputs %}
@@ -2359,24 +2382,10 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
               <span class="ric-fig-l"><span class="l-en">Sample size</span><span class="l-zh">样本量</span></span>
               <span class="ric-fig-v">{% if card.sample_n is none %}<span class="ric-null">—</span>{% else %}{{ card.sample_n }}{% endif %}</span>
             </div>
+            {% if card.effective_n is not none %}
             <div class="ric-fig" data-ric-code="effective_n">
               <span class="ric-fig-l"><span class="l-en">Effective sample size</span><span class="l-zh">有效样本量</span></span>
-              <span class="ric-fig-v">{% if card.effective_n is none %}<span class="ric-null">—</span>{% else %}{{ card.effective_n }}{% endif %}</span>
-              {% if card.effective_n is none %}
-              {% for nr in card.null_reasons if nr.code == 'effective_n' %}
-              <span class="ric-why"><span class="l-en">{{ nr.detail.en|e }}</span><span class="l-zh">{{ (nr.detail.zh or nr.detail.en)|e }}</span></span>
-              {% endfor %}
-              {% endif %}
-            </div>
-            {# Missing CI is glance-tier — never only buried under diagnostics. #}
-            {%- set ci_nulls = card.null_reasons|selectattr('code', 'equalto', 'uncertainty_interval')|list -%}
-            {% if (not card.uncertainty) and ci_nulls %}
-            <div class="ric-fig" data-ric-code="uncertainty_interval">
-              <span class="ric-fig-l"><span class="l-en">Confidence interval</span><span class="l-zh">置信区间</span></span>
-              <span class="ric-fig-v"><span class="ric-null">—</span></span>
-              {% for nr in ci_nulls %}
-              <span class="ric-why"><span class="l-en">Not available yet — {{ nr.detail.en|e }}</span><span class="l-zh">暂不可用 — {{ (nr.detail.zh or nr.detail.en)|e }}</span></span>
-              {% endfor %}
+              <span class="ric-fig-v">{{ card.effective_n }}</span>
             </div>
             {% endif %}
             <div class="ric-fig" data-ric-code="cutoff">
@@ -2396,7 +2405,7 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
             </div>
           </div>
 
-          {# Every typed null is printed — not only effective_n. #}
+          {# Every typed null is printed once — this panel is the only home. #}
           {% if card.null_reasons %}
           <div class="ric-nulls" data-ric-nulls>
             <div class="ric-nulls-t"><span class="l-en">Not available yet</span><span class="l-zh">暂不可用</span></div>
@@ -2410,11 +2419,11 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
                 <span class="l-en">Effective sample size — {{ nr.detail.en|e }}</span>
                 <span class="l-zh">有效样本量 — {{ (nr.detail.zh or nr.detail.en)|e }}</span>
                 {%- elif nr.code == 'ticker_cluster_t' -%}
-                <span class="l-en">Ticker-clustered t statistic — {{ nr.detail.en|e }}</span>
-                <span class="l-zh">按标的聚类的 t 统计量 — {{ (nr.detail.zh or nr.detail.en)|e }}</span>
+                <span class="l-en">Ticker-clustered t statistic — Not recorded in the source study.</span>
+                <span class="l-zh">按标的聚类的 t 统计量 — 来源研究未记录。</span>
                 {%- else -%}
-                <span class="l-en">{{ nr.detail.en|e }}</span>
-                <span class="l-zh">{{ (nr.detail.zh or nr.detail.en)|e }}</span>
+                <span class="l-en">Not recorded in the source study.</span>
+                <span class="l-zh">来源研究未记录。</span>
                 {%- endif -%}
               </li>
               {% endfor %}
@@ -2494,23 +2503,15 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
           </div>
           {% endif %}
 
-          {% if card.uncertainty or metrics or (card.null_reasons|selectattr('code', 'ne', 'effective_n')|list) %}
+          {% if card.uncertainty or metrics %}
           <details class="ric-more">
             <summary><span class="l-en">Uncertainty and diagnostics</span><span class="l-zh">不确定性与诊断</span></summary>
             <div class="ric-more-b"><ul class="ric-list">
               {% for it in card.uncertainty %}
               <li data-ric-code="{{ it.code }}"><span class="l-en">{{ it.label.en|e }}</span><span class="l-zh">{{ (it.label.zh or it.label.en)|e }}</span> — <span class="ric-count">{{ ric_value(it) }}</span></li>
               {% endfor %}
-              {% if not card.uncertainty %}
-              {% for nr in card.null_reasons if nr.code == 'uncertainty_interval' %}
-              <li data-ric-code="uncertainty_interval"><span class="l-en">Confidence interval</span><span class="l-zh">置信区间</span> — <span class="ric-null">—</span> <span class="l-en">Not available yet — {{ nr.detail.en|e }}</span><span class="l-zh">暂不可用 — {{ (nr.detail.zh or nr.detail.en)|e }}</span></li>
-              {% endfor %}
-              {% endif %}
               {% for it in metrics %}
               <li data-ric-code="{{ it.code }}"><span class="l-en">{{ it.label.en|e }}</span><span class="l-zh">{{ (it.label.zh or it.label.en)|e }}</span> — <span class="ric-count">{{ ric_value(it) }}</span></li>
-              {% endfor %}
-              {% for nr in card.null_reasons if nr.code not in ('effective_n', 'uncertainty_interval') %}
-              <li data-ric-null-code="{{ nr.code }}"><span class="l-en">Not available yet — {{ nr.detail.en|e }}</span><span class="l-zh">暂不可用 — {{ (nr.detail.zh or nr.detail.en)|e }}</span></li>
               {% endfor %}
             </ul></div>
           </details>
@@ -2568,12 +2569,16 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
                 <dt><span class="l-en">Evidence tier</span><span class="l-zh">证据层级</span></dt>
                 <dd>{{ ric_tier_receipt(card.evidence_tier) }} <code>{{ card.evidence_tier }}</code></dd>
                 <dt><span class="l-en">Authority</span><span class="l-zh">权限</span></dt>
-                <dd>{{ ric_authority_receipt() }}
-                  {% if card.ordered_effect_path and card.ordered_effect_path.evidence_status %}
-                  <code>{{ card.ordered_effect_path.evidence_status }}</code>
-                  {% endif %}
-                  {% for k, v in card.authority|dictsort %}{{ k }}={{ 'true' if v else 'false' }}{% if not loop.last %} {% endif %}{% endfor %}
+                <dd>{{ ric_authority_receipt(card) }}</dd>
+                {% if card.ordered_effect_path and card.ordered_effect_path.evidence_status %}
+                {%- set es = card.ordered_effect_path.evidence_status -%}
+                <dt><span class="l-en">Path status</span><span class="l-zh">路径状态</span></dt>
+                <dd>
+                  <span class="l-en">{{ ric_path_status_gloss[es][0] if es in ric_path_status_gloss else es|replace('_', ' ') }}</span>
+                  <span class="l-zh">{{ ric_path_status_gloss[es][1] if es in ric_path_status_gloss else es|replace('_', ' ') }}</span>
+                  <code>{{ es }}</code>
                 </dd>
+                {% endif %}
                 {% for g in gates %}
                 {%- set gid = (g.code.split('_')|first) if g.code else '' -%}
                 <dt><span class="l-en">Gate {{ gid }}</span><span class="l-zh">门槛 {{ gid }}</span></dt>
@@ -2603,6 +2608,10 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
             <span class="l-en">This card carries no authority. It cannot forecast, rank, gate, size or trade, and nothing downstream reads it as permission.</span>
             <span class="l-zh">本卡片不具备任何授权：不可用于预测、排序、门控、仓位或交易，下游系统亦不会将其视为许可。</span>
           </div>
+          <p class="ric-stance">
+            <span class="l-en">Watch — do not trade off this card.</span>
+            <span class="l-zh">观望 — 不要据此交易。</span>
+          </p>
 
         </div>
       </article>
