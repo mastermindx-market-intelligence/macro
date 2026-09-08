@@ -30,19 +30,18 @@ def record(path: Path) -> dict:
     return yaml.safe_load(path.read_text(encoding="utf-8").split("---", 2)[1])
 
 
-@pytest.mark.parametrize("wave", ["A1", "A2", "B1", "B2", "B4", "C1"])
-def test_protected_foundation_milestones_are_not_pending(wave: str) -> None:
-    waves = {w["id"]: w for w in record(STORE / WS)["waves"]}
-    assert waves[wave]["status"] == "done", (
-        f"{wave} already has a protected release; do not recommission it"
-    )
+@pytest.mark.parametrize("release", ["#6760", "#6713", "#332", "#333", "#336", "#337"])
+def test_dated_handoff_preserves_protected_release_evidence(release: str) -> None:
+    # Pin historical evidence, never the mutable status of a production workstream.
+    assert (STORE / NEW).is_file(), "The corrected dated handoff is absent"
+    assert release in json.dumps(record(STORE / NEW)["verified"])
 
 
-def test_superseded_release_is_not_the_primary_next_action() -> None:
-    current = record(STORE / WS)
-    assert "Merge A2 (#6699" not in current["next_action"]
-    a2 = next(w for w in current["waves"] if w["id"] == "A2")
-    assert a2["pr"] == 6760
+def test_dated_handoff_does_not_repeat_superseded_release() -> None:
+    assert (STORE / NEW).is_file(), "The corrected dated handoff is absent"
+    historical = record(STORE / NEW)
+    assert "Merge A2 (#6699" not in " ".join(historical["next_actions"])
+    assert "Do not reopen #6699/#6711" in " ".join(historical["do_not_redo"])
 
 
 def test_historical_handoff_names_both_live_source_gates_without_permission() -> None:
@@ -138,3 +137,19 @@ def test_malformed_new_handoff_never_silently_restores_obsolete_instructions(tmp
                for x in bundle["excluded"])
     assert any(x["path"].endswith(str(OLD)) and "older_handoff" in x["reason"]
                for x in bundle["excluded"])
+
+
+def test_later_workstream_completion_is_not_blocked_by_historical_case(tmp_path) -> None:
+    root = case_store(tmp_path)
+    current = record(root / WS)
+    current["status"] = "done"
+    current["next_action"] = "Historical fixture: all required outcome evidence accepted; archive."
+    for wave in current["waves"]:
+        wave["status"] = "done"
+    rewrite_record(root / WS, current)
+    bundle = compile_case(root)
+    items = section(bundle, "workstream")["items"]
+    row = next(item for item in items if item["kind"] == "workstream")
+    assert row["status"] == "done"
+    assert "all required outcome evidence accepted; archive" in row["excerpt"]
+    assert "not for permission" in section(bundle, "workstream")["title"]
