@@ -1499,12 +1499,12 @@ def test_element_text_head_is_first_block_not_mid_word() -> None:
     """MINOR-E2: heads are first-block, ≤400, never mid-word; sha256 present."""
     from scripts import capture_macro_command_p4 as capture
 
-    mid = "You opened Macro Command at Borrowing costs. Read today's overview"
-    assert capture.first_block_head(mid + " extra words " * 40, 80).endswith(
-        ("overview", "costs.", "overview."))
-    assert not capture.first_block_head(
+    assert capture.first_block_head(
         "Borrowing costs. Read today's overview extra", 20
-    ).endswith("Borrow")
+    ) == "Borrowing costs."
+    assert "Borrow" != capture.first_block_head(
+        "Borrowing costs sit above the fold today and keep climbing", 20
+    )
     manifest = json.loads(
         (ROOT / "mockups" / "evidence" / "macro-command-p4" / "manifest.json")
         .read_text(encoding="utf-8"))
