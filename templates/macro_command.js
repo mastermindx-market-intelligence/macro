@@ -38,20 +38,30 @@
             || label;
         }
       }
-      if (window.MMBrain && typeof window.MMBrain.explain === 'function') {
-        event.preventDefault();
-        window.MMBrain.explain(sectionId, label);
-        return;
+      function openVisibleChat() {
+        if (window.MMBrain && typeof window.MMBrain.explain === 'function') {
+          window.MMBrain.explain(sectionId, label);
+          return true;
+        }
+        if (window.MMBrain && typeof window.MMBrain.open === 'function') {
+          window.MMBrain.open();
+          return true;
+        }
+        return false;
       }
-      if (window.MMBrain && typeof window.MMBrain.open === 'function') {
+      if (openVisibleChat()) {
         event.preventDefault();
-        window.MMBrain.open();
         return;
       }
       var boot = document.getElementById('mmb-boot');
       if (boot) {
         event.preventDefault();
         boot.click();
+        var tries = 0;
+        var timer = setInterval(function () {
+          tries += 1;
+          if (openVisibleChat() || tries > 60) clearInterval(timer);
+        }, 50);
       }
     });
   }

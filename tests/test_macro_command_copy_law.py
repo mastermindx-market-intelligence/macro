@@ -622,6 +622,12 @@ def test_clearance_probe_js_binds_locator_element_then_arg() -> None:
         outside, rail, dom_descendant=True, analyst_in_viewport=False)
     assert off["analystMergedInto"] is None
     assert off["analystOffViewport"] is True
+    overlap = {"top": 60, "bottom": 110, "left": 20, "right": 80}
+    overlap_row = decide_analyst_merge(
+        overlap, rail, dom_descendant=True, analyst_in_viewport=True,
+        overlaps_rail=True, viewport_width=390)
+    assert overlap_row["analystMergedInto"] is None
+    assert overlap_row["analystOffViewport"] is False
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
@@ -673,6 +679,24 @@ def test_clearance_probe_js_binds_locator_element_then_arg() -> None:
             assert inside_row["analystMergedInto"] == "rail"
             assert inside_row["mergeBasis"] == "geometry"
             assert_merged_geometry(inside_row)
+            page.set_content(
+                """<!doctype html><html><body style="margin:0">
+                <nav class="mq-suitenav" id="suitenav"
+                     style="position:sticky;top:0;height:80px;width:360px;
+                            background:#333;color:#fff">
+                  <a class="mc-analyst" href="chat.html"
+                     style="position:absolute;top:50px;left:20px;
+                            width:80px;height:40px;background:#f00">Ask</a>
+                </nav>
+                <p style="position:absolute;top:70px;left:20px;width:80px">
+                  HITTEXT</p>
+                </body></html>"""
+            )
+            overlap_js = page.locator("html").evaluate(
+                _CLEARANCE_JS, {"position": 0.0})
+            assert overlap_js["analystMergedInto"] in (None, "")
+            assert overlap_js["analystOffViewport"] is False
+            assert overlap_js["analyst_hits"], overlap_js
         finally:
             browser.close()
     finally:
@@ -741,8 +765,24 @@ def test_clearance_probe_ok_fails_on_empty_or_hits() -> None:
         "ok": True, "occluders": [{"position": "sticky"}], "width": 1440,
         "mmbBootInDom": True, "mmbBootVisible": True,
         "mmbBootBox": {"left": 1216, "right": 1418},
-        "fabGutterPx": 40, "fabRightMarginPx": 22,
+        "fabGutterTextPx": 40, "fabGutterPx": 40, "fabRightMarginPx": 22,
     }) is True
+    assert clearance_probe_ok({
+        "text_count": 3, "intersections": [], "analyst_hits": [],
+        "ok": True, "occluders": [{"position": "sticky"}], "width": 1440,
+        "mmbBootInDom": True, "mmbBootVisible": True,
+        "mmbBootBox": {"left": 1216, "right": 1418},
+        "fabGutterTextPx": None,
+        "gutterBasis": {"kind": "no-text-in-fab-band"},
+        "fabRightMarginPx": 22,
+    }) is True
+    assert clearance_probe_ok({
+        "text_count": 3, "intersections": [], "analyst_hits": [],
+        "ok": True, "occluders": [{"position": "sticky"}], "width": 1440,
+        "mmbBootInDom": True, "mmbBootVisible": True,
+        "mmbBootBox": {"left": 1216, "right": 1418},
+        "fabGutterTextPx": -12, "fabRightMarginPx": 22,
+    }) is False
     assert clearance_probe_ok({
         "text_count": 3, "intersections": [], "analyst_hits": [],
         "ok": True, "occluders": [{"position": "sticky"}], "width": 1440,
@@ -1005,8 +1045,7 @@ def test_committed_manifest_gaps_equal_declared_minus_captured() -> None:
         for st in page.get("states") or []
         if st.get("captured") and st.get("file")
     }
-    if not any(name.startswith("chipmat-") for name in captured):
-        pytest.skip("v7 recapture has not written chipmat cells yet")
+    assert any(name.startswith("chipmat-") for name in captured)
     expected = sorted(set(declared_cells(probes.get("e5_applicability"))) - captured)
     recorded = [
         row["file"] for row in (probes.get("gaps") or [])
@@ -1083,7 +1122,9 @@ def test_chip_material_keys_include_both_locales() -> None:
 
 def test_synthetic_clearance_can_fail() -> None:
     """e2: classifier reports HIT on unexposable cover and a bounded partial."""
-    from scripts.capture_macro_command_p5 import synthetic_clearance_receipts
+    from scripts.capture_macro_command_p5 import (
+        classify_partial_cover, synthetic_clearance_receipts,
+    )
     row = synthetic_clearance_receipts()
     full = row["full_cover_unexposable"]
     assert full["hit"] is True
@@ -1091,6 +1132,10 @@ def test_synthetic_clearance_can_fail() -> None:
     partial = row["partial_bounded"]
     assert partial["hit"] is False
     assert 0 <= partial["exposedAtScrollY"] <= partial["maxScrollAtCheck"]
+    assert partial == classify_partial_cover(
+        doc_top=200.0, ov_bottom=60.0, max_scroll_at_check=800.0)
+    assert "hit" in classify_partial_cover(
+        doc_top=10.0, ov_bottom=80.0, max_scroll_at_check=800.0)
 
 
 def test_p5_committed_crops_span_recomputed_from_crop_box_doc() -> None:
@@ -1153,8 +1198,7 @@ def test_p5_completeness_against_tree_not_manifest_self() -> None:
         for st in page.get("states") or []
         if st.get("captured") and st.get("file")
     }
-    if not any(name.startswith("chipmat-") for name in captured):
-        pytest.skip("v7 recapture has not written chipmat cells yet")
+    assert any(name.startswith("chipmat-") for name in captured)
     declared = set(declared_cells(appl))
     tree = {path.name for path in evidence.glob("*.png")}
     listed = subprocess.check_output(
@@ -1167,35 +1211,183 @@ def test_p5_completeness_against_tree_not_manifest_self() -> None:
         assert git_pngs - captured == set()
     assert "14-light-zh-768.png" not in tree
     assert "i2-dark-en-390.png" not in tree
+    from scripts.capture_macro_command_p5 import (
+        CHIP_MATERIAL_WIDTHS, WORKSPACE_PAGES, _chipmat_collision_ratified,
+        parse_chipmat_name,
+    )
+    expected_ws = {
+        f"chip_material_{page.replace('.html', '')}_{theme}_{locale}_{width}"
+        for page in WORKSPACE_PAGES
+        for theme in ("dark", "light")
+        for locale in ("en", "zh")
+        for width in CHIP_MATERIAL_WIDTHS
+    }
     chip_keys = [key for key in probes if key.startswith("chip_material_")]
-    locales = {key.split("_")[-2] for key in chip_keys if key.split("_")[-2] in ("en", "zh")}
     workspace_keys = [key for key in chip_keys if "macro_monetary" not in key]
-    if workspace_keys:
-        assert locales == {"en", "zh"}
-        assert len({key for key in workspace_keys}) == 48
+    assert set(workspace_keys) == expected_ws
+    locales = {key.split("_")[-2] for key in workspace_keys}
+    assert locales == {"en", "zh"}
+    for page in WORKSPACE_PAGES:
+        slug = page.replace(".html", "")
+        for theme in ("dark", "light"):
+            for width in CHIP_MATERIAL_WIDTHS:
+                en = probes[f"chip_material_{slug}_{theme}_en_{width}"]
+                zh = probes[f"chip_material_{slug}_{theme}_zh_{width}"]
+                if en.get("identicalToLocale"):
+                    assert en.get("identicalToLocaleReason")
+                    continue
+                assert json.dumps(en, sort_keys=True) != json.dumps(
+                    zh, sort_keys=True)
+                assert en.get("railInnerHtmlSha256")
+                assert zh.get("railInnerHtmlSha256")
+                assert en.get("probeBeforeShot") is True
+                assert zh.get("probeBeforeShot") is True
+                assert en.get("chipSelector")
+                assert en.get("siblingPillSelector")
     chat_keys = [key for key in probes if key.startswith("chip_opens_chat_")]
     chat_rows = [probes[key] for key in chat_keys]
-    if chat_rows:
-        blobs = [json.dumps(row, sort_keys=True) for row in chat_rows]
-        assert len(chat_keys) == 40
-        assert len(set(chat_keys)) == 40
-        # Dark/light at the same page/locale/width share a URL/DOM delta;
-        # v6's defect was one constant for all 40. Require 20 page/locale/width
-        # bodies, not a single shared dict.
-        assert len(set(blobs)) == 20
-        assert len({(row.get("page"), row.get("locale"), row.get("width"))
-                    for row in chat_rows}) == 20
-        for row in chat_rows:
-            assert "mmbRootBefore" in row and "mmbRootAfter" in row
-            assert "urlBefore" in row and "urlAfter" in row
-            assert row.get("openedBy") == "click"
+    assert len(chat_keys) == 40
+    blobs = [json.dumps(row, sort_keys=True) for row in chat_rows]
+    assert len(set(chat_keys)) == 40
+    # Dark/light at the same page/locale/width share a URL/DOM delta;
+    # v6's defect was one constant for all 40. Require 20 page/locale/width
+    # bodies, not a single shared dict.
+    assert len(set(blobs)) == 20
+    assert len({(row.get("page"), row.get("locale"), row.get("width"))
+                for row in chat_rows}) == 20
+    for row in chat_rows:
+        assert "mmbRootBefore" in row and "mmbRootAfter" in row
+        assert "urlBefore" in row and "urlAfter" in row
+        assert row.get("openedBy") == "click"
+        assert "openState" in row
+        assert row["openState"].get("selector") == "#mmb-panel"
+        assert row["openState"].get("openClass") == "open"
+        assert row.get("ok") is True
+        assert row["openState"].get("visible") is True
+        assert "visibleAfterMs" in row
     for key, row in probes.items():
         if not key.startswith("e5_timeout_"):
             continue
         assert "requestSeenAtMs" in row and "cloneSeenAtMs" in row
         assert abs(float(row["elapsedMs"])
                    - (float(row["cloneSeenAtMs"]) - float(row["requestSeenAtMs"]))) < 1
-    assert "clearance_1440_" not in "".join(probes)
-    syn = probes.get("synthetic_clearance") or {}
-    if syn:
-        assert syn["full_cover_unexposable"]["hit"] is True
+    assert "clearance_1440_" not in json.dumps(probes)
+    syn = probes.get("synthetic_clearance")
+    assert syn
+    assert syn["full_cover_unexposable"]["hit"] is True
+    assert syn["partial_bounded"]["hit"] is False
+    chipmat_files = [name for name in captured if name.startswith("chipmat-")]
+    assert len(chipmat_files) == 48
+    by_sha: dict[str, list[str]] = {}
+    for page in manifest.get("pages") or []:
+        for state in page.get("states") or []:
+            if not str(state.get("file") or "").startswith("chipmat-"):
+                continue
+            by_sha.setdefault(state.get("sha256"), []).append(state["file"])
+    for files in by_sha.values():
+        if len(files) < 2:
+            continue
+        assert _chipmat_collision_ratified(files, probes), files
+        parsed = [parse_chipmat_name(name) for name in files]
+        assert all(parsed)
+        assert len({(row["theme"], row["locale"], row["width"]) for row in parsed}) == 1
+
+
+def test_chip_opens_chat_ok_requires_visible_surface() -> None:
+    """M1: a hidden mount is not an opened chat; a painted panel is."""
+    from scripts.capture_macro_command_p5 import chat_visible_from_state
+    hidden = {
+        "present": True, "visible": False,
+        "box": {"width": 0, "height": 0},
+        "openState": {"selector": "#mmb-panel", "openClass": "open",
+                      "open": False, "visible": False},
+    }
+    assert chat_visible_from_state(hidden) is False
+    painted = {
+        "present": True, "visible": False,
+        "box": {"width": 0, "height": 0},
+        "openState": {
+            "selector": "#mmb-panel", "openClass": "open",
+            "open": True, "visible": True,
+            "box": {"width": 400, "height": 600},
+        },
+    }
+    assert chat_visible_from_state(painted) is True
+
+
+def test_chip_opens_chat_synthetic_hidden_mount_is_not_ok() -> None:
+    """M1: click that mounts a hidden #mmb-root → ok:false; visible panel → ok."""
+    from scripts.capture_macro_command_p5 import _run_chip_opens_chat
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        pytest.skip("Playwright not installed")
+    try:
+        playwright_cm = sync_playwright().start()
+    except Exception as exc:
+        pytest.skip(f"Playwright runtime unavailable: {exc}")
+    try:
+        try:
+            browser = playwright_cm.chromium.launch(headless=True, channel="chrome")
+        except Exception:
+            try:
+                browser = playwright_cm.chromium.launch(headless=True)
+            except Exception as exc:
+                pytest.skip(f"Chromium unavailable: {exc}")
+        page = browser.new_page(viewport={"width": 390, "height": 844})
+        try:
+            page.set_content(
+                """<!doctype html><html><body>
+                <a class="mc-analyst" data-mc-analyst href="#">Ask</a>
+                <script>
+                document.querySelector('.mc-analyst').addEventListener('click', function (e) {
+                  e.preventDefault();
+                  var root = document.createElement('div');
+                  root.id = 'mmb-root';
+                  root.style.cssText = 'position:fixed;width:0;height:0;visibility:hidden';
+                  document.body.appendChild(root);
+                });
+                </script></body></html>"""
+            )
+            hidden = _run_chip_opens_chat(
+                page, page_name="synthetic.html", locale="en", width=390)
+            assert hidden["ok"] is False
+            assert hidden["mmbRootAfter"]["present"] is True
+            assert hidden["mmbRootAfter"]["visible"] is False
+            page.set_content(
+                """<!doctype html><html><body>
+                <a class="mc-analyst" data-mc-analyst href="#">Ask</a>
+                <script>
+                document.querySelector('.mc-analyst').addEventListener('click', function (e) {
+                  e.preventDefault();
+                  var root = document.createElement('div');
+                  root.id = 'mmb-root';
+                  var panel = document.createElement('div');
+                  panel.id = 'mmb-panel';
+                  panel.className = 'open';
+                  panel.style.cssText = 'position:fixed;right:10px;bottom:10px;'
+                    + 'width:200px;height:200px;background:#111;color:#fff';
+                  panel.textContent = 'chat';
+                  root.appendChild(panel);
+                  document.body.appendChild(root);
+                });
+                </script></body></html>"""
+            )
+            shown = _run_chip_opens_chat(
+                page, page_name="synthetic.html", locale="en", width=390)
+            assert shown["ok"] is True
+            assert shown["openState"]["visible"] is True
+            assert shown["visibleAfterMs"] is not None
+        finally:
+            browser.close()
+    finally:
+        playwright_cm.stop()
+
+
+def test_chipmat_capture_does_not_inject_or_expand() -> None:
+    """M2: no title-pill injection and no rail expansion helper remains."""
+    src = (ROOT / "scripts" / "capture_macro_command_p5.py").read_text(
+        encoding="utf-8")
+    assert "data-mc-chipmat-title" not in src
+    assert "_EXPAND_RAIL_JS" not in src
+    assert "is-current" not in src or "mq-suitenav-pill is-current" not in src

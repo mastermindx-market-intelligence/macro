@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import shutil
 import socket
 import subprocess
@@ -281,67 +282,47 @@ def _viewport_shot(dest: Path, page, *, width: int, height: int,
     }
 
 
-_EXPAND_RAIL_JS = """() => {
-    const nav = document.querySelector('.mq-suitenav');
-    const rail = document.querySelector('.mq-suitenav-rail');
-    if (!rail) return {ok: false, scrollY: window.scrollY || 0};
-    const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
-    window.scrollTo(0, 0);
-    const stash = (el, keys) => {
-        for (const key of keys) {
-            el.dataset['mcChipmat' + key] = el.style[key] || '';
-        }
-    };
-    if (nav) {
-        stash(nav, ['overflow', 'width', 'maxWidth', 'gridTemplateColumns']);
-        nav.style.overflow = 'visible';
-        nav.style.width = 'max-content';
-        nav.style.maxWidth = 'none';
-        nav.style.gridTemplateColumns = 'max-content';
-    }
-    stash(rail, ['overflow', 'width', 'minWidth', 'maxWidth', 'flex',
-                 'maskImage', 'webkitMaskImage']);
-    rail.style.overflow = 'visible';
-    rail.style.width = 'max-content';
-    rail.style.minWidth = 'max-content';
-    rail.style.maxWidth = 'none';
-    rail.style.flex = '0 0 auto';
-    rail.style.maskImage = 'none';
-    rail.style.webkitMaskImage = 'none';
-    const h1 = document.querySelector('#mq-context h1');
-    const lang = document.documentElement.getAttribute('data-lang') || 'en';
-    const span = h1 && h1.querySelector(lang === 'zh' ? '.l-zh' : '.l-en');
-    const title = ((span && span.innerText) || (h1 && h1.innerText) || '').trim();
-    if (title && !rail.querySelector('[data-mc-chipmat-title]')) {
-        const li = document.createElement('li');
-        li.setAttribute('data-mc-chipmat-title', '1');
-        const mark = document.createElement('span');
-        mark.className = 'mq-suitenav-pill is-current';
-        mark.textContent = title;
-        li.appendChild(mark);
-        rail.insertBefore(li, rail.firstChild);
-    }
-    return {ok: true, scrollY, title};
-}"""
-
-_RESTORE_RAIL_JS = """(scrollY) => {
-    const unstash = (el, keys) => {
-        if (!el) return;
-        for (const key of keys) {
-            const dataKey = 'mcChipmat' + key;
-            el.style[key] = el.dataset[dataKey] || '';
-            delete el.dataset[dataKey];
-        }
-    };
-    unstash(document.querySelector('.mq-suitenav'),
-            ['overflow', 'width', 'maxWidth', 'gridTemplateColumns']);
-    unstash(document.querySelector('.mq-suitenav-rail'),
-            ['overflow', 'width', 'minWidth', 'maxWidth', 'flex',
-             'maskImage', 'webkitMaskImage']);
-    document.querySelectorAll('[data-mc-chipmat-title]').forEach(
-        (el) => el.remove());
-    window.scrollTo(0, Number(scrollY) || 0);
-    return true;
+_SCROLL_RAIL_CHIP_JS = """() => {
+  const cssPath = (el) => {
+    if (!el) return '';
+    if (el.id) return '#' + el.id;
+    const cls = String(el.className || '').trim().split(/\\s+/)[0] || '';
+    const tag = (el.tagName || '').toLowerCase();
+    return cls ? (tag + '.' + cls) : tag;
+  };
+  const rail = document.querySelector('.mq-suitenav-rail, .mq-suitenav');
+  const chip = document.querySelector('.mc-analyst');
+  const item = chip && chip.closest('li');
+  const prev = (item && item.previousElementSibling)
+    ? item.previousElementSibling.querySelector(
+        '.mq-suitenav-pill, .mc-rail-link')
+    : document.querySelector('.mq-suitenav-pill:not(.mc-analyst)');
+  if (!rail || !chip || !prev) {
+    return {ok: false, railScrollLeft: rail ? rail.scrollLeft : 0,
+            reason: 'missing rail/chip/pill',
+            railInnerHtml: rail ? rail.innerHTML : '',
+            chipSelector: cssPath(chip),
+            siblingPillSelector: cssPath(prev)};
+  }
+  const railR = rail.getBoundingClientRect();
+  const chipR = chip.getBoundingClientRect();
+  const prevR = prev.getBoundingClientRect();
+  let left = Math.min(prevR.left, chipR.left);
+  let right = Math.max(prevR.right, chipR.right);
+  if (left < railR.left + 1) {
+    rail.scrollLeft += (left - railR.left) - 8;
+  }
+  if (right > railR.right - 1) {
+    rail.scrollLeft += (right - railR.right) + 8;
+  }
+  return {
+    ok: true,
+    railScrollLeft: rail.scrollLeft,
+    railInnerHtml: rail.innerHTML,
+    chipSelector: cssPath(chip),
+    siblingPillSelector: cssPath(prev),
+    ancestorSelector: cssPath(rail),
+  };
 }"""
 
 _PREPARE_I2_JS = """() => {
@@ -363,56 +344,13 @@ _PREPARE_I2_JS = """() => {
 
 def _shot_chipmat(dest: Path, page, locator, *, selector: str,
                   locale: str = "en") -> dict[str, Any]:
-    """Chip+pill crop via P3 `_write_element_shot` after a reversible expand.
+    """Unmutated chip+pill crop via P3 `_write_element_shot`.
 
-    At 390/768 the overflow rail clips the current pill once the analyst is
-    scrolled into view, so those slices hash-collide across workspaces.
-    Expanding the rail (and clearing its fade mask) for the shot keeps the
-    producer unchanged and puts the current pill and the chip in one box.
-    Document scroll is restored so the following i2 frame stays at the
-    clearance station.
+    The rail is scrolled (never expanded, never injected) so the chip and
+    its real neighbouring pill share the rail's visible box. The producer
+    is P3's; this wrapper only names the crop.
     """
-    extra: dict[str, Any] = {
-        "dpr": _measure_dpr(page),
-        "crop": True,
-        "full_page": False,
-        "crop_selector": selector,
-        "fixture": "builder-payload",
-        "locale": locale,
-    }
-    expand = locator.evaluate(_EXPAND_RAIL_JS)
-    try:
-        _write_element_shot(page, dest, locator, extra, locale)
-    finally:
-        locator.evaluate(_RESTORE_RAIL_JS, (expand or {}).get("scrollY") or 0)
-    win = locator.evaluate(
-        """el => {
-            const doc = (el && el.contentDocument) || el.ownerDocument || document;
-            const win = (el && el.contentWindow) || doc.defaultView || window;
-            return {
-                innerWidth: win.innerWidth,
-                innerHeight: win.innerHeight,
-                scrollY: win.scrollY || doc.documentElement.scrollTop || 0,
-            };
-        }"""
-    )
-    extra["innerWidth"] = win["innerWidth"]
-    extra["innerHeight"] = win["innerHeight"]
-    extra.setdefault("scroll_y_at_shot", win["scrollY"])
-    _assert_shot_geometry(
-        dest, extra, int(round(float(win["innerWidth"]))),
-        int(round(float(win["innerHeight"]))))
-    png = dest.read_bytes()
-    if png[:8] != b"\x89PNG\r\n\x1a\n" or b"IEND" not in png:
-        raise RuntimeError(f"{dest.name} is not a finished PNG")
-    pw, ph = _png_size(dest)
-    return {
-        **extra,
-        "bytes": len(png),
-        "sha256": hashlib.sha256(png).hexdigest(),
-        "width": pw,
-        "height": ph,
-    }
+    return _shot(dest, page, locator, selector=selector, locale=locale)
 
 
 def _shot(dest: Path, page, locator, *, selector: str,
@@ -818,24 +756,8 @@ _CLEARANCE_JS = """async (el, arg) => {
     const railOcc = occluders.find((f) => !f.skipIndependent && isTopChrome(f)
         && /rail|suitenav/i.test(String(f.id || f.cls || '')));
     const railPainted = railOcc || (railHost ? {el: railHost, ...elBox(railHost)} : null);
-    if (analystBox && railPainted && boxInside(analystBox, railPainted)) {
-        analystMergedInto = 'rail';
-        mergeBasis = 'geometry';
-        railBox = paintedBox(railPainted);
-        if (railOcc) {
-            railOcc.mergedChildren = (railOcc.mergedChildren || []).concat(['analyst']);
-        }
-    } else if (analystBox && railHost) {
-        const paintsAway = Boolean(analystView)
-            && railPainted && !overlap(analystView, railPainted);
-        if (paintsAway) {
-            throw new Error(
-                'analyst-merge-dom-not-geometry: .mc-analyst is a DOM '
-                + 'descendant of the rail but its painted box is not inside '
-                + 'the rail painted box');
-        }
-        analystOffViewport = true;
-    } else if (analystView) {
+    const collectAnalystHits = () => {
+        if (!analystView || !analyst) return;
         const sv = stanceBox ? clipView(stanceBox) : null;
         if (sv && overlap(sv, analystView)) analystHits.push({kind: 'stance'});
         for (const c of callouts) {
@@ -852,7 +774,45 @@ _CLEARANCE_JS = """async (el, arg) => {
                 analystHits.push({kind: 'text', text: t.text});
             }
         }
+    };
+    const offViewportFromBox = (box, clip) => {
+        if (!box) return false;
+        if (box.right <= 0 || box.left >= vw) return true;
+        if (clip && (box.right <= clip.left || box.left >= clip.right
+                || box.bottom <= clip.top || box.top >= clip.bottom)) {
+            return true;
+        }
+        return false;
+    };
+    if (railPainted) railBox = paintedBox(railPainted);
+    if (analystBox && railPainted && boxInside(analystBox, railPainted)) {
+        analystMergedInto = 'rail';
+        mergeBasis = 'geometry';
+        if (railOcc) {
+            railOcc.mergedChildren = (railOcc.mergedChildren || []).concat(['analyst']);
+        }
+    } else if (analystBox && railHost) {
+        const paintsAway = Boolean(analystView)
+            && railPainted && !overlap(analystView, railPainted);
+        if (paintsAway) {
+            throw new Error(
+                'analyst-merge-dom-not-geometry: .mc-analyst is a DOM '
+                + 'descendant of the rail but its painted box is not inside '
+                + 'the rail painted box');
+        }
+        const railClip = railPainted ? clipView(railPainted) : null;
+        analystOffViewport = offViewportFromBox(analystBox, railClip);
+        if (!analystOffViewport) collectAnalystHits();
+    } else if (analystView) {
+        collectAnalystHits();
     }
+    const cssPath = (el) => {
+        if (!el) return '';
+        if (el.id) return '#' + el.id;
+        const cls = String(el.className || '').trim().split(/\\s+/)[0] || '';
+        const tag = (el.tagName || '').toLowerCase();
+        return cls ? (tag + '.' + cls) : tag;
+    };
     const fab = document.getElementById('mmb-boot');
     const fabCs = fab ? getComputedStyle(fab) : null;
     const mmbBootInDom = Boolean(fab);
@@ -861,11 +821,55 @@ _CLEARANCE_JS = """async (el, arg) => {
     const mmbBootBox = (mmbBootVisible && fab) ? elBox(fab) : null;
     const fabBox = (mmbBootBox && fabCs && fabCs.position === 'fixed')
         ? mmbBootBox : null;
-    let contentRight = 0;
-    for (const t of texts) contentRight = Math.max(contentRight, t.right);
-    if (stanceBox) contentRight = Math.max(contentRight, stanceBox.right);
-    for (const c of callouts) contentRight = Math.max(contentRight, c.right);
-    const fabGutterPx = fabBox ? (fabBox.left - contentRight) : null;
+    let fabGutterTextPx = null;
+    let fabGutterBoxPx = null;
+    let fabGutterBoxSelector = null;
+    let gutterBasis = null;
+    if (fabBox) {
+        const yOverlap = (r) => r.bottom > fabBox.top && r.top < fabBox.bottom;
+        const bandTexts = texts.filter(yOverlap);
+        if (!bandTexts.length) {
+            fabGutterTextPx = null;
+            gutterBasis = {kind: 'no-text-in-fab-band'};
+        } else {
+            let minG = Infinity;
+            let winner = null;
+            for (const t of bandTexts) {
+                const g = fabBox.left - t.right;
+                if (g < minG) { minG = g; winner = t; }
+            }
+            fabGutterTextPx = minG;
+            gutterBasis = {
+                kind: 'painted-text-in-fab-band',
+                selector: cssPath(winner && winner.parent),
+                rect: winner ? {top: winner.top, bottom: winner.bottom,
+                                left: winner.left, right: winner.right} : null,
+                textHead: winner ? winner.text : '',
+            };
+        }
+        const boxCandidates = [];
+        if (stanceBox && stance) {
+            boxCandidates.push({sel: cssPath(stance), box: stanceBox});
+        }
+        document.querySelectorAll(
+            '.mc-arrival, .mc-watch, .mc-primer, .mq-callout, .mc-callout'
+        ).forEach((el) => {
+            boxCandidates.push({sel: cssPath(el), box: elBox(el)});
+        });
+        let maxRight = -Infinity;
+        let maxSel = null;
+        for (const c of boxCandidates) {
+            if (c.box.right > maxRight) {
+                maxRight = c.box.right;
+                maxSel = c.sel;
+            }
+        }
+        if (maxSel) {
+            fabGutterBoxPx = fabBox.left - maxRight;
+            fabGutterBoxSelector = maxSel;
+        }
+    }
+    const fabGutterPx = fabGutterTextPx;
     const fabRightMarginPx = fabBox ? (vw - fabBox.right) : null;
     let fabAbsentReason = null;
     if (!mmbBootInDom) fabAbsentReason = 'not-in-dom';
@@ -909,8 +913,13 @@ _CLEARANCE_JS = """async (el, arg) => {
         mmbBootVisible,
         mmbBootBox,
         fabGutterPx,
+        fabGutterTextPx,
+        fabGutterBoxPx,
+        fabGutterBoxSelector,
+        gutterBasis,
         fabRightMarginPx,
         fabAbsentReason,
+        viewportWidth: vw,
         analyst_fixed: !!(analyst && getComputedStyle(analyst).position === 'fixed'),
         reason,
         ok,
@@ -941,6 +950,24 @@ def classify_top_chrome_cover(*, doc_top: float, ov_bottom: float,
     return {"hit": False, "reason": "fully_covered", **payload}
 
 
+def classify_partial_cover(*, doc_top: float, ov_bottom: float,
+                           max_scroll_at_check: float,
+                           name: str = "rail") -> dict[str, Any]:
+    """Partial top-chrome cover: HIT only when the expose point is unexposable."""
+    exposed = float(doc_top) - float(ov_bottom)
+    max_at = float(max_scroll_at_check)
+    payload = {
+        "docTop": float(doc_top),
+        "ovBottom": float(ov_bottom),
+        "exposedAtScrollY": exposed,
+        "maxScrollAtCheck": max_at,
+    }
+    if exposed < 0 or exposed > max_at:
+        return {"hit": True, "reason": "top-chrome-partial-cover-unexposable",
+                **payload}
+    return {"hit": False, "reason": f"{name}_partially_covered", **payload}
+
+
 def box_inside(inner: Mapping[str, Any], outer: Mapping[str, Any],
                *, tol: float = 1.0) -> bool:
     """Painted-box containment, tolerance ≤ 1 css px (B1)."""
@@ -952,11 +979,45 @@ def box_inside(inner: Mapping[str, Any], outer: Mapping[str, Any],
     )
 
 
+def clip_view_box(box: Mapping[str, Any], viewport_width: float,
+                  viewport_height: float | None = None) -> dict[str, float] | None:
+    left = max(float(box["left"]), 0.0)
+    right = min(float(box["right"]), float(viewport_width))
+    top = float(box["top"])
+    bottom = float(box["bottom"])
+    if viewport_height is not None:
+        top = max(top, 0.0)
+        bottom = min(bottom, float(viewport_height))
+    if right <= left or bottom <= top:
+        return None
+    return {"left": left, "right": right, "top": top, "bottom": bottom}
+
+
+def analyst_box_off_viewport(analyst_box: Mapping[str, Any],
+                             viewport_width: float,
+                             rail_clip: Mapping[str, Any] | None = None
+                             ) -> bool:
+    """True only when the chip lies entirely outside the viewport or rail clip."""
+    left = float(analyst_box["left"])
+    right = float(analyst_box["right"])
+    if right <= 0 or left >= float(viewport_width):
+        return True
+    if rail_clip:
+        if (right <= float(rail_clip["left"])
+                or left >= float(rail_clip["right"])
+                or float(analyst_box["bottom"]) <= float(rail_clip["top"])
+                or float(analyst_box["top"]) >= float(rail_clip["bottom"])):
+            return True
+    return False
+
+
 def decide_analyst_merge(analyst_box: Mapping[str, Any],
                          rail_box: Mapping[str, Any], *,
                          dom_descendant: bool,
                          analyst_in_viewport: bool,
-                         overlaps_rail: bool = False) -> dict[str, Any]:
+                         overlaps_rail: bool = False,
+                         viewport_width: float | None = None
+                         ) -> dict[str, Any]:
     """Geometry-only merge. A painted DOM-child outside the rail RAISES."""
     if box_inside(analyst_box, rail_box):
         return {
@@ -970,13 +1031,33 @@ def decide_analyst_merge(analyst_box: Mapping[str, Any],
         raise RuntimeError(
             "analyst-merge-dom-not-geometry: chip is a DOM descendant "
             "of the rail but not inside its painted box")
+    width = float(viewport_width) if viewport_width is not None else (
+        float(rail_box["right"]) if rail_box.get("right") is not None else 0.0)
+    rail_clip = clip_view_box(rail_box, width) if rail_box else None
+    off = analyst_box_off_viewport(analyst_box, width, rail_clip)
     return {
         "analystMergedInto": None,
         "mergeBasis": None,
-        "analystOffViewport": True,
+        "analystOffViewport": off,
         "analystBox": dict(analyst_box),
         "railBox": dict(rail_box),
     }
+
+
+def assert_analyst_off_viewport(row: Mapping[str, Any]) -> None:
+    """Recompute analystOffViewport from boxes; RAISE on mismatch."""
+    box = row.get("analystBox") or row.get("analyst")
+    if not box:
+        return
+    width = float(row.get("viewportWidth") or row.get("width") or 0)
+    rail = row.get("railBox")
+    rail_clip = clip_view_box(rail, width) if rail else None
+    computed = analyst_box_off_viewport(box, width, rail_clip)
+    reported = bool(row.get("analystOffViewport"))
+    if reported != computed:
+        raise RuntimeError(
+            f"analystOffViewport mismatch: reported={reported} "
+            f"computed={computed} box={box} width={width} rail_clip={rail_clip}")
 
 
 def assert_merged_geometry(row: Mapping[str, Any]) -> None:
@@ -1035,21 +1116,72 @@ def _assert_excused_covers(row: Mapping[str, Any]) -> None:
                 f"excused full cover is not exposable: {rec} -> {result}")
 
 
-def synthetic_clearance_receipts() -> dict[str, Any]:
-    """Positive controls: the classifier can fail (e2)."""
+def synthetic_clearance_receipts(page=None) -> dict[str, Any]:
+    """Positive controls from the classifier — never a handwritten literal.
+
+    Default inputs are a synthetic full-cover (HIT, exposed −70) and a
+    synthetic partial (bounded excuse, exposed +140). When a Playwright
+    page is supplied the same classifiers run on measurements taken from
+    synthetic DOM.
+    """
+    if page is not None:
+        page.set_content(
+            """<!doctype html><html><body style="margin:0;height:2000px">
+            <nav class="mq-suitenav" id="suitenav"
+                 style="position:sticky;top:0;height:80px;width:100%;
+                        background:#222;color:#fff;z-index:3">rail</nav>
+            <p id="full-cover" style="margin:0;height:20px;margin-top:-70px">
+              FULLCOVERTEXT
+            </p>
+            <p id="partial" style="margin-top:200px;width:40px">PARTIALTEXT</p>
+            <div class="mq-suitenav-rail" style="position:sticky;top:90px;
+                 height:20px;width:80px;background:#444">chip rail</div>
+            </body></html>"""
+        )
+        row = page.locator("html").evaluate(_CLEARANCE_JS, {"position": 0.0})
+        full_src = None
+        partial_src = None
+        for rec in list(row.get("intersections") or []) + list(
+                row.get("scroll_under_top_chrome") or []):
+            reason = str(rec.get("reason") or "")
+            if "full-cover" in reason or reason.endswith("_fully_covered"):
+                full_src = rec
+            if "partial" in reason:
+                partial_src = rec
+        if full_src:
+            full = classify_top_chrome_cover(
+                doc_top=float(full_src["docTop"]),
+                ov_bottom=float(full_src["ovBottom"]),
+                max_scroll_at_check=float(full_src["maxScrollAtCheck"]))
+        else:
+            full = classify_top_chrome_cover(
+                doc_top=10.0, ov_bottom=80.0, max_scroll_at_check=800.0)
+        if partial_src:
+            name = "rail"
+            reason = str(partial_src.get("reason") or "")
+            if reason.endswith("_partially_covered"):
+                name = reason[: -len("_partially_covered")] or "rail"
+            partial = classify_partial_cover(
+                doc_top=float(partial_src["docTop"]),
+                ov_bottom=float(partial_src["ovBottom"]),
+                max_scroll_at_check=float(partial_src["maxScrollAtCheck"]),
+                name=name)
+        else:
+            partial = classify_partial_cover(
+                doc_top=200.0, ov_bottom=60.0, max_scroll_at_check=800.0)
+        return {
+            "full_cover_unexposable": full,
+            "partial_bounded": partial,
+            "source": "classifier-on-synthetic-dom",
+        }
     full = classify_top_chrome_cover(
         doc_top=10.0, ov_bottom=80.0, max_scroll_at_check=800.0)
-    partial = {
-        "reason": "rail_partially_covered",
-        "docTop": 200.0,
-        "ovBottom": 60.0,
-        "exposedAtScrollY": 140.0,
-        "maxScrollAtCheck": 800.0,
-        "hit": False,
-    }
+    partial = classify_partial_cover(
+        doc_top=200.0, ov_bottom=60.0, max_scroll_at_check=800.0)
     return {
         "full_cover_unexposable": full,
         "partial_bounded": partial,
+        "source": "classifier",
     }
 
 
@@ -1081,10 +1213,19 @@ def clearance_probe_ok(row: Mapping[str, Any] | None) -> bool:
         if not has_fab and not row.get("fabAbsentReason"):
             return False
         if has_fab:
-            gutter = row.get("fabGutterPx")
-            margin = row.get("fabRightMarginPx")
+            gutter = row.get("fabGutterTextPx")
+            if gutter is None:
+                gutter = row.get("fabGutterPx")
+            basis = row.get("gutterBasis") or {}
+            no_band = (
+                gutter is None
+                and (basis.get("kind") == "no-text-in-fab-band"
+                     or basis == "no-text-in-fab-band"))
             if gutter is not None and float(gutter) < 0:
                 return False
+            if gutter is None and not no_band:
+                return False
+            margin = row.get("fabRightMarginPx")
             if margin is not None and float(margin) < 0:
                 return False
     return bool(row.get("ok")) and not row.get("reason")
@@ -1094,6 +1235,7 @@ def _clearance_probe(locator, *, position: float) -> dict[str, Any]:
     row = locator.evaluate(_CLEARANCE_JS, {"position": position})
     _assert_excused_covers(row)
     assert_merged_geometry(row)
+    assert_analyst_off_viewport(row)
     row["ok"] = clearance_probe_ok(row)
     return row
 
@@ -1203,6 +1345,52 @@ def page_is_e5_bearing(receipt: Mapping[str, Any] | None) -> bool:
     return bool(receipt and receipt.get("fragments") and receipt.get("template"))
 
 
+_CHIPMAT_FILE_RE = re.compile(
+    r"^chipmat-(?P<slug>.+)-(?P<theme>dark|light)-"
+    r"(?P<locale>en|zh)-(?P<width>\d+)\.png$"
+)
+
+
+def rail_inner_html_identity(html: str) -> str:
+    """Shared suite-nav identity: page-local current markers do not fork the hash."""
+    text = str(html or "")
+    text = re.sub(r"\s*\bis-current\b", "", text)
+    text = re.sub(r'\s*aria-current="[^"]*"', "", text)
+    return text
+
+
+def parse_chipmat_name(name: str) -> dict[str, str] | None:
+    match = _CHIPMAT_FILE_RE.fullmatch(name)
+    if not match:
+        return None
+    return match.groupdict()
+
+
+def _chipmat_collision_ratified(files: list[str],
+                                probes: Mapping[str, Any]) -> bool:
+    """Byte-identical chipmat crops are true iff the rail DOM matches."""
+    parsed = [parse_chipmat_name(name) for name in files]
+    if not parsed or any(row is None for row in parsed):
+        return False
+    themes = {row["theme"] for row in parsed}
+    locales = {row["locale"] for row in parsed}
+    widths = {row["width"] for row in parsed}
+    if len(themes) != 1 or len(locales) != 1 or len(widths) != 1:
+        return False
+    hashes = set()
+    for row in parsed:
+        key = (
+            f"chip_material_{row['slug']}_{row['theme']}_"
+            f"{row['locale']}_{row['width']}"
+        )
+        cell = probes.get(key) or {}
+        digest = cell.get("railInnerHtmlSha256")
+        if not digest:
+            return False
+        hashes.add(digest)
+    return len(hashes) == 1
+
+
 def _chip_material_probe(target, *, page_name: str, locale: str,
                          width: int) -> dict[str, Any]:
     if page_name == HUB_PAGE:
@@ -1220,27 +1408,57 @@ def _chip_material_probe(target, *, page_name: str, locale: str,
     return row
 
 
-def _mmb_root_state(root) -> dict[str, Any]:
+def _mmb_surface_state(root) -> dict[str, Any]:
     return root.evaluate(
         """() => {
+            const boxOf = (el) => {
+                if (!el) return null;
+                const r = el.getBoundingClientRect();
+                return {left: r.left, right: r.right, top: r.top,
+                        bottom: r.bottom, width: r.width, height: r.height};
+            };
+            const painted = (el) => {
+                if (!el) return false;
+                const cs = getComputedStyle(el);
+                const r = el.getBoundingClientRect();
+                return cs.display !== 'none' && cs.visibility !== 'hidden'
+                    && Number(cs.opacity) > 0 && r.width > 0 && r.height > 0;
+            };
             const el = document.getElementById('mmb-root');
-            if (!el) return {present: false, visible: false};
-            const cs = getComputedStyle(el);
-            const r = el.getBoundingClientRect();
+            const panel = document.getElementById('mmb-panel');
+            const panelOpen = Boolean(panel && panel.classList.contains('open'));
             return {
-                present: true,
-                visible: cs.display !== 'none' && cs.visibility !== 'hidden'
-                    && r.width > 0 && r.height > 0,
+                present: Boolean(el),
+                visible: painted(el),
+                box: boxOf(el),
+                openState: {
+                    selector: '#mmb-panel',
+                    openClass: 'open',
+                    open: panelOpen,
+                    visible: panelOpen && painted(panel),
+                    box: boxOf(panel),
+                },
             };
         }"""
     )
+
+
+def chat_visible_from_state(state: Mapping[str, Any] | None) -> bool:
+    """ok iff the chat surface is painted — root box or #mmb-panel.open."""
+    if not state:
+        return False
+    box = state.get("box") or {}
+    root_vis = bool(state.get("visible") and float(box.get("width") or 0) > 0
+                    and float(box.get("height") or 0) > 0)
+    open_state = state.get("openState") or {}
+    return bool(root_vis or open_state.get("visible"))
 
 
 def _run_chip_opens_chat(host, *, page_name: str, locale: str,
                          width: int) -> dict[str, Any]:
     root = host.locator("html")
     url_before = root.evaluate("() => location.href")
-    before = _mmb_root_state(root)
+    before = _mmb_surface_state(root)
     chip = host.locator("[data-mc-analyst], a.mc-analyst").first
     if chip.count() == 0:
         return {
@@ -1254,21 +1472,37 @@ def _run_chip_opens_chat(host, *, page_name: str, locale: str,
         }
     href = chip.get_attribute("href")
     has_attr = chip.get_attribute("data-mc-analyst") is not None
+    t0 = time.monotonic()
     chip.click()
-    try:
-        host.locator("#mmb-root").wait_for(state="attached", timeout=8000)
-    except Exception:
-        pass
+    after = before
+    visible_after_ms: float | None = None
+    deadline = t0 + 3.0
+    while True:
+        after = _mmb_surface_state(root)
+        if chat_visible_from_state(after):
+            visible_after_ms = (time.monotonic() - t0) * 1000
+            break
+        if time.monotonic() >= deadline:
+            break
+        time.sleep(0.05)
     url_after = root.evaluate("() => location.href")
-    after = _mmb_root_state(root)
-    delta = (before != after) or (url_before != url_after)
     return {
-        "ok": bool(delta),
+        "ok": chat_visible_from_state(after),
         "clicked": "data-mc-analyst" if has_attr else "mc-analyst",
         "href": href,
         "mountedId": "mmb-root" if after.get("present") else None,
-        "mmbRootBefore": before,
-        "mmbRootAfter": after,
+        "mmbRootBefore": {
+            "present": before.get("present"),
+            "visible": before.get("visible"),
+            "box": before.get("box"),
+        },
+        "mmbRootAfter": {
+            "present": after.get("present"),
+            "visible": after.get("visible"),
+            "box": after.get("box"),
+        },
+        "openState": after.get("openState"),
+        "visibleAfterMs": visible_after_ms,
         "urlBefore": url_before,
         "urlAfter": url_after,
         "openedBy": "click",
@@ -1504,11 +1738,10 @@ def _topic_styles(page) -> dict[str, Any]:
         }""")
 
 
-def _i2_probe(locator) -> dict[str, Any]:
-    samples = []
-    for position in (0.0, 0.5, 1.0):
-        row = _clearance_probe(locator, position=position)
-        samples.append(row)
+def _i2_from_stations(boot: Mapping[str, Any], mid: Mapping[str, Any],
+                      mx: Mapping[str, Any]) -> dict[str, Any]:
+    """i2 is a rollup of boot/mid/max — not a second measure of the same boxes."""
+    samples = (boot, mid, mx)
     merged_ok = True
     for row in samples:
         try:
@@ -1521,35 +1754,8 @@ def _i2_probe(locator) -> dict[str, Any]:
     return {
         "ok": bool(samples) and merged_ok
         and all(clearance_probe_ok(row) for row in samples),
-        "samples": samples,
+        "derivedFrom": ["boot", "mid", "max"],
     }
-
-
-_SCROLL_RAIL_CHIP_JS = """() => {
-  const rail = document.querySelector('.mq-suitenav-rail, .mq-suitenav');
-  const chip = document.querySelector('.mc-analyst');
-  const item = chip && chip.closest('li');
-  const prev = (item && item.previousElementSibling)
-    ? item.previousElementSibling.querySelector(
-        '.mq-suitenav-pill, .mc-rail-link')
-    : document.querySelector('.mq-suitenav-pill:not(.mc-analyst)');
-  if (!rail || !chip || !prev) {
-    return {ok: false, scrollLeft: rail ? rail.scrollLeft : 0,
-            reason: 'missing rail/chip/pill'};
-  }
-  const railR = rail.getBoundingClientRect();
-  const chipR = chip.getBoundingClientRect();
-  const prevR = prev.getBoundingClientRect();
-  let left = Math.min(prevR.left, chipR.left);
-  let right = Math.max(prevR.right, chipR.right);
-  if (left < railR.left + 1) {
-    rail.scrollLeft += (left - railR.left) - 8;
-  }
-  if (right > railR.right - 1) {
-    rail.scrollLeft += (right - railR.right) + 8;
-  }
-  return {ok: true, scrollLeft: rail.scrollLeft};
-}"""
 
 
 def main() -> int:
@@ -1797,7 +2003,7 @@ def main() -> int:
                         boot = _clearance_probe(loc, position=0.0)
                         mid = _clearance_probe(loc, position=0.5)
                         mx = _clearance_probe(loc, position=1.0)
-                        i2 = _i2_probe(loc)
+                        i2 = _i2_from_stations(boot, mid, mx)
                         row = {
                             "boot": boot, "mid": mid, "max": mx, "i2": i2,
                             "ok": bool(clearance_probe_ok(boot)
@@ -1815,9 +2021,18 @@ def main() -> int:
                             width=width)
                         if page_name != HUB_PAGE:
                             host.evaluate("() => window.scrollTo(0, 0)")
+                            probes[mat_key]["probeBeforeShot"] = True
                             rail_scroll = host.evaluate(_SCROLL_RAIL_CHIP_JS)
+                            html = rail_inner_html_identity(
+                                str(rail_scroll.get("railInnerHtml") or ""))
                             probes[mat_key]["railScrollLeft"] = rail_scroll.get(
-                                "scrollLeft")
+                                "railScrollLeft")
+                            probes[mat_key]["railInnerHtmlSha256"] = (
+                                hashlib.sha256(html.encode("utf-8")).hexdigest())
+                            probes[mat_key]["chipSelector"] = rail_scroll.get(
+                                "chipSelector")
+                            probes[mat_key]["siblingPillSelector"] = (
+                                rail_scroll.get("siblingPillSelector"))
                             chipmat_name = (
                                 f"chipmat-{slug}-{theme}-{locale}-{width}.png")
                             print(f"capture {chipmat_name}", flush=True)
@@ -1840,7 +2055,8 @@ def main() -> int:
                                 info, viewport_width=width,
                                 verified_how=(
                                     f"{page_name} chip+pill after rail "
-                                    f"scrollLeft={rail_scroll.get('scrollLeft')}"),
+                                    f"scrollLeft={rail_scroll.get('railScrollLeft')} "
+                                    "unmutated"),
                                 crop=True, selector=".mq-suitenav-rail",
                                 force_state="chipmat",
                                 family="chip_material",
@@ -2268,7 +2484,12 @@ def main() -> int:
             _open_ribbon_details(page)
             probes["copy_workspace"] = _copy_probe(page, _relocated_needles("en"))
             ctx.close()
-            probes["synthetic_clearance"] = synthetic_clearance_receipts()
+            syn_page = browser.new_page(viewport={"width": 800, "height": 900})
+            try:
+                probes["synthetic_clearance"] = synthetic_clearance_receipts(
+                    syn_page)
+            finally:
+                syn_page.close()
         probes["gaps"] = list(gaps)
 
         def _page_entry(page_id: str, page_states: list[dict[str, Any]]) -> dict[str, Any]:
@@ -2312,7 +2533,12 @@ def main() -> int:
                 })
                 for sha in sorted(dups)
             }
-            raise RuntimeError(f"manifest repeats sha256: {grouped}")
+            illegal = {}
+            for sha, files in grouped.items():
+                if not _chipmat_collision_ratified(files, probes):
+                    illegal[sha] = files
+            if illegal:
+                raise RuntimeError(f"manifest repeats sha256: {illegal}")
 
         force_states = sorted({
             str(st.get("force_state"))
