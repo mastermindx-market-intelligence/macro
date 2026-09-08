@@ -47,50 +47,125 @@ ASSETS = (
     "navigation-refresh.css", "product-nav-icons.css", "nav_market.js",
 )
 
-CLEARANCE_JS = """() => {
-  /* N-B1: measure at document maximum. Never scrollBy to satisfy the
-     assertion — the harness must not move the page to make itself true. */
+CLEARANCE_AT_JS = """(target) => {
+  /* R8-M1: at scroll 0 / 50% / max, no .mc-panels text node may
+     intersect a fixed overlay (#mmb-boot, a leftover fixed .mc-analyst)
+     or — at scroll 0 — be fully covered by the sticky rail. An empty
+     text-node set is a fail. Never scrollBy to satisfy the assertion. */
   const maxY = Math.max(0,
     document.documentElement.scrollHeight - window.innerHeight);
-  window.scrollTo(0, maxY);
+  let want = 0;
+  if (target === 'max') want = maxY;
+  else if (target === '50') want = maxY * 0.5;
+  window.scrollTo(0, want);
   const reached = window.scrollY || document.documentElement.scrollTop;
-  const panels = [...document.querySelectorAll('.mc-panel')]
-    .filter((p) => !p.hidden && getComputedStyle(p).display !== 'none');
-  const lastPanel = panels[panels.length - 1];
-  let last = lastPanel && lastPanel.lastElementChild;
-  while (last && (last.hidden || last.tagName === 'TEMPLATE')) {
-    last = last.previousElementSibling;
+  const overlays = [];
+  const addBox = (el, name) => {
+    if (!el) return;
+    const cs = getComputedStyle(el);
+    const pos = cs.position;
+    if (pos !== 'fixed' && pos !== 'sticky') return;
+    if (cs.display === 'none' || cs.visibility === 'hidden') return;
+    const box = el.getBoundingClientRect();
+    if (box.width < 1 || box.height < 1) return;
+    overlays.push({
+      name, pos,
+      top: box.top, left: box.left, right: box.right, bottom: box.bottom,
+      width: box.width, height: box.height,
+    });
+  };
+  addBox(document.querySelector('.mc-rail'), 'rail');
+  document.querySelectorAll('.mc-rail-link').forEach((el) => addBox(el, 'rail-chip'));
+  addBox(document.querySelector('.mc-analyst'), 'analyst');
+  addBox(document.getElementById('mmb-boot'), 'mmb-boot');
+  const root = document.querySelector('.mc-panels');
+  if (!root) {
+    return {ok: false, reason: 'missing .mc-panels', target, scrollY: reached,
+            maxScroll: maxY, maxScrollMatched: Math.abs(reached - want) < 2,
+            textCount: 0, hits: [], overlays};
   }
-  const pill = document.querySelector('.mc-analyst');
-  if (!last || !pill) {
-    return {lastBottom: null, pillTop: null, gap: null, clear: false,
-            reason: 'missing last or pill', maxScroll: maxY,
-            scrollReached: reached};
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      return (node.nodeValue || '').replace(/\\s+/g, '').length
+        ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    },
+  });
+  const texts = [];
+  while (walker.nextNode()) texts.push(walker.currentNode);
+  if (texts.length === 0) {
+    return {ok: false, reason: 'empty text-node set', target, scrollY: reached,
+            maxScroll: maxY, maxScrollMatched: Math.abs(reached - want) < 2,
+            textCount: 0, hits: [], overlays};
   }
-  const lastBox = last.getBoundingClientRect();
-  const pillBox = pill.getBoundingClientRect();
-  const lastAbsBottom = lastBox.bottom + (window.scrollY || 0);
-  const reservedBandCss = document.documentElement.scrollHeight - lastAbsBottom;
-  const lastBottom = lastBox.bottom;
-  const pillTop = pillBox.top;
-  const present = lastBottom > 0 && pillTop > 0;
+  const intersects = (a, b) => !(a.right <= b.left || a.left >= b.right
+    || a.bottom <= b.top || a.top >= b.bottom);
+  const fullyCovered = (text, ov) => text.top >= ov.top - 0.5
+    && text.bottom <= ov.bottom + 0.5
+    && text.left >= ov.left - 0.5
+    && text.right <= ov.right + 0.5;
+  const readingAncestor = (node) => {
+    let el = node.parentElement;
+    while (el && el !== root) {
+      const cls = el.className || '';
+      if (/(?:^|\\s)(?:mc-figure|mc-move|mc-stance|mc-panel-title|mc-caption|mc-watch|mc-read|mc-chip)(?:\\s|$)/.test(cls)) {
+        return true;
+      }
+      if (/(?:^|\\s)(?:mc-dest|mc-dests|mc-dest-go)(?:\\s|$)/.test(cls)) {
+        return false;
+      }
+      el = el.parentElement;
+    }
+    return true;
+  };
+  const hits = [];
+  for (const node of texts) {
+    const range = document.createRange();
+    range.selectNodeContents(node);
+    const inReading = readingAncestor(node);
+    for (const rect of range.getClientRects()) {
+      if (rect.width < 1 || rect.height < 1) continue;
+      if (rect.bottom < 0 || rect.top > window.innerHeight) continue;
+      for (const ov of overlays) {
+        if (!intersects(rect, ov)) continue;
+        const fixed = ov.pos === 'fixed';
+        const railFull = ov.pos === 'sticky' && target === '0'
+          && fullyCovered(rect, ov);
+        if (!fixed && !railFull) continue;
+        if (ov.name === 'mmb-boot' && !inReading) continue;
+        hits.push({
+          text: String(node.nodeValue || '').trim().slice(0, 80),
+          overlay: ov.name,
+          overlayPos: ov.pos,
+          textTop: rect.top,
+          textBottom: rect.bottom,
+          ovTop: ov.top,
+          ovBottom: ov.bottom,
+        });
+      }
+    }
+  }
+  const analyst = document.querySelector('.mc-analyst');
+  const boot = document.getElementById('mmb-boot');
+  const analystCs = analyst ? getComputedStyle(analyst) : null;
+  const bootBox = boot ? boot.getBoundingClientRect() : null;
   return {
-    lastBottom,
-    lastTop: lastBox.top,
-    lastTag: last.className || last.tagName,
-    pillTop,
-    pillHeight: pillBox.height,
-    pillBottom: pillBox.bottom,
-    gap: pillTop - lastBottom,
-    clear: Boolean(present && lastBottom <= pillTop),
+    ok: hits.length === 0,
+    target,
+    scrollY: reached,
+    scrollWanted: want,
+    maxScroll: maxY,
+    maxScrollMatched: Math.abs(reached - want) < 2,
+    textCount: texts.length,
+    hits,
+    overlays,
+    analystPosition: analystCs ? analystCs.position : null,
+    mmbBootPresent: Boolean(boot),
+    mmbBootBox: bootBox ? {
+      top: bootBox.top, bottom: bootBox.bottom,
+      left: bootBox.left, right: bootBox.right,
+    } : null,
     scrollHeight: document.documentElement.scrollHeight,
     innerHeight: window.innerHeight,
-    maxScroll: maxY,
-    scrollReached: reached,
-    maxScrollMatched: Math.abs(reached - maxY) < 2,
-    reservedBandCss,
-    pad: getComputedStyle(
-      document.querySelector('.mc-panels') || lastPanel).paddingBottom,
   };
 }"""
 
@@ -174,8 +249,10 @@ STRIP_VOID_JS = """() => {
   }
   const stripBg = getComputedStyle(strip).backgroundColor;
   const stripFilled = parseAlpha(stripBg) > 0.05;
-  const filledOutsideWiderThan40 = Boolean(stripFilled && voids.some((v) => v.width > 40));
-  const holeWiderThan40 = voids.some((v) => v.side !== 'between' && v.width > 40);
+  /* R8-m1: filledOutsideWiderThan40 is NOT gated on stripFilled.
+     A >40px run outside a chip is a void whether the container paints. */
+  const filledOutsideWiderThan40 = voids.some((v) => v.width > 40);
+  const holeWiderThan40 = voids.some((v) => v.width > 40);
   return {
     ok: !filledOutsideWiderThan40 && !holeWiderThan40
       && emptyChildren === 0 && chips.length === children.length,
@@ -188,6 +265,10 @@ STRIP_VOID_JS = """() => {
     maxVoidWidth: voids.length ? Math.max(...voids.map((v) => v.width)) : 0,
     filledOutsideWiderThan40,
     holeWiderThan40,
+    chipBoxes,
+    stripBox: {left: stripBox.left, right: stripBox.right,
+               top: stripBox.top, bottom: stripBox.bottom,
+               width: stripBox.width, height: stripBox.height},
     viewport: {innerWidth: window.innerWidth, stripWidth: stripBox.width},
   };
 }"""
@@ -241,6 +322,99 @@ HAIRLINE_JS = """() => {
     visibleTab: visible.getAttribute('data-mc-tabbody'),
   };
 }"""
+
+
+def _run_clearance(page) -> dict[str, Any]:
+    """R8-M1: measure at scroll 0, 50%, max. Fail on any hit or empty text."""
+    positions: dict[str, Any] = {}
+    for target in ("0", "50", "max"):
+        row = page.evaluate(CLEARANCE_AT_JS, target)
+        positions[target] = row
+        if row.get("textCount", 0) == 0:
+            raise RuntimeError(f"clearance empty text-node set at {target}: {row}")
+        if target == "max" and not row.get("maxScrollMatched"):
+            raise RuntimeError(f"clearance max scroll not reached: {row}")
+        if not row.get("ok"):
+            raise RuntimeError(f"clearance hits at {target}: {row.get('hits')}")
+    return {
+        "ok": all(pos.get("ok") for pos in positions.values()),
+        "textCount": positions["0"].get("textCount"),
+        "positions": positions,
+        "analystPosition": positions["0"].get("analystPosition"),
+        "mmbBootPresent": positions["0"].get("mmbBootPresent"),
+        "mmbBootBox": positions["0"].get("mmbBootBox"),
+    }
+
+
+def _colour_close(pixel: tuple[int, int, int], canvas: tuple[int, int, int],
+                  tol: int = 10) -> bool:
+    return all(abs(a - b) <= tol for a, b in zip(pixel, canvas))
+
+
+def _pixel_scan_strip_void(path: Path, probe: dict[str, Any],
+                           scale: int = 2) -> dict[str, Any]:
+    """R8-m1: scan the captured strip-row band. Any run ≥40 CSS px of
+    non-canvas colour outside a chip box is a void."""
+    from PIL import Image
+    image = Image.open(path).convert("RGB")
+    strip = probe.get("stripBox") or {}
+    chips = probe.get("chipBoxes") or []
+    if not strip or not chips:
+        return {"ok": False, "reason": "missing strip/chip boxes",
+                "pixelVoidWiderThan40": True, "pixelVoids": []}
+    # First chip row only — the coverage chip is a full-width second row.
+    row_top = min(box["top"] for box in chips)
+    row_boxes = [box for box in chips if abs(box["top"] - row_top) < 4]
+    y0 = int(min(box["top"] for box in row_boxes) * scale)
+    y1 = int(max(box["bottom"] for box in row_boxes) * scale)
+    x0 = int(strip["left"] * scale)
+    x1 = int(strip["right"] * scale)
+    y0 = max(0, y0)
+    y1 = min(image.height, y1)
+    x0 = max(0, x0)
+    x1 = min(image.width, x1)
+    canvas = image.getpixel((min(8, image.width - 1), min(8, image.height - 1)))
+    chip_dev = [
+        (int(box["left"] * scale) - 1, int(box["right"] * scale) + 1,
+         int(box["top"] * scale) - 1, int(box["bottom"] * scale) + 1)
+        for box in row_boxes
+    ]
+
+    def in_chip(x: int, y: int) -> bool:
+        return any(l <= x <= r and t <= y <= b for l, r, t, b in chip_dev)
+
+    threshold = 40 * scale
+    voids: list[dict[str, Any]] = []
+    for y in range(y0, y1):
+        run = 0
+        run_x = x0
+        for x in range(x0, x1):
+            if in_chip(x, y):
+                if run >= threshold:
+                    voids.append({"y": y, "x": run_x, "widthCss": run / scale})
+                run = 0
+                run_x = x
+                continue
+            pixel = image.getpixel((x, y))
+            if _colour_close(pixel, canvas):
+                if run >= threshold:
+                    voids.append({"y": y, "x": run_x, "widthCss": run / scale})
+                run = 0
+                run_x = x
+                continue
+            if run == 0:
+                run_x = x
+            run += 1
+        if run >= threshold:
+            voids.append({"y": y, "x": run_x, "widthCss": run / scale})
+    return {
+        "ok": len(voids) == 0,
+        "pixelVoidWiderThan40": len(voids) > 0,
+        "pixelVoids": voids[:12],
+        "pixelVoidCount": len(voids),
+        "canvasRgb": list(canvas),
+        "band": {"x0": x0, "x1": x1, "y0": y0, "y1": y1},
+    }
 
 
 def _png_size(path: Path) -> tuple[int, int]:
@@ -417,10 +591,22 @@ def _force_state_for(filename: str, extra: dict[str, Any] | None) -> str | None:
     named = {
         "17-dark-en-1440-arrival.png": "arrival",
         "18-light-en-1440-arrival.png": "arrival",
+        "30-dark-zh-1440-arrival.png": "arrival",
+        "31-light-zh-1440-arrival.png": "arrival",
+        "36-dark-en-390-arrival.png": "arrival",
+        "37-dark-zh-390-arrival.png": "arrival",
+        "38-light-en-390-arrival.png": "arrival",
+        "39-light-zh-390-arrival.png": "arrival",
         "19-dark-en-1440-dest-hover.png": "dest_hover",
         "20-light-en-1440-dest-hover.png": "dest_hover",
+        "32-dark-zh-1440-dest-hover.png": "dest_hover",
+        "33-light-zh-1440-dest-hover.png": "dest_hover",
         "21-dark-en-1440-heading-focus.png": "heading_focus",
         "22-light-en-1440-heading-focus.png": "heading_focus",
+        "34-dark-zh-1440-heading-focus.png": "heading_focus",
+        "35-light-zh-1440-heading-focus.png": "heading_focus",
+        "28-dark-zh-768.png": None,
+        "29-light-zh-768.png": None,
         "05-dark-en-1440-rates.png": "rates",
         "06-dark-zh-1440-rates.png": "rates",
         "07-light-en-1440-rates.png": "rates",
@@ -431,6 +617,8 @@ def _force_state_for(filename: str, extra: dict[str, Any] | None) -> str | None:
         "24-dark-en-1440-inflation-foot.png": "inflation_foot",
         "25-dark-en-1440-e3.png": "e3",
         "26-light-en-1440-e3.png": "e3",
+        "40-dark-zh-1440-e3.png": "e3",
+        "41-light-zh-1440-e3.png": "e3",
         "27-light-en-1440-money-central-banks.png": "money_central_banks",
     }
     if filename in named:
@@ -713,28 +901,42 @@ def _capture_empty_states(browser, tmp: Path, servers: list, manifest: dict) -> 
              "force_state": "e6",
          }),
     ]
+    zh_shots = []
+    for filename, theme, site, hash_path, selector, extra in empty_shots:
+        if filename.startswith("empty-"):
+            zh_name = filename.replace(".png", "-zh.png")
+        elif filename == "25-dark-en-1440-e3.png":
+            zh_name = "40-dark-zh-1440-e3.png"
+        elif filename == "26-light-en-1440-e3.png":
+            zh_name = "41-light-zh-1440-e3.png"
+        else:
+            continue
+        zh_shots.append((zh_name, theme, site, hash_path, selector, extra, "zh"))
+    empty_shots = [
+        (*shot, "en") for shot in empty_shots
+    ] + zh_shots
 
     served: dict[str, tuple] = {}
     try:
-        for filename, theme, site, hash_path, selector, extra in empty_shots:
+        for filename, theme, site, hash_path, selector, extra, locale in empty_shots:
             dest = EVIDENCE / filename
-            print(f"capturing {filename} (empty {extra.get('force_state')})", flush=True)
+            print(f"capturing {filename} (empty {extra.get('force_state')} {locale})", flush=True)
             key = str(site)
             if key not in served:
                 proc, origin = _serve(site)
                 servers.append(proc)
                 served[key] = (proc, origin)
             _origin = served[key][1]
-            context = _new_context(browser, theme, "en", 1440, 2200)
+            context = _new_context(browser, theme, locale, 1440, 2200)
             try:
                 page = _open_direct(
                     context, _origin + "/macro_monetary.html",
-                    hash_path, theme, "en")
+                    hash_path, theme, locale)
                 page.wait_for_selector(selector, timeout=15000)
                 page.locator(selector).first.screenshot(path=str(dest), type="png")
                 _assert_png(dest)
                 _upsert(manifest, filename, _row(
-                    filename, dest, theme, "en", 1440, 2200, extra))
+                    filename, dest, theme, locale, 1440, 2200, extra))
                 print(f"  {filename} {dest.stat().st_size}B {_sha(dest)[:12]}", flush=True)
             finally:
                 context.close()
@@ -778,12 +980,24 @@ def main() -> int:
             ("14-light-zh-390-end.png", "light", "zh", 390, 844, "#overview", "iframe-end", None),
             ("15-dark-en-768.png", "dark", "en", 768, 1400, "#overview", "iframe-full", None),
             ("16-light-en-768.png", "light", "en", 768, 1400, "#overview", "iframe-full", None),
+            ("28-dark-zh-768.png", "dark", "zh", 768, 1400, "#overview", "iframe-full", None),
+            ("29-light-zh-768.png", "light", "zh", 768, 1400, "#overview", "iframe-full", None),
             ("17-dark-en-1440-arrival.png", "dark", "en", 1440, 2200, "#rates", "arrival", None),
             ("18-light-en-1440-arrival.png", "light", "en", 1440, 2200, "#rates", "arrival", None),
+            ("30-dark-zh-1440-arrival.png", "dark", "zh", 1440, 2200, "#rates", "arrival", None),
+            ("31-light-zh-1440-arrival.png", "light", "zh", 1440, 2200, "#rates", "arrival", None),
+            ("36-dark-en-390-arrival.png", "dark", "en", 390, 844, "#rates", "arrival-iframe", None),
+            ("37-dark-zh-390-arrival.png", "dark", "zh", 390, 844, "#rates", "arrival-iframe", None),
+            ("38-light-en-390-arrival.png", "light", "en", 390, 844, "#rates", "arrival-iframe", None),
+            ("39-light-zh-390-arrival.png", "light", "zh", 390, 844, "#rates", "arrival-iframe", None),
             ("19-dark-en-1440-dest-hover.png", "dark", "en", 1440, 2200, "#overview", "hover", None),
             ("20-light-en-1440-dest-hover.png", "light", "en", 1440, 2200, "#overview", "hover", None),
+            ("32-dark-zh-1440-dest-hover.png", "dark", "zh", 1440, 2200, "#overview", "hover", None),
+            ("33-light-zh-1440-dest-hover.png", "light", "zh", 1440, 2200, "#overview", "hover", None),
             ("21-dark-en-1440-heading-focus.png", "dark", "en", 1440, 2200, "#overview", "focus", None),
             ("22-light-en-1440-heading-focus.png", "light", "en", 1440, 2200, "#overview", "focus", None),
+            ("34-dark-zh-1440-heading-focus.png", "dark", "zh", 1440, 2200, "#overview", "focus", None),
+            ("35-light-zh-1440-heading-focus.png", "light", "zh", 1440, 2200, "#overview", "focus", None),
             ("23-dark-en-1440-money-central-banks.png", "dark", "en", 1440, 2200, "#money/central_banks", "full", None),
             ("24-dark-en-1440-inflation-foot.png", "dark", "en", 1440, 2200, "#inflation", "full", None),
             ("27-light-en-1440-money-central-banks.png", "light", "en", 1440, 2200, "#money/central_banks", "full", None),
@@ -833,6 +1047,9 @@ def main() -> int:
                         elif kind == "arrival":
                             target.wait_for_selector("[data-mc-arrival]:not([hidden])", timeout=8000)
                             target.locator("#rates").screenshot(path=str(dest), type="png")
+                        elif kind == "arrival-iframe":
+                            target.wait_for_selector("[data-mc-arrival]:not([hidden])", timeout=8000)
+                            page.screenshot(path=str(dest), type="png", full_page=False)
                         elif kind == "hover":
                             card = target.locator("#overview .mc-dest").first
                             card.hover()
@@ -851,7 +1068,7 @@ def main() -> int:
                     finally:
                         context.close()
 
-                # B1 rail probe + M1 clearance at 390, four theme/lang cells
+                # B1 rail probe + R8-M1 clearance at 390, four theme/lang cells
                 for theme, locale in (("dark", "en"), ("dark", "zh"),
                                       ("light", "en"), ("light", "zh")):
                     context = _new_context(browser, theme, locale, 390, 844)
@@ -870,26 +1087,24 @@ def main() -> int:
                                 f"scrollWidth={rail.get('scrollWidth')} "
                                 f"clientWidth={rail.get('clientWidth')}")
                         probes[f"rail_{theme}_{locale}"] = rail
-                        clear = page.evaluate(CLEARANCE_JS)
-                        if clear.get("lastBottom") is None or clear.get("lastBottom") <= 0:
-                            raise RuntimeError(f"N-B1 lastBottom missing/negative {theme}/{locale}: {clear}")
-                        if not clear.get("maxScrollMatched"):
+                        clear = _run_clearance(page)
+                        if not clear.get("ok"):
                             raise RuntimeError(
-                                f"N-B1 max scroll not reached {theme}/{locale}: {clear}")
-                        if not clear.get("clear"):
-                            raise RuntimeError(f"N-B1 last content under pill {theme}/{locale}: {clear}")
+                                f"R8-M1 clearance failed 390 {theme}/{locale}: {clear}")
+                        probes[f"clearance_390_{theme}_{locale}"] = clear
                         probes[f"clearance_{theme}_{locale}"] = clear
-                        print(f"  probe {theme}/{locale} lastBottom={clear['lastBottom']} "
-                              f"pillTop={clear['pillTop']} pillH={clear.get('pillHeight')} "
-                              f"gap={clear.get('gap')} reserved={clear.get('reservedBandCss')} "
-                              f"maxY={clear.get('maxScroll')} reached={clear.get('scrollReached')} "
-                              f"clear={clear['clear']}", flush=True)
+                        print(
+                            f"  clearance 390 {theme}/{locale} ok={clear['ok']} "
+                            f"texts={clear['textCount']} "
+                            f"analyst={clear['positions']['0'].get('analystPosition')} "
+                            f"boot={clear['positions']['0'].get('mmbBootPresent')}",
+                            flush=True)
                     finally:
                         context.close()
 
-                # 768 rail probe both themes
+                # 768 rail + clearance, both themes (EN); ZH 768 is frames-only
                 for theme, locale in (("dark", "en"), ("light", "en")):
-                    context = _new_context(browser, theme, locale, 768, 1024)
+                    context = _new_context(browser, theme, locale, 768, 1400)
                     try:
                         page = _open_direct(
                             context, origin + "/macro_monetary.html",
@@ -899,6 +1114,15 @@ def main() -> int:
                         if not rail.get("ok") or rail.get("railAlpha") != 1 or not rail.get("equal"):
                             raise RuntimeError(f"B1 768 rail probe failed {theme}: {rail}")
                         probes[f"rail_768_{theme}_{locale}"] = rail
+                        clear = _run_clearance(page)
+                        if not clear.get("ok"):
+                            raise RuntimeError(
+                                f"R8-M1 clearance failed 768 {theme}/{locale}: {clear}")
+                        probes[f"clearance_768_{theme}_{locale}"] = clear
+                        print(
+                            f"  clearance 768 {theme}/{locale} ok={clear['ok']} "
+                            f"texts={clear['textCount']}",
+                            flush=True)
                     finally:
                         context.close()
 
@@ -935,30 +1159,49 @@ def main() -> int:
                 finally:
                     context.close()
 
-                # R7-M2: no filled void in the 1440 light EN strip.
-                context = _new_context(browser, "light", "en", 1440, 2200)
-                try:
-                    page = _open_direct(
-                        context, origin + "/macro_monetary.html",
-                        "#overview", "light", "en")
-                    page.wait_for_selector(".mc-strip .mc-chip", timeout=15000)
-                    void_probe = page.evaluate(STRIP_VOID_JS)
-                    if not void_probe.get("ok"):
-                        raise RuntimeError(f"R7-M2 strip void probe failed: {void_probe}")
-                    if void_probe.get("filledOutsideWiderThan40"):
-                        raise RuntimeError(
-                            f"R7-M2 filled slab outside a chip: {void_probe}")
-                    probes["strip_void_probe"] = void_probe
-                    print(
-                        f"  probe strip_void_probe chips={void_probe['chipCount']} "
-                        f"children={void_probe['childCount']} "
-                        f"empty={void_probe['emptyChildren']} "
-                        f"stripFilled={void_probe['stripFilled']} "
-                        f"maxVoid={void_probe.get('maxVoidWidth')} "
-                        f"ok={void_probe['ok']}",
-                        flush=True)
-                finally:
-                    context.close()
+                # R8-m1: strip-void at 1440 dark+light × EN+ZH, JS + PNG scan.
+                strip_voids: dict[str, Any] = {}
+                frame_for = {
+                    ("dark", "en"): "01-dark-en-1440.png",
+                    ("dark", "zh"): "02-dark-zh-1440.png",
+                    ("light", "en"): "03-light-en-1440.png",
+                    ("light", "zh"): "04-light-zh-1440.png",
+                }
+                for theme, locale in (("dark", "en"), ("dark", "zh"),
+                                      ("light", "en"), ("light", "zh")):
+                    context = _new_context(browser, theme, locale, 1440, 2200)
+                    try:
+                        page = _open_direct(
+                            context, origin + "/macro_monetary.html",
+                            "#overview", theme, locale)
+                        page.wait_for_selector(".mc-strip .mc-chip", timeout=15000)
+                        void_probe = page.evaluate(STRIP_VOID_JS)
+                        png = EVIDENCE / frame_for[(theme, locale)]
+                        pixel = _pixel_scan_strip_void(png, void_probe)
+                        void_probe["pixelVoidWiderThan40"] = pixel["pixelVoidWiderThan40"]
+                        void_probe["pixelVoids"] = pixel.get("pixelVoids")
+                        void_probe["pixelVoidCount"] = pixel.get("pixelVoidCount")
+                        void_probe["canvasRgb"] = pixel.get("canvasRgb")
+                        void_probe["ok"] = bool(
+                            void_probe.get("ok") and pixel.get("ok"))
+                        if not void_probe.get("ok"):
+                            raise RuntimeError(
+                                f"R8-m1 strip void {theme}/{locale}: {void_probe}")
+                        if void_probe.get("filledOutsideWiderThan40"):
+                            raise RuntimeError(
+                                f"R8-m1 filled outside chip {theme}/{locale}: {void_probe}")
+                        key = f"{theme}_{locale}"
+                        strip_voids[key] = void_probe
+                        print(
+                            f"  strip_void {key} chips={void_probe['chipCount']} "
+                            f"maxVoid={void_probe.get('maxVoidWidth')} "
+                            f"pixelVoids={pixel.get('pixelVoidCount')} "
+                            f"ok={void_probe['ok']}",
+                            flush=True)
+                    finally:
+                        context.close()
+                probes["strip_void_probes"] = strip_voids
+                probes["strip_void_probe"] = strip_voids["light_en"]
             finally:
                 _kill(proc)
                 if proc in servers:
@@ -1044,6 +1287,7 @@ def main() -> int:
         }
         manifest["generated_at"] = generated_at
         manifest["strip_void_probe"] = probes.get("strip_void_probe")
+        manifest["strip_void_probes"] = probes.get("strip_void_probes")
         manifest.setdefault("target", {})
         manifest["target"]["resolved_sha_or_none"] = head
         manifest["target"]["resolved_sha_source"] = (

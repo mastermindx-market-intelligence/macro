@@ -226,8 +226,9 @@ html[data-lang="zh"] .mc-read-topic { margin-inline-end: .06em; }
   box-shadow: var(--mc-strip-shadow);
 }
 html[data-theme="light"] .mc-strip { gap: 8px; }
-/* D6: `display:grid` beats the UA `[hidden]{display:none}` rule, so an empty
-   strip kept reserving 32px + a 4-column track above the fold. */
+/* D6: a `display` value on `.mc-strip` (flex now; grid before) beats the
+   UA `[hidden]{display:none}` rule, so an empty strip kept reserving
+   height above the fold. The explicit none restores the hide. */
 .mc-strip[hidden] { display: none; }
 .mc-chip {
   position: relative;
@@ -673,13 +674,13 @@ html[data-theme="light"] .mc-empty {
     max-width: min(230px, calc(100vw - 32px));
   }
   .mc-rail { order: 2; }
-  /* N-B1: one reserved band on the panel column so the last content can
-     scroll fully above the fixed ask pill. 84px is the existing
-     `.mc-analyst { bottom: 84px }` FAB offset; 44px is the measured pill
-     height; 16px is the gap. I2's duplicate rule is this one. */
+  /* R8-M1: the ≤768 ask control is no longer a fixed pill. The only
+     remaining fixed overlay is #mmb-boot — at ≤700 it is the 38px orb
+     + 8px pad + 16px bottom inset (theme.js MMB_BOOT_CSS). 16px more
+     is the gap so the last card can scroll fully above the FAB. */
   .mc-panels {
     order: 3;
-    padding-bottom: calc(84px + 44px + 16px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(70px + 16px + env(safe-area-inset-bottom, 0px));
   }
   .mc-rail {
     position: sticky; top: 60px; z-index: 4;
@@ -691,11 +692,16 @@ html[data-theme="light"] .mc-empty {
        same flat --bg, so this is one material, not a tonal seam. */
     background: var(--bg); border-bottom: 1px solid var(--mq-line);
   }
+  /* R8-m4 / carried m5-ii: hash-arrival headings clear the sticky
+     site-nav (60px) plus this rail (~48px: 8+32+8). 88px was the
+     desktop law and clipped the arrival H2 at 390. */
+  .mc-panel,
+  .mc-panel-title[tabindex] { scroll-margin-top: 112px; }
   .mc-rail-label { display: none; }
   /* I1: the chip row scrolls INSIDE the rail box. Without min-width:0 /
      contain the nowrap labels expand documentElement.scrollWidth at 390. */
   .mc-rail-list {
-    flex: 1 1 auto; min-width: 0; max-width: 100%;
+    flex: 1 1 0; min-width: 0; max-width: none;
     flex-direction: row; overflow-x: auto; scrollbar-width: none; gap: 6px;
     contain: inline-size;
   }
@@ -718,17 +724,22 @@ html[data-theme="light"] .mc-empty {
   .mc-dests { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
   .mc-rail-bar { display: none; }
   .mc-rail-link.is-current { border: 1px solid var(--mq-accent); }
-  /* bottom:84px, not 16px -- clears the sitewide #mmb-boot FAB the
-     analyst control shares the corner with at <=768px (Meta-CEO
-     review, PR 6930 BLOCKER mobile analyst collision). */
-  .mc-analyst { position: fixed; right: 16px; bottom: 84px; margin: 0; z-index: 6;
-    max-width: calc(100vw - 32px);
-    /* m4: `--mc-panel-bg` is `--mq-surface`, which is 90% opaque, so the card
-       underneath showed THROUGH the pill (mc-p2-dark-zh-390.png, over the
-       "流动性与央行" card). A floating control over scrolling content must be
-       opaque: dark takes the page ground, light takes white material. */
-    background: var(--bg); box-shadow: var(--mc-panel-shadow); }
-  html[data-theme="light"] .mc-analyst { background: var(--panel); }
+  /* R8-M1: no floating pill at ≤768. The analyst is the last chip of
+     the collapsed rail — static, same material as `.mc-rail-link`.
+     #mmb-boot stays the only fixed corner control. ≥769 is unchanged. */
+  .mc-analyst {
+    position: static;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 7px 12px;
+    border: 1px solid var(--mq-line-strong);
+    background: transparent;
+    box-shadow: none;
+    max-width: none;
+    white-space: nowrap;
+    z-index: auto;
+  }
+  .mc-analyst-mark { display: none; }
 }
 @media (max-width: 480px) {
   .mc-read { font-size: var(--fs-h2, 21px); line-height: 1.36; }

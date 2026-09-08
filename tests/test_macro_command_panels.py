@@ -44,8 +44,6 @@ RAIL_WORKSPACES = (
 
 @pytest.fixture(scope="module")
 def built(tmp_path_factory) -> tuple[str, Path]:
-    if not (DATA_ROOT / "workspaces" / "manifest.json").is_file():
-        pytest.skip("site/macrodata tree not present")
     out = tmp_path_factory.mktemp("macro_command_panels") / "site"
     pages = builder.render(ROOT, data_root=DATA_ROOT, out_dir=out, page_built_at=BUILT_AT)
     hub = [p for p in pages if p.name == builder.HUB_PAGE.output]
@@ -89,6 +87,7 @@ def test_rail_workspace_order_is_the_fourteen_named_in_delta_13() -> None:
     assert len(set(builder.rail_workspace_ids())) == 14
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_overview_directory_hrefs_are_rail_order(built: tuple[str, Path]) -> None:
     html, _ = built
     overview = _panel(html, "overview")
@@ -99,6 +98,7 @@ def test_overview_directory_hrefs_are_rail_order(built: tuple[str, Path]) -> Non
     assert hrefs == expected
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_overview_has_one_figure_of_five_rows_outside_the_directory(
         built: tuple[str, Path]) -> None:
     html, _ = built
@@ -117,6 +117,7 @@ def test_overview_has_one_figure_of_five_rows_outside_the_directory(
     assert 'class="mc-dests"' not in figure.group(0)
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_overview_dom_order_and_no_details_or_arrival(built: tuple[str, Path]) -> None:
     html, _ = built
     order = _child_classes(_panel(html, "overview"))
@@ -139,6 +140,7 @@ def test_overview_dom_order_and_no_details_or_arrival(built: tuple[str, Path]) -
         assert "compared against the previous publication" not in overview
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_p3_non_overview_dom_order(built: tuple[str, Path]) -> None:
     html, _ = built
     for section_id in ("money", "policy", "rates", "inflation"):
@@ -168,6 +170,7 @@ def test_p3_non_overview_dom_order(built: tuple[str, Path]) -> None:
             assert "mc-foot" in order
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_p4_sections_are_not_rendered_as_empty_shells(
         built: tuple[str, Path]) -> None:
     """N5-M2: P3 ships only populated panels — no offer-only P4 shells."""
@@ -178,6 +181,7 @@ def test_p4_sections_are_not_rendered_as_empty_shells(
         assert f'data-mc-section="{section_id}"' not in html, section_id
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_panel_focus_and_subtab_aria_yield_to_shipped_p1(built: tuple[str, Path]) -> None:
     html, _ = built
     assert len(re.findall(r'<section class="mc-panel"[^>]*tabindex', html)) == 0
@@ -188,12 +192,14 @@ def test_panel_focus_and_subtab_aria_yield_to_shipped_p1(built: tuple[str, Path]
     assert re.findall(r'class="mc-subtabs"[^>]*aria-label=', html) == []
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_building_sentence_is_gone(built: tuple[str, Path]) -> None:
     html, _ = built
     assert "mc-figure-building" not in html
     assert "not available yet. Start with any workspace" not in html
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_overview_stance_carries_no_digit(built: tuple[str, Path]) -> None:
     html, _ = built
     stance = re.search(
@@ -222,6 +228,7 @@ def test_deck_count_changes_when_the_rail_length_changes() -> None:
     assert "4 个研究板块" in four["zh"]
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_built_page_has_one_section_count_matching_the_rail(
         built: tuple[str, Path]) -> None:
     html, _ = built
@@ -291,6 +298,7 @@ def test_unmapped_metric_on_a_p3_section_raises() -> None:
         builder._move_rows_from_deltas(deltas, href="x.html", show_source=None)
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_not_applicable_is_unstated_not_e1(built: tuple[str, Path]) -> None:
     html, _ = built
     rates = _panel(html, "rates")
@@ -300,6 +308,7 @@ def test_not_applicable_is_unstated_not_e1(built: tuple[str, Path]) -> None:
     assert "No single reading is published here" in policy
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_e2_figure_prints_the_e2_stance_not_the_structural_null(
         built: tuple[str, Path]) -> None:
     """M6 branch 1: #rates is E2 today — stance matches the empty title.
@@ -317,6 +326,7 @@ def test_e2_figure_prints_the_e2_stance_not_the_structural_null(
     assert "hasn't arrived" in unescape(html)  # strip chip stays the transient voice
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_populated_unstated_section_uses_see_curve_chip(
         built: tuple[str, Path]) -> None:
     """M6 branch 2: #policy has rows + no headline — structural stance,
@@ -361,6 +371,7 @@ def test_hub_raises_on_unmapped_metric() -> None:
     assert "unmapped metric id" in str(raised.value)
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_built_hub_coverage_uses_populated_tally_and_some_unread(
         built: tuple[str, Path]) -> None:
     """R6-M1 / N0: the chip and the Overview stance share the populated tally."""
@@ -433,6 +444,7 @@ def test_all_populated_current_uses_all_read_stance() -> None:
         assert MOVEMENT_DECK_EN not in overview["stance"]["text"]["en"]
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_dests_heading_names_destination_pages_not_research_sections(
         built: tuple[str, Path]) -> None:
     """n4: 12 and 14 are labelled as different counts."""
@@ -444,6 +456,7 @@ def test_dests_heading_names_destination_pages_not_research_sections(
     assert "接下来去哪里——14 个目标页面" in overview
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_unmapped_metrics_attribute_is_absent_from_the_dom(
         built: tuple[str, Path]) -> None:
     """n2: the diagnostic counter is gone from customer-facing markup."""
@@ -599,24 +612,30 @@ def test_empty_state_evidence_names_fixture_and_trigger() -> None:
     states = {state.get("file"): state for state in manifest["pages"][0]["states"]}
     for empty_id in ("e1", "e2", "e3", "e4", "e6"):
         for theme in ("dark", "light"):
-            name = f"empty-{empty_id}-{theme}.png"
-            row = states[name]
-            assert row["captured"] is True, name
-            assert row.get("fixture"), name
-            assert (ROOT / row["fixture"]).is_file(), row["fixture"]
-            assert row.get("trigger"), name
-            png = ROOT / "mockups" / "evidence" / "macro-command-p3" / name
-            assert png.is_file(), name
-            data = png.read_bytes()
-            assert data[:8] == b"\x89PNG\r\n\x1a\n", name
-            assert b"IEND" in data, name
-            assert len(data) > 20000, (name, len(data))
+            for name in (
+                f"empty-{empty_id}-{theme}.png",
+                f"empty-{empty_id}-{theme}-zh.png",
+            ):
+                row = states[name]
+                assert row["captured"] is True, name
+                assert row.get("fixture"), name
+                assert (ROOT / row["fixture"]).is_file(), row["fixture"]
+                assert row.get("trigger"), name
+                png = ROOT / "mockups" / "evidence" / "macro-command-p3" / name
+                assert png.is_file(), name
+                data = png.read_bytes()
+                assert data[:8] == b"\x89PNG\r\n\x1a\n", name
+                assert b"IEND" in data, name
+                assert len(data) > 20000, (name, len(data))
+                if name.endswith("-zh.png"):
+                    assert row.get("locale") == "zh", name
     e5 = next(s for s in manifest["pages"][0]["states"]
               if s.get("force_state") == "e5")
     assert e5["captured"] is False
     assert "not builder-triggerable" in e5["reason"]
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_rendered_l_zh_spans_have_cjk_or_are_pure_symbols(
         built: tuple[str, Path]) -> None:
     """M2: every `.l-zh` on the built hub carries CJK unless its sibling
@@ -638,6 +657,7 @@ def test_rendered_l_zh_spans_have_cjk_or_are_pure_symbols(
         assert zh_text != en_text, en_text
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_copy_guard_is_green_on_the_rebuilt_page(built: tuple[str, Path]) -> None:
     html, _ = built
     assert guard.find_violations(html) == []
@@ -650,6 +670,7 @@ def test_dec_stance_is_guidance_record_exists() -> None:
     assert "no score" in text
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_arrival_ships_hidden_on_non_overview_panels(built: tuple[str, Path]) -> None:
     html, _ = built
     assert html.count("data-mc-arrival hidden") == len(P3_IDS) - 1
@@ -657,6 +678,7 @@ def test_arrival_ships_hidden_on_non_overview_panels(built: tuple[str, Path]) ->
     assert "data-mc-arrival" not in overview
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_fragments_carry_the_authenticity_marker(built: tuple[str, Path]) -> None:
     _, out = built
     frag_dir = out / "macro" / "fragments"
@@ -740,25 +762,32 @@ def test_one_null_voice_for_every_section_level_empty() -> None:
 
 
 def test_p3_clearance_probes_are_real_geometry() -> None:
-    """N-B1: four 390 max-scroll measurements. The file records the numbers;
-    this test does not move the page. lastBottom <= pillTop, and the scroll
-    actually reached equals scrollHeight - innerHeight."""
+    """R8-M1: 390 (4 cells) + 768 (2 cells) at scroll 0 / 50% / max.
+    ok is false on any text-vs-fixed-overlay hit or an empty text set."""
     probes = json.loads(
         (ROOT / "mockups" / "evidence" / "macro-command-p3" / "probes.json")
         .read_text(encoding="utf-8"))
-    for key in ("clearance_dark_en", "clearance_dark_zh",
-                "clearance_light_en", "clearance_light_zh"):
+    keys = (
+        "clearance_390_dark_en", "clearance_390_dark_zh",
+        "clearance_390_light_en", "clearance_390_light_zh",
+        "clearance_768_dark_en", "clearance_768_light_en",
+    )
+    for key in keys:
         row = probes[key]
-        assert row.get("lastBottom") is not None, key
-        assert row["lastBottom"] > 0, (key, row)
-        assert row.get("pillTop") is not None and row["pillTop"] > 0, (key, row)
-        assert row.get("pillHeight") is not None and row["pillHeight"] > 0, (key, row)
-        assert row.get("clear") is True, (key, row)
-        assert row["lastBottom"] <= row["pillTop"], (key, row)
-        max_scroll = row["scrollHeight"] - row["innerHeight"]
-        assert abs(row["maxScroll"] - max_scroll) < 2, (key, row)
-        assert abs(row["scrollReached"] - row["maxScroll"]) < 2, (key, row)
-        assert row.get("maxScrollMatched") is True, (key, row)
+        assert row.get("ok") is True, (key, row.get("hits"), row)
+        assert row.get("textCount", 0) > 0, (key, row)
+        positions = row.get("positions") or {}
+        assert set(positions) >= {"0", "50", "max"}, (key, positions.keys())
+        for pos_name, pos in positions.items():
+            assert pos.get("ok") is True, (key, pos_name, pos.get("hits"))
+            assert pos.get("textCount", 0) > 0, (key, pos_name)
+            assert "scrollY" in pos, (key, pos_name)
+            if pos_name == "max":
+                assert pos.get("maxScrollMatched") is True, (key, pos)
+        # Back-compat aliases used by the 390 body table.
+        if key.startswith("clearance_390_"):
+            alias = key.replace("clearance_390_", "clearance_")
+            assert probes[alias]["ok"] is True, alias
 
 
 def test_p3_evidence_frames_are_not_byte_duplicates() -> None:
@@ -922,6 +951,7 @@ def test_i4_exploding_compare_is_current_only(monkeypatch) -> None:
     assert figure["state_line"] == dict(L.COUNT["same_publication"])
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_n5_m1_same_publication_fixture_uses_current_only_deck_once(
         built: tuple[str, Path]) -> None:
     """N5-M1: same-publication prior → current-only deck sentence once, EN+ZH."""
@@ -938,6 +968,7 @@ def test_n5_m1_same_publication_fixture_uses_current_only_deck_once(
     assert "目前只有一次读数" not in overview
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_n5_m2_hub_renders_only_populated_panels_with_stance(
         built: tuple[str, Path]) -> None:
     """N5-M2: every section has a stance; rail count equals panel count."""
@@ -955,6 +986,7 @@ def test_n5_m2_hub_renders_only_populated_panels_with_stance(
     assert html.count('<span class="l-zh">总览</span>') >= 1
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_n5_m2_unpopulated_hash_resolves_to_overview_anchor(
         built: tuple[str, Path]) -> None:
     html, _ = built
@@ -966,6 +998,7 @@ def test_n5_m2_unpopulated_hash_resolves_to_overview_anchor(
     assert "sectionId = 'overview'" in js
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_i4_live_hub_does_not_claim_a_comparison_it_did_not_make(
         built: tuple[str, Path]) -> None:
     html, _ = built
@@ -1040,7 +1073,7 @@ def test_r6_m2_figure_mode_pure_movement_current_and_mixed() -> None:
     assert builder._figure_mode(
         [{"kind": "movement"}, {"kind": "movement"}]) == "movement"
     assert builder._figure_mode([{"kind": "current"}]) == "current"
-    assert builder._figure_mode([]) == "current"
+    assert builder._figure_mode([]) == "none"
     assert builder._figure_mode(
         [{"kind": "movement"}, {"kind": "current"}]) == "mixed"
 
@@ -1110,6 +1143,7 @@ def test_r6_m2_mixed_overview_keeps_state_line_and_mixed_sentence() -> None:
     assert section["figure"]["rows"][1]["prior"] is None
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_r6_m3_chip_and_read_hrefs_resolve_to_rendered_sections(
         built: tuple[str, Path]) -> None:
     html, _ = built
@@ -1139,6 +1173,7 @@ def test_r6_m3_chip_and_read_hrefs_resolve_to_rendered_sections(
     assert int(note.group(2)) == len(P3_IDS)
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_r6_m1_hub_never_prints_twelve_as_a_section_count(
         built: tuple[str, Path]) -> None:
     html = unescape(built[0])
@@ -1258,14 +1293,46 @@ def test_r7_m1_movement_has_count_text_and_no_state_line() -> None:
 
 
 def test_r7_m2_strip_void_probe_has_no_filled_slab() -> None:
-    """R7-M2: 1440 light EN probe — no filled rectangle >40px outside a chip."""
+    """R7-M2 / R8-m1: 1440 dark+light × EN+ZH — no ≥40px void outside a chip."""
     probes = json.loads(
         (ROOT / "mockups" / "evidence" / "macro-command-p3" / "probes.json")
         .read_text(encoding="utf-8"))
-    row = probes["strip_void_probe"]
-    assert row.get("ok") is True, row
-    assert row.get("filledOutsideWiderThan40") is False, row
-    assert row.get("holeWiderThan40") is False, row
-    assert row.get("emptyChildren") == 0, row
-    assert row.get("chipCount") == row.get("childCount"), row
-    assert row.get("stripFilled") is False, row
+    rows = probes.get("strip_void_probes") or {}
+    assert set(rows) == {"dark_en", "dark_zh", "light_en", "light_zh"}
+    for key, row in rows.items():
+        assert row.get("ok") is True, (key, row)
+        assert row.get("filledOutsideWiderThan40") is False, (key, row)
+        assert row.get("holeWiderThan40") is False, (key, row)
+        assert row.get("emptyChildren") == 0, (key, row)
+        assert row.get("chipCount") == row.get("childCount"), (key, row)
+        assert row.get("pixelVoidWiderThan40") is False, (key, row)
+    # Back-compat alias is the light EN cell.
+    alias = probes["strip_void_probe"]
+    assert alias.get("ok") is True, alias
+
+
+def test_r8_m1_empty_and_unknown_kind_are_mode_none() -> None:
+    """r8-m1: empty / unrecognised rows must not print the current-only claim."""
+    assert builder._figure_mode([]) == "none"
+    assert builder._figure_mode([{"kind": "weird"}]) == "none"
+    empty = builder._figure_block([], overview=False, shown=0, total=0)
+    assert empty["state_line"] is None
+    assert empty["count_text"] is None
+    unknown = builder._figure_block(
+        [{"kind": "weird"}], overview=False, shown=1, total=1)
+    assert unknown["state_line"] is None
+    assert unknown["count_text"] is None
+    overview_empty = _overview_from_rows([])
+    assert overview_empty["question"] is None
+    assert overview_empty["figure"]["state_line"] is None
+    assert overview_empty["figure"]["count_text"] is None
+    joined_en = json.dumps(overview_empty, ensure_ascii=False)
+    assert "Only one reading is published so far" not in joined_en
+    assert "目前只有一次读数" not in joined_en
+    overview_unknown = _overview_from_rows([{"kind": "weird"}])
+    assert overview_unknown["question"] is None
+    assert overview_unknown["figure"]["state_line"] is None
+    assert overview_unknown["figure"]["count_text"] is None
+    joined_zh = json.dumps(overview_unknown, ensure_ascii=False)
+    assert "Only one reading is published so far" not in joined_zh
+    assert "目前只有一次读数" not in joined_zh

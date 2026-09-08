@@ -460,8 +460,6 @@ def test_every_theme_differing_token_is_declared_at_least_twice(token: str) -> N
 
 @pytest.fixture(scope="module")
 def built_hub(tmp_path_factory: pytest.TempPathFactory) -> str:
-    if not (DATA_ROOT / "workspaces" / "manifest.json").is_file():
-        pytest.skip("site/macrodata tree not present")
     out = tmp_path_factory.mktemp("macro_command_read_strip") / "site"
     pages = builder.render(ROOT, data_root=DATA_ROOT, out_dir=out, page_built_at=BUILT_AT)
     hub = [p for p in pages if p.name == builder.HUB_PAGE.output]
@@ -469,12 +467,14 @@ def built_hub(tmp_path_factory: pytest.TempPathFactory) -> str:
     return hub[0].read_text(encoding="utf-8")
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_the_real_page_renders_populated_chips_only(built_hub: str) -> None:
     """R6-M3: chips whose section is not rendered are not rendered."""
     chip_ids = re.findall(r'<li class="mc-chip[^"]*" data-mc-topic="([a-z]+)"', built_hub)
     assert chip_ids == ["money", "policy", "rates", "inflation", "coverage"]
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_r7_m2_strip_has_exactly_populated_plus_coverage_and_no_empty_children(
         built_hub: str) -> None:
     """R7-M2: strip children = populated chips + coverage; no empty cells."""
@@ -495,6 +495,7 @@ def test_r7_m2_strip_has_exactly_populated_plus_coverage_and_no_empty_children(
     assert re.search(r"--mc-strip-bg:\s*transparent", css)
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_coverage_chip_omits_asof_and_does_not_borrow_nulled(built_hub: str) -> None:
     """MJ-2: a coverage counter is not a dated topic reading."""
     match = re.search(
@@ -517,6 +518,7 @@ def test_read_fallback_uses_p1_honest_copy() -> None:
     assert "今日读数不完整" not in macros
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_the_real_page_carries_no_bare_iso_timestamp_in_visible_text(built_hub: str) -> None:
     """G2b, restated for the header specifically: `<time datetime=...>` is
     fine; a bare ISO date in the surrounding text is not."""
@@ -524,6 +526,7 @@ def test_the_real_page_carries_no_bare_iso_timestamp_in_visible_text(built_hub: 
     assert not re.search(r">\s*\d{4}-\d{2}-\d{2}\s*<", visible)
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_the_real_built_page_passes_the_copy_guard(built_hub: str, tmp_path: Path) -> None:
     from scripts import check_macro_command_copy as guard
     assert guard.find_violations(built_hub) == []

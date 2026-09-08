@@ -42,8 +42,6 @@ def built_hub(tmp_path_factory) -> str:
     assertions need the real `templates/theme.js` (for the analyst control's
     mount path) and the real `_site_nav.html.j2` (for G7's byte-unchanged
     proof), not a trimmed fixture tree."""
-    if not (DATA_ROOT / "workspaces" / "manifest.json").is_file():
-        pytest.skip("site/macrodata tree not present")
     out = tmp_path_factory.mktemp("macro_command_shell") / "site"
     pages = builder.render(ROOT, data_root=DATA_ROOT, out_dir=out, page_built_at=BUILT_AT)
     hub = [p for p in pages if p.name == builder.HUB_PAGE.output]
@@ -65,11 +63,13 @@ def macro_command_js() -> str:
 # rail + routing
 # --------------------------------------------------------------------------
 
+@pytest.mark.needs_full_checkout("site")
 def test_the_rail_has_exactly_the_populated_sections_in_reading_order(built_hub: str) -> None:
     order = re.findall(r'data-mc-section="([a-z]+)"', built_hub)
     assert order == list(EXPECTED_SECTION_ORDER)
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_every_hash_href_has_a_matching_bare_id(built_hub: str) -> None:
     """Judge D9: §1.1 once printed `#money` while the template renders
     `id="money"` — every section link and `:target` route was dead. Any
@@ -82,6 +82,7 @@ def test_every_hash_href_has_a_matching_bare_id(built_hub: str) -> None:
         assert target in ids, f"href=\"#{target}\" has no matching id=\"{target}\""
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_the_populated_sections_render_unhidden_and_in_order_with_js_off(built_hub: str) -> None:
     """D8: the served document is a first-class no-JS reading — every panel
     ships visible; JS adds `hidden` only at boot, never the builder. The
@@ -101,6 +102,7 @@ def test_the_populated_sections_render_unhidden_and_in_order_with_js_off(built_h
     assert "正在载入本板块" not in visible_en
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_the_populated_subtabbed_section_carries_a_real_tablist_of_two(built_hub: str) -> None:
     for section_id in SUBTABBED_SECTIONS:
         match = re.search(
@@ -113,6 +115,7 @@ def test_the_populated_subtabbed_section_carries_a_real_tablist_of_two(built_hub
         assert len(tabs) == 2, (section_id, len(tabs))
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_non_subtabbed_non_overview_sections_carry_no_tablist(built_hub: str) -> None:
     for section_id in EXPECTED_SECTION_ORDER:
         if section_id in SUBTABBED_SECTIONS or section_id == "overview":
@@ -244,23 +247,31 @@ def test_le768_rail_is_opaque_flat_bg_like_the_shell(macro_command_css: str) -> 
         body, re.S)
 
 
-def test_le768_panel_column_reserves_the_ask_pill_band(
+def test_le768_panel_column_reserves_the_mmb_boot_band(
         macro_command_css: str) -> None:
-    """N-B1: one reserved band on the panel column at ≤768; the ≤480
-    148px mid-panel hacks are gone."""
+    """R8-M1: the reserved band is for #mmb-boot only. The ask pill is
+    gone at ≤768, so the 84+44+16 stack must not return. ≤480 148px
+    mid-panel hacks stay gone."""
     block = re.search(r'@media \(max-width: 768px\) \{(.*?)(?=\n@media|\Z)',
                       macro_command_css, re.S)
     assert block
     body = _strip_css_comments(block.group(1))
     assert re.search(
-        r'\.mc-panels\s*\{[^}]*padding-bottom:\s*calc\(84px \+ 44px \+ 16px \+ env\(safe-area-inset-bottom, 0px\)\)',
+        r'\.mc-panels\s*\{[^}]*padding-bottom:\s*calc\(70px \+ 16px \+ env\(safe-area-inset-bottom, 0px\)\)',
         body, re.S)
+    assert "84px + 44px + 16px" not in body
+    analyst = re.search(r'\.mc-analyst\s*\{([^}]+)\}', body)
+    assert analyst, "missing ≤768 .mc-analyst"
+    assert "position: static" in analyst.group(1)
+    assert "position: fixed" not in analyst.group(1)
+    assert "bottom:" not in analyst.group(1)
     le480 = re.search(r'@media \(max-width: 480px\) \{(.*?)(?=\n@media|\Z)',
                       macro_command_css, re.S)
     assert le480
     small = le480.group(1)
     assert "padding-bottom: 148px" not in small
     assert "#overview .mc-caption" not in small
+    assert ".mc-analyst" not in _strip_css_comments(small)
 
 
 def test_i1_rail_list_scrolls_inside_its_own_box(macro_command_css: str) -> None:
@@ -272,7 +283,7 @@ def test_i1_rail_list_scrolls_inside_its_own_box(macro_command_css: str) -> None
     assert rule, "missing ≤768 .mc-rail-list"
     text = rule.group(1)
     assert "overflow-x: auto" in text
-    assert "max-width: 100%" in text
+    assert "min-width: 0" in text
     assert "contain: inline-size" in text
 
 
@@ -328,6 +339,7 @@ def test_no_mc_tone_class_is_minted(macro_command_css: str) -> None:
 # G4 — honest nulls: every dash carries a sibling .mq-sr
 # --------------------------------------------------------------------------
 
+@pytest.mark.needs_full_checkout("site")
 def test_every_mq_dash_carries_a_sibling_mq_sr(built_hub: str) -> None:
     for match in re.finditer(r'<span class="mq-dash"[^>]*>—</span>(.{0,80})', built_hub, re.S):
         tail = match.group(1)
@@ -338,6 +350,7 @@ def test_every_mq_dash_carries_a_sibling_mq_sr(built_hub: str) -> None:
 # §8 — exactly one analyst control, zero new endpoint strings
 # --------------------------------------------------------------------------
 
+@pytest.mark.needs_full_checkout("site")
 def test_exactly_one_analyst_control(built_hub: str) -> None:
     main_html = built_hub[built_hub.index('<main class="mc-shell"'):]
     buttons = main_html.count("data-mc-analyst")
@@ -346,8 +359,12 @@ def test_exactly_one_analyst_control(built_hub: str) -> None:
     # distinct control OPENINGS instead.
     openings = len(re.findall(r'<(?:button|a)[^>]*class="mc-analyst"', main_html))
     assert openings == 1, f"expected exactly one .mc-analyst control, found {openings}"
+    assert "Ask the analyst" in main_html
+    assert "问分析师" in main_html
+    assert "向分析师提问" not in main_html
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_zero_new_endpoint_strings(built_hub: str, macro_command_js: str) -> None:
     main_html = built_hub[built_hub.index('<main class="mc-shell"'):]
     for forbidden in ("?topic=", "&section=", "/api/"):
@@ -362,6 +379,7 @@ def test_zero_new_endpoint_strings(built_hub: str, macro_command_js: str) -> Non
 _ZH_RE = re.compile(r'[一-鿿]')
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_no_zh_text_inside_any_title_attribute(built_hub: str) -> None:
     for value in re.findall(r'\btitle="([^"]*)"', built_hub):
         assert not _ZH_RE.search(value), f'title="{value}" carries ZH text'
@@ -416,6 +434,7 @@ def test_as_of_display_is_a_plain_date_in_both_languages() -> None:
     assert builder._plain_as_of_display("not-a-date") is None
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_the_hub_eyebrow_uses_plain_dates_and_states_the_oldest_print_rule(
         built_hub: str) -> None:
     authored = built_hub[built_hub.index('<main class="mc-shell"'):]
@@ -442,6 +461,7 @@ def test_the_hub_eyebrow_uses_plain_dates_and_states_the_oldest_print_rule(
         assert f"取下方 {n_dated} 项有日期读数中最早的一项；各读数标注各自日期。" in authored
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_overview_offers_visible_workspace_links_and_honest_null_copy(
         built_hub: str) -> None:
     """M2: Overview content is a next-action list, not a 'being built' stub.
@@ -480,6 +500,7 @@ def test_overview_offers_visible_workspace_links_and_honest_null_copy(
     assert not re.search(r'<section class="mc-panel"[^>]*tabindex="-1"', authored)
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_p3_shell_enables_guarded_fragment_fetch(
         built_hub: str, macro_command_js: str) -> None:
     """P3 writes fragments; the fetch still requires the authenticity marker."""
@@ -490,6 +511,7 @@ def test_p3_shell_enables_guarded_fragment_fetch(
     assert "content-type" in macro_command_js
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_subtab_tablist_uses_the_bilingual_heading(built_hub: str) -> None:
     """m1: ZH screen readers hear the existing bilingual h2, not EN-only."""
     for section_id in SUBTABBED_SECTIONS:

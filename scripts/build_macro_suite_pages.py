@@ -722,11 +722,16 @@ def _move_rows_from_deltas(deltas: Sequence[Mapping[str, Any]], *,
 def _figure_mode(rows: Sequence[Mapping[str, Any]]) -> str:
     """Overview deck voice from the rows that are actually on the figure.
 
-    R6-M2: "movement" when any row has a genuine earlier prior; "current"
-    only when no row does; "mixed" when both kinds sit in one figure.
+    R6-M2 / R7-M1 / r8-m1: "movement" when any row has a genuine earlier
+    prior; "current" only when every recognised row is current-only;
+    "mixed" when both kinds sit in one figure. An empty set or any
+    unrecognised `kind` is `none` — never fail open onto `current`.
     """
-    has_movement = any(row.get("kind") == "movement" for row in rows)
-    has_current = any(row.get("kind") == "current" for row in rows)
+    kinds = {row.get("kind") for row in rows}
+    if not kinds or kinds - {"movement", "current"}:
+        return "none"
+    has_movement = "movement" in kinds
+    has_current = "current" in kinds
     if has_movement and has_current:
         return "mixed"
     if has_movement:
@@ -800,8 +805,9 @@ def _apply_overview_deck(section: dict[str, Any], *,
             # pair. Printing it again on the figure is the same sentence
             # twice. Section figures keep the pair (they have no deck).
             section["figure"]["state_line"] = None
-    else:
+    elif mode == "movement":
         section["question"] = dict(L.OVERVIEW_QUESTIONS["movement"])
+    # mode == "none": no deck override, no state_line, no count (r8-m1).
     table = L.STANCES.get("overview") or {}
     if key not in table:
         raise MacroCommandBuildError(f"unknown stance key overview/{key}")
@@ -863,13 +869,14 @@ def _restrict_header_to_populated(
 
 def _figure_block(rows: Sequence[Mapping[str, Any]], *, overview: bool,
                   shown: int, total: int) -> dict[str, Any]:
-    """Mode-driven figure chrome (R7-M1). Not `any_current`-driven.
+    """Mode-driven figure chrome (R7-M1 / r8-m1). Not `any_current`-driven.
 
     movement → count_text, no state line.
     current  → same_publication state line, no count.
     mixed    → overview_mixed state line, no count. Overview then drops
     the state line in `_apply_overview_deck` so the mixed pair is spoken
     once (the deck already carries it).
+    none     → no state line, no count, no deck override.
     """
     mode = _figure_mode(rows)
     count = None
