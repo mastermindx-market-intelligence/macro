@@ -473,6 +473,45 @@ _PREPARE_I2_JS = """() => {
 }"""
 
 
+def _host_frame_offset(page, frame) -> dict[str, float]:
+    """Measured #mc-p5-frame origin in the host viewport. Never a literal."""
+    if frame is None:
+        return {"x": 0.0, "y": 0.0}
+    host = page.locator("#mc-p5-frame").bounding_box()
+    if not host:
+        raise RuntimeError("chipmat iframe has no box")
+    return {"x": float(host["x"]), "y": float(host["y"])}
+
+
+def _to_host_page(
+        box: Mapping[str, Any] | None, offset: Mapping[str, float],
+        host_scroll_y: float) -> dict[str, float] | None:
+    """Translate an iframe-local box into host-page document space."""
+    if not box:
+        return None
+    dx = float(offset["x"])
+    dy = float(offset["y"]) + float(host_scroll_y)
+    if "left" in box and "right" in box:
+        left = float(box["left"]) + dx
+        top = float(box["top"]) + dy
+        width = float(box.get("width") or (float(box["right"]) - float(box["left"])))
+        height = float(box.get("height") or (float(box["bottom"]) - float(box["top"])))
+        return {
+            "left": left, "right": left + width,
+            "top": top, "bottom": top + height,
+            "x": left, "y": top, "width": width, "height": height,
+        }
+    x = float(box["x"]) + dx
+    y = float(box["y"]) + dy
+    width = float(box["width"])
+    height = float(box["height"])
+    return {
+        "left": x, "right": x + width,
+        "top": y, "bottom": y + height,
+        "x": x, "y": y, "width": width, "height": height,
+    }
+
+
 def _page_space_clip(page, frame, clip: Mapping[str, Any]) -> dict[str, float]:
     """Translate an iframe-local clip into the parent page viewport."""
     box = {
@@ -481,21 +520,19 @@ def _page_space_clip(page, frame, clip: Mapping[str, Any]) -> dict[str, float]:
         "width": float(clip["width"]),
         "height": float(clip["height"]),
     }
-    if frame is None:
-        return box
-    host = page.locator("#mc-p5-frame").bounding_box()
-    if not host:
-        raise RuntimeError("chipmat iframe has no box")
+    offset = _host_frame_offset(page, frame)
     return {
-        "x": float(host["x"]) + box["x"],
-        "y": float(host["y"]) + box["y"],
+        "x": offset["x"] + box["x"],
+        "y": offset["y"] + box["y"],
         "width": box["width"],
         "height": box["height"],
     }
 
 
 def _shot_chipmat_clip(dest: Path, page, clip: Mapping[str, Any], *,
-                       selector: str, locale: str, text_head: str
+                       selector: str, locale: str, text_head: str,
+                       frame_inner_width: int | None = None,
+                       host_offset: Mapping[str, float] | None = None,
                        ) -> dict[str, Any]:
     """Viewport clip of the visible chip(+pill) — never scrollIntoView."""
     extra: dict[str, Any] = {
@@ -526,20 +563,30 @@ def _shot_chipmat_clip(dest: Path, page, clip: Mapping[str, Any], *,
         "width": max(1.0, x1 - x),
         "height": max(1.0, y1 - y),
     }
-    scroll_y = _read_scroll(page)
+    host_scroll_y = _read_scroll(page)
     page.screenshot(path=str(dest), type="png", clip=page_clip)
+    extra["coordSpace"] = "host-page"
+    extra["hostFrameOffset"] = {
+        "x": float((host_offset or {}).get("x") or 0.0),
+        "y": float((host_offset or {}).get("y") or 0.0),
+    }
+    extra["host_scroll_y_at_shot"] = host_scroll_y
     extra["crop_box"] = page_clip
     extra["crop_box_doc"] = {
         "x": page_clip["x"],
-        "y": page_clip["y"] + scroll_y,
+        "y": page_clip["y"] + host_scroll_y,
         "width": page_clip["width"],
         "height": page_clip["height"],
     }
-    extra["scroll_y_at_shot"] = scroll_y
+    extra["crop_width"] = page_clip["width"]
+    extra["scroll_y_at_shot"] = host_scroll_y
     extra["element_text_head"] = text_head.replace("\n", " ").strip()[:80]
     extra["device_px_span"] = _device_px_span(page_clip, extra["dpr"])
-    extra["innerWidth"] = int(round(vw))
+    extra["innerWidth"] = (
+        int(frame_inner_width) if frame_inner_width is not None
+        else int(round(vw)))
     extra["innerHeight"] = int(round(vh))
+    extra["frameInnerWidth"] = extra["innerWidth"]
     _assert_shot_geometry(dest, extra, int(round(vw)), int(round(vh)))
     png = dest.read_bytes()
     if png[:8] != b"\x89PNG\r\n\x1a\n" or b"IEND" not in png:
@@ -611,7 +658,10 @@ def _state(filename: str, theme: str, locale: str, viewport: str,
     ihdr_h = int(info["height"])
     css_w = ihdr_w / measured_dpr
     is_crop = bool(crop or info.get("crop_box"))
-    declared = int(round(css_w)) if is_crop else int(viewport_width)
+    declared = int(viewport_width)
+    crop_box = info.get("crop_box") if is_crop else None
+    crop_width = (
+        float(crop_box["width"]) if isinstance(crop_box, Mapping) else None)
     crop_selector = info.get("crop_selector") if is_crop else None
     if is_crop:
         crop_selector = crop_selector or selector
@@ -640,6 +690,7 @@ def _state(filename: str, theme: str, locale: str, viewport: str,
         "theme": theme,
         "viewport": viewport,
         "viewport_width": declared,
+        "crop_width": crop_width,
         "viewport_css_width": css_w,
         "viewport_height": vh,
         "dpr": measured_dpr,
@@ -654,7 +705,9 @@ def _state(filename: str, theme: str, locale: str, viewport: str,
         "trigger": trigger,
     }
     for key in ("crop_box_doc", "scroll_y_at_shot", "ihdr_delta_px",
-                "element_text_head", "innerWidth", "innerHeight"):
+                "element_text_head", "innerWidth", "innerHeight",
+                "coordSpace", "hostFrameOffset", "host_scroll_y_at_shot",
+                "frameInnerWidth", "analystBox", "siblingPillBox"):
         if info.get(key) is not None:
             row[key] = info[key]
     return row
@@ -1402,15 +1455,10 @@ def synthetic_clearance_receipts(page=None) -> dict[str, Any]:
             "maxScrollAtCheck": float(partial_src["maxScrollAtCheck"]),
             "partialStation": geom,
         }
-    full = classify_top_chrome_cover(
-        doc_top=10.0, ov_bottom=80.0, max_scroll_at_check=800.0)
-    partial = classify_partial_cover(
-        doc_top=200.0, ov_bottom=60.0, max_scroll_at_check=800.0)
-    return {
-        "full_cover_unexposable": full,
-        "partial_bounded": partial,
-        "source": "classifier",
-    }
+    raise RuntimeError(
+        "synthetic clearance requires a Playwright page; a DOM-path "
+        "failure raises — there is no literal classifier fallback"
+    )
 
 
 def clearance_probe_ok(row: Mapping[str, Any] | None) -> bool:
@@ -1615,7 +1663,11 @@ def _css_box(box: Mapping[str, Any] | None) -> dict[str, float] | None:
 def chipmat_containment_holds(cell: Mapping[str, Any], *,
                               tol: float = 1.0) -> bool:
     """analystBox (and sibling pill when the pair fits) inside cropBox."""
-    crop = _css_box(cell.get("cropBox") or cell.get("crop_box"))
+    if cell.get("coordSpace") == "host-page":
+        crop = _css_box(cell.get("crop_box_doc") or cell.get("cropBox")
+                        or cell.get("crop_box"))
+    else:
+        crop = _css_box(cell.get("cropBox") or cell.get("crop_box"))
     chip = _css_box(cell.get("analystBox"))
     if not crop or not chip:
         return False
@@ -1726,7 +1778,7 @@ def _mmb_surface_state(root) -> dict[str, Any]:
                 box: boxOf(el),
                 openState: {
                     selector: '#mmb-panel',
-                    openClass: 'open',
+                    openClass: panelOpen ? 'open' : null,
                     open: panelOpen,
                     visible: panelOpen && painted(panel),
                     box: boxOf(panel),
@@ -1795,6 +1847,8 @@ def _run_chip_opens_chat(host, *, page_name: str, locale: str,
             "box": after.get("box"),
         },
         "openState": after.get("openState"),
+        "openClass": (
+            "open" if (after.get("openState") or {}).get("open") else None),
         "visibleAfterMs": visible_after_ms,
         "urlBefore": url_before,
         "urlAfter": url_after,
@@ -2370,8 +2424,32 @@ def main() -> int:
                             chipmat_name = (
                                 f"chipmat-{slug}-{theme}-{locale}-{width}.png")
                             print(f"capture {chipmat_name}", flush=True)
+                            host_offset = _host_frame_offset(page, frame)
+                            host_scroll_y = _read_scroll(page)
+                            frame_inner = width
+                            if frame is not None:
+                                frame_inner = int(round(float(
+                                    frame.locator("html").evaluate(
+                                        "() => window.innerWidth"))))
                             page_clip = _page_space_clip(
                                 page, frame, rail_scroll["cropBox"])
+                            host_analyst = _to_host_page(
+                                rail_scroll.get("analystBox"),
+                                host_offset, host_scroll_y)
+                            host_pill = _to_host_page(
+                                rail_scroll.get("siblingPillBox"),
+                                host_offset, host_scroll_y)
+                            host_crop = _to_host_page(
+                                rail_scroll.get("cropBox"),
+                                host_offset, host_scroll_y)
+                            probes[mat_key]["coordSpace"] = "host-page"
+                            probes[mat_key]["hostFrameOffset"] = host_offset
+                            probes[mat_key]["host_scroll_y_at_shot"] = (
+                                host_scroll_y)
+                            probes[mat_key]["frameInnerWidth"] = frame_inner
+                            probes[mat_key]["analystBoxHost"] = host_analyst
+                            probes[mat_key]["siblingPillBoxHost"] = host_pill
+                            probes[mat_key]["cropBoxHost"] = host_crop
                             info = _shot_chipmat_clip(
                                 EVIDENCE / chipmat_name, page, page_clip,
                                 selector=str(
@@ -2380,7 +2458,15 @@ def main() -> int:
                                 locale=locale,
                                 text_head=str(
                                     rail_scroll.get("elementTextHead") or ""),
+                                frame_inner_width=frame_inner,
+                                host_offset=host_offset,
                             )
+                            info["analystBox"] = host_analyst
+                            info["siblingPillBox"] = host_pill
+                            info["coordSpace"] = "host-page"
+                            info["hostFrameOffset"] = host_offset
+                            info["host_scroll_y_at_shot"] = host_scroll_y
+                            info["frameInnerWidth"] = frame_inner
                             dest_states = ws_states[page_name]
                             dest_states.append(_state(
                                 chipmat_name, theme, locale,

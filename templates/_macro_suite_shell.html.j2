@@ -78,7 +78,7 @@
     block-level sibling. Never emit <details> inside <p> or <span>. -#}
 {%- macro relocated_original(node) -%}
 {%- if node %}
-{% call mc_details() %}{{ bl(node) }}{% endcall %}
+{% call mc_details() %}<code class="mc-producer-receipt" lang="en">{{ node.en }}</code> <code class="mc-producer-receipt" lang="zh">{{ node.zh }}</code>{% endcall %}
 {%- endif -%}
 {%- endmacro -%}
 
@@ -733,7 +733,7 @@
         <tr>
           <th scope="row">{{ bl(row.label) }}
             {% call mc_details() %}
-              {%- if row.label_original %}{{ bl(row.label_original) }}{% endif %}
+              {%- if row.label_original %}<code class="mc-producer-receipt" lang="en">{{ row.label_original.en }}</code> <code class="mc-producer-receipt" lang="zh">{{ row.label_original.zh }}</code>{% endif %}
               <span class="mq-owner-field"><code>{{ row.owner_field }}</code></span>
             {% endcall %}</th>
           <td>{% if row.value %}{{ bl(row.value) }}{% else %}{{ absent(row.absence, True) }}{% endif %}</td>

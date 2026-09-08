@@ -23,11 +23,10 @@ that copy and this guard is what keeps it honest as it lands.
 
 Usage:
     python3 scripts/check_macro_command_copy.py
-        # scan the built site/macro_monetary.html; exit 1 on any violation
+        # scan every suite page + both hubs; exit 1 on any violation
     python3 scripts/check_macro_command_copy.py path/to/some.html
-        # scan an arbitrary built HTML file instead (used by the test suite
-        # against a freshly rendered page in a tmp_path, and available for a
-        # later packet's deep-link pages)
+        # scan one or more built HTML files (used by the test suite
+        # against a freshly rendered page in a tmp_path)
 """
 from __future__ import annotations
 
@@ -37,8 +36,15 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_TARGET = ROOT / "site" / "macro_monetary.html"
 LABELS_PATH = ROOT / "lib" / "macro_suite_labels.py"
+sys.path.insert(0, str(ROOT))
+
+
+def default_targets() -> list[Path]:
+    """Every suite page plus the Macro Command hub (n1)."""
+    from scripts.build_macro_suite_pages import HUB_PAGE, SUITE_PAGES
+    names = [HUB_PAGE.output] + [page.output for page in SUITE_PAGES]
+    return [ROOT / "site" / name for name in names]
 
 # §5's banned-substring CI list, verbatim from the frozen spec's table
 # footer. Case-sensitive and taken literally — the spec lists both cases of
@@ -78,6 +84,17 @@ _MACHINE_FLOAT_RE = re.compile(
     r'(?<![\d.])[+\u2212-]?\d+\.\d{4,}(?![\d])'
     r'|[+\u2212-]?\d+\.?\d*[eE][+\-]\d+'
 )
+# P5 v10 E-m1: painted bilingual copy may not leak slugs / study ids.
+_SNAKE_RE = re.compile(r"[a-z]+_[a-z_]+")
+_RULE_ID_RE = re.compile(r"\bR\d[A-Z]?\b|\bF\d{2}\b")
+_BRACE_RE = re.compile(r"[{}]")
+_PARQUET_RE = re.compile(r"\bparquets?\b", re.I)
+# Enumerated — no wildcard. Tickers / ISO / proper nouns that match a shape.
+MACHINE_TEXT_EXCEPTIONS: frozenset[str] = frozenset({
+    "FRED", "FOMC", "SOFR", "TIPS", "OECD", "NBER", "HICP", "VIX",
+    "CPI", "GDP", "NFCI", "OFR", "BLS", "ECB", "BOJ", "TGA", "USD",
+    "US", "EU", "JP", "CN", "GB",
+})
 
 # Strip only the <details> BODY (children after <summary>). The summary
 # is painted while closed, so the predicate must see it (P5 r4 m-b).
@@ -128,6 +145,40 @@ def reading_path_text(html: str) -> str:
     return _WS_RE.sub(" ", stripped)
 
 
+def locale_span_texts(html: str) -> list[tuple[str, str]]:
+    """Visible ``.l-en`` / ``.l-zh`` bodies, including details (E-m1)."""
+    stripped = _SCRIPT_RE.sub("", html)
+    found: list[tuple[str, str]] = []
+    for locale in ("en", "zh"):
+        for raw in re.findall(
+                rf'<span class="l-{locale}">(.*?)</span>', stripped, re.S):
+            text = _TAG_RE.sub("", raw)
+            text = _WS_RE.sub(" ", text).strip()
+            if text:
+                found.append((locale, text))
+    return found
+
+
+def machine_copy_hits(text: str) -> list[str]:
+    """Front-facing machine-text shapes (E-m1). Empty means the string is plain."""
+    if not text:
+        return []
+    hits: list[str] = []
+    if _BRACE_RE.search(text):
+        hits.append("braces")
+    for match in _SNAKE_RE.finditer(text):
+        token = match.group(0)
+        if token not in MACHINE_TEXT_EXCEPTIONS:
+            hits.append(f"snake:{token}")
+    if _PARQUET_RE.search(text):
+        hits.append("parquet")
+    for match in _RULE_ID_RE.finditer(text):
+        token = match.group(0)
+        if token not in MACHINE_TEXT_EXCEPTIONS:
+            hits.append(f"rule:{token}")
+    return hits
+
+
 def find_violations(html: str) -> list[str]:
     """Return every copy-law violation found in `html`'s reading path. An
     empty list means the page is clean."""
@@ -172,6 +223,14 @@ def find_violations(html: str) -> list[str]:
             "with a unit at the builder/renderer boundary"
         )
 
+    for locale, span in locale_span_texts(html):
+        for hit in machine_copy_hits(span):
+            snippet = span[:80]
+            violations.append(
+                f"machine-text {hit!r} in .{locale} span {snippet!r} "
+                "(E-m1) — replace with plain words a customer can read"
+            )
+
     return violations
 
 
@@ -185,12 +244,17 @@ def check_file(path: Path) -> list[str]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "target", nargs="?", default=str(DEFAULT_TARGET),
-        help="built HTML page to scan (default: site/macro_monetary.html)",
+        "targets", nargs="*",
+        help="built HTML pages to scan (default: every suite page + both hubs)",
     )
     args = parser.parse_args(argv)
 
-    violations = check_file(Path(args.target))
+    paths = [Path(item) for item in args.targets] if args.targets else default_targets()
+    scanned = [str(path) for path in paths]
+    violations: list[str] = []
+    for path in paths:
+        for item in check_file(path):
+            violations.append(f"{path.name}: {item}")
     if violations:
         for violation in violations:
             # House law: a GitHub annotation must START the line, so this is
@@ -198,12 +262,16 @@ def main(argv: list[str] | None = None) -> int:
             # annotations must START the line").
             print(f"::error title=macro-command-copy-law::{violation}", flush=True)
         print(
-            f"macro command copy guard: {len(violations)} violation(s) in {args.target}",
+            f"macro command copy guard: {len(violations)} violation(s) in "
+            f"{len(scanned)} page(s): {', '.join(Path(p).name for p in scanned)}",
             file=sys.stderr,
         )
         return 1
 
-    print(f"macro command copy guard: clean ({args.target})")
+    print(
+        f"macro command copy guard: clean "
+        f"({len(scanned)} pages: {', '.join(Path(p).name for p in scanned)})"
+    )
     return 0
 
 

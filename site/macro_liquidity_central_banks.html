@@ -427,7 +427,7 @@
         <div><dt><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></dt>
              <dd><time>2026-09-04T11:03:41.497178+00:00</time></dd></div>
         <div class="mq-nonclock"><dt><span class="l-en">Page built</span><span class="l-zh">页面生成</span></dt>
-             <dd><time>2026-09-08T19:47:57Z</time></dd></div>
+             <dd><time>2026-09-08T20:51:23Z</time></dd></div>
       </dl>
 
   </div>
@@ -548,7 +548,7 @@
   <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
   <div class="mc-details-body">
   <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
-  <span class="l-en">The GLT owner itself marks this cycle&#39;s overall quality as degraded (global credit context: insufficient_comparable_pit_coverage). This composer passes that read through unchanged rather than smoothing it over or recomputing a cleaner-looking number.</span><span class="l-zh">GLT数据源自身将本周期的整体质量标记为降级（global credit context: insufficient_comparable_pit_coverage）。本组合器原样传递该判断，不做平滑处理，也不重新计算出一个更好看的数字。</span>
+  <code class="mc-producer-receipt" lang="en">The GLT owner itself marks this cycle&#39;s overall quality as degraded (global credit context: insufficient_comparable_pit_coverage). This composer passes that read through unchanged rather than smoothing it over or recomputing a cleaner-looking number.</code> <code class="mc-producer-receipt" lang="zh">GLT数据源自身将本周期的整体质量标记为降级（global credit context: insufficient_comparable_pit_coverage）。本组合器原样传递该判断，不做平滑处理，也不重新计算出一个更好看的数字。</code>
   </div>
 </details>
       <p class="mq-implication-claim"><span class="l-en">States what the accepted data shows.</span><span class="l-zh">陈述已接受数据所显示的事实。</span></p>
@@ -748,15 +748,15 @@
         <span class="mq-metric-name"><span class="l-en">Global money impulse</span><span class="l-zh">全球货币脉冲</span></span>
         <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">0.00</span><span class="l-zh">0.00</span><span class="mq-metric-unit"><span class="l-en">Z score pts</span><span class="l-zh">Z score pts</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">Higher more expansionary</span></p>
+      <strong class="mq-metric-value"><span class="l-en">0.00</span><span class="l-zh">0.00</span><span class="mq-metric-unit"><span class="l-en">Z score pts</span><span class="l-zh">z 值点数</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">数值越高＝越宽松</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-28</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Weekly change in expanding z score</span><span class="l-zh">Weekly change in expanding z score</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Weekly change in expanding z score</span><span class="l-zh">扩张 z 值的周变化</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>state.monetary_impulse</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -801,14 +801,14 @@
         <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">0.08</span><span class="l-zh">0.08</span><span class="mq-metric-unit"><span class="l-en">std dev</span><span class="l-zh">标准差</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">Higher more expansionary</span></p>
+      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">数值越高＝越宽松</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-28</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Prior only expanding z score of weekly change</span><span class="l-zh">Prior only expanding z score of weekly change</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Prior only expanding z score of weekly change</span><span class="l-zh">仅用先验的周变化扩张 z 值</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>state.monetary_impulse_z</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -849,18 +849,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Glt monetary stance</span><span class="l-zh">Glt monetary stance</span></span>
+        <span class="mq-metric-name"><span class="l-en">Glt monetary stance</span><span class="l-zh">全球流动性货币立场</span></span>
         <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">0.94</span><span class="l-zh">0.94</span><span class="mq-metric-unit"><span class="l-en">std dev</span><span class="l-zh">标准差</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">Higher more expansionary</span></p>
+      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">数值越高＝越宽松</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-28</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Expanding z score</span><span class="l-zh">Expanding z score</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Expanding z score</span><span class="l-zh">扩张 z 值</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>state.monetary_stance</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -901,18 +901,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Glt orthogonalised impulse</span><span class="l-zh">Glt orthogonalised impulse</span></span>
+        <span class="mq-metric-name"><span class="l-en">Glt orthogonalised impulse</span><span class="l-zh">全球流动性正交脉冲</span></span>
         <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">0.02</span><span class="l-zh">0.02</span><span class="mq-metric-unit"><span class="l-en">std dev</span><span class="l-zh">标准差</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">Higher more expansionary</span></p>
+      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">数值越高＝越宽松</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-28</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Causal regression residual z units</span><span class="l-zh">Causal regression residual z units</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Causal regression residual z units</span><span class="l-zh">因果回归残差（z 值）</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>state.orthogonalised_impulse</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -956,15 +956,15 @@
         <span class="mq-metric-name"><span class="l-en">Global liquidity breadth</span><span class="l-zh">全球流动性广度</span></span>
         <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">0.33</span><span class="l-zh">0.33</span><span class="mq-metric-unit"><span class="l-en">Share 0 to 1</span><span class="l-zh">Share 0 to 1</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher broader agreement</span><span class="l-zh">Higher broader agreement</span></p>
+      <strong class="mq-metric-value"><span class="l-en">0.33</span><span class="l-zh">0.33</span><span class="mq-metric-unit"><span class="l-en">Share 0 to 1</span><span class="l-zh">份额（0–1）</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher broader agreement</span><span class="l-zh">数值越高＝方向一致越广</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-28</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Share of components agreeing with direction</span><span class="l-zh">Share of components agreeing with direction</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Share of components agreeing with direction</span><span class="l-zh">与方向一致的分项占比</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>state.liquidity_breadth</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1009,14 +1009,14 @@
         <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">−0.14</span><span class="l-zh">−0.14</span><span class="mq-metric-unit"><span class="l-en">std dev</span><span class="l-zh">标准差</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher easier funding</span><span class="l-zh">Higher easier funding</span></p>
+      <p class="mq-metric-direction"><span class="l-en">Higher easier funding</span><span class="l-zh">数值越高＝融资越容易</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-28</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Expanding z score positive is easier</span><span class="l-zh">Expanding z score positive is easier</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Expanding z score positive is easier</span><span class="l-zh">扩张 z 值为正表示更宽松</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>state.usd_funding_impulse</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1057,18 +1057,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Glt policy liquidity impulse</span><span class="l-zh">Glt policy liquidity impulse</span></span>
+        <span class="mq-metric-name"><span class="l-en">Glt policy liquidity impulse</span><span class="l-zh">全球政策流动性脉冲</span></span>
         <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">0.00</span><span class="l-zh">0.00</span><span class="mq-metric-unit"><span class="l-en">Z score pts</span><span class="l-zh">Z score pts</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">Higher more expansionary</span></p>
+      <strong class="mq-metric-value"><span class="l-en">0.00</span><span class="l-zh">0.00</span><span class="mq-metric-unit"><span class="l-en">Z score pts</span><span class="l-zh">z 值点数</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">数值越高＝越宽松</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-28</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Weekly change in expanding z score</span><span class="l-zh">Weekly change in expanding z score</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Weekly change in expanding z score</span><span class="l-zh">扩张 z 值的周变化</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>state.policy_liquidity_impulse</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1109,18 +1109,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Glt credit impulse global</span><span class="l-zh">Glt credit impulse global</span></span>
+        <span class="mq-metric-name"><span class="l-en">Glt credit impulse global</span><span class="l-zh">全球信贷脉冲</span></span>
         <span class="mq-chip mq-tone-neutral"><span class="l-en">Not covered</span><span class="l-zh">未覆盖</span></span>
       </header>
       <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Not covered</span><span class="l-zh">未覆盖</span></span></span><span class="mq-metric-unit"><span class="l-en">std dev</span><span class="l-zh">标准差</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher more credit expansion</span><span class="l-zh">Higher more credit expansion</span></p>
+      <p class="mq-metric-direction"><span class="l-en">Higher more credit expansion</span><span class="l-zh">数值越高＝信贷扩张越多</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-28</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Cross country credit impulse comparison</span><span class="l-zh">Cross country credit impulse comparison</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Cross country credit impulse comparison</span><span class="l-zh">跨国信贷脉冲比较</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>state.credit_impulse_global</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1161,10 +1161,10 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Glt state label</span><span class="l-zh">Glt state label</span></span>
+        <span class="mq-metric-name"><span class="l-en">Glt state label</span><span class="l-zh">全球流动性状态标签</span></span>
         <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">Flat</span><span class="l-zh">Flat</span></strong>
+      <strong class="mq-metric-value"><span class="l-en">Flat</span><span class="l-zh">持平</span></strong>
       <p class="mq-metric-direction"></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
@@ -1172,7 +1172,7 @@
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-28</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Owner native categorical</span><span class="l-zh">Owner native categorical</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Owner native categorical</span><span class="l-zh">所有者原生分类</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>state.label</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1213,10 +1213,10 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Glt state quality label</span><span class="l-zh">Glt state quality label</span></span>
+        <span class="mq-metric-name"><span class="l-en">Glt state quality label</span><span class="l-zh">全球流动性质量标签</span></span>
         <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">Mixed</span><span class="l-zh">Mixed</span></strong>
+      <strong class="mq-metric-value"><span class="l-en">Mixed</span><span class="l-zh">混合</span></strong>
       <p class="mq-metric-direction"></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
@@ -1224,7 +1224,7 @@
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-28</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">State vs us quality agreement label</span><span class="l-zh">State vs us quality agreement label</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">State vs us quality agreement label</span><span class="l-zh">相对美国质量是否一致</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>state.event_reference.quality</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1265,11 +1265,11 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Glt confidence</span><span class="l-zh">Glt confidence</span></span>
+        <span class="mq-metric-name"><span class="l-en">Glt confidence</span><span class="l-zh">全球流动性把握</span></span>
         <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">0.83</span><span class="l-zh">0.83</span><span class="mq-metric-unit"><span class="l-en">Ratio 0 1</span><span class="l-zh">Ratio 0 1</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher more coverage and pit reliability</span><span class="l-zh">Higher more coverage and pit reliability</span></p>
+      <strong class="mq-metric-value"><span class="l-en">0.83</span><span class="l-zh">0.83</span><span class="mq-metric-unit"><span class="l-en">Ratio 0 1</span><span class="l-zh">比率（0–1）</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher more coverage and pit reliability</span><span class="l-zh">数值越高＝覆盖与同点可靠性越高</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
@@ -1317,11 +1317,11 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Glt monetary coverage ratio</span><span class="l-zh">Glt monetary coverage ratio</span></span>
+        <span class="mq-metric-name"><span class="l-en">Glt monetary coverage ratio</span><span class="l-zh">全球货币覆盖率</span></span>
         <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">1.00</span><span class="l-zh">1.00</span><span class="mq-metric-unit"><span class="l-en">Ratio 0 1</span><span class="l-zh">Ratio 0 1</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher more coverage</span><span class="l-zh">Higher more coverage</span></p>
+      <strong class="mq-metric-value"><span class="l-en">1.00</span><span class="l-zh">1.00</span><span class="mq-metric-unit"><span class="l-en">Ratio 0 1</span><span class="l-zh">比率（0–1）</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher more coverage</span><span class="l-zh">数值越高＝覆盖越广</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
@@ -1369,11 +1369,11 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Glt funding coverage ratio</span><span class="l-zh">Glt funding coverage ratio</span></span>
+        <span class="mq-metric-name"><span class="l-en">Glt funding coverage ratio</span><span class="l-zh">全球融资覆盖率</span></span>
         <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">1.00</span><span class="l-zh">1.00</span><span class="mq-metric-unit"><span class="l-en">Ratio 0 1</span><span class="l-zh">Ratio 0 1</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher more coverage</span><span class="l-zh">Higher more coverage</span></p>
+      <strong class="mq-metric-value"><span class="l-en">1.00</span><span class="l-zh">1.00</span><span class="mq-metric-unit"><span class="l-en">Ratio 0 1</span><span class="l-zh">比率（0–1）</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher more coverage</span><span class="l-zh">数值越高＝覆盖越广</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
@@ -1421,18 +1421,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Glt fed monetary contribution z</span><span class="l-zh">Glt fed monetary contribution z</span></span>
+        <span class="mq-metric-name"><span class="l-en">Glt fed monetary contribution z</span><span class="l-zh">美联储货币贡献 z 值</span></span>
         <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">0.97</span><span class="l-zh">0.97</span><span class="mq-metric-unit"><span class="l-en">std dev</span><span class="l-zh">标准差</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">Higher more expansionary</span></p>
+      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">数值越高＝越宽松</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-28</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Standardized monetary contribution</span><span class="l-zh">Standardized monetary contribution</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Standardized monetary contribution</span><span class="l-zh">标准化货币贡献</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>freshness.component_snapshot.monetary.fed.current_contribution_z</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1473,18 +1473,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Glt ecb monetary contribution z</span><span class="l-zh">Glt ecb monetary contribution z</span></span>
+        <span class="mq-metric-name"><span class="l-en">Glt ecb monetary contribution z</span><span class="l-zh">欧央行货币贡献 z 值</span></span>
         <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">1.01</span><span class="l-zh">1.01</span><span class="mq-metric-unit"><span class="l-en">std dev</span><span class="l-zh">标准差</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">Higher more expansionary</span></p>
+      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">数值越高＝越宽松</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-28</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Standardized monetary contribution</span><span class="l-zh">Standardized monetary contribution</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Standardized monetary contribution</span><span class="l-zh">标准化货币贡献</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>freshness.component_snapshot.monetary.ecb.current_contribution_z</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1525,18 +1525,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Glt boj monetary contribution z</span><span class="l-zh">Glt boj monetary contribution z</span></span>
+        <span class="mq-metric-name"><span class="l-en">Glt boj monetary contribution z</span><span class="l-zh">日本央行货币贡献 z 值</span></span>
         <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">0.85</span><span class="l-zh">0.85</span><span class="mq-metric-unit"><span class="l-en">std dev</span><span class="l-zh">标准差</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">Higher more expansionary</span></p>
+      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">数值越高＝越宽松</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-28</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Standardized monetary contribution</span><span class="l-zh">Standardized monetary contribution</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Standardized monetary contribution</span><span class="l-zh">标准化货币贡献</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>freshness.component_snapshot.monetary.boj.current_contribution_z</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1577,18 +1577,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Glt broad dollar contribution z</span><span class="l-zh">Glt broad dollar contribution z</span></span>
+        <span class="mq-metric-name"><span class="l-en">Glt broad dollar contribution z</span><span class="l-zh">广义美元贡献 z 值</span></span>
         <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">0.26</span><span class="l-zh">0.26</span><span class="mq-metric-unit"><span class="l-en">std dev</span><span class="l-zh">标准差</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher easier funding</span><span class="l-zh">Higher easier funding</span></p>
+      <p class="mq-metric-direction"><span class="l-en">Higher easier funding</span><span class="l-zh">数值越高＝融资越容易</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-28</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Standardized funding contribution</span><span class="l-zh">Standardized funding contribution</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Standardized funding contribution</span><span class="l-zh">标准化融资贡献</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>freshness.component_snapshot.usd_funding.broad_dollar.current_contribution_z</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1629,18 +1629,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Glt high yield oas contribution z</span><span class="l-zh">Glt high yield oas contribution z</span></span>
+        <span class="mq-metric-name"><span class="l-en">Glt high yield oas contribution z</span><span class="l-zh">高收益利差贡献 z 值</span></span>
         <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">0.06</span><span class="l-zh">0.06</span><span class="mq-metric-unit"><span class="l-en">std dev</span><span class="l-zh">标准差</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher easier funding</span><span class="l-zh">Higher easier funding</span></p>
+      <p class="mq-metric-direction"><span class="l-en">Higher easier funding</span><span class="l-zh">数值越高＝融资越容易</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-28</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Standardized funding contribution</span><span class="l-zh">Standardized funding contribution</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Standardized funding contribution</span><span class="l-zh">标准化融资贡献</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>freshness.component_snapshot.usd_funding.high_yield_oas.current_contribution_z</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1681,18 +1681,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Glt real yield 10y contribution z</span><span class="l-zh">Glt real yield 10y contribution z</span></span>
+        <span class="mq-metric-name"><span class="l-en">Glt real yield 10y contribution z</span><span class="l-zh">10年期实际收益率贡献 z 值</span></span>
         <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">−0.76</span><span class="l-zh">−0.76</span><span class="mq-metric-unit"><span class="l-en">std dev</span><span class="l-zh">标准差</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher easier funding</span><span class="l-zh">Higher easier funding</span></p>
+      <p class="mq-metric-direction"><span class="l-en">Higher easier funding</span><span class="l-zh">数值越高＝融资越容易</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-28</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Standardized funding contribution</span><span class="l-zh">Standardized funding contribution</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Standardized funding contribution</span><span class="l-zh">标准化融资贡献</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>freshness.component_snapshot.usd_funding.real_yield_10y.current_contribution_z</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1733,11 +1733,11 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Cb fed balance sheet level</span><span class="l-zh">Cb fed balance sheet level</span></span>
+        <span class="mq-metric-name"><span class="l-en">Cb fed balance sheet level</span><span class="l-zh">美联储资产负债表水平</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">6,737.2</span><span class="l-zh">6,737.2</span><span class="mq-metric-unit"><span class="l-en">Usd billions</span><span class="l-zh">Usd billions</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher more accommodative</span><span class="l-zh">Higher more accommodative</span></p>
+      <strong class="mq-metric-value"><span class="l-en">6,737.2</span><span class="l-zh">6,737.2</span><span class="mq-metric-unit"><span class="l-en">Usd billions</span><span class="l-zh">十亿美元</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher more accommodative</span><span class="l-zh">数值越高＝越宽松</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
@@ -1789,14 +1789,14 @@
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">0.38</span><span class="l-zh">0.38</span><span class="mq-metric-unit"><span class="l-en">%</span><span class="l-zh">%</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">Higher more expansionary</span></p>
+      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">数值越高＝越宽松</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-02</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Trailing 13w pct change</span><span class="l-zh">Trailing 13w pct change</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Trailing 13w pct change</span><span class="l-zh">过去13周百分比变化</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>cb_desk.cbs.bs_impulse.impulse_13w</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1837,18 +1837,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Cb fed balance sheet impulse 52w</span><span class="l-zh">Cb fed balance sheet impulse 52w</span></span>
+        <span class="mq-metric-name"><span class="l-en">Cb fed balance sheet impulse 52w</span><span class="l-zh">美联储资产负债表脉冲（52周）</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">2.05</span><span class="l-zh">2.05</span><span class="mq-metric-unit"><span class="l-en">%</span><span class="l-zh">%</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">Higher more expansionary</span></p>
+      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">数值越高＝越宽松</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-02</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Trailing 52w pct change</span><span class="l-zh">Trailing 52w pct change</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Trailing 52w pct change</span><span class="l-zh">过去52周百分比变化</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>cb_desk.cbs.bs_impulse.impulse_52w</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1889,11 +1889,11 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Cb ecb balance sheet level</span><span class="l-zh">Cb ecb balance sheet level</span></span>
+        <span class="mq-metric-name"><span class="l-en">Cb ecb balance sheet level</span><span class="l-zh">欧央行资产负债表水平</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">5,915.3</span><span class="l-zh">5,915.3</span><span class="mq-metric-unit"><span class="l-en">Eur billions</span><span class="l-zh">Eur billions</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher more accommodative</span><span class="l-zh">Higher more accommodative</span></p>
+      <strong class="mq-metric-value"><span class="l-en">5,915.3</span><span class="l-zh">5,915.3</span><span class="mq-metric-unit"><span class="l-en">Eur billions</span><span class="l-zh">十亿欧元</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher more accommodative</span><span class="l-zh">数值越高＝越宽松</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
@@ -1941,18 +1941,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Cb ecb balance sheet impulse 13w</span><span class="l-zh">Cb ecb balance sheet impulse 13w</span></span>
+        <span class="mq-metric-name"><span class="l-en">Cb ecb balance sheet impulse 13w</span><span class="l-zh">欧央行资产负债表脉冲（13周）</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">−4.00</span><span class="l-zh">−4.00</span><span class="mq-metric-unit"><span class="l-en">%</span><span class="l-zh">%</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">Higher more expansionary</span></p>
+      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">数值越高＝越宽松</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-28</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Trailing 13w pct change</span><span class="l-zh">Trailing 13w pct change</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Trailing 13w pct change</span><span class="l-zh">过去13周百分比变化</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>cb_desk.cbs.bs_impulse.impulse_13w</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1993,18 +1993,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Cb ecb balance sheet impulse 52w</span><span class="l-zh">Cb ecb balance sheet impulse 52w</span></span>
+        <span class="mq-metric-name"><span class="l-en">Cb ecb balance sheet impulse 52w</span><span class="l-zh">欧央行资产负债表脉冲（52周）</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">−2.86</span><span class="l-zh">−2.86</span><span class="mq-metric-unit"><span class="l-en">%</span><span class="l-zh">%</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">Higher more expansionary</span></p>
+      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">数值越高＝越宽松</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-28</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Trailing 52w pct change</span><span class="l-zh">Trailing 52w pct change</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Trailing 52w pct change</span><span class="l-zh">过去52周百分比变化</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>cb_desk.cbs.bs_impulse.impulse_52w</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -2045,11 +2045,11 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Cb boj balance sheet level</span><span class="l-zh">Cb boj balance sheet level</span></span>
+        <span class="mq-metric-name"><span class="l-en">Cb boj balance sheet level</span><span class="l-zh">日本央行资产负债表水平</span></span>
         <span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">644,662.0</span><span class="l-zh">644,662.0</span><span class="mq-metric-unit"><span class="l-en">Jpy billions</span><span class="l-zh">Jpy billions</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher more accommodative</span><span class="l-zh">Higher more accommodative</span></p>
+      <strong class="mq-metric-value"><span class="l-en">644,662.0</span><span class="l-zh">644,662.0</span><span class="mq-metric-unit"><span class="l-en">Jpy billions</span><span class="l-zh">十亿日元</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher more accommodative</span><span class="l-zh">数值越高＝越宽松</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
@@ -2097,18 +2097,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Cb boj balance sheet impulse 13w</span><span class="l-zh">Cb boj balance sheet impulse 13w</span></span>
+        <span class="mq-metric-name"><span class="l-en">Cb boj balance sheet impulse 13w</span><span class="l-zh">日本央行资产负债表脉冲（13周）</span></span>
         <span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">−10.64</span><span class="l-zh">−10.64</span><span class="mq-metric-unit"><span class="l-en">%</span><span class="l-zh">%</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">Higher more expansionary</span></p>
+      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">数值越高＝越宽松</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-01</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Trailing 13w pct change</span><span class="l-zh">Trailing 13w pct change</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Trailing 13w pct change</span><span class="l-zh">过去13周百分比变化</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>cb_desk.cbs.bs_impulse.impulse_13w</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -2149,18 +2149,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Cb boj balance sheet impulse 52w</span><span class="l-zh">Cb boj balance sheet impulse 52w</span></span>
+        <span class="mq-metric-name"><span class="l-en">Cb boj balance sheet impulse 52w</span><span class="l-zh">日本央行资产负债表脉冲（52周）</span></span>
         <span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">−12.73</span><span class="l-zh">−12.73</span><span class="mq-metric-unit"><span class="l-en">%</span><span class="l-zh">%</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">Higher more expansionary</span></p>
+      <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">数值越高＝越宽松</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-01</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Trailing 52w pct change</span><span class="l-zh">Trailing 52w pct change</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Trailing 52w pct change</span><span class="l-zh">过去52周百分比变化</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>cb_desk.cbs.bs_impulse.impulse_52w</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -2423,8 +2423,8 @@
           <li><span class="l-en">Fed balance-sheet 13w change</span><span class="l-zh">美联储资产负债表13周变化</span> <span class="mq-chip"><span class="l-en">%</span><span class="l-zh">%</span></span> <span class="mq-withheld-range">−20.00 … 20.00 · <span class="l-en">step</span><span class="l-zh">步长</span> 0.50</span></li>
           <li><span class="l-en">ECB balance-sheet 13w change</span><span class="l-zh">欧洲央行资产负债表13周变化</span> <span class="mq-chip"><span class="l-en">%</span><span class="l-zh">%</span></span> <span class="mq-withheld-range">−20.00 … 20.00 · <span class="l-en">step</span><span class="l-zh">步长</span> 0.50</span></li>
           <li><span class="l-en">BoJ balance-sheet 13w change</span><span class="l-zh">日本银行资产负债表13周变化</span> <span class="mq-chip"><span class="l-en">%</span><span class="l-zh">%</span></span> <span class="mq-withheld-range">−20.00 … 20.00 · <span class="l-en">step</span><span class="l-zh">步长</span> 0.50</span></li>
-          <li><span class="l-en">USD funding impulse</span><span class="l-zh">美元融资脉冲</span> <span class="mq-chip"><span class="l-en">Z</span><span class="l-zh">Z</span></span> <span class="mq-withheld-range">−3.00 … 3.00 · <span class="l-en">step</span><span class="l-zh">步长</span> 0.10</span></li>
-          <li><span class="l-en">Global monetary impulse (z)</span><span class="l-zh">全球货币脉冲（z值）</span> <span class="mq-chip"><span class="l-en">Z</span><span class="l-zh">Z</span></span> <span class="mq-withheld-range">−3.00 … 3.00 · <span class="l-en">step</span><span class="l-zh">步长</span> 0.10</span></li>
+          <li><span class="l-en">USD funding impulse</span><span class="l-zh">美元融资脉冲</span> <span class="mq-chip"><span class="l-en">Z</span><span class="l-zh">z 值</span></span> <span class="mq-withheld-range">−3.00 … 3.00 · <span class="l-en">step</span><span class="l-zh">步长</span> 0.10</span></li>
+          <li><span class="l-en">Global monetary impulse (z)</span><span class="l-zh">全球货币脉冲（z值）</span> <span class="mq-chip"><span class="l-en">Z</span><span class="l-zh">z 值</span></span> <span class="mq-withheld-range">−3.00 … 3.00 · <span class="l-en">step</span><span class="l-zh">步长</span> 0.10</span></li>
         </ul>
       </details>
     </article>
@@ -2717,7 +2717,7 @@
         </div>
         <div class="mq-clock">
           <dt><span class="mq-clock-name"><span class="l-en">Page refreshed</span><span class="l-zh">页面更新于</span></span><span class="mq-clock-meaning"><span class="l-en">Static page render time. Not an economic clock.</span><span class="l-zh">静态页面渲染时间，并非经济时钟。</span></span></dt>
-          <dd><time>2026-09-08T19:47:57Z</time></dd>
+          <dd><time>2026-09-08T20:51:23Z</time></dd>
         </div>
       </dl>
     </section>

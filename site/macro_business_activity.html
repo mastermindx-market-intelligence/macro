@@ -427,7 +427,7 @@
         <div><dt><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></dt>
              <dd><time>2026-09-30</time></dd></div>
         <div class="mq-nonclock"><dt><span class="l-en">Page built</span><span class="l-zh">页面生成</span></dt>
-             <dd><time>2026-09-08T19:47:57Z</time></dd></div>
+             <dd><time>2026-09-08T20:51:23Z</time></dd></div>
       </dl>
 
   </div>
@@ -494,7 +494,7 @@
   <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
   <div class="mc-details-body">
   <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
-  <span class="l-en">No dual-axis Business Activity state (new demand/orders x production/utilization) is asserted: the owner-published engine.business_cycle artifact exposes only blended leading/coincident/lagging tier composites, not the individual orders/production/inventory legs the blueprinted headline needs. Rather than estimate a fabricated split, the real tier-level reads are published as metrics instead.</span><span class="l-zh">未给出双轴商业活动状态（新增需求/订单 × 生产/产能利用）：所有者发布的 engine.business_cycle 制品仅公开了混合的领先/同步/滞后层综合指数，而非蓝图所需的独立订单/生产/库存分项。为避免虚构拆分，改以指标形式发布真实的分层读数。</span>
+  <code class="mc-producer-receipt" lang="en">No dual-axis Business Activity state (new demand/orders x production/utilization) is asserted: the owner-published engine.business_cycle artifact exposes only blended leading/coincident/lagging tier composites, not the individual orders/production/inventory legs the blueprinted headline needs. Rather than estimate a fabricated split, the real tier-level reads are published as metrics instead.</code> <code class="mc-producer-receipt" lang="zh">未给出双轴商业活动状态（新增需求/订单 × 生产/产能利用）：所有者发布的 engine.business_cycle 制品仅公开了混合的领先/同步/滞后层综合指数，而非蓝图所需的独立订单/生产/库存分项。为避免虚构拆分，改以指标形式发布真实的分层读数。</code>
   </div>
 </details>
       <p class="mq-implication-claim"><span class="l-en">States what the accepted data shows.</span><span class="l-zh">陈述已接受数据所显示的事实。</span></p>
@@ -726,10 +726,10 @@
   <div class="mq-metric-grid">
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Leading tier index</span><span class="l-zh">Leading tier index</span></span>
+        <span class="mq-metric-name"><span class="l-en">Leading tier index</span><span class="l-zh">领先层指数</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Computation refused</span><span class="l-zh">拒绝计算</span></span></span><span class="mq-metric-unit"><span class="l-en">Index pt</span><span class="l-zh">Index pt</span></span></strong>
+      <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Computation refused</span><span class="l-zh">拒绝计算</span></span></span><span class="mq-metric-unit"><span class="l-en">Index pt</span><span class="l-zh">指数点</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher = stronger support</span><span class="l-zh">数值越高＝支持越强</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
@@ -737,7 +737,7 @@
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-30</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Rebased 100 composite</span><span class="l-zh">Rebased 100 composite</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Rebased 100 composite</span><span class="l-zh">以100为基准的综合指数</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.leading.index</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -781,15 +781,15 @@
         <span class="mq-metric-name"><span class="l-en">Leading-activity momentum (6-month)</span><span class="l-zh">领先活动动能（6个月）</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Computation refused</span><span class="l-zh">拒绝计算</span></span></span><span class="mq-metric-unit"><span class="l-en">Index pt</span><span class="l-zh">Index pt</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher accelerating</span><span class="l-zh">Higher accelerating</span></p>
+      <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Computation refused</span><span class="l-zh">拒绝计算</span></span></span><span class="mq-metric-unit"><span class="l-en">Index pt</span><span class="l-zh">指数点</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher accelerating</span><span class="l-zh">数值越高＝加速越快</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-30</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">6m change</span><span class="l-zh">6m change</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">6m change</span><span class="l-zh">6个月变化</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.leading.mom6</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -830,18 +830,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Leading tier trend</span><span class="l-zh">Leading tier trend</span></span>
+        <span class="mq-metric-name"><span class="l-en">Leading tier trend</span><span class="l-zh">领先层趋势</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Computation refused</span><span class="l-zh">拒绝计算</span></span></span><span class="mq-metric-unit"><span class="l-en">Index pt</span><span class="l-zh">Index pt</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher accelerating</span><span class="l-zh">Higher accelerating</span></p>
+      <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Computation refused</span><span class="l-zh">拒绝计算</span></span></span><span class="mq-metric-unit"><span class="l-en">Index pt</span><span class="l-zh">指数点</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher accelerating</span><span class="l-zh">数值越高＝加速越快</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-30</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Ema of 6m change</span><span class="l-zh">Ema of 6m change</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Ema of 6m change</span><span class="l-zh">6个月变化的指数均值</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.leading.trend</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -882,18 +882,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Leading tier diffusion</span><span class="l-zh">Leading tier diffusion</span></span>
+        <span class="mq-metric-name"><span class="l-en">Leading tier diffusion</span><span class="l-zh">领先层扩散</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Computation refused</span><span class="l-zh">拒绝计算</span></span></span><span class="mq-metric-unit"><span class="l-en">%</span><span class="l-zh">%</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher broader</span><span class="l-zh">Higher broader</span></p>
+      <p class="mq-metric-direction"><span class="l-en">Higher broader</span><span class="l-zh">数值越高＝覆盖越广</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-30</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Share of legs rising 6m</span><span class="l-zh">Share of legs rising 6m</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Share of legs rising 6m</span><span class="l-zh">6个月内上升分项占比</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.leading.diffusion</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -934,18 +934,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Leading tier direction</span><span class="l-zh">Leading tier direction</span></span>
+        <span class="mq-metric-name"><span class="l-en">Leading tier direction</span><span class="l-zh">领先层方向</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Computation refused</span><span class="l-zh">拒绝计算</span></span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">N/a</span></p>
+      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">不适用</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-30</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Sign of 6m momentum</span><span class="l-zh">Sign of 6m momentum</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Sign of 6m momentum</span><span class="l-zh">6个月动能方向</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.leading.direction</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -986,18 +986,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Leading tier leg count</span><span class="l-zh">Leading tier leg count</span></span>
+        <span class="mq-metric-name"><span class="l-en">Leading tier leg count</span><span class="l-zh">领先层分项数</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">3.00</span><span class="l-zh">3.00</span><span class="mq-metric-unit"><span class="l-en">Legs</span><span class="l-zh">Legs</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher broader input coverage</span><span class="l-zh">Higher broader input coverage</span></p>
+      <strong class="mq-metric-value"><span class="l-en">3.00</span><span class="l-zh">3.00</span><span class="mq-metric-unit"><span class="l-en">Legs</span><span class="l-zh">分项</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher broader input coverage</span><span class="l-zh">数值越高＝输入覆盖越广</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-30</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Count of available legs</span><span class="l-zh">Count of available legs</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Count of available legs</span><span class="l-zh">可用分项数量</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.leading.n_legs</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1038,10 +1038,10 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Coincident tier index</span><span class="l-zh">Coincident tier index</span></span>
+        <span class="mq-metric-name"><span class="l-en">Coincident tier index</span><span class="l-zh">同步层指数</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">35.43</span><span class="l-zh">35.43</span><span class="mq-metric-unit"><span class="l-en">Index pt</span><span class="l-zh">Index pt</span></span></strong>
+      <strong class="mq-metric-value"><span class="l-en">35.43</span><span class="l-zh">35.43</span><span class="mq-metric-unit"><span class="l-en">Index pt</span><span class="l-zh">指数点</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher = stronger support</span><span class="l-zh">数值越高＝支持越强</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
@@ -1049,7 +1049,7 @@
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-07-31</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Rebased 100 composite</span><span class="l-zh">Rebased 100 composite</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Rebased 100 composite</span><span class="l-zh">以100为基准的综合指数</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.coincident.index</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1093,15 +1093,15 @@
         <span class="mq-metric-name"><span class="l-en">Current-activity momentum (6-month)</span><span class="l-zh">当前活动动能（6个月）</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">−0.22</span><span class="l-zh">−0.22</span><span class="mq-metric-unit"><span class="l-en">Index pt</span><span class="l-zh">Index pt</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher accelerating</span><span class="l-zh">Higher accelerating</span></p>
+      <strong class="mq-metric-value"><span class="l-en">−0.22</span><span class="l-zh">−0.22</span><span class="mq-metric-unit"><span class="l-en">Index pt</span><span class="l-zh">指数点</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher accelerating</span><span class="l-zh">数值越高＝加速越快</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-07-31</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">6m change</span><span class="l-zh">6m change</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">6m change</span><span class="l-zh">6个月变化</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.coincident.mom6</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1142,18 +1142,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Coincident tier trend</span><span class="l-zh">Coincident tier trend</span></span>
+        <span class="mq-metric-name"><span class="l-en">Coincident tier trend</span><span class="l-zh">同步层趋势</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">−0.36</span><span class="l-zh">−0.36</span><span class="mq-metric-unit"><span class="l-en">Index pt</span><span class="l-zh">Index pt</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher accelerating</span><span class="l-zh">Higher accelerating</span></p>
+      <strong class="mq-metric-value"><span class="l-en">−0.36</span><span class="l-zh">−0.36</span><span class="mq-metric-unit"><span class="l-en">Index pt</span><span class="l-zh">指数点</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher accelerating</span><span class="l-zh">数值越高＝加速越快</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-07-31</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Ema of 6m change</span><span class="l-zh">Ema of 6m change</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Ema of 6m change</span><span class="l-zh">6个月变化的指数均值</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.coincident.trend</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1194,18 +1194,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Coincident tier diffusion</span><span class="l-zh">Coincident tier diffusion</span></span>
+        <span class="mq-metric-name"><span class="l-en">Coincident tier diffusion</span><span class="l-zh">同步层扩散</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">66.67</span><span class="l-zh">66.67</span><span class="mq-metric-unit"><span class="l-en">%</span><span class="l-zh">%</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher broader</span><span class="l-zh">Higher broader</span></p>
+      <p class="mq-metric-direction"><span class="l-en">Higher broader</span><span class="l-zh">数值越高＝覆盖越广</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-07-31</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Share of legs rising 6m</span><span class="l-zh">Share of legs rising 6m</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Share of legs rising 6m</span><span class="l-zh">6个月内上升分项占比</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.coincident.diffusion</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1246,18 +1246,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Coincident tier direction</span><span class="l-zh">Coincident tier direction</span></span>
+        <span class="mq-metric-name"><span class="l-en">Coincident tier direction</span><span class="l-zh">同步层方向</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">Falling</span><span class="l-zh">Falling</span></strong>
-      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">N/a</span></p>
+      <strong class="mq-metric-value"><span class="l-en">Falling</span><span class="l-zh">下降</span></strong>
+      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">不适用</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-07-31</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Sign of 6m momentum</span><span class="l-zh">Sign of 6m momentum</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Sign of 6m momentum</span><span class="l-zh">6个月动能方向</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.coincident.direction</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1298,18 +1298,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Coincident tier leg count</span><span class="l-zh">Coincident tier leg count</span></span>
+        <span class="mq-metric-name"><span class="l-en">Coincident tier leg count</span><span class="l-zh">同步层分项数</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">3.00</span><span class="l-zh">3.00</span><span class="mq-metric-unit"><span class="l-en">Legs</span><span class="l-zh">Legs</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher broader input coverage</span><span class="l-zh">Higher broader input coverage</span></p>
+      <strong class="mq-metric-value"><span class="l-en">3.00</span><span class="l-zh">3.00</span><span class="mq-metric-unit"><span class="l-en">Legs</span><span class="l-zh">分项</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher broader input coverage</span><span class="l-zh">数值越高＝输入覆盖越广</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-07-31</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Count of available legs</span><span class="l-zh">Count of available legs</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Count of available legs</span><span class="l-zh">可用分项数量</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.coincident.n_legs</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1350,10 +1350,10 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Lagging tier index</span><span class="l-zh">Lagging tier index</span></span>
+        <span class="mq-metric-name"><span class="l-en">Lagging tier index</span><span class="l-zh">滞后层指数</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Computation refused</span><span class="l-zh">拒绝计算</span></span></span><span class="mq-metric-unit"><span class="l-en">Index pt</span><span class="l-zh">Index pt</span></span></strong>
+      <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Computation refused</span><span class="l-zh">拒绝计算</span></span></span><span class="mq-metric-unit"><span class="l-en">Index pt</span><span class="l-zh">指数点</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher = stronger support</span><span class="l-zh">数值越高＝支持越强</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
@@ -1361,7 +1361,7 @@
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-31</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Rebased 100 composite</span><span class="l-zh">Rebased 100 composite</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Rebased 100 composite</span><span class="l-zh">以100为基准的综合指数</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.lagging.index</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1405,15 +1405,15 @@
         <span class="mq-metric-name"><span class="l-en">Lagging-activity momentum (6-month)</span><span class="l-zh">滞后活动动能（6个月）</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Computation refused</span><span class="l-zh">拒绝计算</span></span></span><span class="mq-metric-unit"><span class="l-en">Index pt</span><span class="l-zh">Index pt</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher accelerating</span><span class="l-zh">Higher accelerating</span></p>
+      <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Computation refused</span><span class="l-zh">拒绝计算</span></span></span><span class="mq-metric-unit"><span class="l-en">Index pt</span><span class="l-zh">指数点</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher accelerating</span><span class="l-zh">数值越高＝加速越快</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-31</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">6m change</span><span class="l-zh">6m change</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">6m change</span><span class="l-zh">6个月变化</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.lagging.mom6</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1454,18 +1454,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Lagging tier trend</span><span class="l-zh">Lagging tier trend</span></span>
+        <span class="mq-metric-name"><span class="l-en">Lagging tier trend</span><span class="l-zh">滞后层趋势</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Computation refused</span><span class="l-zh">拒绝计算</span></span></span><span class="mq-metric-unit"><span class="l-en">Index pt</span><span class="l-zh">Index pt</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher accelerating</span><span class="l-zh">Higher accelerating</span></p>
+      <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Computation refused</span><span class="l-zh">拒绝计算</span></span></span><span class="mq-metric-unit"><span class="l-en">Index pt</span><span class="l-zh">指数点</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher accelerating</span><span class="l-zh">数值越高＝加速越快</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-31</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Ema of 6m change</span><span class="l-zh">Ema of 6m change</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Ema of 6m change</span><span class="l-zh">6个月变化的指数均值</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.lagging.trend</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1506,18 +1506,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Lagging tier diffusion</span><span class="l-zh">Lagging tier diffusion</span></span>
+        <span class="mq-metric-name"><span class="l-en">Lagging tier diffusion</span><span class="l-zh">滞后层扩散</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Computation refused</span><span class="l-zh">拒绝计算</span></span></span><span class="mq-metric-unit"><span class="l-en">%</span><span class="l-zh">%</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher broader</span><span class="l-zh">Higher broader</span></p>
+      <p class="mq-metric-direction"><span class="l-en">Higher broader</span><span class="l-zh">数值越高＝覆盖越广</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-31</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Share of legs rising 6m</span><span class="l-zh">Share of legs rising 6m</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Share of legs rising 6m</span><span class="l-zh">6个月内上升分项占比</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.lagging.diffusion</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1558,18 +1558,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Lagging tier direction</span><span class="l-zh">Lagging tier direction</span></span>
+        <span class="mq-metric-name"><span class="l-en">Lagging tier direction</span><span class="l-zh">滞后层方向</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Computation refused</span><span class="l-zh">拒绝计算</span></span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">N/a</span></p>
+      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">不适用</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-31</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Sign of 6m momentum</span><span class="l-zh">Sign of 6m momentum</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Sign of 6m momentum</span><span class="l-zh">6个月动能方向</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.lagging.direction</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1610,18 +1610,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Lagging tier leg count</span><span class="l-zh">Lagging tier leg count</span></span>
+        <span class="mq-metric-name"><span class="l-en">Lagging tier leg count</span><span class="l-zh">滞后层分项数</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">2.00</span><span class="l-zh">2.00</span><span class="mq-metric-unit"><span class="l-en">Legs</span><span class="l-zh">Legs</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher broader input coverage</span><span class="l-zh">Higher broader input coverage</span></p>
+      <strong class="mq-metric-value"><span class="l-en">2.00</span><span class="l-zh">2.00</span><span class="mq-metric-unit"><span class="l-en">Legs</span><span class="l-zh">分项</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher broader input coverage</span><span class="l-zh">数值越高＝输入覆盖越广</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-08-31</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Count of available legs</span><span class="l-zh">Count of available legs</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Count of available legs</span><span class="l-zh">可用分项数量</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.lagging.n_legs</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1665,7 +1665,7 @@
         <span class="mq-metric-name"><span class="l-en">Current-to-lagging activity gap (6-month)</span><span class="l-zh">当前与滞后活动差距（6个月）</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">−0.57</span><span class="l-zh">−0.57</span><span class="mq-metric-unit"><span class="l-en">Ratio pt</span><span class="l-zh">Ratio pt</span></span></strong>
+      <strong class="mq-metric-value"><span class="l-en">−0.57</span><span class="l-zh">−0.57</span><span class="mq-metric-unit"><span class="l-en">Ratio pt</span><span class="l-zh">比率点</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher = stronger support</span><span class="l-zh">数值越高＝支持越强</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
@@ -1673,7 +1673,7 @@
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-30</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">6m change of ratio</span><span class="l-zh">6m change of ratio</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">6m change of ratio</span><span class="l-zh">比率的6个月变化</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.cl_ratio_mom6</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1714,18 +1714,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Recession signal state</span><span class="l-zh">Recession signal state</span></span>
+        <span class="mq-metric-name"><span class="l-en">Recession signal state</span><span class="l-zh">衰退信号状态</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">Off</span><span class="l-zh">Off</span></strong>
-      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">N/a</span></p>
+      <strong class="mq-metric-value"><span class="l-en">Off</span><span class="l-zh">关闭</span></strong>
+      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">不适用</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-30</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Three ds rule</span><span class="l-zh">Three ds rule</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Three ds rule</span><span class="l-zh">三项门槛规则</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.recession_signal.state</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1766,18 +1766,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Recession signal depth</span><span class="l-zh">Recession signal depth</span></span>
+        <span class="mq-metric-name"><span class="l-en">Recession signal depth</span><span class="l-zh">衰退信号深度</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">No</span><span class="l-zh">否</span></strong>
-      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">N/a</span></p>
+      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">不适用</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-30</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Leading mom6 below threshold</span><span class="l-zh">Leading mom6 below threshold</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Leading mom6 below threshold</span><span class="l-zh">领先6个月动能低于门槛</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.recession_signal.conditions.depth</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1818,18 +1818,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Recession signal breadth</span><span class="l-zh">Recession signal breadth</span></span>
+        <span class="mq-metric-name"><span class="l-en">Recession signal breadth</span><span class="l-zh">衰退信号广度</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">No</span><span class="l-zh">否</span></strong>
-      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">N/a</span></p>
+      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">不适用</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-30</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Diffusion at or below cutoff</span><span class="l-zh">Diffusion at or below cutoff</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Diffusion at or below cutoff</span><span class="l-zh">扩散处于或低于截止值</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.recession_signal.conditions.breadth</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1870,18 +1870,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Recession signal months active</span><span class="l-zh">Recession signal months active</span></span>
+        <span class="mq-metric-name"><span class="l-en">Recession signal months active</span><span class="l-zh">衰退信号持续月数</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">40.00</span><span class="l-zh">40.00</span><span class="mq-metric-unit"><span class="l-en">Months</span><span class="l-zh">Months</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">N/a</span></p>
+      <strong class="mq-metric-value"><span class="l-en">40.00</span><span class="l-zh">40.00</span><span class="mq-metric-unit"><span class="l-en">Months</span><span class="l-zh">月</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">不适用</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-30</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Consecutive months in state</span><span class="l-zh">Consecutive months in state</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Consecutive months in state</span><span class="l-zh">连续处于该状态的月数</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.recession_signal.months_active</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1922,18 +1922,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Business cycle phase</span><span class="l-zh">Business cycle phase</span></span>
+        <span class="mq-metric-name"><span class="l-en">Business cycle phase</span><span class="l-zh">商业周期阶段</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">Recovery</span><span class="l-zh">Recovery</span></strong>
-      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">N/a</span></p>
+      <strong class="mq-metric-value"><span class="l-en">Recovery</span><span class="l-zh">复苏</span></strong>
+      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">不适用</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-30</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Leading x coincident momentum sign</span><span class="l-zh">Leading x coincident momentum sign</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Leading x coincident momentum sign</span><span class="l-zh">领先与同步动能方向</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.phase.label</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -1974,18 +1974,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Recession signal oos catch rate</span><span class="l-zh">Recession signal oos catch rate</span></span>
+        <span class="mq-metric-name"><span class="l-en">Recession signal oos catch rate</span><span class="l-zh">衰退信号样本外捕捉率</span></span>
         <span class="mq-chip mq-tone-neutral"><span class="l-en">Historical, as known then</span><span class="l-zh">历史（按当时已知）</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">0.67</span><span class="l-zh">0.67</span><span class="mq-metric-unit"><span class="l-en">ratio</span><span class="l-zh">比率</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher more reliable</span><span class="l-zh">Higher more reliable</span></p>
+      <p class="mq-metric-direction"><span class="l-en">Higher more reliable</span><span class="l-zh">数值越高＝越可靠</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><time>2026-09-30</time></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Leave one recession out</span><span class="l-zh">Leave one recession out</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Leave one recession out</span><span class="l-zh">留出一次衰退</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.measured.oos_catch_rate</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -2026,18 +2026,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Survey composite pmi</span><span class="l-zh">Survey composite pmi</span></span>
+        <span class="mq-metric-name"><span class="l-en">Survey composite pmi</span><span class="l-zh">调查综合 PMI</span></span>
         <span class="mq-chip mq-tone-bad"><span class="l-en">Rights blocked</span><span class="l-zh">授权受限</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Rights blocked</span><span class="l-zh">授权受限</span></span></span><span class="mq-metric-unit"><span class="l-en">Diffusion index 50 line</span><span class="l-zh">Diffusion index 50 line</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher expansion below50 contraction</span><span class="l-zh">Higher expansion below50 contraction</span></p>
+      <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Rights blocked</span><span class="l-zh">授权受限</span></span></span><span class="mq-metric-unit"><span class="l-en">Diffusion index 50 line</span><span class="l-zh">扩散指数50分界</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher expansion below50 contraction</span><span class="l-zh">高于50为扩张，低于50为收缩</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><span class="mq-dash">—</span></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Diffusion index</span><span class="l-zh">Diffusion index</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Diffusion index</span><span class="l-zh">扩散指数</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>NONE</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -2078,18 +2078,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">New orders demand</span><span class="l-zh">New orders demand</span></span>
+        <span class="mq-metric-name"><span class="l-en">New orders demand</span><span class="l-zh">新订单需求</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Computation refused</span><span class="l-zh">拒绝计算</span></span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">N/a</span></p>
+      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">不适用</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><span class="mq-dash">—</span></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Leg level not separable</span><span class="l-zh">Leg level not separable</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Leg level not separable</span><span class="l-zh">分项水平无法拆分</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>new_orders_demand</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -2130,18 +2130,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Production utilization</span><span class="l-zh">Production utilization</span></span>
+        <span class="mq-metric-name"><span class="l-en">Production utilization</span><span class="l-zh">产能利用率</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Computation refused</span><span class="l-zh">拒绝计算</span></span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">N/a</span></p>
+      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">不适用</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><span class="mq-dash">—</span></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Leg level not separable</span><span class="l-zh">Leg level not separable</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Leg level not separable</span><span class="l-zh">分项水平无法拆分</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>production_utilization</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -2182,18 +2182,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Inventory cycle phase</span><span class="l-zh">Inventory cycle phase</span></span>
+        <span class="mq-metric-name"><span class="l-en">Inventory cycle phase</span><span class="l-zh">库存周期阶段</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Computation refused</span><span class="l-zh">拒绝计算</span></span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">N/a</span></p>
+      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">不适用</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><span class="mq-dash">—</span></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Leg level not separable</span><span class="l-zh">Leg level not separable</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Leg level not separable</span><span class="l-zh">分项水平无法拆分</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>inventory_cycle_phase</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -2234,18 +2234,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Capex orders growth</span><span class="l-zh">Capex orders growth</span></span>
+        <span class="mq-metric-name"><span class="l-en">Capex orders growth</span><span class="l-zh">资本开支订单增长</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Computation refused</span><span class="l-zh">拒绝计算</span></span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">N/a</span></p>
+      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">不适用</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><span class="mq-dash">—</span></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Leg level not separable</span><span class="l-zh">Leg level not separable</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Leg level not separable</span><span class="l-zh">分项水平无法拆分</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>capex_orders_growth</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -2286,18 +2286,18 @@
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Shipments sales growth</span><span class="l-zh">Shipments sales growth</span></span>
+        <span class="mq-metric-name"><span class="l-en">Shipments sales growth</span><span class="l-zh">出货与销售增长</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Computation refused</span><span class="l-zh">拒绝计算</span></span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">N/a</span></p>
+      <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">不适用</span></p>
       <details class="mc-details">
         <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
         <div class="mc-details-body mq-metric-clocks">
         <dl class="mq-metric-meta">
           <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
                <dd><span class="mq-dash">—</span></dd></div>
-          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Leg level not separable</span><span class="l-zh">Leg level not separable</span></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Leg level not separable</span><span class="l-zh">分项水平无法拆分</span></dd></div>
           <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>shipments_sales_growth</code> · v1.0.0</dd></div>
         </dl>
         <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
@@ -2599,7 +2599,7 @@
         </div>
         <div class="mq-clock">
           <dt><span class="mq-clock-name"><span class="l-en">Page refreshed</span><span class="l-zh">页面更新于</span></span><span class="mq-clock-meaning"><span class="l-en">Static page render time. Not an economic clock.</span><span class="l-zh">静态页面渲染时间，并非经济时钟。</span></span></dt>
-          <dd><time>2026-09-08T19:47:57Z</time></dd>
+          <dd><time>2026-09-08T20:51:23Z</time></dd>
         </div>
       </dl>
     </section>

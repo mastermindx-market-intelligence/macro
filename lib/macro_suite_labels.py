@@ -25,6 +25,8 @@ import re
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
+from lib.macro_suite_zh_parity import apply_zh_parity
+
 # Tokens seen by this process that had no reviewed label. Tests assert this is
 # empty for the shipped artifact; the page renders a de-slugged fallback either
 # way, so a new owner token degrades honestly instead of blanking the cell.
@@ -35,7 +37,7 @@ TRUE_MINUS = "\u2212"
 
 
 def _pair(en: str, zh: str) -> dict[str, str]:
-    return {"en": en, "zh": zh}
+    return apply_zh_parity({"en": en, "zh": zh}) or {"en": en, "zh": zh}
 
 
 # Short figure-scale words for Overview / section movement rows (E-m10).
@@ -392,6 +394,8 @@ METRIC: dict[str, dict[str, str]] = {
     "glt_liquidity_breadth": _pair("Global liquidity breadth", "全球流动性广度"),
     "glt_usd_funding_impulse": _pair("Dollar-funding impulse", "美元融资脉冲"),
     "iorb": _pair("Interest on reserves", "准备金利息"),
+    "production_utilization": _pair("Production utilization", "产能利用率"),
+    "inventory_cycle_phase": _pair("Inventory cycle phase", "库存周期阶段"),
 }
 
 # F01 Macro Command P3 — reviewed panel copy. Keyed (section_id, state_key).
@@ -1211,10 +1215,10 @@ def label(vocabulary: str, token: Any) -> dict[str, str] | None:
         raise KeyError(f"unknown label vocabulary: {vocabulary!r}")
     found = table.get(str(token))
     if found is not None:
-        return dict(found)
+        return apply_zh_parity(dict(found))
     _UNKNOWN.add(f"{vocabulary}:{token}")
     readable = deslug(token)
-    return _pair(readable, readable)
+    return apply_zh_parity(_pair(readable, readable))
 
 
 def tone(vocabulary: str, token: Any, default: str = "neutral") -> str:
@@ -1541,11 +1545,11 @@ PLAIN_PRODUCER: tuple[tuple[str, dict[str, str]], ...] = (
     (
         "This workspace reads FRED Treasury-curve and policy-corridor parquets only",
         _pair(
-            "This page reads the Treasury curve and the policy corridor only. "
-            "The implied-path and yield-momentum views already live on Monetary "
-            "Policy, so they are not repeated here.",
-            "本页只读取国债曲线与政策走廊。隐含路径与收益率动能已在货币政策页"
-            "发布，此处不再重复。",
+            "Reads the policy-corridor series only. The implied-path and "
+            "yield-momentum views already live on Monetary Policy, so they "
+            "are not repeated here.",
+            "只读取政策走廊序列。隐含路径与收益率动能已在货币政策页发布，"
+            "此处不再重复。",
         ),
     ),
     (
@@ -1688,9 +1692,17 @@ PLAIN_PRODUCER: tuple[tuple[str, dict[str, str]], ...] = (
     (
         "{rate_side, balance_sheet}",
         _pair(
-            "The shared drivers block is closed to the two named groups. "
-            "Each driver's own label and note carries the reading.",
-            "共享驱动区块只开放两个已命名的组别。各驱动自己的标签与说明承载读数。",
+            "Shared drivers this week: the policy rate and the central-bank "
+            "balance sheet.",
+            "本周共享驱动：政策利率与央行资产负债表。",
+        ),
+    ),
+    (
+        "The shared drivers block is closed to exactly",
+        _pair(
+            "Shared drivers this week: the policy rate and the central-bank "
+            "balance sheet.",
+            "本周共享驱动：政策利率与央行资产负债表。",
         ),
     ),
     (
@@ -1850,15 +1862,15 @@ def apply_plain_pair(node: Mapping[str, str] | None) -> tuple[dict[str, str] | N
     rewrite = lookup_plain_producer(en) or lookup_plain_producer(zh)
     hits = bool(machine_text_hits(en) or machine_text_hits(zh))
     if rewrite is None and not hits:
-        return {"en": en, "zh": zh or en}, None
+        return apply_zh_parity({"en": en, "zh": zh or en}), None
     if rewrite is None:
         rewrite = dict(PLAIN_FALLBACK)
     if machine_text_hits(rewrite.get("en") or "") or machine_text_hits(rewrite.get("zh") or ""):
         rewrite = dict(PLAIN_FALLBACK)
-    rewrite = {
+    rewrite = apply_zh_parity({
         "en": format_user_facing_text(str(rewrite.get("en") or "")),
         "zh": format_user_facing_text(str(rewrite.get("zh") or "")),
-    }
+    })
     return rewrite, dict(node)
 
 
@@ -1874,12 +1886,12 @@ def apply_plain_label(node: Mapping[str, str] | None) -> tuple[dict[str, str] | 
     rewrite = PLAIN_LABEL.get(en) or lookup_plain_producer(en) or lookup_plain_producer(zh)
     hits = bool(machine_text_hits(en) or machine_text_hits(zh))
     if rewrite is None and not hits:
-        return dict(node), None
+        return apply_zh_parity(dict(node)), None
     if rewrite is None:
         rewrite = dict(PLAIN_FALLBACK)
     if machine_text_hits(rewrite.get("en") or "") or machine_text_hits(rewrite.get("zh") or ""):
         rewrite = dict(PLAIN_FALLBACK)
-    return dict(rewrite), dict(node)
+    return apply_zh_parity(dict(rewrite)), dict(node)
 
 
 _SKIP_SANITIZE_KEYS = frozenset({

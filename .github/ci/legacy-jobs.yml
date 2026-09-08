@@ -3454,6 +3454,7 @@ jobs:
       # macro-suite hook — see the contracts/market_os entry above.
       - "lib/macro_suite_labels.py"
       - "lib/macro_suite_view.py"
+      - "lib/macro_suite_zh_parity.py"
       - "lib/nyse_calendar.py"
       - "lib/options_context.py"
       - "lib/pages.py"
@@ -13814,6 +13815,7 @@ jobs:
       - "lib/config.py"
       - "lib/macro_suite_labels.py"
       - "lib/macro_suite_view.py"
+      - "lib/macro_suite_zh_parity.py"
       - "lib/pages.py"
       - "scripts/__init__.py"
       - "scripts/build_macro_suite_pages.py"

@@ -360,7 +360,9 @@ _B1_REWRITES = (
     ("macro_rates_curves.html",
      "This page does not publish a two-sided headline state"),
     ("macro_rates_curves.html",
-     "This page reads the Treasury curve and the policy corridor only."),
+     "Reads the policy-corridor series only."),
+    ("macro_financial_conditions.html",
+     "Shared drivers this week: the policy rate and the central-bank balance sheet."),
     ("macro_business_activity.html",
      "No two-sided business-activity state is published today"),
     ("macro_financial_conditions.html",
@@ -421,6 +423,33 @@ def test_machine_text_predicate_catches_slugs_tokens_and_iso() -> None:
     assert machine_text_hits("p = 0.04")
     assert machine_text_hits("label_en is a field")
     assert not machine_text_hits("Sticky prices are leading the mix.")
+
+
+def test_machine_copy_hits_catch_braces_snake_parquet_and_rule_ids() -> None:
+    """E-m1: painted locale spans may not leak slugs, parquets, or study ids."""
+    assert "braces" in guard.machine_copy_hits(
+        "closed to exactly {rate_side, balance_sheet} (R1A's")
+    assert "snake:rate_side" in guard.machine_copy_hits(
+        "closed to exactly {rate_side, balance_sheet} (R1A's")
+    assert "rule:R1A" in guard.machine_copy_hits(
+        "closed to exactly {rate_side, balance_sheet} (R1A's")
+    assert "parquet" in guard.machine_copy_hits(
+        "Reads the policy-corridor parquets only")
+    assert guard.machine_copy_hits(
+        "Shared drivers this week: the policy rate and the central-bank "
+        "balance sheet.") == []
+    assert guard.machine_copy_hits(
+        "Reads the policy-corridor series only.") == []
+
+
+def test_copy_guard_defaults_to_every_suite_page_and_hub() -> None:
+    """n1: no-arg invocation scans every suite page + both hubs."""
+    from scripts.build_macro_suite_pages import HUB_PAGE, SUITE_PAGES
+    from scripts.check_macro_command_copy import default_targets
+    names = {path.name for path in default_targets()}
+    expected = {HUB_PAGE.output} | {page.output for page in SUITE_PAGES}
+    assert names == expected
+    assert len(names) >= 15
 
 
 def test_production_key_space_has_no_machine_text_on_rendered_output(
@@ -1123,19 +1152,33 @@ def test_chip_material_keys_include_both_locales() -> None:
 def test_synthetic_clearance_can_fail() -> None:
     """e2: classifier reports HIT on unexposable cover and a bounded partial."""
     from scripts.capture_macro_command_p5 import (
-        classify_partial_cover, synthetic_clearance_receipts,
+        classify_partial_cover, classify_top_chrome_cover,
     )
-    row = synthetic_clearance_receipts()
-    full = row["full_cover_unexposable"]
+    full = classify_top_chrome_cover(
+        doc_top=10.0, ov_bottom=80.0, max_scroll_at_check=800.0)
     assert full["hit"] is True
     assert full["exposedAtScrollY"] < 0
-    partial = row["partial_bounded"]
+    partial = classify_partial_cover(
+        doc_top=200.0, ov_bottom=60.0, max_scroll_at_check=800.0)
     assert partial["hit"] is False
     assert 0 <= partial["exposedAtScrollY"] <= partial["maxScrollAtCheck"]
-    assert partial == classify_partial_cover(
-        doc_top=200.0, ov_bottom=60.0, max_scroll_at_check=800.0)
     assert "hit" in classify_partial_cover(
         doc_top=10.0, ov_bottom=80.0, max_scroll_at_check=800.0)
+
+
+def test_synthetic_clearance_receipts_never_emits_literal_classifier() -> None:
+    """m1: no code path may emit source != classifier-on-synthetic-dom."""
+    from scripts.capture_macro_command_p5 import synthetic_clearance_receipts
+    src = (ROOT / "scripts" / "capture_macro_command_p5.py").read_text(
+        encoding="utf-8")
+    assert '"source": "classifier"' not in src
+    assert "doc_top=200.0, ov_bottom=60.0, max_scroll_at_check=800.0" not in src
+    try:
+        synthetic_clearance_receipts()
+    except RuntimeError as exc:
+        assert "Playwright page" in str(exc)
+    else:
+        raise AssertionError("no-page path must raise")
 
 
 def test_p5_committed_crops_span_recomputed_from_crop_box_doc() -> None:
@@ -1278,10 +1321,16 @@ def test_p5_completeness_against_tree_not_manifest_self() -> None:
         assert row.get("openedBy") == "click"
         assert "openState" in row
         assert row["openState"].get("selector") == "#mmb-panel"
-        assert row["openState"].get("openClass") == "open"
         assert row.get("ok") is True
         assert row["openState"].get("visible") is True
         assert "visibleAfterMs" in row
+        # E-n1: top-level openClass is "open" iff #mmb-panel.open matched.
+        if row["openState"].get("open"):
+            assert row.get("openClass") == "open"
+            assert row["openState"].get("openClass") == "open"
+        else:
+            assert row.get("openClass") is None
+            assert row["openState"].get("openClass") is None
     for key, row in probes.items():
         if not key.startswith("e5_timeout_"):
             continue
@@ -1505,9 +1554,10 @@ def test_synthetic_partial_binds_from_dom() -> None:
         playwright_cm.stop()
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_user_facing_numbers_have_no_machine_floats() -> None:
     """E-m3: rendered suite HTML never ships ≥4 fractional digits or e±."""
-    from scripts.build_macro_suite_pages import HUB_PAGE, SUITE_PAGES
+    from scripts.build_macro_suite_pages import HUB_PAGE, SECTIONS, SUITE_PAGES
     from lib.macro_suite_labels import (
         format_user_facing_number, format_user_facing_text,
     )
@@ -1520,43 +1570,98 @@ def test_user_facing_numbers_have_no_machine_floats() -> None:
     assert "0.71" in rewritten
     assert "66.7%" in rewritten
     pages = [HUB_PAGE.output] + [page.output for page in SUITE_PAGES]
-    for name in pages:
-        path = ROOT / "site" / name
-        if not path.is_file():
-            pytest.skip(f"{name} is not in this checkout")
-        html = path.read_text(encoding="utf-8")
+    present = [name for name in pages if (ROOT / "site" / name).is_file()]
+    assert len(present) >= 14, present
+    hub = (ROOT / "site" / HUB_PAGE.output).read_text(encoding="utf-8")
+    found_sections = [sec.id for sec in SECTIONS if sec.id in hub]
+    assert len(found_sections) >= 12, found_sections
+    for name in present:
+        html = (ROOT / "site" / name).read_text(encoding="utf-8")
         assert guard.find_violations(html) == [], name
 
 
-def test_zh_component_chips_are_translated() -> None:
-    """E-m4: ZH chip labels are not ASCII-only except ratified tickers/units."""
-    from scripts.build_macro_suite_pages import HUB_PAGE, SUITE_PAGES
+@pytest.mark.needs_full_checkout("site")
+def test_zh_l_zh_spans_are_translated() -> None:
+    """M1: every .l-zh on suite pages + hubs is not ASCII-letters-only."""
+    from scripts.build_macro_suite_pages import HUB_PAGE, SECTIONS, SUITE_PAGES
     ratified = {
         "US", "EU", "JP", "CN", "GB", "USD", "FRED", "SOFR", "TIPS", "OECD",
         "NBER", "FOMC", "VIX", "CPI", "HICP", "BLS", "GDP", "NFCI", "OFR",
-        "bp", "pts", "%", "—",
+        "ECB", "BOJ", "TGA", "WEI", "PMI", "HPI", "EFFR", "OBFR", "IORB",
+        "SAAR", "NSA", "JOLTS", "NFP", "ADP", "PCE", "SEP",
+        "bp", "pts", "%", "—", "Vix",
     }
     _CJK = re.compile(r"[\u3000-\u303f\u3400-\u9fff\uf900-\ufaff\uff00-\uffef]")
     _LETTERS = re.compile(r"[A-Za-z]")
     pages = [HUB_PAGE.output] + [page.output for page in SUITE_PAGES]
-    assert len(pages) >= 14
-    for name in pages:
-        path = ROOT / "site" / name
-        if not path.is_file():
-            pytest.skip(f"{name} is not in this checkout")
-        html = path.read_text(encoding="utf-8")
-        chips = re.findall(
-            r'<(?:span|a|strong|li)\s+class="[^"]*'
-            r'(?:mq-chip|mc-chip-label|mq-suitenav-pill)[^"]*"'
-            r'[^>]*>(.*?)</(?:span|a|strong|li)>',
-            html, re.S)
-        assert chips, name
-        for chip in chips:
-            zh_spans = re.findall(r'<span class="l-zh">(.*?)</span>', chip, re.S)
-            for zh in zh_spans:
-                text = re.sub(r"<[^>]+>", "", zh).strip()
-                if not text or not _LETTERS.search(text):
-                    continue
-                if text in ratified:
-                    continue
-                assert _CJK.search(text), (name, text)
+    present = [name for name in pages if (ROOT / "site" / name).is_file()]
+    assert len(present) >= 14, present
+    hub = (ROOT / "site" / HUB_PAGE.output).read_text(encoding="utf-8")
+    found_sections = [sec.id for sec in SECTIONS if sec.id in hub]
+    assert len(found_sections) >= 12, found_sections
+    scanned = 0
+    ascii_hits = []
+    per_page: dict[str, int] = {}
+    for name in present:
+        html = (ROOT / "site" / name).read_text(encoding="utf-8")
+        zh_spans = re.findall(r'<span class="l-zh">(.*?)</span>', html, re.S)
+        per_page[name] = len(zh_spans)
+        scanned += len(zh_spans)
+        for zh in zh_spans:
+            text = re.sub(r"<[^>]+>", "", zh).strip()
+            if not text or not _LETTERS.search(text):
+                continue
+            if text in ratified:
+                continue
+            if not _CJK.search(text):
+                ascii_hits.append((name, text))
+    assert scanned > 0
+    assert ascii_hits == [], ascii_hits
+
+
+@pytest.mark.needs_full_checkout("site")
+def test_locale_spans_have_no_machine_text() -> None:
+    """E-m1: visible .l-en/.l-zh never carry braces, snake_case, parquet, R1A."""
+    from scripts.build_macro_suite_pages import HUB_PAGE, SECTIONS, SUITE_PAGES
+    pages = [HUB_PAGE.output] + [page.output for page in SUITE_PAGES]
+    present = [name for name in pages if (ROOT / "site" / name).is_file()]
+    assert len(present) >= 14, present
+    hub = (ROOT / "site" / HUB_PAGE.output).read_text(encoding="utf-8")
+    found_sections = [sec.id for sec in SECTIONS if sec.id in hub]
+    assert len(found_sections) >= 12, found_sections
+    dirty = []
+    for name in present:
+        html = (ROOT / "site" / name).read_text(encoding="utf-8")
+        for locale, text in guard.locale_span_texts(html):
+            hits = guard.machine_copy_hits(text)
+            if hits:
+                dirty.append(f"{name}:{locale}:{hits[:6]}:{text[:80]}")
+    assert dirty == [], dirty
+
+
+def test_chipmat_containment_from_manifest_alone() -> None:
+    """m2: 48/48 containment from manifest values, no probes, no offset."""
+    import json
+    from scripts.capture_macro_command_p5 import chipmat_containment_holds
+    manifest_path = ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json"
+    if not manifest_path.is_file():
+        pytest.skip("P5 evidence manifest is not in this checkout")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    contained = 0
+    for page in manifest.get("pages") or []:
+        for state in page.get("states") or []:
+            if not str(state.get("file") or "").startswith("chipmat-"):
+                continue
+            assert state.get("coordSpace") == "host-page", state.get("file")
+            assert isinstance(state.get("hostFrameOffset"), dict), state.get("file")
+            assert "x" in state["hostFrameOffset"] and "y" in state["hostFrameOffset"]
+            assert "host_scroll_y_at_shot" in state, state.get("file")
+            assert state.get("viewport_width") in (390, 768, 1440), state.get("file")
+            assert state.get("frameInnerWidth") in (390, 768, 1440), state.get("file")
+            assert state.get("crop_width") is not None, state.get("file")
+            assert state.get("analystBox"), state.get("file")
+            assert state.get("siblingPillBox"), state.get("file")
+            assert state.get("crop_box_doc"), state.get("file")
+            assert chipmat_containment_holds(state), state.get("file")
+            contained += 1
+    assert contained == 48
