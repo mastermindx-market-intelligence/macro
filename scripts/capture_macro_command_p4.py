@@ -24,9 +24,11 @@ if str(ROOT) not in sys.path:
 from scripts.capture_macro_command_p3 import (  # noqa: E402
     RAIL_VIEWPORT_JS,
     _assert_shot_geometry,
+    _confirm_rail_fade_visual,
     _device_px_span,
     _device_px_span_from_crop_box_doc,
     _run_clearance,
+    _run_synthetic_clearance,
     _write_element_shot,
 )
 
@@ -97,8 +99,131 @@ def _copy_chrome(out: Path) -> None:
     for name in ASSETS:
         tmpl = ROOT / "templates" / name
         src = tmpl if tmpl.exists() else SITE / name
-        if src.exists():
-            shutil.copy2(src, out / name)
+        if not src.exists():
+            raise RuntimeError(f"asset missing: {name}")
+        shutil.copy2(src, out / name)
+
+
+def hub_id_set() -> set[str]:
+    """Section + workspace ids the hub is built from. Never a literal list."""
+    from scripts import build_macro_suite_pages as builder
+    ids: set[str] = set()
+    for section in builder.SECTIONS:
+        ids.add(section.id)
+        if section.workspace_id:
+            ids.add(section.workspace_id)
+        for tab in section.subtabs or ():
+            if tab.workspace_id:
+                ids.add(tab.workspace_id)
+    return ids
+
+
+def section_from_clip_sel(clip_sel: str) -> str:
+    """Prefix-strip only. lstrip('section#') eats the 'c' in credit."""
+    text = str(clip_sel or "").strip()
+    for prefix in ("section.mc-panel#", "section#"):
+        if text.startswith(prefix):
+            return text.removeprefix(prefix).split()[0].split("/")[0]
+    raise RuntimeError(f"cannot derive section from clip selector {clip_sel!r}")
+
+
+def first_block_head(text: str, limit: int = 400) -> str:
+    """Headline + stance of the element's visible text, never mid-word."""
+    collapsed = " ".join((text or "").split())
+    if not collapsed:
+        return ""
+    parts = re.split(r"(?<=[.。！？!?])\s+", collapsed)
+    block = " ".join(parts[:2]) if parts else collapsed
+    if len(block) <= limit:
+        return block
+    cut = block[:limit]
+    if len(block) > limit and not block[limit].isspace():
+        space = cut.rfind(" ")
+        if space > 0:
+            cut = cut[:space]
+    return cut.rstrip()
+
+
+def enrich_element_text(extra: dict[str, Any], locator) -> None:
+    text = str(locator.inner_text() or "")
+    extra["element_text_head"] = first_block_head(text)
+    extra["element_text_sha256"] = hashlib.sha256(
+        text.encode("utf-8")).hexdigest()
+
+
+def evidence_tree_stems(evidence: Path = EVIDENCE) -> set[str]:
+    stems = {path.stem for path in evidence.glob("*.png")}
+    blast = evidence / "blast-radius"
+    if blast.is_dir():
+        stems.update(f"blast-radius/{path.stem}" for path in blast.glob("*.png"))
+    return stems
+
+
+def png_declared_cells(declared: list[str],
+                       probe_stems: list[str] | set[str]) -> set[str]:
+    return set(declared) - set(probe_stems)
+
+
+def assert_tree_matches_declared(
+        evidence: Path, declared: list[str],
+        probe_stems: list[str] | set[str]) -> None:
+    """Both directions over the evidence directory, not captured_cells."""
+    want = png_declared_cells(declared, probe_stems)
+    have = evidence_tree_stems(evidence)
+    missing = sorted(want - have)
+    extra = sorted(have - want)
+    if missing or extra:
+        raise RuntimeError(
+            f"evidence tree mismatch declared-on-disk={missing} "
+            f"on-disk-declared={extra}")
+
+
+def assert_sha256_collisions_only_e5(states: list[dict[str, Any]]) -> None:
+    """Non-E5 sha256 collisions raise. E5 groups need one box + per-section selector."""
+    by_sha: dict[str, list[dict[str, Any]]] = {}
+    for state in states:
+        digest = state.get("sha256")
+        if not state.get("captured") or not digest:
+            continue
+        by_sha.setdefault(str(digest), []).append(state)
+    for digest, group in by_sha.items():
+        if len(group) < 2:
+            continue
+        e5_ok = all(
+            str(row.get("file") or "").startswith("empty-e5-")
+            or row.get("force_state") == "e5"
+            for row in group)
+        # Same-box clusters must share one crop_box_doc; 390 can place the
+        # same painted card at more than one Y, so the hash group may
+        # contain several boxes. Each box-cluster still needs a distinct
+        # crop_selector per section.
+        by_box: dict[str, list[dict[str, Any]]] = {}
+        for row in group:
+            key = json.dumps(row.get("crop_box_doc"), sort_keys=True, default=str)
+            by_box.setdefault(key, []).append(row)
+        selectors_by_section: dict[str, set[str]] = {}
+        for row in group:
+            selectors_by_section.setdefault(
+                str(row.get("section") or ""), set()
+            ).add(str(row.get("crop_selector") or ""))
+        one_selector_per_section = all(
+            len(sels) == 1 for sels in selectors_by_section.values())
+        distinct_across_sections = (
+            len({next(iter(sels)) for sels in selectors_by_section.values()})
+            == len(selectors_by_section)
+        )
+        box_clusters_ok = all(
+            len({
+                json.dumps(row.get("crop_box_doc"), sort_keys=True, default=str)
+                for row in cluster
+            }) == 1
+            for cluster in by_box.values()
+        )
+        if not (e5_ok and box_clusters_ok and one_selector_per_section
+                and distinct_across_sections):
+            raise RuntimeError(
+                "sha256 collision not in ruled E5 group "
+                f"{digest}: {[row.get('file') for row in group]}")
 
 
 def _remanifest(data_root: Path, workspace_id: str, mutate) -> None:
@@ -295,6 +420,7 @@ def _capture_clip(*, browser, url: str, hash_path: str, theme: str, locale: str,
         extra["full_page"] = False
         extra["crop_selector"] = sel
         _write_element_shot(page, dest, target, extra, locale)
+        enrich_element_text(extra, target)
         clip = extra["crop_box"]
         box = extra.get("crop_box") or box
     _assert_shot_geometry(dest, extra, width, height)
@@ -345,6 +471,7 @@ def _capture_clip(*, browser, url: str, hash_path: str, theme: str, locale: str,
         "crop_box_doc": extra.get("crop_box_doc"),
         "scroll_y_at_shot": extra.get("scroll_y_at_shot"),
         "element_text_head": extra.get("element_text_head"),
+        "element_text_sha256": extra.get("element_text_sha256"),
         "device_px_span": extra.get("device_px_span"),
         "ihdr_delta_px": extra.get("ihdr_delta_px"),
     }
@@ -369,6 +496,9 @@ def _state_row(filename: str, theme: str, locale: str, viewport: str,
         raise ValueError(
             f"{filename}: fixture must be a path or the literal "
             f"'builder-payload'")
+    if section is not None and section not in hub_id_set():
+        raise RuntimeError(
+            f"{filename}: section {section!r} not in hub id set")
     vw, vh = _viewport_dims(viewport)
     row = {
         "access": "anonymous",
@@ -402,11 +532,17 @@ def _state_row(filename: str, theme: str, locale: str, viewport: str,
         row["selector"] = selector
         row["crop_selector"] = selector if crop else None
     if crop:
+        # NIT-1: forward the producer's extra whole, not a key list.
+        row = {**info, **row}
         row["crop_box"] = info.get("crop_box") or info.get("clip")
-        for key in ("crop_box_doc", "scroll_y_at_shot",
-                    "element_text_head", "device_px_span", "ihdr_delta_px"):
-            if key in info:
-                row[key] = info[key]
+        row.update({
+            key: info[key] for key in info
+            if key not in {
+                "file", "theme", "locale", "viewport", "section",
+                "fixture", "trigger", "verified_how", "access",
+                "force_state", "captured",
+            }
+        })
     else:
         row["crop_selector"] = None
         row["crop_box"] = None
@@ -418,6 +554,30 @@ SECTIONS = ("growth", "jobs", "housing", "consumer", "credit", "debt", "trade")
 THEMES = ("dark", "light")
 LOCALES = ("en", "zh")
 EMPTY_IDS = ("e1", "e2", "e3", "e4", "e6")
+# Fixture empties are one section each (MINOR-E3 ratified). E5 is per-section.
+EMPTY_FIXTURE_SECTION = {
+    "e1": "housing",
+    "e2": "housing",
+    "e3": "housing",
+    "e4": "credit",
+    "e6": "credit",
+}
+
+
+def expected_p4_section_family_counts(section: str) -> dict[str, int]:
+    """Per-family PNG counts for one of the seven P4 sections."""
+    fixture = 8 * sum(
+        1 for empty_id, mapped in EMPTY_FIXTURE_SECTION.items()
+        if mapped == section)
+    state_keys = sum(1 for key in STATE_KEYS if key.startswith(section + "-"))
+    return {
+        "sections": 16,
+        "empty_e5": 8,
+        "empty_fixture": fixture,
+        "states": state_keys * 4,
+    }
+
+
 STATE_KEYS = (
     "growth-business", "credit-funding", "growth-foot", "consumer-foot",
 )
@@ -799,6 +959,7 @@ def _capture_metric_table(*, browser, origin: str, page_name: str,
         "crop_selector": selector, "fixture": "builder-payload",
     }
     _write_element_shot(page, dest, table, extra, locale)
+    enrich_element_text(extra, table)
     clip = extra["crop_box"]
     box = extra.get("crop_box") or {}
     _assert_shot_geometry(dest, extra, 1440, 900)
@@ -832,6 +993,7 @@ def _capture_metric_table(*, browser, origin: str, page_name: str,
         "crop_box_doc": extra.get("crop_box_doc"),
         "scroll_y_at_shot": extra.get("scroll_y_at_shot"),
         "element_text_head": extra.get("element_text_head"),
+        "element_text_sha256": extra.get("element_text_sha256"),
         "device_px_span": extra.get("device_px_span"),
         "ihdr_delta_px": extra.get("ihdr_delta_px"),
     }
@@ -863,6 +1025,7 @@ def _capture_hub_e5_cell(*, browser, origin: str, section: str,
         def _stall(route) -> None:
             if "requestSeenAt" not in seen:
                 seen["requestSeenAt"] = time.monotonic()
+                seen["requestUrl"] = route.request.url
             held.append(route)
 
         page.route("**/macro/fragments/**", _stall)
@@ -928,6 +1091,13 @@ def _capture_hub_e5_cell(*, browser, origin: str, section: str,
         if not receipt.get("clonePresent"):
             raise RuntimeError(
                 f"E5 clone missing {section}/{theme}/{locale}/{vw}: {receipt}")
+        request_url = str(seen.get("requestUrl") or "")
+        fragment_target = str(receipt.get("fragmentTarget") or "")
+        if fragment_target and not request_url.endswith(fragment_target):
+            raise RuntimeError(
+                f"E5 requestUrl {request_url!r} does not match "
+                f"fragmentTarget {fragment_target!r} "
+                f"{section}/{theme}/{locale}/{vw}")
         extra = {
             "dpr": float(page.evaluate("window.devicePixelRatio")),
             "force_state": "e5",
@@ -942,6 +1112,7 @@ def _capture_hub_e5_cell(*, browser, origin: str, section: str,
         }
         target = page.locator(clone_sel).first
         _write_element_shot(page, dest, target, extra, locale)
+        enrich_element_text(extra, target)
         _assert_shot_geometry(dest, extra, vw, vh)
         png = dest.read_bytes()
         if png[:8] != b"\x89PNG\r\n\x1a\n" or b"IEND" not in png:
@@ -973,12 +1144,14 @@ def _capture_hub_e5_cell(*, browser, origin: str, section: str,
             "crop_box_doc": extra.get("crop_box_doc"),
             "scroll_y_at_shot": extra.get("scroll_y_at_shot"),
             "element_text_head": extra.get("element_text_head"),
+            "element_text_sha256": extra.get("element_text_sha256"),
             "device_px_span": extra.get("device_px_span"),
             "ihdr_delta_px": extra.get("ihdr_delta_px"),
         }
         probe = {
             "elapsedMs": elapsed_ms,
             "requestSeenAtMs": request_seen_at_ms,
+            "requestUrl": request_url,
             "cloneSeenAtMs": clone_seen_at_ms,
             "templatePresent": receipt.get("templatePresent"),
             "clonePresent": receipt.get("clonePresent"),
@@ -1352,7 +1525,7 @@ def main() -> int:
                             states.append(_state_row(
                                 name, theme, locale, viewport, info,
                                 fixture=fixture, trigger=trigger,
-                                section=clip_sel.lstrip("section#").split()[0],
+                                section=section_from_clip_sel(clip_sel),
                                 crop=not first_screen,
                                 selector=clip_sel,
                                 force_state=empty_id,
@@ -1449,6 +1622,7 @@ def main() -> int:
                             raise RuntimeError(
                                 f"rail viewport {width} {theme}/{locale}: "
                                 f"{viewport}")
+                        viewport.update(_confirm_rail_fade_visual(page, viewport))
                         viewport["maskImageRaw"] = viewport.get("maskRaw")
                         if viewport.get("fadeWidth") is None:
                             ctx.close()
@@ -1511,6 +1685,14 @@ def main() -> int:
                     ctx.close()
                     print(f"  {stem} {fab}", flush=True)
 
+            synth_page = browser.new_page(viewport={"width": 1440, "height": 900})
+            try:
+                probes["synthetic_clearance"] = _run_synthetic_clearance(
+                    synth_page)
+            finally:
+                synth_page.close()
+            print("  synthetic_clearance ok", flush=True)
+
             browser.close()
 
         from scripts import check_macro_command_copy as guard
@@ -1535,6 +1717,8 @@ def main() -> int:
         if extras:
             raise RuntimeError(
                 "captured stems not in declared matrix: " + "; ".join(extras))
+        assert_tree_matches_declared(EVIDENCE, declared, probe_stems)
+        assert_sha256_collisions_only_e5(states)
         excluded = generate_excluded(gaps)
 
         head_end = _assert_head_unmoved(head)

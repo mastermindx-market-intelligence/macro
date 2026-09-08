@@ -1150,6 +1150,8 @@ def test_p3_clearance_and_rail_import_contract() -> None:
 
     assert capture.RAIL_VIEWPORT_JS is p3.RAIL_VIEWPORT_JS
     assert capture._run_clearance is p3._run_clearance
+    assert capture._run_synthetic_clearance is p3._run_synthetic_clearance
+    assert capture._confirm_rail_fade_visual is p3._confirm_rail_fade_visual
     assert capture._device_px_span is p3._device_px_span
     assert capture._write_element_shot is p3._write_element_shot
     assert capture._assert_shot_geometry is p3._assert_shot_geometry
@@ -1319,3 +1321,361 @@ def test_committed_crops_span_recomputed_from_crop_box_doc() -> None:
             "h": abs(int(state["height"]) - exp_h),
         }
         assert delta["w"] <= 1 and delta["h"] <= 1, (state.get("file"), delta)
+
+
+def _crop_info(**extra):
+    info = {
+        "applied_locale": "en",
+        "applied_theme": "dark",
+        "bytes": 10,
+        "png_height": 10,
+        "png_width": 10,
+        "sha256": "a" * 64,
+        "css_width": 10,
+        "css_height": 10,
+        "clip": {"x": 0, "y": 0, "width": 10, "height": 10},
+        "dpr": 2,
+        "crop_box": {"x": 0, "y": 0, "width": 10, "height": 10},
+        "crop_box_doc": {"x": 0, "y": 0, "width": 10, "height": 10},
+        "scroll_y_at_shot": 0,
+        "element_text_head": "Included in a higher plan. The reading is available on upgrade.",
+        "element_text_sha256": "b" * 64,
+        "device_px_span": {"x0": 0, "x1": 10, "y0": 0, "y1": 10},
+        "ihdr_delta_px": {"w": 0, "h": 0},
+    }
+    info.update(extra)
+    return info
+
+
+def test_section_from_clip_sel_does_not_eat_credit_c() -> None:
+    """MAJOR-E1: prefix-strip, never lstrip character class."""
+    from scripts import capture_macro_command_p4 as capture
+
+    assert capture.section_from_clip_sel("section#credit") == "credit"
+    assert capture.section_from_clip_sel("section.mc-panel#credit") == "credit"
+    assert capture.section_from_clip_sel("section#housing") == "housing"
+    with pytest.raises(RuntimeError, match="cannot derive section"):
+        capture.section_from_clip_sel("[data-mc-empty='e4']")
+
+
+def test_state_row_raises_on_section_outside_hub_ids() -> None:
+    """MAJOR-E1: writer raises when section is not in the hub id set."""
+    from scripts import capture_macro_command_p4 as capture
+
+    with pytest.raises(RuntimeError, match="not in hub id set"):
+        capture._state_row(
+            "empty-e6-light-zh-1440.png", "light", "zh", "desktop",
+            _crop_info(), fixture="builder-payload", verified_how="test",
+            section="redit", crop=True)
+
+
+def test_manifest_section_census_uses_hub_id_set() -> None:
+    """MAJOR-E1: every committed section ∈ hub ids; seven P4 family counts."""
+    from collections import Counter
+
+    from scripts import capture_macro_command_p4 as capture
+
+    allowed = capture.hub_id_set()
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p4" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    states = manifest["pages"][0]["states"]
+    census = Counter(row.get("section") for row in states if row.get("section"))
+    for section in census:
+        assert section in allowed, (section, census[section])
+    for section in capture.SECTIONS:
+        families = capture.expected_p4_section_family_counts(section)
+        rows = [row for row in states if row.get("section") == section]
+        section_files = [
+            row for row in rows
+            if re.match(rf"(comp|tab|mob)-{section}-", str(row.get("file") or ""))
+        ]
+        e5_files = [
+            row for row in rows
+            if str(row.get("file") or "").startswith(f"empty-e5-{section}-")
+        ]
+        fixture_files = [
+            row for row in rows
+            if re.match(r"empty-e[1-46]-", str(row.get("file") or ""))
+        ]
+        state_files = [
+            row for row in rows
+            if str(row.get("file") or "").startswith("state-")
+        ]
+        assert len(section_files) == families["sections"], (section, families)
+        assert len(e5_files) == families["empty_e5"], (section, families)
+        assert len(fixture_files) == families["empty_fixture"], (section, families)
+        assert len(state_files) == families["states"], (section, families)
+
+
+def test_synthetic_clearance_receipt_asserts_hit() -> None:
+    """MAJOR-E2: python synthetic_hit_rule receipt from the committed probes."""
+    probes = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p4" / "probes.json")
+        .read_text(encoding="utf-8"))
+    row = probes["synthetic_clearance"]
+    receipts = row.get("synthetic_hit_rule") or {}
+    assert set(receipts) >= {"inside zone", "below zone", "under pill"}
+    for station in ("0", "50", "max"):
+        inside = receipts["inside zone"][station]
+        assert inside["verdict"] == "hit", station
+        assert inside["reason"] == "sticky-rail-full-cover-unexposable"
+        assert float(inside["exposedAtScrollY"]) < 0
+    excused = [
+        item for item in receipts["below zone"].values()
+        if item.get("verdict") == "excused"
+    ]
+    assert excused and excused[0].get("exposedAtScrollY") is not None
+    assert any(
+        item.get("verdict") == "hit" for item in receipts["under pill"].values())
+
+
+def test_synthetic_clearance_runs_shipped_js_in_playwright() -> None:
+    """MAJOR-E2: SHIPPED CLEARANCE_AT_JS against the synthetic DOM."""
+    from scripts import capture_macro_command_p4 as capture
+
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        pytest.skip("Playwright not installed")
+    try:
+        playwright_cm = sync_playwright().start()
+    except Exception as exc:
+        pytest.skip(f"Playwright runtime unavailable: {exc}")
+    try:
+        try:
+            browser = playwright_cm.chromium.launch(headless=True, channel="chrome")
+        except Exception:
+            try:
+                browser = playwright_cm.chromium.launch(headless=True)
+            except Exception as exc:
+                pytest.skip(f"Chromium unavailable: {exc}")
+        try:
+            page = browser.new_page(viewport={"width": 1440, "height": 900})
+            row = capture._run_synthetic_clearance(page)
+        finally:
+            browser.close()
+    finally:
+        playwright_cm.stop()
+    receipts = row["synthetic_hit_rule"]
+    for station in ("0", "50", "max"):
+        assert receipts["inside zone"][station]["verdict"] == "hit", station
+        assert receipts["inside zone"][station]["reason"] == (
+            "sticky-rail-full-cover-unexposable")
+        assert float(receipts["inside zone"][station]["exposedAtScrollY"]) < 0
+    excused = [
+        item for item in receipts["below zone"].values()
+        if item.get("verdict") == "excused"
+    ]
+    assert excused and excused[0].get("exposedAtScrollY") is not None
+
+
+def test_rail_viewport_records_full_fade_receipt() -> None:
+    """MINOR-E1: fade fields present; |fadeOnsetX − fadeLeft| ≤ 4 when applicable."""
+    probes = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p4" / "probes.json")
+        .read_text(encoding="utf-8"))
+    for theme in ("dark", "light"):
+        for locale in ("en", "zh"):
+            for width in (390, 768):
+                key = f"rail_viewport-{theme}-{locale}-{width}"
+                row = probes[key]
+                assert "fadeOnsetX" in row, key
+                assert "fadeHalfDelta" in row or row.get("fadeVisualApplicable") is False, key
+                assert "fadeVisualApplicable" in row, key
+                assert row.get("maskRaw"), key
+                assert row.get("chips"), key
+                for chip in row["chips"]:
+                    assert chip.get("fullyVisibleAtScrollLeft") is not None, (key, chip)
+                if row.get("fadeVisualApplicable"):
+                    assert row.get("fadeOnsetX") is not None, key
+                    assert abs(float(row["fadeOnsetX"]) - float(row["fadeLeft"])) <= 4, key
+                    assert row.get("fadeHalfDelta") is not None, key
+                else:
+                    assert row.get("fadeVisualReason"), key
+
+
+def test_element_text_head_is_first_block_not_mid_word() -> None:
+    """MINOR-E2: heads are first-block, ≤400, never mid-word; sha256 present."""
+    from scripts import capture_macro_command_p4 as capture
+
+    mid = "You opened Macro Command at Borrowing costs. Read today's overview"
+    assert capture.first_block_head(mid + " extra words " * 40, 80).endswith(
+        ("overview", "costs.", "overview."))
+    assert not capture.first_block_head(
+        "Borrowing costs. Read today's overview extra", 20
+    ).endswith("Borrow")
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p4" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    for state in manifest["pages"][0]["states"]:
+        if not state.get("crop"):
+            continue
+        head = state.get("element_text_head") or ""
+        assert head, state.get("file")
+        assert len(head) <= 400, (state.get("file"), len(head))
+        assert state.get("element_text_sha256"), state.get("file")
+        if head and not head[-1].isspace():
+            # never mid-word: last char is punctuation or the block ended cleanly
+            assert head[-1].isalnum() or head[-1] in ".。！？!?→", (
+                state.get("file"), head[-20:])
+
+
+def test_rendered_sections_have_no_repeated_visible_sentence() -> None:
+    """MINOR-E2: repeated-sentence check on the rendered hub, not the head."""
+    from html.parser import HTMLParser
+
+    html = (ROOT / "site" / "macro_monetary.html").read_text(encoding="utf-8")
+
+    class _Visible(HTMLParser):
+        def __init__(self, lang: str) -> None:
+            super().__init__()
+            self.lang = lang
+            self._skip = 0
+            self.texts: list[str] = []
+
+        def handle_starttag(self, tag, attrs):
+            cls = dict(attrs).get("class", "")
+            if self.lang == "en" and "l-zh" in cls.split():
+                self._skip += 1
+            elif self.lang == "zh" and "l-en" in cls.split():
+                self._skip += 1
+            elif self._skip:
+                self._skip += 1
+
+        def handle_endtag(self, tag):
+            if self._skip:
+                self._skip -= 1
+
+        def handle_data(self, data):
+            if self._skip:
+                return
+            text = " ".join(data.split())
+            if text:
+                self.texts.append(text)
+
+    for section in P4_IDS:
+        match = re.search(
+            r'<section class="mc-panel" id="' + section + r'".*?(?=<section class="mc-panel"|</main>)',
+            html, re.S)
+        assert match, section
+        for lang in ("en", "zh"):
+            parser = _Visible(lang)
+            parser.feed(match.group(0))
+            blob = " ".join(parser.texts)
+            sentences = [
+                part.strip() for part in re.split(r"(?<=[.。！？!?])\s+", blob)
+                if part.strip()
+            ]
+            assert sentences, (section, lang)
+            assert len(sentences) == len(set(sentences)), (section, lang, sentences)
+
+
+def test_seven_p4_sections_share_e1_e4_e6_vocabulary() -> None:
+    """MINOR-E3: identical E1–E4/E6 vocabulary; {plan} filled per section."""
+    from jinja2 import Environment, FileSystemLoader, StrictUndefined
+
+    env = Environment(
+        loader=FileSystemLoader(str(ROOT / "templates")),
+        autoescape=True,
+        undefined=StrictUndefined,
+    )
+    tmpl = env.from_string(
+        '{% import "_macro_command_figures.html.j2" as fig %}{{ fig.empty(state) }}'
+    )
+    for section in builder.SECTIONS:
+        if section.id not in P4_IDS:
+            continue
+        for empty_id in ("e1", "e2", "e3", "e4", "e6"):
+            kwargs: dict = {}
+            if empty_id == "e6":
+                kwargs["plan"] = section.label_en
+            state = builder._empty_state(empty_id, **kwargs)
+            html = unescape(tmpl.render(state=state))
+            spec = L.EMPTY_STATES[empty_id]
+            assert spec["title"]["en"] in html, (section.id, empty_id)
+            assert spec["title"]["zh"] in html, (section.id, empty_id)
+            if empty_id == "e6":
+                assert spec["why"]["en"].format(plan=section.label_en) in html
+                assert spec["why"]["zh"].format(plan=section.label_en) in html
+                assert spec["cta_label"]["zh"] == "查看升级方案"
+                assert spec["cta_label"]["zh"] in html
+            if empty_id == "e2":
+                assert spec["title"]["en"] == "No reading arrived today."
+                assert spec["title"]["zh"] == "今天没有新的读数。"
+
+
+def test_tree_completeness_fails_when_committed_frame_missing(tmp_path: Path) -> None:
+    """CODE MINOR-1: delete one committed frame in a temp copy → check fails."""
+    from scripts import capture_macro_command_p4 as capture
+
+    src = ROOT / "mockups" / "evidence" / "macro-command-p4"
+    dest = tmp_path / "macro-command-p4"
+    shutil.copytree(src, dest, ignore=shutil.ignore_patterns("fixtures"))
+    manifest = json.loads((src / "manifest.json").read_text(encoding="utf-8"))
+    declared = capture.flatten_declared(manifest["declared"])
+    probe_stems = manifest.get("probe_stems") or []
+    capture.assert_tree_matches_declared(dest, declared, probe_stems)
+    victim = dest / "comp-growth-dark-en-1440.png"
+    assert victim.is_file()
+    victim.unlink()
+    with pytest.raises(RuntimeError, match="declared-on-disk"):
+        capture.assert_tree_matches_declared(dest, declared, probe_stems)
+
+
+def test_copy_chrome_raises_on_stale_asset_name(tmp_path: Path, monkeypatch) -> None:
+    """CODE MINOR-2: a stale name in ASSETS raises, naming the asset."""
+    from scripts import capture_macro_command_p4 as capture
+
+    monkeypatch.setattr(
+        capture, "ASSETS", capture.ASSETS + ("not-a-real-p4-asset.css",))
+    with pytest.raises(RuntimeError, match="asset missing: not-a-real-p4-asset.css"):
+        capture._copy_chrome(tmp_path)
+
+
+def test_sha256_collisions_only_in_ruled_e5_groups() -> None:
+    """CODE MINOR-3: non-E5 collisions raise; ruled E5 groups are allowed."""
+    from scripts import capture_macro_command_p4 as capture
+
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p4" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    states = manifest["pages"][0]["states"]
+    capture.assert_sha256_collisions_only_e5(states)
+    clone = copy.deepcopy(states)
+    donor = next(row for row in clone if row.get("file") == "empty-e6-dark-en-1440.png")
+    victim = next(row for row in clone if row.get("file") == "empty-e6-light-en-1440.png")
+    victim["sha256"] = donor["sha256"]
+    with pytest.raises(RuntimeError, match="not in ruled E5 group"):
+        capture.assert_sha256_collisions_only_e5(clone)
+
+
+def test_state_row_forwards_producer_extra_keys() -> None:
+    """NIT-1: written row keys ⊇ producer extra keys."""
+    import inspect
+
+    from scripts import capture_macro_command_p3 as p3
+    from scripts import capture_macro_command_p4 as capture
+
+    producer_keys = set(re.findall(
+        r'extra\["(\w+)"\]\s*=', inspect.getsource(p3._write_element_shot)))
+    producer_keys.add("element_text_sha256")
+    info = _crop_info(**{key: f"fwd-{key}" for key in producer_keys})
+    row = capture._state_row(
+        "state-growth-foot-dark-en-1440.png", "dark", "en", "desktop", info,
+        fixture="builder-payload", verified_how="test",
+        section="growth", crop=True)
+    assert producer_keys <= set(row)
+
+
+def test_e5_request_url_matches_fragment_target() -> None:
+    """NIT-2: stalled requestUrl matches the section fragmentTarget."""
+    probes = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p4" / "probes.json")
+        .read_text(encoding="utf-8"))
+    for key, row in probes.items():
+        if not str(key).startswith("e5_timeout_"):
+            continue
+        assert row.get("requestUrl"), key
+        assert row["requestUrl"].endswith(row["fragmentTarget"]), key
+        assert abs(row["elapsedMs"] - (row["cloneSeenAtMs"] - row["requestSeenAtMs"])) < 1e-6
