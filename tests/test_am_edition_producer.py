@@ -8,11 +8,12 @@ marker.
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
 
+from lib import nyse_calendar
 from scripts.build_am_edition import (
     STATES,
     CLASSIFICATIONS,
@@ -434,7 +435,8 @@ def test_stale_quote_baseline_is_not_labelled_yesterdays_close(tmp_path):
     now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
     site, data = _fresh_tree(tmp_path, tape_asof="2026-07-27T22:32:09.883727Z", session_date="2026-09-08")
     payload = build_payload(site, data, now=now)
-    assert payload["prior_close_date"] == "2026-09-07"
+    # 2026-09-07 is Labor Day; the weekday-only walk used to name the holiday.
+    assert payload["prior_close_date"] == "2026-09-04"
     tape = next(b for b in payload["blocks"] if b["key"] == "tape_since_prior_close")
     row = tape["rows"][0]
     assert row["change_pct"] is None
@@ -451,7 +453,7 @@ def test_same_session_quote_keeps_change_pct_against_prior_close(tmp_path):
     site, data = _fresh_tree(tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08")
     payload = build_payload(site, data, now=now)
     tape = next(b for b in payload["blocks"] if b["key"] == "tape_since_prior_close")
-    assert payload["prior_close_date"] == "2026-09-07"
+    assert payload["prior_close_date"] == "2026-09-04"
     assert tape["rows"][0]["change_pct"] == 0.14
     assert "Compared with the close of" not in (tape["state_reason_en"] or "")
 
@@ -507,3 +509,44 @@ def test_not_yet_open_counts_toward_null_count(tmp_path):
     clock = next(b for b in payload["blocks"] if b["key"] == "session_clock")
     assert clock["state"] == "NOT_YET_OPEN"
     assert payload["null_count"] >= 1
+
+
+def test_nyse_holiday_session_is_closed_with_prior_session_close(tmp_path):
+    # 2026-07-03 is the observed Independence Day (Friday; July 4 is Saturday).
+    holiday = date(2026, 7, 3)
+    assert not nyse_calendar.is_session(holiday)
+    prior_session = nyse_calendar.last_session_on_or_before(holiday - timedelta(days=1))
+    assert prior_session == date(2026, 7, 2)
+    # Midday ET on the holiday (11:00 ET = 15:00 UTC, DST) — the old weekday
+    # wall-clock would have published OPEN / CURRENT here.
+    now = datetime(2026, 7, 3, 15, 0, tzinfo=timezone.utc)
+    assert _session_phase(now) == "holiday"
+    site, data = _fresh_tree(tmp_path, tape_asof="2026-07-02T20:00:00Z", session_date="2026-07-03")
+    payload = build_payload(site, data, now=now)
+    assert payload["session_state"] == "CLOSED"
+    assert payload["prior_close_date"] == "2026-07-02"
+    clock = next(b for b in payload["blocks"] if b["key"] == "session_clock")
+    assert clock["state"] == "CLOSED"
+    assert clock["state_reason_en"] == "Market holiday"
+    assert clock["state_reason_zh"] == "休市日"
+    # The weekday-only walk-back would name Friday 2026-07-03 (the holiday)
+    # as prior_close_date on the following Monday.
+    monday_after = datetime(2026, 7, 6, 15, 0, tzinfo=timezone.utc)
+    site2, data2 = _fresh_tree(tmp_path / "mon", tape_asof="2026-07-02T20:00:00Z", session_date="2026-07-06")
+    payload2 = build_payload(site2, data2, now=monday_after)
+    assert payload2["prior_close_date"] == "2026-07-02"
+
+
+def test_weekday_session_clock_unchanged_on_a_normal_session_day(tmp_path):
+    # Wednesday 2026-09-16 11:00 ET (15:00 UTC) — a regular session with no
+    # adjacent holiday, so prior_close_date is the previous weekday.
+    now = datetime(2026, 9, 16, 15, 0, tzinfo=timezone.utc)
+    assert nyse_calendar.is_session(date(2026, 9, 16))
+    assert _session_phase(now) == "open"
+    site, data = _fresh_tree(tmp_path, tape_asof="2026-09-16T13:00:00Z", session_date="2026-09-16")
+    payload = build_payload(site, data, now=now)
+    assert payload["session_state"] == "OPEN"
+    assert payload["prior_close_date"] == "2026-09-15"
+    clock = next(b for b in payload["blocks"] if b["key"] == "session_clock")
+    assert clock["state"] == "CURRENT"
+    assert clock["state_reason_en"] is None

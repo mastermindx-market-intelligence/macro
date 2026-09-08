@@ -28,7 +28,7 @@ from zoneinfo import ZoneInfo
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from lib import config  # noqa: E402
+from lib import config, nyse_calendar  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_am_edition")
@@ -56,7 +56,8 @@ _TAPE_SYMBOLS = (
     ("^RUT", "Russell 2000", "罗素2000指数"),
 )
 
-# US regular session: 09:30–16:00 America/New_York on a weekday (DST-aware).
+# US regular session: 09:30–16:00 America/New_York on an NYSE session day
+# (DST-aware). Session days come from lib.nyse_calendar, not weekday().
 _US_OPEN_HOUR_LOCAL = 9
 _US_OPEN_MINUTE_LOCAL = 30
 _US_CLOSE_HOUR_LOCAL = 16
@@ -289,11 +290,16 @@ def _block(
 
 
 def _session_phase(now: datetime) -> str:
-    """weekend | preopen | open | closed. Exchange holiday calendar is not
-    modelled here -> weekday-only gate."""
+    """weekend | holiday | preopen | open | closed.
+
+    Session days come from lib.nyse_calendar.is_session (weekends and
+    full-day NYSE holidays). The 09:30–16:00 ET clock applies only on a
+    session day. HK is out of scope — this producer is US-only.
+    """
     local = now.astimezone(_NY_TZ)
-    if local.weekday() >= 5:
-        return "weekend"
+    today = local.date()
+    if not nyse_calendar.is_session(today):
+        return "weekend" if today.weekday() >= 5 else "holiday"
     open_local = local.replace(
         hour=_US_OPEN_HOUR_LOCAL, minute=_US_OPEN_MINUTE_LOCAL, second=0, microsecond=0
     )
@@ -309,17 +315,13 @@ def _session_phase(now: datetime) -> str:
 
 def _is_session_open_now(now: datetime) -> bool:
     """True only during the US regular session (09:30–16:00 America/New_York,
-    DST-aware) on a weekday."""
+    DST-aware) on an NYSE session day — False on weekends and holidays."""
     return _session_phase(now) == "open"
 
 
 def _previous_trading_day(d: date) -> date:
-    """Walk back to the previous weekday (Mon-Fri). Exchange holiday calendar
-    is not modelled here -> weekend-only gate, same scope as _is_session_open_now."""
-    prev = d - timedelta(days=1)
-    while prev.weekday() >= 5:
-        prev = prev - timedelta(days=1)
-    return prev
+    """Most recent NYSE session strictly before `d` (lib.nyse_calendar)."""
+    return nyse_calendar.last_session_on_or_before(d - timedelta(days=1))
 
 
 def _session_clock_block(generated_at: str, now: datetime) -> dict:
@@ -328,6 +330,10 @@ def _session_clock_block(generated_at: str, now: datetime) -> dict:
         state = "NOT_YET_OPEN"
         reason_en = "Markets are closed for the weekend."
         reason_zh = "周末休市。"
+    elif phase == "holiday":
+        state = "CLOSED"
+        reason_en = "Market holiday"
+        reason_zh = "休市日"
     elif phase == "preopen":
         state = "NOT_YET_OPEN"
         reason_en = "US markets have not opened yet today."
@@ -748,12 +754,10 @@ def build_payload(site: Path, data_dir: Path, *, now: datetime | None = None) ->
         now = now.replace(tzinfo=timezone.utc)
     generated_at = now.isoformat()
     session_date = now.strftime("%Y-%m-%d")
-    # Previous TRADING day, not previous calendar day: a calendar walk-back
-    # publishes Sunday as "prior_close_date" every Monday premarket (and any
-    # day after a market holiday), which then falsely DEGRADEs feasibility
-    # against a close that never happened. Exchange holiday calendar is not
-    # modelled here (weekend-only gate, same scope as _is_session_open_now).
-    prior_close_date = _previous_trading_day(now.date()).strftime("%Y-%m-%d")
+    # Last completed NYSE session (lib.nyse_calendar.expected_last_session):
+    # skips weekends AND full-day holidays. A weekday-only walk-back would
+    # name Independence Day observed as prior_close_date the following Monday.
+    prior_close_date = nyse_calendar.expected_last_session(now).strftime("%Y-%m-%d")
     # Prior-close cut: 20:00 UTC (4pm ET, approx) on the prior trading date.
     prior_close_cut = f"{prior_close_date}T20:00:00+00:00"
 
@@ -785,7 +789,7 @@ def build_payload(site: Path, data_dir: Path, *, now: datetime | None = None) ->
     phase = _session_phase(now)
     if phase == "open":
         session_state = "OPEN"
-    elif phase == "closed":
+    elif phase in ("closed", "holiday"):
         session_state = "CLOSED"
     else:
         session_state = "NOT_YET_OPEN"
