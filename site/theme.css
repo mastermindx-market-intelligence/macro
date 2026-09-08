@@ -214,6 +214,13 @@ html[data-theme="light"] {
    on `langchange`), the whole UI recolours instantly.
    Specificity note: html[data-theme="light"] and html[data-lang="zh"] tie at
    (0,1,1); the dual-attribute selector (0,2,1) below pins the light+zh combo. */
+/* Freshness / provenance states live on the STATUS plane, not the direction pair.
+   A fresh / stale / verified / updated / as-of chip ("Confirmed <date>", coverage
+   badges, live dots) says how CURRENT a datum is, never which way a market moved,
+   so it is coloured with --ok/--warn/--act (+ their --ink-*) and NEVER with
+   --up/--down — otherwise the swap below paints the same chip green in EN and red
+   in ZH (Opus re-review of PR #6933, international_macro .imd-chip.fresh).
+   tests/test_freshness_chips_language_invariant.py pins every template rule. */
 html[data-lang="zh"] {
   --up: #e06464; --down: #45b873;        /* swapped: red now = up */
   --q1: #d04545;                         /* Goldilocks -> red */
