@@ -687,6 +687,7 @@ def _move_rows_from_deltas(deltas: Sequence[Mapping[str, Any]], *,
                  else (delta.get("prior_present") and delta.get("current_present")
                        and delta.get("delta_present")))
         )
+        scale = L.figure_scale(delta.get("unit"))
         if is_movement:
             sign = delta.get("sign") if delta.get("delta_present") else "unavailable"
             rows.append({
@@ -698,6 +699,10 @@ def _move_rows_from_deltas(deltas: Sequence[Mapping[str, Any]], *,
                 "current": delta.get("current") if delta.get("current_present") else L.EM_DASH,
                 "delta": delta.get("delta") if delta.get("delta_present") else L.EM_DASH,
                 "sign": sign or "unavailable",
+                "unit": delta.get("unit"),
+                "scale": scale,
+                "move_words": L.fmt_move_words(
+                    delta.get("delta_raw"), sign, delta.get("unit")),
                 "as_of_month": None,
                 "metric_id": metric_id,
             })
@@ -713,6 +718,9 @@ def _move_rows_from_deltas(deltas: Sequence[Mapping[str, Any]], *,
             "current": delta.get("current"),
             "delta": None,
             "sign": None,
+            "unit": delta.get("unit"),
+            "scale": scale,
+            "move_words": None,
             "as_of_month": dict(as_of_month) if as_of_month else None,
             "metric_id": metric_id,
         })
@@ -1095,6 +1103,9 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
             "current": row.get("current") or L.EM_DASH,
             "delta": (row.get("delta") or L.EM_DASH) if kind == "movement" else None,
             "sign": (row.get("sign") or "unavailable") if kind == "movement" else None,
+            "unit": row.get("unit"),
+            "scale": dict(row["scale"]) if row.get("scale") else L.figure_scale(row.get("unit")),
+            "move_words": dict(row["move_words"]) if row.get("move_words") else None,
             "as_of_month": dict(row["as_of_month"]) if row.get("as_of_month") else None,
             "metric_id": row.get("metric_id"),
         })

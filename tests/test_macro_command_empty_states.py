@@ -100,6 +100,53 @@ def test_one_null_voice_drops_caption_and_matches_stance_for_e1_through_e6() -> 
         assert empty["title"]["en"] in html
 
 
+def test_empty_states_have_no_repeated_visible_string() -> None:
+    """E-M4: no two visible text nodes inside one empty state are equal."""
+    from html.parser import HTMLParser
+
+    class _Visible(HTMLParser):
+        def __init__(self, lang: str) -> None:
+            super().__init__()
+            self.lang = lang
+            self._skip = 0
+            self._keep = 0
+            self.texts: list[str] = []
+
+        def handle_starttag(self, tag, attrs):
+            cls = dict(attrs).get("class", "")
+            if self.lang == "en" and "l-zh" in cls.split():
+                self._skip += 1
+            elif self.lang == "zh" and "l-en" in cls.split():
+                self._skip += 1
+            elif self._skip:
+                self._skip += 1
+
+        def handle_endtag(self, tag):
+            if self._skip:
+                self._skip -= 1
+
+        def handle_data(self, data):
+            if self._skip:
+                return
+            text = " ".join(data.split())
+            if text:
+                self.texts.append(text)
+
+    for empty_id in ("e1", "e2", "e3", "e4", "e5", "e6"):
+        kwargs: dict = {}
+        if empty_id == "e5":
+            kwargs["cta_href"] = "macro_rates_curves.html"
+        if empty_id == "e6":
+            kwargs["plan"] = "Pro"
+        html = _render_empty(builder._empty_state(empty_id, **kwargs))
+        for lang in ("en", "zh"):
+            parser = _Visible(lang)
+            parser.feed(html)
+            assert parser.texts, (empty_id, lang)
+            assert len(parser.texts) == len(set(parser.texts)), (
+                empty_id, lang, parser.texts)
+
+
 def test_e1_stance_and_slot_are_the_same_sentence() -> None:
     """m-a: E1 says one cause — stance title == slot title."""
     empty = builder._empty_state("e1")

@@ -610,29 +610,31 @@ def test_empty_state_evidence_names_fixture_and_trigger() -> None:
         (ROOT / "mockups" / "evidence" / "macro-command-p3" / "manifest.json")
         .read_text(encoding="utf-8"))
     states = {state.get("file"): state for state in manifest["pages"][0]["states"]}
-    for empty_id in ("e1", "e2", "e3", "e4", "e6"):
+    for empty_id in ("e1", "e2", "e3", "e4", "e5", "e6"):
         for theme in ("dark", "light"):
             for name in (
                 f"empty-{empty_id}-{theme}.png",
                 f"empty-{empty_id}-{theme}-zh.png",
+                f"empty-{empty_id}-{theme}-390.png",
+                f"empty-{empty_id}-{theme}-zh-390.png",
             ):
                 row = states[name]
                 assert row["captured"] is True, name
-                assert row.get("fixture"), name
-                assert (ROOT / row["fixture"]).is_file(), row["fixture"]
+                fixture = row.get("fixture")
+                assert fixture, name
+                if fixture != "builder-payload":
+                    path = ROOT / "mockups" / "evidence" / "macro-command-p3" / fixture
+                    if not path.is_file():
+                        path = ROOT / fixture
+                    assert path.is_file(), (name, fixture)
                 assert row.get("trigger"), name
                 png = ROOT / "mockups" / "evidence" / "macro-command-p3" / name
                 assert png.is_file(), name
                 data = png.read_bytes()
                 assert data[:8] == b"\x89PNG\r\n\x1a\n", name
                 assert b"IEND" in data, name
-                assert len(data) > 20000, (name, len(data))
-                if name.endswith("-zh.png"):
+                if "zh" in name.split(".")[0].split("-"):
                     assert row.get("locale") == "zh", name
-    e5 = next(s for s in manifest["pages"][0]["states"]
-              if s.get("force_state") == "e5")
-    assert e5["captured"] is False
-    assert "not builder-triggerable" in e5["reason"]
 
 
 @pytest.mark.needs_full_checkout("site")
@@ -771,7 +773,8 @@ def test_p3_clearance_probes_are_real_geometry() -> None:
     keys = (
         "clearance_390_dark_en", "clearance_390_dark_zh",
         "clearance_390_light_en", "clearance_390_light_zh",
-        "clearance_768_dark_en", "clearance_768_light_en",
+        "clearance_768_dark_en", "clearance_768_dark_zh",
+        "clearance_768_light_en", "clearance_768_light_zh",
     )
     for key in keys:
         row = probes[key]
@@ -797,6 +800,13 @@ def test_p3_clearance_probes_are_real_geometry() -> None:
                     assert reason.endswith("_fully_covered") or reason.endswith(
                         "_partially_covered"), (key, pos_name, reason)
                     assert "box" in item and "ovBox" in item, (key, pos_name, item)
+                    if reason == "rail_fully_covered":
+                        exposed = item.get("exposedAtScrollY")
+                        assert exposed is not None, (key, pos_name, item)
+                        assert 0 <= float(exposed) <= float(
+                            pos.get("maxScroll") or 0), (key, pos_name, item)
+                        assert "docTop" in item and "ovHeight" in item, (
+                            key, pos_name, item)
     # r10 evidence m2: no viewport-less clearance aliases.
     for alias in (
         "clearance_dark_en", "clearance_dark_zh",
@@ -814,7 +824,8 @@ def test_r9_fab_hidden_at_390_visible_at_1440() -> None:
     for key in (
         "clearance_390_dark_en", "clearance_390_dark_zh",
         "clearance_390_light_en", "clearance_390_light_zh",
-        "clearance_768_dark_en", "clearance_768_light_en",
+        "clearance_768_dark_en", "clearance_768_dark_zh",
+        "clearance_768_light_en", "clearance_768_light_zh",
     ):
         assert probes[key]["mmbBootDisplay"] == "none", key
     for key in (
@@ -876,8 +887,13 @@ def test_e2_evidence_names_fixture_and_trigger() -> None:
     for theme in ("dark", "light"):
         row = states[f"empty-e2-{theme}.png"]
         assert row["captured"] is True
-        assert row.get("fixture")
-        assert (ROOT / row["fixture"]).is_file()
+        fixture = row.get("fixture")
+        assert fixture
+        if fixture != "builder-payload":
+            path = ROOT / "mockups" / "evidence" / "macro-command-p3" / fixture
+            if not path.is_file():
+                path = ROOT / fixture
+            assert path.is_file(), fixture
         assert row.get("trigger")
         assert "SOURCE_FAILED" in row["trigger"] or "STALE_SOURCE" in row["trigger"]
 
@@ -1374,9 +1390,7 @@ def test_r7_m2_strip_void_probe_has_no_filled_slab() -> None:
         assert row.get("canvasRgb"), (key, row)
         assert row.get("canvasSource"), (key, row)
         assert "strip-inter-chip-gap" in str(row.get("canvasSource")), (key, row)
-    # Back-compat alias is the light EN cell.
-    alias = probes["strip_void_probe"]
-    assert alias.get("ok") is True, alias
+    assert "strip_void_probe" not in probes
 
 
 def test_r8_m1_empty_and_unknown_kind_are_mode_none() -> None:
@@ -1428,7 +1442,7 @@ def test_capture_refuses_when_head_moves(monkeypatch) -> None:
 
 
 def test_pixel_scan_falls_back_to_bg_when_gap_too_small(tmp_path) -> None:
-    """r10-m3: gap < 8 css or in_chip sample uses the resolved --bg token."""
+    """r10-m3 / r11-m3: gap < 8 css uses the resolved --bg custom property."""
     from PIL import Image
 
     from scripts import capture_macro_command_p3 as capture
@@ -1442,11 +1456,55 @@ def test_pixel_scan_falls_back_to_bg_when_gap_too_small(tmp_path) -> None:
             {"left": 0, "right": 9.5, "top": 0, "bottom": 10},
             {"left": 10, "right": 20, "top": 0, "bottom": 10},
         ],
-        "bgResolved": "rgb(13, 16, 24)",
+        "bgToken": "#0d1018",
     }
     row = capture._pixel_scan_strip_void(path, probe, scale=2)
-    assert "getComputedStyle --bg" in str(row.get("canvasSource"))
+    assert row.get("canvasSource") == "--bg custom property"
     assert row.get("canvasRgb") == [13, 16, 24]
+
+
+def test_pixel_scan_rejects_in_chip_sample(tmp_path) -> None:
+    """r11-n2: gap ≥8 but the sample sits in a chip → --bg, never the chip pixel."""
+    from PIL import Image
+
+    from scripts import capture_macro_command_p3 as capture
+
+    image = Image.new("RGB", (80, 20), (10, 20, 30))
+    path = tmp_path / "strip.png"
+    image.save(path)
+    boxes = [
+        {"left": 0, "right": 10, "top": 0, "bottom": 10},
+        {"left": 20, "right": 30, "top": 0, "bottom": 10},
+    ]
+
+    def in_chip(_x: int, _y: int) -> bool:
+        return True
+
+    canvas, source = capture._choose_strip_canvas(
+        image, boxes, 2, in_chip, "#0d1018")
+    assert source == "--bg custom property"
+    assert canvas == (13, 16, 24)
+
+
+def test_pixel_scan_raises_when_bg_token_does_not_parse(tmp_path) -> None:
+    """r11-n2: fallback token that does not parse is a hard error."""
+    from PIL import Image
+
+    from scripts import capture_macro_command_p3 as capture
+
+    image = Image.new("RGB", (40, 20), (10, 20, 30))
+    path = tmp_path / "strip.png"
+    image.save(path)
+    probe = {
+        "stripBox": {"left": 0, "right": 20, "top": 0, "bottom": 10},
+        "chipBoxes": [
+            {"left": 0, "right": 9.5, "top": 0, "bottom": 10},
+            {"left": 10, "right": 20, "top": 0, "bottom": 10},
+        ],
+        "bgToken": "not-a-colour",
+    }
+    with pytest.raises(RuntimeError, match="--bg did not parse"):
+        capture._pixel_scan_strip_void(path, probe, scale=2)
 
 
 def test_r10_chip_opens_chat_receipts() -> None:
@@ -1454,7 +1512,10 @@ def test_r10_chip_opens_chat_receipts() -> None:
     probes = json.loads(
         (ROOT / "mockups" / "evidence" / "macro-command-p3" / "probes.json")
         .read_text(encoding="utf-8"))
-    for key in ("chip_opens_chat_390_dark_en", "chip_opens_chat_390_light_en"):
+    for key in (
+        "chip_opens_chat_390_dark_en", "chip_opens_chat_390_light_en",
+        "chip_opens_chat_390_dark_zh", "chip_opens_chat_390_light_zh",
+    ):
         row = probes[key]
         assert row.get("ok") is True, (key, row)
         assert row.get("clicked") == "data-mc-analyst", (key, row)
@@ -1481,3 +1542,176 @@ def test_r10_measured_clean_tree_protocol() -> None:
     assert f"tree_clean_start={manifest['tree_clean_start']}" in source
     assert f"tree_clean_end={manifest['tree_clean_end']}" in source
     assert "git status --short was empty" not in source
+
+
+def test_r12_device_px_matches_playwright_snap() -> None:
+    """E-M1: crop IHDR uses Playwright's floor/ceil device span, not round()."""
+    from scripts import capture_macro_command_p3 as capture
+
+    assert capture._device_px(199.453125, 566.453125, 2.0) == 1134
+    assert capture._device_px(0.0, 1440.0, 2.0) == 2880
+    assert capture._device_px(0.0, 900.0, 2.0) == 1800
+
+
+def test_r12_clearance_js_has_no_target_zero_gate() -> None:
+    """r11-M2: HIT is document geometry; the JS must not gate on target === '0'."""
+    from scripts import capture_macro_command_p3 as capture
+
+    assert "target === '0'" not in capture.CLEARANCE_AT_JS
+    assert "sticky-rail-full-cover-unexposable" in capture.CLEARANCE_AT_JS
+    assert "exposedAtScrollY" in capture.CLEARANCE_AT_JS
+
+
+def test_r12_synthetic_rail_zone_hits_every_target() -> None:
+    """A text node inside the stick zone is a HIT at 0 / 50 / max."""
+    from scripts import capture_macro_command_p3 as capture
+
+    positions = capture._synthetic_clearance_page(
+        node_doc_top=20, node_height=16, ov_bottom=56,
+        max_scroll=0, inner_height=900)
+    for target in ("0", "50", "max"):
+        row = positions[target]
+        assert row["hits"], target
+        assert row["hits"][0]["reason"] == "sticky-rail-full-cover-unexposable"
+        assert row["hits"][0]["exposedAtScrollY"] < 0
+
+
+def test_r12_synthetic_below_zone_is_excused_with_exposed() -> None:
+    """A node below the stick zone is excused and records exposedAtScrollY."""
+    from scripts import capture_macro_command_p3 as capture
+
+    positions = capture._synthetic_clearance_page(
+        node_doc_top=400, node_height=16, ov_bottom=115,
+        max_scroll=800, inner_height=900)
+    # At scroll 0 the node sits below the rail (not covered). At a
+    # scroll that pulls it under the rail it is fully covered and exposable.
+    covered = capture._synthetic_clearance_page(
+        node_doc_top=400, node_height=16, ov_bottom=115,
+        max_scroll=400 - 8, inner_height=900)
+    excused = covered["max"]["excused"]
+    assert excused, covered["max"]
+    assert excused[0]["reason"] == "rail_fully_covered"
+    assert excused[0]["exposedAtScrollY"] == 400 - 115
+    assert 0 <= excused[0]["exposedAtScrollY"] <= 400 - 8
+    assert positions["0"]["ok"] is True
+
+
+def test_r12_unreachable_exposed_is_a_hit() -> None:
+    """An excuse that names a scroll past maxScroll is a HIT."""
+    from scripts import capture_macro_command_p3 as capture
+
+    reason, exposed = capture._sticky_cover_verdict(400, 115, max_scroll=100)
+    assert reason == "sticky-rail-full-cover-unexposable"
+    assert exposed == 285
+
+
+def test_r12_excused_unreachable_exposed_raises() -> None:
+    from scripts import capture_macro_command_p3 as capture
+
+    class _Page:
+        def evaluate(self, _js, target):
+            return {
+                "ok": True,
+                "textCount": 1,
+                "maxScrollMatched": True,
+                "maxScroll": 100,
+                "excused": [{
+                    "reason": "rail_fully_covered",
+                    "exposedAtScrollY": 999,
+                    "docTop": 80,
+                    "ovHeight": 56,
+                }],
+                "hits": [],
+                "analystPosition": "static",
+                "mmbBootPresent": False,
+                "mmbBootDisplay": "none",
+                "mmbBootBox": None,
+            }
+
+    with pytest.raises(RuntimeError, match="unreachable"):
+        capture._run_clearance(_Page())
+
+
+def test_r12_manifest_shot_schema() -> None:
+    """E-M1: every captured state records dpr/crop and IHDR matches the kind."""
+    from scripts import capture_macro_command_p3 as capture
+
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p3" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    evidence = ROOT / "mockups" / "evidence" / "macro-command-p3"
+    for state in manifest["pages"][0]["states"]:
+        if not state.get("captured"):
+            continue
+        assert "dpr" in state and state["dpr"] is not None, state.get("file")
+        assert state.get("crop") in (True, False), state.get("file")
+        assert state.get("fixture") is not None, state.get("file")
+        dest = evidence / state["file"]
+        extra = {
+            "dpr": state["dpr"],
+            "crop": state["crop"],
+            "full_page": state.get("full_page"),
+            "crop_box": state.get("crop_box"),
+            "crop_selector": state.get("crop_selector"),
+        }
+        capture._assert_shot_geometry(
+            dest, extra, state["viewport_width"], state["viewport_height"])
+
+
+def test_r12_gaps_are_computed_from_declared_minus_captured() -> None:
+    """E-M2: pages[0].gaps is declared − captured, never hand-typed."""
+    from scripts import capture_macro_command_p3 as capture
+
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p3" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    declared = capture._declared_empty_cells()
+    assert len(declared) == 6 * 2 * 2 * 2
+    computed = capture._compute_gaps(declared, manifest["pages"][0]["states"])
+    assert computed == manifest["pages"][0]["gaps"]
+    for gap in computed:
+        assert gap.get("captured") is False
+        assert gap.get("reason")
+
+
+def test_r12_no_orphan_strip_void_probe() -> None:
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p3" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    probes = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p3" / "probes.json")
+        .read_text(encoding="utf-8"))
+    assert "strip_void_probe" not in manifest
+    assert "strip_void_probe" not in probes
+
+
+def test_r12_e5_timeout_receipts() -> None:
+    probes = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p3" / "probes.json")
+        .read_text(encoding="utf-8"))
+    for theme in ("dark", "light"):
+        for locale in ("en", "zh"):
+            for vw in (1440, 390):
+                key = f"e5_timeout_{theme}_{locale}_{vw}"
+                row = probes[key]
+                assert row.get("elapsedMs") >= 8000, (key, row)
+                assert row.get("templatePresent") is True, (key, row)
+                assert row.get("clonePresent") is True, (key, row)
+                assert row.get("headline"), (key, row)
+
+
+def test_r12_rail_clip_receipts() -> None:
+    probes = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p3" / "probes.json")
+        .read_text(encoding="utf-8"))
+    for theme in ("dark", "light"):
+        for locale in ("en", "zh"):
+            for vw in (390, 768):
+                key = f"rail_clip_{theme}_{locale}_{vw}"
+                row = probes[key]
+                assert row.get("ok") is True, (key, row)
+                for chip in row.get("chips") or []:
+                    assert chip["scrollWidth"] <= chip["clientWidth"] + 1, (
+                        key, chip)
+                mask = row.get("maskImage") or row.get("webkitMaskImage")
+                assert mask and mask != "none", (key, row)

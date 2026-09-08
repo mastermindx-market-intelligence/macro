@@ -478,7 +478,7 @@ html[data-theme="light"] .mc-move-row.mx-chg-row {
 a.mc-move-name:hover { color: var(--mq-accent); text-decoration: underline; }
 .mc-move-source { flex: none; font-size: 11px; color: var(--mq-muted); }
 .mc-move-what {
-  flex: none; display: inline-flex; align-items: baseline; gap: 8px;
+  flex: none; display: inline-flex; flex-direction: column; align-items: flex-end; gap: 2px;
   font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 12.5px;
 }
 .mc-move-prior { color: var(--mq-muted); }
@@ -492,6 +492,11 @@ a.mc-move-name:hover { color: var(--mq-accent); text-decoration: underline; }
 .mc-move-count { margin: 10px 0 0; font-size: 11.5px; line-height: 1.5; color: var(--mq-muted); }
 .mc-move-state { margin: 0 0 10px; font-size: 12.5px; line-height: 1.5; color: var(--mq-muted); }
 .mc-move-asof { font-size: 11.5px; color: var(--mq-muted); font-variant-numeric: normal; }
+.mc-move-words {
+  display: block; font-family: inherit; font-size: 12px; font-weight: 400;
+  line-height: 1.4; color: var(--mq-muted); font-variant-numeric: tabular-nums;
+  text-align: right; max-width: 28ch;
+}
 html[data-lang="zh"] .mc-move-name { letter-spacing: 0; }
 
 /* ── deep-link arrival line (P3 D12) ──────────────────────────────────────────
@@ -686,7 +691,9 @@ html[data-theme="light"] .mc-empty {
      sticky at the top). Reserve only the home-indicator inset. */
   .mc-panels {
     order: 3;
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    /* r12-M2: a modest end spacer so the last dest-card line can
+       sit below the sticky rail at max scroll. */
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
   }
   .mc-rail {
     position: sticky; top: 60px; z-index: 4;
@@ -719,7 +726,15 @@ html[data-theme="light"] .mc-empty {
      clipped ("利率与收:"). A mask is alpha-only, so it is theme-neutral. */
   .mc-rail-list { mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
                   -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent); }
-  .mc-rail-link { white-space: nowrap; padding: 7px 12px; border-radius: 999px; }
+  /* E-m11: chips never clip their own label. The list scrolls; the chip
+     box is sized to its nowrap text. overflow:hidden is forbidden here. */
+  .mc-rail-link {
+    flex: none;
+    white-space: nowrap;
+    overflow: visible;
+    padding: 7px 12px;
+    border-radius: 999px;
+  }
   /* same overflow + edge mask as the rail — a hard-clipped tab row
      ("利率与收:") has no scroll affordance without it. */
   .mc-subtabs {

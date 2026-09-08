@@ -28,10 +28,35 @@ from typing import Any, Iterable, Mapping
 _UNKNOWN: set[str] = set()
 
 EM_DASH = "—"
+TRUE_MINUS = "\u2212"
 
 
 def _pair(en: str, zh: str) -> dict[str, str]:
     return {"en": en, "zh": zh}
+
+
+# Short figure-scale words for Overview / section movement rows (E-m10).
+# Distinct from UNIT, which is the longer details-table label.
+FIGURE_SCALE: dict[str, dict[str, str]] = {
+    "score": _pair("pts", "点"),
+    "USD_bn": _pair("bn", "十亿"),
+    "pct": _pair("%", "%"),
+    "percent": _pair("%", "%"),
+    "pct_pts": _pair("pts", "点"),
+    "pct_saar": _pair("%", "%"),
+    "pct_mom": _pair("%", "%"),
+    "pct_yoy": _pair("%", "%"),
+    "bp": _pair("pts", "点"),
+    "stddev": _pair("index", "指数"),
+    "index": _pair("index", "指数"),
+    "count": _pair("count", "个"),
+    "ratio": _pair("index", "指数"),
+    "percentile": _pair("index", "指数"),
+    "z_score": _pair("index", "指数"),
+    "categorical": _pair("index reading", "指数读数"),
+    "business_days": _pair("days", "日"),
+}
+FIGURE_SCALE_FALLBACK = _pair("index reading", "指数读数")
 
 
 # --- section 7.6 freshness vocabulary ---------------------------------------
@@ -598,7 +623,9 @@ EMPTY_STATES: dict[str, dict[str, Any]] = {
         "id": "e6",
         "title": _pair("Included in a higher plan", "包含于更高级别方案"),
         "why": _pair("This section is part of {plan}.", "本板块属于{plan}。"),
-        "unlock": _pair("Upgrade to see it", "升级后即可查看"),
+        "unlock": _pair(
+            "The reading is available on upgrade.",
+            "升级后可查看该读数。"),
         "cta_href": "plans.html",
         "cta_label": _pair("Upgrade to see it", "升级后即可查看"),
     },
@@ -974,6 +1001,44 @@ def known(vocabulary: str) -> tuple[str, ...]:
 
 # --- value formatting --------------------------------------------------------
 
+def figure_scale(unit: Any) -> dict[str, str]:
+    """Short scale word for a figure reading. Unknown / missing → 'index reading'."""
+    key = str(unit).strip() if unit else ""
+    if key and key in FIGURE_SCALE:
+        return dict(FIGURE_SCALE[key])
+    return dict(FIGURE_SCALE_FALLBACK)
+
+
+def fmt_true_minus(text: str | None) -> str | None:
+    if text is None:
+        return None
+    if text.startswith("-"):
+        return TRUE_MINUS + text[1:]
+    return text
+
+
+def fmt_move_words(delta_raw: Any, sign: str | None, unit: Any) -> dict[str, str] | None:
+    """Plain-word movement under an Overview / section figure."""
+    if not isinstance(delta_raw, (int, float)) or isinstance(delta_raw, bool):
+        return None
+    scale = figure_scale(unit)
+    magnitude = abs(float(delta_raw))
+    mag_text = fmt_true_minus(fmt_number(magnitude)) or "0"
+    if sign == "flat" or magnitude == 0:
+        return _pair("unchanged since the last reading", "较上次读数持平")
+    if sign == "up":
+        return _pair(
+            f"up {mag_text} {scale['en']} since the last reading",
+            f"较上次读数上升 {mag_text} {scale['zh']}",
+        )
+    if sign == "down":
+        return _pair(
+            f"down {mag_text} {scale['en']} since the last reading",
+            f"较上次读数下降 {mag_text} {scale['zh']}",
+        )
+    return None
+
+
 def fmt_number(value: Any) -> str | None:
     """Format a numeric cell WITHOUT changing its basis or unit.
 
@@ -990,12 +1055,14 @@ def fmt_number(value: Any) -> str | None:
         return None
     magnitude = abs(float(value))
     if magnitude >= 1000:
-        return f"{value:,.1f}"
-    if magnitude >= 1:
-        return f"{value:,.2f}"
-    if magnitude == 0:
-        return "0"
-    return f"{value:.4g}"
+        text = f"{value:,.1f}"
+    elif magnitude >= 1:
+        text = f"{value:,.2f}"
+    elif magnitude == 0:
+        text = "0"
+    else:
+        text = f"{value:.4g}"
+    return fmt_true_minus(text) if float(value) < 0 else text
 
 
 def fmt_signed(value: Any) -> str | None:

@@ -40,16 +40,13 @@
       {%- if row.source %}<span class="mc-move-source">{{ bl(row.source) }}</span>{% endif %}
       {%- if row.kind == 'current' %}
       <span class="mx-chg-what mc-move-what">
-        <strong class="mc-move-current">{{ row.current }}</strong>
+        <strong class="mc-move-current">{{ t((row.current ~ ' ' ~ (row.scale.en if row.scale else 'index reading')), (row.current ~ ' ' ~ (row.scale.zh if row.scale else '指数读数'))) }}</strong>
         {%- if row.as_of_month %}<span class="mc-move-asof">{{ bl(row.as_of_month) }}</span>{% endif %}
       </span>
       {%- else %}
       <span class="mx-chg-what mc-move-what">
-        <span class="mc-move-prior">{{ row.prior }}</span>
-        <span class="mc-move-arrow" aria-hidden="true">&rarr;</span>
-        <span class="mq-sr">{{ t('changed to', '变为') }}</span>
-        <strong class="mc-move-current">{{ row.current }}</strong>
-        <span class="mc-move-delta mq-delta mq-delta-{{ row.sign }}">{{ row.delta }}</span>
+        <strong class="mc-move-current">{{ t((row.current ~ ' ' ~ (row.scale.en if row.scale else 'index reading')), (row.current ~ ' ' ~ (row.scale.zh if row.scale else '指数读数'))) }}</strong>
+        {%- if row.move_words %}<span class="mc-move-words">{{ bl(row.move_words) }}</span>{% endif %}
       </span>
       {%- endif %}
     </li>

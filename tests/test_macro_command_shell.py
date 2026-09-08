@@ -257,7 +257,7 @@ def test_le768_panel_column_reserves_only_what_is_still_fixed(
     assert block
     body = _strip_css_comments(block.group(1))
     assert re.search(
-        r'\.mc-panels\s*\{[^}]*padding-bottom:\s*env\(safe-area-inset-bottom, 0px\)',
+        r'\.mc-panels\s*\{[^}]*padding-bottom:\s*calc\(72px \+ env\(safe-area-inset-bottom, 0px\)\)',
         body, re.S)
     assert "70px + 16px" not in body
     assert "84px + 44px + 16px" not in body
@@ -422,6 +422,8 @@ def test_desktop_rail_link_rules_exclude_analyst(
                macro_command_css, flags=re.S))
     assert ".mc-rail-link:not(.mc-analyst)" in outside
     assert ".mc-rail-link:not(.mc-analyst):hover" in outside
+    assert not re.search(r'^\s*\.mc-rail-link\s*\{', outside, re.M), outside
+    assert not re.search(r'\.mc-rail-link:hover\s*\{', outside), outside
     block = re.search(r'@media \(max-width: 768px\) \{(.*?)(?=\n@media|\Z)',
                       macro_command_css, re.S)
     assert block

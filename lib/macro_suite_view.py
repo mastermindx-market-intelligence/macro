@@ -443,6 +443,11 @@ def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
     # I4: a same-publication prior (previous BUILD of this print) is not
     # movement. Fail-closed — missing/unparseable/equal → not earlier.
     prior_is_earlier = prior_publication_is_earlier(prior_date, headline_date)
+    unit_by_metric = {
+        item.get("metric_id"): item.get("unit")
+        for item in (snapshot.get("metrics") or {}).get("items") or []
+        if item.get("metric_id")
+    }
     deltas = []
     for delta in changes.get("deltas") or []:
         prior_raw, current_raw = delta.get("prior_value"), delta.get("current_value")
@@ -473,6 +478,7 @@ def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
             "current": L.fmt_number(current_raw) if current_present else None,
             "delta": L.fmt_signed(delta_raw) if delta_present else None,
             "sign": _sign(delta_raw),
+            "unit": unit_by_metric.get(delta.get("metric_id")),
             "absence": None if comparable_row else _absence(delta.get("null_reason")),
             "note": delta.get("note"),
         })
@@ -1253,6 +1259,12 @@ def build_hub_view(entries: Sequence[Mapping[str, Any]], *,
                 "current": delta.get("current"),
                 "delta": delta.get("delta") if is_movement else None,
                 "sign": delta.get("sign") if is_movement else None,
+                "unit": delta.get("unit"),
+                "scale": L.figure_scale(delta.get("unit")),
+                "move_words": (
+                    L.fmt_move_words(
+                        delta.get("delta_raw"), delta.get("sign"), delta.get("unit"))
+                    if is_movement else None),
                 "as_of_month": dict(as_of_month) if (not is_movement and as_of_month) else None,
             })
 

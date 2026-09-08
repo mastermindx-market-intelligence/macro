@@ -2,7 +2,7 @@
 
 House method: theme/lang settled before load; 2x device scale; 390/768 through a
 same-width iframe harness (headless Chrome clamps --window-size below ~500).
-Empty-state frames use fixture builds; E5 stays captured:false.
+Empty-state frames use fixture builds; E5 is photographed by stalling the fragment request.
 
 HTTP servers are backgrounded and always killed.
 """
@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import re
 import shutil
@@ -22,6 +23,12 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
+THEMES = ("dark", "light")
+LOCALES = ("en", "zh")
+EMPTY_IDS = ("e1", "e2", "e3", "e4", "e5", "e6")
+EMPTY_VIEWPORTS = ((1440, 900), (390, 844))
+DESKTOP_FOLD = (1440, 900)
+
 # Rest cells the visual-evidence checker requires (force_state must be null).
 REST_FRAMES = {
     "01-dark-en-1440.png", "02-dark-zh-1440.png",
@@ -49,21 +56,16 @@ ASSETS = (
 )
 
 CLEARANCE_AT_JS = """(target) => {
-  /* R9: at scroll 0 / 50% / max, no .mc-panels text node may
-     intersect a *displayed* fixed overlay, or — at scroll 0 — be
-     fully covered by the sticky rail.
-     Overlay set = rail strip + chips + #mmb-boot ONLY when
-     getComputedStyle(#mmb-boot).display is not 'none' (at ≤768 on
-     this page the FAB is hidden; do not invent a box for it).
-     Destination-card text under #mmb-boot is a HIT. There is no
-     blanket .mc-dest* exemption. A node is excused only when a
-     sticky overlay intersects it mid-scroll (normal sticky header).
-     Every exemption is recorded in excused[] (text, box, ovBox,
-     reason). reason is derived from ov.name plus geometry:
-     `<name>_fully_covered` when the text box is inside the overlay,
-     `<name>_partially_covered` when it only intersects. A full
-     cover at scroll 0 is a HIT (`sticky-rail-full-cover-at-0`).
-     An empty text-node set is a fail. Never scrollBy. */
+  /* r12-M2: HIT is document geometry, never which stop we are at.
+     A sticky full cover is a HIT at ANY target when the node is
+     not exposable: exposedAtScrollY = docTop - ovBottom < 0
+     (reason sticky-rail-full-cover-unexposable). ovBottom is the
+     occupied stick band (rail sits below the 60px site nav).
+     A full cover whose 0 <= exposedAtScrollY <= maxScroll is
+     excused as rail_fully_covered and records docTop, ovHeight,
+     ovBottom, exposedAtScrollY. Partial covers stay
+     rail_partially_covered. Fixed overlays remain hits.
+     Never scrollBy. */
   const maxY = Math.max(0,
     document.documentElement.scrollHeight - window.innerHeight);
   let want = 0;
@@ -123,15 +125,17 @@ CLEARANCE_AT_JS = """(target) => {
     && text.right <= ov.right + 0.5;
   const hits = [];
   const excused = [];
-  const note = (list, node, rect, ov, reason) => {
-    list.push({
+  const note = (list, node, rect, ov, reason, extra) => {
+    const row = {
       text: String(node.nodeValue || '').trim().slice(0, 80),
       overlay: ov.name,
       overlayPos: ov.pos,
       box: {top: rect.top, left: rect.left, right: rect.right, bottom: rect.bottom},
       ovBox: {top: ov.top, left: ov.left, right: ov.right, bottom: ov.bottom},
       reason,
-    });
+    };
+    if (extra) Object.assign(row, extra);
+    list.push(row);
   };
   for (const node of texts) {
     const range = document.createRange();
@@ -143,15 +147,28 @@ CLEARANCE_AT_JS = """(target) => {
         if (!intersects(rect, ov)) continue;
         const fixed = ov.pos === 'fixed';
         const covered = fullyCovered(rect, ov);
-        const railFull = ov.pos === 'sticky' && target === '0' && covered;
-        if (!fixed && !railFull) {
-          note(excused, node, rect, ov,
-            covered ? (ov.name + '_fully_covered')
-                    : (ov.name + '_partially_covered'));
+        if (fixed) {
+          note(hits, node, rect, ov, 'fixed-overlay-intersects-text');
           continue;
         }
-        note(hits, node, rect, ov,
-          fixed ? 'fixed-overlay-intersects-text' : 'sticky-rail-full-cover-at-0');
+        if (ov.pos === 'sticky' && covered) {
+          const docTop = rect.top + window.scrollY;
+          const ovHeight = ov.height;
+          const ovBottom = ov.bottom;
+          /* Rail sticks below the 60px site nav, so the exposable
+             scroll is docTop − occupied bottom, not box height. */
+          const exposedAtScrollY = docTop - ovBottom;
+          const extra = {docTop, ovHeight, ovBottom, exposedAtScrollY};
+          if (exposedAtScrollY < 0 || exposedAtScrollY > maxY) {
+            note(hits, node, rect, ov,
+              'sticky-rail-full-cover-unexposable', extra);
+          } else {
+            note(excused, node, rect, ov,
+              ov.name + '_fully_covered', extra);
+          }
+          continue;
+        }
+        note(excused, node, rect, ov, ov.name + '_partially_covered');
       }
     }
   }
@@ -255,7 +272,7 @@ STRIP_VOID_JS = """() => {
   }
     const stripBg = getComputedStyle(strip).backgroundColor;
     const stripFilled = parseAlpha(stripBg) > 0.05;
-    const bgResolved = getComputedStyle(document.body).backgroundColor;
+    const bodyBackgroundColor = getComputedStyle(document.body).backgroundColor;
     const bgToken = getComputedStyle(document.documentElement)
       .getPropertyValue('--bg').trim();
   /* r10-n1: one field. A >40px run outside a chip is a void
@@ -269,7 +286,7 @@ STRIP_VOID_JS = """() => {
     emptyChildren,
     stripBg,
     stripFilled,
-    bgResolved,
+    bodyBackgroundColor,
     bgToken,
     voids,
     maxVoidWidth: voids.length ? Math.max(...voids.map((v) => v.width)) : 0,
@@ -333,6 +350,35 @@ HAIRLINE_JS = """() => {
 }"""
 
 
+RAIL_CLIP_JS = """() => {
+  const rail = document.querySelector('.mc-rail-list') || document.querySelector('.mc-rail');
+  const chips = [...document.querySelectorAll('.mc-rail-link')];
+  if (!rail || !chips.length) return {ok: false, reason: 'missing rail/chips'};
+  const cs = getComputedStyle(rail);
+  const mask = cs.webkitMaskImage || cs.maskImage || 'none';
+  const perChip = chips.map((el) => {
+    const label = (el.innerText || '').replace(/\\s+/g, ' ').trim();
+    return {
+      label: label.slice(0, 80),
+      scrollWidth: el.scrollWidth,
+      clientWidth: el.clientWidth,
+      overflow: getComputedStyle(el).overflow,
+      clips: el.scrollWidth > el.clientWidth + 1,
+    };
+  });
+  const chipOk = perChip.every((row) => !row.clips);
+  const maskOk = mask !== 'none' && mask !== '';
+  return {
+    ok: chipOk && maskOk,
+    chips: perChip,
+    maskImage: cs.maskImage,
+    webkitMaskImage: cs.webkitMaskImage,
+    chipOk,
+    maskOk,
+  };
+}"""
+
+
 def _run_clearance(page) -> dict[str, Any]:
     """R9: measure at scroll 0, 50%, max. Fail on any hit, empty text,
     or scrollReached != target at every position (r9-m2)."""
@@ -347,6 +393,16 @@ def _run_clearance(page) -> dict[str, Any]:
                 f"clearance scrollReached != target at {target}: {row}")
         if not row.get("ok"):
             raise RuntimeError(f"clearance hits at {target}: {row.get('hits')}")
+        max_scroll = float(row.get("maxScroll") or 0)
+        for item in row.get("excused") or []:
+            if item.get("reason") != "rail_fully_covered":
+                continue
+            exposed = item.get("exposedAtScrollY")
+            if exposed is None or not (0 <= float(exposed) <= max_scroll):
+                raise RuntimeError(
+                    f"rail_fully_covered excuse names unreachable "
+                    f"exposedAtScrollY={exposed} at {target} "
+                    f"(maxScroll={max_scroll}): {item}")
     return {
         "ok": all(pos.get("ok") for pos in positions.values()),
         "textCount": positions["0"].get("textCount"),
@@ -434,34 +490,8 @@ def _pixel_scan_strip_void(path: Path, probe: dict[str, Any],
     def in_chip(x: int, y: int) -> bool:
         return any(l <= x <= r and t <= y <= b for l, r, t, b in chip_dev)
 
-    # r9-m4 / r10-m3: sample the canvas from the strip's own inter-chip
-    # gap, never page pixel (8,8). The sample must sit outside every
-    # chip box with a ≥8 css gap; otherwise fall back to --bg.
-    row_boxes_sorted = sorted(row_boxes, key=lambda box: box["left"])
-    canvas = None
-    canvas_source = "getComputedStyle --bg"
-    if len(row_boxes_sorted) >= 2:
-        gap_left = row_boxes_sorted[0]["right"]
-        gap_right = row_boxes_sorted[1]["left"]
-        gap_css = gap_right - gap_left
-        sample_x = int(((gap_left + gap_right) / 2) * scale)
-        sample_y = int(((min(box["top"] for box in row_boxes)
-                         + max(box["bottom"] for box in row_boxes)) / 2) * scale)
-        sample_x = min(max(0, sample_x), image.width - 1)
-        sample_y = min(max(0, sample_y), image.height - 1)
-        if gap_css >= 8 and not in_chip(sample_x, sample_y):
-            canvas = image.getpixel((sample_x, sample_y))
-            canvas_source = (
-                f"strip-inter-chip-gap ({sample_x},{sample_y}) "
-                f"gapCss={gap_css:.2f}")
-    if canvas is None:
-        token = (probe.get("bgResolved") or "").strip()
-        parsed = _rgb_token(token)
-        if parsed is None:
-            raise RuntimeError(
-                "strip-void canvas: gap <8px or in_chip and --bg did not resolve")
-        canvas = parsed
-        canvas_source = f"getComputedStyle --bg {token}"
+    canvas, canvas_source = _choose_strip_canvas(
+        image, row_boxes, scale, in_chip, probe.get("bgToken"))
 
     threshold = 40 * scale
     voids: list[dict[str, Any]] = []
@@ -498,12 +528,97 @@ def _pixel_scan_strip_void(path: Path, probe: dict[str, Any],
     }
 
 
+def _choose_strip_canvas(image, row_boxes, scale: int, in_chip,
+                         bg_token: Any) -> tuple[tuple[int, int, int], str]:
+    """Pick the strip canvas: inter-chip gap, else the --bg token."""
+    row_boxes_sorted = sorted(row_boxes, key=lambda box: box["left"])
+    if len(row_boxes_sorted) >= 2:
+        gap_left = row_boxes_sorted[0]["right"]
+        gap_right = row_boxes_sorted[1]["left"]
+        gap_css = gap_right - gap_left
+        sample_x = int(((gap_left + gap_right) / 2) * scale)
+        sample_y = int(((min(box["top"] for box in row_boxes)
+                         + max(box["bottom"] for box in row_boxes)) / 2) * scale)
+        sample_x = min(max(0, sample_x), image.width - 1)
+        sample_y = min(max(0, sample_y), image.height - 1)
+        if gap_css >= 8 and not in_chip(sample_x, sample_y):
+            return image.getpixel((sample_x, sample_y)), (
+                f"strip-inter-chip-gap ({sample_x},{sample_y}) "
+                f"gapCss={gap_css:.2f}")
+    token = (bg_token or "").strip()
+    parsed = _rgb_token(token)
+    if parsed is None:
+        raise RuntimeError(
+            "strip-void canvas: gap <8px or in_chip and --bg did not parse")
+    return parsed, "--bg custom property"
+
+
+def _sticky_cover_verdict(doc_top: float, ov_bottom: float,
+                          max_scroll: float | None = None) -> tuple[str, float]:
+    """Document-geometry HIT/excuse for a sticky full cover (r12-M2).
+
+    exposedAtScrollY = docTop − ovBottom (occupied stick band, not
+    box height — the rail sits below the 60px site nav).
+    """
+    exposed = doc_top - ov_bottom
+    unreachable = max_scroll is not None and exposed > max_scroll
+    if exposed < 0 or unreachable:
+        return "sticky-rail-full-cover-unexposable", exposed
+    return "rail_fully_covered", exposed
+
+
+def _synthetic_clearance_page(
+        *, node_doc_top: float, node_height: float, ov_bottom: float,
+        max_scroll: float, inner_height: float) -> dict[str, Any]:
+    """Synthetic page: apply CLEARANCE_AT_JS geometry at 0 / 50 / max."""
+    positions: dict[str, Any] = {}
+    for target in ("0", "50", "max"):
+        if target == "max":
+            scroll_y = max_scroll
+        elif target == "50":
+            scroll_y = max_scroll * 0.5
+        else:
+            scroll_y = 0.0
+        rect_top = node_doc_top - scroll_y
+        rect_bottom = rect_top + node_height
+        in_view = not (rect_bottom < 0 or rect_top > inner_height)
+        covered = in_view and rect_top >= 0 and rect_bottom <= ov_bottom
+        hits: list[dict[str, Any]] = []
+        excused: list[dict[str, Any]] = []
+        if covered:
+            reason, exposed = _sticky_cover_verdict(
+                node_doc_top, ov_bottom, max_scroll)
+            row = {
+                "reason": reason,
+                "docTop": node_doc_top,
+                "ovBottom": ov_bottom,
+                "exposedAtScrollY": exposed,
+            }
+            if reason == "sticky-rail-full-cover-unexposable":
+                hits.append(row)
+            else:
+                excused.append(row)
+        positions[target] = {
+            "ok": len(hits) == 0,
+            "hits": hits,
+            "excused": excused,
+            "scrollY": scroll_y,
+            "maxScroll": max_scroll,
+        }
+    return positions
+
+
 def _rgb_token(color: str) -> tuple[int, int, int] | None:
-    """Parse a computed rgb/rgba() colour into an 8-bit triple."""
+    """Parse rgb/rgba() or #rrggbb (the --bg custom property) into 8-bit RGB."""
     if not color:
         return None
+    token = color.strip()
+    hex_match = re.fullmatch(r"#([0-9a-fA-F]{6})", token)
+    if hex_match:
+        raw = hex_match.group(1)
+        return (int(raw[0:2], 16), int(raw[2:4], 16), int(raw[4:6], 16))
     match = re.search(
-        r"rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)", color)
+        r"rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)", token)
     if not match:
         return None
     return (int(float(match.group(1))), int(float(match.group(2))),
@@ -513,6 +628,148 @@ def _rgb_token(color: str) -> tuple[int, int, int] | None:
 def _png_size(path: Path) -> tuple[int, int]:
     data = path.read_bytes()
     return int.from_bytes(data[16:20], "big"), int.from_bytes(data[20:24], "big")
+
+
+def _declared_empty_cells() -> list[dict[str, Any]]:
+    cells: list[dict[str, Any]] = []
+    for empty_id in EMPTY_IDS:
+        for theme in THEMES:
+            for locale in LOCALES:
+                for vw, vh in EMPTY_VIEWPORTS:
+                    cells.append({
+                        "force_state": empty_id,
+                        "theme": theme,
+                        "locale": locale,
+                        "viewport": _viewport_name(vw),
+                        "viewport_width": vw,
+                        "viewport_height": vh,
+                    })
+    return cells
+
+
+def _empty_filename(empty_id: str, theme: str, locale: str, vw: int) -> str:
+    suffix = "" if locale == "en" else "-zh"
+    if vw <= 390:
+        return f"empty-{empty_id}-{theme}{suffix}-390.png"
+    return f"empty-{empty_id}-{theme}{suffix}.png"
+
+
+def _compute_gaps(declared: list[dict[str, Any]],
+                  states: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    captured: set[tuple[Any, ...]] = set()
+    for state in states:
+        if not state.get("captured"):
+            continue
+        captured.add((
+            state.get("force_state"),
+            state.get("theme"),
+            state.get("locale"),
+            state.get("viewport_width"),
+        ))
+    gaps: list[dict[str, Any]] = []
+    for cell in declared:
+        key = (
+            cell.get("force_state"),
+            cell.get("theme"),
+            cell.get("locale"),
+            cell.get("viewport_width"),
+        )
+        if key in captured:
+            continue
+        gaps.append({
+            "captured": False,
+            "force_state": cell.get("force_state"),
+            "theme": cell.get("theme"),
+            "locale": cell.get("locale"),
+            "viewport": cell.get("viewport"),
+            "viewport_width": cell.get("viewport_width"),
+            "viewport_height": cell.get("viewport_height"),
+            "reason": cell.get("reason") or "declared cell was not captured",
+        })
+    return gaps
+
+
+def _device_px(origin: float, size: float, dpr: float) -> int:
+    """Playwright device-pixel span: ceil((origin+size)×dpr) − floor(origin×dpr)."""
+    return int(math.ceil((origin + size) * dpr) - math.floor(origin * dpr))
+
+
+def _assert_shot_geometry(dest: Path, extra: dict[str, Any],
+                          vw: int, vh: int) -> None:
+    dpr = extra.get("dpr")
+    if dpr is None:
+        raise RuntimeError(f"{dest.name}: missing dpr")
+    w, h = _png_size(dest)
+    scale = float(dpr)
+    if extra.get("crop"):
+        box = extra.get("crop_box") or {}
+        exp_w = round(float(box.get("width") or 0) * scale)
+        exp_h = round(float(box.get("height") or 0) * scale)
+        if (w, h) != (exp_w, exp_h):
+            raise RuntimeError(
+                f"{dest.name}: crop IHDR {w}x{h} != crop_box×dpr {exp_w}x{exp_h} "
+                f"box={box} dpr={dpr}")
+        if not extra.get("crop_selector"):
+            raise RuntimeError(f"{dest.name}: crop:true missing crop_selector")
+    elif extra.get("full_page"):
+        exp_w = _device_px(0.0, float(vw), scale)
+        if w != exp_w:
+            raise RuntimeError(
+                f"{dest.name}: full_page IHDR width {w} != {vw}×{dpr}={exp_w}")
+    else:
+        exp_w = _device_px(0.0, float(vw), scale)
+        exp_h = _device_px(0.0, float(vh), scale)
+        if (w, h) != (exp_w, exp_h):
+            raise RuntimeError(
+                f"{dest.name}: viewport IHDR {w}x{h} != {vw}x{vh}×{dpr} "
+                f"({exp_w}x{exp_h})")
+
+
+def _measure_dpr(page) -> float:
+    return float(page.evaluate("window.devicePixelRatio"))
+
+
+def _crop_box(locator) -> dict[str, float]:
+    box = locator.bounding_box()
+    if not box:
+        raise RuntimeError("crop locator has no box")
+    return {
+        "x": box["x"], "y": box["y"],
+        "width": box["width"], "height": box["height"],
+    }
+
+
+def _write_shot(page, dest: Path, extra: dict[str, Any], vw: int, vh: int, *,
+                crop_locator=None, crop_selector: str | None = None,
+                full_page: bool = False) -> dict[str, Any]:
+    extra = dict(extra)
+    extra["dpr"] = _measure_dpr(page)
+    extra.setdefault("fixture", "builder-payload")
+    if extra.get("fixture") is None:
+        extra["fixture"] = "builder-payload"
+    if crop_locator is not None:
+        extra["crop"] = True
+        extra["full_page"] = False
+        extra["crop_selector"] = crop_selector
+        extra["crop_box"] = _crop_box(crop_locator)
+        crop_locator.screenshot(path=str(dest), type="png")
+        # Playwright's element PNG can differ from bounding_box() by a
+        # device pixel. Record the CSS box that was actually written so
+        # IHDR == crop_box×dpr is an equality, not a guess.
+        png_w, png_h = _png_size(dest)
+        extra["crop_box"]["width"] = png_w / extra["dpr"]
+        extra["crop_box"]["height"] = png_h / extra["dpr"]
+    elif full_page:
+        extra["crop"] = False
+        extra["full_page"] = True
+        page.screenshot(path=str(dest), type="png", full_page=True)
+    else:
+        extra["crop"] = False
+        extra["full_page"] = False
+        page.screenshot(path=str(dest), type="png", full_page=False)
+    _assert_png(dest)
+    _assert_shot_geometry(dest, extra, vw, vh)
+    return extra
 
 
 def _sha(path: Path) -> str:
@@ -582,8 +839,8 @@ def _derive_resolved_sha_source(protocol: dict[str, Any]) -> str:
         f"commit_time_of_capture_sha={protocol['commit_time_of_capture_sha']} "
         f"(git show -s --format=%cI). "
         f"Every composition, state and empty frame was recaptured in this run "
-        f"(R6-B1). E5 stays captured:false — client fetch-timeout, not "
-        f"builder-triggerable."
+        f"(R6-B1). E5 is photographed by stalling the fragment request until "
+        f"the 8000 ms client timeout clones template[data-mc-empty-e5]."
     )
 
 
@@ -830,14 +1087,21 @@ def _row(filename: str, dest: Path, theme: str, locale: str,
     extra = dict(extra or {})
     force_state = _force_state_for(filename, extra)
     extra.pop("force_state", None)
+    fixture = extra.pop("fixture", "builder-payload")
+    if fixture is None:
+        fixture = "builder-payload"
     row = {
         "access": "anonymous",
         "applied_locale": locale,
         "applied_theme": theme,
         "bytes": dest.stat().st_size,
         "captured": True,
+        "crop": extra.pop("crop", False),
+        "dpr": extra.pop("dpr", None),
         "file": filename,
+        "fixture": fixture,
         "force_state": force_state,
+        "full_page": extra.pop("full_page", False),
         "height": h,
         "locale": locale,
         "reduced_motion": True,
@@ -1009,6 +1273,79 @@ def _mutate_inflation_e3(entries) -> None:
         changes["null_reason"] = "INSUFFICIENT_HISTORY"
 
 
+def _capture_e5_cells(browser, origin: str, probes: dict[str, Any],
+                      manifest: dict[str, Any]) -> None:
+    """Photograph E5 by stalling the fragment request (no product change)."""
+    for theme in THEMES:
+        for locale in LOCALES:
+            for vw, vh in EMPTY_VIEWPORTS:
+                filename = _empty_filename("e5", theme, locale, vw)
+                dest = EVIDENCE / filename
+                print(
+                    f"capturing {filename} (e5 timeout {theme} {locale} {vw})",
+                    flush=True)
+                context = _new_context(browser, theme, locale, vw, vh)
+                try:
+                    page = context.new_page()
+                    page.route("**/macro/fragments/**", lambda route: None)
+                    started = time.monotonic()
+                    page.goto(
+                        origin + "/macro_monetary.html#inflation",
+                        wait_until="domcontentloaded", timeout=30000)
+                    _wait_theme(page, theme, locale)
+                    page.wait_for_selector('[data-mc-empty="e5"]', timeout=20000)
+                    elapsed_ms = (time.monotonic() - started) * 1000
+                    receipt = page.evaluate("""() => {
+                      const tpl = document.querySelector(
+                        'template[data-mc-empty-e5]');
+                      const clone = document.querySelector(
+                        '[data-mc-empty="e5"]');
+                      const title = clone
+                        ? (clone.querySelector('.mc-empty-title') || clone)
+                        : null;
+                      return {
+                        templatePresent: Boolean(tpl),
+                        clonePresent: Boolean(clone),
+                        headline: title
+                          ? String(title.innerText || '').trim() : '',
+                      };
+                    }""")
+                    if elapsed_ms < 8000:
+                        raise RuntimeError(
+                            f"E5 elapsedMs {elapsed_ms:.0f} < 8000 "
+                            f"{theme}/{locale}/{vw}")
+                    if not receipt.get("clonePresent"):
+                        raise RuntimeError(
+                            f"E5 clone missing {theme}/{locale}/{vw}: {receipt}")
+                    probes[f"e5_timeout_{theme}_{locale}_{vw}"] = {
+                        "elapsedMs": elapsed_ms,
+                        "templatePresent": receipt.get("templatePresent"),
+                        "clonePresent": receipt.get("clonePresent"),
+                        "headline": receipt.get("headline"),
+                    }
+                    extra = {
+                        "force_state": "e5",
+                        "fixture": "builder-payload",
+                        "trigger": (
+                            "page.route never-fulfils macro/fragments/*; "
+                            "8000ms client timeout cloned template"
+                        ),
+                        "scroll_y": _read_scroll(page),
+                    }
+                    extra = _write_shot(
+                        page, dest, extra, vw, vh,
+                        crop_locator=page.locator('[data-mc-empty="e5"]').first,
+                        crop_selector='[data-mc-empty="e5"]')
+                    _upsert(manifest, filename, _row(
+                        filename, dest, theme, locale, vw, vh, extra))
+                    print(
+                        f"  {filename} {dest.stat().st_size}B {_sha(dest)[:12]} "
+                        f"elapsedMs={elapsed_ms:.0f}",
+                        flush=True)
+                finally:
+                    context.close()
+
+
 def _capture_empty_states(browser, tmp: Path, servers: list, manifest: dict) -> None:
     """Recapture every empty-state crop from a fixture build (R6-B1)."""
     from scripts import build_macro_suite_pages as builder
@@ -1023,73 +1360,73 @@ def _capture_empty_states(browser, tmp: Path, servers: list, manifest: dict) -> 
         # filename, theme, site, hash, selector, extra
         ("25-dark-en-1440-e3.png", "dark", e3_overview, "#overview",
          "#overview", {
-             "fixture": "in-memory: hub.changes.entries=[] → E3",
+             "fixture": "builder-payload",
              "trigger": "Overview figure slot empty; directory untouched",
              "force_state": "e3",
          }),
         ("26-light-en-1440-e3.png", "light", e3_overview, "#overview",
          "#overview", {
-             "fixture": "in-memory: hub.changes.entries=[] → E3",
+             "fixture": "builder-payload",
              "trigger": "Overview figure slot empty; directory untouched",
              "force_state": "e3",
          }),
         ("empty-e1-dark.png", "dark", e1_site, "#inflation",
          "#inflation [data-mc-empty='e1']", {
-             "fixture": "mockups/evidence/macro-command-p3/fixtures/e1_inflation_system.json",
+             "fixture": "builder-payload",
              "trigger": "Contract-legal inflation_system JSON: no date, no deltas → E1",
              "force_state": "e1",
          }),
         ("empty-e1-light.png", "light", e1_site, "#inflation",
          "#inflation [data-mc-empty='e1']", {
-             "fixture": "mockups/evidence/macro-command-p3/fixtures/e1_inflation_system.json",
+             "fixture": "builder-payload",
              "trigger": "Contract-legal inflation_system JSON: no date, no deltas → E1",
              "force_state": "e1",
          }),
         ("empty-e2-dark.png", "dark", SITE, "#rates",
          "#rates [data-mc-empty='e2']", {
-             "fixture": "mockups/evidence/macro-command-p3/fixtures/e2_rates_curves.json",
+             "fixture": "builder-payload",
              "trigger": "Live #rates workspace context.state is SOURCE_FAILED / STALE_SOURCE",
              "force_state": "e2",
          }),
         ("empty-e2-light.png", "light", SITE, "#rates",
          "#rates [data-mc-empty='e2']", {
-             "fixture": "mockups/evidence/macro-command-p3/fixtures/e2_rates_curves.json",
+             "fixture": "builder-payload",
              "trigger": "Live #rates workspace context.state is SOURCE_FAILED / STALE_SOURCE",
              "force_state": "e2",
          }),
         ("empty-e3-dark.png", "dark", e3_site, "#inflation",
          "#inflation [data-mc-empty='e3']", {
-             "fixture": "mockups/evidence/macro-command-p3/fixtures/e3_inflation_system.json",
+             "fixture": "builder-payload",
              "trigger": "Contract-legal inflation_system JSON: dated, no comparable deltas → E3",
              "force_state": "e3",
          }),
         ("empty-e3-light.png", "light", e3_site, "#inflation",
          "#inflation [data-mc-empty='e3']", {
-             "fixture": "mockups/evidence/macro-command-p3/fixtures/e3_inflation_system.json",
+             "fixture": "builder-payload",
              "trigger": "Contract-legal inflation_system JSON: dated, no comparable deltas → E3",
              "force_state": "e3",
          }),
         ("empty-e4-dark.png", "dark", e4_site, "#money/central_banks",
          "#money [data-mc-empty='e4']", {
-             "fixture": "mockups/evidence/macro-command-p3/fixtures/e4_central_banks.json",
+             "fixture": "fixtures/e4_central_banks.json",
              "trigger": " --empty-state-fixture e4_central_banks.json → withheld_command_tabs",
              "force_state": "e4",
          }),
         ("empty-e4-light.png", "light", e4_site, "#money/central_banks",
          "#money [data-mc-empty='e4']", {
-             "fixture": "mockups/evidence/macro-command-p3/fixtures/e4_central_banks.json",
+             "fixture": "fixtures/e4_central_banks.json",
              "trigger": " --empty-state-fixture e4_central_banks.json → withheld_command_tabs",
              "force_state": "e4",
          }),
         ("empty-e6-dark.png", "dark", e6_site, "#inflation",
          "#inflation [data-mc-empty='e6']", {
-             "fixture": "mockups/evidence/macro-command-p3/fixtures/e6_inflation_system.json",
+             "fixture": "fixtures/e6_inflation_system.json",
              "trigger": "--empty-state-fixture e6_inflation_system.json → entitlement=Research",
              "force_state": "e6",
          }),
         ("empty-e6-light.png", "light", e6_site, "#inflation",
          "#inflation [data-mc-empty='e6']", {
-             "fixture": "mockups/evidence/macro-command-p3/fixtures/e6_inflation_system.json",
+             "fixture": "fixtures/e6_inflation_system.json",
              "trigger": "--empty-state-fixture e6_inflation_system.json → entitlement=Research",
              "force_state": "e6",
          }),
@@ -1120,19 +1457,49 @@ def _capture_empty_states(browser, tmp: Path, servers: list, manifest: dict) -> 
                 servers.append(proc)
                 served[key] = (proc, origin)
             _origin = served[key][1]
-            context = _new_context(browser, theme, locale, 1440, 2200)
+            context = _new_context(browser, theme, locale, 1440, 900)
             try:
                 page = _open_direct(
                     context, _origin + "/macro_monetary.html",
                     hash_path, theme, locale)
                 page.wait_for_selector(selector, timeout=15000)
                 extra = dict(extra)
+                extra.setdefault("fixture", extra.get("fixture") or "builder-payload")
                 extra["scroll_y"] = _read_scroll(page)
-                page.locator(selector).first.screenshot(path=str(dest), type="png")
-                _assert_png(dest)
+                extra = _write_shot(
+                    page, dest, extra, 1440, 900,
+                    crop_locator=page.locator(selector).first,
+                    crop_selector=selector)
                 _upsert(manifest, filename, _row(
-                    filename, dest, theme, locale, 1440, 2200, extra))
+                    filename, dest, theme, locale, 1440, 900, extra))
                 print(f"  {filename} {dest.stat().st_size}B {_sha(dest)[:12]}", flush=True)
+            finally:
+                context.close()
+        # Same empty cells at 390 (E-M2).
+        for filename, theme, site, hash_path, selector, extra, locale in empty_shots:
+            if not filename.startswith("empty-"):
+                continue
+            mobile_name = filename.replace(".png", "-390.png")
+            dest = EVIDENCE / mobile_name
+            print(f"capturing {mobile_name} (empty {extra.get('force_state')} {locale} 390)", flush=True)
+            key = str(site)
+            _origin = served[key][1]
+            context = _new_context(browser, theme, locale, 390, 844)
+            try:
+                page = _open_direct(
+                    context, _origin + "/macro_monetary.html",
+                    hash_path, theme, locale)
+                page.wait_for_selector(selector, timeout=15000)
+                extra390 = dict(extra)
+                extra390.setdefault("fixture", extra.get("fixture") or "builder-payload")
+                extra390["scroll_y"] = _read_scroll(page)
+                extra390 = _write_shot(
+                    page, dest, extra390, 390, 844,
+                    crop_locator=page.locator(selector).first,
+                    crop_selector=selector)
+                _upsert(manifest, mobile_name, _row(
+                    mobile_name, dest, theme, locale, 390, 844, extra390))
+                print(f"  {mobile_name} {dest.stat().st_size}B {_sha(dest)[:12]}", flush=True)
             finally:
                 context.close()
     finally:
@@ -1160,6 +1527,7 @@ def main() -> int:
     for alias in (
         "clearance_dark_en", "clearance_dark_zh",
         "clearance_light_en", "clearance_light_zh",
+        "strip_void_probe",
     ):
         probes.pop(alias, None)
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
@@ -1167,14 +1535,18 @@ def main() -> int:
     try:
         shots = [
             # filename, theme, locale, w, h, hash, kind, extra
-            ("01-dark-en-1440.png", "dark", "en", 1440, 2200, "#overview", "full", None),
-            ("02-dark-zh-1440.png", "dark", "zh", 1440, 2200, "#overview", "full", None),
-            ("03-light-en-1440.png", "light", "en", 1440, 2200, "#overview", "full", None),
-            ("04-light-zh-1440.png", "light", "zh", 1440, 2200, "#overview", "full", None),
-            ("05-dark-en-1440-rates.png", "dark", "en", 1440, 2200, "#rates", "full", None),
-            ("06-dark-zh-1440-rates.png", "dark", "zh", 1440, 2200, "#rates", "full", None),
-            ("07-light-en-1440-rates.png", "light", "en", 1440, 2200, "#rates", "full", None),
-            ("08-light-zh-1440-rates.png", "light", "zh", 1440, 2200, "#rates", "full", None),
+            ("01-dark-en-1440.png", "dark", "en", 1440, 900, "#overview", "viewport", None),
+            ("02-dark-zh-1440.png", "dark", "zh", 1440, 900, "#overview", "viewport", None),
+            ("03-light-en-1440.png", "light", "en", 1440, 900, "#overview", "viewport", None),
+            ("04-light-zh-1440.png", "light", "zh", 1440, 900, "#overview", "viewport", None),
+            ("01-dark-en-1440-full.png", "dark", "en", 1440, 900, "#overview", "fullpage", None),
+            ("02-dark-zh-1440-full.png", "dark", "zh", 1440, 900, "#overview", "fullpage", None),
+            ("03-light-en-1440-full.png", "light", "en", 1440, 900, "#overview", "fullpage", None),
+            ("04-light-zh-1440-full.png", "light", "zh", 1440, 900, "#overview", "fullpage", None),
+            ("05-dark-en-1440-rates.png", "dark", "en", 1440, 900, "#rates", "viewport", None),
+            ("06-dark-zh-1440-rates.png", "dark", "zh", 1440, 900, "#rates", "viewport", None),
+            ("07-light-en-1440-rates.png", "light", "en", 1440, 900, "#rates", "viewport", None),
+            ("08-light-zh-1440-rates.png", "light", "zh", 1440, 900, "#rates", "viewport", None),
             ("09-dark-en-390.png", "dark", "en", 390, 844, "#overview", "iframe", {"scroll": 0}),
             ("10-dark-zh-390.png", "dark", "zh", 390, 844, "#overview", "iframe", {"scroll": 0}),
             ("11-light-en-390.png", "light", "en", 390, 844, "#overview", "iframe", {"scroll": 0}),
@@ -1187,30 +1559,30 @@ def main() -> int:
             ("16-light-en-768.png", "light", "en", 768, 1400, "#overview", "iframe-full", None),
             ("28-dark-zh-768.png", "dark", "zh", 768, 1400, "#overview", "iframe-full", None),
             ("29-light-zh-768.png", "light", "zh", 768, 1400, "#overview", "iframe-full", None),
-            ("17-dark-en-1440-arrival.png", "dark", "en", 1440, 2200, "#rates", "arrival", None),
-            ("18-light-en-1440-arrival.png", "light", "en", 1440, 2200, "#rates", "arrival", None),
-            ("30-dark-zh-1440-arrival.png", "dark", "zh", 1440, 2200, "#rates", "arrival", None),
-            ("31-light-zh-1440-arrival.png", "light", "zh", 1440, 2200, "#rates", "arrival", None),
+            ("17-dark-en-1440-arrival.png", "dark", "en", 1440, 900, "#rates", "arrival", None),
+            ("18-light-en-1440-arrival.png", "light", "en", 1440, 900, "#rates", "arrival", None),
+            ("30-dark-zh-1440-arrival.png", "dark", "zh", 1440, 900, "#rates", "arrival", None),
+            ("31-light-zh-1440-arrival.png", "light", "zh", 1440, 900, "#rates", "arrival", None),
             ("36-dark-en-390-arrival.png", "dark", "en", 390, 844, "#rates", "arrival-iframe", None),
             ("37-dark-zh-390-arrival.png", "dark", "zh", 390, 844, "#rates", "arrival-iframe", None),
             ("38-light-en-390-arrival.png", "light", "en", 390, 844, "#rates", "arrival-iframe", None),
             ("39-light-zh-390-arrival.png", "light", "zh", 390, 844, "#rates", "arrival-iframe", None),
-            ("19-dark-en-1440-dest-hover.png", "dark", "en", 1440, 2200, "#overview", "hover", None),
-            ("20-light-en-1440-dest-hover.png", "light", "en", 1440, 2200, "#overview", "hover", None),
-            ("32-dark-zh-1440-dest-hover.png", "dark", "zh", 1440, 2200, "#overview", "hover", None),
-            ("33-light-zh-1440-dest-hover.png", "light", "zh", 1440, 2200, "#overview", "hover", None),
-            ("21-dark-en-1440-heading-focus.png", "dark", "en", 1440, 2200, "#overview", "focus", None),
-            ("22-light-en-1440-heading-focus.png", "light", "en", 1440, 2200, "#overview", "focus", None),
-            ("34-dark-zh-1440-heading-focus.png", "dark", "zh", 1440, 2200, "#overview", "focus", None),
-            ("35-light-zh-1440-heading-focus.png", "light", "zh", 1440, 2200, "#overview", "focus", None),
-            ("23-dark-en-1440-money-central-banks.png", "dark", "en", 1440, 2200, "#money/central_banks", "full", None),
-            ("27-light-en-1440-money-central-banks.png", "light", "en", 1440, 2200, "#money/central_banks", "full", None),
-            ("48-dark-zh-1440-money-central-banks.png", "dark", "zh", 1440, 2200, "#money/central_banks", "full", None),
-            ("49-light-zh-1440-money-central-banks.png", "light", "zh", 1440, 2200, "#money/central_banks", "full", None),
-            ("24-dark-en-1440-inflation-foot.png", "dark", "en", 1440, 2200, "#inflation", "full", None),
-            ("55-light-en-1440-inflation-foot.png", "light", "en", 1440, 2200, "#inflation", "full", None),
-            ("56-dark-zh-1440-inflation-foot.png", "dark", "zh", 1440, 2200, "#inflation", "full", None),
-            ("57-light-zh-1440-inflation-foot.png", "light", "zh", 1440, 2200, "#inflation", "full", None),
+            ("19-dark-en-1440-dest-hover.png", "dark", "en", 1440, 900, "#overview", "hover", None),
+            ("20-light-en-1440-dest-hover.png", "light", "en", 1440, 900, "#overview", "hover", None),
+            ("32-dark-zh-1440-dest-hover.png", "dark", "zh", 1440, 900, "#overview", "hover", None),
+            ("33-light-zh-1440-dest-hover.png", "light", "zh", 1440, 900, "#overview", "hover", None),
+            ("21-dark-en-1440-heading-focus.png", "dark", "en", 1440, 900, "#overview", "focus", None),
+            ("22-light-en-1440-heading-focus.png", "light", "en", 1440, 900, "#overview", "focus", None),
+            ("34-dark-zh-1440-heading-focus.png", "dark", "zh", 1440, 900, "#overview", "focus", None),
+            ("35-light-zh-1440-heading-focus.png", "light", "zh", 1440, 900, "#overview", "focus", None),
+            ("23-dark-en-1440-money-central-banks.png", "dark", "en", 1440, 900, "#money/central_banks", "viewport", None),
+            ("27-light-en-1440-money-central-banks.png", "light", "en", 1440, 900, "#money/central_banks", "viewport", None),
+            ("48-dark-zh-1440-money-central-banks.png", "dark", "zh", 1440, 900, "#money/central_banks", "viewport", None),
+            ("49-light-zh-1440-money-central-banks.png", "light", "zh", 1440, 900, "#money/central_banks", "viewport", None),
+            ("24-dark-en-1440-inflation-foot.png", "dark", "en", 1440, 900, "#inflation", "viewport", None),
+            ("55-light-en-1440-inflation-foot.png", "light", "en", 1440, 900, "#inflation", "viewport", None),
+            ("56-dark-zh-1440-inflation-foot.png", "dark", "zh", 1440, 900, "#inflation", "viewport", None),
+            ("57-light-zh-1440-inflation-foot.png", "light", "zh", 1440, 900, "#inflation", "viewport", None),
         ]
 
         with sync_playwright() as playwright:
@@ -1249,39 +1621,48 @@ def main() -> int:
                                 raise RuntimeError(
                                     f"{filename} still asks what moved")
                         extra = dict(extra or {})
+                        extra.setdefault("fixture", "builder-payload")
                         if kind == "iframe-end":
                             extra["scroll_y"] = _settle_scroll(target, "max")
-                            page.screenshot(path=str(dest), type="png", full_page=False)
-                        elif kind == "iframe":
+                            extra = _write_shot(page, dest, extra, vw, vh)
+                        elif kind in ("iframe", "iframe-full", "viewport"):
                             extra["scroll_y"] = _settle_scroll(target, "0")
-                            page.screenshot(path=str(dest), type="png", full_page=False)
-                        elif kind == "iframe-full":
+                            extra = _write_shot(page, dest, extra, vw, vh)
+                        elif kind == "fullpage":
                             extra["scroll_y"] = _settle_scroll(target, "0")
-                            page.screenshot(path=str(dest), type="png", full_page=False)
+                            extra = _write_shot(page, dest, extra, vw, vh, full_page=True)
                         elif kind == "arrival":
                             target.wait_for_selector("[data-mc-arrival]:not([hidden])", timeout=8000)
                             extra["scroll_y"] = _read_scroll(target)
-                            target.locator("#rates").screenshot(path=str(dest), type="png")
+                            extra = _write_shot(
+                                target, dest, extra, vw, vh,
+                                crop_locator=target.locator("#rates"),
+                                crop_selector="#rates")
                         elif kind == "arrival-iframe":
                             target.wait_for_selector("[data-mc-arrival]:not([hidden])", timeout=8000)
                             extra["scroll_y"] = _read_scroll(target)
-                            page.screenshot(path=str(dest), type="png", full_page=False)
+                            extra = _write_shot(page, dest, extra, vw, vh)
                         elif kind == "hover":
                             card = target.locator("#overview .mc-dest").first
                             card.hover()
                             target.wait_for_timeout(150)
                             extra["scroll_y"] = _read_scroll(target)
-                            card.screenshot(path=str(dest), type="png")
+                            extra = _write_shot(
+                                target, dest, extra, vw, vh,
+                                crop_locator=card,
+                                crop_selector="#overview .mc-dest")
                         elif kind == "focus":
                             heading = target.locator("#overview-h")
                             heading.focus()
                             target.wait_for_timeout(150)
                             extra["scroll_y"] = _read_scroll(target)
-                            heading.screenshot(path=str(dest), type="png")
+                            extra = _write_shot(
+                                target, dest, extra, vw, vh,
+                                crop_locator=heading,
+                                crop_selector="#overview-h")
                         else:
                             extra["scroll_y"] = _read_scroll(target)
-                            page.screenshot(path=str(dest), type="png", full_page=True)
-                        _assert_png(dest)
+                            extra = _write_shot(page, dest, extra, vw, vh, full_page=True)
                         _upsert(manifest, filename, _row(filename, dest, theme, locale, vw, vh, extra))
                         print(f"  {filename} {dest.stat().st_size}B {_sha(dest)[:12]}", flush=True)
                     finally:
@@ -1311,6 +1692,11 @@ def main() -> int:
                             raise RuntimeError(
                                 f"R8-M1 clearance failed 390 {theme}/{locale}: {clear}")
                         probes[f"clearance_390_{theme}_{locale}"] = clear
+                        clip = page.evaluate(RAIL_CLIP_JS)
+                        if not clip.get("ok"):
+                            raise RuntimeError(
+                                f"rail clip 390 {theme}/{locale}: {clip}")
+                        probes[f"rail_clip_{theme}_{locale}_390"] = clip
                         print(
                             f"  clearance 390 {theme}/{locale} ok={clear['ok']} "
                             f"texts={clear['textCount']} "
@@ -1320,8 +1706,9 @@ def main() -> int:
                     finally:
                         context.close()
 
-                # 768 rail + clearance, both themes (EN); ZH 768 is frames-only
-                for theme, locale in (("dark", "en"), ("light", "en")):
+                # 768 rail + clearance, both themes × both locales
+                for theme, locale in (("dark", "en"), ("dark", "zh"),
+                                      ("light", "en"), ("light", "zh")):
                     context = _new_context(browser, theme, locale, 768, 1400)
                     try:
                         page = _open_direct(
@@ -1337,6 +1724,11 @@ def main() -> int:
                             raise RuntimeError(
                                 f"R8-M1 clearance failed 768 {theme}/{locale}: {clear}")
                         probes[f"clearance_768_{theme}_{locale}"] = clear
+                        clip = page.evaluate(RAIL_CLIP_JS)
+                        if not clip.get("ok"):
+                            raise RuntimeError(
+                                f"rail clip 768 {theme}/{locale}: {clip}")
+                        probes[f"rail_clip_{theme}_{locale}_768"] = clip
                         print(
                             f"  clearance 768 {theme}/{locale} ok={clear['ok']} "
                             f"texts={clear['textCount']}",
@@ -1348,7 +1740,7 @@ def main() -> int:
                 # four 1440 cells. Must stay visible (flex).
                 for theme, locale in (("dark", "en"), ("dark", "zh"),
                                       ("light", "en"), ("light", "zh")):
-                    context = _new_context(browser, theme, locale, 1440, 2200)
+                    context = _new_context(browser, theme, locale, 1440, 900)
                     try:
                         page = _open_direct(
                             context, origin + "/macro_monetary.html",
@@ -1373,7 +1765,8 @@ def main() -> int:
 
                 # r10 evidence m4: click the ≤768 analyst chip; the same
                 # chat surface the FAB would boot (`#mmb-root`) must mount.
-                for theme, locale in (("dark", "en"), ("light", "en")):
+                for theme, locale in (("dark", "en"), ("dark", "zh"),
+                                      ("light", "en"), ("light", "zh")):
                     context = _new_context(browser, theme, locale, 390, 844)
                     try:
                         page = _open_direct(
@@ -1392,7 +1785,7 @@ def main() -> int:
                         context.close()
 
                 # RIDER M2: one hairline on a populated light sub-tab.
-                context = _new_context(browser, "light", "en", 1440, 2200)
+                context = _new_context(browser, "light", "en", 1440, 900)
                 try:
                     page = _open_direct(
                         context, origin + "/macro_monetary.html",
@@ -1434,7 +1827,7 @@ def main() -> int:
                 }
                 for theme, locale in (("dark", "en"), ("dark", "zh"),
                                       ("light", "en"), ("light", "zh")):
-                    context = _new_context(browser, theme, locale, 1440, 2200)
+                    context = _new_context(browser, theme, locale, 1440, 900)
                     try:
                         page = _open_direct(
                             context, origin + "/macro_monetary.html",
@@ -1469,7 +1862,8 @@ def main() -> int:
                     finally:
                         context.close()
                 probes["strip_void_probes"] = strip_voids
-                probes["strip_void_probe"] = strip_voids["light_en"]
+                probes.pop("strip_void_probe", None)
+                _capture_e5_cells(browser, origin, probes, manifest)
             finally:
                 _kill(proc)
                 if proc in servers:
@@ -1477,35 +1871,6 @@ def main() -> int:
 
             _capture_empty_states(browser, tmp, servers, manifest)
             browser.close()
-
-        _upsert(manifest, "empty-e5-dark.png", {
-            "access": "anonymous",
-            "applied_locale": "en",
-            "applied_theme": "dark",
-            "bytes": None,
-            "captured": False,
-            "file": None,
-            "sha256": None,
-            "force_state": "e5",
-            "fixture": None,
-            "reduced_motion": True,
-            "trigger": (
-                "E5 is a client fetch-timeout of macro/fragments/<id>.html "
-                "(PENDING_TIMEOUT_MS=8000). The builder only emits a hidden "
-                "<template data-mc-empty-e5>; a visible E5 cannot be produced "
-                "from workspace JSON through scripts/build_macro_suite_pages.py."
-            ),
-            "locale": "en",
-            "reason": (
-                "not builder-triggerable: client fetch-timeout of a fragment; "
-                "builder emits only the hidden <template data-mc-empty-e5>"
-            ),
-            "theme": "dark",
-            "scroll_y": None,
-            "viewport": "desktop",
-            "viewport_height": 2200,
-            "viewport_width": 1440,
-        })
 
         # Distinct-frame sha check; drop the r4 stray row.
         states = [
@@ -1553,8 +1918,15 @@ def main() -> int:
             raise RuntimeError(f"duplicate evidence blobs: {dupes}")
 
         manifest["axes"]["force_states"] = sorted(force_states)
+        manifest["pages"][0]["gaps"] = _compute_gaps(
+            _declared_empty_cells(), states)
+        for gap in manifest["pages"][0]["gaps"]:
+            if not gap.get("reason"):
+                raise RuntimeError(f"gap missing reason: {gap}")
+            if gap.get("captured") is not False:
+                raise RuntimeError(f"gap must be captured:false: {gap}")
         manifest["axes"]["viewports"] = {
-            "desktop": [1440, 2200],
+            "desktop": [1440, 900],
             "tablet": [768, 1400],
             "mobile": [390, 844],
         }
@@ -1581,7 +1953,7 @@ def main() -> int:
         manifest["head_end"] = head_end
         manifest["capture_sha"] = head
         manifest["commit_time_of_capture_sha"] = commit_time
-        manifest["strip_void_probe"] = probes.get("strip_void_probe")
+        manifest.pop("strip_void_probe", None)
         manifest["strip_void_probes"] = probes.get("strip_void_probes")
         manifest.setdefault("target", {})
         manifest["target"]["resolved_sha_or_none"] = head
@@ -1598,6 +1970,7 @@ def main() -> int:
         probes["capture_sha"] = head
         probes["commit_time_of_capture_sha"] = commit_time
         probes["resolved_sha_or_none"] = head
+        probes.pop("strip_void_probe", None)
         PROBES.write_text(json.dumps(probes, indent=2) + "\n", encoding="utf-8")
         print(
             f"wrote {MANIFEST} generated_at_start={generated_at_start} "
