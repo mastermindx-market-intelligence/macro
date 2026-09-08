@@ -1,40 +1,28 @@
-{% macro t(en, zh='') -%}
-<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
-{%- endmacro %}
-{#
-  ══════════════════════════════════════════════════════════════════════════════
-  OPTIONS WORKSPACE — the canonical options surface (OEU lane M-CMD).
-  Ruling: research/options_estate/OEU_MASTERPLAN.md §2
-  Pinned design: research/options_estate/WORKSPACE_DESIGN_SPEC.md
-  Reference markup/CSS: mockups/oeu_workspace/options_mockup.html (copied)
-  Context: scripts/build_options_command.py
 
-  THE VISUAL SYSTEM IN ONE LINE — "the fill-track": every quantity is drawn as a
-  bounded track with a VISIBLE denominator and a filled portion. Four scales of
-  one idea — the close line (coverage), the pip strip (5), the dot-ladder (8/7),
-  the sector bar (shared scale). An unfilled pip is a filled grey tile, never an
-  empty outline: when "off" is invisible, 6/8 reads as a random pattern and the
-  honesty of the scale is lost.
 
-  PAYLOAD LAW (spec §6): the persistent chrome and the Daily Brief are baked
-  inline — the honesty layer must never depend on a fetch. Scanner / Ticker /
-  Leaders payloads are lazy-fetched on first mode activation with plain fetch().
-  NEVER a JS-injected <script> loader: that bypasses asset stamping (#3372).
-  ══════════════════════════════════════════════════════════════════════════════
-#}
-{% set sess = session if session else {} %}
-{#- The close line's fill IS the coverage share. An UNKNOWN coverage must never
-    render as a complete line: with no number the rule stays fully hatched and
-    says so on hover. Never a floor, a minimum, or a "looks better" rounding. -#}
-{% set cov_pct = sess.coverage_pct if sess.coverage_pct is not none else 0 %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Options — one workspace · 期权工作台</title>
-{% set seo_title = "Options Workspace: Brief, Scanner, Per-Name & Leaders — Mastermind" %}{% set seo_desc = "One workspace for the settled options close — the day's brief, a 400-name scanner, per-name dealer positioning and the flow leader boards, in plain words." %}{% set seo_path = "options.html" %}
-{% include "_seo_head.html.j2" %}
+
+<meta name="description" content="One workspace for the settled options close — the day&#39;s brief, a 400-name scanner, per-name dealer positioning and the flow leader boards, in plain words.">
+<link rel="canonical" href="https://www.mastermind-x.com/options.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MastermindX">
+<meta property="og:title" content="Options Workspace: Brief, Scanner, Per-Name &amp; Leaders — Mastermind">
+<meta property="og:description" content="One workspace for the settled options close — the day&#39;s brief, a 400-name scanner, per-name dealer positioning and the flow leader boards, in plain words.">
+<meta property="og:url" content="https://www.mastermind-x.com/options.html">
+<meta property="og:image" content="https://www.mastermind-x.com/apple-touch-icon.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Options Workspace: Brief, Scanner, Per-Name &amp; Leaders — Mastermind">
+<meta name="twitter:description" content="One workspace for the settled options close — the day&#39;s brief, a 400-name scanner, per-name dealer positioning and the flow leader boards, in plain words.">
+<meta name="twitter:image" content="https://www.mastermind-x.com/apple-touch-icon.png">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css">
 <link rel="stylesheet" href="illus.css">
@@ -943,7 +931,249 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
 </head>
 <body class="page-options">
 
-{% include "_site_nav.html.j2" %}
+
+
+<nav class="site-nav">
+
+
+
+    <link rel="stylesheet" href="navigation-refresh.css">
+    <div class="nav-links">
+    
+    <a class="nav-brand" href="start.html" aria-label="MASTERMINDX — Home">
+      <svg class="brand-glyph" width="29" height="29" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="mbTile" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#5b9dff"/><stop offset=".42" stop-color="#3b82f6"/>
+            <stop offset=".74" stop-color="#6366f1"/><stop offset="1" stop-color="#7c5cff"/></linearGradient>
+          <linearGradient id="mbSheen" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#ffffff" stop-opacity=".34"/><stop offset=".55" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
+          <radialGradient id="mbGlow" cx=".5" cy=".4" r=".65">
+            <stop offset="0" stop-color="#ffffff" stop-opacity=".22"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
+          <linearGradient id="mbInk" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#dbe7ff"/></linearGradient>
+        </defs>
+        <rect x="3" y="3" width="34" height="34" rx="10.5" fill="url(#mbTile)"/>
+        <rect x="3" y="3" width="34" height="34" rx="10.5" fill="url(#mbGlow)"/>
+        <rect x="3" y="3" width="34" height="34" rx="10.5" fill="url(#mbSheen)"/>
+        <rect x="3.7" y="3.7" width="32.6" height="32.6" rx="9.9" fill="none" stroke="#ffffff" stroke-opacity=".28"/>
+        <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.3">
+          <path d="M13 28 L13 14.5 L20 22 L27 12.5 L27 28" stroke="#15205a" stroke-opacity=".30" transform="translate(0,1.1)"/>
+          <path d="M13 28 L13 14.5 L20 22 L27 12.5 L27 28" stroke="url(#mbInk)"/>
+        </g>
+      </svg>
+      <span class="brand-word">MASTERMINDX</span>
+    </a>
+    
+    <div class="nav-dd">
+      <a class="nav-link" href="macro.html"><span class="menu-icon menu-icon-flag menu-icon-us" aria-hidden="true"></span><span class="l-en">United States</span><span class="l-zh">美国</span> <span class="caret">▾</span></a>
+      <div class="nav-dd-menu" role="menu">
+        <a href="macro.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Macro Dashboard</span><span class="l-zh">宏观仪表盘</span><span class="d"><span class="l-en">Regime · growth · inflation · nowcast</span><span class="l-zh">市况 · 增长 · 通胀 · 实时测算</span></span></a>
+        <a href="us_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet · sectors · flows</span><span class="l-zh">Prophet · 板块 · 资金</span></span></a>
+        
+        <a href="intraday_flow.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Intraday Flow Tracker</span><span class="l-zh">盘中资金流追踪</span><span class="d"><span class="l-en">Live session board — volume, tape and stance lanes · ≈15-min delayed</span><span class="l-zh">盘中实时看板 — 量能、盘面与操作分级 · 约延迟15分钟</span></span></a>
+        <a href="stage_analysis.html"><span class="submenu-icon submenu-icon-stage" aria-hidden="true"></span><span class="l-en">Stage Analysis</span><span class="l-zh">阶段分析</span><span class="d"><span class="l-en">Stage 1-4 cycle · fresh breakouts · earnings tone</span><span class="l-zh">阶段1-4周期 · 新突破 · 财报语气</span></span></a>
+        
+        <a href="winner_health.html"><span class="submenu-icon submenu-icon-leader" aria-hidden="true"></span><span class="l-en">Winner Health</span><span class="l-zh">持仓健康度</span><span class="d"><span class="l-en">Big gains near their highs · how the move is aging · what similar past runs did</span><span class="l-zh">涨幅可观且仍在高位 · 行情老化到什么程度 · 相似历史行情走过的路</span></span></a>
+        
+        <a href="sector_central.html"><span class="submenu-icon submenu-icon-intelligence" aria-hidden="true"></span><span class="l-en">Sector Intelligence</span><span class="l-zh">行业情报</span><span class="d"><span class="l-en">Sectors, themes & rotation in one read · lanes · cycle map · graded</span><span class="l-zh">板块·主题·轮动一页读 · 操作清单 · 周期图谱 · 自评分</span></span></a>
+        <a href="sector_central.html#confluence"><span class="submenu-icon submenu-icon-confluence" aria-hidden="true"></span><span class="l-en">Subsector Confluence</span><span class="l-zh">子行业汇聚</span><span class="d"><span class="l-en">Entry-now S&P 500 subsectors · T1-T4 tiers · two-way confirmed stocks · basket charts</span><span class="l-zh">S&P 500 现可入场子行业 · T1-T4 分层 · 两道确认的选股 · 篮子走势图</span></span></a>
+        <a href="strategies.html"><span class="submenu-icon submenu-icon-strategy" aria-hidden="true"></span><span class="l-en">Strategies</span><span class="l-zh">策略</span><span class="d"><span class="l-en">Tactical strategy scorecards</span><span class="l-zh">战术策略记分卡</span></span></a>
+        <a href="news.html"><span class="submenu-icon submenu-icon-news" aria-hidden="true"></span><span class="l-en">News Feed</span><span class="l-zh">新闻流</span><span class="d"><span class="l-en">Macro headlines · catalysts · sentiment</span><span class="l-zh">宏观头条 · 日程 · 情绪</span></span></a>
+        <a href="alerts.html"><span class="submenu-icon submenu-icon-alert" aria-hidden="true"></span><span class="l-en">Alert Center</span><span class="l-zh">警报中心</span><span class="d"><span class="l-en">Ranked & triaged alerts</span><span class="l-zh">分级分诊的警报</span></span></a>
+        
+        <div class="nav-dd nav-sub">
+          <a class="nav-sub-trig" href="options.html"><span class="nav-sub-text"><span class="submenu-icon submenu-icon-options" aria-hidden="true"></span><span class="l-en">Options & Market Structure</span><span class="l-zh">期权与市场结构</span><span class="d"><span class="l-en">Workspace · dark pool · index regime</span><span class="l-zh">工作台 · 暗池 · 指数结构</span></span></span><span class="caret-r">▸</span></a>
+          <div class="nav-dd-menu" role="menu">
+            <a href="options.html"><span class="submenu-icon submenu-icon-options" aria-hidden="true"></span><span class="l-en">Options — the workspace</span><span class="l-zh">期权工作台</span><span class="d"><span class="l-en">Daily Brief · Flow · Scanner · Ticker · Leaders</span><span class="l-zh">每日简报 · 资金流 · 筛选 · 个股 · 领头股</span></span></a>
+            <a href="darkpool.html"><span class="submenu-icon submenu-icon-darkpool" aria-hidden="true"></span><span class="l-en">Dark Pool Desk</span><span class="l-zh">场外暗池台</span><span class="d"><span class="l-en">Off-exchange volume · short ratio · ATS venues</span><span class="l-zh">场外成交量 · 融券比率 · ATS场所</span></span></a>
+            <a href="market_structure.html"><span class="submenu-icon submenu-icon-structure" aria-hidden="true"></span><span class="l-en">Market Structure</span><span class="l-zh">市场结构</span><span class="d"><span class="l-en">GEX regime · machine flows · dispersion · weekly range</span><span class="l-zh">做市商制度 · 机器资金 · 离散度 · 周度区间</span></span></a>
+          </div>
+        </div>
+        <a href="leader_radar.html"><span class="submenu-icon submenu-icon-radar" aria-hidden="true"></span><span class="l-en">Leader Radar</span><span class="l-zh">龙头雷达</span><span class="d"><span class="l-en">Lifecycle board · regime · handoff watch · rerating watch</span><span class="l-zh">生命周期看板 · 龙头市况 · 换手观察 · 重估观察</span></span></a>
+      </div>
+    </div>
+    <div class="nav-dd">
+      <a class="nav-link" href="china.html"><span class="menu-icon menu-icon-flag menu-icon-cn" aria-hidden="true"></span><span class="l-en">China</span><span class="l-zh">中国</span> <span class="caret">▾</span></a>
+      <div class="nav-dd-menu" role="menu">
+        <a href="china.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Macro Dashboard</span><span class="l-zh">宏观仪表盘</span><span class="d"><span class="l-en">A-share regime · sectors · flows</span><span class="l-zh">A股周期 · 板块 · 资金</span></span></a>
+        <a href="china_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet · alpha · setups</span><span class="l-zh">Prophet · 超额收益 · 买点</span></span></a>
+        
+        <a href="sector_central_china.html"><span class="submenu-icon submenu-icon-intelligence" aria-hidden="true"></span><span class="l-en">Sector Intelligence</span><span class="l-zh">行业情报</span><span class="d"><span class="l-en">Gated board · cycle map · whole-market rotation · theme baskets — one page</span><span class="l-zh">门控研判 · 周期图谱 · 全市场轮动 · 主题篮子 — 一页尽览</span></span></a>
+        <a href="sector_central_china.html#confluence"><span class="submenu-icon submenu-icon-confluence" aria-hidden="true"></span><span class="l-en">Subsector Confluence</span><span class="l-zh">子行业汇聚</span><span class="d"><span class="l-en">Entry-now 同花顺 concepts · T1-T4 tiers · two-way confirmed A-shares · basket charts</span><span class="l-zh">同花顺现可入场概念 · T1-T4 分层 · 两道确认的选股 · 篮子走势图</span></span></a>
+        <a href="china_heatmap.html"><span class="submenu-icon submenu-icon-heatmap" aria-hidden="true"></span><span class="l-en">Market Heatmap</span><span class="l-zh">市场热力图</span><span class="d"><span class="l-en">Every A-share · sector treemap · market-cap</span><span class="l-zh">全部A股 · 板块树图 · 按市值</span></span></a>
+        <a href="china_strategies.html"><span class="submenu-icon submenu-icon-strategy" aria-hidden="true"></span><span class="l-en">Strategies</span><span class="l-zh">策略</span><span class="d"><span class="l-en">Tactical strategy scorecards</span><span class="l-zh">战术策略记分卡</span></span></a>
+        <a href="china_news.html"><span class="submenu-icon submenu-icon-news" aria-hidden="true"></span><span class="l-en">China News Feed</span><span class="l-zh">中国新闻</span><span class="d"><span class="l-en">Policy tone · official sources · market tags</span><span class="l-zh">政策基调 · 官方来源 · 市场标签</span></span></a>
+        <div class="nav-dd nav-sub">
+          <a class="nav-sub-trig" href="china_intel.html"><span class="nav-sub-text"><span class="submenu-icon submenu-icon-research" aria-hidden="true"></span><span class="l-en">Research</span><span class="l-zh">研究</span><span class="d"><span class="l-en">Intel hub · flows · policy</span><span class="l-zh">情报中心 · 资金流 · 政策</span></span></span><span class="caret-r">▸</span></a>
+          <div class="nav-dd-menu" role="menu">
+            <a href="china_intel.html"><span class="submenu-icon submenu-icon-intelligence" aria-hidden="true"></span><span class="l-en">Intelligence Hub</span><span class="l-zh">情报中心</span><span class="d"><span class="l-en">All China intel + Mastermind feed</span><span class="l-zh">全部中国情报 + Mastermind 信号</span></span></a>
+            <a href="china_mechanics.html"><span class="submenu-icon submenu-icon-research" aria-hidden="true"></span><span class="l-en">Market Mechanics</span><span class="l-zh">市场结构</span><span class="d"><span class="l-en">Participation · limit breadth · phase memory · policy tape</span><span class="l-zh">参与度 · 涨跌停广度 · 阶段记忆 · 政策磁带</span></span></a>
+            <a href="baskets_china_ths.html"><span class="submenu-icon submenu-icon-baskets" aria-hidden="true"></span><span class="l-en">同花顺 Theme Baskets</span><span class="l-zh">同花顺主题篮子</span><span class="d"><span class="l-en">Tonghuashun concept boards · members & performance</span><span class="l-zh">同花顺概念板块 · 成分与表现</span></span></a>
+            <a href="flow_velocity.html"><span class="submenu-icon submenu-icon-flow" aria-hidden="true"></span><span class="l-en">Capital Flow Velocity</span><span class="l-zh">资金流速</span><span class="d"><span class="l-en">Big-money flow into names &amp; sectors · velocity · accel</span><span class="l-zh">主力资金流入个股与板块 · 流速 · 加速度</span></span></a>
+            <a href="china_altdata.html"><span class="submenu-icon submenu-icon-altdata" aria-hidden="true"></span><span class="l-en">Alternative Data</span><span class="l-zh">另类数据</span><span class="d"><span class="l-en">Smart-money convergence · signal lab</span><span class="l-zh">主力共振 · 信号实验室</span></span></a>
+            <a href="china_policy_watch.html"><span class="submenu-icon submenu-icon-policy" aria-hidden="true"></span><span class="l-en">PBoC & Policy Watch</span><span class="l-zh">央行与政策观察</span><span class="d"><span class="l-en">Rate corridor · liquidity · sector policy</span><span class="l-zh">利率走廊 · 流动性 · 行业政策</span></span></a>
+            <a href="china_radar.html"><span class="submenu-icon submenu-icon-radar" aria-hidden="true"></span><span class="l-en">Divergence Radar</span><span class="l-zh">背离雷达</span><span class="d"><span class="l-en">Policy/flow signal vs sector price</span><span class="l-zh">政策/资金信号 vs 板块价格</span></span></a>
+            <a href="china_special_situations.html"><span class="submenu-icon submenu-icon-event" aria-hidden="true"></span><span class="l-en">Special Situations</span><span class="l-zh">特殊事件</span><span class="d"><span class="l-en">Unlocks · inquiry letters · preannouncements · pledge stress</span><span class="l-zh">解禁 · 问询函 · 业绩预告 · 质押风险</span></span></a>
+            <a href="narrative_radar.html"><span class="submenu-icon submenu-icon-narrative" aria-hidden="true"></span><span class="l-en">Narrative Basket Radar</span><span class="l-zh">主题篮子雷达</span><span class="d"><span class="l-en">Which THS theme is running · global driver · member entries</span><span class="l-zh">哪个同花顺主题正在运行 · 全球驱动 · 成员入场</span></span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-dd">
+      <a class="nav-link" href="hk.html"><span class="menu-icon menu-icon-flag menu-icon-hk" aria-hidden="true"></span><span class="l-en">Hong Kong</span><span class="l-zh">香港</span> <span class="caret">▾</span></a>
+      <div class="nav-dd-menu" role="menu">
+        <a href="hk.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Macro Dashboard</span><span class="l-zh">宏观仪表盘</span><span class="d"><span class="l-en">HSI · southbound · global risk</span><span class="l-zh">HSI · 南向 · 全球风险</span></span></a>
+        <a href="hk_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet HK · alpha</span><span class="l-zh">Prophet 港股 · 超额收益</span></span></a>
+        <a href="hk_heatmap.html"><span class="submenu-icon submenu-icon-heatmap" aria-hidden="true"></span><span class="l-en">Market Heatmap</span><span class="l-zh">市场热力图</span><span class="d"><span class="l-en">HK universe · sector treemap · turnover-sized</span><span class="l-zh">港股全景 · 板块树图 · 按成交额</span></span></a>
+        <a href="flow_velocity.html"><span class="submenu-icon submenu-icon-flow" aria-hidden="true"></span><span class="l-en">Capital Flow Velocity</span><span class="l-zh">资金流速</span><span class="d"><span class="l-en">Southbound + A-share big-money velocity</span><span class="l-zh">南向 + A股主力资金流速</span></span></a>
+        <a href="baskets_hk.html"><span class="submenu-icon submenu-icon-baskets" aria-hidden="true"></span><span class="l-en">Thematic Baskets</span><span class="l-zh">主题篮子</span><span class="d"><span class="l-en">Equal-weight theme baskets vs HSI</span><span class="l-zh">等权主题篮子 vs 恒指</span></span></a>
+        <a href="allocation_hk.html"><span class="submenu-icon submenu-icon-rebalance" aria-hidden="true"></span><span class="l-en">Narrative Rotation</span><span class="l-zh">主题轮动</span><span class="d"><span class="l-en">Which theme to hold & when to rotate</span><span class="l-zh">持有哪个主题 · 何时轮动</span></span></a>
+      </div>
+    </div>
+    <div class="nav-dd">
+      <a class="nav-link" href="canada.html"><span class="menu-icon menu-icon-flag menu-icon-ca" aria-hidden="true"></span><span class="l-en">Canada</span><span class="l-zh">加拿大</span> <span class="caret">▾</span></a>
+      <div class="nav-dd-menu" role="menu">
+        <a href="canada.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Macro Dashboard</span><span class="l-zh">宏观仪表盘</span><span class="d"><span class="l-en">TSX · BoC · commodity overlay</span><span class="l-zh">TSX · 加央行 · 商品叠加</span></span></a>
+        <a href="canada_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet TSX · sectors · alpha</span><span class="l-zh">Prophet 多伦多 · 板块 · 超额收益</span></span></a>
+        <a href="canada_heatmap.html"><span class="submenu-icon submenu-icon-heatmap" aria-hidden="true"></span><span class="l-en">Market Heatmap</span><span class="l-zh">市场热力图</span><span class="d"><span class="l-en">TSX universe · sector treemap · market-cap</span><span class="l-zh">TSX全景 · 板块树图 · 按市值</span></span></a>
+        <a href="baskets_canada.html"><span class="submenu-icon submenu-icon-baskets" aria-hidden="true"></span><span class="l-en">Thematic Baskets</span><span class="l-zh">主题篮子</span><span class="d"><span class="l-en">Equal-weight theme baskets vs S&P/TSX</span><span class="l-zh">等权主题篮子 vs 标普/多伦多</span></span></a>
+        <a href="allocation_canada.html"><span class="submenu-icon submenu-icon-rebalance" aria-hidden="true"></span><span class="l-en">Narrative Rotation</span><span class="l-zh">主题轮动</span><span class="d"><span class="l-en">Which theme to hold & when to rotate</span><span class="l-zh">持有哪个主题 · 何时轮动</span></span></a>
+      </div>
+    </div>
+    <div class="nav-dd">
+      <a class="nav-link" href="intl.html"><span class="menu-icon menu-icon-intl" aria-hidden="true"></span><span class="l-en">International</span><span class="l-zh">国际</span> <span class="caret">▾</span></a>
+      <div class="nav-dd-menu" role="menu">
+        <a href="intl.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Macro Dashboard</span><span class="l-zh">宏观仪表盘</span><span class="d"><span class="l-en">JP · KR · TW · UK · EU compared</span><span class="l-zh">日 · 韩 · 台 · 英 · 欧 对比</span></span></a>
+        
+        <div class="nav-dd nav-sub">
+          <a class="nav-sub-trig" href="japan.html"><span class="nav-sub-text"><span aria-hidden="true">🌐</span> <span class="l-en">Country Dashboards</span><span class="l-zh">国家看板</span><span class="d"><span class="l-en">Japan · Korea · Euro Area · UK · India</span><span class="l-zh">日本 · 韩国 · 欧元区 · 英国 · 印度</span></span></span><span class="caret-r">▸</span></a>
+          <div class="nav-dd-menu" role="menu">
+            <a href="japan.html" data-intl-country="jp"><span aria-hidden="true">🇯🇵</span> <span class="l-en">Japan Macro</span><span class="l-zh">日本宏观</span><span class="d"><span class="l-en">BoJ · wages · JGBs · yen</span><span class="l-zh">日银 · 工资 · JGB · 日元</span></span></a>
+            <a href="south_korea.html" data-intl-country="kr"><span aria-hidden="true">🇰🇷</span> <span class="l-en">South Korea Macro</span><span class="l-zh">韩国宏观</span><span class="d"><span class="l-en">BOK · exports · household credit · won</span><span class="l-zh">韩银 · 出口 · 家庭信贷 · 韩元</span></span></a>
+            <a href="euro_area.html" data-intl-country="ez"><span aria-hidden="true">🇪🇺</span> <span class="l-en">Euro Area Macro</span><span class="l-zh">欧元区宏观</span><span class="d"><span class="l-en">EA21 · ECB · HICP · bank credit</span><span class="l-zh">EA21 · 欧洲央行 · HICP · 银行信贷</span></span></a>
+            <a href="united_kingdom.html" data-intl-country="gb"><span aria-hidden="true">🇬🇧</span> <span class="l-en">United Kingdom Macro</span><span class="l-zh">英国宏观</span><span class="d"><span class="l-en">BoE · services CPI · wages · gilts</span><span class="l-zh">英央行 · 服务CPI · 工资 · 英债</span></span></a>
+            <a href="india.html" data-intl-country="in"><span aria-hidden="true">🇮🇳</span> <span class="l-en">India Macro</span><span class="l-zh">印度宏观</span><span class="d"><span class="l-en">RBI · food inflation · credit · rupee</span><span class="l-zh">RBI · 食品通胀 · 信贷 · 卢比</span></span></a>
+          </div>
+        </div>
+        <a href="intl_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet cross-market · sectors</span><span class="l-zh">Prophet 跨市场 · 板块</span></span></a>
+        <a href="baskets_intl.html"><span class="submenu-icon submenu-icon-baskets" aria-hidden="true"></span><span class="l-en">Thematic Baskets</span><span class="l-zh">主题篮子</span><span class="d"><span class="l-en">Cross-country theme baskets · ex-US</span><span class="l-zh">跨国主题篮子 · 除美</span></span></a>
+      </div>
+    </div>
+    <div class="nav-dd">
+      <a class="nav-link" href="javascript:void(0)"><span class="menu-icon menu-icon-assets" aria-hidden="true"></span><span class="l-en">Other Assets</span><span class="l-zh">其他资产</span> <span class="caret">▾</span></a>
+      <div class="nav-dd-menu" role="menu">
+        <div class="nav-dd nav-sub">
+          <a class="nav-sub-trig" href="commodities.html"><span class="nav-sub-text"><span class="submenu-icon submenu-icon-commodities" aria-hidden="true"></span><span class="l-en">Commodities</span><span class="l-zh">大宗商品</span><span class="d"><span class="l-en">Gold · oil · silver · copper</span><span class="l-zh">黄金 · 原油 · 白银 · 铜</span></span></span><span class="caret-r">▸</span></a>
+          <div class="nav-dd-menu" role="menu">
+            <a href="commodities.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Commodity Dashboard</span><span class="l-zh">商品仪表盘</span><span class="d"><span class="l-en">Gold · silver · copper · oil · complex</span><span class="l-zh">金 · 银 · 铜 · 油 · 综合</span></span></a>
+            <a href="commodity_strategies.html"><span class="submenu-icon submenu-icon-strategy" aria-hidden="true"></span><span class="l-en">Strategies</span><span class="l-zh">策略</span><span class="d"><span class="l-en">Per-commodity tactical strategies</span><span class="l-zh">分品种战术策略</span></span></a>
+            <a href="spr.html"><span class="submenu-icon submenu-icon-commodities" aria-hidden="true"></span><span class="l-en">Strategic Reserves</span><span class="l-zh">战略储备</span><span class="d"><span class="l-en">SPR levels by country vs oil prices</span><span class="l-zh">各国战略储备水平与油价</span></span></a>
+          </div>
+        </div>
+        <a href="forex.html"><span class="submenu-icon submenu-icon-forex" aria-hidden="true"></span><span class="l-en">Forex</span><span class="l-zh">外汇</span><span class="d"><span class="l-en">Dollar desk · G10 carry · pairs</span><span class="l-zh">美元走势 · G10 套息 · 货币对</span></span></a>
+        <a href="bonds.html"><span class="submenu-icon submenu-icon-policy" aria-hidden="true"></span><span class="l-en">Bonds</span><span class="l-zh">债券</span><span class="d"><span class="l-en">Curve · credit · duration compass</span><span class="l-zh">曲线 · 信用 · 久期罗盘</span></span></a>
+      </div>
+    </div>
+    
+    <div class="nav-dd nav-mega-dd">
+      <a class="nav-link" href="intelligence_hub.html"><span class="menu-icon menu-icon-research" aria-hidden="true"></span><span class="l-en">Research</span><span class="l-zh">研究</span> <span class="caret">▾</span></a>
+      <div class="nav-dd-menu nav-mega mega-menu" role="menu">
+        <div class="mega-main nav-mega-main">
+          <section class="mega-section nav-mega-section">
+            <h2 class="section-label nav-mega-h"><span class="l-en">Core Research</span><span class="l-zh">核心研究</span></h2>
+            <div class="item-grid nav-mega-item-grid">
+              <a class="mega-item nm-feat" href="intelligence_hub.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M6 12 24 3l18 9v23l-18 10L6 35Z"/><path d="m24 9 12 7v15l-12 7-12-7V16Z"/><circle class="soft-fill" cx="24" cy="24" r="4"/><path class="accent" d="M24 20V9M28 24h8M24 28v10M20 24h-8M21 21l-6-5M27 21l6-5M21 27l-6 5M27 27l6 5"/><circle cx="24" cy="9" r="1.5"/><circle cx="36" cy="24" r="1.5"/><circle cx="24" cy="38" r="1.5"/><circle cx="12" cy="24" r="1.5"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Intelligence Hub</span><span class="l-zh">情报中心</span></span><span class="item-desc d"><span class="l-en">Your complete market command center</span><span class="l-zh">你的完整市场指挥中心</span></span></span></a>
+              
+              <a class="mega-item nm-feat" href="watchlist.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M25 7a17 17 0 0 1 16 16"/><circle cx="21" cy="26" r="14"/><circle class="ghost" cx="21" cy="26" r="6"/><path class="accent" d="M21 12a14 14 0 0 1 12.1 7L21 26Z"/><path d="M21 12v14l12.1-7"/><circle class="soft-fill" cx="21" cy="26" r="3.2"/><path class="accent" d="M39 41v-9M44 41v-15"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Mastermind Portfolio</span><span class="l-zh">Mastermind 组合</span></span><span class="item-desc d"><span class="l-en">Your holdings with tonight’s signals</span><span class="l-zh">你的持仓与今晚信号</span></span></span></a>
+              
+              <a class="mega-item nm-feat" href="https://bot.mastermind-x.com" target="_blank" rel="noopener"><span class="icon-drawing nm-ic cyan" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M17 11V6M24 11V6M31 11V6M17 37v5M24 37v5M31 37v5M11 17H6M11 24H6M11 31H6M37 17h5M37 24h5M37 31h5"/><rect x="11" y="11" width="26" height="26" rx="5"/><path class="accent" d="m15 29 4-4 3.5 2.5 3.5-5.5"/><circle class="soft-fill" cx="26" cy="22" r="2.4"/><path class="ghost" d="m28 20.5 6-5"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Mastermind Bot</span><span class="l-zh">Mastermind 交易机器人</span><span class="nm-tier">PRO</span></span><span class="item-desc d"><span class="l-en">The AI’s own paper account — every trade explained</span><span class="l-zh">AI 自己的模拟账户，每笔交易都附理由</span></span></span></a>
+              <a class="mega-item nm-feat" href="reports.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M13 7h22l6 6v28H13z"/><path d="M9 4h22l6 6v28H9z"/><path d="M31 4v7h6"/><path class="accent" d="M15 29h16M15 33h12M15 16h16"/><path d="m15 25 4-4 4 2 6-7 3 3"/><circle class="soft-fill" cx="29" cy="16" r="2"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Research Reports</span><span class="l-zh">研究报告</span></span><span class="item-desc d"><span class="l-en">Deep dives and market calls</span><span class="l-zh">深度研究与市场判断</span></span></span></a>
+              <a class="mega-item nm-feat" href="research_vault.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="m7 14 17-9 17 9v23l-17 8-17-8Z"/><path d="m10 16 14-7 14 7v19l-14 7-14-7Z"/><path d="M10 16l14 7 14-7M24 23v19"/><circle class="soft-fill" cx="24" cy="27" r="6"/><path class="accent" d="M24 24v6M21 27h6"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Research Vault</span><span class="l-zh">研报库</span></span><span class="item-desc d"><span class="l-en">Search every published research note</span><span class="l-zh">搜索所有已发布研究</span></span></span></a>
+              <a class="mega-item nm-feat" data-nav-file="earnings_wire" href="stocks/earnings/index.html"><span class="icon-drawing nm-ic cyan" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M8 7h25l7 7v27H8z"/><path d="M6 5h25l7 7v27H6zM31 5v8h7"/><path class="accent" d="M12 29h5l3-7 5 12 4-9 3 4h3"/><path d="M12 16h14M12 20h9"/><circle class="soft-fill" cx="34" cy="29" r="3"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Earnings Wire</span><span class="l-zh">财报情报线</span></span><span class="item-desc d"><span class="l-en">Verified calls, weekly intelligence and company context</span><span class="l-zh">已核验电话会、每周情报与公司语境</span></span></span></a>
+              <a class="mega-item nm-feat" href="fundamental_forensics.html"><span class="icon-drawing nm-ic cyan" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M9 6h24l6 6v28H9z"/><path d="M7 4h24l6 6v23H7zM31 4v7h6"/><path d="M13 15h16M13 21h12M13 27h8"/><circle class="soft-fill" cx="31" cy="31" r="8"/><circle cx="29" cy="29" r="7"/><path class="accent" d="m34 34 7 7M25 29h8M29 25v8"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Filing Forensics</span><span class="l-zh">财报排雷</span></span><span class="item-desc d"><span class="l-en">Find the accounting changes worth reviewing</span><span class="l-zh">找出值得复核的会计变动</span></span></span></a>
+              <a class="mega-item nm-feat" href="neural_web.html"><span class="icon-drawing nm-ic cyan" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M6 24h36M24 6v36"/><circle class="soft-fill" cx="24" cy="24" r="5"/><circle cx="11" cy="12" r="3"/><circle cx="37" cy="12" r="3"/><circle cx="9" cy="34" r="3"/><circle cx="39" cy="34" r="3"/><path class="accent" d="M20 21 13 14M28 21l7-7M20 27l-8 5M28 27l8 5M14 12h20M11 15l-2 16M37 15l2 16M12 34h24"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Neural Web</span><span class="l-zh">智脑</span></span><span class="item-desc d"><span class="l-en">See how every signal votes</span><span class="l-zh">查看每个信号如何投票</span></span></span></a>
+              <a class="mega-item nm-feat" href="market_memory.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M8 10h32v28H8z"/><path d="M7 8h14c5 0 8 3 8 8v24c0-5-3-8-8-8H7zM41 8H27v32c0-5 3-8 8-8h6z"/><path class="accent" d="M13 16h9M13 21h7M33 15h4M33 20h4"/><circle class="soft-fill" cx="27" cy="29" r="4"/><path d="M24 29h6"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Market Memory</span><span class="l-zh">市场记忆</span></span><span class="item-desc d"><span class="l-en">Put today beside comparable episodes</span><span class="l-zh">将今天与可比历史片段并排</span></span></span></a>
+              <a class="mega-item nm-feat" href="reference.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M10 14h28v26H10z"/><path d="M7 12h28a3 3 0 0 1 3 3v21a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V15a3 3 0 0 1 3-3Z"/><path class="accent" d="M16 12V8h12v4"/><path d="M11 22h18M11 28h13"/><circle class="soft-fill" cx="33" cy="28" r="3"/><path class="accent" d="M11 34h9"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Market Reference</span><span class="l-zh">市场参考</span></span><span class="item-desc d"><span class="l-en">Look up any indicator or term</span><span class="l-zh">查询任意指标与术语</span></span></span></a>
+            </div>
+          </section>
+          <section class="mega-section nav-mega-section">
+            <h2 class="section-label nav-mega-h"><span class="l-en">Find the Edge</span><span class="l-zh">找到你的优势</span></h2>
+            <div class="item-grid nav-mega-item-grid">
+              <a class="mega-item nav-mega-item" href="foresight.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M4 24h40M24 4v40"/><path d="M7 25s7-11 17-11 17 11 17 11-7 11-17 11S7 25 7 25Z"/><circle class="soft-fill" cx="24" cy="25" r="5"/><path class="accent" d="M31 12 38 5M34 16h9M13 14 8 9"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Foresight</span><span class="l-zh">前瞻</span></span><span class="item-desc d"><span class="l-en">Themes before markets price them</span><span class="l-zh">市场定价前的主题</span></span></span></a>
+              <a class="mega-item nav-mega-item" href="state_of_themes.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M8 11h30v23H8z"/><rect x="6" y="8" width="30" height="23" rx="2"/><rect x="12" y="15" width="30" height="23" rx="2"/><path class="accent" d="m17 31 5-6 5 3 8-9M31 19h4v4"/><circle class="soft-fill" cx="22" cy="25" r="2"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Theme Tracker</span><span class="l-zh">主题追踪</span></span><span class="item-desc d"><span class="l-en">What’s strengthening and fading now</span><span class="l-zh">正在增强与减弱的主题</span></span></span></a>
+              <a class="mega-item nav-mega-item" href="radar.html"><span class="icon-drawing nm-ic cyan" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M6 39h36M9 7v32"/><path d="M10 32c7-1 10-6 15-8s8-1 13-10"/><path class="accent" d="M10 18c7 1 10 6 15 8s9 2 13 10"/><circle class="soft-fill" cx="25" cy="24" r="2.5"/><path d="M36 12h4v4M36 36h4v-4"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Divergence Radar</span><span class="l-zh">背离雷达</span></span><span class="item-desc d"><span class="l-en">Where price and reality split</span><span class="l-zh">价格与现实的分歧</span></span></span></a>
+              <a class="mega-item nav-mega-item" href="stock_seasonality.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M10 14h32v28H10z"/><rect x="6" y="11" width="32" height="28" rx="3"/><path d="M6 19h32M15 7v8M29 7v8"/><path class="accent" d="m12 32 5-6 5 3 6-9 4 5"/><circle class="soft-fill" cx="28" cy="20" r="2.4"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Stock Seasonality</span><span class="l-zh">个股季节性</span></span><span class="item-desc d"><span class="l-en">Which calendar windows actually repeat</span><span class="l-zh">哪些日历窗口真的会重演</span></span></span></a>
+              <a class="mega-item nav-mega-item" href="confluence_screener.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><rect x="6" y="8" width="36" height="28" rx="3"/><path class="ghost" d="M11 13h26v18H11z"/><path class="accent" d="m12 27 6-7 5 4 7-9 6 4"/><circle class="soft-fill" cx="30" cy="15" r="2.4"/><path d="M18 41h12M24 36v5"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Signal Board</span><span class="l-zh">信号看板</span></span><span class="item-desc d"><span class="l-en">Today’s strongest confirmed setups</span><span class="l-zh">今日最强确认信号</span></span></span></a>
+            </div>
+          </section>
+          <section class="mega-section nav-mega-section">
+            <h2 class="section-label nav-mega-h"><span class="l-en">Capital & Regimes</span><span class="l-zh">资金与周期</span></h2>
+            <div class="item-grid nav-mega-item-grid">
+              <a class="mega-item nav-mega-item" href="smart_money.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><rect x="7" y="15" width="34" height="25" rx="4"/><path d="M17 15v-5h14v5M7 24h34"/><circle class="soft-fill" cx="24" cy="24" r="4"/><path class="accent" d="M24 21v6M21 24h6M13 10 8 5M35 10l5-5"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Smart Money</span><span class="l-zh">聪明钱</span></span><span class="item-desc d"><span class="l-en">How top investors are positioned</span><span class="l-zh">顶级投资者的仓位</span></span></span></a>
+              <a class="mega-item nav-mega-item" href="etfs.html"><span class="icon-drawing nm-ic cyan" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="m8 14 16-8 16 8-16 8Z"/><path d="m8 22 16 8 16-8M8 30l16 8 16-8"/><path class="accent" d="M14 18v12c0 5 4 9 10 9s10-4 10-9V18"/><path class="ghost" d="M24 22v15"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Fund Flows</span><span class="l-zh">基金流向</span></span><span class="item-desc d"><span class="l-en">Where institutional capital is moving</span><span class="l-zh">机构资金流向</span></span></span></a>
+              <a class="mega-item nav-mega-item" href="cycle.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="17"/><circle class="ghost" cx="24" cy="24" r="11"/><path d="M24 7v6M41 24h-6M24 41v-6M7 24h6"/><path class="accent" d="M24 24 34 14M34 10v4h4"/><circle class="soft-fill" cx="24" cy="24" r="3"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Cycle Intelligence</span><span class="l-zh">周期情报</span></span><span class="item-desc d"><span class="l-en">Where the economy is heading</span><span class="l-zh">经济周期的下一站</span></span></span></a>
+              <a class="mega-item nav-mega-item" href="macro_context.html"><span class="icon-drawing nm-ic cyan" aria-hidden="true"><svg viewBox="0 0 48 48"><circle class="soft-fill" cx="31" cy="14" r="7"/><path class="accent" d="M31 3v4M31 21v4M20 14h4M38 14h4M23 6l3 3M36 19l3 3"/><path d="M11 34c-4 0-6-3-6-6s2-6 6-6c2-6 11-7 15-2 5-1 9 2 9 7 0 4-3 7-8 7Z"/><path d="m13 42 5-5 4 3 6-5 6 2"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Macro Weather</span><span class="l-zh">宏观气象</span></span><span class="item-desc d"><span class="l-en">Growth, inflation and liquidity now</span><span class="l-zh">当前增长、通胀与流动性</span></span></span></a>
+            </div>
+          </section>
+        </div>
+        <aside class="mega-rail nav-mega-rail" aria-label="Explore research">
+          <h2 class="section-label nav-mega-h"><span class="l-en">Explore</span><span class="l-zh">探索</span></h2>
+          <a class="rail-link nav-rail-item" href="policy_watch.html"><span><span class="l-en">Policy Watch</span><span class="l-zh">政策观察</span></span><span class="rail-arrow nav-drill-arrow" aria-hidden="true">↗</span></a>
+          <a class="rail-link nav-rail-item" href="government_revenue.html"><span><span class="l-en">Government Revenue</span><span class="l-zh">政府收入</span></span><span class="rail-arrow nav-drill-arrow" aria-hidden="true">↗</span></a>
+          <a class="rail-link nav-rail-item" href="alt_data.html"><span><span class="l-en">Alternative Data</span><span class="l-zh">另类数据</span></span><span class="rail-arrow nav-drill-arrow" aria-hidden="true">↗</span></a>
+          <a class="rail-link nav-rail-item" href="special_situations.html"><span><span class="l-en">Special Situations</span><span class="l-zh">特殊事件</span></span><span class="rail-arrow nav-drill-arrow" aria-hidden="true">↗</span></a>
+          <a class="rail-link nav-rail-item" href="biocatalyst.html"><span><span class="l-en">BioCatalyst Intelligence</span><span class="l-zh">生物医药催化剂情报</span></span><span class="rail-arrow nav-drill-arrow" aria-hidden="true">↗</span></a>
+          <a class="rail-link nav-rail-item" href="capital_structure.html"><span><span class="l-en">Capital Structure</span><span class="l-zh">资本结构</span></span><span class="rail-arrow nav-drill-arrow" aria-hidden="true">↗</span></a>
+          <div class="nav-drill" data-nav-drill>
+            <button class="rail-link nav-rail-item nav-drill-trigger" type="button" data-nav-drill-open aria-expanded="false">
+              <span><span class="l-en">Global Cycles</span><span class="l-zh">全球周期</span></span><span class="rail-arrow nav-drill-arrow" aria-hidden="true">›</span>
+            </button>
+            <div class="nav-drill-panel" data-nav-drill-panel inert>
+              <button class="nav-drill-back" type="button" data-nav-drill-back>‹ <span><span class="l-en">Research</span><span class="l-zh">研究</span></span></button>
+              <div class="nav-drill-heading"><span class="l-en">Global Cycles</span><span class="l-zh">全球周期</span></div>
+              <a class="nav-mega-item" href="markets.html"><span class="nm-ic research-icon research-icon-global-cycles" aria-hidden="true"></span><span class="nm-tx"><span class="nm-t"><span class="l-en">Global Market Cycles</span><span class="l-zh">全球市场周期</span></span><span class="d"><span class="l-en">Compare national equity clocks</span><span class="l-zh">比较各国股市周期</span></span></span></a>
+              <a class="nav-mega-item" href="country_cycles.html"><span class="nm-ic research-icon research-icon-country-cycles" aria-hidden="true"></span><span class="nm-tx"><span class="nm-t"><span class="l-en">Country Cycles</span><span class="l-zh">国家周期</span></span><span class="d"><span class="l-en">Track countries and regions</span><span class="l-zh">追踪国家与区域</span></span></span></a>
+              <a class="nav-mega-item" href="sector_cycles.html"><span class="nm-ic research-icon research-icon-sector-cycles" aria-hidden="true"></span><span class="nm-tx"><span class="nm-t"><span class="l-en">U.S. Sector Cycles</span><span class="l-zh">美国行业周期</span></span><span class="d"><span class="l-en">See every sector clock</span><span class="l-zh">查看所有行业周期</span></span></span></a>
+              <a class="nav-mega-item" href="sector_cycles_china.html"><span class="nm-ic research-icon research-icon-sector-cycles" aria-hidden="true"></span><span class="nm-tx"><span class="nm-t"><span class="l-en">China Sector Cycles</span><span class="l-zh">中国行业周期</span></span><span class="d"><span class="l-en">Read China sector rotation</span><span class="l-zh">查看中国行业轮动</span></span></span></a>
+              <a class="nav-mega-item" href="cycle.html"><span class="nm-ic research-icon research-icon-cycle-intelligence" aria-hidden="true"></span><span class="nm-tx"><span class="nm-t"><span class="l-en">Cycle Intelligence</span><span class="l-zh">周期情报</span></span><span class="d"><span class="l-en">Understand the full cycle</span><span class="l-zh">理解完整经济周期</span></span></span></a>
+              <a class="nav-mega-item" href="macro_context.html"><span class="nm-ic research-icon research-icon-macro-weather" aria-hidden="true"></span><span class="nm-tx"><span class="nm-t"><span class="l-en">Macro Weather</span><span class="l-zh">宏观气象</span></span><span class="d"><span class="l-en">Read today’s macro regime</span><span class="l-zh">读取当前宏观环境</span></span></span></a>
+            </div>
+          </div>
+          <a class="rail-link nav-rail-item" href="intelligence_hub.html"><span><span class="l-en">Browse all research</span><span class="l-zh">浏览全部研究</span></span><span class="rail-arrow nav-drill-arrow" aria-hidden="true">→</span></a>
+          <div class="rail-note">
+            <strong><span class="l-en">Cleaner by design</span><span class="l-zh">简洁设计</span></strong>
+            <span class="l-en">Detailed diagnostics and proprietary labs move to the admin console.</span><span class="l-zh">详细诊断和专有实验室移至管理控制台。</span>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+  
+  <script src="logo_config.js"></script>
+  <script src="stock-logos.js"></script>
+  <script src="live_config.js"></script>
+  <script src="live.js"></script>
+  <div class="nav-search">
+    <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
+    <input type="text" autocomplete="off" aria-label="Search stocks"
+      placeholder="Search any stock — US, China, HK, Canada &amp; more…"
+      data-ph-zh="搜索任意股票 — 美股、A 股、港股、加股等…">
+    <div class="nav-sugg"></div>
+  </div>
+  <div class="nav-ctrls">
+    
+    <a class="ai-brief-link terminal-link" href="https://app.mastermind-x.com" target="_blank" rel="noopener"><span class="product-icon product-icon-terminal" aria-hidden="true"></span><span class="l-en">Terminal</span><span class="l-zh">终端</span></a>
+    <button class="theme-switch" aria-label="Toggle dark / light mode">
+      <span class="ic sun">☀️</span><span class="ic moon">🌙</span><span class="knob"></span>
+    </button>
+    <div class="lang-toggle" role="group" aria-label="Language">
+      <span class="pill"></span>
+      <span class="opt en-opt" data-l="en">EN</span>
+      <span class="opt zh-opt" data-l="zh">中文</span>
+    </div>
+  </div>
+</nav>
 
 <div class="oew">
 <div class="oew-wrap">
@@ -965,56 +1195,112 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
 
     <!-- THE SESSION STAMP -->
     <div class="oew-stampblock">
-      <div class="oew-stamp-k">{{ t('Latest completed session', '最近完成场次') }}</div>
-      <div class="oew-stamp-date mono">{{ sess.date if sess.date else '—' }}</div>
+      <div class="oew-stamp-k"><span class="l-en">Latest completed session</span><span class="l-zh">最近完成场次</span></div>
+      <div class="oew-stamp-date mono">2026-09-04</div>
       <div class="oew-stamp-closed">
-        {% if sess.weekday_en %}
-        <span class="l-en">{{ sess.weekday_en }} · closed 16:00 ET</span><span class="l-zh">{{ sess.weekday_zh }} · 美东 16:00 收盘</span>
-        {% else %}{{ t('closed 16:00 ET', '美东 16:00 收盘') }}{% endif %}
+        
+        <span class="l-en">Friday · closed 16:00 ET</span><span class="l-zh">周五 · 美东 16:00 收盘</span>
+        
       </div>
       <div class="oew-stamp-rows">
         <div class="oew-stamp-row">
-          <span class="k">{{ t('Positions counted', '持仓统计') }}</span>
-          <span class="v brass mono">{{ sess.oi_vintage if sess.oi_vintage else '—' }}</span>
+          <span class="k"><span class="l-en">Positions counted</span><span class="l-zh">持仓统计</span></span>
+          <span class="v brass mono">—</span>
         </div>
         <div class="oew-stamp-row">
-          <span class="k">{{ t('Names covered', '覆盖标的') }}</span>
-          <span class="v mono">{% if sess.covered is not none %}{{ sess.covered }} / {{ sess.universe }}{% else %}—{% endif %}</span>
+          <span class="k"><span class="l-en">Names covered</span><span class="l-zh">覆盖标的</span></span>
+          <span class="v mono">—</span>
         </div>
         <div class="oew-stamp-row">
-          <span class="k">{{ t('Data quality', '数据质量') }}</span>
-          <span class="v" data-tip-en="{{ sess.quality_tip_en }}" data-tip-zh="{{ sess.quality_tip_zh }}">{{ t(sess.quality_en, sess.quality_zh) }}</span>
+          <span class="k"><span class="l-en">Data quality</span><span class="l-zh">数据质量</span></span>
+          <span class="v" data-tip-en="Latest completed session: 2026-09-04. Prior-session inputs remain visible with their real dates: Options intelligence is 2026-09-03 (1 sessions behind)." data-tip-zh="最近完成场次：2026-09-04。较早场次的输入仍按真实日期展示：期权情报为 2026-09-03（落后 1 个交易日）。"><span class="l-en">Stale</span><span class="l-zh">过期</span></span>
         </div>
       </div>
       <details class="oew-source-receipt">
-        <summary>{{ t('Source-session receipt', '数据源场次凭证') }}</summary>
-        {%- for src in sess.sources %}
+        <summary><span class="l-en">Source-session receipt</span><span class="l-zh">数据源场次凭证</span></summary>
         <div class="oew-source-row">
-          <span>{{ t(src.name_en, src.name_zh) }}</span>
-          <span class="mono {{ src.status }}">{{ src.source_session or t('unavailable', '不可用') }}{% if src.sessions_behind %} · {{ src.sessions_behind }} {{ t('sessions behind', '个交易日落后') }}{% endif %}</span>
+          <span><span class="l-en">Options tape</span><span class="l-zh">期权成交</span></span>
+          <span class="mono unavailable"><span class="l-en">unavailable</span><span class="l-zh">不可用</span></span>
         </div>
-        {%- endfor %}
+        <div class="oew-source-row">
+          <span><span class="l-en">Scanner rows</span><span class="l-zh">筛选表标的</span></span>
+          <span class="mono unavailable"><span class="l-en">unavailable</span><span class="l-zh">不可用</span></span>
+        </div>
+        <div class="oew-source-row">
+          <span><span class="l-en">Dealer positioning</span><span class="l-zh">做市商持仓</span></span>
+          <span class="mono unavailable"><span class="l-en">unavailable</span><span class="l-zh">不可用</span></span>
+        </div>
+        <div class="oew-source-row">
+          <span><span class="l-en">Flow leaders</span><span class="l-zh">资金领跑</span></span>
+          <span class="mono unavailable"><span class="l-en">unavailable</span><span class="l-zh">不可用</span></span>
+        </div>
+        <div class="oew-source-row">
+          <span><span class="l-en">Index structure</span><span class="l-zh">指数结构</span></span>
+          <span class="mono unavailable"><span class="l-en">unavailable</span><span class="l-zh">不可用</span></span>
+        </div>
+        <div class="oew-source-row">
+          <span><span class="l-en">Volatility regime</span><span class="l-zh">波动状态</span></span>
+          <span class="mono unavailable"><span class="l-en">unavailable</span><span class="l-zh">不可用</span></span>
+        </div>
+        <div class="oew-source-row">
+          <span><span class="l-en">Options intelligence</span><span class="l-zh">期权情报</span></span>
+          <span class="mono stale">2026-09-03 · 1 <span class="l-en">sessions behind</span><span class="l-zh">个交易日落后</span></span>
+        </div>
       </details>
     </div>
 
     <!-- THE POSTURE CONSOLE — four readings, side by side, never combined -->
     <div class="oew-console">
       <div class="oew-console-grid">
-        {% for cell in posture %}
+        
         <div class="oew-read">
           <div class="oew-read-k">
-            <span class="oew-eyebrow">{{ t(cell.label_en, cell.label_zh) }}</span>
-            {% if cell.vetted %}<span class="oew-vetted" role="img"
-              data-tip-en="One of the few readings on this site with a published track record. Open the panel's ? for the full receipt."
-              data-tip-zh="本站少数拥有公开历史记录的读数之一。点击面板的 ? 查看完整依据。">✓</span>{% endif %}
+            <span class="oew-eyebrow"><span class="l-en">Whole market</span><span class="l-zh">整体市场</span></span>
+            
           </div>
-          <div class="oew-read-v">{{ t(cell.state_en, cell.state_zh) }}</div>
-          <div class="oew-pips" role="img" data-tip-en="{{ cell.tip_en }}" data-tip-zh="{{ cell.tip_zh }}">
-            {% for i in range(cell.pips_total) %}<i class="oew-pip{% if i < cell.pips %} on{% endif %}"></i>{% endfor %}
+          <div class="oew-read-v"><span class="l-en">—</span><span class="l-zh">—</span></div>
+          <div class="oew-pips" role="img" data-tip-en="Where the volatility surface sits on a calm-to-stressed scale, 0 of 5. It reads what index options cost against how much the market has actually been moving." data-tip-zh="波动率曲面在平静至紧张刻度上的位置：5 格中第 0 格。它衡量的是指数期权的价格相对市场实际波动幅度的水平。">
+            <i class="oew-pip"></i><i class="oew-pip"></i><i class="oew-pip"></i><i class="oew-pip"></i><i class="oew-pip"></i>
           </div>
-          {% if cell.note_en %}<div class="oew-read-n">{{ t(cell.note_en, cell.note_zh) }}</div>{% endif %}
+          
         </div>
-        {% endfor %}
+        
+        <div class="oew-read">
+          <div class="oew-read-k">
+            <span class="oew-eyebrow"><span class="l-en">S&amp;P dealers</span><span class="l-zh">标普做市商</span></span>
+            
+          </div>
+          <div class="oew-read-v"><span class="l-en">—</span><span class="l-zh">—</span></div>
+          <div class="oew-pips" role="img" data-tip-en="Model estimate: real dealer books are unobservable." data-tip-zh="模型估算：真实做市商持仓不可观测。">
+            <i class="oew-pip"></i><i class="oew-pip"></i><i class="oew-pip"></i><i class="oew-pip"></i><i class="oew-pip"></i>
+          </div>
+          
+        </div>
+        
+        <div class="oew-read">
+          <div class="oew-read-k">
+            <span class="oew-eyebrow"><span class="l-en">Today&#39;s tape</span><span class="l-zh">今日盘面</span></span>
+            
+          </div>
+          <div class="oew-read-v"><span class="l-en">—</span><span class="l-zh">—</span></div>
+          <div class="oew-pips" role="img" data-tip-en="How busy the options tape was, on this desk&#39;s own scale." data-tip-zh="期权盘面的繁忙程度，采用本台既有刻度。">
+            <i class="oew-pip"></i><i class="oew-pip"></i><i class="oew-pip"></i><i class="oew-pip"></i><i class="oew-pip"></i>
+          </div>
+          
+        </div>
+        
+        <div class="oew-read">
+          <div class="oew-read-k">
+            <span class="oew-eyebrow"><span class="l-en">Same-day bets</span><span class="l-zh">当日到期押注</span></span>
+            
+          </div>
+          <div class="oew-read-v"><span class="l-en">—</span><span class="l-zh">—</span></div>
+          <div class="oew-pips" role="img" data-tip-en="Same-day contracts are usually day-trading, not positioning for a move." data-tip-zh="当日到期合约通常用于日内交易，而非布局趋势。">
+            <i class="oew-pip"></i><i class="oew-pip"></i><i class="oew-pip"></i><i class="oew-pip"></i><i class="oew-pip"></i>
+          </div>
+          <div class="oew-read-n"><span class="l-en">expiring the same day</span><span class="l-zh">当日到期</span></div>
+        </div>
+        
       </div>
     </div>
   </div>
@@ -1026,42 +1312,33 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
        decision element (OIP_MASTERPLAN §3 verdict law); the sentence is the valuable
        half and stays verbatim. Resolves the follow-up W1_DESIGN_SPEC §0.13 flagged. -->
   <div class="oew-nofuse">
-    <span>{{ t('Four readings, shown side by side and never averaged into one score.',
-               '四项读数并列呈现，不会合成单一评分。') }}</span>
+    <span><span class="l-en">Four readings, shown side by side and never averaged into one score.</span><span class="l-zh">四项读数并列呈现，不会合成单一评分。</span></span>
   </div>
 
   <!-- ★ THE CLOSE LINE — the filled portion IS the coverage number ★ -->
-  <div class="oew-closeline" style="--oew-cov:{{ cov_pct }}%" role="img"
-    data-tip-en="{{ sess.cov_tip_en }}" data-tip-zh="{{ sess.cov_tip_zh }}">
+  <div class="oew-closeline" style="--oew-cov:0%" role="img"
+    data-tip-en="We could not count how many names reported a complete options chain for this close, so this line is left empty rather than shown as full." data-tip-zh="我们无法统计本次收盘有多少标的提供了完整期权链，因此此线留空，而非显示为完整。">
     <span class="oew-cov-tick"></span>
     <span class="oew-cov-label">
-      {% if sess.covered is not none %}
-      <span class="l-en">covered <b class="mono">{{ sess.covered }}</b>/<span class="mono">{{ sess.universe }}</span> names</span>
-      <span class="l-zh">已覆盖 <b class="mono">{{ sess.covered }}</b>/<span class="mono">{{ sess.universe }}</span> 个标的</span>
-      {% endif %}
+      
     </span>
   </div>
 
   <!-- MODE TABS -->
   <nav class="oew-tabs" role="tablist" aria-label="Options workspace modes">
     <button class="oew-tab" role="tab" aria-selected="true" data-mode="brief" id="tab-brief" aria-controls="mode-brief">
-      {{ t('Daily Brief', '每日简报') }}
-    </button>
-    {#- Tab order is PINNED: brief · flow · scanner · ticker · leaders — the five
-        evening questions in reading order (ONE_DOOR_RULING_AND_SPEC §2.0.1). The
-        .cnt figure is the covered-sector count, from the same filter the panel
-        it opens uses. -#}
-    <button class="oew-tab" role="tab" aria-selected="false" data-mode="flow" id="tab-flow" aria-controls="mode-flow">
-      {{ t('Flow', '资金流') }}{% if counts.flow %}<span class="cnt mono">{{ counts.flow }}</span>{% endif %}
+      <span class="l-en">Daily Brief</span><span class="l-zh">每日简报</span>
+    </button><button class="oew-tab" role="tab" aria-selected="false" data-mode="flow" id="tab-flow" aria-controls="mode-flow">
+      <span class="l-en">Flow</span><span class="l-zh">资金流</span>
     </button>
     <button class="oew-tab" role="tab" aria-selected="false" data-mode="scanner" id="tab-scanner" aria-controls="mode-scanner">
-      {{ t('Scanner', '筛选') }}{% if counts.scanner %}<span class="cnt mono">{{ counts.scanner }}</span>{% endif %}
+      <span class="l-en">Scanner</span><span class="l-zh">筛选</span>
     </button>
     <button class="oew-tab" role="tab" aria-selected="false" data-mode="ticker" id="tab-ticker" aria-controls="mode-ticker">
-      {{ t('Ticker', '个股') }}<span class="cnt mono" id="oew-tk-cnt">{{ counts.ticker }}</span>
+      <span class="l-en">Ticker</span><span class="l-zh">个股</span><span class="cnt mono" id="oew-tk-cnt">SPX</span>
     </button>
     <button class="oew-tab" role="tab" aria-selected="false" data-mode="leaders" id="tab-leaders" aria-controls="mode-leaders">
-      {{ t('Leaders', '领头股') }}{% if counts.leaders %}<span class="cnt mono">{{ counts.leaders }}</span>{% endif %}
+      <span class="l-en">Leaders</span><span class="l-zh">领头股</span>
     </button>
   </nav>
 </header>
@@ -1074,278 +1351,331 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
        context (build_aib()/`_aib_card()`).  No ranking, ordering or scoring happens
        in this template. -->
   <div class="oew-panel oew-aib" id="aib"
-       data-aib-state="{{ aib.board_state or 'unavailable' }}"
-       data-aib-asof="{{ aib.freshness.asof_date or '' }}"
-       data-aib-receipt="{{ (aib.receipt_id or '')[:12] }}"
-       data-aib-fresh="{{ aib.freshness.level }}">
-    {%- if sess.quality_en == 'Stale' %}
+       data-aib-state="OK"
+       data-aib-asof="2026-09-03"
+       data-aib-receipt="e5bd3f474eab"
+       data-aib-fresh="lagging">
     <div class="oew-nofuse" role="status">
-      <span>{{ t('The latest completed session is ' ~ sess.target_session ~ '. The panels below are retained prior-session context; each footer keeps its actual source date and none describes the target close.',
-                 '最近完成场次为 ' ~ sess.target_session ~ '。以下面板仅保留为较早场次背景；每个页脚均保留真实数据源日期，均不代表目标收盘。') }}</span>
+      <span><span class="l-en">The latest completed session is 2026-09-04. The panels below are retained prior-session context; each footer keeps its actual source date and none describes the target close.</span><span class="l-zh">最近完成场次为 2026-09-04。以下面板仅保留为较早场次背景；每个页脚均保留真实数据源日期，均不代表目标收盘。</span></span>
     </div>
-    {%- endif %}
     <div class="oew-phead">
-      <h2 class="oew-ph-title">{{ t('Options Intelligence Brief', '期权情报简报') }}</h2>
-      <span class="oew-ph-sub">{{ t('ranked priorities, event and crowding reads, and one quiet control', '优先级排序、事件与拥挤读数，以及一个平静对照') }}</span>
+      <h2 class="oew-ph-title"><span class="l-en">Options Intelligence Brief</span><span class="l-zh">期权情报简报</span></h2>
+      <span class="oew-ph-sub"><span class="l-en">ranked priorities, event and crowding reads, and one quiet control</span><span class="l-zh">优先级排序、事件与拥挤读数，以及一个平静对照</span></span>
       <div class="oew-ph-right">
-        <span class="oew-aib-honesty">{{ t('Research priority · not a probability or trade signal', '研究优先级 · 非概率或交易信号') }}</span>
+        <span class="oew-aib-honesty"><span class="l-en">Research priority · not a probability or trade signal</span><span class="l-zh">研究优先级 · 非概率或交易信号</span></span>
         <span class="oew-help" tabindex="0" role="button"
           data-tip-en="Ranked by evidence strength and confidence — never a probability, an edge, or a buy/sell signal. Two independent facts (open-interest positioning and skew change) must agree before a card gets a direction; Prophet context is display-only and never changes this ranking."
           data-tip-zh="按证据强度与置信度排序——绝非概率、优势或买卖信号。未平仓合约仓位与偏度变化两个独立事实须一致，卡片才会给出方向；Prophet 参考仅供展示，不影响本排序。">?</span>
       </div>
     </div>
-    {% if aib.available %}
+    
     <div class="oew-aib-stamps">
-      {% if aib.as_of_session %}<span class="mono">{{ t('Settled', '已结算') }} {{ aib.as_of_session }}</span>{% endif %}
-      {% if aib.oi_counted_date %}<span class="mono">{{ t('Positions counted', '持仓统计于') }} {{ aib.oi_counted_date }}</span>{% endif %}
-      {% if aib.pending_session %}
-      <span class="oew-aib-pending mono">{{ t('Newer session', '更新交易日') }} {{ aib.pending_session }} {{ t('awaiting position counts', '等待持仓统计') }}</span>
-      {% endif %}
-      {%- if aib.healthy %}
-      <span class="oew-aib-elig mono">{{ aib.eligible }}/{{ aib.present }} {{ t('names eligible', '名称符合条件') }}</span>
-      {%- endif %}
+      <span class="mono"><span class="l-en">Settled</span><span class="l-zh">已结算</span> 2026-09-03</span>
+      <span class="mono"><span class="l-en">Positions counted</span><span class="l-zh">持仓统计于</span> 2026-09-03</span>
+      
+      <span class="oew-aib-elig mono">10/20 <span class="l-en">names eligible</span><span class="l-zh">名称符合条件</span></span>
     </div>
-    {% endif %}
-    {#- ── GLANCE TIER · lede ────────────────────────────────────────────────
-        The answer before the evidence: what today's brief says, what to do
-        about it, and how fresh it is.  Every string is a closed-vocabulary
-        lookup from build_aib() keyed on the payload's own board_state and
-        card count — no scoring, no ranking and no generated prose here. -#}
-    <div class="oew-aib-lede is-{{ aib.freshness.level }}">
-      <h3 class="oew-aib-lede-head">{{ t(aib.lede_head_en, aib.lede_head_zh) }}</h3>
+    <div class="oew-aib-lede is-lagging">
+      <h3 class="oew-aib-lede-head"><span class="l-en">3 names are worth a look after today&#39;s close.</span><span class="l-zh">今日收盘后有 3 个名称值得关注。</span></h3>
       <p class="oew-aib-lede-stance">
-        <span class="oew-aib-lede-todo">{{ t('What to do', '该怎么做') }}</span>
-        {%- if aib.lede_stance_slug == 'data' %}
-        <span class="oew-aib-lede-chip">{{ t(aib.lede_stance_word_en, aib.lede_stance_word_zh) }}</span>
-        {%- else %}
-        <span class="oew-stance st-{{ aib.lede_stance_slug }}">{{ t(aib.lede_stance_word_en, aib.lede_stance_word_zh) }}</span>
-        {%- endif %}
-        <span class="oew-aib-lede-said">{{ t(aib.lede_stance_en, aib.lede_stance_zh) }}</span>
+        <span class="oew-aib-lede-todo"><span class="l-en">What to do</span><span class="l-zh">该怎么做</span></span>
+        <span class="oew-stance st-watch"><span class="l-en">Watch — don&#39;t chase</span><span class="l-zh">观察—勿追高</span></span>
+        <span class="oew-aib-lede-said"><span class="l-en">Read these first — none is a trade on its own.</span><span class="l-zh">建议优先阅读——均非独立交易信号。</span></span>
       </p>
       <p class="oew-aib-fresh">
-        {%- if aib.freshness.asof_en %}
-        <span class="oew-aib-fresh-asof">{{ t('As of', '数据截至') }} {{ t(aib.freshness.asof_en, aib.freshness.asof_zh) }}</span>
-        {%- endif %}
-        <span class="oew-aib-fresh-age lvl-{{ aib.freshness.level }}">{{ t(aib.freshness.age_en, aib.freshness.age_zh) }}</span>
-        {%- if aib.freshness.built_en %}
-        <span class="oew-aib-fresh-built">{{ t(aib.freshness.built_en, aib.freshness.built_zh) }}</span>
-        {%- else %}
-        <span class="oew-aib-fresh-built">{{ t('Update time not recorded', '未记录更新时间') }}</span>
-        {%- endif %}
+        <span class="oew-aib-fresh-asof"><span class="l-en">As of</span><span class="l-zh">数据截至</span> <span class="l-en">Thu 3 Sep close</span><span class="l-zh">9月3日收盘</span></span>
+        <span class="oew-aib-fresh-age lvl-lagging"><span class="l-en">1 trading day behind</span><span class="l-zh">落后 1 个交易日</span></span>
+        <span class="oew-aib-fresh-built"><span class="l-en">Updated 6 Sep, 05:12 UTC</span><span class="l-zh">更新于 9月6日 05:12 UTC</span></span>
       </p>
     </div>
     <div class="oew-pbody">
-      {% if aib.available and aib.healthy %}
+      
 
-      {# ── BAND 1 · canon: the ranked top six, exactly as ranked ── #}
-      {% if aib.cards %}
+      
+      
       <div class="oew-aib-grid">
-        {% for c in aib.cards %}
-        <article class="oew-aib-card is-{{ c.state_slug }}">
+        
+        <article class="oew-aib-card is-up">
           <header class="oew-aib-top">
-            <span class="oew-aib-rank mono">№{{ c.board_rank }}</span>
-            {# board_rank is machine-supplied (contract §5a); the template no longer derives rank from loop.index #}
-            <span class="oew-aib-sym mono">{{ c.symbol }}</span>
-            <span class="oew-aib-state">{{ t(c.display_state_en, c.display_state_zh) }}</span>
+            <span class="oew-aib-rank mono">№1</span>
+            
+            <span class="oew-aib-sym mono">AAA</span>
+            <span class="oew-aib-state"><span class="l-en">Upside evidence</span><span class="l-zh">上行证据</span></span>
           </header>
           <div class="oew-aib-legs" role="img"
             data-tip-en="Two independent facts must agree before we call a direction: how open interest grew (calls vs puts) and how the skew moved. One arrow per fact."
             data-tip-zh="必须两个独立事实一致才判定方向：未平仓合约的增长结构（看涨与看跌）与偏度的变化。每个事实一个箭头。">
-            <span class="leg leg-oi {{ c.oi_cls }}">{{ c.oi_glyph }} OI</span>
-            <span class="leg leg-skew {{ c.skew_cls }}">{{ c.skew_glyph }} {{ t('Skew', '偏度') }}</span>
-            <span class="oew-aib-legverdict">{{ t(c.leg_verdict_en, c.leg_verdict_zh) }}</span>
+            <span class="leg leg-oi up">▲ OI</span>
+            <span class="leg leg-skew up">▲ <span class="l-en">Skew</span><span class="l-zh">偏度</span></span>
+            <span class="oew-aib-legverdict"><span class="l-en">aligned</span><span class="l-zh">一致</span></span>
           </div>
           <div class="oew-aib-meter">
-            <span class="lbl">{{ t('Evidence', '证据') }}</span>
+            <span class="lbl"><span class="l-en">Evidence</span><span class="l-zh">证据</span></span>
             <span class="oew-pips" role="img"
-              data-tip-en="Evidence strength, {{ c.pips }} of {{ c.pips_total }}."
-              data-tip-zh="证据强度，{{ c.pips_total }} 格中第 {{ c.pips }} 格。">
-              {% for i in range(c.pips_total) %}<i class="oew-pip{% if i < c.pips %} on{% endif %}"></i>{% endfor %}
+              data-tip-en="Evidence strength, 4 of 5."
+              data-tip-zh="证据强度，5 格中第 4 格。">
+              <i class="oew-pip on"></i><i class="oew-pip on"></i><i class="oew-pip on"></i><i class="oew-pip on"></i><i class="oew-pip"></i>
             </span>
-            <span class="oew-aib-band band-{{ c.band_slug }}">{{ t(c.band_en, c.band_zh) }}</span>
+            <span class="oew-aib-band band-moderate"><span class="l-en">Moderate</span><span class="l-zh">中等</span></span>
           </div>
-          <p class="oew-aib-why">{{ t(c.why_lead_en, c.why_lead_zh) }}</p>
+          <p class="oew-aib-why"><span class="l-en">why-now for AAA</span><span class="l-zh">AAA 事实</span></p>
           <div class="oew-aib-facts mono">
-            <span>{{ t('Horizon', '周期') }} {{ t(c.horizon_en, c.horizon_zh) }}</span>
-            {% if c.move_pct %}<span>±{{ c.move_pct }}% {{ t('implied', '隐含') }}</span>{% endif %}
-            <span>{{ t('Fresh until', '有效至') }} {{ c.fresh_until }}</span>
+            <span><span class="l-en">Horizon</span><span class="l-zh">周期</span> <span class="l-en">next 5 sessions</span><span class="l-zh">未来5个交易日</span></span>
+            <span>±3.0% <span class="l-en">implied</span><span class="l-zh">隐含</span></span>
+            <span><span class="l-en">Fresh until</span><span class="l-zh">有效至</span> 2026-09-08</span>
           </div>
           <div class="oew-aib-chips">
-            {% if c.crowding %}<span class="oew-aib-crowd">{{ t('Crowded tape', '拥挤交易') }}</span>{% endif %}
+            
             <span class="oew-aib-prophet"
-              data-tip-en="Prophet context only — it does not change this board's ranking.{% if c.prophet_asof %} As of {{ c.prophet_asof }}.{% endif %}"
-              data-tip-zh="仅为 Prophet 参考——不影响本板块排序。{% if c.prophet_asof %}截至 {{ c.prophet_asof }}。{% endif %}">Prophet · {{ t(c.prophet_en, c.prophet_zh) }}</span>
+              data-tip-en="Prophet context only — it does not change this board's ranking. As of 2026-09-05."
+              data-tip-zh="仅为 Prophet 参考——不影响本板块排序。截至 2026-09-05。">Prophet · <span class="l-en">Entry window open</span><span class="l-zh">入场窗口开放</span></span>
           </div>
           <details class="oew-aib-detail">
-            <summary>{{ t('Why & what would change it', '依据与变化条件') }}</summary>
+            <summary><span class="l-en">Why &amp; what would change it</span><span class="l-zh">依据与变化条件</span></summary>
             <div class="oew-aib-detailbody">
               <div class="oew-aib-dline">
-                <span class="k">{{ t('OI evidence', '未平仓量证据') }}</span>
-                <span class="v">{{ t(c.detail.oi_line_en, c.detail.oi_line_zh) }}</span>
+                <span class="k"><span class="l-en">OI evidence</span><span class="l-zh">未平仓量证据</span></span>
+                <span class="v"><span class="l-en">Open interest grew on the call side, sharply (45 sessions of history).</span><span class="l-zh">未平仓量在看涨方向增长，显著（45 个历史交易日）。</span></span>
               </div>
               <div class="oew-aib-dline">
-                <span class="k">{{ t('Skew evidence', '偏度证据') }}</span>
-                <span class="v">{{ t(c.detail.skew_line_en, c.detail.skew_line_zh) }}</span>
+                <span class="k"><span class="l-en">Skew evidence</span><span class="l-zh">偏度证据</span></span>
+                <span class="v"><span class="l-en">Downside skew flattened unusually, sharply (18 sessions of history).</span><span class="l-zh">下行偏度走平异常，显著（18 个历史交易日）。</span></span>
               </div>
-              {% if c.detail.mechanics_en %}
+              
+              
               <div class="oew-aib-dline">
-                <span class="k">{{ t('Mechanics', '机制背景') }}</span>
-                <span class="v">{{ t(c.detail.mechanics_en, c.detail.mechanics_zh) }}</span>
+                <span class="k"><span class="l-en">Evidence</span><span class="l-zh">证据</span></span>
+                <span class="v"><span class="l-en">why-now for AAA</span><span class="l-zh">AAA 事实</span></span>
               </div>
-              {% endif %}
-              {% for w in c.detail.why_now %}
+              
               <div class="oew-aib-dline">
-                <span class="k">{{ t('Evidence', '证据') }}</span>
-                <span class="v">{{ t(w.en, w.zh) }}</span>
-              </div>
-              {% endfor %}
-              <div class="oew-aib-dline">
-                <span class="k">{{ t('Would confirm', '确认条件') }}</span>
-                <span class="v">{{ t(c.detail.trigger_en, c.detail.trigger_zh) }}</span>
+                <span class="k"><span class="l-en">Would confirm</span><span class="l-zh">确认条件</span></span>
+                <span class="v"><span class="l-en">trigger AAA</span><span class="l-zh">AAA 触发</span></span>
               </div>
               <div class="oew-aib-dline">
-                <span class="k">{{ t('Would change it', '变化条件') }}</span>
-                <span class="v">{{ t(c.detail.invalidation_en, c.detail.invalidation_zh) }}</span>
+                <span class="k"><span class="l-en">Would change it</span><span class="l-zh">变化条件</span></span>
+                <span class="v"><span class="l-en">invalidation AAA</span><span class="l-zh">AAA 失效</span></span>
               </div>
               <div class="oew-aib-dline">
-                <span class="k">{{ t('Priority score', '优先级分数') }}</span>
-                <span class="v mono">{{ c.research_priority_score }}</span>
+                <span class="k"><span class="l-en">Priority score</span><span class="l-zh">优先级分数</span></span>
+                <span class="v mono">1</span>
               </div>
               <div class="oew-aib-dline">
-                <span class="k">{{ t('Receipt', '回执') }}</span>
-                <span class="v mono">{{ c.signal_id }}</span>
+                <span class="k"><span class="l-en">Receipt</span><span class="l-zh">回执</span></span>
+                <span class="v mono">adib:v1.2:2026-09-05:AAA</span>
               </div>
             </div>
           </details>
         </article>
-        {% endfor %}
+        
+        <article class="oew-aib-card is-up">
+          <header class="oew-aib-top">
+            <span class="oew-aib-rank mono">№2</span>
+            
+            <span class="oew-aib-sym mono">BBB</span>
+            <span class="oew-aib-state"><span class="l-en">Upside evidence</span><span class="l-zh">上行证据</span></span>
+          </header>
+          <div class="oew-aib-legs" role="img"
+            data-tip-en="Two independent facts must agree before we call a direction: how open interest grew (calls vs puts) and how the skew moved. One arrow per fact."
+            data-tip-zh="必须两个独立事实一致才判定方向：未平仓合约的增长结构（看涨与看跌）与偏度的变化。每个事实一个箭头。">
+            <span class="leg leg-oi up">▲ OI</span>
+            <span class="leg leg-skew up">▲ <span class="l-en">Skew</span><span class="l-zh">偏度</span></span>
+            <span class="oew-aib-legverdict"><span class="l-en">aligned</span><span class="l-zh">一致</span></span>
+          </div>
+          <div class="oew-aib-meter">
+            <span class="lbl"><span class="l-en">Evidence</span><span class="l-zh">证据</span></span>
+            <span class="oew-pips" role="img"
+              data-tip-en="Evidence strength, 4 of 5."
+              data-tip-zh="证据强度，5 格中第 4 格。">
+              <i class="oew-pip on"></i><i class="oew-pip on"></i><i class="oew-pip on"></i><i class="oew-pip on"></i><i class="oew-pip"></i>
+            </span>
+            <span class="oew-aib-band band-moderate"><span class="l-en">Moderate</span><span class="l-zh">中等</span></span>
+          </div>
+          <p class="oew-aib-why"><span class="l-en">why-now for BBB</span><span class="l-zh">BBB 事实</span></p>
+          <div class="oew-aib-facts mono">
+            <span><span class="l-en">Horizon</span><span class="l-zh">周期</span> <span class="l-en">next 5 sessions</span><span class="l-zh">未来5个交易日</span></span>
+            <span>±3.0% <span class="l-en">implied</span><span class="l-zh">隐含</span></span>
+            <span><span class="l-en">Fresh until</span><span class="l-zh">有效至</span> 2026-09-08</span>
+          </div>
+          <div class="oew-aib-chips">
+            
+            <span class="oew-aib-prophet"
+              data-tip-en="Prophet context only — it does not change this board's ranking. As of 2026-09-05."
+              data-tip-zh="仅为 Prophet 参考——不影响本板块排序。截至 2026-09-05。">Prophet · <span class="l-en">Entry window open</span><span class="l-zh">入场窗口开放</span></span>
+          </div>
+          <details class="oew-aib-detail">
+            <summary><span class="l-en">Why &amp; what would change it</span><span class="l-zh">依据与变化条件</span></summary>
+            <div class="oew-aib-detailbody">
+              <div class="oew-aib-dline">
+                <span class="k"><span class="l-en">OI evidence</span><span class="l-zh">未平仓量证据</span></span>
+                <span class="v"><span class="l-en">Open interest grew on the call side, sharply (45 sessions of history).</span><span class="l-zh">未平仓量在看涨方向增长，显著（45 个历史交易日）。</span></span>
+              </div>
+              <div class="oew-aib-dline">
+                <span class="k"><span class="l-en">Skew evidence</span><span class="l-zh">偏度证据</span></span>
+                <span class="v"><span class="l-en">Downside skew flattened unusually, sharply (18 sessions of history).</span><span class="l-zh">下行偏度走平异常，显著（18 个历史交易日）。</span></span>
+              </div>
+              
+              
+              <div class="oew-aib-dline">
+                <span class="k"><span class="l-en">Evidence</span><span class="l-zh">证据</span></span>
+                <span class="v"><span class="l-en">why-now for BBB</span><span class="l-zh">BBB 事实</span></span>
+              </div>
+              
+              <div class="oew-aib-dline">
+                <span class="k"><span class="l-en">Would confirm</span><span class="l-zh">确认条件</span></span>
+                <span class="v"><span class="l-en">trigger BBB</span><span class="l-zh">BBB 触发</span></span>
+              </div>
+              <div class="oew-aib-dline">
+                <span class="k"><span class="l-en">Would change it</span><span class="l-zh">变化条件</span></span>
+                <span class="v"><span class="l-en">invalidation BBB</span><span class="l-zh">BBB 失效</span></span>
+              </div>
+              <div class="oew-aib-dline">
+                <span class="k"><span class="l-en">Priority score</span><span class="l-zh">优先级分数</span></span>
+                <span class="v mono">2</span>
+              </div>
+              <div class="oew-aib-dline">
+                <span class="k"><span class="l-en">Receipt</span><span class="l-zh">回执</span></span>
+                <span class="v mono">adib:v1.2:2026-09-05:BBB</span>
+              </div>
+            </div>
+          </details>
+        </article>
+        
+        <article class="oew-aib-card is-up">
+          <header class="oew-aib-top">
+            <span class="oew-aib-rank mono">№3</span>
+            
+            <span class="oew-aib-sym mono">CCC</span>
+            <span class="oew-aib-state"><span class="l-en">Upside evidence</span><span class="l-zh">上行证据</span></span>
+          </header>
+          <div class="oew-aib-legs" role="img"
+            data-tip-en="Two independent facts must agree before we call a direction: how open interest grew (calls vs puts) and how the skew moved. One arrow per fact."
+            data-tip-zh="必须两个独立事实一致才判定方向：未平仓合约的增长结构（看涨与看跌）与偏度的变化。每个事实一个箭头。">
+            <span class="leg leg-oi up">▲ OI</span>
+            <span class="leg leg-skew up">▲ <span class="l-en">Skew</span><span class="l-zh">偏度</span></span>
+            <span class="oew-aib-legverdict"><span class="l-en">aligned</span><span class="l-zh">一致</span></span>
+          </div>
+          <div class="oew-aib-meter">
+            <span class="lbl"><span class="l-en">Evidence</span><span class="l-zh">证据</span></span>
+            <span class="oew-pips" role="img"
+              data-tip-en="Evidence strength, 4 of 5."
+              data-tip-zh="证据强度，5 格中第 4 格。">
+              <i class="oew-pip on"></i><i class="oew-pip on"></i><i class="oew-pip on"></i><i class="oew-pip on"></i><i class="oew-pip"></i>
+            </span>
+            <span class="oew-aib-band band-moderate"><span class="l-en">Moderate</span><span class="l-zh">中等</span></span>
+          </div>
+          <p class="oew-aib-why"><span class="l-en">why-now for CCC</span><span class="l-zh">CCC 事实</span></p>
+          <div class="oew-aib-facts mono">
+            <span><span class="l-en">Horizon</span><span class="l-zh">周期</span> <span class="l-en">next 5 sessions</span><span class="l-zh">未来5个交易日</span></span>
+            <span>±3.0% <span class="l-en">implied</span><span class="l-zh">隐含</span></span>
+            <span><span class="l-en">Fresh until</span><span class="l-zh">有效至</span> 2026-09-08</span>
+          </div>
+          <div class="oew-aib-chips">
+            
+            <span class="oew-aib-prophet"
+              data-tip-en="Prophet context only — it does not change this board's ranking. As of 2026-09-05."
+              data-tip-zh="仅为 Prophet 参考——不影响本板块排序。截至 2026-09-05。">Prophet · <span class="l-en">Entry window open</span><span class="l-zh">入场窗口开放</span></span>
+          </div>
+          <details class="oew-aib-detail">
+            <summary><span class="l-en">Why &amp; what would change it</span><span class="l-zh">依据与变化条件</span></summary>
+            <div class="oew-aib-detailbody">
+              <div class="oew-aib-dline">
+                <span class="k"><span class="l-en">OI evidence</span><span class="l-zh">未平仓量证据</span></span>
+                <span class="v"><span class="l-en">Open interest grew on the call side, sharply (45 sessions of history).</span><span class="l-zh">未平仓量在看涨方向增长，显著（45 个历史交易日）。</span></span>
+              </div>
+              <div class="oew-aib-dline">
+                <span class="k"><span class="l-en">Skew evidence</span><span class="l-zh">偏度证据</span></span>
+                <span class="v"><span class="l-en">Downside skew flattened unusually, sharply (18 sessions of history).</span><span class="l-zh">下行偏度走平异常，显著（18 个历史交易日）。</span></span>
+              </div>
+              
+              
+              <div class="oew-aib-dline">
+                <span class="k"><span class="l-en">Evidence</span><span class="l-zh">证据</span></span>
+                <span class="v"><span class="l-en">why-now for CCC</span><span class="l-zh">CCC 事实</span></span>
+              </div>
+              
+              <div class="oew-aib-dline">
+                <span class="k"><span class="l-en">Would confirm</span><span class="l-zh">确认条件</span></span>
+                <span class="v"><span class="l-en">trigger CCC</span><span class="l-zh">CCC 触发</span></span>
+              </div>
+              <div class="oew-aib-dline">
+                <span class="k"><span class="l-en">Would change it</span><span class="l-zh">变化条件</span></span>
+                <span class="v"><span class="l-en">invalidation CCC</span><span class="l-zh">CCC 失效</span></span>
+              </div>
+              <div class="oew-aib-dline">
+                <span class="k"><span class="l-en">Priority score</span><span class="l-zh">优先级分数</span></span>
+                <span class="v mono">3</span>
+              </div>
+              <div class="oew-aib-dline">
+                <span class="k"><span class="l-en">Receipt</span><span class="l-zh">回执</span></span>
+                <span class="v mono">adib:v1.2:2026-09-05:CCC</span>
+              </div>
+            </div>
+          </details>
+        </article>
+        
       </div>
-      {% else %}
-      <div class="oew-aib-empty">
-        <p class="oew-aib-empty-lead">{{ t('No name clears the research-priority threshold today.', '今日没有名称达到研究优先级门槛。') }}</p>
-        <p class="oew-aib-empty-sub">{{ aib.eligible }} {{ t('names fully eligible · source healthy', '个名称完全符合条件 · 数据源正常') }}</p>
-      </div>
-      {% endif %}
+      
 
-      {# ── BAND 2 · directional watch — same ranked list, below the cut ── #}
-      {% if aib.watch %}
-      <div class="oew-aib-watch">
-        <span class="oew-aib-wlbl" tabindex="0" role="button"
-          data-tip-en="Names that met the same evidence bar as the six above but ranked below the cut. The numbers are their place in the full ranking, so a gap means a higher-ranked volatility name sits between them. Order comes from the board's own ranking and is never re-sorted here."
-          data-tip-zh="与上方六个达到同一证据标准、但排名未进前六的名称。编号为其在完整排序中的位次，因此编号跳跃表示中间有排名更高的波动率名称。顺序沿用板块自身排序，此处不重新排序。"
-        >{{ t('Qualified below the cut', '达标但未入前六') }}</span>
-        {% for w in aib.watch %}
-        <button class="oew-tkchip oew-aib-wchip is-{{ w.dir_slug }}" type="button" data-goto="{{ w.symbol }}">
-          <span class="rk">№{{ w.board_rank }}</span>
-          <span>{{ w.symbol }}</span>
-          <span class="dir">{{ t(w.dir_en, w.dir_zh) }}</span>
-        </button>
-        {% endfor %}
-        {% if aib.watch_overflow > 0 %}
-        <span class="oew-aib-rmore">+{{ aib.watch_overflow }} {{ t('more', '个') }}</span>
-        {% endif %}
-      </div>
-      {% elif aib.no_directional %}
-      <p class="oew-aib-wnull">{{ t('No upside or downside hypothesis qualified today.', '今日没有上行或下行假设达标。') }}</p>
-      {% endif %}
+      
+      
+      <p class="oew-aib-wnull"><span class="l-en">No upside or downside hypothesis qualified today.</span><span class="l-zh">今日没有上行或下行假设达标。</span></p>
+      
 
-      {# ── BAND 3 · evidence rail — event premium | crowded tape ── #}
+      
       <div class="oew-aib-rail">
 
         <div class="oew-rg oew-aib-rgbody">
           <div class="oew-aib-rghead">
-            <span class="oew-rg-h">{{ t('Ahead of an event', '事件前') }}</span>
+            <span class="oew-rg-h"><span class="l-en">Ahead of an event</span><span class="l-zh">事件前</span></span>
             <span class="oew-help" tabindex="0" role="button"
               data-tip-en="Names with a known event inside the next 45 days, ordered by how far their event pricing sits from other event names today. Cross-sectional comparison only — it never says an event move is cheap or expensive."
               data-tip-zh="未来 45 天内有已知事件的名称，按其事件定价与当前其他事件名称的偏离程度排序。仅为横截面比较——绝不表示某次事件变动是便宜还是昂贵。">?</span>
           </div>
-          {% if aib.events %}
-            {% for e in aib.events %}
-            <div class="oew-aib-rrow">
-              <span class="oew-aib-rsym">{{ e.symbol }}</span>
-              <span class="oew-aib-rline">{{ t(e.state_en, e.state_zh) }}</span>
-              {% if e.board_rank %}<span class="oew-aib-rref">№{{ e.board_rank }} {{ t('above', '见上') }}</span>{% endif %}
-              <span class="oew-aib-rmeta">{{ t('Event', '事件') }} {{ e.event_date }}{% if e.move_pct %} · ±{{ e.move_pct }}%{% endif %}</span>
-            </div>
-            {% endfor %}
-            {% if aib.events_overflow > 0 %}
-            <div class="oew-aib-rmore">+{{ aib.events_overflow }} {{ t('more', '个') }}</div>
-            {% endif %}
-          {% else %}
-          <p class="oew-aib-rempty">{{ t(aib.events_empty_en, aib.events_empty_zh) }}</p>
-          {% endif %}
+          
+          <p class="oew-aib-rempty"><span class="l-en">No name has an event inside the window.</span><span class="l-zh">窗口内没有名称有事件。</span></p>
+          
         </div>
 
         <div class="oew-rg oew-aib-rgbody">
           <div class="oew-aib-rghead">
-            <span class="oew-rg-h">{{ t('Crowded tape', '拥挤交易') }}</span>
+            <span class="oew-rg-h"><span class="l-en">Crowded tape</span><span class="l-zh">拥挤交易</span></span>
             <span class="oew-help" tabindex="0" role="button"
               data-tip-en="Names where activity looks crowded: same-day expiries dominating the tape, options costly while price sits at a high, or both running for days. Crowding cuts how tradeable an idea is; it never gives a direction."
               data-tip-zh="活跃度显示拥挤的名称：当日到期主导盘面、价格高位时期权偏贵，或两者持续数日。拥挤会削弱想法的可执行性；它从不给出方向。">?</span>
           </div>
-          {% if aib.risks %}
-            {% for r in aib.risks %}
-            <div class="oew-aib-rrow">
-              <span class="oew-aib-rsym">{{ r.symbol }}</span>
-              <span class="oew-aib-rline">{{ t(r.cause_en, r.cause_zh) }}</span>
-              {% if r.board_rank %}<span class="oew-aib-rref">№{{ r.board_rank }} {{ t('above', '见上') }}</span>{% endif %}
-            </div>
-            {% endfor %}
-            {% if aib.risks_overflow > 0 %}
-            <div class="oew-aib-rmore">+{{ aib.risks_overflow }} {{ t('more', '个') }}</div>
-            {% endif %}
-          {% else %}
-          <p class="oew-aib-rempty">{{ t('Nothing looks crowded today.', '今日无拥挤迹象。') }}</p>
-          {% endif %}
+          
+          <p class="oew-aib-rempty"><span class="l-en">Nothing looks crowded today.</span><span class="l-zh">今日无拥挤迹象。</span></p>
+          
         </div>
 
       </div>
 
-      {# ── BAND 4 · the control — never a card, never clickable ── #}
+      
       <div class="oew-aib-control">
         <span class="oew-aib-ctlk" tabindex="0" role="button"
           data-tip-en="A healthy, fully covered name that cleared nothing today — shown so you can tell 'nothing here' apart from 'no data'. It is not a research priority and is never ranked."
           data-tip-zh="一个数据完整、今日无任何状态达标的健康名称——用以区分「无信号」与「无数据」。它不是研究优先级，也从不参与排序。"
-        >{{ t('Control', '对照') }}</span>
-        {% if aib.control %}
-        <span class="oew-aib-ctlsym">{{ aib.control.symbol }}</span>
-        <span>— {{ t(aib.control.reason_en, aib.control.reason_zh) }}</span>
-        {% else %}
-        <span>— {{ t('no fully covered quiet name today.', '今日无数据完整的平静名称。') }}</span>
-        {% endif %}
+        ><span class="l-en">Control</span><span class="l-zh">对照</span></span>
+        
+        <span>— <span class="l-en">no fully covered quiet name today.</span><span class="l-zh">今日无数据完整的平静名称。</span></span>
+        
       </div>
 
-      {% else %}
-      <div class="oew-aib-degraded">
-        <p class="oew-aib-degraded-lead">{{ t(aib.degraded_en or 'This board is unavailable for this close.', aib.degraded_zh or '本次收盘该板块暂不可用。') }}</p>
-        <p class="oew-aib-degraded-why">{{ t(aib.degraded_why_en or 'This is a data gap, not a quiet market.',
-                                              aib.degraded_why_zh or '这是数据缺口，并非市场平静。') }}</p>
-        <details class="oew-aib-degraded-rcp">
-          <summary>{{ t('What we checked', '我们检查了什么') }}</summary>
-          <div class="oew-aib-detailbody">
-            <div class="oew-aib-dline"><span class="k">{{ t('Last settled close', '最近结算收盘') }}</span><span class="v mono">{{ aib.as_of_session or t('not recorded', '未记录') }}</span></div>
-            <div class="oew-aib-dline"><span class="k">{{ t('Positions counted', '持仓统计于') }}</span><span class="v mono">{{ aib.oi_counted_date or t('not recorded', '未记录') }}</span></div>
-            <div class="oew-aib-dline"><span class="k">{{ t('Built', '生成于') }}</span><span class="v">{% if aib.freshness.built_en %}{{ t(aib.freshness.built_en, aib.freshness.built_zh) }}{% else %}{{ t('not recorded', '未记录') }}{% endif %}</span></div>
-            <div class="oew-aib-dline"><span class="k">{{ t('Receipt', '回执') }}</span><span class="v mono">{{ (aib.receipt_id or '')[:12] or t('not recorded', '未记录') }}</span></div>
-          </div>
-        </details>
-      </div>
-      {% endif %}
+      
     </div>
     <div class="oew-pfoot">
-      <span>{{ t('Hypotheses to research, ranked by evidence — none is a trade on its own.', '按证据排序的研究假设——均非独立交易信号。') }}</span>
-      {% if aib.overflow > 0 %}<span class="oew-aib-more"
-        data-tip-en="Counts every direction above the threshold, including volatility names. The strip above names only the upside and downside ones."
-        data-tip-zh="统计门槛之上的全部方向，含波动率名称。上方条带仅列出上行与下行名称。">{{ aib.overflow }} {{ t('more above threshold', '个更多超过门槛') }}</span>{% endif %}
-      {% if aib.as_of_session %}
-      <span class="oew-asof mono" data-tip-en="Receipt {{ aib.receipt_id[:12] }}" data-tip-zh="回执 {{ aib.receipt_id[:12] }}">{{ aib.as_of_session }}</span>
-      {% endif %}
+      <span><span class="l-en">Hypotheses to research, ranked by evidence — none is a trade on its own.</span><span class="l-zh">按证据排序的研究假设——均非独立交易信号。</span></span>
+      
+      
+      <span class="oew-asof mono" data-tip-en="Receipt e5bd3f474eab" data-tip-zh="回执 e5bd3f474eab">2026-09-03</span>
+      
     </div>
   </div>
 
   <div class="oew-panel">
     <div class="oew-phead">
-      <h2 class="oew-ph-title">{{ t('What changed', '有何变化') }}</h2>
+      <h2 class="oew-ph-title"><span class="l-en">What changed</span><span class="l-zh">有何变化</span></h2>
       <div class="oew-ph-right">
         <span class="oew-help" tabindex="0" role="button"
           data-tip-en="Each chip compares this close with the previous close on one measure. Hover a chip for the two numbers behind it."
@@ -1353,32 +1683,23 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
       </div>
     </div>
     <div class="oew-pbody">
-      {% if changed.chips %}
-      <div class="oew-chips">
-        {% for c in changed.chips %}
-        <span class="oew-chg" data-tip-en="{{ c.tip_en }}" data-tip-zh="{{ c.tip_zh }}">
-          <span class="ar {{ c.arrow }}">{% if c.arrow == 'u' %}▲{% elif c.arrow == 'd' %}▼{% else %}▬{% endif %}</span>{{ t(c.en, c.zh) }}</span>
-        {% endfor %}
-      </div>
-      {% else %}
-      <p class="oew-empty">{{ t('Nothing moved enough between the two closes for us to flag it. This fills in as soon as a measure changes.',
-                               '两次收盘之间没有足够显著的变化需要标注。一旦某项指标发生变化，此处会立即填充。') }}</p>
-      {% endif %}
+      
+      <p class="oew-empty"><span class="l-en">Nothing moved enough between the two closes for us to flag it. This fills in as soon as a measure changes.</span><span class="l-zh">两次收盘之间没有足够显著的变化需要标注。一旦某项指标发生变化，此处会立即填充。</span></p>
+      
     </div>
     <div class="oew-pfoot">
-      <span class="oew-stance st-watch">{{ t("Watch — don't chase", '观察—勿追高') }}</span>
-      <span>{{ t("Nothing here is a trade on its own — these are the day's deltas, not signals.",
-                 '这些只是当日变化，本身并不构成交易信号。') }}</span>
-      {% if changed.asof %}<span class="oew-asof mono">{{ changed.asof }}</span>{% endif %}
+      <span class="oew-stance st-watch"><span class="l-en">Watch — don&#39;t chase</span><span class="l-zh">观察—勿追高</span></span>
+      <span><span class="l-en">Nothing here is a trade on its own — these are the day&#39;s deltas, not signals.</span><span class="l-zh">这些只是当日变化，本身并不构成交易信号。</span></span>
+      
     </div>
   </div>
 
-  <div class="oew-sec-h"><h2>{{ t('Where the indexes closed', '指数收盘位置') }}</h2></div>
+  <div class="oew-sec-h"><h2><span class="l-en">Where the indexes closed</span><span class="l-zh">指数收盘位置</span></h2></div>
 
   <div class="oew-panel">
     <div class="oew-phead">
-      <h2 class="oew-ph-title">{{ t('The four that set the tone', '定调的四大指数') }}</h2>
-      <span class="oew-ph-sub">{{ t('where price sits against the levels dealers hedge around', '价格相对做市商对冲水位的位置') }}</span>
+      <h2 class="oew-ph-title"><span class="l-en">The four that set the tone</span><span class="l-zh">定调的四大指数</span></h2>
+      <span class="oew-ph-sub"><span class="l-en">where price sits against the levels dealers hedge around</span><span class="l-zh">价格相对做市商对冲水位的位置</span></span>
       <div class="oew-ph-right">
         <span class="oew-help" tabindex="0" role="button"
           data-tip-en="The flip is the price where dealer hedging changes character: above it hedging damps moves, below it hedging amplifies them. Walls are the strikes with the most dealer gamma above and below. Expected move is what the options market is pricing for one session, at roughly a 2-in-3 chance. The stance chip follows the regime word — it is not a separate signal. Model estimate: real dealer books are unobservable."
@@ -1386,44 +1707,22 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
       </div>
     </div>
     <div class="oew-pbody">
-      {% if indexes %}
-      <div class="oew-idx">
-        {% for ix in indexes %}
-        <div class="oew-ic">
-          <div class="oew-ic-top"><span class="oew-ic-sym mono">{{ ix.sym }}</span><span class="oew-ic-px mono">{{ ix.spot }}</span></div>
-          <div class="oew-ic-regime">{{ t(ix.head_en, ix.head_zh) }}</div>
-          <div class="oew-ic-line">{{ t(ix.line_en, ix.line_zh) }}</div>
-          <div class="oew-ic-levels">
-            <span class="oew-ic-lv"><span class="k">{{ t('Floor', '下方墙') }}</span><span class="v mono">{{ ix.floor }}</span></span>
-            <span class="oew-ic-lv"><span class="k">{{ t('Flip', '翻转位') }}</span><span class="v mono">{{ ix.flip }}</span></span>
-            <span class="oew-ic-lv"><span class="k">{{ t('Ceiling', '上方墙') }}</span><span class="v mono">{{ ix.ceiling }}</span></span>
-          </div>
-          <div class="oew-ic-foot">
-            {% if ix.stance == 'protect' %}<span class="oew-stance st-protect">{{ t('Protect gains', '保护利润') }}</span>
-            {% else %}<span class="oew-stance st-watch">{{ t("Watch — don't chase", '观察—勿追高') }}</span>{% endif %}
-            <span class="oew-ic-em mono">{{ ix.em }}</span>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-      {% else %}
-      <p class="oew-empty">{{ t('No index chains reported for this close. This fills in with SPX, SPY, QQQ and IWM as soon as the options snapshot lands.',
-                               '本次收盘没有指数期权链数据。待期权快照到位后，此处会显示 SPX、SPY、QQQ 与 IWM。') }}</p>
-      {% endif %}
+      
+      <p class="oew-empty"><span class="l-en">No index chains reported for this close. This fills in with SPX, SPY, QQQ and IWM as soon as the options snapshot lands.</span><span class="l-zh">本次收盘没有指数期权链数据。待期权快照到位后，此处会显示 SPX、SPY、QQQ 与 IWM。</span></p>
+      
     </div>
     <div class="oew-pfoot">
-      <span>{{ t("Levels are measured from this close and hold until tomorrow's data run. A move through one intraday does not count until it closes there.",
-                 '水位以本次收盘计算，在明日数据更新前有效。盘中穿越某一水位，须以收盘站稳为准。') }}</span>
-      {% if indexes %}<span class="oew-asof mono">{{ indexes[0].asof }}</span>{% endif %}
+      <span><span class="l-en">Levels are measured from this close and hold until tomorrow&#39;s data run. A move through one intraday does not count until it closes there.</span><span class="l-zh">水位以本次收盘计算，在明日数据更新前有效。盘中穿越某一水位，须以收盘站稳为准。</span></span>
+      
     </div>
   </div>
 
-  <div class="oew-sec-h"><h2>{{ t('Where the money went', '资金去向') }}</h2></div>
+  <div class="oew-sec-h"><h2><span class="l-en">Where the money went</span><span class="l-zh">资金去向</span></h2></div>
 
   <div class="oew-panel">
     <div class="oew-phead">
-      <h2 class="oew-ph-title">{{ t('Premium by sector', '各板块权利金') }}</h2>
-      <span class="oew-ph-sub">{{ t("how concentrated today's options money was", '今日期权资金的集中程度') }}</span>
+      <h2 class="oew-ph-title"><span class="l-en">Premium by sector</span><span class="l-zh">各板块权利金</span></h2>
+      <span class="oew-ph-sub"><span class="l-en">how concentrated today&#39;s options money was</span><span class="l-zh">今日期权资金的集中程度</span></span>
       <div class="oew-ph-right">
         <span class="oew-help" tabindex="0" role="button"
           data-tip-en="Bars share one scale, so lengths are directly comparable. Size is a solid read; the buying/selling tone comes from tick-rule signing and is not reliable enough to read as direction on its own."
@@ -1431,46 +1730,26 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
       </div>
     </div>
     <div class="oew-pbody">
-      {% if sectors and sectors.rows %}
-      <div class="oew-sect">
-        {% for s in sectors.rows %}
-        <div class="oew-sr">
-          <span class="oew-sr-name">{{ td(s.sector) }}</span>
-          <span class="oew-sr-track"><i class="oew-sr-fill {{ s.cls }}" style="width:{{ s.width }}%"></i></span>
-          <span class="oew-sr-val mono">{{ s.val }}</span>
-          <span class="tone {{ s.cls if s.cls != 'mix' else '' }}">{{ t(s.tone_en, s.tone_zh) }}</span>
-        </div>
-        {% endfor %}
-      </div>
-      {% else %}
-      <p class="oew-empty">{{ t('Sector premium did not report for this close. It returns with the next options tape.',
-                               '本次收盘没有板块权利金数据。下一次期权盘面数据到位后会恢复。') }}</p>
-      {% endif %}
+      
+      <p class="oew-empty"><span class="l-en">Sector premium did not report for this close. It returns with the next options tape.</span><span class="l-zh">本次收盘没有板块权利金数据。下一次期权盘面数据到位后会恢复。</span></p>
+      
     </div>
     <div class="oew-pfoot">
-      <span class="oew-stance st-watch">{{ t("Watch — don't chase", '观察—勿追高') }}</span>
+      <span class="oew-stance st-watch"><span class="l-en">Watch — don&#39;t chase</span><span class="l-zh">观察—勿追高</span></span>
       <span>
-        {% if sectors and sectors.top2_pct %}
-        <span class="l-en">Two sectors took {{ sectors.top2_pct }}% of today's premium. This is a picture of where money went, not a forecast of where it goes next.</span>
-        <span class="l-zh">两个板块占据今日 {{ sectors.top2_pct }}% 的权利金。这是资金去向的记录，而非对后续走向的预测。</span>
-        {% else %}
-        {{ t('This is a picture of where money went, not a forecast of where it goes next.',
-             '这是资金去向的记录，而非对后续走向的预测。') }}
-        {% endif %}
+        
+        <span class="l-en">This is a picture of where money went, not a forecast of where it goes next.</span><span class="l-zh">这是资金去向的记录，而非对后续走向的预测。</span>
+        
       </span>
-      {% if direction_reliable == false %}
-      <span class="cau" data-tip-en="{{ direction_note or 'Net premium direction comes from tick-rule signing and is approximate.' }}" data-tip-zh="买卖倾向来自 tick 规则签署，为近似值，不足以单独作为方向依据。">
-        <span class="l-en">tone: not reliable alone</span><span class="l-zh">倾向：不足以单独判断</span>
-      </span>
-      {% endif %}
-      {% if sectors and sectors.asof %}<span class="oew-asof mono">{{ sectors.asof }}</span>{% endif %}
+      
+      
     </div>
   </div>
 
   <div class="oew-panel">
     <div class="oew-phead">
-      <h2 class="oew-ph-title">{{ t('Biggest single bets', '最大单笔押注') }}</h2>
-      <span class="oew-ph-sub">{{ t('net premium, direction approximate', '净权利金，方向为近似值') }}</span>
+      <h2 class="oew-ph-title"><span class="l-en">Biggest single bets</span><span class="l-zh">最大单笔押注</span></h2>
+      <span class="oew-ph-sub"><span class="l-en">net premium, direction approximate</span><span class="l-zh">净权利金，方向为近似值</span></span>
       <div class="oew-ph-right">
         <span class="oew-help" tabindex="0" role="button"
           data-tip-en="Net premium is calls bought minus puts bought, after tick-rule signing. A large call number can still be a hedge on a short position — size is reliable, intent is not."
@@ -1478,90 +1757,58 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
       </div>
     </div>
     <div class="oew-pbody" style="padding:0">
-      {% if bets and bets.rows %}
-      <div class="oew-bets">
-        {% for b in bets.rows %}
-        <div class="oew-bet">
-          <span class="oew-bet-sym mono">{{ b.sym }}</span>
-          <span class="oew-bet-amt {{ b.sign }} mono">{{ b.amt }}</span>
-          <span class="oew-bet-note">{{ t(b.tone_en, b.tone_zh) }}</span>
-          <span class="oew-bet-r">
-            {% for c in b.cautions %}<span class="cau{% if c.warn %} cau-warn{% endif %}" data-tip-en="{{ c.tip_en }}" data-tip-zh="{{ c.tip_zh }}">{{ t(c.en, c.zh) }}</span>{% endfor %}
-            {% if b.share_en %}<span class="tone">{{ t(b.share_en, b.share_zh) }}</span>{% endif %}
-          </span>
-        </div>
-        {% endfor %}
-      </div>
-      {% else %}
-      <div class="oew-pbody"><p class="oew-empty">{{ t('No single-name premium marks for this close. They return with the next options tape.',
-                               '本次收盘没有个股权利金记录。下一次期权盘面数据到位后会恢复。') }}</p></div>
-      {% endif %}
+      
+      <div class="oew-pbody"><p class="oew-empty"><span class="l-en">No single-name premium marks for this close. They return with the next options tape.</span><span class="l-zh">本次收盘没有个股权利金记录。下一次期权盘面数据到位后会恢复。</span></p></div>
+      
     </div>
     <div class="oew-pfoot">
-      <span class="oew-stance st-watch">{{ t("Watch — don't chase", '观察—勿追高') }}</span>
-      <span>{{ t('Big premium marks attention, not conviction. A single large trade can be one desk hedging.',
-                 '大额权利金代表关注度，而非信心。单笔大单可能只是某个交易台在对冲。') }}</span>
-      {% if bets and bets.asof %}<span class="oew-asof mono">{{ bets.asof }}</span>{% endif %}
+      <span class="oew-stance st-watch"><span class="l-en">Watch — don&#39;t chase</span><span class="l-zh">观察—勿追高</span></span>
+      <span><span class="l-en">Big premium marks attention, not conviction. A single large trade can be one desk hedging.</span><span class="l-zh">大额权利金代表关注度，而非信心。单笔大单可能只是某个交易台在对冲。</span></span>
+      
     </div>
   </div>
 
-  <div class="oew-sec-h"><h2>{{ t('For tomorrow', '明日关注') }}</h2></div>
+  <div class="oew-sec-h"><h2><span class="l-en">For tomorrow</span><span class="l-zh">明日关注</span></h2></div>
 
   <div class="oew-panel">
     <div class="oew-phead">
-      <h2 class="oew-ph-title">{{ t('Names worth a look before the open', '开盘前值得关注的标的') }}</h2>
-      <span class="oew-ph-sub">{{ t('a research list, not a buy list', '研究清单，非买入清单') }}</span>
+      <h2 class="oew-ph-title"><span class="l-en">Names worth a look before the open</span><span class="l-zh">开盘前值得关注的标的</span></h2>
+      <span class="oew-ph-sub"><span class="l-en">a research list, not a buy list</span><span class="l-zh">研究清单，非买入清单</span></span>
     </div>
     <div class="oew-pbody">
       <div class="oew-rail">
         <div class="oew-rg">
-          <div class="oew-rg-h">{{ t('Money keeps showing up', '资金反复出现') }}</div>
-          <div class="oew-rg-s">{{ t('Heavy options buying on most of the last ten days.', '近十个交易日中多数出现大量期权买入。') }}</div>
-          {% if rail.a %}<div class="oew-tkchips">
-            {% for tk in rail.a %}<button class="oew-tkchip" type="button" data-goto="{{ tk }}">{{ tk }}</button>{% endfor %}
-          </div>{% else %}<p class="oew-empty">{{ t('None yet — this fills in once enough sessions of options flow have accrued.', '暂无 — 待期权资金流场次积累足够后会填充。') }}</p>{% endif %}
+          <div class="oew-rg-h"><span class="l-en">Money keeps showing up</span><span class="l-zh">资金反复出现</span></div>
+          <div class="oew-rg-s"><span class="l-en">Heavy options buying on most of the last ten days.</span><span class="l-zh">近十个交易日中多数出现大量期权买入。</span></div>
+          <p class="oew-empty"><span class="l-en">None yet — this fills in once enough sessions of options flow have accrued.</span><span class="l-zh">暂无 — 待期权资金流场次积累足够后会填充。</span></p>
         </div>
         <div class="oew-rg">
-          <div class="oew-rg-h">{{ t('Turned back up after a washout', '洗盘后重新转强') }}</div>
-          <div class="oew-rg-s">{{ t('Money flipped positive right after a run of selling.', '在连续卖出之后，资金刚刚转为流入。') }}</div>
-          {% if rail.b %}<div class="oew-tkchips">
-            {% for tk in rail.b %}<button class="oew-tkchip" type="button" data-goto="{{ tk }}">{{ tk }}</button>{% endfor %}
-          </div>{% else %}<p class="oew-empty">{{ t('No fresh turns in this close.', '本次收盘没有新的转向。') }}</p>{% endif %}
+          <div class="oew-rg-h"><span class="l-en">Turned back up after a washout</span><span class="l-zh">洗盘后重新转强</span></div>
+          <div class="oew-rg-s"><span class="l-en">Money flipped positive right after a run of selling.</span><span class="l-zh">在连续卖出之后，资金刚刚转为流入。</span></div>
+          <p class="oew-empty"><span class="l-en">No fresh turns in this close.</span><span class="l-zh">本次收盘没有新的转向。</span></p>
         </div>
         <div class="oew-rg">
-          <div class="oew-rg-h">{{ t('Sitting near a flip level', '接近翻转位') }}</div>
-          <div class="oew-rg-s">{{ t('Within 1% of the price where hedging changes character.', '距对冲性质改变的价格 1% 以内。') }}</div>
-          {% if rail.c %}<div class="oew-tkchips">
-            {% for tk in rail.c %}<button class="oew-tkchip" type="button" data-goto="{{ tk }}">{{ tk }}</button>{% endfor %}
-          </div>{% else %}<p class="oew-empty">{{ t('No name closed within 1% of its flip level.', '没有标的收于其翻转位 1% 以内。') }}</p>{% endif %}
+          <div class="oew-rg-h"><span class="l-en">Sitting near a flip level</span><span class="l-zh">接近翻转位</span></div>
+          <div class="oew-rg-s"><span class="l-en">Within 1% of the price where hedging changes character.</span><span class="l-zh">距对冲性质改变的价格 1% 以内。</span></div>
+          <p class="oew-empty"><span class="l-en">No name closed within 1% of its flip level.</span><span class="l-zh">没有标的收于其翻转位 1% 以内。</span></p>
         </div>
       </div>
     </div>
     <div class="oew-pfoot">
-      <span class="oew-stance st-ready">{{ t('Get ready', '做好准备') }}</span>
-      <span>{{ t('Tap a name to open its workbench. These are starting points for your own work.',
-                 '点击标的可打开其工作台。这些只是你自行研究的起点。') }}</span>
-      {% if rail.asof %}<span class="oew-asof mono">{{ rail.asof }}</span>{% endif %}
+      <span class="oew-stance st-ready"><span class="l-en">Get ready</span><span class="l-zh">做好准备</span></span>
+      <span><span class="l-en">Tap a name to open its workbench. These are starting points for your own work.</span><span class="l-zh">点击标的可打开其工作台。这些只是你自行研究的起点。</span></span>
+      
     </div>
   </div>
 
   <div class="oew-handoff">
     <div>
-      <div class="oew-ho-t">{{ t('This page is the settled close', '本页呈现的是已结算的收盘') }}</div>
-      <div class="oew-ho-s">{{ t("Levels here hold until tomorrow's data run. For walls that move during the session, live tape and replay, the Terminal is the live surface.",
-                                 '此处水位在明日数据更新前保持不变。若需盘中实时移动的墙位、实时逐笔与回放，请使用交易终端。') }}
-        {#- The positioning sentence (ONE_DOOR §5): both desks ship on the same
-            subscription, so this states the DIVISION OF LABOUR, never an upsell. -#}
-        {{ t('Same subscription, two clocks — the Terminal is the live desk (tape, replay, alerts); this workspace is the settled record.',
-             '同一订阅，两种时钟 — 交易终端是盘中实时台（逐笔、回放、警报）；本工作台是收盘后的定格记录。') }}</div>
+      <div class="oew-ho-t"><span class="l-en">This page is the settled close</span><span class="l-zh">本页呈现的是已结算的收盘</span></div>
+      <div class="oew-ho-s"><span class="l-en">Levels here hold until tomorrow&#39;s data run. For walls that move during the session, live tape and replay, the Terminal is the live surface.</span><span class="l-zh">此处水位在明日数据更新前保持不变。若需盘中实时移动的墙位、实时逐笔与回放，请使用交易终端。</span><span class="l-en">Same subscription, two clocks — the Terminal is the live desk (tape, replay, alerts); this workspace is the settled record.</span><span class="l-zh">同一订阅，两种时钟 — 交易终端是盘中实时台（逐笔、回放、警报）；本工作台是收盘后的定格记录。</span></div>
       <div class="oew-ho-clock mono" id="oew-clock">
         <span class="l-en">closed 16:00 ET</span><span class="l-zh">美东 16:00 收盘</span>
       </div>
-    </div>
-    {#- href is a working no-JS destination AND the fallback: the script below
-        re-points it through MDXTerminal.url() once theme.js has defined the
-        helper, so the &from=macro/&ret= stamp the Terminal reads is never lost. -#}
-    <a class="oew-cta" id="oew-brief-cta" href="https://app.mastermind-x.com" target="_blank" rel="noopener">{{ t('Open the Terminal', '打开交易终端') }} ↗</a>
+    </div><a class="oew-cta" id="oew-brief-cta" href="https://app.mastermind-x.com" target="_blank" rel="noopener"><span class="l-en">Open the Terminal</span><span class="l-zh">打开交易终端</span> ↗</a>
   </div>
 </section>
 
@@ -1592,24 +1839,16 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
        above is a static sibling node the render function never touches (W1_DESIGN_
        SPEC.md §0.15: getting this wrong recreates the search box, and re-triggers
        its "/" focus race, on every ticker change). -->
-  <div id="oew-tk-body"></div>
-
-  {#- THE PRIMER — ported VERBATIM from gex.html (templates/gex.html.j2:400-412),
-      the page this workspace absorbs. It is Ticker mode's footer (ONE_DOOR §1
-      table): fixed reference copy that belongs to the mode, not to any one name,
-      so it is STATIC markup — a sibling of #oew-tk-body that renderTicker() never
-      touches — and it therefore keeps working when a name's chain 404s. Closed by
-      default; not a read, so no stance chip and no as-of. -#}
-  <details class="oew-panel oew-shelf oew-primer">
-    <summary>{{ t('New to options? Read this first.', '不熟悉期权？先读这里。') }}</summary>
+  <div id="oew-tk-body"></div><details class="oew-panel oew-shelf oew-primer">
+    <summary><span class="l-en">New to options? Read this first.</span><span class="l-zh">不熟悉期权？先读这里。</span></summary>
     <div class="oew-pbody">
-      <p>{{ t("This page maps where big options dealers are likely to push or cushion the price. It's a map of levels — not a buy/sell signal, not a price target.", "本页标示大型期权做市商可能推动或缓冲价格之处。这是价位地图 — 并非买卖信号、也非目标价。") }}</p>
+      <p><span class="l-en">This page maps where big options dealers are likely to push or cushion the price. It&#39;s a map of levels — not a buy/sell signal, not a price target.</span><span class="l-zh">本页标示大型期权做市商可能推动或缓冲价格之处。这是价位地图 — 并非买卖信号、也非目标价。</span></p>
       <ul>
-        <li>{{ t("<b>Dealers</b> are the banks that sell most options. To stay neutral they constantly buy and sell the stock against what they've sold — and that hedging quietly pushes the price around.", "<b>做市商</b>是卖出大部分期权的银行。为保持中性，它们不断反向买卖股票 — 这种对冲会悄悄推动价格。")|safe }}</li>
-        <li>{{ t("Sometimes their hedging <b>calms</b> the market, sometimes it makes it <b>jumpy</b>. Leaning against moves keeps price in a range; piling into moves makes trends and air-pockets bigger. It's about how volatile — not which direction.", "对冲有时让市场<b>平静</b>、有时让市场<b>跳动</b>。逆势对冲使价格停在区间；顺势对冲使趋势与急跌更大。这关乎波动多大 — 而非方向。")|safe }}</li>
-        <li>{{ t("<b>Walls</b> are the prices where that hedging is heaviest — a call wall above acts like a ceiling, a put wall below like a floor. Each is scored Strong → Faint. Price tends to stall there; it doesn't aim there.", "<b>墙</b>是对冲最重的价位 — 上方看涨墙像天花板，下方看跌墙像地板。每面墙有强弱评分。价格倾向在此停滞，而非以此为目标。")|safe }}</li>
-        <li>{{ t("<b>The flip</b> is the line between the calm and jumpy regimes — watch it like a thermostat, not like support/resistance.", "<b>翻转</b>是平静与跳动体制的分界 — 像恒温器一样观察它，而非支撑/阻力。")|safe }}</li>
-        <li>{{ t("How to use it: pick a name, read the one-line verdict, look at the ladder, then watch the <b>daily-close</b> triggers. The math is solid for indices and big ETFs, loose for single stocks.", "用法：选一个标的，读一行结论，看价位图，再关注<b>日线收盘</b>触发。对指数与大型ETF稳健，对个股宽松。")|safe }}</li>
+        <li><span class="l-en">&lt;b&gt;Dealers&lt;/b&gt; are the banks that sell most options. To stay neutral they constantly buy and sell the stock against what they&#39;ve sold — and that hedging quietly pushes the price around.</span><span class="l-zh">&lt;b&gt;做市商&lt;/b&gt;是卖出大部分期权的银行。为保持中性，它们不断反向买卖股票 — 这种对冲会悄悄推动价格。</span></li>
+        <li><span class="l-en">Sometimes their hedging &lt;b&gt;calms&lt;/b&gt; the market, sometimes it makes it &lt;b&gt;jumpy&lt;/b&gt;. Leaning against moves keeps price in a range; piling into moves makes trends and air-pockets bigger. It&#39;s about how volatile — not which direction.</span><span class="l-zh">对冲有时让市场&lt;b&gt;平静&lt;/b&gt;、有时让市场&lt;b&gt;跳动&lt;/b&gt;。逆势对冲使价格停在区间；顺势对冲使趋势与急跌更大。这关乎波动多大 — 而非方向。</span></li>
+        <li><span class="l-en">&lt;b&gt;Walls&lt;/b&gt; are the prices where that hedging is heaviest — a call wall above acts like a ceiling, a put wall below like a floor. Each is scored Strong → Faint. Price tends to stall there; it doesn&#39;t aim there.</span><span class="l-zh">&lt;b&gt;墙&lt;/b&gt;是对冲最重的价位 — 上方看涨墙像天花板，下方看跌墙像地板。每面墙有强弱评分。价格倾向在此停滞，而非以此为目标。</span></li>
+        <li><span class="l-en">&lt;b&gt;The flip&lt;/b&gt; is the line between the calm and jumpy regimes — watch it like a thermostat, not like support/resistance.</span><span class="l-zh">&lt;b&gt;翻转&lt;/b&gt;是平静与跳动体制的分界 — 像恒温器一样观察它，而非支撑/阻力。</span></li>
+        <li><span class="l-en">How to use it: pick a name, read the one-line verdict, look at the ladder, then watch the &lt;b&gt;daily-close&lt;/b&gt; triggers. The math is solid for indices and big ETFs, loose for single stocks.</span><span class="l-zh">用法：选一个标的，读一行结论，看价位图，再关注&lt;b&gt;日线收盘&lt;/b&gt;触发。对指数与大型ETF稳健，对个股宽松。</span></li>
       </ul>
     </div>
   </details>
@@ -1633,9 +1872,9 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
    anchors on this pair: this data script FIRST, then the data-externalize IIFE.
    Both are plain top-level statements, so they run before the IIFE that reads
    them regardless of whether the IIFE ships inline or as an external file. */
-window.OEW_TICKER_MANIFEST = {{ ticker_manifest_json|safe }};
-window.OEW_DEFAULT_TICKER = {{ (counts.ticker or 'SPY') | tojson }};
-window.OEW_SECTOR_ZH = {{ sector_zh_json|safe }};
+window.OEW_TICKER_MANIFEST = [];
+window.OEW_DEFAULT_TICKER = "SPX";
+window.OEW_SECTOR_ZH = {};
 </script>
 <script data-externalize>
 /* ══════════════════════════════════════════════════════════════════════════
@@ -1746,7 +1985,7 @@ function getJSON(url){
 var flDesk = null, flTide = null;
 /* Generated from the canonical NYSE calendar at bake time.  It is null on a
    weekend/holiday, so the literal Today panel cannot invent a session. */
-var LIVE_SESSION_DATE = {{ live_session_date|tojson }};
+var LIVE_SESSION_DATE = "2026-09-04";
 
 function r2Url(path){
   var base = String((window && window.DATA_BASE) || '').replace(/\/+$/, '');
@@ -3817,5 +4056,31 @@ document.addEventListener('themechange', function(){
 </script>
 <script defer src="illus.js"></script>
 <script src="theme.js"></script>
+
+<style>.nav-search .idle-ticker{visibility:hidden!important}</style>
+<script>
+(function () {
+  function clearNavSearch() {
+    document.querySelectorAll('.nav-search input, .ticker-input').forEach(function (el) {
+      el.value = '';
+      el.blur();
+    });
+    document.querySelectorAll('.idle-ticker').forEach(function (el) {
+      el.textContent = '';
+    });
+  }
+  clearNavSearch();
+  document.addEventListener('DOMContentLoaded', clearNavSearch);
+  window.addEventListener('load', function () {
+    clearNavSearch();
+    var n = 0;
+    var id = setInterval(function () {
+      clearNavSearch();
+      n += 1;
+      if (n > 80) clearInterval(id);
+    }, 50);
+  });
+})();
+</script>
 </body>
 </html>
