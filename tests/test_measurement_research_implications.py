@@ -169,9 +169,14 @@ def _expected_metric_value(metric: dict) -> str:
         return f"{value[0] * 100:.2f}% … {value[2] * 100:.2f}%"
     if unit in {"return_fraction", "fraction"}:
         return f"{value * 100:.3f}%"
-    if unit == "probability" and isinstance(value, (int, float)) and not isinstance(value, bool) and value == 0:
-        # Exact zero is a float display artifact; template prints an upper bound.
-        return "&lt; 0.001"
+    if unit == "probability" and isinstance(value, (int, float)) and not isinstance(value, bool):
+        floor = metric.get("display_floor")
+        draws = metric.get("draws")
+        if isinstance(floor, (int, float)) and not isinstance(floor, bool) and value < floor:
+            return f"&lt; {floor:.4f}"
+        if isinstance(draws, (int, float)) and not isinstance(draws, bool) and draws > 0 and value == 0:
+            return f"&lt; {1 / (draws + 1):.4f}"
+        return f"{value:.4f}"
     if unit in {"months", "events", "episodes", "draws", "tickers"}:
         return str(value)
     if unit == "probability" and isinstance(value, (int, float)) and not isinstance(value, bool):
@@ -559,7 +564,7 @@ def test_ordered_path_preserves_exploratory_and_sample_semantics(
     )
 
     assert "Exploratory — not gated" in es_html
-    assert "探索性 — 未门控" in es_html
+    assert "探索性 —— 未设门槛" in es_html
     assert path["evidence_status"] in _isolate_receipts(es_html)
     assert path["sample_basis"]["en"] in es_html
     assert path["comparison_note"]["en"] in es_html
@@ -1423,10 +1428,15 @@ def test_preregistration_chip_is_not_painted_as_pass_or_fail(real_section):
     css = Path(__file__).resolve().parent.parent.joinpath(
         "templates", "measurement.html.j2"
     ).read_text(encoding="utf-8")
-    m = re.search(r"\.ric-prereg\b[^{]*\{[^}]*\}", css, flags=re.DOTALL)
-    assert m
-    assert "var(--ok)" not in m.group(0)
-    assert "var(--act)" not in m.group(0)
+    style = css[css.find("<style>") : css.find("</style>")]
+    rules = re.findall(r"([^{}]*\.ric-prereg[^{]*)\{([^}]*)\}", style)
+    assert len(rules) >= 3, f"expected base + theme rules, got {len(rules)}"
+    selectors = " ".join(sel for sel, _ in rules)
+    assert 'html[data-theme="dark"]' in selectors
+    assert 'html[data-theme="light"]' in selectors
+    for sel, body in rules:
+        assert "var(--ok)" not in body, f"{sel.strip()} paints the chip as pass"
+        assert "var(--act)" not in body, f"{sel.strip()} paints the chip as fail"
 
 
 def test_missing_confidence_interval_is_printed_for_synthetic_control(contract, real_section):
@@ -1446,15 +1456,235 @@ def test_missing_confidence_interval_is_printed_for_synthetic_control(contract, 
     assert 'data-ric-null-code="ticker_cluster_t"' in card_html
 
 
-def test_zero_probability_is_not_rendered_as_exact_zero(real_section):
-    """MINOR: p=0.0 is a display artifact; prefer an upper-bound form."""
+def test_honest_zero_probability_is_printed_not_invented_floor(real_section):
+    """A stored 0 without display_floor/draws is printed as 0.0000, not < 0.001."""
     card_html = _isolate_card(real_section, "synthetic_control")
-    # Glance output for monthly_newey_west_p must not show a bare 0.0000.
     fig = re.search(
         r'data-ric-code="monthly_newey_west_p".*?</div>',
         card_html,
         flags=re.DOTALL,
     )
     assert fig, "monthly_newey_west_p fig missing"
-    assert "0.0000" not in fig.group(0)
-    assert "&lt; 0.001" in fig.group(0) or "< 0.001" in fig.group(0)
+    assert "0.0000" in fig.group(0)
+    assert "&lt; 0.001" not in fig.group(0)
+    assert "< 0.001" not in fig.group(0)
+
+
+def test_boolean_false_probability_does_not_claim_a_significance_floor():
+    card = _minimal_card(
+        family="event_study",
+        quality="DIAGNOSTIC_ONLY",
+        outputs=[
+            {
+                "code": "false_p",
+                "label": {"en": "False p", "zh": "假 p"},
+                "source": "x",
+                "unit": "probability",
+                "value": False,
+            }
+        ],
+    )
+    section = _section(_render(research_implications=_envelope([card])))
+    fig = _metric_markup(_isolate_card(section, "event_study"), "false_p")
+    assert "&lt; 0.001" not in fig
+    assert "< 0.001" not in fig
+    assert "0.0000" not in fig
+    assert "False" in fig
+
+
+def test_probability_floor_comes_from_contract_precision_or_draws():
+    floor_card = _minimal_card(
+        family="event_study",
+        quality="DIAGNOSTIC_ONLY",
+        outputs=[
+            {
+                "code": "analytic_p",
+                "label": {"en": "Analytic p", "zh": "解析 p"},
+                "source": "x",
+                "unit": "probability",
+                "value": 0.0,
+                "display_floor": 0.01,
+            }
+        ],
+    )
+    draws_card = _minimal_card(
+        family="synthetic_control",
+        quality="DIAGNOSTIC_FAILED",
+        outputs=[
+            {
+                "code": "resample_p",
+                "label": {"en": "Resample p", "zh": "重抽样 p"},
+                "source": "x",
+                "unit": "probability",
+                "value": 0.0,
+                "draws": 99,
+            }
+        ],
+    )
+    floor_html = _metric_markup(
+        _isolate_card(
+            _section(_render(research_implications=_envelope([floor_card]))),
+            "event_study",
+        ),
+        "analytic_p",
+    )
+    draws_html = _metric_markup(
+        _isolate_card(
+            _section(_render(research_implications=_envelope([draws_card]))),
+            "synthetic_control",
+        ),
+        "resample_p",
+    )
+    assert "&lt; 0.0100" in floor_html
+    assert "owner-supplied display floor" in floor_html
+    assert "所有者给出的显示下限" in floor_html
+    assert "&lt; 0.0100" in draws_html
+    assert "resampling floor 1/(draws+1)" in draws_html
+    assert "重抽样下限 1/(次数+1)" in draws_html
+    assert "&lt; 0.001" not in floor_html
+    assert "&lt; 0.001" not in draws_html
+
+
+def test_glance_header_uses_review_plain_word_labels(contract, real_section):
+    family_gloss = {
+        "synthetic_control": ("Synthetic control", "合成控制"),
+        "event_study": ("Event study", "事件研究"),
+    }
+    for card in contract["cards"]:
+        header = _isolate_header(_isolate_card(real_section, card["method_family"]))
+        assert "Evidence: diagnostic run" in header
+        assert "证据：诊断性运行" in header
+        en, zh = family_gloss[card["method_family"]]
+        assert en in header
+        assert zh in header
+        assert "tier: DIAGNOSTIC" not in header
+        glance = _glance_outside_details(
+            _isolate_card(real_section, card["method_family"])
+        )
+        assert "Watch — do not trade off this card." in glance
+        assert "观望 — 不要据此交易。" in glance
+        assert "forecast_authority=false" not in glance
+        assert "EXPLORATORY_NON_GATED" not in glance
+
+
+def test_zero_result_filter_copy_is_not_the_showing_zero_line():
+    src = (REPO / "templates" / "measurement.html.j2").read_text(encoding="utf-8")
+    start = src.find("function apply(sel)")
+    assert start != -1
+    body = src[start : src.find("for (var k = 0", start)]
+    assert "shown === 0" in body
+    assert "No cards match this filter" in body
+    assert "没有符合此筛选的卡片" in body
+    zero_branch = body[body.find("shown === 0") : body.find("} else {", body.find("shown === 0"))]
+    assert "Showing " not in zero_branch
+    assert "显示 0" not in zero_branch
+
+
+def test_ric_null_code_class_is_not_dead_css():
+    src = (REPO / "templates" / "measurement.html.j2").read_text(encoding="utf-8")
+    style = src[src.find("<style>") : src.find("</style>")]
+    assert ".ric-nulls .ric-null-code" not in style
+    assert 'class="ric-null-code"' not in src
+    assert "var(--fig)" not in style
+
+
+def test_hub_template_links_to_research_implications_anchor():
+    hub = (REPO / "templates" / "intelligence_hub.html.j2").read_text(encoding="utf-8")
+    hrefs = re.findall(r'href="measurement\.html#ric-section"', hub)
+    assert len(hrefs) == 1
+
+
+def test_hub_entry_is_bilingual_and_inside_track_record_band():
+    hub = (REPO / "templates" / "intelligence_hub.html.j2").read_text(encoding="utf-8")
+    m = re.search(r'<a class="card rid"[^>]*>(.*?)</a>', hub, flags=re.DOTALL)
+    assert m, "no .rid entry row found in the hub template"
+    row = m.group(1)
+    spans = re.findall(
+        r'class="(rid-k|rid-t|rid-d)">'
+        r'<span class="l-en">(.*?)</span><span class="l-zh">(.*?)</span>',
+        row,
+        flags=re.DOTALL,
+    )
+    assert [cls for cls, _en, _zh in spans] == ["rid-k", "rid-t", "rid-d"]
+    for _cls, en, zh in spans:
+        assert en.strip()
+        assert re.search(r"[一-鿿]", zh), f"ZH span has no Chinese: {zh!r}"
+    tr = re.search(
+        r'<div class="band"[^>]*>.*?Track record.*?</div>(.*?)(?=<div class="band"|$)',
+        hub,
+        flags=re.DOTALL,
+    )
+    assert tr and 'class="card rid"' in tr.group(1)
+    rid_pos = hub.find('class="card rid"')
+    window = hub[hub.rfind('<div class="band"', 0, rid_pos) : rid_pos]
+    assert window.count('<div class="band"') == 1
+    assert "_site_nav.html.j2" in hub
+    assert "_public_nav" not in hub
+
+
+def test_f10a1_evidence_is_full_viewport_and_theme_differentiated():
+    """BLOCKER 1 / MAJOR 2: frames must be themed viewport shots, not crops."""
+    receipt = REPO / "mockups/evidence/f10a1-implication-entry/EVIDENCE.yml"
+    manifest_path = REPO / "mockups/evidence/f10a1-implication-entry/manifest.json"
+    assert receipt.is_file()
+    assert manifest_path.is_file()
+    import yaml
+
+    body = yaml.safe_load(receipt.read_text(encoding="utf-8"))
+    assert body["schema"] == "mastermind.page_evidence_receipt.v1"
+    assert "templates/measurement.html.j2" in body["changed_paths"]
+    assert "templates/intelligence_hub.html.j2" in body["changed_paths"]
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    pages = {page["page_id"]: page for page in manifest["pages"]}
+    assert set(pages) == {"measurement.html", "intelligence_hub.html"}
+
+    def _mean_luma(path: Path) -> float:
+        from PIL import Image
+
+        img = Image.open(path).convert("RGB")
+        pixels = list(img.getdata())
+        assert pixels, f"{path} has no pixels"
+        return sum(0.2126 * r + 0.7152 * g + 0.0722 * b for r, g, b in pixels) / len(
+            pixels
+        )
+
+    for page_id, page in pages.items():
+        captured = [s for s in page["states"] if s.get("captured")]
+        assert len(captured) == 8, f"{page_id} missing REST cells: {len(captured)}"
+        for state in captured:
+            png = manifest_path.parent / state["file"]
+            assert png.is_file(), f"missing {png.name}"
+            assert state.get("applied_theme") == state["theme"]
+            assert state.get("applied_locale") == state["locale"]
+            if state["viewport"] == "desktop":
+                assert state["viewport_width"] == 1440
+                assert state["width"] >= 1400, (
+                    f"{page_id} {state['theme']} {state['locale']} is a crop "
+                    f"({state['width']}x{state['height']}), not a 1440 viewport"
+                )
+                assert state["height"] >= 800, (
+                    f"{page_id} {state['theme']} {state['locale']} height "
+                    f"{state['height']} is an element crop"
+                )
+            if state["viewport"] == "mobile":
+                assert state["viewport_width"] == 390
+                assert state["width"] >= 360
+                assert state["height"] >= 700
+
+    meas = pages["measurement.html"]
+    dark = next(
+        s
+        for s in meas["states"]
+        if s["viewport"] == "desktop" and s["locale"] == "en" and s["theme"] == "dark"
+    )
+    light = next(
+        s
+        for s in meas["states"]
+        if s["viewport"] == "desktop" and s["locale"] == "en" and s["theme"] == "light"
+    )
+    dark_luma = _mean_luma(manifest_path.parent / dark["file"])
+    light_luma = _mean_luma(manifest_path.parent / light["file"])
+    assert light_luma - dark_luma >= 40, (
+        f"measurement dark/light frames are not theme-differentiated "
+        f"(dark={dark_luma:.1f} light={light_luma:.1f})"
+    )

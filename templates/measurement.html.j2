@@ -713,8 +713,6 @@ html[data-theme="light"] .ric-prereg:not(.is-absent) .ric-prereg-d{box-shadow:no
 .ric-nulls-t{margin:0 0 8px;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
 .ric-nulls ul{margin:0;padding:0;list-style:none;display:grid;gap:8px}
 .ric-nulls li{font-size:.78rem;line-height:1.55;color:var(--text)}
-.ric-nulls .ric-null-code{display:inline-block;margin-right:6px;font-family:var(--fig);font-size:.68rem;
-  padding:1px 6px;border-radius:var(--r-ctl,8px);background:color-mix(in srgb,var(--text) 7%,transparent);color:var(--muted)}
 html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--card-shadow)}
 .ric-filter-count{margin:-12px 0 18px;font-size:.74rem;color:var(--muted)}
 </style>
@@ -2153,11 +2151,24 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
     {%- set u = item.get('unit') -%}
     {%- if v is none -%}<span class="ric-null">—</span>
     {%- elif u == 'boolean' -%}<span class="l-en">{{ 'Yes' if v else 'No' }}</span><span class="l-zh">{{ '是' if v else '否' }}</span>
+    {%- elif v is sameas true or v is sameas false -%}{{ v|e }}
     {%- elif u == 'return_fraction_interval' and v is sequence and v is not string and v|length == 3 -%}
       {{ '%.2f'|format(v[0] * 100) }}% … {{ '%.2f'|format(v[2] * 100) }}%
       <span class="ric-fig-sub"><span class="l-en">bootstrap median</span><span class="l-zh">自助法中位数</span> {{ '%.2f'|format(v[1] * 100) }}%</span>
     {%- elif u == 'return_fraction' or u == 'fraction' -%}{{ '%.3f'|format(v * 100) }}%
-    {%- elif u == 'probability' and v is number and v is not sameas true and v is not sameas false and v == 0 -%}&lt; 0.001{{ ric_unit(u) }}
+    {%- elif u == 'probability' and v is number and v is not sameas true and v is not sameas false -%}
+      {%- set floor = item.get('display_floor') -%}
+      {%- set draws = item.get('draws') -%}
+      {%- if floor is number and floor is not sameas true and floor is not sameas false and v < floor -%}
+        &lt; {{ '%.4f'|format(floor) }}{{ ric_unit(u) }}
+        <span class="ric-fig-sub"><span class="l-en">owner-supplied display floor</span><span class="l-zh">所有者给出的显示下限</span></span>
+      {%- elif draws is number and draws is not sameas true and draws is not sameas false and draws > 0 and v == 0 -%}
+        {%- set resample_floor = 1 / (draws + 1) -%}
+        &lt; {{ '%.4f'|format(resample_floor) }}{{ ric_unit(u) }}
+        <span class="ric-fig-sub"><span class="l-en">resampling floor 1/(draws+1)</span><span class="l-zh">重抽样下限 1/(次数+1)</span></span>
+      {%- else -%}
+        {{ '%.4f'|format(v) }}{{ ric_unit(u) }}
+      {%- endif -%}
     {%- elif u in ('months', 'events', 'episodes', 'draws', 'tickers') -%}{{ v }}{{ ric_unit(u) }}
     {%- elif u == 'probability' and v is number -%}
       {%- if v < 0.0001 -%}<span class="l-en">below 0.0001</span><span class="l-zh">小于 0.0001</span>{{ ric_unit(u) }}
@@ -2192,7 +2203,7 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
     'DIAGNOSTIC': ('Diagnostic only', '仅诊断'),
   } %}
   {% set ric_path_status_gloss = {
-    'EXPLORATORY_NON_GATED': ('Exploratory — not gated', '探索性 — 未门控'),
+    'EXPLORATORY_NON_GATED': ('Exploratory — not gated', '探索性 —— 未设门槛'),
   } %}
   {% set ric_en_months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] %}
   {% set ric_n = ric_cards|length %}
@@ -2295,10 +2306,6 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
               <span class="l-en">{% if q == 'STALE' %}Out of date — receipt older than its window{% elif q in ric_quality_gloss %}{{ ric_quality_gloss[q][0] }}{% else %}State not recognised{% endif %}</span>
               <span class="l-zh">{% if q == 'STALE' %}已过期——回执早于其窗口{% elif q in ric_quality_gloss %}{{ ric_quality_gloss[q][1] }}{% else %}状态未识别{% endif %}</span>
             </span>
-            <details class="ric-state-detail">
-              <summary><span class="l-en">code</span><span class="l-zh">代码</span></summary>
-              <code class="ric-state-code">{{ q }}</code>
-            </details>
             {%- set ric_prereg = card.source_artifacts|selectattr('role', 'equalto', 'preregistration')|list -%}
             <span class="ric-prereg{{ '' if ric_prereg else ' is-absent' }}"
                   data-ric-prereg="{{ 'on-file' if ric_prereg else 'absent' }}">
@@ -2335,6 +2342,10 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
             <span class="l-en">Nothing was written down before this run, so read the result as exploratory — the questions could have been chosen after the data was seen.</span>
             <span class="l-zh">本次运行之前没有写定任何内容，因此该结果应按探索性阅读 —— 问题可能是在看到数据之后才选定的。</span>
             {%- endif %}
+          </p>
+          <p class="ric-prereg-why ric-stance">
+            <span class="l-en">Watch — do not trade off this card.</span>
+            <span class="l-zh">观望 — 不要据此交易。</span>
           </p>
 
           <div class="ric-figs">
@@ -2726,6 +2737,11 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
       if (sel === 'all' || shown === total) {
         countEl.hidden = true;
         countEl.textContent = '';
+      } else if (shown === 0) {
+        countEl.hidden = false;
+        countEl.innerHTML =
+          '<span class="l-en">No cards match this filter</span>' +
+          '<span class="l-zh">没有符合此筛选的卡片</span>';
       } else {
         countEl.hidden = false;
         countEl.innerHTML =
