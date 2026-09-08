@@ -120,7 +120,7 @@ class LegQuote:
 @dataclass(frozen=True)
 class Leg:
     right: str
-    strike: float
+    strike: float | None
     expiration: str
     qty: int
     entry_price: float | None
@@ -258,6 +258,28 @@ def _dedup_sorted_states(states: Sequence[NullState]) -> tuple[NullState, ...]:
     for st in states:
         seen[(st.scope, st.code)] = st
     return tuple(sorted(seen.values(), key=lambda s: (s.scope, s.code)))
+
+
+def _identity_mismatch(scope: str, reason: str, receipt: dict[str, object]) -> NullState:
+    return NullState(code="IDENTITY_MISMATCH", scope=scope, reason=reason, receipt=receipt)
+
+
+def _leg_has_identity_null(leg: Leg) -> bool:
+    if leg.strike is None:
+        return True
+    return any(s.code == "IDENTITY_MISMATCH" for s in leg.states)
+
+
+def _leg_abstains_from_numeric(leg: Leg) -> bool:
+    """A missing strike/identity/quote is an abstaining leg — never a 0.0 stand-in."""
+    if _leg_has_identity_null(leg):
+        return True
+    return leg.entry_price is None
+
+
+def _carry_leg_states(struct_states: list[NullState], legs: Sequence[Leg]) -> None:
+    for leg in legs:
+        struct_states.extend(leg.states)
 
 
 def _net_greek_field(per_leg: Sequence["LegGreeks"], legs: Sequence[Leg], field_name: str) -> float | None:
@@ -413,14 +435,12 @@ def leg_from_chain_row(row: Mapping[str, object], *, qty: int, multiplier: float
     strike = _finite_or_none(strike_raw)
     if strike is None:
         states.append(
-            NullState(
-                code="IDENTITY_MISMATCH",
-                scope=scope_placeholder,
-                reason="strike absent/NaN/non-numeric",
-                receipt={"strike": strike_raw},
+            _identity_mismatch(
+                scope_placeholder,
+                "strike absent/NaN/non-numeric",
+                {"strike": strike_raw},
             )
         )
-        strike = 0.0
 
     expiration_raw = row.get("expiration")
     if expiration_raw is None or str(expiration_raw).strip() in ("", "None", "nan"):
@@ -553,11 +573,19 @@ def structure_from_chain(
         legs: list[Leg] = []
         for i, spec in enumerate(leg_specs):
             right = str(spec["right"]).upper()
-            strike = float(spec["strike"])
+            strike = _finite_or_none(spec.get("strike"))
             expiration = str(spec["expiration"])
             qty = int(spec["qty"])
             multiplier = multipliers[i] if multipliers is not None and i < len(multipliers) else None
             leg_states: list[NullState] = []
+            if strike is None:
+                leg_states.append(
+                    _identity_mismatch(
+                        f"leg:{i}",
+                        "strike absent/NaN/non-numeric",
+                        {"strike": spec.get("strike")},
+                    )
+                )
             if multiplier is None:
                 leg_states.append(
                     NullState(
@@ -609,6 +637,7 @@ def structure_from_chain(
             )
         shape, extra = _structure_shape(legs, has_underlying)
         struct_states.extend(extra)
+        _carry_leg_states(struct_states, legs)
         return Structure(
             root=root,
             legs=tuple(legs),
@@ -620,16 +649,18 @@ def structure_from_chain(
     legs = []
     for i, spec in enumerate(leg_specs):
         right = str(spec["right"]).upper()
-        strike = float(spec["strike"])
+        strike = _finite_or_none(spec.get("strike"))
         expiration = str(spec["expiration"])
         qty = int(spec["qty"])
         multiplier = multipliers[i] if multipliers is not None and i < len(multipliers) else None
 
-        mask = (
-            (chain_df["expiration"].astype(str) == expiration)
-            & (chain_df["strike"].astype(float) == strike)
-            & (chain_df["right"].astype(str).str.upper() == right)
-        )
+        right_ok = chain_df["right"].astype(str).str.upper() == right
+        exp_ok = chain_df["expiration"].astype(str) == expiration
+        if strike is None:
+            strike_ok = chain_df["strike"].map(_finite_or_none).isna()
+        else:
+            strike_ok = chain_df["strike"].astype(float) == strike
+        mask = exp_ok & strike_ok & right_ok
         matched = chain_df[mask]
         if len(matched) == 0:
             leg_states = [
@@ -640,6 +671,14 @@ def structure_from_chain(
                     receipt={"right": right, "strike": strike, "expiration": expiration},
                 )
             ]
+            if strike is None:
+                leg_states.append(
+                    _identity_mismatch(
+                        f"leg:{i}",
+                        "strike absent/NaN/non-numeric",
+                        {"strike": spec.get("strike")},
+                    )
+                )
             if qty == 0:
                 leg_states.append(
                     NullState(
@@ -701,6 +740,7 @@ def structure_from_chain(
 
     shape, extra = _structure_shape(legs, has_underlying)
     struct_states.extend(extra)
+    _carry_leg_states(struct_states, legs)
     return Structure(
         root=root,
         legs=tuple(legs),
@@ -721,11 +761,18 @@ def structure_from_legs(
         extra: list[NullState] = []
         if leg.right not in ("C", "P"):
             extra.append(
-                NullState(
-                    code="IDENTITY_MISMATCH",
-                    scope=f"leg:{i}",
-                    reason="right is not C/P",
-                    receipt={"right": leg.right},
+                _identity_mismatch(
+                    f"leg:{i}",
+                    "right is not C/P",
+                    {"right": leg.right},
+                )
+            )
+        if leg.strike is None:
+            extra.append(
+                _identity_mismatch(
+                    f"leg:{i}",
+                    "strike absent/NaN/non-numeric",
+                    {"strike": None},
                 )
             )
         if leg.qty == 0:
@@ -801,6 +848,7 @@ def structure_from_legs(
 
     shape, extra = _structure_shape(rescoped, has_underlying)
     struct_states.extend(extra)
+    _carry_leg_states(struct_states, rescoped)
     return Structure(
         root=root,
         legs=tuple(rescoped),
@@ -822,14 +870,15 @@ def expiry_payoff(structure: Structure, spots: Sequence[float]) -> PayoffCurve:
     legs = structure.legs
     states: list[NullState] = list(structure.states)
 
-    abstained_idx = {i for i, leg in enumerate(legs) if leg.entry_price is None}
-    if abstained_idx:
+    abstained_idx = {i for i, leg in enumerate(legs) if _leg_abstains_from_numeric(leg)}
+    quote_missing_idx = {i for i, leg in enumerate(legs) if leg.entry_price is None}
+    if quote_missing_idx:
         states.append(
             NullState(
                 code="QUOTE_MISSING",
                 scope="structure",
                 reason="one or more legs have no entry price",
-                receipt={"abstained_legs": sorted(abstained_idx)},
+                receipt={"abstained_legs": sorted(quote_missing_idx)},
             )
         )
 
@@ -849,7 +898,7 @@ def expiry_payoff(structure: Structure, spots: Sequence[float]) -> PayoffCurve:
             NullState(
                 code="INCOMPLETE_LEGS",
                 scope="structure",
-                reason="pnl/cost/bounds withheld because one or more legs have no entry price",
+                reason="pnl/cost/bounds withheld because one or more legs have a null strike, identity, or quote",
                 receipt={"abstained_legs": sorted(abstained_idx)},
             )
         )
@@ -1004,6 +1053,30 @@ def scenario_grid(
     legs = structure.legs
     states: list[NullState] = list(structure.states)
 
+    identity_null_idx = {i for i, leg in enumerate(legs) if _leg_has_identity_null(leg)}
+    if identity_null_idx:
+        states.append(
+            NullState(
+                code="INCOMPLETE_LEGS",
+                scope="structure",
+                reason="scenario withheld because one or more legs have a null strike or identity",
+                receipt={"abstained_legs": sorted(identity_null_idx)},
+            )
+        )
+        empty_row = tuple(None for _ in spot_shocks)
+        empty_codes = tuple(() for _ in spot_shocks)
+        return ScenarioGrid(
+            spot_shocks=spot_shocks,
+            vol_shocks=vol_shocks,
+            days_forward=days_forward,
+            base_spot=float(base_spot),
+            pnl=tuple(empty_row for _ in vol_shocks),
+            value=tuple(empty_row for _ in vol_shocks),
+            cell_states=tuple(empty_codes for _ in vol_shocks),
+            assumptions=assumption_block(structure, r=r, q=q),
+            states=_dedup_sorted_states(states),
+        )
+
     missing_mult_idx = {i for i, leg in enumerate(legs) if leg.multiplier is None}
     if missing_mult_idx:
         states.append(
@@ -1067,6 +1140,10 @@ def scenario_grid(
                 is_call = leg.right == "C"
                 if T <= 0:
                     price = _intrinsic(leg.right, leg.strike, S)
+                elif S == 0.0:
+                    # BS limit at S=0: a call is worthless; a put is the discounted strike.
+                    # Handle here so engine/intraday_greeks._d1_d2 never sees log(0/K).
+                    price = 0.0 if is_call else float(leg.strike) * math.exp(-r * T)
                 else:
                     price = float(bs_price(S, leg.strike, T, sigma, is_call, r, q))
                 if _is_nan(price) or not math.isfinite(price):
@@ -1123,6 +1200,16 @@ def scenario_grid(
 def _leg_greeks_at(
     leg: Leg, S: float, T: float, r: float, q: float
 ) -> LegGreeks:
+    if _leg_has_identity_null(leg):
+        return LegGreeks(
+            delta=None,
+            gamma=None,
+            vanna=None,
+            charm_per_day=None,
+            vega=None,
+            theta_per_day=None,
+            states=("IDENTITY_MISMATCH",),
+        )
     if leg.iv is None:
         return LegGreeks(
             delta=None,
@@ -1200,6 +1287,10 @@ def greeks_drift(
         t_years: list[float] = []
         per_leg: list[LegGreeks] = []
         for leg in legs:
+            if _leg_has_identity_null(leg):
+                t_years.append(0.0)
+                per_leg.append(_leg_greeks_at(leg, base_spot, 0.0, r, q))
+                continue
             exp_d = _parse_date(leg.expiration)
             days_remaining = (exp_d - eval_d).days - d
             T = max(days_remaining, 0) / DAYS_PER_YEAR

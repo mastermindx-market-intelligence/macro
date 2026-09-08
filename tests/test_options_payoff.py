@@ -10,6 +10,7 @@ from __future__ import annotations
 import ast
 import dataclasses
 import math
+import warnings
 
 import numpy as np
 import pandas as pd
@@ -585,6 +586,7 @@ def test_leg_from_chain_row_missing_identity_emits_typed_null():
     leg = op.leg_from_chain_row(row, qty=1, multiplier=100.0)
     codes = [s.code for s in leg.states]
     assert codes.count("IDENTITY_MISMATCH") == 2
+    assert leg.strike is None
     receipts = [s.receipt for s in leg.states if s.code == "IDENTITY_MISMATCH"]
     assert any("strike" in r and r["strike"] is None for r in receipts)
     assert any("expiration" in r and r["expiration"] is None for r in receipts)
@@ -621,3 +623,56 @@ def test_scenario_grid_horizon_expiry_is_a_receipted_null_state():
     # Horizon past expiry uses intrinsic: long call at S=100, K=100 is worth 0, cost=500.
     assert grid.value[0][0] == pytest.approx(0.0)
     assert grid.pnl[0][0] == pytest.approx(-500.0)
+
+
+def _assert_null_strike_abstains(structure: op.Structure, spots: list[float]) -> None:
+    curve = op.expiry_payoff(structure, spots)
+    assert curve.pnl == tuple(None for _ in spots)
+    assert curve.cost is None
+    assert "IDENTITY_MISMATCH" in {s.code for s in structure.states}
+    assert "IDENTITY_MISMATCH" in {s.code for s in curve.states}
+    summary = op.structure_summary(structure, base_spot=100.0, evaluation_date="2026-09-01")
+    assert "IDENTITY_MISMATCH" in {s.code for s in summary.states}
+    assert summary.prerequisites_met is False
+    assert summary.cost is None
+
+
+# ── 22 N1: null-strike chain row abstains on both construction paths ──────────────────
+def test_null_strike_chain_row_abstains_on_both_construction_paths():
+    row = _chain_row(strike=None, bid_eod=3.9, ask_eod=4.1, implied_vol=0.3)
+    spots = [80.0, 120.0]
+
+    leg = op.leg_from_chain_row(row, qty=1, multiplier=100.0)
+    assert leg.strike is None
+    structure = op.structure_from_legs([leg], root="TEST", asof_date="2026-09-01")
+    _assert_null_strike_abstains(structure, spots)
+
+    df = _chain_frame([row])
+    structure2 = op.structure_from_chain(
+        df,
+        root="TEST",
+        asof_date="2026-09-01",
+        leg_specs=[{"right": "C", "strike": None, "expiration": "2026-12-18", "qty": 1}],
+        multipliers=[100.0],
+    )
+    assert structure2.legs[0].strike is None
+    _assert_null_strike_abstains(structure2, spots)
+
+
+# ── 23 minor: S=0 (sshock == -1.0) must not warn through bs_price ────────────────────
+def test_scenario_grid_s_equals_zero_emits_no_log_warning():
+    leg = _leg("C", 100.0, "2026-12-18", 1, entry=4.0)
+    structure = op.structure_from_legs([leg], root="TEST", asof_date="2026-09-01")
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        grid = op.scenario_grid(
+            structure,
+            base_spot=100.0,
+            spot_shocks=[-1.0],
+            vol_shocks=[0.0],
+            days_forward=5,
+            evaluation_date="2026-09-01",
+        )
+    assert list(caught) == []
+    # Call at S=0 is worth 0; cost = 4.0 * 100 = 400; pnl = -400.
+    assert grid.pnl[0][0] == pytest.approx(-400.0)
