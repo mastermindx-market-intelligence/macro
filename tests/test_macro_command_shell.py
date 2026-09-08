@@ -691,6 +691,10 @@ def test_workspace_analyst_is_suite_nav_pill_material() -> None:
     for match in re.finditer(r'^([^\n{]*)\.mc-analyst\s*\{', css, re.M):
         prefix = match.group(1)
         assert "mq-suite-page" in prefix or "mc-rail-link:not" in prefix, prefix
+    analyst = re.search(r'\.mq-suitenav-analyst \.mc-analyst\s*\{([^}]+)\}', suite)
+    assert analyst
+    assert "font:" not in analyst.group(1)
+    assert "font-size" not in analyst.group(1)
 
 
 def test_workspace_tab_strip_never_cuts_mid_word() -> None:
