@@ -1568,4 +1568,5 @@ from tests.agent_eval_continuity_cases import (  # noqa: E402,F401
     test_unknown_effect_is_visible_not_cured_by_a_new_handoff,
     test_malformed_new_handoff_never_silently_restores_obsolete_instructions,
     test_later_workstream_completion_is_not_blocked_by_historical_case,
+    test_e1_readiness_requires_the_runner_even_when_bridge_source_is_done,
 )

@@ -153,3 +153,40 @@ def test_later_workstream_completion_is_not_blocked_by_historical_case(tmp_path)
     assert row["status"] == "done"
     assert "all required outcome evidence accepted; archive" in row["excerpt"]
     assert "not for permission" in section(bundle, "workstream")["title"]
+
+
+@pytest.mark.parametrize("runner_status, expected", [("in_progress", "blocked"), ("done", "ready")])
+def test_e1_readiness_requires_the_runner_even_when_bridge_source_is_done(
+    tmp_path: Path, runner_status: str, expected: str,
+) -> None:
+    """Completed bridge SOURCE cannot satisfy the still-held live runner dependency."""
+    root = case_store(tmp_path)
+    current = record(root / WS)
+    current["status"] = "active"
+    for wave in current["waves"]:
+        if wave["id"] in {"B2", "B4", "C1"}:
+            wave["status"] = "done"
+        elif wave["id"] == "B3":
+            wave["status"] = runner_status
+        elif wave["id"] == "C2":
+            wave["status"] = "todo"
+    rewrite_record(root / WS, current)
+    before = digests(root)
+    env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1", GIT_OPTIONAL_LOCKS="0",
+               MACRO_MASTERMIND_REPO=str(root / "absent-mastermind"),
+               MACRO_TERMINAL_REPO=str(root / "absent-terminal"))
+    result = subprocess.run(
+        [sys.executable, str(REPO / "scripts/agentos.py"), "brief", "--root",
+         str(root), "--json", "--no-remember", "--now", "2026-09-08T23:59:00Z"],
+        cwd=REPO, env=env, text=True, capture_output=True, timeout=45,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    readiness = json.loads(result.stdout)["readiness"]
+    e1 = next(row for row in readiness["records"]
+              if row["workstream"] == KEY and row["wave"] == "C2")
+    assert e1["state"] == expected
+    if expected == "blocked":
+        assert f"WS:{KEY}#B3" in e1["unmet_dependencies"]
+    else:
+        assert e1["unmet_dependencies"] == []
+    assert digests(root) == before

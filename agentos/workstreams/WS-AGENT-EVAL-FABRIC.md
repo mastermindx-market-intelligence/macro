@@ -73,7 +73,7 @@ waves:
   - id: C2
     title: EVAL-E1 real paired experiment (preregistration protected; execution unproven)
     status: todo
-    depends_on: [B2, B4, C1]
+    depends_on: [B2, B3, B4, C1]
     next_action: >
       Mastermind #337 merge 21a721427743fdae6d513eeb0f993ebd1c327a81 protects
       preregistration only. No experiment or ranking is proven by that merge.

@@ -110,3 +110,25 @@ No assertion, workflow, guard, waiver, authority or provider boundary was relaxe
 The prior refused invocation remains a separate confirmed-no-effect event; it is not
 relabelled successful. Current collection, test, review and release proof are separate
 receipts. The candidate remains DRAFT/HOLD until those current gates are satisfied.
+
+## Dependency falsifier caught before release
+
+The existing machine readiness reader exposed a second error in the repaired records:
+B4 accurately meant bridge-source DONE, but C2 depended on B4 rather than directly on
+the held B3 runner. A real `brief --json --no-remember` over the copied record returned
+C2 READY while B3 was IN_PROGRESS. Prose saying wait for B3 did not create that edge.
+The regression first failed on that false-ready result (one failed / one positive control
+passed). C2 now declares B3 directly in the existing `depends_on` field. No readiness
+algorithm, authority or runtime was changed. Controls exercise B3 pending and genuinely
+completed so this does not freeze today's status into a permanent gate.
+
+The 221-test full canonical job selection on the prior fd42 candidate timed out at its
+900-second local ceiling; its exact parent/child were then observed absent. That attempt
+is TERMINAL_TIMEOUT, not a pass and not evidence that all 221 tests completed. The
+original 158-test prior-head qualification remains dated prior evidence. New focused,
+validation, hosted and post-release observations are recorded separately.
+
+Current focused result: all 15 continuity regressions pass through the canonical
+`tests/test_agentos_compile.py` collection, including both runner-dependency controls.
+Canonical validation reads 1,078 records and returns zero errors (69 disclosed warnings).
+These results do not excuse the separately timed-out full local job or pending hosted CI.

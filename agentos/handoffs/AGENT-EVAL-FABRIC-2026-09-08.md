@@ -50,6 +50,9 @@ verified:
   - claim: The real pre-repair context consumer emitted the obsolete prerequisite as its next action.
     command: "python3 scripts/agentos.py compile-context --workstream AGENT-EVAL-FABRIC --budget 4000"
     result: "At Macro 2b3d6a7b967a28c7f83a3392dd628a554ac1894c, exit 0 emitted Merge A2 (#6699...) and pending already-protected source milestones."
+  - claim: The real dependency reader does not report E1 ready while the runner prerequisite is unfinished.
+    command: "python3 -m pytest tests/test_agentos_compile.py -k test_e1_readiness_requires_the_runner -q; existing scripts/agentos.py brief --json --no-remember"
+    result: "Before the direct B3 dependency, one negative case failed and its completed-runner control passed. With that authored edge, both pass; all 15 continuity cases pass in the canonical CI target. No readiness implementation changed."
 unverified:
   - claim: All actual delivery and learning capabilities are live.
     what_would_verify: Current-owner release, real runner/configuration acceptance, E1, repaired OL-V1 episode and measured forward value.
