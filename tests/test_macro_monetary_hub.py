@@ -280,6 +280,7 @@ def test_coverage_absence_is_typed_and_has_screen_reader_text(hub: str) -> None:
         "No dated reading yet" in authored
         or "Today's reading is incomplete" in authored
         or "Today's read is not available yet" in authored
+        or "Today&#39;s read is not available yet" in authored
         or "See each workspace below" in authored
     )
     assert (

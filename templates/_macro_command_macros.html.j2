@@ -79,7 +79,7 @@
 {%- if read.clauses|length >= 3 %}
 <p class="mc-read" data-mc-read>
 {%- for clause in read.clauses -%}
-<span class="mc-read-clause"><a class="mc-read-topic mq-tone-{{ clause.tone }}" href="#{{ clause.section }}" data-mc-topic="{{ clause.id }}">{{ bl(clause.topic) }}</a><span class="mc-read-state">{{ bl(clause.predicate) }}</span>{{ bl(clause.punct) }}</span>
+<span class="mc-read-clause"><a class="mc-read-topic mq-tone-{{ clause.tone }}" href="#{{ clause.section }}" data-mc-topic="{{ clause.id }}">{{ bl(clause.topic) }}</a><span class="l-en"> </span><span class="l-zh"></span><span class="mc-read-state">{{ bl(clause.predicate) }}</span>{{ bl(clause.punct) }}</span>
 {%- endfor -%}
 </p>
 {%- if read.omitted %}
@@ -87,8 +87,8 @@
                                 '部分读数今日不可用，具体见下方状态条。') }}</p>
 {%- endif %}
 {%- else %}
-<p class="mc-read-fallback">{{ t("Today's reading is incomplete. Here is what we do have.",
-                                 '今日读数不完整。以下是我们已有的部分。') }}</p>
+<p class="mc-read-fallback">{{ t("See each workspace below for its own dated read.",
+                                 '各工作区下方各自展示其带日期的读数。') }}</p>
 {%- endif %}
 {%- endmacro %}
 
@@ -110,16 +110,18 @@
     <a class="mc-chip-link" href="#{{ chip.section }}" aria-describedby="{{ chip.id }}-help">
       <span class="mc-chip-top">
         <span class="mc-chip-label">{{ bl(chip.label) }}</span>
-        {#- F-12: a fully null chip renders NO as-of. Its value line already
-            says "Not available yet" and its note gives the reason, so
-            `nulled()`'s dash would be an orphan glyph — worst at 390, where
-            the head stacks. `nulled()` still fires for the case §3.4 aims
-            at: a chip that HAS a value but no date. -#}
+        {#- F-12 / MJ-2: a fully null chip renders NO as-of. A coverage
+            counter is a build-hygiene readout with no date by design —
+            `as_of_omitted` suppresses the cell so it never borrows
+            `nulled()`'s "no dated reading for this topic" sentence.
+            `nulled()` still fires for a market chip that HAS a value but
+            no date. -#}
         {%- if chip.as_of %}
         <span class="mc-chip-asof">
           <span class="mc-asof-word">{{ t('Data to', '数据截至') }}</span>
           <time datetime="{{ chip.as_of }}">{{ bl(chip.as_of_display) }}</time>
         </span>
+        {%- elif chip.as_of_omitted %}
         {%- elif not chip.null %}
         <span class="mc-chip-asof">{{ nulled('no dated reading for this topic', '该主题没有带日期的读数') }}</span>
         {%- endif %}

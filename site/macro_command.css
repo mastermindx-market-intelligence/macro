@@ -530,22 +530,10 @@ html[data-theme="light"] .mc-shell :focus-visible { box-shadow: 0 0 0 1px var(--
   .mc-dest-title { font-size: 15px; }
   .mc-dest-answers { font-size: 13px; }
 
-  /* Touch has no hover and tapping the cell navigates, so the note is
-     unreachable at this width. Honesty is never demoted: a NULL chip's
-     reason is printed. A populated chip's note is a definition — Tier-2
-     material — and stays clipped-but-announced. */
-  .mc-chip.is-null .mc-chip-help {
-    position: static;
-    opacity: 1;
-    clip-path: none;
-    width: auto;
-    margin-top: 6px;
-    padding: 0;
-    border: 0;
-    background: none;
-    box-shadow: none;
-    font-size: var(--fs-micro, 11px);
-  }
+  /* Touch has no hover and tapping the cell navigates. A NULL chip's
+     reason is already printed on `.mc-chip-fresh`. The definition
+     (`.mc-chip-help`) stays clipped-but-announced so null cells do not
+     grow several times the height of populated ones (MJ-4 / MN-4). */
 }
 html[data-lang="zh"] .mc-read { letter-spacing: 0; line-height: 1.55; font-size: calc(clamp(23px, 1.05rem + 1vw, 34px) * .92); }
 html[data-lang="zh"] .mc-title { letter-spacing: 0; }

@@ -154,6 +154,18 @@ def test_coverage_chip_value_has_no_digit_and_note_matches_counted_phrase() -> N
     assert not _DIGIT_RE.search(coverage["value"]["zh"])
     assert _COVERAGE_NOTE_EN_RE.match(coverage["note"]["en"]), coverage["note"]["en"]
     assert _COVERAGE_NOTE_ZH_RE.match(coverage["note"]["zh"]), coverage["note"]["zh"]
+    assert coverage["as_of"] is None
+    assert coverage["null"] is False
+    assert coverage["as_of_omitted"] is True
+
+
+def test_market_chips_are_not_as_of_omitted() -> None:
+    entries = _all_current_entries()
+    header = macro_suite_view.build_command_header(entries, page_built_at=BUILT_AT)
+    for chip in header["strip"]:
+        if chip["id"] == "coverage":
+            continue
+        assert chip["as_of_omitted"] is False, chip["id"]
 
 
 def test_coverage_tally_available_never_exceeds_total() -> None:
@@ -315,6 +327,8 @@ def test_read_as_of_is_the_oldest_effective_date_among_rendered_clauses() -> Non
     ]
     header = macro_suite_view.build_command_header(entries, page_built_at=BUILT_AT)
     assert header["read"]["as_of"] == "2026-09-01"
+    assert header["read"]["as_of_meaning"]["en"].startswith("Oldest of the fourteen workspaces")
+    assert "取十四个工作区中最旧的最新读数" in header["read"]["as_of_meaning"]["zh"]
 
 
 def test_punctuation_is_assigned_by_position_mid_penultimate_last() -> None:
@@ -400,6 +414,28 @@ def test_the_real_page_renders_at_least_five_chips_and_exactly_eight_total(built
     chip_ids = re.findall(r'<li class="mc-chip[^"]*" data-mc-topic="([a-z]+)"', built_hub)
     assert chip_ids == ["money", "policy", "rates", "inflation", "growth", "jobs",
                         "credit", "coverage"]
+
+
+def test_coverage_chip_omits_asof_and_does_not_borrow_nulled(built_hub: str) -> None:
+    """MJ-2: a coverage counter is not a dated topic reading."""
+    match = re.search(
+        r'<li class="mc-chip[^"]*" data-mc-topic="coverage">(.*?)</li>',
+        built_hub, re.S)
+    assert match, "coverage chip missing from the built hub"
+    cell = match.group(1)
+    assert "mc-chip-asof" not in cell
+    assert "no dated reading for this topic" not in cell
+    assert "该主题没有带日期的读数" not in cell
+    assert "mq-dash" not in cell
+
+
+def test_read_fallback_uses_p1_honest_copy() -> None:
+    """BL-1: P2 must not restore the rejected incomplete-reading fallback."""
+    macros = (TEMPLATES / "_macro_command_macros.html.j2").read_text(encoding="utf-8")
+    assert "See each workspace below for its own dated read." in macros
+    assert "各工作区下方各自展示其带日期的读数。" in macros
+    assert "Today's reading is incomplete" not in macros
+    assert "今日读数不完整" not in macros
 
 
 def test_the_real_page_carries_no_bare_iso_timestamp_in_visible_text(built_hub: str) -> None:

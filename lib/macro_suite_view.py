@@ -1362,7 +1362,7 @@ def _chip_and_clause(chip_id: str, workspace_id: str, section_id: str,
         chip = {
             "id": chip_id, "section": section_id, "label": label,
             "value": None, "tone": "neutral", "null": True,
-            "as_of": None, "as_of_display": None,
+            "as_of": None, "as_of_display": None, "as_of_omitted": False,
             "note": dict(L.CHIP_NULL_NOTE[cause]),
             "meaning": meaning,
         }
@@ -1393,6 +1393,7 @@ def _chip_and_clause(chip_id: str, workspace_id: str, section_id: str,
             "value": producer_label, "tone": "neutral", "null": False,
             "as_of": effective_date,
             "as_of_display": L.date_display_pair(effective_date) if effective_date else None,
+            "as_of_omitted": False,
             "note": freshness_note,
             "meaning": meaning,
         }
@@ -1403,6 +1404,7 @@ def _chip_and_clause(chip_id: str, workspace_id: str, section_id: str,
         "value": dict(word_table[key]), "tone": tone_table[key], "null": False,
         "as_of": effective_date,
         "as_of_display": L.date_display_pair(effective_date) if effective_date else None,
+        "as_of_omitted": False,
         "note": freshness_note,
         "meaning": meaning,
     }
@@ -1422,7 +1424,7 @@ def _coverage_chip(available: int, total: int) -> dict[str, Any]:
     return {
         "id": "coverage", "section": "overview", "label": dict(L.CHIP_LABEL["coverage"]),
         "value": dict(value), "tone": "ok" if complete else "warn", "null": False,
-        "as_of": None, "as_of_display": None,
+        "as_of": None, "as_of_display": None, "as_of_omitted": True,
         "note": note,
         "meaning": dict(L.CHIP_MEANING["coverage"]),
     }
@@ -1476,10 +1478,18 @@ def build_command_header(entries: Sequence[Mapping[str, Any]], *,
     sections_total = len(_COVERAGE_WORKSPACES) + 1
     chips.append(_coverage_chip(sections_available, sections_total))
 
+    as_of_meaning = {
+        "en": (
+            "Oldest of the fourteen workspaces' latest prints — newer "
+            "sections are dated on their own page."
+        ),
+        "zh": "取十四个工作区中最旧的最新读数 — 各板块自身日期见其页面。",
+    } if read_as_of else None
     return {
         "read": {
             "as_of": read_as_of,
             "as_of_display": L.date_display_pair(read_as_of) if read_as_of else None,
+            "as_of_meaning": as_of_meaning,
             "clauses": clauses,
             "omitted": len(clauses) < len(_CHIP_WORKSPACES),
         },
