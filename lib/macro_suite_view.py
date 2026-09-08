@@ -1041,12 +1041,6 @@ def degraded_view(*, workspace_id: str, title: Mapping[str, str],
 #: How many change lines the hub prints before it defers to the workspaces.
 HUB_CHANGE_LIMIT = 5
 
-_EN_CARDINALS = (
-    "Zero", "One", "Two", "Three", "Four", "Five", "Six",
-    "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve",
-)
-
-
 def _rail_section_count() -> int:
     """The customer-facing rail length — derive, never hardcode fourteen."""
     from scripts.build_macro_suite_pages import SECTIONS  # noqa: PLC0415
@@ -1054,11 +1048,12 @@ def _rail_section_count() -> int:
 
 
 def _deck_copy(section_count: int) -> dict[str, str]:
-    word = _EN_CARDINALS[section_count] if 0 <= section_count < len(_EN_CARDINALS) else str(section_count)
-    return _pair(
-        f"{word} research sections, one current read.",
-        f"{section_count}个研究板块，一个当前读数。",
-    )
+    """Overview primer: the rail's section count, digits in both languages."""
+    src = L.PRIMERS["overview"]
+    return {
+        "en": src["en"].format(n=section_count),
+        "zh": src["zh"].format(n=section_count),
+    }
 
 #: Freshness tokens that mean a reader must not treat the row as settled.
 _ATTENTION_FRESHNESS = frozenset({
@@ -1124,6 +1119,7 @@ def build_hub_view(entries: Sequence[Mapping[str, Any]], *,
     """
     rows: list[dict[str, Any]] = []
     changes_pool: list[dict[str, Any]] = []
+    unmapped_metrics: list[str] = []
     attention: list[dict[str, Any]] = []
     unavailable: list[dict[str, Any]] = []
     effective_dates: list[str] = []
@@ -1202,12 +1198,17 @@ def build_hub_view(entries: Sequence[Mapping[str, Any]], *,
             # unavailable rows and dropped real no-change ones.
             if not delta.get("comparable"):
                 continue
+            metric_id = str(delta.get("metric_id") or "")
+            if metric_id not in L.METRIC:
+                # Fail-closed: never render a de-slugged / raw label on the hub.
+                unmapped_metrics.append(metric_id)
+                continue
             changes_pool.append({
                 "workspace_id": entry["workspace_id"],
                 "workspace_title": dict(entry["title"]),
                 "href": entry["output"],
-                "metric_id": delta.get("metric_id"),
-                "label": delta.get("label"),
+                "metric_id": metric_id,
+                "label": dict(L.METRIC[metric_id]),
                 "prior": delta.get("prior"),
                 "current": delta.get("current"),
                 "delta": delta.get("delta"),
@@ -1251,6 +1252,8 @@ def build_hub_view(entries: Sequence[Mapping[str, Any]], *,
             "shown": len(shown),
             "remaining": max(0, len(changes_pool) - len(shown)),
             "total": len(changes_pool),
+            "unmapped_metrics": len(unmapped_metrics),
+            "unmapped_ids": list(unmapped_metrics),
             "heading": _pair("Recent changes", "近期变化"),
             # Named honestly: these are the first N in the suite's own order, not
             # a curated set of the N that matter most.
@@ -1332,6 +1335,27 @@ def _freshness_state(snapshot: Mapping[str, Any] | None) -> str | None:
     return (snapshot.get("availability") or {}).get("state")
 
 
+def _snapshot_figure_populated(snapshot: Mapping[str, Any] | None) -> bool:
+    """True when P3 would render movement rows, not an E2/E3 empty slot.
+
+    SOURCE_FAILED / STALE_SOURCE force E2 even when deltas exist. Comparable
+    rows are what make a NOT_APPLICABLE section a real figure (M6).
+    """
+    if not snapshot:
+        return False
+    freshness = _freshness_state(snapshot)
+    if freshness in ("SOURCE_FAILED", "STALE_SOURCE"):
+        return False
+    changes = snapshot.get("changes") or {}
+    if changes.get("comparability") != "COMPARABLE":
+        return False
+    for delta in changes.get("deltas") or []:
+        if (_finite(delta.get("prior_value")) and _finite(delta.get("current_value"))
+                and _finite(delta.get("delta"))):
+            return True
+    return False
+
+
 def _chip_null_cause(entry: Mapping[str, Any] | None, null_reason: Any) -> str:
     """The one typed cause a null chip's note is selected from (design pin
     §6.8). Checked in this order: a workspace this build could not even
@@ -1377,10 +1401,26 @@ def _chip_and_clause(chip_id: str, workspace_id: str, section_id: str,
                       else L.FRESHNESS_NOTE.get(str(freshness)))
 
     if state_id is None:
+        if (headline.get("null_reason") == "NOT_APPLICABLE"
+                and _snapshot_figure_populated(snapshot)):
+            cause = "see_curve"
+            chip = {
+                "id": chip_id, "section": section_id, "label": label,
+                "value": None, "tone": "neutral", "null": True,
+                "cause": cause,
+                "as_of": effective_date,
+                "as_of_display": (
+                    L.date_display_pair(effective_date) if effective_date else None),
+                "as_of_omitted": False,
+                "note": None,
+                "meaning": meaning,
+            }
+            return chip, None
         cause = _chip_null_cause(entry, headline.get("null_reason"))
         chip = {
             "id": chip_id, "section": section_id, "label": label,
             "value": None, "tone": "neutral", "null": True,
+            "cause": cause,
             "as_of": None, "as_of_display": None, "as_of_omitted": False,
             "note": dict(L.CHIP_NULL_NOTE[cause]),
             "meaning": meaning,
@@ -1410,6 +1450,7 @@ def _chip_and_clause(chip_id: str, workspace_id: str, section_id: str,
         chip = {
             "id": chip_id, "section": section_id, "label": label,
             "value": producer_label, "tone": "neutral", "null": False,
+            "cause": None,
             "as_of": effective_date,
             "as_of_display": L.date_display_pair(effective_date) if effective_date else None,
             "as_of_omitted": False,
@@ -1421,6 +1462,7 @@ def _chip_and_clause(chip_id: str, workspace_id: str, section_id: str,
     chip = {
         "id": chip_id, "section": section_id, "label": label,
         "value": dict(word_table[key]), "tone": tone_table[key], "null": False,
+        "cause": None,
         "as_of": effective_date,
         "as_of_display": L.date_display_pair(effective_date) if effective_date else None,
         "as_of_omitted": False,
@@ -1462,6 +1504,7 @@ def _coverage_chip(available: int, total: int) -> dict[str, Any]:
     return {
         "id": "coverage", "section": "overview", "label": dict(L.CHIP_LABEL["coverage"]),
         "value": dict(value), "tone": "ok" if complete else "warn", "null": False,
+        "cause": None,
         "as_of": None, "as_of_display": None, "as_of_omitted": True,
         "note": note,
         "meaning": dict(L.CHIP_MEANING["coverage"]),

@@ -252,6 +252,26 @@ def test_no_axes_workspace_that_also_failed_today_gets_the_late_cause() -> None:
     assert chip["note"] == L.CHIP_NULL_NOTE["late"]
 
 
+def test_populated_not_applicable_chip_reads_see_the_curve() -> None:
+    """M6: a NOT_APPLICABLE section whose figure has rows is not 'hasn't
+    arrived' — the chip names the curve and keeps the figure's as-of."""
+    entries = [_entry("monetary_policy", state_id=None, freshness="CURRENT",
+                      effective_date="2026-09-04", null_reason="NOT_APPLICABLE")]
+    entries[0]["snapshot"]["changes"] = {
+        "comparability": "COMPARABLE",
+        "deltas": [{
+            "metric_id": "fed_funds_rate",
+            "prior_value": 4.33, "current_value": 4.33, "delta": 0.0,
+        }],
+    }
+    header = macro_suite_view.build_command_header(entries, page_built_at=BUILT_AT)
+    chip = next(c for c in header["strip"] if c["id"] == "policy")
+    assert chip["null"] is True
+    assert chip["cause"] == "see_curve"
+    assert chip["as_of"] == "2026-09-04"
+    assert chip["note"] is None
+
+
 # --------------------------------------------------------------------------
 # 5b — an unknown (workspace_id, state_id) never blocks the build
 # --------------------------------------------------------------------------

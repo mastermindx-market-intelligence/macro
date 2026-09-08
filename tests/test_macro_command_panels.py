@@ -8,6 +8,7 @@ from the rail, never hardcoded as fourteen.
 from __future__ import annotations
 
 import re
+from html import unescape
 from pathlib import Path
 
 import pytest
@@ -116,13 +117,19 @@ def test_overview_dom_order_and_no_details_or_arrival(built: tuple[str, Path]) -
 def test_p3_non_overview_dom_order(built: tuple[str, Path]) -> None:
     html, _ = built
     for section_id in ("money", "policy", "rates", "inflation"):
-        order = _child_classes(_panel(html, section_id))
+        panel = _panel(html, section_id)
+        order = _child_classes(panel)
         assert order[0] == "mc-arrival", section_id
         assert "mc-panel-head" in order
         assert "mc-stance" in order
         assert "mc-primer" in order
         assert "mc-figure" in order
-        assert "mc-caption" in order
+        # m1: an E2 figure has no rows, so the "each row shows…" caption is dropped.
+        if ('data-mc-empty="e2"' in panel
+                or "Today's number didn't arrive" in unescape(panel)):
+            assert "mc-caption" not in order
+        else:
+            assert "mc-caption" in order, (section_id, order)
         assert "mc-watch" in order
         assert "mc-details" in order
         assert order.index("mc-stance") < order.index("mc-figure") < order.index("mc-watch")
@@ -170,17 +177,31 @@ def test_derived_deck_uses_rail_section_count_not_fourteen() -> None:
     assert n == 12
     copy = macro_suite_view._deck_copy(n)
     assert "Fourteen" not in copy["en"]
-    assert "十四个研究工作区" not in copy["zh"]
-    assert str(n) in copy["zh"]
-    assert "Twelve" in copy["en"]
+    assert "fourteen" not in copy["en"]
+    assert "十四" not in copy["zh"]
+    assert f"{n} research sections" in copy["en"]
+    assert f"{n} 个研究板块" in copy["zh"]
 
 
 def test_deck_count_changes_when_the_rail_length_changes() -> None:
     eleven = macro_suite_view._deck_copy(11)
     twelve = macro_suite_view._deck_copy(12)
     assert eleven != twelve
-    assert "Eleven" in eleven["en"]
-    assert "11" in eleven["zh"]
+    assert "11 research sections" in eleven["en"]
+    assert "12 research sections" in twelve["en"]
+    assert "11 个研究板块" in eleven["zh"]
+
+
+def test_built_page_has_one_section_count_matching_the_rail(
+        built: tuple[str, Path]) -> None:
+    html, _ = built
+    n = len(builder.SECTIONS)
+    assert html.count("Fourteen research") == 0
+    assert html.count("十四个研究") == 0
+    assert html.count(f"{n} research sections") == 1
+    assert html.count(f"{n} 个研究板块") == 1
+    assert f"of {n} sections" in html
+    assert f"{n} 个板块中" in html
 
 
 def test_copy_budgets_on_the_reviewed_tables() -> None:
@@ -239,9 +260,110 @@ def test_not_applicable_is_unstated_not_e1(built: tuple[str, Path]) -> None:
     html, _ = built
     rates = _panel(html, "rates")
     assert 'data-mc-empty="e1"' not in rates
-    assert "No single reading is published here" in rates
     policy = _panel(html, "policy")
     assert 'data-mc-empty="e1"' not in policy
+    assert "No single reading is published here" in policy
+
+
+def test_e2_figure_prints_the_e2_stance_not_the_structural_null(
+        built: tuple[str, Path]) -> None:
+    """M6 branch 1: #rates is E2 today — stance matches the empty title.
+
+    The empty figure lives in the fragment (JS hydrates `[data-mc-figure]`);
+    the stance is in the panel shell.
+    """
+    html, out = built
+    rates = unescape(_panel(html, "rates"))
+    fragment = (out / "macro" / "fragments" / "rates.html").read_text(encoding="utf-8")
+    assert 'data-mc-empty="e2"' in fragment
+    assert "Today's number didn't arrive" in rates
+    assert "No single reading is published here" not in rates
+    assert "Each row shows the last two readings" not in rates
+    assert "hasn't arrived" in unescape(html)  # strip chip stays the transient voice
+
+
+def test_populated_unstated_section_uses_see_curve_chip(
+        built: tuple[str, Path]) -> None:
+    """M6 branch 2: #policy has rows + no headline — structural stance,
+    strip chip reads 'See the curve below' and is dated."""
+    html, _ = built
+    policy = _panel(html, "policy")
+    assert 'data-mc-empty="e2"' not in policy
+    assert "No single reading is published here" in policy
+    assert "See the curve below" in html
+    assert "见下方曲线" in html
+
+
+def test_hub_drops_unmapped_metric_and_counts_it_in_the_receipt() -> None:
+    """B1: an unmapped hub-pool id is dropped, never de-slugged, and counted."""
+    from jinja2 import Environment, FileSystemLoader, StrictUndefined
+
+    deltas = [{
+        "metric_id": "not_a_reviewed_metric",
+        "label": {"en": "Nope", "zh": "Nope"},
+        "prior_value": 1.0,
+        "current_value": 2.0,
+        "delta": 1.0,
+    }]
+    entries = []
+    for page in builder.SUITE_PAGES:
+        snap = None
+        if page.workspace_id == "growth_real_economy":
+            snap = {
+                "workspace": {"id": page.workspace_id},
+                "availability": {"state": "CURRENT"},
+                "headline": {"status": "PRESENT", "state_id": "C",
+                             "effective_date": "2026-09-04"},
+                "changes": {"comparability": "COMPARABLE", "deltas": deltas},
+            }
+        entries.append({
+            "workspace_id": page.workspace_id, "region": "US",
+            "output": page.output,
+            "title": {"en": page.workspace_id, "zh": page.workspace_id},
+            "subtitle": {"en": "", "zh": ""},
+            "snapshot": snap, "failure": None if snap else {"kind": "NOT_COVERED"},
+        })
+    hub = macro_suite_view.build_hub_view(entries, page_built_at=BUILT_AT)
+    assert hub["changes"]["entries"] == []
+    assert hub["changes"]["unmapped_metrics"] == 1
+    sections = builder._macro_command_sections(entries, page_built_at=BUILT_AT)
+    overview = next(s for s in sections if s["id"] == "overview")
+    assert overview["figure"] is None
+    assert overview["empty"] is not None
+    assert overview["empty"]["id"] == "e3"
+    assert overview["empty"]["unmapped_metrics"] == 1
+    env = Environment(
+        loader=FileSystemLoader(str(ROOT / "templates")),
+        autoescape=True, undefined=StrictUndefined)
+    html = env.from_string(
+        '{% import "_macro_command_figures.html.j2" as fig %}'
+        '{{ fig.empty(state) }}'
+    ).render(state=overview["empty"])
+    assert "not_a_reviewed_metric" not in html
+    assert "Nope" not in html
+    assert "Not a reviewed metric" not in html
+    assert 'data-unmapped-metrics="1"' in html
+
+
+def test_rendered_l_zh_spans_have_cjk_or_are_pure_symbols(
+        built: tuple[str, Path]) -> None:
+    """M2: every `.l-zh` on the built hub carries CJK unless its sibling
+    `.l-en` has no letters; a lettered EN string may not be copied into ZH."""
+    html, _ = built
+    # Ideographs plus CJK punctuation / fullwidth forms (e.g. U+FF1B `；`).
+    _CJK = re.compile(r"[\u3000-\u303f\u3400-\u9fff\uf900-\ufaff\uff00-\uffef]")
+    _LETTERS = re.compile(r"[A-Za-z]")
+    pairs = re.findall(
+        r'<span class="l-en">(.*?)</span>\s*<span class="l-zh">(.*?)</span>',
+        html, re.S)
+    assert pairs, "hub lost bilingual pairs"
+    for en, zh in pairs:
+        en_text = re.sub(r"<[^>]+>", "", en)
+        zh_text = re.sub(r"<[^>]+>", "", zh)
+        if not _LETTERS.search(en_text):
+            continue
+        assert _CJK.search(zh_text), (en_text, zh_text)
+        assert zh_text != en_text, en_text
 
 
 def test_copy_guard_is_green_on_the_rebuilt_page(built: tuple[str, Path]) -> None:

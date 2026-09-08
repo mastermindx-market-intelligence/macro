@@ -23,7 +23,10 @@
   --mc-dur: 160ms;
 
   /* DARK art direction: light, not lines */
-  --mc-panel-bg: var(--mq-surface);
+  /* M5: opaque raised well. `--mq-surface` is `--panel` at 90% so the
+     page bloom showed through the reading path. `--panel` is the same
+     colour at 100% — the figure recess (`--bg`) still sits one step below. */
+  --mc-panel-bg: var(--panel);
   --mc-panel-border: 1px solid transparent;
   --mc-panel-shadow: inset 0 1px 0 color-mix(in srgb, #fff 6%, transparent);
   /* DARK — the figure is a RECESS: one true luminance step BELOW the panel.
@@ -611,11 +614,35 @@ html[data-theme="light"] .mc-empty {
 @media (max-width: 768px) {
   /* m4: the pill is fixed at bottom:84px and is ~40px tall, so it occupies the
      bottom 124px of the viewport. 140px of tail padding keeps the last
-     destination card's bottom edge >=16px clear of it at full scroll. */
-  .mc-shell { grid-template-columns: minmax(0, 1fr); gap: 18px; padding: 18px 18px 140px; }
+     destination card's bottom edge >=16px clear of it at full scroll.
+     M4: `min-height: calc(100vh - 84px)` + two auto rows stretched the
+     rail track (~260 device-px void between the search bar and the
+     eyebrow). Kill the viewport min-height, pack rows, and hoist the
+     command header above the rail via `display: contents` so the
+     nav→eyebrow gap is this padding-top plus the nav's 16px margin. */
+  .mc-shell {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    align-content: start;
+    min-height: 0;
+    gap: 12px;
+    /* 8px + the site-nav's inherited 16px margin-bottom = 24px nav→eyebrow
+       (M4 ≤ 24). `.mc-command`/`.mc-panel` are grid items under
+       `display: contents` so they need `min-width: 0` or the Read strip's
+       min-content widens `documentElement.scrollWidth` at 390 (P-19). */
+    padding: 8px 18px 140px;
+    overflow-x: hidden; /* P-19: rail + chip notes must not widen the page */
+  }
+  .mc-content { display: contents; }
+  .mc-command, .mc-panel { min-width: 0; }
+  .mc-command { order: 1; }
+  .mc-rail { order: 2; }
+  .mc-panel { order: 3; }
   .mc-rail {
     position: sticky; top: 60px; z-index: 4;
     flex-direction: row; align-items: center; gap: 8px;
+    align-self: start;
+    height: auto;
     margin: 0 -18px; padding: 8px 18px;
     background: var(--bg); border-bottom: 1px solid var(--mq-line);
   }

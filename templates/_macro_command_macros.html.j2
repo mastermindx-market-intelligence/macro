@@ -127,7 +127,8 @@
         {%- endif %}
       </span>
       <strong class="mc-chip-value mq-tone-{{ chip.tone }}">
-        {%- if chip.null %}{{ t('Not available yet', '暂不可用') }}
+        {%- if chip.null and chip.cause == 'see_curve' %}{{ t('See the curve below', '见下方曲线') }}
+        {%- elif chip.null %}{{ t('Not available yet', '暂不可用') }}
         {%- else %}{{ bl(chip.value) }}{% endif -%}
       </strong>
       {%- if chip.note %}

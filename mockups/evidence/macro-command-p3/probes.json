@@ -4,7 +4,7 @@
   "p1_dests": 1,
   "p1_dests_in_figure": false,
   "dark_figure_bg": "rgb(13, 16, 24)",
-  "dark_panel_bg": "color(srgb 0.0823529 0.0941176 0.12549 / 0.9)",
+  "dark_panel_bg": "rgb(21, 24, 32)",
   "dark_figure_border": "0px",
   "dark_move_current": "rgb(200, 208, 220)",
   "dark_move_prior": "rgb(139, 147, 161)",
@@ -12,17 +12,11 @@
   "dark_arrival_shadow": "none",
   "dark_arrival_border": "rgba(0, 0, 0, 0)",
   "dark_arrival_bg": "color(srgb 0.356863 0.607843 0.941176 / 0.1)",
-  "asof_fs": "13px",
+  "asof_fs": "11px",
   "caption_fs": "13px",
-  "asof_lh": "20.15px",
+  "asof_lh": "17.05px",
   "caption_lh": "20.15px",
   "details_key_fs": "11px",
-  "scroll_w": [
-    1440,
-    1440
-  ],
-  "len_en": 529,
-  "len_zh": 529,
   "dest_hrefs": [
     "macro_liquidity_regime.html",
     "macro_liquidity_central_banks.html",
@@ -39,6 +33,15 @@
     "macro_national_debt_liabilities.html",
     "macro_trade_flows.html"
   ],
+  "len_en": 529,
+  "len_zh": 529,
+  "panel_alpha_dark": "rgb(21, 24, 32)",
+  "dest_rest_dark": "color(srgb 1 1 1 / 0.06) 0px 1px 0px 0px inset",
+  "dest_hover_dark": {
+    "boxShadow": "color(srgb 0.784314 0.815686 0.862745 / 0.1) 0px 1px 0px 0px inset",
+    "background": "color(srgb 0.784314 0.815686 0.862745 / 0.09)",
+    "border": "rgba(0, 0, 0, 0)"
+  },
   "light_figure_bg": "rgb(255, 255, 255)",
   "light_panel_bg": "rgb(255, 255, 255)",
   "light_figure_border": "1px",
@@ -46,55 +49,7 @@
   "light_move_current": "rgb(46, 57, 80)",
   "light_move_prior": "rgb(76, 90, 108)",
   "light_row_border": "color(srgb 0.180392 0.223529 0.313726 / 0.1)",
-  "clearance_dark_en": {
-    "lastBottom": 648.84375,
-    "pillTop": 717.859375,
-    "gap": 69.015625,
-    "pillBg": "rgb(13, 16, 24)",
-    "pad": "140px",
-    "pillAlpha": "rgb(13, 16, 24)"
-  },
-  "clearance_light_zh": {
-    "lastBottom": 649.0625,
-    "pillTop": 717.859375,
-    "gap": 68.796875,
-    "pillBg": "rgb(255, 255, 255)",
-    "pad": "140px",
-    "pillAlpha": "rgb(255, 255, 255)"
-  },
-  "pad_768": "140px",
-  "arrival_hidden_dark": [
-    true,
-    true,
-    false,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true
-  ],
-  "arrival_hidden_light": [
-    true,
-    true,
-    false,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true
-  ],
-  "dest_rest_dark": "color(srgb 1 1 1 / 0.06) 0px 1px 0px 0px inset",
-  "dest_hover_dark": {
-    "boxShadow": "color(srgb 0.784314 0.815686 0.862745 / 0.1) 0px 1px 0px 0px inset",
-    "background": "color(srgb 0.784314 0.815686 0.862745 / 0.09)",
-    "border": "rgba(0, 0, 0, 0)"
-  },
+  "panel_alpha_light": "rgb(255, 255, 255)",
   "dest_rest_light": "none",
   "dest_hover_light": {
     "boxShadow": "color(srgb 0.109804 0.141176 0.188235 / 0.1) 0px 1px 2px 0px, color(srgb 0.109804 0.141176 0.188235 / 0.22) 0px 8px 24px -18px",
@@ -115,6 +70,32 @@
     "sectionOutline": "rgb(46, 57, 80) none 3px",
     "sectionShadow": "color(srgb 0.109804 0.141176 0.188235 / 0.1) 0px 1px 2px 0px, color(srgb 0.109804 0.141176 0.188235 / 0.22) 0px 8px 24px -18px"
   },
+  "arrival_hidden_dark": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "arrival_hidden_light": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
   "money_tabs": {
     "fundingHidden": true,
     "banksHidden": false,
@@ -122,6 +103,192 @@
   },
   "inflation_foot": true,
   "empty_dark_bg": "rgba(0, 0, 0, 0)",
-  "empty_light_bg": "color(srgb 0.109804 0.141176 0.188235 / 0.02)",
-  "empty_light_border": "color(srgb 0.109804 0.141176 0.188235 / 0.14)"
+  "empty_light_bg": "color(srgb 0.180392 0.223529 0.313726 / 0.02)",
+  "empty_light_border": "color(srgb 0.109804 0.141176 0.188235 / 0.14)",
+  "m4_nav_to_eyebrow_768": {
+    "navBottom": 117,
+    "eyebrowTop": 141,
+    "gap": 24,
+    "shellPadTop": "8px",
+    "note": "measured at scrollY=0; 16px site-nav margin-bottom + 8px shell padding-top"
+  },
+  "pad_768": "140px",
+  "m5_dark_390_caption": {
+    "caption_color": "rgb(139, 147, 161)",
+    "caption_bg": "rgba(0, 0, 0, 0)",
+    "panel_bg": "rgb(21, 24, 32)",
+    "count_color": "rgb(139, 147, 161)",
+    "count_bg": "rgba(0, 0, 0, 0)"
+  },
+  "m5_caption_contrast": 5.7342770734687685,
+  "m5_count_contrast": 5.7342770734687685,
+  "clearance_dark_en": {
+    "lastBottom": -404.4375,
+    "pillTop": 717.859375,
+    "gap": 1122.296875,
+    "pillBg": "rgb(13, 16, 24)",
+    "pad": "140px",
+    "pillAlpha": "rgb(13, 16, 24)"
+  },
+  "clearance_light_zh": {
+    "lastBottom": -404.4375,
+    "pillTop": 717.859375,
+    "gap": 1122.296875,
+    "pillBg": "rgb(255, 255, 255)",
+    "pad": "140px",
+    "pillAlpha": "rgb(255, 255, 255)"
+  },
+  "scroll_matrix": {
+    "1440_dark_en": {
+      "sw": 1440,
+      "cw": 1440,
+      "equal": true
+    },
+    "1440_dark_zh": {
+      "sw": 1440,
+      "cw": 1440,
+      "equal": true
+    },
+    "1440_light_en": {
+      "sw": 1440,
+      "cw": 1440,
+      "equal": true
+    },
+    "1440_light_zh": {
+      "sw": 1440,
+      "cw": 1440,
+      "equal": true
+    },
+    "768_dark_en": {
+      "sw": 768,
+      "cw": 768,
+      "equal": true
+    },
+    "768_dark_zh": {
+      "sw": 768,
+      "cw": 768,
+      "equal": true
+    },
+    "768_light_en": {
+      "sw": 768,
+      "cw": 768,
+      "equal": true
+    },
+    "768_light_zh": {
+      "sw": 768,
+      "cw": 768,
+      "equal": true
+    },
+    "390_dark_en": {
+      "sw": 390,
+      "cw": 390,
+      "equal": true
+    },
+    "390_dark_zh": {
+      "sw": 390,
+      "cw": 390,
+      "equal": true
+    },
+    "390_light_en": {
+      "sw": 390,
+      "cw": 390,
+      "equal": true
+    },
+    "390_light_zh": {
+      "sw": 390,
+      "cw": 390,
+      "equal": true
+    }
+  },
+  "scroll_w": [
+    1440,
+    1440
+  ],
+  "p19_all_equal": true,
+  "panel_bgs": {
+    "1440_dark": [
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)"
+    ],
+    "1440_light": [
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)"
+    ],
+    "768_dark": [
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)"
+    ],
+    "768_light": [
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)"
+    ],
+    "390_dark": [
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)",
+      "rgb(21, 24, 32)"
+    ],
+    "390_light": [
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)"
+    ]
+  }
 }

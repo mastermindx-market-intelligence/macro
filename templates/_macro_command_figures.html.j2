@@ -27,7 +27,7 @@
 {%- endmacro %}
 
 {% macro movement(block) -%}
-<div class="mc-move" data-mc-move data-mc-fragment>
+<div class="mc-move" data-mc-move data-mc-fragment data-unmapped-metrics="{{ block.unmapped_metrics|default(0) }}">
   <ul class="mc-move-list">
     {%- for row in block.rows %}
     <li class="mx-chg-row mc-move-row">
@@ -52,7 +52,7 @@
 {%- endmacro %}
 
 {% macro empty(state) -%}
-<div class="mc-empty" role="note" data-mc-empty="{{ state.id }}" data-mc-fragment>
+<div class="mc-empty" role="note" data-mc-empty="{{ state.id }}" data-mc-fragment data-unmapped-metrics="{{ state.unmapped_metrics|default(0) }}">
   <p class="mc-empty-title">{{ bl(state.title) }}</p>
   <p class="mc-empty-why">{{ bl(state.why) }}</p>
   {%- if state.unlock %}<p class="mc-empty-unlock">{{ bl(state.unlock) }}</p>{% endif %}

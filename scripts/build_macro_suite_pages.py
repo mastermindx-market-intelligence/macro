@@ -697,7 +697,7 @@ def _move_rows_from_deltas(deltas: Sequence[Mapping[str, Any]], *,
 
 
 def _figure_block(rows: Sequence[Mapping[str, Any]], *, overview: bool,
-                  shown: int, total: int) -> dict[str, Any]:
+                  shown: int, total: int, unmapped_metrics: int = 0) -> dict[str, Any]:
     if overview:
         count = {
             "en": L.COUNT["overview"]["en"].format(shown=shown, total=total),
@@ -708,7 +708,8 @@ def _figure_block(rows: Sequence[Mapping[str, Any]], *, overview: bool,
             "en": L.COUNT["section"]["en"].format(n=len(rows)),
             "zh": L.COUNT["section"]["zh"].format(n=len(rows)),
         }
-    return {"rows": list(rows), "count_text": count}
+    return {"rows": list(rows), "count_text": count,
+            "unmapped_metrics": unmapped_metrics}
 
 
 def _state_key(snapshot: Mapping[str, Any] | None) -> str:
@@ -833,14 +834,7 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
     rail_index = {workspace_id: index for index, workspace_id in enumerate(rail_ids)}
     shown = list(hub["changes"]["entries"])
     shown.sort(key=lambda row: rail_index.get(row.get("workspace_id"), 999))
-    for row in shown:
-        metric_id = row.get("metric_id")
-        # Overview reuses the already-capped hub pool (DELTA 13). P4 workspace
-        # metrics in that pool are P5's METRIC sweep — raising here would
-        # write no page. P3 section figures still fail-closed via _require_metric.
-        if metric_id and str(metric_id) in L.METRIC:
-            row["label"] = dict(L.METRIC[str(metric_id)])
-
+    unmapped_metrics = int((hub.get("changes") or {}).get("unmapped_metrics") or 0)
     overview_rows = [{
         "name": dict(row["label"]) if row.get("label") else {"en": "", "zh": ""},
         "source": dict(row["workspace_title"]) if row.get("workspace_title") else None,
@@ -891,7 +885,7 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
                     "text": dict(table[key]),
                     "tone": "ok" if key == "all_read" else "warn",
                 }
-                primer = dict(L.PRIMERS["overview"])
+                primer = dict(hub["deck"])
                 caption = dict(L.CAPTIONS["overview"])
                 watching = _boundary_watching("overview", None, None)
             if overview_rows:
@@ -899,9 +893,11 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
                     overview_rows, overview=True,
                     shown=hub["changes"]["shown"],
                     total=hub["changes"]["total"],
+                    unmapped_metrics=unmapped_metrics,
                 )
             else:
                 empty = _empty_state("e3")
+                empty["unmapped_metrics"] = unmapped_metrics
         else:
             workspace_id, snap = _stance_snapshot(section, by_id)
             view = (_workspace_view(snap, workspace_id=workspace_id,
@@ -957,6 +953,16 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
             elif has_copy:
                 figure, empty = _figure_or_empty_for_workspace(
                     snap, view=view, href=section.deep_href)
+
+        # M6: one null voice. E2 figure → E2 stance (never the structural
+        # "no single reading"). m1: an E2 slot has no rows, so drop the
+        # "each row shows…" caption.
+        if has_copy and empty and empty.get("id") == "e2":
+            stance = {
+                "text": dict(L.EMPTY_STATES["e2"]["title"]),
+                "tone": "neutral",
+            }
+            caption = None
 
         empty_e5 = None if is_overview else _empty_state(
             "e5", cta_href=section.deep_href or (

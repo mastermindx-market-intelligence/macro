@@ -284,6 +284,61 @@ METRIC: dict[str, dict[str, str]] = {
         "Extra yield for lending ten years", "持有十年期债券的额外收益"),
     "inflation_impulse": _pair("Speed of price rises", "物价上涨速度"),
     "persistence_breadth": _pair("Spread of price rises", "涨价的广度"),
+    # Hub-pool candidates (every id `build_hub_view` can print). A missing
+    # key is dropped, never de-slugged — see `_macro_command_sections`.
+    "growth_momentum": _pair("Growth momentum (6-month)", "增长动能（6个月）"),
+    "growth_level_breadth": _pair(
+        "How many growth gauges are rising", "上升的增长指标数量"),
+    "coincident_tier_momentum_6m": _pair(
+        "Current-activity momentum (6-month)", "当前活动动能（6个月）"),
+    "leading_tier_momentum_6m": _pair(
+        "Leading-activity momentum (6-month)", "领先活动动能（6个月）"),
+    "lagging_tier_momentum_6m": _pair(
+        "Lagging-activity momentum (6-month)", "滞后活动动能（6个月）"),
+    "coincident_lagging_ratio_momentum_6m": _pair(
+        "Current-to-lagging activity gap (6-month)", "当前与滞后活动差距（6个月）"),
+    "financial_conditions_level": _pair(
+        "How tight financial conditions are", "金融状况松紧程度"),
+    "financial_conditions_impulse": _pair(
+        "Whether financial conditions are tightening", "金融状况是否在收紧"),
+    "labor_demand": _pair(
+        "How many jobs employers want to fill", "企业想填补的岗位数量"),
+    "labor_supply_tightness": _pair(
+        "How scarce available workers are", "可用劳动力的稀缺程度"),
+    "mortgage_30y_rate_level": _pair("Thirty-year mortgage rate", "三十年期房贷利率"),
+    "housing_starts_yoy": _pair("Housing starts, year over year", "新屋开工同比"),
+    "building_permits_yoy": _pair("Building permits, year over year", "营建许可同比"),
+    "case_shiller_national_hpi_yoy": _pair(
+        "National house prices, year over year", "全国房价同比"),
+    "retail_sales_level": _pair("Retail sales", "零售销售"),
+    "retail_sales_yoy": _pair("Retail sales, year over year", "零售销售同比"),
+    "consumer_sentiment_level": _pair(
+        "How households feel about the economy", "家庭对经济的感受"),
+    "consumer_sentiment_yoy": _pair(
+        "Household sentiment, year over year", "家庭感受同比"),
+    "cash_flow_momentum": _pair("Household cash-flow momentum", "家庭现金流动能"),
+    "credit_stress": _pair("Household credit stress", "家庭信贷压力"),
+    "cs_issuer_count": _pair(
+        "How many issuers came to market", "来市场发债的主体数量"),
+    "cs_event_count": _pair("How many financing events happened", "融资事件数量"),
+    "cs_classified_event_count": _pair(
+        "How many events we could classify", "已分类的事件数量"),
+    "cs_deferred_event_count": _pair(
+        "How many events are still being reviewed", "仍在审阅的事件数量"),
+    "cs_review_count": _pair("Events awaiting a second look", "待复核的事件"),
+    "tga_level": _pair("Treasury cash balance", "财政部现金余额"),
+    "net_issuance_sum_13w": _pair(
+        "Net government issuance, 13 weeks", "政府净发行（13周）"),
+    "auction_bid_to_cover_recent_avg": _pair("Recent auction demand", "近期拍卖需求"),
+    "household_debt_service_ratio_level": _pair(
+        "Share of income going to debt payments", "收入中用于还债的比重"),
+    "bond_desk_health_score_level": _pair(
+        "How healthy the government-bond desk is", "国债交易台健康程度"),
+    "trade_balance_level": _pair("Trade balance", "贸易差额"),
+    "exports_level": _pair("Exports", "出口"),
+    "imports_level": _pair("Imports", "进口"),
+    "export_import_coverage_ratio": _pair(
+        "How much exports cover imports", "出口对进口的覆盖程度"),
 }
 
 # F01 Macro Command P3 — reviewed panel copy. Keyed (section_id, state_key).
@@ -355,8 +410,8 @@ STANCES: dict[str, dict[str, dict[str, str]]] = {
 
 PRIMERS: dict[str, dict[str, str]] = {
     "overview": _pair(
-        "Macro is not one number. Fourteen research desks each publish their own reading, and this page puts them side by side. Nothing here is blended into a score.",
-        "宏观不是一个数字。十四个研究小组各自发布自己的读数，本页把它们并排呈现。这里不会把它们混合成一个分数。"),
+        "Macro is not one number. {n} research sections each publish their own reading, and this page puts them side by side. Nothing here is blended into a score.",
+        "宏观不是一个数字。{n} 个研究板块各自发布自己的读数，本页把它们并排呈现。这里不会把它们混合成一个分数。"),
     "money": _pair(
         "Money here means how easily cash moves through the banking system. When it moves freely, borrowing is cheap and markets are calm; when it jams, everything gets harder.",
         "这里的「资金」指现金在银行体系中流动的顺畅程度。流动顺畅时借贷便宜、市场平静；一旦堵塞，一切都会变难。"),
@@ -727,6 +782,11 @@ CHIP_NULL_NOTE: dict[str, dict[str, str]] = {
     "plan": _pair(
         "This section is part of a higher plan.",
         "本板块属于更高级别方案。"),
+    # M6: populated figure + no headline number. The chip VALUE is rewritten
+    # to this pair; the date rides `as_of` (P2 strip null branch).
+    "see_curve": _pair(
+        "See the curve below",
+        "见下方曲线"),
 }
 
 # Chip 8 (`coverage`) value word (pin §6.5) — digit-free, per §3.0 bullet 1.
