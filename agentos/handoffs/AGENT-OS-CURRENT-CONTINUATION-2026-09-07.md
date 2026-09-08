@@ -40,15 +40,19 @@ verified:
       93 pre-existing warnings; two targeted tests passed; context_bundle.v1 contained all
       five records. Independent review and terminal trusted CI remain separate gates.
   - claim: >
-      The CXI C1 deterministic-relevance carrier has one accepted receiver and no START.
+      The CXI C1 deterministic-relevance carrier was admitted to one sticky source carrier.
     command: >
-      Fresh-read Slack C0BSBM78V1N/1788799732.129829 through Sol ruling
-      1788803231.117309.
+      Fresh-read Slack C0BSBM78V1N/1788799732.129829 through the receiver WATCH receipt,
+      Sol START 1788804429.409789, and storage-bound carrier correction
+      1788805290.888559.
     result: >
-      Claude8/Fable5.1 session local_57d76fcf-173c-4354-beaf-685aff5a8187 returned pickup
-      and a bounded method/path proposal. Sol conditionally accepted the method, but held
-      START pending an exact WATCH_ARMED or WATCH_UNAVAILABLE receipt. No C1 source effect is
-      established.
+      Claude8/Fable5.1 session local_57d76fcf-173c-4354-beaf-685aff5a8187 owns the one
+      started operation. The storage helper owns branch
+      claude/ssd-macro-context-index-c1-deterministic-relevance-20260907-eb72fdd2f21a0582
+      and worktree /Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/
+      macro-context-index-c1-deterministic-relevance-20260907-eb72fdd2f21a0582.
+      This record does not assert a terminal RESULT, STOP, accepted head, or current
+      provider execution state; those require a fresh exact-thread and source read.
   - claim: >
       Current free-text recovery is useful but not yet sufficient for the generic request.
     command: >
@@ -67,11 +71,11 @@ unverified:
       one maintenance-only current-main composition with exact five-path parity and natural
       checks before guarded source release.
   - claim: >
-      CXI C1 has a reciprocal watcher and an admitted source START.
+      CXI C1 has reached a terminal, independently reviewed, accepted source result.
     what_would_verify: >
-      An exact same-carrier WATCH_ARMED or concrete WATCH_UNAVAILABLE receipt, followed by a
-      fresh Sol START that pins action-time Macro main, Skillpack, receiver, path ceiling,
-      worktree, and effect boundary.
+      A fresh exact-thread read of C0BSBM78V1N/1788799732.129829, immutable branch/head/tree
+      and path evidence, required local/hosted checks, Sol adjudication, and an explicit
+      terminal STOP. START and a materialized worktree are not completion.
   - claim: >
       Current Executive OS Job, Attempt, Worker, or Event state exists for either records
       operation.
@@ -83,14 +87,17 @@ unresolved:
     PR 6977 remains open and behind a frequently moving Macro main; its current GitHub merge
     object is not action-time integration proof.
   - >
-    The C1 watcher receipt is still absent, so source implementation remains PRE_START.
+    The C1 source operation is STARTED on one sticky helper-owned carrier. Its latest
+    branch head, local dirt, process state, benchmark progress, and terminal status remain
+    thread/source-scoped and must be fresh-read before continuation or acceptance.
   - >
     WS:AGENT-OS frontmatter still names MAS-28 calibration as its next action; this bounded
     handoff does not silently rewrite that workstream record.
 next_actions:
   - >
-    Re-read the exact CXI C1 Slack root. If the required watcher receipt exists and no newer
-    conflict/effect appears, issue one separate Sol START on that carrier with current pins.
+    Re-read the exact CXI C1 Slack root and helper-owned worktree. Adjudicate the newest
+    material edge on that same carrier with CONTINUE, bounded repair, decision request, or
+    terminal STOP. Do not issue a second START or create a replacement carrier.
   - >
     Re-read PR 6977 checks and independent review. After both are accepted, perform one
     maintenance-only current-main qualification, preserve the five-path records ceiling, and
@@ -133,7 +140,8 @@ independently useful bounded capabilities:
    organizational routing; no plugin workflow is integrated merely because the records exist.
 2. **Context Index C1 relevance and abstention** — the active C1 carrier must make weak human
    hints resolve useful current evidence while returning an honest null for irrelevant queries.
-   It remains PRE_START until reciprocal watcher continuity is established.
+   It is STARTED on one sticky helper-owned carrier, but no terminal result or accepted capability
+   is inferred without a fresh exact-thread/source adjudication.
 
 Executive OS remains the only Job / Attempt / Worker / Event lifecycle. Agent OS owns this
 durable organizational context. GitHub owns implementation and evidence. Linear remains a
@@ -144,7 +152,7 @@ projection. Slack remains transport and hot state.
 | Carrier | Current state | Proven effect | Exact next gate |
 |---|---|---|---|
 | Macro PR 6977, branch `sol/plugin-integration-handoffs-2026-09-07`, head `6406f3b...` | source published; independent review and trusted CI pending | one five-path records repair commit | independent exact-head review, terminal checks, current-main qualification |
-| Slack `C0BSBM78V1N/1788799732.129829`, operation `macro-context-index-c1-deterministic-relevance-20260907-sol-001` | pickup accepted; PRE_START | none | exact watcher receipt, then separate Sol START |
+| Slack `C0BSBM78V1N/1788799732.129829`, operation `macro-context-index-c1-deterministic-relevance-20260907-sol-001` | STARTED; sticky Claude8/Fable5.1 receiver and helper-owned carrier | branch/worktree materialization is established; later source/benchmark effects require fresh read | consume newest exact-thread edge; continue/repair/STOP on this carrier only |
 | This handoff branch | records-only continuity update | this one file only | Agent OS validation, independent review, guarded protection |
 
 No row above proves an Executive OS runtime state. No row authorizes a second carrier.
@@ -157,7 +165,7 @@ No row above proves an Executive OS runtime state. No row authorizes a second ca
 | PR 6977 plugin handoff packet | `BUILT_NOT_PROVEN` | source exists; independent acceptance/current-base release remain open |
 | Plugin end-to-end workflows | `NOT_BUILT` | each connector lane still requires a real producer-to-consumer slice |
 | Context Index C0 | `PROVEN_LIVE` as protected source | deterministic baseline exists; quality remains below target |
-| Context Index C1 | `SPEC_ONLY / PRE_START` | method conditionally frozen; source work not admitted |
+| Context Index C1 | `STARTED / NOT_ACCEPTED` | one source carrier is admitted; current head, proof, and terminal result require fresh adjudication |
 | Generic “Continue Agent OS Work” recovery | `PARTIAL` | workstream resolves, but current handoff selection was stale |
 | Executive OS runtime linkage for this continuation | `DARK_OR_DISCONNECTED` | current tool namespace was not available; no lifecycle state is inferred |
 
@@ -165,8 +173,8 @@ No row above proves an Executive OS runtime state. No row authorizes a second ca
 
 First, preserve carrier order rather than starting more work:
 
-1. CXI C1: obtain the exact receiver watcher receipt; if current pins and effects remain clean,
-   issue one START and let the existing Fable root own the bounded source wave.
+1. CXI C1: fresh-read the existing exact thread and helper-owned worktree; adjudicate the newest
+   material edge and keep the already-started Fable operation on that one carrier.
 2. PR 6977: obtain non-author review and terminal CI; then qualify against action-time main and
    protect only the durable-record capability.
 3. This continuity record: validate and protect it so the next fresh session can recover the
