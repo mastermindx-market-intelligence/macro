@@ -1121,9 +1121,7 @@ def test_committed_gate_dot_is_a_circle_on_the_capture_sha_frame():
                     r, g, b = pixels[x + dx, y + dy]
                     if max(r, g, b) - min(r, g, b) < 40:
                         continue
-                    if (g >= 90 and g - r >= 20 and g - b >= 10) or (
-                        r >= 160 and r - g >= 40 and r - b >= 20
-                    ):
+                    if (g >= 100 and g - r >= 40) or (r >= 180 and r - g >= 60):
                         lit += 1
                 rows.append(lit)
                 lit_total += lit
