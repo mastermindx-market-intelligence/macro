@@ -41,6 +41,7 @@
 {%- if node %}{{ t(node.en, node.zh) }}{% endif -%}
 {%- endmacro %}
 {% import "_macro_command_macros.html.j2" as m %}
+{% import "_macro_command_figures.html.j2" as fig %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -126,6 +127,19 @@
     {%- for s in sections %}
     <section class="mc-panel" id="{{ s.id }}" data-mc-panel="{{ s.id }}"
              aria-labelledby="{{ s.id }}-h">
+
+      {# P3 D12 — deep-link arrival. Server-rendered so the copy is an
+         .l-en/.l-zh pair (G6), `hidden` in the served document, unhidden by JS
+         at boot ONLY when the URL hash named this section. Reuses the exact
+         mechanism the pending line already uses (:192). #}
+      {%- if not s.first %}
+      <p class="mc-arrival" data-mc-arrival hidden>
+        <span class="mc-arrival-bar" aria-hidden="true"></span>
+        <span class="mc-arrival-text">{{ t('You opened Macro Command at', '你从这里进入宏观指挥台：') }}
+          <b>{{ bl(s.label) }}</b>.</span>
+        <a class="mc-arrival-link" href="#overview">{{ t("Read today's overview", '查看今日总览') }} &rarr;</a>
+      </p>
+      {%- endif %}
       <div class="mc-panel-head">
         <h2 class="mc-panel-title" id="{{ s.id }}-h" tabindex="-1">{{ bl(s.label) }}</h2>
         {%- if s.question %}<p class="mc-panel-question">{{ bl(s.question) }}</p>{% endif %}
@@ -157,34 +171,15 @@
       </div>
       {%- endif %}
 
-      <div class="mc-figure{{ ' mc-figure-dests' if s.first else '' }}" data-mc-figure>
+      <div class="mc-figure" data-mc-figure>
         {%- if s.first %}
-        <p class="mc-figure-building">{{ t("Today's read is not available yet. Start with any workspace below.",
-                                             '今日读数暂不可用。可从下方任一工作区开始。') }}</p>
-        {# D3/D5: the fourteen workspaces ARE the Overview's content, and this is
-           their SINGLE source — a directory of destinations, not a bulleted link
-           list, and no longer repeated inside <details> (see the guard below).
-           Only `link.href` and `link.title` are used; `_detail_link()` publishes
-           nothing else. `link.state` is a forward hook for P2's per-workspace
-           date and renders nothing today. #}
-        <ul class="mc-dests">
-          {%- for link in s.detail_links %}
-          <li>
-            <a class="mc-dest" href="{{ link.href }}">
-              <span class="mc-dest-bar" aria-hidden="true"></span>
-              <span class="mc-dest-title">{{ bl(link.title) }}</span>
-              {{ m.answers(link.href) }}
-              {%- if link.get('state') and link.state.as_of %}
-              <span class="mc-dest-meta">
-                <span class="mc-asof-word">{{ t('Data to', '数据截至') }}</span>
-                <time datetime="{{ link.state.as_of }}">{{ bl(link.state.as_of_display) }}</time>
-              </span>
-              {%- endif %}
-              <span class="mc-dest-go" aria-hidden="true">→</span>
-            </a>
-          </li>
-          {%- endfor %}
-        </ul>
+        {# P3 §0: the Overview's ONE figure. The fourteen destinations are not a
+           figure and now live in the panel's destination block below. The P1
+           "Today's read is not available yet" sentence is deleted with this
+           branch: it was false the moment P2 shipped The Read above it. #}
+        {%- if s.empty %}{{ fig.empty(s.empty) }}
+        {%- else %}{{ fig.movement(s.figure) }}
+        {%- endif %}
         {%- elif s.subtabs %}
         {# D8: the DEFAULT (no-JS) content is an honest null with a real destination, for EACH tab body.
            The pending line is hidden in the document and unhidden by JS at boot; both tab bodies ship
@@ -220,18 +215,55 @@
       </div>
       {%- endif %}
 
+      {# P3 D7 — instrument note. Never a tone, never a watching bullet. #}
+      {%- if s.input_note %}
+      <p class="mc-foot">{{ t('Some inputs are not current today — see details.',
+                              '今天部分输入并非最新 — 详见细节。') }}</p>
+      {%- endif %}
+
+      {# P3 §0 / P1 D5: the fourteen destinations, ONCE, and no longer inside
+         `.mc-figure`. This is the Overview's navigation tier, which is why it
+         is a labelled <nav> and why it sits where every other panel's
+         <details> sits. Order is the rail's reading order (addendum DELTA 13).
+         Only `link.href` and `link.title` are used. #}
+      {%- if s.first %}
+      <nav class="mc-dests-block" aria-labelledby="{{ s.id }}-dests-h">
+        <h3 class="mc-dests-title" id="{{ s.id }}-dests-h">{{ t('Where to go next', '接下来去哪里') }}</h3>
+        <ul class="mc-dests">
+          {%- for link in s.detail_links %}
+          <li>
+            <a class="mc-dest" href="{{ link.href }}">
+              <span class="mc-dest-bar" aria-hidden="true"></span>
+              <span class="mc-dest-title">{{ bl(link.title) }}</span>
+              {{ m.answers(link.href) }}
+              <span class="mc-dest-go" aria-hidden="true">→</span>
+            </a>
+          </li>
+          {%- endfor %}
+        </ul>
+      </nav>
+      {%- endif %}
+
       {# D5: the Overview's fourteen destinations live exactly once, in the
-         visible directory above. Repeating them under a disclosure named
-         "Details, methods and sources" that carries neither methods nor sources
-         made a screen-reader user traverse all fourteen twice. Every other panel
-         keeps its own single-workspace disclosure, unchanged. #}
+         destination block above. Every other panel keeps its own
+         single-workspace disclosure. #}
       {%- if not s.first %}
+      <template data-mc-empty-e5>{{ fig.empty(s.empty_e5) }}</template>
       <details class="mc-details">
         <summary>{{ t('Details, methods and sources', '细节、方法与来源') }}</summary>
         <div class="mc-details-body">
-          {# §1.3: the workspace's own title, once, as the deep link. Overview has
-             no single workspace of its own, so it lists all fourteen (real
-             registry titles/hrefs, closed suite order — never invented copy). #}
+          {%- if s.state_label %}
+          <p class="mc-details-state">
+            <span class="mc-details-key">{{ t('Published reading', '已发布读数') }}</span>
+            <span class="mc-details-val">{{ bl(s.state_label) }}</span>
+          </p>
+          {%- endif %}
+          {%- if s.as_of %}
+          <p class="mc-details-asof">
+            <span class="mc-asof-word">{{ t('Data to', '数据截至') }}</span>
+            <time datetime="{{ s.as_of }}">{{ bl(s.as_of_display) }}</time>
+          </p>
+          {%- endif %}
           <ul class="mc-details-links">
             {%- for link in s.detail_links %}
             <li><a href="{{ link.href }}">{{ bl(link.title) }}</a></li>

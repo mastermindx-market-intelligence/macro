@@ -46,6 +46,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(_REPO_ROOT))
 
 from engine.market_os.macro_workspaces import contract, registry  # noqa: E402
+from lib import macro_suite_labels as L  # noqa: E402
 from lib import macro_suite_view  # noqa: E402
 
 # Shared across every workspace page: copied once per build, never per page.
@@ -300,6 +301,8 @@ class Section:
     workspace_id: str | None = None
     deep_href: str | None = None
     subtabs: tuple[SubTab, ...] = ()
+    question_en: str | None = None
+    question_zh: str | None = None
 
 
 # Macro Command left-rail sections — twelve, in the FIXED reading order a
@@ -308,19 +311,29 @@ class Section:
 # DNR:KILL-REGIME-SCORECARD). The template adds the leading "#" to `id` for
 # hrefs/DOM ids (R10) — this constant carries bare tokens only.
 SECTIONS: tuple[Section, ...] = (
-    Section(id="overview", label_en="Overview", label_zh="总览"),
-    Section(id="money", label_en="Money & liquidity", label_zh="资金与流动性", subtabs=(
+    Section(id="overview", label_en="Overview", label_zh="总览",
+            question_en="What is macro saying today, and what moved?",
+            question_zh="今天宏观在说什么？有什么变化？"),
+    Section(id="money", label_en="Money & liquidity", label_zh="资金与流动性",
+            question_en="Is money getting easier or harder to come by?",
+            question_zh="资金是变得更容易还是更难获得？", subtabs=(
         SubTab(id="liquidity", label_en="How much money is around", label_zh="市场资金",
                workspace_id="liquidity_regime", deep_href="macro_liquidity_regime.html"),
         SubTab(id="central_banks", label_en="What central banks are holding", label_zh="央行资产负债表",
                workspace_id="liquidity_central_banks", deep_href="macro_liquidity_central_banks.html"),
     )),
     Section(id="policy", label_en="Policy rates", label_zh="政策利率",
-            workspace_id="monetary_policy", deep_href="macro_monetary_policy.html"),
+            workspace_id="monetary_policy", deep_href="macro_monetary_policy.html",
+            question_en="Where is the policy rate, and where do markets think it goes?",
+            question_zh="政策利率在哪里？市场认为它会去哪里？"),
     Section(id="rates", label_en="Rates & the curve", label_zh="利率与收益率曲线",
-            workspace_id="rates_curves", deep_href="macro_rates_curves.html"),
+            workspace_id="rates_curves", deep_href="macro_rates_curves.html",
+            question_en="What do government borrowing costs look like across time?",
+            question_zh="不同期限的政府借贷成本是什么样？"),
     Section(id="inflation", label_en="Inflation", label_zh="通胀",
-            workspace_id="inflation_system", deep_href="macro_inflation_system.html"),
+            workspace_id="inflation_system", deep_href="macro_inflation_system.html",
+            question_en="Are prices still rising, and is it spreading?",
+            question_zh="物价还在上涨吗？涨势是否在扩散？"),
     Section(id="growth", label_en="Growth", label_zh="经济增长", subtabs=(
         SubTab(id="economy", label_en="The whole economy", label_zh="整体经济",
                workspace_id="growth_real_economy", deep_href="macro_growth_real_economy.html"),
@@ -587,60 +600,415 @@ def build_page(root: Path, page: SuitePage, *, data_root: Path, out_dir: Path,
     return destination, ok, hub_entry
 
 
+P3_COPY_IDS = frozenset({"overview", "money", "policy", "rates", "inflation"})
+P3_PRIMER_OPEN = frozenset({"overview", "money", "policy"})
+_SOURCE_NOTE_TITLES = frozenset({
+    "Required source not current",
+    "Optional legs degraded",
+    "Contradictory signals",
+})
+_E2_STATES = frozenset({"SOURCE_FAILED", "STALE_SOURCE"})
+
+
+class MacroCommandBuildError(RuntimeError):
+    """Fail-closed: an unmapped stance key or metric id writes no page."""
+
+
+def rail_workspace_ids() -> tuple[str, ...]:
+    """The fourteen workspaces in rail reading order (addendum DELTA 13).
+
+    Sub-tabbed sections contribute first sub-tab then second. Data-independent,
+    so DNR:KILL-REGIME-SCORECARD is not engaged.
+    """
+    order: list[str] = []
+    for section in SECTIONS:
+        if section.subtabs:
+            order.extend(tab.workspace_id for tab in section.subtabs)
+        elif section.workspace_id:
+            order.append(section.workspace_id)
+    return tuple(order)
+
+
 def _detail_link(title_by_workspace: Mapping[str, Mapping[str, str]], workspace_id: str,
                   deep_href: str) -> dict[str, Any]:
     title = title_by_workspace.get(workspace_id)
     return {"title": title or {"en": workspace_id, "zh": workspace_id}, "href": deep_href}
 
 
-def _macro_command_sections(entries: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
+def _empty_state(state_id: str, *, cta_href: str | None = None,
+                 plan: str | None = None) -> dict[str, Any]:
+    spec = L.EMPTY_STATES[state_id]
+    state: dict[str, Any] = {
+        "id": spec["id"],
+        "title": dict(spec["title"]),
+        "why": dict(spec["why"]),
+        "unlock": dict(spec["unlock"]) if spec.get("unlock") else None,
+        "next": dict(spec["next"]) if spec.get("next") else None,
+        "cta": None,
+    }
+    if state_id == "e5":
+        state["cta"] = {"href": cta_href or "#overview", "label": dict(spec["cta_label"])}
+        state["unlock"] = None
+        state["next"] = None
+    elif state_id == "e6":
+        why = spec["why"]
+        filled = plan or "a higher plan"
+        state["why"] = {"en": why["en"].format(plan=filled),
+                        "zh": why["zh"].format(plan=filled)}
+        state["cta"] = {"href": spec["cta_href"], "label": dict(spec["cta_label"])}
+        state["next"] = None
+    elif state_id == "e2":
+        state["next"] = None
+    elif state_id == "e3":
+        state["unlock"] = None
+    elif state_id == "e4":
+        state["next"] = None
+    return state
+
+
+def _require_metric(metric_id: str) -> None:
+    if metric_id not in L.METRIC:
+        raise MacroCommandBuildError(
+            f"unmapped metric_id {metric_id!r} on the hub — extend METRIC, never deslug")
+
+
+def _move_rows_from_deltas(deltas: Sequence[Mapping[str, Any]], *,
+                           href: str | None, show_source: Mapping[str, str] | None,
+                           ) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for delta in deltas:
+        if not (delta.get("prior_present") or delta.get("current_present")
+                or delta.get("delta_present")):
+            continue
+        metric_id = str(delta.get("metric_id") or "")
+        _require_metric(metric_id)
+        sign = delta.get("sign") if delta.get("delta_present") else "unavailable"
+        rows.append({
+            "name": dict(delta["label"]) if delta.get("label") else dict(L.METRIC[metric_id]),
+            "source": dict(show_source) if show_source else None,
+            "href": href,
+            "prior": delta.get("prior") if delta.get("prior_present") else L.EM_DASH,
+            "current": delta.get("current") if delta.get("current_present") else L.EM_DASH,
+            "delta": delta.get("delta") if delta.get("delta_present") else L.EM_DASH,
+            "sign": sign or "unavailable",
+            "metric_id": metric_id,
+        })
+    return rows
+
+
+def _figure_block(rows: Sequence[Mapping[str, Any]], *, overview: bool,
+                  shown: int, total: int) -> dict[str, Any]:
+    if overview:
+        count = {
+            "en": L.COUNT["overview"]["en"].format(shown=shown, total=total),
+            "zh": L.COUNT["overview"]["zh"].format(shown=shown, total=total),
+        }
+    else:
+        count = {
+            "en": L.COUNT["section"]["en"].format(n=len(rows)),
+            "zh": L.COUNT["section"]["zh"].format(n=len(rows)),
+        }
+    return {"rows": list(rows), "count_text": count}
+
+
+def _state_key(snapshot: Mapping[str, Any] | None) -> str:
+    if not snapshot:
+        return "unavailable"
+    headline = snapshot.get("headline") or {}
+    if headline.get("status") == "PRESENT" and headline.get("state_id"):
+        return str(headline["state_id"])
+    if headline.get("null_reason") == "NOT_APPLICABLE":
+        return "unstated"
+    return "unavailable"
+
+
+def _stance_snapshot(section: Section,
+                     by_id: Mapping[str, Mapping[str, Any]],
+                     ) -> tuple[str | None, Mapping[str, Any] | None]:
+    """D5: first sub-tab whose workspace publishes a state; else first tab."""
+    if section.subtabs:
+        for tab in section.subtabs:
+            entry = by_id.get(tab.workspace_id) or {}
+            snap = entry.get("snapshot")
+            if snap and (snap.get("headline") or {}).get("status") == "PRESENT":
+                return tab.workspace_id, snap
+        first = section.subtabs[0]
+        entry = by_id.get(first.workspace_id) or {}
+        return first.workspace_id, entry.get("snapshot")
+    if section.workspace_id:
+        entry = by_id.get(section.workspace_id) or {}
+        return section.workspace_id, entry.get("snapshot")
+    return None, None
+
+
+def _workspace_view(snapshot: Mapping[str, Any], *, workspace_id: str,
+                    page_built_at: str) -> dict[str, Any]:
+    artifact = {
+        "path": f"macrodata/workspaces/{workspace_id}/US/latest.json",
+        "manifest_path": "macrodata/workspaces/manifest.json",
+        "sha256": None,
+        "bytes": None,
+        "min_client_contract": MIN_CLIENT_CONTRACT,
+    }
+    return macro_suite_view.build_view(
+        snapshot, page_built_at=page_built_at, artifact=artifact,
+        layout=_layout_for(workspace_id),
+    )
+
+
+def _input_note_from_view(view: Mapping[str, Any]) -> bool:
+    for item in view.get("diagnostics") or []:
+        title = item.get("title") or {}
+        title_en = title.get("en") if isinstance(title, Mapping) else None
+        if item.get("tone") in ("warn", "bad") and title_en in _SOURCE_NOTE_TITLES:
+            return True
+    return False
+
+
+def _figure_or_empty_for_workspace(snapshot: Mapping[str, Any] | None, *,
+                                   view: Mapping[str, Any] | None,
+                                   href: str | None,
+                                   entitlement: str | None = None,
+                                   ) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
+    if entitlement:
+        return None, _empty_state("e6", plan=entitlement)
+    if view and (view.get("context") or {}).get("state") in _E2_STATES:
+        return None, _empty_state("e2")
+    headline = (view or {}).get("headline") or {}
+    changes = (view or {}).get("changes") or {}
+    deltas = list(changes.get("deltas") or [])
+    has_date = bool(headline.get("effective_date"))
+    comparable_rows = _move_rows_from_deltas(deltas, href=href, show_source=None)
+    raw = (snapshot or {}).get("headline") or {}
+    not_applicable = raw.get("null_reason") == "NOT_APPLICABLE"
+    if not has_date and not comparable_rows and not not_applicable:
+        return None, _empty_state("e1")
+    if not changes.get("comparable") or not comparable_rows:
+        return None, _empty_state("e3")
+    return _figure_block(comparable_rows, overview=False,
+                         shown=len(comparable_rows), total=len(comparable_rows)), None
+
+
+def _boundary_watching(section_id: str, snapshot: Mapping[str, Any] | None,
+                       view: Mapping[str, Any] | None) -> list[dict[str, str]]:
+    reviewed = [dict(item) for item in L.WATCHING[section_id]]
+    if not view or not snapshot:
+        return reviewed
+    boundary = (view.get("headline") or {}).get("nearest_boundary") or {}
+    if not boundary.get("distance_present"):
+        return reviewed
+    axis_id = ((snapshot.get("headline") or {}).get("nearest_boundary") or {}).get("axis")
+    if axis_id:
+        _require_metric(str(axis_id))
+        axis_label = L.METRIC[str(axis_id)]
+    else:
+        axis_label = boundary.get("axis_label") or {"en": "", "zh": ""}
+    distance = boundary.get("distance")
+    line = {
+        "en": L.BOUNDARY_LINE["en"].format(axis=axis_label["en"], distance=distance),
+        "zh": L.BOUNDARY_LINE["zh"].format(axis=axis_label["zh"], distance=distance),
+    }
+    return [line, *reviewed]
+
+
+def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
+                            page_built_at: str) -> list[dict[str, Any]]:
     """Build the `sections` template context from the static SECTIONS constant.
 
-    Every optional field a P1 panel does not populate (question / stance /
-    primer / caption / watching / tone — R3) is set to an explicit falsy
-    value rather than omitted: the render environment uses
-    ``StrictUndefined``, so a bare ``{% if s.tone %}`` on a dict missing the
-    key raises rather than evaluating falsy.
+    P3 populates question / stance / primer / caption / watching for the first
+    five sections only; the seven P4 sections degrade to head + figure.
+    Every optional field is an explicit falsy so StrictUndefined stays silent.
     """
+    by_id = {entry["workspace_id"]: entry for entry in entries}
     title_by_workspace = {entry["workspace_id"]: entry["title"] for entry in entries}
-    all_links = [_detail_link(title_by_workspace, entry["workspace_id"], entry["output"])
-                 for entry in entries]
+    rail_ids = rail_workspace_ids()
+    overview_links = [
+        _detail_link(title_by_workspace, workspace_id,
+                     (by_id.get(workspace_id) or {}).get("output")
+                     or f"macro_{workspace_id}.html")
+        for workspace_id in rail_ids
+    ]
+
+    hub = macro_suite_view.build_hub_view(entries, page_built_at=page_built_at)
+    rail_index = {workspace_id: index for index, workspace_id in enumerate(rail_ids)}
+    shown = list(hub["changes"]["entries"])
+    shown.sort(key=lambda row: rail_index.get(row.get("workspace_id"), 999))
+    for row in shown:
+        metric_id = row.get("metric_id")
+        # Overview reuses the already-capped hub pool (DELTA 13). P4 workspace
+        # metrics in that pool are P5's METRIC sweep — raising here would
+        # write no page. P3 section figures still fail-closed via _require_metric.
+        if metric_id and str(metric_id) in L.METRIC:
+            row["label"] = dict(L.METRIC[str(metric_id)])
+
+    overview_rows = [{
+        "name": dict(row["label"]) if row.get("label") else {"en": "", "zh": ""},
+        "source": dict(row["workspace_title"]) if row.get("workspace_title") else None,
+        "href": row.get("href"),
+        "prior": row.get("prior") or L.EM_DASH,
+        "current": row.get("current") or L.EM_DASH,
+        "delta": row.get("delta") or L.EM_DASH,
+        "sign": row.get("sign") or "unavailable",
+        "metric_id": row.get("metric_id"),
+    } for row in shown]
 
     sections: list[dict[str, Any]] = []
     for section in SECTIONS:
         is_overview = section.id == "overview"
+        has_copy = section.id in P3_COPY_IDS
         subtabs: list[dict[str, Any]] | None = None
         detail_links: list[dict[str, Any]]
         if section.subtabs:
-            subtabs = [{
-                "id": tab.id,
-                "label": {"en": tab.label_en, "zh": tab.label_zh},
-                "first": index == 0,
-                "deep_href": tab.deep_href,
-            } for index, tab in enumerate(section.subtabs)]
             detail_links = [_detail_link(title_by_workspace, tab.workspace_id, tab.deep_href)
                             for tab in section.subtabs]
         elif is_overview:
-            detail_links = all_links
+            detail_links = overview_links
         else:
             detail_links = [_detail_link(title_by_workspace, section.workspace_id, section.deep_href)]
+
+        stance = None
+        primer = None
+        caption = None
+        watching = None
+        input_note = False
+        state_label = None
+        as_of = None
+        as_of_display = None
+        figure = None
+        empty = None
+        tone = None
+        question = ({"en": section.question_en, "zh": section.question_zh}
+                    if section.question_en else None)
+
+        if is_overview:
+            coverage = hub.get("coverage") or {}
+            key = "all_read" if coverage.get("complete") else "some_unread"
+            table = L.STANCES.get("overview") or {}
+            if key not in table:
+                raise MacroCommandBuildError(f"unknown stance key overview/{key}")
+            if has_copy:
+                stance = {
+                    "text": dict(table[key]),
+                    "tone": "ok" if key == "all_read" else "warn",
+                }
+                primer = dict(L.PRIMERS["overview"])
+                caption = dict(L.CAPTIONS["overview"])
+                watching = _boundary_watching("overview", None, None)
+            if overview_rows:
+                figure = _figure_block(
+                    overview_rows, overview=True,
+                    shown=hub["changes"]["shown"],
+                    total=hub["changes"]["total"],
+                )
+            else:
+                empty = _empty_state("e3")
+        else:
+            workspace_id, snap = _stance_snapshot(section, by_id)
+            view = (_workspace_view(snap, workspace_id=workspace_id,
+                                    page_built_at=page_built_at)
+                    if snap and workspace_id else None)
+            if has_copy:
+                key = _state_key(snap)
+                table = L.STANCES.get(section.id) or {}
+                if key not in table:
+                    raise MacroCommandBuildError(
+                        f"unknown stance key {section.id}/{key}")
+                if key in ("unstated", "unavailable"):
+                    tone = "neutral"
+                elif workspace_id and key in (L.STATE_TONE.get(workspace_id) or {}):
+                    tone = L.STATE_TONE[workspace_id][key]
+                else:
+                    tone = "neutral"
+                stance = {"text": dict(table[key]), "tone": tone}
+                primer = dict(L.PRIMERS[section.id])
+                caption = dict(L.CAPTIONS[section.id])
+                watching = _boundary_watching(section.id, snap, view)
+            if view and has_copy:
+                input_note = _input_note_from_view(view)
+                headline = view.get("headline") or {}
+                state_label = headline.get("state_label")
+                as_of = headline.get("effective_date")
+                as_of_display = L.date_display_pair(as_of) if as_of else None
+
+            if section.subtabs:
+                subtabs = []
+                notes = [input_note]
+                for index, tab in enumerate(section.subtabs):
+                    tab_entry = by_id.get(tab.workspace_id) or {}
+                    tab_snap = tab_entry.get("snapshot")
+                    tab_view = (_workspace_view(tab_snap, workspace_id=tab.workspace_id,
+                                                page_built_at=page_built_at)
+                                if tab_snap else None)
+                    tab_figure = tab_empty = None
+                    if has_copy:
+                        tab_figure, tab_empty = _figure_or_empty_for_workspace(
+                            tab_snap, view=tab_view, href=tab.deep_href)
+                    if tab_view:
+                        notes.append(_input_note_from_view(tab_view))
+                    subtabs.append({
+                        "id": tab.id,
+                        "label": {"en": tab.label_en, "zh": tab.label_zh},
+                        "first": index == 0,
+                        "deep_href": tab.deep_href,
+                        "figure": tab_figure,
+                        "empty": tab_empty,
+                    })
+                input_note = any(notes) if has_copy else False
+            elif has_copy:
+                figure, empty = _figure_or_empty_for_workspace(
+                    snap, view=view, href=section.deep_href)
+
+        empty_e5 = None if is_overview else _empty_state(
+            "e5", cta_href=section.deep_href or (
+                section.subtabs[0].deep_href if section.subtabs else "#overview"))
 
         sections.append({
             "id": section.id,
             "label": {"en": section.label_en, "zh": section.label_zh},
             "first": is_overview,
-            "tone": None,
-            "question": None,
-            "stance": None,
-            "primer": None,
-            "primer_open": False,
-            "caption": None,
-            "watching": None,
+            "tone": (stance or {}).get("tone") if stance else None,
+            "question": question,
+            "stance": stance,
+            "primer": primer,
+            "primer_open": section.id in P3_PRIMER_OPEN,
+            "caption": caption,
+            "watching": watching,
+            "input_note": input_note,
+            "state_label": state_label,
+            "as_of": as_of,
+            "as_of_display": as_of_display,
+            "figure": figure,
+            "empty": empty,
+            "empty_e5": empty_e5,
+            "entitlement": None,
             "deep_href": section.deep_href,
             "subtabs": subtabs,
             "detail_links": detail_links,
         })
     return sections
+
+
+def write_fragments(env: Environment, sections: Sequence[Mapping[str, Any]],
+                    out_dir: Path) -> list[Path]:
+    """Emit `site/macro/fragments/<id>.html` — the inner HTML of `[data-mc-figure]`."""
+    dest = Path(out_dir) / "macro" / "fragments"
+    dest.mkdir(parents=True, exist_ok=True)
+    tmpl = env.get_template("_macro_command_fragment.html.j2")
+    written: list[Path] = []
+    for section in sections:
+        if section.get("first"):
+            continue
+        html = tmpl.render(s=section)
+        html = "\n".join(line.rstrip() for line in html.splitlines()) + "\n"
+        path = dest / f"{section['id']}.html"
+        temp = _temp_sibling(path)
+        try:
+            temp.write_text(html, encoding="utf-8")
+            os.replace(temp, path)
+        finally:
+            temp.unlink(missing_ok=True)
+        written.append(path)
+    return written
 
 
 def _macro_command_analyst(root: Path) -> dict[str, Any]:
@@ -694,6 +1062,8 @@ def build_hub(entries: Sequence[Mapping[str, Any]], *, out_dir: Path,
     tally's "today" cut.
     """
     header = macro_suite_view.build_command_header(entries, page_built_at=page_built_at)
+    sections = _macro_command_sections(entries, page_built_at=page_built_at)
+    fragment_paths = write_fragments(env, sections, out_dir)
     html = env.get_template(HUB_PAGE.template).render(
         page_title="Macro & Monetary",
         page_seo_title=HUB_PAGE.seo_title,
@@ -702,11 +1072,11 @@ def build_hub(entries: Sequence[Mapping[str, Any]], *, out_dir: Path,
         active_section="research",
         active_page=Path(HUB_PAGE.output).stem,
         suite_nav=suite_nav(HUB_PAGE.output),
-        sections=_macro_command_sections(entries),
+        sections=sections,
         analyst=_macro_command_analyst(root),
         read=header["read"],
         strip=header["strip"],
-        fragments_ready=False,
+        fragments_ready=bool(fragment_paths),
     )
     html = "\n".join(line.rstrip() for line in html.splitlines()) + "\n"
 

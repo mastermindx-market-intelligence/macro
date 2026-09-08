@@ -394,18 +394,26 @@ def test_the_hub_eyebrow_uses_plain_dates_and_states_the_oldest_print_rule(
 
 def test_overview_offers_visible_workspace_links_and_honest_null_copy(
         built_hub: str) -> None:
-    """M2: Overview content is a next-action list, not a 'being built' stub."""
+    """M2: Overview content is a next-action list, not a 'being built' stub.
+
+    P3 deleted the P1 building sentence (addendum C2/DELTA 3) because The
+    Read already occupies that slot. The directory remains the next-action
+    list, now outside `.mc-figure` as a labelled destination block.
+    """
     match = re.search(
         r'<section class="mc-panel" id="overview".*?(?=<section class="mc-panel")',
         built_hub, re.S)
     assert match
     body = match.group(0)
-    assert "Today&#39;s read is not available yet" in body or "Today's read is not available yet" in body
-    assert "今日读数暂不可用" in body
+    assert "Today&#39;s read is not available yet" not in body
+    assert "Today's read is not available yet" not in body
+    assert "今日读数暂不可用" not in body
     assert "being built" not in body
+    assert 'class="mc-dests-block"' in body
     assert 'class="mc-dests"' in body
     assert body.count('class="mc-dest"') == 14
     assert '<details class="mc-details">' not in body
+    assert 'class="mc-move"' in body
     for page in builder.SUITE_PAGES:
         assert f'href="{page.output}"' in body, page.workspace_id
     authored = built_hub[built_hub.index('<main class="mc-shell"'):]
@@ -422,10 +430,10 @@ def test_overview_offers_visible_workspace_links_and_honest_null_copy(
     assert not re.search(r'<section class="mc-panel"[^>]*tabindex="-1"', authored)
 
 
-def test_p1_shell_does_not_enable_fragment_fetch(
+def test_p3_shell_enables_guarded_fragment_fetch(
         built_hub: str, macro_command_js: str) -> None:
-    """M3: P1 issues no request and does not assign innerHTML unguarded."""
-    assert "data-mc-fragments" not in built_hub
+    """P3 writes fragments; the fetch still requires the authenticity marker."""
+    assert "data-mc-fragments" in built_hub
     assert "data-mc-fragments" in macro_command_js
     assert "hasAttribute" in macro_command_js
     assert "data-mc-fragment" in macro_command_js

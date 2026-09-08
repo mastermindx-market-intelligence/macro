@@ -1,0 +1,127 @@
+{
+  "p1_overview_figures": 1,
+  "p1_move_rows": 5,
+  "p1_dests": 1,
+  "p1_dests_in_figure": false,
+  "dark_figure_bg": "rgb(13, 16, 24)",
+  "dark_panel_bg": "color(srgb 0.0823529 0.0941176 0.12549 / 0.9)",
+  "dark_figure_border": "0px",
+  "dark_move_current": "rgb(200, 208, 220)",
+  "dark_move_prior": "rgb(139, 147, 161)",
+  "dark_row_border": "color(srgb 0.784314 0.815686 0.862745 / 0.08)",
+  "dark_arrival_shadow": "none",
+  "dark_arrival_border": "rgba(0, 0, 0, 0)",
+  "dark_arrival_bg": "color(srgb 0.356863 0.607843 0.941176 / 0.1)",
+  "asof_fs": "13px",
+  "caption_fs": "13px",
+  "asof_lh": "20.15px",
+  "caption_lh": "20.15px",
+  "details_key_fs": "11px",
+  "scroll_w": [
+    1440,
+    1440
+  ],
+  "len_en": 529,
+  "len_zh": 529,
+  "dest_hrefs": [
+    "macro_liquidity_regime.html",
+    "macro_liquidity_central_banks.html",
+    "macro_monetary_policy.html",
+    "macro_rates_curves.html",
+    "macro_inflation_system.html",
+    "macro_growth_real_economy.html",
+    "macro_business_activity.html",
+    "macro_labor_markets.html",
+    "macro_housing_real_estate.html",
+    "macro_consumer_payments.html",
+    "macro_financial_conditions.html",
+    "macro_capital_structure.html",
+    "macro_national_debt_liabilities.html",
+    "macro_trade_flows.html"
+  ],
+  "light_figure_bg": "rgb(255, 255, 255)",
+  "light_panel_bg": "rgb(255, 255, 255)",
+  "light_figure_border": "1px",
+  "light_figure_radius": "0px",
+  "light_move_current": "rgb(46, 57, 80)",
+  "light_move_prior": "rgb(76, 90, 108)",
+  "light_row_border": "color(srgb 0.180392 0.223529 0.313726 / 0.1)",
+  "clearance_dark_en": {
+    "lastBottom": 648.84375,
+    "pillTop": 717.859375,
+    "gap": 69.015625,
+    "pillBg": "rgb(13, 16, 24)",
+    "pad": "140px",
+    "pillAlpha": "rgb(13, 16, 24)"
+  },
+  "clearance_light_zh": {
+    "lastBottom": 649.0625,
+    "pillTop": 717.859375,
+    "gap": 68.796875,
+    "pillBg": "rgb(255, 255, 255)",
+    "pad": "140px",
+    "pillAlpha": "rgb(255, 255, 255)"
+  },
+  "pad_768": "140px",
+  "arrival_hidden_dark": [
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "arrival_hidden_light": [
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "dest_rest_dark": "color(srgb 1 1 1 / 0.06) 0px 1px 0px 0px inset",
+  "dest_hover_dark": {
+    "boxShadow": "color(srgb 0.784314 0.815686 0.862745 / 0.1) 0px 1px 0px 0px inset",
+    "background": "color(srgb 0.784314 0.815686 0.862745 / 0.09)",
+    "border": "rgba(0, 0, 0, 0)"
+  },
+  "dest_rest_light": "none",
+  "dest_hover_light": {
+    "boxShadow": "color(srgb 0.109804 0.141176 0.188235 / 0.1) 0px 1px 2px 0px, color(srgb 0.109804 0.141176 0.188235 / 0.22) 0px 8px 24px -18px",
+    "background": "rgb(255, 255, 255)",
+    "border": "color(srgb 0.148112 0.329526 0.849055 / 0.4668)"
+  },
+  "heading_focus_dark": {
+    "outline": "rgb(200, 208, 220) none 3px",
+    "boxShadow": "none",
+    "bg": "radial-gradient(closest-side, color(srgb 0.356863 0.607843 0.941176 / 0.22), rgba(0, 0, 0, 0))",
+    "sectionOutline": "rgb(200, 208, 220) none 3px",
+    "sectionShadow": "color(srgb 1 1 1 / 0.06) 0px 1px 0px 0px inset"
+  },
+  "heading_focus_light": {
+    "outline": "rgb(46, 57, 80) none 3px",
+    "boxShadow": "none",
+    "bg": "none",
+    "sectionOutline": "rgb(46, 57, 80) none 3px",
+    "sectionShadow": "color(srgb 0.109804 0.141176 0.188235 / 0.1) 0px 1px 2px 0px, color(srgb 0.109804 0.141176 0.188235 / 0.22) 0px 8px 24px -18px"
+  },
+  "money_tabs": {
+    "fundingHidden": true,
+    "banksHidden": false,
+    "selected": "central_banks"
+  },
+  "inflation_foot": true,
+  "empty_dark_bg": "rgba(0, 0, 0, 0)",
+  "empty_light_bg": "color(srgb 0.109804 0.141176 0.188235 / 0.02)",
+  "empty_light_border": "color(srgb 0.109804 0.141176 0.188235 / 0.14)"
+}

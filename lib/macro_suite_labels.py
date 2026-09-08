@@ -259,6 +259,247 @@ METRIC: dict[str, dict[str, str]] = {
     "ofr_fsi": _pair("OFR financial stress", "OFR 金融压力指数"),
     "hy_oas_pct": _pair("High-yield credit spread", "高收益信用利差"),
     "rates_scare_score": _pair("Rates scare score", "利率恐慌评分"),
+    # F01 Macro Command P3 §F.1 — the fifteen ids the hub actually renders.
+    # curve_2s10s / curve_2s10s_level carry the owner suffix on purpose (D10).
+    "glt_monetary_impulse": _pair("Central-bank money impulse", "央行货币投放力度"),
+    "glt_monetary_impulse_z": _pair(
+        "Central-bank money impulse, against its own history",
+        "央行货币投放力度（对比自身历史）"),
+    "glt_usd_funding_impulse": _pair("Dollar funding conditions", "美元融资状况"),
+    "glt_liquidity_breadth": _pair("How widely liquidity is improving", "流动性改善的广度"),
+    "cb_fed_balance_sheet_impulse_13w": _pair(
+        "Fed balance sheet, 13-week change", "美联储资产负债表（13周变化）"),
+    "fed_funds_rate": _pair("Policy rate", "政策利率"),
+    "market_implied_path_12m_bp": _pair(
+        "What markets price for the next year", "市场对未来一年的定价"),
+    "curve_2s10s": _pair(
+        "Two-year to ten-year gap, policy reading", "2年期与10年期利差（政策读数）"),
+    "dots_vs_market_gap_bp": _pair(
+        "Fed's path versus the market's", "美联储路径与市场预期之差"),
+    "us2y_level": _pair("Two-year Treasury yield", "两年期美债收益率"),
+    "us10y_level": _pair("Ten-year Treasury yield", "十年期美债收益率"),
+    "curve_2s10s_level": _pair(
+        "Two-year to ten-year gap, curve reading", "2年期与10年期利差（曲线读数）"),
+    "term_premium_10y_level": _pair(
+        "Extra yield for lending ten years", "持有十年期债券的额外收益"),
+    "inflation_impulse": _pair("Speed of price rises", "物价上涨速度"),
+    "persistence_breadth": _pair("Spread of price rises", "涨价的广度"),
+}
+
+# F01 Macro Command P3 — reviewed panel copy. Keyed (section_id, state_key).
+# Overview stances carry no count (addendum DELTA 16 / C10); the strip owns
+# the only integer. A missing key is a build defect — the builder raises.
+_UNAVAILABLE = _pair(
+    "This desk could not be read today. Nothing is shown rather than yesterday's number dressed as today's.",
+    "本组今天无法读取。我们宁可不显示，也不会把昨天的数字当作今天的。",
+)
+_UNSTATED_GENERIC = _pair(
+    "We publish no single reading for this desk. Read the moves below, then open its workspace.",
+    "本组我们不发布单一读数。请先看下方变化，再进入其工作区。",
+)
+
+STANCES: dict[str, dict[str, dict[str, str]]] = {
+    "overview": {
+        "all_read": _pair(
+            "Every desk reported today. Start with what moved, then open the section you care about.",
+            "今天每个小组都有读数。先看变化，再进入你关心的板块。"),
+        "some_unread": _pair(
+            "Some desks have not reported yet. What moved below is what we do have.",
+            "部分小组今天尚未发布。下方的变化就是我们目前掌握的内容。"),
+    },
+    "money": {
+        "A": _pair(
+            "Money is easy and support is strong. No action needed today; the thing to watch is funding tightening.",
+            "资金宽松且支持强劲。今天无需行动，要盯的是融资是否收紧。"),
+        "B": _pair(
+            "Funding is tight despite strong support. Watch closely — this combination rarely lasts long.",
+            "支持强劲但融资仍偏紧。密切观察 — 这种组合通常持续不久。"),
+        "C": _pair(
+            "Money is easy to borrow, but the cushion behind it is thin. Watch — don't read the calm as safety.",
+            "资金容易借到，但背后的缓冲很薄。观察为主 — 别把平静当成安全。"),
+        "D": _pair(
+            "Funding is tight and the cushion is thin. Read this section closely before anything else.",
+            "融资偏紧且缓冲很薄。请先仔细读本板块，再看其他。"),
+        "unstated": _UNSTATED_GENERIC,
+        "unavailable": _UNAVAILABLE,
+    },
+    "policy": {
+        "unstated": _pair(
+            "No single reading is published here. The gap between the Fed's path and the market's is the line to watch.",
+            "此处不发布单一状态读数。要盯的是美联储路径与市场预期之间的差距。"),
+        "unavailable": _UNAVAILABLE,
+    },
+    "rates": {
+        "unstated": _pair(
+            "No single reading is published here. Watch the two-year and ten-year together, not either one alone.",
+            "此处不发布单一状态读数。请把两年期与十年期一起看，不要只看其一。"),
+        "unavailable": _UNAVAILABLE,
+    },
+    "inflation": {
+        "A": _pair(
+            "The headline is cooling, but the increases underneath are broad and sticky. Watch — don't call it over.",
+            "总体在降温，但底层上涨仍广泛顽固。观察为主，别急着宣布结束。"),
+        "B": _pair(
+            "Prices are rising fast and the rise is broad. Read this section before anything else today.",
+            "物价上涨快且范围广。今天请先读本板块，再看其他。"),
+        "C": _pair(
+            "Prices are cooling and the cooling is broad. No action needed; watch for a re-acceleration.",
+            "物价在降温且范围广。无需行动，留意是否重新加速。"),
+        "D": _pair(
+            "Prices are rising fast but only in a few places. Watch — narrow rises usually fade.",
+            "物价上涨快，但只集中在少数项目。观察为主，范围窄的涨势通常会退去。"),
+        "unstated": _UNSTATED_GENERIC,
+        "unavailable": _UNAVAILABLE,
+    },
+}
+
+PRIMERS: dict[str, dict[str, str]] = {
+    "overview": _pair(
+        "Macro is not one number. Fourteen research desks each publish their own reading, and this page puts them side by side. Nothing here is blended into a score.",
+        "宏观不是一个数字。十四个研究小组各自发布自己的读数，本页把它们并排呈现。这里不会把它们混合成一个分数。"),
+    "money": _pair(
+        "Money here means how easily cash moves through the banking system. When it moves freely, borrowing is cheap and markets are calm; when it jams, everything gets harder.",
+        "这里的「资金」指现金在银行体系中流动的顺畅程度。流动顺畅时借贷便宜、市场平静；一旦堵塞，一切都会变难。"),
+    "policy": _pair(
+        "The policy rate is the price the central bank sets for overnight money. Everything else — mortgages, company loans, savings — is priced off it, so its direction matters more than its level.",
+        "政策利率是央行为隔夜资金设定的价格。房贷、企业贷款、存款利率都以它为基准，所以它的方向比水平更重要。"),
+    "rates": _pair(
+        "A yield curve is just the government's borrowing cost at different lengths of time, drawn side by side. When short costs more than long, lenders are being paid to wait — which is unusual.",
+        "收益率曲线就是把政府在不同期限上的借贷成本并排画出来。当短端高于长端时，出借人被支付以等待 — 这并不寻常。"),
+    "inflation": _pair(
+        "Inflation is two questions, not one: how fast prices are rising right now, and how many things are rising together. A fast rise in a few items fades; a slow rise in everything does not.",
+        "通胀其实是两个问题：当前物价上涨有多快，以及有多少东西在一起涨。少数商品的快速上涨会退去，而所有东西一起慢慢涨则不会。"),
+}
+
+CAPTIONS: dict[str, dict[str, str]] = {
+    "overview": _pair(
+        "Each row is one desk's own measurement, before and after. A flat change means measured and unchanged.",
+        "每一行都是某个小组自己的读数，前后对照。变化为零表示已测量且未变动。"),
+    "money": _pair(
+        "Each row shows the last two readings. Lower funding pressure means money is easier to get.",
+        "每行显示最近两次读数。融资压力越低，表示资金越容易获得。"),
+    "policy": _pair(
+        "Each row shows the last two readings. A rising market path means markets expect higher rates.",
+        "每行显示最近两次读数。市场预期路径上行，表示市场预计利率更高。"),
+    "rates": _pair(
+        "Each row shows the last two readings. The gap between two-year and ten-year is the curve's shape.",
+        "每行显示最近两次读数。两年期与十年期之间的差就是曲线的形状。"),
+    "inflation": _pair(
+        "Each row shows the last two readings. Higher means faster or more widespread price rises.",
+        "每行显示最近两次读数。数值更高表示涨价更快或更广泛。"),
+}
+
+WATCHING: dict[str, tuple[dict[str, str], ...]] = {
+    "overview": (
+        _pair("If a desk stops publishing, its row disappears here before anything else changes.",
+              "若某小组停止发布，其行会先于其他变化在此消失。"),
+        _pair("If several desks move the same way on one day, the read is broadening.",
+              "若多个小组同日朝同一方向变动，说明读数正在扩散。"),
+    ),
+    "money": (
+        _pair("If the overnight buffer stays at its floor, new government borrowing drains bank reserves.",
+              "若隔夜缓冲一直贴在下限，新增政府举债将直接消耗银行准备金。"),
+        _pair("If funding pressure rises while support stays weak, the calm has run out.",
+              "若融资压力上升而支持仍然疲弱，说明平静已经结束。"),
+    ),
+    "policy": (
+        _pair("If the market's path and the Fed's own path keep separating, one of them will move.",
+              "若市场预期路径与美联储自身路径持续背离，其中一方终将调整。"),
+        _pair("If the policy rate moves before the market path does, the change was not priced.",
+              "若政策利率先于市场预期路径变动，说明这次变化并未被计入价格。"),
+    ),
+    "rates": (
+        _pair("If the two-year falls faster than the ten-year, markets are pricing cuts.",
+              "若两年期比十年期下行更快，说明市场在为降息定价。"),
+        _pair("If the gap turns negative again, short money is costing more than long.",
+              "若该差值再度转负，表示短期资金比长期资金更贵。"),
+    ),
+    "inflation": (
+        _pair("If the broad measure keeps rising while the headline falls, the cooling is not finished.",
+              "若广度指标继续上行而总体读数下行，说明降温尚未完成。"),
+        _pair("If both fall together, the cooling has reached the stickier part of the basket.",
+              "若两者同时下行，说明降温已触及篮子中较顽固的部分。"),
+    ),
+}
+
+# Derived lines (pin §I.6) — format strings, never reviewed variants.
+COUNT = {
+    "overview": _pair(
+        "{shown} of {total} compared readings, in reading order — not a ranking.",
+        "{total} 项可比读数中的 {shown} 项，按阅读顺序排列 — 并非重要性排序。"),
+    "section": _pair(
+        "{n} readings compared against the previous publication.",
+        "与上一次发布相比，共对比 {n} 项读数。"),
+    "remaining": _pair(
+        "{remaining} more changes are on the workspace pages.",
+        "还有 {remaining} 项变化，可在各工作区页面查看。"),
+}
+
+BOUNDARY_LINE = _pair(
+    "Closest to a different reading: {axis}, about {distance} away.",
+    "距离另一种读数最近的是：{axis}，约差 {distance}。",
+)
+
+# Spec §7 empty-state copy, verbatim. Markup + firing conditions are pin §G.
+EMPTY_STATES: dict[str, dict[str, Any]] = {
+    "e1": {
+        "id": "e1",
+        "title": _pair("We don't have this reading yet", "该读数暂不可用"),
+        "why": _pair(
+            "The source this section is built from has not published a dated reading.",
+            "本板块所依据的数据源尚未发布带日期的读数。"),
+        "unlock": _pair(
+            "It appears here the first time that source publishes.",
+            "该数据源首次发布后即会出现在此处。"),
+        "next": _pair("Checked again in tonight's update.", "今晚的更新会再次检查。"),
+    },
+    "e2": {
+        "id": "e2",
+        "title": _pair("Today's number didn't arrive", "今天的数据未能送达"),
+        "why": _pair(
+            "The data provider did not deliver in time. We show nothing rather than yesterday's number dressed as today's.",
+            "数据提供方未能及时送达。我们宁可不显示，也不会把昨天的数字当作今天的。"),
+        "unlock": _pair(
+            "It returns as soon as the provider publishes; checked every night.",
+            "数据源恢复发布后即会显示；每晚检查。"),
+        "next": None,
+    },
+    "e3": {
+        "id": "e3",
+        "title": _pair("We can't show the change yet", "暂时无法显示变化"),
+        "why": _pair(
+            "There is no earlier reading measured the same way, so any arrow would be invented.",
+            "不存在以相同方法测得的历史读数，任何箭头都会是臆造的。"),
+        "next": _pair(
+            "The first comparable reading appears after the next publication.",
+            "下一次发布后将出现首个可对比读数。"),
+    },
+    "e4": {
+        "id": "e4",
+        "title": _pair("Not open yet", "尚未开放"),
+        "why": _pair(
+            "This part is built but not switched on for customers.",
+            "该功能已建成，但尚未对客户开放。"),
+        "unlock": _pair(
+            "It appears here when it is turned on. There is nothing you need to do.",
+            "开放后会自动出现，无需操作。"),
+    },
+    "e5": {
+        "id": "e5",
+        "title": _pair("This section didn't load", "本板块未能载入"),
+        "why": _pair("The page couldn't fetch it just now.", "页面此刻未能取回该板块。"),
+        "cta_label": _pair(
+            "Reload the page, or open the full workspace →",
+            "请重新载入页面，或打开完整工作区 →"),
+    },
+    "e6": {
+        "id": "e6",
+        "title": _pair("Included in a higher plan", "包含于更高级别方案"),
+        "why": _pair("This section is part of {plan}.", "本板块属于{plan}。"),
+        "unlock": _pair("Upgrade to see it", "升级后即可查看"),
+        "cta_href": "plans.html",
+        "cta_label": _pair("Upgrade to see it", "升级后即可查看"),
+    },
 }
 
 # --- implication horizons ----------------------------------------------------

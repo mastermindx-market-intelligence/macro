@@ -45,6 +45,8 @@ SUBTABBED_SECTIONS = ("money", "growth", "credit")
 _TEMPLATE_NAMES = (
     "macro_monetary.html.j2",
     "_macro_command_macros.html.j2",
+    "_macro_command_figures.html.j2",
+    "_macro_command_fragment.html.j2",
     "_macro_suite_nav.html.j2",
     "macro_liquidity_regime.html.j2",
     "macro_growth_real_economy.html.j2",
@@ -282,12 +284,19 @@ def test_coverage_absence_is_typed_and_has_screen_reader_text(hub: str) -> None:
         or "Today's read is not available yet" in authored
         or "Today&#39;s read is not available yet" in authored
         or "See each workspace below" in authored
+        or "Some desks have not reported yet" in authored
+        or "Every desk reported today" in authored
+        or "This section didn't load" in authored
+        or "This section didn&#39;t load" in authored
     )
     assert (
         "暂无带日期的读数" in authored
         or "今日读数不完整" in authored
         or "今日读数暂不可用" in authored
         or "各工作区下方各自展示" in authored
+        or "部分小组今天尚未发布" in authored
+        or "今天每个小组都有读数" in authored
+        or "本板块未能载入" in authored
     )
     for match in re.finditer(r'<span class="mq-dash"[^>]*>—</span>(.{0,80})', authored, re.S):
         assert 'class="mq-sr"' in match.group(1), \

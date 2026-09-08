@@ -1041,6 +1041,25 @@ def degraded_view(*, workspace_id: str, title: Mapping[str, str],
 #: How many change lines the hub prints before it defers to the workspaces.
 HUB_CHANGE_LIMIT = 5
 
+_EN_CARDINALS = (
+    "Zero", "One", "Two", "Three", "Four", "Five", "Six",
+    "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve",
+)
+
+
+def _rail_section_count() -> int:
+    """The customer-facing rail length — derive, never hardcode fourteen."""
+    from scripts.build_macro_suite_pages import SECTIONS  # noqa: PLC0415
+    return len(SECTIONS)
+
+
+def _deck_copy(section_count: int) -> dict[str, str]:
+    word = _EN_CARDINALS[section_count] if 0 <= section_count < len(_EN_CARDINALS) else str(section_count)
+    return _pair(
+        f"{word} research sections, one current read.",
+        f"{section_count}个研究板块，一个当前读数。",
+    )
+
 #: Freshness tokens that mean a reader must not treat the row as settled.
 _ATTENTION_FRESHNESS = frozenset({
     "SOURCE_FAILED", "STALE_SOURCE", "RIGHTS_BLOCKED", "SIMULATED",
@@ -1187,6 +1206,7 @@ def build_hub_view(entries: Sequence[Mapping[str, Any]], *,
                 "workspace_id": entry["workspace_id"],
                 "workspace_title": dict(entry["title"]),
                 "href": entry["output"],
+                "metric_id": delta.get("metric_id"),
                 "label": delta.get("label"),
                 "prior": delta.get("prior"),
                 "current": delta.get("current"),
@@ -1209,8 +1229,7 @@ def build_hub_view(entries: Sequence[Mapping[str, Any]], *,
         "page_built_at": page_built_at,
         "kicker": _pair("Macro & Monetary", "宏观与货币"),
         "title": _pair("Macro & Monetary", "宏观与货币"),
-        "deck": _pair("Fourteen research workspaces, one current read.",
-                      "十四个研究工作区，一个当前读数。"),
+        "deck": _deck_copy(_rail_section_count()),
         "as_of": {
             # The suite is only as current as its oldest accepted print.
             "effective_date": min(effective_dates) if effective_dates else None,
