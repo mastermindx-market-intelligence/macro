@@ -292,3 +292,120 @@ def test_no_module_level_io_at_import_time():
         assert not isinstance(node, (ast.Expr, ast.With)) or isinstance(
             getattr(node, "value", None), ast.Constant
         ), "module-level statement performs work at import time"
+
+
+# Raw builder prices are evidence, never Prophet rows or ranking outputs.
+@pytest.fixture
+def raw_universe_prices(monkeypatch):
+    import pandas as pd
+    from engine import china_intel_hub as hub
+
+    dates = pd.bdate_range(end="2026-09-07", periods=140)
+    prices = pd.Series([100.0 + i / 10 for i in range(140)], index=dates)
+    bench = pd.Series(100.0, index=dates, name="bench")
+    monkeypatch.setattr(hub, "_load_closes_and_benchmark", lambda: (pd.DataFrame(), bench))
+    monkeypatch.setattr(hub, "_load_per_stock_close", lambda ticker: None)
+    return prices, bench
+
+
+def _interest_with_raw(prices, **kwargs):
+    return CII.build_interest_map(
+        ["600038.SS"],
+        altdata_by={"600038.SS": {"convergence": 0.6, "side": "accumulate"}},
+        radar_by={}, special_by={}, raw_closes_by={"600038.SS": prices},
+        as_of=kwargs.get("as_of", "2026-09-07"),
+    )["600038.SS"]
+
+
+def test_builder_only_raw_prices_restore_real_interest(raw_universe_prices):
+    prices, _ = raw_universe_prices
+    record = _interest_with_raw(prices)
+    assert record["basis"] == CII.BASIS_MEASURED
+    assert record["score"] > 0
+
+
+def test_raw_price_repair_uses_unchanged_trajectory_and_score(raw_universe_prices):
+    from engine import china_intel_hub as hub
+    prices, bench = raw_universe_prices
+    expected = CII.interest_score(
+        altdata_row={"convergence": 0.6, "side": "accumulate"},
+        traj=hub._price_trajectory("600038.SS", prices.to_frame("600038.SS"), bench))
+    assert _interest_with_raw(prices) == expected
+
+
+@pytest.mark.parametrize("defect", [
+    "stale", "short", "zero", "negative", "infinite", "text", "boolean",
+    "duplicate", "numeric_index", "out_of_order", "wrong_ticker",
+])
+def test_bad_raw_prices_stay_unavailable(raw_universe_prices, defect):
+    import pandas as pd
+    prices, _ = raw_universe_prices
+    bad = prices.copy()
+    if defect == "stale": bad = bad.iloc[:-1]
+    elif defect == "short": bad = bad.iloc[-20:]
+    elif defect == "zero": bad.iloc[-1] = 0
+    elif defect == "negative": bad.iloc[-1] = -1
+    elif defect == "infinite": bad.iloc[-1] = float("inf")
+    elif defect == "text": bad = bad.astype(object); bad.iloc[-1] = "invalid"
+    elif defect == "boolean": bad = bad.astype(object); bad.iloc[-1] = True
+    elif defect == "duplicate": bad = pd.concat([bad, bad.iloc[-1:]])
+    elif defect == "numeric_index": bad.index = range(len(bad))
+    elif defect == "out_of_order": bad = bad.iloc[::-1]
+    elif defect == "wrong_ticker":
+        result = CII.build_interest_map(
+            ["600038.SS"], altdata_by={"600038.SS": {"convergence": 0.6}},
+            radar_by={}, special_by={}, raw_closes_by={"OTHER.SS": bad},
+            as_of="2026-09-07")
+        assert result["600038.SS"]["basis"] == CII.BASIS_FALLBACK
+        return
+    record = _interest_with_raw(bad)
+    assert record["basis"] == CII.BASIS_FALLBACK
+    assert record["score"] is None
+
+
+@pytest.mark.parametrize("cut", [None, "bad", "2026-09-07T23:59:59", 1788825600])
+def test_raw_prices_require_explicit_session_cut(raw_universe_prices, cut):
+    record = _interest_with_raw(raw_universe_prices[0], as_of=cut)
+    assert record["basis"] == CII.BASIS_FALLBACK
+
+
+def test_future_prices_cannot_change_past_interest(raw_universe_prices):
+    import pandas as pd
+    prices, _ = raw_universe_prices
+    later = pd.concat([prices, pd.Series([9000.0], index=[pd.Timestamp("2026-09-08")])])
+    before = prices.copy(deep=True)
+    assert _interest_with_raw(later) == _interest_with_raw(prices)
+    pd.testing.assert_series_equal(prices, before)
+
+
+def test_raw_prices_do_not_replace_existing_covered_inputs(raw_universe_prices, monkeypatch):
+    import pandas as pd
+    from engine import china_intel_hub as hub
+    prices, bench = raw_universe_prices
+    monkeypatch.setattr(hub, "_load_closes_and_benchmark",
+                        lambda: (prices.to_frame("600038.SS"), bench))
+    expected = CII.build_interest_map(
+        ["600038.SS"], altdata_by={"600038.SS": {"convergence": 0.6, "side": "accumulate"}},
+        radar_by={}, special_by={})
+    replacement = pd.Series(5000.0, index=prices.index)
+    assert _interest_with_raw(replacement) == expected["600038.SS"]
+
+
+def test_missing_desks_cannot_gain_interest_from_raw_prices(raw_universe_prices):
+    record = CII.build_interest_map(
+        ["600038.SS"], altdata_by={}, radar_by={}, special_by={},
+        raw_closes_by={"600038.SS": raw_universe_prices[0]}, as_of="2026-09-07")
+    assert record["600038.SS"]["unavailable_reason"] == "no_desk_evidence"
+
+
+def test_real_builder_supplies_raw_universe_and_session_cut():
+    path = Path(CII.__file__).parents[1] / "scripts" / "build_china_library.py"
+    tree = ast.parse(path.read_text(encoding="utf-8"))
+    calls = [n for n in ast.walk(tree) if isinstance(n, ast.Call)
+             and isinstance(n.func, ast.Attribute) and n.func.attr == "build_interest_map"]
+    assert len(calls) == 1
+    kwargs = {k.arg: k.value for k in calls[0].keywords}
+    assert "raw_closes_by" in kwargs and "as_of" in kwargs
+    assert isinstance(kwargs["raw_closes_by"], ast.DictComp)
+    assert ast.unparse(kwargs["raw_closes_by"].generators[0].iter) == "uni"
+    assert ast.unparse(kwargs["as_of"]) == "_board_asof"

@@ -406,6 +406,8 @@ def build_interest_map(
     radar_by: Mapping[str, Mapping[str, Any]] | None = None,
     special_by: Mapping[str, Mapping[str, Any]] | None = None,
     traj_by: Mapping[str, Mapping[str, Any]] | None = None,
+    raw_closes_by: Mapping[str, Any] | None = None,
+    as_of: str | None = None,
 ) -> dict[str, dict]:
     """Score every requested ticker.  Returns ``{TICKER: interest record}``.
 
@@ -414,6 +416,13 @@ def build_interest_map(
     ``None`` is loaded from its upstream producer; the price plane is loaded only for
     names a desk actually saw, because a name with no desk evidence falls back to v3
     regardless of what its price did.
+
+    ``raw_closes_by`` may supply the builder's already-loaded raw daily series
+    for names absent from both existing price readers. ``as_of`` is required for
+    that fallback only; it is not a historical-replay guarantee for the other
+    upstream desks. Explicit ``traj_by`` retains precedence over all loaders.
+    Formula and coverage law are unchanged, but repairing a missing input can
+    activate intelligence ordering globally: release requires serving review.
 
     Never raises: a total evidence failure returns every ticker as ``fallback_v3``,
     which orders the board exactly as v3 would have.
@@ -429,7 +438,7 @@ def build_interest_map(
 
     covered = [t for t in wanted if t in altdata_by or t in radar_by]
     if traj_by is None:
-        traj_by = _trajectories(covered)
+        traj_by = _trajectories(covered, raw_closes_by=raw_closes_by, as_of=as_of)
 
     out: dict[str, dict] = {}
     for ticker in wanted:
@@ -442,13 +451,16 @@ def build_interest_map(
     return out
 
 
-def _trajectories(tickers: Iterable[str]) -> dict[str, dict]:
+def _trajectories(
+    tickers: Iterable[str], *, raw_closes_by: Mapping[str, Any] | None = None,
+    as_of: str | None = None,
+) -> dict[str, dict]:
     """Per-name CSI300-relative price trajectories, via the hub's price reader.
 
     Measured 2026-08-15: ~0.7 ms/name over the CN close panel, so the full ~1.7k
-    candidate set costs ~1.2s on the render path.  ``{}`` on any failure — every
-    affected name then takes the ``no_edge_evidence`` fallback rather than a
-    manufactured edge.
+    candidate set costs ~1.2s on the render path. Missing reader inputs may use
+    a validated raw builder series; existing trajectories are never replaced.
+    ``{}`` on an upstream failure leaves typed missingness, never a synthetic edge.
     """
     tickers = list(tickers)
     if not tickers:
@@ -459,6 +471,11 @@ def _trajectories(tickers: Iterable[str]) -> dict[str, dict]:
         out: dict[str, dict] = {}
         for ticker in tickers:
             traj = hub._price_trajectory(ticker, closes, bench)
+            if not traj and isinstance(raw_closes_by, Mapping):
+                raw = _raw_close_at_cut(raw_closes_by.get(ticker), as_of)
+                if raw is not None:
+                    # Reuse the owner calculation; only its missing input is supplied.
+                    traj = hub._price_trajectory(ticker, raw.to_frame(ticker), bench)
             if traj:
                 out[ticker] = traj
         return out
@@ -495,3 +512,46 @@ def coverage(interest_map: Mapping[str, Mapping[str, Any]]) -> dict[str, Any]:
         "score_median": scores[len(scores) // 2] if scores else None,
         "score_max": scores[-1] if scores else None,
     }
+
+
+def _raw_close_at_cut(series: Any, as_of: str | None):
+    """Validate a missing reader input from the builder's raw daily universe.
+
+    Existing search/deep trajectories retain precedence. This does not read a
+    board, infer a price, or create a price store. A session cut is mandatory;
+    future bars are excluded and the last observed close must match that cut.
+    Naive daily dates and timezone-stamped session labels follow the builder's
+    _last_session convention: strip the timezone, not shift the economic date.
+    """
+    from datetime import date
+    import pandas as pd
+
+    try:
+        if not isinstance(as_of, str) or len(as_of) != 10:
+            return None
+        cut = pd.Timestamp(date.fromisoformat(as_of))
+        if not isinstance(series, pd.Series) or not isinstance(series.index, pd.DatetimeIndex):
+            return None
+        prices = series.copy(deep=True)
+        index = prices.index
+        if index.hasnans:
+            return None
+        if index.tz is not None:
+            index = index.tz_localize(None)
+        prices.index = index.normalize()
+        prices = prices.loc[prices.index <= cut]
+        if not prices.index.is_unique or not prices.index.is_monotonic_increasing:
+            return None
+        # A union-calendar null is absence, not a synthetic zero price.
+        prices = prices.dropna()
+        if len(prices) < 21 or prices.index[-1] != cut:
+            return None
+        if any(isinstance(value, bool) for value in prices):
+            return None
+        prices = pd.to_numeric(prices, errors="raise")
+        if not all(math.isfinite(float(value)) and float(value) > 0 for value in prices):
+            return None
+        return prices
+    except (TypeError, ValueError, OverflowError):
+        # Existing interest_score returns typed no_edge_evidence for this case.
+        return None
