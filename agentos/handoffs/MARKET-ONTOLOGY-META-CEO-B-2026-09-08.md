@@ -22,6 +22,9 @@ changed:
   - path: agentos/handoffs/MARKET-ONTOLOGY-META-CEO-B-2026-09-08.md
     what: "This seat-transfer record."
 verified:
+  - claim: "Terminal #514 merged as cff58ee8 (22:14Z 2026-09-08) and Supabase migrations 0014 then 0015 are APPLIED in production in ledger order."
+    command: "python3 ddl/raw_apply.py 0014_tenancy_foundation.sql receipt_0014.json 0014_tenancy_foundation; python3 ddl/raw_apply.py 0015_team_roles_invitations.sql receipt_0015.json 0015_team_roles_invitations (SQL fetched from origin/master via the contents API; the merge commit carries both files + RESERVATIONS.json)"
+    result: "0014: apply_status 201, tables teams/team_members/team_invites present with RLS, 5/5 indexes, 8/8 policies, 3/3 functions, MISSING=[]; 0015: 201, workspace_settings present, 1/1 index, 4/4 policies, accept_team_invite present, MISSING=[]; receipt comment posted on terminal#514; receipts contain no ref/token shapes"
   - claim: "Four concluded-green half-B macro PRs were squash-merged by hand at 19:35Z and are on origin/main: #6953 records T17 (be460cd7), #6961 B-A-F04-K1 docket (5dca9478), #6926 B-F09-6 commodity coverage matrix + policy chip (8e3bb1a4), #6919 B-F13-2 specs 057/058 (8ec42a8e)."
     command: "gh pr merge <n> --squash; gh pr list --state all --search '6953 6961 6963 6964 6965 6926 6919' --json number,state,mergeCommit; git cat-file -e origin/main:<a file from each PR>"
     result: "4 MERGED with the shas above; each PR's files present on origin/main b166c1f4. #6926 is code+templates: render.yml runs 34269887088 (8e3bb1a4) and 34269924888 (ad021359) were queued at 19:36Z; the successor confirms the covering render concludes success."
@@ -46,7 +49,7 @@ unresolved:
   - "macro#6981 (B-REC-2, CI-authority edit): lane m6981_r4 is resolving the legacy-jobs.yml conflict; on its PASS verdict post a ratification comment naming the new head, keep merge-on-green, wait for concluded checks, merge by hand on green. Merged head clears the Stop guard only via a green main ci.yml run on a descendant (authority_changed)."
   - "Consolidation PR (lane m_bb4_consol, branch claude/mo-b-bb4-docket-consolidation-20260908): on PASS, mark ready, arm merge-on-green, merge on concluded green, then CLOSE #6963 #6964 #6965 #6924 as SUPERSEDED with a comment quoting the per-file 2-dot proof (git diff origin/<pr-branch> HEAD -- <file> empty). Never merge those four individually."
   - "Red half-B macro PRs still owed a heal round each (classify against main first; a pack red that main's newest green run passed is yours): #6962 pack-10; #6959 pack-5; #6921 pack-7; #6920 pack-5; #6918 pack-7+pack-10; #6906 pack-7; #6905 pack-9; contract-delta on #6958 #6925(also DIRTY) #6909 #6904. Pending (CI queue): #6971 #6966 #6960 #6957. Drafts not armed: #6927 (B-F09-4), #6907 (B-F08-1a)."
-  - "Production DDL: after Terminal #514 merges run terminal_reviews/_post_merge.sh 514 (deploy + data-dpl-id live proof + readback), fetch supabase/migrations/0014_tenancy_foundation.sql and 0015_team_roles_invitations.sql from origin/master, apply 0014 THEN 0015 with ddl/raw_apply.py <sql> <receipt.json> <label> (curl user-agent; credentials are read from ~/Documents/Cluade/charting-app/.env, never printed), post a receipt comment on #514, then launch ext/args_t527_r3.json (merge #527 onto master + RESERVATIONS 0016 taken); after #527 merges apply 0016 the same way. Receipt files go in the next records PR."
+  - "Production DDL: 0014 and 0015 APPLIED 22:27Z 2026-09-08 (receipts ddl/receipt_0014.json, receipt_0015.json in the kit; receipt comment on terminal#514). Remaining: after Terminal #527 merges (lane t527_r3 launched detached 22:29Z: merge onto master + RESERVATIONS 0016 taken), run _post_merge.sh 527 then apply 0016 with ddl/raw_apply.py the same way and post its receipt; the three redacted receipt files go in the next records PR."
   - "Owed later (unchanged from the 09-07 record): spec items 4-6/11/12 when #6958/#6963/#6971/#6905 merge; F07 follow-on (user-adjustable assumptions, design lane) after #6905; B-F06-3 after #6920 + #6831; B-PLAT-5 after the first tests/test_market_ontology_*.py on main; plain-language follow-ups listed there."
   - "Chairman decisions pending: add ci-linux runners or throttle main baselines; arm the fleet worktree GC; ban isolation:'worktree' spawns; remote Desktop Commander search scope."
 next_actions:
@@ -116,8 +119,8 @@ everything else while the host is up, but it is not durable.
 | macro | #6958 #6925 #6909 #6904 | see PR | merge-blocked, contract-delta | wire the new suite into legacy-jobs.yml (no waiver) |
 | macro | #6971 #6966 #6960 #6957 | see PR | armed, checks pending | wait; watcher reports |
 | macro | #6927 #6907 | see PR | DRAFT, not armed | leave until their packets are re-commissioned |
-| terminal | #514 B-F12-1 tenancy (0014+0015 SQL) | refreshed 19:34Z | auto-merge armed | on merge: deploy, live proof, DDL 0014 then 0015, launch args_t527_r3 |
-| terminal | #527 B-F12-4 (0016) | 33030ee4 | DIRTY, waits #514 | pre-written round args_t527_r3.json |
+| terminal | #514 B-F12-1 tenancy (0014+0015 SQL) | MERGED cff58ee8 22:14Z | DDL 0014+0015 applied 22:27Z | confirm the deploy log _deploy_514.log shows data-dpl-id = master |
+| terminal | #527 B-F12-4 (0016) | 33030ee4 | DIRTY; lane t527_r3 running | ratify on PASS; on merge: deploy + DDL 0016 |
 | terminal | #501 #496 #490 (foreign, armed) | see PR | BLOCKED on checks | post-merge chain + readback when they merge |
 
 ## Operating pattern the successor inherits
