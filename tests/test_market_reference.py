@@ -585,23 +585,24 @@ def test_unknown_anchor_state_and_search_input_are_server_rendered(rendered_html
 # 5 · A-MO-W2-1 coverage ledger + owner block + dashboard chips
 # ---------------------------------------------------------------------------
 
-# Frozen census of faces this wave accounted for. A silent drop (or an
-# undeclared extra) fails the floor-pin rather than vanishing from the page.
-DOCUMENTED_COVERAGE_ELEMENTS = (
-    "Prophet Stock Signals Board",
-    "Sector Act-Now Board",
-    "Regime Badge",
-    "Posture Chip",
+# Look-up chips in templates/dashboard.html.j2 are the dashboard face census
+# ("exactly the faces this rack renders"). A new chip without a library home
+# fails test_dashboard_faces_match_template_and_registry; do not re-pin a
+# hand-maintained tuple here — derive from the template.
+_LOOKUP_CHIP_HREF_RE = re.compile(
+    r'class="mx5-deep-chip mx5-ref-chip" href="reference\.html#([a-z0-9-]+)"'
 )
 
-DASHBOARD_LOOKUP_IDS = (
-    "market-state-score",
-    "regime-quadrant",
-    "transition-state",
-    "risk-radar",
-    "evidence-matrix",
-    "sector-heat",
-)
+
+def _dashboard_lookup_ids_from_template() -> tuple[str, ...]:
+    """Source of truth for dashboard faces: the Look-up row in the template."""
+    text = (REPO / "templates" / "dashboard.html.j2").read_text(encoding="utf-8")
+    return tuple(_LOOKUP_CHIP_HREF_RE.findall(text))
+
+
+def _coverage_element_ens_from_yaml(raw: dict) -> tuple[str, ...]:
+    """Source of truth for the coverage ledger: YAML coverage_exceptions."""
+    return tuple(row["element_en"] for row in raw["coverage_exceptions"])
 
 US_STOCKS_OWNER_ANCHORS = (
     "action-board",
@@ -625,22 +626,27 @@ def _coverage_exc(**overrides) -> dict:
     return row
 
 
-def test_coverage_floor_pins_documented_elements(real_coverage):
-    """Lead-line census: the committed ledger lists exactly the documented
-    faces, so an undocumented drop cannot hide behind a shrinking count."""
+def test_coverage_floor_pins_documented_elements(real_coverage, real_raw):
+    """Two sources that must agree on the ledger census:
+    1. config/market_reference.yml coverage_exceptions (page source)
+    2. the rendered coverage view-model
+    A new YAML row without a render, or a render without a YAML row, fails.
+    Count is derived from the YAML, not a hand-maintained floor."""
+    yaml_names = _coverage_element_ens_from_yaml(real_raw)
     names = tuple(c["element_en"] for c in real_coverage)
-    assert names == DOCUMENTED_COVERAGE_ELEMENTS
-    assert len(real_coverage) == 4
+    assert names == yaml_names
+    assert len(real_coverage) == len(yaml_names)
 
 
 def test_every_documented_element_is_accounted_for(real_raw, real_entries, real_coverage):
     """Every coverage_exceptions row is either not_an_indicator or covered_by
     a real registry id; no documented face is silently absent."""
     raw_list = real_raw["coverage_exceptions"]
-    assert len(raw_list) == len(real_coverage) == 4
+    yaml_names = _coverage_element_ens_from_yaml(real_raw)
+    assert len(raw_list) == len(real_coverage) == len(yaml_names)
     known = {e["id"] for e in real_entries}
     for row in raw_list:
-        assert row["element_en"] in DOCUMENTED_COVERAGE_ELEMENTS
+        assert row["element_en"] in yaml_names
         assert (row.get("element_zh") or "").strip()
         assert row["state"] in ("not_an_indicator", "covered_by")
         for sid in row.get("see_ids") or []:
@@ -838,12 +844,27 @@ def test_owner_unlinked_flag_is_true_iff_owner_ref_has_no_fragment(real_entries)
 
 
 def test_dashboard_lookup_chip_ids_resolve(real_entries):
-    text = (REPO / "templates" / "dashboard.html.j2").read_text(encoding="utf-8")
-    ids = re.findall(r'class="mx5-deep-chip mx5-ref-chip" href="reference\.html#([a-z0-9-]+)"', text)
+    ids = _dashboard_lookup_ids_from_template()
     known = {e["id"] for e in real_entries}
-    assert tuple(ids) == DASHBOARD_LOOKUP_IDS
+    assert ids, "dashboard template Look-up row is the face census"
     missing = [i for i in ids if i not in known]
     assert missing == [], f"Look-up chips point at unknown registry ids: {missing}"
+
+
+def test_dashboard_faces_match_template_and_registry(real_entries):
+    """Dashboard face count is derived from templates/dashboard.html.j2
+    (Look-up row) and must agree with config/market_reference.yml entries.
+    A new face added to the template without a library home fails here."""
+    chip_ids = _dashboard_lookup_ids_from_template()
+    known = {e["id"] for e in real_entries}
+    assert chip_ids, "empty Look-up row is not a census"
+    assert len(chip_ids) == len(set(chip_ids)), "Look-up chips must be unique"
+    missing = [i for i in chip_ids if i not in known]
+    assert missing == [], (
+        "templates/dashboard.html.j2 Look-up chips and "
+        "config/market_reference.yml entries must agree; "
+        f"chips missing from the registry: {missing}"
+    )
 
 
 def test_us_stocks_owner_anchors_are_allowlisted_and_live():
@@ -866,3 +887,14 @@ def test_sue_label_leads_with_plain_words(real_entries, rendered_html):
     assert "SUE Earnings Surprise" not in rendered_html
     assert "Earnings Surprise (SUE)" in rendered_html
     assert "盈余惊喜 (SUE)" in rendered_html
+
+
+def test_alpha_label_leads_with_plain_words(real_entries, rendered_html):
+    """MINOR M1: customer-facing Alpha copy leads with the meaning, not α."""
+    alpha = next(e for e in real_entries if e["id"] == "alpha-chip")
+    assert alpha["label_en"] == "Excess return vs. market (alpha)"
+    assert alpha["label_zh"] == "相对市场的超额收益（Alpha）"
+    assert "Alpha (α) Chip" not in rendered_html
+    assert "Alpha (α) 标签" not in rendered_html
+    assert "Excess return vs. market (alpha)" in rendered_html
+    assert "相对市场的超额收益（Alpha）" in rendered_html

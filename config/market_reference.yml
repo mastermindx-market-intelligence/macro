@@ -1580,8 +1580,8 @@ entries:
   - id: alpha-chip
     kind: indicator
     family: cross-asset-basics
-    label_en: Alpha (α) Chip
-    label_zh: Alpha (α) 标签
+    label_en: Excess return vs. market (alpha)
+    label_zh: 相对市场的超额收益（Alpha）
     aliases_en: []
     aliases_zh: []
     short_definition_en: >
