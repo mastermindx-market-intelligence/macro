@@ -161,6 +161,16 @@ def test_empty_states_have_no_repeated_visible_string() -> None:
                 empty_id, lang, parser.texts)
 
 
+def test_empty_card_hides_title_when_the_panel_already_has_the_stance() -> None:
+    """M6: one null voice per section — stance line OR card title, not both."""
+    src = (ROOT / "templates" / "_macro_command_fragment.html.j2").read_text(
+        encoding="utf-8")
+    assert "fig.empty(s.empty, hide_title=true)" in src
+    assert "fig.empty(tab.empty, hide_title=true)" in src
+    isolated = _render_empty(builder._empty_state("e2"))
+    assert "Today's number didn't arrive" in isolated
+
+
 def test_e1_stance_and_slot_are_the_same_sentence() -> None:
     """MINOR-E6: E1's title lives on the card; stance is not a second copy."""
     empty = builder._empty_state("e1")

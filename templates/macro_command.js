@@ -246,7 +246,7 @@
           || (lang === 'zh' ? '宏观指挥台' : 'Macro Command');
       }
       if (window.MMBrain && typeof window.MMBrain.explain === 'function') {
-        window.MMBrain.explain(label, label);
+        window.MMBrain.explain(sectionId, label);
         return;
       }
       if (window.MMBrain && typeof window.MMBrain.open === 'function') {

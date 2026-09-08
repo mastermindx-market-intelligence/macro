@@ -33,6 +33,7 @@ evidence:
   - "Frozen spec §5 row 62 — exact Plain EN/ZH footer; 'never tells you what to do' dropped"
   - "templates/macro_monetary.html.j2 — composition footer uses row 62's exact strings"
   - "DNR:KILL-FUSED-COMPOSITE, DNR:KILL-REGIME-SCORECARD — no score, no ranking"
+  - "Spec §8 amendment (Meta-CEO A 2026-09-08): at ≤768 the `.mc-analyst` control is the last chip of the collapsed horizontal rail, not a page-level floating pill. Label stays Ask the analyst / 向分析师提问."
 affects:
   - "templates/macro_monetary.html.j2"
   - "lib/macro_suite_labels.py"

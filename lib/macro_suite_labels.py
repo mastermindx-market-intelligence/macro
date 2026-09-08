@@ -1310,3 +1310,221 @@ def collect_unknown(*tokens: Iterable[Any]) -> tuple[str, ...]:  # pragma: no co
 
 def is_bilingual(node: Any) -> bool:
     return isinstance(node, Mapping) and "en" in node
+
+
+# P5 r2 — reviewed one-sentence rewrites for producer strings that trip the
+# copy guard. Keyed by a unique EN prefix of the original. The original is
+# never deleted: the view keeps it for <details class="mc-details">.
+# A banned string with no row here is a build defect (fail closed).
+_PLAIN_PRODUCER_BANNED: tuple[str, ...] = (
+    "accepted print", "accepted snapshot", "method version", "method-comparable",
+    "hysteresis", "axis", "Axis", "authority ceiling", "content hash",
+    "generation id", "producer", "artifact", "manifest", "trace_ref",
+    "definition_id", "owner_ref", "standardized", "Diagnostics", "Vector",
+    "vector", "snapshot", "deterministic", "schema", "Regime map", "Freshness",
+    "Presence", "coverage_ratio", "null_reason", "NOT_COVERED",
+)
+
+PLAIN_PRODUCER: tuple[tuple[str, dict[str, str]], ...] = (
+    (
+        "This page publishes no dual-axis state and no headline quadrant: the "
+        "frozen Market Ontology architecture document defines twelve macro "
+        "workspaces, each with its own headline blueprint (or an explicit note "
+        "that none exists), and Rates & Curves",
+        _pair(
+            "This page does not publish a two-sided headline state — Rates & "
+            "Curves was added after the original twelve workspaces, so the real "
+            "curve readings sit below as numbers, not as a quadrant.",
+            "本页不发布双边头条状态 — 利率与曲线是在原十二个工作区之后新增的，"
+            "真实曲线读数以下方数字呈现，而非象限。",
+        ),
+    ),
+    (
+        "This workspace reads FRED Treasury-curve and policy-corridor parquets only",
+        _pair(
+            "This page reads the Treasury curve and the policy corridor only. "
+            "The implied-path and yield-momentum views already live on Monetary "
+            "Policy, so they are not repeated here.",
+            "本页只读取国债曲线与政策走廊。隐含路径与收益率动能已在货币政策页"
+            "发布，此处不再重复。",
+        ),
+    ),
+    (
+        "No dual-axis Business Activity state",
+        _pair(
+            "No two-sided business-activity state is published today — the "
+            "source gives blended cycle readings, not the separate orders and "
+            "production legs a headline would need. Those blended readings are "
+            "shown as numbers below.",
+            "今天没有发布双边商业活动状态 — 数据源给出的是混合周期读数，而非"
+            "头条所需的独立订单与生产分项。这些混合读数以下方数字呈现。",
+        ),
+    ),
+    (
+        "The lending channel (architecture 10.8's fifth Mastermind channel)",
+        _pair(
+            "The lending channel has no source wired today, so it is marked "
+            "uncovered — not treated as calm.",
+            "借贷渠道今天没有接入数据源，因此标记为未覆盖 — 不会当作平静。",
+        ),
+    ),
+    (
+        "No dual-axis Housing state",
+        _pair(
+            "No two-sided housing state is published today — sales and income "
+            "data we would need for demand and affordability are not available. "
+            "Starts, permits and home prices are shown as numbers below.",
+            "今天没有发布双边住房状态 — 衡量需求与可负担性所需的成交和收入"
+            "数据不可用。开工、许可与房价以下方数字呈现。",
+        ),
+    ),
+    (
+        "No dual-axis National Debt state",
+        _pair(
+            "No two-sided debt-pressure state is published today — we do not "
+            "have the maturity wall or the revenue and interest-cost series a "
+            "headline would need. Issuance, auction demand and repayment-burden "
+            "readings are shown as numbers below.",
+            "今天没有发布双边债务压力状态 — 没有头条所需的到期墙、财政收入或"
+            "利息成本序列。发行、拍卖需求与偿债负担读数以下方数字呈现。",
+        ),
+    ),
+    (
+        "This page publishes no dual-axis state and no headline quadrant: the "
+        "frozen Market Ontology architecture document defines twelve macro "
+        "workspaces, each with its own headline blueprint (or an explicit note "
+        "that none exists), and Trade Flows",
+        _pair(
+            "This page does not publish a two-sided headline state — Trade "
+            "Flows was added after the original twelve workspaces, so the real "
+            "trade readings sit below as numbers, not as a quadrant.",
+            "本页不发布双边头条状态 — 贸易流动是在原十二个工作区之后新增的，"
+            "真实贸易读数以下方数字呈现，而非象限。",
+        ),
+    ),
+    (
+        "The owner artifact's own authority block agrees",
+        _pair(
+            "The source's own authority note matches this page: context only — "
+            "no rank, no entry, no sizing.",
+            "数据源自身的权限说明与本页一致：仅作背景 — 不排名、不给出入场、不定仓。",
+        ),
+    ),
+    (
+        "The drivers.rate_side bucket in this snapshot carries cash-flow/spending legs",
+        _pair(
+            "The two driver groups on this page are spending and credit-stress "
+            "readings, not policy rates or a balance sheet. The group names are "
+            "reused from a shared template.",
+            "本页两组驱动是支出与信贷压力读数，不是政策利率或资产负债表。"
+            "组名沿用共享模板。",
+        ),
+    ),
+    (
+        "The drivers.balance_sheet bucket in this snapshot carries supply, home-price, and rent legs",
+        _pair(
+            "The second driver group on this page is supply, home prices and "
+            "rent — not a balance sheet. The group name is reused from a shared "
+            "template.",
+            "本页第二组驱动是供给、房价与租金 — 不是资产负债表。组名沿用共享模板。",
+        ),
+    ),
+    (
+        "The drivers.rate_side bucket in this snapshot carries yield/credit-cycle legs",
+        _pair(
+            "The first driver group on this page is auction yields and "
+            "repayment-burden readings, not policy rates. The group name is "
+            "reused from a shared template.",
+            "本页第一组驱动是拍卖收益率与偿债负担读数，不是政策利率。组名沿用共享模板。",
+        ),
+    ),
+    (
+        "The drivers.rate_side bucket in this snapshot carries USD funding-side legs",
+        _pair(
+            "The first driver group on this page is dollar-funding readings, "
+            "not policy rates. The group name is reused from a shared template.",
+            "本页第一组驱动是美元融资读数，不是政策利率。组名沿用共享模板。",
+        ),
+    ),
+    (
+        "The drivers.balance_sheet bucket in this snapshot carries corridor spreads",
+        _pair(
+            "The second driver group on this page is corridor spreads and curve "
+            "shape — not a balance sheet. The group name is reused from a shared "
+            "template.",
+            "本页第二组驱动是走廊利差与曲线形态 — 不是资产负债表。组名沿用共享模板。",
+        ),
+    ),
+    (
+        "The drivers.balance_sheet bucket in this snapshot carries the dollar-flow legs",
+        _pair(
+            "The driver groups on this page are trade flows and prices, not "
+            "policy rates or a balance sheet. The group names are reused from a "
+            "shared template.",
+            "本页驱动组是贸易流动与价格，不是政策利率或资产负债表。组名沿用共享模板。",
+        ),
+    ),
+)
+
+# Short labels: rewrite in place, never a generic pointer.
+PLAIN_LABEL: dict[str, dict[str, str]] = {
+    "Growth axis composite (engine/axes.py)": _pair("Growth score", "增长评分"),
+}
+
+
+def producer_trips_copy_guard(en: str) -> bool:
+    return any(phrase in en for phrase in _PLAIN_PRODUCER_BANNED)
+
+
+def lookup_plain_producer(en: str) -> dict[str, str] | None:
+    hits = [(prefix, pair) for prefix, pair in PLAIN_PRODUCER if en.startswith(prefix)]
+    if not hits:
+        return None
+    hits.sort(key=lambda item: len(item[0]), reverse=True)
+    return dict(hits[0][1])
+
+
+def apply_plain_producer(node: Mapping[str, str] | None) -> tuple[dict[str, str] | None, dict[str, str] | None]:
+    """Return ``(reading, original_or_none)``.
+
+    A banned producer string without a reviewed rewrite raises — never a
+    substring pointer such as "A published note is in Details".
+    """
+    if not node:
+        return None, None
+    en = str(node.get("en") or "")
+    if not en or not producer_trips_copy_guard(en):
+        return dict(node), None
+    rewrite = lookup_plain_producer(en)
+    if rewrite is None:
+        raise ValueError(
+            "producer text trips the copy guard and has no reviewed rewrite: "
+            f"{en[:160]!r}"
+        )
+    return rewrite, dict(node)
+
+
+def apply_plain_label(node: Mapping[str, str] | None) -> tuple[dict[str, str] | None, dict[str, str] | None]:
+    """Rewrite a short label. No generic fallback. Fail closed if banned."""
+    if not node:
+        return None, None
+    en = str(node.get("en") or "")
+    if not en or not producer_trips_copy_guard(en):
+        return dict(node), None
+    rewrite = PLAIN_LABEL.get(en)
+    if rewrite is None:
+        raise ValueError(
+            "label trips the copy guard and has no reviewed pair: "
+            f"{en[:160]!r}"
+        )
+    return dict(rewrite), dict(node)
+
+
+def copy_probe_row_ok(row: Mapping[str, Any]) -> bool:
+    """M2: ok is the conjunction of every predicate. Absent never scores inside."""
+    return bool(row.get("in_page")) and bool(row.get("inside")) and not bool(row.get("outside"))
+
+
+def copy_probe_ok(rows: Iterable[Mapping[str, Any]]) -> bool:
+    rows = list(rows)
+    return bool(rows) and all(copy_probe_row_ok(row) for row in rows)

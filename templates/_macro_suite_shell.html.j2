@@ -62,24 +62,19 @@
 </details>
 {%- endmacro -%}
 
-{#- Producer bilingual nodes can carry banned substrings (R1: keep the
-    original; do not leave it in the reading path). -#}
-{%- macro customer(node, fallback_en='See details', fallback_zh='见详情') -%}
-{%- set en = (node.en if node is mapping else '') or '' -%}
-{%- if node and ('axis' in en or 'Axis' in en or 'artifact' in en or 'snapshot' in en or 'vector' in en or 'Vector' in en or 'producer' in en or 'manifest' in en or 'NOT_COVERED' in en or 'schema' in en or 'hysteresis' in en or 'standardized' in en or 'accepted print' in en or 'accepted snapshot' in en or 'method version' in en) -%}
-{{ t(fallback_en, fallback_zh) }}
-{% call mc_details() %}{{ bl(node) }}{% endcall %}
-{%- else -%}
-{{ bl(node) }}
-{%- endif -%}
-{%- endmacro -%}
-
+{#- vis_time is a date face only. The machine value stays in datetime=;
+    a second Details toggle per cell (m4) is not emitted. -#}
 {%- macro vis_time(value) -%}
 {%- if value -%}
 <time datetime="{{ value }}">{{ value.split('T')[0] }}</time>
-{%- if 'T' in value -%}
-{% call mc_details() %}<p>{{ t('Full timestamp', '完整时间戳') }} <time>{{ value }}</time></p>{% endcall %}
 {%- endif -%}
+{%- endmacro -%}
+
+{#- Long producer prose: reading-path sentence, then the original as a
+    block-level sibling. Never emit <details> inside <p> or <span>. -#}
+{%- macro relocated_original(node) -%}
+{%- if node %}
+{% call mc_details() %}{{ bl(node) }}{% endcall %}
 {%- endif -%}
 {%- endmacro -%}
 
@@ -101,7 +96,7 @@
   <div class="mq-context-id">
     <p class="mq-kicker">{{ t('Macro & Monetary', '宏观与货币') }}</p>
     <h1>{{ bl(view.workspace.title) }}</h1>
-    <p class="mq-deck">{{ customer(view.workspace.subtitle, 'This workspace\'s current reading', '本工作区的当前读数') }}</p>
+    <p class="mq-deck">{{ bl(view.workspace.subtitle) }}</p>
     <div class="mq-idchips">
       <span class="mq-chip mq-chip-key">{{ t('Region', '地区') }} · {{ bl(view.region.display) }}</span>
       <span class="mq-chip mq-chip-key">{{ t('Frequency', '频率') }} · {{ t('Updates when the source updates', '数据源更新时同步更新') }}</span>
@@ -180,7 +175,7 @@
   <div class="mq-context-id">
     <p class="mq-kicker">{{ t('Macro & Monetary', '宏观与货币') }}</p>
     <h1>{{ bl(view.workspace.title) }}</h1>
-    <p class="mq-deck">{{ customer(view.workspace.subtitle, 'This workspace\'s current reading', '本工作区的当前读数') }}</p>
+    <p class="mq-deck">{{ bl(view.workspace.subtitle) }}</p>
   </div>
   <p class="mq-context-line">
     <span class="mq-context-line-item">
@@ -208,11 +203,12 @@
 {%- macro context_detail(view) -%}
 {%- set ctx = view.context -%}
 <section class="mq-contextdetail" aria-labelledby="mq-contextdetail-title">
+  <h3 id="mq-contextdetail-title">{{ t('Dates and data coverage', '日期与数据覆盖') }}</h3>
   <details class="mc-details">
     <summary>{{ t('Dates and data coverage', '日期与数据覆盖') }}</summary>
     <div class="mc-details-body">
   <div class="mq-section-head">
-    <h3 id="mq-contextdetail-title">{{ t('Dates, coverage and source clocks', '日期、覆盖率与数据源时钟') }}</h3>
+    <p>{{ t('Dates, coverage and source clocks', '日期、覆盖率与数据源时钟') }}</p>
     <span class="mq-section-note">{{ t('The same facts the reading above is built on, in full.', '上方读数所依据的全部事实。') }}</span>
   </div>
   <div class="mq-avail">
@@ -275,7 +271,7 @@
     <span class="mq-glance-key">{{ t('Changed', '变化') }}</span>
     {%- if g.change.present %}
     <span class="mq-glance-value">
-      <span class="mq-glance-metric">{{ customer(g.change.lead.label, 'A compared reading', '一项对比读数') }}</span>
+      <span class="mq-glance-metric">{{ bl(g.change.lead.label) }}</span>
       <span class="mq-delta mq-delta-{{ g.change.lead.sign }}">{{ g.change.lead.delta }}</span>
       <span class="mq-glance-from">{{ g.change.lead.prior }} → {{ g.change.lead.current }}</span>
     </span>
@@ -291,13 +287,14 @@
     <span class="mq-glance-key">{{ t('Means', '含义') }}</span>
     {%- if g.meaning.present %}
     <span class="mq-glance-value">
-      {{ customer(g.meaning.text, 'A published note is in Details', '一条已发布说明见详情') }}
+      {{ bl(g.meaning.text) }}
       <span class="mq-glance-evidence">{{ bl(g.meaning.evidence_label) }}</span>
     </span>
     {%- else %}
     <span class="mq-glance-value mq-glance-none">{{ bl(g.meaning.absence_text) }}</span>
     {%- endif %}
   </p>
+  {%- if g.meaning.present %}{{ relocated_original(g.meaning.text_original) }}{% endif %}
 </section>
 {%- endmacro -%}
 
@@ -351,9 +348,9 @@
         {%- if item.horizon %}<span class="mq-chip">{{ t('Horizon', '时间跨度') }} · {{ bl(item.horizon) }}</span>{% endif %}
         {%- for channel in item.channels %}<span class="mq-chip mq-chip-channel">{{ bl(channel) }}</span>{% endfor %}
       </div>
-      <p class="mq-implication-text">{{ customer(item.text, 'A published note is in Details', '一条已发布说明见详情') }}</p>
-      <p class="mq-implication-claim">{{ customer(item.evidence_claim, 'Evidence note', '证据说明') }}</p>
-      <p class="mq-implication-contra">{% if item.contradictions %}{{ t('Signals that disagree', '相互矛盾的信号') }}: {{ item.contradictions | join(', ') }}{% endif %}</p>
+      <p class="mq-implication-text">{{ bl(item.text) }}</p>
+      {{ relocated_original(item.text_original) }}
+      <p class="mq-implication-claim">{{ bl(item.evidence_claim) }}</p>
       <details class="mc-details">
         <summary>{{ t('How sure we are', '把握程度') }}</summary>
         <div class="mc-details-body mq-confidence">
@@ -363,9 +360,6 @@
           <div><dt>{{ bl(band.name) }}</dt><dd>{% if band.value %}{{ bl(band.value) }}{% else %}{{ absent(band.absence, True) }}{% endif %}</dd></div>
           {%- endfor %}
         </dl>
-        {%- if item.contradictions %}
-        <p class="mq-implication-contra">{{ t('Contradictions', '矛盾之处') }}: {{ item.contradictions | join(', ') }}</p>
-        {%- endif %}
         {%- if item.trace_ref %}
         <p class="mq-trace"><span class="mq-trace-label">{{ t('Trace', '溯源') }}</span><code>{{ item.trace_ref }}</code>
           <button type="button" class="mq-linkish" data-mq-open-evidence>{{ t('Open evidence', '打开证据') }}</button></p>
@@ -390,7 +384,7 @@
 {%- set head = view.headline -%}
 <section class="mq-headline" aria-labelledby="mq-headline-title">
   <div class="mq-headline-state">
-    <p class="mq-kicker">{{ customer(head.subtitle, 'Current reading', '当前读数') }}</p>
+    <p class="mq-kicker">{{ bl(head.subtitle) }}</p>
     <h2 id="mq-headline-title">
       {%- if head.state_label -%}
       <span class="mq-state-letter" aria-hidden="true">{{ head.state_id }}</span>{{ bl(head.state_label) }}
@@ -566,8 +560,8 @@
   <ul class="mq-diag-list">
     {%- for item in view.diagnostics %}
     <li class="mq-diag mq-tone-{{ item.tone }}">
-      <strong>{{ customer(item.title, 'A recorded data issue', '一条已记录的数据问题') }}</strong>
-      <span>{{ customer(item.body, 'See details', '见详情') }}</span>
+      <strong>{{ bl(item.title) }}</strong>
+      <span>{{ bl(item.body) }}</span>
     </li>
     {%- endfor %}
   </ul>
@@ -598,7 +592,7 @@
     <tbody>
       {%- for delta in changes.deltas %}
       <tr>
-        <th scope="row">{{ customer(delta.label, 'A compared reading', '一项对比读数') }}</th>
+        <th scope="row">{{ bl(delta.label) }}</th>
         <td>{% if delta.prior_present %}{{ delta.prior }}{% else %}{{ absent(delta.absence, True) }}{% endif %}</td>
         <td>{% if delta.current_present %}{{ delta.current }}{% else %}{{ absent(delta.absence, True) }}{% endif %}</td>
         {#- No sign class at all when the delta is absent: `mq-delta-flat` is the
@@ -635,7 +629,7 @@
     {%- for metric in view.metrics %}
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name">{{ customer(metric.label, 'A published reading', '一项已发布读数') }}</span>
+        <span class="mq-metric-name">{{ bl(metric.label) }}</span>
         {{ chip(metric.freshness, metric.freshness_tone) }}
       </header>
       <strong class="mq-metric-value">
@@ -692,7 +686,7 @@
     <tbody>
       {%- for item in series.entries %}
       <tr>
-        <th scope="row">{{ customer(item.label, 'A published series', '一条已发布序列') }}</th>
+        <th scope="row">{{ bl(item.label) }}</th>
         <td>{{ bl(item.unit) }}</td>
         <td>{{ item.count }}</td>
         <td>{{ t('From', '自') }} {{ vis_time(item.first) }} {{ t('to', '至') }} {{ vis_time(item.last) }}</td>
@@ -733,8 +727,11 @@
       <tbody>
         {%- for row in group.rows %}
         <tr>
-          <th scope="row">{{ customer(row.label, 'A published driver', '一项已发布驱动') }}
-            {% call mc_details() %}<span class="mq-owner-field"><code>{{ row.owner_field }}</code></span>{% endcall %}</th>
+          <th scope="row">{{ bl(row.label) }}
+            {% call mc_details() %}
+              {%- if row.label_original %}{{ bl(row.label_original) }}{% endif %}
+              <span class="mq-owner-field"><code>{{ row.owner_field }}</code></span>
+            {% endcall %}</th>
           <td>{% if row.value %}{{ bl(row.value) }}{% else %}{{ absent(row.absence, True) }}{% endif %}</td>
           <td>{{ bl(row.unit) }}</td>
           <td class="mq-delta{% if row.impact_present %} mq-delta-{{ row.impact_sign }}{% else %} mq-delta-unavailable{% endif %}">
@@ -804,10 +801,9 @@
 {%- macro lineage(view) -%}
 {%- set corrections = view.evidence.corrections -%}
 <section class="mq-lineage" aria-labelledby="mq-lineage-title">
+  <h3 id="mq-lineage-title">{{ t('How this reading was revised', '本读数如何被修订') }}</h3>
   {% call mc_details() %}
-  <div class="mq-section-head">
-    <h3 id="mq-lineage-title">{{ t('Correction and method lineage', '更正与方法沿革') }}</h3>
-  </div>
+  <p>{{ t('Correction and method lineage', '更正与方法沿革') }}</p>
   <dl class="mq-method-grid">
     <div><dt>{{ t('Correction state', '更正状态') }}</dt><dd>{{ bl(corrections.state) }}</dd></div>
     <div><dt>{{ t('Predecessor generation', '前一代产物') }}</dt>
@@ -835,8 +831,8 @@
   <div class="mq-withheld-grid">
     {%- for item in view.withheld_tabs %}
     <article class="mq-withheld-card">
-      <h4>{{ customer(item.name, 'Not open yet', '尚未开放') }}</h4>
-      <p>{{ customer(item.reason, 'This capability is named here rather than shown as a tab.', '该能力在此列出，不以标签页呈现。') }}</p>
+      <h4>{{ bl(item.name) }}</h4>
+      <p>{{ bl(item.reason) }}</p>
       {%- if item.declared %}
       <details>
         <summary>{{ bl(item.declared_title) }}</summary>
@@ -862,8 +858,8 @@
        aria-hidden="true" tabindex="-1" hidden inert>
   <header class="mq-drawer-head">
     <div>
-      <p class="mq-kicker">{{ t('Sources', '数据来源') }}</p>
-      <h2 id="mq-evidence-title">{{ t('Sources', '数据来源') }}</h2>
+      <p class="mq-kicker">{{ t('Source receipt', '来源凭据') }}</p>
+      <h2 id="mq-evidence-title">{{ t('Evidence', '证据') }}</h2>
     </div>
     <button class="mq-drawer-close" id="mq-close-evidence" type="button"
             data-label-en="Close evidence drawer" data-label-zh="关闭证据抽屉"
@@ -871,11 +867,8 @@
   </header>
   <div class="mq-drawer-body">
   <details class="mc-details" open>
-    <summary>{{ t('Sources', '数据来源') }}</summary>
+    <summary>{{ t('Technical receipt', '技术凭据') }}</summary>
     <div class="mc-details-body">
-      <p>{{ t('Source receipt', '来源凭据') }}</p>
-      <p>{{ t('Evidence', '证据') }}</p>
-
     <section class="mq-drawer-section">
       <h3>{{ t('Authority ceiling', '权限上限') }}</h3>
       <p class="mq-authority-statement">{{ bl(evidence.authority.statement) }}</p>
@@ -1060,7 +1053,7 @@
     <div class="mq-context-id">
       <p class="mq-kicker">{{ t('Macro & Monetary', '宏观与货币') }}</p>
       <h1>{{ bl(view.workspace.title) }}</h1>
-      <p class="mq-deck">{{ customer(view.workspace.subtitle, 'This workspace\'s current reading', '本工作区的当前读数') }}</p>
+      <p class="mq-deck">{{ bl(view.workspace.subtitle) }}</p>
       <div class="mq-idchips">
         <span class="mq-chip mq-chip-key">{{ t('Region', '地区') }} · {{ bl(view.region.display) }}</span>
         <span class="mq-chip mq-tone-bad">{{ bl(view.failure.label) }}</span>

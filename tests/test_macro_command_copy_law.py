@@ -230,7 +230,6 @@ RELOCATED_STRINGS: tuple[str, ...] = (
     "Correction and method lineage",
     "Predecessor generation",
     "Changed fingerprints",
-    "Source receipt",
     "Artifact",
     "Transform",
     "Non-economic clocks",
@@ -343,3 +342,178 @@ def test_guard_script_reports_a_missing_file_rather_than_crashing(tmp_path: Path
 def test_guard_is_wired_into_ci() -> None:
     ci = (ROOT / ".github" / "ci" / "legacy-jobs.yml").read_text(encoding="utf-8")
     assert "tests/test_macro_command_copy_law.py" in ci
+
+
+# --------------------------------------------------------------------------
+# P5 r2 — B1 / M2 / M3 / M4 / M5 / M6
+# --------------------------------------------------------------------------
+
+_POINTER_STRINGS = (
+    "A published note is in Details",
+    "A published reading",
+    "A published driver",
+    "A compared reading",
+    "A published series",
+    "A recorded data issue",
+)
+
+_B1_REWRITES = (
+    ("macro_rates_curves.html",
+     "This page does not publish a two-sided headline state"),
+    ("macro_rates_curves.html",
+     "This page reads the Treasury curve and the policy corridor only."),
+    ("macro_business_activity.html",
+     "No two-sided business-activity state is published today"),
+    ("macro_financial_conditions.html",
+     "The lending channel has no source wired today"),
+    ("macro_housing_real_estate.html",
+     "No two-sided housing state is published today"),
+    ("macro_national_debt_liabilities.html",
+     "No two-sided debt-pressure state is published today"),
+    ("macro_trade_flows.html",
+     "This page does not publish a two-sided headline state — Trade Flows was added after the original twelve workspaces"),
+    ("macro_growth_real_economy.html",
+     "Growth score"),
+)
+
+_B1_ORIGINALS = (
+    ("macro_rates_curves.html",
+     "This page publishes no dual-axis state and no headline quadrant"),
+    ("macro_rates_curves.html",
+     "This workspace reads FRED Treasury-curve and policy-corridor parquets only"),
+    ("macro_growth_real_economy.html",
+     "Growth axis composite (engine/axes.py)"),
+)
+
+
+def test_customer_macro_and_pointer_fallbacks_are_gone() -> None:
+    shell = (ROOT / "templates" / "_macro_suite_shell.html.j2").read_text(encoding="utf-8")
+    assert "{%- macro customer(" not in shell
+    assert "macro customer(" not in shell
+    for pointer in _POINTER_STRINGS:
+        assert pointer not in shell
+
+
+def test_copy_probe_ok_is_the_conjunction_of_every_row() -> None:
+    from lib.macro_suite_labels import copy_probe_ok, copy_probe_row_ok
+    present = {"in_page": True, "inside": True, "outside": False}
+    assert copy_probe_row_ok(present) is True
+    assert copy_probe_ok([present, present]) is True
+    assert copy_probe_row_ok({"in_page": False, "inside": False, "outside": False}) is False
+    assert copy_probe_row_ok({"in_page": False, "inside": True, "outside": False}) is False
+    assert copy_probe_ok([present, {"in_page": False, "inside": False, "outside": False}]) is False
+    assert copy_probe_ok([]) is False
+
+
+def test_apply_plain_producer_fail_closed_without_a_reviewed_pair() -> None:
+    from lib.macro_suite_labels import apply_plain_producer
+    import pytest
+    with pytest.raises(ValueError, match="no reviewed rewrite"):
+        apply_plain_producer({"en": "A dual-axis snapshot with no reviewed pair", "zh": "无"})
+
+
+def test_b1_rewrites_are_in_the_reading_path_and_originals_are_in_details(
+        tmp_path_factory) -> None:
+    out = tmp_path_factory.mktemp("macro_command_b1") / "site"
+    pages = {p.name: p.read_text(encoding="utf-8")
+             for p in builder.render(ROOT, data_root=DATA_ROOT, out_dir=out,
+                                     page_built_at=BUILT_AT)}
+    for pointer in _POINTER_STRINGS:
+        for name, html in pages.items():
+            assert pointer not in html, f"{name} still has {pointer!r}"
+    for name, needle in _B1_REWRITES:
+        html = pages[name]
+        assert needle in guard.reading_path_text(html), name
+    for name, needle in _B1_ORIGINALS:
+        html = pages[name]
+        assert needle in html
+        assert needle not in guard.reading_path_text(html), name
+
+
+def test_no_details_has_a_p_or_span_ancestor_on_the_fifteen_pages(
+        tmp_path_factory) -> None:
+    from html.parser import HTMLParser
+
+    class _Walker(HTMLParser):
+        def __init__(self) -> None:
+            super().__init__(convert_charrefs=True)
+            self.stack: list[str] = []
+            self.bad: list[str] = []
+
+        def handle_starttag(self, tag, attrs):
+            if tag == "details" and any(a in self.stack for a in ("p", "span")):
+                self.bad.append("/".join(self.stack + [tag]))
+            if tag not in {"br", "img", "input", "meta", "link", "hr"}:
+                self.stack.append(tag)
+
+        def handle_endtag(self, tag):
+            if self.stack and self.stack[-1] == tag:
+                self.stack.pop()
+            elif tag in self.stack:
+                while self.stack and self.stack[-1] != tag:
+                    self.stack.pop()
+                if self.stack:
+                    self.stack.pop()
+
+    out = tmp_path_factory.mktemp("macro_command_m3") / "site"
+    pages = builder.render(ROOT, data_root=DATA_ROOT, out_dir=out, page_built_at=BUILT_AT)
+    dirty: list[str] = []
+    for path in pages:
+        walker = _Walker()
+        walker.feed(path.read_text(encoding="utf-8"))
+        if walker.bad:
+            dirty.append(f"{path.name}: {walker.bad[:3]}")
+    assert dirty == [], dirty
+
+
+def test_analyst_explain_passes_section_id_then_label() -> None:
+    js = (ROOT / "templates" / "macro_command.js").read_text(encoding="utf-8")
+    assert "window.MMBrain.explain(sectionId, label)" in js
+    assert "window.MMBrain.explain(label, label)" not in js
+
+
+def test_implication_contra_block_is_gone() -> None:
+    shell = (ROOT / "templates" / "_macro_suite_shell.html.j2").read_text(encoding="utf-8")
+    assert "mq-implication-contra" not in shell
+    assert "item.contradictions" not in shell
+
+
+def test_evidence_drawer_has_one_sources_heading_and_distinct_title() -> None:
+    shell = (ROOT / "templates" / "_macro_suite_shell.html.j2").read_text(encoding="utf-8")
+    assert "t('Source receipt', '来源凭据')" in shell
+    assert "t('Evidence', '证据')" in shell
+    assert shell.count("t('Sources', '数据来源')") == 1
+
+
+def test_clearance_probe_js_binds_locator_element_then_arg() -> None:
+    """Playwright locator.evaluate calls fn(element, arg). A one-arg
+    function reads the HTMLElement and scores ok on zero text nodes."""
+    from scripts.capture_macro_command_p5 import _CLEARANCE_JS
+    assert _CLEARANCE_JS.lstrip().startswith("(el, arg)")
+    assert "texts.length > 0" in _CLEARANCE_JS
+    assert "fabInBand === true" in _CLEARANCE_JS
+
+
+def test_capture_relocated_needles_are_locale_visible_and_must_be_inside() -> None:
+    """M2 / B3: 15/16 probe strings exist on the rates page and live in details."""
+    from scripts.capture_macro_command_p5 import RELOCATED_EN, RELOCATED_ZH
+    html = (ROOT / "site" / "macro_rates_curves.html").read_text(encoding="utf-8")
+    assert "This page publishes no dual-axis" in html
+    for needle in RELOCATED_EN:
+        assert needle in html
+        assert needle not in guard.reading_path_text(html)
+    for needle in RELOCATED_ZH:
+        assert needle in html
+        assert needle not in guard.reading_path_text(html)
+
+
+def test_analyst_is_last_rail_child_and_not_fixed_at_768() -> None:
+    hub = (ROOT / "templates" / "macro_monetary.html.j2").read_text(encoding="utf-8")
+    rail_end = hub.index("</nav>")
+    rail = hub[hub.index('<nav class="mc-rail"'):rail_end]
+    assert rail.index("mc-rail-list") < rail.index("mc-analyst")
+    css = (ROOT / "templates" / "macro_command.css").read_text(encoding="utf-8")
+    mobile = css.split("@media (max-width: 768px)")[1].split("@media (max-width: 480px)")[0]
+    assert "position: fixed" not in mobile
+    assert "position: static" in mobile
+    assert "84px + 16px + 16px + 16px" not in css

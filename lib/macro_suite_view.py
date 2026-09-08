@@ -168,6 +168,7 @@ def _implications(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         text = _bilingual(raw.get("text"))
         if text is None:
             continue
+        reading, original = L.apply_plain_producer(text)
         confidence = raw.get("confidence") or {}
         bands = []
         for key, name in L.CONFIDENCE_DIMENSION.items():
@@ -180,7 +181,8 @@ def _implications(snapshot: Mapping[str, Any]) -> dict[str, Any]:
                           "absence": None if value else _absence(None)})
         items.append({
             "implication_id": raw.get("implication_id"),
-            "text": text,
+            "text": reading,
+            "text_original": original,
             "evidence_class": raw.get("evidence_class"),
             "evidence_label": L.label("evidence_class", raw.get("evidence_class")),
             "evidence_claim": L.label("evidence_claim", raw.get("evidence_class")),
@@ -572,9 +574,12 @@ def _drivers(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) -> 
             signed = None
             if isinstance(magnitude, (int, float)) and isinstance(sign, int):
                 signed = L.fmt_signed(magnitude * sign)
+            raw_label = _bilingual(driver.get("label"))
+            label, label_original = L.apply_plain_label(raw_label)
             rows.append({
                 "driver_id": driver.get("driver_id"),
-                "label": _bilingual(driver.get("label")),
+                "label": label,
+                "label_original": label_original,
                 "owner_field": driver.get("owner_field"),
                 "value": L.value_pair(driver.get("value")),
                 "absence": None if driver.get("value") is not None else _absence(None),
@@ -950,6 +955,7 @@ def _glance(changes: Mapping[str, Any],
         "meaning": {
             "present": lead_implication is not None,
             "text": lead_implication.get("text") if lead_implication else None,
+            "text_original": lead_implication.get("text_original") if lead_implication else None,
             "evidence_label": lead_implication.get("evidence_label") if lead_implication else None,
             "evidence_claim": lead_implication.get("evidence_claim") if lead_implication else None,
             "remaining": max(0, len(entries) - 1) if entries else 0,
@@ -985,6 +991,7 @@ def build_view(snapshot: Mapping[str, Any], *, page_built_at: str,
     headline = _headline(snapshot, axes)
     changes = _changes(snapshot)
     series = _series(snapshot)
+    implications = _implications(snapshot)
 
     tabs = [
         {"tab_id": "current", "name": _pair("Current", "当前")},
@@ -997,7 +1004,7 @@ def build_view(snapshot: Mapping[str, Any], *, page_built_at: str,
         "layout": layout,
         "decision_first": layout == LAYOUT_DECISION_FIRST,
         "next_action": _next_action(context, headline),
-        "glance": _glance(changes, _implications(snapshot)),
+        "glance": _glance(changes, implications),
         "workspace": {
             "id": (snapshot.get("workspace") or {}).get("id"),
             "title": _bilingual((snapshot.get("workspace") or {}).get("title")),
@@ -1007,7 +1014,7 @@ def build_view(snapshot: Mapping[str, Any], *, page_built_at: str,
                                (snapshot.get("region") or {}).get("display_name"),
                                bool((snapshot.get("region") or {}).get("supported"))),
         "context": context,
-        "implications": _implications(snapshot),
+        "implications": implications,
         "headline": headline,
         "axes": axes,
         "tabs": tabs,

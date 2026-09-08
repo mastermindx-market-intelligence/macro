@@ -173,7 +173,7 @@
            figure and now live in the panel's destination block below. The P1
            "Today's read is not available yet" sentence is deleted with this
            branch: it was false the moment P2 shipped The Read above it. #}
-        {%- if s.empty %}{{ fig.empty(s.empty) }}
+        {%- if s.empty %}{{ fig.empty(s.empty, hide_title=true) }}
         {%- else %}{{ fig.movement(s.figure) }}
         {%- endif %}
         {%- elif s.subtabs %}

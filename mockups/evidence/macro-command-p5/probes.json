@@ -3,20 +3,26 @@
     "ok": true,
     "rows": [
       {
-        "string": "Details, methods and sources",
+        "string": "This page publishes no dual-axis state and no headline quadrant",
         "in_page": true,
         "inside": true,
         "outside": false
       },
       {
-        "string": "Published reading",
-        "in_page": false,
+        "string": "What this state implies",
+        "in_page": true,
         "inside": true,
         "outside": false
       },
       {
-        "string": "\u7ec6\u8282\u3001\u65b9\u6cd5\u4e0e\u6765\u6e90",
-        "in_page": false,
+        "string": "Deterministic text from the accepted snapshot. No language model writes here.",
+        "in_page": true,
+        "inside": true,
+        "outside": false
+      },
+      {
+        "string": "Confidence basis",
+        "in_page": true,
         "inside": true,
         "outside": false
       }
@@ -26,20 +32,26 @@
     "ok": true,
     "rows": [
       {
-        "string": "Details, methods and sources",
+        "string": "\u672c\u9875\u4e0d\u53d1\u5e03\u53cc\u8f74\u72b6\u6001,\u4e5f\u4e0d\u53d1\u5e03\u5934\u6761\u8c61\u9650",
         "in_page": true,
         "inside": true,
         "outside": false
       },
       {
-        "string": "Published reading",
-        "in_page": false,
+        "string": "\u8be5\u72b6\u6001\u610f\u5473\u7740\u4ec0\u4e48",
+        "in_page": true,
         "inside": true,
         "outside": false
       },
       {
-        "string": "\u7ec6\u8282\u3001\u65b9\u6cd5\u4e0e\u6765\u6e90",
-        "in_page": false,
+        "string": "\u6587\u672c\u7531\u5df2\u63a5\u53d7\u5feb\u7167\u786e\u5b9a\u6027\u751f\u6210\uff0c\u6b64\u5904\u4e0d\u7531\u8bed\u8a00\u6a21\u578b\u64b0\u5199\u3002",
+        "in_page": true,
+        "inside": true,
+        "outside": false
+      },
+      {
+        "string": "\u7f6e\u4fe1\u5ea6\u4f9d\u636e",
+        "in_page": true,
         "inside": true,
         "outside": false
       }
@@ -68,91 +80,1253 @@
     "color": "color(srgb 0.518353 0.379137 0.182431)"
   },
   "read_word_contrast_ok": true,
-  "i2_390": {
-    "ok": true,
-    "value": {
-      "x": 242.796875,
-      "y": 709.515625,
-      "w": 50.578125,
-      "h": 21.6875,
-      "in_view": true
+  "clear_390_dark_en": {
+    "boot": {
+      "at_max": false,
+      "fixed": [
+        {
+          "id": "mmb-boot",
+          "tag": "DIV",
+          "cls": "",
+          "x": 318,
+          "y": 800,
+          "w": 56,
+          "h": 56,
+          "top": 800,
+          "bottom": 856,
+          "left": 318,
+          "right": 374
+        }
+      ],
+      "text_count": 51,
+      "intersections": [
+        {
+          "text": {
+            "tag": "LI",
+            "cls": "mc-chip",
+            "x": 199,
+            "y": 774.421875,
+            "w": 159,
+            "h": 107.046875,
+            "top": 774.421875,
+            "bottom": 881.46875,
+            "left": 199,
+            "right": 358
+          },
+          "fixed": {
+            "id": "mmb-boot",
+            "tag": "DIV",
+            "cls": "",
+            "x": 318,
+            "y": 800,
+            "w": 56,
+            "h": 56,
+            "top": 800,
+            "bottom": 856,
+            "left": 318,
+            "right": 374
+          }
+        }
+      ],
+      "stance": {
+        "tag": "P",
+        "cls": "mc-stance mq-tone-warn",
+        "x": 49,
+        "y": 1033.984375,
+        "w": 292,
+        "h": 91.5,
+        "top": 1033.984375,
+        "bottom": 1125.484375,
+        "left": 49,
+        "right": 341
+      },
+      "stance_hits": [],
+      "fab": {
+        "tag": "DIV",
+        "cls": "",
+        "x": 318,
+        "y": 800,
+        "w": 56,
+        "h": 56,
+        "top": 800,
+        "bottom": 856,
+        "left": 318,
+        "right": 374
+      },
+      "fab_in_reserved_band": null,
+      "analyst_fixed": false,
+      "ok": true
     },
-    "delta": {
-      "x": 301.375,
-      "y": 710.515625,
-      "w": 37.625,
-      "h": 19.375,
-      "in_view": true
+    "max": {
+      "at_max": true,
+      "fixed": [
+        {
+          "id": "mmb-boot",
+          "tag": "DIV",
+          "cls": "",
+          "x": 318,
+          "y": 800,
+          "w": 56,
+          "h": 56,
+          "top": 800,
+          "bottom": 856,
+          "left": 318,
+          "right": 374
+        }
+      ],
+      "text_count": 51,
+      "intersections": [],
+      "stance": {
+        "tag": "P",
+        "cls": "mc-stance mq-tone-warn",
+        "x": 49,
+        "y": -1673.015625,
+        "w": 292,
+        "h": 91.5,
+        "top": -1673.015625,
+        "bottom": -1581.515625,
+        "left": 49,
+        "right": 341
+      },
+      "stance_hits": [],
+      "fab": {
+        "tag": "DIV",
+        "cls": "",
+        "x": 318,
+        "y": 800,
+        "w": 56,
+        "h": 56,
+        "top": 800,
+        "bottom": 856,
+        "left": 318,
+        "right": 374
+      },
+      "fab_in_reserved_band": true,
+      "analyst_fixed": false,
+      "ok": true
     },
-    "pill": {
-      "x": 232.734375,
-      "y": 745.859375,
-      "w": 141.265625,
-      "h": 42.140625
-    },
-    "overlap_value": false,
-    "overlap_delta": false
+    "ok": true
   },
+  "clear_390_dark_zh": {
+    "boot": {
+      "at_max": false,
+      "fixed": [
+        {
+          "id": "mmb-boot",
+          "tag": "DIV",
+          "cls": "",
+          "x": 318,
+          "y": 800,
+          "w": 56,
+          "h": 56,
+          "top": 800,
+          "bottom": 856,
+          "left": 318,
+          "right": 374
+        }
+      ],
+      "text_count": 51,
+      "intersections": [
+        {
+          "text": {
+            "tag": "LI",
+            "cls": "mc-rail-item",
+            "x": 235.625,
+            "y": 830.234375,
+            "w": 95.09375,
+            "h": 33.546875,
+            "top": 830.234375,
+            "bottom": 863.78125,
+            "left": 235.625,
+            "right": 330.71875
+          },
+          "fixed": {
+            "id": "mmb-boot",
+            "tag": "DIV",
+            "cls": "",
+            "x": 318,
+            "y": 800,
+            "w": 56,
+            "h": 56,
+            "top": 800,
+            "bottom": 856,
+            "left": 318,
+            "right": 374
+          }
+        },
+        {
+          "text": {
+            "tag": "LI",
+            "cls": "mc-rail-item",
+            "x": 336.71875,
+            "y": 830.234375,
+            "w": 150.171875,
+            "h": 33.546875,
+            "top": 830.234375,
+            "bottom": 863.78125,
+            "left": 336.71875,
+            "right": 486.890625
+          },
+          "fixed": {
+            "id": "mmb-boot",
+            "tag": "DIV",
+            "cls": "",
+            "x": 318,
+            "y": 800,
+            "w": 56,
+            "h": 56,
+            "top": 800,
+            "bottom": 856,
+            "left": 318,
+            "right": 374
+          }
+        }
+      ],
+      "stance": {
+        "tag": "P",
+        "cls": "mc-stance mq-tone-warn",
+        "x": 49,
+        "y": 937.453125,
+        "w": 292,
+        "h": 69,
+        "top": 937.453125,
+        "bottom": 1006.453125,
+        "left": 49,
+        "right": 341
+      },
+      "stance_hits": [],
+      "fab": {
+        "tag": "DIV",
+        "cls": "",
+        "x": 318,
+        "y": 800,
+        "w": 56,
+        "h": 56,
+        "top": 800,
+        "bottom": 856,
+        "left": 318,
+        "right": 374
+      },
+      "fab_in_reserved_band": null,
+      "analyst_fixed": false,
+      "ok": true
+    },
+    "max": {
+      "at_max": true,
+      "fixed": [
+        {
+          "id": "mmb-boot",
+          "tag": "DIV",
+          "cls": "",
+          "x": 318,
+          "y": 800,
+          "w": 56,
+          "h": 56,
+          "top": 800,
+          "bottom": 856,
+          "left": 318,
+          "right": 374
+        }
+      ],
+      "text_count": 51,
+      "intersections": [],
+      "stance": {
+        "tag": "P",
+        "cls": "mc-stance mq-tone-warn",
+        "x": 49,
+        "y": -1366.546875,
+        "w": 292,
+        "h": 69,
+        "top": -1366.546875,
+        "bottom": -1297.546875,
+        "left": 49,
+        "right": 341
+      },
+      "stance_hits": [],
+      "fab": {
+        "tag": "DIV",
+        "cls": "",
+        "x": 318,
+        "y": 800,
+        "w": 56,
+        "h": 56,
+        "top": 800,
+        "bottom": 856,
+        "left": 318,
+        "right": 374
+      },
+      "fab_in_reserved_band": true,
+      "analyst_fixed": false,
+      "ok": true
+    },
+    "ok": true
+  },
+  "clear_390_light_en": {
+    "boot": {
+      "at_max": false,
+      "fixed": [
+        {
+          "id": "mmb-boot",
+          "tag": "DIV",
+          "cls": "",
+          "x": 318,
+          "y": 800,
+          "w": 56,
+          "h": 56,
+          "top": 800,
+          "bottom": 856,
+          "left": 318,
+          "right": 374
+        }
+      ],
+      "text_count": 51,
+      "intersections": [
+        {
+          "text": {
+            "tag": "LI",
+            "cls": "mc-chip",
+            "x": 195.5,
+            "y": 740.921875,
+            "w": 161.5,
+            "h": 107.046875,
+            "top": 740.921875,
+            "bottom": 847.96875,
+            "left": 195.5,
+            "right": 357
+          },
+          "fixed": {
+            "id": "mmb-boot",
+            "tag": "DIV",
+            "cls": "",
+            "x": 318,
+            "y": 800,
+            "w": 56,
+            "h": 56,
+            "top": 800,
+            "bottom": 856,
+            "left": 318,
+            "right": 374
+          }
+        }
+      ],
+      "stance": {
+        "tag": "P",
+        "cls": "mc-stance mq-tone-warn",
+        "x": 49,
+        "y": 1001.484375,
+        "w": 292,
+        "h": 91.5,
+        "top": 1001.484375,
+        "bottom": 1092.984375,
+        "left": 49,
+        "right": 341
+      },
+      "stance_hits": [],
+      "fab": {
+        "tag": "DIV",
+        "cls": "",
+        "x": 318,
+        "y": 800,
+        "w": 56,
+        "h": 56,
+        "top": 800,
+        "bottom": 856,
+        "left": 318,
+        "right": 374
+      },
+      "fab_in_reserved_band": null,
+      "analyst_fixed": false,
+      "ok": true
+    },
+    "max": {
+      "at_max": true,
+      "fixed": [
+        {
+          "id": "mmb-boot",
+          "tag": "DIV",
+          "cls": "",
+          "x": 318,
+          "y": 800,
+          "w": 56,
+          "h": 56,
+          "top": 800,
+          "bottom": 856,
+          "left": 318,
+          "right": 374
+        }
+      ],
+      "text_count": 51,
+      "intersections": [],
+      "stance": {
+        "tag": "P",
+        "cls": "mc-stance mq-tone-warn",
+        "x": 49,
+        "y": -1686.515625,
+        "w": 292,
+        "h": 91.5,
+        "top": -1686.515625,
+        "bottom": -1595.015625,
+        "left": 49,
+        "right": 341
+      },
+      "stance_hits": [],
+      "fab": {
+        "tag": "DIV",
+        "cls": "",
+        "x": 318,
+        "y": 800,
+        "w": 56,
+        "h": 56,
+        "top": 800,
+        "bottom": 856,
+        "left": 318,
+        "right": 374
+      },
+      "fab_in_reserved_band": true,
+      "analyst_fixed": false,
+      "ok": true
+    },
+    "ok": true
+  },
+  "clear_390_light_zh": {
+    "boot": {
+      "at_max": false,
+      "fixed": [
+        {
+          "id": "mmb-boot",
+          "tag": "DIV",
+          "cls": "",
+          "x": 318,
+          "y": 800,
+          "w": 56,
+          "h": 56,
+          "top": 800,
+          "bottom": 856,
+          "left": 318,
+          "right": 374
+        }
+      ],
+      "text_count": 51,
+      "intersections": [
+        {
+          "text": {
+            "tag": "LI",
+            "cls": "mc-rail-item",
+            "x": 235.625,
+            "y": 811.234375,
+            "w": 95.09375,
+            "h": 33.546875,
+            "top": 811.234375,
+            "bottom": 844.78125,
+            "left": 235.625,
+            "right": 330.71875
+          },
+          "fixed": {
+            "id": "mmb-boot",
+            "tag": "DIV",
+            "cls": "",
+            "x": 318,
+            "y": 800,
+            "w": 56,
+            "h": 56,
+            "top": 800,
+            "bottom": 856,
+            "left": 318,
+            "right": 374
+          }
+        },
+        {
+          "text": {
+            "tag": "LI",
+            "cls": "mc-rail-item",
+            "x": 336.71875,
+            "y": 811.234375,
+            "w": 150.171875,
+            "h": 33.546875,
+            "top": 811.234375,
+            "bottom": 844.78125,
+            "left": 336.71875,
+            "right": 486.890625
+          },
+          "fixed": {
+            "id": "mmb-boot",
+            "tag": "DIV",
+            "cls": "",
+            "x": 318,
+            "y": 800,
+            "w": 56,
+            "h": 56,
+            "top": 800,
+            "bottom": 856,
+            "left": 318,
+            "right": 374
+          }
+        }
+      ],
+      "stance": {
+        "tag": "P",
+        "cls": "mc-stance mq-tone-warn",
+        "x": 49,
+        "y": 918.453125,
+        "w": 292,
+        "h": 69,
+        "top": 918.453125,
+        "bottom": 987.453125,
+        "left": 49,
+        "right": 341
+      },
+      "stance_hits": [],
+      "fab": {
+        "tag": "DIV",
+        "cls": "",
+        "x": 318,
+        "y": 800,
+        "w": 56,
+        "h": 56,
+        "top": 800,
+        "bottom": 856,
+        "left": 318,
+        "right": 374
+      },
+      "fab_in_reserved_band": null,
+      "analyst_fixed": false,
+      "ok": true
+    },
+    "max": {
+      "at_max": true,
+      "fixed": [
+        {
+          "id": "mmb-boot",
+          "tag": "DIV",
+          "cls": "",
+          "x": 318,
+          "y": 800,
+          "w": 56,
+          "h": 56,
+          "top": 800,
+          "bottom": 856,
+          "left": 318,
+          "right": 374
+        }
+      ],
+      "text_count": 51,
+      "intersections": [],
+      "stance": {
+        "tag": "P",
+        "cls": "mc-stance mq-tone-warn",
+        "x": 49,
+        "y": -1380.546875,
+        "w": 292,
+        "h": 69,
+        "top": -1380.546875,
+        "bottom": -1311.546875,
+        "left": 49,
+        "right": 341
+      },
+      "stance_hits": [],
+      "fab": {
+        "tag": "DIV",
+        "cls": "",
+        "x": 318,
+        "y": 800,
+        "w": 56,
+        "h": 56,
+        "top": 800,
+        "bottom": 856,
+        "left": 318,
+        "right": 374
+      },
+      "fab_in_reserved_band": true,
+      "analyst_fixed": false,
+      "ok": true
+    },
+    "ok": true
+  },
+  "clear_768_dark_en": {
+    "boot": {
+      "at_max": false,
+      "fixed": [
+        {
+          "id": "mmb-boot",
+          "tag": "DIV",
+          "cls": "",
+          "x": 543.90625,
+          "y": 794,
+          "w": 202.09375,
+          "h": 56,
+          "top": 794,
+          "bottom": 850,
+          "left": 543.90625,
+          "right": 746
+        }
+      ],
+      "text_count": 51,
+      "intersections": [
+        {
+          "text": {
+            "tag": "LI",
+            "cls": "mc-rail-item",
+            "x": 417.703125,
+            "y": 822.703125,
+            "w": 150.921875,
+            "h": 33.546875,
+            "top": 822.703125,
+            "bottom": 856.25,
+            "left": 417.703125,
+            "right": 568.625
+          },
+          "fixed": {
+            "id": "mmb-boot",
+            "tag": "DIV",
+            "cls": "",
+            "x": 543.90625,
+            "y": 794,
+            "w": 202.09375,
+            "h": 56,
+            "top": 794,
+            "bottom": 850,
+            "left": 543.90625,
+            "right": 746
+          }
+        },
+        {
+          "text": {
+            "tag": "LI",
+            "cls": "mc-rail-item",
+            "x": 574.625,
+            "y": 822.703125,
+            "w": 90.328125,
+            "h": 33.546875,
+            "top": 822.703125,
+            "bottom": 856.25,
+            "left": 574.625,
+            "right": 664.953125
+          },
+          "fixed": {
+            "id": "mmb-boot",
+            "tag": "DIV",
+            "cls": "",
+            "x": 543.90625,
+            "y": 794,
+            "w": 202.09375,
+            "h": 56,
+            "top": 794,
+            "bottom": 850,
+            "left": 543.90625,
+            "right": 746
+          }
+        },
+        {
+          "text": {
+            "tag": "LI",
+            "cls": "mc-rail-item",
+            "x": 670.953125,
+            "y": 822.703125,
+            "w": 85.375,
+            "h": 33.546875,
+            "top": 822.703125,
+            "bottom": 856.25,
+            "left": 670.953125,
+            "right": 756.328125
+          },
+          "fixed": {
+            "id": "mmb-boot",
+            "tag": "DIV",
+            "cls": "",
+            "x": 543.90625,
+            "y": 794,
+            "w": 202.09375,
+            "h": 56,
+            "top": 794,
+            "bottom": 850,
+            "left": 543.90625,
+            "right": 746
+          }
+        }
+      ],
+      "stance": {
+        "tag": "P",
+        "cls": "mc-stance mq-tone-warn",
+        "x": 61,
+        "y": 938.9375,
+        "w": 646,
+        "h": 69,
+        "top": 938.9375,
+        "bottom": 1007.9375,
+        "left": 61,
+        "right": 707
+      },
+      "stance_hits": [],
+      "fab": {
+        "tag": "DIV",
+        "cls": "",
+        "x": 543.90625,
+        "y": 794,
+        "w": 202.09375,
+        "h": 56,
+        "top": 794,
+        "bottom": 850,
+        "left": 543.90625,
+        "right": 746
+      },
+      "fab_in_reserved_band": null,
+      "analyst_fixed": false,
+      "ok": true
+    },
+    "max": {
+      "at_max": true,
+      "fixed": [
+        {
+          "id": "mmb-boot",
+          "tag": "DIV",
+          "cls": "",
+          "x": 543.90625,
+          "y": 794,
+          "w": 202.09375,
+          "h": 56,
+          "top": 794,
+          "bottom": 850,
+          "left": 543.90625,
+          "right": 746
+        }
+      ],
+      "text_count": 51,
+      "intersections": [],
+      "stance": {
+        "tag": "P",
+        "cls": "mc-stance mq-tone-warn",
+        "x": 61,
+        "y": -528.0625,
+        "w": 646,
+        "h": 69,
+        "top": -528.0625,
+        "bottom": -459.0625,
+        "left": 61,
+        "right": 707
+      },
+      "stance_hits": [],
+      "fab": {
+        "tag": "DIV",
+        "cls": "",
+        "x": 543.90625,
+        "y": 794,
+        "w": 202.09375,
+        "h": 56,
+        "top": 794,
+        "bottom": 850,
+        "left": 543.90625,
+        "right": 746
+      },
+      "fab_in_reserved_band": true,
+      "analyst_fixed": false,
+      "ok": true
+    },
+    "ok": true
+  },
+  "clear_768_dark_zh": {
+    "boot": {
+      "at_max": false,
+      "fixed": [
+        {
+          "id": "mmb-boot",
+          "tag": "DIV",
+          "cls": "",
+          "x": 574.9375,
+          "y": 794,
+          "w": 171.0625,
+          "h": 56,
+          "top": 794,
+          "bottom": 850,
+          "left": 574.9375,
+          "right": 746
+        }
+      ],
+      "text_count": 51,
+      "intersections": [
+        {
+          "text": {
+            "tag": "LI",
+            "cls": "mc-rail-item",
+            "x": 570.4375,
+            "y": 776.40625,
+            "w": 95.09375,
+            "h": 33.546875,
+            "top": 776.40625,
+            "bottom": 809.953125,
+            "left": 570.4375,
+            "right": 665.53125
+          },
+          "fixed": {
+            "id": "mmb-boot",
+            "tag": "DIV",
+            "cls": "",
+            "x": 574.9375,
+            "y": 794,
+            "w": 171.0625,
+            "h": 56,
+            "top": 794,
+            "bottom": 850,
+            "left": 574.9375,
+            "right": 746
+          }
+        },
+        {
+          "text": {
+            "tag": "LI",
+            "cls": "mc-rail-item",
+            "x": 671.53125,
+            "y": 776.40625,
+            "w": 67.546875,
+            "h": 33.546875,
+            "top": 776.40625,
+            "bottom": 809.953125,
+            "left": 671.53125,
+            "right": 739.078125
+          },
+          "fixed": {
+            "id": "mmb-boot",
+            "tag": "DIV",
+            "cls": "",
+            "x": 574.9375,
+            "y": 794,
+            "w": 171.0625,
+            "h": 56,
+            "top": 794,
+            "bottom": 850,
+            "left": 574.9375,
+            "right": 746
+          }
+        },
+        {
+          "text": {
+            "tag": "LI",
+            "cls": "mc-rail-item",
+            "x": 745.078125,
+            "y": 776.40625,
+            "w": 81.3125,
+            "h": 33.546875,
+            "top": 776.40625,
+            "bottom": 809.953125,
+            "left": 745.078125,
+            "right": 826.390625
+          },
+          "fixed": {
+            "id": "mmb-boot",
+            "tag": "DIV",
+            "cls": "",
+            "x": 574.9375,
+            "y": 794,
+            "w": 171.0625,
+            "h": 56,
+            "top": 794,
+            "bottom": 850,
+            "left": 574.9375,
+            "right": 746
+          }
+        }
+      ],
+      "stance": {
+        "tag": "P",
+        "cls": "mc-stance mq-tone-warn",
+        "x": 61,
+        "y": 892.640625,
+        "w": 646,
+        "h": 46.5,
+        "top": 892.640625,
+        "bottom": 939.140625,
+        "left": 61,
+        "right": 707
+      },
+      "stance_hits": [],
+      "fab": {
+        "tag": "DIV",
+        "cls": "",
+        "x": 574.9375,
+        "y": 794,
+        "w": 171.0625,
+        "h": 56,
+        "top": 794,
+        "bottom": 850,
+        "left": 574.9375,
+        "right": 746
+      },
+      "fab_in_reserved_band": null,
+      "analyst_fixed": false,
+      "ok": true
+    },
+    "max": {
+      "at_max": true,
+      "fixed": [
+        {
+          "id": "mmb-boot",
+          "tag": "DIV",
+          "cls": "",
+          "x": 574.9375,
+          "y": 794,
+          "w": 171.0625,
+          "h": 56,
+          "top": 794,
+          "bottom": 850,
+          "left": 574.9375,
+          "right": 746
+        }
+      ],
+      "text_count": 51,
+      "intersections": [],
+      "stance": {
+        "tag": "P",
+        "cls": "mc-stance mq-tone-warn",
+        "x": 61,
+        "y": -373.359375,
+        "w": 646,
+        "h": 46.5,
+        "top": -373.359375,
+        "bottom": -326.859375,
+        "left": 61,
+        "right": 707
+      },
+      "stance_hits": [],
+      "fab": {
+        "tag": "DIV",
+        "cls": "",
+        "x": 574.9375,
+        "y": 794,
+        "w": 171.0625,
+        "h": 56,
+        "top": 794,
+        "bottom": 850,
+        "left": 574.9375,
+        "right": 746
+      },
+      "fab_in_reserved_band": true,
+      "analyst_fixed": false,
+      "ok": true
+    },
+    "ok": true
+  },
+  "clear_768_light_en": {
+    "boot": {
+      "at_max": false,
+      "fixed": [
+        {
+          "id": "mmb-boot",
+          "tag": "DIV",
+          "cls": "",
+          "x": 543.90625,
+          "y": 794,
+          "w": 202.09375,
+          "h": 56,
+          "top": 794,
+          "bottom": 850,
+          "left": 543.90625,
+          "right": 746
+        }
+      ],
+      "text_count": 51,
+      "intersections": [
+        {
+          "text": {
+            "tag": "LI",
+            "cls": "mc-rail-item",
+            "x": 417.703125,
+            "y": 803.703125,
+            "w": 150.921875,
+            "h": 33.546875,
+            "top": 803.703125,
+            "bottom": 837.25,
+            "left": 417.703125,
+            "right": 568.625
+          },
+          "fixed": {
+            "id": "mmb-boot",
+            "tag": "DIV",
+            "cls": "",
+            "x": 543.90625,
+            "y": 794,
+            "w": 202.09375,
+            "h": 56,
+            "top": 794,
+            "bottom": 850,
+            "left": 543.90625,
+            "right": 746
+          }
+        },
+        {
+          "text": {
+            "tag": "LI",
+            "cls": "mc-rail-item",
+            "x": 574.625,
+            "y": 803.703125,
+            "w": 90.328125,
+            "h": 33.546875,
+            "top": 803.703125,
+            "bottom": 837.25,
+            "left": 574.625,
+            "right": 664.953125
+          },
+          "fixed": {
+            "id": "mmb-boot",
+            "tag": "DIV",
+            "cls": "",
+            "x": 543.90625,
+            "y": 794,
+            "w": 202.09375,
+            "h": 56,
+            "top": 794,
+            "bottom": 850,
+            "left": 543.90625,
+            "right": 746
+          }
+        },
+        {
+          "text": {
+            "tag": "LI",
+            "cls": "mc-rail-item",
+            "x": 670.953125,
+            "y": 803.703125,
+            "w": 85.375,
+            "h": 33.546875,
+            "top": 803.703125,
+            "bottom": 837.25,
+            "left": 670.953125,
+            "right": 756.328125
+          },
+          "fixed": {
+            "id": "mmb-boot",
+            "tag": "DIV",
+            "cls": "",
+            "x": 543.90625,
+            "y": 794,
+            "w": 202.09375,
+            "h": 56,
+            "top": 794,
+            "bottom": 850,
+            "left": 543.90625,
+            "right": 746
+          }
+        }
+      ],
+      "stance": {
+        "tag": "P",
+        "cls": "mc-stance mq-tone-warn",
+        "x": 61,
+        "y": 919.9375,
+        "w": 646,
+        "h": 69,
+        "top": 919.9375,
+        "bottom": 988.9375,
+        "left": 61,
+        "right": 707
+      },
+      "stance_hits": [],
+      "fab": {
+        "tag": "DIV",
+        "cls": "",
+        "x": 543.90625,
+        "y": 794,
+        "w": 202.09375,
+        "h": 56,
+        "top": 794,
+        "bottom": 850,
+        "left": 543.90625,
+        "right": 746
+      },
+      "fab_in_reserved_band": null,
+      "analyst_fixed": false,
+      "ok": true
+    },
+    "max": {
+      "at_max": true,
+      "fixed": [
+        {
+          "id": "mmb-boot",
+          "tag": "DIV",
+          "cls": "",
+          "x": 543.90625,
+          "y": 794,
+          "w": 202.09375,
+          "h": 56,
+          "top": 794,
+          "bottom": 850,
+          "left": 543.90625,
+          "right": 746
+        }
+      ],
+      "text_count": 51,
+      "intersections": [],
+      "stance": {
+        "tag": "P",
+        "cls": "mc-stance mq-tone-warn",
+        "x": 61,
+        "y": -530.0625,
+        "w": 646,
+        "h": 69,
+        "top": -530.0625,
+        "bottom": -461.0625,
+        "left": 61,
+        "right": 707
+      },
+      "stance_hits": [],
+      "fab": {
+        "tag": "DIV",
+        "cls": "",
+        "x": 543.90625,
+        "y": 794,
+        "w": 202.09375,
+        "h": 56,
+        "top": 794,
+        "bottom": 850,
+        "left": 543.90625,
+        "right": 746
+      },
+      "fab_in_reserved_band": true,
+      "analyst_fixed": false,
+      "ok": true
+    },
+    "ok": true
+  },
+  "clear_768_light_zh": {
+    "boot": {
+      "at_max": false,
+      "fixed": [
+        {
+          "id": "mmb-boot",
+          "tag": "DIV",
+          "cls": "",
+          "x": 574.9375,
+          "y": 794,
+          "w": 171.0625,
+          "h": 56,
+          "top": 794,
+          "bottom": 850,
+          "left": 574.9375,
+          "right": 746
+        }
+      ],
+      "text_count": 51,
+      "intersections": [],
+      "stance": {
+        "tag": "P",
+        "cls": "mc-stance mq-tone-warn",
+        "x": 61,
+        "y": 873.640625,
+        "w": 646,
+        "h": 46.5,
+        "top": 873.640625,
+        "bottom": 920.140625,
+        "left": 61,
+        "right": 707
+      },
+      "stance_hits": [],
+      "fab": {
+        "tag": "DIV",
+        "cls": "",
+        "x": 574.9375,
+        "y": 794,
+        "w": 171.0625,
+        "h": 56,
+        "top": 794,
+        "bottom": 850,
+        "left": 574.9375,
+        "right": 746
+      },
+      "fab_in_reserved_band": null,
+      "analyst_fixed": false,
+      "ok": true
+    },
+    "max": {
+      "at_max": true,
+      "fixed": [
+        {
+          "id": "mmb-boot",
+          "tag": "DIV",
+          "cls": "",
+          "x": 574.9375,
+          "y": 794,
+          "w": 171.0625,
+          "h": 56,
+          "top": 794,
+          "bottom": 850,
+          "left": 574.9375,
+          "right": 746
+        }
+      ],
+      "text_count": 51,
+      "intersections": [],
+      "stance": {
+        "tag": "P",
+        "cls": "mc-stance mq-tone-warn",
+        "x": 61,
+        "y": -375.359375,
+        "w": 646,
+        "h": 46.5,
+        "top": -375.359375,
+        "bottom": -328.859375,
+        "left": 61,
+        "right": 707
+      },
+      "stance_hits": [],
+      "fab": {
+        "tag": "DIV",
+        "cls": "",
+        "x": 574.9375,
+        "y": 794,
+        "w": 171.0625,
+        "h": 56,
+        "top": 794,
+        "bottom": 850,
+        "left": 574.9375,
+        "right": 746
+      },
+      "fab_in_reserved_band": true,
+      "analyst_fixed": false,
+      "ok": true
+    },
+    "ok": true
+  },
+  "i2_ok": true,
+  "half_null_markers": {
+    "omitted": true,
+    "null_chips": 4,
+    "e2": true,
+    "e6": true,
+    "e2_visible": true,
+    "e6_visible": true
+  },
+  "half_null_ok": true,
   "copy_15_ok": true,
   "copy_16_ok": true,
   "copy_workspace": {
     "ok": true,
     "rows": [
       {
-        "string": "Last accepted source cut",
-        "in_page": false,
-        "inside": false,
-        "outside": false
-      },
-      {
-        "string": "Calculation as-of",
-        "in_page": false,
-        "inside": false,
-        "outside": false
-      },
-      {
-        "string": "Page built",
-        "in_page": false,
-        "inside": false,
-        "outside": false
-      },
-      {
-        "string": "Method version",
-        "in_page": false,
-        "inside": false,
-        "outside": false
-      },
-      {
-        "string": "Authority ceiling",
-        "in_page": false,
+        "string": "This page publishes no dual-axis state and no headline quadrant",
+        "in_page": true,
         "inside": true,
         "outside": false
       },
       {
-        "string": "Source receipt",
-        "in_page": false,
-        "inside": true,
-        "outside": false
-      },
-      {
-        "string": "Content hash",
-        "in_page": false,
+        "string": "What this state implies",
+        "in_page": true,
         "inside": true,
         "outside": false
       },
       {
         "string": "Deterministic text from the accepted snapshot. No language model writes here.",
-        "in_page": false,
-        "inside": false,
+        "in_page": true,
+        "inside": true,
+        "outside": false
+      },
+      {
+        "string": "Confidence basis",
+        "in_page": true,
+        "inside": true,
         "outside": false
       }
     ]
   },
-  "i2_ok": true,
   "gaps": [
     "E5 remains a disclosed gap: the empty-e5 node is a <template> the client mounts on fragment failure, not a builder-triggerable fixture.",
-    "head_sha 729d4593a16ba2af13f9f12a0c4d1906b8885ab1 is the pre-commit tip at capture; P5 commits land after.",
-    "Frame 18: live hub has omitted=True null_chips=2; E2/E6 not builder-triggerable (e2=False e6=False).",
-    "Frame 19: live hub has omitted=True null_chips=2; E2/E6 not builder-triggerable (e2=False e6=False)."
+    "head_sha b80601bcc6825f275834b32771ddc2fd58a9d838 is the pre-commit tip at capture; P5 commits land after."
   ]
 }
