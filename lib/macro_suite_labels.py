@@ -353,6 +353,17 @@ _UNSTATED_GENERIC = _pair(
     "本组我们不发布单一读数。请先看下方变化，再进入其工作区。",
 )
 
+# N5-M1: Overview question is derived from figure mode so the deck never
+# asks "what moved" when the figure has no earlier reading to compare.
+OVERVIEW_QUESTIONS: dict[str, dict[str, str]] = {
+    "movement": _pair(
+        "What is macro saying today, and what moved?",
+        "今天宏观在说什么？有什么变化？"),
+    "current": _pair(
+        "What is macro saying today?",
+        "今天宏观在说什么？"),
+}
+
 STANCES: dict[str, dict[str, dict[str, str]]] = {
     "overview": {
         "all_read": _pair(
@@ -361,6 +372,14 @@ STANCES: dict[str, dict[str, dict[str, str]]] = {
         "some_unread": _pair(
             "Some desks have not reported yet. What moved below is what we do have.",
             "部分小组今天尚未发布。下方的变化就是我们目前掌握的内容。"),
+        # N5-M1: current-only figure mode. One voice — the figure state line
+        # is suppressed when this sentence is the panel stance.
+        "all_read_current": _pair(
+            "Every desk reported today. The latest readings are below — there is no earlier reading to compare yet.",
+            "今天每个小组都有读数。最新读数如下——暂无更早读数可比。"),
+        "some_unread_current": _pair(
+            "Some desks have not reported yet. The latest readings are below — there is no earlier reading to compare yet.",
+            "部分小组今天尚未发布。最新读数如下——暂无更早读数可比。"),
     },
     "money": {
         "A": _pair(
@@ -493,6 +512,12 @@ COUNT = {
     "same_publication": _pair(
         "Only one reading is published so far — nothing earlier to compare yet.",
         "目前只有一次读数——暂无更早读数可比。"),
+    # N5-M1: Overview deck/stance sentence when the figure is current-only.
+    # Distinct from same_publication so the panel can speak this once and
+    # drop the figure state line (one null voice).
+    "overview_current": _pair(
+        "The latest readings are below — there is no earlier reading to compare yet.",
+        "最新读数如下——暂无更早读数可比。"),
 }
 
 BOUNDARY_LINE = _pair(

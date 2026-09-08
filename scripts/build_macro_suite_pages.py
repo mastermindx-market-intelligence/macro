@@ -601,6 +601,9 @@ def build_page(root: Path, page: SuitePage, *, data_root: Path, out_dir: Path,
 
 
 P3_COPY_IDS = frozenset({"overview", "money", "policy", "rates", "inflation"})
+P3_UNPOPULATED_IDS = frozenset({
+    "growth", "jobs", "housing", "consumer", "credit", "debt", "trade",
+})
 P3_PRIMER_OPEN = frozenset({"overview", "money", "policy"})
 _SOURCE_NOTE_TITLES = frozenset({
     "Required source not current",
@@ -717,6 +720,40 @@ def _move_rows_from_deltas(deltas: Sequence[Mapping[str, Any]], *,
             "metric_id": metric_id,
         })
     return rows
+
+
+def _figure_mode(rows: Sequence[Mapping[str, Any]]) -> str:
+    """Overview deck voice: movement when every row compares two publications."""
+    if rows and all(row.get("kind") == "movement" for row in rows):
+        return "movement"
+    return "current"
+
+
+def _panel_is_populated(section: Mapping[str, Any]) -> bool:
+    """N5-M2: a customer panel is populated when it has a stance (P3 copy)
+    or a typed figure/empty. Bare offer-link shells are not panels."""
+    if section.get("stance"):
+        return True
+    if section.get("figure") or section.get("empty"):
+        return True
+    for tab in section.get("subtabs") or []:
+        if tab.get("figure") or tab.get("empty"):
+            return True
+    return False
+
+
+def _remap_unpopulated_anchors(header: dict[str, Any],
+                               panel_ids: set[str]) -> None:
+    """Chip and Read deep-links to a missing panel resolve to Overview."""
+    for chip in header.get("strip") or []:
+        section = chip.get("section")
+        chip["href_section"] = (
+            section if section in panel_ids else "overview")
+    read = header.get("read") or {}
+    for clause in read.get("clauses") or []:
+        section = clause.get("section")
+        clause["href_section"] = (
+            section if section in panel_ids else "overview")
 
 
 def _figure_block(rows: Sequence[Mapping[str, Any]], *, overview: bool,
@@ -973,17 +1010,6 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
             sections_available, sections_total = macro_suite_view.section_coverage_tally(
                 entries)
             key = "all_read" if sections_available == sections_total else "some_unread"
-            table = L.STANCES.get("overview") or {}
-            if key not in table:
-                raise MacroCommandBuildError(f"unknown stance key overview/{key}")
-            if has_copy:
-                stance = {
-                    "text": dict(table[key]),
-                    "tone": "ok" if key == "all_read" else "warn",
-                }
-                primer = dict(hub["deck"])
-                caption = dict(L.CAPTIONS["overview"])
-                watching = _boundary_watching("overview", None, None)
             if overview_rows:
                 figure = _figure_block(
                     overview_rows, overview=True,
@@ -992,6 +1018,28 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
                 )
             else:
                 empty = _empty_state("e3")
+            # N5-M1: deck/stance are one voice derived from the figure mode.
+            # Current-only suppresses the figure state line so the sentence
+            # is not printed twice in the same panel.
+            mode = _figure_mode(overview_rows)
+            if mode == "current":
+                key = f"{key}_current"
+                question = dict(L.OVERVIEW_QUESTIONS["current"])
+                if figure:
+                    figure["state_line"] = None
+            else:
+                question = dict(L.OVERVIEW_QUESTIONS["movement"])
+            table = L.STANCES.get("overview") or {}
+            if key not in table:
+                raise MacroCommandBuildError(f"unknown stance key overview/{key}")
+            if has_copy:
+                stance = {
+                    "text": dict(table[key]),
+                    "tone": "ok" if key.startswith("all_read") else "warn",
+                }
+                primer = dict(hub["deck"])
+                caption = dict(L.CAPTIONS["overview"])
+                watching = _boundary_watching("overview", None, None)
         else:
             workspace_id, snap = _stance_snapshot(section, by_id)
             view = (_workspace_view(snap, workspace_id=workspace_id,
@@ -1116,7 +1164,14 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
             "subtabs": subtabs,
             "detail_links": detail_links,
         })
-    return sections
+    # N5-M2: P3 ships only populated panels. The P4 seven stay in SECTIONS
+    # (rail-order / dests / coverage) but do not render as empty shells.
+    populated = [section for section in sections if _panel_is_populated(section)]
+    count = len(populated)
+    for section in populated:
+        if section.get("first") and section.get("primer"):
+            section["primer"] = macro_suite_view._deck_copy(count)
+    return populated
 
 
 def write_fragments(env: Environment, sections: Sequence[Mapping[str, Any]],
@@ -1126,6 +1181,7 @@ def write_fragments(env: Environment, sections: Sequence[Mapping[str, Any]],
     dest.mkdir(parents=True, exist_ok=True)
     tmpl = env.get_template("_macro_command_fragment.html.j2")
     written: list[Path] = []
+    keep: set[str] = set()
     for section in sections:
         if section.get("first"):
             continue
@@ -1139,6 +1195,10 @@ def write_fragments(env: Environment, sections: Sequence[Mapping[str, Any]],
         finally:
             temp.unlink(missing_ok=True)
         written.append(path)
+        keep.add(path.name)
+    for stale in dest.glob("*.html"):
+        if stale.name not in keep:
+            stale.unlink()
     return written
 
 
@@ -1197,6 +1257,7 @@ def build_hub(entries: Sequence[Mapping[str, Any]], *, out_dir: Path,
     sections = _macro_command_sections(
         entries, page_built_at=page_built_at,
         allow_empty_state_fixture=allow_empty_state_fixture)
+    _remap_unpopulated_anchors(header, {section["id"] for section in sections})
     fragment_paths = write_fragments(env, sections, out_dir)
     html = env.get_template(HUB_PAGE.template).render(
         page_title="Macro & Monetary",

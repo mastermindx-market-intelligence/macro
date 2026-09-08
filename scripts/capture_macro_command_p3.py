@@ -28,6 +28,12 @@ REST_FRAMES = {
     "09-dark-en-390.png", "10-dark-zh-390.png",
     "11-light-en-390.png", "12-light-zh-390.png",
 }
+# r5: recapture only frames whose content changed (Overview deck + the
+# populated light sub-tab M2 proof). 15/16 also show the Overview deck.
+RECATCH_FRAMES = REST_FRAMES | {
+    "15-dark-en-768.png", "16-light-en-768.png",
+    "27-light-en-1440-money-central-banks.png",
+}
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -126,6 +132,55 @@ RAIL_JS = """() => {
   };
 }"""
 
+HAIRLINE_JS = """() => {
+  /* RIDER M2: exactly one hairline between the pill row and the first
+     populated row on a light deep-linked sub-tab. Measure rule rects. */
+  const figure = document.querySelector('#money .mc-figure');
+  const pills = document.querySelector('#money .mc-subtabs');
+  const visible = [...document.querySelectorAll('#money .mc-figure-tabbody')]
+    .find((el) => !el.hidden && getComputedStyle(el).display !== 'none');
+  if (!figure || !pills || !visible) {
+    return {populated: false, reason: 'missing figure/pills/tab'};
+  }
+  const firstRow = visible.querySelector(
+    '.mc-move-row, .mx-chg-row, .mc-move, [data-mc-empty]');
+  if (!firstRow) {
+    return {populated: false, reason: 'no row in visible tab'};
+  }
+  const pillBottom = pills.getBoundingClientRect().bottom;
+  const rowTop = firstRow.getBoundingClientRect().top;
+  const figCs = getComputedStyle(figure);
+  const tabCs = getComputedStyle(visible);
+  const figureBorderTopPx = parseFloat(figCs.borderTopWidth) || 0;
+  const tabbodyBorderTopPx = parseFloat(tabCs.borderTopWidth) || 0;
+  const rules = [];
+  const consider = (el) => {
+    const cs = getComputedStyle(el);
+    const box = el.getBoundingClientRect();
+    const bt = parseFloat(cs.borderTopWidth) || 0;
+    if (bt >= 0.5 && box.top >= pillBottom - 2 && box.top <= rowTop + 2) {
+      rules.push({
+        className: String(el.className || el.tagName),
+        top: box.top,
+        borderTop: bt,
+      });
+    }
+  };
+  consider(figure);
+  consider(visible);
+  return {
+    populated: true,
+    hairlineCount: rules.length,
+    rules,
+    tabbodyBorderTopPx,
+    figureBorderTopPx,
+    firstRowClass: String(firstRow.className || ''),
+    pillBottom,
+    rowTop,
+    visibleTab: visible.getAttribute('data-mc-tabbody'),
+  };
+}"""
+
 
 def _png_size(path: Path) -> tuple[int, int]:
     data = path.read_bytes()
@@ -217,10 +272,25 @@ def _wait_theme(page, theme: str, locale: str) -> None:
     )
 
 
+def _wait_hash_ready(page, hash_path: str) -> None:
+    """Money figures live in a fetched fragment — wait for a real row
+    on the *visible* tab (a hidden sibling's `.mc-move` is not enough)."""
+    if not hash_path.startswith("#money"):
+        return
+    page.wait_for_selector("#money [data-mc-figure]", timeout=15000)
+    tab = "central_banks" if "/central_banks" in hash_path else "liquidity"
+    page.wait_for_selector(
+        f"#{tab} .mc-move-row, #{tab} .mc-move-current-only",
+        state="visible",
+        timeout=15000,
+    )
+
+
 def _open_direct(context, url: str, hash_path: str, theme: str, locale: str):
     page = context.new_page()
     page.goto(url + hash_path, wait_until="domcontentloaded", timeout=30000)
     _wait_theme(page, theme, locale)
+    _wait_hash_ready(page, hash_path)
     return page
 
 
@@ -292,7 +362,7 @@ def _force_state_for(filename: str, extra: dict[str, Any] | None) -> str | None:
         "24-dark-en-1440-inflation-foot.png": "inflation_foot",
         "25-dark-en-1440-e3.png": "e3",
         "26-light-en-1440-e3.png": "e3",
-        "27-light-en-1440-growth-business.png": "growth_business",
+        "27-light-en-1440-money-central-banks.png": "money_central_banks",
     }
     if filename in named:
         return named[filename]
@@ -453,28 +523,7 @@ def main() -> int:
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
 
     try:
-        print("building empty-state fixture sites", flush=True)
-
-        def _e1(snap: dict[str, Any]) -> None:
-            snap["headline"]["effective_date"] = None
-            snap["headline"]["status"] = "ABSENT"
-            snap["headline"]["null_reason"] = "NOT_YET_RELEASED"
-            snap["changes"]["deltas"] = []
-            snap["changes"]["comparability"] = "NO_PRIOR"
-            snap["changes"]["status"] = "ABSENT"
-            snap["changes"]["null_reason"] = "INSUFFICIENT_HISTORY"
-
-        def _e3(snap: dict[str, Any]) -> None:
-            snap["changes"]["deltas"] = []
-            snap["changes"]["comparability"] = "NO_PRIOR"
-            snap["changes"]["status"] = "ABSENT"
-            snap["changes"]["null_reason"] = "INSUFFICIENT_HISTORY"
-
-        site_e1 = _build_json_empty(tmp, "e1", _e1)
-        site_e3 = _build_json_empty(tmp, "e3", _e3)
-        site_e4 = _build_flag_empty(tmp, "e4_central_banks.json", "e4", "money.html")
-        site_e6 = _build_flag_empty(tmp, "e6_inflation_system.json", "e6", "inflation.html")
-        site_e3ov = _build_e3_overview(tmp)
+        print("skipping empty-state fixture sites (unchanged this pass)", flush=True)
 
         shots = [
             # filename, theme, locale, w, h, hash, kind, extra
@@ -502,7 +551,7 @@ def main() -> int:
             ("22-light-en-1440-heading-focus.png", "light", "en", 1440, 2200, "#overview", "focus", None),
             ("23-dark-en-1440-money-central-banks.png", "dark", "en", 1440, 2200, "#money/central_banks", "full", None),
             ("24-dark-en-1440-inflation-foot.png", "dark", "en", 1440, 2200, "#inflation", "full", None),
-            ("27-light-en-1440-growth-business.png", "light", "en", 1440, 2200, "#growth/business", "full", None),
+            ("27-light-en-1440-money-central-banks.png", "light", "en", 1440, 2200, "#money/central_banks", "full", None),
         ]
 
         with sync_playwright() as playwright:
@@ -512,6 +561,9 @@ def main() -> int:
             try:
                 for filename, theme, locale, vw, vh, hash_path, kind, extra in shots:
                     dest = EVIDENCE / filename
+                    if filename not in RECATCH_FRAMES:
+                        print(f"keeping {filename}", flush=True)
+                        continue
                     print(f"capturing {filename} ({kind})", flush=True)
                     context = _new_context(browser, theme, locale, vw, vh)
                     inner = None
@@ -525,12 +577,21 @@ def main() -> int:
                                             hash_path, theme, locale)
                         target = page
                         page.wait_for_selector(".mc-shell", timeout=15000)
-                        if kind in ("full",) and hash_path == "#overview" and vw == 1440:
+                        if hash_path == "#overview" and locale == "en":
                             html = target.content()
                             if "Every desk reported today" in html:
                                 raise RuntimeError(f"{filename} still has the false-green stance")
-                            if "Some desks have not reported yet" not in html and locale == "en":
+                            if "Some desks have not reported yet" not in html:
                                 raise RuntimeError(f"{filename} missing warn stance")
+                            if "What moved below is what we do have" in html:
+                                raise RuntimeError(
+                                    f"{filename} still promises movement on a current-only deck")
+                            if "The latest readings are below" not in html:
+                                raise RuntimeError(
+                                    f"{filename} missing current-only deck sentence")
+                            if "and what moved?" in html:
+                                raise RuntimeError(
+                                    f"{filename} still asks what moved")
                         if kind == "iframe-end":
                             target.evaluate("window.scrollTo(0, document.documentElement.scrollHeight)")
                             target.wait_for_timeout(200)
@@ -608,95 +669,45 @@ def main() -> int:
                         probes[f"rail_768_{theme}_{locale}"] = rail
                     finally:
                         context.close()
-            finally:
-                _kill(proc)
-                if proc in servers:
-                    servers.remove(proc)
 
-            # E3 overview frames 25/26 from the fixture build
-            proc, origin = _serve(site_e3ov)
-            servers.append(proc)
-            try:
-                for filename, theme in (("25-dark-en-1440-e3.png", "dark"),
-                                        ("26-light-en-1440-e3.png", "light")):
-                    dest = EVIDENCE / filename
-                    print(f"capturing {filename}", flush=True)
-                    context = _new_context(browser, theme, "en", 1440, 2200)
-                    try:
-                        page = _open_direct(context, origin + "/macro_monetary.html",
-                                            "#overview", theme, "en")
-                        if 'data-mc-empty="e3"' not in page.content():
-                            raise RuntimeError(f"{filename} is not the E3 overview")
-                        page.locator("#overview").screenshot(path=str(dest), type="png")
-                        _assert_png(dest)
-                        _upsert(manifest, filename, _row(
-                            filename, dest, theme, "en", 1440, 2200,
-                            {"fixture": "in-memory: hub.changes.entries=[] → E3",
-                             "trigger": "Overview figure slot empty; directory untouched"}))
-                    finally:
-                        context.close()
-            finally:
-                _kill(proc)
-                if proc in servers:
-                    servers.remove(proc)
-
-            empty_jobs = [
-                ("e1", site_e1, "#inflation", "#inflation [data-mc-empty='e1']",
-                 "#inflation", FIXTURES / "e1_inflation_system.json",
-                 "Contract-legal inflation_system JSON: no date, no deltas → E1"),
-                ("e2", SITE, "#rates", "#rates [data-mc-empty='e2']",
-                 "#rates", FIXTURES / "e2_rates_curves.json",
-                 "Live #rates workspace context.state is SOURCE_FAILED / STALE_SOURCE"),
-                ("e3", site_e3, "#inflation", "#inflation [data-mc-empty='e3']",
-                 "#inflation", FIXTURES / "e3_inflation_system.json",
-                 "Contract-legal inflation_system JSON: dated, no comparable deltas → E3"),
-                ("e4", site_e4, "#central_banks", "#money [data-mc-empty='e4']",
-                 "#money", FIXTURES / "e4_central_banks.json",
-                 " --empty-state-fixture e4_central_banks.json → withheld_command_tabs"),
-                ("e6", site_e6, "#inflation", "#inflation [data-mc-empty='e6']",
-                 "#inflation", FIXTURES / "e6_inflation_system.json",
-                 "--empty-state-fixture e6_inflation_system.json → entitlement=Research"),
-            ]
-            for empty_id, site_dir, hash_path, empty_sel, panel_sel, fixture, trigger in empty_jobs:
-                proc, origin = _serve(site_dir)
-                servers.append(proc)
+                # RIDER M2: one hairline on a populated light sub-tab.
+                context = _new_context(browser, "light", "en", 1440, 2200)
                 try:
-                    for theme in ("dark", "light"):
-                        dest = EVIDENCE / f"empty-{empty_id}-{theme}.png"
-                        print(f"capturing {dest.name}", flush=True)
-                        context = _new_context(browser, theme, "en", 1440, 2200)
-                        try:
-                            page = _open_direct(
-                                context, origin + "/macro_monetary.html",
-                                hash_path, theme, "en")
-                            page.wait_for_selector(empty_sel, timeout=15000)
-                            # Arrival chrome is a different frame (17/18). Hide
-                            # it here so an empty-slot clip is not a byte copy
-                            # of the deep-link arrival crop.
-                            page.evaluate(
-                                """() => {
-                                  document.querySelectorAll('[data-mc-arrival]')
-                                    .forEach((el) => { el.hidden = true; });
-                                }""")
-                            page.locator(panel_sel).first.screenshot(
-                                path=str(dest), type="png")
-                            _assert_png(dest)
-                            text = page.locator(empty_sel).first.inner_text()
-                            if "Empty e" in text:
-                                raise RuntimeError(f"placeholder leaked: {text!r}")
-                            if "Each row shows the last two readings" in page.locator(panel_sel).first.inner_text():
-                                raise RuntimeError(f"{dest.name} still prints the row caption")
-                            _upsert(manifest, dest.name, _row(
-                                dest.name, dest, theme, "en", 1440, 2200,
-                                {"fixture": str(fixture.relative_to(ROOT)),
-                                 "trigger": trigger}))
-                        finally:
-                            context.close()
+                    page = _open_direct(
+                        context, origin + "/macro_monetary.html",
+                        "#money/central_banks", "light", "en")
+                    page.wait_for_selector(
+                        "#central_banks .mc-move-row, "
+                        "#central_banks .mc-move-current-only",
+                        state="visible",
+                        timeout=15000)
+                    hair = page.evaluate(HAIRLINE_JS)
+                    if not hair.get("populated"):
+                        raise RuntimeError(f"RIDER M2 hairline probe not populated: {hair}")
+                    if hair.get("hairlineCount") != 1:
+                        raise RuntimeError(
+                            f"RIDER M2 expected one hairline, got {hair}")
+                    if hair.get("tabbodyBorderTopPx") != 0:
+                        raise RuntimeError(
+                            f"RIDER M2 tabbody still draws a top rule: {hair}")
+                    if hair.get("figureBorderTopPx") != 1:
+                        raise RuntimeError(
+                            f"RIDER M2 figure fence missing: {hair}")
+                    probes["m2_hairline_light_en"] = hair
+                    print(
+                        f"  probe m2_hairline_light_en count={hair['hairlineCount']} "
+                        f"figTop={hair['figureBorderTopPx']} "
+                        f"tabTop={hair['tabbodyBorderTopPx']} "
+                        f"tab={hair.get('visibleTab')}",
+                        flush=True)
                 finally:
-                    _kill(proc)
-                    if proc in servers:
-                        servers.remove(proc)
+                    context.close()
+            finally:
+                _kill(proc)
+                if proc in servers:
+                    servers.remove(proc)
 
+            print("keeping empty-state frames (content unchanged)", flush=True)
             browser.close()
 
         _upsert(manifest, "empty-e5-dark.png", {
@@ -730,13 +741,23 @@ def main() -> int:
         # Distinct-frame sha check; drop the r4 stray row.
         states = [
             state for state in manifest["pages"][0]["states"]
-            if state.get("file") != "rates-curves-zh-after.png"
-            and state.get("force_state") != "addendum:rates-curves-zh-after.png"
+            if state.get("file") not in {
+                "rates-curves-zh-after.png",
+                "27-light-en-1440-growth-business.png",
+            }
+            and state.get("force_state") not in {
+                "addendum:rates-curves-zh-after.png",
+                "growth_business",
+            }
         ]
         manifest["pages"][0]["states"] = states
-        stray = EVIDENCE / "rates-curves-zh-after.png"
-        if stray.exists():
-            stray.unlink()
+        for stray_name in (
+            "rates-curves-zh-after.png",
+            "27-light-en-1440-growth-business.png",
+        ):
+            stray = EVIDENCE / stray_name
+            if stray.exists():
+                stray.unlink()
 
         by_sha: dict[str, list[str]] = {}
         force_states: set[str] = set()
@@ -769,11 +790,12 @@ def main() -> int:
         manifest["target"]["resolved_sha_or_none"] = head
         manifest["target"]["resolved_sha_source"] = (
             f"pre-commit HEAD of this worktree ({head}); the capture ran on "
-            "this working tree after the r4/v5 CSS/builder edits and one "
-            "scripts/build_macro_suite_pages.py rebuild. I4 composition "
-            "change: Overview + money/policy/inflation figures that had a "
-            "same-publication prior now render current-only rows + the typed "
-            "state line (frames 01–04, 09–16, 23, 24, 27)."
+            "this working tree after the r5 N5-M1/N5-M2/M2 edits and one "
+            "scripts/build_macro_suite_pages.py rebuild. Recaptured Overview "
+            "deck frames 01–04, 09–12 and 15/16 (same deck at 768) plus the "
+            "populated light #money/central_banks M2 proof (27). The empty "
+            "growth/business tab frame is deleted; that real-page proof "
+            "moves to P4 v2 once the section is populated."
         )
         MANIFEST.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
         probes["generated_at"] = generated_at

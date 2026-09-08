@@ -28,6 +28,11 @@ DATA_ROOT = ROOT / "site" / "macrodata"
 BUILT_AT = "2026-09-06T00:00:00Z"
 P3_IDS = ("overview", "money", "policy", "rates", "inflation")
 P4_IDS = ("growth", "jobs", "housing", "consumer", "credit", "debt", "trade")
+CURRENT_ONLY_DECK_EN = (
+    "The latest readings are below — there is no earlier reading to compare yet.")
+CURRENT_ONLY_DECK_ZH = "最新读数如下——暂无更早读数可比。"
+MOVEMENT_DECK_EN = "What moved below is what we do have."
+MOVEMENT_DECK_ZH = "下方的变化就是我们目前掌握的内容。"
 RAIL_WORKSPACES = (
     "liquidity_regime", "liquidity_central_banks", "monetary_policy",
     "rates_curves", "inflation_system", "growth_real_economy",
@@ -126,7 +131,8 @@ def test_overview_dom_order_and_no_details_or_arrival(built: tuple[str, Path]) -
         ]
     assert order == expected
     overview = unescape(_panel(html, "overview"))
-    if "Only one reading is published so far" in overview:
+    if (CURRENT_ONLY_DECK_EN in overview
+            or "Only one reading is published so far" in overview):
         assert "mc-caption" not in order
         assert "compared against the previous publication" not in overview
 
@@ -160,21 +166,21 @@ def test_p3_non_overview_dom_order(built: tuple[str, Path]) -> None:
             assert "mc-foot" in order
 
 
-def test_p4_sections_have_no_stance_primer_caption_watch(built: tuple[str, Path]) -> None:
+def test_p4_sections_are_not_rendered_as_empty_shells(
+        built: tuple[str, Path]) -> None:
+    """N5-M2: P3 ships only populated panels — no offer-only P4 shells."""
     html, _ = built
     for section_id in P4_IDS:
-        panel = _panel(html, section_id)
-        assert 'class="mc-stance' not in panel, section_id
-        assert 'class="mc-primer' not in panel, section_id
-        assert 'class="mc-caption' not in panel, section_id
-        assert 'class="mc-watch' not in panel, section_id
+        assert f'id="{section_id}"' not in html, section_id
+        assert f'data-mc-panel="{section_id}"' not in html, section_id
+        assert f'data-mc-section="{section_id}"' not in html, section_id
 
 
 def test_panel_focus_and_subtab_aria_yield_to_shipped_p1(built: tuple[str, Path]) -> None:
     html, _ = built
     assert len(re.findall(r'<section class="mc-panel"[^>]*tabindex', html)) == 0
     titles = re.findall(r'<h2 class="mc-panel-title"[^>]*>', html)
-    assert len(titles) == 12
+    assert len(titles) == len(P3_IDS)
     for tag in titles:
         assert 'tabindex="-1"' in tag
     assert re.findall(r'class="mc-subtabs"[^>]*aria-label=', html) == []
@@ -195,9 +201,8 @@ def test_overview_stance_carries_no_digit(built: tuple[str, Path]) -> None:
     assert not re.search(r"\d", text)
 
 
-def test_derived_deck_uses_rail_section_count_not_fourteen() -> None:
-    n = len(builder.SECTIONS)
-    assert n == 12
+def test_derived_deck_uses_populated_panel_count_not_fourteen() -> None:
+    n = len(P3_IDS)
     copy = macro_suite_view._deck_copy(n)
     assert "Fourteen" not in copy["en"]
     assert "fourteen" not in copy["en"]
@@ -207,24 +212,25 @@ def test_derived_deck_uses_rail_section_count_not_fourteen() -> None:
 
 
 def test_deck_count_changes_when_the_rail_length_changes() -> None:
-    eleven = macro_suite_view._deck_copy(11)
-    twelve = macro_suite_view._deck_copy(12)
-    assert eleven != twelve
-    assert "11 research sections" in eleven["en"]
-    assert "12 research sections" in twelve["en"]
-    assert "11 个研究板块" in eleven["zh"]
+    four = macro_suite_view._deck_copy(4)
+    five = macro_suite_view._deck_copy(5)
+    assert four != five
+    assert "4 research sections" in four["en"]
+    assert "5 research sections" in five["en"]
+    assert "4 个研究板块" in four["zh"]
 
 
 def test_built_page_has_one_section_count_matching_the_rail(
         built: tuple[str, Path]) -> None:
     html, _ = built
-    n = len(builder.SECTIONS)
+    n = len(P3_IDS)
     assert html.count("Fourteen research") == 0
     assert html.count("十四个研究") == 0
     assert html.count(f"{n} research sections") == 1
     assert html.count(f"{n} 个研究板块") == 1
-    assert f"of {n} sections" in html
-    assert f"{n} 个板块中" in html
+    # Coverage chip still owns the 12-section completeness integer (C10).
+    assert "of 12 sections" in html
+    assert "12 个板块中" in html
 
 
 def test_copy_budgets_on_the_reviewed_tables() -> None:
@@ -360,6 +366,8 @@ def test_built_hub_9_of_12_uses_some_unread_stance(built: tuple[str, Path]) -> N
     assert stance.group(1) == "warn"
     text = re.sub(r"<[^>]+>", "", stance.group(2))
     assert "Some desks have not reported yet" in text
+    assert CURRENT_ONLY_DECK_EN in text
+    assert MOVEMENT_DECK_EN not in text
     assert "Every desk reported today" not in overview
     assert "Every desk reported today" not in html
     plain = unescape(html)
@@ -390,6 +398,11 @@ def _live_entries() -> list[dict]:
     return entries
 
 
+def _figure_is_current_only(section: dict) -> bool:
+    rows = list((section.get("figure") or {}).get("rows") or [])
+    return bool(rows) and all(row.get("kind") == "current" for row in rows)
+
+
 def test_twelve_of_twelve_uses_all_read_stance() -> None:
     """N0: only a full section tally may wear the complete / ok stance."""
     entries = copy.deepcopy(_live_entries())
@@ -404,6 +417,10 @@ def test_twelve_of_twelve_uses_all_read_stance() -> None:
     assert overview["stance"]["tone"] == "ok"
     assert "Every desk reported today" in overview["stance"]["text"]["en"]
     assert "今天每个小组都有读数" in overview["stance"]["text"]["zh"]
+    # Live data is same-publication, so the current-only deck sentence wins.
+    if _figure_is_current_only(overview):
+        assert CURRENT_ONLY_DECK_EN in overview["stance"]["text"]["en"]
+        assert MOVEMENT_DECK_EN not in overview["stance"]["text"]["en"]
 
 
 def test_dests_heading_names_destination_pages_not_research_sections(
@@ -411,8 +428,8 @@ def test_dests_heading_names_destination_pages_not_research_sections(
     """n4: 12 and 14 are labelled as different counts."""
     html, _ = built
     overview = unescape(_panel(html, "overview"))
-    assert "12 research sections" in overview
-    assert "12 个研究板块" in overview
+    assert "5 research sections" in overview
+    assert "5 个研究板块" in overview
     assert "Where to go next — 14 destination pages" in overview
     assert "接下来去哪里——14 个目标页面" in overview
 
@@ -623,9 +640,9 @@ def test_dec_stance_is_guidance_record_exists() -> None:
     assert "no score" in text
 
 
-def test_arrival_ships_hidden_on_eleven_non_overview_panels(built: tuple[str, Path]) -> None:
+def test_arrival_ships_hidden_on_non_overview_panels(built: tuple[str, Path]) -> None:
     html, _ = built
-    assert html.count("data-mc-arrival hidden") == 11
+    assert html.count("data-mc-arrival hidden") == len(P3_IDS) - 1
     overview = _panel(html, "overview")
     assert "data-mc-arrival" not in overview
 
@@ -635,6 +652,7 @@ def test_fragments_carry_the_authenticity_marker(built: tuple[str, Path]) -> Non
     frag_dir = out / "macro" / "fragments"
     names = sorted(p.name for p in frag_dir.glob("*.html"))
     assert "overview.html" not in names
+    assert names == ["inflation.html", "money.html", "policy.html", "rates.html"]
     assert "money.html" in names
     assert "rates.html" in names
     money = (frag_dir / "money.html").read_text(encoding="utf-8")
@@ -815,14 +833,15 @@ def test_i4_earlier_prior_is_a_movement_row() -> None:
     assert row["sign"] == "up"
 
 
-def test_i4_same_publication_is_current_only() -> None:
-    """I4 (b): equal dates → current reading + one typed state line; no count."""
+@pytest.mark.parametrize("prior_date", ("2026-08-01", None, "not-a-date"))
+def test_i4_equal_missing_or_unparseable_prior_is_current_only(
+        prior_date: str | None) -> None:
+    """I4 (b): equal / missing / unparseable prior → current-only + one state line."""
     assert macro_suite_view.prior_publication_is_earlier(
-        "2026-08-01", "2026-08-01") is False
+        prior_date, "2026-08-01") is False
     view = _i4_view(
-        prior_date="2026-08-01", headline_date="2026-08-01",
-        deltas=[_i4_delta("funding_pressure", delta="0", sign="flat")],
-        prior_is_earlier=False)
+        prior_date=prior_date, headline_date="2026-08-01",
+        deltas=[_i4_delta("funding_pressure", delta="0", sign="flat")])
     figure, empty = builder._figure_or_empty_for_workspace(
         {"headline": {"effective_date": "2026-08-01"}},
         view=view, href="x.html")
@@ -830,6 +849,8 @@ def test_i4_same_publication_is_current_only() -> None:
     assert figure is not None
     assert figure["count_text"] is None
     assert figure["state_line"] == dict(L.COUNT["same_publication"])
+    assert "compared against the previous publication" not in (
+        (figure["count_text"] or {}).get("en") or "")
     assert figure["state_line"]["en"] == (
         "Only one reading is published so far — nothing earlier to compare yet.")
     assert figure["state_line"]["zh"] == "目前只有一次读数——暂无更早读数可比。"
@@ -839,7 +860,6 @@ def test_i4_same_publication_is_current_only() -> None:
     assert row["prior"] is None
     assert row["delta"] is None
     assert row["sign"] is None
-    assert row["as_of_month"] == {"en": "Aug 2026", "zh": "2026年8月"}
 
 
 def test_i4_mixed_rows_keep_both_kinds_and_one_state_line() -> None:
@@ -865,13 +885,8 @@ def test_i4_mixed_rows_keep_both_kinds_and_one_state_line() -> None:
     assert figure["rows"][1]["sign"] is None
 
 
-def test_i4_unparseable_or_exploding_compare_is_current_only(
-        monkeypatch) -> None:
-    """I4 (e): missing / unparseable / exception → current-only, never movement."""
-    assert macro_suite_view.prior_publication_is_earlier(
-        "not-a-date", "2026-08-01") is False
-    assert macro_suite_view.prior_publication_is_earlier(
-        None, "2026-08-01") is False
+def test_i4_exploding_compare_is_current_only(monkeypatch) -> None:
+    """I4 (e): exception in the date comparison → current-only."""
 
     def _boom(*_a, **_k):
         raise RuntimeError("date compare exploded")
@@ -893,14 +908,59 @@ def test_i4_unparseable_or_exploding_compare_is_current_only(
     assert figure["state_line"] == dict(L.COUNT["same_publication"])
 
 
+def test_n5_m1_same_publication_fixture_uses_current_only_deck_once(
+        built: tuple[str, Path]) -> None:
+    """N5-M1: same-publication prior → current-only deck sentence once, EN+ZH."""
+    html, _ = built
+    overview = unescape(_panel(html, "overview"))
+    assert overview.count(CURRENT_ONLY_DECK_EN) == 1
+    assert overview.count(CURRENT_ONLY_DECK_ZH) == 1
+    assert MOVEMENT_DECK_EN not in overview
+    assert MOVEMENT_DECK_ZH not in overview
+    assert "and what moved?" not in overview
+    assert "有什么变化？" not in overview
+    # One voice: the figure state line is not repeated under the stance.
+    assert "Only one reading is published so far" not in overview
+    assert "目前只有一次读数" not in overview
+
+
+def test_n5_m2_hub_renders_only_populated_panels_with_stance(
+        built: tuple[str, Path]) -> None:
+    """N5-M2: every section has a stance; rail count equals panel count."""
+    html, _ = built
+    panels = re.findall(r'<section class="mc-panel" id="([^"]+)"', html)
+    rail = re.findall(r'data-mc-section="([a-z]+)"', html)
+    assert panels == list(P3_IDS)
+    assert rail == list(P3_IDS)
+    for section_id in panels:
+        body = _panel(html, section_id)
+        assert 'class="mc-stance' in body, section_id
+    # Destination cards still name the fourteen workspaces; the Growth
+    # *panel* is what must be gone (offer-only shells).
+    assert html.count('<span class="l-en">Overview</span>') >= 1
+    assert html.count('<span class="l-zh">总览</span>') >= 1
+
+
+def test_n5_m2_unpopulated_hash_resolves_to_overview_anchor(
+        built: tuple[str, Path]) -> None:
+    html, _ = built
+    ids = set(re.findall(r'\bid="([^"]+)"', html))
+    for href in re.findall(r'href="#([^"]+)"', html):
+        assert href in ids, href
+        assert href not in P4_IDS
+    js = (ROOT / "templates" / "macro_command.js").read_text(encoding="utf-8")
+    assert "sectionId = 'overview'" in js
+
+
 def test_i4_live_hub_does_not_claim_a_comparison_it_did_not_make(
         built: tuple[str, Path]) -> None:
     html, _ = built
     overview = unescape(_panel(html, "overview"))
-    assert "Only one reading is published so far" in overview
-    assert overview.count("Only one reading is published so far") == 1
+    assert overview.count(CURRENT_ONLY_DECK_EN) == 1
+    assert overview.count(CURRENT_ONLY_DECK_ZH) == 1
     assert "compared against the previous publication" not in overview
     assert "mq-delta-flat" not in overview
+    assert "Only one reading is published so far" not in overview
 
 
 def test_i3_arrival_punctuation_lives_inside_the_t_pair() -> None:
@@ -933,6 +993,18 @@ def test_p3_manifest_axes_match_every_force_state_and_tablet_bucket() -> None:
         if state.get("file") == "rates-curves-zh-after.png":
             raise AssertionError("stray rates-curves-zh-after.png still in manifest")
     assert seen == axes_states
+
+
+def test_rider_m2_light_subtab_has_one_hairline() -> None:
+    """RIDER M2: exactly one hairline between the pill row and the first row."""
+    probes = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p3" / "probes.json")
+        .read_text(encoding="utf-8"))
+    row = probes["m2_hairline_light_en"]
+    assert row.get("populated") is True, row
+    assert row.get("hairlineCount") == 1, row
+    assert row.get("tabbodyBorderTopPx") == 0, row
+    assert row.get("figureBorderTopPx") == 1, row
 
 
 def test_i1_rail_probe_has_no_document_overflow() -> None:

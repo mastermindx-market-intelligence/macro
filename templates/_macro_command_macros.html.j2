@@ -79,7 +79,7 @@
 {%- if read.clauses|length >= 3 %}
 <p class="mc-read" data-mc-read>
 {%- for clause in read.clauses -%}
-<span class="mc-read-clause"><a class="mc-read-topic mq-tone-{{ clause.tone }}" href="#{{ clause.section }}" data-mc-topic="{{ clause.id }}">{{ bl(clause.topic) }}</a><span class="l-en"> </span><span class="l-zh"></span><span class="mc-read-state">{{ bl(clause.predicate) }}</span>{{ bl(clause.punct) }}</span>
+<span class="mc-read-clause"><a class="mc-read-topic mq-tone-{{ clause.tone }}" href="#{{ clause.href_section or clause.section }}" data-mc-topic="{{ clause.id }}">{{ bl(clause.topic) }}</a><span class="l-en"> </span><span class="l-zh"></span><span class="mc-read-state">{{ bl(clause.predicate) }}</span>{{ bl(clause.punct) }}</span>
 {%- endfor -%}
 </p>
 {%- if read.omitted %}
@@ -107,7 +107,7 @@
 <ul class="mc-strip" data-mc-strip aria-labelledby="mc-strip-h">
   {%- for chip in strip %}
   <li class="mc-chip{{ ' is-null' if chip.null else '' }}" data-mc-topic="{{ chip.id }}">
-    <a class="mc-chip-link" href="#{{ chip.section }}" aria-describedby="{{ chip.id }}-help">
+    <a class="mc-chip-link" href="#{{ chip.href_section or chip.section }}" aria-describedby="{{ chip.id }}-help">
       <span class="mc-chip-top">
         <span class="mc-chip-label">{{ bl(chip.label) }}</span>
         {#- F-12 / MJ-2: a fully null chip renders NO as-of. A coverage
