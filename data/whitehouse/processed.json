@@ -1001,6 +1001,24 @@
       "at": "2026-09-08T18:40:21.866361+00:00",
       "activated": false,
       "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=49843": {
+      "id": "wh-2026-09-08-fact-sheet-president-donald-j-trump-accelerates-veterans-access-to-benefits-and-",
+      "at": "2026-09-08T21:52:26.478255+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=49842": {
+      "id": "wh-2026-09-08-accelerating-access-to-veterans-benefits-and-employment-opportunities",
+      "at": "2026-09-08T21:52:38.646715+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=49840": {
+      "id": "wh-2026-09-08-adjusting-certain-delegations-under-the-defense-production-act-e2de",
+      "at": "2026-09-08T21:52:51.359335+00:00",
+      "activated": false,
+      "importance": 0
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."
