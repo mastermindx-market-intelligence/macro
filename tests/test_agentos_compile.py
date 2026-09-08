@@ -1558,3 +1558,14 @@ def test_omitting_any_eligible_candidate_from_the_digest_set_is_detected(
 # MAS-65 extends the canonical always-on collection without relocating its tests.
 from tests.linear_portfolio_plan_cases import *  # noqa: E402,F401,F403
 from tests.linear_portfolio_plan_live_cases import *  # noqa: E402,F401,F403
+
+# September 8 continuation regressions run in the existing Agent OS CI job.
+from tests.agent_eval_continuity_cases import (  # noqa: E402,F401
+    test_dated_handoff_preserves_protected_release_evidence,
+    test_dated_handoff_does_not_repeat_superseded_release,
+    test_historical_handoff_names_both_live_source_gates_without_permission,
+    test_real_compiler_recovers_new_handoff_and_excludes_old,
+    test_unknown_effect_is_visible_not_cured_by_a_new_handoff,
+    test_malformed_new_handoff_never_silently_restores_obsolete_instructions,
+    test_later_workstream_completion_is_not_blocked_by_historical_case,
+)

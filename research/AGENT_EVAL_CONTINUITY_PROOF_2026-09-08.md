@@ -13,9 +13,10 @@ The Fable program, OHF/Outcome Learning source owners, Executive lifecycle and e
 retrieval/compiler retain their ownership. This adds no runtime, store, evaluator,
 watcher, provider route, authority or automatic policy promotion.
 
-Exactly four paths: the existing workstream, the September 8 handoff, its regression test,
-and this evidence report. The September 1 handoff is preserved byte-for-byte. No generated
-Agent OS view or existing compiler implementation is edited.
+The original checkpoint owned four paths. The current continuation owns five: the existing
+workstream, September 8 handoff, continuity case module, existing canonical test collection
+module, and this report. The September 1 handoff is preserved byte-for-byte. No generated
+Agent OS view, compiler implementation, workflow, guard or waiver is edited.
 
 ## Observed RED
 
@@ -90,3 +91,22 @@ CI integration and protected-source acceptance remain incomplete. Preserve the e
 candidate and its evidence; resolve the platform source-edit boundary before advancing
 that exact integration step. This report grants no exception or bypass. Further test,
 review and checkpoint receipts belong on the existing Macro #6993 carrier.
+
+## Current continuation: test integration, not a guard waiver
+
+The earlier hold above is retained as dated history. A new live Chairman continuation
+recovered PR #6998 at `cd115807343fb79d1742912cf831fb54e1ba4e89` and the real source/evidence
+checkpoint, despite the previous chat closeout reporting no source modification.
+A complete 151-open-PR census returned no competing edit on the five paths and no
+unresolved file pages. Required collection on the existing CI target selected zero
+continuity cases (exit 5); hosted `contract-delta` independently named the unrun suite.
+
+The normal same-host continuation invocation passed its current permission boundary and
+applied the bounded source integration at 2026-09-08T21:04:12Z. Scope amendment:
+Macro #6993 comment 5591843756. The original test module was renamed to
+`tests/agent_eval_continuity_cases.py` without changing any assertion byte, then imported
+explicitly by `tests/test_agentos_compile.py`, following its existing case-module pattern.
+No assertion, workflow, guard, waiver, authority or provider boundary was relaxed.
+The prior refused invocation remains a separate confirmed-no-effect event; it is not
+relabelled successful. Current collection, test, review and release proof are separate
+receipts. The candidate remains DRAFT/HOLD until those current gates are satisfied.

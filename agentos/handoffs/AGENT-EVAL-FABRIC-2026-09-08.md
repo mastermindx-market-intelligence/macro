@@ -28,8 +28,10 @@ changed:
     what: Reconciles protected milestones, true release and repair gates, supersession, and safely quoted PR references.
   - path: agentos/handoffs/AGENT-EVAL-FABRIC-2026-09-08.md
     what: Replaces obsolete continuation selection without deleting the historical handoff.
-  - path: tests/test_agent_eval_continuity.py
+  - path: tests/agent_eval_continuity_cases.py
     what: Tests protected milestone recovery, real compiler selection, cited read-only output and adverse-state visibility.
+  - path: tests/test_agentos_compile.py
+    what: Collects the unchanged continuity cases in the existing Agent OS CI job; no workflow or waiver change.
   - path: research/AGENT_EVAL_CONTINUITY_PROOF_2026-09-08.md
     what: Preserves bounded before/after evidence, provenance and remaining proof limits.
 verified:
@@ -53,7 +55,7 @@ unverified:
     what_would_verify: Current-owner release, real runner/configuration acceptance, E1, repaired OL-V1 episode and measured forward value.
   - claim: Every installed CEO reader has consumed the new handoff.
     what_would_verify: Readback from each separately owned deployed reader; a fresh repository consumer proves only that source path.
-prs: [6760, 6993]
+prs: [6760, 6993, 6998]
 decisions:
   - DEC:AGENT-EVAL-FABLE-COO-DELEGATION
 ---
