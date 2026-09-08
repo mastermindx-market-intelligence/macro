@@ -304,7 +304,8 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
       - name: install test deps
-        run: pip install pytest
+        # pyyaml: scripts.build_am_edition imports lib.config, which imports yaml.
+        run: pip install pytest pyyaml
       - name: AM Edition producer contract (per-source clocks, six states, no laundering)
         run: python -m pytest tests/test_am_edition_producer.py -q
 
