@@ -172,9 +172,9 @@ def _expected_metric_value(metric: dict) -> str:
     if unit in {"months", "events", "episodes", "draws", "tickers"}:
         return str(value)
     if unit == "probability" and isinstance(value, (int, float)) and not isinstance(value, bool):
-        if value < 0.00005:
+        if value < 0.0001:
             return "below 0.0001"
-        return f"{value:.4g}"
+        return f"{value:.4f}"
     if isinstance(value, (int, float)) and not isinstance(value, bool):
         return f"{value:.4f}"
     return str(value)
@@ -961,14 +961,15 @@ def test_state_rail_css_uses_distinct_semantic_tokens():
     css = (REPO / "templates" / "measurement.html.j2").read_text(encoding="utf-8")
     style_end = css.find("</style>")
     ric_css = css[css.find(".ric-rail") : style_end]
+    assert "grid-template-columns:5px minmax(0,1fr)" in css[css.find(".ric-card{") : style_end]
     assert ".ric-card.ric-s-complete .ric-rail{background:var(--ink-ok)}" in ric_css
     assert (
         ".ric-card.ric-s-diagnostic .ric-rail{background:repeating-linear-gradient("
-        "180deg,var(--muted) 0 7px,transparent 7px 14px)}"
+        "180deg,var(--muted) 0 10px,transparent 10px 16px)}"
     ) in ric_css
     assert (
         ".ric-card.ric-s-stale .ric-rail{background:repeating-linear-gradient("
-        "135deg, var(--muted) 0 4px, transparent 4px 8px)}"
+        "135deg, var(--muted) 0 3px, transparent 3px 6px)}"
     ) in ric_css
     assert ".ric-card.ric-s-stale .ric-state{color:var(--muted)}" in ric_css
     assert ".ric-card.ric-s-missing .ric-rail{background:var(--warn)}" in ric_css
@@ -982,16 +983,26 @@ def test_state_rail_css_uses_distinct_semantic_tokens():
 
 
 def test_glance_gate_is_plain_word_result(contract, real_section):
-    """Glance leads with a plain-word gate name; codes and chips stay in Receipts."""
+    """Glance leads with the result; a token dot marks met / not-met. Codes stay in Receipts."""
     glance = _glance_outside_details(real_section)
-    assert "Positive control survives — Condition met" in glance
-    assert "Estimators unbiased — Condition not met" in glance
-    assert "Synthetic control not noisier — Condition met" in glance
-    assert "Watch condition holds — Condition met" in glance
-    assert "正向对照成立——条件成立" in glance
-    assert "估计量无偏——条件未成立" in glance
-    assert "合成对照噪声不高于基准——条件成立" in glance
-    assert "观察条件成立——条件成立" in glance
+    glance_text = re.sub(r"<[^>]+>", "", glance)
+    assert "Met — Positive control survives" in glance_text
+    assert "Not met — Estimators unbiased" in glance_text
+    assert "Met — Synthetic control not noisier" in glance_text
+    assert "Met — Watch condition holds" in glance_text
+    assert "已成立——正向对照成立" in glance_text
+    assert "未成立——估计量无偏" in glance_text
+    assert "已成立——合成对照噪声不高于基准" in glance_text
+    assert "已成立——观察条件成立" in glance_text
+    assert glance_text.index("Not met —") < glance_text.index("Estimators unbiased")
+    assert glance_text.index("未成立——") < glance_text.index("估计量无偏")
+    assert '<span class="ric-g-lead">Not met</span> — Estimators unbiased' in glance
+    assert '<span class="ric-g-lead">未成立</span>——估计量无偏' in glance
+    sc = _isolate_card(real_section, "synthetic_control")
+    sc_glance = _glance_outside_details(sc)
+    gate_rows = re.findall(r'class="ric-gate ric-g-(met|not)"', sc_glance)
+    assert gate_rows == ["met", "not", "met", "met"]
+    assert len(re.findall(r"\.ric-gate::before", (REPO / "templates" / "measurement.html.j2").read_text(encoding="utf-8"))) == 1
     gate_copy = " ".join(re.findall(r'class="ric-gate-b">\s*<span class="l-(?:en|zh)">(.*?)</span>', glance))
     for token in ("PC1", "PC2", "PC3", "F1", "PASS", "FAIL", "falsif", "证伪"):
         assert token not in gate_copy, f"{token!r} leaked onto the RIC glance gate row"
@@ -1000,7 +1011,6 @@ def test_glance_gate_is_plain_word_result(contract, real_section):
     assert ">FAIL<" not in glance
     assert "F1 falsifier holds" not in glance
     assert "证伪条件成立" not in glance
-    sc = _isolate_card(real_section, "synthetic_control")
     receipts = _isolate_receipts(sc)
     assert "PC1_positive_control_survives" in receipts
     assert "F1_falsifier_holds" in receipts
@@ -1008,8 +1018,23 @@ def test_glance_gate_is_plain_word_result(contract, real_section):
     assert "F1 证伪条件成立" in receipts
 
 
+def test_glance_gate_dot_uses_existing_tokens():
+    """One 8px token dot per row: --ink-ok when met, --act when not met."""
+    css = (REPO / "templates" / "measurement.html.j2").read_text(encoding="utf-8")
+    style_end = css.find("</style>")
+    ric_css = css[css.find(".ric-gates{") : style_end]
+    assert ".ric-gate::before{content:\"\";flex:0 0 8px;width:8px;height:8px;" in ric_css
+    assert "border-radius:var(--r-pill)" in ric_css[ric_css.find(".ric-gate::before") :]
+    assert ".ric-gate.ric-g-met::before{background:var(--ink-ok)}" in ric_css
+    assert ".ric-gate.ric-g-not::before{background:var(--act)}" in ric_css
+    assert ".ric-gate.ric-g-not .ric-g-lead{font-weight:600}" in ric_css
+    assert "ric-gate-m" not in ric_css
+    assert "ric-gate-pass" not in ric_css
+    assert "ric-gate-fail" not in ric_css
+
+
 def test_probability_never_prints_a_rounded_zero():
-    """A non-zero p-value must not render as 0.0000; tiny p uses a floor."""
+    """Tiny p uses a floor; p at or above 0.0001 uses four decimals; never scientific notation."""
     tiny = _minimal_card(
         family="event_study",
         quality="DIAGNOSTIC_FAILED",
@@ -1019,6 +1044,18 @@ def test_probability_never_prints_a_rounded_zero():
                 "label": {"en": "Tiny p", "zh": "极小 p"},
                 "unit": "probability",
                 "value": 1e-7,
+            },
+            {
+                "code": "p_below_floor",
+                "label": {"en": "Just below floor", "zh": "略低于下限"},
+                "unit": "probability",
+                "value": 0.00006,
+            },
+            {
+                "code": "p_above_floor",
+                "label": {"en": "Just above floor", "zh": "略高于下限"},
+                "unit": "probability",
+                "value": 0.00012,
             },
             {
                 "code": "p_ordinary",
@@ -1036,15 +1073,41 @@ def test_probability_never_prints_a_rounded_zero():
     )
     section = _section(_render(research_implications=_envelope([tiny])))
     tiny_fig = _metric_markup(section, "p_tiny")
+    below_fig = _metric_markup(section, "p_below_floor")
+    above_fig = _metric_markup(section, "p_above_floor")
     ordinary_fig = _metric_markup(section, "p_ordinary")
     absent_fig = _metric_markup(section, "p_absent")
     assert "below 0.0001" in tiny_fig
     assert "小于 0.0001" in tiny_fig
     assert "0.0000" not in tiny_fig
     assert "1e-7" not in tiny_fig
+    assert "below 0.0001" in below_fig
+    assert "小于 0.0001" in below_fig
+    assert "6e-05" not in below_fig
+    assert "0.00006" not in below_fig
+    assert "0.0001" in above_fig
+    assert "小于 0.0001" not in above_fig
+    assert "below 0.0001" not in above_fig
+    assert "1.2e-04" not in above_fig
     assert "0.0123" in ordinary_fig
     assert "0.0000" not in ordinary_fig
     assert '<span class="ric-null">—</span>' in absent_fig
+
+
+def test_production_zero_p_is_a_computed_underflow(contract, real_section):
+    """MINOR 3: owner Newey-West p is round(2*(1-Φ(|t|)), 4). t=8.291 underflows to 0.0.
+
+    That is a real computation, not a not-computed sentinel (those are None when n<8).
+    The front therefore prints the tiny-p floor, not “p-value not computed”.
+    """
+    sc = next(c for c in contract["cards"] if c["method_family"] == "synthetic_control")
+    p_metric = next(m for m in sc["outputs"] if m["code"] == "monthly_newey_west_p")
+    assert p_metric["value"] == 0.0
+    markup = _metric_markup(_isolate_card(real_section, "synthetic_control"), "monthly_newey_west_p")
+    assert "below 0.0001" in markup
+    assert "小于 0.0001" in markup
+    assert "p-value not computed" not in markup
+    assert "p 值未计算" not in markup
 
 
 def test_stale_state_text_is_the_window_sentence():

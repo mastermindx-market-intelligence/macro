@@ -574,14 +574,14 @@ html[data-theme="light"] .ric-fbtn[aria-pressed="true"]{color:var(--panel)}
 .ric-fbtn:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
 
 .ric-cards{display:flex;flex-direction:column;gap:20px}
-.ric-card{display:grid;grid-template-columns:3px minmax(0,1fr);
+.ric-card{display:grid;grid-template-columns:5px minmax(0,1fr);
   border:1px solid var(--border);border-radius:var(--r-card,12px);overflow:hidden;
   background:var(--card)}
 .ric-card[hidden]{display:none}
 .ric-rail{background:var(--muted)}
 .ric-card.ric-s-complete .ric-rail{background:var(--ink-ok)}
-.ric-card.ric-s-diagnostic .ric-rail{background:repeating-linear-gradient(180deg,var(--muted) 0 7px,transparent 7px 14px)}
-.ric-card.ric-s-stale .ric-rail{background:repeating-linear-gradient(135deg, var(--muted) 0 4px, transparent 4px 8px)}
+.ric-card.ric-s-diagnostic .ric-rail{background:repeating-linear-gradient(180deg,var(--muted) 0 10px,transparent 10px 16px)}
+.ric-card.ric-s-stale .ric-rail{background:repeating-linear-gradient(135deg, var(--muted) 0 3px, transparent 3px 6px)}
 .ric-card.ric-s-missing .ric-rail{background:var(--warn)}
 .ric-card.ric-s-failed  .ric-rail{background:var(--act)}
 .ric-card.ric-s-incomplete .ric-rail{background:var(--warn)}
@@ -646,7 +646,11 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
 .ric-gates-l{font-size:.72rem;font-weight:600;letter-spacing:.04em;color:var(--muted);
   text-transform:uppercase;margin:0 0 8px}
 .ric-gates{display:flex;flex-direction:column;gap:8px;margin:0 0 4px}
-.ric-gate{font-size:.78rem;line-height:1.55}
+.ric-gate{font-size:.78rem;line-height:1.55;display:flex;align-items:flex-start;gap:8px}
+.ric-gate::before{content:"";flex:0 0 8px;width:8px;height:8px;margin-top:.45em;border-radius:var(--r-pill)}
+.ric-gate.ric-g-met::before{background:var(--ink-ok)}
+.ric-gate.ric-g-not::before{background:var(--act)}
+.ric-gate.ric-g-not .ric-g-lead{font-weight:600}
 .ric-gate-b{min-width:0}
 .ric-gate-n{color:var(--muted);display:block;margin-top:2px;font-size:.74rem}
 
@@ -2120,8 +2124,8 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
     {%- elif u == 'return_fraction' or u == 'fraction' -%}{{ '%.3f'|format(v * 100) }}%
     {%- elif u in ('months', 'events', 'episodes', 'draws', 'tickers') -%}{{ v }}{{ ric_unit(u) }}
     {%- elif u == 'probability' and v is number -%}
-      {%- if v < 0.00005 -%}<span class="l-en">below 0.0001</span><span class="l-zh">小于 0.0001</span>{{ ric_unit(u) }}
-      {%- else -%}{{ '%.4g'|format(v) }}{{ ric_unit(u) }}
+      {%- if v < 0.0001 -%}<span class="l-en">below 0.0001</span><span class="l-zh">小于 0.0001</span>{{ ric_unit(u) }}
+      {%- else -%}{{ '%.4f'|format(v) }}{{ ric_unit(u) }}
       {%- endif -%}
     {%- elif v is number -%}{{ '%.4f'|format(v) }}{{ ric_unit(u) }}
     {%- else -%}{{ v|e }}
@@ -2352,10 +2356,10 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
             {% for g in gates %}
             {%- set gid = (g.code.split('_')|first) if g.code else '' -%}
             {%- set gname = ric_gate_plain[gid] if gid in ric_gate_plain else none -%}
-            <div class="ric-gate">
+            <div class="ric-gate {{ 'ric-g-met' if g.passed else 'ric-g-not' }}">
               <span class="ric-gate-b">
-                <span class="l-en">{{ gname[0] if gname else 'Gate' }} — {{ 'Condition met' if g.passed else 'Condition not met' }}</span>
-                <span class="l-zh">{{ gname[1] if gname else '检验条件' }}——{{ '条件成立' if g.passed else '条件未成立' }}</span>
+                <span class="l-en">{% if g.passed %}Met — {% else %}<span class="ric-g-lead">Not met</span> — {% endif %}{{ gname[0] if gname else 'Gate' }}</span>
+                <span class="l-zh">{% if g.passed %}已成立——{% else %}<span class="ric-g-lead">未成立</span>——{% endif %}{{ gname[1] if gname else '检验条件' }}</span>
                 <details class="ric-more">
                   <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
                   <span class="ric-gate-n"><span class="l-en">{{ g.detail.en|e }}</span><span class="l-zh">{{ (g.detail.zh or g.detail.en)|e }}</span></span>
