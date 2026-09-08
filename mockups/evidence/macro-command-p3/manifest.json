@@ -43,11 +43,11 @@
     }
   },
   "excluded": [],
-  "generated_at": "2026-09-08T14:40:37Z",
+  "generated_at": "2026-09-08T15:30:20Z",
   "honesty": {
     "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
     "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
-    "gaps": "every declared family cell that was not captured is recorded in gaps with a reason; force_states, empty_states, clearance, chip_opens_chat, strip_void, rail_viewport, e5, and fab are published as data and gaps is computed from that structure"
+    "gaps": "every declared family cell that was not captured is recorded in gaps with a reason; force_states, empty_states, clearance, chip_opens_chat, strip_void, rail_viewport, e5, fab, rest_views, full_page, and movement_row are published as data and gaps is computed from that structure"
   },
   "outcome": "captured",
   "pages": [
@@ -87,7 +87,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 957785,
+          "bytes": 957753,
           "captured": true,
           "crop": false,
           "dpr": 2.0,
@@ -99,7 +99,7 @@
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 0.0,
-          "sha256": "8858a4dc458ab3eb7f05836759c426e403be3bc522c7ad87096b1c50a0d1c528",
+          "sha256": "6d45634e97e390f037b5ebbfcd8f37c140bf23f533ec0a54eeac5961d869e969",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -344,7 +344,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 543009,
+          "bytes": 542898,
           "captured": true,
           "crop": false,
           "dpr": 2.0,
@@ -356,7 +356,7 @@
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 0.0,
-          "sha256": "1eaf51dbb48b6a72ac92297432ca6135e02494ad4b9ab715258bfdf626f47ccf",
+          "sha256": "10df98b2fe02142b4d903a408e8ac19cbe634b42320da070a3d798cb41a7a05a",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_height": 1400,
@@ -390,7 +390,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 318462,
+          "bytes": 137709,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -402,7 +402,7 @@
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 409.0,
-          "sha256": "9dc0f73e14975f33e97c73a8ab0e73d0f8d2401b5a9ec473f47531f4b2fe0d67",
+          "sha256": "5d11e89ef3b6eef2670ca810226380152fbb471ba8a6aa80686c4edd20c7c9a4",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -414,13 +414,27 @@
             "y": 199.453125,
             "width": 748,
             "height": 566.453125
+          },
+          "crop_box_doc": {
+            "x": 332,
+            "y": 608.453125,
+            "width": 748,
+            "height": 566.453125
+          },
+          "scroll_y_at_shot": 409.0,
+          "element_text_head": "You opened Macro Command at Rates & the curve. Read today's overview \u2192  Rates & ",
+          "device_px_span": {
+            "x0": 664,
+            "x1": 2160,
+            "y0": 398,
+            "y1": 1532
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 209003,
+          "bytes": 139045,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -432,7 +446,7 @@
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 415.0,
-          "sha256": "1e8a58754fd2836c2e7458a3897da858fc970170fc4be1a7111930b2c0edce2b",
+          "sha256": "36438c1e3039f92553911a8a9ddbc486413b54e39b9ad6e83dd8948450fc8f64",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -444,13 +458,27 @@
             "y": 197.453125,
             "width": 748,
             "height": 568.453125
+          },
+          "crop_box_doc": {
+            "x": 332,
+            "y": 612.453125,
+            "width": 748,
+            "height": 568.453125
+          },
+          "scroll_y_at_shot": 415.0,
+          "element_text_head": "You opened Macro Command at Rates & the curve. Read today's overview \u2192  Rates & ",
+          "device_px_span": {
+            "x0": 664,
+            "x1": 2160,
+            "y0": 394,
+            "y1": 1532
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 18114,
+          "bytes": 17026,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -458,11 +486,11 @@
           "fixture": "builder-payload",
           "force_state": "dest_hover",
           "full_page": false,
-          "height": 207,
+          "height": 208,
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 520.0,
-          "sha256": "a597731108c4747e5fdeeb73e880d11dcf972586018d79e95c7c1e41fd7623b3",
+          "sha256": "e27c988e0b7c974209c696c77186afd041cd50b4289e636ab7fc8bc4fe7f537c",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -474,13 +502,27 @@
             "y": 787.59375,
             "width": 226,
             "height": 102.9375
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 1307.59375,
+            "width": 226,
+            "height": 102.9375
+          },
+          "scroll_y_at_shot": 520.0,
+          "element_text_head": "Liquidity Regime Monitor Whether cash in the system is getting easier or tighter",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 1166,
+            "y0": 1575,
+            "y1": 1783
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 17381,
+          "bytes": 16982,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -488,11 +530,11 @@
           "fixture": "builder-payload",
           "force_state": "dest_hover",
           "full_page": false,
-          "height": 207,
+          "height": 208,
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 524.0,
-          "sha256": "02b7a7048b2014b5e5cb6e3cf3db38ec138187a9ce95d176b6113fa9b8dfc962",
+          "sha256": "b44f16bb637093147170d99026984754cabadff875d8c4b0aa494e05d90fa6e0",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -504,13 +546,27 @@
             "y": 789.59375,
             "width": 226,
             "height": 102.9375
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 1313.59375,
+            "width": 226,
+            "height": 102.9375
+          },
+          "scroll_y_at_shot": 524.0,
+          "element_text_head": "Liquidity Regime Monitor Whether cash in the system is getting easier or tighter",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 1166,
+            "y0": 1579,
+            "y1": 1787
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 5037,
+          "bytes": 8042,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -522,25 +578,39 @@
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 520.0,
-          "sha256": "7f694b65c8ade9e36589a3dd348e0985e9c713f1cd71397cc34dec22d2c38843",
+          "sha256": "04b902841959957aa41d25e3409284b41387544e89a9d2a5bb8c8117fd23a5a9",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
           "viewport_width": 1440,
-          "width": 173,
+          "width": 174,
           "crop_selector": "#overview-h",
           "crop_box": {
             "x": 353.046875,
             "y": 113.453125,
             "width": 86.078125,
             "height": 28.390625
+          },
+          "crop_box_doc": {
+            "x": 353.046875,
+            "y": 633.453125,
+            "width": 86.078125,
+            "height": 28.390625
+          },
+          "scroll_y_at_shot": 520.0,
+          "element_text_head": "Overview",
+          "device_px_span": {
+            "x0": 706,
+            "x1": 880,
+            "y0": 226,
+            "y1": 284
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 4848,
+          "bytes": 3906,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -552,18 +622,32 @@
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 524.0,
-          "sha256": "f0a8555928ee8464c42f2d4ee04fa2ece1161cbd2b50630a54dc9e559c6a28b2",
+          "sha256": "7384f7199be97e00327acf9bde8e3637bd85ae2e10c9764165653f9784f2a8dd",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
           "viewport_width": 1440,
-          "width": 173,
+          "width": 174,
           "crop_selector": "#overview-h",
           "crop_box": {
             "x": 353.046875,
             "y": 113.453125,
             "width": 86.078125,
             "height": 28.390625
+          },
+          "crop_box_doc": {
+            "x": 353.046875,
+            "y": 637.453125,
+            "width": 86.078125,
+            "height": 28.390625
+          },
+          "scroll_y_at_shot": 524.0,
+          "element_text_head": "Overview",
+          "device_px_span": {
+            "x0": 706,
+            "x1": 880,
+            "y0": 226,
+            "y1": 284
           }
         },
         {
@@ -593,7 +677,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 948250,
+          "bytes": 948389,
           "captured": true,
           "crop": false,
           "dpr": 2.0,
@@ -605,7 +689,7 @@
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 0.0,
-          "sha256": "30ddb267984fec59060495b696d855219a92d2f95e4bdfecbbbe8b7f325e7bb6",
+          "sha256": "2cc300a47ac997688853cd922f6c93cda37945ade3d503575c92bae863e0e9f4",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -616,7 +700,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 443953,
+          "bytes": 340820,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -624,11 +708,11 @@
           "fixture": "builder-payload",
           "force_state": "e3",
           "full_page": false,
-          "height": 2109,
+          "height": 2110,
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 520.0,
-          "sha256": "3e50e65ae359bec1f78b75c41e3c4f05316d2d82b69223cf3f59af73351533f9",
+          "sha256": "f1df33850e8885554f9dcdf186cbd95b21612469e0813a3ff0b1b66dd1b2f5f1",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -641,13 +725,27 @@
             "y": 88.453125,
             "width": 748,
             "height": 1053.90625
+          },
+          "crop_box_doc": {
+            "x": 332,
+            "y": 608.453125,
+            "width": 748,
+            "height": 1053.90625
+          },
+          "scroll_y_at_shot": 520.0,
+          "element_text_head": "Overview  What is macro saying today, and what moved?  What this means for you: ",
+          "device_px_span": {
+            "x0": 664,
+            "x1": 2160,
+            "y0": 176,
+            "y1": 2286
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 353931,
+          "bytes": 337895,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -655,11 +753,11 @@
           "fixture": "builder-payload",
           "force_state": "e3",
           "full_page": false,
-          "height": 2113,
+          "height": 2114,
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 524.0,
-          "sha256": "4670c6fc354861cc51343184380ee3bb9e99f2cf2594e15f0563cabca5aacf20",
+          "sha256": "c2fbe06a3d26bf2af8a171cb07215b37181a05a8e0b9976415ac4a9595662534",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -672,13 +770,27 @@
             "y": 88.453125,
             "width": 748,
             "height": 1055.90625
+          },
+          "crop_box_doc": {
+            "x": 332,
+            "y": 612.453125,
+            "width": 748,
+            "height": 1055.90625
+          },
+          "scroll_y_at_shot": 524.0,
+          "element_text_head": "Overview  What is macro saying today, and what moved?  What this means for you: ",
+          "device_px_span": {
+            "x0": 664,
+            "x1": 2160,
+            "y0": 176,
+            "y1": 2290
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 106912,
+          "bytes": 38928,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -686,11 +798,11 @@
           "fixture": "builder-payload",
           "force_state": "e1",
           "full_page": false,
-          "height": 313,
+          "height": 314,
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 444.0,
-          "sha256": "b5b5545b73844c2791d56bc31554f91a8c7f7c8fa024db869d4f86538ea1f0bf",
+          "sha256": "07e844e90f91ca79e30bb6cc02fb0887ecbd9a2e7f39d5c81dc45e5b2f788ef8",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -703,13 +815,27 @@
             "y": 370.328125,
             "width": 670,
             "height": 156.015625
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 814.328125,
+            "width": 670,
+            "height": 156.015625
+          },
+          "scroll_y_at_shot": 444.0,
+          "element_text_head": "We don't have this reading yet  The source this section is built from has not pu",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 740,
+            "y1": 1054
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 80535,
+          "bytes": 39150,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -717,11 +843,11 @@
           "fixture": "builder-payload",
           "force_state": "e2",
           "full_page": false,
-          "height": 297,
+          "height": 298,
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 409.0,
-          "sha256": "893c6a2d45d804f9df649bdc1545d4eb85786aa18b6106e38794c06f36771b91",
+          "sha256": "3559364ec6ac77d70920ac9d2dd2ae3ff2482ad55c85294c3a3862d6dcebab4a",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -734,13 +860,27 @@
             "y": 425.46875,
             "width": 670,
             "height": 148.015625
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 834.46875,
+            "width": 670,
+            "height": 148.015625
+          },
+          "scroll_y_at_shot": 409.0,
+          "element_text_head": "Today's number didn't arrive  The data provider did not deliver in time. We show",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 850,
+            "y1": 1148
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 99166,
+          "bytes": 35908,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -748,11 +888,11 @@
           "fixture": "builder-payload",
           "force_state": "e3",
           "full_page": false,
-          "height": 297,
+          "height": 298,
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 456.0,
-          "sha256": "93844bde2e262c3aa9c491b2edb0d6837ae76cf03da84d6afe8e5e5dd02998c5",
+          "sha256": "d54594939137b9405a7f3fc680ed0b8e6ccc98834b9df4a6c2063ce571d7899f",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -765,13 +905,27 @@
             "y": 378.46875,
             "width": 670,
             "height": 148.015625
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 834.46875,
+            "width": 670,
+            "height": 148.015625
+          },
+          "scroll_y_at_shot": 456.0,
+          "element_text_head": "We can't show the change yet  There is no earlier reading measured the same way,",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 756,
+            "y1": 1054
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 45548,
+          "bytes": 27249,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -779,11 +933,11 @@
           "fixture": "fixtures/e4_central_banks.json",
           "force_state": "e4",
           "full_page": false,
-          "height": 255,
+          "height": 256,
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 0.0,
-          "sha256": "2be42c4257514f9fcfddd5c37f81f153fb2bd17607f366174ee2c064c6c621d4",
+          "sha256": "98f6ffedc53e723a09ecb0ba58e9bcf3b8827149b7eda60d28ea898ea34aec29",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -796,13 +950,27 @@
             "y": 399.78125,
             "width": 670,
             "height": 127.09375
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 980.78125,
+            "width": 670,
+            "height": 127.09375
+          },
+          "scroll_y_at_shot": 581.0,
+          "element_text_head": "Not open yet  This part is built but not switched on for customers.  It appears ",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 799,
+            "y1": 1055
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 47230,
+          "bytes": 26131,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -810,11 +978,11 @@
           "fixture": "builder-payload",
           "force_state": "e5",
           "full_page": false,
-          "height": 294,
+          "height": 296,
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 401.0,
-          "sha256": "b10d7173f0beac2dd1eba249a7b55118ca0a4f4e589edf81d98b12457dbdfa2c",
+          "sha256": "61ea41021edc1e3a200677b223b334cfdf38e2cbdca2378734a87b2fb018294e",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -827,13 +995,27 @@
             "y": 455.96875,
             "width": 670,
             "height": 146.3125
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 856.96875,
+            "width": 670,
+            "height": 146.3125
+          },
+          "scroll_y_at_shot": 401.0,
+          "element_text_head": "This section didn't load  The page couldn't fetch it just now.  Reload the page,",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 911,
+            "y1": 1207
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 90619,
+          "bytes": 29350,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -845,7 +1027,7 @@
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 483.0,
-          "sha256": "585401bfa5217f28505090992ba74aaf801765a22a7a1e4e8540f3eb4f6e46dd",
+          "sha256": "a6755fa42f3eae3df32eeda5cc251c1e810e80d6ecb8186134975ab50e6c835f",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -858,13 +1040,27 @@
             "y": 351.46875,
             "width": 670,
             "height": 175.234375
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 834.46875,
+            "width": 670,
+            "height": 175.234375
+          },
+          "scroll_y_at_shot": 483.0,
+          "element_text_head": "Included in a higher plan  This section is part of Research.  The reading is ava",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 702,
+            "y1": 1054
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 46723,
+          "bytes": 39955,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -872,11 +1068,11 @@
           "fixture": "builder-payload",
           "force_state": "e2",
           "full_page": false,
-          "height": 297,
+          "height": 298,
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 415.0,
-          "sha256": "bef18c88f986bcadf9436f2a4188a77893d3272b455f4ec12fa2b0aeab078bf8",
+          "sha256": "535be920dcebfb90fce68ec7bc1cd29d8cf3ee0352f0ad2333cd2ab15083a40e",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -889,13 +1085,27 @@
             "y": 424.46875,
             "width": 698,
             "height": 148.015625
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 839.46875,
+            "width": 698,
+            "height": 148.015625
+          },
+          "scroll_y_at_shot": 415.0,
+          "element_text_head": "Today's number didn't arrive  The data provider did not deliver in time. We show",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 848,
+            "y1": 1146
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 52095,
+          "bytes": 29493,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -907,7 +1117,7 @@
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 489.0,
-          "sha256": "657d204a310b5b1c54a41664af057f2b572c15e65d228d0ec08b79eef2fd93ee",
+          "sha256": "3c647d233aa2b0646a9719a70727f0f6dd53f525a5fb51e5398dced7affc237a",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -920,13 +1130,27 @@
             "y": 350.46875,
             "width": 698,
             "height": 175.234375
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 839.46875,
+            "width": 698,
+            "height": 175.234375
+          },
+          "scroll_y_at_shot": 489.0,
+          "element_text_head": "Included in a higher plan  This section is part of Research.  The reading is ava",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 700,
+            "y1": 1052
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 50645,
+          "bytes": 39619,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -934,11 +1158,11 @@
           "fixture": "builder-payload",
           "force_state": "e1",
           "full_page": false,
-          "height": 313,
+          "height": 314,
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 450.0,
-          "sha256": "61d3f4d5446b98e4bc33ede91933b3ba32b201ace8aa9885e32646a5d4f50edd",
+          "sha256": "35ec8f381cb7d087eb93cb0c0ec2b4be5836124d43ae9c25b1583e56b58831a9",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -951,13 +1175,27 @@
             "y": 369.328125,
             "width": 698,
             "height": 156.015625
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 819.328125,
+            "width": 698,
+            "height": 156.015625
+          },
+          "scroll_y_at_shot": 450.0,
+          "element_text_head": "We don't have this reading yet  The source this section is built from has not pu",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 738,
+            "y1": 1052
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 46801,
+          "bytes": 36769,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -965,11 +1203,11 @@
           "fixture": "builder-payload",
           "force_state": "e3",
           "full_page": false,
-          "height": 297,
+          "height": 298,
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 462.0,
-          "sha256": "bffd7e29f6f1c8b882b8d8ea8f1e7437e12e6e0a7ffa77fba4371bfbbb541576",
+          "sha256": "3aaf769dc3a42f7b4249fd01db98702c066dcfad4fc963ddfaa289bb232dd0a5",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -982,13 +1220,27 @@
             "y": 377.46875,
             "width": 698,
             "height": 148.015625
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 839.46875,
+            "width": 698,
+            "height": 148.015625
+          },
+          "scroll_y_at_shot": 462.0,
+          "element_text_head": "We can't show the change yet  There is no earlier reading measured the same way,",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 754,
+            "y1": 1052
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 43596,
+          "bytes": 27186,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -996,11 +1248,11 @@
           "fixture": "fixtures/e4_central_banks.json",
           "force_state": "e4",
           "full_page": false,
-          "height": 255,
+          "height": 256,
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 0.0,
-          "sha256": "01541d3ba7255a71588d0f5c51ed09bb7987b3021ed7787b3ae9435f454dea27",
+          "sha256": "58e1b3695c0b1f9381acd249c92795ed835c3631a62308e9abdcc5a34cfe2561",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -1013,6 +1265,20 @@
             "y": 398.78125,
             "width": 698,
             "height": 127.09375
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 964.78125,
+            "width": 698,
+            "height": 127.09375
+          },
+          "scroll_y_at_shot": 566.0,
+          "element_text_head": "Not open yet  This part is built but not switched on for customers.  It appears ",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 797,
+            "y1": 1053
           }
         },
         {
@@ -1088,7 +1354,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 309809,
+          "bytes": 151413,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -1096,11 +1362,11 @@
           "fixture": "builder-payload",
           "force_state": "arrival",
           "full_page": false,
-          "height": 1134,
+          "height": 1136,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 331.0,
-          "sha256": "c7f37c652e1f94b3f9196d773cf62fc8e5b704766a057e3018b0d35f7b73776a",
+          "sha256": "47129320090eddbc428d729ad1fa46e9077cb958ad34e8bafe9fa3f40b7880af",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -1112,13 +1378,27 @@
             "y": 199.703125,
             "width": 748,
             "height": 566.453125
+          },
+          "crop_box_doc": {
+            "x": 332,
+            "y": 530.703125,
+            "width": 748,
+            "height": 566.453125
+          },
+          "scroll_y_at_shot": 331.0,
+          "element_text_head": "\u4f60\u4ece\u8fd9\u91cc\u8fdb\u5165\u5b8f\u89c2\u6307\u6325\u53f0\uff1a\u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf\u3002 \u67e5\u770b\u4eca\u65e5\u603b\u89c8 \u2192  \u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf  \u4e0d\u540c\u671f\u9650\u7684\u653f\u5e9c\u501f\u8d37\u6210\u672c\u662f\u4ec0\u4e48\u6837\uff1f  \u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48: \u4eca\u5929\u7684\u6570\u636e\u672a\u80fd\u9001\u8fbe ",
+          "device_px_span": {
+            "x0": 664,
+            "x1": 2160,
+            "y0": 399,
+            "y1": 1535
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 212642,
+          "bytes": 153062,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -1126,11 +1406,11 @@
           "fixture": "builder-payload",
           "force_state": "arrival",
           "full_page": false,
-          "height": 1138,
+          "height": 1140,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 337.0,
-          "sha256": "62c4bd829e9185804ceb4cbb2b417a5a6d4b4b9165157027a0f07edc613852e3",
+          "sha256": "84af6d94190c6196238376f93bd9d29003914f06398ae2d5724bb0648aa6532e",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -1142,6 +1422,20 @@
             "y": 197.703125,
             "width": 748,
             "height": 568.453125
+          },
+          "crop_box_doc": {
+            "x": 332,
+            "y": 534.703125,
+            "width": 748,
+            "height": 568.453125
+          },
+          "scroll_y_at_shot": 337.0,
+          "element_text_head": "\u4f60\u4ece\u8fd9\u91cc\u8fdb\u5165\u5b8f\u89c2\u6307\u6325\u53f0\uff1a\u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf\u3002 \u67e5\u770b\u4eca\u65e5\u603b\u89c8 \u2192  \u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf  \u4e0d\u540c\u671f\u9650\u7684\u653f\u5e9c\u501f\u8d37\u6210\u672c\u662f\u4ec0\u4e48\u6837\uff1f  \u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48: \u4eca\u5929\u7684\u6570\u636e\u672a\u80fd\u9001\u8fbe ",
+          "device_px_span": {
+            "x0": 664,
+            "x1": 2160,
+            "y0": 395,
+            "y1": 1535
           }
         },
         {
@@ -1194,7 +1488,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 184130,
+          "bytes": 184780,
           "captured": true,
           "crop": false,
           "dpr": 2.0,
@@ -1206,7 +1500,7 @@
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 707.0,
-          "sha256": "4cfff46aff6b64e59c86e7c2c474290e458b59bd7c772ad4c794f193693f6d9d",
+          "sha256": "9ee3743345a043d15f644b6dace809dcf0a7e38a31a65f572aa64d588c60c1f2",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -1217,7 +1511,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 198382,
+          "bytes": 198499,
           "captured": true,
           "crop": false,
           "dpr": 2.0,
@@ -1229,7 +1523,7 @@
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 614.0,
-          "sha256": "2bde215090cc2434226845d6487e0e37664518cc4b899d2c42609b315822152c",
+          "sha256": "7802d065ae4465ed109a51217757562eeb665d738c1a1ff19d6de0fcde455c3e",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -1240,7 +1534,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 8707,
+          "bytes": 18146,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -1252,7 +1546,7 @@
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 443.0,
-          "sha256": "b39062dbf2403d1a527f27b6557e7e3082e3de92367464f3d5c10ec503e736d7",
+          "sha256": "9b7da3fe39c93803bd5fe1a5a8a6ec31a76e07aa981277b0b1abd549891b404b",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -1264,13 +1558,27 @@
             "y": 764.34375,
             "width": 226,
             "height": 88.25
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 1207.34375,
+            "width": 226,
+            "height": 88.25
+          },
+          "scroll_y_at_shot": 443.0,
+          "element_text_head": "\u6d41\u52a8\u6027\u4f53\u5236\u76d1\u6d4b \u7cfb\u7edf\u91cc\u7684\u8d44\u91d1\u662f\u5728\u53d8\u5bbd\u677e\u8fd8\u662f\u53d8\u7d27\u3002 \u2192",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 1166,
+            "y0": 1528,
+            "y1": 1706
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 7430,
+          "bytes": 18111,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -1282,7 +1590,7 @@
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 447.0,
-          "sha256": "04b5032878f86dff192ffff9dbbbf1f23e4e5fdab0ded7c0e384a7beb18e51fc",
+          "sha256": "3153d61ea224208b0bd7f4b8cd3439d4f7d3b1b90c398754be4a0c5d6d213da8",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -1294,13 +1602,27 @@
             "y": 766.34375,
             "width": 226,
             "height": 88.25
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 1213.34375,
+            "width": 226,
+            "height": 88.25
+          },
+          "scroll_y_at_shot": 447.0,
+          "element_text_head": "\u6d41\u52a8\u6027\u4f53\u5236\u76d1\u6d4b \u7cfb\u7edf\u91cc\u7684\u8d44\u91d1\u662f\u5728\u53d8\u5bbd\u677e\u8fd8\u662f\u53d8\u7d27\u3002 \u2192",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 1166,
+            "y0": 1532,
+            "y1": 1710
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 2909,
+          "bytes": 4536,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -1308,11 +1630,11 @@
           "fixture": "builder-payload",
           "force_state": "heading_focus",
           "full_page": false,
-          "height": 58,
+          "height": 60,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 443.0,
-          "sha256": "477794e9847134163be7db97db2a706afe25f30f45f6e8f710edf433105f7065",
+          "sha256": "95fdd9879c24da86c902c04cdaf55cc357eeceb6279ff429f8cd87efe0ac40fc",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -1324,13 +1646,27 @@
             "y": 112.703125,
             "width": 43.90625,
             "height": 28.390625
+          },
+          "crop_box_doc": {
+            "x": 353.046875,
+            "y": 555.703125,
+            "width": 43.90625,
+            "height": 28.390625
+          },
+          "scroll_y_at_shot": 443.0,
+          "element_text_head": "\u603b\u89c8",
+          "device_px_span": {
+            "x0": 706,
+            "x1": 794,
+            "y0": 225,
+            "y1": 285
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 2756,
+          "bytes": 2357,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -1338,11 +1674,11 @@
           "fixture": "builder-payload",
           "force_state": "heading_focus",
           "full_page": false,
-          "height": 58,
+          "height": 60,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 447.0,
-          "sha256": "fa665be72ee31a2ca249f84b3ba0520c179600a6e0aec284c25005e3277acdf4",
+          "sha256": "ccc35c21e214c836ea601ec072d2a916913e954bfdd91fadd3b9d180ef580dd4",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -1354,13 +1690,27 @@
             "y": 112.703125,
             "width": 43.90625,
             "height": 28.390625
+          },
+          "crop_box_doc": {
+            "x": 353.046875,
+            "y": 559.703125,
+            "width": 43.90625,
+            "height": 28.390625
+          },
+          "scroll_y_at_shot": 447.0,
+          "element_text_head": "\u603b\u89c8",
+          "device_px_span": {
+            "x0": 706,
+            "x1": 794,
+            "y0": 225,
+            "y1": 285
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 474992,
+          "bytes": 337094,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -1368,11 +1718,11 @@
           "fixture": "builder-payload",
           "force_state": "e3",
           "full_page": false,
-          "height": 2026,
+          "height": 2028,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 443.0,
-          "sha256": "3190a1a899414c27459733e4c343ea10bacab857a10fa788487859caf4a4b040",
+          "sha256": "fc92c3f13a96570ae0e860cac0528156443a382b1cfccad36714708b2d8e5bf4",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -1385,13 +1735,27 @@
             "y": 87.703125,
             "width": 748,
             "height": 1012.484375
+          },
+          "crop_box_doc": {
+            "x": 332,
+            "y": 530.703125,
+            "width": 748,
+            "height": 1012.484375
+          },
+          "scroll_y_at_shot": 443.0,
+          "element_text_head": "\u603b\u89c8  \u4eca\u5929\u5b8f\u89c2\u5728\u8bf4\u4ec0\u4e48\uff1f\u6709\u4ec0\u4e48\u53d8\u5316\uff1f  \u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48: \u90e8\u5206\u5c0f\u7ec4\u4eca\u5929\u5c1a\u672a\u53d1\u5e03\u3002\u4e0b\u65b9\u7684\u53d8\u5316\u5c31\u662f\u6211\u4eec\u76ee\u524d\u638c\u63e1\u7684\u5185\u5bb9\u3002  \u7b2c\u4e00\u6b21\u770b\uff1f30 \u79d2\u8bfb\u61c2 \u5b8f\u89c2\u4e0d\u662f\u4e00\u4e2a\u6570",
+          "device_px_span": {
+            "x0": 664,
+            "x1": 2160,
+            "y0": 175,
+            "y1": 2203
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 388262,
+          "bytes": 334394,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -1399,11 +1763,11 @@
           "fixture": "builder-payload",
           "force_state": "e3",
           "full_page": false,
-          "height": 2030,
+          "height": 2032,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 447.0,
-          "sha256": "32d88dada81afd471836bd443ed1b54cb6f95f4a6c45948bf012e04e4216c3e0",
+          "sha256": "35b7642e79c0dec2eef2ee78f112e527a676ec3c729dc0777a31865c5d097620",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -1416,13 +1780,27 @@
             "y": 87.703125,
             "width": 748,
             "height": 1014.484375
+          },
+          "crop_box_doc": {
+            "x": 332,
+            "y": 534.703125,
+            "width": 748,
+            "height": 1014.484375
+          },
+          "scroll_y_at_shot": 447.0,
+          "element_text_head": "\u603b\u89c8  \u4eca\u5929\u5b8f\u89c2\u5728\u8bf4\u4ec0\u4e48\uff1f\u6709\u4ec0\u4e48\u53d8\u5316\uff1f  \u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48: \u90e8\u5206\u5c0f\u7ec4\u4eca\u5929\u5c1a\u672a\u53d1\u5e03\u3002\u4e0b\u65b9\u7684\u53d8\u5316\u5c31\u662f\u6211\u4eec\u76ee\u524d\u638c\u63e1\u7684\u5185\u5bb9\u3002  \u7b2c\u4e00\u6b21\u770b\uff1f30 \u79d2\u8bfb\u61c2 \u5b8f\u89c2\u4e0d\u662f\u4e00\u4e2a\u6570",
+          "device_px_span": {
+            "x0": 664,
+            "x1": 2160,
+            "y0": 175,
+            "y1": 2207
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 48050,
+          "bytes": 43154,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -1430,11 +1808,11 @@
           "fixture": "builder-payload",
           "force_state": "e1",
           "full_page": false,
-          "height": 313,
+          "height": 314,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 365.0,
-          "sha256": "c9bdcf02271097d937502e10390b46d7219be628dc1dd2827b66ca060d26613a",
+          "sha256": "183d2b81cd5ad8041fc23f7a208cc0a629058d766450287d0b80bf8c94f5a591",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -1447,13 +1825,27 @@
             "y": 391.71875,
             "width": 670,
             "height": 156.015625
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 756.71875,
+            "width": 670,
+            "height": 156.015625
+          },
+          "scroll_y_at_shot": 365.0,
+          "element_text_head": "\u8be5\u8bfb\u6570\u6682\u4e0d\u53ef\u7528  \u672c\u677f\u5757\u6240\u4f9d\u636e\u7684\u6570\u636e\u6e90\u5c1a\u672a\u53d1\u5e03\u5e26\u65e5\u671f\u7684\u8bfb\u6570\u3002  \u8be5\u6570\u636e\u6e90\u9996\u6b21\u53d1\u5e03\u540e\u5373\u4f1a\u51fa\u73b0\u5728\u6b64\u5904\u3002  \u4eca\u665a\u7684\u66f4\u65b0\u4f1a\u518d\u6b21\u68c0\u67e5\u3002",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 783,
+            "y1": 1097
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 25521,
+          "bytes": 44396,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -1461,11 +1853,11 @@
           "fixture": "builder-payload",
           "force_state": "e1",
           "full_page": false,
-          "height": 313,
+          "height": 314,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 371.0,
-          "sha256": "4a2f116f63c7fdeb45b7eae8d61391b5061bced9fcf81fb87fb066e1edca7ab9",
+          "sha256": "18883e9920635b3380217eee0e880fa465ef5ef6326e3e8bab216d4e88fbe616",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -1478,13 +1870,27 @@
             "y": 390.71875,
             "width": 698,
             "height": 156.015625
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 761.71875,
+            "width": 698,
+            "height": 156.015625
+          },
+          "scroll_y_at_shot": 371.0,
+          "element_text_head": "\u8be5\u8bfb\u6570\u6682\u4e0d\u53ef\u7528  \u672c\u677f\u5757\u6240\u4f9d\u636e\u7684\u6570\u636e\u6e90\u5c1a\u672a\u53d1\u5e03\u5e26\u65e5\u671f\u7684\u8bfb\u6570\u3002  \u8be5\u6570\u636e\u6e90\u9996\u6b21\u53d1\u5e03\u540e\u5373\u4f1a\u51fa\u73b0\u5728\u6b64\u5904\u3002  \u4eca\u665a\u7684\u66f4\u65b0\u4f1a\u518d\u6b21\u68c0\u67e5\u3002",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 781,
+            "y1": 1095
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 28188,
+          "bytes": 44598,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -1492,11 +1898,11 @@
           "fixture": "builder-payload",
           "force_state": "e2",
           "full_page": false,
-          "height": 297,
+          "height": 298,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 331.0,
-          "sha256": "75602b208294fd46c21450acd26add0f3592de9a47e952daf35cbda7e9b77ab6",
+          "sha256": "2949afc9d8511fbc95e700098efba4450b8cafe157079f3527e66fdce172789b",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -1509,13 +1915,27 @@
             "y": 425.71875,
             "width": 670,
             "height": 148.015625
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 756.71875,
+            "width": 670,
+            "height": 148.015625
+          },
+          "scroll_y_at_shot": 331.0,
+          "element_text_head": "\u4eca\u5929\u7684\u6570\u636e\u672a\u80fd\u9001\u8fbe  \u6570\u636e\u63d0\u4f9b\u65b9\u672a\u80fd\u53ca\u65f6\u9001\u8fbe\u3002\u6211\u4eec\u5b81\u53ef\u4e0d\u663e\u793a\uff0c\u4e5f\u4e0d\u4f1a\u628a\u6628\u5929\u7684\u6570\u5b57\u5f53\u4f5c\u4eca\u5929\u7684\u3002  \u6570\u636e\u6e90\u6062\u590d\u53d1\u5e03\u540e\u5373\u4f1a\u663e\u793a\uff1b\u6bcf\u665a\u68c0\u67e5\u3002",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 851,
+            "y1": 1149
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 17384,
+          "bytes": 45708,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -1523,11 +1943,11 @@
           "fixture": "builder-payload",
           "force_state": "e2",
           "full_page": false,
-          "height": 297,
+          "height": 298,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 337.0,
-          "sha256": "047f80a8a3cd3ccd19fdc48fdef629d724d2d5bd3e6400e00b5509675d596296",
+          "sha256": "b5e04d0ca5ce8cb18ccceef372d781472c7def6c03fe3038bacbe71631f869b4",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -1540,13 +1960,27 @@
             "y": 424.71875,
             "width": 698,
             "height": 148.015625
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 761.71875,
+            "width": 698,
+            "height": 148.015625
+          },
+          "scroll_y_at_shot": 337.0,
+          "element_text_head": "\u4eca\u5929\u7684\u6570\u636e\u672a\u80fd\u9001\u8fbe  \u6570\u636e\u63d0\u4f9b\u65b9\u672a\u80fd\u53ca\u65f6\u9001\u8fbe\u3002\u6211\u4eec\u5b81\u53ef\u4e0d\u663e\u793a\uff0c\u4e5f\u4e0d\u4f1a\u628a\u6628\u5929\u7684\u6570\u5b57\u5f53\u4f5c\u4eca\u5929\u7684\u3002  \u6570\u636e\u6e90\u6062\u590d\u53d1\u5e03\u540e\u5373\u4f1a\u663e\u793a\uff1b\u6bcf\u665a\u68c0\u67e5\u3002",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 849,
+            "y1": 1147
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 22773,
+          "bytes": 35450,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -1554,11 +1988,11 @@
           "fixture": "builder-payload",
           "force_state": "e3",
           "full_page": false,
-          "height": 255,
+          "height": 256,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 336.0,
-          "sha256": "c3cfbcbf1faa24d5080acd8327dcabaa4a63cbaa3d6d366028e27e9a06a67ac7",
+          "sha256": "73af14fd405f672418b8da248c74320b18c8a8c550715f4574b8cb1f068d891e",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -1571,13 +2005,27 @@
             "y": 420.71875,
             "width": 670,
             "height": 127.09375
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 756.71875,
+            "width": 670,
+            "height": 127.09375
+          },
+          "scroll_y_at_shot": 336.0,
+          "element_text_head": "\u6682\u65f6\u65e0\u6cd5\u663e\u793a\u53d8\u5316  \u4e0d\u5b58\u5728\u4ee5\u76f8\u540c\u65b9\u6cd5\u6d4b\u5f97\u7684\u5386\u53f2\u8bfb\u6570\uff0c\u4efb\u4f55\u7bad\u5934\u90fd\u4f1a\u662f\u81c6\u9020\u7684\u3002  \u4e0b\u4e00\u6b21\u53d1\u5e03\u540e\u5c06\u51fa\u73b0\u9996\u4e2a\u53ef\u5bf9\u6bd4\u8bfb\u6570\u3002",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 841,
+            "y1": 1097
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 17286,
+          "bytes": 35738,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -1585,11 +2033,11 @@
           "fixture": "builder-payload",
           "force_state": "e3",
           "full_page": false,
-          "height": 255,
+          "height": 256,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 342.0,
-          "sha256": "f211e2786b38ac2acd84f591f5add434cb205d06f089a3990f4e59f6b418b383",
+          "sha256": "47c20a721ea53707c2e45c1f643fbc4532aaa6c0c23c01f03b13dd6112cb8514",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -1602,13 +2050,27 @@
             "y": 419.71875,
             "width": 698,
             "height": 127.09375
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 761.71875,
+            "width": 698,
+            "height": 127.09375
+          },
+          "scroll_y_at_shot": 342.0,
+          "element_text_head": "\u6682\u65f6\u65e0\u6cd5\u663e\u793a\u53d8\u5316  \u4e0d\u5b58\u5728\u4ee5\u76f8\u540c\u65b9\u6cd5\u6d4b\u5f97\u7684\u5386\u53f2\u8bfb\u6570\uff0c\u4efb\u4f55\u7bad\u5934\u90fd\u4f1a\u662f\u81c6\u9020\u7684\u3002  \u4e0b\u4e00\u6b21\u53d1\u5e03\u540e\u5c06\u51fa\u73b0\u9996\u4e2a\u53ef\u5bf9\u6bd4\u8bfb\u6570\u3002",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 839,
+            "y1": 1095
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 17895,
+          "bytes": 24409,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -1616,11 +2078,11 @@
           "fixture": "fixtures/e4_central_banks.json",
           "force_state": "e4",
           "full_page": false,
-          "height": 255,
+          "height": 256,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 0.0,
-          "sha256": "d743cbceca91d78b26f7f1bad29d0cb947b25474dca60722b43952778b25eb53",
+          "sha256": "b1f81ca2f87671fc2b2efd3aee1ad02ff40943f84234438b7733bc92d8e63346",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -1633,13 +2095,27 @@
             "y": 772.640625,
             "width": 670,
             "height": 127.09375
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 880.640625,
+            "width": 670,
+            "height": 127.09375
+          },
+          "scroll_y_at_shot": 108.0,
+          "element_text_head": "\u5c1a\u672a\u5f00\u653e  \u8be5\u529f\u80fd\u5df2\u5efa\u6210\uff0c\u4f46\u5c1a\u672a\u5bf9\u5ba2\u6237\u5f00\u653e\u3002  \u5f00\u653e\u540e\u4f1a\u81ea\u52a8\u51fa\u73b0\uff0c\u65e0\u9700\u64cd\u4f5c\u3002",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 1545,
+            "y1": 1801
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 22402,
+          "bytes": 24451,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -1647,11 +2123,11 @@
           "fixture": "fixtures/e4_central_banks.json",
           "force_state": "e4",
           "full_page": false,
-          "height": 255,
+          "height": 256,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 0.0,
-          "sha256": "dc3991dc4cf7d5d68bf8851695411c5883ef47acdfd9fa65a253162eefb8c5ba",
+          "sha256": "3d1b3c5b77e801268d3092d1ba194dc32f0be6a60ef042c8ff7264bdfec2f29a",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -1664,13 +2140,27 @@
             "y": 772.640625,
             "width": 698,
             "height": 127.09375
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 864.640625,
+            "width": 698,
+            "height": 127.09375
+          },
+          "scroll_y_at_shot": 92.0,
+          "element_text_head": "\u5c1a\u672a\u5f00\u653e  \u8be5\u529f\u80fd\u5df2\u5efa\u6210\uff0c\u4f46\u5c1a\u672a\u5bf9\u5ba2\u6237\u5f00\u653e\u3002  \u5f00\u653e\u540e\u4f1a\u81ea\u52a8\u51fa\u73b0\uff0c\u65e0\u9700\u64cd\u4f5c\u3002",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 1545,
+            "y1": 1801
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 72330,
+          "bytes": 29922,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -1678,11 +2168,11 @@
           "fixture": "fixtures/e6_inflation_system.json",
           "force_state": "e6",
           "full_page": false,
-          "height": 351,
+          "height": 352,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 384.0,
-          "sha256": "22431f0d68e047127c3ba81e14957d4e3214daf633592d1c1565f9d13a30ebfa",
+          "sha256": "859714c40417df76c4e69a512b76f2564145d624890026b322af820f77e9388f",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -1695,13 +2185,27 @@
             "y": 372.71875,
             "width": 670,
             "height": 175.234375
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 756.71875,
+            "width": 670,
+            "height": 175.234375
+          },
+          "scroll_y_at_shot": 384.0,
+          "element_text_head": "\u5305\u542b\u4e8e\u66f4\u9ad8\u7ea7\u522b\u65b9\u6848  \u672c\u677f\u5757\u5c5e\u4e8eResearch\u3002  \u5347\u7ea7\u540e\u53ef\u67e5\u770b\u8be5\u8bfb\u6570\u3002  \u5347\u7ea7\u540e\u5373\u53ef\u67e5\u770b",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 745,
+            "y1": 1097
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 35776,
+          "bytes": 30378,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -1709,11 +2213,11 @@
           "fixture": "fixtures/e6_inflation_system.json",
           "force_state": "e6",
           "full_page": false,
-          "height": 351,
+          "height": 352,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 390.0,
-          "sha256": "de85c5f5036967d5ca04744a625e8f4136e24d832db98a442d8fda970bc500a8",
+          "sha256": "6a8f11593cbd74b6913fa19854284b2e7956d3c80fd5ef9886e71e55108cbc5c",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -1726,6 +2230,20 @@
             "y": 371.71875,
             "width": 698,
             "height": 175.234375
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 761.71875,
+            "width": 698,
+            "height": 175.234375
+          },
+          "scroll_y_at_shot": 390.0,
+          "element_text_head": "\u5305\u542b\u4e8e\u66f4\u9ad8\u7ea7\u522b\u65b9\u6848  \u672c\u677f\u5757\u5c5e\u4e8eResearch\u3002  \u5347\u7ea7\u540e\u53ef\u67e5\u770b\u8be5\u8bfb\u6570\u3002  \u5347\u7ea7\u540e\u5373\u53ef\u67e5\u770b",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 743,
+            "y1": 1095
           }
         },
         {
@@ -1780,7 +2298,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 181000,
+          "bytes": 180455,
           "captured": true,
           "crop": false,
           "dpr": 2.0,
@@ -1792,7 +2310,7 @@
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 2495.0,
-          "sha256": "3607f2999f03ef3d9df6e0f70c8284fab71d818c9672204907d69aad41e368db",
+          "sha256": "8c3adb010db417b053dce4e3ba33c36865f2c0c29144b7c9d8d722a1beffc5fd",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -1804,7 +2322,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 181514,
+          "bytes": 181883,
           "captured": true,
           "crop": false,
           "dpr": 2.0,
@@ -1816,7 +2334,7 @@
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 2121.0,
-          "sha256": "63d57170d9f36b9daeb9aa23b7373e55870d3a1b200a01df3f073bd8401cf995",
+          "sha256": "6dc69394eca7a29e2f367aa8a649d3c7d5ecc48b3d94988c3343a6cc37a492a7",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -1828,7 +2346,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 981312,
+          "bytes": 981310,
           "captured": true,
           "crop": false,
           "dpr": 2.0,
@@ -1840,7 +2358,7 @@
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 0.0,
-          "sha256": "ded76f4646466180920f81247e6c8d14102c5779943f895ac7858e7946cbc9e5",
+          "sha256": "ca889f60f7890eb12801dd8e6dabb407ce96143277dc8e753b75b7f943b3b75b",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -1897,7 +2415,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 953444,
+          "bytes": 953447,
           "captured": true,
           "crop": false,
           "dpr": 2.0,
@@ -1909,7 +2427,7 @@
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 0.0,
-          "sha256": "7e45169bcbcddbbd37fe267bc60c687bdcbb23e3f2786514c8fd7008b2fe92b8",
+          "sha256": "21990dff3fa423ff7fae81a061e33e1746a6dfb7ee7b5a7a31fcdb6fbb9a6540",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -2035,7 +2553,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 43414,
+          "bytes": 25687,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2047,7 +2565,7 @@
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 660.0,
-          "sha256": "8c5874c80fc7313172ecc38e8bbf771fca61f5fe63c7a237089998984eac80c7",
+          "sha256": "6a7e9508853ee4a4b1dceb2e23d22a6aec7a156b44f32e3e232079293e18a221",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -2060,13 +2578,27 @@
             "y": 443.484375,
             "width": 292,
             "height": 166.453125
+          },
+          "crop_box_doc": {
+            "x": 49,
+            "y": 1103.484375,
+            "width": 292,
+            "height": 166.453125
+          },
+          "scroll_y_at_shot": 660.0,
+          "element_text_head": "This section didn't load  The page couldn't fetch it just now.  Reload the page,",
+          "device_px_span": {
+            "x0": 98,
+            "x1": 682,
+            "y0": 886,
+            "y1": 1220
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 27424,
+          "bytes": 29215,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2074,11 +2606,11 @@
           "fixture": "builder-payload",
           "force_state": "e5",
           "full_page": false,
-          "height": 294,
+          "height": 296,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 259.0,
-          "sha256": "8ada162493395e2bf52f89e509e55af27a5e2bb3076b9facfbaed8301fa6628e",
+          "sha256": "c78074f1e27c7fa2987a4c1dec0ccc00bf91e50e4e9a8c38cacd8c2eb87b23a9",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -2091,13 +2623,27 @@
             "y": 497.71875,
             "width": 670,
             "height": 146.3125
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 756.71875,
+            "width": 670,
+            "height": 146.3125
+          },
+          "scroll_y_at_shot": 259.0,
+          "element_text_head": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165  \u9875\u9762\u6b64\u523b\u672a\u80fd\u53d6\u56de\u8be5\u677f\u5757\u3002  \u8bf7\u91cd\u65b0\u8f7d\u5165\u9875\u9762\uff0c\u6216\u6253\u5f00\u5b8c\u6574\u5de5\u4f5c\u533a \u2192",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 995,
+            "y1": 1291
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 43738,
+          "bytes": 26596,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2109,7 +2655,7 @@
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 536.0,
-          "sha256": "52e71c3a513be9afdd948db3d106829a481c0a082e203584763b11a3fdd3d70a",
+          "sha256": "84c6bf41cb17a8bf580fd3aa0847bfdb508027e5b38d5a731e2143e2fa01f077",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -2122,13 +2668,27 @@
             "y": 464.375,
             "width": 292,
             "height": 166.453125
+          },
+          "crop_box_doc": {
+            "x": 49,
+            "y": 1000.375,
+            "width": 292,
+            "height": 166.453125
+          },
+          "scroll_y_at_shot": 536.0,
+          "element_text_head": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165  \u9875\u9762\u6b64\u523b\u672a\u80fd\u53d6\u56de\u8be5\u677f\u5757\u3002  \u8bf7\u91cd\u65b0\u8f7d\u5165\u9875\u9762\uff0c\u6216\u6253\u5f00\u5b8c\u6574\u5de5\u4f5c\u533a \u2192",
+          "device_px_span": {
+            "x0": 98,
+            "x1": 682,
+            "y0": 928,
+            "y1": 1262
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 28573,
+          "bytes": 26119,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2136,11 +2696,11 @@
           "fixture": "builder-payload",
           "force_state": "e5",
           "full_page": false,
-          "height": 294,
+          "height": 296,
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 407.0,
-          "sha256": "48d21050ec17e6706ca2e9f6d54d3948a119613a45484b5863debeb73d9bd7a0",
+          "sha256": "08a8f087bc06dcb70eca4345bc2c5607b5836d0e0154c94f057589e9be3c072f",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -2153,13 +2713,27 @@
             "y": 454.96875,
             "width": 698,
             "height": 146.3125
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 861.96875,
+            "width": 698,
+            "height": 146.3125
+          },
+          "scroll_y_at_shot": 407.0,
+          "element_text_head": "This section didn't load  The page couldn't fetch it just now.  Reload the page,",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 909,
+            "y1": 1205
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 45222,
+          "bytes": 25215,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2167,11 +2741,11 @@
           "fixture": "builder-payload",
           "force_state": "e5",
           "full_page": false,
-          "height": 334,
+          "height": 336,
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 698.0,
-          "sha256": "0350b1f2a916f73c1776f4850fdda8b89ca2014dfdf29350444f293548bf5c26",
+          "sha256": "ca5a75c3df9578c0fd0c81f72ff0832cd3c6f9e8765795426a2e7185129f1f9a",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -2184,13 +2758,27 @@
             "y": 435.984375,
             "width": 308,
             "height": 166.453125
+          },
+          "crop_box_doc": {
+            "x": 41,
+            "y": 1133.984375,
+            "width": 308,
+            "height": 166.453125
+          },
+          "scroll_y_at_shot": 698.0,
+          "element_text_head": "This section didn't load  The page couldn't fetch it just now.  Reload the page,",
+          "device_px_span": {
+            "x0": 82,
+            "x1": 698,
+            "y0": 871,
+            "y1": 1207
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 29747,
+          "bytes": 29306,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2198,11 +2786,11 @@
           "fixture": "builder-payload",
           "force_state": "e5",
           "full_page": false,
-          "height": 294,
+          "height": 296,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 265.0,
-          "sha256": "1bb5914108188ad764cb3806fc4dda70f312803ed89e43061bb7f8c45f4980d9",
+          "sha256": "697c2650a27c68dfad4e8a8f05f94da224543fc77fc7720ef8624baf085c425e",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -2215,13 +2803,27 @@
             "y": 496.71875,
             "width": 698,
             "height": 146.3125
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 761.71875,
+            "width": 698,
+            "height": 146.3125
+          },
+          "scroll_y_at_shot": 265.0,
+          "element_text_head": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165  \u9875\u9762\u6b64\u523b\u672a\u80fd\u53d6\u56de\u8be5\u677f\u5757\u3002  \u8bf7\u91cd\u65b0\u8f7d\u5165\u9875\u9762\uff0c\u6216\u6253\u5f00\u5b8c\u6574\u5de5\u4f5c\u533a \u2192",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 993,
+            "y1": 1289
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 36763,
+          "bytes": 25663,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2233,7 +2835,7 @@
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 556.0,
-          "sha256": "09bd053ce8439b266beaed601f1921ecca7eac55de3a93373d41c377b83d3639",
+          "sha256": "ff2cb34e4e296716d3b6ed04a8c59c96e969bf7abd393ed3db431a2fd07b2dfd",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -2246,13 +2848,27 @@
             "y": 457.375,
             "width": 308,
             "height": 146.3125
+          },
+          "crop_box_doc": {
+            "x": 41,
+            "y": 1013.375,
+            "width": 308,
+            "height": 146.3125
+          },
+          "scroll_y_at_shot": 556.0,
+          "element_text_head": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165  \u9875\u9762\u6b64\u523b\u672a\u80fd\u53d6\u56de\u8be5\u677f\u5757\u3002  \u8bf7\u91cd\u65b0\u8f7d\u5165\u9875\u9762\uff0c\u6216\u6253\u5f00\u5b8c\u6574\u5de5\u4f5c\u533a \u2192",
+          "device_px_span": {
+            "x0": 82,
+            "x1": 698,
+            "y0": 914,
+            "y1": 1208
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 46799,
+          "bytes": 39432,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2260,11 +2876,11 @@
           "fixture": "builder-payload",
           "force_state": "e1",
           "full_page": false,
-          "height": 397,
+          "height": 398,
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 664.0,
-          "sha256": "3cafd6a77fd31c8c61a11b48ee72ff4cb90044520d9276431c2520e465babcdd",
+          "sha256": "35dda376cd1997e253851f385c007e79103d5b17be1741a21fd308b203ac444f",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -2277,13 +2893,27 @@
             "y": 374.34375,
             "width": 292,
             "height": 197.859375
+          },
+          "crop_box_doc": {
+            "x": 49,
+            "y": 1038.34375,
+            "width": 292,
+            "height": 197.859375
+          },
+          "scroll_y_at_shot": 664.0,
+          "element_text_head": "We don't have this reading yet  The source this section is built from has not pu",
+          "device_px_span": {
+            "x0": 98,
+            "x1": 682,
+            "y0": 748,
+            "y1": 1146
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 46160,
+          "bytes": 40172,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2291,11 +2921,11 @@
           "fixture": "builder-payload",
           "force_state": "e1",
           "full_page": false,
-          "height": 397,
+          "height": 398,
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 687.0,
-          "sha256": "44e7f20b167d4a1bd8aae8258cbad0610dbead114726721739382010c834feeb",
+          "sha256": "b99d6921849688dde1c1f7ab8cd55d1586839996c561154d168ca4803b112212",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -2308,13 +2938,27 @@
             "y": 381.84375,
             "width": 308,
             "height": 197.859375
+          },
+          "crop_box_doc": {
+            "x": 41,
+            "y": 1068.84375,
+            "width": 308,
+            "height": 197.859375
+          },
+          "scroll_y_at_shot": 687.0,
+          "element_text_head": "We don't have this reading yet  The source this section is built from has not pu",
+          "device_px_span": {
+            "x0": 82,
+            "x1": 698,
+            "y0": 763,
+            "y1": 1161
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 51988,
+          "bytes": 43191,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2322,11 +2966,11 @@
           "fixture": "builder-payload",
           "force_state": "e2",
           "full_page": false,
-          "height": 422,
+          "height": 424,
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 684.0,
-          "sha256": "948ede63056dda5ff79b38992802447be252c29c91574bfa8d6f64a6971e554f",
+          "sha256": "e337fd9860a46ea09a112011209f0c6b149905a8c5371b969cfd51f76aad9fea",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -2339,13 +2983,27 @@
             "y": 412.609375,
             "width": 292,
             "height": 210.78125
+          },
+          "crop_box_doc": {
+            "x": 49,
+            "y": 1096.609375,
+            "width": 292,
+            "height": 210.78125
+          },
+          "scroll_y_at_shot": 684.0,
+          "element_text_head": "Today's number didn't arrive  The data provider did not deliver in time. We show",
+          "device_px_span": {
+            "x0": 98,
+            "x1": 682,
+            "y0": 825,
+            "y1": 1249
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 50504,
+          "bytes": 42012,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2357,7 +3015,7 @@
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 707.0,
-          "sha256": "b39b02755c29b112ca669e4011cb0aba79d36a5bf2fc8ebdf0b748fce88bd9e9",
+          "sha256": "29b35a0aef78065a64541448c0c1d6947d79242b33d391d237fe40e8a680fa3f",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -2370,13 +3028,27 @@
             "y": 420.109375,
             "width": 308,
             "height": 189.859375
+          },
+          "crop_box_doc": {
+            "x": 41,
+            "y": 1127.109375,
+            "width": 308,
+            "height": 189.859375
+          },
+          "scroll_y_at_shot": 707.0,
+          "element_text_head": "Today's number didn't arrive  The data provider did not deliver in time. We show",
+          "device_px_span": {
+            "x0": 82,
+            "x1": 698,
+            "y0": 840,
+            "y1": 1220
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 46639,
+          "bytes": 37815,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2384,11 +3056,11 @@
           "fixture": "builder-payload",
           "force_state": "e3",
           "full_page": false,
-          "height": 381,
+          "height": 382,
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 684.0,
-          "sha256": "2ab292d4033054ee0f9f6e1ca68059d43329a7b7c413b16e2530b6222625a2e3",
+          "sha256": "b495dca1e2d5b772d9e46a3fe49c2b4be9fbc187819e7c7ff94c2a77f980bbfc",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -2401,13 +3073,27 @@
             "y": 374.484375,
             "width": 292,
             "height": 189.859375
+          },
+          "crop_box_doc": {
+            "x": 49,
+            "y": 1058.484375,
+            "width": 292,
+            "height": 189.859375
+          },
+          "scroll_y_at_shot": 684.0,
+          "element_text_head": "We can't show the change yet  There is no earlier reading measured the same way,",
+          "device_px_span": {
+            "x0": 98,
+            "x1": 682,
+            "y0": 748,
+            "y1": 1130
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 40281,
+          "bytes": 38299,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2415,11 +3101,11 @@
           "fixture": "builder-payload",
           "force_state": "e3",
           "full_page": false,
-          "height": 381,
+          "height": 382,
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 707.0,
-          "sha256": "9b0f89385539242428732b52644e6c6b11541c339d8b7898a5e70c616e564f55",
+          "sha256": "186a0119420c8c33018acf415eb10312de1020dd9e58a9ddc5a91a4f9e5e100f",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -2432,13 +3118,27 @@
             "y": 381.984375,
             "width": 308,
             "height": 189.859375
+          },
+          "crop_box_doc": {
+            "x": 41,
+            "y": 1088.984375,
+            "width": 308,
+            "height": 189.859375
+          },
+          "scroll_y_at_shot": 707.0,
+          "element_text_head": "We can't show the change yet  There is no earlier reading measured the same way,",
+          "device_px_span": {
+            "x0": 82,
+            "x1": 698,
+            "y0": 763,
+            "y1": 1145
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 37807,
+          "bytes": 28757,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2446,11 +3146,11 @@
           "fixture": "fixtures/e4_central_banks.json",
           "force_state": "e4",
           "full_page": false,
-          "height": 339,
+          "height": 340,
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 0.0,
-          "sha256": "39de8b0910b8de9cb38c1806be920dee4c78686571b3ac65f40c76b57b25f81a",
+          "sha256": "6b26dccd842d6cc8d4a532b2fba4b04a1ad8db075b9370cdf69e346e61f1f9ae",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -2463,13 +3163,27 @@
             "y": 344.9375,
             "width": 292,
             "height": 168.9375
+          },
+          "crop_box_doc": {
+            "x": 49,
+            "y": 1290.9375,
+            "width": 292,
+            "height": 168.9375
+          },
+          "scroll_y_at_shot": 946.0,
+          "element_text_head": "Not open yet  This part is built but not switched on for customers.  It appears ",
+          "device_px_span": {
+            "x0": 98,
+            "x1": 682,
+            "y0": 689,
+            "y1": 1029
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 37065,
+          "bytes": 28636,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2477,11 +3191,11 @@
           "fixture": "fixtures/e4_central_banks.json",
           "force_state": "e4",
           "full_page": false,
-          "height": 339,
+          "height": 340,
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 0.0,
-          "sha256": "301820fa9a67d1773f38975ade6b7b6262ec3f47135b3225590073a25aac34f9",
+          "sha256": "65c61832aef9aaf09da730e748630049ddaccbcd5e7e39c660b2c0fea55895af",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -2494,13 +3208,27 @@
             "y": 337.4375,
             "width": 308,
             "height": 168.9375
+          },
+          "crop_box_doc": {
+            "x": 41,
+            "y": 1300.4375,
+            "width": 308,
+            "height": 168.9375
+          },
+          "scroll_y_at_shot": 963.0,
+          "element_text_head": "Not open yet  This part is built but not switched on for customers.  It appears ",
+          "device_px_span": {
+            "x0": 82,
+            "x1": 698,
+            "y0": 674,
+            "y1": 1014
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 41099,
+          "bytes": 26543,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2512,7 +3240,7 @@
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 684.0,
-          "sha256": "41880a6ede342c385aa84b31e479520c5388ea9ce01f070ceefaa22e89f95223",
+          "sha256": "4c0b58314032b2c7f67f29c62433920c8837ebe1929611c9b89de3fb54efdd0c",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -2525,13 +3253,27 @@
             "y": 374.484375,
             "width": 292,
             "height": 175.234375
+          },
+          "crop_box_doc": {
+            "x": 49,
+            "y": 1058.484375,
+            "width": 292,
+            "height": 175.234375
+          },
+          "scroll_y_at_shot": 684.0,
+          "element_text_head": "Included in a higher plan  This section is part of Research.  The reading is ava",
+          "device_px_span": {
+            "x0": 98,
+            "x1": 682,
+            "y0": 748,
+            "y1": 1100
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 31727,
+          "bytes": 26291,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2539,11 +3281,11 @@
           "fixture": "fixtures/e6_inflation_system.json",
           "force_state": "e6",
           "full_page": false,
-          "height": 352,
+          "height": 354,
           "locale": "en",
           "reduced_motion": true,
           "scroll_y": 707.0,
-          "sha256": "ae093a2c6e05864a131f8d6e6852a087cacf3b1456f3ee397446aafbfb8d6f46",
+          "sha256": "bf41f28af85630187c5296e2e640865d3aa4a79b788fbbf95857e6a452a015d4",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -2556,13 +3298,27 @@
             "y": 381.984375,
             "width": 308,
             "height": 175.234375
+          },
+          "crop_box_doc": {
+            "x": 41,
+            "y": 1088.984375,
+            "width": 308,
+            "height": 175.234375
+          },
+          "scroll_y_at_shot": 707.0,
+          "element_text_head": "Included in a higher plan  This section is part of Research.  The reading is ava",
+          "device_px_span": {
+            "x0": 82,
+            "x1": 698,
+            "y0": 763,
+            "y1": 1117
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 44258,
+          "bytes": 40288,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2570,11 +3326,11 @@
           "fixture": "builder-payload",
           "force_state": "e1",
           "full_page": false,
-          "height": 355,
+          "height": 356,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 600.0,
-          "sha256": "d6ff56b1bb61ccf15f966bd474c077500d1201f761f56e349c50d572eaa2235d",
+          "sha256": "fde5a19af574c9b4c21af82b6093694d73b3e5abc7283ab19f469eac6063cc13",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -2587,13 +3343,27 @@
             "y": 357.734375,
             "width": 292,
             "height": 176.9375
+          },
+          "crop_box_doc": {
+            "x": 49,
+            "y": 957.734375,
+            "width": 292,
+            "height": 176.9375
+          },
+          "scroll_y_at_shot": 600.0,
+          "element_text_head": "\u8be5\u8bfb\u6570\u6682\u4e0d\u53ef\u7528  \u672c\u677f\u5757\u6240\u4f9d\u636e\u7684\u6570\u636e\u6e90\u5c1a\u672a\u53d1\u5e03\u5e26\u65e5\u671f\u7684\u8bfb\u6570\u3002  \u8be5\u6570\u636e\u6e90\u9996\u6b21\u53d1\u5e03\u540e\u5373\u4f1a\u51fa\u73b0\u5728\u6b64\u5904\u3002  \u4eca\u665a\u7684\u66f4\u65b0\u4f1a\u518d\u6b21\u68c0\u67e5\u3002",
+          "device_px_span": {
+            "x0": 98,
+            "x1": 682,
+            "y0": 715,
+            "y1": 1071
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 44592,
+          "bytes": 39920,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2601,11 +3371,11 @@
           "fixture": "builder-payload",
           "force_state": "e1",
           "full_page": false,
-          "height": 355,
+          "height": 356,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 620.0,
-          "sha256": "6f7a7ab7607a7eb7a63ba44aff7c8734f2e6c705cd718d32079c2b51528b9273",
+          "sha256": "8729bc1343f0c75ae6a11a248bb3b6c0fbb545109bd94f2c32028f714d97a444",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -2618,13 +3388,27 @@
             "y": 350.734375,
             "width": 308,
             "height": 176.9375
+          },
+          "crop_box_doc": {
+            "x": 41,
+            "y": 970.734375,
+            "width": 308,
+            "height": 176.9375
+          },
+          "scroll_y_at_shot": 620.0,
+          "element_text_head": "\u8be5\u8bfb\u6570\u6682\u4e0d\u53ef\u7528  \u672c\u677f\u5757\u6240\u4f9d\u636e\u7684\u6570\u636e\u6e90\u5c1a\u672a\u53d1\u5e03\u5e26\u65e5\u671f\u7684\u8bfb\u6570\u3002  \u8be5\u6570\u636e\u6e90\u9996\u6b21\u53d1\u5e03\u540e\u5373\u4f1a\u51fa\u73b0\u5728\u6b64\u5904\u3002  \u4eca\u665a\u7684\u66f4\u65b0\u4f1a\u518d\u6b21\u68c0\u67e5\u3002",
+          "device_px_span": {
+            "x0": 82,
+            "x1": 698,
+            "y0": 701,
+            "y1": 1057
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 48325,
+          "bytes": 42589,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2632,11 +3416,11 @@
           "fixture": "builder-payload",
           "force_state": "e2",
           "full_page": false,
-          "height": 381,
+          "height": 382,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 634.0,
-          "sha256": "2461b7ceb3c36cafdf9c782966ce292e3c9c0eba4226773d03ef04cd39c66c72",
+          "sha256": "898ac54655bf0b7d3d00af795abdffaa312c4bdeb84f3a9404506ec22c292ee6",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -2649,13 +3433,27 @@
             "y": 393.71875,
             "width": 292,
             "height": 189.859375
+          },
+          "crop_box_doc": {
+            "x": 49,
+            "y": 1027.71875,
+            "width": 292,
+            "height": 189.859375
+          },
+          "scroll_y_at_shot": 634.0,
+          "element_text_head": "\u4eca\u5929\u7684\u6570\u636e\u672a\u80fd\u9001\u8fbe  \u6570\u636e\u63d0\u4f9b\u65b9\u672a\u80fd\u53ca\u65f6\u9001\u8fbe\u3002\u6211\u4eec\u5b81\u53ef\u4e0d\u663e\u793a\uff0c\u4e5f\u4e0d\u4f1a\u628a\u6628\u5929\u7684\u6570\u5b57\u5f53\u4f5c\u4eca\u5929\u7684\u3002  \u6570\u636e\u6e90\u6062\u590d\u53d1\u5e03\u540e\u5373\u4f1a\u663e\u793a\uff1b\u6bcf\u665a\u68c0\u67e5\u3002",
+          "device_px_span": {
+            "x0": 98,
+            "x1": 682,
+            "y0": 787,
+            "y1": 1169
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 41259,
+          "bytes": 41793,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2663,11 +3461,11 @@
           "fixture": "builder-payload",
           "force_state": "e2",
           "full_page": false,
-          "height": 297,
+          "height": 298,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 614.0,
-          "sha256": "b2500d61509205d47f95ff9bf5eb4ef315065ec1f90734c1254cc2d22aa9da53",
+          "sha256": "6be76505995bb0ea751b2b92fafbe218c7883ef9562e6b462b27d63c4ac98a80",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -2680,13 +3478,27 @@
             "y": 426.71875,
             "width": 308,
             "height": 148.015625
+          },
+          "crop_box_doc": {
+            "x": 41,
+            "y": 1040.71875,
+            "width": 308,
+            "height": 148.015625
+          },
+          "scroll_y_at_shot": 614.0,
+          "element_text_head": "\u4eca\u5929\u7684\u6570\u636e\u672a\u80fd\u9001\u8fbe  \u6570\u636e\u63d0\u4f9b\u65b9\u672a\u80fd\u53ca\u65f6\u9001\u8fbe\u3002\u6211\u4eec\u5b81\u53ef\u4e0d\u663e\u793a\uff0c\u4e5f\u4e0d\u4f1a\u628a\u6628\u5929\u7684\u6570\u5b57\u5f53\u4f5c\u4eca\u5929\u7684\u3002  \u6570\u636e\u6e90\u6062\u590d\u53d1\u5e03\u540e\u5373\u4f1a\u663e\u793a\uff1b\u6bcf\u665a\u68c0\u67e5\u3002",
+          "device_px_span": {
+            "x0": 82,
+            "x1": 698,
+            "y0": 853,
+            "y1": 1151
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 44023,
+          "bytes": 33488,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2694,11 +3506,11 @@
           "fixture": "builder-payload",
           "force_state": "e3",
           "full_page": false,
-          "height": 297,
+          "height": 298,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 591.0,
-          "sha256": "85cf61bc23f41f9b728abc482ef13dbec812982952d330db788fa65a8cb346e5",
+          "sha256": "082e9e14bbb7b59bc25fac98c8a542d57a622c0aeafd558e027b79c142b36b4b",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -2711,13 +3523,27 @@
             "y": 386.875,
             "width": 292,
             "height": 148.015625
+          },
+          "crop_box_doc": {
+            "x": 49,
+            "y": 977.875,
+            "width": 292,
+            "height": 148.015625
+          },
+          "scroll_y_at_shot": 591.0,
+          "element_text_head": "\u6682\u65f6\u65e0\u6cd5\u663e\u793a\u53d8\u5316  \u4e0d\u5b58\u5728\u4ee5\u76f8\u540c\u65b9\u6cd5\u6d4b\u5f97\u7684\u5386\u53f2\u8bfb\u6570\uff0c\u4efb\u4f55\u7bad\u5934\u90fd\u4f1a\u662f\u81c6\u9020\u7684\u3002  \u4e0b\u4e00\u6b21\u53d1\u5e03\u540e\u5c06\u51fa\u73b0\u9996\u4e2a\u53ef\u5bf9\u6bd4\u8bfb\u6570\u3002",
+          "device_px_span": {
+            "x0": 98,
+            "x1": 682,
+            "y0": 773,
+            "y1": 1071
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 40760,
+          "bytes": 34205,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2725,11 +3551,11 @@
           "fixture": "builder-payload",
           "force_state": "e3",
           "full_page": false,
-          "height": 297,
+          "height": 298,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 611.0,
-          "sha256": "ae0524a982a90bd0f8803c3415930f731320bdfa5ea0937d0b6704c2443ae6fe",
+          "sha256": "b953d2760e0a6cc9bfde2ed18ba7eb9be2778c37206f2257449ec443f55c6e97",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -2742,13 +3568,27 @@
             "y": 379.875,
             "width": 308,
             "height": 148.015625
+          },
+          "crop_box_doc": {
+            "x": 41,
+            "y": 990.875,
+            "width": 308,
+            "height": 148.015625
+          },
+          "scroll_y_at_shot": 611.0,
+          "element_text_head": "\u6682\u65f6\u65e0\u6cd5\u663e\u793a\u53d8\u5316  \u4e0d\u5b58\u5728\u4ee5\u76f8\u540c\u65b9\u6cd5\u6d4b\u5f97\u7684\u5386\u53f2\u8bfb\u6570\uff0c\u4efb\u4f55\u7bad\u5934\u90fd\u4f1a\u662f\u81c6\u9020\u7684\u3002  \u4e0b\u4e00\u6b21\u53d1\u5e03\u540e\u5c06\u51fa\u73b0\u9996\u4e2a\u53ef\u5bf9\u6bd4\u8bfb\u6570\u3002",
+          "device_px_span": {
+            "x0": 82,
+            "x1": 698,
+            "y0": 759,
+            "y1": 1057
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 39640,
+          "bytes": 21876,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2756,11 +3596,11 @@
           "fixture": "fixtures/e4_central_banks.json",
           "force_state": "e4",
           "full_page": false,
-          "height": 255,
+          "height": 256,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 0.0,
-          "sha256": "f11e9185e63c34653993538515d5bd82edc8745e24dfd5e90494c214c6389aeb",
+          "sha256": "e78704a49c8bcacf5eb42423bbe3a59ef0ad8729fbc477f38eaef206b263d2a1",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -2773,13 +3613,27 @@
             "y": 407.78125,
             "width": 292,
             "height": 127.09375
+          },
+          "crop_box_doc": {
+            "x": 49,
+            "y": 1177.78125,
+            "width": 292,
+            "height": 127.09375
+          },
+          "scroll_y_at_shot": 770.0,
+          "element_text_head": "\u5c1a\u672a\u5f00\u653e  \u8be5\u529f\u80fd\u5df2\u5efa\u6210\uff0c\u4f46\u5c1a\u672a\u5bf9\u5ba2\u6237\u5f00\u653e\u3002  \u5f00\u653e\u540e\u4f1a\u81ea\u52a8\u51fa\u73b0\uff0c\u65e0\u9700\u64cd\u4f5c\u3002",
+          "device_px_span": {
+            "x0": 98,
+            "x1": 682,
+            "y0": 815,
+            "y1": 1071
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 36263,
+          "bytes": 21992,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2787,11 +3641,11 @@
           "fixture": "fixtures/e4_central_banks.json",
           "force_state": "e4",
           "full_page": false,
-          "height": 255,
+          "height": 256,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 0.0,
-          "sha256": "8e99c5d6236cd06b6947129dad86cc337b9c6d01cfb91cfe3c12a32b0bb7cb1e",
+          "sha256": "c6fdb33f23fe90fa2cfae8e9cbb9d8810eb3c6048ea3c916e04f269676e9bdab",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -2804,13 +3658,27 @@
             "y": 400.78125,
             "width": 308,
             "height": 127.09375
+          },
+          "crop_box_doc": {
+            "x": 41,
+            "y": 1169.78125,
+            "width": 308,
+            "height": 127.09375
+          },
+          "scroll_y_at_shot": 769.0,
+          "element_text_head": "\u5c1a\u672a\u5f00\u653e  \u8be5\u529f\u80fd\u5df2\u5efa\u6210\uff0c\u4f46\u5c1a\u672a\u5bf9\u5ba2\u6237\u5f00\u653e\u3002  \u5f00\u653e\u540e\u4f1a\u81ea\u52a8\u51fa\u73b0\uff0c\u65e0\u9700\u64cd\u4f5c\u3002",
+          "device_px_span": {
+            "x0": 82,
+            "x1": 698,
+            "y0": 801,
+            "y1": 1057
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 44505,
+          "bytes": 27507,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2818,11 +3686,11 @@
           "fixture": "fixtures/e6_inflation_system.json",
           "force_state": "e6",
           "full_page": false,
-          "height": 352,
+          "height": 354,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 619.0,
-          "sha256": "b46fb5836d8080c263830de4d569ca6036e8ef537d6588ccb7cc7ecde4e91003",
+          "sha256": "4e857c671513ae92e43ee49341b922e5ad012f3bb0ee8b148872962ef4b8958c",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -2835,13 +3703,27 @@
             "y": 358.875,
             "width": 292,
             "height": 175.234375
+          },
+          "crop_box_doc": {
+            "x": 49,
+            "y": 977.875,
+            "width": 292,
+            "height": 175.234375
+          },
+          "scroll_y_at_shot": 619.0,
+          "element_text_head": "\u5305\u542b\u4e8e\u66f4\u9ad8\u7ea7\u522b\u65b9\u6848  \u672c\u677f\u5757\u5c5e\u4e8eResearch\u3002  \u5347\u7ea7\u540e\u53ef\u67e5\u770b\u8be5\u8bfb\u6570\u3002  \u5347\u7ea7\u540e\u5373\u53ef\u67e5\u770b",
+          "device_px_span": {
+            "x0": 98,
+            "x1": 682,
+            "y0": 717,
+            "y1": 1071
           }
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 41826,
+          "bytes": 27406,
           "captured": true,
           "crop": true,
           "dpr": 2.0,
@@ -2849,11 +3731,11 @@
           "fixture": "fixtures/e6_inflation_system.json",
           "force_state": "e6",
           "full_page": false,
-          "height": 352,
+          "height": 354,
           "locale": "zh",
           "reduced_motion": true,
           "scroll_y": 639.0,
-          "sha256": "fc9f64153a2fc56f9f86b7fc48155caec3c7f9d5427d4811e7874dbac1c4346d",
+          "sha256": "508e9802e77728b4849103faa10259f36ea4f9056f86d9d1d024430849c7c861",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -2866,14 +3748,204 @@
             "y": 351.875,
             "width": 308,
             "height": 175.234375
+          },
+          "crop_box_doc": {
+            "x": 41,
+            "y": 990.875,
+            "width": 308,
+            "height": 175.234375
+          },
+          "scroll_y_at_shot": 639.0,
+          "element_text_head": "\u5305\u542b\u4e8e\u66f4\u9ad8\u7ea7\u522b\u65b9\u6848  \u672c\u677f\u5757\u5c5e\u4e8eResearch\u3002  \u5347\u7ea7\u540e\u53ef\u67e5\u770b\u8be5\u8bfb\u6570\u3002  \u5347\u7ea7\u540e\u5373\u53ef\u67e5\u770b",
+          "device_px_span": {
+            "x0": 82,
+            "x1": 698,
+            "y0": 703,
+            "y1": 1057
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 16723,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "movement-row-dark-en.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": false,
+          "height": 156,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 520.0,
+          "sha256": "a70741f4fe77715411a6a1113168987ad699bb6ef21b482e81ec3565eb438fb6",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1340,
+          "crop_selector": "#inflation .mc-move-row:not(.mc-move-current-only)",
+          "crop_box": {
+            "x": 371,
+            "y": 336.96875,
+            "width": 670,
+            "height": 76.28125
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 856.96875,
+            "width": 670,
+            "height": 76.28125
+          },
+          "scroll_y_at_shot": 520.0,
+          "element_text_head": "Speed of price rises 49.59 pts unchanged since the last reading",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 673,
+            "y1": 829
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 13578,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "movement-row-dark-zh.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": false,
+          "height": 122,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 385.0,
+          "sha256": "df11b308ffb26550a56229a33a9cc3c0a2339b1e41feea17f8d49ddfb9f60cc2",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1340,
+          "crop_selector": "#inflation .mc-move-row:not(.mc-move-current-only)",
+          "crop_box": {
+            "x": 371,
+            "y": 371.71875,
+            "width": 670,
+            "height": 59.484375
+          },
+          "crop_box_doc": {
+            "x": 371,
+            "y": 756.71875,
+            "width": 670,
+            "height": 59.484375
+          },
+          "scroll_y_at_shot": 385.0,
+          "element_text_head": "\u7269\u4ef7\u4e0a\u6da8\u901f\u5ea6 49.59 \u70b9 \u8f83\u4e0a\u6b21\u8bfb\u6570\u6301\u5e73",
+          "device_px_span": {
+            "x0": 742,
+            "x1": 2082,
+            "y0": 743,
+            "y1": 865
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 16929,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "movement-row-light-en.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": false,
+          "height": 156,
+          "locale": "en",
+          "reduced_motion": true,
+          "scroll_y": 524.0,
+          "sha256": "f71aebec2e16988db9947c34642a710e7a55d49f170d80ae61337ae2a59256f0",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1396,
+          "crop_selector": "#inflation .mc-move-row:not(.mc-move-current-only)",
+          "crop_box": {
+            "x": 357,
+            "y": 337.96875,
+            "width": 698,
+            "height": 76.28125
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 861.96875,
+            "width": 698,
+            "height": 76.28125
+          },
+          "scroll_y_at_shot": 524.0,
+          "element_text_head": "Speed of price rises 49.59 pts unchanged since the last reading",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 675,
+            "y1": 831
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 13897,
+          "captured": true,
+          "crop": true,
+          "dpr": 2.0,
+          "file": "movement-row-light-zh.png",
+          "fixture": "builder-payload",
+          "force_state": null,
+          "full_page": false,
+          "height": 122,
+          "locale": "zh",
+          "reduced_motion": true,
+          "scroll_y": 391.0,
+          "sha256": "c82910575f22a83215337982998db4ff5ca947c668dd6ee73528a18c8af4e66d",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1396,
+          "crop_selector": "#inflation .mc-move-row:not(.mc-move-current-only)",
+          "crop_box": {
+            "x": 357,
+            "y": 370.71875,
+            "width": 698,
+            "height": 59.484375
+          },
+          "crop_box_doc": {
+            "x": 357,
+            "y": 761.71875,
+            "width": 698,
+            "height": 59.484375
+          },
+          "scroll_y_at_shot": 391.0,
+          "element_text_head": "\u7269\u4ef7\u4e0a\u6da8\u901f\u5ea6 49.59 \u70b9 \u8f83\u4e0a\u6b21\u8bfb\u6570\u6301\u5e73",
+          "device_px_span": {
+            "x0": 714,
+            "x1": 2110,
+            "y0": 741,
+            "y1": 863
           }
         }
       ]
     }
   ],
   "target": {
-    "resolved_sha_or_none": "0a70231b143971cbd798285fffd0273688f1b5de",
-    "resolved_sha_source": "committed HEAD of this worktree (0a70231b143971cbd798285fffd0273688f1b5de); tree_clean_start=True from `git status --short` at start (empty=True); tree_clean_end=True from `git status --short -- templates scripts lib` at end (empty=True); head_start=0a70231b143971cbd798285fffd0273688f1b5de; head_end=0a70231b143971cbd798285fffd0273688f1b5de; generated_at_start=2026-09-08T14:38:10Z; generated_at_end=2026-09-08T14:40:37Z; commit_time_of_capture_sha=2026-09-08T07:38:03-07:00 (git show -s --format=%cI). Every composition, state and empty frame was recaptured in this run (R6-B1). E5 is photographed by stalling the fragment request until the 8000 ms client timeout clones template[data-mc-empty-e5]."
+    "resolved_sha_or_none": "6548556b70ec3cc515b9c51d2d2968ceeaa143a5",
+    "resolved_sha_source": "committed HEAD of this worktree (6548556b70ec3cc515b9c51d2d2968ceeaa143a5); tree_clean_start=True from `git status --short` at start (empty=True); tree_clean_end=True from `git status --short -- templates scripts lib` at end (empty=True); head_start=6548556b70ec3cc515b9c51d2d2968ceeaa143a5; head_end=6548556b70ec3cc515b9c51d2d2968ceeaa143a5; generated_at_start=2026-09-08T15:27:54Z; generated_at_end=2026-09-08T15:30:20Z; commit_time_of_capture_sha=2026-09-08T08:27:51-07:00 (git show -s --format=%cI). Every composition, state and empty frame was recaptured in this run (R6-B1). E5 is photographed by stalling the fragment request until the 8000 ms client timeout clones template[data-mc-empty-e5]."
   },
   "strip_void_probes": {
     "dark_en": {
@@ -2950,7 +4022,17 @@
         16,
         25
       ],
-      "canvasSource": "strip-inter-chip-gap (1164,0) gapCss=8.00"
+      "canvasSource": "strip-inter-chip-gap (582.00css,-80.99css) gapCss=8.00",
+      "bgTokenRgb": [
+        13,
+        16,
+        24
+      ],
+      "delta": [
+        0,
+        0,
+        1
+      ]
     },
     "dark_zh": {
       "ok": true,
@@ -3026,7 +4108,17 @@
         16,
         25
       ],
-      "canvasSource": "strip-inter-chip-gap (1164,0) gapCss=8.00"
+      "canvasSource": "strip-inter-chip-gap (582.00css,-74.99css) gapCss=8.00",
+      "bgTokenRgb": [
+        13,
+        16,
+        24
+      ],
+      "delta": [
+        0,
+        0,
+        1
+      ]
     },
     "light_en": {
       "ok": true,
@@ -3102,7 +4194,17 @@
         234,
         240
       ],
-      "canvasSource": "strip-inter-chip-gap (1164,0) gapCss=8.00"
+      "canvasSource": "strip-inter-chip-gap (582.00css,-83.99css) gapCss=8.00",
+      "bgTokenRgb": [
+        232,
+        235,
+        241
+      ],
+      "delta": [
+        1,
+        1,
+        1
+      ]
     },
     "light_zh": {
       "ok": true,
@@ -3178,17 +4280,27 @@
         234,
         240
       ],
-      "canvasSource": "strip-inter-chip-gap (1164,0) gapCss=8.00"
+      "canvasSource": "strip-inter-chip-gap (582.00css,-77.99css) gapCss=8.00",
+      "bgTokenRgb": [
+        232,
+        235,
+        241
+      ],
+      "delta": [
+        1,
+        1,
+        1
+      ]
     }
   },
-  "capture_sha": "0a70231b143971cbd798285fffd0273688f1b5de",
-  "commit_time_of_capture_sha": "2026-09-08T07:38:03-07:00",
-  "generated_at_start": "2026-09-08T14:38:10Z",
-  "generated_at_end": "2026-09-08T14:40:37Z",
+  "capture_sha": "6548556b70ec3cc515b9c51d2d2968ceeaa143a5",
+  "commit_time_of_capture_sha": "2026-09-08T08:27:51-07:00",
+  "generated_at_start": "2026-09-08T15:27:54Z",
+  "generated_at_end": "2026-09-08T15:30:20Z",
   "tree_clean_start": true,
   "tree_clean_end": true,
-  "head_start": "0a70231b143971cbd798285fffd0273688f1b5de",
-  "head_end": "0a70231b143971cbd798285fffd0273688f1b5de",
+  "head_start": "6548556b70ec3cc515b9c51d2d2968ceeaa143a5",
+  "head_end": "6548556b70ec3cc515b9c51d2d2968ceeaa143a5",
   "declared": {
     "force_states": [
       {
@@ -4239,6 +5351,172 @@
       },
       {
         "family": "fab",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      }
+    ],
+    "rest_views": [
+      {
+        "family": "rest_views",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "rest_views",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "rest_views",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "rest_views",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "rest_views",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "rest_views",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "rest_views",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "rest_views",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "mobile",
+        "viewport_width": 390,
+        "viewport_height": 844
+      },
+      {
+        "family": "rest_views",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "tablet",
+        "viewport_width": 768,
+        "viewport_height": 1400
+      },
+      {
+        "family": "rest_views",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "tablet",
+        "viewport_width": 768,
+        "viewport_height": 1400
+      },
+      {
+        "family": "rest_views",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "tablet",
+        "viewport_width": 768,
+        "viewport_height": 1400
+      },
+      {
+        "family": "rest_views",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "tablet",
+        "viewport_width": 768,
+        "viewport_height": 1400
+      }
+    ],
+    "full_page": [
+      {
+        "family": "full_page",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "full_page",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "full_page",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "full_page",
+        "theme": "light",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      }
+    ],
+    "movement_row": [
+      {
+        "family": "movement_row",
+        "theme": "dark",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "movement_row",
+        "theme": "dark",
+        "locale": "zh",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "movement_row",
+        "theme": "light",
+        "locale": "en",
+        "viewport": "desktop",
+        "viewport_width": 1440,
+        "viewport_height": 900
+      },
+      {
+        "family": "movement_row",
         "theme": "light",
         "locale": "zh",
         "viewport": "desktop",
