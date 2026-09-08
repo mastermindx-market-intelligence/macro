@@ -61,7 +61,7 @@
       "panel_sw": 694,
       "panel_cw": 694,
       "rail_sw": 1395,
-      "rail_cw": 696,
+      "rail_cw": 570,
       "panel_ok": true,
       "doc_ok": true
     },
@@ -74,7 +74,7 @@
       "panel_sw": 694,
       "panel_cw": 694,
       "rail_sw": 1180,
-      "rail_cw": 696,
+      "rail_cw": 609,
       "panel_ok": true,
       "doc_ok": true
     },
@@ -87,7 +87,7 @@
       "panel_sw": 694,
       "panel_cw": 694,
       "rail_sw": 1395,
-      "rail_cw": 696,
+      "rail_cw": 570,
       "panel_ok": true,
       "doc_ok": true
     },
@@ -100,7 +100,7 @@
       "panel_sw": 694,
       "panel_cw": 694,
       "rail_sw": 1180,
-      "rail_cw": 696,
+      "rail_cw": 609,
       "panel_ok": true,
       "doc_ok": true
     },
@@ -113,7 +113,7 @@
       "panel_sw": 324,
       "panel_cw": 324,
       "rail_sw": 1395,
-      "rail_cw": 326,
+      "rail_cw": 200,
       "panel_ok": true,
       "doc_ok": true
     },
@@ -126,7 +126,7 @@
       "panel_sw": 324,
       "panel_cw": 324,
       "rail_sw": 1180,
-      "rail_cw": 326,
+      "rail_cw": 239,
       "panel_ok": true,
       "doc_ok": true
     },
@@ -139,7 +139,7 @@
       "panel_sw": 324,
       "panel_cw": 324,
       "rail_sw": 1395,
-      "rail_cw": 326,
+      "rail_cw": 200,
       "panel_ok": true,
       "doc_ok": true
     },
@@ -152,7 +152,7 @@
       "panel_sw": 324,
       "panel_cw": 324,
       "rail_sw": 1180,
-      "rail_cw": 326,
+      "rail_cw": 239,
       "panel_ok": true,
       "doc_ok": true
     }
@@ -161,7 +161,19 @@
     "exit": 0,
     "violations": []
   },
-  "head_sha_at_capture": "439515e738431e26b3e9b6c34f4dc971fdb21a9d",
-  "captured_at": "2026-09-08T10:05:27Z",
-  "pre_commit": true
+  "blast_pages": [
+    "macro_business_activity.html",
+    "macro_capital_structure.html",
+    "macro_consumer_payments.html",
+    "macro_financial_conditions.html",
+    "macro_growth_real_economy.html",
+    "macro_housing_real_estate.html",
+    "macro_labor_markets.html",
+    "macro_national_debt_liabilities.html",
+    "macro_trade_flows.html"
+  ],
+  "head_sha_at_capture": "4e49087cddf62c6f19c41b09dae8cc06fa22f1ae",
+  "captured_at": "2026-09-08T10:44:29Z",
+  "pre_commit": false,
+  "capture_sha": "4e49087cddf62c6f19c41b09dae8cc06fa22f1ae"
 }
