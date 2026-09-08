@@ -1247,12 +1247,18 @@ def test_p5_completeness_against_tree_not_manifest_self() -> None:
     chat_keys = [key for key in probes if key.startswith("chip_opens_chat_")]
     chat_rows = [probes[key] for key in chat_keys]
     assert len(chat_keys) == 40
-    blobs = [json.dumps(row, sort_keys=True) for row in chat_rows]
     assert len(set(chat_keys)) == 40
-    # Dark/light at the same page/locale/width share a URL/DOM delta;
-    # v6's defect was one constant for all 40. Require 20 page/locale/width
-    # bodies, not a single shared dict.
-    assert len(set(blobs)) == 20
+    # Dark/light at the same page/locale/width are one identity. Timing and
+    # painted boxes may fork the raw dict; v6's defect was one constant for
+    # all 40. The honest pin is 20 (page, locale, width) identities.
+    identities = {
+        (row.get("page"), row.get("locale"), row.get("width"),
+         row.get("ok"), row.get("openedBy"),
+         (row.get("openState") or {}).get("selector"),
+         (row.get("openState") or {}).get("visible"))
+        for row in chat_rows
+    }
+    assert len(identities) == 20
     assert len({(row.get("page"), row.get("locale"), row.get("width"))
                 for row in chat_rows}) == 20
     for row in chat_rows:
