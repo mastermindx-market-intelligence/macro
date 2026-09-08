@@ -330,8 +330,9 @@ def test_every_published_metric_id_has_a_reviewed_public_name() -> None:
 def test_a_percentile_is_never_silently_rescaled() -> None:
     """0.046 is a percentile on a 0-1 basis. Printing 4.6% would be a
     transformation the contract never declared."""
-    assert labels.fmt_number(0.046031746031746035) == "0.04603"
-    assert labels.fmt_ratio_pct(1.0) == "100%"
+    assert labels.fmt_number(0.046031746031746035) == "0.05"
+    assert "4.6%" not in (labels.fmt_number(0.046031746031746035) or "")
+    assert labels.fmt_ratio_pct(1.0) == "100.0%"
 
 
 # --------------------------------------------------------------------------

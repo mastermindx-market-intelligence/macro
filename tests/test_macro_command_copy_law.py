@@ -1152,8 +1152,8 @@ def test_p5_committed_crops_span_recomputed_from_crop_box_doc() -> None:
         for st in page.get("states") or []
         if st.get("captured") and st.get("crop")
     ]
-    if not crop_states or "crop_box_doc" not in crop_states[0]:
-        pytest.skip("v7 recapture has not written crop_box_doc yet")
+    assert crop_states, "committed manifest has no crop states"
+    assert "crop_box_doc" in crop_states[0], crop_states[0]
     for page in manifest.get("pages") or []:
         for state in page.get("states") or []:
             if not state.get("captured"):
@@ -1233,17 +1233,28 @@ def test_p5_completeness_against_tree_not_manifest_self() -> None:
             for width in CHIP_MATERIAL_WIDTHS:
                 en = probes[f"chip_material_{slug}_{theme}_en_{width}"]
                 zh = probes[f"chip_material_{slug}_{theme}_zh_{width}"]
-                if en.get("identicalToLocale"):
+                en_label = en.get("chipLabel") or ""
+                zh_label = zh.get("chipLabel") or ""
+                en_width = ((en.get("analystBox") or {}).get("width")
+                            or en.get("locale"))
+                zh_width = ((zh.get("analystBox") or {}).get("width")
+                            or zh.get("locale"))
+                if en_label == zh_label and en_width == zh_width:
+                    assert en.get("identicalToLocale")
                     assert en.get("identicalToLocaleReason")
                     continue
-                assert json.dumps(en, sort_keys=True) != json.dumps(
-                    zh, sort_keys=True)
+                assert en_label != zh_label or en_width != zh_width
                 assert en.get("railInnerHtmlSha256")
                 assert zh.get("railInnerHtmlSha256")
+                assert en.get("cropDomSha256")
+                assert zh.get("cropDomSha256")
                 assert en.get("probeBeforeShot") is True
                 assert zh.get("probeBeforeShot") is True
                 assert en.get("chipSelector")
                 assert en.get("siblingPillSelector")
+                assert en.get("chipSelector") != en.get("siblingPillSelector")
+                assert en.get("scrollResult", {}).get("ok") is True
+                assert zh.get("scrollResult", {}).get("ok") is True
     chat_keys = [key for key in probes if key.startswith("chip_opens_chat_")]
     chat_rows = [probes[key] for key in chat_keys]
     assert len(chat_keys) == 40
@@ -1284,6 +1295,18 @@ def test_p5_completeness_against_tree_not_manifest_self() -> None:
     assert syn["partial_bounded"]["hit"] is False
     chipmat_files = [name for name in captured if name.startswith("chipmat-")]
     assert len(chipmat_files) == 48
+    from scripts.capture_macro_command_p5 import (
+        assert_chipmat_containment, chipmat_containment_holds,
+    )
+    contained = 0
+    for key in workspace_keys:
+        cell = probes[key]
+        assert chipmat_containment_holds(cell), key
+        assert_chipmat_containment(cell, key=key)
+        head = str(cell.get("elementTextHead") or "")
+        assert cell.get("chipLabel") in head, (key, head)
+        contained += 1
+    assert contained == 48
     by_sha: dict[str, list[str]] = {}
     for page in manifest.get("pages") or []:
         for state in page.get("states") or []:
@@ -1397,3 +1420,143 @@ def test_chipmat_capture_does_not_inject_or_expand() -> None:
     assert "data-mc-chipmat-title" not in src
     assert "_EXPAND_RAIL_JS" not in src
     assert "is-current" not in src or "mq-suitenav-pill is-current" not in src
+
+
+def test_chipmat_collision_same_bytes_different_dom_raises() -> None:
+    """E-m2: identical PNG bytes with different cropDomSha256 are not ratified."""
+    from scripts.capture_macro_command_p5 import _chipmat_collision_ratified
+    box = {"left": 10, "right": 80, "top": 4, "bottom": 40}
+    probes = {
+        "chip_material_macro_rates_curves_dark_en_390": {
+            "cropDomSha256": "aaa",
+            "analystBox": box, "siblingPillBox": box, "cropBox": box,
+            "chipmatPairFits": True,
+        },
+        "chip_material_macro_financial_conditions_dark_en_390": {
+            "cropDomSha256": "bbb",
+            "analystBox": box, "siblingPillBox": box, "cropBox": box,
+            "chipmatPairFits": True,
+        },
+    }
+    files = [
+        "chipmat-macro_rates_curves-dark-en-390.png",
+        "chipmat-macro_financial_conditions-dark-en-390.png",
+    ]
+    assert _chipmat_collision_ratified(files, probes) is False
+
+
+def test_chipmat_collision_same_bytes_same_dom_allowed() -> None:
+    """E-m2: identical PNG bytes with matching cropDomSha256 + identity pass."""
+    from scripts.capture_macro_command_p5 import _chipmat_collision_ratified
+    box = {"left": 10, "right": 80, "top": 4, "bottom": 40}
+    cell = {
+        "cropDomSha256": "same-hash",
+        "analystBox": box, "siblingPillBox": box, "cropBox": box,
+        "chipmatPairFits": True,
+    }
+    probes = {
+        "chip_material_macro_rates_curves_dark_en_390": cell,
+        "chip_material_macro_financial_conditions_dark_en_390": dict(cell),
+    }
+    files = [
+        "chipmat-macro_rates_curves-dark-en-390.png",
+        "chipmat-macro_financial_conditions-dark-en-390.png",
+    ]
+    assert _chipmat_collision_ratified(files, probes) is True
+
+
+def test_synthetic_partial_binds_from_dom() -> None:
+    """m1: classifier-on-synthetic-dom numbers come from a covering paragraph."""
+    from scripts.capture_macro_command_p5 import (
+        classify_partial_cover, synthetic_clearance_receipts,
+    )
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        pytest.skip("Playwright not installed")
+    try:
+        playwright_cm = sync_playwright().start()
+    except Exception as exc:
+        pytest.skip(f"Playwright runtime unavailable: {exc}")
+    try:
+        try:
+            browser = playwright_cm.chromium.launch(headless=True, channel="chrome")
+        except Exception:
+            try:
+                browser = playwright_cm.chromium.launch(headless=True)
+            except Exception as exc:
+                pytest.skip(f"Chromium unavailable: {exc}")
+        page = browser.new_page(viewport={"width": 800, "height": 900})
+        try:
+            row = synthetic_clearance_receipts(page)
+            assert row["source"] == "classifier-on-synthetic-dom"
+            partial = row["partial_bounded"]
+            assert partial["hit"] is False
+            assert 0 <= partial["exposedAtScrollY"] <= partial["maxScrollAtCheck"]
+            literal = classify_partial_cover(
+                doc_top=200.0, ov_bottom=60.0, max_scroll_at_check=800.0)
+            assert partial != literal
+            assert abs(float(partial["maxScrollAtCheck"])
+                       - float(row["maxScrollAtCheck"])) < 1
+            assert float(row["maxScrollAtCheck"]) > 800
+        finally:
+            browser.close()
+    finally:
+        playwright_cm.stop()
+
+
+def test_user_facing_numbers_have_no_machine_floats() -> None:
+    """E-m3: rendered suite HTML never ships ≥4 fractional digits or e±."""
+    from scripts.build_macro_suite_pages import HUB_PAGE, SUITE_PAGES
+    from lib.macro_suite_labels import (
+        format_user_facing_number, format_user_facing_text,
+    )
+    assert format_user_facing_number(0.7084035025522297) == "0.71"
+    assert format_user_facing_number(-0.21603351448561625) == "\u22120.22"
+    assert format_user_facing_number(66.66666666666667, kind="percent") == "66.7%"
+    rewritten = format_user_facing_text(
+        "6-month momentum 0.7084035025522297, breadth 66.66666666666667")
+    assert "0.7084035025522297" not in rewritten
+    assert "0.71" in rewritten
+    assert "66.7%" in rewritten
+    pages = [HUB_PAGE.output] + [page.output for page in SUITE_PAGES]
+    for name in pages:
+        path = ROOT / "site" / name
+        if not path.is_file():
+            pytest.skip(f"{name} is not in this checkout")
+        html = path.read_text(encoding="utf-8")
+        assert guard.find_violations(html) == [], name
+
+
+def test_zh_component_chips_are_translated() -> None:
+    """E-m4: ZH chip labels are not ASCII-only except ratified tickers/units."""
+    from scripts.build_macro_suite_pages import HUB_PAGE, SUITE_PAGES
+    ratified = {
+        "US", "EU", "JP", "CN", "GB", "USD", "FRED", "SOFR", "TIPS", "OECD",
+        "NBER", "FOMC", "VIX", "CPI", "HICP", "BLS", "GDP", "NFCI", "OFR",
+        "bp", "pts", "%", "—",
+    }
+    _CJK = re.compile(r"[\u3000-\u303f\u3400-\u9fff\uf900-\ufaff\uff00-\uffef]")
+    _LETTERS = re.compile(r"[A-Za-z]")
+    pages = [HUB_PAGE.output] + [page.output for page in SUITE_PAGES]
+    assert len(pages) >= 14
+    for name in pages:
+        path = ROOT / "site" / name
+        if not path.is_file():
+            pytest.skip(f"{name} is not in this checkout")
+        html = path.read_text(encoding="utf-8")
+        chips = re.findall(
+            r'<(?:span|a|strong|li)\s+class="[^"]*'
+            r'(?:mq-chip|mc-chip-label|mq-suitenav-pill)[^"]*"'
+            r'[^>]*>(.*?)</(?:span|a|strong|li)>',
+            html, re.S)
+        assert chips, name
+        for chip in chips:
+            zh_spans = re.findall(r'<span class="l-zh">(.*?)</span>', chip, re.S)
+            for zh in zh_spans:
+                text = re.sub(r"<[^>]+>", "", zh).strip()
+                if not text or not _LETTERS.search(text):
+                    continue
+                if text in ratified:
+                    continue
+                assert _CJK.search(text), (name, text)

@@ -30,6 +30,7 @@ from scripts.capture_macro_command_p3 import (  # noqa: E402
     _device_px_span,
     _device_px_span_from_crop_box_doc,
     _measure_dpr,
+    _read_scroll,
     _write_element_shot,
 )
 
@@ -283,45 +284,174 @@ def _viewport_shot(dest: Path, page, *, width: int, height: int,
 
 
 _SCROLL_RAIL_CHIP_JS = """() => {
-  const cssPath = (el) => {
+  const boxOf = (el) => {
+    const r = el.getBoundingClientRect();
+    return {left: r.left, right: r.right, top: r.top, bottom: r.bottom,
+            x: r.x, y: r.y, width: r.width, height: r.height};
+  };
+  const identifyingSelector = (el) => {
     if (!el) return '';
     if (el.id) return '#' + el.id;
-    const cls = String(el.className || '').trim().split(/\\s+/)[0] || '';
     const tag = (el.tagName || '').toLowerCase();
-    return cls ? (tag + '.' + cls) : tag;
+    const href = el.getAttribute('href');
+    const ws = el.getAttribute('data-mq-workspace');
+    let sel = tag;
+    if (el.classList.contains('mc-analyst')) sel += '.mc-analyst';
+    else if (el.classList.contains('mq-suitenav-pill')) sel += '.mq-suitenav-pill';
+    if (href) sel += '[href="' + href + '"]';
+    if (ws) sel += '[data-mq-workspace="' + ws + '"]';
+    if (el.hasAttribute('data-mc-analyst')) sel += '[data-mc-analyst]';
+    if (sel === tag || sel === (tag + '.mq-suitenav-pill')) {
+      const chain = [];
+      let node = el;
+      while (node && node.nodeType === 1 && chain.length < 8) {
+        const parent = node.parentElement;
+        if (!parent) break;
+        const kids = Array.from(parent.children).filter(
+          (c) => c.tagName === node.tagName);
+        chain.unshift(node.tagName.toLowerCase() + ':nth-of-type('
+                      + (kids.indexOf(node) + 1) + ')');
+        if (parent.id) { chain.unshift('#' + parent.id); break; }
+        node = parent;
+      }
+      sel = chain.join('>');
+    }
+    return sel;
   };
-  const rail = document.querySelector('.mq-suitenav-rail, .mq-suitenav');
+  const visibleText = (el) => String((el && el.innerText) || '')
+    .replace(/\\s+/g, ' ').trim();
+  const overflowScrollableX = (el) => {
+    const ox = getComputedStyle(el).overflowX;
+    return (ox === 'auto' || ox === 'scroll')
+      && el.scrollWidth > el.clientWidth + 1;
+  };
   const chip = document.querySelector('.mc-analyst');
   const item = chip && chip.closest('li');
   const prev = (item && item.previousElementSibling)
     ? item.previousElementSibling.querySelector(
         '.mq-suitenav-pill, .mc-rail-link')
     : document.querySelector('.mq-suitenav-pill:not(.mc-analyst)');
-  if (!rail || !chip || !prev) {
-    return {ok: false, railScrollLeft: rail ? rail.scrollLeft : 0,
-            reason: 'missing rail/chip/pill',
-            railInnerHtml: rail ? rail.innerHTML : '',
-            chipSelector: cssPath(chip),
-            siblingPillSelector: cssPath(prev)};
+  const rail = document.querySelector('.mq-suitenav-rail');
+  if (!chip || !prev) {
+    return {ok: false, reason: 'missing rail/chip/pill',
+            railScrollLeft: 0, scrollLeftBefore: 0, scrollLeftAfter: 0,
+            chipSelector: identifyingSelector(chip),
+            siblingPillSelector: identifyingSelector(prev),
+            chipLabel: visibleText(chip),
+            siblingPillLabel: visibleText(prev),
+            railInnerHtml: rail ? rail.innerHTML : ''};
   }
-  const railR = rail.getBoundingClientRect();
-  const chipR = chip.getBoundingClientRect();
-  const prevR = prev.getBoundingClientRect();
-  let left = Math.min(prevR.left, chipR.left);
-  let right = Math.max(prevR.right, chipR.right);
-  if (left < railR.left + 1) {
-    rail.scrollLeft += (left - railR.left) - 8;
+  let scroller = null;
+  let walk = chip.parentElement;
+  while (walk && walk !== document.documentElement) {
+    if (overflowScrollableX(walk)) { scroller = walk; break; }
+    walk = walk.parentElement;
   }
-  if (right > railR.right - 1) {
-    rail.scrollLeft += (right - railR.right) + 8;
+  if (!scroller) {
+    walk = chip.parentElement;
+    while (walk && walk !== document.documentElement) {
+      const ox = getComputedStyle(walk).overflowX;
+      if (ox === 'auto' || ox === 'scroll') { scroller = walk; break; }
+      walk = walk.parentElement;
+    }
   }
+  if (!scroller) {
+    return {ok: false, reason: 'no scroll container',
+            railScrollLeft: 0, scrollLeftBefore: 0, scrollLeftAfter: 0,
+            chipSelector: identifyingSelector(chip),
+            siblingPillSelector: identifyingSelector(prev),
+            chipLabel: visibleText(chip),
+            siblingPillLabel: visibleText(prev),
+            railInnerHtml: rail ? rail.innerHTML : ''};
+  }
+  const scrollLeftBefore = scroller.scrollLeft;
+  chip.scrollIntoView({inline: 'end', block: 'nearest'});
+  let scR = scroller.getBoundingClientRect();
+  let chipR = chip.getBoundingClientRect();
+  let prevR = prev.getBoundingClientRect();
+  const pairWidth = Math.max(chipR.right, prevR.right)
+    - Math.min(chipR.left, prevR.left);
+  const containerWidth = scroller.clientWidth;
+  const chipmatPairFits = pairWidth <= containerWidth - 4;
+  if (chipmatPairFits) {
+    if (prevR.left < scR.left + 1) {
+      scroller.scrollLeft += (prevR.left - scR.left) - 8;
+    }
+    chipR = chip.getBoundingClientRect();
+    prevR = prev.getBoundingClientRect();
+    scR = scroller.getBoundingClientRect();
+    if (chipR.right > scR.right - 1) {
+      scroller.scrollLeft += (chipR.right - scR.right) + 8;
+    }
+    chipR = chip.getBoundingClientRect();
+    prevR = prev.getBoundingClientRect();
+    scR = scroller.getBoundingClientRect();
+    if (prevR.left < scR.left + 1) {
+      scroller.scrollLeft += (prevR.left - scR.left) - 8;
+    }
+  }
+  const containerBox = boxOf(scroller);
+  const analystBox = boxOf(chip);
+  const pillBox = boxOf(prev);
+  const pairLeft = chipmatPairFits
+    ? Math.min(analystBox.left, pillBox.left) : analystBox.left;
+  const pairRight = chipmatPairFits
+    ? Math.max(analystBox.right, pillBox.right) : analystBox.right;
+  const pairTop = chipmatPairFits
+    ? Math.min(analystBox.top, pillBox.top) : analystBox.top;
+  const pairBottom = chipmatPairFits
+    ? Math.max(analystBox.bottom, pillBox.bottom) : analystBox.bottom;
+  const pad = 12;
+  const clipLeft = Math.max(containerBox.left, pairLeft - pad);
+  const clipRight = Math.min(containerBox.right, pairRight + pad);
+  const clipTop = Math.max(containerBox.top, pairTop - pad);
+  const clipBottom = Math.min(containerBox.bottom, pairBottom + pad);
+  const cropBox = {
+    x: clipLeft, y: clipTop,
+    width: Math.max(1, clipRight - clipLeft),
+    height: Math.max(1, clipBottom - clipTop),
+    left: clipLeft, right: clipRight, top: clipTop, bottom: clipBottom,
+  };
+  const intersects = (a, b) => !(a.right <= b.left || a.left >= b.right
+    || a.bottom <= b.top || a.top >= b.bottom);
+  const candidates = [];
+  document.querySelectorAll('*').forEach((el) => {
+    const r = el.getBoundingClientRect();
+    if (r.width <= 0 || r.height <= 0) return;
+    if (!intersects(r, cropBox)) return;
+    candidates.push(el);
+  });
+  const keep = candidates.filter((el) => {
+    const cls = String(el.className || '');
+    if (/(mq-suitenav-pill|mc-analyst|mq-suitenav-analyst)/.test(cls)) {
+      return true;
+    }
+    return !candidates.some((other) => other !== el && el.contains(other));
+  });
+  const cropDomHtml = keep.map((el) => el.outerHTML).join('\\n');
+  const chipLabel = visibleText(chip);
+  const siblingPillLabel = visibleText(prev);
   return {
     ok: true,
-    railScrollLeft: rail.scrollLeft,
-    railInnerHtml: rail.innerHTML,
-    chipSelector: cssPath(chip),
-    siblingPillSelector: cssPath(prev),
-    ancestorSelector: cssPath(rail),
+    reason: '',
+    scrollContainerSelector: identifyingSelector(scroller),
+    scrollLeftBefore,
+    scrollLeftAfter: scroller.scrollLeft,
+    railScrollLeft: scroller.scrollLeft,
+    chipSelector: identifyingSelector(chip),
+    siblingPillSelector: identifyingSelector(prev),
+    chipLabel,
+    siblingPillLabel,
+    elementTextHead: (chipLabel + ' ' + siblingPillLabel).trim(),
+    analystBox,
+    siblingPillBox: pillBox,
+    containerBox,
+    cropBox,
+    chipmatPairFits,
+    pairWidth,
+    containerWidth,
+    railInnerHtml: rail ? rail.innerHTML : scroller.innerHTML,
+    cropDomHtml,
   };
 }"""
 
@@ -342,15 +472,72 @@ _PREPARE_I2_JS = """() => {
 }"""
 
 
-def _shot_chipmat(dest: Path, page, locator, *, selector: str,
-                  locale: str = "en") -> dict[str, Any]:
-    """Unmutated chip+pill crop via P3 `_write_element_shot`.
+def _page_space_clip(page, frame, clip: Mapping[str, Any]) -> dict[str, float]:
+    """Translate an iframe-local clip into the parent page viewport."""
+    box = {
+        "x": float(clip["x"]),
+        "y": float(clip["y"]),
+        "width": float(clip["width"]),
+        "height": float(clip["height"]),
+    }
+    if frame is None:
+        return box
+    host = page.locator("#mc-p5-frame").bounding_box()
+    if not host:
+        raise RuntimeError("chipmat iframe has no box")
+    return {
+        "x": float(host["x"]) + box["x"],
+        "y": float(host["y"]) + box["y"],
+        "width": box["width"],
+        "height": box["height"],
+    }
 
-    The rail is scrolled (never expanded, never injected) so the chip and
-    its real neighbouring pill share the rail's visible box. The producer
-    is P3's; this wrapper only names the crop.
-    """
-    return _shot(dest, page, locator, selector=selector, locale=locale)
+
+def _shot_chipmat_clip(dest: Path, page, clip: Mapping[str, Any], *,
+                       selector: str, locale: str, text_head: str
+                       ) -> dict[str, Any]:
+    """Viewport clip of the visible chip(+pill) — never scrollIntoView."""
+    extra: dict[str, Any] = {
+        "dpr": _measure_dpr(page),
+        "crop": True,
+        "full_page": False,
+        "crop_selector": selector,
+        "fixture": "builder-payload",
+        "locale": locale,
+    }
+    vw = float((page.viewport_size or {}).get("width") or 1440)
+    vh = float((page.viewport_size or {}).get("height") or 900)
+    x = max(0.0, float(clip["x"]))
+    y = max(0.0, float(clip["y"]))
+    width = max(1.0, min(float(clip["width"]), vw - x))
+    height = max(1.0, min(float(clip["height"]), vh - y))
+    page_clip = {"x": x, "y": y, "width": width, "height": height}
+    scroll_y = _read_scroll(page)
+    page.screenshot(path=str(dest), type="png", clip=page_clip)
+    extra["crop_box"] = page_clip
+    extra["crop_box_doc"] = {
+        "x": page_clip["x"],
+        "y": page_clip["y"] + scroll_y,
+        "width": page_clip["width"],
+        "height": page_clip["height"],
+    }
+    extra["scroll_y_at_shot"] = scroll_y
+    extra["element_text_head"] = text_head.replace("\n", " ").strip()[:80]
+    extra["device_px_span"] = _device_px_span(page_clip, extra["dpr"])
+    extra["innerWidth"] = int(round(vw))
+    extra["innerHeight"] = int(round(vh))
+    _assert_shot_geometry(dest, extra, int(round(vw)), int(round(vh)))
+    png = dest.read_bytes()
+    if png[:8] != b"\x89PNG\r\n\x1a\n" or b"IEND" not in png:
+        raise RuntimeError(f"{dest.name} is not a finished PNG")
+    pw, ph = _png_size(dest)
+    return {
+        **extra,
+        "bytes": len(png),
+        "sha256": hashlib.sha256(png).hexdigest(),
+        "width": pw,
+        "height": ph,
+    }
 
 
 def _shot(dest: Path, page, locator, *, selector: str,
@@ -1126,53 +1313,80 @@ def synthetic_clearance_receipts(page=None) -> dict[str, Any]:
     """
     if page is not None:
         page.set_content(
-            """<!doctype html><html><body style="margin:0;height:2000px">
+            """<!doctype html><html><body style="margin:0;min-height:2200px">
             <nav class="mq-suitenav" id="suitenav"
                  style="position:sticky;top:0;height:80px;width:100%;
                         background:#222;color:#fff;z-index:3">rail</nav>
+            <main>
             <p id="full-cover" style="margin:0;height:20px;margin-top:-70px">
               FULLCOVERTEXT
             </p>
-            <p id="partial" style="margin-top:200px;width:40px">PARTIALTEXT</p>
-            <div class="mq-suitenav-rail" style="position:sticky;top:90px;
-                 height:20px;width:80px;background:#444">chip rail</div>
+            <p id="partial" style="margin:400px 0 0;width:72px;font-size:16px;
+                 line-height:20px">PARTIALTEXT PARTIALTEXT PARTIALTEXT
+                 PARTIALTEXT PARTIALTEXT PARTIALTEXT PARTIALTEXT
+                 PARTIALTEXT PARTIALTEXT PARTIALTEXT</p>
+            <div style="height:1600px"></div>
+            </main>
             </body></html>"""
         )
-        row = page.locator("html").evaluate(_CLEARANCE_JS, {"position": 0.0})
+        geom = page.evaluate(
+            """() => {
+                const partial = document.getElementById('partial');
+                const nav = document.getElementById('suitenav');
+                const max = Math.max(
+                    0, document.documentElement.scrollHeight - window.innerHeight);
+                const docTop = partial.getBoundingClientRect().top
+                    + (window.scrollY || 0);
+                const navH = nav.getBoundingClientRect().height;
+                const want = Math.max(0, docTop - navH * 0.5);
+                return {docTop, navH, max, want,
+                        position: max ? Math.min(0.999, want / max) : 0};
+            }"""
+        )
+        full_row = page.locator("html").evaluate(_CLEARANCE_JS, {"position": 0.0})
+        partial_row = page.locator("html").evaluate(
+            _CLEARANCE_JS, {"position": float(geom["position"])})
         full_src = None
         partial_src = None
-        for rec in list(row.get("intersections") or []) + list(
-                row.get("scroll_under_top_chrome") or []):
+        for rec in list(full_row.get("intersections") or []) + list(
+                full_row.get("scroll_under_top_chrome") or []):
             reason = str(rec.get("reason") or "")
             if "full-cover" in reason or reason.endswith("_fully_covered"):
                 full_src = rec
+        for rec in list(partial_row.get("intersections") or []) + list(
+                partial_row.get("scroll_under_top_chrome") or []):
+            reason = str(rec.get("reason") or "")
             if "partial" in reason:
                 partial_src = rec
-        if full_src:
-            full = classify_top_chrome_cover(
-                doc_top=float(full_src["docTop"]),
-                ov_bottom=float(full_src["ovBottom"]),
-                max_scroll_at_check=float(full_src["maxScrollAtCheck"]))
-        else:
-            full = classify_top_chrome_cover(
-                doc_top=10.0, ov_bottom=80.0, max_scroll_at_check=800.0)
-        if partial_src:
-            name = "rail"
-            reason = str(partial_src.get("reason") or "")
-            if reason.endswith("_partially_covered"):
-                name = reason[: -len("_partially_covered")] or "rail"
-            partial = classify_partial_cover(
-                doc_top=float(partial_src["docTop"]),
-                ov_bottom=float(partial_src["ovBottom"]),
-                max_scroll_at_check=float(partial_src["maxScrollAtCheck"]),
-                name=name)
-        else:
-            partial = classify_partial_cover(
-                doc_top=200.0, ov_bottom=60.0, max_scroll_at_check=800.0)
+        if not full_src:
+            raise RuntimeError(
+                f"synthetic full-cover DOM did not bind: geom={geom} "
+                f"intersections={full_row.get('intersections')} "
+                f"scroll_under={full_row.get('scroll_under_top_chrome')}")
+        if not partial_src:
+            raise RuntimeError(
+                f"synthetic partial DOM did not bind: geom={geom} "
+                f"intersections={partial_row.get('intersections')} "
+                f"scroll_under={partial_row.get('scroll_under_top_chrome')}")
+        full = classify_top_chrome_cover(
+            doc_top=float(full_src["docTop"]),
+            ov_bottom=float(full_src["ovBottom"]),
+            max_scroll_at_check=float(full_src["maxScrollAtCheck"]))
+        name = "rail"
+        reason = str(partial_src.get("reason") or "")
+        if reason.endswith("_partially_covered"):
+            name = reason[: -len("_partially_covered")] or "rail"
+        partial = classify_partial_cover(
+            doc_top=float(partial_src["docTop"]),
+            ov_bottom=float(partial_src["ovBottom"]),
+            max_scroll_at_check=float(partial_src["maxScrollAtCheck"]),
+            name=name)
         return {
             "full_cover_unexposable": full,
             "partial_bounded": partial,
             "source": "classifier-on-synthetic-dom",
+            "maxScrollAtCheck": float(partial_src["maxScrollAtCheck"]),
+            "partialStation": geom,
         }
     full = classify_top_chrome_cover(
         doc_top=10.0, ov_bottom=80.0, max_scroll_at_check=800.0)
@@ -1366,9 +1580,72 @@ def parse_chipmat_name(name: str) -> dict[str, str] | None:
     return match.groupdict()
 
 
+def _css_box(box: Mapping[str, Any] | None) -> dict[str, float] | None:
+    if not box:
+        return None
+    if "left" in box and "right" in box:
+        return {
+            "left": float(box["left"]),
+            "right": float(box["right"]),
+            "top": float(box["top"]),
+            "bottom": float(box["bottom"]),
+        }
+    return {
+        "left": float(box["x"]),
+        "right": float(box["x"]) + float(box["width"]),
+        "top": float(box["y"]),
+        "bottom": float(box["y"]) + float(box["height"]),
+    }
+
+
+def chipmat_containment_holds(cell: Mapping[str, Any], *,
+                              tol: float = 1.0) -> bool:
+    """analystBox (and sibling pill when the pair fits) inside cropBox."""
+    crop = _css_box(cell.get("cropBox") or cell.get("crop_box"))
+    chip = _css_box(cell.get("analystBox"))
+    if not crop or not chip:
+        return False
+    if not box_inside(chip, crop, tol=tol):
+        return False
+    if cell.get("chipmatPairFits") is False:
+        return True
+    pill = _css_box(cell.get("siblingPillBox"))
+    if not pill:
+        return False
+    return box_inside(pill, crop, tol=tol)
+
+
+def chipmat_chip_margin_px(cell: Mapping[str, Any]) -> float | None:
+    crop = _css_box(cell.get("cropBox") or cell.get("crop_box"))
+    chip = _css_box(cell.get("analystBox"))
+    if not crop or not chip:
+        return None
+    return min(
+        chip["left"] - crop["left"],
+        crop["right"] - chip["right"],
+        chip["top"] - crop["top"],
+        crop["bottom"] - chip["bottom"],
+    )
+
+
+def assert_chipmat_containment(cell: Mapping[str, Any], *,
+                               key: str = "") -> None:
+    if not chipmat_containment_holds(cell):
+        raise RuntimeError(
+            f"{key or 'chipmat'}: analyst/pill not inside crop "
+            f"analyst={cell.get('analystBox')} pill={cell.get('siblingPillBox')} "
+            f"crop={cell.get('cropBox')} pairFits={cell.get('chipmatPairFits')}")
+    label = str(cell.get("chipLabel") or "")
+    head = str(cell.get("elementTextHead") or cell.get("element_text_head") or "")
+    if label and label not in head:
+        raise RuntimeError(
+            f"{key or 'chipmat'}: element_text_head {head!r} missing "
+            f"chip label {label!r}")
+
+
 def _chipmat_collision_ratified(files: list[str],
                                 probes: Mapping[str, Any]) -> bool:
-    """Byte-identical chipmat crops are true iff the rail DOM matches."""
+    """Byte-identical chipmat crops are true iff crop DOM + identity match."""
     parsed = [parse_chipmat_name(name) for name in files]
     if not parsed or any(row is None for row in parsed):
         return False
@@ -1384,8 +1661,10 @@ def _chipmat_collision_ratified(files: list[str],
             f"{row['locale']}_{row['width']}"
         )
         cell = probes.get(key) or {}
-        digest = cell.get("railInnerHtmlSha256")
+        digest = cell.get("cropDomSha256")
         if not digest:
+            return False
+        if not chipmat_containment_holds(cell):
             return False
         hashes.add(digest)
     return len(hashes) == 1
@@ -2023,30 +2302,71 @@ def main() -> int:
                             host.evaluate("() => window.scrollTo(0, 0)")
                             probes[mat_key]["probeBeforeShot"] = True
                             rail_scroll = host.evaluate(_SCROLL_RAIL_CHIP_JS)
+                            probes[mat_key]["scrollResult"] = rail_scroll
+                            if not rail_scroll.get("ok"):
+                                raise RuntimeError(
+                                    f"{mat_key}: scrollResult ok:false "
+                                    f"{rail_scroll}")
+                            chip_sel = str(rail_scroll.get("chipSelector") or "")
+                            pill_sel = str(
+                                rail_scroll.get("siblingPillSelector") or "")
+                            if not chip_sel or not pill_sel or chip_sel == pill_sel:
+                                raise RuntimeError(
+                                    f"{mat_key}: selectors must identify "
+                                    f"distinct elements: {chip_sel!r} "
+                                    f"{pill_sel!r}")
                             html = rail_inner_html_identity(
                                 str(rail_scroll.get("railInnerHtml") or ""))
+                            crop_dom = str(rail_scroll.get("cropDomHtml") or "")
                             probes[mat_key]["railScrollLeft"] = rail_scroll.get(
                                 "railScrollLeft")
+                            probes[mat_key]["scrollLeftBefore"] = (
+                                rail_scroll.get("scrollLeftBefore"))
+                            probes[mat_key]["scrollLeftAfter"] = (
+                                rail_scroll.get("scrollLeftAfter"))
+                            probes[mat_key]["scrollContainerSelector"] = (
+                                rail_scroll.get("scrollContainerSelector"))
                             probes[mat_key]["railInnerHtmlSha256"] = (
                                 hashlib.sha256(html.encode("utf-8")).hexdigest())
-                            probes[mat_key]["chipSelector"] = rail_scroll.get(
-                                "chipSelector")
-                            probes[mat_key]["siblingPillSelector"] = (
-                                rail_scroll.get("siblingPillSelector"))
+                            probes[mat_key]["cropDomSha256"] = (
+                                hashlib.sha256(
+                                    crop_dom.encode("utf-8")).hexdigest())
+                            probes[mat_key]["chipSelector"] = chip_sel
+                            probes[mat_key]["siblingPillSelector"] = pill_sel
+                            probes[mat_key]["chipLabel"] = rail_scroll.get(
+                                "chipLabel")
+                            probes[mat_key]["siblingPillLabel"] = (
+                                rail_scroll.get("siblingPillLabel"))
+                            probes[mat_key]["analystBox"] = rail_scroll.get(
+                                "analystBox")
+                            probes[mat_key]["siblingPillBox"] = (
+                                rail_scroll.get("siblingPillBox"))
+                            probes[mat_key]["cropBox"] = rail_scroll.get(
+                                "cropBox")
+                            probes[mat_key]["chipmatPairFits"] = (
+                                rail_scroll.get("chipmatPairFits"))
+                            probes[mat_key]["pairWidth"] = rail_scroll.get(
+                                "pairWidth")
+                            probes[mat_key]["containerWidth"] = (
+                                rail_scroll.get("containerWidth"))
+                            probes[mat_key]["elementTextHead"] = (
+                                rail_scroll.get("elementTextHead"))
+                            assert_chipmat_containment(
+                                probes[mat_key], key=mat_key)
                             chipmat_name = (
                                 f"chipmat-{slug}-{theme}-{locale}-{width}.png")
                             print(f"capture {chipmat_name}", flush=True)
-                            if frame is not None:
-                                nav_loc = page.frame_locator(
-                                    "#mc-p5-frame"
-                                ).locator(".mq-suitenav-rail").first
-                            else:
-                                nav_loc = page.locator(
-                                    ".mq-suitenav-rail").first
-                            info = _shot_chipmat(
-                                EVIDENCE / chipmat_name, page, nav_loc,
-                                selector=".mq-suitenav-rail",
-                                locale=locale)
+                            page_clip = _page_space_clip(
+                                page, frame, rail_scroll["cropBox"])
+                            info = _shot_chipmat_clip(
+                                EVIDENCE / chipmat_name, page, page_clip,
+                                selector=str(
+                                    rail_scroll.get("scrollContainerSelector")
+                                    or ".mq-suitenav-rail"),
+                                locale=locale,
+                                text_head=str(
+                                    rail_scroll.get("elementTextHead") or ""),
+                            )
                             dest_states = ws_states[page_name]
                             dest_states.append(_state(
                                 chipmat_name, theme, locale,
@@ -2054,10 +2374,15 @@ def main() -> int:
                                     "mobile" if width == 390 else "tablet"),
                                 info, viewport_width=width,
                                 verified_how=(
-                                    f"{page_name} chip+pill after rail "
-                                    f"scrollLeft={rail_scroll.get('railScrollLeft')} "
-                                    "unmutated"),
-                                crop=True, selector=".mq-suitenav-rail",
+                                    f"{page_name} chip+pill after "
+                                    f"{rail_scroll.get('scrollContainerSelector')} "
+                                    f"scrollLeft={rail_scroll.get('scrollLeftAfter')} "
+                                    f"unmutated pairFits="
+                                    f"{rail_scroll.get('chipmatPairFits')}"),
+                                crop=True,
+                                selector=str(
+                                    rail_scroll.get("scrollContainerSelector")
+                                    or ".mq-suitenav-rail"),
                                 force_state="chipmat",
                                 family="chip_material",
                             ))

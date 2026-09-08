@@ -878,6 +878,36 @@ CHANNEL: dict[str, dict[str, str]] = {
     "dollar": _pair("US dollar", "美元"),
     "volatility": _pair("Volatility", "波动率"),
     "lending": _pair("Bank lending", "银行信贷投放"),
+    "confidence": _pair("Confidence", "信心"),
+    "consumer": _pair("Consumer", "消费"),
+    "credit_markets": _pair("Credit markets", "信贷市场"),
+    "curve": _pair("Curve", "曲线"),
+    "dollar_funding": _pair("Dollar funding", "美元融资"),
+    "employment": _pair("Employment", "就业"),
+    "equities_vol": _pair("Equity volatility", "股市波动"),
+    "expectations": _pair("Expectations", "预期"),
+    "financing": _pair("Financing", "融资"),
+    "fiscal": _pair("Fiscal", "财政"),
+    "hiring": _pair("Hiring", "招聘"),
+    "housing": _pair("Housing", "住房"),
+    "housing_prices": _pair("Home prices", "房价"),
+    "inflation": _pair("Inflation", "通胀"),
+    "inventory": _pair("Inventory", "库存"),
+    "issuance": _pair("Issuance", "发行"),
+    "labor": _pair("Labor", "劳动力"),
+    "layoffs": _pair("Layoffs", "裁员"),
+    "liquidity": _pair("Liquidity", "流动性"),
+    "orders": _pair("Orders", "订单"),
+    "output": _pair("Output", "产出"),
+    "payments": _pair("Payments", "支付"),
+    "prices": _pair("Prices", "物价"),
+    "production": _pair("Production", "生产"),
+    "recession_signal": _pair("Recession signal", "衰退信号"),
+    "rent": _pair("Rent", "租金"),
+    "spending": _pair("Spending", "支出"),
+    "supply": _pair("Supply", "供给"),
+    "trade": _pair("Trade", "贸易"),
+    "wages": _pair("Wages", "工资"),
 }
 
 # --- alert condition kinds (declared, not offered) ---------------------------
@@ -1259,18 +1289,81 @@ def fmt_move_words(delta_raw: Any, sign: str | None, unit: Any) -> dict[str, str
     return None
 
 
-def fmt_number(value: Any) -> str | None:
-    """Format a numeric cell WITHOUT changing its basis or unit.
+def format_user_facing_number(value: Any, *, kind: str = "momentum") -> str | None:
+    """Plain number at the builder/renderer boundary (P5 v9 E-m3).
 
-    Returns ``None`` for a missing value so the caller renders a typed absence.
-    No scaling, no percent conversion, no rounding to a friendlier story: a
-    percentile of ``0.046`` prints as ``0.046`` beside a ``percentile (0-1)``
-    unit, never as a silently multiplied ``4.6%``.
+    Momentum and z-scores use 2 decimals. Percentages use 1 decimal and the
+    ``%`` unit. Never ``repr(float)`` / ``str(float)`` / scientific notation.
     """
     if value is None or isinstance(value, bool):
         return None
     if isinstance(value, str):
-        return value
+        try:
+            value = float(value.replace("\u2212", "-").replace(",", ""))
+        except ValueError:
+            return value
+    if not isinstance(value, (int, float)):
+        return None
+    number = float(value)
+    if kind == "percent":
+        text = f"{number:.1f}%"
+    else:
+        text = f"{number:.2f}"
+    return fmt_true_minus(text) if number < 0 else text
+
+
+_LONG_FLOAT_RE = re.compile(
+    r"(?<![\d.])(?P<sign>[+\u2212-])?(?P<body>\d+\.\d{4,}|\d+(?:\.\d+)?[eE][+\-]?\d+)(?![\d.%])"
+)
+_BREADTH_NUM_RE = re.compile(
+    r"(?P<prefix>breadth|广度)\s+(?P<sign>[+\u2212-])?(?P<num>\d+(?:\.\d+)?)(?![\d.%])",
+    re.I,
+)
+
+
+def format_user_facing_text(text: str) -> str:
+    """Rewrite raw machine floats inside a user-facing prose string."""
+    if not text:
+        return text
+
+    def _repl_long(match: re.Match[str]) -> str:
+        raw = f"{match.group('sign') or ''}{match.group('body')}"
+        try:
+            value = float(raw.replace("\u2212", "-"))
+        except ValueError:
+            return match.group(0)
+        window = text[max(0, match.start() - 28): match.start()].lower()
+        if abs(value) > 1 and any(
+                token in window for token in ("breadth", "广度", "percent", "pct")):
+            return format_user_facing_number(value, kind="percent") or match.group(0)
+        return format_user_facing_number(value, kind="momentum") or match.group(0)
+
+    text = _LONG_FLOAT_RE.sub(_repl_long, text)
+
+    def _repl_breadth(match: re.Match[str]) -> str:
+        raw = f"{match.group('sign') or ''}{match.group('num')}"
+        try:
+            value = float(raw.replace("\u2212", "-"))
+        except ValueError:
+            return match.group(0)
+        formatted = format_user_facing_number(value, kind="percent")
+        return f"{match.group('prefix')} {formatted}" if formatted else match.group(0)
+
+    return _BREADTH_NUM_RE.sub(_repl_breadth, text)
+
+
+def fmt_number(value: Any) -> str | None:
+    """Format a numeric cell WITHOUT changing its basis or unit.
+
+    Returns ``None`` for a missing value so the caller renders a typed absence.
+    No scaling and no percent conversion: a percentile of ``0.046`` prints as
+    ``0.05`` (2 decimals) beside a ``percentile (0-1)`` unit, never as a
+    silently multiplied ``4.6%``. Never emits ≥4 fractional digits or ``e±``.
+    """
+    if value is None or isinstance(value, bool):
+        return None
+    if isinstance(value, str):
+        return format_user_facing_text(value)
     if not isinstance(value, (int, float)):
         return None
     magnitude = abs(float(value))
@@ -1281,7 +1374,7 @@ def fmt_number(value: Any) -> str | None:
     elif magnitude == 0:
         text = "0"
     else:
-        text = f"{value:.4g}"
+        text = f"{value:.2f}"
     return fmt_true_minus(text) if float(value) < 0 else text
 
 
@@ -1301,7 +1394,7 @@ def fmt_ratio_pct(value: Any) -> str | None:
     ratio (``availability.coverage_ratio``)."""
     if not isinstance(value, (int, float)) or isinstance(value, bool):
         return None
-    return f"{float(value) * 100:.0f}%"
+    return f"{float(value) * 100:.1f}%"
 
 
 def value_pair(value: Any) -> dict[str, str] | None:
@@ -1750,8 +1843,8 @@ def apply_plain_pair(node: Mapping[str, str] | None) -> tuple[dict[str, str] | N
     """
     if not node:
         return None, None
-    en = str(node.get("en") or "")
-    zh = str(node.get("zh") or "")
+    en = format_user_facing_text(str(node.get("en") or ""))
+    zh = format_user_facing_text(str(node.get("zh") or ""))
     if not en and not zh:
         return dict(node), None
     rewrite = lookup_plain_producer(en) or lookup_plain_producer(zh)
@@ -1762,6 +1855,10 @@ def apply_plain_pair(node: Mapping[str, str] | None) -> tuple[dict[str, str] | N
         rewrite = dict(PLAIN_FALLBACK)
     if machine_text_hits(rewrite.get("en") or "") or machine_text_hits(rewrite.get("zh") or ""):
         rewrite = dict(PLAIN_FALLBACK)
+    rewrite = {
+        "en": format_user_facing_text(str(rewrite.get("en") or "")),
+        "zh": format_user_facing_text(str(rewrite.get("zh") or "")),
+    }
     return rewrite, dict(node)
 
 

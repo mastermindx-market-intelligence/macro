@@ -73,6 +73,11 @@ FALSIFIER_SUBSTRINGS: tuple[str, ...] = ("falsifier", "refuted", "证伪")
 _BARE_DATE_RE = re.compile(r'(?<![A-Za-z\u4e00-\u9fff]\s)\d{4}-\d{2}-\d{2}')
 _ISO_TIME_RE = re.compile(r'T\d{2}:\d{2}')
 _WS_RE = re.compile(r'[\s\u00a0]+')
+# P5 v9 E-m3: raw machine floats never reach the reading path.
+_MACHINE_FLOAT_RE = re.compile(
+    r'(?<![\d.])[+\u2212-]?\d+\.\d{4,}(?![\d])'
+    r'|[+\u2212-]?\d+\.?\d*[eE][+\-]\d+'
+)
 
 # Strip only the <details> BODY (children after <summary>). The summary
 # is painted while closed, so the predicate must see it (P5 r4 m-b).
@@ -149,6 +154,22 @@ def find_violations(html: str) -> list[str]:
         violations.append(
             f"raw ISO time fragment {match.group(0)!r} in visible text (G2b) — "
             "no ISO datetime separator belongs in what a reader sees"
+        )
+
+    # Tag-stripped bilingual twins (`18.83` + `18.83`) must not glue into a
+    # false 4-decimal token. Scan the same reading path with a space per tag.
+    # Drop <time> bodies so ISO fractional seconds are not mistaken for
+    # machine floats (those are already G2b-gated).
+    float_html = re.sub(r"<time\b[^>]*>.*?</time>", " ", html, flags=re.S)
+    spaced = _TAG_RE.sub(" ", _PRIMER_RE.sub(
+        "", _DETAILS_RE.sub(r"\1\3", _SCRIPT_RE.sub("", float_html))))
+    spaced = _WS_RE.sub(" ", spaced)
+    for match in _MACHINE_FLOAT_RE.finditer(spaced):
+        token = match.group(0)
+        violations.append(
+            f"raw machine float {token!r} in visible text (E-m3) — "
+            "format momentum/z-scores to 2 decimals and percentages to 1 decimal "
+            "with a unit at the builder/renderer boundary"
         )
 
     return violations
