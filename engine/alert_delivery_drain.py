@@ -554,7 +554,7 @@ def drain(*, send_fn: Callable[..., str] | None, now_utc: datetime | None = None
                 # duplicate resolution, never as a fresh fire. delivered_at is the
                 # drain's own resolution time (see MINOR-1 note above), never
                 # email_log's created_at.
-                delivered_at = datetime.now(timezone.utc).isoformat()
+                delivered_at = now_utc.isoformat()
                 ok = _patch_outbox(row["id"], {"status": "sent", "delivered_at": delivered_at,
                                                 "last_error": None})
                 if ok:
@@ -605,13 +605,17 @@ def drain(*, send_fn: Callable[..., str] | None, now_utc: datetime | None = None
                 # forever, and this branch re-fires every 5 minutes with no way out.
                 # Bumping `attempts` here mints a fresh `alert_fire:<id>:<n+1>` key
                 # next tick (same mechanism as the terminal-'failed' branch above),
-                # and once `attempts` reaches the cap the row is retired to
-                # 'failed'/'smtp_unavailable' instead of looping forever -- visible
-                # and out of the selection predicate, never a silent livelock.
+                # and once `attempts` reaches the cap the row is retired instead
+                # of looping forever -- visible and out of the selection
+                # predicate, never a silent livelock. Cause label follows the
+                # mailer status: queued is a failed suppression lookup
+                # (app/mailer.py:27-33, ``suppression_lookup_failed``), not SMTP.
                 new_attempts = int(row.get("attempts") or 0) + 1
                 if new_attempts >= ALERT_RETRY_ATTEMPTS_CAP:
+                    cause = ("suppression_lookup_failed" if log_status == "queued"
+                             else "smtp_unavailable")
                     ok = _patch_outbox(row["id"], {"status": "failed", "attempts": new_attempts,
-                                                    "last_error": "smtp_unavailable"})
+                                                    "last_error": cause})
                     if ok:
                         duplicate_n += 1
                         failed_n += 1
@@ -639,7 +643,7 @@ def drain(*, send_fn: Callable[..., str] | None, now_utc: datetime | None = None
         elif status == "sent":
             fired_at = payload.get("fired_at")
             ok = _patch_outbox(row["id"], {"status": "sent",
-                                            "delivered_at": datetime.now(timezone.utc).isoformat(),
+                                            "delivered_at": now_utc.isoformat(),
                                             "attempts": int(row.get("attempts") or 0) + 1,
                                             "last_error": None})
             if ok:
@@ -668,12 +672,15 @@ def drain(*, send_fn: Callable[..., str] | None, now_utc: datetime | None = None
             # 'duplicate' forever, and the row loops every 5 minutes with no way
             # out (this is the exact livelock the review found at this line). Once
             # `attempts` reaches the cap the row is retired to
-            # 'failed'/'smtp_unavailable' -- visible and out of the selection
-            # predicate -- instead of looping forever.
+            # retired -- visible and out of the selection predicate -- instead
+            # of looping forever. queued names the mailer contract cause
+            # (suppression_lookup_failed); skipped_no_smtp stays smtp_unavailable.
             new_attempts = int(row.get("attempts") or 0) + 1
             if new_attempts >= ALERT_RETRY_ATTEMPTS_CAP:
+                cause = ("suppression_lookup_failed" if status == "queued"
+                         else "smtp_unavailable")
                 ok = _patch_outbox(row["id"], {"status": "failed", "attempts": new_attempts,
-                                                "last_error": "smtp_unavailable"})
+                                                "last_error": cause})
                 if ok:
                     failed_n += 1
                 else:

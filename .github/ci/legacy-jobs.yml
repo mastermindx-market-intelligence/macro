@@ -6233,7 +6233,7 @@ jobs:
     gate: data
     # Support + Email estate: the W1 spine (app/mailer.py, app/support.py,
     # admin/support_tickets.py) plus the W2 public surface (templates/support.html.j2, the
-    # pinned email base). Five suites, all fully offline — no SMTP, no Supabase, no live
+    # pinned email base). Thirteen suites, all fully offline — no SMTP, no Supabase, no live
     # admin state, no network:
     #   test_mailer.py            — LEDGER-FIRST idempotency (a duplicate idem_key sends
     #                               nothing), mail-off skip, marketing suppression +

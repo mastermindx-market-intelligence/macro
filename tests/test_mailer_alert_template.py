@@ -89,3 +89,31 @@ def test_transactional_alert_renders_no_unsubscribe_slot_and_no_new_style_tokens
     found_hex = set(re.findall(r"#[0-9a-fA-F]{6}", html))
     assert found_hex.issubset(baseline_hex)
     assert mailer.__dict__.get("_STYLE") == mailer._STYLE  # byte-identity sanity: no override
+
+
+def test_zh_missing_fired_at_uses_zh_fallback_and_zh_eyebrow_never_english_fallback():
+    """Heal h2 REQUIRED 1 (plain-language law). RED-first on f7245647:
+    compose_alert(lang='zh') with fired_at missing put the English fallback
+    'time not recorded' in the ZH kv value and left the eyebrow as 'ALERT'."""
+    payload = {k: v for k, v in _PAYLOAD.items() if k != "fired_at"}
+    assert "fired_at" not in payload
+    c = mailer.compose_alert(payload, lang="zh")
+    assert c["eyebrow"] == "提醒"
+    kv = next(b for b in c["blocks"] if b.get("kind") == "kv")
+    zh_values = [v for _k, v in kv["zh"]]
+    assert "未记录时间" in zh_values
+    assert "time not recorded" not in zh_values
+    html, text = mailer.render_email(
+        c["title_en"], c["title_zh"], c["blocks"], eyebrow=c["eyebrow"],
+        preheader=c["preheader"], why_en=c["why_en"], why_zh=c["why_zh"],
+        unsubscribe_url="", follow=False)
+    assert "未记录时间" in html
+    assert "提醒" in html
+    zh_half = html.split("中文", 1)[-1]
+    assert "time not recorded" not in zh_half
+    assert "未记录时间" in text
+    assert "提醒" in text
+    # The ZH language half of the plain-text body (after the rule) must not
+    # carry the English fallback either.
+    zh_text_half = text.split("-" * 46, 1)[-1]
+    assert "time not recorded" not in zh_text_half

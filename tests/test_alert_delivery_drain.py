@@ -138,15 +138,13 @@ def test_same_fire_event_id_drained_twice_sends_once_and_reports_duplicate(monke
     assert r2.fired_n == 0
     assert r2.duplicate_n == 1
     assert fake.outbox[0]["status"] == "sent"
-    # Review round 6 MINOR-1: email_log has no sent/updated timestamp column --
-    # `created_at` (asserted here as the row's claim time, 14:59:00, well BEFORE the
-    # drain resolves the duplicate at 15:00:00) must never be read back as
-    # delivered_at. The drain uses its own resolution time instead, which is always
-    # >= the claim time and is never fabricated from a timestamp that means
-    # something else.
+    # Heal h2 REQUIRED 3: delivered_at is the injected clock, not wall-clock
+    # datetime.now. RED-first on f7245647: the prior assertion only checked
+    # inequality vs email_log.created_at and a >= bound, which any later wall
+    # clock also satisfied. Equality against the injected now_utc fails on that
+    # head because the duplicate-sent path stamped datetime.now(timezone.utc).
     delivered_at = fake.outbox[0]["delivered_at"]
-    assert delivered_at != "2026-09-05T14:59:00+00:00"
-    assert datetime.fromisoformat(delivered_at) >= datetime.fromisoformat("2026-09-05T14:59:00+00:00")
+    assert delivered_at == _now().isoformat()
 
 
 def test_duplicate_whose_email_log_row_is_failed_mirrors_status_never_counted_sent(monkeypatch):
@@ -398,6 +396,42 @@ def test_smtp_unavailable_row_at_cap_minus_one_is_retired_and_not_reselected(mon
     result2 = drain.drain(send_fn=lambda **kw: "skipped_no_smtp", now_utc=_now(), limit=10)
     assert result2.evaluated_n == 0
     assert fake.outbox[0]["attempts"] == drain.ALERT_RETRY_ATTEMPTS_CAP
+
+
+def test_queued_path_retired_at_cap_uses_suppression_lookup_failed_not_smtp_unavailable(monkeypatch):
+    """Heal h2 REQUIRED 2. RED-first on f7245647: a row retired at the retry
+    cap from the mailer ``queued`` path (suppression lookup failed — the
+    contract named at app/mailer.py:27-33) was stamped last_error=
+    ``smtp_unavailable``, which names the wrong cause. Both the main path
+    and the duplicate-resolution mirror must use ``suppression_lookup_failed``."""
+    row = _row(attempts=drain.ALERT_RETRY_ATTEMPTS_CAP - 1)
+    fake = FakeTables(outbox=[row])
+    _patch(monkeypatch, fake, users={"u1": OPTED_IN_USER})
+    result = drain.drain(send_fn=lambda **kw: "queued", now_utc=_now(), limit=10)
+    assert result.evaluated_n == 1
+    assert fake.outbox[0]["status"] == "failed"
+    assert fake.outbox[0]["attempts"] == drain.ALERT_RETRY_ATTEMPTS_CAP
+    assert fake.outbox[0]["last_error"] == "suppression_lookup_failed"
+    assert fake.outbox[0]["last_error"] != "smtp_unavailable"
+
+
+def test_queued_duplicate_retired_at_cap_uses_suppression_lookup_failed(monkeypatch):
+    """Heal h2 REQUIRED 2 — duplicate-resolution mirror of the queued-at-cap
+    cause label. RED-first on f7245647: the mirror also wrote
+    ``smtp_unavailable``."""
+    attempt_n = drain.ALERT_RETRY_ATTEMPTS_CAP - 1
+    row = _row(attempts=attempt_n)
+    fake = FakeTables(outbox=[row])
+    fake.email_log[drain._alert_idem_key("fe1", attempt=attempt_n)] = {
+        "status": "queued",
+    }
+    _patch(monkeypatch, fake, users={"u1": OPTED_IN_USER})
+    result = drain.drain(send_fn=lambda **kw: "duplicate", now_utc=_now(), limit=10)
+    assert result.evaluated_n == 1
+    assert fake.outbox[0]["status"] == "failed"
+    assert fake.outbox[0]["attempts"] == drain.ALERT_RETRY_ATTEMPTS_CAP
+    assert fake.outbox[0]["last_error"] == "suppression_lookup_failed"
+    assert fake.outbox[0]["last_error"] != "smtp_unavailable"
 
 
 def test_failed_row_is_retried_by_a_later_drain_and_never_reads_as_sent(monkeypatch):

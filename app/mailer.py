@@ -1033,9 +1033,10 @@ def _alert_plain(value, fallback_en: str, fallback_zh: str, *, zh: bool = False)
     return v
 
 
-def _alert_fired_at_display(fired_at) -> str:
+def _alert_fired_at_display(fired_at, *, zh: bool = False) -> str:
+    fallback = "未记录时间" if zh else "time not recorded"
     if not fired_at:
-        return "time not recorded"
+        return fallback
     try:
         import datetime as _dt
         s = str(fired_at).replace("Z", "+00:00")
@@ -1045,7 +1046,7 @@ def _alert_fired_at_display(fired_at) -> str:
         dt = dt.astimezone(_dt.timezone.utc)
         return dt.strftime("%Y-%m-%d %H:%M UTC")
     except Exception:  # noqa: BLE001
-        return "time not recorded"
+        return fallback
 
 
 def compose_alert(payload: dict, *, lang: str = "en") -> dict:
@@ -1076,7 +1077,8 @@ def compose_alert(payload: dict, *, lang: str = "en") -> dict:
     evidence_url = payload.get("evidence_url") or ""
     if any(tok in str(evidence_url) for tok in _ALERT_BANNED_TOKENS):
         evidence_url = ""
-    fired_at_display = _alert_fired_at_display(payload.get("fired_at"))
+    fired_at_en = _alert_fired_at_display(payload.get("fired_at"))
+    fired_at_zh = _alert_fired_at_display(payload.get("fired_at"), zh=True)
     one_liner = _alert_plain(payload.get("subject"), condition_plain, condition_plain_zh)
 
     if lang == "zh":
@@ -1097,8 +1099,8 @@ def compose_alert(payload: dict, *, lang: str = "en") -> dict:
                        "en": "No evidence link was available for this alert.",
                        "zh": "这条提醒没有可用的依据链接。"})
     blocks.append({"kind": "kv",
-                   "en": [("Noticed at", fired_at_display)],
-                   "zh": [("发现时间", fired_at_display)]})
+                   "en": [("Noticed at", fired_at_en)],
+                   "zh": [("发现时间", fired_at_zh)]})
     blocks.append({"kind": "fine",
                    "en": "Research display only — not advice.",
                    "zh": "仅供研究展示，不构成投资建议。"})
@@ -1107,7 +1109,7 @@ def compose_alert(payload: dict, *, lang: str = "en") -> dict:
         "subject": subject,
         "title_en": one_liner if lang != "zh" else condition_plain,
         "title_zh": condition_plain_zh,
-        "eyebrow": "ALERT",
+        "eyebrow": "提醒" if lang == "zh" else "ALERT",
         "preheader": one_liner,
         "why_en": f"You set an alert on {ticker}.",
         "why_zh": f"你为 {ticker} 设置了提醒。",
