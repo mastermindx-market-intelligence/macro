@@ -192,8 +192,7 @@ jobs:
             /scripts/__init__.py
             /scripts/check_research_vault_source_freshness.py
             /engine/__init__.py
-            /engine/research_vault/__init__.py
-            /engine/research_vault/catalog.py
+            /engine/research_vault/
       - name: verify Research Vault source-content freshness (public URL)
         env:
           RESEARCH_VAULT_SOURCE_MAX_AGE_HOURS: ${{ vars.RESEARCH_VAULT_SOURCE_MAX_AGE_HOURS }}
