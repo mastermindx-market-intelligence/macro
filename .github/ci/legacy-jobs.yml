@@ -5273,6 +5273,7 @@ jobs:
       - tests/test_agentos_schema.py
       - tests/test_agentos_status.py
       - tests/test_market_ontology_f12_public_api_admission.py
+      - tests/test_compile_loop_blocklists_pattern_override.py
       - tests/test_f01_fx_commodity_source_rights.py
       - agentos/discoveries/DSC-COMMODITY-AND-FX-PRICE-SPINE-YAHOO-VENDOR-TERMS-ARE-RECORDED-ADVERSE.md
       - research/market_intelligence_productization/F01_FX_COMMODITY_SOURCE_RIGHTS_AND_DEPTH_2026-09.md
@@ -5400,7 +5401,7 @@ jobs:
           python3 scripts/agentos.py validate
           python -m pytest tests/test_agentos_schema.py tests/test_agentos_status.py \
             tests/test_agentos_compile.py tests/test_f01_fx_commodity_source_rights.py \
-            tests/test_market_ontology_f12_public_api_admission.py -q
+            tests/test_market_ontology_f12_public_api_admission.py tests/test_compile_loop_blocklists_pattern_override.py -q
 
   capability-broker:
     if: ${{ false }}

@@ -287,6 +287,26 @@ def test_self_mod_fence_paths_include_the_three_f12_artifacts():
         assert path in block, f"self-mod-fence paths missing {path}"
 
 
+def test_pattern_override_suite_is_wired_into_agentos_record_contract():
+    """Heal h1 / contract-delta: the round-5 pattern-override suite must appear
+    in self-mod-fence's agent-os record contract pytest list (and its paths:),
+    the same token style #6981 used for test_b_rec2_wave_boundary_records.py.
+    Fails on merged-but-unwired head 9a6e29eb because that file was introduced
+    and no legacy-jobs.yml step named it."""
+    text = LEGACY_JOBS_PATH.read_text(encoding="utf-8")
+    header = "\n  self-mod-fence:\n"
+    header_start = text.index(header)
+    body_start = header_start + len(header)
+    next_job = re.search(r"\n  [a-zA-Z][\w-]*:\n", text[body_start:])
+    block = text[header_start: body_start + next_job.start()] if next_job else text[header_start:]
+    token = "tests/test_compile_loop_blocklists_pattern_override.py"
+    assert token in block, f"self-mod-fence block missing {token}"
+    assert re.search(
+        r"python -m pytest[^\n]*(?:\n[^\n]*)*?tests/test_compile_loop_blocklists_pattern_override\.py",
+        block,
+    ), "agent-os record contract pytest list missing the pattern-override suite"
+
+
 def test_bl_g099_reason_has_no_unbalanced_backtick():
     """Review r1 minor-2: the 200-char reason truncation used to cut mid-token
     and mid-backtick. Pins the fixed behavior against the real compiled
