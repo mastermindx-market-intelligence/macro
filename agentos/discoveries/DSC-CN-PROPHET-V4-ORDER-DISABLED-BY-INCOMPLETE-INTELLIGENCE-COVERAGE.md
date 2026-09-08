@@ -7,8 +7,10 @@ claim: >
   the Intelligence search/deep trajectory readers do not consume; these four
   are absent from the latter two sources at the inspected immutable pin.
 falsifier: >
-  Read the board and candidate ledger at Macro
-  19cad7eaa11ffeeb73c081ff3de84696ae2ee4e6. Filter stamp_date=2026-09-07 and
+  Run git show 19cad7eaa11ffeeb73c081ff3de84696ae2ee4e6:site/factordata/china_standouts.json
+  and inspect ranking.ordering plus ranking.input_coverage.intel_interest.
+  Read the candidate ledger at that same immutable commit with Python/pandas.
+  Filter stamp_date=2026-09-07 and
   board_definition=cn_prophet_v4; a different missing set, eligible status, or
   source availability disproves the pinned diagnosis. A later natural generation
   with genuine complete input coverage and intel_order_active=true clears live
@@ -95,3 +97,47 @@ introduced blockers, and verify current-base/hosted tests. Exact release action:
 reconcile #6866's safety facts and original/current source-price basis, issue a
 controlled-activation ruling, then require the natural producer and entitled
 served-order/browser proof. A source merge is not that proof.
+
+## September 8 review-repair continuation (supersedes the next source action above)
+
+Current source is PR #6992 head a51bae222eedd4c53f4101998f3a3c4bc103f554,
+tree 037627b311e54ae1cb50cb047f6aba720ff3e2df, a forward repair of the first
+candidate. Same branch/worktree/operation; no replacement source carrier.
+The first review identified Boolean-to-price coercion and one bad raw input
+wiping a healthy stock's trajectory. Full build_interest_map tests reproduced
+four intended failures with 48 controls passing. The repaired five existing
+CII/rank/V3/V4/shadow suites passed 169 cases, zero skips; CII contains 52 cases.
+Only CII and its existing test module changed in the repair; the original
+builder-wiring blob 29d16200267b262c7a49c3fa0a432d2d07972107 is unchanged.
+
+The exact same native reviewer returned semantic PASS on this head, with both
+findings closed and no new blocker/major. Its review was static. The 169 tests
+are author execution, not independent reviewer execution; the read-only reviewer
+could not create pytest capture temporaries. The completed finite reviewer had
+no watcher. Its later terminal STOP delivery was platform-blocked and was not
+retried; terminal consumption is unverified. Failed out-of-scope child/memory
+attempts appeared in its runtime output, with no successful effect shown;
+do not infer an exhaustive external-effect census or resume/clone that reviewer.
+
+Actual protected Source Continuity verification returned exit 2 with
+REMOTE_CENSUS_INCOMPLETE: the adapter's 100-open-PR ceiling did not cover the
+156-PR field. The separate complete source census and byte-identical material
+dependencies through main 53142fff7c29230e753699a162c98336211506fb do not replace
+that refused receipt. Keep the existing dependency with Mastermind issue #346;
+no new checkpoint implementation, exception, writer transfer or release follows.
+Current hosted checks remain unverified after a platform-blocked inspection.
+No retry, cancellation, Ready, arming, merge, deployment or ranking activation.
+
+The earlier Chairman-facing report's alternate ticker set (001309.SZ,
+301078.SZ, 601022.SS, 603325.SS), all-null adj_close diagnosis, unpublished-patch
+claim and unverified sandbox review package are withdrawn. A new pinned read
+reproduced the four correct names in the claim above, all raw-ineligible and
+with intel_signal_core=0.0. PR #6992, not that package, is source truth.
+
+Exact continuation: retain this reviewed semantic head; resolve the existing
+formal continuity and allowed current-candidate integration evidence, then
+adjudicate controlled activation under #6866 and prove a natural producer plus
+entitled served-order/browser result. Original historical breadth bytes remain
+unavailable. The four-region integration/Entry Truth/continuing-instruction
+outcome is not complete. No source algorithm work or original diagnosis needs
+to be repeated merely because the chat or base moved.
