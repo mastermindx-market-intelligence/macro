@@ -356,21 +356,17 @@ def test_plain_glance_titles_strip_ledger_enums():
     assert "体制切换" not in zh2
 
     extras = [
-        _ev("p-2", "2026-09-01", source="prophet_ledger", tickers=["AAA"]),
-        _ev("p-3", "2026-09-01", source="prophet_ledger", tickers=["BBB"]),
+        _ev("p-2", "2026-09-01", source="earnings", tickers=["AAA"]),
+        _ev("p-3", "2026-09-01", source="earnings", tickers=["BBB"]),
     ]
-    extras[0]["title"] = "Prophet close: AAA BULL → T1_HIT (+1.0% in 5d)"
-    extras[1]["title"] = "Prophet close: BBB BEAR → T2_HIT (+2.0% in 6d)"
-    surface = impact.glance_consequence_surface([{
+    prophet = {
         **_ev("p-1", "2026-09-01", source="prophet_ledger", tickers=["FBRT"]),
         "title": "Prophet close: FBRT BULL → EXPIRED (-2.1% in 45d)",
         "kind": "signal_close",
-    }, *extras])
-    row = next(r for r in surface["rows"] if "FBRT" in r["title_en"])
-    assert row["title_en"] and row["title_zh"]
-    assert "EXPIRED" not in row["title_en"]
-    assert "EXPIRED" not in row["title_zh"]
-    assert "到期未达标" in row["title_zh"]
+    }
+    surface = impact.glance_consequence_surface([prophet, *extras])
+    assert all(r["family"] != "prophet_ledger" for r in surface["rows"])
+    assert {r["direct_tickers"][0] for r in surface["rows"]} == {"AAA", "BBB"}
 
 
 def test_no_write_family_impact_helper_on_module():
@@ -429,7 +425,7 @@ def test_macro_release_plain_series_labels_and_unmapped_fallback():
         "exposures": [],
     })
     assert en == "Weekly jobless claims came in at +203k"
-    assert zh == "每周初请失业金人数公布为 +203k"
+    assert zh == "每周初请失业金人数公布为+203k"
 
     en_ppi, zh_ppi = impact.plain_glance_titles({
         "title": "Macro print: ppi_finaldemand = -0.3 (2026-09-04)",
@@ -437,7 +433,7 @@ def test_macro_release_plain_series_labels_and_unmapped_fallback():
         "exposures": [],
     })
     assert en_ppi == "Producer prices (final demand) came in at -0.3%"
-    assert zh_ppi == "PPI最终需求公布为 -0.3%"
+    assert zh_ppi == "PPI最终需求公布为-0.3%"
     assert "ppi_finaldemand" not in en_ppi
     assert "ppi_finaldemand" not in zh_ppi
 
@@ -685,41 +681,109 @@ def test_unparsed_regime_risk_and_unknown_source_use_typed_pairs():
     }
     peers = [_named("unk-2", 6, "AA"), _named("unk-3", 5, "BB")]
     surface = impact.glance_consequence_surface([unknown, *peers])
-    row = next(r for r in surface["rows"] if r["direct_tickers"] == ["ZZZ"])
-    assert row["title_en"] == "Market event"
-    assert row["title_zh"] == "市场事件"
+    assert all(r["family"] != "brand_new_adapter" for r in surface["rows"])
+    assert {tuple(r["direct_tickers"]) for r in surface["rows"]} == {("AA",), ("BB",)}
 
 
 def test_zh_glance_strings_have_no_internal_cjk_spaces():
-    """R5: no space between CJK clauses the module emits."""
-    samples = [
-        impact.plain_glance_titles({
-            "title": "Macro print: claims = +215 (2026-07-09)",
-            "source": "macro_release", "exposures": [],
-        })[1],
-        impact.plain_glance_titles({
-            "title": "Macro print: nfp = +162 (2026-09-04)",
-            "source": "macro_release", "exposures": [],
-        })[1],
-        impact.plain_glance_titles({
-            "title": "Earnings call: ANY Q1 FY2017 — confident",
-            "source": "earnings_call",
-            "exposures": [{"ticker": "ANY", "materiality": "direct"}],
-        })[1],
-        impact.plain_glance_titles({
-            "title": "GS: housing",
-            "source": "research_vault",
-            "exposures": [{"ticker": "HSBC", "materiality": "direct"}],
-        })[1],
-        impact.plain_glance_titles({
-            "title": "Prophet close: FBRT BULL → T1_HIT (+10.8% in 25d)",
-            "source": "prophet_ledger",
-            "exposures": [{"ticker": "FBRT", "materiality": "direct"}],
-        })[1],
-    ]
-    assert samples[0] == "每周初请失业金人数公布为 +215k"
-    assert samples[1] == "非农就业公布为 +162k"
-    for zh in samples:
-        assert " 公布" not in zh
-        assert " 业绩" not in zh
-        assert " 的研究" not in zh
+    """R5: no ASCII space around the middot or inside ZH sentences on a card."""
+    zh_earn = impact.plain_glance_titles({
+        "title": "Earnings: AAPL actual vs est",
+        "source": "earnings",
+        "exposures": [{"ticker": "AAPL", "materiality": "direct"}],
+    })[1]
+    assert zh_earn == "AAPL公布业绩"
+    assert " " not in zh_earn
+    assert " ·" not in zh_earn and "· " not in zh_earn
+
+    zh_macro = impact.plain_glance_titles({
+        "title": "Macro print: claims = +215 (2026-07-09)",
+        "source": "macro_release", "exposures": [],
+    })[1]
+    assert zh_macro == "每周初请失业金人数公布为+215k"
+    assert " 公布" not in zh_macro
+    assert " ·" not in zh_macro and "· " not in zh_macro
+
+    ev = _ev("zh-earn-1", "2026-09-07", source="earnings", tickers=["AAPL"])
+    surface = impact.glance_consequence_surface([ev])
+    assert surface["rows"][0]["title_zh"] == "AAPL公布业绩"
+    assert " " not in surface["rows"][0]["title_zh"]
+
+
+def test_macro_and_regime_qualify_without_named_ticker():
+    """NM-2: macro/regime/risk are market events even with no ticker."""
+    macro = _ev("m-claims", "2026-09-04", source="macro_release", tickers=[])
+    macro["title"] = "Macro print: claims = +206 (2026-09-03)"
+    regime = _ev("r-ca", "2026-09-03", source="regime_flip", tickers=[])
+    regime["title"] = "CANADA regime: Q1 Goldilocks → Q3 Stagflation"
+    risk = _ev("k-watch", "2026-09-02", source="risk_band", tickers=[])
+    risk["title"] = "Risk radar: calm → watch"
+    vault = _ev("v-empty", "2026-09-07", source="research_vault", tickers=[])
+    vault["title"] = "UBS: weekly note"
+    surface = impact.glance_consequence_surface([macro, regime, risk, vault])
+    families = {r["family"] for r in surface["rows"]}
+    assert families == {"macro_release", "regime_flip", "risk_band"}
+    assert all(r["family"] != "research_vault" for r in surface["rows"])
+    assert len(surface["rows"]) == 3
+
+
+def test_prophet_ledger_is_typed_exclusion_from_glance():
+    """NM-2: prophet_ledger is not a market event and never appears on the glance."""
+    assert "prophet_ledger" in impact.GLANCE_EXCLUDED_FAMILIES
+    assert "prophet_ledger" not in impact.GLANCE_ELIGIBLE_FAMILIES
+    events = []
+    for i, tk in enumerate(("FBRT", "DVA", "ROST")):
+        ev = _ev(f"prop-{i}", "2026-09-04", source="prophet_ledger", tickers=[tk])
+        ev["title"] = f"Prophet close: {tk} BULL → T1_HIT (+1.0% in 5d)"
+        ev["kind"] = "signal_close"
+        events.append(ev)
+    events.append(_named("earn-keep", 7, "KEEP"))
+    surface = impact.glance_consequence_surface(events)
+    assert all(r["family"] != "prophet_ledger" for r in surface["rows"])
+    assert [r["direct_tickers"] for r in surface["rows"]] == [["KEEP"]]
+    assert surface["families"] == {"earnings": 1}
+
+
+def test_glance_one_qualifying_row_renders():
+    """NM-3: a single qualifying row is a card, not the empty state."""
+    surface = impact.glance_consequence_surface([_named("solo", 7, "SOLO")])
+    assert surface["empty_kind"] is None
+    assert len(surface["rows"]) == 1
+    assert surface["rows"][0]["direct_tickers"] == ["SOLO"]
+    assert surface["rows"][0]["size_en"] is None
+    assert surface["window_label_en"] == "Events from 31 Aug to 7 Sep 2026"
+    assert surface["window_label_zh"] == "2026年8月31日至9月7日的事件"
+
+
+def test_glance_zero_qualifying_rows_typed_empty():
+    """NM-3: the typed empty state appears only when ZERO rows qualify."""
+    notes = []
+    for i in range(4):
+        ev = _ev(f"rv-zero-{i}", "2026-09-07", source="research_vault", tickers=[])
+        ev["title"] = f"UBS: weekly note {i}"
+        notes.append(ev)
+    surface = impact.glance_consequence_surface(notes)
+    assert surface["rows"] == []
+    assert surface["empty_kind"] == "no_named_exposure"
+    assert surface["reason_en"] == impact.EMPTY_NO_EXPOSURE_EN
+    assert surface["reason_zh"] == impact.EMPTY_NO_EXPOSURE_ZH
+    assert surface["window_label_en"] == "Events from 31 Aug to 7 Sep 2026"
+    assert surface["window_label_zh"] == "2026年8月31日至9月7日的事件"
+
+
+def test_glance_fallback_carries_latest_200_label():
+    """NM-3: newest-200 fallback is labelled, never 'last 7 days'."""
+    undated = []
+    for i in range(210):
+        ev = _ev(f"undated-fb-{i:03d}", "2026-01-01",
+                 source="earnings", tickers=[f"U{i}"])
+        ev["date"] = "not-a-date"
+        undated.append(ev)
+    surface = impact.glance_consequence_surface(undated)
+    assert surface["window_mode"] == impact.GLANCE_WINDOW_FALLBACK
+    assert surface["event_count"] == impact.GLANCE_FALLBACK_LIMIT
+    assert surface["window_label_en"] == impact.WINDOW_FALLBACK_LABEL_EN
+    assert surface["window_label_zh"] == impact.WINDOW_FALLBACK_LABEL_ZH
+    assert surface["window_label_en"] == "Latest 200 recorded events"
+    assert surface["window_label_zh"] == "最近记录的200个事件"
+    assert len(surface["rows"]) == 8

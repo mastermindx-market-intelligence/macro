@@ -107,22 +107,45 @@ SECOND_ORDER_CAPPED_REASON = SECOND_ORDER_AMBIGUOUS_REASON
 
 # Glance-tier surface bound (News Feed consequence panel). Bounded so render
 # never runs the full-corpus projection. A glance row must carry a consequence
-# (direct ticker or second-order ticker). The window is the last 7 days as-of
-# the newest parseable event date in the input — no wall-clock on the render
-# path. If that window is empty (undated / unparseable corpus), fall back to
-# the newest 200 events. Fewer than 3 qualifying rows prints a typed empty
-# state and no cards.
+# (direct ticker or second-order ticker) AND belong to a public market-event
+# family. prophet_ledger rows are the product's own trade-plan closes — they
+# are not market events and never appear on the anonymous News glance
+# (typed exclusion). The window is the last 7 days as-of the newest
+# parseable event date in the input — no wall-clock on the render path. If
+# that window is empty (undated / unparseable corpus), fall back to the
+# newest 200 events. Zero qualifying rows prints a typed empty state;
+# one or more qualifying rows render (capped at 8).
 GLANCE_WINDOW_DAYS = 7
 GLANCE_FALLBACK_LIMIT = 200
 GLANCE_ROW_CAP = 8
-GLANCE_MIN_QUALIFYING = 3
+GLANCE_MIN_QUALIFYING = 1
 # Backward-compatible alias: older callers passed this as the pre-filter cap.
 GLANCE_EVENT_LIMIT = GLANCE_ROW_CAP
 GLANCE_WINDOW_LAST_7 = "last_7_days"
 GLANCE_WINDOW_FALLBACK = "newest_200_fallback"
+GLANCE_EXCLUDED_FAMILIES = frozenset({"prophet_ledger"})
+GLANCE_ELIGIBLE_FAMILIES = frozenset({
+    "earnings",
+    "earnings_call",
+    "macro_release",
+    "regime_flip",
+    "risk_band",
+    "research_vault",
+})
+# Earnings / calls / vault notes are about a name. Macro prints and
+# regime/risk shifts are market events even when they name no ticker.
+GLANCE_NAMED_EXPOSURE_FAMILIES = frozenset({
+    "earnings",
+    "earnings_call",
+    "research_vault",
+})
 
 EMPTY_NO_EXPOSURE_EN = "No event with a named market exposure in the last 7 days."
 EMPTY_NO_EXPOSURE_ZH = "近7天没有带明确市场敞口的事件。"
+WINDOW_FALLBACK_LABEL_EN = "Latest 200 recorded events"
+WINDOW_FALLBACK_LABEL_ZH = "最近记录的200个事件"
+SIZE_UNAVAILABLE_EN = "Size not available yet"
+SIZE_UNAVAILABLE_ZH = "暂无幅度"
 
 _MONTH_EN = (
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -525,6 +548,44 @@ def _select_glance_pool(events: list[dict]) -> tuple[list[dict], str]:
     return newest[:GLANCE_FALLBACK_LIMIT], GLANCE_WINDOW_FALLBACK
 
 
+def _plain_window_span(start: date, end: date) -> tuple[str, str]:
+    """EN 'Events from 31 Aug to 7 Sep 2026' / ZH '2026年8月31日至9月7日的事件'."""
+    if start.year == end.year:
+        en = (
+            f"Events from {start.day} {_MONTH_EN[start.month - 1]} "
+            f"to {end.day} {_MONTH_EN[end.month - 1]} {end.year}"
+        )
+        zh = (
+            f"{start.year}年{start.month}月{start.day}日"
+            f"至{end.month}月{end.day}日的事件"
+        )
+    else:
+        en = (
+            f"Events from {start.day} {_MONTH_EN[start.month - 1]} {start.year} "
+            f"to {end.day} {_MONTH_EN[end.month - 1]} {end.year}"
+        )
+        zh = (
+            f"{start.year}年{start.month}月{start.day}日"
+            f"至{end.year}年{end.month}月{end.day}日的事件"
+        )
+    return en, zh
+
+
+def _glance_window_labels(
+    events: list[dict], window_mode: str | None,
+) -> tuple[str | None, str | None]:
+    """Section header for the glance window. Corpus as-of, never wall-clock."""
+    if window_mode == GLANCE_WINDOW_FALLBACK:
+        return WINDOW_FALLBACK_LABEL_EN, WINDOW_FALLBACK_LABEL_ZH
+    as_of = _as_of_event_date(events)
+    if as_of is None:
+        if window_mode:
+            return WINDOW_FALLBACK_LABEL_EN, WINDOW_FALLBACK_LABEL_ZH
+        return None, None
+    cutoff = as_of - timedelta(days=GLANCE_WINDOW_DAYS)
+    return _plain_window_span(cutoff, as_of)
+
+
 def _plain_state(token: str) -> tuple[str, str]:
     key = (token or "").strip().lower()
     mapped = _STATE_PLAIN.get(key)
@@ -662,7 +723,7 @@ def plain_glance_titles(proj: dict) -> tuple[str, str]:
         detail_en = f" ({detail})" if detail else ""
         detail_zh = _zh_detail(detail)
         en = f"{who} {side_en} closed · {out_en}{detail_en}"
-        zh = f"{who}{side_zh}已结 · {out_zh}{detail_zh}"
+        zh = f"{who}{side_zh}已结·{out_zh}{detail_zh}"
         return _sanitize(en, zh, fallback_en=fallback[0], fallback_zh=fallback[1])
 
     m = _REGIME_FLIP_RE.match(raw)
@@ -709,7 +770,7 @@ def plain_glance_titles(proj: dict) -> tuple[str, str]:
                 label_en, label_zh, unit = mapped
                 shown = value if (not unit or str(value).endswith(unit)) else f"{value}{unit}"
                 en = f"{label_en} came in at {shown}"
-                zh = f"{label_zh}公布为 {shown}"
+                zh = f"{label_zh}公布为{shown}"
             else:
                 en, zh = "Macro data release", "宏观数据发布"
         else:
@@ -780,21 +841,31 @@ def glance_consequence_surface(
 ) -> dict:
     """Bounded, plain-word consequence surface for the News Feed panel.
 
-    A glance row must carry a consequence: at least one direct ticker or at
-    least one second-order ticker. Research notes with no named exposure stay
-    in the feed and the vault; they are not glance cards.
+    A glance row must belong to a public market-event family (earnings,
+    earnings_call, macro_release, regime/risk shifts, or a research_vault
+    row with a named exposure). Earnings, earnings-call, and vault rows
+    also need a direct or second-order ticker. Macro prints and regime/risk
+    shifts are market events even when they name no ticker.
+    ``prophet_ledger`` is a typed exclusion — those rows are the product's
+    own trade ledger, not market events, and never appear on the anonymous
+    News glance.
 
     Window: events dated within 7 days of the newest parseable event date in
     the input (no wall-clock). If that window is empty — the corpus is undated
-    or older than 7 days in the sense that no event carries a parseable date
-    inside the as-of window — fall back to the newest 200 events. From the
-    chosen pool, keep the newest ``limit`` (default 8) exposure-bearing rows.
-    Fewer than 3 qualifying rows prints the typed empty state and no cards.
+    or no event carries a parseable date — fall back to the newest 200
+    events. From the chosen pool, keep every qualifying row up to ``limit``
+    (default 8). The typed empty state prints only when ZERO rows qualify.
 
-    Calibrated impact stays null + reason. Empty / missing input prints an
-    honest null state rather than fabricating rows. Row titles are dual-locale
-    plain-word (``title_en`` / ``title_zh``); the raw spine ``title`` is kept
-    for diagnostics only and must not be rendered on the glance surface.
+    The section header carries the window's actual dates from the corpus
+    as-of (``window_label_en`` / ``window_label_zh``), or the fallback label
+    when the newest-200 path fires.
+
+    Calibrated impact stays null + reason. A card with no size prints the
+    typed null (``size_en`` / ``size_zh`` are None). Empty / missing input
+    prints an honest null state rather than fabricating rows. Row titles are
+    dual-locale plain-word (``title_en`` / ``title_zh``); the raw spine
+    ``title`` is kept for diagnostics only and must not be rendered on the
+    glance surface.
     """
     if not events:
         return {
@@ -806,12 +877,15 @@ def glance_consequence_surface(
             "reason_zh": "此窗口尚无大事记事件。",
             "empty_kind": None,
             "window_mode": None,
+            "window_label_en": None,
+            "window_label_zh": None,
             "families": {},
             "rows": [],
             "event_count": 0,
         }
 
     pool, window_mode = _select_glance_pool(events)
+    label_en, label_zh = _glance_window_labels(events, window_mode)
     # Chronological order for projection (point-in-time second-order).
     window = sorted(
         pool,
@@ -824,9 +898,14 @@ def glance_consequence_surface(
     projections = project_events_impact(window, eligible_themes=eligible_themes)
     rows = []
     for proj in projections:
+        family = (proj.get("source") or "").strip()
+        if family in GLANCE_EXCLUDED_FAMILIES:
+            continue
+        if family not in GLANCE_ELIGIBLE_FAMILIES:
+            continue
         direct = [e["ticker"] for e in proj["exposures"] if e.get("materiality") == MATERIALITY_DIRECT]
         second = [e["ticker"] for e in proj["exposures"] if e.get("materiality") == MATERIALITY_SECOND_ORDER]
-        if not direct and not second:
+        if family in GLANCE_NAMED_EXPOSURE_FAMILIES and not direct and not second:
             continue
         title_en, title_zh = plain_glance_titles(proj)
         if not title_en or not title_zh:
@@ -838,7 +917,7 @@ def glance_consequence_surface(
             "event_time_en": time_en,
             "event_time_zh": time_zh,
             "known_at": proj["known_at"],
-            "family": proj["source"] or "unknown",
+            "family": family or "unknown",
             "title": proj.get("title") or "",  # raw spine title — diagnostics only
             "title_en": title_en,
             "title_zh": title_zh,
@@ -847,6 +926,8 @@ def glance_consequence_surface(
             "second_order_truncated": bool(proj.get("second_order_truncated")),
             "second_order_candidate_count": proj.get("second_order_candidate_count", 0),
             "second_order_dropped_count": proj.get("second_order_dropped_count", 0),
+            "size_en": None,
+            "size_zh": None,
             "calibrated_impact": None,
             "calibrated_impact_reason": CALIBRATED_IMPACT_GATE_REASON,
             "causal_label": CAUSAL_LABEL,
@@ -859,7 +940,7 @@ def glance_consequence_surface(
     for row in rows:
         families[row["family"]] = families.get(row["family"], 0) + 1
 
-    if len(rows) < GLANCE_MIN_QUALIFYING:
+    if not rows:
         return {
             "served_as_market_feed": False,
             "market_feed_disposition": "explicitly_does_not_serve_market_feed",
@@ -869,6 +950,8 @@ def glance_consequence_surface(
             "reason_zh": EMPTY_NO_EXPOSURE_ZH,
             "empty_kind": "no_named_exposure",
             "window_mode": window_mode,
+            "window_label_en": label_en,
+            "window_label_zh": label_zh,
             "families": {},
             "rows": [],
             "event_count": len(window),
@@ -883,6 +966,8 @@ def glance_consequence_surface(
         "reason_zh": None,
         "empty_kind": None,
         "window_mode": window_mode,
+        "window_label_en": label_en,
+        "window_label_zh": label_zh,
         "families": families,
         "rows": rows,
         "event_count": len(window),

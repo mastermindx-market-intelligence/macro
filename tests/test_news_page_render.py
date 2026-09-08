@@ -272,7 +272,7 @@ def test_consequence_section_is_single_column_not_nx_cols():
 
 
 def test_consequence_empty_exposure_state_is_typed_sentence_only():
-    """R1 fail-closed: fewer than 3 named-exposure events prints only the typed empty."""
+    """NM-3: ZERO qualifying rows prints the typed empty; dated header still shows."""
     vm = _full_vm()
     vm["chronicle_impact"] = {
         "stance_en": None,
@@ -280,6 +280,8 @@ def test_consequence_empty_exposure_state_is_typed_sentence_only():
         "reason_en": "No event with a named market exposure in the last 7 days.",
         "reason_zh": "近7天没有带明确市场敞口的事件。",
         "empty_kind": "no_named_exposure",
+        "window_label_en": "Events from 31 Aug to 7 Sep 2026",
+        "window_label_zh": "2026年8月31日至9月7日的事件",
         "rows": [],
     }
     html = _env().get_template("news.html.j2").render(**vm)
@@ -288,8 +290,11 @@ def test_consequence_empty_exposure_state_is_typed_sentence_only():
     section = html[start:end]
     assert "No event with a named market exposure in the last 7 days." in section
     assert "近7天没有带明确市场敞口的事件。" in section
+    assert "Events from 31 Aug to 7 Sep 2026" in section
+    assert "2026年8月31日至9月7日的事件" in section
     assert "nx-rel-grid" not in section
     assert "We don’t size these yet" not in section
+    assert "Sizes come from similar past episodes" not in section
     assert "Not available yet" not in section
 
 
@@ -302,6 +307,8 @@ def test_consequence_card_date_is_plain_not_raw_iso():
         "reason_en": None,
         "reason_zh": None,
         "empty_kind": None,
+        "window_label_en": "Events from 31 Aug to 7 Sep 2026",
+        "window_label_zh": "2026年8月31日至9月7日的事件",
         "rows": [
             {
                 "event_id": "cev-a",
@@ -345,6 +352,128 @@ def test_consequence_card_date_is_plain_not_raw_iso():
     assert "7 Sep 2026" in section
     assert "2026年9月7日" in section
     assert "2026-09-07" not in section
+    assert "Events from 31 Aug to 7 Sep 2026" in section
+    assert "Sizes come from similar past episodes — an association, not a forecast." in section
+    assert "幅度来自相似历史情景——仅为关联，非预测。" in section
+    assert "We don’t size these yet" not in section
+    assert "Size not available yet" in section
+    assert "暂无幅度" in section
+
+
+def test_consequence_one_row_renders_card_not_empty():
+    """NM-3: one qualifying row is a card; empty state stays off."""
+    vm = _full_vm()
+    vm["chronicle_impact"] = {
+        "stance_en": "Recent market events and the names they touch — watch, don’t chase.",
+        "stance_zh": "近期市场事件及其涉及的标的——观察为主，不必追高。",
+        "reason_en": None,
+        "reason_zh": None,
+        "empty_kind": None,
+        "window_label_en": "Events from 31 Aug to 7 Sep 2026",
+        "window_label_zh": "2026年8月31日至9月7日的事件",
+        "rows": [{
+            "event_id": "cev-solo",
+            "event_time": "2026-09-07",
+            "event_time_en": "7 Sep 2026",
+            "event_time_zh": "2026年9月7日",
+            "title_en": "AAPL reported earnings",
+            "title_zh": "AAPL公布业绩",
+            "direct_tickers": ["AAPL"],
+            "second_order_tickers": [],
+            "second_order_truncated": False,
+            "size_en": None,
+            "size_zh": None,
+        }],
+    }
+    html = _env().get_template("news.html.j2").render(**vm)
+    start = html.index('id="nxConsequence"')
+    end = html.index("</section>", start)
+    section = html[start:end]
+    assert "nx-rel-grid" in section
+    assert "AAPL reported earnings" in section
+    assert "AAPL公布业绩" in section
+    assert "No event with a named market exposure" not in section
+    assert "Size not available yet" in section
+    assert "暂无幅度" in section
+
+
+def test_consequence_fallback_label_renders():
+    """NM-3: newest-200 fallback prints the dated-corpus-free label."""
+    vm = _full_vm()
+    vm["chronicle_impact"] = {
+        "stance_en": "Recent market events and the names they touch — watch, don’t chase.",
+        "stance_zh": "近期市场事件及其涉及的标的——观察为主，不必追高。",
+        "reason_en": None,
+        "reason_zh": None,
+        "empty_kind": None,
+        "window_mode": "newest_200_fallback",
+        "window_label_en": "Latest 200 recorded events",
+        "window_label_zh": "最近记录的200个事件",
+        "rows": [{
+            "event_id": "cev-fb",
+            "event_time": None,
+            "event_time_en": None,
+            "event_time_zh": None,
+            "title_en": "AAPL reported earnings",
+            "title_zh": "AAPL公布业绩",
+            "direct_tickers": ["AAPL"],
+            "second_order_tickers": [],
+            "second_order_truncated": False,
+        }],
+    }
+    html = _env().get_template("news.html.j2").render(**vm)
+    start = html.index('id="nxConsequence"')
+    end = html.index("</section>", start)
+    section = html[start:end]
+    assert "Latest 200 recorded events" in section
+    assert "最近记录的200个事件" in section
+
+
+def test_consequence_zh_earnings_card_has_no_ascii_spaces():
+    """ZH spacing: no ASCII spaces around the middot or inside an earnings sentence."""
+    vm = _full_vm()
+    vm["chronicle_impact"] = {
+        "stance_en": "Recent market events and the names they touch — watch, don’t chase.",
+        "stance_zh": "近期市场事件及其涉及的标的——观察为主，不必追高。",
+        "reason_en": None,
+        "reason_zh": None,
+        "empty_kind": None,
+        "window_label_en": "Events from 31 Aug to 7 Sep 2026",
+        "window_label_zh": "2026年8月31日至9月7日的事件",
+        "rows": [{
+            "event_id": "cev-aapl",
+            "event_time": "2026-09-07",
+            "event_time_en": "7 Sep 2026",
+            "event_time_zh": "2026年9月7日",
+            "title_en": "AAPL reported earnings",
+            "title_zh": "AAPL公布业绩",
+            "direct_tickers": ["AAPL"],
+            "second_order_tickers": [],
+            "second_order_truncated": False,
+        }],
+    }
+    html = _env().get_template("news.html.j2").render(**vm)
+    start = html.index('id="nxConsequence"')
+    end = html.index("</section>", start)
+    section = html[start:end]
+    zh_title = re.search(r'class="l-zh">AAPL公布业绩</span>', section)
+    assert zh_title, section
+    assert "AAPL 公布" not in section
+    assert "已结 · " not in section
+    assert " · 达到" not in section
+
+
+def test_build_site_passes_unfiltered_event_spine_to_glance():
+    """The site builder hands the full loaded spine to glance — no pre-filter."""
+    src = (ROOT / "scripts" / "build_site.py").read_text(encoding="utf-8")
+    load = "_evs = _spine_mod.load_events_jsonl(_ev_path) if _ev_path.exists() else []"
+    call = "_chronicle_impact = _impact_mod.glance_consequence_surface(_evs)"
+    assert load in src
+    assert call in src
+    between = src.split(load, 1)[1].split(call, 1)[0]
+    assert "_evs =" not in between
+    assert "filter" not in between
+    assert "[" not in between
 
 
 # --------------------------------------------------------------------------- #

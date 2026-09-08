@@ -818,14 +818,16 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
 {% set CI = chronicle_impact if chronicle_impact is mapping else none %}
 <section class="nx-consequence" id="nxConsequence" aria-label="Event consequences">
     <h2 class="nx-sec-hd">{{ t('Event consequences','事件影响') }}</h2>
+    {% if CI and CI.window_label_en %}
+    <p class="nx-sub">{{ t(CI.window_label_en, CI.window_label_zh or CI.window_label_en) }}</p>
+    {% endif %}
     {% if CI and CI.rows and CI.stance_en %}
     <p class="nx-sub">{{ t(CI.stance_en, CI.stance_zh or CI.stance_en) }}</p>
     {% endif %}
     {% if CI and CI.rows %}
-    {#- MAJOR 4: one section-level disclaimer instead of repeating the same
-        two-clause sentence on every card (was 16 of ~32 text lines, plus a
-        dangling middot where the card wrapped). -#}
-    <p class="nx-sub">{{ t('We don\u2019t size these yet — association only, not a forecast.', '尚未量化影响幅度——仅为关联提示，非预测。') }}</p>
+    {#- NM-1: sizes are associations from similar past episodes, never a
+        forecast. A card with no size prints the typed null below. -#}
+    <p class="nx-sub">{{ t('Sizes come from similar past episodes — an association, not a forecast.', '幅度来自相似历史情景——仅为关联，非预测。') }}</p>
     {% endif %}
     {% if CI and CI.rows %}
     <div class="nx-rel-grid">
@@ -846,6 +848,13 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
             {% for tk in row.direct_tickers[:4] %}<a class="nx-tk" href="stock.html#{{ tk|e }}">{{ tk }}</a>{% endfor %}
           {% else %}
             <span>{{ t('No named ticker','未点名标的') }}</span>
+          {% endif %}
+        </div>
+        <div class="nx-meta">
+          {% if row.size_en %}
+            <span>{{ t(row.size_en, row.size_zh or row.size_en) }}</span>
+          {% else %}
+            <span>{{ t('Size not available yet','暂无幅度') }}</span>
           {% endif %}
         </div>
         {% if row.second_order_tickers %}
