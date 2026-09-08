@@ -28,6 +28,15 @@ broke straight from the shipped source with the stdlib:
    ``verified``, ``updated``, ``asof``). Signal states such as ``.st-FRESH_BUY`` are
    market verdicts and are skipped by case; ``refresh`` controls are skipped by name.
    Failures name ``file:line`` so the fix is one edit away.
+
+   Resolution is not line-local. A rule that paints with ``var(--rvc)`` while markup
+   or a sibling rule sets ``--rvc: var(--ok)`` is treated as using ``--ok``. A
+   scoped zh remap (``html[data-lang="zh"] .rrx { --ok: var(--up) }``) applies to
+   any freshness rule whose selector lives in that scope, unless the used token is
+   a root-plane alias (``:root { --fresh-ok: var(--ok) }``) that inherits RESOLVED
+   and is not redeclared inside the remap zone. Harvesting only ``:root`` /
+   ``html[...]`` declarations is how this suite once counted the ``.rrx-rec-chip.fresh``
+   counterexample and cleared it.
 """
 from __future__ import annotations
 
@@ -55,8 +64,15 @@ JS_SELECTOR_RE = re.compile(
     r"|=>|\b(?:return|function|var|const|let|if|else|for|while|switch|case|try|catch)\b"
 )
 
-STATUS_PLANE = ("--ok", "--warn", "--act", "--ink-ok", "--ink-warn", "--ink-act")
+STATUS_PLANE = ("--ok", "--warn", "--act", "--ink-ok", "--ink-warn", "--ink-act", "--fresh-ok")
 DIRECTION_PLANE = ("--up", "--down", "--ink-up", "--ink-down")
+SET_VAR_RE = re.compile(
+    r"\{%-?\s*set\s+(\w+)\s*=\s*'var\((--[A-Za-z0-9_-]+)\)'",
+)
+STYLE_ATTR_RE = re.compile(r"""style\s*=\s*["']([^"']*)["']""")
+STYLE_PROP_RE = re.compile(
+    r"(--[A-Za-z0-9_-]+)\s*:\s*(?:\{\{\s*(\w+)\s*\}\}|([^;]+))"
+)
 
 
 def _blank_preserving_newlines(match: re.Match) -> str:
@@ -132,12 +148,196 @@ def freshness_rules(text: str) -> list[tuple[str, str, int]]:
     return out
 
 
-def freshness_offenders(text: str, swapped: set[str]) -> list[tuple[int, str, list[str]]]:
+def _selector_classes(selector: str) -> set[str]:
+    return set(CLASS_RE.findall(selector))
+
+
+def _lives_in_scope(usage_selector: str, scope_selector: str) -> bool:
+    """True when a freshness rule's selector sits inside a scoped remap zone.
+
+    ``html[data-lang="zh"] .rrx`` scopes ``.rrx .rrx-rec-chip.fresh``.
+    ``html[data-lang="zh"] :is(.igx, .igs)`` scopes both gauge families.
+    A root-plane selector has no classes and never matches.
+    """
+    scope = _selector_classes(scope_selector)
+    return bool(scope) and bool(scope & _selector_classes(usage_selector))
+
+
+def scoped_zh_remaps(theme_css: str) -> list[tuple[str, dict[str, str]]]:
+    """Custom properties redeclared under zh on a SCOPED selector (not :root/html)."""
+    remaps: list[tuple[str, dict[str, str]]] = []
+    for selector, body, _line in _css_rules(theme_css):
+        if 'data-lang="zh"' not in selector or _is_root_plane(selector):
+            continue
+        decls = {name: value.strip() for name, value in DECL_RE.findall(body)}
+        if decls:
+            remaps.append((selector, decls))
+    return remaps
+
+
+def _primary_var_tokens(value: str) -> list[str]:
+    """First argument of each ``var()``, ignoring nested fallbacks.
+
+    ``var(--ok, var(--up))`` is a missing-token fallback, not an alias of
+    ``--up``. Walking fallbacks is how a page-local ``_state_inks`` formula
+    once painted every ``--ink-ok`` user as a direction-token offender.
+    """
+    tokens: list[str] = []
+    i, n = 0, len(value)
+    while i < n:
+        if value.startswith("var(", i):
+            m = re.match(r"var\(\s*(--[A-Za-z0-9_-]+)", value[i:])
+            if m:
+                tokens.append(m.group(1))
+            depth = 0
+            j = i
+            while j < n:
+                if value[j] == "(":
+                    depth += 1
+                elif value[j] == ")":
+                    depth -= 1
+                    if depth == 0:
+                        j += 1
+                        break
+                j += 1
+            i = j
+            continue
+        i += 1
+    return tokens
+
+
+def collect_aliases(*texts: str) -> list[tuple[str, str, list[str]]]:
+    """(name, declaring_selector, value_tokens) from CSS rules and markup.
+
+    Markup covers ``style="--rvc:{{ rvc }}"`` plus a sibling
+    ``{% set rvc = 'var(--ok)' if ... %}`` so the receding-state assignment is
+    visible even though it is not a CSS declaration.
+    """
+    aliases: list[tuple[str, str, list[str]]] = []
+    for text in texts:
+        for selector, body, _line in _css_rules(text):
+            if JS_SELECTOR_RE.search(selector):
+                continue
+            for name, value in DECL_RE.findall(body):
+                toks = _primary_var_tokens(value)
+                if toks:
+                    aliases.append((name, selector, toks))
+        jinja_sets = {var: token for var, token in SET_VAR_RE.findall(text)}
+        for style in STYLE_ATTR_RE.findall(text):
+            for name, jinja_var, raw_value in STYLE_PROP_RE.findall(style):
+                if jinja_var and jinja_var in jinja_sets:
+                    aliases.append((name, "markup", [jinja_sets[jinja_var]]))
+                elif raw_value:
+                    toks = _primary_var_tokens(raw_value)
+                    if toks:
+                        aliases.append((name, "markup", toks))
+    return aliases
+
+
+def _usage_in_remap(usage_selector: str, remaps: list[tuple[str, dict[str, str]]]) -> bool:
+    return any(_lives_in_scope(usage_selector, remap_sel) for remap_sel, _ in remaps)
+
+
+def _matching_aliases(
+    token: str,
+    usage_selector: str,
+    aliases: list[tuple[str, str, list[str]]],
+    remaps: list[tuple[str, dict[str, str]]],
+) -> list[tuple[str, str, list[str]]]:
+    # A root-plane lookup (inherited resolved alias) must not pick up scoped
+    # rebindings of the same name — those compute in the remap zone, not at :root.
+    if _is_root_plane(usage_selector):
+        return [a for a in aliases if a[0] == token and _is_root_plane(a[1])]
+    # Local indirections (--rvc, --ic-col, a redeclared --fresh-ok) only matter
+    # when the freshness rule lives in a scoped zh remap. A generic --c on a
+    # .pill-stale / .st-FRESH_BUY badge is a per-class theme hook, not a remap
+    # escape, and must not be walked estate-wide.
+    in_remap = _usage_in_remap(usage_selector, remaps)
+    scoped: list[tuple[str, str, list[str]]] = []
+    if in_remap:
+        for a in aliases:
+            if a[0] != token or _is_root_plane(a[1]):
+                continue
+            if a[1] == "markup" or _lives_in_scope(usage_selector, a[1]):
+                scoped.append(a)
+    if scoped:
+        return scoped
+    return [a for a in aliases if a[0] == token and _is_root_plane(a[1])]
+
+
+def resolve_freshness_hits(
+    used: set[str],
+    usage_selector: str,
+    swapped: set[str],
+    aliases: list[tuple[str, str, list[str]]],
+    remaps: list[tuple[str, dict[str, str]]],
+) -> list[str]:
+    """Swapped tokens reachable from ``used`` at ``usage_selector``.
+
+    A root-plane alias (``:root { --fresh-ok: var(--ok) }``) resolves its value
+    at the declaration site, so a scoped zh remap of ``--ok`` does not apply.
+    A local alias declared inside the remap zone (``--rvc: var(--ok)`` on
+    ``.rrx-rec``, or ``.rrx { --fresh-ok: var(--ok) }``) does re-resolve.
+    """
+    bad: set[str] = set()
+
+    def walk(token: str, decl_selector: str, seen: frozenset[str]) -> None:
+        if token in seen:
+            return
+        next_seen = seen | {token}
+        if not _is_root_plane(decl_selector):
+            for remap_sel, remap_decls in remaps:
+                if token not in remap_decls:
+                    continue
+                if _lives_in_scope(usage_selector, remap_sel) or _lives_in_scope(decl_selector, remap_sel):
+                    for nxt in _primary_var_tokens(remap_decls[token]):
+                        if nxt in swapped:
+                            bad.add(token)
+                        walk(nxt, remap_sel, next_seen)
+                    if token in swapped:
+                        bad.add(token)
+                    return
+        if token in swapped:
+            bad.add(token)
+            return
+        lookup = decl_selector if _is_root_plane(decl_selector) else usage_selector
+        for _name, alias_sel, value_tokens in _matching_aliases(token, lookup, aliases, remaps):
+            for nxt in value_tokens:
+                walk(nxt, alias_sel, next_seen)
+
+    dirty_used: set[str] = set()
+    for tok in used:
+        before = set(bad)
+        walk(tok, usage_selector, frozenset())
+        if bad - before:
+            dirty_used.add(tok)
+    return sorted(dirty_used)
+
+
+def freshness_offenders(
+    text: str,
+    swapped: set[str],
+    *,
+    theme_css: str | None = None,
+    alias_texts: list[str] | None = None,
+    aliases: list[tuple[str, str, list[str]]] | None = None,
+    remaps: list[tuple[str, dict[str, str]]] | None = None,
+) -> list[tuple[int, str, list[str]]]:
+    if remaps is None:
+        remaps = scoped_zh_remaps(theme_css) if theme_css else []
+    if aliases is None:
+        sources = [text]
+        if theme_css:
+            sources.append(theme_css)
+        if alias_texts:
+            sources.extend(alias_texts)
+        aliases = collect_aliases(*sources)
     offenders = []
     for selector, body, line in freshness_rules(text):
-        used = sorted({tok for tok in VAR_RE.findall(body) if tok in swapped})
-        if used:
-            offenders.append((line, " ".join(selector.split())[:90], used))
+        used = set(VAR_RE.findall(body))
+        hits = resolve_freshness_hits(used, selector, swapped, aliases, remaps)
+        if hits:
+            offenders.append((line, " ".join(selector.split())[:90], hits))
     return offenders
 
 
@@ -173,18 +373,30 @@ def test_closure_is_transitive_over_derived_tokens():
 # ── 2. no freshness rule in any template paints with a swapped token ────────────────
 
 def test_no_freshness_rule_references_a_swapped_direction_token():
-    swapped = swapped_token_closure(THEME.read_text(encoding="utf-8"))
+    theme = THEME.read_text(encoding="utf-8")
+    swapped = swapped_token_closure(theme)
+    remaps = scoped_zh_remaps(theme)
+    theme_aliases = collect_aliases(theme)
     report = []
     total = 0
     for path in _template_files():
         text = path.read_text(encoding="utf-8", errors="replace")
+        sibling_texts = [
+            sib.read_text(encoding="utf-8", errors="replace")
+            for sib in path.parent.glob(path.name.split(".", 1)[0] + ".*")
+            if sib != path and sib.suffix in TEXT_SUFFIXES
+        ]
+        aliases = theme_aliases + collect_aliases(text, *sibling_texts)
         total += len(freshness_rules(text))
-        for line, selector, used in freshness_offenders(text, swapped):
+        for line, selector, used in freshness_offenders(
+            text, swapped, aliases=aliases, remaps=remaps
+        ):
             report.append(f"  {path.relative_to(ROOT)}:{line}  {selector}  ->  {', '.join(used)}")
     assert total >= 10, f"only {total} freshness rules found under templates/ — the matcher is broken"
     assert not report, (
         "freshness / provenance rules must paint with the status plane (--ok/--warn/--act + --ink-*), "
-        "never with tokens theme.css swaps under html[data-lang=\"zh\"]:\n" + "\n".join(report)
+        "never with tokens theme.css swaps under html[data-lang=\"zh\"] "
+        "(local aliases and scoped remaps resolved):\n" + "\n".join(report)
     )
 
 
@@ -207,6 +419,55 @@ def test_matcher_catches_the_original_defect_and_skips_signal_states():
     # Jinja tags inside a <style> block do not break rule extraction
     jinja = '<style>{% if x %}.a{color:red}{% endif %}\n.tp-node.fresh-live{ box-shadow:0 0 0 4px var(--ch,var(--up)); }</style>'
     assert [o[0] for o in freshness_offenders(jinja, swapped)] == [2]
+
+
+def test_matcher_resolves_local_indirection_and_scoped_zh_remaps():
+    theme = (
+        ':root { --ok: #0a0; --up: #0f0; --fresh-ok: var(--ok); }\n'
+        'html[data-lang="zh"] { --up: #f00; }\n'
+        'html[data-lang="zh"] .rrx { --ok: var(--up); }\n'
+        'html[data-lang="zh"] :is(.igx, .igs) { --ok: var(--up); --ink-ok: var(--ink-up); }\n'
+    )
+    swapped = swapped_token_closure(theme)
+    assert "--up" in swapped and "--ok" not in swapped
+
+    # (a) local custom-property indirection: --rvc set from --ok in CSS + markup
+    rrx_css = (
+        '.rrx .rrx-rec { --rvc: var(--info); }\n'
+        '.rrx .rrx-rec-chip.fresh { color: var(--rvc); }\n'
+    )
+    rrx_html = (
+        "{%- set rvc = 'var(--ok)' if rv.receding else 'var(--info)' -%}\n"
+        '<div class="rrx-rec" style="--rvc:{{ rvc }}"></div>\n'
+    )
+    assert freshness_offenders(rrx_css, swapped, theme_css=theme, alias_texts=[rrx_html]) == [
+        (2, ".rrx .rrx-rec-chip.fresh", ["--rvc"])
+    ]
+
+    # (b) scoped zh remap of --ok inside .igs — counted-and-cleared by the old root-only harvest
+    igs = '.igs .igs-dot.fresh { box-shadow: 0 0 0 2px color-mix(in srgb, var(--ok) 30%, transparent); }\n'
+    assert freshness_offenders(igs, swapped, theme_css=theme) == [
+        (1, ".igs .igs-dot.fresh", ["--ok"])
+    ]
+
+    # --fresh-ok inherited from :root escapes the remap (computes unremapped, inherits resolved)
+    healed_rrx = '.rrx .rrx-rec-chip.fresh { color: var(--fresh-ok); }\n'
+    assert freshness_offenders(healed_rrx, swapped, theme_css=theme) == []
+    healed_igs = '.igs .igs-dot.fresh { box-shadow: 0 0 0 2px var(--fresh-ok); }\n'
+    assert freshness_offenders(healed_igs, swapped, theme_css=theme) == []
+
+    # redeclaring the alias inside the remap zone re-resolves against remapped --ok
+    trap = (
+        '.rrx { --fresh-ok: var(--ok); }\n'
+        '.rrx .rrx-rec-chip.fresh { color: var(--fresh-ok); }\n'
+    )
+    assert freshness_offenders(trap, swapped, theme_css=theme) == [
+        (2, ".rrx .rrx-rec-chip.fresh", ["--fresh-ok"])
+    ]
+
+    # a freshness rule OUTSIDE the remap zone may still use --ok
+    outside = '.imd-chip.fresh { color: var(--ink-ok, var(--ok)); }\n'
+    assert freshness_offenders(outside, swapped, theme_css=theme) == []
 
 
 # ── 3. the motivating exemplar and the two JS-authored freshness colours ──────────────

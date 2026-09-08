@@ -69,6 +69,11 @@
   --line: #3a4150;
   --q1: #2e9e4f; --q2: #d4a017; --q3: #d04545; --q4: #3f78d8;
   --warn: #e0a030; --act: #e05555; --ok: #3da564;
+  /* Freshness/recency snapshot of --ok, computed HERE (unremapped). It inherits
+     RESOLVED, so a .fresh chip inside html[data-lang="zh"] .rrx / .igs keeps the
+     status green when those scopes remap --ok onto --up. Do not redeclare this
+     alias inside .rrx/.igs — that would re-resolve against the remapped --ok. */
+  --fresh-ok: var(--ok);
   --up: #45b873; --down: #e06464; --orange: #e08b45;
   --info: #5b9bf0; --link: #7aa7e0;
   --g-cold: #4d8df0; --g-hot: #e0a23c; --g-mid: #3a4150;
@@ -177,6 +182,7 @@ html[data-theme="light"] {
   --line: color-mix(in srgb, #1c2430 16%, #eaecf0);
   --q1: #1f8b41; --q2: #b07d05; --q3: #c12f2f; --q4: #2f63c4;
   --warn: #b9791a; --act: #c43d3d; --ok: #2f8a52;
+  --fresh-ok: var(--ok);
   --up: #1f9a55; --down: #cf4040; --orange: #c4781f;
   --info: #285fff; --link: #285fff;
   --g-cold: #285fff; --g-hot: #c2841f; --g-mid: #cdd5e0;
@@ -220,7 +226,12 @@ html[data-theme="light"] {
    so it is coloured with --ok/--warn/--act (+ their --ink-*) and NEVER with
    --up/--down — otherwise the swap below paints the same chip green in EN and red
    in ZH (Opus re-review of PR #6933, international_macro .imd-chip.fresh).
-   tests/test_freshness_chips_language_invariant.py pins every template rule. */
+   Inside a gauge-scoped zh remap (.rrx / .igs) even var(--ok) flips, because
+   those scopes rebind --ok onto --up. Freshness chips there must paint with
+   --fresh-ok (snapshotted at :root / light, inherited resolved) and must not
+   redeclare that alias in the remap zone.
+   tests/test_freshness_chips_language_invariant.py pins every template rule,
+   including local custom-property indirection (--rvc) and scoped remaps. */
 html[data-lang="zh"] {
   --up: #e06464; --down: #45b873;        /* swapped: red now = up */
   --q1: #d04545;                         /* Goldilocks -> red */
