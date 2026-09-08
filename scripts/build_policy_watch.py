@@ -103,7 +103,10 @@ _STOP_ZH = {"proposed": "提出", "passed": "通过", "in_force": "生效", "enf
 
 def format_lifecycle_date(raw: object, precision: str = "day") -> tuple[str, str]:
     """Plain EN/ZH lifecycle date. Day → 'May 1, 2026' / '2026年5月1日';
-    month → 'Nov 2025' / '2025年11月'. Locale-free; ISO stays only in data-*."""
+    month → 'Nov 2025' / '2025年11月'; undated → 'date not published' /
+    '日期未公布'. Locale-free; ISO stays only in data-*."""
+    if precision == "undated":
+        return "date not published", "日期未公布"
     text = str(raw or "").strip()[:10]
     if not text:
         return "", ""
@@ -141,13 +144,6 @@ def decorate_lifecycle_view(lifecycle: dict | None) -> dict | None:
         en, zh = format_lifecycle_date(it.get("state_asof"), prec)
         it["state_asof_en"] = en
         it["state_asof_zh"] = zh
-        ns = it.get("next_step")
-        if isinstance(ns, dict) and ns.get("date"):
-            ns = dict(ns)
-            ns_en, ns_zh = format_lifecycle_date(ns.get("date"), ns.get("date_precision") or "day")
-            ns["date_en"] = ns_en
-            ns["date_zh"] = ns_zh
-            it["next_step"] = ns
         decorated.append(it)
     gap_tuples = [tuple(it.get("gaps") or []) for it in decorated]
     shared = None

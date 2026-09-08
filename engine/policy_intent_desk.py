@@ -640,7 +640,11 @@ def ingest_lifecycle(root=None) -> int:
             item_id = ev.get("item_id")
             event_date = ev.get("event_date")
             source = ev.get("source") or {}
-            if typ not in LIFECYCLE_EVENT_TYPES or not item_id or not event_date or not source.get("url"):
+            precision = ev.get("date_precision") or "day"
+            if typ not in LIFECYCLE_EVENT_TYPES or not item_id or not source.get("url"):
+                rejects += 1
+                continue
+            if precision != "undated" and not event_date:
                 rejects += 1
                 continue
             candidates.append(ev)
@@ -657,7 +661,8 @@ def ingest_lifecycle(root=None) -> int:
         for ev in candidates:
             key = "|".join([
                 str(ev.get("item_id")), str(ev.get("type")),
-                str(ev.get("event_date")), str((ev.get("source") or {}).get("url")),
+                str(ev.get("event_date") or "undated"),
+                str((ev.get("source") or {}).get("url")),
             ])
             event_id = hashlib.sha256(key.encode("utf-8")).hexdigest()[:16]
             row = dict(ev)
@@ -682,12 +687,15 @@ def ingest_lifecycle(root=None) -> int:
 def _event_date_precision(ev: dict | None) -> str:
     """Seed/store date_precision; absent rows default to day."""
     raw = (ev or {}).get("date_precision") or "day"
-    return "month" if raw == "month" else "day"
+    if raw in ("month", "undated"):
+        return raw
+    return "day"
 
 
 def _stall_anchor_date(event_date: str, precision: str):
     """Day-precision uses the stated day; month-precision uses the last day of
-    that month so a 45-day stall never overstates a gap the source cannot pin."""
+    that month so a 45-day stall never overstates a gap the source cannot pin.
+    Undated rows never call this — they do not anchor stall arithmetic."""
     from calendar import monthrange
     from datetime import date as _date
     d0 = _date.fromisoformat(event_date[:10])
@@ -696,11 +704,22 @@ def _stall_anchor_date(event_date: str, precision: str):
     return d0
 
 
+def _event_fold_stamp(ev: dict) -> str:
+    """Sort stamp for fold order. Undated rows have no attested time and apply
+    after dated rows so a later attested stage still lands on top."""
+    return ev.get("known_at") or ev.get("event_date") or "\uffff"
+
+
 def _stamp_event_dating(state_pack: dict, ev: dict) -> None:
     """Copy the cited date, knowability, source, and precision onto the pack."""
-    state_pack["state_asof"] = ev.get("event_date")
-    state_pack["known_at"] = ev.get("known_at")
-    state_pack["date_precision"] = _event_date_precision(ev)
+    precision = _event_date_precision(ev)
+    state_pack["date_precision"] = precision
+    if precision == "undated":
+        state_pack["state_asof"] = None
+        state_pack["known_at"] = ev.get("known_at")
+    else:
+        state_pack["state_asof"] = ev.get("event_date")
+        state_pack["known_at"] = ev.get("known_at")
     src = ev.get("source") or {}
     state_pack["source"] = {
         "url": src.get("url"), "label": _lifecycle_source_label(src.get("url")),
@@ -740,7 +759,7 @@ def fold_lifecycle(events: list[dict], registry: list[dict], as_of_date: str | N
         item_events = sorted(
             by_item.get(item_id, []),
             key=lambda e: (
-                e.get("known_at") or "",
+                _event_fold_stamp(e),
                 _stage_sort_rank(e.get("type")),
                 e.get("event_id") or "",
             ),
@@ -855,7 +874,9 @@ def fold_lifecycle(events: list[dict], registry: list[dict], as_of_date: str | N
 
         stalled = False
         date_precision = state_pack.get("date_precision")
-        if as_of_date and stage_rank is not None and not terminal_frozen and stage_rank + 1 < len(LIFECYCLE_STAGES):
+        if date_precision == "undated":
+            stalled = False
+        elif as_of_date and stage_rank is not None and not terminal_frozen and stage_rank + 1 < len(LIFECYCLE_STAGES):
             ref_date = state_pack["state_asof"] or (state_pack["known_at"] or "")[:10]
             if ref_date:
                 try:
@@ -942,10 +963,17 @@ def lifecycle_view(root=None) -> dict:
             else:
                 counts["other"] += 1
 
-        dated = [it for it in items if it.get("known_at")]
-        newest = max(dated, key=lambda it: it["known_at"]) if dated else None
-        as_of = newest["known_at"].split("T")[0] if newest else intel_as_of
-        as_of_precision = (newest.get("date_precision") or "day") if newest else "day"
+        dated = [
+            it for it in items
+            if it.get("state_asof") and it.get("date_precision") != "undated"
+        ]
+        newest = max(dated, key=lambda it: it["known_at"] or it["state_asof"]) if dated else None
+        if newest:
+            as_of = (newest.get("known_at") or newest["state_asof"] or "").split("T")[0]
+            as_of_precision = newest.get("date_precision") or "day"
+        else:
+            as_of = intel_as_of
+            as_of_precision = "day"
 
         null_reason = None
         if registry and not events:

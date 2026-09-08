@@ -372,16 +372,20 @@ def test_committed_seed_against_real_intel_registry(tmp_path):
     assert view["null_reason"] is None
     assert len(view["items"]) == 6
     assert all(not it.get("jurisdiction_en") for it in view["items"])
-    assert view["as_of"] == "2026-07-01"
-    assert view["as_of_precision"] == "month"
+    assert view["as_of"] == "2026-06-24"
+    assert view["as_of_precision"] == "day"
     assert view["intel_as_of"] == intel["as_of"] == "2026-07-13"
     by_id = {it["id"]: it for it in view["items"]}
     assert by_id["lever_chips"]["state"] == "in_force"
     assert by_id["lever_chips"]["source"]["url"].startswith("https://www.whitehouse.gov/")
     assert by_id["lever_nuclear"]["state"] == "enforced"
+    assert by_id["lever_nuclear"]["date_precision"] == "undated"
+    assert by_id["lever_nuclear"]["state_asof"] is None
+    assert by_id["lever_nuclear"]["stalled"] is False
     stalled_ids = {it["id"] for it in view["items"] if it["stalled"]}
     assert "lever_chips" in stalled_ids
     assert "lever_intermediation" in stalled_ids
+    assert "lever_nuclear" not in stalled_ids
 
 
 def test_union_lifecycle_events_store_wins_per_item():
@@ -415,14 +419,66 @@ def test_month_precision_uses_month_end_for_stall_and_does_not_overstate():
 
 def test_seed_month_precision_rows_match_attested_month_not_invented_day():
     seed = json.loads(Path("config/policy_lifecycle_seed.json").read_text())
-    assert "date_precision is day (default) or month" in seed["note"]
+    assert "date_precision is day (default), month, or undated" in seed["note"]
     by_key = {(e["item_id"], e["type"], e["event_date"]): e for e in seed["events"]}
     nov = by_key[("lever_issuance", "in_force", "2025-11-01")]
     may = by_key[("lever_issuance", "in_force", "2026-05-01")]
-    doe = by_key[("lever_nuclear", "enforced", "2026-07-01")]
-    assert nov["date_precision"] == may["date_precision"] == doe["date_precision"] == "month"
+    assert nov["date_precision"] == may["date_precision"] == "month"
+    doe = next(e for e in seed["events"] if e["item_id"] == "lever_nuclear" and e["type"] == "enforced")
     assert doe["type"] == "enforced"
+    assert doe["date_precision"] == "undated"
+    assert doe["event_date"] is None
     assert "2026-07-04" not in {e["event_date"] for e in seed["events"]}
+    assert "2026-07-01" not in {e["event_date"] for e in seed["events"]}
+
+
+def test_undated_stage_is_reached_not_stalled_and_does_not_set_chip():
+    """MINOR-1: an undated newest stage still counts as reached, never stalls,
+    and never becomes the newest-dated-stage chip."""
+    dated = _ev("L1", "in_force", "2026-01-14", "2026-01-14T12:00:00Z")
+    undated = {
+        "item_id": "L1", "type": "enforced", "event_date": None,
+        "date_precision": "undated", "known_at": None,
+        "source": {"url": "https://www.energy.gov/x", "title": "doc", "doc_id": "1"},
+    }
+    sibling = _ev("L2", "proposed", "2026-06-24", "2026-06-24T12:00:00Z")
+    reg = [
+        {"id": "L1", "title_en": "Nuclear", "title_zh": "核电"},
+        {"id": "L2", "title_en": "Dollar", "title_zh": "美元"},
+    ]
+    rows = fold_lifecycle([dated, undated, sibling], reg, as_of_date="2026-07-13")
+    by_id = {it["id"]: it for it in rows}
+    assert by_id["L1"]["state"] == "enforced"
+    assert "enforced" in by_id["L1"]["reached"]
+    assert by_id["L1"]["date_precision"] == "undated"
+    assert by_id["L1"]["state_asof"] is None
+    assert by_id["L1"]["stalled"] is False
+    assert by_id["L2"]["state"] == "proposed"
+
+
+def test_undated_stage_does_not_set_newest_dated_chip(tmp_path):
+    dated = _ev("L1", "in_force", "2026-01-14", "2026-01-14T12:00:00Z")
+    undated = {
+        "item_id": "L1", "type": "enforced", "event_date": None,
+        "date_precision": "undated", "known_at": None,
+        "source": {"url": "https://www.energy.gov/x", "title": "doc", "doc_id": "1"},
+    }
+    sibling = _ev("L2", "proposed", "2026-06-24", "2026-06-24T12:00:00Z")
+    (tmp_path / "data" / "policy").mkdir(parents=True)
+    (tmp_path / "data" / "policy" / "intel.json").write_text(json.dumps({
+        "as_of": "2026-07-13",
+        "administration": {"verified_levers": [
+            {"id": "L1", "title_en": "Nuclear", "title_zh": "核电"},
+            {"id": "L2", "title_en": "Dollar", "title_zh": "美元"},
+        ]},
+        "policy_lifecycle": [dated, undated, sibling],
+    }))
+    view = lifecycle_view(tmp_path)
+    assert view["as_of"] == "2026-06-24"
+    assert view["as_of_precision"] == "day"
+    nuclear = next(it for it in view["items"] if it["id"] == "L1")
+    assert nuclear["stalled"] is False
+    assert nuclear["date_precision"] == "undated"
 
 
 def test_all_event_types_are_declared():

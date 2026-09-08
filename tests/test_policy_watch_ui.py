@@ -251,6 +251,7 @@ def test_format_lifecycle_date_day_and_month_en_zh():
     assert format_lifecycle_date("2025-11-01", "month") == ("Nov 2025", "2025年11月")
     assert format_lifecycle_date("2026-07-13", "day") == ("July 13, 2026", "2026年7月13日")
     assert format_lifecycle_date("2026-07-01", "month") == ("Jul 2026", "2026年7月")
+    assert format_lifecycle_date(None, "undated") == ("date not published", "日期未公布")
 
 
 def test_month_precision_row_renders_month_only_and_is_not_stalled(monkeypatch, tmp_path):
@@ -304,7 +305,65 @@ def test_mixed_gap_sets_keep_per_row_null_lines(monkeypatch, tmp_path):
     html = _render_policy_watch_with_lifecycle(fixture, monkeypatch, tmp_path)
     assert "No published dates for" not in html
     assert "No published date for" in html
-    assert "No date published" in html
+    assert "Next step to watch" in html
+    next_chunk = html.split("Next step to watch", 1)[1]
+    assert "No date published" in next_chunk[:200]
+    assert "it.next_step.date" not in (ROOT / "templates" / "policy_watch.html.j2").read_text()
     assert '<span class="l-en">, </span><span class="l-zh">、</span>' in html
     decorated = decorate_lifecycle_view(fixture)
     assert decorated["shared_gap_set"] is None
+    for it in decorated["items"]:
+        ns = it.get("next_step")
+        if isinstance(ns, dict):
+            assert "date_en" not in ns
+            assert "date_zh" not in ns
+
+
+def test_undated_row_renders_copy_is_not_stalled_and_does_not_set_chip(monkeypatch, tmp_path):
+    from engine.policy_intent_desk import fold_lifecycle
+
+    dated = {
+        "item_id": "L2", "type": "proposed", "event_date": "2026-06-24",
+        "known_at": "2026-06-24T12:00:00Z",
+        "source": {"url": "https://www.federalregister.gov/y", "title": "doc", "doc_id": "2"},
+    }
+    undated = {
+        "item_id": "L1", "type": "enforced", "event_date": None,
+        "date_precision": "undated", "known_at": None,
+        "source": {"url": "https://www.energy.gov/x", "title": "doc", "doc_id": "1"},
+    }
+    prior = {
+        "item_id": "L1", "type": "in_force", "event_date": "2025-05-23",
+        "known_at": "2025-05-23T12:00:00Z",
+        "source": {"url": "https://www.energy.gov/ne", "title": "eo", "doc_id": "0"},
+    }
+    rows = fold_lifecycle(
+        [prior, undated, dated],
+        [{"id": "L1", "title_en": "Nuclear", "title_zh": "核电"},
+         {"id": "L2", "title_en": "Dollar", "title_zh": "美元"}],
+        as_of_date="2026-07-13",
+    )
+    nuclear = next(it for it in rows if it["id"] == "L1")
+    assert nuclear["stalled"] is False
+    assert nuclear["date_precision"] == "undated"
+    fixture = {
+        "schema": "policy_lifecycle.v1", "as_of": "2026-06-24", "as_of_precision": "day",
+        "intel_as_of": "2026-07-13", "null_reason": None,
+        "counts": {"enforced": 1, "proposed": 1, "passed": 0, "in_force": 0,
+                   "other": 0, "unknown": 0},
+        "items": rows,
+    }
+    html = _render_policy_watch_with_lifecycle(fixture, monkeypatch, tmp_path)
+    assert "date not published" in html
+    assert "日期未公布" in html
+    assert "Latest stage has no published date — watch the next document." in html
+    assert "最新阶段未公布日期——关注下一份文件。" in html
+    assert 'class="pw-stage is-stalled' not in html
+    assert "Newest dated stage" in html
+    assert "June 24, 2026" in html
+    assert "2026年6月24日" in html
+    chip = html.split("Newest dated stage", 1)[1][:240]
+    assert "June 24, 2026" in chip
+    assert "Jul 2026" not in chip
+    assert "2026年7月<" not in chip and "2026年7月 " not in chip
+    assert 'data-date-precision="undated"' in html

@@ -542,9 +542,11 @@
           {% elif it.conflict %}
             <p class="pw-stage-why">{{ t('Records conflict — under review.','记录冲突，正在核实。') }}</p>
           {% elif it.next_step %}
-            <p class="pw-stage-next">{{ t('Next step to watch','下一步观察') }}: {{ bl(STOP_EN[it.next_step.stage], STOP_ZH[it.next_step.stage]) }}{% if it.next_step.date %} · <span class="pw-date" data-next-date="{{ it.next_step.date }}">{{ bl(it.next_step.date_en or it.next_step.date, it.next_step.date_zh or it.next_step.date) }}</span>{% elif not lifecycle.shared_gap_set %} · {{ t('No date published','未公布日期') }}{% endif %}</p>
+            <p class="pw-stage-next">{{ t('Next step to watch','下一步观察') }}: {{ bl(STOP_EN[it.next_step.stage], STOP_ZH[it.next_step.stage]) }}{% if not lifecycle.shared_gap_set %} · {{ t('No date published','未公布日期') }}{% endif %}</p>
           {% endif %}
-          {% if it.stalled %}
+          {% if it.date_precision == 'undated' %}
+            <p class="pw-stage-why">{{ t('Latest stage has no published date — watch the next document.','最新阶段未公布日期——关注下一份文件。') }}</p>
+          {% elif it.stalled %}
             {% if lifecycle.intel_as_of %}
             <p class="pw-stage-why" data-intel-as-of="{{ lifecycle.intel_as_of }}">{{ bl("No movement for 45+ days as of " + (lifecycle.intel_as_of_en or lifecycle.intel_as_of) + " — watch, don't chase.", "截至" + (lifecycle.intel_as_of_zh or lifecycle.intel_as_of) + "已超过 45 天没有推进——观察，不必追。") }}</p>
             {% else %}
@@ -555,7 +557,7 @@
         </div>
         <div class="pw-stage-track">
           <div class="pw-stage-meter" role="img"
-               aria-label="{{ tp(stage_en, stage_zh) }}{% if it.stalled %} · {{ tp("No movement for 45+ days", "超过 45 天没有推进") }}{% endif %}{% if it.state_asof_en %} · {{ tp(it.state_asof_en, it.state_asof_zh) }}{% elif it.state_asof %} · {{ it.state_asof }}{% endif %}">
+               aria-label="{{ tp(stage_en, stage_zh) }}{% if it.stalled %} · {{ tp("No movement for 45+ days", "超过 45 天没有推进") }}{% endif %}{% if it.state_asof_en %} · {{ tp(it.state_asof_en, it.state_asof_zh) }}{% endif %}">
             {% for stop in ['proposed','passed','in_force','enforced'] %}
             <span class="pw-stage-seg{% if stop in it.reached %} is-reached{% endif %}{% if idx is not none and loop.index0 == idx %} is-current{% endif %}" aria-hidden="true"></span>
             {% endfor %}
@@ -570,7 +572,8 @@
           {% if it.state == 'unknown' %}<span class="pw-badge neutral">{{ t('Not tracked yet','尚未跟踪') }}</span>
           {% else %}<span class="pw-badge {{ 'warn' if it.stalled or it.conflict else ('fact' if it.basis and 'FACT' in it.basis else ('read' if it.basis and 'INFERENCE' in it.basis else 'neutral')) }}">{{ bl(STAGE_EN[it.state], STAGE_ZH[it.state]) }}</span>{% endif %}
           {% if it.corrected %}<span class="pw-badge updated">{{ t('Updated','已更正') }}</span>{% endif %}
-          {% if it.state_asof %}<span class="pw-stage-asof" data-state-asof="{{ it.state_asof }}">{{ bl(it.state_asof_en or it.state_asof, it.state_asof_zh or it.state_asof) }}</span>{% endif %}
+          {% if it.date_precision == 'undated' %}<span class="pw-stage-asof">{{ t('date not published','日期未公布') }}</span>
+          {% elif it.state_asof %}<span class="pw-stage-asof" data-state-asof="{{ it.state_asof }}">{{ bl(it.state_asof_en or it.state_asof, it.state_asof_zh or it.state_asof) }}</span>{% endif %}
           {% if it.source and it.source.url %}<a class="pw-stage-src" href="{{ it.source.url }}" rel="nofollow noopener" target="_blank">{{ it.source.label }}</a>{% endif %}
         </div>
       </article>
