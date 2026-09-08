@@ -80,19 +80,15 @@
       {%- endfor %}
     </ul>
 
-    {# ANALYST — mount the sitewide widget; the bare link is the degraded fallback only (§8) #}
-    {%- if analyst.mountable %}
-    <button type="button" class="mc-rail-link mc-analyst" data-mc-analyst
-            data-mc-analyst-label-en="Macro Command" data-mc-analyst-label-zh="宏观指挥台">
-      <span class="mc-analyst-mark" aria-hidden="true">◈</span>
-      <span class="mc-analyst-text">{{ t('Ask the analyst', '问分析师') }}</span>
-    </button>
-    {%- else %}
-    <a class="mc-rail-link mc-analyst" href="chat.html">
+    {# ANALYST — always a plain chat.html link so a reader without
+       macro_command.js can still open chat (r10-m1). When the sitewide
+       widget is mountable, JS preventDefault()s and boots #mmb-boot. #}
+    <a class="mc-rail-link mc-analyst" href="chat.html"
+       {%- if analyst.mountable %} data-mc-analyst
+            data-mc-analyst-label-en="Macro Command" data-mc-analyst-label-zh="宏观指挥台"{%- endif %}>
       <span class="mc-analyst-mark" aria-hidden="true">◈</span>
       <span class="mc-analyst-text">{{ t('Ask the analyst', '问分析师') }}</span>
     </a>
-    {%- endif %}
   </nav>
 
   <div class="mc-content" id="mc-content">

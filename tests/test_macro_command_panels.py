@@ -789,12 +789,20 @@ def test_p3_clearance_probes_are_real_geometry() -> None:
             assert "mmbBootDisplay" in pos, (key, pos_name)
         if key.startswith("clearance_390_") or key.startswith("clearance_768_"):
             assert row.get("mmbBootDisplay") == "none", (key, row)
-            for pos in positions.values():
+            for pos_name, pos in positions.items():
                 names = [ov.get("name") for ov in pos.get("overlays") or []]
                 assert "mmb-boot" not in names, (key, names)
-        if key.startswith("clearance_390_"):
-            alias = key.replace("clearance_390_", "clearance_")
-            assert probes[alias]["ok"] is True, alias
+                for item in pos.get("excused") or []:
+                    reason = str(item.get("reason") or "")
+                    assert reason.endswith("_fully_covered") or reason.endswith(
+                        "_partially_covered"), (key, pos_name, reason)
+                    assert "box" in item and "ovBox" in item, (key, pos_name, item)
+    # r10 evidence m2: no viewport-less clearance aliases.
+    for alias in (
+        "clearance_dark_en", "clearance_dark_zh",
+        "clearance_light_en", "clearance_light_zh",
+    ):
+        assert alias not in probes, alias
 
 
 def test_r9_fab_hidden_at_390_visible_at_1440() -> None:
@@ -809,9 +817,13 @@ def test_r9_fab_hidden_at_390_visible_at_1440() -> None:
         "clearance_768_dark_en", "clearance_768_light_en",
     ):
         assert probes[key]["mmbBootDisplay"] == "none", key
-    fab = probes["fab_display_1440_dark_en"]
-    assert fab.get("present") is True, fab
-    assert fab.get("display") not in (None, "none"), fab
+    for key in (
+        "fab_display_1440_dark_en", "fab_display_1440_dark_zh",
+        "fab_display_1440_light_en", "fab_display_1440_light_zh",
+    ):
+        fab = probes[key]
+        assert fab.get("present") is True, (key, fab)
+        assert fab.get("display") not in (None, "none"), (key, fab)
 
 
 def test_r9_default_390_frames_are_scroll_zero() -> None:
@@ -1353,8 +1365,9 @@ def test_r7_m2_strip_void_probe_has_no_filled_slab() -> None:
     assert set(rows) == {"dark_en", "dark_zh", "light_en", "light_zh"}
     for key, row in rows.items():
         assert row.get("ok") is True, (key, row)
-        assert row.get("filledOutsideWiderThan40") is False, (key, row)
-        assert row.get("holeWiderThan40") is False, (key, row)
+        assert row.get("voidWiderThan40") is False, (key, row)
+        assert "filledOutsideWiderThan40" not in row, (key, row)
+        assert "holeWiderThan40" not in row, (key, row)
         assert row.get("emptyChildren") == 0, (key, row)
         assert row.get("chipCount") == row.get("childCount"), (key, row)
         assert row.get("pixelVoidWiderThan40") is False, (key, row)
@@ -1391,3 +1404,80 @@ def test_r8_m1_empty_and_unknown_kind_are_mode_none() -> None:
     joined_zh = json.dumps(overview_unknown, ensure_ascii=False)
     assert "Only one reading is published so far" not in joined_zh
     assert "目前只有一次读数" not in joined_zh
+
+
+def test_capture_refuses_dirty_tree(monkeypatch) -> None:
+    """r10-M1: a fake dirty `git status --short` must abort the capture."""
+    from scripts import capture_macro_command_p3 as capture
+
+    monkeypatch.setattr(
+        capture, "_git_status_short",
+        lambda *paths: " M templates/macro_command.css\n")
+    monkeypatch.setattr(capture, "_head_sha", lambda: "deadbeef")
+    with pytest.raises(RuntimeError, match="dirty worktree"):
+        capture._require_clean_tree(when="start")
+
+
+def test_capture_refuses_when_head_moves(monkeypatch) -> None:
+    """r10-M1: HEAD must be the same at start and end."""
+    from scripts import capture_macro_command_p3 as capture
+
+    monkeypatch.setattr(capture, "_head_sha", lambda: "bbbbbbbb")
+    with pytest.raises(RuntimeError, match="HEAD moved"):
+        capture._assert_head_unmoved("aaaaaaaa")
+
+
+def test_pixel_scan_falls_back_to_bg_when_gap_too_small(tmp_path) -> None:
+    """r10-m3: gap < 8 css or in_chip sample uses the resolved --bg token."""
+    from PIL import Image
+
+    from scripts import capture_macro_command_p3 as capture
+
+    image = Image.new("RGB", (40, 20), (10, 20, 30))
+    path = tmp_path / "strip.png"
+    image.save(path)
+    probe = {
+        "stripBox": {"left": 0, "right": 20, "top": 0, "bottom": 10},
+        "chipBoxes": [
+            {"left": 0, "right": 9.5, "top": 0, "bottom": 10},
+            {"left": 10, "right": 20, "top": 0, "bottom": 10},
+        ],
+        "bgResolved": "rgb(13, 16, 24)",
+    }
+    row = capture._pixel_scan_strip_void(path, probe, scale=2)
+    assert "getComputedStyle --bg" in str(row.get("canvasSource"))
+    assert row.get("canvasRgb") == [13, 16, 24]
+
+
+def test_r10_chip_opens_chat_receipts() -> None:
+    """r10 evidence m4: ≤768 analyst chip mounts #mmb-root on dark+light 390."""
+    probes = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p3" / "probes.json")
+        .read_text(encoding="utf-8"))
+    for key in ("chip_opens_chat_390_dark_en", "chip_opens_chat_390_light_en"):
+        row = probes[key]
+        assert row.get("ok") is True, (key, row)
+        assert row.get("clicked") == "data-mc-analyst", (key, row)
+        assert row.get("mountedId") == "mmb-root", (key, row)
+
+
+def test_r10_measured_clean_tree_protocol() -> None:
+    """r10-M1: manifest records measured start/end clean-tree + head fields."""
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p3" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    for key in (
+        "tree_clean_start", "tree_clean_end",
+        "head_start", "head_end",
+        "generated_at_start", "generated_at_end",
+        "commit_time_of_capture_sha",
+    ):
+        assert key in manifest, key
+    assert manifest["tree_clean_start"] is True
+    assert manifest["tree_clean_end"] is True
+    assert manifest["head_start"] == manifest["head_end"]
+    assert manifest["head_start"] == manifest["capture_sha"]
+    source = manifest["target"]["resolved_sha_source"]
+    assert f"tree_clean_start={manifest['tree_clean_start']}" in source
+    assert f"tree_clean_end={manifest['tree_clean_end']}" in source
+    assert "git status --short was empty" not in source

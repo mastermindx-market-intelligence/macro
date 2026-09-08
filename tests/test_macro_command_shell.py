@@ -391,11 +391,13 @@ def test_exactly_one_analyst_control(built_hub: str) -> None:
     # two label attributes on the SAME element) only once per element; count
     # distinct control OPENINGS instead.
     openings = len(re.findall(
-        r'<(?:button|a)[^>]*class="[^"]*\bmc-analyst\b', main_html))
+        r'<a[^>]*class="[^"]*\bmc-analyst\b', main_html))
     assert openings == 1, f"expected exactly one .mc-analyst control, found {openings}"
     assert re.search(
-        r'<(?:button|a)[^>]*class="[^"]*\bmc-rail-link\b[^"]*\bmc-analyst\b',
-        main_html), "≤768 pill material is the shared .mc-rail-link class"
+        r'<a[^>]*class="[^"]*\bmc-rail-link\b[^"]*\bmc-analyst\b[^>]*href="chat\.html"',
+        main_html) or re.search(
+        r'<a[^>]*href="chat\.html"[^>]*class="[^"]*\bmc-rail-link\b[^"]*\bmc-analyst\b',
+        main_html), "r10-m1: the chip is a plain chat.html link"
     assert "Ask the analyst" in main_html
     assert "问分析师" in main_html
     assert "向分析师提问" not in main_html
@@ -407,6 +409,25 @@ def test_analyst_chip_boots_the_same_chat_as_mmb_boot(
     assert "data-mc-analyst" in macro_command_js
     assert "getElementById('mmb-boot')" in macro_command_js
     assert "boot.click()" in macro_command_js
+    assert "preventDefault()" in macro_command_js
+
+
+def test_desktop_rail_link_rules_exclude_analyst(
+        macro_command_css: str) -> None:
+    """r10-m4: scoped the class — ≥769 analyst look is unchanged because
+    desktop `.mc-rail-link` / `:hover` are `:not(.mc-analyst)`. ≤768 still
+    shares `.mc-rail-link` pill material."""
+    outside = _strip_css_comments(
+        re.sub(r'@media \(max-width: 768px\) \{.*?(?=\n@media|\Z)', '',
+               macro_command_css, flags=re.S))
+    assert ".mc-rail-link:not(.mc-analyst)" in outside
+    assert ".mc-rail-link:not(.mc-analyst):hover" in outside
+    block = re.search(r'@media \(max-width: 768px\) \{(.*?)(?=\n@media|\Z)',
+                      macro_command_css, re.S)
+    assert block
+    body = _strip_css_comments(block.group(1))
+    assert re.search(
+        r'\.mc-rail-link\s*\{[^}]*border-radius:\s*999px', body, re.S)
 
 
 @pytest.mark.needs_full_checkout("site")

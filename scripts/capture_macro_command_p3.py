@@ -56,10 +56,13 @@ CLEARANCE_AT_JS = """(target) => {
      getComputedStyle(#mmb-boot).display is not 'none' (at ≤768 on
      this page the FAB is hidden; do not invent a box for it).
      Destination-card text under #mmb-boot is a HIT. There is no
-     blanket .mc-dest* exemption. A node is excused only when it is
-     fully hidden by an opaque element by design, or when a sticky
-     rail partially clips it mid-scroll (normal sticky header).
-     Every exemption is recorded in excused[] (text, box, reason).
+     blanket .mc-dest* exemption. A node is excused only when a
+     sticky overlay intersects it mid-scroll (normal sticky header).
+     Every exemption is recorded in excused[] (text, box, ovBox,
+     reason). reason is derived from ov.name plus geometry:
+     `<name>_fully_covered` when the text box is inside the overlay,
+     `<name>_partially_covered` when it only intersects. A full
+     cover at scroll 0 is a HIT (`sticky-rail-full-cover-at-0`).
      An empty text-node set is a fail. Never scrollBy. */
   const maxY = Math.max(0,
     document.documentElement.scrollHeight - window.innerHeight);
@@ -139,10 +142,12 @@ CLEARANCE_AT_JS = """(target) => {
       for (const ov of overlays) {
         if (!intersects(rect, ov)) continue;
         const fixed = ov.pos === 'fixed';
-        const railFull = ov.pos === 'sticky' && target === '0'
-          && fullyCovered(rect, ov);
+        const covered = fullyCovered(rect, ov);
+        const railFull = ov.pos === 'sticky' && target === '0' && covered;
         if (!fixed && !railFull) {
-          note(excused, node, rect, ov, 'sticky-rail-partial-clip');
+          note(excused, node, rect, ov,
+            covered ? (ov.name + '_fully_covered')
+                    : (ov.name + '_partially_covered'));
           continue;
         }
         note(hits, node, rect, ov,
@@ -253,12 +258,11 @@ STRIP_VOID_JS = """() => {
     const bgResolved = getComputedStyle(document.body).backgroundColor;
     const bgToken = getComputedStyle(document.documentElement)
       .getPropertyValue('--bg').trim();
-  /* R8-m1: filledOutsideWiderThan40 is NOT gated on stripFilled.
-     A >40px run outside a chip is a void whether the container paints. */
-  const filledOutsideWiderThan40 = voids.some((v) => v.width > 40);
-  const holeWiderThan40 = voids.some((v) => v.width > 40);
+  /* r10-n1: one field. A >40px run outside a chip is a void
+     whether the container paints (not gated on stripFilled). */
+  const voidWiderThan40 = voids.some((v) => v.width > 40);
   return {
-    ok: !filledOutsideWiderThan40 && !holeWiderThan40
+    ok: !voidWiderThan40
       && emptyChildren === 0 && chips.length === children.length,
     chipCount: chips.length,
     childCount: children.length,
@@ -269,8 +273,7 @@ STRIP_VOID_JS = """() => {
     bgToken,
     voids,
     maxVoidWidth: voids.length ? Math.max(...voids.map((v) => v.width)) : 0,
-    filledOutsideWiderThan40,
-    holeWiderThan40,
+    voidWiderThan40,
     chipBoxes,
     stripBox: {left: stripBox.left, right: stripBox.right,
                top: stripBox.top, bottom: stripBox.bottom,
@@ -358,6 +361,43 @@ def _run_clearance(page) -> dict[str, Any]:
     }
 
 
+def _run_chip_opens_chat(page) -> dict[str, Any]:
+    """r10 evidence m4: click the ≤768 analyst chip and assert the
+    same chat surface the FAB would have booted (`#mmb-root`)."""
+    chip = page.query_selector("[data-mc-analyst]")
+    if chip is None:
+        raise RuntimeError("chip-opens-chat: missing [data-mc-analyst]")
+    href = chip.get_attribute("href")
+    chip.click()
+    # theme.js mounts #mmb-root hidden until the panel opens; attached
+    # is the mount the FAB would have booted (r10 evidence m4).
+    page.wait_for_selector("#mmb-root", state="attached", timeout=30000)
+    mounted = page.evaluate("""() => {
+      const root = document.getElementById('mmb-root');
+      const panel = document.getElementById('mmb-panel');
+      const cs = root ? getComputedStyle(root) : null;
+      return {
+        mountedId: root ? root.id : null,
+        mountedClass: root ? (root.className || '') : null,
+        mountedDisplay: cs ? cs.display : null,
+        mountedVisibility: cs ? cs.visibility : null,
+        mmbPanelPresent: Boolean(panel),
+        mmBrainMounted: Boolean(window.MMBrain && window.MMBrain.mounted),
+      };
+    }""")
+    if not mounted.get("mountedId"):
+        raise RuntimeError(f"chip-opens-chat: #mmb-root did not mount: {mounted}")
+    return {
+        "ok": True,
+        "clicked": "data-mc-analyst",
+        "href": href,
+        "mountedId": mounted.get("mountedId"),
+        "mountedClass": mounted.get("mountedClass"),
+        "mmbPanelPresent": mounted.get("mmbPanelPresent"),
+        "mmBrainMounted": mounted.get("mmBrainMounted"),
+    }
+
+
 def _colour_close(pixel: tuple[int, int, int], canvas: tuple[int, int, int],
                   tol: int = 10) -> bool:
     return all(abs(a - b) <= tol for a, b in zip(pixel, canvas))
@@ -385,28 +425,6 @@ def _pixel_scan_strip_void(path: Path, probe: dict[str, Any],
     y1 = min(image.height, y1)
     x0 = max(0, x0)
     x1 = min(image.width, x1)
-    # r9-m4: sample the canvas from the strip's own inter-chip gap,
-    # never page pixel (8,8) under the radial-wash / site-nav band.
-    row_boxes_sorted = sorted(row_boxes, key=lambda box: box["left"])
-    canvas_source = "strip-inter-chip-gap"
-    if len(row_boxes_sorted) >= 2:
-        gap_left = row_boxes_sorted[0]["right"]
-        gap_right = row_boxes_sorted[1]["left"]
-        sample_x = int(((gap_left + gap_right) / 2) * scale)
-        sample_y = int(((min(box["top"] for box in row_boxes)
-                         + max(box["bottom"] for box in row_boxes)) / 2) * scale)
-        sample_x = min(max(0, sample_x), image.width - 1)
-        sample_y = min(max(0, sample_y), image.height - 1)
-        canvas = image.getpixel((sample_x, sample_y))
-        canvas_source = f"strip-inter-chip-gap ({sample_x},{sample_y})"
-    else:
-        token = (probe.get("bgResolved") or "").strip()
-        parsed = _rgb_token(token)
-        if parsed is None:
-            raise RuntimeError(
-                "strip-void canvas: no inter-chip gap and --bg did not resolve")
-        canvas = parsed
-        canvas_source = f"getComputedStyle --bg {token}"
     chip_dev = [
         (int(box["left"] * scale) - 1, int(box["right"] * scale) + 1,
          int(box["top"] * scale) - 1, int(box["bottom"] * scale) + 1)
@@ -415,6 +433,35 @@ def _pixel_scan_strip_void(path: Path, probe: dict[str, Any],
 
     def in_chip(x: int, y: int) -> bool:
         return any(l <= x <= r and t <= y <= b for l, r, t, b in chip_dev)
+
+    # r9-m4 / r10-m3: sample the canvas from the strip's own inter-chip
+    # gap, never page pixel (8,8). The sample must sit outside every
+    # chip box with a ≥8 css gap; otherwise fall back to --bg.
+    row_boxes_sorted = sorted(row_boxes, key=lambda box: box["left"])
+    canvas = None
+    canvas_source = "getComputedStyle --bg"
+    if len(row_boxes_sorted) >= 2:
+        gap_left = row_boxes_sorted[0]["right"]
+        gap_right = row_boxes_sorted[1]["left"]
+        gap_css = gap_right - gap_left
+        sample_x = int(((gap_left + gap_right) / 2) * scale)
+        sample_y = int(((min(box["top"] for box in row_boxes)
+                         + max(box["bottom"] for box in row_boxes)) / 2) * scale)
+        sample_x = min(max(0, sample_x), image.width - 1)
+        sample_y = min(max(0, sample_y), image.height - 1)
+        if gap_css >= 8 and not in_chip(sample_x, sample_y):
+            canvas = image.getpixel((sample_x, sample_y))
+            canvas_source = (
+                f"strip-inter-chip-gap ({sample_x},{sample_y}) "
+                f"gapCss={gap_css:.2f}")
+    if canvas is None:
+        token = (probe.get("bgResolved") or "").strip()
+        parsed = _rgb_token(token)
+        if parsed is None:
+            raise RuntimeError(
+                "strip-void canvas: gap <8px or in_chip and --bg did not resolve")
+        canvas = parsed
+        canvas_source = f"getComputedStyle --bg {token}"
 
     threshold = 40 * scale
     voids: list[dict[str, Any]] = []
@@ -476,6 +523,68 @@ def _head_sha() -> str:
     out = subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True)
     return out.strip()
+
+
+def _git_status_short(*paths: str) -> str:
+    cmd = ["git", "status", "--short"]
+    if paths:
+        cmd += ["--", *paths]
+    return subprocess.check_output(cmd, cwd=ROOT, text=True)
+
+
+def _require_clean_tree(*, when: str, paths: tuple[str, ...] = ()) -> dict[str, Any]:
+    """Run `git status --short` (optionally scoped) and abort if dirty.
+
+    r10-M1: the manifest must not claim a clean-tree check the script
+    never ran. Start of run = whole tree. End of run = templates /
+    scripts / lib (the capture writes evidence under mockups/).
+    """
+    status = _git_status_short(*paths)
+    head = _head_sha()
+    clean = status.strip() == ""
+    measured = {
+        "when": when,
+        "status": status,
+        "clean": clean,
+        "head": head,
+        "paths": list(paths),
+    }
+    if not clean:
+        scope = " ".join(paths) if paths else "(whole tree)"
+        raise RuntimeError(
+            f"capture refused: dirty worktree at {when} {scope}:\n{status}")
+    return measured
+
+
+def _assert_head_unmoved(head_start: str) -> str:
+    head_end = _head_sha()
+    if head_end != head_start:
+        raise RuntimeError(
+            f"capture refused: HEAD moved during the run "
+            f"{head_start} -> {head_end}")
+    return head_end
+
+
+def _derive_resolved_sha_source(protocol: dict[str, Any]) -> str:
+    """Every sentence is derived from measured protocol fields."""
+    return (
+        f"committed HEAD of this worktree ({protocol['head_start']}); "
+        f"tree_clean_start={protocol['tree_clean_start']} from "
+        f"`git status --short` at start "
+        f"(empty={protocol['tree_clean_start']}); "
+        f"tree_clean_end={protocol['tree_clean_end']} from "
+        f"`git status --short -- templates scripts lib` at end "
+        f"(empty={protocol['tree_clean_end']}); "
+        f"head_start={protocol['head_start']}; "
+        f"head_end={protocol['head_end']}; "
+        f"generated_at_start={protocol['generated_at_start']}; "
+        f"generated_at_end={protocol['generated_at_end']}; "
+        f"commit_time_of_capture_sha={protocol['commit_time_of_capture_sha']} "
+        f"(git show -s --format=%cI). "
+        f"Every composition, state and empty frame was recaptured in this run "
+        f"(R6-B1). E5 stays captured:false — client fetch-timeout, not "
+        f"builder-triggerable."
+    )
 
 
 def _commit_iso(sha: str) -> str:
@@ -1040,11 +1149,19 @@ def main() -> int:
     tmp = Path(os.environ.get("TMPDIR", "/tmp")) / f"mc-p3-r3-{os.getpid()}"
     tmp.mkdir(parents=True, exist_ok=True)
     servers: list[subprocess.Popen] = []
-    generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    head = _head_sha()
+    start_tree = _require_clean_tree(when="start")
+    generated_at_start = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    head = start_tree["head"]
     probes: dict[str, Any] = {}
     if PROBES.exists():
         probes = json.loads(PROBES.read_text(encoding="utf-8"))
+    # r10 evidence m2: viewport-less clearance_* aliases were byte
+    # duplicates of clearance_390_*. One key per cell.
+    for alias in (
+        "clearance_dark_en", "clearance_dark_zh",
+        "clearance_light_en", "clearance_light_zh",
+    ):
+        probes.pop(alias, None)
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
 
     try:
@@ -1194,7 +1311,6 @@ def main() -> int:
                             raise RuntimeError(
                                 f"R8-M1 clearance failed 390 {theme}/{locale}: {clear}")
                         probes[f"clearance_390_{theme}_{locale}"] = clear
-                        probes[f"clearance_{theme}_{locale}"] = clear
                         print(
                             f"  clearance 390 {theme}/{locale} ok={clear['ok']} "
                             f"texts={clear['textCount']} "
@@ -1228,27 +1344,52 @@ def main() -> int:
                     finally:
                         context.close()
 
-                # R9-M2: FAB computed display at desktop — must stay visible.
-                context = _new_context(browser, "dark", "en", 1440, 2200)
-                try:
-                    page = _open_direct(
-                        context, origin + "/macro_monetary.html",
-                        "#overview", "dark", "en")
-                    page.wait_for_selector("#mmb-boot", timeout=15000)
-                    fab = page.evaluate("""() => {
-                      const el = document.getElementById('mmb-boot');
-                      if (!el) return {present: false, display: null};
-                      const cs = getComputedStyle(el);
-                      return {present: true, display: cs.display,
-                              position: cs.position};
-                    }""")
-                    if not fab.get("present") or fab.get("display") == "none":
-                        raise RuntimeError(
-                            f"R9-M2 FAB must stay visible at 1440: {fab}")
-                    probes["fab_display_1440_dark_en"] = fab
-                    print(f"  fab_display_1440_dark_en {fab}", flush=True)
-                finally:
-                    context.close()
+                # R9-M2 / r10-m3: FAB computed display at desktop — all
+                # four 1440 cells. Must stay visible (flex).
+                for theme, locale in (("dark", "en"), ("dark", "zh"),
+                                      ("light", "en"), ("light", "zh")):
+                    context = _new_context(browser, theme, locale, 1440, 2200)
+                    try:
+                        page = _open_direct(
+                            context, origin + "/macro_monetary.html",
+                            "#overview", theme, locale)
+                        page.wait_for_selector("#mmb-boot", timeout=15000)
+                        fab = page.evaluate("""() => {
+                          const el = document.getElementById('mmb-boot');
+                          if (!el) return {present: false, display: null};
+                          const cs = getComputedStyle(el);
+                          return {present: true, display: cs.display,
+                                  position: cs.position};
+                        }""")
+                        if not fab.get("present") or fab.get("display") == "none":
+                            raise RuntimeError(
+                                f"R9-M2 FAB must stay visible at 1440 "
+                                f"{theme}/{locale}: {fab}")
+                        key = f"fab_display_1440_{theme}_{locale}"
+                        probes[key] = fab
+                        print(f"  {key} {fab}", flush=True)
+                    finally:
+                        context.close()
+
+                # r10 evidence m4: click the ≤768 analyst chip; the same
+                # chat surface the FAB would boot (`#mmb-root`) must mount.
+                for theme, locale in (("dark", "en"), ("light", "en")):
+                    context = _new_context(browser, theme, locale, 390, 844)
+                    try:
+                        page = _open_direct(
+                            context, origin + "/macro_monetary.html",
+                            "#overview", theme, locale)
+                        page.wait_for_selector("[data-mc-analyst]", timeout=15000)
+                        chat = _run_chip_opens_chat(page)
+                        key = f"chip_opens_chat_390_{theme}_{locale}"
+                        probes[key] = chat
+                        print(
+                            f"  {key} mounted={chat.get('mountedId')} "
+                            f"class={chat.get('mountedClass')!r} "
+                            f"panel={chat.get('mmbPanelPresent')}",
+                            flush=True)
+                    finally:
+                        context.close()
 
                 # RIDER M2: one hairline on a populated light sub-tab.
                 context = _new_context(browser, "light", "en", 1440, 2200)
@@ -1312,9 +1453,9 @@ def main() -> int:
                         if not void_probe.get("ok"):
                             raise RuntimeError(
                                 f"R8-m1 strip void {theme}/{locale}: {void_probe}")
-                        if void_probe.get("filledOutsideWiderThan40"):
+                        if void_probe.get("voidWiderThan40"):
                             raise RuntimeError(
-                                f"R8-m1 filled outside chip {theme}/{locale}: {void_probe}")
+                                f"R8-m1 void wider than 40 {theme}/{locale}: {void_probe}")
                         key = f"{theme}_{locale}"
                         strip_voids[key] = void_probe
                         print(
@@ -1417,32 +1558,53 @@ def main() -> int:
             "tablet": [768, 1400],
             "mobile": [390, 844],
         }
+        generated_at_end = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        head_end = _assert_head_unmoved(head)
+        end_tree = _require_clean_tree(
+            when="end", paths=("templates", "scripts", "lib"))
         commit_time = _commit_iso(head)
-        manifest["generated_at"] = generated_at
+        protocol = {
+            "tree_clean_start": start_tree["clean"],
+            "tree_clean_end": end_tree["clean"],
+            "head_start": head,
+            "head_end": head_end,
+            "generated_at_start": generated_at_start,
+            "generated_at_end": generated_at_end,
+            "commit_time_of_capture_sha": commit_time,
+        }
+        manifest["generated_at"] = generated_at_end
+        manifest["generated_at_start"] = generated_at_start
+        manifest["generated_at_end"] = generated_at_end
+        manifest["tree_clean_start"] = protocol["tree_clean_start"]
+        manifest["tree_clean_end"] = protocol["tree_clean_end"]
+        manifest["head_start"] = head
+        manifest["head_end"] = head_end
         manifest["capture_sha"] = head
         manifest["commit_time_of_capture_sha"] = commit_time
         manifest["strip_void_probe"] = probes.get("strip_void_probe")
         manifest["strip_void_probes"] = probes.get("strip_void_probes")
         manifest.setdefault("target", {})
         manifest["target"]["resolved_sha_or_none"] = head
-        manifest["target"]["resolved_sha_source"] = (
-            f"committed HEAD of this worktree ({head}); the capture ran on "
-            "that exact committed sha after git status --short was empty and "
-            "after one scripts/build_macro_suite_pages.py rebuild. "
-            f"capture_sha={head}; commit_time_of_capture_sha={commit_time} "
-            f"(git show -s --format=%cI); generated_at={generated_at} is the "
-            "capture clock and is later than that commit time. Every "
-            "composition, state and empty frame was recaptured in this run "
-            "(R6-B1). No retained PNG bytes. E5 stays captured:false — "
-            "client fetch-timeout, not builder-triggerable."
-        )
+        manifest["target"]["resolved_sha_source"] = _derive_resolved_sha_source(
+            protocol)
         MANIFEST.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
-        probes["generated_at"] = generated_at
+        probes["generated_at"] = generated_at_end
+        probes["generated_at_start"] = generated_at_start
+        probes["generated_at_end"] = generated_at_end
+        probes["tree_clean_start"] = protocol["tree_clean_start"]
+        probes["tree_clean_end"] = protocol["tree_clean_end"]
+        probes["head_start"] = head
+        probes["head_end"] = head_end
         probes["capture_sha"] = head
         probes["commit_time_of_capture_sha"] = commit_time
         probes["resolved_sha_or_none"] = head
         PROBES.write_text(json.dumps(probes, indent=2) + "\n", encoding="utf-8")
-        print(f"wrote {MANIFEST} generated_at={generated_at} head={head}", flush=True)
+        print(
+            f"wrote {MANIFEST} generated_at_start={generated_at_start} "
+            f"generated_at_end={generated_at_end} head={head} "
+            f"tree_clean_start={protocol['tree_clean_start']} "
+            f"tree_clean_end={protocol['tree_clean_end']}",
+            flush=True)
         return 0
     finally:
         for proc in servers:

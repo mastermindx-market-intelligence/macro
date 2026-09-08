@@ -225,22 +225,28 @@
   /* ── analyst control — §8, R8: existing sitewide entry points only ─────── */
   var analystBtn = document.querySelector('[data-mc-analyst]');
   if (analystBtn) {
-    analystBtn.addEventListener('click', function () {
+    analystBtn.addEventListener('click', function (event) {
       var sectionId = 'overview';
       var current = content.querySelector('[data-mc-panel]:not([hidden])');
       if (current) sectionId = current.getAttribute('data-mc-panel');
       var railLink = railLinkById(sectionId);
       var label = railLink ? railLink.textContent.trim() : 'Macro Command';
       if (window.MMBrain && window.MMBrain.mounted) {
+        event.preventDefault();
         if (typeof window.MMBrain.explain === 'function') window.MMBrain.explain(sectionId, label);
         else if (typeof window.MMBrain.open === 'function') window.MMBrain.open();
         return;
       }
       /* Not yet mounted: activate the sitewide launcher stub theme.js already
          renders on this page (`#mmb-boot`) — its own click handler owns the
-         load-then-open flow. No new endpoint, no new query string. */
+         load-then-open flow. No new endpoint, no new query string. The
+         control is an <a href="chat.html">; if the stub is missing we
+         leave the navigation in place (r10-m1 no-JS fallback). */
       var boot = document.getElementById('mmb-boot');
-      if (boot) boot.click();
+      if (boot) {
+        event.preventDefault();
+        boot.click();
+      }
     });
   }
 
