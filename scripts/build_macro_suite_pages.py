@@ -334,28 +334,42 @@ SECTIONS: tuple[Section, ...] = (
             workspace_id="inflation_system", deep_href="macro_inflation_system.html",
             question_en="Are prices still rising, and is it spreading?",
             question_zh="物价还在上涨吗？涨势是否在扩散？"),
-    Section(id="growth", label_en="Growth", label_zh="经济增长", subtabs=(
+    Section(id="growth", label_en="Growth", label_zh="经济增长",
+            question_en="Is the economy speeding up or slowing down?",
+            question_zh="经济是在加快还是放缓？", subtabs=(
         SubTab(id="economy", label_en="The whole economy", label_zh="整体经济",
                workspace_id="growth_real_economy", deep_href="macro_growth_real_economy.html"),
         SubTab(id="business", label_en="What companies are doing", label_zh="企业活动",
                workspace_id="business_activity", deep_href="macro_business_activity.html"),
     )),
     Section(id="jobs", label_en="Jobs", label_zh="就业",
-            workspace_id="labor_markets", deep_href="macro_labor_markets.html"),
+            workspace_id="labor_markets", deep_href="macro_labor_markets.html",
+            question_en="How hard is it to hire, and how hard to find work?",
+            question_zh="招人有多难？找工作又有多难？"),
     Section(id="housing", label_en="Housing", label_zh="房地产",
-            workspace_id="housing_real_estate", deep_href="macro_housing_real_estate.html"),
+            workspace_id="housing_real_estate", deep_href="macro_housing_real_estate.html",
+            question_en="What does it cost to buy, build and own a home?",
+            question_zh="买房、建房与持有住房的成本是多少？"),
     Section(id="consumer", label_en="Consumers", label_zh="消费者",
-            workspace_id="consumer_payments", deep_href="macro_consumer_payments.html"),
-    Section(id="credit", label_en="Borrowing costs", label_zh="融资环境", subtabs=(
+            workspace_id="consumer_payments", deep_href="macro_consumer_payments.html",
+            question_en="Are households spending, and can they keep it up?",
+            question_zh="家庭还在消费吗？还能撑多久？"),
+    Section(id="credit", label_en="Borrowing costs", label_zh="融资环境",
+            question_en="How expensive and how hard is it to borrow?",
+            question_zh="借钱有多贵？又有多难？", subtabs=(
         SubTab(id="borrowing", label_en="How hard it is to borrow", label_zh="融资难易",
                workspace_id="financial_conditions", deep_href="macro_financial_conditions.html"),
         SubTab(id="funding", label_en="How companies fund themselves", label_zh="企业融资结构",
                workspace_id="capital_structure", deep_href="macro_capital_structure.html"),
     )),
     Section(id="debt", label_en="Government debt", label_zh="政府债务",
-            workspace_id="national_debt_liabilities", deep_href="macro_national_debt_liabilities.html"),
+            workspace_id="national_debt_liabilities", deep_href="macro_national_debt_liabilities.html",
+            question_en="How much is the government borrowing, and who is buying?",
+            question_zh="政府借了多少？又是谁在买？"),
     Section(id="trade", label_en="Trade", label_zh="贸易往来",
-            workspace_id="trade_flows", deep_href="macro_trade_flows.html"),
+            workspace_id="trade_flows", deep_href="macro_trade_flows.html",
+            question_en="What is the country buying and selling abroad?",
+            question_zh="这个国家在海外买什么、卖什么？"),
 )
 
 
@@ -600,14 +614,18 @@ def build_page(root: Path, page: SuitePage, *, data_root: Path, out_dir: Path,
     return destination, ok, hub_entry
 
 
-P3_COPY_IDS = frozenset({"overview", "money", "policy", "rates", "inflation"})
+COPY_IDS = frozenset({
+    "overview", "money", "policy", "rates", "inflation",
+    "growth", "jobs", "housing", "consumer", "credit", "debt", "trade",
+})
 P3_PRIMER_OPEN = frozenset({"overview", "money", "policy"})
-_SOURCE_NOTE_TITLES = frozenset({
+_STALE_NOTE_TITLES = frozenset({
     "Required source not current",
     "Optional legs degraded",
-    "Contradictory signals",
 })
+_DISAGREE_NOTE_TITLES = frozenset({"Contradictory signals"})
 _E2_STATES = frozenset({"SOURCE_FAILED", "STALE_SOURCE"})
+_NULL_VOICE_EMPTY_IDS = frozenset({"e1", "e2"})
 
 
 class MacroCommandBuildError(RuntimeError):
@@ -953,13 +971,36 @@ def _workspace_view(snapshot: Mapping[str, Any], *, workspace_id: str,
     )
 
 
-def _input_note_from_view(view: Mapping[str, Any]) -> bool:
+def _input_note_from_view(view: Mapping[str, Any]) -> str | None:
+    """Which instrument condition fired — stale wins over disagree.
+
+    P4 §3.4: growth fires only `Contradictory signals`, so the P3 sentence
+    "Some inputs are not current today" would be false there.
+    """
+    stale = False
+    disagree = False
     for item in view.get("diagnostics") or []:
         title = item.get("title") or {}
         title_en = title.get("en") if isinstance(title, Mapping) else None
-        if item.get("tone") in ("warn", "bad") and title_en in _SOURCE_NOTE_TITLES:
-            return True
-    return False
+        if item.get("tone") not in ("warn", "bad"):
+            continue
+        if title_en in _STALE_NOTE_TITLES:
+            stale = True
+        elif title_en in _DISAGREE_NOTE_TITLES:
+            disagree = True
+    if stale:
+        return "stale"
+    if disagree:
+        return "disagree"
+    return None
+
+
+def _input_note_pair(*keys: str | None) -> dict[str, str] | None:
+    if any(key == "stale" for key in keys):
+        return dict(L.FOOT["stale"])
+    if any(key == "disagree" for key in keys):
+        return dict(L.FOOT["disagree"])
+    return None
 
 
 def _entitlement_plan(snapshot: Mapping[str, Any] | None, *,
@@ -1008,6 +1049,19 @@ def _apply_empty_voice(empty: Mapping[str, Any] | None) -> dict[str, Any] | None
     if not empty:
         return None
     return None
+
+
+def _section_is_entitlement_walled(
+        empty: Mapping[str, Any] | None,
+        subtabs: Sequence[Mapping[str, Any]] | None) -> bool:
+    """N-D: any E6 slot on the section walls the whole section."""
+    if empty and empty.get("id") == "e6":
+        return True
+    for tab in subtabs or ():
+        tab_empty = tab.get("empty") or {}
+        if tab_empty.get("id") == "e6":
+            return True
+    return False
 
 
 def _figure_or_empty_for_workspace(snapshot: Mapping[str, Any] | None, *,
@@ -1076,9 +1130,9 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
                             ) -> list[dict[str, Any]]:
     """Build the `sections` template context from the static SECTIONS constant.
 
-    P3 populates question / stance / primer / caption / watching for the first
-    five sections only; the seven P4 sections degrade to head + figure.
-    Every optional field is an explicit falsy so StrictUndefined stays silent.
+    All twelve sections populate question / stance / primer / caption /
+    watching. P3_PRIMER_OPEN stays the first three. Every optional field is
+    an explicit falsy so StrictUndefined stays silent.
     """
     by_id = {entry["workspace_id"]: entry for entry in entries}
     title_by_workspace = {entry["workspace_id"]: entry["title"] for entry in entries}
@@ -1116,7 +1170,7 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
     sections: list[dict[str, Any]] = []
     for section in SECTIONS:
         is_overview = section.id == "overview"
-        has_copy = section.id in P3_COPY_IDS
+        has_copy = section.id in COPY_IDS
         subtabs: list[dict[str, Any]] | None = None
         detail_links: list[dict[str, Any]]
         if section.subtabs:
@@ -1132,7 +1186,7 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
         primer = None
         caption = None
         watching = None
-        input_note = False
+        input_note = None
         state_label = None
         as_of = None
         as_of_display = None
@@ -1222,16 +1276,17 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
                         "figure": tab_figure,
                         "empty": tab_empty,
                     })
-                input_note = any(notes) if has_copy else False
+                input_note = _input_note_pair(*notes) if has_copy else None
             elif has_copy:
                 figure, empty = _figure_or_empty_for_workspace(
                     snap, view=view, href=section.deep_href,
                     entitlement=_entitlement_plan(
                         snap, allow_fixture_keys=allow_empty_state_fixture))
+                input_note = _input_note_pair(input_note)
 
         # M2: one null voice for every empty slot, not only E2. A figure
         # with no rows drops the "each row shows…" caption; a section-level
-        # empty replaces the stance with that state's own title.
+        # empty (or the stance sub-tab's empty) replaces the stance.
         slot_empty = empty
         if subtabs:
             slot_empty = empty or next(
@@ -1246,11 +1301,27 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
                 figure_rows.extend((tab.get("figure") or {}).get("rows") or [])
         if has_copy and any(row.get("kind") == "current" for row in figure_rows):
             caption = None
-        if has_copy and empty:
-            # The empty card speaks once. Echoing its title as stance is
-            # a second copy of the same sentence (MINOR-E6).
-            voiced = _apply_empty_voice(empty)
-            stance = voiced
+        empty_for_voice = empty
+        if has_copy and section.subtabs and subtabs:
+            stance_workspace, _ = _stance_snapshot(section, by_id)
+            stance_tab_id = None
+            for tab in section.subtabs:
+                if tab.workspace_id == stance_workspace:
+                    stance_tab_id = tab.id
+                    break
+            if stance_tab_id is None:
+                stance_tab_id = section.subtabs[0].id
+            match = next((item for item in subtabs if item["id"] == stance_tab_id), None)
+            if match is not None:
+                empty_for_voice = match.get("empty")
+        if has_copy and empty_for_voice is not None:
+            # The empty card speaks once. Echoing it as stance is a second copy.
+            stance = _apply_empty_voice(empty_for_voice)
+        # N-D: an entitlement-walled section never keeps a read-now
+        # stance or a WATCHING list. Any E6 slot walls the section.
+        if has_copy and _section_is_entitlement_walled(empty, subtabs):
+            stance = _apply_empty_voice(_empty_state("e6"))
+            watching = None
 
         empty_e5 = None if is_overview else _empty_state(
             "e5", cta_href=section.deep_href or (
@@ -1288,8 +1359,8 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
             "subtabs": subtabs,
             "detail_links": detail_links,
         })
-    # N5-M2: P3 ships only populated panels. The P4 seven stay in SECTIONS
-    # (rail-order / dests / coverage) but do not render as empty shells.
+    # N5-M2: ship only populated panels. P4 fills the remaining seven, so
+    # all twelve COPY_IDS sections render.
     populated = [section for section in sections if _panel_is_populated(section)]
     count = len(populated)
     panel_ids = {section["id"] for section in populated}

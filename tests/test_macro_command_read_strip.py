@@ -195,9 +195,21 @@ def test_coverage_tally_drops_when_a_representative_workspace_is_not_current() -
 def test_state_word_predicate_form_state_tone_share_identical_keys() -> None:
     word_keys = {(w, s) for w, by in L.STATE_WORD.items() for s in by}
     pred_keys = {(w, s) for w, by in L.PREDICATE_FORM.items() for s in by}
-    tone_keys = {(w, s) for w, by in L.STATE_TONE.items() for s in by}
-    assert word_keys == pred_keys == tone_keys
+    # Panel-only workspaces publish STATE_TONE for the hub panel but are
+    # not strip chips, so they sit in STATE_TONE without STATE_WORD /
+    # PREDICATE_FORM rows. Derived from the tables — a future panel-only
+    # workspace cannot silently escape the lock by name.
+    panel_only_workspaces = set(L.STATE_TONE) - set(L.STATE_WORD)
+    chip_tone_keys = {
+        (w, s) for w, by in L.STATE_TONE.items()
+        if w not in panel_only_workspaces
+        for s in by
+    }
+    assert word_keys == pred_keys == chip_tone_keys
     assert word_keys, "expected at least one reviewed (workspace, state) pair"
+    assert panel_only_workspaces, "expected at least one panel-only workspace"
+    for workspace_id in panel_only_workspaces:
+        assert set(L.STATE_TONE[workspace_id]) == {"A", "B", "C", "D"}, workspace_id
 
 
 def test_every_market_workspace_has_all_four_quadrant_letters() -> None:
@@ -471,7 +483,16 @@ def built_hub(tmp_path_factory: pytest.TempPathFactory) -> str:
 def test_the_real_page_renders_populated_chips_only(built_hub: str) -> None:
     """R6-M3: chips whose section is not rendered are not rendered."""
     chip_ids = re.findall(r'<li class="mc-chip[^"]*" data-mc-topic="([a-z]+)"', built_hub)
-    assert chip_ids == ["money", "policy", "rates", "inflation", "coverage"]
+    panel_ids = set(re.findall(r'<section class="mc-panel" id="([^"]+)"', built_hub))
+    assert chip_ids == [
+        "money", "policy", "rates", "inflation", "growth", "jobs", "credit",
+        "coverage",
+    ]
+    assert "coverage" in chip_ids
+    for chip_id in chip_ids:
+        if chip_id == "coverage":
+            continue
+        assert chip_id in panel_ids, chip_id
 
 
 @pytest.mark.needs_full_checkout("site")

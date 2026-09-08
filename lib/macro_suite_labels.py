@@ -313,7 +313,11 @@ METRIC: dict[str, dict[str, str]] = {
     # key is dropped, never de-slugged — see `_macro_command_sections`.
     "growth_momentum": _pair("Growth momentum (6-month)", "增长动能（6个月）"),
     "growth_level_breadth": _pair(
-        "How many growth gauges are rising", "上升的增长指标数量"),
+        "Strength and breadth of growth", "增长的强度与广度"),
+    "conditions_level": _pair(
+        "Tightness of borrowing conditions", "融资条件的紧张程度"),
+    "conditions_impulse": _pair(
+        "Direction of borrowing conditions", "融资条件的变化方向"),
     "coincident_tier_momentum_6m": _pair(
         "Current-activity momentum (6-month)", "当前活动动能（6个月）"),
     "leading_tier_momentum_6m": _pair(
@@ -323,13 +327,13 @@ METRIC: dict[str, dict[str, str]] = {
     "coincident_lagging_ratio_momentum_6m": _pair(
         "Current-to-lagging activity gap (6-month)", "当前与滞后活动差距（6个月）"),
     "financial_conditions_level": _pair(
-        "How tight financial conditions are", "金融状况松紧程度"),
+        "Tightness of borrowing conditions", "融资条件的紧张程度"),
     "financial_conditions_impulse": _pair(
-        "Whether financial conditions are tightening", "金融状况是否在收紧"),
+        "Direction of borrowing conditions", "融资条件的变化方向"),
     "labor_demand": _pair(
-        "How many jobs employers want to fill", "企业想填补的岗位数量"),
+        "Employer demand for workers", "企业对劳动力的需求"),
     "labor_supply_tightness": _pair(
-        "How scarce available workers are", "可用劳动力的稀缺程度"),
+        "Tightness of the job market", "就业市场的紧张程度"),
     "mortgage_30y_rate_level": _pair("Thirty-year mortgage rate", "三十年期房贷利率"),
     "housing_starts_yoy": _pair("Housing starts, year over year", "新屋开工同比"),
     "building_permits_yoy": _pair("Building permits, year over year", "营建许可同比"),
@@ -460,6 +464,88 @@ STANCES: dict[str, dict[str, dict[str, str]]] = {
         "unstated": _UNSTATED_GENERIC,
         "unavailable": _UNAVAILABLE,
     },
+    "growth": {
+        "A": _pair(
+            "Growth is still strong but slowing. Watch the pace, not the level, from here.",
+            "增长依然强劲，但正在放缓。从这里开始，要盯的是速度而不是水平。"),
+        "B": _pair(
+            "Growth is picking up and the pickup is broad. No action needed; watch for it narrowing.",
+            "增长正在加快，而且面也广。今天无需行动，留意面是否收窄。"),
+        "C": _pair(
+            "Growth is weak and still slowing. Read this section closely before anything else today.",
+            "增长疲弱且仍在放缓。今天请先仔细读本板块，再看其他。"),
+        "D": _pair(
+            "Growth is improving, but only in a few places. Watch — narrow pickups usually fade.",
+            "增长在改善，但只集中在少数领域。观察为主 — 面窄的回升通常会退去。"),
+        "unstated": _UNSTATED_GENERIC,
+        "unavailable": _UNAVAILABLE,
+    },
+    "jobs": {
+        "A": _pair(
+            "Jobs are still hard to fill, but hiring demand is cooling. Watch the demand side first.",
+            "岗位依然难填，但招聘需求正在降温。请先盯需求这一侧。"),
+        "B": _pair(
+            "Employers are hiring hard and workers are scarce. No action needed; watch for demand cooling.",
+            "企业招聘强劲，人手依然紧缺。今天无需行动，留意需求是否降温。"),
+        "C": _pair(
+            "Hiring demand is weak and workers are easy to find. Read this section closely today.",
+            "招聘需求疲弱，人手很好找。今天请仔细读本板块。"),
+        "D": _pair(
+            "Hiring is picking up and there is still room to grow. No action needed today.",
+            "招聘正在回升，而且仍有余量。今天无需行动。"),
+        "unstated": _UNSTATED_GENERIC,
+        "unavailable": _UNAVAILABLE,
+    },
+    "housing": {
+        "unstated": _UNSTATED_GENERIC,
+        "unavailable": _pair(
+            "No single housing reading is published. Mortgage costs, building activity and prices below are the read.",
+            "房地产没有单一综合读数。要看的是下方的房贷成本、建筑活动与房价。"),
+    },
+    "consumer": {
+        "A": _pair(
+            "Households are spending and their finances look comfortable. No action needed today.",
+            "家庭在消费，财务状况也较为宽裕。今天无需行动。"),
+        "B": _pair(
+            "Households are still spending, but debt stress is high. Watch — this pairing rarely holds long.",
+            "家庭仍在消费，但债务压力偏高。观察为主 — 这种组合通常撑不久。"),
+        "C": _pair(
+            "Spending has slowed, but household finances are still comfortable. Watch the spending side.",
+            "消费已经放缓，但家庭财务仍较宽裕。请盯住消费这一侧。"),
+        "D": _pair(
+            "Spending has slowed and debt stress is high. Read this section closely before anything else.",
+            "消费放缓且债务压力偏高。请先仔细读本板块，再看其他。"),
+        "unstated": _UNSTATED_GENERIC,
+        "unavailable": _UNAVAILABLE,
+    },
+    "credit": {
+        "A": _pair(
+            "Borrowing is cheap and getting cheaper. No action needed today; watch for the turn.",
+            "借钱便宜，而且还在变便宜。今天无需行动，留意何时转向。"),
+        "B": _pair(
+            "Borrowing is expensive and getting harder. Read this section closely before anything else today.",
+            "借钱成本偏高，而且越来越难。今天请先仔细读本板块，再看其他。"),
+        "C": _pair(
+            "Borrowing is still cheap, but it is getting less so. Watch the direction, not the level.",
+            "借钱仍然便宜，但正在变贵。要盯的是方向，而不是水平。"),
+        "D": _pair(
+            "Borrowing is expensive but easing. Watch whether the easing reaches company funding.",
+            "借钱成本仍高，但正在放松。留意这份放松是否传导到企业融资。"),
+        "unstated": _UNSTATED_GENERIC,
+        "unavailable": _UNAVAILABLE,
+    },
+    "debt": {
+        "unstated": _UNSTATED_GENERIC,
+        "unavailable": _pair(
+            "No single debt reading is published. Watch the cash balance, new issuance and auction demand below.",
+            "政府债务没有单一综合读数。请看下方的现金余额、新发行与拍卖需求。"),
+    },
+    "trade": {
+        "unstated": _pair(
+            "No single trade reading is published here. The balance, exports and imports below are the read.",
+            "贸易往来此处不发布单一读数。下方的差额、出口与进口就是要看的内容。"),
+        "unavailable": _UNAVAILABLE,
+    },
 }
 
 PRIMERS: dict[str, dict[str, str]] = {
@@ -478,6 +564,27 @@ PRIMERS: dict[str, dict[str, str]] = {
     "inflation": _pair(
         "Inflation is two questions, not one: how fast prices are rising right now, and how many things are rising together. A fast rise in a few items fades; a slow rise in everything does not.",
         "通胀其实是两个问题：当前物价上涨有多快，以及有多少东西在一起涨。少数商品的快速上涨会退去，而所有东西一起慢慢涨则不会。"),
+    "growth": _pair(
+        "Growth here means how fast the economy is expanding and how many parts of it are expanding together.",
+        "这里的「增长」指经济扩张的速度，以及有多少领域在同步扩张。"),
+    "jobs": _pair(
+        "This section is about how hard it is for companies to hire, and how easily people find work.",
+        "本板块讲的是企业招人的难度，以及人们找工作的难易程度。"),
+    "housing": _pair(
+        "This section is about what it costs to borrow for a home, how much is being built, and where prices are.",
+        "本板块讲的是买房借贷的成本、建了多少房，以及房价处在什么位置。"),
+    "consumer": _pair(
+        "This section is about how much households are spending and how comfortably they can carry their debts.",
+        "本板块讲的是家庭花了多少钱，以及他们背负债务的轻松程度。"),
+    "credit": _pair(
+        "This section is about how expensive and how hard it is for companies to borrow right now.",
+        "本板块讲的是企业当下借钱的成本有多高、难度有多大。"),
+    "debt": _pair(
+        "This section is about how much the government is borrowing and how easily that debt finds buyers.",
+        "本板块讲的是政府借了多少钱，以及这些债务找到买家的难易程度。"),
+    "trade": _pair(
+        "This section is about what the country sells abroad, what it buys, and the gap between the two.",
+        "本板块讲的是这个国家向海外卖了什么、买了什么，以及两者之间的差额。"),
 }
 
 CAPTIONS: dict[str, dict[str, str]] = {
@@ -496,6 +603,27 @@ CAPTIONS: dict[str, dict[str, str]] = {
     "inflation": _pair(
         "Each row shows the last two readings. Higher means faster or more widespread price rises.",
         "每行显示最近两次读数。数值更高表示涨价更快或更广泛。"),
+    "growth": _pair(
+        "Each row shows the last two readings. The tabs are not on one scale.",
+        "每行显示最近两次读数。两个标签页衡量的不是同一件事。"),
+    "jobs": _pair(
+        "Each row shows the last two readings. Higher means a tighter job market.",
+        "每行显示最近两次读数。数值更高表示就业市场更紧。"),
+    "housing": _pair(
+        "Each row shows the last two readings. Costs and volumes read differently.",
+        "每行显示最近两次读数。成本与建量需分开来看。"),
+    "consumer": _pair(
+        "Each row shows the last two readings. Read spending and stress separately.",
+        "每行显示最近两次读数。消费与压力需分开来看。"),
+    "credit": _pair(
+        "Each row shows the last two readings. The tabs are not on one scale.",
+        "每行显示最近两次读数。两个标签页衡量的不是同一件事。"),
+    "debt": _pair(
+        "Each row shows the last two readings. More issuance is more debt to place.",
+        "每行显示最近两次读数。发行越多，需要消化的债务就越多。"),
+    "trade": _pair(
+        "Each row shows the last two readings. Imports above exports is a deficit.",
+        "每行显示最近两次读数。进口大于出口即为逆差。"),
 }
 
 WATCHING: dict[str, tuple[dict[str, str], ...]] = {
@@ -529,6 +657,60 @@ WATCHING: dict[str, tuple[dict[str, str], ...]] = {
         _pair("If both fall together, the cooling has reached the stickier part of the basket.",
               "若两者同时下行，说明降温已触及篮子中较顽固的部分。"),
     ),
+    "growth": (
+        _pair("If the pace slows while most gauges still rise, the slowdown is not broad yet.",
+              "若速度放缓而多数指标仍在上行，说明放缓尚未扩散。"),
+        _pair("If company activity weakens before the wider economy does, the turn starts there.",
+              "若企业活动先于整体经济走弱，转折就是从那里开始的。"),
+    ),
+    "jobs": (
+        _pair("If hiring demand falls while workers stay scarce, wage pressure lasts longer.",
+              "若招聘需求下滑而人手仍然紧缺，薪资压力会持续更久。"),
+        _pair("If both readings fall together, the job market is loosening for real.",
+              "若两项读数同时下行，说明就业市场是真的在转松。"),
+    ),
+    "housing": (
+        _pair("If building permits fall while the mortgage rate holds, builders are stepping back.",
+              "若营建许可下滑而房贷利率未动，说明开发商正在收手。"),
+        _pair("If prices keep rising while building slows, affordability gets worse, not better.",
+              "若房价继续上涨而建设放缓，可负担性只会更差。"),
+    ),
+    "consumer": (
+        _pair("If stress keeps rising while spending holds, the spending is being borrowed.",
+              "若压力持续上升而消费未减，说明这些消费是借来的。"),
+        _pair("If spending falls first, households are pulling back before the debt bites.",
+              "若消费先行下滑，说明家庭在债务咬人之前就已收手。"),
+    ),
+    "credit": (
+        _pair("If conditions tighten while companies keep issuing, the pressure has not reached them yet.",
+              "若融资条件收紧而企业仍在照常发债，说明压力尚未传导到它们身上。"),
+        _pair("If issuing slows first, borrowers are stepping back before the price moves.",
+              "若发行先行放缓，说明借款人在价格变动前就已收手。"),
+    ),
+    "debt": (
+        _pair("If auction demand falls while issuance rises, buyers are asking for a better price.",
+              "若拍卖需求下滑而发行量上升，说明买方在要求更好的价格。"),
+        _pair("If the cash balance is rebuilt quickly, that money comes out of the market.",
+              "若现金余额被快速补回，这些钱就是从市场里抽走的。"),
+    ),
+    "trade": (
+        _pair("If imports rise while exports flatten, the gap widens without demand improving.",
+              "若进口上升而出口走平，差额会在需求未改善的情况下扩大。"),
+        _pair("If both fall together, trade is slowing rather than rebalancing.",
+              "若两者同时下滑，说明贸易是在放缓，而不是在再平衡。"),
+    ),
+}
+
+# P4 §3.4 — the panel-foot note names the instrument condition that fired.
+# `stale` is the shipped P3 sentence (unchanged). `disagree` is the new pair
+# for `Contradictory signals` alone — growth fires that today.
+FOOT: dict[str, dict[str, str]] = {
+    "stale": _pair(
+        "Some inputs are not current today — see details.",
+        "今天部分输入并非最新 — 详见细节。"),
+    "disagree": _pair(
+        "Some inputs disagree today — see details.",
+        "今天部分输入相互矛盾 — 详见细节。"),
 }
 
 # Derived lines (pin §I.6) — format strings, never reviewed variants.
@@ -582,7 +764,9 @@ EMPTY_STATES: dict[str, dict[str, Any]] = {
     },
     "e2": {
         "id": "e2",
-        "title": _pair("Today's number didn't arrive", "今天的数据未能送达"),
+        # N-B: one sentence on the card. The old title is retired; the
+        # panel stance is suppressed (P3 v16 MINOR-E6).
+        "title": _pair("No reading arrived today.", "今天没有新的读数。"),
         "why": _pair(
             "The data provider did not deliver in time. We show nothing rather than yesterday's number dressed as today's.",
             "数据提供方未能及时送达。我们宁可不显示，也不会把昨天的数字当作今天的。"),
@@ -621,12 +805,18 @@ EMPTY_STATES: dict[str, dict[str, Any]] = {
     },
     "e6": {
         "id": "e6",
+        # r5 MINOR-1 / P3 v16: one proposition per slot. Title names the wall
+        # (suite-law ZH 包含在更高方案中); stance, why, unlock and the button
+        # each add one different fact.
         "title": _pair("Included in a higher plan", "包含在更高方案中"),
-        "why": _pair("This section is part of {plan}.", "本板块属于{plan}。"),
+        # N-D: a walled section never issues a read-now instruction.
         "stance": _pair(
             "The reading is available on upgrade.",
             "升级后可查看该读数。"),
-        "unlock": _pair("See it with an upgrade.", "升级即可查看。"),
+        "why": _pair("This section is part of {plan}.", "本板块属于{plan}。"),
+        "unlock": _pair(
+            "See it with an upgrade.",
+            "升级即可查看。"),
         "cta_href": "plans.html",
         "cta_label": _pair("Upgrade to see it", "查看升级方案"),
     },
@@ -737,9 +927,11 @@ STATE_WORD: dict[str, dict[str, dict[str, str]]] = {
         "D": _pair("Hiring into slack", "宽松中招聘"),
     },
     "financial_conditions": {
-        "A": _pair("Easy but tightening", "宽松但转紧"),
+        # P4 Q2: A/C were swapped against the composer's _QUADRANTS /
+        # _classify (A = not tight, not tightening; C = not tight, tightening).
+        "A": _pair("Easy and easing", "宽松且续松"),
         "B": _pair("Tight and tightening", "偏紧且续紧"),
-        "C": _pair("Easy and easing", "宽松且续松"),
+        "C": _pair("Easy but tightening", "宽松但转紧"),
         "D": _pair("Tight but easing", "偏紧但转松"),
     },
 }
@@ -770,9 +962,9 @@ PREDICATE_FORM: dict[str, dict[str, dict[str, str]]] = {
         "D": _pair("are picking up with room to grow", "招聘在回升，且仍有余量"),
     },
     "financial_conditions": {
-        "A": _pair("is still cheap but getting less so", "仍然便宜，但正在变贵"),
+        "A": _pair("is cheap and getting cheaper", "便宜，而且还在变便宜"),
         "B": _pair("is expensive and getting harder", "成本偏高，而且越来越难"),
-        "C": _pair("is cheap and getting cheaper", "便宜，而且还在变便宜"),
+        "C": _pair("is still cheap but getting less so", "仍然便宜，但正在变贵"),
         "D": _pair("is expensive but easing", "成本仍高，但正在放松"),
     },
 }
@@ -786,7 +978,10 @@ STATE_TONE: dict[str, dict[str, str]] = {
     "inflation_system": {"A": "warn", "B": "bad", "C": "ok", "D": "warn"},
     "growth_real_economy": {"A": "warn", "B": "ok", "C": "bad", "D": "warn"},
     "labor_markets": {"A": "warn", "B": "ok", "C": "bad", "D": "ok"},
-    "financial_conditions": {"A": "warn", "B": "bad", "C": "ok", "D": "warn"},
+    "financial_conditions": {"A": "ok", "B": "bad", "C": "warn", "D": "warn"},
+    # P4-5 / §3.3: consumer_payments publishes PRESENT / B. Panel-only —
+    # not a strip chip, so STATE_WORD / PREDICATE_FORM stay the chip key set.
+    "consumer_payments": {"A": "ok", "B": "warn", "C": "warn", "D": "bad"},
 }
 
 # Plain-word siblings of FRESHNESS (`.mc-chip-fresh`, pin §6.6). FRESHNESS's

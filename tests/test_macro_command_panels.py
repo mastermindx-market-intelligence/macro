@@ -192,14 +192,30 @@ def test_p3_non_overview_dom_order(built: tuple[str, Path]) -> None:
 
 
 @pytest.mark.needs_full_checkout("site")
-def test_p4_sections_are_not_rendered_as_empty_shells(
-        built: tuple[str, Path]) -> None:
-    """N5-M2: P3 ships only populated panels — no offer-only P4 shells."""
+def test_p4_sections_have_stance_primer_caption_watch(built: tuple[str, Path]) -> None:
     html, _ = built
+    # Live #rates is E2 — the empty card is the one voice, so 11 stances.
+    assert html.count('<p class="mc-stance') == 11
+    assert html.count('<details class="mc-primer') == 12
+    assert html.count('<div class="mc-watch') == 12
+    # P4-3 drops the caption on an E1/E2 figure. I4 also drops it when the
+    # figure is current-only (same-publication prior). Live data today is
+    # current-only, so the caption count is not the naive twelve.
     for section_id in P4_IDS:
-        assert f'id="{section_id}"' not in html, section_id
-        assert f'data-mc-panel="{section_id}"' not in html, section_id
-        assert f'data-mc-section="{section_id}"' not in html, section_id
+        panel = _panel(html, section_id)
+        assert 'class="mc-stance' in panel, section_id
+        assert 'class="mc-primer' in panel, section_id
+        assert 'class="mc-watch' in panel, section_id
+        assert 'class="mc-panel-question"' in panel, section_id
+        # P4 primers ship closed — open-by-default stays the first three.
+        assert 'class="mc-primer" open' not in panel, section_id
+        text = unescape(panel)
+        if ("Today's number didn't arrive" in text
+                or "Only one reading is published so far" in text
+                or "Each row shows the last two readings" not in text):
+            assert 'class="mc-caption' not in panel, section_id
+        else:
+            assert 'class="mc-caption' in panel, section_id
 
 
 @pytest.mark.needs_full_checkout("site")
@@ -207,7 +223,7 @@ def test_panel_focus_and_subtab_aria_yield_to_shipped_p1(built: tuple[str, Path]
     html, _ = built
     assert len(re.findall(r'<section class="mc-panel"[^>]*tabindex', html)) == 0
     titles = re.findall(r'<h2 class="mc-panel-title"[^>]*>', html)
-    assert len(titles) == len(P3_IDS)
+    assert len(titles) == len(P3_IDS) + len(P4_IDS)
     for tag in titles:
         assert 'tabindex="-1"' in tag
     assert re.findall(r'class="mc-subtabs"[^>]*aria-label=', html) == []
@@ -253,18 +269,17 @@ def test_deck_count_changes_when_the_rail_length_changes() -> None:
 def test_built_page_has_one_section_count_matching_the_rail(
         built: tuple[str, Path]) -> None:
     html, _ = built
-    n = len(P3_IDS)
+    n = len(P3_IDS) + len(P4_IDS)
     assert html.count("Fourteen research") == 0
     assert html.count("十四个研究") == 0
     assert html.count(f"{n} research sections") == 1
     assert html.count(f"{n} 个研究板块") == 1
-    # R6-M1: one count truth — populated panels, never the P2 12-rail.
-    assert "of 12 sections" not in html
-    assert "of 12" not in unescape(html)
-    assert "12 个板块" not in html
-    assert "12个板块" not in html
-    assert re.search(r"\d+ of 5 sections have today's data", unescape(html))
-    assert re.search(r"5个板块中有\d+个有今日数据", unescape(html))
+    # R6-M1: one count truth — populated panels. P4 fills the remaining
+    # seven, so the coverage denominator is twelve, not the P3-only five.
+    assert re.search(rf"\d+ of {n} sections have today's data", unescape(html))
+    assert re.search(rf"{n}个板块中有\d+个有今日数据", unescape(html))
+    assert "Fourteen research" not in html
+    assert "十四个研究" not in html
 
 
 def test_copy_budgets_on_the_reviewed_tables() -> None:
@@ -342,7 +357,8 @@ def test_e2_figure_prints_the_e2_stance_not_the_structural_null(
     fragment = unescape(
         (out / "macro" / "fragments" / "rates.html").read_text(encoding="utf-8"))
     assert 'data-mc-empty="e2"' in fragment
-    assert "Today's number didn't arrive" in fragment
+    assert "No reading arrived today." in fragment
+    assert "Today's number didn't arrive" not in fragment
     assert "Today's number didn't arrive" not in rates
     assert "No single reading is published here" not in rates
     assert "Each row shows the last two readings" not in rates
@@ -415,10 +431,11 @@ def test_built_hub_coverage_uses_populated_tally_and_some_unread(
     note = re.search(r"(\d+) of (\d+) sections have today's data", plain)
     assert note, "coverage chip lost its counted note"
     available, total = int(note.group(1)), int(note.group(2))
-    assert total == len(P3_IDS)
+    populated_ids = set(P3_IDS + P4_IDS)
+    assert total == len(populated_ids)
     assert available < total
     assert (available, total) == builder.populated_section_coverage_tally(
-        _live_entries(), set(P3_IDS))
+        _live_entries(), populated_ids)
     opening = re.search(r'<p class="mc-stance[^"]*"', overview)
     assert opening and "mq-tone-ok" not in opening.group(0)
 
@@ -473,8 +490,8 @@ def test_dests_heading_names_destination_pages_not_research_sections(
     """n4: 12 and 14 are labelled as different counts."""
     html, _ = built
     overview = unescape(_panel(html, "overview"))
-    assert "5 research sections" in overview
-    assert "5 个研究板块" in overview
+    assert "12 research sections" in overview
+    assert "12 个研究板块" in overview
     assert "Where to go next — 14 destination pages" in overview
     assert "接下来去哪里——14 个目标页面" in overview
 
@@ -700,7 +717,7 @@ def test_dec_stance_is_guidance_record_exists() -> None:
 @pytest.mark.needs_full_checkout("site")
 def test_arrival_ships_hidden_on_non_overview_panels(built: tuple[str, Path]) -> None:
     html, _ = built
-    assert html.count("data-mc-arrival hidden") == len(P3_IDS) - 1
+    assert html.count("data-mc-arrival hidden") == len(P3_IDS) + len(P4_IDS) - 1
     overview = _panel(html, "overview")
     assert "data-mc-arrival" not in overview
 
@@ -711,9 +728,15 @@ def test_fragments_carry_the_authenticity_marker(built: tuple[str, Path]) -> Non
     frag_dir = out / "macro" / "fragments"
     names = sorted(p.name for p in frag_dir.glob("*.html"))
     assert "overview.html" not in names
-    assert names == ["inflation.html", "money.html", "policy.html", "rates.html"]
+    expected = sorted(
+        f"{section_id}.html"
+        for section_id in (*P3_IDS, *P4_IDS)
+        if section_id != "overview"
+    )
+    assert names == expected
     assert "money.html" in names
     assert "rates.html" in names
+    assert "growth.html" in names
     money = (frag_dir / "money.html").read_text(encoding="utf-8")
     assert "data-mc-fragment" in money
     assert "data-mc-tabbody=\"liquidity\"" in money
@@ -768,17 +791,18 @@ def test_empty_state_fixture_flag_enables_e4_and_e6(tmp_path: Path) -> None:
         (out / "macro" / "fragments" / "inflation.html").read_text(encoding="utf-8"))
     hub = unescape((out / "macro_monetary.html").read_text(encoding="utf-8"))
     assert 'data-mc-empty="e6"' in frag
+    assert "Included in a higher plan" in frag
     inflation = re.search(
         r'<section class="mc-panel" id="inflation".*?(?=<section class="mc-panel"|</main>)',
         hub, re.S)
     assert inflation
     body = inflation.group(0)
-    assert "Included in a higher plan" in frag
     assert "包含在更高方案中" in frag
     assert "See it with an upgrade." in frag
     assert "升级即可查看。" in frag
     assert "查看升级方案" in frag
-    assert "Included in a higher plan" not in body
+    assert "The reading is available on upgrade." in frag
+    assert "The reading is available on upgrade." not in body
     assert "Each row shows the last two readings" not in body
     assert 'class="mc-caption"' not in body
 
@@ -1122,8 +1146,8 @@ def test_n5_m2_hub_renders_only_populated_panels_with_stance(
     html, _ = built
     panels = re.findall(r'<section class="mc-panel" id="([^"]+)"', html)
     rail = re.findall(r'data-mc-section="([a-z]+)"', html)
-    assert panels == list(P3_IDS)
-    assert rail == list(P3_IDS)
+    assert panels == list(P3_IDS) + list(P4_IDS)
+    assert rail == list(P3_IDS) + list(P4_IDS)
     for section_id in panels:
         body = _panel(html, section_id)
         visible = re.sub(r"<template[^>]*>.*?</template>", "", body, flags=re.S)
@@ -1135,20 +1159,19 @@ def test_n5_m2_hub_renders_only_populated_panels_with_stance(
             continue
         else:
             assert 'data-mc-offer' in visible, section_id
-    # Destination cards still name the fourteen workspaces; the Growth
-    # *panel* is what must be gone (offer-only shells).
     assert html.count('<span class="l-en">Overview</span>') >= 1
     assert html.count('<span class="l-zh">总览</span>') >= 1
 
 
 @pytest.mark.needs_full_checkout("site")
-def test_n5_m2_unpopulated_hash_resolves_to_overview_anchor(
+def test_n5_m2_every_in_page_hash_resolves_to_a_real_anchor(
         built: tuple[str, Path]) -> None:
     html, _ = built
     ids = set(re.findall(r'\bid="([^"]+)"', html))
     for href in re.findall(r'href="#([^"]+)"', html):
         assert href in ids, href
-        assert href not in P4_IDS
+    for section_id in P4_IDS:
+        assert section_id in ids
     js = (ROOT / "templates" / "macro_command.js").read_text(encoding="utf-8")
     assert "sectionId = 'overview'" in js
 
@@ -1303,29 +1326,27 @@ def test_r6_m3_chip_and_read_hrefs_resolve_to_rendered_sections(
         built: tuple[str, Path]) -> None:
     html, _ = built
     panel_ids = set(re.findall(r'<section class="mc-panel" id="([^"]+)"', html))
-    assert panel_ids == set(P3_IDS)
+    assert panel_ids == set(P3_IDS + P4_IDS)
     chips = re.findall(r'<a class="mc-chip-link" href="#([^"]+)"', html)
     assert chips
     assert len(chips) == len(set(chips)), chips
     for href in chips:
         assert href in panel_ids, href
-        assert href not in P4_IDS
     topics = re.findall(
         r'<li class="mc-chip[^"]*" data-mc-topic="([^"]+)"', html)
-    assert topics == ["money", "policy", "rates", "inflation", "coverage"]
+    assert "coverage" in topics
+    assert set(topics) - {"coverage"} <= panel_ids
     clauses = re.findall(
         r'<a class="mc-read-topic[^"]*" href="#([^"]+)"', html)
     assert clauses
     assert len(clauses) == len(set(clauses)), clauses
     for href in clauses:
         assert href in panel_ids, href
-        assert href not in P4_IDS
     note = re.search(
         r"(\d+) of (\d+) sections have today's data", unescape(html))
     assert note
-    assert int(note.group(2)) == len(topics)  # same populated set as the chips
-    # coverage is the extra chip; market chips + overview = N of 5
-    assert int(note.group(2)) == len(P3_IDS)
+    # Coverage denominator is populated panels (twelve), not chip count.
+    assert int(note.group(2)) == len(P3_IDS + P4_IDS)
 
 
 @pytest.mark.needs_full_checkout("site")
@@ -1336,14 +1357,17 @@ def test_r6_m1_hub_never_prints_twelve_as_a_section_count(
     visible = re.sub(r"<style[^>]*>.*?</style>", "", visible, flags=re.S)
     visible = re.sub(r'datetime="[^"]*"', "", visible)
     text = re.sub(r"<[^>]+>", " ", visible)
-    assert "of 12" not in text
-    assert "12 research" not in text
-    assert "12 个板块" not in text
-    assert "12个板块" not in text
-    assert "5 research sections" in text
-    assert "5 个研究板块" in text
-    assert re.search(r"\d+ of 5 sections have today's data", text)
-    assert re.search(r"5个板块中有\d+个有今日数据", text)
+    n = len(P3_IDS + P4_IDS)
+    # P3's lie was printing twelve while only five panels shipped. P4
+    # populates all twelve, so the coverage denominator is twelve; fourteen
+    # (the workspace count) remains the forbidden count.
+    assert "Fourteen research" not in text
+    assert "14 research" not in text
+    assert "十四个研究" not in text
+    assert f"{n} research sections" in text
+    assert f"{n} 个研究板块" in text
+    assert re.search(rf"\d+ of {n} sections have today's data", text)
+    assert re.search(rf"{n}个板块中有\d+个有今日数据", text)
 
 
 def test_r6_m2_stance_alone_is_not_populated() -> None:

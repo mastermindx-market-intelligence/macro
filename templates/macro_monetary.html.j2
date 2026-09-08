@@ -211,10 +211,9 @@
       </div>
       {%- endif %}
 
-      {# P3 D7 — instrument note. Never a tone, never a watching bullet. #}
+      {# P3 D7 / P4 §3.4 — instrument note names the condition that fired. #}
       {%- if s.input_note %}
-      <p class="mc-foot">{{ t('Some inputs are not current today — see details.',
-                              '今天部分输入并非最新 — 详见细节。') }}</p>
+      <p class="mc-foot">{{ bl(s.input_note) }}</p>
       {%- endif %}
 
       {# P3 §0 / P1 D5: the fourteen destinations, ONCE, and no longer inside

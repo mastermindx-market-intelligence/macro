@@ -37,9 +37,10 @@ BUILT_AT = "2026-09-06T08:00:00Z"
 # Fixed reading order — frozen Macro Command spec §1.1 (customer's question
 # order), never the producer registry order and never re-sorted with data.
 EXPECTED_SECTION_ORDER = (
-    "overview", "money", "policy", "rates", "inflation",
+    "overview", "money", "policy", "rates", "inflation", "growth",
+    "jobs", "housing", "consumer", "credit", "debt", "trade",
 )
-SUBTABBED_SECTIONS = ("money",)
+SUBTABBED_SECTIONS = ("money", "growth", "credit")
 
 _TEMPLATE_NAMES = (
     "macro_monetary.html.j2",

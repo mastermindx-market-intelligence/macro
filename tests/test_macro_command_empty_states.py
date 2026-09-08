@@ -7,6 +7,7 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
+from lib import macro_suite_labels as L
 from scripts import build_macro_suite_pages as builder
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -34,7 +35,9 @@ def test_e1_through_e6_render_the_spec_sentences_verbatim() -> None:
 
     e2 = _render_empty(builder._empty_state("e2"))
     assert 'data-mc-empty="e2"' in e2
-    assert "Today's number didn't arrive" in e2
+    assert "No reading arrived today." in e2
+    assert "今天没有新的读数。" in e2
+    assert "Today's number didn't arrive" not in e2
     assert "昨天的数字当作今天的" in e2
     assert "mc-empty-next" not in e2  # unlock/next merged into unlock
 
@@ -55,6 +58,8 @@ def test_e1_through_e6_render_the_spec_sentences_verbatim() -> None:
     e6 = _render_empty(builder._empty_state("e6", plan="Pro"))
     assert "Included in a higher plan" in e6
     assert "包含在更高方案中" in e6
+    assert "This section is included in a higher plan." not in e6
+    assert "本板块包含在更高方案中。" not in e6
     assert "本板块属于Pro。" in e6
     assert "The reading is available on upgrade." in e6
     assert "升级后可查看该读数。" in e6
@@ -63,6 +68,8 @@ def test_e1_through_e6_render_the_spec_sentences_verbatim() -> None:
     assert "Upgrade to see it" in e6
     assert "查看升级方案" in e6
     assert 'href="plans.html"' in e6
+    assert e6.count("Upgrade to see it") == 1
+    assert e6.count("查看升级方案") == 1
     assert "mc-empty-next" not in e6
     assert "包含于更高级别方案" not in e6
     assert "升级后即可查看" not in e6
@@ -239,8 +246,8 @@ def test_hydrated_empty_section_has_no_repeated_sentence() -> None:
         )
         text = unescape(composed)
         for sentence in (
-            "Today's number didn't arrive",
-            "今天的数据未能送达",
+            "No reading arrived today.",
+            "今天没有新的读数。",
             "The data provider did not deliver in time",
             "数据提供方未能及时送达",
         ):
@@ -250,7 +257,7 @@ def test_hydrated_empty_section_has_no_repeated_sentence() -> None:
             parser.feed(composed)
             empty_lines = [
                 t for t in parser.texts
-                if "didn't arrive" in t or "未能送达" in t
+                if "No reading arrived" in t or "没有新的读数" in t
                 or "did not deliver" in t or "未能及时送达" in t
             ]
             assert empty_lines, lang
