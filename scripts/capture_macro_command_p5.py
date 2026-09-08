@@ -430,7 +430,7 @@ _CLEARANCE_JS = """(el, arg) => {
        text can never clear the stuck box (exposedAtScrollY < 0). */
     const occluderName = (f) => {
         const raw = String(f.id || f.cls || 'occluder').trim();
-        return raw.split(/\s+/)[0] || 'occluder';
+        return raw.split(/\\s+/)[0] || 'occluder';
     };
     const hits = [];
     const scrollUnder = [];
