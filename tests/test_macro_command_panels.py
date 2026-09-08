@@ -192,14 +192,29 @@ def test_p3_non_overview_dom_order(built: tuple[str, Path]) -> None:
 
 
 @pytest.mark.needs_full_checkout("site")
-def test_p4_sections_are_not_rendered_as_empty_shells(
-        built: tuple[str, Path]) -> None:
-    """N5-M2: P3 ships only populated panels — no offer-only P4 shells."""
+def test_p4_sections_have_stance_primer_caption_watch(built: tuple[str, Path]) -> None:
     html, _ = built
+    assert html.count('<p class="mc-stance') == 12
+    assert html.count('<details class="mc-primer') == 12
+    assert html.count('<div class="mc-watch') == 12
+    # P4-3 drops the caption on an E1/E2 figure. I4 also drops it when the
+    # figure is current-only (same-publication prior). Live data today is
+    # current-only, so the caption count is not the naive twelve.
     for section_id in P4_IDS:
-        assert f'id="{section_id}"' not in html, section_id
-        assert f'data-mc-panel="{section_id}"' not in html, section_id
-        assert f'data-mc-section="{section_id}"' not in html, section_id
+        panel = _panel(html, section_id)
+        assert 'class="mc-stance' in panel, section_id
+        assert 'class="mc-primer' in panel, section_id
+        assert 'class="mc-watch' in panel, section_id
+        assert 'class="mc-panel-question"' in panel, section_id
+        # P4 primers ship closed — open-by-default stays the first three.
+        assert 'class="mc-primer" open' not in panel, section_id
+        text = unescape(panel)
+        if ("Today's number didn't arrive" in text
+                or "Only one reading is published so far" in text
+                or "Each row shows the last two readings" not in text):
+            assert 'class="mc-caption' not in panel, section_id
+        else:
+            assert 'class="mc-caption' in panel, section_id
 
 
 @pytest.mark.needs_full_checkout("site")
@@ -207,7 +222,7 @@ def test_panel_focus_and_subtab_aria_yield_to_shipped_p1(built: tuple[str, Path]
     html, _ = built
     assert len(re.findall(r'<section class="mc-panel"[^>]*tabindex', html)) == 0
     titles = re.findall(r'<h2 class="mc-panel-title"[^>]*>', html)
-    assert len(titles) == len(P3_IDS)
+    assert len(titles) == len(P3_IDS) + len(P4_IDS)
     for tag in titles:
         assert 'tabindex="-1"' in tag
     assert re.findall(r'class="mc-subtabs"[^>]*aria-label=', html) == []
@@ -1113,42 +1128,28 @@ def test_n5_m1_same_publication_fixture_uses_current_only_deck_once(
 @pytest.mark.needs_full_checkout("site")
 def test_n5_m2_hub_renders_only_populated_panels_with_stance(
         built: tuple[str, Path]) -> None:
-    """N5-M2: rail count equals panel count.
-
-    A populated figure keeps its stance. An empty card is the one null
-    voice — no section stance (MINOR-E6). Live rates hydrates E2 from
-    the fragment, so the hub also has no stance.
-    """
+    """N5-M2: every rendered section has a stance; rail count equals panel count."""
     html, _ = built
     panels = re.findall(r'<section class="mc-panel" id="([^"]+)"', html)
     rail = re.findall(r'data-mc-section="([a-z]+)"', html)
-    assert panels == list(P3_IDS)
-    assert rail == list(P3_IDS)
+    assert panels == list(P3_IDS) + list(P4_IDS)
+    assert rail == list(P3_IDS) + list(P4_IDS)
     for section_id in panels:
         body = _panel(html, section_id)
-        visible = re.sub(r"<template[^>]*>.*?</template>", "", body, flags=re.S)
-        has_empty = bool(re.search(r'data-mc-empty="e[1-6]"', visible))
-        has_stance = 'class="mc-stance' in visible
-        if has_empty:
-            assert not has_stance, section_id
-        elif has_stance:
-            continue
-        else:
-            assert 'data-mc-offer' in visible, section_id
-    # Destination cards still name the fourteen workspaces; the Growth
-    # *panel* is what must be gone (offer-only shells).
+        assert 'class="mc-stance' in body, section_id
     assert html.count('<span class="l-en">Overview</span>') >= 1
     assert html.count('<span class="l-zh">总览</span>') >= 1
 
 
 @pytest.mark.needs_full_checkout("site")
-def test_n5_m2_unpopulated_hash_resolves_to_overview_anchor(
+def test_n5_m2_every_in_page_hash_resolves_to_a_real_anchor(
         built: tuple[str, Path]) -> None:
     html, _ = built
     ids = set(re.findall(r'\bid="([^"]+)"', html))
     for href in re.findall(r'href="#([^"]+)"', html):
         assert href in ids, href
-        assert href not in P4_IDS
+    for section_id in P4_IDS:
+        assert section_id in ids
     js = (ROOT / "templates" / "macro_command.js").read_text(encoding="utf-8")
     assert "sectionId = 'overview'" in js
 

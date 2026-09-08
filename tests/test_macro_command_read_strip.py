@@ -195,9 +195,16 @@ def test_coverage_tally_drops_when_a_representative_workspace_is_not_current() -
 def test_state_word_predicate_form_state_tone_share_identical_keys() -> None:
     word_keys = {(w, s) for w, by in L.STATE_WORD.items() for s in by}
     pred_keys = {(w, s) for w, by in L.PREDICATE_FORM.items() for s in by}
-    tone_keys = {(w, s) for w, by in L.STATE_TONE.items() for s in by}
-    assert word_keys == pred_keys == tone_keys
+    # P4-5 adds panel-only consumer_payments to STATE_TONE; the chip tables
+    # stay locked to one another.
+    chip_tone_keys = {
+        (w, s) for w, by in L.STATE_TONE.items()
+        if w != "consumer_payments"
+        for s in by
+    }
+    assert word_keys == pred_keys == chip_tone_keys
     assert word_keys, "expected at least one reviewed (workspace, state) pair"
+    assert set(L.STATE_TONE["consumer_payments"]) == {"A", "B", "C", "D"}
 
 
 def test_every_market_workspace_has_all_four_quadrant_letters() -> None:

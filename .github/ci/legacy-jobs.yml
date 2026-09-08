@@ -13838,6 +13838,7 @@ jobs:
       - "tests/test_macro_command_read_strip.py"
       - "tests/test_macro_command_panels.py"
       - "tests/test_macro_command_empty_states.py"
+      - "tests/test_macro_command_p4_copy.py"
       # scripts/check_contract_delta.py's import-closure audit: Macro Command
       # is the first page in this job to render the built artifact itself
       # (test_macro_command_shell.py reads `site/macro_monetary.html` for
@@ -13865,6 +13866,6 @@ jobs:
       - name: install suite-page test dependencies
         run: pip install pytest jinja2 pyyaml jsonschema==4.26.0
       - name: Market OS macro suite pages — shell, labels, view model, builder
-        run: python -m pytest tests/test_macro_suite_pages.py tests/test_macro_command_shell.py tests/test_macro_command_copy_law.py tests/test_macro_command_read_strip.py tests/test_macro_command_panels.py tests/test_macro_command_empty_states.py -q
+        run: python -m pytest tests/test_macro_suite_pages.py tests/test_macro_command_shell.py tests/test_macro_command_copy_law.py tests/test_macro_command_read_strip.py tests/test_macro_command_panels.py tests/test_macro_command_empty_states.py tests/test_macro_command_p4_copy.py -q
       - name: Market OS macro suite hub — discoverability, ordering, honest absence
         run: python -m pytest tests/test_macro_monetary_hub.py -q
