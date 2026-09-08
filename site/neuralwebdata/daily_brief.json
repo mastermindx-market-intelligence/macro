@@ -1,15 +1,15 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-09-07T00:33:49.689407+00:00",
+  "produced_at": "2026-09-08T21:57:42.804172+00:00",
   "as_of": "2026-09-04",
   "status": "warn",
   "phase": "final",
   "did_the_brain_run": {
-    "cortex_status": "degraded",
-    "tool_call_batches": 0,
-    "individual_tool_calls": 0,
+    "cortex_status": "fresh",
+    "tool_call_batches": 4,
+    "individual_tool_calls": 9,
     "context_stale": false,
-    "summary": "cortex degraded — model_unavailable"
+    "summary": "cortex ran (9 tool calls); memo as_of 2026-09-07T18:19:20+00:00"
   },
   "what_changed": [],
   "what_contradicted": [
@@ -180,12 +180,6 @@
     ]
   },
   "operator_attention": [
-    {
-      "priority": 1,
-      "area": "cortex",
-      "summary": "cortex degraded — inspect data/neuralweb/cortex/memo.json and run_status",
-      "action_type": "ops_fix"
-    },
     {
       "priority": 2,
       "area": "causal-edges",
@@ -453,9 +447,9 @@
   },
   "china_market_state": {
     "available": true,
-    "as_of": "2026-09-06",
+    "as_of": "2026-09-08",
     "phase": "REPAIR",
-    "phase_confidence": 0.8,
+    "phase_confidence": 0.667,
     "who_controls": "mixed",
     "policy_impulse": "neutral",
     "top_contradiction": null,
@@ -479,7 +473,7 @@
   },
   "causal_lab": {
     "available": true,
-    "asof": "2026-09-06T11:13:44Z",
+    "asof": "2026-09-08T16:03:13Z",
     "new_edges_this_week_by_verdict": {
       "insufficient_power": 22,
       "null": 11,
@@ -487,7 +481,7 @@
     },
     "nulls_added": 35,
     "cards_filed": 2,
-    "llm_lane_status": "degraded_pack_only",
+    "llm_lane_status": "armed",
     "display_only": true,
     "not_a_signal": true
   },

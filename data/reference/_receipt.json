@@ -13,12 +13,12 @@
     "evidence_sources": {
       "cn": {
         "dataset": "data/china_filings/filings.parquet",
-        "newest_observation": "2026-09-04",
+        "newest_observation": "2026-09-07",
         "provenance": "CNInfo (\u5de8\u6f6e\u8d44\u8baf\u7f51) SSE+SZSE disclosure metadata (collectors/china_filings.py)"
       },
       "hk": {
         "dataset": "data/hk_shorts/positions.parquet + data/hk_shorts/turnover.parquet",
-        "newest_observation": "2026-09-03",
+        "newest_observation": "2026-09-07",
         "provenance": "SFC official Short Position Reports + HKEX official turnover statistics (collectors/hk_shorts.py)"
       }
     },
@@ -74,7 +74,7 @@
       "hk": 0
     },
     "resolved_this_run": {
-      "cn": 3,
+      "cn": 0,
       "hk": 0
     },
     "resolved_total": {
@@ -87,8 +87,8 @@
     },
     "target_population_source": "data/theme_graph/nodes.parquet (kind=company, market_scope in cn/hk)"
   },
-  "cik_map_snapshot": "2026-08-31",
-  "code_version": "f14e05e1de03f018c196aa216d5297bd3d56820c",
+  "cik_map_snapshot": "2026-09-07",
+  "code_version": "2621dc7f34e1f167bdaeb510152ba5241f314f01",
   "coverage": {
     "resolved": 705,
     "total": 715,
@@ -113,7 +113,7 @@
     "reference.issuer_migrations",
     "reference.security_migrations"
   ],
-  "generated_at": "2026-09-06T16:56:03",
+  "generated_at": "2026-09-08T03:14:28",
   "identity_exceptions": [
     {
       "evidence": "SEC Barnes Group 2025-01-27 8-K/Form 25; Barrick Mining 2025-05-07 Form 6-K Exhibit 99.2; Gold.com 2025-11-12 AMRK->NYSE GOLD transfer announcement; config/theme_graph_identity_breaks.yml GOLD",
@@ -132,19 +132,19 @@
     "config.yml": "57da871abb2cffc75dd534578ad81e78f19ce8f683af3c7c93308c1c06457246",
     "config/delisted_symbols.yml": "6cefebced6f19f7d612078f369e47ae4cd4d23ac35f6ecfbd732f4dd4a6e661a",
     "data/baskets/membership.json": "b968e9812f60494bd02bbc0d5ad4b8dc67dcb90a939426728e9db6befba9678a",
-    "data/breadth/constituents.parquet": "58bbb0268564fe8069fc940f5dc481b9598062366e496d82441c99658e45265e",
-    "data/china_filings/filings.parquet": "c70ffcdd1e83be57ba7a9f2d32b733ff9b082dd9e0e33a8327e2cde5cb53a105",
+    "data/breadth/constituents.parquet": "f40d594d8115f9036c4d8a8ded8df81edbd2a40638d2240501ac1adca00b252c",
+    "data/china_filings/filings.parquet": "94eb6569a187aa3db7fa0c2cae59b45d136a0a8f6a4fed3535f254b77b403d2f",
     "data/hk_shorts/positions.parquet": "64199df048feee073c9710e728c48e8526e001a21237022223ea0aa897f2a2c5",
-    "data/hk_shorts/turnover.parquet": "1bcd89ad3d13a74c5da8b34db95fca477f259ace0b312e783312c45ad9e1258e",
-    "data/symbol_directory/cik_map": "b61f78452c3b0bcea05416c4ff131d034c86c113f58d131d21224ac7f0ca09e3",
-    "data/symbol_directory/snapshots": "839269a602db10856d0bacec16a4e1d69e63787d170ae6f08cea0ef08c36d842",
+    "data/hk_shorts/turnover.parquet": "c1e8e525e70275707556e8e65e8cf5a4b67f950576b199b8ee7157f646e66f61",
+    "data/symbol_directory/cik_map": "62f6fe8ae252a7ef265a3840fb5cadc18846cf6a1989977c8b30a118162a24b2",
+    "data/symbol_directory/snapshots": "2c27f3c30f5b113ed7dedd5328c7b1a50d54f0932d0139167073405cff5ff0cd",
     "data/theme_graph/nodes.parquet": "aec75eba73a401fe360c3332a6bdc67ab170368a57dae0c159612138d95bf4e1",
     "lib/ticker_aliases.py": "6a6da16e40de28e9ac3eb9f319ca6b1a137a479656101b590b9264211e3e70fd"
   },
   "issuer": {
     "era": "issuer_semantic_correction_v1",
     "era_migrations_total": 3,
-    "evidence_snapshot": "2026-08-31",
+    "evidence_snapshot": "2026-09-07",
     "migrations_this_run": 0,
     "multi_security_groups": [
       {
@@ -245,7 +245,7 @@
     "ticker_key_migrations": 1,
     "universe_keys": 710
   },
-  "symbol_directory_snapshot": "2026-09-06",
+  "symbol_directory_snapshot": "2026-09-08",
   "undated_renames": [
     {
       "evidence": "lib/ticker_aliases.py YAHOO_FETCH_ALIASES FI->FISV (vendor LAGS the rename); config.yml breadth.ticker_fixups FISV->FI; no in-repo date for the 2023 change",
@@ -328,7 +328,7 @@
         "symbol": "GATO"
       },
       {
-        "code": "not_listed_cik_present",
+        "code": "not_listed_no_cik",
         "reason": "absent from the newest symbol-directory snapshot under 'GGRP' or 'GGRP' (and from the exit ledger) \u2014 venue unknown",
         "symbol": "GGRP"
       },
