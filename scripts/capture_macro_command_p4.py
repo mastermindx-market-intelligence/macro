@@ -6,7 +6,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import math
 import os
 import re
 import shutil
@@ -21,6 +20,16 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+
+from scripts.capture_macro_command_p3 import (  # noqa: E402
+    RAIL_VIEWPORT_JS,
+    _assert_shot_geometry,
+    _device_px_span,
+    _device_px_span_from_crop_box_doc,
+    _run_clearance,
+    _write_element_shot,
+)
+
 SITE = ROOT / "site"
 DATA = SITE / "macrodata"
 EVIDENCE = ROOT / "mockups" / "evidence" / "macro-command-p4"
@@ -81,79 +90,6 @@ def _kill_all() -> None:
 def _png_size(path: Path) -> tuple[int, int]:
     data = path.read_bytes()
     return int.from_bytes(data[16:20], "big"), int.from_bytes(data[20:24], "big")
-
-
-def _device_px(origin: float, size: float, dpr: float) -> int:
-    """Playwright device-pixel span: ceil((origin+size)×dpr) − floor(origin×dpr)."""
-    return int(math.ceil((origin + size) * dpr) - math.floor(origin * dpr))
-
-
-def _assert_shot_geometry(dest: Path, extra: dict[str, Any],
-                          vw: int, vh: int) -> None:
-    dpr = extra.get("dpr")
-    if dpr is None:
-        raise RuntimeError(f"{dest.name}: missing dpr")
-    width, height = _png_size(dest)
-    scale = float(dpr)
-    if extra.get("crop"):
-        span = extra.get("device_px_span")
-        if not span:
-            raise RuntimeError(f"{dest.name}: crop missing device_px_span")
-        exp_w = int(span["x1"]) - int(span["x0"])
-        exp_h = int(span["y1"]) - int(span["y0"])
-        if width < exp_w or height < exp_h:
-            raise RuntimeError(
-                f"{dest.name}: element box exceeds what was shot "
-                f"IHDR {width}x{height} < device_px_span {exp_w}x{exp_h} "
-                f"span={span} dpr={dpr}")
-        if (width, height) != (exp_w, exp_h):
-            raise RuntimeError(
-                f"{dest.name}: crop IHDR {width}x{height} != device_px_span "
-                f"{exp_w}x{exp_h} span={span} dpr={dpr}")
-        if not extra.get("crop_selector"):
-            raise RuntimeError(f"{dest.name}: crop:true missing crop_selector")
-    elif extra.get("full_page"):
-        exp_w = _device_px(0.0, float(vw), scale)
-        if width != exp_w:
-            raise RuntimeError(
-                f"{dest.name}: full_page IHDR width {width} != {vw}×{dpr}={exp_w}")
-    else:
-        exp_w = _device_px(0.0, float(vw), scale)
-        exp_h = _device_px(0.0, float(vh), scale)
-        if (width, height) != (exp_w, exp_h):
-            raise RuntimeError(
-                f"{dest.name}: viewport IHDR {width}x{height} != {vw}x{vh}×{dpr} "
-                f"({exp_w}x{exp_h})")
-
-
-def _pin_element_span(dest: Path, extra: dict[str, Any]) -> None:
-    """NIT-2: refuse a partial element shot; record the PNG's device span.
-
-    Playwright locator.screenshot() may add a device-pixel of rounding
-    beyond the CSS box. That is still a full element. A PNG smaller
-    than the element box is a clipped frame and is an error.
-    """
-    from scripts.capture_macro_command_p3 import _device_px_span
-
-    box = extra.get("crop_box") or {}
-    expected = _device_px_span(box, float(extra["dpr"]))
-    width, height = _png_size(dest)
-    exp_w = expected["x1"] - expected["x0"]
-    exp_h = expected["y1"] - expected["y0"]
-    if width < exp_w or height < exp_h:
-        raise RuntimeError(
-            f"{dest.name}: element box exceeds what was shot "
-            f"IHDR {width}x{height} < element span {exp_w}x{exp_h} "
-            f"box={box} dpr={extra.get('dpr')}")
-    extra["element_device_px_span"] = expected
-    extra["device_px_span"] = {
-        "x0": expected["x0"],
-        "x1": expected["x0"] + width,
-        "y0": expected["y0"],
-        "y1": expected["y0"] + height,
-    }
-    if not extra.get("element_text_head"):
-        raise RuntimeError(f"{dest.name}: empty element_text_head")
 
 
 def _copy_chrome(out: Path) -> None:
@@ -322,8 +258,6 @@ def _capture_clip(*, browser, url: str, hash_path: str, theme: str, locale: str,
                   wait_sel: str | None = None, width: int = 1440,
                   height: int = 900, first_screen: bool = False,
                   full_page: bool = False) -> dict[str, Any]:
-    from scripts.capture_macro_command_p3 import _write_element_shot
-
     context, page = _open_page(
         browser=browser, url=url, hash_path=hash_path, theme=theme,
         locale=locale, width=width, height=height)
@@ -361,7 +295,6 @@ def _capture_clip(*, browser, url: str, hash_path: str, theme: str, locale: str,
         extra["full_page"] = False
         extra["crop_selector"] = sel
         _write_element_shot(page, dest, target, extra, locale)
-        _pin_element_span(dest, extra)
         clip = extra["crop_box"]
         box = extra.get("crop_box") or box
     _assert_shot_geometry(dest, extra, width, height)
@@ -413,6 +346,7 @@ def _capture_clip(*, browser, url: str, hash_path: str, theme: str, locale: str,
         "scroll_y_at_shot": extra.get("scroll_y_at_shot"),
         "element_text_head": extra.get("element_text_head"),
         "device_px_span": extra.get("device_px_span"),
+        "ihdr_delta_px": extra.get("ihdr_delta_px"),
     }
 
 
@@ -470,7 +404,7 @@ def _state_row(filename: str, theme: str, locale: str, viewport: str,
     if crop:
         row["crop_box"] = info.get("crop_box") or info.get("clip")
         for key in ("crop_box_doc", "scroll_y_at_shot",
-                    "element_text_head", "device_px_span"):
+                    "element_text_head", "device_px_span", "ihdr_delta_px"):
             if key in info:
                 row[key] = info[key]
     else:
@@ -494,49 +428,48 @@ REST_VIEWPORT_WIDTHS = (1440, 768, 390)
 E5_VIEWPORT_WIDTHS = (1440, 390)
 CLEAN_END_PATHS = ("templates", "scripts", "lib", "site")
 
+# MINOR-1: E5 applicability is decided on the live DOM, never by a regex
+# over committed site HTML. A nested </section> cannot hide a template.
+E5_APPLICABILITY_JS = """() => {
+  const shell = document.querySelector('#mc-shell');
+  const fragments = Boolean(
+    shell && shell.hasAttribute('data-mc-fragments'));
+  const receipt = {};
+  for (const panel of document.querySelectorAll('[data-mc-panel]')) {
+    const sectionId = panel.getAttribute('data-mc-panel');
+    if (!sectionId) continue;
+    receipt[sectionId] = {
+      templatePresent: Boolean(
+        panel.querySelector('template[data-mc-empty-e5]')),
+      fragmentTarget: 'macro/fragments/' + sectionId + '.html',
+      fragments,
+    };
+  }
+  return receipt;
+}"""
 
-def e5_applicability_from_html(html: str) -> dict[str, dict[str, Any]]:
-    """Per hub-section receipt from the rendered hub (not standalone templates)."""
-    fragments = "data-mc-fragments" in html
-    receipt: dict[str, dict[str, Any]] = {}
-    for match in re.finditer(
-            r'<section[^>]*\bdata-mc-panel="([^"]+)"[^>]*>(.*?)</section>',
-            html, flags=re.DOTALL):
-        section_id = match.group(1)
-        body = match.group(2)
-        receipt[section_id] = {
-            "templatePresent": "data-mc-empty-e5" in body,
-            "fragmentTarget": f"macro/fragments/{section_id}.html",
-            "fragments": fragments,
-        }
+
+def e5_applicability_from_page(page) -> dict[str, dict[str, Any]]:
+    """Runtime receipt: every [data-mc-panel] + #mc-shell[data-mc-fragments]."""
+    receipt = page.evaluate(E5_APPLICABILITY_JS)
+    if not isinstance(receipt, dict):
+        raise RuntimeError(f"E5 applicability evaluate returned {type(receipt)}")
     return receipt
 
 
-def e5_applicability(html: str | None = None) -> dict[str, dict[str, Any]]:
-    """E5 is decided per section panel on the rendered hub page."""
-    if html is None:
-        path = SITE / "macro_monetary.html"
-        if not path.exists():
-            raise RuntimeError(
-                "hub page missing at site/macro_monetary.html; rebuild first")
-        html = path.read_text(encoding="utf-8")
-    return e5_applicability_from_html(html)
-
-
 def empty_ids_for_section(section_receipt: dict[str, Any]) -> tuple[str, ...]:
-    """Fixture empties always; E5 only when this hub section carries the template."""
+    """Fixture empties always; E5 only when the live panel can enter it."""
     ids = list(EMPTY_IDS)
-    if section_receipt.get("templatePresent"):
+    if (section_receipt.get("templatePresent")
+            and section_receipt.get("fragments")):
         ids.append("e5")
     return tuple(ids)
 
 
 def declared_families(*, blast_keys: list[str],
-                      applicability: dict[str, dict[str, Any]] | None = None
+                      applicability: dict[str, dict[str, Any]]
                       ) -> dict[str, list[str]]:
-    """Complete declared matrix. Per-section E5 is omitted unless the panel can enter it."""
-    if applicability is None:
-        applicability = e5_applicability()
+    """Complete declared matrix. Per-section E5 follows the runtime receipt."""
     families: dict[str, list[str]] = {
         "sections": [],
         "empty_states": [],
@@ -610,8 +543,10 @@ def flatten_declared(families: dict[str, list[str]]) -> list[str]:
     return cells
 
 
-def declared_cells(*, blast_keys: list[str]) -> list[str]:
-    return flatten_declared(declared_families(blast_keys=blast_keys))
+def declared_cells(*, blast_keys: list[str],
+                   applicability: dict[str, dict[str, Any]]) -> list[str]:
+    return flatten_declared(declared_families(
+        blast_keys=blast_keys, applicability=applicability))
 
 
 def captured_stems(states: list[dict[str, Any]]) -> set[str]:
@@ -631,6 +566,16 @@ def generate_gaps(declared: list[str], captured: set[str]) -> list[str]:
         f"{cell}: captured:false — declared cell missing from this run"
         for cell in declared
         if cell not in captured
+    ]
+
+
+def generate_extras(declared: list[str], captured: set[str]) -> list[str]:
+    """captured − declared. A stray frame is a silently undeclared cell."""
+    declared_set = set(declared)
+    return [
+        f"{cell}: undeclared — captured stem not in declared matrix"
+        for cell in sorted(captured)
+        if cell not in declared_set
     ]
 
 
@@ -818,8 +763,6 @@ def _extract_parent_site(tmp: Path, pages: list[str]) -> Path:
 
 def _capture_metric_table(*, browser, origin: str, page_name: str,
                           theme: str, locale: str, dest: Path) -> dict[str, Any]:
-    from scripts.capture_macro_command_p3 import _write_element_shot
-
     selector = "section.mq-changed table.mq-table"
     ctx, page = _open_page(
         browser=browser, url=f"{origin}/{page_name}", hash_path="",
@@ -856,7 +799,6 @@ def _capture_metric_table(*, browser, origin: str, page_name: str,
         "crop_selector": selector, "fixture": "builder-payload",
     }
     _write_element_shot(page, dest, table, extra, locale)
-    _pin_element_span(dest, extra)
     clip = extra["crop_box"]
     box = extra.get("crop_box") or {}
     _assert_shot_geometry(dest, extra, 1440, 900)
@@ -891,6 +833,7 @@ def _capture_metric_table(*, browser, origin: str, page_name: str,
         "scroll_y_at_shot": extra.get("scroll_y_at_shot"),
         "element_text_head": extra.get("element_text_head"),
         "device_px_span": extra.get("device_px_span"),
+        "ihdr_delta_px": extra.get("ihdr_delta_px"),
     }
 
 
@@ -898,8 +841,6 @@ def _capture_hub_e5_cell(*, browser, origin: str, section: str,
                          theme: str, locale: str, vw: int, vh: int,
                          dest: Path) -> tuple[dict[str, Any], dict[str, Any]]:
     """Photograph one hub-section E5 via P3's stalled fragment request."""
-    from scripts.capture_macro_command_p3 import _write_element_shot
-
     context = browser.new_context(
         viewport={"width": vw, "height": vh},
         device_scale_factor=2,
@@ -1001,7 +942,6 @@ def _capture_hub_e5_cell(*, browser, origin: str, section: str,
         }
         target = page.locator(clone_sel).first
         _write_element_shot(page, dest, target, extra, locale)
-        _pin_element_span(dest, extra)
         _assert_shot_geometry(dest, extra, vw, vh)
         png = dest.read_bytes()
         if png[:8] != b"\x89PNG\r\n\x1a\n" or b"IEND" not in png:
@@ -1034,6 +974,7 @@ def _capture_hub_e5_cell(*, browser, origin: str, section: str,
             "scroll_y_at_shot": extra.get("scroll_y_at_shot"),
             "element_text_head": extra.get("element_text_head"),
             "device_px_span": extra.get("device_px_span"),
+            "ihdr_delta_px": extra.get("ihdr_delta_px"),
         }
         probe = {
             "elapsedMs": elapsed_ms,
@@ -1083,6 +1024,20 @@ def main() -> int:
         url = origin + "/macro_monetary.html"
         with sync_playwright() as playwright:
             browser = playwright.chromium.launch(headless=True)
+
+            ctx, page = _open_page(
+                browser=browser, url=url, hash_path="#growth",
+                theme="dark", locale="en", width=1440, height=900)
+            page.wait_for_selector("[data-mc-panel]", state="attached", timeout=15000)
+            page.wait_for_selector("#mc-shell", state="attached", timeout=15000)
+            applicability = e5_applicability_from_page(page)
+            ctx.close()
+            if not applicability:
+                raise RuntimeError("E5 applicability receipt is empty")
+            print(
+                f"e5 applicability sections={sorted(applicability)} "
+                f"fragments={next(iter(applicability.values()), {}).get('fragments')}",
+                flush=True)
 
             # §4.1 — 7 sections × (1440 fold + full-page, 768, 390) × dark/light × EN/ZH
             section_viewports = (
@@ -1404,8 +1359,6 @@ def main() -> int:
                                 verified_how=how,
                             ))
 
-            applicability = e5_applicability(
-                (SITE / "macro_monetary.html").read_text(encoding="utf-8"))
             e5_heights = {1440: 900, 390: 844}
             for section in SECTIONS:
                 if "e5" not in empty_ids_for_section(
@@ -1443,11 +1396,6 @@ def main() -> int:
                                     "locator.screenshot of cloned template"
                                 ),
                             ))
-
-            from scripts.capture_macro_command_p3 import (
-                RAIL_VIEWPORT_JS,
-                _run_clearance,
-            )
 
             clearance_heights = {390: 844, 768: 1400, 1440: 900}
             for section in SECTIONS:
@@ -1577,13 +1525,16 @@ def main() -> int:
             name.removeprefix("macro_").removesuffix(".html")
             for name in probes.get("blast_pages") or []
         ]
-        applicability = e5_applicability(hub_html)
         families = declared_families(
             blast_keys=blast_keys, applicability=applicability)
         declared = flatten_declared(families)
         captured = captured_stems(states)
         captured.update(probe_stems)
         gaps = generate_gaps(declared, captured)
+        extras = generate_extras(declared, captured)
+        if extras:
+            raise RuntimeError(
+                "captured stems not in declared matrix: " + "; ".join(extras))
         excluded = generate_excluded(gaps)
 
         head_end = _assert_head_unmoved(head)

@@ -108,18 +108,10 @@ def test_one_null_voice_drops_caption_and_matches_stance_for_e1_through_e6() -> 
             kwargs["plan"] = "Pro"
         empty = builder._empty_state(empty_id, **kwargs)
         voice = builder._apply_empty_voice(empty)
-        spec = L.EMPTY_STATES[empty_id]
-        expected = spec.get("stance") or spec["title"]
-        assert voice is not None, empty_id
-        assert voice["text"]["en"] == expected["en"]
-        assert voice["text"]["zh"] == expected["zh"]
+        assert voice is None, empty_id
         html = _render_empty(empty)
         assert "Each row shows the last two readings" not in html
         assert empty["title"]["en"] in html
-        if spec.get("stance"):
-            assert empty["title"]["en"] != voice["text"]["en"], empty_id
-            assert empty["title"]["zh"] != voice["text"]["zh"], empty_id
-            assert voice["text"]["en"] not in html, empty_id
 
 
 def test_empty_states_have_no_repeated_visible_string() -> None:
@@ -254,8 +246,8 @@ def test_hydrated_empty_section_has_no_repeated_sentence() -> None:
         )
         text = unescape(composed)
         for sentence in (
-            "Today's number didn't arrive",
-            "今天的数据未能送达",
+            "No reading arrived today.",
+            "今天没有新的读数。",
             "The data provider did not deliver in time",
             "数据提供方未能及时送达",
         ):
@@ -265,7 +257,7 @@ def test_hydrated_empty_section_has_no_repeated_sentence() -> None:
             parser.feed(composed)
             empty_lines = [
                 t for t in parser.texts
-                if "didn't arrive" in t or "未能送达" in t
+                if "No reading arrived" in t or "没有新的读数" in t
                 or "did not deliver" in t or "未能及时送达" in t
             ]
             assert empty_lines, lang

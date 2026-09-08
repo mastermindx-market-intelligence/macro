@@ -764,10 +764,9 @@ EMPTY_STATES: dict[str, dict[str, Any]] = {
     },
     "e2": {
         "id": "e2",
-        # N-B: card headline and stance are one sentence each, never the
-        # same sentence twice in one panel.
+        # N-B: one sentence on the card. The old title is retired; the
+        # panel stance is suppressed (P3 v16 MINOR-E6).
         "title": _pair("No reading arrived today.", "今天没有新的读数。"),
-        "stance": _pair("Today's number didn't arrive", "今天的数据未能送达"),
         "why": _pair(
             "The data provider did not deliver in time. We show nothing rather than yesterday's number dressed as today's.",
             "数据提供方未能及时送达。我们宁可不显示，也不会把昨天的数字当作今天的。"),

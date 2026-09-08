@@ -194,7 +194,8 @@ def test_p3_non_overview_dom_order(built: tuple[str, Path]) -> None:
 @pytest.mark.needs_full_checkout("site")
 def test_p4_sections_have_stance_primer_caption_watch(built: tuple[str, Path]) -> None:
     html, _ = built
-    assert html.count('<p class="mc-stance') == 12
+    # Live #rates is E2 — the empty card is the one voice, so 11 stances.
+    assert html.count('<p class="mc-stance') == 11
     assert html.count('<details class="mc-primer') == 12
     assert html.count('<div class="mc-watch') == 12
     # P4-3 drops the caption on an E1/E2 figure. I4 also drops it when the
@@ -356,7 +357,8 @@ def test_e2_figure_prints_the_e2_stance_not_the_structural_null(
     fragment = unescape(
         (out / "macro" / "fragments" / "rates.html").read_text(encoding="utf-8"))
     assert 'data-mc-empty="e2"' in fragment
-    assert "Today's number didn't arrive" in fragment
+    assert "No reading arrived today." in fragment
+    assert "Today's number didn't arrive" not in fragment
     assert "Today's number didn't arrive" not in rates
     assert "No single reading is published here" not in rates
     assert "Each row shows the last two readings" not in rates
@@ -799,7 +801,8 @@ def test_empty_state_fixture_flag_enables_e4_and_e6(tmp_path: Path) -> None:
     assert "See it with an upgrade." in frag
     assert "升级即可查看。" in frag
     assert "查看升级方案" in frag
-    assert "The reading is available on upgrade." in body
+    assert "The reading is available on upgrade." in frag
+    assert "The reading is available on upgrade." not in body
     assert "Each row shows the last two readings" not in body
     assert 'class="mc-caption"' not in body
 
@@ -809,11 +812,7 @@ def test_one_null_voice_for_every_section_level_empty() -> None:
     for empty_id in ("e1", "e2", "e3", "e6"):
         voice = builder._apply_empty_voice(builder._empty_state(
             empty_id, plan="Research" if empty_id == "e6" else None))
-        assert voice is not None
-        assert voice["tone"] == "neutral"
-        spec = L.EMPTY_STATES[empty_id]
-        expected = spec.get("stance") or spec["title"]
-        assert voice["text"]["en"] == expected["en"]
+        assert voice is None, empty_id
 
 
 def test_p3_clearance_probes_are_real_geometry() -> None:
@@ -1138,7 +1137,12 @@ def test_n5_m1_same_publication_fixture_uses_current_only_deck_once(
 @pytest.mark.needs_full_checkout("site")
 def test_n5_m2_hub_renders_only_populated_panels_with_stance(
         built: tuple[str, Path]) -> None:
-    """N5-M2: every rendered section has a stance; rail count equals panel count."""
+    """N5-M2: rail count equals panel count.
+
+    A populated figure keeps its stance. An empty card is the one null
+    voice — no section stance (MINOR-E6). Live rates hydrates E2 from
+    the fragment, so the hub also has no stance.
+    """
     html, _ = built
     panels = re.findall(r'<section class="mc-panel" id="([^"]+)"', html)
     rail = re.findall(r'data-mc-section="([a-z]+)"', html)
@@ -1146,7 +1150,15 @@ def test_n5_m2_hub_renders_only_populated_panels_with_stance(
     assert rail == list(P3_IDS) + list(P4_IDS)
     for section_id in panels:
         body = _panel(html, section_id)
-        assert 'class="mc-stance' in body, section_id
+        visible = re.sub(r"<template[^>]*>.*?</template>", "", body, flags=re.S)
+        has_empty = bool(re.search(r'data-mc-empty="e[1-6]"', visible))
+        has_stance = 'class="mc-stance' in visible
+        if has_empty:
+            assert not has_stance, section_id
+        elif has_stance:
+            continue
+        else:
+            assert 'data-mc-offer' in visible, section_id
     assert html.count('<span class="l-en">Overview</span>') >= 1
     assert html.count('<span class="l-zh">总览</span>') >= 1
 

@@ -573,7 +573,8 @@ def test_e1_on_housing_uses_the_empty_title_and_drops_caption(tmp_path: Path) ->
     housing = _panel(html, "housing")
     frag = unescape((out / "macro" / "fragments" / "housing.html").read_text(encoding="utf-8"))
     assert 'data-mc-empty="e1"' in frag
-    assert "We don't have this reading yet" in housing
+    assert "We don't have this reading yet" in frag
+    assert "We don't have this reading yet" not in housing
     assert "No single housing reading is published" not in housing
     assert "Each row shows the last two readings" not in housing
     assert "class=\"mc-caption\"" not in housing
@@ -592,10 +593,7 @@ def test_e2_on_housing_uses_the_empty_title(tmp_path: Path) -> None:
     housing = next(s for s in sections if s["id"] == "housing")
     assert housing["empty"]["id"] == "e2"
     assert housing["empty"]["title"]["en"] == L.EMPTY_STATES["e2"]["title"]["en"]
-    assert housing["stance"]["text"]["en"] == L.EMPTY_STATES["e2"]["stance"]["en"]
-    assert housing["stance"]["text"]["zh"] == L.EMPTY_STATES["e2"]["stance"]["zh"]
-    assert housing["stance"]["text"]["en"] != housing["empty"]["title"]["en"]
-    assert housing["stance"]["tone"] == "neutral"
+    assert housing["stance"] is None
     assert housing["caption"] is None
 
 
@@ -617,8 +615,7 @@ def test_subtab_e1_uses_the_stance_tab_empty_title() -> None:
     assert growth["empty"] is None
     economy = next(t for t in growth["subtabs"] if t["id"] == "economy")
     assert economy["empty"]["id"] == "e1"
-    assert growth["stance"]["text"]["en"] == L.EMPTY_STATES["e1"]["title"]["en"]
-    assert growth["stance"]["tone"] == "neutral"
+    assert growth["stance"] is None
     assert growth["caption"] is None
 
 
@@ -638,8 +635,7 @@ def test_credit_subtab_e2_uses_the_stance_tab_empty_title() -> None:
     credit = next(s for s in sections if s["id"] == "credit")
     borrowing = next(t for t in credit["subtabs"] if t["id"] == "borrowing")
     assert borrowing["empty"]["id"] == "e2"
-    assert credit["stance"]["text"]["en"] == L.EMPTY_STATES["e2"]["stance"]["en"]
-    assert credit["stance"]["text"]["zh"] == L.EMPTY_STATES["e2"]["stance"]["zh"]
+    assert credit["stance"] is None
     assert credit["caption"] is None
 
 
@@ -946,14 +942,8 @@ def test_entitlement_walled_section_uses_plan_stance_and_drops_watching() -> Non
     credit = next(section for section in sections if section["id"] == "credit")
     funding = next(tab for tab in credit["subtabs"] if tab["id"] == "funding")
     assert funding["empty"]["id"] == "e6"
-    plan_en = L.EMPTY_STATES["e6"]["stance"]["en"]
-    plan_zh = L.EMPTY_STATES["e6"]["stance"]["zh"]
-    assert credit["stance"]["text"]["en"] == plan_en
-    assert credit["stance"]["text"]["zh"] == plan_zh
+    assert credit["stance"] is None
     assert credit["watching"] is None
-    assert "Read this section closely" not in credit["stance"]["text"]["en"]
-    assert "请先仔细读本板块" not in credit["stance"]["text"]["zh"]
-    assert credit["stance"]["text"]["en"] != L.EMPTY_STATES["e6"]["title"]["en"]
     assert credit["empty"] is None
 
 
@@ -982,31 +972,59 @@ def test_p4_probes_name_panel_ok_and_doc_ok_separately() -> None:
             assert row["mmbBootDisplay"] == "none", row
 
 
-def _synthetic_hub(*, missing_section: str | None = None) -> str:
-    panels = []
+def _runtime_receipt(*, missing_section: str | None = None,
+                     fragments: bool = True) -> dict[str, dict]:
+    receipt: dict[str, dict] = {}
     for section in ("overview", "growth", "jobs", "housing",
                     "consumer", "credit", "debt", "trade"):
-        tpl = ""
-        if section != "overview" and section != missing_section:
-            tpl = '<template data-mc-empty-e5></template>'
-        panels.append(
-            f'<section class="mc-panel" id="{section}" '
-            f'data-mc-panel="{section}">{tpl}</section>')
-    return '<main class="mc-shell" data-mc-fragments>' + "".join(panels) + "</main>"
+        present = section != "overview" and section != missing_section
+        receipt[section] = {
+            "templatePresent": present,
+            "fragmentTarget": f"macro/fragments/{section}.html",
+            "fragments": fragments,
+        }
+    return receipt
+
+
+def test_e5_applicability_from_page_evaluates_runtime_js() -> None:
+    """r8 MINOR-1: applicability is page.evaluate over the live DOM, not HTML regex."""
+    from scripts import capture_macro_command_p4 as capture
+
+    assert "e5_applicability_from_html" not in dir(capture)
+    src = Path(capture.__file__).read_text(encoding="utf-8")
+    assert "def e5_applicability_from_html" not in src
+    assert "def e5_applicability(" not in src
+    assert "re.finditer" not in src
+    js = capture.E5_APPLICABILITY_JS
+    assert "querySelectorAll('[data-mc-panel]')" in js
+    assert "template[data-mc-empty-e5]" in js
+    assert "#mc-shell" in js
+    assert "data-mc-fragments" in js
+
+    seen: dict[str, str] = {}
+
+    class _Page:
+        def evaluate(self, code):
+            seen["js"] = code
+            return _runtime_receipt(missing_section="jobs")
+
+    receipt = capture.e5_applicability_from_page(_Page())
+    assert seen["js"] == capture.E5_APPLICABILITY_JS
+    assert receipt["growth"]["templatePresent"] is True
+    assert receipt["jobs"]["templatePresent"] is False
+    assert receipt["growth"]["fragments"] is True
 
 
 def test_e5_applicability_is_per_hub_section() -> None:
-    """r7 SCOPE + MINOR-1: E5 is declared per hub section that carries the template."""
+    """r7 SCOPE + r8 MINOR-1: E5 is declared from the runtime receipt."""
     from scripts import capture_macro_command_p4 as capture
 
-    html = _synthetic_hub(missing_section="jobs")
-    receipt = capture.e5_applicability_from_html(html)
-    assert receipt["growth"]["templatePresent"] is True
-    assert receipt["jobs"]["templatePresent"] is False
-    assert receipt["growth"]["fragmentTarget"] == "macro/fragments/growth.html"
-    assert receipt["jobs"]["fragmentTarget"] == "macro/fragments/jobs.html"
+    receipt = _runtime_receipt(missing_section="jobs")
     assert capture.empty_ids_for_section(receipt["growth"])[-1] == "e5"
     assert "e5" not in capture.empty_ids_for_section(receipt["jobs"])
+    no_fragments = _runtime_receipt()
+    no_fragments["growth"]["fragments"] = False
+    assert "e5" not in capture.empty_ids_for_section(no_fragments["growth"])
     families = capture.declared_families(
         blast_keys=["growth_real_economy"], applicability=receipt)
     e5 = [cell for cell in families["empty_states"] if cell.startswith("empty-e5-")]
@@ -1024,6 +1042,7 @@ def test_declared_matrix_gaps_are_generated_not_hand_written() -> None:
         section: {
             "templatePresent": False,
             "fragmentTarget": f"macro/fragments/{section}.html",
+            "fragments": True,
         }
         for section in capture.SECTIONS
     }
@@ -1123,14 +1142,37 @@ def test_state_row_rejects_null_fixture() -> None:
 
 
 def test_p3_clearance_and_rail_import_contract() -> None:
-    """r7 MINOR-2: P3 ladder/rail contract is pinned so a rename fails here."""
-    from scripts.capture_macro_command_p3 import RAIL_VIEWPORT_JS, _run_clearance
+    """r7 MINOR-2 + r8 MINOR-2: every P3 import is module-level and pinned."""
+    import inspect
 
-    assert callable(_run_clearance)
-    assert "parseFadeWidth" in RAIL_VIEWPORT_JS
-    assert "maskRaw" in RAIL_VIEWPORT_JS
-    assert "mask-image" in RAIL_VIEWPORT_JS
-    assert "fadeWidth" in RAIL_VIEWPORT_JS
+    from scripts import capture_macro_command_p3 as p3
+    from scripts import capture_macro_command_p4 as capture
+
+    assert capture.RAIL_VIEWPORT_JS is p3.RAIL_VIEWPORT_JS
+    assert capture._run_clearance is p3._run_clearance
+    assert capture._device_px_span is p3._device_px_span
+    assert capture._write_element_shot is p3._write_element_shot
+    assert capture._assert_shot_geometry is p3._assert_shot_geometry
+    assert capture._device_px_span_from_crop_box_doc is p3._device_px_span_from_crop_box_doc
+
+    assert callable(capture._run_clearance)
+    assert "parseFadeWidth" in capture.RAIL_VIEWPORT_JS
+    assert "maskRaw" in capture.RAIL_VIEWPORT_JS
+    assert "mask-image" in capture.RAIL_VIEWPORT_JS
+    assert "fadeWidth" in capture.RAIL_VIEWPORT_JS
+
+    span = capture._device_px_span(
+        {"x": 10.2, "y": 20.4, "width": 100.3, "height": 50.1}, 2.0)
+    assert set(span) == {"x0", "x1", "y0", "y1"}
+
+    shot_src = inspect.getsource(capture._write_element_shot)
+    assert 'extra["crop_box_doc"]' in shot_src
+    assert 'extra["scroll_y_at_shot"]' in shot_src
+    assert 'extra["element_text_head"]' in shot_src
+    assert 'extra["device_px_span"] = _device_px_span(box_before, extra["dpr"])' in shot_src
+    assert "element box moved" in shot_src
+
+    _run_clearance = capture._run_clearance
 
     class _Page:
         def evaluate(self, _js, target=None):
@@ -1187,3 +1229,93 @@ def test_manifest_gaps_recompute_from_declared() -> None:
     captured.update(manifest.get("probe_stems") or [])
     assert "gaps" in manifest
     assert capture.generate_gaps(flat, captured) == manifest["gaps"]
+    # r8 NIT: captured ⊆ declared and declared ⊆ captured. A silently
+    # dropped E5 cell or a stray frame fails this, not just declared − captured.
+    assert capture.generate_extras(flat, captured) == []
+    assert captured - set(flat) == set()
+    assert set(flat) - captured == set(gap.split(":", 1)[0] for gap in manifest["gaps"])
+
+
+def test_runtime_receipt_agrees_with_declared_e5() -> None:
+    """r8 MINOR-1: committed runtime receipt and declared E5 cells agree."""
+    from scripts import capture_macro_command_p4 as capture
+
+    probes_path = ROOT / "mockups" / "evidence" / "macro-command-p4" / "probes.json"
+    manifest_path = ROOT / "mockups" / "evidence" / "macro-command-p4" / "manifest.json"
+    probes = json.loads(probes_path.read_text(encoding="utf-8"))
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    receipt = probes.get("e5_applicability") or {}
+    assert receipt, "probes.e5_applicability missing"
+    families = capture.declared_families(
+        blast_keys=[
+            name.removeprefix("macro_").removesuffix(".html")
+            for name in (probes.get("blast_pages") or [])
+        ],
+        applicability=receipt,
+    )
+    declared_e5 = {
+        cell for cell in families["empty_states"] if cell.startswith("empty-e5-")
+    }
+    manifest_e5 = {
+        cell for cell in manifest["declared"]["empty_states"]
+        if cell.startswith("empty-e5-")
+    }
+    assert declared_e5 == manifest_e5
+    captured = capture.captured_stems(manifest["pages"][0]["states"])
+    captured_e5 = {stem for stem in captured if stem.startswith("empty-e5-")}
+    assert captured_e5 == declared_e5
+
+
+def test_generate_extras_flags_undeclared_stems() -> None:
+    """r8 NIT: captured − declared is a first-class list."""
+    from scripts import capture_macro_command_p4 as capture
+
+    declared = ["empty-e1-light-zh-390"]
+    captured = {"empty-e1-light-zh-390", "stray-frame"}
+    extras = capture.generate_extras(declared, captured)
+    assert extras == [
+        "stray-frame: undeclared — captured stem not in declared matrix"
+    ]
+    assert capture.generate_extras(declared, set(declared)) == []
+
+
+def test_ihdr_3px_wider_than_element_span_raises(tmp_path: Path) -> None:
+    """r8 MAJOR-1: PNG 3 px wider than the element-box span raises."""
+    from PIL import Image
+
+    from scripts import capture_macro_command_p4 as capture
+
+    dest = tmp_path / "wide.png"
+    Image.new("RGB", (103, 50), (0, 0, 0)).save(dest)
+    extra = {
+        "dpr": 2.0,
+        "crop": True,
+        "crop_selector": "#x",
+        "device_px_span": {"x0": 0, "x1": 100, "y0": 0, "y1": 50},
+    }
+    with pytest.raises(RuntimeError, match="device_px_span"):
+        capture._assert_shot_geometry(dest, extra, 1440, 900)
+
+
+def test_committed_crops_span_recomputed_from_crop_box_doc() -> None:
+    """r8 MAJOR-1: every committed crop span is the element box, not the IHDR."""
+    from scripts import capture_macro_command_p4 as capture
+
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p4" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    for state in manifest["pages"][0]["states"]:
+        if not state.get("crop"):
+            continue
+        box = state.get("crop_box_doc")
+        assert box, state.get("file")
+        recomputed = capture._device_px_span_from_crop_box_doc(
+            box, float(state["scroll_y_at_shot"]), float(state["dpr"]))
+        assert state["device_px_span"] == recomputed, state.get("file")
+        exp_w = recomputed["x1"] - recomputed["x0"]
+        exp_h = recomputed["y1"] - recomputed["y0"]
+        delta = state.get("ihdr_delta_px") or {
+            "w": abs(int(state["width"]) - exp_w),
+            "h": abs(int(state["height"]) - exp_h),
+        }
+        assert delta["w"] <= 1 and delta["h"] <= 1, (state.get("file"), delta)
