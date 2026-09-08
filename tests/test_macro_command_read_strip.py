@@ -27,7 +27,8 @@ governs everywhere the pin does not speak. This file proves:
 9. ``--mc-stance-wash`` stays a percentage in both themes (0% dark / 6%
    light) — the frozen constraint this packet must not disturb.
 10. The real built page against the live artifact renders the expected
-    shape: >=3 clauses, exactly 8 chips, and the copy guard is green.
+    shape: >=2 clauses after the populated-only filter, five chips
+    (four market + coverage), and the copy guard is green.
 """
 from __future__ import annotations
 
@@ -466,10 +467,10 @@ def built_hub(tmp_path_factory: pytest.TempPathFactory) -> str:
     return hub[0].read_text(encoding="utf-8")
 
 
-def test_the_real_page_renders_at_least_five_chips_and_exactly_eight_total(built_hub: str) -> None:
+def test_the_real_page_renders_populated_chips_only(built_hub: str) -> None:
+    """R6-M3: chips whose section is not rendered are not rendered."""
     chip_ids = re.findall(r'<li class="mc-chip[^"]*" data-mc-topic="([a-z]+)"', built_hub)
-    assert chip_ids == ["money", "policy", "rates", "inflation", "growth", "jobs",
-                        "credit", "coverage"]
+    assert chip_ids == ["money", "policy", "rates", "inflation", "coverage"]
 
 
 def test_coverage_chip_omits_asof_and_does_not_borrow_nulled(built_hub: str) -> None:

@@ -228,9 +228,13 @@ def test_built_page_has_one_section_count_matching_the_rail(
     assert html.count("十四个研究") == 0
     assert html.count(f"{n} research sections") == 1
     assert html.count(f"{n} 个研究板块") == 1
-    # Coverage chip still owns the 12-section completeness integer (C10).
-    assert "of 12 sections" in html
-    assert "12 个板块中" in html
+    # R6-M1: one count truth — populated panels, never the P2 12-rail.
+    assert "of 12 sections" not in html
+    assert "of 12" not in unescape(html)
+    assert "12 个板块" not in html
+    assert "12个板块" not in html
+    assert re.search(r"\d+ of 5 sections have today's data", unescape(html))
+    assert re.search(r"5个板块中有\d+个有今日数据", unescape(html))
 
 
 def test_copy_budgets_on_the_reviewed_tables() -> None:
@@ -355,8 +359,9 @@ def test_hub_raises_on_unmapped_metric() -> None:
     assert "unmapped metric id" in str(raised.value)
 
 
-def test_built_hub_9_of_12_uses_some_unread_stance(built: tuple[str, Path]) -> None:
-    """N0: today's 9/12 chip and the Overview stance are one completeness."""
+def test_built_hub_coverage_uses_populated_tally_and_some_unread(
+        built: tuple[str, Path]) -> None:
+    """R6-M1 / N0: the chip and the Overview stance share the populated tally."""
     html, _ = built
     overview = unescape(_panel(html, "overview"))
     stance = re.search(
@@ -374,8 +379,10 @@ def test_built_hub_9_of_12_uses_some_unread_stance(built: tuple[str, Path]) -> N
     note = re.search(r"(\d+) of (\d+) sections have today's data", plain)
     assert note, "coverage chip lost its counted note"
     available, total = int(note.group(1)), int(note.group(2))
+    assert total == len(P3_IDS)
     assert available < total
-    assert (available, total) == macro_suite_view.section_coverage_tally(_live_entries())
+    assert (available, total) == builder.populated_section_coverage_tally(
+        _live_entries(), set(P3_IDS))
     opening = re.search(r'<p class="mc-stance[^"]*"', overview)
     assert opening and "mq-tone-ok" not in opening.group(0)
 
@@ -403,15 +410,16 @@ def _figure_is_current_only(section: dict) -> bool:
     return bool(rows) and all(row.get("kind") == "current" for row in rows)
 
 
-def test_twelve_of_twelve_uses_all_read_stance() -> None:
-    """N0: only a full section tally may wear the complete / ok stance."""
+def test_all_populated_current_uses_all_read_stance() -> None:
+    """N0: only a full populated tally may wear the complete / ok stance."""
     entries = copy.deepcopy(_live_entries())
     for entry in entries:
         snap = entry.get("snapshot")
         if snap is not None:
             snap.setdefault("availability", {})["state"] = "CURRENT"
-    available, total = macro_suite_view.section_coverage_tally(entries)
-    assert (available, total) == (12, 12)
+    available, total = builder.populated_section_coverage_tally(
+        entries, set(P3_IDS))
+    assert (available, total) == (len(P3_IDS), len(P3_IDS))
     sections = builder._macro_command_sections(entries, page_built_at=BUILT_AT)
     overview = next(s for s in sections if s["id"] == "overview")
     assert overview["stance"]["tone"] == "ok"
@@ -1016,3 +1024,145 @@ def test_i1_rail_probe_has_no_document_overflow() -> None:
         assert row["scrollWidth"] == row["clientWidth"], (key, row)
         assert row.get("noDocOverflow") is True, (key, row)
         assert row.get("listOverflowX") == "auto", (key, row)
+
+
+MIXED_DECK_EN = "Some readings have no earlier print to compare yet."
+MIXED_DECK_ZH = "部分读数暂无更早读数可比。"
+
+
+def test_r6_m2_figure_mode_pure_movement_current_and_mixed() -> None:
+    assert builder._figure_mode(
+        [{"kind": "movement"}, {"kind": "movement"}]) == "movement"
+    assert builder._figure_mode([{"kind": "current"}]) == "current"
+    assert builder._figure_mode([]) == "current"
+    assert builder._figure_mode(
+        [{"kind": "movement"}, {"kind": "current"}]) == "mixed"
+
+
+def _overview_from_rows(rows: list[dict], *, available: int = 4,
+                        total: int = 5) -> dict:
+    any_current = any(row.get("kind") == "current" for row in rows)
+    section = {
+        "id": "overview",
+        "first": True,
+        "figure": {
+            "rows": rows,
+            "count_text": None,
+            "state_line": (
+                dict(L.COUNT["same_publication"]) if any_current else None),
+        },
+        "question": None,
+        "stance": None,
+    }
+    builder._apply_overview_deck(section, available=available, total=total)
+    return section
+
+
+def test_r6_m2_pure_movement_overview_keeps_movement_voice() -> None:
+    section = _overview_from_rows([
+        {"kind": "movement", "prior": "1", "current": "2", "delta": "+1",
+         "sign": "up"},
+        {"kind": "movement", "prior": "3", "current": "3", "delta": "0",
+         "sign": "flat"},
+    ])
+    assert builder._figure_mode(section["figure"]["rows"]) == "movement"
+    assert "and what moved" in section["question"]["en"]
+    assert MIXED_DECK_EN not in section["stance"]["text"]["en"]
+    assert CURRENT_ONLY_DECK_EN not in section["stance"]["text"]["en"]
+    assert section["figure"]["state_line"] is None
+    assert [row["kind"] for row in section["figure"]["rows"]] == [
+        "movement", "movement"]
+
+
+def test_r6_m2_pure_current_overview_uses_current_voice_once() -> None:
+    section = _overview_from_rows([
+        {"kind": "current", "prior": None, "current": "2", "delta": None,
+         "sign": None},
+    ])
+    assert builder._figure_mode(section["figure"]["rows"]) == "current"
+    assert "and what moved" not in section["question"]["en"]
+    assert CURRENT_ONLY_DECK_EN in section["stance"]["text"]["en"]
+    assert CURRENT_ONLY_DECK_ZH in section["stance"]["text"]["zh"]
+    assert section["figure"]["state_line"] is None
+    assert section["figure"]["rows"][0]["prior"] is None
+    assert section["figure"]["rows"][0]["kind"] == "current"
+
+
+def test_r6_m2_mixed_overview_keeps_state_line_and_mixed_sentence() -> None:
+    section = _overview_from_rows([
+        {"kind": "movement", "prior": "1", "current": "2", "delta": "+1",
+         "sign": "up"},
+        {"kind": "current", "prior": None, "current": "4", "delta": None,
+         "sign": None},
+    ])
+    assert builder._figure_mode(section["figure"]["rows"]) == "mixed"
+    assert "and what moved" in section["question"]["en"]
+    assert MIXED_DECK_EN in section["stance"]["text"]["en"]
+    assert MIXED_DECK_ZH in section["stance"]["text"]["zh"]
+    assert CURRENT_ONLY_DECK_EN not in section["stance"]["text"]["en"]
+    assert section["figure"]["state_line"] == dict(L.COUNT["same_publication"])
+    kinds = [row["kind"] for row in section["figure"]["rows"]]
+    assert kinds == ["movement", "current"]
+    assert section["figure"]["rows"][0]["delta"] == "+1"
+    assert section["figure"]["rows"][1]["prior"] is None
+    assert section["figure"]["state_line"]["en"] == (
+        "Only one reading is published so far — nothing earlier to compare yet.")
+
+
+def test_r6_m3_chip_and_read_hrefs_resolve_to_rendered_sections(
+        built: tuple[str, Path]) -> None:
+    html, _ = built
+    panel_ids = set(re.findall(r'<section class="mc-panel" id="([^"]+)"', html))
+    assert panel_ids == set(P3_IDS)
+    chips = re.findall(r'<a class="mc-chip-link" href="#([^"]+)"', html)
+    assert chips
+    assert len(chips) == len(set(chips)), chips
+    for href in chips:
+        assert href in panel_ids, href
+        assert href not in P4_IDS
+    topics = re.findall(
+        r'<li class="mc-chip[^"]*" data-mc-topic="([^"]+)"', html)
+    assert topics == ["money", "policy", "rates", "inflation", "coverage"]
+    clauses = re.findall(
+        r'<a class="mc-read-topic[^"]*" href="#([^"]+)"', html)
+    assert clauses
+    assert len(clauses) == len(set(clauses)), clauses
+    for href in clauses:
+        assert href in panel_ids, href
+        assert href not in P4_IDS
+    note = re.search(
+        r"(\d+) of (\d+) sections have today's data", unescape(html))
+    assert note
+    assert int(note.group(2)) == len(topics)  # same populated set as the chips
+    # coverage is the extra chip; market chips + overview = N of 5
+    assert int(note.group(2)) == len(P3_IDS)
+
+
+def test_r6_m1_hub_never_prints_twelve_as_a_section_count(
+        built: tuple[str, Path]) -> None:
+    html = unescape(built[0])
+    visible = re.sub(r"<script[^>]*>.*?</script>", "", html, flags=re.S)
+    visible = re.sub(r"<style[^>]*>.*?</style>", "", visible, flags=re.S)
+    visible = re.sub(r'datetime="[^"]*"', "", visible)
+    text = re.sub(r"<[^>]+>", " ", visible)
+    assert "of 12" not in text
+    assert "12 research" not in text
+    assert "12 个板块" not in text
+    assert "12个板块" not in text
+    assert "5 research sections" in text
+    assert "5 个研究板块" in text
+    assert re.search(r"\d+ of 5 sections have today's data", text)
+    assert re.search(r"5个板块中有\d+个有今日数据", text)
+
+
+def test_r6_m2_stance_alone_is_not_populated() -> None:
+    assert builder._panel_is_populated({"stance": {"text": "x"}}) is False
+    assert builder._panel_is_populated({"figure": {"rows": [1]}}) is True
+    assert builder._panel_is_populated({"empty": {"id": "e2"}}) is True
+    assert builder._panel_is_populated(
+        {"subtabs": [{"empty": {"id": "e4"}}]}) is True
+    assert builder._panel_is_populated({"id": "growth"}) is False
+
+
+def test_r6_m1_unpopulated_ids_constant_is_gone() -> None:
+    assert not hasattr(builder, "P3_UNPOPULATED_IDS")

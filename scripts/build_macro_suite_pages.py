@@ -601,9 +601,6 @@ def build_page(root: Path, page: SuitePage, *, data_root: Path, out_dir: Path,
 
 
 P3_COPY_IDS = frozenset({"overview", "money", "policy", "rates", "inflation"})
-P3_UNPOPULATED_IDS = frozenset({
-    "growth", "jobs", "housing", "consumer", "credit", "debt", "trade",
-})
 P3_PRIMER_OPEN = frozenset({"overview", "money", "policy"})
 _SOURCE_NOTE_TITLES = frozenset({
     "Required source not current",
@@ -723,17 +720,22 @@ def _move_rows_from_deltas(deltas: Sequence[Mapping[str, Any]], *,
 
 
 def _figure_mode(rows: Sequence[Mapping[str, Any]]) -> str:
-    """Overview deck voice: movement when every row compares two publications."""
-    if rows and all(row.get("kind") == "movement" for row in rows):
+    """Overview deck voice from the rows that are actually on the figure.
+
+    R6-M2: "movement" when any row has a genuine earlier prior; "current"
+    only when no row does; "mixed" when both kinds sit in one figure.
+    """
+    has_movement = any(row.get("kind") == "movement" for row in rows)
+    has_current = any(row.get("kind") == "current" for row in rows)
+    if has_movement and has_current:
+        return "mixed"
+    if has_movement:
         return "movement"
     return "current"
 
 
 def _panel_is_populated(section: Mapping[str, Any]) -> bool:
-    """N5-M2: a customer panel is populated when it has a stance (P3 copy)
-    or a typed figure/empty. Bare offer-link shells are not panels."""
-    if section.get("stance"):
-        return True
+    """R6-m2: populated means a typed figure or empty, never stance-only."""
     if section.get("figure") or section.get("empty"):
         return True
     for tab in section.get("subtabs") or []:
@@ -742,18 +744,116 @@ def _panel_is_populated(section: Mapping[str, Any]) -> bool:
     return False
 
 
-def _remap_unpopulated_anchors(header: dict[str, Any],
-                               panel_ids: set[str]) -> None:
-    """Chip and Read deep-links to a missing panel resolve to Overview."""
-    for chip in header.get("strip") or []:
-        section = chip.get("section")
-        chip["href_section"] = (
-            section if section in panel_ids else "overview")
-    read = header.get("read") or {}
-    for clause in read.get("clauses") or []:
-        section = clause.get("section")
-        clause["href_section"] = (
-            section if section in panel_ids else "overview")
+def _section_coverage_workspace(section_id: str) -> str | None:
+    """Primary workspace for a rail section — first sub-tab when split."""
+    for section in SECTIONS:
+        if section.id != section_id:
+            continue
+        if section.workspace_id:
+            return section.workspace_id
+        if section.subtabs:
+            return section.subtabs[0].workspace_id
+        return None
+    return None
+
+
+def populated_section_coverage_tally(
+        entries: Sequence[Mapping[str, Any]],
+        panel_ids: set[str]) -> tuple[int, int]:
+    """DATA COVERAGE for the panels this page actually renders (R6-M1)."""
+    by_workspace = {entry["workspace_id"]: entry for entry in entries}
+    available = 0
+    total = 0
+    for section in SECTIONS:
+        if section.id not in panel_ids:
+            continue
+        total += 1
+        if section.id == "overview":
+            available += 1
+            continue
+        workspace_id = _section_coverage_workspace(section.id)
+        entry = by_workspace.get(workspace_id) if workspace_id else None
+        snap = entry.get("snapshot") if entry else None
+        if snap and macro_suite_view._freshness_state(snap) == "CURRENT":
+            available += 1
+    return available, total
+
+
+def _apply_overview_deck(section: dict[str, Any], *,
+                         available: int, total: int) -> None:
+    """One Overview voice from figure mode + the populated coverage tally."""
+    rows = list((section.get("figure") or {}).get("rows") or [])
+    mode = _figure_mode(rows)
+    key = "all_read" if available == total else "some_unread"
+    if mode == "current":
+        key = f"{key}_current"
+        section["question"] = dict(L.OVERVIEW_QUESTIONS["current"])
+        if section.get("figure"):
+            # One null voice: the stance already says there is no earlier
+            # reading. Mixed must NOT take this branch (R6-M2).
+            section["figure"]["state_line"] = None
+    elif mode == "mixed":
+        key = f"{key}_mixed"
+        section["question"] = dict(L.OVERVIEW_QUESTIONS["movement"])
+    else:
+        section["question"] = dict(L.OVERVIEW_QUESTIONS["movement"])
+    table = L.STANCES.get("overview") or {}
+    if key not in table:
+        raise MacroCommandBuildError(f"unknown stance key overview/{key}")
+    section["stance"] = {
+        "text": dict(table[key]),
+        "tone": "ok" if key.startswith("all_read") else "warn",
+    }
+
+
+def _restrict_header_to_populated(
+        header: dict[str, Any],
+        entries: Sequence[Mapping[str, Any]],
+        panel_ids: set[str]) -> None:
+    """R6-M3: chips and Read clauses only for rendered panels. No redirect."""
+    chips = [
+        chip for chip in (header.get("strip") or [])
+        if chip.get("id") == "coverage" or chip.get("section") in panel_ids
+    ]
+    clauses = [
+        clause for clause in ((header.get("read") or {}).get("clauses") or [])
+        if clause.get("section") in panel_ids
+    ]
+    n = len(clauses)
+    for index, clause in enumerate(clauses):
+        if index == n - 1:
+            punct_key = "last"
+        elif index == n - 2:
+            punct_key = "penultimate"
+        else:
+            punct_key = "mid"
+        clause["punct"] = dict(L.READ_PUNCT[punct_key])
+        clause["href_section"] = clause.get("section")
+    for chip in chips:
+        chip["href_section"] = chip.get("section")
+    available, total = populated_section_coverage_tally(entries, panel_ids)
+    coverage = macro_suite_view._coverage_chip(available, total)
+    coverage["note"] = {
+        "en": f"{available} of {total} sections have today's data",
+        "zh": f"{total}个板块中有{available}个有今日数据",
+    }
+    coverage["href_section"] = coverage.get("section") or "overview"
+    chips = [
+        coverage if chip.get("id") == "coverage" else chip
+        for chip in chips
+    ]
+    dated = [chip["as_of"] for chip in chips if chip.get("as_of")]
+    read = header.setdefault("read", {})
+    read["clauses"] = clauses
+    read["omitted"] = len(clauses) < len(
+        [chip for chip in chips if chip.get("id") != "coverage"])
+    if dated:
+        read["as_of"] = min(dated)
+        read["as_of_display"] = L.date_display_pair(read["as_of"])
+        read["as_of_meaning"] = macro_suite_view._as_of_meaning(
+            len(dated), all_same=min(dated) == max(dated))
+    header["strip"] = chips
+    header["coverage"] = {"available": available, "total": total}
 
 
 def _figure_block(rows: Sequence[Mapping[str, Any]], *, overview: bool,
@@ -1006,10 +1106,6 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
                     if section.question_en else None)
 
         if is_overview:
-            # N0: one completeness — the same tally the DATA COVERAGE chip uses.
-            sections_available, sections_total = macro_suite_view.section_coverage_tally(
-                entries)
-            key = "all_read" if sections_available == sections_total else "some_unread"
             if overview_rows:
                 figure = _figure_block(
                     overview_rows, overview=True,
@@ -1018,24 +1114,14 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
                 )
             else:
                 empty = _empty_state("e3")
-            # N5-M1: deck/stance are one voice derived from the figure mode.
-            # Current-only suppresses the figure state line so the sentence
-            # is not printed twice in the same panel.
-            mode = _figure_mode(overview_rows)
-            if mode == "current":
-                key = f"{key}_current"
-                question = dict(L.OVERVIEW_QUESTIONS["current"])
-                if figure:
-                    figure["state_line"] = None
-            else:
-                question = dict(L.OVERVIEW_QUESTIONS["movement"])
+            # Stance / question are applied after the populated filter so
+            # the coverage tally and the figure mode share one count
+            # (R6-M1 / R6-M2). Placeholder copy keeps has_copy slots live.
             table = L.STANCES.get("overview") or {}
-            if key not in table:
-                raise MacroCommandBuildError(f"unknown stance key overview/{key}")
             if has_copy:
                 stance = {
-                    "text": dict(table[key]),
-                    "tone": "ok" if key.startswith("all_read") else "warn",
+                    "text": dict(table["some_unread"]),
+                    "tone": "warn",
                 }
                 primer = dict(hub["deck"])
                 caption = dict(L.CAPTIONS["overview"])
@@ -1168,9 +1254,12 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
     # (rail-order / dests / coverage) but do not render as empty shells.
     populated = [section for section in sections if _panel_is_populated(section)]
     count = len(populated)
+    panel_ids = {section["id"] for section in populated}
+    available, total = populated_section_coverage_tally(entries, panel_ids)
     for section in populated:
-        if section.get("first") and section.get("primer"):
+        if section.get("first"):
             section["primer"] = macro_suite_view._deck_copy(count)
+            _apply_overview_deck(section, available=available, total=total)
     return populated
 
 
@@ -1257,7 +1346,8 @@ def build_hub(entries: Sequence[Mapping[str, Any]], *, out_dir: Path,
     sections = _macro_command_sections(
         entries, page_built_at=page_built_at,
         allow_empty_state_fixture=allow_empty_state_fixture)
-    _remap_unpopulated_anchors(header, {section["id"] for section in sections})
+    _restrict_header_to_populated(
+        header, entries, {section["id"] for section in sections})
     fragment_paths = write_fragments(env, sections, out_dir)
     html = env.get_template(HUB_PAGE.template).render(
         page_title="Macro & Monetary",

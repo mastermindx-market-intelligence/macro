@@ -67,7 +67,9 @@
   reviewed state, joined by fixed connectives (G3). `clause.punct` is a
   BILINGUAL pair: EN joins with ", " / ", and " / "."; ZH joins with "；" and
   ends "。" and never carries a coordinating word (a calqued "，和" is not
-  Chinese). Fewer than three clauses suppresses the sentence entirely.
+  Chinese). Fewer than two clauses suppresses the sentence entirely
+  (R6-M3: after the populated-only filter the live Read has two
+  clauses; a three-clause floor would hide a true sentence).
 
   NO whitespace is emitted inside <p class="mc-read"> — not between the anchor
   and its predicate, not between clauses. EN's word space is a CSS margin on
@@ -76,7 +78,7 @@
   space in Chinese and as a leading indent before the first word (F-10).
 #}
 {% macro read_block(read) -%}
-{%- if read.clauses|length >= 3 %}
+{%- if read.clauses|length >= 2 %}
 <p class="mc-read" data-mc-read>
 {%- for clause in read.clauses -%}
 <span class="mc-read-clause"><a class="mc-read-topic mq-tone-{{ clause.tone }}" href="#{{ clause.href_section or clause.section }}" data-mc-topic="{{ clause.id }}">{{ bl(clause.topic) }}</a><span class="l-en"> </span><span class="l-zh"></span><span class="mc-read-state">{{ bl(clause.predicate) }}</span>{{ bl(clause.punct) }}</span>

@@ -28,12 +28,9 @@ REST_FRAMES = {
     "09-dark-en-390.png", "10-dark-zh-390.png",
     "11-light-en-390.png", "12-light-zh-390.png",
 }
-# r5: recapture only frames whose content changed (Overview deck + the
-# populated light sub-tab M2 proof). 15/16 also show the Overview deck.
-RECATCH_FRAMES = REST_FRAMES | {
-    "15-dark-en-768.png", "16-light-en-768.png",
-    "27-light-en-1440-money-central-banks.png",
-}
+# R6-B1: recapture the entire matrix at the committed code sha. A
+# selective keep is how the last pass documented a page that no longer
+# existed. Empty-state crops are rebuilt from fixtures in the same run.
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -274,13 +271,21 @@ def _wait_theme(page, theme: str, locale: str) -> None:
 
 def _wait_hash_ready(page, hash_path: str) -> None:
     """Money figures live in a fetched fragment — wait for a real row
-    on the *visible* tab (a hidden sibling's `.mc-move` is not enough)."""
+    on the *visible* tab (a hidden sibling's `.mc-move` is not enough).
+
+    E4 withholds the destination tab, so the visible thing is the typed
+    empty, not a movement row. Accept either.
+    """
     if not hash_path.startswith("#money"):
         return
-    page.wait_for_selector("#money [data-mc-figure]", timeout=15000)
+    page.wait_for_selector(
+        "#money [data-mc-figure], #money [data-mc-empty]",
+        timeout=15000,
+    )
     tab = "central_banks" if "/central_banks" in hash_path else "liquidity"
     page.wait_for_selector(
-        f"#{tab} .mc-move-row, #{tab} .mc-move-current-only",
+        f"#{tab} .mc-move-row, #{tab} .mc-move-current-only, "
+        f"#money [data-mc-empty], #{tab} [data-mc-empty]",
         state="visible",
         timeout=15000,
     )
@@ -509,6 +514,174 @@ def _build_flag_empty(tmp: Path, fixture_name: str, empty_id: str, frag: str) ->
     return out
 
 
+def _build_mutated_hub(tmp: Path, tag: str, mutate, *,
+                       allow_fixture: bool = False) -> Path:
+    from scripts import build_macro_suite_pages as builder
+    out = tmp / f"site-{tag}"
+    out.mkdir(parents=True, exist_ok=True)
+    _copy_chrome(out)
+    entries = _live_entries()
+    mutate(entries)
+    env = builder._environment(ROOT)
+    builder.build_hub(
+        entries, out_dir=out, env=env, root=ROOT,
+        page_built_at="2026-09-06T00:00:00Z",
+        allow_empty_state_fixture=allow_fixture)
+    for asset in builder.SHARED_ASSETS:
+        shutil.copy2(ROOT / "templates" / asset, out / asset)
+    return out
+
+
+def _mutate_inflation_e1(entries) -> None:
+    for entry in entries:
+        if entry.get("workspace_id") != "inflation_system":
+            continue
+        snap = entry.get("snapshot")
+        if not isinstance(snap, dict):
+            continue
+        headline = snap.setdefault("headline", {})
+        headline["effective_date"] = None
+        headline["status"] = "ABSENT"
+        headline["null_reason"] = "NOT_YET_RELEASED"
+        changes = snap.setdefault("changes", {})
+        changes["deltas"] = []
+        changes["comparability"] = "NO_PRIOR"
+        changes["status"] = "ABSENT"
+        changes["null_reason"] = "INSUFFICIENT_HISTORY"
+
+
+def _mutate_inflation_e3(entries) -> None:
+    for entry in entries:
+        if entry.get("workspace_id") != "inflation_system":
+            continue
+        snap = entry.get("snapshot")
+        if not isinstance(snap, dict):
+            continue
+        changes = snap.setdefault("changes", {})
+        changes["deltas"] = []
+        changes["comparability"] = "NO_PRIOR"
+        changes["status"] = "ABSENT"
+        changes["null_reason"] = "INSUFFICIENT_HISTORY"
+
+
+def _capture_empty_states(browser, tmp: Path, servers: list, manifest: dict) -> None:
+    """Recapture every empty-state crop from a fixture build (R6-B1)."""
+    from scripts import build_macro_suite_pages as builder
+
+    e3_overview = _build_e3_overview(tmp)
+    e1_site = _build_mutated_hub(tmp, "e1", _mutate_inflation_e1)
+    e3_site = _build_mutated_hub(tmp, "e3-inflation", _mutate_inflation_e3)
+    e4_site = _build_flag_empty(tmp, "e4_central_banks.json", "e4", "money.html")
+    e6_site = _build_flag_empty(tmp, "e6_inflation_system.json", "e6", "inflation.html")
+
+    empty_shots = [
+        # filename, theme, site, hash, selector, extra
+        ("25-dark-en-1440-e3.png", "dark", e3_overview, "#overview",
+         "#overview", {
+             "fixture": "in-memory: hub.changes.entries=[] → E3",
+             "trigger": "Overview figure slot empty; directory untouched",
+             "force_state": "e3",
+         }),
+        ("26-light-en-1440-e3.png", "light", e3_overview, "#overview",
+         "#overview", {
+             "fixture": "in-memory: hub.changes.entries=[] → E3",
+             "trigger": "Overview figure slot empty; directory untouched",
+             "force_state": "e3",
+         }),
+        ("empty-e1-dark.png", "dark", e1_site, "#inflation",
+         "#inflation [data-mc-empty='e1']", {
+             "fixture": "mockups/evidence/macro-command-p3/fixtures/e1_inflation_system.json",
+             "trigger": "Contract-legal inflation_system JSON: no date, no deltas → E1",
+             "force_state": "e1",
+         }),
+        ("empty-e1-light.png", "light", e1_site, "#inflation",
+         "#inflation [data-mc-empty='e1']", {
+             "fixture": "mockups/evidence/macro-command-p3/fixtures/e1_inflation_system.json",
+             "trigger": "Contract-legal inflation_system JSON: no date, no deltas → E1",
+             "force_state": "e1",
+         }),
+        ("empty-e2-dark.png", "dark", SITE, "#rates",
+         "#rates [data-mc-empty='e2']", {
+             "fixture": "mockups/evidence/macro-command-p3/fixtures/e2_rates_curves.json",
+             "trigger": "Live #rates workspace context.state is SOURCE_FAILED / STALE_SOURCE",
+             "force_state": "e2",
+         }),
+        ("empty-e2-light.png", "light", SITE, "#rates",
+         "#rates [data-mc-empty='e2']", {
+             "fixture": "mockups/evidence/macro-command-p3/fixtures/e2_rates_curves.json",
+             "trigger": "Live #rates workspace context.state is SOURCE_FAILED / STALE_SOURCE",
+             "force_state": "e2",
+         }),
+        ("empty-e3-dark.png", "dark", e3_site, "#inflation",
+         "#inflation [data-mc-empty='e3']", {
+             "fixture": "mockups/evidence/macro-command-p3/fixtures/e3_inflation_system.json",
+             "trigger": "Contract-legal inflation_system JSON: dated, no comparable deltas → E3",
+             "force_state": "e3",
+         }),
+        ("empty-e3-light.png", "light", e3_site, "#inflation",
+         "#inflation [data-mc-empty='e3']", {
+             "fixture": "mockups/evidence/macro-command-p3/fixtures/e3_inflation_system.json",
+             "trigger": "Contract-legal inflation_system JSON: dated, no comparable deltas → E3",
+             "force_state": "e3",
+         }),
+        ("empty-e4-dark.png", "dark", e4_site, "#money/central_banks",
+         "#money [data-mc-empty='e4']", {
+             "fixture": "mockups/evidence/macro-command-p3/fixtures/e4_central_banks.json",
+             "trigger": " --empty-state-fixture e4_central_banks.json → withheld_command_tabs",
+             "force_state": "e4",
+         }),
+        ("empty-e4-light.png", "light", e4_site, "#money/central_banks",
+         "#money [data-mc-empty='e4']", {
+             "fixture": "mockups/evidence/macro-command-p3/fixtures/e4_central_banks.json",
+             "trigger": " --empty-state-fixture e4_central_banks.json → withheld_command_tabs",
+             "force_state": "e4",
+         }),
+        ("empty-e6-dark.png", "dark", e6_site, "#inflation",
+         "#inflation [data-mc-empty='e6']", {
+             "fixture": "mockups/evidence/macro-command-p3/fixtures/e6_inflation_system.json",
+             "trigger": "--empty-state-fixture e6_inflation_system.json → entitlement=Research",
+             "force_state": "e6",
+         }),
+        ("empty-e6-light.png", "light", e6_site, "#inflation",
+         "#inflation [data-mc-empty='e6']", {
+             "fixture": "mockups/evidence/macro-command-p3/fixtures/e6_inflation_system.json",
+             "trigger": "--empty-state-fixture e6_inflation_system.json → entitlement=Research",
+             "force_state": "e6",
+         }),
+    ]
+
+    served: dict[str, tuple] = {}
+    try:
+        for filename, theme, site, hash_path, selector, extra in empty_shots:
+            dest = EVIDENCE / filename
+            print(f"capturing {filename} (empty {extra.get('force_state')})", flush=True)
+            key = str(site)
+            if key not in served:
+                proc, origin = _serve(site)
+                servers.append(proc)
+                served[key] = (proc, origin)
+            _origin = served[key][1]
+            context = _new_context(browser, theme, "en", 1440, 2200)
+            try:
+                page = _open_direct(
+                    context, _origin + "/macro_monetary.html",
+                    hash_path, theme, "en")
+                page.wait_for_selector(selector, timeout=15000)
+                page.locator(selector).first.screenshot(path=str(dest), type="png")
+                _assert_png(dest)
+                _upsert(manifest, filename, _row(
+                    filename, dest, theme, "en", 1440, 2200, extra))
+                print(f"  {filename} {dest.stat().st_size}B {_sha(dest)[:12]}", flush=True)
+            finally:
+                context.close()
+    finally:
+        for proc, _origin in served.values():
+            _kill(proc)
+            if proc in servers:
+                servers.remove(proc)
+    del builder
+
+
 def main() -> int:
     from playwright.sync_api import sync_playwright
 
@@ -523,8 +696,6 @@ def main() -> int:
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
 
     try:
-        print("skipping empty-state fixture sites (unchanged this pass)", flush=True)
-
         shots = [
             # filename, theme, locale, w, h, hash, kind, extra
             ("01-dark-en-1440.png", "dark", "en", 1440, 2200, "#overview", "full", None),
@@ -561,9 +732,6 @@ def main() -> int:
             try:
                 for filename, theme, locale, vw, vh, hash_path, kind, extra in shots:
                     dest = EVIDENCE / filename
-                    if filename not in RECATCH_FRAMES:
-                        print(f"keeping {filename}", flush=True)
-                        continue
                     print(f"capturing {filename} ({kind})", flush=True)
                     context = _new_context(browser, theme, locale, vw, vh)
                     inner = None
@@ -707,7 +875,7 @@ def main() -> int:
                 if proc in servers:
                     servers.remove(proc)
 
-            print("keeping empty-state frames (content unchanged)", flush=True)
+            _capture_empty_states(browser, tmp, servers, manifest)
             browser.close()
 
         _upsert(manifest, "empty-e5-dark.png", {
@@ -789,13 +957,11 @@ def main() -> int:
         manifest.setdefault("target", {})
         manifest["target"]["resolved_sha_or_none"] = head
         manifest["target"]["resolved_sha_source"] = (
-            f"pre-commit HEAD of this worktree ({head}); the capture ran on "
-            "this working tree after the r5 N5-M1/N5-M2/M2 edits and one "
-            "scripts/build_macro_suite_pages.py rebuild. Recaptured Overview "
-            "deck frames 01–04, 09–12 and 15/16 (same deck at 768) plus the "
-            "populated light #money/central_banks M2 proof (27). The empty "
-            "growth/business tab frame is deleted; that real-page proof "
-            "moves to P4 v2 once the section is populated."
+            f"committed HEAD of this worktree ({head}); the capture ran on "
+            "that exact sha after one scripts/build_macro_suite_pages.py "
+            "rebuild. Every composition, state and empty frame was recaptured "
+            "in this run (R6-B1). No retained PNG bytes. E5 stays "
+            "captured:false — client fetch-timeout, not builder-triggerable."
         )
         MANIFEST.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
         probes["generated_at"] = generated_at
