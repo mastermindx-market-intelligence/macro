@@ -181,6 +181,19 @@ jobs:
     timeout-minutes: 3
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Full-history fetch of this repository exceeds the 3-minute job
+          # budget on hosted runners (dispatch runs 34194129748 / 34194530285
+          # were cancelled inside actions/checkout); the guard is stdlib-only.
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/__init__.py
+            /scripts/check_research_vault_source_freshness.py
+            /engine/__init__.py
+            /engine/research_vault/__init__.py
+            /engine/research_vault/catalog.py
       - name: verify Research Vault source-content freshness (public URL)
         env:
           RESEARCH_VAULT_SOURCE_MAX_AGE_HOURS: ${{ vars.RESEARCH_VAULT_SOURCE_MAX_AGE_HOURS }}
@@ -207,5 +220,12 @@ jobs:
     timeout-minutes: 3
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/__init__.py
+            /scripts/check_vps_live_health.py
       - name: verify public VPS lane freshness
         run: python scripts/check_vps_live_health.py
