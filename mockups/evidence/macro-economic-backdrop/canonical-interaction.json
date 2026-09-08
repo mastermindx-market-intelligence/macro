@@ -1,0 +1,261 @@
+{
+  "kind": "ACTUAL_LOCAL_CANONICAL_TARGET",
+  "production": false,
+  "at": "2026-09-07T07:20:18.362285+00:00",
+  "html_sha256": "e93ed968875eae9803286b083d58ffb70f5f87e6af4816735e8fb90ecc8485b9",
+  "source_hashes": {
+    "lib/macro_economic_backdrop.py": "575c1bcfd9a1d1bad6e956d804f45f777bc983ecbc2d21ed24877e4796988ab7",
+    "scripts/build_site.py": "11d886fe54ff5feac54fa9dfca2da7dc9102668a031b015b7677a332753c8361",
+    "templates/dashboard.html.j2": "130b11ed7e189b15aa849e6a3a94297eb17abfb39869183eeaf3357cd0a924d1",
+    "templates/_macro_economic_backdrop.html.j2": "eb08ff11b2605188a7a7bcafbfaa5b52db611299f235d57ceb6688115614daec",
+    "templates/_macro_economic_backdrop.css.j2": "2c1437ac11f590b66df7407a50f28d4cc4fb12926ea63c4ad7c0ef90bcde095b"
+  },
+  "cases": [
+    {
+      "width": 1440,
+      "theme": "dark",
+      "lang": "en",
+      "row_height": 226.796875,
+      "placement": {
+        "market_bottom": 1190.90625,
+        "row_top": 1224.90625,
+        "row_bottom": 1451.703125,
+        "actions_top": 1489.703125
+      },
+      "keyboard_receipt": true,
+      "source_receipt_heights": [
+        44,
+        44,
+        44
+      ],
+      "page_errors": []
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "lang": "en",
+      "row_height": 234.796875,
+      "placement": {
+        "market_bottom": 1190.90625,
+        "row_top": 1224.90625,
+        "row_bottom": 1459.703125,
+        "actions_top": 1497.703125
+      },
+      "keyboard_receipt": true,
+      "source_receipt_heights": [
+        44,
+        44,
+        44
+      ],
+      "page_errors": []
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "lang": "zh",
+      "row_height": 229.3125,
+      "placement": {
+        "market_bottom": 1169.65625,
+        "row_top": 1203.65625,
+        "row_bottom": 1432.96875,
+        "actions_top": 1470.96875
+      },
+      "keyboard_receipt": true,
+      "source_receipt_heights": [
+        44,
+        44,
+        44
+      ],
+      "page_errors": []
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "lang": "zh",
+      "row_height": 237.3125,
+      "placement": {
+        "market_bottom": 1169.65625,
+        "row_top": 1203.65625,
+        "row_bottom": 1440.96875,
+        "actions_top": 1478.96875
+      },
+      "keyboard_receipt": true,
+      "source_receipt_heights": [
+        44,
+        44,
+        44
+      ],
+      "page_errors": []
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "lang": "en",
+      "row_height": 639.296875,
+      "placement": {
+        "market_bottom": 1616.453125,
+        "row_top": 1646.453125,
+        "row_bottom": 2285.75,
+        "actions_top": 2319.75
+      },
+      "keyboard_receipt": true,
+      "source_receipt_heights": [
+        44,
+        44,
+        44
+      ],
+      "page_errors": []
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "lang": "en",
+      "row_height": 663.296875,
+      "placement": {
+        "market_bottom": 1616.453125,
+        "row_top": 1646.453125,
+        "row_bottom": 2309.75,
+        "actions_top": 2343.75
+      },
+      "keyboard_receipt": true,
+      "source_receipt_heights": [
+        44,
+        44,
+        44
+      ],
+      "page_errors": []
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "lang": "zh",
+      "row_height": 646.84375,
+      "placement": {
+        "market_bottom": 1599.328125,
+        "row_top": 1629.328125,
+        "row_bottom": 2276.171875,
+        "actions_top": 2310.171875
+      },
+      "keyboard_receipt": true,
+      "source_receipt_heights": [
+        44,
+        44,
+        44
+      ],
+      "page_errors": []
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "lang": "zh",
+      "row_height": 670.84375,
+      "placement": {
+        "market_bottom": 1599.328125,
+        "row_top": 1629.328125,
+        "row_bottom": 2300.171875,
+        "actions_top": 2334.171875
+      },
+      "keyboard_receipt": true,
+      "source_receipt_heights": [
+        44,
+        44,
+        44
+      ],
+      "page_errors": []
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "lang": "en",
+      "row_height": 719.59375,
+      "placement": {
+        "market_bottom": 1738.921875,
+        "row_top": 1768.921875,
+        "row_bottom": 2488.515625,
+        "actions_top": 2522.515625
+      },
+      "keyboard_receipt": true,
+      "source_receipt_heights": [
+        44,
+        44,
+        44
+      ],
+      "page_errors": []
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "lang": "en",
+      "row_height": 743.59375,
+      "placement": {
+        "market_bottom": 1738.921875,
+        "row_top": 1768.921875,
+        "row_bottom": 2512.515625,
+        "actions_top": 2546.515625
+      },
+      "keyboard_receipt": true,
+      "source_receipt_heights": [
+        44,
+        44,
+        44
+      ],
+      "page_errors": []
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "lang": "zh",
+      "row_height": 660.484375,
+      "placement": {
+        "market_bottom": 1612.640625,
+        "row_top": 1642.640625,
+        "row_bottom": 2303.125,
+        "actions_top": 2337.125
+      },
+      "keyboard_receipt": true,
+      "source_receipt_heights": [
+        44,
+        44,
+        44
+      ],
+      "page_errors": []
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "lang": "zh",
+      "row_height": 684.484375,
+      "placement": {
+        "market_bottom": 1612.640625,
+        "row_top": 1642.640625,
+        "row_bottom": 2327.125,
+        "actions_top": 2361.125
+      },
+      "keyboard_receipt": true,
+      "source_receipt_heights": [
+        44,
+        44,
+        44
+      ],
+      "page_errors": []
+    }
+  ],
+  "journeys": [
+    {
+      "topic": "growth_real_economy",
+      "destination": "/macro_growth_real_economy.html",
+      "same_owner_state": true
+    },
+    {
+      "topic": "inflation_system",
+      "destination": "/macro_inflation_system.html",
+      "same_owner_state": true
+    },
+    {
+      "topic": "financial_conditions",
+      "destination": "/macro_financial_conditions.html",
+      "same_owner_state": true
+    }
+  ],
+  "status": "PASS"
+}

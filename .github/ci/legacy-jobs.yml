@@ -3375,6 +3375,7 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "lib/macro_economic_backdrop.py"
       - "contracts/evidence_foundation/vocabulary.v1.json"
       - "contracts/evidence_foundation/reference.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
@@ -13819,6 +13820,13 @@ jobs:
       - "scripts/build_macro_suite_pages.py"
       - "site/macrodata/workspaces/**"
       - "tests/test_macro_suite_pages.py"
+      - "lib/macro_economic_backdrop.py"
+      - "templates/_macro_economic_backdrop.html.j2"
+      - "templates/_macro_economic_backdrop.css.j2"
+      - "tests/test_macro_economic_backdrop.py"
+      - "tests/test_macro_workspace_growth.py"
+      - "tests/test_macro_workspace_inflation.py"
+      - "tests/test_macro_workspace_financial_conditions.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -13829,4 +13837,4 @@ jobs:
       - name: install suite-page test dependencies
         run: pip install pytest jinja2 pyyaml jsonschema==4.26.0
       - name: Market OS macro suite pages — shell, labels, view model, builder
-        run: python -m pytest tests/test_macro_suite_pages.py -q
+        run: python -m pytest tests/test_macro_suite_pages.py tests/test_macro_economic_backdrop.py -q

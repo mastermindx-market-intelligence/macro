@@ -1165,3 +1165,13 @@ def test_strip_tables_mobile_column_contract():
     # scraping them from the page IS reading the hide list.
     hidden = set(re.findall(r"\.topsetups \.ts-tbl \.(c-[a-z]+)", html))
     assert hidden == (trigger | leaders) - _MOBILE_KEEP
+
+
+def test_dashboard_mount_and_builder_use_existing_publication_without_stock_scope():
+    root = Path(__file__).resolve().parents[1]
+    template = (root / "templates/dashboard.html.j2").read_text()
+    assert template.count("economic.economic_backdrop(") == 1
+    assert "{% if mode != 'stocks' %}{{ economic.economic_backdrop(economic_backdrop|default([])) }}{% endif %}" in template
+    assert template.index('id="sx-markets-v2"') < template.index("economic.economic_backdrop(")
+    source = (root / "scripts/build_site.py").read_text()
+    assert source.count('build_economic_backdrop(site / "macrodata", page_built_at=generated)') == 1

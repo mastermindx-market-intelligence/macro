@@ -1,0 +1,30 @@
+{
+  "at": "2026-09-07T07:18:00.928503+00:00",
+  "command": [
+    "python3",
+    "-m",
+    "pytest",
+    "tests/test_macro_economic_backdrop.py",
+    "tests/test_dashboard_template_render.py",
+    "tests/test_macro_suite_pages.py",
+    "tests/test_macro_workspace_growth.py",
+    "tests/test_macro_workspace_inflation.py",
+    "tests/test_macro_workspace_financial_conditions.py",
+    "-q",
+    "-ra"
+  ],
+  "exit": 0,
+  "result": "222 passed in69.56s; actual completed process37407 return0",
+  "source_hashes": {
+    "lib/macro_economic_backdrop.py": "575c1bcfd9a1d1bad6e956d804f45f777bc983ecbc2d21ed24877e4796988ab7",
+    "templates/_macro_economic_backdrop.css.j2": "2c1437ac11f590b66df7407a50f28d4cc4fb12926ea63c4ad7c0ef90bcde095b",
+    "templates/_macro_economic_backdrop.html.j2": "eb08ff11b2605188a7a7bcafbfaa5b52db611299f235d57ceb6688115614daec",
+    "scripts/build_site.py": "11d886fe54ff5feac54fa9dfca2da7dc9102668a031b015b7677a332753c8361",
+    "templates/dashboard.html.j2": "130b11ed7e189b15aa849e6a3a94297eb17abfb39869183eeaf3357cd0a924d1",
+    "tests/test_macro_economic_backdrop.py": "d16e29bb139059760bfc0cb56c0c798fad4900e9669d029b5e0fb70e13f8ca67",
+    "tests/test_dashboard_template_render.py": "b0b26f3759cef803601f35aa18022597388284d5730c8b747dc82cd9a8f74e9c"
+  },
+  "source_unchanged": true,
+  "review_parent": "d50deee6479e0820587456b0d2b5505c1f61af19",
+  "log_sha256": "9bdafc3a6db0a0712fc25b0dc5e20b6162869edad468148307289ca4d06af7de"
+}
