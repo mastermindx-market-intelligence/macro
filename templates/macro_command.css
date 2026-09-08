@@ -23,6 +23,13 @@ body.mc-page {
   --mc-halo: 0.12;          /* radial wash behind a Read topic word — dark only */
   --mc-read-lh: 1.42;
   --mc-focus-inner: 0 0 0 0 transparent;
+  --mc-underline: 0;
+  --mc-read-weight: 440;
+  --mc-strip-bg: transparent;
+  --mc-strip-border: none;
+  --mc-strip-shadow: none;
+  --mc-lit-halo: .22;
+  --mc-lit-underline: 0;
 }
 
 html[data-theme="light"] body.mc-page {
@@ -31,6 +38,13 @@ html[data-theme="light"] body.mc-page {
   --mc-chip-bg: var(--panel);
   --mc-stance-wash: 6%;
   --mc-halo: 0;
+  --mc-underline: 0;
+  --mc-read-weight: 460;
+  --mc-strip-bg: var(--mq-line);
+  --mc-strip-border: none;
+  --mc-strip-shadow: none;
+  --mc-lit-halo: 0;
+  --mc-lit-underline: 0;
 }
 
 /* ── shell ───────────────────────────────────────────────────────────────── */
@@ -95,12 +109,17 @@ html[data-theme="light"] .mc-rail-link.is-current {
 .mc-analyst:hover { border-color: var(--mq-accent); color: var(--mq-accent); }
 
 /* ── command header + THE READ ───────────────────────────────────────────── */
-.mc-asof-meaning { margin: 6px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--mq-muted); max-width: 62ch; }
+.mc-asof-meaning {
+  margin: -14px 0 18px; font-size: 12.5px; font-weight: 400;
+  line-height: 1.45; color: var(--mq-muted); max-width: 62ch;
+}
 .mc-figure-building { margin: 0; font-size: 14.5px; line-height: 1.55; color: var(--mq-ink); max-width: 62ch; }
 .mc-eyebrow {  margin: 0 0 6px; font-size: 11px; font-weight: 500;
   letter-spacing: .08em; color: var(--mq-muted);
 }
-.mc-eyebrow time { font-family: var(--font-mono); }
+/* F-7: the UI face with tabular figures, never mono — "4 Sep 2026" contains a
+   word, and mono is reserved for figures, tickers, code and axis ticks. */
+.mc-eyebrow time { font-variant-numeric: tabular-nums; }
 .mc-asof-word { letter-spacing: 0; }
 .mc-title {
   /* D2: NOT `--fs-h2` — theme.css:56 sets it to 17px for panel titles, so the
@@ -112,12 +131,16 @@ html[data-theme="light"] .mc-rail-link.is-current {
 .mc-read {
   margin: 0 0 22px; max-width: 62ch;
   font-size: clamp(23px, 1.05rem + 1vw, 34px); line-height: var(--mc-read-lh);
-  font-weight: 450; letter-spacing: -.012em; color: var(--mq-ink);
+  font-weight: var(--mc-read-weight); letter-spacing: -.012em; color: var(--mq-ink);
   text-wrap: pretty;
 }
 .mc-read-clause { white-space: normal; }
+/* F-1: no `color` declaration here. `.mq-tone-*` (macro_suite.css:88-91) is
+   the same specificity and loads FIRST, so a color set here would silently
+   kill the frozen tone mechanism and turn the wash into an ink-grey smudge. */
 .mc-read-topic {
-  color: inherit; text-decoration: none; font-weight: 600;
+  text-decoration: none;
+  font-weight: 600;
   padding: 0 .08em 1px;
   border-bottom: 0 solid currentColor;
   /* D4: the halo is painted ON the element. A z-index:-1 pseudo would paint behind the page canvas. */
@@ -126,46 +149,118 @@ html[data-theme="light"] .mc-rail-link.is-current {
   background-size: 100% 160%;
   background-position: center;
   background-repeat: no-repeat;
+  transition: border-bottom-width 160ms ease, background-image 160ms ease;
 }
 html[data-theme="light"] .mc-read-topic { border-bottom-width: 2px; }
+.mc-read-topic.mq-tone-neutral { color: var(--mq-ink); }
+/* F-10: the gap between a topic word and its predicate is CSS, never
+   template whitespace. EN needs a word space; ZH must not have one. */
+.mc-read-topic { margin-inline-end: .24em; }
+html[data-lang="zh"] .mc-read-topic { margin-inline-end: .06em; }
 .mc-read-state { color: var(--mq-ink); }
 .mc-read-omitted, .mc-read-fallback {
   margin: 0 0 22px; font-size: var(--fs-sm, 13px); line-height: 1.5; color: var(--mq-muted); max-width: 62ch;
 }
 .mc-read-fallback { font-size: 15px; line-height: 1.55; font-weight: 450; color: var(--mq-ink); }
 
-/* ── state strip ─────────────────────────────────────────────────────────── */
+/* ── THE STATE STRIP ──────────────────────────────────────────────────────── */
 .mc-strip {
-  list-style: none; margin: 0 0 32px; padding: 0;
-  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px;
+  list-style: none;
+  margin: 0 0 32px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  background: var(--mc-strip-bg);
+  border: var(--mc-strip-border);
+  border-radius: 0;
+  box-shadow: var(--mc-strip-shadow);
+}
+html[data-theme="light"] .mc-strip {
+  gap: 1px;
+  border: 1px solid var(--mq-line);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 8%, transparent);
 }
 /* D6: `display:grid` beats the UA `[hidden]{display:none}` rule, so an empty
    strip kept reserving 32px + a 4-column track above the fold. */
 .mc-strip[hidden] { display: none; }
 .mc-chip {
-  position: relative; border: 1px solid color-mix(in srgb, var(--mq-ink) 18%, transparent);
-  background: var(--mc-chip-bg); border-radius: var(--r-ctl, 8px);
-  padding: 10px 12px; min-width: 0;
+  position: relative;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--mq-ink) 18%, transparent);
+  border-radius: var(--r-ctl, 8px);
+  background: var(--mc-chip-bg);
+  transition: box-shadow 160ms ease;
 }
-.mc-chip-link { display: grid; gap: 2px; text-decoration: none; color: inherit; }
-.mc-chip-label { font-size: var(--fs-micro, 11px); letter-spacing: .06em; text-transform: uppercase; color: var(--mq-muted); }
-.mc-chip-value { font-size: 14px; font-weight: 600; color: var(--mq-ink); overflow-wrap: anywhere; }
-.mc-chip-asof { font-size: 11px; color: var(--mq-muted); }
-.mc-chip-asof time { font-family: var(--font-mono); }
-/* freshness is a plain word in muted ink — it never colours the chip (§3.4) */
-.mc-chip-fresh { color: var(--mq-muted); font-style: normal; }
+html[data-theme="light"] .mc-chip {
+  padding: 11px 13px;
+  border-width: 0;
+  border-radius: 0;
+}
+.mc-chip-link {
+  display: grid;
+  gap: 3px;
+  text-decoration: none;
+  color: inherit;
+}
+.mc-chip-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+.mc-chip-label {
+  font-size: var(--fs-label, var(--fs-micro, 11px));
+  font-weight: 600;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--mq-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mc-chip-asof {
+  font-size: var(--fs-micro, 11px);
+  color: var(--mq-muted);
+  white-space: nowrap;
+  flex: none;
+}
+/* F-7: the UI face with tabular figures, never mono. */
+.mc-chip-asof time { font-variant-numeric: tabular-nums; }
+html[data-lang="zh"] .mc-chip-label { letter-spacing: 0; text-transform: none; }
+.mc-chip-value {
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.25;
+  letter-spacing: -.005em;
+  overflow-wrap: anywhere;
+}
 .mc-chip.is-null .mc-chip-value { color: var(--mq-muted); font-weight: 500; }
+.mc-chip-fresh { font-size: var(--fs-micro, 11px); line-height: 1.35; color: var(--mq-muted); }
+/* F-2: hidden by CLIP, not by visibility — an aria-describedby target must
+   stay in the accessibility tree in every AT. */
 .mc-chip-help {
-  position: absolute; left: 0; top: calc(100% + 6px); z-index: 5;
-  width: max(220px, 100%); padding: 8px 10px; border-radius: var(--r-ctl, 8px);
-  border: 1px solid transparent; background: var(--mc-panel-bg);
+  position: absolute;
+  left: 0;
+  top: calc(100% + 6px);
+  z-index: 5;
+  width: max(230px, 100%);
+  padding: 9px 11px;
+  border-radius: var(--r-ctl, 8px);
+  border: 1px solid transparent;
+  background: var(--mc-panel-bg);
   box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 6%, transparent);
-  font-size: 12px; line-height: 1.45; color: var(--mq-muted);
-  opacity: 0; visibility: hidden; transition: opacity 160ms ease;
+  font-size: var(--fs-sm, 13px);
+  line-height: 1.45;
+  color: var(--mq-muted);
+  opacity: 0;
+  clip-path: inset(50%);
+  transition: opacity 160ms ease;
 }
 .mc-chip:hover .mc-chip-help,
-.mc-chip:focus-within .mc-chip-help { opacity: 1; visibility: visible; }
-html[data-theme="light"] .mc-chip,
+.mc-chip:focus-within .mc-chip-help { opacity: 1; clip-path: none; }
 html[data-theme="light"] .mc-subtab:not([aria-selected="true"]) {
   border-color: color-mix(in srgb, var(--mq-ink) 14%, transparent);
 }
@@ -174,6 +269,47 @@ html[data-theme="light"] .mc-chip-help {
   box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 10%, transparent),
               0 8px 24px -18px color-mix(in srgb, var(--text) 22%, transparent);
 }
+html[data-theme="light"] .mc-chip:hover,
+html[data-theme="light"] .mc-chip:focus-within {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--mq-accent) 34%, transparent);
+}
+
+/* SIGNATURE — hovering or focusing either register raises the other. */
+.mc-command:has(.mc-chip[data-mc-topic="money"]:hover) .mc-read-topic[data-mc-topic="money"],
+.mc-command:has(.mc-chip[data-mc-topic="money"]:focus-within) .mc-read-topic[data-mc-topic="money"],
+.mc-command:has(.mc-read-topic[data-mc-topic="money"]:hover) .mc-chip[data-mc-topic="money"],
+.mc-command:has(.mc-read-topic[data-mc-topic="money"]:focus-within) .mc-chip[data-mc-topic="money"]
+  { --mc-halo: var(--mc-lit-halo); --mc-underline: var(--mc-lit-underline); }
+.mc-command:has(.mc-chip[data-mc-topic="policy"]:hover) .mc-read-topic[data-mc-topic="policy"],
+.mc-command:has(.mc-chip[data-mc-topic="policy"]:focus-within) .mc-read-topic[data-mc-topic="policy"],
+.mc-command:has(.mc-read-topic[data-mc-topic="policy"]:hover) .mc-chip[data-mc-topic="policy"],
+.mc-command:has(.mc-read-topic[data-mc-topic="policy"]:focus-within) .mc-chip[data-mc-topic="policy"]
+  { --mc-halo: var(--mc-lit-halo); --mc-underline: var(--mc-lit-underline); }
+.mc-command:has(.mc-chip[data-mc-topic="rates"]:hover) .mc-read-topic[data-mc-topic="rates"],
+.mc-command:has(.mc-chip[data-mc-topic="rates"]:focus-within) .mc-read-topic[data-mc-topic="rates"],
+.mc-command:has(.mc-read-topic[data-mc-topic="rates"]:hover) .mc-chip[data-mc-topic="rates"],
+.mc-command:has(.mc-read-topic[data-mc-topic="rates"]:focus-within) .mc-chip[data-mc-topic="rates"]
+  { --mc-halo: var(--mc-lit-halo); --mc-underline: var(--mc-lit-underline); }
+.mc-command:has(.mc-chip[data-mc-topic="inflation"]:hover) .mc-read-topic[data-mc-topic="inflation"],
+.mc-command:has(.mc-chip[data-mc-topic="inflation"]:focus-within) .mc-read-topic[data-mc-topic="inflation"],
+.mc-command:has(.mc-read-topic[data-mc-topic="inflation"]:hover) .mc-chip[data-mc-topic="inflation"],
+.mc-command:has(.mc-read-topic[data-mc-topic="inflation"]:focus-within) .mc-chip[data-mc-topic="inflation"]
+  { --mc-halo: var(--mc-lit-halo); --mc-underline: var(--mc-lit-underline); }
+.mc-command:has(.mc-chip[data-mc-topic="growth"]:hover) .mc-read-topic[data-mc-topic="growth"],
+.mc-command:has(.mc-chip[data-mc-topic="growth"]:focus-within) .mc-read-topic[data-mc-topic="growth"],
+.mc-command:has(.mc-read-topic[data-mc-topic="growth"]:hover) .mc-chip[data-mc-topic="growth"],
+.mc-command:has(.mc-read-topic[data-mc-topic="growth"]:focus-within) .mc-chip[data-mc-topic="growth"]
+  { --mc-halo: var(--mc-lit-halo); --mc-underline: var(--mc-lit-underline); }
+.mc-command:has(.mc-chip[data-mc-topic="jobs"]:hover) .mc-read-topic[data-mc-topic="jobs"],
+.mc-command:has(.mc-chip[data-mc-topic="jobs"]:focus-within) .mc-read-topic[data-mc-topic="jobs"],
+.mc-command:has(.mc-read-topic[data-mc-topic="jobs"]:hover) .mc-chip[data-mc-topic="jobs"],
+.mc-command:has(.mc-read-topic[data-mc-topic="jobs"]:focus-within) .mc-chip[data-mc-topic="jobs"]
+  { --mc-halo: var(--mc-lit-halo); --mc-underline: var(--mc-lit-underline); }
+.mc-command:has(.mc-chip[data-mc-topic="credit"]:hover) .mc-read-topic[data-mc-topic="credit"],
+.mc-command:has(.mc-chip[data-mc-topic="credit"]:focus-within) .mc-read-topic[data-mc-topic="credit"],
+.mc-command:has(.mc-read-topic[data-mc-topic="credit"]:hover) .mc-chip[data-mc-topic="credit"],
+.mc-command:has(.mc-read-topic[data-mc-topic="credit"]:focus-within) .mc-chip[data-mc-topic="credit"]
+  { --mc-halo: var(--mc-lit-halo); --mc-underline: var(--mc-lit-underline); }
 
 /* ── panel ───────────────────────────────────────────────────────────────── */
 .mc-panel {
@@ -367,6 +503,15 @@ html[data-theme="light"] .mc-shell :focus-visible { box-shadow: 0 0 0 1px var(--
   .mc-rail-list { mask-image: linear-gradient(to right, black calc(100% - 26px), transparent);
                   -webkit-mask-image: linear-gradient(to right, black calc(100% - 26px), transparent); }
   .mc-rail-link { white-space: nowrap; padding: 7px 12px; border-radius: var(--r-pill, 999px); }
+  /* same overflow + edge mask as the rail — a hard-clipped tab row
+     ("利率与收:") has no scroll affordance without it. */
+  .mc-subtabs {
+    flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
+    mask-image: linear-gradient(to right, black calc(100% - 26px), transparent);
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 26px), transparent);
+  }
+  .mc-subtabs::-webkit-scrollbar { display: none; }
+  .mc-subtab { white-space: nowrap; flex: none; }
   .mc-title { font-size: 26px; line-height: 1.18; }
   .mc-dests { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
   .mc-rail-bar { display: none; }
@@ -382,27 +527,32 @@ html[data-theme="light"] .mc-shell :focus-visible { box-shadow: 0 0 0 1px var(--
   }
 }
 @media (max-width: 480px) {
-  .mc-read { font-size: var(--fs-h2, 21px); line-height: 1.4; }
+  .mc-read { font-size: var(--fs-h2, 21px); line-height: 1.36; }
   /* D2: `--fs-h3` is 14px in theme.css:59 — this rule is what made the H1
      smaller than the 16px body sentence in 09-dark-zh-390.png. */
   .mc-title { font-size: 24px; line-height: 1.2; }
   .mc-panel-title { font-size: 17px; }
   .mc-panel { padding: 16px; border-radius: var(--r-card, 12px); }
-  .mc-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
-  .mc-chip-help { position: static; opacity: 1; visibility: visible; margin-top: 6px; width: auto;
-    border: 0; box-shadow: none; padding: 0; background: none; }
+  .mc-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin-bottom: 24px; }
+  .mc-chip-top { flex-direction: column; align-items: flex-start; gap: 1px; }
+  .mc-chip-value { font-size: 14px; }
   .mc-figure { padding: 8px; margin: 0 -8px; }
   /* the directory is not a plot: it must not gain the figure's bleed */
   .mc-figure-dests { padding: 0; margin: 0; }
   .mc-dest-title { font-size: 15px; }
   .mc-dest-answers { font-size: 13px; }
+
+  /* Touch has no hover and tapping the cell navigates. A NULL chip's
+     reason is already printed on `.mc-chip-fresh`. The definition
+     (`.mc-chip-help`) stays clipped-but-announced so null cells do not
+     grow several times the height of populated ones (MJ-4 / MN-4). */
 }
 html[data-lang="zh"] .mc-read { letter-spacing: 0; line-height: 1.55; font-size: calc(clamp(23px, 1.05rem + 1vw, 34px) * .92); }
 html[data-lang="zh"] .mc-title { letter-spacing: 0; }
 html[data-lang="zh"] .mc-dest-title,
 html[data-lang="zh"] .mc-dest-answers { letter-spacing: 0; line-height: 1.5; }
 @media (prefers-reduced-motion: reduce) {
-  .mc-rail-link, .mc-chip-help, .mc-dest, .mc-dest-bar, .mc-dest-go { transition: none; }
+  .mc-rail-link, .mc-read-topic, .mc-chip, .mc-chip-help, .mc-dest, .mc-dest-bar, .mc-dest-go { transition: none; }
   .mc-dest:hover .mc-dest-go, .mc-dest:focus-visible .mc-dest-go { transform: none; }
 }
 

@@ -374,8 +374,22 @@ def test_the_hub_eyebrow_uses_plain_dates_and_states_the_oldest_print_rule(
     glance = re.sub(r"<details\b.*?</details>", " ", authored, flags=re.S)
     glance_text = re.sub(r"<[^>]+>", " ", glance)
     assert not re.search(r"\b\d{4}-\d{2}-\d{2}\b", glance_text)
-    assert "Oldest of the fourteen workspaces" in authored
-    assert "取十四个工作区中最旧的最新读数" in authored
+    strip = re.search(r'<ul class="mc-strip".*?</ul>', authored, flags=re.S)
+    assert strip, "the built hub must render the state strip"
+    n_dated = strip.group(0).count("<time datetime=")
+    if n_dated == 0:
+        assert 'class="mc-asof-meaning"' not in authored
+        return
+    times = re.findall(r'<time datetime="([^"]+)"', strip.group(0))
+    all_same = len(set(times)) == 1
+    if all_same:
+        assert (f"All {n_dated} dated readings in the strip below share this date."
+                in authored)
+        assert f"下方 {n_dated} 项有日期读数均为此日期。" in authored
+    else:
+        assert (f"Oldest date among the {n_dated} dated readings in the strip below; "
+                "each reading shows its own date." in authored)
+        assert f"取下方 {n_dated} 项有日期读数中最早的一项；各读数标注各自日期。" in authored
 
 
 def test_overview_offers_visible_workspace_links_and_honest_null_copy(
