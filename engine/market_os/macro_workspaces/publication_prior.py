@@ -19,8 +19,8 @@ from typing import Any, Mapping
 COMPARABILITY_NO_EARLIER = "NO_EARLIER_PUBLICATION"
 
 NO_EARLIER_VOICE = {
-    "en": "No earlier reading yet",
-    "zh": "暂无更早读数",
+    "en": "No earlier reading available to compare yet.",
+    "zh": "暂无可比较的更早读数。",
 }
 
 
@@ -181,7 +181,7 @@ def _absent_headline_vector() -> dict[str, Any]:
         "dx": None,
         "dy": None,
         "status": "ABSENT",
-        "null_reason": COMPARABILITY_NO_EARLIER,
+        "null_reason": "INSUFFICIENT_HISTORY",
     }
 
 
@@ -256,6 +256,7 @@ def _recompute_headline_from_resolved(
         return
     headline["one_month_vector"] = _absent_headline_vector()
     headline["transition_distance"] = None
+    headline["movement_state"] = COMPARABILITY_NO_EARLIER
     # prior_state.effective_date is NOT rewritten: a non-numeric prior
     # quadrant is not evidence of movement since the earlier publication.
 

@@ -428,7 +428,8 @@ def _no_earlier_absence(null_reason: Any = None) -> dict[str, Any]:
     return {
         "token": token,
         "label": L.label("comparability", token) or _pair(
-            "No earlier reading yet", "暂无更早读数"),
+            "No earlier reading available to compare yet.",
+            "暂无可比较的更早读数。"),
         "display": EM_DASH,
         "null_reason": null_reason,
     }

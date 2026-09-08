@@ -34,7 +34,11 @@ from engine.market_os.macro_workspaces.publication_prior import (  # noqa: E402
     prior_publication_snapshot,
     resolve_publication_prior,
 )
+from lib import macro_suite_labels as L  # noqa: E402
 from lib import macro_suite_view as V  # noqa: E402
+
+_NO_EARLIER_EN = "No earlier reading available to compare yet."
+_NO_EARLIER_ZH = "暂无可比较的更早读数。"
 
 FIXTURE = ROOT / "tests" / "fixtures" / "macro_workspace_prior_publication" / (
     "consumer_payments_fred_frames.json"
@@ -160,17 +164,17 @@ def test_view_prints_plain_words_for_null_deltas_never_none_or_nan() -> None:
     )
     changes = view["changes"]
     assert changes["comparable"] is False
-    assert changes["comparability_label"]["en"] == "No earlier reading yet"
-    assert changes["comparability_label"]["zh"] == "暂无更早读数"
-    assert changes["absence"]["label"]["en"] == "No earlier reading yet"
-    assert changes["absence"]["label"]["zh"] == "暂无更早读数"
+    assert changes["comparability_label"]["en"] == _NO_EARLIER_EN
+    assert changes["comparability_label"]["zh"] == _NO_EARLIER_ZH
+    assert changes["absence"]["label"]["en"] == _NO_EARLIER_EN
+    assert changes["absence"]["label"]["zh"] == _NO_EARLIER_ZH
     blob = json.dumps(changes, ensure_ascii=False)
     assert "None" not in blob
     assert "nan" not in blob.lower()
     glance = view["glance"]["change"]
     assert glance["present"] is False
-    assert glance["absence"]["label"]["en"] == "No earlier reading yet"
-    assert glance["absence"]["label"]["zh"] == "暂无更早读数"
+    assert glance["absence"]["label"]["en"] == _NO_EARLIER_EN
+    assert glance["absence"]["label"]["zh"] == _NO_EARLIER_ZH
 
 
 def test_producer_seal_substitutes_resolved_earlier_publication() -> None:
@@ -275,6 +279,23 @@ def _call_headline(mod, resolved):
     return mod._headline(_ASOF, resolved)
 
 
+def _call_changes(mod, prior, headline=None):
+    """Invoke each composer's ``_changes`` against the same current payload.
+
+    Signatures differ; current values are fixed so two same-dated priors
+    (raw earlier vs carried snapshot) can be compared for identity.
+    """
+    name = mod.__name__.rsplit(".", 1)[-1]
+    hl = headline if isinstance(headline, dict) else {"effective_date": _ASOF}
+    if name in {"growth", "inflation"}:
+        return mod._changes(40.0, 60.0, prior, _ASOF)
+    if name in {"labor", "liquidity_regime", "financial_conditions"}:
+        return mod._changes(hl, 40.0, 60.0, prior)
+    if name == "business_activity":
+        return mod._changes({}, _ASOF, prior)
+    return mod._changes({}, prior, _ASOF)
+
+
 @pytest.mark.parametrize("wid", _COMPOSER_MODULES)
 def test_headline_vector_uses_publication_prior(wid) -> None:
     mod = importlib.import_module(f"engine.market_os.macro_workspaces.{wid}")
@@ -322,8 +343,8 @@ def test_shell_null_vector_slot_prints_no_earlier_reading_both_locales() -> None
         '{% import "_macro_suite_shell.html.j2" as shell %}'
         "{{ shell.headline_band(view) }}"
     ).render(view=view)
-    assert "No earlier reading yet" in html
-    assert "暂无更早读数" in html
+    assert _NO_EARLIER_EN in html
+    assert _NO_EARLIER_ZH in html
     assert "Δx 0.0" not in html and "Δx +0" not in html
     assert "None" not in html
     assert "No vector is drawn: there is no method-comparable prior print to move from." in html
@@ -340,10 +361,10 @@ def test_view_absence_labels_three_cases_both_locales() -> None:
     second = _compose(fx["july"], fx["built_at"], prior=first)
     view_none = V.build_view(second, page_built_at="2026-09-04T00:00:00Z",
                              artifact=_artifact())
-    assert view_none["changes"]["absence"]["label"]["en"] == "No earlier reading yet"
-    assert view_none["changes"]["absence"]["label"]["zh"] == "暂无更早读数"
-    assert view_none["glance"]["change"]["absence"]["label"]["en"] == "No earlier reading yet"
-    assert view_none["glance"]["change"]["absence"]["label"]["zh"] == "暂无更早读数"
+    assert view_none["changes"]["absence"]["label"]["en"] == _NO_EARLIER_EN
+    assert view_none["changes"]["absence"]["label"]["zh"] == _NO_EARLIER_ZH
+    assert view_none["glance"]["change"]["absence"]["label"]["en"] == _NO_EARLIER_EN
+    assert view_none["glance"]["change"]["absence"]["label"]["zh"] == _NO_EARLIER_ZH
 
     snap = json.loads(json.dumps(second))
     snap["changes"] = {
@@ -478,6 +499,7 @@ def test_same_dated_rebuild_matches_first_build_headline(wid) -> None:
     h2 = build2.get("hysteresis") or {}
     assert h1.get("held_prior") == h2.get("held_prior")
     assert h1.get("note") == h2.get("note")
+    assert _call_changes(mod, earlier, build1) == _call_changes(mod, carried, build2)
 
 
 def test_later_publication_computes_against_stored_earlier_snapshot() -> None:
@@ -531,10 +553,14 @@ def test_producer_seal_types_absent_vector_when_prior_quadrant_non_numeric() -> 
     sealed = apply_producer_prior_seal(body, stored)
     vec = sealed["headline"]["one_month_vector"]
     assert vec["status"] == "ABSENT"
-    assert vec["null_reason"] == "NO_EARLIER_PUBLICATION"
+    assert vec["null_reason"] == "INSUFFICIENT_HISTORY"
     assert vec["dx"] is None and vec["dy"] is None
     assert sealed["headline"]["transition_distance"] is None
+    assert sealed["headline"]["movement_state"] == "NO_EARLIER_PUBLICATION"
     assert sealed["headline"]["prior_state"]["effective_date"] == "2026-07-01"
+    viewed = V._headline(sealed, [])
+    assert viewed["vector"]["absence"]["label"]["en"] == _NO_EARLIER_EN
+    assert viewed["vector"]["absence"]["label"]["zh"] == _NO_EARLIER_ZH
 
 
 def test_glance_preserves_method_changed_absence_from_real_composer() -> None:
@@ -571,8 +597,8 @@ def test_newly_tracked_metric_without_stored_prior_is_typed_no_earlier() -> None
         rebuilt, page_built_at="2026-09-04T00:00:00Z", artifact=_artifact())
     retail_view = next(
         d for d in view["changes"]["deltas"] if d["metric_id"] == "retail_sales_level")
-    assert retail_view["absence"]["label"]["en"] == "No earlier reading yet"
-    assert retail_view["absence"]["label"]["zh"] == "暂无更早读数"
+    assert retail_view["absence"]["label"]["en"] == _NO_EARLIER_EN
+    assert retail_view["absence"]["label"]["zh"] == _NO_EARLIER_ZH
 
 
 def test_resolve_returns_stored_prior_publication_on_same_dated_rebuild() -> None:
@@ -591,4 +617,26 @@ def test_resolve_returns_stored_prior_publication_on_same_dated_rebuild() -> Non
     assert resolve_publication_prior(
         {"headline": {"effective_date": "2026-07-01"}}, "2026-07-01"
     ) is None
+
+
+def test_null_reason_tokens_this_pr_writes_are_reviewed_both_locales() -> None:
+    """M-A: no English-in-ZH leak, and unknown_tokens stays empty.
+
+    This PR writes ``INSUFFICIENT_HISTORY`` as the headline-vector
+    ``null_reason`` (never ``NO_EARLIER_PUBLICATION``). That token already
+    carries a reviewed EN/ZH pair. The customer-facing no-earlier copy is
+    the comparability pair, true for both 'not retained yet' and 'none exists'.
+    """
+    L.reset_unknown_tokens()
+    written = ("INSUFFICIENT_HISTORY",)
+    for token in written:
+        pair = L.label("null_reason", token)
+        assert pair is not None
+        assert pair["en"] != pair["zh"], token
+        assert pair["zh"] != "No earlier publication"
+        assert pair["zh"] != pair["en"]
+    pair = L.label("comparability", "NO_EARLIER_PUBLICATION")
+    assert pair["en"] == _NO_EARLIER_EN
+    assert pair["zh"] == _NO_EARLIER_ZH
+    assert L.unknown_tokens() == ()
 
