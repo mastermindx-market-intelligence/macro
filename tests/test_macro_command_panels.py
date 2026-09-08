@@ -930,6 +930,11 @@ def test_p3_evidence_frames_are_not_byte_duplicates() -> None:
     by_sha: dict[str, list[str]] = {}
     for state in _manifest_states(manifest):
         if state.get("captured") and state.get("sha256") and state.get("file"):
+            # MAJOR-2: strip-{theme}-{locale}.png is a dedicated same-
+            # scroll 1440 viewport of #overview, so it may byte-match
+            # the rest overview. The capture gate excludes the pair.
+            if str(state["file"]).startswith("strip-"):
+                continue
             by_sha.setdefault(state["sha256"], []).append(state["file"])
     dupes = {sha: names for sha, names in by_sha.items() if len(names) > 1}
     assert dupes == {}, dupes
@@ -1108,7 +1113,12 @@ def test_n5_m1_same_publication_fixture_uses_current_only_deck_once(
 @pytest.mark.needs_full_checkout("site")
 def test_n5_m2_hub_renders_only_populated_panels_with_stance(
         built: tuple[str, Path]) -> None:
-    """N5-M2: every section has a stance; rail count equals panel count."""
+    """N5-M2: rail count equals panel count.
+
+    A populated figure keeps its stance. An empty card is the one null
+    voice — no section stance (MINOR-E6). Live rates hydrates E2 from
+    the fragment, so the hub also has no stance.
+    """
     html, _ = built
     panels = re.findall(r'<section class="mc-panel" id="([^"]+)"', html)
     rail = re.findall(r'data-mc-section="([a-z]+)"', html)
@@ -1116,7 +1126,15 @@ def test_n5_m2_hub_renders_only_populated_panels_with_stance(
     assert rail == list(P3_IDS)
     for section_id in panels:
         body = _panel(html, section_id)
-        assert 'class="mc-stance' in body, section_id
+        visible = re.sub(r"<template[^>]*>.*?</template>", "", body, flags=re.S)
+        has_empty = bool(re.search(r'data-mc-empty="e[1-6]"', visible))
+        has_stance = 'class="mc-stance' in visible
+        if has_empty:
+            assert not has_stance, section_id
+        elif has_stance:
+            continue
+        else:
+            assert 'data-mc-offer' in visible, section_id
     # Destination cards still name the fourteen workspaces; the Growth
     # *panel* is what must be gone (offer-only shells).
     assert html.count('<span class="l-en">Overview</span>') >= 1
