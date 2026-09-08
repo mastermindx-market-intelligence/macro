@@ -7,10 +7,12 @@ one-null-voice on E1, truthful housing/debt/trade stances, Q2 A/C pin.
 from __future__ import annotations
 
 import copy
+import inspect
 import json
 import re
 import shutil
 from html import unescape
+from html.parser import HTMLParser
 from pathlib import Path
 
 from engine.market_os.macro_workspaces import contract as workspace_contract
@@ -1521,48 +1523,71 @@ def test_element_text_head_is_first_block_not_mid_word() -> None:
                 state.get("file"), head[-20:])
 
 
+_VOID_TAGS = frozenset({
+    "area", "base", "br", "col", "embed", "hr", "img", "input",
+    "link", "meta", "param", "source", "track", "wbr",
+})
+
+
+class _Visible(HTMLParser):
+    """Locale-aware visible text. Void tags inside a skipped subtree must
+    not increment skip depth — HTMLParser never emits their end tag."""
+
+    def __init__(self, lang: str) -> None:
+        super().__init__()
+        self.lang = lang
+        self._skip = 0
+        self.texts: list[str] = []
+
+    def _skip_start(self, tag: str, attrs) -> None:
+        classes = dict(attrs).get("class", "").split()
+        if self.lang == "en" and "l-zh" in classes:
+            self._skip += 1
+        elif self.lang == "zh" and "l-en" in classes:
+            self._skip += 1
+        elif self._skip and tag not in _VOID_TAGS:
+            self._skip += 1
+
+    def handle_starttag(self, tag, attrs):
+        self._skip_start(tag, attrs)
+
+    def handle_startendtag(self, tag, attrs):
+        if self._skip:
+            return
+        self._skip_start(tag, attrs)
+        if self._skip:
+            self._skip -= 1
+
+    def handle_endtag(self, tag):
+        if tag in _VOID_TAGS:
+            return
+        if self._skip:
+            self._skip -= 1
+
+    def handle_data(self, data):
+        if self._skip:
+            return
+        text = " ".join(data.split())
+        if text:
+            self.texts.append(text)
+
+
+def _visible_blob(html: str, lang: str) -> str:
+    parser = _Visible(lang)
+    parser.feed(html)
+    return " ".join(parser.texts)
+
+
 def test_rendered_sections_have_no_repeated_visible_sentence() -> None:
     """MINOR-E2: repeated-sentence check on the rendered hub, not the head."""
-    from html.parser import HTMLParser
-
     html = (ROOT / "site" / "macro_monetary.html").read_text(encoding="utf-8")
-
-    class _Visible(HTMLParser):
-        def __init__(self, lang: str) -> None:
-            super().__init__()
-            self.lang = lang
-            self._skip = 0
-            self.texts: list[str] = []
-
-        def handle_starttag(self, tag, attrs):
-            cls = dict(attrs).get("class", "")
-            if self.lang == "en" and "l-zh" in cls.split():
-                self._skip += 1
-            elif self.lang == "zh" and "l-en" in cls.split():
-                self._skip += 1
-            elif self._skip:
-                self._skip += 1
-
-        def handle_endtag(self, tag):
-            if self._skip:
-                self._skip -= 1
-
-        def handle_data(self, data):
-            if self._skip:
-                return
-            text = " ".join(data.split())
-            if text:
-                self.texts.append(text)
-
     for section in P4_IDS:
         match = re.search(
             r'<section class="mc-panel" id="' + section + r'".*?(?=<section class="mc-panel"|</main>)',
             html, re.S)
         assert match, section
         for lang in ("en", "zh"):
-            parser = _Visible(lang)
-            parser.feed(match.group(0))
-            blob = " ".join(parser.texts)
+            blob = _visible_blob(match.group(0), lang)
             sentences = [
                 part.strip() for part in re.split(r"(?<=[.。！？!?])\s+", blob)
                 if part.strip()
@@ -1571,38 +1596,219 @@ def test_rendered_sections_have_no_repeated_visible_sentence() -> None:
             assert len(sentences) == len(set(sentences)), (section, lang, sentences)
 
 
-def test_seven_p4_sections_share_e1_e4_e6_vocabulary() -> None:
-    """MINOR-E3: identical E1–E4/E6 vocabulary; {plan} filled per section."""
-    from jinja2 import Environment, FileSystemLoader, StrictUndefined
+def test_visible_parser_does_not_go_blind_on_void_in_skipped_span() -> None:
+    """NIT-1: a <br> inside an l-zh span must not swallow the following EN."""
+    html = (
+        '<section class="mc-panel" id="housing">'
+        '<span class="l-zh">跳过<br>仍跳过</span>'
+        '<span class="l-en">First sentence. Second sentence.</span>'
+        "</section>"
+    )
+    blob = _visible_blob(html, "en")
+    assert "First sentence." in blob
+    assert "Second sentence." in blob
+    assert "跳过" not in blob
+    sentences = [
+        part.strip() for part in re.split(r"(?<=[.。！？!?])\s+", blob)
+        if part.strip()
+    ]
+    assert sentences == ["First sentence.", "Second sentence."]
 
-    env = Environment(
-        loader=FileSystemLoader(str(ROOT / "templates")),
-        autoescape=True,
-        undefined=StrictUndefined,
-    )
-    tmpl = env.from_string(
-        '{% import "_macro_command_figures.html.j2" as fig %}{{ fig.empty(state) }}'
-    )
+
+def _p4_workspaces() -> dict[str, list[str]]:
+    mapping: dict[str, list[str]] = {}
     for section in builder.SECTIONS:
         if section.id not in P4_IDS:
             continue
-        for empty_id in ("e1", "e2", "e3", "e4", "e6"):
-            kwargs: dict = {}
-            if empty_id == "e6":
-                kwargs["plan"] = section.label_en
-            state = builder._empty_state(empty_id, **kwargs)
-            html = unescape(tmpl.render(state=state))
-            spec = L.EMPTY_STATES[empty_id]
-            assert spec["title"]["en"] in html, (section.id, empty_id)
-            assert spec["title"]["zh"] in html, (section.id, empty_id)
-            if empty_id == "e6":
-                assert spec["why"]["en"].format(plan=section.label_en) in html
-                assert spec["why"]["zh"].format(plan=section.label_en) in html
-                assert spec["cta_label"]["zh"] == "查看升级方案"
-                assert spec["cta_label"]["zh"] in html
+        if section.subtabs:
+            mapping[section.id] = [tab.workspace_id for tab in section.subtabs]
+        elif section.workspace_id:
+            mapping[section.id] = [section.workspace_id]
+    return mapping
+
+
+def _p4_plan(section_id: str) -> str:
+    """The entitlement string the fixture path writes; :1073 must pass it."""
+    return f"Research-{section_id}"
+
+
+def _mutate_p4_entries_for_empty(entries: list[dict], empty_id: str) -> None:
+    ws_to_section = {
+        workspace_id: section_id
+        for section_id, workspace_ids in _p4_workspaces().items()
+        for workspace_id in workspace_ids
+    }
+    tab_id_by_workspace: dict[str, str] = {}
+    for section in builder.SECTIONS:
+        if section.id not in P4_IDS or not section.subtabs:
+            continue
+        for tab in section.subtabs:
+            tab_id_by_workspace[tab.workspace_id] = tab.id
+    for entry in entries:
+        workspace_id = entry["workspace_id"]
+        if workspace_id not in ws_to_section:
+            continue
+        snap = entry["snapshot"]
+        section_id = ws_to_section[workspace_id]
+        if empty_id == "e1":
+            snap["headline"]["effective_date"] = None
+            snap["headline"]["status"] = "ABSENT"
+            snap["headline"]["state_id"] = None
+            snap["headline"]["null_reason"] = "NOT_YET_RELEASED"
+            snap["changes"]["deltas"] = []
+            snap["changes"]["comparability"] = "NO_PRIOR"
+            snap["changes"]["status"] = "ABSENT"
+            snap["changes"]["null_reason"] = "INSUFFICIENT_HISTORY"
+        elif empty_id == "e2":
+            snap["availability"]["state"] = "SOURCE_FAILED"
+            snap["headline"]["status"] = "ABSENT"
+            snap["headline"]["state_id"] = None
+            snap["headline"]["effective_date"] = None
+            snap["changes"]["deltas"] = []
+        elif empty_id == "e3":
+            if not snap["headline"].get("effective_date"):
+                snap["headline"]["effective_date"] = "2026-09-01"
+            snap["changes"]["deltas"] = []
+            snap["changes"]["comparability"] = "NO_PRIOR"
+            snap["changes"]["status"] = "ABSENT"
+            snap["changes"]["null_reason"] = "INSUFFICIENT_HISTORY"
+        elif empty_id == "e4":
+            if workspace_id in tab_id_by_workspace:
+                snap["withheld_command_tabs"] = [tab_id_by_workspace[workspace_id]]
+        elif empty_id == "e6":
+            snap["entitlement"] = _p4_plan(section_id)
+
+
+def _section_has_empty(section: dict, empty_id: str) -> bool:
+    if (section.get("empty") or {}).get("id") == empty_id:
+        return True
+    return any(
+        (tab.get("empty") or {}).get("id") == empty_id
+        for tab in section.get("subtabs") or []
+    )
+
+
+def _render_forced_hub(tmp_path: Path, empty_id: str) -> Path:
+    """Same force path as capture `_build_memory_hub` / remanifest fixtures."""
+    out = tmp_path / f"forced-{empty_id}"
+    out.mkdir(parents=True, exist_ok=True)
+    entries = copy.deepcopy(_live_entries())
+    _mutate_p4_entries_for_empty(entries, empty_id)
+    env = builder._environment(ROOT)
+    sections = builder._macro_command_sections(
+        entries, page_built_at=BUILT_AT, allow_empty_state_fixture=True)
+    if empty_id == "e4":
+        # E4 only routes through withheld command tabs. Non-subtab P4
+        # sections have no writer path; inject the same `_empty_state`
+        # the fixture path uses so the rendered fragment still carries E4.
+        for section in sections:
+            if section["id"] in P4_IDS and not _section_has_empty(section, "e4"):
+                section["empty"] = builder._empty_state("e4")
+    builder.build_hub(
+        entries, out_dir=out, env=env, root=ROOT,
+        page_built_at=BUILT_AT, allow_empty_state_fixture=True)
+    if empty_id == "e4":
+        builder.write_fragments(env, sections, out)
+    return out
+
+
+def _empty_card_html(html: str, empty_id: str) -> str:
+    match = re.search(
+        r'<div class="mc-empty" role="note" data-mc-empty="'
+        + re.escape(empty_id) + r'".*?</div>',
+        html, re.S)
+    assert match, empty_id
+    return match.group(0)
+
+
+def _normalize_empty_card(card: str, *, plan: str | None = None) -> str:
+    text = card
+    if plan:
+        text = text.replace(plan, "{plan}")
+    return text
+
+
+def _assert_shared_empty_cards(
+        cards: dict[str, str], *, plans: dict[str, str] | None = None) -> None:
+    normalized = {
+        section_id: _normalize_empty_card(
+            card, plan=(plans or {}).get(section_id))
+        for section_id, card in cards.items()
+    }
+    first_id, first = next(iter(normalized.items()))
+    for section_id, text in normalized.items():
+        assert text == first, (first_id, section_id, first[:200], text[:200])
+
+
+def _assert_empty_vocabulary(card: str, empty_id: str, plan: str | None) -> None:
+    spec = L.EMPTY_STATES[empty_id]
+    for lang in ("en", "zh"):
+        assert spec["title"][lang] == _visible_blob(
+            re.search(r'<p class="mc-empty-title">.*?</p>', card, re.S).group(0),
+            lang), (empty_id, lang)
+        why = spec["why"][lang]
+        if empty_id == "e6":
+            why = why.format(plan=plan)
+        assert why == _visible_blob(
+            re.search(r'<p class="mc-empty-why">.*?</p>', card, re.S).group(0),
+            lang), (empty_id, lang, plan)
+        if spec.get("stance"):
+            assert spec["stance"][lang] == _visible_blob(
+                re.search(r'<p class="mc-empty-stance">.*?</p>', card, re.S).group(0),
+                lang), (empty_id, lang)
+        if spec.get("unlock"):
+            assert spec["unlock"][lang] == _visible_blob(
+                re.search(r'<p class="mc-empty-unlock">.*?</p>', card, re.S).group(0),
+                lang), (empty_id, lang)
+        if spec.get("next"):
+            assert spec["next"][lang] == _visible_blob(
+                re.search(r'<p class="mc-empty-next">.*?</p>', card, re.S).group(0),
+                lang), (empty_id, lang)
+        if spec.get("cta_label"):
+            assert spec["cta_label"][lang] == _visible_blob(
+                re.search(r'<a class="mc-empty-cta"[^>]*>.*?</a>', card, re.S).group(0),
+                lang), (empty_id, lang)
+
+
+def test_seven_p4_sections_share_e1_e4_e6_vocabulary(tmp_path: Path) -> None:
+    """MINOR-E3(b): rendered-page vocabulary on every P4 section × E1–E4/E6."""
+    by_section = {section.id: section for section in builder.SECTIONS}
+    for empty_id in ("e1", "e2", "e3", "e4", "e6"):
+        out = _render_forced_hub(tmp_path, empty_id)
+        hub = unescape((out / "macro_monetary.html").read_text(encoding="utf-8"))
+        cards: dict[str, str] = {}
+        plans = {section_id: _p4_plan(section_id) for section_id in P4_IDS}
+        for section_id in P4_IDS:
+            panel = _panel(hub, section_id)
+            spec_section = by_section[section_id]
+            assert spec_section.label_en in panel, section_id
+            assert spec_section.label_zh in panel, section_id
+            frag = unescape(
+                (out / "macro" / "fragments" / f"{section_id}.html")
+                .read_text(encoding="utf-8"))
+            assert f'data-mc-empty="{empty_id}"' in frag, (section_id, empty_id)
+            card = _empty_card_html(frag, empty_id)
+            plan = plans[section_id] if empty_id == "e6" else None
+            _assert_empty_vocabulary(card, empty_id, plan)
             if empty_id == "e2":
-                assert spec["title"]["en"] == "No reading arrived today."
-                assert spec["title"]["zh"] == "今天没有新的读数。"
+                assert L.EMPTY_STATES["e2"]["title"]["en"] == "No reading arrived today."
+                assert L.EMPTY_STATES["e2"]["title"]["zh"] == "今天没有新的读数。"
+            if empty_id == "e6":
+                assert L.EMPTY_STATES["e6"]["cta_label"]["zh"] == "查看升级方案"
+            cards[section_id] = card
+        _assert_shared_empty_cards(
+            cards, plans=plans if empty_id == "e6" else None)
+
+        if empty_id == "e4":
+            bad = dict(cards)
+            bad["credit"] = bad["credit"].replace(
+                L.EMPTY_STATES["e4"]["title"]["en"], "Only-credit E4 title")
+            with pytest.raises(AssertionError):
+                _assert_shared_empty_cards(bad)
+        if empty_id == "e6":
+            credit = cards["credit"]
+            with pytest.raises(AssertionError):
+                _assert_empty_vocabulary(credit, "e6", "WRONG-PLAN")
 
 
 def test_tree_completeness_fails_when_committed_frame_missing(tmp_path: Path) -> None:
@@ -1633,8 +1839,53 @@ def test_copy_chrome_raises_on_stale_asset_name(tmp_path: Path, monkeypatch) -> 
         capture._copy_chrome(tmp_path)
 
 
+def _e5_collision_groups(states: list[dict]) -> dict[str, list[dict]]:
+    groups: dict[str, list[dict]] = {}
+    for row in states:
+        digest = row.get("sha256")
+        if not row.get("captured") or not digest:
+            continue
+        groups.setdefault(str(digest), []).append(row)
+    return {digest: group for digest, group in groups.items() if len(group) > 1}
+
+
+def _box_key(row: dict) -> str:
+    return json.dumps(row.get("crop_box_doc"), sort_keys=True, default=str)
+
+
+def assert_committed_e5_collision_groups(states: list[dict]) -> None:
+    """Committed-manifest collision predicate (r10 CODE MINOR-1 / EVIDENCE MINOR-1).
+
+    For every sha256 group: all rows are empty_e5 crops; all share
+    (theme, locale, width); crop_selector values are pairwise distinct
+    (one row per section); the set of distinct crop_box_doc is recorded
+    and ≤ the number of rows. Identical boxes are not required.
+    """
+    for digest, group in _e5_collision_groups(states).items():
+        files = [row.get("file") for row in group]
+        assert all(
+            str(row.get("file") or "").startswith("empty-e5-")
+            or row.get("force_state") == "e5"
+            for row in group
+        ), (digest, files)
+        assert all(row.get("crop") for row in group), (digest, files)
+        axes = {
+            (row.get("theme"), row.get("locale"),
+             row.get("viewport_width") or row.get("width"))
+            for row in group
+        }
+        assert len(axes) == 1, (digest, files, axes)
+        sections = [row.get("section") for row in group]
+        assert len(sections) == len(set(sections)), (digest, files, sections)
+        selectors = [row.get("crop_selector") for row in group]
+        assert None not in selectors, (digest, files)
+        assert len(selectors) == len(set(selectors)), (digest, files, selectors)
+        boxes = {_box_key(row) for row in group}
+        assert 1 <= len(boxes) <= len(group), (digest, files, len(boxes))
+
+
 def test_sha256_collisions_only_in_ruled_e5_groups() -> None:
-    """CODE MINOR-3: non-E5 collisions raise; ruled E5 groups are allowed."""
+    """CODE MINOR-3 / r10 MINOR-1: committed E5 groups; intra-section fails."""
     from scripts import capture_macro_command_p4 as capture
 
     manifest = json.loads(
@@ -1642,30 +1893,94 @@ def test_sha256_collisions_only_in_ruled_e5_groups() -> None:
         .read_text(encoding="utf-8"))
     states = manifest["pages"][0]["states"]
     capture.assert_sha256_collisions_only_e5(states)
+    assert_committed_e5_collision_groups(states)
     clone = copy.deepcopy(states)
     donor = next(row for row in clone if row.get("file") == "empty-e6-dark-en-1440.png")
     victim = next(row for row in clone if row.get("file") == "empty-e6-light-en-1440.png")
     victim["sha256"] = donor["sha256"]
     with pytest.raises(RuntimeError, match="not in ruled E5 group"):
         capture.assert_sha256_collisions_only_e5(clone)
+    intra = copy.deepcopy(states)
+    light = next(
+        row for row in intra
+        if row.get("file") == "empty-e5-credit-light-en-1440.png")
+    dup = copy.deepcopy(light)
+    dup["file"] = "empty-e5-credit-dup-light-en-1440.png"
+    dup["crop_selector"] = 'section#credit [data-mc-empty="e5"]-dup'
+    intra.append(dup)
+    with pytest.raises(AssertionError):
+        assert_committed_e5_collision_groups(intra)
+    cross = copy.deepcopy(states)
+    credit = next(
+        row for row in cross
+        if row.get("file") == "empty-e5-credit-light-en-1440.png")
+    growth = next(
+        row for row in cross
+        if row.get("file") == "empty-e5-growth-dark-zh-390.png")
+    growth["sha256"] = credit["sha256"]
+    with pytest.raises(AssertionError):
+        assert_committed_e5_collision_groups(cross)
+
+
+def _p3_producer_crop_keys() -> set[str]:
+    from scripts import capture_macro_command_p3 as p3
+
+    keys = set(re.findall(
+        r'extra\["(\w+)"\]\s*=', inspect.getsource(p3._write_element_shot)))
+    keys.add("element_text_sha256")
+    return keys
+
+
+def _p4_extra_info_boundary_keys() -> set[str]:
+    """Keys the extra→info list at :466-478 / :989-999 / :1139-1150 copies."""
+    from scripts import capture_macro_command_p4 as capture
+
+    keys: set[str] = set()
+    for fn in (
+            capture._capture_clip,
+            capture._capture_metric_table,
+            capture._capture_hub_e5_cell,
+    ):
+        keys.update(re.findall(r'extra\.get\("(\w+)"\)', inspect.getsource(fn)))
+    return keys
+
+
+def _info_through_p4_extra_boundary(extra: dict) -> dict:
+    """Feed producer extra through the real extra.get() key list, then _state_row."""
+    info = {
+        "applied_locale": "en",
+        "applied_theme": "dark",
+        "bytes": 10,
+        "png_height": 10,
+        "png_width": 10,
+        "sha256": "a" * 64,
+        "css_width": 10,
+        "css_height": 10,
+        "clip": {"x": 0, "y": 0, "width": 10, "height": 10},
+        "dpr": 2,
+    }
+    for key in _p4_extra_info_boundary_keys():
+        if key in extra:
+            info[key] = extra[key]
+    return info
 
 
 def test_state_row_forwards_producer_extra_keys() -> None:
-    """NIT-1: written row keys ⊇ producer extra keys."""
-    import inspect
-
-    from scripts import capture_macro_command_p3 as p3
+    """r10 MINOR-2: written row ⊇ producer keys after the real extra→info list."""
     from scripts import capture_macro_command_p4 as capture
 
-    producer_keys = set(re.findall(
-        r'extra\["(\w+)"\]\s*=', inspect.getsource(p3._write_element_shot)))
-    producer_keys.add("element_text_sha256")
-    info = _crop_info(**{key: f"fwd-{key}" for key in producer_keys})
+    producer_keys = _p3_producer_crop_keys()
+    extra = {key: f"fwd-{key}" for key in producer_keys}
+    extra["new_probe"] = "must-not-pass-the-key-list"
+    info = _info_through_p4_extra_boundary(extra)
+    assert "new_probe" not in info
+    assert producer_keys <= set(info), sorted(producer_keys - set(info))
     row = capture._state_row(
         "state-growth-foot-dark-en-1440.png", "dark", "en", "desktop", info,
         fixture="builder-payload", verified_how="test",
         section="growth", crop=True)
-    assert producer_keys <= set(row)
+    assert producer_keys <= set(row), sorted(producer_keys - set(row))
+    assert "new_probe" not in row
 
 
 def test_e5_request_url_matches_fragment_target() -> None:
