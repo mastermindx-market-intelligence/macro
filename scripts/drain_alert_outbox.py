@@ -24,9 +24,13 @@ import argparse
 import os
 import sys
 from datetime import datetime, timezone
+from pathlib import Path
 
-from app import mailer
-from engine import alert_delivery_drain as drain_mod
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
+
+from app import mailer  # noqa: E402
+from engine import alert_delivery_drain as drain_mod  # noqa: E402
 
 
 def main(argv=None) -> int:
