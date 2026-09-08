@@ -69,6 +69,11 @@ from __future__ import annotations
 from hashlib import sha256
 from typing import Any, Mapping
 
+from engine.market_os.macro_workspaces.publication_prior import (
+    no_earlier_publication,
+    resolve_publication_prior,
+)
+
 METHOD_VERSION = "growth_real_economy.compose.v1"
 AXIS_DEFINITION_VERSION = "1.0.0"
 PRODUCER = "engine.market_os.macro_workspaces.growth"
@@ -433,7 +438,7 @@ def compose(regime_latest: Mapping[str, Any], *, built_at: str,
     headline = _headline(x_value, x_status, x_null, y_value, y_status, y_null, asof, prior_snapshot)
 
     # ---- changes vs prior accepted print ----------------------------------- #
-    changes = _changes(x_value, y_value, prior_snapshot)
+    changes = _changes(x_value, y_value, prior_snapshot, asof)
 
     # ---- axis objects (full section-7.9 disclosure) ----------------------- #
     # Built AFTER the contradiction-handling block above so a fired
@@ -726,11 +731,14 @@ def _headline(x_value, x_status, x_null, y_value, y_status, y_null, asof, prior_
     }
 
 
-def _changes(x_value, y_value, prior_snapshot) -> dict:
+def _changes(x_value, y_value, prior_snapshot, current_effective_date) -> dict:
     if prior_snapshot is None:
         return {"comparability": "NO_PRIOR", "prior_generation_id": None,
                 "prior_effective_date": None, "prior_method_version": None,
                 "deltas": [], "status": "ABSENT", "null_reason": "WARMUP"}
+    prior_snapshot = resolve_publication_prior(prior_snapshot, current_effective_date)
+    if prior_snapshot is None:
+        return no_earlier_publication()
     prior_method = _get(prior_snapshot, "headline", "method_version")
     prior_gen = _get(prior_snapshot, "generation", "generation_id")
     prior_eff = _get(prior_snapshot, "headline", "effective_date")

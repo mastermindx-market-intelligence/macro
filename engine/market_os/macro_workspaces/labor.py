@@ -73,6 +73,11 @@ import copy
 from hashlib import sha256
 from typing import Any, Mapping
 
+from engine.market_os.macro_workspaces.publication_prior import (
+    no_earlier_publication,
+    resolve_publication_prior,
+)
+
 METHOD_VERSION = "labor_markets.compose.v1"
 AXIS_DEFINITION_VERSION = "1.0.0"
 PRODUCER = "engine.market_os.macro_workspaces.labor"
@@ -594,6 +599,9 @@ def _changes(headline, x_value, y_value, prior_snapshot) -> dict:
         return {"comparability": "NO_PRIOR", "prior_generation_id": None,
                 "prior_effective_date": None, "prior_method_version": None,
                 "deltas": [], "status": "ABSENT", "null_reason": "WARMUP"}
+    prior_snapshot = resolve_publication_prior(prior_snapshot, _get(headline, "effective_date"))
+    if prior_snapshot is None:
+        return no_earlier_publication()
     prior_method = _get(prior_snapshot, "headline", "method_version")
     prior_gen = _get(prior_snapshot, "generation", "generation_id")
     prior_eff = _get(prior_snapshot, "headline", "effective_date")

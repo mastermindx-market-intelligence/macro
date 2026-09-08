@@ -406,9 +406,25 @@ def _quadrant_map(headline: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]
 
 # --- what changed -------------------------------------------------------------
 
+def _no_earlier_absence(null_reason: Any = None) -> dict[str, Any]:
+    """Plain-word typed absence for a missing earlier publication.
+
+    Never ``None`` / ``nan`` / a fabricated 0 — the shell prints this label.
+    """
+    token = "NO_EARLIER_PUBLICATION"
+    return {
+        "token": token,
+        "label": L.label("comparability", token) or _pair(
+            "No earlier reading yet", "暂无更早读数"),
+        "display": EM_DASH,
+        "null_reason": null_reason,
+    }
+
+
 def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
     changes = snapshot.get("changes") or {}
     comparability = changes.get("comparability")
+    no_earlier = comparability == "NO_EARLIER_PUBLICATION"
     deltas = []
     for delta in changes.get("deltas") or []:
         prior_raw, current_raw = delta.get("prior_value"), delta.get("current_value")
@@ -421,6 +437,13 @@ def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         current_present = _finite(current_raw)
         delta_present = _finite(delta_raw)
         comparable_row = prior_present and current_present and delta_present
+        row_absence = None
+        if not comparable_row:
+            # A null prior/delta is "no earlier reading", never None/nan/0.
+            if prior_raw is None or delta_raw is None or no_earlier:
+                row_absence = _no_earlier_absence(delta.get("null_reason"))
+            else:
+                row_absence = _absence(delta.get("null_reason"))
         deltas.append({
             "metric_id": delta.get("metric_id"),
             "label": L.label("metric", delta.get("metric_id")),
@@ -437,10 +460,16 @@ def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
             "current": L.fmt_number(current_raw) if current_present else None,
             "delta": L.fmt_signed(delta_raw) if delta_present else None,
             "sign": _sign(delta_raw),
-            "absence": None if comparable_row else _absence(delta.get("null_reason")),
+            "absence": row_absence,
             "note": delta.get("note"),
         })
     comparable = comparability == "COMPARABLE"
+    if no_earlier:
+        block_absence = _no_earlier_absence(changes.get("null_reason"))
+    elif not (comparable and deltas):
+        block_absence = _absence(changes.get("null_reason"))
+    else:
+        block_absence = None
     return {
         "comparability": comparability,
         "comparability_label": L.label("comparability", comparability),
@@ -449,7 +478,7 @@ def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         "prior_generation_id": changes.get("prior_generation_id"),
         "prior_effective_date": L.date_or_none(changes.get("prior_effective_date")),
         "prior_method_version": changes.get("prior_method_version"),
-        "absence": None if comparable and deltas else _absence(changes.get("null_reason")),
+        "absence": block_absence,
         "status": L.label("presence", changes.get("status")),
     }
 
@@ -902,7 +931,8 @@ def _glance(changes: Mapping[str, Any],
             # rather than an empty section the reader has to interpret.
             "comparable_count": len(comparable),
             "total_count": len(deltas),
-            "absence": None if comparable else _absence(changes.get("null_reason")),
+            "absence": (None if comparable
+                        else (changes.get("absence") or _no_earlier_absence())),
         },
         "meaning": {
             "present": lead_implication is not None,
