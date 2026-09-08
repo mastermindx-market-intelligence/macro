@@ -846,11 +846,15 @@ def test_p5_manifest_viewport_identity() -> None:
             expected = width / dpr
             if abs(float(css) - expected) > 0.51:
                 dirty.append(f"{name}: css {css} != ihdr {width}/{dpr}")
-            if abs(float(declared) - expected) > 0.51:
-                dirty.append(f"{name}: viewport_width {declared} != {expected}")
+            if declared not in (390, 768, 1440):
+                dirty.append(f"{name}: viewport_width {declared} not a declared render width")
             if state.get("crop"):
                 if not state.get("selector"):
                     dirty.append(f"{name}: crop without selector")
+                if state.get("crop_width") is None:
+                    dirty.append(f"{name}: crop missing crop_width")
+            elif abs(float(declared) - expected) > 0.51:
+                dirty.append(f"{name}: viewport_width {declared} != {expected}")
             png = manifest_path.parent / name
             if png.is_file():
                 data = png.read_bytes()
