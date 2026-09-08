@@ -36,13 +36,34 @@ def test_featured_calls_put_needs_review_first():
     assert rows[0]["needs_review"] is True
 
 
-def test_broken_ceasefire_call_is_forced_into_review():
+def test_resolved_ceasefire_entry_is_not_forced_back_into_review():
     rows = _featured_predictions(
-        [{"id": "P44", "status": "open", "check_by": "2026-08-31"}],
+        [{"id": "P44", "status": "void", "check_by": "2026-08-31", "reviewed_on": "2026-09-08"}],
         {"predictions": {"P44": {"overdue": False}}},
     )
-    assert rows[0]["needs_review"] is True
+    assert rows[0]["needs_review"] is False
 
+
+def test_recent_reviews_are_featured_ahead_of_still_open_calls():
+    calls = [
+        {"id": "P1", "status": "open", "check_by": "2026-12-31"},
+        {"id": "P2", "status": "hit", "check_by": "2026-08-01", "reviewed_on": "2026-09-07"},
+        {"id": "P3", "status": "void", "check_by": "2026-07-01", "reviewed_on": "2026-09-08"},
+    ]
+    rows = _featured_predictions(calls, {"predictions": {}}, limit=3)
+    assert [row["id"] for row in rows] == ["P3", "P2", "P1"]
+
+def test_policy_watch_review_batch_is_resolved_and_auditable():
+    intel = json.loads((ROOT / "data" / "policy" / "intel.json").read_text(encoding="utf-8"))
+    by_id = {p["id"]: p for p in intel["predictions"]}
+    assert {pid: by_id[pid]["status"] for pid in ("P6", "P16", "P40", "P41", "P43", "P44")} == {
+        "P6": "hit", "P16": "hit", "P40": "hit", "P41": "hit", "P43": "void", "P44": "void",
+    }
+    for pid in ("P6", "P16", "P40", "P41", "P43", "P44"):
+        assert by_id[pid]["reviewed_on"] == "2026-09-08"
+        assert by_id[pid]["result_en"] and by_id[pid]["result_zh"] and by_id[pid]["result_code"]
+    assert by_id["P43"]["result_code"] == "outcome_predated_call"
+    assert by_id["P44"]["result_code"] == "premise_broken_at_entry"
 
 def test_policy_watch_template_uses_macro_ui_roles_and_plain_labels():
     template = (ROOT / "templates" / "policy_watch.html.j2").read_text(encoding="utf-8")
@@ -87,7 +108,6 @@ def test_generated_policy_watch_links_resolvable_page_css():
     assert 'url("fonts/InterDisplay-600.woff2")' not in css
     assert "The policy moves that matter for markets. Last verified" in page
     assert "See all calls" in page
-    assert "Under review after the ceasefire collapsed" in page
     assert "READ BEING UPDATED" not in page
     assert "What policymakers do, not what they say" not in page
     assert "Miran role: authored before CEA/Fed tenure" not in page
@@ -99,10 +119,14 @@ def _render_policy_watch_with_lifecycle(lifecycle_fixture, monkeypatch, tmp_path
     the lifecycle view so every other context var (intel, dates, fed_stance, ...) is the
     real production shape — avoids re-guessing the whole context surface."""
     import scripts.build_policy_watch as bpw
+    from engine import fed_stance as _fs
     from engine import policy_intent_desk as _pid
+    from engine import policy_rotation_check as _rotc
 
     monkeypatch.setattr(_pid, "lifecycle_view", lambda root=None: lifecycle_fixture)
     monkeypatch.setattr(_pid, "ingest_lifecycle", lambda root=None: 0)
+    monkeypatch.setattr(_fs, "append_history", lambda snapshot: None)
+    monkeypatch.setattr(_rotc, "append_history", lambda snapshot: None)
 
     captured = {}
 
@@ -185,7 +209,7 @@ def test_light_mode_changes_the_mechanism_not_only_the_token():
 
 def test_policy_watch_l1_section_count_is_unchanged():
     template = (ROOT / "templates" / "policy_watch.html.j2").read_text(encoding="utf-8")
-    assert template.count('<section class="pw-section"') == 7
+    assert template.count('<section class="pw-section"') == 8
 
 
 def test_stalled_state_prints_plain_words(monkeypatch, tmp_path):
