@@ -157,6 +157,19 @@ _DISCLOSURE_EN: dict[tuple[str, str | None], str] = {
         "We don't publish a market feed yet — we don't yet measure which "
         "way each event pushed a stock."
     ),
+    ("PARTIALLY_SERVED", "magnitude_unmeasured"): (
+        "We don't publish a market feed yet — we record which way events "
+        "pushed a stock, but not yet by how much."
+    ),
+    ("PARTIALLY_SERVED", "direction_unmeasured"): (
+        "We don't publish a market feed yet — we record how large some "
+        "events were, but not yet which way they pushed a stock."
+    ),
+    ("PARTIALLY_SERVED", "claim_unsupported_both_measured"): (
+        "We don't publish a market feed yet — we record which way events "
+        "pushed a stock and how large some events were, but not yet on "
+        "the same events."
+    ),
     ("PARTIALLY_SERVED", "projection_incomplete"): (
         "We don't publish a full market feed yet. Some fields are ready; "
         "direction or size for each event is still incomplete."
@@ -192,6 +205,16 @@ _DISCLOSURE_ZH: dict[tuple[str, str | None], str] = {
     ),
     ("PARTIALLY_SERVED", "claim_unsupported_by_store"): (
         "我们暂未发布市场事件流——每个事件对个股的方向影响尚未测量。"
+    ),
+    ("PARTIALLY_SERVED", "magnitude_unmeasured"): (
+        "我们暂未发布市场事件流——已记录事件推动个股的方向，但尚未记录幅度。"
+    ),
+    ("PARTIALLY_SERVED", "direction_unmeasured"): (
+        "我们暂未发布市场事件流——已记录部分事件的影响幅度，但尚未记录方向。"
+    ),
+    ("PARTIALLY_SERVED", "claim_unsupported_both_measured"): (
+        "我们暂未发布市场事件流——已记录事件推动个股的方向与部分事件的幅度，"
+        "但尚未同时记录在同一事件上。"
     ),
     ("PARTIALLY_SERVED", "projection_incomplete"): (
         "我们暂未完整发布市场事件流。部分字段已就绪，但每个事件的方向或幅度仍不完整。"
@@ -305,16 +328,32 @@ def _disclosure_cause(state: str, flags: set[str] | frozenset[str]) -> str | Non
 
     Direction-only and magnitude-only stores must not share one copy string:
     a magnitude-only census that printed "which way some events pushed a
-    stock" was a false measurement claim (MAJOR-2, PR #6897).
+    stock" was a false measurement claim (MAJOR-2, PR #6897). The same split
+    applies in the declared-projection branch: returning
+    claim_unsupported_by_store before consulting the census printed
+    "we don't yet measure which way" on a store whose receipt already
+    counted direction-bearing ticker events (MAJOR-A, PR #6897 r2).
     """
     if state != "PARTIALLY_SERVED":
         return None
-    for key in (
-        "below_coverage_threshold",
-        "claim_unsupported_by_store",
-    ):
-        if key in flags:
-            return key
+    if "below_coverage_threshold" in flags:
+        return "below_coverage_threshold"
+    if "claim_unsupported_by_store" in flags:
+        has_direction = (
+            "store_has_direction_data_claim_unsupported" in flags
+            or "magnitude_unmeasured" in flags
+        )
+        has_magnitude = (
+            "store_has_magnitude_data_claim_unsupported" in flags
+            or "direction_unmeasured" in flags
+        )
+        if has_direction and has_magnitude:
+            return "claim_unsupported_both_measured"
+        if has_direction:
+            return "magnitude_unmeasured"
+        if has_magnitude:
+            return "direction_unmeasured"
+        return "claim_unsupported_by_store"
     has_direction = "store_has_direction_data_no_declared_projection" in flags
     has_magnitude = "store_has_magnitude_data_no_declared_projection" in flags
     if has_direction and has_magnitude:
@@ -348,12 +387,14 @@ def market_feed_field_coverage(root: Path | str | None = None) -> dict:
     NOT_SERVED call be made on nothing.
 
     Direction/magnitude counts require a closed value domain — key presence or
-    free-text values do not count. events_with_direction_and_magnitude is
-    restricted to ticker-bearing events so it is a true subset of
-    events_with_tickers: the SERVED coverage ratio divides one by the
-    other, and a numerator drawn from the whole store (including tickerless
-    events) let the ratio exceed 1.0 and let SERVED fire with zero actual
-    stock impact (MAJOR-1, PR #6897 review).
+    free-text values do not count. events_with_direction_field,
+    events_with_magnitude_field, and events_with_direction_and_magnitude are
+    all restricted to ticker-bearing events so a tickerless direction row
+    cannot print "pushed a stock" while events_with_tickers == 0 (MINOR-A,
+    PR #6897 r2). The SERVED coverage ratio divides the co-occurrence count
+    by events_with_tickers; a numerator drawn from the whole store
+    (including tickerless events) let the ratio exceed 1.0 and let SERVED
+    fire with zero actual stock impact (MAJOR-1, PR #6897 review).
     """
     out = {
         "store_path": str(EVENTS_REL),
@@ -387,8 +428,16 @@ def market_feed_field_coverage(root: Path | str | None = None) -> dict:
                 continue
         total = len(events)
         with_tickers = sum(1 for e in events if e.get("tickers"))
-        with_direction = sum(1 for e in events if _event_has_valid_direction(e))
-        with_magnitude = sum(1 for e in events if _event_has_valid_magnitude(e))
+        with_direction = sum(
+            1
+            for e in events
+            if e.get("tickers") and _event_has_valid_direction(e)
+        )
+        with_magnitude = sum(
+            1
+            for e in events
+            if e.get("tickers") and _event_has_valid_magnitude(e)
+        )
         with_direction_and_magnitude = sum(
             1
             for e in events
@@ -558,6 +607,19 @@ def resolve_market_feed_alias(
                 if unsupported_claims:
                     state = "PARTIALLY_SERVED"
                     flags.add("claim_unsupported_by_store")
+                    # Same direction/magnitude split as the no-projection
+                    # branch: a declared projection must not print
+                    # "we don't yet measure which way" when the store
+                    # already recorded direction on ticker-bearing events
+                    # (MAJOR-A, PR #6897 r2).
+                    if store_has_direction:
+                        flags.add("store_has_direction_data_claim_unsupported")
+                    if store_has_magnitude:
+                        flags.add("store_has_magnitude_data_claim_unsupported")
+                    if store_has_direction and not store_has_magnitude:
+                        flags.add("magnitude_unmeasured")
+                    elif store_has_magnitude and not store_has_direction:
+                        flags.add("direction_unmeasured")
                     if missing_fields:
                         flags.add("projection_incomplete")
                     reason = "claim_unsupported_by_store: declared field(s) lack store support"

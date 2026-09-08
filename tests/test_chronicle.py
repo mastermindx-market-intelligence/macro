@@ -3187,6 +3187,167 @@ def test_market_feed_alias_disclosure_cause_claim_unsupported(tmp_path):
     )
 
 
+def test_market_feed_alias_declared_projection_reflects_store_direction_data(tmp_path):
+    """MAJOR-A (Opus r2): a declared projection on a direction-only
+    ticker-bearing store must not print 'we don't yet measure which way'.
+    Two ticker-bearing direction-only events + all 5 required fields."""
+    from engine.chronicle.market_feed_alias import (
+        resolve_market_feed_alias, MARKET_FEED_REQUIRED_FIELDS,
+    )
+    from engine.chronicle.governor import build_and_write
+
+    root = _make_fixture_root(tmp_path)
+    build_and_write(root=root, rebuild=True)
+
+    with open(root / "data" / "chronicle" / "events.jsonl", "a", encoding="utf-8") as fh:
+        for i in range(2):
+            fh.write(json.dumps({
+                "id": f"dir-only-{i}",
+                "date": f"2026-08-0{i + 1}",
+                "tickers": [f"D{i}"],
+                "direction": "up",
+            }) + "\n")
+
+    receipt = resolve_market_feed_alias(
+        root=root,
+        projection={"name": "x", "route": "/x", "fields": list(MARKET_FEED_REQUIRED_FIELDS)},
+    )
+    assert receipt["state"] == "PARTIALLY_SERVED"
+    assert receipt["coverage"]["events_with_direction_field"] == 2
+    assert receipt["coverage"]["events_with_magnitude_field"] == 0
+    assert "claim_unsupported_by_store" in receipt["flags"]
+    assert "magnitude_unmeasured" in receipt["flags"]
+    assert receipt["disclosure_en"] == (
+        "We don't publish a market feed yet — we record which way events "
+        "pushed a stock, but not yet by how much."
+    )
+    assert receipt["disclosure_zh"] == (
+        "我们暂未发布市场事件流——已记录事件推动个股的方向，但尚未记录幅度。"
+    )
+    assert "we don't yet measure which way" not in receipt["disclosure_en"]
+    assert "方向影响尚未测量" not in receipt["disclosure_zh"]
+
+
+def test_market_feed_alias_declared_projection_reflects_store_magnitude_data(tmp_path):
+    """MAJOR-A mirror: magnitude recorded, direction not — do not claim
+    direction is unmeasured as if nothing was recorded."""
+    from engine.chronicle.market_feed_alias import (
+        resolve_market_feed_alias, MARKET_FEED_REQUIRED_FIELDS,
+    )
+    from engine.chronicle.governor import build_and_write
+
+    root = _make_fixture_root(tmp_path)
+    build_and_write(root=root, rebuild=True)
+
+    with open(root / "data" / "chronicle" / "events.jsonl", "a", encoding="utf-8") as fh:
+        fh.write(json.dumps({
+            "id": "mag-only-1", "date": "2026-08-01",
+            "tickers": ["M1"], "impact_magnitude": 0.4,
+        }) + "\n")
+        fh.write(json.dumps({
+            "id": "mag-only-2", "date": "2026-08-02",
+            "tickers": ["M2"], "impact_magnitude": 0.6,
+        }) + "\n")
+
+    receipt = resolve_market_feed_alias(
+        root=root,
+        projection={"name": "x", "route": "/x", "fields": list(MARKET_FEED_REQUIRED_FIELDS)},
+    )
+    assert receipt["state"] == "PARTIALLY_SERVED"
+    assert receipt["coverage"]["events_with_direction_field"] == 0
+    assert receipt["coverage"]["events_with_magnitude_field"] == 2
+    assert "direction_unmeasured" in receipt["flags"]
+    assert receipt["disclosure_en"] == (
+        "We don't publish a market feed yet — we record how large some "
+        "events were, but not yet which way they pushed a stock."
+    )
+    assert receipt["disclosure_zh"] == (
+        "我们暂未发布市场事件流——已记录部分事件的影响幅度，但尚未记录方向。"
+    )
+    assert "we don't yet measure which way" not in receipt["disclosure_en"]
+
+
+def test_market_feed_alias_declared_projection_names_disjoint_direction_and_magnitude(
+    tmp_path,
+):
+    """MAJOR-A both-present: direction and magnitude on disjoint events
+    must name both measurements, not the neither-measured copy."""
+    from engine.chronicle.market_feed_alias import (
+        resolve_market_feed_alias, MARKET_FEED_REQUIRED_FIELDS,
+    )
+    from engine.chronicle.governor import build_and_write
+
+    root = _make_fixture_root(tmp_path)
+    build_and_write(root=root, rebuild=True)
+
+    with open(root / "data" / "chronicle" / "events.jsonl", "a", encoding="utf-8") as fh:
+        fh.write(json.dumps({
+            "id": "direction-only", "date": "2026-08-05", "tickers": ["A"],
+            "direction": "up",
+        }) + "\n")
+        fh.write(json.dumps({
+            "id": "magnitude-only", "date": "2026-08-06", "tickers": ["B"],
+            "impact_magnitude": 0.3,
+        }) + "\n")
+
+    receipt = resolve_market_feed_alias(
+        root=root,
+        projection={"name": "x", "route": "/x", "fields": list(MARKET_FEED_REQUIRED_FIELDS)},
+    )
+    assert receipt["state"] == "PARTIALLY_SERVED"
+    assert "claim_unsupported_by_store" in receipt["flags"]
+    assert receipt["disclosure_en"] == (
+        "We don't publish a market feed yet — we record which way events "
+        "pushed a stock and how large some events were, but not yet on "
+        "the same events."
+    )
+    assert receipt["disclosure_zh"] == (
+        "我们暂未发布市场事件流——已记录事件推动个股的方向与部分事件的幅度，"
+        "但尚未同时记录在同一事件上。"
+    )
+    assert "we don't yet measure which way" not in receipt["disclosure_en"]
+
+
+def test_market_feed_alias_tickerless_direction_does_not_claim_stock_push(tmp_path):
+    """MINOR-A: direction/magnitude census is ticker-restricted. A tickerless
+    direction event must not yield 'pushed a stock' while
+    events_with_tickers == 0."""
+    from engine.chronicle.market_feed_alias import (
+        resolve_market_feed_alias, market_feed_field_coverage,
+    )
+
+    events_dir = tmp_path / "data" / "chronicle"
+    events_dir.mkdir(parents=True)
+    (events_dir / "events.jsonl").write_text(
+        json.dumps({
+            "id": "tickerless-dir",
+            "date": "2026-08-01",
+            "tickers": [],
+            "direction": "up",
+        }) + "\n",
+        encoding="utf-8",
+    )
+
+    coverage = market_feed_field_coverage(root=tmp_path)
+    assert coverage["readable"] is True
+    assert coverage["events_with_tickers"] == 0
+    assert coverage["events_with_direction_field"] == 0
+    assert coverage["events_with_magnitude_field"] == 0
+
+    receipt = resolve_market_feed_alias(root=tmp_path, projection=None)
+    assert receipt["state"] == "NOT_SERVED"
+    assert "store_has_direction_data_no_declared_projection" not in receipt["flags"]
+    assert receipt["disclosure_en"] == (
+        "We don't publish a market feed yet. We track the events and which "
+        "tickers they touch — we do not yet publish which way each "
+        "event pushed a stock, so that column is blank on purpose."
+    )
+    assert "We've started recording which way some events pushed a stock" not in (
+        receipt["disclosure_en"]
+    )
+    assert "部分事件的方向影响已开始记录" not in receipt["disclosure_zh"]
+
+
 def test_market_feed_alias_unknown_declared_fields_flag(tmp_path):
     """Opus MINOR-2: unknown projection fields raise unknown_declared_fields."""
     from engine.chronicle.market_feed_alias import resolve_market_feed_alias
@@ -3363,7 +3524,9 @@ def test_market_feed_alias_mixed_date_types_do_not_unread_store(tmp_path):
     assert coverage["reason"] is None
     assert coverage["events_total"] >= 2
     assert coverage["events_with_tickers"] >= 2
-    assert coverage["coverage_start"] == "2026-07-09" or coverage["coverage_start"] <= "2026-09-01"
+    assert isinstance(coverage["coverage_start"], str)
+    assert coverage["coverage_start"].count("-") == 2
+    assert coverage["coverage_start"] < coverage["coverage_end"]
     assert coverage["coverage_end"] == "2026-09-01"
     assert isinstance(coverage["coverage_start"], str)
     assert isinstance(coverage["coverage_end"], str)
