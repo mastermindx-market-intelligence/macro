@@ -1125,7 +1125,7 @@ def _headline(effective_date, prior_snapshot) -> dict:
         "prior_state": {"state_id": None, "effective_date": prior_eff, "method_version": prior_method},
         "transition_distance": None,
         "nearest_boundary": {"axis": None, "distance": None, "null_reason": "NOT_APPLICABLE"},
-        "one_month_vector": {"dx": None, "dy": None, "status": "ABSENT", "null_reason": "NOT_APPLICABLE"},
+        "one_month_vector": {"dx": None, "dy": None, "status": "ABSENT", "null_reason": "NOT_APPLICABLE", "x_axis_id": None, "y_axis_id": None},
         "hysteresis": {
             "band": 0.0, "applied": False, "held_prior": False,
             "note": (

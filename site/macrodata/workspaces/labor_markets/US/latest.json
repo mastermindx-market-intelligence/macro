@@ -417,8 +417,8 @@
     "built_at": "2026-09-06T21:23:24Z",
     "calculation_as_of": "2026-09-04",
     "code_version": "41929a0479ef0e5e4a8ac34086668c738c1e480f",
-    "content_sha256": "822853f15b747b13b6048046df3448606f08c094bc184a96ad2e2ee6c2c26a54",
-    "generation_id": "labor_markets-US-822853f15b747b13",
+    "content_sha256": "ca464c4e6a3dd332eda432ffaffb62dbb771eafaaf75320a12c45a32de9d7958",
+    "generation_id": "labor_markets-US-ca464c4e6a3dd332",
     "producer": "engine.market_os.macro_workspaces.labor",
     "rendered_at": null
   },
@@ -441,7 +441,9 @@
       "dx": 0.0,
       "dy": 0.0,
       "null_reason": null,
-      "status": "PRESENT"
+      "status": "PRESENT",
+      "x_axis_id": "labor_demand",
+      "y_axis_id": "labor_supply_tightness"
     },
     "prior_state": {
       "effective_date": "2026-09-04",

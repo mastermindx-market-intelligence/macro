@@ -563,6 +563,8 @@ def _headline(x_value, x_status, x_null, y_value, y_status, y_null, asof,
             vec_null = "INSUFFICIENT_HISTORY"
         vec = {"dx": None, "dy": None, "status": "ABSENT", "null_reason": vec_null}
         transition_distance = None
+    vec["x_axis_id"] = "funding_pressure"
+    vec["y_axis_id"] = "balance_sheet_support"
 
     # F1: disclosure text describes the corrected per-axis-crossing rule.
     if not applied:

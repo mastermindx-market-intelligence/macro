@@ -1373,6 +1373,8 @@ def _headline(x_value, x_status, x_null, y_value, y_status, y_null, effective_da
             vec_null = "INSUFFICIENT_HISTORY"
         vec = {"dx": None, "dy": None, "status": "ABSENT", "null_reason": vec_null}
         transition_distance = None
+    vec["x_axis_id"] = "cash_flow_momentum"
+    vec["y_axis_id"] = "credit_stress"
 
     if not computable:
         note = (

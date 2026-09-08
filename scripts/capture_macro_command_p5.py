@@ -27,6 +27,7 @@ if str(ROOT) not in sys.path:
 from scripts.capture_macro_command_p3 import (  # noqa: E402
     RAIL_VIEWPORT_JS,
     _assert_shot_geometry,
+    _crop_box,
     _device_px,
     _device_px_span,
     _device_px_span_from_crop_box_doc,
@@ -62,6 +63,8 @@ RELOCATED_ZH = (
 # them as workspace rows (identical sha256 is an M1 defect).
 _SKIP_WS_DUP = {
     ("macro_rates_curves.html", "open", "dark", "en"),
+    ("macro_rates_curves.html", "open", "dark", "zh"),
+    ("macro_rates_curves.html", "open", "light", "en"),
     ("macro_rates_curves.html", "open", "light", "zh"),
 }
 WORKSPACE_PAGES = (
@@ -70,6 +73,12 @@ WORKSPACE_PAGES = (
     "macro_financial_conditions.html",
     "macro_housing_real_estate.html",
 )
+METHOD_OPEN_PAGES = (
+    "macro_financial_conditions.html",
+    "macro_labor_markets.html",
+)
+METHOD_OPEN_SELECTOR = "section.mq-method .mq-axis-method"
+METHOD_OPEN_DETAILS = "section.mq-method details.mc-details"
 FIVE_PAGES = ("macro_monetary.html",) + WORKSPACE_PAGES
 HUB_PAGE = "macro_monetary.html"
 CHIP_MATERIAL_WIDTHS = (1440, 768, 390)
@@ -208,7 +217,9 @@ def family_for(filename: str) -> str:
         return "e5"
     if name.startswith("half-") or name.startswith(("18-", "18b-", "19-", "19b-")):
         return "half_null"
-    if name.startswith(("15-", "16-")):
+    if name.startswith("method_open-"):
+        return "method_open"
+    if name.startswith(("15-", "15b-", "16-", "16b-")):
         return "details_open"
     if name.startswith("17"):
         return "read_word"
@@ -611,6 +622,10 @@ def _shot(dest: Path, page, locator, *, selector: str,
         "locale": locale,
     }
     _write_element_shot(page, dest, locator, extra, locale)
+    full_text = str(locator.inner_text() or "")
+    extra["element_text_sha256"] = hashlib.sha256(
+        full_text.encode("utf-8")).hexdigest()
+    extra["_element_text"] = full_text
     win = locator.evaluate(
         """el => {
             const doc = (el && el.contentDocument) || el.ownerDocument || document;
@@ -703,7 +718,8 @@ def _state(filename: str, theme: str, locale: str, viewport: str,
         "trigger": trigger,
     }
     for key in ("crop_box_doc", "scroll_y_at_shot", "ihdr_delta_px",
-                "element_text_head", "innerWidth", "innerHeight",
+                "element_text_head", "element_text_sha256", "openedBy",
+                "innerWidth", "innerHeight",
                 "coordSpace", "hostFrameOffset", "host_scroll_y_at_shot",
                 "frameInnerWidth", "analystBox", "siblingPillBox"):
         if info.get(key) is not None:
@@ -728,6 +744,52 @@ def _gap_state(filename: str, theme: str, locale: str, viewport: str,
 
 def _relocated_needles(locale: str) -> tuple[str, ...]:
     return RELOCATED_ZH if locale == "zh" else RELOCATED_EN
+
+
+def _box_contains(outer: Mapping[str, float], inner: Mapping[str, float],
+                  *, tol: float = 1.0) -> bool:
+    return (
+        float(inner["x"]) + tol >= float(outer["x"])
+        and float(inner["y"]) + tol >= float(outer["y"])
+        and float(inner["x"]) + float(inner["width"]) - tol
+        <= float(outer["x"]) + float(outer["width"])
+        and float(inner["y"]) + float(inner["height"]) - tol
+        <= float(outer["y"]) + float(outer["height"])
+    )
+
+
+def _open_method_details_by_click(target, *, host_page) -> str:
+    """Real click on the method <details> summary. `target` is page or frame.
+
+    Composition-law rows live under the Drivers tab panel (`data-mq-panel=drivers`);
+    that panel starts hidden, so the tab must be selected first.
+    """
+    drivers_tab = target.locator('[data-mq-tab="drivers"]').first
+    drivers_tab.wait_for(state="visible", timeout=15000)
+    drivers_tab.click(timeout=15000)
+    host_page.wait_for_timeout(120)
+    panel = target.locator('[data-mq-panel="drivers"]').first
+    panel.wait_for(state="visible", timeout=15000)
+    details = target.locator(METHOD_OPEN_DETAILS).first
+    details.wait_for(state="visible", timeout=15000)
+    details.scroll_into_view_if_needed(timeout=15000)
+    summary = details.locator("summary").first
+    summary.click(timeout=15000)
+    host_page.wait_for_timeout(120)
+    opened = bool(details.evaluate("el => el.open"))
+    if not opened:
+        raise RuntimeError("section.mq-method details did not open on click")
+    return "click"
+
+
+def _assert_method_dl_contained(body) -> None:
+    dl = body.locator("dl").first
+    dl.wait_for(timeout=8000)
+    outer = _crop_box(body)
+    inner = _crop_box(dl)
+    if not _box_contains(outer, inner):
+        raise RuntimeError(
+            f"mq-axis-method crop does not contain its dl: {outer} vs {inner}")
 
 
 def _open_ribbon_details(page) -> None:
@@ -1979,8 +2041,20 @@ def declared_cell_rows(
         ("14", "light", "en"), ("14b", "light", "zh"),
     ):
         add(f"{n}-{theme}-{locale}-768.png")
-    for n, theme, locale in (("15", "dark", "en"), ("16", "light", "zh")):
+    for n, theme, locale in (
+        ("15", "dark", "en"), ("15b", "dark", "zh"),
+        ("16", "light", "zh"), ("16b", "light", "en"),
+    ):
         add(f"{n}-{theme}-{locale}-1440.png")
+    for page_name in METHOD_OPEN_PAGES:
+        slug = page_name.replace(".html", "")
+        for theme, locale in (
+            ("dark", "en"), ("dark", "zh"),
+            ("light", "en"), ("light", "zh"),
+        ):
+            add(f"method_open-{slug}-{theme}-{locale}-1440.png")
+        add(f"method_open-{slug}-dark-en-390.png")
+        add(f"method_open-{slug}-light-zh-390.png")
     for n, theme, locale in (
         ("17", "dark", "en"), ("17b", "light", "en"),
         ("17c", "dark", "zh"), ("17d", "light", "zh"),
@@ -2145,6 +2219,9 @@ def main() -> int:
     harness_files: list[Path] = []
     ws_states: dict[str, list[dict[str, Any]]] = {
         page: [] for page in WORKSPACE_PAGES}
+    mo_states: dict[str, list[dict[str, Any]]] = {
+        page: [] for page in METHOD_OPEN_PAGES}
+    probes["method_open_text"] = {}
 
     try:
         _proc, origin = _serve(SITE)
@@ -2260,8 +2337,11 @@ def main() -> int:
                 ))
                 ctx.close()
 
-            # 15–16 workspace details OPEN on the relocated §5 / B1 block
-            for n, theme, locale in (("15", "dark", "en"), ("16", "light", "zh")):
+            # 15–16 workspace details OPEN — full 2×2 at 1440
+            for n, theme, locale in (
+                ("15", "dark", "en"), ("15b", "dark", "zh"),
+                ("16", "light", "zh"), ("16b", "light", "en"),
+            ):
                 name = f"{n}-{theme}-{locale}-1440.png"
                 print(f"capture {name}", flush=True)
                 ctx, page, _ = _open(
@@ -2896,6 +2976,74 @@ def main() -> int:
                     ))
                     ctx.close()
 
+            # method_open: real click, crop the composition-law body
+            for page_name in METHOD_OPEN_PAGES:
+                slug = page_name.replace(".html", "")
+                cells = [
+                    (theme, locale, 1440)
+                    for theme, locale in (
+                        ("dark", "en"), ("dark", "zh"),
+                        ("light", "en"), ("light", "zh"),
+                    )
+                ] + [("dark", "en", 390), ("light", "zh", 390)]
+                for theme, locale, width in cells:
+                    name = f"method_open-{slug}-{theme}-{locale}-{width}.png"
+                    print(f"capture {name}", flush=True)
+                    if width == 390:
+                        ctx, page, frame = _open(
+                            browser=browser, origin=origin,
+                            path=f"/{page_name}", theme=theme, locale=locale,
+                            width=1440, height=900, iframe_width=390)
+                        target = frame
+                    else:
+                        ctx, page, _ = _open(
+                            browser=browser, origin=origin,
+                            path=f"/{page_name}", theme=theme, locale=locale,
+                            width=1440, height=2800)
+                        target = page
+                    opened_by = _open_method_details_by_click(
+                        target, host_page=page)
+                    body = target.locator(METHOD_OPEN_SELECTOR).first
+                    body.wait_for(timeout=15000)
+                    _assert_method_dl_contained(body)
+                    info = _shot(
+                        EVIDENCE / name, page, body,
+                        selector=METHOD_OPEN_SELECTOR, locale=locale)
+                    info["openedBy"] = opened_by
+                    info.pop("_element_text", None)
+                    # textContent keeps source casing + both locales; innerText
+                    # applies CSS text-transform:uppercase on <dt> labels.
+                    raw_text = body.evaluate("el => el.textContent || ''")
+                    probes["method_open_text"][name] = raw_text
+                    label_at = raw_text.find("Weights law")
+                    if label_at < 0:
+                        label_at = raw_text.find("权重法则")
+                    head_src = raw_text[label_at:] if label_at >= 0 else raw_text
+                    info["element_text_head"] = head_src.replace("\n", " ").strip()[:80]
+                    info["element_text_sha256"] = hashlib.sha256(
+                        raw_text.encode("utf-8")).hexdigest()
+                    state = _state(
+                        name, theme, locale,
+                        "mobile" if width == 390 else "desktop",
+                        info, viewport_width=width,
+                        verified_how=(
+                            f"{page_name} method details opened by click; "
+                            f"crop {METHOD_OPEN_SELECTOR}"
+                        ),
+                        crop=True, selector=METHOD_OPEN_SELECTOR,
+                        force_state="method_open",
+                        family="method_open",
+                    )
+                    if page_name in ws_states:
+                        ws_states[page_name].append(state)
+                    else:
+                        # method_open-only pages have no rest matrix; hang the
+                        # crop on the already rest-covered financial_conditions
+                        # page so check_ui_visual_evidence does not invent a
+                        # bare page entry that fails the rest census.
+                        ws_states["macro_financial_conditions.html"].append(state)
+                    ctx.close()
+
             probes["copy_15_ok"] = bool((probes.get("copy_15") or {}).get("ok"))
             probes["copy_16_ok"] = bool((probes.get("copy_16") or {}).get("ok"))
             print("probe workspace relocated strings", flush=True)
@@ -2930,6 +3078,8 @@ def main() -> int:
         pages_out = [_page_entry("macro_monetary.html", states)]
         for page_name in WORKSPACE_PAGES:
             pages_out.append(_page_entry(page_name, ws_states.get(page_name, [])))
+        # METHOD_OPEN_PAGES outside WORKSPACE_PAGES hang on financial_conditions
+        # above — do not mint a rest-less page entry.
 
         for page_name, mode, theme, locale in _SKIP_WS_DUP:
             leftover = EVIDENCE / (
@@ -2937,7 +3087,6 @@ def main() -> int:
                 f"{mode}-{theme}-{locale}-1440.png"
             )
             leftover.unlink(missing_ok=True)
-        (EVIDENCE / "16-light-en-1440.png").unlink(missing_ok=True)
 
         shas = [
             st["sha256"]

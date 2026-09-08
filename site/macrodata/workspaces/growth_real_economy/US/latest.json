@@ -517,8 +517,8 @@
     "built_at": "2026-09-06T21:23:24Z",
     "calculation_as_of": "2026-09-04",
     "code_version": "41929a0479ef0e5e4a8ac34086668c738c1e480f",
-    "content_sha256": "73efc323e4dfd48b93c5f3da1a7c796136f57b268359210650bb82d3dd89700b",
-    "generation_id": "growth_real_economy-US-73efc323e4dfd48b",
+    "content_sha256": "10d677d618958646ca3480a8856d5d47ced4b2da4de891017c9cd19daefb77cc",
+    "generation_id": "growth_real_economy-US-10d677d618958646",
     "producer": "engine.market_os.macro_workspaces.growth",
     "rendered_at": null
   },
@@ -541,7 +541,9 @@
       "dx": 0.0,
       "dy": 0.0,
       "null_reason": null,
-      "status": "PRESENT"
+      "status": "PRESENT",
+      "x_axis_id": "growth_momentum",
+      "y_axis_id": "growth_level_breadth"
     },
     "prior_state": {
       "effective_date": "2026-09-04",

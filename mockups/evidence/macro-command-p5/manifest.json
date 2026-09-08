@@ -33,7 +33,23 @@
     ],
     "details_open": [
       "15-dark-en-1440.png",
-      "16-light-zh-1440.png"
+      "15b-dark-zh-1440.png",
+      "16-light-zh-1440.png",
+      "16b-light-en-1440.png"
+    ],
+    "method_open": [
+      "method_open-macro_financial_conditions-dark-en-1440.png",
+      "method_open-macro_financial_conditions-dark-zh-1440.png",
+      "method_open-macro_financial_conditions-light-en-1440.png",
+      "method_open-macro_financial_conditions-light-zh-1440.png",
+      "method_open-macro_financial_conditions-dark-en-390.png",
+      "method_open-macro_financial_conditions-light-zh-390.png",
+      "method_open-macro_labor_markets-dark-en-1440.png",
+      "method_open-macro_labor_markets-dark-zh-1440.png",
+      "method_open-macro_labor_markets-light-en-1440.png",
+      "method_open-macro_labor_markets-light-zh-1440.png",
+      "method_open-macro_labor_markets-dark-en-390.png",
+      "method_open-macro_labor_markets-light-zh-390.png"
     ],
     "read_word": [
       "17-dark-en-1440.png",
@@ -99,12 +115,10 @@
       "ws-macro_rates_curves-dark-en-390-open.png",
       "ws-macro_rates_curves-dark-en-768.png",
       "ws-macro_rates_curves-closed-dark-zh-1440.png",
-      "ws-macro_rates_curves-open-dark-zh-1440.png",
       "ws-macro_rates_curves-dark-zh-390.png",
       "ws-macro_rates_curves-dark-zh-390-open.png",
       "ws-macro_rates_curves-dark-zh-768.png",
       "ws-macro_rates_curves-closed-light-en-1440.png",
-      "ws-macro_rates_curves-open-light-en-1440.png",
       "ws-macro_rates_curves-light-en-390.png",
       "ws-macro_rates_curves-light-en-390-open.png",
       "ws-macro_rates_curves-light-en-768.png",
@@ -324,8 +338,64 @@
       "family": "details_open"
     },
     {
+      "file": "15b-dark-zh-1440.png",
+      "family": "details_open"
+    },
+    {
       "file": "16-light-zh-1440.png",
       "family": "details_open"
+    },
+    {
+      "file": "16b-light-en-1440.png",
+      "family": "details_open"
+    },
+    {
+      "file": "method_open-macro_financial_conditions-dark-en-1440.png",
+      "family": "method_open"
+    },
+    {
+      "file": "method_open-macro_financial_conditions-dark-zh-1440.png",
+      "family": "method_open"
+    },
+    {
+      "file": "method_open-macro_financial_conditions-light-en-1440.png",
+      "family": "method_open"
+    },
+    {
+      "file": "method_open-macro_financial_conditions-light-zh-1440.png",
+      "family": "method_open"
+    },
+    {
+      "file": "method_open-macro_financial_conditions-dark-en-390.png",
+      "family": "method_open"
+    },
+    {
+      "file": "method_open-macro_financial_conditions-light-zh-390.png",
+      "family": "method_open"
+    },
+    {
+      "file": "method_open-macro_labor_markets-dark-en-1440.png",
+      "family": "method_open"
+    },
+    {
+      "file": "method_open-macro_labor_markets-dark-zh-1440.png",
+      "family": "method_open"
+    },
+    {
+      "file": "method_open-macro_labor_markets-light-en-1440.png",
+      "family": "method_open"
+    },
+    {
+      "file": "method_open-macro_labor_markets-light-zh-1440.png",
+      "family": "method_open"
+    },
+    {
+      "file": "method_open-macro_labor_markets-dark-en-390.png",
+      "family": "method_open"
+    },
+    {
+      "file": "method_open-macro_labor_markets-light-zh-390.png",
+      "family": "method_open"
     },
     {
       "file": "17-dark-en-1440.png",
@@ -568,10 +638,6 @@
       "family": "workspace"
     },
     {
-      "file": "ws-macro_rates_curves-open-dark-zh-1440.png",
-      "family": "workspace"
-    },
-    {
       "file": "ws-macro_rates_curves-dark-zh-390.png",
       "family": "workspace"
     },
@@ -597,10 +663,6 @@
     },
     {
       "file": "ws-macro_rates_curves-closed-light-en-1440.png",
-      "family": "workspace"
-    },
-    {
-      "file": "ws-macro_rates_curves-open-light-en-1440.png",
       "family": "workspace"
     },
     {
@@ -1098,6 +1160,7 @@
       "details_open",
       "empty-e5",
       "half-null",
+      "method_open",
       "rates_panel",
       "read_word",
       "tablet_768"
@@ -1126,22 +1189,22 @@
     }
   },
   "excluded": [],
-  "generated_at": "2026-09-08T22:58:00Z",
-  "generated_at_start": "2026-09-08T22:58:00Z",
-  "generated_at_end": "2026-09-08T23:03:52Z",
-  "head_sha": "e75342ebc6bd97fcba0c2213250d71b682c87e0d",
-  "head_start": "e75342ebc6bd97fcba0c2213250d71b682c87e0d",
-  "head_end": "e75342ebc6bd97fcba0c2213250d71b682c87e0d",
-  "capture_sha": "e75342ebc6bd97fcba0c2213250d71b682c87e0d",
+  "generated_at": "2026-09-08T23:54:57Z",
+  "generated_at_start": "2026-09-08T23:54:57Z",
+  "generated_at_end": "2026-09-09T00:00:57Z",
+  "head_sha": "8e648ac56b0869151b5b01cb3bbf3a099c61afd5",
+  "head_start": "8e648ac56b0869151b5b01cb3bbf3a099c61afd5",
+  "head_end": "8e648ac56b0869151b5b01cb3bbf3a099c61afd5",
+  "capture_sha": "8e648ac56b0869151b5b01cb3bbf3a099c61afd5",
   "tree_clean_start": true,
   "tree_clean_end": true,
-  "commit_time_of_capture_sha": "2026-09-08T15:57:52-07:00",
+  "commit_time_of_capture_sha": "2026-09-08T16:54:51-07:00",
   "pre_commit": false,
   "honesty": {
     "access": "anonymous only; no credential is entered, stored, or synthesized",
     "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
     "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them",
-    "capture": "tree_clean_start=True; tree_clean_end=True; head_start=e75342ebc6bd97fcba0c2213250d71b682c87e0d; head_end=e75342ebc6bd97fcba0c2213250d71b682c87e0d; generated_at_start=2026-09-08T22:58:00Z; generated_at_end=2026-09-08T23:03:52Z; commit_time_of_capture_sha=2026-09-08T15:57:52-07:00"
+    "capture": "tree_clean_start=True; tree_clean_end=True; head_start=d4e5b2756dc1aefd21dec4b7493ea7d91eecef5e; head_end=d4e5b2756dc1aefd21dec4b7493ea7d91eecef5e; generated_at_start=2026-09-08T23:54:57Z; generated_at_end=2026-09-09T00:00:57Z; commit_time_of_capture_sha=2026-09-08T16:54:51-07:00"
   },
   "outcome": "captured",
   "pages": [
@@ -1158,7 +1221,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 765781,
+          "bytes": 765976,
           "captured": true,
           "file": "01-dark-en-1440.png",
           "family": "hub_fold",
@@ -1166,7 +1229,7 @@
           "height": 1800,
           "width": 2880,
           "locale": "en",
-          "sha256": "84dd82ff88fae7a926f266cb5c04a308e4ce1b21d889d0b24c6887b2cdc2724a",
+          "sha256": "76c1a1957e06158f130ca0418b92b41259c69f36ce8c7e3481b45952790f04e6",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -1185,7 +1248,7 @@
             "y0": 0,
             "y1": 1800
           },
-          "verified_how": "Playwright 1440\u00d7900 fold dpr=2; eyebrow+H1+Read+chips",
+          "verified_how": "Playwright 1440×900 fold dpr=2; eyebrow+H1+Read+chips",
           "fixture": "builder-payload",
           "trigger": null,
           "scroll_y_at_shot": 565,
@@ -1269,7 +1332,7 @@
             "y0": 0,
             "y1": 1800
           },
-          "verified_how": "Playwright 1440\u00d7900 fold dpr=2; eyebrow+H1+Read+chips",
+          "verified_how": "Playwright 1440×900 fold dpr=2; eyebrow+H1+Read+chips",
           "fixture": "builder-payload",
           "trigger": null,
           "scroll_y_at_shot": 487,
@@ -1284,7 +1347,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 1560154,
+          "bytes": 1583681,
           "captured": true,
           "file": "02-dark-zh-1440-full.png",
           "family": "hub_full",
@@ -1292,7 +1355,7 @@
           "height": 3848,
           "width": 2880,
           "locale": "zh",
-          "sha256": "f3f22fdbe627c5e4ab8554d3bb02d155cd60f1d5623c48c5fa65bdc458d9a05d",
+          "sha256": "d652675b093b9bf4c31f0074cc3b9e2e75e86ad5e9a02dd096408ee27860ecbb",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -1353,7 +1416,7 @@
             "y0": 0,
             "y1": 1800
           },
-          "verified_how": "Playwright 1440\u00d7900 fold dpr=2; eyebrow+H1+Read+chips",
+          "verified_how": "Playwright 1440×900 fold dpr=2; eyebrow+H1+Read+chips",
           "fixture": "builder-payload",
           "trigger": null,
           "scroll_y_at_shot": 569,
@@ -1437,7 +1500,7 @@
             "y0": 0,
             "y1": 1800
           },
-          "verified_how": "Playwright 1440\u00d7900 fold dpr=2; eyebrow+H1+Read+chips",
+          "verified_how": "Playwright 1440×900 fold dpr=2; eyebrow+H1+Read+chips",
           "fixture": "builder-payload",
           "trigger": null,
           "scroll_y_at_shot": 491,
@@ -1540,7 +1603,8 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "You opened Macro Command at Rates & the curve. Read today's overview \u2192  Rates & ",
+          "element_text_head": "You opened Macro Command at Rates & the curve. Read today's overview →  Rates & ",
+          "element_text_sha256": "bb4328542b0e966dbc01e6a3afd8810ba5dfd29e04321c25ad0e360eee5b2833",
           "innerWidth": 1440,
           "innerHeight": 2800
         },
@@ -1594,7 +1658,8 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u4f60\u4ece\u8fd9\u91cc\u8fdb\u5165\u5b8f\u89c2\u6307\u6325\u53f0\uff1a\u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf\u3002 \u67e5\u770b\u4eca\u65e5\u603b\u89c8 \u2192  \u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf  \u4e0d\u540c\u671f\u9650\u7684\u653f\u5e9c\u501f\u8d37\u6210\u672c\u662f\u4ec0\u4e48\u6837\uff1f  \u7b2c\u4e00\u6b21\u770b\uff1f30 \u79d2\u8bfb\u61c2 \u6536\u76ca\u7387\u66f2\u7ebf\u5c31\u662f\u628a",
+          "element_text_head": "你从这里进入宏观指挥台：利率与收益率曲线。 查看今日总览 →  利率与收益率曲线  不同期限的政府借贷成本是什么样？  第一次看？30 秒读懂 收益率曲线就是把",
+          "element_text_sha256": "29430431534ee8cf69bca093468105fd0519d78a7071e9c0eaff8a928a0c4b5b",
           "innerWidth": 1440,
           "innerHeight": 2800
         },
@@ -1648,7 +1713,8 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "You opened Macro Command at Rates & the curve. Read today's overview \u2192  Rates & ",
+          "element_text_head": "You opened Macro Command at Rates & the curve. Read today's overview →  Rates & ",
+          "element_text_sha256": "bb4328542b0e966dbc01e6a3afd8810ba5dfd29e04321c25ad0e360eee5b2833",
           "innerWidth": 1440,
           "innerHeight": 2800
         },
@@ -1702,7 +1768,8 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u4f60\u4ece\u8fd9\u91cc\u8fdb\u5165\u5b8f\u89c2\u6307\u6325\u53f0\uff1a\u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf\u3002 \u67e5\u770b\u4eca\u65e5\u603b\u89c8 \u2192  \u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf  \u4e0d\u540c\u671f\u9650\u7684\u653f\u5e9c\u501f\u8d37\u6210\u672c\u662f\u4ec0\u4e48\u6837\uff1f  \u7b2c\u4e00\u6b21\u770b\uff1f30 \u79d2\u8bfb\u61c2 \u6536\u76ca\u7387\u66f2\u7ebf\u5c31\u662f\u628a",
+          "element_text_head": "你从这里进入宏观指挥台：利率与收益率曲线。 查看今日总览 →  利率与收益率曲线  不同期限的政府借贷成本是什么样？  第一次看？30 秒读懂 收益率曲线就是把",
+          "element_text_sha256": "29430431534ee8cf69bca093468105fd0519d78a7071e9c0eaff8a928a0c4b5b",
           "innerWidth": 1440,
           "innerHeight": 2800
         },
@@ -1757,6 +1824,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -1811,6 +1879,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -1865,6 +1934,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -1919,6 +1989,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -1973,6 +2044,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 1072
         },
@@ -2027,6 +2099,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 1072
         },
@@ -2081,6 +2154,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 1072
         },
@@ -2135,6 +2209,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 1072
         },
@@ -2189,6 +2264,7 @@
             "h": 0
           },
           "element_text_head": "Money",
+          "element_text_sha256": "5ccc2e8715d7a17c3110afe37b8561b84b450db8efcf187d90649f212201050f",
           "innerWidth": 1440,
           "innerHeight": 2200
         },
@@ -2243,6 +2319,7 @@
             "h": 0
           },
           "element_text_head": "Money",
+          "element_text_sha256": "5ccc2e8715d7a17c3110afe37b8561b84b450db8efcf187d90649f212201050f",
           "innerWidth": 1440,
           "innerHeight": 2200
         },
@@ -2296,7 +2373,8 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u8d44\u91d1",
+          "element_text_head": "资金",
+          "element_text_sha256": "4cd1c821039abb9b8cdcb1c82faeeb6591a35e6c7a9a883f648cb8d530313f16",
           "innerWidth": 1440,
           "innerHeight": 2200
         },
@@ -2350,7 +2428,8 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u8d44\u91d1",
+          "element_text_head": "资金",
+          "element_text_sha256": "4cd1c821039abb9b8cdcb1c82faeeb6591a35e6c7a9a883f648cb8d530313f16",
           "innerWidth": 1440,
           "innerHeight": 2200
         },
@@ -2405,6 +2484,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -2459,6 +2539,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -2513,6 +2594,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -2567,6 +2649,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -2621,6 +2704,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 872
         },
@@ -2675,6 +2759,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 872
         },
@@ -2729,6 +2814,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 872
         },
@@ -2783,6 +2869,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 872
         },
@@ -2790,7 +2877,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 934705,
+          "bytes": 953933,
           "captured": true,
           "file": "e5-dark-en-1440.png",
           "family": "e5",
@@ -2798,7 +2885,7 @@
           "height": 1800,
           "width": 2880,
           "locale": "en",
-          "sha256": "7136a92aba553e36bc2c121c50d5a4e7eb332907d7899d1b915104235f2ebda5",
+          "sha256": "e86bf4b255185eea9b6bc24b1447a589f743f4130774eddec94fe68255ab850c",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -2817,10 +2904,10 @@
             "y0": 0,
             "y1": 1800
           },
-          "verified_how": "E5 cloned after stalled fragment \u22658000ms",
+          "verified_how": "E5 cloned after stalled fragment ≥8000ms",
           "fixture": "builder-payload",
           "trigger": null,
-          "scroll_y_at_shot": 346,
+          "scroll_y_at_shot": 265,
           "ihdr_delta_px": {
             "w": 0,
             "h": 0
@@ -2864,7 +2951,7 @@
             "y0": 56,
             "y1": 1800
           },
-          "verified_how": "E5 cloned after stalled fragment \u22658000ms",
+          "verified_how": "E5 cloned after stalled fragment ≥8000ms",
           "fixture": "builder-payload",
           "trigger": null,
           "crop_box_doc": {
@@ -2879,6 +2966,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -2918,7 +3006,7 @@
             "y0": 56,
             "y1": 1800
           },
-          "verified_how": "E5 cloned after stalled fragment \u22658000ms",
+          "verified_how": "E5 cloned after stalled fragment ≥8000ms",
           "fixture": "builder-payload",
           "trigger": null,
           "crop_box_doc": {
@@ -2933,6 +3021,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 872
         },
@@ -2967,7 +3056,7 @@
             "y0": 0,
             "y1": 1800
           },
-          "verified_how": "E5 cloned after stalled fragment \u22658000ms",
+          "verified_how": "E5 cloned after stalled fragment ≥8000ms",
           "fixture": "builder-payload",
           "trigger": null,
           "scroll_y_at_shot": 187,
@@ -3014,7 +3103,7 @@
             "y0": 56,
             "y1": 1800
           },
-          "verified_how": "E5 cloned after stalled fragment \u22658000ms",
+          "verified_how": "E5 cloned after stalled fragment ≥8000ms",
           "fixture": "builder-payload",
           "trigger": null,
           "crop_box_doc": {
@@ -3029,6 +3118,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -3068,7 +3158,7 @@
             "y0": 56,
             "y1": 1800
           },
-          "verified_how": "E5 cloned after stalled fragment \u22658000ms",
+          "verified_how": "E5 cloned after stalled fragment ≥8000ms",
           "fixture": "builder-payload",
           "trigger": null,
           "crop_box_doc": {
@@ -3083,6 +3173,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 872
         },
@@ -3117,7 +3208,7 @@
             "y0": 0,
             "y1": 1800
           },
-          "verified_how": "E5 cloned after stalled fragment \u22658000ms",
+          "verified_how": "E5 cloned after stalled fragment ≥8000ms",
           "fixture": "builder-payload",
           "trigger": null,
           "scroll_y_at_shot": 271,
@@ -3164,7 +3255,7 @@
             "y0": 56,
             "y1": 1800
           },
-          "verified_how": "E5 cloned after stalled fragment \u22658000ms",
+          "verified_how": "E5 cloned after stalled fragment ≥8000ms",
           "fixture": "builder-payload",
           "trigger": null,
           "crop_box_doc": {
@@ -3179,6 +3270,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -3218,7 +3310,7 @@
             "y0": 56,
             "y1": 1800
           },
-          "verified_how": "E5 cloned after stalled fragment \u22658000ms",
+          "verified_how": "E5 cloned after stalled fragment ≥8000ms",
           "fixture": "builder-payload",
           "trigger": null,
           "crop_box_doc": {
@@ -3233,6 +3325,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 872
         },
@@ -3267,7 +3360,7 @@
             "y0": 0,
             "y1": 1800
           },
-          "verified_how": "E5 cloned after stalled fragment \u22658000ms",
+          "verified_how": "E5 cloned after stalled fragment ≥8000ms",
           "fixture": "builder-payload",
           "trigger": null,
           "scroll_y_at_shot": 193,
@@ -3314,7 +3407,7 @@
             "y0": 56,
             "y1": 1800
           },
-          "verified_how": "E5 cloned after stalled fragment \u22658000ms",
+          "verified_how": "E5 cloned after stalled fragment ≥8000ms",
           "fixture": "builder-payload",
           "trigger": null,
           "crop_box_doc": {
@@ -3329,6 +3422,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -3368,7 +3462,7 @@
             "y0": 56,
             "y1": 1800
           },
-          "verified_how": "E5 cloned after stalled fragment \u22658000ms",
+          "verified_how": "E5 cloned after stalled fragment ≥8000ms",
           "fixture": "builder-payload",
           "trigger": null,
           "crop_box_doc": {
@@ -3383,6 +3477,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 872
         },
@@ -3390,7 +3485,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 1284037,
+          "bytes": 1284031,
           "captured": true,
           "file": "18-dark-en-1440.png",
           "family": "half_null",
@@ -3398,7 +3493,7 @@
           "height": 5600,
           "width": 2880,
           "locale": "en",
-          "sha256": "0a8b72311f5760ef8b4273bb9434580fe589f1fb3dd05c8102e4141a13e1e676",
+          "sha256": "c3934c0303c073b70472ec8a263a15d09b9a79b4dc7e9817e18a7e86c4cd4f5d",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -3417,7 +3512,7 @@
             "y0": 0,
             "y1": 5600
           },
-          "verified_how": "in-memory half-null: read.omitted + \u22652 null chips + E2 housing + E6 credit",
+          "verified_how": "in-memory half-null: read.omitted + ≥2 null chips + E2 housing + E6 credit",
           "fixture": "builder-payload",
           "trigger": "in-memory: housing SOURCE_FAILED + capital_structure entitlement=Research",
           "scroll_y_at_shot": 28,
@@ -3459,7 +3554,7 @@
             "y0": 0,
             "y1": 5600
           },
-          "verified_how": "in-memory half-null: read.omitted + \u22652 null chips + E2 housing + E6 credit",
+          "verified_how": "in-memory half-null: read.omitted + ≥2 null chips + E2 housing + E6 credit",
           "fixture": "builder-payload",
           "trigger": "in-memory: housing SOURCE_FAILED + capital_structure entitlement=Research",
           "scroll_y_at_shot": 28,
@@ -3501,7 +3596,7 @@
             "y0": 0,
             "y1": 5600
           },
-          "verified_how": "in-memory half-null: read.omitted + \u22652 null chips + E2 housing + E6 credit",
+          "verified_how": "in-memory half-null: read.omitted + ≥2 null chips + E2 housing + E6 credit",
           "fixture": "builder-payload",
           "trigger": "in-memory: housing SOURCE_FAILED + capital_structure entitlement=Research",
           "scroll_y_at_shot": 28,
@@ -3543,7 +3638,7 @@
             "y0": 0,
             "y1": 5600
           },
-          "verified_how": "in-memory half-null: read.omitted + \u22652 null chips + E2 housing + E6 credit",
+          "verified_how": "in-memory half-null: read.omitted + ≥2 null chips + E2 housing + E6 credit",
           "fixture": "builder-payload",
           "trigger": "in-memory: housing SOURCE_FAILED + capital_structure entitlement=Research",
           "scroll_y_at_shot": 28,
@@ -3590,7 +3685,7 @@
             "y0": 56,
             "y1": 1800
           },
-          "verified_how": "in-memory half-null: read.omitted + \u22652 null chips + E2 housing + E6 credit",
+          "verified_how": "in-memory half-null: read.omitted + ≥2 null chips + E2 housing + E6 credit",
           "fixture": "builder-payload",
           "trigger": "in-memory: housing SOURCE_FAILED + capital_structure entitlement=Research",
           "crop_box_doc": {
@@ -3605,6 +3700,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -3644,7 +3740,7 @@
             "y0": 56,
             "y1": 1800
           },
-          "verified_how": "in-memory half-null: read.omitted + \u22652 null chips + E2 housing + E6 credit",
+          "verified_how": "in-memory half-null: read.omitted + ≥2 null chips + E2 housing + E6 credit",
           "fixture": "builder-payload",
           "trigger": "in-memory: housing SOURCE_FAILED + capital_structure entitlement=Research",
           "crop_box_doc": {
@@ -3659,6 +3755,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -3698,7 +3795,7 @@
             "y0": 56,
             "y1": 1800
           },
-          "verified_how": "in-memory half-null: read.omitted + \u22652 null chips + E2 housing + E6 credit",
+          "verified_how": "in-memory half-null: read.omitted + ≥2 null chips + E2 housing + E6 credit",
           "fixture": "builder-payload",
           "trigger": "in-memory: housing SOURCE_FAILED + capital_structure entitlement=Research",
           "crop_box_doc": {
@@ -3713,6 +3810,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -3752,7 +3850,7 @@
             "y0": 56,
             "y1": 1800
           },
-          "verified_how": "in-memory half-null: read.omitted + \u22652 null chips + E2 housing + E6 credit",
+          "verified_how": "in-memory half-null: read.omitted + ≥2 null chips + E2 housing + E6 credit",
           "fixture": "builder-payload",
           "trigger": "in-memory: housing SOURCE_FAILED + capital_structure entitlement=Research",
           "crop_box_doc": {
@@ -3767,6 +3865,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         }
@@ -3817,7 +3916,7 @@
             "y0": 840,
             "y1": 3236
           },
-          "verified_how": "macro_rates_curves relocated implication details.open; \u00a75 strings readable",
+          "verified_how": "macro_rates_curves relocated implication details.open; §5 strings readable",
           "fixture": "builder-payload",
           "trigger": null,
           "crop_box_doc": {
@@ -3831,7 +3930,63 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "What this means for you Technical notes  Technical receipt for operators \u2014 serie",
+          "element_text_head": "What this means for you Technical notes  Technical receipt for operators — serie",
+          "element_text_sha256": "fd21ed033c5e13a0ea9e7ca2f24dcc919891f5ff27fc8c78f03412096b7b6ca2",
+          "innerWidth": 1440,
+          "innerHeight": 2800
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 378283,
+          "captured": true,
+          "file": "15b-dark-zh-1440.png",
+          "family": "details_open",
+          "force_state": "details_open",
+          "height": 2354,
+          "width": 2288,
+          "locale": "zh",
+          "sha256": "9887a5995d84a2f140069a5ad8cb0b2c335e7fa01fe9c6aff8661350f4063b69",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": 1144.0,
+          "viewport_css_width": 1144.0,
+          "viewport_height": 2800,
+          "dpr": 2.0,
+          "crop": true,
+          "crop_selector": ".mq-ribbon",
+          "crop_box": {
+            "x": 18,
+            "y": 420.71875,
+            "width": 1144,
+            "height": 1176.25
+          },
+          "selector": ".mq-ribbon",
+          "full_page": false,
+          "device_px_span": {
+            "x0": 36,
+            "x1": 2324,
+            "y0": 840,
+            "y1": 3194
+          },
+          "verified_how": "macro_rates_curves relocated implication details.open; §5 strings readable",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "crop_box_doc": {
+            "x": 18,
+            "y": 420.71875,
+            "width": 1144,
+            "height": 1176.25
+          },
+          "scroll_y_at_shot": 0.0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "element_text_head": "这对你意味着什么 技术说明  给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。  该状态意味着什么  文本由已接受快照确定性生成，此处不由",
+          "element_text_sha256": "c55ddc32f137c599f5b3007cd28d74ffb1a5ed48df006ed80eba816915d63db1",
           "innerWidth": 1440,
           "innerHeight": 2800
         },
@@ -3871,7 +4026,7 @@
             "y0": 840,
             "y1": 3194
           },
-          "verified_how": "macro_rates_curves relocated implication details.open; \u00a75 strings readable",
+          "verified_how": "macro_rates_curves relocated implication details.open; §5 strings readable",
           "fixture": "builder-payload",
           "trigger": null,
           "crop_box_doc": {
@@ -3885,7 +4040,63 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48 \u6280\u672f\u8bf4\u660e  \u7ed9\u64cd\u4f5c\u5458\u7684\u6280\u672f\u51ed\u636e \u2014 \u5e8f\u5217\u540d\u3001\u65f6\u95f4\u6233\u4e0e\u6587\u4ef6\u8def\u5f84\u3002\u4e0d\u662f\u7ed9\u5ba2\u6237\u770b\u7684\u8bfb\u6570\u3002  \u8be5\u72b6\u6001\u610f\u5473\u7740\u4ec0\u4e48  \u6587\u672c\u7531\u5df2\u63a5\u53d7\u5feb\u7167\u786e\u5b9a\u6027\u751f\u6210\uff0c\u6b64\u5904\u4e0d\u7531",
+          "element_text_head": "这对你意味着什么 技术说明  给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。  该状态意味着什么  文本由已接受快照确定性生成，此处不由",
+          "element_text_sha256": "c55ddc32f137c599f5b3007cd28d74ffb1a5ed48df006ed80eba816915d63db1",
+          "innerWidth": 1440,
+          "innerHeight": 2800
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 347423,
+          "captured": true,
+          "file": "16b-light-en-1440.png",
+          "family": "details_open",
+          "force_state": "details_open",
+          "height": 2396,
+          "width": 2288,
+          "locale": "en",
+          "sha256": "97e134c6a7c42829dc0481d9833b1ef59ed9a50a56d60d8fc99476c05949e32d",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": 1144.0,
+          "viewport_css_width": 1144.0,
+          "viewport_height": 2800,
+          "dpr": 2.0,
+          "crop": true,
+          "crop_selector": ".mq-ribbon",
+          "crop_box": {
+            "x": 18,
+            "y": 420.71875,
+            "width": 1144,
+            "height": 1196.5
+          },
+          "selector": ".mq-ribbon",
+          "full_page": false,
+          "device_px_span": {
+            "x0": 36,
+            "x1": 2324,
+            "y0": 840,
+            "y1": 3236
+          },
+          "verified_how": "macro_rates_curves relocated implication details.open; §5 strings readable",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "crop_box_doc": {
+            "x": 18,
+            "y": 420.71875,
+            "width": 1144,
+            "height": 1196.5
+          },
+          "scroll_y_at_shot": 0.0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "element_text_head": "What this means for you Technical notes  Technical receipt for operators — serie",
+          "element_text_sha256": "fd21ed033c5e13a0ea9e7ca2f24dcc919891f5ff27fc8c78f03412096b7b6ca2",
           "innerWidth": 1440,
           "innerHeight": 2800
         },
@@ -4021,6 +4232,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -4074,7 +4286,7 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
+          "element_text_head": "问分析师 贸易流动",
           "innerWidth": 390,
           "innerHeight": 900,
           "coordSpace": "host-page",
@@ -4156,6 +4368,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -4291,6 +4504,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -4344,7 +4558,7 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
+          "element_text_head": "问分析师 贸易流动",
           "innerWidth": 390,
           "innerHeight": 900,
           "coordSpace": "host-page",
@@ -4426,6 +4640,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -4561,6 +4776,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 872
         },
@@ -4614,7 +4830,7 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
+          "element_text_head": "问分析师 贸易流动",
           "innerWidth": 768,
           "innerHeight": 900,
           "coordSpace": "host-page",
@@ -4696,6 +4912,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 872
         },
@@ -4831,6 +5048,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 872
         },
@@ -4884,7 +5102,7 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
+          "element_text_head": "问分析师 贸易流动",
           "innerWidth": 768,
           "innerHeight": 900,
           "coordSpace": "host-page",
@@ -4966,6 +5184,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 872
         },
@@ -5100,7 +5319,7 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
+          "element_text_head": "问分析师 贸易流动",
           "innerWidth": 1440,
           "innerHeight": 900,
           "coordSpace": "host-page",
@@ -5262,7 +5481,7 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
+          "element_text_head": "问分析师 贸易流动",
           "innerWidth": 1440,
           "innerHeight": 900,
           "coordSpace": "host-page",
@@ -5297,7 +5516,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 1240445,
+          "bytes": 1240628,
           "captured": true,
           "file": "ws-macro_rates_curves-closed-dark-en-1440.png",
           "family": "workspace",
@@ -5305,7 +5524,7 @@
           "height": 4800,
           "width": 2880,
           "locale": "en",
-          "sha256": "62ef100d383dabe971040037cd6f0adf34ed5db6bf946450232adb57ae5adce1",
+          "sha256": "9e011d4aa2d1e23b46c8b88fc89b9a184aea815bffa323b05f164ef8ef26bacb",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -5379,60 +5598,6 @@
         },
         {
           "access": "anonymous",
-          "applied_locale": "zh",
-          "applied_theme": "dark",
-          "bytes": 240035,
-          "captured": true,
-          "file": "ws-macro_rates_curves-open-dark-zh-1440.png",
-          "family": "workspace",
-          "force_state": "details_open",
-          "height": 1546,
-          "width": 2288,
-          "locale": "zh",
-          "sha256": "4e116920cc7323d459c9a96a983a3522a741bf26fcf2ced88e72f2c23979885a",
-          "theme": "dark",
-          "viewport": "desktop",
-          "viewport_width": 1440,
-          "crop_width": 1144.0,
-          "viewport_css_width": 1144.0,
-          "viewport_height": 2400,
-          "dpr": 2.0,
-          "crop": true,
-          "crop_selector": ".mq-ribbon",
-          "crop_box": {
-            "x": 18,
-            "y": 420.71875,
-            "width": 1144,
-            "height": 771.859375
-          },
-          "selector": ".mq-ribbon",
-          "full_page": false,
-          "device_px_span": {
-            "x0": 36,
-            "x1": 2324,
-            "y0": 840,
-            "y1": 2386
-          },
-          "verified_how": "macro_rates_curves.html ribbon; details open",
-          "fixture": "builder-payload",
-          "trigger": null,
-          "crop_box_doc": {
-            "x": 18,
-            "y": 420.71875,
-            "width": 1144,
-            "height": 771.859375
-          },
-          "scroll_y_at_shot": 0.0,
-          "ihdr_delta_px": {
-            "w": 0,
-            "h": 0
-          },
-          "element_text_head": "\u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48 \u6280\u672f\u8bf4\u660e \u63cf\u8ff0\u6027 \u65f6\u95f4\u8de8\u5ea6 \u00b7 \u5f53\u524d\u8bfb\u6570 \u5229\u7387 \u66f2\u7ebf  \u672c\u9875\u4e0d\u53d1\u5e03\u53cc\u8fb9\u5934\u6761\u72b6\u6001 \u2014 \u5229\u7387\u4e0e\u66f2\u7ebf\u662f\u5728\u539f\u5341\u4e8c\u4e2a\u5de5\u4f5c\u533a\u4e4b\u540e\u65b0\u589e\u7684\uff0c\u771f\u5b9e\u66f2\u7ebf\u8bfb\u6570\u4ee5\u4e0b\u65b9",
-          "innerWidth": 1440,
-          "innerHeight": 2400
-        },
-        {
-          "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
           "bytes": 1192532,
@@ -5470,60 +5635,6 @@
             "w": 0,
             "h": 0
           },
-          "innerWidth": 1440,
-          "innerHeight": 2400
-        },
-        {
-          "access": "anonymous",
-          "applied_locale": "en",
-          "applied_theme": "light",
-          "bytes": 230108,
-          "captured": true,
-          "file": "ws-macro_rates_curves-open-light-en-1440.png",
-          "family": "workspace",
-          "force_state": "details_open",
-          "height": 1586,
-          "width": 2288,
-          "locale": "en",
-          "sha256": "cf10603f7b15e77dbf998aa17f79412c68eccdbc9ca540770f4dd9d40c0aa720",
-          "theme": "light",
-          "viewport": "desktop",
-          "viewport_width": 1440,
-          "crop_width": 1144.0,
-          "viewport_css_width": 1144.0,
-          "viewport_height": 2400,
-          "dpr": 2.0,
-          "crop": true,
-          "crop_selector": ".mq-ribbon",
-          "crop_box": {
-            "x": 18,
-            "y": 420.71875,
-            "width": 1144,
-            "height": 792.109375
-          },
-          "selector": ".mq-ribbon",
-          "full_page": false,
-          "device_px_span": {
-            "x0": 36,
-            "x1": 2324,
-            "y0": 840,
-            "y1": 2426
-          },
-          "verified_how": "macro_rates_curves.html ribbon; details open",
-          "fixture": "builder-payload",
-          "trigger": null,
-          "crop_box_doc": {
-            "x": 18,
-            "y": 420.71875,
-            "width": 1144,
-            "height": 792.109375
-          },
-          "scroll_y_at_shot": 0.0,
-          "ihdr_delta_px": {
-            "w": 0,
-            "h": 0
-          },
-          "element_text_head": "What this means for you Technical notes Descriptive Horizon \u00b7 Current reading Ra",
           "innerWidth": 1440,
           "innerHeight": 2400
         },
@@ -5620,6 +5731,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -5674,6 +5786,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -5681,7 +5794,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 317254,
+          "bytes": 317370,
           "captured": true,
           "file": "ws-macro_rates_curves-dark-zh-390.png",
           "family": "workspace",
@@ -5689,7 +5802,7 @@
           "height": 1744,
           "width": 780,
           "locale": "zh",
-          "sha256": "25b2394c3d1587499ad417f506dcd14e937454d2e77498584076a52deaee5f20",
+          "sha256": "ce555293fda99599f1e34f608f214872b23e5f4d0a333e1a19c82b44b598a565",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -5728,6 +5841,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -5782,6 +5896,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -5836,6 +5951,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -5890,6 +6006,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -5944,6 +6061,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -5998,6 +6116,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -6052,6 +6171,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 1072
         },
@@ -6106,6 +6226,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 1072
         },
@@ -6160,6 +6281,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 1072
         },
@@ -6214,6 +6336,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 1072
         }
@@ -6360,6 +6483,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -6413,7 +6537,7 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
+          "element_text_head": "问分析师 贸易流动",
           "innerWidth": 390,
           "innerHeight": 900,
           "coordSpace": "host-page",
@@ -6495,6 +6619,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -6630,6 +6755,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -6683,7 +6809,7 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
+          "element_text_head": "问分析师 贸易流动",
           "innerWidth": 390,
           "innerHeight": 900,
           "coordSpace": "host-page",
@@ -6765,6 +6891,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -6900,6 +7027,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 872
         },
@@ -6953,7 +7081,7 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
+          "element_text_head": "问分析师 贸易流动",
           "innerWidth": 768,
           "innerHeight": 900,
           "coordSpace": "host-page",
@@ -7035,6 +7163,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 872
         },
@@ -7170,6 +7299,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 872
         },
@@ -7223,7 +7353,7 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
+          "element_text_head": "问分析师 贸易流动",
           "innerWidth": 768,
           "innerHeight": 900,
           "coordSpace": "host-page",
@@ -7305,6 +7435,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 872
         },
@@ -7439,7 +7570,7 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
+          "element_text_head": "问分析师 贸易流动",
           "innerWidth": 1440,
           "innerHeight": 900,
           "coordSpace": "host-page",
@@ -7601,7 +7732,7 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
+          "element_text_head": "问分析师 贸易流动",
           "innerWidth": 1440,
           "innerHeight": 900,
           "coordSpace": "host-page",
@@ -7724,7 +7855,8 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "What this means for you Technical notes Descriptive Horizon \u00b7 Current reading Or",
+          "element_text_head": "What this means for you Technical notes Descriptive Horizon · Current reading Or",
+          "element_text_sha256": "a074ecf02a765579dad61dde6f9bbbe558a37566a6bcc4ee5e18112aede8e34e",
           "innerWidth": 1440,
           "innerHeight": 2400
         },
@@ -7820,7 +7952,8 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48 \u6280\u672f\u8bf4\u660e \u63cf\u8ff0\u6027 \u65f6\u95f4\u8de8\u5ea6 \u00b7 \u5f53\u524d\u8bfb\u6570 \u8ba2\u5355 \u751f\u4ea7 \u5e93\u5b58  \u4eca\u5929\u6ca1\u6709\u53d1\u5e03\u53cc\u8fb9\u5546\u4e1a\u6d3b\u52a8\u72b6\u6001 \u2014 \u6570\u636e\u6e90\u7ed9\u51fa\u7684\u662f\u6df7\u5408\u5468\u671f\u8bfb\u6570\uff0c\u800c\u975e\u5934\u6761\u6240\u9700\u7684\u72ec\u7acb",
+          "element_text_head": "这对你意味着什么 技术说明 描述性 时间跨度 · 当前读数 订单 生产 库存  今天没有发布双边商业活动状态 — 数据源给出的是混合周期读数，而非头条所需的独立",
+          "element_text_sha256": "5b98acad40bf4d28ce4a15448e0eaa162b667a0bd6511b5f8ced1a659980da7d",
           "innerWidth": 1440,
           "innerHeight": 2400
         },
@@ -7916,7 +8049,8 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "What this means for you Technical notes Descriptive Horizon \u00b7 Current reading Or",
+          "element_text_head": "What this means for you Technical notes Descriptive Horizon · Current reading Or",
+          "element_text_sha256": "a074ecf02a765579dad61dde6f9bbbe558a37566a6bcc4ee5e18112aede8e34e",
           "innerWidth": 1440,
           "innerHeight": 2400
         },
@@ -8012,7 +8146,8 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48 \u6280\u672f\u8bf4\u660e \u63cf\u8ff0\u6027 \u65f6\u95f4\u8de8\u5ea6 \u00b7 \u5f53\u524d\u8bfb\u6570 \u8ba2\u5355 \u751f\u4ea7 \u5e93\u5b58  \u4eca\u5929\u6ca1\u6709\u53d1\u5e03\u53cc\u8fb9\u5546\u4e1a\u6d3b\u52a8\u72b6\u6001 \u2014 \u6570\u636e\u6e90\u7ed9\u51fa\u7684\u662f\u6df7\u5408\u5468\u671f\u8bfb\u6570\uff0c\u800c\u975e\u5934\u6761\u6240\u9700\u7684\u72ec\u7acb",
+          "element_text_head": "这对你意味着什么 技术说明 描述性 时间跨度 · 当前读数 订单 生产 库存  今天没有发布双边商业活动状态 — 数据源给出的是混合周期读数，而非头条所需的独立",
+          "element_text_sha256": "5b98acad40bf4d28ce4a15448e0eaa162b667a0bd6511b5f8ced1a659980da7d",
           "innerWidth": 1440,
           "innerHeight": 2400
         },
@@ -8067,6 +8202,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -8074,7 +8210,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 288617,
+          "bytes": 288621,
           "captured": true,
           "file": "ws-macro_business_activity-dark-en-390-open.png",
           "family": "workspace",
@@ -8082,7 +8218,7 @@
           "height": 1744,
           "width": 780,
           "locale": "en",
-          "sha256": "9ff73a183f2f767a077eb786b62f4fd0afadd19272875b8b1b52f8df8ea0e4f9",
+          "sha256": "39999497696e14835cf4f57300e52651ad6d2b7a09974c251410b07f0f3f51a9",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -8121,6 +8257,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -8128,7 +8265,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 305514,
+          "bytes": 305594,
           "captured": true,
           "file": "ws-macro_business_activity-dark-zh-390.png",
           "family": "workspace",
@@ -8136,7 +8273,7 @@
           "height": 1744,
           "width": 780,
           "locale": "zh",
-          "sha256": "89f9329fb8b27cc886066ba72de72221c652613f0ad4f0eb314c65546f10fd5a",
+          "sha256": "58493802e8e33a476709e590d74da0046c5c618a63af2a2650972c22e53ba892",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -8175,6 +8312,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -8182,7 +8320,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 303307,
+          "bytes": 303386,
           "captured": true,
           "file": "ws-macro_business_activity-dark-zh-390-open.png",
           "family": "workspace",
@@ -8190,7 +8328,7 @@
           "height": 1744,
           "width": 780,
           "locale": "zh",
-          "sha256": "32f25468a660531c93957c77ac838b7639b52e091abd3c96e364b4d26913b1bc",
+          "sha256": "c825cdf3057797de758217c08d52c7b24d080fc35d0f882f08405d2615cefce7",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -8229,6 +8367,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -8283,6 +8422,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -8337,6 +8477,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -8391,6 +8532,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -8445,6 +8587,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -8499,6 +8642,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 1072
         },
@@ -8506,7 +8650,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 495497,
+          "bytes": 495512,
           "captured": true,
           "file": "ws-macro_business_activity-dark-zh-768.png",
           "family": "workspace",
@@ -8514,7 +8658,7 @@
           "height": 2144,
           "width": 1536,
           "locale": "zh",
-          "sha256": "5da9b8de02f31f284e27ded87e210f9ec5430f7b691a5b2c9f388297cfae5026",
+          "sha256": "a4dd0f818bf10ecaacc0f340ebc355017d09c7cc6ac2fd08e8c6744ed4beb70a",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -8553,6 +8697,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 1072
         },
@@ -8607,6 +8752,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 1072
         },
@@ -8661,6 +8807,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 1072
         }
@@ -8807,6 +8954,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -8860,7 +9008,7 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
+          "element_text_head": "问分析师 贸易流动",
           "innerWidth": 390,
           "innerHeight": 900,
           "coordSpace": "host-page",
@@ -8942,6 +9090,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -9077,6 +9226,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -9130,7 +9280,7 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
+          "element_text_head": "问分析师 贸易流动",
           "innerWidth": 390,
           "innerHeight": 900,
           "coordSpace": "host-page",
@@ -9212,6 +9362,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -9347,6 +9498,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 872
         },
@@ -9400,7 +9552,7 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
+          "element_text_head": "问分析师 贸易流动",
           "innerWidth": 768,
           "innerHeight": 900,
           "coordSpace": "host-page",
@@ -9482,6 +9634,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 872
         },
@@ -9617,6 +9770,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 872
         },
@@ -9670,7 +9824,7 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
+          "element_text_head": "问分析师 贸易流动",
           "innerWidth": 768,
           "innerHeight": 900,
           "coordSpace": "host-page",
@@ -9752,6 +9906,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 872
         },
@@ -9886,7 +10041,7 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
+          "element_text_head": "问分析师 贸易流动",
           "innerWidth": 1440,
           "innerHeight": 900,
           "coordSpace": "host-page",
@@ -10048,7 +10203,7 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
+          "element_text_head": "问分析师 贸易流动",
           "innerWidth": 1440,
           "innerHeight": 900,
           "coordSpace": "host-page",
@@ -10171,7 +10326,8 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "What this means for you Technical notes Descriptive Horizon \u00b7 Current reading Ra",
+          "element_text_head": "What this means for you Technical notes Descriptive Horizon · Current reading Ra",
+          "element_text_sha256": "28d7d8f2c1268b52e62ce9d4767ca4923576c3a3adb146afdd380123266fa3e0",
           "innerWidth": 1440,
           "innerHeight": 2400
         },
@@ -10179,7 +10335,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 1252133,
+          "bytes": 1252002,
           "captured": true,
           "file": "ws-macro_financial_conditions-closed-dark-zh-1440.png",
           "family": "workspace",
@@ -10187,7 +10343,7 @@
           "height": 4800,
           "width": 2880,
           "locale": "zh",
-          "sha256": "f38ec9651d3f181b8a747bd94fb7569be75df44507cbf0d8721047465a63efed",
+          "sha256": "efbb54e567072da59cf4d4b08ef6d77282f92db488ed0b234b4b081352e02306",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -10267,7 +10423,8 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48 \u6280\u672f\u8bf4\u660e \u63cf\u8ff0\u6027 \u65f6\u95f4\u8de8\u5ea6 \u00b7 \u5f53\u524d\u8bfb\u6570 \u5229\u7387 \u4fe1\u8d37 \u7f8e\u5143\u878d\u8d44 \u80a1\u5e02\u6ce2\u52a8  \u7f8e\u56fd\u91d1\u878d\u6761\u4ef6\u8bfb\u6570\u4e3a B - \u7d27\u5f20\u6761\u4ef6 / \u8fb9\u9645\u6536\u7d27\uff08\u6c34\u5e73 x=56",
+          "element_text_head": "这对你意味着什么 技术说明 描述性 时间跨度 · 当前读数 利率 信贷 美元融资 股市波动  美国金融条件读数为 B - 紧张条件 / 边际收紧（水平 x=56",
+          "element_text_sha256": "be85ef6d4a2dd64331c0b50121e34273b4f0ed8723bc3538b955bd5247668a8a",
           "innerWidth": 1440,
           "innerHeight": 2400
         },
@@ -10363,7 +10520,8 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "What this means for you Technical notes Descriptive Horizon \u00b7 Current reading Ra",
+          "element_text_head": "What this means for you Technical notes Descriptive Horizon · Current reading Ra",
+          "element_text_sha256": "28d7d8f2c1268b52e62ce9d4767ca4923576c3a3adb146afdd380123266fa3e0",
           "innerWidth": 1440,
           "innerHeight": 2400
         },
@@ -10459,7 +10617,8 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48 \u6280\u672f\u8bf4\u660e \u63cf\u8ff0\u6027 \u65f6\u95f4\u8de8\u5ea6 \u00b7 \u5f53\u524d\u8bfb\u6570 \u5229\u7387 \u4fe1\u8d37 \u7f8e\u5143\u878d\u8d44 \u80a1\u5e02\u6ce2\u52a8  \u7f8e\u56fd\u91d1\u878d\u6761\u4ef6\u8bfb\u6570\u4e3a B - \u7d27\u5f20\u6761\u4ef6 / \u8fb9\u9645\u6536\u7d27\uff08\u6c34\u5e73 x=56",
+          "element_text_head": "这对你意味着什么 技术说明 描述性 时间跨度 · 当前读数 利率 信贷 美元融资 股市波动  美国金融条件读数为 B - 紧张条件 / 边际收紧（水平 x=56",
+          "element_text_sha256": "be85ef6d4a2dd64331c0b50121e34273b4f0ed8723bc3538b955bd5247668a8a",
           "innerWidth": 1440,
           "innerHeight": 2400
         },
@@ -10514,6 +10673,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -10568,6 +10728,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -10622,6 +10783,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -10629,7 +10791,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 300630,
+          "bytes": 300748,
           "captured": true,
           "file": "ws-macro_financial_conditions-dark-zh-390-open.png",
           "family": "workspace",
@@ -10637,7 +10799,7 @@
           "height": 1744,
           "width": 780,
           "locale": "zh",
-          "sha256": "6d7a336fe1731d5008c81cdebb7e062cec7a82d6584045d1975620f5f371843c",
+          "sha256": "a615bead1b1998a1eae35e1232acfa2325b6a1a5e3b8e64c6c4b2e4e63160303",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -10676,6 +10838,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -10730,6 +10893,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -10784,6 +10948,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -10838,6 +11003,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -10892,6 +11058,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -10899,7 +11066,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 467294,
+          "bytes": 467268,
           "captured": true,
           "file": "ws-macro_financial_conditions-dark-en-768.png",
           "family": "workspace",
@@ -10907,7 +11074,7 @@
           "height": 2144,
           "width": 1536,
           "locale": "en",
-          "sha256": "23610bb1a45889e072ef7999789501176541dc7ac174c98e6f35e42a017ef6c9",
+          "sha256": "3a76432b0874330f05721b483885dd1f79b6d8ccc09cd48776d1d1b7c70768a7",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -10946,6 +11113,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 1072
         },
@@ -10953,7 +11121,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 475469,
+          "bytes": 475447,
           "captured": true,
           "file": "ws-macro_financial_conditions-dark-zh-768.png",
           "family": "workspace",
@@ -10961,7 +11129,7 @@
           "height": 2144,
           "width": 1536,
           "locale": "zh",
-          "sha256": "36f00805ca506fd6fecf522735083d4274e380a549b6abc92c8a3bf30e049ba8",
+          "sha256": "1042ed47ead964b8ca0d3010d2ada68a70ea3bb1a44e4fe8687d945cbc46a416",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -11000,6 +11168,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 1072
         },
@@ -11054,6 +11223,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 1072
         },
@@ -11108,8 +11278,681 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 1072
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 299527,
+          "captured": true,
+          "file": "method_open-macro_financial_conditions-dark-en-1440.png",
+          "family": "method_open",
+          "force_state": "method_open",
+          "height": 1460,
+          "width": 2196,
+          "locale": "en",
+          "sha256": "bb4679218de9fd1100285958adef766d1abdec343869130faf51d914cf4c6e26",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": 1098.0,
+          "viewport_css_width": 1098.0,
+          "viewport_height": 2800,
+          "dpr": 2.0,
+          "crop": true,
+          "crop_selector": "section.mq-method .mq-axis-method",
+          "crop_box": {
+            "x": 41,
+            "y": 1968.390625,
+            "width": 1098,
+            "height": 729
+          },
+          "selector": "section.mq-method .mq-axis-method",
+          "full_page": false,
+          "device_px_span": {
+            "x0": 82,
+            "x1": 2278,
+            "y0": 3936,
+            "y1": 5396
+          },
+          "verified_how": "macro_financial_conditions.html method details opened by click; crop section.mq-method .mq-axis-method",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "crop_box_doc": {
+            "x": 41,
+            "y": 1968.390625,
+            "width": 1098,
+            "height": 729
+          },
+          "scroll_y_at_shot": 0.0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "element_text_head": "Weights law权重法则Weighted average of four channels, re-weighted over those that ar",
+          "element_text_sha256": "f13d9372dc5db35db3246d64e2b38f7d579b19330d4eb1136ecacccde6cd4b35",
+          "openedBy": "click",
+          "innerWidth": 1440,
+          "innerHeight": 2800
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 285064,
+          "captured": true,
+          "file": "method_open-macro_financial_conditions-dark-zh-1440.png",
+          "family": "method_open",
+          "force_state": "method_open",
+          "height": 1236,
+          "width": 2196,
+          "locale": "zh",
+          "sha256": "bd83d7fa48e9185461ac2b2f305e81e62afcb8c52872bb0fc687f8961ae271ec",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": 1098.0,
+          "viewport_css_width": 1098.0,
+          "viewport_height": 2800,
+          "dpr": 2.0,
+          "crop": true,
+          "crop_selector": "section.mq-method .mq-axis-method",
+          "crop_box": {
+            "x": 41,
+            "y": 1911.09375,
+            "width": 1098,
+            "height": 617.4375
+          },
+          "selector": "section.mq-method .mq-axis-method",
+          "full_page": false,
+          "device_px_span": {
+            "x0": 82,
+            "x1": 2278,
+            "y0": 3822,
+            "y1": 5058
+          },
+          "verified_how": "macro_financial_conditions.html method details opened by click; crop section.mq-method .mq-axis-method",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "crop_box_doc": {
+            "x": 41,
+            "y": 1911.09375,
+            "width": 1098,
+            "height": 617.4375
+          },
+          "scroll_y_at_shot": 0.0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "element_text_head": "Weights law权重法则Weighted average of four channels, re-weighted over those that ar",
+          "element_text_sha256": "f13d9372dc5db35db3246d64e2b38f7d579b19330d4eb1136ecacccde6cd4b35",
+          "openedBy": "click",
+          "innerWidth": 1440,
+          "innerHeight": 2800
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 304977,
+          "captured": true,
+          "file": "method_open-macro_financial_conditions-light-en-1440.png",
+          "family": "method_open",
+          "force_state": "method_open",
+          "height": 1460,
+          "width": 2196,
+          "locale": "en",
+          "sha256": "07e334e308b808ebf65d474e02a5a5b67c7614f5c702107f8005d2e77b6a73c6",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": 1098.0,
+          "viewport_css_width": 1098.0,
+          "viewport_height": 2800,
+          "dpr": 2.0,
+          "crop": true,
+          "crop_selector": "section.mq-method .mq-axis-method",
+          "crop_box": {
+            "x": 41,
+            "y": 1968.390625,
+            "width": 1098,
+            "height": 729
+          },
+          "selector": "section.mq-method .mq-axis-method",
+          "full_page": false,
+          "device_px_span": {
+            "x0": 82,
+            "x1": 2278,
+            "y0": 3936,
+            "y1": 5396
+          },
+          "verified_how": "macro_financial_conditions.html method details opened by click; crop section.mq-method .mq-axis-method",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "crop_box_doc": {
+            "x": 41,
+            "y": 1968.390625,
+            "width": 1098,
+            "height": 729
+          },
+          "scroll_y_at_shot": 0.0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "element_text_head": "Weights law权重法则Weighted average of four channels, re-weighted over those that ar",
+          "element_text_sha256": "f13d9372dc5db35db3246d64e2b38f7d579b19330d4eb1136ecacccde6cd4b35",
+          "openedBy": "click",
+          "innerWidth": 1440,
+          "innerHeight": 2800
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 291957,
+          "captured": true,
+          "file": "method_open-macro_financial_conditions-light-zh-1440.png",
+          "family": "method_open",
+          "force_state": "method_open",
+          "height": 1236,
+          "width": 2196,
+          "locale": "zh",
+          "sha256": "574e91ab4444c8ce60c491e909f082f94be64f731b3ce570521f5e628a027432",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": 1098.0,
+          "viewport_css_width": 1098.0,
+          "viewport_height": 2800,
+          "dpr": 2.0,
+          "crop": true,
+          "crop_selector": "section.mq-method .mq-axis-method",
+          "crop_box": {
+            "x": 41,
+            "y": 1911.09375,
+            "width": 1098,
+            "height": 617.4375
+          },
+          "selector": "section.mq-method .mq-axis-method",
+          "full_page": false,
+          "device_px_span": {
+            "x0": 82,
+            "x1": 2278,
+            "y0": 3822,
+            "y1": 5058
+          },
+          "verified_how": "macro_financial_conditions.html method details opened by click; crop section.mq-method .mq-axis-method",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "crop_box_doc": {
+            "x": 41,
+            "y": 1911.09375,
+            "width": 1098,
+            "height": 617.4375
+          },
+          "scroll_y_at_shot": 0.0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "element_text_head": "Weights law权重法则Weighted average of four channels, re-weighted over those that ar",
+          "element_text_sha256": "f13d9372dc5db35db3246d64e2b38f7d579b19330d4eb1136ecacccde6cd4b35",
+          "openedBy": "click",
+          "innerWidth": 1440,
+          "innerHeight": 2800
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 127828,
+          "captured": true,
+          "file": "method_open-macro_financial_conditions-dark-en-390.png",
+          "family": "method_open",
+          "force_state": "method_open",
+          "height": 2266,
+          "width": 946,
+          "locale": "en",
+          "sha256": "13d759b57ce4623e403242690e6a00133607269fde8f15345c4a3d4933287223",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "crop_width": 472.734375,
+          "viewport_css_width": 473.0,
+          "viewport_height": 872,
+          "dpr": 2.0,
+          "crop": true,
+          "crop_selector": "section.mq-method .mq-axis-method",
+          "crop_box": {
+            "x": -1,
+            "y": 27.25,
+            "width": 472.734375,
+            "height": 1132.578125
+          },
+          "selector": "section.mq-method .mq-axis-method",
+          "full_page": false,
+          "device_px_span": {
+            "x0": -2,
+            "x1": 944,
+            "y0": 54,
+            "y1": 2320
+          },
+          "verified_how": "macro_financial_conditions.html method details opened by click; crop section.mq-method .mq-axis-method",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "crop_box_doc": {
+            "x": -1,
+            "y": 31.25,
+            "width": 472.734375,
+            "height": 1132.578125
+          },
+          "scroll_y_at_shot": 4.0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "element_text_head": "Weights law权重法则Weighted average of four channels, re-weighted over those that ar",
+          "element_text_sha256": "f13d9372dc5db35db3246d64e2b38f7d579b19330d4eb1136ecacccde6cd4b35",
+          "openedBy": "click",
+          "innerWidth": 390,
+          "innerHeight": 872
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 243121,
+          "captured": true,
+          "file": "method_open-macro_financial_conditions-light-zh-390.png",
+          "family": "method_open",
+          "force_state": "method_open",
+          "height": 2044,
+          "width": 656,
+          "locale": "zh",
+          "sha256": "8600b33c9139278edf72284d3e06c128278ef4bf5fb898eada918c37a997acee",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "crop_width": 328.0,
+          "viewport_css_width": 328.0,
+          "viewport_height": 872,
+          "dpr": 2.0,
+          "crop": true,
+          "crop_selector": "section.mq-method .mq-axis-method",
+          "crop_box": {
+            "x": 31,
+            "y": 26.625,
+            "width": 328,
+            "height": 1021.015625
+          },
+          "selector": "section.mq-method .mq-axis-method",
+          "full_page": false,
+          "device_px_span": {
+            "x0": 62,
+            "x1": 718,
+            "y0": 52,
+            "y1": 2096
+          },
+          "verified_how": "macro_financial_conditions.html method details opened by click; crop section.mq-method .mq-axis-method",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "crop_box_doc": {
+            "x": 31,
+            "y": 30.625,
+            "width": 328,
+            "height": 1021.015625
+          },
+          "scroll_y_at_shot": 4.0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "element_text_head": "Weights law权重法则Weighted average of four channels, re-weighted over those that ar",
+          "element_text_sha256": "f13d9372dc5db35db3246d64e2b38f7d579b19330d4eb1136ecacccde6cd4b35",
+          "openedBy": "click",
+          "innerWidth": 390,
+          "innerHeight": 872
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 242663,
+          "captured": true,
+          "file": "method_open-macro_labor_markets-dark-en-1440.png",
+          "family": "method_open",
+          "force_state": "method_open",
+          "height": 1174,
+          "width": 2196,
+          "locale": "en",
+          "sha256": "a61df7e09725593c036ac06e64cdf2f8687fff9214187658bec813f301693414",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": 1098.0,
+          "viewport_css_width": 1098.0,
+          "viewport_height": 2800,
+          "dpr": 2.0,
+          "crop": true,
+          "crop_selector": "section.mq-method .mq-axis-method",
+          "crop_box": {
+            "x": 41,
+            "y": 1558.546875,
+            "width": 1098,
+            "height": 585.84375
+          },
+          "selector": "section.mq-method .mq-axis-method",
+          "full_page": false,
+          "device_px_span": {
+            "x0": 82,
+            "x1": 2278,
+            "y0": 3116,
+            "y1": 4290
+          },
+          "verified_how": "macro_labor_markets.html method details opened by click; crop section.mq-method .mq-axis-method",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "crop_box_doc": {
+            "x": 41,
+            "y": 1558.546875,
+            "width": 1098,
+            "height": 585.84375
+          },
+          "scroll_y_at_shot": 0.0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "element_text_head": "Weights law权重法则Weighted average of the parts that are present: initial-claims mo",
+          "element_text_sha256": "877154fce24d539424092b53fbcc2ffff4bfe4d4aa4429117f8a80045412708d",
+          "openedBy": "click",
+          "innerWidth": 1440,
+          "innerHeight": 2800
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 232455,
+          "captured": true,
+          "file": "method_open-macro_labor_markets-dark-zh-1440.png",
+          "family": "method_open",
+          "force_state": "method_open",
+          "height": 1024,
+          "width": 2196,
+          "locale": "zh",
+          "sha256": "3399e1519eca1dc980e8a987d460cae29ed312d06e0a9de5be57833885213921",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": 1098.0,
+          "viewport_css_width": 1098.0,
+          "viewport_height": 2800,
+          "dpr": 2.0,
+          "crop": true,
+          "crop_selector": "section.mq-method .mq-axis-method",
+          "crop_box": {
+            "x": 41,
+            "y": 1521.5,
+            "width": 1098,
+            "height": 511.46875
+          },
+          "selector": "section.mq-method .mq-axis-method",
+          "full_page": false,
+          "device_px_span": {
+            "x0": 82,
+            "x1": 2278,
+            "y0": 3042,
+            "y1": 4066
+          },
+          "verified_how": "macro_labor_markets.html method details opened by click; crop section.mq-method .mq-axis-method",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "crop_box_doc": {
+            "x": 41,
+            "y": 1521.5,
+            "width": 1098,
+            "height": 511.46875
+          },
+          "scroll_y_at_shot": 0.0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "element_text_head": "Weights law权重法则Weighted average of the parts that are present: initial-claims mo",
+          "element_text_sha256": "877154fce24d539424092b53fbcc2ffff4bfe4d4aa4429117f8a80045412708d",
+          "openedBy": "click",
+          "innerWidth": 1440,
+          "innerHeight": 2800
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 247578,
+          "captured": true,
+          "file": "method_open-macro_labor_markets-light-en-1440.png",
+          "family": "method_open",
+          "force_state": "method_open",
+          "height": 1174,
+          "width": 2196,
+          "locale": "en",
+          "sha256": "c69dac4bd4f731ec74b7f3c0c1ba9cd0d8055e92c91c4b6f8259b09bb5e1c9e9",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": 1098.0,
+          "viewport_css_width": 1098.0,
+          "viewport_height": 2800,
+          "dpr": 2.0,
+          "crop": true,
+          "crop_selector": "section.mq-method .mq-axis-method",
+          "crop_box": {
+            "x": 41,
+            "y": 1558.546875,
+            "width": 1098,
+            "height": 585.84375
+          },
+          "selector": "section.mq-method .mq-axis-method",
+          "full_page": false,
+          "device_px_span": {
+            "x0": 82,
+            "x1": 2278,
+            "y0": 3116,
+            "y1": 4290
+          },
+          "verified_how": "macro_labor_markets.html method details opened by click; crop section.mq-method .mq-axis-method",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "crop_box_doc": {
+            "x": 41,
+            "y": 1558.546875,
+            "width": 1098,
+            "height": 585.84375
+          },
+          "scroll_y_at_shot": 0.0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "element_text_head": "Weights law权重法则Weighted average of the parts that are present: initial-claims mo",
+          "element_text_sha256": "877154fce24d539424092b53fbcc2ffff4bfe4d4aa4429117f8a80045412708d",
+          "openedBy": "click",
+          "innerWidth": 1440,
+          "innerHeight": 2800
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 237452,
+          "captured": true,
+          "file": "method_open-macro_labor_markets-light-zh-1440.png",
+          "family": "method_open",
+          "force_state": "method_open",
+          "height": 1024,
+          "width": 2196,
+          "locale": "zh",
+          "sha256": "58125ccdc9bda3f08981d654889ea9774a3c62a904ab1d87a2a4eb045db84e98",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": 1098.0,
+          "viewport_css_width": 1098.0,
+          "viewport_height": 2800,
+          "dpr": 2.0,
+          "crop": true,
+          "crop_selector": "section.mq-method .mq-axis-method",
+          "crop_box": {
+            "x": 41,
+            "y": 1521.5,
+            "width": 1098,
+            "height": 511.46875
+          },
+          "selector": "section.mq-method .mq-axis-method",
+          "full_page": false,
+          "device_px_span": {
+            "x0": 82,
+            "x1": 2278,
+            "y0": 3042,
+            "y1": 4066
+          },
+          "verified_how": "macro_labor_markets.html method details opened by click; crop section.mq-method .mq-axis-method",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "crop_box_doc": {
+            "x": 41,
+            "y": 1521.5,
+            "width": 1098,
+            "height": 511.46875
+          },
+          "scroll_y_at_shot": 0.0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "element_text_head": "Weights law权重法则Weighted average of the parts that are present: initial-claims mo",
+          "element_text_sha256": "877154fce24d539424092b53fbcc2ffff4bfe4d4aa4429117f8a80045412708d",
+          "openedBy": "click",
+          "innerWidth": 1440,
+          "innerHeight": 2800
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 116126,
+          "captured": true,
+          "file": "method_open-macro_labor_markets-dark-en-390.png",
+          "family": "method_open",
+          "force_state": "method_open",
+          "height": 2242,
+          "width": 892,
+          "locale": "en",
+          "sha256": "d9051dc7e48c288201869d8b18123243b978e07781ef4e69637be89d1d002a81",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "crop_width": 445.234375,
+          "viewport_css_width": 446.0,
+          "viewport_height": 872,
+          "dpr": 2.0,
+          "crop": true,
+          "crop_selector": "section.mq-method .mq-axis-method",
+          "crop_box": {
+            "x": -1,
+            "y": 26.765625,
+            "width": 445.234375,
+            "height": 1119.578125
+          },
+          "selector": "section.mq-method .mq-axis-method",
+          "full_page": false,
+          "device_px_span": {
+            "x0": -2,
+            "x1": 890,
+            "y0": 52,
+            "y1": 2294
+          },
+          "verified_how": "macro_labor_markets.html method details opened by click; crop section.mq-method .mq-axis-method",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "crop_box_doc": {
+            "x": -1,
+            "y": 30.765625,
+            "width": 445.234375,
+            "height": 1119.578125
+          },
+          "scroll_y_at_shot": 4.0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "element_text_head": "Weights law权重法则Weighted average of the parts that are present: initial-claims mo",
+          "element_text_sha256": "877154fce24d539424092b53fbcc2ffff4bfe4d4aa4429117f8a80045412708d",
+          "openedBy": "click",
+          "innerWidth": 390,
+          "innerHeight": 872
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 211116,
+          "captured": true,
+          "file": "method_open-macro_labor_markets-light-zh-390.png",
+          "family": "method_open",
+          "force_state": "method_open",
+          "height": 1906,
+          "width": 656,
+          "locale": "zh",
+          "sha256": "8422bc6dd9ae442119afc75b98e75465477d85946daf239c1d5d79a2010cad0a",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "crop_width": 328.0,
+          "viewport_css_width": 328.0,
+          "viewport_height": 872,
+          "dpr": 2.0,
+          "crop": true,
+          "crop_selector": "section.mq-method .mq-axis-method",
+          "crop_box": {
+            "x": 31,
+            "y": 27.421875,
+            "width": 328,
+            "height": 952.234375
+          },
+          "selector": "section.mq-method .mq-axis-method",
+          "full_page": false,
+          "device_px_span": {
+            "x0": 62,
+            "x1": 718,
+            "y0": 54,
+            "y1": 1960
+          },
+          "verified_how": "macro_labor_markets.html method details opened by click; crop section.mq-method .mq-axis-method",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "crop_box_doc": {
+            "x": 31,
+            "y": 31.421875,
+            "width": 328,
+            "height": 952.234375
+          },
+          "scroll_y_at_shot": 4.0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "element_text_head": "Weights law权重法则Weighted average of the parts that are present: initial-claims mo",
+          "element_text_sha256": "877154fce24d539424092b53fbcc2ffff4bfe4d4aa4429117f8a80045412708d",
+          "openedBy": "click",
+          "innerWidth": 390,
+          "innerHeight": 872
         }
       ]
     },
@@ -11254,6 +12097,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -11307,7 +12151,7 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
+          "element_text_head": "问分析师 贸易流动",
           "innerWidth": 390,
           "innerHeight": 900,
           "coordSpace": "host-page",
@@ -11389,6 +12233,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -11524,6 +12369,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -11577,7 +12423,7 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
+          "element_text_head": "问分析师 贸易流动",
           "innerWidth": 390,
           "innerHeight": 900,
           "coordSpace": "host-page",
@@ -11659,6 +12505,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -11794,6 +12641,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 872
         },
@@ -11847,7 +12695,7 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
+          "element_text_head": "问分析师 贸易流动",
           "innerWidth": 768,
           "innerHeight": 900,
           "coordSpace": "host-page",
@@ -11929,6 +12777,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 872
         },
@@ -12064,6 +12913,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 872
         },
@@ -12117,7 +12967,7 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
+          "element_text_head": "问分析师 贸易流动",
           "innerWidth": 768,
           "innerHeight": 900,
           "coordSpace": "host-page",
@@ -12199,6 +13049,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 872
         },
@@ -12333,7 +13184,7 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
+          "element_text_head": "问分析师 贸易流动",
           "innerWidth": 1440,
           "innerHeight": 900,
           "coordSpace": "host-page",
@@ -12495,7 +13346,7 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
+          "element_text_head": "问分析师 贸易流动",
           "innerWidth": 1440,
           "innerHeight": 900,
           "coordSpace": "host-page",
@@ -12530,7 +13381,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 1372854,
+          "bytes": 1372652,
           "captured": true,
           "file": "ws-macro_housing_real_estate-closed-dark-en-1440.png",
           "family": "workspace",
@@ -12538,7 +13389,7 @@
           "height": 4800,
           "width": 2880,
           "locale": "en",
-          "sha256": "eb726fdd454af4fad14e488b28aa68ade077f15c8cd365b139ddecaccb0a7815",
+          "sha256": "dd09ee8ad506b883c14de094be9e56b6c840663d87740023e0a4e22fefe5e533",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -12618,7 +13469,8 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "What this means for you Technical notes Descriptive Horizon \u00b7 Current reading Ho",
+          "element_text_head": "What this means for you Technical notes Descriptive Horizon · Current reading Ho",
+          "element_text_sha256": "b9184f693160778105a297e265a2af450e5aef55a51ea6209904dfcd601c5ec6",
           "innerWidth": 1440,
           "innerHeight": 2400
         },
@@ -12714,7 +13566,8 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48 \u6280\u672f\u8bf4\u660e \u63cf\u8ff0\u6027 \u65f6\u95f4\u8de8\u5ea6 \u00b7 \u5f53\u524d\u8bfb\u6570 \u4f4f\u623f \u878d\u8d44 \u4f9b\u7ed9  \u4eca\u5929\u6ca1\u6709\u53d1\u5e03\u53cc\u8fb9\u4f4f\u623f\u72b6\u6001 \u2014 \u8861\u91cf\u9700\u6c42\u4e0e\u53ef\u8d1f\u62c5\u6027\u6240\u9700\u7684\u6210\u4ea4\u548c\u6536\u5165\u6570\u636e\u4e0d\u53ef\u7528\u3002\u5f00\u5de5",
+          "element_text_head": "这对你意味着什么 技术说明 描述性 时间跨度 · 当前读数 住房 融资 供给  今天没有发布双边住房状态 — 衡量需求与可负担性所需的成交和收入数据不可用。开工",
+          "element_text_sha256": "ddd8e361ebe18280e09ffd375c38bddf692499213b496128a363887307d51892",
           "innerWidth": 1440,
           "innerHeight": 2400
         },
@@ -12810,7 +13663,8 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "What this means for you Technical notes Descriptive Horizon \u00b7 Current reading Ho",
+          "element_text_head": "What this means for you Technical notes Descriptive Horizon · Current reading Ho",
+          "element_text_sha256": "b9184f693160778105a297e265a2af450e5aef55a51ea6209904dfcd601c5ec6",
           "innerWidth": 1440,
           "innerHeight": 2400
         },
@@ -12906,7 +13760,8 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "\u8fd9\u5bf9\u4f60\u610f\u5473\u7740\u4ec0\u4e48 \u6280\u672f\u8bf4\u660e \u63cf\u8ff0\u6027 \u65f6\u95f4\u8de8\u5ea6 \u00b7 \u5f53\u524d\u8bfb\u6570 \u4f4f\u623f \u878d\u8d44 \u4f9b\u7ed9  \u4eca\u5929\u6ca1\u6709\u53d1\u5e03\u53cc\u8fb9\u4f4f\u623f\u72b6\u6001 \u2014 \u8861\u91cf\u9700\u6c42\u4e0e\u53ef\u8d1f\u62c5\u6027\u6240\u9700\u7684\u6210\u4ea4\u548c\u6536\u5165\u6570\u636e\u4e0d\u53ef\u7528\u3002\u5f00\u5de5",
+          "element_text_head": "这对你意味着什么 技术说明 描述性 时间跨度 · 当前读数 住房 融资 供给  今天没有发布双边住房状态 — 衡量需求与可负担性所需的成交和收入数据不可用。开工",
+          "element_text_sha256": "ddd8e361ebe18280e09ffd375c38bddf692499213b496128a363887307d51892",
           "innerWidth": 1440,
           "innerHeight": 2400
         },
@@ -12914,7 +13769,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 301023,
+          "bytes": 301051,
           "captured": true,
           "file": "ws-macro_housing_real_estate-dark-en-390.png",
           "family": "workspace",
@@ -12922,7 +13777,7 @@
           "height": 1744,
           "width": 780,
           "locale": "en",
-          "sha256": "4da078035a10d44c2d1a4da22a39459ed858ba4261b9a12a0d905804f07a8f79",
+          "sha256": "2e69657715e3035dca3669f3b10b820f7de04513cbcbc013fab19eafe68115a2",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -12961,6 +13816,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -13015,6 +13871,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -13069,6 +13926,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -13076,7 +13934,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 315285,
+          "bytes": 315464,
           "captured": true,
           "file": "ws-macro_housing_real_estate-dark-zh-390-open.png",
           "family": "workspace",
@@ -13084,7 +13942,7 @@
           "height": 1744,
           "width": 780,
           "locale": "zh",
-          "sha256": "d853903423e91e5a43f5501f5365b651f5513db9e0655fea6e3dd041258485e1",
+          "sha256": "1f14ee6804483862fe2b0f0c09116cdb9c60d3fe32d7564072cacedb7d738e61",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -13123,6 +13981,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -13177,6 +14036,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -13231,6 +14091,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -13285,6 +14146,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -13339,6 +14201,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 390,
           "innerHeight": 872
         },
@@ -13346,7 +14209,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 481594,
+          "bytes": 481620,
           "captured": true,
           "file": "ws-macro_housing_real_estate-dark-en-768.png",
           "family": "workspace",
@@ -13354,7 +14217,7 @@
           "height": 2144,
           "width": 1536,
           "locale": "en",
-          "sha256": "e268bc50e1db35aad97adb696c6721ddf269af92ee49f3923d7a311550fc97a8",
+          "sha256": "80ecdeb052367df609b0507233f2ffbb6ea283b1ff5185016dbbee5a2820ed12",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -13393,6 +14256,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 1072
         },
@@ -13400,7 +14264,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 481941,
+          "bytes": 481926,
           "captured": true,
           "file": "ws-macro_housing_real_estate-dark-zh-768.png",
           "family": "workspace",
@@ -13408,7 +14272,7 @@
           "height": 2144,
           "width": 1536,
           "locale": "zh",
-          "sha256": "9be92ee79078dc41fc72b52ab0c24f0f67c96b57c57128a40ff68a069eca64bd",
+          "sha256": "bb8f605735e3f70f7c8409c6479c1ab5899fbcfe1c6be6f012d8439b9696f13f",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -13447,6 +14311,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 1072
         },
@@ -13501,6 +14366,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 1072
         },
@@ -13555,6 +14421,7 @@
             "h": 0
           },
           "element_text_head": "",
+          "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 1072
         }

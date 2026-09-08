@@ -144,12 +144,14 @@
         "one_month_vector": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["dx", "dy", "status", "null_reason"],
+          "required": ["dx", "dy", "status", "null_reason", "x_axis_id", "y_axis_id"],
           "properties": {
             "dx": { "type": ["number", "null"] },
             "dy": { "type": ["number", "null"] },
             "status": { "$ref": "#/$defs/presenceState" },
-            "null_reason": { "$ref": "#/$defs/nullReasonOrNull" }
+            "null_reason": { "$ref": "#/$defs/nullReasonOrNull" },
+            "x_axis_id": { "type": ["string", "null"] },
+            "y_axis_id": { "type": ["string", "null"] }
           }
         },
         "hysteresis": {

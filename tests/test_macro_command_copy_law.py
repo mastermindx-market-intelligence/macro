@@ -1686,8 +1686,8 @@ def test_vector_move_pair_zero_and_nonzero_are_plain_words() -> None:
     assert zero["en"] == "No change on either axis this month."
     assert zero["zh"] == "本月两轴均无变化。"
     moved = vector_move_pair(0.4, -0.2, x_axis, y_axis)
-    assert moved["en"] == "Tighter on funding, easier on financial conditions."
-    assert moved["zh"] == "融资收紧，金融条件放松。"
+    assert moved["en"] == "Tighter funding conditions, weaker tightening impulse."
+    assert moved["zh"] == "融资条件收紧，收紧脉冲减弱。"
     assert "Moved on" not in moved["en"]
     assert "Δ" not in moved["en"] and "·" not in moved["en"]
 
@@ -1779,9 +1779,17 @@ COMPOSITION_DISCLOSURE_ROWS = (
 
 def test_axis_move_clauses_cover_every_axis_and_direction() -> None:
     from lib.macro_suite_disclosure import (
-        AXIS_MOVE_CLAUSES, axis_move_clause, required_axis_ids,
+        AXIS_MOVE_CLAUSES, axis_move_clause, payload_axis_ids, required_axis_ids,
     )
     from lib.macro_suite_labels import vector_move_pair
+    emitted = payload_axis_ids(DATA_ROOT)
+    table = set(required_axis_ids())
+    missing = sorted(emitted - table)
+    extra = sorted(table - emitted)
+    assert missing == [], f"clause table missing emitted axis ids: {missing}"
+    assert extra == [], (
+        f"clause table has movement-only extras not emitted by builders: {extra}"
+    )
     axes = required_axis_ids()
     assert axes, "clause table is empty"
     for axis_id in axes:
@@ -1792,6 +1800,7 @@ def test_axis_move_clauses_cover_every_axis_and_direction() -> None:
             assert not re.search(r"[A-Za-z]", leftover), (axis_id, direction, zh)
             assert not _REPEAT_TOKEN.search(zh), (axis_id, direction, zh)
             assert "Moved on" not in clause["en"]
+            assert clause["en"][0].isupper(), (axis_id, direction, clause["en"])
             assert (axis_id, direction) in AXIS_MOVE_CLAUSES
     zero = vector_move_pair(0, 0, {"axis_id": axes[0]}, {"axis_id": axes[1]})
     assert zero["en"] == "No change on either axis this month."
@@ -1804,22 +1813,50 @@ def test_axis_move_clauses_cover_every_axis_and_direction() -> None:
     assert right[0].islower() or right.split()[0] in {
         "GLT", "US", "CPI", "FRED", "OFR", "NFCI"}
     assert "Moved on" not in moved["en"]
+    growth = vector_move_pair(0.4, -0.2, {"axis_id": "growth_momentum"},
+                              {"axis_id": "growth_level_breadth"})
+    assert growth["en"] == "Stronger growth momentum, narrower breadth."
+    inflation = vector_move_pair(0.4, -0.2, {"axis_id": "inflation_impulse"},
+                                 {"axis_id": "persistence_breadth"})
+    assert inflation["en"] == "Faster price rises, across fewer categories."
 
 
 def test_vector_axes_resolve_by_id_not_list_order() -> None:
+    """M2: ids come from committed builder payloads; list order does not bind."""
     from lib.macro_suite_disclosure import resolve_vector_axes
     from lib.macro_suite_labels import vector_move_pair
-    x = {"axis_id": "funding_pressure"}
-    y = {"axis_id": "balance_sheet_support"}
-    got_x, got_y = resolve_vector_axes(
-        [y, x],
-        {"x_axis_id": "funding_pressure", "y_axis_id": "balance_sheet_support"},
-    )
-    assert got_x["axis_id"] == "funding_pressure"
-    assert got_y["axis_id"] == "balance_sheet_support"
-    moved = vector_move_pair(0.4, -0.2, got_x, got_y)
-    assert moved["en"].startswith("Tighter funding pressure")
-    assert "weaker balance-sheet support" in moved["en"]
+    from lib.macro_suite_view import _headline
+    import json
+    for page in builder.SUITE_PAGES:
+        path = DATA_ROOT / "workspaces" / page.workspace_id / page.region / "latest.json"
+        snap = json.loads(path.read_text(encoding="utf-8"))
+        items = list((snap.get("axes") or {}).get("items") or [])
+        vector = (snap.get("headline") or {}).get("one_month_vector") or {}
+        assert "x_axis_id" in vector and "y_axis_id" in vector, page.output
+        if len(items) < 2:
+            continue
+        assert vector["x_axis_id"] and vector["y_axis_id"], page.output
+        got_x, got_y = resolve_vector_axes(items, vector)
+        assert got_x["axis_id"] == vector["x_axis_id"]
+        assert got_y["axis_id"] == vector["y_axis_id"]
+        swapped = list(reversed(items))
+        again_x, again_y = resolve_vector_axes(swapped, vector)
+        assert again_x["axis_id"] == got_x["axis_id"]
+        assert again_y["axis_id"] == got_y["axis_id"]
+        if vector.get("status") == "PRESENT":
+            first = vector_move_pair(vector.get("dx"), vector.get("dy"), got_x, got_y)
+            second = vector_move_pair(vector.get("dx"), vector.get("dy"), again_x, again_y)
+            assert first == second
+            view = _headline(snap, swapped)
+            assert view["vector"]["x_axis_id"] == vector["x_axis_id"]
+            assert view["vector"]["y_axis_id"] == vector["y_axis_id"]
+            if view["vector"]["move"]:
+                assert view["vector"]["move"] == first
+    with pytest.raises(KeyError, match="missing required x_axis_id"):
+        resolve_vector_axes(
+            [{"axis_id": "a"}, {"axis_id": "b"}],
+            {},
+        )
 
 
 def test_visible_text_parser_treats_void_elements_as_self_closing() -> None:
@@ -1850,6 +1887,25 @@ def test_copy_guard_reports_allowlist_without_deleting_input() -> None:
     assert any("No change on either axis this month." in item for item in exceptions)
 
 
+COMPOSITE_COUNT_BY_PAGE = {
+    "macro_monetary.html": 0,
+    "macro_liquidity_regime.html": 2,
+    "macro_growth_real_economy.html": 2,
+    "macro_business_activity.html": 0,
+    "macro_labor_markets.html": 2,
+    "macro_inflation_system.html": 2,
+    "macro_monetary_policy.html": 0,
+    "macro_financial_conditions.html": 2,
+    "macro_liquidity_central_banks.html": 0,
+    "macro_capital_structure.html": 0,
+    "macro_housing_real_estate.html": 0,
+    "macro_consumer_payments.html": 2,
+    "macro_national_debt_liabilities.html": 0,
+    "macro_rates_curves.html": 0,
+    "macro_trade_flows.html": 0,
+}
+
+
 @pytest.mark.needs_full_checkout("site")
 def test_composites_disclose_composition_law_in_plain_words() -> None:
     """M1: every composite on the 15 pages paints the N disclosure rows, EN+ZH."""
@@ -1857,7 +1913,7 @@ def test_composites_disclose_composition_law_in_plain_words() -> None:
     pages = [HUB_PAGE.output] + [page.output for page in SUITE_PAGES]
     present = [name for name in pages if (ROOT / "site" / name).is_file()]
     assert len(present) >= 14, present
-    composites = 0
+    assert set(COMPOSITE_COUNT_BY_PAGE) == set(pages)
     missing: list[str] = []
     machine: list[str] = []
     for name in present:
@@ -1865,8 +1921,9 @@ def test_composites_disclose_composition_law_in_plain_words() -> None:
         blocks = re.findall(
             r'<div class="mc-details-body mq-axis-method">(.*?)</div>\s*</details>',
             html, re.S)
+        assert len(blocks) == COMPOSITE_COUNT_BY_PAGE[name], (
+            name, len(blocks), COMPOSITE_COUNT_BY_PAGE[name])
         for body in blocks:
-            composites += 1
             for en, zh in COMPOSITION_DISCLOSURE_ROWS:
                 if en not in body:
                     missing.append(f"{name}: missing EN {en!r}")
@@ -1877,6 +1934,178 @@ def test_composites_disclose_composition_law_in_plain_words() -> None:
                 hits = guard.machine_copy_hits(node.get("text") or "")
                 if hits:
                     machine.append(f"{name}:{hits}:{node.get('text','')[:80]}")
-    assert composites >= 1, present
     assert missing == [], missing
     assert machine == [], machine
+
+
+def test_lineage_note_kinds_render_distinct_facts() -> None:
+    from lib.macro_suite_disclosure import (
+        LINEAGE_NOTE_KIND_FACTS, classify_lineage_kind, lineage_note_pair,
+    )
+    samples = {
+        "no_change_republication": (
+            "Same reference period as the predecessor print; no source value changed "
+            "(no-change republication)."
+        ),
+        "value_correction": (
+            "Same reference period as the predecessor print, but one or more "
+            "owner-native source values changed: this print supersedes the prior "
+            "one as a revision."
+        ),
+        "source_swap": "The source for this reading changed; the reference period is the same.",
+        "reference_period_change": (
+            "Reference period differs from the predecessor print (a new observation, "
+            "not a revision of the same period); no correction asserted."
+        ),
+        "first_known": (
+            "First-known snapshot for this owner input; predecessor recorded when "
+            "a prior accepted print exists."
+        ),
+    }
+    rendered: dict[str, str] = {}
+    for kind, sample in samples.items():
+        assert classify_lineage_kind(sample) == kind
+        pair = lineage_note_pair(
+            sample, effective_date="2026-09-04", prior_effective_date="2026-09-03")
+        assert pair is not None
+        rendered[kind] = pair["en"]
+        assert LINEAGE_NOTE_KIND_FACTS[kind] in pair["en"], (kind, pair["en"])
+        assert "4 Sep 2026" in pair["en"]
+        assert pair["zh"]
+    assert len(set(rendered.values())) == len(rendered)
+    with pytest.raises(KeyError, match="unknown lineage note kind"):
+        classify_lineage_kind("engine.internal_revision_token v3")
+    fallback = lineage_note_pair(
+        "engine.internal_revision_token v3", effective_date="2026-09-04")
+    assert fallback is not None
+    assert "4 Sep 2026" in fallback["en"]
+    assert "A correction note is on file" in fallback["en"]
+
+
+@pytest.mark.needs_full_checkout("site")
+def test_financial_conditions_page_shows_no_change_republication() -> None:
+    html = (ROOT / "site" / "macro_financial_conditions.html").read_text(
+        encoding="utf-8")
+    assert "no-change republication" in html
+    assert "A correction note is on file for this reading." not in html
+
+
+def test_hysteresis_note_distinguishes_configured_from_unused() -> None:
+    from lib.macro_suite_disclosure import hysteresis_note_pair
+    unused = hysteresis_note_pair({"band": 5, "applied": False, "held_prior": False})
+    assert "configured but was not needed" in unused["en"]
+    assert "5" in unused["en"]
+    assert "未用到" in unused["zh"]
+    not_engaged = hysteresis_note_pair({
+        "band": 5, "applied": True, "held_prior": False,
+        "note": "raw classification already matches the prior print; "
+                "no boundary crossing, hysteresis not engaged",
+    })
+    assert "configured but was not needed" in not_engaged["en"]
+    absent = hysteresis_note_pair({"band": 0, "applied": False, "held_prior": False})
+    assert absent["en"] == "No hold-back band is configured on this reading."
+    assert "未配置" in absent["zh"]
+    held = hysteresis_note_pair({"band": 5, "applied": True, "held_prior": True})
+    assert "kept this reading on the prior side" in held["en"]
+    flipped = hysteresis_note_pair({
+        "band": 5, "applied": True, "held_prior": False,
+        "note": "prior quadrant not held: labor_demand crossed the 50 boundary "
+                "and moved beyond the 5.0-pt hysteresis band, so the transition "
+                "to the raw quadrant is accepted",
+    })
+    assert "did not stay on the prior side" in flipped["en"]
+
+
+def test_owner_display_pair_falls_back_without_raising(capsys) -> None:
+    from lib.macro_suite_disclosure import owner_display_pair
+    pair = owner_display_pair("engine.brand_new_desk")
+    assert pair == {
+        "en": "Source owner not yet named",
+        "zh": "数据来源负责人待定",
+    }
+    captured = capsys.readouterr()
+    warning = next(
+        (line for line in captured.out.splitlines() if line.startswith("::warning")),
+        "",
+    )
+    assert warning.startswith("::warning title=macro-suite-unmapped-owner::")
+    assert "engine.brand_new_desk" in warning
+
+
+@pytest.mark.needs_full_checkout("site")
+def test_trace_row_present_iff_trace_ref() -> None:
+    import json
+    path = DATA_ROOT / "workspaces" / "financial_conditions" / "US" / "latest.json"
+    snap = json.loads(path.read_text(encoding="utf-8"))
+    items = ((snap.get("implications") or {}).get("items") or [])[:3]
+    assert items, "financial_conditions must have implication items"
+    html = (ROOT / "site" / "macro_financial_conditions.html").read_text(
+        encoding="utf-8")
+    traces = re.findall(r'<p class="mq-trace">', html)
+    expected = sum(1 for item in items if item.get("trace_ref"))
+    assert len(traces) == expected
+    src = (ROOT / "templates" / "_macro_suite_shell.html.j2").read_text(
+        encoding="utf-8")
+    assert "{%- if item.trace_ref %}" in src
+    assert "mq-trace" in src
+
+
+@pytest.mark.needs_full_checkout("site")
+def test_restored_row_families_on_non_composite_page() -> None:
+    html = (ROOT / "site" / "macro_monetary_policy.html").read_text(
+        encoding="utf-8")
+    assert "mq-axis-method" not in html
+    for en, zh in (
+        ("Method version", "方法版本"),
+        ("Changed fingerprints", "已变更指纹"),
+        ("Hysteresis", "滞回"),
+        ("replaces the prior one", "本期取代上一期"),
+    ):
+        assert en in html, en
+        assert zh in html, zh
+    assert "Definition version" in html
+    assert "A correction note is on file for this reading." not in html
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_method_open_family_photographs_disclosure_rows() -> None:
+    import json
+    from scripts.capture_macro_command_p5 import declared_families, family_for
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    probes = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "probes.json")
+        .read_text(encoding="utf-8"))
+    cells = [
+        state
+        for page in manifest.get("pages") or []
+        for state in page.get("states") or []
+        if state.get("family") == "method_open" or family_for(state.get("file") or "") == "method_open"
+    ]
+    assert len(cells) >= 10, [c.get("file") for c in cells]
+    for state in cells:
+        assert state.get("crop_selector") == "section.mq-method .mq-axis-method"
+        assert state.get("openedBy") == "click"
+        head = state.get("element_text_head") or ""
+        assert "Weights law" in head or "权重法则" in head, (state.get("file"), head)
+        assert state.get("element_text_sha256")
+        text = (probes.get("method_open_text") or {}).get(state["file"]) or ""
+        if not text:
+            text = state.get("element_text") or ""
+        assert text, state.get("file")
+        for en, zh in COMPOSITION_DISCLOSURE_ROWS:
+            assert en in text, (state.get("file"), en)
+            assert zh in text, (state.get("file"), zh)
+    families = probes.get("declared_families") or declared_families()
+    assert "method_open" in families
+    details = [
+        state
+        for page in manifest.get("pages") or []
+        for state in page.get("states") or []
+        if state.get("family") == "details_open"
+        and str(state.get("file", "")).startswith(("15", "16"))
+        and "1440" in str(state.get("file"))
+    ]
+    pairs = {(s.get("theme"), s.get("locale")) for s in details}
+    assert pairs >= {("dark", "en"), ("dark", "zh"), ("light", "en"), ("light", "zh")}

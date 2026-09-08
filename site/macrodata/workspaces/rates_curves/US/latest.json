@@ -515,8 +515,8 @@
     "built_at": "2026-09-06T21:23:24Z",
     "calculation_as_of": "2026-09-08",
     "code_version": "41929a0479ef0e5e4a8ac34086668c738c1e480f",
-    "content_sha256": "269ef219a01f9d0eb92dee547d5e1ec916d7d0d78bad4a53654d27bf6c7e4be0",
-    "generation_id": "rates_curves-US-269ef219a01f9d0e",
+    "content_sha256": "c277a2c3cac0710840924f47ec8173e12da3442d9197447b3111c9e5bcdbb10d",
+    "generation_id": "rates_curves-US-c277a2c3cac07108",
     "producer": "engine.market_os.macro_workspaces.rates_curves",
     "rendered_at": null
   },
@@ -539,7 +539,9 @@
       "dx": null,
       "dy": null,
       "null_reason": "NOT_APPLICABLE",
-      "status": "ABSENT"
+      "status": "ABSENT",
+      "x_axis_id": null,
+      "y_axis_id": null
     },
     "prior_state": {
       "effective_date": "2026-09-08",

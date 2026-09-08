@@ -551,6 +551,8 @@ def _headline(x_value, x_status, x_null, y_value, y_status, y_null, asof,
             vec_null = "INSUFFICIENT_HISTORY"
         vec = {"dx": None, "dy": None, "status": "ABSENT", "null_reason": vec_null}
         transition_distance = None
+    vec["x_axis_id"] = "labor_demand"
+    vec["y_axis_id"] = "labor_supply_tightness"
 
     if not applied:
         note = "no comparable prior print; raw threshold classification, hysteresis not applied"

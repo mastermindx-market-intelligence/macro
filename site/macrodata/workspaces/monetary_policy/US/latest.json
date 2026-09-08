@@ -320,8 +320,8 @@
     "built_at": "2026-09-06T21:23:24Z",
     "calculation_as_of": "2026-09-04",
     "code_version": "41929a0479ef0e5e4a8ac34086668c738c1e480f",
-    "content_sha256": "22a1cf243e1349082df716042119515db7f6eb203f8cc8a4efa500f53a906aee",
-    "generation_id": "monetary_policy-US-22a1cf243e134908",
+    "content_sha256": "b2ec407eeba5353132730240868590c2ae65d7b639b992dfde93258609794399",
+    "generation_id": "monetary_policy-US-b2ec407eeba53531",
     "producer": "engine.market_os.macro_workspaces.monetary_policy",
     "rendered_at": null
   },
@@ -344,7 +344,9 @@
       "dx": null,
       "dy": null,
       "null_reason": "NOT_APPLICABLE",
-      "status": "ABSENT"
+      "status": "ABSENT",
+      "x_axis_id": null,
+      "y_axis_id": null
     },
     "prior_state": {
       "effective_date": "2026-09-04",

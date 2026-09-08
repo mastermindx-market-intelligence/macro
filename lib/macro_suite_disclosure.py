@@ -6,7 +6,9 @@ clause is a build defect, never a generic "Moved on".
 """
 from __future__ import annotations
 
+import json
 import re
+from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 from lib.macro_suite_zh_parity import apply_zh_parity
@@ -25,49 +27,50 @@ def _pair(en: str, zh: str) -> dict[str, str]:
 
 # Hand-written glance clauses. Keyed by (axis_id, direction). A missing key
 # raises at build time — no "Moved on", no English leaking into ZH.
+#
+# Authoring rule (one idiom, one casing): every clause is a sentence fragment
+# that names its axis; the first word is stored capitalised; clause_case
+# lowers a later clause. Do not mix "on X" fragments with bare noun phrases.
+# conditions_level / conditions_impulse are internal hysteresis labels in
+# financial_conditions.py — they are not published axis_id values and have
+# no movement clauses.
 AXIS_MOVE_CLAUSES: dict[tuple[str, str], dict[str, str]] = {
     ("funding_pressure", "up"): _pair("Tighter funding pressure", "融资压力上升"),
     ("funding_pressure", "down"): _pair("Easier funding pressure", "融资压力减轻"),
-    ("funding_pressure", "flat"): _pair("no change in funding pressure", "融资压力无变化"),
+    ("funding_pressure", "flat"): _pair("No change in funding pressure", "融资压力无变化"),
     ("balance_sheet_support", "up"): _pair("Stronger balance-sheet support", "资产负债表支持增强"),
     ("balance_sheet_support", "down"): _pair("Weaker balance-sheet support", "资产负债表支持减弱"),
-    ("balance_sheet_support", "flat"): _pair("no change in balance-sheet support", "资产负债表支持无变化"),
-    ("financial_conditions_level", "up"): _pair("Tighter on funding", "融资收紧"),
-    ("financial_conditions_level", "down"): _pair("easier on funding", "融资放松"),
-    ("financial_conditions_level", "flat"): _pair("no change in funding tightness", "融资松紧无变化"),
+    ("balance_sheet_support", "flat"): _pair("No change in balance-sheet support", "资产负债表支持无变化"),
+    ("financial_conditions_level", "up"): _pair("Tighter funding conditions", "融资条件收紧"),
+    ("financial_conditions_level", "down"): _pair("Easier funding conditions", "融资条件放松"),
+    ("financial_conditions_level", "flat"): _pair("No change in funding tightness", "融资松紧无变化"),
     ("financial_conditions_impulse", "up"): _pair("Stronger tightening impulse", "收紧脉冲更强"),
-    ("financial_conditions_impulse", "down"): _pair("easier on financial conditions", "金融条件放松"),
-    ("financial_conditions_impulse", "flat"): _pair("no change in the tightening impulse", "收紧脉冲无变化"),
-    ("conditions_level", "up"): _pair("Tighter on funding", "融资收紧"),
-    ("conditions_level", "down"): _pair("easier on funding", "融资放松"),
-    ("conditions_level", "flat"): _pair("no change in funding tightness", "融资松紧无变化"),
-    ("conditions_impulse", "up"): _pair("Stronger tightening impulse", "收紧脉冲更强"),
-    ("conditions_impulse", "down"): _pair("easier on financial conditions", "金融条件放松"),
-    ("conditions_impulse", "flat"): _pair("no change in the tightening impulse", "收紧脉冲无变化"),
+    ("financial_conditions_impulse", "down"): _pair("Weaker tightening impulse", "收紧脉冲减弱"),
+    ("financial_conditions_impulse", "flat"): _pair("No change in the tightening impulse", "收紧脉冲无变化"),
     ("growth_momentum", "up"): _pair("Stronger growth momentum", "增长动能增强"),
     ("growth_momentum", "down"): _pair("Weaker growth momentum", "增长动能减弱"),
-    ("growth_momentum", "flat"): _pair("no change in growth momentum", "增长动能无变化"),
-    ("growth_level_breadth", "up"): _pair("Broader, stronger growth", "增长更广更强"),
-    ("growth_level_breadth", "down"): _pair("Narrower, weaker growth", "增长更窄更弱"),
-    ("growth_level_breadth", "flat"): _pair("no change in growth breadth", "增长广度无变化"),
+    ("growth_momentum", "flat"): _pair("No change in growth momentum", "增长动能无变化"),
+    ("growth_level_breadth", "up"): _pair("Broader breadth", "增长广度扩大"),
+    ("growth_level_breadth", "down"): _pair("Narrower breadth", "增长广度收窄"),
+    ("growth_level_breadth", "flat"): _pair("No change in growth breadth", "增长广度无变化"),
     ("inflation_impulse", "up"): _pair("Faster price rises", "物价上涨加快"),
     ("inflation_impulse", "down"): _pair("Slower price rises", "物价上涨放缓"),
-    ("inflation_impulse", "flat"): _pair("no change in the speed of price rises", "物价上涨速度无变化"),
-    ("persistence_breadth", "up"): _pair("Broader price rises", "涨价范围扩大"),
-    ("persistence_breadth", "down"): _pair("Narrower price rises", "涨价范围收窄"),
-    ("persistence_breadth", "flat"): _pair("no change in how widely prices are rising", "涨价广度无变化"),
+    ("inflation_impulse", "flat"): _pair("No change in the speed of price rises", "物价上涨速度无变化"),
+    ("persistence_breadth", "up"): _pair("Across more categories", "涨价类别增多"),
+    ("persistence_breadth", "down"): _pair("Across fewer categories", "涨价类别减少"),
+    ("persistence_breadth", "flat"): _pair("No change in how widely prices are rising", "涨价广度无变化"),
     ("labor_demand", "up"): _pair("Stronger employer demand", "用工需求增强"),
     ("labor_demand", "down"): _pair("Weaker employer demand", "用工需求减弱"),
-    ("labor_demand", "flat"): _pair("no change in employer demand", "用工需求无变化"),
+    ("labor_demand", "flat"): _pair("No change in employer demand", "用工需求无变化"),
     ("labor_supply_tightness", "up"): _pair("Tighter job-market conditions", "就业市场更紧"),
     ("labor_supply_tightness", "down"): _pair("Easier job-market conditions", "就业市场更松"),
-    ("labor_supply_tightness", "flat"): _pair("no change in job-market tightness", "就业市场松紧无变化"),
+    ("labor_supply_tightness", "flat"): _pair("No change in job-market tightness", "就业市场松紧无变化"),
     ("cash_flow_momentum", "up"): _pair("Stronger household cash flow", "家庭现金流增强"),
     ("cash_flow_momentum", "down"): _pair("Weaker household cash flow", "家庭现金流减弱"),
-    ("cash_flow_momentum", "flat"): _pair("no change in household cash flow", "家庭现金流无变化"),
+    ("cash_flow_momentum", "flat"): _pair("No change in household cash flow", "家庭现金流无变化"),
     ("credit_stress", "up"): _pair("More household credit stress", "家庭信贷压力加大"),
     ("credit_stress", "down"): _pair("Less household credit stress", "家庭信贷压力减轻"),
-    ("credit_stress", "flat"): _pair("no change in household credit stress", "家庭信贷压力无变化"),
+    ("credit_stress", "flat"): _pair("No change in household credit stress", "家庭信贷压力无变化"),
 }
 
 # Composition-law body copy. Keyed by (axis_id, field). Missing raises.
@@ -526,7 +529,11 @@ def owner_display_pair(ref: Any) -> dict[str, str] | None:
         metric = METRIC.get(head.group(1))
         if metric:
             return dict(metric)
-    raise KeyError(f"no customer name for owner_ref {text!r}")
+    print(
+        f"::warning title=macro-suite-unmapped-owner::no customer name for owner_ref {text!r}",
+        flush=True,
+    )
+    return _pair("Source owner not yet named", "数据来源负责人待定")
 
 
 def composition_law_pair(axis_id: Any, field: str, raw: Any) -> dict[str, str]:
@@ -599,35 +606,50 @@ def coverage_floor_pair(ratio: Any) -> dict[str, str] | None:
 
 def hysteresis_note_pair(hysteresis: Mapping[str, Any] | None) -> dict[str, str]:
     block = hysteresis or {}
-    applied = bool(block.get("applied"))
     held = bool(block.get("held_prior"))
     from lib.macro_suite_labels import fmt_number
-    band = fmt_number(block.get("band"))
-    if not applied:
+    raw_band = block.get("band")
+    try:
+        band_n = float(raw_band) if raw_band is not None else None
+    except (TypeError, ValueError):
+        band_n = None
+    configured = band_n is not None and band_n > 0
+    band = fmt_number(raw_band) if configured else None
+    note_l = str(block.get("note") or "").lower()
+    # Producer "prior quadrant not held … moved beyond the band" means a real flip.
+    crossed_beyond = (
+        "prior quadrant not held" in note_l
+        or "moved beyond" in note_l
+        or "transition to the raw quadrant is accepted" in note_l
+    )
+    if not configured:
         return _pair(
-            "No hold-back band is in use on this reading.",
-            "本读数未使用滞回带。",
+            "No hold-back band is configured on this reading.",
+            "本读数未配置滞回带。",
         )
     if held and band:
         return _pair(
             f"A {band}-point hold-back band kept this reading on the prior side of the line.",
             f"{band} 点的滞回带使本读数留在原分界一侧。",
         )
-    if band:
+    if crossed_beyond and band:
         return _pair(
             f"A {band}-point hold-back band is in use; this reading did not stay on the prior side of the line.",
             f"已启用 {band} 点滞回带；本读数未留在原分界一侧。",
         )
+    # applied=False (no prior) OR applied but not engaged (raw already matched).
     return _pair(
-        "A hold-back band is in use on this reading.",
-        "本读数正在使用滞回带。",
+        f"A {band}-point hold-back band is configured but was not needed this reading.",
+        f"已配置 {band} 点滞回带，但本读数未用到。",
     )
 
 
 def changed_sources_pair(fingerprints: Sequence[Any] | None) -> dict[str, str] | None:
     names: list[dict[str, str]] = []
     for item in fingerprints or []:
-        names.append(owner_display_pair(item) or _pair(str(item), str(item)))
+        pair = owner_display_pair(item)
+        if pair:
+            names.append(pair)
     if not names:
         return None
     return _pair(
@@ -636,14 +658,126 @@ def changed_sources_pair(fingerprints: Sequence[Any] | None) -> dict[str, str] |
     )
 
 
-def lineage_note_pair(note: Any) -> dict[str, str] | None:
+# Producer kinds enumerated from engine/market_os/macro_workspaces/*._corrections.
+# Distinguishing fact is the customer-visible phrase that must appear in EN.
+LINEAGE_NOTE_KIND_SENTENCES: dict[str, dict[str, str]] = {
+    "no_change_republication": _pair(
+        "Same reference period as the predecessor print; no source value changed (no-change republication).",
+        "与上一期读数同一参考期；源值未变（无变更再发布）。",
+    ),
+    "value_correction": _pair(
+        "Same reference period as the predecessor print; a source value changed, so this print replaces the prior one.",
+        "与上一期读数同一参考期；源值已变，本期取代上一期。",
+    ),
+    "source_swap": _pair(
+        "The source for this reading changed; the reference period is the same.",
+        "本读数的数据源已更换；参考期不变。",
+    ),
+    "reference_period_change": _pair(
+        "This is a new observation for a later reference period, not a revision of the prior print.",
+        "这是较晚参考期的新观察，不是对上一期读数的修订。",
+    ),
+    "first_known": _pair(
+        "This is the first published print; no predecessor is on file yet.",
+        "这是首次发布的读数；尚无上一期存档。",
+    ),
+}
+
+LINEAGE_NOTE_KIND_FACTS: dict[str, str] = {
+    "no_change_republication": "no-change republication",
+    "value_correction": "replaces the prior one",
+    "source_swap": "source for this reading changed",
+    "reference_period_change": "later reference period",
+    "first_known": "first published print",
+}
+
+_LINEAGE_KIND_MARKERS: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("source_swap", ("source swap", "source for this reading changed", "source was swapped")),
+    ("value_correction", (
+        "supersedes the prior one as a revision",
+        "changed value: this print supersedes",
+        "source values changed",
+        "metrics changed value",
+        "owner-native metrics changed value",
+        "source components changed value",
+    )),
+    ("no_change_republication", (
+        "no-change republication",
+        "no source value changed",
+        "no source component changed",
+        "no tracked metric changed",
+        "no tracked tier field changed",
+    )),
+    ("reference_period_change", (
+        "reference period differs",
+        "new observation, not a revision",
+    )),
+    ("first_known", (
+        "first-known snapshot",
+        "predecessor recorded when a prior accepted print exists",
+    )),
+)
+
+
+def classify_lineage_kind(note: Any) -> str:
+    """Map a producer note to a kind. Unknown notes raise (tests pin this)."""
+    text = str(note or "").strip().lower()
+    if not text:
+        raise KeyError("empty lineage note has no kind")
+    for kind, markers in _LINEAGE_KIND_MARKERS:
+        if any(marker in text for marker in markers):
+            return kind
+    raise KeyError(f"unknown lineage note kind for {note!r}")
+
+
+def _period_clause(effective_date: Any, prior_effective_date: Any) -> dict[str, str] | None:
+    from lib.macro_suite_labels import date_display_pair
+    dated = date_display_pair(str(effective_date) if effective_date else "")
+    prior = date_display_pair(str(prior_effective_date) if prior_effective_date else "")
+    if dated and prior:
+        return _pair(
+            f" This print is as of {dated['en']}; the predecessor is as of {prior['en']}.",
+            f"本期截至{dated['zh']}；上一期截至{prior['zh']}。",
+        )
+    if dated:
+        return _pair(
+            f" This print is as of {dated['en']}.",
+            f"本期截至{dated['zh']}。",
+        )
+    if prior:
+        return _pair(
+            f" The predecessor is as of {prior['en']}.",
+            f"上一期截至{prior['zh']}。",
+        )
+    return None
+
+
+def lineage_note_pair(
+    note: Any,
+    *,
+    effective_date: Any = None,
+    prior_effective_date: Any = None,
+) -> dict[str, str] | None:
     if not note or not str(note).strip():
         return None
     text = str(note).strip()
-    return _pair(
-        "A correction note is on file for this reading.",
-        "本读数附有更正说明。",
-    ) if text else None
+    period = _period_clause(effective_date, prior_effective_date)
+    try:
+        kind = classify_lineage_kind(text)
+    except KeyError:
+        print(
+            f"::warning title=macro-suite-unknown-lineage-kind::unknown lineage note {text!r}",
+            flush=True,
+        )
+        fallback_en = "A correction note is on file for this reading."
+        fallback_zh = "本读数附有更正说明。"
+        if period:
+            return _pair(fallback_en + period["en"], fallback_zh + period["zh"])
+        return _pair(fallback_en, fallback_zh)
+    sentence = dict(LINEAGE_NOTE_KIND_SENTENCES[kind])
+    if period:
+        return _pair(sentence["en"] + period["en"], sentence["zh"] + period["zh"])
+    return sentence
 
 
 def _first_word(text: str) -> str:
@@ -689,18 +823,31 @@ def required_axis_ids() -> tuple[str, ...]:
     return tuple(sorted({axis_id for axis_id, _direction in AXIS_MOVE_CLAUSES}))
 
 
+def payload_axis_ids(data_root: str | Path) -> frozenset[str]:
+    """Axis ids actually emitted on committed workspace payloads."""
+    ids: set[str] = set()
+    root = Path(data_root)
+    for path in sorted(root.glob("workspaces/*/US/latest.json")):
+        snap = json.loads(path.read_text(encoding="utf-8"))
+        for axis in ((snap.get("axes") or {}).get("items") or []):
+            axis_id = axis.get("axis_id")
+            if axis_id:
+                ids.add(str(axis_id))
+    return frozenset(ids)
+
+
 def resolve_vector_axes(
     axes: Sequence[Mapping[str, Any]],
     vector: Mapping[str, Any] | None,
 ) -> tuple[Mapping[str, Any], Mapping[str, Any]]:
-    """Bind dx/dy to axes by id. Missing ids are stamped from published order."""
+    """Bind dx/dy to axes by id. Missing ids raise — no positional fallback."""
     items = list(axes or [])
     by_id = {str(axis.get("axis_id")): axis for axis in items if axis.get("axis_id")}
     block = vector or {}
-    x_id = block.get("x_axis_id") or (items[0].get("axis_id") if items else None)
-    y_id = block.get("y_axis_id") or (items[1].get("axis_id") if len(items) > 1 else None)
+    x_id = block.get("x_axis_id")
+    y_id = block.get("y_axis_id")
     if not x_id or not y_id:
-        raise KeyError("vector is missing x_axis_id/y_axis_id and axes cannot supply them")
+        raise KeyError("vector is missing required x_axis_id/y_axis_id")
     if str(x_id) not in by_id or str(y_id) not in by_id:
         raise KeyError(f"vector axis id not in axes: {x_id!r} {y_id!r}")
     return by_id[str(x_id)], by_id[str(y_id)]

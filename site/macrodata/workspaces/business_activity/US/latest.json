@@ -179,8 +179,8 @@
     "built_at": "2026-09-06T21:23:24Z",
     "calculation_as_of": "2026-09-30",
     "code_version": "41929a0479ef0e5e4a8ac34086668c738c1e480f",
-    "content_sha256": "7518a85d3398ca1cf51c18b6fdb3810e8b2f5dd01cf7d216bf146d5d907582ea",
-    "generation_id": "business_activity-US-7518a85d3398ca1c",
+    "content_sha256": "78f8a2866178ff6587f5593644b9af4c44c79ae530f5b81c5200150ac1189811",
+    "generation_id": "business_activity-US-78f8a2866178ff65",
     "producer": "engine.market_os.macro_workspaces.business_activity",
     "rendered_at": null
   },
@@ -203,7 +203,9 @@
       "dx": null,
       "dy": null,
       "null_reason": "COMPUTATION_REFUSED",
-      "status": "ABSENT"
+      "status": "ABSENT",
+      "x_axis_id": null,
+      "y_axis_id": null
     },
     "prior_state": {
       "effective_date": "2026-09-30",

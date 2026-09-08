@@ -349,11 +349,13 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
     x_axis, y_axis = {}, {}
     x_id = vector.get("x_axis_id")
     y_id = vector.get("y_axis_id")
-    if len(axes) >= 2:
+    if x_id and y_id:
         resolved_x, resolved_y = D.resolve_vector_axes(axes, vector)
         x_axis, y_axis = resolved_x, resolved_y
         x_id = x_axis.get("axis_id")
         y_id = y_axis.get("axis_id")
+    elif vector_present:
+        raise KeyError("vector is missing required x_axis_id/y_axis_id")
     published = L.date_or_none(headline.get("effective_date"))
     return {
         "state_id": headline.get("state_id"),
@@ -838,7 +840,14 @@ def _evidence(snapshot: Mapping[str, Any], context: Mapping[str, Any],
             "changed_fingerprints": list(corrections.get("changed_fingerprints") or []),
             "changed_sources": D.changed_sources_pair(
                 corrections.get("changed_fingerprints")),
-            "note": D.lineage_note_pair(corrections.get("note")),
+            "note": D.lineage_note_pair(
+                corrections.get("note"),
+                effective_date=(snapshot.get("headline") or {}).get("effective_date"),
+                prior_effective_date=(
+                    ((snapshot.get("headline") or {}).get("prior_state") or {})
+                    .get("effective_date")
+                ),
+            ),
             "predecessor_label": (
                 _pair("A prior published generation is on file.",
                       "已有上一已发布代次存档。")

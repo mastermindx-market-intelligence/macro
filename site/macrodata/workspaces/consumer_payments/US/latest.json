@@ -541,8 +541,8 @@
     "built_at": "2026-09-06T21:23:24Z",
     "calculation_as_of": "2026-07-01",
     "code_version": "41929a0479ef0e5e4a8ac34086668c738c1e480f",
-    "content_sha256": "382cc0f3b5779173dffe9cf8f1cf88509e272f78ca56b70fd1e8a6cf14644752",
-    "generation_id": "consumer_payments-US-382cc0f3b5779173",
+    "content_sha256": "5985d3c5c71946f4b4eff7983fbe863bac0c6a903a8e92fc351ff1dad3caa898",
+    "generation_id": "consumer_payments-US-5985d3c5c71946f4",
     "producer": "engine.market_os.macro_workspaces.consumer_payments",
     "rendered_at": null
   },
@@ -565,7 +565,9 @@
       "dx": 0.0,
       "dy": 0.0,
       "null_reason": null,
-      "status": "PRESENT"
+      "status": "PRESENT",
+      "x_axis_id": "cash_flow_momentum",
+      "y_axis_id": "credit_stress"
     },
     "prior_state": {
       "effective_date": "2026-07-01",

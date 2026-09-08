@@ -507,8 +507,8 @@
     "built_at": "2026-09-06T21:23:24Z",
     "calculation_as_of": "2026-09-04",
     "code_version": "41929a0479ef0e5e4a8ac34086668c738c1e480f",
-    "content_sha256": "ec042f91f04ab8ff590e21005d7adeebbd276436860b65130459bd8f2c663226",
-    "generation_id": "financial_conditions-US-ec042f91f04ab8ff",
+    "content_sha256": "851dd53c69fbc68f6315398bec1c867606d12de23ec0465abdba5c74961c005c",
+    "generation_id": "financial_conditions-US-851dd53c69fbc68f",
     "producer": "engine.market_os.macro_workspaces.financial_conditions",
     "rendered_at": null
   },
@@ -531,7 +531,9 @@
       "dx": 0.0,
       "dy": 0.0,
       "null_reason": null,
-      "status": "PRESENT"
+      "status": "PRESENT",
+      "x_axis_id": "financial_conditions_level",
+      "y_axis_id": "financial_conditions_impulse"
     },
     "prior_state": {
       "effective_date": "2026-09-04",

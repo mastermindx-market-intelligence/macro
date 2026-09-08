@@ -370,8 +370,8 @@
     "built_at": "2026-09-06T21:23:24Z",
     "calculation_as_of": "2026-09-03",
     "code_version": "41929a0479ef0e5e4a8ac34086668c738c1e480f",
-    "content_sha256": "8f99cb532cca86896cadf0afd31857b0a8b85da8083c7f3fa3777358aec43bbb",
-    "generation_id": "national_debt_liabilities-US-8f99cb532cca8689",
+    "content_sha256": "dc29ef08819831877d933d5d74d3d7c27e188ffd7e350f72388a66e2d9beb2ea",
+    "generation_id": "national_debt_liabilities-US-dc29ef0881983187",
     "producer": "engine.market_os.macro_workspaces.national_debt",
     "rendered_at": null
   },
@@ -394,7 +394,9 @@
       "dx": null,
       "dy": null,
       "null_reason": "COMPUTATION_REFUSED",
-      "status": "ABSENT"
+      "status": "ABSENT",
+      "x_axis_id": null,
+      "y_axis_id": null
     },
     "prior_state": {
       "effective_date": "2026-09-03",

@@ -470,8 +470,8 @@
     "built_at": "2026-09-06T21:23:24Z",
     "calculation_as_of": "2026-09-04",
     "code_version": "41929a0479ef0e5e4a8ac34086668c738c1e480f",
-    "content_sha256": "cda6778b4f655170e866155db5b4e9551559a13ccf60f440d5000c7e9474cc14",
-    "generation_id": "liquidity_regime-US-cda6778b4f655170",
+    "content_sha256": "436cb50706c3eb9d99f6b5956172e95d36b4be63fce4daa482f8de0d120cfac1",
+    "generation_id": "liquidity_regime-US-436cb50706c3eb9d",
     "producer": "engine.market_os.macro_workspaces.liquidity_regime",
     "rendered_at": null
   },
@@ -494,7 +494,9 @@
       "dx": 0.0,
       "dy": 0.0,
       "null_reason": null,
-      "status": "PRESENT"
+      "status": "PRESENT",
+      "x_axis_id": "funding_pressure",
+      "y_axis_id": "balance_sheet_support"
     },
     "prior_state": {
       "effective_date": "2026-09-04",

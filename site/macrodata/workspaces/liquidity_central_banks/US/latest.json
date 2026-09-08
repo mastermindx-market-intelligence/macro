@@ -303,8 +303,8 @@
     "built_at": "2026-09-06T21:23:24Z",
     "calculation_as_of": "2026-09-04T11:03:41.497178+00:00",
     "code_version": "41929a0479ef0e5e4a8ac34086668c738c1e480f",
-    "content_sha256": "96076f98950a316cda8f85a09be5d77d98ecd4173c03e40ef34a18366b55d341",
-    "generation_id": "liquidity_central_banks-US-96076f98950a316c",
+    "content_sha256": "87bf49df46fc53ee8aae311051876967ad662388eb67b0b92fa3a33becbbf720",
+    "generation_id": "liquidity_central_banks-US-87bf49df46fc53ee",
     "producer": "engine.market_os.macro_workspaces.liquidity_central_banks",
     "rendered_at": null
   },
@@ -327,7 +327,9 @@
       "dx": null,
       "dy": null,
       "null_reason": "NOT_APPLICABLE",
-      "status": "ABSENT"
+      "status": "ABSENT",
+      "x_axis_id": null,
+      "y_axis_id": null
     },
     "prior_state": {
       "effective_date": "2026-08-28",

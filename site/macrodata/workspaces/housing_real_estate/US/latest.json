@@ -314,8 +314,8 @@
     "built_at": "2026-09-06T21:23:24Z",
     "calculation_as_of": "2026-09-03",
     "code_version": "41929a0479ef0e5e4a8ac34086668c738c1e480f",
-    "content_sha256": "43098ac493b7367901c3fd04c4a19e8fd20381b03c7adbd9442d13b3bd581776",
-    "generation_id": "housing_real_estate-US-43098ac493b73679",
+    "content_sha256": "a4d86d0849c5e71f85d113ece9673d2c163f4f06c5332eff54d4c2ccb833f4b1",
+    "generation_id": "housing_real_estate-US-a4d86d0849c5e71f",
     "producer": "engine.market_os.macro_workspaces.housing",
     "rendered_at": null
   },
@@ -338,7 +338,9 @@
       "dx": null,
       "dy": null,
       "null_reason": "COMPUTATION_REFUSED",
-      "status": "ABSENT"
+      "status": "ABSENT",
+      "x_axis_id": null,
+      "y_axis_id": null
     },
     "prior_state": {
       "effective_date": "2026-09-03",
