@@ -73,6 +73,7 @@ BINDING_STATES: tuple[str, ...] = (
 )
 
 DEFAULT_HORIZON_DAYS = 63  # calendar days of forward catalyst lookahead
+REPO_ROOT = os.path.realpath(os.path.join(os.path.dirname(__file__), ".."))
 
 _KIND_TIEBREAK: tuple[str, ...] = (
     "earnings",
@@ -309,6 +310,11 @@ def _candidate_row(
 ) -> dict[str, Any]:
     lookahead = _lookahead_excluded(c, event_date)
     trusted = not _is_untrustworthy(c, event_date)
+    known_same_day = (
+        c.known_as_of is not None
+        and event_date is not None
+        and c.known_as_of == event_date
+    )
     row: dict[str, Any] = {
         "kind": c.kind,
         "date": c.date.isoformat(),
@@ -316,6 +322,7 @@ def _candidate_row(
         "artifact": c.artifact,
         "stale": c.stale,
         "known_as_of": c.known_as_of.isoformat() if c.known_as_of is not None else None,
+        "known_same_day": known_same_day,
         "in_window": in_window,
         "trusted": trusted,
         "exclusion_reason": "LOOKAHEAD_EXCLUDED" if lookahead else None,
@@ -581,7 +588,12 @@ def bind_event(
             ]
             if not in_window_list:
                 catalyst_state = UNBOUND_NO_CATALYST
-                if exp_date is not None and all(c.date > exp_date for c in pool):
+                relevant = [c for c in pool if c.date >= asof]
+                if (
+                    exp_date is not None
+                    and relevant
+                    and all(c.date > exp_date for c in relevant)
+                ):
                     catalyst_reason = "all_candidates_after_expiry"
                 else:
                     catalyst_reason = "no_candidate_in_window"
@@ -731,8 +743,8 @@ def write_links(path: os.PathLike[str] | str, links: Sequence[CatalystLink]) -> 
     path from config; refuses the repo ``data/`` tree. Tests pass tmp_path only.
     """
     out = os.fspath(path)
-    abs_out = os.path.abspath(out)
-    repo_data = os.path.abspath("data")
+    abs_out = os.path.realpath(out)
+    repo_data = os.path.join(REPO_ROOT, "data")
     if abs_out == repo_data or abs_out.startswith(repo_data + os.sep):
         raise ValueError("write_links refuses repo data/ paths (no data/ I/O)")
     parent = os.path.dirname(out)

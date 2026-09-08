@@ -14,6 +14,7 @@ from datetime import date, timedelta
 
 import pytest
 
+import engine.options_catalyst_link as ocl
 from engine.earnings_catalyst import STALE_AGE_TD as CANONICAL_STALE_AGE_TD
 from engine.options_catalyst_link import (
     AMBIGUOUS_MULTIPLE,
@@ -289,7 +290,7 @@ def test_catalyst_after_expiry_state_stable_when_stale_past_macro_present():
     ).record
     assert rec["binding_state"] == UNBOUND_NO_CATALYST
     assert rec["expiry"]["state"] == "OK"
-    assert rec["catalyst_reason"] == "no_candidate_in_window"
+    assert rec["catalyst_reason"] == "all_candidates_after_expiry"
     assert rec["expiry"]["dte_calendar_days"] == 42
 
 
@@ -590,6 +591,25 @@ def test_write_links_refuses_repo_data_path():
     assert not pathlib.Path("data/options/catalyst_links.jsonl").exists()
 
 
+def test_write_links_refuses_absolute_repo_data_from_foreign_cwd(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    dest = (
+        pathlib.Path(ocl.__file__).resolve().parent.parent / "data" / "xx_probe.jsonl"
+    )
+    with pytest.raises(ValueError, match="data/"):
+        write_links(str(dest), [])
+    assert not dest.exists()
+
+
+def test_write_links_accepts_tmp_path_from_foreign_cwd(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    dest = tmp_path / "links.jsonl"
+    n = write_links(dest, [])
+    assert n == 0
+    assert dest.exists()
+    assert dest.read_text(encoding="utf-8") == ""
+
+
 # ── B2 look-ahead ─────────────────────────────────────────────────────────────
 
 
@@ -626,6 +646,23 @@ def test_known_as_of_none_is_lookahead_excluded():
     assert rec["catalyst_reason"] == "LOOKAHEAD_EXCLUDED"
     assert rec["candidates"][0]["known_as_of"] is None
     assert rec["candidates"][0]["exclusion_reason"] == "LOOKAHEAD_EXCLUDED"
+
+
+def test_known_same_day_is_flagged_on_candidate_row():
+    rec = _bind(
+        _event(ts="2026-09-05T18:30:00Z"),
+        asof=date(2026, 9, 5),
+        catalysts={
+            "AAPL": [_earnings(date(2026, 9, 16), known_as_of=date(2026, 9, 5))],
+        },
+    ).record
+    assert rec["binding_state"] == BOUND
+    assert rec["catalyst_reason"] is None
+    row = rec["candidates"][0]
+    assert row["known_as_of"] == "2026-09-05"
+    assert row["known_same_day"] is True
+    assert row["exclusion_reason"] is None
+    assert row["trusted"] is True
 
 
 def test_asof_before_session_is_typed():
