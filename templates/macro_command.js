@@ -83,7 +83,7 @@
 
     var hash = '#' + resolvedId + (subtabId ? '/' + subtabId : '');
     if (location.hash !== hash) history.replaceState(null, '', hash);
-    if (focus !== false) target.focus();
+    if (focus !== false) (target.querySelector('.mc-panel-title') || target).focus();
   }
 
   /* ── sub-tabs: real role="tablist", roving tabindex — §6.2 item 4 ─────── */

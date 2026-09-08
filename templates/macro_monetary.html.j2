@@ -134,7 +134,7 @@
                                        '各工作区下方各自展示其带日期的读数。') }}</p>
       {%- endif %}
 
-      <ul class="mc-strip" data-mc-strip>
+      <ul class="mc-strip" data-mc-strip{{ ' hidden' if not strip else '' }}>
         {%- for chip in strip %}
         <li class="mc-chip mq-tone-{{ chip.tone }}{{ ' is-null' if chip.null else '' }}">
           <a class="mc-chip-link" href="#{{ chip.section }}" aria-describedby="{{ chip.id }}-help">
@@ -162,9 +162,9 @@
 
     {%- for s in sections %}
     <section class="mc-panel" id="{{ s.id }}" data-mc-panel="{{ s.id }}"
-             aria-labelledby="{{ s.id }}-h" tabindex="-1">
+             aria-labelledby="{{ s.id }}-h">
       <div class="mc-panel-head">
-        <h2 class="mc-panel-title" id="{{ s.id }}-h">{{ bl(s.label) }}</h2>
+        <h2 class="mc-panel-title" id="{{ s.id }}-h" tabindex="-1">{{ bl(s.label) }}</h2>
         {%- if s.question %}<p class="mc-panel-question">{{ bl(s.question) }}</p>{% endif %}
       </div>
 
@@ -194,15 +194,32 @@
       </div>
       {%- endif %}
 
-      <div class="mc-figure" data-mc-figure>
+      <div class="mc-figure{{ ' mc-figure-dests' if s.first else '' }}" data-mc-figure>
         {%- if s.first %}
-        <p class="mc-figure-building">{{ t("Today's read is not available yet. Open any section on the left for its full workspace.",
-                                             '今日读数暂不可用。点击左侧任一板块查看其完整工作区。') }}</p>
-        {# M2: the fourteen workspace deep links are the Overview's real
-           content — never hidden inside <details> as the only next action. #}
-        <ul class="mc-overview-links">
+        <p class="mc-figure-building">{{ t("Today's read is not available yet. Start with any workspace below.",
+                                             '今日读数暂不可用。可从下方任一工作区开始。') }}</p>
+        {# D3/D5: the fourteen workspaces ARE the Overview's content, and this is
+           their SINGLE source — a directory of destinations, not a bulleted link
+           list, and no longer repeated inside <details> (see the guard below).
+           Only `link.href` and `link.title` are used; `_detail_link()` publishes
+           nothing else. `link.state` is a forward hook for P2's per-workspace
+           date and renders nothing today. #}
+        <ul class="mc-dests">
           {%- for link in s.detail_links %}
-          <li><a href="{{ link.href }}">{{ bl(link.title) }}</a></li>
+          <li>
+            <a class="mc-dest" href="{{ link.href }}">
+              <span class="mc-dest-bar" aria-hidden="true"></span>
+              <span class="mc-dest-title">{{ bl(link.title) }}</span>
+              {{ m.answers(link.href) }}
+              {%- if link.get('state') and link.state.as_of %}
+              <span class="mc-dest-meta">
+                <span class="mc-asof-word">{{ t('Data to', '数据截至') }}</span>
+                <time datetime="{{ link.state.as_of }}">{{ bl(link.state.as_of_display) }}</time>
+              </span>
+              {%- endif %}
+              <span class="mc-dest-go" aria-hidden="true">→</span>
+            </a>
+          </li>
           {%- endfor %}
         </ul>
         {%- elif s.subtabs %}
@@ -240,6 +257,12 @@
       </div>
       {%- endif %}
 
+      {# D5: the Overview's fourteen destinations live exactly once, in the
+         visible directory above. Repeating them under a disclosure named
+         "Details, methods and sources" that carries neither methods nor sources
+         made a screen-reader user traverse all fourteen twice. Every other panel
+         keeps its own single-workspace disclosure, unchanged. #}
+      {%- if not s.first %}
       <details class="mc-details">
         <summary>{{ t('Details, methods and sources', '细节、方法与来源') }}</summary>
         <div class="mc-details-body">
@@ -253,6 +276,7 @@
           </ul>
         </div>
       </details>
+      {%- endif %}
     </section>
     {%- endfor %}
   </div>

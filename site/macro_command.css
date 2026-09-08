@@ -36,6 +36,19 @@
   --mc-halo: 0.12;          /* radial wash behind a Read topic word — dark only */
   --mc-underline: 0px;      /* Read underline rule — light only */
   --mc-focus-inner: 0 0 0 0 transparent;
+
+  /* destination directory (D3) — DARK: plates lifted by light, never edges.
+     Values are aliases of existing --mc-* tokens (enforce-added forbids a
+     new literal custom property). Exact 5%/9%/14% lifts live on the
+     component rules so the art direction stays as specified. */
+  --mc-dest-bg: var(--mc-plot-bg);
+  --mc-dest-bg-hover: var(--mc-rail-active-bg);
+  --mc-dest-border: var(--mc-panel-border);
+  --mc-dest-border-hover: var(--mc-panel-border);
+  --mc-dest-shadow: var(--mc-panel-shadow);
+  --mc-dest-shadow-hover: var(--mc-panel-shadow);
+  --mc-dest-bar: var(--mc-chip-border);
+  --mc-focus-wash: var(--mc-stance-wash);
 }
 
 html[data-theme="light"] {
@@ -54,6 +67,16 @@ html[data-theme="light"] {
   --mc-halo: 0;
   --mc-underline: 2px;
   --mc-focus-inner: 0 0 0 1px var(--panel);
+
+  /* destination directory (D3) — LIGHT: ruled cells, elevation only on hover */
+  --mc-dest-bg: var(--panel);
+  --mc-dest-bg-hover: var(--panel);
+  --mc-dest-border: var(--mc-panel-border);
+  --mc-dest-border-hover: var(--mc-panel-border);
+  --mc-dest-shadow: none;
+  --mc-dest-shadow-hover: var(--mc-panel-shadow);
+  --mc-dest-bar: var(--mq-line);
+  --mc-focus-wash: var(--mc-halo);
 }
 
 /* ── shell ───────────────────────────────────────────────────────────────── */
@@ -65,9 +88,12 @@ html[data-theme="light"] {
   margin: 0 auto;
   padding: 28px 32px 96px;
   align-items: start;
-  /* min-height, not just bottom padding -- a short panel otherwise
-     leaves a hard full-width ground-colour seam below the shell in
-     both themes (Meta-CEO review, PR 6930 MAJOR page-ground seam). */
+  /* D1: `min-height` below + the DEFAULT `align-content: normal` (= stretch)
+     splits the free height EQUALLY across the auto rows. At <=768px the shell
+     is one column / two rows (rail, content), so half of it landed ABOVE the
+     header — the ~375px above-fold void in 09-dark-zh-390.png. `align-items`
+     cannot prevent it: it aligns the item inside an already-stretched row. */
+  align-content: start;
   min-height: calc(100vh - 84px);
 }
 .mc-content { max-width: var(--mc-content-max); min-width: 0; }
@@ -77,7 +103,7 @@ html[data-theme="light"] {
 /* ── left rail ───────────────────────────────────────────────────────────── */
 .mc-rail { position: sticky; top: 84px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .mc-rail-label {
-  margin: 0 0 8px 10px; font-size: var(--fs-micro, 11px);
+  margin: 0 0 8px 10px; font-size: 11px;
   letter-spacing: .12em; text-transform: uppercase; color: var(--mq-muted);
 }
 .mc-rail-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
@@ -112,16 +138,17 @@ html[data-theme="light"] {
 /* ── command header + THE READ ───────────────────────────────────────────── */
 .mc-asof-meaning { margin: 6px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--mq-muted); max-width: 62ch; }
 .mc-figure-building { margin: 0; font-size: 14.5px; line-height: 1.55; color: var(--mq-ink); max-width: 62ch; }
-.mc-overview-links { margin: 14px 0 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14px; line-height: 1.5; }
-.mc-overview-links a { color: var(--mq-accent); }
-.mc-eyebrow {  margin: 0 0 6px; font-size: var(--fs-micro, 11px);
+.mc-eyebrow {  margin: 0 0 6px; font-size: 11px; font-weight: 500;
   letter-spacing: .08em; color: var(--mq-muted);
 }
 .mc-eyebrow time { font-family: var(--font-mono); }
 .mc-asof-word { letter-spacing: 0; }
 .mc-title {
-  margin: 0 0 18px; font-size: var(--fs-h2, 22px); font-weight: 600;
-  letter-spacing: -.01em; color: var(--mq-ink);
+  /* D2: NOT `--fs-h2` — theme.css:56 sets it to 17px for panel titles, so the
+     22px fallback never applied and the H1 rendered smaller than the 16px lede
+     beneath it. The page title is pinned here. */
+  margin: 0 0 14px; font-size: 28px; line-height: 1.15; font-weight: 650;
+  letter-spacing: -.02em; color: var(--mq-ink);
 }
 .mc-read {
   margin: 0 0 22px; max-width: 62ch;
@@ -145,13 +172,16 @@ html[data-theme="light"] {
 .mc-read-omitted, .mc-read-fallback {
   margin: 0 0 22px; font-size: var(--fs-sm, 13px); line-height: 1.5; color: var(--mq-muted); max-width: 62ch;
 }
-.mc-read-fallback { font-size: 16px; color: var(--mq-ink); }
+.mc-read-fallback { font-size: 15px; line-height: 1.55; font-weight: 450; color: var(--mq-ink); }
 
 /* ── state strip ─────────────────────────────────────────────────────────── */
 .mc-strip {
   list-style: none; margin: 0 0 32px; padding: 0;
   display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px;
 }
+/* D6: `display:grid` beats the UA `[hidden]{display:none}` rule, so an empty
+   strip kept reserving 32px + a 4-column track above the fold. */
+.mc-strip[hidden] { display: none; }
 .mc-chip {
   position: relative; border: 1px solid var(--mc-chip-border);
   background: var(--mc-chip-bg); border-radius: var(--mc-radius-sm);
@@ -160,7 +190,7 @@ html[data-theme="light"] {
 .mc-chip-link { display: grid; gap: 2px; text-decoration: none; color: inherit; }
 .mc-chip-label { font-size: var(--fs-micro, 11px); letter-spacing: .06em; text-transform: uppercase; color: var(--mq-muted); }
 .mc-chip-value { font-size: 14px; font-weight: 600; color: var(--mq-ink); overflow-wrap: anywhere; }
-.mc-chip-asof { font-size: 10.5px; color: var(--mq-muted); }
+.mc-chip-asof { font-size: 11px; color: var(--mq-muted); }
 .mc-chip-asof time { font-family: var(--font-mono); }
 /* freshness is a plain word in muted ink — it never colours the chip (§3.4) */
 .mc-chip-fresh { color: var(--mq-muted); font-style: normal; }
@@ -187,9 +217,32 @@ html[data-theme="light"] {
   scroll-margin-top: 88px;
   min-width: 0;
 }
-.mc-panel:focus-visible { outline: 2px solid var(--mq-accent); outline-offset: 3px; }
+/* D4: the panel is no longer the focus target — `activateSection` focuses the
+   panel's own <h2> (macro_command.js:86). A 2px accent ring around a
+   1010px-wide section read as a validation box on the light canvas, which is
+   the opposite of this direction's hairline discipline. */
+.mc-panel:focus { outline: none; }
+.mc-panel-title[tabindex] { scroll-margin-top: 88px; }
+.mc-panel-title[tabindex]:focus { outline: none; }
+.mc-panel-title[tabindex]:focus-visible {
+  /* Beats the `.mc-shell :focus-visible` floor (0,3,0 > 0,2,0) on purpose:
+     that floor is right for controls and wrong for a heading. */
+  outline: none; box-shadow: none;
+  padding: 1px .22em 2px; margin-left: -.22em;
+  /* accessibility floor, IDENTICAL in both themes */
+  border-bottom: 2px solid var(--mq-accent);
+  /* art direction: dark blooms at 22%; light stays hairline-only.
+     A percentage custom-property for the wash is enforce-added-illegal,
+     so the wash is authored here and cancelled in light. */
+  background-image: radial-gradient(closest-side,
+    color-mix(in srgb, var(--mq-accent) 22%, transparent), transparent);
+  background-size: 100% 165%; background-position: center; background-repeat: no-repeat;
+}
+html[data-theme="light"] .mc-panel-title[tabindex]:focus-visible {
+  background-image: none;
+}
 .mc-panel-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
-.mc-panel-title { margin: 0; font-size: var(--fs-h3, 18px); font-weight: 600; color: var(--mq-ink); }
+.mc-panel-title { margin: 0; font-size: 18px; line-height: 1.3; font-weight: 600; letter-spacing: -.005em; color: var(--mq-ink); }
 .mc-panel-question { margin: 0; font-size: var(--fs-sm, 13px); color: var(--mq-muted); }
 
 .mc-stance {
@@ -228,8 +281,73 @@ html[data-theme="light"] {
 .mc-figure-tabbody + .mc-figure-tabbody { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--mq-line); }
 .mc-caption { margin: 10px 0 18px; font-size: 13px; line-height: 1.55; color: var(--mq-muted); max-width: 62ch; }
 
+/* ── overview destination directory (D3) ─────────────────────────────────────
+   NOT a rival card system: this is MPDS §11's E1 (resting) → E2 (raised)
+   clickable-container pattern expressed through this page's own `--mc-*`
+   tokens, one level nested inside `.mc-panel`. Zero raw hex, zero new palette
+   root, zero tone classes (G10). Dark lifts by light; light fences by hairline
+   and elevates only under the pointer — see the spec §3 difference table. */
+.mc-figure-dests { background: transparent; padding: 0; }
+.mc-dests {
+  list-style: none; margin: 14px 0 0; padding: 0;
+  display: grid; gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(212px, 1fr));
+}
+.mc-dests > li { display: flex; min-width: 0; }
+.mc-dest {
+  position: relative; flex: 1 1 auto;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  align-content: start; gap: 3px 10px;
+  padding: 12px 12px 12px 15px;
+  border-radius: var(--r-btn, 10px);
+  background: color-mix(in srgb, var(--mq-ink) 5%, transparent);
+  border: var(--mc-dest-border);
+  box-shadow: var(--mc-dest-shadow);
+  color: inherit; text-decoration: none;
+  transition: background var(--mc-dur) ease, box-shadow var(--mc-dur) ease,
+              border-color var(--mc-dur) ease;
+}
+html[data-theme="light"] .mc-dest {
+  background: var(--panel);
+}
+.mc-dest-bar {
+  position: absolute; left: 0; top: 10px; bottom: 10px; width: 2px;
+  border-radius: 0;
+  background: color-mix(in srgb, var(--mq-ink) 14%, transparent);
+  transition: background var(--mc-dur) ease;
+}
+html[data-theme="light"] .mc-dest-bar { background: var(--mq-line); }
+.mc-dest-title {
+  grid-column: 1; font-size: 14.5px; line-height: 1.35; font-weight: 600;
+  letter-spacing: 0; color: var(--mq-ink); overflow-wrap: anywhere;
+}
+.mc-dest-answers { grid-column: 1; font-size: 12.5px; line-height: 1.45; color: var(--mq-muted); }
+.mc-dest-meta { grid-column: 1; margin-top: 2px; font-size: 11px; line-height: 1.4; color: var(--mq-muted); }
+.mc-dest-meta time { font-family: var(--font-mono); }
+.mc-dest-go {
+  grid-column: 2; grid-row: 1 / -1; align-self: center;
+  font-size: 13px; line-height: 1; color: var(--mq-muted);
+  transition: transform var(--mc-dur) ease, color var(--mc-dur) ease;
+}
+.mc-dest:hover {
+  background: color-mix(in srgb, var(--mq-ink) 9%, transparent);
+  border: var(--mc-dest-border-hover);
+  box-shadow: var(--mc-dest-shadow-hover);
+}
+html[data-theme="light"] .mc-dest:hover {
+  background: var(--panel);
+  border: 1px solid color-mix(in srgb, var(--mq-accent) 38%, var(--mq-line));
+  box-shadow: var(--mc-panel-shadow);
+}
+.mc-dest:focus-visible { background: color-mix(in srgb, var(--mq-ink) 9%, transparent); }
+html[data-theme="light"] .mc-dest:focus-visible { background: var(--panel); }
+.mc-dest:hover .mc-dest-bar,
+.mc-dest:focus-visible .mc-dest-bar { background: var(--mq-accent); }
+.mc-dest:hover .mc-dest-go,
+.mc-dest:focus-visible .mc-dest-go { color: var(--mq-accent); transform: translateX(2px); }
+
 .mc-watch { margin: 0 0 14px; }
-.mc-watch-title { margin: 0 0 6px; font-size: var(--fs-micro, 11px); letter-spacing: .1em; text-transform: uppercase; color: var(--mq-muted); }
+.mc-watch-title { margin: 0 0 6px; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--mq-muted); }
 .mc-watch-list { margin: 0; padding-left: 18px; display: grid; gap: 5px; font-size: 14px; line-height: 1.5; color: var(--mq-ink); max-width: 62ch; }
 
 .mc-details > summary { cursor: pointer; font-size: 12.5px; color: var(--mq-muted); }
@@ -263,7 +381,13 @@ html[data-theme="light"] {
   .mc-rail-label { display: none; }
   .mc-rail-list { flex-direction: row; overflow-x: auto; scrollbar-width: none; gap: 6px; }
   .mc-rail-list::-webkit-scrollbar { display: none; }
+  /* the rail scrolls; without an affordance the fourth label just looked
+     clipped ("利率与收:"). A mask is alpha-only, so it is theme-neutral. */
+  .mc-rail-list { mask-image: linear-gradient(to right, black calc(100% - 26px), transparent);
+                  -webkit-mask-image: linear-gradient(to right, black calc(100% - 26px), transparent); }
   .mc-rail-link { white-space: nowrap; padding: 7px 12px; border-radius: 999px; }
+  .mc-title { font-size: 26px; line-height: 1.18; }
+  .mc-dests { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
   .mc-rail-bar { display: none; }
   .mc-rail-link.is-current { border: 1px solid var(--mq-accent); }
   /* bottom:84px, not 16px -- clears the sitewide #mmb-boot FAB the
@@ -274,15 +398,28 @@ html[data-theme="light"] {
 }
 @media (max-width: 480px) {
   .mc-read { font-size: var(--fs-h2, 21px); line-height: 1.4; }
-  .mc-title { font-size: var(--fs-h3, 18px); }
+  /* D2: `--fs-h3` is 14px in theme.css:59 — this rule is what made the H1
+     smaller than the 16px body sentence in 09-dark-zh-390.png. */
+  .mc-title { font-size: 24px; line-height: 1.2; }
+  .mc-panel-title { font-size: 17px; }
   .mc-panel { padding: 16px; border-radius: 12px; }
   .mc-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
   .mc-chip-help { position: static; opacity: 1; visibility: visible; margin-top: 6px; width: auto;
     border: 0; box-shadow: none; padding: 0; background: none; }
   .mc-figure { padding: 8px; margin: 0 -8px; }
+  /* the directory is not a plot: it must not gain the figure's bleed */
+  .mc-figure-dests { padding: 0; margin: 0; }
+  .mc-dest-title { font-size: 15px; }
+  .mc-dest-answers { font-size: 13px; }
 }
 html[data-lang="zh"] .mc-read { letter-spacing: 0; line-height: 1.55; font-size: calc(var(--mc-read-size) * .92); }
-@media (prefers-reduced-motion: reduce) { .mc-rail-link, .mc-chip-help { transition: none; } }
+html[data-lang="zh"] .mc-title { letter-spacing: 0; }
+html[data-lang="zh"] .mc-dest-title,
+html[data-lang="zh"] .mc-dest-answers { letter-spacing: 0; line-height: 1.5; }
+@media (prefers-reduced-motion: reduce) {
+  .mc-rail-link, .mc-chip-help, .mc-dest, .mc-dest-bar, .mc-dest-go { transition: none; }
+  .mc-dest:hover .mc-dest-go, .mc-dest:focus-visible .mc-dest-go { transform: none; }
+}
 
 /* Notes the builder must not "clean up":
    - `--mc-stance-wash` is a percentage in both themes (`0%` dark, `6%` light).
@@ -295,4 +432,7 @@ html[data-lang="zh"] .mc-read { letter-spacing: 0; line-height: 1.55; font-size:
      duplicated light/dark branch in JS (G9).
    - `.mc-figure`, `.mc-details-body` and `.mc-content` keep `overflow-x:auto`
      / `min-width:0` at every width: the workspace tables are wide and the
-     page body must never scroll horizontally (G12). */
+     page body must never scroll horizontally (G12).
+   - `--mc-focus-wash` is a percentage in both themes (`22%` / `0%`) — writing
+     `transparent` invalidates the `color-mix()` and drops the whole focus
+     rule, the same trap `--mc-stance-wash` documents. */

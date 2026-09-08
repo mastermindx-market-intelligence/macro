@@ -369,9 +369,23 @@ def test_overview_offers_visible_workspace_links_and_honest_null_copy(
     assert "Today&#39;s read is not available yet" in body or "Today's read is not available yet" in body
     assert "今日读数暂不可用" in body
     assert "being built" not in body
-    assert 'class="mc-overview-links"' in body
+    assert 'class="mc-dests"' in body
+    assert body.count('class="mc-dest"') == 14
+    assert '<details class="mc-details">' not in body
     for page in builder.SUITE_PAGES:
         assert f'href="{page.output}"' in body, page.workspace_id
+    authored = built_hub[built_hub.index('<main class="mc-shell"'):]
+    for panel in re.finditer(
+            r'<section class="mc-panel" id="([^"]+)".*?(?=<section class="mc-panel"|</div>\s*</main>)',
+            authored, re.S):
+        section_id, html = panel.group(1), panel.group(0)
+        details_count = html.count('<details class="mc-details">')
+        if section_id == "overview":
+            assert details_count == 0
+        else:
+            assert details_count == 1, section_id
+    assert re.search(r'<h2 class="mc-panel-title"[^>]*tabindex="-1"', authored)
+    assert not re.search(r'<section class="mc-panel"[^>]*tabindex="-1"', authored)
 
 
 def test_p1_shell_does_not_enable_fragment_fetch(
