@@ -24,7 +24,7 @@
         "chain_reader": {"const": "engine.transmission_chains.load_chains()"},
         "store_meta": {"anyOf": [{"type": "null"}, {"type": "object"}]},
         "engine_version": {"const": "market_ontology.exposure_map.v1"},
-        "belief_collapse": {"const": "max belief_time <= asof per edge_id; ties on computed_at then src then dst"}
+        "belief_collapse": {"const": "max belief_time <= asof per edge_id (null belief_time never eligible); ties on computed_at then src then dst"}
       }
     }
   },
@@ -44,7 +44,8 @@
           "enum": [
             "SHOCK_UNKNOWN", "NO_THEMES_DECLARED", "NO_THEME_EDGES", "NO_MEMBERSHIP_YET",
             "RIGHTS_SUPPRESSED", "IDENTITY_UNRESOLVED", "STORE_UNAVAILABLE", "NO_ETF_EDGES",
-            "BELIEF_AFTER_ASOF", "IDENTITY_COLLISION", "UNKNOWN_RIGHTS_FAMILY"
+            "BELIEF_AFTER_ASOF", "IDENTITY_COLLISION", "UNKNOWN_RIGHTS_FAMILY",
+            "BELIEF_TIME_UNKNOWN", "EDGE_ID_MISSING"
           ]
         },
         "reason": {"$ref": "#/$defs/bilingual"},

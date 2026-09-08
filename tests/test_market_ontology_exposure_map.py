@@ -617,7 +617,10 @@ def test_collapse_tie_on_same_belief_and_computed_at_is_deterministic():
     m2 = _compose(FakeStore([b, a]), _spec(["ltheme:finviz:x"]))
     assert json.dumps(to_json(m1)) == json.dumps(to_json(m2))
     assert [c["company_node_id"] for c in m1.themes[0].companies] == ["co:us:B"]
-    law = "max belief_time <= asof per edge_id; ties on computed_at then src then dst"
+    law = (
+        "max belief_time <= asof per edge_id (null belief_time never eligible); "
+        "ties on computed_at then src then dst"
+    )
     assert m1.provenance["belief_collapse"] == law
     const = _schema()["properties"]["provenance"]["properties"]["belief_collapse"]["const"]
     assert const == law
@@ -760,3 +763,152 @@ def test_production_compose_has_no_allow_all_default():
     assert "assert_public_emission_allowed" in fallback
     assert "_allow_all" not in fallback
     assert "_allow_all" not in MODULE_PATH.read_text()
+
+
+def test_unknown_ltheme_prefix_fails_closed_on_real_gate():
+    """NM4: an unregistered ltheme: prefix is RIGHTS_SUPPRESSED /
+    UNKNOWN_RIGHTS_FAMILY, not NO_MEMBERSHIP_YET. Twin of the basket-plane gate."""
+    edges = [
+        edge("e1", "EXPRESSES", "ltheme:newvendor:y", "theme:g"),
+        edge("e2", "MEMBER_OF", "co:us:LEAK2", "ltheme:newvendor:y"),
+    ]
+    m = compose_exposure_map(
+        FakeStore(edges), _spec(["theme:g"]), asof="2026-06-01",
+        chain_loader=_chain_loader,
+    )
+    theme = m.themes[0]
+    assert theme.state == "RIGHTS_SUPPRESSED"
+    assert theme.companies is None
+    assert theme.company_count is None
+    assert theme.unavailable["code"] == "UNKNOWN_RIGHTS_FAMILY"
+    dumped = json.dumps(to_json(m))
+    assert "co:us:LEAK2" not in dumped
+    assert "has not been recorded" not in theme.unavailable["reason"]["en"]
+    jsonschema.validate(to_json(m), _schema())
+
+
+def test_null_belief_time_is_never_eligible():
+    """m1: a row whose belief date is unknown is not knowable at any as-of."""
+    from engine.market_ontology.exposure_map import _REASONS
+
+    enum = set(_schema()["$defs"]["unavailable"]["properties"]["code"]["enum"])
+    assert set(_REASONS) == enum
+    assert "BELIEF_TIME_UNKNOWN" in enum
+
+    edges = [
+        edge("e1", "MEMBER_OF", "co:us:NB", "theme:g",
+             belief_time=None, valid_from="1800-01-01"),
+    ]
+    for asof in ("1900-01-01", "2027-01-01"):
+        m = _compose(FakeStore(edges), _spec(["theme:g"]), asof=asof)
+        theme = m.themes[0]
+        dumped = json.dumps(to_json(m))
+        assert "co:us:NB" not in dumped
+        assert theme.companies is None
+        codes = {a["code"] for a in theme.abstentions}
+        if theme.unavailable is not None:
+            codes.add(theme.unavailable["code"])
+        assert "BELIEF_TIME_UNKNOWN" in codes
+        jsonschema.validate(to_json(m), _schema())
+
+
+def test_null_edge_id_is_typed_abstention():
+    """m2: a missing edge_id is EDGE_ID_MISSING, counted, not a silent drop."""
+    edges = [
+        edge(None, "MEMBER_OF", "co:us:NAN", "theme:g"),
+        edge("e2", "MEMBER_OF", "co:us:OK", "theme:g"),
+    ]
+    m = _compose(FakeStore(edges), _spec(["theme:g"]))
+    theme = m.themes[0]
+    assert theme.state == "OK"
+    assert [c["company_node_id"] for c in theme.companies] == ["co:us:OK"]
+    assert any(a["code"] == "EDGE_ID_MISSING" for a in theme.abstentions)
+    dumped = json.dumps(to_json(m))
+    assert dumped.count("EDGE_ID_MISSING") >= 1
+    jsonschema.validate(to_json(m), _schema())
+
+
+def test_collapse_matches_store_latest_belief_on_single_belief_and_differs_on_two(
+    monkeypatch,
+):
+    """m3: composer collapse equals store latest_belief on one belief per
+    edge_id; a two-belief edge recollapses at the caller as-of and differs."""
+    import pandas as pd
+
+    from engine.market_ontology.exposure_map import _collapse_and_filter_edges
+    from engine.theme_graph import store as tg_store
+
+    def _pairs(frame_or_map):
+        if isinstance(frame_or_map, dict):
+            return {
+                eid: (row["src"], row["dst"], row["belief_time"])
+                for eid, row in frame_or_map.items()
+            }
+        out = {}
+        for _, row in frame_or_map.iterrows():
+            bt = row["belief_time"]
+            if hasattr(bt, "isoformat"):
+                bt = bt.isoformat()
+            else:
+                bt = None if bt is None else str(bt)[:10]
+            out[str(row["edge_id"])] = (row["src"], row["dst"], bt)
+        return out
+
+    single = [
+        edge("e1", "MEMBER_OF", "co:us:A", "theme:g",
+             belief_time="2026-01-01", computed_at="2026-01-01T00:00:00Z"),
+    ]
+
+    def _read_single(_path, _columns):
+        return pd.DataFrame(single)
+
+    monkeypatch.setattr(tg_store, "_read", _read_single)
+    store_single = tg_store.read_edges(latest_belief=True)
+    collapsed_single, _ = _collapse_and_filter_edges(
+        single, datetime.date(2026, 6, 1),
+    )
+    assert _pairs(collapsed_single) == _pairs(store_single)
+
+    two = [
+        edge("e1", "MEMBER_OF", "co:us:OLD", "theme:g",
+             belief_time="2026-01-01", computed_at="2026-01-01T00:00:00Z"),
+        edge("e1", "MEMBER_OF", "co:us:NEW", "theme:g",
+             belief_time="2026-08-01", computed_at="2026-08-01T00:00:00Z"),
+    ]
+
+    def _read_two(_path, _columns):
+        return pd.DataFrame(two)
+
+    monkeypatch.setattr(tg_store, "_read", _read_two)
+    store_two = tg_store.read_edges(latest_belief=True)
+    early, _ = _collapse_and_filter_edges(two, datetime.date(2026, 3, 1))
+    late, _ = _collapse_and_filter_edges(two, datetime.date(2026, 9, 1))
+
+    store_pairs = _pairs(store_two)
+    assert store_pairs == {"e1": ("co:us:NEW", "theme:g", "2026-08-01")}
+    assert _pairs(early) == {"e1": ("co:us:OLD", "theme:g", "2026-01-01")}
+    assert _pairs(late) == store_pairs
+    assert _pairs(early) != store_pairs
+
+
+def test_theme_level_rights_refusal_omits_clock_abstentions():
+    """m4: a rights-refused theme omits BELIEF_AFTER_ASOF so a later-belief
+    edge cannot leak through the abstention list of a family we may not show."""
+    edges = [
+        edge("e1", "MEMBER_OF", "co:us:A", "ltheme:finviz:z",
+             belief_time="2026-01-01", computed_at="2026-01-01T00:00:00Z"),
+        edge("e1", "MEMBER_OF", "co:us:A", "ltheme:finviz:z",
+             belief_time="2026-12-01", computed_at="2026-12-01T00:00:00Z"),
+    ]
+    m = compose_exposure_map(
+        FakeStore(edges), _spec(["ltheme:finviz:z"]), asof="2026-06-01",
+        chain_loader=_chain_loader,
+    )
+    theme = m.themes[0]
+    assert theme.state == "RIGHTS_SUPPRESSED"
+    assert theme.companies is None
+    assert theme.unavailable["code"] == "RIGHTS_SUPPRESSED"
+    assert not any(a["code"] == "BELIEF_AFTER_ASOF" for a in theme.abstentions)
+    dumped = json.dumps(to_json(m))
+    assert "co:us:A" not in dumped
+    jsonschema.validate(to_json(m), _schema())

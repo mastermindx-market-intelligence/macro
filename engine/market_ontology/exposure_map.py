@@ -43,7 +43,8 @@ _EDGE_READER = "engine.theme_graph.store.read_edges(latest_belief=False)"
 _IDENTITY_READER = "engine.theme_graph.store.read_identity_resolution(latest=True)"
 _CHAIN_READER = "engine.transmission_chains.load_chains()"
 _BELIEF_COLLAPSE = (
-    "max belief_time <= asof per edge_id; ties on computed_at then src then dst"
+    "max belief_time <= asof per edge_id (null belief_time never eligible); "
+    "ties on computed_at then src then dst"
 )
 
 # --- §3.1 id grammars (closed allowlist) -----------------------------------------
@@ -174,6 +175,14 @@ _REASONS: dict[str, tuple[str, str]] = {
     "UNKNOWN_RIGHTS_FAMILY": (
         "This source is not a reviewed family, so its company list cannot be shown here.",
         "该来源不属于已审核的数据族，其公司名单在此处不可展示。",
+    ),
+    "BELIEF_TIME_UNKNOWN": (
+        "We do not know when this link became known, so it cannot be used for this date.",
+        "我们不知道该关联是何时被确认的，因此无法用于此日期。",
+    ),
+    "EDGE_ID_MISSING": (
+        "This link has no identifier, so it cannot be used.",
+        "该关联没有标识符，因此无法使用。",
     ),
 }
 
@@ -400,24 +409,43 @@ def _collapse_and_filter_edges(
     the abstention — not whichever row happened to arrive first.
     """
     by_id: dict[str, list[Mapping[str, Any]]] = {}
+    abstentions: list[dict[str, Any]] = []
     for row in sorted(raw_rows, key=_edge_row_order_key):
         eid = row.get("edge_id")
         if _is_null(eid):
+            dst = "" if _is_null(row.get("dst")) else str(row.get("dst"))
+            entry = _unavailable("EDGE_ID_MISSING", subject_id=None)
+            entry["_dst"] = dst
+            abstentions.append(entry)
             continue
         by_id.setdefault(str(eid), []).append(row)
 
     in_view: dict[str, dict[str, Any]] = {}
-    abstentions: list[dict[str, Any]] = []
 
     for eid, rows in by_id.items():
         eligible: list[Mapping[str, Any]] = []
         future: list[Mapping[str, Any]] = []
+        unknown: list[Mapping[str, Any]] = []
         for row in rows:
             belief = _date(row.get("belief_time"))
-            if belief is not None and belief > asof:
+            if belief is None:
+                # Knowability is untyped: a null belief_time is never eligible
+                # at any as-of (fail closed). This is what makes
+                # "max belief_time <= asof per edge_id" true by construction.
+                unknown.append(row)
+            elif belief > asof:
                 future.append(row)
             else:
                 eligible.append(row)
+        if unknown:
+            dsts = sorted({
+                ("" if _is_null(row.get("dst")) else str(row.get("dst")))
+                for row in unknown
+            })
+            for dst in dsts:
+                entry = _unavailable("BELIEF_TIME_UNKNOWN", subject_id=eid)
+                entry["_dst"] = dst
+                abstentions.append(entry)
         if future:
             dsts = sorted({
                 ("" if _is_null(row.get("dst")) else str(row.get("dst")))
@@ -512,15 +540,22 @@ def _walk_theme(
                 ))
 
     # Path C — local_theme_bridge (2 hops), only for canonical theme:* ids.
+    # Rights before grammar: an ltheme: id whose vendor is not a registered
+    # rights family is UNKNOWN_RIGHTS_FAMILY, same as the basket plane. The
+    # §3.1 grammar skip must not fire first and rewrite that as
+    # NO_MEMBERSHIP_YET (a false data fact). A registered vendor whose
+    # membership is genuinely unrecorded is the only path that sentence is true.
     if _is_canonical_theme_id(theme_id):
         for edge in expresses_by_dst.get(theme_id, []):
             ltheme = edge.get("src")
-            if not _is_local_theme_id(ltheme):
+            if not isinstance(ltheme, str) or not ltheme.startswith("ltheme:"):
                 continue
             family = family_resolver(ltheme)
             refused = _emission_refused(ltheme, family, assert_allowed)
             if refused is not None:
                 abstentions.append(refused)
+                continue
+            if not _is_local_theme_id(ltheme):
                 continue
             lthemes_used.add(ltheme)
             for member_edge in member_of_by_dst.get(ltheme, []):
