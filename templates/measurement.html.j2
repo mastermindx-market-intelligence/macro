@@ -647,7 +647,7 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
   text-transform:uppercase;margin:0 0 8px}
 .ric-gates{display:flex;flex-direction:column;gap:8px;margin:0 0 4px}
 .ric-gate{font-size:.78rem;line-height:1.55;display:flex;align-items:flex-start;gap:8px}
-.ric-gate::before{content:"";flex:0 0 8px;width:8px;height:8px;margin-top:.45em;border-radius:var(--r-pill)}
+.ric-gate::before{content:"";flex:0 0 8px;width:8px;height:8px;margin-top:.45em;border-radius:var(--r-pill,999px)}
 .ric-gate.ric-g-met::before{background:var(--ink-ok)}
 .ric-gate.ric-g-not::before{background:var(--act)}
 .ric-gate.ric-g-not .ric-g-lead{font-weight:600}
@@ -2125,6 +2125,7 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
     {%- elif u in ('months', 'events', 'episodes', 'draws', 'tickers') -%}{{ v }}{{ ric_unit(u) }}
     {%- elif u == 'probability' and v is number -%}
       {%- if v < 0.0001 -%}<span class="l-en">below 0.0001</span><span class="l-zh">小于 0.0001</span>{{ ric_unit(u) }}
+      {%- elif v > 0.9999 -%}<span class="l-en">above 0.9999</span><span class="l-zh">大于 0.9999</span>{{ ric_unit(u) }}
       {%- else -%}{{ '%.4f'|format(v) }}{{ ric_unit(u) }}
       {%- endif -%}
     {%- elif v is number -%}{{ '%.4f'|format(v) }}{{ ric_unit(u) }}
@@ -2179,6 +2180,13 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
     'PC2': ('Estimators unbiased', '估计量无偏'),
     'PC3': ('Synthetic control not noisier', '合成对照噪声不高于基准'),
     'F1': ('Watch condition holds', '观察条件成立'),
+  } %}
+  {# Glance questions never carry an internal study slug. Machine names stay in Receipts. #}
+  {% set ric_question_plain = {
+    'HINCL2': (
+      'What return pattern was recorded around Stock Connect inclusion announcements in this frozen event-study run?',
+      '这次冻结的事件研究记录了互联互通纳入公告前后怎样的收益路径？',
+    ),
   } %}
 
   <section class="mh-section" id="ric-section">
@@ -2252,9 +2260,15 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
             </span>
           </div>
 
+          {%- set qen = card.question.en -%}
+          {%- set qzh = card.question.zh or card.question.en -%}
+          {%- if 'HINCL2' in qen or 'HINCL2' in qzh -%}
+            {%- set qen = ric_question_plain['HINCL2'][0] -%}
+            {%- set qzh = ric_question_plain['HINCL2'][1] -%}
+          {%- endif -%}
           <h3 class="ric-q">
-            <span class="l-en">{{ card.question.en|e }}</span>
-            <span class="l-zh">{{ (card.question.zh or card.question.en)|e }}</span>
+            <span class="l-en">{{ qen|e }}</span>
+            <span class="l-zh">{{ qzh|e }}</span>
           </h3>
           <p class="ric-estimand">
             <span class="l-en">{{ card.estimand.en|e }}</span>
@@ -2441,6 +2455,8 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
                 <dt><span class="l-en">Run</span><span class="l-zh">运行</span></dt><dd>{{ card.study_run_id }}</dd>
                 <dt><span class="l-en">Result</span><span class="l-zh">选定结果</span></dt><dd>{{ card.selected_result_id }}</dd>
                 <dt><span class="l-en">Adapter</span><span class="l-zh">适配器</span></dt><dd>{{ card.adapter_version }}</dd>
+                <dt><span class="l-en">Owner question</span><span class="l-zh">所有者问题</span></dt>
+                <dd><span class="l-en">{{ card.question.en|e }}</span> / <span class="l-zh">{{ (card.question.zh or card.question.en)|e }}</span></dd>
                 <dt><span class="l-en">Method</span><span class="l-zh">方法版本</span></dt><dd>{{ card.method_revision }}</dd>
                 {% for a in card.source_artifacts + card.code_identity %}
                 <dt>

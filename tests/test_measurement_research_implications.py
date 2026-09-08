@@ -174,6 +174,8 @@ def _expected_metric_value(metric: dict) -> str:
     if unit == "probability" and isinstance(value, (int, float)) and not isinstance(value, bool):
         if value < 0.0001:
             return "below 0.0001"
+        if value > 0.9999:
+            return "above 0.9999"
         return f"{value:.4f}"
     if isinstance(value, (int, float)) and not isinstance(value, bool):
         return f"{value:.4f}"
@@ -243,6 +245,19 @@ def test_visual_evidence_receipt_binds_the_template_and_eight_rest_cells():
         assert state["applied_theme"] == state["theme"]
         assert state["applied_locale"] == state["locale"]
         assert state["viewport_width"] == (1440 if state["viewport"] == "desktop" else 390)
+    capture_sha = manifest.get("capture_sha") or (manifest.get("target") or {}).get("resolved_sha_or_none")
+    assert isinstance(capture_sha, str) and re.fullmatch(r"[0-9a-f]{40}", capture_sha), (
+        "manifest must bind frames to a committed code sha"
+    )
+    assert manifest.get("generated_at"), "manifest must record generated_at"
+    mobile_metrics = measurement.get("metrics", {}).get("by_viewport", {}).get("mobile", {})
+    mobile_widths = {state["width"] for state in rest if state["viewport"] == "mobile"}
+    if mobile_widths != {390}:
+        assert mobile_metrics.get("horizontal_overflow") is True
+        note = manifest.get("mobile_width_truth") or ""
+        assert "imce_prospective_observation" in note
+        assert "outside" in note.lower()
+        assert "#ric-section" in note
     samples = manifest.get("rail_samples", {}).get("frames", [])
     assert samples, "rail_samples.frames must record mode + mechanism per state"
     by_key = {
@@ -1018,19 +1033,110 @@ def test_glance_gate_is_plain_word_result(contract, real_section):
     assert "F1 证伪条件成立" in receipts
 
 
+def test_glance_question_does_not_carry_internal_study_slug(real_section):
+    """MINOR 3: HINCL2 is machine text; the glance question uses the gloss map."""
+    glance = _glance_outside_details(real_section)
+    glance_text = re.sub(r"<[^>]+>", "", glance)
+    assert "HINCL2" not in glance_text
+    assert "Stock Connect inclusion announcements" in glance_text
+    assert "互联互通纳入公告" in glance_text
+    es = _isolate_card(real_section, "event_study")
+    assert "HINCL2" in _isolate_receipts(es)
+
+
 def test_glance_gate_dot_uses_existing_tokens():
     """One 8px token dot per row: --ink-ok when met, --act when not met."""
     css = (REPO / "templates" / "measurement.html.j2").read_text(encoding="utf-8")
     style_end = css.find("</style>")
     ric_css = css[css.find(".ric-gates{") : style_end]
     assert ".ric-gate::before{content:\"\";flex:0 0 8px;width:8px;height:8px;" in ric_css
-    assert "border-radius:var(--r-pill)" in ric_css[ric_css.find(".ric-gate::before") :]
+    before = ric_css[ric_css.find(".ric-gate::before") :]
+    assert "border-radius:var(--r-pill,999px)" in before
+    assert "border-radius:var(--r-pill)}" not in before.split("}", 1)[0] + "}"
     assert ".ric-gate.ric-g-met::before{background:var(--ink-ok)}" in ric_css
     assert ".ric-gate.ric-g-not::before{background:var(--act)}" in ric_css
     assert ".ric-gate.ric-g-not .ric-g-lead{font-weight:600}" in ric_css
     assert "ric-gate-m" not in ric_css
     assert "ric-gate-pass" not in ric_css
     assert "ric-gate-fail" not in ric_css
+
+
+def test_committed_gate_dot_is_a_circle_on_the_capture_sha_frame():
+    """Rendered geometry: the 8x8 gate dot is a circle, not a square, at capture_sha."""
+    import yaml
+    from PIL import Image
+
+    receipt = yaml.safe_load(
+        (REPO / "mockups/evidence/f10x1-research-implication-card/EVIDENCE.yml").read_text(
+            encoding="utf-8"
+        )
+    )
+    manifest_path = REPO / receipt["manifest"]
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    capture_sha = manifest.get("capture_sha") or (manifest.get("target") or {}).get(
+        "resolved_sha_or_none"
+    )
+    assert isinstance(capture_sha, str) and re.fullmatch(r"[0-9a-f]{40}", capture_sha)
+    measurement = next(
+        page
+        for page in manifest["pages"]
+        if str(page.get("route", "")).endswith("measurement.html")
+    )
+    state = next(
+        row
+        for row in measurement["states"]
+        if row.get("captured")
+        and row.get("viewport") == "desktop"
+        and row.get("locale") == "en"
+        and row.get("theme") == "dark"
+        and row.get("force_state") is None
+    )
+    image = Image.open(manifest_path.parent / state["file"]).convert("RGB")
+    pixels = image.load()
+    width, height = image.size
+    hint = next(
+        (
+            row
+            for row in manifest.get("rail_samples", {}).get("frames", [])
+            if row.get("quality") == "DIAGNOSTIC_FAILED"
+            and row.get("theme") == "dark"
+            and row.get("locale") == "en"
+            and row.get("file") == state["file"]
+        ),
+        None,
+    )
+    y0 = max(0, int(hint["y0"]) - 40) if hint else 0
+    y1 = min(height - 7, int(hint["y1"]) + 800) if hint else height - 7
+    x0 = max(0, int(hint["x0"]) - 40) if hint else 0
+    x1 = min(width - 7, 360)
+    circle_profile = (2, 6, 6, 8, 8, 6, 6, 2)
+    found = []
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            rows = []
+            lit_total = 0
+            for dy in range(8):
+                lit = 0
+                for dx in range(8):
+                    r, g, b = pixels[x + dx, y + dy]
+                    if max(r, g, b) - min(r, g, b) < 40:
+                        continue
+                    if (g >= 90 and g - r >= 20 and g - b >= 10) or (
+                        r >= 160 and r - g >= 40 and r - b >= 20
+                    ):
+                        lit += 1
+                rows.append(lit)
+                lit_total += lit
+            if tuple(rows) == circle_profile and lit_total >= 40:
+                found.append((x, y))
+                if len(found) >= 2:
+                    break
+        if len(found) >= 2:
+            break
+    assert found, (
+        f"no 8x8 circle (row widths {circle_profile}) on {state['file']} "
+        f"window=({x0},{y0})-({x1},{y1}) at capture_sha={capture_sha}"
+    )
 
 
 def test_probability_never_prints_a_rounded_zero():
@@ -1064,6 +1170,12 @@ def test_probability_never_prints_a_rounded_zero():
                 "value": 0.0123,
             },
             {
+                "code": "p_near_one",
+                "label": {"en": "Near-one p", "zh": "接近 1 的 p"},
+                "unit": "probability",
+                "value": 0.99996,
+            },
+            {
                 "code": "p_absent",
                 "label": {"en": "Absent p", "zh": "缺失 p"},
                 "unit": "probability",
@@ -1076,6 +1188,7 @@ def test_probability_never_prints_a_rounded_zero():
     below_fig = _metric_markup(section, "p_below_floor")
     above_fig = _metric_markup(section, "p_above_floor")
     ordinary_fig = _metric_markup(section, "p_ordinary")
+    near_one_fig = _metric_markup(section, "p_near_one")
     absent_fig = _metric_markup(section, "p_absent")
     assert "below 0.0001" in tiny_fig
     assert "小于 0.0001" in tiny_fig
@@ -1091,6 +1204,10 @@ def test_probability_never_prints_a_rounded_zero():
     assert "1.2e-04" not in above_fig
     assert "0.0123" in ordinary_fig
     assert "0.0000" not in ordinary_fig
+    assert "above 0.9999" in near_one_fig
+    assert "大于 0.9999" in near_one_fig
+    assert "1.0000" not in near_one_fig
+    assert "0.99996" not in near_one_fig
     assert '<span class="ric-null">—</span>' in absent_fig
 
 
