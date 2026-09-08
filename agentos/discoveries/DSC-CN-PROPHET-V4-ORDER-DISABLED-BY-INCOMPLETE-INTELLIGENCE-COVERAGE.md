@@ -44,100 +44,173 @@ scope:
 confidence: verified
 ---
 
-# Resolved diagnosis and bounded implementation
+# Current recovery checkpoint — September 8, 2026
 
-The initial assessment at eb9e91961ddc4f3043d0dad358602525e66eccda correctly
-identified four gaps but did not establish their identities. This continuation
-resolves that specific uncertainty; it does not erase the first investigation's
-failed optional probe or claim that blocked work was executed.
+This checkpoint supersedes prior next-action prose in this record. The original
+forensic claim above remains date-specific. Earlier complete records are retained
+at 93ba34ba53d001607b0d84b059a3b6756190a6f3; do not replay completed diagnosis or
+implementation from their historical next actions.
 
-The same four missing names occur on 12 persisted sessions from August 20 through
-September 7. They have leading-desk evidence (altdata), a measured signal core
-of 0.0, and no remaining-edge input. The current board therefore falls back over
-all 1,620 ranked records despite 1,616 measured records; none of the four is raw
-eligible. Their candidate records contain computed price/technical fields, but
-that is not a substitute for original raw price-vintage evidence.
+Current protected procedure is Mastermind
+7afc66410ac5935f5d4db52377d3a7de5e770df4, with same-commit compatible Skillpack
+1.0.1/bootstrap1 and byte-identical required procedure/companion laws.
+The outcome remains a useful four-market rotation-to-company-to-entry-to-management
+journey, not merely completion of the source fixes below.
 
-The original breadth-cache bytes were not available in the committed source
-or the inspected primary data directory. Do not manufacture historical prices,
-write guessed zero scores, drop four names, or quietly change the coverage
-population. The measured-zero value after a genuine price repair must come from
-the unchanged scorer, not imputation.
+## Source capability ledger
 
-## Source repair exists, not live acceptance
+### China intelligence input parity — BUILT_NOT_PROVEN
 
-PR6992, operation prophet-cn-interest-input-parity-20260908-sol-001, stages an
-optional, validated raw-universe price fallback in CII and the real builder
-input wiring. First source head2afdd2290fc1bb49fcbbdb295ef1799e4ea8da97:
-three files, baseline21 passes, pre-fix21 new failures/21 passes, post-fix42
-CII passes and159 across five relevant suites. It remains Draft/HOLD. Always
-read its current head, subsequent review and test evidence; this historical
-first-head receipt is not later release authority.
+Macro PR6992, operation prophet-cn-interest-input-parity-20260908-sol-001,
+head a51bae222eedd4c53f4101998f3a3c4bc103f554,
+tree 037627b311e54ae1cb50cb047f6aba720ff3e2df, remains the existing three-file
+source carrier. It supplies already-selected builder raw prices only when the
+existing search/deep readers cannot produce a trajectory. Existing covered-input
+precedence, formulas, coverage law and entry gates remain unchanged.
 
-Existing covered trajectories, score formulas, coverage floors and entry gates
-are unchanged. Restoring a missing input MAY globally activate intelligence
-ordering. An unchanged formula therefore does not imply unchanged production
-behavior. No production activation, improved return or natural four-row repair
-proof is claimed.
+169 author tests pass, no skips; the independent static semantic review passed.
+The first review's Boolean-to-price coercion and one-input exception erasing a
+healthy neighbor were reproduced and repaired through full build_interest_map
+regressions. Those repairs must not be rediscovered or replaced.
 
-## Existing recovery boundary recovered
+Restoring input coverage can activate a materially different global ordering.
+Unchanged formulas do not imply unchanged serving behavior. No natural-run,
+entitled served-order, original historical breadth-byte or return-improvement
+proof is claimed. Draft/HOLD, no merge or production activation from this record.
 
-China recovery #6866 and sticky R0 #6871 already exist. R0's replay was rejected
-for false-proof/chronology/denominator issues and remains with its exact native
-writer. Its R4 tripwire is a warning/proposal plus explicit serving adjudication,
-not an automatic ranker-revert actuator. Do not accept R0 from this data repair.
+### Waiting instruction truth — BUILT_NOT_PROVEN
 
-The separate chronology repair #6567 is already merged as
-c968530b5e0e03632fd8d4e06611b3acddb0ece9. Do not rebuild it from stale issue
-prose. Other component owners and the current four-market cockpit/Entry Truth
-programs remain intact.
+Macro PR6996, operation prophet-entry-wait-copy-20260908-sol-001,
+head 30da44be695d5b7b249d0180f3af6d21ed5bad09,
+tree 009a5e2512208bb016042f65c3e84e10ca1c30c3, is now published on the original
+prepared branch/worktree. Exactly engine/entry_signal.py and its existing test
+module change. The existing confluence_gated predicate now owns action,
+action_zh and timing.next_trigger: "Wait for confirmation — no new entry yet."
+and "等待确认 — 暂不新开仓。". All non-copy fields and nongated outputs are preserved.
+This is predecessor instruction coherence, not B2/B3/B4 Availability or sizing.
 
-Exact next source action: consume PR6992's independent review, repair only real
-introduced blockers, and verify current-base/hosted tests. Exact release action:
-reconcile #6866's safety facts and original/current source-price basis, issue a
-controlled-activation ruling, then require the natural producer and entitled
-served-order/browser proof. A source merge is not that proof.
+26 owning tests pass on installed CPython3.12; 176 relevant cases pass on the
+already-installed complete CPython3.14 environment. The earlier broader3.12
+run had173 passes and one missing-plotly dependency failure; no installation,
+shim or test exclusion hid it. Three forbidden-copy mutations are killed.
+45 before/after comparisons show only six gated cases differ, and only in the
+three copy fields. Independent static review returned PASS, no blocker/major,
+on this exact head. The finite reviewer was consumed/stopped on PR6996;
+no watcher, native successor task or unattended work is claimed.
 
-## September 8 review-repair continuation (supersedes the next source action above)
+The real producer reaches the real China shelf/card Jinja and shared LENS hover.
+Synthetic browser evidence shows the original opening instruction and corrected
+EN/ZH desktop dark/light instructions; the actual PNGs were inspected. A second
+fixture uses real page CSS and matching spot, with readable in-viewport desktop
+tips. All external requests were blocked and browser contexts closed. Mobile390
+tap attempted Terminal navigation and did not yield accepted persistent-tip proof;
+blocked Terminal assets limit interpretation. This is not an established new
+production JS bug and does not authorize shared-theme edits. Component evidence
+is not authenticated production or full mobile acceptance.
 
-Current source is PR #6992 head a51bae222eedd4c53f4101998f3a3c4bc103f554,
-tree 037627b311e54ae1cb50cb047f6aba720ff3e2df, a forward repair of the first
-candidate. Same branch/worktree/operation; no replacement source carrier.
-The first review identified Boolean-to-price coercion and one bad raw input
-wiping a healthy stock's trajectory. Full build_interest_map tests reproduced
-four intended failures with 48 controls passing. The repaired five existing
-CII/rank/V3/V4/shadow suites passed 169 cases, zero skips; CII contains 52 cases.
-Only CII and its existing test module changed in the repair; the original
-builder-wiring blob 29d16200267b262c7a49c3fa0a432d2d07972107 is unchanged.
+### Official collision-census scale repair — BUILT_NOT_PROVEN
 
-The exact same native reviewer returned semantic PASS on this head, with both
-findings closed and no new blocker/major. Its review was static. The 169 tests
-are author execution, not independent reviewer execution; the read-only reviewer
-could not create pytest capture temporaries. The completed finite reviewer had
-no watcher. Its later terminal STOP delivery was platform-blocked and was not
-retried; terminal consumption is unverified. Failed out-of-scope child/memory
-attempts appeared in its runtime output, with no successful effect shown;
-do not infer an exhaustive external-effect census or resume/clone that reviewer.
+Mastermind PR544, operation source-continuity-census-scale-20260908-sol-001,
+implements the existing issue346 bounded proposal in the one adapter:256 PRs,
+640 logical GET attempts,32MiB normalized JSON and180-second cooperative budget
+shared across both observations. Existing raw-response/time limits, pure verifier,
+complete pagination, rename/path, second-observation equality, Git and authority
+rules remain unchanged. No retry, cursor, new state store or success waiver.
 
-Actual protected Source Continuity verification returned exit 2 with
-REMOTE_CENSUS_INCOMPLETE: the adapter's 100-open-PR ceiling did not cover the
-156-PR field. The separate complete source census and byte-identical material
-dependencies through main 53142fff7c29230e753699a162c98336211506fb do not replace
-that refused receipt. Keep the existing dependency with Mastermind issue #346;
-no new checkpoint implementation, exception, writer transfer or release follows.
-Current hosted checks remain unverified after a platform-blocked inspection.
-No retry, cancellation, Ready, arming, merge, deployment or ranking activation.
+Original semantic head c484c05c7fb5772d506eafff10155b83d541c33f has215 author
+passes, eleven rejected mutations and independent static PASS. The CURRENT
+PROTECTED original adapter genuinely produced CHECKPOINT_VERIFIED for this real
+smaller-repository source:3878aa3397561fe213eb866306476afeb83d57959e6bd2299b08924b527c60b4,
+at18:35:47Z, collisionDISJOINT, local=remote, no dirt/untracked/unpushed source.
+That checkpoint does not certify Macro6992 or the candidate's own adoption.
 
-The earlier Chairman-facing report's alternate ticker set (001309.SZ,
-301078.SZ, 601022.SS, 603325.SS), all-null adj_close diagnosis, unpublished-patch
-claim and unverified sandbox review package are withdrawn. A new pinned read
-reproduced the four correct names in the claim above, all raw-ineligible and
-with intel_signal_core=0.0. PR #6992, not that package, is source truth.
+Its initial natural job102188194201/run34263852719 reached98% before the
+confirmed25m0s ceiling cancelled it; that remains invalid full-suite evidence.
+After the separate CI fix below protected, this same carrier was composed once:
+head26b236697e98c9ec4ebeff725a4f5fbab9ebdbfe,
+tree9d062117925f26f72d852fbc0fcb105d6083496b,
+parents[c484c05c7fb5772d506eafff10155b83d541c33f,
+7afc66410ac5935f5d4db52377d3a7de5e770df4].
+Current PR evidence reports all four owned blobs unchanged and170 selected
+integration passes; this is not the earlier full215-case selection. Natural
+required job102216436666 and security campaign must conclude before acceptance.
+Do not repeat that composition, rerun the old cancelled campaign, or widen scope.
 
-Exact continuation: retain this reviewed semantic head; resolve the existing
-formal continuity and allowed current-candidate integration evidence, then
-adjudicate controlled activation under #6866 and prove a natural producer plus
-entitled served-order/browser result. Original historical breadth bytes remain
-unavailable. The four-region integration/Entry Truth/continuing-instruction
-outcome is not complete. No source algorithm work or original diagnosis needs
-to be repeated merely because the chat or base moved.
+### Bounded CI completion allowance — SOURCE_PROTECTED
+
+Mastermind PR545, ci-whole-suite-budget-20260908-sol-001, changed exactly the
+existing test-job timeout25 to40minutes plus its regression. All workflow
+semantics, discovery, permissions, failure behavior and exclusions were preserved.
+17 focused tests pass and non-author review5146386015 accepts the exact source.
+Natural run34269290231/job102206509545 completed SUCCESS:518 modules discovered,
+zero excluded,518 running, with all four security/analysis checks successful.
+These are modules, not pytest case counts; no universal no-skip claim.
+
+PR545 actually merged at19:57:50Z as
+7afc66410ac5935f5d4db52377d3a7de5e770df4. Its protected tree equals reviewed
+candidate treeea77d3bf0c38ec60f27df73952821dffd1139a6d, sole parentfc29e14a0d9ee41105264a5abc1d182daee7abbf.
+Terminal acceptance/merge receipt is5591035553. A prior blocked checkpoint attempt
+remains historical and is not retroactively relabeled successful. Source
+protection and its release receipt are current GitHub facts; do not repeat the
+merge or wake the completed source/reviewer. This changes CI source, not product
+ranking, deployment or positions. The fresh544 campaign uses that protected
+workflow dependency; its own result is still a separate proof obligation.
+
+## Current committed-output witnesses
+
+At Macro f3a4df9b0dd78f623d24c846633b060829eb611b, the China September8 output
+still requests intelligence order but serves V3 coverage fallback:1623 ranked,
+1619 measured, four no_edge_evidence. This is newer than the original1620-row
+September7 claim and does not change its historical validity.
+
+Deduplicating tickers across each published artifact's lanes identifies18 gated
+records with contradictory opening instructions: China2/182 distinct displayed
+names (September8;000739.SZ and601003.SS), US10/152 (September4), Canada6/24
+(September4;ARE.TO,DOO.TO,QSR.TO,CCL-B.TO,CCA.TO,RCH.TO), and HK0/93
+(September8). Different clocks are explicit. These are committed-artifact
+witnesses, not simultaneous authenticated live-site observations or investment
+recommendations. No individual user's loss is attributed from these counts.
+
+## R0 safety work exists locally; preserve exact custody
+
+Macro6871 remains at51ddb898ff0c130910f9f3f4266727905826a92d, with the original
+Codex:/root/cn_prophet_r0 under native parent01a05a89-cb19-7162-99c4-54ffdc714cf1.
+Read-only recovery found exactly one dirty replay script,+294/-44, mtime
+2026-09-05T07:55:21.217321Z, SHA256
+cf4e01044bb90e046443b9b9cd7213f45f14009c63af16330f862dd246b98da2.
+It contains partial latch/order/duplicate-price repairs. Tests/report are not
+regenerated or committed; it is not accepted replay proof. Do not reset, replace,
+commit for another writer or manufacture a new native child.
+
+A bounded metadata-only read found the exact parent record with task_complete
+at2026-09-08T19:42:31.307Z. Parent presence does not identify the R0 child UUID,
+prove child liveness, or authorize parent-resume as a substitute. Exact native
+binding, actual source/effect/checkpoint and existing continuation conditions
+remain required. Material readback and corrected545/544 dependency status were
+posted to the existing Slack root C0BSBM78V1N/1788585650.083679 at
+1788897849.252109 and1788898097.519559. Delivery is not receiver consumption.
+
+## Exact continuation and no-rebuild boundaries
+
+Consume the already-started544 current-composition campaign and qualify its
+current source/continuity/release evidence. After accepted source protection,
+use the accepted adapter for one genuine bounded consumer proof; exceeding any
+remaining budget must still refuse. Then advance6992 and6996 through their
+existing current-source, review, publication and entitled production paths.
+Never treat544 protection as automatic China serving activation or acceptance
+of6871's rejected safety replay. The existing R0 reconciliation owner must
+resolve the exact original child and preserved dirt; no new worker/queue.
+
+Keep6805 Entry Truth,6817/6832 cockpit and6797/6705 D5 under their current owners.
+The chronology repair6567 already merged as
+c968530b5e0e03632fd8d4e06611b3acddb0ece9; do not rebuild it. Sector/company
+integration, validated earlier discovery/selection and continuing withdrawal/
+management still require complete user journeys. These source slices do not
+close that broader mission or establish improved investment returns.
+
+Historical reporting errors remain withdrawn: alternate four names001309.SZ,
+301078.SZ,601022.SS,603325.SS; all-null adj_close diagnosis; unpublished-patch
+claim; unverified sandbox review links; and the later statement that no new work
+had occurred. Canonical source/evidence is the existing PR family and this
+record, not those summaries. Native evidence files remain on the authorized Mac
+under exec-prestage-receipts; they are not sandbox download paths.
