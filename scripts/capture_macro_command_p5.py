@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import re
 import shutil
@@ -507,11 +508,24 @@ def _shot_chipmat_clip(dest: Path, page, clip: Mapping[str, Any], *,
     }
     vw = float((page.viewport_size or {}).get("width") or 1440)
     vh = float((page.viewport_size or {}).get("height") or 900)
-    x = max(0.0, float(clip["x"]))
-    y = max(0.0, float(clip["y"]))
-    width = max(1.0, min(float(clip["width"]), vw - x))
-    height = max(1.0, min(float(clip["height"]), vh - y))
-    page_clip = {"x": x, "y": y, "width": width, "height": height}
+    raw_x = max(0.0, float(clip["x"]))
+    raw_y = max(0.0, float(clip["y"]))
+    raw_w = max(1.0, min(float(clip["width"]), vw - raw_x))
+    raw_h = max(1.0, min(float(clip["height"]), vh - raw_y))
+    # page.screenshot(clip=) matches locator.screenshot only after the CSS
+    # box is snapped (floor origin, ceil extent). Raw fractions are up to
+    # 2 device px short of `_device_px_span` (chipmat 390 IHDR 438×104 vs
+    # span 440×106).
+    x = float(math.floor(raw_x))
+    y = float(math.floor(raw_y))
+    x1 = min(vw, float(math.ceil(raw_x + raw_w)))
+    y1 = min(vh, float(math.ceil(raw_y + raw_h)))
+    page_clip = {
+        "x": x,
+        "y": y,
+        "width": max(1.0, x1 - x),
+        "height": max(1.0, y1 - y),
+    }
     scroll_y = _read_scroll(page)
     page.screenshot(path=str(dest), type="png", clip=page_clip)
     extra["crop_box"] = page_clip
