@@ -759,7 +759,7 @@
   </div>
   {%- for axis in view.axes %}
   <details class="mc-details">
-    <summary><span>{{ bl(axis.label) }}</span><span class="mq-axis-method-value">{% if axis.value %}{{ axis.value }}{% else %}{{ absent(axis.absence, True) }}{% endif %}</span></summary>
+    <summary><span>{{ bl(axis.label) }}</span><span class="mq-axis-method-value">{% if axis.value_with_unit %}{{ bl(axis.value_with_unit) }}{% else %}{{ absent(axis.absence, True) }}{% endif %}</span></summary>
     <div class="mc-details-body mq-axis-method">
     <p>{{ t('Axis method receipts', '坐标轴方法凭据') }}</p>
     <p>{{ t('A composite may only be shown when its full composition law is disclosed.', '只有在完整披露构成法则的前提下，复合指标才可展示。') }}</p>
@@ -942,7 +942,7 @@
 
 {# ─────────────────────────── assembled page body ───────────────────────── #}
 {%- macro body(view) -%}
-{{ suitenav.suite_bar(suite_nav) }}
+{{ suitenav.suite_bar(suite_nav, analyst|default({'mountable': false})) }}
 {%- if view.decision_first %}{{ decision_first_body(view) }}{% else %}
 <main class="mq-shell" id="mq-shell">
   {{ context_header(view) }}
@@ -1051,7 +1051,7 @@
 
 {# ───────────────────── honest refusal (fail-closed) body ───────────────── #}
 {%- macro degraded_body(view) -%}
-{{ suitenav.suite_bar(suite_nav) }}
+{{ suitenav.suite_bar(suite_nav, analyst|default({'mountable': false})) }}
 <main class="mq-shell mq-shell-degraded" id="mq-shell">
   <header class="mq-context">
     <div class="mq-context-id">

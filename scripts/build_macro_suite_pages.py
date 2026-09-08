@@ -539,7 +539,8 @@ def _environment(root: Path) -> Environment:
     return env
 
 
-def render_page(env: Environment, page: SuitePage, view: Mapping[str, Any]) -> str:
+def render_page(env: Environment, page: SuitePage, view: Mapping[str, Any],
+                *, analyst: Mapping[str, Any] | None = None) -> str:
     html = env.get_template(page.template).render(
         view=view,
         workspace_id=page.workspace_id,
@@ -551,6 +552,7 @@ def render_page(env: Environment, page: SuitePage, view: Mapping[str, Any]) -> s
         active_section="research",
         active_page=Path(page.output).stem,
         suite_nav=suite_nav(page.output),
+        analyst=analyst if analyst is not None else {"mountable": False},
     )
     # The shared navigation partials indent around conditional blocks; normalise
     # generated-only trailing whitespace so the committed page stays diff-clean.
@@ -596,7 +598,7 @@ def build_page(root: Path, page: SuitePage, *, data_root: Path, out_dir: Path,
         hub_entry = {"snapshot": None,
                      "failure": {"kind": refusal.kind, "detail": refusal.detail}}
 
-    html = render_page(env, page, view)
+    html = render_page(env, page, view, analyst=_macro_command_analyst(root))
 
     # write_page owns the depth-aware data-base shim. Route through a temporary
     # file so even an interrupted builder cannot leave a partial page served.

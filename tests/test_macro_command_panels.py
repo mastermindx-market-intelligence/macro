@@ -791,7 +791,8 @@ def test_empty_state_fixture_flag_enables_e4_and_e6(tmp_path: Path) -> None:
         (out / "macro" / "fragments" / "inflation.html").read_text(encoding="utf-8"))
     hub = unescape((out / "macro_monetary.html").read_text(encoding="utf-8"))
     assert 'data-mc-empty="e6"' in frag
-    assert "Included in a higher plan" in frag
+    assert "This section is part of Research." in frag
+    assert "Upgrade to see it" in frag
     inflation = re.search(
         r'<section class="mc-panel" id="inflation".*?(?=<section class="mc-panel"|</main>)',
         hub, re.S)

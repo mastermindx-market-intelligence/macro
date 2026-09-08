@@ -237,11 +237,25 @@ def _axis_view(axis: Mapping[str, Any]) -> dict[str, Any]:
             "freshness": L.label("freshness", component.get("freshness")),
             "freshness_tone": L.tone("freshness", component.get("freshness")),
         })
+    number = L.fmt_number(value)
+    unit_token = axis.get("unit")
+    unit_pair = L.label("unit", unit_token) if unit_token in L.UNIT else None
+    if number and unit_pair:
+        value_with_unit = {
+            "en": f"{number} {unit_pair['en']}",
+            "zh": f"{number} {unit_pair['zh']}",
+        }
+    elif number:
+        value_with_unit = {"en": number, "zh": number}
+    else:
+        value_with_unit = None
     return {
         "axis_id": axis.get("axis_id"),
-        "label": _bilingual(axis.get("label")),
+        "label": (L.METRIC.get(str(axis.get("axis_id") or ""))
+                  or _bilingual(axis.get("label"))),
         "direction": L.label("direction", axis.get("direction_semantics")),
-        "value": L.fmt_number(value),
+        "value": number,
+        "value_with_unit": value_with_unit,
         "value_raw": value if isinstance(value, (int, float)) and not isinstance(value, bool) else None,
         "absence": None if value is not None else _absence(axis.get("null_reason")),
         "freshness": L.label("freshness", axis.get("freshness")),

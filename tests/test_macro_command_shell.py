@@ -275,12 +275,13 @@ def test_le768_panel_column_reserves_only_what_is_still_fixed(
     assert "padding-bottom: calc(56px + 16px" not in body
     assert "padding-bottom: 144px" not in body
     assert re.search(
-        r'\.mc-panels\s*\{[^}]*padding-bottom:\s*env\(safe-area-inset-bottom, 0px\)',
+        r'\.mc-panels\s*\{[^}]*padding-bottom:\s*(?:calc\(72px \+ )?env\(safe-area-inset-bottom, 0px\)',
         body, re.S)
     assert "72px" not in body
     assert "70px + 16px" not in body
     assert "84px + 44px + 16px" not in body
-    analyst = re.search(r'\.mc-analyst\s*\{([^}]+)\}', body)
+    analyst = re.search(
+        r'(?:body:not\(\.mq-suite-page\) )?\s*\.mc-analyst\s*\{([^}]+)\}', body)
     assert analyst, "missing ≤768 .mc-analyst"
     assert "position: static" in analyst.group(1)
     assert "position: fixed" not in analyst.group(1)
@@ -463,6 +464,11 @@ def test_desktop_rail_link_rules_exclude_analyst(
     assert "border-radius" not in analyst.group(1)
     assert "font-size" not in analyst.group(1)
     assert "padding:" not in analyst.group(1)
+    # Pill radius stays on the shared desktop `.mc-rail-link` rule.
+    # Redeclaring 999px here is an enforce-added radius-literal.
+    assert re.search(r'\.mc-rail-link\s*\{[^}]*overflow:\s*visible', body, re.S)
+    assert not re.search(
+        r'\.mc-rail-link\s*\{[^}]*border-radius:\s*999px', body, re.S)
 
 
 def test_ge769_panels_reserve_fab_gutter(macro_command_css: str) -> None:
@@ -665,9 +671,26 @@ def test_workspace_pages_carry_analyst_chip_and_page_class() -> None:
     assert "calc(100% - 24px)" in suite
     for name in WORKSPACE_P5:
         text = (TEMPLATES / name).read_text(encoding="utf-8")
-        assert 'class="mq-page mc-page"' in text
+        assert 'class="mq-page mc-page mq-suite-page"' in text
         assert "macro_command.css" in text
         assert "macro_command.js" in text
+    assert "href=\"chat.html\"" in nav
+    assert "body:not(.mq-suite-page) .mc-analyst" in css
+
+
+def test_workspace_analyst_is_suite_nav_pill_material() -> None:
+    """MA2: hub-only .mc-analyst rules never reach the workspace nav."""
+    css = (TEMPLATES / "macro_command.css").read_text(encoding="utf-8")
+    suite = (TEMPLATES / "macro_suite.css").read_text(encoding="utf-8")
+    assert "body:not(.mq-suite-page) .mc-analyst" in css
+    assert re.search(
+        r'\.mq-suitenav-pill\s*\{[^}]*border-radius:\s*var\(--r-pill,999px\)',
+        suite, re.S)
+    assert re.search(
+        r'\.mq-suitenav-pill\s*\{[^}]*min-height:\s*44px', suite, re.S)
+    for match in re.finditer(r'^([^\n{]*)\.mc-analyst\s*\{', css, re.M):
+        prefix = match.group(1)
+        assert "mq-suite-page" in prefix or "mc-rail-link:not" in prefix, prefix
 
 
 def test_workspace_tab_strip_never_cuts_mid_word() -> None:

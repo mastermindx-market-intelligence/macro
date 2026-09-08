@@ -74,7 +74,12 @@ _BARE_DATE_RE = re.compile(r'(?<![A-Za-z\u4e00-\u9fff]\s)\d{4}-\d{2}-\d{2}')
 _ISO_TIME_RE = re.compile(r'T\d{2}:\d{2}')
 _WS_RE = re.compile(r'[\s\u00a0]+')
 
-_DETAILS_RE = re.compile(r'<details\s+class="mc-details"[^>]*>.*?</details>', re.S)
+# Strip only the <details> BODY (children after <summary>). The summary
+# is painted while closed, so the predicate must see it (P5 r4 m-b).
+_DETAILS_RE = re.compile(
+    r'(<details\b[^>]*>\s*<summary\b[^>]*>.*?</summary>)(.*?)(</details>)',
+    re.S,
+)
 _PRIMER_RE = re.compile(r'<details\s+class="mc-primer"[^>]*>.*?</details>', re.S)
 _SCRIPT_RE = re.compile(r'<script\b[^>]*>.*?</script>', re.S)
 _TAG_RE = re.compile(r'<[^>]+>')
@@ -108,7 +113,7 @@ def reading_path_text(html: str) -> str:
     banned-substring or bare-timestamp scan — only what a reader actually
     sees does."""
     stripped = _SCRIPT_RE.sub("", html)
-    stripped = _DETAILS_RE.sub("", stripped)
+    stripped = _DETAILS_RE.sub(r"\1\3", stripped)
     stripped = _PRIMER_RE.sub("", stripped)
     # Tags become empty, not a space: the page emits the plain word and the
     # date in sibling elements (`<span class="mc-asof-word">Data to</span>

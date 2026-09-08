@@ -16,7 +16,7 @@
      `#mc-shell` is absent so the four workspace pages can boot the same chat. */
   var analystBtn = document.querySelector('[data-mc-analyst]');
   if (analystBtn) {
-    analystBtn.addEventListener('click', function () {
+    analystBtn.addEventListener('click', function (event) {
       var lang = (document.documentElement.getAttribute('data-lang') || 'en') === 'zh' ? 'zh' : 'en';
       var sectionId = document.body.getAttribute('data-mq-workspace') || 'overview';
       var label = lang === 'zh'
@@ -39,15 +39,20 @@
         }
       }
       if (window.MMBrain && typeof window.MMBrain.explain === 'function') {
+        event.preventDefault();
         window.MMBrain.explain(sectionId, label);
         return;
       }
       if (window.MMBrain && typeof window.MMBrain.open === 'function') {
+        event.preventDefault();
         window.MMBrain.open();
         return;
       }
       var boot = document.getElementById('mmb-boot');
-      if (boot) boot.click();
+      if (boot) {
+        event.preventDefault();
+        boot.click();
+      }
     });
   }
 

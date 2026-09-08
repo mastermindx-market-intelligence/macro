@@ -4,7 +4,7 @@
   A MACRO LIBRARY, imported the same way as the shell:
 
       {% import "_macro_suite_nav.html.j2" as suitenav %}
-      {{ suitenav.suite_bar(suite_nav) }}
+      {{ suitenav.suite_bar(suite_nav, analyst) }}
 
   It is imported rather than {% include %}d on purpose: an include would resolve
   t() from whichever template pulled it in, and the shell calls this from inside
@@ -35,7 +35,7 @@
 
 {#- The bar carried by every workspace page: one way back to the suite entry
     point, and one way sideways to any sibling workspace. -#}
-{%- macro suite_bar(nav) -%}
+{%- macro suite_bar(nav, analyst=None) -%}
 <nav class="mq-suitenav" aria-label="Macro and Monetary suite">
   <a class="mq-suitenav-home" href="{{ nav.hub.href }}">
     <span class="mq-suitenav-home-mark" aria-hidden="true">←</span>
@@ -52,10 +52,15 @@
     </li>
     {%- endfor %}
     <li class="mq-suitenav-analyst">
-      <button type="button" class="mq-suitenav-pill mc-analyst" data-mc-analyst
-              data-mc-analyst-label-en="this workspace" data-mc-analyst-label-zh="本工作区">
+      {# Same pair as the hub (macro_monetary.html.j2): always a chat.html
+         link so a no-JS reader still has an entry when the FAB is
+         CSS-hidden at ≤768. data-mc-analyst is added only when the
+         sitewide widget is mountable (JS then preventDefault()s). #}
+      <a class="mq-suitenav-pill mc-analyst" href="chat.html"
+         {%- if analyst and analyst.mountable %} data-mc-analyst
+              data-mc-analyst-label-en="this workspace" data-mc-analyst-label-zh="本工作区"{%- endif %}>
         <span class="mc-analyst-text">{{ t('Ask the analyst', '问分析师') }}</span>
-      </button>
+      </a>
     </li>
   </ul>
 </nav>

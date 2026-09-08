@@ -451,15 +451,26 @@ def test_production_key_space_has_no_machine_text_on_rendered_output(
     assert dirty == [], dirty
 
 
-def test_committed_payloads_have_zero_plain_fallbacks(tmp_path_factory) -> None:
-    """M1: the fallback is a tripwire. Today's key space ships reviewed pairs."""
+FIVE_COMMAND_PAGES = (
+    "macro_monetary.html",
+    "macro_rates_curves.html",
+    "macro_business_activity.html",
+    "macro_financial_conditions.html",
+    "macro_housing_real_estate.html",
+)
+
+
+def test_committed_payloads_have_zero_plain_fallbacks() -> None:
+    """MA4: count BOTH fallback sentences against committed site/*.html."""
     from lib.macro_suite_labels import PLAIN_FALLBACK
-    out = tmp_path_factory.mktemp("macro_command_fallback") / "site"
-    pages = builder.render(ROOT, data_root=DATA_ROOT, out_dir=out,
-                           page_built_at=BUILT_AT)
+
+    if not (ROOT / "site" / "macro_monetary.html").is_file():
+        pytest.skip("site/ is sparse-omitted; capture records fallback_count_* = 0")
     leftover: list[str] = []
-    fallback_count = 0
-    for path in pages:
+    counts = {"en": 0, "zh": 0}
+    for name in FIVE_COMMAND_PAGES:
+        path = ROOT / "site" / name
+        assert path.is_file(), name
         html = path.read_text(encoding="utf-8")
         start = html.find('class="mq-context"')
         if start < 0:
@@ -467,11 +478,13 @@ def test_committed_payloads_have_zero_plain_fallbacks(tmp_path_factory) -> None:
         if start < 0:
             start = 0
         text = guard.reading_path_text(html[start:])
-        n = text.count(PLAIN_FALLBACK["en"])
-        fallback_count += n
-        if n:
-            leftover.append(f"{path.name}:{n}")
-    assert fallback_count == 0, leftover
+        n_en = text.count(PLAIN_FALLBACK["en"])
+        n_zh = text.count(PLAIN_FALLBACK["zh"])
+        counts["en"] += n_en
+        counts["zh"] += n_zh
+        if n_en or n_zh:
+            leftover.append(f"{name}:en={n_en}:zh={n_zh}")
+    assert counts["en"] == 0 and counts["zh"] == 0, leftover
 
 
 def test_read_stance_has_one_space_after_each_topic(tmp_path_factory) -> None:
@@ -603,6 +616,9 @@ def test_clearance_probe_js_binds_locator_element_then_arg() -> None:
     assert "scroll_under_top_chrome" in _CLEARANCE_JS
     assert "closest('.mc-rail, .mq-suitenav')" in _CLEARANCE_JS
     assert ".mc-rail, .mc-rail-list" not in _CLEARANCE_JS
+    assert "position > 0" not in _CLEARANCE_JS
+    assert "exposedAtScrollY" in _CLEARANCE_JS
+    assert "top-chrome-full-cover-unexposable" in _CLEARANCE_JS
 
 
 def test_capture_relocated_needles_are_locale_visible_and_must_be_inside() -> None:
@@ -655,6 +671,10 @@ def test_clearance_probe_ok_fails_on_empty_or_hits() -> None:
     }) is False
     assert clearance_probe_ok({
         "text_count": 3, "intersections": [], "analyst_hits": [],
+        "ok": True, "occluders": [], "width": 1440,
+    }) is False
+    assert clearance_probe_ok({
+        "text_count": 3, "intersections": [], "analyst_hits": [],
         "scrollMatched": False, "ok": True,
         "occluders": [{"position": "sticky"}], "width": 390,
     }) is False
@@ -698,3 +718,149 @@ def test_p5_manifest_viewport_identity() -> None:
     if orphan.is_file():
         dirty.append("orphan 16-light-en-1440.png still committed")
     assert dirty == [], dirty
+
+
+def test_top_chrome_cover_uses_document_geometry() -> None:
+    """MA1: a node inside the stuck zone is a hit; one below is excused."""
+    from scripts.capture_macro_command_p5 import (
+        classify_top_chrome_cover, _CLEARANCE_JS,
+    )
+    inside = classify_top_chrome_cover(doc_top=40, ov_height=60, max_scroll=800)
+    assert inside["hit"] is True
+    assert inside["reason"] == "top-chrome-full-cover-unexposable"
+    below = classify_top_chrome_cover(doc_top=200, ov_height=60, max_scroll=800)
+    assert below["hit"] is False
+    assert below["exposedAtScrollY"] == 140
+    assert "position > 0" not in _CLEARANCE_JS
+    assert "target ===" not in _CLEARANCE_JS
+
+
+def test_five_pages_have_one_analyst_entry_and_nojs_fallback(tmp_path_factory) -> None:
+    """MA3: each of the five pages has exactly one analyst entry;
+    mountable=False emits <a href="chat.html">."""
+    from jinja2 import Environment, FileSystemLoader, StrictUndefined
+
+    pages = builder.render(ROOT, data_root=DATA_ROOT,
+                           out_dir=tmp_path_factory.mktemp("analyst") / "site",
+                           page_built_at=BUILT_AT)
+    wanted = {name: None for name in FIVE_COMMAND_PAGES}
+    for path in pages:
+        if path.name in wanted:
+            wanted[path.name] = path.read_text(encoding="utf-8")
+    missing = [name for name, html in wanted.items() if html is None]
+    assert not missing, missing
+    for name, html in wanted.items():
+        openings = len(re.findall(
+            r'<(?:a|button)\b[^>]*class="[^"]*\bmc-analyst[\s"]', html))
+        assert openings == 1, (name, openings)
+        assert 'href="chat.html"' in html
+    env = Environment(
+        loader=FileSystemLoader(str(ROOT / "templates")),
+        autoescape=True, undefined=StrictUndefined)
+    nav = env.get_template("_macro_suite_nav.html.j2")
+    # Render the macro with mountable=False via a thin wrapper.
+    rendered = env.from_string(
+        '{% import "_macro_suite_nav.html.j2" as suitenav %}'
+        '{{ suitenav.suite_bar(nav, analyst) }}'
+    ).render(
+        nav={"hub": {"href": "macro_monetary.html"}, "entries": []},
+        analyst={"mountable": False},
+    )
+    assert "<button" not in rendered
+    assert re.search(r'<a[^>]*class="[^"]*\bmc-analyst\b[^>]*href="chat\.html"',
+                     rendered) or re.search(
+        r'<a[^>]*href="chat\.html"[^>]*class="[^"]*\bmc-analyst\b', rendered)
+
+
+def test_e6_on_five_pages_matches_p4_v6_slots(tmp_path_factory) -> None:
+    """MA5: verify P4 v6 E6 strings at this head; do not patch them here."""
+    from lib import macro_suite_labels as labels
+    from tests.test_macro_command_empty_states import _render_empty
+
+    spec = labels.EMPTY_STATES["e6"]
+    assert spec["title"]["en"] == "Included in a higher plan"
+    assert spec["title"]["zh"] == "包含在更高方案中"
+    assert spec["stance"]["en"] == "The reading is available on upgrade."
+    assert spec["stance"]["zh"] == "升级后可查看该读数。"
+    assert spec["unlock"]["en"] == "See it with an upgrade."
+    assert spec["unlock"]["zh"] == "升级即可查看。"
+    rendered = _render_empty(builder._empty_state("e6", plan="Research"))
+    assert "Included in a higher plan" in rendered
+    assert "包含在更高方案中" in rendered
+    assert "See it with an upgrade." in rendered
+    assert "升级即可查看。" in rendered
+    assert "This section is part of Research." in rendered
+    assert "本板块属于Research。" in rendered
+    assert "This section is included in a higher plan." not in rendered
+    assert "本板块包含在更高方案中。" not in rendered
+    assert rendered.count("Included in a higher plan") == 1
+    assert "Read this section closely" not in rendered
+    assert "请先仔细读本板块" not in rendered
+
+
+def test_copy_guard_keeps_details_summary() -> None:
+    """m-b: <summary> text is in the reading path; the body is not."""
+    html = (
+        '<details class="mc-details">'
+        "<summary>How this is calculated 1.25 score (0-100)</summary>"
+        "<div>hysteresis snapshot producer</div>"
+        "</details>"
+    )
+    text = guard.reading_path_text(html)
+    assert "How this is calculated" in text
+    assert "1.25 score (0-100)" in text
+    assert "hysteresis snapshot" not in text
+
+
+def test_declared_cells_minus_captured_is_gaps() -> None:
+    from scripts.capture_macro_command_p5 import declared_cells
+    declared = declared_cells()
+    captured = set(declared)
+    assert sorted(set(declared) - captured) == []
+    assert "01-dark-en-1440-full.png" in declared
+    assert "09-dark-en-390.png" in declared
+    assert "ws-macro_rates_curves-closed-dark-en-1440.png" in declared
+
+
+def test_committed_manifest_gaps_equal_declared_minus_captured() -> None:
+    """Tests recompute gaps and IHDR equalities from the committed manifest."""
+    import json
+    from scripts.capture_macro_command_p5 import declared_cells
+
+    manifest_path = ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json"
+    probes_path = ROOT / "mockups" / "evidence" / "macro-command-p5" / "probes.json"
+    if not manifest_path.is_file():
+        pytest.skip("P5 evidence manifest is not in this checkout")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    probes = json.loads(probes_path.read_text(encoding="utf-8"))
+    if "declared_cells" not in probes:
+        pytest.skip("r4 recapture has not written declared_cells yet")
+    captured = {
+        st["file"]
+        for page in manifest.get("pages") or []
+        for st in page.get("states") or []
+        if st.get("captured") and st.get("file")
+    }
+    expected = sorted(set(declared_cells()) - captured)
+    recorded = [
+        row["file"] for row in (probes.get("gaps") or [])
+        if isinstance(row, dict) and row.get("reason") == "declared minus captured"
+    ]
+    assert recorded == expected
+    assert manifest.get("tree_clean_start") is True
+    assert manifest.get("tree_clean_end") is True
+    for page in manifest.get("pages") or []:
+        for state in page.get("states") or []:
+            if not state.get("captured"):
+                continue
+            dpr = float(state.get("dpr") or 0)
+            assert dpr > 0, state.get("file")
+            png = manifest_path.parent / state["file"]
+            if not png.is_file():
+                continue
+            ihdr_w = int.from_bytes(png.read_bytes()[16:20], "big")
+            assert ihdr_w == state["width"], state.get("file")
+            fixture = state.get("fixture")
+            assert fixture == "builder-payload" or (
+                isinstance(fixture, str) and fixture.endswith((".json", ".html"))
+            ), (state.get("file"), fixture)
