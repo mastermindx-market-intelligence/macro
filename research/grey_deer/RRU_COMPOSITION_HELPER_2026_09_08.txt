@@ -1,0 +1,49 @@
+def _composition_coverage(profile, sub, comp, index):
+    """Availability of derived inputs, not feed freshness or forecast confidence."""
+    index = pd.Index(index)
+    current = index[-1] if len(index) else None
+    complete = pd.Series(True, index=index, dtype=bool)
+    groups, members_available, members_expected = [], 0, 0
+    available_weight = total_weight = 0.0
+    legs = tuple(getattr(profile, "comp_legs", ()) or ())
+    for key, codes, weight in legs:
+        masks = {}
+        for code in codes:
+            values = (sub or {}).get(code)
+            values = (values.reindex(index) if values is not None else
+                      pd.Series(np.nan, index=index, dtype=float))
+            masks[code] = pd.Series(np.isfinite(values), index=index)
+        frame = pd.DataFrame(masks, index=index)
+        present = [code for code in codes if current is not None and bool(frame.at[current, code])]
+        complete &= frame.all(axis=1) if len(codes) else False
+        groups.append({"key": key, "expected": list(codes), "present": present,
+                       "missing": [c for c in codes if c not in present], "weight": weight})
+        members_available += len(present)
+        members_expected += len(codes)
+        total_weight += weight
+        available_weight += weight if present else 0.0
+    finite_comp = (comp[np.isfinite(comp)] if comp is not None else pd.Series(dtype=float))
+    if current is not None:
+        finite_comp = finite_comp.loc[finite_comp.index <= current]
+    current_score = bool(current is not None and current in finite_comp.index)
+    score_asof = str(pd.Timestamp(finite_comp.index[-1]).date()) if len(finite_comp) else None
+    recent = finite_comp.tail(30)
+    window = index[(index >= recent.index[0]) & (index <= current)] if len(recent) else index[:0]
+    incomplete_sessions = int((~complete.reindex(window, fill_value=False)).sum())
+    status = ("UNAVAILABLE" if not members_available else
+              "COMPLETE" if members_available == members_expected else "PARTIAL")
+    return {
+        "status": status, "freshness": "not_assessed",
+        "asof": str(pd.Timestamp(current).date()) if current is not None else None,
+        "score_asof": score_asof, "score_current": current_score,
+        "groups_expected": len(legs),
+        "groups_available": sum(bool(g["present"]) for g in groups),
+        "members_expected": members_expected, "members_available": members_available,
+        "group_weight_coverage": available_weight / total_weight if total_weight else None,
+        "groups": groups, "comparison_sessions": len(window),
+        "comparison_incomplete_sessions": incomplete_sessions,
+        "comparison_comparable": bool(current_score and status == "COMPLETE"
+                                      and len(recent) >= 10 and not incomplete_sessions),
+        "calibration_status": "unreviewed_corrected_construction",
+        "method": "available_group_weight.v1",
+    }
