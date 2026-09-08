@@ -886,9 +886,40 @@ def _strip_sentence(text: str) -> str:
     return text.strip().rstrip(".—。")
 
 
+def _levenshtein(left: str, right: str) -> int:
+    if left == right:
+        return 0
+    if not left:
+        return len(right)
+    if not right:
+        return len(left)
+    prev = list(range(len(right) + 1))
+    for i, char_l in enumerate(left, 1):
+        curr = [i]
+        for j, char_r in enumerate(right, 1):
+            curr.append(min(
+                prev[j] + 1,
+                curr[j - 1] + 1,
+                prev[j - 1] + (char_l != char_r),
+            ))
+        prev = curr
+    return prev[-1]
+
+
+def _shared_char_ratio(left: str, right: str) -> float:
+    from collections import Counter
+    denom = max(len(left), len(right))
+    if denom == 0:
+        return 1.0
+    shared = sum((Counter(left) & Counter(right)).values())
+    return shared / denom
+
+
 def test_e6_slots_share_no_sentence_or_prefix() -> None:
-    """r5 MINOR-1: no two E6 slots share a sentence or a sentence prefix."""
+    """r5 MINOR-1 + r6 MINOR-A: distinct slots; reject twins (Lev≤2 or ≥80% chars)."""
     slots = _e6_slot_texts()
+    assert slots["cta_label"]["en"] == "Upgrade to see it"
+    assert slots["cta_label"]["zh"] == "查看升级方案"
     for locale in ("en", "zh"):
         items = [(key, _strip_sentence(pair[locale])) for key, pair in slots.items()]
         for i, (key_a, text_a) in enumerate(items):
@@ -898,6 +929,10 @@ def test_e6_slots_share_no_sentence_or_prefix() -> None:
                 assert text_a != text_b, (locale, key_a, key_b, text_a)
                 assert not text_b.startswith(text_a), (locale, key_a, key_b, text_a, text_b)
                 assert not text_a.startswith(text_b), (locale, key_a, key_b, text_a, text_b)
+                assert _levenshtein(text_a, text_b) > 2, (
+                    locale, key_a, key_b, text_a, text_b)
+                assert _shared_char_ratio(text_a, text_b) < 0.8, (
+                    locale, key_a, key_b, text_a, text_b)
 
 
 def test_entitlement_walled_section_uses_plan_stance_and_drops_watching() -> None:
@@ -947,33 +982,56 @@ def test_p4_probes_name_panel_ok_and_doc_ok_separately() -> None:
             assert row["mmbBootDisplay"] == "none", row
 
 
+def test_e5_not_applicable_on_workspace_templates() -> None:
+    """r6 BLOCKER: E5 exists only where fragments + template both exist."""
+    from scripts import capture_macro_command_p4 as capture
+
+    receipt = capture.e5_applicability()
+    for rel, row in receipt.items():
+        if rel.endswith("macro_monetary.html.j2"):
+            continue
+        assert row == {"fragments": False, "template": False}, (rel, row)
+    assert "templates/_macro_suite_shell.html.j2" in receipt
+    families = capture.declared_families(blast_keys=["growth_real_economy"])
+    empty_ids = {cell.split("-")[1] for cell in families["empty_states"]}
+    assert empty_ids == {"e1", "e2", "e3", "e4", "e6"}
+    assert not any("e5" in cell for cell in capture.flatten_declared(families))
+
+
 def test_declared_matrix_gaps_are_generated_not_hand_written() -> None:
-    """r5 MAJ-A: gaps = declared − captured; only E5 when the matrix is complete."""
+    """r6 MAJOR: every state is a per-cell matrix; gaps = declared − captured."""
     from scripts import capture_macro_command_p4 as capture
 
     blast = [f"workspace_{i}" for i in range(9)]
-    declared = capture.declared_cells(blast_keys=blast)
-    assert declared[-1] == "empty-e5"
-    assert declared.count("empty-e5") == 1
-    assert len(declared) == (
-        7 * 3 * 4  # sections × widths × theme/locale
-        + 5 * 2 * 4  # empties E1–E4/E6 × (1440, 390) × cells
-        + 4 * 4  # state kinds × theme/locale
-        + 9 * 2 * 4  # blast pages × before/after × four axes
-        + 1  # E5
-    )
-    captured = {cell for cell in declared if cell != "empty-e5"}
-    gaps = capture.generate_gaps(declared, captured)
-    assert gaps == [capture.E5_GAP]
-    excluded = capture.generate_excluded(gaps)
-    assert excluded == [{
-        "id": "empty-e5",
-        "captured": False,
-        "reason": capture.E5_REASON,
-    }]
+    families = capture.declared_families(blast_keys=blast)
+    declared = capture.flatten_declared(families)
+    assert not any("e5" in cell for cell in declared)
+    assert len(families["empty_states"]) == 5 * 2 * 4
+    assert len(families["sections"]) == 7 * 3 * 4 + 7 * 4  # widths + 1440 full
+    assert len(families["states"]) == 4 * 4
+    assert len(families["blast"]) == 9 * 2 * 4
+    assert len(families["clearance"]) == 7 * 3 * 4
+    assert len(families["rail_viewport"]) == 2 * 4
+    assert len(families["fab"]) == 4
+    captured = set(declared)
+    assert capture.generate_gaps(declared, captured) == []
     missing = capture.generate_gaps(
         declared, captured - {"empty-e1-light-zh-390", "mob-growth-dark-en-390"})
     stems = {gap.split(":", 1)[0] for gap in missing}
-    assert "empty-e1-light-zh-390" in stems
-    assert "mob-growth-dark-en-390" in stems
-    assert "empty-e5" in stems
+    assert stems == {"empty-e1-light-zh-390", "mob-growth-dark-en-390"}
+    excluded = capture.generate_excluded(missing)
+    assert {row["id"] for row in excluded} == stems
+
+
+def test_manifest_gaps_recompute_from_declared() -> None:
+    """r6 MAJOR: a test recomputes gaps from manifest['declared'] and asserts equality."""
+    from scripts import capture_macro_command_p4 as capture
+
+    manifest_path = ROOT / "mockups" / "evidence" / "macro-command-p4" / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    declared = manifest.get("declared")
+    assert isinstance(declared, dict), "manifest.declared must be the complete family matrix"
+    flat = capture.flatten_declared(declared)
+    captured = capture.captured_stems(manifest["pages"][0]["states"])
+    captured.update(manifest.get("probe_stems") or [])
+    assert capture.generate_gaps(flat, captured) == manifest["gaps"]

@@ -69,6 +69,7 @@ def test_e1_through_e6_render_the_spec_sentences_verbatim() -> None:
     assert "查看升级方案" in e6
     assert 'href="plans.html"' in e6
     assert e6.count("Upgrade to see it") == 1
+    assert e6.count("查看升级方案") == 1
     assert "mc-empty-next" not in e6
     assert "包含于更高级别方案" not in e6
     assert "升级后即可查看" not in e6
