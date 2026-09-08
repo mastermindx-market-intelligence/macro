@@ -64,6 +64,11 @@ def macro_command_js() -> str:
 # rail + routing
 # --------------------------------------------------------------------------
 
+def test_the_hub_body_carries_mc_page(built_hub: str) -> None:
+    """R1: custom properties are scoped to body.mc-page. P3/P4/P5 rely on it."""
+    assert re.search(r'<body\b[^>]*\bclass="[^"]*\bmc-page\b', built_hub)
+
+
 def test_the_rail_has_exactly_twelve_links_in_the_fixed_reading_order(built_hub: str) -> None:
     order = re.findall(r'data-mc-section="([a-z]+)"', built_hub)
     assert order == list(EXPECTED_SECTION_ORDER)
@@ -187,9 +192,35 @@ def _token_block(css: str, selector: str) -> str:
     return match.group(1)
 
 
+DARK_SCOPE = "body.mc-page"
+LIGHT_SCOPE = 'html[data-theme="light"] body.mc-page'
+
+
+def test_tokens_are_scoped_to_body_mc_page_not_root(macro_command_css: str) -> None:
+    """R1: a :root custom-property block is a parallel palette. Scope is
+    body.mc-page (the hub body class). Comments may name :root in prose."""
+    assert not re.search(r'(?<![\w-]):root\b\s*\{', _strip_css_comments(macro_command_css))
+    assert re.search(r'body\.mc-page\s*\{', macro_command_css)
+    assert re.search(r'html\[data-theme="light"\]\s+body\.mc-page\s*\{', macro_command_css)
+
+
+def test_radii_use_the_theme_scale_not_mc_radius_tokens(macro_command_css: str) -> None:
+    """R3: var(--mc-radius*) is not a radius token the ratchet accepts."""
+    assert "--mc-radius" not in macro_command_css
+    assert "var(--r-pill" in macro_command_css
+    assert "var(--r-ctl" in macro_command_css
+    assert "var(--r-card" in macro_command_css
+    for match in re.finditer(r'border-radius\s*:\s*([^;]+);', macro_command_css):
+        value = match.group(1).strip()
+        assert (
+            re.search(r'var\(\s*--r-[A-Za-z0-9_-]+', value)
+            or value.lower() in {"0", "0px", "50%", "inherit", "initial", "unset", "revert"}
+        ), f"non-theme radius: {value}"
+
+
 def test_every_mc_token_is_a_reference_or_a_literal(macro_command_css: str) -> None:
-    root_block = _token_block(macro_command_css, ":root")
-    light_block = _token_block(macro_command_css, 'html[data-theme="light"]')
+    root_block = _token_block(macro_command_css, DARK_SCOPE)
+    light_block = _token_block(macro_command_css, LIGHT_SCOPE)
     declarations = re.findall(r'(--mc-[a-z-]+):\s*([^;]+);', root_block + "\n" + light_block)
     assert declarations
     bare_hex = re.compile(r'^#[0-9a-fA-F]{3,8}$')
@@ -199,25 +230,14 @@ def test_every_mc_token_is_a_reference_or_a_literal(macro_command_css: str) -> N
 
 
 def test_component_rules_carry_zero_raw_hex(macro_command_css: str) -> None:
-    """G10: hex is permitted only inside the two theme-invariant shadow
-    tokens' own `color-mix()` composites (a fixed neutral tint, not a themed
-    ink) — never in a component rule outside the token blocks.
-
-    The two token blocks are removed one at a time (never concatenated) —
-    `root_block + light_block` is not itself a contiguous substring of the
-    file, since real component rules sit between them, so a single combined
-    `.replace()` call would silently match nothing and leave the token
-    blocks' own hex-bearing shadow composites in the "component" text."""
-    root_block = _token_block(macro_command_css, ":root")
-    light_block = _token_block(macro_command_css, 'html[data-theme="light"]')
-    component_css = macro_command_css.replace(root_block, "").replace(light_block, "")
-    assert not re.search(r'#[0-9a-fA-F]{3,8}\b', component_css), \
-        "a component rule must reference a --mc-*/--mq-* token, never a raw hex literal"
+    """G10 / R4: no hex anywhere in this file — shadows derive from --text."""
+    assert not re.search(r'#[0-9a-fA-F]{3,8}\b', macro_command_css), \
+        "macro_command.css must carry zero hex literals"
 
 
 def test_css_defines_both_root_and_light_for_every_theme_differing_token(macro_command_css: str) -> None:
-    root_block = _token_block(macro_command_css, ":root")
-    light_block = _token_block(macro_command_css, 'html[data-theme="light"]')
+    root_block = _token_block(macro_command_css, DARK_SCOPE)
+    light_block = _token_block(macro_command_css, LIGHT_SCOPE)
     root_names = set(re.findall(r'(--mc-[a-z-]+):', root_block))
     light_names = set(re.findall(r'(--mc-[a-z-]+):', light_block))
     assert light_names, "no theme-differing --mc-* tokens found in the light block"
