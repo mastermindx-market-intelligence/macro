@@ -365,8 +365,8 @@
     "listMaxWidth": "none",
     "listContain": "inline-size"
   },
-  "generated_at": "2026-09-08T15:30:20Z",
-  "resolved_sha_or_none": "6548556b70ec3cc515b9c51d2d2968ceeaa143a5",
+  "generated_at": "2026-09-08T16:19:41Z",
+  "resolved_sha_or_none": "54be458c734755e6456f82c98f57bfc9aca2e65c",
   "m2_hairline_light_en": {
     "populated": true,
     "hairlineCount": 1,
@@ -386,11 +386,11 @@
   },
   "clearance_390_dark_en": {
     "ok": true,
-    "textCount": 319,
+    "textCount": 314,
     "positions": {
       "0": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
@@ -420,7 +420,7 @@
       },
       "50": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [
           {
@@ -517,7 +517,7 @@
       },
       "max": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [
           {
@@ -604,11 +604,11 @@
   },
   "clearance_390_dark_zh": {
     "ok": true,
-    "textCount": 319,
+    "textCount": 314,
     "positions": {
       "0": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
@@ -638,7 +638,7 @@
       },
       "50": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [
           {
@@ -713,7 +713,7 @@
       },
       "max": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [
           {
@@ -822,11 +822,11 @@
   },
   "clearance_390_light_en": {
     "ok": true,
-    "textCount": 319,
+    "textCount": 314,
     "positions": {
       "0": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
@@ -856,7 +856,7 @@
       },
       "50": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [
           {
@@ -931,7 +931,7 @@
       },
       "max": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [
           {
@@ -1018,11 +1018,11 @@
   },
   "clearance_390_light_zh": {
     "ok": true,
-    "textCount": 319,
+    "textCount": 314,
     "positions": {
       "0": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
@@ -1052,7 +1052,7 @@
       },
       "50": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [
           {
@@ -1127,7 +1127,7 @@
       },
       "max": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [
           {
@@ -1236,11 +1236,11 @@
   },
   "clearance_768_dark_en": {
     "ok": true,
-    "textCount": 319,
+    "textCount": 314,
     "positions": {
       "0": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
@@ -1270,7 +1270,7 @@
       },
       "50": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
@@ -1300,7 +1300,7 @@
       },
       "max": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [
           {
@@ -1431,11 +1431,11 @@
   },
   "clearance_768_light_en": {
     "ok": true,
-    "textCount": 319,
+    "textCount": 314,
     "positions": {
       "0": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
@@ -1465,7 +1465,7 @@
       },
       "50": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
@@ -1495,7 +1495,7 @@
       },
       "max": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [
           {
@@ -1641,40 +1641,40 @@
         {
           "left": 332,
           "right": 578,
-          "top": -133.140625,
-          "bottom": -28.84375,
+          "top": 386.859375,
+          "bottom": 491.15625,
           "width": 246,
           "height": 104.296875
         },
         {
           "left": 586,
           "right": 832,
-          "top": -133.140625,
-          "bottom": -28.84375,
+          "top": 386.859375,
+          "bottom": 491.15625,
           "width": 246,
           "height": 104.296875
         },
         {
           "left": 840,
           "right": 1086,
-          "top": -133.140625,
-          "bottom": -28.84375,
+          "top": 386.859375,
+          "bottom": 491.15625,
           "width": 246,
           "height": 104.296875
         },
         {
           "left": 1094,
           "right": 1340,
-          "top": -133.140625,
-          "bottom": -28.84375,
+          "top": 386.859375,
+          "bottom": 491.15625,
           "width": 246,
           "height": 104.296875
         },
         {
           "left": 332,
           "right": 1340,
-          "top": -20.84375,
-          "bottom": 56.453125,
+          "top": 499.15625,
+          "bottom": 576.453125,
           "width": 1008,
           "height": 77.296875
         }
@@ -1682,24 +1682,29 @@
       "stripBox": {
         "left": 332,
         "right": 1340,
-        "top": -133.140625,
-        "bottom": 56.453125,
+        "top": 386.859375,
+        "bottom": 576.453125,
         "width": 1008,
         "height": 189.59375
       },
       "viewport": {
         "innerWidth": 1440,
+        "innerHeight": 900,
         "stripWidth": 1008
       },
+      "scrollY": 0,
+      "scrollYAtMeasure": 0.0,
+      "scrollYAtShot": 0.0,
       "pixelVoidWiderThan40": false,
       "pixelVoids": [],
       "pixelVoidCount": 0,
+      "pixelsScanned": 421344,
       "canvasRgb": [
         13,
         16,
-        25
+        24
       ],
-      "canvasSource": "strip-inter-chip-gap (582.00css,-80.99css) gapCss=8.00",
+      "canvasSource": "strip-inter-chip-gap (582.00css,439.01css) gapCss=8.00",
       "bgTokenRgb": [
         13,
         16,
@@ -1708,8 +1713,14 @@
       "delta": [
         0,
         0,
-        1
-      ]
+        0
+      ],
+      "band": {
+        "x0": 664,
+        "x1": 2680,
+        "y0": 773,
+        "y1": 982
+      }
     },
     "dark_zh": {
       "ok": true,
@@ -1727,40 +1738,40 @@
         {
           "left": 332,
           "right": 578,
-          "top": -120.390625,
-          "bottom": -29.59375,
+          "top": 322.609375,
+          "bottom": 413.40625,
           "width": 246,
           "height": 90.796875
         },
         {
           "left": 586,
           "right": 832,
-          "top": -120.390625,
-          "bottom": -29.59375,
+          "top": 322.609375,
+          "bottom": 413.40625,
           "width": 246,
           "height": 90.796875
         },
         {
           "left": 840,
           "right": 1086,
-          "top": -120.390625,
-          "bottom": -29.59375,
+          "top": 322.609375,
+          "bottom": 413.40625,
           "width": 246,
           "height": 90.796875
         },
         {
           "left": 1094,
           "right": 1340,
-          "top": -120.390625,
-          "bottom": -29.59375,
+          "top": 322.609375,
+          "bottom": 413.40625,
           "width": 246,
           "height": 90.796875
         },
         {
           "left": 332,
           "right": 1340,
-          "top": -21.59375,
-          "bottom": 55.703125,
+          "top": 421.40625,
+          "bottom": 498.703125,
           "width": 1008,
           "height": 77.296875
         }
@@ -1768,24 +1779,29 @@
       "stripBox": {
         "left": 332,
         "right": 1340,
-        "top": -120.390625,
-        "bottom": 55.703125,
+        "top": 322.609375,
+        "bottom": 498.703125,
         "width": 1008,
         "height": 176.09375
       },
       "viewport": {
         "innerWidth": 1440,
+        "innerHeight": 900,
         "stripWidth": 1008
       },
+      "scrollY": 0,
+      "scrollYAtMeasure": 0.0,
+      "scrollYAtShot": 0.0,
       "pixelVoidWiderThan40": false,
       "pixelVoids": [],
       "pixelVoidCount": 0,
+      "pixelsScanned": 364896,
       "canvasRgb": [
         13,
         16,
-        25
+        24
       ],
-      "canvasSource": "strip-inter-chip-gap (582.00css,-74.99css) gapCss=8.00",
+      "canvasSource": "strip-inter-chip-gap (582.00css,368.01css) gapCss=8.00",
       "bgTokenRgb": [
         13,
         16,
@@ -1794,8 +1810,14 @@
       "delta": [
         0,
         0,
-        1
-      ]
+        0
+      ],
+      "band": {
+        "x0": 664,
+        "x1": 2680,
+        "y0": 645,
+        "y1": 826
+      }
     },
     "light_en": {
       "ok": true,
@@ -1813,40 +1835,40 @@
         {
           "left": 332,
           "right": 578,
-          "top": -137.140625,
-          "bottom": -30.84375,
+          "top": 386.859375,
+          "bottom": 493.15625,
           "width": 246,
           "height": 106.296875
         },
         {
           "left": 586,
           "right": 832,
-          "top": -137.140625,
-          "bottom": -30.84375,
+          "top": 386.859375,
+          "bottom": 493.15625,
           "width": 246,
           "height": 106.296875
         },
         {
           "left": 840,
           "right": 1086,
-          "top": -137.140625,
-          "bottom": -30.84375,
+          "top": 386.859375,
+          "bottom": 493.15625,
           "width": 246,
           "height": 106.296875
         },
         {
           "left": 1094,
           "right": 1340,
-          "top": -137.140625,
-          "bottom": -30.84375,
+          "top": 386.859375,
+          "bottom": 493.15625,
           "width": 246,
           "height": 106.296875
         },
         {
           "left": 332,
           "right": 1340,
-          "top": -22.84375,
-          "bottom": 56.453125,
+          "top": 501.15625,
+          "bottom": 580.453125,
           "width": 1008,
           "height": 79.296875
         }
@@ -1854,34 +1876,45 @@
       "stripBox": {
         "left": 332,
         "right": 1340,
-        "top": -137.140625,
-        "bottom": 56.453125,
+        "top": 386.859375,
+        "bottom": 580.453125,
         "width": 1008,
         "height": 193.59375
       },
       "viewport": {
         "innerWidth": 1440,
+        "innerHeight": 900,
         "stripWidth": 1008
       },
+      "scrollY": 0,
+      "scrollYAtMeasure": 0.0,
+      "scrollYAtShot": 0.0,
       "pixelVoidWiderThan40": false,
       "pixelVoids": [],
       "pixelVoidCount": 0,
+      "pixelsScanned": 429408,
       "canvasRgb": [
-        231,
-        234,
-        240
+        232,
+        235,
+        241
       ],
-      "canvasSource": "strip-inter-chip-gap (582.00css,-83.99css) gapCss=8.00",
+      "canvasSource": "strip-inter-chip-gap (582.00css,440.01css) gapCss=8.00",
       "bgTokenRgb": [
         232,
         235,
         241
       ],
       "delta": [
-        1,
-        1,
-        1
-      ]
+        0,
+        0,
+        0
+      ],
+      "band": {
+        "x0": 664,
+        "x1": 2680,
+        "y0": 773,
+        "y1": 986
+      }
     },
     "light_zh": {
       "ok": true,
@@ -1899,40 +1932,40 @@
         {
           "left": 332,
           "right": 578,
-          "top": -124.390625,
-          "bottom": -31.59375,
+          "top": 322.609375,
+          "bottom": 415.40625,
           "width": 246,
           "height": 92.796875
         },
         {
           "left": 586,
           "right": 832,
-          "top": -124.390625,
-          "bottom": -31.59375,
+          "top": 322.609375,
+          "bottom": 415.40625,
           "width": 246,
           "height": 92.796875
         },
         {
           "left": 840,
           "right": 1086,
-          "top": -124.390625,
-          "bottom": -31.59375,
+          "top": 322.609375,
+          "bottom": 415.40625,
           "width": 246,
           "height": 92.796875
         },
         {
           "left": 1094,
           "right": 1340,
-          "top": -124.390625,
-          "bottom": -31.59375,
+          "top": 322.609375,
+          "bottom": 415.40625,
           "width": 246,
           "height": 92.796875
         },
         {
           "left": 332,
           "right": 1340,
-          "top": -23.59375,
-          "bottom": 55.703125,
+          "top": 423.40625,
+          "bottom": 502.703125,
           "width": 1008,
           "height": 79.296875
         }
@@ -1940,34 +1973,45 @@
       "stripBox": {
         "left": 332,
         "right": 1340,
-        "top": -124.390625,
-        "bottom": 55.703125,
+        "top": 322.609375,
+        "bottom": 502.703125,
         "width": 1008,
         "height": 180.09375
       },
       "viewport": {
         "innerWidth": 1440,
+        "innerHeight": 900,
         "stripWidth": 1008
       },
+      "scrollY": 0,
+      "scrollYAtMeasure": 0.0,
+      "scrollYAtShot": 0.0,
       "pixelVoidWiderThan40": false,
       "pixelVoids": [],
       "pixelVoidCount": 0,
+      "pixelsScanned": 372960,
       "canvasRgb": [
-        231,
-        234,
-        240
+        232,
+        235,
+        241
       ],
-      "canvasSource": "strip-inter-chip-gap (582.00css,-77.99css) gapCss=8.00",
+      "canvasSource": "strip-inter-chip-gap (582.00css,369.01css) gapCss=8.00",
       "bgTokenRgb": [
         232,
         235,
         241
       ],
       "delta": [
-        1,
-        1,
-        1
-      ]
+        0,
+        0,
+        0
+      ],
+      "band": {
+        "x0": 664,
+        "x1": 2680,
+        "y0": 645,
+        "y1": 830
+      }
     }
   },
   "fab_display_1440_dark_en": {
@@ -1983,8 +2027,8 @@
       "height": 56
     }
   },
-  "capture_sha": "6548556b70ec3cc515b9c51d2d2968ceeaa143a5",
-  "commit_time_of_capture_sha": "2026-09-08T08:27:51-07:00",
+  "capture_sha": "54be458c734755e6456f82c98f57bfc9aca2e65c",
+  "commit_time_of_capture_sha": "2026-09-08T09:17:12-07:00",
   "fab_display_1440_dark_zh": {
     "present": true,
     "display": "flex",
@@ -2042,12 +2086,12 @@
     "mmbPanelPresent": true,
     "mmBrainMounted": true
   },
-  "generated_at_start": "2026-09-08T15:27:54Z",
-  "generated_at_end": "2026-09-08T15:30:20Z",
+  "generated_at_start": "2026-09-08T16:17:17Z",
+  "generated_at_end": "2026-09-08T16:19:41Z",
   "tree_clean_start": true,
   "tree_clean_end": true,
-  "head_start": "6548556b70ec3cc515b9c51d2d2968ceeaa143a5",
-  "head_end": "6548556b70ec3cc515b9c51d2d2968ceeaa143a5",
+  "head_start": "54be458c734755e6456f82c98f57bfc9aca2e65c",
+  "head_end": "54be458c734755e6456f82c98f57bfc9aca2e65c",
   "rail_768_dark_zh": {
     "ok": true,
     "railBg": "rgb(13, 16, 24)",
@@ -2065,11 +2109,11 @@
   },
   "clearance_768_dark_zh": {
     "ok": true,
-    "textCount": 319,
+    "textCount": 314,
     "positions": {
       "0": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
@@ -2099,7 +2143,7 @@
       },
       "50": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
@@ -2129,7 +2173,7 @@
       },
       "max": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
@@ -2186,11 +2230,11 @@
   },
   "clearance_768_light_zh": {
     "ok": true,
-    "textCount": 319,
+    "textCount": 314,
     "positions": {
       "0": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
@@ -2220,7 +2264,7 @@
       },
       "50": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
@@ -2250,7 +2294,7 @@
       },
       "max": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
@@ -2309,65 +2353,65 @@
     "mmBrainMounted": true
   },
   "e5_timeout_dark_en_1440": {
-    "elapsedMs": 8049.957584023476,
-    "requestSeenAtMs": 841302051.336166,
-    "cloneSeenAtMs": 841310101.29375,
+    "elapsedMs": 8039.45179104805,
+    "requestSeenAtMs": 844265254.5378749,
+    "cloneSeenAtMs": 844273293.989666,
     "templatePresent": true,
     "clonePresent": true,
     "headline": "This section didn't load"
   },
   "e5_timeout_dark_en_390": {
-    "elapsedMs": 8092.382917046547,
-    "requestSeenAtMs": 841310483.264916,
-    "cloneSeenAtMs": 841318575.647833,
+    "elapsedMs": 8101.184875011444,
+    "requestSeenAtMs": 844273685.576375,
+    "cloneSeenAtMs": 844281786.76125,
     "templatePresent": true,
     "clonePresent": true,
     "headline": "This section didn't load"
   },
   "e5_timeout_dark_zh_1440": {
-    "elapsedMs": 8091.3416659832,
-    "requestSeenAtMs": 841319031.06225,
-    "cloneSeenAtMs": 841327122.403916,
+    "elapsedMs": 8010.179332971573,
+    "requestSeenAtMs": 844282144.537083,
+    "cloneSeenAtMs": 844290154.716416,
     "templatePresent": true,
     "clonePresent": true,
     "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165"
   },
   "e5_timeout_dark_zh_390": {
-    "elapsedMs": 8049.501875042915,
-    "requestSeenAtMs": 841327568.6158329,
-    "cloneSeenAtMs": 841335618.117708,
+    "elapsedMs": 8086.035457968712,
+    "requestSeenAtMs": 844290535.2365,
+    "cloneSeenAtMs": 844298621.271958,
     "templatePresent": true,
     "clonePresent": true,
     "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165"
   },
   "e5_timeout_light_en_1440": {
-    "elapsedMs": 8083.231417059898,
-    "requestSeenAtMs": 841336004.2130829,
-    "cloneSeenAtMs": 841344087.4445,
+    "elapsedMs": 8053.582000017166,
+    "requestSeenAtMs": 844299085.446208,
+    "cloneSeenAtMs": 844307139.028208,
     "templatePresent": true,
     "clonePresent": true,
     "headline": "This section didn't load"
   },
   "e5_timeout_light_en_390": {
-    "elapsedMs": 8110.277999997139,
-    "requestSeenAtMs": 841344476.9002911,
-    "cloneSeenAtMs": 841352587.1782911,
+    "elapsedMs": 8012.973667025566,
+    "requestSeenAtMs": 844307517.525708,
+    "cloneSeenAtMs": 844315530.499375,
     "templatePresent": true,
     "clonePresent": true,
     "headline": "This section didn't load"
   },
   "e5_timeout_light_zh_1440": {
-    "elapsedMs": 8074.909667015076,
-    "requestSeenAtMs": 841353048.318208,
-    "cloneSeenAtMs": 841361123.227875,
+    "elapsedMs": 8035.071999907494,
+    "requestSeenAtMs": 844315984.2974161,
+    "cloneSeenAtMs": 844324019.369416,
     "templatePresent": true,
     "clonePresent": true,
     "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165"
   },
   "e5_timeout_light_zh_390": {
-    "elapsedMs": 8075.035332918167,
-    "requestSeenAtMs": 841361613.5632501,
-    "cloneSeenAtMs": 841369688.598583,
+    "elapsedMs": 8004.034125089645,
+    "requestSeenAtMs": 844324392.438833,
+    "cloneSeenAtMs": 844332396.4729581,
     "templatePresent": true,
     "clonePresent": true,
     "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165"
@@ -2385,7 +2429,7 @@
     "fadeWidth": 24.0,
     "fadeLeft": 186.9375,
     "fadeBeginsBeforeAnalyst": 56,
-    "maxScrollLeft": 454,
+    "maxScrollLeft": 438.0,
     "at0": {
       "scrollLeft": 0,
       "listBox": {
@@ -2464,25 +2508,25 @@
           "fraction": 0,
           "box": {
             "left": 401.703125,
-            "right": 548.625,
+            "right": 532.625,
             "top": 68,
             "bottom": 99.546875,
-            "width": 146.921875,
+            "width": 130.921875,
             "height": 31.546875
           },
           "underAnalyst": false,
           "overflow": "visible",
           "whiteSpace": "nowrap",
-          "scrollWidth": 147,
-          "clientWidth": 147,
+          "scrollWidth": 131,
+          "clientWidth": 131,
           "selfClips": false
         },
         {
           "label": "Inflation",
           "fraction": 0,
           "box": {
-            "left": 554.625,
-            "right": 640.953125,
+            "left": 538.625,
+            "right": 624.953125,
             "top": 68,
             "bottom": 99.546875,
             "width": 86.328125,
@@ -2498,7 +2542,7 @@
       ]
     },
     "atMax": {
-      "scrollLeft": 454,
+      "scrollLeft": 438,
       "listBox": {
         "left": 32,
         "right": 210.9375,
@@ -2520,8 +2564,8 @@
           "label": "Overview",
           "fraction": 0,
           "box": {
-            "left": -422,
-            "right": -322.84375,
+            "left": -406,
+            "right": -306.84375,
             "top": 68,
             "bottom": 101.546875,
             "width": 99.15625,
@@ -2538,8 +2582,8 @@
           "label": "Money & liquidity",
           "fraction": 0,
           "box": {
-            "left": -316.84375,
-            "right": -172.921875,
+            "left": -300.84375,
+            "right": -156.921875,
             "top": 68,
             "bottom": 99.546875,
             "width": 143.921875,
@@ -2556,8 +2600,8 @@
           "label": "Policy rates",
           "fraction": 0,
           "box": {
-            "left": -166.921875,
-            "right": -58.296875,
+            "left": -150.921875,
+            "right": -42.296875,
             "top": 68,
             "bottom": 99.546875,
             "width": 108.625,
@@ -2572,20 +2616,20 @@
         },
         {
           "label": "Rates & the curve",
-          "fraction": 0.4262469424651707,
+          "fraction": 0.4783387039026137,
           "box": {
-            "left": -52.296875,
+            "left": -36.296875,
             "right": 94.625,
             "top": 68,
             "bottom": 99.546875,
-            "width": 146.921875,
+            "width": 130.921875,
             "height": 31.546875
           },
           "underAnalyst": false,
           "overflow": "visible",
           "whiteSpace": "nowrap",
-          "scrollWidth": 147,
-          "clientWidth": 147,
+          "scrollWidth": 131,
+          "clientWidth": 131,
           "selfClips": false
         },
         {
@@ -2653,13 +2697,13 @@
         "fullyVisible": true,
         "overflow": "visible",
         "whiteSpace": "nowrap",
-        "scrollWidth": 147,
-        "clientWidth": 147,
+        "scrollWidth": 131,
+        "clientWidth": 131,
         "selfClips": false
       },
       {
         "label": "Inflation",
-        "fullyVisibleAtScrollLeft": 454,
+        "fullyVisibleAtScrollLeft": 438,
         "fraction": 0.9998190045248869,
         "underAnalyst": false,
         "fullyVisible": true,
@@ -2670,8 +2714,12 @@
         "selfClips": false
       }
     ],
+    "fadeVisualApplicable": true,
+    "fadeVisualReason": null,
+    "fadeOnsetX": 185.9375,
     "fadeVisualStartX": 185.9375,
-    "fadeVisualHalfX": 185.9375
+    "fadeVisualHalfX": 185.9375,
+    "fadeHalfDelta": -1.0
   },
   "chip_material_dark_en_390": {
     "ok": true,
@@ -2716,7 +2764,7 @@
     "fadeWidth": 24.0,
     "fadeLeft": 226.90625,
     "fadeBeginsBeforeAnalyst": 56,
-    "maxScrollLeft": 313,
+    "maxScrollLeft": 297.0,
     "at0": {
       "scrollLeft": 0,
       "listBox": {
@@ -2795,25 +2843,25 @@
           "fraction": 0,
           "box": {
             "left": 324.71875,
-            "right": 470.890625,
+            "right": 454.890625,
             "top": 68,
             "bottom": 99.546875,
-            "width": 146.171875,
+            "width": 130.171875,
             "height": 31.546875
           },
           "underAnalyst": true,
           "overflow": "visible",
           "whiteSpace": "nowrap",
-          "scrollWidth": 146,
-          "clientWidth": 146,
+          "scrollWidth": 130,
+          "clientWidth": 130,
           "selfClips": false
         },
         {
           "label": "\u901a\u80c0",
           "fraction": 0,
           "box": {
-            "left": 476.890625,
-            "right": 540.4375,
+            "left": 460.890625,
+            "right": 524.4375,
             "top": 68,
             "bottom": 99.546875,
             "width": 63.546875,
@@ -2829,7 +2877,7 @@
       ]
     },
     "atMax": {
-      "scrollLeft": 313,
+      "scrollLeft": 297,
       "listBox": {
         "left": 32,
         "right": 250.90625,
@@ -2851,8 +2899,8 @@
           "label": "\u603b\u89c8",
           "fraction": 0,
           "box": {
-            "left": -281,
-            "right": -216,
+            "left": -265,
+            "right": -200,
             "top": 68,
             "bottom": 101.546875,
             "width": 65,
@@ -2869,8 +2917,8 @@
           "label": "\u8d44\u91d1\u4e0e\u6d41\u52a8\u6027",
           "fraction": 0,
           "box": {
-            "left": -210,
-            "right": -91.375,
+            "left": -194,
+            "right": -75.375,
             "top": 68,
             "bottom": 99.546875,
             "width": 118.625,
@@ -2887,8 +2935,8 @@
           "label": "\u653f\u7b56\u5229\u7387",
           "fraction": 0,
           "box": {
-            "left": -85.375,
-            "right": 5.71875,
+            "left": -69.375,
+            "right": 21.71875,
             "top": 68,
             "bottom": 99.546875,
             "width": 91.09375,
@@ -2903,20 +2951,20 @@
         },
         {
           "label": "\u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf",
-          "fraction": 0.8612506680919294,
+          "fraction": 0.967110791021486,
           "box": {
-            "left": 11.71875,
+            "left": 27.71875,
             "right": 157.890625,
             "top": 68,
             "bottom": 99.546875,
-            "width": 146.171875,
+            "width": 130.171875,
             "height": 31.546875
           },
           "underAnalyst": false,
           "overflow": "visible",
           "whiteSpace": "nowrap",
-          "scrollWidth": 146,
-          "clientWidth": 146,
+          "scrollWidth": 130,
+          "clientWidth": 130,
           "selfClips": false
         },
         {
@@ -2978,19 +3026,19 @@
       },
       {
         "label": "\u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf",
-        "fullyVisibleAtScrollLeft": 262,
+        "fullyVisibleAtScrollLeft": 246,
         "fraction": 1,
         "underAnalyst": false,
         "fullyVisible": true,
         "overflow": "visible",
         "whiteSpace": "nowrap",
-        "scrollWidth": 146,
-        "clientWidth": 146,
+        "scrollWidth": 130,
+        "clientWidth": 130,
         "selfClips": false
       },
       {
         "label": "\u901a\u80c0",
-        "fullyVisibleAtScrollLeft": 313,
+        "fullyVisibleAtScrollLeft": 297,
         "fraction": 0.9916400295057782,
         "underAnalyst": false,
         "fullyVisible": true,
@@ -3001,8 +3049,12 @@
         "selfClips": false
       }
     ],
-    "fadeVisualStartX": 227.90625,
-    "fadeVisualHalfX": 240.90625
+    "fadeVisualApplicable": true,
+    "fadeVisualReason": null,
+    "fadeOnsetX": 227.90625,
+    "fadeVisualStartX": 240.90625,
+    "fadeVisualHalfX": 240.90625,
+    "fadeHalfDelta": 14.0
   },
   "chip_material_dark_zh_390": {
     "ok": true,
@@ -3047,7 +3099,7 @@
     "fadeWidth": 24.0,
     "fadeLeft": 186.9375,
     "fadeBeginsBeforeAnalyst": 56,
-    "maxScrollLeft": 454,
+    "maxScrollLeft": 438.0,
     "at0": {
       "scrollLeft": 0,
       "listBox": {
@@ -3126,25 +3178,25 @@
           "fraction": 0,
           "box": {
             "left": 401.703125,
-            "right": 548.625,
+            "right": 532.625,
             "top": 68,
             "bottom": 99.546875,
-            "width": 146.921875,
+            "width": 130.921875,
             "height": 31.546875
           },
           "underAnalyst": false,
           "overflow": "visible",
           "whiteSpace": "nowrap",
-          "scrollWidth": 147,
-          "clientWidth": 147,
+          "scrollWidth": 131,
+          "clientWidth": 131,
           "selfClips": false
         },
         {
           "label": "Inflation",
           "fraction": 0,
           "box": {
-            "left": 554.625,
-            "right": 640.953125,
+            "left": 538.625,
+            "right": 624.953125,
             "top": 68,
             "bottom": 99.546875,
             "width": 86.328125,
@@ -3160,7 +3212,7 @@
       ]
     },
     "atMax": {
-      "scrollLeft": 454,
+      "scrollLeft": 438,
       "listBox": {
         "left": 32,
         "right": 210.9375,
@@ -3182,8 +3234,8 @@
           "label": "Overview",
           "fraction": 0,
           "box": {
-            "left": -422,
-            "right": -322.84375,
+            "left": -406,
+            "right": -306.84375,
             "top": 68,
             "bottom": 101.546875,
             "width": 99.15625,
@@ -3200,8 +3252,8 @@
           "label": "Money & liquidity",
           "fraction": 0,
           "box": {
-            "left": -316.84375,
-            "right": -172.921875,
+            "left": -300.84375,
+            "right": -156.921875,
             "top": 68,
             "bottom": 99.546875,
             "width": 143.921875,
@@ -3218,8 +3270,8 @@
           "label": "Policy rates",
           "fraction": 0,
           "box": {
-            "left": -166.921875,
-            "right": -58.296875,
+            "left": -150.921875,
+            "right": -42.296875,
             "top": 68,
             "bottom": 99.546875,
             "width": 108.625,
@@ -3234,20 +3286,20 @@
         },
         {
           "label": "Rates & the curve",
-          "fraction": 0.4262469424651707,
+          "fraction": 0.4783387039026137,
           "box": {
-            "left": -52.296875,
+            "left": -36.296875,
             "right": 94.625,
             "top": 68,
             "bottom": 99.546875,
-            "width": 146.921875,
+            "width": 130.921875,
             "height": 31.546875
           },
           "underAnalyst": false,
           "overflow": "visible",
           "whiteSpace": "nowrap",
-          "scrollWidth": 147,
-          "clientWidth": 147,
+          "scrollWidth": 131,
+          "clientWidth": 131,
           "selfClips": false
         },
         {
@@ -3315,13 +3367,13 @@
         "fullyVisible": true,
         "overflow": "visible",
         "whiteSpace": "nowrap",
-        "scrollWidth": 147,
-        "clientWidth": 147,
+        "scrollWidth": 131,
+        "clientWidth": 131,
         "selfClips": false
       },
       {
         "label": "Inflation",
-        "fullyVisibleAtScrollLeft": 454,
+        "fullyVisibleAtScrollLeft": 438,
         "fraction": 0.9998190045248869,
         "underAnalyst": false,
         "fullyVisible": true,
@@ -3332,8 +3384,12 @@
         "selfClips": false
       }
     ],
+    "fadeVisualApplicable": true,
+    "fadeVisualReason": null,
+    "fadeOnsetX": 185.9375,
     "fadeVisualStartX": 185.9375,
-    "fadeVisualHalfX": 185.9375
+    "fadeVisualHalfX": 185.9375,
+    "fadeHalfDelta": -1.0
   },
   "chip_material_light_en_390": {
     "ok": true,
@@ -3378,7 +3434,7 @@
     "fadeWidth": 24.0,
     "fadeLeft": 226.90625,
     "fadeBeginsBeforeAnalyst": 56,
-    "maxScrollLeft": 313,
+    "maxScrollLeft": 297.0,
     "at0": {
       "scrollLeft": 0,
       "listBox": {
@@ -3457,25 +3513,25 @@
           "fraction": 0,
           "box": {
             "left": 324.71875,
-            "right": 470.890625,
+            "right": 454.890625,
             "top": 68,
             "bottom": 99.546875,
-            "width": 146.171875,
+            "width": 130.171875,
             "height": 31.546875
           },
           "underAnalyst": true,
           "overflow": "visible",
           "whiteSpace": "nowrap",
-          "scrollWidth": 146,
-          "clientWidth": 146,
+          "scrollWidth": 130,
+          "clientWidth": 130,
           "selfClips": false
         },
         {
           "label": "\u901a\u80c0",
           "fraction": 0,
           "box": {
-            "left": 476.890625,
-            "right": 540.4375,
+            "left": 460.890625,
+            "right": 524.4375,
             "top": 68,
             "bottom": 99.546875,
             "width": 63.546875,
@@ -3491,7 +3547,7 @@
       ]
     },
     "atMax": {
-      "scrollLeft": 313,
+      "scrollLeft": 297,
       "listBox": {
         "left": 32,
         "right": 250.90625,
@@ -3513,8 +3569,8 @@
           "label": "\u603b\u89c8",
           "fraction": 0,
           "box": {
-            "left": -281,
-            "right": -216,
+            "left": -265,
+            "right": -200,
             "top": 68,
             "bottom": 101.546875,
             "width": 65,
@@ -3531,8 +3587,8 @@
           "label": "\u8d44\u91d1\u4e0e\u6d41\u52a8\u6027",
           "fraction": 0,
           "box": {
-            "left": -210,
-            "right": -91.375,
+            "left": -194,
+            "right": -75.375,
             "top": 68,
             "bottom": 99.546875,
             "width": 118.625,
@@ -3549,8 +3605,8 @@
           "label": "\u653f\u7b56\u5229\u7387",
           "fraction": 0,
           "box": {
-            "left": -85.375,
-            "right": 5.71875,
+            "left": -69.375,
+            "right": 21.71875,
             "top": 68,
             "bottom": 99.546875,
             "width": 91.09375,
@@ -3565,20 +3621,20 @@
         },
         {
           "label": "\u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf",
-          "fraction": 0.8612506680919294,
+          "fraction": 0.967110791021486,
           "box": {
-            "left": 11.71875,
+            "left": 27.71875,
             "right": 157.890625,
             "top": 68,
             "bottom": 99.546875,
-            "width": 146.171875,
+            "width": 130.171875,
             "height": 31.546875
           },
           "underAnalyst": false,
           "overflow": "visible",
           "whiteSpace": "nowrap",
-          "scrollWidth": 146,
-          "clientWidth": 146,
+          "scrollWidth": 130,
+          "clientWidth": 130,
           "selfClips": false
         },
         {
@@ -3640,19 +3696,19 @@
       },
       {
         "label": "\u5229\u7387\u4e0e\u6536\u76ca\u7387\u66f2\u7ebf",
-        "fullyVisibleAtScrollLeft": 262,
+        "fullyVisibleAtScrollLeft": 246,
         "fraction": 1,
         "underAnalyst": false,
         "fullyVisible": true,
         "overflow": "visible",
         "whiteSpace": "nowrap",
-        "scrollWidth": 146,
-        "clientWidth": 146,
+        "scrollWidth": 130,
+        "clientWidth": 130,
         "selfClips": false
       },
       {
         "label": "\u901a\u80c0",
-        "fullyVisibleAtScrollLeft": 313,
+        "fullyVisibleAtScrollLeft": 297,
         "fraction": 0.9916400295057782,
         "underAnalyst": false,
         "fullyVisible": true,
@@ -3663,8 +3719,12 @@
         "selfClips": false
       }
     ],
-    "fadeVisualStartX": 227.90625,
-    "fadeVisualHalfX": 240.90625
+    "fadeVisualApplicable": true,
+    "fadeVisualReason": null,
+    "fadeOnsetX": 227.90625,
+    "fadeVisualStartX": 240.90625,
+    "fadeVisualHalfX": 240.90625,
+    "fadeHalfDelta": 14.0
   },
   "chip_material_light_zh_390": {
     "ok": true,
@@ -3709,7 +3769,7 @@
     "fadeWidth": 24.0,
     "fadeLeft": 560.9375,
     "fadeBeginsBeforeAnalyst": 56,
-    "maxScrollLeft": 84,
+    "maxScrollLeft": 68.0,
     "at0": {
       "scrollLeft": 0,
       "listBox": {
@@ -3788,25 +3848,25 @@
           "fraction": 1,
           "box": {
             "left": 405.703125,
-            "right": 552.625,
+            "right": 536.625,
             "top": 68,
             "bottom": 99.546875,
-            "width": 146.921875,
+            "width": 130.921875,
             "height": 31.546875
           },
           "underAnalyst": false,
           "overflow": "visible",
           "whiteSpace": "nowrap",
-          "scrollWidth": 147,
-          "clientWidth": 147,
+          "scrollWidth": 131,
+          "clientWidth": 131,
           "selfClips": false
         },
         {
           "label": "Inflation",
-          "fraction": 0.026787330316742082,
+          "fraction": 0.21212669683257918,
           "box": {
-            "left": 558.625,
-            "right": 644.953125,
+            "left": 542.625,
+            "right": 628.953125,
             "top": 68,
             "bottom": 99.546875,
             "width": 86.328125,
@@ -3822,7 +3882,7 @@
       ]
     },
     "atMax": {
-      "scrollLeft": 84,
+      "scrollLeft": 68,
       "listBox": {
         "left": 36,
         "right": 584.9375,
@@ -3842,10 +3902,10 @@
       "chips": [
         {
           "label": "Overview",
-          "fraction": 0.15285219035612985,
+          "fraction": 0.3142136779073432,
           "box": {
-            "left": -48,
-            "right": 51.15625,
+            "left": -32,
+            "right": 67.15625,
             "top": 68,
             "bottom": 101.546875,
             "width": 99.15625,
@@ -3862,8 +3922,8 @@
           "label": "Money & liquidity",
           "fraction": 1,
           "box": {
-            "left": 57.15625,
-            "right": 201.078125,
+            "left": 73.15625,
+            "right": 217.078125,
             "top": 68,
             "bottom": 99.546875,
             "width": 143.921875,
@@ -3880,8 +3940,8 @@
           "label": "Policy rates",
           "fraction": 1,
           "box": {
-            "left": 207.078125,
-            "right": 315.703125,
+            "left": 223.078125,
+            "right": 331.703125,
             "top": 68,
             "bottom": 99.546875,
             "width": 108.625,
@@ -3898,18 +3958,18 @@
           "label": "Rates & the curve",
           "fraction": 1,
           "box": {
-            "left": 321.703125,
+            "left": 337.703125,
             "right": 468.625,
             "top": 68,
             "bottom": 99.546875,
-            "width": 146.921875,
+            "width": 130.921875,
             "height": 31.546875
           },
           "underAnalyst": false,
           "overflow": "visible",
           "whiteSpace": "nowrap",
-          "scrollWidth": 147,
-          "clientWidth": 147,
+          "scrollWidth": 131,
+          "clientWidth": 131,
           "selfClips": false
         },
         {
@@ -3977,13 +4037,13 @@
         "fullyVisible": true,
         "overflow": "visible",
         "whiteSpace": "nowrap",
-        "scrollWidth": 147,
-        "clientWidth": 147,
+        "scrollWidth": 131,
+        "clientWidth": 131,
         "selfClips": false
       },
       {
         "label": "Inflation",
-        "fullyVisibleAtScrollLeft": 84,
+        "fullyVisibleAtScrollLeft": 68,
         "fraction": 0.9998190045248869,
         "underAnalyst": false,
         "fullyVisible": true,
@@ -3994,8 +4054,12 @@
         "selfClips": false
       }
     ],
-    "fadeVisualStartX": 564.9375,
-    "fadeVisualHalfX": 573.9375
+    "fadeVisualApplicable": true,
+    "fadeVisualReason": null,
+    "fadeOnsetX": 564.9375,
+    "fadeVisualStartX": 573.9375,
+    "fadeVisualHalfX": 573.9375,
+    "fadeHalfDelta": 13.0
   },
   "chip_material_dark_en_768": {
     "ok": true,
@@ -4040,7 +4104,7 @@
     "fadeWidth": 24.0,
     "fadeLeft": 600.90625,
     "fadeBeginsBeforeAnalyst": 56,
-    "maxScrollLeft": 0,
+    "maxScrollLeft": 0.0,
     "at0": {
       "scrollLeft": 0,
       "listBox": {
@@ -4119,25 +4183,25 @@
           "fraction": 1,
           "box": {
             "left": 328.71875,
-            "right": 474.890625,
+            "right": 458.890625,
             "top": 112.390625,
             "bottom": 143.9375,
-            "width": 146.171875,
+            "width": 130.171875,
             "height": 31.546875
           },
           "underAnalyst": false,
           "overflow": "visible",
           "whiteSpace": "nowrap",
-          "scrollWidth": 146,
-          "clientWidth": 146,
+          "scrollWidth": 130,
+          "clientWidth": 130,
           "selfClips": false
         },
         {
           "label": "\u901a\u80c0",
           "fraction": 1,
           "box": {
-            "left": 480.890625,
-            "right": 544.4375,
+            "left": 464.890625,
+            "right": 528.4375,
             "top": 112.390625,
             "bottom": 143.9375,
             "width": 63.546875,
@@ -4230,25 +4294,25 @@
           "fraction": 1,
           "box": {
             "left": 328.71875,
-            "right": 474.890625,
+            "right": 458.890625,
             "top": 112.390625,
             "bottom": 143.9375,
-            "width": 146.171875,
+            "width": 130.171875,
             "height": 31.546875
           },
           "underAnalyst": false,
           "overflow": "visible",
           "whiteSpace": "nowrap",
-          "scrollWidth": 146,
-          "clientWidth": 146,
+          "scrollWidth": 130,
+          "clientWidth": 130,
           "selfClips": false
         },
         {
           "label": "\u901a\u80c0",
           "fraction": 1,
           "box": {
-            "left": 480.890625,
-            "right": 544.4375,
+            "left": 464.890625,
+            "right": 528.4375,
             "top": 112.390625,
             "bottom": 143.9375,
             "width": 63.546875,
@@ -4308,8 +4372,8 @@
         "fullyVisible": true,
         "overflow": "visible",
         "whiteSpace": "nowrap",
-        "scrollWidth": 146,
-        "clientWidth": 146,
+        "scrollWidth": 130,
+        "clientWidth": 130,
         "selfClips": false
       },
       {
@@ -4325,8 +4389,10 @@
         "selfClips": false
       }
     ],
-    "fadeVisualStartX": 600.90625,
-    "fadeVisualHalfX": 600.90625
+    "fadeVisualApplicable": false,
+    "fadeVisualReason": "maxScrollLeft=0",
+    "fadeOnsetX": null,
+    "fadeVisualStartX": null
   },
   "chip_material_dark_zh_768": {
     "ok": true,
@@ -4371,7 +4437,7 @@
     "fadeWidth": 24.0,
     "fadeLeft": 560.9375,
     "fadeBeginsBeforeAnalyst": 56,
-    "maxScrollLeft": 84,
+    "maxScrollLeft": 68.0,
     "at0": {
       "scrollLeft": 0,
       "listBox": {
@@ -4450,25 +4516,25 @@
           "fraction": 1,
           "box": {
             "left": 405.703125,
-            "right": 552.625,
+            "right": 536.625,
             "top": 68,
             "bottom": 99.546875,
-            "width": 146.921875,
+            "width": 130.921875,
             "height": 31.546875
           },
           "underAnalyst": false,
           "overflow": "visible",
           "whiteSpace": "nowrap",
-          "scrollWidth": 147,
-          "clientWidth": 147,
+          "scrollWidth": 131,
+          "clientWidth": 131,
           "selfClips": false
         },
         {
           "label": "Inflation",
-          "fraction": 0.026787330316742082,
+          "fraction": 0.21212669683257918,
           "box": {
-            "left": 558.625,
-            "right": 644.953125,
+            "left": 542.625,
+            "right": 628.953125,
             "top": 68,
             "bottom": 99.546875,
             "width": 86.328125,
@@ -4484,7 +4550,7 @@
       ]
     },
     "atMax": {
-      "scrollLeft": 84,
+      "scrollLeft": 68,
       "listBox": {
         "left": 36,
         "right": 584.9375,
@@ -4504,10 +4570,10 @@
       "chips": [
         {
           "label": "Overview",
-          "fraction": 0.15285219035612985,
+          "fraction": 0.3142136779073432,
           "box": {
-            "left": -48,
-            "right": 51.15625,
+            "left": -32,
+            "right": 67.15625,
             "top": 68,
             "bottom": 101.546875,
             "width": 99.15625,
@@ -4524,8 +4590,8 @@
           "label": "Money & liquidity",
           "fraction": 1,
           "box": {
-            "left": 57.15625,
-            "right": 201.078125,
+            "left": 73.15625,
+            "right": 217.078125,
             "top": 68,
             "bottom": 99.546875,
             "width": 143.921875,
@@ -4542,8 +4608,8 @@
           "label": "Policy rates",
           "fraction": 1,
           "box": {
-            "left": 207.078125,
-            "right": 315.703125,
+            "left": 223.078125,
+            "right": 331.703125,
             "top": 68,
             "bottom": 99.546875,
             "width": 108.625,
@@ -4560,18 +4626,18 @@
           "label": "Rates & the curve",
           "fraction": 1,
           "box": {
-            "left": 321.703125,
+            "left": 337.703125,
             "right": 468.625,
             "top": 68,
             "bottom": 99.546875,
-            "width": 146.921875,
+            "width": 130.921875,
             "height": 31.546875
           },
           "underAnalyst": false,
           "overflow": "visible",
           "whiteSpace": "nowrap",
-          "scrollWidth": 147,
-          "clientWidth": 147,
+          "scrollWidth": 131,
+          "clientWidth": 131,
           "selfClips": false
         },
         {
@@ -4639,13 +4705,13 @@
         "fullyVisible": true,
         "overflow": "visible",
         "whiteSpace": "nowrap",
-        "scrollWidth": 147,
-        "clientWidth": 147,
+        "scrollWidth": 131,
+        "clientWidth": 131,
         "selfClips": false
       },
       {
         "label": "Inflation",
-        "fullyVisibleAtScrollLeft": 84,
+        "fullyVisibleAtScrollLeft": 68,
         "fraction": 0.9998190045248869,
         "underAnalyst": false,
         "fullyVisible": true,
@@ -4656,8 +4722,12 @@
         "selfClips": false
       }
     ],
-    "fadeVisualStartX": 564.9375,
-    "fadeVisualHalfX": 573.9375
+    "fadeVisualApplicable": true,
+    "fadeVisualReason": null,
+    "fadeOnsetX": 564.9375,
+    "fadeVisualStartX": 573.9375,
+    "fadeVisualHalfX": 573.9375,
+    "fadeHalfDelta": 13.0
   },
   "chip_material_light_en_768": {
     "ok": true,
@@ -4702,7 +4772,7 @@
     "fadeWidth": 24.0,
     "fadeLeft": 600.90625,
     "fadeBeginsBeforeAnalyst": 56,
-    "maxScrollLeft": 0,
+    "maxScrollLeft": 0.0,
     "at0": {
       "scrollLeft": 0,
       "listBox": {
@@ -4781,25 +4851,25 @@
           "fraction": 1,
           "box": {
             "left": 328.71875,
-            "right": 474.890625,
+            "right": 458.890625,
             "top": 110.390625,
             "bottom": 141.9375,
-            "width": 146.171875,
+            "width": 130.171875,
             "height": 31.546875
           },
           "underAnalyst": false,
           "overflow": "visible",
           "whiteSpace": "nowrap",
-          "scrollWidth": 146,
-          "clientWidth": 146,
+          "scrollWidth": 130,
+          "clientWidth": 130,
           "selfClips": false
         },
         {
           "label": "\u901a\u80c0",
           "fraction": 1,
           "box": {
-            "left": 480.890625,
-            "right": 544.4375,
+            "left": 464.890625,
+            "right": 528.4375,
             "top": 110.390625,
             "bottom": 141.9375,
             "width": 63.546875,
@@ -4892,25 +4962,25 @@
           "fraction": 1,
           "box": {
             "left": 328.71875,
-            "right": 474.890625,
+            "right": 458.890625,
             "top": 110.390625,
             "bottom": 141.9375,
-            "width": 146.171875,
+            "width": 130.171875,
             "height": 31.546875
           },
           "underAnalyst": false,
           "overflow": "visible",
           "whiteSpace": "nowrap",
-          "scrollWidth": 146,
-          "clientWidth": 146,
+          "scrollWidth": 130,
+          "clientWidth": 130,
           "selfClips": false
         },
         {
           "label": "\u901a\u80c0",
           "fraction": 1,
           "box": {
-            "left": 480.890625,
-            "right": 544.4375,
+            "left": 464.890625,
+            "right": 528.4375,
             "top": 110.390625,
             "bottom": 141.9375,
             "width": 63.546875,
@@ -4970,8 +5040,8 @@
         "fullyVisible": true,
         "overflow": "visible",
         "whiteSpace": "nowrap",
-        "scrollWidth": 146,
-        "clientWidth": 146,
+        "scrollWidth": 130,
+        "clientWidth": 130,
         "selfClips": false
       },
       {
@@ -4987,8 +5057,10 @@
         "selfClips": false
       }
     ],
-    "fadeVisualStartX": 600.90625,
-    "fadeVisualHalfX": 600.90625
+    "fadeVisualApplicable": false,
+    "fadeVisualReason": "maxScrollLeft=0",
+    "fadeOnsetX": null,
+    "fadeVisualStartX": null
   },
   "chip_material_light_zh_768": {
     "ok": true,
@@ -5022,11 +5094,11 @@
   },
   "clearance_1440_dark_en": {
     "ok": true,
-    "textCount": 319,
+    "textCount": 314,
     "positions": {
       "0": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
@@ -5071,7 +5143,7 @@
       },
       "50": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
@@ -5116,7 +5188,7 @@
       },
       "max": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
@@ -5178,11 +5250,11 @@
   },
   "clearance_1440_dark_zh": {
     "ok": true,
-    "textCount": 319,
+    "textCount": 314,
     "positions": {
       "0": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
@@ -5227,7 +5299,7 @@
       },
       "50": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
@@ -5272,7 +5344,7 @@
       },
       "max": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
@@ -5334,11 +5406,11 @@
   },
   "clearance_1440_light_en": {
     "ok": true,
-    "textCount": 319,
+    "textCount": 314,
     "positions": {
       "0": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
@@ -5383,7 +5455,7 @@
       },
       "50": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
@@ -5428,7 +5500,7 @@
       },
       "max": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
@@ -5490,11 +5562,11 @@
   },
   "clearance_1440_light_zh": {
     "ok": true,
-    "textCount": 319,
+    "textCount": 314,
     "positions": {
       "0": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
@@ -5539,7 +5611,7 @@
       },
       "50": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
@@ -5584,7 +5656,7 @@
       },
       "max": {
         "ok": true,
-        "textCount": 319,
+        "textCount": 314,
         "hits": [],
         "excused": [],
         "analystPosition": "static",
