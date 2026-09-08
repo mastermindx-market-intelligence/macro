@@ -171,6 +171,10 @@ def _expected_metric_value(metric: dict) -> str:
         return f"{value * 100:.3f}%"
     if unit in {"months", "events", "episodes", "draws", "tickers"}:
         return str(value)
+    if unit == "probability" and isinstance(value, (int, float)) and not isinstance(value, bool):
+        if value < 0.00005:
+            return "below 0.0001"
+        return f"{value:.4g}"
     if isinstance(value, (int, float)) and not isinstance(value, bool):
         return f"{value:.4f}"
     return str(value)
@@ -240,9 +244,45 @@ def test_visual_evidence_receipt_binds_the_template_and_eight_rest_cells():
         assert state["applied_locale"] == state["locale"]
         assert state["viewport_width"] == (1440 if state["viewport"] == "desktop" else 390)
     samples = manifest.get("rail_samples", {}).get("frames", [])
-    assert len(samples) == 4, "four fixture rails must be sampled"
-    colours = {tuple(row["mean_rgb"]) for row in samples}
-    assert len(colours) == 4, f"fixture rails must be four distinct colours, got {colours}"
+    assert samples, "rail_samples.frames must record mode + mechanism per state"
+    by_key = {
+        (row["quality"], row["theme"], row["locale"]): row
+        for row in samples
+    }
+    required_qualities = {
+        "COMPLETE": "solid",
+        "DIAGNOSTIC_ONLY": "dashed",
+        "STALE": "hatched",
+        "ARTIFACT_MISSING": "solid",
+        "DIAGNOSTIC_FAILED": "solid",
+    }
+    for quality, mechanism in required_qualities.items():
+        for theme in ("dark", "light"):
+            for locale in ("en", "zh"):
+                row = by_key.get((quality, theme, locale))
+                assert row, f"missing rail sample {quality}/{theme}/{locale}"
+                assert row["mechanism"] == mechanism, (
+                    f"{quality} mechanism must be {mechanism}, got {row['mechanism']}"
+                )
+                assert "mode_rgb" in row and len(row["mode_rgb"]) == 3
+                assert "mean_rgb" not in row
+    for theme in ("dark", "light"):
+        for locale in ("en", "zh"):
+            complete = tuple(by_key[("COMPLETE", theme, locale)]["mode_rgb"])
+            failed = tuple(by_key[("DIAGNOSTIC_FAILED", theme, locale)]["mode_rgb"])
+            assert complete != failed, (
+                f"COMPLETE rail must not equal DIAGNOSTIC_FAILED in {theme}/{locale}: "
+                f"{complete} == {failed}"
+            )
+    stale_mech = {row["mechanism"] for row in samples if row["quality"] == "STALE"}
+    other_mech = {row["mechanism"] for row in samples if row["quality"] == "UNKNOWN_FALLBACK"}
+    if other_mech:
+        assert stale_mech != other_mech or any(
+            tuple(a["mode_rgb"]) != tuple(b["mode_rgb"])
+            for a in samples if a["quality"] == "STALE"
+            for b in samples if b["quality"] == "UNKNOWN_FALLBACK"
+            if a["theme"] == b["theme"] and a["locale"] == b["locale"]
+        )
 
 
 def test_stale_ungoverned_ric_verify_shots_are_gone():
@@ -674,10 +714,10 @@ def test_real_pair_lede_is_derived_from_card_states(contract, real_section):
     n = len(contract["cards"])
     k = sum(1 for card in contract["cards"] if card["quality"] == "COMPLETE")
     assert n == 2 and k == 0
-    assert "None of the 2 cards below is usable today." in real_section
-    assert "下方 2 张卡片今天均不可用。" in real_section
-    assert "Neither card below is usable" not in real_section
-    assert "下方两张卡片均不可用" not in real_section
+    assert "Neither card below is usable today." in real_section
+    assert "下方两张卡片今天均不可用。" in real_section
+    assert "None of the 2 cards below is usable today." not in real_section
+    assert "下方 2 张卡片今天均不可用。" not in real_section
 
 
 def test_dom_order_equals_contract_order(contract, real_section):
@@ -812,11 +852,11 @@ def test_unknown_quality_state_degrades_without_inventing_a_verdict():
     section = _section(_render(research_implications=_envelope([card])))
     assert section
     header = _isolate_header(_isolate_card(section, "event_study"))
-    assert "State reported by the owner" in header
-    assert "所有者报告的状态" in header
+    assert "State not recognised" in header
+    assert "状态未识别" in header
     assert "SOMETHING_NEW" not in header
-    assert 'data-ric-f="q:SOMETHING_NEW"' in section
-    start = section.find('data-ric-f="q:SOMETHING_NEW"')
+    assert 'data-ric-f="q:other"' in section
+    start = section.find('data-ric-f="q:other"')
     end = section.find("</button>", start)
     button = section[start:end]
     assert "Other states" in button
@@ -872,8 +912,8 @@ def test_derived_lede_n2_k0():
         _minimal_card(family="synthetic_control", quality="ARTIFACT_MISSING"),
     ]
     section = _section(_render(research_implications=_envelope(cards)))
-    assert "None of the 2 cards below is usable today." in section
-    assert "下方 2 张卡片今天均不可用。" in section
+    assert "Neither card below is usable today." in section
+    assert "下方两张卡片今天均不可用。" in section
 
 
 def test_derived_lede_n2_k1():
@@ -921,12 +961,20 @@ def test_state_rail_css_uses_distinct_semantic_tokens():
     css = (REPO / "templates" / "measurement.html.j2").read_text(encoding="utf-8")
     style_end = css.find("</style>")
     ric_css = css[css.find(".ric-rail") : style_end]
-    assert ".ric-card.ric-s-complete .ric-rail{background:var(--ink-act)}" in ric_css
-    assert "repeating-linear-gradient" in ric_css
-    assert ".ric-card.ric-s-stale .ric-rail{background:var(--muted)}" in ric_css
+    assert ".ric-card.ric-s-complete .ric-rail{background:var(--ink-ok)}" in ric_css
+    assert (
+        ".ric-card.ric-s-diagnostic .ric-rail{background:repeating-linear-gradient("
+        "180deg,var(--muted) 0 7px,transparent 7px 14px)}"
+    ) in ric_css
+    assert (
+        ".ric-card.ric-s-stale .ric-rail{background:repeating-linear-gradient("
+        "135deg, var(--muted) 0 4px, transparent 4px 8px)}"
+    ) in ric_css
+    assert ".ric-card.ric-s-stale .ric-state{color:var(--muted)}" in ric_css
     assert ".ric-card.ric-s-missing .ric-rail{background:var(--warn)}" in ric_css
     assert ".ric-card.ric-s-failed  .ric-rail{background:var(--act)}" in ric_css
     assert ".ric-card.ric-s-incomplete .ric-rail{background:var(--warn)}" in ric_css
+    assert "var(--ink-act)" not in ric_css
     assert "var(--up)" not in ric_css
     assert "var(--down)" not in ric_css
     assert "var(--ink-up)" not in ric_css
@@ -934,18 +982,89 @@ def test_state_rail_css_uses_distinct_semantic_tokens():
 
 
 def test_glance_gate_is_plain_word_result(contract, real_section):
-    """Glance shows short id + Condition met/not met; owner labels stay in Receipts."""
+    """Glance leads with a plain-word gate name; codes and chips stay in Receipts."""
     glance = _glance_outside_details(real_section)
-    assert "Condition met" in glance
-    assert "Condition not met" in glance
-    assert "条件成立" in glance
-    assert "条件未成立" in glance
+    assert "Positive control survives — Condition met" in glance
+    assert "Estimators unbiased — Condition not met" in glance
+    assert "Synthetic control not noisier — Condition met" in glance
+    assert "Watch condition holds — Condition met" in glance
+    assert "正向对照成立——条件成立" in glance
+    assert "估计量无偏——条件未成立" in glance
+    assert "合成对照噪声不高于基准——条件成立" in glance
+    assert "观察条件成立——条件成立" in glance
+    gate_copy = " ".join(re.findall(r'class="ric-gate-b">\s*<span class="l-(?:en|zh)">(.*?)</span>', glance))
+    for token in ("PC1", "PC2", "PC3", "F1", "PASS", "FAIL", "falsif", "证伪"):
+        assert token not in gate_copy, f"{token!r} leaked onto the RIC glance gate row"
+    assert 'class="ric-gate-m' not in glance
+    assert ">PASS<" not in glance
+    assert ">FAIL<" not in glance
     assert "F1 falsifier holds" not in glance
     assert "证伪条件成立" not in glance
     sc = _isolate_card(real_section, "synthetic_control")
     receipts = _isolate_receipts(sc)
+    assert "PC1_positive_control_survives" in receipts
+    assert "F1_falsifier_holds" in receipts
     assert "F1 falsifier holds" in receipts
     assert "F1 证伪条件成立" in receipts
+
+
+def test_probability_never_prints_a_rounded_zero():
+    """A non-zero p-value must not render as 0.0000; tiny p uses a floor."""
+    tiny = _minimal_card(
+        family="event_study",
+        quality="DIAGNOSTIC_FAILED",
+        outputs=[
+            {
+                "code": "p_tiny",
+                "label": {"en": "Tiny p", "zh": "极小 p"},
+                "unit": "probability",
+                "value": 1e-7,
+            },
+            {
+                "code": "p_ordinary",
+                "label": {"en": "Ordinary p", "zh": "普通 p"},
+                "unit": "probability",
+                "value": 0.0123,
+            },
+            {
+                "code": "p_absent",
+                "label": {"en": "Absent p", "zh": "缺失 p"},
+                "unit": "probability",
+                "value": None,
+            },
+        ],
+    )
+    section = _section(_render(research_implications=_envelope([tiny])))
+    tiny_fig = _metric_markup(section, "p_tiny")
+    ordinary_fig = _metric_markup(section, "p_ordinary")
+    absent_fig = _metric_markup(section, "p_absent")
+    assert "below 0.0001" in tiny_fig
+    assert "小于 0.0001" in tiny_fig
+    assert "0.0000" not in tiny_fig
+    assert "1e-7" not in tiny_fig
+    assert "0.0123" in ordinary_fig
+    assert "0.0000" not in ordinary_fig
+    assert '<span class="ric-null">—</span>' in absent_fig
+
+
+def test_stale_state_text_is_the_window_sentence():
+    card = _minimal_card(family="event_study", quality="STALE")
+    header = _isolate_header(
+        _isolate_card(_section(_render(research_implications=_envelope([card]))), "event_study")
+    )
+    assert "Out of date — receipt older than its window" in header
+    assert "已过期——回执早于其窗口" in header
+
+
+def test_unknown_qualities_share_one_other_states_chip():
+    cards = [
+        _minimal_card(family="event_study", quality="SOMETHING_NEW"),
+        _minimal_card(family="synthetic_control", quality="ALSO_NEW"),
+    ]
+    section = _section(_render(research_implications=_envelope(cards)))
+    assert section.count('data-ric-f="q:other"') == 1
+    assert 'data-ric-f="q:SOMETHING_NEW"' not in section
+    assert 'data-ric-unglossed="1"' in section
 
 
 # ---------------------------------------------------------------------------
