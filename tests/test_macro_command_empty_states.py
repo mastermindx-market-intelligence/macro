@@ -1,6 +1,7 @@
 """Macro Command P3 — the six typed empty states (pin §G, spec §7)."""
 from __future__ import annotations
 
+import re
 from html import unescape
 from pathlib import Path
 
@@ -53,9 +54,18 @@ def test_e1_through_e6_render_the_spec_sentences_verbatim() -> None:
 
     e6 = _render_empty(builder._empty_state("e6", plan="Pro"))
     assert "Included in a higher plan" in e6
+    assert "包含在更高方案中" in e6
     assert "本板块属于Pro。" in e6
+    assert "The reading is available on upgrade." in e6
+    assert "升级后可查看该读数。" in e6
+    assert "See it with an upgrade." in e6
+    assert "升级即可查看。" in e6
+    assert "Upgrade to see it" in e6
+    assert "查看升级方案" in e6
     assert 'href="plans.html"' in e6
     assert "mc-empty-next" not in e6
+    assert "包含于更高级别方案" not in e6
+    assert "升级后即可查看" not in e6
 
 
 def test_e2_and_e6_are_never_a_bad_tone() -> None:
@@ -82,8 +92,7 @@ def test_e6_interpolates_the_plan_name_in_both_languages() -> None:
 
 
 def test_one_null_voice_drops_caption_and_matches_stance_for_e1_through_e6() -> None:
-    """M2: every empty state's title is the stance; caption is not the explanation."""
-    from lib import macro_suite_labels as L
+    """MINOR-E6: the empty card speaks; section stance is suppressed."""
     for empty_id in ("e1", "e2", "e3", "e4", "e5", "e6"):
         kwargs = {}
         if empty_id == "e5":
@@ -92,9 +101,7 @@ def test_one_null_voice_drops_caption_and_matches_stance_for_e1_through_e6() -> 
             kwargs["plan"] = "Pro"
         empty = builder._empty_state(empty_id, **kwargs)
         voice = builder._apply_empty_voice(empty)
-        assert voice is not None, empty_id
-        assert voice["text"]["en"] == L.EMPTY_STATES[empty_id]["title"]["en"]
-        assert voice["text"]["zh"] == L.EMPTY_STATES[empty_id]["title"]["zh"]
+        assert voice is None, empty_id
         html = _render_empty(empty)
         assert "Each row shows the last two readings" not in html
         assert empty["title"]["en"] in html
@@ -148,9 +155,103 @@ def test_empty_states_have_no_repeated_visible_string() -> None:
 
 
 def test_e1_stance_and_slot_are_the_same_sentence() -> None:
-    """m-a: E1 says one cause — stance title == slot title."""
+    """MINOR-E6: E1's title lives on the card; stance is not a second copy."""
     empty = builder._empty_state("e1")
     voice = builder._apply_empty_voice(empty)
-    assert voice["text"]["en"] == empty["title"]["en"]
-    assert voice["text"]["en"] == "We don't have this reading yet"
-    assert "could not be read today" not in voice["text"]["en"]
+    assert voice is None
+    html = _render_empty(empty)
+    assert "We don't have this reading yet" in html
+    assert html.count("We don't have this reading yet") == 1
+    assert "could not be read today" not in html
+
+
+def test_e6_suite_vocabulary_is_pinned() -> None:
+    """E6 ZH TITLE UNIFICATION: one vocabulary across the suite."""
+    from lib import macro_suite_labels as L
+    spec = L.EMPTY_STATES["e6"]
+    assert spec["title"] == {
+        "en": "Included in a higher plan", "zh": "包含在更高方案中"}
+    assert spec["stance"] == {
+        "en": "The reading is available on upgrade.",
+        "zh": "升级后可查看该读数。"}
+    assert spec["unlock"] == {
+        "en": "See it with an upgrade.", "zh": "升级即可查看。"}
+    assert spec["cta_label"] == {
+        "en": "Upgrade to see it", "zh": "查看升级方案"}
+    assert spec["why"]["en"] == "This section is part of {plan}."
+    assert spec["why"]["zh"] == "本板块属于{plan}。"
+
+
+def test_hydrated_empty_section_has_no_repeated_sentence() -> None:
+    """MINOR-E6: no visible sentence appears twice in one section."""
+    from html.parser import HTMLParser
+
+    class _Visible(HTMLParser):
+        def __init__(self, lang: str) -> None:
+            super().__init__()
+            self.lang = lang
+            self._skip = 0
+            self.texts: list[str] = []
+
+        def handle_starttag(self, tag, attrs):
+            cls = dict(attrs).get("class", "")
+            if self.lang == "en" and "l-zh" in cls.split():
+                self._skip += 1
+            elif self.lang == "zh" and "l-en" in cls.split():
+                self._skip += 1
+            elif self._skip:
+                self._skip += 1
+
+        def handle_endtag(self, tag):
+            if self._skip:
+                self._skip -= 1
+
+        def handle_data(self, data):
+            if self._skip:
+                return
+            text = " ".join(data.split())
+            if text:
+                self.texts.append(text)
+
+    data_root = ROOT / "site" / "macrodata"
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmp:
+        dest = Path(tmp) / "site"
+        builder.render(
+            ROOT, data_root=data_root, out_dir=dest,
+            page_built_at="2026-09-06T00:00:00Z")
+        hub = dest.joinpath("macro_monetary.html").read_text(encoding="utf-8")
+        frag = dest.joinpath("macro", "fragments", "rates.html").read_text(
+            encoding="utf-8")
+        match = re.search(
+            r'<section class="mc-panel" id="rates".*?(?=<section class="mc-panel"|</main>)',
+            hub, re.S)
+        assert match
+        panel = match.group(0)
+        composed = (
+            panel.replace(
+                '<p class="mc-figure-pending" hidden data-mc-pending>',
+                '<p class="mc-figure-pending" hidden data-mc-pending hidden-skip>',
+            ).replace(
+                '<p class="mc-figure-offer" data-mc-offer>',
+                "<div>" + frag + '</div><p class="mc-figure-offer" hidden data-mc-offer>',
+            )
+        )
+        text = unescape(composed)
+        for sentence in (
+            "Today's number didn't arrive",
+            "今天的数据未能送达",
+            "The data provider did not deliver in time",
+            "数据提供方未能及时送达",
+        ):
+            assert text.count(sentence) == 1, sentence
+        for lang in ("en", "zh"):
+            parser = _Visible(lang)
+            parser.feed(composed)
+            empty_lines = [
+                t for t in parser.texts
+                if "didn't arrive" in t or "未能送达" in t
+                or "did not deliver" in t or "未能及时送达" in t
+            ]
+            assert empty_lines, lang
+            assert len(empty_lines) == len(set(empty_lines)), (lang, empty_lines)

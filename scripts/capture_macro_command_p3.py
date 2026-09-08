@@ -307,7 +307,10 @@ STRIP_VOID_JS = """() => {
     stripBox: {left: stripBox.left, right: stripBox.right,
                top: stripBox.top, bottom: stripBox.bottom,
                width: stripBox.width, height: stripBox.height},
-    viewport: {innerWidth: window.innerWidth, stripWidth: stripBox.width},
+    viewport: {innerWidth: window.innerWidth,
+               innerHeight: window.innerHeight,
+               stripWidth: stripBox.width},
+    scrollY: window.scrollY || document.documentElement.scrollTop || 0,
   };
 }"""
 
@@ -639,14 +642,18 @@ def _colour_close(pixel: tuple[int, int, int], canvas: tuple[int, int, int],
 def _pixel_scan_strip_void(path: Path, probe: dict[str, Any],
                            scale: int = 2) -> dict[str, Any]:
     """R8-m1: scan the captured strip-row band. Any run ≥40 CSS px of
-    non-canvas colour outside a chip box is a void."""
+    non-canvas colour outside a chip box is a void.
+
+    MAJOR-2: never clamp a negative / off-image band onto row 0. A band
+    that does not sit inside the image, or that iterates zero pixels, is
+    a hard error — ``ok=True`` on an unscanned image is how r15 failed.
+    """
     from PIL import Image
     image = Image.open(path).convert("RGB")
     strip = probe.get("stripBox") or {}
     chips = probe.get("chipBoxes") or []
     if not strip or not chips:
-        return {"ok": False, "reason": "missing strip/chip boxes",
-                "pixelVoidWiderThan40": True, "pixelVoids": []}
+        raise RuntimeError("strip-void scan: missing strip/chip boxes")
     # First chip row only — the coverage chip is a full-width second row.
     row_top = min(box["top"] for box in chips)
     row_boxes = [box for box in chips if abs(box["top"] - row_top) < 4]
@@ -654,10 +661,15 @@ def _pixel_scan_strip_void(path: Path, probe: dict[str, Any],
     y1 = int(max(box["bottom"] for box in row_boxes) * scale)
     x0 = int(strip["left"] * scale)
     x1 = int(strip["right"] * scale)
-    y0 = max(0, y0)
-    y1 = min(image.height, y1)
-    x0 = max(0, x0)
-    x1 = min(image.width, x1)
+    if y0 < 0 or y1 > image.height or y0 >= y1:
+        raise RuntimeError(
+            f"strip-void scan: row band [{y0},{y1}) is outside the image "
+            f"{image.width}x{image.height} (css tops "
+            f"{[box['top'] for box in row_boxes]})")
+    if x0 < 0 or x1 > image.width or x0 >= x1:
+        raise RuntimeError(
+            f"strip-void scan: strip band [{x0},{x1}) is outside the image "
+            f"{image.width}x{image.height}")
     chip_dev = [
         (int(box["left"] * scale) - 1, int(box["right"] * scale) + 1,
          int(box["top"] * scale) - 1, int(box["bottom"] * scale) + 1)
@@ -667,8 +679,11 @@ def _pixel_scan_strip_void(path: Path, probe: dict[str, Any],
     def in_chip(x: int, y: int) -> bool:
         return any(l <= x <= r and t <= y <= b for l, r, t, b in chip_dev)
 
+    viewport_h = ((probe.get("viewport") or {}).get("innerHeight")
+                  or (image.height / scale))
     canvas, canvas_source = _choose_strip_canvas(
-        image, row_boxes, scale, in_chip, probe.get("bgToken"))
+        image, row_boxes, scale, in_chip, probe.get("bgToken"),
+        viewport_height=float(viewport_h))
     bg_token_rgb = _rgb_token((probe.get("bgToken") or "").strip())
     canvas_delta = (
         [abs(int(a) - int(b)) for a, b in zip(canvas, bg_token_rgb)]
@@ -677,10 +692,12 @@ def _pixel_scan_strip_void(path: Path, probe: dict[str, Any],
 
     threshold = 40 * scale
     voids: list[dict[str, Any]] = []
+    pixels_scanned = 0
     for y in range(y0, y1):
         run = 0
         run_x = x0
         for x in range(x0, x1):
+            pixels_scanned += 1
             if in_chip(x, y):
                 if run >= threshold:
                     voids.append({"y": y, "x": run_x, "widthCss": run / scale})
@@ -699,11 +716,15 @@ def _pixel_scan_strip_void(path: Path, probe: dict[str, Any],
             run += 1
         if run >= threshold:
             voids.append({"y": y, "x": run_x, "widthCss": run / scale})
+    if pixels_scanned == 0:
+        raise RuntimeError(
+            f"strip-void scan: pixelsScanned=0 band=[{x0},{x1})x[{y0},{y1})")
     return {
         "ok": len(voids) == 0,
         "pixelVoidWiderThan40": len(voids) > 0,
         "pixelVoids": voids[:12],
         "pixelVoidCount": len(voids),
+        "pixelsScanned": pixels_scanned,
         "canvasRgb": list(canvas),
         "canvasSource": canvas_source,
         "bgTokenRgb": list(bg_token_rgb) if bg_token_rgb is not None else None,
@@ -713,50 +734,65 @@ def _pixel_scan_strip_void(path: Path, probe: dict[str, Any],
 
 
 def _choose_strip_canvas(image, row_boxes, scale: int, in_chip,
-                         bg_token: Any) -> tuple[tuple[int, int, int], str]:
-    """Pick the strip canvas: inter-chip gap, else the --bg token.
+                         bg_token: Any, *,
+                         viewport_height: float | None = None
+                         ) -> tuple[tuple[int, int, int], str]:
+    """Pick the strip canvas from an on-row inter-chip gap.
 
-    Fallback reads getComputedStyle(document.documentElement)
-    .getPropertyValue('--bg') (passed in as bg_token) and labels the
-    source "--bg custom property". bodyBackgroundColor is a separate
-    receipt field, never the canvasSource label.
+    MAJOR-2: the sample point must sit in the viewport, inside the chip
+    row band, and inside a gap ≥ 8 css px. Coordinates are never clamped
+    onto the image; an off-image or off-row point raises.
     """
     row_boxes_sorted = sorted(row_boxes, key=lambda box: box["left"])
-    if len(row_boxes_sorted) >= 2:
-        gap_left = row_boxes_sorted[0]["right"]
-        gap_right = row_boxes_sorted[1]["left"]
-        gap_css = gap_right - gap_left
-        sample_x_css = (gap_left + gap_right) / 2
-        sample_y_css = (
-            min(box["top"] for box in row_boxes)
-            + max(box["bottom"] for box in row_boxes)
-        ) / 2
-        sample_x = int(sample_x_css * scale)
-        sample_y = int(sample_y_css * scale)
-        sample_x = min(max(0, sample_x), image.width - 1)
-        sample_y = min(max(0, sample_y), image.height - 1)
-        if gap_css >= 8 and not in_chip(sample_x, sample_y):
-            sampled = image.getpixel((sample_x, sample_y))
-            token = (bg_token or "").strip()
-            parsed = _rgb_token(token)
-            if parsed is None:
-                raise RuntimeError(
-                    "strip-void canvas: gap sample has no parsable --bg token")
-            delta = [abs(int(a) - int(b)) for a, b in zip(sampled, parsed)]
-            if any(channel > 2 for channel in delta):
-                raise RuntimeError(
-                    f"strip-void canvas sample {list(sampled)} != --bg "
-                    f"{list(parsed)} delta={delta} at "
-                    f"({sample_x_css:.2f}css,{sample_y_css:.2f}css)")
-            return sampled, (
-                f"strip-inter-chip-gap ({sample_x_css:.2f}css,"
-                f"{sample_y_css:.2f}css) gapCss={gap_css:.2f}")
+    if len(row_boxes_sorted) < 2:
+        raise RuntimeError(
+            "strip-void canvas: need ≥2 chips on the sampled row for a gap")
+    gap_left = row_boxes_sorted[0]["right"]
+    gap_right = row_boxes_sorted[1]["left"]
+    gap_css = gap_right - gap_left
+    sample_x_css = (gap_left + gap_right) / 2
+    row_top = min(box["top"] for box in row_boxes)
+    row_bottom = max(box["bottom"] for box in row_boxes)
+    sample_y_css = (row_top + row_bottom) / 2
+    view_h = float(viewport_height if viewport_height is not None
+                   else (image.height / float(scale)))
+    if sample_y_css < 0 or sample_y_css >= view_h:
+        raise RuntimeError(
+            f"strip-void canvas: sample y {sample_y_css:.2f}css is outside "
+            f"the viewport [0, {view_h})")
+    if sample_y_css < row_top or sample_y_css >= row_bottom:
+        raise RuntimeError(
+            f"strip-void canvas: sample y {sample_y_css:.2f}css is outside "
+            f"the chip-row band [{row_top:.2f}, {row_bottom:.2f})")
+    if gap_css < 8:
+        raise RuntimeError(
+            f"strip-void canvas: inter-chip gap {gap_css:.2f}css < 8")
+    sample_x = int(sample_x_css * scale)
+    sample_y = int(sample_y_css * scale)
+    if sample_x < 0 or sample_x >= image.width or sample_y < 0 or sample_y >= image.height:
+        raise RuntimeError(
+            f"strip-void canvas: device sample ({sample_x},{sample_y}) is "
+            f"outside the image {image.width}x{image.height} "
+            f"(css {sample_x_css:.2f},{sample_y_css:.2f})")
+    if in_chip(sample_x, sample_y):
+        raise RuntimeError(
+            f"strip-void canvas: sample ({sample_x_css:.2f}css,"
+            f"{sample_y_css:.2f}css) landed inside a chip")
+    sampled = image.getpixel((sample_x, sample_y))
     token = (bg_token or "").strip()
     parsed = _rgb_token(token)
     if parsed is None:
         raise RuntimeError(
-            "strip-void canvas: gap <8px or in_chip and --bg did not parse")
-    return parsed, "--bg custom property"
+            "strip-void canvas: gap sample has no parsable --bg token")
+    delta = [abs(int(a) - int(b)) for a, b in zip(sampled, parsed)]
+    if any(channel > 2 for channel in delta):
+        raise RuntimeError(
+            f"strip-void canvas sample {list(sampled)} != --bg "
+            f"{list(parsed)} delta={delta} at "
+            f"({sample_x_css:.2f}css,{sample_y_css:.2f}css)")
+    return sampled, (
+        f"strip-inter-chip-gap ({sample_x_css:.2f}css,"
+        f"{sample_y_css:.2f}css) gapCss={gap_css:.2f}")
 
 
 def _paint_alpha(pixel: tuple[int, ...], paint: tuple[int, ...],
@@ -805,6 +841,7 @@ def _confirm_rail_fade_visual(page, viewport: dict[str, Any]) -> dict[str, Any]:
       return {
         ok: true,
         fadeLeft,
+        maxScrollLeft: maxSL,
         listBox: {left: listBox.left, right: listBox.right,
                   width: listBox.width, height: listBox.height},
         chips,
@@ -817,6 +854,34 @@ def _confirm_rail_fade_visual(page, viewport: dict[str, Any]) -> dict[str, Any]:
     fade_left = float(live["fadeLeft"])
     list_box = live.get("listBox") or {}
     chips = live.get("chips") or []
+    max_scroll_left = float(live.get("maxScrollLeft") or 0)
+    common = {
+        "fadeLeft": fade_left,
+        "fadeWidth": fade_width,
+        "maxScrollLeft": max_scroll_left,
+        "maskRaw": viewport.get("maskRaw") or (viewport.get("at0") or {}).get("maskRaw"),
+    }
+    if max_scroll_left <= 0:
+        return {
+            **common,
+            "fadeVisualApplicable": False,
+            "fadeVisualReason": "maxScrollLeft=0",
+            "fadeOnsetX": None,
+            "fadeVisualStartX": None,
+        }
+    paint_box = None
+    for box in chips:
+        if float(box.get("left") or 0) < fade_left and float(box.get("right") or 0) > fade_left - 8:
+            paint_box = box
+            break
+    if paint_box is None:
+        return {
+            **common,
+            "fadeVisualApplicable": False,
+            "fadeVisualReason": "no chip under the band",
+            "fadeOnsetX": None,
+            "fadeVisualStartX": None,
+        }
     page.wait_for_timeout(80)
     dpr = float(page.evaluate("window.devicePixelRatio"))
     bg_token = page.evaluate(
@@ -824,15 +889,6 @@ def _confirm_rail_fade_visual(page, viewport: dict[str, Any]) -> dict[str, Any]:
     canvas = _rgb_token((bg_token or "").strip())
     if canvas is None:
         raise RuntimeError(f"fade visual: --bg did not parse: {bg_token!r}")
-    paint_box = None
-    for box in chips:
-        if float(box.get("left") or 0) < fade_left and float(box.get("right") or 0) > fade_left - 8:
-            paint_box = box
-            break
-    if paint_box is None:
-        paint_box = chips[-1] if chips else None
-    if not paint_box:
-        raise RuntimeError("fade visual: no chip box after scroll")
     tmp = Path(os.environ.get("TMPDIR", "/tmp")) / f"mc-fade-{os.getpid()}.png"
     page.screenshot(path=str(tmp), type="png", full_page=False)
     try:
@@ -889,26 +945,35 @@ def _confirm_rail_fade_visual(page, viewport: dict[str, Any]) -> dict[str, Any]:
                 fade_half = x_css
                 break
         if fade_visual is None or fade_half is None:
-            # No chip paint in the band (list does not overflow). The
-            # mask still applies; the band is canvas-on-canvas, so the
-            # parsed stop is the visual start.
             band_paint = max(raw) if raw else 0.0
             if band_paint >= 0.5:
                 raise RuntimeError(
                     f"fade visual: paint in the band never crossed 50% "
                     f"[{start}, {end}] fadeLeft={fade_left} maxAlpha={band_paint}")
-            fade_visual = fade_left
-            fade_half = fade_left
+            return {
+                **common,
+                "fadeVisualApplicable": False,
+                "fadeVisualReason": "no chip under the band",
+                "fadeOnsetX": None,
+                "fadeVisualStartX": None,
+            }
+        # NIT-1: fadeOnsetX is the 0.92 paint start (must sit on fadeLeft
+        # ±4). fadeVisualStartX is the 50 % crossing. A 24 css px linear
+        # mask reaches 50 % ~12 px after fadeLeft, so ±4 on the 50 %
+        # point vs fadeLeft is physically mid-ramp — recorded, not a
+        # raise. See DEVIATIONS.
         if abs(fade_visual - fade_left) > 4:
             raise RuntimeError(
-                f"fade visual start {fade_visual:.2f} != fadeLeft "
+                f"fade onset {fade_visual:.2f} != fadeLeft "
                 f"{fade_left:.2f} (tol 4 css px) half={fade_half}")
         return {
-            "fadeVisualStartX": fade_visual,
+            **common,
+            "fadeVisualApplicable": True,
+            "fadeVisualReason": None,
+            "fadeOnsetX": fade_visual,
+            "fadeVisualStartX": fade_half,
             "fadeVisualHalfX": fade_half,
-            "fadeLeft": fade_left,
-            "fadeWidth": fade_width,
-            "maskRaw": viewport.get("maskRaw") or (viewport.get("at0") or {}).get("maskRaw"),
+            "fadeHalfDelta": fade_half - fade_left,
         }
     finally:
         tmp.unlink(missing_ok=True)
@@ -1112,6 +1177,7 @@ def _declared_force_state_cells() -> list[dict[str, Any]]:
         ("money_central_banks", 1440, 900),
         ("inflation_foot", 1440, 900),
         ("scroll_max", 390, 844),
+        ("e3", 1440, 900),
     ]
     cells: list[dict[str, Any]] = []
     for force_state, vw, vh in spec:
@@ -1184,7 +1250,12 @@ def _captured_declared_keys(
         if not state.get("captured"):
             continue
         fs = state.get("force_state")
-        if fs in EMPTY_IDS:
+        filename = str(state.get("file") or "")
+        # Empty-state crops are `empty-*`. Overview force-state
+        # shots (`*-1440-e3.png`) are also element crops, so `crop`
+        # must not pull them into empty_states — that hid the four
+        # declared e3 cells from the captured-declared join.
+        if filename.startswith("empty-") and fs in EMPTY_IDS:
             keys.add(("empty_states", fs, state.get("theme"),
                       state.get("locale"), state.get("viewport_width")))
         elif fs:
@@ -1221,6 +1292,8 @@ def _captured_declared_keys(
             keys.add(("full_page", None, theme, locale, vw))
         if filename.startswith("movement-row-"):
             keys.add(("movement_row", None, theme, locale, vw))
+        if filename.startswith("strip-"):
+            keys.add(("strip_void", None, theme, locale, vw))
         if filename in REST_FRAMES or (
                 vw == 768 and not state.get("force_state")
                 and not state.get("crop") and not state.get("full_page")
@@ -1233,9 +1306,11 @@ def _compute_gaps_from_declared(
         declared: dict[str, list[dict[str, Any]]],
         captured: set[tuple[Any, ...]]) -> list[dict[str, Any]]:
     gaps: list[dict[str, Any]] = []
+    declared_keys: set[tuple[Any, ...]] = set()
     for family, cells in declared.items():
         for cell in cells:
             key = _declared_cell_key(cell)
+            declared_keys.add(key)
             if key in captured:
                 continue
             row = dict(cell)
@@ -1243,6 +1318,17 @@ def _compute_gaps_from_declared(
             row["reason"] = cell.get("reason") or "declared cell was not captured"
             row.setdefault("family", family)
             gaps.append(row)
+    for key in sorted(captured - declared_keys, key=lambda item: str(item)):
+        family, force_state, theme, locale, vw = key
+        gaps.append({
+            "family": family,
+            "force_state": force_state,
+            "theme": theme,
+            "locale": locale,
+            "viewport_width": vw,
+            "captured": False,
+            "reason": "captured frame matches no declared cell",
+        })
     return gaps
 
 
@@ -1302,33 +1388,30 @@ def _assert_shot_geometry(dest: Path, extra: dict[str, Any],
     scale = float(dpr)
     if extra.get("crop"):
         span = extra.get("device_px_span")
-        if span:
-            exp_w = int(span["x1"]) - int(span["x0"])
-            exp_h = int(span["y1"]) - int(span["y0"])
-            if (w, h) != (exp_w, exp_h):
-                raise RuntimeError(
-                    f"{dest.name}: crop IHDR {w}x{h} != device_px_span "
-                    f"{exp_w}x{exp_h} span={span} dpr={dpr}")
-        else:
-            box = extra.get("crop_box") or {}
-            exp_w = _device_px(float(box.get("x") or 0),
-                               float(box.get("width") or 0), scale)
-            exp_h = _device_px(float(box.get("y") or 0),
-                               float(box.get("height") or 0), scale)
-            if (w, h) != (exp_w, exp_h):
-                raise RuntimeError(
-                    f"{dest.name}: crop IHDR {w}x{h} != crop_box×dpr {exp_w}x{exp_h} "
-                    f"box={box} dpr={dpr}")
+        if not span:
+            raise RuntimeError(f"{dest.name}: crop missing device_px_span")
+        exp_w = int(span["x1"]) - int(span["x0"])
+        exp_h = int(span["y1"]) - int(span["y0"])
+        delta_w = abs(w - exp_w)
+        delta_h = abs(h - exp_h)
+        extra["ihdr_delta_px"] = {"w": delta_w, "h": delta_h}
+        if delta_w > 1 or delta_h > 1:
+            raise RuntimeError(
+                f"{dest.name}: crop IHDR {w}x{h} differs from device_px_span "
+                f"{exp_w}x{exp_h} by {extra['ihdr_delta_px']} "
+                f"(tol 1 device px/dim) span={span} dpr={dpr}")
         if not extra.get("crop_selector"):
             raise RuntimeError(f"{dest.name}: crop:true missing crop_selector")
     elif extra.get("full_page"):
         exp_w = _device_px(0.0, float(vw), scale)
+        extra["ihdr_delta_px"] = {"w": abs(w - exp_w), "h": 0}
         if w != exp_w:
             raise RuntimeError(
                 f"{dest.name}: full_page IHDR width {w} != {vw}×{dpr}={exp_w}")
     else:
         exp_w = _device_px(0.0, float(vw), scale)
         exp_h = _device_px(0.0, float(vh), scale)
+        extra["ihdr_delta_px"] = {"w": abs(w - exp_w), "h": abs(h - exp_h)}
         if (w, h) != (exp_w, exp_h):
             raise RuntimeError(
                 f"{dest.name}: viewport IHDR {w}x{h} != {vw}x{vh}×{dpr} "
@@ -1364,12 +1447,42 @@ def _empty_headline(empty_id: str, locale: str) -> str:
 
 
 def _device_px_span(box: dict[str, float], dpr: float) -> dict[str, int]:
+    """Element-box device span. The PNG is never an input.
+
+    Playwright's ``locator.screenshot()`` clips the enclosing CSS-pixel
+    rect (floor origin, ceil extent) and then multiplies by dpr. Doing
+    ``floor(x×dpr)`` / ``ceil((x+w)×dpr)`` on the raw fractional box is
+    up to 2 device px short when both edges have opposing fractions
+    (measured: 34-dark-zh-1440-heading-focus.png IHDR 88×60 vs raw
+    floor/ceil span 88×58). Snap CSS first, then × dpr.
+    """
     scale = float(dpr)
-    x0 = int(math.floor(float(box["x"]) * scale))
-    y0 = int(math.floor(float(box["y"]) * scale))
-    x1 = int(math.ceil((float(box["x"]) + float(box["width"])) * scale))
-    y1 = int(math.ceil((float(box["y"]) + float(box["height"])) * scale))
-    return {"x0": x0, "x1": x1, "y0": y0, "y1": y1}
+    css_x0 = math.floor(float(box["x"]))
+    css_y0 = math.floor(float(box["y"]))
+    css_x1 = math.ceil(float(box["x"]) + float(box["width"]))
+    css_y1 = math.ceil(float(box["y"]) + float(box["height"]))
+    return {
+        "x0": int(math.floor(css_x0 * scale)),
+        "x1": int(math.ceil(css_x1 * scale)),
+        "y0": int(math.floor(css_y0 * scale)),
+        "y1": int(math.ceil(css_y1 * scale)),
+    }
+
+
+def _device_px_span_from_crop_box_doc(
+        box_doc: dict[str, float], scroll_y: float, dpr: float
+        ) -> dict[str, int]:
+    """Recompute the element span from the committed document box.
+
+    Viewport y = crop_box_doc.y − scroll_y_at_shot. Used by the schema
+    test so the published span cannot be back-filled from the PNG.
+    """
+    return _device_px_span({
+        "x": float(box_doc["x"]),
+        "y": float(box_doc["y"]) - float(scroll_y),
+        "width": float(box_doc["width"]),
+        "height": float(box_doc["height"]),
+    }, dpr)
 
 
 def _write_element_shot(page, dest: Path, locator, extra: dict[str, Any],
@@ -1411,14 +1524,8 @@ def _write_element_shot(page, dest: Path, locator, extra: dict[str, Any],
     }
     extra["scroll_y_at_shot"] = scroll_y
     extra["element_text_head"] = text.replace("\n", " ").strip()[:80]
-    width, height = _png_size(dest)
-    origin = _device_px_span(box_before, extra["dpr"])
-    extra["device_px_span"] = {
-        "x0": origin["x0"],
-        "x1": origin["x0"] + width,
-        "y0": origin["y0"],
-        "y1": origin["y0"] + height,
-    }
+    # MAJOR-1: span is the element box only. The PNG is never an input.
+    extra["device_px_span"] = _device_px_span(box_before, extra["dpr"])
     selector = str(extra.get("crop_selector") or "")
     match = re.search(r'data-mc-empty=["\'](e[1-6])["\']', selector)
     if match:
@@ -2676,14 +2783,10 @@ def main() -> int:
                 finally:
                     context.close()
 
-                # R8-m1: strip-void at 1440 dark+light × EN+ZH, JS + PNG scan.
+                # R8-m1 / MAJOR-2: measure chip boxes and photograph the
+                # strip in ONE scroll state. Never scan a previously
+                # saved rest-view frame from another scroll.
                 strip_voids: dict[str, Any] = {}
-                frame_for = {
-                    ("dark", "en"): "01-dark-en-1440.png",
-                    ("dark", "zh"): "02-dark-zh-1440.png",
-                    ("light", "en"): "03-light-en-1440.png",
-                    ("light", "zh"): "04-light-zh-1440.png",
-                }
                 for theme, locale in (("dark", "en"), ("dark", "zh"),
                                       ("light", "en"), ("light", "zh")):
                     context = _new_context(browser, theme, locale, 1440, 900)
@@ -2692,16 +2795,32 @@ def main() -> int:
                             context, origin + "/macro_monetary.html",
                             "#overview", theme, locale)
                         page.wait_for_selector(".mc-strip .mc-chip", timeout=15000)
+                        _settle_scroll(page, "0")
+                        scroll_at_measure = _read_scroll(page)
                         void_probe = page.evaluate(STRIP_VOID_JS)
-                        png = EVIDENCE / frame_for[(theme, locale)]
-                        pixel = _pixel_scan_strip_void(png, void_probe)
+                        void_probe["scrollYAtMeasure"] = scroll_at_measure
+                        filename = f"strip-{theme}-{locale}.png"
+                        dest = EVIDENCE / filename
+                        extra = _write_shot(
+                            page, dest, {"theme": theme}, 1440, 900,
+                            locale=locale)
+                        scroll_at_shot = _read_scroll(page)
+                        void_probe["scrollYAtShot"] = scroll_at_shot
+                        if abs(float(scroll_at_measure) - float(scroll_at_shot)) > 0.01:
+                            raise RuntimeError(
+                                f"R8-m1 strip void {theme}/{locale}: "
+                                f"scroll moved between measure "
+                                f"{scroll_at_measure} and shot {scroll_at_shot}")
+                        pixel = _pixel_scan_strip_void(dest, void_probe)
                         void_probe["pixelVoidWiderThan40"] = pixel["pixelVoidWiderThan40"]
                         void_probe["pixelVoids"] = pixel.get("pixelVoids")
                         void_probe["pixelVoidCount"] = pixel.get("pixelVoidCount")
+                        void_probe["pixelsScanned"] = pixel.get("pixelsScanned")
                         void_probe["canvasRgb"] = pixel.get("canvasRgb")
                         void_probe["canvasSource"] = pixel.get("canvasSource")
                         void_probe["bgTokenRgb"] = pixel.get("bgTokenRgb")
                         void_probe["delta"] = pixel.get("delta")
+                        void_probe["band"] = pixel.get("band")
                         void_probe["ok"] = bool(
                             void_probe.get("ok") and pixel.get("ok"))
                         if not void_probe.get("ok"):
@@ -2710,14 +2829,22 @@ def main() -> int:
                         if void_probe.get("voidWiderThan40"):
                             raise RuntimeError(
                                 f"R8-m1 void wider than 40 {theme}/{locale}: {void_probe}")
+                        if int(void_probe.get("pixelsScanned") or 0) <= 0:
+                            raise RuntimeError(
+                                f"R8-m1 strip void {theme}/{locale}: "
+                                f"pixelsScanned={void_probe.get('pixelsScanned')}")
                         key = f"{theme}_{locale}"
                         strip_voids[key] = void_probe
+                        _upsert(manifest, filename, _row(
+                            filename, dest, theme, locale, 1440, 900, extra))
                         print(
                             f"  strip_void {key} chips={void_probe['chipCount']} "
                             f"maxVoid={void_probe.get('maxVoidWidth')} "
                             f"pixelVoids={pixel.get('pixelVoidCount')} "
+                            f"pixels={pixel.get('pixelsScanned')} "
                             f"canvas={pixel.get('canvasRgb')} "
                             f"src={pixel.get('canvasSource')} "
+                            f"scroll={scroll_at_shot} "
                             f"ok={void_probe['ok']}",
                             flush=True)
                     finally:
@@ -2775,7 +2902,11 @@ def main() -> int:
                 raise RuntimeError(
                     f"N-M2 768 frame must be viewport=tablet: {state.get('file')}")
             if state.get("captured") and state.get("sha256") and state.get("file"):
-                by_sha.setdefault(state["sha256"], []).append(state["file"])
+                # strip-* is a dedicated same-scroll viewport of #overview,
+                # so it may byte-match the 1440 rest frame. That pair is
+                # intentional (MAJOR-2); exclude it from the dupe gate.
+                if not str(state["file"]).startswith("strip-"):
+                    by_sha.setdefault(state["sha256"], []).append(state["file"])
         dupes = {sha: names for sha, names in by_sha.items() if len(names) > 1}
         if dupes:
             raise RuntimeError(f"duplicate evidence blobs: {dupes}")

@@ -621,13 +621,14 @@ EMPTY_STATES: dict[str, dict[str, Any]] = {
     },
     "e6": {
         "id": "e6",
-        "title": _pair("Included in a higher plan", "包含于更高级别方案"),
+        "title": _pair("Included in a higher plan", "包含在更高方案中"),
         "why": _pair("This section is part of {plan}.", "本板块属于{plan}。"),
-        "unlock": _pair(
+        "stance": _pair(
             "The reading is available on upgrade.",
             "升级后可查看该读数。"),
+        "unlock": _pair("See it with an upgrade.", "升级即可查看。"),
         "cta_href": "plans.html",
-        "cta_label": _pair("Upgrade to see it", "升级后即可查看"),
+        "cta_label": _pair("Upgrade to see it", "查看升级方案"),
     },
 }
 

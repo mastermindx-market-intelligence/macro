@@ -643,6 +643,7 @@ def _empty_state(state_id: str, *, cta_href: str | None = None,
         "title": dict(spec["title"]),
         "why": dict(spec["why"]),
         "unlock": dict(spec["unlock"]) if spec.get("unlock") else None,
+        "stance": dict(spec["stance"]) if spec.get("stance") else None,
         "next": dict(spec["next"]) if spec.get("next") else None,
         "cta": None,
     }
@@ -998,13 +999,15 @@ def _command_tab_withheld(snapshot: Mapping[str, Any] | None,
 
 
 def _apply_empty_voice(empty: Mapping[str, Any] | None) -> dict[str, Any] | None:
-    """One null voice: the empty state's own title is the section stance."""
+    """MINOR-E6: the empty card is the one null voice.
+
+    A section that already renders an empty card must not also print the
+    same title as a stance / status line under the heading. Date-only
+    chips stay; the sentence does not.
+    """
     if not empty:
         return None
-    spec = L.EMPTY_STATES.get(str(empty.get("id") or ""))
-    if not spec:
-        return None
-    return {"text": dict(spec["title"]), "tone": "neutral"}
+    return None
 
 
 def _figure_or_empty_for_workspace(snapshot: Mapping[str, Any] | None, *,
@@ -1244,9 +1247,10 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
         if has_copy and any(row.get("kind") == "current" for row in figure_rows):
             caption = None
         if has_copy and empty:
+            # The empty card speaks once. Echoing its title as stance is
+            # a second copy of the same sentence (MINOR-E6).
             voiced = _apply_empty_voice(empty)
-            if voiced:
-                stance = voiced
+            stance = voiced
 
         empty_e5 = None if is_overview else _empty_state(
             "e5", cta_href=section.deep_href or (

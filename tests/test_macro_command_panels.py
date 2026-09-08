@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import copy
 import json
+import math
 import re
 import shutil
 from html import unescape
@@ -161,7 +162,11 @@ def test_p3_non_overview_dom_order(built: tuple[str, Path]) -> None:
         order = _child_classes(panel)
         assert order[0] == "mc-arrival", section_id
         assert "mc-panel-head" in order
-        assert "mc-stance" in order
+        if section_id == "rates":
+            # MINOR-E6: the empty card is the one voice; no stance echo.
+            assert "mc-stance" not in order, (section_id, order)
+        else:
+            assert "mc-stance" in order, (section_id, order)
         assert "mc-primer" in order
         assert "mc-figure" in order
         # M2: a section-level empty (live #rates is E2) drops the caption.
@@ -170,7 +175,7 @@ def test_p3_non_overview_dom_order(built: tuple[str, Path]) -> None:
         # Caption is a comparison claim. E2 (section empty) and I4
         # (same-publication current-only, often only in the fragment)
         # must not keep it.
-        if ("Today's number didn't arrive" in text
+        if (section_id == "rates"
                 or "Only one reading is published so far" in text
                 or "Each row shows the last two readings" not in text):
             assert "mc-caption" not in order, (section_id, order)
@@ -178,7 +183,10 @@ def test_p3_non_overview_dom_order(built: tuple[str, Path]) -> None:
             assert "mc-caption" in order, (section_id, order)
         assert "mc-watch" in order
         assert "mc-details" in order
-        assert order.index("mc-stance") < order.index("mc-figure") < order.index("mc-watch")
+        if section_id == "rates":
+            assert order.index("mc-figure") < order.index("mc-watch")
+        else:
+            assert order.index("mc-stance") < order.index("mc-figure") < order.index("mc-watch")
         if section_id == "inflation":
             assert "mc-foot" in order
 
@@ -324,16 +332,18 @@ def test_not_applicable_is_unstated_not_e1(built: tuple[str, Path]) -> None:
 @pytest.mark.needs_full_checkout("site")
 def test_e2_figure_prints_the_e2_stance_not_the_structural_null(
         built: tuple[str, Path]) -> None:
-    """M6 branch 1: #rates is E2 today — stance matches the empty title.
+    """M6 / MINOR-E6: #rates is E2 — the empty card speaks once.
 
     The empty figure lives in the fragment (JS hydrates `[data-mc-figure]`);
-    the stance is in the panel shell.
+    the panel shell must not repeat the title as a stance line.
     """
     html, out = built
     rates = unescape(_panel(html, "rates"))
-    fragment = (out / "macro" / "fragments" / "rates.html").read_text(encoding="utf-8")
+    fragment = unescape(
+        (out / "macro" / "fragments" / "rates.html").read_text(encoding="utf-8"))
     assert 'data-mc-empty="e2"' in fragment
-    assert "Today's number didn't arrive" in rates
+    assert "Today's number didn't arrive" in fragment
+    assert "Today's number didn't arrive" not in rates
     assert "No single reading is published here" not in rates
     assert "Each row shows the last two readings" not in rates
     assert "hasn't arrived" in unescape(html)  # strip chip stays the transient voice
@@ -587,7 +597,8 @@ def test_e1_fixture_through_the_real_builder(tmp_path: Path) -> None:
         hub, re.S)
     assert inflation
     body = inflation.group(0)
-    assert "We don't have this reading yet" in body
+    assert "We don't have this reading yet" in frag
+    assert "We don't have this reading yet" not in body
     assert "This desk could not be read today" not in body
     assert "Each row shows the last two readings" not in body
     assert 'class="mc-caption"' not in body
@@ -612,7 +623,8 @@ def test_e3_fixture_through_the_real_builder(tmp_path: Path) -> None:
         hub, re.S)
     assert inflation
     body = inflation.group(0)
-    assert "We can't show the change yet" in body
+    assert "We can't show the change yet" in frag
+    assert "We can't show the change yet" not in body
     assert "Each row shows the last two readings" not in body
     assert 'class="mc-caption"' not in body
 
@@ -761,19 +773,22 @@ def test_empty_state_fixture_flag_enables_e4_and_e6(tmp_path: Path) -> None:
         hub, re.S)
     assert inflation
     body = inflation.group(0)
-    assert "Included in a higher plan" in body
+    assert "Included in a higher plan" in frag
+    assert "包含在更高方案中" in frag
+    assert "See it with an upgrade." in frag
+    assert "升级即可查看。" in frag
+    assert "查看升级方案" in frag
+    assert "Included in a higher plan" not in body
     assert "Each row shows the last two readings" not in body
     assert 'class="mc-caption"' not in body
 
 
 def test_one_null_voice_for_every_section_level_empty() -> None:
-    """M2: E1–E6 drop the row caption; section-level empties share the slot title."""
+    """MINOR-E6: E1–E6 drop the row caption; the empty card is the one voice."""
     for empty_id in ("e1", "e2", "e3", "e6"):
         voice = builder._apply_empty_voice(builder._empty_state(
             empty_id, plan="Research" if empty_id == "e6" else None))
-        assert voice is not None
-        assert voice["tone"] == "neutral"
-        assert voice["text"]["en"] == L.EMPTY_STATES[empty_id]["title"]["en"]
+        assert voice is None, empty_id
 
 
 def test_p3_clearance_probes_are_real_geometry() -> None:
@@ -1436,6 +1451,17 @@ def test_r7_m2_strip_void_probe_has_no_filled_slab() -> None:
         assert row.get("bgTokenRgb"), (key, row)
         assert row.get("delta") is not None, (key, row)
         assert all(int(channel) <= 2 for channel in row["delta"]), (key, row)
+        assert int(row.get("pixelsScanned") or 0) > 0, (key, row)
+        assert row.get("scrollYAtMeasure") is not None, (key, row)
+        assert row.get("scrollYAtShot") is not None, (key, row)
+        assert abs(float(row["scrollYAtMeasure"]) - float(row["scrollYAtShot"])) <= 0.01, (
+            key, row)
+        sample = str(row.get("canvasSource") or "")
+        assert "css" in sample, (key, sample)
+        # Sample y is the second css number and must be on-viewport.
+        match = re.search(r"\(([-0-9.]+)css,([-0-9.]+)css\)", sample)
+        assert match, (key, sample)
+        assert float(match.group(2)) >= 0, (key, sample)
     assert "strip_void_probe" not in probes
 
 
@@ -1487,13 +1513,13 @@ def test_capture_refuses_when_head_moves(monkeypatch) -> None:
         capture._assert_head_unmoved("aaaaaaaa")
 
 
-def test_pixel_scan_falls_back_to_bg_when_gap_too_small(tmp_path) -> None:
-    """r10-m3 / r11-m3: gap < 8 css uses the resolved --bg custom property."""
+def test_pixel_scan_raises_when_gap_too_small(tmp_path) -> None:
+    """MAJOR-2: gap < 8 css is a hard error, never a silent --bg pass."""
     from PIL import Image
 
     from scripts import capture_macro_command_p3 as capture
 
-    image = Image.new("RGB", (40, 20), (10, 20, 30))
+    image = Image.new("RGB", (40, 20), (13, 16, 24))
     path = tmp_path / "strip.png"
     image.save(path)
     probe = {
@@ -1503,21 +1529,19 @@ def test_pixel_scan_falls_back_to_bg_when_gap_too_small(tmp_path) -> None:
             {"left": 10, "right": 20, "top": 0, "bottom": 10},
         ],
         "bgToken": "#0d1018",
+        "viewport": {"innerHeight": 10},
     }
-    row = capture._pixel_scan_strip_void(path, probe, scale=2)
-    assert row.get("canvasSource") == "--bg custom property"
-    assert row.get("canvasRgb") == [13, 16, 24]
+    with pytest.raises(RuntimeError, match="gap .* < 8"):
+        capture._pixel_scan_strip_void(path, probe, scale=2)
 
 
-def test_pixel_scan_rejects_in_chip_sample(tmp_path) -> None:
-    """r11-n2: gap ≥8 but the sample sits in a chip → --bg, never the chip pixel."""
+def test_pixel_scan_raises_on_in_chip_sample(tmp_path) -> None:
+    """MAJOR-2: a sample that lands in a chip raises, never falls back."""
     from PIL import Image
 
     from scripts import capture_macro_command_p3 as capture
 
-    image = Image.new("RGB", (80, 20), (10, 20, 30))
-    path = tmp_path / "strip.png"
-    image.save(path)
+    image = Image.new("RGB", (80, 20), (13, 16, 24))
     boxes = [
         {"left": 0, "right": 10, "top": 0, "bottom": 10},
         {"left": 20, "right": 30, "top": 0, "bottom": 10},
@@ -1526,10 +1550,58 @@ def test_pixel_scan_rejects_in_chip_sample(tmp_path) -> None:
     def in_chip(_x: int, _y: int) -> bool:
         return True
 
-    canvas, source = capture._choose_strip_canvas(
-        image, boxes, 2, in_chip, "#0d1018")
-    assert source == "--bg custom property"
-    assert canvas == (13, 16, 24)
+    with pytest.raises(RuntimeError, match="landed inside a chip"):
+        capture._choose_strip_canvas(
+            image, boxes, 2, in_chip, "#0d1018", viewport_height=10)
+
+
+def test_pixel_scan_raises_on_negative_boxes(tmp_path) -> None:
+    """MAJOR-2: a probe whose chip row sits above the viewport must raise."""
+    from PIL import Image
+
+    from scripts import capture_macro_command_p3 as capture
+
+    image = Image.new("RGB", (80, 20), (13, 16, 24))
+    path = tmp_path / "strip.png"
+    image.save(path)
+    probe = {
+        "stripBox": {"left": 0, "right": 40, "top": -80, "bottom": -20},
+        "chipBoxes": [
+            {"left": 0, "right": 10, "top": -80, "bottom": -20},
+            {"left": 20, "right": 30, "top": -80, "bottom": -20},
+        ],
+        "bgToken": "#0d1018",
+        "viewport": {"innerHeight": 10},
+    }
+    with pytest.raises(RuntimeError, match="outside"):
+        capture._pixel_scan_strip_void(path, probe, scale=2)
+
+
+def test_pixel_scan_detects_synthetic_void(tmp_path) -> None:
+    """MAJOR-2: a known ≥40 css px non-canvas run outside chips is a void."""
+    from PIL import Image
+
+    from scripts import capture_macro_command_p3 as capture
+
+    image = Image.new("RGB", (200, 20), (13, 16, 24))
+    for x in range(80, 180):
+        for y in range(20):
+            image.putpixel((x, y), (200, 10, 10))
+    path = tmp_path / "strip.png"
+    image.save(path)
+    probe = {
+        "stripBox": {"left": 0, "right": 100, "top": 0, "bottom": 10},
+        "chipBoxes": [
+            {"left": 0, "right": 10, "top": 0, "bottom": 10},
+            {"left": 20, "right": 30, "top": 0, "bottom": 10},
+        ],
+        "bgToken": "#0d1018",
+        "viewport": {"innerHeight": 10},
+    }
+    row = capture._pixel_scan_strip_void(path, probe, scale=2)
+    assert row.get("pixelVoidWiderThan40") is True
+    assert row.get("ok") is False
+    assert int(row.get("pixelsScanned") or 0) > 0
 
 
 def test_pixel_scan_gap_matches_bg_token(tmp_path) -> None:
@@ -1548,9 +1620,11 @@ def test_pixel_scan_gap_matches_bg_token(tmp_path) -> None:
             {"left": 20, "right": 30, "top": 0, "bottom": 10},
         ],
         "bgToken": "#0d1018",
+        "viewport": {"innerHeight": 10},
     }
     row = capture._pixel_scan_strip_void(path, probe, scale=2)
     assert "15.00css" in str(row.get("canvasSource"))
+    assert int(row.get("pixelsScanned") or 0) > 0
     assert row.get("canvasRgb") == [13, 16, 24]
     assert row.get("bgTokenRgb") == [13, 16, 24]
     assert row.get("delta") == [0, 0, 0]
@@ -1571,6 +1645,7 @@ def test_pixel_scan_raises_when_gap_mismatches_bg(tmp_path) -> None:
             {"left": 20, "right": 30, "top": 0, "bottom": 10},
         ],
         "bgToken": "#0d1018",
+        "viewport": {"innerHeight": 10},
     }
     with pytest.raises(RuntimeError, match="!= --bg"):
         capture._pixel_scan_strip_void(path, probe, scale=2)
@@ -1582,18 +1657,19 @@ def test_pixel_scan_raises_when_bg_token_does_not_parse(tmp_path) -> None:
 
     from scripts import capture_macro_command_p3 as capture
 
-    image = Image.new("RGB", (40, 20), (10, 20, 30))
+    image = Image.new("RGB", (80, 20), (10, 20, 30))
     path = tmp_path / "strip.png"
     image.save(path)
     probe = {
-        "stripBox": {"left": 0, "right": 20, "top": 0, "bottom": 10},
+        "stripBox": {"left": 0, "right": 40, "top": 0, "bottom": 10},
         "chipBoxes": [
-            {"left": 0, "right": 9.5, "top": 0, "bottom": 10},
-            {"left": 10, "right": 20, "top": 0, "bottom": 10},
+            {"left": 0, "right": 10, "top": 0, "bottom": 10},
+            {"left": 20, "right": 30, "top": 0, "bottom": 10},
         ],
         "bgToken": "not-a-colour",
+        "viewport": {"innerHeight": 10},
     }
-    with pytest.raises(RuntimeError, match="--bg did not parse"):
+    with pytest.raises(RuntimeError, match="no parsable --bg"):
         capture._pixel_scan_strip_void(path, probe, scale=2)
 
 
@@ -1645,14 +1721,17 @@ def test_r12_device_px_matches_playwright_snap(tmp_path: Path) -> None:
     assert capture._device_px(0.0, 900.0, 2.0) == 1800
     dest = tmp_path / "crop.png"
     Image.new("RGB", (1134, 80), (10, 20, 30)).save(dest)
+    box = {"x": 199.453125, "y": 10.0, "width": 566.453125, "height": 40.0}
     extra = {
         "dpr": 2.0,
         "crop": True,
-        "crop_box": {"x": 199.453125, "y": 10.0, "width": 566.453125, "height": 40.0},
+        "crop_box": box,
         "crop_selector": ".mc-figure",
+        "device_px_span": capture._device_px_span(box, 2.0),
     }
     # 80 == _device_px(10.0, 40.0, 2.0)
     capture._assert_shot_geometry(dest, extra, 1440, 900)
+    assert extra["ihdr_delta_px"] == {"w": 0, "h": 0}
 
 
 def test_r12_clearance_js_has_no_target_zero_gate() -> None:
@@ -1762,8 +1841,14 @@ def test_r12_manifest_shot_schema() -> None:
                 assert state.get("element_text_head") is not None, state.get("file")
                 span = state.get("device_px_span") or {}
                 assert set(span) >= {"x0", "x1", "y0", "y1"}, state.get("file")
-                assert state["width"] == span["x1"] - span["x0"], state.get("file")
-                assert state["height"] == span["y1"] - span["y0"], state.get("file")
+                recomputed = capture._device_px_span_from_crop_box_doc(
+                    state["crop_box_doc"], state["scroll_y_at_shot"],
+                    float(state["dpr"]))
+                assert span == recomputed, (state.get("file"), span, recomputed)
+                delta = extra.get("ihdr_delta_px") or {}
+                assert delta.get("w", 99) <= 1, (state.get("file"), delta)
+                assert delta.get("h", 99) <= 1, (state.get("file"), delta)
+                assert "ihdr_delta_px" in state, state.get("file")
 
 
 def test_r12_gaps_are_computed_from_declared_minus_captured() -> None:
@@ -1792,6 +1877,13 @@ def test_r12_gaps_are_computed_from_declared_minus_captured() -> None:
     computed = capture._compute_gaps_from_declared(declared, captured)
     assert computed == manifest["gaps"]
     assert computed == []
+    declared_keys = {
+        capture._declared_cell_key(cell)
+        for cells in declared.values()
+        for cell in cells
+    }
+    assert declared_keys - captured == set()
+    assert captured - declared_keys == set()
     empty_declared = capture._declared_empty_cells()
     assert len(empty_declared) == 6 * 2 * 2 * 2
     for page in _manifest_pages(manifest):
@@ -1833,16 +1925,17 @@ def test_r12_e5_timeout_receipts() -> None:
 
 
 def test_r12_choose_strip_canvas_fallback_label() -> None:
-    """MAJOR-E2 / r11 MINOR-3: fallback is --bg, never bodyBackgroundColor."""
+    """MAJOR-2: the canvas sample raises off-row; --bg is never a silent pass."""
     from scripts import capture_macro_command_p3 as capture
 
     src = capture._choose_strip_canvas.__doc__ or ""
     fn_src = Path(capture.__file__).read_text(encoding="utf-8")
     assert 'getPropertyValue(\'--bg\')' in capture.STRIP_VOID_JS
-    assert '"--bg custom property"' in fn_src
     assert "bodyBackgroundColor" in capture.STRIP_VOID_JS
     assert "bgResolved" not in capture.STRIP_VOID_JS
-    assert "--bg custom property" in src
+    assert "never clamped" in src
+    assert 'origin["x0"] + width' not in fn_src
+    assert 'extra["device_px_span"] = _device_px_span' in fn_src
 
 
 def test_r12_rail_viewport_receipts() -> None:
@@ -1865,9 +1958,18 @@ def test_r12_rail_viewport_receipts() -> None:
                     "webkitMaskImage")
                 assert mask and mask != "none", (key, row)
                 assert "calc(100%" in str(mask) or "%" in str(mask), (key, mask)
-                assert row.get("fadeVisualStartX") is not None, (key, row)
-                assert abs(float(row["fadeVisualStartX"]) - float(row["fadeLeft"])) <= 4, (
-                    key, row)
+                if row.get("fadeVisualApplicable"):
+                    assert row.get("fadeOnsetX") is not None, (key, row)
+                    assert row.get("fadeVisualStartX") is not None, (key, row)
+                    assert abs(float(row["fadeOnsetX"]) - float(row["fadeLeft"])) <= 4, (
+                        key, row)
+                    assert float(row["fadeVisualStartX"]) >= float(row["fadeOnsetX"]) - 0.5, (
+                        key, row)
+                else:
+                    assert row.get("fadeVisualReason") in {
+                        "maxScrollLeft=0", "no chip under the band",
+                    }, (key, row)
+                    assert row.get("fadeVisualStartX") is None, (key, row)
                 assert row.get("chips"), (key, row)
                 for chip in row["chips"]:
                     assert chip.get("fullyVisible") is True, (key, chip)
@@ -1916,3 +2018,106 @@ def test_r14_movement_row_element_shots() -> None:
             head = str(row.get("element_text_head") or "")
             assert re.search(r"\d", head), (name, head)
             assert len(head) > 12, (name, head)
+
+
+def test_r15_ihdr_3px_wider_than_span_raises(tmp_path: Path) -> None:
+    """MAJOR-1: a PNG whose IHDR is 3 px wider than the element span raises."""
+    from PIL import Image
+
+    from scripts import capture_macro_command_p3 as capture
+
+    dest = tmp_path / "wide.png"
+    Image.new("RGB", (103, 50), (0, 0, 0)).save(dest)
+    extra = {
+        "dpr": 2.0,
+        "crop": True,
+        "crop_selector": "#x",
+        "device_px_span": {"x0": 0, "x1": 100, "y0": 0, "y1": 50},
+    }
+    with pytest.raises(RuntimeError, match="device_px_span"):
+        capture._assert_shot_geometry(dest, extra, 1440, 900)
+
+
+def test_r15_ihdr_within_1px_of_span_passes(tmp_path: Path) -> None:
+    """MAJOR-1: Playwright's 1 device-px rounding is recorded, not fatal."""
+    from PIL import Image
+
+    from scripts import capture_macro_command_p3 as capture
+
+    dest = tmp_path / "near.png"
+    Image.new("RGB", (101, 50), (0, 0, 0)).save(dest)
+    extra = {
+        "dpr": 2.0,
+        "crop": True,
+        "crop_selector": "#x",
+        "device_px_span": {"x0": 0, "x1": 100, "y0": 0, "y1": 50},
+    }
+    capture._assert_shot_geometry(dest, extra, 1440, 900)
+    assert extra["ihdr_delta_px"] == {"w": 1, "h": 0}
+
+
+def test_r15_device_px_span_is_element_box_only() -> None:
+    """MAJOR-1: the writer assigns _device_px_span(box); PNG width is unused."""
+    from scripts import capture_macro_command_p3 as capture
+
+    src = Path(capture.__file__).read_text(encoding="utf-8")
+    assert 'extra["device_px_span"] = _device_px_span(box_before, extra["dpr"])' in src
+    assert "origin[\"x0\"] + width" not in src
+
+
+def test_r15_device_px_span_uses_enclosing_css_rect() -> None:
+    """MAJOR-E1: opposing fractional edges must not produce a 2 px short span."""
+    from scripts import capture_macro_command_p3 as capture
+
+    # The heading-focus ZH failure: raw floor(x*dpr)/ceil((x+h)*dpr)
+    # is 58 tall; enclosing CSS × dpr is 60, matching Playwright.
+    box = {"x": 353.2, "y": 112.6, "width": 43.6, "height": 28.8}
+    span = capture._device_px_span(box, 2.0)
+    assert span["x1"] - span["x0"] == 88
+    assert span["y1"] - span["y0"] == 60
+    raw_h = int(math.ceil((112.6 + 28.8) * 2) - math.floor(112.6 * 2))
+    assert raw_h == 58
+
+
+def test_r15_strip_frames_are_declared_and_captured() -> None:
+    """MAJOR-2 / MINOR-E4: dedicated strip frames belong to strip_void."""
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p3" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    states = {state.get("file"): state for state in _manifest_states(manifest)}
+    for theme in ("dark", "light"):
+        for locale in ("en", "zh"):
+            name = f"strip-{theme}-{locale}.png"
+            row = states[name]
+            assert row.get("captured") is True, name
+            assert row.get("crop") is False, name
+            assert row.get("viewport_width") == 1440, name
+
+
+def test_r15_e3_overview_crop_is_force_state_not_empty() -> None:
+    """MINOR-E4: *-1440-e3.png is force_states even though crop=True."""
+    from scripts import capture_macro_command_p3 as capture
+
+    states = [
+        {
+            "file": "25-dark-en-1440-e3.png",
+            "captured": True,
+            "force_state": "e3",
+            "theme": "dark",
+            "locale": "en",
+            "viewport_width": 1440,
+            "crop": True,
+        },
+        {
+            "file": "empty-e3-dark.png",
+            "captured": True,
+            "force_state": "e3",
+            "theme": "dark",
+            "locale": "en",
+            "viewport_width": 1440,
+            "crop": True,
+        },
+    ]
+    keys = capture._captured_declared_keys(states, {})
+    assert ("force_states", "e3", "dark", "en", 1440) in keys
+    assert ("empty_states", "e3", "dark", "en", 1440) in keys

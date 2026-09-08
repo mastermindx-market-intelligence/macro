@@ -60,6 +60,7 @@
 <div class="mc-empty" role="note" data-mc-empty="{{ state.id }}" data-mc-fragment>
   <p class="mc-empty-title">{{ bl(state.title) }}</p>
   <p class="mc-empty-why">{{ bl(state.why) }}</p>
+  {%- if state.stance %}<p class="mc-empty-stance">{{ bl(state.stance) }}</p>{% endif %}
   {%- if state.unlock %}<p class="mc-empty-unlock">{{ bl(state.unlock) }}</p>{% endif %}
   {%- if state.next %}<p class="mc-empty-next">{{ bl(state.next) }}</p>{% endif %}
   {%- if state.cta %}<a class="mc-empty-cta" href="{{ state.cta.href }}">{{ bl(state.cta.label) }}</a>{% endif %}
