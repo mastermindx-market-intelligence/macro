@@ -118,6 +118,9 @@ HAC_LAG_RULE = "h + 1"  # Newey-West truncation at horizon h; documented, not tu
 GLOBAL_NULL_FWER_VINTAGE = "historical_pre_finite_sample_66f414ac2b3"
 
 # Customer sentences for the plain-word layer. Slugs stay on irf[].reason.
+# ZH strings are Meta-CEO A pins (PR #6901 MINOR 5): one sentence for one, same
+# plain register, no English and no untranslated identifiers inside ZH.
+_REASON_FALLBACK = {"en": "a data problem", "zh": "数据问题"}
 _REASON_PLAIN = {
     "insufficient_observations": "we do not have enough history yet",
     "degenerate_shock": "the event we measured never actually varied",
@@ -130,6 +133,15 @@ _REASON_PLAIN = {
     "misaligned_lengths": "the two series do not line up",
     "non_finite_input": "the data has gaps we could not fill",
     "horizon_exceeds_sample": "the window runs past the end of the data",
+}
+_REASON_PLAIN_ZH = {
+    "insufficient_observations": "历史数据不足",
+    "degenerate_shock": "所测事件实际上从未变化",
+    "rank_deficient_design": "输入彼此重复，没有剩下可测量的内容",
+    "insufficient_dof": "输入彼此重复，没有剩下可测量的内容",
+    "misaligned_lengths": "两条序列对不齐",
+    "non_finite_input": "数据有缺口，无法补齐",
+    "horizon_exceeds_sample": "窗口超出了数据末端",
 }
 
 
@@ -314,19 +326,22 @@ def _targets_dropped_at_tail(n_by_horizon: dict, horizons: int) -> dict:
     return {str(h): int(max(0, base_n - ns[h])) for h in range(horizons + 1)}
 
 
-def _plain_reason_texts(reasons: list[str]) -> list[str]:
+def _plain_reason_texts(reasons: list[str], lang: str = "en") -> list[str]:
     """Map abstention slugs to customer sentences; keep first-seen order.
 
     Distinct slugs that share a sentence (rank_deficient_design /
     insufficient_dof) collapse to one sentence so the line does not repeat.
+    `lang` is "en" or "zh"; every key has a counterpart in both tables.
     """
+    table = _REASON_PLAIN_ZH if lang == "zh" else _REASON_PLAIN
+    fallback = _REASON_FALLBACK["zh" if lang == "zh" else "en"]
     seen_slugs: list[str] = []
     texts: list[str] = []
     for reason in reasons:
         if not reason or reason in seen_slugs:
             continue
         seen_slugs.append(reason)
-        text = _REASON_PLAIN.get(reason, "a data problem")
+        text = table.get(reason, fallback)
         if text not in texts:
             texts.append(text)
     return texts
@@ -701,7 +716,7 @@ def impulse_response(y, shock, *, horizons: int = HORIZONS, lags: int = LAGS,
     return result
 
 
-def plain_words(result: dict) -> str:
+def plain_words(result: dict, lang: str = "en") -> str:
     """One or two short sentences, no jargon, no internal state names.
 
     MUST distinguish an honest null (every horizon was tested and none
@@ -709,12 +724,23 @@ def plain_words(result: dict) -> str:
     all, or only some horizons could be) - collapsing both into the same
     sentence publishes "no effect" for a case where no measurement was
     ever taken. Every distinct abstention reason is mapped to a customer
-    sentence; the raw slug stays on irf[].reason."""
+    sentence; the raw slug stays on irf[].reason.
+
+    `lang` is "en" or "zh". ZH strings are Meta-CEO A pins; one sentence
+    for one, same numbers, no English inside ZH."""
+    if lang not in ("en", "zh"):
+        raise ValueError("lang must be 'en' or 'zh'")
     null = result.get("null", {})
     rejecting = null.get("rejecting_horizons") or []
     if rejecting:
+        n = len(rejecting)
+        if lang == "zh":
+            return (
+                f"冲击后有 {n} 个时点出现了可测量的影响，"
+                "并通过了对多时点同时检验的校正。"
+            )
         return (
-            f"A measurable effect showed up at {len(rejecting)} time-step(s) after "
+            f"A measurable effect showed up at {n} time-step(s) after "
             "the shock, and it survived correction for testing many time-steps at once."
         )
     mt = result.get("multiple_testing", {})
@@ -729,17 +755,28 @@ def plain_words(result: dict) -> str:
             reason = row.get("reason")
             if row.get("abstained") and reason and reason not in reasons:
                 reasons.append(reason)
-        reason_txt = "; ".join(_plain_reason_texts(reasons)) or "a data problem"
+        joiner = "；" if lang == "zh" else "; "
+        fallback = _REASON_FALLBACK[lang]
+        reason_txt = joiner.join(_plain_reason_texts(reasons, lang=lang)) or fallback
+        if lang == "zh":
+            return f"暂无结果——冲击后没有任何时点可以测量（{reason_txt}）。"
         return (
             "Not available yet - we could not measure any time-step after the "
             f"shock ({reason_txt})."
         )
     if tested < declared:
         missing = declared - tested
+        if lang == "zh":
+            return (
+                f"在可测量的 {tested} 个时点中，没有影响通过校正；"
+                f"另有 {missing} 个时点暂时无法测量。"
+            )
         return (
             f"No effect survived correction in the {tested} time-step(s) we could "
             f"measure; {missing} could not be measured yet."
         )
+    if lang == "zh":
+        return "冲击后没有任何时点出现通过校正的影响，该校正针对多时点同时检验。"
     return (
         "No time-step after the shock showed an effect that survived correction "
         "for testing many time-steps at once."

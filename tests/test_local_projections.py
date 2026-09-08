@@ -9,6 +9,7 @@ mirroring tests/test_synthetic_control.py.
 import inspect
 import math
 import os
+import re
 import sys
 
 import numpy as np
@@ -645,6 +646,79 @@ def test_plain_words_distinguishes_abstention_from_tested_null():
     assert "do not line up" in words.lower()
     assert "misaligned" not in words.lower()
     assert "no time-step after the shock showed an effect" not in words.lower()
+
+
+_CJK_RE = re.compile(r"[\u4e00-\u9fff]")
+_BANNED_FRONT_TOKENS = ("falsif", "证伪", "validated")
+
+
+def _assert_en_zh_parity(en: str, zh: str) -> None:
+    assert _CJK_RE.search(zh), zh
+    assert zh != en
+    assert re.findall(r"\d+", en) == re.findall(r"\d+", zh), (en, zh)
+    blob = f"{en}\n{zh}".lower()
+    for banned in _BANNED_FRONT_TOKENS:
+        assert banned not in blob, (banned, en, zh)
+    assert not re.search(r"[A-Za-z]", zh), zh
+
+
+def test_plain_words_zh_parity_on_every_branch():
+    # MINOR 5: each customer sentence has a ZH counterpart. Same numbers,
+    # CJK present, no English inside ZH, no front-facing banned tokens.
+    branches = {
+        "rejecting": {
+            "null": {"rejecting_horizons": [0, 3, 7]},
+            "multiple_testing": {"n_horizons_tested": 21, "n_horizons_declared": 21},
+        },
+        "none_tested": {
+            "null": {"rejecting_horizons": []},
+            "multiple_testing": {"n_horizons_tested": 0, "n_horizons_declared": 6},
+            "irf": [{"abstained": True, "reason": "insufficient_observations"}],
+        },
+        "partial": {
+            "null": {"rejecting_horizons": []},
+            "multiple_testing": {"n_horizons_tested": 12, "n_horizons_declared": 21},
+        },
+        "honest_null": {
+            "null": {"rejecting_horizons": []},
+            "multiple_testing": {"n_horizons_tested": 21, "n_horizons_declared": 21},
+        },
+    }
+    expected_zh = {
+        "rejecting": "冲击后有 3 个时点出现了可测量的影响，并通过了对多时点同时检验的校正。",
+        "none_tested": "暂无结果——冲击后没有任何时点可以测量（历史数据不足）。",
+        "partial": "在可测量的 12 个时点中，没有影响通过校正；另有 9 个时点暂时无法测量。",
+        "honest_null": "冲击后没有任何时点出现通过校正的影响，该校正针对多时点同时检验。",
+    }
+    for name, payload in branches.items():
+        en = lp.plain_words(payload, lang="en")
+        zh = lp.plain_words(payload, lang="zh")
+        _assert_en_zh_parity(en, zh)
+        assert zh == expected_zh[name], (name, zh)
+
+
+def test_every_plain_reason_key_has_en_and_zh():
+    # MINOR 5: every slug `_plain_reason_texts` can emit has both languages.
+    assert set(lp._REASON_PLAIN) == set(lp._REASON_PLAIN_ZH)
+    assert set(lp._REASON_FALLBACK) == {"en", "zh"}
+    assert _CJK_RE.search(lp._REASON_FALLBACK["zh"])
+    assert not re.search(r"[A-Za-z]", lp._REASON_FALLBACK["zh"])
+    for key, en in lp._REASON_PLAIN.items():
+        zh = lp._REASON_PLAIN_ZH[key]
+        _assert_en_zh_parity(en, zh)
+        payload = {
+            "null": {"rejecting_horizons": []},
+            "multiple_testing": {"n_horizons_tested": 0, "n_horizons_declared": 1},
+            "irf": [{"abstained": True, "reason": key}],
+        }
+        en_line = lp.plain_words(payload, lang="en")
+        zh_line = lp.plain_words(payload, lang="zh")
+        _assert_en_zh_parity(en_line, zh_line)
+        assert en in en_line
+        assert zh in zh_line
+        assert key not in en_line and key not in zh_line
+    unknown = lp._plain_reason_texts(["not_a_real_slug"], lang="zh")
+    assert unknown == [lp._REASON_FALLBACK["zh"]]
 
 
 def test_single_nan_target_does_not_abstain_the_whole_horizon():
