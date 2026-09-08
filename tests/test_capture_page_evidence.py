@@ -1335,8 +1335,7 @@ def test_state_seed_source_is_a_terminated_statement_safe_to_concatenate():
     first script and recorded in the manifest as a page console error with no
     source URL. The fix is the terminating semicolon, never a try/catch.
     """
-    module = _load_module()
-    seed = module.state_seed_source({"theme": "dark", "locale": "en"})
+    seed = cpe.state_seed_source({"theme": "dark", "locale": "en"})
     assert seed.rstrip().endswith(");"), seed[-40:]
     wrapper_iifes = "\n(function(){ globalThis.__wrapped = 1; })();"
     composed = seed + wrapper_iifes
