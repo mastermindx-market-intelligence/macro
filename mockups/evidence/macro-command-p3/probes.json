@@ -123,38 +123,284 @@
   "m5_caption_contrast": 5.7342770734687685,
   "m5_count_contrast": 5.7342770734687685,
   "clearance_dark_en": {
-    "lastBottom": 637,
-    "lastTop": -758.21875,
-    "lastTag": "mc-dests-block",
-    "pillTop": 717.859375,
-    "pillHeight": 42.140625,
-    "pillBottom": 760,
-    "gap": 80.859375,
-    "clear": true,
-    "scrollHeight": 3346,
-    "innerHeight": 844,
-    "maxScroll": 2502,
-    "scrollReached": 2502,
-    "maxScrollMatched": true,
-    "reservedBandCss": 207,
-    "pad": "144px"
+    "ok": true,
+    "textCount": 314,
+    "positions": {
+      "0": {
+        "ok": true,
+        "target": "0",
+        "scrollY": 0,
+        "scrollWanted": 0,
+        "maxScroll": 2447,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 733.09375,
+            "left": 14,
+            "right": 376,
+            "bottom": 786.234375,
+            "width": 362,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 772,
+            "left": 318,
+            "right": 374,
+            "bottom": 828,
+            "width": 56,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 772,
+          "bottom": 828,
+          "left": 318,
+          "right": 374
+        },
+        "scrollHeight": 3291,
+        "innerHeight": 844
+      },
+      "50": {
+        "ok": true,
+        "target": "50",
+        "scrollY": 1224,
+        "scrollWanted": 1223.5,
+        "maxScroll": 2447,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 14,
+            "right": 376,
+            "bottom": 113.140625,
+            "width": 362,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 772,
+            "left": 318,
+            "right": 374,
+            "bottom": 828,
+            "width": 56,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 772,
+          "bottom": 828,
+          "left": 318,
+          "right": 374
+        },
+        "scrollHeight": 3291,
+        "innerHeight": 844
+      },
+      "max": {
+        "ok": true,
+        "target": "max",
+        "scrollY": 2447,
+        "scrollWanted": 2447,
+        "maxScroll": 2447,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 14,
+            "right": 376,
+            "bottom": 113.140625,
+            "width": 362,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 772,
+            "left": 318,
+            "right": 374,
+            "bottom": 828,
+            "width": 56,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 772,
+          "bottom": 828,
+          "left": 318,
+          "right": 374
+        },
+        "scrollHeight": 3291,
+        "innerHeight": 844
+      }
+    },
+    "analystPosition": "static",
+    "mmbBootPresent": true,
+    "mmbBootBox": {
+      "top": 772,
+      "bottom": 828,
+      "left": 318,
+      "right": 374
+    }
   },
   "clearance_light_zh": {
-    "lastBottom": 636.546875,
-    "lastTop": -518.5,
-    "lastTag": "mc-dests-block",
-    "pillTop": 717.859375,
-    "pillHeight": 42.140625,
-    "pillBottom": 760,
-    "gap": 81.3125,
-    "clear": true,
-    "scrollHeight": 2998,
-    "innerHeight": 844,
-    "maxScroll": 2154,
-    "scrollReached": 2154,
-    "maxScrollMatched": true,
-    "reservedBandCss": 207.453125,
-    "pad": "144px"
+    "ok": true,
+    "textCount": 314,
+    "positions": {
+      "0": {
+        "ok": true,
+        "target": "0",
+        "scrollY": 0,
+        "scrollWanted": 0,
+        "maxScroll": 2098,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 676.703125,
+            "left": 14,
+            "right": 376,
+            "bottom": 729.84375,
+            "width": 362,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 772,
+            "left": 318,
+            "right": 374,
+            "bottom": 828,
+            "width": 56,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 772,
+          "bottom": 828,
+          "left": 318,
+          "right": 374
+        },
+        "scrollHeight": 2942,
+        "innerHeight": 844
+      },
+      "50": {
+        "ok": true,
+        "target": "50",
+        "scrollY": 1049,
+        "scrollWanted": 1049,
+        "maxScroll": 2098,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 14,
+            "right": 376,
+            "bottom": 113.140625,
+            "width": 362,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 772,
+            "left": 318,
+            "right": 374,
+            "bottom": 828,
+            "width": 56,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 772,
+          "bottom": 828,
+          "left": 318,
+          "right": 374
+        },
+        "scrollHeight": 2942,
+        "innerHeight": 844
+      },
+      "max": {
+        "ok": true,
+        "target": "max",
+        "scrollY": 2098,
+        "scrollWanted": 2098,
+        "maxScroll": 2098,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 14,
+            "right": 376,
+            "bottom": 113.140625,
+            "width": 362,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 772,
+            "left": 318,
+            "right": 374,
+            "bottom": 828,
+            "width": 56,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 772,
+          "bottom": 828,
+          "left": 318,
+          "right": 374
+        },
+        "scrollHeight": 2942,
+        "innerHeight": 844
+      }
+    },
+    "analystPosition": "static",
+    "mmbBootPresent": true,
+    "mmbBootBox": {
+      "top": 772,
+      "bottom": 828,
+      "left": 318,
+      "right": 374
+    }
   },
   "scroll_matrix": {
     "1440_dark_en": {
@@ -321,7 +567,7 @@
     "clientWidth": 390,
     "noDocOverflow": true,
     "listOverflowX": "auto",
-    "listMaxWidth": "100%",
+    "listMaxWidth": "none",
     "listContain": "inline-size"
   },
   "rail_dark_zh": {
@@ -336,25 +582,148 @@
     "clientWidth": 390,
     "noDocOverflow": true,
     "listOverflowX": "auto",
-    "listMaxWidth": "100%",
+    "listMaxWidth": "none",
     "listContain": "inline-size"
   },
   "clearance_dark_zh": {
-    "lastBottom": 636.546875,
-    "lastTop": -518.5,
-    "lastTag": "mc-dests-block",
-    "pillTop": 717.859375,
-    "pillHeight": 42.140625,
-    "pillBottom": 760,
-    "gap": 81.3125,
-    "clear": true,
-    "scrollHeight": 2978,
-    "innerHeight": 844,
-    "maxScroll": 2134,
-    "scrollReached": 2134,
-    "maxScrollMatched": true,
-    "reservedBandCss": 207.453125,
-    "pad": "144px"
+    "ok": true,
+    "textCount": 314,
+    "positions": {
+      "0": {
+        "ok": true,
+        "target": "0",
+        "scrollY": 0,
+        "scrollWanted": 0,
+        "maxScroll": 2078,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 670.703125,
+            "left": 14,
+            "right": 376,
+            "bottom": 723.84375,
+            "width": 362,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 772,
+            "left": 318,
+            "right": 374,
+            "bottom": 828,
+            "width": 56,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 772,
+          "bottom": 828,
+          "left": 318,
+          "right": 374
+        },
+        "scrollHeight": 2922,
+        "innerHeight": 844
+      },
+      "50": {
+        "ok": true,
+        "target": "50",
+        "scrollY": 1039,
+        "scrollWanted": 1039,
+        "maxScroll": 2078,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 14,
+            "right": 376,
+            "bottom": 113.140625,
+            "width": 362,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 772,
+            "left": 318,
+            "right": 374,
+            "bottom": 828,
+            "width": 56,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 772,
+          "bottom": 828,
+          "left": 318,
+          "right": 374
+        },
+        "scrollHeight": 2922,
+        "innerHeight": 844
+      },
+      "max": {
+        "ok": true,
+        "target": "max",
+        "scrollY": 2078,
+        "scrollWanted": 2078,
+        "maxScroll": 2078,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 14,
+            "right": 376,
+            "bottom": 113.140625,
+            "width": 362,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 772,
+            "left": 318,
+            "right": 374,
+            "bottom": 828,
+            "width": 56,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 772,
+          "bottom": 828,
+          "left": 318,
+          "right": 374
+        },
+        "scrollHeight": 2922,
+        "innerHeight": 844
+      }
+    },
+    "analystPosition": "static",
+    "mmbBootPresent": true,
+    "mmbBootBox": {
+      "top": 772,
+      "bottom": 828,
+      "left": 318,
+      "right": 374
+    }
   },
   "rail_light_en": {
     "ok": true,
@@ -368,25 +737,148 @@
     "clientWidth": 390,
     "noDocOverflow": true,
     "listOverflowX": "auto",
-    "listMaxWidth": "100%",
+    "listMaxWidth": "none",
     "listContain": "inline-size"
   },
   "clearance_light_en": {
-    "lastBottom": 636.5,
-    "lastTop": -758.71875,
-    "lastTag": "mc-dests-block",
-    "pillTop": 717.859375,
-    "pillHeight": 42.140625,
-    "pillBottom": 760,
-    "gap": 81.359375,
-    "clear": true,
-    "scrollHeight": 3384,
-    "innerHeight": 844,
-    "maxScroll": 2540,
-    "scrollReached": 2540,
-    "maxScrollMatched": true,
-    "reservedBandCss": 207.5,
-    "pad": "144px"
+    "ok": true,
+    "textCount": 314,
+    "positions": {
+      "0": {
+        "ok": true,
+        "target": "0",
+        "scrollY": 0,
+        "scrollWanted": 0,
+        "maxScroll": 2484,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 756.59375,
+            "left": 14,
+            "right": 376,
+            "bottom": 809.734375,
+            "width": 362,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 772,
+            "left": 318,
+            "right": 374,
+            "bottom": 828,
+            "width": 56,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 772,
+          "bottom": 828,
+          "left": 318,
+          "right": 374
+        },
+        "scrollHeight": 3328,
+        "innerHeight": 844
+      },
+      "50": {
+        "ok": true,
+        "target": "50",
+        "scrollY": 1242,
+        "scrollWanted": 1242,
+        "maxScroll": 2484,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 14,
+            "right": 376,
+            "bottom": 113.140625,
+            "width": 362,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 772,
+            "left": 318,
+            "right": 374,
+            "bottom": 828,
+            "width": 56,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 772,
+          "bottom": 828,
+          "left": 318,
+          "right": 374
+        },
+        "scrollHeight": 3328,
+        "innerHeight": 844
+      },
+      "max": {
+        "ok": true,
+        "target": "max",
+        "scrollY": 2484,
+        "scrollWanted": 2484,
+        "maxScroll": 2484,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 14,
+            "right": 376,
+            "bottom": 113.140625,
+            "width": 362,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 772,
+            "left": 318,
+            "right": 374,
+            "bottom": 828,
+            "width": 56,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 772,
+          "bottom": 828,
+          "left": 318,
+          "right": 374
+        },
+        "scrollHeight": 3328,
+        "innerHeight": 844
+      }
+    },
+    "analystPosition": "static",
+    "mmbBootPresent": true,
+    "mmbBootBox": {
+      "top": 772,
+      "bottom": 828,
+      "left": 318,
+      "right": 374
+    }
   },
   "rail_light_zh": {
     "ok": true,
@@ -400,7 +892,7 @@
     "clientWidth": 390,
     "noDocOverflow": true,
     "listOverflowX": "auto",
-    "listMaxWidth": "100%",
+    "listMaxWidth": "none",
     "listContain": "inline-size"
   },
   "rail_768_dark_en": {
@@ -415,7 +907,7 @@
     "clientWidth": 768,
     "noDocOverflow": true,
     "listOverflowX": "auto",
-    "listMaxWidth": "100%",
+    "listMaxWidth": "none",
     "listContain": "inline-size"
   },
   "rail_768_light_en": {
@@ -430,11 +922,11 @@
     "clientWidth": 768,
     "noDocOverflow": true,
     "listOverflowX": "auto",
-    "listMaxWidth": "100%",
+    "listMaxWidth": "none",
     "listContain": "inline-size"
   },
-  "generated_at": "2026-09-08T09:39:28Z",
-  "resolved_sha_or_none": "d1d5e188ecd32785b2528feb5420c6264c9dcf11",
+  "generated_at": "2026-09-08T10:15:06Z",
+  "resolved_sha_or_none": "c1b5115e68a753181e825d897b681f613ab2c21c",
   "m2_hairline_light_en": {
     "populated": true,
     "hairlineCount": 1,
@@ -463,9 +955,1205 @@
     "maxVoidWidth": 0,
     "filledOutsideWiderThan40": false,
     "holeWiderThan40": false,
+    "chipBoxes": [
+      {
+        "left": 332,
+        "right": 578,
+        "top": 358.859375,
+        "bottom": 465.15625,
+        "width": 246,
+        "height": 106.296875
+      },
+      {
+        "left": 586,
+        "right": 832,
+        "top": 358.859375,
+        "bottom": 465.15625,
+        "width": 246,
+        "height": 106.296875
+      },
+      {
+        "left": 840,
+        "right": 1086,
+        "top": 358.859375,
+        "bottom": 465.15625,
+        "width": 246,
+        "height": 106.296875
+      },
+      {
+        "left": 1094,
+        "right": 1340,
+        "top": 358.859375,
+        "bottom": 465.15625,
+        "width": 246,
+        "height": 106.296875
+      },
+      {
+        "left": 332,
+        "right": 1340,
+        "top": 473.15625,
+        "bottom": 552.453125,
+        "width": 1008,
+        "height": 79.296875
+      }
+    ],
+    "stripBox": {
+      "left": 332,
+      "right": 1340,
+      "top": 358.859375,
+      "bottom": 552.453125,
+      "width": 1008,
+      "height": 193.59375
+    },
     "viewport": {
       "innerWidth": 1440,
       "stripWidth": 1008
+    },
+    "pixelVoidWiderThan40": false,
+    "pixelVoids": [],
+    "pixelVoidCount": 0,
+    "canvasRgb": [
+      224,
+      229,
+      241
+    ]
+  },
+  "clearance_390_dark_en": {
+    "ok": true,
+    "textCount": 314,
+    "positions": {
+      "0": {
+        "ok": true,
+        "target": "0",
+        "scrollY": 0,
+        "scrollWanted": 0,
+        "maxScroll": 2447,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 733.09375,
+            "left": 14,
+            "right": 376,
+            "bottom": 786.234375,
+            "width": 362,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 772,
+            "left": 318,
+            "right": 374,
+            "bottom": 828,
+            "width": 56,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 772,
+          "bottom": 828,
+          "left": 318,
+          "right": 374
+        },
+        "scrollHeight": 3291,
+        "innerHeight": 844
+      },
+      "50": {
+        "ok": true,
+        "target": "50",
+        "scrollY": 1224,
+        "scrollWanted": 1223.5,
+        "maxScroll": 2447,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 14,
+            "right": 376,
+            "bottom": 113.140625,
+            "width": 362,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 772,
+            "left": 318,
+            "right": 374,
+            "bottom": 828,
+            "width": 56,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 772,
+          "bottom": 828,
+          "left": 318,
+          "right": 374
+        },
+        "scrollHeight": 3291,
+        "innerHeight": 844
+      },
+      "max": {
+        "ok": true,
+        "target": "max",
+        "scrollY": 2447,
+        "scrollWanted": 2447,
+        "maxScroll": 2447,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 14,
+            "right": 376,
+            "bottom": 113.140625,
+            "width": 362,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 772,
+            "left": 318,
+            "right": 374,
+            "bottom": 828,
+            "width": 56,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 772,
+          "bottom": 828,
+          "left": 318,
+          "right": 374
+        },
+        "scrollHeight": 3291,
+        "innerHeight": 844
+      }
+    },
+    "analystPosition": "static",
+    "mmbBootPresent": true,
+    "mmbBootBox": {
+      "top": 772,
+      "bottom": 828,
+      "left": 318,
+      "right": 374
+    }
+  },
+  "clearance_390_dark_zh": {
+    "ok": true,
+    "textCount": 314,
+    "positions": {
+      "0": {
+        "ok": true,
+        "target": "0",
+        "scrollY": 0,
+        "scrollWanted": 0,
+        "maxScroll": 2078,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 670.703125,
+            "left": 14,
+            "right": 376,
+            "bottom": 723.84375,
+            "width": 362,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 772,
+            "left": 318,
+            "right": 374,
+            "bottom": 828,
+            "width": 56,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 772,
+          "bottom": 828,
+          "left": 318,
+          "right": 374
+        },
+        "scrollHeight": 2922,
+        "innerHeight": 844
+      },
+      "50": {
+        "ok": true,
+        "target": "50",
+        "scrollY": 1039,
+        "scrollWanted": 1039,
+        "maxScroll": 2078,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 14,
+            "right": 376,
+            "bottom": 113.140625,
+            "width": 362,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 772,
+            "left": 318,
+            "right": 374,
+            "bottom": 828,
+            "width": 56,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 772,
+          "bottom": 828,
+          "left": 318,
+          "right": 374
+        },
+        "scrollHeight": 2922,
+        "innerHeight": 844
+      },
+      "max": {
+        "ok": true,
+        "target": "max",
+        "scrollY": 2078,
+        "scrollWanted": 2078,
+        "maxScroll": 2078,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 14,
+            "right": 376,
+            "bottom": 113.140625,
+            "width": 362,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 772,
+            "left": 318,
+            "right": 374,
+            "bottom": 828,
+            "width": 56,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 772,
+          "bottom": 828,
+          "left": 318,
+          "right": 374
+        },
+        "scrollHeight": 2922,
+        "innerHeight": 844
+      }
+    },
+    "analystPosition": "static",
+    "mmbBootPresent": true,
+    "mmbBootBox": {
+      "top": 772,
+      "bottom": 828,
+      "left": 318,
+      "right": 374
+    }
+  },
+  "clearance_390_light_en": {
+    "ok": true,
+    "textCount": 314,
+    "positions": {
+      "0": {
+        "ok": true,
+        "target": "0",
+        "scrollY": 0,
+        "scrollWanted": 0,
+        "maxScroll": 2484,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 756.59375,
+            "left": 14,
+            "right": 376,
+            "bottom": 809.734375,
+            "width": 362,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 772,
+            "left": 318,
+            "right": 374,
+            "bottom": 828,
+            "width": 56,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 772,
+          "bottom": 828,
+          "left": 318,
+          "right": 374
+        },
+        "scrollHeight": 3328,
+        "innerHeight": 844
+      },
+      "50": {
+        "ok": true,
+        "target": "50",
+        "scrollY": 1242,
+        "scrollWanted": 1242,
+        "maxScroll": 2484,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 14,
+            "right": 376,
+            "bottom": 113.140625,
+            "width": 362,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 772,
+            "left": 318,
+            "right": 374,
+            "bottom": 828,
+            "width": 56,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 772,
+          "bottom": 828,
+          "left": 318,
+          "right": 374
+        },
+        "scrollHeight": 3328,
+        "innerHeight": 844
+      },
+      "max": {
+        "ok": true,
+        "target": "max",
+        "scrollY": 2484,
+        "scrollWanted": 2484,
+        "maxScroll": 2484,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 14,
+            "right": 376,
+            "bottom": 113.140625,
+            "width": 362,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 772,
+            "left": 318,
+            "right": 374,
+            "bottom": 828,
+            "width": 56,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 772,
+          "bottom": 828,
+          "left": 318,
+          "right": 374
+        },
+        "scrollHeight": 3328,
+        "innerHeight": 844
+      }
+    },
+    "analystPosition": "static",
+    "mmbBootPresent": true,
+    "mmbBootBox": {
+      "top": 772,
+      "bottom": 828,
+      "left": 318,
+      "right": 374
+    }
+  },
+  "clearance_390_light_zh": {
+    "ok": true,
+    "textCount": 314,
+    "positions": {
+      "0": {
+        "ok": true,
+        "target": "0",
+        "scrollY": 0,
+        "scrollWanted": 0,
+        "maxScroll": 2098,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 676.703125,
+            "left": 14,
+            "right": 376,
+            "bottom": 729.84375,
+            "width": 362,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 772,
+            "left": 318,
+            "right": 374,
+            "bottom": 828,
+            "width": 56,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 772,
+          "bottom": 828,
+          "left": 318,
+          "right": 374
+        },
+        "scrollHeight": 2942,
+        "innerHeight": 844
+      },
+      "50": {
+        "ok": true,
+        "target": "50",
+        "scrollY": 1049,
+        "scrollWanted": 1049,
+        "maxScroll": 2098,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 14,
+            "right": 376,
+            "bottom": 113.140625,
+            "width": 362,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 772,
+            "left": 318,
+            "right": 374,
+            "bottom": 828,
+            "width": 56,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 772,
+          "bottom": 828,
+          "left": 318,
+          "right": 374
+        },
+        "scrollHeight": 2942,
+        "innerHeight": 844
+      },
+      "max": {
+        "ok": true,
+        "target": "max",
+        "scrollY": 2098,
+        "scrollWanted": 2098,
+        "maxScroll": 2098,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 14,
+            "right": 376,
+            "bottom": 113.140625,
+            "width": 362,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 772,
+            "left": 318,
+            "right": 374,
+            "bottom": 828,
+            "width": 56,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 772,
+          "bottom": 828,
+          "left": 318,
+          "right": 374
+        },
+        "scrollHeight": 2942,
+        "innerHeight": 844
+      }
+    },
+    "analystPosition": "static",
+    "mmbBootPresent": true,
+    "mmbBootBox": {
+      "top": 772,
+      "bottom": 828,
+      "left": 318,
+      "right": 374
+    }
+  },
+  "clearance_768_dark_en": {
+    "ok": true,
+    "textCount": 314,
+    "positions": {
+      "0": {
+        "ok": true,
+        "target": "0",
+        "scrollY": 0,
+        "scrollWanted": 0,
+        "maxScroll": 714,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 674.625,
+            "left": 18,
+            "right": 750,
+            "bottom": 727.765625,
+            "width": 732,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 1322,
+            "left": 543.90625,
+            "right": 746,
+            "bottom": 1378,
+            "width": 202.09375,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 1322,
+          "bottom": 1378,
+          "left": 543.90625,
+          "right": 746
+        },
+        "scrollHeight": 2114,
+        "innerHeight": 1400
+      },
+      "50": {
+        "ok": true,
+        "target": "50",
+        "scrollY": 357,
+        "scrollWanted": 357,
+        "maxScroll": 714,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 317.625,
+            "left": 18,
+            "right": 750,
+            "bottom": 370.765625,
+            "width": 732,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 1322,
+            "left": 543.90625,
+            "right": 746,
+            "bottom": 1378,
+            "width": 202.09375,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 1322,
+          "bottom": 1378,
+          "left": 543.90625,
+          "right": 746
+        },
+        "scrollHeight": 2114,
+        "innerHeight": 1400
+      },
+      "max": {
+        "ok": true,
+        "target": "max",
+        "scrollY": 714,
+        "scrollWanted": 714,
+        "maxScroll": 714,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 18,
+            "right": 750,
+            "bottom": 113.140625,
+            "width": 732,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 1322,
+            "left": 543.90625,
+            "right": 746,
+            "bottom": 1378,
+            "width": 202.09375,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 1322,
+          "bottom": 1378,
+          "left": 543.90625,
+          "right": 746
+        },
+        "scrollHeight": 2114,
+        "innerHeight": 1400
+      }
+    },
+    "analystPosition": "static",
+    "mmbBootPresent": true,
+    "mmbBootBox": {
+      "top": 1322,
+      "bottom": 1378,
+      "left": 543.90625,
+      "right": 746
+    }
+  },
+  "clearance_768_light_en": {
+    "ok": true,
+    "textCount": 314,
+    "positions": {
+      "0": {
+        "ok": true,
+        "target": "0",
+        "scrollY": 0,
+        "scrollWanted": 0,
+        "maxScroll": 722,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 680.625,
+            "left": 18,
+            "right": 750,
+            "bottom": 733.765625,
+            "width": 732,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 1322,
+            "left": 543.90625,
+            "right": 746,
+            "bottom": 1378,
+            "width": 202.09375,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 1322,
+          "bottom": 1378,
+          "left": 543.90625,
+          "right": 746
+        },
+        "scrollHeight": 2122,
+        "innerHeight": 1400
+      },
+      "50": {
+        "ok": true,
+        "target": "50",
+        "scrollY": 361,
+        "scrollWanted": 361,
+        "maxScroll": 722,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 319.625,
+            "left": 18,
+            "right": 750,
+            "bottom": 372.765625,
+            "width": 732,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 1322,
+            "left": 543.90625,
+            "right": 746,
+            "bottom": 1378,
+            "width": 202.09375,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 1322,
+          "bottom": 1378,
+          "left": 543.90625,
+          "right": 746
+        },
+        "scrollHeight": 2122,
+        "innerHeight": 1400
+      },
+      "max": {
+        "ok": true,
+        "target": "max",
+        "scrollY": 722,
+        "scrollWanted": 722,
+        "maxScroll": 722,
+        "maxScrollMatched": true,
+        "textCount": 314,
+        "hits": [],
+        "overlays": [
+          {
+            "name": "rail",
+            "pos": "sticky",
+            "top": 60,
+            "left": 18,
+            "right": 750,
+            "bottom": 113.140625,
+            "width": 732,
+            "height": 53.140625
+          },
+          {
+            "name": "mmb-boot",
+            "pos": "fixed",
+            "top": 1322,
+            "left": 543.90625,
+            "right": 746,
+            "bottom": 1378,
+            "width": 202.09375,
+            "height": 56
+          }
+        ],
+        "analystPosition": "static",
+        "mmbBootPresent": true,
+        "mmbBootBox": {
+          "top": 1322,
+          "bottom": 1378,
+          "left": 543.90625,
+          "right": 746
+        },
+        "scrollHeight": 2122,
+        "innerHeight": 1400
+      }
+    },
+    "analystPosition": "static",
+    "mmbBootPresent": true,
+    "mmbBootBox": {
+      "top": 1322,
+      "bottom": 1378,
+      "left": 543.90625,
+      "right": 746
+    }
+  },
+  "strip_void_probes": {
+    "dark_en": {
+      "ok": true,
+      "chipCount": 5,
+      "childCount": 5,
+      "emptyChildren": 0,
+      "stripBg": "rgba(0, 0, 0, 0)",
+      "stripFilled": false,
+      "voids": [],
+      "maxVoidWidth": 0,
+      "filledOutsideWiderThan40": false,
+      "holeWiderThan40": false,
+      "chipBoxes": [
+        {
+          "left": 332,
+          "right": 578,
+          "top": 358.859375,
+          "bottom": 463.15625,
+          "width": 246,
+          "height": 104.296875
+        },
+        {
+          "left": 586,
+          "right": 832,
+          "top": 358.859375,
+          "bottom": 463.15625,
+          "width": 246,
+          "height": 104.296875
+        },
+        {
+          "left": 840,
+          "right": 1086,
+          "top": 358.859375,
+          "bottom": 463.15625,
+          "width": 246,
+          "height": 104.296875
+        },
+        {
+          "left": 1094,
+          "right": 1340,
+          "top": 358.859375,
+          "bottom": 463.15625,
+          "width": 246,
+          "height": 104.296875
+        },
+        {
+          "left": 332,
+          "right": 1340,
+          "top": 471.15625,
+          "bottom": 548.453125,
+          "width": 1008,
+          "height": 77.296875
+        }
+      ],
+      "stripBox": {
+        "left": 332,
+        "right": 1340,
+        "top": 358.859375,
+        "bottom": 548.453125,
+        "width": 1008,
+        "height": 189.59375
+      },
+      "viewport": {
+        "innerWidth": 1440,
+        "stripWidth": 1008
+      },
+      "pixelVoidWiderThan40": false,
+      "pixelVoids": [],
+      "pixelVoidCount": 0,
+      "canvasRgb": [
+        16,
+        21,
+        32
+      ]
+    },
+    "dark_zh": {
+      "ok": true,
+      "chipCount": 5,
+      "childCount": 5,
+      "emptyChildren": 0,
+      "stripBg": "rgba(0, 0, 0, 0)",
+      "stripFilled": false,
+      "voids": [],
+      "maxVoidWidth": 0,
+      "filledOutsideWiderThan40": false,
+      "holeWiderThan40": false,
+      "chipBoxes": [
+        {
+          "left": 332,
+          "right": 578,
+          "top": 298.484375,
+          "bottom": 389.28125,
+          "width": 246,
+          "height": 90.796875
+        },
+        {
+          "left": 586,
+          "right": 832,
+          "top": 298.484375,
+          "bottom": 389.28125,
+          "width": 246,
+          "height": 90.796875
+        },
+        {
+          "left": 840,
+          "right": 1086,
+          "top": 298.484375,
+          "bottom": 389.28125,
+          "width": 246,
+          "height": 90.796875
+        },
+        {
+          "left": 1094,
+          "right": 1340,
+          "top": 298.484375,
+          "bottom": 389.28125,
+          "width": 246,
+          "height": 90.796875
+        },
+        {
+          "left": 332,
+          "right": 1340,
+          "top": 397.28125,
+          "bottom": 474.578125,
+          "width": 1008,
+          "height": 77.296875
+        }
+      ],
+      "stripBox": {
+        "left": 332,
+        "right": 1340,
+        "top": 298.484375,
+        "bottom": 474.578125,
+        "width": 1008,
+        "height": 176.09375
+      },
+      "viewport": {
+        "innerWidth": 1440,
+        "stripWidth": 1008
+      },
+      "pixelVoidWiderThan40": false,
+      "pixelVoids": [],
+      "pixelVoidCount": 0,
+      "canvasRgb": [
+        16,
+        21,
+        32
+      ]
+    },
+    "light_en": {
+      "ok": true,
+      "chipCount": 5,
+      "childCount": 5,
+      "emptyChildren": 0,
+      "stripBg": "rgba(0, 0, 0, 0)",
+      "stripFilled": false,
+      "voids": [],
+      "maxVoidWidth": 0,
+      "filledOutsideWiderThan40": false,
+      "holeWiderThan40": false,
+      "chipBoxes": [
+        {
+          "left": 332,
+          "right": 578,
+          "top": 358.859375,
+          "bottom": 465.15625,
+          "width": 246,
+          "height": 106.296875
+        },
+        {
+          "left": 586,
+          "right": 832,
+          "top": 358.859375,
+          "bottom": 465.15625,
+          "width": 246,
+          "height": 106.296875
+        },
+        {
+          "left": 840,
+          "right": 1086,
+          "top": 358.859375,
+          "bottom": 465.15625,
+          "width": 246,
+          "height": 106.296875
+        },
+        {
+          "left": 1094,
+          "right": 1340,
+          "top": 358.859375,
+          "bottom": 465.15625,
+          "width": 246,
+          "height": 106.296875
+        },
+        {
+          "left": 332,
+          "right": 1340,
+          "top": 473.15625,
+          "bottom": 552.453125,
+          "width": 1008,
+          "height": 79.296875
+        }
+      ],
+      "stripBox": {
+        "left": 332,
+        "right": 1340,
+        "top": 358.859375,
+        "bottom": 552.453125,
+        "width": 1008,
+        "height": 193.59375
+      },
+      "viewport": {
+        "innerWidth": 1440,
+        "stripWidth": 1008
+      },
+      "pixelVoidWiderThan40": false,
+      "pixelVoids": [],
+      "pixelVoidCount": 0,
+      "canvasRgb": [
+        224,
+        229,
+        241
+      ]
+    },
+    "light_zh": {
+      "ok": true,
+      "chipCount": 5,
+      "childCount": 5,
+      "emptyChildren": 0,
+      "stripBg": "rgba(0, 0, 0, 0)",
+      "stripFilled": false,
+      "voids": [],
+      "maxVoidWidth": 0,
+      "filledOutsideWiderThan40": false,
+      "holeWiderThan40": false,
+      "chipBoxes": [
+        {
+          "left": 332,
+          "right": 578,
+          "top": 298.484375,
+          "bottom": 391.28125,
+          "width": 246,
+          "height": 92.796875
+        },
+        {
+          "left": 586,
+          "right": 832,
+          "top": 298.484375,
+          "bottom": 391.28125,
+          "width": 246,
+          "height": 92.796875
+        },
+        {
+          "left": 840,
+          "right": 1086,
+          "top": 298.484375,
+          "bottom": 391.28125,
+          "width": 246,
+          "height": 92.796875
+        },
+        {
+          "left": 1094,
+          "right": 1340,
+          "top": 298.484375,
+          "bottom": 391.28125,
+          "width": 246,
+          "height": 92.796875
+        },
+        {
+          "left": 332,
+          "right": 1340,
+          "top": 399.28125,
+          "bottom": 478.578125,
+          "width": 1008,
+          "height": 79.296875
+        }
+      ],
+      "stripBox": {
+        "left": 332,
+        "right": 1340,
+        "top": 298.484375,
+        "bottom": 478.578125,
+        "width": 1008,
+        "height": 180.09375
+      },
+      "viewport": {
+        "innerWidth": 1440,
+        "stripWidth": 1008
+      },
+      "pixelVoidWiderThan40": false,
+      "pixelVoids": [],
+      "pixelVoidCount": 0,
+      "canvasRgb": [
+        224,
+        229,
+        241
+      ]
     }
   }
 }
