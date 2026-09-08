@@ -159,6 +159,11 @@ CLEARANCE_AT_JS = """(target) => {
              scroll is docTop − occupied bottom, not box height. */
           const exposedAtScrollY = docTop - ovBottom;
           const extra = {docTop, ovHeight, ovBottom, exposedAtScrollY};
+          /* exposed > maxY cannot occur in-browser: fullyCovered
+             requires rect.bottom <= ov.bottom + 0.5, so
+             docTop <= ovBottom + scrollY and exposed <= scrollY <= maxY.
+             The bound stays as defense if a future overlay reports a
+             smaller maxY than the scroll that produced the cover. */
           if (exposedAtScrollY < 0 || exposedAtScrollY > maxY) {
             note(hits, node, rect, ov,
               'sticky-rail-full-cover-unexposable', extra);
@@ -168,7 +173,12 @@ CLEARANCE_AT_JS = """(target) => {
           }
           continue;
         }
-        note(excused, node, rect, ov, ov.name + '_partially_covered');
+        const docTop = rect.top + window.scrollY;
+        const ovHeight = ov.height;
+        const ovBottom = ov.bottom;
+        const exposedAtScrollY = docTop - ovBottom;
+        note(excused, node, rect, ov, ov.name + '_partially_covered',
+          {docTop, ovHeight, ovBottom, exposedAtScrollY});
       }
     }
   }
@@ -350,32 +360,169 @@ HAIRLINE_JS = """() => {
 }"""
 
 
-RAIL_CLIP_JS = """() => {
-  const rail = document.querySelector('.mc-rail-list') || document.querySelector('.mc-rail');
-  const chips = [...document.querySelectorAll('.mc-rail-link')];
-  if (!rail || !chips.length) return {ok: false, reason: 'missing rail/chips'};
-  const cs = getComputedStyle(rail);
-  const mask = cs.webkitMaskImage || cs.maskImage || 'none';
-  const perChip = chips.map((el) => {
-    const label = (el.innerText || '').replace(/\\s+/g, ' ').trim();
+RAIL_VIEWPORT_JS = """() => {
+  /* BLOCKER-E1: measure the RAIL VIEWPORT, not each chip's own box.
+     Content-sized chips have scrollWidth==clientWidth by construction;
+     truncation is the list scroller + fade + pinned analyst. */
+  const list = document.querySelector('.mc-rail-list');
+  const analyst = document.querySelector('.mc-analyst');
+  const content = [...document.querySelectorAll('.mc-rail-link:not(.mc-analyst)')];
+  if (!list || !analyst || !content.length) {
+    return {ok: false, reason: 'missing rail-list/analyst/chips'};
+  }
+  const fadeCss = 24;
+  const listCs = getComputedStyle(list);
+  const maskImage = listCs.maskImage;
+  const webkitMaskImage = listCs.webkitMaskImage;
+  const mask = (webkitMaskImage && webkitMaskImage !== 'none')
+    ? webkitMaskImage
+    : (maskImage || 'none');
+  const maskOk = mask !== 'none' && mask !== '';
+  const maxScrollLeft = Math.max(0, list.scrollWidth - list.clientWidth);
+
+  const chipOwn = (el) => {
+    const cs = getComputedStyle(el);
     return {
-      label: label.slice(0, 80),
+      overflow: cs.overflow,
+      whiteSpace: cs.whiteSpace,
       scrollWidth: el.scrollWidth,
       clientWidth: el.clientWidth,
-      overflow: getComputedStyle(el).overflow,
-      clips: el.scrollWidth > el.clientWidth + 1,
+      selfClips: el.scrollWidth > el.clientWidth + 1,
     };
-  });
-  const chipOk = perChip.every((row) => !row.clips);
-  const maskOk = mask !== 'none' && mask !== '';
-  return {
-    ok: chipOk && maskOk,
-    chips: perChip,
-    maskImage: cs.maskImage,
-    webkitMaskImage: cs.webkitMaskImage,
-    chipOk,
-    maskOk,
   };
+
+  const visibleFraction = (el, listBox, analystBox) => {
+    const box = el.getBoundingClientRect();
+    const fadeLeft = listBox.right - fadeCss;
+    const visibleRight = Math.min(listBox.right, fadeLeft, analystBox.left);
+    const visibleLeft = listBox.left;
+    const left = Math.max(box.left, visibleLeft);
+    const right = Math.min(box.right, visibleRight);
+    const vis = Math.max(0, right - left);
+    const underAnalyst = !(box.right <= analystBox.left || box.left >= analystBox.right
+      || box.bottom <= analystBox.top || box.top >= analystBox.bottom);
+    return {
+      label: (el.innerText || '').replace(/\\s+/g, ' ').trim().slice(0, 80),
+      fraction: box.width > 0 ? vis / box.width : 0,
+      box: {left: box.left, right: box.right, top: box.top, bottom: box.bottom,
+            width: box.width, height: box.height},
+      underAnalyst,
+      ...chipOwn(el),
+    };
+  };
+
+  const snapshot = (scrollLeft) => {
+    list.scrollLeft = scrollLeft;
+    const listBox = list.getBoundingClientRect();
+    const analystBox = analyst.getBoundingClientRect();
+    const fadeLeft = listBox.right - fadeCss;
+    const fadeWidth = listBox.right - fadeLeft;
+    const fadeBeginsBeforeAnalyst = analystBox.left - fadeLeft;
+    return {
+      scrollLeft: list.scrollLeft,
+      listBox: {left: listBox.left, right: listBox.right,
+                width: listBox.width, height: listBox.height},
+      analystBox: {left: analystBox.left, right: analystBox.right,
+                   width: analystBox.width, height: analystBox.height},
+      fadeWidth,
+      fadeLeft,
+      fadeBeginsBeforeAnalyst,
+      chips: content.map((el) => visibleFraction(el, listBox, analystBox)),
+    };
+  };
+
+  const at0 = snapshot(0);
+  const atMax = snapshot(maxScrollLeft);
+  const first = at0.chips[0] || {};
+  const firstFullyVisibleAt0 = Boolean(
+    first.fraction >= 0.99 && !first.underAnalyst);
+
+  const fullyVisibleAt = [];
+  for (let i = 0; i < content.length; i += 1) {
+    const el = content[i];
+    const visibleW = Math.max(1, list.clientWidth - fadeCss);
+    const lo = Math.max(0, el.offsetLeft + el.offsetWidth - visibleW);
+    const candidates = [0, lo, el.offsetLeft, maxScrollLeft];
+    for (let d = -24; d <= 24; d += 4) {
+      candidates.push(lo + d, el.offsetLeft + d);
+    }
+    let best = {fraction: -1, underAnalyst: true};
+    let bestSL = 0;
+    for (const raw of candidates) {
+      const sl = Math.max(0, Math.min(maxScrollLeft, raw));
+      const row = snapshot(sl);
+      const chip = row.chips[i] || {};
+      const better = chip.fraction > best.fraction
+        || (chip.fraction === best.fraction && !chip.underAnalyst
+            && best.underAnalyst);
+      if (better) {
+        best = chip;
+        bestSL = row.scrollLeft;
+      }
+    }
+    fullyVisibleAt.push({
+      label: best.label,
+      fullyVisibleAtScrollLeft: bestSL,
+      fraction: best.fraction,
+      underAnalyst: best.underAnalyst,
+      fullyVisible: best.fraction >= 0.99 && !best.underAnalyst,
+      overflow: best.overflow,
+      whiteSpace: best.whiteSpace,
+      scrollWidth: best.scrollWidth,
+      clientWidth: best.clientWidth,
+      selfClips: best.selfClips,
+    });
+  }
+
+  const fadeBandOk = at0.fadeWidth >= fadeCss - 0.5
+    && at0.fadeBeginsBeforeAnalyst >= fadeCss - 0.5
+    && maskOk;
+  const everyReachable = fullyVisibleAt.every((row) => row.fullyVisible);
+  const ownLabelOk = fullyVisibleAt.every(
+    (row) => !row.selfClips && row.whiteSpace === 'nowrap'
+      && row.overflow !== 'hidden');
+  /* (d) alone is never a pass. */
+  const ok = firstFullyVisibleAt0 && everyReachable && fadeBandOk;
+  return {
+    ok,
+    firstFullyVisibleAt0,
+    everyReachable,
+    fadeBandOk,
+    maskOk,
+    ownLabelOk,
+    maskImage,
+    webkitMaskImage,
+    fadeWidth: at0.fadeWidth,
+    fadeBeginsBeforeAnalyst: at0.fadeBeginsBeforeAnalyst,
+    maxScrollLeft,
+    at0,
+    atMax,
+    chips: fullyVisibleAt,
+  };
+}"""
+
+
+CHIP_MATERIAL_JS = """() => {
+  const analyst = document.querySelector('.mc-analyst');
+  const sibling = document.querySelector(
+    '.mc-rail-link:not(.mc-analyst):not(.is-current)');
+  if (!analyst || !sibling) return {ok: false, reason: 'missing chips'};
+  const props = [
+    'borderRadius', 'borderTopWidth', 'borderRightWidth',
+    'borderBottomWidth', 'borderLeftWidth', 'borderTopStyle',
+    'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft',
+    'fontSize',
+  ];
+  const read = (el) => {
+    const cs = getComputedStyle(el);
+    const out = {};
+    for (const key of props) out[key] = cs[key];
+    return out;
+  };
+  const a = read(analyst);
+  const s = read(sibling);
+  const mismatches = props.filter((key) => a[key] !== s[key]);
+  return {ok: mismatches.length === 0, analyst: a, sibling: s, mismatches};
 }"""
 
 
@@ -395,14 +542,20 @@ def _run_clearance(page) -> dict[str, Any]:
             raise RuntimeError(f"clearance hits at {target}: {row.get('hits')}")
         max_scroll = float(row.get("maxScroll") or 0)
         for item in row.get("excused") or []:
-            if item.get("reason") != "rail_fully_covered":
+            reason = str(item.get("reason") or "")
+            if not (reason.endswith("_fully_covered")
+                    or reason.endswith("_partially_covered")):
                 continue
             exposed = item.get("exposedAtScrollY")
             if exposed is None or not (0 <= float(exposed) <= max_scroll):
                 raise RuntimeError(
-                    f"rail_fully_covered excuse names unreachable "
+                    f"{reason} excuse names unreachable "
                     f"exposedAtScrollY={exposed} at {target} "
                     f"(maxScroll={max_scroll}): {item}")
+            for key in ("docTop", "ovBottom", "exposedAtScrollY"):
+                if key not in item:
+                    raise RuntimeError(
+                        f"{reason} excuse missing {key} at {target}: {item}")
     return {
         "ok": all(pos.get("ok") for pos in positions.values()),
         "textCount": positions["0"].get("textCount"),
@@ -530,7 +683,13 @@ def _pixel_scan_strip_void(path: Path, probe: dict[str, Any],
 
 def _choose_strip_canvas(image, row_boxes, scale: int, in_chip,
                          bg_token: Any) -> tuple[tuple[int, int, int], str]:
-    """Pick the strip canvas: inter-chip gap, else the --bg token."""
+    """Pick the strip canvas: inter-chip gap, else the --bg token.
+
+    Fallback reads getComputedStyle(document.documentElement)
+    .getPropertyValue('--bg') (passed in as bg_token) and labels the
+    source "--bg custom property". bodyBackgroundColor is a separate
+    receipt field, never the canvasSource label.
+    """
     row_boxes_sorted = sorted(row_boxes, key=lambda box: box["left"])
     if len(row_boxes_sorted) >= 2:
         gap_left = row_boxes_sorted[0]["right"]
@@ -559,6 +718,9 @@ def _sticky_cover_verdict(doc_top: float, ov_bottom: float,
 
     exposedAtScrollY = docTop − ovBottom (occupied stick band, not
     box height — the rail sits below the 60px site nav).
+    exposed > maxScroll cannot occur in-browser (fullyCovered implies
+    docTop <= ovBottom + scrollY <= ovBottom + maxScroll); the bound
+    stays as defense if a future overlay reports a smaller maxY.
     """
     exposed = doc_top - ov_bottom
     unreachable = max_scroll is not None and exposed > max_scroll
@@ -567,45 +729,37 @@ def _sticky_cover_verdict(doc_top: float, ov_bottom: float,
     return "rail_fully_covered", exposed
 
 
-def _synthetic_clearance_page(
-        *, node_doc_top: float, node_height: float, ov_bottom: float,
-        max_scroll: float, inner_height: float) -> dict[str, Any]:
-    """Synthetic page: apply CLEARANCE_AT_JS geometry at 0 / 50 / max."""
+SYNTHETIC_CLEARANCE_HTML = """<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  body { margin: 0; font: 16px/20px sans-serif; }
+  .mc-rail {
+    position: sticky; top: 0; z-index: 4; height: 80px;
+    background: #c00; color: #fff;
+  }
+  .mc-panels { margin-top: -80px; }
+  .stuck { height: 20px; padding-top: 10px; margin: 0; }
+  .below { margin: 400px 0 0; height: 20px; }
+  .spacer { height: 2200px; }
+</style></head>
+<body>
+  <div class="mc-rail">RAIL</div>
+  <div class="mc-panels">
+    <p class="stuck">inside zone</p>
+    <p class="below">below zone</p>
+    <div class="spacer"></div>
+  </div>
+</body></html>
+"""
+
+
+def _run_synthetic_clearance(page) -> dict[str, Any]:
+    """MINOR-C1: run the SHIPPED CLEARANCE_AT_JS on a sticky bar + two nodes."""
+    page.set_content(SYNTHETIC_CLEARANCE_HTML)
     positions: dict[str, Any] = {}
     for target in ("0", "50", "max"):
-        if target == "max":
-            scroll_y = max_scroll
-        elif target == "50":
-            scroll_y = max_scroll * 0.5
-        else:
-            scroll_y = 0.0
-        rect_top = node_doc_top - scroll_y
-        rect_bottom = rect_top + node_height
-        in_view = not (rect_bottom < 0 or rect_top > inner_height)
-        covered = in_view and rect_top >= 0 and rect_bottom <= ov_bottom
-        hits: list[dict[str, Any]] = []
-        excused: list[dict[str, Any]] = []
-        if covered:
-            reason, exposed = _sticky_cover_verdict(
-                node_doc_top, ov_bottom, max_scroll)
-            row = {
-                "reason": reason,
-                "docTop": node_doc_top,
-                "ovBottom": ov_bottom,
-                "exposedAtScrollY": exposed,
-            }
-            if reason == "sticky-rail-full-cover-unexposable":
-                hits.append(row)
-            else:
-                excused.append(row)
-        positions[target] = {
-            "ok": len(hits) == 0,
-            "hits": hits,
-            "excused": excused,
-            "scrollY": scroll_y,
-            "maxScroll": max_scroll,
-        }
-    return positions
+        positions[target] = page.evaluate(CLEARANCE_AT_JS, target)
+    return {"ok": True, "positions": positions}
 
 
 def _rgb_token(color: str) -> tuple[int, int, int] | None:
@@ -637,6 +791,7 @@ def _declared_empty_cells() -> list[dict[str, Any]]:
             for locale in LOCALES:
                 for vw, vh in EMPTY_VIEWPORTS:
                     cells.append({
+                        "family": "empty_states",
                         "force_state": empty_id,
                         "theme": theme,
                         "locale": locale,
@@ -645,6 +800,129 @@ def _declared_empty_cells() -> list[dict[str, Any]]:
                         "viewport_height": vh,
                     })
     return cells
+
+
+def _theme_locale_cells(family: str, widths: tuple[int, ...],
+                        heights: dict[int, int] | None = None
+                        ) -> list[dict[str, Any]]:
+    cells: list[dict[str, Any]] = []
+    height_of = heights or {1440: 900, 768: 1400, 390: 844}
+    for theme in THEMES:
+        for locale in LOCALES:
+            for vw in widths:
+                cells.append({
+                    "family": family,
+                    "theme": theme,
+                    "locale": locale,
+                    "viewport": _viewport_name(vw),
+                    "viewport_width": vw,
+                    "viewport_height": height_of[vw],
+                })
+    return cells
+
+
+def _declared_force_state_cells() -> list[dict[str, Any]]:
+    """Intended force-state photograph cells — not a cartesian of axes."""
+    spec: list[tuple[str, int, int]] = [
+        ("arrival", 1440, 900), ("arrival", 390, 844),
+        ("dest_hover", 1440, 900),
+        ("heading_focus", 1440, 900),
+        ("rates", 1440, 900),
+        ("money_central_banks", 1440, 900),
+        ("inflation_foot", 1440, 900),
+        ("scroll_max", 390, 844),
+    ]
+    cells: list[dict[str, Any]] = []
+    for force_state, vw, vh in spec:
+        for theme in THEMES:
+            for locale in LOCALES:
+                cells.append({
+                    "family": "force_states",
+                    "force_state": force_state,
+                    "theme": theme,
+                    "locale": locale,
+                    "viewport": _viewport_name(vw),
+                    "viewport_width": vw,
+                    "viewport_height": vh,
+                })
+    return cells
+
+
+def _declared_families() -> dict[str, list[dict[str, Any]]]:
+    return {
+        "force_states": _declared_force_state_cells(),
+        "empty_states": _declared_empty_cells(),
+        "clearance": _theme_locale_cells("clearance", (390, 768, 1440)),
+        "chip_opens_chat": _theme_locale_cells("chip_opens_chat", (390,)),
+        "strip_void": _theme_locale_cells("strip_void", (1440,)),
+        "rail_viewport": _theme_locale_cells("rail_viewport", (390, 768)),
+        "e5": _theme_locale_cells("e5", (1440, 390)),
+        "fab": _theme_locale_cells("fab", (1440,)),
+    }
+
+
+def _declared_cell_key(cell: dict[str, Any]) -> tuple[Any, ...]:
+    return (
+        cell.get("family"),
+        cell.get("force_state"),
+        cell.get("theme"),
+        cell.get("locale"),
+        cell.get("viewport_width"),
+    )
+
+
+def _captured_declared_keys(
+        states: list[dict[str, Any]],
+        probes: dict[str, Any]) -> set[tuple[Any, ...]]:
+    keys: set[tuple[Any, ...]] = set()
+    for state in states:
+        if not state.get("captured"):
+            continue
+        fs = state.get("force_state")
+        if fs in EMPTY_IDS:
+            keys.add(("empty_states", fs, state.get("theme"),
+                      state.get("locale"), state.get("viewport_width")))
+        elif fs:
+            keys.add(("force_states", fs, state.get("theme"),
+                      state.get("locale"), state.get("viewport_width")))
+    for theme in THEMES:
+        for locale in LOCALES:
+            for vw in (390, 768, 1440):
+                if probes.get(f"clearance_{vw}_{theme}_{locale}"):
+                    keys.add(("clearance", None, theme, locale, vw))
+            if probes.get(f"chip_opens_chat_390_{theme}_{locale}"):
+                keys.add(("chip_opens_chat", None, theme, locale, 390))
+            strip = (probes.get("strip_void_probes") or {}).get(
+                f"{theme}_{locale}")
+            if strip:
+                keys.add(("strip_void", None, theme, locale, 1440))
+            for vw in (390, 768):
+                if probes.get(f"rail_viewport_{theme}_{locale}_{vw}"):
+                    keys.add(("rail_viewport", None, theme, locale, vw))
+            if probes.get(f"e5_timeout_{theme}_{locale}_1440"):
+                keys.add(("e5", None, theme, locale, 1440))
+            if probes.get(f"e5_timeout_{theme}_{locale}_390"):
+                keys.add(("e5", None, theme, locale, 390))
+            if probes.get(f"fab_display_1440_{theme}_{locale}"):
+                keys.add(("fab", None, theme, locale, 1440))
+    return keys
+
+
+def _compute_gaps_from_declared(
+        declared: dict[str, list[dict[str, Any]]],
+        captured: set[tuple[Any, ...]]) -> list[dict[str, Any]]:
+    gaps: list[dict[str, Any]] = []
+    for family, cells in declared.items():
+        for cell in cells:
+            key = _declared_cell_key(cell)
+            if key in captured:
+                continue
+            row = dict(cell)
+            row["captured"] = False
+            row["reason"] = cell.get("reason") or "declared cell was not captured"
+            row.setdefault("family", family)
+            gaps.append(row)
+    return gaps
 
 
 def _empty_filename(empty_id: str, theme: str, locale: str, vw: int) -> str:
@@ -703,8 +981,10 @@ def _assert_shot_geometry(dest: Path, extra: dict[str, Any],
     scale = float(dpr)
     if extra.get("crop"):
         box = extra.get("crop_box") or {}
-        exp_w = round(float(box.get("width") or 0) * scale)
-        exp_h = round(float(box.get("height") or 0) * scale)
+        exp_w = _device_px(float(box.get("x") or 0),
+                           float(box.get("width") or 0), scale)
+        exp_h = _device_px(float(box.get("y") or 0),
+                           float(box.get("height") or 0), scale)
         if (w, h) != (exp_w, exp_h):
             raise RuntimeError(
                 f"{dest.name}: crop IHDR {w}x{h} != crop_box×dpr {exp_w}x{exp_h} "
@@ -739,6 +1019,37 @@ def _crop_box(locator) -> dict[str, float]:
     }
 
 
+def _write_device_crop(page, dest: Path, box: dict[str, float],
+                       dpr: float) -> None:
+    """Crop a viewport PNG on the ceil/floor device span (MINOR-C4).
+
+    Playwright's clip/element screenshot rounds independently of
+    `_device_px`; cutting the viewport image ourselves keeps IHDR
+    equal to that span.
+    """
+    from PIL import Image
+    scale = float(dpr)
+    tmp = dest.with_suffix(dest.suffix + ".viewport.png")
+    page.screenshot(path=str(tmp), type="png", full_page=True)
+    image = Image.open(tmp).convert("RGB")
+    x0 = int(math.floor(box["x"] * scale))
+    y0 = int(math.floor(box["y"] * scale))
+    width = _device_px(box["x"], box["width"], scale)
+    height = _device_px(box["y"], box["height"], scale)
+    x1 = min(image.width, x0 + width)
+    y1 = min(image.height, y0 + height)
+    x0 = max(0, x0)
+    y0 = max(0, y0)
+    if (x1 - x0, y1 - y0) != (width, height):
+        tmp.unlink(missing_ok=True)
+        raise RuntimeError(
+            f"{dest.name}: crop {width}x{height} at ({x0},{y0}) "
+            f"does not fit viewport PNG {image.width}x{image.height} "
+            f"box={box} dpr={dpr}")
+    image.crop((x0, y0, x1, y1)).save(dest, format="PNG")
+    tmp.unlink(missing_ok=True)
+
+
 def _write_shot(page, dest: Path, extra: dict[str, Any], vw: int, vh: int, *,
                 crop_locator=None, crop_selector: str | None = None,
                 full_page: bool = False) -> dict[str, Any]:
@@ -751,14 +1062,9 @@ def _write_shot(page, dest: Path, extra: dict[str, Any], vw: int, vh: int, *,
         extra["crop"] = True
         extra["full_page"] = False
         extra["crop_selector"] = crop_selector
+        crop_locator.scroll_into_view_if_needed()
         extra["crop_box"] = _crop_box(crop_locator)
-        crop_locator.screenshot(path=str(dest), type="png")
-        # Playwright's element PNG can differ from bounding_box() by a
-        # device pixel. Record the CSS box that was actually written so
-        # IHDR == crop_box×dpr is an equality, not a guess.
-        png_w, png_h = _png_size(dest)
-        extra["crop_box"]["width"] = png_w / extra["dpr"]
-        extra["crop_box"]["height"] = png_h / extra["dpr"]
+        _write_device_crop(page, dest, extra["crop_box"], extra["dpr"])
     elif full_page:
         extra["crop"] = False
         extra["full_page"] = True
@@ -880,12 +1186,34 @@ def _free_port() -> int:
         return sock.getsockname()[1]
 
 
-def _serve(root: Path) -> tuple[subprocess.Popen, str]:
-    port = _free_port()
+def _serve(root: Path, port: int | None = None) -> tuple[subprocess.Popen, str]:
+    """Threaded static server. The stdlib ``-m http.server`` is single-thread
+    and has died mid-E5 (CONNECTION_REFUSED) on two recapture runs."""
+    if port is None:
+        port = _free_port()
+    code = (
+        "from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler\n"
+        "import os\n"
+        "class H(SimpleHTTPRequestHandler):\n"
+        "    def handle(self):\n"
+        "        try:\n"
+        "            super().handle()\n"
+        "        except (BrokenPipeError, ConnectionResetError):\n"
+        "            pass\n"
+        "    def log_message(self, *args):\n"
+        "        pass\n"
+        f"os.chdir({str(root.resolve())!r})\n"
+        f"ThreadingHTTPServer(('127.0.0.1', {int(port)}), H).serve_forever()\n"
+    )
+    log = Path(os.environ.get("TMPDIR", "/tmp")) / f"mc-p3-http-{port}.log"
     proc = subprocess.Popen(
-        [sys.executable, "-m", "http.server", str(port), "--bind", "127.0.0.1"],
-        cwd=root, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    print(f"http.server pid={proc.pid} cwd={root} port={port}", flush=True)
+        [sys.executable, "-c", code],
+        stdout=subprocess.DEVNULL,
+        stderr=log.open("w"),
+        start_new_session=True)
+    print(
+        f"http.server pid={proc.pid} cwd={root} port={port} threaded",
+        flush=True)
     deadline = time.time() + 8
     while time.time() < deadline:
         try:
@@ -893,9 +1221,34 @@ def _serve(root: Path) -> tuple[subprocess.Popen, str]:
                 break
         except OSError:
             if proc.poll() is not None:
-                raise RuntimeError(f"http.server exited {proc.returncode}")
+                tail = log.read_text(encoding="utf-8", errors="replace")[-400:]
+                raise RuntimeError(
+                    f"http.server exited {proc.returncode}: {tail}")
             time.sleep(0.1)
+    else:
+        raise RuntimeError(f"http.server did not bind :{port}")
     return proc, f"http://127.0.0.1:{port}"
+
+
+def _origin_port(origin: str) -> int:
+    return int(origin.rsplit(":", 1)[-1])
+
+
+def _origin_alive(origin: str) -> bool:
+    port = _origin_port(origin)
+    try:
+        with socket.create_connection(("127.0.0.1", port), timeout=0.5):
+            return True
+    except OSError:
+        return False
+
+
+def _ensure_origin(origin: str, root: Path,
+                   servers: list) -> None:
+    if _origin_alive(origin):
+        return
+    proc, _ = _serve(root, port=_origin_port(origin))
+    servers.append(proc)
 
 
 def _kill(proc: subprocess.Popen | None) -> None:
@@ -1274,7 +1627,8 @@ def _mutate_inflation_e3(entries) -> None:
 
 
 def _capture_e5_cells(browser, origin: str, probes: dict[str, Any],
-                      manifest: dict[str, Any]) -> None:
+                      manifest: dict[str, Any], *, site_root: Path,
+                      servers: list) -> None:
     """Photograph E5 by stalling the fragment request (no product change)."""
     for theme in THEMES:
         for locale in LOCALES:
@@ -1284,17 +1638,44 @@ def _capture_e5_cells(browser, origin: str, probes: dict[str, Any],
                 print(
                     f"capturing {filename} (e5 timeout {theme} {locale} {vw})",
                     flush=True)
+                _ensure_origin(origin, site_root, servers)
                 context = _new_context(browser, theme, locale, vw, vh)
+                held: list = []
                 try:
                     page = context.new_page()
-                    page.route("**/macro/fragments/**", lambda route: None)
-                    started = time.monotonic()
+                    seen: dict[str, float] = {}
+
+                    def _stall(route) -> None:
+                        if "requestSeenAt" not in seen:
+                            seen["requestSeenAt"] = time.monotonic()
+                        # Hold the request (never fulfil) so the product
+                        # 8000ms timeout clones the template. Abort after
+                        # the clone is photographed so Playwright's route
+                        # task can finish — a never-returning handler
+                        # leaked pending tasks and killed later cells.
+                        held.append(route)
+
+                    page.route("**/macro/fragments/**", _stall)
                     page.goto(
                         origin + "/macro_monetary.html#inflation",
                         wait_until="domcontentloaded", timeout=30000)
                     _wait_theme(page, theme, locale)
-                    page.wait_for_selector('[data-mc-empty="e5"]', timeout=20000)
-                    elapsed_ms = (time.monotonic() - started) * 1000
+                    deadline = time.monotonic() + 20.0
+                    clone_seen_at: float | None = None
+                    while time.monotonic() < deadline:
+                        if page.query_selector('[data-mc-empty="e5"]'):
+                            clone_seen_at = time.monotonic()
+                            break
+                        page.wait_for_timeout(100)
+                    if clone_seen_at is None:
+                        raise RuntimeError(
+                            f"E5 clone missing {theme}/{locale}/{vw}")
+                    request_seen_at = seen.get("requestSeenAt")
+                    if request_seen_at is None:
+                        raise RuntimeError(
+                            f"E5 fragment request never seen "
+                            f"{theme}/{locale}/{vw}")
+                    elapsed_ms = (clone_seen_at - request_seen_at) * 1000
                     receipt = page.evaluate("""() => {
                       const tpl = document.querySelector(
                         'template[data-mc-empty-e5]');
@@ -1319,6 +1700,8 @@ def _capture_e5_cells(browser, origin: str, probes: dict[str, Any],
                             f"E5 clone missing {theme}/{locale}/{vw}: {receipt}")
                     probes[f"e5_timeout_{theme}_{locale}_{vw}"] = {
                         "elapsedMs": elapsed_ms,
+                        "requestSeenAt": request_seen_at,
+                        "cloneSeenAt": clone_seen_at,
                         "templatePresent": receipt.get("templatePresent"),
                         "clonePresent": receipt.get("clonePresent"),
                         "headline": receipt.get("headline"),
@@ -1343,6 +1726,11 @@ def _capture_e5_cells(browser, origin: str, probes: dict[str, Any],
                         f"elapsedMs={elapsed_ms:.0f}",
                         flush=True)
                 finally:
+                    for route in held:
+                        try:
+                            route.abort("timedout")
+                        except Exception:
+                            pass
                     context.close()
 
 
@@ -1530,6 +1918,10 @@ def main() -> int:
         "strip_void_probe",
     ):
         probes.pop(alias, None)
+    for theme in THEMES:
+        for locale in LOCALES:
+            for vw in (390, 768):
+                probes.pop(f"rail_clip_{theme}_{locale}_{vw}", None)
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
 
     try:
@@ -1692,11 +2084,17 @@ def main() -> int:
                             raise RuntimeError(
                                 f"R8-M1 clearance failed 390 {theme}/{locale}: {clear}")
                         probes[f"clearance_390_{theme}_{locale}"] = clear
-                        clip = page.evaluate(RAIL_CLIP_JS)
-                        if not clip.get("ok"):
+                        viewport = page.evaluate(RAIL_VIEWPORT_JS)
+                        if not viewport.get("ok"):
                             raise RuntimeError(
-                                f"rail clip 390 {theme}/{locale}: {clip}")
-                        probes[f"rail_clip_{theme}_{locale}_390"] = clip
+                                f"rail viewport 390 {theme}/{locale}: {viewport}")
+                        probes[f"rail_viewport_{theme}_{locale}_390"] = viewport
+                        probes.pop(f"rail_clip_{theme}_{locale}_390", None)
+                        material = page.evaluate(CHIP_MATERIAL_JS)
+                        if not material.get("ok"):
+                            raise RuntimeError(
+                                f"chip material 390 {theme}/{locale}: {material}")
+                        probes[f"chip_material_{theme}_{locale}_390"] = material
                         print(
                             f"  clearance 390 {theme}/{locale} ok={clear['ok']} "
                             f"texts={clear['textCount']} "
@@ -1724,11 +2122,17 @@ def main() -> int:
                             raise RuntimeError(
                                 f"R8-M1 clearance failed 768 {theme}/{locale}: {clear}")
                         probes[f"clearance_768_{theme}_{locale}"] = clear
-                        clip = page.evaluate(RAIL_CLIP_JS)
-                        if not clip.get("ok"):
+                        viewport = page.evaluate(RAIL_VIEWPORT_JS)
+                        if not viewport.get("ok"):
                             raise RuntimeError(
-                                f"rail clip 768 {theme}/{locale}: {clip}")
-                        probes[f"rail_clip_{theme}_{locale}_768"] = clip
+                                f"rail viewport 768 {theme}/{locale}: {viewport}")
+                        probes[f"rail_viewport_{theme}_{locale}_768"] = viewport
+                        probes.pop(f"rail_clip_{theme}_{locale}_768", None)
+                        material = page.evaluate(CHIP_MATERIAL_JS)
+                        if not material.get("ok"):
+                            raise RuntimeError(
+                                f"chip material 768 {theme}/{locale}: {material}")
+                        probes[f"chip_material_{theme}_{locale}_768"] = material
                         print(
                             f"  clearance 768 {theme}/{locale} ok={clear['ok']} "
                             f"texts={clear['textCount']}",
@@ -1736,8 +2140,8 @@ def main() -> int:
                     finally:
                         context.close()
 
-                # R9-M2 / r10-m3: FAB computed display at desktop — all
-                # four 1440 cells. Must stay visible (flex).
+                # R9-M2 / MAJOR-E1: FAB visible at 1440 and clearance
+                # ladder with #mmb-boot as a fixed occluder.
                 for theme, locale in (("dark", "en"), ("dark", "zh"),
                                       ("light", "en"), ("light", "zh")):
                     context = _new_context(browser, theme, locale, 1440, 900)
@@ -1746,12 +2150,17 @@ def main() -> int:
                             context, origin + "/macro_monetary.html",
                             "#overview", theme, locale)
                         page.wait_for_selector("#mmb-boot", timeout=15000)
+                        page.wait_for_selector(".mc-panels", timeout=15000)
                         fab = page.evaluate("""() => {
                           const el = document.getElementById('mmb-boot');
                           if (!el) return {present: false, display: null};
                           const cs = getComputedStyle(el);
+                          const box = el.getBoundingClientRect();
                           return {present: true, display: cs.display,
-                                  position: cs.position};
+                                  position: cs.position,
+                                  box: {top: box.top, bottom: box.bottom,
+                                        left: box.left, right: box.right,
+                                        width: box.width, height: box.height}};
                         }""")
                         if not fab.get("present") or fab.get("display") == "none":
                             raise RuntimeError(
@@ -1759,9 +2168,34 @@ def main() -> int:
                                 f"{theme}/{locale}: {fab}")
                         key = f"fab_display_1440_{theme}_{locale}"
                         probes[key] = fab
-                        print(f"  {key} {fab}", flush=True)
+                        clear = _run_clearance(page)
+                        if not clear.get("ok"):
+                            raise RuntimeError(
+                                f"clearance failed 1440 {theme}/{locale}: {clear}")
+                        for pos_name, pos in (clear.get("positions") or {}).items():
+                            names = [ov.get("name") for ov in pos.get("overlays") or []]
+                            if "mmb-boot" not in names:
+                                raise RuntimeError(
+                                    f"1440 clearance missing mmb-boot overlay "
+                                    f"{theme}/{locale}@{pos_name}: {names}")
+                        probes[f"clearance_1440_{theme}_{locale}"] = clear
+                        print(
+                            f"  {key} {fab} clearance texts="
+                            f"{clear.get('textCount')} "
+                            f"bootBox={clear.get('mmbBootBox')}",
+                            flush=True)
                     finally:
                         context.close()
+
+                # MINOR-C1: shipped CLEARANCE_AT_JS on a synthetic page.
+                syn_ctx = _new_context(browser, "dark", "en", 1440, 900)
+                try:
+                    syn_page = syn_ctx.new_page()
+                    probes["synthetic_clearance"] = _run_synthetic_clearance(
+                        syn_page)
+                    print("  synthetic_clearance ok", flush=True)
+                finally:
+                    syn_ctx.close()
 
                 # r10 evidence m4: click the ≤768 analyst chip; the same
                 # chat surface the FAB would boot (`#mmb-root`) must mount.
@@ -1863,7 +2297,9 @@ def main() -> int:
                         context.close()
                 probes["strip_void_probes"] = strip_voids
                 probes.pop("strip_void_probe", None)
-                _capture_e5_cells(browser, origin, probes, manifest)
+                _capture_e5_cells(
+                    browser, origin, probes, manifest,
+                    site_root=SITE, servers=servers)
             finally:
                 _kill(proc)
                 if proc in servers:
@@ -1918,9 +2354,20 @@ def main() -> int:
             raise RuntimeError(f"duplicate evidence blobs: {dupes}")
 
         manifest["axes"]["force_states"] = sorted(force_states)
+        declared = _declared_families()
+        captured_keys = _captured_declared_keys(states, probes)
+        manifest["declared"] = declared
+        manifest["gaps"] = _compute_gaps_from_declared(declared, captured_keys)
+        manifest.setdefault("honesty", {})
+        manifest["honesty"]["gaps"] = (
+            "every declared family cell that was not captured is recorded "
+            "in gaps with a reason; force_states, empty_states, clearance, "
+            "chip_opens_chat, strip_void, rail_viewport, e5, and fab are "
+            "published as data and gaps is computed from that structure"
+        )
         manifest["pages"][0]["gaps"] = _compute_gaps(
             _declared_empty_cells(), states)
-        for gap in manifest["pages"][0]["gaps"]:
+        for gap in list(manifest["gaps"]) + list(manifest["pages"][0]["gaps"]):
             if not gap.get("reason"):
                 raise RuntimeError(f"gap missing reason: {gap}")
             if gap.get("captured") is not False:

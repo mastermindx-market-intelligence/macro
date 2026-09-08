@@ -126,7 +126,7 @@ html[data-theme="light"] {
 .mc-rail-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
 /* r10-m4: desktop .mc-rail-link / :hover exclude .mc-analyst so the
    ≥769 boxed chip (border, chip-bg, accent hover) stays unchanged.
-   ≤768 still shares .mc-rail-link pill material (padding/radius). */
+   ≤768 .mc-rail-link (including .mc-analyst) shares pill material. */
 .mc-rail-link:not(.mc-analyst) {
   position: relative; display: flex; align-items: center; gap: 10px;
   padding: 9px 12px 9px 14px; border-radius: var(--mc-radius-sm);
@@ -647,6 +647,14 @@ html[data-theme="light"] .mc-empty {
 @media (max-width: 1023px) {
   .mc-chip { flex-basis: calc((100% - 8px) / 2); }
 }
+@media (min-width: 769px) {
+  /* MAJOR-E1: the FAB (#mmb-boot) lives in a reserved right gutter so
+     it never intersects panel/figure text. Gutter ≥ FAB width + 24px,
+     tokenized as rail-w + gap (measured from the computed FAB box). */
+  body.mc-page .mc-panels {
+    padding-right: calc(var(--mc-rail-w) + var(--mc-gap));
+  }
+}
 @media (max-width: 768px) {
   /* N-B1: the reserved band lives on `.mc-panels`, not on the shell.
      M4: `min-height: calc(100vh - 84px)` + two auto rows stretched the
@@ -691,9 +699,7 @@ html[data-theme="light"] .mc-empty {
      sticky at the top). Reserve only the home-indicator inset. */
   .mc-panels {
     order: 3;
-    /* r12-M2: a modest end spacer so the last dest-card line can
-       sit below the sticky rail at max scroll. */
-    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
   .mc-rail {
     position: sticky; top: 60px; z-index: 4;
@@ -718,21 +724,28 @@ html[data-theme="light"] .mc-empty {
     flex-direction: row; overflow-x: auto; scrollbar-width: none; gap: 6px;
     contain: inline-size;
     /* R9-m3: the overflow mask finishes ≥24px before the analyst chip
-       so a mid-word clip never sits flush against it. */
+       so a mid-word clip never sits flush against it. padding-right
+       lets the last chip scroll fully out of the fade band. */
     margin-right: 24px;
+    padding-right: 24px;
   }
   .mc-rail-list::-webkit-scrollbar { display: none; }
   /* the rail scrolls; without an affordance the fourth label just looked
      clipped ("利率与收:"). A mask is alpha-only, so it is theme-neutral. */
   .mc-rail-list { mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
                   -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent); }
-  /* E-m11: chips never clip their own label. The list scrolls; the chip
-     box is sized to its nowrap text. overflow:hidden is forbidden here. */
-  .mc-rail-link {
+  /* E-m11 / r12-M1: every rail chip — including .mc-analyst — shares
+     one pill. The list scrolls; the chip box is sized to its nowrap
+     text. overflow:hidden is forbidden here. */
+  .mc-rail .mc-rail-link {
     flex: none;
     white-space: nowrap;
     overflow: visible;
-    padding: 7px 12px;
+    padding: 7px 10px;
+    border: none;
+    border-radius: var(--r-pill, 999px);
+    font-size: 13.5px;
+    line-height: 1.3;
   }
   /* same overflow + edge mask as the rail — a hard-clipped tab row
      ("利率与收:") has no scroll affordance without it. */
@@ -747,23 +760,18 @@ html[data-theme="light"] .mc-empty {
   .mc-dests { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
   .mc-rail-bar { display: none; }
   .mc-rail-link.is-current { border: 1px solid var(--mq-accent); }
-  /* R9-M2 / r9-M2: no floating pill at ≤768. The analyst reuses
-     `.mc-rail-link` (999px, no extra border, same padding/type/state
-     colours). Do not redeclare radius here — enforce-added blocked a
-     token-only radius line on the prior pass. ≥769 analyst look is
-     unchanged: desktop `.mc-rail-link` / `:hover` are `:not(.mc-analyst)`. */
+  /* R9-M2: no floating chip at ≤768. The analyst is a .mc-rail-link
+     and inherits the shared pill (radius/border/padding/font) above.
+     ≥769 analyst look is unchanged: desktop `.mc-rail-link` / `:hover`
+     are `:not(.mc-analyst)`. */
   .mc-analyst {
     position: static;
     flex: 0 0 auto;
     margin: 0;
-    border: none;
     background: transparent;
     box-shadow: none;
     max-width: none;
-    white-space: nowrap;
     z-index: auto;
-    font-size: 13.5px;
-    line-height: 1.3;
     color: var(--mq-muted);
   }
   .mc-analyst:hover {

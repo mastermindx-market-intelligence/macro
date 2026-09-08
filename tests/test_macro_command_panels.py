@@ -775,6 +775,8 @@ def test_p3_clearance_probes_are_real_geometry() -> None:
         "clearance_390_light_en", "clearance_390_light_zh",
         "clearance_768_dark_en", "clearance_768_dark_zh",
         "clearance_768_light_en", "clearance_768_light_zh",
+        "clearance_1440_dark_en", "clearance_1440_dark_zh",
+        "clearance_1440_light_en", "clearance_1440_light_zh",
     )
     for key in keys:
         row = probes[key]
@@ -800,12 +802,31 @@ def test_p3_clearance_probes_are_real_geometry() -> None:
                     assert reason.endswith("_fully_covered") or reason.endswith(
                         "_partially_covered"), (key, pos_name, reason)
                     assert "box" in item and "ovBox" in item, (key, pos_name, item)
-                    if reason == "rail_fully_covered":
+                    if reason.endswith("_fully_covered") or reason.endswith(
+                            "_partially_covered"):
                         exposed = item.get("exposedAtScrollY")
                         assert exposed is not None, (key, pos_name, item)
                         assert 0 <= float(exposed) <= float(
                             pos.get("maxScroll") or 0), (key, pos_name, item)
-                        assert "docTop" in item and "ovHeight" in item, (
+                        assert "docTop" in item and "ovBottom" in item, (
+                            key, pos_name, item)
+                        assert abs(float(item["docTop"]) - float(item["ovBottom"])
+                                   - float(exposed)) < 0.01, (key, pos_name, item)
+        if key.startswith("clearance_1440_"):
+            assert row.get("mmbBootDisplay") not in (None, "none"), (key, row)
+            assert row.get("mmbBootBox"), (key, row)
+            for pos_name, pos in positions.items():
+                names = [ov.get("name") for ov in pos.get("overlays") or []]
+                assert "mmb-boot" in names, (key, names)
+                for item in pos.get("excused") or []:
+                    reason = str(item.get("reason") or "")
+                    if reason.endswith("_fully_covered") or reason.endswith(
+                            "_partially_covered"):
+                        exposed = item.get("exposedAtScrollY")
+                        assert exposed is not None, (key, pos_name, item)
+                        assert 0 <= float(exposed) <= float(
+                            pos.get("maxScroll") or 0), (key, pos_name, item)
+                        assert "docTop" in item and "ovBottom" in item, (
                             key, pos_name, item)
     # r10 evidence m2: no viewport-less clearance aliases.
     for alias in (
@@ -835,6 +856,8 @@ def test_r9_fab_hidden_at_390_visible_at_1440() -> None:
         fab = probes[key]
         assert fab.get("present") is True, (key, fab)
         assert fab.get("display") not in (None, "none"), (key, fab)
+        assert fab.get("box"), (key, fab)
+        assert float(fab["box"]["width"]) > 0, (key, fab)
 
 
 def test_r9_default_390_frames_are_scroll_zero() -> None:
@@ -1544,13 +1567,25 @@ def test_r10_measured_clean_tree_protocol() -> None:
     assert "git status --short was empty" not in source
 
 
-def test_r12_device_px_matches_playwright_snap() -> None:
-    """E-M1: crop IHDR uses Playwright's floor/ceil device span, not round()."""
+def test_r12_device_px_matches_playwright_snap(tmp_path: Path) -> None:
+    """E-M1 / MINOR-C4: crop IHDR uses _device_px, not round()."""
+    from PIL import Image
+
     from scripts import capture_macro_command_p3 as capture
 
     assert capture._device_px(199.453125, 566.453125, 2.0) == 1134
     assert capture._device_px(0.0, 1440.0, 2.0) == 2880
     assert capture._device_px(0.0, 900.0, 2.0) == 1800
+    dest = tmp_path / "crop.png"
+    Image.new("RGB", (1134, 80), (10, 20, 30)).save(dest)
+    extra = {
+        "dpr": 2.0,
+        "crop": True,
+        "crop_box": {"x": 199.453125, "y": 10.0, "width": 566.453125, "height": 40.0},
+        "crop_selector": ".mc-figure",
+    }
+    # 80 == _device_px(10.0, 40.0, 2.0)
+    capture._assert_shot_geometry(dest, extra, 1440, 900)
 
 
 def test_r12_clearance_js_has_no_target_zero_gate() -> None:
@@ -1562,47 +1597,32 @@ def test_r12_clearance_js_has_no_target_zero_gate() -> None:
     assert "exposedAtScrollY" in capture.CLEARANCE_AT_JS
 
 
-def test_r12_synthetic_rail_zone_hits_every_target() -> None:
-    """A text node inside the stick zone is a HIT at 0 / 50 / max."""
+def test_r12_synthetic_clearance_runs_shipped_js() -> None:
+    """MINOR-C1: receipts come from CLEARANCE_AT_JS, not a Python twin."""
     from scripts import capture_macro_command_p3 as capture
 
-    positions = capture._synthetic_clearance_page(
-        node_doc_top=20, node_height=16, ov_bottom=56,
-        max_scroll=0, inner_height=900)
-    for target in ("0", "50", "max"):
-        row = positions[target]
-        assert row["hits"], target
-        assert row["hits"][0]["reason"] == "sticky-rail-full-cover-unexposable"
-        assert row["hits"][0]["exposedAtScrollY"] < 0
-
-
-def test_r12_synthetic_below_zone_is_excused_with_exposed() -> None:
-    """A node below the stick zone is excused and records exposedAtScrollY."""
-    from scripts import capture_macro_command_p3 as capture
-
-    positions = capture._synthetic_clearance_page(
-        node_doc_top=400, node_height=16, ov_bottom=115,
-        max_scroll=800, inner_height=900)
-    # At scroll 0 the node sits below the rail (not covered). At a
-    # scroll that pulls it under the rail it is fully covered and exposable.
-    covered = capture._synthetic_clearance_page(
-        node_doc_top=400, node_height=16, ov_bottom=115,
-        max_scroll=400 - 8, inner_height=900)
-    excused = covered["max"]["excused"]
-    assert excused, covered["max"]
-    assert excused[0]["reason"] == "rail_fully_covered"
-    assert excused[0]["exposedAtScrollY"] == 400 - 115
-    assert 0 <= excused[0]["exposedAtScrollY"] <= 400 - 8
-    assert positions["0"]["ok"] is True
-
-
-def test_r12_unreachable_exposed_is_a_hit() -> None:
-    """An excuse that names a scroll past maxScroll is a HIT."""
-    from scripts import capture_macro_command_p3 as capture
-
-    reason, exposed = capture._sticky_cover_verdict(400, 115, max_scroll=100)
-    assert reason == "sticky-rail-full-cover-unexposable"
-    assert exposed == 285
+    assert not hasattr(capture, "_synthetic_clearance_page")
+    probes = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p3" / "probes.json")
+        .read_text(encoding="utf-8"))
+    row = probes["synthetic_clearance"]
+    positions = row["positions"]
+    assert set(positions) >= {"0", "50", "max"}
+    pos0 = positions["0"]
+    inside = [h for h in pos0.get("hits") or []
+              if "inside" in str(h.get("text") or "")]
+    assert inside, pos0.get("hits")
+    assert inside[0]["reason"] == "sticky-rail-full-cover-unexposable"
+    assert inside[0]["exposedAtScrollY"] < 0
+    assert abs(float(inside[0]["docTop"]) - float(inside[0]["ovBottom"])
+               - float(inside[0]["exposedAtScrollY"])) < 0.01
+    for pos in positions.values():
+        for item in list(pos.get("excused") or []) + list(pos.get("hits") or []):
+            if "exposedAtScrollY" not in item:
+                continue
+            assert "docTop" in item and "ovBottom" in item, item
+            assert abs(float(item["docTop"]) - float(item["ovBottom"])
+                       - float(item["exposedAtScrollY"])) < 0.01
 
 
 def test_r12_excused_unreachable_exposed_raises() -> None:
@@ -1640,38 +1660,54 @@ def test_r12_manifest_shot_schema() -> None:
         (ROOT / "mockups" / "evidence" / "macro-command-p3" / "manifest.json")
         .read_text(encoding="utf-8"))
     evidence = ROOT / "mockups" / "evidence" / "macro-command-p3"
-    for state in manifest["pages"][0]["states"]:
-        if not state.get("captured"):
-            continue
-        assert "dpr" in state and state["dpr"] is not None, state.get("file")
-        assert state.get("crop") in (True, False), state.get("file")
-        assert state.get("fixture") is not None, state.get("file")
-        dest = evidence / state["file"]
-        extra = {
-            "dpr": state["dpr"],
-            "crop": state["crop"],
-            "full_page": state.get("full_page"),
-            "crop_box": state.get("crop_box"),
-            "crop_selector": state.get("crop_selector"),
-        }
-        capture._assert_shot_geometry(
-            dest, extra, state["viewport_width"], state["viewport_height"])
+    for page in manifest["pages"]:
+        for state in page.get("states") or []:
+            if not state.get("captured"):
+                continue
+            assert "dpr" in state and state["dpr"] is not None, state.get("file")
+            assert state.get("crop") in (True, False), state.get("file")
+            assert state.get("fixture") is not None, state.get("file")
+            dest = evidence / state["file"]
+            extra = {
+                "dpr": state["dpr"],
+                "crop": state["crop"],
+                "full_page": state.get("full_page"),
+                "crop_box": state.get("crop_box"),
+                "crop_selector": state.get("crop_selector"),
+            }
+            capture._assert_shot_geometry(
+                dest, extra, state["viewport_width"], state["viewport_height"])
 
 
 def test_r12_gaps_are_computed_from_declared_minus_captured() -> None:
-    """E-M2: pages[0].gaps is declared − captured, never hand-typed."""
+    """E-M2 / MINOR-E1: manifest.gaps is declared − captured, 0 phantoms."""
     from scripts import capture_macro_command_p3 as capture
 
     manifest = json.loads(
         (ROOT / "mockups" / "evidence" / "macro-command-p3" / "manifest.json")
         .read_text(encoding="utf-8"))
-    declared = capture._declared_empty_cells()
-    assert len(declared) == 6 * 2 * 2 * 2
-    computed = capture._compute_gaps(declared, manifest["pages"][0]["states"])
-    assert computed == manifest["pages"][0]["gaps"]
-    for gap in computed:
-        assert gap.get("captured") is False
-        assert gap.get("reason")
+    probes = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p3" / "probes.json")
+        .read_text(encoding="utf-8"))
+    declared = manifest["declared"]
+    expected_families = {
+        "force_states", "empty_states", "clearance", "chip_opens_chat",
+        "strip_void", "rail_viewport", "e5", "fab",
+    }
+    assert set(declared) == expected_families
+    for family, cells in declared.items():
+        assert cells, family
+        honesty = manifest["honesty"]["gaps"]
+        assert "reason" in honesty
+    states = [state for page in manifest["pages"] for state in page.get("states") or []]
+    captured = capture._captured_declared_keys(states, probes)
+    computed = capture._compute_gaps_from_declared(declared, captured)
+    assert computed == manifest["gaps"]
+    assert computed == []
+    empty_declared = capture._declared_empty_cells()
+    assert len(empty_declared) == 6 * 2 * 2 * 2
+    empty_gaps = capture._compute_gaps(empty_declared, manifest["pages"][0]["states"])
+    assert empty_gaps == manifest["pages"][0]["gaps"]
 
 
 def test_r12_no_orphan_strip_void_probe() -> None:
@@ -1695,23 +1731,76 @@ def test_r12_e5_timeout_receipts() -> None:
                 key = f"e5_timeout_{theme}_{locale}_{vw}"
                 row = probes[key]
                 assert row.get("elapsedMs") >= 8000, (key, row)
+                assert row.get("requestSeenAt") is not None, (key, row)
+                assert row.get("cloneSeenAt") is not None, (key, row)
+                assert float(row["cloneSeenAt"]) > float(row["requestSeenAt"]), (
+                    key, row)
+                assert abs(
+                    (float(row["cloneSeenAt"]) - float(row["requestSeenAt"]))
+                    * 1000 - float(row["elapsedMs"])) < 1.0, (key, row)
                 assert row.get("templatePresent") is True, (key, row)
                 assert row.get("clonePresent") is True, (key, row)
                 assert row.get("headline"), (key, row)
 
 
-def test_r12_rail_clip_receipts() -> None:
+def test_r12_choose_strip_canvas_fallback_label() -> None:
+    """MAJOR-E2 / r11 MINOR-3: fallback is --bg, never bodyBackgroundColor."""
+    from scripts import capture_macro_command_p3 as capture
+
+    src = capture._choose_strip_canvas.__doc__ or ""
+    fn_src = Path(capture.__file__).read_text(encoding="utf-8")
+    assert 'getPropertyValue(\'--bg\')' in capture.STRIP_VOID_JS
+    assert '"--bg custom property"' in fn_src
+    assert "bodyBackgroundColor" in capture.STRIP_VOID_JS
+    assert "bgResolved" not in capture.STRIP_VOID_JS
+    assert "--bg custom property" in src
+
+
+def test_r12_rail_viewport_receipts() -> None:
     probes = json.loads(
         (ROOT / "mockups" / "evidence" / "macro-command-p3" / "probes.json")
         .read_text(encoding="utf-8"))
     for theme in ("dark", "light"):
         for locale in ("en", "zh"):
             for vw in (390, 768):
-                key = f"rail_clip_{theme}_{locale}_{vw}"
+                key = f"rail_viewport_{theme}_{locale}_{vw}"
                 row = probes[key]
                 assert row.get("ok") is True, (key, row)
-                for chip in row.get("chips") or []:
-                    assert chip["scrollWidth"] <= chip["clientWidth"] + 1, (
-                        key, chip)
+                assert row.get("firstFullyVisibleAt0") is True, (key, row)
+                assert row.get("everyReachable") is True, (key, row)
+                assert row.get("fadeBandOk") is True, (key, row)
+                assert row.get("fadeWidth", 0) >= 24 - 0.5, (key, row)
+                assert row.get("fadeBeginsBeforeAnalyst", 0) >= 24 - 0.5, (
+                    key, row)
                 mask = row.get("maskImage") or row.get("webkitMaskImage")
                 assert mask and mask != "none", (key, row)
+                assert row.get("chips"), (key, row)
+                for chip in row["chips"]:
+                    assert chip.get("fullyVisible") is True, (key, chip)
+                    assert chip.get("fullyVisibleAtScrollLeft") is not None, (
+                        key, chip)
+                    assert chip.get("underAnalyst") is False, (key, chip)
+                    assert chip.get("overflow") != "hidden", (key, chip)
+                    assert chip.get("whiteSpace") == "nowrap", (key, chip)
+                    assert chip["scrollWidth"] <= chip["clientWidth"] + 1, (
+                        key, chip)
+                assert f"rail_clip_{theme}_{locale}_{vw}" not in probes
+
+
+def test_r12_chip_material_receipts() -> None:
+    probes = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p3" / "probes.json")
+        .read_text(encoding="utf-8"))
+    for theme in ("dark", "light"):
+        for locale in ("en", "zh"):
+            for vw in (390, 768):
+                key = f"chip_material_{theme}_{locale}_{vw}"
+                row = probes[key]
+                assert row.get("ok") is True, (key, row)
+                assert row.get("mismatches") == [], (key, row)
+                for prop in (
+                    "borderRadius", "paddingTop", "paddingRight",
+                    "paddingBottom", "paddingLeft", "fontSize",
+                ):
+                    assert row["analyst"][prop] == row["sibling"][prop], (
+                        key, prop, row)

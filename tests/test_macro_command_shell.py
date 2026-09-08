@@ -257,8 +257,9 @@ def test_le768_panel_column_reserves_only_what_is_still_fixed(
     assert block
     body = _strip_css_comments(block.group(1))
     assert re.search(
-        r'\.mc-panels\s*\{[^}]*padding-bottom:\s*calc\(72px \+ env\(safe-area-inset-bottom, 0px\)\)',
+        r'\.mc-panels\s*\{[^}]*padding-bottom:\s*env\(safe-area-inset-bottom, 0px\)',
         body, re.S)
+    assert "72px" not in body
     assert "70px + 16px" not in body
     assert "84px + 44px + 16px" not in body
     analyst = re.search(r'\.mc-analyst\s*\{([^}]+)\}', body)
@@ -414,9 +415,9 @@ def test_analyst_chip_boots_the_same_chat_as_mmb_boot(
 
 def test_desktop_rail_link_rules_exclude_analyst(
         macro_command_css: str) -> None:
-    """r10-m4: scoped the class — ≥769 analyst look is unchanged because
-    desktop `.mc-rail-link` / `:hover` are `:not(.mc-analyst)`. ≤768 still
-    shares `.mc-rail-link` pill material."""
+    """r10-m4 / r12-M1: ≥769 analyst look is unchanged because desktop
+    `.mc-rail-link` / `:hover` are `:not(.mc-analyst)`. ≤768 `.mc-rail-link`
+    (including `.mc-analyst`) shares pill material via `var(--r-pill`."""
     outside = _strip_css_comments(
         re.sub(r'@media \(max-width: 768px\) \{.*?(?=\n@media|\Z)', '',
                macro_command_css, flags=re.S))
@@ -428,8 +429,31 @@ def test_desktop_rail_link_rules_exclude_analyst(
                       macro_command_css, re.S)
     assert block
     body = _strip_css_comments(block.group(1))
+    rail = re.search(r'\.mc-rail-link\s*\{([^}]+)\}', body)
+    assert rail, "missing ≤768 .mc-rail-link"
+    assert "white-space: nowrap" in rail.group(1)
+    assert "var(--r-pill" in rail.group(1)
+    assert ".mc-rail .mc-rail-link" in body
+    assert not re.search(
+        r'\.mc-rail-link:not\(\.mc-analyst\)', body), (
+        "≤768 .mc-analyst must not be excluded from the pill rule")
+    analyst = re.search(r'\.mc-analyst\s*\{([^}]+)\}', body)
+    assert analyst
+    assert "border-radius" not in analyst.group(1)
+    assert "font-size" not in analyst.group(1)
+    assert "padding:" not in analyst.group(1)
+
+
+def test_ge769_panels_reserve_fab_gutter(macro_command_css: str) -> None:
+    """MAJOR-E1: ≥769 .mc-panels padding-right is rail-w + gap."""
+    block = re.search(r'@media \(min-width: 769px\) \{(.*?)(?=\n@media|\Z)',
+                      macro_command_css, re.S)
+    assert block, "missing ≥769 block"
+    body = _strip_css_comments(block.group(1))
     assert re.search(
-        r'\.mc-rail-link\s*\{[^}]*white-space:\s*nowrap', body, re.S)
+        r'body\.mc-page\s+\.mc-panels\s*\{[^}]*padding-right:\s*'
+        r'calc\(var\(--mc-rail-w\) \+ var\(--mc-gap\)\)',
+        body, re.S)
 
 
 @pytest.mark.needs_full_checkout("site")
