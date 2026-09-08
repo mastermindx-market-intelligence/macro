@@ -605,7 +605,7 @@ def test_e1_fixture_through_the_real_builder(tmp_path: Path) -> None:
     frag = unescape(
         (out / "macro" / "fragments" / "inflation.html").read_text(encoding="utf-8"))
     assert 'data-mc-empty="e1"' in frag
-    assert "mc-empty-title" not in frag
+    assert "mc-empty-title" in frag
     assert "Empty e1" not in frag
     assert "Today's number didn't arrive" not in frag
     hub = unescape((out / "macro_monetary.html").read_text(encoding="utf-8"))
@@ -631,7 +631,7 @@ def test_e3_fixture_through_the_real_builder(tmp_path: Path) -> None:
     frag = unescape(
         (out / "macro" / "fragments" / "inflation.html").read_text(encoding="utf-8"))
     assert 'data-mc-empty="e3"' in frag
-    assert "mc-empty-title" not in frag
+    assert "mc-empty-title" in frag
     assert "We don't have this reading yet" not in frag
     assert "Empty e3" not in frag
     hub = unescape((out / "macro_monetary.html").read_text(encoding="utf-8"))

@@ -162,11 +162,17 @@ def test_empty_states_have_no_repeated_visible_string() -> None:
 
 
 def test_empty_card_hides_title_when_the_panel_already_has_the_stance() -> None:
-    """M6: one null voice per section — stance line OR card title, not both."""
+    """M6: one null voice per section — stance line OR card title, not both.
+
+    P3 v16 / P4 v9: E1's title lives on the card (fragment). The hub panel
+    still hides the duplicate title when it already speaks the stance.
+    """
     src = (ROOT / "templates" / "_macro_command_fragment.html.j2").read_text(
         encoding="utf-8")
-    assert "fig.empty(s.empty, hide_title=true)" in src
-    assert "fig.empty(tab.empty, hide_title=true)" in src
+    assert "fig.empty(s.empty)" in src
+    assert "fig.empty(tab.empty)" in src
+    hub = (ROOT / "templates" / "macro_monetary.html.j2").read_text(encoding="utf-8")
+    assert "fig.empty(s.empty, hide_title=true)" in hub
     isolated = _render_empty(builder._empty_state("e2"))
     assert "No reading arrived today" in isolated or "Today's number didn't arrive" in isolated
 

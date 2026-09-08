@@ -9,7 +9,7 @@
 {%- for tab in s.subtabs %}
 <div class="mc-figure-tabbody" data-mc-tabbody="{{ tab.id }}" id="{{ tab.id }}"
      role="tabpanel" aria-labelledby="{{ tab.id }}-t" data-mc-fragment>
-  {%- if tab.empty %}{{ fig.empty(tab.empty, hide_title=true) }}
+  {%- if tab.empty %}{{ fig.empty(tab.empty) }}
   {%- elif tab.figure %}{{ fig.movement(tab.figure) }}
   {%- else %}
   <p class="mc-figure-offer" data-mc-offer>
@@ -20,7 +20,7 @@
 </div>
 {%- endfor %}
 {%- elif s.empty %}
-{{ fig.empty(s.empty, hide_title=true) }}
+{{ fig.empty(s.empty) }}
 {%- elif s.figure %}
 {{ fig.movement(s.figure) }}
 {%- else %}

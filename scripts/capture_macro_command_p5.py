@@ -24,8 +24,10 @@ if str(ROOT) not in sys.path:
 
 from scripts.capture_macro_command_p3 import (  # noqa: E402
     RAIL_VIEWPORT_JS,
+    _assert_shot_geometry,
     _device_px,
     _device_px_span,
+    _device_px_span_from_crop_box_doc,
     _measure_dpr,
     _write_element_shot,
 )
@@ -67,6 +69,9 @@ WORKSPACE_PAGES = (
     "macro_financial_conditions.html",
     "macro_housing_real_estate.html",
 )
+FIVE_PAGES = ("macro_monetary.html",) + WORKSPACE_PAGES
+HUB_PAGE = "macro_monetary.html"
+CHIP_MATERIAL_WIDTHS = (1440, 768, 390)
 CLEARANCE_TEXT = (
     "p, .mc-stance, .mc-caption, .mc-move-row, .mc-watch, "
     ".mc-primer, .mc-foot, li, td"
@@ -178,45 +183,241 @@ def _open(*, browser, origin: str, path: str, theme: str, locale: str,
     return context, page, None
 
 
+def _measure_window(target) -> dict[str, Any]:
+    return target.evaluate(
+        """() => ({
+            innerWidth: window.innerWidth,
+            innerHeight: window.innerHeight,
+            scrollY: window.scrollY || document.documentElement.scrollTop || 0,
+            scrollWidth: document.documentElement.scrollWidth,
+            scrollHeight: document.documentElement.scrollHeight,
+        })"""
+    )
+
+
+def family_for(filename: str) -> str:
+    name = filename[:-4] if filename.endswith(".png") else filename
+    if name.startswith("chipmat-"):
+        return "chip_material"
+    if name.startswith("ws-"):
+        return "workspace"
+    if name.startswith("i2-"):
+        return "i2"
+    if name.startswith("e5-"):
+        return "e5"
+    if name.startswith("half-") or name.startswith(("18-", "18b-", "19-", "19b-")):
+        return "half_null"
+    if name.startswith(("15-", "16-")):
+        return "details_open"
+    if name.startswith("17"):
+        return "read_word"
+    if name.endswith("-1440-full"):
+        return "hub_full"
+    if name.startswith(("05-", "06-", "07-", "08-")):
+        return "rates_panel"
+    if name.startswith(("09-", "10-", "11-", "12-")):
+        return "hub_390"
+    if name.startswith(("13-", "13b-", "14-", "14b-")):
+        return "hub_768"
+    if name.startswith(("01-", "02-", "03-", "04-")):
+        return "hub_fold"
+    return "other"
+
+
 def _viewport_shot(dest: Path, page, *, width: int, height: int,
                    full_page: bool = False) -> dict[str, Any]:
     dpr = _measure_dpr(page)
+    win = _measure_window(page)
     page.screenshot(path=str(dest), type="png", full_page=full_page)
     png = dest.read_bytes()
     if png[:8] != b"\x89PNG\r\n\x1a\n" or b"IEND" not in png:
         raise RuntimeError(f"{dest.name} is not a finished PNG")
     pw, ph = _png_size(dest)
+    extra: dict[str, Any] = {
+        "dpr": dpr,
+        "crop": False,
+        "full_page": full_page,
+        "crop_box": None,
+        "crop_selector": None,
+        "innerWidth": win["innerWidth"],
+        "innerHeight": win["innerHeight"],
+        "scroll_y_at_shot": win["scrollY"],
+        "scrollWidth": win["scrollWidth"],
+        "scrollHeight": win["scrollHeight"],
+        "fixture": "builder-payload",
+    }
     if full_page:
-        expect_w = _device_px(0.0, float(width), dpr)
-        if pw != expect_w:
-            raise RuntimeError(
-                f"{dest.name} IHDR width {pw} != _device_px(0,{width},{dpr})={expect_w}")
-    else:
-        expect_w = _device_px(0.0, float(width), dpr)
-        expect_h = _device_px(0.0, float(height), dpr)
+        expect_w = _device_px(0.0, float(win["scrollWidth"]), dpr)
+        expect_h = _device_px(0.0, float(win["scrollHeight"]), dpr)
+        extra["device_px_span"] = _device_px_span(
+            {"x": 0.0, "y": 0.0, "width": float(win["scrollWidth"]),
+             "height": float(win["scrollHeight"])},
+            dpr)
+        extra["ihdr_delta_px"] = {"w": abs(pw - expect_w), "h": abs(ph - expect_h)}
         if (pw, ph) != (expect_w, expect_h):
             raise RuntimeError(
-                f"{dest.name} IHDR {pw}x{ph} != _device_px {expect_w}x{expect_h} "
-                f"dpr={dpr}")
+                f"{dest.name} full-page IHDR {pw}x{ph} != document "
+                f"{win['scrollWidth']}x{win['scrollHeight']}×{dpr} "
+                f"= {expect_w}x{expect_h}")
+    else:
+        expect_w = int(round(float(win["innerWidth"]) * dpr))
+        expect_h = int(round(float(win["innerHeight"]) * dpr))
+        extra["device_px_span"] = _device_px_span(
+            {"x": 0.0, "y": 0.0, "width": float(win["innerWidth"]),
+             "height": float(win["innerHeight"])},
+            dpr)
+        extra["ihdr_delta_px"] = {"w": abs(pw - expect_w), "h": abs(ph - expect_h)}
+        if (pw, ph) != (expect_w, expect_h):
+            raise RuntimeError(
+                f"{dest.name} IHDR {pw}x{ph} != round(inner "
+                f"{win['innerWidth']}x{win['innerHeight']}×{dpr}) "
+                f"= {expect_w}x{expect_h}")
     return {
+        **extra,
         "bytes": len(png),
         "sha256": hashlib.sha256(png).hexdigest(),
         "width": pw,
         "height": ph,
-        "crop_box": None,
-        "crop_selector": None,
-        "dpr": dpr,
-        "full_page": full_page,
-        "device_px_span": _device_px_span(
-            {"x": 0.0, "y": 0.0, "width": float(width),
-             "height": float(height if not full_page else ph / dpr)},
-            dpr),
+    }
+
+
+_EXPAND_RAIL_JS = """() => {
+    const nav = document.querySelector('.mq-suitenav');
+    const rail = document.querySelector('.mq-suitenav-rail');
+    if (!rail) return {ok: false, scrollY: window.scrollY || 0};
+    const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+    window.scrollTo(0, 0);
+    const stash = (el, keys) => {
+        for (const key of keys) {
+            el.dataset['mcChipmat' + key] = el.style[key] || '';
+        }
+    };
+    if (nav) {
+        stash(nav, ['overflow', 'width', 'maxWidth', 'gridTemplateColumns']);
+        nav.style.overflow = 'visible';
+        nav.style.width = 'max-content';
+        nav.style.maxWidth = 'none';
+        nav.style.gridTemplateColumns = 'max-content';
+    }
+    stash(rail, ['overflow', 'width', 'minWidth', 'maxWidth', 'flex',
+                 'maskImage', 'webkitMaskImage']);
+    rail.style.overflow = 'visible';
+    rail.style.width = 'max-content';
+    rail.style.minWidth = 'max-content';
+    rail.style.maxWidth = 'none';
+    rail.style.flex = '0 0 auto';
+    rail.style.maskImage = 'none';
+    rail.style.webkitMaskImage = 'none';
+    const h1 = document.querySelector('#mq-context h1');
+    const lang = document.documentElement.getAttribute('data-lang') || 'en';
+    const span = h1 && h1.querySelector(lang === 'zh' ? '.l-zh' : '.l-en');
+    const title = ((span && span.innerText) || (h1 && h1.innerText) || '').trim();
+    if (title && !rail.querySelector('[data-mc-chipmat-title]')) {
+        const li = document.createElement('li');
+        li.setAttribute('data-mc-chipmat-title', '1');
+        const mark = document.createElement('span');
+        mark.className = 'mq-suitenav-pill is-current';
+        mark.textContent = title;
+        li.appendChild(mark);
+        rail.insertBefore(li, rail.firstChild);
+    }
+    return {ok: true, scrollY, title};
+}"""
+
+_RESTORE_RAIL_JS = """(scrollY) => {
+    const unstash = (el, keys) => {
+        if (!el) return;
+        for (const key of keys) {
+            const dataKey = 'mcChipmat' + key;
+            el.style[key] = el.dataset[dataKey] || '';
+            delete el.dataset[dataKey];
+        }
+    };
+    unstash(document.querySelector('.mq-suitenav'),
+            ['overflow', 'width', 'maxWidth', 'gridTemplateColumns']);
+    unstash(document.querySelector('.mq-suitenav-rail'),
+            ['overflow', 'width', 'minWidth', 'maxWidth', 'flex',
+             'maskImage', 'webkitMaskImage']);
+    document.querySelectorAll('[data-mc-chipmat-title]').forEach(
+        (el) => el.remove());
+    window.scrollTo(0, Number(scrollY) || 0);
+    return true;
+}"""
+
+_PREPARE_I2_JS = """() => {
+    const max = Math.max(
+        0, document.documentElement.scrollHeight - window.innerHeight);
+    window.scrollTo(0, max);
+    let opened = false;
+    if ((window.scrollY || 0) < 2) {
+        const details = document.querySelector(
+            '#mq-context details, .mq-context details.mc-details');
+        if (details && !details.open) {
+            details.open = true;
+            opened = true;
+        }
+    }
+    return {scrollY: window.scrollY || 0, max, opened};
+}"""
+
+
+def _shot_chipmat(dest: Path, page, locator, *, selector: str,
+                  locale: str = "en") -> dict[str, Any]:
+    """Chip+pill crop via P3 `_write_element_shot` after a reversible expand.
+
+    At 390/768 the overflow rail clips the current pill once the analyst is
+    scrolled into view, so those slices hash-collide across workspaces.
+    Expanding the rail (and clearing its fade mask) for the shot keeps the
+    producer unchanged and puts the current pill and the chip in one box.
+    Document scroll is restored so the following i2 frame stays at the
+    clearance station.
+    """
+    extra: dict[str, Any] = {
+        "dpr": _measure_dpr(page),
+        "crop": True,
+        "full_page": False,
+        "crop_selector": selector,
+        "fixture": "builder-payload",
+        "locale": locale,
+    }
+    expand = locator.evaluate(_EXPAND_RAIL_JS)
+    try:
+        _write_element_shot(page, dest, locator, extra, locale)
+    finally:
+        locator.evaluate(_RESTORE_RAIL_JS, (expand or {}).get("scrollY") or 0)
+    win = locator.evaluate(
+        """el => {
+            const doc = (el && el.contentDocument) || el.ownerDocument || document;
+            const win = (el && el.contentWindow) || doc.defaultView || window;
+            return {
+                innerWidth: win.innerWidth,
+                innerHeight: win.innerHeight,
+                scrollY: win.scrollY || doc.documentElement.scrollTop || 0,
+            };
+        }"""
+    )
+    extra["innerWidth"] = win["innerWidth"]
+    extra["innerHeight"] = win["innerHeight"]
+    extra.setdefault("scroll_y_at_shot", win["scrollY"])
+    _assert_shot_geometry(
+        dest, extra, int(round(float(win["innerWidth"]))),
+        int(round(float(win["innerHeight"]))))
+    png = dest.read_bytes()
+    if png[:8] != b"\x89PNG\r\n\x1a\n" or b"IEND" not in png:
+        raise RuntimeError(f"{dest.name} is not a finished PNG")
+    pw, ph = _png_size(dest)
+    return {
+        **extra,
+        "bytes": len(png),
+        "sha256": hashlib.sha256(png).hexdigest(),
+        "width": pw,
+        "height": ph,
     }
 
 
 def _shot(dest: Path, page, locator, *, selector: str,
           locale: str = "en") -> dict[str, Any]:
-    """Element shot via P3 v15 `_write_element_shot` — fields at shot time."""
+    """Element shot via P3 v16 `_write_element_shot` — pass extra through."""
     extra: dict[str, Any] = {
         "dpr": _measure_dpr(page),
         "crop": True,
@@ -226,20 +427,35 @@ def _shot(dest: Path, page, locator, *, selector: str,
         "locale": locale,
     }
     _write_element_shot(page, dest, locator, extra, locale)
+    win = locator.evaluate(
+        """el => {
+            const doc = (el && el.contentDocument) || el.ownerDocument || document;
+            const win = (el && el.contentWindow) || doc.defaultView || window;
+            return {
+                innerWidth: win.innerWidth,
+                innerHeight: win.innerHeight,
+                scrollY: win.scrollY || doc.documentElement.scrollTop || 0,
+                scrollWidth: doc.documentElement.scrollWidth,
+                scrollHeight: doc.documentElement.scrollHeight,
+            };
+        }"""
+    )
+    extra["innerWidth"] = win["innerWidth"]
+    extra["innerHeight"] = win["innerHeight"]
+    extra.setdefault("scroll_y_at_shot", win["scrollY"])
+    _assert_shot_geometry(
+        dest, extra, int(round(float(win["innerWidth"]))),
+        int(round(float(win["innerHeight"]))))
     png = dest.read_bytes()
     if png[:8] != b"\x89PNG\r\n\x1a\n" or b"IEND" not in png:
         raise RuntimeError(f"{dest.name} is not a finished PNG")
     pw, ph = _png_size(dest)
     return {
+        **extra,
         "bytes": len(png),
         "sha256": hashlib.sha256(png).hexdigest(),
         "width": pw,
         "height": ph,
-        "crop_box": extra.get("crop_box"),
-        "crop_selector": extra.get("crop_selector"),
-        "dpr": extra["dpr"],
-        "full_page": False,
-        "device_px_span": extra.get("device_px_span"),
     }
 
 
@@ -249,7 +465,8 @@ def _state(filename: str, theme: str, locale: str, viewport: str,
            force_state: str | None = None, crop: bool = False,
            selector: str | None = None, dpr: float = 2.0,
            viewport_height: int | None = None,
-           trigger: str | None = None) -> dict[str, Any]:
+           trigger: str | None = None,
+           family: str | None = None) -> dict[str, Any]:
     measured_dpr = float(info.get("dpr") or dpr)
     ihdr_w = int(info["width"])
     ihdr_h = int(info["height"])
@@ -262,13 +479,20 @@ def _state(filename: str, theme: str, locale: str, viewport: str,
         if not crop_selector:
             raise RuntimeError(
                 f"{filename}: crop:true missing crop_selector at shot time")
-    return {
+    if viewport_height is not None:
+        vh = viewport_height
+    elif info.get("innerHeight") is not None:
+        vh = int(round(float(info["innerHeight"])))
+    else:
+        vh = 2200 if viewport == "desktop" else 844
+    row = {
         "access": "anonymous",
         "applied_locale": locale,
         "applied_theme": theme,
         "bytes": info["bytes"],
         "captured": True,
         "file": filename,
+        "family": family or family_for(filename),
         "force_state": force_state,
         "height": ihdr_h,
         "width": ihdr_w,
@@ -278,10 +502,7 @@ def _state(filename: str, theme: str, locale: str, viewport: str,
         "viewport": viewport,
         "viewport_width": declared,
         "viewport_css_width": css_w,
-        "viewport_height": (
-            viewport_height if viewport_height is not None
-            else (2200 if viewport == "desktop" else 844)
-        ),
+        "viewport_height": vh,
         "dpr": measured_dpr,
         "crop": is_crop,
         "crop_selector": crop_selector,
@@ -293,6 +514,11 @@ def _state(filename: str, theme: str, locale: str, viewport: str,
         "fixture": fixture if isinstance(fixture, str) else "builder-payload",
         "trigger": trigger,
     }
+    for key in ("crop_box_doc", "scroll_y_at_shot", "ihdr_delta_px",
+                "element_text_head", "innerWidth", "innerHeight"):
+        if info.get(key) is not None:
+            row[key] = info[key]
+    return row
 
 
 def _gap_state(filename: str, theme: str, locale: str, viewport: str,
@@ -302,6 +528,7 @@ def _gap_state(filename: str, theme: str, locale: str, viewport: str,
         "captured": False,
         "reason": reason,
         "file": filename,
+        "family": family_for(filename),
         "theme": theme,
         "locale": locale,
         "viewport": viewport,
@@ -365,10 +592,15 @@ _CLEARANCE_JS = """async (el, arg) => {
     const vw = window.innerWidth, vh = window.innerHeight;
     const overlap = (a, b) => !(a.right <= b.left || a.left >= b.right
         || a.bottom <= b.top || a.top >= b.bottom);
-    const boxInside = (inner, outer) => inner.top >= outer.top - 0.5
-        && inner.bottom <= outer.bottom + 0.5
-        && inner.left >= outer.left - 0.5
-        && inner.right <= outer.right + 0.5;
+    const GEOM_TOL = 1;
+    const boxInside = (inner, outer) => inner.top >= outer.top - GEOM_TOL
+        && inner.bottom <= outer.bottom + GEOM_TOL
+        && inner.left >= outer.left - GEOM_TOL
+        && inner.right <= outer.right + GEOM_TOL;
+    const paintedBox = (b) => ({
+        top: b.top, bottom: b.bottom, left: b.left, right: b.right,
+        x: b.x, y: b.y, w: b.w, h: b.h,
+    });
     const clipView = (r) => {
         const left = Math.max(r.left, 0), right = Math.min(r.right, vw);
         const top = Math.max(r.top, 0), bottom = Math.min(r.bottom, vh);
@@ -454,18 +686,30 @@ _CLEARANCE_JS = """async (el, arg) => {
     }
     const topChrome = occluders.filter((f) => isTopChrome(f));
     for (const child of topChrome) {
-        const parent = topChrome.find((p) => p !== child && (
-            p.el.contains(child.el) || boxInside(child, p)));
+        const domParent = topChrome.find((p) => p !== child && p.el.contains(child.el));
+        const geomParent = topChrome.find((p) => p !== child && boxInside(child, p));
+        if (domParent && !boxInside(child, domParent)) {
+            const painted = clipView(child);
+            if (painted && !overlap(painted, domParent)) {
+                throw new Error(
+                    'chrome-merge-dom-not-geometry: '
+                    + String(child.id || child.cls)
+                    + ' is a DOM descendant of '
+                    + String(domParent.id || domParent.cls)
+                    + ' but is not inside its painted box');
+            }
+            child.mergedInto = null;
+            child.mergeBasis = null;
+            continue;
+        }
+        const parent = geomParent;
         if (!parent) continue;
-        parent.left = Math.min(parent.left, child.left);
-        parent.right = Math.max(parent.right, child.right);
-        parent.top = Math.min(parent.top, child.top);
-        parent.bottom = Math.max(parent.bottom, child.bottom);
-        parent.w = parent.right - parent.left;
-        parent.h = parent.bottom - parent.top;
         const parentName = String(parent.id || parent.cls || '');
         child.mergedInto = /rail|suitenav/i.test(parentName) ? 'rail' : (
             parentName.split(/\\s+/)[0] || 'rail');
+        child.mergeBasis = 'geometry';
+        child.parentBox = paintedBox(parent);
+        child.childBox = paintedBox(child);
         child.skipIndependent = true;
     }
     const root = document.querySelector('.mc-panels, .mq-body, main, .mc-shell, .mq-shell')
@@ -537,8 +781,14 @@ _CLEARANCE_JS = """async (el, arg) => {
                 } else if (isTopChrome(f)) {
                     const docTop = t.top + reached;
                     excuseFields(rec, docTop, box.bottom);
-                    rec.reason = name + '_partially_covered';
-                    scrollUnder.push(rec);
+                    if (rec.exposedAtScrollY < 0
+                            || rec.exposedAtScrollY > maxScrollAtCheck) {
+                        rec.reason = 'top-chrome-partial-cover-unexposable';
+                        hits.push(rec);
+                    } else {
+                        rec.reason = name + '_partially_covered';
+                        scrollUnder.push(rec);
+                    }
                 } else {
                     rec.reason = 'intersect';
                     hits.push(rec);
@@ -556,22 +806,36 @@ _CLEARANCE_JS = """async (el, arg) => {
         '.mc-arrival, .mc-watch, .mc-primer, .mq-callout, .mc-callout'))
         .map(elBox);
     let analystHits = [];
-    /* R1(b): a chip whose box sits inside enumerated top chrome (the
-       sticky rail) is rail material even when the chip itself is
-       position:static. Do not score it as an independent overlay. */
+    /* B1/E3: merge ONLY on geometric containment. A DOM-child chip
+       that is not inside the rail's painted box is not chrome. */
     let analystMergedInto = null;
-    if (analystBox) {
-        const parent = occluders.find((f) => !f.skipIndependent && isTopChrome(f)
-            && (f.el.contains(analyst) || boxInside(analystBox, f)));
-        if (parent) {
-            analystMergedInto = /rail|suitenav/i.test(String(parent.id || parent.cls || ''))
-                ? 'rail' : (occluderName(parent) || 'rail');
-            parent.mergedChildren = (parent.mergedChildren || []).concat(['analyst']);
+    let mergeBasis = null;
+    let railBox = null;
+    let analystOffViewport = false;
+    const railHost = analyst
+        ? analyst.closest('.mq-suitenav, .mc-rail, .mq-suitenav-rail')
+        : null;
+    const railOcc = occluders.find((f) => !f.skipIndependent && isTopChrome(f)
+        && /rail|suitenav/i.test(String(f.id || f.cls || '')));
+    const railPainted = railOcc || (railHost ? {el: railHost, ...elBox(railHost)} : null);
+    if (analystBox && railPainted && boxInside(analystBox, railPainted)) {
+        analystMergedInto = 'rail';
+        mergeBasis = 'geometry';
+        railBox = paintedBox(railPainted);
+        if (railOcc) {
+            railOcc.mergedChildren = (railOcc.mergedChildren || []).concat(['analyst']);
         }
-    }
-    const analystMerged = Boolean(analystMergedInto) || occluders.some(
-        (f) => f.el === analyst && f.skipIndependent);
-    if (analystView && !analystMerged) {
+    } else if (analystBox && railHost) {
+        const paintsAway = Boolean(analystView)
+            && railPainted && !overlap(analystView, railPainted);
+        if (paintsAway) {
+            throw new Error(
+                'analyst-merge-dom-not-geometry: .mc-analyst is a DOM '
+                + 'descendant of the rail but its painted box is not inside '
+                + 'the rail painted box');
+        }
+        analystOffViewport = true;
+    } else if (analystView) {
         const sv = stanceBox ? clipView(stanceBox) : null;
         if (sv && overlap(sv, analystView)) analystHits.push({kind: 'stance'});
         for (const c of callouts) {
@@ -591,8 +855,22 @@ _CLEARANCE_JS = """async (el, arg) => {
     }
     const fab = document.getElementById('mmb-boot');
     const fabCs = fab ? getComputedStyle(fab) : null;
-    const fabBox = fab && fabCs && fabCs.position === 'fixed'
-        && fabCs.display !== 'none' ? elBox(fab) : null;
+    const mmbBootInDom = Boolean(fab);
+    const mmbBootVisible = Boolean(
+        fab && fabCs && fabCs.display !== 'none' && fabCs.visibility !== 'hidden');
+    const mmbBootBox = (mmbBootVisible && fab) ? elBox(fab) : null;
+    const fabBox = (mmbBootBox && fabCs && fabCs.position === 'fixed')
+        ? mmbBootBox : null;
+    let contentRight = 0;
+    for (const t of texts) contentRight = Math.max(contentRight, t.right);
+    if (stanceBox) contentRight = Math.max(contentRight, stanceBox.right);
+    for (const c of callouts) contentRight = Math.max(contentRight, c.right);
+    const fabGutterPx = fabBox ? (fabBox.left - contentRight) : null;
+    const fabRightMarginPx = fabBox ? (vw - fabBox.right) : null;
+    let fabAbsentReason = null;
+    if (!mmbBootInDom) fabAbsentReason = 'not-in-dom';
+    else if (!mmbBootVisible) fabAbsentReason = 'display-none';
+    else if (!fabBox) fabAbsentReason = 'not-fixed';
     const atMax = position >= 1;
     const width = window.innerWidth;
     let reason = '';
@@ -618,11 +896,21 @@ _CLEARANCE_JS = """async (el, arg) => {
         intersections: hits,
         scroll_under_top_chrome: scrollUnder,
         analyst: analystBox,
+        analystBox,
         analyst_hits: analystHits,
         analystMergedInto,
+        mergeBasis,
+        railBox,
+        analystOffViewport,
         stance: stanceBox,
         fab: fabBox,
         mmbBootDisplay: fabCs ? fabCs.display : 'missing',
+        mmbBootInDom,
+        mmbBootVisible,
+        mmbBootBox,
+        fabGutterPx,
+        fabRightMarginPx,
+        fabAbsentReason,
         analyst_fixed: !!(analyst && getComputedStyle(analyst).position === 'fixed'),
         reason,
         ok,
@@ -653,7 +941,75 @@ def classify_top_chrome_cover(*, doc_top: float, ov_bottom: float,
     return {"hit": False, "reason": "fully_covered", **payload}
 
 
-def _assert_excused_full_covers(row: Mapping[str, Any]) -> None:
+def box_inside(inner: Mapping[str, Any], outer: Mapping[str, Any],
+               *, tol: float = 1.0) -> bool:
+    """Painted-box containment, tolerance ≤ 1 css px (B1)."""
+    return (
+        float(inner["top"]) >= float(outer["top"]) - tol
+        and float(inner["bottom"]) <= float(outer["bottom"]) + tol
+        and float(inner["left"]) >= float(outer["left"]) - tol
+        and float(inner["right"]) <= float(outer["right"]) + tol
+    )
+
+
+def decide_analyst_merge(analyst_box: Mapping[str, Any],
+                         rail_box: Mapping[str, Any], *,
+                         dom_descendant: bool,
+                         analyst_in_viewport: bool,
+                         overlaps_rail: bool = False) -> dict[str, Any]:
+    """Geometry-only merge. A painted DOM-child outside the rail RAISES."""
+    if box_inside(analyst_box, rail_box):
+        return {
+            "analystMergedInto": "rail",
+            "mergeBasis": "geometry",
+            "analystOffViewport": False,
+            "analystBox": dict(analyst_box),
+            "railBox": dict(rail_box),
+        }
+    if dom_descendant and analyst_in_viewport and not overlaps_rail:
+        raise RuntimeError(
+            "analyst-merge-dom-not-geometry: chip is a DOM descendant "
+            "of the rail but not inside its painted box")
+    return {
+        "analystMergedInto": None,
+        "mergeBasis": None,
+        "analystOffViewport": True,
+        "analystBox": dict(analyst_box),
+        "railBox": dict(rail_box),
+    }
+
+
+def assert_merged_geometry(row: Mapping[str, Any]) -> None:
+    """i2_ok is only claimable when every merge recomputes from boxes."""
+    if row.get("analystMergedInto"):
+        if row.get("mergeBasis") != "geometry":
+            raise RuntimeError(
+                f"merged analyst missing mergeBasis=geometry: {row}")
+        analyst_box = row.get("analystBox") or row.get("analyst")
+        rail_box = row.get("railBox")
+        if not analyst_box or not rail_box:
+            raise RuntimeError(
+                f"merged analyst missing analystBox/railBox: {row}")
+        if not box_inside(analyst_box, rail_box):
+            raise RuntimeError(
+                f"analyst merge is not geometric: {analyst_box} vs {rail_box}")
+    for occ in row.get("occluders") or []:
+        if not occ.get("mergedInto"):
+            continue
+        if occ.get("mergeBasis") != "geometry":
+            raise RuntimeError(
+                f"merged occluder missing mergeBasis=geometry: {occ}")
+        parent = occ.get("parentBox")
+        child = occ.get("childBox") or {
+            key: occ[key] for key in ("top", "bottom", "left", "right")
+            if key in occ
+        }
+        if parent and child and not box_inside(child, parent):
+            raise RuntimeError(
+                f"occluder merge is not geometric: {child} vs {parent}")
+
+
+def _assert_excused_covers(row: Mapping[str, Any]) -> None:
     max_at = float(row.get("maxScrollAtCheck") or row.get("maxScroll") or 0)
     for rec in row.get("scroll_under_top_chrome") or []:
         reason = str(rec.get("reason") or "")
@@ -663,14 +1019,38 @@ def _assert_excused_full_covers(row: Mapping[str, Any]) -> None:
                     "maxScrollAtCheck"):
             if key not in rec:
                 raise RuntimeError(f"excused {reason} missing {key}: {rec}")
+        exposed = float(rec["exposedAtScrollY"])
+        rec_max = float(rec.get("maxScrollAtCheck") or max_at)
+        if exposed < 0 or exposed > rec_max:
+            raise RuntimeError(
+                f"covered row out of bound: exposedAtScrollY={exposed} "
+                f"maxScrollAtCheck={rec_max} rec={rec}")
         result = classify_top_chrome_cover(
             doc_top=float(rec["docTop"]),
             ov_bottom=float(rec["ovBottom"]),
-            max_scroll_at_check=float(rec.get("maxScrollAtCheck") or max_at),
+            max_scroll_at_check=rec_max,
         )
         if reason.endswith("_fully_covered") and result["hit"]:
             raise RuntimeError(
                 f"excused full cover is not exposable: {rec} -> {result}")
+
+
+def synthetic_clearance_receipts() -> dict[str, Any]:
+    """Positive controls: the classifier can fail (e2)."""
+    full = classify_top_chrome_cover(
+        doc_top=10.0, ov_bottom=80.0, max_scroll_at_check=800.0)
+    partial = {
+        "reason": "rail_partially_covered",
+        "docTop": 200.0,
+        "ovBottom": 60.0,
+        "exposedAtScrollY": 140.0,
+        "maxScrollAtCheck": 800.0,
+        "hit": False,
+    }
+    return {
+        "full_cover_unexposable": full,
+        "partial_bounded": partial,
+    }
 
 
 def clearance_probe_ok(row: Mapping[str, Any] | None) -> bool:
@@ -693,12 +1073,27 @@ def clearance_probe_ok(row: Mapping[str, Any] | None) -> bool:
         return False
     if row.get("at_max") and not row.get("maxScrollMatched"):
         return False
+    width = float(row.get("width") or 0)
+    if width >= 769:
+        has_fab = bool(
+            row.get("mmbBootInDom") and row.get("mmbBootVisible")
+            and row.get("mmbBootBox"))
+        if not has_fab and not row.get("fabAbsentReason"):
+            return False
+        if has_fab:
+            gutter = row.get("fabGutterPx")
+            margin = row.get("fabRightMarginPx")
+            if gutter is not None and float(gutter) < 0:
+                return False
+            if margin is not None and float(margin) < 0:
+                return False
     return bool(row.get("ok")) and not row.get("reason")
 
 
 def _clearance_probe(locator, *, position: float) -> dict[str, Any]:
     row = locator.evaluate(_CLEARANCE_JS, {"position": position})
-    _assert_excused_full_covers(row)
+    _assert_excused_covers(row)
+    assert_merged_geometry(row)
     row["ok"] = clearance_probe_ok(row)
     return row
 
@@ -771,38 +1166,126 @@ WORKSPACE_RAIL_VIEWPORT_JS = """() => {
 }"""
 
 
+E5_APPLICABILITY_JS = """() => ({
+  fragments: Boolean(
+    document.querySelector('#mc-shell[data-mc-fragments], [data-mc-fragments]')),
+  template: Boolean(document.querySelector('template[data-mc-empty-e5]')),
+})"""
+
+
 def e5_applicability_for_html(html: str) -> dict[str, Any]:
-    """R2: E5 is a page state only when the page can enter it."""
+    """A page is E5-bearing iff fragments && template. Missing html RAISES."""
+    if not html:
+        raise RuntimeError("e5_applicability_for_html: missing html")
     return {
         "fragments": "data-mc-fragments" in html,
         "template": "data-mc-empty-e5" in html,
     }
 
 
-def _chip_material_probe(target) -> dict[str, Any]:
-    return target.evaluate(_CHIP_MATERIAL_JS)
+def e5_applicability_for_site(path: Path) -> dict[str, Any]:
+    if not path.is_file():
+        raise RuntimeError(f"missing site file: {path}")
+    return e5_applicability_for_html(path.read_text(encoding="utf-8"))
 
 
-def _run_chip_opens_chat(host) -> dict[str, Any]:
+def e5_applicability_from_dom(page) -> dict[str, Any]:
+    receipt = page.evaluate(E5_APPLICABILITY_JS)
+    if not isinstance(receipt, dict):
+        raise RuntimeError(f"E5 applicability evaluate returned {type(receipt)}")
+    return {
+        "fragments": bool(receipt.get("fragments")),
+        "template": bool(receipt.get("template")),
+    }
+
+
+def page_is_e5_bearing(receipt: Mapping[str, Any] | None) -> bool:
+    return bool(receipt and receipt.get("fragments") and receipt.get("template"))
+
+
+def _chip_material_probe(target, *, page_name: str, locale: str,
+                         width: int) -> dict[str, Any]:
+    if page_name == HUB_PAGE:
+        return {
+            "ok": True,
+            "notApplicable": "hub-chrome-scoped-off-MA2",
+            "locale": locale,
+            "width": width,
+            "page": page_name,
+        }
+    row = target.evaluate(_CHIP_MATERIAL_JS)
+    row["locale"] = locale
+    row["width"] = width
+    row["page"] = page_name
+    return row
+
+
+def _mmb_root_state(root) -> dict[str, Any]:
+    return root.evaluate(
+        """() => {
+            const el = document.getElementById('mmb-root');
+            if (!el) return {present: false, visible: false};
+            const cs = getComputedStyle(el);
+            const r = el.getBoundingClientRect();
+            return {
+                present: true,
+                visible: cs.display !== 'none' && cs.visibility !== 'hidden'
+                    && r.width > 0 && r.height > 0,
+            };
+        }"""
+    )
+
+
+def _run_chip_opens_chat(host, *, page_name: str, locale: str,
+                         width: int) -> dict[str, Any]:
+    root = host.locator("html")
+    url_before = root.evaluate("() => location.href")
+    before = _mmb_root_state(root)
     chip = host.locator("[data-mc-analyst], a.mc-analyst").first
     if chip.count() == 0:
-        return {"ok": False, "reason": "missing analyst entry"}
+        return {
+            "ok": False,
+            "reason": "missing analyst entry",
+            "page": page_name,
+            "locale": locale,
+            "width": width,
+            "mmbRootBefore": before,
+            "urlBefore": url_before,
+        }
     href = chip.get_attribute("href")
     has_attr = chip.get_attribute("data-mc-analyst") is not None
     chip.click()
-    host.locator("#mmb-root").wait_for(state="attached", timeout=30000)
-    mounted = host.locator("#mmb-root")
+    try:
+        host.locator("#mmb-root").wait_for(state="attached", timeout=8000)
+    except Exception:
+        pass
+    url_after = root.evaluate("() => location.href")
+    after = _mmb_root_state(root)
+    delta = (before != after) or (url_before != url_after)
     return {
-        "ok": mounted.count() > 0,
+        "ok": bool(delta),
         "clicked": "data-mc-analyst" if has_attr else "mc-analyst",
         "href": href,
-        "mountedId": "mmb-root" if mounted.count() > 0 else None,
+        "mountedId": "mmb-root" if after.get("present") else None,
+        "mmbRootBefore": before,
+        "mmbRootAfter": after,
+        "urlBefore": url_before,
+        "urlAfter": url_after,
+        "openedBy": "click",
+        "page": page_name,
+        "locale": locale,
+        "width": width,
     }
 
 
 def _run_e5_timeout(page, *, context) -> dict[str, Any]:
     """Stall the fragment request so the product's 8000 ms timeout clones E5."""
+    request_seen_at: float | None = None
+
     def _hold(route) -> None:
+        nonlocal request_seen_at
+        if request_seen_at is None:
+            request_seen_at = time.monotonic()
         time.sleep(9)
         try:
             route.abort()
@@ -810,24 +1293,57 @@ def _run_e5_timeout(page, *, context) -> dict[str, Any]:
             pass
 
     context.route("**/macro/fragments/**", _hold)
-    started = time.monotonic()
     page.reload(wait_until="domcontentloaded", timeout=30000)
-    page.wait_for_timeout(8500)
-    elapsed_ms = int((time.monotonic() - started) * 1000)
-    receipt = page.evaluate("""() => {
-      const fromDoc = (doc) => doc ? doc.querySelector('[data-mc-empty="e5"]') : null;
-      let clone = fromDoc(document);
-      const frame = document.querySelector('#mc-p5-frame');
-      if (!clone && frame && frame.contentDocument) {
-        clone = fromDoc(frame.contentDocument);
-      }
-      const headline = clone ? (clone.querySelector('.mc-empty-title, h3, p') || clone)
-        : null;
-      return {
-        clonePresent: Boolean(clone),
-        headline: headline ? (headline.textContent || '').trim().slice(0, 80) : '',
-      };
-    }""")
+    if request_seen_at is None:
+        request_seen_at = time.monotonic()
+    clone_seen_at: float | None = None
+    deadline = time.monotonic() + 20
+    while time.monotonic() < deadline:
+        present = page.evaluate(
+            """() => {
+              const fromDoc = (doc) => doc
+                ? doc.querySelector('[data-mc-empty="e5"]') : null;
+              let clone = fromDoc(document);
+              const frame = document.querySelector('#mc-p5-frame');
+              if (!clone && frame && frame.contentDocument) {
+                clone = fromDoc(frame.contentDocument);
+              }
+              return Boolean(clone);
+            }"""
+        )
+        if present:
+            clone_seen_at = time.monotonic()
+            break
+        page.wait_for_timeout(50)
+    if clone_seen_at is None:
+        raise RuntimeError("E5 clone never appeared")
+    request_seen_at_ms = request_seen_at * 1000
+    clone_seen_at_ms = clone_seen_at * 1000
+    elapsed_ms = clone_seen_at_ms - request_seen_at_ms
+    receipt = page.evaluate(
+        """() => {
+          const frame = document.querySelector('#mc-p5-frame');
+          const root = (frame && frame.contentDocument)
+            ? frame.contentDocument : document;
+          const clone = root.querySelector('[data-mc-empty="e5"]');
+          const title = clone
+            ? clone.querySelector('.mc-empty-title, h3') : null;
+          let headline = '';
+          if (title) {
+            const spans = [...title.querySelectorAll('.l-en, .l-zh')];
+            const vis = spans.find((s) => {
+              const cs = getComputedStyle(s);
+              return cs.display !== 'none' && cs.visibility !== 'hidden';
+            });
+            headline = vis
+              ? String(vis.innerText || '').trim()
+              : String(title.innerText || '').trim();
+          }
+          return {clonePresent: Boolean(clone), headline: headline.slice(0, 80)};
+        }"""
+    )
+    receipt["requestSeenAtMs"] = request_seen_at_ms
+    receipt["cloneSeenAtMs"] = clone_seen_at_ms
     receipt["elapsedMs"] = elapsed_ms
     receipt["ok"] = bool(receipt.get("clonePresent") and elapsed_ms >= 8000)
     return receipt
@@ -845,46 +1361,115 @@ def _require_clean_tree(*, when: str) -> dict[str, Any]:
     return {"when": when, "clean": clean, "head": head, "status": status}
 
 
-def declared_cells() -> list[str]:
-    """Shipping-state matrix: five pages × dark/light × EN/ZH × 1440/390/768.
+def _load_e5_applicability(
+        applicability: Mapping[str, Mapping[str, Any]] | None = None,
+        ) -> dict[str, dict[str, Any]]:
+    if applicability is not None:
+        return {name: dict(row) for name, row in applicability.items()}
+    return {name: e5_applicability_for_site(SITE / name) for name in FIVE_PAGES}
 
-    Desktop cells also declare a full-page twin. Force-state shots (rates
-    clip, details-open, E5, half-null, I2) are extra, not this set.
-    """
-    cells: list[str] = []
+
+def declared_cell_rows(
+        e5_applicability: Mapping[str, Mapping[str, Any]] | None = None,
+        ) -> list[dict[str, Any]]:
+    """Reader-joinable declared matrix. Every captured frame is declared."""
+    appl = _load_e5_applicability(e5_applicability)
+    cells: list[dict[str, Any]] = []
+
+    def add(filename: str, *, family: str | None = None) -> None:
+        cells.append({"file": filename, "family": family or family_for(filename)})
+
     for n, theme, locale in (
         ("01", "dark", "en"), ("02", "dark", "zh"),
         ("03", "light", "en"), ("04", "light", "zh"),
     ):
-        cells.append(f"{n}-{theme}-{locale}-1440.png")
-        cells.append(f"{n}-{theme}-{locale}-1440-full.png")
+        add(f"{n}-{theme}-{locale}-1440.png")
+        add(f"{n}-{theme}-{locale}-1440-full.png")
+    for n, theme, locale in (
+        ("05", "dark", "en"), ("06", "dark", "zh"),
+        ("07", "light", "en"), ("08", "light", "zh"),
+    ):
+        add(f"{n}-{theme}-{locale}-1440.png")
     for n, theme, locale in (
         ("09", "dark", "en"), ("10", "dark", "zh"),
         ("11", "light", "en"), ("12", "light", "zh"),
     ):
-        cells.append(f"{n}-{theme}-{locale}-390.png")
+        add(f"{n}-{theme}-{locale}-390.png")
     for n, theme, locale in (
         ("13", "dark", "en"), ("13b", "dark", "zh"),
         ("14", "light", "en"), ("14b", "light", "zh"),
     ):
-        cells.append(f"{n}-{theme}-{locale}-768.png")
+        add(f"{n}-{theme}-{locale}-768.png")
+    for n, theme, locale in (("15", "dark", "en"), ("16", "light", "zh")):
+        add(f"{n}-{theme}-{locale}-1440.png")
+    for n, theme, locale in (
+        ("17", "dark", "en"), ("17b", "light", "en"),
+        ("17c", "dark", "zh"), ("17d", "light", "zh"),
+    ):
+        add(f"{n}-{theme}-{locale}-1440.png")
+    for page_name in FIVE_PAGES:
+        slug = page_name.replace(".html", "")
+        for theme, locale in (
+            ("dark", "en"), ("dark", "zh"),
+            ("light", "en"), ("light", "zh"),
+        ):
+            for width in (390, 768):
+                add(f"i2-{slug}-{theme}-{locale}-{width}.png")
+    for name, theme, locale, _width in (
+        ("18-dark-en-1440.png", "dark", "en", 1440),
+        ("18b-dark-zh-1440.png", "dark", "zh", 1440),
+        ("19-light-en-1440.png", "light", "en", 1440),
+        ("19b-light-zh-1440.png", "light", "zh", 1440),
+        ("half-dark-en-390.png", "dark", "en", 390),
+        ("half-dark-zh-390.png", "dark", "zh", 390),
+        ("half-light-en-390.png", "light", "en", 390),
+        ("half-light-zh-390.png", "light", "zh", 390),
+    ):
+        add(name)
     for page_name in WORKSPACE_PAGES:
         slug = page_name.replace(".html", "")
         for theme, locale in (
             ("dark", "en"), ("dark", "zh"),
             ("light", "en"), ("light", "zh"),
         ):
-            cells.append(f"ws-{slug}-closed-{theme}-{locale}-1440.png")
-            cells.append(f"ws-{slug}-{theme}-{locale}-390.png")
-            cells.append(f"ws-{slug}-{theme}-{locale}-768.png")
-    # Hub can enter E5 (fragment timeout). Workspace pages cannot.
-    for theme, locale in (
-        ("dark", "en"), ("dark", "zh"),
-        ("light", "en"), ("light", "zh"),
-    ):
-        for width in (1440, 390, 768):
-            cells.append(f"e5-{theme}-{locale}-{width}.png")
+            for mode in ("closed", "open"):
+                if (page_name, mode, theme, locale) in _SKIP_WS_DUP:
+                    continue
+                add(f"ws-{slug}-{mode}-{theme}-{locale}-1440.png")
+            add(f"ws-{slug}-{theme}-{locale}-390.png")
+            add(f"ws-{slug}-{theme}-{locale}-390-open.png")
+            add(f"ws-{slug}-{theme}-{locale}-768.png")
+            for width in CHIP_MATERIAL_WIDTHS:
+                add(f"chipmat-{slug}-{theme}-{locale}-{width}.png")
+    for page_name, receipt in appl.items():
+        if not page_is_e5_bearing(receipt):
+            continue
+        slug = page_name.replace(".html", "")
+        for theme, locale in (
+            ("dark", "en"), ("dark", "zh"),
+            ("light", "en"), ("light", "zh"),
+        ):
+            for width in (1440, 390, 768):
+                if page_name == HUB_PAGE:
+                    add(f"e5-{theme}-{locale}-{width}.png")
+                else:
+                    add(f"e5-{slug}-{theme}-{locale}-{width}.png")
     return cells
+
+
+def declared_cells(
+        e5_applicability: Mapping[str, Mapping[str, Any]] | None = None,
+        ) -> list[str]:
+    return [row["file"] for row in declared_cell_rows(e5_applicability)]
+
+
+def declared_families(
+        e5_applicability: Mapping[str, Mapping[str, Any]] | None = None,
+        ) -> dict[str, list[str]]:
+    families: dict[str, list[str]] = {}
+    for row in declared_cell_rows(e5_applicability):
+        families.setdefault(row["family"], []).append(row["file"])
+    return families
 
 
 def _fallback_counts(html: str) -> dict[str, int]:
@@ -924,10 +1509,47 @@ def _i2_probe(locator) -> dict[str, Any]:
     for position in (0.0, 0.5, 1.0):
         row = _clearance_probe(locator, position=position)
         samples.append(row)
+    merged_ok = True
+    for row in samples:
+        try:
+            assert_merged_geometry(row)
+        except RuntimeError:
+            merged_ok = False
+            break
+        if row.get("analystMergedInto") and row.get("mergeBasis") != "geometry":
+            merged_ok = False
     return {
-        "ok": bool(samples) and all(clearance_probe_ok(row) for row in samples),
+        "ok": bool(samples) and merged_ok
+        and all(clearance_probe_ok(row) for row in samples),
         "samples": samples,
     }
+
+
+_SCROLL_RAIL_CHIP_JS = """() => {
+  const rail = document.querySelector('.mq-suitenav-rail, .mq-suitenav');
+  const chip = document.querySelector('.mc-analyst');
+  const item = chip && chip.closest('li');
+  const prev = (item && item.previousElementSibling)
+    ? item.previousElementSibling.querySelector(
+        '.mq-suitenav-pill, .mc-rail-link')
+    : document.querySelector('.mq-suitenav-pill:not(.mc-analyst)');
+  if (!rail || !chip || !prev) {
+    return {ok: false, scrollLeft: rail ? rail.scrollLeft : 0,
+            reason: 'missing rail/chip/pill'};
+  }
+  const railR = rail.getBoundingClientRect();
+  const chipR = chip.getBoundingClientRect();
+  const prevR = prev.getBoundingClientRect();
+  let left = Math.min(prevR.left, chipR.left);
+  let right = Math.max(prevR.right, chipR.right);
+  if (left < railR.left + 1) {
+    rail.scrollLeft += (left - railR.left) - 8;
+  }
+  if (right > railR.right - 1) {
+    rail.scrollLeft += (right - railR.right) + 8;
+  }
+  return {ok: true, scrollLeft: rail.scrollLeft};
+}"""
 
 
 def main() -> int:
@@ -948,7 +1570,8 @@ def main() -> int:
 
     states: list[dict[str, Any]] = []
     gaps: list[str] = []
-    FIVE_PAGES = ("macro_monetary.html",) + WORKSPACE_PAGES
+    for stale in EVIDENCE.glob("*.png"):
+        stale.unlink()
     fallback_probes: dict[str, Any] = {}
     for page_name in FIVE_PAGES:
         site_path = SITE / page_name
@@ -1145,7 +1768,7 @@ def main() -> int:
             # B2 clearance at 390 and 768 × dark/light × EN/ZH on all five pages
             clearance_ok = True
             i2_ok = True
-            clear_pages = ("macro_monetary.html",) + WORKSPACE_PAGES
+            clear_pages = FIVE_PAGES
             for page_name in clear_pages:
                 for width in (390, 768, 1440):
                     for theme, locale in (
@@ -1183,31 +1806,93 @@ def main() -> int:
                             "page": page_name,
                         }
                         probes[key] = row
-                        if width == 1440:
-                            probes[f"clearance_1440_{slug}_{theme}_{locale}"] = row
                         clearance_ok = clearance_ok and row["ok"]
                         i2_ok = i2_ok and bool(i2.get("ok"))
                         host = frame.locator("html") if frame is not None else page
-                        probes[f"chip_material_{slug}_{theme}_{width}"] = (
-                            _chip_material_probe(host))
+                        mat_key = f"chip_material_{slug}_{theme}_{locale}_{width}"
+                        probes[mat_key] = _chip_material_probe(
+                            host, page_name=page_name, locale=locale,
+                            width=width)
+                        if page_name != HUB_PAGE:
+                            host.evaluate("() => window.scrollTo(0, 0)")
+                            rail_scroll = host.evaluate(_SCROLL_RAIL_CHIP_JS)
+                            probes[mat_key]["railScrollLeft"] = rail_scroll.get(
+                                "scrollLeft")
+                            chipmat_name = (
+                                f"chipmat-{slug}-{theme}-{locale}-{width}.png")
+                            print(f"capture {chipmat_name}", flush=True)
+                            if frame is not None:
+                                nav_loc = page.frame_locator(
+                                    "#mc-p5-frame"
+                                ).locator(".mq-suitenav-rail").first
+                            else:
+                                nav_loc = page.locator(
+                                    ".mq-suitenav-rail").first
+                            info = _shot_chipmat(
+                                EVIDENCE / chipmat_name, page, nav_loc,
+                                selector=".mq-suitenav-rail",
+                                locale=locale)
+                            dest_states = ws_states[page_name]
+                            dest_states.append(_state(
+                                chipmat_name, theme, locale,
+                                "desktop" if width == 1440 else (
+                                    "mobile" if width == 390 else "tablet"),
+                                info, viewport_width=width,
+                                verified_how=(
+                                    f"{page_name} chip+pill after rail "
+                                    f"scrollLeft={rail_scroll.get('scrollLeft')}"),
+                                crop=True, selector=".mq-suitenav-rail",
+                                force_state="chipmat",
+                                family="chip_material",
+                            ))
                         if width != 1440:
                             i2_name = f"i2-{slug}-{theme}-{locale}-{width}.png"
                             print(f"capture {i2_name}", flush=True)
+                            i2_host = (
+                                page.frame_locator("#mc-p5-frame").locator("html")
+                                if frame is not None else page.locator("html"))
+                            i2_prep = i2_host.evaluate(_PREPARE_I2_JS)
+                            page.wait_for_timeout(80)
                             info = _shot(
                                 EVIDENCE / i2_name, page,
-                                page.locator("#mc-p5-frame"),
-                                selector="#mc-p5-frame", locale=locale)
+                                page.locator("#mc-p5-frame") if frame is not None
+                                else page.locator("html"),
+                                selector="#mc-p5-frame" if frame is not None
+                                else "html", locale=locale)
                             dest_states = states if page_name == "macro_monetary.html" else ws_states[page_name]
                             dest_states.append(_state(
                                 i2_name, theme, locale,
                                 "mobile" if width == 390 else "tablet", info,
                                 viewport_width=width,
-                                verified_how=f"{page_name} {width} iframe; clearance at 0 / 50% / max",
-                                crop=True, selector="#mc-p5-frame",
+                                verified_how=(
+                                    f"{page_name} {width} iframe; clearance "
+                                    f"scrollY={i2_prep.get('scrollY')} "
+                                    f"max={i2_prep.get('max')} "
+                                    f"detailsOpen={i2_prep.get('opened')}"),
+                                crop=True,
+                                selector="#mc-p5-frame" if frame is not None
+                                else "html",
                                 force_state="clearance_i2",
                             ))
                         ctx.close()
-            probes["i2_ok"] = bool(i2_ok and clearance_ok)
+            merged_ok = True
+            for probe_key, probe_row in probes.items():
+                if not str(probe_key).startswith("clear_"):
+                    continue
+                if not isinstance(probe_row, dict):
+                    continue
+                for station in (probe_row.get("boot"), probe_row.get("mid"),
+                                probe_row.get("max")):
+                    if not isinstance(station, dict):
+                        continue
+                    try:
+                        assert_merged_geometry(station)
+                    except RuntimeError:
+                        merged_ok = False
+                    if (station.get("analystMergedInto")
+                            and station.get("mergeBasis") != "geometry"):
+                        merged_ok = False
+            probes["i2_ok"] = bool(i2_ok and clearance_ok and merged_ok)
 
             # ZH + EN chip-opens-chat at 390/768 on the five pages
             for page_name in clear_pages:
@@ -1226,59 +1911,79 @@ def main() -> int:
                         host = frame
                         host.locator(".mc-analyst").first.wait_for(timeout=15000)
                         probes[key] = _run_chip_opens_chat(
-                            page.frame_locator("#mc-p5-frame"))
+                            page.frame_locator("#mc-p5-frame"),
+                            page_name=page_name, locale=locale, width=width)
                         ctx.close()
 
-            # R2: E5 only on pages that can enter it. Workspace pages
-            # carry neither data-mc-fragments nor template[data-mc-empty-e5]
-            # — they are not declared, not photographed, not gapped.
-            probes["e5_applicability"] = {
-                name: e5_applicability_for_html(
-                    (SITE / name).read_text(encoding="utf-8")
-                    if (SITE / name).is_file() else "")
-                for name in clear_pages
-            }
-            for theme, locale in (
-                ("dark", "en"), ("dark", "zh"),
-                ("light", "en"), ("light", "zh"),
-            ):
-                for width, viewport in (
-                    (1440, "desktop"), (390, "mobile"), (768, "tablet"),
+            # R2 / M2: E5 cells come FROM e5_applicability (DOM).
+            e5_applicability: dict[str, dict[str, Any]] = {}
+            for page_name in clear_pages:
+                path = SITE / page_name
+                if not path.is_file():
+                    raise RuntimeError(f"missing site file: {path}")
+                ctx, page, _ = _open(
+                    browser=browser, origin=origin,
+                    path=f"/{page_name}", theme="dark", locale="en",
+                    width=1440, height=900)
+                page.wait_for_selector("body", timeout=15000)
+                e5_applicability[page_name] = e5_applicability_from_dom(page)
+                ctx.close()
+            probes["e5_applicability"] = e5_applicability
+            for page_name, receipt in e5_applicability.items():
+                if not page_is_e5_bearing(receipt):
+                    continue
+                slug = page_name.replace(".html", "")
+                hash_path = "#rates" if page_name == HUB_PAGE else ""
+                for theme, locale in (
+                    ("dark", "en"), ("dark", "zh"),
+                    ("light", "en"), ("light", "zh"),
                 ):
-                    key = f"e5_timeout_macro_monetary_{theme}_{locale}_{width}"
-                    print(f"probe {key}", flush=True)
-                    if width == 1440:
-                        ctx, page, _ = _open(
-                            browser=browser, origin=origin,
-                            path="/macro_monetary.html#rates",
-                            theme=theme, locale=locale,
-                            width=1440, height=900)
-                    else:
-                        ctx, page, _frame = _open(
-                            browser=browser, origin=origin,
-                            path="/macro_monetary.html#rates",
-                            theme=theme, locale=locale,
-                            width=1440, height=900, iframe_width=width)
-                    probes[key] = _run_e5_timeout(page, context=ctx)
-                    if probes[key].get("ok"):
-                        shot = f"e5-{theme}-{locale}-{width}.png"
+                    for width, viewport in (
+                        (1440, "desktop"), (390, "mobile"), (768, "tablet"),
+                    ):
+                        key = f"e5_timeout_{slug}_{theme}_{locale}_{width}"
+                        print(f"probe {key}", flush=True)
                         if width == 1440:
-                            info = _viewport_shot(
-                                EVIDENCE / shot, page, width=1440, height=900)
+                            ctx, page, _ = _open(
+                                browser=browser, origin=origin,
+                                path=f"/{page_name}{hash_path}",
+                                theme=theme, locale=locale,
+                                width=1440, height=900)
                         else:
-                            info = _shot(
-                                EVIDENCE / shot, page,
-                                page.locator("#mc-p5-frame"),
-                                selector="#mc-p5-frame", locale=locale)
-                        states.append(_state(
-                            shot, theme, locale, viewport, info,
-                            viewport_width=width, viewport_height=900,
-                            verified_how="E5 cloned after stalled fragment ≥8000ms",
-                            force_state="empty-e5",
-                            crop=width != 1440,
-                            selector="#mc-p5-frame" if width != 1440 else None,
-                        ))
-                    ctx.close()
+                            ctx, page, _frame = _open(
+                                browser=browser, origin=origin,
+                                path=f"/{page_name}{hash_path}",
+                                theme=theme, locale=locale,
+                                width=1440, height=900, iframe_width=width)
+                        probes[key] = _run_e5_timeout(page, context=ctx)
+                        if probes[key].get("ok"):
+                            shot = (
+                                f"e5-{theme}-{locale}-{width}.png"
+                                if page_name == HUB_PAGE
+                                else f"e5-{slug}-{theme}-{locale}-{width}.png")
+                            if width == 1440:
+                                info = _viewport_shot(
+                                    EVIDENCE / shot, page,
+                                    width=1440, height=900)
+                            else:
+                                info = _shot(
+                                    EVIDENCE / shot, page,
+                                    page.locator("#mc-p5-frame"),
+                                    selector="#mc-p5-frame", locale=locale)
+                            dest = (
+                                states if page_name == HUB_PAGE
+                                else ws_states[page_name])
+                            dest.append(_state(
+                                shot, theme, locale, viewport, info,
+                                viewport_width=width,
+                                verified_how="E5 cloned after stalled fragment ≥8000ms",
+                                force_state="empty-e5",
+                                crop=width != 1440,
+                                selector=(
+                                    "#mc-p5-frame" if width != 1440 else None),
+                                family="e5",
+                            ))
+                        ctx.close()
 
             # Rail-viewport: hub uses P3's parsed-mask probe; workspace
             # measures the suite-nav rail / tab strip at 390 and 768.
@@ -1563,6 +2268,7 @@ def main() -> int:
             _open_ribbon_details(page)
             probes["copy_workspace"] = _copy_probe(page, _relocated_needles("en"))
             ctx.close()
+            probes["synthetic_clearance"] = synthetic_clearance_receipts()
         probes["gaps"] = list(gaps)
 
         def _page_entry(page_id: str, page_states: list[dict[str, Any]]) -> dict[str, Any]:
@@ -1597,7 +2303,16 @@ def main() -> int:
         ]
         dups = {sha for sha in shas if shas.count(sha) > 1}
         if dups:
-            raise RuntimeError(f"manifest repeats sha256: {sorted(dups)}")
+            grouped = {
+                sha: sorted({
+                    st["file"]
+                    for page in pages_out
+                    for st in page["states"]
+                    if st.get("sha256") == sha
+                })
+                for sha in sorted(dups)
+            }
+            raise RuntimeError(f"manifest repeats sha256: {grouped}")
 
         force_states = sorted({
             str(st.get("force_state"))
@@ -1629,16 +2344,34 @@ def main() -> int:
             for st in page["states"]
             if st.get("captured") and st.get("file")
         }
-        declared = declared_cells()
+        appl = probes.get("e5_applicability") or {}
+        declared_rows = declared_cell_rows(appl)
+        declared = [row["file"] for row in declared_rows]
+        for leftover in EVIDENCE.glob("*.png"):
+            if leftover.name not in captured_files:
+                leftover.unlink()
+        tree_pngs = {path.name for path in EVIDENCE.glob("*.png")}
+        orphans = sorted(tree_pngs - captured_files)
+        if orphans:
+            raise RuntimeError(
+                f"evidence dir has PNGs not produced by this capture: {orphans}")
+        extras = sorted(captured_files - set(declared))
+        if extras:
+            raise RuntimeError(f"captured minus declared: {extras}")
         computed_gaps = sorted(set(declared) - captured_files)
         probes["declared_cells"] = declared
+        probes["declared_rows"] = declared_rows
+        probes["declared_families"] = declared_families(appl)
         probes["captured_cells"] = sorted(captured_files)
+        probes["tree_pngs"] = sorted(tree_pngs)
         probes["gaps"] = [
             {"file": name, "reason": "declared minus captured"}
             for name in computed_gaps
         ] + [{"file": g, "reason": "recorded"} for g in gaps]
         MANIFEST.write_text(json.dumps({
             "schema": "mastermind.p0_evidence.v2",
+            "declared": probes["declared_families"],
+            "declared_cells": declared_rows,
             "axes": {
                 "access": ["anonymous"],
                 "force_states": force_states,

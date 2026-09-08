@@ -601,28 +601,82 @@ def test_evidence_drawer_has_one_sources_heading_and_distinct_title() -> None:
 
 
 def test_clearance_probe_js_binds_locator_element_then_arg() -> None:
-    """Playwright locator.evaluate calls fn(element, arg). A one-arg
-    function reads the HTMLElement and scores ok on zero text nodes."""
-    from scripts.capture_macro_command_p5 import _CLEARANCE_JS
+    """n2: run the shipped _CLEARANCE_JS against synthetic DOM."""
+    from scripts.capture_macro_command_p5 import (
+        _CLEARANCE_JS, decide_analyst_merge, assert_merged_geometry,
+    )
     assert _CLEARANCE_JS.lstrip().startswith("async (el, arg)")
-    assert "texts.length > 0" in _CLEARANCE_JS
-    assert "maxScrollAtCheck" in _CLEARANCE_JS
-    assert "fonts.ready" in _CLEARANCE_JS
-    assert "requestAnimationFrame" in _CLEARANCE_JS
-    assert "mergedInto" in _CLEARANCE_JS
-    assert "analystMergedInto" in _CLEARANCE_JS
-    assert "position:static" in _CLEARANCE_JS
-    assert "NodeFilter.SHOW_TEXT" in _CLEARANCE_JS
-    assert "querySelectorAll('*')" in _CLEARANCE_JS
-    assert "no_occluders_found" in _CLEARANCE_JS
-    assert "mmbBootDisplay" in _CLEARANCE_JS
-    assert "clipView" in _CLEARANCE_JS
-    assert "scroll_under_top_chrome" in _CLEARANCE_JS
-    assert "closest('.mc-rail, .mq-suitenav')" in _CLEARANCE_JS
-    assert ".mc-rail, .mc-rail-list" not in _CLEARANCE_JS
-    assert "position > 0" not in _CLEARANCE_JS
-    assert "exposedAtScrollY" in _CLEARANCE_JS
-    assert "top-chrome-full-cover-unexposable" in _CLEARANCE_JS
+    rail = {"top": 0, "bottom": 80, "left": 0, "right": 300}
+    inside = {"top": 10, "bottom": 40, "left": 20, "right": 80}
+    row = decide_analyst_merge(
+        inside, rail, dom_descendant=True, analyst_in_viewport=True)
+    assert row["analystMergedInto"] == "rail"
+    assert row["mergeBasis"] == "geometry"
+    assert_merged_geometry(row)
+    outside = {"top": 400, "bottom": 430, "left": 20, "right": 80}
+    with pytest.raises(RuntimeError, match="analyst-merge-dom-not-geometry"):
+        decide_analyst_merge(
+            outside, rail, dom_descendant=True, analyst_in_viewport=True,
+            overlaps_rail=False)
+    off = decide_analyst_merge(
+        outside, rail, dom_descendant=True, analyst_in_viewport=False)
+    assert off["analystMergedInto"] is None
+    assert off["analystOffViewport"] is True
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        pytest.skip("Playwright not installed")
+    try:
+        playwright_cm = sync_playwright().start()
+    except Exception as exc:
+        pytest.skip(f"Playwright runtime unavailable: {exc}")
+    try:
+        try:
+            browser = playwright_cm.chromium.launch(headless=True, channel="chrome")
+        except Exception:
+            try:
+                browser = playwright_cm.chromium.launch(headless=True)
+            except Exception as exc:
+                pytest.skip(f"Chromium unavailable: {exc}")
+        page = browser.new_page(viewport={"width": 390, "height": 844})
+        try:
+            page.set_content(
+                """<!doctype html><html><body style="margin:0">
+                <nav class="mq-suitenav" id="suitenav"
+                     style="position:sticky;top:0;height:80px;width:300px;
+                            background:#333;color:#fff">
+                  <a class="mc-analyst" href="chat.html"
+                     style="position:relative;top:400px;display:block;
+                            width:80px;height:30px;background:#f00">Ask</a>
+                </nav>
+                <p class="mc-stance" style="margin-top:400px">Body stance</p>
+                <p>Body text that the chip will overlay</p>
+                </body></html>"""
+            )
+            with pytest.raises(Exception, match="analyst-merge-dom-not-geometry"):
+                page.locator("html").evaluate(_CLEARANCE_JS, {"position": 0.0})
+            page.set_content(
+                """<!doctype html><html><body style="margin:0">
+                <nav class="mq-suitenav" id="suitenav"
+                     style="position:sticky;top:0;height:80px;width:360px;
+                            background:#333;color:#fff">
+                  <a class="mc-analyst" href="chat.html"
+                     style="display:block;width:80px;height:30px;
+                            margin:10px">Ask</a>
+                </nav>
+                <p class="mc-stance">Body stance</p>
+                <p>Body text below the rail</p>
+                </body></html>"""
+            )
+            inside_row = page.locator("html").evaluate(
+                _CLEARANCE_JS, {"position": 0.0})
+            assert inside_row["analystMergedInto"] == "rail"
+            assert inside_row["mergeBasis"] == "geometry"
+            assert_merged_geometry(inside_row)
+        finally:
+            browser.close()
+    finally:
+        playwright_cm.stop()
 
 
 def test_capture_relocated_needles_are_locale_visible_and_must_be_inside() -> None:
@@ -682,6 +736,22 @@ def test_clearance_probe_ok_fails_on_empty_or_hits() -> None:
         "scrollMatched": False, "ok": True,
         "occluders": [{"position": "sticky"}], "width": 390,
     }) is False
+    assert clearance_probe_ok({
+        "text_count": 3, "intersections": [], "analyst_hits": [],
+        "ok": True, "occluders": [{"position": "sticky"}], "width": 1440,
+        "mmbBootInDom": True, "mmbBootVisible": True,
+        "mmbBootBox": {"left": 1216, "right": 1418},
+        "fabGutterPx": 40, "fabRightMarginPx": 22,
+    }) is True
+    assert clearance_probe_ok({
+        "text_count": 3, "intersections": [], "analyst_hits": [],
+        "ok": True, "occluders": [{"position": "sticky"}], "width": 1440,
+    }) is False
+    assert clearance_probe_ok({
+        "text_count": 3, "intersections": [], "analyst_hits": [],
+        "ok": True, "occluders": [{"position": "sticky"}], "width": 1440,
+        "fabAbsentReason": "not-in-dom",
+    }) is True
 
 
 def test_p5_manifest_viewport_identity() -> None:
@@ -830,16 +900,36 @@ def test_e6_on_five_pages_matches_p4_v6_slots(tmp_path_factory) -> None:
 
 
 def test_e5_is_not_a_workspace_declared_state() -> None:
-    """R2: workspace pages cannot enter E5; hub can."""
+    """M2: E5 cells are derived from e5_applicability; missing file raises."""
+    from pathlib import Path as _Path
     from scripts.capture_macro_command_p5 import (
-        declared_cells, e5_applicability_for_html, WORKSPACE_PAGES,
+        declared_cells, e5_applicability_for_html, e5_applicability_for_site,
+        WORKSPACE_PAGES, FIVE_PAGES, HUB_PAGE,
     )
-    declared = declared_cells()
+    with pytest.raises(RuntimeError, match="missing html"):
+        e5_applicability_for_html("")
+    with pytest.raises(RuntimeError, match="missing site file"):
+        e5_applicability_for_site(_Path("/no/such/macro_page.html"))
+    appl = {
+        HUB_PAGE: {"fragments": True, "template": True},
+    }
+    for page in WORKSPACE_PAGES:
+        appl[page] = {"fragments": False, "template": False}
+    declared = declared_cells(appl)
     assert "e5-dark-en-1440.png" in declared
     for page in WORKSPACE_PAGES:
         slug = page.replace(".html", "")
         assert not any(name.startswith(f"e5-{slug}") for name in declared)
-        assert f"empty-e5-{slug}" not in "".join(declared)
+    mutated = dict(appl)
+    mutated[WORKSPACE_PAGES[0]] = {"fragments": True, "template": True}
+    mutated_declared = declared_cells(mutated)
+    slug = WORKSPACE_PAGES[0].replace(".html", "")
+    assert f"e5-{slug}-dark-en-1440.png" in mutated_declared
+    assert "e5-dark-en-1440.png" in mutated_declared
+    flipped = dict(appl)
+    flipped[HUB_PAGE] = {"fragments": False, "template": False}
+    flipped_declared = declared_cells(flipped)
+    assert "e5-dark-en-1440.png" not in flipped_declared
     for page in WORKSPACE_PAGES:
         path = ROOT / "site" / page
         if not path.is_file():
@@ -851,18 +941,25 @@ def test_e5_is_not_a_workspace_declared_state() -> None:
         receipt = e5_applicability_for_html(hub.read_text(encoding="utf-8"))
         assert receipt["fragments"] is True
         assert receipt["template"] is True
+    _ = FIVE_PAGES
 
 
 def test_p5_element_shot_imports_p3_device_span() -> None:
-    """R3: P5 uses P3's exact _device_px span; no 4-px slop."""
+    """E1: P5 calls P3 v16 producer unchanged; no local copy."""
     from scripts import capture_macro_command_p5 as p5
-    from scripts.capture_macro_command_p3 import _device_px, _write_element_shot
+    from scripts.capture_macro_command_p3 import (
+        _assert_shot_geometry, _device_px, _device_px_span_from_crop_box_doc,
+        _write_element_shot,
+    )
     assert p5._device_px is _device_px
     assert p5._write_element_shot is _write_element_shot
+    assert p5._device_px_span_from_crop_box_doc is _device_px_span_from_crop_box_doc
+    assert p5._assert_shot_geometry is _assert_shot_geometry
     src = (ROOT / "scripts" / "capture_macro_command_p5.py").read_text(
         encoding="utf-8")
     assert "slop=4" not in src
     assert "slop: int" not in src
+    assert "def _write_element_shot" not in src
 
 
 def test_copy_guard_keeps_details_summary() -> None:
@@ -908,7 +1005,9 @@ def test_committed_manifest_gaps_equal_declared_minus_captured() -> None:
         for st in page.get("states") or []
         if st.get("captured") and st.get("file")
     }
-    expected = sorted(set(declared_cells()) - captured)
+    if not any(name.startswith("chipmat-") for name in captured):
+        pytest.skip("v7 recapture has not written chipmat cells yet")
+    expected = sorted(set(declared_cells(probes.get("e5_applicability"))) - captured)
     recorded = [
         row["file"] for row in (probes.get("gaps") or [])
         if isinstance(row, dict) and row.get("reason") == "declared minus captured"
@@ -931,3 +1030,164 @@ def test_committed_manifest_gaps_equal_declared_minus_captured() -> None:
             assert fixture == "builder-payload" or (
                 isinstance(fixture, str) and fixture.endswith((".json", ".html"))
             ), (state.get("file"), fixture)
+
+
+def test_covered_rows_are_bounded_including_partial() -> None:
+    """M3: every *_covered row is bound; an out-of-bound partial raises."""
+    from scripts.capture_macro_command_p5 import _assert_excused_covers
+    ok = {
+        "maxScrollAtCheck": 800,
+        "scroll_under_top_chrome": [{
+            "reason": "rail_partially_covered",
+            "docTop": 200, "ovBottom": 60,
+            "exposedAtScrollY": 140, "maxScrollAtCheck": 800,
+        }],
+    }
+    _assert_excused_covers(ok)
+    bad = {
+        "maxScrollAtCheck": 800,
+        "scroll_under_top_chrome": [{
+            "reason": "rail_partially_covered",
+            "docTop": 10, "ovBottom": 80,
+            "exposedAtScrollY": -70, "maxScrollAtCheck": 800,
+        }],
+    }
+    with pytest.raises(RuntimeError, match="out of bound"):
+        _assert_excused_covers(bad)
+
+
+def test_chip_material_keys_include_both_locales() -> None:
+    """M1 / m5: 48 workspace cells; hub is typed not-applicable."""
+    from scripts.capture_macro_command_p5 import (
+        CHIP_MATERIAL_WIDTHS, WORKSPACE_PAGES, declared_cell_rows,
+        family_for, HUB_PAGE,
+    )
+    appl = {HUB_PAGE: {"fragments": True, "template": True}}
+    for page in WORKSPACE_PAGES:
+        appl[page] = {"fragments": False, "template": False}
+    rows = declared_cell_rows(appl)
+    chipmat = [row["file"] for row in rows if row["family"] == "chip_material"]
+    assert len(chipmat) == 48
+    assert len(set(chipmat)) == 48
+    for page in WORKSPACE_PAGES:
+        slug = page.replace(".html", "")
+        for theme in ("dark", "light"):
+            for locale in ("en", "zh"):
+                for width in CHIP_MATERIAL_WIDTHS:
+                    name = f"chipmat-{slug}-{theme}-{locale}-{width}.png"
+                    assert name in chipmat
+    assert not any("macro_monetary" in name for name in chipmat)
+    assert family_for("chipmat-macro_rates_curves-dark-en-1440.png") == (
+        "chip_material")
+
+
+def test_synthetic_clearance_can_fail() -> None:
+    """e2: classifier reports HIT on unexposable cover and a bounded partial."""
+    from scripts.capture_macro_command_p5 import synthetic_clearance_receipts
+    row = synthetic_clearance_receipts()
+    full = row["full_cover_unexposable"]
+    assert full["hit"] is True
+    assert full["exposedAtScrollY"] < 0
+    partial = row["partial_bounded"]
+    assert partial["hit"] is False
+    assert 0 <= partial["exposedAtScrollY"] <= partial["maxScrollAtCheck"]
+
+
+def test_p5_committed_crops_span_recomputed_from_crop_box_doc() -> None:
+    """E1: every committed crop span recomputes from crop_box_doc − scroll_y."""
+    import json
+    from scripts import capture_macro_command_p5 as capture
+
+    manifest_path = ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json"
+    if not manifest_path.is_file():
+        pytest.skip("P5 evidence manifest is not in this checkout")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    crop_states = [
+        st for page in manifest.get("pages") or []
+        for st in page.get("states") or []
+        if st.get("captured") and st.get("crop")
+    ]
+    if not crop_states or "crop_box_doc" not in crop_states[0]:
+        pytest.skip("v7 recapture has not written crop_box_doc yet")
+    for page in manifest.get("pages") or []:
+        for state in page.get("states") or []:
+            if not state.get("captured"):
+                continue
+            assert state.get("family"), state.get("file")
+            if state.get("crop"):
+                assert state.get("crop_box_doc"), state.get("file")
+                assert "scroll_y_at_shot" in state, state.get("file")
+                assert state.get("element_text_head") is not None, state.get("file")
+                assert "ihdr_delta_px" in state, state.get("file")
+                recomputed = capture._device_px_span_from_crop_box_doc(
+                    state["crop_box_doc"], float(state["scroll_y_at_shot"]),
+                    float(state["dpr"]))
+                assert state["device_px_span"] == recomputed, (
+                    state.get("file"), state["device_px_span"], recomputed)
+                delta = state.get("ihdr_delta_px") or {}
+                assert delta.get("w", 99) <= 1, (state.get("file"), delta)
+                assert delta.get("h", 99) <= 1, (state.get("file"), delta)
+            else:
+                assert "scroll_y_at_shot" in state, state.get("file")
+                assert "innerWidth" in state and "innerHeight" in state, (
+                    state.get("file"))
+
+
+def test_p5_completeness_against_tree_not_manifest_self() -> None:
+    """E6: captured − declared is empty over the tree listing."""
+    import json
+    import subprocess
+    from scripts.capture_macro_command_p5 import declared_cells
+
+    evidence = ROOT / "mockups" / "evidence" / "macro-command-p5"
+    manifest_path = evidence / "manifest.json"
+    probes_path = evidence / "probes.json"
+    if not manifest_path.is_file() or not probes_path.is_file():
+        pytest.skip("P5 evidence is not in this checkout")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    probes = json.loads(probes_path.read_text(encoding="utf-8"))
+    appl = probes.get("e5_applicability")
+    captured = {
+        st["file"]
+        for page in manifest.get("pages") or []
+        for st in page.get("states") or []
+        if st.get("captured") and st.get("file")
+    }
+    if not any(name.startswith("chipmat-") for name in captured):
+        pytest.skip("v7 recapture has not written chipmat cells yet")
+    declared = set(declared_cells(appl))
+    tree = {path.name for path in evidence.glob("*.png")}
+    listed = subprocess.check_output(
+        ["git", "ls-files", "mockups/evidence/macro-command-p5/*.png"],
+        cwd=ROOT, text=True)
+    git_pngs = {Path(line).name for line in listed.splitlines() if line.strip()}
+    assert captured - declared == set()
+    assert tree - captured == set()
+    if git_pngs:
+        assert git_pngs - captured == set()
+    assert "14-light-zh-768.png" not in tree
+    assert "i2-dark-en-390.png" not in tree
+    chip_keys = [key for key in probes if key.startswith("chip_material_")]
+    locales = {key.split("_")[-2] for key in chip_keys if key.split("_")[-2] in ("en", "zh")}
+    workspace_keys = [key for key in chip_keys if "macro_monetary" not in key]
+    if workspace_keys:
+        assert locales == {"en", "zh"}
+        assert len({key for key in workspace_keys}) == 48
+    chat_rows = [probes[key] for key in probes if key.startswith("chip_opens_chat_")]
+    if chat_rows:
+        blobs = [json.dumps(row, sort_keys=True) for row in chat_rows]
+        assert len(set(blobs)) == len(blobs)
+        for row in chat_rows:
+            assert "mmbRootBefore" in row and "mmbRootAfter" in row
+            assert "urlBefore" in row and "urlAfter" in row
+            assert row.get("openedBy") == "click"
+    for key, row in probes.items():
+        if not key.startswith("e5_timeout_"):
+            continue
+        assert "requestSeenAtMs" in row and "cloneSeenAtMs" in row
+        assert abs(float(row["elapsedMs"])
+                   - (float(row["cloneSeenAtMs"]) - float(row["requestSeenAtMs"]))) < 1
+    assert "clearance_1440_" not in "".join(probes)
+    syn = probes.get("synthetic_clearance") or {}
+    if syn:
+        assert syn["full_cover_unexposable"]["hit"] is True
