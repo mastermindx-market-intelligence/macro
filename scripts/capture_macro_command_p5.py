@@ -247,6 +247,8 @@ def _state(filename: str, theme: str, locale: str, viewport: str,
     is_crop = bool(crop or info.get("crop_box"))
     declared = int(round(css_w)) if is_crop else int(viewport_width)
     crop_selector = selector if is_crop else None
+    if is_crop and not crop_selector:
+        crop_selector = "#mc-p5-frame"
     return {
         "access": "anonymous",
         "applied_locale": locale,
