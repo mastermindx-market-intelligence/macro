@@ -1,0 +1,543 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "generated_at": "2026-09-08T04:51:46Z",
+  "outcome": "captured",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them",
+    "source": "rebuilt site/policy_watch.html from the current branch via python3 -m scripts.build_policy_watch; seed = config/policy_lifecycle_seed.json folded against data/policy/intel.json"
+  },
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [
+      "proposed",
+      "in_force",
+      "enforced",
+      "stalled"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "pages": [
+    {
+      "page_id": "policy_watch.html",
+      "registry_route": "/policy_watch.html",
+      "route": "/policy_watch.html",
+      "route_kind": "explicit_override",
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        },
+        {
+          "captured": false,
+          "dimension": "lifecycle_state",
+          "reason": "seed emits no passed / withdrawn / struck_down / superseded / unknown / correction row",
+          "value": "passed"
+        }
+      ],
+      "metrics": {
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        }
+      },
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 1113960,
+          "captured": true,
+          "file": "dark_en_1440.png",
+          "force_state": null,
+          "height": 4400,
+          "locale": "en",
+          "sha256": "db70e208540fdb6b76881178b69ef0c971e6600ce8cc195c2f7168dd4ddd51f6",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 2200,
+          "viewport_width": 1440,
+          "width": 2880
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 1171095,
+          "captured": true,
+          "file": "dark_zh_1440.png",
+          "force_state": null,
+          "height": 4400,
+          "locale": "zh",
+          "sha256": "6324701949897566baadf0dadaeae047bb6ba09095efdeb6065e314fac6e9a0b",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 2200,
+          "viewport_width": 1440,
+          "width": 2880
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 1099382,
+          "captured": true,
+          "file": "light_en_1440.png",
+          "force_state": null,
+          "height": 4400,
+          "locale": "en",
+          "sha256": "d8d9cb1d3f3c010f00d5d58763995e8a1db2b4dddda75f9e0969fc14fcd86094",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 2200,
+          "viewport_width": 1440,
+          "width": 2880
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 1152737,
+          "captured": true,
+          "file": "light_zh_1440.png",
+          "force_state": null,
+          "height": 4400,
+          "locale": "zh",
+          "sha256": "26b470b2674f369360ec2a97b0d1dbb68e8a3469dc28663c30c61a12e29f0f24",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 2200,
+          "viewport_width": 1440,
+          "width": 2880
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 782559,
+          "captured": true,
+          "file": "dark_en_390.png",
+          "force_state": null,
+          "height": 4800,
+          "locale": "en",
+          "sha256": "c78df467ef6dbf4be9be0d8bb3e223ec87c91813946f1325c0eee10998e9e086",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 1600
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 838021,
+          "captured": true,
+          "file": "dark_zh_390.png",
+          "force_state": null,
+          "height": 4800,
+          "locale": "zh",
+          "sha256": "34dfada617034a2fbf82d9f73fcff1417268f490745b16dfeaec26eee7d1950a",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 1600
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 754271,
+          "captured": true,
+          "file": "light_en_390.png",
+          "force_state": null,
+          "height": 4800,
+          "locale": "en",
+          "sha256": "680cc349bf85f448122208d41d975082f899e1d9b2a37aa7bf1c99be026972c6",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 1600
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 814940,
+          "captured": true,
+          "file": "light_zh_390.png",
+          "force_state": null,
+          "height": 4800,
+          "locale": "zh",
+          "sha256": "4b8d2f0e20986fbf478e66d4ab00f34894280ae8588e3fc3b5942a15f63d5098",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 1600
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 710085,
+          "captured": true,
+          "file": "crop_proposed_light_en_1440.png",
+          "force_state": "proposed",
+          "height": 1800,
+          "locale": "en",
+          "sha256": "b60086e88b6635ff1abb12ad8b2e657c0b7e7e90f1b2feea96f519522d25bb4e",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 775473,
+          "captured": true,
+          "file": "crop_proposed_dark_zh_1440.png",
+          "force_state": "proposed",
+          "height": 1800,
+          "locale": "zh",
+          "sha256": "21929cdfbf1127515370defe48e1a88d6a998dcb954fd5faf366ad625d490d11",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 672484,
+          "captured": true,
+          "file": "crop_in_force_light_en_1440.png",
+          "force_state": "in_force",
+          "height": 1800,
+          "locale": "en",
+          "sha256": "b7a28963876773c895a42dcc974bb9c8938e85568a6b4fa72ca8f4cd8c636540",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 760505,
+          "captured": true,
+          "file": "crop_in_force_dark_zh_1440.png",
+          "force_state": "in_force",
+          "height": 1800,
+          "locale": "zh",
+          "sha256": "174ecd376760ffcba85852786c5100d15642065ead4b01801369ad72714c79a3",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 710662,
+          "captured": true,
+          "file": "crop_enforced_light_en_1440.png",
+          "force_state": "enforced",
+          "height": 1800,
+          "locale": "en",
+          "sha256": "28a0819e3094393b2597a7e79dc8f6f82a7687ca5fe812c9d70a12c33ae3786a",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 765662,
+          "captured": true,
+          "file": "crop_enforced_dark_zh_1440.png",
+          "force_state": "enforced",
+          "height": 1800,
+          "locale": "zh",
+          "sha256": "b0d235380d56852192d173da8bd6a4e0998e7d7da58eea6c81008f7a7b9773e3",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 665154,
+          "captured": true,
+          "file": "crop_stalled_light_en_1440.png",
+          "force_state": "stalled",
+          "height": 1800,
+          "locale": "en",
+          "sha256": "d8ed5165aa3062eb9e778dfe607901733e3d649c69b847542d650ee18cace81d",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 717968,
+          "captured": true,
+          "file": "crop_stalled_dark_zh_1440.png",
+          "force_state": "stalled",
+          "height": 1800,
+          "locale": "zh",
+          "sha256": "67c9fbd0427d25ef5d807f9c670c6baefe1a22ac4aff753eff12180c630b0cb8",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880
+        }
+      ]
+    }
+  ],
+  "selection": {
+    "explicit_routes": [
+      "/policy_watch.html"
+    ],
+    "max_pages": 1,
+    "mode": "explicit_routes",
+    "note": "headless Chrome file:// capture of the rebuilt policy_watch page; 390 cells use an iframe harness",
+    "priority": null,
+    "registry": null,
+    "registry_rows": 0,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "site_dir": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/site",
+    "resolved_sha_or_none": "2552a2a70598114324e77c76e2c935988ab76bce",
+    "resolved_sha_source": "HEAD of the capture worktree before the evidence commit"
+  },
+  "tool": {
+    "module_ref": "headless Chrome --headless=new --force-device-scale-factor=2",
+    "user_agent": "A-F02-2 review recapture",
+    "version": "chrome-headless"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 16,
+    "states_captured": 16
+  },
+  "capture_commands": [
+    {
+      "file": "dark_en_1440.png",
+      "theme": "dark",
+      "lang": "en",
+      "width": 1440,
+      "cmd": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless=new --force-device-scale-factor=2 --screenshot=/Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/dark_en_1440.png --window-size=1440,2200 file:///Users/chriswong/Documents/Cluade/Macro%20Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/site/_cap_mo_f02_2_dark_en.html"
+    },
+    {
+      "file": "dark_zh_1440.png",
+      "theme": "dark",
+      "lang": "zh",
+      "width": 1440,
+      "cmd": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless=new --force-device-scale-factor=2 --screenshot=/Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/dark_zh_1440.png --window-size=1440,2200 file:///Users/chriswong/Documents/Cluade/Macro%20Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/site/_cap_mo_f02_2_dark_zh.html"
+    },
+    {
+      "file": "light_en_1440.png",
+      "theme": "light",
+      "lang": "en",
+      "width": 1440,
+      "cmd": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless=new --force-device-scale-factor=2 --screenshot=/Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/light_en_1440.png --window-size=1440,2200 file:///Users/chriswong/Documents/Cluade/Macro%20Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/site/_cap_mo_f02_2_light_en.html"
+    },
+    {
+      "file": "light_zh_1440.png",
+      "theme": "light",
+      "lang": "zh",
+      "width": 1440,
+      "cmd": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless=new --force-device-scale-factor=2 --screenshot=/Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/light_zh_1440.png --window-size=1440,2200 file:///Users/chriswong/Documents/Cluade/Macro%20Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/site/_cap_mo_f02_2_light_zh.html"
+    },
+    {
+      "file": "dark_en_390.png",
+      "theme": "dark",
+      "lang": "en",
+      "width": 390,
+      "cmd": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless=new --force-device-scale-factor=2 --screenshot=/Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/dark_en_390.png --window-size=800,2400 file:///Users/chriswong/Documents/Cluade/Macro%20Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/site/_cap_mo_f02_2_harness390_dark_en.html (390 iframe harness; Chrome clamps --window-size below ~500px)"
+    },
+    {
+      "file": "dark_zh_390.png",
+      "theme": "dark",
+      "lang": "zh",
+      "width": 390,
+      "cmd": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless=new --force-device-scale-factor=2 --screenshot=/Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/dark_zh_390.png --window-size=800,2400 file:///Users/chriswong/Documents/Cluade/Macro%20Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/site/_cap_mo_f02_2_harness390_dark_zh.html (390 iframe harness; Chrome clamps --window-size below ~500px)"
+    },
+    {
+      "file": "light_en_390.png",
+      "theme": "light",
+      "lang": "en",
+      "width": 390,
+      "cmd": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless=new --force-device-scale-factor=2 --screenshot=/Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/light_en_390.png --window-size=800,2400 file:///Users/chriswong/Documents/Cluade/Macro%20Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/site/_cap_mo_f02_2_harness390_light_en.html (390 iframe harness; Chrome clamps --window-size below ~500px)"
+    },
+    {
+      "file": "light_zh_390.png",
+      "theme": "light",
+      "lang": "zh",
+      "width": 390,
+      "cmd": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless=new --force-device-scale-factor=2 --screenshot=/Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/light_zh_390.png --window-size=800,2400 file:///Users/chriswong/Documents/Cluade/Macro%20Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/site/_cap_mo_f02_2_harness390_light_zh.html (390 iframe harness; Chrome clamps --window-size below ~500px)"
+    },
+    {
+      "file": "crop_proposed_light_en_1440.png",
+      "theme": "light",
+      "lang": "en",
+      "width": 1440,
+      "state": "proposed",
+      "item_id": "lever_dollar_bridge",
+      "cmd": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless=new --force-device-scale-factor=2 --screenshot=/Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/crop_proposed_light_en_1440.png --window-size=1440,900 file:///Users/chriswong/Documents/Cluade/Macro%20Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/site/_cap_mo_f02_2_light_en_proposed.html"
+    },
+    {
+      "file": "crop_proposed_dark_zh_1440.png",
+      "theme": "dark",
+      "lang": "zh",
+      "width": 1440,
+      "state": "proposed",
+      "item_id": "lever_dollar_bridge",
+      "cmd": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless=new --force-device-scale-factor=2 --screenshot=/Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/crop_proposed_dark_zh_1440.png --window-size=1440,900 file:///Users/chriswong/Documents/Cluade/Macro%20Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/site/_cap_mo_f02_2_dark_zh_proposed.html"
+    },
+    {
+      "file": "crop_in_force_light_en_1440.png",
+      "theme": "light",
+      "lang": "en",
+      "width": 1440,
+      "state": "in_force",
+      "item_id": "lever_fed_nexus",
+      "cmd": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless=new --force-device-scale-factor=2 --screenshot=/Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/crop_in_force_light_en_1440.png --window-size=1440,900 file:///Users/chriswong/Documents/Cluade/Macro%20Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/site/_cap_mo_f02_2_light_en_in_force.html"
+    },
+    {
+      "file": "crop_in_force_dark_zh_1440.png",
+      "theme": "dark",
+      "lang": "zh",
+      "width": 1440,
+      "state": "in_force",
+      "item_id": "lever_fed_nexus",
+      "cmd": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless=new --force-device-scale-factor=2 --screenshot=/Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/crop_in_force_dark_zh_1440.png --window-size=1440,900 file:///Users/chriswong/Documents/Cluade/Macro%20Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/site/_cap_mo_f02_2_dark_zh_in_force.html"
+    },
+    {
+      "file": "crop_enforced_light_en_1440.png",
+      "theme": "light",
+      "lang": "en",
+      "width": 1440,
+      "state": "enforced",
+      "item_id": "lever_nuclear",
+      "cmd": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless=new --force-device-scale-factor=2 --screenshot=/Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/crop_enforced_light_en_1440.png --window-size=1440,900 file:///Users/chriswong/Documents/Cluade/Macro%20Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/site/_cap_mo_f02_2_light_en_enforced.html"
+    },
+    {
+      "file": "crop_enforced_dark_zh_1440.png",
+      "theme": "dark",
+      "lang": "zh",
+      "width": 1440,
+      "state": "enforced",
+      "item_id": "lever_nuclear",
+      "cmd": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless=new --force-device-scale-factor=2 --screenshot=/Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/crop_enforced_dark_zh_1440.png --window-size=1440,900 file:///Users/chriswong/Documents/Cluade/Macro%20Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/site/_cap_mo_f02_2_dark_zh_enforced.html"
+    },
+    {
+      "file": "crop_stalled_light_en_1440.png",
+      "theme": "light",
+      "lang": "en",
+      "width": 1440,
+      "state": "stalled",
+      "item_id": "lever_chips",
+      "cmd": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless=new --force-device-scale-factor=2 --screenshot=/Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/crop_stalled_light_en_1440.png --window-size=1440,900 file:///Users/chriswong/Documents/Cluade/Macro%20Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/site/_cap_mo_f02_2_light_en_stalled.html"
+    },
+    {
+      "file": "crop_stalled_dark_zh_1440.png",
+      "theme": "dark",
+      "lang": "zh",
+      "width": 1440,
+      "state": "stalled",
+      "item_id": "lever_chips",
+      "cmd": "\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless=new --force-device-scale-factor=2 --screenshot=/Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/crop_stalled_dark_zh_1440.png --window-size=1440,900 file:///Users/chriswong/Documents/Cluade/Macro%20Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/site/_cap_mo_f02_2_dark_zh_stalled.html"
+    }
+  ]
+}
