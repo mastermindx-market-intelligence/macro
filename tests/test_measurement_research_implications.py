@@ -1585,6 +1585,54 @@ def test_resampling_floor_below_display_floor_uses_below_wording():
     assert "resampling floor 1/(draws+1)" in fig
 
 
+def test_owner_display_floor_below_threshold_uses_below_wording():
+    """NIT ii: owner-supplied display_floor < 0.0001 must not print < 0.0000."""
+    card = _minimal_card(
+        family="event_study",
+        quality="DIAGNOSTIC_ONLY",
+        outputs=[
+            {
+                "code": "tiny_owner_p",
+                "label": {"en": "Tiny owner p", "zh": "极小所有者 p"},
+                "source": "x",
+                "unit": "probability",
+                "value": 0.0,
+                "display_floor": 0.00005,
+            }
+        ],
+    )
+    fig = _metric_markup(
+        _isolate_card(
+            _section(_render(research_implications=_envelope([card]))),
+            "event_study",
+        ),
+        "tiny_owner_p",
+    )
+    assert "below 0.0001" in fig
+    assert "小于 0.0001" in fig
+    assert "0.0000" not in fig
+    assert "owner-supplied display floor" in fig
+    assert "所有者给出的显示下限" in fig
+
+
+def test_hub_adapter_failure_emits_line_start_ric_adapter_warning(capsys, monkeypatch):
+    """MINOR A: adapter swallow is a line-start GitHub annotation, not a logger prefix."""
+    import engine.research_implication_card as ric
+    import scripts.build_intel_hub as bih
+
+    monkeypatch.setattr(
+        ric,
+        "build_research_implication_cards",
+        lambda _root: (_ for _ in ()).throw(RuntimeError("adapter down")),
+    )
+    envelope = bih.load_research_implications_for_hub(REPO)
+    assert envelope["cards"] == []
+    lines = [ln for ln in capsys.readouterr().out.splitlines() if ln.startswith("::")]
+    assert lines, "adapter failure produced no line-start annotation"
+    assert lines[0].startswith("::warning title=ric-adapter::")
+    assert "adapter down" in lines[0]
+
+
 def test_glance_header_uses_review_plain_word_labels(contract, real_section):
     """MAJOR 3: glance header is the parent's one state chip; method/tier live in Receipts."""
     family_rows = {
@@ -1752,24 +1800,31 @@ def test_null_labels_appear_at_most_once_per_locale(contract, real_section):
 
 
 def test_ric_stance_rule_is_body_weight_and_last_line(real_section):
-    """MINOR 2: .ric-stance is the card verdict — body size, --text, last line."""
+    """MINOR 2 / NIT i: full-width hairline on .ric-stance; text measure on .ric-copy."""
     src = (REPO / "templates" / "measurement.html.j2").read_text(encoding="utf-8")
     style = src[src.find("<style>") : src.find("</style>")]
     m = re.search(r"\.ric-stance\{([^}]+)\}", style)
     assert m, "missing .ric-stance rule"
     body = m.group(1)
-    assert "font-weight:600" in body.replace(" ", "")
-    assert "color:var(--text)" in body.replace(" ", "")
     assert "var(--line)" in body
-    assert ".74rem" not in body
-    assert "0.74rem" not in body
-    assert "font-size:1rem" in body.replace(" ", "")
+    assert "border-top" in body.replace(" ", "")
+    assert "max-width" not in body.replace(" ", "")
+    copy = re.search(r"\.ric-copy\{([^}]+)\}", style)
+    assert copy, "missing .ric-copy rule"
+    copy_body = copy.group(1).replace(" ", "")
+    assert "font-weight:600" in copy_body
+    assert "color:var(--text)" in copy_body
+    assert "font-size:1rem" in copy_body
+    assert "max-width:70ch" in copy_body
+    assert ".74rem" not in copy_body
+    assert "0.74rem" not in copy_body
     assert 'html[data-theme="dark"] .ric-stance' in style
     assert 'html[data-theme="light"] .ric-stance' in style
     for card_html in _cards_html(real_section):
         last = card_html.rfind('class="ric-stance"')
         assert last != -1
         assert card_html.rfind('class="ric-auth"') < last
+        assert 'class="ric-copy"' in card_html[last:]
 
 
 def test_hub_entry_count_matches_destination(contract, real_section):
@@ -1791,6 +1846,30 @@ def test_hub_entry_count_matches_destination(contract, real_section):
     one_html = _render_hub(research_implications=one)
     assert "what 1 frozen study actually produced" in one_html
     assert "1 项冻结研究的实际产出" in one_html
+
+
+def test_hub_entry_omitted_when_card_count_is_zero():
+    """MINOR A: zero cards print nothing — no dead #ric-section, no '0 frozen studies'."""
+    empty = _render_hub(
+        research_implications={
+            "schema": "mastermind.research_implication_cards/v1",
+            "cards": [],
+        }
+    )
+    assert "ric-section" not in empty
+    assert "0 frozen" not in empty
+    assert "0 项冻结" not in empty
+    two = _render_hub(
+        research_implications=_envelope(
+            [
+                _minimal_card(family="event_study", quality="DIAGNOSTIC_ONLY"),
+                _minimal_card(family="synthetic_control", quality="DIAGNOSTIC_FAILED"),
+            ]
+        )
+    )
+    assert two.count('href="measurement.html#ric-section"') == 1
+    assert "what 2 frozen studies actually produced" in two
+    assert "2 项冻结研究的实际产出" in two
 
 
 def test_authority_receipt_names_a_set_flag_and_does_not_print_none():

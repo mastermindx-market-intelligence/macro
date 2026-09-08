@@ -366,6 +366,21 @@ def compute_market_pulse_roster(hub: dict) -> list[str]:
     return ordered[:MARKET_PULSE_ROSTER_CAP]
 
 
+def load_research_implications_for_hub(root: Path) -> dict:
+    """Same envelope the Calibration Lab destination uses. Zero cards on adapter failure."""
+    empty = {"schema": "mastermind.research_implication_cards/v1", "cards": []}
+    try:
+        from engine.research_implication_card import build_research_implication_cards
+        return build_research_implication_cards(root)
+    except Exception as e:  # noqa: BLE001
+        print(
+            f"::warning title=ric-adapter::research implication cards unavailable for hub entry ({e})",
+            flush=True,
+        )
+        log.warning("research implication cards unavailable for hub entry (%s)", e)
+        return empty
+
+
 def build(write: bool = True) -> dict:
     hub = intel_hub.load_and_build(top=30)
     stamp_special_freshness(hub, config.ROOT)      # D3 — age the catalyst panel's input, loudly
@@ -474,12 +489,7 @@ def build(write: bool = True) -> dict:
 
     # Same envelope the Calibration Lab destination page uses — the hub entry
     # count must stay derived, never hardcoded.
-    research_implications = {"schema": "mastermind.research_implication_cards/v1", "cards": []}
-    try:
-        from engine.research_implication_card import build_research_implication_cards
-        research_implications = build_research_implication_cards(root)
-    except Exception as e:  # noqa: BLE001
-        log.warning("research implication cards unavailable for hub entry (%s)", e)
+    research_implications = load_research_implications_for_hub(root)
 
     # render the page
     try:

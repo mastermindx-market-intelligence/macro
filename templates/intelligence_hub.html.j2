@@ -807,6 +807,7 @@
   {# ── ENTRY: the study plane behind this band lives on the Calibration Lab ── #}
   {%- set ric_cards = (research_implications.get('cards') if research_implications is defined and research_implications else []) -%}
   {%- set ric_n = ric_cards|length -%}
+  {% if ric_n %}
   <a class="card rid" href="measurement.html#ric-section">
     <span class="rid-rail" aria-hidden="true"></span>
     <span class="rid-b">
@@ -816,6 +817,7 @@
     </span>
     <span class="rid-a" aria-hidden="true">→</span>
   </a>
+  {% endif %}
 
   {# UNIFIED FORWARD DESK GRADER — Tier-3 mechanics, shipped folded #}
   {{ dg.styles() }}

@@ -709,7 +709,8 @@ html[data-theme="light"] .ric-prereg{background:var(--panel);
 html[data-theme="light"] .ric-prereg:not(.is-absent) .ric-prereg-d{box-shadow:none}
 .ric-prereg-why{margin:-8px 0 16px;max-width:70ch;font-size:.74rem;line-height:1.6;color:var(--muted)}
 .ric-stance{margin:16px 0 0;padding-top:13px;border-top:1px solid var(--line);
-  font-size:1rem;line-height:1.5;font-weight:600;color:var(--text);max-width:70ch}
+  font-size:1rem;line-height:1.5;font-weight:600;color:var(--text)}
+.ric-copy{margin:0;max-width:70ch;font-size:1rem;line-height:1.5;font-weight:600;color:var(--text)}
 html[data-theme="dark"] .ric-stance{box-shadow:none}
 html[data-theme="light"] .ric-stance{border-top-color:var(--line)}
 .ric-nulls{margin:0 0 16px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--r-card,12px);
@@ -2186,7 +2187,11 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
       {%- set floor = item.get('display_floor') -%}
       {%- set draws = item.get('draws') -%}
       {%- if floor is number and floor is not sameas true and floor is not sameas false and v < floor -%}
+        {%- if floor < 0.0001 -%}
+        <span class="l-en">below 0.0001</span><span class="l-zh">小于 0.0001</span>{{ ric_unit(u) }}
+        {%- else -%}
         &lt; {{ '%.4f'|format(floor) }}{{ ric_unit(u) }}
+        {%- endif -%}
         <span class="ric-fig-sub"><span class="l-en">owner-supplied display floor</span><span class="l-zh">所有者给出的显示下限</span></span>
       {%- elif draws is number and draws is not sameas true and draws is not sameas false and draws > 0 and v == 0 -%}
         {%- set resample_floor = 1 / (draws + 1) -%}
@@ -2608,10 +2613,12 @@ html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--car
             <span class="l-en">This card carries no authority. It cannot forecast, rank, gate, size or trade, and nothing downstream reads it as permission.</span>
             <span class="l-zh">本卡片不具备任何授权：不可用于预测、排序、门控、仓位或交易，下游系统亦不会将其视为许可。</span>
           </div>
-          <p class="ric-stance">
-            <span class="l-en">Watch — do not trade off this card.</span>
-            <span class="l-zh">观望 — 不要据此交易。</span>
-          </p>
+          <div class="ric-stance">
+            <p class="ric-copy">
+              <span class="l-en">Watch — do not trade off this card.</span>
+              <span class="l-zh">观望 — 不要据此交易。</span>
+            </p>
+          </div>
 
         </div>
       </article>
