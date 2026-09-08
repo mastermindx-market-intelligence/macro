@@ -1,0 +1,15 @@
+{
+  "utc": "2026-09-08T06:12:56.632552+00:00",
+  "workspace": "/workspace",
+  "head": "20edb97448d15eb7b668429e57b3b4c480641bed",
+  "command": "python3 -m pytest tests/test_risk_envelope_presentation.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_risk_state_live_session_floor.py tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py -q",
+  "result": "302 passed in 6.16s",
+  "skips": 0,
+  "source_hashes": {
+    "templates/_risk_envelope_band.html.j2": "57d49f347118b82651cdb57bae8bee141811795f69a61c39670f9d37136d69b0",
+    "templates/_risk_envelope_band.css.j2": "3b677ae0ab102abd35a35bb10c16bbdf910665332f4e50a6635ecc2bf851988b",
+    "templates/dashboard.html.j2": "77579fe042bf950f901232b277899d64a62bbb0fc6c0211f3c70a8b602e8efde",
+    "tests/test_risk_envelope_presentation.py": "056a156783f6aabdca41cb93cc6fe113cf97c541dffd7919896f76f48391ab27",
+    "site/macro.html": "057628471cac5296d781a8e711ecc9ad9a53839cd34d3d047ada7318fb8e5cf7"
+  }
+}
