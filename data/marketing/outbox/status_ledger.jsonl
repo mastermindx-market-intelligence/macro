@@ -5685,3 +5685,10 @@
 {"id":"ob-2026-09-09-9477999bda","from":"posting","to":"posted","at":"2026-09-09T17:13:01Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aa1939d5e8b0a4dedb8b1a2","external_url":null,"at":"2026-09-09T17:12:51Z","booked_at":"2026-09-09T17:12:51Z"}}
 {"id":"ob-2026-09-09-a0c5c3e0eb","from":"approved","to":"posting","at":"2026-09-09T17:13:01Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-09-09-a0c5c3e0eb","from":"posting","to":"posted","at":"2026-09-09T17:13:02Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aa1939e5e8b0a4dedb8b1d5","external_url":null,"at":"2026-09-09T17:12:51Z","booked_at":"2026-09-09T17:12:51Z"}}
+{"id":"ob-2026-09-09-18799e1284","from":"queued","to":"approved","at":"2026-09-09T17:18:29Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-09-09-19ebf63e23","from":"queued","to":"approved","at":"2026-09-09T17:18:29Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-09-09-9a8511b72b","from":"queued","to":"approved","at":"2026-09-09T17:18:29Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-09-09-18799e1284","from":"approved","to":"quarantined","at":"2026-09-09T17:18:31Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
+{"id":"ob-2026-09-09-19ebf63e23","from":"approved","to":"posting","at":"2026-09-09T17:18:35Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-09-09-19ebf63e23","from":"posting","to":"posted","at":"2026-09-09T17:18:36Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aa194ecfeadd8ff0edee332","external_url":null,"at":"2026-09-09T17:18:29Z","booked_at":"2026-09-09T17:18:29Z"}}
+{"id":"ob-2026-09-09-9a8511b72b","from":"approved","to":"quarantined","at":"2026-09-09T17:18:37Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
