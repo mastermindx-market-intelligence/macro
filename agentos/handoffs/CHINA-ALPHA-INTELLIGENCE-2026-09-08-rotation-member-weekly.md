@@ -3,127 +3,145 @@ workstream: WS:CHINA-ALPHA-INTELLIGENCE
 session: claude/china-rotation-member-weekly-20260908-sol-001
 model: sol
 ended_because: blocked
-mission: >
-  Restore already-computed recent stock movement through the existing China rotation
-  detail journey with honest observation dates, without changing group or Prophet
-  ranking, entry authority, monthly member ordering or the common identity plane.
-state_before: >
-  At Macro0b30e044b6456a96f1d6e1a9885987691a2b46dc, the September8 THS basket
-  source had3522 member occurrences with3522 non-null ret_5d values, but the China
-  rotation adapter hardcoded displayed1W values to null. Its real detail consumer
-  displayed only1M. The existing source-continuity successor and LENS repair have
-  separate active owners and must not be duplicated.
+mission: 'Restore already-computed recent stock movement through the existing China rotation detail
+  journey with honest observation dates, without changing group or Prophet ranking, entry authority,
+  monthly member ordering or the common identity plane.
+
+  '
+state_before: 'At Macro0b30e044b6456a96f1d6e1a9885987691a2b46dc, the September8 THS basket source
+  had3522 member occurrences with3522 non-null ret_5d values, but the China rotation adapter hardcoded
+  displayed1W values to null. Its real detail consumer displayed only1M. The existing source-continuity
+  successor and LENS repair have separate active owners and must not be duplicated.
+
+  '
 changed:
-  - path: tests/test_baskets_region.py
-    what: >
-      Confirmed local-only regression additions for current versus stale/gapped
-      observations, six-session-window validity, invalid numeric types, immutable
-      inputs and unchanged existing trailing-return values. No production edit.
-  - path: tests/test_subsector_rotation.py
-    what: >
-      Confirmed local-only regression additions for weekly percent units, real zero
-      and negative values, observation-date agreement, null preservation, unchanged
-      monthly sample/group order, the actual CN detail builder, and unchanged default
-      shared-template behavior for other regions. No result from these new tests yet.
-  - path: agentos/handoffs/CHINA-ALPHA-INTELLIGENCE-2026-09-08-rotation-member-weekly.md
-    what: >
-      Adds this handoff to the existing records carrier6990; it does not publish or
-      replace the interrupted source branch, and does not claim feature completion.
+- path: engine/baskets_region.py
+  what: Published7023 adds observation dates only, preserving existing numeric fields.
+- path: engine/subsector_rotation_china.py
+  what: Published7023 maps current supported five-session returns into weekly percent without changing
+    monthly sample/order or group ranking.
+- path: scripts/build_subsector_rotation_china_pages.py
+  what: Actual China detail builder opts into weekly/date/sample display in the existing shared component.
+- path: templates/subsector_rotation_detail.html.j2
+  what: Existing member cards now expose weekly/monthly returns and unavailable or older observation
+    states; browser acceptance remains open.
+- path: tests/test_baskets_region.py
+  what: Producer validity, gap/date, Boolean and huge-integer regression cases.
+- path: tests/test_subsector_rotation.py
+  what: Adapter/default-region cases and uninterrupted real prices-to-detail-page proof.
 verified:
-  - claim: The existing source computes weekly returns but the China adapter drops them.
-    command: >
-      git show 0b30e044b6456a96f1d6e1a9885987691a2b46dc:engine/baskets_region.py;
-      git show 0b30e044b6456a96f1d6e1a9885987691a2b46dc:engine/subsector_rotation_china.py;
-      parse site/chinabasketdata/baskets_ths.json at the same immutable commit.
-    result: >
-      Producer emits ret_1d/ret_5d/ret_10d/ret_20d. Adapter _members writes1W=None.
-      Snapshotas_of2026-09-08 contains3522 member occurrences and every one hasret_5d.
-      This is not a unique-stock count, a live-site capture or a return forecast.
-  - claim: The new source worktree was created from a fresh remote main without competing path edits.
-    command: >
-      Complete four-page GitHub open-PR path census plus immutable Git resolution of
-      truncated file listings; targeted git status over263 registered worktrees;
-      git fetch origin main; git worktree add --no-checkout on the unique claude branch.
-    result: >
-      154 open PRs, no overlapping source path and no unresolved truncated listing.
-      Local target deltas were absent sparse-proof files, not source modifications.
-      Fresh source base909b9ffe81314fa0d5763f436a5386024168f86c matched remote main;
-      the declared six paths were unchanged from prior323d63c5. Worktree was clean.
-  - claim: Unchanged four-module baseline completed on the already-installed Python3.14 environment.
-    command: >
-      PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -q --tb=short -p no:cacheprovider
-      tests/test_baskets_region.py tests/test_baskets_china.py
-      tests/test_baskets_china_ths.py tests/test_subsector_rotation.py
-    result: >
-      35passed, exit0, native process61387. An earlier sparse baseline lacked the
-      collectors directory; materializing it exposed a separate missing-lxml failure
-      underPython3.12:34passed/1failed. No installation, shim or exclusion hid it.
-  - claim: New test-source writes were acknowledged before Studio transport stopped responding.
-    command: Remote Desktop Commander write_file append calls to the two exact owned test paths.
-    result: >
-      The app acknowledged all appended test blocks. No engine, builder or template
-      implementation file was edited, and no feature commit, push or PR was created.
-  - claim: The current host failure was reported to its existing maintenance owner.
-    command: GitHub add_comment_to_issue on Mastermind507 after reading owner adoption5592487889.
-    result: >
-      Comment5592825960 records this caller, the unresolved test receipt and the same
-      Studio device. It creates no installer/wake assignment or drain certificate.
+- claim: The existing source computes weekly returns but the China adapter drops them.
+  command: 'git show 0b30e044b6456a96f1d6e1a9885987691a2b46dc:engine/baskets_region.py; git show
+    0b30e044b6456a96f1d6e1a9885987691a2b46dc:engine/subsector_rotation_china.py; parse site/chinabasketdata/baskets_ths.json
+    at the same immutable commit.
+
+    '
+  result: 'Producer emits ret_1d/ret_5d/ret_10d/ret_20d. Adapter _members writes1W=None. Snapshotas_of2026-09-08
+    contains3522 member occurrences and every one hasret_5d. This is not a unique-stock count, a
+    live-site capture or a return forecast.
+
+    '
+- claim: The new source worktree was created from a fresh remote main without competing path edits.
+  command: 'Complete four-page GitHub open-PR path census plus immutable Git resolution of truncated
+    file listings; targeted git status over263 registered worktrees; git fetch origin main; git worktree
+    add --no-checkout on the unique claude branch.
+
+    '
+  result: '154 open PRs, no overlapping source path and no unresolved truncated listing. Local target
+    deltas were absent sparse-proof files, not source modifications. Fresh source base909b9ffe81314fa0d5763f436a5386024168f86c
+    matched remote main; the declared six paths were unchanged from prior323d63c5. Worktree was clean.
+
+    '
+- claim: Unchanged four-module baseline completed on the already-installed Python3.14 environment.
+  command: 'PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -q --tb=short -p no:cacheprovider tests/test_baskets_region.py
+    tests/test_baskets_china.py tests/test_baskets_china_ths.py tests/test_subsector_rotation.py
+
+    '
+  result: '35passed, exit0, native process61387. An earlier sparse baseline lacked the collectors
+    directory; materializing it exposed a separate missing-lxml failure underPython3.12:34passed/1failed.
+    No installation, shim or exclusion hid it.
+
+    '
+- claim: New test-source writes were acknowledged before Studio transport stopped responding.
+  command: Remote Desktop Commander write_file append calls to the two exact owned test paths.
+  result: 'The app acknowledged all appended test blocks. No engine, builder or template implementation
+    file was edited, and no feature commit, push or PR was created.
+
+    '
+- claim: The current host failure was reported to its existing maintenance owner.
+  command: GitHub add_comment_to_issue on Mastermind507 after reading owner adoption5592487889.
+  result: 'Comment5592825960 records this caller, the unresolved test receipt and the same Studio
+    device. It creates no installer/wake assignment or drain certificate.
+
+    '
+- claim: Current source is built and published on the original carrier.
+  command: git commit/push and authenticated exact-head readback of Macro7023.
+  result: Head595014ab1eb56d564c93566b18595ef5a580b8a9/tree183ec38529105db30a6394f83272d07a80951dba,
+    six paths, original909b9ffe base, Draft/HOLD.
+- claim: New current tests and producer parity executed.
+  command: Actual four owning pytest modules; eighteen old/new producer cases; four real-function
+    in-memory mutations.
+  result: Current pre-code7FAIL/36PASS; final44PASS/0FAIL.18cases preserve every old field/chart/group
+    order after removing only two added date fields. Four mutations fail intended assertions; source
+    bytes unchanged.
+- claim: Actual current protected source checkpoint was attempted and refused.
+  command: Mastermindf3f2d915 scripts/source_continuity.py verify --kind checkpoint on actual7023
+    worktree/authenticated GitHub.
+  result: Exit2/REMOTE_CENSUS_INCOMPLETE after122.83seconds. No valid checkpoint, no waiver and no
+    repeated remote canary. Existing346 owns complete Macro-scale proof.
 unverified:
-  - claim: Outcome and side effects of the first new-regression run.
-    what_would_verify: >
-      Same-device recovery of the exact red.log, process/session state and working-tree
-      diff. The start_process returned no PID or exit; do not infer either completion
-      or no execution from the timeout, and do not replay it before reconciliation.
-  - claim: Weekly-member production implementation, passing new tests and rendered capability.
-    what_would_verify: >
-      After recovering the existing source carrier, implement only the admitted six
-      paths, run discriminating regressions, compare unchanged fields and render the
-      actual CN detail builder with complete/partial/null inputs in both themes and
-      languages on desktop1440/mobile390. None of this completion is claimed now.
-  - claim: Current full Agent OS validation of this new handoff.
-    what_would_verify: >
-      Run the existing scripts/agentos.py validator at the correct record basename
-      against the current store. Frontmatter was checked against the current schema;
-      the official record or whole-store validator has not executed for this addition.
+- claim: Outcome and side effects of the first new-regression run.
+  what_would_verify: 'Same-device recovery of the exact red.log, process/session state and working-tree
+    diff. The start_process returned no PID or exit; do not infer either completion or no execution
+    from the timeout, and do not replay it before reconciliation.
+
+    '
+- claim: Browser and natural production acceptance.
+  what_would_verify: A successful permitted desktop/mobile EN/ZH dark/light browser receipt for this
+    exact source, followed by current source review/CI and natural producer/served-route proof. Two
+    ChromeCLI fixtures timed out; Playwright harness append was refused and never executed.
 unresolved:
-  - Studio file/process/ping calls timed out; the cloud online label is not execution proof.
-  - The red test run has no received PID/result. Source custody and its possible process stay sticky.
-  - Existing Macro6992/6996 remain held; Source Continuity346 has an active saturated-foreign-PR successor.
-  - Existing LENS6860 owns mobile gesture work; no shared-JS implementation belongs to this slice.
+- Historical September8 test exit remains unavailable; new current source/results are separately
+  witnessed.
+- Official current-source continuity and independent exact-head review remain required before release.
+- Browser evidence is unproven after completed CLI timeouts and a refused harness append.
+- Existing6992/6996 and346/6860/554/548 owners retain their own gates; no duplicate or bypass.
 next_actions:
-  - >
-    On the same Studio, read the retained red.log and reconcile the pending test
-    process plus actual local diff before any source command or rerun. Recover the
-    existing branch/worktree; do not mint another one or overwrite unique tests.
-  - >
-    Verify intended new failures against the unchanged production source. Correct
-    any test-harness defect honestly before implementing the six-path vertical.
-  - >
-    Add price_asof/ret_5d_asof metadata to the current producer without changing old
-    values; restore current-only weekly values in the China adapter; opt only the
-    CN detail builder into the existing shared component's1W/1M/date/sample view.
-  - >
-    Prove null/zero/negative/date/unit behavior, exact non-weekly parity, the actual
-    producer-to-renderer path and dark/light EN/ZH desktop/mobile results. Publish
-    one normal same-branch DraftHOLD source PR, obtain current independent review,
-    applicable completed CI/continuity and natural publication/served-user proof.
+- Resolve the existing346 official source-proof dependency for7023 and consume its real current hosted
+  checks; do not repeat the unchanged incomplete proof or fabricate a collision receipt.
+- Obtain independent exact-head review and permitted real browser proof; do not repeat a refused
+  harness operation via another route.
+- Only after current source/visual/safety gates permit release, prove a normal producer/publication
+  and actual served-user result. No source reconstruction or replacement branch.
 do_not_redo:
-  - Do not restart or duplicate terminal Mastermind544/545; their merges are ca833b63 and7afc6641.
-  - Do not create a competing saturated-foreign-PR adapter; existing START is Mastermind346/comment5592292126.
-  - Do not replace Macro6992 input repair, Macro6996 instruction repair, existing China6871 or Entry Truth6805.
-  - Do not use635cbf9a as6996 source; the verified source is30da44be695d5b7b249d0180f3af6d21ed5bad09.
-  - Do not claim weekly data is absent upstream or create another price collector/store.
-  - Do not change the monthly top-eight selection or promote these display returns into trading authority.
-  - Do not infer a complete constituent roster from the displayed eight-member sample.
-  - Do not relabel the35-pass unchanged baseline as a pass of the new regression tests.
+- Do not restart or duplicate terminal Mastermind544/545; their merges are ca833b63 and7afc6641.
+- Do not create a competing saturated-foreign-PR adapter; existing START is Mastermind346/comment5592292126.
+- Do not replace Macro6992 input repair, Macro6996 instruction repair, existing China6871 or Entry
+  Truth6805.
+- Do not use635cbf9a as6996 source; the verified source is30da44be695d5b7b249d0180f3af6d21ed5bad09.
+- Do not claim weekly data is absent upstream or create another price collector/store.
+- Do not change the monthly top-eight selection or promote these display returns into trading authority.
+- Do not infer a complete constituent roster from the displayed eight-member sample.
+- Do not relabel the35-pass unchanged baseline as a pass of the new regression tests.
+- Do not call the old unobserved test complete or label the current44cases the older35case baseline;
+  do not claim screenshots were produced.
 danger_areas:
-  - The common producer also feeds Hong Kong and Canada; additive metadata must not alter their values or default UI.
-  - Five non-null observations across a gap are not five complete input sessions; do not compress missingness silently.
-  - Snapshot/observation dates are not knowledge-time or a point-in-time replay guarantee.
-  - No test result or file contents may be fabricated because remote transport failed.
-  - No pending source operation may be moved to another Mac or carrier without effect/custody reconciliation.
-prs: [6990, 6992, 6996, 6860, 7000]
-discoveries: [DSC:CN-PROPHET-V4-ORDER-DISABLED-BY-INCOMPLETE-INTELLIGENCE-COVERAGE]
+- The common producer also feeds Hong Kong and Canada; additive metadata must not alter their values
+  or default UI.
+- Five non-null observations across a gap are not five complete input sessions; do not compress missingness
+  silently.
+- Snapshot/observation dates are not knowledge-time or a point-in-time replay guarantee.
+- No test result or file contents may be fabricated because remote transport failed.
+- No pending source operation may be moved to another Mac or carrier without effect/custody reconciliation.
+prs:
+- 6860
+- 6990
+- 6992
+- 6996
+- 7000
+- 7023
+discoveries:
+- DSC:CN-PROPHET-V4-ORDER-DISABLED-BY-INCOMPLETE-INTELLIGENCE-COVERAGE
 ---
 
 # Exact continuation: existing weekly-member source, not a replacement plan
@@ -191,3 +209,31 @@ The product capability remains NOT_BUILT for this new weekly-display slice;
 test preparation and a35-case unchanged baseline do not make it live. The broader
 China/US/HK/Canada recovery remains open. The next useful action is same-carrier
 result recovery followed by the bounded producer-to-user implementation.
+
+
+## September9 published continuation — supersedes historical local-only next actions
+
+The original source operation continued on its same Studio worktree/branch.
+Published source7023 is595014ab1eb56d564c93566b18595ef5a580b8a9, tree183ec38529105db30a6394f83272d07a80951dba.
+44owning tests passed, including real producer-to-page output;18before/after
+producer cases preserve every old field and4forbidden mutations are caught.
+The weekly observation contract covers supplied input rows, not an independent
+exchange calendar or knowledge-time replay. Zero/negative weekly numbers stay
+real; stale/gapped/invalid dates stay unavailable. No Prophet ranking/entry changes.
+
+Two isolated ChromeCLI attempts returned final40second timeouts. A Playwright
+test dependency installed, but the new harness append was refused; that partial
+script never launched a server or browser. No visual result is accepted.
+The generated HTML fixture is source/consumer proof, not browser or production
+proof. A separate refused template polish was not applied; default non-China
+view tests pass but whole-template byte identity is not claimed.
+
+Current procedure was Mastermindf3f2d9155796876009f2d427bfdecc7ee7b63e74.
+Candidate six paths are unchanged through observed Macroef080409; the fresh
+compound full census was refused and yielded no complete collision receipt.
+This is source preservation on the existing writer, not release authorization.
+Actual official checkpoint and independent review remain controlling gates.
+
+The actual current protected source checkpoint returned REMOTE_CENSUS_INCOMPLETE
+after122.83seconds (exit2). This adds7023as an affected consumer of the existing346
+owner; it neither establishes collisions nor permits an alternate proof.
