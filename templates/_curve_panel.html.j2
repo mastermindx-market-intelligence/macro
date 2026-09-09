@@ -184,7 +184,8 @@
         {% if spread.today is none %}
           {{ t(curve.null_spread.en, curve.null_spread.zh) }}
         {% else %}
-          {{ t('%+.2f percentage points'|format(spread.today), '%+.2f个百分点'|format(spread.today)) }}
+          {{ t(curve.spread_now.en, curve.spread_now.zh) }}
+          {{ t('%.2f percentage points'|format(spread.today), '%.2f个百分点'|format(spread.today)) }}
         {% endif %}
       </dd>
       <p class="mq-curve-deltas">

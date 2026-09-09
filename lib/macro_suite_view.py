@@ -990,16 +990,16 @@ _CURVE_TENOR_LABELS: dict[str, dict[str, str]] = {
     "30y": _pair("30-year", "30年期"),
 }
 _CURVE_TENOR_SHORT = {
-    "3m": _pair("3m", "3个月"),
-    "6m": _pair("6m", "6个月"),
-    "1y": _pair("1y", "1年"),
-    "2y": _pair("2y", "2年"),
-    "3y": _pair("3y", "3年"),
-    "5y": _pair("5y", "5年"),
-    "7y": _pair("7y", "7年"),
-    "10y": _pair("10y", "10年"),
-    "20y": _pair("20y", "20年"),
-    "30y": _pair("30y", "30年"),
+    "3m": _pair("3 mo", "3个月"),
+    "6m": _pair("6 mo", "6个月"),
+    "1y": _pair("1 yr", "1年"),
+    "2y": _pair("2 yr", "2年"),
+    "3y": _pair("3 yr", "3年"),
+    "5y": _pair("5 yr", "5年"),
+    "7y": _pair("7 yr", "7年"),
+    "10y": _pair("10 yr", "10年"),
+    "20y": _pair("20 yr", "20年"),
+    "30y": _pair("30 yr", "30年"),
 }
 # At a 390 CSS px viewport ten overlay labels cannot clear each other: the ZH
 # short forms are ~26 px wide against a ~33 px tick pitch. These five stay
@@ -1018,28 +1018,32 @@ _SHAPE_NORMAL_LONG_DIP = _pair(
     "曲线呈正常形态 — 期限越长，收益率越高，仅在最长端有小幅回落。",
 )
 _SHAPE_FLAT = _pair(
-    "The curve is close to flat between three months and ten years.",
-    "三个月至十年期之间的曲线接近平坦。",
+    "The curve is close to flat — long and short maturities pay about the same.",
+    "曲线接近平坦——长短期限的收益率大致相同。",
 )
 _SHAPE_INVERTED_FRONT = _pair(
     "The curve is inverted at the front — three-month yields are at or above ten-year yields.",
     "曲线在短端倒挂 — 三个月期收益率已不低于十年期。",
 )
 _SHAPE_INVERTED_BELLY = _pair(
-    "The curve is inverted between two and ten years.",
-    "曲线在两年期与十年期之间倒挂。",
+    "The curve is inverted between two and ten years — two-year yields are at or above ten-year yields.",
+    "曲线在两年期与十年期之间倒挂——两年期收益率不低于十年期收益率。",
 )
 _SHAPE_INVERTED_BOTH = _pair(
-    "The curve is inverted at the front and between two and ten years.",
-    "曲线在短端以及两年期与十年期之间均倒挂。",
+    "The curve is inverted at the front and between two and ten years — three-month and two-year yields are at or above ten-year yields.",
+    "曲线在短端以及两年期与十年期之间均倒挂——三个月期与两年期收益率均不低于十年期收益率。",
+)
+_SHAPE_UNSTATED = _pair(
+    "The curve's shape is not stated today: a deciding maturity has no reading.",
+    "今日不判断曲线形态：关键期限缺少读数。",
 )
 _CURVE_NULL_PANEL = _pair(
     "The curve panel needs the Treasury data from tonight, which did not arrive.",
     "曲线面板需要当晚的美债数据，但数据未能到达。",
 )
 _CURVE_NULL_FIRST_NIGHTLY = _pair(
-    "The curve history is still being built; the comparison lines arrive after tonight's update.",
-    "曲线历史仍在建立中，对比线将在今晚的数据更新后出现。",
+    "Today's curve is shown alone: no earlier curve is on file to compare it with.",
+    "今天的曲线单独显示：暂无更早的曲线可供对比。",
 )
 _CURVE_NULL_TENOR = _pair(
     "No reading for this maturity in tonight's data.",
@@ -1147,7 +1151,7 @@ def _rows_for_tenor(index: Mapping[str, list[tuple[date, float]]], tenor: str) -
 def _null_tenor_copy(tenor: str) -> dict[str, str]:
     label = _CURVE_TENOR_LABELS[tenor]
     return _pair(
-        f"No reading for the {label['en']} in tonight's data.",
+        f"No reading for the {label['en']} maturity in tonight's data.",
         f"本次数据未覆盖{label['zh']}。",
     )
 
@@ -1160,8 +1164,9 @@ def _tenor_today(tenors: Sequence[Mapping[str, Any]], tenor: str) -> float | Non
 
 
 def _shape_read(tenors: Sequence[Mapping[str, Any]]) -> dict[str, str]:
-    """Three states with a where. Policy spreads only; a long-end kink is not inverted.
+    """Shape states with a where. Policy spreads only; a long-end kink is not inverted.
 
+    UNSTATED — neither 10y−3m nor 10y−2y can be computed.
     INVERTED — 10y−3m or 10y−2y is at or below zero, and the sentence names where.
     FLAT — 10y−3m is within ±0.25 pp and no policy spread is negative.
     NORMAL — otherwise. A 20y-above-30y dip may add one plain clause.
@@ -1173,6 +1178,8 @@ def _shape_read(tenors: Sequence[Mapping[str, Any]]) -> dict[str, str]:
     y30 = _tenor_today(tenors, "30y")
     spread_10y3m = None if y3m is None or y10 is None else y10 - y3m
     spread_2s10s = None if y2y is None or y10 is None else y10 - y2y
+    if spread_10y3m is None and spread_2s10s is None:
+        return dict(_SHAPE_UNSTATED)
     front_inv = spread_10y3m is not None and spread_10y3m <= 0
     belly_inv = spread_2s10s is not None and spread_2s10s <= 0
     if front_inv and belly_inv:
@@ -1231,8 +1238,11 @@ def _chart_payload(tenors: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     # "5.28%"-shaped label in Inter at 10 px is 31.7 px of ink, and the 4 px
     # gutter has to fit beside it. 64/640 leaves 29.6 px of content box and the
     # glyphs overflow it into the plot; 72/640 leaves 33.8 px and they do not.
-    # pad_r gives back the 8 units pad_l took, so the tick pitch and the gap
-    # between the last two labels stay where they were before R1.
+    # pad_l rose 48→72 (took 24 units). pad_r fell 16→8 (gave back 8, not the
+    # 24 that pad_l took). Inner width 576→560; tick pitch 64.00→62.22 units;
+    # the last-two-label gap shrank by about 1.8 CSS px at 1440. The 390
+    # x-label gap rule (≥4 px) still holds because only five labels stay
+    # visible there.
     pad_l, pad_r, pad_t, pad_b = 72, 8, 14, 28
     n = max(1, len(tenors) - 1)
     inner_w = width - pad_l - pad_r
@@ -1338,7 +1348,7 @@ def _curve_levels_caption(days: Sequence[date]) -> dict[str, str] | None:
     if a is None or b is None:
         return None
     if first == last:
-        return _pair(f"Levels as of {a['en']}", f"各期限水平截至 {a['zh']}")
+        return _pair(f"Levels as of {a['en']}", f"各期限水平截至{a['zh']}")
     if first.year == last.year and first.month == last.month:
         en = f"{first.day}–{last.day} {_MONTHS_EN[first.month - 1]} {first.year}"
         zh = f"{first.year}年{first.month}月{first.day}日至{last.day}日"
@@ -1349,7 +1359,7 @@ def _curve_levels_caption(days: Sequence[date]) -> dict[str, str] | None:
     else:
         en = f"{a['en']} – {b['en']}"
         zh = f"{a['zh']}至{b['zh']}"
-    return _pair(f"Levels as of {en}", f"各期限水平截至 {zh}")
+    return _pair(f"Levels as of {en}", f"各期限水平截至{zh}")
 
 
 def _curve_hero(snapshot: Mapping[str, Any]) -> dict[str, Any]:
@@ -1444,6 +1454,7 @@ def _curve_hero(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         ),
         "change_close": dict(_CURVE_CHANGE_CLOSE),
         "change_month": dict(_CURVE_CHANGE_MONTH),
+        "spread_now": _pair("Spread now", "当前利差"),
         "unit_spread": dict(_CURVE_UNIT_SPREAD),
         "chart": _chart_payload(tenors) if ok else None,
     }

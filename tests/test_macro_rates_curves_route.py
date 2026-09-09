@@ -7,9 +7,10 @@ fixture). No test touches ``data/fred/*.parquet`` or the network.
 The cases pin: the hero is rates_curves-only, ten nominal CMT tenors
 in registry order, prior-close / prior-month arithmetic, honest nulls, the
 context_only ceiling, two arithmetic spreads, EN+ZH copy, whole-panel null,
-render-level byte preservation of site/bonds.html (T10) and of the thirteen
-sibling suite pages plus the hub (T11), and no import of the yield-curve
-engine.
+region-level byte preservation of the thirteen sibling suite pages plus the
+hub (T11), and no import of the yield-curve engine. T10 lives in
+tests/test_macro_rates_curves_bonds_guard.py so this pandas-free module
+never imports scripts.build_bonds.
 """
 from __future__ import annotations
 
@@ -65,20 +66,35 @@ SHAPE_NORMAL_DIP_EN = (
     "with a small dip at the very long end."
 )
 SHAPE_NORMAL_DIP_ZH = "曲线呈正常形态 — 期限越长，收益率越高，仅在最长端有小幅回落。"
-SHAPE_FLAT_EN = "The curve is close to flat between three months and ten years."
-SHAPE_FLAT_ZH = "三个月至十年期之间的曲线接近平坦。"
+SHAPE_FLAT_EN = "The curve is close to flat — long and short maturities pay about the same."
+SHAPE_FLAT_ZH = "曲线接近平坦——长短期限的收益率大致相同。"
 SHAPE_INVERTED_FRONT_EN = (
     "The curve is inverted at the front — three-month yields are at or above ten-year yields."
 )
 SHAPE_INVERTED_FRONT_ZH = "曲线在短端倒挂 — 三个月期收益率已不低于十年期。"
-SHAPE_INVERTED_BELLY_EN = "The curve is inverted between two and ten years."
-SHAPE_INVERTED_BELLY_ZH = "曲线在两年期与十年期之间倒挂。"
+SHAPE_INVERTED_BELLY_EN = (
+    "The curve is inverted between two and ten years — two-year yields are at or above ten-year yields."
+)
+SHAPE_INVERTED_BELLY_ZH = (
+    "曲线在两年期与十年期之间倒挂——两年期收益率不低于十年期收益率。"
+)
+SHAPE_INVERTED_BOTH_EN = (
+    "The curve is inverted at the front and between two and ten years — "
+    "three-month and two-year yields are at or above ten-year yields."
+)
+SHAPE_INVERTED_BOTH_ZH = (
+    "曲线在短端以及两年期与十年期之间均倒挂——三个月期与两年期收益率均不低于十年期收益率。"
+)
+SHAPE_UNSTATED_EN = (
+    "The curve's shape is not stated today: a deciding maturity has no reading."
+)
+SHAPE_UNSTATED_ZH = "今日不判断曲线形态：关键期限缺少读数。"
 NULL_PANEL_EN = "The curve panel needs the Treasury data from tonight, which did not arrive."
 NULL_PANEL_ZH = "曲线面板需要当晚的美债数据，但数据未能到达。"
 NULL_FIRST_NIGHTLY_EN = (
-    "The curve history is still being built; the comparison lines arrive after tonight's update."
+    "Today's curve is shown alone: no earlier curve is on file to compare it with."
 )
-NULL_FIRST_NIGHTLY_ZH = "曲线历史仍在建立中，对比线将在今晚的数据更新后出现。"
+NULL_FIRST_NIGHTLY_ZH = "今天的曲线单独显示：暂无更早的曲线可供对比。"
 # The two honest-null legend lines, verbatim. EN and ZH must state the SAME
 # reason: "a second day" is not "the next day", and 一个月前线 garden-paths on
 # 前线 ("front line"), so the ZH names the line in quotation marks instead.
@@ -90,32 +106,39 @@ LEGEND_MONTH_NULL_EN = (
     "A month ago is not drawn: that comparison needs a month of history."
 )
 LEGEND_MONTH_NULL_ZH = "未画出“一个月前”对比线：该对比需要一个月的历史数据。"
-NULL_SEVEN_EN = "No reading for the 7-year in tonight's data."
+NULL_SEVEN_EN = "No reading for the 7-year maturity in tonight's data."
 NULL_SEVEN_ZH = "本次数据未覆盖7年期。"
 CHANGE_CLOSE_EN = "Change since prior close"
 CHANGE_CLOSE_ZH = "较上一交易日收盘变动"
 CHANGE_MONTH_EN = "Change over a month"
 CHANGE_MONTH_ZH = "较一个月前变动"
+SPREAD_NOW_EN = "Spread now"
+SPREAD_NOW_ZH = "当前利差"
 SUBTITLE_EN = "today versus the prior close versus a month ago"
 SUBTITLE_ZH = "今日、上一交易日收盘与一个月前对比"
 
-# The three files T10 guards. They are on the exclusive job's trigger paths so
-# the guard RUNS when they change; T10 itself is a build-vs-committed byte
-# comparison, never a source-hash pin, so a legitimate bonds-hub edit that
-# rebakes site/bonds.html in the same PR stays green.
-BONDS_GUARDED_SOURCES = (
-    "templates/bonds.html.j2",
-    "scripts/build_bonds.py",
-    "engine/yield_curve.py",
-)
-
-# The page-build stamp the shell prints, and the bonds hub's own build stamp.
-# Both are wall clocks: a render can only equal committed bytes when the clock
-# is pinned to the one the committed page was baked with.
+# The page-build stamp the shell prints. T11 renders each sibling with that
+# page's own stamp so the stamp sitting inside the macro-suite region does
+# not itself become a mismatch; a shared-stamp precondition is forbidden.
 _SUITE_BUILT_AT_RE = re.compile(
     r"Page built.*?<time>(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)</time>", re.S)
-_BONDS_BUILT_AT_RE = re.compile(
-    r"构建于</span>\s*(\d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC)")
+
+T11_SITE_PAGES = (
+    "site/macro_liquidity_regime.html",
+    "site/macro_growth_real_economy.html",
+    "site/macro_business_activity.html",
+    "site/macro_labor_markets.html",
+    "site/macro_inflation_system.html",
+    "site/macro_monetary_policy.html",
+    "site/macro_financial_conditions.html",
+    "site/macro_liquidity_central_banks.html",
+    "site/macro_capital_structure.html",
+    "site/macro_housing_real_estate.html",
+    "site/macro_consumer_payments.html",
+    "site/macro_national_debt_liabilities.html",
+    "site/macro_trade_flows.html",
+    "site/macro_monetary.html",
+)
 
 # The region of a rendered suite page that this packet's shared-surface edits
 # (the hero slot in the shell's body macro, the Range cell, the `range` key in
@@ -465,7 +488,7 @@ def test_5_missing_tenor_is_an_honest_null_not_a_dropped_row() -> None:
         assert not (has5 and has10), seg
     html = _render_panel(hero)
     # autoescape turns the apostrophe into &#39;; the words still have to land.
-    assert "No reading for the 7-year" in html
+    assert "No reading for the 7-year maturity in tonight" in html
     assert NULL_SEVEN_ZH in html
     svg = _svg_inner(html)
     assert f"{x7}," not in svg
@@ -618,7 +641,7 @@ def test_9_whole_panel_honest_null_when_snapshot_incomplete() -> None:
     # Default fixture availability is CURRENT, so this is the first-nightly
     # null, not the did-not-arrive sentence. autoescape turns the apostrophe
     # into &#39;; the words still have to land.
-    assert "The curve history is still being built" in html
+    assert "no earlier curve is on file" in html
     assert NULL_FIRST_NIGHTLY_ZH in html
     assert NULL_PANEL_EN not in html
     assert "<polyline" not in html
@@ -626,94 +649,22 @@ def test_9_whole_panel_honest_null_when_snapshot_incomplete() -> None:
 
 
 # ---------------------------------------------------------------------------
-# T10 — build site/bonds.html through scripts/build_bonds.py, compare bytes
+# T11 — region byte identity of the thirteen siblings plus the hub
 # ---------------------------------------------------------------------------
 def _copy_site_assets(destination: Path) -> None:
-    """lib.pages.write_page stamps ?v=<hash> from the assets beside the page.
-
-    Without them the render is bare-href and can never equal a committed page.
-    """
-    for asset in sorted((ROOT / "site").glob("*.css")):
+    """lib.pages.write_page may hash sibling css/js next to the page."""
+    site = ROOT / "site"
+    if not site.is_dir():
+        return
+    for asset in sorted(site.glob("*.css")):
         shutil.copy2(asset, destination / asset.name)
-    for asset in sorted((ROOT / "site").glob("*.js")):
+    for asset in sorted(site.glob("*.js")):
         shutil.copy2(asset, destination / asset.name)
 
 
-def test_10_bonds_hub_page_builds_to_the_committed_bytes(tmp_path, monkeypatch) -> None:
-    """Preservation at the RENDER level: build site/bonds.html through
-    scripts/build_bonds.py and assert the bytes equal the committed page.
-
-    Not a source-hash pin. A bonds-hub PR that legitimately edits
-    templates/bonds.html.j2 and rebakes site/bonds.html in the same commit
-    moves both sides together and stays green; this packet, which touches
-    neither, is proven not to move the page at all.
-
-    The page carries a wall-clock build stamp (`built = datetime.now(...)`), so
-    the clock is pinned to the stamp the committed page was baked with —
-    otherwise no build could ever equal committed bytes. The build reads the
-    parquet stores under data/; where those are not present in the checkout the
-    builder returns its own "skipping bonds page" path and this test skips with
-    that reason printed, never a silent pass.
-    """
-    committed_path = ROOT / "site" / "bonds.html"
-    if not committed_path.exists():
-        pytest.skip("site/bonds.html is not present in this checkout")
-    committed = committed_path.read_bytes()
-    stamp = _BONDS_BUILT_AT_RE.search(committed.decode("utf-8"))
-    if stamp is None:
-        pytest.skip("committed site/bonds.html carries no build stamp to pin the clock to")
-
-    from datetime import datetime as _dt
-
-    from scripts import build_bonds
-
-    out = tmp_path / "site"
-    out.mkdir()
-    _copy_site_assets(out)
-    real_write_page = build_bonds.write_page
-
-    def _redirected_write_page(path, html):
-        return real_write_page(out / Path(path).name, html)
-
-    class _PinnedClock(_dt):
-        @classmethod
-        def now(cls, tz=None):  # noqa: D401 — the one wall clock the page prints
-            return _dt.strptime(stamp.group(1), "%Y-%m-%d %H:%M UTC").replace(tzinfo=tz)
-
-    monkeypatch.setattr(build_bonds, "write_page", _redirected_write_page)
-    monkeypatch.setattr(build_bonds, "datetime", _PinnedClock)
-    monkeypatch.setattr(build_bonds.config, "data_dir", lambda: tmp_path / "data")
-    rc = build_bonds.main()
-    produced = out / "bonds.html"
-    if not produced.exists():
-        pytest.skip(
-            "scripts/build_bonds.py did not produce a page in this checkout "
-            f"(main() returned {rc}; the engine's parquet stores under data/ are "
-            "absent, so it takes its own 'skipping bonds page' path). T10 runs "
-            "for real where the data tree is present."
-        )
-    assert produced.read_bytes() == committed, (
-        "site/bonds.html no longer builds to its committed bytes"
-    )
-    for rel in BONDS_GUARDED_SOURCES:
-        assert (ROOT / rel).exists(), rel
-
-
-# ---------------------------------------------------------------------------
-# T11 — the thirteen sibling suite pages and the hub, at the render level
-# ---------------------------------------------------------------------------
-def _committed_suite_build_stamp() -> str | None:
-    """The one page-built stamp every committed suite page shares, or None."""
-    stamps: set[str] = set()
-    for page in builder.SUITE_PAGES:
-        path = ROOT / "site" / page.output
-        if not path.exists():
-            return None
-        found = _SUITE_BUILT_AT_RE.search(path.read_text(encoding="utf-8"))
-        if found is None:
-            return None
-        stamps.add(found.group(1))
-    return stamps.pop() if len(stamps) == 1 else None
+def _page_built_stamp(html: str) -> str | None:
+    found = _SUITE_BUILT_AT_RE.search(html)
+    return found.group(1) if found else None
 
 
 def _region(html: str, name: str) -> str | None:
@@ -726,29 +677,44 @@ def _region(html: str, name: str) -> str | None:
 
 
 def test_11_thirteen_other_suite_pages_byte_identical(tmp_path) -> None:
-    """Build the thirteen other SUITE_PAGES and the hub through the real
-    builder and compare each to the committed bytes on this tree.
+    """Region-level byte identity of the macro-suite region (the slice
+    enclosing <main>) on all fourteen T11 targets, unconditionally.
 
-    A sibling whose macro-suite region moved is a regression — this packet
-    edits the shared shell (the hero slot, the component-histories Range cell)
-    and the shared `_series()` builder, and this is the proof those edits are
-    inert everywhere else. Where the committed copy differs only OUTSIDE that
-    region the difference is pre-existing main-side drift (the committed pages
-    were baked by the site-chrome render lane, which stamps ?v= on every asset
-    ref, adds `defer`, injects preload hints and the banner script, and the
-    committed copies predate the newest nav row); that page is reported with
-    its reason and named in the PR body's GAPS, never silently passed.
+    A mismatched region is a FAIL, never a skip. Whole-page identity is
+    reported per target as information (identical / drifted lists printed);
+    ``assert len(identical)+len(drifted)==14`` is kept. Main-side chrome
+    stamps make whole-page identity unattainable on committed siblings; the
+    region is the whole of what this packet's shared-surface edits can reach.
+
+    Each target is rendered with that committed page's own page-built stamp
+    so a stamp sitting inside the region cannot itself become a mismatch, and
+    so a sibling rebake that moves one stamp cannot disable this test.
     """
-    stamp = _committed_suite_build_stamp()
-    if stamp is None:
-        pytest.skip("committed suite pages do not share one page-built stamp to render against")
+    assert (ROOT / "site" / "macrodata").is_dir(), (
+        "site/ is not materialised — python3 scripts/worktree_sparse.py add site"
+    )
     _copy_site_assets(tmp_path)
-    builder.render(ROOT, data_root=ROOT / "site" / "macrodata",
-                   out_dir=tmp_path, page_built_at=stamp)
+    env = builder._environment(ROOT)
+    data = ROOT / "site" / "macrodata"
+    entries: list[Any] = []
+    for page in builder.SUITE_PAGES:
+        committed_path = ROOT / "site" / page.output
+        assert committed_path.exists(), page.output
+        stamp = _page_built_stamp(committed_path.read_text(encoding="utf-8")) or BUILT_AT
+        _path, _ok, entry = builder.build_page(
+            ROOT, page, data_root=data, out_dir=tmp_path, env=env,
+            page_built_at=stamp,
+        )
+        entries.append(entry)
+    hub_committed = ROOT / "site" / "macro_monetary.html"
+    assert hub_committed.exists()
+    hub_stamp = _page_built_stamp(hub_committed.read_text(encoding="utf-8")) or BUILT_AT
+    builder.build_hub(entries, out_dir=tmp_path, env=env, page_built_at=hub_stamp)
 
     targets = [page.output for page in builder.SUITE_PAGES
                if page.workspace_id != "rates_curves"] + ["macro_monetary.html"]
     assert len(targets) == 14
+    assert [f"site/{name}" for name in targets] == list(T11_SITE_PAGES)
 
     identical: list[str] = []
     drifted: list[str] = []
@@ -768,13 +734,48 @@ def test_11_thirteen_other_suite_pages_byte_identical(tmp_path) -> None:
             "edits, not main-side drift."
         )
         drifted.append(name)
-        print(f"T11 drift-skip {name}: committed bytes differ only OUTSIDE the "
-              "macro-suite region (main-side: the committed copy was written by the "
-              "site-chrome render lane and predates the current nav/asset stamps). "
-              "The macro-suite region is byte-identical.")
-    print(f"T11: 14 targets — {len(identical)} whole-page byte-identical, "
-          f"{len(drifted)} region-identical with pre-existing main-side drift.")
+    print(f"T11 identical: {identical}")
+    print(f"T11 drifted: {drifted}")
+    print(f"T11: 14 targets — {len(identical)} whole-page identical, "
+          f"{len(drifted)} region-identical with whole-page drift.")
     assert len(identical) + len(drifted) == 14
+
+
+def test_11_stamp_mismatch_does_not_disable_the_region_assertion(tmp_path) -> None:
+    """M4. Altering one sibling's page-built stamp in a tmp copy must not
+    skip T11, and the region assertion still runs.
+    """
+    name = "macro_trade_flows.html"
+    committed_path = ROOT / "site" / name
+    assert committed_path.exists(), name
+    original = committed_path.read_text(encoding="utf-8")
+    stamp = _page_built_stamp(original)
+    assert stamp is not None
+    altered_stamp = "1999-01-01T00:00:00Z"
+    altered = original.replace(stamp, altered_stamp)
+    assert altered != original
+    assert stamp not in altered
+    copy = tmp_path / name
+    copy.write_text(altered, encoding="utf-8")
+    # The comparison still runs: region of the altered copy vs a re-render
+    # that uses the altered stamp. A skip is impossible here — there is no
+    # shared-stamp gate.
+    env = builder._environment(ROOT)
+    data = ROOT / "site" / "macrodata"
+    page = next(p for p in builder.SUITE_PAGES if p.output == name)
+    out = tmp_path / "rendered"
+    out.mkdir()
+    _copy_site_assets(out)
+    builder.build_page(
+        ROOT, page, data_root=data, out_dir=out, env=env,
+        page_built_at=altered_stamp,
+    )
+    before = _region(altered, name)
+    after = _region((out / name).read_text(encoding="utf-8"), name)
+    assert before is not None and after is not None
+    assert before == after
+    assert altered_stamp in before
+    assert stamp not in before
 
 
 # ---------------------------------------------------------------------------
@@ -830,9 +831,8 @@ def test_12_no_import_of_yield_curve_engine() -> None:
         for token in forbidden:
             assert token not in text, f"{rel} imports {token}"
     # sys.modules assertion: building the rates_curves view must not load those
-    # engines. T10 imports scripts.build_bonds itself (it builds the bonds page
-    # to compare bytes), so clear the probes first — otherwise this measures the
-    # test file's own imports instead of the view builder's.
+    # engines. Clear the probes first so this measures the view builder, not
+    # any earlier import in the process.
     probes = (
         "engine.yield_curve",
         "engine.rates_inflation_command",
@@ -918,6 +918,8 @@ def test_hero_numbers_carry_units_and_change_rows_are_not_legend_labels() -> Non
     assert CHANGE_CLOSE_ZH in html
     assert CHANGE_MONTH_EN in html
     assert CHANGE_MONTH_ZH in html
+    assert SPREAD_NOW_EN in html
+    assert SPREAD_NOW_ZH in html
     # Legend still names the plotted LEVELS; change rows must not reuse those
     # labels as the only words in front of a delta.
     legend_close = html.find("is-close")
@@ -997,7 +999,7 @@ def test_null_first_nightly_when_availability_is_current_and_series_absent() -> 
     hero = _hero(empty)
     assert hero["ok"] is False
     html = _render_panel(hero)
-    assert "The curve history is still being built" in html
+    assert "no earlier curve is on file" in html
     assert NULL_FIRST_NIGHTLY_ZH in html
     assert NULL_PANEL_EN not in html
     assert NULL_PANEL_ZH not in html
@@ -1036,7 +1038,7 @@ def test_tenor_labels_live_outside_the_viewbox_as_an_html_list() -> None:
     svg = _svg_inner(html)
     assert "<text" not in svg
     assert "<tspan" not in svg
-    for label in ("3-month", "30-year", "3月期", "30年期", "3m", "30y", "3个月"):
+    for label in ("3-month", "30-year", "3月期", "30年期", "3 mo", "30 yr", "3个月"):
         assert label not in svg, label
     svg_end = html.find("</svg>")
     ol_at = html.find('<ol class="mq-curve-xlabels">')
@@ -1140,7 +1142,7 @@ def test_as_of_caption_is_derived_from_the_plotted_rows() -> None:
     assert hero["as_of"] == "2026-09-09"
     html = _render_panel(hero)
     assert "Levels as of 9 September 2026" in html
-    assert "各期限水平截至 2026年9月9日" in html
+    assert "各期限水平截至2026年9月9日" in html
 
 
 def test_a_tenor_a_day_behind_makes_the_caption_name_the_range() -> None:
@@ -1163,7 +1165,7 @@ def test_a_tenor_a_day_behind_makes_the_caption_name_the_range() -> None:
     assert hero["as_of"] == "2026-09-08"
     html = _render_panel(hero)
     assert "Levels as of 8–9 September 2026" in html
-    assert "各期限水平截至 2026年9月8日至9日" in html
+    assert "各期限水平截至2026年9月8日至9日" in html
     # the page-wide calculation stamp is 2026-09-09 and must not stand alone
     assert "Levels as of 9 September 2026" not in html
     assert "As of 9 September 2026" not in html
@@ -1261,13 +1263,22 @@ def test_panel_heading_dropped_kicker_not_rates_and_curves_twice() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Round 3 R6 / R7 — job order and T10 path closure
+# Round 3 R6 / R7 — job order and T11 path closure
 # ---------------------------------------------------------------------------
 def _macro_suite_pages_job() -> dict[str, Any]:
     raw = yaml.safe_load(
         (ROOT / ".github" / "ci" / "legacy-jobs.yml").read_text(encoding="utf-8")
     )
     job = raw["jobs"]["market-os-macro-suite-pages"]
+    assert isinstance(job, dict)
+    return job
+
+
+def _credit_desk_job() -> dict[str, Any]:
+    raw = yaml.safe_load(
+        (ROOT / ".github" / "ci" / "legacy-jobs.yml").read_text(encoding="utf-8")
+    )
+    job = raw["jobs"]["ccw-w4-credit-desk"]
     assert isinstance(job, dict)
     return job
 
@@ -1283,14 +1294,86 @@ def test_packet_suite_is_the_first_pytest_step_in_the_job() -> None:
     assert "tests/test_macro_rates_curves_route.py" in pytest_steps[0]["run"]
     for step in steps:
         assert "continue-on-error" not in step
+    install = next(s for s in steps if "pip install" in str(s.get("run") or ""))
+    assert "pandas" not in install["run"]
+    assert "numpy" not in install["run"]
 
 
-def test_t10_guarded_paths_are_in_the_exclusive_job_paths() -> None:
+def test_t11_site_pages_are_listed_in_the_exclusive_job_paths() -> None:
     job = _macro_suite_pages_job()
     paths = list(job["paths"])
-    for rel in BONDS_GUARDED_SOURCES:
+    for rel in T11_SITE_PAGES:
         assert rel in paths, rel
-    # T10 reads the committed page itself, so the guard has to fire when the
-    # page moves. check_contract_delta.py demands this entry for the same
-    # reason (widening is the safe direction).
+    assert "site/bonds.html" not in paths
+    assert "tests/test_macro_rates_curves_bonds_guard.py" not in paths
+
+
+def test_t10_lives_on_the_pandas_job() -> None:
+    job = _credit_desk_job()
+    runs = "\n".join(str(s.get("run") or "") for s in job["steps"])
+    assert "tests/test_macro_rates_curves_bonds_guard.py" in runs
+    paths = list(job["paths"])
     assert "site/bonds.html" in paths
+    assert "scripts/build_bonds.py" in paths
+    assert "templates/bonds.html.j2" in paths
+    assert "tests/test_macro_rates_curves_bonds_guard.py" in paths
+
+
+def test_shape_inverted_both_carries_a_gloss() -> None:
+    html = _render_panel(_hero(_snapshot(levels=_inverted_levels())))
+    assert SHAPE_INVERTED_BOTH_EN in html
+    assert SHAPE_INVERTED_BOTH_ZH in html
+    assert SHAPE_INVERTED_FRONT_EN not in html
+    assert SHAPE_INVERTED_BELLY_EN not in html
+    assert SHAPE_NORMAL_EN not in html
+
+
+def test_shape_unstated_when_deciding_maturity_is_absent() -> None:
+    """R9.1. 10y absent, six tenors present → unstated, never NORMAL."""
+    skip = frozenset({"10y", "7y", "20y", "30y"})
+    hero = _hero(_snapshot(skip_tenors=skip))
+    present = [row for row in hero["tenors"] if row["today"] is not None]
+    assert len(present) == 6
+    assert hero["ok"] is True
+    html = _render_panel(hero)
+    assert hero["shape_read"]["en"] == SHAPE_UNSTATED_EN
+    assert hero["shape_read"]["zh"] == SHAPE_UNSTATED_ZH
+    assert "a deciding maturity has no reading." in html
+    assert SHAPE_UNSTATED_ZH in html
+    assert SHAPE_NORMAL_EN not in html
+    assert SHAPE_NORMAL_ZH not in html
+    assert SHAPE_FLAT_EN not in html
+
+
+def test_en_short_tenors_are_mo_and_yr() -> None:
+    """R9.3. EN shorts are real words; ZH shorts stay as they were."""
+    ticks = _hero(_snapshot())["chart"]["x_ticks"]
+    assert [tick["short"]["en"] for tick in ticks] == [
+        "3 mo", "6 mo", "1 yr", "2 yr", "3 yr", "5 yr", "7 yr", "10 yr",
+        "20 yr", "30 yr",
+    ]
+    assert [tick["short"]["zh"] for tick in ticks] == [
+        "3个月", "6个月", "1年", "2年", "3年", "5年", "7年", "10年", "20年", "30年",
+    ]
+    html = _render_panel(_hero(_snapshot()))
+    assert "3 mo" in html
+    assert ">3m<" not in html
+    assert "3个月" in html
+
+
+def test_spread_level_drops_forced_plus_and_is_labelled_spread_now() -> None:
+    """R9.4. The level has no forced plus; a negative keeps its minus."""
+    html = _render_panel(_hero(_snapshot(levels=_complete_levels())))
+    assert SPREAD_NOW_EN in html
+    assert SPREAD_NOW_ZH in html
+    assert "+0.45 percentage points" not in html
+    assert "0.45 percentage points" in html
+    assert "0.45个百分点" in html
+    inverted = _render_panel(_hero(_snapshot(levels=_inverted_front_levels())))
+    assert SPREAD_NOW_EN in inverted
+    assert "-0.30 percentage points" in inverted
+    assert "-0.30个百分点" in inverted
+    assert CHANGE_CLOSE_EN in html
+    assert CHANGE_CLOSE_ZH in html
+    assert CHANGE_MONTH_EN in html
+    assert CHANGE_MONTH_ZH in html

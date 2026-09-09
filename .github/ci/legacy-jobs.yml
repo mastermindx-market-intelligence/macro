@@ -6270,6 +6270,22 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly
       - name: CCW-W4 credit desk vm tests
         run: python -m pytest tests/test_bonds_corp_credit_vm.py -v
+      - name: A-F01-W4-1 bonds hub byte-preservation guard (T10)
+        run: python -m pytest tests/test_macro_rates_curves_bonds_guard.py -q
+    # T10 lives here, not in market-os-macro-suite-pages: that exclusive job
+    # installs only pytest/jinja2/pyyaml/jsonschema (pandas-free by law). T10
+    # calls scripts.build_bonds.main(), which imports numpy and pandas at
+    # module scope. Declared paths are unioned with inference from both
+    # pytest files; listed so an edit to a T10 subject starts this job.
+    paths:
+      - "tests/test_bonds_corp_credit_vm.py"
+      - "tests/test_macro_rates_curves_bonds_guard.py"
+      - "site/bonds.html"
+      - "scripts/build_bonds.py"
+      - "templates/bonds.html.j2"
+      - "lib/macro_suite_view.py"
+      - "templates/_curve_panel.html.j2"
+      - "templates/_macro_suite_shell.html.j2"
 
   ccw-w6-study-s1:
     if: ${{ false }}
@@ -13955,42 +13971,25 @@ jobs:
       # A-F01-W4-1: ceiling-scoped Treasury curve-shape hero on rates_curves.
       - "templates/_curve_panel.html.j2"
       - "tests/test_macro_rates_curves_route.py"
-      # Explicit widening: T10 builds site/bonds.html through
-      # scripts/build_bonds.py and compares it to the committed page, so the
-      # exclusive job must fire when any of those change. Disclosed in the PR
-      # body (R7). Adding yield_curve / build_bonds pulls their import closure;
-      # contract-delta requires those files in this job's paths (widening is
-      # the safe direction).
-      - "site/bonds.html"
-      - "templates/bonds.html.j2"
-      - "scripts/build_bonds.py"
-      - "engine/yield_curve.py"
-      - "collectors/base.py"
-      - "collectors/fred.py"
-      - "engine/bond_compass.py"
-      - "engine/bond_cross_asset.py"
-      - "engine/bonds.py"
-      - "engine/bonds_alerts.py"
-      - "engine/canon.py"
-      - "engine/conditions.py"
-      - "engine/credit_cycle.py"
-      - "engine/cross_asset.py"
-      - "engine/cross_asset_trend.py"
-      - "engine/fed_path.py"
-      - "engine/i18n.py"
-      - "engine/indicators.py"
-      - "engine/inputs.py"
-      - "engine/intl_bonds.py"
-      - "engine/intl_risk.py"
-      - "engine/ird_velocity.py"
-      - "engine/pit.py"
-      - "engine/pit_lag_recorder.py"
-      - "engine/total_return.py"
-      - "engine/treasury_supply.py"
-      - "engine/validation.py"
-      - "lib/forex_link.py"
-      - "lib/illus.py"
-      - "lib/store.py"
+      # T11 reads these fourteen committed pages (thirteen siblings + the hub).
+      # Listed literally: they are computed from SUITE_PAGES at runtime and
+      # would otherwise be invisible to the trigger-closure checker. T10 no
+      # longer runs in this pandas-free job; site/bonds.html lives on
+      # ccw-w4-credit-desk.
+      - "site/macro_liquidity_regime.html"
+      - "site/macro_growth_real_economy.html"
+      - "site/macro_business_activity.html"
+      - "site/macro_labor_markets.html"
+      - "site/macro_inflation_system.html"
+      - "site/macro_monetary_policy.html"
+      - "site/macro_financial_conditions.html"
+      - "site/macro_liquidity_central_banks.html"
+      - "site/macro_capital_structure.html"
+      - "site/macro_housing_real_estate.html"
+      - "site/macro_consumer_payments.html"
+      - "site/macro_national_debt_liabilities.html"
+      - "site/macro_trade_flows.html"
+      - "site/macro_monetary.html"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
