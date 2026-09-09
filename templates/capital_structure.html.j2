@@ -70,7 +70,7 @@
     </div>
     {% if premium and premium.status == 'computed' %}
     <p>{{ t('A buyer has offered', '买方出价') }} <strong>{{ premium.currency }} {{ '%.2f'|format(premium.offer_price) }}</strong>
-       {{ t('a share for', '每股，收购') }} <strong>{{ premium.ticker }}</strong>.
+       {{ t('a share for', '每股，收购') }} <strong>{{ premium.ticker }}</strong>{{ t('.', '。') }}
        {{ t('That is', '相当于') }} <strong>{{ '%+.1f'|format(premium.premium_pct) }}%</strong>
        {{ t('above the share price on the last trading day before the deal reached the SEC record.', '高于该交易进入 SEC 记录前最后一个交易日的股价。') }}</p>
     <div class="cs-latest-grid">

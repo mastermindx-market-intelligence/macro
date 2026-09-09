@@ -473,18 +473,38 @@ def build_situations() -> pd.DataFrame:
     return df
 
 
+def _premium_snapshot_payload(df) -> dict:
+    """Best-effort featured premium. On any failure return the full ``_refused()``
+    shape so the snapshot JSON never carries a bare machine reason."""
+    try:
+        from engine import special_situations_premium
+        return special_situations_premium.featured_premium(df=df)
+    except Exception as e:  # noqa: BLE001 — premium is best-effort, never blocks the desk
+        log.warning("special_situations premium failed: %s", e)
+        try:
+            from engine.special_situations_premium import _refused
+            return _refused("computation_unavailable")
+        except Exception:  # noqa: BLE001 — import itself failed; still emit plain-word nulls
+            return {
+                "schema": "special_situations.premium.v1",
+                "parser_version": "special-situations-premium/1.0.0",
+                "scored": SCORED,
+                "is_context_only": True,
+                "disclaimer": DISCLAIMER,
+                "status": "refused",
+                "refusal": "computation_unavailable",
+                "null_en": "We could not compute a premium for this deal right now — check back later.",
+                "null_zh": "我们暂时无法计算该交易的溢价，请稍后再试。",
+            }
+
+
 def snapshot() -> dict:
     """Display payload for the desk: classified situations passing the floor,
     grouped by category, plus honest coverage counts. SCORED=False / context-only."""
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     df = build_situations()
     if df.empty:
-        try:
-            from engine import special_situations_premium
-            premium = special_situations_premium.featured_premium(df=df)
-        except Exception as e:  # noqa: BLE001 — premium is best-effort, never blocks the desk
-            log.warning("special_situations premium (empty snapshot) failed: %s", e)
-            premium = {"status": "refused", "refusal": "computation_unavailable"}
+        premium = _premium_snapshot_payload(df)
         return {"scored": SCORED, "is_context_only": True, "disclaimer": DISCLAIMER,
                 "built": now, "situations": [], "counts": {}, "coverage": {},
                 "premium": premium}
@@ -509,14 +529,9 @@ def snapshot() -> dict:
     keep_cols = [c for c in keep_cols if c in desk.columns]
     sits = (desk.sort_values("date_filed", ascending=False)[keep_cols]
             .to_dict("records"))
-    try:
-        from engine import special_situations_premium
-        # Major-1 fix: reuse the frame already built above instead of re-running
-        # build_situations() + lifecycle() + _closes_panel() a second time.
-        premium = special_situations_premium.featured_premium(df=df)
-    except Exception as e:  # noqa: BLE001 — premium is best-effort, never blocks the desk
-        log.warning("special_situations premium failed: %s", e)
-        premium = {"status": "refused", "refusal": "computation_unavailable"}
+    # Major-1 fix: reuse the frame already built above instead of re-running
+    # build_situations() + lifecycle() + _closes_panel() a second time.
+    premium = _premium_snapshot_payload(df)
     return {
         "scored": SCORED, "is_context_only": True, "disclaimer": DISCLAIMER,
         "built": now, "counts": by_cat, "coverage": coverage, "situations": sits,

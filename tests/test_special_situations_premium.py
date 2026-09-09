@@ -168,6 +168,35 @@ def test_snapshot_contract_is_extended_not_forked(monkeypatch):
     assert "premium" in snap
 
 
+def test_snapshot_exception_fallback_carries_plain_word_nulls(monkeypatch):
+    """RED-first (h2 MINOR 2): the snapshot() except fallback used to be
+    ``{"status": "refused", "refusal": "computation_unavailable"}`` with no
+    ``null_en``/``null_zh``, so the JSON carried a bare machine reason. The
+    fallback must be the full ``_refused()`` shape the rendered block already
+    uses.
+    """
+    from engine import special_situations as ss
+    from engine import special_situations_premium as prem_mod
+
+    monkeypatch.setattr(ss, "build_situations", lambda: pd.DataFrame())
+
+    def _boom(*_a, **_k):
+        raise RuntimeError("forced computation failure")
+
+    monkeypatch.setattr(prem_mod, "featured_premium", _boom)
+    snap = ss.snapshot()
+    premium = snap["premium"]
+    assert premium["status"] == "refused"
+    assert premium["refusal"] == "computation_unavailable"
+    assert premium.get("null_en"), premium
+    assert premium.get("null_zh"), premium
+    assert "computation_unavailable" not in premium["null_en"]
+    assert "computation_unavailable" not in premium["null_zh"]
+    expected = prem_mod._refused("computation_unavailable")
+    assert premium["null_en"] == expected["null_en"]
+    assert premium["null_zh"] == expected["null_zh"]
+
+
 def test_receipt_round_trips_the_template_contract(tmp_path, monkeypatch):
     fx = _load("premium_computed_deal.json")
     expected = prem.premium_for_event(
@@ -231,6 +260,51 @@ def test_desk_shell_renders_the_premium_block_in_both_languages(tmp_path):
         for token in cls.split():
             if token.startswith("cs-"):
                 assert f".{token}" in css, f"class {token} not defined in capital_structure.css"
+
+
+def _premium_block_source() -> str:
+    src = (Path(__file__).parent.parent / "templates" / "capital_structure.html.j2").read_text(
+        encoding="utf-8")
+    start = src.index("B-F09-4 PREMIUM BLOCK START")
+    end = src.index("B-F09-4 PREMIUM BLOCK END")
+    return src[start:end]
+
+
+def test_premium_block_keeps_ascii_stop_punctuation_inside_t():
+    """RED-first (h2 MINOR 1): ``</strong>.`` after ``premium.ticker`` sat
+    outside ``t()``, so the ZH sentence closed with an English period.
+    """
+    block = _premium_block_source()
+    assert "</strong>." not in block
+    assert "</strong>:" not in block
+    assert "{{ t('.', '。') }}" in block
+    # Any remaining `.` / `:` / `,` in the block must sit inside a t() call
+    # (or a jinja comment / interpolation / HTML attribute), never as a
+    # user-facing stop after a value.
+    user_bits = re.sub(r"\{#.*?#\}", "", block, flags=re.S)
+    user_bits = re.sub(r"\{\{\s*t\((?:.|\n)*?\)\s*\}\}", "", user_bits)
+    user_bits = re.sub(r"\{%.*?%\}", "", user_bits, flags=re.S)
+    user_bits = re.sub(r"\{\{.*?\}\}", "", user_bits, flags=re.S)
+    user_bits = re.sub(r"<[^>]+>", " ", user_bits)
+    assert not re.search(r"[.:]", user_bits), user_bits
+
+
+def test_computed_premium_zh_sentence_closes_with_ideographic_full_stop():
+    fx = _load("premium_computed_deal.json")
+    premium = prem.premium_for_event(
+        fx["event"], closes=_closes_series(fx["closes"]), lifecycle_row=fx["lifecycle_row"],
+        ledger=fx["ledger"], asof="2026-09-06 00:00 UTC")
+    _, block = _render_premium(premium)
+    ticker = premium["ticker"]
+    assert f"<strong>{ticker}</strong>." not in block
+    assert re.search(
+        rf"<strong>{re.escape(ticker)}</strong>"
+        r'<span class="l-en">\.</span><span class="l-zh">。</span>',
+        block,
+    )
+    _, null_block = _render_premium(_run_fixture("premium_no_unaffected.json"))
+    assert "目前没有可展示的交易。" in null_block or "我们没有该交易公布之前的股价数据。" in null_block
+    assert re.search(r"class=\"l-zh\">[^<]*[.:][^<]*</span>", null_block) is None
 
 
 def test_desk_shell_renders_without_a_receipt():
