@@ -75,12 +75,13 @@
        {{ t('above the share price on the last trading day before the deal reached the SEC record.', '高于该交易进入 SEC 记录前最后一个交易日的股价。') }}</p>
     <div class="cs-latest-grid">
       <div><span>{{ t('Offer price', '出价') }}</span><strong>{{ premium.currency }} {{ '%.2f'|format(premium.offer_price) }}</strong></div>
-      <div><span>{{ t('Filing it came from', '出处文件') }}</span><strong>{{ premium.offer_form_type }} · {{ premium.offer_accession }}</strong></div>
+      <div><span>{{ t('SEC filing type', 'SEC 披露文件类型') }}</span><strong>{{ premium.offer_form_type }}</strong></div>
+      <div><span>{{ t('SEC accession number', 'SEC 文件编号') }}</span><strong>{{ premium.offer_accession }}</strong></div>
       <div><span>{{ t('That filing is dated', '该文件日期') }}</span><strong>{{ premium.offer_filing_date }}</strong></div>
       <div><span>{{ t('Deal first reached the record', '交易首次进入记录') }}</span><strong>{{ premium.announcement_filing_date }}</strong></div>
       <div><span>{{ t('Share price used', '所用股价') }}</span><strong>{{ premium.currency }} {{ '%.2f'|format(premium.unaffected_price) }}</strong></div>
       <div><span>{{ t('Price date', '股价日期') }}</span><strong>{{ premium.unaffected_price_date }}</strong></div>
-      <div><span>{{ t('Filings so far', '已提交文件数') }}</span><strong>{{ premium.amendment_vintage.filings_in_deal }}</strong></div>
+      <div><span>{{ t('Filings so far', '已披露文件数') }}</span><strong>{{ premium.amendment_vintage.filings_in_deal }}</strong></div>
       <div><span>{{ t('Revisions so far', '修订次数') }}</span><strong>{{ premium.amendment_vintage.n_amendments }}</strong></div>
     </div>
     {% if premium.offer_price_provenance != 'filing_text_confirmed' %}
@@ -90,7 +91,7 @@
     {% elif premium %}
     <div class="cs-unavailable">
       <span class="cs-unavailable-mark" aria-hidden="true">↳</span>
-      <div><strong>{{ t(premium.null_en, premium.null_zh) }}</strong></div>
+      <div><strong>{{ t(premium.null_en or 'No deal is ready to show right now.', premium.null_zh or '目前没有可展示的交易。') }}</strong></div>
     </div>
     {% else %}
     <div class="cs-unavailable">

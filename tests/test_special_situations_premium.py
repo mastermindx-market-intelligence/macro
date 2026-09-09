@@ -187,24 +187,46 @@ def test_receipt_round_trips_the_template_contract(tmp_path, monkeypatch):
     assert payload["ticker"] == expected["ticker"]
 
 
-def test_desk_shell_renders_the_premium_block_in_both_languages(tmp_path):
+def _render_premium(premium=None, **kwargs):
     from jinja2 import Environment, FileSystemLoader, StrictUndefined
     repo_root = Path(__file__).parent.parent
     env = Environment(loader=FileSystemLoader(str(repo_root / "templates")),
                        autoescape=True, undefined=StrictUndefined)
+    render_kw = dict(active_section="research", active_page="capital_structure",
+                     **kwargs)
+    if premium is not None:
+        render_kw["premium"] = premium
+    html = env.get_template("capital_structure.html.j2").render(**render_kw)
+    after = html.split('id="cs-premium"', 1)[1]
+    if 'id="cs-policy"' in after:
+        block = after.split('id="cs-policy"', 1)[0]
+    else:
+        block = after.split('class="cs-workspace"', 1)[0]
+    return html, block
+
+
+def test_desk_shell_renders_the_premium_block_in_both_languages(tmp_path):
     fx = _load("premium_computed_deal.json")
     premium = prem.premium_for_event(
         fx["event"], closes=_closes_series(fx["closes"]), lifecycle_row=fx["lifecycle_row"],
         ledger=fx["ledger"], asof="2026-09-06 00:00 UTC")
-    html = env.get_template("capital_structure.html.j2").render(
-        active_section="research", active_page="capital_structure", premium=premium)
+    html, block = _render_premium(premium)
     assert 'id="cs-premium"' in html
     assert premium["unaffected_price_date"] in html
     assert premium["announcement_filing_date"] in html
+    assert premium["offer_filing_date"] in html
+    assert premium["offer_accession"] in html
     assert f"{premium['premium_pct']:+.1f}%" in html
+    assert "SEC accession number" in block
+    assert "SEC 文件编号" in block
+    assert "SEC filing type" in block
+    assert "SEC 披露文件类型" in block
+    assert "申报" not in block
+    assert "offer_price_provenance" not in block
+    assert "None" not in block
     assert "<style" not in html
+    repo_root = Path(__file__).parent.parent
     css = (repo_root / "templates" / "capital_structure.css").read_text(encoding="utf-8")
-    block = html.split('id="cs-premium"')[1]
     for cls in re.findall(r'class="([^"]+)"', block):
         for token in cls.split():
             if token.startswith("cs-"):
@@ -212,13 +234,35 @@ def test_desk_shell_renders_the_premium_block_in_both_languages(tmp_path):
 
 
 def test_desk_shell_renders_without_a_receipt():
-    from jinja2 import Environment, FileSystemLoader, StrictUndefined
-    repo_root = Path(__file__).parent.parent
-    env = Environment(loader=FileSystemLoader(str(repo_root / "templates")),
-                       autoescape=True, undefined=StrictUndefined)
-    html = env.get_template("capital_structure.html.j2").render(
-        active_section="research", active_page="capital_structure")
-    assert "No deal is ready to show right now." in html
+    html, block = _render_premium(None)
+    assert "No deal is ready to show right now." in block
+    assert "目前没有可展示的交易。" in block
+    assert "申报" not in block
+    assert "None" not in block
+
+
+def test_desk_shell_refuses_ambiguous_join_in_plain_words():
+    row = _run_fixture("premium_join_ambiguous.json")
+    assert row["status"] == "refused"
+    assert "premium_pct" not in row
+    _, block = _render_premium(row)
+    assert row["null_en"] in block
+    assert row["null_zh"] in block
+    assert "申报" not in block
+    assert "None" not in block
+    assert re.search(r"[+\-]?\d+\.\d+%", block) is None
+
+
+def test_desk_shell_refuses_missing_unaffected_price_in_plain_words():
+    row = _run_fixture("premium_no_unaffected.json")
+    assert row["status"] == "refused"
+    assert "premium_pct" not in row
+    _, block = _render_premium(row)
+    assert row["null_en"] in block
+    assert row["null_zh"] in block
+    assert "申报" not in block
+    assert "None" not in block
+    assert re.search(r"[+\-]?\d+\.\d+%", block) is None
 
 
 def test_builder_tolerates_a_missing_or_corrupt_receipt(tmp_path):

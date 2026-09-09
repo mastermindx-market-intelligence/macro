@@ -1,0 +1,456 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "generated_at": "2026-09-09T03:36:54Z",
+  "outcome": "captured",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them",
+    "source": "locally rendered templates/capital_structure.html.j2 against tests/fixtures/special_situations/premium_computed_deal.json and premium_no_unaffected.json"
+  },
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "pages": [
+    {
+      "page_id": "capital_structure_premium_computed",
+      "registry_route": "/capital_structure.html",
+      "route": "/computed.html",
+      "route_kind": "local_fixture",
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": [],
+      "metrics": {
+        "label": "computed premium"
+      },
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "computed_dark_en_1440.png",
+          "force_state": null,
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "clip_target": "#cs-premium",
+          "verified_how": "playwright element screenshot of #cs-premium after data-theme/data-lang + localStorage seed",
+          "bytes": 207559,
+          "sha256": "f1e028ddb6a261792eaf1cd8499e8486dad3feb72f0acebee91992f5da65313c",
+          "width": 2808,
+          "height": 866,
+          "css_size": [
+            1440,
+            900
+          ]
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "computed_light_en_1440.png",
+          "force_state": null,
+          "locale": "en",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "clip_target": "#cs-premium",
+          "verified_how": "playwright element screenshot of #cs-premium after data-theme/data-lang + localStorage seed",
+          "bytes": 136199,
+          "sha256": "fc9d7b63ad54e53714b8ab421e500272dc57bd38e0606a00db1358cd14e21924",
+          "width": 2808,
+          "height": 866,
+          "css_size": [
+            1440,
+            900
+          ]
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "computed_dark_zh_1440.png",
+          "force_state": null,
+          "locale": "zh",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "clip_target": "#cs-premium",
+          "verified_how": "playwright element screenshot of #cs-premium after data-theme/data-lang + localStorage seed",
+          "bytes": 221156,
+          "sha256": "250ad44492f217c7815d9da5060892afaf727df10c0573c9f568956b3f057bf1",
+          "width": 2808,
+          "height": 866,
+          "css_size": [
+            1440,
+            900
+          ]
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "computed_light_zh_1440.png",
+          "force_state": null,
+          "locale": "zh",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "clip_target": "#cs-premium",
+          "verified_how": "playwright element screenshot of #cs-premium after data-theme/data-lang + localStorage seed",
+          "bytes": 149683,
+          "sha256": "43a1316b18e632b8363ecdb31ebb1e41c464dfd2c33a3a9a3712c5b49cf6b324",
+          "width": 2808,
+          "height": 866,
+          "css_size": [
+            1440,
+            900
+          ]
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "computed_dark_en_390.png",
+          "force_state": null,
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "clip_target": "#cs-premium",
+          "verified_how": "playwright element screenshot of #cs-premium after data-theme/data-lang + localStorage seed",
+          "bytes": 240765,
+          "sha256": "e5ee1426aa37d5aeb932a01f48421fdc2f083b46cb83e92dd53fff74ce720324",
+          "width": 732,
+          "height": 1524,
+          "css_size": [
+            390,
+            844
+          ]
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "computed_light_en_390.png",
+          "force_state": null,
+          "locale": "en",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "clip_target": "#cs-premium",
+          "verified_how": "playwright element screenshot of #cs-premium after data-theme/data-lang + localStorage seed",
+          "bytes": 152382,
+          "sha256": "ff90fa318b5afe002c6176f726866ade005a71f12de55847d4bc3df4c0401e3c",
+          "width": 732,
+          "height": 1524,
+          "css_size": [
+            390,
+            844
+          ]
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "computed_dark_zh_390.png",
+          "force_state": null,
+          "locale": "zh",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "clip_target": "#cs-premium",
+          "verified_how": "playwright element screenshot of #cs-premium after data-theme/data-lang + localStorage seed",
+          "bytes": 198134,
+          "sha256": "adb95e1ad8d2520a925db3c935c4ea9cb960d949436ce5244f896ccdd685f5af",
+          "width": 732,
+          "height": 1332,
+          "css_size": [
+            390,
+            844
+          ]
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "computed_light_zh_390.png",
+          "force_state": null,
+          "locale": "zh",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "clip_target": "#cs-premium",
+          "verified_how": "playwright element screenshot of #cs-premium after data-theme/data-lang + localStorage seed",
+          "bytes": 140240,
+          "sha256": "70f2188352314689443f40a2285ea749e529c8783f639f398bfcb9e9844107c6",
+          "width": 732,
+          "height": 1332,
+          "css_size": [
+            390,
+            844
+          ]
+        }
+      ]
+    },
+    {
+      "page_id": "capital_structure_premium_null",
+      "registry_route": "/capital_structure.html",
+      "route": "/null.html",
+      "route_kind": "local_fixture",
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": [],
+      "metrics": {
+        "label": "plain-word null"
+      },
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "null_dark_en_1440.png",
+          "force_state": null,
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "clip_target": "#cs-premium",
+          "verified_how": "playwright element screenshot of #cs-premium after data-theme/data-lang + localStorage seed",
+          "bytes": 92988,
+          "sha256": "6cac534052df84917643481647532b5e64e0fb1cb766faa594682a9463480a4d",
+          "width": 2808,
+          "height": 522,
+          "css_size": [
+            1440,
+            900
+          ]
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "null_light_en_1440.png",
+          "force_state": null,
+          "locale": "en",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "clip_target": "#cs-premium",
+          "verified_how": "playwright element screenshot of #cs-premium after data-theme/data-lang + localStorage seed",
+          "bytes": 71776,
+          "sha256": "126eabd3993094c12afcecf1fb9587235dad4af086d49e3192a59cfa9dafcc5c",
+          "width": 2808,
+          "height": 522,
+          "css_size": [
+            1440,
+            900
+          ]
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "null_dark_zh_1440.png",
+          "force_state": null,
+          "locale": "zh",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "clip_target": "#cs-premium",
+          "verified_how": "playwright element screenshot of #cs-premium after data-theme/data-lang + localStorage seed",
+          "bytes": 100623,
+          "sha256": "7bc9325974aade7546add280af3aefdc50c9dd1dd871577564acd06942f95791",
+          "width": 2808,
+          "height": 522,
+          "css_size": [
+            1440,
+            900
+          ]
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "null_light_zh_1440.png",
+          "force_state": null,
+          "locale": "zh",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "clip_target": "#cs-premium",
+          "verified_how": "playwright element screenshot of #cs-premium after data-theme/data-lang + localStorage seed",
+          "bytes": 77307,
+          "sha256": "b624a5c92b8213e936dde868a262fd719a72f59b9108e37a79ba172dc1c658ab",
+          "width": 2808,
+          "height": 522,
+          "css_size": [
+            1440,
+            900
+          ]
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "null_dark_en_390.png",
+          "force_state": null,
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "clip_target": "#cs-premium",
+          "verified_how": "playwright element screenshot of #cs-premium after data-theme/data-lang + localStorage seed",
+          "bytes": 95081,
+          "sha256": "754c0b24638aa5f650b53023d7bb042cb8126b88fb9fc9c61bb7bb74a9170b71",
+          "width": 732,
+          "height": 732,
+          "css_size": [
+            390,
+            844
+          ]
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "null_light_en_390.png",
+          "force_state": null,
+          "locale": "en",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "clip_target": "#cs-premium",
+          "verified_how": "playwright element screenshot of #cs-premium after data-theme/data-lang + localStorage seed",
+          "bytes": 73864,
+          "sha256": "18873ca1a9d2487c1a76978ce8ae8ee0b8c328accd250dea5a970ae03e02efe5",
+          "width": 732,
+          "height": 732,
+          "css_size": [
+            390,
+            844
+          ]
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "null_dark_zh_390.png",
+          "force_state": null,
+          "locale": "zh",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "clip_target": "#cs-premium",
+          "verified_how": "playwright element screenshot of #cs-premium after data-theme/data-lang + localStorage seed",
+          "bytes": 86891,
+          "sha256": "9732cc360e2a16f865ff0027366b9c2d4617be64461a1d486d7a4c4056594efe",
+          "width": 732,
+          "height": 600,
+          "css_size": [
+            390,
+            844
+          ]
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "null_light_zh_390.png",
+          "force_state": null,
+          "locale": "zh",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "clip_target": "#cs-premium",
+          "verified_how": "playwright element screenshot of #cs-premium after data-theme/data-lang + localStorage seed",
+          "bytes": 65814,
+          "sha256": "71399a0c1c285d5b173136f8acd6bd3cbd15e689449b531069ef458cc21ce7dd",
+          "width": 732,
+          "height": 600,
+          "css_size": [
+            390,
+            844
+          ]
+        }
+      ]
+    }
+  ],
+  "selection": {
+    "routes": [
+      "/computed.html",
+      "/null.html"
+    ]
+  },
+  "target": {
+    "block": "#cs-premium"
+  },
+  "tool": {
+    "module_ref": "playwright chromium element screenshot of #cs-premium; device_scale_factor=2",
+    "user_agent": "B-F09-4 premium block evidence",
+    "version": "chrome-headless"
+  },
+  "totals": {
+    "pages": 2,
+    "states_attempted": 16,
+    "states_captured": 16
+  },
+  "capture_commands": [
+    "python3 scripts/worktree_sparse.py add mockups",
+    "locally rendered capital_structure.html.j2 with committed premium fixtures; playwright screenshot #cs-premium"
+  ]
+}
