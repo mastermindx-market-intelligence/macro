@@ -1083,9 +1083,9 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
 <section class="mod ss-mod rv" id="security-state" aria-labelledby="ss-title">
   <div class="mod-hd">
     <h2 id="ss-title">{{ t('Security state', '证券状态') }}</h2>
-    <span class="hint">{{ t('Eight reads on this listing.', '这只证券的八项读数。') }}</span>
+    <span class="hint">{{ t('The panels below.', '以下面板。') }}</span>
   </div>
-  <p class="ss-sub">{{ t('Eight separate reads on this listing — what each one rests on, and how old it is. Use it to check the rest of the page. Not a buy or sell signal, and never blended into a score.', '对该证券的八项独立读数 — 每项的依据来源与时效。可用于核对本页其余内容。不构成买卖信号，也不会合并为任何评分。') }}</p>
+  <p class="ss-sub">{{ t('The panels below — what each one rests on, and how old it is. Use it to check the rest of the page. Not a buy or sell signal, and never blended into a score.', '以下面板 — 每项的依据来源与时效。可用于核对本页其余内容。不构成买卖信号，也不会合并为任何评分。') }}</p>
 
   {# One flag, at most. A read that could not be built outranks an identity
      problem; both name what still works, so the reader never has to guess how
@@ -1109,7 +1109,9 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
       {% if ss.coverage.opt_total is not none %}<span class="v">{{ ss.coverage.opt_avail if ss.coverage.opt_avail is not none else '—' }} / {{ ss.coverage.opt_total }} {{ t('optional, current', '项可选读数（当前）') }}</span>{% endif %}
     </div>
     {% if ss.personal_impact %}
-    <div class="ss-note"><b>{{ t(ss.personal_impact.title_en, ss.personal_impact.title_zh) }}</b><span class="v">{{ t(ss.personal_impact.headline.en, ss.personal_impact.headline.zh) }}</span></div>
+    <div class="ss-note"><b>{{ t(ss.personal_impact.title_en, ss.personal_impact.title_zh) }}</b><span class="v">{{ t(ss.personal_impact.headline.en, ss.personal_impact.headline.zh) }}</span>
+      <button type="button" class="gbtn gbtn-sm" onclick="dsrOpenDlg('dlg-{{ ss.personal_impact.dlg }}')">{{ t('Receipts', '凭证') }}</button>
+    </div>
     {% endif %}
   </article>
 
@@ -1117,7 +1119,11 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
     {% for a in ss.axes %}
     <article class="ss-cell ss-t-{{ a.tone }} ss-r-{{ a.rail }}{{ ' is-ok' if a.ok }}">
       <h3 class="ss-axis ss-b1b-h"><span>{{ t(a.title_en, a.title_zh) }}</span><span class="ss-chip">{{ t(a.cov_en, a.cov_zh) }}</span></h3>
-      <p class="ss-head">{{ t(a.headline.en, a.headline.zh) }}</p>
+      {# State sentence prints once on the surface: Overview keeps it; the
+         grid card reprints the headline only when it would say something
+         different (design system §9.5). #}
+      {% set skip_dup_state = a.key == 'state' and ss.overview.state_summary and a.headline.en == ss.overview.state_summary.en and a.headline.zh == ss.overview.state_summary.zh %}
+      {% if a.headline and not skip_dup_state %}<p class="ss-head">{{ t(a.headline.en, a.headline.zh) }}</p>{% endif %}
       {% if a.clause %}<p class="ss-body">{{ t(a.clause.en, a.clause.zh) }}</p>{% endif %}
       {% if a.why %}<p class="{{ 'ss-why' if a.clause else 'ss-body' }}">{{ t(a.why.en, a.why.zh) }}</p>{% endif %}
 
@@ -1764,7 +1770,8 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
    dialog nested in the section would be trapped inside the card. They reuse the
    page's dsrOpenDlg mechanics wholesale (focus trap, Escape, scroll lock, and
    the ≤640px bottom-sheet geometry the drawer requirement asks for). #}
-{% for a in ss.axes %}
+{% set ss_dlg_legs = ss.axes + ([ss.personal_impact] if ss.personal_impact else []) %}
+{% for a in ss_dlg_legs %}
 <div class="dsr-dlg" id="dlg-{{ a.dlg }}" role="dialog" aria-labelledby="dlg-{{ a.dlg }}-title">
   <div class="dsr-dlg-backdrop"></div>
   <div class="dsr-dlg-panel">

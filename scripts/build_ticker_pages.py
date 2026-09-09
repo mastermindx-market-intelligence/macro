@@ -4460,7 +4460,11 @@ def build_security_state(blob: dict | None) -> dict | None:
             "overview": overview,
             "owner_receipts": owner_receipts,
             "tally": tally,
-            "gates": [g for a in axes for g in a["gates"]],
+            # Axis cards plus the Overview personal_impact row: a failed gate
+            # on that leg still reaches the evidence-dialog tally. Coverage
+            # buckets (`tally`) stay the five grid cards so the count matches
+            # the cards the reader can see.
+            "gates": [g for a in list(axes) + [personal_impact] for g in a["gates"]],
             "evidence": {
                 "refs": [_clean_str(r) for r in (ev.get("evidence_block_refs") or []) if _clean_str(r)],
                 "recipe_id": _clean_str(ev.get("recipe_id") or ""),

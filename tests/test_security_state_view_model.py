@@ -1325,7 +1325,7 @@ def _heading_label(node: _HtmlNode) -> str:
     return " ".join(node.get_text().split())
 
 
-def _visible_b1b_headings(html: str, lang: str = "en") -> list[str]:
+def _visible_b1b_headings(html: str) -> list[str]:
     """Named B1B panel headings inside `#security-state`, never dialog chrome."""
     section = _card_region(html)
     wrapped = "<section " + section[section.find("id="):]
@@ -1403,11 +1403,16 @@ def test_owner_receipts_glance_uses_bilingual_house_copy_not_engine_prose() -> N
     assert view is not None
     legs = view["identity"]["legs"]
     assert [lg["check"] for lg in legs] == [f"R{i}" for i in range(1, 10)]
-    for lg in legs:
+    fixture_legs = state["identity_proof"]["legs"]
+    assert len(fixture_legs) == len(legs)
+    for src, lg in zip(fixture_legs, legs):
         house = _SS_LEG_DESC[(lg["check"], lg["code"] or "")]
+        raw = src["description"]
         assert lg["desc_en"] == house["en"]
         assert lg["desc_zh"] == house["zh"]
         assert lg["desc_en"] != lg["desc_zh"]
+        assert lg["desc_en"] != raw
+        assert lg["desc_zh"] != raw
         assert re.search(r"[一-鿿]", lg["desc_zh"]), lg["desc_zh"]
 
     zh_card = _card_region(_render_section(view, lang="zh"))
@@ -1431,10 +1436,13 @@ def test_owner_receipts_glance_uses_bilingual_house_copy_not_engine_prose() -> N
         assert lg["desc_zh"] in zh_card
         assert lg["desc_en"] in en_card
         assert lg["desc_en"] not in zh_card
-    assert "Eight reads on this listing." in en_card
-    assert "这只证券的八项读数。" in zh_card
+    assert "The panels below" in en_card
+    assert "以下面板" in zh_card
     assert "八个面板" not in zh_card
     assert "eight panels" not in en_card
+    assert "Eight reads on this listing" not in en_card
+    assert "Eight separate reads" not in en_card
+    assert "八项读数" not in zh_card
 
     # Machine identifiers remain in the evidence dialog, not at glance.
     full_en = _render_section(view, lang="en")
@@ -1449,7 +1457,7 @@ def test_ticker_page_renders_all_eight_b1b_panel_headings_for_msft() -> None:
     view = build_security_state({"security_state": state})
     assert view is not None
     html = _render_section(view)
-    headings = _visible_b1b_headings(html, lang="en")
+    headings = _visible_b1b_headings(html)
     assert headings == list(_B1B_HEADINGS_EN), headings
 
 
@@ -1462,12 +1470,70 @@ def test_aapl_page_still_renders_five_axis_cards_after_the_personal_impact_extra
     tree = _parse_class_tree(html)
     grid = tree.find_class("ss-grid")
     assert grid is not None
-    cards = [c for c in grid.find_all_class("ss-cell") if "ss-grid" not in c.classes]
     # `.ss-cell` descendants of the grid — the grid itself is not an ss-cell.
     cards = grid.find_all_class("ss-cell")
     assert len(cards) == 5, [c.find_class("ss-axis").get_text() if c.find_class("ss-axis") else "?" for c in cards]
     texts = [c.get_text() for c in cards]
     assert all("Your position" not in t and "你的持仓" not in t for t in texts)
+
+
+def test_subhead_does_not_assert_a_count_the_page_contradicts() -> None:
+    """B-F06-3 resume MAJOR-2: lead copy must not name a panel or read count
+    the same screen contradicts (5 axis cards, 8 freeze panels, 7 coverage
+    legs). Count-free copy only.
+    """
+    fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_msft_expected_output.json"
+    state = json.loads(fixture.read_text(encoding="utf-8"))
+    view = build_security_state({"security_state": state})
+    assert view is not None
+    en_card = _card_region(_render_section(view, lang="en"))
+    zh_card = _card_region(_render_section(view, lang="zh"))
+    for banned in (
+        "Eight separate reads",
+        "Eight reads on this listing",
+        "eight panels",
+        "Eight panels",
+    ):
+        assert banned not in en_card, banned
+    for banned in ("八项独立读数", "八项读数", "八个面板"):
+        assert banned not in zh_card, banned
+    assert "The panels below" in en_card
+    assert "以下面板" in zh_card
+
+
+def test_state_sentence_prints_once_on_the_surface() -> None:
+    """Overview keeps the state headline; the grid card reprints it only when
+    it would say something different (design system §9.5, printed once).
+    """
+    view = build_security_state({"security_state": _contract()})
+    assert view is not None
+    en_card = _card_region(_render_section(view, lang="en"))
+    zh_card = _card_region(_render_section(view, lang="zh"))
+    assert en_card.count("Worth monitoring") == 1
+    assert zh_card.count("值得关注") == 1
+    wrapped = "<section " + en_card[en_card.find("id="):]
+    tree = _parse_class_tree(wrapped)
+    grid = tree.find_class("ss-grid")
+    assert grid is not None
+    state_card = grid.find_all_class("ss-cell")[0]
+    assert "Worth monitoring" not in state_card.get_text()
+
+
+def test_personal_impact_failed_gates_reach_the_tally_and_receipt_dialog() -> None:
+    """The Overview refold must not drop personal_impact gates from the
+    aggregated tally or retire its receipt dialog.
+    """
+    contract = _contract()
+    contract["legs"]["personal_impact"]["failed_gates"] = [{"code": "RIGHTS_WITHHELD"}]
+    view = build_security_state({"security_state": contract})
+    assert view is not None
+    assert any(g["code"] == "RIGHTS_WITHHELD" for g in view["gates"])
+    html = _render_section(view)
+    assert 'id="dlg-ss-personal-impact"' in html
+    glance = _card_region(html)
+    assert "dsrOpenDlg('dlg-ss-personal-impact')" in glance
+    assert len(view["axes"]) == 5
+    assert all(a["key"] != "personal_impact" for a in view["axes"])
 
 
 def test_no_new_panel_reads_a_rank_score_size_or_gate_field() -> None:
