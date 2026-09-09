@@ -14,23 +14,985 @@
     "macro_housing_real_estate.html": 0
   },
   "method_open_text": {
-    "method_open-macro_financial_conditions-dark-en-1440.png": "Axis method receipts A composite may only be shown when its full composition law is disclosed. DIRECTION Higher = tighter funding WEIGHTS LAW Weighted average of four channels, re-weighted over those that are present: rates 30%, credit 30%, dollar funding 20%, equities and volatility 20%. A fifth declared channel \u2014 lending \u2014 has no source and carries no weight. TRANSFORMATION Each channel is its own disclosed mix: rates from the 10-year real yield percentile; credit from high-yield spreads and the Chicago Fed credit slice; dollar funding from the OFR funding leg; equities from the volatility-regime score and bond-volatility percentile. Official Chicago Fed and OFR headline indexes are published separately and are not blended in here. Boundary 50, hold-back band 5 points. FREQUENCY ALIGNMENT Mixed clocks: daily real yields and volatility, roughly weekly credit and OFR funding. Each channel keeps its own source clock. REVISION BEHAVIOUR Recomputed each time the source publishes, using only readings that were already known then. A method change is reported as a break in comparability, never as a numeric move. COMPONENTS PRESENT 4 / minimum 2 COVERAGE FLOOR At least 50% of the parts must be present DEFINITION VERSION Definition v1, published 4 Sep 2026 AUTHORITY CEILING Descriptive reading \u2014 this page cannot rank, size or trigger a trade COMPONENT RAW STANDARDIZED WEIGHT CONTRIBUTION Rates channel Financial-conditions workspace 98.00 98.00 0.30 +14.40 Credit channel Financial-conditions workspace 47.01 47.01 0.30 \u22120.90 Dollar/funding channel Financial-conditions workspace 46.98 46.98 0.20 \u22120.60 Equities/volatility channel Financial-conditions workspace 20.18 20.18 0.20 \u22125.96",
-    "method_open-macro_financial_conditions-dark-zh-1440.png": "\u5750\u6807\u8f74\u65b9\u6cd5\u51ed\u636e \u53ea\u6709\u5728\u5b8c\u6574\u62ab\u9732\u6784\u6210\u6cd5\u5219\u7684\u524d\u63d0\u4e0b\uff0c\u590d\u5408\u6307\u6807\u624d\u53ef\u5c55\u793a\u3002 \u65b9\u5411 \u6570\u503c\u8d8a\u9ad8\uff1d\u878d\u8d44\u8d8a\u7d27 \u6743\u91cd\u6cd5\u5219 \u56db\u4e2a\u6e20\u9053\u7684\u52a0\u6743\u5e73\u5747\uff0c\u6309\u5230\u4f4d\u6e20\u9053\u91cd\u65b0\u52a0\u6743\uff1a\u5229\u7387 30%\u3001\u4fe1\u8d37 30%\u3001\u7f8e\u5143\u878d\u8d44 20%\u3001\u80a1\u7968\u4e0e\u6ce2\u52a8 20%\u3002\u7b2c\u4e94\u4e2a\u5df2\u58f0\u660e\u6e20\u9053\uff08\u501f\u8d37\uff09\u6ca1\u6709\u6570\u636e\u6e90\uff0c\u4e0d\u8ba1\u5165\u6743\u91cd\u3002 \u53d8\u6362 \u5404\u6e20\u9053\u6709\u5404\u81ea\u62ab\u9732\u7684\u6784\u6210\uff1a\u5229\u7387\u6765\u81ea 10 \u5e74\u671f\u5b9e\u9645\u6536\u76ca\u7387\u5206\u4f4d\uff1b\u4fe1\u8d37\u6765\u81ea\u9ad8\u6536\u76ca\u5229\u5dee\u4e0e\u829d\u52a0\u54e5\u8054\u50a8\u4fe1\u8d37\u5206\u9879\uff1b\u7f8e\u5143\u878d\u8d44\u6765\u81ea OFR \u878d\u8d44\u5206\u9879\uff1b\u80a1\u7968\u6765\u81ea\u6ce2\u52a8\u4f53\u5236\u8bc4\u5206\u4e0e\u503a\u5238\u6ce2\u52a8\u5206\u4f4d\u3002\u5b98\u65b9\u829d\u52a0\u54e5\u8054\u50a8\u4e0e OFR \u7efc\u5408\u6307\u6570\u53e6\u884c\u53d1\u5e03\uff0c\u4e0d\u5728\u6b64\u6df7\u5408\u3002\u5206\u754c 50\uff0c\u6ede\u56de\u5e26 5 \u70b9\u3002 \u9891\u7387\u5bf9\u9f50 \u65f6\u949f\u4e0d\u4e00\uff1a\u5b9e\u9645\u6536\u76ca\u7387\u4e0e\u6ce2\u52a8\u4e3a\u65e5\u5ea6\uff0c\u4fe1\u8d37\u4e0e OFR \u878d\u8d44\u5927\u7ea6\u6bcf\u5468\u3002\u5404\u6e20\u9053\u4fdd\u7559\u81ea\u5df1\u7684\u6765\u6e90\u65f6\u949f\u3002 \u4fee\u8ba2\u884c\u4e3a \u6bcf\u6b21\u6570\u636e\u6e90\u53d1\u5e03\u65f6\u7528\u5f53\u65f6\u5df2\u77e5\u7684\u8bfb\u6570\u91cd\u7b97\u3002\u65b9\u6cd5\u53d8\u66f4\u4f1a\u6807\u660e\u4e3a\u4e0d\u53ef\u6bd4\uff0c\u800c\u4e0d\u4f1a\u5199\u6210\u6570\u5b57\u4f4d\u79fb\u3002 \u5df2\u5177\u5907\u5206\u9879 4 / \u6700\u5c11 2 \u8986\u76d6\u4e0b\u9650 \u81f3\u5c11 50% \u7684\u5206\u9879\u5fc5\u987b\u5230\u4f4d \u5b9a\u4e49\u7248\u672c \u5b9a\u4e49\u7b2c1\u7248\uff0c\u53d1\u5e03\u4e8e2026\u5e749\u67084\u65e5 \u6743\u9650\u4e0a\u9650 \u63cf\u8ff0\u6027\u8bfb\u6570 \u2014 \u672c\u9875\u4e0d\u80fd\u6392\u540d\u3001\u5b9a\u4ed3\u6216\u89e6\u53d1\u4ea4\u6613 \u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u5229\u7387\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 98.00 98.00 0.30 +14.40 \u4fe1\u7528\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 47.01 47.01 0.30 \u22120.90 \u7f8e\u5143/\u878d\u8d44\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 46.98 46.98 0.20 \u22120.60 \u80a1\u7968/\u6ce2\u52a8\u7387\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 20.18 20.18 0.20 \u22125.96",
-    "method_open-macro_financial_conditions-light-en-1440.png": "Axis method receipts A composite may only be shown when its full composition law is disclosed. DIRECTION Higher = tighter funding WEIGHTS LAW Weighted average of four channels, re-weighted over those that are present: rates 30%, credit 30%, dollar funding 20%, equities and volatility 20%. A fifth declared channel \u2014 lending \u2014 has no source and carries no weight. TRANSFORMATION Each channel is its own disclosed mix: rates from the 10-year real yield percentile; credit from high-yield spreads and the Chicago Fed credit slice; dollar funding from the OFR funding leg; equities from the volatility-regime score and bond-volatility percentile. Official Chicago Fed and OFR headline indexes are published separately and are not blended in here. Boundary 50, hold-back band 5 points. FREQUENCY ALIGNMENT Mixed clocks: daily real yields and volatility, roughly weekly credit and OFR funding. Each channel keeps its own source clock. REVISION BEHAVIOUR Recomputed each time the source publishes, using only readings that were already known then. A method change is reported as a break in comparability, never as a numeric move. COMPONENTS PRESENT 4 / minimum 2 COVERAGE FLOOR At least 50% of the parts must be present DEFINITION VERSION Definition v1, published 4 Sep 2026 AUTHORITY CEILING Descriptive reading \u2014 this page cannot rank, size or trigger a trade COMPONENT RAW STANDARDIZED WEIGHT CONTRIBUTION Rates channel Financial-conditions workspace 98.00 98.00 0.30 +14.40 Credit channel Financial-conditions workspace 47.01 47.01 0.30 \u22120.90 Dollar/funding channel Financial-conditions workspace 46.98 46.98 0.20 \u22120.60 Equities/volatility channel Financial-conditions workspace 20.18 20.18 0.20 \u22125.96",
-    "method_open-macro_financial_conditions-light-zh-1440.png": "\u5750\u6807\u8f74\u65b9\u6cd5\u51ed\u636e \u53ea\u6709\u5728\u5b8c\u6574\u62ab\u9732\u6784\u6210\u6cd5\u5219\u7684\u524d\u63d0\u4e0b\uff0c\u590d\u5408\u6307\u6807\u624d\u53ef\u5c55\u793a\u3002 \u65b9\u5411 \u6570\u503c\u8d8a\u9ad8\uff1d\u878d\u8d44\u8d8a\u7d27 \u6743\u91cd\u6cd5\u5219 \u56db\u4e2a\u6e20\u9053\u7684\u52a0\u6743\u5e73\u5747\uff0c\u6309\u5230\u4f4d\u6e20\u9053\u91cd\u65b0\u52a0\u6743\uff1a\u5229\u7387 30%\u3001\u4fe1\u8d37 30%\u3001\u7f8e\u5143\u878d\u8d44 20%\u3001\u80a1\u7968\u4e0e\u6ce2\u52a8 20%\u3002\u7b2c\u4e94\u4e2a\u5df2\u58f0\u660e\u6e20\u9053\uff08\u501f\u8d37\uff09\u6ca1\u6709\u6570\u636e\u6e90\uff0c\u4e0d\u8ba1\u5165\u6743\u91cd\u3002 \u53d8\u6362 \u5404\u6e20\u9053\u6709\u5404\u81ea\u62ab\u9732\u7684\u6784\u6210\uff1a\u5229\u7387\u6765\u81ea 10 \u5e74\u671f\u5b9e\u9645\u6536\u76ca\u7387\u5206\u4f4d\uff1b\u4fe1\u8d37\u6765\u81ea\u9ad8\u6536\u76ca\u5229\u5dee\u4e0e\u829d\u52a0\u54e5\u8054\u50a8\u4fe1\u8d37\u5206\u9879\uff1b\u7f8e\u5143\u878d\u8d44\u6765\u81ea OFR \u878d\u8d44\u5206\u9879\uff1b\u80a1\u7968\u6765\u81ea\u6ce2\u52a8\u4f53\u5236\u8bc4\u5206\u4e0e\u503a\u5238\u6ce2\u52a8\u5206\u4f4d\u3002\u5b98\u65b9\u829d\u52a0\u54e5\u8054\u50a8\u4e0e OFR \u7efc\u5408\u6307\u6570\u53e6\u884c\u53d1\u5e03\uff0c\u4e0d\u5728\u6b64\u6df7\u5408\u3002\u5206\u754c 50\uff0c\u6ede\u56de\u5e26 5 \u70b9\u3002 \u9891\u7387\u5bf9\u9f50 \u65f6\u949f\u4e0d\u4e00\uff1a\u5b9e\u9645\u6536\u76ca\u7387\u4e0e\u6ce2\u52a8\u4e3a\u65e5\u5ea6\uff0c\u4fe1\u8d37\u4e0e OFR \u878d\u8d44\u5927\u7ea6\u6bcf\u5468\u3002\u5404\u6e20\u9053\u4fdd\u7559\u81ea\u5df1\u7684\u6765\u6e90\u65f6\u949f\u3002 \u4fee\u8ba2\u884c\u4e3a \u6bcf\u6b21\u6570\u636e\u6e90\u53d1\u5e03\u65f6\u7528\u5f53\u65f6\u5df2\u77e5\u7684\u8bfb\u6570\u91cd\u7b97\u3002\u65b9\u6cd5\u53d8\u66f4\u4f1a\u6807\u660e\u4e3a\u4e0d\u53ef\u6bd4\uff0c\u800c\u4e0d\u4f1a\u5199\u6210\u6570\u5b57\u4f4d\u79fb\u3002 \u5df2\u5177\u5907\u5206\u9879 4 / \u6700\u5c11 2 \u8986\u76d6\u4e0b\u9650 \u81f3\u5c11 50% \u7684\u5206\u9879\u5fc5\u987b\u5230\u4f4d \u5b9a\u4e49\u7248\u672c \u5b9a\u4e49\u7b2c1\u7248\uff0c\u53d1\u5e03\u4e8e2026\u5e749\u67084\u65e5 \u6743\u9650\u4e0a\u9650 \u63cf\u8ff0\u6027\u8bfb\u6570 \u2014 \u672c\u9875\u4e0d\u80fd\u6392\u540d\u3001\u5b9a\u4ed3\u6216\u89e6\u53d1\u4ea4\u6613 \u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u5229\u7387\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 98.00 98.00 0.30 +14.40 \u4fe1\u7528\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 47.01 47.01 0.30 \u22120.90 \u7f8e\u5143/\u878d\u8d44\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 46.98 46.98 0.20 \u22120.60 \u80a1\u7968/\u6ce2\u52a8\u7387\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 20.18 20.18 0.20 \u22125.96",
-    "method_open-macro_financial_conditions-dark-en-390.png": "Axis method receipts A composite may only be shown when its full composition law is disclosed. DIRECTION Higher = tighter funding WEIGHTS LAW Weighted average of four channels, re-weighted over those that are present: rates 30%, credit 30%, dollar funding 20%, equities and volatility 20%. A fifth declared channel \u2014 lending \u2014 has no source and carries no weight. TRANSFORMATION Each channel is its own disclosed mix: rates from the 10-year real yield percentile; credit from high-yield spreads and the Chicago Fed credit slice; dollar funding from the OFR funding leg; equities from the volatility-regime score and bond-volatility percentile. Official Chicago Fed and OFR headline indexes are published separately and are not blended in here. Boundary 50, hold-back band 5 points. FREQUENCY ALIGNMENT Mixed clocks: daily real yields and volatility, roughly weekly credit and OFR funding. Each channel keeps its own source clock. REVISION BEHAVIOUR Recomputed each time the source publishes, using only readings that were already known then. A method change is reported as a break in comparability, never as a numeric move. COMPONENTS PRESENT 4 / minimum 2 COVERAGE FLOOR At least 50% of the parts must be present DEFINITION VERSION Definition v1, published 4 Sep 2026 AUTHORITY CEILING Descriptive reading \u2014 this page cannot rank, size or trigger a trade COMPONENT RAW STANDARDIZED WEIGHT CONTRIBUTION Rates channel Financial-conditions workspace 98.00 98.00 0.30 +14.40 Credit channel Financial-conditions workspace 47.01 47.01 0.30 \u22120.90 Dollar/funding channel Financial-conditions workspace 46.98 46.98 0.20 \u22120.60 Equities/volatility channel Financial-conditions workspace 20.18 20.18 0.20 \u22125.96",
-    "method_open-macro_financial_conditions-dark-zh-390.png": "\u5750\u6807\u8f74\u65b9\u6cd5\u51ed\u636e \u53ea\u6709\u5728\u5b8c\u6574\u62ab\u9732\u6784\u6210\u6cd5\u5219\u7684\u524d\u63d0\u4e0b\uff0c\u590d\u5408\u6307\u6807\u624d\u53ef\u5c55\u793a\u3002 \u65b9\u5411 \u6570\u503c\u8d8a\u9ad8\uff1d\u878d\u8d44\u8d8a\u7d27 \u6743\u91cd\u6cd5\u5219 \u56db\u4e2a\u6e20\u9053\u7684\u52a0\u6743\u5e73\u5747\uff0c\u6309\u5230\u4f4d\u6e20\u9053\u91cd\u65b0\u52a0\u6743\uff1a\u5229\u7387 30%\u3001\u4fe1\u8d37 30%\u3001\u7f8e\u5143\u878d\u8d44 20%\u3001\u80a1\u7968\u4e0e\u6ce2\u52a8 20%\u3002\u7b2c\u4e94\u4e2a\u5df2\u58f0\u660e\u6e20\u9053\uff08\u501f\u8d37\uff09\u6ca1\u6709\u6570\u636e\u6e90\uff0c\u4e0d\u8ba1\u5165\u6743\u91cd\u3002 \u53d8\u6362 \u5404\u6e20\u9053\u6709\u5404\u81ea\u62ab\u9732\u7684\u6784\u6210\uff1a\u5229\u7387\u6765\u81ea 10 \u5e74\u671f\u5b9e\u9645\u6536\u76ca\u7387\u5206\u4f4d\uff1b\u4fe1\u8d37\u6765\u81ea\u9ad8\u6536\u76ca\u5229\u5dee\u4e0e\u829d\u52a0\u54e5\u8054\u50a8\u4fe1\u8d37\u5206\u9879\uff1b\u7f8e\u5143\u878d\u8d44\u6765\u81ea OFR \u878d\u8d44\u5206\u9879\uff1b\u80a1\u7968\u6765\u81ea\u6ce2\u52a8\u4f53\u5236\u8bc4\u5206\u4e0e\u503a\u5238\u6ce2\u52a8\u5206\u4f4d\u3002\u5b98\u65b9\u829d\u52a0\u54e5\u8054\u50a8\u4e0e OFR \u7efc\u5408\u6307\u6570\u53e6\u884c\u53d1\u5e03\uff0c\u4e0d\u5728\u6b64\u6df7\u5408\u3002\u5206\u754c 50\uff0c\u6ede\u56de\u5e26 5 \u70b9\u3002 \u9891\u7387\u5bf9\u9f50 \u65f6\u949f\u4e0d\u4e00\uff1a\u5b9e\u9645\u6536\u76ca\u7387\u4e0e\u6ce2\u52a8\u4e3a\u65e5\u5ea6\uff0c\u4fe1\u8d37\u4e0e OFR \u878d\u8d44\u5927\u7ea6\u6bcf\u5468\u3002\u5404\u6e20\u9053\u4fdd\u7559\u81ea\u5df1\u7684\u6765\u6e90\u65f6\u949f\u3002 \u4fee\u8ba2\u884c\u4e3a \u6bcf\u6b21\u6570\u636e\u6e90\u53d1\u5e03\u65f6\u7528\u5f53\u65f6\u5df2\u77e5\u7684\u8bfb\u6570\u91cd\u7b97\u3002\u65b9\u6cd5\u53d8\u66f4\u4f1a\u6807\u660e\u4e3a\u4e0d\u53ef\u6bd4\uff0c\u800c\u4e0d\u4f1a\u5199\u6210\u6570\u5b57\u4f4d\u79fb\u3002 \u5df2\u5177\u5907\u5206\u9879 4 / \u6700\u5c11 2 \u8986\u76d6\u4e0b\u9650 \u81f3\u5c11 50% \u7684\u5206\u9879\u5fc5\u987b\u5230\u4f4d \u5b9a\u4e49\u7248\u672c \u5b9a\u4e49\u7b2c1\u7248\uff0c\u53d1\u5e03\u4e8e2026\u5e749\u67084\u65e5 \u6743\u9650\u4e0a\u9650 \u63cf\u8ff0\u6027\u8bfb\u6570 \u2014 \u672c\u9875\u4e0d\u80fd\u6392\u540d\u3001\u5b9a\u4ed3\u6216\u89e6\u53d1\u4ea4\u6613 \u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u5229\u7387\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 98.00 98.00 0.30 +14.40 \u4fe1\u7528\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 47.01 47.01 0.30 \u22120.90 \u7f8e\u5143/\u878d\u8d44\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 46.98 46.98 0.20 \u22120.60 \u80a1\u7968/\u6ce2\u52a8\u7387\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 20.18 20.18 0.20 \u22125.96",
-    "method_open-macro_financial_conditions-light-en-390.png": "Axis method receipts A composite may only be shown when its full composition law is disclosed. DIRECTION Higher = tighter funding WEIGHTS LAW Weighted average of four channels, re-weighted over those that are present: rates 30%, credit 30%, dollar funding 20%, equities and volatility 20%. A fifth declared channel \u2014 lending \u2014 has no source and carries no weight. TRANSFORMATION Each channel is its own disclosed mix: rates from the 10-year real yield percentile; credit from high-yield spreads and the Chicago Fed credit slice; dollar funding from the OFR funding leg; equities from the volatility-regime score and bond-volatility percentile. Official Chicago Fed and OFR headline indexes are published separately and are not blended in here. Boundary 50, hold-back band 5 points. FREQUENCY ALIGNMENT Mixed clocks: daily real yields and volatility, roughly weekly credit and OFR funding. Each channel keeps its own source clock. REVISION BEHAVIOUR Recomputed each time the source publishes, using only readings that were already known then. A method change is reported as a break in comparability, never as a numeric move. COMPONENTS PRESENT 4 / minimum 2 COVERAGE FLOOR At least 50% of the parts must be present DEFINITION VERSION Definition v1, published 4 Sep 2026 AUTHORITY CEILING Descriptive reading \u2014 this page cannot rank, size or trigger a trade COMPONENT RAW STANDARDIZED WEIGHT CONTRIBUTION Rates channel Financial-conditions workspace 98.00 98.00 0.30 +14.40 Credit channel Financial-conditions workspace 47.01 47.01 0.30 \u22120.90 Dollar/funding channel Financial-conditions workspace 46.98 46.98 0.20 \u22120.60 Equities/volatility channel Financial-conditions workspace 20.18 20.18 0.20 \u22125.96",
-    "method_open-macro_financial_conditions-light-zh-390.png": "\u5750\u6807\u8f74\u65b9\u6cd5\u51ed\u636e \u53ea\u6709\u5728\u5b8c\u6574\u62ab\u9732\u6784\u6210\u6cd5\u5219\u7684\u524d\u63d0\u4e0b\uff0c\u590d\u5408\u6307\u6807\u624d\u53ef\u5c55\u793a\u3002 \u65b9\u5411 \u6570\u503c\u8d8a\u9ad8\uff1d\u878d\u8d44\u8d8a\u7d27 \u6743\u91cd\u6cd5\u5219 \u56db\u4e2a\u6e20\u9053\u7684\u52a0\u6743\u5e73\u5747\uff0c\u6309\u5230\u4f4d\u6e20\u9053\u91cd\u65b0\u52a0\u6743\uff1a\u5229\u7387 30%\u3001\u4fe1\u8d37 30%\u3001\u7f8e\u5143\u878d\u8d44 20%\u3001\u80a1\u7968\u4e0e\u6ce2\u52a8 20%\u3002\u7b2c\u4e94\u4e2a\u5df2\u58f0\u660e\u6e20\u9053\uff08\u501f\u8d37\uff09\u6ca1\u6709\u6570\u636e\u6e90\uff0c\u4e0d\u8ba1\u5165\u6743\u91cd\u3002 \u53d8\u6362 \u5404\u6e20\u9053\u6709\u5404\u81ea\u62ab\u9732\u7684\u6784\u6210\uff1a\u5229\u7387\u6765\u81ea 10 \u5e74\u671f\u5b9e\u9645\u6536\u76ca\u7387\u5206\u4f4d\uff1b\u4fe1\u8d37\u6765\u81ea\u9ad8\u6536\u76ca\u5229\u5dee\u4e0e\u829d\u52a0\u54e5\u8054\u50a8\u4fe1\u8d37\u5206\u9879\uff1b\u7f8e\u5143\u878d\u8d44\u6765\u81ea OFR \u878d\u8d44\u5206\u9879\uff1b\u80a1\u7968\u6765\u81ea\u6ce2\u52a8\u4f53\u5236\u8bc4\u5206\u4e0e\u503a\u5238\u6ce2\u52a8\u5206\u4f4d\u3002\u5b98\u65b9\u829d\u52a0\u54e5\u8054\u50a8\u4e0e OFR \u7efc\u5408\u6307\u6570\u53e6\u884c\u53d1\u5e03\uff0c\u4e0d\u5728\u6b64\u6df7\u5408\u3002\u5206\u754c 50\uff0c\u6ede\u56de\u5e26 5 \u70b9\u3002 \u9891\u7387\u5bf9\u9f50 \u65f6\u949f\u4e0d\u4e00\uff1a\u5b9e\u9645\u6536\u76ca\u7387\u4e0e\u6ce2\u52a8\u4e3a\u65e5\u5ea6\uff0c\u4fe1\u8d37\u4e0e OFR \u878d\u8d44\u5927\u7ea6\u6bcf\u5468\u3002\u5404\u6e20\u9053\u4fdd\u7559\u81ea\u5df1\u7684\u6765\u6e90\u65f6\u949f\u3002 \u4fee\u8ba2\u884c\u4e3a \u6bcf\u6b21\u6570\u636e\u6e90\u53d1\u5e03\u65f6\u7528\u5f53\u65f6\u5df2\u77e5\u7684\u8bfb\u6570\u91cd\u7b97\u3002\u65b9\u6cd5\u53d8\u66f4\u4f1a\u6807\u660e\u4e3a\u4e0d\u53ef\u6bd4\uff0c\u800c\u4e0d\u4f1a\u5199\u6210\u6570\u5b57\u4f4d\u79fb\u3002 \u5df2\u5177\u5907\u5206\u9879 4 / \u6700\u5c11 2 \u8986\u76d6\u4e0b\u9650 \u81f3\u5c11 50% \u7684\u5206\u9879\u5fc5\u987b\u5230\u4f4d \u5b9a\u4e49\u7248\u672c \u5b9a\u4e49\u7b2c1\u7248\uff0c\u53d1\u5e03\u4e8e2026\u5e749\u67084\u65e5 \u6743\u9650\u4e0a\u9650 \u63cf\u8ff0\u6027\u8bfb\u6570 \u2014 \u672c\u9875\u4e0d\u80fd\u6392\u540d\u3001\u5b9a\u4ed3\u6216\u89e6\u53d1\u4ea4\u6613 \u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u5229\u7387\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 98.00 98.00 0.30 +14.40 \u4fe1\u7528\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 47.01 47.01 0.30 \u22120.90 \u7f8e\u5143/\u878d\u8d44\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 46.98 46.98 0.20 \u22120.60 \u80a1\u7968/\u6ce2\u52a8\u7387\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 20.18 20.18 0.20 \u22125.96",
-    "method_open-macro_labor_markets-dark-en-1440.png": "Axis method receipts A composite may only be shown when its full composition law is disclosed. DIRECTION Higher = stronger support WEIGHTS LAW Weighted average of the parts that are present: initial-claims momentum 40%, job-postings momentum 35%, withheld-tax income-growth proxy 25%. TRANSFORMATION Claims are inverted so elevated claims read as weaker demand. Job-postings 3-month change and withheld-tax year-over-year growth map onto 0\u2013100. Only prior published readings are used. FREQUENCY ALIGNMENT Mixed clocks: weekly initial claims (Thursday), weekly job-postings, and a daily-accrual Treasury withheld-tax proxy, all aligned to one shared calculation date. REVISION BEHAVIOUR Recomputed each time the source publishes, using only readings that were already known then. A method change is reported as a break in comparability, never as a numeric move. COMPONENTS PRESENT 3 / minimum 2 COVERAGE FLOOR At least 50% of the parts must be present DEFINITION VERSION Definition v1, published 4 Sep 2026 AUTHORITY CEILING Descriptive reading \u2014 this page cannot rank, size or trigger a trade COMPONENT RAW STANDARDIZED WEIGHT CONTRIBUTION Initial-claims momentum Labor-nowcast regime desk \u22121.30 76.07 0.40 +10.43 Job-postings momentum (Indeed) Labor-nowcast regime desk 1.68 58.41 0.35 +2.94 Withheld-tax income growth (proxy) Labor-nowcast regime desk 2.01 62.58 0.25 +3.15",
-    "method_open-macro_labor_markets-dark-zh-1440.png": "\u5750\u6807\u8f74\u65b9\u6cd5\u51ed\u636e \u53ea\u6709\u5728\u5b8c\u6574\u62ab\u9732\u6784\u6210\u6cd5\u5219\u7684\u524d\u63d0\u4e0b\uff0c\u590d\u5408\u6307\u6807\u624d\u53ef\u5c55\u793a\u3002 \u65b9\u5411 \u6570\u503c\u8d8a\u9ad8\uff1d\u652f\u6301\u8d8a\u5f3a \u6743\u91cd\u6cd5\u5219 \u6309\u5230\u4f4d\u5206\u9879\u7684\u52a0\u6743\u5e73\u5747\uff1a\u521d\u8bf7\u52a8\u91cf 40%\u3001\u804c\u4f4d\u53d1\u5e03\u52a8\u91cf 35%\u3001\u4ee3\u6263\u7a0e\u6536\u5165\u589e\u957f\u4ee3\u7406 25%\u3002 \u53d8\u6362 \u521d\u8bf7\u53d6\u53cd\uff0c\u521d\u8bf7\u5347\u9ad8\u8868\u793a\u9700\u6c42\u66f4\u5f31\u3002\u804c\u4f4d\u53d1\u5e03\u4e09\u4e2a\u6708\u53d8\u5316\u4e0e\u4ee3\u6263\u7a0e\u540c\u6bd4\u6620\u5c04\u5230 0\u2013100\u3002\u53ea\u4f7f\u7528\u5df2\u53d1\u5e03\u7684\u5148\u9a8c\u8bfb\u6570\u3002 \u9891\u7387\u5bf9\u9f50 \u65f6\u949f\u4e0d\u4e00\uff1a\u5468\u5ea6\u521d\u8bf7\uff08\u5468\u56db\uff09\u3001\u5468\u5ea6\u804c\u4f4d\u53d1\u5e03\uff0c\u4ee5\u53ca\u6309\u65e5\u7d2f\u8ba1\u7684\u8d22\u653f\u90e8\u4ee3\u6263\u7a0e\u4ee3\u7406\uff0c\u5168\u90e8\u5bf9\u9f50\u5230\u540c\u4e00\u4e2a\u8ba1\u7b97\u65e5\u3002 \u4fee\u8ba2\u884c\u4e3a \u6bcf\u6b21\u6570\u636e\u6e90\u53d1\u5e03\u65f6\u7528\u5f53\u65f6\u5df2\u77e5\u7684\u8bfb\u6570\u91cd\u7b97\u3002\u65b9\u6cd5\u53d8\u66f4\u4f1a\u6807\u660e\u4e3a\u4e0d\u53ef\u6bd4\uff0c\u800c\u4e0d\u4f1a\u5199\u6210\u6570\u5b57\u4f4d\u79fb\u3002 \u5df2\u5177\u5907\u5206\u9879 3 / \u6700\u5c11 2 \u8986\u76d6\u4e0b\u9650 \u81f3\u5c11 50% \u7684\u5206\u9879\u5fc5\u987b\u5230\u4f4d \u5b9a\u4e49\u7248\u672c \u5b9a\u4e49\u7b2c1\u7248\uff0c\u53d1\u5e03\u4e8e2026\u5e749\u67084\u65e5 \u6743\u9650\u4e0a\u9650 \u63cf\u8ff0\u6027\u8bfb\u6570 \u2014 \u672c\u9875\u4e0d\u80fd\u6392\u540d\u3001\u5b9a\u4ed3\u6216\u89e6\u53d1\u4ea4\u6613 \u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u521d\u8bf7\u5931\u4e1a\u91d1\u52a8\u80fd \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 \u22121.30 76.07 0.40 +10.43 \u804c\u4f4d\u53d1\u5e03\u52a8\u80fd\uff08Indeed\uff09 \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 1.68 58.41 0.35 +2.94 \u9884\u6263\u7a0e\u6536\u5165\u589e\u957f\uff08\u4ee3\u7406\u6307\u6807\uff09 \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 2.01 62.58 0.25 +3.15",
-    "method_open-macro_labor_markets-light-en-1440.png": "Axis method receipts A composite may only be shown when its full composition law is disclosed. DIRECTION Higher = stronger support WEIGHTS LAW Weighted average of the parts that are present: initial-claims momentum 40%, job-postings momentum 35%, withheld-tax income-growth proxy 25%. TRANSFORMATION Claims are inverted so elevated claims read as weaker demand. Job-postings 3-month change and withheld-tax year-over-year growth map onto 0\u2013100. Only prior published readings are used. FREQUENCY ALIGNMENT Mixed clocks: weekly initial claims (Thursday), weekly job-postings, and a daily-accrual Treasury withheld-tax proxy, all aligned to one shared calculation date. REVISION BEHAVIOUR Recomputed each time the source publishes, using only readings that were already known then. A method change is reported as a break in comparability, never as a numeric move. COMPONENTS PRESENT 3 / minimum 2 COVERAGE FLOOR At least 50% of the parts must be present DEFINITION VERSION Definition v1, published 4 Sep 2026 AUTHORITY CEILING Descriptive reading \u2014 this page cannot rank, size or trigger a trade COMPONENT RAW STANDARDIZED WEIGHT CONTRIBUTION Initial-claims momentum Labor-nowcast regime desk \u22121.30 76.07 0.40 +10.43 Job-postings momentum (Indeed) Labor-nowcast regime desk 1.68 58.41 0.35 +2.94 Withheld-tax income growth (proxy) Labor-nowcast regime desk 2.01 62.58 0.25 +3.15",
-    "method_open-macro_labor_markets-light-zh-1440.png": "\u5750\u6807\u8f74\u65b9\u6cd5\u51ed\u636e \u53ea\u6709\u5728\u5b8c\u6574\u62ab\u9732\u6784\u6210\u6cd5\u5219\u7684\u524d\u63d0\u4e0b\uff0c\u590d\u5408\u6307\u6807\u624d\u53ef\u5c55\u793a\u3002 \u65b9\u5411 \u6570\u503c\u8d8a\u9ad8\uff1d\u652f\u6301\u8d8a\u5f3a \u6743\u91cd\u6cd5\u5219 \u6309\u5230\u4f4d\u5206\u9879\u7684\u52a0\u6743\u5e73\u5747\uff1a\u521d\u8bf7\u52a8\u91cf 40%\u3001\u804c\u4f4d\u53d1\u5e03\u52a8\u91cf 35%\u3001\u4ee3\u6263\u7a0e\u6536\u5165\u589e\u957f\u4ee3\u7406 25%\u3002 \u53d8\u6362 \u521d\u8bf7\u53d6\u53cd\uff0c\u521d\u8bf7\u5347\u9ad8\u8868\u793a\u9700\u6c42\u66f4\u5f31\u3002\u804c\u4f4d\u53d1\u5e03\u4e09\u4e2a\u6708\u53d8\u5316\u4e0e\u4ee3\u6263\u7a0e\u540c\u6bd4\u6620\u5c04\u5230 0\u2013100\u3002\u53ea\u4f7f\u7528\u5df2\u53d1\u5e03\u7684\u5148\u9a8c\u8bfb\u6570\u3002 \u9891\u7387\u5bf9\u9f50 \u65f6\u949f\u4e0d\u4e00\uff1a\u5468\u5ea6\u521d\u8bf7\uff08\u5468\u56db\uff09\u3001\u5468\u5ea6\u804c\u4f4d\u53d1\u5e03\uff0c\u4ee5\u53ca\u6309\u65e5\u7d2f\u8ba1\u7684\u8d22\u653f\u90e8\u4ee3\u6263\u7a0e\u4ee3\u7406\uff0c\u5168\u90e8\u5bf9\u9f50\u5230\u540c\u4e00\u4e2a\u8ba1\u7b97\u65e5\u3002 \u4fee\u8ba2\u884c\u4e3a \u6bcf\u6b21\u6570\u636e\u6e90\u53d1\u5e03\u65f6\u7528\u5f53\u65f6\u5df2\u77e5\u7684\u8bfb\u6570\u91cd\u7b97\u3002\u65b9\u6cd5\u53d8\u66f4\u4f1a\u6807\u660e\u4e3a\u4e0d\u53ef\u6bd4\uff0c\u800c\u4e0d\u4f1a\u5199\u6210\u6570\u5b57\u4f4d\u79fb\u3002 \u5df2\u5177\u5907\u5206\u9879 3 / \u6700\u5c11 2 \u8986\u76d6\u4e0b\u9650 \u81f3\u5c11 50% \u7684\u5206\u9879\u5fc5\u987b\u5230\u4f4d \u5b9a\u4e49\u7248\u672c \u5b9a\u4e49\u7b2c1\u7248\uff0c\u53d1\u5e03\u4e8e2026\u5e749\u67084\u65e5 \u6743\u9650\u4e0a\u9650 \u63cf\u8ff0\u6027\u8bfb\u6570 \u2014 \u672c\u9875\u4e0d\u80fd\u6392\u540d\u3001\u5b9a\u4ed3\u6216\u89e6\u53d1\u4ea4\u6613 \u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u521d\u8bf7\u5931\u4e1a\u91d1\u52a8\u80fd \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 \u22121.30 76.07 0.40 +10.43 \u804c\u4f4d\u53d1\u5e03\u52a8\u80fd\uff08Indeed\uff09 \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 1.68 58.41 0.35 +2.94 \u9884\u6263\u7a0e\u6536\u5165\u589e\u957f\uff08\u4ee3\u7406\u6307\u6807\uff09 \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 2.01 62.58 0.25 +3.15",
-    "method_open-macro_labor_markets-dark-en-390.png": "Axis method receipts A composite may only be shown when its full composition law is disclosed. DIRECTION Higher = stronger support WEIGHTS LAW Weighted average of the parts that are present: initial-claims momentum 40%, job-postings momentum 35%, withheld-tax income-growth proxy 25%. TRANSFORMATION Claims are inverted so elevated claims read as weaker demand. Job-postings 3-month change and withheld-tax year-over-year growth map onto 0\u2013100. Only prior published readings are used. FREQUENCY ALIGNMENT Mixed clocks: weekly initial claims (Thursday), weekly job-postings, and a daily-accrual Treasury withheld-tax proxy, all aligned to one shared calculation date. REVISION BEHAVIOUR Recomputed each time the source publishes, using only readings that were already known then. A method change is reported as a break in comparability, never as a numeric move. COMPONENTS PRESENT 3 / minimum 2 COVERAGE FLOOR At least 50% of the parts must be present DEFINITION VERSION Definition v1, published 4 Sep 2026 AUTHORITY CEILING Descriptive reading \u2014 this page cannot rank, size or trigger a trade COMPONENT RAW STANDARDIZED WEIGHT CONTRIBUTION Initial-claims momentum Labor-nowcast regime desk \u22121.30 76.07 0.40 +10.43 Job-postings momentum (Indeed) Labor-nowcast regime desk 1.68 58.41 0.35 +2.94 Withheld-tax income growth (proxy) Labor-nowcast regime desk 2.01 62.58 0.25 +3.15",
-    "method_open-macro_labor_markets-dark-zh-390.png": "\u5750\u6807\u8f74\u65b9\u6cd5\u51ed\u636e \u53ea\u6709\u5728\u5b8c\u6574\u62ab\u9732\u6784\u6210\u6cd5\u5219\u7684\u524d\u63d0\u4e0b\uff0c\u590d\u5408\u6307\u6807\u624d\u53ef\u5c55\u793a\u3002 \u65b9\u5411 \u6570\u503c\u8d8a\u9ad8\uff1d\u652f\u6301\u8d8a\u5f3a \u6743\u91cd\u6cd5\u5219 \u6309\u5230\u4f4d\u5206\u9879\u7684\u52a0\u6743\u5e73\u5747\uff1a\u521d\u8bf7\u52a8\u91cf 40%\u3001\u804c\u4f4d\u53d1\u5e03\u52a8\u91cf 35%\u3001\u4ee3\u6263\u7a0e\u6536\u5165\u589e\u957f\u4ee3\u7406 25%\u3002 \u53d8\u6362 \u521d\u8bf7\u53d6\u53cd\uff0c\u521d\u8bf7\u5347\u9ad8\u8868\u793a\u9700\u6c42\u66f4\u5f31\u3002\u804c\u4f4d\u53d1\u5e03\u4e09\u4e2a\u6708\u53d8\u5316\u4e0e\u4ee3\u6263\u7a0e\u540c\u6bd4\u6620\u5c04\u5230 0\u2013100\u3002\u53ea\u4f7f\u7528\u5df2\u53d1\u5e03\u7684\u5148\u9a8c\u8bfb\u6570\u3002 \u9891\u7387\u5bf9\u9f50 \u65f6\u949f\u4e0d\u4e00\uff1a\u5468\u5ea6\u521d\u8bf7\uff08\u5468\u56db\uff09\u3001\u5468\u5ea6\u804c\u4f4d\u53d1\u5e03\uff0c\u4ee5\u53ca\u6309\u65e5\u7d2f\u8ba1\u7684\u8d22\u653f\u90e8\u4ee3\u6263\u7a0e\u4ee3\u7406\uff0c\u5168\u90e8\u5bf9\u9f50\u5230\u540c\u4e00\u4e2a\u8ba1\u7b97\u65e5\u3002 \u4fee\u8ba2\u884c\u4e3a \u6bcf\u6b21\u6570\u636e\u6e90\u53d1\u5e03\u65f6\u7528\u5f53\u65f6\u5df2\u77e5\u7684\u8bfb\u6570\u91cd\u7b97\u3002\u65b9\u6cd5\u53d8\u66f4\u4f1a\u6807\u660e\u4e3a\u4e0d\u53ef\u6bd4\uff0c\u800c\u4e0d\u4f1a\u5199\u6210\u6570\u5b57\u4f4d\u79fb\u3002 \u5df2\u5177\u5907\u5206\u9879 3 / \u6700\u5c11 2 \u8986\u76d6\u4e0b\u9650 \u81f3\u5c11 50% \u7684\u5206\u9879\u5fc5\u987b\u5230\u4f4d \u5b9a\u4e49\u7248\u672c \u5b9a\u4e49\u7b2c1\u7248\uff0c\u53d1\u5e03\u4e8e2026\u5e749\u67084\u65e5 \u6743\u9650\u4e0a\u9650 \u63cf\u8ff0\u6027\u8bfb\u6570 \u2014 \u672c\u9875\u4e0d\u80fd\u6392\u540d\u3001\u5b9a\u4ed3\u6216\u89e6\u53d1\u4ea4\u6613 \u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u521d\u8bf7\u5931\u4e1a\u91d1\u52a8\u80fd \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 \u22121.30 76.07 0.40 +10.43 \u804c\u4f4d\u53d1\u5e03\u52a8\u80fd\uff08Indeed\uff09 \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 1.68 58.41 0.35 +2.94 \u9884\u6263\u7a0e\u6536\u5165\u589e\u957f\uff08\u4ee3\u7406\u6307\u6807\uff09 \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 2.01 62.58 0.25 +3.15",
-    "method_open-macro_labor_markets-light-en-390.png": "Axis method receipts A composite may only be shown when its full composition law is disclosed. DIRECTION Higher = stronger support WEIGHTS LAW Weighted average of the parts that are present: initial-claims momentum 40%, job-postings momentum 35%, withheld-tax income-growth proxy 25%. TRANSFORMATION Claims are inverted so elevated claims read as weaker demand. Job-postings 3-month change and withheld-tax year-over-year growth map onto 0\u2013100. Only prior published readings are used. FREQUENCY ALIGNMENT Mixed clocks: weekly initial claims (Thursday), weekly job-postings, and a daily-accrual Treasury withheld-tax proxy, all aligned to one shared calculation date. REVISION BEHAVIOUR Recomputed each time the source publishes, using only readings that were already known then. A method change is reported as a break in comparability, never as a numeric move. COMPONENTS PRESENT 3 / minimum 2 COVERAGE FLOOR At least 50% of the parts must be present DEFINITION VERSION Definition v1, published 4 Sep 2026 AUTHORITY CEILING Descriptive reading \u2014 this page cannot rank, size or trigger a trade COMPONENT RAW STANDARDIZED WEIGHT CONTRIBUTION Initial-claims momentum Labor-nowcast regime desk \u22121.30 76.07 0.40 +10.43 Job-postings momentum (Indeed) Labor-nowcast regime desk 1.68 58.41 0.35 +2.94 Withheld-tax income growth (proxy) Labor-nowcast regime desk 2.01 62.58 0.25 +3.15",
-    "method_open-macro_labor_markets-light-zh-390.png": "\u5750\u6807\u8f74\u65b9\u6cd5\u51ed\u636e \u53ea\u6709\u5728\u5b8c\u6574\u62ab\u9732\u6784\u6210\u6cd5\u5219\u7684\u524d\u63d0\u4e0b\uff0c\u590d\u5408\u6307\u6807\u624d\u53ef\u5c55\u793a\u3002 \u65b9\u5411 \u6570\u503c\u8d8a\u9ad8\uff1d\u652f\u6301\u8d8a\u5f3a \u6743\u91cd\u6cd5\u5219 \u6309\u5230\u4f4d\u5206\u9879\u7684\u52a0\u6743\u5e73\u5747\uff1a\u521d\u8bf7\u52a8\u91cf 40%\u3001\u804c\u4f4d\u53d1\u5e03\u52a8\u91cf 35%\u3001\u4ee3\u6263\u7a0e\u6536\u5165\u589e\u957f\u4ee3\u7406 25%\u3002 \u53d8\u6362 \u521d\u8bf7\u53d6\u53cd\uff0c\u521d\u8bf7\u5347\u9ad8\u8868\u793a\u9700\u6c42\u66f4\u5f31\u3002\u804c\u4f4d\u53d1\u5e03\u4e09\u4e2a\u6708\u53d8\u5316\u4e0e\u4ee3\u6263\u7a0e\u540c\u6bd4\u6620\u5c04\u5230 0\u2013100\u3002\u53ea\u4f7f\u7528\u5df2\u53d1\u5e03\u7684\u5148\u9a8c\u8bfb\u6570\u3002 \u9891\u7387\u5bf9\u9f50 \u65f6\u949f\u4e0d\u4e00\uff1a\u5468\u5ea6\u521d\u8bf7\uff08\u5468\u56db\uff09\u3001\u5468\u5ea6\u804c\u4f4d\u53d1\u5e03\uff0c\u4ee5\u53ca\u6309\u65e5\u7d2f\u8ba1\u7684\u8d22\u653f\u90e8\u4ee3\u6263\u7a0e\u4ee3\u7406\uff0c\u5168\u90e8\u5bf9\u9f50\u5230\u540c\u4e00\u4e2a\u8ba1\u7b97\u65e5\u3002 \u4fee\u8ba2\u884c\u4e3a \u6bcf\u6b21\u6570\u636e\u6e90\u53d1\u5e03\u65f6\u7528\u5f53\u65f6\u5df2\u77e5\u7684\u8bfb\u6570\u91cd\u7b97\u3002\u65b9\u6cd5\u53d8\u66f4\u4f1a\u6807\u660e\u4e3a\u4e0d\u53ef\u6bd4\uff0c\u800c\u4e0d\u4f1a\u5199\u6210\u6570\u5b57\u4f4d\u79fb\u3002 \u5df2\u5177\u5907\u5206\u9879 3 / \u6700\u5c11 2 \u8986\u76d6\u4e0b\u9650 \u81f3\u5c11 50% \u7684\u5206\u9879\u5fc5\u987b\u5230\u4f4d \u5b9a\u4e49\u7248\u672c \u5b9a\u4e49\u7b2c1\u7248\uff0c\u53d1\u5e03\u4e8e2026\u5e749\u67084\u65e5 \u6743\u9650\u4e0a\u9650 \u63cf\u8ff0\u6027\u8bfb\u6570 \u2014 \u672c\u9875\u4e0d\u80fd\u6392\u540d\u3001\u5b9a\u4ed3\u6216\u89e6\u53d1\u4ea4\u6613 \u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u521d\u8bf7\u5931\u4e1a\u91d1\u52a8\u80fd \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 \u22121.30 76.07 0.40 +10.43 \u804c\u4f4d\u53d1\u5e03\u52a8\u80fd\uff08Indeed\uff09 \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 1.68 58.41 0.35 +2.94 \u9884\u6263\u7a0e\u6536\u5165\u589e\u957f\uff08\u4ee3\u7406\u6307\u6807\uff09 \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 2.01 62.58 0.25 +3.15"
+    "method_open-macro_financial_conditions-dark-en-1440.png": "How this is calculated Tightness of borrowing conditions 56.93 Axis method receipts A composite may only be shown when its full composition law is disclosed. DIRECTION Higher = tighter funding WEIGHTS LAW Weighted average of four channels, re-weighted over those that are present: rates 30%, credit 30%, dollar funding 20%, equities and volatility 20%. A fifth declared channel \u2014 lending \u2014 has no source and carries no weight. TRANSFORMATION Each channel is its own disclosed mix: rates from the 10-year real yield percentile; credit from high-yield spreads and the Chicago Fed credit slice; dollar funding from the OFR funding leg; equities from the volatility-regime score and bond-volatility percentile. Official Chicago Fed and OFR headline indexes are published separately and are not blended in here. Boundary 50, hold-back band 5 points. FREQUENCY ALIGNMENT Mixed clocks: daily real yields and volatility, roughly weekly credit and OFR funding. Each channel keeps its own source clock. REVISION BEHAVIOUR Recomputed each time the source publishes, using only readings that were already known then. A method change is reported as a break in comparability, never as a numeric move. COMPONENTS PRESENT 4 / minimum 2 COVERAGE FLOOR At least 50% of the parts must be present DEFINITION VERSION Definition v1, published 4 Sep 2026 AUTHORITY CEILING Descriptive reading \u2014 this page cannot rank, size or trigger a trade COMPONENT RAW STANDARDIZED WEIGHT CONTRIBUTION Rates channel Financial-conditions workspace 98.00 98.00 0.30 +14.40 Credit channel Financial-conditions workspace 47.01 47.01 0.30 \u22120.90 Dollar/funding channel Financial-conditions workspace 46.98 46.98 0.20 \u22120.60 Equities/volatility channel Financial-conditions workspace 20.18 20.18 0.20 \u22125.96 Direction of borrowing conditions 49.67 3 / 2 45.00 0.35 \u22121.75 35.20 0.35 \u22125.18 72.00 0.30 +6.60",
+    "method_open-macro_financial_conditions-dark-zh-1440.png": "\u8ba1\u7b97\u65b9\u6cd5 \u878d\u8d44\u6761\u4ef6\u7684\u7d27\u5f20\u7a0b\u5ea6 56.93 \u5750\u6807\u8f74\u65b9\u6cd5\u51ed\u636e \u53ea\u6709\u5728\u5b8c\u6574\u62ab\u9732\u6784\u6210\u6cd5\u5219\u7684\u524d\u63d0\u4e0b\uff0c\u590d\u5408\u6307\u6807\u624d\u53ef\u5c55\u793a\u3002 \u65b9\u5411 \u6570\u503c\u8d8a\u9ad8\uff1d\u878d\u8d44\u8d8a\u7d27 \u6743\u91cd\u6cd5\u5219 \u56db\u4e2a\u6e20\u9053\u7684\u52a0\u6743\u5e73\u5747\uff0c\u6309\u5230\u4f4d\u6e20\u9053\u91cd\u65b0\u52a0\u6743\uff1a\u5229\u7387 30%\u3001\u4fe1\u8d37 30%\u3001\u7f8e\u5143\u878d\u8d44 20%\u3001\u80a1\u7968\u4e0e\u6ce2\u52a8 20%\u3002\u7b2c\u4e94\u4e2a\u5df2\u58f0\u660e\u6e20\u9053\uff08\u501f\u8d37\uff09\u6ca1\u6709\u6570\u636e\u6e90\uff0c\u4e0d\u8ba1\u5165\u6743\u91cd\u3002 \u53d8\u6362 \u5404\u6e20\u9053\u6709\u5404\u81ea\u62ab\u9732\u7684\u6784\u6210\uff1a\u5229\u7387\u6765\u81ea 10 \u5e74\u671f\u5b9e\u9645\u6536\u76ca\u7387\u5206\u4f4d\uff1b\u4fe1\u8d37\u6765\u81ea\u9ad8\u6536\u76ca\u5229\u5dee\u4e0e\u829d\u52a0\u54e5\u8054\u50a8\u4fe1\u8d37\u5206\u9879\uff1b\u7f8e\u5143\u878d\u8d44\u6765\u81ea OFR \u878d\u8d44\u5206\u9879\uff1b\u80a1\u7968\u6765\u81ea\u6ce2\u52a8\u4f53\u5236\u8bc4\u5206\u4e0e\u503a\u5238\u6ce2\u52a8\u5206\u4f4d\u3002\u5b98\u65b9\u829d\u52a0\u54e5\u8054\u50a8\u4e0e OFR \u7efc\u5408\u6307\u6570\u53e6\u884c\u53d1\u5e03\uff0c\u4e0d\u5728\u6b64\u6df7\u5408\u3002\u5206\u754c 50\uff0c\u6ede\u56de\u5e26 5 \u70b9\u3002 \u9891\u7387\u5bf9\u9f50 \u65f6\u949f\u4e0d\u4e00\uff1a\u5b9e\u9645\u6536\u76ca\u7387\u4e0e\u6ce2\u52a8\u4e3a\u65e5\u5ea6\uff0c\u4fe1\u8d37\u4e0e OFR \u878d\u8d44\u5927\u7ea6\u6bcf\u5468\u3002\u5404\u6e20\u9053\u4fdd\u7559\u81ea\u5df1\u7684\u6765\u6e90\u65f6\u949f\u3002 \u4fee\u8ba2\u884c\u4e3a \u6bcf\u6b21\u6570\u636e\u6e90\u53d1\u5e03\u65f6\u7528\u5f53\u65f6\u5df2\u77e5\u7684\u8bfb\u6570\u91cd\u7b97\u3002\u65b9\u6cd5\u53d8\u66f4\u4f1a\u6807\u660e\u4e3a\u4e0d\u53ef\u6bd4\uff0c\u800c\u4e0d\u4f1a\u5199\u6210\u6570\u5b57\u4f4d\u79fb\u3002 \u5df2\u5177\u5907\u5206\u9879 4 / \u6700\u5c11 2 \u8986\u76d6\u4e0b\u9650 \u81f3\u5c11 50% \u7684\u5206\u9879\u5fc5\u987b\u5230\u4f4d \u5b9a\u4e49\u7248\u672c \u5b9a\u4e49\u7b2c1\u7248\uff0c\u53d1\u5e03\u4e8e2026\u5e749\u67084\u65e5 \u6743\u9650\u4e0a\u9650 \u63cf\u8ff0\u6027\u8bfb\u6570 \u2014 \u672c\u9875\u4e0d\u80fd\u6392\u540d\u3001\u5b9a\u4ed3\u6216\u89e6\u53d1\u4ea4\u6613 \u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u5229\u7387\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 98.00 98.00 0.30 +14.40 \u4fe1\u7528\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 47.01 47.01 0.30 \u22120.90 \u7f8e\u5143/\u878d\u8d44\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 46.98 46.98 0.20 \u22120.60 \u80a1\u7968/\u6ce2\u52a8\u7387\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 20.18 20.18 0.20 \u22125.96 \u878d\u8d44\u6761\u4ef6\u7684\u53d8\u5316\u65b9\u5411 49.67 3 / 2 45.00 0.35 \u22121.75 35.20 0.35 \u22125.18 72.00 0.30 +6.60",
+    "method_open-macro_financial_conditions-light-en-1440.png": "How this is calculated Tightness of borrowing conditions 56.93 Axis method receipts A composite may only be shown when its full composition law is disclosed. DIRECTION Higher = tighter funding WEIGHTS LAW Weighted average of four channels, re-weighted over those that are present: rates 30%, credit 30%, dollar funding 20%, equities and volatility 20%. A fifth declared channel \u2014 lending \u2014 has no source and carries no weight. TRANSFORMATION Each channel is its own disclosed mix: rates from the 10-year real yield percentile; credit from high-yield spreads and the Chicago Fed credit slice; dollar funding from the OFR funding leg; equities from the volatility-regime score and bond-volatility percentile. Official Chicago Fed and OFR headline indexes are published separately and are not blended in here. Boundary 50, hold-back band 5 points. FREQUENCY ALIGNMENT Mixed clocks: daily real yields and volatility, roughly weekly credit and OFR funding. Each channel keeps its own source clock. REVISION BEHAVIOUR Recomputed each time the source publishes, using only readings that were already known then. A method change is reported as a break in comparability, never as a numeric move. COMPONENTS PRESENT 4 / minimum 2 COVERAGE FLOOR At least 50% of the parts must be present DEFINITION VERSION Definition v1, published 4 Sep 2026 AUTHORITY CEILING Descriptive reading \u2014 this page cannot rank, size or trigger a trade COMPONENT RAW STANDARDIZED WEIGHT CONTRIBUTION Rates channel Financial-conditions workspace 98.00 98.00 0.30 +14.40 Credit channel Financial-conditions workspace 47.01 47.01 0.30 \u22120.90 Dollar/funding channel Financial-conditions workspace 46.98 46.98 0.20 \u22120.60 Equities/volatility channel Financial-conditions workspace 20.18 20.18 0.20 \u22125.96 Direction of borrowing conditions 49.67 3 / 2 45.00 0.35 \u22121.75 35.20 0.35 \u22125.18 72.00 0.30 +6.60",
+    "method_open-macro_financial_conditions-light-zh-1440.png": "\u8ba1\u7b97\u65b9\u6cd5 \u878d\u8d44\u6761\u4ef6\u7684\u7d27\u5f20\u7a0b\u5ea6 56.93 \u5750\u6807\u8f74\u65b9\u6cd5\u51ed\u636e \u53ea\u6709\u5728\u5b8c\u6574\u62ab\u9732\u6784\u6210\u6cd5\u5219\u7684\u524d\u63d0\u4e0b\uff0c\u590d\u5408\u6307\u6807\u624d\u53ef\u5c55\u793a\u3002 \u65b9\u5411 \u6570\u503c\u8d8a\u9ad8\uff1d\u878d\u8d44\u8d8a\u7d27 \u6743\u91cd\u6cd5\u5219 \u56db\u4e2a\u6e20\u9053\u7684\u52a0\u6743\u5e73\u5747\uff0c\u6309\u5230\u4f4d\u6e20\u9053\u91cd\u65b0\u52a0\u6743\uff1a\u5229\u7387 30%\u3001\u4fe1\u8d37 30%\u3001\u7f8e\u5143\u878d\u8d44 20%\u3001\u80a1\u7968\u4e0e\u6ce2\u52a8 20%\u3002\u7b2c\u4e94\u4e2a\u5df2\u58f0\u660e\u6e20\u9053\uff08\u501f\u8d37\uff09\u6ca1\u6709\u6570\u636e\u6e90\uff0c\u4e0d\u8ba1\u5165\u6743\u91cd\u3002 \u53d8\u6362 \u5404\u6e20\u9053\u6709\u5404\u81ea\u62ab\u9732\u7684\u6784\u6210\uff1a\u5229\u7387\u6765\u81ea 10 \u5e74\u671f\u5b9e\u9645\u6536\u76ca\u7387\u5206\u4f4d\uff1b\u4fe1\u8d37\u6765\u81ea\u9ad8\u6536\u76ca\u5229\u5dee\u4e0e\u829d\u52a0\u54e5\u8054\u50a8\u4fe1\u8d37\u5206\u9879\uff1b\u7f8e\u5143\u878d\u8d44\u6765\u81ea OFR \u878d\u8d44\u5206\u9879\uff1b\u80a1\u7968\u6765\u81ea\u6ce2\u52a8\u4f53\u5236\u8bc4\u5206\u4e0e\u503a\u5238\u6ce2\u52a8\u5206\u4f4d\u3002\u5b98\u65b9\u829d\u52a0\u54e5\u8054\u50a8\u4e0e OFR \u7efc\u5408\u6307\u6570\u53e6\u884c\u53d1\u5e03\uff0c\u4e0d\u5728\u6b64\u6df7\u5408\u3002\u5206\u754c 50\uff0c\u6ede\u56de\u5e26 5 \u70b9\u3002 \u9891\u7387\u5bf9\u9f50 \u65f6\u949f\u4e0d\u4e00\uff1a\u5b9e\u9645\u6536\u76ca\u7387\u4e0e\u6ce2\u52a8\u4e3a\u65e5\u5ea6\uff0c\u4fe1\u8d37\u4e0e OFR \u878d\u8d44\u5927\u7ea6\u6bcf\u5468\u3002\u5404\u6e20\u9053\u4fdd\u7559\u81ea\u5df1\u7684\u6765\u6e90\u65f6\u949f\u3002 \u4fee\u8ba2\u884c\u4e3a \u6bcf\u6b21\u6570\u636e\u6e90\u53d1\u5e03\u65f6\u7528\u5f53\u65f6\u5df2\u77e5\u7684\u8bfb\u6570\u91cd\u7b97\u3002\u65b9\u6cd5\u53d8\u66f4\u4f1a\u6807\u660e\u4e3a\u4e0d\u53ef\u6bd4\uff0c\u800c\u4e0d\u4f1a\u5199\u6210\u6570\u5b57\u4f4d\u79fb\u3002 \u5df2\u5177\u5907\u5206\u9879 4 / \u6700\u5c11 2 \u8986\u76d6\u4e0b\u9650 \u81f3\u5c11 50% \u7684\u5206\u9879\u5fc5\u987b\u5230\u4f4d \u5b9a\u4e49\u7248\u672c \u5b9a\u4e49\u7b2c1\u7248\uff0c\u53d1\u5e03\u4e8e2026\u5e749\u67084\u65e5 \u6743\u9650\u4e0a\u9650 \u63cf\u8ff0\u6027\u8bfb\u6570 \u2014 \u672c\u9875\u4e0d\u80fd\u6392\u540d\u3001\u5b9a\u4ed3\u6216\u89e6\u53d1\u4ea4\u6613 \u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u5229\u7387\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 98.00 98.00 0.30 +14.40 \u4fe1\u7528\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 47.01 47.01 0.30 \u22120.90 \u7f8e\u5143/\u878d\u8d44\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 46.98 46.98 0.20 \u22120.60 \u80a1\u7968/\u6ce2\u52a8\u7387\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 20.18 20.18 0.20 \u22125.96 \u878d\u8d44\u6761\u4ef6\u7684\u53d8\u5316\u65b9\u5411 49.67 3 / 2 45.00 0.35 \u22121.75 35.20 0.35 \u22125.18 72.00 0.30 +6.60",
+    "method_open-macro_financial_conditions-dark-en-390.png": "How this is calculated Tightness of borrowing conditions 56.93 Axis method receipts A composite may only be shown when its full composition law is disclosed. DIRECTION Higher = tighter funding WEIGHTS LAW Weighted average of four channels, re-weighted over those that are present: rates 30%, credit 30%, dollar funding 20%, equities and volatility 20%. A fifth declared channel \u2014 lending \u2014 has no source and carries no weight. TRANSFORMATION Each channel is its own disclosed mix: rates from the 10-year real yield percentile; credit from high-yield spreads and the Chicago Fed credit slice; dollar funding from the OFR funding leg; equities from the volatility-regime score and bond-volatility percentile. Official Chicago Fed and OFR headline indexes are published separately and are not blended in here. Boundary 50, hold-back band 5 points. FREQUENCY ALIGNMENT Mixed clocks: daily real yields and volatility, roughly weekly credit and OFR funding. Each channel keeps its own source clock. REVISION BEHAVIOUR Recomputed each time the source publishes, using only readings that were already known then. A method change is reported as a break in comparability, never as a numeric move. COMPONENTS PRESENT 4 / minimum 2 COVERAGE FLOOR At least 50% of the parts must be present DEFINITION VERSION Definition v1, published 4 Sep 2026 AUTHORITY CEILING Descriptive reading \u2014 this page cannot rank, size or trigger a trade COMPONENT RAW STANDARDIZED WEIGHT CONTRIBUTION Rates channel Financial-conditions workspace 98.00 98.00 0.30 +14.40 Credit channel Financial-conditions workspace 47.01 47.01 0.30 \u22120.90 Dollar/funding channel Financial-conditions workspace 46.98 46.98 0.20 \u22120.60 Equities/volatility channel Financial-conditions workspace 20.18 20.18 0.20 \u22125.96 Direction of borrowing conditions 49.67 3 / 2 45.00 0.35 \u22121.75 35.20 0.35 \u22125.18 72.00 0.30 +6.60",
+    "method_open-macro_financial_conditions-dark-zh-390.png": "\u8ba1\u7b97\u65b9\u6cd5 \u878d\u8d44\u6761\u4ef6\u7684\u7d27\u5f20\u7a0b\u5ea6 56.93 \u5750\u6807\u8f74\u65b9\u6cd5\u51ed\u636e \u53ea\u6709\u5728\u5b8c\u6574\u62ab\u9732\u6784\u6210\u6cd5\u5219\u7684\u524d\u63d0\u4e0b\uff0c\u590d\u5408\u6307\u6807\u624d\u53ef\u5c55\u793a\u3002 \u65b9\u5411 \u6570\u503c\u8d8a\u9ad8\uff1d\u878d\u8d44\u8d8a\u7d27 \u6743\u91cd\u6cd5\u5219 \u56db\u4e2a\u6e20\u9053\u7684\u52a0\u6743\u5e73\u5747\uff0c\u6309\u5230\u4f4d\u6e20\u9053\u91cd\u65b0\u52a0\u6743\uff1a\u5229\u7387 30%\u3001\u4fe1\u8d37 30%\u3001\u7f8e\u5143\u878d\u8d44 20%\u3001\u80a1\u7968\u4e0e\u6ce2\u52a8 20%\u3002\u7b2c\u4e94\u4e2a\u5df2\u58f0\u660e\u6e20\u9053\uff08\u501f\u8d37\uff09\u6ca1\u6709\u6570\u636e\u6e90\uff0c\u4e0d\u8ba1\u5165\u6743\u91cd\u3002 \u53d8\u6362 \u5404\u6e20\u9053\u6709\u5404\u81ea\u62ab\u9732\u7684\u6784\u6210\uff1a\u5229\u7387\u6765\u81ea 10 \u5e74\u671f\u5b9e\u9645\u6536\u76ca\u7387\u5206\u4f4d\uff1b\u4fe1\u8d37\u6765\u81ea\u9ad8\u6536\u76ca\u5229\u5dee\u4e0e\u829d\u52a0\u54e5\u8054\u50a8\u4fe1\u8d37\u5206\u9879\uff1b\u7f8e\u5143\u878d\u8d44\u6765\u81ea OFR \u878d\u8d44\u5206\u9879\uff1b\u80a1\u7968\u6765\u81ea\u6ce2\u52a8\u4f53\u5236\u8bc4\u5206\u4e0e\u503a\u5238\u6ce2\u52a8\u5206\u4f4d\u3002\u5b98\u65b9\u829d\u52a0\u54e5\u8054\u50a8\u4e0e OFR \u7efc\u5408\u6307\u6570\u53e6\u884c\u53d1\u5e03\uff0c\u4e0d\u5728\u6b64\u6df7\u5408\u3002\u5206\u754c 50\uff0c\u6ede\u56de\u5e26 5 \u70b9\u3002 \u9891\u7387\u5bf9\u9f50 \u65f6\u949f\u4e0d\u4e00\uff1a\u5b9e\u9645\u6536\u76ca\u7387\u4e0e\u6ce2\u52a8\u4e3a\u65e5\u5ea6\uff0c\u4fe1\u8d37\u4e0e OFR \u878d\u8d44\u5927\u7ea6\u6bcf\u5468\u3002\u5404\u6e20\u9053\u4fdd\u7559\u81ea\u5df1\u7684\u6765\u6e90\u65f6\u949f\u3002 \u4fee\u8ba2\u884c\u4e3a \u6bcf\u6b21\u6570\u636e\u6e90\u53d1\u5e03\u65f6\u7528\u5f53\u65f6\u5df2\u77e5\u7684\u8bfb\u6570\u91cd\u7b97\u3002\u65b9\u6cd5\u53d8\u66f4\u4f1a\u6807\u660e\u4e3a\u4e0d\u53ef\u6bd4\uff0c\u800c\u4e0d\u4f1a\u5199\u6210\u6570\u5b57\u4f4d\u79fb\u3002 \u5df2\u5177\u5907\u5206\u9879 4 / \u6700\u5c11 2 \u8986\u76d6\u4e0b\u9650 \u81f3\u5c11 50% \u7684\u5206\u9879\u5fc5\u987b\u5230\u4f4d \u5b9a\u4e49\u7248\u672c \u5b9a\u4e49\u7b2c1\u7248\uff0c\u53d1\u5e03\u4e8e2026\u5e749\u67084\u65e5 \u6743\u9650\u4e0a\u9650 \u63cf\u8ff0\u6027\u8bfb\u6570 \u2014 \u672c\u9875\u4e0d\u80fd\u6392\u540d\u3001\u5b9a\u4ed3\u6216\u89e6\u53d1\u4ea4\u6613 \u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u5229\u7387\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 98.00 98.00 0.30 +14.40 \u4fe1\u7528\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 47.01 47.01 0.30 \u22120.90 \u7f8e\u5143/\u878d\u8d44\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 46.98 46.98 0.20 \u22120.60 \u80a1\u7968/\u6ce2\u52a8\u7387\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 20.18 20.18 0.20 \u22125.96 \u878d\u8d44\u6761\u4ef6\u7684\u53d8\u5316\u65b9\u5411 49.67 3 / 2 45.00 0.35 \u22121.75 35.20 0.35 \u22125.18 72.00 0.30 +6.60",
+    "method_open-macro_financial_conditions-light-en-390.png": "How this is calculated Tightness of borrowing conditions 56.93 Axis method receipts A composite may only be shown when its full composition law is disclosed. DIRECTION Higher = tighter funding WEIGHTS LAW Weighted average of four channels, re-weighted over those that are present: rates 30%, credit 30%, dollar funding 20%, equities and volatility 20%. A fifth declared channel \u2014 lending \u2014 has no source and carries no weight. TRANSFORMATION Each channel is its own disclosed mix: rates from the 10-year real yield percentile; credit from high-yield spreads and the Chicago Fed credit slice; dollar funding from the OFR funding leg; equities from the volatility-regime score and bond-volatility percentile. Official Chicago Fed and OFR headline indexes are published separately and are not blended in here. Boundary 50, hold-back band 5 points. FREQUENCY ALIGNMENT Mixed clocks: daily real yields and volatility, roughly weekly credit and OFR funding. Each channel keeps its own source clock. REVISION BEHAVIOUR Recomputed each time the source publishes, using only readings that were already known then. A method change is reported as a break in comparability, never as a numeric move. COMPONENTS PRESENT 4 / minimum 2 COVERAGE FLOOR At least 50% of the parts must be present DEFINITION VERSION Definition v1, published 4 Sep 2026 AUTHORITY CEILING Descriptive reading \u2014 this page cannot rank, size or trigger a trade COMPONENT RAW STANDARDIZED WEIGHT CONTRIBUTION Rates channel Financial-conditions workspace 98.00 98.00 0.30 +14.40 Credit channel Financial-conditions workspace 47.01 47.01 0.30 \u22120.90 Dollar/funding channel Financial-conditions workspace 46.98 46.98 0.20 \u22120.60 Equities/volatility channel Financial-conditions workspace 20.18 20.18 0.20 \u22125.96 Direction of borrowing conditions 49.67 3 / 2 45.00 0.35 \u22121.75 35.20 0.35 \u22125.18 72.00 0.30 +6.60",
+    "method_open-macro_financial_conditions-light-zh-390.png": "\u8ba1\u7b97\u65b9\u6cd5 \u878d\u8d44\u6761\u4ef6\u7684\u7d27\u5f20\u7a0b\u5ea6 56.93 \u5750\u6807\u8f74\u65b9\u6cd5\u51ed\u636e \u53ea\u6709\u5728\u5b8c\u6574\u62ab\u9732\u6784\u6210\u6cd5\u5219\u7684\u524d\u63d0\u4e0b\uff0c\u590d\u5408\u6307\u6807\u624d\u53ef\u5c55\u793a\u3002 \u65b9\u5411 \u6570\u503c\u8d8a\u9ad8\uff1d\u878d\u8d44\u8d8a\u7d27 \u6743\u91cd\u6cd5\u5219 \u56db\u4e2a\u6e20\u9053\u7684\u52a0\u6743\u5e73\u5747\uff0c\u6309\u5230\u4f4d\u6e20\u9053\u91cd\u65b0\u52a0\u6743\uff1a\u5229\u7387 30%\u3001\u4fe1\u8d37 30%\u3001\u7f8e\u5143\u878d\u8d44 20%\u3001\u80a1\u7968\u4e0e\u6ce2\u52a8 20%\u3002\u7b2c\u4e94\u4e2a\u5df2\u58f0\u660e\u6e20\u9053\uff08\u501f\u8d37\uff09\u6ca1\u6709\u6570\u636e\u6e90\uff0c\u4e0d\u8ba1\u5165\u6743\u91cd\u3002 \u53d8\u6362 \u5404\u6e20\u9053\u6709\u5404\u81ea\u62ab\u9732\u7684\u6784\u6210\uff1a\u5229\u7387\u6765\u81ea 10 \u5e74\u671f\u5b9e\u9645\u6536\u76ca\u7387\u5206\u4f4d\uff1b\u4fe1\u8d37\u6765\u81ea\u9ad8\u6536\u76ca\u5229\u5dee\u4e0e\u829d\u52a0\u54e5\u8054\u50a8\u4fe1\u8d37\u5206\u9879\uff1b\u7f8e\u5143\u878d\u8d44\u6765\u81ea OFR \u878d\u8d44\u5206\u9879\uff1b\u80a1\u7968\u6765\u81ea\u6ce2\u52a8\u4f53\u5236\u8bc4\u5206\u4e0e\u503a\u5238\u6ce2\u52a8\u5206\u4f4d\u3002\u5b98\u65b9\u829d\u52a0\u54e5\u8054\u50a8\u4e0e OFR \u7efc\u5408\u6307\u6570\u53e6\u884c\u53d1\u5e03\uff0c\u4e0d\u5728\u6b64\u6df7\u5408\u3002\u5206\u754c 50\uff0c\u6ede\u56de\u5e26 5 \u70b9\u3002 \u9891\u7387\u5bf9\u9f50 \u65f6\u949f\u4e0d\u4e00\uff1a\u5b9e\u9645\u6536\u76ca\u7387\u4e0e\u6ce2\u52a8\u4e3a\u65e5\u5ea6\uff0c\u4fe1\u8d37\u4e0e OFR \u878d\u8d44\u5927\u7ea6\u6bcf\u5468\u3002\u5404\u6e20\u9053\u4fdd\u7559\u81ea\u5df1\u7684\u6765\u6e90\u65f6\u949f\u3002 \u4fee\u8ba2\u884c\u4e3a \u6bcf\u6b21\u6570\u636e\u6e90\u53d1\u5e03\u65f6\u7528\u5f53\u65f6\u5df2\u77e5\u7684\u8bfb\u6570\u91cd\u7b97\u3002\u65b9\u6cd5\u53d8\u66f4\u4f1a\u6807\u660e\u4e3a\u4e0d\u53ef\u6bd4\uff0c\u800c\u4e0d\u4f1a\u5199\u6210\u6570\u5b57\u4f4d\u79fb\u3002 \u5df2\u5177\u5907\u5206\u9879 4 / \u6700\u5c11 2 \u8986\u76d6\u4e0b\u9650 \u81f3\u5c11 50% \u7684\u5206\u9879\u5fc5\u987b\u5230\u4f4d \u5b9a\u4e49\u7248\u672c \u5b9a\u4e49\u7b2c1\u7248\uff0c\u53d1\u5e03\u4e8e2026\u5e749\u67084\u65e5 \u6743\u9650\u4e0a\u9650 \u63cf\u8ff0\u6027\u8bfb\u6570 \u2014 \u672c\u9875\u4e0d\u80fd\u6392\u540d\u3001\u5b9a\u4ed3\u6216\u89e6\u53d1\u4ea4\u6613 \u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u5229\u7387\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 98.00 98.00 0.30 +14.40 \u4fe1\u7528\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 47.01 47.01 0.30 \u22120.90 \u7f8e\u5143/\u878d\u8d44\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 46.98 46.98 0.20 \u22120.60 \u80a1\u7968/\u6ce2\u52a8\u7387\u5206\u9879 \u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 20.18 20.18 0.20 \u22125.96 \u878d\u8d44\u6761\u4ef6\u7684\u53d8\u5316\u65b9\u5411 49.67 3 / 2 45.00 0.35 \u22121.75 35.20 0.35 \u22125.18 72.00 0.30 +6.60",
+    "method_open-macro_labor_markets-dark-en-1440.png": "How this is calculated Employer demand for workers 66.52 Axis method receipts A composite may only be shown when its full composition law is disclosed. DIRECTION Higher = stronger support WEIGHTS LAW Weighted average of the parts that are present: initial-claims momentum 40%, job-postings momentum 35%, withheld-tax income-growth proxy 25%. TRANSFORMATION Claims are inverted so elevated claims read as weaker demand. Job-postings 3-month change and withheld-tax year-over-year growth map onto 0\u2013100. Only prior published readings are used. FREQUENCY ALIGNMENT Mixed clocks: weekly initial claims (Thursday), weekly job-postings, and a daily-accrual Treasury withheld-tax proxy, all aligned to one shared calculation date. REVISION BEHAVIOUR Recomputed each time the source publishes, using only readings that were already known then. A method change is reported as a break in comparability, never as a numeric move. COMPONENTS PRESENT 3 / minimum 2 COVERAGE FLOOR At least 50% of the parts must be present DEFINITION VERSION Definition v1, published 4 Sep 2026 AUTHORITY CEILING Descriptive reading \u2014 this page cannot rank, size or trigger a trade COMPONENT RAW STANDARDIZED WEIGHT CONTRIBUTION Initial-claims momentum Labor-nowcast regime desk \u22121.30 76.07 0.40 +10.43 Job-postings momentum (Indeed) Labor-nowcast regime desk 1.68 58.41 0.35 +2.94 Withheld-tax income growth (proxy) Labor-nowcast regime desk 2.01 62.58 0.25 +3.15 Tightness of the job market 76.35 2 / 2 57.00 0.55 +3.85 100.00 0.45 +22.50",
+    "method_open-macro_labor_markets-dark-zh-1440.png": "\u8ba1\u7b97\u65b9\u6cd5 \u4f01\u4e1a\u5bf9\u52b3\u52a8\u529b\u7684\u9700\u6c42 66.52 \u5750\u6807\u8f74\u65b9\u6cd5\u51ed\u636e \u53ea\u6709\u5728\u5b8c\u6574\u62ab\u9732\u6784\u6210\u6cd5\u5219\u7684\u524d\u63d0\u4e0b\uff0c\u590d\u5408\u6307\u6807\u624d\u53ef\u5c55\u793a\u3002 \u65b9\u5411 \u6570\u503c\u8d8a\u9ad8\uff1d\u652f\u6301\u8d8a\u5f3a \u6743\u91cd\u6cd5\u5219 \u6309\u5230\u4f4d\u5206\u9879\u7684\u52a0\u6743\u5e73\u5747\uff1a\u521d\u8bf7\u52a8\u91cf 40%\u3001\u804c\u4f4d\u53d1\u5e03\u52a8\u91cf 35%\u3001\u4ee3\u6263\u7a0e\u6536\u5165\u589e\u957f\u4ee3\u7406 25%\u3002 \u53d8\u6362 \u521d\u8bf7\u53d6\u53cd\uff0c\u521d\u8bf7\u5347\u9ad8\u8868\u793a\u9700\u6c42\u66f4\u5f31\u3002\u804c\u4f4d\u53d1\u5e03\u4e09\u4e2a\u6708\u53d8\u5316\u4e0e\u4ee3\u6263\u7a0e\u540c\u6bd4\u6620\u5c04\u5230 0\u2013100\u3002\u53ea\u4f7f\u7528\u5df2\u53d1\u5e03\u7684\u5148\u9a8c\u8bfb\u6570\u3002 \u9891\u7387\u5bf9\u9f50 \u65f6\u949f\u4e0d\u4e00\uff1a\u5468\u5ea6\u521d\u8bf7\uff08\u5468\u56db\uff09\u3001\u5468\u5ea6\u804c\u4f4d\u53d1\u5e03\uff0c\u4ee5\u53ca\u6309\u65e5\u7d2f\u8ba1\u7684\u8d22\u653f\u90e8\u4ee3\u6263\u7a0e\u4ee3\u7406\uff0c\u5168\u90e8\u5bf9\u9f50\u5230\u540c\u4e00\u4e2a\u8ba1\u7b97\u65e5\u3002 \u4fee\u8ba2\u884c\u4e3a \u6bcf\u6b21\u6570\u636e\u6e90\u53d1\u5e03\u65f6\u7528\u5f53\u65f6\u5df2\u77e5\u7684\u8bfb\u6570\u91cd\u7b97\u3002\u65b9\u6cd5\u53d8\u66f4\u4f1a\u6807\u660e\u4e3a\u4e0d\u53ef\u6bd4\uff0c\u800c\u4e0d\u4f1a\u5199\u6210\u6570\u5b57\u4f4d\u79fb\u3002 \u5df2\u5177\u5907\u5206\u9879 3 / \u6700\u5c11 2 \u8986\u76d6\u4e0b\u9650 \u81f3\u5c11 50% \u7684\u5206\u9879\u5fc5\u987b\u5230\u4f4d \u5b9a\u4e49\u7248\u672c \u5b9a\u4e49\u7b2c1\u7248\uff0c\u53d1\u5e03\u4e8e2026\u5e749\u67084\u65e5 \u6743\u9650\u4e0a\u9650 \u63cf\u8ff0\u6027\u8bfb\u6570 \u2014 \u672c\u9875\u4e0d\u80fd\u6392\u540d\u3001\u5b9a\u4ed3\u6216\u89e6\u53d1\u4ea4\u6613 \u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u521d\u8bf7\u5931\u4e1a\u91d1\u52a8\u80fd \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 \u22121.30 76.07 0.40 +10.43 \u804c\u4f4d\u53d1\u5e03\u52a8\u80fd\uff08Indeed\uff09 \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 1.68 58.41 0.35 +2.94 \u9884\u6263\u7a0e\u6536\u5165\u589e\u957f\uff08\u4ee3\u7406\u6307\u6807\uff09 \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 2.01 62.58 0.25 +3.15 \u5c31\u4e1a\u5e02\u573a\u7684\u7d27\u5f20\u7a0b\u5ea6 76.35 2 / 2 57.00 0.55 +3.85 100.00 0.45 +22.50",
+    "method_open-macro_labor_markets-light-en-1440.png": "How this is calculated Employer demand for workers 66.52 Axis method receipts A composite may only be shown when its full composition law is disclosed. DIRECTION Higher = stronger support WEIGHTS LAW Weighted average of the parts that are present: initial-claims momentum 40%, job-postings momentum 35%, withheld-tax income-growth proxy 25%. TRANSFORMATION Claims are inverted so elevated claims read as weaker demand. Job-postings 3-month change and withheld-tax year-over-year growth map onto 0\u2013100. Only prior published readings are used. FREQUENCY ALIGNMENT Mixed clocks: weekly initial claims (Thursday), weekly job-postings, and a daily-accrual Treasury withheld-tax proxy, all aligned to one shared calculation date. REVISION BEHAVIOUR Recomputed each time the source publishes, using only readings that were already known then. A method change is reported as a break in comparability, never as a numeric move. COMPONENTS PRESENT 3 / minimum 2 COVERAGE FLOOR At least 50% of the parts must be present DEFINITION VERSION Definition v1, published 4 Sep 2026 AUTHORITY CEILING Descriptive reading \u2014 this page cannot rank, size or trigger a trade COMPONENT RAW STANDARDIZED WEIGHT CONTRIBUTION Initial-claims momentum Labor-nowcast regime desk \u22121.30 76.07 0.40 +10.43 Job-postings momentum (Indeed) Labor-nowcast regime desk 1.68 58.41 0.35 +2.94 Withheld-tax income growth (proxy) Labor-nowcast regime desk 2.01 62.58 0.25 +3.15 Tightness of the job market 76.35 2 / 2 57.00 0.55 +3.85 100.00 0.45 +22.50",
+    "method_open-macro_labor_markets-light-zh-1440.png": "\u8ba1\u7b97\u65b9\u6cd5 \u4f01\u4e1a\u5bf9\u52b3\u52a8\u529b\u7684\u9700\u6c42 66.52 \u5750\u6807\u8f74\u65b9\u6cd5\u51ed\u636e \u53ea\u6709\u5728\u5b8c\u6574\u62ab\u9732\u6784\u6210\u6cd5\u5219\u7684\u524d\u63d0\u4e0b\uff0c\u590d\u5408\u6307\u6807\u624d\u53ef\u5c55\u793a\u3002 \u65b9\u5411 \u6570\u503c\u8d8a\u9ad8\uff1d\u652f\u6301\u8d8a\u5f3a \u6743\u91cd\u6cd5\u5219 \u6309\u5230\u4f4d\u5206\u9879\u7684\u52a0\u6743\u5e73\u5747\uff1a\u521d\u8bf7\u52a8\u91cf 40%\u3001\u804c\u4f4d\u53d1\u5e03\u52a8\u91cf 35%\u3001\u4ee3\u6263\u7a0e\u6536\u5165\u589e\u957f\u4ee3\u7406 25%\u3002 \u53d8\u6362 \u521d\u8bf7\u53d6\u53cd\uff0c\u521d\u8bf7\u5347\u9ad8\u8868\u793a\u9700\u6c42\u66f4\u5f31\u3002\u804c\u4f4d\u53d1\u5e03\u4e09\u4e2a\u6708\u53d8\u5316\u4e0e\u4ee3\u6263\u7a0e\u540c\u6bd4\u6620\u5c04\u5230 0\u2013100\u3002\u53ea\u4f7f\u7528\u5df2\u53d1\u5e03\u7684\u5148\u9a8c\u8bfb\u6570\u3002 \u9891\u7387\u5bf9\u9f50 \u65f6\u949f\u4e0d\u4e00\uff1a\u5468\u5ea6\u521d\u8bf7\uff08\u5468\u56db\uff09\u3001\u5468\u5ea6\u804c\u4f4d\u53d1\u5e03\uff0c\u4ee5\u53ca\u6309\u65e5\u7d2f\u8ba1\u7684\u8d22\u653f\u90e8\u4ee3\u6263\u7a0e\u4ee3\u7406\uff0c\u5168\u90e8\u5bf9\u9f50\u5230\u540c\u4e00\u4e2a\u8ba1\u7b97\u65e5\u3002 \u4fee\u8ba2\u884c\u4e3a \u6bcf\u6b21\u6570\u636e\u6e90\u53d1\u5e03\u65f6\u7528\u5f53\u65f6\u5df2\u77e5\u7684\u8bfb\u6570\u91cd\u7b97\u3002\u65b9\u6cd5\u53d8\u66f4\u4f1a\u6807\u660e\u4e3a\u4e0d\u53ef\u6bd4\uff0c\u800c\u4e0d\u4f1a\u5199\u6210\u6570\u5b57\u4f4d\u79fb\u3002 \u5df2\u5177\u5907\u5206\u9879 3 / \u6700\u5c11 2 \u8986\u76d6\u4e0b\u9650 \u81f3\u5c11 50% \u7684\u5206\u9879\u5fc5\u987b\u5230\u4f4d \u5b9a\u4e49\u7248\u672c \u5b9a\u4e49\u7b2c1\u7248\uff0c\u53d1\u5e03\u4e8e2026\u5e749\u67084\u65e5 \u6743\u9650\u4e0a\u9650 \u63cf\u8ff0\u6027\u8bfb\u6570 \u2014 \u672c\u9875\u4e0d\u80fd\u6392\u540d\u3001\u5b9a\u4ed3\u6216\u89e6\u53d1\u4ea4\u6613 \u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u521d\u8bf7\u5931\u4e1a\u91d1\u52a8\u80fd \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 \u22121.30 76.07 0.40 +10.43 \u804c\u4f4d\u53d1\u5e03\u52a8\u80fd\uff08Indeed\uff09 \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 1.68 58.41 0.35 +2.94 \u9884\u6263\u7a0e\u6536\u5165\u589e\u957f\uff08\u4ee3\u7406\u6307\u6807\uff09 \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 2.01 62.58 0.25 +3.15 \u5c31\u4e1a\u5e02\u573a\u7684\u7d27\u5f20\u7a0b\u5ea6 76.35 2 / 2 57.00 0.55 +3.85 100.00 0.45 +22.50",
+    "method_open-macro_labor_markets-dark-en-390.png": "How this is calculated Employer demand for workers 66.52 Axis method receipts A composite may only be shown when its full composition law is disclosed. DIRECTION Higher = stronger support WEIGHTS LAW Weighted average of the parts that are present: initial-claims momentum 40%, job-postings momentum 35%, withheld-tax income-growth proxy 25%. TRANSFORMATION Claims are inverted so elevated claims read as weaker demand. Job-postings 3-month change and withheld-tax year-over-year growth map onto 0\u2013100. Only prior published readings are used. FREQUENCY ALIGNMENT Mixed clocks: weekly initial claims (Thursday), weekly job-postings, and a daily-accrual Treasury withheld-tax proxy, all aligned to one shared calculation date. REVISION BEHAVIOUR Recomputed each time the source publishes, using only readings that were already known then. A method change is reported as a break in comparability, never as a numeric move. COMPONENTS PRESENT 3 / minimum 2 COVERAGE FLOOR At least 50% of the parts must be present DEFINITION VERSION Definition v1, published 4 Sep 2026 AUTHORITY CEILING Descriptive reading \u2014 this page cannot rank, size or trigger a trade COMPONENT RAW STANDARDIZED WEIGHT CONTRIBUTION Initial-claims momentum Labor-nowcast regime desk \u22121.30 76.07 0.40 +10.43 Job-postings momentum (Indeed) Labor-nowcast regime desk 1.68 58.41 0.35 +2.94 Withheld-tax income growth (proxy) Labor-nowcast regime desk 2.01 62.58 0.25 +3.15 Tightness of the job market 76.35 2 / 2 57.00 0.55 +3.85 100.00 0.45 +22.50",
+    "method_open-macro_labor_markets-dark-zh-390.png": "\u8ba1\u7b97\u65b9\u6cd5 \u4f01\u4e1a\u5bf9\u52b3\u52a8\u529b\u7684\u9700\u6c42 66.52 \u5750\u6807\u8f74\u65b9\u6cd5\u51ed\u636e \u53ea\u6709\u5728\u5b8c\u6574\u62ab\u9732\u6784\u6210\u6cd5\u5219\u7684\u524d\u63d0\u4e0b\uff0c\u590d\u5408\u6307\u6807\u624d\u53ef\u5c55\u793a\u3002 \u65b9\u5411 \u6570\u503c\u8d8a\u9ad8\uff1d\u652f\u6301\u8d8a\u5f3a \u6743\u91cd\u6cd5\u5219 \u6309\u5230\u4f4d\u5206\u9879\u7684\u52a0\u6743\u5e73\u5747\uff1a\u521d\u8bf7\u52a8\u91cf 40%\u3001\u804c\u4f4d\u53d1\u5e03\u52a8\u91cf 35%\u3001\u4ee3\u6263\u7a0e\u6536\u5165\u589e\u957f\u4ee3\u7406 25%\u3002 \u53d8\u6362 \u521d\u8bf7\u53d6\u53cd\uff0c\u521d\u8bf7\u5347\u9ad8\u8868\u793a\u9700\u6c42\u66f4\u5f31\u3002\u804c\u4f4d\u53d1\u5e03\u4e09\u4e2a\u6708\u53d8\u5316\u4e0e\u4ee3\u6263\u7a0e\u540c\u6bd4\u6620\u5c04\u5230 0\u2013100\u3002\u53ea\u4f7f\u7528\u5df2\u53d1\u5e03\u7684\u5148\u9a8c\u8bfb\u6570\u3002 \u9891\u7387\u5bf9\u9f50 \u65f6\u949f\u4e0d\u4e00\uff1a\u5468\u5ea6\u521d\u8bf7\uff08\u5468\u56db\uff09\u3001\u5468\u5ea6\u804c\u4f4d\u53d1\u5e03\uff0c\u4ee5\u53ca\u6309\u65e5\u7d2f\u8ba1\u7684\u8d22\u653f\u90e8\u4ee3\u6263\u7a0e\u4ee3\u7406\uff0c\u5168\u90e8\u5bf9\u9f50\u5230\u540c\u4e00\u4e2a\u8ba1\u7b97\u65e5\u3002 \u4fee\u8ba2\u884c\u4e3a \u6bcf\u6b21\u6570\u636e\u6e90\u53d1\u5e03\u65f6\u7528\u5f53\u65f6\u5df2\u77e5\u7684\u8bfb\u6570\u91cd\u7b97\u3002\u65b9\u6cd5\u53d8\u66f4\u4f1a\u6807\u660e\u4e3a\u4e0d\u53ef\u6bd4\uff0c\u800c\u4e0d\u4f1a\u5199\u6210\u6570\u5b57\u4f4d\u79fb\u3002 \u5df2\u5177\u5907\u5206\u9879 3 / \u6700\u5c11 2 \u8986\u76d6\u4e0b\u9650 \u81f3\u5c11 50% \u7684\u5206\u9879\u5fc5\u987b\u5230\u4f4d \u5b9a\u4e49\u7248\u672c \u5b9a\u4e49\u7b2c1\u7248\uff0c\u53d1\u5e03\u4e8e2026\u5e749\u67084\u65e5 \u6743\u9650\u4e0a\u9650 \u63cf\u8ff0\u6027\u8bfb\u6570 \u2014 \u672c\u9875\u4e0d\u80fd\u6392\u540d\u3001\u5b9a\u4ed3\u6216\u89e6\u53d1\u4ea4\u6613 \u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u521d\u8bf7\u5931\u4e1a\u91d1\u52a8\u80fd \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 \u22121.30 76.07 0.40 +10.43 \u804c\u4f4d\u53d1\u5e03\u52a8\u80fd\uff08Indeed\uff09 \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 1.68 58.41 0.35 +2.94 \u9884\u6263\u7a0e\u6536\u5165\u589e\u957f\uff08\u4ee3\u7406\u6307\u6807\uff09 \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 2.01 62.58 0.25 +3.15 \u5c31\u4e1a\u5e02\u573a\u7684\u7d27\u5f20\u7a0b\u5ea6 76.35 2 / 2 57.00 0.55 +3.85 100.00 0.45 +22.50",
+    "method_open-macro_labor_markets-light-en-390.png": "How this is calculated Employer demand for workers 66.52 Axis method receipts A composite may only be shown when its full composition law is disclosed. DIRECTION Higher = stronger support WEIGHTS LAW Weighted average of the parts that are present: initial-claims momentum 40%, job-postings momentum 35%, withheld-tax income-growth proxy 25%. TRANSFORMATION Claims are inverted so elevated claims read as weaker demand. Job-postings 3-month change and withheld-tax year-over-year growth map onto 0\u2013100. Only prior published readings are used. FREQUENCY ALIGNMENT Mixed clocks: weekly initial claims (Thursday), weekly job-postings, and a daily-accrual Treasury withheld-tax proxy, all aligned to one shared calculation date. REVISION BEHAVIOUR Recomputed each time the source publishes, using only readings that were already known then. A method change is reported as a break in comparability, never as a numeric move. COMPONENTS PRESENT 3 / minimum 2 COVERAGE FLOOR At least 50% of the parts must be present DEFINITION VERSION Definition v1, published 4 Sep 2026 AUTHORITY CEILING Descriptive reading \u2014 this page cannot rank, size or trigger a trade COMPONENT RAW STANDARDIZED WEIGHT CONTRIBUTION Initial-claims momentum Labor-nowcast regime desk \u22121.30 76.07 0.40 +10.43 Job-postings momentum (Indeed) Labor-nowcast regime desk 1.68 58.41 0.35 +2.94 Withheld-tax income growth (proxy) Labor-nowcast regime desk 2.01 62.58 0.25 +3.15 Tightness of the job market 76.35 2 / 2 57.00 0.55 +3.85 100.00 0.45 +22.50",
+    "method_open-macro_labor_markets-light-zh-390.png": "\u8ba1\u7b97\u65b9\u6cd5 \u4f01\u4e1a\u5bf9\u52b3\u52a8\u529b\u7684\u9700\u6c42 66.52 \u5750\u6807\u8f74\u65b9\u6cd5\u51ed\u636e \u53ea\u6709\u5728\u5b8c\u6574\u62ab\u9732\u6784\u6210\u6cd5\u5219\u7684\u524d\u63d0\u4e0b\uff0c\u590d\u5408\u6307\u6807\u624d\u53ef\u5c55\u793a\u3002 \u65b9\u5411 \u6570\u503c\u8d8a\u9ad8\uff1d\u652f\u6301\u8d8a\u5f3a \u6743\u91cd\u6cd5\u5219 \u6309\u5230\u4f4d\u5206\u9879\u7684\u52a0\u6743\u5e73\u5747\uff1a\u521d\u8bf7\u52a8\u91cf 40%\u3001\u804c\u4f4d\u53d1\u5e03\u52a8\u91cf 35%\u3001\u4ee3\u6263\u7a0e\u6536\u5165\u589e\u957f\u4ee3\u7406 25%\u3002 \u53d8\u6362 \u521d\u8bf7\u53d6\u53cd\uff0c\u521d\u8bf7\u5347\u9ad8\u8868\u793a\u9700\u6c42\u66f4\u5f31\u3002\u804c\u4f4d\u53d1\u5e03\u4e09\u4e2a\u6708\u53d8\u5316\u4e0e\u4ee3\u6263\u7a0e\u540c\u6bd4\u6620\u5c04\u5230 0\u2013100\u3002\u53ea\u4f7f\u7528\u5df2\u53d1\u5e03\u7684\u5148\u9a8c\u8bfb\u6570\u3002 \u9891\u7387\u5bf9\u9f50 \u65f6\u949f\u4e0d\u4e00\uff1a\u5468\u5ea6\u521d\u8bf7\uff08\u5468\u56db\uff09\u3001\u5468\u5ea6\u804c\u4f4d\u53d1\u5e03\uff0c\u4ee5\u53ca\u6309\u65e5\u7d2f\u8ba1\u7684\u8d22\u653f\u90e8\u4ee3\u6263\u7a0e\u4ee3\u7406\uff0c\u5168\u90e8\u5bf9\u9f50\u5230\u540c\u4e00\u4e2a\u8ba1\u7b97\u65e5\u3002 \u4fee\u8ba2\u884c\u4e3a \u6bcf\u6b21\u6570\u636e\u6e90\u53d1\u5e03\u65f6\u7528\u5f53\u65f6\u5df2\u77e5\u7684\u8bfb\u6570\u91cd\u7b97\u3002\u65b9\u6cd5\u53d8\u66f4\u4f1a\u6807\u660e\u4e3a\u4e0d\u53ef\u6bd4\uff0c\u800c\u4e0d\u4f1a\u5199\u6210\u6570\u5b57\u4f4d\u79fb\u3002 \u5df2\u5177\u5907\u5206\u9879 3 / \u6700\u5c11 2 \u8986\u76d6\u4e0b\u9650 \u81f3\u5c11 50% \u7684\u5206\u9879\u5fc5\u987b\u5230\u4f4d \u5b9a\u4e49\u7248\u672c \u5b9a\u4e49\u7b2c1\u7248\uff0c\u53d1\u5e03\u4e8e2026\u5e749\u67084\u65e5 \u6743\u9650\u4e0a\u9650 \u63cf\u8ff0\u6027\u8bfb\u6570 \u2014 \u672c\u9875\u4e0d\u80fd\u6392\u540d\u3001\u5b9a\u4ed3\u6216\u89e6\u53d1\u4ea4\u6613 \u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u521d\u8bf7\u5931\u4e1a\u91d1\u52a8\u80fd \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 \u22121.30 76.07 0.40 +10.43 \u804c\u4f4d\u53d1\u5e03\u52a8\u80fd\uff08Indeed\uff09 \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 1.68 58.41 0.35 +2.94 \u9884\u6263\u7a0e\u6536\u5165\u589e\u957f\uff08\u4ee3\u7406\u6307\u6807\uff09 \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 2.01 62.58 0.25 +3.15 \u5c31\u4e1a\u5e02\u573a\u7684\u7d27\u5f20\u7a0b\u5ea6 76.35 2 / 2 57.00 0.55 +3.85 100.00 0.45 +22.50"
   },
+  "page_fits": [
+    {
+      "route": "macro_monetary.html",
+      "width": 320,
+      "locale": "en",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_monetary.html",
+      "width": 320,
+      "locale": "zh",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_monetary.html",
+      "width": 390,
+      "locale": "en",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_monetary.html",
+      "width": 390,
+      "locale": "zh",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_monetary.html",
+      "width": 768,
+      "locale": "en",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_monetary.html",
+      "width": 768,
+      "locale": "zh",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_monetary.html",
+      "width": 1440,
+      "locale": "en",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_monetary.html",
+      "width": 1440,
+      "locale": "zh",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_liquidity_regime.html",
+      "width": 320,
+      "locale": "en",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_liquidity_regime.html",
+      "width": 320,
+      "locale": "zh",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_liquidity_regime.html",
+      "width": 390,
+      "locale": "en",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_liquidity_regime.html",
+      "width": 390,
+      "locale": "zh",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_liquidity_regime.html",
+      "width": 768,
+      "locale": "en",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_liquidity_regime.html",
+      "width": 768,
+      "locale": "zh",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_liquidity_regime.html",
+      "width": 1440,
+      "locale": "en",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_liquidity_regime.html",
+      "width": 1440,
+      "locale": "zh",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_growth_real_economy.html",
+      "width": 320,
+      "locale": "en",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_growth_real_economy.html",
+      "width": 320,
+      "locale": "zh",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_growth_real_economy.html",
+      "width": 390,
+      "locale": "en",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_growth_real_economy.html",
+      "width": 390,
+      "locale": "zh",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_growth_real_economy.html",
+      "width": 768,
+      "locale": "en",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_growth_real_economy.html",
+      "width": 768,
+      "locale": "zh",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_growth_real_economy.html",
+      "width": 1440,
+      "locale": "en",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_growth_real_economy.html",
+      "width": 1440,
+      "locale": "zh",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_business_activity.html",
+      "width": 320,
+      "locale": "en",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_business_activity.html",
+      "width": 320,
+      "locale": "zh",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_business_activity.html",
+      "width": 390,
+      "locale": "en",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_business_activity.html",
+      "width": 390,
+      "locale": "zh",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_business_activity.html",
+      "width": 768,
+      "locale": "en",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_business_activity.html",
+      "width": 768,
+      "locale": "zh",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_business_activity.html",
+      "width": 1440,
+      "locale": "en",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_business_activity.html",
+      "width": 1440,
+      "locale": "zh",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_labor_markets.html",
+      "width": 320,
+      "locale": "en",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_labor_markets.html",
+      "width": 320,
+      "locale": "zh",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_labor_markets.html",
+      "width": 390,
+      "locale": "en",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_labor_markets.html",
+      "width": 390,
+      "locale": "zh",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_labor_markets.html",
+      "width": 768,
+      "locale": "en",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_labor_markets.html",
+      "width": 768,
+      "locale": "zh",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_labor_markets.html",
+      "width": 1440,
+      "locale": "en",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_labor_markets.html",
+      "width": 1440,
+      "locale": "zh",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_inflation_system.html",
+      "width": 320,
+      "locale": "en",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_inflation_system.html",
+      "width": 320,
+      "locale": "zh",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_inflation_system.html",
+      "width": 390,
+      "locale": "en",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_inflation_system.html",
+      "width": 390,
+      "locale": "zh",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_inflation_system.html",
+      "width": 768,
+      "locale": "en",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_inflation_system.html",
+      "width": 768,
+      "locale": "zh",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_inflation_system.html",
+      "width": 1440,
+      "locale": "en",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_inflation_system.html",
+      "width": 1440,
+      "locale": "zh",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_monetary_policy.html",
+      "width": 320,
+      "locale": "en",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_monetary_policy.html",
+      "width": 320,
+      "locale": "zh",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_monetary_policy.html",
+      "width": 390,
+      "locale": "en",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_monetary_policy.html",
+      "width": 390,
+      "locale": "zh",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_monetary_policy.html",
+      "width": 768,
+      "locale": "en",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_monetary_policy.html",
+      "width": 768,
+      "locale": "zh",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_monetary_policy.html",
+      "width": 1440,
+      "locale": "en",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_monetary_policy.html",
+      "width": 1440,
+      "locale": "zh",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_financial_conditions.html",
+      "width": 320,
+      "locale": "en",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_financial_conditions.html",
+      "width": 320,
+      "locale": "zh",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_financial_conditions.html",
+      "width": 390,
+      "locale": "en",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_financial_conditions.html",
+      "width": 390,
+      "locale": "zh",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_financial_conditions.html",
+      "width": 768,
+      "locale": "en",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_financial_conditions.html",
+      "width": 768,
+      "locale": "zh",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_financial_conditions.html",
+      "width": 1440,
+      "locale": "en",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_financial_conditions.html",
+      "width": 1440,
+      "locale": "zh",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_liquidity_central_banks.html",
+      "width": 320,
+      "locale": "en",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_liquidity_central_banks.html",
+      "width": 320,
+      "locale": "zh",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_liquidity_central_banks.html",
+      "width": 390,
+      "locale": "en",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_liquidity_central_banks.html",
+      "width": 390,
+      "locale": "zh",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_liquidity_central_banks.html",
+      "width": 768,
+      "locale": "en",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_liquidity_central_banks.html",
+      "width": 768,
+      "locale": "zh",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_liquidity_central_banks.html",
+      "width": 1440,
+      "locale": "en",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_liquidity_central_banks.html",
+      "width": 1440,
+      "locale": "zh",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_capital_structure.html",
+      "width": 320,
+      "locale": "en",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_capital_structure.html",
+      "width": 320,
+      "locale": "zh",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_capital_structure.html",
+      "width": 390,
+      "locale": "en",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_capital_structure.html",
+      "width": 390,
+      "locale": "zh",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_capital_structure.html",
+      "width": 768,
+      "locale": "en",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_capital_structure.html",
+      "width": 768,
+      "locale": "zh",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_capital_structure.html",
+      "width": 1440,
+      "locale": "en",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_capital_structure.html",
+      "width": 1440,
+      "locale": "zh",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_housing_real_estate.html",
+      "width": 320,
+      "locale": "en",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_housing_real_estate.html",
+      "width": 320,
+      "locale": "zh",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_housing_real_estate.html",
+      "width": 390,
+      "locale": "en",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_housing_real_estate.html",
+      "width": 390,
+      "locale": "zh",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_housing_real_estate.html",
+      "width": 768,
+      "locale": "en",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_housing_real_estate.html",
+      "width": 768,
+      "locale": "zh",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_housing_real_estate.html",
+      "width": 1440,
+      "locale": "en",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_housing_real_estate.html",
+      "width": 1440,
+      "locale": "zh",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_consumer_payments.html",
+      "width": 320,
+      "locale": "en",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_consumer_payments.html",
+      "width": 320,
+      "locale": "zh",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_consumer_payments.html",
+      "width": 390,
+      "locale": "en",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_consumer_payments.html",
+      "width": 390,
+      "locale": "zh",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_consumer_payments.html",
+      "width": 768,
+      "locale": "en",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_consumer_payments.html",
+      "width": 768,
+      "locale": "zh",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_consumer_payments.html",
+      "width": 1440,
+      "locale": "en",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_consumer_payments.html",
+      "width": 1440,
+      "locale": "zh",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_national_debt_liabilities.html",
+      "width": 320,
+      "locale": "en",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_national_debt_liabilities.html",
+      "width": 320,
+      "locale": "zh",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_national_debt_liabilities.html",
+      "width": 390,
+      "locale": "en",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_national_debt_liabilities.html",
+      "width": 390,
+      "locale": "zh",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_national_debt_liabilities.html",
+      "width": 768,
+      "locale": "en",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_national_debt_liabilities.html",
+      "width": 768,
+      "locale": "zh",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_national_debt_liabilities.html",
+      "width": 1440,
+      "locale": "en",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_national_debt_liabilities.html",
+      "width": 1440,
+      "locale": "zh",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_rates_curves.html",
+      "width": 320,
+      "locale": "en",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_rates_curves.html",
+      "width": 320,
+      "locale": "zh",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_rates_curves.html",
+      "width": 390,
+      "locale": "en",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_rates_curves.html",
+      "width": 390,
+      "locale": "zh",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_rates_curves.html",
+      "width": 768,
+      "locale": "en",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_rates_curves.html",
+      "width": 768,
+      "locale": "zh",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_rates_curves.html",
+      "width": 1440,
+      "locale": "en",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_rates_curves.html",
+      "width": 1440,
+      "locale": "zh",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_trade_flows.html",
+      "width": 320,
+      "locale": "en",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_trade_flows.html",
+      "width": 320,
+      "locale": "zh",
+      "scroll_width": 320.0,
+      "inner_width": 320.0,
+      "fits": true
+    },
+    {
+      "route": "macro_trade_flows.html",
+      "width": 390,
+      "locale": "en",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_trade_flows.html",
+      "width": 390,
+      "locale": "zh",
+      "scroll_width": 390.0,
+      "inner_width": 390.0,
+      "fits": true
+    },
+    {
+      "route": "macro_trade_flows.html",
+      "width": 768,
+      "locale": "en",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_trade_flows.html",
+      "width": 768,
+      "locale": "zh",
+      "scroll_width": 768.0,
+      "inner_width": 768.0,
+      "fits": true
+    },
+    {
+      "route": "macro_trade_flows.html",
+      "width": 1440,
+      "locale": "en",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    },
+    {
+      "route": "macro_trade_flows.html",
+      "width": 1440,
+      "locale": "zh",
+      "scroll_width": 1440.0,
+      "inner_width": 1440.0,
+      "fits": true
+    }
+  ],
   "copy_15": {
     "ok": true,
     "rows": [
@@ -32333,13 +33295,14 @@
     "pairWidth": 206.15625,
     "containerWidth": 338,
     "elementTextHead": "Ask the analyst Trade Flows",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 390,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 241.5625,
       "right": 350.484375,
@@ -35960,13 +36923,14 @@
     "pairWidth": 152,
     "containerWidth": 338,
     "elementTextHead": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 390,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 277.1875,
       "right": 350.1875,
@@ -39587,13 +40551,14 @@
     "pairWidth": 206.15625,
     "containerWidth": 338,
     "elementTextHead": "Ask the analyst Trade Flows",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 390,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 241.5625,
       "right": 350.484375,
@@ -43214,13 +44179,14 @@
     "pairWidth": 152,
     "containerWidth": 338,
     "elementTextHead": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 390,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 277.1875,
       "right": 350.1875,
@@ -46169,13 +47135,14 @@
     "pairWidth": 206.15625,
     "containerWidth": 427,
     "elementTextHead": "Ask the analyst Trade Flows",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 768,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 616.046875,
       "right": 724.96875,
@@ -49124,13 +50091,14 @@
     "pairWidth": 152,
     "containerWidth": 527,
     "elementTextHead": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 768,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 651.0,
       "right": 724.0,
@@ -52079,13 +53047,14 @@
     "pairWidth": 206.15625,
     "containerWidth": 427,
     "elementTextHead": "Ask the analyst Trade Flows",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 768,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 616.046875,
       "right": 724.96875,
@@ -55034,13 +56003,14 @@
     "pairWidth": 152,
     "containerWidth": 527,
     "elementTextHead": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 768,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 651.0,
       "right": 724.0,
@@ -55788,7 +56758,7 @@
     "pairWidth": 206.15625,
     "containerWidth": 1123,
     "elementTextHead": "Ask the analyst Trade Flows",
-    "coordSpace": "host-page",
+    "coordSpace": "host",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 0.0
@@ -56542,7 +57512,7 @@
     "pairWidth": 152,
     "containerWidth": 1223,
     "elementTextHead": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
-    "coordSpace": "host-page",
+    "coordSpace": "host",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 0.0
@@ -57296,7 +58266,7 @@
     "pairWidth": 206.15625,
     "containerWidth": 1123,
     "elementTextHead": "Ask the analyst Trade Flows",
-    "coordSpace": "host-page",
+    "coordSpace": "host",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 0.0
@@ -58050,7 +59020,7 @@
     "pairWidth": 152,
     "containerWidth": 1223,
     "elementTextHead": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
-    "coordSpace": "host-page",
+    "coordSpace": "host",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 0.0
@@ -61677,13 +62647,14 @@
     "pairWidth": 206.15625,
     "containerWidth": 338,
     "elementTextHead": "Ask the analyst Trade Flows",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 390,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 241.15625,
       "right": 350.078125,
@@ -65400,13 +66371,14 @@
     "pairWidth": 152,
     "containerWidth": 338,
     "elementTextHead": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 390,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 277.4375,
       "right": 350.4375,
@@ -69027,13 +69999,14 @@
     "pairWidth": 206.15625,
     "containerWidth": 338,
     "elementTextHead": "Ask the analyst Trade Flows",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 390,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 241.15625,
       "right": 350.078125,
@@ -72750,13 +73723,14 @@
     "pairWidth": 152,
     "containerWidth": 338,
     "elementTextHead": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 390,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 277.4375,
       "right": 350.4375,
@@ -75825,13 +76799,14 @@
     "pairWidth": 206.15625,
     "containerWidth": 427,
     "elementTextHead": "Ask the analyst Trade Flows",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 768,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 615.640625,
       "right": 724.5625,
@@ -78948,13 +79923,14 @@
     "pairWidth": 152,
     "containerWidth": 527,
     "elementTextHead": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 768,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 651.25,
       "right": 724.25,
@@ -82023,13 +82999,14 @@
     "pairWidth": 206.15625,
     "containerWidth": 427,
     "elementTextHead": "Ask the analyst Trade Flows",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 768,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 615.640625,
       "right": 724.5625,
@@ -85146,13 +86123,14 @@
     "pairWidth": 152,
     "containerWidth": 527,
     "elementTextHead": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 768,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 651.25,
       "right": 724.25,
@@ -85900,7 +86878,7 @@
     "pairWidth": 206.15625,
     "containerWidth": 1123,
     "elementTextHead": "Ask the analyst Trade Flows",
-    "coordSpace": "host-page",
+    "coordSpace": "host",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 0.0
@@ -86654,7 +87632,7 @@
     "pairWidth": 152,
     "containerWidth": 1223,
     "elementTextHead": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
-    "coordSpace": "host-page",
+    "coordSpace": "host",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 0.0
@@ -87408,7 +88386,7 @@
     "pairWidth": 206.15625,
     "containerWidth": 1123,
     "elementTextHead": "Ask the analyst Trade Flows",
-    "coordSpace": "host-page",
+    "coordSpace": "host",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 0.0
@@ -88162,7 +89140,7 @@
     "pairWidth": 152,
     "containerWidth": 1223,
     "elementTextHead": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
-    "coordSpace": "host-page",
+    "coordSpace": "host",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 0.0
@@ -91069,13 +92047,14 @@
     "pairWidth": 206.15625,
     "containerWidth": 338,
     "elementTextHead": "Ask the analyst Trade Flows",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 390,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 240.640625,
       "right": 349.5625,
@@ -94048,13 +95027,14 @@
     "pairWidth": 152,
     "containerWidth": 338,
     "elementTextHead": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 390,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 277.4375,
       "right": 350.4375,
@@ -96955,13 +97935,14 @@
     "pairWidth": 206.15625,
     "containerWidth": 338,
     "elementTextHead": "Ask the analyst Trade Flows",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 390,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 240.640625,
       "right": 349.5625,
@@ -99934,13 +100915,14 @@
     "pairWidth": 152,
     "containerWidth": 338,
     "elementTextHead": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 390,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 277.4375,
       "right": 350.4375,
@@ -102793,13 +103775,14 @@
     "pairWidth": 206.15625,
     "containerWidth": 427,
     "elementTextHead": "Ask the analyst Trade Flows",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 768,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 615.125,
       "right": 724.046875,
@@ -105604,13 +106587,14 @@
     "pairWidth": 152,
     "containerWidth": 527,
     "elementTextHead": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 768,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 651.25,
       "right": 724.25,
@@ -108463,13 +109447,14 @@
     "pairWidth": 206.15625,
     "containerWidth": 427,
     "elementTextHead": "Ask the analyst Trade Flows",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 768,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 615.125,
       "right": 724.046875,
@@ -111274,13 +112259,14 @@
     "pairWidth": 152,
     "containerWidth": 527,
     "elementTextHead": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 768,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 651.25,
       "right": 724.25,
@@ -112028,7 +113014,7 @@
     "pairWidth": 206.15625,
     "containerWidth": 1123,
     "elementTextHead": "Ask the analyst Trade Flows",
-    "coordSpace": "host-page",
+    "coordSpace": "host",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 0.0
@@ -112782,7 +113768,7 @@
     "pairWidth": 152,
     "containerWidth": 1223,
     "elementTextHead": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
-    "coordSpace": "host-page",
+    "coordSpace": "host",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 0.0
@@ -113536,7 +114522,7 @@
     "pairWidth": 206.15625,
     "containerWidth": 1123,
     "elementTextHead": "Ask the analyst Trade Flows",
-    "coordSpace": "host-page",
+    "coordSpace": "host",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 0.0
@@ -114290,7 +115276,7 @@
     "pairWidth": 152,
     "containerWidth": 1223,
     "elementTextHead": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
-    "coordSpace": "host-page",
+    "coordSpace": "host",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 0.0
@@ -117437,13 +118423,14 @@
     "pairWidth": 206.15625,
     "containerWidth": 338,
     "elementTextHead": "Ask the analyst Trade Flows",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 390,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 240.875,
       "right": 349.796875,
@@ -120464,13 +121451,14 @@
     "pairWidth": 152,
     "containerWidth": 338,
     "elementTextHead": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 390,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 276.953125,
       "right": 349.953125,
@@ -123611,13 +124599,14 @@
     "pairWidth": 206.15625,
     "containerWidth": 338,
     "elementTextHead": "Ask the analyst Trade Flows",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 390,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 240.875,
       "right": 349.796875,
@@ -126638,13 +127627,14 @@
     "pairWidth": 152,
     "containerWidth": 338,
     "elementTextHead": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 390,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 276.953125,
       "right": 349.953125,
@@ -129593,13 +130583,14 @@
     "pairWidth": 206.15625,
     "containerWidth": 427,
     "elementTextHead": "Ask the analyst Trade Flows",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 768,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 615.359375,
       "right": 724.28125,
@@ -132572,13 +133563,14 @@
     "pairWidth": 152,
     "containerWidth": 527,
     "elementTextHead": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 768,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 650.765625,
       "right": 723.765625,
@@ -135527,13 +136519,14 @@
     "pairWidth": 206.15625,
     "containerWidth": 427,
     "elementTextHead": "Ask the analyst Trade Flows",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 768,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 615.359375,
       "right": 724.28125,
@@ -138506,13 +139499,14 @@
     "pairWidth": 152,
     "containerWidth": 527,
     "elementTextHead": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
-    "coordSpace": "host-page",
+    "coordSpace": "iframe",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 32.0
     },
     "host_scroll_y_at_shot": 0.0,
     "frameInnerWidth": 768,
+    "frameInnerHeight": 872,
     "analystBoxHost": {
       "left": 650.765625,
       "right": 723.765625,
@@ -139260,7 +140254,7 @@
     "pairWidth": 206.15625,
     "containerWidth": 1123,
     "elementTextHead": "Ask the analyst Trade Flows",
-    "coordSpace": "host-page",
+    "coordSpace": "host",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 0.0
@@ -140014,7 +141008,7 @@
     "pairWidth": 152,
     "containerWidth": 1223,
     "elementTextHead": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
-    "coordSpace": "host-page",
+    "coordSpace": "host",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 0.0
@@ -140768,7 +141762,7 @@
     "pairWidth": 206.15625,
     "containerWidth": 1123,
     "elementTextHead": "Ask the analyst Trade Flows",
-    "coordSpace": "host-page",
+    "coordSpace": "host",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 0.0
@@ -141522,7 +142516,7 @@
     "pairWidth": 152,
     "containerWidth": 1223,
     "elementTextHead": "\u95ee\u5206\u6790\u5e08 \u8d38\u6613\u6d41\u52a8",
-    "coordSpace": "host-page",
+    "coordSpace": "host",
     "hostFrameOffset": {
       "x": 0.0,
       "y": 0.0
@@ -141598,9 +142592,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 142.9430419811979,
-    "urlBefore": "http://127.0.0.1:53706/macro_monetary.html#overview",
-    "urlAfter": "http://127.0.0.1:53706/macro_monetary.html#overview",
+    "visibleAfterMs": 141.82749995961785,
+    "urlBefore": "http://127.0.0.1:60039/macro_monetary.html#overview",
+    "urlAfter": "http://127.0.0.1:60039/macro_monetary.html#overview",
     "openedBy": "click",
     "page": "macro_monetary.html",
     "locale": "en",
@@ -141643,9 +142637,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 128.5445000976324,
-    "urlBefore": "http://127.0.0.1:53706/macro_monetary.html#overview",
-    "urlAfter": "http://127.0.0.1:53706/macro_monetary.html#overview",
+    "visibleAfterMs": 121.58170808106661,
+    "urlBefore": "http://127.0.0.1:60039/macro_monetary.html#overview",
+    "urlAfter": "http://127.0.0.1:60039/macro_monetary.html#overview",
     "openedBy": "click",
     "page": "macro_monetary.html",
     "locale": "zh",
@@ -141688,9 +142682,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 132.11779203265905,
-    "urlBefore": "http://127.0.0.1:53706/macro_monetary.html#overview",
-    "urlAfter": "http://127.0.0.1:53706/macro_monetary.html#overview",
+    "visibleAfterMs": 150.18395893275738,
+    "urlBefore": "http://127.0.0.1:60039/macro_monetary.html#overview",
+    "urlAfter": "http://127.0.0.1:60039/macro_monetary.html#overview",
     "openedBy": "click",
     "page": "macro_monetary.html",
     "locale": "en",
@@ -141733,9 +142727,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 127.26387497968972,
-    "urlBefore": "http://127.0.0.1:53706/macro_monetary.html#overview",
-    "urlAfter": "http://127.0.0.1:53706/macro_monetary.html#overview",
+    "visibleAfterMs": 131.55491696670651,
+    "urlBefore": "http://127.0.0.1:60039/macro_monetary.html#overview",
+    "urlAfter": "http://127.0.0.1:60039/macro_monetary.html#overview",
     "openedBy": "click",
     "page": "macro_monetary.html",
     "locale": "zh",
@@ -141778,9 +142772,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 141.4862920064479,
-    "urlBefore": "http://127.0.0.1:53706/macro_monetary.html#overview",
-    "urlAfter": "http://127.0.0.1:53706/macro_monetary.html#overview",
+    "visibleAfterMs": 124.79104194790125,
+    "urlBefore": "http://127.0.0.1:60039/macro_monetary.html#overview",
+    "urlAfter": "http://127.0.0.1:60039/macro_monetary.html#overview",
     "openedBy": "click",
     "page": "macro_monetary.html",
     "locale": "en",
@@ -141802,8 +142796,8 @@
       "box": {
         "left": 18,
         "right": 750,
-        "top": 1353,
-        "bottom": 1353,
+        "top": 854,
+        "bottom": 854,
         "width": 732,
         "height": 0
       }
@@ -141823,9 +142817,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 94.0021249698475,
-    "urlBefore": "http://127.0.0.1:53706/macro_monetary.html#overview",
-    "urlAfter": "http://127.0.0.1:53706/macro_monetary.html#overview",
+    "visibleAfterMs": 132.57554196752608,
+    "urlBefore": "http://127.0.0.1:60039/macro_monetary.html#overview",
+    "urlAfter": "http://127.0.0.1:60039/macro_monetary.html#overview",
     "openedBy": "click",
     "page": "macro_monetary.html",
     "locale": "zh",
@@ -141868,9 +142862,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 146.37895801570266,
-    "urlBefore": "http://127.0.0.1:53706/macro_monetary.html#overview",
-    "urlAfter": "http://127.0.0.1:53706/macro_monetary.html#overview",
+    "visibleAfterMs": 115.56475004181266,
+    "urlBefore": "http://127.0.0.1:60039/macro_monetary.html#overview",
+    "urlAfter": "http://127.0.0.1:60039/macro_monetary.html#overview",
     "openedBy": "click",
     "page": "macro_monetary.html",
     "locale": "en",
@@ -141892,8 +142886,8 @@
       "box": {
         "left": 18,
         "right": 750,
-        "top": 1355,
-        "bottom": 1355,
+        "top": 854,
+        "bottom": 854,
         "width": 732,
         "height": 0
       }
@@ -141913,9 +142907,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 108.28883294016123,
-    "urlBefore": "http://127.0.0.1:53706/macro_monetary.html#overview",
-    "urlAfter": "http://127.0.0.1:53706/macro_monetary.html#overview",
+    "visibleAfterMs": 135.72229095734656,
+    "urlBefore": "http://127.0.0.1:60039/macro_monetary.html#overview",
+    "urlAfter": "http://127.0.0.1:60039/macro_monetary.html#overview",
     "openedBy": "click",
     "page": "macro_monetary.html",
     "locale": "zh",
@@ -141958,9 +142952,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 75.24162495974451,
-    "urlBefore": "http://127.0.0.1:53706/macro_rates_curves.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_rates_curves.html",
+    "visibleAfterMs": 72.19220802653581,
+    "urlBefore": "http://127.0.0.1:60039/macro_rates_curves.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_rates_curves.html",
     "openedBy": "click",
     "page": "macro_rates_curves.html",
     "locale": "en",
@@ -142003,9 +142997,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 68.62937496043742,
-    "urlBefore": "http://127.0.0.1:53706/macro_rates_curves.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_rates_curves.html",
+    "visibleAfterMs": 74.43083298858255,
+    "urlBefore": "http://127.0.0.1:60039/macro_rates_curves.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_rates_curves.html",
     "openedBy": "click",
     "page": "macro_rates_curves.html",
     "locale": "zh",
@@ -142048,9 +143042,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 83.9708331041038,
-    "urlBefore": "http://127.0.0.1:53706/macro_rates_curves.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_rates_curves.html",
+    "visibleAfterMs": 93.4037909610197,
+    "urlBefore": "http://127.0.0.1:60039/macro_rates_curves.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_rates_curves.html",
     "openedBy": "click",
     "page": "macro_rates_curves.html",
     "locale": "en",
@@ -142072,8 +143066,8 @@
       "box": {
         "left": 14,
         "right": 376,
-        "top": 7949,
-        "bottom": 7949,
+        "top": 858,
+        "bottom": 858,
         "width": 362,
         "height": 0
       }
@@ -142093,9 +143087,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 71.5289170620963,
-    "urlBefore": "http://127.0.0.1:53706/macro_rates_curves.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_rates_curves.html",
+    "visibleAfterMs": 187.22375005017966,
+    "urlBefore": "http://127.0.0.1:60039/macro_rates_curves.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_rates_curves.html",
     "openedBy": "click",
     "page": "macro_rates_curves.html",
     "locale": "zh",
@@ -142138,9 +143132,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 218.15650002099574,
-    "urlBefore": "http://127.0.0.1:53706/macro_rates_curves.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_rates_curves.html",
+    "visibleAfterMs": 88.91045895870775,
+    "urlBefore": "http://127.0.0.1:60039/macro_rates_curves.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_rates_curves.html",
     "openedBy": "click",
     "page": "macro_rates_curves.html",
     "locale": "en",
@@ -142183,9 +143177,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 80.10970894247293,
-    "urlBefore": "http://127.0.0.1:53706/macro_rates_curves.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_rates_curves.html",
+    "visibleAfterMs": 66.46995909977704,
+    "urlBefore": "http://127.0.0.1:60039/macro_rates_curves.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_rates_curves.html",
     "openedBy": "click",
     "page": "macro_rates_curves.html",
     "locale": "zh",
@@ -142207,8 +143201,8 @@
       "box": {
         "left": 18,
         "right": 750,
-        "top": 5261.453125,
-        "bottom": 5261.453125,
+        "top": 854.453125,
+        "bottom": 854.453125,
         "width": 732,
         "height": 0
       }
@@ -142228,9 +143222,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 66.19341694749892,
-    "urlBefore": "http://127.0.0.1:53706/macro_rates_curves.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_rates_curves.html",
+    "visibleAfterMs": 185.8429160201922,
+    "urlBefore": "http://127.0.0.1:60039/macro_rates_curves.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_rates_curves.html",
     "openedBy": "click",
     "page": "macro_rates_curves.html",
     "locale": "en",
@@ -142273,9 +143267,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 80.38674993440509,
-    "urlBefore": "http://127.0.0.1:53706/macro_rates_curves.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_rates_curves.html",
+    "visibleAfterMs": 97.0539579866454,
+    "urlBefore": "http://127.0.0.1:60039/macro_rates_curves.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_rates_curves.html",
     "openedBy": "click",
     "page": "macro_rates_curves.html",
     "locale": "zh",
@@ -142318,9 +143312,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 77.73229095619172,
-    "urlBefore": "http://127.0.0.1:53706/macro_business_activity.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_business_activity.html",
+    "visibleAfterMs": 83.53862504009157,
+    "urlBefore": "http://127.0.0.1:60039/macro_business_activity.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_business_activity.html",
     "openedBy": "click",
     "page": "macro_business_activity.html",
     "locale": "en",
@@ -142363,9 +143357,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 172.7241249755025,
-    "urlBefore": "http://127.0.0.1:53706/macro_business_activity.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_business_activity.html",
+    "visibleAfterMs": 181.132624973543,
+    "urlBefore": "http://127.0.0.1:60039/macro_business_activity.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_business_activity.html",
     "openedBy": "click",
     "page": "macro_business_activity.html",
     "locale": "zh",
@@ -142387,8 +143381,8 @@
       "box": {
         "left": 14,
         "right": 376,
-        "top": 7933.640625,
-        "bottom": 7933.640625,
+        "top": 857.640625,
+        "bottom": 857.640625,
         "width": 362,
         "height": 0
       }
@@ -142408,9 +143402,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 73.45083309337497,
-    "urlBefore": "http://127.0.0.1:53706/macro_business_activity.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_business_activity.html",
+    "visibleAfterMs": 175.6643330445513,
+    "urlBefore": "http://127.0.0.1:60039/macro_business_activity.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_business_activity.html",
     "openedBy": "click",
     "page": "macro_business_activity.html",
     "locale": "en",
@@ -142432,8 +143426,8 @@
       "box": {
         "left": 14,
         "right": 376,
-        "top": 858.21875,
-        "bottom": 858.21875,
+        "top": 7605.21875,
+        "bottom": 7605.21875,
         "width": 362,
         "height": 0
       }
@@ -142453,9 +143447,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 191.71033392194659,
-    "urlBefore": "http://127.0.0.1:53706/macro_business_activity.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_business_activity.html",
+    "visibleAfterMs": 79.29137500468642,
+    "urlBefore": "http://127.0.0.1:60039/macro_business_activity.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_business_activity.html",
     "openedBy": "click",
     "page": "macro_business_activity.html",
     "locale": "zh",
@@ -142477,8 +143471,8 @@
       "box": {
         "left": 18,
         "right": 750,
-        "top": 5008.78125,
-        "bottom": 5008.78125,
+        "top": 853.78125,
+        "bottom": 853.78125,
         "width": 732,
         "height": 0
       }
@@ -142498,9 +143492,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 63.02283296827227,
-    "urlBefore": "http://127.0.0.1:53706/macro_business_activity.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_business_activity.html",
+    "visibleAfterMs": 175.41274998802692,
+    "urlBefore": "http://127.0.0.1:60039/macro_business_activity.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_business_activity.html",
     "openedBy": "click",
     "page": "macro_business_activity.html",
     "locale": "en",
@@ -142522,8 +143516,8 @@
       "box": {
         "left": 18,
         "right": 750,
-        "top": 853.640625,
-        "bottom": 853.640625,
+        "top": 4846.640625,
+        "bottom": 4846.640625,
         "width": 732,
         "height": 0
       }
@@ -142543,9 +143537,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 177.2824169602245,
-    "urlBefore": "http://127.0.0.1:53706/macro_business_activity.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_business_activity.html",
+    "visibleAfterMs": 77.6904160156846,
+    "urlBefore": "http://127.0.0.1:60039/macro_business_activity.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_business_activity.html",
     "openedBy": "click",
     "page": "macro_business_activity.html",
     "locale": "zh",
@@ -142588,9 +143582,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 67.3466669395566,
-    "urlBefore": "http://127.0.0.1:53706/macro_business_activity.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_business_activity.html",
+    "visibleAfterMs": 94.93104193825275,
+    "urlBefore": "http://127.0.0.1:60039/macro_business_activity.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_business_activity.html",
     "openedBy": "click",
     "page": "macro_business_activity.html",
     "locale": "en",
@@ -142633,9 +143627,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 175.20499997772276,
-    "urlBefore": "http://127.0.0.1:53706/macro_business_activity.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_business_activity.html",
+    "visibleAfterMs": 173.7301250686869,
+    "urlBefore": "http://127.0.0.1:60039/macro_business_activity.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_business_activity.html",
     "openedBy": "click",
     "page": "macro_business_activity.html",
     "locale": "zh",
@@ -142657,8 +143651,8 @@
       "box": {
         "left": 14,
         "right": 376,
-        "top": 7979.34375,
-        "bottom": 7979.34375,
+        "top": 858.34375,
+        "bottom": 858.34375,
         "width": 362,
         "height": 0
       }
@@ -142678,9 +143672,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 76.6554590081796,
-    "urlBefore": "http://127.0.0.1:53706/macro_financial_conditions.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_financial_conditions.html",
+    "visibleAfterMs": 158.03900000173599,
+    "urlBefore": "http://127.0.0.1:60039/macro_financial_conditions.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_financial_conditions.html",
     "openedBy": "click",
     "page": "macro_financial_conditions.html",
     "locale": "en",
@@ -142723,9 +143717,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 187.6300829462707,
-    "urlBefore": "http://127.0.0.1:53706/macro_financial_conditions.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_financial_conditions.html",
+    "visibleAfterMs": 190.73695805855095,
+    "urlBefore": "http://127.0.0.1:60039/macro_financial_conditions.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_financial_conditions.html",
     "openedBy": "click",
     "page": "macro_financial_conditions.html",
     "locale": "zh",
@@ -142768,9 +143762,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 172.8847500635311,
-    "urlBefore": "http://127.0.0.1:53706/macro_financial_conditions.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_financial_conditions.html",
+    "visibleAfterMs": 163.30145800020546,
+    "urlBefore": "http://127.0.0.1:60039/macro_financial_conditions.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_financial_conditions.html",
     "openedBy": "click",
     "page": "macro_financial_conditions.html",
     "locale": "en",
@@ -142792,8 +143786,8 @@
       "box": {
         "left": 14,
         "right": 376,
-        "top": 858.296875,
-        "bottom": 858.296875,
+        "top": 7618.296875,
+        "bottom": 7618.296875,
         "width": 362,
         "height": 0
       }
@@ -142813,9 +143807,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 181.52304098475724,
-    "urlBefore": "http://127.0.0.1:53706/macro_financial_conditions.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_financial_conditions.html",
+    "visibleAfterMs": 63.70674993377179,
+    "urlBefore": "http://127.0.0.1:60039/macro_financial_conditions.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_financial_conditions.html",
     "openedBy": "click",
     "page": "macro_financial_conditions.html",
     "locale": "zh",
@@ -142837,8 +143831,8 @@
       "box": {
         "left": 18,
         "right": 750,
-        "top": 5405.921875,
-        "bottom": 5405.921875,
+        "top": 853.921875,
+        "bottom": 853.921875,
         "width": 732,
         "height": 0
       }
@@ -142858,9 +143852,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 82.32583303470165,
-    "urlBefore": "http://127.0.0.1:53706/macro_financial_conditions.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_financial_conditions.html",
+    "visibleAfterMs": 174.2418750654906,
+    "urlBefore": "http://127.0.0.1:60039/macro_financial_conditions.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_financial_conditions.html",
     "openedBy": "click",
     "page": "macro_financial_conditions.html",
     "locale": "en",
@@ -142903,9 +143897,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 192.13541701901704,
-    "urlBefore": "http://127.0.0.1:53706/macro_financial_conditions.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_financial_conditions.html",
+    "visibleAfterMs": 176.39845795929432,
+    "urlBefore": "http://127.0.0.1:60039/macro_financial_conditions.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_financial_conditions.html",
     "openedBy": "click",
     "page": "macro_financial_conditions.html",
     "locale": "zh",
@@ -142948,9 +143942,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 77.4764169473201,
-    "urlBefore": "http://127.0.0.1:53706/macro_financial_conditions.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_financial_conditions.html",
+    "visibleAfterMs": 70.52770897280425,
+    "urlBefore": "http://127.0.0.1:60039/macro_financial_conditions.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_financial_conditions.html",
     "openedBy": "click",
     "page": "macro_financial_conditions.html",
     "locale": "en",
@@ -142972,8 +143966,8 @@
       "box": {
         "left": 18,
         "right": 750,
-        "top": 5278.375,
-        "bottom": 5278.375,
+        "top": 854.375,
+        "bottom": 854.375,
         "width": 732,
         "height": 0
       }
@@ -142993,9 +143987,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 72.49166700057685,
-    "urlBefore": "http://127.0.0.1:53706/macro_financial_conditions.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_financial_conditions.html",
+    "visibleAfterMs": 182.8007089206949,
+    "urlBefore": "http://127.0.0.1:60039/macro_financial_conditions.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_financial_conditions.html",
     "openedBy": "click",
     "page": "macro_financial_conditions.html",
     "locale": "zh",
@@ -143038,9 +144032,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 192.16966698877513,
-    "urlBefore": "http://127.0.0.1:53706/macro_housing_real_estate.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_housing_real_estate.html",
+    "visibleAfterMs": 173.942458932288,
+    "urlBefore": "http://127.0.0.1:60039/macro_housing_real_estate.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_housing_real_estate.html",
     "openedBy": "click",
     "page": "macro_housing_real_estate.html",
     "locale": "en",
@@ -143083,9 +144077,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 175.30762497335672,
-    "urlBefore": "http://127.0.0.1:53706/macro_housing_real_estate.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_housing_real_estate.html",
+    "visibleAfterMs": 192.31175002641976,
+    "urlBefore": "http://127.0.0.1:60039/macro_housing_real_estate.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_housing_real_estate.html",
     "openedBy": "click",
     "page": "macro_housing_real_estate.html",
     "locale": "zh",
@@ -143107,8 +144101,8 @@
       "box": {
         "left": 14,
         "right": 376,
-        "top": 858,
-        "bottom": 858,
+        "top": 5957,
+        "bottom": 5957,
         "width": 362,
         "height": 0
       }
@@ -143128,9 +144122,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 181.51295802090317,
-    "urlBefore": "http://127.0.0.1:53706/macro_housing_real_estate.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_housing_real_estate.html",
+    "visibleAfterMs": 89.66299996245652,
+    "urlBefore": "http://127.0.0.1:60039/macro_housing_real_estate.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_housing_real_estate.html",
     "openedBy": "click",
     "page": "macro_housing_real_estate.html",
     "locale": "en",
@@ -143152,8 +144146,8 @@
       "box": {
         "left": 14,
         "right": 376,
-        "top": 857.796875,
-        "bottom": 857.796875,
+        "top": 5583.796875,
+        "bottom": 5583.796875,
         "width": 362,
         "height": 0
       }
@@ -143173,9 +144167,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 192.22216703929007,
-    "urlBefore": "http://127.0.0.1:53706/macro_housing_real_estate.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_housing_real_estate.html",
+    "visibleAfterMs": 78.44708301126957,
+    "urlBefore": "http://127.0.0.1:60039/macro_housing_real_estate.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_housing_real_estate.html",
     "openedBy": "click",
     "page": "macro_housing_real_estate.html",
     "locale": "zh",
@@ -143218,9 +144212,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 69.6285410085693,
-    "urlBefore": "http://127.0.0.1:53706/macro_housing_real_estate.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_housing_real_estate.html",
+    "visibleAfterMs": 76.17545907851309,
+    "urlBefore": "http://127.0.0.1:60039/macro_housing_real_estate.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_housing_real_estate.html",
     "openedBy": "click",
     "page": "macro_housing_real_estate.html",
     "locale": "en",
@@ -143263,9 +144257,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 71.65904203429818,
-    "urlBefore": "http://127.0.0.1:53706/macro_housing_real_estate.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_housing_real_estate.html",
+    "visibleAfterMs": 71.90137496218085,
+    "urlBefore": "http://127.0.0.1:60039/macro_housing_real_estate.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_housing_real_estate.html",
     "openedBy": "click",
     "page": "macro_housing_real_estate.html",
     "locale": "zh",
@@ -143308,9 +144302,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 82.3930409969762,
-    "urlBefore": "http://127.0.0.1:53706/macro_housing_real_estate.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_housing_real_estate.html",
+    "visibleAfterMs": 80.1009590504691,
+    "urlBefore": "http://127.0.0.1:60039/macro_housing_real_estate.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_housing_real_estate.html",
     "openedBy": "click",
     "page": "macro_housing_real_estate.html",
     "locale": "en",
@@ -143353,9 +144347,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 73.39270797092468,
-    "urlBefore": "http://127.0.0.1:53706/macro_housing_real_estate.html",
-    "urlAfter": "http://127.0.0.1:53706/macro_housing_real_estate.html",
+    "visibleAfterMs": 68.74608295038342,
+    "urlBefore": "http://127.0.0.1:60039/macro_housing_real_estate.html",
+    "urlAfter": "http://127.0.0.1:60039/macro_housing_real_estate.html",
     "openedBy": "click",
     "page": "macro_housing_real_estate.html",
     "locale": "zh",
@@ -143386,97 +144380,97 @@
   "e5_timeout_macro_monetary_dark_en_1440": {
     "clonePresent": true,
     "headline": "This section didn't load",
-    "requestSeenAtMs": 914816381.9035,
-    "cloneSeenAtMs": 914825392.028416,
-    "elapsedMs": 9010.12491607666,
+    "requestSeenAtMs": 925421108.009958,
+    "cloneSeenAtMs": 925430126.065458,
+    "elapsedMs": 9018.055500030518,
     "ok": true
   },
   "e5_timeout_macro_monetary_dark_en_390": {
     "clonePresent": true,
     "headline": "This section didn't load",
-    "requestSeenAtMs": 914826423.348458,
-    "cloneSeenAtMs": 914835452.402458,
-    "elapsedMs": 9029.053999900818,
+    "requestSeenAtMs": 925431156.271083,
+    "cloneSeenAtMs": 925440276.288041,
+    "elapsedMs": 9120.016957998276,
     "ok": true
   },
   "e5_timeout_macro_monetary_dark_en_768": {
     "clonePresent": true,
     "headline": "This section didn't load",
-    "requestSeenAtMs": 914837284.5812911,
-    "cloneSeenAtMs": 914846306.993958,
-    "elapsedMs": 9022.412666916847,
+    "requestSeenAtMs": 925442326.3779579,
+    "cloneSeenAtMs": 925451369.693875,
+    "elapsedMs": 9043.315917015076,
     "ok": true
   },
   "e5_timeout_macro_monetary_dark_zh_1440": {
     "clonePresent": true,
     "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
-    "requestSeenAtMs": 914847830.138041,
-    "cloneSeenAtMs": 914856838.120416,
-    "elapsedMs": 9007.98237502575,
+    "requestSeenAtMs": 925453143.3594999,
+    "cloneSeenAtMs": 925462151.717625,
+    "elapsedMs": 9008.358125090599,
     "ok": true
   },
   "e5_timeout_macro_monetary_dark_zh_390": {
     "clonePresent": true,
     "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
-    "requestSeenAtMs": 914857874.024583,
-    "cloneSeenAtMs": 914866904.298875,
-    "elapsedMs": 9030.274291992188,
+    "requestSeenAtMs": 925463244.109666,
+    "cloneSeenAtMs": 925472272.748583,
+    "elapsedMs": 9028.6389169693,
     "ok": true
   },
   "e5_timeout_macro_monetary_dark_zh_768": {
     "clonePresent": true,
     "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
-    "requestSeenAtMs": 914869106.176541,
-    "cloneSeenAtMs": 914878139.061541,
-    "elapsedMs": 9032.884999990463,
+    "requestSeenAtMs": 925474444.845791,
+    "cloneSeenAtMs": 925483487.966625,
+    "elapsedMs": 9043.120833992958,
     "ok": true
   },
   "e5_timeout_macro_monetary_light_en_1440": {
     "clonePresent": true,
     "headline": "This section didn't load",
-    "requestSeenAtMs": 914879596.371625,
-    "cloneSeenAtMs": 914888604.005458,
-    "elapsedMs": 9007.633833050728,
+    "requestSeenAtMs": 925485251.4783751,
+    "cloneSeenAtMs": 925494259.147375,
+    "elapsedMs": 9007.668999910355,
     "ok": true
   },
   "e5_timeout_macro_monetary_light_en_390": {
     "clonePresent": true,
     "headline": "This section didn't load",
-    "requestSeenAtMs": 914889557.3022081,
-    "cloneSeenAtMs": 914898586.721416,
-    "elapsedMs": 9029.419207930565,
+    "requestSeenAtMs": 925495311.249666,
+    "cloneSeenAtMs": 925504349.786541,
+    "elapsedMs": 9038.536875009537,
     "ok": true
   },
   "e5_timeout_macro_monetary_light_en_768": {
     "clonePresent": true,
     "headline": "This section didn't load",
-    "requestSeenAtMs": 914900389.164166,
-    "cloneSeenAtMs": 914909411.080541,
-    "elapsedMs": 9021.916375041008,
+    "requestSeenAtMs": 925506398.576416,
+    "cloneSeenAtMs": 925515421.251875,
+    "elapsedMs": 9022.67545902729,
     "ok": true
   },
   "e5_timeout_macro_monetary_light_zh_1440": {
     "clonePresent": true,
     "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
-    "requestSeenAtMs": 914911011.502708,
-    "cloneSeenAtMs": 914920025.119458,
-    "elapsedMs": 9013.616750001907,
+    "requestSeenAtMs": 925517295.4256251,
+    "cloneSeenAtMs": 925526303.052375,
+    "elapsedMs": 9007.626749873161,
     "ok": true
   },
   "e5_timeout_macro_monetary_light_zh_390": {
     "clonePresent": true,
     "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
-    "requestSeenAtMs": 914921017.709916,
-    "cloneSeenAtMs": 914930047.302166,
-    "elapsedMs": 9029.59224998951,
+    "requestSeenAtMs": 925527559.222083,
+    "cloneSeenAtMs": 925536589.138333,
+    "elapsedMs": 9029.916249990463,
     "ok": true
   },
   "e5_timeout_macro_monetary_light_zh_768": {
     "clonePresent": true,
     "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
-    "requestSeenAtMs": 914931925.758208,
-    "cloneSeenAtMs": 914940957.2813749,
-    "elapsedMs": 9031.523166894913,
+    "requestSeenAtMs": 925538650.568416,
+    "cloneSeenAtMs": 925547685.9799999,
+    "elapsedMs": 9035.411583900452,
     "ok": true
   },
   "rail_viewport_macro_monetary_dark_en_390": {
@@ -148934,19 +149928,19 @@
     "method_table_390_start-macro_financial_conditions-dark-en-390.png": "Component Raw Rates channelFinancial-conditions workspace 98.00 Credit channelFinancial-conditions workspace 47.01 Dollar/funding channelFinancial-conditions workspace 46.98 Equities/volatility channelFinancial-conditions workspace 20.18",
     "method_table_390_end-macro_financial_conditions-dark-en-390.png": "Standardized Weight Contribution 98.00 0.30 +14.40 47.01 0.30 \u22120.90 46.98 0.20 \u22120.60 20.18 0.20 \u22125.96",
     "method_table_390_start-macro_financial_conditions-dark-zh-390.png": "\u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u5229\u7387\u5206\u9879\u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 98.00 98.00 0.30 \u4fe1\u7528\u5206\u9879\u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 47.01 47.01 0.30 \u7f8e\u5143/\u878d\u8d44\u5206\u9879\u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 46.98 46.98 0.20 \u80a1\u7968/\u6ce2\u52a8\u7387\u5206\u9879\u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 20.18 20.18 0.20",
-    "method_table_390_end-macro_financial_conditions-dark-zh-390.png": "\u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e 98.00 98.00 0.30 +14.40 47.01 47.01 0.30 \u22120.90 46.98 46.98 0.20 \u22120.60 20.18 20.18 0.20 \u22125.96",
+    "method_table_390_end-macro_financial_conditions-dark-zh-390.png": "\u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u5229\u7387\u5206\u9879\u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 98.00 98.00 0.30 +14.40 \u4fe1\u7528\u5206\u9879\u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 47.01 47.01 0.30 \u22120.90 \u7f8e\u5143/\u878d\u8d44\u5206\u9879\u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 46.98 46.98 0.20 \u22120.60 \u80a1\u7968/\u6ce2\u52a8\u7387\u5206\u9879\u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 20.18 20.18 0.20 \u22125.96",
     "method_table_390_start-macro_financial_conditions-light-en-390.png": "Component Raw Rates channelFinancial-conditions workspace 98.00 Credit channelFinancial-conditions workspace 47.01 Dollar/funding channelFinancial-conditions workspace 46.98 Equities/volatility channelFinancial-conditions workspace 20.18",
     "method_table_390_end-macro_financial_conditions-light-en-390.png": "Standardized Weight Contribution 98.00 0.30 +14.40 47.01 0.30 \u22120.90 46.98 0.20 \u22120.60 20.18 0.20 \u22125.96",
     "method_table_390_start-macro_financial_conditions-light-zh-390.png": "\u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u5229\u7387\u5206\u9879\u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 98.00 98.00 0.30 \u4fe1\u7528\u5206\u9879\u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 47.01 47.01 0.30 \u7f8e\u5143/\u878d\u8d44\u5206\u9879\u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 46.98 46.98 0.20 \u80a1\u7968/\u6ce2\u52a8\u7387\u5206\u9879\u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 20.18 20.18 0.20",
-    "method_table_390_end-macro_financial_conditions-light-zh-390.png": "\u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e 98.00 98.00 0.30 +14.40 47.01 47.01 0.30 \u22120.90 46.98 46.98 0.20 \u22120.60 20.18 20.18 0.20 \u22125.96",
+    "method_table_390_end-macro_financial_conditions-light-zh-390.png": "\u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u5229\u7387\u5206\u9879\u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 98.00 98.00 0.30 +14.40 \u4fe1\u7528\u5206\u9879\u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 47.01 47.01 0.30 \u22120.90 \u7f8e\u5143/\u878d\u8d44\u5206\u9879\u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 46.98 46.98 0.20 \u22120.60 \u80a1\u7968/\u6ce2\u52a8\u7387\u5206\u9879\u91d1\u878d\u6761\u4ef6\u5de5\u4f5c\u533a 20.18 20.18 0.20 \u22125.96",
     "method_table_390_start-macro_labor_markets-dark-en-390.png": "Component Raw Initial-claims momentumLabor-nowcast regime desk \u22121.30 Job-postings momentum (Indeed)Labor-nowcast regime desk 1.68 Withheld-tax income growth (proxy)Labor-nowcast regime desk 2.01",
     "method_table_390_end-macro_labor_markets-dark-en-390.png": "Standardized Weight Contribution 76.07 0.40 +10.43 58.41 0.35 +2.94 62.58 0.25 +3.15",
     "method_table_390_start-macro_labor_markets-dark-zh-390.png": "\u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u521d\u8bf7\u5931\u4e1a\u91d1\u52a8\u80fd\u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 \u22121.30 76.07 \u804c\u4f4d\u53d1\u5e03\u52a8\u80fd\uff08Indeed\uff09\u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 1.68 58.41 \u9884\u6263\u7a0e\u6536\u5165\u589e\u957f\uff08\u4ee3\u7406\u6307\u6807\uff09\u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 2.01 62.58",
-    "method_table_390_end-macro_labor_markets-dark-zh-390.png": "\u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u22121.30 76.07 0.40 +10.43 1.68 58.41 0.35 +2.94 2.01 62.58 0.25 +3.15",
+    "method_table_390_end-macro_labor_markets-dark-zh-390.png": "\u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u521d\u8bf7\u5931\u4e1a\u91d1\u52a8\u80fd\u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 \u22121.30 76.07 0.40 +10.43 \u804c\u4f4d\u53d1\u5e03\u52a8\u80fd\uff08Indeed\uff09\u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 1.68 58.41 0.35 +2.94 \u9884\u6263\u7a0e\u6536\u5165\u589e\u957f\uff08\u4ee3\u7406\u6307\u6807\uff09\u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 2.01 62.58 0.25 +3.15",
     "method_table_390_start-macro_labor_markets-light-en-390.png": "Component Raw Initial-claims momentumLabor-nowcast regime desk \u22121.30 Job-postings momentum (Indeed)Labor-nowcast regime desk 1.68 Withheld-tax income growth (proxy)Labor-nowcast regime desk 2.01",
     "method_table_390_end-macro_labor_markets-light-en-390.png": "Standardized Weight Contribution 76.07 0.40 +10.43 58.41 0.35 +2.94 62.58 0.25 +3.15",
     "method_table_390_start-macro_labor_markets-light-zh-390.png": "\u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u521d\u8bf7\u5931\u4e1a\u91d1\u52a8\u80fd\u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 \u22121.30 76.07 \u804c\u4f4d\u53d1\u5e03\u52a8\u80fd\uff08Indeed\uff09\u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 1.68 58.41 \u9884\u6263\u7a0e\u6536\u5165\u589e\u957f\uff08\u4ee3\u7406\u6307\u6807\uff09\u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 2.01 62.58",
-    "method_table_390_end-macro_labor_markets-light-zh-390.png": "\u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u22121.30 76.07 0.40 +10.43 1.68 58.41 0.35 +2.94 2.01 62.58 0.25 +3.15"
+    "method_table_390_end-macro_labor_markets-light-zh-390.png": "\u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u521d\u8bf7\u5931\u4e1a\u91d1\u52a8\u80fd\u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 \u22121.30 76.07 0.40 +10.43 \u804c\u4f4d\u53d1\u5e03\u52a8\u80fd\uff08Indeed\uff09\u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 1.68 58.41 0.35 +2.94 \u9884\u6263\u7a0e\u6536\u5165\u589e\u957f\uff08\u4ee3\u7406\u6307\u6807\uff09\u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 2.01 62.58 0.25 +3.15"
   },
   "lineage_open_text": {
     "lineage_open-macro_financial_conditions-dark-en-1440.png": "How this reading was revised Technical notes Technical receipt for operators \u2014 series names, timestamps and file paths. Not the customer reading. Correction and method lineage CORRECTION STATE No correction recorded PREDECESSOR GENERATION A prior published generation is on file. CHANGED FINGERPRINTS \u2014 HYSTERESIS A 5-point hold-back band kept this reading on the prior side of the line. Same reference period as the predecessor print; no source value changed (no-change republication). Both as of 4 Sep 2026.",
@@ -149354,6 +150348,30 @@
     "chipmat-macro_housing_real_estate-light-zh-1440.png",
     "chipmat-macro_housing_real_estate-light-zh-768.png",
     "chipmat-macro_housing_real_estate-light-zh-390.png",
+    "hubrail-rail-dark-en-390-start.png",
+    "hubrail-rail-dark-en-390-end.png",
+    "hubrail-rail-dark-en-768-start.png",
+    "hubrail-rail-dark-en-768-end.png",
+    "hubrail-subtabs-dark-en-390-start.png",
+    "hubrail-subtabs-dark-en-390-end.png",
+    "hubrail-rail-dark-zh-390-start.png",
+    "hubrail-rail-dark-zh-390-end.png",
+    "hubrail-rail-dark-zh-768-start.png",
+    "hubrail-rail-dark-zh-768-end.png",
+    "hubrail-subtabs-dark-zh-390-start.png",
+    "hubrail-subtabs-dark-zh-390-end.png",
+    "hubrail-rail-light-en-390-start.png",
+    "hubrail-rail-light-en-390-end.png",
+    "hubrail-rail-light-en-768-start.png",
+    "hubrail-rail-light-en-768-end.png",
+    "hubrail-subtabs-light-en-390-start.png",
+    "hubrail-subtabs-light-en-390-end.png",
+    "hubrail-rail-light-zh-390-start.png",
+    "hubrail-rail-light-zh-390-end.png",
+    "hubrail-rail-light-zh-768-start.png",
+    "hubrail-rail-light-zh-768-end.png",
+    "hubrail-subtabs-light-zh-390-start.png",
+    "hubrail-subtabs-light-zh-390-end.png",
     "e5-dark-en-1440.png",
     "e5-dark-en-390.png",
     "e5-dark-en-768.png",
@@ -150537,6 +151555,102 @@
       "family": "chip_material"
     },
     {
+      "file": "hubrail-rail-dark-en-390-start.png",
+      "family": "hub_rail"
+    },
+    {
+      "file": "hubrail-rail-dark-en-390-end.png",
+      "family": "hub_rail"
+    },
+    {
+      "file": "hubrail-rail-dark-en-768-start.png",
+      "family": "hub_rail"
+    },
+    {
+      "file": "hubrail-rail-dark-en-768-end.png",
+      "family": "hub_rail"
+    },
+    {
+      "file": "hubrail-subtabs-dark-en-390-start.png",
+      "family": "hub_rail"
+    },
+    {
+      "file": "hubrail-subtabs-dark-en-390-end.png",
+      "family": "hub_rail"
+    },
+    {
+      "file": "hubrail-rail-dark-zh-390-start.png",
+      "family": "hub_rail"
+    },
+    {
+      "file": "hubrail-rail-dark-zh-390-end.png",
+      "family": "hub_rail"
+    },
+    {
+      "file": "hubrail-rail-dark-zh-768-start.png",
+      "family": "hub_rail"
+    },
+    {
+      "file": "hubrail-rail-dark-zh-768-end.png",
+      "family": "hub_rail"
+    },
+    {
+      "file": "hubrail-subtabs-dark-zh-390-start.png",
+      "family": "hub_rail"
+    },
+    {
+      "file": "hubrail-subtabs-dark-zh-390-end.png",
+      "family": "hub_rail"
+    },
+    {
+      "file": "hubrail-rail-light-en-390-start.png",
+      "family": "hub_rail"
+    },
+    {
+      "file": "hubrail-rail-light-en-390-end.png",
+      "family": "hub_rail"
+    },
+    {
+      "file": "hubrail-rail-light-en-768-start.png",
+      "family": "hub_rail"
+    },
+    {
+      "file": "hubrail-rail-light-en-768-end.png",
+      "family": "hub_rail"
+    },
+    {
+      "file": "hubrail-subtabs-light-en-390-start.png",
+      "family": "hub_rail"
+    },
+    {
+      "file": "hubrail-subtabs-light-en-390-end.png",
+      "family": "hub_rail"
+    },
+    {
+      "file": "hubrail-rail-light-zh-390-start.png",
+      "family": "hub_rail"
+    },
+    {
+      "file": "hubrail-rail-light-zh-390-end.png",
+      "family": "hub_rail"
+    },
+    {
+      "file": "hubrail-rail-light-zh-768-start.png",
+      "family": "hub_rail"
+    },
+    {
+      "file": "hubrail-rail-light-zh-768-end.png",
+      "family": "hub_rail"
+    },
+    {
+      "file": "hubrail-subtabs-light-zh-390-start.png",
+      "family": "hub_rail"
+    },
+    {
+      "file": "hubrail-subtabs-light-zh-390-end.png",
+      "family": "hub_rail"
+    },
+    {
       "file": "e5-dark-en-1440.png",
       "family": "e5"
     },
@@ -150908,6 +152022,32 @@
       "chipmat-macro_housing_real_estate-light-zh-768.png",
       "chipmat-macro_housing_real_estate-light-zh-390.png"
     ],
+    "hub_rail": [
+      "hubrail-rail-dark-en-390-start.png",
+      "hubrail-rail-dark-en-390-end.png",
+      "hubrail-rail-dark-en-768-start.png",
+      "hubrail-rail-dark-en-768-end.png",
+      "hubrail-subtabs-dark-en-390-start.png",
+      "hubrail-subtabs-dark-en-390-end.png",
+      "hubrail-rail-dark-zh-390-start.png",
+      "hubrail-rail-dark-zh-390-end.png",
+      "hubrail-rail-dark-zh-768-start.png",
+      "hubrail-rail-dark-zh-768-end.png",
+      "hubrail-subtabs-dark-zh-390-start.png",
+      "hubrail-subtabs-dark-zh-390-end.png",
+      "hubrail-rail-light-en-390-start.png",
+      "hubrail-rail-light-en-390-end.png",
+      "hubrail-rail-light-en-768-start.png",
+      "hubrail-rail-light-en-768-end.png",
+      "hubrail-subtabs-light-en-390-start.png",
+      "hubrail-subtabs-light-en-390-end.png",
+      "hubrail-rail-light-zh-390-start.png",
+      "hubrail-rail-light-zh-390-end.png",
+      "hubrail-rail-light-zh-768-start.png",
+      "hubrail-rail-light-zh-768-end.png",
+      "hubrail-subtabs-light-zh-390-start.png",
+      "hubrail-subtabs-light-zh-390-end.png"
+    ],
     "e5": [
       "e5-dark-en-1440.png",
       "e5-dark-en-390.png",
@@ -151056,6 +152196,30 @@
     "half-dark-zh-390.png",
     "half-light-en-390.png",
     "half-light-zh-390.png",
+    "hubrail-rail-dark-en-390-end.png",
+    "hubrail-rail-dark-en-390-start.png",
+    "hubrail-rail-dark-en-768-end.png",
+    "hubrail-rail-dark-en-768-start.png",
+    "hubrail-rail-dark-zh-390-end.png",
+    "hubrail-rail-dark-zh-390-start.png",
+    "hubrail-rail-dark-zh-768-end.png",
+    "hubrail-rail-dark-zh-768-start.png",
+    "hubrail-rail-light-en-390-end.png",
+    "hubrail-rail-light-en-390-start.png",
+    "hubrail-rail-light-en-768-end.png",
+    "hubrail-rail-light-en-768-start.png",
+    "hubrail-rail-light-zh-390-end.png",
+    "hubrail-rail-light-zh-390-start.png",
+    "hubrail-rail-light-zh-768-end.png",
+    "hubrail-rail-light-zh-768-start.png",
+    "hubrail-subtabs-dark-en-390-end.png",
+    "hubrail-subtabs-dark-en-390-start.png",
+    "hubrail-subtabs-dark-zh-390-end.png",
+    "hubrail-subtabs-dark-zh-390-start.png",
+    "hubrail-subtabs-light-en-390-end.png",
+    "hubrail-subtabs-light-en-390-start.png",
+    "hubrail-subtabs-light-zh-390-end.png",
+    "hubrail-subtabs-light-zh-390-start.png",
     "i2-macro_business_activity-dark-en-390.png",
     "i2-macro_business_activity-dark-en-768.png",
     "i2-macro_business_activity-dark-zh-390.png",
@@ -151362,6 +152526,30 @@
     "half-dark-zh-390.png",
     "half-light-en-390.png",
     "half-light-zh-390.png",
+    "hubrail-rail-dark-en-390-end.png",
+    "hubrail-rail-dark-en-390-start.png",
+    "hubrail-rail-dark-en-768-end.png",
+    "hubrail-rail-dark-en-768-start.png",
+    "hubrail-rail-dark-zh-390-end.png",
+    "hubrail-rail-dark-zh-390-start.png",
+    "hubrail-rail-dark-zh-768-end.png",
+    "hubrail-rail-dark-zh-768-start.png",
+    "hubrail-rail-light-en-390-end.png",
+    "hubrail-rail-light-en-390-start.png",
+    "hubrail-rail-light-en-768-end.png",
+    "hubrail-rail-light-en-768-start.png",
+    "hubrail-rail-light-zh-390-end.png",
+    "hubrail-rail-light-zh-390-start.png",
+    "hubrail-rail-light-zh-768-end.png",
+    "hubrail-rail-light-zh-768-start.png",
+    "hubrail-subtabs-dark-en-390-end.png",
+    "hubrail-subtabs-dark-en-390-start.png",
+    "hubrail-subtabs-dark-zh-390-end.png",
+    "hubrail-subtabs-dark-zh-390-start.png",
+    "hubrail-subtabs-light-en-390-end.png",
+    "hubrail-subtabs-light-en-390-start.png",
+    "hubrail-subtabs-light-zh-390-end.png",
+    "hubrail-subtabs-light-zh-390-start.png",
     "i2-macro_business_activity-dark-en-390.png",
     "i2-macro_business_activity-dark-en-768.png",
     "i2-macro_business_activity-dark-zh-390.png",
