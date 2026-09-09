@@ -324,3 +324,25 @@ def test_real_prices_flow_through_baskets_rotation_and_detail_page(tmp_path):
     assert str(idx[-2].date()) in html  # stale close is not re-dated to the snapshot
     assert "Weekly coverage incomplete" in html
     assert "周度数据不完整" in html
+
+
+def test_member_pipeline_guards_run_in_the_existing_code_gate():
+    """A green data-only scope check must not leave the new regressions unexecuted."""
+    from pathlib import Path
+    import shlex
+    import yaml
+
+    manifest = yaml.safe_load((Path(__file__).parents[1] /
+                               ".github/ci/legacy-jobs.yml").read_text())
+    job = manifest["jobs"]["rc-r14-china-rotation-events"]
+    assert job["gate"] == "code"
+    assert not job.get("continue-on-error", False)
+    suites = {"tests/test_baskets_region.py", "tests/test_subsector_rotation.py"}
+    matching = []
+    for step in job["steps"]:
+        args = shlex.split(step.get("run", ""))
+        if args[:3] == ["python", "-m", "pytest"] and suites <= set(args[3:]):
+            assert "if" not in step and not step.get("continue-on-error", False)
+            assert not any(a == "-k" or a.startswith("--deselect") for a in args)
+            matching.append(step)
+    assert len(matching) == 1, "member producer/consumer suites are absent from the code gate"

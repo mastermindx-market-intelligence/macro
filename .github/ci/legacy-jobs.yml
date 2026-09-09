@@ -5960,9 +5960,11 @@ jobs:
         with:
           python-version: "3.12"
       - name: install deps
-        run: pip install pytest pandas numpy pyyaml pyarrow
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: RC-R14 China + HK rotation events test suite
         run: python -m pytest tests/test_rotation_events.py tests/test_rotation_events_china.py tests/test_rotation_events_hk.py -v
+      - name: China rotation members — producer-to-detail contract
+        run: python -m pytest tests/test_baskets_region.py tests/test_subsector_rotation.py -q
 
   codex-research-engine:
     if: ${{ false }}
