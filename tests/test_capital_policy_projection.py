@@ -160,12 +160,20 @@ def test_2_no_new_signal_no_numeric_score_field(monkeypatch):
                 "reg_stage": "proposed_rule",
                 "title": "disclosure comment",
                 "event_type": "comment_close",
+                "html_url": (
+                    "https://www.federalregister.gov/documents/"
+                    "2026/09/01/2026-12345/example-disclosure"
+                ),
             }],
             "entity_list_events": [{
                 "date": "2026-09-30",
                 "event_type": "entity_list",
                 "title": "entity list",
                 "is_upcoming": True,
+                "html_url": (
+                    "https://www.federalregister.gov/documents/"
+                    "2026/09/02/2026-12346/example-entity-list"
+                ),
             }],
             "latency_summary": {},
             "note": "fixture",
@@ -180,8 +188,12 @@ def test_2_no_new_signal_no_numeric_score_field(monkeypatch):
         assert "impact" not in row
     blob = json.dumps(payload, ensure_ascii=False)
     assert "impact" not in blob.lower()
-    # Word-bounded denylist over the serialized payload (naive 'z' in
-    # horizon_days would false-red the required schema field).
+    # Spec T2 is a substring denylist over json.dumps(payload). The token "z"
+    # is word-bounded because it is a substring of the required schema field
+    # horizon_days; every other token is a raw substring.
+    blob_l = blob.lower()
+    for tok in DENYLIST:
+        assert tok.lower() not in blob_l, tok
     assert DENYLIST_RE.search(blob) is None, blob
 
 
@@ -224,19 +236,68 @@ def test_5_unavailable_differs_from_empty(monkeypatch):
 
 
 def test_6_every_row_has_an_allowlisted_public_source_url(monkeypatch):
+    document_url = (
+        "https://www.federalregister.gov/documents/"
+        "2026/09/01/2026-12345/example-disclosure"
+    )
     _patch_engines(
         monkeypatch,
         events=[
             _macro_event("FOMC", "2026-09-16", label="FOMC decision (SEP · dot-plot)"),
             _macro_event("OPEX", "2026-09-18", label="Options expiration"),
         ],
-        calendar=_empty_calendar(),
+        calendar={
+            "asof": TODAY.isoformat(),
+            "themes": {},
+            "upcoming_events": [
+                {
+                    "date": "2026-09-25",
+                    "basket_id": "fintech_payments",
+                    "reg_stage": "proposed_rule",
+                    "title": "disclosure without a document url",
+                    "event_type": "comment_close",
+                },
+                {
+                    "date": "2026-09-26",
+                    "basket_id": "fintech_payments",
+                    "reg_stage": "proposed_rule",
+                    "title": "disclosure with invented homepage",
+                    "html_url": "https://www.federalregister.gov/",
+                },
+                {
+                    "date": "2026-09-27",
+                    "basket_id": "fintech_payments",
+                    "reg_stage": "proposed_rule",
+                    "title": "disclosure with the public record",
+                    "html_url": document_url,
+                },
+            ],
+            "entity_list_events": [{
+                "date": "2026-09-30",
+                "event_type": "entity_list",
+                "title": "entity list without a document url",
+                "is_upcoming": True,
+            }],
+            "latency_summary": {},
+            "note": "fixture",
+        },
     )
     payload = project(today=TODAY)
     rows = _all_rows(payload)
     assert any(r["window_id"] == "rates_policy" for r in rows)
     assert all(r["window_id"] != "equity_new_issue" for r in rows)
     assert payload["row_count"] == len(rows)
+    blob = json.dumps(payload, ensure_ascii=False)
+    assert "https://www.federalregister.gov/" not in blob.replace(document_url, "")
+    homepage_rows = [
+        r for r in rows
+        if urlparse(r["source_url"]).path in ("", "/")
+        and (urlparse(r["source_url"]).hostname or "").endswith("federalregister.gov")
+    ]
+    assert homepage_rows == [], homepage_rows
+    disclosure = [r for r in rows if r["window_id"] == "disclosure_regulatory"]
+    assert [r["source_url"] for r in disclosure] == [document_url]
+    assert all(r["window_id"] != "export_control" for r in rows)
     for row in rows:
         assert row["source_url"]
         host = urlparse(row["source_url"]).hostname or ""
@@ -328,11 +389,23 @@ def test_10_deterministic_and_sorted(monkeypatch):
     )
     # Rows are collected in (date, event-type) order then grouped into the
     # frozen window table. Flattening by window order cannot put AUCTION
-    # before FOMC on the same date (T4 pins window order), so the sort is
-    # pinned per window — each window carries one event type.
+    # before FOMC on the same date (T4 pins window order), so the visible
+    # per-window dates stay sorted, and MAX_ROWS clips the global list.
     for window in a["windows"]:
         dates = [r["date"] for r in window["rows"]]
         assert dates == sorted(dates)
+    same_day = (
+        [_macro_event("AUCTION", "2026-09-16", label=f"Note auction {i}")
+         for i in range(12)]
+        + [_macro_event("FOMC", "2026-09-16", label="FOMC decision")]
+    )
+    _patch_engines(monkeypatch, events=same_day, calendar=_empty_calendar())
+    clipped = project(today=TODAY)
+    assert clipped["truncated"] is True
+    assert clipped["row_count"] == MAX_ROWS
+    # AUCTION sorts before FOMC on the same date, so the FOMC row is the one
+    # MAX_ROWS drops — proving global (date, event type) order, not window order.
+    assert all(r["window_id"] != "rates_policy" for r in _all_rows(clipped))
 
 
 def test_11_max_rows_and_truncation_disclosed(tmp_path, monkeypatch):
@@ -469,3 +542,29 @@ def test_14_never_raises_into_the_build(tmp_path, monkeypatch):
 def test_horizon_constant_is_frozen():
     assert HORIZON_DAYS == 45
     assert MAX_ROWS == 12
+
+
+def test_15_section_raw_budget_holds_at_max_rows(tmp_path, monkeypatch):
+    """Spec §8 / §11.4: a 12-row section must stay at or under 8 KB raw HTML."""
+    from datetime import timedelta
+    events = [
+        _macro_event(
+            "FOMC",
+            (TODAY + timedelta(days=i)).isoformat(),
+            label="FOMC decision (SEP · dot-plot)",
+        )
+        for i in range(40)
+    ]
+    _patch_engines(monkeypatch, events=events, calendar=_empty_calendar())
+    payload = project(today=TODAY)
+    assert payload["row_count"] == MAX_ROWS
+    assert payload["truncated"] is True
+    monkeypatch.setattr(page_builder, "_policy_projection", lambda today=None: payload)
+    monkeypatch.setattr(page_builder, "_policy_watch", lambda today=None: {
+        "state": "empty", "headline_en": "x", "headline_zh": "x",
+        "detail_en": "x", "detail_zh": "x",
+    })
+    _copy_templates(tmp_path)
+    html = page_builder.render(tmp_path).read_text(encoding="utf-8")
+    n = len(_section(html).encode("utf-8"))
+    assert n <= 8192, n

@@ -94,42 +94,22 @@
      appear; empty is not unavailable. No window id, event token, or schema
      string reaches the screen. ── #}
   {% if policy_projection is defined and policy_projection %}
-  <section class="cs-policy cs-policy-active" id="cs-policy-projection" aria-label="Policy calendar">
-    <span class="cs-policy-mark" aria-hidden="true">↳</span>
+  <section class="cs-policy cs-policy-active" id="cs-policy-projection" aria-labelledby="cs-pp-kicker">
     <div>
-      <p class="cs-kicker">{{ t('Policy calendar', '政策日历') }}</p>
+      <p class="cs-kicker" id="cs-pp-kicker">{{ t('Policy calendar', '政策日历') }}</p>
       <strong>{{ t('Dated steps on the public record', '公开记录上的既定日期节点') }}</strong>
       <span>{{ t(policy_projection.note_en, policy_projection.note_zh) }}</span>
-      <span>{{ t('We watch the disclosure-rule dates that reach this pipeline; when none is pending we say so.', '我们关注本数据管道覆盖的披露规则日期；若暂无待办节点，会如实说明。') }}</span>
-      {% if policy_projection.truncated %}
-      <span>{{ t('Showing the next 12 dated steps.', '仅展示接下来的 12 个既定日期节点。') }}</span>
-      {% endif %}
-      <div class="cs-policy-windows">
-        {% for window in policy_projection.windows %}
+      {% if policy_projection.truncated %}<span>{{ t('Showing the next 12 dated steps.', '仅展示接下来的 12 个既定日期节点。') }}</span>{% endif %}
+      <div class="cs-policy-windows">{% for window in policy_projection.windows %}
         <div class="cs-policy-window">
           <p class="cs-kicker">{{ t(window.label_en, window.label_zh) }}</p>
-          {% if window.state == 'unavailable' %}
-          <span>{{ t(window.reason_en, window.reason_zh) }}</span>
-          {% elif window.state == 'empty' %}
-          <span>{{ t(window.reason_en, window.reason_zh) }}</span>
-          {% else %}
-          <ul class="cs-policy-row-list">
-            {% for row in window.rows %}
+          {% if window.state != 'present' %}<span>{{ t(window.reason_en, window.reason_zh) }}</span>
+          {% else %}<ul class="cs-policy-row-list">{% for row in window.rows %}
             {% set parts = row.date.split('-') %}
             {% set month_en = {'01':'Jan','02':'Feb','03':'Mar','04':'Apr','05':'May','06':'Jun','07':'Jul','08':'Aug','09':'Sep','10':'Oct','11':'Nov','12':'Dec'} %}
-            <li class="cs-policy-row">
-              <strong>{{ t(row.event_en, row.event_zh) }}</strong>
-              <time datetime="{{ row.date }}">{{ t(
-                month_en[parts[1]] ~ ' ' ~ (parts[2]|int) ~ ', ' ~ parts[0],
-                parts[0] ~ '年' ~ (parts[1]|int) ~ '月' ~ (parts[2]|int) ~ '日'
-              ) }}</time>
-              <a href="{{ row.source_url }}" rel="noopener noreferrer">{{ t('Source', '来源') }}</a>
-            </li>
-            {% endfor %}
-          </ul>
-          {% endif %}
-        </div>
-        {% endfor %}
+            <li class="cs-policy-row"><strong>{{ t(row.event_en, row.event_zh) }}</strong> <time datetime="{{ row.date }}">{{ t(month_en[parts[1]] ~ ' ' ~ (parts[2]|int) ~ ', ' ~ parts[0], parts[0] ~ '年' ~ (parts[1]|int) ~ '月' ~ (parts[2]|int) ~ '日') }}</time> <a href="{{ row.source_url }}" rel="noopener">{{ t('Source', '来源') }}</a></li>
+          {% endfor %}</ul>{% endif %}
+        </div>{% endfor %}
       </div>
     </div>
   </section>

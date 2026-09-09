@@ -78,7 +78,10 @@ _ALLOWLIST_HOSTS = frozenset({
 
 _DISCLOSURE_BASKETS = frozenset({"fintech_payments"})
 
-_SOURCE = {
+# Frozen sources for dated calendars that ARE the public record. Policy
+# rows never use these: a Federal Register homepage does not date an event
+# and is dropped, not invented (§4).
+_FROZEN_SOURCE = {
     "FOMC": (
         "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
         "Federal Reserve meeting calendar",
@@ -89,26 +92,15 @@ _SOURCE = {
         "TreasuryDirect upcoming auctions",
         "财政部国债直销即将拍卖",
     ),
-    "comment_close": (
-        "https://www.federalregister.gov/",
-        "Federal Register public record",
-        "联邦公报公开记录",
-    ),
-    "rule_effective": (
-        "https://www.federalregister.gov/",
-        "Federal Register public record",
-        "联邦公报公开记录",
-    ),
-    "entity_list": (
-        "https://www.federalregister.gov/",
-        "Federal Register public record",
-        "联邦公报公开记录",
-    ),
 }
+_POLICY_SOURCE_LABEL = (
+    "Federal Register public record",
+    "联邦公报公开记录",
+)
 
 NOTE_EN = (
-    "Dated steps already on the public record, matched to the part of the "
-    "capital markets each one touches. Not a rating and not a trade call."
+    "Dated public-record steps, each matched to the capital-markets window "
+    "it touches. Not a rating and not a trade call."
 )
 NOTE_ZH = (
     "均为已进入公开记录的既定日期节点，并标注各自触及的资本市场环节。"
@@ -176,17 +168,49 @@ def _host_allowed(url: str) -> bool:
     return host in _ALLOWLIST_HOSTS
 
 
+def _url_dates_the_event(url: str) -> bool:
+    """True only when the URL is the public record that dates the event.
+
+    A Federal Register homepage is not that record — it is an invented
+    citation and the row is dropped (§4; reviewer instruction 3).
+    """
+    if not url or not _host_allowed(url):
+        return False
+    parsed = urlparse(url)
+    host = (parsed.hostname or "").lower()
+    path = (parsed.path or "").rstrip("/")
+    if host.endswith("federalregister.gov"):
+        return path.startswith("/documents") or path.startswith("/d/")
+    return True
+
+
+def _source_for(etype: str, ev: dict) -> tuple[str, str, str] | None:
+    frozen = _FROZEN_SOURCE.get(etype)
+    if frozen is not None:
+        url, src_en, src_zh = frozen
+        if _url_dates_the_event(url):
+            return url, src_en, src_zh
+        return None
+    url = str(
+        ev.get("html_url") or ev.get("url") or ev.get("source_url") or ""
+    ).strip()
+    if not _url_dates_the_event(url):
+        return None
+    src_en, src_zh = _POLICY_SOURCE_LABEL
+    return url, src_en, src_zh
+
+
 def _copy_for(etype: str, ev: dict) -> tuple[str, str] | None:
     if etype == "FOMC":
         label = str(ev.get("label") or "")
         if "SEP" in label or "dot-plot" in label or "projections" in label.lower():
             return (
-                "Federal Open Market Committee decision (with projections)",
-                "美联储公开市场委员会决议（含经济预测）",
+                "Fed rate decision, with outlook",
+                "美联储利率决议，含展望",
             )
         return (
-            "Federal Open Market Committee decision",
-            "美联储公开市场委员会决议",
+            "Fed rate decision",
+            "美联储利率决议",
         )
     if etype == "AUCTION":
         label = str(ev.get("label") or "").strip()
@@ -215,12 +239,10 @@ def _copy_for(etype: str, ev: dict) -> tuple[str, str] | None:
 
 
 def _row(etype: str, window_id: str, day: date, asof: date, ev: dict) -> dict | None:
-    source = _SOURCE.get(etype)
+    source = _source_for(etype, ev)
     if source is None:
         return None
     url, src_en, src_zh = source
-    if not _host_allowed(url):
-        return None
     copy = _copy_for(etype, ev)
     if copy is None:
         return None
