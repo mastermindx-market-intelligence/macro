@@ -37,6 +37,7 @@ Run: python3 -m pytest tests/test_worktree_sparse.py -q
 """
 from __future__ import annotations
 
+import errno
 import importlib.util
 import io
 import json
@@ -1281,3 +1282,173 @@ def test_main_status_no_heal_without_json_skips_lock_clearing(repo, monkeypatch,
 
     assert WS.main(["status"]) == 0
     assert not lock.exists(), "bare status heals, matching status --json"
+
+
+# ── P1a/P1b (META-CEO B h1, 2026-09-09) — fail closed on unconfirmed probes ─
+
+def _lsof_mod(kind: str):
+    return WS if kind == "script" else _load_hook()
+
+
+@pytest.mark.parametrize("kind", ["script", "hook"])
+@pytest.mark.parametrize(
+    "returncode,stderr,stdout,expected",
+    [
+        (0, "lsof: WARNING: can't stat() fuse fs\n", "p12\n", None),
+        (0, "", "p12\n", "p12\n"),
+        (1, "", "", ""),
+        (1, "lsof: WARNING: can't stat() fuse fs\n", "", None),
+    ],
+    ids=["exit0-stderr", "exit0-empty-stderr", "exit1-empty-stderr", "exit1-stderr"],
+)
+def test_run_lsof_trusts_only_exit_0_or_1_with_empty_stderr(
+    kind, monkeypatch, returncode, stderr, stdout, expected,
+):
+    """P1a: trustworthy lsof is exit 0 or 1 with empty stderr; any stderr
+    (including exit 0 + WARNING) is unconfirmed (None). Parametrised over
+    both duplicated copies."""
+    class Fake:
+        pass
+
+    fake = Fake()
+    fake.returncode = returncode
+    fake.stdout = stdout
+    fake.stderr = stderr
+    monkeypatch.setattr(subprocess, "run", lambda *a, **k: fake)
+    assert _lsof_mod(kind)._run_lsof(["-F", "pn"]) == expected
+
+
+def test_gather_live_processes_linux_permission_denied_cwd_is_unknown(
+    monkeypatch, tmp_path,
+):
+    """P1b(a): PermissionError on a still-existing pid's cwd is UNKNOWN
+    (None), never a confirmed empty list."""
+    worktree = tmp_path / "worktree"
+    worktree.mkdir()
+    proc_root = tmp_path / "proc"
+    pid_dir = proc_root / "1001"
+    pid_dir.mkdir(parents=True)
+    os.symlink(worktree, pid_dir / "cwd")
+
+    real_resolve = Path.resolve
+
+    def fake_resolve(self, *args, **kwargs):
+        if self.name == "cwd" and self.parent.name == "1001":
+            raise PermissionError(errno.EACCES, "Permission denied", str(self))
+        return real_resolve(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "resolve", fake_resolve)
+    monkeypatch.setattr(WS.platform, "system", lambda: "Linux")
+
+    assert WS.gather_live_processes(worktree, None, proc_root=proc_root) is None
+
+
+def test_gather_live_processes_linux_permission_denied_fd_dir_is_unknown(
+    monkeypatch, tmp_path,
+):
+    """P1b(b): PermissionError listing /proc/<pid>/fd while cwd is
+    elsewhere is UNKNOWN (None), never 'no open files'."""
+    worktree = tmp_path / "worktree"
+    worktree.mkdir()
+    gitdir = tmp_path / "gitdir"
+    gitdir.mkdir()
+    (gitdir / "index.lock").write_bytes(b"")
+    elsewhere = tmp_path / "elsewhere"
+    elsewhere.mkdir()
+    proc_root = tmp_path / "proc"
+    pid_dir = proc_root / "1002"
+    pid_dir.mkdir(parents=True)
+    os.symlink(elsewhere, pid_dir / "cwd")
+    fd_dir = pid_dir / "fd"
+    fd_dir.mkdir()
+    os.symlink(gitdir / "index.lock", fd_dir / "3")
+
+    real_iterdir = Path.iterdir
+
+    def fake_iterdir(self):
+        if self.name == "fd" and self.parent.name == "1002":
+            raise PermissionError(errno.EACCES, "Permission denied", str(self))
+        return real_iterdir(self)
+
+    monkeypatch.setattr(Path, "iterdir", fake_iterdir)
+    monkeypatch.setattr(WS.platform, "system", lambda: "Linux")
+
+    assert WS.gather_live_processes(worktree, gitdir, proc_root=proc_root) is None
+
+
+def test_gather_live_processes_linux_vanished_pid_is_skipped_not_unknown(
+    monkeypatch, tmp_path,
+):
+    """P1b(c): FileNotFoundError on cwd means the pid vanished between
+    listing and inspection — skip it. The result stays a complete list
+    (here empty), not None. A leftover fd that would have matched must
+    not resurrect a gone pid (pre-fix treated the cwd error as 'cwd
+    elsewhere' and then counted the fd)."""
+    worktree = tmp_path / "worktree"
+    worktree.mkdir()
+    gitdir = tmp_path / "gitdir"
+    gitdir.mkdir()
+    lockfile = gitdir / "index.lock"
+    lockfile.write_bytes(b"")
+    elsewhere = tmp_path / "elsewhere"
+    elsewhere.mkdir()
+    proc_root = tmp_path / "proc"
+    pid_dir = proc_root / "1003"
+    pid_dir.mkdir(parents=True)
+    os.symlink(elsewhere, pid_dir / "cwd")
+    fd_dir = pid_dir / "fd"
+    fd_dir.mkdir()
+    os.symlink(lockfile, fd_dir / "9")
+
+    real_resolve = Path.resolve
+
+    def fake_resolve(self, *args, **kwargs):
+        if self.name == "cwd" and self.parent.name == "1003":
+            raise FileNotFoundError(
+                errno.ENOENT, "No such file or directory", str(self),
+            )
+        return real_resolve(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "resolve", fake_resolve)
+    monkeypatch.setattr(WS.platform, "system", lambda: "Linux")
+
+    procs = WS.gather_live_processes(worktree, gitdir, proc_root=proc_root)
+    assert procs == []
+
+
+def test_gather_live_processes_linux_clean_walk_no_match_is_empty(
+    monkeypatch, tmp_path,
+):
+    """P1b(d): every pid inspected without error and none matched → []."""
+    worktree = tmp_path / "worktree"
+    worktree.mkdir()
+    elsewhere = tmp_path / "elsewhere"
+    elsewhere.mkdir()
+    proc_root = tmp_path / "proc"
+    pid_dir = proc_root / "1004"
+    pid_dir.mkdir(parents=True)
+    os.symlink(elsewhere, pid_dir / "cwd")
+    monkeypatch.setattr(WS.platform, "system", lambda: "Linux")
+
+    procs = WS.gather_live_processes(worktree, None, proc_root=proc_root)
+    assert procs == []
+
+
+def test_gather_live_processes_linux_clean_walk_cwd_under_worktree_is_one_record(
+    monkeypatch, tmp_path,
+):
+    """P1b(e): a readable pid whose cwd is under the worktree → one record."""
+    worktree = tmp_path / "worktree"
+    worktree.mkdir()
+    sub = worktree / "sub"
+    sub.mkdir()
+    proc_root = tmp_path / "proc"
+    pid_dir = proc_root / "1005"
+    pid_dir.mkdir(parents=True)
+    os.symlink(sub, pid_dir / "cwd")
+    monkeypatch.setattr(WS.platform, "system", lambda: "Linux")
+
+    procs = WS.gather_live_processes(worktree, None, proc_root=proc_root)
+    assert procs is not None
+    assert [p["pid"] for p in procs] == [1005]
+    assert Path(procs[0]["cwd"]) == sub.resolve()

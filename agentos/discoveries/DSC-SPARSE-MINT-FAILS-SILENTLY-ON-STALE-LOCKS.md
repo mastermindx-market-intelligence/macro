@@ -32,7 +32,9 @@ so_what: >
   lock or a post-apply state mismatch — never a silent full checkout. A
   future census script should call `python3 scripts/worktree_sparse.py status
   --json` per worktree (reports `stale_locks_removed` as a side effect) rather
-  than re-deriving lock staleness from scratch.
+  than re-deriving lock staleness from scratch. A live-holder probe is also
+  UNKNOWN (must not unlink) when lsof exits 0 with any stderr text, or when a
+  still-existing Linux pid's /proc cwd or fd is permission-denied.
 kind: landmine
 verified_at: 2026-09-06
 verified_by: >

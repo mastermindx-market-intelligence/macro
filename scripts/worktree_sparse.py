@@ -63,6 +63,7 @@ Exit codes: 0 = success · 1 = failure (not a git worktree, git error, bad dir).
 """
 from __future__ import annotations
 
+import errno
 import json
 import os
 import platform
@@ -257,11 +258,12 @@ def _run_lsof(args: list[str]) -> str | None:
     """Run ``lsof`` with ``args``; return stdout, or None when the call could
     not be trusted at all (missing binary, hung, timeout, or any other surprise).
 
-    ``lsof`` exits 1 when it simply found no matching processes — that is a
-    trustworthy (empty) answer ONLY when stderr is also empty. Any stderr
-    text (``WARNING``, ``can't stat``) means the probe aborted or errored
-    mid-walk and must be treated as unconfirmed (None), never as "nobody
-    holds it". Other exit codes and outright exceptions also map to None.
+    Trustworthy results are exactly (exit 0 AND stderr empty after strip) or
+    (exit 1 AND stderr empty) — both return stdout; every other combination
+    (any exit with non-empty stderr, any other exit code, exception, timeout)
+    is unconfirmed (None). ``lsof`` exits 0 with warnings on stderr when it
+    found matches but could not stat some filesystem, so exit 0 alone is not
+    proof the walk was complete.
     """
     try:
         out = subprocess.run(
@@ -270,9 +272,8 @@ def _run_lsof(args: list[str]) -> str | None:
         )
     except Exception:  # noqa: BLE001 — lsof missing/hung/anything else
         return None
-    if out.returncode == 0:
-        return out.stdout
-    if out.returncode == 1 and not (out.stderr or "").strip():
+    stderr_empty = not (out.stderr or "").strip()
+    if out.returncode in (0, 1) and stderr_empty:
         return out.stdout
     return None
 
@@ -295,6 +296,22 @@ def _parse_lsof_pn(text: str) -> list[dict]:
         elif tag == "n" and current is not None:
             current["paths"].append(value)
     return records
+
+
+def _proc_oserror_is_vanished(exc: BaseException) -> bool:
+    """True when a /proc inspection OSError means the pid is gone.
+
+    ESRCH (``ProcessLookupError``) and ENOENT (``FileNotFoundError``) are
+    the process exiting between ``proc_root.iterdir`` and this look. Any
+    other OSError (EACCES, EPERM, EIO, ...) is an unobservable still-
+    existing pid and must fail closed.
+    """
+    if isinstance(exc, ProcessLookupError):
+        return True
+    if isinstance(exc, FileNotFoundError):
+        return True
+    err = getattr(exc, "errno", None)
+    return err in (errno.ESRCH, errno.ENOENT)
 
 
 def gather_live_processes(
@@ -326,7 +343,10 @@ def gather_live_processes(
     Linux: ``/proc/*/cwd`` symlinks for the worktree scope, plus
     ``/proc/*/fd/*`` symlinks for the git-dir scope (the same two-check
     shape as macOS) — ``proc_root`` is injectable so tests can point this at
-    a synthetic tree without a real Linux host.
+    a synthetic tree without a real Linux host. A pid that vanished
+    (ENOENT/ESRCH on cwd or fd dir) is skipped and the list stays complete;
+    PermissionError or any other OSError on an existing pid's cwd or fd is
+    UNKNOWN (return None) — never "not holding".
     """
     system = platform.system()
     if system == "Darwin":
@@ -388,8 +408,10 @@ def gather_live_processes(
             cwd_link: Path | None
             try:
                 cwd_link = (entry / "cwd").resolve()
-            except OSError:
-                cwd_link = None
+            except OSError as exc:
+                if _proc_oserror_is_vanished(exc):
+                    continue  # pid exited between listing and inspection
+                return None  # still exists, unobservable — fail closed
             matched = cwd_link is not None and (
                 cwd_link == target or target in cwd_link.parents
             )
@@ -397,13 +419,17 @@ def gather_live_processes(
                 fd_dir = entry / "fd"
                 try:
                     fd_entries = list(fd_dir.iterdir())
-                except OSError:
-                    fd_entries = []
+                except OSError as exc:
+                    if _proc_oserror_is_vanished(exc):
+                        continue
+                    return None
                 for fd in fd_entries:
                     try:
                         fd_link = fd.resolve()
-                    except OSError:
-                        continue
+                    except OSError as exc:
+                        if _proc_oserror_is_vanished(exc):
+                            continue  # that fd vanished; keep walking
+                        return None
                     if fd_link == git_target or git_target in fd_link.parents:
                         matched = True
                         break

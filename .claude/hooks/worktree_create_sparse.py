@@ -269,11 +269,13 @@ def _path_under(path: str, root: Path) -> bool:
 
 def _run_lsof(args: list[str]) -> str | None:
     """Best-effort ``lsof`` call; None when it could not be trusted at all
-    (missing binary, hung, timeout, or any other surprise). Exit 1 (no
-    matches) is a trustworthy empty answer ONLY when stderr is also empty —
-    any stderr text (WARNING, can't stat) is unconfirmed. Duplicated from
-    scripts/worktree_sparse.py deliberately: this hook must not depend on the
-    repo's import surface being intact (see ``load_profile`` above)."""
+    (missing binary, hung, timeout, or any other surprise). Trustworthy
+    results are exactly (exit 0 AND stderr empty after strip) or (exit 1
+    AND stderr empty) — both return stdout; every other combination is
+    unconfirmed (None), including exit 0 with WARNING/can't-stat on stderr.
+    Duplicated from scripts/worktree_sparse.py deliberately: this hook must
+    not depend on the repo's import surface being intact (see
+    ``load_profile`` above)."""
     try:
         out = subprocess.run(
             ["lsof", *args],
@@ -281,9 +283,8 @@ def _run_lsof(args: list[str]) -> str | None:
         )
     except Exception:  # noqa: BLE001
         return None
-    if out.returncode == 0:
-        return out.stdout
-    if out.returncode == 1 and not (out.stderr or "").strip():
+    stderr_empty = not (out.stderr or "").strip()
+    if out.returncode in (0, 1) and stderr_empty:
         return out.stdout
     return None
 
