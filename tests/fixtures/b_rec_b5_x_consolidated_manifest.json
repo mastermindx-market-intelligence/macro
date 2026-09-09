@@ -1,0 +1,275 @@
+{
+  "packet": "B-REC-B5-X",
+  "title": "Consolidated records: F07 consensus verified-negative, enterprise-planner rejection, F09 coverage-matrix row edits, F08 metric-matrix amendment, F13 tier-refresh acceptance conflict",
+  "recorded_at": "2026-09-09",
+  "recorded_by": "Meta-CEO B successor seat, harness session d640f3ef",
+  "base_branch": "claude/mo-b-a-rec-w4-1-half-a-ledger-reconciliation",
+  "how_verified": "Every claim this suite checks is read from this checked-in manifest. The suite never shells to git or gh and never reads a terminal/ tree, which this repository does not contain. Terminal metric ownership rests on B-REC-B5-1 / macro#7003's reading of terminal#524 at the pin below.",
+  "state_vocabulary": [
+    "NOT_BUILT",
+    "SPEC_ONLY",
+    "PARTIAL",
+    "BUILT_NOT_PROVEN",
+    "PROVEN_LIVE"
+  ],
+  "no_proven_live_reason": "This packet records rulings and merged-build matches. It has no two-user production readback, so no row may move to PROVEN_LIVE.",
+  "terminal_pin": {
+    "repo": "terminal",
+    "commit": "db69d0723dd8426700aebb81f0e1d5715e2e7bbb",
+    "pr": 524,
+    "merge": "efcd98aaf4f432692ea1841655bf24c0045bbd02",
+    "disclosure": "Macro contains no terminal/ tree. This pin is the Terminal master sha B-REC-B5-1 verified against, plus the terminal#524 merge. Later drift on that repository is invisible to this suite by design."
+  },
+  "edited": [
+    {
+      "id": "MO-DELTA-017",
+      "packet": 15,
+      "new_granular_disposition": "NEW_BOUNDED_BUILD",
+      "new_capability_state_c2": "NOT_BUILT",
+      "state_delta_must_contain": [
+        "RECORDED 2026-09-09",
+        "BLOCKED_RIGHTS",
+        "FIF half is unbuilt",
+        "MO-PAID-035 records the verified negative",
+        "stays NEW_BOUNDED_BUILD"
+      ],
+      "adjudication_must_contain": [
+        "B-REC-B5-X (2026-09-09)",
+        "macro#6905",
+        "OPEN",
+        "F07 do_not_redo"
+      ],
+      "next_bounded_child_must_contain": [
+        "DEFER — F07 valuation-source ruling + FIF pipeline past fixture-only"
+      ]
+    },
+    {
+      "id": "MO-PAID-035",
+      "packet": 15,
+      "new_granular_disposition": "BLOCKED_RIGHTS",
+      "new_capability_state_c2": "NOT_BUILT",
+      "state_delta_must_contain": [
+        "RECORDED 2026-09-09",
+        "engine/stock_fundamentals.py:1815",
+        "BLOCKED_RIGHTS pending a Chairman licensing act"
+      ],
+      "adjudication_must_contain": [
+        "MARKET_ONTOLOGY_HALF_B_RIGHTS_AND_UPSTREAM_GATE_DOCKET_2026-09-06.md#mo-paid-035",
+        "B-REC-B5-X (2026-09-09)",
+        "verified negative"
+      ],
+      "preserved_prefix": "DOCKETED_TERMINAL_HALF_B;",
+      "next_bounded_child_must_contain": [
+        "DOCKETED_TERMINAL_HALF_B;"
+      ]
+    },
+    {
+      "id": "MO-PAID-037",
+      "packet": 15,
+      "new_granular_disposition": "BLOCKED_RIGHTS",
+      "new_capability_state_c2": "NOT_BUILT",
+      "state_delta_must_contain": [
+        "RECORDED 2026-09-09",
+        "closes only after 022, 026 and 035",
+        "inherits that block"
+      ],
+      "adjudication_must_contain": [
+        "MARKET_ONTOLOGY_HALF_B_RIGHTS_AND_UPSTREAM_GATE_DOCKET_2026-09-06.md#mo-paid-037",
+        "B-REC-B5-X (2026-09-09)",
+        "triple dependency 022+026+035"
+      ],
+      "preserved_prefix": "DOCKETED_TERMINAL_HALF_B;",
+      "next_bounded_child_must_contain": [
+        "DOCKETED_TERMINAL_HALF_B;"
+      ]
+    },
+    {
+      "id": "MO-DELTA-040",
+      "packet": 23,
+      "new_granular_disposition": "REJECTED_BY_DESIGN",
+      "new_capability_state_c2": "NOT_BUILT",
+      "state_delta_must_contain": [
+        "RECORDED 2026-09-09",
+        "Sol docket ruling is recorded",
+        "operations_only",
+        "post-F12-tenancy revisit clause is preserved"
+      ],
+      "adjudication_must_contain": [
+        "REJECTED_BY_DESIGN_CURRENT_PRODUCT_SHAPE",
+        "B-REC-B5-X (2026-09-09)",
+        "post-tenancy revisit clause"
+      ],
+      "next_bounded_child_must_contain": [
+        "post-F12-tenancy revisit clause"
+      ]
+    },
+    {
+      "id": "MO-DELTA-029",
+      "packet": 24,
+      "new_granular_disposition": "NEW_BOUNDED_BUILD",
+      "new_capability_state_c2": "BUILT_NOT_PROVEN",
+      "state_delta_must_contain": [
+        "BUILT: macro#6926",
+        "8e3bb1a4dd",
+        "matrix names file and source per family",
+        "Not yet two-user-proven in production"
+      ],
+      "adjudication_must_contain": [
+        "B-REC-B5-X (2026-09-09)",
+        "closed against macro#6926 merge 8e3bb1a4dd"
+      ],
+      "next_bounded_child_must_contain": [
+        "DONE for the matrix itself"
+      ]
+    },
+    {
+      "id": "MO-PAID-067",
+      "packet": 24,
+      "new_granular_disposition": "PROJECTION_ONLY",
+      "new_capability_state_c2": "BUILT_NOT_PROVEN",
+      "state_delta_must_contain": [
+        "BUILT: macro#6926",
+        "policy_calendar",
+        "foresight_cascade is not wired into this page",
+        "Policy watch",
+        "Not yet two-user-proven in production"
+      ],
+      "adjudication_must_contain": [
+        "B-REC-B5-X (2026-09-09)",
+        "policy_calendar half of the either/or sentence",
+        "foresight_cascade is not wired"
+      ],
+      "next_bounded_child_must_contain": [
+        "wire policy engines into one capital-markets page as a projection (no new signal)"
+      ]
+    },
+    {
+      "id": "MO-PAID-057",
+      "packet": "R9",
+      "new_granular_disposition": "UPGRADE_EXISTING_OWNER",
+      "new_capability_state_c2": "PARTIAL",
+      "state_delta_must_contain": [
+        "UNVERIFIED->CONFIRMED-NEGATIVE in repo scope: no tier-differentiated refresh/SLO config anywhere (external scheduler cannot be ruled out)"
+      ],
+      "adjudication_must_contain": [
+        "F13-lane row"
+      ],
+      "next_bounded_child_must_equal": "REWRITE the acceptance test to a measurable PRO-first checkpoint on an existing PRO-exclusive surface, or record refusal under #6919; no tier scheduler is built",
+      "other_cells_unchanged": true
+    }
+  ],
+  "recorded_not_edited": [
+    {
+      "id": "MO-DELTA-036",
+      "owner_pr": 6925,
+      "why": "Open macro#6925 already writes the F12 public-API refusal on this row. This packet records that fact and does not edit the cell."
+    },
+    {
+      "id": "MO-DELTA-037",
+      "owner_pr": 6925,
+      "why": "Open macro#6925 already writes the F12 public-API refusal on this row. This packet records that fact and does not edit the cell."
+    },
+    {
+      "id": "MO-DELTA-038",
+      "owner_pr": 6925,
+      "why": "Open macro#6925 already writes the F12 public-API refusal on this row. This packet records that fact and does not edit the cell."
+    },
+    {
+      "id": "MO-DELTA-039",
+      "owner_pr": 6925,
+      "why": "Open macro#6925 already writes the F12 public-API refusal on this row. This packet records that fact and does not edit the cell."
+    },
+    {
+      "id": "MO-PAID-055",
+      "owner_pr": 6925,
+      "why": "Open macro#6925 already writes the F12 public-API refusal on this row. This packet records that fact and does not edit the cell."
+    },
+    {
+      "id": "MO-PAID-084",
+      "owner_pr": 6925,
+      "why": "Open macro#6925 already writes the F12 public-API refusal on this row. This packet records that fact and does not edit the cell."
+    },
+    {
+      "id": "MO-PAID-036",
+      "owner_pr": 7003,
+      "why": "macro#7003, this packet's ancestor, already moved the row to BUILT_NOT_PROVEN against terminal#524. This packet does not re-edit it."
+    },
+    {
+      "id": "MO-DELTA-014",
+      "owner_pr": 7003,
+      "why": "macro#7003 already left the row PARTIAL: Sharpe, Sortino and beta are computed nowhere for a user's holdings. This packet does not close it."
+    }
+  ],
+  "f08_metrics": [
+    {
+      "metric": "concentration",
+      "owning_module": "terminal/lib/portfolioRisk.ts",
+      "definition": "The per-user holdings concentration readout shipped by terminal#524 over A1A positions. This matrix names the owning module; it does not restate or fork the formula in that file.",
+      "benchmark": "none — descriptive of the user's own book, not a peer or index comparison",
+      "horizon": "point-in-time over current holdings",
+      "annualization": "none",
+      "version": "terminal#524 merge efcd98aa",
+      "may_not_be_used_for": "Must not become execution or sizing authority. F08 freeze: research Portfolio Constructor output never becomes execution/sizing authority."
+    },
+    {
+      "metric": "industry weight",
+      "owning_module": "terminal/lib/portfolioRisk.ts",
+      "definition": "The per-user industry-weight factor readout shipped by terminal#524 over A1A positions. This matrix names the owning module; it does not restate or fork the formula in that file.",
+      "benchmark": "none — descriptive of the user's own book, not a peer or index comparison",
+      "horizon": "point-in-time over current holdings",
+      "annualization": "none",
+      "version": "terminal#524 merge efcd98aa",
+      "may_not_be_used_for": "Must not become execution or sizing authority. F08 freeze: research weights must not become execution/sizing authority."
+    },
+    {
+      "metric": "company-size weight",
+      "owning_module": "terminal/lib/portfolioRisk.ts",
+      "definition": "The per-user company-size-weight factor readout shipped by terminal#524 over A1A positions. This matrix names the owning module; it does not restate or fork the formula in that file.",
+      "benchmark": "none — descriptive of the user's own book, not a peer or index comparison",
+      "horizon": "point-in-time over current holdings",
+      "annualization": "none",
+      "version": "terminal#524 merge efcd98aa",
+      "may_not_be_used_for": "Must not become execution or sizing authority. F08 freeze: research weights must not become execution/sizing authority."
+    },
+    {
+      "metric": "liquidity thickness",
+      "owning_module": "terminal/lib/portfolioRisk.ts",
+      "definition": "The per-user liquidity-thickness readout shipped by terminal#524 over A1A positions. This matrix names the owning module; it does not restate or fork the formula in that file.",
+      "benchmark": "none — descriptive of the user's own book, not a peer or index comparison",
+      "horizon": "point-in-time over current holdings",
+      "annualization": "none",
+      "version": "terminal#524 merge efcd98aa",
+      "may_not_be_used_for": "Must not become execution or sizing authority."
+    },
+    {
+      "metric": "Sharpe",
+      "owning_module": "NO-OWNER",
+      "definition": "NO-OWNER",
+      "benchmark": "NO-OWNER",
+      "horizon": "NO-OWNER",
+      "annualization": "NO-OWNER",
+      "version": "NO-OWNER",
+      "may_not_be_used_for": "No builder may compute or display Sharpe over a user's holdings until an owner is ratified. The freeze forbids forking or inventing a formula. terminal#524 does not compute it over A1A positions."
+    },
+    {
+      "metric": "Sortino",
+      "owning_module": "NO-OWNER",
+      "definition": "NO-OWNER",
+      "benchmark": "NO-OWNER",
+      "horizon": "NO-OWNER",
+      "annualization": "NO-OWNER",
+      "version": "NO-OWNER",
+      "may_not_be_used_for": "No builder may compute or display Sortino over a user's holdings until an owner is ratified. The freeze forbids forking or inventing a formula. terminal#524 does not compute it over A1A positions."
+    },
+    {
+      "metric": "beta",
+      "owning_module": "NO-OWNER",
+      "definition": "NO-OWNER",
+      "benchmark": "NO-OWNER",
+      "horizon": "NO-OWNER",
+      "annualization": "NO-OWNER",
+      "version": "NO-OWNER",
+      "may_not_be_used_for": "No builder may compute or display beta over a user's holdings until an owner is ratified. The freeze forbids forking or inventing a formula. terminal#524 does not compute it over A1A positions."
+    }
+  ]
+}
