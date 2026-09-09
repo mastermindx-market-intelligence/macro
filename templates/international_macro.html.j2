@@ -71,10 +71,15 @@ nav.site-nav{position:relative;z-index:20}
 .imd-scope{color:var(--muted);font-size:12px;margin:10px 0 0;max-width:720px}
 .imd-asof{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:16px;font-size:11px;color:var(--muted)}
 .imd-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;border:1px solid var(--imd-border);background:color-mix(in srgb,var(--text) 4%,transparent);font-size:10px;font-weight:750}
-.imd-chip.fresh,.imd-chip.constructive,.imd-chip.clear{color:var(--ink-up, var(--up));border-color:color-mix(in srgb,var(--up) 35%,var(--imd-border));background:color-mix(in srgb,var(--up) 9%,transparent)}
+.imd-chip.constructive,.imd-chip.clear{color:var(--ink-up, var(--up));border-color:color-mix(in srgb,var(--up) 35%,var(--imd-border));background:color-mix(in srgb,var(--up) 9%,transparent)}
 .imd-chip.stale,.imd-chip.today,.imd-chip.balanced,.imd-chip.caution{color:var(--ink-warn, var(--warn));border-color:color-mix(in srgb,var(--warn) 38%,var(--imd-border));background:color-mix(in srgb,var(--warn) 9%,transparent)}
-.imd-chip.missing,.imd-chip.defensive,.imd-chip.risk{color:var(--ink-down, var(--down));border-color:color-mix(in srgb,var(--down) 36%,var(--imd-border));background:color-mix(in srgb,var(--down) 8%,transparent)}
+.imd-chip.defensive,.imd-chip.risk{color:var(--ink-down, var(--down));border-color:color-mix(in srgb,var(--down) 36%,var(--imd-border));background:color-mix(in srgb,var(--down) 8%,transparent)}
 .imd-chip.released{color:var(--muted)}
+/* Data-health states (fresh / stale / missing) say how CURRENT a datum is, never which way a market
+   moved, so they sit on the language-invariant status plane (--ok/--warn/--act) and never on --up/--down:
+   the "Confirmed <date>" chip must read the same in EN and ZH (theme.css swaps --up/--down under zh). */
+.imd-chip.fresh{color:var(--ink-ok, var(--ok));border-color:color-mix(in srgb,var(--ok) 35%,var(--imd-border));background:color-mix(in srgb,var(--ok) 9%,transparent)}
+.imd-chip.missing{color:var(--ink-act, var(--act));border-color:color-mix(in srgb,var(--act) 36%,var(--imd-border));background:color-mix(in srgb,var(--act) 8%,transparent)}
 .imd-score-wrap{display:grid;grid-template-columns:164px minmax(0,1fr);gap:20px;align-items:center;margin-top:24px}
 .imd-gauge{
   width:154px;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;

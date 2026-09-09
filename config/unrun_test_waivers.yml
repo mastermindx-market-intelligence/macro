@@ -123,3 +123,43 @@ tests/test_valuation_scenario.py: >-
   engine subject's own suite in this repo. Owner: F07 valuation/scenario lane.
   Delete this row and add the file to a `run:` step in the first genuinely
   enabled job that imports engine/valuation_scenario.py in a production path.
+
+tests/test_market_ontology_f11_post_vertical_contract.py: >-
+  MO-BB4 packet B-F11-3 (PR #6963): records-only contract doc + agentos DEC test for
+  F00C ledger rows MO-PAID-031/032/054. Suite is pure text assertions (no network,
+  no data/, no site/) and passes locally via
+  `python -m pytest tests/test_market_ontology_f11_post_vertical_contract.py -q`
+  (16 passed). Owner: WS:MARKET-OS. Exit condition: adopted by the
+  market-ontology-records CI job when it lands (Meta-CEO B, B-PLAT-5, in flight);
+  delete this row then.
+
+tests/test_market_ontology_f13_accuracy_ledger_spec.py: >-
+  Records-only spec-freeze suite for packet B-F13-4 (MO-DELTA-007 personal accuracy
+  ledger spec, F13-OPS-LEARNING). Wiring it into a legacy-jobs.yml signal-contract step
+  is a global CI invalidator (full 194-job suite) and a ci-authority hit for a suite
+  that only reads one markdown file. Owner: Meta-CEO B, lane F13. Adopted by the
+  market-ontology-records CI job when it is commissioned (Meta-CEO B, B-PLAT-5);
+  delete this row then.
+
+tests/test_market_ontology_f12_commercial_scope.py: >-
+  Packet B-F12-6 (records-only): pins the F12 post-tenancy commercial/account scope
+  doc's ledger-row answers (MO-PAID-079 commercial_only, MO-PAID-080 account_only),
+  the Chairman pricing-defer blockquote, the sibling-boundary bullets, and the
+  typed-null / no-fabrication / no-"validated" invariants. Not wired into
+  .github/ci/legacy-jobs.yml because that file is a global CI invalidator (full
+  194-job suite, a ci-authority hit) and this suite only reads one static research/
+  markdown doc plus the repo's own file tree — no engine or signal-contract path.
+  Run directly via `python3 -m pytest tests/test_market_ontology_f12_commercial_scope.py -q`
+  in CI triage / local verification. Owner: Meta-CEO B, lane F12. Adopted by the
+  market-ontology-records CI job when it is commissioned (Meta-CEO B, B-PLAT-5);
+  delete this row then.
+
+tests/test_market_ontology_half_b_rights_docket.py: >-
+  Records-only regression for packet B-F09-7 (Half-B rights/upstream-gate docket):
+  asserts shape of a new research/ doc + a new agentos/decisions/ DEC record + 20
+  cell edits in the F00C ledger CSV. No engine/scripts subject owns this file, and
+  listing it in .github/ci/legacy-jobs.yml is a global CI invalidator (full-suite,
+  ci-authority hit) for a records-only, no-render packet. Run directly via
+  `python -m pytest tests/test_market_ontology_half_b_rights_docket.py -q` in CI
+  triage / local verification. Owner: Meta-CEO B wave, lane F09. Delete this row
+  if a market-ontology-records CI step is ever commissioned.
