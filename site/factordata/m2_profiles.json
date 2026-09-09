@@ -1,11 +1,11 @@
 {
  "meta": {
-  "fingerprint": "2348326b021be648",
-  "computed_at": "2026-09-08T13:39:02.814215+00:00",
+  "fingerprint": "54e14319e25b3bf1",
+  "computed_at": "2026-09-09T14:40:20.164919+00:00",
   "max_date": "2026-09-04",
   "version": "m2.v1",
-  "universe_n": 243,
-  "computed_n": 243,
+  "universe_n": 244,
+  "computed_n": 244,
   "skipped_n": 0,
   "failed_n": 0,
   "note": "Daily-bar approximation over typical price (H+L+C)/3 \u2014 not intraday-true VWAP. Display-tier context; not a signal."
@@ -2568,6 +2568,38 @@
      "value": 64.9155,
      "anchor_date": "2025-10-13",
      "dist_pct": -12.55
+    }
+   }
+  },
+  "EL": {
+   "as_of": "2026-09-04",
+   "close": 103.86,
+   "vwap_w": 101.5934,
+   "profile": {
+    "poc": 84.2354,
+    "va_low": 72.7869,
+    "va_high": 93.9226,
+    "window": 126,
+    "poc_dist_pct": 23.3,
+    "in_value_area": false
+   },
+   "avwap": {
+    "earnings_proxy": {
+     "value": 100.6291,
+     "anchor_date": "2026-08-19",
+     "sessions_since": 12,
+     "sessions_held": 3,
+     "dist_pct": 3.21
+    },
+    "ytd": {
+     "value": 89.8898,
+     "anchor_date": "2026-01-02",
+     "dist_pct": 15.54
+    },
+    "low_52w": {
+     "value": 84.3776,
+     "anchor_date": "2026-04-02",
+     "dist_pct": 23.09
     }
    }
   },

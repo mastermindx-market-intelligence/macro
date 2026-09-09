@@ -2,7 +2,7 @@
   "schema": "price_pressure.v1",
   "engine_version": "price_pressure.v1",
   "asof": "2026-09-04",
-  "generated_utc": "2026-09-07T00:04:58+00:00",
+  "generated_utc": "2026-09-09T10:41:19+00:00",
   "display_only": true,
   "authority": {
     "can_rank": false,
@@ -51,13 +51,8 @@
     "spy_ret_z": -0.4674618591271393,
     "broad_selloff": false,
     "broad_selloff_threshold": 60.0,
-    "character": {
-      "verdict": "clear",
-      "primary_label": "Oil shock",
-      "asof": "2026-09-04",
-      "source": "data/regime/latest.json#market_drivers"
-    },
-    "banner": "Today's pressure is name-by-name, not market-wide.",
+    "character": null,
+    "banner": null,
     "down_today": 5,
     "up_today": 4,
     "broad_selloff_label": "today's pressure is name-by-name"
@@ -1377,7 +1372,9 @@
     ],
     "reading": "Continuation is the modal outcome and the recovery that exists is sub-cost. This lobe displays that record; it does not re-litigate it."
   },
-  "gaps": [],
+  "gaps": [
+    "day_character: newest session is not the current day — no day-character banner attached"
+  ],
   "ordering": {
     "rule": "most-recent-first, then ticker alphabetically",
     "why": "ordering by size of move would be a ranking, which the authority block above says this artifact cannot do"
