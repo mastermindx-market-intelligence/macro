@@ -310,7 +310,7 @@
     "site/nav_market.js": "24985e3240b509bfa197a5203b7bd28bb039b82b77a624481393203c74463497",
     "site/navigation-refresh.css": "c299c32498d25c412608eca40e53686b891076dd11a0c452b7dfe048c3d25584",
     "site/product-nav-icons.css": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93",
-    "site/stock-dashboard.css": "9f5f93c5a7effd57a8fdf049f49d1969ea29421f26d1607874e0d520db8055bb",
+    "site/stock-dashboard.css": "b992834e8e3b05c007aef13d1df01656b6b9515484242f80a16ed872f1d65bbe",
     "site/stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
     "site/stocktable.js": "56f6f93366f2e21024b4cd5c971766a7c9506aea49c21b37b428674b8f086819",
     "site/tablesort.js": "484d93337c0288b95b920d82d893600c97d7e4313c715d6bd9263222c9e4cc78",
@@ -3264,7 +3264,7 @@
         "screenshot": {
           "filename": "owner-empty-ca-watch-only-en-dark-390.png",
           "width": 390,
-          "sha256": "1592895f26f118e991dd7fecbf326254a57def26b234ebe21dc2ab6dc3f9d4cf",
+          "sha256": "46139d2a27b8e47f471414029e41940085cdacde8c87c64b3544e2ed935ddd39",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-390.png"
         },
         "console_exceptions": [],
@@ -4701,7 +4701,7 @@
         "screenshot": {
           "filename": "owner-empty-ca-watch-only-en-dark-1440.png",
           "width": 1440,
-          "sha256": "019f6738b4851152061177a2a31fd0cfa922f6eb060a0bb9634121532b423d9a",
+          "sha256": "00d60198365c5bb9af26545d909bca7a68851efb3481239af44060d3bbe186ab",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-1440.png"
         },
         "console_exceptions": [],
@@ -6138,7 +6138,7 @@
         "screenshot": {
           "filename": "owner-empty-ca-watch-only-en-light-390.png",
           "width": 390,
-          "sha256": "97da32b6c65462d4c083e86eb2192b77edfee965053e9c95a8fe13bf54a34da2",
+          "sha256": "5d1245a9ef4967a8bdc1be30e21a939a246fc720d22eacbedafe7358aa1928d6",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-390.png"
         },
         "console_exceptions": [],
@@ -10449,7 +10449,7 @@
         "screenshot": {
           "filename": "owner-empty-ca-watch-only-zh-dark-1440.png",
           "width": 1440,
-          "sha256": "f89d1c41966df200e88f93a885ef5d481221f923b954fbd2ae47436e642d8962",
+          "sha256": "0cae065a89342dfe9a29def11c5a533cd0bb29a84954c40b073f609a02a21b3c",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-1440.png"
         },
         "console_exceptions": [],
@@ -13323,7 +13323,7 @@
         "screenshot": {
           "filename": "owner-empty-ca-watch-only-zh-light-1440.png",
           "width": 1440,
-          "sha256": "6bc3c589cdbe951bea9634356c37e4d7d026746b1a9264704060a09a0a47b89f",
+          "sha256": "862250222489e67a99acb0819cccde467584ec0b48eb1927fb11966eebc39001",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-1440.png"
         },
         "console_exceptions": [],

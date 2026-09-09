@@ -218,7 +218,8 @@
     var leadersTxt = x.leaders.length ? x.leaders.join(" · ") : "—";
     var cycleHtml = (x.cycleState && x.cycleState.en) ? ' <span class="hk-v37-cycle">· ' + bi(x.cycleState.en, x.cycleState.zh) + '</span>' : '';
     var rankTxt = x.rank != null ? "RS #" + x.rank : "—";
-    return '<button class="hk-v37-lead-row" data-hk-lead-id="' + esc(x.id) + '" style="--breadth:' + breadth + '%"><span class="hk-v37-rank">' + esc(rankTxt) + '</span><span><span class="hk-v37-lead-name">' + bi(x.name.en, x.name.zh) + '</span><span class="hk-v37-leaders">' + esc(leadersTxt) + '</span>' + cycleHtml + '</span><span class="hk-v37-stance ' + x.tone + '">' + bi(x.stance.en, x.stance.zh) + '</span><span class="hk-v37-count">' + (x.count != null ? x.count : "—") + '</span></button>';
+    var act = x.members != null ? ' data-hk-lead-id="' + esc(x.id) + '"' : ' disabled';
+    return '<button class="hk-v37-lead-row" type="button"' + act + ' style="--breadth:' + breadth + '%"><span class="hk-v37-rank">' + esc(rankTxt) + '</span><span><span class="hk-v37-lead-name">' + bi(x.name.en, x.name.zh) + '</span><span class="hk-v37-leaders">' + esc(leadersTxt) + '</span>' + cycleHtml + '</span><span class="hk-v37-stance ' + x.tone + '">' + bi(x.stance.en, x.stance.zh) + '</span><span class="hk-v37-count">' + (x.count != null ? x.count : "—") + '</span></button>';
   }
   function renderLeadership() {
     var host = qs("#hk-v37-lead-list");
@@ -524,7 +525,7 @@
      the owner's own rank (null renders "—", never a minted number), stance a
      separate chip, count "—" when membership is unknown. */
   function modalRows(items, rk) {
-    return items.length ? items.map(function (x) { return '<tr tabindex="0" data-hk-modal-id="' + esc(x.id) + '">' + (rk ? '<td class="num">' + esc(x.rank != null ? "RS #" + x.rank : "—") + '</td>' : '') + '<td><b>' + bi(x.name.en, x.name.zh) + '</b></td><td><span class="hk-v37-stance ' + x.tone + '">' + bi(x.stance.en, x.stance.zh) + '</span></td><td>' + (x.cycleState && x.cycleState.en ? bi(x.cycleState.en, x.cycleState.zh) : "—") + '</td><td class="leaders">' + esc(x.leaders.length ? x.leaders.join(" · ") : "—") + '</td><td class="num">' + (x.count != null ? x.count : "—") + '</td></tr>'; }).join("") : '<tr><td colspan="' + (rk ? 6 : 5) + '">—</td></tr>';
+    return items.length ? items.map(function (x) { var act = x.members != null ? ' tabindex="0" data-hk-modal-id="' + esc(x.id) + '"' : ''; return '<tr' + act + '>' + (rk ? '<td class="num">' + esc(x.rank != null ? "RS #" + x.rank : "—") + '</td>' : '') + '<td><b>' + bi(x.name.en, x.name.zh) + '</b></td><td><span class="hk-v37-stance ' + x.tone + '">' + bi(x.stance.en, x.stance.zh) + '</span></td><td>' + (x.cycleState && x.cycleState.en ? bi(x.cycleState.en, x.cycleState.zh) : "—") + '</td><td class="leaders">' + esc(x.leaders.length ? x.leaders.join(" · ") : "—") + '</td><td class="num">' + (x.count != null ? x.count : "—") + '</td></tr>'; }).join("") : '<tr><td colspan="' + (rk ? 6 : 5) + '">—</td></tr>';
   }
   function modalPaneHtml() {
     /* Rank column + basis chip render ONLY under an owner rank (§10). */

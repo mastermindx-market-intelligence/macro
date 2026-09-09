@@ -881,3 +881,51 @@ def test_act_now_presentation_controls_never_touch_population_or_filter():
     assert "toggleAnLane" not in text
     assert "anOpen" not in text
     assert 'closest("[data-hk-an-view]")' not in text
+
+
+@pytest.mark.parametrize("known, size", [(False, 0), (True, 0), (True, 2)])
+@pytest.mark.parametrize("expanded", [False, True])
+def test_leadership_renderers_require_known_membership(known, size, expanded):
+    """Execute the actual renderers: unknown is inert, known-zero is selectable."""
+    import json
+    import subprocess
+    from bs4 import BeautifulSoup
+
+    text = _composer_text()
+    functions = []
+    for name in ("esc", "bi", "leadRow", "modalRows"):
+        match = re.search(
+            r"^  function " + name + r"\b.*?(?=^  function |\Z)",
+            text, re.MULTILINE | re.DOTALL,
+        )
+        assert match, name
+        functions.append(match.group(0))
+    script = "\n".join(functions) + "\n" + r"""
+var x = {id: 'FIXTURE-FINANCE', name: {en: 'Finance', zh: '金融'},
+         stance: {en: 'Watch', zh: '观察'}, tone: 'wait', rank: 2,
+         leaders: [], cycleState: null, count: null, members: null};
+if (KNOWN) { x.members = new Set(Array.from({length: SIZE}, (_, i) => String(i)));
+             x.count = SIZE; }
+console.log(EXPANDED ? modalRows([x], true) : leadRow(x, 4));
+""".replace("KNOWN", json.dumps(known)).replace("SIZE", str(size)).replace(
+        "EXPANDED", json.dumps(expanded))
+    result = subprocess.run(["node", "-e", script], text=True, capture_output=True,
+                            timeout=15, check=True)
+    node = BeautifulSoup(result.stdout, "html.parser").select_one(
+        "tr" if expanded else "button.hk-v37-lead-row")
+    assert node is not None
+    hook = "data-hk-modal-id" if expanded else "data-hk-lead-id"
+    assert node.has_attr(hook) is known
+    if expanded:
+        assert node.has_attr("tabindex") is known
+    else:
+        assert node.has_attr("disabled") is (not known)
+    assert (node.select_one("td:last-child") if expanded else
+            node.select_one(".hk-v37-count")).get_text(strip=True) == (
+        str(size) if known else "—")
+
+
+def test_unknown_leadership_cursor_does_not_invite_activation():
+    css = STOCK_CSS.read_text(encoding="utf-8")
+    assert ".mx-stockdash--hk .hk-v37-lead-row:hover:not(:disabled)" in css
+    assert re.search(r"\.mx-stockdash--hk \.hk-v37-lead-row:disabled\s*\{[^}]*cursor:\s*default", css)

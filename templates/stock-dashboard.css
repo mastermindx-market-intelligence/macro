@@ -971,8 +971,9 @@ html[data-theme=light] .mx-stockdash--ca .ca-v36-modal .ca-v36-modal-x:hover {
   content: ""; position: absolute; left: 0; bottom: 0; width: var(--breadth, 8%); height: 1px;
   background: color-mix(in srgb, var(--link) 44%, transparent); opacity: .5;
 }
-.mx-stockdash--hk .hk-v37-lead-row:hover,
+.mx-stockdash--hk .hk-v37-lead-row:hover:not(:disabled),
 .mx-stockdash--hk .hk-v37-lead-row.is-active { background: color-mix(in srgb, var(--link) 6%, transparent); }
+.mx-stockdash--hk .hk-v37-lead-row:disabled { cursor: default; }
 .mx-stockdash--hk .hk-v37-rank { color: var(--muted); font-size: 11.5px; font-variant-numeric: tabular-nums; }
 .mx-stockdash--hk .hk-v37-lead-name {
   display: block; overflow: hidden; font-size: 14.7px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap;
