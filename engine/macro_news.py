@@ -919,15 +919,27 @@ def _fetch_official_feeds(cfg: dict, today: date | None = None) -> tuple[list[di
     feeds = cfg.get("official_feeds") or OFFICIAL_FEEDS
     articles: list[dict] = []
     failures = 0
+    feed_outcomes: list[dict] = []
     window_days = int(cfg.get("official_window_days", 45))
+    acquired = datetime.now(timezone.utc).isoformat()
     try:
         import requests
         for feed in feeds:
+            outcome = {
+                "name": feed.get("name"),
+                "url": feed.get("url"),
+                "status": "ok",
+                "item_count": 0,
+            }
+            before = len(articles)
             try:
                 r = requests.get(feed["url"], timeout=12,
                                  headers={"User-Agent": "macro-dashboard/1.0 (research; contact local)"})
                 if r.status_code != 200:
                     failures += 1
+                    outcome["status"] = "fail"
+                    outcome["http_status"] = r.status_code
+                    feed_outcomes.append(outcome)
                     continue
                 # When the server omits a charset header, requests defaults to
                 # ISO-8859-1 per RFC 2616, mangling UTF-8 bytes (e.g. "Europeâs"
@@ -943,15 +955,37 @@ def _fetch_official_feeds(cfg: dict, today: date | None = None) -> tuple[list[di
                     if dt and dt.date() < today - timedelta(days=window_days):
                         continue
                     articles.append(item)
+                outcome["item_count"] = len(articles) - before
+                feed_outcomes.append(outcome)
             except Exception:  # noqa: BLE001
                 failures += 1
+                outcome["status"] = "error"
+                feed_outcomes.append(outcome)
     except Exception:  # noqa: BLE001
         failures = len(feeds)
+        if not feed_outcomes:
+            feed_outcomes = [{"name": f.get("name"), "url": f.get("url"),
+                              "status": "error", "item_count": 0} for f in feeds]
     page_articles, page_reason = _fetch_official_pages(cfg, today) if cfg.get("use_official_pages", True) else ([], None)
     articles.extend(page_articles)
     reason = "official_fetch_error" if failures == len(feeds) and not articles else page_reason
+    statuses = [str(f.get("status")) for f in feed_outcomes]
+    if feed_outcomes and all(s == "ok" for s in statuses):
+        feed_status = "ok"
+    elif feed_outcomes and all(s != "ok" for s in statuses):
+        feed_status = "failed"
+    elif feed_outcomes:
+        feed_status = "mixed"
+    else:
+        feed_status = "failed" if failures else "ok"
     try:
-        cache.write_text(json.dumps({"articles": articles, "degraded_reason": reason}))
+        cache.write_text(json.dumps({
+            "articles": articles,
+            "degraded_reason": reason,
+            "fetched_at": acquired,
+            "feeds": feed_outcomes,
+            "feed_status": feed_status,
+        }))
     except Exception:  # noqa: BLE001
         pass
     return articles, reason

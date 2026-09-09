@@ -1,0 +1,84 @@
+{# Display-only current-source panel. Parent supplies t/bl macros and `current`. #}
+{% set cal = current.calendar if current else none %}
+{% set stmt = current.statement if current else none %}
+{% set news = current.headlines if current else none %}
+{% set cmp = current.comparison if current else none %}
+{% set action = stmt.facts.action if stmt and stmt.facts else none %}
+{% set ns = namespace(headline_rows=[]) %}
+<div class="pw-current" data-pw-current="1">
+  <div class="pw-glance-grid">
+    <article class="pw-card green" id="pw-last-decision">
+      <h3 class="pw-card-title">{{ t('Last recorded decision','最近一次已收录决议') }}</h3>
+      {% if stmt and stmt.state == 'awaiting_statement' %}
+      <p class="pw-primary">{{ t('The latest decision is not yet available. An older recorded statement is not treated as current.','最新决议尚不可用。更早收录的声明不作为当前决议。') }}</p>
+      <p class="pw-mini-copy">{{ t('Elapsed decision','已过决议日') }} {{ stmt.elapsed_decision or stmt.decision_date }}</p>
+      {% elif stmt and stmt.state == 'recorded' %}
+      <p class="pw-primary">
+        {% if action == 'maintain' %}{{ t('The Committee maintained the federal funds target range at','委员会将联邦基金目标区间维持在') }}
+        {% elif action == 'lower' %}{{ t('The Committee lowered the federal funds target range to','委员会将联邦基金目标区间下调至') }}
+        {% elif action == 'raise' %}{{ t('The Committee raised the federal funds target range to','委员会将联邦基金目标区间上调至') }}
+        {% else %}{{ t('Recorded decision facts','已收录决议事实') }}
+        {% endif %}
+        {% if stmt.facts and stmt.facts.target_range %}<strong> {{ stmt.facts.target_range }}</strong>{% endif %}.
+      </p>
+      <div class="pw-meta-row">
+        {% if stmt.source_date %}<span class="pw-chip" data-statement-date="{{ stmt.source_date }}">{{ t('Statement date','声明日期') }} {{ stmt.source_date }}</span>{% endif %}
+        {% if stmt.seed %}<span class="pw-chip">{{ t('Collection date (seed, not a new verification)','收录日期（种子数据，不是新的核实）') }} {{ stmt.collected_at }}</span>
+        {% elif stmt.collected_at %}<span class="pw-chip">{{ t('Collected','收录于') }} {{ stmt.collected_at }}</span>{% endif %}
+      </div>
+      {% else %}
+      <p class="pw-primary">{{ t('No recorded FOMC statement is available in the store.','尚无已收录的FOMC声明。') }}</p>
+      {% endif %}
+    </article>
+    <article class="pw-card blue{% if news and news.state in ['invalid_newest','missing'] %} pw-current-degraded{% endif %}" id="pw-official-updates">
+      <h3 class="pw-card-title">{{ t('Official updates','官方动态') }}</h3>
+      {% if news and news.state == 'invalid_newest' %}
+      <p class="pw-mini-copy">{{ t('Newest official cache is unreadable. An earlier cache is last-good, not fresh.','最新官方缓存无法读取。更早的缓存是上次可用副本，不是新证据。') }}</p>
+      {% set ns.headline_rows = (news.last_good['items'] if news.last_good else []) %}
+      {% elif news and news.state == 'missing' %}
+      <p class="pw-primary">{{ t('Official headline cache is missing.','官方头条缓存缺失。') }}</p>
+      {% set ns.headline_rows = [] %}
+      {% else %}
+      {% set ns.headline_rows = news['items'] if news else [] %}
+      {% endif %}
+      {% if ns.headline_rows %}
+      <div class="pw-event-list">
+        {% for item in ns.headline_rows[:4] %}
+        <div class="pw-event">
+          <span class="pw-date">{{ item.published_at[:10] }}</span>
+          <span class="pw-event-name">
+            <span class="pw-source-original">{{ t('Original source text','原文') }}</span>
+            {{ item.title }}
+          </span>
+          <a class="gbtn gbtn-sm" href="{{ item.url }}" target="_blank" rel="noopener">{{ t('Open','打开') }}</a>
+        </div>
+        {% endfor %}
+      </div>
+      {% if news and news.saved_date %}<p class="pw-mini-copy">{{ t('Cache saved date','缓存保存日期') }} {{ news.saved_date }}{% if news.fetched_at %} · {{ t('Acquired','获取于') }} {{ news.fetched_at }}{% endif %}. {{ t('Build time is not evidence.','页面构建时间不是证据时间。') }}</p>{% endif %}
+      {% elif news and news.state != 'missing' %}
+      <p class="pw-primary">{{ t('No admitted Federal Reserve monetary or speech items in this cache.','本缓存没有可收录的美联储货币或讲话条目。') }}</p>
+      {% endif %}
+    </article>
+  </div>
+
+  <details class="pw-details" id="pw-sources-changes">
+    <summary class="gbtn gbtn-sm">{{ t('Sources & changes','来源与变化') }}</summary>
+    <div class="pw-detail-body">
+      {% if cmp and cmp.state == 'available' %}
+      <p>{{ t('Compared with the preceding recorded statement. Phrases are quoted from the source, not a model claim.','与上一份已收录声明比较。短语引自原文，不是模型判断。') }}</p>
+      <p class="pw-mini-copy">{{ t('Prior statement','上一份声明') }} {{ cmp.prior_date }}</p>
+      {% for row in cmp.highlights %}
+      <p>
+        {% if row.removed_text %}<span class="pw-source-original">− {{ row.removed_text }}</span>{% endif %}
+        {% if row.added_text %}<span class="pw-source-original">+ {{ row.added_text }}</span>{% endif %}
+      </p>
+      {% endfor %}
+      {% else %}
+      <p>{{ t('Comparison unavailable — no prior statement in the store.','无法比较——存储中没有上一份声明。') }}</p>
+      {% endif %}
+      {% if stmt and stmt.url %}
+      <p><a class="gbtn gbtn-sm" href="{{ stmt.url }}" target="_blank" rel="noopener">{{ t('Open official statement','阅读官方声明') }}</a></p>
+      {% endif %}
+    </div>
+  </details>
+</div>

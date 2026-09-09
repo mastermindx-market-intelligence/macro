@@ -19,20 +19,6 @@
 {% set LEAN = {
   'overweight':['Favoured','相对受益'], 'underweight':['Under pressure','相对承压'], 'avoid':['Avoid','回避']
 } %}
-{% set VIEW_COPY = {
-  'XLE': {
-    'en':'Energy may stay supported while Iran risk keeps oil prices elevated.',
-    'zh':'伊朗局势让油价风险偏上，能源股可能继续获得支撑。',
-    'risk_en':'A durable ceasefire and oil below $70 would weaken this view.',
-    'risk_zh':'如果停火持久、油价跌破70美元，这一判断会转弱。'
-  },
-  'XLF': {
-    'en':'Banks may benefit from Treasury-market reforms and a steeper yield curve.',
-    'zh':'国债市场改革和更陡的收益率曲线可能利好银行。',
-    'risk_en':'Recession fears and wider credit spreads could outweigh those benefits.',
-    'risk_zh':'衰退担忧和信用利差扩大可能盖过这些利好。'
-  }
-} %}
 {% set TF_COPY = {
   'tf_comms': {
     'en':'Possible changes to forecasts, press conferences and meeting transcripts.',
@@ -285,6 +271,13 @@
   .pw-chip{gap:5px;padding:5px 10px;color:var(--pw-ink-2);font-size:11.5px;line-height:1.2}
   .pw-chip strong{color:var(--text)}
   .pw-chip.stale,.pw-badge.warn{color:var(--pw-amber);border-color:color-mix(in srgb,var(--pw-amber) 42%,var(--line));background:color-mix(in srgb,var(--pw-amber) 10%,var(--panel))}
+  .pw-current .gbtn,.pw-current summary.gbtn{min-height:40px;min-width:40px}
+  .pw-current-degraded{border-left:3px solid var(--pw-amber);background:transparent}
+  html[data-theme="light"] .pw-current-degraded{box-shadow:none;background:transparent;border-left:3px solid var(--pw-amber)}
+  .pw-source-original{display:block;color:var(--pw-ink-2);font-size:11px;letter-spacing:.02em}
+  .pw-research-banner{margin:28px 0 0;padding:14px 16px;border:1px solid var(--pw-hair);border-radius:14px;background:var(--panel)}
+  html[data-theme="light"] .pw-research-banner{box-shadow:var(--pw-shadow)}
+  .pw-research-banner h2{margin:0 0 6px;font-size:18px}
   .pw-badge{padding:3px 8px;font-size:10.5px;font-weight:700;line-height:1.25}
   .pw-badge.fact{color:var(--pw-green);border-color:color-mix(in srgb,var(--pw-green) 38%,var(--line));background:color-mix(in srgb,var(--pw-green) 9%,var(--panel))}
   .pw-badge.read{color:var(--pw-purple);border-color:color-mix(in srgb,var(--pw-purple) 38%,var(--line));background:color-mix(in srgb,var(--pw-purple) 9%,var(--panel))}
@@ -360,13 +353,17 @@
 {% set age = dates.staleness.age_days if dates and dates.staleness else none %}
 {% set stance = fed_stance.stance if fed_stance else 'unknown' %}
 {% set divergence = scorecard.sharpest_divergence if scorecard and scorecard.sharpest_divergence else none %}
+{% set fomc_meetings = current.calendar.meetings if current and current.calendar else [] %}
+{% set calendar_state = current.calendar.state if current and current.calendar else none %}
+{% set calendar_url = current.calendar.calendar_url if current and current.calendar else 'https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm' %}
+{% set has_background = intel and intel.as_of %}
 
 <main class="pw-shell">
   <section class="pw-hero pw-surface" aria-labelledby="pw-title">
     <div>
       <p class="pw-eyebrow">{{ t('Market policy','市场政策') }}</p>
       <h1 id="pw-title">{{ t('Fed & Policy Watch','美联储与政策观察') }}</h1>
-      <p class="pw-subtitle">{{ t('The policy moves that matter for markets. Last verified','影响市场的政策变化。最近核实于') }} <span class="l-en">{{ verified_en }}</span><span class="l-zh">{{ verified_zh }}</span>.</p>
+      <p class="pw-subtitle">{{ t('Dated policy changes and the next decision.','政策变化与下一次决议') }}</p>
       <div class="pw-chips">
         {% if age is not none and age > 14 %}<span class="pw-chip stale">{{ t('Needs refresh','需要更新') }}</span>{% endif %}
         <span class="pw-chip">{{ t('Facts and analysis kept separate','事实与分析分开呈现') }}</span>
@@ -383,17 +380,21 @@
         {% if fed_hist and fed_hist.since %}<p class="pw-mini-copy">{{ t('Unchanged since','自此日期以来未变') }} {{ fed_hist.since }}{% if fed_hist.changed_recently %} · {{ t('changed recently','近期有变化') }}{% endif %}</p>{% endif %}
       </div>
       <div>
-        <p class="pw-mini-title">{{ t('Key dates','关键日期') }}</p>
-        {% if upcoming %}
+        <p class="pw-mini-title">{{ t('Next Fed decisions','下一次美联储决议') }}</p>
+        {% if fomc_meetings %}
         <div class="pw-event-list">
-          {% for event in upcoming[:3] %}
+          {% for event in fomc_meetings[:3] %}
           <div class="pw-event">
             <span class="pw-date">{{ event.date[5:] }}</span>
-            <span class="pw-event-name">{% if event.key %}★ {% endif %}{{ bl(event.event_en, event.event_zh) }}</span>
+            <span class="pw-event-name">{{ bl(event.event_en, event.event_zh) }}</span>
             <span class="pw-badge neutral">{% if event.days_to == 0 %}{{ t('Today','今天') }}{% elif event.days_to == 1 %}{{ t('Tomorrow','明天') }}{% else %}{{ event.days_to }}{{ t('d','天') }}{% endif %}</span>
           </div>
           {% endfor %}
         </div>
+        <p class="pw-mini-copy"><a class="gbtn gbtn-sm" href="{{ calendar_url }}" target="_blank" rel="noopener">{{ t('Official calendar','官方日程') }}</a></p>
+        {% elif calendar_state == 'schedule_needs_updating' %}
+        <p class="pw-mini-copy">{{ t('The known decision calendar needs updating.','已知决议日程需要更新。') }}</p>
+        <p class="pw-mini-copy"><a class="gbtn gbtn-sm" href="{{ calendar_url }}" target="_blank" rel="noopener">{{ t('Official calendar','官方日程') }}</a></p>
         {% else %}
         <p class="pw-mini-copy">{{ t('No upcoming policy dates in this update.','本次更新没有未来政策日期。') }}</p>
         {% endif %}
@@ -413,14 +414,14 @@
 
   {% if (age is not none and age > 14) or divergence %}
   <div class="pw-alert" role="note">
-    {% if age is not none and age > 14 %}<span><strong>{{ t('Needs refresh.','需要更新。') }}</strong> {{ t('Check the latest news before acting.','采取行动前请先核对最新消息。') }}</span>{% endif %}
+    {% if age is not none and age > 14 %}<span><strong>{{ t('This research needs a new review; the dated official records above are separate.','这份研究需要重新核实；上方官方记录单独列示') }}</strong></span>{% endif %}
     {% if divergence %}<span><strong>{{ t('Not working:','尚未奏效：') }}</strong> {{ bl(divergence.theme, divergence.theme_zh if divergence.theme_zh else divergence.theme) }} {{ t('is trailing the S&P 500.','目前跑输标普500。') }}</span>{% endif %}
   </div>
   {% endif %}
 
   <nav class="pw-toc" aria-label="Jump to section">
     <a class="gbtn gbtn-sm gbtn-pill" href="#overview">{{ t('Quick take','快速了解') }}</a>
-    {% if desk %}<a class="gbtn gbtn-sm gbtn-pill" href="#views">{{ t('Market views','市场观点') }}</a>{% endif %}
+    <a class="gbtn gbtn-sm gbtn-pill" href="#background">{{ t('Background research','历史研究') }}</a>
     <a class="gbtn gbtn-sm gbtn-pill" href="#fed">{{ t('The Fed','美联储') }}</a>
     <a class="gbtn gbtn-sm gbtn-pill" href="#policy">{{ t('Policy stages','政策进程') }}</a>
     <a class="gbtn gbtn-sm gbtn-pill" href="#impact">{{ t('Market impact','市场影响') }}</a>
@@ -430,19 +431,21 @@
 
   <section class="pw-section" id="overview">
     {{ section_head('Quick take','快速了解','What matters now','当前重点','The short version.','先看最重要的。') }}
-    <div class="pw-glance-grid">
-      <article class="pw-card green">
-        <h3 class="pw-card-title">{{ t('Bottom line','核心结论') }}</h3>
-        <p class="pw-primary">{{ t('The Fed is staying tough on inflation while Treasury tries to lower borrowing costs and fund domestic industry.','美联储仍严控通胀，财政部则试图降低融资成本并支持国内产业。') }}</p>
-      </article>
-      <article class="pw-card amber">
-        <h3 class="pw-card-title">{{ t('What to watch','需要关注') }}</h3>
-        <p class="pw-primary">{{ t('Jobs, inflation and Treasury funding matter more than speeches. Weak growth could reopen cuts; sticky inflation could delay them.','就业、通胀和国债融资比讲话更重要。增长转弱可能重启降息，通胀黏性则会推迟行动。') }}</p>
-      </article>
-    </div>
-    <p class="pw-build-note">{{ t('The Fed and Treasury appear aligned on lower borrowing costs, but there is no proof of a coordinated plan.','美联储与财政部似乎都希望降低融资成本，但没有证据表明双方存在协同计划。') }}</p>
+    {% include "_policy_watch_current.html.j2" %}
+    <p class="pw-build-note">{{ t('Compare the next decision with the last statement. This is what to monitor, not a claim about today’s motives.','把下一次决议与上一份声明对照。这是监测方法，不是对今日动机的判断。') }}</p>
   </section>
 
+  <div class="pw-research-banner" id="background">
+    <h2>{{ t('Background research','历史研究') }}</h2>
+    {% if has_background %}
+    <p class="pw-mini-copy">{{ t('Last verified','最近核实') }} <span class="l-en">{{ verified_en }}</span><span class="l-zh">{{ verified_zh }}</span>.</p>
+    {% if age is not none and age > 14 %}<p class="pw-mini-copy">{{ t('This research needs a new review; the dated official records above are separate.','这份研究需要重新核实；上方官方记录单独列示') }}</p>{% endif %}
+    {% else %}
+    <p class="pw-primary">{{ t('No background research in this update.','本次更新没有历史研究。') }}</p>
+    {% endif %}
+  </div>
+
+  {% if has_background %}
   {% if desk %}
   <section class="pw-section" id="views">
     {{ section_head('Market views','市场观点','Ideas we’re tracking','我们正在跟踪的观点','Early views with a clear review date.','早期观点，均设有复核日期。') }}
@@ -453,17 +456,16 @@
     <div class="pw-card-grid">
       {% for view in desk.theses %}
       {% set actor = THREAD.get('fed' if view.actor == 'fed' else 'policy', ['Policy','政策']) %}
-      {% set view_copy = VIEW_COPY.get(view.subject) %}
       <article class="pw-card blue" data-policy-id="view-{{ loop.index }}">
         <span class="pw-card-label">{{ bl(actor[0], actor[1]) }}</span>
         <h3 class="pw-card-title">{{ view.subject }} · {{ lean_tag(view.lean) }}</h3>
-        <p class="pw-primary">{{ bl(view_copy.en if view_copy else brief(view.thesis, 150), view_copy.zh if view_copy else brief(view.thesis_zh, 72)) }}</p>
+        <p class="pw-primary">{{ bl(brief(view.thesis, 150), brief(view.thesis_zh, 72)) }}</p>
         <div class="pw-meta-row"><span class="pw-chip">{{ t('Review by','复核日期') }} {{ view.check_by }}</span>{{ confidence_tag(view.conviction) }}</div>
         {% if view.dissent or (view.falsifier and view.falsifier.text) %}
         <details class="pw-details">
           <summary class="gbtn gbtn-sm">{{ t('Risks & review','风险与复核条件') }}</summary>
           <div class="pw-detail-body">
-            {% if view.dissent %}<p><strong>{{ t('Main risk:','主要风险：') }}</strong> {{ bl(view_copy.risk_en if view_copy else brief(view.dissent, 160), view_copy.risk_zh if view_copy else brief(view.dissent_zh, 80)) }}</p>{% endif %}
+            {% if view.dissent %}<p><strong>{{ t('Main risk:','主要风险：') }}</strong> {{ bl(brief(view.dissent, 160), brief(view.dissent_zh, 80)) }}</p>{% endif %}
             {% if view.falsifier and view.falsifier.text %}<p><strong>{{ t('What would change this:','什么会改变判断：') }}</strong> {{ bl(brief(view.falsifier.text, 170), brief(view.falsifier.text_zh, 85)) }}</p>{% endif %}
           </div>
         </details>
@@ -483,7 +485,7 @@
       <article class="pw-card blue"><h3 class="pw-card-title">{{ t('What could change','可能的变化') }}</h3><p class="pw-primary">{{ t('Rule changes could make a later pivot easier, but there is no clear rate-cut signal yet.','规则调整可能让未来转向更容易，但目前没有明确的降息信号。') }}</p></article>
     </div>
     <div class="pw-card-grid" style="margin-top:12px">
-      {% for item in intel.fed.task_forces %}
+      {% for item in (intel.fed.task_forces if intel and intel.fed else []) %}
       {% set copy = TF_COPY.get(item.id) %}
       <article class="pw-card" data-policy-id="{{ item.id }}">
         <h3 class="pw-card-title">{{ bl(item.name_en, item.name_zh) }}</h3>
@@ -670,7 +672,7 @@
     <details class="pw-details">
       <summary class="gbtn gbtn-sm">{{ t('See all calls','查看全部判断') }} ({{ counts.total }})</summary>
       <div class="pw-detail-body pw-ledger">
-        {% for call in intel.predictions %}
+        {% for call in (intel.predictions if intel else []) %}
         {% set date_row = dates.predictions[call.id] if dates and dates.predictions and call.id in dates.predictions else none %}
         {% set topic = THREAD.get(call.thread,[call.thread,call.thread]) %}
         {% set call_copy = CALL_COPY.get(call.id, [brief(call.text_en,180),brief(call.text_zh,90)]) %}
@@ -679,6 +681,7 @@
       </div>
     </details>
   </section>
+  {% endif %}
 
   <section class="pw-section" id="sources">
     {{ section_head('Receipts','依据','What we watch','我们关注什么','Details only when you need them.','需要时再查看细节。') }}
