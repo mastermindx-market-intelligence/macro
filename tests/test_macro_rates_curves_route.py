@@ -1058,11 +1058,13 @@ def test_y_label_box_width_equals_pad_l_over_chart_width() -> None:
     """
     css = (TEMPLATES / "_curve_panel.html.j2").read_text(encoding="utf-8")
     declared = re.findall(r"\.mq-curve-ylabels li \{[^}]*?width:\s*([0-9.]+)%", css, re.S)
-    assert declared == ["10"], declared
+    assert declared == ["11.25"], declared
     chart = _hero(_snapshot())["chart"]
     assert float(declared[0]) == pytest.approx(100.0 * chart["pad_l"] / chart["width"])
-    # A "5.28%"-shaped label at 10 CSS px needs ~28 px plus the 4 px gutter.
+    # Measured: 31.7 px of ink for a "5.28%"-shaped label in Inter at 10 CSS px,
+    # plus the 4 px gutter, against a 336 px plot at a 390 viewport.
     assert chart["pad_l"] >= 64
+    assert chart["pad_l"] / chart["width"] * 336.0 - 4.0 >= 31.7
     media = css[css.find("@media"):]
     assert media, "the partial has no media query to check"
     assert re.search(r"\.mq-curve-ylabels li \{[^}]*width", media, re.S) is None, (

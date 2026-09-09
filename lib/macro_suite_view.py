@@ -1224,11 +1224,16 @@ def _chart_payload(tenors: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     The last x-tick is end-anchored so ``30-year`` cannot clip the viewBox.
     """
     width, height = 640, 200
-    # pad_l/width is also the CSS width of `.mq-curve-ylabels li` (10%), at
+    # pad_l/width is also the CSS width of `.mq-curve-ylabels li` (11.25%), at
     # every viewport and with no media override, so a y-tick label box ends
     # exactly at the plot's left edge and no series can run through a glyph.
-    # 64/640 leaves 10 CSS px for a "5.28%"-shaped label at a 390 viewport.
-    pad_l, pad_r, pad_t, pad_b = 64, 16, 14, 28
+    # Measured in the browser at a 390 CSS px viewport: the plot is 336 px, a
+    # "5.28%"-shaped label in Inter at 10 px is 31.7 px of ink, and the 4 px
+    # gutter has to fit beside it. 64/640 leaves 29.6 px of content box and the
+    # glyphs overflow it into the plot; 72/640 leaves 33.8 px and they do not.
+    # pad_r gives back the 8 units pad_l took, so the tick pitch and the gap
+    # between the last two labels stay where they were before R1.
+    pad_l, pad_r, pad_t, pad_b = 72, 8, 14, 28
     n = max(1, len(tenors) - 1)
     inner_w = width - pad_l - pad_r
     inner_h = height - pad_t - pad_b
