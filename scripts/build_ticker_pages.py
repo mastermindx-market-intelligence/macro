@@ -3447,16 +3447,16 @@ _SS_IDENTITY: dict[str, dict[str, str]] = {
     },
 }
 
-# Six axes, in reading order. Titles are plain words: the axis names in the
-# contract (STATE / OPPORTUNITY_CONTEXT / PERSONAL_IMPACT) are field names, and
-# field names are not user copy.
+# Five axes, in reading order. Titles are plain words: the axis names in the
+# contract (STATE / OPPORTUNITY_CONTEXT) are field names, and field names are
+# not user copy. `personal_impact` is not an axis — F06 freeze §3 folds it
+# into Overview as one exposure row, never a sixth card.
 _SS_AXES: tuple[tuple[str, str, str], ...] = (
     ("state", "Where it stands", "当前位置"),
     ("change", "What changed", "有何变化"),
     ("opportunity_context", "Opportunity context", "机会背景"),
     ("risk", "What could go wrong", "风险"),
     ("catalyst", "What to watch next", "接下来关注"),
-    ("personal_impact", "Your position", "你的持仓"),
 )
 
 # Gate codes are deterministic machine identifiers — required in the drilldown
@@ -4222,11 +4222,20 @@ def _ss_fill_opportunity(out: dict[str, Any], leg: dict) -> None:
 def _ss_fill_personal(out: dict[str, Any], leg: dict) -> None:
     """`personal_impact` on a public page is a designed state, not a blank."""
     code = _clean_str(leg.get("state") or "").upper()
-    known = _SS_PERSONAL.get(code)
-    if known and not _ss_pair(leg, "headline"):
-        out["headline"] = {"en": known["en"], "zh": known["zh"]}
-        if not _ss_pair(leg, "reason"):
-            out["why"] = {"en": known["why_en"], "zh": known["why_zh"]}
+    # F06 freeze §4: NOT_APPLICABLE on this leg is the Overview exposure row.
+    # The registered sentence is binding — never blanked, never a raw code.
+    if out.get("cov") == "NOT_APPLICABLE" and not _ss_pair(leg, "headline"):
+        out["headline"] = {
+            "en": "This does not apply to you right now.",
+            "zh": "这暂不适用于你。",
+        }
+        out["why"] = None
+    else:
+        known = _SS_PERSONAL.get(code)
+        if known and not _ss_pair(leg, "headline"):
+            out["headline"] = {"en": known["en"], "zh": known["zh"]}
+            if not _ss_pair(leg, "reason"):
+                out["why"] = {"en": known["why_en"], "zh": known["why_zh"]}
     if code:
         out["fields"] = [{"k": "state", "v": code}]
 
@@ -4243,6 +4252,10 @@ def build_security_state(blob: dict | None) -> dict | None:
     try:
         legs = ss.get("legs") if isinstance(ss.get("legs"), dict) else {}
         axes = [_ss_leg(k, en, zh, legs.get(k)) for k, en, zh in _SS_AXES]
+        personal_impact = _ss_leg(
+            "personal_impact", "Your position", "你的持仓",
+            legs.get("personal_impact"),
+        )
 
         deg_code = _clean_str(ss.get("dominant_degradation") or "").upper() or "NONE"
         deg = _SS_DEGRADATION.get(deg_code, _SS_DEGRADATION["UNAVAILABLE"])
@@ -4286,8 +4299,8 @@ def build_security_state(blob: dict | None) -> dict | None:
             })
 
         # The tally under the grid is the grid's own legend: same rail shapes,
-        # same words, counted from the same six legs. One canonical count per
-        # population, printed once (design system §9.5).
+        # same words, counted from the same five axis legs. One canonical count
+        # per population, printed once (design system §9.5).
         order = ["ok", "warn", "act", "off"]
         buckets: dict[tuple[str, str], dict[str, Any]] = {}
         for a in axes:
@@ -4332,67 +4345,90 @@ def build_security_state(blob: dict | None) -> dict | None:
             # keeps its exact form nowhere else, because nowhere else asked.
             lg_reason = {"en": _ss_prettify(lg_reason["en"]), "zh": _ss_prettify(lg_reason["en"])}
 
+        generated_at = _ss_clock(ss.get("generated_at"))
+        compiled_at = _ss_clock(asof.get("state_compiled_at"))
+        content_sha256 = _clean_str(ss.get("content_sha256") or "")
+        degradation = {
+            "code": deg_code, "tone": deg["tone"],
+            "en": deg["en"], "zh": deg["zh"],
+            "clean": deg_code == "NONE",
+            "failed": deg_code == "COMPILER_FAILURE",
+        }
+        identity = {
+            "code": id_code, "tone": idc["tone"],
+            "ok": id_code == "PROVEN",
+            "en": idc["en"], "zh": idc["zh"],
+            "why_en": idc["why_en"], "why_zh": idc["why_zh"],
+            "legs": id_legs,
+            "equalities": [_clean_str(e) for e in (ident_raw.get("equalities") or []) if _clean_str(e)],
+            # Chairman plain-language law (2026-09-06): a refusal is a
+            # machine code (`COMPILER_FAILURE`, `IDENTITY_UNRESOLVED`, …)
+            # and must never render as bare English prose duplicated into
+            # the ZH slot — house copy from `_SS_GATES` leads, the raw
+            # code stays only as the receipt (`code`), never the sentence
+            # itself (macro#6920 round-2 MAJOR #2).
+            "refusals": [
+                {
+                    "code": code,
+                    "en": (_SS_GATES.get(code) or {}).get("en") or _ss_prettify(code),
+                    "zh": (_SS_GATES.get(code) or {}).get("zh") or _ss_prettify(code),
+                }
+                for code in (_clean_str(e) for e in (ident_raw.get("refusals") or []))
+                if code
+            ],
+            # Chairman plain-language law (2026-09-06), macro#6920
+            # round-3 MAJOR #2: a disclosure is stored engine-side as
+            # "CODE: technical description" — the code must never render
+            # as bare prose, and the raw English description must never
+            # render into the ZH slot untranslated. House copy
+            # (`_SS_DISCLOSURES`) leads in both languages; the raw code
+            # stays only in the receipt chip (`code`), never the sentence.
+            "disclosures": _ss_disclosure_rows(ident_raw.get("disclosures")),
+        }
+        # Availability and non-blocking are two different questions and the
+        # contract now answers both. `available` counts only AVAILABLE; a
+        # read that does not apply is not available, it is simply not in the
+        # way — so it is counted, and named, separately.
+        coverage = {
+            "req_total": cov_block.get("required_legs_total"),
+            "req_avail": cov_block.get("required_legs_available"),
+            "req_nonblock": cov_block.get("required_legs_nonblocking"),
+            "opt_total": cov_block.get("optional_legs_total"),
+            "opt_avail": cov_block.get("optional_legs_available"),
+            "opt_nonblock": cov_block.get("optional_legs_nonblocking"),
+        }
+        state_axis = next((a for a in axes if a["key"] == "state"), None)
+        overview = {
+            "coverage": coverage,
+            "degradation": degradation,
+            "state_summary": (state_axis or {}).get("headline"),
+            "personal_impact": personal_impact,
+        }
+        owner_receipts = {
+            "legs": id_legs,
+            "generated_at": generated_at,
+            "compiled_at": compiled_at,
+            "content_sha256": content_sha256,
+        }
+
         return {
             "version": _clean_str(ss.get("schema") or ss.get("version") or "security_state.v1"),
             "ticker_display": _clean_str(ss.get("ticker_display") or ""),
             "security_id": _clean_str(ss.get("security_id") or ""),
             "issuer_id": _clean_str(ss.get("issuer_id") or ""),
             "listing_key": _clean_str(ss.get("listing_key") or ""),
-            "generated_at": _ss_clock(ss.get("generated_at")),
+            "generated_at": generated_at,
             "market_at": _ss_clock(asof.get("market_at")),
             "frontier_at": _ss_clock(asof.get("source_frontier_at")),
-            "compiled_at": _ss_clock(asof.get("state_compiled_at")),
-            "degradation": {
-                "code": deg_code, "tone": deg["tone"],
-                "en": deg["en"], "zh": deg["zh"],
-                "clean": deg_code == "NONE",
-                "failed": deg_code == "COMPILER_FAILURE",
-            },
-            "identity": {
-                "code": id_code, "tone": idc["tone"],
-                "ok": id_code == "PROVEN",
-                "en": idc["en"], "zh": idc["zh"],
-                "why_en": idc["why_en"], "why_zh": idc["why_zh"],
-                "legs": id_legs,
-                "equalities": [_clean_str(e) for e in (ident_raw.get("equalities") or []) if _clean_str(e)],
-                # Chairman plain-language law (2026-09-06): a refusal is a
-                # machine code (`COMPILER_FAILURE`, `IDENTITY_UNRESOLVED`, …)
-                # and must never render as bare English prose duplicated into
-                # the ZH slot — house copy from `_SS_GATES` leads, the raw
-                # code stays only as the receipt (`code`), never the sentence
-                # itself (macro#6920 round-2 MAJOR #2).
-                "refusals": [
-                    {
-                        "code": code,
-                        "en": (_SS_GATES.get(code) or {}).get("en") or _ss_prettify(code),
-                        "zh": (_SS_GATES.get(code) or {}).get("zh") or _ss_prettify(code),
-                    }
-                    for code in (_clean_str(e) for e in (ident_raw.get("refusals") or []))
-                    if code
-                ],
-                # Chairman plain-language law (2026-09-06), macro#6920
-                # round-3 MAJOR #2: a disclosure is stored engine-side as
-                # "CODE: technical description" — the code must never render
-                # as bare prose, and the raw English description must never
-                # render into the ZH slot untranslated. House copy
-                # (`_SS_DISCLOSURES`) leads in both languages; the raw code
-                # stays only in the receipt chip (`code`), never the sentence.
-                "disclosures": _ss_disclosure_rows(ident_raw.get("disclosures")),
-            },
+            "compiled_at": compiled_at,
+            "degradation": degradation,
+            "identity": identity,
             "coverage_state": _clean_str(cov_block.get("overall_state") or ""),
-            # Availability and non-blocking are two different questions and the
-            # contract now answers both. `available` counts only AVAILABLE; a
-            # read that does not apply is not available, it is simply not in the
-            # way — so it is counted, and named, separately.
-            "coverage": {
-                "req_total": cov_block.get("required_legs_total"),
-                "req_avail": cov_block.get("required_legs_available"),
-                "req_nonblock": cov_block.get("required_legs_nonblocking"),
-                "opt_total": cov_block.get("optional_legs_total"),
-                "opt_avail": cov_block.get("optional_legs_available"),
-                "opt_nonblock": cov_block.get("optional_legs_nonblocking"),
-            },
+            "coverage": coverage,
             "axes": axes,
+            "personal_impact": personal_impact,
+            "overview": overview,
+            "owner_receipts": owner_receipts,
             "tally": tally,
             "gates": [g for a in axes for g in a["gates"]],
             "evidence": {
@@ -4409,7 +4445,7 @@ def build_security_state(blob: dict | None) -> dict | None:
                               for c in (ev.get("conflicts") or [])],
                 "compiled_at": _ss_clock(comp.get("compiled_at")),
             },
-            "content_sha256": _clean_str(ss.get("content_sha256") or ""),
+            "content_sha256": content_sha256,
             "last_good": {
                 "ok": lg_ok,
                 "at": lg_at,

@@ -1174,6 +1174,8 @@ jobs:
       - "contracts/evidence_foundation/recipe.v1.schema.json"
       - "tests/test_security_state_contract.py"
       - "tests/test_security_state_view_model.py"
+      - "tests/test_market_ontology_f06_scope.py"
+      - "research/market_intelligence_productization/MARKET_ONTOLOGY_F06_SCREENER_AND_COCKPIT_SCOPE_2026-09-06.md"
       - "config/site_access.yml"
       - "config/sparse_worktree.json"
       - "engine/__init__.py"
@@ -1325,6 +1327,12 @@ jobs:
       # fixture dicts only. Own step per this job's precedent (step = masking unit).
       - name: security_state.v1 view-model projection (B1A)
         run: python -m pytest tests/test_security_state_view_model.py -q
+      # B-F06-3 (seat ruling R4): the F06 scope-freeze records suite ships with
+      # this packet (byte-identical from #6966). Named here as its own step so
+      # it is not a waiver-only dark test. Hermetic: one markdown file, no
+      # data/ and no site/ read.
+      - name: F06 screener and cockpit scope freeze (B-F06-2/3)
+        run: python -m pytest tests/test_market_ontology_f06_scope.py -q
 
   chronicle-suite:
     if: ${{ false }}

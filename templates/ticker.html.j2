@@ -360,6 +360,8 @@ html.has-js .rv.in{opacity:1;transform:none;transition:opacity .55s ease,transfo
 
 .ss-mod{margin-top:20px;}
 .ss-sub{margin:-4px 0 15px;max-width:76ch;font-size:12.5px;line-height:1.55;color:var(--muted);}
+.ss-mod > .ss-cell{margin-bottom:12px;}
+.ss-mod > .ss-cell:last-child{margin-top:16px;margin-bottom:0;}
 .ss-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
 .ss-cell{position:relative;display:flex;flex-direction:column;min-width:0;
   padding:14px 15px 12px 17px;border:1px solid var(--hair);border-radius:13px;
@@ -1077,13 +1079,13 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
 
 {%- if security_state %}{% set ss = security_state %}
 
-<!-- ═ SECURITY STATE — six separate reads, each carrying its own coverage ═ -->
+<!-- ═ SECURITY STATE — eight B1B panels over the frozen security_state.v1 object ═ -->
 <section class="mod ss-mod rv" id="security-state" aria-labelledby="ss-title">
   <div class="mod-hd">
     <h2 id="ss-title">{{ t('Security state', '证券状态') }}</h2>
-    <span class="hint">{{ t('six reads', '六项读数') }}</span>
+    <span class="hint">{{ t('eight panels', '八个面板') }}</span>
   </div>
-  <p class="ss-sub">{{ t('Six separate reads on this listing — what each one rests on, and how old it is. Use it to check the rest of the page. Not a buy or sell signal, and never blended into a score.', '对该证券的六项独立读数 — 每项的依据来源与时效。可用于核对本页其余内容。不构成买卖信号，也不会合并为任何评分。') }}</p>
+  <p class="ss-sub">{{ t('Eight separate reads on this listing — what each one rests on, and how old it is. Use it to check the rest of the page. Not a buy or sell signal, and never blended into a score.', '对该证券的八项独立读数 — 每项的依据来源与时效。可用于核对本页其余内容。不构成买卖信号，也不会合并为任何评分。') }}</p>
 
   {# One flag, at most. A read that could not be built outranks an identity
      problem; both name what still works, so the reader never has to guess how
@@ -1092,15 +1094,29 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
   {# The last-good citation is gated on a read that actually succeeded: a
      recorded fallback whose own compile failed is not something to fall back
      on, and naming it would promise the reader a version that never existed. #}
-  <p class="ss-flag ss-t-act"><b>{{ t('This read could not be built', '本次读数无法生成') }}</b>{{ t('The six reads below could not be compiled from their sources this run. The price, chart and company sections above are unaffected.', '本次运行未能从来源生成下方六项读数。上方的价格、图表与公司板块不受影响。') }}{% if ss.last_good.ok %} {{ t('Last complete read:', '上次完整读数：') }} {{ ss.last_good.at }}{% if ss.last_good.deg and ss.last_good.deg.code != 'NONE' %} — {{ t(ss.last_good.deg.en|lower, ss.last_good.deg.zh) }}{% endif %}.{% endif %}</p>
+  <p class="ss-flag ss-t-act"><b>{{ t('This read could not be built', '本次读数无法生成') }}</b>{{ t('The panels below could not be compiled from their sources this run. The price, chart and company sections above are unaffected.', '本次运行未能从来源生成下方面板。上方的价格、图表与公司板块不受影响。') }}{% if ss.last_good.ok %} {{ t('Last complete read:', '上次完整读数：') }} {{ ss.last_good.at }}{% if ss.last_good.deg and ss.last_good.deg.code != 'NONE' %} — {{ t(ss.last_good.deg.en|lower, ss.last_good.deg.zh) }}{% endif %}.{% endif %}</p>
   {% elif not ss.identity.ok %}
   <p class="ss-flag ss-t-{{ ss.identity.tone }}"><b>{{ t(ss.identity.en, ss.identity.zh) }}</b>{{ t(ss.identity.why_en, ss.identity.why_zh) }}</p>
   {% endif %}
 
+  {# 1 · Overview — coverage, degradation, state-leg summary, personal-impact row. #}
+  <article class="ss-cell ss-t-{{ ss.degradation.tone }} ss-r-solid{{ ' is-ok' if ss.degradation.clean }}">
+    <h3 class="ss-axis ss-b1b-h"><span>{{ t('Overview', '概览') }}</span><span class="ss-chip">{{ t(ss.degradation.en, ss.degradation.zh) }}</span></h3>
+    <p class="ss-why">{{ t('What this security looks like right now, at a glance.', '这只证券当前状况的一目了然总览。') }}</p>
+    {% if ss.overview.state_summary %}<p class="ss-head">{{ t(ss.overview.state_summary.en, ss.overview.state_summary.zh) }}</p>{% endif %}
+    <div class="ss-note"><b>{{ t('Reads available', '可用读数') }}</b>
+      {% if ss.coverage.req_total is not none %}<span class="v">{{ ss.coverage.req_avail if ss.coverage.req_avail is not none else '—' }} / {{ ss.coverage.req_total }} {{ t('required, current', '项必需读数（当前）') }}</span>{% endif %}
+      {% if ss.coverage.opt_total is not none %}<span class="v">{{ ss.coverage.opt_avail if ss.coverage.opt_avail is not none else '—' }} / {{ ss.coverage.opt_total }} {{ t('optional, current', '项可选读数（当前）') }}</span>{% endif %}
+    </div>
+    {% if ss.personal_impact %}
+    <div class="ss-note"><b>{{ t(ss.personal_impact.title_en, ss.personal_impact.title_zh) }}</b><span class="v">{{ t(ss.personal_impact.headline.en, ss.personal_impact.headline.zh) }}</span></div>
+    {% endif %}
+  </article>
+
   <div class="ss-grid">
     {% for a in ss.axes %}
     <article class="ss-cell ss-t-{{ a.tone }} ss-r-{{ a.rail }}{{ ' is-ok' if a.ok }}">
-      <h3 class="ss-axis"><span>{{ t(a.title_en, a.title_zh) }}</span><span class="ss-chip">{{ t(a.cov_en, a.cov_zh) }}</span></h3>
+      <h3 class="ss-axis ss-b1b-h"><span>{{ t(a.title_en, a.title_zh) }}</span><span class="ss-chip">{{ t(a.cov_en, a.cov_zh) }}</span></h3>
       <p class="ss-head">{{ t(a.headline.en, a.headline.zh) }}</p>
       {% if a.clause %}<p class="ss-body">{{ t(a.clause.en, a.clause.zh) }}</p>{% endif %}
       {% if a.why %}<p class="{{ 'ss-why' if a.clause else 'ss-body' }}">{{ t(a.why.en, a.why.zh) }}</p>{% endif %}
@@ -1149,7 +1165,7 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
   </div>
 
   <div class="ss-ev">
-    <span class="ss-ev-label">{{ t('Evidence & receipts', '证据与凭证') }}</span>
+    <span class="ss-ev-label ss-b1b-h">{{ t('Evidence', '证据') }}</span>
     <span class="ss-tally">
       {% for b in ss.tally %}<span class="ss-t-{{ b.tone }}"><i class="ss-tick ss-r-{{ b.rail }}" aria-hidden="true"></i><b>{{ b.n }}</b> {{ t(b.en|lower, b.zh) }}</span>{% endfor %}
       <span class="ss-prov">{{ t('counted here', '本页统计') }}</span>
@@ -1157,6 +1173,34 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
     {% if ss.frontier_at %}<span class="ss-clock">{{ t('sources through', '来源截至') }} {{ ss.frontier_at }}</span>{% endif %}
     <button type="button" class="gbtn gbtn-sm" onclick="dsrOpenDlg('dlg-ss-evidence')">{{ t('Open evidence', '查看证据') }}</button>
   </div>
+
+  {# 8 · Owner & model receipts — always visible, equal weight with the other panels. #}
+  <article class="ss-cell ss-t-{{ ss.identity.tone }} ss-r-solid{{ ' is-ok' if ss.identity.ok }}">
+    <h3 class="ss-axis ss-b1b-h"><span>{{ t('Owner & model receipts', '所有者与模型凭证') }}</span><span class="ss-chip">{{ t(ss.identity.en, ss.identity.zh) }}</span></h3>
+    <p class="ss-why">{{ t('Who read this, when, and the exact fingerprint of what was read.', '谁读取了这些数据、何时读取，以及所读内容的确切指纹。') }}</p>
+    {% for lg in ss.identity.legs %}
+    <div class="ss-chk ss-t-{{ lg.tone }}">
+      <div class="ss-chk-h">
+        <span class="r">{{ lg.check }}</span>
+        <span class="v">{{ t(lg.result_en, lg.result_zh) }}</span>
+        {% if lg.code %}<span class="c ss-id">{{ lg.code }}</span>{% endif %}
+      </div>
+      {% if lg.desc_en %}<p class="ss-chk-d">{{ t(lg.desc_en, lg.desc_zh) }}</p>{% endif %}
+      {% if lg.artifact %}<p class="ss-chk-s"><span class="ss-id">{{ lg.artifact }}</span></p>{% endif %}
+      {% if lg.reader %}<p class="ss-chk-s">{{ t('read by', '读取方') }} <span class="ss-id">{{ lg.reader }}</span></p>{% endif %}
+      {% if lg.reads %}<dl class="ss-chk-v">{% for v in lg.reads %}<dt>{{ v.k }}</dt><dd>{{ v.v if v.v else '—' }}</dd>{% endfor %}</dl>{% endif %}
+    </div>
+    {% endfor %}
+    {% if ss.generated_at %}
+    <div class="ss-note"><b>{{ t('Generated', '生成时间') }}</b><span class="v">{{ ss.generated_at }}</span></div>
+    {% endif %}
+    {% if ss.compiled_at %}
+    <div class="ss-note"><b>{{ t('Compiled', '编排时间') }}</b><span class="v">{{ ss.compiled_at }}</span></div>
+    {% endif %}
+    {% if ss.content_sha256 %}
+    <div class="ss-note"><b>{{ t('Content fingerprint', '内容指纹') }}</b><span class="v ss-id">{{ ss.content_sha256 }}</span></div>
+    {% endif %}
+  </article>
 </section>
 {%- endif %}
 
@@ -1844,7 +1888,7 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
     </div>
     <div class="dsr-dlg-body">
       <section class="dpanel">
-        <h3>{{ t('Coverage of the six reads', '六项读数的覆盖情况') }}<span class="ss-prov">{{ t('counted here', '本页统计') }}</span></h3>
+        <h3>{{ t('Coverage of these reads', '这些读数的覆盖情况') }}<span class="ss-prov">{{ t('counted here', '本页统计') }}</span></h3>
         <div class="dkv">
           {% for b in ss.tally %}<div class="r6d"><span class="k ss-t-{{ b.tone }} ss-tone-ink">{{ t(b.en, b.zh) }}</span><span class="vv num">{{ b.n }} / {{ ss.axes|length }}</span></div>{% endfor %}
         </div>

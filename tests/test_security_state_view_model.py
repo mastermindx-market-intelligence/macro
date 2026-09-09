@@ -718,7 +718,7 @@ def test_coverage_counts_separate_available_from_nonblocking() -> None:
 
 def test_not_applicable_leg_is_not_displayed_as_available() -> None:
     view = build_security_state({"security_state": _contract()})
-    personal = _axis(view, "personal_impact")
+    personal = view["personal_impact"]
     assert personal["cov"] == "NOT_APPLICABLE"
     assert personal["ok"] is False
     assert personal["tone"] == "off"
@@ -1272,4 +1272,153 @@ def test_m1_shell_gate_description_renders_a_real_bilingual_sentence() -> None:
 def _prettify_words(code: str) -> str:
     words = re.sub(r"[^0-9A-Za-z]+", " ", code).strip().lower()
     return (words[:1].upper() + words[1:]) if words else ""
+
+
+# ---------------------------------------------------------------------------
+# B-F06-3 · second-issuer cockpit — eight B1B panels, personal_impact refolded
+# ---------------------------------------------------------------------------
+
+# Freeze §3 panel names in the freeze's own order. Overview and Owner & model
+# receipts use the packet copy table; Evidence is the freeze panel name;
+# the five remaining axis cards keep the titles #6920 shipped and map 1:1
+# onto freeze panels 4, 3, 5, 6, 7. Visible document order is Overview, then
+# those five axis cards in `_SS_AXES` order, then Evidence, then Owner &
+# model receipts — the packet spec pins Overview before `.ss-grid`.
+_B1B_HEADINGS_EN = (
+    "Overview",
+    "Where it stands",
+    "What changed",
+    "Opportunity context",
+    "What could go wrong",
+    "What to watch next",
+    "Evidence",
+    "Owner & model receipts",
+)
+_FREEZE_NOT_APPLICABLE_EN = "This does not apply to you right now."
+_FREEZE_NOT_APPLICABLE_ZH = "这暂不适用于你。"
+
+
+def _heading_label(node: _HtmlNode) -> str:
+    """The panel name, never the coverage chip sitting in the same heading."""
+    for child in node.children:
+        if "ss-chip" in child.classes:
+            continue
+        text = " ".join(child.get_text().split())
+        if text:
+            return text
+    return " ".join(node.get_text().split())
+
+
+def _visible_b1b_headings(html: str, lang: str = "en") -> list[str]:
+    """Named B1B panel headings inside `#security-state`, never dialog chrome."""
+    section = _card_region(html)
+    wrapped = "<section " + section[section.find("id="):]
+    tree = _parse_class_tree(wrapped)
+    return [_heading_label(node) for node in tree.find_all_class("ss-b1b-h") if _heading_label(node)]
+
+
+def test_personal_impact_is_no_longer_rendered_as_a_sixth_axis_card() -> None:
+    view = build_security_state({"security_state": _contract()})
+    assert view is not None
+    assert len(view["axes"]) == 5
+    assert [a["key"] for a in view["axes"]] == [
+        "state", "change", "opportunity_context", "risk", "catalyst",
+    ]
+    assert all(a["key"] != "personal_impact" for a in view["axes"])
+
+
+def test_overview_carries_coverage_degradation_and_the_personal_impact_row() -> None:
+    view = build_security_state({"security_state": _contract()})
+    assert view is not None
+    overview = view["overview"]
+    assert overview["coverage"] is view["coverage"]
+    assert overview["degradation"] is view["degradation"]
+    assert overview["personal_impact"] is view["personal_impact"]
+    assert view["personal_impact"]["key"] == "personal_impact"
+
+
+def test_personal_impact_not_applicable_prints_the_freeze_registered_sentence() -> None:
+    contract = _contract()
+    assert contract["legs"]["personal_impact"]["coverage_state"] == "NOT_APPLICABLE"
+    view = build_security_state({"security_state": contract})
+    assert view is not None
+    row = view["overview"]["personal_impact"]
+    assert row["headline"]["en"] == _FREEZE_NOT_APPLICABLE_EN
+    assert row["headline"]["zh"] == _FREEZE_NOT_APPLICABLE_ZH
+    assert "NOT_APPLICABLE" not in row["headline"]["en"]
+    assert "NOT_APPLICABLE" not in row["headline"]["zh"]
+
+    en_card = _card_region(_render_section(view, lang="en"))
+    zh_card = _card_region(_render_section(view, lang="zh"))
+    assert _FREEZE_NOT_APPLICABLE_EN in en_card
+    assert _FREEZE_NOT_APPLICABLE_ZH in zh_card
+    assert "NOT_APPLICABLE" not in en_card
+    assert "NOT_APPLICABLE" not in zh_card
+
+
+def test_owner_model_receipts_surfaces_identity_legs_asof_and_content_sha256() -> None:
+    view = build_security_state({"security_state": _contract()})
+    assert view is not None
+    receipts = view["owner_receipts"]
+    assert receipts["legs"] is view["identity"]["legs"]
+    assert receipts["generated_at"] == view["generated_at"]
+    assert receipts["compiled_at"] == view["compiled_at"]
+    assert receipts["content_sha256"] == view["content_sha256"]
+    assert receipts["content_sha256"]
+    assert receipts["generated_at"]
+    assert receipts["compiled_at"]
+
+
+def test_ticker_page_renders_all_eight_b1b_panel_headings_for_msft() -> None:
+    fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_msft_expected_output.json"
+    state = json.loads(fixture.read_text(encoding="utf-8"))
+    view = build_security_state({"security_state": state})
+    assert view is not None
+    html = _render_section(view)
+    headings = _visible_b1b_headings(html, lang="en")
+    assert headings == list(_B1B_HEADINGS_EN), headings
+
+
+def test_aapl_page_still_renders_five_axis_cards_after_the_personal_impact_extraction() -> None:
+    view = build_security_state({"security_state": _contract()})
+    assert view is not None
+    html = _render_section(view)
+    tree = _parse_class_tree(html)
+    grid = tree.find_class("ss-grid")
+    assert grid is not None
+    cards = [c for c in grid.find_all_class("ss-cell") if "ss-grid" not in c.classes]
+    # `.ss-cell` descendants of the grid — the grid itself is not an ss-cell.
+    cards = grid.find_all_class("ss-cell")
+    assert len(cards) == 5, [c.find_class("ss-axis").get_text() if c.find_class("ss-axis") else "?" for c in cards]
+    texts = [c.get_text() for c in cards]
+    assert all("Your position" not in t and "你的持仓" not in t for t in texts)
+
+
+def test_no_new_panel_reads_a_rank_score_size_or_gate_field() -> None:
+    """New cockpit code may only read the frozen object. It must not assign
+    any `can_*` authority key to true, and it must not mint a rank, score,
+    size or gate value of its own (DNR:KILL-CAUSAL-DAG-ALPHA).
+    """
+    py_src = (REPO / "scripts" / "build_ticker_pages.py").read_text(encoding="utf-8")
+    j2_src = (REPO / "templates" / "ticker.html.j2").read_text(encoding="utf-8")
+    # Restrict the Python scan to the security-state projection — the rest of
+    # the dossier builder already talks about scores on other surfaces.
+    start = py_src.index("# Security State (security_state.v1)")
+    end = py_src.index("# Main context builder", start)
+    ss_py = py_src[start:end]
+    for key in (
+        "can_rank", "can_gate", "can_size",
+        "can_originate_signal", "can_execute",
+    ):
+        for label, src in (("build_ticker_pages.py", ss_py), ("ticker.html.j2", j2_src)):
+            assert f"{key}=True" not in src.replace(" ", ""), (
+                f"{label} assigns {key} to true"
+            )
+            assert f"{key} = True" not in src, f"{label} assigns {key} to true"
+            assert f'"{key}": True' not in src and f"'{key}': True" not in src, (
+                f"{label} sets {key} true in a literal"
+            )
+    for banned in ("rank_score", "size_score", "gate_score", "llm_confidence"):
+        assert banned not in ss_py, f"new authority field {banned!r} in the projection"
+        assert banned not in j2_src, f"new authority field {banned!r} in the template"
 
