@@ -8,6 +8,8 @@ Protected procedure for this continuation: Mastermind `f3f2d9155796876009f2d427b
 
 The retained filter experiment's close agreement with the August printed threshold depended on a chart-supplied initial state. Warming the same coefficients from the retained historical price series materially changed the endpoint. A separate affine common-seed feasibility calculation tested a declared constant-EMA grid against the earlier and later uncensored image levels under three engineering vertical error budgets. No tested alpha/seed pair satisfied the entire path under those budgets. This is a bounded formula-family result, not a proof over all filters, all continuous parameters or all image/date/vintage uncertainty. It does not establish a defect in the creator's strategy.
 
+An adversarial tolerance check on the same grid found path-only feasibility at a uniform vertical half-width of approximately 4.48659 pixels. That check does not impose the final printed rounding interval. Because increasing the four-pixel budget by about half a pixel restores a path fit, the narrow rejection must not be described as robust exclusion of the EMA family. The defensible ruling is that endpoint resemblance, image tolerance and chart initialization do not establish a recovered model.
+
 The prior August model is not established as the unchanged September Systematic Core. A second independently observed, version-matched threshold and a complete state transition remain more informative than tuning portfolio CAGR. An initialization fitted from the target chart must not silently become a historically generated model state.
 
 ## Original value-state research consumer
@@ -34,7 +36,7 @@ A separate algebraic check on retained prior-day Greeks and next-day investigati
 
 ## Verification and continuation
 
-Eighty-seven V6 local tests passed for affine feasibility, initialization, profile clocks/revisions/nulls, closed JSON input, descriptive skew selection, label maturity, split crossing and reference-exposure algebra. These are private research-code checks, not this records PR's CI and not proof of alpha.
+Ninety-two V6 local tests passed for affine feasibility, initialization, minimum-width sensitivity, profile clocks/revisions/nulls, closed JSON input, descriptive skew selection, label maturity, split crossing and reference-exposure algebra. These are private research-code checks, not this records PR's CI and not proof of alpha. An initially invalid zero-alpha test fixture was corrected to respect the existing open-interval alpha contract; the failed and final passing logs are retained.
 
 Next research action: supply one real, source-qualified profile pair for a version-matched disclosed transition, run the existing stateless research consumer, and preserve its observed or unavailable result without outcome fitting. Separately seek a second independent numerical threshold before claiming a recovered core rule. The current source owner reconciles the intended existing volume in parallel; no recovery execution is inferred from the FYI.
 
