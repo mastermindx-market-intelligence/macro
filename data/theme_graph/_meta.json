@@ -1,5 +1,5 @@
 {
-  "belief_time": "2026-09-05",
+  "belief_time": "2026-09-06",
   "capability_counts": {
     "measurement_candidate": 505,
     "semantic_only": 138
@@ -12,12 +12,12 @@
       "symbol": "IBIT"
     }
   ],
-  "computed_at": "2026-09-05T02:22:17Z",
+  "computed_at": "2026-09-06T23:11:52Z",
   "counts": {
     "capability": 644,
-    "edges": 14737,
+    "edges": 16854,
     "edges_latest_belief": 8293,
-    "evidence": 17,
+    "evidence": 19,
     "identity_resolution": 2807,
     "node_lifecycle": 2,
     "nodes": 3882
@@ -26,8 +26,8 @@
   "era": "observed",
   "identity_resolution_state_counts": {
     "DEFERRED_IDENTITY_EXCEPTION": 1,
-    "NOT_IN_MASTER": 202,
-    "RESOLVED": 2369,
+    "NOT_IN_MASTER": 199,
+    "RESOLVED": 2372,
     "UNSUPPORTED_MARKET": 233
   },
   "lane": "nightly",
@@ -53,7 +53,7 @@
       ]
     },
     "ths": {
-      "concept_map_asof": "2026-08-29",
+      "concept_map_asof": "2026-09-05",
       "concepts": 375,
       "expresses_edges": 237,
       "unresolved_concept_names": 0

@@ -1,10 +1,41 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-05T00:56:51.194631+00:00",
-  "posts_seen": 13,
-  "seen_total": 165,
-  "evaluated": 0,
+  "as_of": "2026-09-09T00:16:40.922822+00:00",
+  "posts_seen": 11,
+  "seen_total": 175,
+  "evaluated": 5,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": []
+  "gate_scores": [
+    {
+      "id": "wh-2026-09-08-modifying-the-scope-of-products-of-canada-subject-to-the-additional-duties-impos",
+      "importance": 0,
+      "activated": false,
+      "degraded_reason": "served_by:codex"
+    },
+    {
+      "id": "wh-2026-09-08-excluding-certain-canadian-alcoholic-beverages-from-importation-into-the-united-",
+      "importance": 0,
+      "activated": false,
+      "degraded_reason": null
+    },
+    {
+      "id": "wh-2026-09-08-excluding-certain-canadian-products-from-importation-into-the-united-states-in-r",
+      "importance": 0,
+      "activated": false,
+      "degraded_reason": null
+    },
+    {
+      "id": "wh-2026-09-08-modifying-the-scope-of-products-of-canada-subject-to-the-additional-duties-impos",
+      "importance": 0,
+      "activated": false,
+      "degraded_reason": null
+    },
+    {
+      "id": "wh-2026-09-08-excluding-certain-canadian-products-from-importation-into-the-united-states-in-r",
+      "importance": 0,
+      "activated": false,
+      "degraded_reason": null
+    }
+  ]
 }
