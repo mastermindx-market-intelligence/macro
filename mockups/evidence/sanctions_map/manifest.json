@@ -926,7 +926,7 @@
           "sha256": "b7b66af730eff459e605a888064e9ade39d3c55ffaac15df08c6a5436a45c009",
           "theme": "light",
           "toggle": {
-            "action": "after load: click gear, popover opens (aria-expanded=true), click Light; theme.js setTheme(\"light\") writes data-theme + localStorage.theme and fires themechange; Escape closes the popover before the screenshot",
+            "action": "after load: click gear, popover opens (aria-expanded=true), click Light; theme.js setTheme(\"light\") writes data-theme + localStorage.theme and fires themechange; Escape was issued but the popover remained open at screenshot time",
             "control": "shared-chrome settings gear #settings-open (theme.js initSettings moves the _site_nav.html.j2 .theme-switch behind it) -> popover #settings-pop -> segment #set-theme-light",
             "opened": {
               "computed_body_bg": "rgb(13, 16, 24)",
@@ -982,7 +982,8 @@
                 "navigation-refresh.css"
               ],
               "zh_display": "none"
-            }
+            },
+            "probe_notes": "pop_open reads true pre-click; this probe does not discriminate popover state — gear_expanded and seg_light_pressed are the discriminating probes"
           },
           "verified_how": "playwright full-page; dark/en seeded before load through scripts/capture_page_evidence.py state_seed_source (terminated IIFE); load + 400ms settle; pre-probe data-theme=dark; IN-PAGE settings gear #settings-open clicked, popover open, #set-theme-light clicked; 700ms; post-probe data-theme=light + localStorage.theme=light + computed styles; prefers-reduced-motion:reduce; device_scale_factor=2; PNG 2880x4496; pageerror + console.error listeners live for the whole session",
           "viewport": "desktop",
