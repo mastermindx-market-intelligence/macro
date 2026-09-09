@@ -399,7 +399,9 @@ def test_quiet_hours_copy_says_alerts_wait_and_are_sent(account_js):
     assert "sent when the window ends" in en.lower()
     assert "fires" not in en.lower()
     assert "等待" in zh
-    assert "补发" in zh or "发送" in zh
+    assert "发送" in zh
+    assert "触发" not in zh
+    assert "fires" not in zh.lower()
 
 
 def test_alert_group_strings_have_no_machine_text(account_js):
@@ -479,3 +481,88 @@ def test_alerts_on_with_zh_lang_defaults_to_asia_shanghai(auth, store):
     assert out["prefs"]["tz"] == user_prefs.default_tz_for_lang("zh") == "Asia/Shanghai"
     _, _, payload = auth.calls[0]
     assert payload["user_metadata"]["tz"] == "Asia/Shanghai"
+
+
+def test_alert_detail_open_beats_runtime_field_max_height(account_js):
+    """MAJOR 1: the alert block is class='mmacc-field mmacc-alert-detail'. The
+    inherited runtime rule `.mmacc-field.open{max-height:280px}` (same 0,2,0
+    specificity, injected later) was clipping quiet-hours copy on mobile 390.
+    Governed CSS must win with a higher-specificity open height."""
+    theme = (ROOT / "templates" / "theme.css").read_text()
+    start = "/* account sheet: alert delivery preferences (B-F08-1a) */"
+    end = "/* end account sheet: alert delivery preferences (B-F08-1a) */"
+    block = theme[theme.index(start):theme.index(end)]
+    assert ".mmacc-field.open{max-height:280px" in account_js
+    assert ".mmacc-field.mmacc-alert-detail.open{" in block
+    assert "max-height:min(80vh,960px)" in block
+    assert ".mmacc-alert-detail.open{max-height:420px}" not in block
+
+
+def test_optin_success_applies_returned_server_tz(account_js):
+    """MAJOR 2: turning alerts on with no stored tz POSTs only opt-in; the
+    server applies default_tz_for_lang and returns it on prefs.tz. The sheet
+    must put that zone on #mmacc-tz and drop the 'using your browser' hint
+    so stored default and visible control agree without a reload."""
+    assert "function _applySavedTz" in account_js
+    start = account_js.index("function onAlertOptin")
+    end = account_js.index("\n  function onAlertCat")
+    body = account_js[start:end]
+    assert "prefs.tz" in body
+    assert "_applySavedTz(prefs.tz)" in body
+    apply_start = account_js.index("function _applySavedTz")
+    apply_end = account_js.index("\n  function ", apply_start + 1)
+    apply_body = account_js[apply_start:apply_end]
+    assert "mmacc-tz" in apply_body
+    assert "mmacc-hint-tz" in apply_body
+    assert "data-prev" in apply_body
+
+
+def test_quiet_hours_error_rolls_back_to_data_prev(account_js):
+    """MINOR 6: _sendQuietHours used to snapshot prevS/prevE from the values
+    just typed, so the error path restored the same values (no-op). Rollback
+    must read data-prev captured from the last successful save / initial paint."""
+    start = account_js.index("function _sendQuietHours")
+    end = account_js.index("\n  function onAlertQhClear")
+    body = account_js[start:end]
+    assert "getAttribute('data-prev')" in body
+    assert "var prevS = sv, prevE = ev" not in body
+    group = account_js[account_js.index("function alertPrefsGroupHTML"):
+                       account_js.index("\n  function infoRow")]
+    assert 'id="mmacc-qh-start"' in group
+    assert "data-prev=" in group
+
+
+def test_category_copy_is_plain_not_internal_jargon(account_js):
+    """REQUIRED 3: the thesis_window category is a wire key. The label the
+    customer sees must be a plain sentence, never 'thesis window' / '观点窗口'."""
+    import re
+    m = re.search(
+        r"al_cat_thes:\s*\[\s*(['\"])(.*?)\1\s*,\s*(['\"])(.*?)\3",
+        account_js,
+    )
+    assert m, "al_cat_thes STR missing"
+    en, zh = m.group(2), m.group(4)
+    assert "thesis" not in en.lower()
+    assert "观点窗口" not in zh
+    assert en[0].isupper()
+    assert zh
+
+
+def test_empty_body_400_is_plain_bilingual_and_names_alert_settings(auth, store):
+    """REQUIRED 3: empty POST 400 must be a plain EN+ZH sentence and must
+    mention the alert fields this route now accepts — never the English-only
+    machine prompt that listed only lang/theme/brain_depth."""
+    from fastapi import HTTPException
+    with pytest.raises(HTTPException) as ei:
+        account_prefs.save_prefs(account_prefs.PrefsRequest(), user=USER)
+    assert ei.value.status_code == 400
+    detail = ei.value.detail
+    assert isinstance(detail, dict)
+    en, zh = detail["en"], detail["zh"]
+    assert en[0].isupper() and en.endswith(".")
+    assert "_" not in en
+    assert "null" not in en.lower()
+    assert "brain_depth" not in en
+    assert "alert" in en.lower()
+    assert "提醒" in zh
+    assert auth.calls == []

@@ -117,6 +117,10 @@ _FIELD_ERR: dict[str, tuple[str, str]] = {
                            "该设置只有开或关两种状态。"),
 }
 _DEFAULT_ERR = ("We don't recognise that choice.", "无法识别该选项。")
+_EMPTY_BODY_ERR = (
+    "Nothing to save. Send language, theme, answer length, or an alert setting.",
+    "没有可保存的内容。请发送语言、主题、回答长度或一项提醒设置。",
+)
 
 
 def _field_error(key: str) -> dict:
@@ -172,7 +176,8 @@ def save_prefs(body: PrefsRequest, user: dict = Depends(_current_user)) -> dict:
         patch[key] = val
         response_prefs[key] = val
     if not patch:
-        raise HTTPException(400, "nothing to save (send lang, theme and/or brain_depth)")
+        en, zh = _EMPTY_BODY_ERR
+        raise HTTPException(400, detail={"en": en, "zh": zh})
 
     existing_meta = dict(user.get("user_metadata") or {})
 

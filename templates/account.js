@@ -99,7 +99,7 @@
       '暂时无法读取你的设置，因此无法显示已保存的内容。当前没有任何改动。'],
     al_what: ['What to send', '发送哪些提醒'],
     al_cat_hold: ['A position I hold moves on real news', '我持有的仓位因真实消息出现变动'],
-    al_cat_thes: ['A thesis window I’m watching opens or closes', '我关注的观点窗口打开或关闭'],
+    al_cat_thes: ['A market view I’m watching starts or ends', '我关注的市场观点开始或结束'],
     al_none: ["No alert types chosen yet — you won't get any alert emails.",
       '尚未选择提醒类型 — 你不会收到提醒邮件。'],
     al_tz: ['Your time zone', '你的时区'],
@@ -108,7 +108,7 @@
       '尚未保存 — 在你选择之前，暂时使用你浏览器的时区。'],
     al_qh: ['Quiet hours', '免打扰时段'],
     al_qh_hint: ['Nothing is sent between these times. Alerts wait and are sent when the window ends.',
-      '此时段内不发送。期间触发的提醒会等待，时段结束后补发。'],
+      '此时段内不发送。提醒会等待，时段结束后再发送。'],
     al_qh_s: ['Quiet hours start', '免打扰开始时间'],
     al_qh_e: ['Quiet hours end', '免打扰结束时间'],
     al_clear: ['Clear', '清除'],
@@ -399,6 +399,26 @@
       return '<option value="' + esc(z) + '"' + (z === sel ? ' selected' : '') + '>' + esc(_tzLabel(z)) + '</option>';
     }).join('');
   }
+  function _applySavedTz(tz) {
+    if (!tz) return;
+    var sel = E('mmacc-tz');
+    if (sel) {
+      var found = false;
+      for (var i = 0; i < sel.options.length; i++) {
+        if (sel.options[i].value === tz) { found = true; break; }
+      }
+      if (!found) {
+        var opt = document.createElement('option');
+        opt.value = tz;
+        opt.textContent = _tzLabel(tz);
+        sel.appendChild(opt);
+      }
+      sel.value = tz;
+      sel.setAttribute('data-prev', tz);
+    }
+    var hint = document.querySelector('.mmacc-hint-tz');
+    if (hint) hint.remove();
+  }
   function alertCatRow(cat, label, checked) {
     return '<div class="mmacc-row mmacc-row-toggle"><span class="mmacc-k">' + esc(label) + '</span>' +
       '<button type="button" class="mmacc-switch mmacc-switch-sm" role="switch" ' +
@@ -435,10 +455,10 @@
           '<div class="mmacc-sublabel">' + esc(T('al_qh')) + '</div>' +
           '<div class="mmacc-timepair">' +
             '<input type="time" class="mmacc-input mmacc-time" id="mmacc-qh-start" aria-label="' + esc(T('al_qh_s')) + '" ' +
-              'data-act="alert-qh" value="' + esc((qh && qh.start) || '') + '">' +
+              'data-act="alert-qh" data-prev="' + esc((qh && qh.start) || '') + '" value="' + esc((qh && qh.start) || '') + '">' +
             '<span class="mmacc-timesep">\u2192</span>' +
             '<input type="time" class="mmacc-input mmacc-time" id="mmacc-qh-end" aria-label="' + esc(T('al_qh_e')) + '" ' +
-              'data-act="alert-qh" value="' + esc((qh && qh.end) || '') + '">' +
+              'data-act="alert-qh" data-prev="' + esc((qh && qh.end) || '') + '" value="' + esc((qh && qh.end) || '') + '">' +
             '<button type="button" class="mmacc-mini" data-act="alert-qh-clear">' + esc(T('al_clear')) + '</button>' +
           '</div>' +
           '<div class="mmacc-hint">' + esc(T('al_qh_hint')) + '</div>' +
@@ -663,7 +683,9 @@
     if (g) g.setAttribute('data-on', next ? 'true' : 'false');
     var detail = E('mmacc-alert-detail');
     if (detail) detail.classList.toggle('open', next);
-    persistAlertPref('alert_email_optin', next, function () {
+    persistAlertPref('alert_email_optin', next, function (res) {
+      var prefs = (res && res.data && res.data.prefs) || {};
+      if (next && prefs.tz) _applySavedTz(prefs.tz);
       setMsg('mmacc-alert-msg', T('al_saved'), 'ok');
     }, function (res) {
       btn.setAttribute('aria-checked', was ? 'true' : 'false');
@@ -699,9 +721,12 @@
   function _sendQuietHours() {
     var s = E('mmacc-qh-start'), e2 = E('mmacc-qh-end');
     var sv = (s && s.value) || '', ev = (e2 && e2.value) || '';
-    var prevS = sv, prevE = ev;
+    var prevS = (s && (s.getAttribute('data-prev') || '')) || '';
+    var prevE = (e2 && (e2.getAttribute('data-prev') || '')) || '';
     var payload = (!sv || !ev || sv === ev) ? 'off' : { start: sv, end: ev };
     persistAlertPref('quiet_hours', payload, function () {
+      if (s) s.setAttribute('data-prev', sv);
+      if (e2) e2.setAttribute('data-prev', ev);
       var g = document.querySelector('.mmacc-alerts');
       if (g) g.setAttribute('data-quiet', (payload !== 'off') ? 'true' : 'false');
       setMsg('mmacc-alert-msg', T('al_saved'), 'ok');
