@@ -679,12 +679,24 @@ def test_build_current_omits_enforcement_noise(tmp_path):
     assert not any("enforcement" in t.lower() for t in titles)
 
 
-def _render_current_page(current, intel=None, dates=None):
+def _render_current_page(current, intel=None, dates=None, uk_desk=None, background_unavailable=False):
     from jinja2 import Environment, FileSystemLoader
 
     if intel is None:
         intel = json.loads((ROOT / "data" / "policy" / "intel.json").read_text(encoding="utf-8"))
     preds = intel.get("predictions") or []
+    if uk_desk is None:
+        uk_desk = {
+            "state": "gate_off",
+            "jurisdiction_en": "United Kingdom",
+            "jurisdiction_zh": "英国",
+            "body_en": "HM Treasury",
+            "body_zh": "英国财政部",
+            "source_label": "GOV.UK",
+            "headline": None,
+            "stance": None,
+            "model_unavailable": False,
+        }
     env = Environment(loader=FileSystemLoader(str(ROOT / "templates")), autoescape=True)
     return env.get_template("policy_watch.html.j2").render(
         intel=intel,
@@ -697,7 +709,8 @@ def _render_current_page(current, intel=None, dates=None):
         verified_en="July 13, 2026", verified_zh="2026年7月13日",
         source_links=[], featured_predictions=[], brief=brief,
         active_section="research", active_page="policy_watch",
-        lifecycle=None, current=current,
+        lifecycle=None, current=current, uk_desk=uk_desk,
+        background_unavailable=background_unavailable,
     )
 
 
