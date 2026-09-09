@@ -3654,42 +3654,42 @@ _SS_LEG_DESC: dict[tuple[str, str], dict[str, str]] = {
     # the same house form the empty-code entries use: one sentence, no code
     # token, real Chinese. ISSUER_GROUP_AMBIGUOUS is carried by two different
     # checks and each states its own fact.
-    ("R1", "SECURITY_SUPERSEDED"): {  # engine/security_state.py:452-462
+    ("R1", "SECURITY_SUPERSEDED"): {  # engine/security_state.py:451-460
         "en": "This security record is missing, or it has been replaced.",
         "zh": "该证券记录缺失，或已被替换。",
     },
-    ("R2", "IDENTITY_UNRESOLVED"): {  # engine/security_state.py:470-477
+    ("R2", "IDENTITY_UNRESOLVED"): {  # engine/security_state.py:470-475
         "en": "This security is not tied to its resolved issuer.",
         "zh": "该证券未绑定到已解析的发行主体。",
     },
-    ("R3", "ISSUER_GROUP_AMBIGUOUS"): {  # engine/security_state.py:492-501
+    ("R3", "ISSUER_GROUP_AMBIGUOUS"): {  # engine/security_state.py:489-499
         "en": "No single active issuer record binds this company and its identifier.",
         "zh": "没有唯一一条有效的发行主体记录绑定该公司及其识别码。",
     },
-    ("R4", "ISSUER_GROUP_AMBIGUOUS"): {  # engine/security_state.py:509-517
+    ("R4", "ISSUER_GROUP_AMBIGUOUS"): {  # engine/security_state.py:510-515
         "en": "This issuer currently holds more than this one security, or not this one.",
         "zh": "该发行主体当前持有的证券不止这一只，或并不包含这一只。",
     },
-    ("R5", "LISTING_KEY_INCOHERENT"): {  # engine/security_state.py:538-546
+    ("R5", "LISTING_KEY_INCOHERENT"): {  # engine/security_state.py:539-544
         "en": "The listing identifier does not map back to this same security.",
         "zh": "上市标识无法回映射到同一只证券。",
     },
-    ("R6", "IDENTITY_CORRECTED"): {  # engine/security_state.py:551-561
+    ("R6", "IDENTITY_CORRECTED"): {  # engine/security_state.py:551-559
         "en": "An issuer or security migration is on file for this name.",
         "zh": "该名称存在发行主体或证券迁移记录。",
     },
-    ("R7", "SUBJECT_NATIVE_PARITY_FAILED"): {  # engine/security_state.py:592-602
+    ("R7", "SUBJECT_NATIVE_PARITY_FAILED"): {  # engine/security_state.py:594-600
         "en": "The workspace events and disclosures do not all bind to the same "
               "company identifier.",
         "zh": "工作区的事件与披露并非全部绑定同一公司识别码。",
     },
-    ("R8", "IDENTITY_BRIDGE_DISAGREEMENT"): {  # engine/security_state.py:614-625
+    ("R8", "IDENTITY_BRIDGE_DISAGREEMENT"): {  # engine/security_state.py:616-623
         "en": "The master company identifier does not match the owner read, or a "
               "present workspace disagrees.",
         "zh": "主数据中的公司识别码与所有者读数不一致，或现有工作区与之不符。",
     },
     # Ruled by the seat, round 5.
-    ("R9", "CORROBORATION_DIVERGENT"): {  # engine/security_state.py:648-657
+    ("R9", "CORROBORATION_DIVERGENT"): {  # engine/security_state.py:650-656
         "en": "The workspace listing does not agree with this security's current "
               "ticker and venue.",
         "zh": "工作区上市记录与该证券当前的代码及交易场所不一致。",
