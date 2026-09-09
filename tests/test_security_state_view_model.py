@@ -432,7 +432,7 @@ def _contract(**over) -> dict:
                 "check": "R1",
                 "description": "security_master row exists, security_state/superseded_by both null",
                 "artifact": "data/reference/security_master.parquet",
-                "reader": "scripts/build_stock_library.py::_read_security_state_identity_rows",
+                "reader": "scripts/security_state_producer.py::_read_security_state_identity_rows",
                 "values_read": [
                     {"field": "row_present", "value": True},
                     {"field": "security_state", "value": None},
@@ -1128,7 +1128,7 @@ def test_every_compile_path_refusal_code_has_house_copy_with_no_prettify_fallbac
     assert codes == {
         "SECURITY_SUPERSEDED", "IDENTITY_UNRESOLVED", "ISSUER_GROUP_AMBIGUOUS",
         "LISTING_KEY_INCOHERENT", "IDENTITY_CORRECTED", "SUBJECT_NATIVE_PARITY_FAILED",
-        "IDENTITY_BRIDGE_DISAGREEMENT", "COMPILER_FAILURE",
+        "IDENTITY_BRIDGE_DISAGREEMENT", "COMPILER_FAILURE", "OWNER_IDENTITY_UNREAD",
     }, (
         f"engine/security_state.py's emitted refusal-code set changed: {sorted(codes)} — "
         "this test's extraction regex and its house-copy coverage below must be updated together"
@@ -1217,7 +1217,7 @@ def test_m1_shell_gate_description_renders_a_real_bilingual_sentence() -> None:
             "description": "owner-identity batch was unavailable this cycle; subject is the "
             "frozen pinned allowlist mapping for this ticker, never a live owner read",
             "artifact": "SecurityStateSubject (frozen pinned allowlist config, not a producer owner receipt)",
-            "reader": "scripts/build_stock_library.py::_read_security_state_identity_rows",
+            "reader": "scripts/security_state_producer.py::_read_security_state_identity_rows",
             "values_read": [{"field": "subject_ticker_display", "value": "MSFT"}],
             "result": "fail", "code": "IDENTITY_UNRESOLVED",
         }],
