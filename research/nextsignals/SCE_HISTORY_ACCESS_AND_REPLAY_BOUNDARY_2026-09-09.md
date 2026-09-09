@@ -8,7 +8,7 @@ Chairman Chris directly asked Sol to continue the nextSignals/Systematic Core re
 
 Protected procedure: `mastermindx-market-intelligence/Mastermind@686af274d8ae1558f3f3ae35e0b3aae68be80a01`, Sol Skillpack 1.0.1, bootstrap major 1. Macro records base: `8e2986c86cae763f64cedeeabc8e9bed851cc28a`.
 
-## What was actually verified on 2026-09-09
+## What was initially verified on 2026-09-09
 
 The existing `engine.thetadata_store.resolve_thetadata_store(required=True, purpose=...)` successfully resolved the canonical store on its existing host. Metadata reads confirmed SPY and XLE EOD, open-interest and Greeks files for 2023, 2024, 2025 and 2026. GLD was absent from the per-root manifest and from all three corresponding stored root directories at that observation.
 
@@ -34,12 +34,32 @@ Earlier simple moving-average and fixed dual-KAMA probes do not reproduce the fu
 
 Use the existing options source, episode/campaign evidence and research owners. Book state and economic accounting must respect the existing Portfolio owner. No second Terminal, raw-options store, lifecycle, issuance queue, signal authority or portfolio control plane is commissioned here.
 
+## Initial continuation, preserved as history
+
+The initial next action was a bounded, timestamp-preserving replay of the disclosed XLE August entry/exit episode and a GLD episode, retaining instrument assumptions, bid/ask, quote age, conditions, sizes, clocks, marks, costs, cash and missingness. The update below supersedes that access/proof instruction only to the extent actually completed. The contracts remain investigative assumptions, not identified creator contracts.
+
+## Timestamp-preserving continuation update, 2026-09-09
+
+The existing Terminal supplied all 15 expected morning and afternoon observations for the selected XLE episode. A one-contract funded quote-based accounting scenario now preserves every sampled session, costs, cash income and daily open-position valuation. A separate narrow tick-window read supports the chosen entry quote across its returned subsequent updates. These observations improve the price assumption; they do not prove an actual fill, complete exchange sequence, deeper liquidity or the creator's ledger.
+
+For the selected GLD episode, both fixed-time quote panels returned 8 of 9 expected sessions. The missing session remained unavailable in a separate single-day at-time request and a bounded historical-quote window. A historical EOD record for that same contract/date did exist. This is therefore an endpoint/time-resolution coverage disagreement, not proof that the contract had no data that day. The EOD record's creation time and last-trade time do not establish the timestamp of its bid/ask. No EOD value was silently substituted for the missing fixed-time quote, and no complete GLD daily maximum drawdown was claimed.
+
+A matched-clock underlying-stock quote request was refused with a stock-subscription entitlement response even though options history remained accessible. The existing account's options access must not be generalized into historical stock-quote entitlement. No subscription purchase, venue substitution, access bypass or alternate collector was attempted.
+
+The local research code now distinguishes successful numerical optimization from a hypothesis that fits the original image-reading bands. Conditional fits compare constant core inventory plus the same investigative long calls under daily marking and cost-held/exit-recognized views. A cost-held existence witness is not proof of the creator's accounting, instruments or strategy. Estimated quantities also do not prove execution capacity: displayed top-of-book size is a limited observation, not total market depth or a permanent market-capacity limit.
+
+The expanded exposure examination preserves engineering-band uncertainty. It supports substantially reduced SPY-equivalent exposure in the March defensive segment, but does not identify an exact one-third rule or prove the first de-risk magnitude from the image alone. Point estimates must not become recovered settings.
+
+Local synthetic tests cover clocks, expiry, identity, null validity, missing entry-session marks, funding, quote sizes, fees, future-data isolation, image-fit feasibility and exposure intervals. These are private research-code tests, not this records PR's source CI and not strategy validation.
+
 ## Exact next action
 
-Using the existing source owner and resolver, complete a bounded, timestamp-preserving replay of the disclosed XLE August entry/exit episode and a GLD episode. Retain the exact contract-selection assumption, bid/ask, quote age, condition, sizes, decision timestamp, next executable timestamp, open-position marks, commissions, cash returns and missing-data behavior. Compare daily marked-to-market and realized-only displays for the same funded positions. Do not assume the selected investigative contracts were the creator's contracts.
+The research owner should resolve the selected GLD fixed-time coverage discrepancy through the existing data source owner, preserving the failed requests and the distinct EOD observation. Do not fill the gap with a trade close, EOD midpoint, a later quote or a different contract and call the original fixed-time replay complete.
 
-If source timestamps or executable quote coverage are unavailable, report that exact missing input. Do not substitute synthetic option history, a zero trade close, or an EOD midpoint and label it an actual fill. Any permanent GLD cache/universe change belongs to the source owner's separately scoped implementation, not this access proof.
+Independently, continue identifying core-state transitions and overlay eligibility/exits from versioned public observations. Price-path resemblance and a successful accounting witness are not enough: recover a reproducible rule and test it with one funded daily-marked book, explicit contract selection, executable-time assumptions, costs and missingness. The remaining question is mechanism identification and validation, not whether historical options data can be accessed at all.
+
+Any permanent GLD cache/universe change remains the source owner's separately scoped implementation. No source-cadence or AD-1T1/AD-1T2 state is modified by this record.
 
 ## Acceptance
 
-The continuation is research-complete only when the tested episode has a reproducible funded accounting path and its unresolved assumptions are explicit. Neither this record, successful access, source CI nor a merge establishes SCE replication, statistically durable alpha, production readiness or superiority.
+The bounded XLE accounting scenario is complete with its declared historical-quote assumptions. The GLD fixed-time scenario and full SCE reconstruction remain PARTIAL. Neither this record, successful access, local tests, source CI nor a merge establishes statistically durable alpha, production readiness or superiority. Full final acceptance still requires a frozen specification, economic replay, adversarial validation and forward evidence.
