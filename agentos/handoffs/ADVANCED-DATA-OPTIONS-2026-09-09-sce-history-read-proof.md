@@ -4,92 +4,95 @@ session: sol/sce-data-proof-records-20260909
 model: sol
 ended_because: complete
 mission: >-
-  Preserve the SCE research program's bounded source, accounting and rule-identification
-  progress without changing source ownership, workstream lifecycle state, runtime or
-  trading authority. Complete refers to these recorded subtasks, not the SCE program.
+  Preserve the bounded SCE source, accounting and mechanism-research progress while
+  leaving the full program PARTIAL and existing source/runtime ownership unchanged.
+  Complete refers only to the recorded research subtasks, not product or alpha acceptance.
 state_before: >-
-  The research session had daily-price experiments and later a timestamped XLE
-  example, but had not compared paired payoff constructions or recovered the
-  published defensive-threshold history as an intermediate model constraint.
+  Earlier native reads proved bounded stored-history and quote access; later research
+  supplied XLE accounting examples, a paired payoff probe and an August threshold path.
+  Exact core and overlay rules remained unidentified.
 changed:
   - path: research/nextsignals/SCE_HISTORY_ACCESS_AND_REPLAY_BOUNDARY_2026-09-09.md
-    what: Preserve source reads, bounded accounting, version-specific rule constraints, threshold extraction and exact continuation.
+    what: Retain the earlier dated access, accounting and version-specific threshold evidence.
+  - path: research/nextsignals/SCE_V6_INITIALIZATION_AND_VALUE_STATE_2026-09-09.md
+    what: Record initialization falsifiers, clock-safe synthetic value-state consumption and the new current source gate.
   - path: agentos/discoveries/DSC-SCE-THETA-HISTORY-ACCESS-AND-GLD-CACHE-GAP.md
-    what: Preserve the initial dated GLD cache-versus-vendor-access distinction without treating it as full coverage.
+    what: Preserve the original dated cache-versus-vendor observation; it is not current liveness.
 verified:
-  - claim: The canonical resolver found SPY and XLE stored historical options tiers.
-    command: resolve_thetadata_store plus ParquetFile metadata and schema reads for 2023-2026.
-    result: Both roots had EOD/OI/Greeks files; original quote timing fields were not in normalized EOD.
-  - claim: GLD stored-history absence did not establish a general vendor access failure.
-    command: Manifest/directory census and bounded existing-Terminal historical GLD EOD GET.
-    result: GLD absent in the checked store; the bounded vendor request returned HTTP 200.
-  - claim: The selected XLE long-call and paired-spread probes retain a complete fixed-time quote panel and funded research accounting.
-    command: Existing-Terminal at-time quote reads, local identity/clock/size audit and one-contract replay.
-    result: Fifteen expected afternoon sessions present for both legs; cash, fees and marks preserved; not actual fills or creator positions.
-  - claim: The selected GLD gap is an inventory-versus-quote-payload discrepancy, not demonstrated total contract-day data absence.
-    command: Quote-date inventory, fixed-time and bounded historical-quote reads, and separate same-date EOD read.
-    result: Inventory lists the date and EOD exists; the required bounded quote payload remains unavailable and was not replaced.
-  - claim: Versioned public images constrain the older entry/exit architecture and defensive threshold.
-    command: Public creator post/image reads; 24-point raster extraction with six gaps; 26 fixed direct-indicator and two inverse checks.
-    result: Printed threshold and extracted endpoint agree; tested proxy formulas do not identify the printed final threshold; no portfolio-return claim.
-  - claim: The research adapters passed local arithmetic, clock, funding and missingness checks.
-    command: V5 python -m pytest -q tests; separately rerun inherited V4 tests.
-    result: Thirty-three V5 and forty-six inherited tests passed; not this PR's source CI or evidence of alpha.
+  - claim: Earlier bounded native reads found stored SPY/XLE tiers and historical XLE/GLD vendor examples.
+    command: Previously retained canonical resolver, parquet metadata and bounded existing-Terminal requests.
+    result: Historical evidence retained; not generalized into present access or complete contract/date coverage.
+  - claim: The selected XLE research quotes support a bounded funded accounting example and paired payoff diagnostic.
+    command: Retained fixed-time quote audits and private one-contract accounting tests.
+    result: Fifteen expected afternoon observations retained for the investigative legs; not actual creator positions or fills.
+  - claim: The close endpoint agreement of one filter candidate depends materially on initialization.
+    command: Fixed-coefficient historical warm-up plus affine common-seed feasibility tests against retained runway observations.
+    result: Historical warm-up changes the endpoint; no tested constant-EMA grid point fits the full uncensored path under the declared vertical budgets.
+  - claim: A stateless original value-state consumer works on explicit synthetic completed-profile facts.
+    command: V6 profile_replay_cli and tests for clocks, availability, revisions, retraction, nulls and grid identity.
+    result: Qualified or unavailable research observations only; no real profile feed, producer, position or trading authority.
+  - claim: A fresh canonical stored-data read is blocked by unavailable external-volume targets.
+    command: Existing resolve_thetadata_store call, bounded native path/symlink metadata and intended-volume stat.
+    result: Root and manifest present; EOD/OI/Greeks external targets unavailable. No mount, path override or source restart attempted.
+  - claim: V6 research adapters pass their local behavioral tests.
+    command: python -m pytest -q tests in the private V6 research package.
+    result: 87 passed; not this records PR's CI, empirical strategy validation or production proof.
 unverified:
-  - claim: All SCE options episodes can be replicated at executable point-in-time quotes.
-    what_would_verify: Complete timestamp-preserving coverage and funded daily-MTM replay for the exact tested contracts and dates.
-  - claim: The full SCE transition, eligibility, exit and sizing mechanism is identified and robust.
-    what_would_verify: Version-specific observable-rule reconciliation, a frozen complete specification, adverse replay and forward validation.
+  - claim: The current external source volume has been restored.
+    what_would_verify: Existing source/host owner reconciles the intended volume and canonical resolver succeeds without a parallel store.
+  - claim: The real value-profile input is suitable for point-in-time exit research.
+    what_would_verify: Original available-at evidence, complete session identity and stable comparable profile grids from the existing data owner.
+  - claim: The descriptive options-context feature has a measured forward relationship.
+    what_would_verify: Qualified source recovery followed by the frozen, maturity- and split-aware research protocol; population and association were not run.
+  - claim: The full SCE transition, entry, exit and sizing mechanism is identified and robust.
+    what_would_verify: Independent version-matched observations, frozen specification, funded adverse replay and forward evidence.
 unresolved:
-  - The GLD fixed-time payload gap and full stored history remain unresolved; inventory presence does not close the gap.
-  - Historical stock-quote entitlement is distinct from the verified options access.
-  - Published overlay accounting, actual instruments, exits, sizing and historical version consistency remain unidentified.
-  - The broad multi-case portfolio/P&L calculation and later pixel-refinement phase were tool-blocked; no result is claimed.
+  - The new external-volume access failure has no established cause or recovery worker assignment.
+  - The older selected GLD fixed-time payload gap remains distinct from the current volume failure.
+  - Historical stock-quote entitlement remains distinct from earlier options access.
+  - Current historical data, image-fit seeds and later model versions are not original point-in-time model state.
+  - A refused remote append left an unimported incomplete research file; no empirical options population was extracted.
 next_actions:
-  - Sol tests a bounded version-specific transition formulation against the recovered threshold series and printed anchor, not portfolio CAGR.
-  - Separately specify entry eligibility and value-migration semantics; do not rename fixed holding/trailing controls as recovered auction rules.
-  - The existing source owner reconciles the GLD inventory/payload discrepancy in parallel without holding the rest of the research idle.
+  - The existing source/host owner reconciles the intended external volume and proves the canonical resolver; do not infer recovery from an observation-only notification.
+  - Sol obtains a source-qualified real profile pair for a version-matched transition and tests the stateless research consumer without outcome fitting.
+  - Seek a second independently observed numerical threshold and initial-state convention before declaring a core formula recovered.
 do_not_redo:
-  - Do not repeat the premise that web Sol lacks authorized host access.
-  - Do not infer vendor-wide GLD failure from an absent local root or one fixed-time gap.
-  - Do not repeat completed XLE access proofs merely to show activity; use retained fixtures and tests.
-  - Do not add watch-only VWAP or volatility-term-structure panels as portfolio gates.
-  - Do not bypass a blocked research operation through another tool or represent prepared code as an executed sweep.
-  - Do not start another Terminal, raw-options store or lifecycle; this record does not alter AD state.
+  - Do not repeat completed XLE access probes merely to show activity; retained examples remain useful historical evidence.
+  - Do not equate an intact old manifest with current source access or infer data destruction from an absent mount.
+  - Do not bypass a blocked research operation through another tool or finish the refused remote append through another writer.
+  - Do not silently treat daily-bar profile proxies as traded-volume/TPO input or chart-seeded filters as historically generated rules.
+  - Do not promote watch-only context, create another Terminal/store/queue/lifecycle, or alter AD acceptance from this record.
 danger_areas:
-  - EOD creation/last-trade timestamps do not establish bid/ask timing; zero trade close may mean no trade.
-  - Related June/July/August models are not identified as unchanged September Systematic Core code.
-  - Raster centers and tolerance assumptions are not exact model outputs or statistical confidence intervals.
-  - A higher return on option premium is not necessarily higher dollar alpha or equal market exposure.
-  - Package execution, assignment and deeper liquidity are not established by leg quotes or displayed size.
-  - This repository is public; raw licensed data and private host/session identifiers must not be committed.
+  - Same premium is not same delta/gamma; retained prior-day Greeks with next-day outlays are not contemporaneous matched-risk evidence.
+  - XLE corporate-action-crossing labels require explicit adjustment semantics or exclusion; immature and overlapping labels cannot inflate evidence.
+  - Unknown availability, retraction and profile-grid changes must remain unavailable, not silently become hold or exit decisions.
+  - This repository is public; raw licensed observations and private host/session paths remain in the Chairman's research package only.
 discoveries:
   - DSC:SCE-THETA-HISTORY-ACCESS-AND-GLD-CACHE-GAP
 ---
 
 ## State
 
-Bounded source-access and XLE long-call/paired-spread research-accounting subtasks
-are complete with declared assumptions. GLD fixed-time coverage and full SCE
-reconstruction remain PARTIAL. This is organizational continuity, not an Executive
-job, source-workstream takeover, worker commission or production completion.
+The full SCE program remains PARTIAL. Earlier bounded source-access/accounting
+subtasks retain their dated evidence; a newer native read found the intended
+external store targets unavailable. That is a current dependency failure, not a
+retroactive deletion of AD-1T1 proof or a claim of vendor revocation.
 
-## What remains
+## Research continuation
 
-The source record `research/nextsignals/SCE_HISTORY_ACCESS_AND_REPLAY_BOUNDARY_2026-09-09.md`
-contains retained history and the current research/source split. The new primary
-constraint is a dated defensive-threshold path, not another fitted equity curve.
-Local tests and successful quote retrieval do not prove the creator's strategy.
+Read `research/nextsignals/SCE_V6_INITIALIZATION_AND_VALUE_STATE_2026-09-09.md`
+for the new initialization and profile-consumption boundaries. Retained-input
+mechanism work can proceed independently of the source-volume reconciliation.
+A synthetic consumer is not a production profile pipeline or recovered auction rule.
 
-## Dangers
+## Source continuation
 
-The paired spread's relative advantage changed with the chosen exit horizon, and
-its dollar P&L was not higher in the tested episode. Do not generalize a terminal
-premium-return ratio into a universal instrument selector. Preserve causal clocks,
-missing quotes and source-generation distinctions before evaluating a full book.
+The private CEO control-room message was an observation-only FYI. No worker,
+watcher, mount, collector restart, source replacement or recovery START was armed.
+The canonical host/source owner keeps the recovery scope. Current GitHub CI and
+merge state must be read separately before calling these source records accepted.
 
 ## Outside scope
 
-No collector, model, scorer, portfolio, runtime, authentication, subscription or
-production changes. No independent trading edge, full reconstruction or superiority
-is claimed. Public record CI and merge remain separate release obligations.
+No production, trading, model promotion, runtime lifecycle, subscription or
+credential change. No independent alpha or full nextSignals replication is claimed.
