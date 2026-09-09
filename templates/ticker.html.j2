@@ -1083,7 +1083,7 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
 <section class="mod ss-mod rv" id="security-state" aria-labelledby="ss-title">
   <div class="mod-hd">
     <h2 id="ss-title">{{ t('Security state', '证券状态') }}</h2>
-    <span class="hint">{{ t('The panels below.', '以下面板。') }}</span>
+    <span class="hint">{{ t(ss.panel_hint.en, ss.panel_hint.zh) }}</span>
   </div>
   <p class="ss-sub">{{ t('The panels below — what each one rests on, and how old it is. Use it to check the rest of the page. Not a buy or sell signal, and never blended into a score.', '以下面板 — 每项的依据来源与时效。可用于核对本页其余内容。不构成买卖信号，也不会合并为任何评分。') }}</p>
 
@@ -1104,9 +1104,11 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
     <h3 class="ss-axis ss-b1b-h"><span>{{ t('Overview', '概览') }}</span><span class="ss-chip">{{ t(ss.degradation.en, ss.degradation.zh) }}</span></h3>
     <p class="ss-why">{{ t('What this security looks like right now, at a glance.', '这只证券当前状况的一目了然总览。') }}</p>
     {% if ss.overview.state_summary %}<p class="ss-head">{{ t(ss.overview.state_summary.en, ss.overview.state_summary.zh) }}</p>{% endif %}
+    {# One sentence per population, worded once in the projection so EN and ZH
+       say the same thing about the same two counts. #}
     <div class="ss-note"><b>{{ t('Reads available', '可用读数') }}</b>
-      {% if ss.coverage.req_total is not none %}<span class="v">{{ ss.coverage.req_avail if ss.coverage.req_avail is not none else '—' }} / {{ ss.coverage.req_total }} {{ t('required, current', '项必需读数（当前）') }}</span>{% endif %}
-      {% if ss.coverage.opt_total is not none %}<span class="v">{{ ss.coverage.opt_avail if ss.coverage.opt_avail is not none else '—' }} / {{ ss.coverage.opt_total }} {{ t('optional, current', '项可选读数（当前）') }}</span>{% endif %}
+      {% if ss.coverage.req_sentence %}<span class="v">{{ t(ss.coverage.req_sentence.en, ss.coverage.req_sentence.zh) }}</span>{% endif %}
+      {% if ss.coverage.opt_sentence %}<span class="v">{{ t(ss.coverage.opt_sentence.en, ss.coverage.opt_sentence.zh) }}</span>{% endif %}
     </div>
     {% if ss.personal_impact %}
     <div class="ss-note"><b>{{ t(ss.personal_impact.title_en, ss.personal_impact.title_zh) }}</b><span class="v">{{ t(ss.personal_impact.headline.en, ss.personal_impact.headline.zh) }}</span>
@@ -1120,10 +1122,12 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
     <article class="ss-cell ss-t-{{ a.tone }} ss-r-{{ a.rail }}{{ ' is-ok' if a.ok }}">
       <h3 class="ss-axis ss-b1b-h"><span>{{ t(a.title_en, a.title_zh) }}</span><span class="ss-chip">{{ t(a.cov_en, a.cov_zh) }}</span></h3>
       {# State sentence prints once on the surface: Overview carries it, so
-         the state card never reprints it (design system §9.5). Overview reads
-         the same headline object this loop reads, so there is no case in
-         which the two would differ. #}
-      {% if a.headline and a.key != 'state' %}<p class="ss-head">{{ t(a.headline.en, a.headline.zh) }}</p>{% endif %}
+         the state card drops it (design system §9.5). Overview reads the same
+         headline object this loop reads, so there is no case in which the two
+         would differ. The exception is a stance whose house sentence has no
+         explanation half — with no clause, dropping the headline would leave a
+         card of heading and chip with no prose at all. #}
+      {% if a.headline and (a.key != 'state' or not a.clause) %}<p class="ss-head">{{ t(a.headline.en, a.headline.zh) }}</p>{% endif %}
       {% if a.clause %}<p class="ss-body">{{ t(a.clause.en, a.clause.zh) }}</p>{% endif %}
       {% if a.why %}<p class="{{ 'ss-why' if a.clause else 'ss-body' }}">{{ t(a.why.en, a.why.zh) }}</p>{% endif %}
 
@@ -1184,7 +1188,12 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
   <article class="ss-cell ss-t-{{ ss.identity.tone }} ss-r-solid{{ ' is-ok' if ss.identity.ok }}">
     <h3 class="ss-axis ss-b1b-h"><span>{{ t('Owner & model receipts', '所有者与模型凭证') }}</span><span class="ss-chip">{{ t(ss.identity.en, ss.identity.zh) }}</span></h3>
     <p class="ss-why">{{ t('Who read this, when, and the exact fingerprint of what was read.', '谁读取了这些数据、何时读取，以及所读内容的确切指纹。') }}</p>
-    {% for lg in ss.identity.legs %}
+    {# The receipt rows and clocks come from `owner_receipts`, the path the
+       frozen packet names for this panel; the drilldown dialog keeps reading
+       `identity` for the raw fields. `owner_receipts.legs` IS `identity.legs`
+       — the same list object, never a second composition (pinned by
+       test_owner_model_receipts_surfaces_identity_legs_asof_and_content_sha256). #}
+    {% for lg in ss.owner_receipts.legs %}
     {# The engine's own verdict for this leg is never edited: it rides the
        data attribute even where the visible label is the house's hedge. #}
     <div class="ss-chk ss-t-{{ lg.tone }}" data-ss-result="{{ lg.result }}">
@@ -1198,14 +1207,14 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
       {% if lg.desc_en and lg.desc_zh and lg.desc_en != lg.desc_zh %}<p class="ss-chk-d">{{ t(lg.desc_en, lg.desc_zh) }}</p>{% endif %}
     </div>
     {% endfor %}
-    {% if ss.generated_at %}
-    <div class="ss-note"><b>{{ t('Generated', '生成时间') }}</b><span class="v">{{ ss.generated_at }}</span></div>
+    {% if ss.owner_receipts.generated_at %}
+    <div class="ss-note"><b>{{ t('Generated', '生成时间') }}</b><span class="v">{{ ss.owner_receipts.generated_at }}</span></div>
     {% endif %}
-    {% if ss.compiled_at %}
-    <div class="ss-note"><b>{{ t('Compiled', '编排时间') }}</b><span class="v">{{ ss.compiled_at }}</span></div>
+    {% if ss.owner_receipts.compiled_at %}
+    <div class="ss-note"><b>{{ t('Compiled', '编排时间') }}</b><span class="v">{{ ss.owner_receipts.compiled_at }}</span></div>
     {% endif %}
-    {% if ss.content_sha256 %}
-    <div class="ss-note"><b>{{ t('Content fingerprint', '内容指纹') }}</b><span class="v ss-id">{{ ss.content_sha256 }}</span></div>
+    {% if ss.owner_receipts.content_sha256 %}
+    <div class="ss-note"><b>{{ t('Content fingerprint', '内容指纹') }}</b><span class="v ss-id">{{ ss.owner_receipts.content_sha256 }}</span></div>
     {% endif %}
   </article>
 </section>

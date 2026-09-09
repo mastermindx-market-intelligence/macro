@@ -3624,9 +3624,16 @@ _SS_LEG_DESC: dict[tuple[str, str], dict[str, str]] = {
         "en": "Workspace events and disclosures, when present, bind to the same company identifier.",
         "zh": "若有工作区，其事件与披露均绑定同一公司识别码。",
     },
+    # `r8_pass` is `master_cik == subject.issuer_cik and (not
+    # workspace_available or filing_cik_ok)` — the workspace conjunct is
+    # vacuous whenever no workspace was loaded this cycle, and on that path
+    # the R9 row on this same panel says no workspace listing was available
+    # to compare. So the workspace half is conditional, in both languages,
+    # exactly as ("R7", "") already words it.
     ("R8", ""): {
-        "en": "The master company identifier matches the owner read, and a present workspace agrees.",
-        "zh": "主数据中的公司识别码与所有者读数一致，且现有工作区也一致。",
+        "en": "The master company identifier matches the owner read; "
+              "if a workspace is present, it agrees too.",
+        "zh": "主数据中的公司识别码与所有者读数一致；若有工作区，工作区亦一致。",
     },
     ("R9", ""): {
         "en": "The workspace primary listing agrees with this security's current ticker and venue.",
@@ -3637,6 +3644,55 @@ _SS_LEG_DESC: dict[tuple[str, str], dict[str, str]] = {
         "pinned-allowlist mapping for this ticker, not a live owner read.",
         "zh": "本周期所有者身份批处理不可用；本证券主体为该股票代码的冻结准入映射，"
         "并非实时读取的所有者身份数据。",
+    },
+    # ── B-F06-3 round-5 R3: the failure sentences ──────────────────────────
+    # Promoting the receipt chain to an always-visible, equal-weight panel put
+    # the failure rows where the reader most needs the explanation, and an
+    # unmapped code rendered as an id and a status word and nothing else. Each
+    # pair below is the plain-words negation of the engine's own leg
+    # description for that check (engine/security_state.py, cited per row), in
+    # the same house form the empty-code entries use: one sentence, no code
+    # token, real Chinese. ISSUER_GROUP_AMBIGUOUS is carried by two different
+    # checks and each states its own fact.
+    ("R1", "SECURITY_SUPERSEDED"): {  # engine/security_state.py:452-462
+        "en": "This security record is missing, or it has been replaced.",
+        "zh": "该证券记录缺失，或已被替换。",
+    },
+    ("R2", "IDENTITY_UNRESOLVED"): {  # engine/security_state.py:470-477
+        "en": "This security is not tied to its resolved issuer.",
+        "zh": "该证券未绑定到已解析的发行主体。",
+    },
+    ("R3", "ISSUER_GROUP_AMBIGUOUS"): {  # engine/security_state.py:492-501
+        "en": "No single active issuer record binds this company and its identifier.",
+        "zh": "没有唯一一条有效的发行主体记录绑定该公司及其识别码。",
+    },
+    ("R4", "ISSUER_GROUP_AMBIGUOUS"): {  # engine/security_state.py:509-517
+        "en": "This issuer currently holds more than this one security, or not this one.",
+        "zh": "该发行主体当前持有的证券不止这一只，或并不包含这一只。",
+    },
+    ("R5", "LISTING_KEY_INCOHERENT"): {  # engine/security_state.py:538-546
+        "en": "The listing identifier does not map back to this same security.",
+        "zh": "上市标识无法回映射到同一只证券。",
+    },
+    ("R6", "IDENTITY_CORRECTED"): {  # engine/security_state.py:551-561
+        "en": "An issuer or security migration is on file for this name.",
+        "zh": "该名称存在发行主体或证券迁移记录。",
+    },
+    ("R7", "SUBJECT_NATIVE_PARITY_FAILED"): {  # engine/security_state.py:592-602
+        "en": "The workspace events and disclosures do not all bind to the same "
+              "company identifier.",
+        "zh": "工作区的事件与披露并非全部绑定同一公司识别码。",
+    },
+    ("R8", "IDENTITY_BRIDGE_DISAGREEMENT"): {  # engine/security_state.py:614-625
+        "en": "The master company identifier does not match the owner read, or a "
+              "present workspace disagrees.",
+        "zh": "主数据中的公司识别码与所有者读数不一致，或现有工作区与之不符。",
+    },
+    # Ruled by the seat, round 5.
+    ("R9", "CORROBORATION_DIVERGENT"): {  # engine/security_state.py:648-657
+        "en": "The workspace listing does not agree with this security's current "
+              "ticker and venue.",
+        "zh": "工作区上市记录与该证券当前的代码及交易场所不一致。",
     },
 }
 
@@ -3922,6 +3978,24 @@ def _ss_read_value(seq: Any, field: str) -> str | None:
             return ""
         return _ss_value(item.get("value", item.get("v")))
     return None
+
+
+def _ss_coverage_sentence(avail: Any, total: Any, *, required: bool) -> dict[str, str] | None:
+    """One coverage count, as the same sentence in both languages.
+
+    `avail` may be absent where `total` is known — the contract answers the two
+    questions separately — so the unknown half prints as an em dash rather than
+    a zero, which would be a claim the object never made.
+    """
+    if total is None:
+        return None
+    n = "—" if avail is None else _ss_value(avail)
+    m = _ss_value(total)
+    if required:
+        return {"en": f"{n} of {m} required reads are current.",
+                "zh": f"{m} 项必需读数中，{n} 项为当前数据。"}
+    return {"en": f"{n} of {m} optional reads are current.",
+            "zh": f"{m} 项可选读数中，{n} 项为当前数据。"}
 
 
 def _ss_split_lead(en: str, zh: str) -> tuple[dict[str, str], dict[str, str] | None]:
@@ -4382,6 +4456,12 @@ def build_security_state(blob: dict | None) -> dict | None:
             if desc_house and not leg_code:
                 corroboration = (_ss_read_value(lg.get("values_read"), "corroboration_state")
                                  if leg_check == "R9" else None)
+                # "Recorded, but with no value echoed" is still nothing the
+                # page can compare against, so it takes the same branch as
+                # "not recorded at all" rather than falling through to the
+                # affirmative agreement copy.
+                if corroboration is not None and not corroboration.strip():
+                    corroboration = None
                 if leg_check == "R9" and (corroboration or "").strip().upper() == "UNAVAILABLE":
                     desc_en, desc_zh = _SS_LEG_R9_UNAVAILABLE["en"], _SS_LEG_R9_UNAVAILABLE["zh"]
                     res_en, res_zh = _SS_RESULT_NOT_CHECKED["en"], _SS_RESULT_NOT_CHECKED["zh"]
@@ -4507,6 +4587,16 @@ def build_security_state(blob: dict | None) -> dict | None:
             "opt_avail": cov_block.get("optional_legs_available"),
             "opt_nonblock": cov_block.get("optional_legs_nonblocking"),
         }
+        # The row used to print "2 / 2 required, current" in English against a
+        # full Chinese noun phrase — a comma-joined fragment whose "current"
+        # modified nothing the reader could name. Both languages now get the
+        # same sentence, composed once here from the same two counts.
+        coverage["req_sentence"] = _ss_coverage_sentence(
+            coverage["req_avail"], coverage["req_total"], required=True,
+        )
+        coverage["opt_sentence"] = _ss_coverage_sentence(
+            coverage["opt_avail"], coverage["opt_total"], required=False,
+        )
         state_axis = next((a for a in axes if a["key"] == "state"), None)
         overview = {
             "coverage": coverage,
@@ -4514,6 +4604,14 @@ def build_security_state(blob: dict | None) -> dict | None:
             "state_summary": (state_axis or {}).get("headline"),
             "personal_impact": personal_impact,
         }
+        # The eyebrow is a count of this section's own panels, computed from
+        # the list the template lays out — Overview, the axis cards, Evidence,
+        # and Owner & model receipts — so it can never name a number the same
+        # screen contradicts. Six keeps the base's spelled-out wording.
+        panel_count = 1 + len(axes) + 1 + 1
+        panel_hint = ({"en": "six reads", "zh": "六项读数"} if panel_count == 6
+                      else {"en": f"{panel_count} reads", "zh": f"{panel_count} 项读数"})
+
         owner_receipts = {
             "legs": id_legs,
             "generated_at": generated_at,
@@ -4536,6 +4634,8 @@ def build_security_state(blob: dict | None) -> dict | None:
             "coverage_state": _clean_str(cov_block.get("overall_state") or ""),
             "coverage": coverage,
             "axes": axes,
+            "panel_count": panel_count,
+            "panel_hint": panel_hint,
             "personal_impact": personal_impact,
             "overview": overview,
             "owner_receipts": owner_receipts,
