@@ -129,6 +129,9 @@
   {% if not curve.ok %}
   <p class="mq-curve-null">{{ t(curve.null_panel.en, curve.null_panel.zh) }}</p>
   {% else %}
+  {% if curve.first_nightly %}
+  <p class="mq-curve-null">{{ t(curve.first_nightly.en, curve.first_nightly.zh) }}</p>
+  {% endif %}
   <div class="mq-curve-chart">
     <div class="mq-curve-plot">
       <svg viewBox="0 0 {{ curve.chart.width }} {{ curve.chart.height }}" role="img"

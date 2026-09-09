@@ -91,6 +91,8 @@ SHAPE_UNSTATED_EN = (
 SHAPE_UNSTATED_ZH = "今日不判断曲线形态：关键期限缺少读数。"
 NULL_PANEL_EN = "The curve panel needs the Treasury data from tonight, which did not arrive."
 NULL_PANEL_ZH = "曲线面板需要当晚的美债数据，但数据未能到达。"
+NULL_NOT_DRAWN_EN = "The curve is not drawn: not enough maturities have a reading."
+NULL_NOT_DRAWN_ZH = "曲线未画出：有读数的期限不足。"
 NULL_FIRST_NIGHTLY_EN = (
     "Today's curve is shown alone: no earlier curve is on file to compare it with."
 )
@@ -638,11 +640,13 @@ def test_9_whole_panel_honest_null_when_snapshot_incomplete() -> None:
     hero = _hero(empty)
     assert hero["ok"] is False
     html = _render_panel(hero)
-    # Default fixture availability is CURRENT, so this is the first-nightly
-    # null, not the did-not-arrive sentence. autoescape turns the apostrophe
-    # into &#39;; the words still have to land.
-    assert "no earlier curve is on file" in html
-    assert NULL_FIRST_NIGHTLY_ZH in html
+    # Default fixture availability is CURRENT, but the panel is not drawn
+    # (zero tenors). The copy must not claim today's curve is shown.
+    assert NULL_NOT_DRAWN_EN in html
+    assert NULL_NOT_DRAWN_ZH in html
+    assert NULL_FIRST_NIGHTLY_EN not in html
+    assert NULL_FIRST_NIGHTLY_ZH not in html
+    assert "shown alone" not in html
     assert NULL_PANEL_EN not in html
     assert "<polyline" not in html
     assert "<path" not in html
@@ -994,15 +998,56 @@ def test_shape_snapshot_kink_is_normal_not_inverted() -> None:
 # ---------------------------------------------------------------------------
 # Round 3 R2 — two honest-null reasons
 # ---------------------------------------------------------------------------
-def test_null_first_nightly_when_availability_is_current_and_series_absent() -> None:
+def test_null_not_drawn_when_availability_is_current_and_series_absent() -> None:
     empty = _snapshot(levels={}, extra_points={}, skip_tenors=frozenset(NOMINAL_TENORS))
     hero = _hero(empty)
     assert hero["ok"] is False
     html = _render_panel(hero)
-    assert "no earlier curve is on file" in html
-    assert NULL_FIRST_NIGHTLY_ZH in html
+    assert NULL_NOT_DRAWN_EN in html
+    assert NULL_NOT_DRAWN_ZH in html
+    assert NULL_FIRST_NIGHTLY_EN not in html
+    assert NULL_FIRST_NIGHTLY_ZH not in html
+    assert "shown alone" not in html
     assert NULL_PANEL_EN not in html
     assert NULL_PANEL_ZH not in html
+
+
+def test_first_nightly_copy_only_when_todays_curve_is_shown() -> None:
+    """M2. The ruled 'shown alone' pair is true only when the chart draws
+    today's curve and no earlier curve. An empty CURRENT panel must not use it.
+    """
+    as_of = date(2026, 9, 9)
+    extra = {
+        tenor: [{"t": as_of.isoformat(), "v": 4.0 + i * 0.02}]
+        for i, tenor in enumerate(NOMINAL_TENORS)
+    }
+    shown = _hero(_snapshot(extra_points=extra, as_of=as_of))
+    assert shown["ok"] is True
+    assert shown["chart"]["has_today"] is True
+    assert shown["chart"]["has_prior_close"] is False
+    assert shown["chart"]["has_prior_month"] is False
+    shown_html = _render_panel(shown)
+    # autoescape turns the apostrophe in Today's into &#39;
+    assert "curve is shown alone" in shown_html
+    assert "no earlier curve is on file" in shown_html
+    assert NULL_FIRST_NIGHTLY_ZH in shown_html
+    assert NULL_NOT_DRAWN_EN not in shown_html
+
+    empty = _hero(_snapshot(levels={}, extra_points={}, skip_tenors=frozenset(NOMINAL_TENORS)))
+    assert empty["ok"] is False
+    empty_html = _render_panel(empty)
+    assert NULL_FIRST_NIGHTLY_EN not in empty_html
+    assert NULL_FIRST_NIGHTLY_ZH not in empty_html
+    assert NULL_NOT_DRAWN_EN in empty_html
+    assert NULL_NOT_DRAWN_ZH in empty_html
+
+    complete = _hero(_snapshot())
+    assert complete["ok"] is True
+    assert complete["chart"]["has_prior_close"] is True
+    complete_html = _render_panel(complete)
+    assert NULL_FIRST_NIGHTLY_EN not in complete_html
+    assert NULL_FIRST_NIGHTLY_ZH not in complete_html
+    assert complete["first_nightly"] is None
 
 
 def test_null_did_not_arrive_when_availability_is_not_current() -> None:
@@ -1021,6 +1066,8 @@ def test_null_did_not_arrive_when_availability_is_not_current() -> None:
     assert NULL_PANEL_ZH in html
     assert NULL_FIRST_NIGHTLY_EN not in html
     assert NULL_FIRST_NIGHTLY_ZH not in html
+    assert NULL_NOT_DRAWN_EN not in html
+    assert NULL_NOT_DRAWN_ZH not in html
 
 
 # ---------------------------------------------------------------------------
@@ -1080,9 +1127,10 @@ def test_mobile_x_labels_are_thinned_so_no_two_touch_at_390() -> None:
     viewport in either language. Five stay visible; the other five keep their
     <li> in the <ol> and are hidden by CSS alone.
 
-    The gap is checked against a deliberately pessimistic model: a plot only
-    300 CSS px wide (narrower than a 390 viewport actually gives), CJK glyphs
-    at the full 10 px em and ASCII digits at 0.6 em.
+    The gap is checked at the measured 390-viewport plot width (336 CSS px,
+    from the pad_l y-label measurement in ``_chart_payload``) with CJK glyphs
+    at the full 10 px em and ASCII at 0.6 em. The last-two EN shorts after
+    R9.3 (``10 yr`` / ``30 yr``) must still clear by more than 4 CSS px.
     """
     hero = _hero(_snapshot())
     chart = hero["chart"]
@@ -1091,17 +1139,20 @@ def test_mobile_x_labels_are_thinned_so_no_two_touch_at_390() -> None:
     shown = [tick for tick in ticks if tick["mobile"]]
     assert [tick["label"]["en"] for tick in shown] == [
         "3-month", "1-year", "5-year", "10-year", "30-year"]
+    assert [tick["short"]["en"] for tick in shown] == [
+        "3 mo", "1 yr", "5 yr", "10 yr", "30 yr"]
     html = _render_panel(hero)
     overlay = html[html.find('<ol class="mq-curve-xlabels">'):html.find("</ol>", html.find('<ol class="mq-curve-xlabels">'))]
     assert overlay.count("<li ") == 10
     assert overlay.count("is-mobile-hidden") == 5
     assert ".mq-curve-xlabels li.is-mobile-hidden { visibility: hidden; }" in html
 
-    plot_px = 300.0
+    plot_px = 336.0  # measured plot width at a 390 CSS px viewport
 
     def _width(text: str) -> float:
         return sum(10.0 if ord(ch) > 0x2E80 else 6.0 for ch in text)
 
+    gaps: dict[str, list[float]] = {}
     for lang in ("en", "zh"):
         boxes: list[tuple[float, float]] = []
         for tick in shown:
@@ -1111,8 +1162,17 @@ def test_mobile_x_labels_are_thinned_so_no_two_touch_at_390() -> None:
                 boxes.append((centre - width, centre))
             else:
                 boxes.append((centre - width / 2.0, centre + width / 2.0))
+        lang_gaps = []
         for (_, right), (left, _) in zip(boxes, boxes[1:]):
-            assert left - right >= 4.0, (lang, boxes)
+            gap = left - right
+            lang_gaps.append(gap)
+            assert gap >= 4.0, (lang, gap, boxes)
+        gaps[lang] = lang_gaps
+    # Last two visible EN shorts: 10 yr (center) and 30 yr (end-anchored).
+    last_two_en = gaps["en"][-1]
+    print(f"R9.2 last-two EN gap at 390/336px plot: {last_two_en:.2f} CSS px")
+    assert last_two_en >= 4.0
+    assert last_two_en == pytest.approx(20.33, abs=0.05)
 
 
 def test_axis_overlay_labels_are_ten_css_px() -> None:
@@ -1182,6 +1242,12 @@ def test_legend_omits_undrawn_comparison_windows() -> None:
     assert hero["chart"]["has_prior_close"] is False
     assert hero["chart"]["has_prior_month"] is False
     html = _render_panel(hero)
+    assert hero["first_nightly"]["en"] == NULL_FIRST_NIGHTLY_EN
+    assert hero["first_nightly"]["zh"] == NULL_FIRST_NIGHTLY_ZH
+    # autoescape turns the apostrophe in Today's into &#39;
+    assert "curve is shown alone" in html
+    assert "no earlier curve is on file" in html
+    assert NULL_FIRST_NIGHTLY_ZH in html
     assert LEGEND_CLOSE_NULL_EN in html
     assert LEGEND_CLOSE_NULL_ZH in html
     assert LEGEND_MONTH_NULL_EN in html

@@ -1041,6 +1041,15 @@ _CURVE_NULL_PANEL = _pair(
     "The curve panel needs the Treasury data from tonight, which did not arrive.",
     "曲线面板需要当晚的美债数据，但数据未能到达。",
 )
+# ok=False and availability CURRENT: the panel is not drawn. The code knows
+# only that fewer than six maturities have a reading — not that "today's
+# curve is shown" and not that a later update will fill the gap.
+_CURVE_NULL_NOT_DRAWN = _pair(
+    "The curve is not drawn: not enough maturities have a reading.",
+    "曲线未画出：有读数的期限不足。",
+)
+# ok=True and no prior-close / prior-month line: today's curve is on the
+# chart, and no earlier curve is on file to draw beside it.
 _CURVE_NULL_FIRST_NIGHTLY = _pair(
     "Today's curve is shown alone: no earlier curve is on file to compare it with.",
     "今天的曲线单独显示：暂无更早的曲线可供对比。",
@@ -1407,11 +1416,16 @@ def _curve_hero(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         (snapshot.get("availability") or {}).get("state") or ""
     ).upper()
     availability_current = availability_state == "CURRENT"
+    chart = _chart_payload(tenors) if ok else None
+    first_nightly = None
     if ok:
         null_panel = dict(_CURVE_NULL_PANEL)
         shape = _shape_read(tenors)
+        if chart is not None and not chart["has_prior_close"] and not chart["has_prior_month"]:
+            first_nightly = dict(_CURVE_NULL_FIRST_NIGHTLY)
     elif availability_current:
-        null_panel = dict(_CURVE_NULL_FIRST_NIGHTLY)
+        # Panel not drawn. Do not claim today's curve is shown.
+        null_panel = dict(_CURVE_NULL_NOT_DRAWN)
         shape = dict(null_panel)
     else:
         null_panel = dict(_CURVE_NULL_PANEL)
@@ -1437,6 +1451,7 @@ def _curve_hero(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         "missing_tenors": missing,
         "missing_copy": [_null_tenor_copy(tenor) for tenor in missing],
         "null_panel": null_panel,
+        "first_nightly": first_nightly,
         "null_tenor": dict(_CURVE_NULL_TENOR),
         "null_spread": dict(_CURVE_NULL_SPREAD),
         "heading": dict(_CURVE_HEADING),
@@ -1456,7 +1471,7 @@ def _curve_hero(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         "change_month": dict(_CURVE_CHANGE_MONTH),
         "spread_now": _pair("Spread now", "当前利差"),
         "unit_spread": dict(_CURVE_UNIT_SPREAD),
-        "chart": _chart_payload(tenors) if ok else None,
+        "chart": chart,
     }
 
 
