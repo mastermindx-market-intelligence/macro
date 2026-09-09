@@ -1,0 +1,57 @@
+# Sanctioned horizontal scrollers for Macro Command P5 evidence (E-B1).
+# Every non-empty content_overflows entry must resolve to a row here.
+# NEVER register #mq-shell / div.mq-workspace / #mq-panel-current — those
+# scrolling at 390 are layout defects fixed at the source.
+
+ul.mq-suitenav-rail:
+  kind: designed-rail
+  covering_family: chip_material
+  reason: >-
+    Suite-nav chip rail; chip_material crops photograph the scrolled-out
+    chip+pill pair after intentional scrollLeft.
+
+.mq-suitenav-rail:
+  kind: designed-rail
+  covering_family: chip_material
+  reason: >-
+    Class-only alias of the suite-nav chip rail covered by chip_material.
+
+table.mq-table:
+  kind: table
+  covering_family: method_table_390
+  reason: >-
+    Method contribution table; start/end (or table_fits) pair crops cover
+    scrolled-out headers and values.
+
+.mq-table:
+  kind: table
+  covering_family: method_table_390
+  reason: >-
+    Class alias for method contribution tables covered by method_table_390.
+
+table.mq-table.mq-table-compact:
+  kind: table
+  covering_family: method_table_390
+  reason: >-
+    Compact method table variant; same start/end covering family as .mq-table.
+
+ul.mc-rail-list:
+  kind: designed-rail
+  covering_family: chip_material
+  reason: >-
+    Hub/workspace horizontal rail list; suite navigation material crops
+    cover scrolled-out labels at phone widths.
+
+"#mc-strip-h":
+  kind: designed-rail
+  covering_family: chip_material
+  reason: >-
+    Horizontal strip under the suite shell; chip/rail material crops cover
+    its scrolled-out contents.
+
+div.mc-subtabs:
+  kind: designed-rail
+  covering_family: chip_material
+  reason: >-
+    Sub-tab strip that scrolls horizontally on narrow viewports; covered by
+    chip_material / workspace rail photography.

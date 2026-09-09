@@ -507,8 +507,8 @@
     "built_at": "2026-09-06T21:23:24Z",
     "calculation_as_of": "2026-09-04",
     "code_version": "41929a0479ef0e5e4a8ac34086668c738c1e480f",
-    "content_sha256": "851dd53c69fbc68f6315398bec1c867606d12de23ec0465abdba5c74961c005c",
-    "generation_id": "financial_conditions-US-851dd53c69fbc68f",
+    "content_sha256": "d4094068479fb9a38e8c0260f1787ade3d7dbd61236c0152be9cc247a31a1137",
+    "generation_id": "financial_conditions-US-d4094068479fb9a3",
     "producer": "engine.market_os.macro_workspaces.financial_conditions",
     "rendered_at": null
   },
@@ -580,8 +580,8 @@
         "horizon": "current",
         "implication_id": "state_descriptive",
         "text": {
-          "en": "US financial conditions read B - Tight conditions / Tightening impulse (level x=56.93, impulse y=49.67, boundary 50).",
-          "zh": "美国金融条件读数为 B - 紧张条件 / 边际收紧（水平 x=56.93，边际冲量 y=49.67，分界 50）。"
+          "en": "US financial conditions read B - Tight conditions / Tightening impulse (level 56.9, impulse 49.7, boundary 50).",
+          "zh": "美国金融条件读数为 B - 紧张条件 / 边际收紧（水平 56.9，边际冲量 49.7，分界 50）。"
         },
         "trace_ref": "data/regime/latest.json#conditions"
       },

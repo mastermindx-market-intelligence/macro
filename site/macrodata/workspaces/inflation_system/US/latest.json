@@ -529,8 +529,8 @@
     "built_at": "2026-09-06T21:23:24Z",
     "calculation_as_of": "2026-09-06",
     "code_version": "41929a0479ef0e5e4a8ac34086668c738c1e480f",
-    "content_sha256": "4389443a5f244752bf8e4072e14d1a34a2afa4fd6df4203701e3c2487564713a",
-    "generation_id": "inflation_system-US-4389443a5f244752",
+    "content_sha256": "7ed1eb25ae29836e17f7d4e325cc7d94271463e6efc1f33d06307f6dd6b585b2",
+    "generation_id": "inflation_system-US-7ed1eb25ae29836e",
     "producer": "engine.market_os.macro_workspaces.inflation",
     "rendered_at": null
   },
@@ -603,8 +603,8 @@
         "horizon": "current",
         "implication_id": "state_descriptive",
         "text": {
-          "en": "US inflation regime reads A - Disinflating headline, broad/sticky underlying (impulse x=49.59, persistence/breadth y=57.89, boundary 50).",
-          "zh": "美国通胀体制读数为 A - 总体降温，但内部广泛/顽固（冲量 x=49.59，持续性/广度 y=57.89，分界 50）。"
+          "en": "US inflation regime reads A - Disinflating headline, broad/sticky underlying (impulse 49.6, persistence/breadth 57.9, boundary 50).",
+          "zh": "美国通胀体制读数为 A - 总体降温，但内部广泛/顽固（冲量 49.6，持续性/广度 57.9，分界 50）。"
         },
         "trace_ref": "data/release_forecast/inflation_intelligence.json#released_state"
       },

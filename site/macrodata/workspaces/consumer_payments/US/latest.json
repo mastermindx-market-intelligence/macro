@@ -541,8 +541,8 @@
     "built_at": "2026-09-06T21:23:24Z",
     "calculation_as_of": "2026-07-01",
     "code_version": "41929a0479ef0e5e4a8ac34086668c738c1e480f",
-    "content_sha256": "5985d3c5c71946f4b4eff7983fbe863bac0c6a903a8e92fc351ff1dad3caa898",
-    "generation_id": "consumer_payments-US-5985d3c5c71946f4",
+    "content_sha256": "88816f44371237ef386b9a1bf6c3e861a354ab79079933ebe15e4bc3dae8a519",
+    "generation_id": "consumer_payments-US-88816f44371237ef",
     "producer": "engine.market_os.macro_workspaces.consumer_payments",
     "rendered_at": null
   },
@@ -613,8 +613,8 @@
         "horizon": "current",
         "implication_id": "headline_computed",
         "text": {
-          "en": "Consumer & Payments reads B - Strong cash-flow momentum / High credit stress (cash-flow momentum x=67.54, credit stress y=51.14, boundary 50).",
-          "zh": "消费与支付读数为 B - 现金流动能强 / 信贷压力高（现金流动能 x=67.54，信贷压力 y=51.14，分界 50）。"
+          "en": "Consumer & Payments reads B - Strong cash-flow momentum / High credit stress (cash-flow momentum 67.5, credit stress 51.1, boundary 50).",
+          "zh": "消费与支付读数为 B - 现金流动能强 / 信贷压力高（现金流动能 67.5，信贷压力 51.1，分界 50）。"
         },
         "trace_ref": "engine.market_os.macro_workspaces.consumer_payments#headline"
       },

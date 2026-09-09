@@ -470,8 +470,8 @@
     "built_at": "2026-09-06T21:23:24Z",
     "calculation_as_of": "2026-09-04",
     "code_version": "41929a0479ef0e5e4a8ac34086668c738c1e480f",
-    "content_sha256": "436cb50706c3eb9d99f6b5956172e95d36b4be63fce4daa482f8de0d120cfac1",
-    "generation_id": "liquidity_regime-US-436cb50706c3eb9d",
+    "content_sha256": "b0e3b6786d426dc182fd81333f9c59eb7cfff3245053df6b88ac22ef536a9ae1",
+    "generation_id": "liquidity_regime-US-b0e3b6786d426dc1",
     "producer": "engine.market_os.macro_workspaces.liquidity_regime",
     "rendered_at": null
   },
@@ -542,8 +542,8 @@
         "horizon": "current",
         "implication_id": "state_descriptive",
         "text": {
-          "en": "US liquidity regime reads C - Easy funding / Weak support (funding pressure x=18.83, balance-sheet support y=45.39, boundary 50).",
-          "zh": "美国流动性体制读数为 C - 宽松融资 / 弱支持（融资压力 x=18.83，资产负债表支持 y=45.39，分界 50）。"
+          "en": "US liquidity regime reads C - Easy funding / Weak support (funding pressure 18.8, balance-sheet support 45.4, boundary 50).",
+          "zh": "美国流动性体制读数为 C - 宽松融资 / 弱支持（融资压力 18.8，资产负债表支持 45.4，分界 50）。"
         },
         "trace_ref": "data/regime/latest.json#liquidity_quality"
       },

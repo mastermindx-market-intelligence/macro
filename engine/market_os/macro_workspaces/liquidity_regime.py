@@ -809,9 +809,9 @@ def _implications(headline, x_value, y_value, contradiction, worst_freshness,
         items.append({
             "implication_id": "state_descriptive",
             "text": _bil(
-                f"US liquidity regime reads {state_id} - {label_en} (funding pressure x={x_value}, "
-                f"balance-sheet support y={y_value}, boundary 50).",
-                f"美国流动性体制读数为 {state_id} - {label_zh}（融资压力 x={x_value}，资产负债表支持 y={y_value}，分界 50）。"),
+                f"US liquidity regime reads {state_id} - {label_en} (funding pressure {float(x_value):.1f}, "
+                f"balance-sheet support {float(y_value):.1f}, boundary 50).",
+                f"美国流动性体制读数为 {state_id} - {label_zh}（融资压力 {float(x_value):.1f}，资产负债表支持 {float(y_value):.1f}，分界 50）。"),
             "evidence_class": "DESCRIPTIVE",
             "confidence": conf,
             "horizon": "current",

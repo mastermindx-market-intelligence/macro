@@ -33,7 +33,6 @@ body.mq-page {
   min-width: 320px;
   margin: 0;
   padding: 18px;
-  overflow-x: hidden;
   color: var(--mq-ink);
   background:
     radial-gradient(circle at 8% -12%, color-mix(in srgb, var(--mq-accent) 9%, transparent), transparent 32rem),
@@ -687,14 +686,33 @@ html[data-theme="light"] .mq-hub-absent {
     display: block;
     overflow-x: auto;
     width: 100%;
-    max-width: calc(100vw - 32px);
+    max-width: 100%;
+    /* Wide thead/tr must not inflate ancestor scrollWidth (E-B1(4)). */
+    contain: inline-size;
   }
   .mq-table th, .mq-table td { white-space: nowrap; }
   .mq-panel,
   .mq-workspace,
-  .mq-shell {
+  .mq-shell,
+  #mq-shell,
+  #mq-panel-current {
     min-width: 0;
     max-width: 100%;
+    overflow-x: visible;
+  }
+  /* Page shell must FIT the viewport at 390 — never a document-level
+     horizontal scroller (E-B1(4) / E-M3). Wide children wrap or scroll
+     inside sanctioned rails/tables only. */
+  body.mq-page {
+    max-width: 100vw;
+    box-sizing: border-box;
+  }
+  #mq-shell,
+  .mq-shell,
+  .mq-workspace,
+  #mq-panel-current {
+    max-width: 100%;
+    box-sizing: border-box;
   }
   /* Overflow stays VISIBLE so capture content_overflows can see clips;
      wrapping — not overflow-x:hidden — is what keeps prose inside the box.
@@ -731,7 +749,7 @@ html[data-theme="light"] .mq-hub-absent {
   }
   section.mq-method .mq-table {
     width: 100%;
-    max-width: calc(100vw - 32px);
+    max-width: 100%;
   }
   .mq-clock { grid-template-columns: 1fr; gap: 2px; }
   /* Nav: the home link keeps its row; the rail takes the full width below it. */

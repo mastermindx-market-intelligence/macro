@@ -417,8 +417,8 @@
     "built_at": "2026-09-06T21:23:24Z",
     "calculation_as_of": "2026-09-04",
     "code_version": "41929a0479ef0e5e4a8ac34086668c738c1e480f",
-    "content_sha256": "ca464c4e6a3dd332eda432ffaffb62dbb771eafaaf75320a12c45a32de9d7958",
-    "generation_id": "labor_markets-US-ca464c4e6a3dd332",
+    "content_sha256": "0eaf60fb3e27cf01b645d414c91117ce5f8426c4ef59200a8a7651d813ea745a",
+    "generation_id": "labor_markets-US-0eaf60fb3e27cf01",
     "producer": "engine.market_os.macro_workspaces.labor",
     "rendered_at": null
   },
@@ -489,8 +489,8 @@
         "horizon": "current",
         "implication_id": "state_descriptive",
         "text": {
-          "en": "US labor market reads B - Strong hiring / Tight market (labor demand x=66.52, labor supply/tightness y=76.35, boundary 50).",
-          "zh": "美国劳动力市场读数为 B - 招聘强劲 / 市场偏紧（劳动力需求 x=66.52，劳动力供给/紧张度 y=76.35，分界 50）。"
+          "en": "US labor market reads B - Strong hiring / Tight market (labor demand 66.5, labor supply/tightness 76.3, boundary 50).",
+          "zh": "美国劳动力市场读数为 B - 招聘强劲 / 市场偏紧（劳动力需求 66.5，劳动力供给/紧张度 76.3，分界 50）。"
         },
         "trace_ref": "data/regime/latest.json#labor_nowcast"
       }

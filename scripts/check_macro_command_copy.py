@@ -430,6 +430,14 @@ def find_exceptions(html: str) -> list[str]:
     return unique
 
 
+_XY_EQ_RE = re.compile(r"\b[xy]\s*=\s*-?\d")
+_AXIS_METHOD_BLOCK_RE = re.compile(
+    r"<(?P<tag>[a-zA-Z0-9]+)[^>]*\bclass=\"[^\"]*\bmq-axis-method\b[^\"]*\"[^>]*>"
+    r".*?</(?P=tag)>",
+    re.S | re.I,
+)
+
+
 def find_violations(html: str) -> list[str]:
     """Return every copy-law violation found in `html`'s reading path. An
     empty list means the page is clean. Allowlisted sentences are matched
@@ -483,15 +491,30 @@ def find_violations(html: str) -> list[str]:
         )
 
     for node in visible_text_nodes(html):
-        text = node.get("text") or ""
+        text_n = node.get("text") or ""
         glance = node.get("glance") == "1"
-        for hit in machine_copy_hits(text, glance=glance):
-            snippet = text[:80]
+        for hit in machine_copy_hits(text_n, glance=glance):
+            snippet = text_n[:80]
             tag = node.get("tag") or "?"
             violations.append(
                 f"machine-text {hit!r} in <{tag}> {snippet!r} "
                 "(E-m1) — replace with plain words a customer can read"
             )
+
+    # E-m4: variable letters never lead in customer copy (x=/y=).
+    # Allowed only inside .mq-axis-method and <details> bodies.
+    xy_html = _SCRIPT_RE.sub("", html)
+    xy_html = _DETAILS_RE.sub(r"\1\3", xy_html)
+    xy_html = _PRIMER_RE.sub("", xy_html)
+    xy_html = _AXIS_METHOD_BLOCK_RE.sub(" ", xy_html)
+    xy_text = _WS_RE.sub(" ", _TAG_RE.sub(" ", xy_html))
+    for match in _XY_EQ_RE.finditer(xy_text):
+        violations.append(
+            f"axis variable leading customer copy {match.group(0)!r} (E-m4) — "
+            "use 'level 56.9, impulse 49.7' wording; x/y letters live only in "
+            ".mq-axis-method and details"
+        )
+        break
 
     return violations
 

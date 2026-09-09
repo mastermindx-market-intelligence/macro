@@ -846,9 +846,9 @@ def _implications(headline, x_value, y_value, contradiction, worst_freshness,
         items.append({
             "implication_id": "state_descriptive",
             "text": _bil(
-                f"US inflation regime reads {state_id} - {label_en} (impulse x={x_value}, "
-                f"persistence/breadth y={y_value}, boundary 50).",
-                f"美国通胀体制读数为 {state_id} - {label_zh}（冲量 x={x_value}，持续性/广度 y={y_value}，分界 50）。"),
+                f"US inflation regime reads {state_id} - {label_en} (impulse {float(x_value):.1f}, "
+                f"persistence/breadth {float(y_value):.1f}, boundary 50).",
+                f"美国通胀体制读数为 {state_id} - {label_zh}（冲量 {float(x_value):.1f}，持续性/广度 {float(y_value):.1f}，分界 50）。"),
             "evidence_class": "DESCRIPTIVE",
             "confidence": conf,
             "horizon": "current",

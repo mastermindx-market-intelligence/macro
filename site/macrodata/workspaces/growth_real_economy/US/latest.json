@@ -517,8 +517,8 @@
     "built_at": "2026-09-06T21:23:24Z",
     "calculation_as_of": "2026-09-04",
     "code_version": "41929a0479ef0e5e4a8ac34086668c738c1e480f",
-    "content_sha256": "10d677d618958646ca3480a8856d5d47ced4b2da4de891017c9cd19daefb77cc",
-    "generation_id": "growth_real_economy-US-10d677d618958646",
+    "content_sha256": "d328560735ec7d78def21065d250e2952e7f8a8bd99d5757dad0f4cdc16077ee",
+    "generation_id": "growth_real_economy-US-d328560735ec7d78",
     "producer": "engine.market_os.macro_workspaces.growth",
     "rendered_at": null
   },
@@ -592,8 +592,8 @@
         "horizon": "current",
         "implication_id": "state_descriptive",
         "text": {
-          "en": "US growth regime reads B - Accelerating momentum, broad strength (growth momentum x=70.61, growth level/breadth y=65.42, boundary 50).",
-          "zh": "美国增长体制读数为 B - 动能加速，广度强劲（增长动能 x=70.61，增长水平/广度 y=65.42，分界 50）。"
+          "en": "US growth regime reads B - Accelerating momentum, broad strength (growth momentum 70.6, growth level/breadth 65.4, boundary 50).",
+          "zh": "美国增长体制读数为 B - 动能加速，广度强劲（增长动能 70.6，增长水平/广度 65.4，分界 50）。"
         },
         "trace_ref": "data/regime/latest.json#business_cycle"
       },

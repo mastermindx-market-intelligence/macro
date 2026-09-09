@@ -970,10 +970,10 @@ def _implications(headline, x_value, y_value, contradiction, worst_freshness,
         items.append({
             "implication_id": "state_descriptive",
             "text": _bil(
-                f"US growth regime reads {state_id} - {label_en} (growth momentum x={x_value}, "
-                f"growth level/breadth y={y_value}, boundary 50).",
-                f"美国增长体制读数为 {state_id} - {label_zh}（增长动能 x={x_value}，"
-                f"增长水平/广度 y={y_value}，分界 50）。"),
+                f"US growth regime reads {state_id} - {label_en} (growth momentum {float(x_value):.1f}, "
+                f"growth level/breadth {float(y_value):.1f}, boundary 50).",
+                f"美国增长体制读数为 {state_id} - {label_zh}（增长动能 {float(x_value):.1f}，"
+                f"增长水平/广度 {float(y_value):.1f}，分界 50）。"),
             "evidence_class": "DESCRIPTIVE",
             "confidence": conf,
             "horizon": "current",
