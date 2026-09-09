@@ -23,6 +23,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+import yaml
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
 from lib import macro_suite_view
@@ -58,12 +59,25 @@ SHAPE_NORMAL_EN = (
     "The curve is upward-sloping — longer maturities pay more than shorter ones."
 )
 SHAPE_NORMAL_ZH = "曲线呈正常形态 — 期限越长，收益率越高。"
-SHAPE_INVERTED_EN = (
-    "The curve is inverted — some shorter maturities pay more than longer ones."
+SHAPE_NORMAL_DIP_EN = (
+    "The curve is upward-sloping — longer maturities pay more than shorter ones, "
+    "with a small dip at the very long end."
 )
-SHAPE_INVERTED_ZH = "曲线出现倒挂 — 部分短期利率高于长期利率。"
+SHAPE_NORMAL_DIP_ZH = "曲线呈正常形态 — 期限越长，收益率越高，仅在最长端有小幅回落。"
+SHAPE_FLAT_EN = "The curve is flat between three months and ten years."
+SHAPE_FLAT_ZH = "三个月至十年期之间的曲线接近平坦。"
+SHAPE_INVERTED_FRONT_EN = (
+    "The curve is inverted at the front — three-month yields are at or above ten-year yields."
+)
+SHAPE_INVERTED_FRONT_ZH = "曲线在短端倒挂 — 三个月期收益率已不低于十年期。"
+SHAPE_INVERTED_BELLY_EN = "The curve is inverted between two and ten years."
+SHAPE_INVERTED_BELLY_ZH = "曲线在两年期与十年期之间倒挂。"
 NULL_PANEL_EN = "The curve panel needs the Treasury data from tonight, which did not arrive."
 NULL_PANEL_ZH = "曲线面板需要当晚的美债数据，但数据未能到达。"
+NULL_FIRST_NIGHTLY_EN = (
+    "The curve history is still being built; the comparison lines arrive after tonight's run."
+)
+NULL_FIRST_NIGHTLY_ZH = "曲线历史仍在建立中，对比线将在今晚运行后出现。"
 NULL_SEVEN_EN = "No reading for the 7-year in tonight's data."
 NULL_SEVEN_ZH = "本次数据未覆盖7年期。"
 CHANGE_CLOSE_EN = "Change since prior close"
@@ -145,10 +159,62 @@ def _complete_levels() -> dict[str, tuple[float, float, float]]:
 
 
 def _inverted_levels() -> dict[str, tuple[float, float, float]]:
-    """today, prior_close, prior_month per tenor. Downward-sloping today."""
+    """today, prior_close, prior_month per tenor. Downward-sloping today.
+
+    Both policy spreads are negative, so this fixture is the both-locations
+    inverted branch. Prefer the front/belly helpers when a test needs one where.
+    """
     today = {
         "3m": 4.55, "6m": 4.48, "1y": 4.40, "2y": 4.32, "3y": 4.25,
         "5y": 4.18, "7y": 4.12, "10y": 4.05, "20y": 3.95, "30y": 3.90,
+    }
+    close = {k: round(v + 0.01, 4) for k, v in today.items()}
+    month = {k: round(v + 0.07, 4) for k, v in today.items()}
+    return {k: (today[k], close[k], month[k]) for k in NOMINAL_TENORS}
+
+
+def _flat_levels() -> dict[str, tuple[float, float, float]]:
+    """10y−3m inside ±0.25 pp; no policy spread negative."""
+    today = {
+        "3m": 4.20, "6m": 4.22, "1y": 4.24, "2y": 4.26, "3y": 4.28,
+        "5y": 4.30, "7y": 4.32, "10y": 4.34, "20y": 4.40, "30y": 4.45,
+    }
+    close = {k: round(v + 0.01, 4) for k, v in today.items()}
+    month = {k: round(v + 0.07, 4) for k, v in today.items()}
+    return {k: (today[k], close[k], month[k]) for k in NOMINAL_TENORS}
+
+
+def _inverted_front_levels() -> dict[str, tuple[float, float, float]]:
+    """10y−3m ≤ 0; 10y−2y still positive."""
+    today = {
+        "3m": 4.50, "6m": 4.40, "1y": 4.20, "2y": 4.00, "3y": 4.05,
+        "5y": 4.10, "7y": 4.15, "10y": 4.20, "20y": 4.30, "30y": 4.35,
+    }
+    close = {k: round(v + 0.01, 4) for k, v in today.items()}
+    month = {k: round(v + 0.07, 4) for k, v in today.items()}
+    return {k: (today[k], close[k], month[k]) for k in NOMINAL_TENORS}
+
+
+def _inverted_belly_levels() -> dict[str, tuple[float, float, float]]:
+    """10y−2y ≤ 0; 10y−3m still positive."""
+    today = {
+        "3m": 3.80, "6m": 3.90, "1y": 4.10, "2y": 4.50, "3y": 4.40,
+        "5y": 4.30, "7y": 4.25, "10y": 4.20, "20y": 4.28, "30y": 4.32,
+    }
+    close = {k: round(v + 0.01, 4) for k, v in today.items()}
+    month = {k: round(v + 0.07, 4) for k, v in today.items()}
+    return {k: (today[k], close[k], month[k]) for k in NOMINAL_TENORS}
+
+
+def _snapshot_kink_levels() -> dict[str, tuple[float, float, float]]:
+    """The committed snapshot's own ten CMT levels (20y 5.25, 30y 5.24).
+
+    Both policy spreads are positive (10y−3m = 0.87, 10y−2y = 0.41). The
+    1 bp 20y/30y dip is a long-end kink, not an inversion.
+    """
+    today = {
+        "3m": 3.91, "6m": 3.98, "1y": 4.13, "2y": 4.37, "3y": 4.45,
+        "5y": 4.54, "7y": 4.65, "10y": 4.78, "20y": 5.25, "30y": 5.24,
     }
     close = {k: round(v + 0.01, 4) for k, v in today.items()}
     month = {k: round(v + 0.07, 4) for k, v in today.items()}
@@ -159,7 +225,8 @@ def _snapshot(*, workspace_id: str = "rates_curves",
               levels: dict[str, tuple[float, float, float]] | None = None,
               extra_points: dict[str, list[dict[str, Any]]] | None = None,
               skip_tenors: frozenset[str] = frozenset(),
-              as_of: date = date(2026, 9, 9)) -> dict[str, Any]:
+              as_of: date = date(2026, 9, 9),
+              availability: dict[str, Any] | None = None) -> dict[str, Any]:
     """A sparse snapshot: enough for build_view, plus a series block the hero reads."""
     items: list[dict[str, Any]] = []
     if levels is None and extra_points is None and workspace_id == "rates_curves":
@@ -197,9 +264,11 @@ def _snapshot(*, workspace_id: str = "rates_curves",
             "calculation_as_of": as_of.isoformat(),
             "content_sha256": "0" * 64,
         },
-        "availability": {"state": "CURRENT", "required": [], "degraded": [],
-                         "coverage_ratio": 1.0, "worst_freshness": "CURRENT",
-                         "contradiction": {"present": False}, "reasons": []},
+        "availability": availability if availability is not None else {
+            "state": "CURRENT", "required": [], "degraded": [],
+            "coverage_ratio": 1.0, "worst_freshness": "CURRENT",
+            "contradiction": {"present": False}, "reasons": [],
+        },
         "headline": {"state_id": None, "status": "ABSENT",
                      "null_reason": "NOT_APPLICABLE",
                      "state_label": _pair("No named state", "无命名状态")},
@@ -501,16 +570,20 @@ def test_8_normal_fixture_renders_the_normal_shape_sentence_only() -> None:
     html = _render_panel(_hero(_snapshot(levels=_complete_levels())))
     assert SHAPE_NORMAL_EN in html
     assert SHAPE_NORMAL_ZH in html
-    assert SHAPE_INVERTED_EN not in html
-    assert SHAPE_INVERTED_ZH not in html
+    assert SHAPE_INVERTED_FRONT_EN not in html
+    assert SHAPE_INVERTED_FRONT_ZH not in html
+    assert SHAPE_INVERTED_BELLY_EN not in html
+    assert "inverted" not in html.lower()
+    assert "倒挂" not in html
 
 
 def test_8_inverted_fixture_renders_the_inverted_shape_sentence_only() -> None:
-    html = _render_panel(_hero(_snapshot(levels=_inverted_levels())))
-    assert SHAPE_INVERTED_EN in html
-    assert SHAPE_INVERTED_ZH in html
+    html = _render_panel(_hero(_snapshot(levels=_inverted_front_levels())))
+    assert SHAPE_INVERTED_FRONT_EN in html
+    assert SHAPE_INVERTED_FRONT_ZH in html
     assert SHAPE_NORMAL_EN not in html
     assert SHAPE_NORMAL_ZH not in html
+    assert SHAPE_INVERTED_BELLY_EN not in html
 
 
 # ---------------------------------------------------------------------------
@@ -521,8 +594,12 @@ def test_9_whole_panel_honest_null_when_snapshot_incomplete() -> None:
     hero = _hero(empty)
     assert hero["ok"] is False
     html = _render_panel(hero)
-    assert NULL_PANEL_EN in html
-    assert NULL_PANEL_ZH in html
+    # Default fixture availability is CURRENT, so this is the first-nightly
+    # null, not the did-not-arrive sentence. autoescape turns the apostrophe
+    # into &#39;; the words still have to land.
+    assert "The curve history is still being built" in html
+    assert NULL_FIRST_NIGHTLY_ZH in html
+    assert NULL_PANEL_EN not in html
     assert "<polyline" not in html
     assert "<path" not in html
 
@@ -611,17 +688,21 @@ def test_12_no_import_of_yield_curve_engine() -> None:
 # R1 — SVG ticks are tspans, never HTML spans
 # ---------------------------------------------------------------------------
 def test_svg_tick_labels_are_tspans_not_html_spans() -> None:
+    """Axis labels live outside the SVG (HTML overlay). SVG must not contain
+    HTML <span> (the foreign-content breakout) or scaled <text> ticks.
+    """
     hero = _hero(_snapshot())
     html = _render_panel(hero)
     svg = _svg_inner(html)
     assert "<span" not in svg
+    assert "<text" not in svg
     ticks = hero["chart"]["x_ticks"]
     assert len(ticks) == 10
+    overlay = html[html.find('class="mq-curve-xlabels"'):html.find('class="mq-curve-legend"')]
     for tick in ticks:
-        x = tick["x"]
-        assert f'<text class="mq-curve-tick" x="{x}"' in svg
-        assert f'<tspan class="l-en">{tick["label"]["en"]}</tspan>' in svg
-        assert f'<tspan class="l-zh">{tick["label"]["zh"]}</tspan>' in svg
+        assert f'<span class="l-en">{tick["label"]["en"]}</span>' in overlay
+        assert f'<span class="l-zh">{tick["label"]["zh"]}</span>' in overlay
+    assert "is-last" in overlay
 
 
 # ---------------------------------------------------------------------------
@@ -680,3 +761,235 @@ def test_hero_numbers_carry_units_and_change_rows_are_not_legend_labels() -> Non
     assert CHANGE_CLOSE_EN in delta_block
     assert "Prior close +" not in delta_block
     assert "A month ago +" not in delta_block
+
+
+# ---------------------------------------------------------------------------
+# Round 3 R1 — three shape states with a where
+# ---------------------------------------------------------------------------
+def test_shape_normal_strictly_rising_has_no_where_clause() -> None:
+    html = _render_panel(_hero(_snapshot(levels=_complete_levels())))
+    assert SHAPE_NORMAL_EN in html
+    assert SHAPE_NORMAL_ZH in html
+    assert "inverted" not in html.lower()
+    assert "倒挂" not in html
+    assert "small dip" not in html
+    assert SHAPE_FLAT_EN not in html
+
+
+def test_shape_flat_when_10y3m_inside_quarter_point() -> None:
+    levels = _flat_levels()
+    assert abs(levels["10y"][0] - levels["3m"][0]) <= 0.25
+    assert levels["10y"][0] - levels["2y"][0] > 0
+    html = _render_panel(_hero(_snapshot(levels=levels)))
+    assert SHAPE_FLAT_EN in html
+    assert SHAPE_FLAT_ZH in html
+    assert "inverted" not in html.lower()
+    assert "倒挂" not in html
+
+
+def test_shape_inverted_at_the_front() -> None:
+    levels = _inverted_front_levels()
+    assert levels["10y"][0] - levels["3m"][0] <= 0
+    assert levels["10y"][0] - levels["2y"][0] > 0
+    html = _render_panel(_hero(_snapshot(levels=levels)))
+    assert SHAPE_INVERTED_FRONT_EN in html
+    assert SHAPE_INVERTED_FRONT_ZH in html
+    assert SHAPE_INVERTED_BELLY_EN not in html
+    assert SHAPE_NORMAL_EN not in html
+
+
+def test_shape_inverted_between_two_and_ten_years() -> None:
+    levels = _inverted_belly_levels()
+    assert levels["10y"][0] - levels["2y"][0] <= 0
+    assert levels["10y"][0] - levels["3m"][0] > 0
+    html = _render_panel(_hero(_snapshot(levels=levels)))
+    assert SHAPE_INVERTED_BELLY_EN in html
+    assert SHAPE_INVERTED_BELLY_ZH in html
+    assert SHAPE_INVERTED_FRONT_EN not in html
+    assert SHAPE_NORMAL_EN not in html
+
+
+def test_shape_snapshot_kink_is_normal_not_inverted() -> None:
+    """The committed snapshot's own ten levels: 20y 5.25 > 30y 5.24, spreads +."""
+    levels = _snapshot_kink_levels()
+    assert levels["10y"][0] - levels["3m"][0] == pytest.approx(0.87)
+    assert levels["10y"][0] - levels["2y"][0] == pytest.approx(0.41)
+    assert levels["20y"][0] > levels["30y"][0]
+    html = _render_panel(_hero(_snapshot(levels=levels)))
+    assert SHAPE_NORMAL_DIP_EN in html
+    assert SHAPE_NORMAL_DIP_ZH in html
+    assert "inverted" not in html.lower()
+    assert "倒挂" not in html
+    assert SHAPE_FLAT_EN not in html
+
+
+# ---------------------------------------------------------------------------
+# Round 3 R2 — two honest-null reasons
+# ---------------------------------------------------------------------------
+def test_null_first_nightly_when_availability_is_current_and_series_absent() -> None:
+    empty = _snapshot(levels={}, extra_points={}, skip_tenors=frozenset(NOMINAL_TENORS))
+    hero = _hero(empty)
+    assert hero["ok"] is False
+    html = _render_panel(hero)
+    assert "The curve history is still being built" in html
+    assert NULL_FIRST_NIGHTLY_ZH in html
+    assert NULL_PANEL_EN not in html
+    assert NULL_PANEL_ZH not in html
+
+
+def test_null_did_not_arrive_when_availability_is_not_current() -> None:
+    empty = _snapshot(
+        levels={}, extra_points={}, skip_tenors=frozenset(NOMINAL_TENORS),
+        availability={
+            "state": "SOURCE_FAILED", "required": [], "degraded": [],
+            "coverage_ratio": 0.0, "worst_freshness": "SOURCE_FAILED",
+            "contradiction": {"present": False}, "reasons": [],
+        },
+    )
+    hero = _hero(empty)
+    assert hero["ok"] is False
+    html = _render_panel(hero)
+    assert NULL_PANEL_EN in html
+    assert NULL_PANEL_ZH in html
+    assert NULL_FIRST_NIGHTLY_EN not in html
+    assert NULL_FIRST_NIGHTLY_ZH not in html
+
+
+# ---------------------------------------------------------------------------
+# Round 3 R4 / R5 — last tick fits; overlay labels are 10 CSS px
+# ---------------------------------------------------------------------------
+def test_last_maturity_label_fits_inside_the_viewbox() -> None:
+    hero = _hero(_snapshot())
+    chart = hero["chart"]
+    last = chart["x_ticks"][-1]
+    assert last["anchor"] == "end"
+    assert last["x"] <= chart["width"]
+    # Conservative 0.62em per character at the 10 CSS px overlay size.
+    # End-anchor means the right edge is last["x"], so the glyph box sits
+    # entirely to the left of that x and must stay inside [0, width].
+    est = 10 * 0.62 * len(last["label"]["en"])
+    assert last["x"] - est >= 0
+    html = _render_panel(hero)
+    assert "30-year" in html
+    assert "30-yea<" not in html
+    overlay_at = html.find('class="mq-curve-xlabels"')
+    legend_at = html.find('class="mq-curve-legend"')
+    assert overlay_at != -1 and legend_at != -1
+    overlay = html[overlay_at:legend_at]
+    assert "is-last" in overlay
+    assert "30-year" in overlay
+
+
+def test_axis_overlay_labels_are_ten_css_px() -> None:
+    html = _render_panel(_hero(_snapshot()))
+    assert re.search(
+        r"\.mq-curve-xlabels li,\s*\n\s*\.mq-curve-ylabels li \{[^}]*font-size:\s*10px",
+        html,
+        re.S,
+    )
+    assert "font-size: 10px; /* CSS px" in html
+
+
+def test_svg_aria_labelledby_is_en_only_with_zh_on_data_a11y() -> None:
+    html = _render_panel(_hero(_snapshot()))
+    start = html.find("<svg")
+    end = html.find(">", start) + 1
+    opener = html[start:end]
+    labelled = re.search(r'aria-labelledby="([^"]*)"', opener)
+    assert labelled is not None
+    assert labelled.group(1) == "mq-curve-hero-caption-en"
+    assert 'data-a11y-zh="mq-curve-hero-caption-zh"' in opener
+    assert 'data-a11y-en="mq-curve-hero-caption-en"' in opener
+
+
+def test_as_of_caption_renders_plain_date() -> None:
+    html = _render_panel(_hero(_snapshot(as_of=date(2026, 9, 9))))
+    assert "As of 9 September 2026" in html
+    assert "截至 2026年9月9日" in html
+
+
+def test_legend_omits_undrawn_comparison_windows() -> None:
+    as_of = date(2026, 9, 9)
+    extra = {
+        tenor: [{"t": as_of.isoformat(), "v": 4.0 + i * 0.02}]
+        for i, tenor in enumerate(NOMINAL_TENORS)
+    }
+    hero = _hero(_snapshot(extra_points=extra, as_of=as_of))
+    assert hero["chart"]["has_today"] is True
+    assert hero["chart"]["has_prior_close"] is False
+    assert hero["chart"]["has_prior_month"] is False
+    html = _render_panel(hero)
+    assert "Prior close is not drawn" in html
+    assert "A month ago is not drawn" in html
+    assert 'class="is-close"' not in html
+    assert 'class="is-month"' not in html
+    assert 'class="is-today"' in html
+
+
+def test_kicker_is_not_duplicated_on_the_panel() -> None:
+    html = _render_panel(_hero(_snapshot()))
+    assert html.count('class="mq-kicker"') == 0
+    assert "The Treasury curve" in html
+
+
+def test_cmt_component_histories_range_is_bilingual_plain() -> None:
+    view = _view(_snapshot())
+    entries = view["series"]["entries"]
+    assert entries
+    for item in entries:
+        if item["series_id"] in TENOR_TO_SERIES.values():
+            assert item["range"] is not None
+            assert item["range"]["en"].startswith("From ")
+            assert "至" in item["range"]["zh"]
+            assert "T" not in item["range"]["en"]
+            html = _render_rates_page(_snapshot())
+            assert item["range"]["en"] in html
+            assert item["range"]["zh"] in html
+            break
+    else:
+        raise AssertionError("no CMT series entry in the view")
+
+
+def test_panel_heading_dropped_kicker_not_rates_and_curves_twice() -> None:
+    html = _render_rates_page(_snapshot())
+    panel = html[html.find("mq-curve-hero"):html.find("mq-page") if "mq-page" in html else len(html)]
+    # The panel itself no longer carries the Rates & Curves kicker; the page
+    # identity in the shell still does.
+    hero = html[html.find('id="mq-curve-hero"'):html.find("mq-curve-spreads")]
+    assert "mq-kicker" not in hero
+
+
+# ---------------------------------------------------------------------------
+# Round 3 R6 / R7 — job order and T10 path closure
+# ---------------------------------------------------------------------------
+def _macro_suite_pages_job() -> dict[str, Any]:
+    raw = yaml.safe_load(
+        (ROOT / ".github" / "ci" / "legacy-jobs.yml").read_text(encoding="utf-8")
+    )
+    job = raw["jobs"]["market-os-macro-suite-pages"]
+    assert isinstance(job, dict)
+    return job
+
+
+def test_packet_suite_is_the_first_pytest_step_in_the_job() -> None:
+    job = _macro_suite_pages_job()
+    steps = job["steps"]
+    pytest_steps = [
+        s for s in steps
+        if re.search(r"pytest\s+tests/", str(s.get("run") or ""))
+    ]
+    assert pytest_steps, "job has no pytest steps"
+    assert "tests/test_macro_rates_curves_route.py" in pytest_steps[0]["run"]
+    for step in steps:
+        assert "continue-on-error" not in step
+
+
+def test_t10_guarded_paths_are_in_the_exclusive_job_paths() -> None:
+    job = _macro_suite_pages_job()
+    paths = list(job["paths"])
+    for rel in (
+        "templates/bonds.html.j2",
+        "scripts/build_bonds.py",
+        "engine/yield_curve.py",
+    ):
+        assert rel in paths, rel

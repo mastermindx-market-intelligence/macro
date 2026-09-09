@@ -13923,6 +13923,11 @@ jobs:
       # A-F01-W4-1: ceiling-scoped Treasury curve-shape hero on rates_curves.
       - "templates/_curve_panel.html.j2"
       - "tests/test_macro_rates_curves_route.py"
+      # Explicit widening: T10 pins these three sources, so the exclusive job
+      # must fire when they change. Disclose in the PR body (R7).
+      - "templates/bonds.html.j2"
+      - "scripts/build_bonds.py"
+      - "engine/yield_curve.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -13932,9 +13937,9 @@ jobs:
           python-version: "3.12"
       - name: install suite-page test dependencies
         run: pip install pytest jinja2 pyyaml jsonschema==4.26.0
+      - name: Market OS rates & curves — curve-shape hero, ceiling, byte preservation
+        run: python -m pytest tests/test_macro_rates_curves_route.py -q
       - name: Market OS macro suite pages — shell, labels, view model, builder
         run: python -m pytest tests/test_macro_suite_pages.py -q
       - name: Market OS macro suite hub — discoverability, ordering, honest absence
         run: python -m pytest tests/test_macro_monetary_hub.py -q
-      - name: Market OS rates & curves — curve-shape hero, ceiling, byte preservation
-        run: python -m pytest tests/test_macro_rates_curves_route.py -q

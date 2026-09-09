@@ -5,14 +5,13 @@
   shared include with templates/bonds.html.j2.
 
   Local t() exists because the shared navigation partial's t() is not in
-  scope for an {% include %}. svg_t() emits SVG tspans: HTML <span> inside
-  SVG <text> is a foreign-content breakout and pops the chart.
+  scope for an {% include %}. Axis labels are HTML overlays: SVG <text>
+  scales with the viewBox and drops below 10 CSS px at a 390 viewport.
+  HTML <span> inside SVG <text> is still forbidden (foreign-content
+  breakout); overlays live outside the <svg>.
 #}
 {% macro t(en, zh='') -%}
 <span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
-{%- endmacro %}
-{% macro svg_t(en, zh='') -%}
-<tspan class="l-en">{{ en }}</tspan><tspan class="l-zh">{{ zh if zh else en }}</tspan>
 {%- endmacro %}
 {% set curve = view.curve_hero %}
 <style>
@@ -32,13 +31,41 @@
     letter-spacing: -0.03em;
   }
   .mq-curve-sub { margin: 6px 0 0; color: var(--mq-muted); font-size: 13px; }
-  .mq-curve-chart { margin: 14px 0 8px; overflow-x: auto; }
-  .mq-curve-chart svg { display: block; width: 100%; height: auto; max-width: 640px; }
+  .mq-curve-asof { margin: 4px 0 0; color: var(--mq-muted); font-size: 12px; }
+  .mq-curve-chart { margin: 14px 0 8px; }
+  .mq-curve-plot { position: relative; max-width: 640px; }
+  .mq-curve-plot svg { display: block; width: 100%; height: auto; }
   .mq-curve-line-today { fill: none; stroke: var(--mq-ink); stroke-width: 2.2; }
   .mq-curve-line-close { fill: none; stroke: var(--mq-accent); stroke-width: 1.6; }
   .mq-curve-line-month { fill: none; stroke: var(--mq-muted); stroke-width: 1.4; stroke-dasharray: 4 3; }
   .mq-curve-axis { stroke: var(--mq-line-strong); stroke-width: 1; }
-  .mq-curve-tick { fill: var(--mq-muted); font-size: 10px; }
+  .mq-curve-xlabels,
+  .mq-curve-ylabels {
+    position: absolute; inset: 0; margin: 0; padding: 0; list-style: none;
+    pointer-events: none;
+  }
+  .mq-curve-xlabels li,
+  .mq-curve-ylabels li {
+    position: absolute;
+    color: var(--mq-muted);
+    font-size: 10px; /* CSS px — does not scale with the SVG viewBox */
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .mq-curve-xlabels li {
+    top: auto;
+    bottom: 2px;
+    transform: translateX(-50%);
+  }
+  .mq-curve-xlabels li.is-last { transform: translateX(-100%); }
+  .mq-curve-ylabels li {
+    left: 0;
+    width: 7.5%;
+    text-align: right;
+    transform: translateY(-50%);
+    box-sizing: border-box;
+    padding-right: 4px;
+  }
   .mq-curve-legend {
     display: flex; flex-wrap: wrap; gap: 12px 18px;
     margin: 0 0 12px; padding: 0; list-style: none;
@@ -52,6 +79,8 @@
   .mq-curve-legend .is-close { color: var(--mq-accent); }
   .mq-curve-legend .is-month { color: var(--mq-muted); }
   .mq-curve-legend .is-month i { border-top: 2px dashed currentColor; height: 0; background: none; }
+  .mq-curve-legend .is-null { color: var(--mq-muted); }
+  .mq-curve-legend .is-null i { display: none; }
   .mq-curve-spreads {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 10px; margin: 0 0 12px;
@@ -71,45 +100,68 @@
   @media (max-width: 640px) {
     .mq-curve-hero { margin: 12px 0 0; padding: 14px 12px 12px; }
     .mq-curve-spread dd { font-size: 18px; }
+    .mq-curve-xlabels li,
+    .mq-curve-ylabels li { font-size: 10px; }
+    .mq-curve-ylabels li { width: 12%; }
   }
 </style>
 <section class="mq-curve-hero{{ ' mq-curve-null-state' if not curve.ok else '' }}" id="mq-curve-hero">
   <header>
-    <p class="mq-kicker">{{ t('Rates & Curves', '利率与曲线') }}</p>
     <h2>{{ t(curve.heading.en, curve.heading.zh) }}</h2>
     <p class="mq-curve-sub">{{ t(curve.subtitle.en, curve.subtitle.zh) }}</p>
+    {% if curve.as_of_caption %}
+    <p class="mq-curve-asof">{{ t(curve.as_of_caption.en, curve.as_of_caption.zh) }}</p>
+    {% endif %}
   </header>
   {% if not curve.ok %}
   <p class="mq-curve-null">{{ t(curve.null_panel.en, curve.null_panel.zh) }}</p>
   {% else %}
   <div class="mq-curve-chart">
-    <svg viewBox="0 0 {{ curve.chart.width }} {{ curve.chart.height }}" role="img"
-         aria-labelledby="mq-curve-hero-caption-en mq-curve-hero-caption-zh">
-      <title id="mq-curve-hero-caption-en" class="l-en">{{ curve.heading.en }} — {{ curve.subtitle.en }}</title>
-      <title id="mq-curve-hero-caption-zh" class="l-zh">{{ curve.heading.zh }} — {{ curve.subtitle.zh }}</title>
-      <line class="mq-curve-axis" x1="40" y1="{{ curve.chart.baseline_y }}"
-            x2="{{ curve.chart.width - 12 }}" y2="{{ curve.chart.baseline_y }}"></line>
-      {% for tick in curve.chart.y_ticks %}
-      <text class="mq-curve-tick" x="36" y="{{ tick.y }}" text-anchor="end" dominant-baseline="middle">{{ tick.text }}</text>
-      {% endfor %}
-      {% for points in curve.chart.prior_month_segments %}
-      <polyline class="mq-curve-line-month" points="{{ points }}"></polyline>
-      {% endfor %}
-      {% for points in curve.chart.prior_close_segments %}
-      <polyline class="mq-curve-line-close" points="{{ points }}"></polyline>
-      {% endfor %}
-      {% for points in curve.chart.today_segments %}
-      <polyline class="mq-curve-line-today" points="{{ points }}"></polyline>
-      {% endfor %}
-      {% for tick in curve.chart.x_ticks %}
-      <text class="mq-curve-tick" x="{{ tick.x }}" y="{{ curve.chart.height - 8 }}" text-anchor="middle">{{ svg_t(tick.label.en, tick.label.zh) }}</text>
-      {% endfor %}
-    </svg>
+    <div class="mq-curve-plot">
+      <svg viewBox="0 0 {{ curve.chart.width }} {{ curve.chart.height }}" role="img"
+           aria-labelledby="mq-curve-hero-caption-en"
+           data-a11y-en="mq-curve-hero-caption-en"
+           data-a11y-zh="mq-curve-hero-caption-zh">
+        <title id="mq-curve-hero-caption-en" class="l-en">{{ curve.heading.en }} — {{ curve.subtitle.en }}{% if curve.as_of_caption %} {{ curve.as_of_caption.en }}{% endif %}</title>
+        <title id="mq-curve-hero-caption-zh" class="l-zh">{{ curve.heading.zh }} — {{ curve.subtitle.zh }}{% if curve.as_of_caption %} {{ curve.as_of_caption.zh }}{% endif %}</title>
+        <line class="mq-curve-axis" x1="{{ curve.chart.pad_l }}" y1="{{ curve.chart.baseline_y }}"
+              x2="{{ curve.chart.width - curve.chart.pad_r }}" y2="{{ curve.chart.baseline_y }}"></line>
+        {% for points in curve.chart.prior_month_segments %}
+        <polyline class="mq-curve-line-month" points="{{ points }}"></polyline>
+        {% endfor %}
+        {% for points in curve.chart.prior_close_segments %}
+        <polyline class="mq-curve-line-close" points="{{ points }}"></polyline>
+        {% endfor %}
+        {% for points in curve.chart.today_segments %}
+        <polyline class="mq-curve-line-today" points="{{ points }}"></polyline>
+        {% endfor %}
+      </svg>
+      <ol class="mq-curve-ylabels">
+        {% for tick in curve.chart.y_ticks %}
+        <li style="top: {{ tick.y_pct }}%">{{ tick.text }}</li>
+        {% endfor %}
+      </ol>
+      <ol class="mq-curve-xlabels">
+        {% for tick in curve.chart.x_ticks %}
+        <li class="{{ 'is-last' if tick.anchor == 'end' else '' }}" style="left: {{ tick.x_pct }}%">{{ t(tick.label.en, tick.label.zh) }}</li>
+        {% endfor %}
+      </ol>
+    </div>
   </div>
   <ul class="mq-curve-legend">
+    {% if curve.chart.has_today %}
     <li class="is-today"><i></i>{{ t(curve.legend_today.en, curve.legend_today.zh) }}</li>
+    {% endif %}
+    {% if curve.chart.has_prior_close %}
     <li class="is-close"><i></i>{{ t(curve.legend_close.en, curve.legend_close.zh) }}</li>
+    {% else %}
+    <li class="is-null">{{ t(curve.legend_close_null.en, curve.legend_close_null.zh) }}</li>
+    {% endif %}
+    {% if curve.chart.has_prior_month %}
     <li class="is-month"><i></i>{{ t(curve.legend_month.en, curve.legend_month.zh) }}</li>
+    {% else %}
+    <li class="is-null">{{ t(curve.legend_month_null.en, curve.legend_month_null.zh) }}</li>
+    {% endif %}
   </ul>
   <dl class="mq-curve-spreads">
     {% for spread in curve.spreads %}
@@ -124,14 +176,14 @@
       </dd>
       <p class="mq-curve-deltas">
         {% if spread.delta_close is none %}
-          {{ t('Change since prior close: no reading.', '较上一交易日收盘变动：无读数。') }}
+          {{ t('Change since prior close: no prior-close reading yet.', '较上一交易日收盘变动：尚无上一交易日读数。') }}
         {% else %}
           {{ t(curve.change_close.en, curve.change_close.zh) }}
           {{ t('%+.2f percentage points'|format(spread.delta_close), '%+.2f个百分点'|format(spread.delta_close)) }}
         {% endif %}
         ·
         {% if spread.delta_month is none %}
-          {{ t('Change over a month: no reading.', '较一个月前变动：无读数。') }}
+          {{ t('Change over a month: no month-ago reading yet.', '较一个月前变动：尚无一个月前读数。') }}
         {% else %}
           {{ t(curve.change_month.en, curve.change_month.zh) }}
           {{ t('%+.2f percentage points'|format(spread.delta_month), '%+.2f个百分点'|format(spread.delta_month)) }}
