@@ -13900,6 +13900,9 @@ jobs:
       - "templates/macro_monetary.html.j2"
       - "templates/_macro_suite_nav.html.j2"
       - "tests/test_macro_monetary_hub.py"
+      # A-F01-W4-1: ceiling-scoped Treasury curve-shape hero on rates_curves.
+      - "templates/_curve_panel.html.j2"
+      - "tests/test_macro_rates_curves_route.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -13913,3 +13916,5 @@ jobs:
         run: python -m pytest tests/test_macro_suite_pages.py -q
       - name: Market OS macro suite hub — discoverability, ordering, honest absence
         run: python -m pytest tests/test_macro_monetary_hub.py -q
+      - name: Market OS rates & curves — curve-shape hero, ceiling, byte preservation
+        run: python -m pytest tests/test_macro_rates_curves_route.py -q

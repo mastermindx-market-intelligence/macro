@@ -20,6 +20,7 @@ Pure: no I/O, no clock read, no network. ``page_built_at`` is supplied.
 from __future__ import annotations
 
 import math
+from datetime import date, datetime, timedelta
 
 from typing import Any, Mapping, Sequence
 
@@ -915,7 +916,302 @@ def _glance(changes: Mapping[str, Any],
     }
 
 
-# --- public entry points ------------------------------------------------------
+# --- rates_curves curve-shape hero (A-F01-W4-1) ------------------------------
+# Context-only: shape + arithmetic spreads. No probability, no forecast, no
+# second producer. Computed from the snapshot's existing series points.
+
+_CURVE_TENORS: tuple[str, ...] = (
+    "3m", "6m", "1y", "2y", "3y", "5y", "7y", "10y", "20y", "30y",
+)
+_CURVE_SERIES_ALIASES: dict[str, tuple[str, ...]] = {
+    "3m": ("us3m", "3m", "us3m_level", "DGS3MO"),
+    "6m": ("us6m", "6m", "us6m_level", "DGS6MO"),
+    "1y": ("us1y", "1y", "us1y_level", "DGS1"),
+    "2y": ("us2y", "2y", "us2y_level", "DGS2"),
+    "3y": ("us3y", "3y", "us3y_level", "DGS3"),
+    "5y": ("us5y", "5y", "us5y_level", "DGS5"),
+    "7y": ("us7y", "7y", "us7y_level", "DGS7"),
+    "10y": ("us10y", "10y", "us10y_level", "DGS10"),
+    "20y": ("us20y", "20y", "us20y_level", "DGS20"),
+    "30y": ("us30y", "30y", "us30y_level", "DGS30"),
+}
+_CURVE_TENOR_LABELS: dict[str, dict[str, str]] = {
+    "3m": _pair("3-month", "3月期"),
+    "6m": _pair("6-month", "6月期"),
+    "1y": _pair("1-year", "1年期"),
+    "2y": _pair("2-year", "2年期"),
+    "3y": _pair("3-year", "3年期"),
+    "5y": _pair("5-year", "5年期"),
+    "7y": _pair("7-year", "7年期"),
+    "10y": _pair("10-year", "10年期"),
+    "20y": _pair("20-year", "20年期"),
+    "30y": _pair("30-year", "30年期"),
+}
+_CURVE_MIN_USABLE = 6
+_CURVE_PRIOR_MONTH_DAYS = 30
+_SHAPE_NORMAL = _pair(
+    "The curve is upward-sloping — longer maturities pay more than shorter ones.",
+    "曲线呈正常形态 — 期限越长，收益率越高。",
+)
+_SHAPE_INVERTED = _pair(
+    "The curve is inverted — some shorter maturities pay more than longer ones.",
+    "曲线出现倒挂 — 部分短期利率高于长期利率。",
+)
+_CURVE_NULL_PANEL = _pair(
+    "The curve panel needs the Treasury data from tonight, which did not arrive.",
+    "曲线面板需要当晚的美债数据，但数据未能到达。",
+)
+_CURVE_NULL_TENOR = _pair(
+    "No reading for this maturity in tonight's data.",
+    "本次数据未覆盖该期限。",
+)
+
+
+def _as_date(value: Any) -> date | None:
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    if isinstance(value, str) and value.strip():
+        try:
+            return date.fromisoformat(value.strip()[:10])
+        except ValueError:
+            return None
+    return None
+
+
+def _r4(value: Any) -> float | None:
+    if not _finite(value):
+        return None
+    return round(float(value), 4)
+
+
+def _delta(today: float | None, prior: float | None) -> float | None:
+    if today is None or prior is None:
+        return None
+    return round(today - prior, 4)
+
+
+def _parse_level_points(raw: Any) -> list[tuple[date, float]]:
+    """Ascending unique (date, value) rows; last listing of a date wins."""
+    by_date: dict[date, float] = {}
+    for point in raw or []:
+        if not isinstance(point, Mapping):
+            continue
+        when = _as_date(point.get("t"))
+        value = _r4(point.get("v"))
+        if when is None or value is None:
+            continue
+        by_date[when] = value
+    return sorted(by_date.items())
+
+
+def _prior_close_value(rows: Sequence[tuple[date, float]]) -> float | None:
+    if len(rows) < 2:
+        return None
+    return rows[-2][1]
+
+
+def _prior_month_value(rows: Sequence[tuple[date, float]], as_of: date | None) -> float | None:
+    """Nearest row at least 30 calendar days before as_of. Never today, never future."""
+    if as_of is None or not rows:
+        return None
+    target = as_of - timedelta(days=_CURVE_PRIOR_MONTH_DAYS)
+    best: tuple[date, float] | None = None
+    for when, value in rows:
+        if when <= target:
+            best = (when, value)
+        else:
+            break
+    return None if best is None else best[1]
+
+
+def _series_points_index(snapshot: Mapping[str, Any]) -> dict[str, list[tuple[date, float]]]:
+    index: dict[str, list[tuple[date, float]]] = {}
+    for entry in ((snapshot.get("series") or {}).get("items") or []):
+        if not isinstance(entry, Mapping):
+            continue
+        series_id = str(entry.get("series_id") or "")
+        if not series_id:
+            continue
+        index[series_id] = _parse_level_points(entry.get("points"))
+    return index
+
+
+def _rows_for_tenor(index: Mapping[str, list[tuple[date, float]]], tenor: str) -> list[tuple[date, float]]:
+    for alias in _CURVE_SERIES_ALIASES[tenor]:
+        rows = index.get(alias)
+        if rows:
+            return rows
+    return []
+
+
+def _shape_read(tenors: Sequence[Mapping[str, Any]]) -> dict[str, str]:
+    present = [(row["tenor"], row["today"]) for row in tenors if _finite(row.get("today"))]
+    for i in range(len(present) - 1):
+        _left_tenor, left = present[i]
+        _right_tenor, right = present[i + 1]
+        if left > right:
+            return dict(_SHAPE_INVERTED)
+    return dict(_SHAPE_NORMAL)
+
+
+def _spread_row(tenors_by_id: Mapping[str, Mapping[str, Any]], *,
+                spread_id: str, short: str, long: str,
+                label: dict[str, str], subtract_long_from_short: bool) -> dict[str, Any]:
+    """Arithmetic difference of two already-published tenor levels. Not a model."""
+    left = tenors_by_id.get(short) or {}
+    right = tenors_by_id.get(long) or {}
+    if subtract_long_from_short:
+        today = _delta(left.get("today"), right.get("today"))
+        close = _delta(left.get("prior_close"), right.get("prior_close"))
+        month = _delta(left.get("prior_month"), right.get("prior_month"))
+    else:
+        today = _delta(right.get("today"), left.get("today"))
+        close = _delta(right.get("prior_close"), left.get("prior_close"))
+        month = _delta(right.get("prior_month"), left.get("prior_month"))
+    return {
+        "id": spread_id,
+        "label": dict(label),
+        "today": today,
+        "delta_close": _delta(today, close),
+        "delta_month": _delta(today, month),
+    }
+
+
+def _chart_payload(tenors: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    """Inline-SVG geometry for three comparison windows. Token colours only."""
+    width, height = 640, 200
+    pad_l, pad_r, pad_t, pad_b = 40, 12, 14, 28
+    n = max(1, len(tenors) - 1)
+    inner_w = width - pad_l - pad_r
+    inner_h = height - pad_t - pad_b
+    values: list[float] = []
+    for row in tenors:
+        for key in ("today", "prior_close", "prior_month"):
+            value = row.get(key)
+            if _finite(value):
+                values.append(float(value))
+    if values:
+        y_min, y_max = min(values), max(values)
+        if y_max <= y_min:
+            y_max = y_min + 0.1
+            y_min = y_min - 0.1
+        pad = (y_max - y_min) * 0.08
+        y_min -= pad
+        y_max += pad
+    else:
+        y_min, y_max = 0.0, 1.0
+
+    def x_at(index: int) -> float:
+        return round(pad_l + (inner_w * index / n), 2)
+
+    def y_at(value: float) -> float:
+        return round(pad_t + (y_max - value) / (y_max - y_min) * inner_h, 2)
+
+    def polyline(key: str) -> str:
+        parts: list[str] = []
+        for i, row in enumerate(tenors):
+            value = row.get(key)
+            if not _finite(value):
+                continue
+            parts.append(f"{x_at(i)},{y_at(float(value))}")
+        return " ".join(parts)
+
+    x_ticks = []
+    for i, row in enumerate(tenors):
+        x_ticks.append({
+            "x": x_at(i),
+            "label": dict(row.get("label") or _CURVE_TENOR_LABELS[row["tenor"]]),
+        })
+    y_ticks = []
+    for frac in (0.0, 0.5, 1.0):
+        value = y_min + (y_max - y_min) * frac
+        y_ticks.append({"y": y_at(value), "text": f"{value:.2f}"})
+    return {
+        "width": width,
+        "height": height,
+        "baseline_y": height - pad_b,
+        "today": polyline("today"),
+        "prior_close": polyline("prior_close"),
+        "prior_month": polyline("prior_month"),
+        "x_ticks": x_ticks,
+        "y_ticks": y_ticks,
+    }
+
+
+def _curve_hero(snapshot: Mapping[str, Any]) -> dict[str, Any]:
+    """Today vs prior close vs prior month for the ten nominal CMT tenors.
+
+    Returns the honest-null panel (ok=False, no partial chart) when fewer than
+    six tenors have a today reading. Missing tenors stay in the list with
+    today=None rather than being dropped.
+    """
+    index = _series_points_index(snapshot)
+    generation = snapshot.get("generation") or {}
+    as_of_candidates: list[date] = []
+    stamped = _as_date(generation.get("calculation_as_of"))
+    if stamped is not None:
+        as_of_candidates.append(stamped)
+
+    tenors: list[dict[str, Any]] = []
+    missing: list[str] = []
+    for tenor in _CURVE_TENORS:
+        rows = _rows_for_tenor(index, tenor)
+        today = rows[-1][1] if rows else None
+        as_of_tenor = rows[-1][0] if rows else None
+        if as_of_tenor is not None:
+            as_of_candidates.append(as_of_tenor)
+        prior_close = _prior_close_value(rows)
+        prior_month = _prior_month_value(rows, as_of_tenor)
+        if today is None:
+            missing.append(tenor)
+        tenors.append({
+            "tenor": tenor,
+            "label": dict(_CURVE_TENOR_LABELS[tenor]),
+            "today": today,
+            "prior_close": prior_close,
+            "prior_month": prior_month,
+            "delta_close": _delta(today, prior_close),
+            "delta_month": _delta(today, prior_month),
+        })
+
+    usable = sum(1 for row in tenors if row["today"] is not None)
+    ok = usable >= _CURVE_MIN_USABLE
+    as_of = max(as_of_candidates).isoformat() if as_of_candidates else None
+    tenors_by_id = {row["tenor"]: row for row in tenors}
+    spreads = [
+        _spread_row(
+            tenors_by_id, spread_id="10y3m", short="3m", long="10y",
+            label=_pair("10-year minus 3-month", "10年期减3月期"),
+            subtract_long_from_short=False,
+        ),
+        _spread_row(
+            tenors_by_id, spread_id="2s10s", short="2y", long="10y",
+            label=_pair("2-year minus 10-year", "2年期减10年期"),
+            subtract_long_from_short=True,
+        ),
+    ]
+    return {
+        "ok": ok,
+        "as_of": as_of,
+        "tenors": tenors,
+        "spreads": spreads,
+        "shape_read": _shape_read(tenors) if ok else dict(_CURVE_NULL_PANEL),
+        "missing_tenors": missing,
+        "null_panel": dict(_CURVE_NULL_PANEL),
+        "null_tenor": dict(_CURVE_NULL_TENOR),
+        "heading": _pair("The Treasury curve", "美债收益率曲线"),
+        "subtitle": _pair(
+            "today vs the prior close vs a month ago",
+            "今日 vs 上一交易日收盘 vs 一个月前",
+        ),
+        "legend_today": _pair("Today", "今日"),
+        "legend_close": _pair("Prior close", "上一交易日收盘"),
+        "legend_month": _pair("A month ago", "一个月前"),
+        "chart": _chart_payload(tenors) if ok else None,
+    }
+
 
 def build_view(snapshot: Mapping[str, Any], *, page_built_at: str,
                artifact: Mapping[str, Any],
@@ -949,7 +1245,7 @@ def build_view(snapshot: Mapping[str, Any], *, page_built_at: str,
         {"tab_id": "history", "name": _pair("History", "历史")},
     ]
 
-    return {
+    view = {
         "ok": True,
         "layout": layout,
         "decision_first": layout == LAYOUT_DECISION_FIRST,
@@ -979,6 +1275,10 @@ def build_view(snapshot: Mapping[str, Any], *, page_built_at: str,
         "learning_events": list((snapshot.get("learning") or {}).get("event_names") or []),
         "page_built_at": page_built_at,
     }
+    # Curve-shape hero is rates_curves-only. Other workspaces must not grow the key.
+    if view["workspace"]["id"] == "rates_curves":
+        view["curve_hero"] = _curve_hero(snapshot)
+    return view
 
 
 def degraded_view(*, workspace_id: str, title: Mapping[str, str],

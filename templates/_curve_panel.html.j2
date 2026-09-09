@@ -1,0 +1,147 @@
+{#
+  Ceiling-scoped Treasury curve-shape hero for the rates_curves route
+  (A-F01-W4-1). Shape + arithmetic spreads only. This partial is NOT the
+  bonds hub panel: it carries no probability, no recession read, and no
+  shared include with templates/bonds.html.j2.
+
+  Local t() exists because the shared navigation partial's t() is not in
+  scope for an {% include %}.
+#}
+{% macro t(en, zh='') -%}
+<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
+{%- endmacro %}
+{% if view.curve_hero is defined %}
+{% set curve = view.curve_hero %}
+<style>
+  .mq-curve-hero {
+    width: min(100%, 1440px);
+    margin: 18px auto 0;
+    padding: 18px 20px 16px;
+    background: var(--mq-surface);
+    border: 1px solid var(--mq-line);
+    border-radius: var(--r-card);
+    box-shadow: var(--mq-shadow);
+    color: var(--mq-ink);
+  }
+  .mq-curve-hero h2 {
+    margin: 0;
+    font-size: clamp(20px, 2.4vw, 28px);
+    letter-spacing: -0.03em;
+  }
+  .mq-curve-sub { margin: 6px 0 0; color: var(--mq-muted); font-size: 13px; }
+  .mq-curve-chart { margin: 14px 0 8px; overflow-x: auto; }
+  .mq-curve-chart svg { display: block; width: 100%; height: auto; max-width: 640px; }
+  .mq-curve-line-today { fill: none; stroke: var(--mq-warn); stroke-width: 2.2; }
+  .mq-curve-line-close { fill: none; stroke: var(--mq-accent); stroke-width: 1.6; }
+  .mq-curve-line-month { fill: none; stroke: var(--mq-muted); stroke-width: 1.4; stroke-dasharray: 4 3; }
+  .mq-curve-axis { stroke: var(--mq-line-strong); stroke-width: 1; }
+  .mq-curve-tick { fill: var(--mq-muted); font-size: 10px; }
+  .mq-curve-legend {
+    display: flex; flex-wrap: wrap; gap: 12px 18px;
+    margin: 0 0 12px; padding: 0; list-style: none;
+    color: var(--mq-muted); font-size: 12px;
+  }
+  .mq-curve-legend i {
+    display: inline-block; width: 16px; height: 2px; margin-right: 6px;
+    vertical-align: middle; background: currentColor;
+  }
+  .mq-curve-legend .is-today { color: var(--mq-warn); }
+  .mq-curve-legend .is-close { color: var(--mq-accent); }
+  .mq-curve-legend .is-month { color: var(--mq-muted); }
+  .mq-curve-legend .is-month i { border-top: 2px dashed currentColor; height: 0; background: none; }
+  .mq-curve-spreads {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px; margin: 0 0 12px;
+  }
+  .mq-curve-spread {
+    padding: 10px 12px;
+    background: var(--mq-raised);
+    border: 1px solid var(--mq-line);
+    border-radius: var(--r-ctl);
+  }
+  .mq-curve-spread dt { margin: 0; color: var(--mq-muted); font-size: 11px; }
+  .mq-curve-spread dd { margin: 4px 0 0; font-size: 20px; letter-spacing: -0.03em; }
+  .mq-curve-deltas { margin: 6px 0 0; color: var(--mq-muted); font-size: 11px; }
+  .mq-curve-shape { margin: 0; max-width: 62ch; font-size: 14px; }
+  .mq-curve-null { margin: 12px 0 0; color: var(--mq-muted); font-size: 14px; }
+  .mq-curve-missing { margin: 8px 0 0; color: var(--mq-muted); font-size: 12px; }
+  @media (max-width: 640px) {
+    .mq-curve-hero { margin: 12px 0 0; padding: 14px 12px 12px; }
+    .mq-curve-spread dd { font-size: 18px; }
+  }
+  html[data-theme="light"] .mq-curve-hero {
+    background: var(--mq-surface);
+    box-shadow: var(--mq-shadow);
+  }
+</style>
+<section class="mq-curve-hero{{ ' mq-curve-null-state' if not curve.ok else '' }}" id="mq-curve-hero">
+  <header>
+    <p class="mq-kicker">{{ t('Rates & Curves', '利率与曲线') }}</p>
+    <h2>{{ t(curve.heading.en, curve.heading.zh) }}</h2>
+    <p class="mq-curve-sub">{{ t(curve.subtitle.en, curve.subtitle.zh) }}</p>
+  </header>
+  {% if not curve.ok %}
+  <p class="mq-curve-null">{{ t(curve.null_panel.en, curve.null_panel.zh) }}</p>
+  {% else %}
+  <div class="mq-curve-chart">
+    <svg viewBox="0 0 {{ curve.chart.width }} {{ curve.chart.height }}" role="img"
+         aria-labelledby="mq-curve-hero-caption">
+      <title id="mq-curve-hero-caption">{{ t(curve.heading.en, curve.heading.zh) }} — {{ t(curve.subtitle.en, curve.subtitle.zh) }}</title>
+      <line class="mq-curve-axis" x1="40" y1="{{ curve.chart.baseline_y }}"
+            x2="{{ curve.chart.width - 12 }}" y2="{{ curve.chart.baseline_y }}"></line>
+      {% for tick in curve.chart.y_ticks %}
+      <text class="mq-curve-tick" x="36" y="{{ tick.y }}" text-anchor="end" dominant-baseline="middle">{{ tick.text }}</text>
+      {% endfor %}
+      {% if curve.chart.prior_month %}
+      <polyline class="mq-curve-line-month" points="{{ curve.chart.prior_month }}"></polyline>
+      {% endif %}
+      {% if curve.chart.prior_close %}
+      <polyline class="mq-curve-line-close" points="{{ curve.chart.prior_close }}"></polyline>
+      {% endif %}
+      {% if curve.chart.today %}
+      <polyline class="mq-curve-line-today" points="{{ curve.chart.today }}"></polyline>
+      {% endif %}
+      {% for tick in curve.chart.x_ticks %}
+      <text class="mq-curve-tick" x="{{ tick.x }}" y="{{ curve.chart.height - 8 }}" text-anchor="middle">{{ t(tick.label.en, tick.label.zh) }}</text>
+      {% endfor %}
+    </svg>
+  </div>
+  <ul class="mq-curve-legend">
+    <li class="is-today"><i></i>{{ t(curve.legend_today.en, curve.legend_today.zh) }}</li>
+    <li class="is-close"><i></i>{{ t(curve.legend_close.en, curve.legend_close.zh) }}</li>
+    <li class="is-month"><i></i>{{ t(curve.legend_month.en, curve.legend_month.zh) }}</li>
+  </ul>
+  <dl class="mq-curve-spreads">
+    {% for spread in curve.spreads %}
+    <div class="mq-curve-spread">
+      <dt>{{ t(spread.label.en, spread.label.zh) }}</dt>
+      <dd>
+        {% if spread.today is none %}
+          {{ t(curve.null_tenor.en, curve.null_tenor.zh) }}
+        {% else %}
+          {{ '%+.2f'|format(spread.today) }}
+        {% endif %}
+      </dd>
+      <p class="mq-curve-deltas">
+        {% if spread.delta_close is none %}
+          {{ t('Prior close: no reading.', '上一交易日收盘：无读数。') }}
+        {% else %}
+          {{ t('Prior close', '上一交易日收盘') }} {{ '%+.2f'|format(spread.delta_close) }}
+        {% endif %}
+        ·
+        {% if spread.delta_month is none %}
+          {{ t('A month ago: no reading.', '一个月前：无读数。') }}
+        {% else %}
+          {{ t('A month ago', '一个月前') }} {{ '%+.2f'|format(spread.delta_month) }}
+        {% endif %}
+      </p>
+    </div>
+    {% endfor %}
+  </dl>
+  <p class="mq-curve-shape">{{ t(curve.shape_read.en, curve.shape_read.zh) }}</p>
+  {% if curve.missing_tenors %}
+  <p class="mq-curve-missing">{{ t(curve.null_tenor.en, curve.null_tenor.zh) }}</p>
+  {% endif %}
+  {% endif %}
+</section>
+{% endif %}

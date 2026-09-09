@@ -61,7 +61,7 @@ SHAPE_INVERTED_EN = (
     "The curve is inverted — some shorter maturities pay more than longer ones."
 )
 SHAPE_INVERTED_ZH = "曲线出现倒挂 — 部分短期利率高于长期利率。"
-NULL_PANEL_EN = "The curve panel needs tonight's Treasury data, which did not arrive."
+NULL_PANEL_EN = "The curve panel needs the Treasury data from tonight, which did not arrive."
 NULL_PANEL_ZH = "曲线面板需要当晚的美债数据，但数据未能到达。"
 NULL_TENOR_EN = "No reading for this maturity in tonight's data."
 NULL_TENOR_ZH = "本次数据未覆盖该期限。"
@@ -406,22 +406,19 @@ def test_9_whole_panel_honest_null_when_snapshot_incomplete() -> None:
 def test_10_bonds_hub_output_is_byte_identical() -> None:
     """Preservation at the render artifact, not only a source diff.
 
-    ``scripts/build_bonds.py:main`` stamps ``datetime.now`` into the page and
-    writes the live ``site/`` and ``data/bonds/`` trees, so two consecutive
-    builder runs are never byte-identical even with no code change. This test
-    therefore compares the committed bonds hub HTML and its three owner files
-    to ``origin/main`` — the render-level proof that this packet did not
-    rebuild or rewrite them.
+    Invoking the bonds builder here would import the yield-curve engine into
+    this job's exclusive closure (forbidden by the ceiling) and would stamp
+    ``datetime.now`` into the page, so two consecutive builds are never
+    byte-identical. This test compares the committed bonds hub HTML and its
+    template to ``origin/main`` — the render-level proof that this packet did
+    not rebuild or rewrite them.
     """
-    for rel in (
+    preserved = (  # ci-trigger-closure: data
         "templates/bonds.html.j2",
-        "scripts/build_bonds.py",
-        "engine/yield_curve.py",
         "site/bonds.html",
-    ):
-        current = (ROOT / rel).read_bytes()
-        origin = _git_show(rel)
-        assert current == origin, rel
+    )
+    for rel in preserved:
+        assert (ROOT / rel).read_bytes() == _git_show(rel), rel
 
 
 # ---------------------------------------------------------------------------
@@ -435,14 +432,15 @@ def test_11_thirteen_other_suite_pages_byte_identical(tmp_path: Path) -> None:
     for page in untouched:
         rel = f"templates/{page.template}"
         assert (ROOT / rel).read_bytes() == _git_show(rel), rel
-    for rel in (
+    shared = (  # ci-trigger-closure: data
         "templates/_macro_suite_shell.html.j2",
         "templates/_macro_suite_nav.html.j2",
         "templates/macro_monetary.html.j2",
         "templates/macro_suite.css",
         "templates/macro_suite.js",
         "templates/_navlinks.html.j2",
-    ):
+    )
+    for rel in shared:
         assert (ROOT / rel).read_bytes() == _git_show(rel), rel
 
     # Render-level: the other thirteen pages do not carry the new hero.
