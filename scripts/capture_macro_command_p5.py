@@ -117,7 +117,13 @@ def _registry_match_selector(sel: str) -> str | None:
     # Compact tables often emit table.mq-table.mq-table-compact — match longest key.
     best = None
     for key in registry:
-        if sel == key or sel.startswith(key + ".") or key in sel.split():
+        if (
+            sel == key
+            or sel.startswith(key + ".")
+            or sel.startswith(key + ":")
+            or sel.startswith(key + "[")
+            or key in sel.split()
+        ):
             if best is None or len(key) > len(best):
                 best = key
         # class-token containment: "table.mq-table.mq-table-compact" vs ".mq-table"
@@ -174,7 +180,7 @@ METHOD_OPEN_PAGES = (
     "macro_financial_conditions.html",
     LABOR_PAGE,
 )
-METHOD_OPEN_SELECTOR = "section.mq-method .mq-axis-method"
+METHOD_OPEN_SELECTOR = "section.mq-method"  # E-n1: section with padding, every cell
 METHOD_OPEN_DETAILS = "section.mq-method details.mc-details"
 # True container for Changed fingerprints / Hysteresis / lineage sentence
 # (NOT section.mq-method — Method version / Owner / Trace live elsewhere;
@@ -202,6 +208,20 @@ CLEARANCE_TEXT = (
 )
 
 SERVERS: list[subprocess.Popen] = []
+
+
+class PageOverflowError(RuntimeError):
+    """Document-level horizontal overflow (C-M1 / E-M3)."""
+
+    def __init__(self, route: str, width: int, scroll_width: float) -> None:
+        self.route = route
+        self.width = width
+        self.scroll_width = scroll_width
+        super().__init__(
+            f"PageOverflowError(route={route!r}, width={width}, "
+            f"scroll_width={scroll_width})")
+
+
 
 
 def _free_port() -> int:
@@ -343,6 +363,8 @@ def family_for(filename: str) -> str:
     name = filename[:-4] if filename.endswith(".png") else filename
     if name.startswith("chipmat-"):
         return "chip_material"
+    if name.startswith("hubrail-"):
+        return "hub_rail"
     if name.startswith("ws-"):
         return "workspace"
     if name.startswith("i2-"):
@@ -700,19 +722,26 @@ def _shot(dest: Path, page, locator, *, selector: str,
     shoot_sel = selector
     if selector == "#mc-p5-frame":
         frame = page.frame_locator("#mc-p5-frame")
-        receipt = frame.locator("body").first
+        receipt = frame.locator("body")
+        if receipt.count() != 1:
+            raise RuntimeError(
+                f"{dest.name}: crop_selector 'body' (iframe) "
+                f"matched {receipt.count()}")
+        receipt = receipt.first
         receipt.wait_for(state="attached", timeout=15000)
-        shoot = page.locator("#mc-p5-frame").first
-        if shoot.count() != 1:
-            raise RuntimeError(f"{dest.name}: #mc-p5-frame count={shoot.count()}")
+        shoot = page.locator("#mc-p5-frame")
+        n = shoot.count()
+        if n != 1:
+            raise RuntimeError(
+                f"{dest.name}: crop_selector '#mc-p5-frame' matched {n}")
         shoot_sel = "#mc-p5-frame"
     else:
-        if page.locator(selector).count() == 0:
+        n = page.locator(selector).count()
+        if n != 1:
             raise RuntimeError(
-                f"{dest.name}: crop_selector {selector!r} matched 0 "
-                "(must resolve; no text-hash fallback)")
-        # Caller passes the concrete locator (often .first of a multi-match).
-        shoot = locator
+                f"{dest.name}: crop_selector {selector!r} matched {n} "
+                "(must be exactly one; tighten the selector — never .first)")
+        shoot = page.locator(selector)
         shoot_sel = selector
     return _element_shot_guarded(
         dest, page, shoot, selector=shoot_sel, locale=locale,
@@ -883,18 +912,20 @@ def _state(filename: str, theme: str, locale: str, viewport: str,
                 "occlusionSamples", "shot_route", "page_id",
                 "innerWidth", "innerHeight",
                 "coordSpace", "hostFrameOffset", "host_scroll_y_at_shot",
-                "frameInnerWidth", "analystBox", "siblingPillBox",
+                "frameInnerWidth", "frameInnerHeight",
+                "analystBox", "siblingPillBox",
                 "raw_box", "cropDomSha256",
                 "scroll_container_selector", "scrollWidth", "clientWidth",
-                "scrollLeft", "overflow_x",
+                "scrollLeft", "overflow_x", "fits",
                 "inner_scrollports", "ancestor_scrollports",
                 "y_coverage", "samples_span", "grid",
                 "receipt_document", "visible_text_at_scroll",
+                "visible_text_at_zero", "painted_fraction",
                 "occlusion_sample_box", "content_overflows",
                 "text_receipt_paths", "shot_viewport",
                 "raw_box_in_shot_viewport", "hidden_fixed",
                 "shoot_box", "table_fits", "page_fits",
-                "page_scroll_width"):
+                "page_scroll_width", "matched"):
         if info.get(key) is not None:
             row[key] = info[key]
     # content_overflows must be present on every crop (empty list is valid).
@@ -965,7 +996,7 @@ def _assert_method_dl_contained(body) -> None:
     inner = _crop_box(dl)
     if not _box_contains(outer, inner):
         raise RuntimeError(
-            f"mq-axis-method crop does not contain its dl: {outer} vs {inner}")
+            f"method section crop does not contain its dl: {outer} vs {inner}")
 
 
 # Fixed/sticky chrome that may lawfully intersect a crop (topbar + in-suite nav).
@@ -1335,11 +1366,21 @@ def _content_overflows_receipt(locator) -> list[dict[str, Any]]:
                     // Never emit bare "text" — SVG text nodes are excluded.
                     return tag === 'text' ? 'svg.text' : tag;
                 }
+                // Concrete selector with nth-of-type (walker forensics).
+                const parent = node.parentElement;
+                let nth = '';
+                if (parent) {
+                    const sibs = Array.from(parent.children).filter(
+                        (c) => c.tagName === node.tagName);
+                    if (sibs.length > 1) {
+                        nth = ':nth-of-type(' + (sibs.indexOf(node) + 1) + ')';
+                    }
+                }
                 if (node.className && typeof node.className === 'string') {
                     const cls = node.className.trim().split(/\\s+/).slice(0, 3).join('.');
-                    return cls ? (tag + '.' + cls) : tag;
+                    return cls ? (tag + '.' + cls + nth) : (tag + nth);
                 }
-                return tag;
+                return tag + nth;
             };
             const matchesKey = (node, key) => {
                 if (!node || !key) return false;
@@ -1469,21 +1510,27 @@ def _content_overflows_receipt(locator) -> list[dict[str, Any]]:
         registry_keys,
     )
     # Normalize nearest_registered_scroller against Python registry keys.
+    # Keep the concrete DOM selector in ``matched`` (with nth) next to the
+    # registry key so receipts still say which .mq-table scrolled.
     normalized: list[dict[str, Any]] = []
     for entry in list(rows or []):
         row = dict(entry)
         sel = str(row.get("selector") or "")
+        concrete = sel
         nearest = row.get("nearest_registered_scroller")
         if nearest:
             matched = _registry_match_selector(str(nearest)) or str(nearest)
             row["nearest_registered_scroller"] = matched
+            row["matched"] = concrete
         else:
             matched = _registry_match_selector(sel)
             if matched and str(row.get("kind")) == "scrollport":
                 row["selector"] = matched
                 row["nearest_registered_scroller"] = matched
+                row["matched"] = concrete
             else:
                 row["nearest_registered_scroller"] = matched
+                row["matched"] = concrete
         # Guarantee geometry keys.
         for key in ("x", "y", "right", "crop_right"):
             if key not in row or row[key] is None:
@@ -1538,9 +1585,8 @@ def _occlusion_samples(locator, *, cols: int = 3, rows: int = 5,
     crop_h = float(box["height"])
     crop_w = float(box["width"])
     short = crop_h < 40.0
-    # inset=4 yields (h-8)/h >= 0.95 only for h >= 160. Smaller crops need a
-    # tighter y inset so geometry alone can clear the ≥0.95 coverage floor.
-    y_inset = min(4.0, max(0.0, crop_h * 0.025))
+    # C-n4: samples at top+4 and bottom-4 exactly; floor is (h-8)/h for h>=40.
+    y_inset = 4.0
     # Inline chips (e.g. .mc-read-topic) share a line with sibling text; a
     # 4px x-inset lands in the following space span. Pull x samples inward.
     x_inset = min(max(4.0, crop_w * 0.12), max(0.0, crop_w / 2.0 - 1.0))
@@ -1638,21 +1684,25 @@ def _occlusion_samples(locator, *, cols: int = 3, rows: int = 5,
     else:
         judged = _judge_occlusion(samples, min_samples=len(pts))
     cov = y_coverage(judged, box)
-    if (not short) and cov + 1e-6 < 0.95:
+    # C-n4: honest floor from the 4px inset grid — no epsilon.
+    floor = ((crop_h - 8.0) / crop_h) if crop_h >= 40.0 else 0.0
+    if (not short) and cov < floor:
         raise RuntimeError(
-            f"y_coverage {cov:.3f} < 0.95 for crop h={crop_h} "
+            f"y_coverage {cov:.6f} < floor {floor:.6f}=(h-8)/h "
+            f"for crop h={crop_h} "
             f"(samples ys={[s.get('y') for s in judged]})")
     ys = [float(s["y"]) for s in judged if "y" in s]
     top = float(box["y"])
     bottom = top + float(box["height"])
     if not short and ys:
-        if min(ys) > top + 8.0 + 1e-6:
+        if min(ys) > top + 4.0:
             raise RuntimeError(
-                f"occlusion samples miss crop top: min_y={min(ys)} top={top}")
-        if max(ys) < bottom - 8.0 - 1e-6:
+                f"occlusion samples miss crop top+4: min_y={min(ys)} "
+                f"top+4={top + 4.0}")
+        if max(ys) < bottom - 4.0:
             raise RuntimeError(
-                f"occlusion samples miss crop bottom: max_y={max(ys)} "
-                f"bottom={bottom}")
+                f"occlusion samples miss crop bottom-4: max_y={max(ys)} "
+                f"bottom-4={bottom - 4.0}")
     meta = {
         "samples_span": "crop",
         "y_coverage": cov,
@@ -1746,8 +1796,57 @@ def _snap_css_box(box: Mapping[str, Any]) -> dict[str, float]:
     }
 
 
-def _assert_page_fits(target, *, name: str) -> dict[str, Any]:
-    """E-M3: page must FIT its viewport — no document-level horizontal scroll."""
+def _painted_fraction(png_path: Path) -> float:
+    """Share of non-background rows (E-m2). Blank canvas is visible in the manifest."""
+    try:
+        from PIL import Image
+        import numpy as np
+    except ImportError:
+        return 1.0
+    im = Image.open(png_path).convert("RGB")
+    arr = np.asarray(im)
+    if arr.size == 0:
+        return 0.0
+    bg = arr[0, 0].astype("int16")
+    delta = np.abs(arr.astype("int16") - bg).max(axis=2)
+    painted_rows = (delta > 8).any(axis=1)
+    return float(painted_rows.mean()) if len(painted_rows) else 0.0
+
+
+def _iframe_coord_receipt(page, *, viewport_width: int) -> dict[str, Any]:
+    """E-m1: iframe-hosted crops record coordSpace + frame geometry."""
+    host = page.locator("#mc-p5-frame")
+    if host.count() != 1:
+        win = _measure_window(page)
+        return {
+            "coordSpace": "host",
+            "innerWidth": int(round(float(win["innerWidth"]))),
+            "innerHeight": int(round(float(win["innerHeight"]))),
+        }
+    box = host.bounding_box() or {"x": 0, "y": 0, "width": 0, "height": 0}
+    frame = page.frame_locator("#mc-p5-frame")
+    dims = frame.locator("html").evaluate(
+        """() => ({
+            frameInnerWidth: window.innerWidth,
+            frameInnerHeight: window.innerHeight,
+        })"""
+    ) or {}
+    host_win = _measure_window(page)
+    return {
+        "coordSpace": "iframe",
+        "frameInnerWidth": int(round(float(
+            dims.get("frameInnerWidth") or viewport_width))),
+        "frameInnerHeight": int(round(float(
+            dims.get("frameInnerHeight") or 0))),
+        "hostFrameOffset": {"x": float(box["x"]), "y": float(box["y"])},
+        "innerWidth": int(round(float(host_win["innerWidth"]))),
+        "innerHeight": int(round(float(host_win["innerHeight"]))),
+    }
+
+
+def _assert_page_fits(target, *, name: str, route: str = "",
+                       width: int | None = None) -> dict[str, Any]:
+    """E-M3/C-M1: page must FIT its viewport — no document-level horizontal scroll."""
     row = target.evaluate(
         """() => {
             const doc = document;
@@ -1762,15 +1861,58 @@ def _assert_page_fits(target, *, name: str) -> dict[str, Any]:
             };
         }"""
     ) or {}
-    if not row.get("page_fits"):
-        raise RuntimeError(
-            f"{name}: page does not fit viewport "
-            f"(scrollWidth={row.get('page_scroll_width')} "
-            f"innerWidth={row.get('innerWidth')})")
+    sw = float(row.get("page_scroll_width") or 0)
+    iw = float(row.get("innerWidth") or 0)
+    fits = bool(row.get("page_fits"))
+    if not fits:
+        route_s = route or name
+        width_i = int(width if width is not None else round(iw))
+        raise PageOverflowError(route_s, width_i, sw)
     return {
-        "page_fits": bool(row.get("page_fits")),
-        "page_scroll_width": float(row.get("page_scroll_width") or 0),
+        "page_fits": fits,
+        "page_scroll_width": sw,
+        "innerWidth": iw,
     }
+
+
+def _probe_page_fits_matrix(browser, *, origin: str) -> list[dict[str, Any]]:
+    """C-M1: one page_fits probe per route × width × locale (one theme)."""
+    from scripts.build_macro_suite_pages import HUB_PAGE, SUITE_PAGES
+    routes = [HUB_PAGE.output] + [page.output for page in SUITE_PAGES]
+    widths = (320, 390, 768, 1440)
+    locales = ("en", "zh")
+    theme = "dark"
+    rows: list[dict[str, Any]] = []
+    for route in routes:
+        for width in widths:
+            for locale in locales:
+                ctx, page, frame = _open(
+                    browser=browser, origin=origin,
+                    path=f"/{route}", theme=theme, locale=locale,
+                    width=1440 if width < 1440 else width,
+                    height=900,
+                    iframe_width=width if width < 1440 else None,
+                )
+                try:
+                    target = (
+                        frame.locator("html") if frame is not None
+                        else page.locator("html"))
+                    target.wait_for(state="attached", timeout=15000)
+                    page.wait_for_timeout(80)
+                    fit = _assert_page_fits(
+                        target, name=f"page_fits:{route}:{width}:{locale}",
+                        route=route, width=width)
+                    rows.append({
+                        "route": route,
+                        "width": width,
+                        "locale": locale,
+                        "scroll_width": fit["page_scroll_width"],
+                        "inner_width": fit.get("innerWidth") or width,
+                        "fits": True,
+                    })
+                finally:
+                    ctx.close()
+    return rows
 
 
 def _scroll_crop_fully_visible(page, selector: str, *, chrome: float) -> None:
@@ -2038,6 +2180,10 @@ def _element_shot_guarded(
     extra["raw_box_in_shot_viewport"] = dict(raw_box)
     extra["shot_viewport"] = {"w": base_w, "h": int(round(vh))}
     page.screenshot(path=str(dest), type="png", clip=shoot_box)
+    # E-m2: blank canvas share. 18-dark-en-1440 half-null fixture is honestly
+    # tall (empty grid track / min-height under content); painted_fraction
+    # makes the blank share visible beside y_coverage.
+    extra["painted_fraction"] = _painted_fraction(dest)
     # Occlusion samples the SHOOT box in the shoot document (host page for
     # iframe crops). Overflow/text still use ``receipt`` (iframe body).
     _attach_occlusion(extra, locator, raw_box=raw_box)
@@ -2083,10 +2229,12 @@ def _element_shot_guarded(
     extra["_element_text"] = visible
     extra["innerWidth"] = int(round(float(win["innerWidth"])))
     extra["innerHeight"] = int(round(float(win["innerHeight"])))
-    if receipt_locator is not None:
+    if receipt_locator is not None or page.locator("#mc-p5-frame").count() == 1:
         extra["receipt_document"] = "iframe"
+        extra.update(_iframe_coord_receipt(page, viewport_width=viewport_width))
     else:
         extra["receipt_document"] = "host"
+        extra["coordSpace"] = "host"
 
     # Invariant: PNG css dims == shoot_box exactly; |shoot − raw| ≤ 1 (C-m4).
     pw_chk, ph_chk = _png_size(dest)
@@ -3069,12 +3217,23 @@ def _css_box(box: Mapping[str, Any] | None) -> dict[str, float] | None:
 
 def chipmat_containment_holds(cell: Mapping[str, Any], *,
                               tol: float = 1.0) -> bool:
-    """analystBox (and sibling pill when the pair fits) inside cropBox."""
-    if cell.get("coordSpace") == "host-page":
-        crop = _css_box(cell.get("crop_box_doc") or cell.get("cropBox")
-                        or cell.get("crop_box"))
+    """analystBox (and sibling pill when the pair fits) inside cropBox.
+
+    analystBox / siblingPillBox are recorded in the same space as the
+    capture path that produced them: iframe crops use viewport-space
+    getBoundingClientRect (match cropBox / crop_box); host / host-page
+    crops record document-space boxes (match crop_box_doc). Never mix
+    crop_box_doc.y with a viewport analystBox.y after a page scroll.
+    """
+    space = cell.get("coordSpace")
+    if space == "iframe":
+        crop = _css_box(
+            cell.get("cropBox") or cell.get("crop_box")
+            or cell.get("crop_box_doc"))
     else:
-        crop = _css_box(cell.get("cropBox") or cell.get("crop_box"))
+        crop = _css_box(
+            cell.get("crop_box_doc") or cell.get("cropBox")
+            or cell.get("crop_box"))
     chip = _css_box(cell.get("analystBox"))
     if not crop or not chip:
         return False
@@ -3174,7 +3333,70 @@ def _crop_collision_ratified(
         return True
     if _disclosure_trace_collision_ratified(files, pages_out):
         return True
-    return _method_table_390_pair_ratified(files, pages_out)
+    if _method_table_390_pair_ratified(files, pages_out):
+        return True
+    return _hub_rail_pair_ratified(files, pages_out)
+
+
+def _hub_rail_pair_ratified(
+        files: list[str], pages_out: Sequence[Mapping[str, Any]]) -> bool:
+    """Hub rail/subtabs start+end may share bytes when the strip fits.
+
+    E-B1: if content fits, start∪end are the same photograph; scroll receipts
+    still carry fits:true / scrollLeft=0. Real overflow must differ.
+    """
+    if len(files) != 2:
+        return False
+    pat_rail = re.compile(
+        r"^hubrail-rail-(dark|light)-(en|zh)-(390|768)-(start|end)\.png$"
+    )
+    pat_sub = re.compile(
+        r"^hubrail-subtabs-(dark|light)-(en|zh)-390-(start|end)\.png$"
+    )
+    parsed = []
+    for name in files:
+        m = pat_rail.match(name)
+        if m:
+            parsed.append({
+                "kind": "rail",
+                "theme": m.group(1),
+                "locale": m.group(2),
+                "width": m.group(3),
+                "pos": m.group(4),
+                "file": name,
+            })
+            continue
+        m = pat_sub.match(name)
+        if m:
+            parsed.append({
+                "kind": "subtabs",
+                "theme": m.group(1),
+                "locale": m.group(2),
+                "width": "390",
+                "pos": m.group(3),
+                "file": name,
+            })
+            continue
+        return False
+    if {row["pos"] for row in parsed} != {"start", "end"}:
+        return False
+    if len({(r["kind"], r["theme"], r["locale"], r["width"]) for r in parsed}) != 1:
+        return False
+    by_file = {
+        st["file"]: st
+        for page in pages_out
+        for st in page.get("states") or []
+        if st.get("file")
+    }
+    for row in parsed:
+        cell = by_file.get(row["file"]) or {}
+        sw = cell.get("scrollWidth")
+        cw = cell.get("clientWidth")
+        if sw is None or cw is None:
+            return False
+        if float(sw) > float(cw) + 1.0:
+            return False
+    return True
 
 
 def _method_table_390_pair_ratified(
@@ -3319,6 +3541,191 @@ def _chip_material_probe(target, *, page_name: str, locale: str,
     row["width"] = width
     row["page"] = page_name
     return row
+
+
+_RAIL_VISIBLE_TEXT_JS = """(el, locale) => {
+    const other = locale === 'zh' ? 'l-en' : 'l-zh';
+    const cr = el.getBoundingClientRect();
+    const parts = [];
+    for (const node of el.querySelectorAll('li, a, button, span.mc-rail-text, .mc-subtab')) {
+      const r = node.getBoundingClientRect();
+      if (r.width < 1 || r.height < 1) continue;
+      // Full containment — a partially clipped chip is not "photographed".
+      if (r.left < cr.left - 0.5 || r.right > cr.right + 0.5) continue;
+      if (r.top < cr.top - 0.5 || r.bottom > cr.bottom + 0.5) continue;
+      const clone = node.cloneNode(true);
+      clone.querySelectorAll('.' + other).forEach(n => n.remove());
+      const t = (clone.innerText || '').replace(/\\s+/g, ' ').trim();
+      if (t) parts.push(t);
+    }
+    return parts.join(' ').replace(/\\s+/g, ' ').trim();
+}"""
+
+
+def _scroll_hub_scroller(target, selector: str, *, pos: str) -> dict[str, Any]:
+    """Scroll a hub rail/subtabs scroller to start or end; return receipts.
+
+    ``target`` is a Playwright locator (usually the iframe/html root). Locator
+    ``evaluate`` binds the matched Element as the first arg and the Python
+    payload as the second — a single-arg ``(args) =>`` would treat the Element
+    as the payload and ``querySelector(undefined)`` → ``missing``.
+    """
+    return target.evaluate(
+        """(root, args) => {
+            const doc = root.ownerDocument || document;
+            const el = doc.querySelector(args.sel);
+            if (!el) return {ok: false, reason: 'missing', sel: args.sel};
+            if (args.pos === 'end') {
+              el.scrollLeft = el.scrollWidth;
+            } else {
+              el.scrollLeft = 0;
+            }
+            const st = getComputedStyle(el);
+            return {
+              ok: true,
+              scroll_container_selector: args.sel,
+              scrollWidth: el.scrollWidth,
+              clientWidth: el.clientWidth,
+              scrollLeft: el.scrollLeft,
+              overflow_x: st.overflowX,
+              fits: el.scrollWidth <= el.clientWidth + 1,
+            };
+        }""",
+        {"sel": selector, "pos": pos},
+    ) or {"ok": False}
+
+
+def _capture_hub_rail_family(browser, *, origin: str,
+                             dest_states: list[dict[str, Any]]) -> None:
+    """E-B1: photograph ul.mc-rail-list (+ div.mc-subtabs) start/end pairs."""
+    rail_sel = "ul.mc-rail-list"
+    # Three mc-subtabs strips exist on the hub; pin the money strip (unique).
+    sub_sel = 'div.mc-subtabs[aria-labelledby="money-h"]'
+    for theme, locale in (
+        ("dark", "en"), ("dark", "zh"),
+        ("light", "en"), ("light", "zh"),
+    ):
+        for width in (390, 768):
+            for pos in ("start", "end"):
+                name = f"hubrail-rail-{theme}-{locale}-{width}-{pos}.png"
+                print(f"capture {name}", flush=True)
+                ctx, page, frame = _open(
+                    browser=browser, origin=origin,
+                    path=f"/{HUB_PAGE}", theme=theme, locale=locale,
+                    width=1440 if width < 1440 else width,
+                    height=900,
+                    iframe_width=width if width < 1440 else None,
+                )
+                try:
+                    host = frame.locator("html") if frame is not None else page
+                    host.locator(rail_sel).wait_for(timeout=15000)
+                    n = host.locator(rail_sel).count()
+                    if n != 1:
+                        raise RuntimeError(
+                            f"{name}: crop_selector {rail_sel!r} matched {n}")
+                    text_zero = str(host.locator(rail_sel).evaluate(
+                        _RAIL_VISIBLE_TEXT_JS, locale) or "")
+                    scroll_rcpt = _scroll_hub_scroller(
+                        host, rail_sel, pos=pos)
+                    if not scroll_rcpt.get("ok"):
+                        raise RuntimeError(f"{name}: scroll failed {scroll_rcpt}")
+                    page.wait_for_timeout(80)
+                    text_at = str(host.locator(rail_sel).evaluate(
+                        _RAIL_VISIBLE_TEXT_JS, locale) or "")
+                    if pos == "end" and float(scroll_rcpt.get("scrollLeft") or 0) <= 0:
+                        # Content fits — still photograph; covering test only
+                        # requires scrollLeft>0 cells when overflow exists.
+                        pass
+                    loc = host.locator(rail_sel)
+                    info = _element_shot_guarded(
+                        EVIDENCE / name, page, loc,
+                        selector=rail_sel, locale=locale,
+                        viewport_width=width, target_for_nav=page,
+                        family="hub_rail",
+                        receipt_locator=(
+                            frame.locator("body").first if frame is not None
+                            else None),
+                    )
+                    info.update(scroll_rcpt)
+                    info["visible_text_at_scroll"] = text_at
+                    info["visible_text_at_zero"] = text_zero
+                    info["page_id"] = HUB_PAGE
+                    info["shot_route"] = _shot_route_of(
+                        frame.locator("html") if frame is not None else page)
+                    dest_states.append(_state(
+                        name, theme, locale,
+                        "mobile" if width == 390 else "tablet",
+                        info, viewport_width=width,
+                        verified_how=(
+                            f"{HUB_PAGE} {rail_sel} scrollLeft={pos}"
+                        ),
+                        crop=True, selector=rail_sel,
+                        force_state=f"hub_rail_{pos}",
+                        family="hub_rail",
+                    ))
+                finally:
+                    ctx.close()
+        # div.mc-subtabs at 390 — live only on the active money panel
+        # (other panels stay [hidden] until hash activation).
+        for pos in ("start", "end"):
+            name = f"hubrail-subtabs-{theme}-{locale}-390-{pos}.png"
+            print(f"capture {name}", flush=True)
+            ctx, page, frame = _open(
+                browser=browser, origin=origin,
+                path=f"/{HUB_PAGE}#money", theme=theme, locale=locale,
+                width=1440, height=900, iframe_width=390,
+            )
+            try:
+                host = frame.locator("html") if frame is not None else page
+                # Boot may settle on overview briefly; force money if needed.
+                host.evaluate(
+                    """() => {
+                        if ((location.hash || '').replace(/^#/, '').split('/')[0]
+                            !== 'money') {
+                          location.hash = '#money';
+                        }
+                    }"""
+                )
+                host.locator("#money:not([hidden])").wait_for(timeout=15000)
+                host.locator(sub_sel).wait_for(state="visible", timeout=15000)
+                n = host.locator(sub_sel).count()
+                if n != 1:
+                    raise RuntimeError(
+                        f"{name}: crop_selector {sub_sel!r} matched {n}")
+                text_zero = str(host.locator(sub_sel).evaluate(
+                    _RAIL_VISIBLE_TEXT_JS, locale) or "")
+                scroll_rcpt = _scroll_hub_scroller(host, sub_sel, pos=pos)
+                if not scroll_rcpt.get("ok"):
+                    raise RuntimeError(f"{name}: scroll failed {scroll_rcpt}")
+                page.wait_for_timeout(80)
+                text_at = str(host.locator(sub_sel).evaluate(
+                    _RAIL_VISIBLE_TEXT_JS, locale) or "")
+                loc = host.locator(sub_sel)
+                info = _element_shot_guarded(
+                    EVIDENCE / name, page, loc,
+                    selector=sub_sel, locale=locale,
+                    viewport_width=390, target_for_nav=page,
+                    family="hub_rail",
+                    receipt_locator=(
+                        frame.locator("body").first if frame is not None
+                        else None),
+                )
+                info.update(scroll_rcpt or {})
+                # Registry key (covering test) — concrete crop stays on crop_selector.
+                info["scroll_container_selector"] = "div.mc-subtabs"
+                info["visible_text_at_scroll"] = text_at
+                info["visible_text_at_zero"] = text_zero
+                info["page_id"] = HUB_PAGE
+                dest_states.append(_state(
+                    name, theme, locale, "mobile", info,
+                    viewport_width=390,
+                    verified_how=f"{HUB_PAGE}#money {sub_sel} scrollLeft={pos}",
+                    crop=True, selector=sub_sel,
+                    force_state=f"hub_subtabs_{pos}",
+                    family="hub_rail",
+                ))
+            finally:
+                ctx.close()
 
 
 def _mmb_surface_state(root) -> dict[str, Any]:
@@ -3654,6 +4061,18 @@ def declared_cell_rows(
             add(f"ws-{slug}-{theme}-{locale}-768.png")
             for width in CHIP_MATERIAL_WIDTHS:
                 add(f"chipmat-{slug}-{theme}-{locale}-{width}.png")
+    # E-B1: hub_rail covers ul.mc-rail-list (+ div.mc-subtabs) on the hub.
+    for theme, locale in (
+        ("dark", "en"), ("dark", "zh"),
+        ("light", "en"), ("light", "zh"),
+    ):
+        for width in (390, 768):
+            for pos in ("start", "end"):
+                add(f"hubrail-rail-{theme}-{locale}-{width}-{pos}.png",
+                    family="hub_rail")
+        for pos in ("start", "end"):
+            add(f"hubrail-subtabs-{theme}-{locale}-390-{pos}.png",
+                family="hub_rail")
     for page_name, receipt in appl.items():
         if not page_is_e5_bearing(receipt):
             continue
@@ -3696,7 +4115,9 @@ def _fallback_counts(html: str) -> dict[str, int]:
 def _topic_styles(page) -> dict[str, Any]:
     return page.evaluate(
         """() => {
-            const el = document.querySelector('.mc-read-topic');
+            const el = document.querySelector(
+                '.mc-read-topic[data-mc-topic="money"]')
+                || document.querySelector('.mc-read-topic');
             if (!el) return {ok: false, reason: 'no .mc-read-topic'};
             const cs = getComputedStyle(el);
             const bg = cs.backgroundImage || '';
@@ -3792,6 +4213,14 @@ def main() -> int:
     try:
         with sync_playwright() as playwright:
             browser = playwright.chromium.launch(headless=True)
+
+            # C-M1: page_fits once per route × width × locale BEFORE any crop.
+            print("probe page_fits matrix (15×4×2)", flush=True)
+            page_fits_rows = _probe_page_fits_matrix(browser, origin=origin)
+            probes["page_fits"] = page_fits_rows
+
+            # E-B1: hub rail + subtabs covering frames (before other crops).
+            _capture_hub_rail_family(browser, origin=origin, dest_states=states)
 
             # 1–4 above the fold
             for n, theme, locale in (
@@ -3922,6 +4351,8 @@ def main() -> int:
                 ctx.close()
 
             # 17 / 17b / 17c / 17d Read-word computed styles (dark/light × EN/ZH)
+            # C-m1: pin the money topic — `.mc-read-topic` matches 5 chips.
+            READ_TOPIC_SEL = '.mc-read-topic[data-mc-topic="money"]'
             style_rows = {}
             for n, theme, locale in (
                 ("17", "dark", "en"), ("17b", "light", "en"),
@@ -3933,17 +4364,20 @@ def main() -> int:
                     browser=browser, origin=origin,
                     path="/macro_monetary.html", theme=theme, locale=locale,
                     width=1440, height=2200)
-                page.wait_for_selector(".mc-read-topic", timeout=15000)
+                page.wait_for_selector(READ_TOPIC_SEL, timeout=15000)
                 styles = _topic_styles(page)
                 style_rows[n] = styles
-                topic = page.locator(".mc-read-topic").first
+                topic = page.locator(READ_TOPIC_SEL)
                 info = _shot(
                     EVIDENCE / name, page, topic,
-                    selector=".mc-read-topic", locale=locale)
+                    selector=READ_TOPIC_SEL, locale=locale)
                 states.append(_state(
                     name, theme, locale, "desktop", info, viewport_width=1440,
-                    verified_how="element clip of the same .mc-read-topic; computed style in probes.json",
-                    crop=True, selector=".mc-read-topic", force_state="read_word",
+                    verified_how=(
+                        "element clip of .mc-read-topic[data-mc-topic=money]; "
+                        "computed style in probes.json"
+                    ),
+                    crop=True, selector=READ_TOPIC_SEL, force_state="read_word",
                 ))
                 ctx.close()
             probes["read_word_17"] = style_rows.get("17")
@@ -4007,6 +4441,14 @@ def main() -> int:
                         if page_name != HUB_PAGE:
                             host.evaluate("() => window.scrollTo(0, 0)")
                             probes[mat_key]["probeBeforeShot"] = True
+                            rail_root_pre = host
+                            # Text at scrollLeft=0 before intentional scroll (E-B1).
+                            rail_sel_guess = "ul.mq-suitenav-rail"
+                            text_zero = ""
+                            if rail_root_pre.locator(rail_sel_guess).count() == 1:
+                                text_zero = str(
+                                    rail_root_pre.locator(rail_sel_guess).evaluate(
+                                        _RAIL_VISIBLE_TEXT_JS, locale) or "")
                             rail_scroll = host.evaluate(_SCROLL_RAIL_CHIP_JS)
                             probes[mat_key]["scrollResult"] = rail_scroll
                             if not rail_scroll.get("ok"):
@@ -4080,11 +4522,16 @@ def main() -> int:
                             host_crop = _to_host_page(
                                 rail_scroll.get("cropBox"),
                                 host_offset, host_scroll_y)
-                            probes[mat_key]["coordSpace"] = "host-page"
+                            probes[mat_key]["coordSpace"] = (
+                                "iframe" if frame is not None else "host")
                             probes[mat_key]["hostFrameOffset"] = host_offset
                             probes[mat_key]["host_scroll_y_at_shot"] = (
                                 host_scroll_y)
                             probes[mat_key]["frameInnerWidth"] = frame_inner
+                            if frame is not None:
+                                probes[mat_key]["frameInnerHeight"] = int(round(
+                                    float(frame.locator("html").evaluate(
+                                        "() => window.innerHeight") or 0)))
                             probes[mat_key]["analystBoxHost"] = host_analyst
                             probes[mat_key]["siblingPillBoxHost"] = host_pill
                             probes[mat_key]["cropBoxHost"] = host_crop
@@ -4103,13 +4550,18 @@ def main() -> int:
                                     f"{chipmat_name}: crop_selector "
                                     f"{rail_sel!r} matched {n_rail} "
                                     "(must be exactly one; no substitution)")
-                            rail_loc = rail_root.locator(rail_sel).first
+                            rail_loc = rail_root.locator(rail_sel)
+                            text_at = str(rail_loc.evaluate(
+                                _RAIL_VISIBLE_TEXT_JS, locale) or "")
                             info = _element_shot_guarded(
                                 EVIDENCE / chipmat_name, page, rail_loc,
                                 selector=rail_sel, locale=locale,
                                 viewport_width=width,
                                 target_for_nav=page,
                                 family="chip_material",
+                                receipt_locator=(
+                                    frame.locator("body").first
+                                    if frame is not None else None),
                             )
                             if probes[mat_key].get("cropDomSha256"):
                                 info["cropDomSha256"] = str(
@@ -4117,7 +4569,12 @@ def main() -> int:
                             info["page_id"] = page_name
                             info["analystBox"] = host_analyst
                             info["siblingPillBox"] = host_pill
-                            info["coordSpace"] = "host-page"
+                            info["visible_text_at_scroll"] = text_at
+                            info["visible_text_at_zero"] = text_zero
+                            # Leave coordSpace from _element_shot_guarded when
+                            # iframe-hosted (E-m1); only set host for native.
+                            if frame is None:
+                                info["coordSpace"] = "host"
                             info["hostFrameOffset"] = host_offset
                             info["host_scroll_y_at_shot"] = host_scroll_y
                             info["frameInnerWidth"] = frame_inner
@@ -4635,7 +5092,12 @@ def main() -> int:
                     target = page
                     opened_by = _open_method_details_by_click(
                         target, host_page=page)
-                    body = target.locator(METHOD_OPEN_SELECTOR).first
+                    n_body = target.locator(METHOD_OPEN_SELECTOR).count()
+                    if n_body != 1:
+                        raise RuntimeError(
+                            f"{name}: crop_selector {METHOD_OPEN_SELECTOR!r} "
+                            f"matched {n_body}")
+                    body = target.locator(METHOD_OPEN_SELECTOR)
                     body.wait_for(timeout=15000)
                     _assert_method_dl_contained(body)
                     info = _element_shot_guarded(
@@ -4665,11 +5127,29 @@ def main() -> int:
                     # scrolls for every method_open 390 cell (2×2 theme×locale).
                     if width == 390:
                         probes.setdefault("method_table_390_text", {})
-                        table = body.locator("table.mq-table, .mq-table").first
-                        if table.count():
-                            table_sel = (
-                                f"{METHOD_OPEN_SELECTOR} .mq-table"
-                            )
+                        # FC/labor method sections carry two mq-tables; pin the
+                        # composition table (first details) with CSS only —
+                        # never .first / never Playwright >> nth (querySelector).
+                        table_rel = (
+                            "> details.mc-details:first-of-type "
+                            ".tbl-scroll table.mq-table"
+                        )
+                        table_sel = f"{METHOD_OPEN_SELECTOR} {table_rel}"
+                        n_table = body.locator(table_rel).count()
+                        if n_table == 0:
+                            n_loose = body.locator("table.mq-table").count()
+                            if n_loose == 0:
+                                pass  # no table in this cell
+                            else:
+                                raise RuntimeError(
+                                    f"{name}: composition table missing "
+                                    f"(loose table.mq-table matched {n_loose})")
+                        elif n_table != 1:
+                            raise RuntimeError(
+                                f"{name}: crop_selector {table_sel!r} "
+                                f"matched {n_table}")
+                        else:
+                            table = body.locator(table_rel)
                             full_text = str(table.evaluate(
                                 """el => (el.innerText || '')
                                     .replace(/\\s+/g, ' ').trim()"""
@@ -4706,8 +5186,7 @@ def main() -> int:
                                         const st = getComputedStyle(el);
                                         return {
                                           scroll_container_selector:
-                                            el.classList.contains('mq-table')
-                                              ? '.mq-table' : 'table.mq-table',
+                                            'table.mq-table',
                                           scrollWidth: el.scrollWidth,
                                           clientWidth: el.clientWidth,
                                           scrollLeft: el.scrollLeft,
@@ -4730,10 +5209,30 @@ def main() -> int:
                                         const parts = [];
                                         for (const cell of el.querySelectorAll('th, td')) {
                                           const r = cell.getBoundingClientRect();
-                                          if (r.left < cr.left - 0.5
+                                          const st = getComputedStyle(cell);
+                                          const sticky = st.position === 'sticky'
+                                              || st.position === 'fixed';
+                                          const row = cell.parentElement;
+                                          let firstCol = false;
+                                          if (row) {
+                                            const cells = [...row.children].filter(
+                                              (c) => c.tagName === 'TH'
+                                                  || c.tagName === 'TD');
+                                            firstCol = cells[0] === cell;
+                                          }
+                                          const vertIn = !(r.top < cr.top - 0.5
+                                              || r.bottom > cr.bottom + 0.5);
+                                          const horizOverlap = r.right > cr.left + 0.5
+                                              && r.left < cr.right - 0.5;
+                                          const fullyIn = !(r.left < cr.left - 0.5
                                               || r.right > cr.right + 0.5
                                               || r.top < cr.top - 0.5
-                                              || r.bottom > cr.bottom + 0.5) {
+                                              || r.bottom > cr.bottom + 0.5);
+                                          // E-M1: sticky/first column by overlap;
+                                          // others by full containment (no mid-digit).
+                                          if (sticky || firstCol) {
+                                            if (!vertIn || !horizOverlap) continue;
+                                          } else if (!fullyIn) {
                                             continue;
                                           }
                                           const clone = cell.cloneNode(true);
@@ -4887,7 +5386,11 @@ def main() -> int:
                 ("_rows_method_version",
                  "section.mq-headline details.mc-details dl.mq-headline-meta",
                  "Method version", "方法版本"),
-                ("_rows_owner", "p.mq-owner", "Owner", "所有者"),
+                # First metric card's Owner line (unique; never bare p.mq-owner).
+                ("_rows_owner",
+                 "div.mq-metric-grid > article.mq-metric:nth-of-type(1) "
+                 "details.mc-details .mc-details-body > p.mq-owner:nth-of-type(2)",
+                 "Owner", "所有者"),
                 # Parent details (not bare p.mq-trace) — Trace chrome alone is
                 # byte-identical across workspaces; the open details carries
                 # page-specific implication copy above the Trace control.
@@ -4903,15 +5406,14 @@ def main() -> int:
                         const hd = document.querySelector(
                             'section.mq-headline details.mc-details');
                         if (hd) hd.open = true;
-                        const owners = Array.from(
-                            document.querySelectorAll('p.mq-owner'));
-                        const o = owners.find(el =>
-                            /Owner|所有者/.test(el.textContent || ''));
-                        if (o) {
-                            const d = o.closest('details');
-                            if (d) d.open = true;
+                        const firstMetric = document.querySelector(
+                            'div.mq-metric-grid > article.mq-metric');
+                        if (firstMetric) {
+                          const d = firstMetric.querySelector('details.mc-details');
+                          if (d) d.open = true;
                         }
-                        const t = document.querySelector('p.mq-trace');
+                        const t = document.querySelector(
+                            'section.mq-ribbon p.mq-trace');
                         if (t) {
                             const d = t.closest('details');
                             if (d) d.open = true;
@@ -4922,18 +5424,12 @@ def main() -> int:
                 return "click"
 
             def _disclosure_locator(target, sel: str):
-                if sel == "p.mq-owner":
-                    return target.locator("p.mq-owner").filter(
-                        has_text=re.compile(r"Owner|所有者")
-                    ).first, "p.mq-owner"
-                if sel == "section.mq-ribbon":
-                    return target.locator("section.mq-ribbon").first, sel
-                if "p.mq-trace" in sel:
-                    loc = target.locator("details.mc-details").filter(
-                        has=target.locator("p.mq-trace")
-                    ).first
-                    return loc, "details.mc-details:has(p.mq-trace)"
-                return target.locator(sel).first, sel
+                n = target.locator(sel).count()
+                if n != 1:
+                    raise RuntimeError(
+                        f"disclosure crop_selector {sel!r} matched {n} "
+                        "(must be exactly one; never .first)")
+                return target.locator(sel), sel
 
             disclosure_cells: list[tuple[str, str, str, int]] = []
             for page_name in DISCLOSURE_ROWS_PAGES:
@@ -5195,6 +5691,7 @@ def main() -> int:
             "tree_clean_end": tree_clean_end,
             "commit_time_of_capture_sha": commit_time,
             "pre_commit": False,
+            "page_fits": probes.get("page_fits") or [],
             "honesty": {
                 "access": "anonymous only; no credential is entered, stored, or synthesized",
                 "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",

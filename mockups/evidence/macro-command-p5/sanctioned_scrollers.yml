@@ -37,10 +37,10 @@ table.mq-table.mq-table-compact:
 
 ul.mc-rail-list:
   kind: designed-rail
-  covering_family: chip_material
+  covering_family: hub_rail
   reason: >-
-    Hub/workspace horizontal rail list; suite navigation material crops
-    cover scrolled-out labels at phone widths.
+    Hub horizontal rail list on macro_monetary; hub_rail crops photograph
+    scrollLeft=0 and scrollLeft=max labels at 390 and 768.
 
 "#mc-strip-h":
   kind: designed-rail
@@ -51,7 +51,7 @@ ul.mc-rail-list:
 
 div.mc-subtabs:
   kind: designed-rail
-  covering_family: chip_material
+  covering_family: hub_rail
   reason: >-
-    Sub-tab strip that scrolls horizontally on narrow viewports; covered by
-    chip_material / workspace rail photography.
+    Hub sub-tab strip that scrolls on narrow viewports; hub_rail crops
+    photograph the money strip (aria-labelledby=money-h) at scrollLeft=0/max.

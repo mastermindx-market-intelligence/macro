@@ -994,15 +994,24 @@ def _implications(headline, level_value, impulse_value, contradiction, worst_fre
     if state_id is not None:
         label_en = _QUADRANTS[state_id]["en"]
         label_zh = _QUADRANTS[state_id]["zh"]
-        level_s = f"{float(level_value):.1f}"
-        impulse_s = f"{float(impulse_value):.1f}"
+        def _plain_num(v) -> tuple[str, str]:
+            # C-n3: never raise on None/non-numeric; print plain-word null.
+            if v is None:
+                return "unavailable", "暂无"
+            try:
+                s = f"{float(v):.1f}"
+                return s, s
+            except (TypeError, ValueError):
+                return "unavailable", "暂无"
+        level_s, level_zh = _plain_num(level_value)
+        impulse_s, impulse_zh = _plain_num(impulse_value)
         items.append({
             "implication_id": "state_descriptive",
             "text": _bil(
                 f"US financial conditions read {state_id} - {label_en} "
                 f"(level {level_s}, impulse {impulse_s}, boundary 50).",
                 f"美国金融条件读数为 {state_id} - {label_zh}"
-                f"（水平 {level_s}，边际冲量 {impulse_s}，分界 50）。"),
+                f"（水平 {level_zh}，边际冲量 {impulse_zh}，分界 50）。"),
             "evidence_class": "DESCRIPTIVE",
             "confidence": conf,
             "horizon": "current",

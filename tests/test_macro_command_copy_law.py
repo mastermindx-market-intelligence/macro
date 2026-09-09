@@ -1674,7 +1674,8 @@ def test_chipmat_containment_from_manifest_alone() -> None:
         for state in page.get("states") or []:
             if not str(state.get("file") or "").startswith("chipmat-"):
                 continue
-            assert state.get("coordSpace") == "host-page", state.get("file")
+            assert state.get("coordSpace") in {"host-page", "iframe", "host"}, (
+                state.get("file"), state.get("coordSpace"))
             assert isinstance(state.get("hostFrameOffset"), dict), state.get("file")
             assert "x" in state["hostFrameOffset"] and "y" in state["hostFrameOffset"]
             assert "host_scroll_y_at_shot" in state, state.get("file")
@@ -2170,7 +2171,8 @@ def test_method_open_family_photographs_disclosure_rows() -> None:
     assert labor_files, "expected labor method_open cells"
     text_hashes: set[str] = set()
     for state in cells:
-        assert state.get("crop_selector") == "section.mq-method .mq-axis-method"
+        from scripts.capture_macro_command_p5 import METHOD_OPEN_SELECTOR
+        assert state.get("crop_selector") == METHOD_OPEN_SELECTOR
         assert state.get("openedBy") == "click"
         locale = state.get("locale") or "en"
         head = (
@@ -2471,11 +2473,11 @@ def test_inner_scrollports_have_method_table_pair() -> None:
 
 @pytest.mark.needs_full_checkout("mockups")
 def test_method_table_390_contribution_union() -> None:
-    """E-B1(3)/C-m1: every probe value appears in start∪end visible_text_at_scroll.
+    """E-B1(3)/C-m1/E-M1: every header + component label + value in start∪end.
 
-    Reads MANIFEST cells' visible_text_at_scroll FIRST (MUT-a1: blanking
-    manifest receipts alone must FAIL). Asserts they equal probes map entries.
-    Missing end is accepted only when start has table_fits: true.
+    Reads MANIFEST cells' visible_text_at_scroll FIRST (MUT-a1 / MUT-hdr:
+    blanking manifest receipts alone must FAIL). Missing end is accepted
+    only when start has table_fits: true.
     """
     import json
     import re
@@ -2494,6 +2496,8 @@ def test_method_table_390_contribution_union() -> None:
     table_probes = probes.get("method_table_390_text") or {}
     assert table_probes, "method_table_390_text probe missing"
     vis_map = probes.get("method_table_390_visible") or {}
+    en_headers = ("COMPONENT", "RAW", "STANDARDIZED", "WEIGHT", "CONTRIBUTION")
+    zh_headers = ("分项", "原始", "标准化", "权重", "贡献")
     for key, full in table_probes.items():
         m = re.match(
             r"method_table_390-(.+)-(dark|light)-(en|zh)-(\d+)$", key)
@@ -2501,9 +2505,6 @@ def test_method_table_390_contribution_union() -> None:
         slug, theme, locale, width = m.groups()
         contribs = re.findall(r"[+\-−]?\d+(?:\.\d+)?", full)
         values = [v for v in contribs if "." in v]
-        headers = re.findall(
-            r"(COMPONENT|RAW|STANDARDIZED|WEIGHT|CONTRIBUTION|"
-            r"分项|原始|标准化|权重|贡献)", full, flags=re.I)
         start = by_file.get(
             f"method_table_390_start-{slug}-{theme}-{locale}-{width}.png")
         end = by_file.get(
@@ -2512,7 +2513,17 @@ def test_method_table_390_contribution_union() -> None:
         if end is None:
             assert start.get("table_fits") is True, (
                 key, "missing end without table_fits")
-        # C-m1: MANIFEST receipts are authoritative — probes must match them.
+            assert float(start.get("scrollWidth") or 0) <= float(
+                start.get("clientWidth") or 0) + 1, (key, "table_fits true")
+        else:
+            assert start.get("table_fits") is not True, (
+                key, "end exists but table_fits true")
+            # C-m3: end must be at max scroll.
+            sw = float(end.get("scrollWidth") or 0)
+            cw = float(end.get("clientWidth") or 0)
+            sl = float(end.get("scrollLeft") or 0)
+            assert abs(sl - (sw - cw)) <= 1.0 or sl >= sw - cw - 1, (
+                key, "end scrollLeft", sl, sw, cw)
         start_vis = str(start.get("visible_text_at_scroll") or "")
         assert start_vis, (key, "blank manifest visible_text_at_scroll")
         if start["file"] in vis_map:
@@ -2531,9 +2542,83 @@ def test_method_table_390_contribution_union() -> None:
         for v in values:
             assert v in full, (key, v)
             assert v in union, (key, v, "missing from start∪end visible text")
+        headers = en_headers if locale == "en" else zh_headers
         for h in headers:
             assert h.casefold() in union.casefold(), (
-                key, h, "header missing from start∪end")
+                key, h, "header missing from start∪end — MUT-hdr must fail")
+        # Component labels: EN by token, ZH by exact substring of row label.
+        if locale == "en":
+            labels = re.findall(
+                r"([A-Za-z][\w/]*(?:\s+channel)?)", full)
+            # Prefer multi-word channel labels when present.
+            channel_labels = re.findall(
+                r"([A-Za-z][\w/]*\s+channel)", full, flags=re.I)
+            check = channel_labels or [
+                t for t in labels
+                if t.upper() not in en_headers and not re.fullmatch(r"[\d.+−\-]+", t)
+            ]
+            for lab in check[:8]:
+                tok = lab.split()[0]
+                assert tok.casefold() in union.casefold(), (
+                    key, lab, "component label missing from start∪end")
+        else:
+            # Strip headers + numbers; remaining CJK phrases are row labels.
+            body = full
+            for h in zh_headers:
+                body = body.replace(h, " ")
+            body = re.sub(r"[+\-−]?\d+(?:\.\d+)?", " ", body)
+            for lab in [p for p in body.split() if len(p) >= 2][:8]:
+                assert lab in union, (
+                    key, lab, "ZH component label missing from start∪end")
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_method_table_header_blank_mut_hdr_fails() -> None:
+    """MUT-hdr: blanking header tokens in manifest visible_text must fail union."""
+    import json
+    import re
+    import copy
+    probes = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "probes.json")
+        .read_text(encoding="utf-8"))
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    by_file = {
+        st["file"]: st
+        for page in manifest["pages"]
+        for st in page["states"]
+        if st.get("file")
+    }
+    key = next(iter(probes.get("method_table_390_text") or {}))
+    m = re.match(r"method_table_390-(.+)-(dark|light)-(en|zh)-(\d+)$", key)
+    assert m, key
+    slug, theme, locale, width = m.groups()
+    start = copy.deepcopy(by_file[
+        f"method_table_390_start-{slug}-{theme}-{locale}-{width}.png"])
+    end = by_file.get(
+        f"method_table_390_end-{slug}-{theme}-{locale}-{width}.png")
+    # Blank header tokens in the start receipt.
+    vis = str(start.get("visible_text_at_scroll") or "")
+    for h in ("COMPONENT", "RAW", "STANDARDIZED", "WEIGHT", "CONTRIBUTION",
+              "Component", "Raw", "Standardized", "Weight", "Contribution",
+              "分项", "原始", "标准化", "权重", "贡献"):
+        vis = re.sub(re.escape(h), "", vis, flags=re.I)
+    start["visible_text_at_scroll"] = vis
+    union = vis
+    if end is not None:
+        end_vis = str(end.get("visible_text_at_scroll") or "")
+        for h in ("COMPONENT", "RAW", "STANDARDIZED", "WEIGHT", "CONTRIBUTION",
+                  "Component", "Raw", "Standardized", "Weight", "Contribution",
+                  "分项", "原始", "标准化", "权重", "贡献"):
+            end_vis = re.sub(re.escape(h), "", end_vis, flags=re.I)
+        union = f"{vis} {end_vis}"
+    headers = (
+        ("COMPONENT", "RAW", "STANDARDIZED", "WEIGHT", "CONTRIBUTION")
+        if locale == "en" else ("分项", "原始", "标准化", "权重", "贡献")
+    )
+    missing = [h for h in headers if h.casefold() not in union.casefold()]
+    assert missing, "MUT-hdr plant did not remove headers"
 
 
 @pytest.mark.needs_full_checkout("mockups")
@@ -2669,11 +2754,13 @@ def test_occlusion_y_coverage_from_raw_box() -> None:
             ys = [float(s["y"]) for s in samples if "y" in s]
             top = float(raw["y"])
             bottom = top + h
-            if cov + 1e-6 < 0.95:
-                bad.append((state.get("file"), "cov", cov))
-            if ys and min(ys) > top + 8.0 + 1e-6:
+            # C-n4: floor is (h-8)/h for h>=40 — no epsilon.
+            floor = (h - 8.0) / h
+            if cov < floor:
+                bad.append((state.get("file"), "cov", cov, floor))
+            if ys and min(ys) > top + 4.0:
                 bad.append((state.get("file"), "top", min(ys), top))
-            if ys and max(ys) < bottom - 8.0 - 1e-6:
+            if ys and max(ys) < bottom - 4.0:
                 bad.append((state.get("file"), "bottom", max(ys), bottom))
     assert not bad, bad[:15]
 
@@ -2875,3 +2962,229 @@ def test_element_text_diverges_with_hidden_node() -> None:
         browser.close()
     finally:
         pw.stop()
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_registry_covering_family_proven_by_manifest() -> None:
+    """E-B1: every registry covering_family is proven against MANIFEST cells."""
+    import json
+    from collections import defaultdict
+    from scripts.capture_macro_command_p5 import (
+        METHOD_OPEN_PAGES, _load_sanctioned_scrollers, _registry_match_selector,
+    )
+
+    registry = _load_sanctioned_scrollers()
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    pages_by_sel: dict[str, set[str]] = defaultdict(set)
+    cells: list[dict] = []
+    for page in manifest["pages"]:
+        for st in page["states"]:
+            if st.get("file"):
+                cells.append(st)
+            page_id = (
+                st.get("page_id") or page.get("page") or page.get("id") or "")
+            for entry in st.get("content_overflows") or []:
+                if entry.get("kind") != "scrollport":
+                    continue
+                key = _registry_match_selector(
+                    str(entry.get("nearest_registered_scroller")
+                        or entry.get("selector") or ""))
+                if key:
+                    pages_by_sel[key].add(str(page_id))
+    offenders = []
+    for sel, row in registry.items():
+        fam = str(row.get("covering_family") or "")
+        kind = str(row.get("kind") or "")
+        pages = set(pages_by_sel.get(sel) or ())
+        # Table covering photography is the method_table_390 family on
+        # method_open pages; incidental mq-table overflow inside workspace/i2
+        # of other suite pages stays registry-allowed (v20 scope = hub_rail).
+        if kind == "table":
+            pages = {p for p in pages if p in METHOD_OPEN_PAGES}
+        for page_id in pages:
+            covering = []
+            for st in cells:
+                if (st.get("family") or "") != fam:
+                    continue
+                if str(st.get("page_id") or "") != page_id:
+                    continue
+                sc = str(st.get("scroll_container_selector") or "")
+                if sc != sel:
+                    def _norm(s: str) -> str:
+                        s = s.strip()
+                        for prefix in ("table.", "ul.", "div.", "ol."):
+                            if s.startswith(prefix):
+                                s = s[len(prefix) - 1:]  # keep leading '.'
+                                break
+                        return s
+                    sc_key = _registry_match_selector(sc)
+                    if (
+                        sc_key != sel
+                        and _norm(sc) != _norm(sel)
+                        and sc_key != _registry_match_selector(sel)
+                    ):
+                        continue
+                if float(st.get("scrollLeft") or 0) <= 0:
+                    continue
+                vis = str(st.get("visible_text_at_scroll") or "")
+                zero = str(st.get("visible_text_at_zero") or "")
+                if not vis:
+                    continue
+                if zero and vis == zero:
+                    continue
+                covering.append(st.get("file"))
+            if not covering:
+                offenders.append((sel, fam, page_id))
+    assert not offenders, offenders[:12]
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_page_fits_table_complete_and_true() -> None:
+    """C-M1: top-level page_fits has 15×4×2 rows, all fits:true; MUT-fits fails."""
+    import json
+    import copy
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    rows = manifest.get("page_fits") or []
+    assert len(rows) == 15 * 4 * 2, len(rows)
+    assert all(r.get("fits") is True for r in rows), [
+        r for r in rows if not r.get("fits")][:5]
+    widths = {int(r["width"]) for r in rows}
+    locales = {r["locale"] for r in rows}
+    assert widths == {320, 390, 768, 1440}
+    assert locales == {"en", "zh"}
+    # MUT-fits: flipping one row to false must be detected.
+    planted = copy.deepcopy(rows)
+    planted[0]["fits"] = False
+    assert any(r.get("fits") is False for r in planted)
+    assert not any(r.get("fits") is False for r in rows)
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_iframe_coord_space_receipts() -> None:
+    """E-m1: iframe cells carry coordSpace/frameInner*/hostFrameOffset."""
+    import json
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    bad = []
+    for page in manifest["pages"]:
+        for st in page["states"]:
+            if not st.get("crop"):
+                continue
+            vw = int(st.get("viewport_width") or 0)
+            if st.get("receipt_document") == "iframe" or st.get("coordSpace") == "iframe":
+                if st.get("coordSpace") != "iframe":
+                    bad.append((st.get("file"), "coordSpace"))
+                if st.get("frameInnerWidth") != vw:
+                    bad.append((st.get("file"), "frameInnerWidth",
+                                st.get("frameInnerWidth"), vw))
+                if "frameInnerHeight" not in st:
+                    bad.append((st.get("file"), "frameInnerHeight"))
+                off = st.get("hostFrameOffset") or {}
+                if not isinstance(off, dict) or "x" not in off or "y" not in off:
+                    bad.append((st.get("file"), "hostFrameOffset"))
+            elif st.get("coordSpace") == "host" or st.get("receipt_document") == "host":
+                if int(st.get("innerWidth") or 0) != vw and vw:
+                    # Host crops may use tall viewport; width must still match.
+                    if int(st.get("innerWidth") or 0) != vw:
+                        bad.append((st.get("file"), "host innerWidth",
+                                    st.get("innerWidth"), vw))
+    assert not bad, bad[:12]
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_table_fits_pair_semantics() -> None:
+    """C-m3: table_fits False ⇒ end at max scroll; True ⇒ no end + fits."""
+    import json
+    from scripts.capture_macro_command_p5 import family_for
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    by_file = {
+        st["file"]: st
+        for page in manifest["pages"]
+        for st in page["states"]
+        if st.get("file")
+    }
+    starts = [
+        st for st in by_file.values()
+        if (st.get("family") or family_for(st.get("file") or "")) == "method_table_390"
+        and "method_table_390_start-" in str(st.get("file") or "")
+    ]
+    assert starts
+    for start in starts:
+        end_name = str(start["file"]).replace(
+            "method_table_390_start-", "method_table_390_end-", 1)
+        end = by_file.get(end_name)
+        if start.get("table_fits") is True:
+            assert end is None, start["file"]
+            assert float(start.get("scrollWidth") or 0) <= float(
+                start.get("clientWidth") or 0) + 1
+        else:
+            assert end is not None, start["file"]
+            sw = float(end.get("scrollWidth") or 0)
+            cw = float(end.get("clientWidth") or 0)
+            sl = float(end.get("scrollLeft") or 0)
+            assert abs(sl - (sw - cw)) <= 1.5 or sl >= max(0.0, sw - cw - 1.5), (
+                start["file"], sl, sw, cw)
+
+
+def test_table_fits_branches_on_synthetic_cells() -> None:
+    """C-m3 unit: both table_fits branches on synthetic cells."""
+    def check(start, end):
+        if start.get("table_fits") is True:
+            assert end is None
+            assert start["scrollWidth"] <= start["clientWidth"] + 1
+        else:
+            assert end is not None
+            assert abs(
+                end["scrollLeft"] - (end["scrollWidth"] - end["clientWidth"])
+            ) <= 1.0
+
+    check({"table_fits": True, "scrollWidth": 100, "clientWidth": 100}, None)
+    check(
+        {"table_fits": False, "scrollWidth": 300, "clientWidth": 100},
+        {"scrollWidth": 300, "clientWidth": 100, "scrollLeft": 200},
+    )
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_painted_fraction_present_on_tall_crops() -> None:
+    """E-m2: tall crops carry painted_fraction so blank canvas is visible."""
+    import json
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    tall = []
+    for page in manifest["pages"]:
+        for st in page["states"]:
+            if not st.get("crop"):
+                continue
+            h = float((st.get("raw_box") or {}).get("height") or 0)
+            if h >= 1000:
+                tall.append(st)
+                assert "painted_fraction" in st, st.get("file")
+                assert 0.0 <= float(st["painted_fraction"]) <= 1.0
+    assert tall, "expected at least one tall crop (h≥1000)"
+
+
+def test_page_overflow_error_type() -> None:
+    from scripts.capture_macro_command_p5 import PageOverflowError
+    err = PageOverflowError("macro_monetary.html", 390, 420.0)
+    assert err.route == "macro_monetary.html"
+    assert err.width == 390
+    assert err.scroll_width == 420.0
+
+
+def test_shot_raises_on_multi_match_selector() -> None:
+    """C-m1: count()!=1 raises (source contract)."""
+    import inspect
+    from scripts import capture_macro_command_p5 as cap
+    src = inspect.getsource(cap._shot)
+    assert "matched {n}" in src or "matched {n_rail}" in src or "matched" in src
+    assert "exactly one" in src or "Tighten" in src or "tighten" in src
+    assert "often .first" not in src

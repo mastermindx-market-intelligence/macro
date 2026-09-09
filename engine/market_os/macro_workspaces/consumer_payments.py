@@ -406,6 +406,16 @@ def _bil(en: str | None, zh: str | None) -> dict:
     return {"en": en, "zh": zh}
 
 
+def _plain_axis(v, *, zh: bool = False) -> str:
+    """C-n3: format an axis score; None/non-numeric → plain-word null."""
+    if v is None:
+        return "暂无" if zh else "unavailable"
+    try:
+        return f"{float(v):.1f}"
+    except (TypeError, ValueError):
+        return "暂无" if zh else "unavailable"
+
+
 def _band(v, lo, hi):
     if v is None:
         return None
@@ -1495,9 +1505,9 @@ def _implications(metrics_by_id: dict, contradictions: list[dict], worst_freshne
             "implication_id": "headline_computed",
             "text": _bil(
                 f"Consumer & Payments reads {headline['state_id']} - {label['en']} "
-                f"(cash-flow momentum {float(x_value):.1f}, credit stress {float(y_value):.1f}, boundary 50).",
+                f"(cash-flow momentum {_plain_axis(x_value)}, credit stress {_plain_axis(y_value)}, boundary 50).",
                 f"消费与支付读数为 {headline['state_id']} - {label['zh']}"
-                f"（现金流动能 {float(x_value):.1f}，信贷压力 {float(y_value):.1f}，分界 50）。"),
+                f"（现金流动能 {_plain_axis(x_value, zh=True)}，信贷压力 {_plain_axis(y_value, zh=True)}，分界 50）。"),
             "evidence_class": "DESCRIPTIVE", "confidence": conf, "horizon": "current",
             "channels": ["consumer", "spending", "credit"],
             "contradictions": [c["kind"] for c in contradictions],

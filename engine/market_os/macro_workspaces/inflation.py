@@ -145,6 +145,18 @@ def _bil(en: str, zh: str | None) -> dict:
     return {"en": en, "zh": zh}
 
 
+
+def _plain_axis_num(v, *, zh: bool = False) -> str:
+    """C-n3: format an axis score; None/non-numeric → plain-word null."""
+    if v is None:
+        return "暂无" if zh else "unavailable"
+    try:
+        return f"{float(v):.1f}"
+    except (TypeError, ValueError):
+        return "暂无" if zh else "unavailable"
+
+
+
 def _pct_to_100(value: float | None, *, center: float, scale: float) -> float | None:
     """Map a %/pp value onto 0-100, centered at ``center`` with a +-``scale``
     half-axis swing. Pure algebra over one already-published owner scalar --
@@ -846,9 +858,9 @@ def _implications(headline, x_value, y_value, contradiction, worst_freshness,
         items.append({
             "implication_id": "state_descriptive",
             "text": _bil(
-                f"US inflation regime reads {state_id} - {label_en} (impulse {float(x_value):.1f}, "
-                f"persistence/breadth {float(y_value):.1f}, boundary 50).",
-                f"美国通胀体制读数为 {state_id} - {label_zh}（冲量 {float(x_value):.1f}，持续性/广度 {float(y_value):.1f}，分界 50）。"),
+                f"US inflation regime reads {state_id} - {label_en} (impulse {_plain_axis_num(x_value)}, "
+                f"persistence/breadth {_plain_axis_num(y_value)}, boundary 50).",
+                f"美国通胀体制读数为 {state_id} - {label_zh}（冲量 {_plain_axis_num(x_value, zh=True)}，持续性/广度 {_plain_axis_num(y_value, zh=True)}，分界 50）。"),
             "evidence_class": "DESCRIPTIVE",
             "confidence": conf,
             "horizon": "current",

@@ -141,6 +141,18 @@ def _bil(en: str, zh: str | None) -> dict:
     return {"en": en, "zh": zh}
 
 
+
+def _plain_axis_num(v, *, zh: bool = False) -> str:
+    """C-n3: format an axis score; None/non-numeric → plain-word null."""
+    if v is None:
+        return "暂无" if zh else "unavailable"
+    try:
+        return f"{float(v):.1f}"
+    except (TypeError, ValueError):
+        return "暂无" if zh else "unavailable"
+
+
+
 def _worst_freshness(states: list[str]) -> str:
     if not states:
         return "SOURCE_FAILED"
@@ -859,10 +871,10 @@ def _implications(headline, x_value, y_value, contradiction, worst_freshness, co
         items.append({
             "implication_id": "state_descriptive",
             "text": _bil(
-                f"US labor market reads {state_id} - {label_en} (labor demand {float(x_value):.1f}, "
-                f"labor supply/tightness {float(y_value):.1f}, boundary 50).",
-                f"美国劳动力市场读数为 {state_id} - {label_zh}（劳动力需求 {float(x_value):.1f}，"
-                f"劳动力供给/紧张度 {float(y_value):.1f}，分界 50）。"),
+                f"US labor market reads {state_id} - {label_en} (labor demand {_plain_axis_num(x_value)}, "
+                f"labor supply/tightness {_plain_axis_num(y_value)}, boundary 50).",
+                f"美国劳动力市场读数为 {state_id} - {label_zh}（劳动力需求 {_plain_axis_num(x_value, zh=True)}，"
+                f"劳动力供给/紧张度 {_plain_axis_num(y_value, zh=True)}，分界 50）。"),
             "evidence_class": "DESCRIPTIVE",
             "confidence": conf,
             "horizon": "current",

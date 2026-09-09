@@ -431,11 +431,71 @@ def find_exceptions(html: str) -> list[str]:
 
 
 _XY_EQ_RE = re.compile(r"\b[xy]\s*=\s*-?\d")
-_AXIS_METHOD_BLOCK_RE = re.compile(
-    r"<(?P<tag>[a-zA-Z0-9]+)[^>]*\bclass=\"[^\"]*\bmq-axis-method\b[^\"]*\"[^>]*>"
-    r".*?</(?P=tag)>",
-    re.S | re.I,
-)
+
+
+def _strip_axis_method_blocks(html: str) -> str:
+    """Remove every .mq-axis-method subtree by walking the DOM (C-n1).
+
+    A regex over HTML under-strips nested same-tag containers; the checker
+    already parses nodes, so strip by balanced tag walk instead.
+    """
+
+    class _Stripper(HTMLParser):
+        def __init__(self) -> None:
+            super().__init__(convert_charrefs=False)
+            self.out: list[str] = []
+            self._skip_depth = 0
+
+        def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+            attr_map = {k: (v or "") for k, v in attrs}
+            classes = attr_map.get("class", "").split()
+            entering = self._skip_depth == 0 and "mq-axis-method" in classes
+            if entering or self._skip_depth:
+                self._skip_depth += 1
+                return
+            attr_s = "".join(
+                f' {k}' if v is None else f' {k}="{v}"' for k, v in attrs
+            )
+            self.out.append(f"<{tag}{attr_s}>")
+
+        def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+            if self._skip_depth:
+                return
+            attr_s = "".join(
+                f' {k}' if v is None else f' {k}="{v}"' for k, v in attrs
+            )
+            self.out.append(f"<{tag}{attr_s} />")
+
+        def handle_endtag(self, tag: str) -> None:
+            if self._skip_depth:
+                self._skip_depth -= 1
+                return
+            self.out.append(f"</{tag}>")
+
+        def handle_data(self, data: str) -> None:
+            if self._skip_depth:
+                return
+            self.out.append(data)
+
+        def handle_entityref(self, name: str) -> None:
+            if self._skip_depth:
+                return
+            self.out.append(f"&{name};")
+
+        def handle_charref(self, name: str) -> None:
+            if self._skip_depth:
+                return
+            self.out.append(f"&#{name};")
+
+        def handle_comment(self, data: str) -> None:
+            if self._skip_depth:
+                return
+            self.out.append(f"<!--{data}-->")
+
+    parser = _Stripper()
+    parser.feed(html)
+    parser.close()
+    return "".join(parser.out)
 
 
 def find_violations(html: str) -> list[str]:
@@ -503,10 +563,11 @@ def find_violations(html: str) -> list[str]:
 
     # E-m4: variable letters never lead in customer copy (x=/y=).
     # Allowed only inside .mq-axis-method and <details> bodies.
+    # C-n1: count EVERY hit (no early break); strip axis-method via DOM walk.
     xy_html = _SCRIPT_RE.sub("", html)
     xy_html = _DETAILS_RE.sub(r"\1\3", xy_html)
     xy_html = _PRIMER_RE.sub("", xy_html)
-    xy_html = _AXIS_METHOD_BLOCK_RE.sub(" ", xy_html)
+    xy_html = _strip_axis_method_blocks(xy_html)
     xy_text = _WS_RE.sub(" ", _TAG_RE.sub(" ", xy_html))
     for match in _XY_EQ_RE.finditer(xy_text):
         violations.append(
@@ -514,7 +575,6 @@ def find_violations(html: str) -> list[str]:
             "use 'level 56.9, impulse 49.7' wording; x/y letters live only in "
             ".mq-axis-method and details"
         )
-        break
 
     return violations
 
