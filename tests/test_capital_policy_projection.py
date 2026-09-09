@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import shutil
 from datetime import date, timedelta
@@ -11,10 +12,13 @@ from urllib.parse import urlparse
 
 import pytest
 
+from engine import capital_policy_projection as engine_projection
 from engine.capital_policy_projection import (
     EVENT_WINDOW_MAP,
     HORIZON_DAYS,
     MAX_ROWS,
+    NOTE_EN,
+    NOTE_ZH,
     ROW_KEYS,
     SCHEMA,
     SECTION_BUDGET_BYTES,
@@ -81,6 +85,30 @@ _FR_PREFIX = "https://www.federalregister.gov/documents/2026/09/01/2026-12345/"
 LONG_FR_DOC = "x" * (158 - len("https://www.federalregister.gov/d/"))
 LONG_FR_URL = f"https://www.federalregister.gov/d/{LONG_FR_DOC}"
 assert len(LONG_FR_URL) == 158, len(LONG_FR_URL)
+# A real Federal Register document number, the shape collectors/federal_register.py
+# stores and engine/policy_calendar.py now passes through.
+REAL_FR_DOC = "2026-19427"
+ISO_DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
+DATETIME_ATTR_RE = re.compile(r'datetime="[^"]*"')
+
+
+def _production_opex_event(day: str) -> dict:
+    """An OPEX row shaped exactly as engine/event_calendar._event emits it.
+
+    Note the absence of an `event_type` key and the presence of `impact`:
+    production rows carry `type`, and OPEX is emitted unconditionally on the
+    third Friday of every month, so a 45-day horizon always holds one.
+    """
+    return {
+        "type": "OPEX",
+        "date": day,
+        "time_et": "",
+        "label": "Options expiration",
+        "label_zh": "期权到期日",
+        "impact": "med",
+        "source": "computed",
+        "is_context_only": True,
+    }
 
 
 def _macro_event(etype: str, day: str, **extra):
@@ -333,7 +361,9 @@ def test_6_every_row_has_an_allowlisted_public_source_url(monkeypatch):
     assert all(r["window_id"] != "equity_new_issue" for r in rows)
     equity = _window(payload, "equity_new_issue")
     assert equity["state"] == "unavailable"
-    assert equity["reason_en"] == _NO_RECORD[0]
+    # OPEX is wired to no source at all: that is the not-wired cause, not the
+    # no-linked-record cause the number-less Federal Register rows carry.
+    assert equity["reason_en"] == _NOT_WIRED[0]
     assert payload["row_count"] == len(rows)
     blob = json.dumps(payload, ensure_ascii=False)
     assert "https://www.federalregister.gov/" not in blob.replace(
@@ -426,7 +456,8 @@ def test_11_max_rows_and_truncation_disclosed(tmp_path, monkeypatch):
     assert payload["row_count"] == MAX_ROWS
     html = _render_section(tmp_path, monkeypatch, payload)
     assert payload["truncation_en"] in html
-    assert f"Next {MAX_ROWS} dated steps." in html
+    assert f"{MAX_ROWS} dated steps shown." in html
+    assert f"已展示 {MAX_ROWS} 个节点。" in html
 
 
 def test_12_artifact_budget_and_atomic_write(tmp_path, monkeypatch, capsys):
@@ -551,16 +582,26 @@ def test_horizon_constant_is_frozen():
 
 
 def test_15_section_raw_budget_holds_at_max_rows(tmp_path, monkeypatch):
-    """Worst-case: MAX_ROWS comment_close rows with a 158-byte record URL."""
-    events = []
+    """Worst case against the PRODUCTION window mix, with real record URLs.
+
+    Round-4 R5(b): the previous shape fed `events=[]`, which suppressed the
+    OPEX drop production always carries, and used a synthetic 158-byte document
+    number no Federal Register record has. This models what a build actually
+    sees: the monthly OPEX row present (so `equity_new_issue` renders its own
+    sentence), MAX_ROWS comment-close rows carrying a real ~10-character
+    document number, at the largest days_out the horizon allows (the longest
+    human date form), and the truncation banner. No length cap is imposed on
+    the document number; this test measures the headroom instead.
+    """
+    events = [_production_opex_event((TODAY + timedelta(days=9)).isoformat())]
     calendar = {
         "asof": TODAY.isoformat(),
         "themes": {},
         "upcoming_events": [
             _policy_event(
-                day=(TODAY + timedelta(days=i)).isoformat(),
+                day=(TODAY + timedelta(days=34 + (i % 12))).isoformat(),
                 event_type="comment_close",
-                document_number=LONG_FR_DOC,
+                document_number=REAL_FR_DOC,
                 title="disclosure comment",
             )
             for i in range(40)
@@ -573,9 +614,13 @@ def test_15_section_raw_budget_holds_at_max_rows(tmp_path, monkeypatch):
     payload = project(today=TODAY)
     assert payload["row_count"] == MAX_ROWS
     assert payload["truncated"] is True
+    assert _window(payload, "equity_new_issue")["state"] == "unavailable"
+    assert _window(payload, "equity_new_issue")["reason_en"] == _NOT_WIRED[0]
     for row in _all_rows(payload):
-        assert len(row["source_url"]) == 158
+        assert row["source_url"] == f"https://www.federalregister.gov/d/{REAL_FR_DOC}"
+        assert len(row["source_url"]) == 44
         assert row["window_id"] == "disclosure_regulatory"
+        assert row["days_out"] >= 34
     html = _render_section(tmp_path, monkeypatch, payload)
     n = len(html.encode("utf-8"))
     assert n <= SECTION_BUDGET_BYTES, n
@@ -607,9 +652,16 @@ def test_r1_policy_read_failed_renders(tmp_path, monkeypatch):
 
 
 def test_r1_no_linked_public_record_renders(tmp_path, monkeypatch):
+    """A window whose rows were read but carry no citable record.
+
+    Round-4 R1 separates the two causes: a row dropped because its own record
+    is missing (a Federal Register step with no document number) is the
+    no-record case; an event type wired to no source at all is `not wired`
+    and is covered by test_r4_1.
+    """
     _patch_engines(
         monkeypatch,
-        events=[_macro_event("OPEX", "2026-09-18", label="Options expiration")],
+        events=[],
         calendar={
             "asof": TODAY.isoformat(),
             "themes": {},
@@ -620,23 +672,75 @@ def test_r1_no_linked_public_record_renders(tmp_path, monkeypatch):
         },
     )
     payload = project(today=TODAY)
-    equity = _window(payload, "equity_new_issue")
     disc = _window(payload, "disclosure_regulatory")
-    assert equity["state"] == "unavailable"
-    assert equity["reason_en"] == _NO_RECORD[0]
-    assert equity["reason_zh"] == _NO_RECORD[1]
     assert disc["state"] == "unavailable"
     assert disc["reason_en"] == _NO_RECORD[0]
+    assert disc["reason_zh"] == _NO_RECORD[1]
     html = _render_section(tmp_path, monkeypatch, payload)
     assert _NO_RECORD[0] in html
     assert _NO_RECORD[1] in html
-    assert _EMPTY_REASON[0] not in _section_window_copy(html, "New share sales")
+    assert _EMPTY_REASON[0] not in _section_window_copy(html, "Disclosure rules")
+
+
+def test_r4_1_production_opex_window_is_not_wired(tmp_path, monkeypatch):
+    """R1: a source-less event type is NOT WIRED, never `no linked record`.
+
+    `OPEX` is the only event type mapped to `equity_new_issue`, and it has no
+    entry in `_FROZEN_SOURCE`, so no OPEX row can ever carry a citation. That
+    is a wiring gap, not a gap in the public record, and the sentence the
+    reader sees has to say so.
+    """
+    _patch_engines(
+        monkeypatch,
+        events=[_production_opex_event("2026-09-18")],
+        calendar=_empty_calendar(),
+    )
+    payload = project(today=TODAY)
+    equity = _window(payload, "equity_new_issue")
+    assert equity["state"] == "unavailable"
+    assert equity["rows"] == []
+    assert equity["reason_en"] == _NOT_WIRED[0]
+    assert equity["reason_zh"] == _NOT_WIRED[1]
+    assert equity["reason_en"] != _NO_RECORD[0]
+    html = _render_section(tmp_path, monkeypatch, payload)
+    slice_ = _section_window_copy(html, "New share sales")
+    assert _NOT_WIRED[0] in slice_
+    assert _NOT_WIRED[1] in slice_
+    assert _NO_RECORD[0] not in slice_
+    assert _EMPTY_REASON[0] not in slice_
+
+
+def test_r4_2_dates_render_in_the_pages_human_form(tmp_path, monkeypatch):
+    """R2: visible dates are relative and human; ISO lives in the attribute."""
+    _patch_engines(
+        monkeypatch,
+        events=[
+            _macro_event("FOMC", TODAY.isoformat(), label="FOMC decision"),
+            _macro_event("FOMC", "2026-09-10", label="FOMC decision"),
+            _macro_event("FOMC", "2026-09-16", label="FOMC decision"),
+        ],
+        calendar=_empty_calendar(),
+    )
+    payload = project(today=TODAY)
+    rows = _window(payload, "rates_policy")["rows"]
+    assert [r["days_out"] for r in rows] == [0, 1, 7]
+    section = _render_section(tmp_path, monkeypatch, payload)
+
+    # The machine date is present, and only inside the datetime attribute.
+    assert 'datetime="2026-09-16"' in section
+    visible = DATETIME_ATTR_RE.sub("", section)
+    assert ISO_DATE_RE.search(visible) is None, ISO_DATE_RE.search(visible).group(0)
+
+    # The page's own relative form, in both languages.
+    for token in ("today", "今天", "in 1 day", "1 天后", "in 7 days", "7 天后"):
+        assert token in section, token
 
 
 def _section_window_copy(section: str, label: str) -> str:
-    """Slice of the rendered section that follows `label` until the next kicker."""
+    """Exactly one window's rendered block: its label up to the next window."""
     idx = section.index(label)
-    return section[idx:idx + 800]
+    nxt = section.find('class="cs-policy-window"', idx)
+    return section[idx:] if nxt == -1 else section[idx:nxt]
 
 
 def test_r1_not_wired_renders(tmp_path, monkeypatch):
@@ -789,6 +893,123 @@ def test_r6_fence_raises_before_over_budget_page(tmp_path, monkeypatch):
     assert not page.exists()
 
 
+def test_r4_3_fence_trip_leaves_the_artifact_untouched(tmp_path, monkeypatch):
+    """R5(a): the JSON artifact is written only after the byte fence passes."""
+    monkeypatch.setattr(page_builder, "_policy_watch", lambda today=None: _stub_watch())
+    _patch_engines(
+        monkeypatch,
+        events=[_macro_event("FOMC", "2026-09-16", label="FOMC decision")],
+        calendar=_empty_calendar(),
+    )
+    payload = project(today=TODAY)
+    monkeypatch.setattr(page_builder, "_policy_projection", lambda today=None: payload)
+    _copy_templates(tmp_path)
+
+    artifact = tmp_path / "site" / "data" / "capital_policy_projection.json"
+    artifact.parent.mkdir(parents=True, exist_ok=True)
+    stale = b'{"schema": "stale-from-the-last-good-build"}\n'
+    artifact.write_bytes(stale)
+
+    monkeypatch.setattr("engine.capital_policy_projection.SECTION_BUDGET_BYTES", 10)
+    with pytest.raises(RuntimeError, match="policy-projection section over budget"):
+        page_builder.render(tmp_path)
+    assert not (tmp_path / "site" / "capital_structure.html").exists()
+    assert artifact.read_bytes() == stale
+    assert not list(artifact.parent.glob(".*.tmp"))
+
+
+def test_r4_4_cache_staleness_uses_the_cache_date_not_mtime(tmp_path, monkeypatch):
+    """R5(f): the same `today` and the same files give the same bytes.
+
+    The cache file is named for the day it covers, so its own date — never the
+    wall clock — decides whether it is stale. An old mtime must not flip a
+    window from `present` to `unavailable`.
+    """
+    cache = tmp_path / "data" / "macro" / "auction_cache" / f"upcoming_{TODAY.isoformat()}.json"
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    cache.write_text(json.dumps([
+        {"securityType": "Note", "securityTerm": "10-Year", "auctionDate": "2026-09-20"},
+    ]), encoding="utf-8")
+    os.utime(cache, (0, 0))  # written a lifetime ago by the clock
+
+    monkeypatch.setattr("engine.capital_policy_projection.config.ROOT", tmp_path)
+    monkeypatch.setattr(
+        "engine.policy_calendar.compute_policy_calendar",
+        lambda df=None, today=None: _empty_calendar(),
+    )
+    first = project(today=TODAY)
+    treasury = _window(first, "treasury_supply")
+    assert treasury["state"] == "present"
+    assert treasury["rows"][0]["event_en"] == "Treasury auctions 10-Year Note"
+
+    second = project(today=TODAY)
+    assert json.dumps(first, sort_keys=True, ensure_ascii=False) == json.dumps(
+        second, sort_keys=True, ensure_ascii=False
+    )
+
+    # A cache written for another day is stale whatever its mtime says.
+    other = tmp_path / "data" / "macro" / "auction_cache" / "upcoming_2026-09-08.json"
+    other.write_text("[]", encoding="utf-8")
+    assert engine_projection._read_auction_cache(TODAY)[0] == "ok"
+    assert engine_projection._read_auction_cache(date(2026, 9, 8))[0] == "ok"
+    cache.unlink()
+    assert engine_projection._read_auction_cache(TODAY)[0] == "missing"
+
+
+def test_r4_5_section_kicker_reads_dated_steps(tmp_path, monkeypatch):
+    """R5(g): the section never labels itself a policy calendar.
+
+    The frozen chip immediately above can read "Policy calendar not in this
+    build"; a second element calling itself POLICY CALENDAR while showing rows
+    makes the page look as though it denies and then displays the same thing.
+    """
+    _patch_engines(
+        monkeypatch,
+        events=[_macro_event("FOMC", "2026-09-16", label="FOMC decision")],
+        calendar=_empty_calendar(),
+    )
+    payload = project(today=TODAY)
+    section = _render_section(tmp_path, monkeypatch, payload)
+    kicker = section[section.index('id="cs-pp-kicker"'):]
+    kicker = kicker[:kicker.index("</p>")]
+    assert "Dated steps" in kicker
+    assert "既定节点" in kicker
+    assert "Policy calendar" not in section
+    assert "政策日历" not in section
+
+
+def test_r4_6_engine_carries_no_denylisted_token(tmp_path, monkeypatch):
+    """R5(h): §2.3 forbids the tokens in the engine, not only the artifact."""
+    source = (ROOT / "engine" / "capital_policy_projection.py").read_text(encoding="utf-8")
+    doc = engine_projection.__doc__ or ""
+    for tok in DENYLIST:
+        assert tok.lower() not in doc.lower(), tok
+    leaked = sorted({m.group(0).strip() for m in DENYLIST_RE.finditer(source)})
+    assert leaked == [], leaked
+
+
+def test_r4_7_ceiling_note_carries_the_merged_chips_wording(tmp_path, monkeypatch):
+    """R3: the section's ceiling note is not thinner than the chip above it."""
+    assert NOTE_EN == "Not a rating, not a trade call."
+    assert NOTE_ZH == "不是评级，也不是交易建议。"
+    # The heading already carries the "dated steps on the public record"
+    # phrase; the note must not repeat it.
+    assert "public record" not in NOTE_EN
+    assert "公开记录" not in NOTE_ZH
+    _patch_engines(
+        monkeypatch,
+        events=[_macro_event("FOMC", "2026-09-16", label="FOMC decision")],
+        calendar=_empty_calendar(),
+    )
+    payload = project(today=TODAY)
+    assert payload["note_en"] == NOTE_EN
+    assert payload["note_zh"] == NOTE_ZH
+    section = _render_section(tmp_path, monkeypatch, payload)
+    assert NOTE_EN in section
+    assert NOTE_ZH in section
+    assert section.count("公开记录上的既定日期节点") == 1
+
+
 def test_r7_missing_cache_is_unavailable(tmp_path, monkeypatch):
     monkeypatch.setattr("engine.capital_policy_projection.config.ROOT", tmp_path)
     monkeypatch.setattr(
@@ -806,18 +1027,42 @@ def test_r7_missing_cache_is_unavailable(tmp_path, monkeypatch):
     assert _EMPTY_REASON[0] not in _section_window_copy(html, "Government borrowing")
 
 
-def test_r7_never_calls_requests(monkeypatch):
+def test_r7_never_calls_requests(tmp_path, monkeypatch):
+    """R7 on the LIVE branch: `us_macro_events` is the real one here.
+
+    Round-4 R5(c): the previous shape monkeypatched `us_macro_events`, which
+    made `live_macro` False, so `_read_auction_cache` — the only code that can
+    reach the network — was never entered and no implementation could have
+    called `requests.get`. This run leaves the real event source in place
+    (`use_fred=False` is passed by `project()`), redirects `config.ROOT` at an
+    empty tree, and arms `requests.get` to raise.
+    """
     def boom(*args, **kwargs):
         raise AssertionError("projection path called the network")
 
     monkeypatch.setattr("requests.get", boom, raising=False)
-    _patch_engines(
-        monkeypatch,
-        events=[_macro_event("FOMC", "2026-09-16", label="FOMC decision")],
-        calendar=_empty_calendar(),
+    monkeypatch.setattr("requests.post", boom, raising=False)
+    monkeypatch.setattr("requests.Session.request", boom, raising=False)
+    monkeypatch.setattr("engine.capital_policy_projection.config.ROOT", tmp_path)
+    # The policy half stays stubbed: compute_policy_calendar reads a parquet and
+    # appends a ledger under data/, which no test may touch.
+    monkeypatch.setattr(
+        "engine.policy_calendar.compute_policy_calendar",
+        lambda df=None, today=None: _empty_calendar(),
+    )
+    assert engine_projection.event_calendar.us_macro_events is (
+        engine_projection._LIVE_US_MACRO_EVENTS
     )
     payload = project(today=TODAY)
-    assert _window(payload, "rates_policy")["state"] == "present"
+    assert payload["schema"] == SCHEMA
+    # The cache is absent under the redirected root, so the live branch was
+    # entered and closed honestly rather than fetching.
+    treasury = _window(payload, "treasury_supply")
+    assert treasury["state"] == "unavailable"
+    assert treasury["reason_en"] == _READ_FAILED_EVENTS[0]
+    assert not (tmp_path / "data").exists()
+    # The real event source is restored for the next test.
+    assert engine_projection.event_calendar._fetch_upcoming_auctions.__name__ != "_closed"
 
 
 def test_r8_policy_calendar_runs_once_per_build(tmp_path, monkeypatch):
@@ -840,10 +1085,20 @@ def test_r8_policy_calendar_runs_once_per_build(tmp_path, monkeypatch):
     assert calls["n"] == 1
 
 
-def test_r8_policy_projection_never_returns_none():
+def test_r8_policy_projection_never_returns_none(monkeypatch):
+    """R5(d): the import-failure fallback is reachable, and it is exercised.
+
+    Previously `typed_unavailable` was imported inside the handler for a failed
+    import of the same module, so the fallback could never run. It is now
+    imported before the guarded import, and deleting `project` from the module
+    drives the real branch.
+    """
     assert page_builder._policy_projection.__annotations__.get("return") in ("dict", dict)
-    # Import failure is untestable without deleting the module; the except
-    # branch returns typed_unavailable, which is a dict.
-    typed = typed_unavailable(today=TODAY)
-    assert isinstance(typed, dict)
-    assert typed["windows"]
+    monkeypatch.delattr(engine_projection, "project")
+    payload = page_builder._policy_projection(today=TODAY)
+    assert isinstance(payload, dict)
+    assert payload["schema"] == SCHEMA
+    assert payload["authority"] == "context_only"
+    assert len(payload["windows"]) == 6
+    assert all(w["state"] == "unavailable" for w in payload["windows"])
+    assert all(w["reason_en"] for w in payload["windows"])
