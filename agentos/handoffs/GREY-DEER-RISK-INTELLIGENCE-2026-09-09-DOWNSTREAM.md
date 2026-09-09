@@ -5,8 +5,8 @@ model: sol
 ended_because: blocked
 mission: >
   Continue the Chairman's all-region Risk Radar upgrade by closing actual
-  downstream missing-size presentation failures and locating the remaining
-  construction-to-authority release defect, without touching production.
+  downstream missing-size presentation failures and the construction-to-authority
+  defect in the uninstalled candidate, without touching production.
 state_before: >
   Same-carrier research head fc9107f43d9f126e8f662717864032f947b41a36 contained
   a tested uninstalled composition candidate. Its unavailable sleeve value had
@@ -30,12 +30,18 @@ verified:
   - claim: The prior numerical construction remains correct against its independent row-wise oracle.
     command: python3 research/grey_deer/RRU_COMPOSITION_NUMERICAL_TESTS_2026_09_08.py
     result: Twenty tests passed across all ten profiles; unchanged production source; synthetic input only.
-  - claim: The corrected candidate can inherit an old construction's force permission.
+  - claim: At the earlier checkpoint, the corrected candidate inherited legacy force permission.
     command: python3 research/grey_deer/RRU_DOWNSTREAM_ACCEPTANCE_2026_09_09.py --scope authority
     result: One expected assertion failure showed ceiling 26 and forced Risk-off; one legacy control passed; no actual grant or policy change.
-  - claim: The actual pure forward-entry constructor drops composition identity.
+  - claim: The original pure forward-entry constructor drops composition identity; the later candidate repairs it.
     command: python3 research/grey_deer/RRU_CONSTRUCTION_SERIALIZATION_2026_09_09.py
     result: One expected failure and one legacy control pass; zero errors; no ledger IO or source mutation.
+  - claim: The full candidate now refuses inherited modern force while preserving legacy and independent guards.
+    command: python3 research/grey_deer/RRU_FORCE_VERIFY_2026_09_09.py --full-modules
+    result: 235 tests passed in one native invocation, zero failures/errors, source unchanged; full pipelines not run.
+  - claim: The exported patch faithfully represents the tested candidate.
+    command: python3 research/grey_deer/RRU_FORCE_EXPORT_PATCH_2026_09_09.py
+    result: Fourteen fresh fixture copies patched to exact candidate hashes; original source unchanged and zero extra files.
 unverified:
   - claim: The corrected construction is eligible for legacy forecast, sizing or binding authority.
     what_would_verify: Existing audit/permission owners explicitly match construction applicability, preserve original evidence and adjudicate policy transition.
@@ -47,9 +53,9 @@ unresolved:
   - Existing source-custody and blocked real-input diagnostic-result boundaries are unchanged.
   - Independent review remains undelivered after its earlier packet-assembly refusal; no worker or watcher exists.
   - The optional translation-helper edit was blocked; direct read found the original function unchanged and no retry followed.
-  - Preserved catalysts remain hidden by the existing recovery present guard; freshness and full percentile-reference comparability remain unresolved.
+  - Preserved catalysts remain hidden by the recovery present guard; raw-source freshness/vintage and full-product recovery utility remain unresolved.
 next_actions:
-  - Sol resolves the remaining construction-applicability gate at the existing scorecard and runner attachment owners; preserve the now-tested prospective metadata serializer and close the actual-force RED without a duplicate policy store or silent release of established restrictions.
+  - First close the source-proven international outer-adapter/wrapper gap under its existing scope; its test append was blocked and the incomplete draft is not proof. Preserve the now-passing force guard and14-path export, then resolve review, custody, integration, real-input and installed-policy gates before release.
   - Resolve lawful source custody and independent review, then install producer and real consumers together with canonical-input publication proof.
   - Complete the new consumer visual matrix and preserve separate time/null, wrong-gauge, recovery visibility and regional early-turn waves.
 do_not_redo:
@@ -64,9 +70,11 @@ danger_areas:
   - A card disclaimer does not constrain the downstream machine cap or preserve construction identity in the grading ledger.
   - The latest 30-session comparison does not establish comparable membership across the whole percentile reference history.
 decisions:
+  - "DEC:RRU-FORCE-GRANT-IS-SNAPSHOT-SCOPED"
   - "DEC:RRU-ONE-EXPERIENCE-SEPARATE-TRUTHS"
   - "DEC:RRU-ARITHMETIC-NEEDS-COMPOSITION-TRUTH"
 discoveries:
+  - "DSC:RRU-INTERNATIONAL-ADAPTER-DROPS-QUALIFIED-READING"
   - "DSC:RRU-CORRECTED-CONSTRUCTION-INHERITS-LEGACY-FORCE"
   - "DSC:RRU-RANK-COMPARISON-NEEDS-REFERENCE-COMPOSITION"
 ---
@@ -174,3 +182,56 @@ Mastermind advanced to63e3ddec6d8819dffe6509f3d13d41f2e94b9709. INDEX and the fo
 required cold-start/reconcile/review/closeout skill blobs were fetched at that same
 commit and exactly matched the previously fully read compatible1.0.1/bootstrap1
 blobs. The new pin is publication procedure; it does not change the research fixture.
+
+## Force-applicability continuation — the candidate RED is closed
+
+Starting head96251ae9; same original Mac/worktree/carrier. The audit-owned predicate
+now qualifies ten raw assignments in five owners and the actual projection/override.
+Modern metadata cannot self-promote; legacy payload shape/permission stays unchanged.
+Earlier track-record evidence remains visible, explicitly not current validation.
+Review and limits: research/grey_deer/RRU_FORCE_APPLICABILITY_REVIEW_2026_09_09.md.
+
+Native process54106 ran235 tests in one full-engine-module invocation, zero failures
+or errors, exit0. It includes the formerly failing force case and its legacy control.
+The complete market-state consumer preserves synthetic78/78 for a modern reading,
+legacy78/26 for a proven legacy grant, and four independent harness guards at41/59.
+The harness flags do not enable new production-CN guards; its actual flags stay empty.
+Sixteen real attachment-block tests keep effect seams mocked; full pipelines remain unrun.
+Forty-eight synthetic browser cases pass across three widths, two themes/languages.
+All48 PNG hashes and candidate-source equality were checked. Four inspected frames
+are committed with the receipt; the remaining44 remain local, not falsely published.
+
+The portable14-path export was applied to fresh fixture copies by the patch tool and
+matched every candidate hash, exit0 (process57261). It is not applied to product source.
+These results supersede only the earlier candidate still-force-RED claim. No installed
+policy is released, and no claim that current production has zero active policies follows.
+A seven-path current-main comparison to3dda3326 was platform-blocked and not retried.
+
+Next: independent exact-candidate review plus lawful current source/integration custody,
+real-input applicability and actual installed-policy disposition, then one source-to-
+consumer release with real publication/browser proof. Do not redo the now-passing guard.
+The parent stays PARTIAL; no worker, watcher, Executive admission or deployment exists.
+
+Recovered within this continuation: the untracked snapshot-scope DEC and international
+adapter DSC already existed. Both are now linked above. `_radar_display` rejects missing
+state/h21 odds, so corrected/unavailable readings can vanish before the outer page.
+Its existing scope and57-line text draft are retained; no adapter test or patch passed.
+The blocked draft append and inherited-test enumeration were not rerun. Closing this
+outer-consumer gap is the first next technical action, before full release review.
+The235 tests and14-path export do not cover it; isolated card success is not page proof.
+
+Publication procedure refreshed to Mastermind f3f2d9155796876009f2d427bfdecc7ee7b63e74.
+INDEX and cold-start/reconcile/review/closeout companion blobs at that same commit
+match the previously fully read compatible1.0.1/bootstrap1 versions. This does not
+refresh the source fixture or clear the blocked current-main comparison.
+Records validation observed1089 records,0errors,163 baseline sparse warnings (64281).
+No full-worktree clean claim: earlier excluded research outputs remain untouched.
+
+Final publication checks: process72269 verified1089 records,0errors,163 warnings;
+all new Python ASTs, whitespace and empty product-path diff passed. The v2 zero-context
+export matches every hash in the235-test receipt and passed fresh-copy replay; its
+manifest requires exact before hashes. Original context-rich patch and raw RED text
+remain local/preserve-only; the normalization receipt records both RED hashes.
+Native remote readback still matched96251ae9 before the next research commit. Git's
+ambient CI Fixture author was observed; per-commit author metadata will use the verified
+connected chriswong6031-creator identity without changing global configuration or tokens.

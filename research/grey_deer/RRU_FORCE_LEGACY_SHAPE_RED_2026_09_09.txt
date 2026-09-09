@@ -1,0 +1,45 @@
+test_foreign_grant_cannot_override_named_policies_or_mutate_inputs (__main__.ForceTests.test_foreign_grant_cannot_override_named_policies_or_mutate_inputs) ... ok
+test_legacy_ceiling_and_source_preserved (__main__.ForceTests.test_legacy_ceiling_and_source_preserved) ... FAIL
+test_modern_boolean_is_not_legacy_permission (__main__.ForceTests.test_modern_boolean_is_not_legacy_permission) ... ok
+test_modern_empty_is_not_legacy_permission (__main__.ForceTests.test_modern_empty_is_not_legacy_permission) ... ok
+test_modern_list_is_not_legacy_permission (__main__.ForceTests.test_modern_list_is_not_legacy_permission) ... ok
+test_modern_null_is_not_legacy_permission (__main__.ForceTests.test_modern_null_is_not_legacy_permission) ... ok
+test_modern_reviewed_claim_is_not_legacy_permission (__main__.ForceTests.test_modern_reviewed_claim_is_not_legacy_permission) ... ok
+test_modern_unknown_is_not_legacy_permission (__main__.ForceTests.test_modern_unknown_is_not_legacy_permission) ... ok
+test_prior_record_is_not_current_force_claim (__main__.ForceTests.test_prior_record_is_not_current_force_claim) ... ok
+test_producer_au (__main__.ForceTests.test_producer_au) ... ok
+test_producer_ca (__main__.ForceTests.test_producer_ca) ... ok
+test_producer_cn (__main__.ForceTests.test_producer_cn) ... ok
+test_producer_ez (__main__.ForceTests.test_producer_ez) ... ok
+test_producer_gb (__main__.ForceTests.test_producer_gb) ... ok
+test_producer_hk (__main__.ForceTests.test_producer_hk) ... ok
+test_producer_in (__main__.ForceTests.test_producer_in) ... ok
+test_producer_jp (__main__.ForceTests.test_producer_jp) ... ok
+test_producer_kr (__main__.ForceTests.test_producer_kr) ... ok
+test_producer_tw (__main__.ForceTests.test_producer_tw) ... ok
+test_reported_binding_object_cannot_bypass_effective_projection (__main__.ForceTests.test_reported_binding_object_cannot_bypass_effective_projection) ... ok
+test_runner_0_legacy (__main__.ForceTests.test_runner_0_legacy) ... ok
+test_runner_0_modern (__main__.ForceTests.test_runner_0_modern) ... ok
+test_runner_1_legacy (__main__.ForceTests.test_runner_1_legacy) ... ok
+test_runner_1_modern (__main__.ForceTests.test_runner_1_modern) ... ok
+test_runner_2_legacy (__main__.ForceTests.test_runner_2_legacy) ... ok
+test_runner_2_modern (__main__.ForceTests.test_runner_2_modern) ... ok
+test_runner_3_legacy (__main__.ForceTests.test_runner_3_legacy) ... ok
+test_runner_3_modern (__main__.ForceTests.test_runner_3_modern) ... ok
+test_runner_4_legacy (__main__.ForceTests.test_runner_4_legacy) ... ok
+test_runner_4_modern (__main__.ForceTests.test_runner_4_modern) ... ok
+
+======================================================================
+FAIL: test_legacy_ceiling_and_source_preserved (__main__.ForceTests.test_legacy_ceiling_and_source_preserved)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 128, in legacy_test
+    self.assertNotIn('reported_can_force', rd, 'Keep legacy projection free of new provenance fields')
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'reported_can_force' unexpectedly found in {'state': 'caution', 'top_score': 99, 'label_en': 'calm', 'label_zh': '平静', 'state_zh': '警戒', 'do_en': 'Trim chasing; favour good entries over extended leaders.', 'do_zh': '减少追高；择优入场而非追逐已延展的龙头。', 'gross': None, 'composition': None, 'legacy_drawdown_prob': None, 'dd5': None, 'dd10': None, 'dd21': None, 'dd_lift': None, 'dd_base': {'h5': None, 'h10': None, 'h21': None}, 'is_warning': True, 'is_loud': False, 'reported_can_force': True, 'can_force': True, 'binding': True, 'authority': {'tier': 'binding', 'can_force': True, 'reason': 'legacy_loud_alert', 'note_en': 'Binding guard — confirmed leading risk may cap the measured tape.', 'note_zh': '约束性护栏——已确认的领先风险可压低实测盘面评分。'}, 'scares': [], 'forward_log': {'market': 'cn', 'n_graded': 200, 'can_force': True}, 'cycle': None, 'counterread': None, 'amp': 0, 'amp_keys': [], 'amp_flags_en': [], 'amp_flags_zh': [], 'severe_gated': False, 'ceiling': 56, 'candidate_ceiling': 56, 'amp_unavailable': [], 'amp_unavailable_keys': [], 'amp_n_checked': 0, 'amp_available': 0, 'ceiling_base': None, 'ceiling_severe_bump': 0, 'ceiling_amp_pull': 0.0, 'ceiling_floor': None, 'recovery': None, 'track': None} : Keep legacy projection free of new provenance fields
+
+----------------------------------------------------------------------
+Ran 30 tests in 0.363s
+
+FAILED (failures=1)
+{"tests": 30, "failures": 1, "errors": 0, "source_unchanged": true, "synthetic_only": true, "full_pipeline": false}

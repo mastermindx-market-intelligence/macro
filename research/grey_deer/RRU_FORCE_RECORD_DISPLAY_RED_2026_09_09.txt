@@ -1,0 +1,45 @@
+test_foreign_grant_cannot_override_named_policies_or_mutate_inputs (__main__.ForceTests.test_foreign_grant_cannot_override_named_policies_or_mutate_inputs) ... ok
+test_legacy_ceiling_and_source_preserved (__main__.ForceTests.test_legacy_ceiling_and_source_preserved) ... ok
+test_modern_boolean_is_not_legacy_permission (__main__.ForceTests.test_modern_boolean_is_not_legacy_permission) ... ok
+test_modern_empty_is_not_legacy_permission (__main__.ForceTests.test_modern_empty_is_not_legacy_permission) ... ok
+test_modern_list_is_not_legacy_permission (__main__.ForceTests.test_modern_list_is_not_legacy_permission) ... ok
+test_modern_null_is_not_legacy_permission (__main__.ForceTests.test_modern_null_is_not_legacy_permission) ... ok
+test_modern_reviewed_claim_is_not_legacy_permission (__main__.ForceTests.test_modern_reviewed_claim_is_not_legacy_permission) ... ok
+test_modern_unknown_is_not_legacy_permission (__main__.ForceTests.test_modern_unknown_is_not_legacy_permission) ... ok
+test_prior_record_is_not_current_force_claim (__main__.ForceTests.test_prior_record_is_not_current_force_claim) ... FAIL
+test_producer_au (__main__.ForceTests.test_producer_au) ... ok
+test_producer_ca (__main__.ForceTests.test_producer_ca) ... ok
+test_producer_cn (__main__.ForceTests.test_producer_cn) ... ok
+test_producer_ez (__main__.ForceTests.test_producer_ez) ... ok
+test_producer_gb (__main__.ForceTests.test_producer_gb) ... ok
+test_producer_hk (__main__.ForceTests.test_producer_hk) ... ok
+test_producer_in (__main__.ForceTests.test_producer_in) ... ok
+test_producer_jp (__main__.ForceTests.test_producer_jp) ... ok
+test_producer_kr (__main__.ForceTests.test_producer_kr) ... ok
+test_producer_tw (__main__.ForceTests.test_producer_tw) ... ok
+test_reported_binding_object_cannot_bypass_effective_projection (__main__.ForceTests.test_reported_binding_object_cannot_bypass_effective_projection) ... ok
+test_runner_0_legacy (__main__.ForceTests.test_runner_0_legacy) ... ok
+test_runner_0_modern (__main__.ForceTests.test_runner_0_modern) ... ok
+test_runner_1_legacy (__main__.ForceTests.test_runner_1_legacy) ... ok
+test_runner_1_modern (__main__.ForceTests.test_runner_1_modern) ... ok
+test_runner_2_legacy (__main__.ForceTests.test_runner_2_legacy) ... ok
+test_runner_2_modern (__main__.ForceTests.test_runner_2_modern) ... ok
+test_runner_3_legacy (__main__.ForceTests.test_runner_3_legacy) ... ok
+test_runner_3_modern (__main__.ForceTests.test_runner_3_modern) ... ok
+test_runner_4_legacy (__main__.ForceTests.test_runner_4_legacy) ... ok
+test_runner_4_modern (__main__.ForceTests.test_runner_4_modern) ... ok
+
+======================================================================
+FAIL: test_prior_record_is_not_current_force_claim (__main__.ForceTests.test_prior_record_is_not_current_force_claim)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_FORCE_APPLICABILITY_TESTS_2026_09_09.py", line 135, in record_display_test
+    self.assertIn('Earlier construction record', html)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Earlier construction record' not found in Markup('<div class="rrx rrx-descriptive rrx-loud" style="--rc:var(--muted)">\n  \n  <div class="rrx-main">\n  <div class="rrx-hd">\n    <span class="rrx-ic">—</span>\n    <div class="rrx-id">\n      <div class="rrx-ttl"><span class="l-en">Risk Radar</span><span class="l-zh">风险雷达</span>\n        <span class="rrx-badge"><span class="l-en">Descriptive reading</span><span class="l-zh">描述性读数</span> · 99/100</span>\n        <span class="help">?<span class="tip"><span class="l-en">Descriptive input-based reading; not a calibrated forecast or sizing instruction.</span><span class="l-zh">输入驱动的描述性读数，并非经校准的预测或仓位指令。</span></span></span>\n      </div>\n      <div class="rrx-dom"><span class="l-en">Input-based reading; forecast calibration under review</span><span class="l-zh">输入驱动的读数；预测校准待核验</span></div>\n      \n      <div class="rrx-authority is-advisory">\n        <span class="l-en">Descriptive context; no forecast, sizing or binding permission.</span><span class="l-zh">描述性背景；不提供预测、仓位指令或约束权限。</span>\n      </div>\n      \n      \n      <div class="rrx-authority is-advisory" data-composition-status="COMPLETE">\n        <span class="l-en">Input coverage</span><span class="l-zh">输入覆盖</span>:  / .\n        \n        <span class="l-en">Recovery comparison unavailable.</span><span class="l-zh">复苏对比暂不可用。</span>\n        <details><summary><span class="l-en">Data details</span><span class="l-zh">数据详情</span></summary>\n          <div><span class="l-en">Groups available</span><span class="l-zh">可用输入组</span>:  / .</div>\n          \n          <div><span class="l-en">Availability does not establish freshness.</span><span class="l-zh">输入可用不代表来源及时。</span></div>\n        </details>\n        <div><span class="l-en">Forecast calibration under review.</span><span class="l-zh">预测校准待核验。</span></div>\n      </div>\n      \n      \n    </div>\n    \n  </div>\n\n  \n  </div>\n\n  <div class="rrx-side">\n  \n  \n  \n\n  \n  \n  <div class="rrx-do"><span class="rrx-do-k"><span class="l-en">Do</span><span class="l-zh">应对</span></span><span class="l-en">Review price and breadth alongside this reading.</span><span class="l-zh">结合价格与市场广度观察此读数。</span></div>\n  \n\n  \n  \n\n  \n  \n\n  \n  \n  \n  \n\n  \n\n  <div class="rrx-trk">\n    <span class="rrx-audit-k">🧾 <span class="l-en">Track record</span><span class="l-zh">往绩</span></span><span>200 <span class="l-en">graded</span><span class="l-zh">已评分</span> · <span class="l-en">moving the verdict</span><span class="l-zh">参与定调</span> ✓</span>\n    \n    <span class="help">?<span class="tip"><span class="l-en">Past-year hit rate: too few graded alerts yet (daily readings — consecutive days overlap) | Watch/caution: too few graded | Recovery: too few graded</span><span class="l-zh">过去一年命中率：暂无足够评分记录（按日读数——连续日期相互重叠） | 观察/谨慎：暂无足够评分 | 修复信号：暂无足够评分</span></span></span>\n  </div>\n  \n  </div>\n</div>')
+
+----------------------------------------------------------------------
+Ran 30 tests in 0.527s
+
+FAILED (failures=1)
+{"tests": 30, "failures": 1, "errors": 0, "source_unchanged": true, "synthetic_only": true, "full_pipeline": false}

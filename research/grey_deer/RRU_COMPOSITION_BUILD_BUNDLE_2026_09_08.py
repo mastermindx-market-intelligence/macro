@@ -287,3 +287,63 @@ change(p, 'return {"status": "accruing", "n_graded": len(rows), "need": MIN_GRAD
        'return {"status": "accruing", "n_graded": len(rows), "need": MIN_GRADED,\n                    "evidence_construction": "legacy_implicit", "excluded_composition_rows": excluded}')
 change(p, 'return {"status": decision, "n_graded": len(rows),\n',
        'return {"status": decision, "n_graded": len(rows),\n                "evidence_construction": "legacy_implicit", "excluded_composition_rows": excluded,\n')
+
+# Source-bound construction applicability: no modern construction is promoted yet.
+p = 'engine/risk_radar_intl_audit.py'
+force_helper = (HERE / 'RRU_FORCE_APPLICABILITY_HELPER_2026_09_09.txt').read_text().rstrip() + '\n\n\n'
+change(p, 'def scorecard(market:', force_helper + 'def scorecard(market:', ['force_applicable_for_snapshot'])
+p = PATHS[1]
+change(p, '    composition = rr.get("composition")\n', '''    composition = rr.get("composition")
+    if "composition" in rr and not isinstance(composition, dict):
+        composition = {"status": "UNAVAILABLE", "score_current": False,
+                       "calibration_status": "unreviewed_corrected_construction"}
+''')
+change(p, '    reference_only = bool(composition and composition.get("calibration_status") == "unreviewed_corrected_construction")',
+       '    reference_only = "composition" in rr')
+change(p, '    _authority = dict(rr.get("authority") or {', '''    _reported_can_force = _can_force
+    from engine.risk_radar_intl_audit import force_applicable_for_snapshot
+    _can_force = force_applicable_for_snapshot(rr, _reported_can_force)
+    _authority = dict(rr.get("authority") or {''')
+change(p, '    # Forward-monitor freshness remains visible in `track`,', '''    if "composition" in rr:
+        _authority = {"tier": "descriptive", "can_force": False,
+                      "reason": "construction_not_promoted",
+                      "note_en": "Descriptive context; no forecast, sizing or binding permission.",
+                      "note_zh": "描述性背景；不提供预测、仓位指令或约束权限。"}
+    # Forward-monitor freshness remains visible in `track`,''')
+change(p, '        "can_force": _can_force,\n        "binding":',
+       '        "reported_can_force": _reported_can_force,\n        "can_force": _can_force,\n        "binding":')
+change(p, '    if rr.get("can_force") and state in ("caution", "elevated", "risk-off"):',
+       '    if out.get("can_force") and state in ("caution", "elevated", "risk-off"):', ['_radar_override_intl'])
+
+# Preserve the original runner/source owners; modify only their scalar attachment.
+for p, payload, score in (
+        ('engine/intl_run.py', 'rec["risk_radar"]', 'sc'),
+        ('scripts/build_china.py', 'latest["risk_radar"]', '_sc'),
+        ('scripts/build_hk.py', 'latest["risk_radar"]', '_sc'),
+        ('scripts/build_canada.py', 'latest["risk_radar"]', '_sc')):
+    SOURCES[p] = committed(p)
+    edited[p] = SOURCES[p]
+    old = f'{payload}["can_force"] = bool({payload}["forward_log"].get("can_force"))'
+    new = f'{payload}["can_force"] = _rra.force_applicable_for_snapshot({payload}, bool({payload}["forward_log"].get("can_force")))'
+    change(p, old, new)
+    old = f'{payload}["can_force"] = bool({score}.get("can_force"))'
+    new = f'{payload}["can_force"] = _rra.force_applicable_for_snapshot({payload}, bool({score}.get("can_force")))'
+    change(p, old, new)
+p = 'scripts/build_china_risk_state.py'
+SOURCES[p] = committed(p)
+edited[p] = SOURCES[p]
+change(p, 'from engine import live_overlay, live_quotes, market_state, risk_radar_intl',
+       'from engine import live_overlay, live_quotes, market_state, risk_radar_intl, risk_radar_intl_audit')
+for payload in ('_latest_nightly["risk_radar"]', 'latest_live["risk_radar"]'):
+    change(p, f'{payload}["can_force"] = can_force',
+           f'{payload}["can_force"] = risk_radar_intl_audit.force_applicable_for_snapshot({payload}, can_force)')
+
+# The prior-method track record must not claim the corrected reading moves a verdict.
+p = PATHS[3]
+change(p, '    {%- if _fl_n > 0 %}', '''    {%- if rd.authority and rd.authority.reason == 'construction_not_promoted' %}
+    <span data-record-applicability="earlier-construction">{{ t('Earlier construction record; not current validation.','旧构造往绩；不构成当前读数的验证。') }}{% if _fl_n > 0 %} {{ _fl_n }} {{ t('graded','已评分') }}.{% endif %}</span>
+    {%- elif _fl_n > 0 %}''')
+
+# Keep added reported-grant provenance off unchanged legacy projections.
+change(PATHS[1], '        "reported_can_force": _reported_can_force,',
+       '        **({"reported_can_force": _reported_can_force} if "composition" in rr else {}),')

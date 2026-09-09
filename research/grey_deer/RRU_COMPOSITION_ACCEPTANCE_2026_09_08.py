@@ -31,6 +31,8 @@ def committed(path):
 SOURCES = {path: committed(path) for path in PATHS}
 TEMPLATE = SOURCES[PATHS[-1]]
 RENDER_SOURCES = {PATHS[-1]: TEMPLATE}
+RUNNER_SOURCES = {}
+RUNNER_PATHS = {"engine/intl_run.py", "scripts/build_china.py", "scripts/build_hk.py", "scripts/build_canada.py", "scripts/build_china_risk_state.py"}
 
 def apply_bundle(bundle):
     global TEMPLATE
@@ -46,6 +48,10 @@ def apply_bundle(bundle):
                 raise ValueError(f"Nonunique replacement: {path}")
             text = text.replace(delta["old"], delta["new"], 1)
         if path not in modules:
+            if path in RUNNER_PATHS:
+                ast.parse(text)
+                RUNNER_SOURCES[path] = text
+                continue
             if not path.startswith("templates/"):
                 raise ValueError(f"Unsupported research bundle path: {path}")
             RENDER_SOURCES[path] = text

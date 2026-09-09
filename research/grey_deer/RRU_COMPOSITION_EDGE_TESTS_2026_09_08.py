@@ -73,8 +73,10 @@ class CompositionEdges(unittest.TestCase):
         saved = copy.deepcopy(out)
         rd = a.project(out)
         self.assertEqual(out, saved)
-        self.assertTrue(rd['can_force'])
-        self.assertEqual(rd['authority'], saved['authority'])
+        self.assertTrue(saved['can_force'])
+        self.assertFalse(rd['can_force'])
+        self.assertFalse(rd['authority']['can_force'])
+        self.assertEqual(rd['reported_can_force'], saved['can_force'])
         self.assertIsNone(rd['dd21'])
 
 if __name__ == '__main__':

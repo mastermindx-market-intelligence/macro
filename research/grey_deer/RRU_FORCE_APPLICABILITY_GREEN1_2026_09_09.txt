@@ -1,0 +1,35 @@
+test_foreign_grant_cannot_override_named_policies_or_mutate_inputs (__main__.ForceTests.test_foreign_grant_cannot_override_named_policies_or_mutate_inputs) ... ok
+test_legacy_ceiling_and_source_preserved (__main__.ForceTests.test_legacy_ceiling_and_source_preserved) ... ok
+test_modern_boolean_is_not_legacy_permission (__main__.ForceTests.test_modern_boolean_is_not_legacy_permission) ... ok
+test_modern_empty_is_not_legacy_permission (__main__.ForceTests.test_modern_empty_is_not_legacy_permission) ... ok
+test_modern_list_is_not_legacy_permission (__main__.ForceTests.test_modern_list_is_not_legacy_permission) ... ok
+test_modern_null_is_not_legacy_permission (__main__.ForceTests.test_modern_null_is_not_legacy_permission) ... ok
+test_modern_reviewed_claim_is_not_legacy_permission (__main__.ForceTests.test_modern_reviewed_claim_is_not_legacy_permission) ... ok
+test_modern_unknown_is_not_legacy_permission (__main__.ForceTests.test_modern_unknown_is_not_legacy_permission) ... ok
+test_producer_au (__main__.ForceTests.test_producer_au) ... ok
+test_producer_ca (__main__.ForceTests.test_producer_ca) ... ok
+test_producer_cn (__main__.ForceTests.test_producer_cn) ... ok
+test_producer_ez (__main__.ForceTests.test_producer_ez) ... ok
+test_producer_gb (__main__.ForceTests.test_producer_gb) ... ok
+test_producer_hk (__main__.ForceTests.test_producer_hk) ... ok
+test_producer_in (__main__.ForceTests.test_producer_in) ... ok
+test_producer_jp (__main__.ForceTests.test_producer_jp) ... ok
+test_producer_kr (__main__.ForceTests.test_producer_kr) ... ok
+test_producer_tw (__main__.ForceTests.test_producer_tw) ... ok
+test_reported_binding_object_cannot_bypass_effective_projection (__main__.ForceTests.test_reported_binding_object_cannot_bypass_effective_projection) ... ok
+test_runner_0_legacy (__main__.ForceTests.test_runner_0_legacy) ... ok
+test_runner_0_modern (__main__.ForceTests.test_runner_0_modern) ... ok
+test_runner_1_legacy (__main__.ForceTests.test_runner_1_legacy) ... ok
+test_runner_1_modern (__main__.ForceTests.test_runner_1_modern) ... ok
+test_runner_2_legacy (__main__.ForceTests.test_runner_2_legacy) ... ok
+test_runner_2_modern (__main__.ForceTests.test_runner_2_modern) ... ok
+test_runner_3_legacy (__main__.ForceTests.test_runner_3_legacy) ... ok
+test_runner_3_modern (__main__.ForceTests.test_runner_3_modern) ... ok
+test_runner_4_legacy (__main__.ForceTests.test_runner_4_legacy) ... ok
+test_runner_4_modern (__main__.ForceTests.test_runner_4_modern) ... ok
+
+----------------------------------------------------------------------
+Ran 29 tests in 0.320s
+
+OK
+{"tests": 29, "failures": 0, "errors": 0, "source_unchanged": true, "synthetic_only": true, "full_pipeline": false}

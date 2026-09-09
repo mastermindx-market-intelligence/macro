@@ -1,0 +1,11 @@
+def force_applicable_for_snapshot(snap: dict, proposed: bool) -> bool:
+    """Qualify this snapshot's legacy force grant; never transition a capital policy.
+
+    No composition-bearing construction is promoted in this release. Declared
+    calibration/status labels cannot grant authority. A future promotion must
+    change this owner under reviewed construction-compatible evidence, not by
+    changing producer prose or reusing the legacy scorecard.
+    """
+    if not isinstance(snap, dict) or "composition" in snap:
+        return False
+    return bool(proposed)

@@ -52,3 +52,19 @@ This supersedes only the prior statement that both candidate counterexamples rem
 open. The actual force-grant counterexample remains open; preserving a method label
 is not filtering method cohorts or granting/removing a policy. Production source and
 all original issued records are unchanged. Independent review and release remain held.
+
+## Later force-applicability disposition
+
+The actual-force counterexample is now closed in the uninstalled research candidate.
+`python3 research/grey_deer/RRU_FORCE_VERIFY_2026_09_09.py --full-modules` returned235
+passing tests, zero failures/errors, unchanged original source (native process54106).
+One audit-owned predicate qualifies the ten raw attachment statements and the actual
+market-state projection/override; explicit modern metadata cannot inherit legacy force.
+The old scorecard stays raw evidence, while its UI label disclaims current validation.
+Legacy permissions/projection shape survive. Whole-consumer and declared independent-
+guard fixtures verify that rejecting modern force does not globally clear other caps.
+
+This supersedes only the previous candidate-force-RED claim. Production source at the
+fixture remains unchanged; independent review, current source custody, real-input
+applicability, installed-policy transition and production proof remain outstanding.
+See research/grey_deer/RRU_FORCE_APPLICABILITY_REVIEW_2026_09_09.md for evidence limits.
