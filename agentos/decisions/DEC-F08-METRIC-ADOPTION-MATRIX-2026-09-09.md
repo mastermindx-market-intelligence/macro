@@ -21,15 +21,15 @@ rationale: >
   invent a formula before the matrix is ratified. terminal#524 shipped a
   per-user concentration, factor and liquidity readout over A1A holdings; it
   did not ship Sharpe, Sortino or beta over a user's own positions, which is
-  why MO-DELTA-014 stays PARTIAL on the base branch and must not be treated as
-  finished. Macro contains no terminal/ tree, so ownership is pinned to the
+  why MO-DELTA-014 stays PARTIAL on the base branch and remains an open row.
+  Macro contains no terminal/ tree, so ownership is pinned to the
   Terminal commit recorded in the packet manifest rather than re-read at test
   time. Naming NO-OWNER for the three missing metrics is the safety margin:
   when in doubt, no owner. Inventing an owner during ratification would be
   the same freeze violation the gate exists to stop.
 alternatives:
-  - option: "Invent owners for Sharpe, Sortino and beta so MO-DELTA-014 can be treated as finished."
-    why_not: "terminal#524 does not compute those three over a user's holdings. The freeze forbids forking or inventing a formula. Closing MO-DELTA-014 on that basis would contradict the base branch and license wrong formulas downstream."
+  - option: "Invent owners for Sharpe, Sortino and beta, then rewrite MO-DELTA-014's PARTIAL cell to BUILT_NOT_PROVEN."
+    why_not: "terminal#524 does not compute those three over a user's holdings. The freeze forbids forking or inventing a formula. Rewriting MO-DELTA-014's PARTIAL cell on that basis would contradict the base branch and license wrong formulas downstream."
   - option: "Leave the matrix unratified and let each V2 builder pick a formula."
     why_not: "The freeze names the matrix as a V2 entry gate. An unratified gate is not a licence to invent; it is a stop. Packet 6 exists to ratify the gate, not to waive it."
   - option: "Rewrite the freeze document in place to list the owners."

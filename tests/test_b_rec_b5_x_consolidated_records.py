@@ -39,6 +39,7 @@ DSC = REPO / (
     "DSC-CENSUS-PACKET-29-F12-RULING-IS-NOT-IN-THE-CONSOLIDATION.md"
 )
 WAIVERS = REPO / "config/unrun_test_waivers.yml"
+_LEGACY_JOBS = REPO / ".github/ci/legacy-jobs.yml"
 
 CAPABILITY_STATES = {
     "NOT_BUILT",
@@ -103,6 +104,43 @@ def _norm(s: str) -> str:
     s = (s or "").replace("`", "")
     s = re.sub(r"\s+", " ", s)
     return s.strip()
+
+
+def _mo_delta_014_closure_hits(text: str) -> list[str]:
+    """Return spans where a closure word sits beside MO-DELTA-014 in one sentence.
+
+    The row is open. A negation that still places a banned word next to the id
+    is a hit: reword the sentence rather than teaching the detector English.
+    """
+    alternation = "|".join(re.escape(word) for word in CLOSURE_WORDS)
+    gap = r"[^.!?]{0,90}"
+    patterns = (
+        re.compile(rf"mo-delta-014{gap}\b(?:{alternation})\b", re.IGNORECASE),
+        re.compile(rf"\b(?:{alternation})\b{gap}mo-delta-014", re.IGNORECASE),
+    )
+    blob = _norm(text)
+    hits: list[str] = []
+    for pattern in patterns:
+        hits.extend(m.group(0) for m in pattern.finditer(blob))
+    return hits
+
+
+# Verbs that claim a row arrived at PROVEN_LIVE. "moves to" (present, often
+# negated as "No row here moves to PROVEN_LIVE") is deliberately absent.
+_PROVEN_LIVE_CLAIM_RES = (
+    re.compile(r"\breached\s+PROVEN_LIVE\b", re.IGNORECASE),
+    re.compile(r"\bmoved to\s+PROVEN_LIVE\b", re.IGNORECASE),
+    re.compile(r"\bis now\s+PROVEN_LIVE\b", re.IGNORECASE),
+    re.compile(r"\bnow reads\s+PROVEN_LIVE\b", re.IGNORECASE),
+)
+
+
+def _proven_live_claim_hits(text: str) -> list[str]:
+    blob = _norm(text)
+    hits: list[str] = []
+    for pattern in _PROVEN_LIVE_CLAIM_RES:
+        hits.extend(m.group(0) for m in pattern.finditer(blob))
+    return hits
 
 
 def _manifest() -> dict:
@@ -307,31 +345,35 @@ def test_recorded_not_edited_rows_are_absent_from_the_edit_table(row_id: str) ->
     assert row_id in text, f"{row_id}: not named in the recorded-not-edited prose"
 
 
+def test_mo_delta_014_closure_detector_fires_on_a_planted_sentence() -> None:
+    planted = "MO-DELTA-014 is absorbed into the base branch."
+    hits = _mo_delta_014_closure_hits(planted)
+    assert hits, (
+        "014 closure detector is vacuous: a planted 'is absorbed' sentence was not caught"
+    )
+
+
 def test_mo_delta_014_is_not_described_as_closed() -> None:
     """BLOCKER 5. The row is open; no document here may say otherwise.
 
-    Normalised through the module's own _norm(), which strips the backticks the
-    documents wrap the row id in, and matched as a regex within one sentence on
-    either side of the id, so `MO-DELTA-014` is absorbed is caught as readily as
-    the bare form.
+    Scans all four record documents this packet ships (consolidated document,
+    F08 matrix, both DECs, the discovery), not only the two that used to be
+    in the loop. Normalised through _norm(), which strips the backticks the
+    documents wrap the row id in, and matched as a regex within one sentence
+    on either side of the id.
     """
-    alternation = "|".join(re.escape(word) for word in CLOSURE_WORDS)
-    gap = r"[^.!?]{0,90}"
-    patterns = (
-        re.compile(rf"mo-delta-014{gap}\b(?:{alternation})\b", re.IGNORECASE),
-        re.compile(rf"\b(?:{alternation})\b{gap}mo-delta-014", re.IGNORECASE),
-    )
     for path, label in (
         (RECORDS_DOC, "consolidated document"),
         (F08_MATRIX, "F08 matrix"),
+        (DEC_F08, "F08 DEC"),
+        (DEC_F13, "F13 DEC"),
+        (DSC, "discovery"),
     ):
-        blob = _norm(path.read_text(encoding="utf-8"))
-        for pattern in patterns:
-            hit = pattern.search(blob)
-            assert hit is None, (
-                f"{label} places a closure word beside MO-DELTA-014, which is open: "
-                f"{hit.group(0)!r}"
-            )
+        hits = _mo_delta_014_closure_hits(path.read_text(encoding="utf-8"))
+        assert not hits, (
+            f"{label} places a closure word beside MO-DELTA-014, which is open: "
+            f"{hits[0]!r}"
+        )
 
 
 # ------------------------------------------------------------ vocabulary
@@ -357,12 +399,39 @@ def test_fourteen_original_rows_use_the_closed_state_vocabulary() -> None:
         )
 
 
+def test_proven_live_claim_detector_fires_on_a_planted_sentence() -> None:
+    planted = "MO-PAID-067 reached PROVEN_LIVE this packet."
+    hits = _proven_live_claim_hits(planted)
+    assert hits, (
+        "PROVEN_LIVE detector is vacuous: a planted 'reached PROVEN_LIVE' sentence was not caught"
+    )
+    allowed = "No row here moves to PROVEN_LIVE"
+    assert not _proven_live_claim_hits(allowed), (
+        "the allowed negation 'No row here moves to PROVEN_LIVE' must pass; "
+        f"detector returned {_proven_live_claim_hits(allowed)!r}"
+    )
+
+
 def test_no_row_in_this_packet_claims_proven_live() -> None:
     for spec in _edited():
         assert spec["new_capability_state_c2"] != "PROVEN_LIVE", spec["id"]
     # Hard ban: do not claim any of the seven moved to PROVEN_LIVE.
     for row_id in _edited_ids():
         assert _ledger()[row_id]["capability_state_c2"] != "PROVEN_LIVE", row_id
+    # Document-level: a sentence that says a row reached / moved to / is now /
+    # now reads PROVEN_LIVE is a false claim. The present-tense negation
+    # "No row here moves to PROVEN_LIVE" is the allowed form and must pass.
+    for path, label in (
+        (RECORDS_DOC, "consolidated document"),
+        (F08_MATRIX, "F08 matrix"),
+        (DEC_F08, "F08 DEC"),
+        (DEC_F13, "F13 DEC"),
+        (DSC, "discovery"),
+    ):
+        hits = _proven_live_claim_hits(path.read_text(encoding="utf-8"))
+        assert not hits, (
+            f"{label} claims a row arrived at PROVEN_LIVE: {hits[0]!r}"
+        )
 
 
 # ------------------------------------------------------------ documents
@@ -429,6 +498,44 @@ def test_f08_matrix_document_exists_and_covers_every_manifest_metric() -> None:
     assert "validated" not in text.lower()
 
 
+def test_f08_matrix_marks_governance_internal_cells_and_requires_bilingual_rewrite() -> None:
+    """Seat ruling R5: Definition and Version are governance-internal; the
+    freeze names five displayed attributes (definition, benchmark, horizon,
+    annualization, version) and all five owe a bilingual rewrite before a
+    surface shows them. Pin both the header marking and the rewrite paragraph
+    so deleting either fails this suite.
+    """
+    text = F08_MATRIX.read_text(encoding="utf-8")
+    header_lines = [
+        line for line in text.splitlines()
+        if "Definition (governance-internal)" in line
+    ]
+    assert header_lines, (
+        "F08 matrix header lost the 'Definition (governance-internal)' marking"
+    )
+    assert "Version (governance-internal)" in header_lines[0], (
+        "F08 matrix header lost the 'Version (governance-internal)' marking"
+    )
+    marker = "governance-internal, not display"
+    idx = text.lower().find(marker)
+    assert idx >= 0, (
+        "F08 matrix lost the governance-internal rewrite-requirement paragraph"
+    )
+    end = text.find("Paired decision", idx)
+    block = text[idx:end if end > 0 else None]
+    for attr in ("definition", "benchmark", "horizon", "annualization", "version"):
+        assert attr in block.lower(), (
+            f"rewrite-requirement paragraph does not name {attr!r}, which the "
+            "F08 freeze lists as a displayed attribute"
+        )
+    assert "bilingual" in block.lower() or "中文" in block, (
+        "rewrite-requirement paragraph lost the bilingual EN/中文 obligation"
+    )
+    assert "t(" in block, (
+        "rewrite-requirement paragraph lost the shipped t('…', '…') form"
+    )
+
+
 def test_f08_architecture_freeze_still_carries_the_no_fork_sentence() -> None:
     assert F08_FREEZE.exists(), f"missing F08 freeze: {F08_FREEZE}"
     text = F08_FREEZE.read_text(encoding="utf-8")
@@ -481,3 +588,51 @@ def test_this_packet_adds_no_waiver_row() -> None:
         return
     text = WAIVERS.read_text(encoding="utf-8")
     assert "test_b_rec_b5_x_consolidated_records" not in text
+
+
+# ------------------------------------------ CI scope closure (round-3 MAJOR 2)
+
+# Every record this suite reads from disk (paths at the top of this file).
+# self-mod-fence is the only job that runs this suite (see the last `run:`
+# step of its definition in .github/ci/legacy-jobs.yml), so an edit touching
+# ONLY one of these paths must be able to select that job on its own —
+# otherwise the pin fires post-merge on main instead of pre-merge on the PR.
+# Modelled on tests/test_b_rec3_wave_boundary_records.py `_PINNED_RECORD_PATHS`
+# and tests/test_f00c_half_a_reconciliation.py's round-3 MAJOR 2 closure.
+# A declaration only ever widens this job's scope (infer_job_scopes() unions
+# declared with inferred), so declaring a path inference already covers costs
+# nothing.
+_PINNED_RECORD_PATHS = tuple(
+    str(path.relative_to(REPO))
+    for path in (
+        Path(__file__).resolve(),
+        MANIFEST,
+        LEDGER,
+        RECORDS_DOC,
+        F08_MATRIX,
+        F08_FREEZE,
+        DEC_F08,
+        DEC_F13,
+        DSC,
+        WAIVERS,
+    )
+)
+
+
+def _self_mod_fence_paths() -> set[str]:
+    manifest = yaml.safe_load(_LEGACY_JOBS.read_text(encoding="utf-8"))
+    return set(manifest["jobs"]["self-mod-fence"].get("paths") or ())
+
+
+@pytest.mark.parametrize("record_path", _PINNED_RECORD_PATHS)
+def test_self_mod_fence_paths_cover_every_record_this_suite_reads(
+    record_path: str,
+) -> None:
+    declared = _self_mod_fence_paths()
+    assert record_path in declared, (
+        f"{record_path!r} is read by this suite, which self-mod-fence is the only "
+        "job to run, but it is missing from that job's `paths:` list in "
+        ".github/ci/legacy-jobs.yml — an edit touching only this file would select "
+        "no job that runs the suite, so the pin would fire post-merge on main "
+        "instead of pre-merge on a PR"
+    )

@@ -47,12 +47,18 @@ open.
 strings.** They carry machine text on purpose: a cross-repo pull-request number
 and a commit sha (`terminal#524 merge efcd98aa`), the internal position code
 `A1A`, and meta about this matrix's own scope. No surface may render either cell
-as written. Before any surface shows a metric's definition or version to a user,
-that cell must first be rewritten in plain language as a bilingual EN/中文 pair
-in the shipped `t('…', '…')` form — the pattern
-`templates/capital_structure.html.j2:72` uses for `Policy watch / 政策关注`.
-A commit sha, a pull-request number or a code like `A1A` never reaches a paying
-user. This requirement binds the V2 builder that this gate admits; it is not
-discharged by ratification.
+as written.
+
+**Every displayed attribute the freeze names — definition, benchmark, horizon,
+annualization and version — must be rewritten in bilingual EN/中文 before a
+surface shows it.** Before any surface shows a metric's definition, benchmark,
+horizon, annualization or version to a user, that cell must first be rewritten
+in plain language as a bilingual EN/中文 pair in the shipped `t('…', '…')`
+form — the pattern `templates/capital_structure.html.j2:72` uses for
+`Policy watch / 政策关注`. A commit sha, a pull-request number or a code like
+`A1A` never reaches a paying user. The three cells that already read as plain
+English (benchmark, horizon, annualization) still owe the bilingual pair;
+EN-only is not enough. This requirement binds the V2 builder that this gate
+admits; it is not discharged by ratification.
 
 Paired decision: `DEC:F08-METRIC-ADOPTION-MATRIX-2026-09-09`.

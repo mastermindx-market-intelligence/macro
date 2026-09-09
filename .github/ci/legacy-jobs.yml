@@ -5314,6 +5314,29 @@ jobs:
       # closure test in test_f00c_half_a_reconciliation.py can pin them by name.
       - tests/fixtures/f00c_half_a_reconciliation_manifest.json
       - research/market_intelligence_productization/MARKET_ONTOLOGY_A_REC_W4_1_HALF_A_LEDGER_RECONCILIATION_2026-09-09.md
+      # B-REC-B5-X (round 3 MAJOR 2), added alongside the two parent blocks above
+      # and under the same rule stated at the top of the B-REC-B5-1 block.
+      # tests/test_b_rec_b5_x_consolidated_records.py (declared above) reads
+      # nine more records from disk that no job claimed: the consolidated
+      # document, the F08 matrix, the F08 freeze, both DECs, the discovery,
+      # the fixture manifest, and the waivers file. Scope inference cannot
+      # reach the DECs, the discovery or the fixture: LITERAL_DIRS in
+      # scripts/ci_scope_dependencies.py has no `agentos` or `tests` entry,
+      # and RECORDS_DOC / DSC are split across parenthesized concatenations
+      # so _PATH_LITERAL cannot fullmatch either fragment. A PR editing ONLY
+      # one of those would select no job that runs the suite, so a
+      # records-only break would merge green and land red on main. All nine
+      # are declared explicitly whether or not inference would reach them,
+      # so the closure test in test_b_rec_b5_x_consolidated_records.py can
+      # pin them by name. The ledger CSV is already in the B-REC-B5-1 block.
+      - tests/fixtures/b_rec_b5_x_consolidated_manifest.json
+      - research/market_intelligence_productization/MARKET_ONTOLOGY_B_REC_B5_X_CONSOLIDATED_RECORDS_2026-09-09.md
+      - research/MARKET_ONTOLOGY_F08_METRIC_ADOPTION_MATRIX_2026-09-09.md
+      - research/MARKET_ONTOLOGY_F08_ARCHITECTURE_FREEZE_2026-09-05.md
+      - agentos/decisions/DEC-F08-METRIC-ADOPTION-MATRIX-2026-09-09.md
+      - agentos/decisions/DEC-F13-TIER-REFRESH-ACCEPTANCE-CONFLICT-2026-09-09.md
+      - agentos/discoveries/DSC-CENSUS-PACKET-29-F12-RULING-IS-NOT-IN-THE-CONSOLIDATION.md
+      - config/unrun_test_waivers.yml
       - tests/test_self_mod_fence.py
       - tests/test_ci_authority.py
       - tests/test_ci_semantic_proof.py
