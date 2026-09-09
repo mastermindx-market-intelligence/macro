@@ -72,3 +72,12 @@ Named source/input/output hashes, 14 adversarial case results and the real-data 
 Only the named source, tests, research/discovery and evidence artifacts belong in the PR. Private proof directories, copied fonts and source data are not publication artifacts.
 
 Private, non-published replay inputs, early failing receipts and copied preview assets were preserved at `/Users/chriswong/Documents/Cluade/macro-ux-evidence/alert-center-v2-astra-20260909` on the authorized Studio. This is an evidence archive, not a lifecycle or control store. The committed proof remains under `mockups/evidence/alert-center-v2/`; never publish the archive's copied font files or account-specific source payloads.
+
+## First hosted CI return and bounded dependency repair
+The first source head `7c3869f0b360667ac07e4d6ea554b08a9b21c8c8` reached hosted `contract-delta`, which correctly reported **two introduced** dependency-coverage failures, not inherited copy findings.
+Job `102626117036` on run `34399072799` identified `biocatalyst-serving` and `unrun-picks-boards`: their exclusive declared paths omitted the new `engine/alert_center_view.py` reached through the shared builder.
+The repair adds exactly that one path to each existing job, with no gate, execution, ownership or authority setting changed. A discriminating test first failed on the omission, then passed after the two-line repair.
+The full focused run after the repair returns **198 passed, 1 deselected, no skips**. The existing whole-estate audit exclusion remains explicit; no unrelated failure is waived.
+All 16 named product/renderer source fingerprints in the committed browser proof remain unchanged, so this CI-only correction does not claim a new visual design or require a fabricated browser recapture.
+The PR remains Draft/HOLD-FOR-SOL; Figma quota, complete design adjudication, independent review, current-head hosted CI and release acceptance remain separate gates.
+The full canonical differential contract gate was rerun against the first hosted base `3018c056a4a8f228e38188b72fe042c870d11131` after this repair: **exit 0, zero introduced findings, zero inherited findings**. Its local result is retained as `mockups/evidence/alert-center-v2/contract-delta-repair.log`. This closes the two reproduced dependency omissions locally, not the repaired head's still-separate hosted CI or final release gates.

@@ -72,3 +72,12 @@ def test_shared_html_never_inlines_account_specific_legacy_rows():
         summary={'total':1})
     assert 'PRIVATE_SENTINEL_TITLE' not in html
     assert 'PRIVATE_ID' not in html
+
+
+def test_curated_serving_jobs_cover_the_new_alert_projection_import():
+    """The shared builder imports this helper; exclusive CI scopes must follow."""
+    import yaml
+    workflow = yaml.safe_load((ROOT / '.github/ci/legacy-jobs.yml').read_text())
+    jobs = workflow['jobs']
+    for name in ('biocatalyst-serving', 'unrun-picks-boards'):
+        assert 'engine/alert_center_view.py' in jobs[name]['paths'], name
