@@ -62,7 +62,7 @@ html.has-js .rv.in{opacity:1;transform:none;transition:opacity .55s ease,transfo
 </style>
 
 
-<section class="mod rv" id="valuation-assumptions" data-valuation-assumptions="v1">
+<section class="mod rv in" id="valuation-assumptions" data-valuation-assumptions="v1">
   <div class="mod-hd">
     <h2><span class="l-en">Try your own assumptions</span><span class="l-zh">试试你自己的假设</span></h2>
     <span class="hint"><span class="l-en">same reported figures · FY2025</span><span class="l-zh">同一批披露数据 · 2025财年</span></span>
@@ -282,7 +282,7 @@ html.has-js .rv.in{opacity:1;transform:none;transition:opacity .55s ease,transfo
 <style>
 .va-floor{margin:0;font-size:13px;line-height:1.55;color:var(--muted);}
 </style>
-<section class="mod rv" id="valuation-assumptions-floor" data-valuation-assumptions="floor">
+<section class="mod rv in" id="valuation-assumptions-floor" data-valuation-assumptions="floor">
   <div class="mod-hd">
     <h2><span class="l-en">Try your own assumptions</span><span class="l-zh">试试你自己的假设</span></h2>
   </div>
@@ -294,6 +294,16 @@ html.has-js .rv.in{opacity:1;transform:none;transition:opacity .55s ease,transfo
 </div>
 
 <script>
+(function(){
+  var rvs = document.querySelectorAll('.rv');
+  rvs.forEach(function(el){ el.classList.add('in'); });
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, {rootMargin: '0px 0px -8% 0px', threshold: 0.06});
+    rvs.forEach(function(el){ io.observe(el); });
+  }
+})();
 document.addEventListener('DOMContentLoaded', function(){
   var el = document.getElementById('va-ctl-margin_delta_pp');
   if (!el) return;

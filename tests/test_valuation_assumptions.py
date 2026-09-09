@@ -704,6 +704,48 @@ process.stdout.write('ok');
     assert "调整下面三项输入，每股数值会随之更新。" in zh_html
 
 
+def test_degraded_capture_host_reveals_rv_modules_under_has_js():
+    """The JS-on degraded evidence host must depict both panels.
+
+    Round-2 review of head 1271a69a: the host stamps has-js and the CSS
+    `html.has-js .rv{opacity:0}` until `.in`, but neither section carried
+    `.in` and no script added it. Recapture showed only the host banner.
+    The sibling AAPL host already adds `.in`; this host must too.
+    """
+    path = (
+        ROOT
+        / "mockups"
+        / "evidence"
+        / "valuation_assumptions"
+        / "hosts"
+        / "evidence"
+        / "valuation-assumptions-degraded.html"
+    )
+    html = path.read_text(encoding="utf-8")
+    assert "classList.add('has-js')" in html or 'classList.add("has-js")' in html
+    compact = re.sub(r"\s+", "", html)
+    assert "html.has-js.rv{opacity:0" in compact
+    assert 'id="valuation-assumptions"' in html
+    assert 'id="valuation-assumptions-floor"' in html
+    assert "Margins are too thin at this setting to produce a number." in html
+    assert "在该设置下利润率过低，无法算出数值。" in html
+    assert "Not enough reported margin to run this." in html
+    assert "披露的利润率基数不足，无法进行试算。" in html
+    assert "el.value = '-1.5'" in html
+    sections = re.findall(
+        r"<section\b[^>]*class=\"([^\"]*)\"[^>]*id=\"(valuation-assumptions(?:-floor)?)\"",
+        html,
+    )
+    ids = {sid for _, sid in sections}
+    assert ids == {"valuation-assumptions", "valuation-assumptions-floor"}, ids
+    baked = all(re.search(r"(?:^|\s)in(?:\s|$)", cls) for cls, _ in sections)
+    script_adds = "classList.add('in')" in html or 'classList.add("in")' in html
+    assert baked or script_adds, (
+        "degraded host stamps has-js and hides .rv at opacity 0, but never "
+        "adds .in, so recapture cannot depict the panels"
+    )
+
+
 def test_module_is_pure():
     src = (ROOT / "engine" / "valuation_assumptions.py").read_text(encoding="utf-8")
     for banned in ("open(", "requests", "read_parquet", "datetime.now", "Path("):
