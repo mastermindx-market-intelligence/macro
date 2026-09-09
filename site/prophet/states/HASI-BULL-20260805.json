@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "HASI-BULL-20260805",
-  "asof": "2026-09-07",
+  "asof": "2026-09-09",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 30.2,
-  "raw_confidence": 29.7,
-  "delta_vs_base": -29.8,
+  "management_confidence": 31.7,
+  "raw_confidence": 34.0,
+  "delta_vs_base": -28.3,
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 53.5,
+    "validity": 73.0,
     "progress": 0.0,
-    "pace": 3.1,
+    "pace": 2.0,
     "retention": 50.0,
-    "overlay": 61.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.629,
+    "dist_to_stop_r": 0.792,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 68.9,
-    "p1": -0.2472,
-    "p2": -0.1236,
+    "horizon_pct_used": 73.3,
+    "p1": -0.1384,
+    "p2": -0.0692,
     "p3": null,
-    "move_r": -0.371,
+    "move_r": -0.208,
     "mfe_r": 0.265,
     "mae_r": -0.371
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "",
+  "change_reason": "Falling Behind Schedule",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-12",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 31,
-  "tau": 0.6889
+  "days_elapsed": 33,
+  "tau": 0.7333
 }

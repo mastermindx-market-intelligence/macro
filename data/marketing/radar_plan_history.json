@@ -2,6 +2,61 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-09-09",
+      "tickers": [
+        "ABM",
+        "ACM",
+        "BABA",
+        "CARR",
+        "COIN",
+        "CRNX",
+        "FCFS",
+        "ITB",
+        "LZB",
+        "MPT",
+        "PRVA",
+        "SEDG",
+        "SGI",
+        "VRSN",
+        "WERN",
+        "WFC"
+      ]
+    },
+    {
+      "as_of": "2026-09-08",
+      "tickers": [
+        "ALGM",
+        "ALKS",
+        "ALV",
+        "AM",
+        "ASTH",
+        "COF",
+        "COLL",
+        "CVS",
+        "CYTK",
+        "DUOL",
+        "ETR",
+        "EZPW",
+        "HOG",
+        "HWM",
+        "KEX",
+        "LEA",
+        "LIVN",
+        "MO",
+        "MSB",
+        "MSFT",
+        "NYT",
+        "RNR",
+        "SAH",
+        "SFM",
+        "TEL",
+        "UGI",
+        "VST",
+        "VYX",
+        "WMB"
+      ]
+    },
+    {
       "as_of": "2026-09-07",
       "tickers": [
         "ACM",
@@ -142,64 +197,6 @@
         "VYX",
         "WH",
         "WHR"
-      ]
-    },
-    {
-      "as_of": "2026-08-31",
-      "tickers": [
-        "ACM",
-        "AEO",
-        "AM",
-        "DHI",
-        "EZPW",
-        "FCN",
-        "HUBG",
-        "LAUR",
-        "LEA",
-        "MTDR",
-        "NBIX",
-        "NYT",
-        "OHI",
-        "ORLY",
-        "PAHC",
-        "PPC",
-        "RKLB",
-        "SAH",
-        "SEDG",
-        "STAG",
-        "STC",
-        "TDC",
-        "TREX",
-        "URBN"
-      ]
-    },
-    {
-      "as_of": "2026-08-30",
-      "tickers": [
-        "ACN",
-        "AEO",
-        "AESI",
-        "ALV",
-        "AMR",
-        "EFC",
-        "INVA",
-        "KDP",
-        "KMPR",
-        "MPT",
-        "MTDR",
-        "OHI",
-        "PIPR",
-        "PWR",
-        "QUBT",
-        "RGNX",
-        "RHI",
-        "RNAQ",
-        "RNR",
-        "SAH",
-        "STC",
-        "TDC",
-        "TMUS",
-        "YUM"
       ]
     }
   ]

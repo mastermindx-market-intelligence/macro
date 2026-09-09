@@ -1,11 +1,11 @@
 {
  "meta": {
-  "fingerprint": "2348326b021be648",
-  "computed_at": "2026-09-05T08:15:02.711039+00:00",
+  "fingerprint": "54e14319e25b3bf1",
+  "computed_at": "2026-09-09T14:40:20.164919+00:00",
   "max_date": "2026-09-04",
   "version": "m2.v1",
-  "universe_n": 243,
-  "computed_n": 243,
+  "universe_n": 244,
+  "computed_n": 244,
   "skipped_n": 0,
   "failed_n": 0,
   "note": "Daily-bar approximation over typical price (H+L+C)/3 \u2014 not intraday-true VWAP. Display-tier context; not a signal."
@@ -16,30 +16,30 @@
    "close": 319.97,
    "vwap_w": 322.771,
    "profile": {
-    "poc": 313.339,
-    "va_low": 278.2804,
-    "va_high": 340.1486,
+    "poc": 313.273,
+    "va_low": 278.1395,
+    "va_high": 340.1397,
     "window": 126,
-    "poc_dist_pct": 2.12,
+    "poc_dist_pct": 2.14,
     "in_value_area": true
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 311.503,
+     "value": 311.4326,
      "anchor_date": "2026-06-26",
      "sessions_since": 49,
      "sessions_held": 8,
-     "dist_pct": 2.72
+     "dist_pct": 2.74
     },
     "ytd": {
-     "value": 285.4964,
+     "value": 285.3124,
      "anchor_date": "2026-01-02",
-     "dist_pct": 12.07
+     "dist_pct": 12.15
     },
     "low_52w": {
-     "value": 278.1532,
+     "value": 277.9562,
      "anchor_date": "2025-09-10",
-     "dist_pct": 15.03
+     "dist_pct": 15.12
     }
    }
   },
@@ -177,29 +177,29 @@
    "vwap_w": 83.2797,
    "profile": {
     "poc": 79.5204,
-    "va_low": 71.1387,
-    "va_high": 84.9438,
+    "va_low": 73.1108,
+    "va_high": 86.916,
     "window": 126,
     "poc_dist_pct": 6.4,
     "in_value_area": true
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 79.6573,
+     "value": 79.7673,
      "anchor_date": "2026-06-18",
-     "sessions_since": 53,
+     "sessions_since": 54,
      "sessions_held": 6,
-     "dist_pct": 6.22
+     "dist_pct": 6.07
     },
     "ytd": {
-     "value": 73.3309,
+     "value": 73.4014,
      "anchor_date": "2026-01-02",
-     "dist_pct": 15.38
+     "dist_pct": 15.27
     },
     "low_52w": {
-     "value": 71.1434,
+     "value": 71.215,
      "anchor_date": "2025-11-10",
-     "dist_pct": 18.93
+     "dist_pct": 18.81
     }
    }
   },
@@ -249,21 +249,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 110.719,
+     "value": 110.701,
      "anchor_date": "2026-06-26",
-     "sessions_since": 48,
+     "sessions_since": 49,
      "sessions_held": 0,
-     "dist_pct": -3.84
+     "dist_pct": -3.82
     },
     "ytd": {
-     "value": 108.4818,
+     "value": 108.489,
      "anchor_date": "2026-01-02",
-     "dist_pct": -1.85
+     "dist_pct": -1.86
     },
     "low_52w": {
-     "value": 107.5616,
+     "value": 107.5728,
      "anchor_date": "2025-12-12",
-     "dist_pct": -1.01
+     "dist_pct": -1.03
     }
    }
   },
@@ -560,30 +560,30 @@
    "close": 82.78,
    "vwap_w": 80.5917,
    "profile": {
-    "poc": 75.9457,
-    "va_low": 67.7035,
-    "va_high": 86.7239,
+    "poc": 63.3413,
+    "va_low": 60.1804,
+    "va_high": 79.1454,
     "window": 126,
-    "poc_dist_pct": 9.0,
-    "in_value_area": true
+    "poc_dist_pct": 30.69,
+    "in_value_area": false
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 80.1251,
+     "value": 80.1502,
      "anchor_date": "2026-06-09",
      "sessions_since": 61,
      "sessions_held": 2,
-     "dist_pct": 3.31
+     "dist_pct": 3.28
     },
     "ytd": {
-     "value": 72.5649,
+     "value": 72.6635,
      "anchor_date": "2026-01-02",
-     "dist_pct": 14.08
+     "dist_pct": 13.92
     },
     "low_52w": {
-     "value": 69.9911,
+     "value": 70.1779,
      "anchor_date": "2025-09-05",
-     "dist_pct": 18.27
+     "dist_pct": 17.96
     }
    }
   },
@@ -729,14 +729,14 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 133.859,
+     "value": 133.8142,
      "anchor_date": "2026-06-18",
-     "sessions_since": 53,
+     "sessions_since": 54,
      "sessions_held": 24,
-     "dist_pct": 5.11
+     "dist_pct": 5.15
     },
     "ytd": {
-     "value": 130.4835,
+     "value": 130.4864,
      "anchor_date": "2026-01-02",
      "dist_pct": 7.83
     },
@@ -752,11 +752,11 @@
    "close": 326.16,
    "vwap_w": 328.8163,
    "profile": {
-    "poc": 340.3003,
-    "va_low": 308.3248,
-    "va_high": 347.9136,
+    "poc": 340.0529,
+    "va_low": 307.7309,
+    "va_high": 350.8269,
     "window": 126,
-    "poc_dist_pct": -4.16,
+    "poc_dist_pct": -4.09,
     "in_value_area": true
    },
    "avwap": {
@@ -768,14 +768,14 @@
      "dist_pct": -2.93
     },
     "ytd": {
-     "value": 329.2844,
+     "value": 328.8015,
      "anchor_date": "2026-01-02",
-     "dist_pct": -0.95
+     "dist_pct": -0.8
     },
     "low_52w": {
-     "value": 326.1065,
+     "value": 325.8855,
      "anchor_date": "2026-03-20",
-     "dist_pct": 0.02
+     "dist_pct": 0.08
     }
    }
   },
@@ -953,21 +953,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 1119.5067,
+     "value": 1116.5122,
      "anchor_date": "2026-07-15",
-     "sessions_since": 36,
+     "sessions_since": 37,
      "sessions_held": 2,
-     "dist_pct": 0.25
+     "dist_pct": 0.52
     },
     "ytd": {
-     "value": 1045.4519,
+     "value": 1045.4408,
      "anchor_date": "2026-01-02",
      "dist_pct": 7.35
     },
     "low_52w": {
-     "value": 1039.0768,
+     "value": 1039.1317,
      "anchor_date": "2026-03-12",
-     "dist_pct": 8.01
+     "dist_pct": 8.0
     }
    }
   },
@@ -992,14 +992,14 @@
      "dist_pct": 1.62
     },
     "ytd": {
-     "value": 58.3244,
+     "value": 58.333,
      "anchor_date": "2026-01-02",
-     "dist_pct": 14.57
+     "dist_pct": 14.55
     },
     "low_52w": {
-     "value": 55.6894,
+     "value": 55.7032,
      "anchor_date": "2025-10-29",
-     "dist_pct": 19.99
+     "dist_pct": 19.96
     }
    }
   },
@@ -1241,21 +1241,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 142.9302,
+     "value": 142.8683,
      "anchor_date": "2026-06-18",
-     "sessions_since": 53,
+     "sessions_since": 54,
      "sessions_held": 2,
-     "dist_pct": 3.44
+     "dist_pct": 3.49
     },
     "ytd": {
-     "value": 142.5976,
+     "value": 142.5824,
      "anchor_date": "2026-01-02",
-     "dist_pct": 3.68
+     "dist_pct": 3.69
     },
     "low_52w": {
-     "value": 140.0902,
+     "value": 140.0756,
      "anchor_date": "2026-06-01",
-     "dist_pct": 5.54
+     "dist_pct": 5.55
     }
    }
   },
@@ -1280,9 +1280,9 @@
      "dist_pct": 0.94
     },
     "ytd": {
-     "value": 82.9819,
+     "value": 82.9432,
      "anchor_date": "2026-01-02",
-     "dist_pct": -8.62
+     "dist_pct": -8.58
     },
     "low_52w": {
      "value": 75.1202,
@@ -1369,16 +1369,16 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 140.4262,
+     "value": 140.3188,
      "anchor_date": "2026-06-18",
-     "sessions_since": 53,
+     "sessions_since": 54,
      "sessions_held": 29,
-     "dist_pct": 8.23
+     "dist_pct": 8.32
     },
     "ytd": {
-     "value": 169.3157,
+     "value": 169.1712,
      "anchor_date": "2026-01-02",
-     "dist_pct": -10.23
+     "dist_pct": -10.16
     },
     "low_52w": {
      "value": 145.9899,
@@ -1424,30 +1424,30 @@
    "close": 88.77,
    "vwap_w": 89.966,
    "profile": {
-    "poc": 91.6334,
-    "va_low": 84.8585,
-    "va_high": 93.6954,
+    "poc": 83.9748,
+    "va_low": 81.9129,
+    "va_high": 91.3389,
     "window": 126,
-    "poc_dist_pct": -3.12,
+    "poc_dist_pct": 5.71,
     "in_value_area": true
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 91.4463,
+     "value": 91.4342,
      "anchor_date": "2026-06-18",
-     "sessions_since": 53,
+     "sessions_since": 54,
      "sessions_held": 0,
-     "dist_pct": -2.93
+     "dist_pct": -2.91
     },
     "ytd": {
-     "value": 88.2424,
+     "value": 88.2516,
      "anchor_date": "2026-01-02",
-     "dist_pct": 0.6
+     "dist_pct": 0.59
     },
     "low_52w": {
-     "value": 85.9159,
+     "value": 85.9303,
      "anchor_date": "2025-11-03",
-     "dist_pct": 3.32
+     "dist_pct": 3.3
     }
    }
   },
@@ -1721,16 +1721,16 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 100.8682,
+     "value": 100.8423,
      "anchor_date": "2026-06-18",
-     "sessions_since": 53,
+     "sessions_since": 54,
      "sessions_held": 0,
-     "dist_pct": -6.55
+     "dist_pct": -6.53
     },
     "ytd": {
-     "value": 109.0763,
+     "value": 109.028,
      "anchor_date": "2026-01-02",
-     "dist_pct": -13.58
+     "dist_pct": -13.55
     },
     "low_52w": {
      "value": 92.5768,
@@ -2048,14 +2048,14 @@
      "dist_pct": -4.08
     },
     "ytd": {
-     "value": 181.527,
+     "value": 181.5478,
      "anchor_date": "2026-01-02",
-     "dist_pct": 16.64
+     "dist_pct": 16.62
     },
     "low_52w": {
-     "value": 180.0335,
+     "value": 180.0743,
      "anchor_date": "2026-03-27",
-     "dist_pct": 17.61
+     "dist_pct": 17.58
     }
    }
   },
@@ -2233,21 +2233,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 185.3979,
+     "value": 185.273,
      "anchor_date": "2026-06-30",
-     "sessions_since": 46,
+     "sessions_since": 47,
      "sessions_held": 2,
-     "dist_pct": 1.61
+     "dist_pct": 1.68
     },
     "ytd": {
-     "value": 182.0633,
+     "value": 182.0408,
      "anchor_date": "2026-01-02",
-     "dist_pct": 3.48
+     "dist_pct": 3.49
     },
     "low_52w": {
-     "value": 180.7796,
+     "value": 180.7658,
      "anchor_date": "2025-12-18",
-     "dist_pct": 4.21
+     "dist_pct": 4.22
     }
    }
   },
@@ -2513,7 +2513,7 @@
    "vwap_w": 107.5104,
    "profile": {
     "poc": 106.8695,
-    "va_low": 102.4979,
+    "va_low": 104.0408,
     "va_high": 110.2124,
     "window": 126,
     "poc_dist_pct": 0.39,
@@ -2521,21 +2521,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 108.8475,
+     "value": 108.8508,
      "anchor_date": "2026-06-18",
-     "sessions_since": 53,
+     "sessions_since": 54,
      "sessions_held": 0,
      "dist_pct": -1.43
     },
     "ytd": {
-     "value": 107.4195,
+     "value": 107.4272,
      "anchor_date": "2026-01-02",
-     "dist_pct": -0.12
+     "dist_pct": -0.13
     },
     "low_52w": {
-     "value": 104.1887,
+     "value": 104.205,
      "anchor_date": "2025-09-16",
-     "dist_pct": 2.98
+     "dist_pct": 2.96
     }
    }
   },
@@ -2571,13 +2571,45 @@
     }
    }
   },
+  "EL": {
+   "as_of": "2026-09-04",
+   "close": 103.86,
+   "vwap_w": 101.5934,
+   "profile": {
+    "poc": 84.2354,
+    "va_low": 72.7869,
+    "va_high": 93.9226,
+    "window": 126,
+    "poc_dist_pct": 23.3,
+    "in_value_area": false
+   },
+   "avwap": {
+    "earnings_proxy": {
+     "value": 100.6291,
+     "anchor_date": "2026-08-19",
+     "sessions_since": 12,
+     "sessions_held": 3,
+     "dist_pct": 3.21
+    },
+    "ytd": {
+     "value": 89.8898,
+     "anchor_date": "2026-01-02",
+     "dist_pct": 15.54
+    },
+    "low_52w": {
+     "value": 84.3776,
+     "anchor_date": "2026-04-02",
+     "dist_pct": 23.09
+    }
+   }
+  },
   "ELV": {
    "as_of": "2026-09-04",
    "close": 407.5,
    "vwap_w": 404.2149,
    "profile": {
-    "poc": 391.7717,
-    "va_low": 326.7795,
+    "poc": 391.7716,
+    "va_low": 333.6207,
     "va_high": 436.24,
     "window": 126,
     "poc_dist_pct": 4.01,
@@ -2585,21 +2617,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 389.2288,
+     "value": 389.2041,
      "anchor_date": "2026-07-15",
-     "sessions_since": 36,
+     "sessions_since": 37,
      "sessions_held": 23,
-     "dist_pct": 4.69
+     "dist_pct": 4.7
     },
     "ytd": {
-     "value": 353.8872,
+     "value": 354.0605,
      "anchor_date": "2026-01-02",
-     "dist_pct": 15.15
+     "dist_pct": 15.09
     },
     "low_52w": {
-     "value": 363.8643,
+     "value": 364.0403,
      "anchor_date": "2026-03-09",
-     "dist_pct": 11.99
+     "dist_pct": 11.94
     }
    }
   },
@@ -2745,21 +2777,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 72.5091,
+     "value": 72.5211,
      "anchor_date": "2026-06-18",
-     "sessions_since": 53,
+     "sessions_since": 54,
      "sessions_held": 0,
-     "dist_pct": -2.01
+     "dist_pct": -2.03
     },
     "ytd": {
-     "value": 69.9821,
+     "value": 69.9971,
      "anchor_date": "2026-01-02",
-     "dist_pct": 1.53
+     "dist_pct": 1.5
     },
     "low_52w": {
-     "value": 68.7926,
+     "value": 68.8056,
      "anchor_date": "2025-09-08",
-     "dist_pct": 3.28
+     "dist_pct": 3.26
     }
    }
   },
@@ -2768,30 +2800,30 @@
    "close": 278.61,
    "vwap_w": 279.4702,
    "profile": {
-    "poc": 281.6311,
+    "poc": 293.2145,
     "va_low": 259.9122,
     "va_high": 300.4542,
     "window": 126,
-    "poc_dist_pct": -1.07,
+    "poc_dist_pct": -4.98,
     "in_value_area": true
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 287.5095,
+     "value": 287.5927,
      "anchor_date": "2026-06-18",
-     "sessions_since": 53,
+     "sessions_since": 54,
      "sessions_held": 0,
-     "dist_pct": -3.1
+     "dist_pct": -3.12
     },
     "ytd": {
-     "value": 264.7047,
+     "value": 264.8323,
      "anchor_date": "2026-01-02",
-     "dist_pct": 5.25
+     "dist_pct": 5.2
     },
     "low_52w": {
-     "value": 275.2299,
+     "value": 275.3602,
      "anchor_date": "2026-03-27",
-     "dist_pct": 1.23
+     "dist_pct": 1.18
     }
    }
   },
@@ -2809,21 +2841,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 412.0654,
+     "value": 411.9377,
      "anchor_date": "2026-06-26",
-     "sessions_since": 48,
+     "sessions_since": 49,
      "sessions_held": 0,
-     "dist_pct": -0.29
+     "dist_pct": -0.26
     },
     "ytd": {
-     "value": 384.2877,
+     "value": 384.3753,
      "anchor_date": "2026-01-02",
-     "dist_pct": 6.91
+     "dist_pct": 6.89
     },
     "low_52w": {
-     "value": 379.9274,
+     "value": 380.0269,
      "anchor_date": "2025-12-17",
-     "dist_pct": 8.14
+     "dist_pct": 8.11
     }
    }
   },
@@ -2944,14 +2976,14 @@
      "dist_pct": -5.18
     },
     "ytd": {
-     "value": 141.5055,
+     "value": 141.5308,
      "anchor_date": "2026-01-02",
-     "dist_pct": -1.59
+     "dist_pct": -1.61
     },
     "low_52w": {
-     "value": 140.217,
+     "value": 140.2467,
      "anchor_date": "2025-12-09",
-     "dist_pct": -0.69
+     "dist_pct": -0.71
     }
    }
   },
@@ -3024,11 +3056,11 @@
    "close": 72.73,
    "vwap_w": 74.0064,
    "profile": {
-    "poc": 61.1481,
-    "va_low": 56.8371,
-    "va_high": 69.1544,
+    "poc": 61.0689,
+    "va_low": 56.7399,
+    "va_high": 69.1084,
     "window": 126,
-    "poc_dist_pct": 18.94,
+    "poc_dist_pct": 19.1,
     "in_value_area": false
    },
    "avwap": {
@@ -3040,14 +3072,14 @@
      "dist_pct": -4.94
     },
     "ytd": {
-     "value": 62.9611,
+     "value": 62.8554,
      "anchor_date": "2026-01-02",
-     "dist_pct": 15.52
+     "dist_pct": 15.71
     },
     "low_52w": {
-     "value": 56.6485,
+     "value": 56.544,
      "anchor_date": "2025-09-25",
-     "dist_pct": 28.39
+     "dist_pct": 28.63
     }
    }
   },
@@ -3129,21 +3161,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 371.9749,
+     "value": 371.9025,
      "anchor_date": "2026-06-18",
-     "sessions_since": 53,
+     "sessions_since": 54,
      "sessions_held": 0,
-     "dist_pct": -3.38
+     "dist_pct": -3.36
     },
     "ytd": {
-     "value": 353.2341,
+     "value": 353.3016,
      "anchor_date": "2026-01-02",
-     "dist_pct": 1.74
+     "dist_pct": 1.72
     },
     "low_52w": {
-     "value": 359.6248,
+     "value": 359.7001,
      "anchor_date": "2026-04-28",
-     "dist_pct": -0.07
+     "dist_pct": -0.09
     }
    }
   },
@@ -3360,14 +3392,14 @@
      "dist_pct": -5.94
     },
     "ytd": {
-     "value": 244.0804,
+     "value": 244.0543,
      "anchor_date": "2026-01-02",
-     "dist_pct": 13.5
+     "dist_pct": 13.51
     },
     "low_52w": {
-     "value": 236.8787,
+     "value": 236.8924,
      "anchor_date": "2025-11-20",
-     "dist_pct": 16.95
+     "dist_pct": 16.94
     }
    }
   },
@@ -3376,8 +3408,8 @@
    "close": 1038.61,
    "vwap_w": 1019.6058,
    "profile": {
-    "poc": 1031.154,
-    "va_low": 913.9422,
+    "poc": 1031.1539,
+    "va_low": 913.9421,
     "va_high": 1148.3658,
     "window": 126,
     "poc_dist_pct": 0.72,
@@ -3472,30 +3504,30 @@
    "close": 311.18,
    "vwap_w": 314.3417,
    "profile": {
-    "poc": 336.558,
-    "va_low": 312.257,
-    "va_high": 340.8464,
+    "poc": 336.4048,
+    "va_low": 312.1149,
+    "va_high": 337.8336,
     "window": 126,
-    "poc_dist_pct": -7.54,
+    "poc_dist_pct": -7.5,
     "in_value_area": false
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 325.9257,
+     "value": 325.8333,
      "anchor_date": "2026-06-26",
-     "sessions_since": 48,
+     "sessions_since": 49,
      "sessions_held": 0,
-     "dist_pct": -4.52
+     "dist_pct": -4.5
     },
     "ytd": {
-     "value": 318.5468,
+     "value": 318.4585,
      "anchor_date": "2026-01-02",
-     "dist_pct": -2.31
+     "dist_pct": -2.29
     },
     "low_52w": {
-     "value": 311.7587,
+     "value": 311.6933,
      "anchor_date": "2025-11-03",
-     "dist_pct": -0.19
+     "dist_pct": -0.16
     }
    }
   },
@@ -3801,21 +3833,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 121.515,
+     "value": 121.6003,
      "anchor_date": "2026-07-02",
-     "sessions_since": 44,
+     "sessions_since": 45,
      "sessions_held": 0,
-     "dist_pct": -3.83
+     "dist_pct": -3.9
     },
     "ytd": {
-     "value": 112.6763,
+     "value": 112.7461,
      "anchor_date": "2026-01-02",
-     "dist_pct": 3.71
+     "dist_pct": 3.65
     },
     "low_52w": {
-     "value": 110.7814,
+     "value": 110.8564,
      "anchor_date": "2025-12-18",
-     "dist_pct": 5.49
+     "dist_pct": 5.42
     }
    }
   },
@@ -3865,21 +3897,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 144.8862,
+     "value": 144.8433,
      "anchor_date": "2026-07-01",
-     "sessions_since": 45,
+     "sessions_since": 46,
      "sessions_held": 1,
-     "dist_pct": 0.04
+     "dist_pct": 0.07
     },
     "ytd": {
-     "value": 135.6651,
+     "value": 135.6818,
      "anchor_date": "2026-01-02",
-     "dist_pct": 6.84
+     "dist_pct": 6.82
     },
     "low_52w": {
-     "value": 128.064,
+     "value": 128.0893,
      "anchor_date": "2025-09-05",
-     "dist_pct": 13.18
+     "dist_pct": 13.16
     }
    }
   },
@@ -4496,9 +4528,9 @@
    "close": 907.99,
    "vwap_w": 905.616,
    "profile": {
-    "poc": 756.4946,
-    "va_low": 731.9364,
-    "va_high": 869.4622,
+    "poc": 756.4947,
+    "va_low": 731.9365,
+    "va_high": 869.4623,
     "window": 126,
     "poc_dist_pct": 20.03,
     "in_value_area": false
@@ -4569,21 +4601,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 85.8525,
+     "value": 85.8071,
      "anchor_date": "2026-06-18",
-     "sessions_since": 53,
-     "sessions_held": 36,
-     "dist_pct": 9.69
+     "sessions_since": 54,
+     "sessions_held": 37,
+     "dist_pct": 9.75
     },
     "ytd": {
-     "value": 86.4732,
+     "value": 86.4574,
      "anchor_date": "2026-01-02",
-     "dist_pct": 8.9
+     "dist_pct": 8.92
     },
     "low_52w": {
-     "value": 84.1938,
+     "value": 84.1757,
      "anchor_date": "2026-06-02",
-     "dist_pct": 11.85
+     "dist_pct": 11.87
     }
    }
   },
@@ -4592,11 +4624,11 @@
    "close": 616.77,
    "vwap_w": 593.7721,
    "profile": {
-    "poc": 609.4579,
-    "va_low": 541.6675,
-    "va_high": 620.1617,
+    "poc": 608.8936,
+    "va_low": 541.1659,
+    "va_high": 619.5874,
     "window": 126,
-    "poc_dist_pct": 1.2,
+    "poc_dist_pct": 1.29,
     "in_value_area": true
    },
    "avwap": {
@@ -4608,14 +4640,14 @@
      "dist_pct": 3.19
     },
     "ytd": {
-     "value": 616.0168,
+     "value": 615.7127,
      "anchor_date": "2026-01-02",
-     "dist_pct": 0.12
+     "dist_pct": 0.17
     },
     "low_52w": {
-     "value": 601.2969,
+     "value": 601.1261,
      "anchor_date": "2026-03-27",
-     "dist_pct": 2.57
+     "dist_pct": 2.6
     }
    }
   },
@@ -4857,21 +4889,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 216.4169,
+     "value": 216.3623,
      "anchor_date": "2026-06-18",
-     "sessions_since": 53,
+     "sessions_since": 54,
      "sessions_held": 2,
-     "dist_pct": 0.6
+     "dist_pct": 0.63
     },
     "ytd": {
-     "value": 189.7003,
+     "value": 189.8616,
      "anchor_date": "2026-01-02",
-     "dist_pct": 14.77
+     "dist_pct": 14.67
     },
     "low_52w": {
-     "value": 181.0224,
+     "value": 181.1751,
      "anchor_date": "2025-09-05",
-     "dist_pct": 20.27
+     "dist_pct": 20.17
     }
    }
   },
@@ -5088,9 +5120,9 @@
      "dist_pct": 0.97
     },
     "ytd": {
-     "value": 142.9469,
+     "value": 142.9037,
      "anchor_date": "2026-01-02",
-     "dist_pct": -16.74
+     "dist_pct": -16.71
     },
     "low_52w": {
      "value": 112.7991,
@@ -5177,21 +5209,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 27.5805,
+     "value": 27.5823,
      "anchor_date": "2026-06-18",
-     "sessions_since": 53,
-     "sessions_held": 46,
-     "dist_pct": 10.19
+     "sessions_since": 54,
+     "sessions_held": 47,
+     "dist_pct": 10.18
     },
     "ytd": {
-     "value": 26.035,
+     "value": 26.0422,
      "anchor_date": "2026-01-02",
-     "dist_pct": 16.73
+     "dist_pct": 16.7
     },
     "low_52w": {
-     "value": 26.0873,
+     "value": 26.0953,
      "anchor_date": "2026-02-09",
-     "dist_pct": 16.49
+     "dist_pct": 16.46
     }
    }
   },
@@ -5241,21 +5273,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 90.2414,
+     "value": 90.2625,
      "anchor_date": "2026-06-18",
-     "sessions_since": 53,
+     "sessions_since": 54,
      "sessions_held": 20,
-     "dist_pct": 5.75
+     "dist_pct": 5.72
     },
     "ytd": {
-     "value": 85.0557,
+     "value": 85.0886,
      "anchor_date": "2026-01-02",
-     "dist_pct": 12.2
+     "dist_pct": 12.15
     },
     "low_52w": {
-     "value": 82.0613,
+     "value": 82.1009,
      "anchor_date": "2025-11-04",
-     "dist_pct": 16.29
+     "dist_pct": 16.24
     }
    }
   },
@@ -5273,21 +5305,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 79.395,
+     "value": 79.4045,
      "anchor_date": "2026-06-18",
-     "sessions_since": 53,
-     "sessions_held": 46,
-     "dist_pct": 4.06
+     "sessions_since": 54,
+     "sessions_held": 47,
+     "dist_pct": 4.05
     },
     "ytd": {
-     "value": 76.669,
+     "value": 76.6831,
      "anchor_date": "2026-01-02",
-     "dist_pct": 7.76
+     "dist_pct": 7.74
     },
     "low_52w": {
-     "value": 76.7493,
+     "value": 76.765,
      "anchor_date": "2026-02-04",
-     "dist_pct": 7.65
+     "dist_pct": 7.63
     }
    }
   },
@@ -5472,9 +5504,9 @@
      "dist_pct": -1.16
     },
     "ytd": {
-     "value": 79.1865,
+     "value": 79.1776,
      "anchor_date": "2026-01-02",
-     "dist_pct": -6.93
+     "dist_pct": -6.92
     },
     "low_52w": {
      "value": 73.435,
@@ -5584,30 +5616,30 @@
    "close": 218.95,
    "vwap_w": 220.708,
    "profile": {
-    "poc": 204.8812,
-    "va_low": 191.2908,
-    "va_high": 210.1083,
+    "poc": 204.8235,
+    "va_low": 191.2103,
+    "va_high": 210.0593,
     "window": 126,
-    "poc_dist_pct": 6.87,
+    "poc_dist_pct": 6.9,
     "in_value_area": false
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 215.9851,
+     "value": 215.8136,
      "anchor_date": "2026-06-18",
-     "sessions_since": 53,
+     "sessions_since": 54,
      "sessions_held": 13,
-     "dist_pct": 1.37
+     "dist_pct": 1.45
     },
     "ytd": {
-     "value": 207.2235,
+     "value": 207.168,
      "anchor_date": "2026-01-02",
-     "dist_pct": 5.66
+     "dist_pct": 5.69
     },
     "low_52w": {
-     "value": 207.7451,
+     "value": 207.6795,
      "anchor_date": "2025-11-03",
-     "dist_pct": 5.39
+     "dist_pct": 5.43
     }
    }
   },
@@ -5696,14 +5728,14 @@
      "dist_pct": -2.0
     },
     "ytd": {
-     "value": 138.1375,
+     "value": 138.1923,
      "anchor_date": "2026-01-02",
-     "dist_pct": -0.58
+     "dist_pct": -0.62
     },
     "low_52w": {
-     "value": 132.3295,
-     "anchor_date": "2025-09-04",
-     "dist_pct": 3.79
+     "value": 132.7226,
+     "anchor_date": "2025-09-10",
+     "dist_pct": 3.48
     }
    }
   },
@@ -5777,7 +5809,7 @@
    "vwap_w": 242.046,
    "profile": {
     "poc": 249.56,
-    "va_low": 213.3031,
+    "va_low": 215.9888,
     "va_high": 256.2743,
     "window": 126,
     "poc_dist_pct": -1.59,
@@ -5785,21 +5817,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 246.5244,
+     "value": 246.5814,
      "anchor_date": "2026-06-18",
-     "sessions_since": 53,
+     "sessions_since": 54,
      "sessions_held": 0,
-     "dist_pct": -0.37
+     "dist_pct": -0.4
     },
     "ytd": {
-     "value": 224.2671,
+     "value": 224.3887,
      "anchor_date": "2026-01-02",
-     "dist_pct": 9.51
+     "dist_pct": 9.45
     },
     "low_52w": {
-     "value": 216.7633,
+     "value": 216.8884,
      "anchor_date": "2025-10-17",
-     "dist_pct": 13.3
+     "dist_pct": 13.24
     }
    }
   },
@@ -5817,21 +5849,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 116.0777,
+     "value": 116.0625,
      "anchor_date": "2026-06-18",
-     "sessions_since": 53,
+     "sessions_since": 54,
      "sessions_held": 0,
-     "dist_pct": -3.06
+     "dist_pct": -3.04
     },
     "ytd": {
-     "value": 111.9612,
+     "value": 111.9727,
      "anchor_date": "2026-01-02",
-     "dist_pct": 0.51
+     "dist_pct": 0.5
     },
     "low_52w": {
-     "value": 109.1966,
+     "value": 109.2145,
      "anchor_date": "2025-11-04",
-     "dist_pct": 3.05
+     "dist_pct": 3.04
     }
    }
   },
@@ -5849,21 +5881,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 35.6535,
+     "value": 35.6476,
      "anchor_date": "2026-06-26",
-     "sessions_since": 48,
+     "sessions_since": 49,
      "sessions_held": 0,
-     "dist_pct": -1.52
+     "dist_pct": -1.51
     },
     "ytd": {
-     "value": 36.284,
+     "value": 36.2794,
      "anchor_date": "2026-01-02",
-     "dist_pct": -3.24
+     "dist_pct": -3.22
     },
     "low_52w": {
-     "value": 36.1476,
+     "value": 36.1439,
      "anchor_date": "2025-12-10",
-     "dist_pct": -2.87
+     "dist_pct": -2.86
     }
    }
   },
@@ -5874,28 +5906,28 @@
    "profile": {
     "poc": 321.4911,
     "va_low": 294.9355,
-    "va_high": 332.4258,
+    "va_high": 329.3016,
     "window": 126,
     "poc_dist_pct": -6.06,
     "in_value_area": true
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 320.4558,
-     "anchor_date": "2026-06-24",
-     "sessions_since": 50,
+     "value": 319.0298,
+     "anchor_date": "2026-07-21",
+     "sessions_since": 33,
      "sessions_held": 0,
-     "dist_pct": -5.76
+     "dist_pct": -5.33
     },
     "ytd": {
-     "value": 298.5728,
+     "value": 298.8187,
      "anchor_date": "2026-01-02",
-     "dist_pct": 1.15
+     "dist_pct": 1.07
     },
     "low_52w": {
-     "value": 298.8089,
+     "value": 299.0514,
      "anchor_date": "2026-01-05",
-     "dist_pct": 1.07
+     "dist_pct": 0.99
     }
    }
   },
@@ -6041,21 +6073,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 712.6415,
+     "value": 712.1756,
      "anchor_date": "2026-06-18",
-     "sessions_since": 53,
-     "sessions_held": 54,
-     "dist_pct": 16.15
+     "sessions_since": 54,
+     "sessions_held": 55,
+     "dist_pct": 16.22
     },
     "ytd": {
-     "value": 714.6053,
+     "value": 714.45,
      "anchor_date": "2026-01-02",
-     "dist_pct": 15.83
+     "dist_pct": 15.85
     },
     "low_52w": {
-     "value": 707.0791,
+     "value": 706.9878,
      "anchor_date": "2025-10-13",
-     "dist_pct": 17.06
+     "dist_pct": 17.08
     }
    }
   },
@@ -6073,21 +6105,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 232.0512,
+     "value": 232.0939,
      "anchor_date": "2026-06-26",
-     "sessions_since": 48,
+     "sessions_since": 49,
      "sessions_held": 0,
-     "dist_pct": -0.59
+     "dist_pct": -0.6
     },
     "ytd": {
-     "value": 218.2631,
+     "value": 218.3446,
      "anchor_date": "2026-01-02",
-     "dist_pct": 5.69
+     "dist_pct": 5.65
     },
     "low_52w": {
-     "value": 202.7239,
+     "value": 202.8376,
      "anchor_date": "2025-09-18",
-     "dist_pct": 13.8
+     "dist_pct": 13.73
     }
    }
   },
@@ -6322,28 +6354,28 @@
    "profile": {
     "poc": 200.7092,
     "va_low": 175.9497,
-    "va_high": 220.2562,
+    "va_high": 222.8624,
     "window": 126,
     "poc_dist_pct": 4.35,
     "in_value_area": true
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 223.301,
+     "value": 223.4073,
      "anchor_date": "2026-06-26",
-     "sessions_since": 48,
+     "sessions_since": 49,
      "sessions_held": 0,
-     "dist_pct": -6.21
+     "dist_pct": -6.25
     },
     "ytd": {
-     "value": 203.0787,
+     "value": 203.2443,
      "anchor_date": "2026-01-02",
-     "dist_pct": 3.13
+     "dist_pct": 3.05
     },
     "low_52w": {
-     "value": 198.7042,
+     "value": 198.8662,
      "anchor_date": "2025-10-31",
-     "dist_pct": 5.4
+     "dist_pct": 5.32
     }
    }
   },
@@ -6425,21 +6457,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 242.0101,
+     "value": 241.8316,
      "anchor_date": "2026-06-18",
-     "sessions_since": 53,
+     "sessions_since": 54,
      "sessions_held": 3,
-     "dist_pct": 0.02
+     "dist_pct": 0.09
     },
     "ytd": {
-     "value": 215.5406,
+     "value": 215.7099,
      "anchor_date": "2026-01-02",
-     "dist_pct": 12.3
+     "dist_pct": 12.22
     },
     "low_52w": {
-     "value": 194.2778,
-     "anchor_date": "2025-09-04",
-     "dist_pct": 24.59
+     "value": 196.1339,
+     "anchor_date": "2025-09-15",
+     "dist_pct": 23.42
     }
    }
   },
@@ -6560,14 +6592,14 @@
      "dist_pct": -3.9
     },
     "ytd": {
-     "value": 78.6191,
+     "value": 78.6267,
      "anchor_date": "2026-01-02",
-     "dist_pct": 1.82
+     "dist_pct": 1.81
     },
     "low_52w": {
-     "value": 77.4359,
+     "value": 77.4541,
      "anchor_date": "2026-03-31",
-     "dist_pct": 3.38
+     "dist_pct": 3.35
     }
    }
   },
@@ -6649,14 +6681,14 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 148.1439,
+     "value": 148.2307,
      "anchor_date": "2026-06-26",
-     "sessions_since": 48,
+     "sessions_since": 49,
      "sessions_held": 0,
-     "dist_pct": -10.84
+     "dist_pct": -10.9
     },
     "ytd": {
-     "value": 153.3147,
+     "value": 153.3177,
      "anchor_date": "2026-01-02",
      "dist_pct": -13.85
     },
@@ -7097,21 +7129,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 62.2999,
+     "value": 62.3237,
      "anchor_date": "2026-06-18",
-     "sessions_since": 53,
+     "sessions_since": 54,
      "sessions_held": 3,
-     "dist_pct": 1.72
+     "dist_pct": 1.68
     },
     "ytd": {
-     "value": 56.4656,
+     "value": 56.5071,
      "anchor_date": "2026-01-02",
-     "dist_pct": 12.23
+     "dist_pct": 12.15
     },
     "low_52w": {
-     "value": 55.5902,
+     "value": 55.6305,
      "anchor_date": "2025-11-18",
-     "dist_pct": 13.99
+     "dist_pct": 13.91
     }
    }
   },
@@ -7225,21 +7257,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 285.6019,
+     "value": 285.4603,
      "anchor_date": "2026-06-18",
-     "sessions_since": 53,
+     "sessions_since": 54,
      "sessions_held": 0,
-     "dist_pct": -8.04
+     "dist_pct": -8.0
     },
     "ytd": {
-     "value": 286.3391,
+     "value": 286.2929,
      "anchor_date": "2026-01-02",
-     "dist_pct": -8.28
+     "dist_pct": -8.27
     },
     "low_52w": {
-     "value": 281.7704,
+     "value": 281.7375,
      "anchor_date": "2026-03-19",
-     "dist_pct": -6.79
+     "dist_pct": -6.78
     }
    }
   },
@@ -7264,14 +7296,14 @@
      "dist_pct": -0.24
     },
     "ytd": {
-     "value": 63.9799,
+     "value": 64.0017,
      "anchor_date": "2026-01-02",
-     "dist_pct": 2.14
+     "dist_pct": 2.11
     },
     "low_52w": {
-     "value": 65.0441,
+     "value": 65.0666,
      "anchor_date": "2026-03-20",
-     "dist_pct": 0.47
+     "dist_pct": 0.44
     }
    }
   },
@@ -7385,21 +7417,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 91.3411,
+     "value": 91.4106,
      "anchor_date": "2026-06-18",
-     "sessions_since": 53,
+     "sessions_since": 54,
      "sessions_held": 0,
-     "dist_pct": -1.17
+     "dist_pct": -1.25
     },
     "ytd": {
-     "value": 85.8296,
+     "value": 85.8736,
      "anchor_date": "2026-01-02",
-     "dist_pct": 5.17
+     "dist_pct": 5.12
     },
     "low_52w": {
-     "value": 82.0975,
+     "value": 82.1395,
      "anchor_date": "2025-09-05",
-     "dist_pct": 9.95
+     "dist_pct": 9.9
     }
    }
   },
@@ -7545,21 +7577,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 232.6294,
+     "value": 232.8145,
      "anchor_date": "2026-06-18",
-     "sessions_since": 53,
+     "sessions_since": 54,
      "sessions_held": 17,
-     "dist_pct": 1.52
+     "dist_pct": 1.44
     },
     "ytd": {
-     "value": 211.824,
+     "value": 211.9853,
      "anchor_date": "2026-01-02",
-     "dist_pct": 11.49
+     "dist_pct": 11.41
     },
     "low_52w": {
-     "value": 205.3214,
+     "value": 205.4648,
      "anchor_date": "2025-10-13",
-     "dist_pct": 15.02
+     "dist_pct": 14.94
     }
    }
   },
@@ -7577,21 +7609,21 @@
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 86.6625,
+     "value": 86.6667,
      "anchor_date": "2026-07-14",
-     "sessions_since": 37,
+     "sessions_since": 38,
      "sessions_held": 4,
-     "dist_pct": 3.82
+     "dist_pct": 3.81
     },
     "ytd": {
-     "value": 82.9868,
+     "value": 83.0111,
      "anchor_date": "2026-01-02",
-     "dist_pct": 8.41
+     "dist_pct": 8.38
     },
     "low_52w": {
-     "value": 83.6464,
+     "value": 83.6943,
      "anchor_date": "2026-05-15",
-     "dist_pct": 7.56
+     "dist_pct": 7.5
     }
    }
   },
@@ -7600,30 +7632,30 @@
    "close": 218.99,
    "vwap_w": 219.6082,
    "profile": {
-    "poc": 224.7777,
-    "va_low": 214.7487,
-    "va_high": 231.7208,
+    "poc": 225.8106,
+    "va_low": 213.9554,
+    "va_high": 229.7624,
     "window": 126,
-    "poc_dist_pct": -2.57,
+    "poc_dist_pct": -3.02,
     "in_value_area": true
    },
    "avwap": {
     "earnings_proxy": {
-     "value": 227.6554,
+     "value": 227.7783,
      "anchor_date": "2026-06-26",
-     "sessions_since": 48,
+     "sessions_since": 49,
      "sessions_held": 0,
-     "dist_pct": -3.81
+     "dist_pct": -3.86
     },
     "ytd": {
-     "value": 226.4283,
+     "value": 225.8506,
      "anchor_date": "2026-01-02",
-     "dist_pct": -3.29
+     "dist_pct": -3.04
     },
     "low_52w": {
-     "value": 223.5292,
+     "value": 222.9046,
      "anchor_date": "2025-11-03",
-     "dist_pct": -2.03
+     "dist_pct": -1.76
     }
    }
   },
@@ -7761,7 +7793,7 @@
    "vwap_w": 162.0069,
    "profile": {
     "poc": 146.5854,
-    "va_low": 145.7519,
+    "va_low": 145.7518,
     "va_high": 164.0905,
     "window": 126,
     "poc_dist_pct": 8.79,
