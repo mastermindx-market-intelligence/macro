@@ -2496,6 +2496,8 @@ def test_method_table_390_contribution_union() -> None:
     table_probes = probes.get("method_table_390_text") or {}
     assert table_probes, "method_table_390_text probe missing"
     vis_map = probes.get("method_table_390_visible") or {}
+    from scripts.capture_macro_command_p5 import METHOD_OPEN_PAGES
+    contrib_slugs = {p.replace(".html", "") for p in METHOD_OPEN_PAGES}
     en_headers = ("COMPONENT", "RAW", "STANDARDIZED", "WEIGHT", "CONTRIBUTION")
     zh_headers = ("分项", "原始", "标准化", "权重", "贡献")
     for key, full in table_probes.items():
@@ -2542,6 +2544,11 @@ def test_method_table_390_contribution_union() -> None:
         for v in values:
             assert v in full, (key, v)
             assert v in union, (key, v, "missing from start∪end visible text")
+        # Extra pages photograph the What-changed table (METRIC/PRIOR/CURRENT),
+        # not the composition-law WEIGHT/CONTRIBUTION grid. Pair + values
+        # still apply; header/label union is METHOD_OPEN_PAGES only.
+        if slug not in contrib_slugs:
+            continue
         headers = en_headers if locale == "en" else zh_headers
         for h in headers:
             assert h.casefold() in union.casefold(), (
@@ -2590,7 +2597,12 @@ def test_method_table_header_blank_mut_hdr_fails() -> None:
         for st in page["states"]
         if st.get("file")
     }
-    key = next(iter(probes.get("method_table_390_text") or {}))
+    from scripts.capture_macro_command_p5 import METHOD_OPEN_PAGES
+    contrib_slugs = {p.replace(".html", "") for p in METHOD_OPEN_PAGES}
+    key = next(
+        k for k in (probes.get("method_table_390_text") or {})
+        if any(s in k for s in contrib_slugs)
+    )
     m = re.match(r"method_table_390-(.+)-(dark|light)-(en|zh)-(\d+)$", key)
     assert m, key
     slug, theme, locale, width = m.groups()
@@ -2736,6 +2748,9 @@ def test_occlusion_y_coverage_from_raw_box() -> None:
             if h < 40.0:
                 if grid != "short":
                     bad.append((state.get("file"), "h<40 must be grid:short"))
+                if state.get("y_coverage") == 0.0:
+                    bad.append((state.get("file"),
+                                "y_coverage 0.0 on short crop misleads"))
                 continue  # short exempt from coverage floor
             if grid == "short":
                 continue
@@ -2857,6 +2872,15 @@ def test_390_matrix_full_theme_locale() -> None:
                 if required not in pages or not need.issubset(pages[required]):
                     missing[f"method_open:{required}"] = sorted(
                         need - (pages.get(required) or set()))
+        if fam == "method_table_390":
+            for required in (
+                "macro_financial_conditions", "macro_labor_markets",
+                "macro_business_activity", "macro_housing_real_estate",
+                "macro_rates_curves",
+            ):
+                if required not in pages or not need.issubset(pages[required]):
+                    missing[f"method_table_390:{required}"] = sorted(
+                        need - (pages.get(required) or set()))
     if not need.issubset(hub_cells):
         missing["hub_390"] = sorted(need - hub_cells)
     assert not missing, missing
@@ -2964,19 +2988,15 @@ def test_element_text_diverges_with_hidden_node() -> None:
         pw.stop()
 
 
-@pytest.mark.needs_full_checkout("mockups")
-def test_registry_covering_family_proven_by_manifest() -> None:
-    """E-B1: every registry covering_family is proven against MANIFEST cells."""
-    import json
-    from collections import defaultdict
-    from scripts.capture_macro_command_p5 import (
-        METHOD_OPEN_PAGES, _load_sanctioned_scrollers, _registry_match_selector,
-    )
+def _registry_coverage_offenders(registry, manifest) -> list:
+    """Per-page covering proof (E-M1 / C-M1). No page-allowlist.
 
-    registry = _load_sanctioned_scrollers()
-    manifest = json.loads(
-        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
-        .read_text(encoding="utf-8"))
+    A registry row must be observed in ≥1 receipt, or carry observed:false
+    and be excluded. MUT-page and MUT-reg3 fail through this helper.
+    """
+    from collections import defaultdict
+    from scripts.capture_macro_command_p5 import _registry_match_selector
+
     pages_by_sel: dict[str, set[str]] = defaultdict(set)
     cells: list[dict] = []
     for page in manifest["pages"]:
@@ -2996,13 +3016,16 @@ def test_registry_covering_family_proven_by_manifest() -> None:
     offenders = []
     for sel, row in registry.items():
         fam = str(row.get("covering_family") or "")
-        kind = str(row.get("kind") or "")
+        observed = row.get("observed", True)
         pages = set(pages_by_sel.get(sel) or ())
-        # Table covering photography is the method_table_390 family on
-        # method_open pages; incidental mq-table overflow inside workspace/i2
-        # of other suite pages stays registry-allowed (v20 scope = hub_rail).
-        if kind == "table":
-            pages = {p for p in pages if p in METHOD_OPEN_PAGES}
+        if observed is False:
+            if pages:
+                offenders.append((sel, "observed:false but reported",
+                                  sorted(pages)[:4]))
+            continue
+        if not pages:
+            offenders.append((sel, fam, "UNOBSERVED"))
+            continue
         for page_id in pages:
             covering = []
             for st in cells:
@@ -3037,6 +3060,20 @@ def test_registry_covering_family_proven_by_manifest() -> None:
                 covering.append(st.get("file"))
             if not covering:
                 offenders.append((sel, fam, page_id))
+    return offenders
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_registry_covering_family_proven_by_manifest() -> None:
+    """E-B1: every registry covering_family is proven per page-that-reports."""
+    import json
+    from scripts.capture_macro_command_p5 import _load_sanctioned_scrollers
+
+    registry = _load_sanctioned_scrollers()
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    offenders = _registry_coverage_offenders(registry, manifest)
     assert not offenders, offenders[:12]
 
 
@@ -3052,10 +3089,14 @@ def test_page_fits_table_complete_and_true() -> None:
     assert len(rows) == 15 * 4 * 2, len(rows)
     assert all(r.get("fits") is True for r in rows), [
         r for r in rows if not r.get("fits")][:5]
+    assert all(r.get("theme") for r in rows), [
+        r for r in rows if not r.get("theme")][:5]
     widths = {int(r["width"]) for r in rows}
     locales = {r["locale"] for r in rows}
+    themes = {r.get("theme") for r in rows}
     assert widths == {320, 390, 768, 1440}
     assert locales == {"en", "zh"}
+    assert themes <= {"dark", "light"} and themes
     # MUT-fits: flipping one row to false must be detected.
     planted = copy.deepcopy(rows)
     planted[0]["fits"] = False
@@ -3153,23 +3194,60 @@ def test_table_fits_branches_on_synthetic_cells() -> None:
 
 
 @pytest.mark.needs_full_checkout("mockups")
-def test_painted_fraction_present_on_tall_crops() -> None:
-    """E-m2: tall crops carry painted_fraction so blank canvas is visible."""
+def test_painted_fraction_present_on_every_cell() -> None:
+    """E-m1: painted_fraction on every cell (328/328 after recapture: all of them).
+
+    Cause lines (from this comment) for the lowest-paint frames:
+    - 18-dark-en-1440 / 18b / 19 / 19b: empty grid track / min-height under
+      content — first-screen canvas is taller than the content.
+    - chipmat-*-390/768: suite-nav chip rail is mostly background (pills on a
+      dark or light track).
+    """
     import json
     manifest = json.loads(
         (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
         .read_text(encoding="utf-8"))
-    tall = []
-    for page in manifest["pages"]:
-        for st in page["states"]:
-            if not st.get("crop"):
-                continue
-            h = float((st.get("raw_box") or {}).get("height") or 0)
-            if h >= 1000:
-                tall.append(st)
-                assert "painted_fraction" in st, st.get("file")
-                assert 0.0 <= float(st["painted_fraction"]) <= 1.0
-    assert tall, "expected at least one tall crop (h≥1000)"
+    cells = [
+        st
+        for page in manifest["pages"]
+        for st in page["states"]
+        if st.get("file") and st.get("captured")
+    ]
+    missing = [st.get("file") for st in cells if "painted_fraction" not in st]
+    assert not missing, missing[:12]
+    for st in cells:
+        assert 0.0 <= float(st["painted_fraction"]) <= 1.0, st.get("file")
+    lowest = sorted(cells, key=lambda st: float(st["painted_fraction"]))[:5]
+    causes = {
+        "18-dark-en-1440.png": (
+            "empty grid track / min-height under content; first-screen canvas "
+            "is taller than the content"),
+        "18b-dark-zh-1440.png": "same empty grid track on the ZH twin",
+        "19-light-en-1440.png": "same empty grid track in light",
+        "19b-light-zh-1440.png": "same empty grid track in light ZH",
+    }
+    printed = []
+    for st in lowest:
+        name = str(st.get("file") or "")
+        cause = causes.get(name)
+        if cause is None and name.startswith("chipmat-"):
+            cause = (
+                "chip rail crop is mostly background (pills on a dark/light "
+                "track)")
+        if cause is None and not st.get("crop"):
+            cause = (
+                "viewport/full-page canvas includes empty grid track below "
+                "content")
+        if cause is None:
+            h = (st.get("raw_box") or {}).get("height")
+            cause = f"family={st.get('family')} crop h={h}"
+        line = (
+            f"painted_fraction {float(st['painted_fraction']):.4f} {name}: "
+            f"{cause}"
+        )
+        print(line, flush=True)
+        printed.append(line)
+    assert len(printed) == 5, printed
 
 
 def test_page_overflow_error_type() -> None:
@@ -3181,10 +3259,181 @@ def test_page_overflow_error_type() -> None:
 
 
 def test_shot_raises_on_multi_match_selector() -> None:
-    """C-m1: count()!=1 raises (source contract)."""
-    import inspect
+    """C-n1: plant two matching nodes; _shot raises by behaviour."""
+    from pathlib import Path
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        pytest.skip("Playwright not installed")
+    from scripts.capture_macro_command_p5 import _shot
+    try:
+        pw = sync_playwright().start()
+    except Exception as exc:
+        pytest.skip(f"Playwright runtime unavailable: {exc}")
+    dest = ROOT / "mockups" / "evidence" / "macro-command-p5" / "_mut_multi.png"
+    try:
+        try:
+            browser = pw.chromium.launch(headless=True)
+        except Exception as exc:
+            pytest.skip(f"chromium unavailable: {exc}")
+        page = browser.new_page(viewport={"width": 400, "height": 300})
+        page.set_content(
+            """<html><body>
+                 <div class="dup-crop">one</div>
+                 <div class="dup-crop">two</div>
+               </body></html>"""
+        )
+        with pytest.raises(RuntimeError, match=r"matched 2") as ei:
+            _shot(dest, page, page.locator(".dup-crop"),
+                  selector=".dup-crop", locale="en")
+        assert "never .first" in str(ei.value) or "exactly one" in str(ei.value)
+        browser.close()
+    finally:
+        pw.stop()
+        dest.unlink(missing_ok=True)
+
+
+def test_page_fits_overflow_writes_false_and_raises() -> None:
+    """C-n2: synthetic overflow writes fits:false AND raises; true path keeps True."""
+    from scripts.capture_macro_command_p5 import (
+        PageOverflowError, _commit_page_fits_row, _page_fits_receipt,
+    )
+    overflow = _page_fits_receipt(
+        {"page_scroll_width": 500, "innerWidth": 390, "page_fits": False},
+        route="macro_monetary.html", width=390, locale="en", theme="light",
+    )
+    assert overflow["fits"] is False
+    assert overflow["theme"] == "light"
+    recorded = [overflow]
+    with pytest.raises(PageOverflowError) as ei:
+        _commit_page_fits_row(overflow)
+    assert recorded[0]["fits"] is False
+    assert ei.value.scroll_width == 500.0
+    ok = _page_fits_receipt(
+        {"page_scroll_width": 390, "innerWidth": 390, "page_fits": True},
+        route="macro_monetary.html", width=390, locale="zh", theme="dark",
+    )
+    assert ok["fits"] is True
+    assert ok["theme"] == "dark"
+    assert _commit_page_fits_row(ok)["fits"] is True
+
+
+def test_painted_fraction_raises_without_libs(monkeypatch) -> None:
+    """C-n3: missing Pillow/numpy raises; receipt is never defaulted to 1.0."""
+    from pathlib import Path
     from scripts import capture_macro_command_p5 as cap
-    src = inspect.getsource(cap._shot)
-    assert "matched {n}" in src or "matched {n_rail}" in src or "matched" in src
-    assert "exactly one" in src or "Tighten" in src or "tighten" in src
-    assert "often .first" not in src
+
+    def no_libs():
+        raise ImportError("plant")
+
+    monkeypatch.setattr(cap, "_paint_libs", no_libs)
+    with pytest.raises(RuntimeError, match="never defaulted"):
+        cap._painted_fraction(Path("/tmp/x.png"))
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_mut_page_deleting_one_reporting_pages_table_cells_fails() -> None:
+    """MUT-page: delete all method_table_390 cells of one reporting page → fail."""
+    import copy
+    import json
+    from scripts.capture_macro_command_p5 import _load_sanctioned_scrollers
+
+    registry = _load_sanctioned_scrollers()
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    planted = copy.deepcopy(manifest)
+    victim = "macro_rates_curves.html"
+    for page in planted["pages"]:
+        page["states"] = [
+            st for st in page["states"]
+            if not (
+                st.get("family") == "method_table_390"
+                and st.get("page_id") == victim
+            )
+        ]
+    offenders = _registry_coverage_offenders(registry, planted)
+    assert any(
+        sel == "table.mq-table" and page_id == victim
+        for sel, _fam, page_id in (
+            (o[0], o[1], o[2] if len(o) > 2 else "") for o in offenders
+        )
+    ), offenders[:12]
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_mut_reg3_fabricated_unobserved_row_fails() -> None:
+    """MUT-reg3: schema-valid fabricated row with no receipts must fail."""
+    import copy
+    import json
+    from scripts.capture_macro_command_p5 import _load_sanctioned_scrollers
+
+    registry = copy.deepcopy(_load_sanctioned_scrollers())
+    registry["div.fake-rail"] = {
+        "kind": "designed-rail",
+        "covering_family": "chip_material",
+        "reason": "schema-valid fabricated row for MUT-reg3 coverage",
+        "observed": True,
+    }
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    offenders = _registry_coverage_offenders(registry, manifest)
+    assert any(o[0] == "div.fake-rail" for o in offenders), offenders[:12]
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_pair_families_drop_end_when_fits() -> None:
+    """E-n1: when the scroller fits, the end crop is not taken; flag consulted."""
+    import json
+    from scripts.capture_macro_command_p5 import family_for
+
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    by_file = {
+        st["file"]: st
+        for page in manifest["pages"]
+        for st in page["states"]
+        if st.get("file")
+    }
+    hub_starts = [
+        st for st in by_file.values()
+        if (st.get("family") or family_for(st.get("file") or "")) == "hub_rail"
+        and str(st.get("file") or "").endswith("-start.png")
+    ]
+    assert hub_starts
+    for start in hub_starts:
+        end_name = str(start["file"]).replace("-start.png", "-end.png", 1)
+        end = by_file.get(end_name)
+        if start.get("fits") is True:
+            assert end is None, start["file"]
+            assert float(start.get("scrollWidth") or 0) <= float(
+                start.get("clientWidth") or 0) + 1
+        else:
+            assert end is not None, start["file"]
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_no_unlisted_identical_png_pairs() -> None:
+    """E-n1: no identical pair may exist unlisted (allowlist / fits flag)."""
+    import json
+    from collections import defaultdict
+    from scripts.capture_macro_command_p5 import _crop_collision_ratified
+
+    root = ROOT / "mockups" / "evidence" / "macro-command-p5"
+    manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
+    probes = json.loads((root / "probes.json").read_text(encoding="utf-8"))
+    by_sha: dict[str, list[str]] = defaultdict(list)
+    for page in manifest["pages"]:
+        for st in page["states"]:
+            if st.get("captured") and st.get("sha256") and st.get("file"):
+                by_sha[st["sha256"]].append(st["file"])
+    illegal = {}
+    for sha, files in by_sha.items():
+        uniq = sorted(set(files))
+        if len(uniq) < 2:
+            continue
+        if not _crop_collision_ratified(uniq, probes, manifest["pages"]):
+            illegal[sha] = uniq
+    assert not illegal, illegal

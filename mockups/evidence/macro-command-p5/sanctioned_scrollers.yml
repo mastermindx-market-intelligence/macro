@@ -10,48 +10,35 @@ ul.mq-suitenav-rail:
     Suite-nav chip rail; chip_material crops photograph the scrolled-out
     chip+pill pair after intentional scrollLeft.
 
-.mq-suitenav-rail:
-  kind: designed-rail
-  covering_family: chip_material
-  reason: >-
-    Class-only alias of the suite-nav chip rail covered by chip_material.
-
 table.mq-table:
   kind: table
   covering_family: method_table_390
   reason: >-
     Method contribution table; start/end (or table_fits) pair crops cover
-    scrolled-out headers and values.
-
-.mq-table:
-  kind: table
-  covering_family: method_table_390
-  reason: >-
-    Class alias for method contribution tables covered by method_table_390.
-
-table.mq-table.mq-table-compact:
-  kind: table
-  covering_family: method_table_390
-  reason: >-
-    Compact method table variant; same start/end covering family as .mq-table.
+    scrolled-out headers and values on every page that reports this
+    scrollport.
 
 ul.mc-rail-list:
   kind: designed-rail
   covering_family: hub_rail
   reason: >-
     Hub horizontal rail list on macro_monetary; hub_rail crops photograph
-    scrollLeft=0 and scrollLeft=max labels at 390 and 768.
+    both ends of the rail (scrollLeft=0 and max) at 390 and 768. The rail
+    middle is reachable only by scrolling.
 
 "#mc-strip-h":
   kind: designed-rail
   covering_family: chip_material
+  observed: false
   reason: >-
-    Horizontal strip under the suite shell; chip/rail material crops cover
-    its scrolled-out contents.
+    No capture cell reports #mc-strip-h as a scrollport; the live suite
+    chip rail is observed as ul.mq-suitenav-rail.
 
 div.mc-subtabs:
   kind: designed-rail
   covering_family: hub_rail
   reason: >-
     Hub sub-tab strip that scrolls on narrow viewports; hub_rail crops
-    photograph the money strip (aria-labelledby=money-h) at scrollLeft=0/max.
+    photograph the money strip (aria-labelledby=money-h) at scrollLeft=0
+    and max when it overflows, or start-only with fits:true when it does
+    not.
