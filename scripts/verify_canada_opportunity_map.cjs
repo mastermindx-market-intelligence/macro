@@ -1443,6 +1443,20 @@ async function desktopBehavior(page, market, themeMembership = {}) {
       sequence.push(themeGroup);
       await page.locator(`#${version}-filter`).click();
       sequence.push(await manifest("theme-clear"));
+
+      await page.locator('[data-ca-source="top"]').click();
+      const sourceBeforeTopTheme = await page.locator('[data-ca-source][aria-selected="true"]').getAttribute('data-ca-source');
+      await themeButton.click();
+      const themeTopGroup = await manifest("theme-top-group");
+      const sourceAfterTopTheme = await page.locator('[data-ca-source][aria-selected="true"]').getAttribute('data-ca-source');
+      themeTopGroup.source_unchanged = sourceAfterTopTheme === sourceBeforeTopTheme;
+      themeTopGroup.pass = themeTopGroup.pass && themeTopGroup.source_unchanged &&
+        themeTopGroup.source === "top" && themeTopGroup.theme_filter === "ca_oil_gas" &&
+        JSON.stringify(themeTopGroup.visible) === JSON.stringify(["SU.TO"]);
+      sequence.push(themeTopGroup);
+      await page.locator(`#${version}-filter`).click();
+      sequence.push(await manifest("theme-top-clear"));
+      await page.locator('[data-ca-source="all"]').click();
     }
   }
   await page.setViewportSize({width: 390, height: 844});
@@ -2270,7 +2284,7 @@ async function main() {
     loaded_assets: Object.fromEntries(Array.from(loadedAssets.entries()).sort()),
     viewport: {width: 390, height: 844, device_scale_factor: 1},
     desktop_viewport: {width: 1440, height: 900, device_scale_factor: 1},
-    acceptance: "390px layout; server-owned four-anchor degraded fallback without false tab semantics; composer upgrades the same nodes in place; one mobile action lane in loaded/disabled/failed/pending states; deterministic owner counts and controls; valid/invalid/direct/back/forward fragment reconciliation; 390/1440 x disabled/failed/pending/loaded native click+Enter+Space disclosure reachability with stable row nodes/payload and lane-local state; desktop <=3 rows/lane and action panel <=240px; one Prophet chrome/view owner; truthful first-frame source; Top/All x Grid/Table identity/order; persisted Table startup; group/clear/resize manifest identity; typed Canada quote states; closed normal/watch-only/null-buy owner projection matrix across EN/ZH x dark/light x 390/1440 x loaded/JS-disabled plus failed/pending watch-only controls; exact admitted known-group membership overlay; Canada theme-to-Prophet filter projection; selected/clear card-only projection without source, card, table, watch, anchor, or research-route mutation; zero duplicate ids and console exceptions",
+    acceptance: "390px layout; server-owned four-anchor degraded fallback without false tab semantics; composer upgrades the same nodes in place; one mobile action lane in loaded/disabled/failed/pending states; deterministic owner counts and controls; valid/invalid/direct/back/forward fragment reconciliation; 390/1440 x disabled/failed/pending/loaded native click+Enter+Space disclosure reachability with stable row nodes/payload and lane-local state; desktop <=3 rows/lane and action panel <=240px; one Prophet chrome/view owner; truthful first-frame source; Top/All x Grid/Table identity/order; persisted Table startup; group/clear/resize manifest identity; typed Canada quote states; closed normal/watch-only/null-buy owner projection matrix across EN/ZH x dark/light x 390/1440 x loaded/JS-disabled plus failed/pending watch-only controls; exact admitted known-group membership overlay; Canada theme-to-Prophet filter projection in both All and Top source populations; selected/clear card-only projection without source, card, table, watch, anchor, or research-route mutation; zero duplicate ids and console exceptions",
     expansion_reachability: expansionReachability,
     fragment_navigation: fragmentNavigation,
     desktop,

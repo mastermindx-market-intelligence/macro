@@ -19,22 +19,23 @@ authority:
 proof:
   rendered_fixture:
     path: mockups/evidence/canada-opportunity-map-20260909/rendered-fixture.json
-    sha256: 268696a3d9d73f13ac65de7eb9ffbd55da212176966e46974539bc6a294d2f5b
+    sha256: ab4da483766d30b33578ff85d149f977f7694b463aa85f567edf7ccda400977c
   browser_receipt:
     path: mockups/evidence/canada-opportunity-map-20260909/mobile-layout-canada.json
-    sha256: 1ef8d558d6b63eeaea60b4e46f2269f0dab3d0246108b2b9e9387bf496e20990
+    sha256: 767cf24b7d7eb6211a7bf0e7a30949795156c76a77cd77c862a2334ca9b2ad92
   opportunity_map_screenshot:
     path: mockups/evidence/canada-opportunity-map-20260909/canada-opportunity-map-desktop.png
-    sha256: 7c3fffd93ba1c313c8ea3dd0a318b633a4d21ff72400bde1b1a29660e1df9e2f
+    sha256: b9b5bfea5a5ff4ea246997443c29112a999de47acf0289564f239174617516bd
   verifier:
     path: scripts/verify_canada_opportunity_map.cjs
-    sha256: c1a78fd757b872ca74005fd5848a3fe5377f5e9fe617d68001782b5c3b7ca0c1
+    sha256: 4bb93390ef3739fe426cf9500267e10b499ef3ad63e5287eb53f5794fcb62953
   renderer:
     path: scripts/render_canada_opportunity_map_fixture.py
     sha256: e6a7e7c82f1c47f0d718ad8f629ab3b2df4a5bf19059aa2243d13e649a235c18
 acceptance:
   focused_tests: 225 passed
   browser: passed
-  theme_filter: ca_oil_gas -> SU.TO, TOU.TO
+  theme_filter_all: ca_oil_gas -> SU.TO, TOU.TO
+  theme_filter_top: ca_oil_gas -> SU.TO
   source_population_unchanged: true
   predecessor_p0b_evidence_rewritten: false

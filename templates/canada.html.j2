@@ -2711,14 +2711,14 @@ html[data-lang="zh"][data-theme="light"] body.page-canada .ms-red .cax-big-score
   {% if _ca_theme_valid %}
   <div class="ca-theme-action" id="ca-theme-action" data-theme-authority="descriptive_rotation">
     <div class="ca-theme-action-hd">
-      <div><b>{{ t('Canadian themes', '加拿大主题') }}</b><span>{{ (_ca_theme.get('n_themes') or 0) }} {{ t('tracked themes', '个已追踪主题') }}{% if _ca_theme.get('n_prophet_current') is not none %} · {{ _ca_theme.get('n_prophet_current') }} {{ t('current Prophet names', '只当前 Prophet 候选') }}{% endif %}</span></div>
+      <div><b>{{ t('Canadian themes', '加拿大主题') }}</b><span>{{ (_ca_theme.get('n_themes') or 0) }} {{ t('tracked themes', '个已追踪主题') }}{% if _ca_theme.get('n_distinct_members') is not none %} · {{ _ca_theme.get('n_distinct_members') }} {{ t('distinct constituents', '个不同主题成分') }}{% endif %}{% if _ca_theme.get('n_prophet_current') is not none %} · {{ _ca_theme.get('n_prophet_current') }} {{ t('current Prophet names', '只当前 Prophet 候选') }}{% endif %}</span></div>
       <div class="ca-theme-action-meta">{{ t('descriptive rotation · does not originate Prophet picks', '描述性轮动 · 不产生 Prophet 选股') }} · {{ t('as of', '截至') }} {{ _ca_theme.get('as_of') or '—' }}</div>
     </div>
     {%- macro _ca_theme_row(it) -%}
       <div class="ca-theme-action-row-w">
         <button class="ca-theme-action-row" type="button"{% if it.get('membership_known') %} data-ca-lead-kind="theme" data-ca-lead-id="{{ it.get('id') }}" data-ca-members="{{ (it.get('members') or [])|join(',') }}"{% else %} disabled{% endif %}>
           <span class="ca-theme-rank">{% if it.get('rank') is not none %}#{{ it.get('rank') }}{% else %}—{% endif %}</span>
-          <span class="ca-theme-name"><b>{{ t(it.get('name') or it.get('id'), it.get('name_zh') or it.get('name') or it.get('id')) }}</b><small>{% if it.get('category') %}{{ t(it.get('category'), it.get('category_zh') or it.get('category')) }}{% if it.get('leaders') %} · {% endif %}{% endif %}{% if it.get('leaders') %}{{ it.get('leaders')|join(' · ') }}{% elif it.get('n_members') is not none %}{{ it.get('n_members') }} {{ t('members','') }}{% endif %}</small></span>
+          <span class="ca-theme-name"><b>{{ t(it.get('name') or it.get('id'), it.get('name_zh') or it.get('name') or it.get('id')) }}</b><small>{% if it.get('category') %}{{ t(it.get('category'), it.get('category_zh') or it.get('category')) }}{% if it.get('leaders') %} · {% endif %}{% endif %}{% if it.get('leaders') %}{{ it.get('leaders')|join(' · ') }}{% elif it.get('n_members') is not none %}{{ it.get('n_members') }} {{ t('members','成分') }}{% endif %}</small></span>
           {% if it.get('prophet_count') is not none %}<span class="ca-theme-prophet">{{ it.get('prophet_count') }} · Prophet</span>{% endif %}
           <span class="ca-theme-state">{{ t(it.get('action_en') or it.get('action') or '—', it.get('action_zh') or it.get('action_en') or it.get('action') or '—') }}</span>
         </button>

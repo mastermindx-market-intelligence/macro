@@ -70,6 +70,8 @@ def test_template_keeps_theme_and_sector_authority_visibly_separate() -> None:
     assert "Canadian Opportunity Map" in text
     assert "Canadian themes below" in text
     assert "tracked proxies" in text
+    assert "distinct constituents" in text
+    assert "个不同主题成分" in text
     assert "_ca_theme.get('as_of')" in text
     assert "{{ latest.date }}" in text
 
@@ -164,6 +166,10 @@ def test_successor_browser_receipt_proves_theme_to_prophet_journey() -> None:
     assert theme["expected"] == theme["visible"] == ["SU.TO", "TOU.TO"]
     cleared = next(row for row in receipt["desktop"]["sequence"] if row["label"] == "theme-clear")
     assert cleared["filter"] is False and cleared["theme_filter"] is None
+    top_theme = next(row for row in receipt["desktop"]["sequence"] if row["label"] == "theme-top-group")
+    assert top_theme["source"] == "top" and top_theme["source_unchanged"] is True
+    assert top_theme["theme_filter"] == "ca_oil_gas"
+    assert top_theme["expected"] == top_theme["visible"] == ["SU.TO"]
     shot = receipt["opportunity_map_screenshot"]
     assert shot and shot["path"] == "mockups/evidence/canada-opportunity-map-20260909/canada-opportunity-map-desktop.png"
     assert _sha256(ROOT / shot["path"]) == shot["sha256"]
