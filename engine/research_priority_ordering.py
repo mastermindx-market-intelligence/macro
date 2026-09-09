@@ -60,7 +60,7 @@ class ThemeEvidence:
 
 @dataclass(frozen=True, slots=True)
 class PriorityItem:
-    position: int                  # 1-based place in this reading order. Not a rank.
+    position: int | None           # 1-based place in the dated order. None when undated.
     node_id: str
     name_en: str
     name_zh: str
@@ -118,7 +118,7 @@ def order_items(themes: Sequence[ThemeEvidence]) -> tuple[PriorityItem, ...]:
     for theme in undated:
         out.append(
             PriorityItem(
-                position=len(out) + 1,
+                position=None,
                 node_id=theme.node_id,
                 name_en=theme.name_en,
                 name_zh=theme.name_zh,
@@ -151,28 +151,44 @@ def max_recorded_date(items: Sequence[PriorityItem]) -> str | None:
 
 
 def to_payload(items: Sequence[PriorityItem], *, asof: str | None, state: str) -> dict:
-    """JSON-safe payload per §2.4. `asof` and `state` are supplied by the caller;
-    this module never asks a clock and never decides whether a store exists.
+    """JSON-safe payload per §2.4. `state` is supplied by the caller; this module
+    never asks a clock and never decides whether a store exists.
 
-    `asof` is None whenever there is no evidence date to report — an unreadable
-    store, an empty one, or a population with no dated theme. The page omits the
-    line entirely in that case rather than printing a dash (seat ruling R1).
+    `asof` is derived from `max_recorded_date(items)` itself so a caller
+    (including `compose()`) cannot re-bind it. It is None whenever there is no
+    evidence date to report — an unreadable store, an empty one, or a population
+    with no dated theme. The page omits the line entirely in that case rather
+    than printing a dash (seat ruling R1). The caller `asof` argument is kept
+    for signature stability and then ignored.
+
+    The ordered list holds at most MAX_ITEMS dated themes. Undated themes are
+    never part of that slice: every undated name travels with the payload.
     """
     if state not in _ALLOWED_STATES:
         state = "unavailable"
     seq = tuple(items)
-    n_total = len(seq)
-    shown = seq[:MAX_ITEMS]
+    dated = tuple(item for item in seq if item.last_recorded_date)
+    undated = tuple(item for item in seq if not item.last_recorded_date)
+    n_dated = len(dated)
+    n_undated = len(undated)
+    n_total = n_dated + n_undated
+    shown: tuple[PriorityItem, ...] = dated[:MAX_ITEMS] + undated
+    derived_asof = max_recorded_date(seq)
+    _ = asof  # signature-stable; compose cannot re-bind the horizon
     if state in {"empty", "unavailable"}:
         shown = ()
         n_total = 0
-        asof = None
-    elif not shown:
+        n_dated = 0
+        n_undated = 0
+        derived_asof = None
+    elif not seq:
         state = "empty"
+        shown = ()
         n_total = 0
-        asof = None
-    if asof is not None:
-        asof = _as_calendar_date(str(asof))
+        n_dated = 0
+        n_undated = 0
+        derived_asof = None
+    asof = _as_calendar_date(str(derived_asof)) if derived_asof is not None else None
     return {
         "schema": SCHEMA,
         "ordering_rule_id": ORDERING_RULE_ID,
@@ -182,6 +198,8 @@ def to_payload(items: Sequence[PriorityItem], *, asof: str | None, state: str) -
         "state": state,
         "max_items": MAX_ITEMS,
         "n_total": n_total,
+        "n_dated": n_dated,
+        "n_undated": n_undated,
         "items": [
             {
                 "position": item.position,

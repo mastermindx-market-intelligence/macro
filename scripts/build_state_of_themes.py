@@ -1454,6 +1454,7 @@ def _assert_theme_store_readable(store: Any) -> None:
     for path, column in (
         (store.nodes_path(), "node_id"),
         (store.edges_path(), "edge_id"),
+        (store.node_lifecycle_path(), "node_id"),
     ):
         if not path.exists():
             raise StoreUnreadable(f"{path.name} does not exist")

@@ -82,18 +82,24 @@ _DETAILS_ZH = (
     "这里的每一行都来自主题证据记录。我们只读两样东西：关于该主题的说法是哪一天记录的，"
     "以及当天记录了多少条。我们不读取、本页也不显示任何关于幅度、方向、把握程度或价格已消化程度的度量——这些尚未建成。"
 )
-_RULE_EN = (
-    "Ordered by when we last recorded new evidence about each theme — newest first. "
-    "Themes recorded on the same day are ordered by how many statements were recorded "
-    "that day, then by name."
+_RULE_EN = "When the date and that day's count match, the list runs by name."
+_RULE_ZH = "日期和当天条数都相同时，按名称排列。"
+_STANCE_EN = (
+    "Start at the top. The list runs by the date something was last written down "
+    "about each theme, newest first; themes written down on the same day run by "
+    "how many statements were recorded that day. It is not where the best idea is."
 )
-_RULE_ZH = (
-    "按我们最近一次记录到该主题新证据的时间排序，最新的排在前面。"
-    "同一天记录的主题，按当天记录的条数排序，条数相同再按名称排序。"
+_STANCE_ZH = (
+    "从最上面开始看。这份清单按每个主题最后一次被记录下内容的日期排列，最新的在前；"
+    "同一天记录的主题，按当天记录的条数排列。它并不是最值得看的地方。"
 )
+_TRUNC_EN = "Showing the 12 most recently updated of {n} dated themes."
+_TRUNC_ZH = "共 {n} 个有日期的主题，显示最近更新的 12 个。"
+_UNDATED_COUNT_EN = "{k} tracked themes have no dated entry yet."
+_UNDATED_COUNT_ZH = "另有 {k} 个主题尚无带日期的记录。"
 
 _ALLOWED_INT_KEYS = frozenset(
-    {"position", "statements_recorded", "n_total", "max_items"}
+    {"position", "statements_recorded", "n_total", "n_dated", "n_undated", "max_items"}
 )
 
 
@@ -147,55 +153,93 @@ def _base_ctx(**kwargs):
     return ctx
 
 
-def _populated_payload():
+def _payload_from_themes(themes, *, state: str = "ok"):
+    """Every ordering-dependent render test goes through the producer."""
     from engine.research_priority_ordering import (
-        PriorityItem,
         max_recorded_date,
+        order_items,
         to_payload,
     )
 
-    items = (
-        PriorityItem(1, "theme:power_grid", "Power grid", "电网", "2026-09-08", 4),
-        PriorityItem(2, "theme:copper", "Copper", "铜", "2026-09-08", 1),
-        PriorityItem(3, "theme:alpha", "Alpha", "阿尔法", "2026-09-01", 2),
-        PriorityItem(4, "theme:undated_a", "Quiet story", "安静主题", None, 0),
+    items = order_items(themes)
+    return to_payload(items, asof=max_recorded_date(items), state=state)
+
+
+def _populated_payload():
+    return _payload_from_themes(
+        (
+            _te("theme:power_grid", "Power grid", "电网",
+                "2026-09-08", "2026-09-08", "2026-09-08", "2026-09-08"),
+            _te("theme:copper", "Copper", "铜", "2026-09-08"),
+            _te("theme:alpha", "Alpha", "阿尔法", "2026-09-01", "2026-09-01"),
+            _te("theme:undated_a", "Quiet story", "安静主题"),
+        )
     )
-    return to_payload(items, asof=max_recorded_date(items), state="ok")
 
 
 def _truncated_payload(n: int = 18):
-    """A payload whose n_total exceeds MAX_ITEMS, so `rp.more` renders."""
-    from engine.research_priority_ordering import (
-        PriorityItem,
-        max_recorded_date,
-        to_payload,
-    )
-
-    items = tuple(
-        PriorityItem(
-            i + 1,
-            f"theme:n{i:02d}",
-            f"Name {i:02d}",
-            f"名{i:02d}",
-            "2026-09-08",
-            1,
-        )
+    """A payload whose dated count exceeds MAX_ITEMS, so the truncation line renders."""
+    themes = tuple(
+        _te(f"theme:n{i:02d}", f"Name {i:02d}", f"名{i:02d}", "2026-09-08")
         for i in range(n)
     )
-    return to_payload(items, asof=max_recorded_date(items), state="ok")
+    return _payload_from_themes(themes)
 
 
-def _write_theme_store(store_dir: Path, nodes: list[dict], edges: list[dict]) -> None:
+def _eleven_dated_seven_undated():
+    dated = tuple(
+        _te(
+            f"theme:d{i:02d}",
+            f"Dated {i:02d}",
+            f"有日{i:02d}",
+            f"2026-09-{8 - i:02d}" if i < 8 else "2026-08-30",
+        )
+        for i in range(11)
+    )
+    undated = tuple(
+        _te(f"theme:u{i:02d}", f"Quiet {i:02d}", f"安静{i:02d}")
+        for i in range(7)
+    )
+    return dated + undated
+
+
+def _fifteen_dated_three_undated():
+    dated = tuple(
+        _te(
+            f"theme:d{i:02d}",
+            f"Dated {i:02d}",
+            f"有日{i:02d}",
+            f"2026-09-{15 - i:02d}" if i < 15 else "2026-08-01",
+        )
+        for i in range(15)
+    )
+    undated = tuple(
+        _te(f"theme:u{i:02d}", f"Quiet {i:02d}", f"安静{i:02d}")
+        for i in range(3)
+    )
+    return dated + undated
+
+
+def _write_theme_store(store_dir: Path, nodes: list[dict], edges: list[dict],
+                       lifecycle: list[dict] | None = None) -> None:
     """Write a REAL parquet store, so the loader meets the real read conditions."""
     pd = pytest.importorskip("pandas")
     pytest.importorskip("pyarrow")
-    from engine.theme_graph.store import EDGE_COLUMNS, NODE_COLUMNS
+    from engine.theme_graph.store import (
+        EDGE_COLUMNS,
+        NODE_COLUMNS,
+        NODE_LIFECYCLE_COLUMNS,
+    )
 
     store_dir.mkdir(parents=True, exist_ok=True)
     node_frame = pd.DataFrame(nodes, columns=list(NODE_COLUMNS))
     edge_frame = pd.DataFrame(edges, columns=list(EDGE_COLUMNS))
+    life_frame = pd.DataFrame(
+        lifecycle or [], columns=list(NODE_LIFECYCLE_COLUMNS)
+    )
     node_frame.to_parquet(store_dir / "nodes.parquet", index=False)
     edge_frame.to_parquet(store_dir / "edges.parquet", index=False)
+    life_frame.to_parquet(store_dir / "node_lifecycle.parquet", index=False)
 
 
 def _node(node_id: str, name_en: str, name_zh: str, *, kind: str = "theme",
@@ -332,8 +376,8 @@ def test_positions_are_dense_one_based_and_unique():
             _te("theme:c", "C", "丙"),
         )
     )
-    positions = [it.position for it in items]
-    assert positions == [1, 2, 3]
+    assert [it.position for it in items if it.last_recorded_date] == [1, 2]
+    assert all(it.position is None for it in items if not it.last_recorded_date)
 
 
 def test_undated_themes_form_a_separate_bucket_appended_last():
@@ -354,8 +398,31 @@ def test_undated_themes_form_a_separate_bucket_appended_last():
     assert items[0].last_recorded_date == "2026-01-01"
     assert items[1].last_recorded_date is None
     assert items[2].last_recorded_date is None
+    assert items[1].position is None
+    assert items[2].position is None
     assert items[1].statements_recorded == 0
     assert items[2].statements_recorded == 0
+
+
+def test_order_items_never_emits_an_undated_item_before_a_dated_one():
+    from engine.research_priority_ordering import order_items
+
+    themes = (
+        _te("theme:undated_z", "Zed", "末"),
+        _te("theme:dated_old", "Old", "旧", "2026-01-01"),
+        _te("theme:undated_a", "Aed", "首"),
+        _te("theme:dated_new", "New", "新", "2026-09-08"),
+    )
+    for perm in itertools.permutations(themes):
+        items = order_items(perm)
+        seen_undated = False
+        for item in items:
+            if item.last_recorded_date is None:
+                seen_undated = True
+                assert item.position is None
+            else:
+                assert not seen_undated
+                assert item.position is not None
 
 
 def test_malformed_date_is_skipped_not_raised_and_never_becomes_today():
@@ -554,10 +621,8 @@ def test_page_states_that_position_is_not_a_score(tmp_path):
 # ---------------------------------------------------------------------------
 
 
-def test_unavailable_payload_renders_the_unavailable_line_not_a_dash(tmp_path):
-    """Template test (renamed from test_missing_store_...): it renders a hand-built
-    payload and asserts the copy. The STORE conditions are exercised end to end by
-    test_missing_store_files_load_as_unavailable and its siblings below."""
+def test_missing_store_renders_the_unavailable_line_not_a_dash(tmp_path):
+    """§2.8 frozen name: unavailable copy, no dash, no list."""
     from engine.research_priority_ordering import to_payload
 
     _copy_templates(tmp_path)
@@ -573,8 +638,8 @@ def test_unavailable_payload_renders_the_unavailable_line_not_a_dash(tmp_path):
     assert re.search(r"\bunavailable\b", visible, re.I) is None
 
 
-def test_empty_payload_renders_the_empty_line_not_a_dash(tmp_path):
-    """Template test (renamed from test_empty_store_...) — see the note above."""
+def test_empty_store_renders_the_empty_line_not_a_dash(tmp_path):
+    """§2.8 frozen name: empty copy, no dash, no list."""
     from engine.research_priority_ordering import to_payload
 
     _copy_templates(tmp_path)
@@ -637,6 +702,25 @@ def test_corrupt_parquet_loads_as_unavailable(tmp_path, monkeypatch):
     store_dir.mkdir(parents=True)
     (store_dir / "nodes.parquet").write_bytes(b"PAR1 this is not a parquet file")
     (store_dir / "edges.parquet").write_bytes(b"PAR1 this is not a parquet file")
+    (store_dir / "node_lifecycle.parquet").write_bytes(b"PAR1 this is not a parquet file")
+    _point_store_at(monkeypatch, store_dir)
+    payload = sot.load_research_priority(tmp_path)
+    assert payload["state"] == "unavailable"
+    assert payload["items"] == []
+    assert payload["asof"] is None
+
+
+def test_corrupt_node_lifecycle_loads_as_unavailable(tmp_path, monkeypatch):
+    """node_lifecycle.parquet is on the §2.4 readability probe; garbage is unavailable."""
+    import scripts.build_state_of_themes as sot
+
+    store_dir = tmp_path / "theme_graph"
+    _write_theme_store(
+        store_dir,
+        nodes=[_node("theme:solar", "Solar", "太阳能")],
+        edges=[_edge("e1", "company:acme", "theme:solar", "2026-07-09")],
+    )
+    (store_dir / "node_lifecycle.parquet").write_bytes(b"PAR1 this is not a parquet file")
     _point_store_at(monkeypatch, store_dir)
     payload = sot.load_research_priority(tmp_path)
     assert payload["state"] == "unavailable"
@@ -737,16 +821,70 @@ def test_asof_never_outruns_the_newest_row_the_page_shows(tmp_path):
     assert "证据记录截至 2026年9月8日" in block
 
 
+def test_to_payload_derives_asof_from_items_so_the_caller_cannot_rebind_it():
+    from engine.research_priority_ordering import (
+        max_recorded_date,
+        order_items,
+        to_payload,
+    )
+
+    items = order_items((_te("theme:solar", "Solar", "太阳能", "2026-07-09"),))
+    payload = to_payload(items, asof="2099-01-01", state="ok")
+    assert payload["asof"] == max_recorded_date(items) == "2026-07-09"
+    assert payload["asof"] != "2099-01-01"
+
+
+def test_compose_binds_asof_from_the_payload_items(tmp_path, monkeypatch):
+    """compose() cannot re-bind asof: to_payload derives it from the items."""
+    import scripts.build_state_of_themes as sot
+    from engine.research_priority_ordering import max_recorded_date, order_items
+
+    nwd = tmp_path / "site" / "neuralwebdata"
+    nwd.mkdir(parents=True)
+    nwd.joinpath("theme_state.json").write_text(
+        json.dumps(
+            {
+                "as_of": "2026-09-09",
+                "n_themes": 1,
+                "themes": [{"theme_id": "theme:solar"}],
+            }
+        ),
+        encoding="utf-8",
+    )
+    store_dir = tmp_path / "theme_graph"
+    _write_theme_store(
+        store_dir,
+        nodes=[
+            _node("theme:solar", "Solar", "太阳能"),
+            _node("theme:copper", "Copper", "铜"),
+        ],
+        edges=[
+            _edge("e1", "company:acme", "theme:solar", "2026-07-09"),
+            _edge("e2", "company:brox", "theme:solar", "2026-07-09"),
+            _edge("e3", "company:crux", "theme:copper", "2026-06-30"),
+        ],
+    )
+    _point_store_at(monkeypatch, store_dir)
+    ctx = sot.compose(tmp_path)
+    payload = ctx["research_priority"]
+    assert payload["state"] == "ok"
+    assert payload["asof"] == "2026-07-09"
+    assert payload["asof"] != ctx["as_of"]
+    reconstructed = order_items(
+        (
+            _te("theme:solar", "Solar", "太阳能", "2026-07-09", "2026-07-09"),
+            _te("theme:copper", "Copper", "铜", "2026-06-30"),
+        )
+    )
+    assert payload["asof"] == max_recorded_date(reconstructed)
+    dated = [item["last_recorded_date"] for item in payload["items"] if item["last_recorded_date"]]
+    assert payload["asof"] == max(dated)
+
+
 def test_page_omits_the_asof_line_when_no_evidence_date_is_known(tmp_path):
     """No dated evidence -> the line is omitted, never printed with a dash."""
-    from engine.research_priority_ordering import PriorityItem, to_payload
-
     _copy_templates(tmp_path)
-    payload = to_payload(
-        (PriorityItem(1, "theme:quiet", "Quiet story", "安静主题", None, 0),),
-        asof=None,
-        state="ok",
-    )
+    payload = _payload_from_themes((_te("theme:quiet", "Quiet story", "安静主题"),))
     block = _rp_block(_render(tmp_path, _base_ctx(research_priority=payload)))
     assert block
     assert "Evidence recorded up to" not in block
@@ -797,19 +935,16 @@ def test_every_new_label_has_both_en_and_zh(tmp_path):
     )
     pairs = [
         ("What to look at first", "先看哪些主题"),
+        (_STANCE_EN, _STANCE_ZH),
         (
-            "Start at the top. The list runs by the date something was last written down about each theme, newest first; themes written down on the same day run by how many statements were recorded that day. It is not where the best idea is.",
-            "从最上面开始看。这份清单按每个主题最后一次被记录下内容的日期排列，最新的在前；同一天记录的主题，按当天记录的条数排列。它并不是最好的主意所在。",
-        ),
-        (
-            "Showing 12 of 18 themes in that order.",
-            "共 18 个主题，按该顺序显示其中 12 个。",
+            _TRUNC_EN.format(n=18),
+            _TRUNC_ZH.format(n=18),
         ),
         (_RULE_EN, _RULE_ZH),
         (_REFUSAL_EN, _REFUSAL_ZH),
         ("New evidence recorded", "记录到新证据"),
-        ("1 statement that day", "当天 1 条"),
-        ("4 statements that day", "当天 4 条"),
+        ("1 statement that day", "当天记录 1 条"),
+        ("4 statements that day", "当天记录 4 条"),
         ("No dated evidence yet", "尚无带日期的证据"),
         (
             "These themes are tracked, but nothing we hold about them carries a date, so they cannot take a place in the order above.",
@@ -823,6 +958,10 @@ def test_every_new_label_has_both_en_and_zh(tmp_path):
             "The evidence record could not be read, so this list is not shown.",
             "无法读取证据记录，因此这份清单暂不显示。",
         ),
+        (
+            _UNDATED_COUNT_EN.format(k=1),
+            _UNDATED_COUNT_ZH.format(k=1),
+        ),
     ]
     for en, zh in pairs:
         haystack = ok_html + empty_html + unavail_html + more_html
@@ -831,47 +970,117 @@ def test_every_new_label_has_both_en_and_zh(tmp_path):
 
 
 def test_truncation_line_states_the_same_criterion_as_the_order(tmp_path):
-    """rp.more must not claim a recency selection the tie-break actually made.
-
-    Every item here shares one date, so 'most recently updated' would be false of
-    all 18; the head was chosen by the ordering key, and the sentence says so.
-    """
+    """Seat R1 frozen truncation copy counts dated themes only."""
     _copy_templates(tmp_path)
     block = _rp_block(_render(tmp_path, _base_ctx(research_priority=_truncated_payload(18))))
     assert block
-    assert "Showing 12 of 18 themes in that order." in block
-    assert "共 18 个主题，按该顺序显示其中 12 个。" in block
-    assert "most recently updated" not in block
-    assert "显示最近更新的" not in block
+    assert _TRUNC_EN.format(n=18) in block
+    assert _TRUNC_ZH.format(n=18) in block
+    assert "in that order" not in block
+    assert "按该顺序显示其中" not in block
 
 
-def test_truncation_line_counts_only_the_dated_rows(tmp_path):
-    """An undated theme is rendered under its own heading and takes no place in the
-    order, so it may not be counted among the themes shown 'in that order'."""
-    from engine.research_priority_ordering import (
-        PriorityItem,
-        max_recorded_date,
-        to_payload,
-    )
-
+def test_eleven_dated_and_seven_undated_shows_every_name_and_no_truncation(tmp_path):
+    """11 dated + 7 undated: no truncation line; 11 numbered rows; 7 undated names."""
     _copy_templates(tmp_path)
-    items = tuple(
-        PriorityItem(i + 1, f"theme:n{i:02d}", f"Name {i:02d}", f"名{i:02d}",
-                     "2026-09-08", 1)
-        for i in range(11)
-    ) + (
-        PriorityItem(12, "theme:quiet", "Quiet story", "安静主题", None, 0),
-    ) + tuple(
-        PriorityItem(i + 13, f"theme:m{i:02d}", f"Later {i:02d}", f"后{i:02d}",
-                     "2026-09-07", 1)
-        for i in range(6)
-    )
-    payload = to_payload(items, asof=max_recorded_date(items), state="ok")
+    payload = _payload_from_themes(_eleven_dated_seven_undated())
+    assert payload["n_dated"] == 11
+    assert payload["n_undated"] == 7
     assert payload["n_total"] == 18
+    assert len([i for i in payload["items"] if i["last_recorded_date"]]) == 11
+    assert len([i for i in payload["items"] if not i["last_recorded_date"]]) == 7
     block = _rp_block(_render(tmp_path, _base_ctx(research_priority=payload)))
-    # 12 payload rows, one of them undated -> 11 sit in the order.
-    assert "Showing 11 of 18 themes in that order." in block
-    assert "No dated evidence yet" in block
+    assert _TRUNC_EN.format(n=11) not in block
+    assert _TRUNC_ZH.format(n=11) not in block
+    assert "Showing the 12 most recently updated" not in block
+    assert "显示最近更新的 12 个" not in block
+    assert _UNDATED_COUNT_EN.format(k=7) in block
+    assert _UNDATED_COUNT_ZH.format(k=7) in block
+    numbered = re.findall(
+        r'<span class="rp-pos">(\d+)\.</span>',
+        block.split('class="rp-undated"', 1)[0],
+    )
+    assert numbered == [str(i) for i in range(1, 12)]
+    undated_html = block.split('class="rp-undated"', 1)[1]
+    assert 'class="rp-pos"' not in undated_html
+    for i in range(11):
+        assert f"Dated {i:02d}" in block
+        assert f"有日{i:02d}" in block
+    for i in range(7):
+        assert f"Quiet {i:02d}" in undated_html
+        assert f"安静{i:02d}" in undated_html
+
+
+def test_fifteen_dated_and_three_undated_truncates_dated_and_lists_every_undated(
+    tmp_path,
+):
+    """15 dated + 3 undated: truncation names 12 of 15; 3 undated names."""
+    _copy_templates(tmp_path)
+    payload = _payload_from_themes(_fifteen_dated_three_undated())
+    assert payload["n_dated"] == 15
+    assert payload["n_undated"] == 3
+    assert len([i for i in payload["items"] if i["last_recorded_date"]]) == 12
+    assert len([i for i in payload["items"] if not i["last_recorded_date"]]) == 3
+    block = _rp_block(_render(tmp_path, _base_ctx(research_priority=payload)))
+    assert _TRUNC_EN.format(n=15) in block
+    assert _TRUNC_ZH.format(n=15) in block
+    assert _UNDATED_COUNT_EN.format(k=3) in block
+    assert _UNDATED_COUNT_ZH.format(k=3) in block
+    numbered = re.findall(
+        r'<span class="rp-pos">(\d+)\.</span>',
+        block.split('class="rp-undated"', 1)[0],
+    )
+    assert numbered == [str(i) for i in range(1, 13)]
+    undated_html = block.split('class="rp-undated"', 1)[1]
+    assert 'class="rp-pos"' not in undated_html
+    shown_dated = [i for i in payload["items"] if i["last_recorded_date"]]
+    hidden_dated = [
+        theme
+        for theme in _fifteen_dated_three_undated()
+        if theme.recorded_dates
+        and theme.node_id not in {item["node_id"] for item in shown_dated}
+    ]
+    assert len(hidden_dated) == 3
+    for item in shown_dated:
+        assert item["name_en"] in block
+        assert item["name_zh"] in block
+    for theme in hidden_dated:
+        assert theme.name_en not in block
+        assert theme.name_zh not in block
+    for i in range(3):
+        assert f"Quiet {i:02d}" in undated_html
+        assert f"安静{i:02d}" in undated_html
+
+
+def test_undated_rows_carry_no_ordinal_in_payload_or_template(tmp_path):
+    _copy_templates(tmp_path)
+    payload = _populated_payload()
+    undated = [item for item in payload["items"] if not item["last_recorded_date"]]
+    assert undated
+    assert all(item["position"] is None for item in undated)
+    dated = [item for item in payload["items"] if item["last_recorded_date"]]
+    assert [item["position"] for item in dated] == list(range(1, len(dated) + 1))
+    block = _rp_block(_render(tmp_path, _base_ctx(research_priority=payload)))
+    undated_html = block.split('class="rp-undated"', 1)[1]
+    assert 'class="rp-pos"' not in undated_html
+    assert "Quiet story" in undated_html
+    assert "4." not in undated_html
+
+
+def test_store_sourced_theme_names_render_in_a_plain_lang_span(tmp_path):
+    _copy_templates(tmp_path)
+    payload = _populated_payload()
+    block = _rp_block(_render(tmp_path, _base_ctx(research_priority=payload)))
+    assert '<span class="l-en" lang="en">Power grid</span>' in block
+    assert '<span class="l-zh" lang="zh">电网</span>' in block
+    assert '<span class="l-en" lang="en">Quiet story</span>' in block
+    assert '<span class="l-zh" lang="zh">安静主题</span>' in block
+    template = TEMPLATE_PATH.read_text(encoding="utf-8")
+    rp_section = template.split('{% if research_priority %}', 1)[1].split(
+        '{# ── SIGNATURE: lifecycle ribbon ── #}', 1
+    )[0]
+    assert "t(item.name_en" not in rp_section
+    assert "t(item.name_zh" not in rp_section
 
 
 def test_no_machine_text_in_the_rendered_block(tmp_path):
@@ -929,6 +1138,8 @@ def test_artifact_truncates_to_max_items_and_discloses_the_total():
     assert payload["max_items"] == MAX_ITEMS == 12
     assert payload["asof"] == "2026-09-08"
     assert payload["n_total"] == 18
+    assert payload["n_dated"] == 18
+    assert payload["n_undated"] == 0
     assert len(payload["items"]) == 12
     assert payload["items"][0]["position"] == 1
     assert payload["items"][-1]["position"] == 12
