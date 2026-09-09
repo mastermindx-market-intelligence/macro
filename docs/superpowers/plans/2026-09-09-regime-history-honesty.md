@@ -63,3 +63,9 @@ includes only their registration in the existing unrun-macro-panels job, its tes
 four shrink-only baseline removals, and a regression using the existing run-source census. No new CI
 job, workflow, runner, authority exception or skip. RED:1 failure /4 passing rounding cases; GREEN:87
 focused tests. e4d6bf3 source review passed; the new configuration/test/evidence delta needs review.
+
+## Superseding only the CI-job placement in the amendment above
+R3 established unrun-macro-panels is gate:data. These are code regressions, so place the same four
+suites in existing gate:code unrun-scoring-engine instead; restore the data-health job exactly.
+No new job, runner, workflow, gate reclassification or duplicate suite. Add a real gate=code loader
+regression. RED:1 failed; GREEN:88 focused,105 actual amended-step tests. All other W0 scope is unchanged.

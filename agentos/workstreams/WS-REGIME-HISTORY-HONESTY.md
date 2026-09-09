@@ -23,7 +23,7 @@ waves:
     pr: 7015
     next_action: >
       Review the same claude/hmm-regime-research-20260909 carrier, conclude applicable checks, then prove
-      normal nightly adoption. Local87-test and real committed-input CLI proof are not PROVEN_LIVE.
+      normal nightly adoption. Local88-test and real committed-input CLI proof are not PROVEN_LIVE.
 next_action: >
   Finish exact-head review and current-base compatibility on the existing branch, then follow ordinary
   delivery and natural-production proof without manually advancing a historical or production ledger.
@@ -47,6 +47,10 @@ Evidence: research/artifacts/regime_history_honesty_20260909/recorded_input_cli_
 The first consumer is the actual validator CLI inspection mode; no customer historical-date UI or
 full neural-web propagation is claimed. No worker dialogue or watcher was armed in this slice.
 
-CI closure is limited to the unrun-macro-panels command/dependency in the shared legacy manifest and
+CI closure is limited to the code-gated unrun-scoring-engine command/dependency in the shared legacy manifest and
 removal of the four now-covered baseline rows. No whole-manifest ownership, runner or gate change.
 Independent repaired-source review passed at e4d6bf3; the later CI/test/evidence delta requires review.
+
+The intermediate1269 review passed but exposed the data-health-only registration boundary. The final
+lane repair has88 focused passes and105 passes on the actual amended pytest command; independent
+review of that final manifest/test delta and concluded hosted code packs remain required.

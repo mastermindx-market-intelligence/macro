@@ -611,3 +611,20 @@ def test_hmm_history_suites_are_named_by_real_ci_run_steps():
     for name in ("test_regime_one.py", "test_regime_hmm.py",
                  "test_validate_regime_fwd.py", "test_perception_contracts.py"):
         assert audit._named_by_a_run_step("tests/" + name, blob, frozenset()), name
+
+
+def test_hmm_history_suites_are_in_the_code_gate_not_only_data_health():
+    from pathlib import Path
+    from scripts import audit_unrun_tests as audit
+    from scripts.run_ci_pack import load_legacy_jobs
+    manifest = Path(__file__).resolve().parents[1] / ".github/ci/legacy-jobs.yml"
+    jobs = load_legacy_jobs(manifest, gate="code")
+    for name in ("test_regime_one.py", "test_regime_hmm.py",
+                 "test_validate_regime_fwd.py", "test_perception_contracts.py"):
+        owners = [job for job in jobs if any(
+            audit._named_by_a_run_step("tests/" + name, step.get("run", ""), frozenset())
+            for step in job.definition.get("steps", []))]
+        assert len(owners) == 1, (name, [job.job_id for job in owners])
+        installs = [step.get("run", "") for step in owners[0].definition["steps"]
+                    if "pip install" in step.get("run", "")]
+        assert len(installs) == 1 and "hmmlearn==0.3.3" in installs[0]

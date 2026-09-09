@@ -19,7 +19,7 @@ changed:
 verified:
   - claim: Existing and added model, reader, CLI, and append tests pass.
     command: python3 -B -m pytest tests/test_regime_one.py tests/test_regime_hmm.py tests/test_validate_regime_fwd.py tests/test_perception_contracts.py -q
-    result: 87 passed after overflow repair, four rounding-boundary cases and RED-to-GREEN real-CI registration; numerical thread counts1; sparse-checkout data guard retained.
+    result: 88 passed after overflow repair, four rounding-boundary cases and RED-to-GREEN code-gate registration; numerical thread counts1; sparse-checkout data guard retained.
   - claim: Actual CLI reads committed legacy records and refuses missing dates without writing.
     command: Existing validator main/parser over a temporary mount of the exact477b9c3 ledger; source and before/after hashes in recorded_input_cli_proof.json.
     result: 40 source rows; first/last inspections exit0 as legacy_record, missing date exit1; bytes unchanged and no output files created.
@@ -62,3 +62,14 @@ Release audit discovered the four suites were grandfathered CI-dark. One existin
 all four, its HMM dependency is declared, and exactly four baseline entries were removed. The new
 registration regression failed before the manifest repair and passed after it. Planner validates210
 existing jobs; this is not remote execution proof. Receipt: review_and_ci_registration.json.
+
+## Final CI-lane correction
+R3 at1269 passed statically but identified that unrun-macro-panels is gate:data, not a PR precondition.
+Sol restored that data-health job exactly and moved the four suites plus their HMM dependency into
+the existing gate:code unrun-scoring-engine job. The new real code-gate-loader test failed before
+this correction and passed after it. Final focused suite88 passed; actual amended command with the
+pre-existing spotlight suite105 passed. Code-only manifest validates137 jobs; remote execution is
+still unproven. code_gate_registration.json records the separate measurements.
+New protected procedure63e3ddec6d8819dffe6509f3d13d41f2e94b9709 was atomically reloaded for review,
+commission and closeout; Skillpack1.0.1/bootstrap1 compatible. R2/R3 reviewers are terminal and exited.
+The final code-lane delta needs its own narrow independent review; do not infer PASS from R3.
