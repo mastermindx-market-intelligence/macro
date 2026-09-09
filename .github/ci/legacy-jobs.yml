@@ -13924,10 +13924,39 @@ jobs:
       - "templates/_curve_panel.html.j2"
       - "tests/test_macro_rates_curves_route.py"
       # Explicit widening: T10 pins these three sources, so the exclusive job
-      # must fire when they change. Disclose in the PR body (R7).
+      # must fire when they change. Disclose in the PR body (R7). Adding
+      # yield_curve / build_bonds pulls their import closure; contract-delta
+      # requires those files in this job's paths (widening is the safe
+      # direction).
       - "templates/bonds.html.j2"
       - "scripts/build_bonds.py"
       - "engine/yield_curve.py"
+      - "collectors/base.py"
+      - "collectors/fred.py"
+      - "engine/bond_compass.py"
+      - "engine/bond_cross_asset.py"
+      - "engine/bonds.py"
+      - "engine/bonds_alerts.py"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/credit_cycle.py"
+      - "engine/cross_asset.py"
+      - "engine/cross_asset_trend.py"
+      - "engine/fed_path.py"
+      - "engine/i18n.py"
+      - "engine/indicators.py"
+      - "engine/inputs.py"
+      - "engine/intl_bonds.py"
+      - "engine/intl_risk.py"
+      - "engine/ird_velocity.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/total_return.py"
+      - "engine/treasury_supply.py"
+      - "engine/validation.py"
+      - "lib/forex_link.py"
+      - "lib/illus.py"
+      - "lib/store.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:

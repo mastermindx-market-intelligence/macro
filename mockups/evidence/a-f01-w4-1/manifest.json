@@ -24,57 +24,75 @@
     }
   },
   "excluded": [],
-  "generated_at": "2026-09-09T11:59:15Z",
+  "generated_at": "2026-09-09T14:10:00Z",
   "honesty": {
     "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
     "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
-    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them",
+    "merge_day": "macro_rates_curves.html is the committed snapshot as-is (series absent, availability current) — what readers see on merge day.",
+    "steady_state": "macro_rates_curves.steady.html is capture-only. synthetic history — not a real nightly. Series built by _cmt_series_block over 45 synthetic calendar days ending at the snapshot's own us3m…us30y levels."
   },
   "outcome": "captured",
   "pages": [
     {
       "console_errors": [
         {
-          "source_url": "http://127.0.0.1:57046/fonts/Inter-600.woff2",
+          "source_url": "http://127.0.0.1:60258/fonts/Inter-600.woff2",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:57046/fonts/Inter-700.woff2",
+          "source_url": "http://127.0.0.1:60258/fonts/Inter-400.woff2",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:57046/fonts/Inter-400.woff2",
+          "source_url": "http://127.0.0.1:60258/fonts/Inter-700.woff2",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:57046/fonts/Inter-500.woff2",
+          "source_url": "http://127.0.0.1:60258/account.js?v=20260814-sf-inter-font-upgrade",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:57046/fonts/Inter-800.woff2",
+          "source_url": "http://127.0.0.1:60258/terminal_overlay.js",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:60258/fonts/Inter-500.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:60258/fonts/Inter-800.woff2",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         }
       ],
       "failed_responses": [
         {
           "status": 404,
-          "url": "http://127.0.0.1:57046/fonts/Inter-600.woff2"
+          "url": "http://127.0.0.1:60258/fonts/Inter-600.woff2"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:57046/fonts/Inter-700.woff2"
+          "url": "http://127.0.0.1:60258/fonts/Inter-400.woff2"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:57046/fonts/Inter-400.woff2"
+          "url": "http://127.0.0.1:60258/fonts/Inter-700.woff2"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:57046/fonts/Inter-500.woff2"
+          "url": "http://127.0.0.1:60258/account.js?v=20260814-sf-inter-font-upgrade"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:57046/fonts/Inter-800.woff2"
+          "url": "http://127.0.0.1:60258/terminal_overlay.js"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:60258/fonts/Inter-500.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:60258/fonts/Inter-800.woff2"
         }
       ],
       "gaps": [
@@ -122,21 +140,21 @@
         }
       ],
       "metrics": {
-        "asof_present": false,
+        "asof_present": true,
         "by_viewport": {
           "desktop": {
-            "document_height_px": 5036,
+            "document_height_px": 4757,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 13849,
+            "document_height_px": 13530,
             "elements_wider_than_viewport": 22,
             "horizontal_overflow": false
           }
         },
         "console_error_count": 1,
-        "document_height_px": 5036,
+        "document_height_px": 4757,
         "duplicate_heading_texts": [],
         "elements_wider_than_viewport": 0,
         "heading_counts": {
@@ -156,7 +174,7 @@
           "viewport": "desktop"
         },
         "panel_count": 2,
-        "payload_bytes_total": 541890,
+        "payload_bytes_total": 379261,
         "raw_slug_hit_count": 1,
         "raw_slug_hits": [
           "term_premium_10y"
@@ -167,7 +185,7 @@
         "source_present": false,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 1711
+        "visible_word_count": 1663
       },
       "page_id": "macro_rates_curves.html",
       "registry_route": "/macro_rates_curves.html",
@@ -178,13 +196,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 838457,
+          "bytes": 820241,
           "captured": true,
-          "file": "af7f56f60223fed3.png",
+          "file": "ec7da783f075e8ae.png",
           "force_state": null,
-          "height": 5036,
+          "height": 4757,
           "locale": "en",
-          "sha256": "af7f56f60223fed3bce3c9c4af5b6496d08a8ce753641349d55aee3b95917699",
+          "sha256": "ec7da783f075e8ae4591536761fc9ff43c888b0c50c20aa7fc043859b5ece0a6",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -195,13 +213,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 831052,
+          "bytes": 807494,
           "captured": true,
-          "file": "c2d2181e0918a54a.png",
+          "file": "f7e7345058e315e9.png",
           "force_state": null,
-          "height": 5036,
+          "height": 4757,
           "locale": "en",
-          "sha256": "c2d2181e0918a54ae94eaf3436d696b28d70088b4cf6486e68d59d63ababbf88",
+          "sha256": "f7e7345058e315e9c0cc5127666e7dc416effd0a7834dcef5680598cf4e40e60",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -212,13 +230,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 871071,
+          "bytes": 871293,
           "captured": true,
-          "file": "1181ecf96729a8c7.png",
+          "file": "973496080059a612.png",
           "force_state": null,
-          "height": 4890,
+          "height": 4648,
           "locale": "zh",
-          "sha256": "1181ecf96729a8c770f15fdab9e97b13e618bbadbae8093bf5655a8ce2406265",
+          "sha256": "973496080059a6121cedb3467433ee89a052d5da2dfae7c0c506136e56a041ff",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -229,13 +247,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 866254,
+          "bytes": 862709,
           "captured": true,
-          "file": "2e9252355f723bc0.png",
+          "file": "000a129a96ba7455.png",
           "force_state": null,
-          "height": 4890,
+          "height": 4648,
           "locale": "zh",
-          "sha256": "2e9252355f723bc0edc41823b69d99c4f111f562dcbb01f11479ce3b34eb671d",
+          "sha256": "000a129a96ba7455fec6e68f728507998c1af1720fca0ce62ac0d44ad544b146",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -246,13 +264,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 1085693,
+          "bytes": 1054081,
           "captured": true,
-          "file": "f6af5a831c8055ca.png",
+          "file": "1842cf8051d5dad8.png",
           "force_state": null,
-          "height": 13849,
+          "height": 13530,
           "locale": "en",
-          "sha256": "f6af5a831c8055ca720e515cf5003a158340a63edb95cc3ef666af5ea7117a02",
+          "sha256": "1842cf8051d5dad833ec4da925e1c3e8460999412441f306724d2c28eae7ff41",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -263,13 +281,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 1084907,
+          "bytes": 1049269,
           "captured": true,
-          "file": "85425cc29997dda0.png",
+          "file": "4cf10d52725a28dd.png",
           "force_state": null,
-          "height": 13849,
+          "height": 13530,
           "locale": "en",
-          "sha256": "85425cc29997dda091b2918f5e8ad0be69ff9c14466382665490e5e0e813a3f0",
+          "sha256": "4cf10d52725a28dd8699e626bd709016678810e2e8f0012bfba1b94c35352ad8",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -280,13 +298,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 1108626,
+          "bytes": 1092867,
           "captured": true,
-          "file": "0de59900530444e8.png",
+          "file": "4fdb0ba0e11d39be.png",
           "force_state": null,
-          "height": 13148,
+          "height": 12902,
           "locale": "zh",
-          "sha256": "0de59900530444e8b5bf78e8a966da8e75c332748417f9792182ced50a4941c2",
+          "sha256": "4fdb0ba0e11d39be57a7ab4234c76767f9fe34578540c6c2465bcebbf44d4d01",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -297,64 +315,81 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 1109265,
+          "bytes": 1093280,
           "captured": true,
-          "file": "7bf1aaaa8b90a05d.png",
+          "file": "ae811207a2a5b875.png",
           "force_state": null,
-          "height": 13148,
+          "height": 12902,
           "locale": "zh",
-          "sha256": "7bf1aaaa8b90a05d2381d461e45c91c20185a872a9fad30e20a7e453856247f1",
+          "sha256": "ae811207a2a5b875ee8490c69d4c7f07d53d204fba0755d0457db2e01ea685ec",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
           "viewport_width": 390,
           "width": 390
         }
-      ]
+      ],
+      "capture_note": "Merge-day state: committed snapshot exactly as-is (series ABSENT, availability CURRENT)."
     },
     {
       "console_errors": [
         {
-          "source_url": "http://127.0.0.1:57046/fonts/Inter-600.woff2",
+          "source_url": "http://127.0.0.1:60258/fonts/Inter-400.woff2",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:57046/fonts/Inter-400.woff2",
+          "source_url": "http://127.0.0.1:60258/fonts/Inter-600.woff2",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:57046/fonts/Inter-700.woff2",
+          "source_url": "http://127.0.0.1:60258/fonts/Inter-700.woff2",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:57046/fonts/Inter-500.woff2",
+          "source_url": "http://127.0.0.1:60258/account.js?v=20260814-sf-inter-font-upgrade",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:57046/fonts/Inter-800.woff2",
+          "source_url": "http://127.0.0.1:60258/terminal_overlay.js",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:60258/fonts/Inter-500.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:60258/fonts/Inter-800.woff2",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         }
       ],
       "failed_responses": [
         {
           "status": 404,
-          "url": "http://127.0.0.1:57046/fonts/Inter-600.woff2"
+          "url": "http://127.0.0.1:60258/fonts/Inter-400.woff2"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:57046/fonts/Inter-400.woff2"
+          "url": "http://127.0.0.1:60258/fonts/Inter-600.woff2"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:57046/fonts/Inter-700.woff2"
+          "url": "http://127.0.0.1:60258/fonts/Inter-700.woff2"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:57046/fonts/Inter-500.woff2"
+          "url": "http://127.0.0.1:60258/account.js?v=20260814-sf-inter-font-upgrade"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:57046/fonts/Inter-800.woff2"
+          "url": "http://127.0.0.1:60258/terminal_overlay.js"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:60258/fonts/Inter-500.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:60258/fonts/Inter-800.woff2"
         }
       ],
       "gaps": [
@@ -402,202 +437,222 @@
         }
       ],
       "metrics": {
-        "asof_present": false,
+        "asof_present": true,
         "by_viewport": {
           "desktop": {
-            "document_height_px": 967,
+            "document_height_px": 5059,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 1143,
-            "elements_wider_than_viewport": 0,
+            "document_height_px": 13872,
+            "elements_wider_than_viewport": 22,
             "horizontal_overflow": false
           }
         },
         "console_error_count": 1,
-        "document_height_px": 967,
+        "document_height_px": 5059,
         "duplicate_heading_texts": [],
         "elements_wider_than_viewport": 0,
         "heading_counts": {
           "h1": 1,
-          "h2": 2,
-          "h3": 0,
-          "h4": 0,
+          "h2": 3,
+          "h3": 4,
+          "h4": 2,
           "h5": 0,
           "h6": 0
         },
         "horizontal_overflow": false,
-        "long_paragraph_count": 0,
+        "long_paragraph_count": 1,
         "measured_in": {
           "access": "anonymous",
           "locale": "en",
           "theme": "dark",
           "viewport": "desktop"
         },
-        "panel_count": 0,
-        "payload_bytes_total": 607610,
-        "raw_slug_hit_count": 0,
-        "raw_slug_hits": [],
+        "panel_count": 2,
+        "payload_bytes_total": 352789,
+        "raw_slug_hit_count": 1,
+        "raw_slug_hits": [
+          "term_premium_10y"
+        ],
         "request_count": 17,
         "screenshot_completion": 1.0,
-        "section_count": 3,
+        "section_count": 6,
         "source_present": false,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 177
+        "visible_word_count": 1725
       },
-      "page_id": "macro_rates_curves.degraded.html",
-      "registry_route": "/macro_rates_curves.degraded.html",
-      "route": "/macro_rates_curves.degraded.html",
+      "page_id": "macro_rates_curves.steady.html",
+      "registry_route": "/macro_rates_curves.steady.html",
+      "route": "/macro_rates_curves.steady.html",
       "route_kind": "explicit_override",
       "states": [
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 266245,
+          "bytes": 852504,
           "captured": true,
-          "file": "bbcd39b6e6f22a42.png",
+          "file": "f2dd0bf805e0007e.png",
           "force_state": null,
-          "height": 967,
+          "height": 5059,
           "locale": "en",
-          "sha256": "bbcd39b6e6f22a429d131854b5a8605de8beaeceed27b1d68e31762255491a50",
+          "sha256": "f2dd0bf805e0007edd39b899229394ad77a485343d7379472eeb012794597898",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
           "viewport_width": 1440,
-          "width": 1440
+          "width": 1440,
+          "synthetic_history_label": "synthetic history — not a real nightly",
+          "notes": "synthetic history — not a real nightly"
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 238811,
+          "bytes": 844413,
           "captured": true,
-          "file": "5f6e62be829873ea.png",
+          "file": "84be3a8df433ef87.png",
           "force_state": null,
-          "height": 967,
+          "height": 5059,
           "locale": "en",
-          "sha256": "5f6e62be829873eafd2daee7fe116a9c18af93c1ebc16d83ef9c5f92a90901db",
+          "sha256": "84be3a8df433ef87601da1c649f61d3a880ab03e3ee405f76b0ca0c7a186f805",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
           "viewport_width": 1440,
-          "width": 1440
+          "width": 1440,
+          "synthetic_history_label": "synthetic history — not a real nightly",
+          "notes": "synthetic history — not a real nightly"
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 277150,
+          "bytes": 900450,
           "captured": true,
-          "file": "b475ce4f650ecf4c.png",
+          "file": "42f26539f5e47997.png",
           "force_state": null,
-          "height": 967,
+          "height": 4928,
           "locale": "zh",
-          "sha256": "b475ce4f650ecf4ce503092fe6dd4d18c25ef36626eb08235d2618946ed3fdb9",
+          "sha256": "42f26539f5e47997132eb90b14d4a927735cf7b3e70075df6487a2fbf2aee7f4",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
           "viewport_width": 1440,
-          "width": 1440
+          "width": 1440,
+          "synthetic_history_label": "synthetic history — not a real nightly",
+          "notes": "synthetic history — not a real nightly"
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 250438,
+          "bytes": 895389,
           "captured": true,
-          "file": "b843b6c93bff2d58.png",
+          "file": "fb5e3cebe59d48ee.png",
           "force_state": null,
-          "height": 967,
+          "height": 4928,
           "locale": "zh",
-          "sha256": "b843b6c93bff2d58bee5c389698584f727fd7fe7342ff5c9ef2724b7a10a575f",
+          "sha256": "fb5e3cebe59d48ee8f49eb76a7a30bdcd3de30ff15ce62f1222dc77c73d3bd97",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
           "viewport_width": 1440,
-          "width": 1440
+          "width": 1440,
+          "synthetic_history_label": "synthetic history — not a real nightly",
+          "notes": "synthetic history — not a real nightly"
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 171003,
+          "bytes": 1091087,
           "captured": true,
-          "file": "d23bf2dc2dca507b.png",
+          "file": "c2a71179facfa227.png",
           "force_state": null,
-          "height": 1143,
+          "height": 13872,
           "locale": "en",
-          "sha256": "d23bf2dc2dca507bcba53771d0f8cb41481c5c1c05d817fc459f85ba887a0cce",
+          "sha256": "c2a71179facfa227b7efe3c05b813dbd6231a7ab003cd3302fa4aa74c5b10dad",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
           "viewport_width": 390,
-          "width": 390
+          "width": 390,
+          "synthetic_history_label": "synthetic history — not a real nightly",
+          "notes": "synthetic history — not a real nightly"
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 159301,
+          "bytes": 1092599,
           "captured": true,
-          "file": "024b1cdc197353a2.png",
+          "file": "2e36804cf27dca68.png",
           "force_state": null,
-          "height": 1143,
+          "height": 13872,
           "locale": "en",
-          "sha256": "024b1cdc197353a2a31c793ece2fc0cb6c5cba27fccfc1688a1adf0c68b44fb3",
+          "sha256": "2e36804cf27dca682819c0ce4ed2798c3f21f6b765a47e273a66e45928cb6fde",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
           "viewport_width": 390,
-          "width": 390
+          "width": 390,
+          "synthetic_history_label": "synthetic history — not a real nightly",
+          "notes": "synthetic history — not a real nightly"
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 178386,
+          "bytes": 1133939,
           "captured": true,
-          "file": "e8f0576fcb3ab320.png",
+          "file": "7b358b8fcb177b06.png",
           "force_state": null,
-          "height": 1054,
+          "height": 13243,
           "locale": "zh",
-          "sha256": "e8f0576fcb3ab320a999164a58637cf3c1fdad17e5682afa6d56c75ea02c9133",
+          "sha256": "7b358b8fcb177b06bfc9e000dcdc0ef4d25855095255ec224a4f83e12563eee3",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
           "viewport_width": 390,
-          "width": 390
+          "width": 390,
+          "synthetic_history_label": "synthetic history — not a real nightly",
+          "notes": "synthetic history — not a real nightly"
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 167734,
+          "bytes": 1136685,
           "captured": true,
-          "file": "c301d2811eea656c.png",
+          "file": "3cf81a75f347f587.png",
           "force_state": null,
-          "height": 1054,
+          "height": 13243,
           "locale": "zh",
-          "sha256": "c301d2811eea656cba7af580ca8a32b98b315d489c774740d508f946aebf3203",
+          "sha256": "3cf81a75f347f587f66da39d4f7c79a641c89082dac64ae3755ccf3028eaab77",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
           "viewport_width": 390,
-          "width": 390
+          "width": 390,
+          "synthetic_history_label": "synthetic history — not a real nightly",
+          "notes": "synthetic history — not a real nightly"
         }
-      ]
+      ],
+      "synthetic_history_label": "synthetic history — not a real nightly",
+      "capture_note": "Steady state: series block emitted by engine.market_os.macro_workspaces.rates_curves._cmt_series_block over a labelled synthetic 45-day history ending at the committed snapshot's own CMT levels. Not a real nightly."
     }
   ],
   "schema": "mastermind.p0_evidence.v2",
   "selection": {
     "explicit_routes": [
       "/macro_rates_curves.html",
-      "/macro_rates_curves.degraded.html"
+      "/macro_rates_curves.steady.html"
     ],
-    "max_pages": 30,
+    "max_pages": 2,
     "mode": "explicit_routes",
     "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
     "priority": null,
@@ -609,10 +664,10 @@
   "target": {
     "base_url": null,
     "kind": "site_dir",
-    "resolved_gitdir_or_none": "/Users/chriswong/lanes/repos/macro/.git/worktrees/mo-ext-fix-7008-0349eb4f0440",
-    "resolved_sha_or_none": "754608ad094dba0bff92673e1302878ba4366fc5",
-    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/lanes/repos/macro/.git/worktrees/mo-ext-fix-7008-0349eb4f0440 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
-    "site_dir": "/Volumes/STORAGE/agent-workspaces/lanes/tmp/mo-7008-site"
+    "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-ext-fix-7008-c9563e2ac12888ec",
+    "resolved_sha_or_none": "5eebba5d462ad765d4bfe33b1af323f816ef9485",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-ext-fix-7008-c9563e2ac12888ec (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mo-ext-fix-7008-c9563e2ac12888ec/.scratch-7008/evidence-site"
   },
   "tool": {
     "module_ref": "scripts/capture_page_evidence.py",
