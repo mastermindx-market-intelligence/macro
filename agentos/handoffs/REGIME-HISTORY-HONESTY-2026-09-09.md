@@ -19,13 +19,14 @@ changed:
 verified:
   - claim: Existing and added model, reader, CLI, and append tests pass.
     command: python3 -B -m pytest tests/test_regime_one.py tests/test_regime_hmm.py tests/test_validate_regime_fwd.py tests/test_perception_contracts.py -q
-    result: 80 passed; numerical thread counts1; sparse-checkout data guard retained.
+    result: 82 passed after the independently identified oversized-integer regression was reproduced and repaired; numerical thread counts1; sparse-checkout data guard retained.
   - claim: Actual CLI reads committed legacy records and refuses missing dates without writing.
     command: Existing validator main/parser over a temporary mount of the exact477b9c3 ledger; source and before/after hashes in recorded_input_cli_proof.json.
     result: 40 source rows; first/last inspections exit0 as legacy_record, missing date exit1; bytes unchanged and no output files created.
   - claim: Named HMM source paths did not move between research and current main pins.
     command: git diff c3d7f1d4149176e35abf6077c18c96513abe6600 477b9c3f449e451063634f1078fc6ce47e209648 -- engine/regime_one.py engine/quad_vector.py scripts/validate_regime_fwd.py
     result: Empty delta on those paths.
+prs: [7015]
 unverified:
   - claim: Independent exact-head review and concluded integration checks.
     what_would_verify: Reviewer return plus current candidate CI and source-continuity receipts on the same PR.
@@ -55,4 +56,4 @@ danger_areas:
 
 This is a recoverable CI/review checkpoint, not a claim the program is finished or a runtime liveness record.
 Protected procedure: Mastermind686af274d8ae1558f3f3ae35e0b3aae68be80a01, Skillpack1.0.1/bootstrap1.
-No delegated receiver, Executive Job, worker ACK/START, or reciprocal watcher was created.
+Finite read-only technical reviews were attempted: Astra failed with unsupported-client400; two Sonnet calls returned empty results; Terra returned one actionable overflow finding. All those processes exited and no watcher or Executive Job was created. The finding was reproduced with two failing tests and repaired; exact repaired-head review is owed.

@@ -528,3 +528,56 @@ a customer historical-date browser interface, a point-in-time eligibility certif
 forecast/portfolio edge. Full neural-web regime integration remains the broader SPEC_ONLY architecture.
 Continuity lives in `WS:REGIME-HISTORY-HONESTY` and `DSC:REGIME-FILTERED-HISTORY-USES-LATER-FIT`.
 The exact next step is candidate review/checks and ordinary release, then natural nightly production proof.
+
+## Measured continuation findings — real inputs, not only synthetic examples
+
+The original 71.11-percentage-point reconstruction change is a synthetic falsifier, not a measured
+financial effect. A new diagnostic uses the exact477b9c3 committed regime frame (25,748 raw rows,
+15,467 usable fitted rows). Withholding its last63 observations moves the fit cutoff fromSeptember8
+toJune11;184 of189 shared reconstructed dates change at published precision. The maximum change is
+**2.55 percentage points** onDecember29,2025 (Q1 changes0.6386 ->0.6641). This is a same-frame fit-
+sensitivity measurement, not an as-issued PIT replay, causal forecast, or portfolio-loss calculation.
+Full receipt: `real_frame_prefix_diagnostic.json` in the existing research evidence directory.
+
+The candidate and its parent were also run on the same real committed frame. Current probabilities,
+modal label, present states, observation count, smoothing flag, and252 reconstructed historical rows
+are exactly equal. W0 changes their interpretation/provenance and ledger handling, not HMM predictions.
+Receipt: `real_frame_numerical_parity.json`; this does not establish all-portfolio behavioral equivalence.
+
+### Fresh support census
+The existing coverage assessor was run unchanged on the actual59,880-row target track record through
+September3. The old bull/bear/choppy `regime_at_entry` is fully covered and passes the support gate;
+the other five richer axes are only about0.7% covered and still fail. Volatility has one observed state;
+several other axes have only one or two months in their thinnest state. These are fresh measurements,
+not a repetition of the older0.4% August statistic. No outcomes were fitted and the prior scoped null
+was not reopened. Receipt: `current_conditioning_coverage.json`.
+
+### A concrete connection for the next useful slice
+Current `world_state._compose_regime` drops quad_vector/regime_one probability context; the actual
+brief_context market-core projection then keeps only quad,confidence,transition_state,flip_margin.
+A pinned-function probe confirms the first omission. The W1 proposal now names both existing projection
+repairs and one actual briefing/dossier consumer, not another model or bus. Receipt:
+`world_state_projection_gap.json`; plan: `REGIME_CONTEXT_W1_VERTICAL_PROPOSAL_2026-09-09.md`.
+
+### Existing forecast comparator, exploratory only
+On the same currently committed frame, the existing horizon resolver can mature24 of the40 saved calls.
+The saved HMM modal label matches the +21-frame-row legacy label12 times; persistence of the current
+legacy label matches10 times. This is a diagnostic comparator, not independent prospective evidence:
+origin/target legacy labels are not authenticated as-issued here, horizons overlap, and the small sample
+was not a fresh preregistered evaluation. No significance, live GO, return edge, or promotion is claimed.
+The individual rows and explicit caveats are in `exploratory_persistence_comparator.json`.
+W2 must preserve actual issuance and target identity, explicit horizon units, and comparison against
+persistence on the same information set; a uniform-state baseline alone is not enough.
+
+### Independent review and bounded repair
+A bounded read-only Terra review of0aa432bf found one introduced issue: a401-digit integer probability
+could overflow during `math.isfinite` conversion rather than produce explicit invalid-record evidence.
+Two tests reproduced the failure for positive/negative oversized integers. Checking the0..1 range first
+closes that path without changing valid probabilities. The focused suite now passes82 tests; the actual
+committed-input read-only CLI proof and HMM numerical parity were refreshed against the repaired bytes.
+Independent review of the repaired head and concluded CI remain release requirements.
+
+The first Astra review attempt failed with an explicit model/client-version400; two Sonnet invocations
+exited without substantive result text and were not counted as passes. No CLI was upgraded and no
+credentials, account, permissions, or subscription were changed. All such review processes terminated;
+no Executive Job or watcher was inferred. `independent_review_and_repair.json` preserves the actual return.

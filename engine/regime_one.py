@@ -952,7 +952,8 @@ def _valid_hmm_prediction(row: dict) -> bool:
     p = row.get("p_quad_filtered")
     if not isinstance(p, dict) or set(p) != set(_QUADS):
         return False
-    if any(type(v) not in (int, float) or not math.isfinite(v) or not 0 <= v <= 1
+    # Range-check integers before float conversion: oversized JSON ints must refuse.
+    if any(type(v) not in (int, float) or not 0 <= v <= 1 or not math.isfinite(v)
            for v in p.values()):
         return False
     modal = row.get("pred_modal_quad")

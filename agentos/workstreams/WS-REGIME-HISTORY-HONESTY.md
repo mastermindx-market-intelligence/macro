@@ -20,9 +20,10 @@ waves:
   - id: W0
     title: Historical basis disclosure, existing-ledger read consumer, and immutable prediction guards
     status: in_progress
+    pr: 7015
     next_action: >
       Review the same claude/hmm-regime-research-20260909 carrier, conclude applicable checks, then prove
-      normal nightly adoption. Local80-test and real committed-input CLI proof are not PROVEN_LIVE.
+      normal nightly adoption. Local82-test and real committed-input CLI proof are not PROVEN_LIVE.
 next_action: >
   Finish exact-head review and current-base compatibility on the existing branch, then follow ordinary
   delivery and natural-production proof without manually advancing a historical or production ledger.

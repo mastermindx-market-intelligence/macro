@@ -27,3 +27,5 @@ actual investment loss. W0 preserves numeric estimates and adds explicit reconst
 The inspected main-pinned prediction ledger contains40 rows, June30–September8, without historical
 issuance/model metadata; these remain useful saved observations, not retroactively certified forecasts.
 The original research's HMM-baseline description was corrected: main passes0.25, not the helper's0.5.
+
+A same-committed-frame diagnostic now confirms184/189 shared historical dates change after63 later rows are added; maximum delta0.0255. This is not an as-issued PIT replay or a financial-loss estimate. Fresh track-record support remains insufficient for all five rich axes (59,880 rows, approximately0.7% coverage). See the real_frame_prefix_diagnostic and current_conditioning_coverage research receipts.

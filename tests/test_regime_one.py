@@ -571,3 +571,17 @@ def test_hmm_accrual_never_appends_a_record_its_reader_would_refuse(tmp_path, mo
     before = p.read_bytes()
     assert R.accrue_hmm_row(tmp_path) is False
     assert p.read_bytes() == before
+
+
+@pytest.mark.parametrize("oversized", [10**400, -(10**400)], ids=["huge-positive", "huge-negative"])
+def test_hmm_oversized_integer_refuses_in_reader_and_append(tmp_path, monkeypatch, oversized):
+    row = _saved_hmm_row()
+    row["p_quad_filtered"]["Q1"] = oversized
+    p = _write_hmm_test_ledger(tmp_path, [row])
+    before = p.read_bytes()
+    out = R.read_hmm_issuance(row["asof"], tmp_path)
+    assert out["status"] == "invalid_record"
+    assert out["recorded_prediction"] is None
+    _stub_hmm_accrual(tmp_path, monkeypatch, "2026-07-02")
+    assert R.accrue_hmm_row(tmp_path) is False
+    assert p.read_bytes() == before

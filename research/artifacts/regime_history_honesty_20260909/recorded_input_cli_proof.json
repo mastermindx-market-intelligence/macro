@@ -67,7 +67,7 @@
     }
   ],
   "candidate_source_sha256": {
-    "engine/regime_one.py": "87ac138f72eec82ece48e0f69eafb452debf51ae126a5e237fbbcf21520087e0",
+    "engine/regime_one.py": "b36e1c10da7db6a4a120a85fceae056f9e7272214fe25bb6be9de85b06f1ced2",
     "engine/quad_vector.py": "8c9468ab5b9fc385855e03392508aced7c38eb9eb28b62278cce4f038028f59e",
     "scripts/validate_regime_fwd.py": "967737c5bf6b2ee29bdd7a5a7c796bd311633e3da1f33bc466754297a607e60c"
   }
