@@ -68,9 +68,9 @@ h3 { font-size:15px; margin:0 0 8px; }
 .armed-yes { color:var(--ink-up, var(--up)); font-weight:700; }
 .armed-no  { color:var(--muted); }
 
-.stale-ok   { color:var(--ink-up, var(--up)); }
+.stale-ok   { color:var(--ink-ok, var(--ok)); }
 .stale-warn { color:var(--ink-warn, var(--warn)); }
-.stale-old  { color:var(--ink-down, var(--down)); }
+.stale-old  { color:var(--ink-act, var(--act)); }
 
 .source-expand { cursor:pointer; color:var(--ink-link, var(--link)); font-size:11px; user-select:none; }
 .source-detail { display:none; background:var(--panel2); border-radius:7px; padding:8px 10px; font-size:11.5px; color:var(--muted); margin-top:4px; }

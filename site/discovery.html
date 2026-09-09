@@ -63,7 +63,7 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=f41f9a21">
+<link rel="stylesheet" href="theme.css?v=63df1679">
 <link rel="stylesheet" href="assets/css/e01c8803.css?v=e01c8803">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
 <link rel="preload" as="style" href="navigation-refresh.css?v=c299c324">
@@ -197,6 +197,7 @@
         </div>
         <a href="intl_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet cross-market · sectors</span><span class="l-zh">Prophet 跨市场 · 板块</span></span></a>
         <a href="baskets_intl.html"><span class="submenu-icon submenu-icon-baskets" aria-hidden="true"></span><span class="l-en">Thematic Baskets</span><span class="l-zh">主题篮子</span><span class="d"><span class="l-en">Cross-country theme baskets · ex-US</span><span class="l-zh">跨国主题篮子 · 除美</span></span></a>
+        <a href="sanctions_map.html"><span class="submenu-icon submenu-icon-policy" aria-hidden="true"></span><span class="l-en">Sanctions Map</span><span class="l-zh">制裁地图</span><span class="d"><span class="l-en">Where US sanctions point · OFAC public list</span><span class="l-zh">美国制裁指向何处 · OFAC 公开名单</span></span></a>
       </div>
     </div>
     <div class="nav-dd">
@@ -363,6 +364,15 @@
     
     <div class="bz-card">
       <div class="bz-head">
+        <span class="tk"><a href="stock.html#WULF">WULF</a></span>
+        <span class="bz-score">+0.59</span>
+      </div>
+      <div class="muted xs" style="margin:1px 0 6px">WULF · <span class="l-en">—</span><span class="l-zh">—</span> · α +0.98 #52/222</div>
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span class="sgchip sg-confirmed" data-tip-en="Confirmed entry signal — it fired in the last few days and is still building (not overbought, not rolling over). The board only labels a name buyable when this fires — never off trend/momentum alone." data-tip-zh="入场信号已确认：最近几天刚触发，还在往上走（没超买，也没回落）。"><span class="l-en">Buy zone</span><span class="l-zh">买入区</span></span><span class="gchip ex-na">—</span><span class="echip tp-extended"><span class="l-en">Extended</span><span class="l-zh">过热</span></span><span class="cchips"></span></div>
+    </div>
+    
+    <div class="bz-card">
+      <div class="bz-head">
         <span class="tk"><a href="stock.html#LEA">LEA</a></span>
         <span class="bz-score">+0.57</span>
       </div>
@@ -425,7 +435,7 @@
     </div>
     
   </div>
-  <p class="muted sm note"><span class="l-en">+ 33 more name(s) with a fresh confluence buy below conviction 0.3 — see the “buy” column in the table.</span><span class="l-zh">另有 33 个已触发共振买入但信念低于 0.3 的标的 — 见下表“买入”列。</span></p>
+  <p class="muted sm note"><span class="l-en">+ 31 more name(s) with a fresh confluence buy below conviction 0.3 — see the “buy” column in the table.</span><span class="l-zh">另有 31 个已触发共振买入但信念低于 0.3 的标的 — 见下表“买入”列。</span></p>
   
 </div>
 
@@ -491,7 +501,7 @@
   <td class="rk">4</td>
   <td><a href="stock.html#SNDK"><b>SNDK</b></a> <span class="muted sm">Sandisk</span><br><span class="muted xs"><span class="l-en">Information Technology</span><span class="l-zh">信息技术</span></span></td>
   <td><div class="scorecell">
-<span class="abar"><i style="left:50%;width:27.1%;background:var(--up)"></i><i class="mid"></i></span><span class="znum band-strong">+1.63</span></div></td>
+<span class="abar"><i style="left:50%;width:27.1%;background:var(--up)"></i><i class="mid"></i></span><span class="znum band-strong">+1.62</span></div></td>
   <td><span class="sgchip sg-none" data-tip-en="No fresh entry signal — not a buy today. A strong name can still be a hold, or be rolling over." data-tip-zh="没有新的入场信号 — 今天不是买点。强势股也可能只是持有，或者已经在回落。">—</span></td>
   <td><span class="gchip ex-steady" data-tip-en="How stretched the name is against its OWN history: -1.5σ above its 200-day average, 74.0% of its 52-week high. In-trend = a leader that is not stretched; Stretched = far enough above to size down. Tells you how much risk to take, never part of the rank." data-tip-zh="相对自身历史的拉伸程度，仅作风险定位，不计入排名。"><span class="l-en">Steady</span><span class="l-zh">平稳</span> <span class="xs">-1.5σ</span></span></td>
   <td><span class="echip tp-extended"><span class="l-en">Extended</span><span class="l-zh">过热</span></span></td>
@@ -1306,7 +1316,7 @@
   <td><a href="stock.html#RBLX"><b>RBLX</b></a> <span class="muted sm">RBLX</span><br><span class="muted xs"><span class="l-en">—</span><span class="l-zh">—</span></span></td>
   <td><div class="scorecell">
 <span class="abar"><i style="right:50%;width:20.6%;background:var(--down)"></i><i class="mid"></i></span><span class="znum band-deeplag">-1.24</span></div></td>
-  <td><span class="sgchip sg-confirmed" data-tip-en="Confirmed entry signal — it fired in the last few days and is still building (not overbought, not rolling over). The board only labels a name buyable when this fires — never off trend/momentum alone." data-tip-zh="入场信号已确认：最近几天刚触发，还在往上走（没超买，也没回落）。"><span class="l-en">Buy zone</span><span class="l-zh">买入区</span></span></td>
+  <td><span class="sgchip sg-none" data-tip-en="No fresh entry signal — not a buy today. A strong name can still be a hold, or be rolling over." data-tip-zh="没有新的入场信号 — 今天不是买点。强势股也可能只是持有，或者已经在回落。">—</span></td>
   <td><span class="gchip ex-na">—</span></td>
   <td><span class="echip tp-laggard"><span class="l-en">Laggard</span><span class="l-zh">落后</span></span></td>
   <td class="convcell"><span class="cchips"></span></td>
@@ -2185,7 +2195,7 @@
             <tr data-grade="steady">
   <td><a href="stock.html#SNDK"><b>SNDK</b></a> <span class="muted sm">Sandisk</span></td>
   <td><div class="scorecell">
-<span class="abar"><i style="left:50%;width:27.1%;background:var(--up)"></i><i class="mid"></i></span><span class="znum band-strong">+1.63</span></div></td>
+<span class="abar"><i style="left:50%;width:27.1%;background:var(--up)"></i><i class="mid"></i></span><span class="znum band-strong">+1.62</span></div></td>
   <td><span class="sgchip sg-none" data-tip-en="No fresh entry signal — not a buy today. A strong name can still be a hold, or be rolling over." data-tip-zh="没有新的入场信号 — 今天不是买点。强势股也可能只是持有，或者已经在回落。">—</span></td>
   <td><span class="gchip ex-steady" data-tip-en="How stretched the name is against its OWN history: -1.5σ above its 200-day average, 74.0% of its 52-week high. In-trend = a leader that is not stretched; Stretched = far enough above to size down. Tells you how much risk to take, never part of the rank." data-tip-zh="相对自身历史的拉伸程度，仅作风险定位，不计入排名。"><span class="l-en">Steady</span><span class="l-zh">平稳</span> <span class="xs">-1.5σ</span></span></td>
   <td><span class="echip tp-extended"><span class="l-en">Extended</span><span class="l-zh">过热</span></span></td>
@@ -4069,7 +4079,7 @@
 
 <div class="panel">
   <p class="muted" style="font-size:12px;margin:0"><span class="l-en">Source: engine/top_picks.py — an alpha-led conviction blend (engine/residual_alpha.py + engine/equity_factors.py + Form-4 insider) over the S&amp;P 1500, validated point-in-time in reports/top-picks-phase0.md. The stretch / exhaustion axis, valuation-vs-own-history chip and cohort banner (engine/extension.py) are DISPLAY-ONLY risk reads — never in the rank: a point-in-time downside test (reports/top-picks-freshness-phase0.md) found no extension screen reduces drawdown, but the parabolic (&gt;2σ own-history) tail is a genuine bubble-pullback hazard, so it is flagged per-name. Ranks recompute daily with prices/filings. A modest, decayed, crowded edge — a research lens with risk context, not a buy list.</span><span class="l-zh">来源：engine/top_picks.py — 覆盖标普 1500 的以阿尔法为主的信念混合（engine/residual_alpha.py + engine/equity_factors.py + Form-4 内部人），已在 reports/top-picks-phase0.md 做点对点验证。拉伸/过热维度、相对自身估值标签与群体横幅（engine/extension.py）均为仅展示的风险读数，不计入排名：点对点下行测试（reports/top-picks-freshness-phase0.md）发现任何拉伸筛选都无法降低回撤，但抛物（相对自身历史&gt;2σ）尾部确为真实的泡沫回撤风险，故逐股标注。排名随价格/披露每日重算。温和、已衰减、拥挤的边际信号 — 带风险背景的研究视角，而非买入清单。</span>
-    <span class="l-en">Generated</span><span class="l-zh">生成于</span> 2026-09-09 08:55 UTC</p>
+    <span class="l-en">Generated</span><span class="l-zh">生成于</span> 2026-09-09 23:18 UTC</p>
 </div>
 
 <script>
@@ -4093,6 +4103,5 @@
 })();
 </script>
 <script src="theme.js?v=53939d13" defer></script>
-<script defer data-whb data-root="" src="wh_banner.js?v=4a53a176"></script>
 </body>
 </html>

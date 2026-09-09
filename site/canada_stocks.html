@@ -56,12 +56,12 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=f41f9a21">
+<link rel="stylesheet" href="theme.css?v=63df1679">
 
 <link rel="stylesheet" href="dashboard-icons.css?v=be32e541">
 <script defer src="dashboard-icons.js?v=8a96e10b"></script>
 <link rel="stylesheet" href="illus.css?v=cbe6a0b4">
-<link rel="stylesheet" href="assets/css/f03170b9.css?v=f03170b9">
+<link rel="stylesheet" href="assets/css/e27acaef.css?v=e27acaef">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
 <link rel="preload" as="style" href="navigation-refresh.css?v=c299c324">
 <link rel="preload" as="style" href="assets/css/3dcb160e.css?v=3dcb160e">
@@ -199,6 +199,7 @@
         </div>
         <a href="intl_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet cross-market · sectors</span><span class="l-zh">Prophet 跨市场 · 板块</span></span></a>
         <a href="baskets_intl.html"><span class="submenu-icon submenu-icon-baskets" aria-hidden="true"></span><span class="l-en">Thematic Baskets</span><span class="l-zh">主题篮子</span><span class="d"><span class="l-en">Cross-country theme baskets · ex-US</span><span class="l-zh">跨国主题篮子 · 除美</span></span></a>
+        <a href="sanctions_map.html"><span class="submenu-icon submenu-icon-policy" aria-hidden="true"></span><span class="l-en">Sanctions Map</span><span class="l-zh">制裁地图</span><span class="d"><span class="l-en">Where US sanctions point · OFAC public list</span><span class="l-zh">美国制裁指向何处 · OFAC 公开名单</span></span></a>
       </div>
     </div>
     <div class="nav-dd">
@@ -321,7 +322,7 @@
   <div class="row">
     <h1><span class="l-en">TSX Stock Dashboard</span><span class="l-zh">标普/TSX 个股看板</span></h1>
     <span style="flex:1"></span>
-    <span class="muted small"><span class="l-en">data through</span><span class="l-zh">数据截至</span> 2026-09-08 · <span class="l-en">built</span><span class="l-zh">生成</span> 2026-09-09 10:06 UTC</span>
+    <span class="muted small"><span class="l-en">data through</span><span class="l-zh">数据截至</span> 2026-09-08 · <span class="l-en">built</span><span class="l-zh">生成</span> 2026-09-09 23:45 UTC</span>
   </div>
   <p class="muted small" style="margin:6px 0 0"><span class="l-en">A shortlist of TSX stocks that look ready to buy, with a suggested buy zone for each. Search any TSX stock in the box above, or click a card for the full breakdown.</span><span class="l-zh">一份看起来可以买入的 TSX 个股短名单，并为每只标注建议买入区间。可在上方搜索框查询任意 TSX 个股，或点击卡片查看完整拆解。</span>
     <a href="canada.html" style="color:var(--ink-link, var(--link));font-weight:600">← <span class="l-en">Canada macro dashboard</span><span class="l-zh">加拿大宏观看板</span></a></p>
@@ -1051,7 +1052,7 @@
 
 <script type="application/json" id="stocktable-data">
 {
-  "rows": [{"_stage": "RIPENING", "alpha": 0.99, "conviction": 31, "days_since_signal": 50, "entry_status": "hold", "group": "setting_up", "name": "ALTIUS MINERALS CORPORATION", "off_high": -2.7, "price": 65.58, "sector": "Materials", "stage": "RIPENING", "ticker": "ALS.TO", "tier": ""}, {"_stage": "RIPENING", "alpha": 0.52, "conviction": 44, "days_since_signal": 8, "entry_status": "buy_soon", "group": "setting_up", "name": "ALTAGAS LTD.", "off_high": -6.9, "price": 53.24, "sector": "Utilities", "stage": "RIPENING", "ticker": "ALA.TO", "tier": ""}, {"_stage": "RIPENING", "alpha": 0.49, "conviction": 28, "days_since_signal": 22, "entry_status": "hold", "group": "setting_up", "name": "SUNCOR ENERGY INC.", "off_high": -1.7, "price": 93.71, "sector": "Energy", "stage": "RIPENING", "ticker": "SU.TO", "tier": ""}, {"_stage": "RIPENING", "alpha": 0.33, "conviction": 49, "days_since_signal": null, "entry_status": "await_confluence", "group": "setting_up", "name": "ATHABASCA OIL CORP", "off_high": -13.2, "price": 11.01, "sector": "Energy", "stage": "RIPENING", "ticker": "ATH.TO", "tier": ""}, {"_stage": "RIPENING", "alpha": 0.22, "conviction": 43, "days_since_signal": 13, "entry_status": "await_confluence", "group": "setting_up", "name": "SOUTH BOW CORPORATION", "off_high": -4.2, "price": 52.17, "sector": "Energy", "stage": "RIPENING", "ticker": "SOBO.TO", "tier": ""}, {"_stage": "RIPENING", "alpha": -0.22, "conviction": 55, "days_since_signal": null, "entry_status": "buy_soon", "group": "setting_up", "name": "NEXGEN ENERGY LTD", "off_high": -21.7, "price": 14.76, "sector": "Energy", "stage": "RIPENING", "ticker": "NXE.TO", "tier": ""}, {"_stage": "RIPENING", "alpha": -0.34, "conviction": 29, "days_since_signal": 61, "entry_status": "extended", "group": "setting_up", "name": "COGECO COMMUNICATIONS INC", "off_high": -20.9, "price": 59.79, "sector": "Communication", "stage": "RIPENING", "ticker": "CCA.TO", "tier": ""}, {"_stage": "RIPENING", "alpha": -0.38, "conviction": 55, "days_since_signal": 70, "entry_status": "await_confluence", "group": "setting_up", "name": "CAMECO CORP", "off_high": -22.5, "price": 140.76, "sector": "Energy", "stage": "RIPENING", "ticker": "CCO.TO", "tier": ""}, {"_stage": "RIPENING", "alpha": -0.5, "conviction": 35, "days_since_signal": 22, "entry_status": "extended", "group": "setting_up", "name": "ALLIED GOLD CORPORATION", "off_high": -27.7, "price": 31.6, "sector": "Materials", "stage": "RIPENING", "ticker": "AAUC.TO", "tier": ""}, {"_stage": "RIPENING", "alpha": -0.84, "conviction": 77, "days_since_signal": 53, "entry_status": "await_confluence", "group": "setting_up", "name": "TERRAVEST INDUSTRIES INC", "off_high": -30.8, "price": 120.51, "sector": "Energy", "stage": "RIPENING", "ticker": "TVK.TO", "tier": ""}],
+  "rows": [{"_stage": "RIPENING", "alpha": 0.99, "conviction": 31, "days_since_signal": 50, "entry_status": "hold", "group": "setting_up", "name": "ALTIUS MINERALS CORPORATION", "off_high": -2.7, "price": 65.58, "sector": "Materials", "stage": "RIPENING", "ticker": "ALS.TO", "tier": ""}, {"_stage": "RIPENING", "alpha": 0.52, "conviction": 44, "days_since_signal": 8, "entry_status": "buy_soon", "group": "setting_up", "name": "ALTAGAS LTD.", "off_high": -6.9, "price": 53.24, "sector": "Utilities", "stage": "RIPENING", "ticker": "ALA.TO", "tier": ""}, {"_stage": "RIPENING", "alpha": 0.49, "conviction": 28, "days_since_signal": 22, "entry_status": "hold", "group": "setting_up", "name": "SUNCOR ENERGY INC.", "off_high": -1.7, "price": 93.71, "sector": "Energy", "stage": "RIPENING", "ticker": "SU.TO", "tier": ""}, {"_stage": "RIPENING", "alpha": 0.33, "conviction": 49, "days_since_signal": 0, "entry_status": "await_confluence", "group": "setting_up", "name": "ATHABASCA OIL CORP", "off_high": -13.2, "price": 11.01, "sector": "Energy", "stage": "RIPENING", "ticker": "ATH.TO", "tier": ""}, {"_stage": "RIPENING", "alpha": 0.22, "conviction": 43, "days_since_signal": 13, "entry_status": "await_confluence", "group": "setting_up", "name": "SOUTH BOW CORPORATION", "off_high": -4.2, "price": 52.17, "sector": "Energy", "stage": "RIPENING", "ticker": "SOBO.TO", "tier": ""}, {"_stage": "RIPENING", "alpha": -0.22, "conviction": 55, "days_since_signal": 0, "entry_status": "buy_soon", "group": "setting_up", "name": "NEXGEN ENERGY LTD", "off_high": -21.7, "price": 14.76, "sector": "Energy", "stage": "RIPENING", "ticker": "NXE.TO", "tier": ""}, {"_stage": "RIPENING", "alpha": -0.34, "conviction": 29, "days_since_signal": 61, "entry_status": "extended", "group": "setting_up", "name": "COGECO COMMUNICATIONS INC", "off_high": -20.9, "price": 59.79, "sector": "Communication", "stage": "RIPENING", "ticker": "CCA.TO", "tier": ""}, {"_stage": "RIPENING", "alpha": -0.38, "conviction": 55, "days_since_signal": 70, "entry_status": "await_confluence", "group": "setting_up", "name": "CAMECO CORP", "off_high": -22.5, "price": 140.76, "sector": "Energy", "stage": "RIPENING", "ticker": "CCO.TO", "tier": ""}, {"_stage": "RIPENING", "alpha": -0.5, "conviction": 35, "days_since_signal": 22, "entry_status": "extended", "group": "setting_up", "name": "ALLIED GOLD CORPORATION", "off_high": -27.7, "price": 31.6, "sector": "Materials", "stage": "RIPENING", "ticker": "AAUC.TO", "tier": ""}, {"_stage": "RIPENING", "alpha": -0.84, "conviction": 77, "days_since_signal": 53, "entry_status": "await_confluence", "group": "setting_up", "name": "TERRAVEST INDUSTRIES INC", "off_high": -30.8, "price": 120.51, "sector": "Energy", "stage": "RIPENING", "ticker": "TVK.TO", "tier": ""}],
   "as_of": "2026-09-08"
 }
 </script>
@@ -2341,6 +2342,5 @@ if (document.readyState === 'loading') {
 <footer class="site-footer">
   <span class="made">© 2026 Mastermind Inc</span>
 </footer>
-<script defer data-whb data-root="" src="wh_banner.js?v=4a53a176"></script>
 </body>
 </html>

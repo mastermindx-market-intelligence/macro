@@ -238,9 +238,9 @@
   .rrx .rrx-rec-chip { display: inline-flex; align-items: center; gap: 3px; font-size: 10.5px;
          color: var(--text); padding: 2px 7px; border-radius: 6px;
          background: var(--panel); border: 1px solid var(--line); }
-  .rrx .rrx-rec-chip.fresh { color: var(--rvc); font-weight: 600;
-         border-color: color-mix(in srgb, var(--rvc) 45%, var(--line));
-         background: color-mix(in srgb, var(--rvc) 10%, var(--panel)); }
+  .rrx .rrx-rec-chip.fresh { color: var(--fresh-ok); font-weight: 600;
+         border-color: color-mix(in srgb, var(--fresh-ok) 45%, var(--line));
+         background: color-mix(in srgb, var(--fresh-ok) 10%, var(--panel)); }
   .rrx .rrx-rec-cats.none { font-size: 10.5px; color: var(--muted); font-style: italic; }
   /* RRX2 WA: drivers line ("what faded / still warm") + muted "no signal" chip */
   .rrx .rrx-rec-drv { font-size: 10px; color: var(--muted); line-height: 1.4; margin-top: -2px; }
