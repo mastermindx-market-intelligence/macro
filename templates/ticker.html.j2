@@ -1083,7 +1083,7 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
 <section class="mod ss-mod rv" id="security-state" aria-labelledby="ss-title">
   <div class="mod-hd">
     <h2 id="ss-title">{{ t('Security state', '证券状态') }}</h2>
-    <span class="hint">{{ t('eight panels', '八个面板') }}</span>
+    <span class="hint">{{ t('Eight reads on this listing.', '这只证券的八项读数。') }}</span>
   </div>
   <p class="ss-sub">{{ t('Eight separate reads on this listing — what each one rests on, and how old it is. Use it to check the rest of the page. Not a buy or sell signal, and never blended into a score.', '对该证券的八项独立读数 — 每项的依据来源与时效。可用于核对本页其余内容。不构成买卖信号，也不会合并为任何评分。') }}</p>
 
@@ -1185,10 +1185,9 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
         <span class="v">{{ t(lg.result_en, lg.result_zh) }}</span>
         {% if lg.code %}<span class="c ss-id">{{ lg.code }}</span>{% endif %}
       </div>
-      {% if lg.desc_en %}<p class="ss-chk-d">{{ t(lg.desc_en, lg.desc_zh) }}</p>{% endif %}
-      {% if lg.artifact %}<p class="ss-chk-s"><span class="ss-id">{{ lg.artifact }}</span></p>{% endif %}
-      {% if lg.reader %}<p class="ss-chk-s">{{ t('read by', '读取方') }} <span class="ss-id">{{ lg.reader }}</span></p>{% endif %}
-      {% if lg.reads %}<dl class="ss-chk-v">{% for v in lg.reads %}<dt>{{ v.k }}</dt><dd>{{ v.v if v.v else '—' }}</dd>{% endfor %}</dl>{% endif %}
+      {# Glance: bilingual house copy only. Artifact, reader, and field slugs
+         stay in dlg-ss-evidence — they are machine identifiers, not a ZH sentence. #}
+      {% if lg.desc_en and lg.desc_zh and lg.desc_en != lg.desc_zh %}<p class="ss-chk-d">{{ t(lg.desc_en, lg.desc_zh) }}</p>{% endif %}
     </div>
     {% endfor %}
     {% if ss.generated_at %}

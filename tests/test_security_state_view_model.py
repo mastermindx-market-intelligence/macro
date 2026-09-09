@@ -384,15 +384,21 @@ def test_compiled_golden_object_reaches_the_view_model() -> None:
     contract_legs = compiled["identity_proof"]["legs"]
     assert contract_legs, "the golden object carries no identity legs"
     assert len(view["identity"]["legs"]) == len(contract_legs)
+    from scripts.build_ticker_pages import _SS_LEG_DESC
+
     for src, out in zip(contract_legs, view["identity"]["legs"]):
         assert out["check"] == src["check"]
-        # macro#6920 round-4: `desc` split into `desc_en`/`desc_zh` (house
-        # copy lookup, see `_SS_LEG_DESC`). AAPL's real R1..R9 legs have no
-        # house-copy entry (that table lists only the M1-shell leg this PR
-        # added), so both slots still carry the raw engine description —
-        # this test's ORIGINAL byte-identity claim, unchanged.
-        assert out["desc_en"] == src["description"]
-        assert out["desc_zh"] == src["description"]
+        # B-F06-3 round-2: proven-path R1..R9 now have registered bilingual
+        # house copy. Artifact/reader/reads stay byte-identical to the
+        # contract (they still feed the evidence dialog).
+        house = _SS_LEG_DESC.get((src["check"], src.get("code") or ""))
+        if house:
+            assert out["desc_en"] == house["en"]
+            assert out["desc_zh"] == house["zh"]
+            assert out["desc_en"] != out["desc_zh"]
+        else:
+            assert out["desc_en"] == src["description"]
+            assert out["desc_zh"] == src["description"]
         assert out["artifact"] == src["artifact"]
         assert out["reader"] == src["reader"]
         assert out["result"] == str(src["result"]).lower()
@@ -725,13 +731,22 @@ def test_not_applicable_leg_is_not_displayed_as_available() -> None:
 
 
 def test_identity_receipts_render_their_actual_fields() -> None:
+    from scripts.build_ticker_pages import _SS_LEG_DESC
+
     view = build_security_state({"security_state": _contract()})
     html = _render_section(view)
+    glance = _card_region(html)
+    house = _SS_LEG_DESC[("R1", "")]
     assert "R1" in html
-    assert "security_master row exists" in html
+    assert house["en"] in html
+    assert "security_master row exists" not in html
+    # Machine identifiers stay in the evidence dialog, never at glance.
     assert "data/reference/security_master.parquet" in html
+    assert "data/reference/security_master.parquet" not in glance
     assert "_read_security_state_identity_rows" in html
+    assert "_read_security_state_identity_rows" not in glance
     assert "row_present" in html
+    assert "row_present" not in glance
     assert "true" in html
     assert "security_state</dt>" in html and "null" in html
 
@@ -1247,10 +1262,9 @@ def test_m1_shell_gate_description_renders_a_real_bilingual_sentence() -> None:
     # The raw engine-only English sentence (pre-fix behaviour) is gone.
     assert "owner-identity batch was unavailable this cycle" not in html
 
-    # A DIFFERENT "R8" leg (the normal AAPL-reachable path, no house-copy
-    # entry for this check/code pair) must be unaffected — its description
-    # still passes through raw in both slots, same as every other leg
-    # (pre-existing MINOR-2, out of this fix's scope).
+    # Proven-path R8 (empty code) is a different key from the M1-shell
+    # IDENTITY_UNRESOLVED row. It now has its own bilingual house copy —
+    # B-F06-3 round-2 put that sentence on the glance surface.
     other_contract = _contract(identity_proof={
         "state": "PROVEN", "method": "owner_backed_chain.v1",
         "legs": [{
@@ -1264,9 +1278,11 @@ def test_m1_shell_gate_description_renders_a_real_bilingual_sentence() -> None:
     other_view = build_security_state({"security_state": other_contract})
     assert other_view is not None
     other_leg = other_view["identity"]["legs"][0]
-    assert other_leg["desc_en"] == other_leg["desc_zh"] == (
-        "master issuer_cik agrees with the owner-composed current CIK; a present workspace also agrees"
-    )
+    house_r8 = _SS_LEG_DESC[("R8", "")]
+    assert other_leg["desc_en"] == house_r8["en"]
+    assert other_leg["desc_zh"] == house_r8["zh"]
+    assert other_leg["desc_en"] != other_leg["desc_zh"]
+    assert "master issuer_cik agrees" not in other_leg["desc_en"]
 
 
 def _prettify_words(code: str) -> str:
@@ -1369,6 +1385,64 @@ def test_owner_model_receipts_surfaces_identity_legs_asof_and_content_sha256() -
     assert receipts["compiled_at"]
 
 
+def test_owner_receipts_glance_uses_bilingual_house_copy_not_engine_prose() -> None:
+    """B-F06-3 round-2 review MAJOR-1.
+
+    The always-visible Owner & model receipts panel printed English engine
+    prose (`security_master row exists…`) and machine identifiers (python
+    paths, parquet paths, field slugs) at glance, including on the ZH page.
+    Spec MAJOR: EN==ZH on a sentence that should differ. Glance copy must be
+    a registered bilingual sentence; artifact/reader/reads stay in the
+    evidence dialog.
+    """
+    from scripts.build_ticker_pages import _SS_LEG_DESC
+
+    fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_msft_expected_output.json"
+    state = json.loads(fixture.read_text(encoding="utf-8"))
+    view = build_security_state({"security_state": state})
+    assert view is not None
+    legs = view["identity"]["legs"]
+    assert [lg["check"] for lg in legs] == [f"R{i}" for i in range(1, 10)]
+    for lg in legs:
+        house = _SS_LEG_DESC[(lg["check"], lg["code"] or "")]
+        assert lg["desc_en"] == house["en"]
+        assert lg["desc_zh"] == house["zh"]
+        assert lg["desc_en"] != lg["desc_zh"]
+        assert re.search(r"[一-鿿]", lg["desc_zh"]), lg["desc_zh"]
+
+    zh_card = _card_region(_render_section(view, lang="zh"))
+    en_card = _card_region(_render_section(view, lang="en"))
+    engine_leaks = (
+        "security_master row exists",
+        "security_state/superseded_by",
+        "scripts/build_stock_library.py",
+        "data/reference/security_master.parquet",
+        "VendorAliasTable.resolve",
+        "row_present",
+        "lib.dataos.identity.parse_listing_key",
+        "issuer_migrations.parquet",
+        "event_workspace.v1",
+        "owner-composed",
+    )
+    for leak in engine_leaks:
+        assert leak not in zh_card, leak
+        assert leak not in en_card, leak
+    for lg in legs:
+        assert lg["desc_zh"] in zh_card
+        assert lg["desc_en"] in en_card
+        assert lg["desc_en"] not in zh_card
+    assert "Eight reads on this listing." in en_card
+    assert "这只证券的八项读数。" in zh_card
+    assert "八个面板" not in zh_card
+    assert "eight panels" not in en_card
+
+    # Machine identifiers remain in the evidence dialog, not at glance.
+    full_en = _render_section(view, lang="en")
+    assert "data/reference/security_master.parquet" in full_en
+    assert "scripts/build_stock_library.py" in full_en
+    assert "VendorAliasTable.resolve" in full_en
+
+
 def test_ticker_page_renders_all_eight_b1b_panel_headings_for_msft() -> None:
     fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_msft_expected_output.json"
     state = json.loads(fixture.read_text(encoding="utf-8"))
@@ -1380,7 +1454,9 @@ def test_ticker_page_renders_all_eight_b1b_panel_headings_for_msft() -> None:
 
 
 def test_aapl_page_still_renders_five_axis_cards_after_the_personal_impact_extraction() -> None:
-    view = build_security_state({"security_state": _contract()})
+    fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_aapl_expected_output.json"
+    state = json.loads(fixture.read_text(encoding="utf-8"))
+    view = build_security_state({"security_state": state})
     assert view is not None
     html = _render_section(view)
     tree = _parse_class_tree(html)

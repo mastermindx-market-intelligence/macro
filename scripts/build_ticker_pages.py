@@ -3586,20 +3586,50 @@ _SS_DISCLOSURES: dict[str, dict[str, str]] = {
     },
 }
 
-# Chairman plain-language law (2026-09-06), macro#6920 round-4 review MAJOR-2:
-# `identity_proof.legs[].description` is the one-line gate sentence printed
-# under each identity-check header (`.ss-chk-d`) — it was passed straight
-# through from the engine (`lg.desc`) with no `t()` call, so a NEW string
-# added to `engine/security_state.py`'s M1 failure shell (owner-identity
-# batch never ran this cycle) rendered in English even on the ZH page, and
-# was the LARGEST text in that block. Keyed on (check, code) rather than the
-# literal sentence, because the same `check` id ("R8") carries several
-# different descriptions depending on `code` (round-2's `_leg_receipt` calls
-# in `engine/security_state.py`) — a code-only key would collide. Only the
-# M1-shell entry is listed: every other leg description in this file predates
-# this PR and is the pre-existing, separately-tracked MINOR-2 systemic issue,
-# not something this PR's own new text may hide behind.
+# Chairman plain-language law (2026-09-06), macro#6920 round-4 review MAJOR-2,
+# B-F06-3 round-2 review MAJOR-1: `identity_proof.legs[].description` is the
+# one-line gate sentence under each identity-check header (`.ss-chk-d`). The
+# engine emits English machine prose; glance (and ZH) must print a registered
+# bilingual sentence instead. Keyed on (check, code) rather than the literal
+# sentence, because the same `check` id ("R8") carries several descriptions
+# depending on `code`. Empty code is the proven-path default for that check.
 _SS_LEG_DESC: dict[tuple[str, str], dict[str, str]] = {
+    ("R1", ""): {
+        "en": "This security record exists and has not been replaced.",
+        "zh": "该证券记录存在，且未被替换。",
+    },
+    ("R2", ""): {
+        "en": "This security is tied to its resolved issuer.",
+        "zh": "该证券已绑定到已解析的发行主体。",
+    },
+    ("R3", ""): {
+        "en": "Exactly one active issuer record binds this company and its identifier.",
+        "zh": "恰好一条有效的发行主体记录绑定了该公司及其识别码。",
+    },
+    ("R4", ""): {
+        "en": "This issuer currently has exactly this one security.",
+        "zh": "该发行主体当前仅有这一只证券。",
+    },
+    ("R5", ""): {
+        "en": "The listing identifier maps back to this same security.",
+        "zh": "上市标识可回映射到同一只证券。",
+    },
+    ("R6", ""): {
+        "en": "No issuer or security migration is on file for this name.",
+        "zh": "该名称没有发行主体或证券迁移记录。",
+    },
+    ("R7", ""): {
+        "en": "Workspace events and disclosures, when present, bind to the same company identifier.",
+        "zh": "若有工作区，其事件与披露均绑定同一公司识别码。",
+    },
+    ("R8", ""): {
+        "en": "The master company identifier matches the owner read, and a present workspace agrees.",
+        "zh": "主数据中的公司识别码与所有者读数一致，且现有工作区也一致。",
+    },
+    ("R9", ""): {
+        "en": "The workspace primary listing agrees with this security's current ticker and venue.",
+        "zh": "工作区主上市记录与该证券当前代码及交易场所一致。",
+    },
     ("R8", "IDENTITY_UNRESOLVED"): {
         "en": "This cycle's owner-identity batch was unavailable; this subject is the frozen "
         "pinned-allowlist mapping for this ticker, not a live owner read.",
@@ -4278,11 +4308,11 @@ def build_security_state(blob: dict | None) -> dict | None:
             leg_check = _clean_str(lg.get("check") or lg.get("leg") or lg.get("name") or "")
             leg_code = _clean_str(lg.get("code") or "")
             desc_raw = _clean_str(lg.get("description") or "")
-            # macro#6920 round-4 review MAJOR-2: house-copy this leg's gate
-            # sentence when a mapping exists (see `_SS_LEG_DESC`); otherwise
-            # the raw engine description passes through unchanged (same
-            # pre-existing behaviour as every other leg, MINOR-2).
-            desc_house = _SS_LEG_DESC.get((leg_check, leg_code)) if leg_code else None
+            # House-copy the gate sentence when a mapping exists (proven-path
+            # empty code, or a named failure code). Unmapped legs still pass
+            # the engine sentence through in both slots — the glance template
+            # omits that pair so ZH never prints English machine prose.
+            desc_house = _SS_LEG_DESC.get((leg_check, leg_code))
             desc_en, desc_zh = (desc_house["en"], desc_house["zh"]) if desc_house else (desc_raw, desc_raw)
             id_legs.append({
                 "check": leg_check,
