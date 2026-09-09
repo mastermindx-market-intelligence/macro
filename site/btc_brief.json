@@ -2,37 +2,37 @@
   "schema": "master_brief.v2",
   "lens": "btc",
   "is_context_only": true,
-  "generated_at": "2026-09-04T12:27:24.208353+00:00",
+  "generated_at": "2026-09-09T10:14:38.772354+00:00",
   "model": "gpt-5.6-sol",
   "served_by": "codex",
-  "state_asof": "2026-09-03",
+  "state_asof": "2026-09-09",
   "tldr": [
-    "Trend: Bitcoin remains constructive with strong momentum and low measured risk.",
-    "Liquidity split: Global money grows, but near-term US liquidity is shrinking.",
-    "Cycle: Late markdown and fair value leave room, but timing risk is rising.",
-    "What to do: Act \u2014 hold the system\u2019s full allocation."
+    "Position: Bitcoin remains risk-on with constructive momentum and low measured risk.",
+    "Support: Global money is expanding, while ETF buyers keep accumulating.",
+    "Tension: Recent dollar liquidity weakened as the post-halving cycle enters a late phase.",
+    "What to do: Act \u00b7 Keep the system\u2019s full allocation; no override is active."
   ],
-  "summary": "Bitcoin stays risk-on, supported by trend and calm leverage, while shrinking near-term liquidity is the main warning.",
-  "regime_read": "The US map remains in Reflation, but the next direction is unclear. Bitcoin\u2019s dominant driver is the split between expanding global money and shrinking near-term US liquidity.\n\nBitcoin remains constructive with strong momentum, fair value, calm leverage, and no credit alarm. The overnight cross-check is stale, so it adds no weight.",
+  "summary": "Bitcoin remains supported, but weaker near-term liquidity and a late cycle phase make continued ETF demand important.",
+  "regime_read": "The US sits in Stagflation on the map. The direction of travel is unclear because the transition reading is missing. Bitcoin\u2019s main support is expanding global money, healthy credit, and calm markets.\n\nBitcoin is in a late post-halving markdown phase, though cycle history offers odds rather than rules. Valuation is fair, leverage is normal, and ETF buying remains supportive. The overnight context review is stale, so it adds no weight.",
   "conflicts": [
-    "Liquidity: Global money says support, near-term US liquidity says restraint \u2014 the rally can continue, but becomes easier to disrupt.",
-    "Trend: Price structure says advance, the cycle clock says late markdown \u2014 strength is real, but the next pivot is nearing.",
-    "Flows: Stablecoin supply says demand is growing, ETF flows say neutral \u2014 buying support exists without a strong institutional surge."
+    "Liquidity split: Global money says expansion, recent dollar liquidity says weakening \u2014 Bitcoin needs flows to bridge that gap.",
+    "Cycle tension: The late cycle phase warns of fading support, while fair value and normal leverage leave room for gains.",
+    "Market breadth: Bitcoin leads a rising market, but participation is narrow \u2014 strength is less durable without broader demand."
   ],
   "rotation_check": null,
   "transmission": [
-    "If near-term US liquidity keeps shrinking \u2192 Bitcoin\u2019s strong trend becomes harder to sustain.",
-    "If stablecoin growth and calm leverage keep up \u2192 demand can rise without a crowded unwind."
+    "If recent dollar liquidity keeps shrinking \u2192 Bitcoin will depend more heavily on ETF demand and calm credit.",
+    "If ETF accumulation keeps up \u2192 fair valuation and normal leverage can support the advance."
   ],
   "watch_items": [
-    "Liquidity turn: renewed US expansion would strengthen the risk-on case.",
-    "Credit widening: stress would challenge the low-risk allocation.",
-    "Trend break: weakening structure would outweigh today\u2019s strong momentum.",
-    "Early-October pivot: confirmation would improve confidence in the next cycle phase."
+    "ETF buying fades: A key source of demand is weakening.",
+    "Credit spreads widen: The risk-on backdrop is starting to crack.",
+    "Momentum breaks: Constructive price structure is failing.",
+    "Global money contracts: The main liquidity support is reversing."
   ],
   "confidence": "medium",
   "theses": [],
-  "raw_text": "{\"tldr\":[\"Trend: Bitcoin remains constructive with strong momentum and low measured risk.\",\"Liquidity split: Global money grows, but near-term US liquidity is shrinking.\",\"Cycle: Late markdown and fair value leave room, but timing risk is rising.\",\"What to do: Act \u2014 hold the system\u2019s full allocation.\"],\"summary\":\"Bitcoin stays risk-on, supported by trend and calm leverage, while shrinking near-term liquidity is the main warning.\",\"regime_read\":\"The US map remains in Reflation, but the next direction is unclear. Bitcoin\u2019s dominant driver is the split between expanding global money and shrinking near-term US liquidity.\\n\\nBitcoin remains constructive with strong momentum, fair value, calm leverage, and no credit alarm. The overnight cross-check is stale, so it adds no weight.\",\"conflicts\":[\"Liquidity: Global money says support, near-term US liquidity says restraint \u2014 the rally can continue, but becomes easier to disrupt.\",\"Trend: Price structure says advance, the cycle clock says late markdown \u2014 strength is real, but the next pivot is nearing.\",\"Flows: Stablecoin supply says demand is growing, ETF flows say neutral \u2014 buying support exists without a strong institutional surge.\"],\"transmission\":[\"If near-term US liquidity keeps shrinking \u2192 Bitcoin\u2019s strong trend becomes harder to sustain.\",\"If stablecoin growth and calm leverage keep up \u2192 demand can rise without a crowded unwind.\"],\"watch_items\":[\"Liquidity turn: renewed US expansion would strengthen the risk-on case.\",\"Credit widening: stress would challenge the low-risk allocation.\",\"Trend break: weakening structure would outweigh today\u2019s strong momentum.\",\"Early-October pivot: confirmation would improve confidence in the next cycle phase.\"],\"confidence\":\"medium\"}",
+  "raw_text": "{\"tldr\":[\"Position: Bitcoin remains risk-on with constructive momentum and low measured risk.\",\"Support: Global money is expanding, while ETF buyers keep accumulating.\",\"Tension: Recent dollar liquidity weakened as the post-halving cycle enters a late phase.\",\"What to do: Act \u00b7 Keep the system\u2019s full allocation; no override is active.\"],\"summary\":\"Bitcoin remains supported, but weaker near-term liquidity and a late cycle phase make continued ETF demand important.\",\"regime_read\":\"The US sits in Stagflation on the map. The direction of travel is unclear because the transition reading is missing. Bitcoin\u2019s main support is expanding global money, healthy credit, and calm markets.\\n\\nBitcoin is in a late post-halving markdown phase, though cycle history offers odds rather than rules. Valuation is fair, leverage is normal, and ETF buying remains supportive. The overnight context review is stale, so it adds no weight.\",\"conflicts\":[\"Liquidity split: Global money says expansion, recent dollar liquidity says weakening \u2014 Bitcoin needs flows to bridge that gap.\",\"Cycle tension: The late cycle phase warns of fading support, while fair value and normal leverage leave room for gains.\",\"Market breadth: Bitcoin leads a rising market, but participation is narrow \u2014 strength is less durable without broader demand.\"],\"transmission\":[\"If recent dollar liquidity keeps shrinking \u2192 Bitcoin will depend more heavily on ETF demand and calm credit.\",\"If ETF accumulation keeps up \u2192 fair valuation and normal leverage can support the advance.\"],\"watch_items\":[\"ETF buying fades: A key source of demand is weakening.\",\"Credit spreads widen: The risk-on backdrop is starting to crack.\",\"Momentum breaks: Constructive price structure is failing.\",\"Global money contracts: The main liquidity support is reversing.\"],\"confidence\":\"medium\"}",
   "degraded_reason": null,
   "disclaimer": "Context only \u2014 not a signal. This is an AI-generated SYNTHESIS of the dashboards' own deterministic outputs. It does not feed any score, signal or allocation, and it can be wrong or overconfident. Use it as a research read; verify every claim against the underlying dashboard it cites. Effective sample sizes on macro regimes are small \u2014 treat cross-asset 'reads' as odds, not forecasts.",
   "style_flags": [],
@@ -52,8 +52,8 @@
       "key": "cycle",
       "label_en": "Cycle clock",
       "label_zh": "\u5468\u671f\u65f6\u949f",
-      "value_en": "Late decline \u00b7 ~91% through",
-      "value_zh": "\u4e0b\u884c\u540e\u6bb5 \u00b7 \u7ea691%\u8fdb\u5ea6",
+      "value_en": "Late decline \u00b7 ~93% through",
+      "value_zh": "\u4e0b\u884c\u540e\u6bb5 \u00b7 \u7ea693%\u8fdb\u5ea6",
       "tone": "warn"
     },
     {
@@ -76,9 +76,9 @@
       "key": "etf",
       "label_en": "ETF flows",
       "label_zh": "ETF\u8d44\u91d1",
-      "value_en": "Flat",
-      "value_zh": "\u6301\u5e73",
-      "tone": "neutral"
+      "value_en": "Money coming in",
+      "value_zh": "\u8d44\u91d1\u6d41\u5165",
+      "tone": "good"
     },
     {
       "key": "liquidity",
@@ -90,29 +90,29 @@
     }
   ],
   "zh": {
-    "summary": "Bitcoin\u7ef4\u6301\u98ce\u9669\u504f\u597d\u8d70\u52bf\uff0c\u8d8b\u52bf\u548c\u6e29\u548c\u6760\u6746\u63d0\u4f9b\u652f\u6491\uff0c\u4f46\u8fd1\u671f\u6d41\u52a8\u6027\u6536\u7f29\u662f\u4e3b\u8981\u8b66\u793a\u3002",
-    "regime_read": "\u7f8e\u56fd\u5b8f\u89c2\u56fe\u666f\u4ecd\u5904\u4e8e\u518d\u901a\u80c0\u9636\u6bb5\uff0c\u4f46\u4e0b\u4e00\u6b65\u65b9\u5411\u5c1a\u4e0d\u660e\u786e\u3002Bitcoin\u7684\u4e3b\u5bfc\u9a71\u52a8\u56e0\u7d20\u662f\u5168\u7403\u8d27\u5e01\u6269\u5f20\u4e0e\u7f8e\u56fd\u8fd1\u671f\u6d41\u52a8\u6027\u6536\u7f29\u4e4b\u95f4\u7684\u5206\u5316\u3002\n\nBitcoin\u6574\u4f53\u4ecd\u504f\u79ef\u6781\uff0c\u52a8\u80fd\u5f3a\u52b2\u3001\u4f30\u503c\u5408\u7406\u3001\u6760\u6746\u6e29\u548c\uff0c\u4e14\u65e0\u4fe1\u7528\u98ce\u9669\u8b66\u62a5\u3002\u9694\u591c\u4ea4\u53c9\u9a8c\u8bc1\u6570\u636e\u5df2\u8fc7\u65f6\uff0c\u56e0\u6b64\u4e0d\u7eb3\u5165\u5224\u65ad\u3002",
+    "summary": "Bitcoin\u4ecd\u6709\u652f\u6491\uff0c\u4f46\u8fd1\u671f\u6d41\u52a8\u6027\u8d70\u5f31\u4e14\u5468\u671f\u5df2\u8fdb\u5165\u540e\u671f\uff0c\u4f7f\u6301\u7eed\u7684ETF\u9700\u6c42\u53d8\u5f97\u81f3\u5173\u91cd\u8981\u3002",
+    "regime_read": "\u4ece\u56fe\u8868\u6765\u770b\uff0c\u7f8e\u56fd\u5904\u4e8e\u6ede\u80c0\u9636\u6bb5\u3002\u7531\u4e8e\u7f3a\u5c11\u8f6c\u578b\u6307\u6807\uff0c\u672a\u6765\u8d70\u5411\u5c1a\u4e0d\u660e\u786e\u3002Bitcoin\u7684\u4e3b\u8981\u652f\u6491\u6765\u81ea\u5168\u7403\u8d27\u5e01\u4f9b\u5e94\u6269\u5f20\u3001\u4fe1\u8d37\u72b6\u51b5\u5065\u5eb7\u548c\u5e02\u573a\u5e73\u7a33\u3002\n\nBitcoin\u6b63\u5904\u4e8e\u51cf\u534a\u540e\u7684\u5468\u671f\u540e\u671f\u4e0b\u8dcc\u9636\u6bb5\uff0c\u4f46\u5386\u53f2\u5468\u671f\u53ea\u80fd\u63d0\u4f9b\u6982\u7387\uff0c\u800c\u975e\u5b9a\u5f8b\u3002\u5f53\u524d\u4f30\u503c\u5408\u7406\u3001\u6760\u6746\u6c34\u5e73\u6b63\u5e38\uff0cETF\u4e70\u76d8\u4ecd\u6784\u6210\u652f\u6491\u3002\u9694\u591c\u80cc\u666f\u8bc4\u4f30\u5df2\u7ecf\u8fc7\u65f6\uff0c\u56e0\u6b64\u4e0d\u5177\u53c2\u8003\u6743\u91cd\u3002",
     "rotation_check": null,
     "tldr": [
-      "\u8d8b\u52bf\uff1aBitcoin\u8d70\u52bf\u4ecd\u5177\u5efa\u8bbe\u6027\uff0c\u52a8\u80fd\u5f3a\u52b2\u4e14\u8861\u91cf\u98ce\u9669\u8f83\u4f4e\u3002",
-      "\u6d41\u52a8\u6027\u5206\u5316\uff1a\u5168\u7403\u8d27\u5e01\u4f9b\u5e94\u589e\u957f\uff0c\u4f46\u7f8e\u56fd\u77ed\u671f\u6d41\u52a8\u6027\u6b63\u5728\u6536\u7f29\u3002",
-      "\u5468\u671f\uff1a\u4e0b\u8dcc\u540e\u671f\u4e0e\u5408\u7406\u4f30\u503c\u4ecd\u7559\u6709\u7a7a\u95f4\uff0c\u4f46\u62e9\u65f6\u98ce\u9669\u6b63\u5728\u4e0a\u5347\u3002",
-      "\u884c\u52a8\u5efa\u8bae\uff1a\u91c7\u53d6\u884c\u52a8\u2014\u2014\u7ef4\u6301\u7cfb\u7edf\u7684\u6ee1\u989d\u914d\u7f6e\u3002"
+      "\u89c2\u70b9\uff1aBitcoin\u4ecd\u5904\u4e8e\u98ce\u9669\u504f\u597d\u72b6\u6001\uff0c\u52a8\u80fd\u79ef\u6781\uff0c\u8861\u91cf\u98ce\u9669\u8f83\u4f4e\u3002",
+      "\u652f\u6491\u56e0\u7d20\uff1a\u5168\u7403\u8d27\u5e01\u4f9b\u5e94\u6b63\u5728\u6269\u5f20\uff0c\u540c\u65f6ETF\u4e70\u5bb6\u6301\u7eed\u589e\u6301\u3002",
+      "\u7d27\u5f20\u56e0\u7d20\uff1a\u968f\u7740\u51cf\u534a\u540e\u5468\u671f\u8fdb\u5165\u540e\u671f\uff0c\u8fd1\u671f\u7f8e\u5143\u6d41\u52a8\u6027\u6709\u6240\u51cf\u5f31\u3002",
+      "\u64cd\u4f5c\u5efa\u8bae\uff1a\u6267\u884c\u2014\u2014\u7ef4\u6301\u7cfb\u7edf\u6ee1\u4ed3\u914d\u7f6e\uff1b\u5f53\u524d\u65e0\u4eba\u5de5\u5e72\u9884\u3002"
     ],
     "conflicts": [
-      "\u6d41\u52a8\u6027\uff1a\u5168\u7403\u8d27\u5e01\u63d0\u4f9b\u652f\u6491\uff0c\u7f8e\u56fd\u8fd1\u671f\u6d41\u52a8\u6027\u5219\u6784\u6210\u5236\u7ea6\u2014\u2014\u6da8\u52bf\u53ef\u4ee5\u5ef6\u7eed\uff0c\u4f46\u66f4\u5bb9\u6613\u53d7\u5230\u51b2\u51fb\u3002",
-      "\u8d8b\u52bf\uff1a\u4ef7\u683c\u7ed3\u6784\u663e\u793a\u4e0a\u6da8\uff0c\u5468\u671f\u65f6\u949f\u663e\u793a\u5904\u4e8e\u4e0b\u8dcc\u540e\u671f\u2014\u2014\u5f3a\u52bf\u786e\u5b9e\u5b58\u5728\uff0c\u4f46\u4e0b\u4e00\u4e2a\u62d0\u70b9\u6b63\u5728\u4e34\u8fd1\u3002",
-      "\u8d44\u91d1\u6d41\uff1a\u7a33\u5b9a\u5e01\u4f9b\u5e94\u663e\u793a\u9700\u6c42\u589e\u957f\uff0cETF\u8d44\u91d1\u6d41\u4fdd\u6301\u4e2d\u6027\u2014\u2014\u5b58\u5728\u4e70\u76d8\u652f\u6491\uff0c\u4f46\u6ca1\u6709\u5f3a\u52b2\u7684\u673a\u6784\u8d44\u91d1\u6d8c\u5165\u3002"
+      "\u6d41\u52a8\u6027\u5206\u5316\uff1a\u5168\u7403\u8d27\u5e01\u4f9b\u5e94\u663e\u793a\u6269\u5f20\uff0c\u4f46\u8fd1\u671f\u7f8e\u5143\u6d41\u52a8\u6027\u8d8b\u5f31\u2014\u2014Bitcoin\u9700\u8981\u8d44\u91d1\u6d41\u5165\u6765\u5f25\u5408\u8fd9\u4e00\u7f3a\u53e3\u3002",
+      "\u5468\u671f\u77db\u76fe\uff1a\u5468\u671f\u540e\u671f\u9884\u793a\u652f\u6491\u53ef\u80fd\u51cf\u5f31\uff0c\u800c\u5408\u7406\u4f30\u503c\u548c\u6b63\u5e38\u6760\u6746\u4ecd\u4e3a\u4e0a\u6da8\u7559\u6709\u7a7a\u95f4\u3002",
+      "\u5e02\u573a\u5e7f\u5ea6\uff1aBitcoin\u9886\u6da8\u4e0a\u884c\u5e02\u573a\uff0c\u4f46\u53c2\u4e0e\u9762\u8f83\u7a84\u2014\u2014\u82e5\u6ca1\u6709\u66f4\u5e7f\u6cdb\u7684\u9700\u6c42\uff0c\u5f3a\u52bf\u884c\u60c5\u7684\u6301\u7eed\u6027\u8f83\u5f31\u3002"
     ],
     "transmission": [
-      "\u5982\u679c\u7f8e\u56fd\u8fd1\u671f\u6d41\u52a8\u6027\u6301\u7eed\u6536\u7f29 \u2192 Bitcoin\u7684\u5f3a\u52b2\u8d8b\u52bf\u5c06\u66f4\u96be\u7ef4\u6301\u3002",
-      "\u5982\u679c\u7a33\u5b9a\u5e01\u6301\u7eed\u589e\u957f\u4e14\u6760\u6746\u4fdd\u6301\u6e29\u548c\uff0c\u9700\u6c42\u53ef\u80fd\u4e0a\u5347\uff0c\u800c\u4e0d\u4f1a\u5f15\u53d1\u62e5\u6324\u4ea4\u6613\u7684\u96c6\u4e2d\u5e73\u4ed3\u3002"
+      "\u5982\u679c\u8fd1\u671f\u7f8e\u5143\u6d41\u52a8\u6027\u7ee7\u7eed\u6536\u7f29 \u2192 Bitcoin\u5c06\u66f4\u52a0\u4f9d\u8d56ETF\u9700\u6c42\u548c\u7a33\u5b9a\u7684\u4fe1\u8d37\u73af\u5883\u3002",
+      "\u82e5ETF\u6301\u7eed\u589e\u6301 \u2192 \u5408\u7406\u4f30\u503c\u548c\u6b63\u5e38\u6760\u6746\u53ef\u652f\u6491\u4e0a\u6da8\u3002"
     ],
     "watch_items": [
-      "\u6d41\u52a8\u6027\u8f6c\u5411\uff1a\u7f8e\u56fd\u6d41\u52a8\u6027\u91cd\u65b0\u6269\u5f20\u5c06\u5f3a\u5316\u98ce\u9669\u504f\u597d\u903b\u8f91\u3002",
-      "\u4fe1\u7528\u5229\u5dee\u8d70\u9614\uff1a\u538b\u529b\u4e0a\u5347\u5c06\u5bf9\u4f4e\u98ce\u9669\u914d\u7f6e\u6784\u6210\u6311\u6218\u3002",
-      "\u8d8b\u52bf\u7834\u4f4d\uff1a\u7ed3\u6784\u8d70\u5f31\u5c06\u76d6\u8fc7\u5f53\u524d\u7684\u5f3a\u52b2\u52a8\u80fd\u3002",
-      "10\u6708\u521d\u8f6c\u6298\uff1a\u82e5\u5f97\u5230\u786e\u8ba4\uff0c\u5c06\u589e\u5f3a\u5bf9\u4e0b\u4e00\u5468\u671f\u9636\u6bb5\u7684\u4fe1\u5fc3\u3002"
+      "ETF\u4e70\u76d8\u51cf\u5f31\uff1a\u4e00\u4e2a\u5173\u952e\u9700\u6c42\u6765\u6e90\u6b63\u5728\u8d70\u5f31\u3002",
+      "\u4fe1\u7528\u5229\u5dee\u6269\u5927\uff1a\u98ce\u9669\u504f\u597d\u80cc\u666f\u5f00\u59cb\u6076\u5316\u3002",
+      "\u52a8\u80fd\u7834\u4f4d\uff1a\u79ef\u6781\u7684\u4ef7\u683c\u7ed3\u6784\u6b63\u5728\u5931\u6548\u3002",
+      "\u5168\u7403\u8d27\u5e01\u6536\u7f29\uff1a\u4e3b\u8981\u6d41\u52a8\u6027\u652f\u6491\u6b63\u5728\u9006\u8f6c\u3002"
     ]
   }
 }

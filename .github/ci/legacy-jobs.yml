@@ -289,6 +289,26 @@ jobs:
       - name: annotations must start the line (bare print, never a logger)
         run: python -m pytest tests/test_gh_annotation_line_start.py -q
 
+  am-edition-producer:
+    if: ${{ false }}
+    gate: code
+    # AM Edition premarket producer contract (A-MO-W2-3): per-source clocks,
+    # six states (incl. CLOSED), no generated_at laundering. Disabled from direct
+    # execution like every sibling job in this family — contract-delta's
+    # differential gate refuses a head that would let GitHub allocate a
+    # duplicate runner alongside the packed trusted-executor dispatch
+    # (run_ci_pack.py redistributes this job into ci-pack-N via `gate: code`).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: install test deps
+        # pyyaml: scripts.build_am_edition imports lib.config, which imports yaml.
+        run: pip install pytest pyyaml
+      - name: AM Edition producer contract (per-source clocks, six states, no laundering)
+        run: python -m pytest tests/test_am_edition_producer.py -q
+
   all-exports-resolve:
     if: ${{ false }}
     gate: code
@@ -724,6 +744,20 @@ jobs:
       # contract compilers adjacent.
       - name: K3-E Opportunity Evidence Vector contract and hostile-fixture kills
         run: python -m pytest tests/test_opportunity_evidence_vector_contract.py -q
+      # B-A-F10-4 estimator implication output contract (contracts/estimator_
+      # implication.v1.schema.json, engine/estimator_implication.py). Rides this
+      # same contract job for the same reason K2-B/K3-E do: a pure read-only
+      # composer over already-checked-out result artifacts (jsonschema +
+      # engine.seasonality.event_study + engine.trial_ledger, both stdlib/
+      # pandas/numpy — already on this job's install line above) that
+      # materializes no store and calls no owner writer. It was named by no
+      # `run:` step in any workflow at review time (2026-09-06 round-1 review,
+      # BLOCKER B1), so its promotion firewall (test_contract_rejects_
+      # promotion_fields et al.) was inert against a future drift — this line
+      # is that fix. Placed immediately after K3-E to keep the pointer-only,
+      # zero-authority contract compilers adjacent.
+      - name: B-A-F10-4 Estimator Implication output contract
+        run: python -m pytest tests/test_estimator_implication_contract.py -q
       # Four detector ids exist as byte-identical strings in THREE implementations
       # with three separate threshold stores: scripts/build_fundamental_forensics.py
       # (inline FRACTION literals, Filing Forensics workbench),
@@ -1096,7 +1130,7 @@ jobs:
           python -m pytest
           tests/test_ai_desk.py tests/test_ai_desk_scorer.py
           tests/test_radar_scorer.py tests/test_narrative_brain.py
-          tests/test_demand_ledger.py tests/test_policy_intent_desk.py
+          tests/test_demand_ledger.py tests/test_policy_intent_desk.py tests/test_uk_policy_brain.py
           tests/test_desk_thesis_ids.py -q
 
   conviction-profile:
@@ -1165,6 +1199,7 @@ jobs:
       # B1A wiring 2026-08-24: this gate:code job owns the dossier contract and now runs the security_state.v1 suite (contract-delta named it unrun).
       - "contracts/market_os/security_state.v1.schema.json"
       - "engine/security_state.py"
+      - "scripts/security_state_producer.py"
       - "lib/evidence_foundation.py"
       - "lib/dataos/identity.py"
       - "contracts/evidence_foundation/vocabulary.v1.json"
@@ -1912,6 +1947,7 @@ jobs:
       - "research/STOCK_PERSONALITY_MASTERPLAN_BY_FABLE.md"
       - "research/US_BOARD_MEASUREMENT.md"
       - "scripts/build_stock_library.py"
+      - "scripts/security_state_producer.py"
       # Import-closure entry: build_stock_library reuses
       # scripts/snapshot_shadow_book.rows_from_board for the shadow-book
       # snapshot (one percentile definition), so exclusive scope must name it.
@@ -3532,6 +3568,7 @@ jobs:
       - "scripts/build_sp500_heatmap.py"
       - "scripts/build_state_of_themes.py"
       - "scripts/build_stock_library.py"
+      - "scripts/security_state_producer.py"
       # Import-closure entry: build_stock_library reuses
       # scripts/snapshot_shadow_book.rows_from_board for the shadow-book
       # snapshot (one percentile definition), so exclusive scope must name it.
@@ -5274,6 +5311,7 @@ jobs:
       - agentos/discoveries/DSC-COMMODITY-AND-FX-PRICE-SPINE-YAHOO-VENDOR-TERMS-ARE-RECORDED-ADVERSE.md
       - research/market_intelligence_productization/F01_FX_COMMODITY_SOURCE_RIGHTS_AND_DEPTH_2026-09.md
       - research/market_intelligence_productization/F01_FX_DISLOCATION_CHARTER_2026-09.md
+      - tests/test_f02_owner_map_receipts.py
       - tests/test_self_mod_fence.py
       - tests/test_ci_authority.py
       - tests/test_ci_semantic_proof.py
@@ -5396,7 +5434,7 @@ jobs:
           # out would otherwise pass as a skip. This line cannot skip.
           python3 scripts/agentos.py validate
           python -m pytest tests/test_agentos_schema.py tests/test_agentos_status.py \
-            tests/test_agentos_compile.py tests/test_f01_fx_commodity_source_rights.py tests/test_b_rec2_wave_boundary_records.py -q
+            tests/test_agentos_compile.py tests/test_f01_fx_commodity_source_rights.py tests/test_f02_owner_map_receipts.py tests/test_b_rec2_wave_boundary_records.py -q
 
   capability-broker:
     if: ${{ false }}
@@ -5861,6 +5899,37 @@ jobs:
       # nowhere.  Same family as test_contagion.py above, so it shares this venv.
       - name: contagion-links session stamps + heal (forward-ledger audit 2026-08-05)
         run: python -m pytest tests/test_contagion_links.py tests/test_heal_contagion_links_ledger.py -q
+
+  sanctions-map-page:
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    # Packet A-F02-1: OFAC sanctions map engine + page + nav + worldmap base +
+    # collector parser. Zero network; fixtures + committed snapshot only.
+    paths:
+      - "collectors/ofac_sdn.py"
+      - "config/sanctions_ofac_programs.yml"
+      - "engine/sanctions_map.py"
+      - "scripts/build_sanctions_map.py"
+      - "scripts/gen_worldmap_svg.py"
+      - "templates/_worldmap_base.html.j2"
+      - "templates/sanctions_map.html.j2"
+      - "templates/_navlinks.html.j2"
+      - "tests/test_ofac_sdn_collector.py"
+      - "tests/test_sanctions_map_engine.py"
+      - "tests/test_sanctions_map_nav.py"
+      - "tests/test_sanctions_map_page.py"
+      - "tests/test_worldmap_base.py"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps
+        run: pip install pytest pandas numpy pyyaml jinja2 requests
+      - name: sanctions map engine + page + nav + worldmap + OFAC collector
+        run: python -m pytest tests/test_sanctions_map_engine.py tests/test_sanctions_map_page.py tests/test_sanctions_map_nav.py tests/test_worldmap_base.py tests/test_ofac_sdn_collector.py -q
 
   itr-turn-rotation:
     if: ${{ false }}
@@ -7091,6 +7160,7 @@ jobs:
       - "scripts/build_sp500_heatmap.py"
       - "scripts/build_state_of_themes.py"
       - "scripts/build_stock_library.py"
+      - "scripts/security_state_producer.py"
       # Import-closure entry: build_stock_library reuses
       # scripts/snapshot_shadow_book.rows_from_board for the shadow-book
       # snapshot (one percentile definition), so exclusive scope must name it.
@@ -7537,6 +7607,7 @@ jobs:
       - "research/STOCK_PERSONALITY_MASTERPLAN_BY_FABLE.md"
       - "research/US_BOARD_MEASUREMENT.md"
       - "scripts/build_stock_library.py"
+      - "scripts/security_state_producer.py"
       # Import-closure entry: build_stock_library reuses
       # scripts/snapshot_shadow_book.rows_from_board for the shadow-book
       # snapshot (one percentile definition), so exclusive scope must name it.
@@ -9156,6 +9227,8 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_theme_graph_local_plane.py -q
       - name: theme graph — source-rights registry shape + F20 grandfather pin
         run: TZ=UTC python -m pytest tests/test_theme_sources_registry.py -q
+      - name: market ontology — GMI exposure composer (shock->theme->company, rights + as-of + typed nulls)
+        run: TZ=UTC python -m pytest tests/test_market_ontology_exposure_map.py -q
       - name: CN limit-rule registry — schema, continuity, parity vs china_microstructure
         run: TZ=UTC python -m pytest tests/test_cn_limit_rules.py -q
       # GMI W2 — the exposure-decomposition probe's pure math. The probe script itself is a
@@ -9329,6 +9402,7 @@ jobs:
       - "research/STOCK_PERSONALITY_MASTERPLAN_BY_FABLE.md"
       - "research/US_BOARD_MEASUREMENT.md"
       - "scripts/build_stock_library.py"
+      - "scripts/security_state_producer.py"
       # Import-closure entry: build_stock_library reuses
       # scripts/snapshot_shadow_book.rows_from_board for the shadow-book
       # snapshot (one percentile definition), so exclusive scope must name it.
@@ -11051,6 +11125,7 @@ jobs:
       - "scripts/build_state_of_themes.py"
       - "scripts/build_stock_board_v2.py"
       - "scripts/build_stock_library.py"
+      - "scripts/security_state_producer.py"
       # Import-closure entry: build_stock_library reuses
       # scripts/snapshot_shadow_book.rows_from_board for the shadow-book
       # snapshot (one percentile definition), so exclusive scope must name it.
@@ -12699,6 +12774,7 @@ jobs:
       - "research/STOCK_PERSONALITY_MASTERPLAN_BY_FABLE.md"
       - "research/US_BOARD_MEASUREMENT.md"
       - "scripts/build_stock_library.py"
+      - "scripts/security_state_producer.py"
       # Import-closure entry: build_stock_library reuses
       # scripts/snapshot_shadow_book.rows_from_board for the shadow-book
       # snapshot (one percentile definition), so exclusive scope must name it.
