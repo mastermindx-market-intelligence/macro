@@ -1,0 +1,157 @@
+{
+  "schema": "policy_watch_r1_evidence.v1",
+  "code_head": "54a8b23b44a0bab4320f71a271f8f9bc78852e9f",
+  "captured_at": "2026-09-09T11:22:33Z",
+  "source": {
+    "kind": "local_temp_render",
+    "url": "http://127.0.0.1:8765/policy_watch.html",
+    "fixture_note": "Rendered from live worktree inputs data/policy/intel.json + data/marketing/fomc + data/macro/official_news_cache into /tmp; NOT deployed/live.",
+    "intel_as_of": "2026-07-13",
+    "cutoff_clock": "2026-09-08T16:00:00Z",
+    "html_source_contains_next_fed_en": true
+  },
+  "captures": [
+    {
+      "file": "desktop-dark-en.png",
+      "theme": "dark",
+      "lang": "en",
+      "viewport": [
+        1440,
+        900
+      ],
+      "observed": true,
+      "opened_detail": true,
+      "content_checks": {
+        "last_recorded_decision": true,
+        "next_fed": false,
+        "background_research": true,
+        "july13": true
+      }
+    },
+    {
+      "file": "desktop-light-en.png",
+      "theme": "light",
+      "lang": "en",
+      "viewport": [
+        1440,
+        900
+      ],
+      "observed": true,
+      "opened_detail": false,
+      "content_checks": {
+        "last_recorded_decision": true,
+        "next_fed": false,
+        "background_research": true,
+        "july13": true
+      }
+    },
+    {
+      "file": "desktop-dark-zh.png",
+      "theme": "dark",
+      "lang": "zh",
+      "viewport": [
+        1440,
+        900
+      ],
+      "observed": true,
+      "opened_detail": false,
+      "content_checks": {
+        "last_recorded_decision": true,
+        "next_fed": true,
+        "background_research": true,
+        "july13": true
+      }
+    },
+    {
+      "file": "desktop-light-zh.png",
+      "theme": "light",
+      "lang": "zh",
+      "viewport": [
+        1440,
+        900
+      ],
+      "observed": true,
+      "opened_detail": false,
+      "content_checks": {
+        "last_recorded_decision": true,
+        "next_fed": true,
+        "background_research": true,
+        "july13": true
+      }
+    },
+    {
+      "file": "mobile-dark-en.png",
+      "theme": "dark",
+      "lang": "en",
+      "viewport": [
+        390,
+        844
+      ],
+      "observed": true,
+      "opened_detail": false,
+      "content_checks": {
+        "last_recorded_decision": true,
+        "next_fed": false,
+        "background_research": true,
+        "july13": true
+      }
+    },
+    {
+      "file": "mobile-light-en.png",
+      "theme": "light",
+      "lang": "en",
+      "viewport": [
+        390,
+        844
+      ],
+      "observed": true,
+      "opened_detail": false,
+      "content_checks": {
+        "last_recorded_decision": true,
+        "next_fed": false,
+        "background_research": true,
+        "july13": true
+      }
+    },
+    {
+      "file": "mobile-dark-zh.png",
+      "theme": "dark",
+      "lang": "zh",
+      "viewport": [
+        390,
+        844
+      ],
+      "observed": true,
+      "opened_detail": false,
+      "content_checks": {
+        "last_recorded_decision": true,
+        "next_fed": true,
+        "background_research": true,
+        "july13": true
+      }
+    },
+    {
+      "file": "mobile-light-zh.png",
+      "theme": "light",
+      "lang": "zh",
+      "viewport": [
+        390,
+        844
+      ],
+      "observed": true,
+      "opened_detail": false,
+      "content_checks": {
+        "last_recorded_decision": true,
+        "next_fed": true,
+        "background_research": true,
+        "july13": true
+      }
+    }
+  ],
+  "unobserved": false,
+  "notes": [
+    "Local temp render only; not deployed/live.",
+    "HTML source contains 'Next Fed decisions'; EN viewport inner_text check was false (likely CSS lang/visibility); ZH visible check passed. Screenshots still observed.",
+    "theme.css copied from templates/ into temp server root for material styling."
+  ]
+}
