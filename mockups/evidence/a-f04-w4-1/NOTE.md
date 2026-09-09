@@ -1,6 +1,8 @@
 # A-F04-W4-1 Theme Tracker reading-order section — theme treatments
 
-Anonymous fixture render of `templates/state_of_themes.html.j2`, not the live VPS page. Theme and language were set on `<html>` via `localStorage` + `add_init_script` **before** load. `prefers-reduced-motion: reduce`. No mid-toggle. Frames are full-page captures of the Theme Tracker fixture (desktop 1440×900, mobile 390×844).
+Anonymous fixture render of `templates/state_of_themes.html.j2`, not the live VPS page. Theme and language were set on `<html>` via `localStorage` + `add_init_script` **before** load. `prefers-reduced-motion: reduce`. No mid-toggle. Frames are full-page captures of the Theme Tracker fixture (desktop 1440×900, mobile 390×844). Recaptured at git HEAD `12852e56e7dd` (the code commit the frames depict). The fixture files that produced these frames are committed under `fixtures/` (`ok.html`, `empty.html`, `unavailable.html`, `theme.css`, `theme.js`) so the capture reproduces.
+
+The populated `/ok.html` frames use a **constructed** theme population: fifteen dated themes with staggered last-recorded dates (8 September 2026 down to 25 August 2026) plus three undated names. That is not the live store. Production currently records one evidence date (2026-07-09) across all 18 theme nodes, so clause 1 of the ordering rule does not separate those rows in production — the visible live sequence comes from the within-day count and then the name. These frames show the dated-slice, truncation sentence, and undated block the round-3 ruling requires, not a nightly snapshot.
 
 What the fixture server did NOT serve (read `failed_responses` in the manifest for the
 authoritative list): all five Inter weights (`Inter-400/500/600/700/800.woff2`),
@@ -8,12 +10,12 @@ authoritative list): all five Inter weights (`Inter-400/500/600/700/800.woff2`),
 `logo_config.js` and `stock-logos.js` all 404 against the fixture. **So every frame below renders
 in the fallback system stack, not the shipped Inter faces** — read the weight relationships in the
 mechanism table as relative, not as a specimen of the shipped typography. `theme.css` and
-`theme.js` ARE served, so `--panel` / `--line` / `--text` / `--muted` / `--card-shadow` resolve and
+`theme.js` ARE served from `fixtures/`, so `--panel` / `--line` / `--text` / `--muted` / `--card-shadow` resolve and
 the enclosure, rule-weight and ink mechanisms described below are the real ones.
 
 Which frames are which:
 
-- `/ok.html` — populated reading-order list (the eight REST cells: desktop/mobile × en/zh × dark/light).
+- `/ok.html` — constructed populated list (the eight REST cells: desktop/mobile × en/zh × dark/light). Twelve numbered dated rows, truncation sentence naming 12 of 15 dated themes, three undated names with no ordinal.
 - `/empty.html` — honest empty state: title plus “We have not recorded new evidence for any theme yet.” / “目前还没有记录到任何主题的新证据。” No list, no dash, no zero.
 - `/unavailable.html` — honest unavailable state: title plus “The evidence record could not be read, so this list is not shown.” / “无法读取证据记录，因此这份清单暂不显示。” No list, no dash, no zero.
 
