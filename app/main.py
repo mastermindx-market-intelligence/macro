@@ -1042,7 +1042,8 @@ _PLAN_LABELS = {"free": "Free", "essential": "Essential", "insider": "Essential"
 
 
 @app.get("/api/account")
-def account(user: dict = Depends(require_user)) -> dict:
+def account(user: dict = Depends(require_user),
+            authorization: str | None = Header(default=None)) -> dict:
     """Plan-display payload for the shared account.js card — macro-hosted, so the macro site
     no longer depends on the Terminal repo for plan display (masterplan §3.2 / MNZ-OD4)."""
     user_id = user.get("id") or user.get("email") or ""
@@ -1052,6 +1053,15 @@ def account(user: dict = Depends(require_user)) -> dict:
         ent = billing.read_entitlement(user_id)
     except Exception:  # noqa: BLE001
         pass
+    from lib import team_membership  # noqa: PLC0415
+    from app.account_prefs import _supabase  # noqa: PLC0415 — reuse, do not duplicate
+    token = team_membership.extract_bearer(authorization)
+    try:
+        teams = team_membership.fetch_caller_teams(token, str(user.get("id") or ""), _supabase())
+    except Exception:  # noqa: BLE001 — a team-read fault must never 500 /api/account
+        teams = {"status": "unavailable", "items": [], "truncated": False}
+    if not isinstance(teams, dict) or teams.get("status") not in {"ok", "unavailable"}:
+        teams = {"status": "unavailable", "items": [], "truncated": False}
     tier = ent["tier"]
     return {
         "authenticated": True,
@@ -1074,6 +1084,9 @@ def account(user: dict = Depends(require_user)) -> dict:
             "theme": (user.get("user_metadata") or {}).get("theme"),
         },
         "plans_url": "/plans.html",
+        # Caller-scoped team membership (B-F12-B5-3a). RLS-scoped PostgREST read;
+        # fail-closed to status=unavailable rather than an empty list that reads as "no teams".
+        "teams": teams,
     }
 
 
