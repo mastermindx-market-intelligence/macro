@@ -236,7 +236,7 @@ html[data-theme="dark"]{
 .sot-disclosure{font-size:12.5px;color:var(--muted);margin:28px 0 0;padding-top:14px;border-top:1px solid var(--line);line-height:1.6}
 
 /* ── reading order (uncalibrated evidence recency; not a ranking) ── */
-.rp{margin:22px 0 6px;padding:18px 20px 16px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card,16px)}
+.rp{margin:22px 0 6px;padding:18px 20px 16px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card,12px)}
 html[data-theme="dark"] .rp{box-shadow:var(--card-shadow),inset 0 0 0 1px color-mix(in srgb,var(--line) 55%,transparent)}
 html[data-theme="light"] .rp{background:var(--panel);box-shadow:var(--card-shadow),0 8px 24px color-mix(in srgb,var(--text) 6%,transparent)}
 .rp .sec-head{margin-top:0}
@@ -263,7 +263,7 @@ html[data-theme="light"] .rp-undated{border-top:1px solid var(--line)}
 .rp details summary::-webkit-details-marker{display:none}
 .rp details .rp-body{padding:0 14px 12px;font-size:12.5px;color:var(--muted);line-height:1.6}
 @media(max-width:560px){
-  .rp{padding:14px 14px 12px;border-radius:var(--r-card,16px)}
+  .rp{padding:14px 14px 12px;border-radius:var(--r-card,12px)}
   .rp-meta{padding-left:0}
 }
 
@@ -341,7 +341,7 @@ html[data-theme="dark"] body::before{
   {% elif research_priority.state == 'unavailable' %}
   <p class="sec-sub">{{ t('The evidence record could not be read, so this list is not shown. Nothing else on this page is affected.', '无法读取证据记录，因此这份清单暂不显示。本页其他内容不受影响。') }}</p>
   {% else %}
-  <p class="sec-sub">{{ t('Start at the top. That is where something new was written down most recently — not where the best idea is.', '从最上面开始看。那里是最近刚被记录下新内容的地方——而不是最好的主意所在。') }}</p>
+  <p class="sec-sub">{{ t('Start at the top. The list runs by the date something was last written down about each theme, newest first; themes written down on the same day run by how many statements were recorded that day. It is not where the best idea is.', '从最上面开始看。这份清单按每个主题最后一次被记录下内容的日期排列，最新的在前；同一天记录的主题，按当天记录的条数排列。它并不是最好的主意所在。') }}</p>
   <p class="rp-rule">{{ t('Ordered by when we last recorded new evidence about each theme — newest first. Themes recorded on the same day are ordered by how many statements were recorded that day, then by name.', '按我们最近一次记录到该主题新证据的时间排序，最新的排在前面。同一天记录的主题，按当天记录的条数排序，条数相同再按名称排序。') }}</p>
   <ol class="rp-list">
     {% for item in research_priority['items'] %}
@@ -362,10 +362,15 @@ html[data-theme="dark"] body::before{
     {% endif %}
     {% endfor %}
   </ol>
-  {% set ns = namespace(undated=false, shown=research_priority['items']|length) %}
+  {# ns.shown counts the DATED rows only — the undated block below is not part of the order. #}
+  {% set ns = namespace(undated=false, shown=0) %}
   {% for item in research_priority['items'] %}
-    {% if not item.last_recorded_date %}{% set ns.undated = true %}{% endif %}
+    {% if item.last_recorded_date %}{% set ns.shown = ns.shown + 1 %}{% else %}{% set ns.undated = true %}{% endif %}
   {% endfor %}
+  <p class="rp-note">{{ t('This is a reading order, not a score. It does not say a theme is more likely to work, worth more, or already in the price.', '这只是阅读顺序，不是评分。它并不表示某个主题更可能奏效、价值更高，或已被价格消化。') }}</p>
+  {% if research_priority.n_total > research_priority.max_items %}
+  <p class="rp-note"><span class="l-en">Showing {{ ns.shown }} of {{ research_priority.n_total }} themes in that order.</span><span class="l-zh">共 {{ research_priority.n_total }} 个主题，按该顺序显示其中 {{ ns.shown }} 个。</span></p>
+  {% endif %}
   {% if ns.undated %}
   <div class="rp-undated">
     <p class="rp-head">{{ t('No dated evidence yet', '尚无带日期的证据') }}</p>
@@ -382,15 +387,13 @@ html[data-theme="dark"] body::before{
     </ol>
   </div>
   {% endif %}
-  <p class="rp-note">{{ t('This is a reading order, not a score. It does not say a theme is more likely to work, worth more, or already in the price.', '这只是阅读顺序，不是评分。它并不表示某个主题更可能奏效、价值更高，或已被价格消化。') }}</p>
-  {% if research_priority.n_total > research_priority.max_items %}
-  <p class="rp-note"><span class="l-en">Showing the {{ ns.shown }} most recently updated of {{ research_priority.n_total }} themes.</span><span class="l-zh">共 {{ research_priority.n_total }} 个主题，显示最近更新的 {{ ns.shown }} 个。</span></p>
-  {% endif %}
   <details>
     <summary>{{ t('How this order is made', '这个顺序是怎么排的') }}</summary>
     <p class="rp-body">{{ t('Every line here comes from the theme evidence record. We read two things only: the day a statement about the theme was written down, and how many were written down that day. We do not read, and this page does not show, any measure of size, direction, how sure we are, or how much is already in the price — those are not built yet.', '这里的每一行都来自主题证据记录。我们只读两样东西：关于该主题的说法是哪一天记录的，以及当天记录了多少条。我们不读取、本页也不显示任何关于幅度、方向、把握程度或价格已消化程度的度量——这些尚未建成。') }}</p>
   </details>
+  {% if research_priority.asof %}
   <p class="rp-note"><span class="l-en">Evidence recorded up to {{ rp_date_en(research_priority.asof) }}</span><span class="l-zh">证据记录截至 {{ rp_date_zh(research_priority.asof) }}</span></p>
+  {% endif %}
   {% endif %}
 </section>
 {% endif %}

@@ -134,9 +134,30 @@ def _date_key(value: str) -> int:
     return int(year) * 10000 + int(month) * 100 + int(day)
 
 
-def to_payload(items: Sequence[PriorityItem], *, asof: str, state: str) -> dict:
+def max_recorded_date(items: Sequence[PriorityItem]) -> str | None:
+    """The latest evidence date actually present in `items`, or None.
+
+    This is the ONLY lawful source of the page's `asof` (seat ruling R1): it is
+    measured from the same rows that produced every `last_recorded_date` shown,
+    so the closing 'Evidence recorded up to ...' line cannot outrun the list
+    beneath it. Undated themes contribute nothing. Pure: no clock is consulted.
+    """
+    dates = [
+        item.last_recorded_date
+        for item in items
+        if item.last_recorded_date
+    ]
+    return max(dates) if dates else None
+
+
+def to_payload(items: Sequence[PriorityItem], *, asof: str | None, state: str) -> dict:
     """JSON-safe payload per §2.4. `asof` and `state` are supplied by the caller;
-    this module never asks a clock and never decides whether a store exists."""
+    this module never asks a clock and never decides whether a store exists.
+
+    `asof` is None whenever there is no evidence date to report — an unreadable
+    store, an empty one, or a population with no dated theme. The page omits the
+    line entirely in that case rather than printing a dash (seat ruling R1).
+    """
     if state not in _ALLOWED_STATES:
         state = "unavailable"
     seq = tuple(items)
@@ -145,9 +166,13 @@ def to_payload(items: Sequence[PriorityItem], *, asof: str, state: str) -> dict:
     if state in {"empty", "unavailable"}:
         shown = ()
         n_total = 0
+        asof = None
     elif not shown:
         state = "empty"
         n_total = 0
+        asof = None
+    if asof is not None:
+        asof = _as_calendar_date(str(asof))
     return {
         "schema": SCHEMA,
         "ordering_rule_id": ORDERING_RULE_ID,

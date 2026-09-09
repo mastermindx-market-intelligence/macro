@@ -1335,9 +1335,10 @@ def compose(root: Path) -> dict[str, Any]:
             tail_zh = f"；<b>{n_caut}</b> 个显得拥挤——不要追高"
         hero_zh = f"{n_themes} 个市场主题中，{lead_zh}{tail_zh}。"
 
+    # NOT overwritten with the page's `as_of`: research_priority.asof is the newest
+    # evidence date the loader actually read (seat ruling R1). The page snapshot clock
+    # and the evidence horizon are different facts and the section states the second.
     rp_payload = load_research_priority(root)
-    if isinstance(rp_payload, dict):
-        rp_payload["asof"] = as_of
 
     return {
         "as_of": as_of,
@@ -1430,6 +1431,38 @@ def load_primary_basket_ids(root: Path) -> dict[str, str]:
         return {}
 
 
+class StoreUnreadable(RuntimeError):
+    """The theme-graph store could not be OPENED — §2.4 'unavailable', not 'empty'.
+
+    ``store.read_nodes`` / ``store.read_edges`` return an empty frame for a missing
+    file AND for a corrupt one (``engine/theme_graph/store.py::_read`` swallows both),
+    so a caller that reads only their return value cannot tell an unreadable record
+    from a record that is genuinely empty. The distinction is the whole of §2.4, so
+    this loader checks the parquet files itself and raises this instead.
+    """
+
+
+def _assert_theme_store_readable(store: Any) -> None:
+    """Raise StoreUnreadable when either store file is missing or unparseable.
+
+    Column-projected so the probe reads the parquet footer plus one column, not the
+    whole table; a truncated or non-parquet file raises here exactly as it would in
+    ``_read``, where the exception is swallowed.
+    """
+    import pandas as pd  # noqa: PLC0415
+
+    for path, column in (
+        (store.nodes_path(), "node_id"),
+        (store.edges_path(), "edge_id"),
+    ):
+        if not path.exists():
+            raise StoreUnreadable(f"{path.name} does not exist")
+        try:
+            pd.read_parquet(path, columns=[column])
+        except Exception as exc:  # noqa: BLE001
+            raise StoreUnreadable(f"{path.name} is unreadable ({exc})") from exc
+
+
 def load_research_priority(root: Path) -> dict[str, Any]:
     """Read the theme-graph current-belief view and return the §2.4 payload.
 
@@ -1439,27 +1472,33 @@ def load_research_priority(root: Path) -> dict[str, Any]:
     write_page` at main(): engine.theme_graph.store pulls in lib.config -> yaml
     and pandas, and a module-scope import would red the lean pytest batch that
     runs tests/test_state_of_themes.py without them).
-    """
-    from engine import research_priority_ordering as rp  # noqa: PLC0415
 
-    asof = "—"
+    `asof` is measured from the evidence rows this call actually read (seat ruling
+    R1), never from the site snapshot clock: the builder introduces no second clock
+    and reports no date the list beneath it cannot show.
+    """
+    rp = None
     try:
-        state = _load_json(root / "site" / "neuralwebdata" / "theme_state.json")
-        if isinstance(state, dict):
-            asof = state.get("as_of", "—") or "—"
-    except Exception:  # noqa: BLE001
-        asof = "—"
-    try:
+        from engine import research_priority_ordering as rp  # noqa: PLC0415
         from engine.theme_graph import store  # noqa: PLC0415
+
+        # §2.4: an unopened store is 'unavailable'; only a store we DID open and
+        # found bare is 'empty'. read_nodes/read_edges cannot tell them apart.
+        _assert_theme_store_readable(store)
 
         nodes = store.read_nodes(current=True)
         edges = store.read_edges(latest_belief=True)
 
         theme_nodes: dict[str, tuple[str, str]] = {}
         if nodes is not None and len(nodes):
-            node_view = nodes[["node_id", "kind", "name_en", "name_zh"]]
+            node_view = nodes[["node_id", "kind", "name_en", "name_zh", "status"]]
             for rec in node_view.itertuples(index=False):
                 if str(rec.kind) != "theme":
+                    continue
+                # read_nodes(current=True) overlays lifecycle onto `status` but removes
+                # no row; store.py says an active-only caller must filter itself.
+                status = "" if rec.status is None else str(rec.status).strip().lower()
+                if status in store.RETIRED_LIKE_STATUSES:
                     continue
                 nid = "" if rec.node_id is None else str(rec.node_id)
                 if not nid:
@@ -1476,7 +1515,9 @@ def load_research_priority(root: Path) -> dict[str, Any]:
                 src = "" if rec.src is None else str(rec.src)
                 dst = "" if rec.dst is None else str(rec.dst)
                 raw = "" if rec.evidence_time is None else str(rec.evidence_time)
-                for nid in (src, dst):
+                # dict.fromkeys de-duplicates a self-loop (src == dst) while keeping
+                # order: §2.1 clause 2 counts EDGE ROWS, one per row.
+                for nid in dict.fromkeys((src, dst)):
                     if nid in theme_nodes:
                         touched.add(nid)
                         dates_by_node[nid].append(raw)
@@ -1492,14 +1533,29 @@ def load_research_priority(root: Path) -> dict[str, Any]:
         ]
         ordered = rp.order_items(themes)
         state_name = "empty" if not ordered else "ok"
-        payload = rp.to_payload(ordered, asof=asof, state=state_name)
-        payload["asof"] = asof
-        return payload
+        return rp.to_payload(
+            ordered, asof=rp.max_recorded_date(ordered), state=state_name
+        )
     except Exception as exc:  # noqa: BLE001
         log.warning("research_priority load failed (%s); page will show unavailable", exc)
-        payload = rp.to_payload((), asof=asof, state="unavailable")
-        payload["asof"] = asof
-        return payload
+        return _research_priority_unavailable(rp)
+
+
+def _research_priority_unavailable(rp: Any) -> dict[str, Any]:
+    """The §2.4 'unavailable' payload, built even when the module import is what failed."""
+    if rp is not None:
+        return rp.to_payload((), asof=None, state="unavailable")
+    return {
+        "schema": "mastermind.research_priority_ordering.v1",
+        "ordering_rule_id": "evidence_recency_then_daily_count_then_name",
+        "authority_ceiling": "research_priority_only",
+        "ledger_row": "MO-DELTA-006",
+        "asof": None,
+        "state": "unavailable",
+        "max_items": 12,
+        "n_total": 0,
+        "items": [],
+    }
 
 
 def write_research_priority(ctx: dict[str, Any], root: Path) -> Path | None:

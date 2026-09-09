@@ -2334,6 +2334,14 @@ jobs:
       # pair pins (visibility declarations, stance/lane inks, light-presence
       # fence, token cleanliness via scripts.check_design_system.scan_text —
       # repo-import only, no new deps), full checkout has site/. No new job.
+      # tests/test_research_priority_ordering.py (A-F04-W4-1, MO-DELTA-006) is the
+      # authority-ceiling census guard for Theme Tracker's uncalibrated reading-order
+      # section: it renders templates/state_of_themes.html.j2 end to end through
+      # scripts/build_state_of_themes.py (jinja2) and loads real tmp parquet stores
+      # through engine/theme_graph/store.py (pandas/pyarrow) to pin the §2.4
+      # ok/empty/unavailable contract — the same dependency set this step already
+      # installs. Theme Tracker's owning job unrun-subsector-themes is gate: data, so
+      # the suite is named here on the census step instead. No new job.
       - name: render-guard + engine-contract tests (rot sweep 2026-07-02)
         run: >
           python -m pytest
@@ -12364,6 +12372,7 @@ jobs:
       - "engine/ledger_lane.py"
       - "engine/news_flow.py"
       - "engine/policy_calendar.py"
+      - "engine/research_priority_ordering.py"
       - "engine/sector_legs.py"
       - "engine/sector_signals.py"
       - "engine/session_anchor.py"
@@ -12380,7 +12389,6 @@ jobs:
       - "engine/theme_graph/__init__.py"
       - "engine/theme_graph/store.py"
       - "engine/theme_revisions.py"
-      - "engine/research_priority_ordering.py"
       - "engine/themes_heatmap.py"
       - "engine/vol_forecast.py"
       - "engine/vol_regime.py"
