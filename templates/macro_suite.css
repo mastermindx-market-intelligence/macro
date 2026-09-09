@@ -696,6 +696,11 @@ html[data-theme="light"] .mq-hub-absent {
     min-width: 0;
     max-width: 100%;
   }
+  /* Overflow stays VISIBLE so capture content_overflows can see clips;
+     wrapping — not overflow-x:hidden — is what keeps prose inside the box.
+     Cause (E-B2): Weights-law / method prose lives in .mq-method-grid dd,
+     not in p; wrap rules that only hit p left dd line boxes wider than
+     .mq-axis-method and the old overflow-x:hidden silently clipped them. */
   section.mq-method,
   section.mq-method details.mc-details,
   section.mq-method .mq-axis-method,
@@ -704,16 +709,25 @@ html[data-theme="light"] .mq-hub-absent {
     max-width: 100%;
     min-width: 0;
     box-sizing: border-box;
-    overflow-x: hidden;
+    overflow-x: visible;
   }
   section.mq-method p,
-  section.mq-method .mc-details-body > p {
+  section.mq-method .mc-details-body > p,
+  section.mq-method .mq-method-grid dd,
+  section.mq-method .mq-method-grid dt,
+  section.mq-method .mq-axis-method {
     overflow-wrap: anywhere;
     word-break: break-word;
+    min-width: 0;
+    max-width: 100%;
   }
   section.mq-method .mq-method-grid {
     min-width: 0;
     grid-template-columns: minmax(0, 1fr);
+  }
+  section.mq-method .mq-method-grid > div {
+    min-width: 0;
+    max-width: 100%;
   }
   section.mq-method .mq-table {
     width: 100%;

@@ -27,6 +27,18 @@ class CaptureGeometryError(RuntimeError):
         self.raw_box = dict(raw_box) if raw_box else None
 
 
+class CaptureContentClippedError(RuntimeError):
+    """Painted content inside a crop is clipped — never commit as DONE."""
+
+    def __init__(
+            self, message: str, *, overflows: Sequence[Mapping[str, Any]] | None = None,
+            page: str = "", state: str = "") -> None:
+        super().__init__(message)
+        self.overflows = [dict(o) for o in (overflows or [])]
+        self.page = page
+        self.state = state
+
+
 def _filter_locale_nodes(
         nodes: Sequence[Mapping[str, Any]], locale: str
         ) -> list[dict[str, Any]]:
@@ -181,18 +193,13 @@ def y_coverage(
         samples: Sequence[Mapping[str, Any]],
         crop_box: Mapping[str, Any],
         ) -> float:
-    """Fraction of crop height spanned by sample ys (0..1).
+    """Honest fraction of crop height spanned by sample ys: (last−first)/h.
 
-    Inclusive edge sampling (±4 px inset) cannot reach (h−8)/h ≥ 0.95 on short
-    crops. When the first/last samples land within 8 px of the sample-box
-    top/bottom, treat coverage as complete (1.0) — the edges were probed.
+    Never short-circuits to 1.0. Short crops (<40 px) use a 3-sample grid
+    and are exempt from the ≥0.95 floor at the call site — not here.
     """
     ys = [float(s["y"]) for s in samples if "y" in s]
     h = float(crop_box.get("height") or 0)
     if not ys or h <= 0:
         return 0.0
-    top = float(crop_box.get("y") or 0.0)
-    bottom = top + h
-    if min(ys) <= top + 8.0 and max(ys) >= bottom - 8.0:
-        return 1.0
     return max(0.0, min(1.0, (max(ys) - min(ys)) / h))

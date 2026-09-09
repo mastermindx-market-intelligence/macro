@@ -126,12 +126,49 @@ def test_grid_sample_points_inclusive_fifteen() -> None:
     assert cov >= 0.95
 
 
+def test_y_coverage_is_honest_span_over_height() -> None:
+    """E-M1: no within-8px → 1.0 short-circuit; coverage is (last−first)/h."""
+    box = {"x": 0, "y": 0, "width": 100, "height": 100}
+    # First/last within 8 px of edges must NOT force 1.0.
+    cov = y_coverage([{"y": 4}, {"y": 92}], box)
+    assert cov == pytest.approx(0.88)
+    assert cov < 0.95
+
+
+def test_capture_content_clipped_error_exists() -> None:
+    from scripts.macro_command_capture_guards import CaptureContentClippedError
+    err = CaptureContentClippedError("x", overflows=[{"kind": "text"}])
+    assert err.overflows[0]["kind"] == "text"
+
+
+def test_no_stitch_path_in_element_shot() -> None:
+    import inspect
+    from scripts import capture_macro_command_p5 as cap
+    src = inspect.getsource(cap._element_shot_guarded)
+    assert "needs_stitch" not in src
+    assert "has_hscroll" not in src
+    assert "_stitch_png_bytes" not in src
+    assert "stitched" not in src
+    assert "content_overflows" in src
+    assert "shot_viewport" in src
+
+
+def test_scroll_clear_no_class_strip() -> None:
+    import inspect
+    from scripts.capture_macro_command_p5 import _scroll_clear_of_chrome
+    src = inspect.getsource(_scroll_clear_of_chrome)
+    assert "classList.remove('nav-open')" not in src
+    assert "classList.remove(\"nav-open\")" not in src
+    assert "Escape" in src or "press" in src.lower() or "toggle" in src
+
+
 def test_no_element_text_alias_assignment_in_capture() -> None:
     """C-M2: grep receipt — no alias of element_text_sha256 from extra[."""
     from pathlib import Path
     src = Path("scripts/capture_macro_command_p5.py").read_text(encoding="utf-8")
     assert 'element_text_sha256"] = extra[' not in src
     assert "element_text_sha256'] = extra[" not in src
+    assert "TEXT_RECEIPT_PATHS" in src
 
 
 def test_scroll_clear_requires_crop_box() -> None:
