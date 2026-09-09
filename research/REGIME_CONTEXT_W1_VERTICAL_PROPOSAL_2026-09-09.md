@@ -82,3 +82,35 @@ unchanged and its complete receipt is current_conditioning_coverage.json beside 
 W2 must define actual future events/horizons and compare against persistence, prevalence, and continuous-
 feature baselines through the existing evaluation owner. W1 descriptive value is not W2 predictive skill;
 W2 skill is not permission to alter portfolio weights. No downstream wave is assigned by this document.
+
+## Current-source consumer closure (additional 2026-09-09 investigation)
+Rechecked on macro `a55b08aa09c99ef36dc7500c63371126e3d46008`. The concrete US path is
+`world_state._compose_regime` -> `brief_context._block_market_core` / `macro_slice` ->
+`master_brain.gather_state()['neural_web']` -> `master_brain.synthesize` / `run(lens='macro')` ->
+`data/regime/master_brief.json` and `site/master_brief.json` -> the existing AI briefing surface
+(`templates/aibrief.html.j2`, existing paired briefing JavaScript). No separate regime page is needed.
+
+**Prior-run context is intentional, not a scheduler defect.** Daily source calls master_brain around
+line3489 and build_world_state around4346. ADB-R1 in `AI_DAILY_BRIEF_DEEPWIRE_MASTERPLAN_BY_FABLE.md`
+explicitly requires committed prior-run context. W1 must not reorder those jobs, add a second world
+builder, or call the old context current-session evidence. The probability object's own asof travels
+through the projection and must not be replaced by the fresh briefing/verdict timestamp.
+
+**A dry-looking caller is not necessarily read-only.** `master_brain.run(persist=False)` still calls
+`_append_ledger` for the macro lens after synthesis (source lines2774-2775). Never invoke this as a
+read-only production probe. Fixture tests must isolate the root and intercept model calls and ledger
+effects. Real product proof uses the accepted normal production generator, not a forced paid re-call.
+
+**Compact nesting proposal:** add an optional `regime.probability_context` projection, containing only
+the producer's current p, asof, model_fit_asof, source, hard-label agreement, degraded/degrade_reason,
+confidence_basis, and optional momentum with its basis/false replay eligibility. Reuse source field
+names; do not invent a schema-wide version bump or another posterior. Numeric values and their caveats
+form one indivisible context object. The existing10,240-byte macro budget can drop the whole object,
+never retain a number while discarding its basis. No reconstructed history list is included.
+
+**Consumer quality gate:** distinguish a current-state estimate from a future-event forecast in both
+prompt evidence and visible wording. ADB-R2/R3/R11/R13 continue to govern budget, same-tape dependence,
+staleness and zero signal authority. Respect ADB-R16's existing Synapse reader registrations; a new
+literal source read needs its existing-owner registration, not a duplicate registry. This closure
+narrows the proposed build packet; interface ratification, writer/collision census and browser proof
+remain owed. W1 is still SPEC_ONLY and does not authorize a source change on its own.

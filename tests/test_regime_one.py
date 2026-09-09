@@ -585,3 +585,29 @@ def test_hmm_oversized_integer_refuses_in_reader_and_append(tmp_path, monkeypatc
     _stub_hmm_accrual(tmp_path, monkeypatch, "2026-07-02")
     assert R.accrue_hmm_row(tmp_path) is False
     assert p.read_bytes() == before
+
+
+@pytest.mark.parametrize("values,valid", [
+    ((.2499, .2499, .25, .25), True),
+    ((.2501, .2501, .25, .25), True),
+    ((.2499, .2499, .2499, .25), False),
+    ((.2501, .2501, .2501, .25), False),
+])
+def test_hmm_reader_preserves_exact_rounding_boundary(tmp_path, values, valid):
+    row = _saved_hmm_row()
+    row["p_quad_filtered"] = dict(zip(("Q1", "Q2", "Q3", "Q4"), values))
+    row["pred_modal_quad"] = max(row["p_quad_filtered"], key=row["p_quad_filtered"].get)
+    p = _write_hmm_test_ledger(tmp_path, [row])
+    before = p.read_bytes()
+    out = R.read_hmm_issuance(row["asof"], tmp_path)
+    assert out["status"] == ("legacy_record" if valid else "invalid_record")
+    assert out["recorded_prediction"] == (row["p_quad_filtered"] if valid else None)
+    assert p.read_bytes() == before
+
+
+def test_hmm_history_suites_are_named_by_real_ci_run_steps():
+    from scripts import audit_unrun_tests as audit
+    blob = audit._workflow_blob()
+    for name in ("test_regime_one.py", "test_regime_hmm.py",
+                 "test_validate_regime_fwd.py", "test_perception_contracts.py"):
+        assert audit._named_by_a_run_step("tests/" + name, blob, frozenset()), name

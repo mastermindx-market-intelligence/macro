@@ -19,7 +19,7 @@ changed:
 verified:
   - claim: Existing and added model, reader, CLI, and append tests pass.
     command: python3 -B -m pytest tests/test_regime_one.py tests/test_regime_hmm.py tests/test_validate_regime_fwd.py tests/test_perception_contracts.py -q
-    result: 82 passed after the independently identified oversized-integer regression was reproduced and repaired; numerical thread counts1; sparse-checkout data guard retained.
+    result: 87 passed after overflow repair, four rounding-boundary cases and RED-to-GREEN real-CI registration; numerical thread counts1; sparse-checkout data guard retained.
   - claim: Actual CLI reads committed legacy records and refuses missing dates without writing.
     command: Existing validator main/parser over a temporary mount of the exact477b9c3 ledger; source and before/after hashes in recorded_input_cli_proof.json.
     result: 40 source rows; first/last inspections exit0 as legacy_record, missing date exit1; bytes unchanged and no output files created.
@@ -28,13 +28,13 @@ verified:
     result: Empty delta on those paths.
 prs: [7015]
 unverified:
-  - claim: Independent exact-head review and concluded integration checks.
+  - claim: Review of the CI-registration/test/evidence delta and concluded hosted integration checks.
     what_would_verify: Reviewer return plus current candidate CI and source-continuity receipts on the same PR.
   - claim: Natural production adoption of the new row metadata and consumer.
     what_would_verify: Normal nightly writer at accepted source plus production read-only inspection of its saved row; no manual accrual.
   - claim: Source-vintage correctness and calibrated forecasting/portfolio improvement.
     what_would_verify: Existing-owner PIT replay and preregistered forward evaluation; timestamps alone do not establish either.
-discoveries: ["DSC:REGIME-FILTERED-HISTORY-USES-LATER-FIT"]
+discoveries: ["DSC:REGIME-FILTERED-HISTORY-USES-LATER-FIT", "DSC:REGIME-TESTS-WERE-GRANDFATHERED-CI-DARK"]
 unresolved:
   - Source is not yet a production acceptance; full neural-web integration remains a separate continuation.
   - Broad GraphQL open-PR file census failed; do not describe a complete estate-wide collision clearance.
@@ -42,7 +42,7 @@ next_actions:
   - Review the exact source candidate and current main changes; retain this branch/PR as the single carrier.
   - Conclude applicable CI and normal release checks without bypass or unrelated main fixes.
   - After accepted delivery, inspect one naturally emitted production record through the existing reader.
-  - Then define one real dossier or briefing integration; preserve the broader regime-intelligence thesis.
+  - Then ratify the source-audited W1 briefing contract; preserve intentional prior-run context, actual source clocks and existing consumer ownership.
 do_not_redo:
   - No replacement HMM, probability store, memory plane, event plane, or risk scorecard.
   - No historical reissuance, source-vintage certification, or grading-threshold change in W0.
@@ -56,4 +56,9 @@ danger_areas:
 
 This is a recoverable CI/review checkpoint, not a claim the program is finished or a runtime liveness record.
 Protected procedure: Mastermind686af274d8ae1558f3f3ae35e0b3aae68be80a01, Skillpack1.0.1/bootstrap1.
-Finite read-only technical reviews were attempted: Astra failed with unsupported-client400; two Sonnet calls returned empty results; Terra returned one actionable overflow finding. All those processes exited and no watcher or Executive Job was created. The finding was reproduced with two failing tests and repaired; exact repaired-head review is owed.
+Finite read-only technical reviews were attempted: Astra failed with unsupported-client400; two Sonnet calls returned empty results; Terra returned one actionable overflow finding. All those processes exited and no watcher or Executive Job was created. The finding was reproduced with two failing tests and repaired. A subsequent finite Terra read-only review of exact e4d6bf3 passed with no blocker; full result and scoped limits are in independent_review_r2.md. All review processes exited; no watcher was created. The later CI-registration/test/docs delta still requires review before release.
+
+Release audit discovered the four suites were grandfathered CI-dark. One existing macro job now names
+all four, its HMM dependency is declared, and exactly four baseline entries were removed. The new
+registration regression failed before the manifest repair and passed after it. Planner validates210
+existing jobs; this is not remote execution proof. Receipt: review_and_ci_registration.json.

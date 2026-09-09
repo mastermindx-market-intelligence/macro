@@ -56,3 +56,10 @@ No relevant occupied HMM worktree or exact-name open PR was found. The generated
 
 ## Stop / continuation
 Stop for source ownership conflict, unknown modifying effect, numerical policy drift, or a requirement for a new store. On return record exact head, tests, actual CLI evidence, missing production proof, and next action. The larger neural-web regime program is not complete when this slice is locally green.
+
+## Same-carrier completion amendment — CI registration
+The release audit found all four focused suites in the grandfathered unrun baseline. Scope therefore
+includes only their registration in the existing unrun-macro-panels job, its tested HMM dependency,
+four shrink-only baseline removals, and a regression using the existing run-source census. No new CI
+job, workflow, runner, authority exception or skip. RED:1 failure /4 passing rounding cases; GREEN:87
+focused tests. e4d6bf3 source review passed; the new configuration/test/evidence delta needs review.
