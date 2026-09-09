@@ -26,6 +26,7 @@ from engine.capital_policy_projection import (
     _EMPTY_REASON,
     _NO_RECORD,
     _NOT_WIRED,
+    _READ_FAILED_AUCTIONS,
     _READ_FAILED_EVENTS,
     _READ_FAILED_POLICY,
     project,
@@ -303,14 +304,24 @@ def test_3_window_map_is_frozen_and_total(monkeypatch):
 
 
 def test_4_all_six_windows_render_in_frozen_order(monkeypatch):
+    """T4, with the credit window under DEVIATION 13.
+
+    Spec §2.4, §2.6 and the §6 T4 row freeze `credit_new_issue` as `empty`.
+    §2.6 defines `empty` as "sources present, no dated step inside the horizon"
+    — and no bond-issuance source exists in v1, so `empty` would tell the
+    reader something untrue. The seat ruled in round 6 (R1) that the shipped
+    `unavailable` state with a not-wired sentence stands and is recorded as
+    numbered DEVIATION 13. This test therefore asserts the deviation, not the
+    frozen row; the frozen ORDER and the six-window guarantee are unchanged.
+    """
     _patch_engines(monkeypatch, events=[], calendar=_empty_calendar())
     payload = project(today=TODAY)
     ids = [w["window_id"] for w in payload["windows"]]
     assert ids == list(FROZEN_WINDOW_ORDER)
     credit = _window(payload, "credit_new_issue")
     assert credit["state"] == "unavailable"
-    assert credit["reason_en"] == _NOT_WIRED[0]
-    assert credit["reason_zh"] == _NOT_WIRED[1]
+    assert credit["reason_en"] == _NOT_WIRED["credit_new_issue"][0]
+    assert credit["reason_zh"] == _NOT_WIRED["credit_new_issue"][1]
     assert credit["rows"] == []
 
 
@@ -363,7 +374,7 @@ def test_6_every_row_has_an_allowlisted_public_source_url(monkeypatch):
     assert equity["state"] == "unavailable"
     # OPEX is wired to no source at all: that is the not-wired cause, not the
     # no-linked-record cause the number-less Federal Register rows carry.
-    assert equity["reason_en"] == _NOT_WIRED[0]
+    assert equity["reason_en"] == _NOT_WIRED["equity_new_issue"][0]
     assert payload["row_count"] == len(rows)
     blob = json.dumps(payload, ensure_ascii=False)
     assert "https://www.federalregister.gov/" not in blob.replace(
@@ -456,8 +467,11 @@ def test_11_max_rows_and_truncation_disclosed(tmp_path, monkeypatch):
     assert payload["row_count"] == MAX_ROWS
     html = _render_section(tmp_path, monkeypatch, payload)
     assert payload["truncation_en"] in html
-    assert f"{MAX_ROWS} dated steps shown." in html
-    assert f"已展示 {MAX_ROWS} 个节点。" in html
+    assert f"Showing the next {MAX_ROWS} dated steps; more are scheduled." in html
+    assert f"仅显示接下来的 {MAX_ROWS} 个既定日期节点，后续仍有安排。" in html
+    # A bare count would not tell the reader that anything was withheld.
+    assert "more are scheduled" in payload["truncation_en"]
+    assert "后续仍有安排" in payload["truncation_zh"]
 
 
 def test_12_artifact_budget_and_atomic_write(tmp_path, monkeypatch, capsys):
@@ -615,7 +629,7 @@ def test_15_section_raw_budget_holds_at_max_rows(tmp_path, monkeypatch):
     assert payload["row_count"] == MAX_ROWS
     assert payload["truncated"] is True
     assert _window(payload, "equity_new_issue")["state"] == "unavailable"
-    assert _window(payload, "equity_new_issue")["reason_en"] == _NOT_WIRED[0]
+    assert _window(payload, "equity_new_issue")["reason_en"] == _NOT_WIRED["equity_new_issue"][0]
     for row in _all_rows(payload):
         assert row["source_url"] == f"https://www.federalregister.gov/d/{REAL_FR_DOC}"
         assert len(row["source_url"]) == 44
@@ -699,13 +713,13 @@ def test_r4_1_production_opex_window_is_not_wired(tmp_path, monkeypatch):
     equity = _window(payload, "equity_new_issue")
     assert equity["state"] == "unavailable"
     assert equity["rows"] == []
-    assert equity["reason_en"] == _NOT_WIRED[0]
-    assert equity["reason_zh"] == _NOT_WIRED[1]
+    assert equity["reason_en"] == _NOT_WIRED["equity_new_issue"][0]
+    assert equity["reason_zh"] == _NOT_WIRED["equity_new_issue"][1]
     assert equity["reason_en"] != _NO_RECORD[0]
     html = _render_section(tmp_path, monkeypatch, payload)
     slice_ = _section_window_copy(html, "New share sales")
-    assert _NOT_WIRED[0] in slice_
-    assert _NOT_WIRED[1] in slice_
+    assert _NOT_WIRED["equity_new_issue"][0] in slice_
+    assert _NOT_WIRED["equity_new_issue"][1] in slice_
     assert _NO_RECORD[0] not in slice_
     assert _EMPTY_REASON[0] not in slice_
 
@@ -748,11 +762,11 @@ def test_r1_not_wired_renders(tmp_path, monkeypatch):
     payload = project(today=TODAY)
     credit = _window(payload, "credit_new_issue")
     assert credit["state"] == "unavailable"
-    assert credit["reason_en"] == _NOT_WIRED[0]
-    assert credit["reason_zh"] == _NOT_WIRED[1]
+    assert credit["reason_en"] == _NOT_WIRED["credit_new_issue"][0]
+    assert credit["reason_zh"] == _NOT_WIRED["credit_new_issue"][1]
     html = _render_section(tmp_path, monkeypatch, payload)
-    assert _NOT_WIRED[0] in html
-    assert _NOT_WIRED[1] in html
+    assert _NOT_WIRED["credit_new_issue"][0] in html
+    assert _NOT_WIRED["credit_new_issue"][1] in html
 
 
 def test_r1_genuine_empty_is_none_pending(tmp_path, monkeypatch):
@@ -782,12 +796,12 @@ def test_r2_clip_per_window_keeps_fomc_and_more_line(tmp_path, monkeypatch):
     assert rates["rows"][0]["event_en"].startswith("Fed rate decision")
     assert treasury["state"] == "present"
     assert len(treasury["rows"]) == MAX_ROWS - 1
-    assert treasury["more_en"] == "1 more step in this window is not shown."
-    assert treasury["more_zh"] == "本窗口另有 1 个既定日期节点未展示。"
+    assert treasury["more_en"] == "1 more dated step is not shown."
+    assert treasury["more_zh"] == "另有 1 个既定日期节点未展示。"
     html = _render_section(tmp_path, monkeypatch, payload)
     assert "Fed rate decision" in html
-    assert "1 more step in this window is not shown." in html
-    assert "本窗口另有 1 个既定日期节点未展示。" in html
+    assert "1 more dated step is not shown." in html
+    assert "另有 1 个既定日期节点未展示。" in html
     assert _EMPTY_REASON[0] not in _section_window_copy(html, "Policy-rate decision")
 
 
@@ -862,13 +876,13 @@ def test_r5_auction_house_copy_and_unmappable_drop(monkeypatch, tmp_path):
     rows = _window(payload, "treasury_supply")["rows"]
     assert len(rows) == 1
     assert rows[0]["event_en"] == "Treasury auctions 10-Year Note"
-    assert rows[0]["event_zh"] == "财政部拍卖10年期国债"
+    assert rows[0]["event_zh"] == "财政部拍卖10年期中期国债"
     blob = json.dumps(payload, ensure_ascii=False)
     for tok in DENYLIST:
         assert tok.lower() not in blob.lower(), tok
     html = _render_section(tmp_path, monkeypatch, payload)
     assert "Treasury auctions 10-Year Note" in html
-    assert "财政部拍卖10年期国债" in html
+    assert "财政部拍卖10年期中期国债" in html
     assert "Bond拍卖" not in html
     for tok in DENYLIST:
         assert tok.lower() not in html.lower(), tok
@@ -947,7 +961,8 @@ def test_r4_4_cache_staleness_uses_the_cache_date_not_mtime(tmp_path, monkeypatc
         second, sort_keys=True, ensure_ascii=False
     )
 
-    # A cache written for another day is stale whatever its mtime says.
+    # The cache file is found by the day in its own name, so each day answers
+    # from its own file and a day with no file answers `missing`.
     other = tmp_path / "data" / "macro" / "auction_cache" / "upcoming_2026-09-08.json"
     other.write_text("[]", encoding="utf-8")
     assert engine_projection._read_auction_cache(TODAY)[0] == "ok"
@@ -973,7 +988,7 @@ def test_r4_5_section_kicker_reads_dated_steps(tmp_path, monkeypatch):
     kicker = section[section.index('id="cs-pp-kicker"'):]
     kicker = kicker[:kicker.index("</p>")]
     assert "Dated steps" in kicker
-    assert "既定节点" in kicker
+    assert "既定日期节点" in kicker
     assert "Policy calendar" not in section
     assert "政策日历" not in section
 
@@ -1019,12 +1034,22 @@ def test_r7_missing_cache_is_unavailable(tmp_path, monkeypatch):
     payload = project(today=TODAY)
     treasury = _window(payload, "treasury_supply")
     assert treasury["state"] == "unavailable"
-    assert treasury["reason_en"] == _READ_FAILED_EVENTS[0]
-    assert treasury["reason_zh"] == _READ_FAILED_EVENTS[1]
+    # R6(R2): the missing file is the cached Treasury auction schedule. Naming
+    # the dated-event calendar here contradicts the window above, which the
+    # same build fills from that calendar.
+    assert treasury["reason_en"] == _READ_FAILED_AUCTIONS[0]
+    assert treasury["reason_zh"] == _READ_FAILED_AUCTIONS[1]
+    assert treasury["reason_en"] != _READ_FAILED_EVENTS[0]
     html = _render_section(tmp_path, monkeypatch, payload)
-    assert _READ_FAILED_EVENTS[0] in html
-    assert _READ_FAILED_EVENTS[1] in html
+    assert _READ_FAILED_AUCTIONS[0] in html
+    assert _READ_FAILED_AUCTIONS[1] in html
     assert _EMPTY_REASON[0] not in _section_window_copy(html, "Government borrowing")
+    # The event-calendar sentence never lands on the rates window in the same
+    # build: that calendar was read, it simply had nothing pending.
+    rates_copy = _section_window_copy(html, "Policy-rate decision")
+    assert _READ_FAILED_AUCTIONS[0] not in rates_copy
+    assert _READ_FAILED_AUCTIONS[1] not in rates_copy
+    assert _window(payload, "rates_policy")["reason_en"] != _READ_FAILED_AUCTIONS[0]
 
 
 def test_r7_never_calls_requests(tmp_path, monkeypatch):
@@ -1059,7 +1084,7 @@ def test_r7_never_calls_requests(tmp_path, monkeypatch):
     # entered and closed honestly rather than fetching.
     treasury = _window(payload, "treasury_supply")
     assert treasury["state"] == "unavailable"
-    assert treasury["reason_en"] == _READ_FAILED_EVENTS[0]
+    assert treasury["reason_en"] == _READ_FAILED_AUCTIONS[0]
     assert not (tmp_path / "data").exists()
     # The real event source is restored for the next test.
     assert engine_projection.event_calendar._fetch_upcoming_auctions.__name__ != "_closed"
@@ -1102,3 +1127,197 @@ def test_r8_policy_projection_never_returns_none(monkeypatch):
     assert len(payload["windows"]) == 6
     assert all(w["state"] == "unavailable" for w in payload["windows"])
     assert all(w["reason_en"] for w in payload["windows"])
+
+
+def test_r6_1_not_wired_copy_names_the_missing_calendar(tmp_path, monkeypatch):
+    """R6(R4 a): the sentence names the object, never an internal referent.
+
+    Nothing on the page is called a "window", so "this window" / "本窗口"
+    pointed at a word the reader never sees. Each window now says which
+    calendar is absent, and the two v1-reachable sentences differ from each
+    other so a reader can tell the share window from the bond window.
+    """
+    _patch_engines(
+        monkeypatch,
+        events=[_production_opex_event("2026-09-18")],
+        calendar=_empty_calendar(),
+    )
+    payload = project(today=TODAY)
+    equity = _window(payload, "equity_new_issue")
+    credit = _window(payload, "credit_new_issue")
+    assert equity["reason_en"] == (
+        "The equity-issuance calendar is not yet connected to this section."
+    )
+    assert equity["reason_zh"] == "本栏目暂未收录股票发行日历。"
+    assert credit["reason_en"] == (
+        "The bond-issuance calendar is not yet connected to this section."
+    )
+    assert credit["reason_zh"] == "本栏目暂未收录债券发行日历。"
+    assert equity["reason_en"] != credit["reason_en"]
+    assert equity["reason_zh"] != credit["reason_zh"]
+
+    section = _render_section(tmp_path, monkeypatch, payload)
+    assert equity["reason_en"] in _section_window_copy(section, "New share sales")
+    assert credit["reason_zh"] in _section_window_copy(section, "New bond sales")
+    # The internal referent and the IT-integration verb are gone from the
+    # whole rendered section, not only from these two sentences.
+    for token in ("this window", "本窗口", "接入", "wired"):
+        assert token not in section, token
+
+
+def test_r6_2_section_uses_one_chinese_name_for_the_object(tmp_path, monkeypatch):
+    """R6(R4 b): 既定日期节点 everywhere — kicker, headline, reasons, overflow."""
+    events = [
+        _macro_event("FOMC", (TODAY + timedelta(days=i)).isoformat(), label="FOMC decision")
+        for i in range(40)
+    ]
+    _patch_engines(monkeypatch, events=events, calendar=_empty_calendar())
+    payload = project(today=TODAY)
+    assert payload["truncated"] is True
+    section = _render_section(tmp_path, monkeypatch, payload)
+    kicker = section[section.index('id="cs-pp-kicker"'):]
+    kicker = kicker[:kicker.index("</p>")]
+    assert "既定日期节点" in kicker
+    # Every occurrence of the noun in the section is the same full name.
+    assert section.count("节点") == section.count("既定日期节点")
+    assert section.count("节点") >= 3, section.count("节点")
+
+
+def test_r6_3_entity_list_step_reads_as_a_plain_sentence(monkeypatch):
+    """R6(R4 c): the export-control row is a sentence, not a label fragment."""
+    _patch_engines(
+        monkeypatch,
+        events=[],
+        calendar={
+            "asof": TODAY.isoformat(),
+            "themes": {},
+            "upcoming_events": [],
+            "entity_list_events": [_policy_event(
+                day="2026-09-30", event_type="entity_list",
+                document_number=REAL_FR_DOC,
+            )],
+            "latency_summary": {},
+            "note": "fixture",
+        },
+    )
+    payload = project(today=TODAY)
+    row = _window(payload, "export_control")["rows"][0]
+    assert row["event_en"] == "An Entity List update takes effect"
+    assert row["event_zh"] == "实体清单更新生效"
+    assert "已定日期" not in row["event_zh"]
+
+
+def test_r6_4_auction_chinese_distinguishes_note_from_bond(monkeypatch):
+    """R6(R4 d): 中期国债 and 长期国债, not one 国债 for both."""
+    _patch_engines(
+        monkeypatch,
+        events=[
+            _auction_event("2026-09-20", tenor="10", kind="Note"),
+            _auction_event("2026-09-24", tenor="30", kind="Bond"),
+        ],
+        calendar=_empty_calendar(),
+    )
+    payload = project(today=TODAY)
+    rows = _window(payload, "treasury_supply")["rows"]
+    assert [r["event_en"] for r in rows] == [
+        "Treasury auctions 10-Year Note",
+        "Treasury auctions 30-Year Bond",
+    ]
+    assert [r["event_zh"] for r in rows] == [
+        "财政部拍卖10年期中期国债",
+        "财政部拍卖30年期长期国债",
+    ]
+    assert rows[0]["event_zh"] != rows[1]["event_zh"]
+    # Spec §2.4 freezes the placed auction types; the Chinese table may name a
+    # Bill, but a Bill row is never ingested by this section.
+    assert engine_projection._AUCTION_TYPE_ZH["Bill"] == "短期国债"
+    assert "Bill" not in engine_projection._AUCTION_TYPES
+
+
+def test_r6_5_a_none_payload_never_overwrites_the_artifact(tmp_path, monkeypatch):
+    """R6(R4 f): a build with no payload leaves the last good JSON alone."""
+    monkeypatch.setattr(page_builder, "_policy_watch", lambda today=None: _stub_watch())
+    monkeypatch.setattr(page_builder, "_policy_projection", lambda today=None: None)
+    _copy_templates(tmp_path)
+    artifact = tmp_path / "site" / "data" / "capital_policy_projection.json"
+    artifact.parent.mkdir(parents=True, exist_ok=True)
+    good = b'{"schema": "capital_policy_projection.v1"}\n'
+    artifact.write_bytes(good)
+
+    page_builder.render(tmp_path)
+    assert artifact.read_bytes() == good
+    assert b"null" not in artifact.read_bytes()
+    assert not list(artifact.parent.glob(".*.tmp"))
+    # The page itself still builds; only the section is withheld.
+    html = (tmp_path / "site" / "capital_structure.html").read_text(encoding="utf-8")
+    assert 'id="cs-policy-projection"' not in html
+
+
+def test_r6_6_the_build_memo_refuses_a_second_day(tmp_path, monkeypatch):
+    """R6(R4 g): the once-per-build memo cannot answer for a day it never ran.
+
+    `_compute_once` stores one result keyed on nothing, so a caller asking for
+    a different day was handed the first call's answer in silence. The chip
+    asks with `today=None` and the section leaf asks with a concrete date, and
+    both mean the same day — so the guard resolves `None` before comparing and
+    only a genuinely different day raises. A guard on `today is not None`
+    instead would fire on every real build: `project()` resolves `None` to
+    `date.today()` before it calls the calendar, and it swallows exceptions
+    into an `unavailable` window, so the two policy windows would silently go
+    dark. This test proves both halves: the real build still fills them, and a
+    differing day is refused in words.
+    """
+    calls = {"n": 0}
+
+    def fake_cal(df=None, today=None):
+        calls["n"] += 1
+        return {
+            "asof": TODAY.isoformat(),
+            "themes": {},
+            "upcoming_events": [_policy_event(
+                day=(TODAY + timedelta(days=16)).isoformat(),
+                event_type="comment_close",
+                document_number=REAL_FR_DOC,
+            )],
+            "entity_list_events": [],
+            "latency_summary": {},
+            "note": "fixture",
+        }
+
+    monkeypatch.setattr("engine.policy_calendar.compute_policy_calendar", fake_cal)
+    monkeypatch.setattr(
+        "engine.event_calendar.us_macro_events",
+        lambda today=None, horizon_days=14, use_fred=True: [],
+    )
+    monkeypatch.setattr("engine.capital_policy_projection.config.ROOT", tmp_path)
+    monkeypatch.setattr(page_builder, "_policy_watch", lambda today=None: _stub_watch())
+    _copy_templates(tmp_path)
+
+    seen = {}
+    real_projection = page_builder._policy_projection
+
+    def capture(today=None):
+        import engine.policy_calendar as _pc
+        seen["fn"] = _pc.compute_policy_calendar
+        return real_projection(today=today)
+
+    monkeypatch.setattr(page_builder, "_policy_projection", capture)
+    page_builder.render(tmp_path)
+
+    # The guard did not fire on the real build: one call, and the window the
+    # policy calendar feeds is filled rather than blanked.
+    assert calls["n"] == 1
+    artifact = json.loads(
+        (tmp_path / "site" / "data" / "capital_policy_projection.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    disclosure = _window(artifact, "disclosure_regulatory")
+    assert disclosure["state"] == "present", disclosure
+
+    wrapper = seen["fn"]
+    assert wrapper is not fake_cal
+    other_day = TODAY - timedelta(days=400)
+    with pytest.raises(RuntimeError, match="one day only"):
+        wrapper(today=other_day)
+    assert calls["n"] == 1
