@@ -47,3 +47,20 @@ Do not rewrite `can_force`, `authority`, any previously published artifact, or a
 This candidate does NOT settle the audit/eligibility owner's construction-identity gate or
 prove that withholding a new inferred sizing field preserves every downstream policy.
 Source installation/release remains held until those real consumers and independent review pass.
+
+## September9 scoped amendment
+
+Clauses9–10 retain the existing latest30-ranked-observation comparison but no longer
+claim that checking those dates alone establishes comparable derived-input membership.
+The helper now also qualifies their canonical trailing504-finite-raw-observation rank
+reference union, including missing benchmark sessions within that span. Existing
+composition metadata carries the reference counts; no threshold/confidence score is
+invented. RRU_REFERENCE_WINDOW_SCOPE_2026_09_09.md preserves the frozen tests, earlier
+contradictory expectation, correction and remaining independent boundary review.
+
+The same research bundle now preserves valid prospective composition by value through
+the existing pure forward-entry constructor, adapting the earlier inline proposal in
+PR6989 comment5593201090. Explicit malformed/unavailable modern metadata does not fall
+through as legacy. This creates no ledger or grant and changes no originally issued
+row. The actual method-compatible scorecard/runner authority gate remains unimplemented
+and still has its separately failing native test. All original release gates survive.

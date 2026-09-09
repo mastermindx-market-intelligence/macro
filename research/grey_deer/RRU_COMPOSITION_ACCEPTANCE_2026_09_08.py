@@ -17,6 +17,7 @@ from jinja2 import Environment, DictLoader, ChainableUndefined
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from engine import risk_radar_intl as radar, market_state, risk_radar_recovery as recovery
+from engine import risk_radar_intl_audit as radar_audit
 PIN = "eb9e91961ddc4f3043d0dad358602525e66eccda"
 PATHS = ("engine/risk_radar_intl.py", "engine/market_state.py",
          "engine/risk_radar_recovery.py", "templates/_risk_radar_card.html.j2")
@@ -32,7 +33,8 @@ RENDER_SOURCES = {PATHS[-1]: TEMPLATE}
 
 def apply_bundle(bundle):
     global TEMPLATE
-    modules = {PATHS[0]: radar, PATHS[1]: market_state, PATHS[2]: recovery}
+    modules = {PATHS[0]: radar, PATHS[1]: market_state, PATHS[2]: recovery,
+               "engine/risk_radar_intl_audit.py": radar_audit}
     for path, entry in bundle.items():
         text = SOURCES.get(path) or committed(path)
         if hashlib.sha256(text.encode()).hexdigest() != entry["base_sha256"]:

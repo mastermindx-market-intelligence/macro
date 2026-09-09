@@ -227,3 +227,39 @@ change(p, "  if(!sc||sc.sleeve_factor==null){ host.innerHTML=''; return; }", '''
     </div>`;
     return;
   }''')
+
+# Adapt the already-published proposal in PR6989 comment5593201090 to the actual
+# pure prospective-entry constructor. This does not call a ledger or eligibility gate.
+p = 'engine/risk_radar_intl_audit.py'
+SOURCES[p] = committed(p)
+edited[p] = SOURCES[p]
+change(p, '''    if not snap or not snap.get("asof") or snap.get("state") is None:
+        return None
+    return {
+''', '''    if not snap or not snap.get("asof") or snap.get("state") is None:
+        return None
+    if "composition" in snap:
+        composition = snap["composition"]
+        if (not isinstance(composition, dict) or composition.get("score_current") is not True
+                or composition.get("status") not in ("COMPLETE", "PARTIAL")):
+            return None
+        import json
+        try:
+            json.dumps(composition, allow_nan=False)
+        except (TypeError, ValueError):
+            return None
+    entry = {
+''', ['_entry_from_snapshot'])
+change(p, '''        "graded": None,
+    }
+
+
+def log_snapshot(''', '''        "graded": None,
+    }
+    if "composition" in snap:
+        from copy import deepcopy
+        entry["composition"] = deepcopy(snap["composition"])
+    return entry
+
+
+def log_snapshot(''', ['_entry_from_snapshot'])

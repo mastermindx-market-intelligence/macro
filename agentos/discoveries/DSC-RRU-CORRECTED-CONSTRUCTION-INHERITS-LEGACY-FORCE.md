@@ -37,3 +37,18 @@ At current-main read aa902f88d746bbc92279bc41903fc8bfa37ff11e, the corresponding
 engine, audit, runner and three affected consumer source blobs matched the fixture.
 This is source-comparison evidence, not whole-PR source custody or production proof.
 The candidate remains uninstalled; these two release counterexamples remain open.
+
+## Later same-continuation disposition
+
+The serialization finding is now closed in the uninstalled native candidate only.
+The older inline proposal in PR6989 comment5593201090 was recovered and adapted into
+the actual-module bundle: finite valid current metadata is retained by value; explicit
+invalid modern metadata cannot become a legacy entry. Before integration, the expanded
+ten-test suite had nine expected failures/one legacy control; afterwards10/10 passed
+with source bytes unchanged and no ledger I/O. Receipts: RRU_SERIALIZER_METADATA_RED
+and RRU_SERIALIZER_METADATA_GREEN_2026_09_09.txt under research/grey_deer/.
+
+This supersedes only the prior statement that both candidate counterexamples remain
+open. The actual force-grant counterexample remains open; preserving a method label
+is not filtering method cohorts or granting/removing a policy. Production source and
+all original issued records are unchanged. Independent review and release remain held.

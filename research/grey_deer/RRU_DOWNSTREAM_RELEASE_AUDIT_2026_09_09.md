@@ -159,3 +159,55 @@ RRU_DOWNSTREAM_BASELINE_RED_2026_09_09.raw.txt, SHA256
 cdf5b5b0075ac19c5824cd8c38edd354e54e17ffe4aa4b13d0a6e4fcc602bfa7.
 Published normalized receipt SHA256:
 e568a6fe79e9ed5a1f8668445664369824fe79b21daba5c6447f6721323f4332.
+
+## Recovered prior sandbox proposal — prospective metadata seam
+
+Fresh MAS-258 recovery exposed the earlier inline candidate in PR6989 comment5593201090
+(MastermindX1,2026-09-08). It already proposed deepcopy and explicit-modern-metadata
+guards for the prospective-entry constructor, with excerpt/sandbox tests. That proposal
+was not in the recovered native bundle. Its earlier source and tests are retained as
+prior evidence, not renamed as new work or treated as full actual-module proof.
+
+Next bounded research integration, frozen before additional tests: adapt that existing
+proposal to the actual `_entry_from_snapshot` via the same hash-bound in-memory bundle.
+Valid current COMPLETE/PARTIAL metadata must survive without aliasing; explicit null,
+non-mapping, stale/current-false, unavailable, non-finite or empty modern composition
+must not fall through as legacy. Absence of the field keeps the original legacy entry.
+No log_snapshot/grade_log/scorecard/governance function, file or ledger is invoked.
+This closes only preservation and diagnostic validity at serialization. It cannot grant
+method-compatible calibration or policy authority, cannot rewrite issued history and
+must leave the separate actual-force counterexample visible until its owner repairs it.
+
+## Latest native candidate result
+
+The actual serializer integration is now GREEN: process31422 first produced nine
+expected failures/one legacy control in ten tests; process36870 then produced10/10
+passes, zero errors, unchanged audit source and no ledger I/O. Evidence files are
+RRU_SERIALIZER_METADATA_RED_2026_09_09.txt and RRU_SERIALIZER_METADATA_GREEN_2026_09_09.txt.
+It closes the previously published serializer counterexample in this research candidate.
+The old counterexample remains valid for the unchanged production source.
+
+Process40820 reran the five existing suites plus the expanded serializer against the
+latest bundle:91+8+7+20+6+10=142 passing tests, exit0 in23.85s. Receipt:
+RRU_FINAL_NATIVE_REGRESSION_2026_09_09.txt. Separately, the reference-window suite passed
+30/30 before the audit-only serializer addition; its test and helper bytes stayed
+unchanged afterwards. These are172 distinct passing synthetic cases across those
+executed scopes, not one172-test final invocation, independent review or market trials.
+
+Process46126 rechecked the actual-force consumer on the latest bundle: one expected
+failure/one legacy control, zero errors, exit1. The corrected unreviewed construction
+still inherits a legacy can_force and imposes ceiling26 in that synthetic probe.
+RRU_FINAL_AUTHORITY_RED_2026_09_09.txt is the remaining executable release blocker.
+No boolean was cleared to conceal it. Source custody, calibrated applicability,
+independent review, raw-feed clocks and actual publication/browser proof remain held.
+
+Final prepublication process54077:1086 Agent OS records, zero errors,163 unchanged
+sparse-context warnings; validator exit0. Whitespace, six Python ASTs and an empty
+production-path diff versus eb9e919 also passed. Protected Skillpack master was freshly
+reread and remained686af274d8ae1558f3f3ae35e0b3aae68be80a01.
+Current reference helper SHA256:
+f30b7a4f7643d88776db00dabf25f79da8def30c990fc1f77628dcd24806cde8.
+Current unchanged30-case test SHA256:
+2582d5f8126cd63f7f65d63d2b35e5d94f45318ca2cc559211759ecc12f7adde.
+No full-worktree-clean claim is made: deliberately excluded earlier research outputs
+and the raw baseline receipt remain local. No blocked request was rerouted.

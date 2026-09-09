@@ -39,14 +39,15 @@ class CompositionEdges(unittest.TestCase):
         self.assertFalse(q['comparison_comparable'])
         self.assertEqual(q['comparison_incomplete_sessions'], 1)
 
-    def test_comparison_recovers_after_its_window_clears(self):
+    def test_recent_gap_clearance_does_not_clear_rank_reference_gaps(self):
         p = a.radar.PROFILES['cn']
         sub = a.fixture(p)
         for s in sub.values():
             s.iloc[-80:-70] = a.np.nan
         q = a.compute(p, sub)['composition']
-        self.assertTrue(q['comparison_comparable'])
+        self.assertFalse(q['comparison_comparable'])
         self.assertEqual(q['comparison_incomplete_sessions'], 0)
+        self.assertEqual(q['comparison_reference_incomplete_sessions'], 10)
 
     def test_old_score_date_is_retained_as_history_not_current(self):
         p = a.radar.PROFILES['cn']

@@ -49,7 +49,7 @@ unresolved:
   - The optional translation-helper edit was blocked; direct read found the original function unchanged and no retry followed.
   - Preserved catalysts remain hidden by the existing recovery present guard; freshness and full percentile-reference comparability remain unresolved.
 next_actions:
-  - Sol resolves construction-applicability semantics at the existing serializer, scorecard and runner attachment owners before a source release; close both named RED probes without a duplicate policy store or silent release of established restrictions.
+  - Sol resolves the remaining construction-applicability gate at the existing scorecard and runner attachment owners; preserve the now-tested prospective metadata serializer and close the actual-force RED without a duplicate policy store or silent release of established restrictions.
   - Resolve lawful source custody and independent review, then install producer and real consumers together with canonical-input publication proof.
   - Complete the new consumer visual matrix and preserve separate time/null, wrong-gauge, recovery visibility and regional early-turn waves.
 do_not_redo:
@@ -68,6 +68,7 @@ decisions:
   - "DEC:RRU-ARITHMETIC-NEEDS-COMPOSITION-TRUTH"
 discoveries:
   - "DSC:RRU-CORRECTED-CONSTRUCTION-INHERITS-LEGACY-FORCE"
+  - "DSC:RRU-RANK-COMPARISON-NEEDS-REFERENCE-COMPOSITION"
 ---
 
 # Same-carrier continuation
@@ -90,3 +91,42 @@ proposed output file was absent at readback and is not committed or treated as p
 The independent stdout-only checks above do not claim to recover that command's
 terminal result; its narrow diagnostic effect is unreconciled. No source, ledger,
 permission, lifecycle or remote publication mutation was requested by that command.
+
+## Subsequent repairs in this continuation
+
+The reference-composition guard now covers the finite-raw-observation rank-reference
+union, not only the latest30 ranked scores. The frozen all-ten-profile test produced
+20 expected failures/10 controls, then30/30 passes. One older edge test's 30-only
+clearance assumption contradicted that contract and was explicitly corrected; the
+five existing suites then passed132/132. Source and receipts are in
+RRU_REFERENCE_WINDOW_SCOPE_2026_09_09.md and its named RED/GREEN/regression files.
+This closes derived-composition reference coverage only, not raw-feed freshness or
+vintage and not independent exact-adjacent-boundary proof; that extra edit/run was
+blocked and not retried. Independent market-repair visibility remains incomplete.
+
+The earlier sandbox proposal at PR6989 comment5593201090 was recovered and integrated
+into the actual native prospective-entry constructor in memory. Ten serializer tests
+went from nine expected failures/one control to10/10 passing. Valid current metadata
+is copied without aliasing; malformed/null/unavailable modern metadata is not legacy.
+No ledger is opened, advanced or rewritten. This closes the candidate serialization
+seam, not method-cohort compatibility or force permission. The next_action field above
+now points to the single remaining actual-force counterexample and its existing owners.
+The old two-counterexample/30-only checkpoints are historical at their stated heads.
+
+Latest regression receipt: RRU_FINAL_NATIVE_REGRESSION_2026_09_09.txt, process40820,
+142 tests passed in the six-suite chain, exit0. The separately successful unchanged
+reference test/helper contributes30 additional synthetic cases; do not call this one
+172-test final invocation. The actual-force probe was rerun on the latest bundle and
+still has one expected failure/one legacy control, exit1 (process46126).
+The substantive source gate is now method-compatible eligibility/attachment, not the
+already-closed prospective-copy omission. Do not silence a previous active restriction
+or invent a new one while repairing that gate. The source-custody and review/proof
+requirements are unchanged. No worker, watcher, Executive Job or production claim exists.
+
+Final records verification after those repairs: process54077 returned1086 records,
+zero errors and163 baseline sparse-context warnings, validator exit0; whitespace,
+six Python ASTs and an empty production-path diff also passed. Governing protected
+Mastermind remained686af274d8ae1558f3f3ae35e0b3aae68be80a01 at publication preflight.
+Known local untracked evidence remains deliberately excluded, not deleted or silently
+committed. Latest source publication must be confirmed independently of these local
+proofs; none is hosted CI, production proof, lifecycle admission or final acceptance.
