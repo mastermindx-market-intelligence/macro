@@ -2,6 +2,15 @@
 
 Anonymous fixture render of `templates/state_of_themes.html.j2`, not the live VPS page. Theme and language were set on `<html>` via `localStorage` + `add_init_script` **before** load. `prefers-reduced-motion: reduce`. No mid-toggle. Frames are full-page captures of the Theme Tracker fixture (desktop 1440×900, mobile 390×844).
 
+What the fixture server did NOT serve (read `failed_responses` in the manifest for the
+authoritative list): all five Inter weights (`Inter-400/500/600/700/800.woff2`),
+`navigation-refresh.css`, `product-nav-icons.css`, `account.js`, `live.js`, `live_config.js`,
+`logo_config.js` and `stock-logos.js` all 404 against the fixture. **So every frame below renders
+in the fallback system stack, not the shipped Inter faces** — read the weight relationships in the
+mechanism table as relative, not as a specimen of the shipped typography. `theme.css` and
+`theme.js` ARE served, so `--panel` / `--line` / `--text` / `--muted` / `--card-shadow` resolve and
+the enclosure, rule-weight and ink mechanisms described below are the real ones.
+
 Which frames are which:
 
 - `/ok.html` — populated reading-order list (the eight REST cells: desktop/mobile × en/zh × dark/light).
