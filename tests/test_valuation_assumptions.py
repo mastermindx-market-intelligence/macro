@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import re
 import shutil
 import subprocess
@@ -61,6 +62,9 @@ def _extract_js(html: str) -> str:
 
 
 def test_per_share_at_matches_v1_for_every_frozen_scenario():
+    """R3(6): per_share_at at the cautious and upbeat triples equals V1's
+    scenario per-share values for the fixture (and at base, for the same
+    identity)."""
     blob = _v1_blob()
     assert blob is not None
     by_key = {s["key"]: s for s in blob["scenarios"]}
@@ -71,6 +75,12 @@ def test_per_share_at_matches_v1_for_every_frozen_scenario():
         got = va.per_share_at(ni, revenue, shares, g, m_pp, mult)
         expected = by_key[key]["per_share"]
         assert got == expected, (key, got, expected)
+    assert by_key["cautious"]["per_share"] == va.per_share_at(
+        ni, revenue, shares, -2, -1.5, 14
+    )
+    assert by_key["upbeat"]["per_share"] == va.per_share_at(
+        ni, revenue, shares, 7, 1.5, 22
+    )
 
 
 def test_controls_blob_default_equals_v1_base_card():
@@ -98,7 +108,7 @@ def test_controls_blob_default_equals_v1_base_card():
     assert blob_defaults == defaults
 
 
-def test_controls_blob_returns_the_null_shape_when_v1_base_card_disagrees():
+def test_controls_blob_returns_the_null_shape_when_v1_base_card_disagrees(caplog):
     """Section 2.6's equality is enforced, not assumed (round 6 ruling R2(b)).
 
     round2() here is half-up; V1's round() is half-to-even, so an exact
@@ -106,17 +116,27 @@ def test_controls_blob_returns_the_null_shape_when_v1_base_card_disagrees():
     the Base card printed directly above it, the panel is not shown at all --
     controls_blob returns the same null shape every other unusable-V1 branch
     returns, rather than painting a figure that contradicts the authority.
+    Round 8 R3(5): the guard logs a warning naming the issuer and both values
+    before it returns that null.
     """
     v1 = _v1_blob()
     assert va.controls_blob(v1) is not None
     by_key = {s["key"]: s for s in v1["scenarios"]}
-    assert va.controls_blob(v1)["server_default"]["per_share"] == by_key["base"]["per_share"]
+    sandbox_ps = va.controls_blob(v1)["server_default"]["per_share"]
+    assert sandbox_ps == by_key["base"]["per_share"]
     for delta in (0.01, -0.01):
         perturbed = json.loads(json.dumps(v1))
+        v1_ps = None
         for s in perturbed["scenarios"]:
             if s["key"] == "base":
                 s["per_share"] = round(s["per_share"] + delta, 2)
-        assert va.controls_blob(perturbed) is None, delta
+                v1_ps = s["per_share"]
+        with caplog.at_level(logging.WARNING, logger="engine.valuation_assumptions"):
+            caplog.clear()
+            assert va.controls_blob(perturbed) is None, delta
+        assert "AAPL" in caplog.text
+        assert str(sandbox_ps) in caplog.text
+        assert str(v1_ps) in caplog.text
 
 
 def test_controls_blob_is_none_when_v1_is_not_usable():
@@ -155,6 +175,17 @@ def test_margin_too_thin_and_nonpositive_never_render_a_number():
     revenue = 1.0e11
     ni_1_2_pct = revenue * 0.012
     assert va.per_share_at(ni_1_2_pct, revenue, FIXTURE_ROW["shares"], 3, -1.5, 18) is None
+    # Round 8 R3(3): a 1.2% margin base clears the floor, so the interactive
+    # panel ships, and the too-thin sentence is pinned verbatim in both
+    # languages on that render.
+    blob_12 = va.controls_blob(_v1_blob(ni=ni_1_2_pct, revenue=revenue))
+    assert blob_12 is not None
+    assert blob_12.get("too_thin_base") is not True
+    html_12 = _render_assumptions(blob_12, t=lambda en, zh: f"{en}|{zh}")
+    assert (
+        "Margins are too thin at this setting to produce a number."
+        "|在该设置下利润率过低，无法算出数值。"
+    ) in html_12
     # A positive raw under half a cent rounds to 0.00, which is not paintable:
     # per_share_at returns None, matching the JS twin (see T5's grid point).
     assert va.per_share_at(1.0e6, 1.0e8, 1.0e12, 0, 0, 8) is None
@@ -305,15 +336,15 @@ def test_bilingual_parity_and_no_zh_in_attributes():
     assert "同一批披露数据" in text
     assert "套用在按 SEC 披露的" in text
     assert "基准情景为 $" in text
-    # One notation for one unit inside one panel: the ZH footnote spells the
-    # multiple range the way the ZH readout above it prints the multiple
-    # (round 6 ruling R2(e)); "倍" never stands beside "×".
-    assert "8× 至 35×" in text
-    assert "8 倍至 35 倍" not in text
-    # "倍" never stands as the UNIT after a number anywhere in the panel; the
-    # control's frozen ZH label "市盈率倍数" (the noun) is what the footnote
-    # reuses, so label and readout name the same thing the same way.
-    for m in re.finditer(r"\d\s*倍", text):
+    # Frozen §2.5 ZH footnote restored (round 8 R2). Round 6 had rewritten it
+    # to '8× 至 35×' to match the readout; that departure is reversed. The
+    # unit-forbid regex exempts this frozen footnote and the frozen control
+    # label 市盈率倍数 — the only two lawful 倍 uses.
+    frozen_footnote_zh = "市盈率倍数 8 倍至 35 倍。"
+    frozen_label_zh = "市盈率倍数"
+    assert frozen_footnote_zh in text
+    remainder = text.replace(frozen_footnote_zh, "").replace(frozen_label_zh, "")
+    for m in re.finditer(r"\d\s*倍", remainder):
         raise AssertionError(f"ZH multiple printed with the 倍 unit: {m.group(0)!r}")
     # The live output region's accessible name comes from the bilingual t()
     # label next to it, not from a static English attribute.
@@ -507,6 +538,10 @@ def test_live_region_is_a_status_and_its_label_sits_outside_it():
 
 
 def test_no_js_default_state_is_correct_and_complete():
+    """T10 (round 8 R1 / R3(4)): server HTML ships disabled inputs, the no-JS
+    sentence in place of the move sentence, min/max/step on each input, and
+    each readout span.
+    """
     blob = va.controls_blob(_v1_blob())
     html = _render_assumptions(blob)
     stripped = re.sub(
@@ -522,13 +557,164 @@ def test_no_js_default_state_is_correct_and_complete():
     assert 'value="3"' in stripped or "value='3'" in stripped
     assert 'value="0"' in stripped or "value='0'" in stripped
     assert 'value="18"' in stripped or "value='18'" in stripped
-    assert "Interactive controls need JavaScript." in stripped
+    by_key = {c["key"]: c for c in blob["controls"]}
+    for key, el_id in (
+        ("sales_growth_pct", "va-ctl-sales_growth_pct"),
+        ("margin_delta_pp", "va-ctl-margin_delta_pp"),
+        ("earnings_multiple", "va-ctl-earnings_multiple"),
+    ):
+        tag = re.search(rf"<input[^>]*id=\"{el_id}\"[^>]*>", stripped)
+        assert tag, el_id
+        src = tag.group(0)
+        assert "disabled" in src, el_id
+        spec = by_key[key]
+        assert f'min="{spec["min"]}"' in src or f"min='{spec['min']}'" in src
+        assert f'max="{spec["max"]}"' in src or f"max='{spec['max']}'" in src
+        assert f'step="{spec["step"]}"' in src or f"step='{spec['step']}'" in src
+        assert f'id="va-read-{key}"' in stripped
+    assert "These inputs need JavaScript to move. The base case is shown." in stripped
+    zh_html = _render_assumptions(blob, t=lambda en, zh: zh)
+    zh_stripped = re.sub(
+        r"<script(?![^>]*type=\"application/json\")[^>]*>.*?</script>",
+        "",
+        zh_html,
+        flags=re.DOTALL | re.IGNORECASE,
+    )
+    assert "这些输入需要启用 JavaScript 才能调整，当前显示的是基准情形。" in zh_stripped
+    nojs_tag = re.search(r"<p[^>]*id=\"va-lede-nojs\"[^>]*>", stripped)
+    assert nojs_tag and "hidden" not in nojs_tag.group(0)
+    js_tag = re.search(r"<p[^>]*id=\"va-lede-js\"[^>]*>", stripped)
+    assert js_tag and "hidden" in js_tag.group(0)
+
+
+def test_js_enables_inputs_and_shows_the_move_sentence():
+    """Round 8 R1 JS-path: bootstrap removes disabled and reveals the move
+    sentence. Run under node against a minimal document mock of the served
+    markup, not against source greps.
+    """
+    node = shutil.which("node")
+    assert node, "node is required; install Node.js (fail loudly, never skip)"
+    blob = va.controls_blob(_v1_blob())
+    html = _render_assumptions(blob)
+    js = _extract_js(html)
+    island = re.search(
+        r'<script type="application/json" id="vs-assumption-inputs">(.*?)</script>',
+        html,
+        re.DOTALL,
+    )
+    assert island, "the JSON island is missing"
+    payload = json.loads(island.group(1))
+    with tempfile.TemporaryDirectory() as td:
+        tdir = Path(td)
+        (tdir / "boot.js").write_text(js, encoding="utf-8")
+        (tdir / "blob.json").write_text(json.dumps(payload), encoding="utf-8")
+        (tdir / "harness.js").write_text(
+            """
+const fs = require('fs');
+const vm = require('vm');
+const data = JSON.parse(fs.readFileSync('./blob.json', 'utf8'));
+const src = fs.readFileSync('./boot.js', 'utf8');
+function el(id, attrs) {
+  const o = {
+    id: id,
+    attrs: Object.assign({}, attrs),
+    value: (attrs && attrs.value != null) ? String(attrs.value) : '',
+    hidden: !!(attrs && attrs.hidden),
+    textContent: (attrs && attrs.textContent) || '',
+    classList: { add: function () {}, remove: function () {} },
+    addEventListener: function () {},
+    getAttribute: function (k) { return Object.prototype.hasOwnProperty.call(o.attrs, k) ? String(o.attrs[k]) : null; },
+    setAttribute: function (k, v) { o.attrs[k] = v; },
+    removeAttribute: function (k) { delete o.attrs[k]; },
+    querySelector: function () { return null; },
+    querySelectorAll: function () { return []; }
+  };
+  return o;
+}
+const elG = el('va-ctl-sales_growth_pct', {value: '3', disabled: ''});
+const elM = el('va-ctl-margin_delta_pp', {value: '0', disabled: ''});
+const elX = el('va-ctl-earnings_multiple', {value: '18', disabled: ''});
+const ledeNojs = el('va-lede-nojs', {});
+ledeNojs.hidden = false;
+const ledeJs = el('va-lede-js', {hidden: true});
+ledeJs.hidden = true;
+const island = el('vs-assumption-inputs', {});
+island.textContent = JSON.stringify(data);
+const byId = {
+  'vs-assumption-inputs': island,
+  'va-ctl-sales_growth_pct': elG,
+  'va-ctl-margin_delta_pp': elM,
+  'va-ctl-earnings_multiple': elX,
+  'va-out': el('va-out', {}),
+  'va-out-num': el('va-out-num', {}),
+  'va-out-null': el('va-out-null', {hidden: true}),
+  'va-bridge': el('va-bridge', {}),
+  'va-read-sales_growth_pct': el('va-read-sales_growth_pct', {}),
+  'va-read-margin_delta_pp': el('va-read-margin_delta_pp', {}),
+  'va-read-earnings_multiple': el('va-read-earnings_multiple', {}),
+  'va-lede-nojs': ledeNojs,
+  'va-lede-js': ledeJs,
+  'va-reset': null,
+  'va-presets': el('va-presets', {})
+};
+const document = {
+  getElementById: function (id) { return Object.prototype.hasOwnProperty.call(byId, id) ? byId[id] : null; },
+  querySelectorAll: function () { return []; },
+  addEventListener: function () {}
+};
+vm.runInNewContext(src, {
+  document: document,
+  module: {exports: {}},
+  globalThis: {},
+  JSON: JSON,
+  Number: Number,
+  Math: Math,
+  Infinity: Infinity,
+  Object: Object,
+  String: String,
+  parseInt: parseInt,
+  parseFloat: parseFloat
+});
+if (elG.getAttribute('disabled') !== null) {
+  throw new Error('sales_growth_pct still disabled');
+}
+if (elM.getAttribute('disabled') !== null) {
+  throw new Error('margin_delta_pp still disabled');
+}
+if (elX.getAttribute('disabled') !== null) {
+  throw new Error('earnings_multiple still disabled');
+}
+if (ledeNojs.hidden !== true) {
+  throw new Error('no-JS lede still visible');
+}
+if (ledeJs.hidden !== false) {
+  throw new Error('move sentence still hidden');
+}
+process.stdout.write('ok');
+""",
+            encoding="utf-8",
+        )
+        proc = subprocess.run(
+            [node, "harness.js"], cwd=tdir, capture_output=True, text=True
+        )
+        assert proc.returncode == 0, proc.stderr
+        assert proc.stdout.strip() == "ok"
+    assert "Move the three inputs below. The per-share number updates as you move them." in html
+    zh_html = _render_assumptions(blob, t=lambda en, zh: zh)
+    assert "调整下面三项输入，每股数值会随之更新。" in zh_html
 
 
 def test_module_is_pure():
     src = (ROOT / "engine" / "valuation_assumptions.py").read_text(encoding="utf-8")
     for banned in ("open(", "requests", "read_parquet", "datetime.now", "Path("):
         assert banned not in src, banned
+
+
+def test_missing_labels_imported_read_only_from_v1():
+    """Round 8 R3(7): spec §2.2 imports MISSING_LABELS from V1 read-only."""
+    assert va._V1_MISSING_LABELS is vs.MISSING_LABELS
+    src = (ROOT / "engine" / "valuation_assumptions.py").read_text(encoding="utf-8")
+    assert "from engine.valuation_scenario import MISSING_LABELS, SCENARIOS" in src
 
 
 def test_artifact_schema_shape():

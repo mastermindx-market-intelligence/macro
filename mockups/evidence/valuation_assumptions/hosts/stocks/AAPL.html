@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AAPL valuation panels</title>
+<script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);document.documentElement.classList.add('has-js');}catch(e){}</script>
+<link rel="stylesheet" href="../theme.css">
+<script defer src="../theme.js"></script>
+<style>
+*{box-sizing:border-box;}
+html body{font:400 13.5px/1.55 var(--font-ui);background:var(--bg);color:var(--text);margin:0;padding:24px 0 0;-webkit-font-smoothing:antialiased;}
+.num{font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
+.page-wrap{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:18px 26px 60px;}
+.mod{background:var(--glass-bg);border:1px solid var(--glass-brd);border-radius:18px;
+  box-shadow:var(--glass-shadow);backdrop-filter:blur(22px) saturate(150%);-webkit-backdrop-filter:blur(22px) saturate(150%);
+  padding:20px 24px 22px;min-width:0;margin:0 0 18px;}
+.mod-hd{display:flex;align-items:baseline;gap:10px;margin:0 0 16px;padding-bottom:12px;border-bottom:1px solid var(--hair, var(--line));}
+.mod-hd h2{display:flex;align-items:center;gap:10px;margin:0;font-size:15.5px;font-weight:650;letter-spacing:-.01em;}
+.mod-hd h2::before{content:"";width:3px;height:15px;border-radius:2px;flex-shrink:0;
+  background:linear-gradient(180deg,var(--link),color-mix(in srgb,var(--link) 30%,transparent));}
+.mod-hd .hint{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:500;white-space:nowrap;}
+.mod-ft{margin-top:14px;padding-top:10px;border-top:1px solid var(--hair, var(--line));font-size:11.5px;color:var(--muted);line-height:1.5;}
+html.has-js .rv{opacity:0;transform:translateY(16px);}
+html.has-js .rv.in{opacity:1;transform:none;transition:opacity .55s ease,transform .55s cubic-bezier(.22,.9,.26,1.02);}
+@media(prefers-reduced-motion:reduce){html.has-js .rv{opacity:1;transform:none;transition:none;}}
+.host-banner{margin:0 0 18px;font-size:12.5px;line-height:1.5;color:var(--muted);max-width:72ch;}
+</style>
+</head>
+<body>
+<div class="page-wrap">
+<p class="host-banner"><span class="l-en">Capture host for the valuation panels. This is not the full stock page.</span><span class="l-zh">估值模块的截图宿主页，不是完整的个股页。</span></p>
+
+<style>
+.vs-lede{margin:2px 0 16px;font-size:13px;line-height:1.55;color:var(--muted);max-width:62ch;}
+.vs-ruler{position:relative;height:64px;margin:6px 4px 30px;}
+.vs-ruler .vs-track{position:absolute;left:0;right:0;top:28px;height:6px;border-radius:var(--r-ctl,3px);
+  background:var(--line);border:1px solid var(--hair);}
+.vs-ruler .vs-mark{position:absolute;top:16px;width:12px;height:12px;border-radius:var(--r-ctl,3px);
+  transform:translateX(-50%);background:var(--muted);}
+.vs-ruler .vs-mark.m-base{background:var(--link);box-shadow:0 0 10px color-mix(in srgb,var(--link) 55%,transparent);}
+.vs-ruler .vs-mark.m-upbeat{background:color-mix(in srgb,var(--link) 55%,var(--text));}
+.vs-ruler .vs-mark.m-gap{background:transparent;border:1px dashed var(--hair);box-shadow:none;}
+.vs-ruler .vs-mark:hover,.vs-ruler .vs-mark:focus-visible{height:14px;top:15px;transition:height var(--t-fast,.14s) ease,top var(--t-fast,.14s) ease;}
+.vs-ruler .vs-lbl{position:absolute;top:44px;transform:translateX(-50%);font-size:10.5px;
+  font-weight:650;color:var(--muted);white-space:nowrap;text-align:center;}
+.vs-ruler .vs-lbl.below{top:auto;bottom:-14px;}
+.vs-ruler .vs-lbl b{display:block;font-size:11.5px;font-weight:750;color:var(--text);font-variant-numeric:tabular-nums;}
+.vs-ruler .vs-price{position:absolute;top:6px;bottom:6px;width:2px;background:var(--text);
+  box-shadow:0 0 0 3px var(--panel);}
+.vs-ruler .vs-price-lbl{position:absolute;top:-14px;transform:translateX(-50%);font-size:9.5px;
+  font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);white-space:nowrap;}
+[data-theme="light"] .vs-ruler .vs-track{background:transparent;border:none;border-bottom:1px solid var(--line);}[data-theme="light"] .vs-ruler .vs-mark{top:28px;border-radius:var(--r-ctl,2px);background:transparent;border:1.5px solid var(--muted);}
+[data-theme="light"] .vs-ruler .vs-mark:hover,[data-theme="light"] .vs-ruler .vs-mark:focus-visible{top:27px;}
+[data-theme="light"] .vs-ruler .vs-mark.m-base{background:var(--link);
+  border:1px solid color-mix(in srgb,var(--link) 55%,var(--panel));box-shadow:0 2px 6px -3px color-mix(in srgb,var(--text) 28%,transparent);}
+[data-theme="light"] .vs-ruler .vs-mark.m-upbeat{background:color-mix(in srgb,var(--link) 50%,var(--panel));border-color:var(--text);}
+[data-theme="light"] .vs-ruler .vs-mark.m-cautious{background:transparent;border-color:var(--muted);}
+[data-theme="light"] .vs-ruler .vs-mark.m-gap{background:transparent;border:1px dashed var(--hair);box-shadow:none;}
+[data-theme="light"] .vs-ruler .vs-price{width:1.5px;background:var(--text);box-shadow:0 0 0 3px var(--panel);}
+
+.vs-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+.vs-card{background:color-mix(in srgb,var(--panel2) 55%,transparent);border:1px solid var(--hair);
+  border-radius:var(--r-card,13px);padding:14px 15px;min-width:0;}
+[data-theme="light"] .vs-card{background:var(--panel);border:1px solid var(--hair);box-shadow:0 6px 18px -12px color-mix(in srgb,var(--text) 18%,transparent);}
+.vs-card .vk{font-size:10.5px;font-weight:650;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+[data-lang="zh"] .vs-card .vk{letter-spacing:0;text-transform:none;}
+.vs-card .vv{margin-top:6px;font-size:20px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;}
+.vs-card .vv.vv-null{font-size:12.5px;font-weight:600;color:var(--muted);}
+.vs-card .va{margin-top:8px;font-size:11.5px;line-height:1.5;color:var(--muted);}
+
+.vs-base{display:flex;flex-direction:column;gap:0;margin-top:2px;}
+.vs-base .r6{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:8px 0;
+  border-bottom:1px solid var(--hair);font-size:12.5px;}
+.vs-base .r6:last-child{border-bottom:none;}
+.vs-base .k6{color:var(--muted);}
+.vs-base .k6 small{display:block;font-size:10.5px;margin-top:2px;}
+.vs-base .v6{font-weight:650;text-align:right;font-variant-numeric:tabular-nums;}
+.vs-base .v6.v6-null{font-weight:500;color:var(--muted);font-variant-numeric:normal;}
+.vs-base .v6 em{display:block;font-style:normal;font-size:10px;font-weight:500;color:var(--muted);margin-top:2px;}.vs-thirdparty-null{margin-top:12px;padding-top:10px;border-top:1px solid var(--hair);
+  font-size:11px;line-height:1.5;color:var(--muted);}
+
+@media(max-width:720px){.vs-cards{grid-template-columns:1fr;}}
+@media(max-width:390px){
+  .vs-base .r6{flex-direction:column;gap:2px;align-items:flex-start;}
+  .vs-base .v6{text-align:left;}
+}
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="mod rv" id="valuation-scenario" data-valuation-scenario="v1">
+  <div class="mod-hd">
+    <h2><span class="l-en">What could it be worth?</span><span class="l-zh">可能值多少？</span></h2>
+    <span class="hint"><span class="l-en">reported SEC figures · FY2025</span><span class="l-zh">SEC披露数据 · 2025财年</span>
+      
+    </span>
+  </div>
+  <p class="vs-lede"><span class="l-en">Three sets of assumptions applied to AAPL's last reported year. Change the assumption, change the answer.</span><span class="l-zh">把三组假设套在AAPL最近一个披露财年上。假设变，答案就变。</span></p><div class="vs-ruler" role="img" aria-label="Per-share value scale across three assumption scenarios and today's price">
+    <div class="vs-track"></div>
+    
+    
+      
+      
+      <div class="vs-mark m-cautious" style="left:8.3%" tabindex="0"></div>
+      <div class="vs-lbl " style="left:8.3%"><span class="l-en">Cautious</span><span class="l-zh">保守</span><b>$98</b></div>
+      
+    
+      
+      
+      <div class="vs-mark m-base" style="left:43.9%" tabindex="0"></div>
+      <div class="vs-lbl below" style="left:43.9%"><span class="l-en">Base</span><span class="l-zh">基准</span><b>$141</b></div>
+      
+    
+      
+      
+      <div class="vs-mark m-upbeat" style="left:84.1%" tabindex="0"></div>
+      <div class="vs-lbl " style="left:84.1%"><span class="l-en">Upbeat</span><span class="l-zh">乐观</span><b>$188</b></div>
+      
+    
+    
+  </div>
+
+  <div class="vs-cards">
+    
+    
+      
+      <div class="vs-card">
+        <div class="vk"><span class="l-en">Cautious</span><span class="l-zh">保守</span></div>
+        
+        <div class="vv num">$98.23</div>
+        
+        <div class="va">
+          <span class="l-en">Sales fall 2% next year, margins narrow, valued at 14× the resulting earnings.</span><span class="l-zh">销售明年下滑2%，利润率收窄，按14倍计算后的净利润估值。</span>
+          
+        </div>
+        
+        
+        
+        
+        <div class="va vs-bridge"><span class="l-en">Vs base: growth -5pp, margin -1.5pp, multiple -4x — $140.57 to $98.23 (-30.1%).</span><span class="l-zh">相对基准：增速-5个百分点，利润率-1.5个百分点，倍数-4倍——$140.57 变为 $98.23（-30.1%）。</span></div>
+        
+      </div>
+    
+      
+      <div class="vs-card">
+        <div class="vk"><span class="l-en">Base</span><span class="l-zh">基准</span></div>
+        
+        <div class="vv num">$140.57</div>
+        
+        <div class="va">
+          <span class="l-en">Sales grow 3% next year, margins hold, valued at 18× the resulting earnings.</span><span class="l-zh">销售明年增长3%，利润率不变，按18倍计算后的净利润估值。</span>
+          
+        </div>
+      </div>
+    
+      
+      <div class="vs-card">
+        <div class="vk"><span class="l-en">Upbeat</span><span class="l-zh">乐观</span></div>
+        
+        <div class="vv num">$188.43</div>
+        
+        <div class="va">
+          <span class="l-en">Sales grow 7% next year, margins widen, valued at 22× the resulting earnings.</span><span class="l-zh">销售明年增长7%，利润率扩大，按22倍计算后的净利润估值。</span>
+        </div>
+        
+        
+        
+        
+        <div class="va vs-bridge"><span class="l-en">Vs base: growth +4pp, margin +1.5pp, multiple +4x — $140.57 to $188.43 (+34.0%).</span><span class="l-zh">相对基准：增速+4个百分点，利润率+1.5个百分点，倍数+4倍——$140.57 变为 $188.43（+34.0%）。</span></div>
+        
+      </div>
+    
+  </div>
+
+  <div class="vs-base kv6">
+    
+    <div class="r6"><span class="k6"><span class="l-en">Revenue</span><span class="l-zh">营业收入</span><small>FY2025 · <span class="l-en">Source: SEC filings</span><span class="l-zh">来源：SEC披露文件</span></small></span>
+      <span class="v6 num">$416.2B</span></div>
+    <div class="r6"><span class="k6"><span class="l-en">Operating income</span><span class="l-zh">营业利润</span><small>FY2025 · <span class="l-en">Source: SEC filings</span><span class="l-zh">来源：SEC披露文件</span></small></span>
+      <span class="v6 v6-null"><span class="l-en">not reported</span><span class="l-zh">未披露</span></span></div>
+    <div class="r6"><span class="k6"><span class="l-en">Net income</span><span class="l-zh">净利润</span><small>FY2025 · <span class="l-en">Source: SEC filings</span><span class="l-zh">来源：SEC披露文件</span></small></span>
+      <span class="v6 num">$112.0B</span></div>
+    <div class="r6"><span class="k6"><span class="l-en">Share count</span><span class="l-zh">股数</span><small>FY2025 · <span class="l-en">Source: SEC filings</span><span class="l-zh">来源：SEC披露文件</span></small></span>
+      <span class="v6 num">14.77B<em><span class="l-en">Shares outstanding, as reported</span><span class="l-zh">披露的流通股数</span></em></span></div>
+    <div class="r6"><span class="k6"><span class="l-en">Net cash / debt</span><span class="l-zh">净现金／净负债</span><small>FY2025 · <span class="l-en">Source: SEC filings</span><span class="l-zh">来源：SEC披露文件</span></small></span>
+      <span class="v6 v6-null"><span class="l-en">not reported</span><span class="l-zh">未披露</span></span></div>
+  </div>
+
+  <div class="vs-thirdparty-null" data-vs-thirdparty-null="1"><span class="l-en">This app does not license Wall Street's outside stock-picking research, so that layer is left empty here — shown honestly as missing, not filled in with a guess.</span><span class="l-zh">本应用未购买华尔街第三方研究机构的选股研究授权，因此这一层留空——如实标注为缺失，而不是用猜测填补。</span></div>
+  <div class="mod-ft"><span class="l-en">Research display only — not advice.</span><span class="l-zh">仅供研究展示，非投资建议。</span></div>
+</section>
+
+
+
+<style>
+.va-lede{margin:2px 0 16px;font-size:13px;line-height:1.55;color:var(--muted);max-width:62ch;}
+.va-ctls{display:flex;flex-direction:column;gap:14px;margin:4px 0 18px;}
+.va-ctl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;}
+.va-ctl label{font-size:12.5px;font-weight:650;color:var(--text);}
+.va-ctl .va-readout{font-variant-numeric:tabular-nums;font-weight:700;color:var(--link);font-size:12.5px;text-align:right;}
+.va-ctl .va-unit{font-size:11px;font-weight:500;color:var(--muted);text-align:right;}
+.va-ctl input[type=range]{grid-column:1 / -1;width:100%;accent-color:var(--link);height:22px;margin:0;background:transparent;}
+.va-out{margin:4px 0 14px;padding:14px 16px;background:color-mix(in srgb,var(--panel2) 55%,transparent);border:1px solid var(--hair);border-radius:var(--r-card,13px);}
+[data-theme="light"] .va-out{background:var(--panel);border:1px solid var(--hair);box-shadow:0 6px 18px -12px color-mix(in srgb,var(--text) 18%,transparent);}
+.va-out-k{font-size:10.5px;font-weight:650;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+[data-lang="zh"] .va-out-k{letter-spacing:0;text-transform:none;}
+/* Never louder than the server-computed authority it defers to: V1's
+   .vs-card .vv is 20px/800 with no glow, and this sandbox figure matches it. */
+.va-out-num{margin-top:6px;font-size:20px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;}
+.va-out-null{margin-top:8px;font-size:13px;line-height:1.5;color:var(--muted);font-weight:600;}
+.va-bridge{margin:8px 0 0;font-size:12px;line-height:1.5;color:var(--muted);}
+.va-presets{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px;}
+.va-presets .va-preset-on{border-color:var(--link);color:var(--link);}
+.va-note{margin:0 0 6px;font-size:11.5px;line-height:1.5;color:var(--muted);}
+.va-is-null .va-out-num,.va-is-null .va-bridge{display:none;}
+.va-is-null .va-out-null{display:block;}
+@media(max-width:390px){
+  .va-ctl{grid-template-columns:1fr;gap:4px;}
+  .va-ctl .va-readout,.va-ctl .va-unit{text-align:left;}
+}
+</style>
+
+
+<section class="mod rv" id="valuation-assumptions" data-valuation-assumptions="v1">
+  <div class="mod-hd">
+    <h2><span class="l-en">Try your own assumptions</span><span class="l-zh">试试你自己的假设</span></h2>
+    <span class="hint"><span class="l-en">same reported figures · FY2025</span><span class="l-zh">同一批披露数据 · 2025财年</span></span>
+  </div>
+  <p class="va-lede" id="va-lede-nojs"><span class="l-en">These inputs need JavaScript to move. The base case is shown.</span><span class="l-zh">这些输入需要启用 JavaScript 才能调整，当前显示的是基准情形。</span></p>
+  <p class="va-lede" id="va-lede-js" hidden><span class="l-en">Move the three inputs below. The per-share number updates as you move them. Nothing you set here is saved or sent anywhere.</span><span class="l-zh">调整下面三项输入，每股数值会随之更新。你在这里设置的内容不会被保存，也不会被发送到任何地方。</span></p>
+  <script type="application/json" id="vs-assumption-inputs">{"controls": [{"default": 3, "key": "sales_growth_pct", "max": 20, "min": -10, "step": 0.5}, {"default": 0, "key": "margin_delta_pp", "max": 3.0, "min": -3.0, "step": 0.1}, {"default": 18, "key": "earnings_multiple", "max": 35, "min": 8, "step": 1}], "fy": 2025, "inputs": {"net_income": 112010000000.0, "net_margin_base": 0.2691506412181824, "revenue": 416161000000.0, "shares": 14773260000.0}, "margin_base_floor": 0.01, "period_end": "2025-09-27", "presets": {"base": {"earnings_multiple": 18, "margin_delta_pp": 0, "sales_growth_pct": 3}, "cautious": {"earnings_multiple": 14, "margin_delta_pp": -1.5, "sales_growth_pct": -2}, "upbeat": {"earnings_multiple": 22, "margin_delta_pp": 1.5, "sales_growth_pct": 7}}, "schema": "valuation_scenario_controls.v1", "server_default": {"earnings_multiple": 18, "margin_delta_pp": 0, "per_share": 140.57, "sales_growth_pct": 3}, "source": "SEC filings", "ticker": "AAPL", "tier": "research_display_only"}</script>
+  <div class="va-ctls">
+    
+      
+    <div class="va-ctl">
+      <label for="va-ctl-sales_growth_pct"><span class="l-en">Sales growth next year</span><span class="l-zh">下一年销售增长</span></label>
+      <span class="va-readout" id="va-read-sales_growth_pct">+3.0%</span>
+      <input type="range" id="va-ctl-sales_growth_pct" min="-10" max="20" step="0.5" value="3" disabled>
+    </div>
+      
+    
+      
+    <div class="va-ctl">
+      <label for="va-ctl-margin_delta_pp"><span class="l-en">Margin change</span><span class="l-zh">利润率变化</span></label>
+      <span>
+        <span class="va-readout" id="va-read-margin_delta_pp">0.0</span>
+        <span class="va-unit"><span class="l-en">percentage points</span><span class="l-zh">个百分点</span></span>
+      </span>
+      <input type="range" id="va-ctl-margin_delta_pp" min="-3.0" max="3.0" step="0.1" value="0" disabled>
+    </div>
+      
+    
+      
+    <div class="va-ctl">
+      <label for="va-ctl-earnings_multiple"><span class="l-en">Earnings multiple</span><span class="l-zh">市盈率倍数</span></label>
+      <span class="va-readout" id="va-read-earnings_multiple">18×</span>
+      <input type="range" id="va-ctl-earnings_multiple" min="8" max="35" step="1" value="18" disabled>
+    </div>
+      
+    
+  </div><div class="va-out">
+    <div class="va-out-k" id="va-out-k"><span class="l-en">Per share, on your assumptions</span><span class="l-zh">按你的假设计算的每股价值</span></div>
+    <div id="va-out" role="status" aria-live="polite" aria-labelledby="va-out-k">
+      <div class="va-out-num num" id="va-out-num">$140.57</div>
+      <div class="va-out-null" id="va-out-null" hidden><span class="l-en">Margins are too thin at this setting to produce a number.</span><span class="l-zh">在该设置下利润率过低，无法算出数值。</span></div>
+      <p class="va-bridge" id="va-bridge"><span class="l-en" lang="en">Base case is $140.57. Your assumptions give $140.57 (0.0%).</span><span class="l-zh" lang="zh-CN">基准情景为 $140.57，你的假设得出 $140.57（0.0%）。</span></p>
+    </div>
+  </div>
+  <div class="va-presets" id="va-presets">
+    <button type="button" class="gbtn gbtn-sm va-preset" data-va-preset="cautious"><span class="l-en">Cautious</span><span class="l-zh">保守</span></button>
+    <button type="button" class="gbtn gbtn-sm va-preset va-preset-on" data-va-preset="base"><span class="l-en">Base</span><span class="l-zh">基准</span></button>
+    <button type="button" class="gbtn gbtn-sm va-preset" data-va-preset="upbeat"><span class="l-en">Upbeat</span><span class="l-zh">乐观</span></button>
+    <button type="button" class="gbtn gbtn-sm" id="va-reset"><span class="l-en">Reset to base</span><span class="l-zh">恢复基准</span></button>
+  </div>
+  <p class="va-note"><span class="l-en">Applied to FY2025 as disclosed to the SEC — revenue, net income and share count come straight from the disclosure, and are not editable here.</span><span class="l-zh">套用在按 SEC 披露的2025财年数据上——营业收入、净利润与股数均直接取自披露文件，此处不可修改。</span></p><p class="va-note"><span class="l-en">Sales growth -10% to +20%; margin change -3.0 to +3.0 percentage points; earnings multiple 8× to 35×.</span><span class="l-zh">销售增长 -10% 至 +20%；利润率变化 -3.0 至 +3.0 个百分点；市盈率倍数 8 倍至 35 倍。</span></p>
+  <script>
+(function (root) {
+  function round2(v) {
+    if (!(v > 0) || v !== v || v === Infinity) return null;
+    return Math.floor(v * 100 + 0.5) / 100;
+  }
+  function perShareAt(ni, revenue, shares, g, mPp, mult) {
+    ni = Number(ni); revenue = Number(revenue); shares = Number(shares);
+    g = Number(g); mPp = Number(mPp); mult = Number(mult);
+    if (![ni, revenue, shares, g, mPp, mult].every(function (x) {
+      return typeof x === "number" && x === x && x !== Infinity && x !== -Infinity;
+    })) return null;
+    if (!(ni > 0) || revenue === 0 || shares === 0) return null;
+    var nmb = ni / revenue;
+    if (Math.abs(nmb) < 0.01) return null;
+    if (nmb + mPp / 100 <= 0) return null;
+    var raw = ni * (1 + g / 100) * (1 + (mPp / 100) / nmb) * mult / shares;
+    var out = round2(raw);
+    // round2 collapses a positive sub-half-cent raw to 0; 0 is not a paintable
+    // per-share value, so it is null here exactly as it is in Python.
+    return (out == null || !(out > 0)) ? null : out;
+  }
+  function format2(v) {
+    var r = round2(v);
+    return r == null ? null : r.toFixed(2);
+  }
+  // One sign convention for every signed figure the panel prints. A value that
+  // rounds to zero is neither a rise nor a fall, so it carries no sign at all:
+  // "-0.0%" beside two equal dollar figures is a formatting artifact, not
+  // plain language. The server render prints the same three strings.
+  function signedPct(v, digits) {
+    var n = Number(v);
+    var body = Math.abs(n).toFixed(digits);
+    if (Number(body) === 0) return body;
+    return (n < 0 ? "-" : "+") + body;
+  }
+  root.vsAssumptionMath = {
+    round2: round2,
+    perShareAt: perShareAt,
+    format2: format2,
+    signedPct: signedPct
+  };
+  if (typeof module !== "undefined" && module.exports) {
+    module.exports = root.vsAssumptionMath;
+  }
+  if (typeof document === "undefined") return;
+
+  var island = document.getElementById("vs-assumption-inputs");
+  if (!island) return;
+  var data;
+  try { data = JSON.parse(island.textContent); } catch (e) { return; }
+  var inp = data.inputs || {};
+  var sd = data.server_default || {};
+  var presets = data.presets || {};
+  var elG = document.getElementById("va-ctl-sales_growth_pct");
+  var elM = document.getElementById("va-ctl-margin_delta_pp");
+  var elX = document.getElementById("va-ctl-earnings_multiple");
+  var outWrap = document.getElementById("va-out");
+  var outNum = document.getElementById("va-out-num");
+  var outNull = document.getElementById("va-out-null");
+  var bridge = document.getElementById("va-bridge");
+  var readG = document.getElementById("va-read-sales_growth_pct");
+  var readM = document.getElementById("va-read-margin_delta_pp");
+  var readX = document.getElementById("va-read-earnings_multiple");
+  if (!elG || !elM || !elX || !outNum) return;
+  elG.removeAttribute("disabled");
+  elM.removeAttribute("disabled");
+  elX.removeAttribute("disabled");
+  var ledeNojs = document.getElementById("va-lede-nojs");
+  var ledeJs = document.getElementById("va-lede-js");
+  if (ledeNojs) ledeNojs.hidden = true;
+  if (ledeJs) ledeJs.hidden = false;
+
+  var basePs = Number(sd.per_share);
+
+  function paintReadouts(g, m, x) {
+    if (readG) readG.textContent = signedPct(g, 1) + "%";
+    if (readM) readM.textContent = signedPct(m, 1);
+    if (readX) readX.textContent = String(Math.round(Number(x))) + "\u00d7";
+  }
+  function markPreset(name) {
+    var btns = document.querySelectorAll("[data-va-preset]");
+    for (var i = 0; i < btns.length; i++) {
+      if (btns[i].getAttribute("data-va-preset") === name) btns[i].classList.add("va-preset-on");
+      else btns[i].classList.remove("va-preset-on");
+    }
+  }
+  function matchingPreset(g, m, x) {
+    for (var key in presets) {
+      if (!Object.prototype.hasOwnProperty.call(presets, key)) continue;
+      var p = presets[key];
+      if (Number(p.sales_growth_pct) === Number(g) &&
+          Number(p.margin_delta_pp) === Number(m) &&
+          Number(p.earnings_multiple) === Number(x)) return key;
+    }
+    return "";
+  }
+  function paint() {
+    var g = Number(elG.value);
+    var m = Number(elM.value);
+    var x = Number(elX.value);
+    paintReadouts(g, m, x);
+    markPreset(matchingPreset(g, m, x));
+    var y = perShareAt(inp.net_income, inp.revenue, inp.shares, g, m, x);
+    var thin = !(y > 0);
+    if (outWrap) {
+      // Each twin declares its own language in the markup (lang="en" /
+      // lang="zh-CN"); nothing stamps one language on the node holding both.
+      if (thin) outWrap.classList.add("va-is-null");
+      else outWrap.classList.remove("va-is-null");
+    }
+    if (outNull) outNull.hidden = !thin;
+    if (outNum) outNum.hidden = thin;
+    if (bridge) bridge.hidden = thin;
+    if (thin) return;
+    var yStr = format2(y);
+    outNum.textContent = "$" + yStr;
+    if (bridge && basePs > 0) {
+      var pct = ((y - basePs) / basePs) * 100;
+      var pctStr = signedPct(pct, 1);
+      var bStr = Number(basePs).toFixed(2);
+      var enEl = bridge.querySelector(".l-en");
+      var zhEl = bridge.querySelector(".l-zh");
+      if (enEl) {
+        enEl.textContent = "Base case is $" + bStr + ". Your assumptions give $" + yStr + " (" + pctStr + "%).";
+      }
+      if (zhEl) {
+        zhEl.textContent = "基准情景为 $" + bStr + "，你的假设得出 $" + yStr + "（" + pctStr + "%）。";
+      }
+    }
+  }
+  function applyTriple(g, m, x) {
+    elG.value = String(g);
+    elM.value = String(m);
+    elX.value = String(x);
+    paint();
+  }
+  elG.addEventListener("input", paint);
+  elM.addEventListener("input", paint);
+  elX.addEventListener("input", paint);
+  var presetBtns = document.querySelectorAll("[data-va-preset]");
+  for (var i = 0; i < presetBtns.length; i++) {
+    presetBtns[i].addEventListener("click", function (ev) {
+      var key = ev.currentTarget.getAttribute("data-va-preset");
+      var p = presets[key];
+      if (!p) return;
+      applyTriple(p.sales_growth_pct, p.margin_delta_pp, p.earnings_multiple);
+    });
+  }
+  var reset = document.getElementById("va-reset");
+  if (reset) {
+    reset.addEventListener("click", function () {
+      applyTriple(sd.sales_growth_pct, sd.margin_delta_pp, sd.earnings_multiple);
+    });
+  }
+  document.addEventListener("langchange", paint);
+  paint();
+})(typeof globalThis !== "undefined" ? globalThis : this);
+  </script>
+  <div class="mod-ft"><span class="l-en">Research display only — not advice.</span><span class="l-zh">仅供研究展示，非投资建议。</span></div>
+</section>
+
+
+</div>
+
+<script>
+(function(){
+  var rvs = document.querySelectorAll('.rv');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, {rootMargin: '0px 0px -8% 0px', threshold: 0.06});
+    rvs.forEach(function(el){ io.observe(el); });
+  } else {
+    rvs.forEach(function(el){ el.classList.add('in'); });
+  }
+  window.addEventListener('load', function(){
+    var v1 = document.getElementById('valuation-scenario');
+    var va = document.getElementById('valuation-assumptions');
+    if (v1) v1.scrollIntoView();
+    setTimeout(function(){ if (va) va.scrollIntoView(); }, 500);
+  });
+})();
+</script>
+
+</body>
+</html>

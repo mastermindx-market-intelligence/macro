@@ -18,14 +18,18 @@ Rounding: do not use Python round() (banker's rounding; JS has no equivalent).
 round2(v) = floor(v * 100 + 0.5) / 100 for v > 0. The panel never paints
 v <= 0. server_default.per_share is computed through the same rule.
 
-SCENARIOS is imported read-only from engine.valuation_scenario so presets
-cannot drift from V1's frozen triples.
+SCENARIOS and MISSING_LABELS are imported read-only from
+engine.valuation_scenario so presets cannot drift from V1's frozen triples
+and a future null path can reuse V1 diction without re-typing.
 """
 from __future__ import annotations
 
+import logging
 import math
 
-from engine.valuation_scenario import SCENARIOS
+from engine.valuation_scenario import MISSING_LABELS, SCENARIOS
+
+log = logging.getLogger(__name__)
 
 # Each range is the V1 frozen triple's own span, widened to a round number
 # that still contains every V1 preset with headroom. V1 spans growth
@@ -38,6 +42,11 @@ CONTROLS = (
 )
 
 _MARGIN_BASE_FLOOR = 0.01
+
+# Imported read-only; kept bound so a future null path can reuse V1 diction
+# without re-typing. The sandbox panel's too-thin sentence is the B-F07-2
+# verbatim copy, not MISSING_LABELS["margin_too_thin"].
+_V1_MISSING_LABELS = MISSING_LABELS
 
 
 def round2(v):
@@ -186,6 +195,12 @@ def controls_blob(v1_blob):
     # authority directly above it. The null shape is the same one every other
     # unusable-V1 branch returns.
     if default_ps != base_ps:
+        log.warning(
+            "valuation_assumptions equality guard: issuer=%s sandbox_per_share=%s v1_base_per_share=%s",
+            ticker,
+            default_ps,
+            base_ps,
+        )
         return None
 
     presets = {}

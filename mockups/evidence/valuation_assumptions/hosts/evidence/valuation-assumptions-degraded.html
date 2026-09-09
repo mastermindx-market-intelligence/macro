@@ -1,23 +1,38 @@
-{#- FROZEN SPEC B-F07-2 -- Valuation under YOUR assumptions.
-    Additive sandbox under the V1 panel. Client-side recompute of the same
-    three free parameters V1 hard-codes. Nothing is saved or sent.
-    Governed CSS lives in this partial's own <style> block -- never authored
-    as a runtime JS stylesheet. Whole file gated on valuation_assumptions
-    (CSS included). too_thin_base renders ONLY the single-line copy. -#}
-{% if valuation_assumptions %}
-{% set va = valuation_assumptions %}
-{% if va.too_thin_base %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Valuation panels — synthetic degraded states</title>
+<script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);document.documentElement.classList.add('has-js');}catch(e){}</script>
+<link rel="stylesheet" href="../theme.css">
+<script defer src="../theme.js"></script>
 <style>
-.va-floor{margin:0;font-size:13px;line-height:1.55;color:var(--muted);}
+*{box-sizing:border-box;}
+html body{font:400 13.5px/1.55 var(--font-ui);background:var(--bg);color:var(--text);margin:0;padding:24px 0 0;-webkit-font-smoothing:antialiased;}
+.num{font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
+.page-wrap{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:18px 26px 60px;}
+.mod{background:var(--glass-bg);border:1px solid var(--glass-brd);border-radius:18px;
+  box-shadow:var(--glass-shadow);backdrop-filter:blur(22px) saturate(150%);-webkit-backdrop-filter:blur(22px) saturate(150%);
+  padding:20px 24px 22px;min-width:0;margin:0 0 18px;}
+.mod-hd{display:flex;align-items:baseline;gap:10px;margin:0 0 16px;padding-bottom:12px;border-bottom:1px solid var(--hair, var(--line));}
+.mod-hd h2{display:flex;align-items:center;gap:10px;margin:0;font-size:15.5px;font-weight:650;letter-spacing:-.01em;}
+.mod-hd h2::before{content:"";width:3px;height:15px;border-radius:2px;flex-shrink:0;
+  background:linear-gradient(180deg,var(--link),color-mix(in srgb,var(--link) 30%,transparent));}
+.mod-hd .hint{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:500;white-space:nowrap;}
+.mod-ft{margin-top:14px;padding-top:10px;border-top:1px solid var(--hair, var(--line));font-size:11.5px;color:var(--muted);line-height:1.5;}
+html.has-js .rv{opacity:0;transform:translateY(16px);}
+html.has-js .rv.in{opacity:1;transform:none;transition:opacity .55s ease,transform .55s cubic-bezier(.22,.9,.26,1.02);}
+@media(prefers-reduced-motion:reduce){html.has-js .rv{opacity:1;transform:none;transition:none;}}
+.host-banner{margin:0 0 18px;font-size:12.5px;line-height:1.5;color:var(--muted);max-width:72ch;}
 </style>
-<section class="mod rv" id="valuation-assumptions-floor" data-valuation-assumptions="floor">
-  <div class="mod-hd">
-    <h2>{{ t('Try your own assumptions', '试试你自己的假设') }}</h2>
-  </div>
-  <p class="va-floor">{{ t('Not enough reported margin to run this.', '披露的利润率基数不足，无法进行试算。') }}</p>
-  <div class="mod-ft">{{ t('Research display only — not advice.', '仅供研究展示，非投资建议。') }}</div>
-</section>
-{% else %}
+</head>
+<body>
+<div class="page-wrap">
+<p class="host-banner"><span class="l-en">Synthetic test data — not a real stock. No figure on this page belongs to any company.</span><span class="l-zh">合成测试数据，并非真实股票。本页数字不属于任何公司。</span></p>
+
+
+
 <style>
 .va-lede{margin:2px 0 16px;font-size:13px;line-height:1.55;color:var(--muted);max-width:62ch;}
 .va-ctls{display:flex;flex-direction:column;gap:14px;margin:4px 0 18px;}
@@ -45,63 +60,60 @@
   .va-ctl .va-readout,.va-ctl .va-unit{text-align:left;}
 }
 </style>
-{% set inp = va.inputs %}
-{% set sd = va.server_default %}
+
+
 <section class="mod rv" id="valuation-assumptions" data-valuation-assumptions="v1">
   <div class="mod-hd">
-    <h2>{{ t('Try your own assumptions', '试试你自己的假设') }}</h2>
-    <span class="hint"><span class="l-en">same reported figures · FY{{ va.fy }}</span><span class="l-zh">同一批披露数据 · {{ va.fy }}财年</span></span>
+    <h2><span class="l-en">Try your own assumptions</span><span class="l-zh">试试你自己的假设</span></h2>
+    <span class="hint"><span class="l-en">same reported figures · FY2025</span><span class="l-zh">同一批披露数据 · 2025财年</span></span>
   </div>
-  <p class="va-lede" id="va-lede-nojs">{{ t('These inputs need JavaScript to move. The base case is shown.', '这些输入需要启用 JavaScript 才能调整，当前显示的是基准情形。') }}</p>
-  <p class="va-lede" id="va-lede-js" hidden>{{ t('Move the three inputs below. The per-share number updates as you move them. Nothing you set here is saved or sent anywhere.', '调整下面三项输入，每股数值会随之更新。你在这里设置的内容不会被保存，也不会被发送到任何地方。') }}</p>
-  <script type="application/json" id="vs-assumption-inputs">{{ va | tojson }}</script>
+  <p class="va-lede" id="va-lede-nojs"><span class="l-en">These inputs need JavaScript to move. The base case is shown.</span><span class="l-zh">这些输入需要启用 JavaScript 才能调整，当前显示的是基准情形。</span></p>
+  <p class="va-lede" id="va-lede-js" hidden><span class="l-en">Move the three inputs below. The per-share number updates as you move them. Nothing you set here is saved or sent anywhere.</span><span class="l-zh">调整下面三项输入，每股数值会随之更新。你在这里设置的内容不会被保存，也不会被发送到任何地方。</span></p>
+  <script type="application/json" id="vs-assumption-inputs">{"controls": [{"default": 3, "key": "sales_growth_pct", "max": 20, "min": -10, "step": 0.5}, {"default": 0, "key": "margin_delta_pp", "max": 3.0, "min": -3.0, "step": 0.1}, {"default": 18, "key": "earnings_multiple", "max": 35, "min": 8, "step": 1}], "fy": 2025, "inputs": {"net_income": 1200000000.0, "net_margin_base": 0.012, "revenue": 100000000000.0, "shares": 14900000000.0}, "margin_base_floor": 0.01, "period_end": "2025-09-27", "presets": {"base": {"earnings_multiple": 18, "margin_delta_pp": 0, "sales_growth_pct": 3}, "cautious": {"earnings_multiple": 14, "margin_delta_pp": -1.5, "sales_growth_pct": -2}, "upbeat": {"earnings_multiple": 22, "margin_delta_pp": 1.5, "sales_growth_pct": 7}}, "schema": "valuation_scenario_controls.v1", "server_default": {"earnings_multiple": 18, "margin_delta_pp": 0, "per_share": 1.49, "sales_growth_pct": 3}, "source": "SEC filings", "ticker": "SYNTHETIC-FIXTURE", "tier": "research_display_only"}</script>
   <div class="va-ctls">
-    {% for c in va.controls %}
-      {% if c.key == 'sales_growth_pct' %}
+    
+      
     <div class="va-ctl">
-      <label for="va-ctl-sales_growth_pct">{{ t('Sales growth next year', '下一年销售增长') }}</label>
-      <span class="va-readout" id="va-read-sales_growth_pct">{{ '%+.1f'|format(sd.sales_growth_pct) if sd.sales_growth_pct else '%.1f'|format(sd.sales_growth_pct) }}%</span>
-      <input type="range" id="va-ctl-sales_growth_pct" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.step }}" value="{{ sd.sales_growth_pct }}" disabled>
+      <label for="va-ctl-sales_growth_pct"><span class="l-en">Sales growth next year</span><span class="l-zh">下一年销售增长</span></label>
+      <span class="va-readout" id="va-read-sales_growth_pct">+3.0%</span>
+      <input type="range" id="va-ctl-sales_growth_pct" min="-10" max="20" step="0.5" value="3" disabled>
     </div>
-      {% elif c.key == 'margin_delta_pp' %}
+      
+    
+      
     <div class="va-ctl">
-      <label for="va-ctl-margin_delta_pp">{{ t('Margin change', '利润率变化') }}</label>
+      <label for="va-ctl-margin_delta_pp"><span class="l-en">Margin change</span><span class="l-zh">利润率变化</span></label>
       <span>
-        <span class="va-readout" id="va-read-margin_delta_pp">{{ '%+.1f'|format(sd.margin_delta_pp) if sd.margin_delta_pp else '%.1f'|format(sd.margin_delta_pp) }}</span>
-        <span class="va-unit">{{ t('percentage points', '个百分点') }}</span>
+        <span class="va-readout" id="va-read-margin_delta_pp">0.0</span>
+        <span class="va-unit"><span class="l-en">percentage points</span><span class="l-zh">个百分点</span></span>
       </span>
-      <input type="range" id="va-ctl-margin_delta_pp" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.step }}" value="{{ sd.margin_delta_pp }}" disabled>
+      <input type="range" id="va-ctl-margin_delta_pp" min="-3.0" max="3.0" step="0.1" value="0" disabled>
     </div>
-      {% else %}
+      
+    
+      
     <div class="va-ctl">
-      <label for="va-ctl-earnings_multiple">{{ t('Earnings multiple', '市盈率倍数') }}</label>
-      <span class="va-readout" id="va-read-earnings_multiple">{{ '%d'|format(sd.earnings_multiple) }}×</span>
-      <input type="range" id="va-ctl-earnings_multiple" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.step }}" value="{{ sd.earnings_multiple }}" disabled>
+      <label for="va-ctl-earnings_multiple"><span class="l-en">Earnings multiple</span><span class="l-zh">市盈率倍数</span></label>
+      <span class="va-readout" id="va-read-earnings_multiple">18×</span>
+      <input type="range" id="va-ctl-earnings_multiple" min="8" max="35" step="1" value="18" disabled>
     </div>
-      {% endif %}
-    {% endfor %}
-  </div>
-  {#- The label sits inside the card but OUTSIDE the live region, so a slider
-      tick announces the value and not the label again; role="status" is what
-      makes the aria-labelledby name survive (role=generic prohibits a name). -#}
-  <div class="va-out">
-    <div class="va-out-k" id="va-out-k">{{ t('Per share, on your assumptions', '按你的假设计算的每股价值') }}</div>
+      
+    
+  </div><div class="va-out">
+    <div class="va-out-k" id="va-out-k"><span class="l-en">Per share, on your assumptions</span><span class="l-zh">按你的假设计算的每股价值</span></div>
     <div id="va-out" role="status" aria-live="polite" aria-labelledby="va-out-k">
-      <div class="va-out-num num" id="va-out-num">${{ '%.2f'|format(sd.per_share) }}</div>
-      <div class="va-out-null" id="va-out-null" hidden>{{ t('Margins are too thin at this setting to produce a number.', '在该设置下利润率过低，无法算出数值。') }}</div>
-      <p class="va-bridge" id="va-bridge"><span class="l-en" lang="en">Base case is ${{ '%.2f'|format(sd.per_share) }}. Your assumptions give ${{ '%.2f'|format(sd.per_share) }} (0.0%).</span><span class="l-zh" lang="zh-CN">基准情景为 ${{ '%.2f'|format(sd.per_share) }}，你的假设得出 ${{ '%.2f'|format(sd.per_share) }}（0.0%）。</span></p>
+      <div class="va-out-num num" id="va-out-num">$1.49</div>
+      <div class="va-out-null" id="va-out-null" hidden><span class="l-en">Margins are too thin at this setting to produce a number.</span><span class="l-zh">在该设置下利润率过低，无法算出数值。</span></div>
+      <p class="va-bridge" id="va-bridge"><span class="l-en" lang="en">Base case is $1.49. Your assumptions give $1.49 (0.0%).</span><span class="l-zh" lang="zh-CN">基准情景为 $1.49，你的假设得出 $1.49（0.0%）。</span></p>
     </div>
   </div>
   <div class="va-presets" id="va-presets">
-    <button type="button" class="gbtn gbtn-sm va-preset" data-va-preset="cautious">{{ t('Cautious', '保守') }}</button>
-    <button type="button" class="gbtn gbtn-sm va-preset va-preset-on" data-va-preset="base">{{ t('Base', '基准') }}</button>
-    <button type="button" class="gbtn gbtn-sm va-preset" data-va-preset="upbeat">{{ t('Upbeat', '乐观') }}</button>
-    <button type="button" class="gbtn gbtn-sm" id="va-reset">{{ t('Reset to base', '恢复基准') }}</button>
+    <button type="button" class="gbtn gbtn-sm va-preset" data-va-preset="cautious"><span class="l-en">Cautious</span><span class="l-zh">保守</span></button>
+    <button type="button" class="gbtn gbtn-sm va-preset va-preset-on" data-va-preset="base"><span class="l-en">Base</span><span class="l-zh">基准</span></button>
+    <button type="button" class="gbtn gbtn-sm va-preset" data-va-preset="upbeat"><span class="l-en">Upbeat</span><span class="l-zh">乐观</span></button>
+    <button type="button" class="gbtn gbtn-sm" id="va-reset"><span class="l-en">Reset to base</span><span class="l-zh">恢复基准</span></button>
   </div>
-  <p class="va-note"><span class="l-en">Applied to FY{{ va.fy }} as disclosed to the SEC — revenue, net income and share count come straight from the disclosure, and are not editable here.</span><span class="l-zh">套用在按 SEC 披露的{{ va.fy }}财年数据上——营业收入、净利润与股数均直接取自披露文件，此处不可修改。</span></p>
-  {#- One minus-sign convention across the panel: the site's ASCII hyphen-minus,
-      the same character the V1 cards and this panel's own readouts print. -#}
-  <p class="va-note">{{ t('Sales growth -10% to +20%; margin change -3.0 to +3.0 percentage points; earnings multiple 8× to 35×.', '销售增长 -10% 至 +20%；利润率变化 -3.0 至 +3.0 个百分点；市盈率倍数 8 倍至 35 倍。') }}</p>
+  <p class="va-note"><span class="l-en">Applied to FY2025 as disclosed to the SEC — revenue, net income and share count come straight from the disclosure, and are not editable here.</span><span class="l-zh">套用在按 SEC 披露的2025财年数据上——营业收入、净利润与股数均直接取自披露文件，此处不可修改。</span></p><p class="va-note"><span class="l-en">Sales growth -10% to +20%; margin change -3.0 to +3.0 percentage points; earnings multiple 8× to 35×.</span><span class="l-zh">销售增长 -10% 至 +20%；利润率变化 -3.0 至 +3.0 个百分点；市盈率倍数 8 倍至 35 倍。</span></p>
   <script>
 (function (root) {
   function round2(v) {
@@ -261,7 +273,34 @@
   paint();
 })(typeof globalThis !== "undefined" ? globalThis : this);
   </script>
-  <div class="mod-ft">{{ t('Research display only — not advice.', '仅供研究展示，非投资建议。') }}</div>
+  <div class="mod-ft"><span class="l-en">Research display only — not advice.</span><span class="l-zh">仅供研究展示，非投资建议。</span></div>
 </section>
-{% endif %}
-{% endif %}
+
+
+
+
+<style>
+.va-floor{margin:0;font-size:13px;line-height:1.55;color:var(--muted);}
+</style>
+<section class="mod rv" id="valuation-assumptions-floor" data-valuation-assumptions="floor">
+  <div class="mod-hd">
+    <h2><span class="l-en">Try your own assumptions</span><span class="l-zh">试试你自己的假设</span></h2>
+  </div>
+  <p class="va-floor"><span class="l-en">Not enough reported margin to run this.</span><span class="l-zh">披露的利润率基数不足，无法进行试算。</span></p>
+  <div class="mod-ft"><span class="l-en">Research display only — not advice.</span><span class="l-zh">仅供研究展示，非投资建议。</span></div>
+</section>
+
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var el = document.getElementById('va-ctl-margin_delta_pp');
+  if (!el) return;
+  el.value = '-1.5';
+  el.dispatchEvent(new Event('input', {bubbles: true}));
+});
+</script>
+
+</body>
+</html>
