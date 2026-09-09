@@ -36,6 +36,7 @@
       "route": "macro_monetary.html",
       "width": 320,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -44,6 +45,7 @@
       "route": "macro_monetary.html",
       "width": 320,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -52,6 +54,7 @@
       "route": "macro_monetary.html",
       "width": 390,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -60,6 +63,7 @@
       "route": "macro_monetary.html",
       "width": 390,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -68,6 +72,7 @@
       "route": "macro_monetary.html",
       "width": 768,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -76,6 +81,7 @@
       "route": "macro_monetary.html",
       "width": 768,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -84,6 +90,7 @@
       "route": "macro_monetary.html",
       "width": 1440,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -92,6 +99,7 @@
       "route": "macro_monetary.html",
       "width": 1440,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -100,6 +108,7 @@
       "route": "macro_liquidity_regime.html",
       "width": 320,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -108,6 +117,7 @@
       "route": "macro_liquidity_regime.html",
       "width": 320,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -116,6 +126,7 @@
       "route": "macro_liquidity_regime.html",
       "width": 390,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -124,6 +135,7 @@
       "route": "macro_liquidity_regime.html",
       "width": 390,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -132,6 +144,7 @@
       "route": "macro_liquidity_regime.html",
       "width": 768,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -140,6 +153,7 @@
       "route": "macro_liquidity_regime.html",
       "width": 768,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -148,6 +162,7 @@
       "route": "macro_liquidity_regime.html",
       "width": 1440,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -156,6 +171,7 @@
       "route": "macro_liquidity_regime.html",
       "width": 1440,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -164,6 +180,7 @@
       "route": "macro_growth_real_economy.html",
       "width": 320,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -172,6 +189,7 @@
       "route": "macro_growth_real_economy.html",
       "width": 320,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -180,6 +198,7 @@
       "route": "macro_growth_real_economy.html",
       "width": 390,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -188,6 +207,7 @@
       "route": "macro_growth_real_economy.html",
       "width": 390,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -196,6 +216,7 @@
       "route": "macro_growth_real_economy.html",
       "width": 768,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -204,6 +225,7 @@
       "route": "macro_growth_real_economy.html",
       "width": 768,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -212,6 +234,7 @@
       "route": "macro_growth_real_economy.html",
       "width": 1440,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -220,6 +243,7 @@
       "route": "macro_growth_real_economy.html",
       "width": 1440,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -228,6 +252,7 @@
       "route": "macro_business_activity.html",
       "width": 320,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -236,6 +261,7 @@
       "route": "macro_business_activity.html",
       "width": 320,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -244,6 +270,7 @@
       "route": "macro_business_activity.html",
       "width": 390,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -252,6 +279,7 @@
       "route": "macro_business_activity.html",
       "width": 390,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -260,6 +288,7 @@
       "route": "macro_business_activity.html",
       "width": 768,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -268,6 +297,7 @@
       "route": "macro_business_activity.html",
       "width": 768,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -276,6 +306,7 @@
       "route": "macro_business_activity.html",
       "width": 1440,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -284,6 +315,7 @@
       "route": "macro_business_activity.html",
       "width": 1440,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -292,6 +324,7 @@
       "route": "macro_labor_markets.html",
       "width": 320,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -300,6 +333,7 @@
       "route": "macro_labor_markets.html",
       "width": 320,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -308,6 +342,7 @@
       "route": "macro_labor_markets.html",
       "width": 390,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -316,6 +351,7 @@
       "route": "macro_labor_markets.html",
       "width": 390,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -324,6 +360,7 @@
       "route": "macro_labor_markets.html",
       "width": 768,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -332,6 +369,7 @@
       "route": "macro_labor_markets.html",
       "width": 768,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -340,6 +378,7 @@
       "route": "macro_labor_markets.html",
       "width": 1440,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -348,6 +387,7 @@
       "route": "macro_labor_markets.html",
       "width": 1440,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -356,6 +396,7 @@
       "route": "macro_inflation_system.html",
       "width": 320,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -364,6 +405,7 @@
       "route": "macro_inflation_system.html",
       "width": 320,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -372,6 +414,7 @@
       "route": "macro_inflation_system.html",
       "width": 390,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -380,6 +423,7 @@
       "route": "macro_inflation_system.html",
       "width": 390,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -388,6 +432,7 @@
       "route": "macro_inflation_system.html",
       "width": 768,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -396,6 +441,7 @@
       "route": "macro_inflation_system.html",
       "width": 768,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -404,6 +450,7 @@
       "route": "macro_inflation_system.html",
       "width": 1440,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -412,6 +459,7 @@
       "route": "macro_inflation_system.html",
       "width": 1440,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -420,6 +468,7 @@
       "route": "macro_monetary_policy.html",
       "width": 320,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -428,6 +477,7 @@
       "route": "macro_monetary_policy.html",
       "width": 320,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -436,6 +486,7 @@
       "route": "macro_monetary_policy.html",
       "width": 390,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -444,6 +495,7 @@
       "route": "macro_monetary_policy.html",
       "width": 390,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -452,6 +504,7 @@
       "route": "macro_monetary_policy.html",
       "width": 768,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -460,6 +513,7 @@
       "route": "macro_monetary_policy.html",
       "width": 768,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -468,6 +522,7 @@
       "route": "macro_monetary_policy.html",
       "width": 1440,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -476,6 +531,7 @@
       "route": "macro_monetary_policy.html",
       "width": 1440,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -484,6 +540,7 @@
       "route": "macro_financial_conditions.html",
       "width": 320,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -492,6 +549,7 @@
       "route": "macro_financial_conditions.html",
       "width": 320,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -500,6 +558,7 @@
       "route": "macro_financial_conditions.html",
       "width": 390,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -508,6 +567,7 @@
       "route": "macro_financial_conditions.html",
       "width": 390,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -516,6 +576,7 @@
       "route": "macro_financial_conditions.html",
       "width": 768,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -524,6 +585,7 @@
       "route": "macro_financial_conditions.html",
       "width": 768,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -532,6 +594,7 @@
       "route": "macro_financial_conditions.html",
       "width": 1440,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -540,6 +603,7 @@
       "route": "macro_financial_conditions.html",
       "width": 1440,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -548,6 +612,7 @@
       "route": "macro_liquidity_central_banks.html",
       "width": 320,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -556,6 +621,7 @@
       "route": "macro_liquidity_central_banks.html",
       "width": 320,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -564,6 +630,7 @@
       "route": "macro_liquidity_central_banks.html",
       "width": 390,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -572,6 +639,7 @@
       "route": "macro_liquidity_central_banks.html",
       "width": 390,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -580,6 +648,7 @@
       "route": "macro_liquidity_central_banks.html",
       "width": 768,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -588,6 +657,7 @@
       "route": "macro_liquidity_central_banks.html",
       "width": 768,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -596,6 +666,7 @@
       "route": "macro_liquidity_central_banks.html",
       "width": 1440,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -604,6 +675,7 @@
       "route": "macro_liquidity_central_banks.html",
       "width": 1440,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -612,6 +684,7 @@
       "route": "macro_capital_structure.html",
       "width": 320,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -620,6 +693,7 @@
       "route": "macro_capital_structure.html",
       "width": 320,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -628,6 +702,7 @@
       "route": "macro_capital_structure.html",
       "width": 390,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -636,6 +711,7 @@
       "route": "macro_capital_structure.html",
       "width": 390,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -644,6 +720,7 @@
       "route": "macro_capital_structure.html",
       "width": 768,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -652,6 +729,7 @@
       "route": "macro_capital_structure.html",
       "width": 768,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -660,6 +738,7 @@
       "route": "macro_capital_structure.html",
       "width": 1440,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -668,6 +747,7 @@
       "route": "macro_capital_structure.html",
       "width": 1440,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -676,6 +756,7 @@
       "route": "macro_housing_real_estate.html",
       "width": 320,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -684,6 +765,7 @@
       "route": "macro_housing_real_estate.html",
       "width": 320,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -692,6 +774,7 @@
       "route": "macro_housing_real_estate.html",
       "width": 390,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -700,6 +783,7 @@
       "route": "macro_housing_real_estate.html",
       "width": 390,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -708,6 +792,7 @@
       "route": "macro_housing_real_estate.html",
       "width": 768,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -716,6 +801,7 @@
       "route": "macro_housing_real_estate.html",
       "width": 768,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -724,6 +810,7 @@
       "route": "macro_housing_real_estate.html",
       "width": 1440,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -732,6 +819,7 @@
       "route": "macro_housing_real_estate.html",
       "width": 1440,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -740,6 +828,7 @@
       "route": "macro_consumer_payments.html",
       "width": 320,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -748,6 +837,7 @@
       "route": "macro_consumer_payments.html",
       "width": 320,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -756,6 +846,7 @@
       "route": "macro_consumer_payments.html",
       "width": 390,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -764,6 +855,7 @@
       "route": "macro_consumer_payments.html",
       "width": 390,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -772,6 +864,7 @@
       "route": "macro_consumer_payments.html",
       "width": 768,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -780,6 +873,7 @@
       "route": "macro_consumer_payments.html",
       "width": 768,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -788,6 +882,7 @@
       "route": "macro_consumer_payments.html",
       "width": 1440,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -796,6 +891,7 @@
       "route": "macro_consumer_payments.html",
       "width": 1440,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -804,6 +900,7 @@
       "route": "macro_national_debt_liabilities.html",
       "width": 320,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -812,6 +909,7 @@
       "route": "macro_national_debt_liabilities.html",
       "width": 320,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -820,6 +918,7 @@
       "route": "macro_national_debt_liabilities.html",
       "width": 390,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -828,6 +927,7 @@
       "route": "macro_national_debt_liabilities.html",
       "width": 390,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -836,6 +936,7 @@
       "route": "macro_national_debt_liabilities.html",
       "width": 768,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -844,6 +945,7 @@
       "route": "macro_national_debt_liabilities.html",
       "width": 768,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -852,6 +954,7 @@
       "route": "macro_national_debt_liabilities.html",
       "width": 1440,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -860,6 +963,7 @@
       "route": "macro_national_debt_liabilities.html",
       "width": 1440,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -868,6 +972,7 @@
       "route": "macro_rates_curves.html",
       "width": 320,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -876,6 +981,7 @@
       "route": "macro_rates_curves.html",
       "width": 320,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -884,6 +990,7 @@
       "route": "macro_rates_curves.html",
       "width": 390,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -892,6 +999,7 @@
       "route": "macro_rates_curves.html",
       "width": 390,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -900,6 +1008,7 @@
       "route": "macro_rates_curves.html",
       "width": 768,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -908,6 +1017,7 @@
       "route": "macro_rates_curves.html",
       "width": 768,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -916,6 +1026,7 @@
       "route": "macro_rates_curves.html",
       "width": 1440,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -924,6 +1035,7 @@
       "route": "macro_rates_curves.html",
       "width": 1440,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -932,6 +1044,7 @@
       "route": "macro_trade_flows.html",
       "width": 320,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -940,6 +1053,7 @@
       "route": "macro_trade_flows.html",
       "width": 320,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 320.0,
       "inner_width": 320.0,
       "fits": true
@@ -948,6 +1062,7 @@
       "route": "macro_trade_flows.html",
       "width": 390,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -956,6 +1071,7 @@
       "route": "macro_trade_flows.html",
       "width": 390,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 390.0,
       "inner_width": 390.0,
       "fits": true
@@ -964,6 +1080,7 @@
       "route": "macro_trade_flows.html",
       "width": 768,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -972,6 +1089,7 @@
       "route": "macro_trade_flows.html",
       "width": 768,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 768.0,
       "inner_width": 768.0,
       "fits": true
@@ -980,6 +1098,7 @@
       "route": "macro_trade_flows.html",
       "width": 1440,
       "locale": "en",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -988,6 +1107,7 @@
       "route": "macro_trade_flows.html",
       "width": 1440,
       "locale": "zh",
+      "theme": "dark",
       "scroll_width": 1440.0,
       "inner_width": 1440.0,
       "fits": true
@@ -142592,9 +142712,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 141.82749995961785,
-    "urlBefore": "http://127.0.0.1:60039/macro_monetary.html#overview",
-    "urlAfter": "http://127.0.0.1:60039/macro_monetary.html#overview",
+    "visibleAfterMs": 136.4464999642223,
+    "urlBefore": "http://127.0.0.1:57295/macro_monetary.html#overview",
+    "urlAfter": "http://127.0.0.1:57295/macro_monetary.html#overview",
     "openedBy": "click",
     "page": "macro_monetary.html",
     "locale": "en",
@@ -142637,9 +142757,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 121.58170808106661,
-    "urlBefore": "http://127.0.0.1:60039/macro_monetary.html#overview",
-    "urlAfter": "http://127.0.0.1:60039/macro_monetary.html#overview",
+    "visibleAfterMs": 117.79812502209097,
+    "urlBefore": "http://127.0.0.1:57295/macro_monetary.html#overview",
+    "urlAfter": "http://127.0.0.1:57295/macro_monetary.html#overview",
     "openedBy": "click",
     "page": "macro_monetary.html",
     "locale": "zh",
@@ -142682,9 +142802,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 150.18395893275738,
-    "urlBefore": "http://127.0.0.1:60039/macro_monetary.html#overview",
-    "urlAfter": "http://127.0.0.1:60039/macro_monetary.html#overview",
+    "visibleAfterMs": 132.49791704583913,
+    "urlBefore": "http://127.0.0.1:57295/macro_monetary.html#overview",
+    "urlAfter": "http://127.0.0.1:57295/macro_monetary.html#overview",
     "openedBy": "click",
     "page": "macro_monetary.html",
     "locale": "en",
@@ -142727,9 +142847,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 131.55491696670651,
-    "urlBefore": "http://127.0.0.1:60039/macro_monetary.html#overview",
-    "urlAfter": "http://127.0.0.1:60039/macro_monetary.html#overview",
+    "visibleAfterMs": 127.84345902036875,
+    "urlBefore": "http://127.0.0.1:57295/macro_monetary.html#overview",
+    "urlAfter": "http://127.0.0.1:57295/macro_monetary.html#overview",
     "openedBy": "click",
     "page": "macro_monetary.html",
     "locale": "zh",
@@ -142751,8 +142871,8 @@
       "box": {
         "left": 18,
         "right": 750,
-        "top": 854.0625,
-        "bottom": 854.0625,
+        "top": 1507.0625,
+        "bottom": 1507.0625,
         "width": 732,
         "height": 0
       }
@@ -142772,9 +142892,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 124.79104194790125,
-    "urlBefore": "http://127.0.0.1:60039/macro_monetary.html#overview",
-    "urlAfter": "http://127.0.0.1:60039/macro_monetary.html#overview",
+    "visibleAfterMs": 73.40062491130084,
+    "urlBefore": "http://127.0.0.1:57295/macro_monetary.html#overview",
+    "urlAfter": "http://127.0.0.1:57295/macro_monetary.html#overview",
     "openedBy": "click",
     "page": "macro_monetary.html",
     "locale": "en",
@@ -142817,9 +142937,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 132.57554196752608,
-    "urlBefore": "http://127.0.0.1:60039/macro_monetary.html#overview",
-    "urlAfter": "http://127.0.0.1:60039/macro_monetary.html#overview",
+    "visibleAfterMs": 116.55608308501542,
+    "urlBefore": "http://127.0.0.1:57295/macro_monetary.html#overview",
+    "urlAfter": "http://127.0.0.1:57295/macro_monetary.html#overview",
     "openedBy": "click",
     "page": "macro_monetary.html",
     "locale": "zh",
@@ -142862,9 +142982,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 115.56475004181266,
-    "urlBefore": "http://127.0.0.1:60039/macro_monetary.html#overview",
-    "urlAfter": "http://127.0.0.1:60039/macro_monetary.html#overview",
+    "visibleAfterMs": 117.37179197371006,
+    "urlBefore": "http://127.0.0.1:57295/macro_monetary.html#overview",
+    "urlAfter": "http://127.0.0.1:57295/macro_monetary.html#overview",
     "openedBy": "click",
     "page": "macro_monetary.html",
     "locale": "en",
@@ -142907,9 +143027,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 135.72229095734656,
-    "urlBefore": "http://127.0.0.1:60039/macro_monetary.html#overview",
-    "urlAfter": "http://127.0.0.1:60039/macro_monetary.html#overview",
+    "visibleAfterMs": 127.74262495804578,
+    "urlBefore": "http://127.0.0.1:57295/macro_monetary.html#overview",
+    "urlAfter": "http://127.0.0.1:57295/macro_monetary.html#overview",
     "openedBy": "click",
     "page": "macro_monetary.html",
     "locale": "zh",
@@ -142931,8 +143051,8 @@
       "box": {
         "left": 14,
         "right": 376,
-        "top": 8345,
-        "bottom": 8345,
+        "top": 858,
+        "bottom": 858,
         "width": 362,
         "height": 0
       }
@@ -142952,9 +143072,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 72.19220802653581,
-    "urlBefore": "http://127.0.0.1:60039/macro_rates_curves.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_rates_curves.html",
+    "visibleAfterMs": 174.13662502076477,
+    "urlBefore": "http://127.0.0.1:57295/macro_rates_curves.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_rates_curves.html",
     "openedBy": "click",
     "page": "macro_rates_curves.html",
     "locale": "en",
@@ -142976,8 +143096,8 @@
       "box": {
         "left": 14,
         "right": 376,
-        "top": 7949,
-        "bottom": 7949,
+        "top": 858,
+        "bottom": 858,
         "width": 362,
         "height": 0
       }
@@ -142997,9 +143117,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 74.43083298858255,
-    "urlBefore": "http://127.0.0.1:60039/macro_rates_curves.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_rates_curves.html",
+    "visibleAfterMs": 185.98083301912993,
+    "urlBefore": "http://127.0.0.1:57295/macro_rates_curves.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_rates_curves.html",
     "openedBy": "click",
     "page": "macro_rates_curves.html",
     "locale": "zh",
@@ -143042,9 +143162,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 93.4037909610197,
-    "urlBefore": "http://127.0.0.1:60039/macro_rates_curves.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_rates_curves.html",
+    "visibleAfterMs": 70.78141695819795,
+    "urlBefore": "http://127.0.0.1:57295/macro_rates_curves.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_rates_curves.html",
     "openedBy": "click",
     "page": "macro_rates_curves.html",
     "locale": "en",
@@ -143066,8 +143186,8 @@
       "box": {
         "left": 14,
         "right": 376,
-        "top": 858,
-        "bottom": 858,
+        "top": 7949,
+        "bottom": 7949,
         "width": 362,
         "height": 0
       }
@@ -143087,9 +143207,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 187.22375005017966,
-    "urlBefore": "http://127.0.0.1:60039/macro_rates_curves.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_rates_curves.html",
+    "visibleAfterMs": 77.97691598534584,
+    "urlBefore": "http://127.0.0.1:57295/macro_rates_curves.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_rates_curves.html",
     "openedBy": "click",
     "page": "macro_rates_curves.html",
     "locale": "zh",
@@ -143132,9 +143252,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 88.91045895870775,
-    "urlBefore": "http://127.0.0.1:60039/macro_rates_curves.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_rates_curves.html",
+    "visibleAfterMs": 79.62299999780953,
+    "urlBefore": "http://127.0.0.1:57295/macro_rates_curves.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_rates_curves.html",
     "openedBy": "click",
     "page": "macro_rates_curves.html",
     "locale": "en",
@@ -143177,9 +143297,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 66.46995909977704,
-    "urlBefore": "http://127.0.0.1:60039/macro_rates_curves.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_rates_curves.html",
+    "visibleAfterMs": 64.94245794601738,
+    "urlBefore": "http://127.0.0.1:57295/macro_rates_curves.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_rates_curves.html",
     "openedBy": "click",
     "page": "macro_rates_curves.html",
     "locale": "zh",
@@ -143222,9 +143342,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 185.8429160201922,
-    "urlBefore": "http://127.0.0.1:60039/macro_rates_curves.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_rates_curves.html",
+    "visibleAfterMs": 176.29741691052914,
+    "urlBefore": "http://127.0.0.1:57295/macro_rates_curves.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_rates_curves.html",
     "openedBy": "click",
     "page": "macro_rates_curves.html",
     "locale": "en",
@@ -143267,9 +143387,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 97.0539579866454,
-    "urlBefore": "http://127.0.0.1:60039/macro_rates_curves.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_rates_curves.html",
+    "visibleAfterMs": 80.99875005427748,
+    "urlBefore": "http://127.0.0.1:57295/macro_rates_curves.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_rates_curves.html",
     "openedBy": "click",
     "page": "macro_rates_curves.html",
     "locale": "zh",
@@ -143291,8 +143411,8 @@
       "box": {
         "left": 14,
         "right": 376,
-        "top": 7933.640625,
-        "bottom": 7933.640625,
+        "top": 857.640625,
+        "bottom": 857.640625,
         "width": 362,
         "height": 0
       }
@@ -143312,9 +143432,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 83.53862504009157,
-    "urlBefore": "http://127.0.0.1:60039/macro_business_activity.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_business_activity.html",
+    "visibleAfterMs": 184.752875007689,
+    "urlBefore": "http://127.0.0.1:57295/macro_business_activity.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_business_activity.html",
     "openedBy": "click",
     "page": "macro_business_activity.html",
     "locale": "en",
@@ -143357,9 +143477,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 181.132624973543,
-    "urlBefore": "http://127.0.0.1:60039/macro_business_activity.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_business_activity.html",
+    "visibleAfterMs": 164.75187498144805,
+    "urlBefore": "http://127.0.0.1:57295/macro_business_activity.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_business_activity.html",
     "openedBy": "click",
     "page": "macro_business_activity.html",
     "locale": "zh",
@@ -143402,9 +143522,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 175.6643330445513,
-    "urlBefore": "http://127.0.0.1:60039/macro_business_activity.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_business_activity.html",
+    "visibleAfterMs": 178.81666601169854,
+    "urlBefore": "http://127.0.0.1:57295/macro_business_activity.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_business_activity.html",
     "openedBy": "click",
     "page": "macro_business_activity.html",
     "locale": "en",
@@ -143426,8 +143546,8 @@
       "box": {
         "left": 14,
         "right": 376,
-        "top": 7605.21875,
-        "bottom": 7605.21875,
+        "top": 858.21875,
+        "bottom": 858.21875,
         "width": 362,
         "height": 0
       }
@@ -143447,9 +143567,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 79.29137500468642,
-    "urlBefore": "http://127.0.0.1:60039/macro_business_activity.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_business_activity.html",
+    "visibleAfterMs": 185.95262500457466,
+    "urlBefore": "http://127.0.0.1:57295/macro_business_activity.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_business_activity.html",
     "openedBy": "click",
     "page": "macro_business_activity.html",
     "locale": "zh",
@@ -143492,9 +143612,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 175.41274998802692,
-    "urlBefore": "http://127.0.0.1:60039/macro_business_activity.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_business_activity.html",
+    "visibleAfterMs": 167.25749999750406,
+    "urlBefore": "http://127.0.0.1:57295/macro_business_activity.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_business_activity.html",
     "openedBy": "click",
     "page": "macro_business_activity.html",
     "locale": "en",
@@ -143516,8 +143636,8 @@
       "box": {
         "left": 18,
         "right": 750,
-        "top": 4846.640625,
-        "bottom": 4846.640625,
+        "top": 853.640625,
+        "bottom": 853.640625,
         "width": 732,
         "height": 0
       }
@@ -143537,9 +143657,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 77.6904160156846,
-    "urlBefore": "http://127.0.0.1:60039/macro_business_activity.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_business_activity.html",
+    "visibleAfterMs": 177.7162499492988,
+    "urlBefore": "http://127.0.0.1:57295/macro_business_activity.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_business_activity.html",
     "openedBy": "click",
     "page": "macro_business_activity.html",
     "locale": "zh",
@@ -143561,8 +143681,8 @@
       "box": {
         "left": 18,
         "right": 750,
-        "top": 5008.78125,
-        "bottom": 5008.78125,
+        "top": 853.78125,
+        "bottom": 853.78125,
         "width": 732,
         "height": 0
       }
@@ -143582,9 +143702,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 94.93104193825275,
-    "urlBefore": "http://127.0.0.1:60039/macro_business_activity.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_business_activity.html",
+    "visibleAfterMs": 188.92687500920147,
+    "urlBefore": "http://127.0.0.1:57295/macro_business_activity.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_business_activity.html",
     "openedBy": "click",
     "page": "macro_business_activity.html",
     "locale": "en",
@@ -143627,9 +143747,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 173.7301250686869,
-    "urlBefore": "http://127.0.0.1:60039/macro_business_activity.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_business_activity.html",
+    "visibleAfterMs": 179.60712499916553,
+    "urlBefore": "http://127.0.0.1:57295/macro_business_activity.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_business_activity.html",
     "openedBy": "click",
     "page": "macro_business_activity.html",
     "locale": "zh",
@@ -143651,8 +143771,8 @@
       "box": {
         "left": 14,
         "right": 376,
-        "top": 858.34375,
-        "bottom": 858.34375,
+        "top": 7979.34375,
+        "bottom": 7979.34375,
         "width": 362,
         "height": 0
       }
@@ -143672,9 +143792,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 158.03900000173599,
-    "urlBefore": "http://127.0.0.1:60039/macro_financial_conditions.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_financial_conditions.html",
+    "visibleAfterMs": 69.373624981381,
+    "urlBefore": "http://127.0.0.1:57295/macro_financial_conditions.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_financial_conditions.html",
     "openedBy": "click",
     "page": "macro_financial_conditions.html",
     "locale": "en",
@@ -143696,8 +143816,8 @@
       "box": {
         "left": 14,
         "right": 376,
-        "top": 858.296875,
-        "bottom": 858.296875,
+        "top": 7618.296875,
+        "bottom": 7618.296875,
         "width": 362,
         "height": 0
       }
@@ -143717,9 +143837,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 190.73695805855095,
-    "urlBefore": "http://127.0.0.1:60039/macro_financial_conditions.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_financial_conditions.html",
+    "visibleAfterMs": 83.99112499319017,
+    "urlBefore": "http://127.0.0.1:57295/macro_financial_conditions.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_financial_conditions.html",
     "openedBy": "click",
     "page": "macro_financial_conditions.html",
     "locale": "zh",
@@ -143762,9 +143882,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 163.30145800020546,
-    "urlBefore": "http://127.0.0.1:60039/macro_financial_conditions.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_financial_conditions.html",
+    "visibleAfterMs": 182.49962490517646,
+    "urlBefore": "http://127.0.0.1:57295/macro_financial_conditions.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_financial_conditions.html",
     "openedBy": "click",
     "page": "macro_financial_conditions.html",
     "locale": "en",
@@ -143786,8 +143906,8 @@
       "box": {
         "left": 14,
         "right": 376,
-        "top": 7618.296875,
-        "bottom": 7618.296875,
+        "top": 858.296875,
+        "bottom": 858.296875,
         "width": 362,
         "height": 0
       }
@@ -143807,9 +143927,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 63.70674993377179,
-    "urlBefore": "http://127.0.0.1:60039/macro_financial_conditions.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_financial_conditions.html",
+    "visibleAfterMs": 177.44687502272427,
+    "urlBefore": "http://127.0.0.1:57295/macro_financial_conditions.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_financial_conditions.html",
     "openedBy": "click",
     "page": "macro_financial_conditions.html",
     "locale": "zh",
@@ -143852,9 +143972,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 174.2418750654906,
-    "urlBefore": "http://127.0.0.1:60039/macro_financial_conditions.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_financial_conditions.html",
+    "visibleAfterMs": 172.94037505052984,
+    "urlBefore": "http://127.0.0.1:57295/macro_financial_conditions.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_financial_conditions.html",
     "openedBy": "click",
     "page": "macro_financial_conditions.html",
     "locale": "en",
@@ -143897,9 +144017,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 176.39845795929432,
-    "urlBefore": "http://127.0.0.1:60039/macro_financial_conditions.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_financial_conditions.html",
+    "visibleAfterMs": 182.01287498231977,
+    "urlBefore": "http://127.0.0.1:57295/macro_financial_conditions.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_financial_conditions.html",
     "openedBy": "click",
     "page": "macro_financial_conditions.html",
     "locale": "zh",
@@ -143921,8 +144041,8 @@
       "box": {
         "left": 18,
         "right": 750,
-        "top": 5405.921875,
-        "bottom": 5405.921875,
+        "top": 853.921875,
+        "bottom": 853.921875,
         "width": 732,
         "height": 0
       }
@@ -143942,9 +144062,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 70.52770897280425,
-    "urlBefore": "http://127.0.0.1:60039/macro_financial_conditions.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_financial_conditions.html",
+    "visibleAfterMs": 168.9576250500977,
+    "urlBefore": "http://127.0.0.1:57295/macro_financial_conditions.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_financial_conditions.html",
     "openedBy": "click",
     "page": "macro_financial_conditions.html",
     "locale": "en",
@@ -143987,9 +144107,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 182.8007089206949,
-    "urlBefore": "http://127.0.0.1:60039/macro_financial_conditions.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_financial_conditions.html",
+    "visibleAfterMs": 185.26687507983297,
+    "urlBefore": "http://127.0.0.1:57295/macro_financial_conditions.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_financial_conditions.html",
     "openedBy": "click",
     "page": "macro_financial_conditions.html",
     "locale": "zh",
@@ -144032,9 +144152,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 173.942458932288,
-    "urlBefore": "http://127.0.0.1:60039/macro_housing_real_estate.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_housing_real_estate.html",
+    "visibleAfterMs": 179.68983307946473,
+    "urlBefore": "http://127.0.0.1:57295/macro_housing_real_estate.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_housing_real_estate.html",
     "openedBy": "click",
     "page": "macro_housing_real_estate.html",
     "locale": "en",
@@ -144077,9 +144197,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 192.31175002641976,
-    "urlBefore": "http://127.0.0.1:60039/macro_housing_real_estate.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_housing_real_estate.html",
+    "visibleAfterMs": 159.47116701863706,
+    "urlBefore": "http://127.0.0.1:57295/macro_housing_real_estate.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_housing_real_estate.html",
     "openedBy": "click",
     "page": "macro_housing_real_estate.html",
     "locale": "zh",
@@ -144101,8 +144221,8 @@
       "box": {
         "left": 14,
         "right": 376,
-        "top": 5957,
-        "bottom": 5957,
+        "top": 858,
+        "bottom": 858,
         "width": 362,
         "height": 0
       }
@@ -144122,9 +144242,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 89.66299996245652,
-    "urlBefore": "http://127.0.0.1:60039/macro_housing_real_estate.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_housing_real_estate.html",
+    "visibleAfterMs": 177.32683394569904,
+    "urlBefore": "http://127.0.0.1:57295/macro_housing_real_estate.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_housing_real_estate.html",
     "openedBy": "click",
     "page": "macro_housing_real_estate.html",
     "locale": "en",
@@ -144146,8 +144266,8 @@
       "box": {
         "left": 14,
         "right": 376,
-        "top": 5583.796875,
-        "bottom": 5583.796875,
+        "top": 857.796875,
+        "bottom": 857.796875,
         "width": 362,
         "height": 0
       }
@@ -144167,9 +144287,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 78.44708301126957,
-    "urlBefore": "http://127.0.0.1:60039/macro_housing_real_estate.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_housing_real_estate.html",
+    "visibleAfterMs": 169.2510830471292,
+    "urlBefore": "http://127.0.0.1:57295/macro_housing_real_estate.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_housing_real_estate.html",
     "openedBy": "click",
     "page": "macro_housing_real_estate.html",
     "locale": "zh",
@@ -144191,8 +144311,8 @@
       "box": {
         "left": 18,
         "right": 750,
-        "top": 3915.921875,
-        "bottom": 3915.921875,
+        "top": 853.921875,
+        "bottom": 853.921875,
         "width": 732,
         "height": 0
       }
@@ -144212,9 +144332,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 76.17545907851309,
-    "urlBefore": "http://127.0.0.1:60039/macro_housing_real_estate.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_housing_real_estate.html",
+    "visibleAfterMs": 150.50370898097754,
+    "urlBefore": "http://127.0.0.1:57295/macro_housing_real_estate.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_housing_real_estate.html",
     "openedBy": "click",
     "page": "macro_housing_real_estate.html",
     "locale": "en",
@@ -144236,8 +144356,8 @@
       "box": {
         "left": 18,
         "right": 750,
-        "top": 3807.46875,
-        "bottom": 3807.46875,
+        "top": 854.46875,
+        "bottom": 854.46875,
         "width": 732,
         "height": 0
       }
@@ -144257,9 +144377,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 71.90137496218085,
-    "urlBefore": "http://127.0.0.1:60039/macro_housing_real_estate.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_housing_real_estate.html",
+    "visibleAfterMs": 171.25079093966633,
+    "urlBefore": "http://127.0.0.1:57295/macro_housing_real_estate.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_housing_real_estate.html",
     "openedBy": "click",
     "page": "macro_housing_real_estate.html",
     "locale": "zh",
@@ -144281,8 +144401,8 @@
       "box": {
         "left": 18,
         "right": 750,
-        "top": 3915.921875,
-        "bottom": 3915.921875,
+        "top": 853.921875,
+        "bottom": 853.921875,
         "width": 732,
         "height": 0
       }
@@ -144302,9 +144422,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 80.1009590504691,
-    "urlBefore": "http://127.0.0.1:60039/macro_housing_real_estate.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_housing_real_estate.html",
+    "visibleAfterMs": 173.3065410517156,
+    "urlBefore": "http://127.0.0.1:57295/macro_housing_real_estate.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_housing_real_estate.html",
     "openedBy": "click",
     "page": "macro_housing_real_estate.html",
     "locale": "en",
@@ -144326,8 +144446,8 @@
       "box": {
         "left": 18,
         "right": 750,
-        "top": 3807.46875,
-        "bottom": 3807.46875,
+        "top": 854.46875,
+        "bottom": 854.46875,
         "width": 732,
         "height": 0
       }
@@ -144347,9 +144467,9 @@
       }
     },
     "openClass": "open",
-    "visibleAfterMs": 68.74608295038342,
-    "urlBefore": "http://127.0.0.1:60039/macro_housing_real_estate.html",
-    "urlAfter": "http://127.0.0.1:60039/macro_housing_real_estate.html",
+    "visibleAfterMs": 167.73745801765472,
+    "urlBefore": "http://127.0.0.1:57295/macro_housing_real_estate.html",
+    "urlAfter": "http://127.0.0.1:57295/macro_housing_real_estate.html",
     "openedBy": "click",
     "page": "macro_housing_real_estate.html",
     "locale": "zh",
@@ -144380,97 +144500,97 @@
   "e5_timeout_macro_monetary_dark_en_1440": {
     "clonePresent": true,
     "headline": "This section didn't load",
-    "requestSeenAtMs": 925421108.009958,
-    "cloneSeenAtMs": 925430126.065458,
-    "elapsedMs": 9018.055500030518,
+    "requestSeenAtMs": 935317194.713166,
+    "cloneSeenAtMs": 935326200.567583,
+    "elapsedMs": 9005.854416966438,
     "ok": true
   },
   "e5_timeout_macro_monetary_dark_en_390": {
     "clonePresent": true,
     "headline": "This section didn't load",
-    "requestSeenAtMs": 925431156.271083,
-    "cloneSeenAtMs": 925440276.288041,
-    "elapsedMs": 9120.016957998276,
+    "requestSeenAtMs": 935327339.869416,
+    "cloneSeenAtMs": 935336379.517666,
+    "elapsedMs": 9039.648249983788,
     "ok": true
   },
   "e5_timeout_macro_monetary_dark_en_768": {
     "clonePresent": true,
     "headline": "This section didn't load",
-    "requestSeenAtMs": 925442326.3779579,
-    "cloneSeenAtMs": 925451369.693875,
-    "elapsedMs": 9043.315917015076,
+    "requestSeenAtMs": 935338224.8996251,
+    "cloneSeenAtMs": 935347258.23775,
+    "elapsedMs": 9033.338124990463,
     "ok": true
   },
   "e5_timeout_macro_monetary_dark_zh_1440": {
     "clonePresent": true,
     "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
-    "requestSeenAtMs": 925453143.3594999,
-    "cloneSeenAtMs": 925462151.717625,
-    "elapsedMs": 9008.358125090599,
+    "requestSeenAtMs": 935348870.9769579,
+    "cloneSeenAtMs": 935357880.533458,
+    "elapsedMs": 9009.556500077248,
     "ok": true
   },
   "e5_timeout_macro_monetary_dark_zh_390": {
     "clonePresent": true,
     "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
-    "requestSeenAtMs": 925463244.109666,
-    "cloneSeenAtMs": 925472272.748583,
-    "elapsedMs": 9028.6389169693,
+    "requestSeenAtMs": 935359051.14225,
+    "cloneSeenAtMs": 935368081.463791,
+    "elapsedMs": 9030.321541070938,
     "ok": true
   },
   "e5_timeout_macro_monetary_dark_zh_768": {
     "clonePresent": true,
     "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
-    "requestSeenAtMs": 925474444.845791,
-    "cloneSeenAtMs": 925483487.966625,
-    "elapsedMs": 9043.120833992958,
+    "requestSeenAtMs": 935370000.221375,
+    "cloneSeenAtMs": 935379034.498583,
+    "elapsedMs": 9034.27720797062,
     "ok": true
   },
   "e5_timeout_macro_monetary_light_en_1440": {
     "clonePresent": true,
     "headline": "This section didn't load",
-    "requestSeenAtMs": 925485251.4783751,
-    "cloneSeenAtMs": 925494259.147375,
-    "elapsedMs": 9007.668999910355,
+    "requestSeenAtMs": 935380627.165375,
+    "cloneSeenAtMs": 935389641.243833,
+    "elapsedMs": 9014.078457951546,
     "ok": true
   },
   "e5_timeout_macro_monetary_light_en_390": {
     "clonePresent": true,
     "headline": "This section didn't load",
-    "requestSeenAtMs": 925495311.249666,
-    "cloneSeenAtMs": 925504349.786541,
-    "elapsedMs": 9038.536875009537,
+    "requestSeenAtMs": 935390703.861833,
+    "cloneSeenAtMs": 935399738.141875,
+    "elapsedMs": 9034.280042052269,
     "ok": true
   },
   "e5_timeout_macro_monetary_light_en_768": {
     "clonePresent": true,
     "headline": "This section didn't load",
-    "requestSeenAtMs": 925506398.576416,
-    "cloneSeenAtMs": 925515421.251875,
-    "elapsedMs": 9022.67545902729,
+    "requestSeenAtMs": 935401669.602416,
+    "cloneSeenAtMs": 935410703.409666,
+    "elapsedMs": 9033.807249903679,
     "ok": true
   },
   "e5_timeout_macro_monetary_light_zh_1440": {
     "clonePresent": true,
     "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
-    "requestSeenAtMs": 925517295.4256251,
-    "cloneSeenAtMs": 925526303.052375,
-    "elapsedMs": 9007.626749873161,
+    "requestSeenAtMs": 935412368.992666,
+    "cloneSeenAtMs": 935421378.636916,
+    "elapsedMs": 9009.644250035286,
     "ok": true
   },
   "e5_timeout_macro_monetary_light_zh_390": {
     "clonePresent": true,
     "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
-    "requestSeenAtMs": 925527559.222083,
-    "cloneSeenAtMs": 925536589.138333,
-    "elapsedMs": 9029.916249990463,
+    "requestSeenAtMs": 935422520.95875,
+    "cloneSeenAtMs": 935431546.250083,
+    "elapsedMs": 9025.291332960129,
     "ok": true
   },
   "e5_timeout_macro_monetary_light_zh_768": {
     "clonePresent": true,
     "headline": "\u672c\u677f\u5757\u672a\u80fd\u8f7d\u5165",
-    "requestSeenAtMs": 925538650.568416,
-    "cloneSeenAtMs": 925547685.9799999,
-    "elapsedMs": 9035.411583900452,
+    "requestSeenAtMs": 935433571.311541,
+    "cloneSeenAtMs": 935442601.1860831,
+    "elapsedMs": 9029.874542117119,
     "ok": true
   },
   "rail_viewport_macro_monetary_dark_en_390": {
@@ -149922,7 +150042,19 @@
     "method_table_390-macro_labor_markets-dark-en-390": "COMPONENT RAW STANDARDIZED WEIGHT CONTRIBUTION Initial-claims momentum Labor-nowcast regime desk \u22121.30 76.07 0.40 +10.43 Job-postings momentum (Indeed) Labor-nowcast regime desk 1.68 58.41 0.35 +2.94 Withheld-tax income growth (proxy) Labor-nowcast regime desk 2.01 62.58 0.25 +3.15",
     "method_table_390-macro_labor_markets-dark-zh-390": "\u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u521d\u8bf7\u5931\u4e1a\u91d1\u52a8\u80fd \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 \u22121.30 76.07 0.40 +10.43 \u804c\u4f4d\u53d1\u5e03\u52a8\u80fd\uff08Indeed\uff09 \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 1.68 58.41 0.35 +2.94 \u9884\u6263\u7a0e\u6536\u5165\u589e\u957f\uff08\u4ee3\u7406\u6307\u6807\uff09 \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 2.01 62.58 0.25 +3.15",
     "method_table_390-macro_labor_markets-light-en-390": "COMPONENT RAW STANDARDIZED WEIGHT CONTRIBUTION Initial-claims momentum Labor-nowcast regime desk \u22121.30 76.07 0.40 +10.43 Job-postings momentum (Indeed) Labor-nowcast regime desk 1.68 58.41 0.35 +2.94 Withheld-tax income growth (proxy) Labor-nowcast regime desk 2.01 62.58 0.25 +3.15",
-    "method_table_390-macro_labor_markets-light-zh-390": "\u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u521d\u8bf7\u5931\u4e1a\u91d1\u52a8\u80fd \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 \u22121.30 76.07 0.40 +10.43 \u804c\u4f4d\u53d1\u5e03\u52a8\u80fd\uff08Indeed\uff09 \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 1.68 58.41 0.35 +2.94 \u9884\u6263\u7a0e\u6536\u5165\u589e\u957f\uff08\u4ee3\u7406\u6307\u6807\uff09 \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 2.01 62.58 0.25 +3.15"
+    "method_table_390-macro_labor_markets-light-zh-390": "\u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u521d\u8bf7\u5931\u4e1a\u91d1\u52a8\u80fd \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 \u22121.30 76.07 0.40 +10.43 \u804c\u4f4d\u53d1\u5e03\u52a8\u80fd\uff08Indeed\uff09 \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 1.68 58.41 0.35 +2.94 \u9884\u6263\u7a0e\u6536\u5165\u589e\u957f\uff08\u4ee3\u7406\u6307\u6807\uff09 \u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 2.01 62.58 0.25 +3.15",
+    "method_table_390-macro_rates_curves-dark-en-390": "METRIC PRIOR CURRENT CHANGE Two-year Treasury yield 4.34 4.34 0 Ten-year Treasury yield 4.77 4.77 0 Two-year to ten-year gap, curve reading 0.43 0.43 0 Extra yield for lending ten years 0.88 0.88 0",
+    "method_table_390-macro_rates_curves-dark-zh-390": "\u6307\u6807 \u4e0a\u671f \u5f53\u524d \u53d8\u5316 \u4e24\u5e74\u671f\u7f8e\u503a\u6536\u76ca\u7387 4.34 4.34 0 \u5341\u5e74\u671f\u7f8e\u503a\u6536\u76ca\u7387 4.77 4.77 0 2\u5e74\u671f\u4e0e10\u5e74\u671f\u5229\u5dee\uff08\u66f2\u7ebf\u8bfb\u6570\uff09 0.43 0.43 0 \u6301\u6709\u5341\u5e74\u671f\u503a\u5238\u7684\u989d\u5916\u6536\u76ca 0.88 0.88 0",
+    "method_table_390-macro_rates_curves-light-en-390": "METRIC PRIOR CURRENT CHANGE Two-year Treasury yield 4.34 4.34 0 Ten-year Treasury yield 4.77 4.77 0 Two-year to ten-year gap, curve reading 0.43 0.43 0 Extra yield for lending ten years 0.88 0.88 0",
+    "method_table_390-macro_rates_curves-light-zh-390": "\u6307\u6807 \u4e0a\u671f \u5f53\u524d \u53d8\u5316 \u4e24\u5e74\u671f\u7f8e\u503a\u6536\u76ca\u7387 4.34 4.34 0 \u5341\u5e74\u671f\u7f8e\u503a\u6536\u76ca\u7387 4.77 4.77 0 2\u5e74\u671f\u4e0e10\u5e74\u671f\u5229\u5dee\uff08\u66f2\u7ebf\u8bfb\u6570\uff09 0.43 0.43 0 \u6301\u6709\u5341\u5e74\u671f\u503a\u5238\u7684\u989d\u5916\u6536\u76ca 0.88 0.88 0",
+    "method_table_390-macro_business_activity-dark-en-390": "METRIC PRIOR CURRENT CHANGE Leading-activity momentum (6-month) \u2014 Unknown \u2014 Unknown \u2014 Unknown Current-activity momentum (6-month) \u22120.22 \u22120.22 0 Lagging-activity momentum (6-month) \u2014 Unknown \u2014 Unknown \u2014 Unknown Current-to-lagging activity gap (6-month) \u22120.57 \u22120.57 0",
+    "method_table_390-macro_business_activity-dark-zh-390": "\u6307\u6807 \u4e0a\u671f \u5f53\u524d \u53d8\u5316 \u9886\u5148\u6d3b\u52a8\u52a8\u80fd\uff086\u4e2a\u6708\uff09 \u2014 \u672a\u77e5 \u2014 \u672a\u77e5 \u2014 \u672a\u77e5 \u5f53\u524d\u6d3b\u52a8\u52a8\u80fd\uff086\u4e2a\u6708\uff09 \u22120.22 \u22120.22 0 \u6ede\u540e\u6d3b\u52a8\u52a8\u80fd\uff086\u4e2a\u6708\uff09 \u2014 \u672a\u77e5 \u2014 \u672a\u77e5 \u2014 \u672a\u77e5 \u5f53\u524d\u4e0e\u6ede\u540e\u6d3b\u52a8\u5dee\u8ddd\uff086\u4e2a\u6708\uff09 \u22120.57 \u22120.57 0",
+    "method_table_390-macro_business_activity-light-en-390": "METRIC PRIOR CURRENT CHANGE Leading-activity momentum (6-month) \u2014 Unknown \u2014 Unknown \u2014 Unknown Current-activity momentum (6-month) \u22120.22 \u22120.22 0 Lagging-activity momentum (6-month) \u2014 Unknown \u2014 Unknown \u2014 Unknown Current-to-lagging activity gap (6-month) \u22120.57 \u22120.57 0",
+    "method_table_390-macro_business_activity-light-zh-390": "\u6307\u6807 \u4e0a\u671f \u5f53\u524d \u53d8\u5316 \u9886\u5148\u6d3b\u52a8\u52a8\u80fd\uff086\u4e2a\u6708\uff09 \u2014 \u672a\u77e5 \u2014 \u672a\u77e5 \u2014 \u672a\u77e5 \u5f53\u524d\u6d3b\u52a8\u52a8\u80fd\uff086\u4e2a\u6708\uff09 \u22120.22 \u22120.22 0 \u6ede\u540e\u6d3b\u52a8\u52a8\u80fd\uff086\u4e2a\u6708\uff09 \u2014 \u672a\u77e5 \u2014 \u672a\u77e5 \u2014 \u672a\u77e5 \u5f53\u524d\u4e0e\u6ede\u540e\u6d3b\u52a8\u5dee\u8ddd\uff086\u4e2a\u6708\uff09 \u22120.57 \u22120.57 0",
+    "method_table_390-macro_housing_real_estate-dark-en-390": "METRIC PRIOR CURRENT CHANGE Thirty-year mortgage rate 6.71 6.71 0 Housing starts, year over year \u221213.48 \u221213.48 0 Building permits, year over year 2.36 2.36 0 National house prices, year over year 1.52 1.52 0",
+    "method_table_390-macro_housing_real_estate-dark-zh-390": "\u6307\u6807 \u4e0a\u671f \u5f53\u524d \u53d8\u5316 \u4e09\u5341\u5e74\u671f\u623f\u8d37\u5229\u7387 6.71 6.71 0 \u65b0\u5c4b\u5f00\u5de5\u540c\u6bd4 \u221213.48 \u221213.48 0 \u8425\u5efa\u8bb8\u53ef\u540c\u6bd4 2.36 2.36 0 \u5168\u56fd\u623f\u4ef7\u540c\u6bd4 1.52 1.52 0",
+    "method_table_390-macro_housing_real_estate-light-en-390": "METRIC PRIOR CURRENT CHANGE Thirty-year mortgage rate 6.71 6.71 0 Housing starts, year over year \u221213.48 \u221213.48 0 Building permits, year over year 2.36 2.36 0 National house prices, year over year 1.52 1.52 0",
+    "method_table_390-macro_housing_real_estate-light-zh-390": "\u6307\u6807 \u4e0a\u671f \u5f53\u524d \u53d8\u5316 \u4e09\u5341\u5e74\u671f\u623f\u8d37\u5229\u7387 6.71 6.71 0 \u65b0\u5c4b\u5f00\u5de5\u540c\u6bd4 \u221213.48 \u221213.48 0 \u8425\u5efa\u8bb8\u53ef\u540c\u6bd4 2.36 2.36 0 \u5168\u56fd\u623f\u4ef7\u540c\u6bd4 1.52 1.52 0"
   },
   "method_table_390_visible": {
     "method_table_390_start-macro_financial_conditions-dark-en-390.png": "Component Raw Rates channelFinancial-conditions workspace 98.00 Credit channelFinancial-conditions workspace 47.01 Dollar/funding channelFinancial-conditions workspace 46.98 Equities/volatility channelFinancial-conditions workspace 20.18",
@@ -149940,7 +150072,27 @@
     "method_table_390_start-macro_labor_markets-light-en-390.png": "Component Raw Initial-claims momentumLabor-nowcast regime desk \u22121.30 Job-postings momentum (Indeed)Labor-nowcast regime desk 1.68 Withheld-tax income growth (proxy)Labor-nowcast regime desk 2.01",
     "method_table_390_end-macro_labor_markets-light-en-390.png": "Standardized Weight Contribution 76.07 0.40 +10.43 58.41 0.35 +2.94 62.58 0.25 +3.15",
     "method_table_390_start-macro_labor_markets-light-zh-390.png": "\u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u521d\u8bf7\u5931\u4e1a\u91d1\u52a8\u80fd\u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 \u22121.30 76.07 \u804c\u4f4d\u53d1\u5e03\u52a8\u80fd\uff08Indeed\uff09\u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 1.68 58.41 \u9884\u6263\u7a0e\u6536\u5165\u589e\u957f\uff08\u4ee3\u7406\u6307\u6807\uff09\u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 2.01 62.58",
-    "method_table_390_end-macro_labor_markets-light-zh-390.png": "\u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u521d\u8bf7\u5931\u4e1a\u91d1\u52a8\u80fd\u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 \u22121.30 76.07 0.40 +10.43 \u804c\u4f4d\u53d1\u5e03\u52a8\u80fd\uff08Indeed\uff09\u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 1.68 58.41 0.35 +2.94 \u9884\u6263\u7a0e\u6536\u5165\u589e\u957f\uff08\u4ee3\u7406\u6307\u6807\uff09\u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 2.01 62.58 0.25 +3.15"
+    "method_table_390_end-macro_labor_markets-light-zh-390.png": "\u5206\u9879 \u539f\u59cb\u503c \u6807\u51c6\u5316\u503c \u6743\u91cd \u8d21\u732e \u521d\u8bf7\u5931\u4e1a\u91d1\u52a8\u80fd\u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 \u22121.30 76.07 0.40 +10.43 \u804c\u4f4d\u53d1\u5e03\u52a8\u80fd\uff08Indeed\uff09\u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 1.68 58.41 0.35 +2.94 \u9884\u6263\u7a0e\u6536\u5165\u589e\u957f\uff08\u4ee3\u7406\u6307\u6807\uff09\u52b3\u52a8\u529b\u5373\u65f6\u9884\u6d4b\u4f53\u5236\u5c0f\u7ec4 2.01 62.58 0.25 +3.15",
+    "method_table_390_start-macro_rates_curves-dark-en-390.png": "Metric Prior Two-year Treasury yield 4.34 Ten-year Treasury yield 4.77 Two-year to ten-year gap, curve reading 0.43 Extra yield for lending ten years 0.88",
+    "method_table_390_end-macro_rates_curves-dark-en-390.png": "Metric Prior Current Change Two-year Treasury yield 4.34 4.34 0 Ten-year Treasury yield 4.77 4.77 0 Two-year to ten-year gap, curve reading 0.43 0.43 0 Extra yield for lending ten years 0.88 0.88 0",
+    "method_table_390_start-macro_rates_curves-dark-zh-390.png": "\u6307\u6807 \u4e0a\u671f \u5f53\u524d \u53d8\u5316 \u4e24\u5e74\u671f\u7f8e\u503a\u6536\u76ca\u7387 4.34 4.34 0 \u5341\u5e74\u671f\u7f8e\u503a\u6536\u76ca\u7387 4.77 4.77 0 2\u5e74\u671f\u4e0e10\u5e74\u671f\u5229\u5dee\uff08\u66f2\u7ebf\u8bfb\u6570\uff09 0.43 0.43 0 \u6301\u6709\u5341\u5e74\u671f\u503a\u5238\u7684\u989d\u5916\u6536\u76ca 0.88 0.88 0",
+    "method_table_390_start-macro_rates_curves-light-en-390.png": "Metric Prior Two-year Treasury yield 4.34 Ten-year Treasury yield 4.77 Two-year to ten-year gap, curve reading 0.43 Extra yield for lending ten years 0.88",
+    "method_table_390_end-macro_rates_curves-light-en-390.png": "Metric Prior Current Change Two-year Treasury yield 4.34 4.34 0 Ten-year Treasury yield 4.77 4.77 0 Two-year to ten-year gap, curve reading 0.43 0.43 0 Extra yield for lending ten years 0.88 0.88 0",
+    "method_table_390_start-macro_rates_curves-light-zh-390.png": "\u6307\u6807 \u4e0a\u671f \u5f53\u524d \u53d8\u5316 \u4e24\u5e74\u671f\u7f8e\u503a\u6536\u76ca\u7387 4.34 4.34 0 \u5341\u5e74\u671f\u7f8e\u503a\u6536\u76ca\u7387 4.77 4.77 0 2\u5e74\u671f\u4e0e10\u5e74\u671f\u5229\u5dee\uff08\u66f2\u7ebf\u8bfb\u6570\uff09 0.43 0.43 0 \u6301\u6709\u5341\u5e74\u671f\u503a\u5238\u7684\u989d\u5916\u6536\u76ca 0.88 0.88 0",
+    "method_table_390_start-macro_business_activity-dark-en-390.png": "Metric Leading-activity momentum (6-month) Current-activity momentum (6-month) Lagging-activity momentum (6-month) Current-to-lagging activity gap (6-month)",
+    "method_table_390_end-macro_business_activity-dark-en-390.png": "Metric Prior Current Change Leading-activity momentum (6-month) \u2014Unknown \u2014Unknown \u2014Unknown Current-activity momentum (6-month) \u22120.22 \u22120.22 0 Lagging-activity momentum (6-month) \u2014Unknown \u2014Unknown \u2014Unknown Current-to-lagging activity gap (6-month) \u22120.57 \u22120.57 0",
+    "method_table_390_start-macro_business_activity-dark-zh-390.png": "\u6307\u6807 \u4e0a\u671f \u5f53\u524d \u9886\u5148\u6d3b\u52a8\u52a8\u80fd\uff086\u4e2a\u6708\uff09 \u2014\u672a\u77e5 \u2014\u672a\u77e5 \u5f53\u524d\u6d3b\u52a8\u52a8\u80fd\uff086\u4e2a\u6708\uff09 \u22120.22 \u22120.22 \u6ede\u540e\u6d3b\u52a8\u52a8\u80fd\uff086\u4e2a\u6708\uff09 \u2014\u672a\u77e5 \u2014\u672a\u77e5 \u5f53\u524d\u4e0e\u6ede\u540e\u6d3b\u52a8\u5dee\u8ddd\uff086\u4e2a\u6708\uff09 \u22120.57 \u22120.57",
+    "method_table_390_end-macro_business_activity-dark-zh-390.png": "\u6307\u6807 \u4e0a\u671f \u5f53\u524d \u53d8\u5316 \u9886\u5148\u6d3b\u52a8\u52a8\u80fd\uff086\u4e2a\u6708\uff09 \u2014\u672a\u77e5 \u2014\u672a\u77e5 \u2014\u672a\u77e5 \u5f53\u524d\u6d3b\u52a8\u52a8\u80fd\uff086\u4e2a\u6708\uff09 \u22120.22 \u22120.22 0 \u6ede\u540e\u6d3b\u52a8\u52a8\u80fd\uff086\u4e2a\u6708\uff09 \u2014\u672a\u77e5 \u2014\u672a\u77e5 \u2014\u672a\u77e5 \u5f53\u524d\u4e0e\u6ede\u540e\u6d3b\u52a8\u5dee\u8ddd\uff086\u4e2a\u6708\uff09 \u22120.57 \u22120.57 0",
+    "method_table_390_start-macro_business_activity-light-en-390.png": "Metric Leading-activity momentum (6-month) Current-activity momentum (6-month) Lagging-activity momentum (6-month) Current-to-lagging activity gap (6-month)",
+    "method_table_390_end-macro_business_activity-light-en-390.png": "Metric Prior Current Change Leading-activity momentum (6-month) \u2014Unknown \u2014Unknown \u2014Unknown Current-activity momentum (6-month) \u22120.22 \u22120.22 0 Lagging-activity momentum (6-month) \u2014Unknown \u2014Unknown \u2014Unknown Current-to-lagging activity gap (6-month) \u22120.57 \u22120.57 0",
+    "method_table_390_start-macro_business_activity-light-zh-390.png": "\u6307\u6807 \u4e0a\u671f \u5f53\u524d \u9886\u5148\u6d3b\u52a8\u52a8\u80fd\uff086\u4e2a\u6708\uff09 \u2014\u672a\u77e5 \u2014\u672a\u77e5 \u5f53\u524d\u6d3b\u52a8\u52a8\u80fd\uff086\u4e2a\u6708\uff09 \u22120.22 \u22120.22 \u6ede\u540e\u6d3b\u52a8\u52a8\u80fd\uff086\u4e2a\u6708\uff09 \u2014\u672a\u77e5 \u2014\u672a\u77e5 \u5f53\u524d\u4e0e\u6ede\u540e\u6d3b\u52a8\u5dee\u8ddd\uff086\u4e2a\u6708\uff09 \u22120.57 \u22120.57",
+    "method_table_390_end-macro_business_activity-light-zh-390.png": "\u6307\u6807 \u4e0a\u671f \u5f53\u524d \u53d8\u5316 \u9886\u5148\u6d3b\u52a8\u52a8\u80fd\uff086\u4e2a\u6708\uff09 \u2014\u672a\u77e5 \u2014\u672a\u77e5 \u2014\u672a\u77e5 \u5f53\u524d\u6d3b\u52a8\u52a8\u80fd\uff086\u4e2a\u6708\uff09 \u22120.22 \u22120.22 0 \u6ede\u540e\u6d3b\u52a8\u52a8\u80fd\uff086\u4e2a\u6708\uff09 \u2014\u672a\u77e5 \u2014\u672a\u77e5 \u2014\u672a\u77e5 \u5f53\u524d\u4e0e\u6ede\u540e\u6d3b\u52a8\u5dee\u8ddd\uff086\u4e2a\u6708\uff09 \u22120.57 \u22120.57 0",
+    "method_table_390_start-macro_housing_real_estate-dark-en-390.png": "Metric Prior Thirty-year mortgage rate 6.71 Housing starts, year over year \u221213.48 Building permits, year over year 2.36 National house prices, year over year 1.52",
+    "method_table_390_end-macro_housing_real_estate-dark-en-390.png": "Metric Prior Current Change Thirty-year mortgage rate 6.71 6.71 0 Housing starts, year over year \u221213.48 \u221213.48 0 Building permits, year over year 2.36 2.36 0 National house prices, year over year 1.52 1.52 0",
+    "method_table_390_start-macro_housing_real_estate-dark-zh-390.png": "\u6307\u6807 \u4e0a\u671f \u5f53\u524d \u53d8\u5316 \u4e09\u5341\u5e74\u671f\u623f\u8d37\u5229\u7387 6.71 6.71 0 \u65b0\u5c4b\u5f00\u5de5\u540c\u6bd4 \u221213.48 \u221213.48 0 \u8425\u5efa\u8bb8\u53ef\u540c\u6bd4 2.36 2.36 0 \u5168\u56fd\u623f\u4ef7\u540c\u6bd4 1.52 1.52 0",
+    "method_table_390_start-macro_housing_real_estate-light-en-390.png": "Metric Prior Thirty-year mortgage rate 6.71 Housing starts, year over year \u221213.48 Building permits, year over year 2.36 National house prices, year over year 1.52",
+    "method_table_390_end-macro_housing_real_estate-light-en-390.png": "Metric Prior Current Change Thirty-year mortgage rate 6.71 6.71 0 Housing starts, year over year \u221213.48 \u221213.48 0 Building permits, year over year 2.36 2.36 0 National house prices, year over year 1.52 1.52 0",
+    "method_table_390_start-macro_housing_real_estate-light-zh-390.png": "\u6307\u6807 \u4e0a\u671f \u5f53\u524d \u53d8\u5316 \u4e09\u5341\u5e74\u671f\u623f\u8d37\u5229\u7387 6.71 6.71 0 \u65b0\u5c4b\u5f00\u5de5\u540c\u6bd4 \u221213.48 \u221213.48 0 \u8425\u5efa\u8bb8\u53ef\u540c\u6bd4 2.36 2.36 0 \u5168\u56fd\u623f\u4ef7\u540c\u6bd4 1.52 1.52 0"
   },
   "lineage_open_text": {
     "lineage_open-macro_financial_conditions-dark-en-1440.png": "How this reading was revised Technical notes Technical receipt for operators \u2014 series names, timestamps and file paths. Not the customer reading. Correction and method lineage CORRECTION STATE No correction recorded PREDECESSOR GENERATION A prior published generation is on file. CHANGED FINGERPRINTS \u2014 HYSTERESIS A 5-point hold-back band kept this reading on the prior side of the line. Same reference period as the predecessor print; no source value changed (no-change republication). Both as of 4 Sep 2026.",
@@ -150054,7 +150206,32 @@
       "position": 0.2932330827067669
     }
   },
-  "gaps": [],
+  "gaps": [
+    {
+      "file": "hubrail-subtabs-dark-zh-390-end.png",
+      "reason": "declared minus captured"
+    },
+    {
+      "file": "hubrail-subtabs-light-zh-390-end.png",
+      "reason": "declared minus captured"
+    },
+    {
+      "file": "method_table_390_end-macro_housing_real_estate-dark-zh-390.png",
+      "reason": "declared minus captured"
+    },
+    {
+      "file": "method_table_390_end-macro_housing_real_estate-light-zh-390.png",
+      "reason": "declared minus captured"
+    },
+    {
+      "file": "method_table_390_end-macro_rates_curves-dark-zh-390.png",
+      "reason": "declared minus captured"
+    },
+    {
+      "file": "method_table_390_end-macro_rates_curves-light-zh-390.png",
+      "reason": "declared minus captured"
+    }
+  ],
   "declared_cells": [
     "01-dark-en-1440.png",
     "01-dark-en-1440-full.png",
@@ -150088,14 +150265,6 @@
     "method_open-macro_financial_conditions-dark-zh-390.png",
     "method_open-macro_financial_conditions-light-en-390.png",
     "method_open-macro_financial_conditions-light-zh-390.png",
-    "method_table_390_start-macro_financial_conditions-dark-en-390.png",
-    "method_table_390_end-macro_financial_conditions-dark-en-390.png",
-    "method_table_390_start-macro_financial_conditions-dark-zh-390.png",
-    "method_table_390_end-macro_financial_conditions-dark-zh-390.png",
-    "method_table_390_start-macro_financial_conditions-light-en-390.png",
-    "method_table_390_end-macro_financial_conditions-light-en-390.png",
-    "method_table_390_start-macro_financial_conditions-light-zh-390.png",
-    "method_table_390_end-macro_financial_conditions-light-zh-390.png",
     "method_open-macro_labor_markets-dark-en-1440.png",
     "method_open-macro_labor_markets-dark-zh-1440.png",
     "method_open-macro_labor_markets-light-en-1440.png",
@@ -150104,6 +150273,38 @@
     "method_open-macro_labor_markets-dark-zh-390.png",
     "method_open-macro_labor_markets-light-en-390.png",
     "method_open-macro_labor_markets-light-zh-390.png",
+    "method_table_390_start-macro_rates_curves-dark-en-390.png",
+    "method_table_390_end-macro_rates_curves-dark-en-390.png",
+    "method_table_390_start-macro_rates_curves-dark-zh-390.png",
+    "method_table_390_end-macro_rates_curves-dark-zh-390.png",
+    "method_table_390_start-macro_rates_curves-light-en-390.png",
+    "method_table_390_end-macro_rates_curves-light-en-390.png",
+    "method_table_390_start-macro_rates_curves-light-zh-390.png",
+    "method_table_390_end-macro_rates_curves-light-zh-390.png",
+    "method_table_390_start-macro_business_activity-dark-en-390.png",
+    "method_table_390_end-macro_business_activity-dark-en-390.png",
+    "method_table_390_start-macro_business_activity-dark-zh-390.png",
+    "method_table_390_end-macro_business_activity-dark-zh-390.png",
+    "method_table_390_start-macro_business_activity-light-en-390.png",
+    "method_table_390_end-macro_business_activity-light-en-390.png",
+    "method_table_390_start-macro_business_activity-light-zh-390.png",
+    "method_table_390_end-macro_business_activity-light-zh-390.png",
+    "method_table_390_start-macro_financial_conditions-dark-en-390.png",
+    "method_table_390_end-macro_financial_conditions-dark-en-390.png",
+    "method_table_390_start-macro_financial_conditions-dark-zh-390.png",
+    "method_table_390_end-macro_financial_conditions-dark-zh-390.png",
+    "method_table_390_start-macro_financial_conditions-light-en-390.png",
+    "method_table_390_end-macro_financial_conditions-light-en-390.png",
+    "method_table_390_start-macro_financial_conditions-light-zh-390.png",
+    "method_table_390_end-macro_financial_conditions-light-zh-390.png",
+    "method_table_390_start-macro_housing_real_estate-dark-en-390.png",
+    "method_table_390_end-macro_housing_real_estate-dark-en-390.png",
+    "method_table_390_start-macro_housing_real_estate-dark-zh-390.png",
+    "method_table_390_end-macro_housing_real_estate-dark-zh-390.png",
+    "method_table_390_start-macro_housing_real_estate-light-en-390.png",
+    "method_table_390_end-macro_housing_real_estate-light-en-390.png",
+    "method_table_390_start-macro_housing_real_estate-light-zh-390.png",
+    "method_table_390_end-macro_housing_real_estate-light-zh-390.png",
     "method_table_390_start-macro_labor_markets-dark-en-390.png",
     "method_table_390_end-macro_labor_markets-dark-en-390.png",
     "method_table_390_start-macro_labor_markets-dark-zh-390.png",
@@ -150515,6 +150716,102 @@
       "family": "method_open"
     },
     {
+      "file": "method_open-macro_labor_markets-dark-en-1440.png",
+      "family": "method_open"
+    },
+    {
+      "file": "method_open-macro_labor_markets-dark-zh-1440.png",
+      "family": "method_open"
+    },
+    {
+      "file": "method_open-macro_labor_markets-light-en-1440.png",
+      "family": "method_open"
+    },
+    {
+      "file": "method_open-macro_labor_markets-light-zh-1440.png",
+      "family": "method_open"
+    },
+    {
+      "file": "method_open-macro_labor_markets-dark-en-390.png",
+      "family": "method_open"
+    },
+    {
+      "file": "method_open-macro_labor_markets-dark-zh-390.png",
+      "family": "method_open"
+    },
+    {
+      "file": "method_open-macro_labor_markets-light-en-390.png",
+      "family": "method_open"
+    },
+    {
+      "file": "method_open-macro_labor_markets-light-zh-390.png",
+      "family": "method_open"
+    },
+    {
+      "file": "method_table_390_start-macro_rates_curves-dark-en-390.png",
+      "family": "method_table_390"
+    },
+    {
+      "file": "method_table_390_end-macro_rates_curves-dark-en-390.png",
+      "family": "method_table_390"
+    },
+    {
+      "file": "method_table_390_start-macro_rates_curves-dark-zh-390.png",
+      "family": "method_table_390"
+    },
+    {
+      "file": "method_table_390_end-macro_rates_curves-dark-zh-390.png",
+      "family": "method_table_390"
+    },
+    {
+      "file": "method_table_390_start-macro_rates_curves-light-en-390.png",
+      "family": "method_table_390"
+    },
+    {
+      "file": "method_table_390_end-macro_rates_curves-light-en-390.png",
+      "family": "method_table_390"
+    },
+    {
+      "file": "method_table_390_start-macro_rates_curves-light-zh-390.png",
+      "family": "method_table_390"
+    },
+    {
+      "file": "method_table_390_end-macro_rates_curves-light-zh-390.png",
+      "family": "method_table_390"
+    },
+    {
+      "file": "method_table_390_start-macro_business_activity-dark-en-390.png",
+      "family": "method_table_390"
+    },
+    {
+      "file": "method_table_390_end-macro_business_activity-dark-en-390.png",
+      "family": "method_table_390"
+    },
+    {
+      "file": "method_table_390_start-macro_business_activity-dark-zh-390.png",
+      "family": "method_table_390"
+    },
+    {
+      "file": "method_table_390_end-macro_business_activity-dark-zh-390.png",
+      "family": "method_table_390"
+    },
+    {
+      "file": "method_table_390_start-macro_business_activity-light-en-390.png",
+      "family": "method_table_390"
+    },
+    {
+      "file": "method_table_390_end-macro_business_activity-light-en-390.png",
+      "family": "method_table_390"
+    },
+    {
+      "file": "method_table_390_start-macro_business_activity-light-zh-390.png",
+      "family": "method_table_390"
+    },
+    {
+      "file": "method_table_390_end-macro_business_activity-light-zh-390.png",
+      "family": "method_table_390"
+    },
+    {
       "file": "method_table_390_start-macro_financial_conditions-dark-en-390.png",
       "family": "method_table_390"
     },
@@ -150547,36 +150844,36 @@
       "family": "method_table_390"
     },
     {
-      "file": "method_open-macro_labor_markets-dark-en-1440.png",
-      "family": "method_open"
+      "file": "method_table_390_start-macro_housing_real_estate-dark-en-390.png",
+      "family": "method_table_390"
     },
     {
-      "file": "method_open-macro_labor_markets-dark-zh-1440.png",
-      "family": "method_open"
+      "file": "method_table_390_end-macro_housing_real_estate-dark-en-390.png",
+      "family": "method_table_390"
     },
     {
-      "file": "method_open-macro_labor_markets-light-en-1440.png",
-      "family": "method_open"
+      "file": "method_table_390_start-macro_housing_real_estate-dark-zh-390.png",
+      "family": "method_table_390"
     },
     {
-      "file": "method_open-macro_labor_markets-light-zh-1440.png",
-      "family": "method_open"
+      "file": "method_table_390_end-macro_housing_real_estate-dark-zh-390.png",
+      "family": "method_table_390"
     },
     {
-      "file": "method_open-macro_labor_markets-dark-en-390.png",
-      "family": "method_open"
+      "file": "method_table_390_start-macro_housing_real_estate-light-en-390.png",
+      "family": "method_table_390"
     },
     {
-      "file": "method_open-macro_labor_markets-dark-zh-390.png",
-      "family": "method_open"
+      "file": "method_table_390_end-macro_housing_real_estate-light-en-390.png",
+      "family": "method_table_390"
     },
     {
-      "file": "method_open-macro_labor_markets-light-en-390.png",
-      "family": "method_open"
+      "file": "method_table_390_start-macro_housing_real_estate-light-zh-390.png",
+      "family": "method_table_390"
     },
     {
-      "file": "method_open-macro_labor_markets-light-zh-390.png",
-      "family": "method_open"
+      "file": "method_table_390_end-macro_housing_real_estate-light-zh-390.png",
+      "family": "method_table_390"
     },
     {
       "file": "method_table_390_start-macro_labor_markets-dark-en-390.png",
@@ -151755,6 +152052,22 @@
       "method_open-macro_labor_markets-light-zh-390.png"
     ],
     "method_table_390": [
+      "method_table_390_start-macro_rates_curves-dark-en-390.png",
+      "method_table_390_end-macro_rates_curves-dark-en-390.png",
+      "method_table_390_start-macro_rates_curves-dark-zh-390.png",
+      "method_table_390_end-macro_rates_curves-dark-zh-390.png",
+      "method_table_390_start-macro_rates_curves-light-en-390.png",
+      "method_table_390_end-macro_rates_curves-light-en-390.png",
+      "method_table_390_start-macro_rates_curves-light-zh-390.png",
+      "method_table_390_end-macro_rates_curves-light-zh-390.png",
+      "method_table_390_start-macro_business_activity-dark-en-390.png",
+      "method_table_390_end-macro_business_activity-dark-en-390.png",
+      "method_table_390_start-macro_business_activity-dark-zh-390.png",
+      "method_table_390_end-macro_business_activity-dark-zh-390.png",
+      "method_table_390_start-macro_business_activity-light-en-390.png",
+      "method_table_390_end-macro_business_activity-light-en-390.png",
+      "method_table_390_start-macro_business_activity-light-zh-390.png",
+      "method_table_390_end-macro_business_activity-light-zh-390.png",
       "method_table_390_start-macro_financial_conditions-dark-en-390.png",
       "method_table_390_end-macro_financial_conditions-dark-en-390.png",
       "method_table_390_start-macro_financial_conditions-dark-zh-390.png",
@@ -151763,6 +152076,14 @@
       "method_table_390_end-macro_financial_conditions-light-en-390.png",
       "method_table_390_start-macro_financial_conditions-light-zh-390.png",
       "method_table_390_end-macro_financial_conditions-light-zh-390.png",
+      "method_table_390_start-macro_housing_real_estate-dark-en-390.png",
+      "method_table_390_end-macro_housing_real_estate-dark-en-390.png",
+      "method_table_390_start-macro_housing_real_estate-dark-zh-390.png",
+      "method_table_390_end-macro_housing_real_estate-dark-zh-390.png",
+      "method_table_390_start-macro_housing_real_estate-light-en-390.png",
+      "method_table_390_end-macro_housing_real_estate-light-en-390.png",
+      "method_table_390_start-macro_housing_real_estate-light-zh-390.png",
+      "method_table_390_end-macro_housing_real_estate-light-zh-390.png",
       "method_table_390_start-macro_labor_markets-dark-en-390.png",
       "method_table_390_end-macro_labor_markets-dark-en-390.png",
       "method_table_390_start-macro_labor_markets-dark-zh-390.png",
@@ -152214,11 +152535,9 @@
     "hubrail-rail-light-zh-768-start.png",
     "hubrail-subtabs-dark-en-390-end.png",
     "hubrail-subtabs-dark-en-390-start.png",
-    "hubrail-subtabs-dark-zh-390-end.png",
     "hubrail-subtabs-dark-zh-390-start.png",
     "hubrail-subtabs-light-en-390-end.png",
     "hubrail-subtabs-light-en-390-start.png",
-    "hubrail-subtabs-light-zh-390-end.png",
     "hubrail-subtabs-light-zh-390-start.png",
     "i2-macro_business_activity-dark-en-390.png",
     "i2-macro_business_activity-dark-en-768.png",
@@ -152284,22 +152603,42 @@
     "method_open-macro_labor_markets-light-en-390.png",
     "method_open-macro_labor_markets-light-zh-1440.png",
     "method_open-macro_labor_markets-light-zh-390.png",
+    "method_table_390_end-macro_business_activity-dark-en-390.png",
+    "method_table_390_end-macro_business_activity-dark-zh-390.png",
+    "method_table_390_end-macro_business_activity-light-en-390.png",
+    "method_table_390_end-macro_business_activity-light-zh-390.png",
     "method_table_390_end-macro_financial_conditions-dark-en-390.png",
     "method_table_390_end-macro_financial_conditions-dark-zh-390.png",
     "method_table_390_end-macro_financial_conditions-light-en-390.png",
     "method_table_390_end-macro_financial_conditions-light-zh-390.png",
+    "method_table_390_end-macro_housing_real_estate-dark-en-390.png",
+    "method_table_390_end-macro_housing_real_estate-light-en-390.png",
     "method_table_390_end-macro_labor_markets-dark-en-390.png",
     "method_table_390_end-macro_labor_markets-dark-zh-390.png",
     "method_table_390_end-macro_labor_markets-light-en-390.png",
     "method_table_390_end-macro_labor_markets-light-zh-390.png",
+    "method_table_390_end-macro_rates_curves-dark-en-390.png",
+    "method_table_390_end-macro_rates_curves-light-en-390.png",
+    "method_table_390_start-macro_business_activity-dark-en-390.png",
+    "method_table_390_start-macro_business_activity-dark-zh-390.png",
+    "method_table_390_start-macro_business_activity-light-en-390.png",
+    "method_table_390_start-macro_business_activity-light-zh-390.png",
     "method_table_390_start-macro_financial_conditions-dark-en-390.png",
     "method_table_390_start-macro_financial_conditions-dark-zh-390.png",
     "method_table_390_start-macro_financial_conditions-light-en-390.png",
     "method_table_390_start-macro_financial_conditions-light-zh-390.png",
+    "method_table_390_start-macro_housing_real_estate-dark-en-390.png",
+    "method_table_390_start-macro_housing_real_estate-dark-zh-390.png",
+    "method_table_390_start-macro_housing_real_estate-light-en-390.png",
+    "method_table_390_start-macro_housing_real_estate-light-zh-390.png",
     "method_table_390_start-macro_labor_markets-dark-en-390.png",
     "method_table_390_start-macro_labor_markets-dark-zh-390.png",
     "method_table_390_start-macro_labor_markets-light-en-390.png",
     "method_table_390_start-macro_labor_markets-light-zh-390.png",
+    "method_table_390_start-macro_rates_curves-dark-en-390.png",
+    "method_table_390_start-macro_rates_curves-dark-zh-390.png",
+    "method_table_390_start-macro_rates_curves-light-en-390.png",
+    "method_table_390_start-macro_rates_curves-light-zh-390.png",
     "ws-macro_business_activity-closed-dark-en-1440.png",
     "ws-macro_business_activity-closed-dark-zh-1440.png",
     "ws-macro_business_activity-closed-light-en-1440.png",
@@ -152544,11 +152883,9 @@
     "hubrail-rail-light-zh-768-start.png",
     "hubrail-subtabs-dark-en-390-end.png",
     "hubrail-subtabs-dark-en-390-start.png",
-    "hubrail-subtabs-dark-zh-390-end.png",
     "hubrail-subtabs-dark-zh-390-start.png",
     "hubrail-subtabs-light-en-390-end.png",
     "hubrail-subtabs-light-en-390-start.png",
-    "hubrail-subtabs-light-zh-390-end.png",
     "hubrail-subtabs-light-zh-390-start.png",
     "i2-macro_business_activity-dark-en-390.png",
     "i2-macro_business_activity-dark-en-768.png",
@@ -152614,22 +152951,42 @@
     "method_open-macro_labor_markets-light-en-390.png",
     "method_open-macro_labor_markets-light-zh-1440.png",
     "method_open-macro_labor_markets-light-zh-390.png",
+    "method_table_390_end-macro_business_activity-dark-en-390.png",
+    "method_table_390_end-macro_business_activity-dark-zh-390.png",
+    "method_table_390_end-macro_business_activity-light-en-390.png",
+    "method_table_390_end-macro_business_activity-light-zh-390.png",
     "method_table_390_end-macro_financial_conditions-dark-en-390.png",
     "method_table_390_end-macro_financial_conditions-dark-zh-390.png",
     "method_table_390_end-macro_financial_conditions-light-en-390.png",
     "method_table_390_end-macro_financial_conditions-light-zh-390.png",
+    "method_table_390_end-macro_housing_real_estate-dark-en-390.png",
+    "method_table_390_end-macro_housing_real_estate-light-en-390.png",
     "method_table_390_end-macro_labor_markets-dark-en-390.png",
     "method_table_390_end-macro_labor_markets-dark-zh-390.png",
     "method_table_390_end-macro_labor_markets-light-en-390.png",
     "method_table_390_end-macro_labor_markets-light-zh-390.png",
+    "method_table_390_end-macro_rates_curves-dark-en-390.png",
+    "method_table_390_end-macro_rates_curves-light-en-390.png",
+    "method_table_390_start-macro_business_activity-dark-en-390.png",
+    "method_table_390_start-macro_business_activity-dark-zh-390.png",
+    "method_table_390_start-macro_business_activity-light-en-390.png",
+    "method_table_390_start-macro_business_activity-light-zh-390.png",
     "method_table_390_start-macro_financial_conditions-dark-en-390.png",
     "method_table_390_start-macro_financial_conditions-dark-zh-390.png",
     "method_table_390_start-macro_financial_conditions-light-en-390.png",
     "method_table_390_start-macro_financial_conditions-light-zh-390.png",
+    "method_table_390_start-macro_housing_real_estate-dark-en-390.png",
+    "method_table_390_start-macro_housing_real_estate-dark-zh-390.png",
+    "method_table_390_start-macro_housing_real_estate-light-en-390.png",
+    "method_table_390_start-macro_housing_real_estate-light-zh-390.png",
     "method_table_390_start-macro_labor_markets-dark-en-390.png",
     "method_table_390_start-macro_labor_markets-dark-zh-390.png",
     "method_table_390_start-macro_labor_markets-light-en-390.png",
     "method_table_390_start-macro_labor_markets-light-zh-390.png",
+    "method_table_390_start-macro_rates_curves-dark-en-390.png",
+    "method_table_390_start-macro_rates_curves-dark-zh-390.png",
+    "method_table_390_start-macro_rates_curves-light-en-390.png",
+    "method_table_390_start-macro_rates_curves-light-zh-390.png",
     "ws-macro_business_activity-closed-dark-en-1440.png",
     "ws-macro_business_activity-closed-dark-zh-1440.png",
     "ws-macro_business_activity-closed-light-en-1440.png",
