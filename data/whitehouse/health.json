@@ -1,17 +1,10 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-09T05:59:36.141764+00:00",
+  "as_of": "2026-09-09T16:37:52.322832+00:00",
   "posts_seen": 12,
   "seen_total": 176,
-  "evaluated": 1,
-  "activated": 1,
+  "evaluated": 0,
+  "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": [
-    {
-      "id": "wh-2026-09-09-fact-sheet-president-donald-j-trump-responds-to-canadas-retaliation",
-      "importance": 72,
-      "activated": true,
-      "degraded_reason": "served_by:deepseek"
-    }
-  ]
+  "gate_scores": []
 }

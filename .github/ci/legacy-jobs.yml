@@ -5310,6 +5310,7 @@ jobs:
       - agentos/discoveries/DSC-COMMODITY-AND-FX-PRICE-SPINE-YAHOO-VENDOR-TERMS-ARE-RECORDED-ADVERSE.md
       - research/market_intelligence_productization/F01_FX_COMMODITY_SOURCE_RIGHTS_AND_DEPTH_2026-09.md
       - research/market_intelligence_productization/F01_FX_DISLOCATION_CHARTER_2026-09.md
+      - tests/test_f02_owner_map_receipts.py
       - tests/test_self_mod_fence.py
       - tests/test_ci_authority.py
       - tests/test_ci_semantic_proof.py
@@ -5432,7 +5433,7 @@ jobs:
           # out would otherwise pass as a skip. This line cannot skip.
           python3 scripts/agentos.py validate
           python -m pytest tests/test_agentos_schema.py tests/test_agentos_status.py \
-            tests/test_agentos_compile.py tests/test_f01_fx_commodity_source_rights.py -q
+            tests/test_agentos_compile.py tests/test_f01_fx_commodity_source_rights.py tests/test_f02_owner_map_receipts.py -q
 
   capability-broker:
     if: ${{ false }}
@@ -5897,6 +5898,37 @@ jobs:
       # nowhere.  Same family as test_contagion.py above, so it shares this venv.
       - name: contagion-links session stamps + heal (forward-ledger audit 2026-08-05)
         run: python -m pytest tests/test_contagion_links.py tests/test_heal_contagion_links_ledger.py -q
+
+  sanctions-map-page:
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    # Packet A-F02-1: OFAC sanctions map engine + page + nav + worldmap base +
+    # collector parser. Zero network; fixtures + committed snapshot only.
+    paths:
+      - "collectors/ofac_sdn.py"
+      - "config/sanctions_ofac_programs.yml"
+      - "engine/sanctions_map.py"
+      - "scripts/build_sanctions_map.py"
+      - "scripts/gen_worldmap_svg.py"
+      - "templates/_worldmap_base.html.j2"
+      - "templates/sanctions_map.html.j2"
+      - "templates/_navlinks.html.j2"
+      - "tests/test_ofac_sdn_collector.py"
+      - "tests/test_sanctions_map_engine.py"
+      - "tests/test_sanctions_map_nav.py"
+      - "tests/test_sanctions_map_page.py"
+      - "tests/test_worldmap_base.py"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps
+        run: pip install pytest pandas numpy pyyaml jinja2 requests
+      - name: sanctions map engine + page + nav + worldmap + OFAC collector
+        run: python -m pytest tests/test_sanctions_map_engine.py tests/test_sanctions_map_page.py tests/test_sanctions_map_nav.py tests/test_worldmap_base.py tests/test_ofac_sdn_collector.py -q
 
   itr-turn-rotation:
     if: ${{ false }}
