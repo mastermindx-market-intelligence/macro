@@ -275,7 +275,7 @@ Use proper probabilistic scores, such as Brier/log scores for events and distrib
 
 Compare with persistence, state prevalence, the existing classifier, and simple continuous-feature forecasts. Count effective independent episodes and account for overlapping horizons. Report false-alarm frequency, lead/detection delay, churn, support, and performance by era.
 
-The inspected `scripts/validate_regime_fwd.py` compares the current modal quad with the legacy quad at a later horizon, uses Wilson intervals, and has a 0.5 baseline and a twenty-matured-row threshold. This is a source-verified existing shadow grader, not sufficient evidence of transition-forecast skill. Persistence can be a much stronger comparator, and overlapping observations do not supply independent Bernoulli trials. The existing record/grading owner should be improved rather than replaced. [I10]
+The inspected `scripts/validate_regime_fwd.py` compares the current modal quad with the legacy quad at a later horizon, uses Wilson intervals, and explicitly passes a 0.25 uniform-state baseline for HMM grading with a twenty-matured-row threshold. The helper default and axis-sign baseline are 0.5; the earlier report conflated these. This is a source-verified existing shadow grader, not sufficient evidence of transition-forecast skill. Persistence can be a much stronger comparator, and overlapping observations do not supply independent Bernoulli trials. The existing record/grading owner should be improved rather than replaced. [I10]
 
 ### C. Does the information improve decisions?
 
@@ -501,8 +501,30 @@ Unless stated otherwise, all paths below were inspected at Macro `c3d7f1d4149176
 
 **I09.** `research/REGIME_V2_PIT_DIVERGENCE_AUDIT.md`; its vintaged/mixed/revised populations and documented coverage limitations, not a blanket fully-PIT claim.
 
-**I10.** `scripts/validate_regime_fwd.py`, maturity, `grade_hmm`, and `_verdict`; twenty-row threshold, Wilson bounds, and 0.5 baseline. `agentos/workstreams/WS-EVAL-OS-MEASUREMENT-LAW.md` supplies existing horizon/outcome-basis boundaries; do not generalize one ledger's horizon law to every other ledger.
+**I10.** `scripts/validate_regime_fwd.py`, maturity, `grade_hmm`, and `_verdict`; twenty-row threshold, Wilson bounds, and explicit HMM baseline=0.25 (the helper default is 0.5). `agentos/workstreams/WS-EVAL-OS-MEASUREMENT-LAW.md` supplies existing horizon/outcome-basis boundaries; do not generalize one ledger's horizon law to every other ledger.
 
 **I11.** `agentos/workstreams/WS-PROPHET-US-V4-RECOVERY.md`; `agentos/workstreams/WS-MARKET-MEMORY-W2C.md`; older next-action dates are not fresh runtime proof. Existing ownership and recorded limitations were used; stale operational statuses were not promoted into present claims.
 
 **I12.** GitHub live read on 2026-09-09: open-PR search surfaced held PR #6685 and related dashboard work. This is a collision warning, not a completed implementation placement census. GitHub compare between the two Macro pins found only marketing-data changes.
+
+## Continuation checkpoint — W0 source candidate, 2026-09-09
+
+Current Chairman continuation authorized the first bounded representation/reader slice. The recovered
+research branch now also contains W0 implementation: reconstruction-basis metadata, the existing-ledger
+`read_hmm_issuance` reader, validator CLI `--inspect-hmm-asof`, and append guards preventing old-date
+reissuance, backwards source dates, ambiguous/damaged ledgers, and inconsistent model cutoffs.
+The numerical HMM, probability momentum, grading thresholds, and capital/entry/ranking logic are unchanged.
+
+Focused baseline was42 passes; the candidate reaches80 passes after tests-first failures for the new
+metadata, reader/CLI, append invariants, and cutoff refusal. `scripts/agentos.py validate` reports0 errors
+with137 existing/sparse-checkout warnings. No whole-estate clean bill is inferred from those warnings.
+Actual CLI main/parser inspection of the immutable477b9c3 committed ledger reads its first/last saved
+predictions as uncertified legacy records and refuses a missing date. All40 source rows remain unchanged;
+input SHA256 before and after: `0e539e599c37779ddf27d73cc8a952e32ac40be78baab95b62e5c1bd2d5b9019`.
+Evidence: `research/artifacts/regime_history_honesty_20260909/recorded_input_cli_proof.json`.
+
+This is a source candidate and real-committed-input local consumer proof, NOT natural-production adoption,
+a customer historical-date browser interface, a point-in-time eligibility certificate, or a calibrated
+forecast/portfolio edge. Full neural-web regime integration remains the broader SPEC_ONLY architecture.
+Continuity lives in `WS:REGIME-HISTORY-HONESTY` and `DSC:REGIME-FILTERED-HISTORY-USES-LATER-FIT`.
+The exact next step is candidate review/checks and ordinary release, then natural nightly production proof.
