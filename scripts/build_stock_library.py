@@ -29,6 +29,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from engine import ticker_alerts  # noqa: E402
 from engine import valuation_scenario as _valuation_scenario  # noqa: E402 — FROZEN SPEC B-F07-1
+from engine import valuation_assumptions as _valuation_assumptions  # noqa: E402 — FROZEN SPEC B-F07-2
 from engine.stock_fundamentals import _load_statements as _vs_load_statements  # noqa: E402
 from engine import signal_gate  # noqa: E402 — owner's confluence T1->T4 cascade (layered ON main's gate)
 from engine.conditions import sector_macro_beta  # noqa: E402
@@ -3627,6 +3628,7 @@ def main() -> int:
                 )
                 if _vs_blob:
                     rec["valuation_scenario"] = {"v1": _vs_blob}
+                    rec["valuation_scenario"]["controls"] = _valuation_assumptions.controls_blob(_vs_blob)
             except Exception as e:  # noqa: BLE001 — additive, never fatal
                 log.warning("valuation_scenario failed for %s: %s", ticker, e)
         # ---- richer OHLCV technical snapshot + single-stock volatility black hole ------

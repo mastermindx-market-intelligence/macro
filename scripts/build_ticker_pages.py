@@ -2459,6 +2459,13 @@ def _valuation_scenario_view(blob: dict | None) -> dict | None:
     return (blob.get("valuation_scenario") or {}).get("v1")
 
 
+def _valuation_assumptions_view(blob: dict | None) -> dict | None:
+    """Passthrough read of valuation_scenario_controls.v1 written next to V1."""
+    if not blob:
+        return None
+    return (blob.get("valuation_scenario") or {}).get("controls")
+
+
 _VS_SCENARIO_TITLES_ZH = {"cautious": "保守", "base": "基准", "upbeat": "乐观"}
 
 
@@ -4448,6 +4455,7 @@ def build_page_context(
     financials = _build_financials(blob)
     valuation = _build_valuation(blob)
     valuation_scenario = _valuation_scenario_view(blob)
+    valuation_assumptions = _valuation_assumptions_view(blob)
     earnings = _build_earnings(blob)
     technicals = _build_technicals(ticker, blob, tech_screener)
     options = _build_options(blob, gex_v1, flow)
@@ -4527,6 +4535,7 @@ def build_page_context(
         "financials": financials,
         "valuation": valuation,
         "valuation_scenario": valuation_scenario,
+        "valuation_assumptions": valuation_assumptions,
         "earnings": earnings,
         "technicals": technicals,
         "options": options,

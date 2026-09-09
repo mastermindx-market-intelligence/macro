@@ -1234,6 +1234,20 @@ jobs:
       - "tests/test_dossier_numeric_contract.py"
       - "tests/test_stock_dossier.py"
       - "tests/test_stock_score.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "collectors/edgar_facts.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "engine/valuation_scenario.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "engine/valuation_assumptions.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "templates/_valuation_scenario.html.j2"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "templates/_valuation_assumptions.html.j2"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "tests/test_valuation_scenario.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "tests/test_valuation_assumptions.py"
     # Wired 2026-08-02: neither suite was named by ANY run step, so #4297's caution
     # rewrite ran 4 stock_score pins red for a day with no CI signal, and the dossier's
     # prose-matched risk_veto died silently. test_stock_score pins the honesty
@@ -1324,6 +1338,11 @@ jobs:
       # fixture dicts only. Own step per this job's precedent (step = masking unit).
       - name: security_state.v1 view-model projection (B1A)
         run: python -m pytest tests/test_security_state_view_model.py -q
+      - name: valuation scenario V1 + user-adjustable assumptions (B-F07-1 / B-F07-2)
+        run: >
+          python -m pytest
+          tests/test_valuation_scenario.py
+          tests/test_valuation_assumptions.py -q
 
   chronicle-suite:
     if: ${{ false }}
@@ -1615,6 +1634,8 @@ jobs:
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "engine/valuation_assumptions.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/__init__.py"
       - "engine/security_state.py"
@@ -6681,6 +6702,8 @@ jobs:
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "engine/valuation_assumptions.py"
       # F01 R1B closure widening 2026-09-04 (contract-delta): build_site.py's
       # guarded macro-suite hook imports the page builder, which carries the
       # workspace contract/registry pair. Enumerated, not globbed — the checker
@@ -7275,6 +7298,8 @@ jobs:
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "engine/valuation_assumptions.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/__init__.py"
       - "engine/security_state.py"
@@ -10496,6 +10521,8 @@ jobs:
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "engine/valuation_assumptions.py"
       # F01 R1B closure widening 2026-09-04 (contract-delta): build_site.py's
       # guarded macro-suite hook imports the page builder, which carries the
       # workspace contract/registry pair. Checker-named files only; the
@@ -12442,6 +12469,8 @@ jobs:
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "engine/valuation_assumptions.py"
       # B1A closure widening 2026-08-24 (contract-delta): build_stock_library's security_state stage extends this job's walked closure.
       - "engine/security_state.py"
       - "engine/theme_graph/__init__.py"
