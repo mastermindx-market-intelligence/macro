@@ -3551,12 +3551,6 @@ _SS_GATES: dict[str, dict[str, str]] = {
         "clear_en": "Every source agrees on this identity again.",
         "clear_zh": "各来源对该身份重新达成一致。",
     },
-    "OWNER_IDENTITY_UNREAD": {
-        "en": "Ownership data was not available this cycle, so this identity is unverified",
-        "zh": "本轮无法取得所有权数据，因此此身份尚未核实",
-        "clear_en": "The owner identity batch runs again on the next scheduled cycle.",
-        "clear_zh": "来源身份批处理将在下一次计划周期重新运行。",
-    },
 }
 
 # Chairman plain-language law (2026-09-06), macro#6920 round-3 MAJOR #2:
