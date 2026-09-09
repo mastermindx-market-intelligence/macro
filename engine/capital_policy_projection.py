@@ -109,12 +109,17 @@ _FROZEN_SOURCE = {
 }
 
 _AUCTION_TYPE_ZH = {
-    "Note": "国债",
-    "Bond": "国债",
+    "Bill": "短期国债",
+    "Note": "中期国债",
+    "Bond": "长期国债",
     "TIPS": "通胀保值国债",
     "FRN": "浮息国债",
 }
-_AUCTION_TYPES = frozenset(_AUCTION_TYPE_ZH)
+# Spec 2.4 freezes the auction types this section places: Note, Bond, TIPS and
+# FRN. Bill carries its Chinese noun above so the table is complete for a
+# reader, but widening the ingested set would place an event type the frozen
+# map does not list, so the set is written out rather than read off the table.
+_AUCTION_TYPES = frozenset({"Note", "Bond", "TIPS", "FRN"})
 _AUCTION_LABEL_RE = re.compile(r"^(\d+)-Year (Note|Bond|TIPS|FRN)$")
 
 # Authority ceiling. The heading already says these are dated steps on the
@@ -128,11 +133,15 @@ NOTE_ZH = "不是评级，也不是交易建议。"
 
 _EMPTY_REASON = (
     "None is pending.",
-    "目前没有待办节点。",
+    "目前没有待办的既定日期节点。",
 )
 _READ_FAILED_EVENTS = (
     "The dated-event calendar could not be read right now.",
     "目前无法读取已定日期事件日历。",
+)
+_READ_FAILED_AUCTIONS = (
+    "The Treasury auction schedule could not be read right now.",
+    "目前无法读取国债拍卖日程。",
 )
 _READ_FAILED_POLICY = (
     "The Federal Register record could not be read right now.",
@@ -142,10 +151,37 @@ _NO_RECORD = (
     "Dated steps exist, but none carry a linked public record.",
     "已有既定日期节点，但没有可引用的公开记录。",
 )
-_NOT_WIRED = (
-    "The calendar for this window is not wired yet.",
-    "本窗口的日历尚未接入。",
-)
+# One sentence per window, so the reader is told which calendar is absent
+# instead of being pointed at an internal referent. Only `equity_new_issue`
+# (OPEX carries no citable record) and `credit_new_issue` (no bond-issuance
+# source exists in v1) can reach this table in v1; the other four are written
+# out so no window can render a state without copy of its own.
+_NOT_WIRED: dict[str, tuple[str, str]] = {
+    "rates_policy": (
+        "The policy-rate calendar is not yet connected to this section.",
+        "本栏目暂未收录政策利率日历。",
+    ),
+    "treasury_supply": (
+        "The government-borrowing calendar is not yet connected to this section.",
+        "本栏目暂未收录政府举债日历。",
+    ),
+    "equity_new_issue": (
+        "The equity-issuance calendar is not yet connected to this section.",
+        "本栏目暂未收录股票发行日历。",
+    ),
+    "credit_new_issue": (
+        "The bond-issuance calendar is not yet connected to this section.",
+        "本栏目暂未收录债券发行日历。",
+    ),
+    "disclosure_regulatory": (
+        "The disclosure-rule calendar is not yet connected to this section.",
+        "本栏目暂未收录披露规则日历。",
+    ),
+    "export_control": (
+        "The export-control calendar is not yet connected to this section.",
+        "本栏目暂未收录出口管制日历。",
+    ),
+}
 
 _EVENT_WINDOWS = frozenset({"rates_policy", "treasury_supply", "equity_new_issue"})
 _POLICY_WINDOWS = frozenset({"disclosure_regulatory", "export_control"})
@@ -256,8 +292,8 @@ def _copy_for(etype: str, ev: dict) -> tuple[str, str] | None:
         )
     if etype == "entity_list":
         return (
-            "An entity-list step is dated",
-            "实体清单节点已定日期",
+            "An Entity List update takes effect",
+            "实体清单更新生效",
         )
     return None
 
@@ -341,27 +377,19 @@ def _auction_cache_path(asof: date):
     )
 
 
-def _cache_day(path) -> date | None:
-    """The day a cache file covers, read from its own name."""
-    stem = path.stem
-    if not stem.startswith(_AUCTION_CACHE_PREFIX):
-        return None
-    return _as_date(stem[len(_AUCTION_CACHE_PREFIX):])
-
-
 def _read_auction_cache(asof: date) -> tuple[str, list]:
     """Return (status, records). Never networks. Never writes.
 
-    Staleness is the cache file's own day against `asof`, never its mtime and
-    never the wall clock: §4 requires byte-identical output for the same
-    `today` and the same files, and an mtime test flips a window from present
-    to unavailable as a build crosses an age boundary.
+    The cache file carries the day it covers in its own name, so a cache
+    written for another day is not found for this `asof` and the status is
+    `missing`. Age is never read from the mtime or the wall clock: §4 requires
+    byte-identical output for the same `today` and the same files, and an mtime
+    test would flip a window from present to unavailable as a build crosses an
+    age boundary.
     """
     path = _auction_cache_path(asof)
     if not path.exists():
         return "missing", []
-    if _cache_day(path) != asof:
-        return "stale", []
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
         if not isinstance(data, list):
@@ -413,12 +441,12 @@ def _suppress_auction_fetch():
 def _more_copy(hidden: int) -> tuple[str, str]:
     if hidden == 1:
         return (
-            "1 more step in this window is not shown.",
-            "本窗口另有 1 个既定日期节点未展示。",
+            "1 more dated step is not shown.",
+            "另有 1 个既定日期节点未展示。",
         )
     return (
-        f"{hidden} more steps in this window are not shown.",
-        f"本窗口另有 {hidden} 个既定日期节点未展示。",
+        f"{hidden} more dated steps are not shown.",
+        f"另有 {hidden} 个既定日期节点未展示。",
     )
 
 
@@ -492,9 +520,11 @@ def typed_unavailable(today: date | None = None) -> dict:
     windows = []
     for window_id in WINDOWS:
         if window_id == _CREDIT_WINDOW:
-            state, reason = "unavailable", _NOT_WIRED
+            state, reason = "unavailable", _NOT_WIRED[window_id]
         elif window_id in _POLICY_WINDOWS:
             state, reason = "unavailable", _READ_FAILED_POLICY
+        elif window_id == _AUCTION_WINDOW:
+            state, reason = "unavailable", _READ_FAILED_AUCTIONS
         else:
             state, reason = "unavailable", _READ_FAILED_EVENTS
         windows.append(_window_entry(window_id, state, reason, []))
@@ -601,10 +631,13 @@ def project(today: date | None = None, horizon_days: int | None = None) -> dict:
         rows = _clean_rows(by_window[window_id])
         more = _more_copy(hidden[window_id]) if hidden[window_id] else ("", "")
         if window_id == _CREDIT_WINDOW:
-            state, reason = "unavailable", _NOT_WIRED
+            state, reason = "unavailable", _NOT_WIRED[window_id]
             rows, more = [], ("", "")
         elif window_id == _AUCTION_WINDOW and auction_status != "ok" and not injected_auctions:
-            state, reason = "unavailable", _READ_FAILED_EVENTS
+            # The auction schedule is its own cached file. Naming the
+            # dated-event calendar here would point the reader at a source the
+            # section read successfully one window above.
+            state, reason = "unavailable", _READ_FAILED_AUCTIONS
             rows, more = [], ("", "")
         elif window_id in _EVENT_WINDOWS and event_unavailable:
             state, reason = "unavailable", _READ_FAILED_EVENTS
@@ -619,7 +652,7 @@ def project(today: date | None = None, horizon_days: int | None = None) -> dict:
         elif unsourced[window_id]:
             # Every step this window saw belongs to an event type wired to no
             # citable source. Blaming the public record would be wrong.
-            state, reason = "unavailable", _NOT_WIRED
+            state, reason = "unavailable", _NOT_WIRED[window_id]
         elif in_horizon[window_id]:
             state, reason = "unavailable", _NO_RECORD
         else:
@@ -629,8 +662,8 @@ def project(today: date | None = None, horizon_days: int | None = None) -> dict:
     row_count = sum(len(w["rows"]) for w in windows)
     truncation = (
         (
-            f"{MAX_ROWS} dated steps shown.",
-            f"已展示 {MAX_ROWS} 个节点。",
+            f"Showing the next {MAX_ROWS} dated steps; more are scheduled.",
+            f"仅显示接下来的 {MAX_ROWS} 个既定日期节点，后续仍有安排。",
         )
         if truncated else ("", "")
     )

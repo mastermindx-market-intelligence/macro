@@ -18,6 +18,7 @@ import json
 import os
 import shutil
 import sys
+from datetime import date
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
@@ -238,14 +239,30 @@ def render(root: Path) -> Path:
     )
     import engine.policy_calendar as _pc
     _orig_cal = _pc.compute_policy_calendar
-    _cal_once: dict = {"used": False, "value": None}
+    _cal_once: dict = {"used": False, "value": None, "day": None}
 
     def _compute_once(df=None, today=None):
+        """One policy-calendar result per build, for exactly one day.
+
+        The stored value is keyed on nothing, so a later caller asking for a
+        different day would have been handed the first call's answer without
+        being told. It is now told, loudly. The day is resolved the way the
+        callee resolves it (`None` means today), because the section leaf
+        passes a concrete date where the chip passes `None` — both mean the
+        same day, and only a genuinely different day is an error.
+        """
         if df is not None:
             return _orig_cal(df=df, today=today)
+        day = today if today is not None else date.today()
         if not _cal_once["used"]:
             _cal_once["used"] = True
+            _cal_once["day"] = day
             _cal_once["value"] = _orig_cal(today=today)
+        elif day != _cal_once["day"]:
+            raise RuntimeError(
+                "policy calendar: this build computes one day only; it was "
+                f"computed for {_cal_once['day']} and cannot answer for {day}"
+            )
         return _cal_once["value"]
 
     _pc.compute_policy_calendar = _compute_once
@@ -268,8 +285,10 @@ def render(root: Path) -> Path:
         _fence_section_budget(html)
     # The artifact is written only once the section is known to be within
     # budget, so an over-budget build cannot leave a refreshed JSON beside a
-    # page that was withheld.
-    _write_projection_artifact(root, payload)
+    # page that was withheld. A build with no payload leaves the last good
+    # artifact in place rather than overwriting it with `null`.
+    if payload is not None:
+        _write_projection_artifact(root, payload)
 
     # write_page owns the depth-aware data-base shim. Use its result through a
     # temporary file so even a standalone builder cannot expose a partial page.

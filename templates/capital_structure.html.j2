@@ -96,7 +96,7 @@
   {% if policy_projection is defined and policy_projection %}
   <section class="cs-policy cs-policy-active" id="cs-policy-projection" aria-labelledby="cs-pp-kicker">
     <div>
-      <p class="cs-kicker" id="cs-pp-kicker">{{ t('Dated steps', '既定节点') }}</p>
+      <p class="cs-kicker" id="cs-pp-kicker">{{ t('Dated steps', '既定日期节点') }}</p>
       <strong>{{ t('Dated steps on the public record', '公开记录上的既定日期节点') }}</strong>
       <span>{{ t(policy_projection.note_en, policy_projection.note_zh) }}</span>
       {% if policy_projection.truncated %}<span>{{ t(policy_projection.truncation_en, policy_projection.truncation_zh) }}</span>{% endif %}
