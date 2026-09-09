@@ -1713,6 +1713,7 @@ jobs:
       - "engine/confluence_tiers.py"
       - "engine/cross_asset.py"
       - "engine/cycles.py"
+      - "engine/debt_maturity.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
       - "engine/earnings_qual.py"
@@ -1979,6 +1980,7 @@ jobs:
       - "scripts/__init__.py"
       - "scripts/audit_options_episode_outcome_coverage.py"
       - "scripts/audit_options_market_memory_context.py"
+      - "scripts/build_debt_maturity.py"
       # AD-1T1: the T1 store's historical backfill driver — RF3/RF4 add a
       # writer-lock/store-agreement check exercised by test_topup_thetadata_daily.py.
       - "scripts/backfill_thetadata_eod.py"
@@ -2342,12 +2344,20 @@ jobs:
       # pair pins (visibility declarations, stance/lane inks, light-presence
       # fence, token cleanliness via scripts.check_design_system.scan_text —
       # repo-import only, no new deps), full checkout has site/. No new job.
+      # tests/test_debt_maturity.py (packet B-F09-3, contract-delta
+      # 2026-09-06) rides this step: engine.debt_maturity is a pure module
+      # already covered by this job's engine/*.py glob, and the Jinja
+      # render tests exercise templates/_debt_maturity.html.j2 the same way
+      # test_stock_dashboard_css.py's neighbours already render real stock
+      # page partials — pandas/pyarrow/jinja2 are already on this step's
+      # install line. No new job.
       - name: render-guard + engine-contract tests (rot sweep 2026-07-02)
         run: >
           python -m pytest
           tests/test_canada_build.py tests/test_canada_canonical_board.py
           tests/test_canada_v36_composer.py
           tests/test_stock_dashboard_css.py
+          tests/test_debt_maturity.py
           tests/test_hk_v37_composer.py
           tests/test_commodity_signals.py
           tests/test_commodity_index.py
@@ -2934,6 +2944,15 @@ jobs:
       # reports every file inside one step, and adds no job to a manifest at the
       # narrow-diff ceiling.  No dependency widened: probed at RUN time it loads
       # pandas/numpy/pyarrow/pyyaml/requests, all already on the install line above.
+      #
+      # Same backfill, packet B-F09-5 (review round 2): tests/test_covenant_terms.py and
+      # tests/test_compile_capital_structure_covenant_terms.py were named by no `run:`
+      # step in any workflow either -- the covenant-terms producer, its compile script,
+      # and its daily.yml wiring would have shipped with zero CI owner, exactly the
+      # #1052/#1253 pattern this file already warns about. Joins the same step for the
+      # same reason: no new dependency (jsonschema/pandas already installed above), and
+      # appended last so an upstream capital-structure regression is still the first
+      # failure a reader sees.
       - name: capital-structure contracts, compilers, projection, graph, source store, and legacy boundary
         # FOUR nightly-wiring suites ride HERE on purpose, and they only mean
         # anything together — each states one side of the same 2026-08-06 split:
@@ -2996,7 +3015,9 @@ jobs:
           tests/test_capital_structure_evidence_identity.py
           tests/test_capital_structure_closed_bundle.py
           tests/test_nwqs_c_dilution.py
-          tests/test_compile_capital_structure_registration_lifecycles.py -q
+          tests/test_compile_capital_structure_registration_lifecycles.py
+          tests/test_covenant_terms.py
+          tests/test_compile_capital_structure_covenant_terms.py -q
 
   stock-seasonality:
     if: ${{ false }}
@@ -3559,6 +3580,7 @@ jobs:
       - "scripts/build_biocatalyst.py"
       - "scripts/build_capital_structure_page.py"
       - "scripts/build_chart_data.py"
+      - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_index_leadership.py"
       - "scripts/build_intelligence_registry.py"
@@ -6799,6 +6821,7 @@ jobs:
       - "engine/ai_desk.py"
       - "engine/ai_desk_scorer.py"
       - "engine/alert_triage.py"
+      - "engine/debt_maturity.py"
       # engine/alert_triage.py imports engine/alert_time.py (the Alert Center
       # three-clock / ET board-day contract, Wave 7 2026-08-20), so this curated
       # scope's import closure reaches it. Declared here because a curated
@@ -7154,6 +7177,7 @@ jobs:
       - "scripts/build_biocatalyst.py"
       - "scripts/build_capital_structure_page.py"
       - "scripts/build_chart_data.py"
+      - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_index_leadership.py"
       - "scripts/build_live_overlay.py"
@@ -7400,6 +7424,7 @@ jobs:
       - "engine/china_validation.py"
       - "engine/cn_newswires.py"
       - "engine/codex_provider.py"
+      - "engine/debt_maturity.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
       - "engine/earnings_qual.py"
@@ -7621,6 +7646,12 @@ jobs:
       # scripts/snapshot_shadow_book.rows_from_board for the shadow-book
       # snapshot (one percentile definition), so exclusive scope must name it.
       - "scripts/snapshot_shadow_book.py"
+      # Import-closure entry (B-F09-3, 2026-09-06): build_stock_library
+      # loads the debt-maturity ladder via
+      # scripts.build_debt_maturity.load_debt_maturity_facts, so exclusive
+      # scope must name this module too (engine/debt_maturity.py, its own
+      # dependency, is already declared above).
+      - "scripts/build_debt_maturity.py"
       - "scripts/check_board_contradictions.py"
       - "scripts/check_signal_gate_coherence.py"
       - "scripts/check_stretch_oracle_contract.py"
@@ -9432,6 +9463,12 @@ jobs:
       # scripts/snapshot_shadow_book.rows_from_board for the shadow-book
       # snapshot (one percentile definition), so exclusive scope must name it.
       - "scripts/snapshot_shadow_book.py"
+      # Import-closure entry (packet B-F09-3, contract-delta 2026-09-06):
+      # build_stock_library now imports scripts.build_debt_maturity's
+      # load_debt_maturity_facts for the debt-maturity-ladder panel; that
+      # module's own top-level import already pulls in engine/debt_maturity.py,
+      # which this job's flat "engine/*.py" glob already covers.
+      - "scripts/build_debt_maturity.py"
       - "scripts/check_board_contradictions.py"
       - "scripts/check_signal_gate_coherence.py"
       - "scripts/check_stretch_oracle_contract.py"
@@ -10672,6 +10709,7 @@ jobs:
       - "engine/ai_desk.py"
       - "engine/ai_desk_scorer.py"
       - "engine/alert_triage.py"
+      - "engine/debt_maturity.py"
       # engine/alert_triage.py imports engine/alert_time.py (the Alert Center
       # three-clock / ET board-day contract, Wave 7 2026-08-20), so this curated
       # scope's import closure reaches it. Declared here because a curated
@@ -11138,6 +11176,7 @@ jobs:
       - "scripts/build_china_strategies.py"
       - "scripts/build_commodity_strategies.py"
       - "scripts/build_crossmarket.py"
+      - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_hk.py"
       - "scripts/build_index_leadership.py"
@@ -12599,6 +12638,7 @@ jobs:
       - "engine/china_validation.py"
       - "engine/cn_newswires.py"
       - "engine/codex_provider.py"
+      - "engine/debt_maturity.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
       - "engine/earnings_qual.py"
@@ -12833,6 +12873,7 @@ jobs:
       - "research/DO_NOT_REBUILD.md"
       - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
       - "scripts/__init__.py"
+      - "scripts/build_debt_maturity.py"
       - "scripts/build_government_revenue.py"
       - "scripts/build_government_revenue_candidates.py"
       # engine/htf_durability.py reads site/basketdata/fear_greed.json and

@@ -3317,6 +3317,16 @@ def sections_available(blob: dict | None, per: dict, agg: dict, ticker: str) -> 
     count = 0
     if blob:
         count += 1
+    # round-2-fix-round MINOR-1: this must gate on the SAME set the nav chip
+    # gates on (templates/ticker.html.j2's debt-maturity jump link, `status
+    # not in ('not_applicable', 'unresolved')`) -- counting only "reported"
+    # left every other real, navigable status (not_loaded / no_filings /
+    # no_maturity_facts / identity_mismatch) undercounted here after the chip
+    # itself was widened in round 2, the same class of chip/count drift the
+    # round-1 review already flagged once.
+    _dm_status = (blob or {}).get("debt_maturity", {}).get("status")
+    if _dm_status and _dm_status not in ("not_applicable", "unresolved"):
+        count += 1
     if (blob or {}).get("valuation"):
         count += 1
     if (blob or {}).get("financials"):
@@ -4617,6 +4627,7 @@ def build_page_context(
         "gauges": gauges,
         "performance": performance,
         "financials": financials,
+        "debt_maturity": (blob or {}).get("debt_maturity"),
         "valuation": valuation,
         "earnings": earnings,
         "technicals": technicals,
