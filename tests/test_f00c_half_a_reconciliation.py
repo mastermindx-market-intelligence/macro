@@ -17,6 +17,7 @@ import json
 from pathlib import Path
 
 import pytest
+import yaml
 
 _ROOT = Path(__file__).resolve().parents[1]
 
@@ -260,6 +261,16 @@ def test_the_6957_collision_is_recorded_as_file_level_not_row_level() -> None:
     assert "MO-DELTA-008" in doc and "file-level" in doc, (
         "the records document must carry the corrected #6957 hunk fact"
     )
+    # Round-3 MAJOR: the body of that section withdrew the row-level reading, but
+    # the section HEADING still restated it, so the guard above passed green over a
+    # false sentence on the committed surface. The heading is now pinned too.
+    assert "this row is also being edited by an open PR" not in doc, (
+        "withdrawn claim: no heading or line in the records document may say #6957 "
+        "edits the MO-PAID-004 row; the collision is file-level"
+    )
+    assert "a file-level collision with open #6957, not a row edit" in doc, (
+        "the MO-PAID-004 caveat heading must state the file-level truth it withdrew to"
+    )
 
 
 def test_this_suite_is_not_waived() -> None:
@@ -267,4 +278,49 @@ def test_this_suite_is_not_waived() -> None:
     text = WAIVERS.read_text(encoding="utf-8")
     assert "test_f00c_half_a_reconciliation" not in text, (
         "this suite must run; do not add it to config/unrun_test_waivers.yml"
+    )
+
+
+# ------------------------------------------ CI scope closure (round-3 MAJOR 2)
+
+_LEGACY_JOBS = _ROOT / ".github" / "ci" / "legacy-jobs.yml"
+
+# Every artifact THIS suite reads from disk and pins. `self-mod-fence` is the only
+# job that runs this suite (see the last `run:` step of its definition in
+# .github/ci/legacy-jobs.yml), so an edit touching ONLY one of these paths must be
+# able to select that job on its own — otherwise the pin fires post-merge on main
+# instead of pre-merge on the PR. Round-3 MAJOR: the manifest fixture was read at
+# line 23 and named in no job's `paths:`; `tests` is absent from LITERAL_DIRS in
+# scripts/ci_scope_dependencies.py, so scope inference could not reach it either,
+# and a fixture-only break would have merged green. Modelled on
+# tests/test_b_rec3_wave_boundary_records.py's `_PINNED_RECORD_PATHS`. Declaring a
+# path inference already covers costs nothing: infer_job_scopes() unions declared
+# with inferred, so a declaration only ever widens a job's scope.
+_PINNED_RECORD_PATHS = tuple(
+    str(path.relative_to(_ROOT))
+    for path in (
+        Path(__file__).resolve(),
+        LEDGER,
+        RECORDS_DOC,
+        MANIFEST,
+    )
+)
+
+
+def _self_mod_fence_paths() -> set[str]:
+    manifest = yaml.safe_load(_LEGACY_JOBS.read_text(encoding="utf-8"))
+    return set(manifest["jobs"]["self-mod-fence"].get("paths") or ())
+
+
+@pytest.mark.parametrize("record_path", _PINNED_RECORD_PATHS)
+def test_self_mod_fence_paths_cover_every_artifact_this_suite_pins(
+    record_path: str,
+) -> None:
+    declared = _self_mod_fence_paths()
+    assert record_path in declared, (
+        f"{record_path!r} is read by this suite, which self-mod-fence is the only "
+        "job to run, but it is missing from that job's `paths:` list in "
+        ".github/ci/legacy-jobs.yml — an edit touching only this file would select "
+        "no job that runs the suite, so the pin would fire post-merge on main "
+        "instead of pre-merge on a PR"
     )

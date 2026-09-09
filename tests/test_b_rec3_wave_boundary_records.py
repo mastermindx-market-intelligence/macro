@@ -247,13 +247,18 @@ _LEGACY_JOBS = _ROOT / ".github" / "ci" / "legacy-jobs.yml"
 
 from tests.test_f00c_terminal_reconciliation import MANIFEST as _F00C_MANIFEST  # noqa: E402
 from tests.test_f00c_terminal_reconciliation import RECORDS_DOC as _F00C_RECORDS_DOC  # noqa: E402
+from tests.test_b_rec2_wave_boundary_records import HANDOFF as _B_REC2_HANDOFF  # noqa: E402
+from tests.test_b_rec2_wave_boundary_records import RECEIPT_0012 as _B_REC2_RECEIPT_0012  # noqa: E402
 
-# Every record this packet's two suites (this file and test_f00c_terminal_-
-# reconciliation.py) read from disk. self-mod-fence is the only job that runs
-# either suite (see the run step at the bottom of its definition below), so an
-# edit that touches ONLY one of these paths must alone be able to select it —
-# otherwise the pin these suites enforce fires post-merge on main instead of
-# pre-merge on a PR.
+# Every record read from disk by ALL THREE suites self-mod-fence runs — this
+# file, test_f00c_terminal_reconciliation.py, and the sibling
+# test_b_rec2_wave_boundary_records.py — not just this packet's own two. That
+# job is the only one that runs any of them (see the run step at the bottom of
+# its definition), so an edit that touches ONLY one of these paths must alone be
+# able to select it — otherwise the pin these suites enforce fires post-merge on
+# main instead of pre-merge on a PR. Round-4 MAJOR: the b_rec2 handoff was read
+# by a suite this job runs and named nowhere in the job's `paths:` list, and
+# `agentos` is outside LITERAL_DIRS, so nothing could select the job for it.
 _PINNED_RECORD_PATHS = tuple(
     str(path.relative_to(_ROOT))
     for path in (
@@ -267,6 +272,8 @@ _PINNED_RECORD_PATHS = tuple(
         LEDGER,
         _F00C_MANIFEST,
         _F00C_RECORDS_DOC,
+        _B_REC2_HANDOFF,
+        _B_REC2_RECEIPT_0012,
     )
 )
 
@@ -277,13 +284,13 @@ def _self_mod_fence_paths() -> set[str]:
 
 
 @pytest.mark.parametrize("record_path", _PINNED_RECORD_PATHS)
-def test_self_mod_fence_paths_cover_every_record_this_packets_suites_pin(
+def test_self_mod_fence_paths_cover_every_record_the_jobs_suites_pin(
     record_path: str,
 ) -> None:
     declared = _self_mod_fence_paths()
     assert record_path in declared, (
-        f"{record_path!r} is read by this packet's suites but missing from "
-        "self-mod-fence's `paths:` list in .github/ci/legacy-jobs.yml — an "
+        f"{record_path!r} is read by a suite self-mod-fence runs but is missing "
+        "from that job's `paths:` list in .github/ci/legacy-jobs.yml — an "
         "edit that touches only this file would never select the job that "
         "pins it, so the pin would fire post-merge on main instead of "
         "pre-merge on a PR"

@@ -14,8 +14,12 @@ against the ledger's own acceptance sentence and writes down what it found, row 
 
 The rule applied to every row was the same and was applied literally: the acceptance
 sentence already written in the ledger is the test, not a paraphrase of it and not the
-pull request's title. Ten sentences were met. Two were not, and those two rows stay open
-with the missing piece named.
+pull request's title. Ten of the twelve acceptance sentences were met; two were not, and
+those two rows stay open with the missing piece named. Read "met" here as a statement
+about the acceptance sentence and nothing else: all twelve rows change state in this
+packet, because the two unmet ones move to `PARTIAL` — an open word — rather than close.
+The sense of "moved" used above, that no ledger row had changed for three days, is the
+state-change sense and is not what the two section headings below are counting.
 
 ## What the state words mean here
 
@@ -28,7 +32,7 @@ readback of the database catalog, not of two people doing the thing the row desc
 two people have exercised one of these surfaces in production and that is recorded, the row
 can move again; nothing in this packet anticipates that.
 
-## The ten rows that moved
+## The ten acceptance sentences that were met
 
 - `MO-PAID-051` — a team-scoped membership row is created and read by a live route. Shipped
   in #514, merged as `cff58ee8`, over migration 0014, which was applied to production on
@@ -71,7 +75,7 @@ can move again; nothing in this packet anticipates that.
   views over the same objects. Shipped in #520, merged as `8255f482`, with no second engine
   and no second store.
 
-## The two rows that did not move, and why
+## The two that were not met, and why
 
 - `MO-PAID-046` asks that a person create and revise a Thesis through the interface, that
   revisions be new rows carrying `amended_from`, and that no edit be possible in place. Two
