@@ -96,7 +96,7 @@
   {% if policy_projection is defined and policy_projection %}
   <section class="cs-policy cs-policy-active" id="cs-policy-projection" aria-labelledby="cs-pp-kicker">
     <div>
-      <p class="cs-kicker" id="cs-pp-kicker">{{ t('Policy calendar', '政策日历') }}</p>
+      <p class="cs-kicker" id="cs-pp-kicker">{{ t('Dated steps', '既定节点') }}</p>
       <strong>{{ t('Dated steps on the public record', '公开记录上的既定日期节点') }}</strong>
       <span>{{ t(policy_projection.note_en, policy_projection.note_zh) }}</span>
       {% if policy_projection.truncated %}<span>{{ t(policy_projection.truncation_en, policy_projection.truncation_zh) }}</span>{% endif %}
@@ -105,7 +105,7 @@
           <p class="cs-kicker">{{ t(window.label_en, window.label_zh) }}</p>
           {% if window.state != 'present' %}<span>{{ t(window.reason_en, window.reason_zh) }}</span>
           {% else %}<ul class="cs-prl">{% for row in window.rows %}
-            <li class="cs-pr"><strong>{{ t(row.event_en, row.event_zh) }}</strong> <time datetime="{{ row.date }}">{{ row.date }}</time> <a href="{{ row.source_url }}" rel="noopener">{{ t(row.source_label_en, row.source_label_zh) }}</a></li>
+            <li class="cs-pr"><strong>{{ t(row.event_en, row.event_zh) }}</strong> <time datetime="{{ row.date }}">{% if row.days_out == 0 %}{{ t('today', '今天') }}{% elif row.days_out == 1 %}{{ t('in 1 day', '1 天后') }}{% else %}{{ t('in ' ~ row.days_out ~ ' days', row.days_out ~ ' 天后') }}{% endif %}</time> <a href="{{ row.source_url }}" rel="noopener">{{ t(row.source_label_en, row.source_label_zh) }}</a></li>
           {% endfor %}</ul>{% if window.more_en %}<span>{{ t(window.more_en, window.more_zh) }}</span>{% endif %}{% endif %}
         </div>{% endfor %}
       </div>

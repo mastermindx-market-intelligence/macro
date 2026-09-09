@@ -160,14 +160,20 @@ ARTIFACT_BUDGET_BYTES = 32_768
 def _policy_projection(today=None) -> dict:
     """Dated-event ledger onto six frozen capital-markets windows. Context only.
 
-    Strictly additive beside the merged Policy watch chip. Never raises into
-    the desk build; a failed leaf degrades to the typed unavailable shape.
+    Strictly additive beside the merged Policy watch chip. `typed_unavailable`
+    is resolved BEFORE the guarded import, so the fallback is reachable: a
+    missing or raising `project` degrades to the typed unavailable shape
+    instead of raising a second ImportError out of the handler. A leaf module
+    that cannot be imported at all still fails the build loudly — that is a
+    broken checkout, not a source that was unavailable for this build, and it
+    must not be reported to a reader as the latter.
     """
+    from engine.capital_policy_projection import typed_unavailable
+
     try:
         from engine.capital_policy_projection import project
         return project(today=today)
     except Exception:  # noqa: BLE001 — a section must never crash the desk
-        from engine.capital_policy_projection import typed_unavailable
         return typed_unavailable(today=today)
 # ── policy-projection:end ──
 
@@ -248,7 +254,6 @@ def render(root: Path) -> Path:
         payload = _policy_projection()
     finally:
         _pc.compute_policy_calendar = _orig_cal
-    _write_projection_artifact(root, payload)
     html = env.get_template("capital_structure.html.j2").render(
         active_section="research",
         active_page="capital_structure",
@@ -261,6 +266,10 @@ def render(root: Path) -> Path:
     html = "\n".join(line.rstrip() for line in html.splitlines()) + "\n"
     if payload and 'id="cs-policy-projection"' in html:
         _fence_section_budget(html)
+    # The artifact is written only once the section is known to be within
+    # budget, so an over-budget build cannot leave a refreshed JSON beside a
+    # page that was withheld.
+    _write_projection_artifact(root, payload)
 
     # write_page owns the depth-aware data-base shim. Use its result through a
     # temporary file so even a standalone builder cannot expose a partial page.

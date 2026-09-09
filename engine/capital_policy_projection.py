@@ -1,16 +1,18 @@
 """Capital-markets dated-policy projection — CONTEXT ONLY · LEAF · B-F09-6b.
 
-Projects dated public-record steps onto six frozen capital-markets windows.
-No score, no rank, no band, no direction. Reads the cached event-calendar
-snapshot and engine.policy_calendar only. Never raises into a build. Never
-calls the network.
+Places dated public-record steps into six frozen capital-markets windows.
+Each row is a step, the day it falls on, the window it touches, and the public
+record that dates it — nothing is measured, ordered by importance, or read as
+a direction. Reads the cached event-calendar snapshot and
+engine.policy_calendar only. Never raises into a build. Never calls the
+network.
 """
 from __future__ import annotations
 
 import json
 import re
 from collections import defaultdict
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, timedelta
 from urllib.parse import urlparse
 
 from engine import event_calendar
@@ -24,7 +26,7 @@ SCHEMA = "capital_policy_projection.v1"
 HORIZON_DAYS = 45
 MAX_ROWS = 12
 SECTION_BUDGET_BYTES = 8192
-_AUCTION_CACHE_MAX_AGE_S = 12 * 3600
+_AUCTION_CACHE_PREFIX = "upcoming_"
 
 WINDOWS: dict[str, dict[str, str]] = {
     "rates_policy": {
@@ -115,8 +117,14 @@ _AUCTION_TYPE_ZH = {
 _AUCTION_TYPES = frozenset(_AUCTION_TYPE_ZH)
 _AUCTION_LABEL_RE = re.compile(r"^(\d+)-Year (Note|Bond|TIPS|FRN)$")
 
-NOTE_EN = "Dated public-record steps. Not a trade call."
-NOTE_ZH = "公开记录上的既定日期节点。不是交易建议。"
+# Authority ceiling. The heading already says these are dated steps on the
+# public record, so the note carries only the ceiling clause, in the exact
+# wording the merged Policy watch chip ships live on main. The frozen §4 string
+# has a third clause that cannot be written anywhere in this packet: §2.3
+# denylists the EN and the ZH word it is built from. The PR body's numbered
+# DEVIATIONS record the drop and the contradiction.
+NOTE_EN = "Not a rating, not a trade call."
+NOTE_ZH = "不是评级，也不是交易建议。"
 
 _EMPTY_REASON = (
     "None is pending.",
@@ -280,11 +288,30 @@ def _row(etype: str, window_id: str, day: date, asof: date, ev: dict) -> dict | 
     }
 
 
-def _ingest(events: list, asof: date, horizon: int) -> tuple[list[dict], dict[str, int], dict[str, int]]:
+def _ingest(
+    events: list, asof: date, horizon: int,
+) -> tuple[list[dict], dict[str, int], dict[str, int], dict[str, int]]:
+    """Rows plus three per-window counters.
+
+    The counters keep two different causes apart, because they name different
+    gaps to the reader (seat ruling R1):
+
+    * `unsourced` — the event type is mapped to this window but has no entry in
+      `_FROZEN_SOURCE` at all, so no row of that type could ever carry a
+      citation. That is a wiring gap on our side, not a gap in the public
+      record. `OPEX` is the standing case: it is computed every third Friday,
+      so `equity_new_issue` always has one and can never render it.
+    * `dropped` — the type IS wired, but this row's own record could not be
+      built (a Federal Register step with no document number) or its copy could
+      not be derived from the row's structured fields.
+    * `in_horizon` — everything mapped and inside the horizon, whatever happened
+      to it afterwards.
+    """
     end = asof + timedelta(days=horizon)
     out: list[dict] = []
     in_horizon: dict[str, int] = defaultdict(int)
     dropped: dict[str, int] = defaultdict(int)
+    unsourced: dict[str, int] = defaultdict(int)
     for ev in events or []:
         if not isinstance(ev, dict):
             continue
@@ -296,27 +323,46 @@ def _ingest(events: list, asof: date, horizon: int) -> tuple[list[dict], dict[st
         if day is None or day < asof or day > end:
             continue
         in_horizon[window_id] += 1
+        if etype not in _FROZEN_SOURCE:
+            unsourced[window_id] += 1
+            continue
         row = _row(etype, window_id, day, asof, ev)
         if row is None:
             dropped[window_id] += 1
             continue
         out.append(row)
-    return out, in_horizon, dropped
+    return out, in_horizon, dropped, unsourced
 
 
 def _auction_cache_path(asof: date):
-    return config.ROOT / "data" / "macro" / "auction_cache" / f"upcoming_{asof.isoformat()}.json"
+    return (
+        config.ROOT / "data" / "macro" / "auction_cache"
+        / f"{_AUCTION_CACHE_PREFIX}{asof.isoformat()}.json"
+    )
+
+
+def _cache_day(path) -> date | None:
+    """The day a cache file covers, read from its own name."""
+    stem = path.stem
+    if not stem.startswith(_AUCTION_CACHE_PREFIX):
+        return None
+    return _as_date(stem[len(_AUCTION_CACHE_PREFIX):])
 
 
 def _read_auction_cache(asof: date) -> tuple[str, list]:
-    """Return (status, records). Never networks. Never writes."""
+    """Return (status, records). Never networks. Never writes.
+
+    Staleness is the cache file's own day against `asof`, never its mtime and
+    never the wall clock: §4 requires byte-identical output for the same
+    `today` and the same files, and an mtime test flips a window from present
+    to unavailable as a build crosses an age boundary.
+    """
     path = _auction_cache_path(asof)
     if not path.exists():
         return "missing", []
+    if _cache_day(path) != asof:
+        return "stale", []
     try:
-        age = datetime.now(timezone.utc).timestamp() - path.stat().st_mtime
-        if age >= _AUCTION_CACHE_MAX_AGE_S:
-            return "stale", []
         data = json.loads(path.read_text(encoding="utf-8"))
         if not isinstance(data, list):
             return "unreadable", []
@@ -525,31 +571,27 @@ def project(today: date | None = None, horizon_days: int | None = None) -> dict:
     collected: list[dict] = []
     in_horizon: dict[str, int] = defaultdict(int)
     dropped: dict[str, int] = defaultdict(int)
+    unsourced: dict[str, int] = defaultdict(int)
+
+    def _absorb(source_events: list) -> None:
+        rows, h, d, u = _ingest(source_events, asof, horizon)
+        collected.extend(rows)
+        for wid, n in h.items():
+            in_horizon[wid] += n
+        for wid, n in d.items():
+            dropped[wid] += n
+        for wid, n in u.items():
+            unsourced[wid] += n
 
     if not event_unavailable:
-        rows, h, d = _ingest(events_no_auction, asof, horizon)
-        collected.extend(rows)
-        for wid, n in h.items():
-            in_horizon[wid] += n
-        for wid, n in d.items():
-            dropped[wid] += n
-        a_rows, a_h, a_d = _ingest(auction_events, asof, horizon)
-        collected.extend(a_rows)
-        for wid, n in a_h.items():
-            in_horizon[wid] += n
-        for wid, n in a_d.items():
-            dropped[wid] += n
+        _absorb(events_no_auction)
+        _absorb(auction_events)
 
     if not policy_unavailable and cal is not None:
-        policy_events = list(cal.get("upcoming_events") or []) + list(
-            cal.get("entity_list_events") or []
+        _absorb(
+            list(cal.get("upcoming_events") or [])
+            + list(cal.get("entity_list_events") or [])
         )
-        rows, h, d = _ingest(policy_events, asof, horizon)
-        collected.extend(rows)
-        for wid, n in h.items():
-            in_horizon[wid] += n
-        for wid, n in d.items():
-            dropped[wid] += n
 
     collected.sort(key=lambda r: (r["date"], r["_etype"]))
     by_window, truncated, hidden = _clip_per_window(collected)
@@ -574,6 +616,10 @@ def project(today: date | None = None, horizon_days: int | None = None) -> dict:
             state, reason = "present", ("", "")
         elif dropped[window_id] or hidden[window_id]:
             state, reason = "unavailable", _NO_RECORD
+        elif unsourced[window_id]:
+            # Every step this window saw belongs to an event type wired to no
+            # citable source. Blaming the public record would be wrong.
+            state, reason = "unavailable", _NOT_WIRED
         elif in_horizon[window_id]:
             state, reason = "unavailable", _NO_RECORD
         else:
@@ -583,8 +629,8 @@ def project(today: date | None = None, horizon_days: int | None = None) -> dict:
     row_count = sum(len(w["rows"]) for w in windows)
     truncation = (
         (
-            f"Next {MAX_ROWS} dated steps.",
-            f"仅展示接下来的 {MAX_ROWS} 个节点。",
+            f"{MAX_ROWS} dated steps shown.",
+            f"已展示 {MAX_ROWS} 个节点。",
         )
         if truncated else ("", "")
     )
