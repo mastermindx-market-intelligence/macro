@@ -2044,6 +2044,10 @@ jobs:
       - "templates/_navlinks.html.j2"
       - "templates/_public_footer.html.j2"
       - "templates/_public_nav.html.j2"
+      # F13-1 closure widening 2026-09-09 (contract-delta): build_site's
+      # source-bound help directory now also validates the public
+      # glossary page against this template.
+      - "templates/glossary.html.j2"
       - "templates/measurement.html.j2"
       - "templates/methodology.html.j2"
       - "templates/support.html.j2"
@@ -7697,6 +7701,10 @@ jobs:
       - "templates/_navlinks.html.j2"
       - "templates/_public_footer.html.j2"
       - "templates/_public_nav.html.j2"
+      # F13-1 closure widening 2026-09-09 (contract-delta): build_site's
+      # source-bound help directory now also validates the public
+      # glossary page against this template.
+      - "templates/glossary.html.j2"
       - "templates/measurement.html.j2"
       - "templates/methodology.html.j2"
       - "templates/support.html.j2"
@@ -9507,6 +9515,10 @@ jobs:
       - "templates/_navlinks.html.j2"
       - "templates/_public_footer.html.j2"
       - "templates/_public_nav.html.j2"
+      # F13-1 closure widening 2026-09-09 (contract-delta): build_site's
+      # source-bound help directory now also validates the public
+      # glossary page against this template.
+      - "templates/glossary.html.j2"
       - "templates/measurement.html.j2"
       - "templates/methodology.html.j2"
       - "templates/support.html.j2"
@@ -12920,6 +12932,10 @@ jobs:
       - "templates/_navlinks.html.j2"
       - "templates/_public_footer.html.j2"
       - "templates/_public_nav.html.j2"
+      # F13-1 closure widening 2026-09-09 (contract-delta): build_site's
+      # source-bound help directory now also validates the public
+      # glossary page against this template.
+      - "templates/glossary.html.j2"
       - "templates/measurement.html.j2"
       - "templates/methodology.html.j2"
       - "templates/support.html.j2"
