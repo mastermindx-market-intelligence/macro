@@ -40,8 +40,8 @@
       "label_zh": "政府举债",
       "more_en": "",
       "more_zh": "",
-      "reason_en": "The dated-event calendar could not be read right now.",
-      "reason_zh": "目前无法读取已定日期事件日历。",
+      "reason_en": "The Treasury auction schedule could not be read right now.",
+      "reason_zh": "目前无法读取国债拍卖日程。",
       "rows": [],
       "state": "unavailable",
       "window_id": "treasury_supply"
@@ -51,8 +51,8 @@
       "label_zh": "新股发行",
       "more_en": "",
       "more_zh": "",
-      "reason_en": "The calendar for this window is not wired yet.",
-      "reason_zh": "本窗口的日历尚未接入。",
+      "reason_en": "The equity-issuance calendar is not yet connected to this section.",
+      "reason_zh": "本栏目暂未收录股票发行日历。",
       "rows": [],
       "state": "unavailable",
       "window_id": "equity_new_issue"
@@ -62,8 +62,8 @@
       "label_zh": "新债发行",
       "more_en": "",
       "more_zh": "",
-      "reason_en": "The calendar for this window is not wired yet.",
-      "reason_zh": "本窗口的日历尚未接入。",
+      "reason_en": "The bond-issuance calendar is not yet connected to this section.",
+      "reason_zh": "本栏目暂未收录债券发行日历。",
       "rows": [],
       "state": "unavailable",
       "window_id": "credit_new_issue"
