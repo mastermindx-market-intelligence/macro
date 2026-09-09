@@ -3723,10 +3723,20 @@ def compile_bundle(
         emit("discoveries", row["item"])
 
     # ---- handoff: the LATEST only ------------------------------------------
-    mine: list[str] = [
-        stem for stem in sorted(hnd_all)
+    mine: dict[str, Path] = {
+        stem: store.paths[f"HND/{stem}"] for stem in sorted(hnd_all)
         if key in _refs(hnd_all[stem].get("workstream"), "WS")
-    ]
+    }
+    # An unparseable canonical filename is negative evidence, not an authored
+    # workstream assertion. Keep it in the latest-candidate set so losing YAML
+    # cannot silently make an older instruction current again.
+    for problem in store.problems:
+        if problem.rule != "unparseable" or problem.path.parent != store.root / "handoffs":
+            continue
+        stem = problem.path.stem
+        date_match = HANDOFF_DATE_RE.search(stem)
+        if date_match and stem[:date_match.start()] == key:
+            mine.setdefault(stem, problem.path)
 
     def handoff_rank(stem: str) -> tuple[str, str]:
         match = HANDOFF_DATE_RE.search(stem)
@@ -3734,8 +3744,10 @@ def compile_bundle(
 
     if mine:
         latest = max(mine, key=handoff_rank)
-        for stem in mine:
-            hnd_path = source(f"HND/{stem}")
+        for stem, hnd_path in sorted(mine.items()):
+            # Bind malformed bytes too: they affect selection despite yielding
+            # no parsed record or emitted handoff.
+            sources.setdefault(str(hnd_path.resolve()), hnd_path)
             if stem != latest:
                 drop("handoff", stem, hnd_path, f"older_handoff (latest: {latest})")
                 continue

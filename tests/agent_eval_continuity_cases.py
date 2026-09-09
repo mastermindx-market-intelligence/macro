@@ -190,3 +190,46 @@ def test_e1_readiness_requires_the_runner_even_when_bridge_source_is_done(
     else:
         assert e1["unmet_dependencies"] == []
     assert digests(root) == before
+
+
+@pytest.mark.parametrize("payload", [
+    "---\nworkstream: [\n---\nUnparseable latest handoff.\n",
+    "Latest handoff without frontmatter.\n",
+    "---\n- not-a-mapping\n---\nLatest handoff.\n",
+])
+def test_unparseable_latest_handoff_never_reactivates_older_work(tmp_path, payload):
+    root = case_store(tmp_path)
+    (root / NEW).write_text(payload, encoding="utf-8")
+    before = digests(root)
+    bundle = compile_case(root)
+    assert section(bundle, "handoff")["items"] == []
+    assert any(x["path"].endswith(str(NEW)) and "malformed" in x["reason"]
+               for x in bundle["excluded"])
+    assert any(x["path"].endswith(str(OLD)) and "older_handoff" in x["reason"]
+               for x in bundle["excluded"])
+    assert any(str(NEW) in x and "malformed" in x for x in bundle["degraded"])
+    assert digests(root) == before
+
+
+@pytest.mark.parametrize("name", [
+    "AGENT-EVAL-FABRIC-OTHER-2026-09-09.md",
+    "OTHER-2026-09-09.md", "AGENT-EVAL-FABRIC-2026-09-01.md",
+])
+def test_unparseable_unrelated_or_older_handoff_keeps_valid_latest(tmp_path, name):
+    root = case_store(tmp_path)
+    (root / "handoffs" / name).write_text("---\nworkstream: [\n---\n", encoding="utf-8")
+    bundle = compile_case(root)
+    items = section(bundle, "handoff")["items"]
+    assert len(items) == 1 and items[0]["path"].endswith(str(NEW))
+
+
+def test_unparseable_selection_evidence_changes_the_source_digest(tmp_path):
+    root = case_store(tmp_path)
+    path = root / NEW
+    path.write_text("---\nworkstream: [\n---\nfirst evidence\n", encoding="utf-8")
+    first = compile_case(root)
+    path.write_text("---\nworkstream: [\n---\ncorrected evidence\n", encoding="utf-8")
+    second = compile_case(root)
+    assert not section(first, "handoff")["items"]
+    assert not section(second, "handoff")["items"]
+    assert first["source_records_digest"] != second["source_records_digest"]

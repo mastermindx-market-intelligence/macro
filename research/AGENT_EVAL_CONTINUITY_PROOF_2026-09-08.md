@@ -13,10 +13,13 @@ The Fable program, OHF/Outcome Learning source owners, Executive lifecycle and e
 retrieval/compiler retain their ownership. This adds no runtime, store, evaluator,
 watcher, provider route, authority or automatic policy promotion.
 
-The original checkpoint owned four paths. The current continuation owns five: the existing
-workstream, September 8 handoff, continuity case module, existing canonical test collection
-module, and this report. The September 1 handoff is preserved byte-for-byte. No generated
-Agent OS view, compiler implementation, workflow, guard or waiver is edited.
+The original checkpoint owned four paths; the September 8 integration owned five.
+The September 9 reviewer repair adds only the existing compiler's latest-handoff selection
+hunk, for six paths total: the workstream, September 8 handoff, continuity case module,
+canonical test collection module, this report, and `scripts/agentos.py`. The September 1
+handoff is preserved byte-for-byte. No loader, schema, generated view, workflow, guard,
+waiver, runtime or permission mechanism is changed. Dated observations below are not
+claims about the current head; the September 9 section states the current proof boundary.
 
 ## Observed RED
 
@@ -132,3 +135,63 @@ Current focused result: all 15 continuity regressions pass through the canonical
 `tests/test_agentos_compile.py` collection, including both runner-dependency controls.
 Canonical validation reads 1,078 records and returns zero errors (69 disclosed warnings).
 These results do not excuse the separately timed-out full local job or pending hosted CI.
+
+## September 9: completed compiler repair; release proof remains separate
+
+Current continuation uses protected Mastermind
+`686af274d8ae1558f3f3ae35e0b3aae68be80a01`, compatible Skillpack 1.0.1/bootstrap 1.
+The restored original Studio checkout remained at published `73a0664096d0d995fa570dd33a81102b0c0a7727`
+with only the previously confirmed three malformed-input test cases uncommitted.
+The old diagnostic PID was absent. Its saved log contained only 84 deselected tests;
+that was not a recovered regression pass. No old publisher or test invocation was replayed.
+
+Independent review 5147327460 / finding 3962536249 correctly identified that syntactically
+unparseable latest handoffs disappeared before latest selection. The actual compiler then
+resurrected obsolete September 1 instructions. The previously tested patch in #6998
+comment 5592965409 is now applied to this original source checkout. Only its existing
+`compile_bundle` selection/digest hunk changes: exact canonical workstream/date filenames
+with parse failures remain negative evidence, are visibly excluded, prevent silent stale
+fallback, and remain bound into the existing source digest. Their filenames never grant
+permission or create an authored workstream assertion. Older and unrelated malformed
+handoffs cannot suppress a valid latest handoff.
+
+A second integration check caught why merely appending the new cases had not protected CI:
+the canonical test module imports case functions explicitly. Before adding their three
+function names, `-k unparseable` ran only one unrelated existing test and deselected 83.
+That exit 0 was rejected as insufficient evidence. After connecting all seven new cases
+to the same explicit import list, the original compiler yielded four failures and four
+passes (83 deselected), matching the intended malformed-latest/digest failures. No original
+assertion, selection policy, workflow or waiver was weakened.
+
+The repaired **complete canonical compiler test module** then concluded at
+2026-09-09T11:12:33Z: **91 passed in 163.18 seconds**, exit 0. This includes all 22
+continuity cases through the actual CI collection target, not just a helper-only run.
+The three source/test digests were unchanged throughout that run:
+
+- compiler: `ca99dbcae79387c989f01f57c58fe0b13c10e3128fdc21c205a5254ec29c7dfd`;
+- canonical collection: `9aeeff4783fbbfbbc7c14e66aae3d51fe31ddcb703de81bc06bcaa6487e10512`;
+- continuity cases: `ed56ede93bd41bbb895244dfdc69931a37899750d9874b98383204b1fbd27049`.
+
+Command: `/opt/homebrew/bin/python3.12 -m pytest -p no:cacheprovider -o addopts=
+tests/test_agentos_compile.py -q --tb=short --durations=12`, with explicit absent sibling
+checkout fixtures. Saved JUnit and result: `compiler-full-20260909.xml` and
+`compiler-full-20260909.json` in the existing operation evidence directory. The separate
+schema/status/rights neighbor run remains independently accountable; it is not covered
+by the 91-case result. Historical full-job timeouts remain timeouts, not passes.
+
+Current target-path census enumerated 157 open PRs. The one oversized #6657 file list
+was resolved for all six target paths using exact merge-base/head object equality;
+it changed none of them. The only peer compiler change is #6976's separate Git-date
+batching. Its source child is terminal, its release ownership remains untouched, and
+its published head, retained local preparation and current main all have the same
+`compile_bundle` AST as our preimage. No peer worktree or release process was modified.
+A combined auxiliary scope-comment request was blocked; canonical readback showed that
+comment absent. It was not resent. This does not stand in for any source or release receipt.
+
+Fresh GitHub observation found the **old published 73a head's** CI and fences concluded
+success; those results do not cover the new parser semantics. Final source review,
+applicable concluded checks on the new candidate, current-base compatibility and
+accepted-source real-reader proof are still required before release. This repair proves
+no fleet-wide context refresh, autonomous E1 run, OL-V1 effect, model comparison or
+organizational speedup. Its direct capability is trustworthy continuation through the
+existing reader, including an explicit failure instead of silent obsolete instructions.

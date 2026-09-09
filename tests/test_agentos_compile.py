@@ -1569,4 +1569,7 @@ from tests.agent_eval_continuity_cases import (  # noqa: E402,F401
     test_malformed_new_handoff_never_silently_restores_obsolete_instructions,
     test_later_workstream_completion_is_not_blocked_by_historical_case,
     test_e1_readiness_requires_the_runner_even_when_bridge_source_is_done,
+    test_unparseable_latest_handoff_never_reactivates_older_work,
+    test_unparseable_unrelated_or_older_handoff_keeps_valid_latest,
+    test_unparseable_selection_evidence_changes_the_source_digest,
 )
