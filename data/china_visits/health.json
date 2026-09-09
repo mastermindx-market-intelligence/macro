@@ -1,11 +1,11 @@
 {
  "status": "upstream_degraded",
  "detail": "derived over a same-run china_filings TRANSPORT degradation (sse: HTTPConnectionPool(host='www.cninfo.com.cn', port=80): Read timed out. (read timeout=15)) \u2014 this run contributes no absence evidence",
- "last_attempt_utc": "2026-09-07T14:40:02.250170+00:00",
+ "last_attempt_utc": "2026-09-09T11:57:17.802351+00:00",
  "last_success_utc": "2026-09-06T11:58:23.880590+00:00",
  "candidate_accounting": {
-  "eligible": 1059,
-  "represented_downstream": 1059,
+  "eligible": 1420,
+  "represented_downstream": 1420,
   "typed_exclusions": 0,
   "exclusions_by_type": {},
   "coverage_exceptions": {
