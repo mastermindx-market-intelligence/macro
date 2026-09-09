@@ -1335,6 +1335,10 @@ def compose(root: Path) -> dict[str, Any]:
             tail_zh = f"；<b>{n_caut}</b> 个显得拥挤——不要追高"
         hero_zh = f"{n_themes} 个市场主题中，{lead_zh}{tail_zh}。"
 
+    rp_payload = load_research_priority(root)
+    if isinstance(rp_payload, dict):
+        rp_payload["asof"] = as_of
+
     return {
         "as_of": as_of,
         "n_themes": n_themes,
@@ -1360,6 +1364,7 @@ def compose(root: Path) -> dict[str, Any]:
         # Trade-flows page-level note (shown once when all-null accrual state)
         "trade_flows_page_note_en": trade_flows_page_note_en,
         "trade_flows_page_note_zh": trade_flows_page_note_zh,
+        "research_priority": rp_payload,
     }
 
 
@@ -1423,6 +1428,95 @@ def load_primary_basket_ids(root: Path) -> dict[str, str]:
         log.warning("theme_crosswalk primary_basket_id load failed (%s); "
                     "basket_lanes will be empty", exc)
         return {}
+
+
+def load_research_priority(root: Path) -> dict[str, Any]:
+    """Read the theme-graph current-belief view and return the §2.4 payload.
+
+    Tolerant in exactly the house shape: any failure -> state 'unavailable',
+    a logged warning, and a page that renders. Never raises.
+    Imports are FUNCTION SCOPE on purpose (same reason as `from lib.pages import
+    write_page` at main(): engine.theme_graph.store pulls in lib.config -> yaml
+    and pandas, and a module-scope import would red the lean pytest batch that
+    runs tests/test_state_of_themes.py without them).
+    """
+    from engine import research_priority_ordering as rp  # noqa: PLC0415
+
+    asof = "—"
+    try:
+        state = _load_json(root / "site" / "neuralwebdata" / "theme_state.json")
+        if isinstance(state, dict):
+            asof = state.get("as_of", "—") or "—"
+    except Exception:  # noqa: BLE001
+        asof = "—"
+    try:
+        from engine.theme_graph import store  # noqa: PLC0415
+
+        nodes = store.read_nodes(current=True)
+        edges = store.read_edges(latest_belief=True)
+
+        theme_nodes: dict[str, tuple[str, str]] = {}
+        if nodes is not None and len(nodes):
+            node_view = nodes[["node_id", "kind", "name_en", "name_zh"]]
+            for rec in node_view.itertuples(index=False):
+                if str(rec.kind) != "theme":
+                    continue
+                nid = "" if rec.node_id is None else str(rec.node_id)
+                if not nid:
+                    continue
+                name_en = "" if rec.name_en is None else str(rec.name_en)
+                name_zh = "" if rec.name_zh is None else str(rec.name_zh)
+                theme_nodes[nid] = (name_en, name_zh)
+
+        dates_by_node: dict[str, list[str]] = {nid: [] for nid in theme_nodes}
+        touched: set[str] = set()
+        if edges is not None and len(edges):
+            edge_view = edges[["src", "dst", "evidence_time"]]
+            for rec in edge_view.itertuples(index=False):
+                src = "" if rec.src is None else str(rec.src)
+                dst = "" if rec.dst is None else str(rec.dst)
+                raw = "" if rec.evidence_time is None else str(rec.evidence_time)
+                for nid in (src, dst):
+                    if nid in theme_nodes:
+                        touched.add(nid)
+                        dates_by_node[nid].append(raw)
+
+        themes = [
+            rp.ThemeEvidence(
+                node_id=nid,
+                name_en=theme_nodes[nid][0],
+                name_zh=theme_nodes[nid][1],
+                recorded_dates=tuple(dates_by_node[nid]),
+            )
+            for nid in touched
+        ]
+        ordered = rp.order_items(themes)
+        state_name = "empty" if not ordered else "ok"
+        payload = rp.to_payload(ordered, asof=asof, state=state_name)
+        payload["asof"] = asof
+        return payload
+    except Exception as exc:  # noqa: BLE001
+        log.warning("research_priority load failed (%s); page will show unavailable", exc)
+        payload = rp.to_payload((), asof=asof, state="unavailable")
+        payload["asof"] = asof
+        return payload
+
+
+def write_research_priority(ctx: dict[str, Any], root: Path) -> Path | None:
+    """Serialize ctx['research_priority'] next to theme_lanes.json. Never raises."""
+    try:
+        payload = ctx.get("research_priority") or {}
+        out = root / "site" / "basketdata" / "research_priority.json"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(
+            json.dumps(payload, separators=(",", ":"), ensure_ascii=False),
+            encoding="utf-8",
+        )
+        log.info("wrote %s", out)
+        return out
+    except Exception as exc:  # noqa: BLE001
+        log.warning("research_priority side-write failed (%s); skipped", exc)
+        return None
 
 
 def write_theme_lanes(ctx: dict[str, Any], root: Path) -> Path | None:
@@ -1519,6 +1613,7 @@ def main(argv: list[str] | None = None) -> int:
         write_page(out_path, html, encoding="utf-8")
         log.info("wrote %s", out_path)
         write_theme_lanes(ctx, root)  # never raises; page already written
+        write_research_priority(ctx, root)  # never raises; page already written
         return 0
     except Exception as exc:  # noqa: BLE001
         log.error("render failed: %s", exc, exc_info=True)

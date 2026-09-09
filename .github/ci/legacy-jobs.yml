@@ -2470,7 +2470,8 @@ jobs:
           tests/test_opex.py
           tests/test_opex_risk.py
           tests/test_seo_meta_rollout.py
-          tests/test_cycles_anchor_invariance.py -q
+          tests/test_cycles_anchor_invariance.py
+          tests/test_research_priority_ordering.py -q
       # house-law registry census (post-#2297 fix): run the statement-tape schema
       # guard itself against the committed registry, not just its pytest coverage.
       # It stays in THIS job — `config/house_law_checks.yml` names this job as its
@@ -6959,6 +6960,7 @@ jobs:
       - "engine/regime_snap.py"
       - "engine/regime_snap_veto.py"
       - "engine/regime_vector.py"
+      - "engine/research_priority_ordering.py"
       - "engine/residual_alpha.py"
       - "engine/risk_envelope.py"
       - "engine/risk_radar.py"
@@ -10889,6 +10891,7 @@ jobs:
       - "engine/regime_snap.py"
       - "engine/regime_snap_veto.py"
       - "engine/regime_vector.py"
+      - "engine/research_priority_ordering.py"
       - "engine/residual_alpha.py"
       - "engine/risk_envelope.py"
       - "engine/risk_radar.py"
@@ -10958,6 +10961,7 @@ jobs:
       - "engine/theme_discovery.py"
       - "engine/theme_emergence.py"
       - "engine/theme_fingerprint.py"
+      - "engine/theme_graph/store.py"
       - "engine/theme_revisions.py"
       - "engine/theme_scoring.py"
       - "engine/theme_tape.py"
@@ -12353,7 +12357,10 @@ jobs:
       - "engine/technicals.py"
       - "engine/theme_emergence.py"
       - "engine/theme_fingerprint.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/store.py"
       - "engine/theme_revisions.py"
+      - "engine/research_priority_ordering.py"
       - "engine/themes_heatmap.py"
       - "engine/vol_forecast.py"
       - "engine/vol_regime.py"
