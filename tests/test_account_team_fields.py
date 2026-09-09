@@ -7,10 +7,15 @@ transport's outgoing headers.
 Route-level cases call the ``account`` handler directly rather than TestClient:
 the ``billing-emails`` job that names this suite does not install ``httpx``, and
 widening that install line would split the shared venv with sibling billing jobs.
-A handler that returns a dict without raising is FastAPI's 200 path.
+A handler that returns a dict without raising is FastAPI's 200 path. This deviation
+from spec §2.5 is authorized by seat ruling R5 of the Round 2 rulings ("route tests
+stay direct calls (disclosed)"); what direct calls cannot reach — FastAPI's
+``Depends``/``Header`` resolution and the HTTP 200 status — is named in the PR's
+GAPS section rather than claimed as covered.
 """
 from __future__ import annotations
 
+import builtins
 import io
 import json
 import sys
@@ -51,11 +56,13 @@ class _Transport:
 
     def __init__(self, body=b"[]", error=None):
         self.calls: list = []
+        self.timeouts: list = []
         self.body = body
         self.error = error
 
     def urlopen(self, req, timeout=None):
         self.calls.append(req)
+        self.timeouts.append(timeout)
         if self.error is not None:
             raise self.error
         return _Resp(self.body)
@@ -322,3 +329,204 @@ def test_account_route_survives_team_read_raise(monkeypatch):
     assert body["email"] == USER["email"]
     assert body["tier"] == "essential"
     assert body["prefs"]["lang"] == "en"
+
+
+# --------------------------------------------------------------------------- #
+# 13. Seat ruling R2 — the fail-closed result is a FRESH object at every site.
+#     A shared module dict shallow-copied with dict() would alias one `items`
+#     list into every response for the life of the process, so one .append in a
+#     future consumer would poison every subsequent caller.
+# --------------------------------------------------------------------------- #
+def _unavailable_from(monkeypatch, site: str) -> dict:
+    """Produce an `unavailable` result through one of the three fail-closed sites."""
+    if site == "falsy-guard":  # lib/team_membership.py — the pre-flight guard
+        monkeypatch.setattr(urllib.request, "urlopen", lambda *a, **kw: None)
+        return team_membership.fetch_caller_teams(None, USER_ID, SUPABASE)
+    if site == "network-fault":  # the except arm
+        result, _t = _fetch(monkeypatch, error=OSError("supabase unreachable"))
+        return result
+    if site == "non-list-body":  # the shape guard after a successful read
+        result, _t = _fetch(monkeypatch, body=b'{"error":"not a list"}')
+        return result
+    raise AssertionError(f"unknown site {site!r}")
+
+
+@pytest.mark.parametrize("site", ["falsy-guard", "network-fault", "non-list-body"])
+def test_unavailable_is_a_fresh_object_at_every_site(monkeypatch, site):
+    first = _unavailable_from(monkeypatch, site)
+    assert first == {"status": "unavailable", "items": [], "truncated": False}
+
+    # Mutate the caller's copy exactly as a future consumer might.
+    first["items"].append({"team_id": "t-poison", "team_name": "Poison", "role": "owner"})
+    first["truncated"] = True
+    first["status"] = "ok"
+
+    second = _unavailable_from(monkeypatch, site)
+    assert second == {"status": "unavailable", "items": [], "truncated": False}
+    assert second is not first
+    assert second["items"] is not first["items"]
+
+
+def test_unavailable_sites_do_not_share_one_items_list(monkeypatch):
+    """Cross-site: the guard's list and the network arm's list are different objects."""
+    guard = _unavailable_from(monkeypatch, "falsy-guard")
+    network = _unavailable_from(monkeypatch, "network-fault")
+    assert guard["items"] is not network["items"]
+
+
+# --------------------------------------------------------------------------- #
+# 14. Seat ruling R3 — every shape PostgREST can return for the `teams(name)`
+#     embed is handled explicitly. In each case the MEMBERSHIP is kept (team_id
+#     and role are the fact /api/account answers) and the status stays "ok";
+#     only the display name degrades to "".
+# --------------------------------------------------------------------------- #
+def _row_with_embed(embed) -> dict:
+    row = {"team_id": "t-acme", "role": "owner"}
+    if embed is not _ABSENT:
+        row["teams"] = embed
+    return row
+
+
+_ABSENT = object()
+
+
+@pytest.mark.parametrize(
+    "embed,expected_name",
+    [
+        ({"name": "Acme"}, "Acme"),                       # to-one, current PostgREST
+        ([{"name": "Acme"}], "Acme"),                     # to-many / older to-one shape
+        ([{"name": "Acme"}, {"name": "Second"}], "Acme"),  # first dict wins
+        ([], ""),                                         # embed present but empty
+        (["Acme"], ""),                                   # list of non-dicts
+        (None, ""),                                       # JSON null embed
+        (_ABSENT, ""),                                    # key absent entirely
+        ("Acme", ""),                                     # bare scalar, not an object
+        ({"name": None}, ""),                             # null name inside the object
+        ({"name": 42}, ""),                               # non-string name
+        ({}, ""),                                         # object without a name key
+    ],
+    ids=["dict", "list-one", "list-many", "list-empty", "list-of-scalars", "null",
+         "absent", "scalar", "null-name", "int-name", "empty-dict"],
+)
+def test_team_name_embed_shapes_degrade_to_empty_name_not_a_dropped_row(
+    monkeypatch, embed, expected_name
+):
+    result, _transport = _fetch(monkeypatch, rows=[_row_with_embed(embed)])
+    assert result["status"] == "ok"          # a name we cannot read is not an outage
+    assert result["truncated"] is False
+    assert result["items"] == [
+        {"team_id": "t-acme", "team_name": expected_name, "role": "owner"},
+    ]
+    assert isinstance(result["items"][0]["team_name"], str)
+
+
+# --------------------------------------------------------------------------- #
+# 15. Seat ruling R3 — the own-row filter value is FULLY percent-encoded
+#     (quote(..., safe="")), so no character in a user id can leak out of the
+#     PostgREST filter value.
+# --------------------------------------------------------------------------- #
+def test_user_id_is_fully_percent_encoded_including_slash(monkeypatch):
+    hostile = "a/b?c&d=e#f"
+    _result, transport = _fetch(monkeypatch, user_id=hostile)
+    url = transport.calls[0].get_full_url()
+    assert f"user_id=eq.{urllib.parse.quote(hostile, safe='')}" in url
+    assert "user_id=eq.a%2Fb" in url        # the slash is escaped, not passed through
+    assert "a/b" not in url.split("user_id=eq.", 1)[1]
+
+
+# --------------------------------------------------------------------------- #
+# 16. Seat ruling R4 — the upstream call is bounded exactly like the auth path
+#     it sits beside: a 4-second timeout and a non-blocking semaphore that SHEDS
+#     to `unavailable` rather than queueing on the shared worker threadpool.
+# --------------------------------------------------------------------------- #
+def test_upstream_timeout_is_four_seconds_like_the_bounded_auth_call(monkeypatch):
+    _result, transport = _fetch(monkeypatch)
+    assert transport.timeouts == [4]
+    assert team_membership._TIMEOUT == 4
+
+
+def test_upstream_semaphore_sheds_instead_of_pinning_the_threadpool(monkeypatch):
+    called = []
+    monkeypatch.setattr(urllib.request, "urlopen", lambda *a, **kw: called.append(1))
+    held = 0
+    try:
+        while team_membership._UPSTREAM_SEM.acquire(blocking=False):
+            held += 1
+        result = team_membership.fetch_caller_teams(CALLER_TOKEN, USER_ID, SUPABASE)
+    finally:
+        for _ in range(held):
+            team_membership._UPSTREAM_SEM.release()
+    assert held == team_membership._UPSTREAM_LIMIT
+    assert result == {"status": "unavailable", "items": [], "truncated": False}
+    assert called == []  # shed BEFORE the network call, never queued behind it
+
+
+def test_semaphore_is_released_after_a_failing_read(monkeypatch):
+    """A shed path that leaked a permit would degrade the route permanently."""
+    before = _drain_and_restore()
+    _result, _t = _fetch(monkeypatch, error=OSError("supabase unreachable"))
+    assert _drain_and_restore() == before
+
+
+def _drain_and_restore() -> int:
+    held = 0
+    while team_membership._UPSTREAM_SEM.acquire(blocking=False):
+        held += 1
+    for _ in range(held):
+        team_membership._UPSTREAM_SEM.release()
+    return held
+
+
+# --------------------------------------------------------------------------- #
+# 17. Seat ruling R1 (the MAJOR) — the handler's two lazy imports live INSIDE
+#     the guard, so the degraded state main.py already models for
+#     app.account_prefs (its router mount is wrapped in try/except) degrades the
+#     `teams` field to unavailable instead of 500-ing GET /api/account.
+#
+#     builtins.__import__ is the only lever that reaches these: both modules are
+#     already in sys.modules (this file imports lib.team_membership at the top),
+#     so every in-handler import is a cache hit and patching the module object
+#     cannot simulate the module failing to import.
+# --------------------------------------------------------------------------- #
+def _block_import(monkeypatch, blocked: str):
+    real_import = builtins.__import__
+
+    def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
+        parts = tuple(fromlist or ())
+        if name == blocked:
+            raise ImportError(f"simulated: cannot import {blocked}")
+        if blocked == "lib.team_membership" and name == "lib" and "team_membership" in parts:
+            raise ImportError("simulated: cannot import name 'team_membership' from 'lib'")
+        return real_import(name, globals, locals, fromlist, level)
+
+    monkeypatch.setattr(builtins, "__import__", fake_import)
+
+
+@pytest.mark.parametrize("blocked", ["lib.team_membership", "app.account_prefs"])
+def test_account_route_survives_a_lazy_import_failure(monkeypatch, blocked):
+    reached = []
+
+    def fake_fetch(*_a, **_kw):
+        reached.append(1)
+        return {"status": "ok", "items": [], "truncated": False}
+
+    _patch_account_deps(monkeypatch, fake_fetch)
+    from app.main import account
+
+    _block_import(monkeypatch, blocked)
+    try:
+        body = account(user=USER, authorization=f"Bearer {CALLER_TOKEN}")
+    finally:
+        monkeypatch.undo()  # restore __import__ before pytest itself imports anything
+
+    assert body["teams"] == {"status": "unavailable", "items": [], "truncated": False}
+    if blocked == "lib.team_membership":
+        assert reached == []  # the read is never attempted when its module is gone
+    # The rest of the payload is untouched — an import fault degrades one field, not the route.
+    assert body["authenticated"] is True
+    assert body["email"] == USER["email"]
+    assert body["name"] == "Ada"
+    assert body["tier"] == "essential"
+    assert body["plan_label"] == "Essential"
+    assert body["prefs"] == {"lang": "en", "theme": "dark"}
+    assert body["plans_url"] == "/plans.html"

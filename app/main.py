@@ -1053,12 +1053,20 @@ def account(user: dict = Depends(require_user),
         ent = billing.read_entitlement(user_id)
     except Exception:  # noqa: BLE001
         pass
-    from lib import team_membership  # noqa: PLC0415
-    from app.account_prefs import _supabase  # noqa: PLC0415 — reuse, do not duplicate
-    token = team_membership.extract_bearer(authorization)
     try:
-        teams = team_membership.fetch_caller_teams(token, str(user.get("id") or ""), _supabase())
-    except Exception:  # noqa: BLE001 — a team-read fault must never 500 /api/account
+        # The two lazy imports live INSIDE this guard, not above it. app/main.py already
+        # models `app.account_prefs` failing to import — its router mount below is wrapped
+        # in try/except and only warns — and in that degraded state an unguarded import here
+        # would turn the whole account payload into a 500 over one optional field. Same
+        # convention as `from app import billing` four lines up.
+        from lib import team_membership  # noqa: PLC0415
+        from app.account_prefs import _supabase  # noqa: PLC0415 — reuse, do not duplicate
+        teams = team_membership.fetch_caller_teams(
+            team_membership.extract_bearer(authorization),
+            str(user.get("id") or ""),
+            _supabase(),
+        )
+    except Exception:  # noqa: BLE001 — import, network or raise: a team-read fault never 500s
         teams = {"status": "unavailable", "items": [], "truncated": False}
     if not isinstance(teams, dict) or teams.get("status") not in {"ok", "unavailable"}:
         teams = {"status": "unavailable", "items": [], "truncated": False}
