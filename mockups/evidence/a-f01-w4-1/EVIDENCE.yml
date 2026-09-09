@@ -3,4 +3,5 @@ changed_paths:
   - templates/_curve_panel.html.j2
   - templates/macro_rates_curves.html.j2
   - lib/macro_suite_view.py
+  - engine/market_os/macro_workspaces/rates_curves.py
 manifest: mockups/evidence/a-f01-w4-1/manifest.json
