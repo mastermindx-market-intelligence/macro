@@ -1019,6 +1019,36 @@
       "at": "2026-09-08T21:52:51.359335+00:00",
       "activated": false,
       "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=49908": {
+      "id": "wh-2026-09-08-modifying-the-scope-of-products-of-canada-subject-to-the-additional-duties-impos",
+      "at": "2026-09-09T00:15:04.192911+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=49904": {
+      "id": "wh-2026-09-08-excluding-certain-canadian-alcoholic-beverages-from-importation-into-the-united-",
+      "at": "2026-09-09T00:15:40.898289+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=49897": {
+      "id": "wh-2026-09-08-excluding-certain-canadian-products-from-importation-into-the-united-states-in-r",
+      "at": "2026-09-09T00:15:56.675145+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=49892": {
+      "id": "wh-2026-09-08-modifying-the-scope-of-products-of-canada-subject-to-the-additional-duties-impos",
+      "at": "2026-09-09T00:16:29.137719+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=49891": {
+      "id": "wh-2026-09-08-excluding-certain-canadian-products-from-importation-into-the-united-states-in-r",
+      "at": "2026-09-09T00:16:40.920955+00:00",
+      "activated": false,
+      "importance": 0
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."
