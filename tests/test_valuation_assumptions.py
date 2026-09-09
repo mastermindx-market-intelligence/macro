@@ -379,7 +379,10 @@ def _reveal_overrides_for_section(css_text: str):
     `[id="..."]`, `html #id.rv` and friends are the same override
     (round 6 ruling R2(a))."""
     bad = []
-    for block in re.findall(r"<style>(.*?)</style>", css_text, re.DOTALL | re.IGNORECASE):
+    # Jinja comments are not markup; the partial's own header comment says the
+    # words "<style> block", which would otherwise open a phantom block here.
+    body = re.sub(r"\{#.*?#\}", "", css_text, flags=re.DOTALL)
+    for block in re.findall(r"<style[^>]*>(.*?)</style>", body, re.DOTALL | re.IGNORECASE):
         for rule in re.finditer(r"([^{}]+)\{([^{}]*)\}", block):
             selector, decls = rule.group(1), rule.group(2)
             if "valuation-assumptions" not in selector:
