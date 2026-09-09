@@ -19,18 +19,18 @@
         "asof_present": false,
         "by_viewport": {
           "desktop": {
-            "document_height_px": 1340,
+            "document_height_px": 1422,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 1980,
+            "document_height_px": 2072,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           }
         },
         "console_error_count": 0,
-        "document_height_px": 1340,
+        "document_height_px": 1422,
         "duplicate_heading_texts": [],
         "elements_wider_than_viewport": 0,
         "heading_counts": {
@@ -50,37 +50,37 @@
           "viewport": "desktop"
         },
         "panel_count": 4,
-        "payload_bytes_total": 520728,
+        "payload_bytes_total": 68192,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
-        "request_count": 10,
+        "request_count": 3,
         "screenshot_completion": 1.0,
-        "section_count": 5,
+        "section_count": 0,
         "source_present": true,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 332
+        "visible_word_count": 297
       },
-      "page_id": "evidence_valuation-assumptions.html",
-      "route": "/evidence/valuation-assumptions.html"
+      "page_id": "stocks_AAPL.html",
+      "route": "/stocks/AAPL.html"
     },
     {
       "metrics": {
         "asof_present": false,
         "by_viewport": {
           "desktop": {
-            "document_height_px": 1370,
+            "document_height_px": 1532,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 2047,
+            "document_height_px": 2276,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           }
         },
         "console_error_count": 0,
-        "document_height_px": 1370,
+        "document_height_px": 1532,
         "duplicate_heading_texts": [],
         "elements_wider_than_viewport": 0,
         "heading_counts": {
@@ -100,16 +100,16 @@
           "viewport": "desktop"
         },
         "panel_count": 4,
-        "payload_bytes_total": 40320,
+        "payload_bytes_total": 60761,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 3,
         "screenshot_completion": 1.0,
-        "section_count": 5,
+        "section_count": 0,
         "source_present": true,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 347
+        "visible_word_count": 353
       },
       "page_id": "evidence_valuation-assumptions-no-js.html",
       "route": "/evidence/valuation-assumptions-no-js.html"
@@ -119,23 +119,25 @@
         "asof_present": false,
         "by_viewport": {
           "desktop": {
-            "document_height_px": 900,
+            "document_height_px": 1035,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 947,
+            "document_height_px": 1417,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           }
         },
         "console_error_count": 0,
-        "document_height_px": 900,
-        "duplicate_heading_texts": [],
+        "document_height_px": 1035,
+        "duplicate_heading_texts": [
+          "try your own assumptions"
+        ],
         "elements_wider_than_viewport": 0,
         "heading_counts": {
           "h1": 0,
-          "h2": 1,
+          "h2": 2,
           "h3": 0,
           "h4": 0,
           "h5": 0,
@@ -150,16 +152,16 @@
           "viewport": "desktop"
         },
         "panel_count": 0,
-        "payload_bytes_total": 503410,
+        "payload_bytes_total": 58169,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
-        "request_count": 10,
+        "request_count": 3,
         "screenshot_completion": 1.0,
-        "section_count": 6,
+        "section_count": 0,
         "source_present": false,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 210
+        "visible_word_count": 246
       },
       "page_id": "evidence_valuation-assumptions-degraded.html",
       "route": "/evidence/valuation-assumptions-degraded.html"
@@ -170,7 +172,7 @@
     "base_url": null,
     "kind": "site_dir",
     "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-cl-f07-2-r4-59c309fb5413f021",
-    "resolved_sha_or_none": "590e2e99e100f8bc7ceee1b48a195d5ea5f2d64e",
+    "resolved_sha_or_none": "54b219713653da7e958c6c902019e86f10a86759",
     "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-cl-f07-2-r4-59c309fb5413f021 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
     "site_dir": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mo-cl-f07-2-r4-59c309fb5413f021/.evidence_site"
   },
