@@ -1165,6 +1165,7 @@ jobs:
       # B1A wiring 2026-08-24: this gate:code job owns the dossier contract and now runs the security_state.v1 suite (contract-delta named it unrun).
       - "contracts/market_os/security_state.v1.schema.json"
       - "engine/security_state.py"
+      - "scripts/security_state_producer.py"
       - "lib/evidence_foundation.py"
       - "lib/dataos/identity.py"
       - "contracts/evidence_foundation/vocabulary.v1.json"
@@ -1912,6 +1913,7 @@ jobs:
       - "research/STOCK_PERSONALITY_MASTERPLAN_BY_FABLE.md"
       - "research/US_BOARD_MEASUREMENT.md"
       - "scripts/build_stock_library.py"
+      - "scripts/security_state_producer.py"
       # Import-closure entry: build_stock_library reuses
       # scripts/snapshot_shadow_book.rows_from_board for the shadow-book
       # snapshot (one percentile definition), so exclusive scope must name it.
@@ -3532,6 +3534,7 @@ jobs:
       - "scripts/build_sp500_heatmap.py"
       - "scripts/build_state_of_themes.py"
       - "scripts/build_stock_library.py"
+      - "scripts/security_state_producer.py"
       # Import-closure entry: build_stock_library reuses
       # scripts/snapshot_shadow_book.rows_from_board for the shadow-book
       # snapshot (one percentile definition), so exclusive scope must name it.
@@ -7090,6 +7093,7 @@ jobs:
       - "scripts/build_sp500_heatmap.py"
       - "scripts/build_state_of_themes.py"
       - "scripts/build_stock_library.py"
+      - "scripts/security_state_producer.py"
       # Import-closure entry: build_stock_library reuses
       # scripts/snapshot_shadow_book.rows_from_board for the shadow-book
       # snapshot (one percentile definition), so exclusive scope must name it.
@@ -7536,6 +7540,7 @@ jobs:
       - "research/STOCK_PERSONALITY_MASTERPLAN_BY_FABLE.md"
       - "research/US_BOARD_MEASUREMENT.md"
       - "scripts/build_stock_library.py"
+      - "scripts/security_state_producer.py"
       # Import-closure entry: build_stock_library reuses
       # scripts/snapshot_shadow_book.rows_from_board for the shadow-book
       # snapshot (one percentile definition), so exclusive scope must name it.
@@ -9328,6 +9333,7 @@ jobs:
       - "research/STOCK_PERSONALITY_MASTERPLAN_BY_FABLE.md"
       - "research/US_BOARD_MEASUREMENT.md"
       - "scripts/build_stock_library.py"
+      - "scripts/security_state_producer.py"
       # Import-closure entry: build_stock_library reuses
       # scripts/snapshot_shadow_book.rows_from_board for the shadow-book
       # snapshot (one percentile definition), so exclusive scope must name it.
@@ -11050,6 +11056,7 @@ jobs:
       - "scripts/build_state_of_themes.py"
       - "scripts/build_stock_board_v2.py"
       - "scripts/build_stock_library.py"
+      - "scripts/security_state_producer.py"
       # Import-closure entry: build_stock_library reuses
       # scripts/snapshot_shadow_book.rows_from_board for the shadow-book
       # snapshot (one percentile definition), so exclusive scope must name it.
@@ -12698,6 +12705,7 @@ jobs:
       - "research/STOCK_PERSONALITY_MASTERPLAN_BY_FABLE.md"
       - "research/US_BOARD_MEASUREMENT.md"
       - "scripts/build_stock_library.py"
+      - "scripts/security_state_producer.py"
       # Import-closure entry: build_stock_library reuses
       # scripts/snapshot_shadow_book.rows_from_board for the shadow-book
       # snapshot (one percentile definition), so exclusive scope must name it.
