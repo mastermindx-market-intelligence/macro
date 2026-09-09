@@ -3,8 +3,15 @@
     three free parameters V1 hard-codes. Nothing is saved or sent.
     Governed CSS lives in this partial's own <style> block -- never authored
     as a runtime JS stylesheet. Whole file gated on valuation_assumptions
-    (CSS included). -#}
+    (CSS included). too_thin_base renders ONLY the single-line copy. -#}
 {% if valuation_assumptions %}
+{% set va = valuation_assumptions %}
+{% if va.too_thin_base %}
+<style>
+.va-floor{margin:8px 0 12px;font-size:13px;line-height:1.55;color:var(--muted);}
+</style>
+<p class="va-floor">{{ t('Not enough reported margin to run this.', '披露的利润率基数不足，无法进行试算。') }}</p>
+{% else %}
 <style>
 .va-lede{margin:2px 0 16px;font-size:13px;line-height:1.55;color:var(--muted);max-width:62ch;}
 .va-ctls{display:flex;flex-direction:column;gap:14px;margin:4px 0 18px;}
@@ -13,7 +20,6 @@
 .va-ctl .va-readout{font-variant-numeric:tabular-nums;font-weight:700;color:var(--link);font-size:12.5px;text-align:right;}
 .va-ctl .va-unit{font-size:11px;font-weight:500;color:var(--muted);text-align:right;}
 .va-ctl input[type=range]{grid-column:1 / -1;width:100%;accent-color:var(--link);height:22px;margin:0;background:transparent;}
-[data-theme="light"] .va-ctl input[type=range]{accent-color:var(--link);}
 .va-out{margin:4px 0 14px;padding:14px 16px;background:color-mix(in srgb,var(--panel2) 55%,transparent);border:1px solid var(--hair);border-radius:var(--r-card,13px);}
 [data-theme="light"] .va-out{background:var(--panel);border:1px solid var(--hair);box-shadow:0 6px 18px -12px color-mix(in srgb,var(--text) 18%,transparent);}
 .va-out-k{font-size:10.5px;font-weight:650;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
@@ -26,7 +32,6 @@
 .va-presets .va-preset-on{border-color:var(--link);color:var(--link);}
 .va-nojs{margin:0 0 12px;font-size:12px;line-height:1.5;color:var(--muted);}
 .va-note{margin:0 0 6px;font-size:11.5px;line-height:1.5;color:var(--muted);}
-.va-floor{margin:8px 0 12px;font-size:13px;line-height:1.55;color:var(--muted);}
 .va-is-null .va-out-num,.va-is-null .va-bridge{display:none;}
 .va-is-null .va-out-null{display:block;}
 @media(max-width:390px){
@@ -35,20 +40,14 @@
   .va-out-num{font-size:22px;}
 }
 </style>
-{% set va = valuation_assumptions %}
 {% set inp = va.inputs %}
 {% set sd = va.server_default %}
-{% set nmb = inp.net_margin_base %}
-{% set floor = va.margin_base_floor %}
 <section class="mod rv" id="valuation-assumptions" data-valuation-assumptions="v1">
   <div class="mod-hd">
     <h2>{{ t('Try your own assumptions', '试试你自己的假设') }}</h2>
-    <span class="hint">{{ t('same reported figures · FY' ~ va.fy, '同一批披露数据 · ' ~ va.fy ~ '财年') }}</span>
+    <span class="hint"><span class="l-en">same reported figures · FY{{ va.fy }}</span><span class="l-zh">同一批披露数据 · {{ va.fy }}财年</span></span>
   </div>
   <p class="va-lede">{{ t('Move the three inputs below. The per-share number updates as you move them. Nothing you set here is saved or sent anywhere.', '调整下面三项输入，每股数值会随之更新。你在这里设置的内容不会被保存，也不会被发送到任何地方。') }}</p>
-  {% if nmb is not none and (nmb | abs) < floor %}
-  <p class="va-floor">{{ t('Not enough reported margin to run this.', '披露的利润率基数不足，无法进行试算。') }}</p>
-  {% else %}
   <script type="application/json" id="vs-assumption-inputs">{{ va | tojson }}</script>
   <div class="va-ctls">
     {% for c in va.controls %}
@@ -80,7 +79,7 @@
     <div class="va-out-k">{{ t('Per share, on your assumptions', '按你的假设计算的每股价值') }}</div>
     <div class="va-out-num num" id="va-out-num">${{ '%.2f'|format(sd.per_share) }}</div>
     <div class="va-out-null" id="va-out-null" hidden>{{ t('Margins are too thin at this setting to produce a number.', '在该设置下利润率过低，无法算出数值。') }}</div>
-    <p class="va-bridge" id="va-bridge">{{ t('Base case is $' ~ ('%.2f'|format(sd.per_share)) ~ '. Your assumptions give $' ~ ('%.2f'|format(sd.per_share)) ~ ' (+0.0%).', '基准情景为 $' ~ ('%.2f'|format(sd.per_share)) ~ '，你的假设得出 $' ~ ('%.2f'|format(sd.per_share)) ~ '（+0.0%）。') }}</p>
+    <p class="va-bridge" id="va-bridge"><span class="l-en">Base case is ${{ '%.2f'|format(sd.per_share) }}. Your assumptions give ${{ '%.2f'|format(sd.per_share) }} (+0.0%).</span><span class="l-zh">基准情景为 ${{ '%.2f'|format(sd.per_share) }}，你的假设得出 ${{ '%.2f'|format(sd.per_share) }}（+0.0%）。</span></p>
   </div>
   <div class="va-presets" id="va-presets">
     <button type="button" class="gbtn gbtn-sm va-preset" data-va-preset="cautious">{{ t('Cautious', '保守') }}</button>
@@ -89,7 +88,7 @@
     <button type="button" class="gbtn gbtn-sm" id="va-reset">{{ t('Reset to base', '恢复基准') }}</button>
   </div>
   <p class="va-nojs" id="va-nojs">{{ t('Interactive controls need JavaScript. The three cases above are computed on the server and always shown.', '交互控件需要启用 JavaScript。上方三个情景由服务器计算，始终显示。') }}</p>
-  <p class="va-note">{{ t('Applied to FY' ~ va.fy ~ ' as disclosed to the SEC — revenue, net income and share count come straight from the disclosure, and are not editable here.', '套用在按 SEC 披露的' ~ va.fy ~ '财年数据上——营业收入、净利润与股数均直接取自披露文件，此处不可修改。') }}</p>
+  <p class="va-note"><span class="l-en">Applied to FY{{ va.fy }} as disclosed to the SEC — revenue, net income and share count come straight from the disclosure, and are not editable here.</span><span class="l-zh">套用在按 SEC 披露的{{ va.fy }}财年数据上——营业收入、净利润与股数均直接取自披露文件，此处不可修改。</span></p>
   <p class="va-note">{{ t('Sales growth −10% to +20%; margin change −3.0 to +3.0 percentage points; earnings multiple 8× to 35×.', '销售增长 −10% 至 +20%；利润率变化 −3.0 至 +3.0 个百分点；市盈率倍数 8 倍至 35 倍。') }}</p>
   <script>
 (function (root) {
@@ -138,11 +137,10 @@
   var readM = document.getElementById("va-read-margin_delta_pp");
   var readX = document.getElementById("va-read-earnings_multiple");
   var nojs = document.getElementById("va-nojs");
-  if (nojs) nojs.hidden = true;
   if (!elG || !elM || !elX || !outNum) return;
+  if (nojs) nojs.hidden = true;
 
   var basePs = Number(sd.per_share);
-  var zh = (document.documentElement.getAttribute("data-lang") || "") === "zh";
 
   function signedPct(v, digits) {
     var n = Number(v);
@@ -174,6 +172,7 @@
     return "";
   }
   function paint() {
+    var liveLang = document.documentElement.getAttribute("data-lang") || "";
     var g = Number(elG.value);
     var m = Number(elM.value);
     var x = Number(elX.value);
@@ -195,10 +194,13 @@
       var pct = ((y - basePs) / basePs) * 100;
       var pctStr = signedPct(pct, 1);
       var bStr = Number(basePs).toFixed(2);
-      if (zh) {
-        bridge.textContent = "基准情景为 $" + bStr + "，你的假设得出 $" + yStr + "（" + pctStr + "%）。";
-      } else {
-        bridge.textContent = "Base case is $" + bStr + ". Your assumptions give $" + yStr + " (" + pctStr + "%).";
+      var enEl = bridge.querySelector(".l-en");
+      var zhEl = bridge.querySelector(".l-zh");
+      if (enEl) {
+        enEl.textContent = "Base case is $" + bStr + ". Your assumptions give $" + yStr + " (" + pctStr + "%).";
+      }
+      if (zhEl) {
+        zhEl.textContent = "基准情景为 $" + bStr + "，你的假设得出 $" + yStr + "（" + pctStr + "%）。";
       }
     }
   }
@@ -226,11 +228,11 @@
       applyTriple(sd.sales_growth_pct, sd.margin_delta_pp, sd.earnings_multiple);
     });
   }
-  document.documentElement.addEventListener("langchange", paint);
+  document.addEventListener("langchange", paint);
   paint();
 })(typeof globalThis !== "undefined" ? globalThis : this);
   </script>
-  {% endif %}
   <div class="mod-ft">{{ t('Research display only — not advice.', '仅供研究展示，非投资建议。') }}</div>
 </section>
+{% endif %}
 {% endif %}

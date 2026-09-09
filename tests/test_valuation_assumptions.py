@@ -17,15 +17,16 @@ from tests.test_valuation_scenario import BANNED_VOCAB, FIXTURE_ROW, _rows
 
 ROOT = Path(__file__).resolve().parent.parent
 
-_V1_BASE_REFS = (
-    "origin/claude/mo-b-b1-b-f07-1",
-    "claude/mo-b-b1-b-f07-1",
-)
-
 # Render of templates/_valuation_scenario.html.j2 against the V1 AAPL-shaped
 # fixture with t(en, zh) = en and deep_ids=[]. Committed so a V1 template
 # edit that this packet must not make fails T9 even if git is unavailable.
 GOLDEN_V1_SHA256 = "a8fef1b18bce0246bc884ef8c18c84a348cacb7f7ec1cdc42ed3dd3abf14493f"
+
+# sha256 of V1's two files at this head. Fleet law: tests never read git history.
+GOLDEN_V1_FILE_SHA256 = {
+    "engine/valuation_scenario.py": "66340a2d03c171239547fea288b11b4bd5cdf698736d5f4bee6a019c73510d27",
+    "templates/_valuation_scenario.html.j2": "6571613442a840588c19cb208a36f2aaf80eb3b0e85c74e3e9fdf1410353ceac",
+}
 
 
 def _v1_blob(**overrides):
@@ -44,18 +45,6 @@ def _render_v1(blob, *, t=None):
     env.globals["t"] = t or (lambda en, zh: en)
     tmpl = env.from_string("{% include '_valuation_scenario.html.j2' %}")
     return tmpl.render(valuation_scenario=blob, deep_ids=[])
-
-
-def _git_show(rel: str) -> bytes:
-    for ref in _V1_BASE_REFS:
-        proc = subprocess.run(
-            ["git", "show", f"{ref}:{rel}"],
-            cwd=ROOT,
-            capture_output=True,
-        )
-        if proc.returncode == 0:
-            return proc.stdout
-    raise AssertionError(f"could not git show {rel} from stacked parent {_V1_BASE_REFS}")
 
 
 def _extract_js(html: str) -> str:
@@ -90,14 +79,23 @@ def test_controls_blob_default_equals_v1_base_card():
     assert blob is not None
     by_key = {s["key"]: s for s in v1["scenarios"]}
     base = by_key["base"]
-    assert blob["server_default"]["per_share"] == base["per_share"]
-    assert blob["server_default"]["sales_growth_pct"] == 3
-    assert blob["server_default"]["margin_delta_pp"] == 0
-    assert blob["server_default"]["earnings_multiple"] == 18
-    defaults = {c["key"]: c["default"] for c in blob["controls"]}
-    assert defaults["sales_growth_pct"] == 3
-    assert defaults["margin_delta_pp"] == 0
-    assert defaults["earnings_multiple"] == 18
+    defaults = {c["key"]: c["default"] for c in va.CONTROLS}
+    sd = blob["server_default"]
+    assert sd["sales_growth_pct"] == defaults["sales_growth_pct"]
+    assert sd["margin_delta_pp"] == defaults["margin_delta_pp"]
+    assert sd["earnings_multiple"] == defaults["earnings_multiple"]
+    expected_ps = va.per_share_at(
+        blob["inputs"]["net_income"],
+        blob["inputs"]["revenue"],
+        blob["inputs"]["shares"],
+        defaults["sales_growth_pct"],
+        defaults["margin_delta_pp"],
+        defaults["earnings_multiple"],
+    )
+    assert sd["per_share"] == expected_ps
+    assert sd["per_share"] == base["per_share"]
+    blob_defaults = {c["key"]: c["default"] for c in blob["controls"]}
+    assert blob_defaults == defaults
 
 
 def test_controls_blob_is_none_when_v1_is_not_usable():
@@ -109,21 +107,32 @@ def test_controls_blob_is_none_when_v1_is_not_usable():
     assert va.controls_blob(_v1_blob(shares=0)) is None
     revenue = 1.0e11
     tiny_ni = revenue * 0.001  # 0.1% margin, under the 1% floor
-    assert va.controls_blob(_v1_blob(ni=tiny_ni, revenue=revenue)) is None
+    thin = va.controls_blob(_v1_blob(ni=tiny_ni, revenue=revenue))
+    assert thin is not None
+    assert thin.get("too_thin_base") is True
+    assert "controls" not in thin
+    assert "server_default" not in thin
+    assert "presets" not in thin
 
 
 def test_margin_too_thin_and_nonpositive_never_render_a_number():
     revenue = 1.0e11
     ni_1_2_pct = revenue * 0.012
     assert va.per_share_at(ni_1_2_pct, revenue, FIXTURE_ROW["shares"], 3, -1.5, 18) is None
-    v1 = _v1_blob(ni=ni_1_2_pct, revenue=revenue)
-    # Base (m_pp=0) is still computable at 1.2%, so the panel ships.
-    blob = va.controls_blob(v1)
-    assert blob is not None
-    html = _render_assumptions(blob, t=lambda en, zh: f"{en}|{zh}")
+    tiny_ni = revenue * 0.001
+    thin = va.controls_blob(_v1_blob(ni=tiny_ni, revenue=revenue))
+    assert thin is not None and thin.get("too_thin_base") is True
+    html = _render_assumptions(thin, t=lambda en, zh: f"{en}|{zh}")
+    assert "Not enough reported margin to run this.|披露的利润率基数不足，无法进行试算。" in html
+    assert "Try your own assumptions" not in html
+    assert "Move the three inputs" not in html
+    assert "Research display only" not in html
+    assert "<h2" not in html
+    assert "va-lede" not in html
+    assert "va-ctls" not in html
+    assert "va-bridge" not in html
+    assert "mod-ft" not in html
     assert "$-" not in html
-    assert "Margins are too thin at this setting to produce a number." in html
-    assert "在该设置下利润率过低，无法算出数值。" in html
 
 
 def test_js_and_python_agree_stringwise_on_a_dense_grid():
@@ -225,13 +234,28 @@ def test_script_injects_no_style_and_stores_nothing():
 def test_bilingual_parity_and_no_zh_in_attributes():
     partial = ROOT / "templates" / "_valuation_assumptions.html.j2"
     text = partial.read_text(encoding="utf-8")
+    n_plain = 0
     for m in re.finditer(r"t\(\s*'([^']*)'\s*,\s*'([^']*)'\s*\)", text):
+        n_plain += 1
         en, zh = m.group(1), m.group(2)
         assert zh.strip() != "", f"empty ZH for en={en!r}"
+    assert n_plain >= 1
+    # Covers t() calls whose arguments concatenate with ~ (the three former
+    # slots were refactored to explicit l-en/l-zh twins; this still fails if
+    # a concatenated t() returns with an empty ZH literal).
+    for m in re.finditer(
+        r"t\(\s*'([^']*)'\s*~.*?,\s*'([^']*)'",
+        text,
+        re.DOTALL,
+    ):
+        assert m.group(2).strip() != "", f"empty ZH in concatenated t() en={m.group(1)!r}"
     for m in re.finditer(r'title="[^"]*[一-鿿][^"]*"', text):
         raise AssertionError(f"ZH text found in a title= attribute: {m.group(0)!r}")
     for m in re.finditer(r'aria-label="[^"]*[一-鿿][^"]*"', text):
         raise AssertionError(f"ZH text found in an aria-label= attribute: {m.group(0)!r}")
+    assert "同一批披露数据" in text
+    assert "套用在按 SEC 披露的" in text
+    assert "基准情景为 $" in text
 
 
 def test_v1_panel_output_is_byte_identical():
@@ -239,10 +263,25 @@ def test_v1_panel_output_is_byte_identical():
     html = _render_v1(blob)
     assert hashlib.sha256(html.encode("utf-8")).hexdigest() == GOLDEN_V1_SHA256
     assert html == GOLDEN_V1_HTML
-    for rel in ("engine/valuation_scenario.py", "templates/_valuation_scenario.html.j2"):
-        shown = _git_show(rel)
-        on_disk = (ROOT / rel).read_bytes()
-        assert shown == on_disk, f"{rel} changed versus stacked parent"
+    for rel, pin in GOLDEN_V1_FILE_SHA256.items():
+        digest = hashlib.sha256((ROOT / rel).read_bytes()).hexdigest()
+        assert digest == pin, rel
+
+
+def test_langchange_binds_on_document_and_bridge_keeps_twins():
+    text = (ROOT / "templates" / "_valuation_assumptions.html.j2").read_text(encoding="utf-8")
+    assert 'document.addEventListener("langchange"' in text
+    assert "documentElement.addEventListener" not in text
+    blob = va.controls_blob(_v1_blob())
+    html = _render_assumptions(blob)
+    m = re.search(r'id="va-bridge"[^>]*>(.*?)</p>', html, re.DOTALL)
+    assert m, "bridge markup missing"
+    inner = m.group(1)
+    assert 'class="l-en"' in inner
+    assert 'class="l-zh"' in inner
+    js = _extract_js(html)
+    assert "bridge.textContent" not in js
+    assert "getAttribute(\"data-lang\")" in js
 
 
 def test_no_js_default_state_is_correct_and_complete():

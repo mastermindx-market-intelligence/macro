@@ -29,7 +29,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from engine import ticker_alerts  # noqa: E402
 from engine import valuation_scenario as _valuation_scenario  # noqa: E402 — FROZEN SPEC B-F07-1
-from engine import valuation_assumptions as _valuation_assumptions  # noqa: E402 — FROZEN SPEC B-F07-2
 from engine.stock_fundamentals import _load_statements as _vs_load_statements  # noqa: E402
 from engine import signal_gate  # noqa: E402 — owner's confluence T1->T4 cascade (layered ON main's gate)
 from engine.conditions import sector_macro_beta  # noqa: E402
@@ -3628,9 +3627,19 @@ def main() -> int:
                 )
                 if _vs_blob:
                     rec["valuation_scenario"] = {"v1": _vs_blob}
-                    rec["valuation_scenario"]["controls"] = _valuation_assumptions.controls_blob(_vs_blob)
             except Exception as e:  # noqa: BLE001 — additive, never fatal
                 log.warning("valuation_scenario failed for %s: %s", ticker, e)
+        # B-F07-2: sibling of the V1 block, not inside it. Lazy import so this
+        # hunk does not sit in #6905's import region.
+        _vs_v1 = (rec.get("valuation_scenario") or {}).get("v1")
+        if _vs_v1 is not None:
+            try:
+                from engine import valuation_assumptions as _valuation_assumptions
+                rec.setdefault("valuation_scenario", {})["controls"] = (
+                    _valuation_assumptions.controls_blob(_vs_v1)
+                )
+            except Exception as e:  # noqa: BLE001 — additive, never fatal
+                log.warning("valuation_assumptions failed for %s: %s", ticker, e)
         # ---- richer OHLCV technical snapshot + single-stock volatility black hole ------
         # Supersede the thin close-only snapshot with the research-vetted read (ATR/ADX/
         # squeeze/volume where full OHLCV exists; momentum / 52w-proximity / realized-vol

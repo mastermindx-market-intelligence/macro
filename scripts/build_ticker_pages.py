@@ -2459,13 +2459,6 @@ def _valuation_scenario_view(blob: dict | None) -> dict | None:
     return (blob.get("valuation_scenario") or {}).get("v1")
 
 
-def _valuation_assumptions_view(blob: dict | None) -> dict | None:
-    """Passthrough read of valuation_scenario_controls.v1 written next to V1."""
-    if not blob:
-        return None
-    return (blob.get("valuation_scenario") or {}).get("controls")
-
-
 _VS_SCENARIO_TITLES_ZH = {"cautious": "保守", "base": "基准", "upbeat": "乐观"}
 
 
@@ -2589,6 +2582,16 @@ def _build_valuation(blob: dict | None) -> list | None:
             "cheap": cheap,
         })
     return rows or None
+
+
+def _valuation_assumptions_view(blob: dict | None) -> dict | None:
+    """Passthrough read of valuation_scenario_controls.v1 written next to V1.
+
+    Lives after _build_valuation, outside the #6905 V1 helper cluster.
+    """
+    if not blob:
+        return None
+    return (blob.get("valuation_scenario") or {}).get("controls")
 
 
 def _build_earnings(blob: dict | None) -> dict | None:
@@ -4455,7 +4458,6 @@ def build_page_context(
     financials = _build_financials(blob)
     valuation = _build_valuation(blob)
     valuation_scenario = _valuation_scenario_view(blob)
-    valuation_assumptions = _valuation_assumptions_view(blob)
     earnings = _build_earnings(blob)
     technicals = _build_technicals(ticker, blob, tech_screener)
     options = _build_options(blob, gex_v1, flow)
@@ -4521,6 +4523,8 @@ def build_page_context(
         index_chips.append({"en": "Russell 2000", "zh": "罗素2000"})
     hero["index_chips"] = index_chips or None
 
+    valuation_assumptions = _valuation_assumptions_view(blob)
+
     return {
         "meta": meta,
         "hero": hero,
@@ -4535,7 +4539,6 @@ def build_page_context(
         "financials": financials,
         "valuation": valuation,
         "valuation_scenario": valuation_scenario,
-        "valuation_assumptions": valuation_assumptions,
         "earnings": earnings,
         "technicals": technicals,
         "options": options,
@@ -4552,6 +4555,7 @@ def build_page_context(
         # Decision Spine. None for every listing whose blob carries no
         # security_state block — those pages render exactly as before.
         "security_state": build_security_state(blob),
+        "valuation_assumptions": valuation_assumptions,
         "news": news_section,
         "placeholders": {
             "analyst_targets": True,

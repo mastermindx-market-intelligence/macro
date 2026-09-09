@@ -10,27 +10,27 @@ Range derivation (frozen spec section 2.3, verbatim): each range is the V1
 frozen triple's own span, widened to a round number that still contains
 every V1 preset with headroom. V1 spans growth [-2, 7] -> [-10, 20];
 margin [-1.5, 1.5] -> [-3.0, 3.0]; multiple [14, 22] -> [8, 35]. Defaults
-are exactly V1's base case (3, 0, 18), so the panel's first paint is
-numerically identical to the Base card.
+are exactly V1's base case, read from CONTROLS (never re-typed as literals
+next to the derived per_share), so the panel's first paint is numerically
+identical to the Base card under the same round2 rule.
 
 Rounding: do not use Python round() (banker's rounding; JS has no equivalent).
 round2(v) = floor(v * 100 + 0.5) / 100 for v > 0. The panel never paints
-v <= 0.
+v <= 0. server_default.per_share is computed through the same rule.
 
-SCENARIOS and MISSING_LABELS are imported read-only from
-engine.valuation_scenario so presets cannot drift from V1's frozen triples
-and a future null path can reuse V1 diction without re-typing.
+SCENARIOS is imported read-only from engine.valuation_scenario so presets
+cannot drift from V1's frozen triples.
 """
 from __future__ import annotations
 
 import math
 
-from engine.valuation_scenario import MISSING_LABELS, SCENARIOS
+from engine.valuation_scenario import SCENARIOS
 
 # Each range is the V1 frozen triple's own span, widened to a round number
 # that still contains every V1 preset with headroom. V1 spans growth
 # [-2, 7] -> [-10, 20]; margin [-1.5, 1.5] -> [-3.0, 3.0]; multiple
-# [14, 22] -> [8, 35]. Defaults are exactly V1's base case (3, 0, 18).
+# [14, 22] -> [8, 35]. Defaults are exactly V1's base case.
 CONTROLS = (
     {"key": "sales_growth_pct", "min": -10, "max": 20, "step": 0.5, "default": 3},
     {"key": "margin_delta_pp", "min": -3.0, "max": 3.0, "step": 0.1, "default": 0},
@@ -38,11 +38,6 @@ CONTROLS = (
 )
 
 _MARGIN_BASE_FLOOR = 0.01
-
-# Imported read-only; kept bound so a future null path can reuse V1 diction
-# without re-typing. The sandbox panel's too-thin sentence is the B-F07-2
-# verbatim copy, not MISSING_LABELS["margin_too_thin"].
-_V1_MISSING_LABELS = MISSING_LABELS
 
 
 def round2(v):
@@ -106,14 +101,20 @@ def _num(v):
     return f
 
 
+def _control_defaults():
+    return {c["key"]: c["default"] for c in CONTROLS}
+
+
 def controls_blob(v1_blob):
     """Build valuation_scenario_controls.v1 from a V1 compute() blob, or None.
 
     Returns None when the V1 blob is missing, when net income is missing or
     not positive, when revenue is missing, when shares are missing or zero,
-    when the margin base is under the 1% floor, or when V1's base scenario
-    is not computable. Every key in the frozen contract is present or the
-    whole blob is None. No key is ever 0 standing in for missing.
+    or when V1's base scenario is not computable. When |net_margin_base| is
+    under the 1% floor, returns a blob with too_thin_base True and no
+    controls (the panel then renders only the single-line copy). Every key
+    in the frozen contract is present on the interactive blob, or the whole
+    blob is None. No key is ever 0 standing in for missing.
     """
     if not v1_blob or not isinstance(v1_blob, dict):
         return None
@@ -130,8 +131,30 @@ def controls_blob(v1_blob):
     if revenue == 0:
         return None
     net_margin_base = ni / revenue
-    if abs(net_margin_base) < _MARGIN_BASE_FLOOR:
+
+    ticker = v1_blob.get("ticker") or ""
+    fy = v1_blob.get("fy")
+    period_end = v1_blob.get("period_end")
+    if fy is None or not period_end:
         return None
+
+    if abs(net_margin_base) < _MARGIN_BASE_FLOOR:
+        return {
+            "schema": "valuation_scenario_controls.v1",
+            "ticker": ticker,
+            "tier": "research_display_only",
+            "fy": fy,
+            "period_end": period_end,
+            "source": "SEC filings",
+            "too_thin_base": True,
+            "inputs": {
+                "net_income": ni,
+                "revenue": revenue,
+                "shares": shares,
+                "net_margin_base": net_margin_base,
+            },
+            "margin_base_floor": _MARGIN_BASE_FLOOR,
+        }
 
     scenarios = v1_blob.get("scenarios") or []
     by_key = {s.get("key"): s for s in scenarios if isinstance(s, dict)}
@@ -142,19 +165,21 @@ def controls_blob(v1_blob):
     if not base_sc.get("computable") or base_ps is None or base_ps <= 0:
         return None
 
-    presets = {}
-    for key, g, m_pp, mult in SCENARIOS:
-        presets[key] = {
-            "sales_growth_pct": g,
-            "margin_delta_pp": m_pp,
-            "earnings_multiple": mult,
-        }
-
-    ticker = v1_blob.get("ticker") or ""
-    fy = v1_blob.get("fy")
-    period_end = v1_blob.get("period_end")
-    if fy is None or not period_end:
+    defaults = _control_defaults()
+    g = defaults["sales_growth_pct"]
+    m_pp = defaults["margin_delta_pp"]
+    mult = defaults["earnings_multiple"]
+    default_ps = per_share_at(ni, revenue, shares, g, m_pp, mult)
+    if default_ps is None:
         return None
+
+    presets = {}
+    for key, g_s, m_s, mult_s in SCENARIOS:
+        presets[key] = {
+            "sales_growth_pct": g_s,
+            "margin_delta_pp": m_s,
+            "earnings_multiple": mult_s,
+        }
 
     return {
         "schema": "valuation_scenario_controls.v1",
@@ -173,9 +198,9 @@ def controls_blob(v1_blob):
         "controls": [dict(c) for c in CONTROLS],
         "presets": presets,
         "server_default": {
-            "sales_growth_pct": 3,
-            "margin_delta_pp": 0,
-            "earnings_multiple": 18,
-            "per_share": base_ps,
+            "sales_growth_pct": g,
+            "margin_delta_pp": m_pp,
+            "earnings_multiple": mult,
+            "per_share": default_ps,
         },
     }
