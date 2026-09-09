@@ -374,7 +374,7 @@ def test_undated_row_renders_copy_is_not_stalled_and_does_not_set_chip(monkeypat
 # R1 current-source consumer — behavioral tests (tmp_path only)
 # --------------------------------------------------------------------------- #
 
-from datetime import datetime, timezone  # noqa: E402
+from datetime import date, datetime, timezone  # noqa: E402
 from engine.policy_watch_current import build_current  # noqa: E402
 
 
@@ -752,7 +752,17 @@ def test_rendered_page_keeps_44_calls_and_july_13_verification():
     assert "09-16" in html
     assert "Original source text" in html
     assert "原文" in html
-    assert "Build time is not evidence" in html
+    assert "Build time is not evidence" not in html
+    assert "Cache saved date" not in html
+    assert "Needs refresh" not in html
+    assert "Background needs review" in html
+    assert "历史研究待复核" in html
+    assert "Official records above" not in html
+    assert "上方官方记录单独列示" not in html
+    # Glance must not use green buy-like decision card.
+    assert 'id="pw-last-decision"' in html
+    assert 'id="pw-last-decision" class="pw-card green"' not in html
+    assert 'class="pw-card green" id="pw-last-decision"' not in html
 
 
 def test_missing_intel_still_renders_current_when_calendar_exists():
@@ -767,3 +777,344 @@ def test_missing_intel_still_renders_current_when_calendar_exists():
     assert "本次更新没有历史研究" in html
     assert "Next Fed decisions" in html
     assert "09-16" in html
+
+
+# --------------------------------------------------------------------------- #
+# R1 repair-1 — headlines health, release clock, statement admit, builder
+# --------------------------------------------------------------------------- #
+
+from zoneinfo import ZoneInfo  # noqa: E402
+
+_ET = ZoneInfo("America/New_York")
+
+
+def _fed_feeds(outcomes: list[dict]) -> list[dict]:
+    return outcomes
+
+
+def test_build_current_fed_feed_outage_degrades_even_with_items(tmp_path):
+    _write_official_cache(tmp_path, "2026-09-06", {
+        "fetched_at": "2026-09-06T12:00:00Z",
+        "feed_status": "mixed",
+        "feeds": [
+            {"name": "BEA - News Releases", "url": "https://apps.bea.gov/rss/rss.xml", "status": "ok", "item_count": 3},
+            {"name": "Federal Reserve - Monetary Policy",
+             "url": "https://www.federalreserve.gov/feeds/press_monetary.xml",
+             "status": "fail", "item_count": 0},
+            {"name": "Federal Reserve - Speeches",
+             "url": "https://www.federalreserve.gov/feeds/speeches.xml",
+             "status": "ok", "item_count": 1},
+        ],
+        "articles": [
+            _fed_item("Warsh, In Our Time",
+                      "https://www.federalreserve.gov/newsevents/speech/warsh20260828a.htm",
+                      "2026-08-28T14:00:00+00:00"),
+        ],
+    })
+    out = build_current(tmp_path, now=_CUTOFF)
+    assert out["headlines"]["state"] == "source_outage"
+    assert out["headlines"]["fresh"] is False
+    assert out["headlines"]["items"]
+
+
+def test_build_current_mixed_feeds_ok_when_relevant_fed_ok(tmp_path):
+    _write_official_cache(tmp_path, "2026-09-06", {
+        "fetched_at": "2026-09-08T12:00:00Z",
+        "feed_status": "mixed",
+        "feeds": [
+            {"name": "BEA - News Releases", "url": "https://apps.bea.gov/rss/rss.xml", "status": "fail", "item_count": 0},
+            {"name": "Federal Reserve - Monetary Policy",
+             "url": "https://www.federalreserve.gov/feeds/press_monetary.xml",
+             "status": "ok", "item_count": 1},
+            {"name": "Federal Reserve - Speeches",
+             "url": "https://www.federalreserve.gov/feeds/speeches.xml",
+             "status": "ok", "item_count": 1},
+            {"name": "Federal Reserve - All Press",
+             "url": "https://www.federalreserve.gov/feeds/press_all.xml",
+             "status": "ok", "item_count": 1},
+        ],
+        "articles": [
+            _fed_item("Warsh, In Our Time",
+                      "https://www.federalreserve.gov/newsevents/speech/warsh20260828a.htm",
+                      "2026-08-28T14:00:00+00:00"),
+        ],
+    })
+    out = build_current(tmp_path, now=_CUTOFF)
+    assert out["headlines"]["state"] == "ok"
+    assert out["headlines"]["fresh"] is True
+
+
+def test_build_current_stale_acquisition_over_24h(tmp_path):
+    _write_official_cache(tmp_path, "2026-09-06", {
+        "fetched_at": "2026-09-06T12:00:00Z",
+        "feed_status": "ok",
+        "feeds": [
+            {"name": "Federal Reserve - Monetary Policy",
+             "url": "https://www.federalreserve.gov/feeds/press_monetary.xml", "status": "ok", "item_count": 1},
+            {"name": "Federal Reserve - Speeches",
+             "url": "https://www.federalreserve.gov/feeds/speeches.xml", "status": "ok", "item_count": 1},
+            {"name": "Federal Reserve - All Press",
+             "url": "https://www.federalreserve.gov/feeds/press_all.xml", "status": "ok", "item_count": 1},
+        ],
+        "articles": [
+            _fed_item("Warsh, In Our Time",
+                      "https://www.federalreserve.gov/newsevents/speech/warsh20260828a.htm",
+                      "2026-08-28T14:00:00+00:00"),
+        ],
+    })
+    out = build_current(tmp_path, now=_CUTOFF)
+    assert out["headlines"]["state"] == "stale"
+    assert out["headlines"]["fresh"] is False
+    assert out["headlines"]["items"]
+    assert out["headlines"]["items"][0]["published_at"].startswith("2026-08-28")
+
+
+def test_build_current_legacy_cache_without_fetched_at_not_fresh(tmp_path):
+    _write_official_cache(tmp_path, "2026-09-06", {"articles": [
+        _fed_item("Warsh, In Our Time",
+                  "https://www.federalreserve.gov/newsevents/speech/warsh20260828a.htm",
+                  "2026-08-28T14:00:00+00:00"),
+    ]})
+    out = build_current(tmp_path, now=_CUTOFF)
+    assert out["headlines"]["fetched_at"] is None
+    assert out["headlines"]["saved_date"] == "2026-09-06"
+    assert out["headlines"]["fresh"] is False
+    assert out["headlines"]["state"] == "ok"
+
+
+def test_build_current_invalid_and_future_fetched_at(tmp_path):
+    _write_official_cache(tmp_path, "2026-09-05", {"articles": [
+        _fed_item("Warsh, In Our Time",
+                  "https://www.federalreserve.gov/newsevents/speech/warsh20260828a.htm",
+                  "2026-08-28T14:00:00+00:00"),
+    ]})
+    _write_official_cache(tmp_path, "2026-09-06", {
+        "fetched_at": "not-a-timestamp",
+        "articles": [
+            _fed_item("Waller, The Economic Outlook",
+                      "https://www.federalreserve.gov/newsevents/speech/waller20260903a.htm",
+                      "2026-09-03T12:30:00+00:00"),
+        ],
+    })
+    out = build_current(tmp_path, now=_CUTOFF)
+    assert out["headlines"]["state"] == "invalid_newest"
+    assert out["headlines"]["fresh"] is not True
+    assert out["headlines"]["items"] == []
+    assert (out["headlines"].get("last_good") or {}).get("saved_date") == "2026-09-05"
+
+    _write_official_cache(tmp_path, "2026-09-06", {
+        "fetched_at": "2026-09-20T12:00:00Z",
+        "articles": [
+            _fed_item("Waller, The Economic Outlook",
+                      "https://www.federalreserve.gov/newsevents/speech/waller20260903a.htm",
+                      "2026-09-03T12:30:00+00:00"),
+        ],
+    })
+    out2 = build_current(tmp_path, now=_CUTOFF)
+    assert out2["headlines"]["state"] == "invalid_newest"
+    assert out2["headlines"]["fresh"] is not True
+
+
+def test_build_current_future_filename_day_invalid(tmp_path):
+    _write_official_cache(tmp_path, "2026-09-20", {
+        "fetched_at": "2026-09-08T12:00:00Z",
+        "articles": [
+            _fed_item("Warsh, In Our Time",
+                      "https://www.federalreserve.gov/newsevents/speech/warsh20260828a.htm",
+                      "2026-08-28T14:00:00+00:00"),
+        ],
+    })
+    out = build_current(tmp_path, now=_CUTOFF)
+    assert out["headlines"]["state"] == "invalid_newest"
+    assert out["headlines"]["fresh"] is not True
+
+
+def test_build_current_successful_fed_zero_items_is_no_new(tmp_path):
+    _write_official_cache(tmp_path, "2026-09-06", {
+        "fetched_at": "2026-09-08T12:00:00Z",
+        "feed_status": "ok",
+        "feeds": [
+            {"name": "Federal Reserve - Monetary Policy",
+             "url": "https://www.federalreserve.gov/feeds/press_monetary.xml", "status": "ok", "item_count": 0},
+            {"name": "Federal Reserve - Speeches",
+             "url": "https://www.federalreserve.gov/feeds/speeches.xml", "status": "ok", "item_count": 0},
+            {"name": "Federal Reserve - All Press",
+             "url": "https://www.federalreserve.gov/feeds/press_all.xml", "status": "ok", "item_count": 0},
+        ],
+        "articles": [
+            _fed_item("Federal Reserve Board announces termination of enforcement actions",
+                      "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260904a.htm",
+                      "2026-09-04T15:00:00+00:00"),
+        ],
+    })
+    out = build_current(tmp_path, now=_CUTOFF)
+    assert out["headlines"]["state"] == "no_new"
+    assert out["headlines"]["fresh"] is False
+
+
+def test_build_current_failed_input_cannot_be_no_new(tmp_path):
+    _write_official_cache(tmp_path, "2026-09-06", {
+        "fetched_at": "2026-09-08T12:00:00Z",
+        "feed_status": "failed",
+        "feeds": [
+            {"name": "Federal Reserve - Monetary Policy",
+             "url": "https://www.federalreserve.gov/feeds/press_monetary.xml", "status": "error", "item_count": 0},
+            {"name": "Federal Reserve - Speeches",
+             "url": "https://www.federalreserve.gov/feeds/speeches.xml", "status": "error", "item_count": 0},
+            {"name": "Federal Reserve - All Press",
+             "url": "https://www.federalreserve.gov/feeds/press_all.xml", "status": "fail", "item_count": 0},
+        ],
+        "articles": [],
+    })
+    out = build_current(tmp_path, now=_CUTOFF)
+    assert out["headlines"]["state"] == "source_outage"
+    assert out["headlines"]["state"] != "no_new"
+
+
+def test_build_current_release_clock_before_and_after_statement_time(tmp_path):
+    _write_fomc(tmp_path, [_june_row(), _july_row()], {
+        "2026-06-17": _JUNE_STMT, "2026-07-29": _JULY_STMT,
+    })
+    before = datetime(2026, 9, 16, 13, 59, tzinfo=_ET)
+    out_before = build_current(tmp_path, now=before)
+    assert out_before["statement"]["state"] == "recorded"
+    assert out_before["statement"]["decision_date"] == "2026-07-29"
+    assert out_before["calendar"]["meetings"][0]["date"] == "2026-09-16"
+    assert out_before["calendar"]["meetings"][0]["days_to"] == 0
+
+    after = datetime(2026, 9, 16, 14, 1, tzinfo=_ET)
+    out_after = build_current(tmp_path, now=after)
+    assert out_after["statement"]["state"] == "awaiting_statement"
+    assert out_after["statement"]["elapsed_decision"] == "2026-09-16"
+
+    utc_midnight = datetime(2026, 9, 16, 0, 0, tzinfo=timezone.utc)
+    out_utc = build_current(tmp_path, now=utc_midnight)
+    assert out_utc["statement"]["state"] == "recorded"
+    assert out_utc["statement"]["decision_date"] == "2026-07-29"
+
+
+def test_build_current_strict_day_parse_rejects_trailing_junk(tmp_path):
+    from engine import policy_watch_current as pwc
+    assert pwc._parse_day("2026-09-16") == date(2026, 9, 16)
+    assert pwc._parse_day("2026-09-16junk") is None
+    assert pwc._parse_day("2026-09-16T14:00:00Z") is None
+
+
+def test_build_current_rejects_malicious_or_mismatched_statement_url(tmp_path):
+    bad = dict(_july_row())
+    bad["url"] = "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm?x=1"
+    _write_fomc(tmp_path, [_june_row(), bad], {
+        "2026-06-17": _JUNE_STMT, "2026-07-29": _JULY_STMT,
+    })
+    out = build_current(tmp_path, now=_CUTOFF)
+    assert out["statement"]["state"] == "unavailable"
+    assert out["statement"]["url"] is None
+
+    wrong_date = dict(_july_row())
+    wrong_date["url"] = "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617a.htm"
+    _write_fomc(tmp_path, [_june_row(), wrong_date], {
+        "2026-06-17": _JUNE_STMT, "2026-07-29": _JULY_STMT,
+    })
+    out2 = build_current(tmp_path, now=_CUTOFF)
+    assert out2["statement"]["state"] == "unavailable"
+
+
+def test_build_current_oversized_statement_body_unavailable(tmp_path):
+    _write_fomc(tmp_path, [_july_row()], {"2026-07-29": "x" * (4 * 1024 * 1024 + 10)})
+    out = build_current(tmp_path, now=_CUTOFF)
+    assert out["statement"]["state"] == "unavailable"
+    assert out["statement"]["reason"] == "statement_oversized_or_unreadable"
+
+
+def test_build_current_malformed_ledger_skips_bad_rows(tmp_path):
+    store = tmp_path / "data" / "marketing" / "fomc"
+    (store / "statements").mkdir(parents=True, exist_ok=True)
+    (store / "statements" / "2026-07-29.txt").write_text(_JULY_STMT, encoding="utf-8")
+    (store / "statements.jsonl").write_text(
+        "{not-json\n" + json.dumps(_july_row()) + "\n",
+        encoding="utf-8",
+    )
+    out = build_current(tmp_path, now=_CUTOFF)
+    assert out["statement"]["state"] == "recorded"
+    assert out["statement"]["decision_date"] == "2026-07-29"
+
+
+def test_builder_invalid_intel_json_still_renders_current(tmp_path, monkeypatch):
+    import scripts.build_policy_watch as bpw
+    from jinja2 import Environment, FileSystemLoader
+
+    # Isolate ROOT/data for builder path via config monkeypatch.
+    monkeypatch.setattr(bpw.config, "ROOT", tmp_path)
+    monkeypatch.setattr(bpw.config, "data_dir", lambda: tmp_path / "data")
+    (tmp_path / "data" / "policy").mkdir(parents=True)
+    (tmp_path / "templates").mkdir(parents=True)
+    # Minimal template stubs so builder can render.
+    for name in ("policy_watch.html.j2", "_policy_watch_current.html.j2",
+                 "_site_nav.html.j2", "_navlinks.html.j2"):
+        src = ROOT / "templates" / name
+        if src.exists():
+            (tmp_path / "templates" / name).write_text(src.read_text(encoding="utf-8"), encoding="utf-8")
+    # Copy only what render needs — use real templates from ROOT via monkeypatch of FileSystemLoader.
+    monkeypatch.setattr(
+        bpw, "Environment",
+        lambda **kw: Environment(loader=FileSystemLoader(str(ROOT / "templates")), autoescape=True),
+    )
+    (tmp_path / "data" / "policy" / "intel.json").write_text("{not-json", encoding="utf-8")
+    _write_fomc(tmp_path, [_july_row()], {"2026-07-29": _JULY_STMT})
+    _write_official_cache(tmp_path, "2026-09-06", {
+        "fetched_at": "2026-09-08T12:00:00Z",
+        "feeds": [
+            {"name": "Federal Reserve - Monetary Policy",
+             "url": "https://www.federalreserve.gov/feeds/press_monetary.xml", "status": "ok", "item_count": 1},
+            {"name": "Federal Reserve - Speeches",
+             "url": "https://www.federalreserve.gov/feeds/speeches.xml", "status": "ok", "item_count": 1},
+            {"name": "Federal Reserve - All Press",
+             "url": "https://www.federalreserve.gov/feeds/press_all.xml", "status": "ok", "item_count": 1},
+        ],
+        "articles": [
+            _fed_item("Warsh, In Our Time",
+                      "https://www.federalreserve.gov/newsevents/speech/warsh20260828a.htm",
+                      "2026-08-28T14:00:00+00:00"),
+        ],
+    })
+    (tmp_path / "site").mkdir(parents=True, exist_ok=True)
+    # Disable history writers that touch real/sibling ledgers.
+    monkeypatch.setattr(bpw, "decorate_lifecycle_view", lambda x: x)
+    rc = bpw.main()
+    assert rc == 0
+    html = (tmp_path / "site" / "policy_watch.html").read_text(encoding="utf-8")
+    assert "Background research unavailable" in html or "无法加载历史研究" in html
+    assert "Next Fed decisions" in html
+    assert "09-16" in html
+    assert "Warsh, In Our Time" in html
+
+
+def test_builder_composer_problem_renders_explanation(tmp_path, monkeypatch):
+    import scripts.build_policy_watch as bpw
+    from jinja2 import Environment, FileSystemLoader
+
+    monkeypatch.setattr(bpw.config, "ROOT", tmp_path)
+    monkeypatch.setattr(bpw.config, "data_dir", lambda: tmp_path / "data")
+    monkeypatch.setattr(
+        bpw, "Environment",
+        lambda **kw: Environment(loader=FileSystemLoader(str(ROOT / "templates")), autoescape=True),
+    )
+    (tmp_path / "data" / "policy").mkdir(parents=True)
+    # Valid original July 13 intel preserved.
+    intel = json.loads((ROOT / "data" / "policy" / "intel.json").read_text(encoding="utf-8"))
+    (tmp_path / "data" / "policy" / "intel.json").write_text(
+        json.dumps(intel), encoding="utf-8",
+    )
+    assert intel.get("as_of") == "2026-07-13"
+
+    def boom(*_a, **_k):
+        raise RuntimeError("composer exploded")
+
+    monkeypatch.setattr(bpw, "build_current", boom)
+    (tmp_path / "site").mkdir(parents=True, exist_ok=True)
+    rc = bpw.main()
+    assert rc == 0
+    html = (tmp_path / "site" / "policy_watch.html").read_text(encoding="utf-8")
+    assert "Current official view problem" in html or "当前官方视图问题" in html
+    assert "composer exploded" in html or "RuntimeError" in html
+    assert "July 13, 2026" in html

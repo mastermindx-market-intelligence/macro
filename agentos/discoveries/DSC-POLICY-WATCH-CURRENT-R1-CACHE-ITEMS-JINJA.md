@@ -24,7 +24,7 @@ confidence: verified
 
 ## Detail
 
-Observed during Policy Watch R1 recovery: `build_current` unit tests were green
-while every real-template render failed because `news.items` bound the dict
-method. Namespace attribute `items` had the same collision class.
+Observed during Policy Watch R1 recovery (child under WS:MARKET-OS): `build_current`
+unit tests were green while every real-template render failed because `news.items`
+bound the dict method. Namespace attribute `items` had the same collision class.
 ---

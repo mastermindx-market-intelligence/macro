@@ -258,7 +258,7 @@
   .pw-shell *{min-width:0}
   .pw-shell :is(h1,h2,h3,.pw-state,.pw-card-title){font-family:var(--font-display)}
   .pw-shell :is(.pw-date,.pw-stat strong,.pw-count,.pw-performance){font-family:var(--font-data);font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
-  .pw-surface,.pw-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--pw-shadow)}
+  .pw-surface,.pw-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel,14px);box-shadow:var(--pw-shadow)}
   .pw-hero{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:28px;padding:26px 28px}
   .pw-hero::before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,var(--pw-purple),color-mix(in srgb,var(--pw-blue) 50%,transparent) 62%,transparent)}
   .pw-eyebrow{margin:0 0 8px;color:var(--pw-purple);font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
@@ -275,7 +275,7 @@
   .pw-current-degraded{border-left:3px solid var(--pw-amber);background:transparent}
   html[data-theme="light"] .pw-current-degraded{box-shadow:none;background:transparent;border-left:3px solid var(--pw-amber)}
   .pw-source-original{display:block;color:var(--pw-ink-2);font-size:11px;letter-spacing:.02em}
-  .pw-research-banner{margin:28px 0 0;padding:14px 16px;border:1px solid var(--pw-hair);border-radius:14px;background:var(--panel)}
+  .pw-research-banner{margin:28px 0 0;padding:14px 16px;border:1px solid var(--pw-hair);border-radius:var(--r-panel,14px);background:var(--panel)}
   html[data-theme="light"] .pw-research-banner{box-shadow:var(--pw-shadow)}
   .pw-research-banner h2{margin:0 0 6px;font-size:18px}
   .pw-badge{padding:3px 8px;font-size:10.5px;font-weight:700;line-height:1.25}
@@ -356,7 +356,8 @@
 {% set fomc_meetings = current.calendar.meetings if current and current.calendar else [] %}
 {% set calendar_state = current.calendar.state if current and current.calendar else none %}
 {% set calendar_url = current.calendar.calendar_url if current and current.calendar else 'https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm' %}
-{% set has_background = intel and intel.as_of %}
+{% set background_unavailable = background_unavailable if background_unavailable is defined else false %}
+{% set has_background = intel and intel.as_of and not background_unavailable %}
 
 <main class="pw-shell">
   <section class="pw-hero pw-surface" aria-labelledby="pw-title">
@@ -365,7 +366,6 @@
       <h1 id="pw-title">{{ t('Fed & Policy Watch','美联储与政策观察') }}</h1>
       <p class="pw-subtitle">{{ t('Dated policy changes and the next decision.','政策变化与下一次决议') }}</p>
       <div class="pw-chips">
-        {% if age is not none and age > 14 %}<span class="pw-chip stale">{{ t('Needs refresh','需要更新') }}</span>{% endif %}
         <span class="pw-chip">{{ t('Facts and analysis kept separate','事实与分析分开呈现') }}</span>
       </div>
       <span class="pw-stance">{{ t('Watch — don’t chase','观察，不追涨') }}</span>
@@ -412,10 +412,14 @@
     </div>
   </section>
 
-  {% if (age is not none and age > 14) or divergence %}
+  {% if divergence %}
   <div class="pw-alert" role="note">
-    {% if age is not none and age > 14 %}<span><strong>{{ t('This research needs a new review; the dated official records above are separate.','这份研究需要重新核实；上方官方记录单独列示') }}</strong></span>{% endif %}
-    {% if divergence %}<span><strong>{{ t('Not working:','尚未奏效：') }}</strong> {{ bl(divergence.theme, divergence.theme_zh if divergence.theme_zh else divergence.theme) }} {{ t('is trailing the S&P 500.','目前跑输标普500。') }}</span>{% endif %}
+    <span><strong>{{ t('Not working:','尚未奏效：') }}</strong> {{ bl(divergence.theme, divergence.theme_zh if divergence.theme_zh else divergence.theme) }} {{ t('is trailing the S&P 500.','目前跑输标普500。') }}</span>
+  </div>
+  {% endif %}
+  {% if current and current.problem %}
+  <div class="pw-alert" role="note" id="pw-current-problem">
+    <span><strong>{{ t('Current official view problem','当前官方视图问题') }}</strong> {{ current.problem }}</span>
   </div>
   {% endif %}
 
@@ -437,9 +441,11 @@
 
   <div class="pw-research-banner" id="background">
     <h2>{{ t('Background research','历史研究') }}</h2>
-    {% if has_background %}
+    {% if background_unavailable %}
+    <p class="pw-primary">{{ t('Background research unavailable in this update.','本次更新无法加载历史研究。') }}</p>
+    {% elif has_background %}
     <p class="pw-mini-copy">{{ t('Last verified','最近核实') }} <span class="l-en">{{ verified_en }}</span><span class="l-zh">{{ verified_zh }}</span>.</p>
-    {% if age is not none and age > 14 %}<p class="pw-mini-copy">{{ t('This research needs a new review; the dated official records above are separate.','这份研究需要重新核实；上方官方记录单独列示') }}</p>{% endif %}
+    {% if age is not none and age > 14 %}<p class="pw-mini-copy"><span class="pw-chip stale">{{ t('Background needs review','历史研究待复核') }}</span> {{ t('Official dated records are separate.','官方注明日期的记录单独列示。') }}</p>{% endif %}
     {% else %}
     <p class="pw-primary">{{ t('No background research in this update.','本次更新没有历史研究。') }}</p>
     {% endif %}
