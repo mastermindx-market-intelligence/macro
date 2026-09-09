@@ -5,7 +5,8 @@ import difflib
 import hashlib
 import json
 from pathlib import Path
-from RRU_COMPOSITION_ACCEPTANCE_2026_09_08 import SOURCES, PATHS
+from RRU_COMPOSITION_ACCEPTANCE_2026_09_08 import SOURCES, PATHS, committed
+SOURCES = dict(SOURCES)
 
 HERE = Path(__file__).resolve().parent
 edited = dict(SOURCES)
@@ -188,3 +189,41 @@ change(p, "'Pullback-risk gauge. Use high readings to trim risk, not to pick sto
        "'Descriptive input-based reading; not a calibrated forecast or sizing instruction.' if _unreviewed else 'Pullback-risk gauge. Use high readings to trim risk, not to pick stocks.'")
 change(p, "'回撤风险仪表。高读数用于降风险，不用于选股。'",
        "'输入驱动的描述性读数，并非经校准的预测或仓位指令。' if _unreviewed else '回撤风险仪表。高读数用于降风险，不用于选股。'")
+
+# Downstream RED: actual sleeve consumers must understand the new unavailable value.
+# These remain source-bound, in-memory edits; no production template is overwritten.
+for p in ('templates/china.html.j2', 'templates/baskets_desk.js',
+          'templates/cn_reversal_sleeve.html.j2'):
+    SOURCES[p] = committed(p)
+    edited[p] = SOURCES[p]
+
+p = 'templates/china.html.j2'
+change(p, "{% if _sc and _sc.radar_state and _sc.radar_state != 'None' %}", '''{% if _sc and _sc.sleeve_status == 'unavailable' %}
+    <div class="muted" data-sleeve-status="unavailable">
+      <span>{{ t('Risk backdrop', '风险背景') }}: {{ t(_sc.label_en, _sc.label_zh) }}</span>
+      {% if _sc.radar_as_of %}<small> · {{ t('as of', '截至') }} {{ _sc.radar_as_of }}</small>{% endif %}
+    </div>
+    {% elif _sc and _sc.radar_state and _sc.radar_state != 'None' %}''')
+
+p = 'templates/cn_reversal_sleeve.html.j2'
+change(p, '<div class="sleeve-chip" data-state="{{ d.sizing.radar_state or \'unknown\' }}">', '''{% if d.sizing.sleeve_factor is not number %}
+<div class="sleeve-chip" data-state="unavailable" data-sleeve-status="unavailable">
+  <span>{{ t(d.sizing.label_en or 'Sizing unavailable', d.sizing.label_zh or '仓位建议暂缺') }}</span>
+  {% if d.sizing.radar_as_of %}<span class="prov">{{ d.sizing.radar_as_of }}</span>{% endif %}
+</div>
+{% else %}
+<div class="sleeve-chip" data-state="{{ d.sizing.radar_state or 'unknown' }}">''')
+change(p, '</div>\n\n<div class="strip">', '</div>\n{% endif %}\n\n<div class="strip">')
+
+p = 'templates/baskets_desk.js'
+change(p, "  if(!sc||sc.sleeve_factor==null){ host.innerHTML=''; return; }", '''  if(!sc){ host.innerHTML=''; return; }
+  if(sc.sleeve_status==='unavailable'||sc.sleeve_factor==null){
+    const explained=sc.sleeve_status==='unavailable';
+    const en=explained?(sc.label_en||'Sizing unavailable'):'Sizing unavailable';
+    const zh=explained?(sc.label_zh||'仓位建议暂缺'):'仓位建议暂缺';
+    host.innerHTML=`<div class="sleeve-chip" data-sleeve-status="unavailable" style="border-left:3px solid var(--muted)">
+      <span class="sl-main"><b>${L(esc(en),esc(zh))}</b></span>
+      <span class="sl-tag muted">${L('No current sizing instruction.','当前不提供仓位指令。')}</span>
+    </div>`;
+    return;
+  }''')

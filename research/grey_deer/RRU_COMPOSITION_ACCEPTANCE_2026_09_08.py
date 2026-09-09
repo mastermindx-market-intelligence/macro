@@ -28,20 +28,25 @@ def committed(path):
 
 SOURCES = {path: committed(path) for path in PATHS}
 TEMPLATE = SOURCES[PATHS[-1]]
+RENDER_SOURCES = {PATHS[-1]: TEMPLATE}
 
 def apply_bundle(bundle):
     global TEMPLATE
     modules = {PATHS[0]: radar, PATHS[1]: market_state, PATHS[2]: recovery}
     for path, entry in bundle.items():
-        text = SOURCES[path]
+        text = SOURCES.get(path) or committed(path)
         if hashlib.sha256(text.encode()).hexdigest() != entry["base_sha256"]:
             raise ValueError(f"Wrong source identity: {path}")
         for delta in entry["replacements"]:
             if text.count(delta["old"]) != 1:
                 raise ValueError(f"Nonunique replacement: {path}")
             text = text.replace(delta["old"], delta["new"], 1)
-        if path == PATHS[-1]:
-            TEMPLATE = text
+        if path not in modules:
+            if not path.startswith("templates/"):
+                raise ValueError(f"Unsupported research bundle path: {path}")
+            RENDER_SOURCES[path] = text
+            if path == PATHS[-1]:
+                TEMPLATE = text
             continue
         nodes = [n for n in ast.parse(text).body if isinstance(n, ast.FunctionDef)
                  and n.name in entry["functions"]]
