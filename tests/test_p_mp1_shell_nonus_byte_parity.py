@@ -180,7 +180,7 @@ def _sha256_text(text: str) -> str:
 _EXPECTED_TEMPLATE_SHA256: dict[str, str] = {
     "templates/hk.html.j2": "947b24a38f46ad53b22fc168cd84f45e8eb630b0d09cee8d5f8ad94e8f82fbdc",
     "templates/china.html.j2": "cb6e0685b96a6d897e9562418927c0bb5d5e656d4b31c99e843ec5f213fa7031",
-    "templates/canada.html.j2": "878237e4c3d0bef90c2fce108b64cf859d8f67783dede4f77881392c2d1eb7e5",
+    "templates/canada.html.j2": "e579449deb5d5cbc1acd3d5541e3c9ca8e60a9a444f1c3363d8cd63df6a9de86",
     "templates/intl.html.j2": "c62b4a6373ac3130a16f622b8dae9b73218642e261051a3bd3493fc95fd0d9a5",
 }
 

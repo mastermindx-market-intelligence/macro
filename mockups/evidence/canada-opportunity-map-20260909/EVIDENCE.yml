@@ -1,0 +1,40 @@
+schema: mastermind.canada_opportunity_map_evidence.v1
+operation: canada-opportunity-map-20260909-sol-001
+base:
+  repository: mastermindx-market-intelligence/macro
+  predecessor_pr: 6832
+  predecessor_head: a55739da7f11e4ec6033b29ba0cefc215e067e86
+claims:
+  source_contract: browser_fixture
+  browser_fixture: reproducible
+  canonical_build: unavailable
+  production: none
+  capability: BUILT_NOT_PROVEN
+authority:
+  theme_action: canadabasketdata/baskets.json#theme_intel.act_now
+  theme_rank: canadabasketdata/baskets.json#theme_intel.themes
+  theme_membership: canadabasketdata/baskets.json#baskets
+  stock_selection: canonical Canada Prophet setups buy+watch
+  projection: deterministic membership intersection only
+proof:
+  rendered_fixture:
+    path: mockups/evidence/canada-opportunity-map-20260909/rendered-fixture.json
+    sha256: 268696a3d9d73f13ac65de7eb9ffbd55da212176966e46974539bc6a294d2f5b
+  browser_receipt:
+    path: mockups/evidence/canada-opportunity-map-20260909/mobile-layout-canada.json
+    sha256: 1ef8d558d6b63eeaea60b4e46f2269f0dab3d0246108b2b9e9387bf496e20990
+  opportunity_map_screenshot:
+    path: mockups/evidence/canada-opportunity-map-20260909/canada-opportunity-map-desktop.png
+    sha256: 7c3fffd93ba1c313c8ea3dd0a318b633a4d21ff72400bde1b1a29660e1df9e2f
+  verifier:
+    path: scripts/verify_canada_opportunity_map.cjs
+    sha256: c1a78fd757b872ca74005fd5848a3fe5377f5e9fe617d68001782b5c3b7ca0c1
+  renderer:
+    path: scripts/render_canada_opportunity_map_fixture.py
+    sha256: e6a7e7c82f1c47f0d718ad8f629ab3b2df4a5bf19059aa2243d13e649a235c18
+acceptance:
+  focused_tests: 225 passed
+  browser: passed
+  theme_filter: ca_oil_gas -> SU.TO, TOU.TO
+  source_population_unchanged: true
+  predecessor_p0b_evidence_rewritten: false

@@ -399,6 +399,115 @@ def _action_board(sectors: list[dict]) -> dict:
             "take_profits": take_profits, "hold": hold, "avoid": avoid}
 
 
+def _canada_theme_action_map(setups: dict | None, site: Path) -> dict | None:
+    """Project existing Canada theme action into the Canada Stocks journey.
+
+    Authority remains with ``canadabasketdata/baskets.json``: ``theme_intel.act_now``
+    owns theme action lanes; ``theme_intel.themes`` owns rank/leadership; ``baskets``
+    owns membership. This helper performs only deterministic joins to the canonical
+    Prophet board/watch populations and never scores, ranks, or originates an action.
+    """
+    path = site / "canadabasketdata" / "baskets.json"
+    if not path.exists():
+        return None
+    try:
+        payload = json.loads(path.read_text())
+    except Exception as exc:  # noqa: BLE001 -- optional projection, never fatal
+        log.warning("canada theme action artifact unreadable (%s); skipping", exc)
+        return None
+    intel = payload.get("theme_intel") if isinstance(payload, dict) else None
+    act = intel.get("act_now") if isinstance(intel, dict) else None
+    themes = intel.get("themes") if isinstance(intel, dict) else None
+    baskets = payload.get("baskets") if isinstance(payload, dict) else None
+    if not isinstance(act, dict) or not isinstance(themes, list) or not isinstance(baskets, list):
+        return None
+
+    theme_by = {str(x.get("id")): x for x in themes if isinstance(x, dict) and x.get("id")}
+    basket_by = {str(x.get("id")): x for x in baskets if isinstance(x, dict) and x.get("id")}
+    cats = payload.get("categories") if isinstance(payload.get("categories"), list) else []
+    cats_zh = payload.get("categories_zh") if isinstance(payload.get("categories_zh"), list) else []
+    cat_zh = {str(cat): cats_zh[i] for i, cat in enumerate(cats) if i < len(cats_zh)}
+
+    def owner_tickers(key: str) -> set[str] | None:
+        rows = (setups or {}).get(key)
+        if not isinstance(rows, list):
+            return None
+        out: set[str] = set()
+        for row in rows:
+            if not isinstance(row, dict) or not isinstance(row.get("ticker"), str):
+                return None
+            ticker = row["ticker"].strip().upper()
+            if not ticker or ticker in out:
+                return None
+            out.add(ticker)
+        return out
+
+    board = owner_tickers("buy")
+    watch = owner_tickers("watch")
+    prophet = (board | watch) if board is not None and watch is not None else None
+    distinct_members: set[str] = set()
+
+    def project(row: dict) -> dict | None:
+        if not isinstance(row, dict) or not row.get("id"):
+            return None
+        tid = str(row["id"])
+        th = theme_by.get(tid, {})
+        basket = basket_by.get(tid)
+        raw_members = basket.get("members") if isinstance(basket, dict) else None
+        membership_known = isinstance(raw_members, list)
+        members: set[str] = set()
+        if membership_known:
+            for member in raw_members:
+                symbol = member if isinstance(member, str) else (member.get("symbol") or member.get("ticker")) if isinstance(member, dict) else None
+                if symbol:
+                    members.add(str(symbol).strip().upper())
+            distinct_members.update(members)
+        leaders = []
+        for leader in ((th.get("leadership") or {}).get("top") or [])[:3]:
+            if isinstance(leader, dict):
+                symbol = leader.get("ticker") or leader.get("symbol") or leader.get("t")
+                if symbol:
+                    leaders.append(str(symbol).strip().upper())
+        category = basket.get("category") if isinstance(basket, dict) else None
+        return {
+            "id": tid,
+            "name": row.get("name") or th.get("name") or tid,
+            "name_zh": row.get("name_zh") or th.get("name_zh") or row.get("name") or tid,
+            "category": category,
+            "category_zh": cat_zh.get(str(category)) if category is not None else None,
+            "rank": th.get("rank"),
+            "score": row.get("score"),
+            "action": row.get("action"),
+            "action_en": row.get("action_en") or row.get("action"),
+            "action_zh": row.get("action_zh") or row.get("action_en") or row.get("action"),
+            "label": row.get("label"),
+            "reason_en": row.get("reason_en") or "; ".join(row.get("reasons") or []),
+            "reason_zh": row.get("reason_zh") or "; ".join(row.get("reasons_zh") or []),
+            "leaders": leaders,
+            "membership_known": membership_known,
+            "members": sorted(members) if membership_known else None,
+            "n_members": len(members) if membership_known else row.get("n_members"),
+            "prophet_count": len(members & prophet) if membership_known and prophet is not None else None,
+            "href": "baskets_canada.html#theme-" + tid,
+        }
+
+    lane_defs = (("buy", "buy_now"), ("add_on_pullback", "in_favour"),
+                 ("conflicted", "watch"), ("reduce", "reduce"))
+    lanes = {}
+    for source_key, out_key in lane_defs:
+        rows = act.get(source_key)
+        if not isinstance(rows, list):
+            return None
+        lanes[out_key] = [item for item in (project(row) for row in rows) if item is not None]
+    return {
+        "as_of": intel.get("as_of") or payload.get("as_of"),
+        "n_themes": len(theme_by),
+        "n_distinct_members": len(distinct_members),
+        "n_prophet_current": len(prophet) if prophet is not None else None,
+        "lanes": lanes,
+        "authority": "descriptive_rotation",
+    }
+
 def _sector_cards(latest: dict) -> list[dict]:
     """Merge the RS-rank table (from the regime run) with per-sector cycle analysis."""
     from engine.canada_inputs import canada_closes
@@ -1465,6 +1574,11 @@ def main() -> int:
         # comment plus the owed-session digest receipt (execution packet §17)
         # are the guard for that residual form.
         vm["setups"] = setups
+
+        # Existing Canada theme intelligence projected into the stock journey.
+        # Read-only consumer: theme owner keeps action/rank authority; Prophet keeps
+        # stock selection authority.  Separate clocks are rendered in the template.
+        vm["theme_actions"] = _canada_theme_action_map(setups, site)
 
         # ── top_setups: top-5 buy rows for the glance card ───────────────────
         # MUST run AFTER vm["setups"] is assigned above (the first cut ran before it
