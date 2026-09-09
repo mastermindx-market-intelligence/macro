@@ -1,6 +1,6 @@
 {
   "appended": 0,
-  "asof": "2026-09-04",
+  "asof": "2026-09-08",
   "candidates": {
     "R": 1,
     "T": 4,
@@ -86,41 +86,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-08 16:04:04",
-  "runtime_s": 101.6,
+  "run_utc": "2026-09-09 15:01:19",
+  "runtime_s": 105.6,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": 0,
-    "asof": "2026-09-04",
-    "n_members": 166,
+    "asof": "2026-09-08",
+    "n_members": 180,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 2.969,
+        "emerging_score": 2.908,
         "rank": 1,
-        "theme": "Agriculture & FoodTech"
+        "theme": "Energy Renewable"
       },
       {
-        "emerging_score": 2.712,
+        "emerging_score": 2.434,
         "rank": 2,
         "theme": "Electric Vehicles"
       },
       {
-        "emerging_score": 2.458,
+        "emerging_score": 2.219,
         "rank": 3,
-        "theme": "Commodities Agriculture"
+        "theme": "Commodities Energy"
       },
       {
-        "emerging_score": 2.183,
+        "emerging_score": 2.203,
         "rank": 4,
-        "theme": "Crypto & Blockchain"
+        "theme": "Semiconductors"
       },
       {
-        "emerging_score": 2.101,
+        "emerging_score": 2.063,
         "rank": 5,
-        "theme": "Energy Renewable"
+        "theme": "Commodities Agriculture"
       }
     ]
   },
@@ -130,15 +130,15 @@
       "3B"
     ],
     "aligned": 4,
-    "asof_max": "2026-09-04",
+    "asof_max": "2026-09-08",
     "asof_mismatch": 0,
-    "asof_run": "2026-09-04",
+    "asof_run": "2026-09-08",
     "evaluated": 713,
     "fresh": 4,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 20.9,
+    "runtime_s": 20.6,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 89,
