@@ -5,13 +5,12 @@ Fully offline: the ONLY seam is ``urllib.request.urlopen`` (the GoTrue admin API
 What this suite pins:
   1. The enum table is CLOSED — an illegal value is dropped on read and refuses the write,
      and an unknown KEY can never reach ``user_metadata`` through this door.
-  2. The merge happens on OUR side and keeps unrelated stored keys. This is the whole reason
-     the module exists: a partial ``user_metadata`` PUT has REPLACED the object on some
-     GoTrue versions, so a blind write silently deletes whatever else is stored there.
-  3. A caller holding the record pays ONE call (PUT); a caller holding only a user id pays a
-     GET first — and a FAILED read REFUSES the write instead of PUTting a partial object.
-  4. Fail-soft everywhere: no configuration, a dead API, or a junk value → False, never a
+  2. Every write takes a fresh uncached GET, overlays only this writer's keys, and PUTs the
+     merged object. A cached ``base`` is ignored, so a Terminal key stored after the auth
+     cache filled cannot be reverted by this writer. A FAILED read still REFUSES the write.
+  3. Fail-soft everywhere: no configuration, a dead API, or a junk value → False, never a
      raise. A display preference is not worth a 500.
+  4. The freeze §8 tz default decides from that same fresh read; None means do not fire.
 """
 from __future__ import annotations
 
@@ -168,21 +167,27 @@ def test_read_user_prefs_makes_no_network_call(monkeypatch):
 
 
 # --------------------------------------------------------------------------- #
-# 3. write with a base: one PUT, merged on our side
+# 3. write: fresh GET, then PUT of fresh ∪ own keys. ``base`` is ignored.
 # --------------------------------------------------------------------------- #
-def test_write_with_base_is_one_put_and_keeps_unrelated_keys(api):
-    ok = user_prefs.write_user_prefs(UID, {"theme": "dark"}, base=dict(STORED), supabase=SB)
+def test_write_keeps_unrelated_keys_from_the_fresh_read_not_from_a_passed_base(api):
+    """Unrelated keys survive because they come from the fresh GET, not from a
+    cached ``base`` the caller still happens to pass. (Was
+    test_write_with_base_is_one_put_and_keeps_unrelated_keys.)
+    """
+    stale = {"display_name": "STALE", "lang": "en"}
+    ok = user_prefs.write_user_prefs(UID, {"theme": "dark"}, base=stale, supabase=SB)
     assert ok is True
-    assert api.methods == ["PUT"], "a caller holding the record must not pay a read"
-    method, url, payload = api.calls[0]
+    assert api.methods == ["GET", "PUT"]
+    method, url, payload = next(c for c in api.calls if c[0] == "PUT")
     assert url == f"https://proj.supabase.test/auth/v1/admin/users/{UID}"
     assert payload["user_metadata"] == {
         "display_name": "Ada", "lang": "en", "onboarded": True, "theme": "dark"}
+    assert payload["user_metadata"]["display_name"] != "STALE"
 
 
 def test_write_normalises_before_storing(api):
     user_prefs.write_user_prefs(UID, {"brain_depth": " DEEP "}, base={}, supabase=SB)
-    assert api.payload_of("PUT")["user_metadata"] == {"brain_depth": "deep"}
+    assert api.payload_of("PUT")["user_metadata"]["brain_depth"] == "deep"
 
 
 def test_write_url_quotes_the_user_id(api):
@@ -201,9 +206,10 @@ def test_write_sends_the_service_role_key_both_ways(api):
 
 
 # --------------------------------------------------------------------------- #
-# 4. write without a base: GET first, and a failed read refuses the write
+# 4. every write GETs first; a failed read refuses the write
 # --------------------------------------------------------------------------- #
 def test_write_without_base_reads_current_metadata_then_merges(api):
+    """There is no longer a no-GET path. methods == ["GET", "PUT"] either way."""
     ok = user_prefs.write_user_prefs(UID, {"brain_depth": "concise"}, supabase=SB)
     assert ok is True
     assert api.methods == ["GET", "PUT"]
@@ -285,16 +291,187 @@ def test_a_dead_api_is_false_never_a_raise(monkeypatch):
     assert user_prefs.write_user_prefs(UID, {"lang": "zh"}, base={}, supabase=SB) is False
 
 
-def test_an_unserialisable_stored_value_is_false_not_a_raise(api):
-    """`base` is somebody else's dict. A value json cannot encode must come back False —
-    this is a fire-and-forget preference write, not a place to raise out of."""
-    assert user_prefs.write_user_prefs(UID, {"lang": "zh"},
-                                       base={"weird": object()}, supabase=SB) is False
+def test_an_unserialisable_stored_value_is_false_not_a_raise(api, monkeypatch):
+    """The fresh read is somebody else's dict. A value json cannot encode must come
+    back False — this is a fire-and-forget preference write, not a place to raise.
+    (Junk used to live on ``base``, which is no longer encoded.)
+    """
+    monkeypatch.setattr(
+        user_prefs, "fetch_user_metadata", lambda *a, **k: {"weird": object()})
+    assert user_prefs.write_user_prefs(UID, {"lang": "zh"}, supabase=SB) is False
 
 
-def test_a_non_dict_base_refuses_the_write(api):
-    """Same refusal as a failed read: an unreadable base means we do not know what is
-    stored, and a PUT would replace an object we never saw."""
-    for junk in ("nope", 5, [], object()):
-        assert user_prefs.write_user_prefs(UID, {"lang": "zh"}, base=junk, supabase=SB) is False
-    assert api.calls == []
+def test_a_junk_base_is_ignored_and_the_write_still_reads_fresh(api):
+    """``base`` is no longer the merge source (was test_a_non_dict_base_refuses_the_write).
+    A non-dict base must not refuse a write we can complete from a fresh read.
+    """
+    assert user_prefs.write_user_prefs(UID, {"lang": "zh"}, base="nope", supabase=SB) is True
+    assert api.methods == ["GET", "PUT"]
+
+
+# --------------------------------------------------------------------------- #
+# B-F08-7a: fresh read, key-scoped merge, Terminal keys survive (seat R1/R3)
+# --------------------------------------------------------------------------- #
+#: Keys the Terminal writes that this module has never validated. A macro PUT
+#: that re-sends a stale snapshot of these is the clobber in the frozen spec §1.3.
+_TERMINAL_STATE = {
+    "lang": "en",
+    "theme": "dark",
+    "market_focus": ["us"],
+    "markets": {"home": "us", "enabled": ["us"]},
+    "terminal": {"start_tf": "D", "updown": "west"},
+    "trade_types": ["stocks"],
+    "display_name": "Ada",
+    "never_seen_key": "keep-me",
+}
+
+
+class _ReplaceGoTrue:
+    """Fake GoTrue that REPLACES user_metadata wholesale on PUT (the vendor
+    behaviour this writer must survive without assuming a merge). GET returns
+    the live store; the caller can mutate ``state`` between the cache fill and
+    the write to model the §1.3 interleaving.
+    """
+
+    def __init__(self, state: dict):
+        self.state = dict(state)
+        self.calls: list[tuple[str, dict | None]] = []
+
+    def urlopen(self, req, timeout=None):
+        method = req.get_method()
+        payload = json.loads(req.data.decode()) if req.data else None
+        self.calls.append((method, payload))
+        if method == "GET":
+            return _Resp(json.dumps({"id": UID, "user_metadata": dict(self.state)}).encode())
+        self.state = dict((payload or {}).get("user_metadata") or {})
+        return _Resp()
+
+    @property
+    def methods(self) -> list[str]:
+        return [c[0] for c in self.calls]
+
+    def put_body(self) -> dict:
+        return next(c[1] for c in self.calls if c[0] == "PUT")
+
+
+def test_write_of_a_pref_preserves_unknown_terminal_keys(monkeypatch):
+    """Seat R3: a write of brain_depth must leave lang, theme, market_focus, and a
+    never-seen key intact. RED against today's writer when it is handed a stale
+    ``base`` that predates those Terminal values.
+    """
+    stale = {"lang": "en", "theme": "light", "display_name": "Ada"}
+    live = dict(_TERMINAL_STATE)
+    live["lang"] = "zh"
+    live["theme"] = "dark"
+    live["market_focus"] = ["us", "hk"]
+    fake = _ReplaceGoTrue(live)
+    monkeypatch.setattr(urllib.request, "urlopen", fake.urlopen)
+
+    ok = user_prefs.write_user_prefs(
+        UID, {"brain_depth": "concise"}, base=dict(stale), supabase=SB)
+    assert ok is True
+    assert fake.methods[0] == "GET", "the write path must call the fresh reader"
+    body = fake.put_body()["user_metadata"]
+    assert body["lang"] == "zh"
+    assert body["theme"] == "dark"
+    assert body["market_focus"] == ["us", "hk"]
+    assert body["never_seen_key"] == "keep-me"
+    assert body["brain_depth"] == "concise"
+    # Stale cached values must not be what landed.
+    assert body["theme"] != "light"
+
+
+def test_merge_modelling_fake_keeps_a_key_the_writer_never_saw(monkeypatch):
+    """§2.2 case 2: fake starts from a state the writer has NOT seen (unknown
+    Terminal key added after any cached base was read). End state keeps it.
+    """
+    stale = {"lang": "en", "display_name": "Ada"}
+    live = {"lang": "en", "display_name": "Ada", "never_seen_key": "keep-me",
+            "market_focus": ["us"]}
+    fake = _ReplaceGoTrue(live)
+    monkeypatch.setattr(urllib.request, "urlopen", fake.urlopen)
+
+    assert user_prefs.write_user_prefs(
+        UID, {"brain_depth": "concise"}, base=dict(stale), supabase=SB) is True
+    assert fake.state["never_seen_key"] == "keep-me"
+    assert fake.state["market_focus"] == ["us"]
+    assert fake.state["brain_depth"] == "concise"
+    assert fake.state["lang"] == "en"
+
+
+def test_interleaving_terminal_write_is_not_clobbered(monkeypatch):
+    """§2.2 case 4 / spec §1.3: cache filled at T−10s, Terminal writes lang and
+    market_focus, then the macro write. Both Terminal choices must survive.
+    """
+    stale = dict(_TERMINAL_STATE)  # T−10 s snapshot
+    live = dict(_TERMINAL_STATE)
+    live["lang"] = "zh"
+    live["market_focus"] = ["us", "hk"]
+    fake = _ReplaceGoTrue(live)
+    monkeypatch.setattr(urllib.request, "urlopen", fake.urlopen)
+
+    assert user_prefs.write_user_prefs(
+        UID, {"brain_depth": "concise"}, base=dict(stale), supabase=SB) is True
+    assert fake.state["lang"] == "zh"
+    assert fake.state["market_focus"] == ["us", "hk"]
+    assert fake.state["brain_depth"] == "concise"
+
+
+def test_stale_cached_snapshot_never_reaches_the_put(monkeypatch):
+    """Seat R3: the write path calls the fresh reader; a cached snapshot passed
+    as ``base`` is not what gets PUT.
+    """
+    stale = {"lang": "en", "theme": "light", "secret_from_cache": "stale"}
+    live = {"lang": "zh", "theme": "dark", "never_seen_key": "keep-me"}
+    fake = _ReplaceGoTrue(live)
+    monkeypatch.setattr(urllib.request, "urlopen", fake.urlopen)
+
+    assert user_prefs.write_user_prefs(
+        UID, {"theme": "dark"}, base=dict(stale), supabase=SB) is True
+    assert fake.methods == ["GET", "PUT"]
+    body = fake.put_body()["user_metadata"]
+    assert "secret_from_cache" not in body
+    assert body["lang"] == "zh"
+    assert body["never_seen_key"] == "keep-me"
+
+
+def test_write_always_pays_a_fresh_get_even_when_base_is_passed(api):
+    """A caller holding the identity-cache record still must not skip the GET."""
+    ok = user_prefs.write_user_prefs(
+        UID, {"theme": "dark"}, base=dict(STORED), supabase=SB)
+    assert ok is True
+    assert api.methods[0] == "GET"
+    assert "PUT" in api.methods
+
+
+def test_apply_tz_default_does_not_overwrite_a_present_tz():
+    """Seat R2/R3: a tz already in the fresh read is left alone."""
+    patch = {"alert_email_optin": True}
+    user_prefs.apply_tz_default(patch, {"tz": "Asia/Hong_Kong", "lang": "en"})
+    assert "tz" not in patch
+
+
+def test_apply_tz_default_none_fresh_does_not_fire():
+    """Seat R2: None means 'we do not know' — the rule does not fire."""
+    patch = {"alert_email_optin": True, "lang": "zh"}
+    user_prefs.apply_tz_default(patch, None)
+    assert "tz" not in patch
+
+
+def test_apply_tz_default_request_tz_wins_over_fresh_and_empty():
+    """A tz present in the request still wins over both a stored zone and None."""
+    patch = {"alert_email_optin": True, "tz": "Europe/London"}
+    user_prefs.apply_tz_default(patch, {"tz": "UTC"})
+    assert patch["tz"] == "Europe/London"
+    patch2 = {"alert_email_optin": True, "tz": "Europe/London"}
+    user_prefs.apply_tz_default(patch2, None)
+    assert patch2["tz"] == "Europe/London"
+
+
+def test_apply_tz_default_fires_from_fresh_lang_when_alerts_turn_on():
+    patch = {"alert_email_optin": True}
+    user_prefs.apply_tz_default(patch, {"lang": "zh"})
+    assert patch["tz"] == "Asia/Shanghai"
+    patch_en = {"alert_email_optin": True}
+    user_prefs.apply_tz_default(patch_en, {"lang": "en"})
+    assert patch_en["tz"] == "UTC"

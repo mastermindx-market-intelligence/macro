@@ -45,18 +45,28 @@ class _Resp:
 
 
 class _Auth:
-    """Records every admin-API call the module makes."""
+    """Records every admin-API call the module makes. GET returns ``metadata``
+    so the writer can take a fresh read; PUT is recorded, not applied.
+    """
 
-    def __init__(self, fail=False):
+    def __init__(self, fail=False, metadata=None):
         self.calls: list[tuple[str, str, dict]] = []
         self.fail = fail
+        self.metadata = dict(USER["user_metadata"] if metadata is None else metadata)
 
     def urlopen(self, req, timeout=None):
+        method = req.get_method()
         payload = json.loads(req.data.decode()) if req.data else {}
-        self.calls.append((req.get_method(), req.full_url, payload))
+        self.calls.append((method, req.full_url, payload))
         if self.fail:
             raise OSError("supabase unreachable")
+        if method == "GET":
+            return _Resp(json.dumps(
+                {"id": USER["id"], "user_metadata": dict(self.metadata)}).encode())
         return _Resp()
+
+    def put(self) -> tuple[str, str, dict]:
+        return next(c for c in self.calls if c[0] == "PUT")
 
 
 class _Store:
@@ -128,7 +138,7 @@ def test_client_sent_user_id_is_ignored(auth, store):
         {"lang": "zh", "user_id": "attacker-uuid", "id": "attacker-uuid"})
     assert not hasattr(body, "user_id")
     account_prefs.save_prefs(body, user=USER)
-    _, url, _ = auth.calls[0]
+    _, url, _ = auth.put()
     assert url.endswith("/auth/v1/admin/users/9c1f-user")
     assert "attacker-uuid" not in url
     assert store.rows[0]["body"][0]["user_id"] == "9c1f-user"
@@ -171,12 +181,13 @@ def test_values_are_normalised(auth, store, value, expected):
 # --------------------------------------------------------------------------- #
 def test_metadata_write_merges_and_does_not_drop_other_keys(auth, store):
     """A partial user_metadata body has replaced the whole object on some GoTrue versions —
-    the merge happens here, from the record the token verification already returned."""
+    the merge happens here, from a fresh admin GET, never the cached identity snapshot."""
     account_prefs.save_prefs(account_prefs.PrefsRequest(theme="dark"), user=USER)
-    method, url, payload = auth.calls[0]
+    method, url, payload = auth.put()
     assert method == "PUT"
     assert url == "https://proj.supabase.test/auth/v1/admin/users/9c1f-user"
     assert payload["user_metadata"] == {"display_name": "Ada", "lang": "en", "theme": "dark"}
+    assert [c[0] for c in auth.calls] == ["GET", "PUT"]
 
 
 def test_lang_mirrors_into_email_prefs(auth, store):
@@ -200,7 +211,7 @@ def test_theme_only_does_not_touch_email_prefs(auth, store):
 def test_both_keys_in_one_call(auth, store):
     out = account_prefs.save_prefs(account_prefs.PrefsRequest(lang="en", theme="dark"), user=USER)
     assert out["prefs"] == {"lang": "en", "theme": "dark"}
-    assert auth.calls[0][2]["user_metadata"]["theme"] == "dark"
+    assert auth.put()[2]["user_metadata"]["theme"] == "dark"
     assert store.rows[0]["body"][0]["lang"] == "en"
 
 
@@ -213,7 +224,7 @@ def test_both_keys_in_one_call(auth, store):
 def test_brain_depth_is_accepted_and_normalised(auth, store, value, expected):
     out = account_prefs.save_prefs(account_prefs.PrefsRequest(brain_depth=value), user=USER)
     assert out["prefs"] == {"brain_depth": expected}
-    assert auth.calls[0][2]["user_metadata"] == {
+    assert auth.put()[2]["user_metadata"] == {
         "display_name": "Ada", "lang": "en", "brain_depth": expected}
 
 
@@ -228,9 +239,62 @@ def test_all_three_keys_in_one_call(auth, store):
     out = account_prefs.save_prefs(
         account_prefs.PrefsRequest(lang="zh", theme="dark", brain_depth="concise"), user=USER)
     assert out["prefs"] == {"lang": "zh", "theme": "dark", "brain_depth": "concise"}
-    assert auth.calls[0][2]["user_metadata"] == {
+    assert auth.put()[2]["user_metadata"] == {
         "display_name": "Ada", "lang": "zh", "theme": "dark", "brain_depth": "concise"}
     assert store.rows[0]["body"][0]["lang"] == "zh"
+
+
+def test_stale_cached_snapshot_never_reaches_the_put(auth, store):
+    """Seat R3: USER.user_metadata is the identity-cache snapshot (lang=en). The
+    fresh GET returns Terminal keys the cache has not seen. Those land on the PUT;
+    the stale lang/theme do not.
+    """
+    auth.metadata = {
+        "lang": "zh", "theme": "dark", "market_focus": ["us", "hk"],
+        "never_seen_key": "keep-me", "display_name": "Ada",
+    }
+    stale_user = {
+        "id": USER["id"], "email": USER["email"],
+        "user_metadata": {"lang": "en", "theme": "light", "display_name": "Ada"},
+    }
+    account_prefs.save_prefs(
+        account_prefs.PrefsRequest(brain_depth="concise"), user=stale_user)
+    assert [c[0] for c in auth.calls] == ["GET", "PUT"]
+    meta = auth.put()[2]["user_metadata"]
+    assert meta["lang"] == "zh"
+    assert meta["theme"] == "dark"
+    assert meta["market_focus"] == ["us", "hk"]
+    assert meta["never_seen_key"] == "keep-me"
+    assert meta["brain_depth"] == "concise"
+
+
+def test_tz_default_on_the_route_uses_a_fresh_read_not_the_cache(auth, store, monkeypatch):
+    """Seat R2/R3: when the tz-default rule is about to fire, the route re-reads.
+    A tz present in the fresh read is not overwritten; a None fresh read does
+    not fire. Exercised through the helper the route calls, because this branch
+    of PrefsRequest has no alert_email_optin on origin/main (that field lands
+    with #6907).
+    """
+    seen = []
+
+    def _fetch(user_id, *, supabase=None):
+        seen.append((user_id, supabase))
+        return {"tz": "Asia/Hong_Kong", "lang": "en"}
+
+    monkeypatch.setattr(account_prefs.user_prefs, "fetch_user_metadata", _fetch)
+    patch = {"alert_email_optin": True}
+    # Mimic the route's "about to fire" gate, then the helper.
+    fresh = account_prefs.user_prefs.fetch_user_metadata("9c1f-user", supabase=("u", "k"))
+    account_prefs.user_prefs.apply_tz_default(patch, fresh)
+    assert seen and "tz" not in patch
+
+    patch_none = {"alert_email_optin": True, "lang": "zh"}
+    account_prefs.user_prefs.apply_tz_default(patch_none, None)
+    assert "tz" not in patch_none
+
+    patch_req = {"alert_email_optin": True, "tz": "Europe/London"}
+    account_prefs.user_prefs.apply_tz_default(patch_req, {"tz": "UTC"})
+    assert patch_req["tz"] == "Europe/London"
 
 
 def test_the_enum_table_is_the_libs(auth, store):
@@ -243,12 +307,13 @@ def test_the_enum_table_is_the_libs(auth, store):
     assert account_prefs.DEPTHS is user_prefs.PREF_VALUES["brain_depth"]
 
 
-def test_the_route_still_makes_exactly_one_network_call(auth, store):
-    """The lib can read current metadata before merging; this path must NOT — the verified
-    token's record is already in hand, so a GET here would be a wasted round trip on every
-    debounced theme toggle."""
+def test_the_route_pays_a_fresh_get_then_a_put(auth, store):
+    """The cached identity snapshot is never the merge base. Every prefs write
+    takes an uncached admin GET, then PUTs. (Was
+    test_the_route_still_makes_exactly_one_network_call.)
+    """
     account_prefs.save_prefs(account_prefs.PrefsRequest(brain_depth="concise"), user=USER)
-    assert [c[0] for c in auth.calls] == ["PUT"]
+    assert [c[0] for c in auth.calls] == ["GET", "PUT"]
 
 
 # --------------------------------------------------------------------------- #
