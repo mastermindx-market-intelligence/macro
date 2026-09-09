@@ -120,12 +120,10 @@ def save_prefs(body: PrefsRequest, user: dict = Depends(_current_user)) -> dict:
     if not patch:
         raise HTTPException(400, "nothing to save (send lang, theme and/or brain_depth)")
 
-    # Freeze §8 tz default: decide from a fresh read, never from the cached
-    # identity snapshot. None from that read means "do not fire".
-    if patch.get("alert_email_optin") is True and "tz" not in patch:
-        fresh = user_prefs.fetch_user_metadata(str(user_id), supabase=_supabase())
-        user_prefs.apply_tz_default(patch, fresh)
-
+    # No tz-default wiring here: PrefsRequest on this branch carries no alert fields, so
+    # the freeze §8 gate could never fire. `lib.user_prefs.apply_tz_default` is the helper
+    # that rule will use; #6907 owns wiring it, on the FRESH read, when it lands the alert
+    # fields on this route.
     stored = _write_user_metadata(str(user_id), patch)
 
     mirrored = False

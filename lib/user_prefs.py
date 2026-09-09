@@ -22,8 +22,11 @@ key gets silently reverted. Keys this module did not validate stay whatever the
 fresh read returned.
 
 The ``base`` keyword is accepted so existing call sites keep running and is
-**ignored**. A failed read still refuses the write: the PUT body is the whole
-object we just saw, and we will not send an object we never saw.
+**ignored**. A read we could not complete OR could not make sense of still refuses
+the write: the PUT body is the whole object we just saw, and we will not send an
+object we never saw. That is a real cost — a transient read blip now fails a save
+that used to go through on one PUT — and it is the trade this module chooses, because
+the failure it replaces silently destroyed keys another product stored.
 
 This closes the auth-cache clobber. It does not close last-write-wins on a key
 two writers both change, and a sibling write that lands between our GET and our
@@ -177,6 +180,12 @@ def fetch_user_metadata(user_id: str, *, supabase: tuple[str, str] | None = None
     None is NOT ``{}``: it means "we do not know what is stored", and that distinction is
     load-bearing — :func:`write_user_prefs` refuses to write on a None rather than sending a
     PUT that could replace an object it never saw.
+
+    A 200 we cannot make sense of is *also* None, not ``{}``: a body that is not a JSON
+    object, or one whose ``user_metadata`` is absent or not an object, tells us nothing
+    about what is stored. Collapsing that to ``{}`` would let the SAFE writer PUT its own
+    three keys as the WHOLE object and erase everything else the account holds. ``{}`` is
+    reserved for the one case we actually observed it: ``user_metadata`` present and empty.
     """
     base_url, key = _supabase(supabase)
     if not user_id or not base_url or not key:
@@ -189,8 +198,16 @@ def fetch_user_metadata(user_id: str, *, supabase: tuple[str, str] | None = None
     except Exception as exc:  # noqa: BLE001
         log.warning("user_prefs: metadata read failed for %s (%s)", user_id, type(exc).__name__)
         return None
-    meta = body.get("user_metadata") if isinstance(body, dict) else None
-    return meta if isinstance(meta, dict) else {}
+    if not isinstance(body, dict):
+        log.warning("user_prefs: metadata read for %s returned a non-object body", user_id)
+        return None
+    meta = body.get("user_metadata")
+    if not isinstance(meta, dict):
+        # Absent or non-dict user_metadata on a 200: unreadable, not empty. Returning {}
+        # here would make the writer replace the stored object with its own keys.
+        log.warning("user_prefs: metadata read for %s had no readable user_metadata", user_id)
+        return None
+    return meta
 
 
 def write_user_prefs(user_id: str, patch: dict, *, base: dict | None = None,

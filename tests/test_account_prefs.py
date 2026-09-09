@@ -7,7 +7,9 @@ Fully offline: no Supabase, no network. Two seams are stubbed —
 Coverage:
   - identity comes from the BEARER TOKEN only; a client-sent user_id is ignored.
   - lang/theme validation, including "nothing to save".
-  - the metadata write MERGES rather than replacing (an unrelated stored key survives).
+  - the metadata write MERGES rather than replacing (an unrelated stored key survives),
+    and it merges onto a FRESH read — the cached identity snapshot never reaches the PUT.
+  - an unreadable fresh read refuses the write: no PUT, and a 502 when nothing else stored.
   - lang mirrors into email_prefs; theme alone does not touch it.
   - fail-soft: a partial failure still 200s with an honest per-sink flag; a total failure
     is an honest 502 rather than a lie.
@@ -268,33 +270,59 @@ def test_stale_cached_snapshot_never_reaches_the_put(auth, store):
     assert meta["brain_depth"] == "concise"
 
 
-def test_tz_default_on_the_route_uses_a_fresh_read_not_the_cache(auth, store, monkeypatch):
-    """Seat R2/R3: when the tz-default rule is about to fire, the route re-reads.
-    A tz present in the fresh read is not overwritten; a None fresh read does
-    not fire. Exercised through the helper the route calls, because this branch
-    of PrefsRequest has no alert_email_optin on origin/main (that field lands
-    with #6907).
+def test_the_route_merges_from_the_fresh_reader_not_the_cached_snapshot(auth, store,
+                                                                        monkeypatch):
+    """Seat R2: the route-boundary contract, driven through the REAL handler with the
+    fresh reader itself mocked (not merely the socket). ``save_prefs`` must reach
+    ``fetch_user_metadata`` with the token-derived id, and the object that reader
+    returns — never the caller's cached ``user_metadata`` — must be what the PUT is
+    built from. (Replaces test_tz_default_on_the_route_uses_a_fresh_read_not_the_cache,
+    which never called save_prefs and asserted a list it had appended to itself.)
     """
-    seen = []
+    seen: list[tuple[str, object]] = []
 
-    def _fetch(user_id, *, supabase=None):
+    def _fresh(user_id, *, supabase=None):
         seen.append((user_id, supabase))
-        return {"tz": "Asia/Hong_Kong", "lang": "en"}
+        return {"lang": "zh", "theme": "dark", "market_focus": ["us", "hk"],
+                "never_seen_key": "keep-me"}
 
-    monkeypatch.setattr(account_prefs.user_prefs, "fetch_user_metadata", _fetch)
-    patch = {"alert_email_optin": True}
-    # Mimic the route's "about to fire" gate, then the helper.
-    fresh = account_prefs.user_prefs.fetch_user_metadata("9c1f-user", supabase=("u", "k"))
-    account_prefs.user_prefs.apply_tz_default(patch, fresh)
-    assert seen and "tz" not in patch
+    monkeypatch.setattr(account_prefs.user_prefs, "fetch_user_metadata", _fresh)
+    stale_user = {
+        "id": USER["id"], "email": USER["email"],
+        "user_metadata": {"lang": "en", "theme": "light", "display_name": "Ada"},
+    }
+    account_prefs.save_prefs(
+        account_prefs.PrefsRequest(brain_depth="concise"), user=stale_user)
 
-    patch_none = {"alert_email_optin": True, "lang": "zh"}
-    account_prefs.user_prefs.apply_tz_default(patch_none, None)
-    assert "tz" not in patch_none
+    assert [uid for uid, _ in seen] == ["9c1f-user"], "the route must take a fresh read"
+    # The GET is the mocked reader's, so the only thing left on the wire is the PUT.
+    assert [c[0] for c in auth.calls] == ["PUT"]
+    meta = auth.put()[2]["user_metadata"]
+    assert meta["lang"] == "zh"
+    assert meta["theme"] == "dark"
+    assert meta["market_focus"] == ["us", "hk"]
+    assert meta["never_seen_key"] == "keep-me"
+    assert meta["brain_depth"] == "concise"
+    assert "display_name" not in meta, "the cached snapshot is not the merge base"
 
-    patch_req = {"alert_email_optin": True, "tz": "Europe/London"}
-    account_prefs.user_prefs.apply_tz_default(patch_req, {"tz": "UTC"})
-    assert patch_req["tz"] == "Europe/London"
+
+def test_an_unreadable_fresh_read_makes_no_put_and_502s(auth, monkeypatch):
+    """Seat R3 at the route boundary, and the packet's KNOWN LIMIT in one test.
+
+    ``fetch_user_metadata`` is None when the read could not be completed OR could not
+    be made sense of (a 200 whose ``user_metadata`` is absent or not an object). The
+    writer refuses, so NO PUT goes out; a brain_depth-only save has no email mirror to
+    fall back on, so the route answers 502 "could not save preferences, please try
+    again" on a save that succeeded on one PUT before this packet.
+    """
+    monkeypatch.setattr(account_prefs.user_prefs, "fetch_user_metadata",
+                        lambda *a, **k: None)
+    monkeypatch.setattr(billing, "_pg", _Store().pg)
+    with pytest.raises(HTTPException) as ei:
+        account_prefs.save_prefs(
+            account_prefs.PrefsRequest(brain_depth="concise"), user=USER)
+    assert ei.value.status_code == 502
+    assert auth.calls == [], "no PUT may follow a read we could not use"
 
 
 def test_the_enum_table_is_the_libs(auth, store):

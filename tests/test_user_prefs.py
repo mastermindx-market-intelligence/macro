@@ -7,7 +7,8 @@ What this suite pins:
      and an unknown KEY can never reach ``user_metadata`` through this door.
   2. Every write takes a fresh uncached GET, overlays only this writer's keys, and PUTs the
      merged object. A cached ``base`` is ignored, so a Terminal key stored after the auth
-     cache filled cannot be reverted by this writer. A FAILED read still REFUSES the write.
+     cache filled cannot be reverted by this writer. A read that FAILED, or a 200 we could
+     not make sense of, still REFUSES the write (both are None, never {}).
   3. Fail-soft everywhere: no configuration, a dead API, or a junk value → False, never a
      raise. A display preference is not worth a 500.
   4. The freeze §8 tz default decides from that same fresh read; None means do not fire.
@@ -226,15 +227,42 @@ def test_a_failed_read_refuses_the_write(monkeypatch):
 
 
 def test_fetch_user_metadata_distinguishes_unknown_from_empty(monkeypatch):
-    """None means "we could not read it"; {} means "we read it and nothing is stored". The
-    write path branches on that difference, so it must not collapse."""
+    """None means "we do not know what is stored"; {} means "we read it and nothing is
+    stored". The write path branches on that difference, so it must not collapse.
+
+    Seat R3 moves three cases from {} to None: a body that is not a JSON object, a 200
+    with no ``user_metadata``, and a ``user_metadata`` that is not an object. Under the
+    SAFE writer the PUT body is the WHOLE object, so calling any of those "empty" would
+    replace everything the account holds with this patch's three keys. Only a
+    ``user_metadata`` we actually saw, and saw empty, is {}.
+    """
     a = _install(monkeypatch, _Api(fail_get=True))
-    assert user_prefs.fetch_user_metadata(UID, supabase=SB) is None   # unknown
+    assert user_prefs.fetch_user_metadata(UID, supabase=SB) is None   # unreadable
     assert a.methods == ["GET"]
-    _install(monkeypatch, _Api(get_body=b'{"id":"x"}'))
+    _install(monkeypatch, _Api(metadata={}))
     assert user_prefs.fetch_user_metadata(UID, supabase=SB) == {}     # known-empty
+    _install(monkeypatch, _Api(get_body=b'{"id":"x"}'))
+    assert user_prefs.fetch_user_metadata(UID, supabase=SB) is None   # no user_metadata
     _install(monkeypatch, _Api(get_body=b'{"user_metadata":"junk"}'))
-    assert user_prefs.fetch_user_metadata(UID, supabase=SB) == {}
+    assert user_prefs.fetch_user_metadata(UID, supabase=SB) is None   # not an object
+    _install(monkeypatch, _Api(get_body=b'{"user_metadata":[1,2]}'))
+    assert user_prefs.fetch_user_metadata(UID, supabase=SB) is None   # a list is not one
+    _install(monkeypatch, _Api(get_body=b'"not an object"'))
+    assert user_prefs.fetch_user_metadata(UID, supabase=SB) is None   # body not an object
+
+
+def test_a_malformed_200_read_refuses_the_write_and_sends_no_put(monkeypatch):
+    """Seat R3, the reason the inversion above matters: a 200 we cannot make sense of
+    must stop the write. Collapsed to {}, the merge base would be empty and the PUT
+    would send ``{"user_metadata": {"theme": "dark"}}`` as the user's whole stored
+    object — the exact clobber this packet exists to remove, arriving from the other
+    direction. KNOWN LIMIT: this fails a save that used to go through.
+    """
+    for body in (b'{"id":"x"}', b'{"user_metadata":"junk"}', b'{"user_metadata":[1,2]}',
+                 b'"not an object"'):
+        a = _install(monkeypatch, _Api(get_body=body))
+        assert user_prefs.write_user_prefs(UID, {"theme": "dark"}, supabase=SB) is False
+        assert a.methods == ["GET"], "no PUT may follow a read we could not use"
 
 
 def test_write_on_a_user_with_no_stored_metadata_yet(monkeypatch):
