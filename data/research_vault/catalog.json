@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-09T14:52:28.078795+00:00",
-  "count": 2071,
+  "generated_at": "2026-09-09T18:06:56.280211+00:00",
+  "count": 2080,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -97,6 +97,47 @@
   ],
   "items": [
     {
+      "id": "marketdesk-xhdzmiea2zl-f5164a",
+      "title": "Global daily even more and less of the same things",
+      "institution": "Rabobank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-09T16:09:58Z",
+      "summary_points": [
+        "**Middle East Geopolitical Tensions & Trade War Risks**: Escalating US-Iran strikes and Saudi-Houthi conflict threaten regional stability; US-China trade war intensifies with Canadian tariffs, EU-China supply chain disputes, and Suez/Panama Canal maritime risks.",
+        "**Oil Market Pressures**: Oil near $100 (Shanghai > Brent), low refined stocks, high crack spreads; EU-China trade tensions risk 300k EU job cuts and supply chain decline.",
+        "**China’s Economic Data & Structural Risks**: CPI at 0.8% y-o-y (up from 0.5%), PPI at 3.8% y-o-y (vs.",
+        "6% consensus); tobacco monopoly’s $54bn capital funding signals inflationary pressures and bad loan risks.",
+        "**US ADP Employment**: Primary data release today; outcome critical for assessing labor market health and influencing Fed policy expectations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-9fw7a7ifpql-4380ba",
+      "title": "GS Esposito GS Tech Communacopia Conference Best of Day 1 9 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-09T14:28:14Z",
+      "summary_points": [
+        "**Broadcom's AI Revenue Scale**: $30bn revenue vs $10bn costs from 1GW AI cluster, frontier models driving 75% industry revenue; Google/TPU (2031), OpenAI/Jalapeno, Anthropic partnerships; FY27/FY28 revenue targets $115bn/$230bn.",
+        "**Reddit's Growth & AI Risk**: 60% revenue growth for 8 quarters, 90% gross margins, 50% user retention lift; risk: AI-generated content diluting authentic discussions.",
+        "**Cisco's Hyperscaler Demand**: $3bn FY26 hyperscaler AI orders, $7.5bn F2027 revenue outlook (15% growth); campus networking accelerating to double-digit growth (vs 3-4% historical).",
+        "**Databricks' Operational Shift**: Focus shifting from chatbots to operational layer (finance/sales/compliance); Lapis initiative for multi-model routing driving adoption beyond early-stage AI."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-kihqfyeqsks-5fe3aa",
       "title": "GS Lee GS Crypto Weekly Recap Macro Heavy 9 Sep 2026",
       "institution": "S&T",
@@ -113,6 +154,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-33r91uqt7z3-18d345",
+      "title": "GS Puzio USDCNH Calls GS Trading Praneet Shah 9 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-09T14:23:13Z",
+      "summary_points": [
+        "**Record Yield Gap**: US-China 10-yr yield gap widens to record levels, driving capital outflows to US, intensifying geopolitical tensions, and pressuring Chinese asset valuations.",
+        "**Correlation Break**: USDCHN spot and 10y US yields both trend downward since 2023, breaking historical positive correlation and signaling structural shifts in currency drivers.",
+        "**Cheap Hedge Opportunity**: 3m ATM USDCHN Call at 0.21% premium (22bps cost) offers low-cost hedging against USD strength via low volatility/carry dynamics.",
+        "**Volatility Decline**: 3m ATM implied vol below 2.35 (Live), declining since 2018-2019, indicating reduced market anxiety about currency volatility."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
@@ -136,6 +197,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-rgidgby9jc4-73391f",
+      "title": "Snowflake Inc. (SNOW) Communacopia + Technology 2026 — Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-09T13:50:15Z",
+      "summary_points": [
+        "**CoCo Forecasting Shift**: Snowflake now uses two quarters of usage data to forecast customer onboarding (CoCo), prioritizing incremental value capture over standalone gross margin, with AI accelerating migration timelines and consumption ramps.",
+        "**AI Adoption Acceleration**: AI shortens onboarding cycles via fixed pricing and enables outcome-driven engagements, driving faster consumption milestones than historical cohorts.",
+        "**Critical Risk**: Iceberg product cannibalizing storage revenue poses a material threat to near-term revenue streams.",
+        "**Valuation Target**: Buy rating with $436 12m price target (82x EV/FCF), driven by fixed cost migration momentum and strategic application stack expansion."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-5rqvpzdykz9-a45c2a",
       "title": "ICG Plc (ICGIN.L) Latest filing highlights Amundi related share buyback programme nearing completion",
       "institution": "Goldman Sachs",
@@ -153,6 +234,85 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ldxlufmmpgt-aba8be",
+      "title": "Korn Ferry (KFY) F1Q First Take Revenue, margin and EPS upside mitigated by a mixed F2Q outlook",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-09T13:49:47Z",
+      "summary_points": [
+        "**F1Q Beat vs F2Q EPS Risk**: F1Q revenue +6.8% y/y (beat consensus 3.9-4.1%), EPS $1.43 (beat GS/FactSet), but F2Q EPS guidance below consensus due to AMS acquisition integration costs.",
+        "**AMS Deal Integration Headwinds**: $1bn AMS acquisition drove +10.4% Search/+11.1% Talent & Org Solutions growth, yet F2Q EPS shortfall and integration risk overshadow near-term results.",
+        "**Guidance vs Consensus & Valuation**: F2Q revenue guidance ($860-878m) exceeds FactSet ($743m), but EBITDA margins/EPS face negative revisions; valuation target $84 (13x NTM P/E) below peer median (15.3x) amid pro-cyclical headwinds."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-inwzggo0t35-c09128",
+      "title": "Taiwan Stronger than expected Rebound in August Exports, Led by Tech",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-09T13:49:41Z",
+      "summary_points": [
+        "**Tech-Driven Export Rebound**: Taiwan's August exports rose 6.2% mom sa, led by tech (14.5% mom sa for info/comm/audiovisual products), reversing prior declines.",
+        "**Record Trade Surplus**: Trade surplus hit $22.3bn NSA, widening due to 7.2% mom sa import rebound and strong export growth, surpassing consensus.",
+        "**US/ASEAN Diversification**: US exports surged (outpacing China/ASEAN), while ASEAN (+10.4% mom sa) and US (+4.3% mom sa) drove half of export gains, reducing China reliance."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-strlhaj2q4l-7cbd40",
+      "title": "China Both CPI and PPI inflation picked up in August",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-09T13:49:18Z",
+      "summary_points": [
+        "**CPI/PPI Data**: Headline CPI +0.8% yoy (vs.",
+        "+0.5% July), PPI +3.8% yoy (vs.",
+        "+3.5% July), driven by energy/transportation services (CPI) and downstream products (PPI), with semiconductor prices contributing ~50% to PPI surge.",
+        "**Semiconductor-Driven PPI**: Producer goods PPI accelerated to +5.0% yoy (vs.",
+        "+4.8% July), while semiconductor-related price increases accounted for ~50% of PPI growth, heightening corporate margin risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-50uicgsuprj-3d0aa7",
+      "title": "Japan September Reuters Tankan Semiconductor Related Demand Contributes to Improvement in Manufacturers' and Non manufactur...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-09T13:49:02Z",
+      "summary_points": [
+        "**Manufacturers' DI at 21-Year High**: DI rose +3 to +21 (highest since Dec 2021), driven by strong semiconductor-related demand (electric machinery +15, textiles/paper +13), offsetting declines in oil/refinery/food sectors.",
+        "**Non-Manufacturers' DI Improvement with Food Sector Weakness**: DI edged up +1 to +29, but food sector deteriorated due to high prices and raw material costs, dragging overall performance.",
+        "**Sector-Specific Semiconductor/AI Demand**: Transport (+8) and real estate/construction (+5) improved, with transport citing semiconductor/AI demand as key driver; information services declined (-12).",
+        "**Non-Manufacturing Outlook Signals Slowdown**: DI forecasts worsen by -2 points from September, indicating potential near-term slowdown despite current improvements."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
@@ -436,6 +596,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zzquemfvqoi-2e652d",
+      "title": "JPM Semiconductors July",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-09T08:09:51Z",
+      "summary_points": [
+        "**Memory Pricing Power**: Memory revenues fell to $78.6B (vs.",
+        "$94.0B), but DRAM/NAND ASPs surged +259%/+344% Y/Y, confirming resilient pricing despite revenue dip.",
+        "**Revised 2026 Outlook**: Industry sales outlook revised upward to >$1.7T in 2026 and >$2T in 2027, significantly above seasonal norms and prior estimates.",
+        "**July Sales Dip & Memory Lumpiness**: Total industry sales fell -10% M/M (vs.",
+        "8% norm) driven by memory volatility; prior-month data revised higher (+4% for Jun-26), signaling cyclical risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 15,
       "language": "en",
       "needs_metadata": false
     },
