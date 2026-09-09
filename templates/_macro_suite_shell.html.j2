@@ -400,14 +400,14 @@
       <div><dt>{{ t('Effective date', '生效日期') }}</dt>
            <dd>{% if head.effective_date %}{{ vis_time(head.effective_date) }}{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
       <div><dt>{{ t('Last reading', '上次读数') }}</dt>
-           <dd>{% if head.prior.absent %}{{ absent(view.changes.absence, True) }}{% else %}<strong>{{ head.prior.state_id }}</strong> {{ vis_time(head.prior.effective_date) }}{% endif %}</dd></div>
+           <dd>{% if head.prior.absent %}{% if view.changes.absence %}{{ absent(view.changes.absence, True) }}{% else %}<span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why">{{ t('No prior reading on file', '尚无上次读数') }}</span>{% endif %}{% else %}<strong>{{ head.prior.state_id }}</strong> {{ vis_time(head.prior.effective_date) }}{% endif %}</dd></div>
     </dl>
     {% call mc_details() %}
       <dl class="mq-headline-meta">
         <div><dt>{{ t('Method version', '方法版本') }}</dt>
              <dd>{% if head.method_version_label %}{{ bl(head.method_version_label) }}{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
         <div><dt>{{ t('Prior accepted print', '上一已接受读数') }}</dt>
-             <dd>{% if head.prior.absent %}{{ absent(view.changes.absence, True) }}{% else %}<strong>{{ head.prior.state_id }}</strong> <time>{{ head.prior.effective_date }}</time>{% endif %}</dd></div>
+             <dd>{% if head.prior.absent %}{% if view.changes.absence %}{{ absent(view.changes.absence, True) }}{% else %}<span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why">{{ t('No prior accepted print on file', '尚无上一已接受读数') }}</span>{% endif %}{% else %}<strong>{{ head.prior.state_id }}</strong> {{ vis_time(head.prior.effective_date) }}{% endif %}</dd></div>
       </dl>
       <p>{{ t('1-month vector', '一个月位移向量') }}</p>
       <p>{{ t('Nearest boundary', '最近分界') }} / {{ t('Score points to', '距下列坐标轴分界') }}</p>

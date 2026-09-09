@@ -681,32 +681,43 @@ html[data-theme="light"] .mq-hub-absent {
   .mq-metric-grid { grid-template-columns: 1fr; }
   .mq-axis-cells { grid-template-columns: 1fr; }
   .mq-method-grid, .mq-confidence-grid { grid-template-columns: 1fr; }
-  /* Wide receipt tables scroll inside themselves rather than the page body. */
-  .mq-table { display: block; overflow-x: auto; white-space: nowrap; }
-  .mq-table th, .mq-table td { white-space: normal; }
-  /* P5 v16: method body must not expand the 390 phone canvas (EN prose is
-     longer than ZH). Constrain the section, wrap prose, keep the table as the
-     only horizontal scroller — functional overflow repair, not a restyle. */
+  /* Wide receipt / method tables: definite viewport-based max so nowrap
+     cells cannot inflate the phone canvas (grid min-width:auto trap). */
+  .mq-table {
+    display: block;
+    overflow-x: auto;
+    width: 100%;
+    max-width: calc(100vw - 32px);
+  }
+  .mq-table th, .mq-table td { white-space: nowrap; }
+  .mq-panel,
+  .mq-workspace,
+  .mq-shell {
+    min-width: 0;
+    max-width: 100%;
+  }
   section.mq-method,
   section.mq-method details.mc-details,
   section.mq-method .mq-axis-method,
   section.mq-method .mc-details-body {
+    width: 100%;
     max-width: 100%;
     min-width: 0;
     box-sizing: border-box;
+    overflow-x: hidden;
   }
-  section.mq-method .mq-axis-method,
-  section.mq-method .mc-details-body {
-    overflow-x: auto;
+  section.mq-method p,
+  section.mq-method .mc-details-body > p {
     overflow-wrap: anywhere;
     word-break: break-word;
   }
   section.mq-method .mq-method-grid {
     min-width: 0;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   section.mq-method .mq-table {
-    max-width: 100%;
+    width: 100%;
+    max-width: calc(100vw - 32px);
   }
   .mq-clock { grid-template-columns: 1fr; gap: 2px; }
   /* Nav: the home link keeps its row; the rail takes the full width below it. */

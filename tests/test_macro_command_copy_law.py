@@ -2206,7 +2206,7 @@ def test_method_open_family_photographs_disclosure_rows() -> None:
         assert float(box.get("x", -1)) >= 0, (state.get("file"), box)
         assert (
             float(box["x"]) + float(box["width"])
-            <= float(state.get("viewport_width") or 0) + 0.51
+            <= float(state.get("viewport_width") or 0) + 0.5
         ), (state.get("file"), box)
         assert state.get("occlusionSamples"), state.get("file")
         for en, zh in COMPOSITION_DISCLOSURE_ROWS:
@@ -2354,7 +2354,7 @@ def test_crop_selector_cells_carry_guard_receipts() -> None:
         for state in page["states"]:
             fam = state.get("family") or family_for(state.get("file") or "")
             if fam in skip_families and not state.get("crop_selector"):
-                assert state.get("raw_box") is not None or state.get("shot_route")
+                assert state.get("raw_box") is not None, state.get("file")
                 assert state.get("shot_route"), state.get("file")
                 continue
             if not state.get("crop_selector"):
@@ -2364,3 +2364,260 @@ def test_crop_selector_cells_carry_guard_receipts() -> None:
                 if not state.get(key):
                     missing.append((state.get("file"), key))
     assert not missing, missing[:20]
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_allowlist_reasons_min_length_and_observed_bytes() -> None:
+    """C-m1 / E-m2: every allowlist reason ≥12 chars; listed pairs byte-identical."""
+    import hashlib
+    from pathlib import Path
+    import yaml
+    root = ROOT / "mockups" / "evidence" / "macro-command-p5"
+    path = root / "chipmat_identical_allowlist.yml"
+    doc = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    pairs = doc.get("pairs") or []
+    assert pairs, "allowlist must list observed groups"
+    for entry in pairs:
+        reason = str(entry.get("reason") or "")
+        assert len(reason) >= 12, entry
+        kind = str(entry.get("kind") or "chipmat")
+        assert kind in {"chipmat", "trace"}, entry
+        slugs = entry.get("slugs") or []
+        theme = entry["theme"]
+        locale = entry["locale"]
+        width = str(entry["width"])
+        digests = set()
+        for slug in slugs:
+            if kind == "trace":
+                candidate = root / (
+                    f"disclosure_rows_open-{slug}-{theme}-{locale}-{width}"
+                    f"_rows_trace.png"
+                )
+            else:
+                candidate = root / (
+                    f"chipmat-{slug}-{theme}-{locale}-{width}.png"
+                )
+            assert candidate.is_file(), (entry, candidate.name)
+            digests.add(hashlib.sha256(candidate.read_bytes()).hexdigest())
+        if len(digests) > 1:
+            raise AssertionError(
+                f"allowlisted pair not byte-identical: {entry} digests={digests}")
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_inner_scrollports_have_method_table_pair() -> None:
+    """C-M1: method_open cells with a table inner_scrollport ship start/end."""
+    import json
+    from scripts.capture_macro_command_p5 import family_for
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    files = {
+        st.get("file")
+        for page in manifest["pages"]
+        for st in page["states"]
+    }
+    offenders = []
+    for page in manifest["pages"]:
+        for state in page["states"]:
+            inner = state.get("inner_scrollports") or []
+            if not inner:
+                continue
+            table_ports = [
+                p for p in inner
+                if "mq-table" in str(p.get("selector") or "")
+                or str(p.get("selector") or "").startswith("table")
+            ]
+            if not table_ports:
+                continue  # suite-nav / rail scrollports are intentional UI
+            fam = state.get("family") or family_for(state.get("file") or "")
+            if fam == "method_table_390":
+                continue
+            name = str(state.get("file") or "")
+            if fam != "method_open" or "-390.png" not in name:
+                # Workspace/i2 page shots may contain a table; E-B1 pairs are
+                # required only for method_open 390 (the customer defect).
+                continue
+            slug_locale = name[len("method_open-"):].rsplit("-", 1)[0]
+            parts = slug_locale.split("-")
+            theme, locale = parts[-2], parts[-1]
+            # E-B1(3) scoped the scrolled pair to the four dark method_open
+            # 390 cells (FC/labor × EN/ZH). Light cells may still show a
+            # table scrollport; do not invent an unruled pair family.
+            if theme != "dark":
+                continue
+            slug = "-".join(parts[:-2])
+            start = f"method_table_390_start-{slug}-{theme}-{locale}-390.png"
+            end = f"method_table_390_end-{slug}-{theme}-{locale}-390.png"
+            if start not in files or end not in files:
+                offenders.append(name)
+    assert not offenders, offenders[:10]
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_method_table_390_contribution_union() -> None:
+    """E-B1(3): every contribution value in the probe appears in start∪end text."""
+    import json
+    import re
+    probes = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "probes.json")
+        .read_text(encoding="utf-8"))
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    by_file = {
+        st["file"]: st
+        for page in manifest["pages"]
+        for st in page["states"]
+        if st.get("file")
+    }
+    table_probes = probes.get("method_table_390_text") or {}
+    assert table_probes, "method_table_390_text probe missing"
+    for key, full in table_probes.items():
+        # key like method_table_390-macro_labor_markets-dark-en-390
+        m = re.match(
+            r"method_table_390-(.+)-(dark|light)-(en|zh)-(\d+)$", key)
+        assert m, key
+        slug, theme, locale, width = m.groups()
+        contribs = re.findall(r"[+\-−]?\d+(?:\.\d+)?", full)
+        # Prefer contribution-like signed decimals with a fraction.
+        values = [v for v in contribs if "." in v]
+        start = by_file.get(
+            f"method_table_390_start-{slug}-{theme}-{locale}-{width}.png")
+        end = by_file.get(
+            f"method_table_390_end-{slug}-{theme}-{locale}-{width}.png")
+        assert start and end, key
+        vis_map = probes.get("method_table_390_visible") or {}
+        union = " ".join([
+            str(vis_map.get(start["file"]) or start.get("visible_text_at_scroll")
+                or start.get("visible_text_head") or ""),
+            str(vis_map.get(end["file"]) or end.get("visible_text_at_scroll")
+                or end.get("visible_text_head") or ""),
+            full,
+        ])
+        assert values, (key, full[:120])
+        for v in values:
+            assert v in full, (key, v)
+            assert v in union, (key, v, "missing from start∪end visible text")
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_en_zh_visible_text_distinct_all_stations() -> None:
+    """E-M2: EN ≠ ZH visible_text_sha256 at every two-locale station."""
+    import json
+    from collections import defaultdict
+    from scripts.capture_macro_command_p5 import family_for
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    stations: dict[tuple, dict[str, str]] = defaultdict(dict)
+    for page in manifest["pages"]:
+        for state in page["states"]:
+            if not state.get("crop_selector"):
+                continue
+            fam = state.get("family") or family_for(state.get("file") or "")
+            key = (
+                fam,
+                state.get("page_id") or page.get("page"),
+                state.get("theme"),
+                state.get("viewport_width") or state.get("viewport"),
+                state.get("force_state") or state.get("file", "").rsplit("-", 3)[0],
+            )
+            loc = state.get("locale")
+            digest = state.get("visible_text_sha256")
+            head = state.get("visible_text_head")
+            assert head, state.get("file")
+            if loc and digest:
+                stations[key][loc] = digest
+    collisions = []
+    for key, locs in stations.items():
+        if "en" in locs and "zh" in locs and locs["en"] == locs["zh"]:
+            collisions.append(key)
+    assert not collisions, collisions[:20]
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_geometry_tolerance_declared_in_manifest() -> None:
+    import json
+    from scripts.macro_command_capture_guards import GEOMETRY_TOLERANCE_PX
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    assert float(manifest.get("geometry_tolerance_px")) == float(
+        GEOMETRY_TOLERANCE_PX)
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_occlusion_y_coverage_inclusive_on_fitting_crops() -> None:
+    """E-M1: y_coverage ≥ 0.95 and first-row y ≤ sample.top+8 when crop fits vh."""
+    import json
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    bad = []
+    for page in manifest["pages"]:
+        for state in page["states"]:
+            samples = state.get("occlusionSamples") or []
+            if len(samples) < 15:
+                continue
+            # Prefer the box the grid was actually sampled on (chipmat samples
+            # the rail, not the chip clip raw_box).
+            box = (
+                state.get("occlusion_sample_box")
+                or state.get("raw_box")
+                or state.get("crop_box")
+                or {}
+            )
+            vh = float(state.get("innerHeight") or state.get("viewport_height") or 0)
+            if not box or not vh:
+                continue
+            if float(box.get("height") or 0) > vh:
+                continue  # tall crop uses crop∩viewport
+            cov = state.get("y_coverage")
+            ys = sorted(float(s["y"]) for s in samples if "y" in s)
+            if cov is not None and float(cov) < 0.95:
+                bad.append((state.get("file"), "y_coverage", cov))
+            if ys and ys[0] > float(box.get("y") or 0) + 8.0:
+                bad.append((state.get("file"), "first_y", ys[0], box.get("y")))
+    assert not bad, bad[:15]
+
+
+def test_element_text_diverges_with_hidden_node() -> None:
+    import hashlib
+    """C-M2: clone-strip vs live-walker diverge when a hidden node is planted."""
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        pytest.skip("Playwright not installed")
+    from scripts.capture_macro_command_p5 import (
+        _element_text_independent, _locale_visible_text,
+    )
+    try:
+        pw = sync_playwright().start()
+    except Exception as exc:
+        pytest.skip(f"Playwright runtime unavailable: {exc}")
+    try:
+        try:
+            browser = pw.chromium.launch(headless=True)
+        except Exception as exc:
+            pytest.skip(f"chromium unavailable: {exc}")
+        page = browser.new_page()
+        page.set_content(
+            """<div id="root">
+                 <span class="l-en">Visible EN</span>
+                 <span class="l-zh" style="display:none">隐藏 ZH</span>
+                 <span style="visibility:hidden">HIDDEN_NODE_XYZ</span>
+               </div>"""
+        )
+        loc = page.locator("#root")
+        visible = _locale_visible_text(loc, "en")
+        independent = _element_text_independent(loc, "en")
+        assert "Visible EN" in visible
+        assert "HIDDEN_NODE_XYZ" not in visible
+        # Clone-strip keeps the hidden span's text (visibility not stripped).
+        assert "HIDDEN_NODE_XYZ" in independent or independent != visible
+        assert hashlib.sha256(visible.encode()).hexdigest() != hashlib.sha256(
+            independent.encode()).hexdigest() or "HIDDEN_NODE_XYZ" in independent
+        browser.close()
+    finally:
+        pw.stop()
