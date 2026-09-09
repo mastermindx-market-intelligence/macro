@@ -1,0 +1,130 @@
+{
+  "input_pin": "a4d33f32dad140acdfa081b21f55ad6d8dcb94d4",
+  "input_sha256": "c7cd0a0a42d9f84a3823ac16b87f681e3471076a8b7d5285fc509626d876b430",
+  "response_fixture_sha256": "3e83dbca5cbb38bb85d65e4e332addb3798b4c0683b7c6867b8fad6ef72987b2",
+  "source_files": {
+    "engine/master_brain.py": "079a1c76cc53a756d9d2ca422ee2ecc582b390588718d2598dac6189c0576e0d",
+    "templates/_aibrief_body.html.j2": "2dd54b556d87f6df03b488a049a47b0610ec612e4db2520da1a173309fff7462"
+  },
+  "cases": [
+    {
+      "case": "real_committed_input",
+      "site": "/Volumes/Mastermind/agent-evidence/regime-hmm-w1-reproduce-final-tie/real_committed_input/site",
+      "reference_time": null,
+      "context": {
+        "availability": "historical",
+        "is_current": false,
+        "is_forecast": false,
+        "historical_replay_eligible": false,
+        "source_asof": "2026-09-08",
+        "model_fit_asof": null,
+        "confidence_basis": null,
+        "hard_label": "Q3",
+        "hard_label_agrees": true,
+        "p": {
+          "Q1": 0.0,
+          "Q2": 0.0203,
+          "Q3": 0.979,
+          "Q4": 0.0007
+        },
+        "freshness_sla_hours": 30.0,
+        "reason": "source_stale"
+      },
+      "regime_evidence": {
+        "en": "Regime evidence: the stored estimate is dated 2026-09-08 and is historical context only, not a current estimate. It is not a forecast.",
+        "zh": "状态证据：已存估计的数据截至 2026-09-08，仅作历史背景，不是当前估计，也并非预测。"
+      },
+      "page_sha256": "367e1280b55e57fd566d492093a8b50fe1738bb95acc3766860c415bc63a6597",
+      "model_response_is_fixture": true,
+      "translation_stubbed": true,
+      "thesis_append_intercepted": true,
+      "production_adoption": false
+    },
+    {
+      "case": "fixture_disagreement",
+      "site": "/Volumes/Mastermind/agent-evidence/regime-hmm-w1-reproduce-final-tie/fixture_disagreement/site",
+      "reference_time": "2026-09-09T00:00:00Z",
+      "context": {
+        "availability": "current",
+        "is_current": true,
+        "is_forecast": false,
+        "historical_replay_eligible": false,
+        "source_asof": "2026-09-08",
+        "model_fit_asof": null,
+        "confidence_basis": null,
+        "hard_label": "Q3",
+        "hard_label_agrees": false,
+        "p": {
+          "Q1": 0.6,
+          "Q2": 0.2,
+          "Q3": 0.1,
+          "Q4": 0.1
+        },
+        "freshness_sla_hours": 30.0
+      },
+      "regime_evidence": {
+        "en": "Regime evidence: current estimate dated 2026-09-08; most-supported state is Goldilocks; it disagrees with the confirmed Stagflation label. It is not a forecast.",
+        "zh": "状态证据：当前估计的数据截至 2026-09-08；最受支持的状态为理想增长；与已确认的滞胀标签不一致。并非预测。",
+        "detail_en": "State probabilities: Goldilocks 60.00%; Reflation 20.00%; Stagflation 10.00%; Growth-scare/Deflation 10.00%; model-fit cutoff unavailable; confidence basis unknown",
+        "detail_zh": "状态概率：理想增长 60.00%；再通胀 20.00%；滞胀 10.00%；增长恐慌／通缩 10.00%；模型拟合截止日期缺失；置信度依据未知"
+      },
+      "page_sha256": "12e4cb0ed9711b09434d366d781d94038783726e063e4dc47e25a1b80e3d5d1a",
+      "model_response_is_fixture": true,
+      "translation_stubbed": true,
+      "thesis_append_intercepted": true,
+      "production_adoption": false
+    },
+    {
+      "case": "fixture_invalid",
+      "site": "/Volumes/Mastermind/agent-evidence/regime-hmm-w1-reproduce-final-tie/fixture_invalid/site",
+      "reference_time": null,
+      "context": {
+        "availability": "unavailable",
+        "is_current": false,
+        "is_forecast": false,
+        "historical_replay_eligible": false,
+        "source_asof": "2026-09-08",
+        "model_fit_asof": null,
+        "confidence_basis": null,
+        "hard_label": "Q3",
+        "hard_label_agrees": true,
+        "reason": "probability_distribution_invalid"
+      },
+      "regime_evidence": {
+        "en": "Regime evidence is unavailable; diagnostic movement is not a forecast.",
+        "zh": "状态证据不可用；诊断性变化并非预测。"
+      },
+      "page_sha256": "fe0e345a42a0fd41297f03e1c898ff0be3efecd8fd914e62856fc7137b561a94",
+      "model_response_is_fixture": true,
+      "translation_stubbed": true,
+      "thesis_append_intercepted": true,
+      "production_adoption": false
+    },
+    {
+      "case": "fixture_missing",
+      "site": "/Volumes/Mastermind/agent-evidence/regime-hmm-w1-reproduce-final-tie/fixture_missing/site",
+      "reference_time": null,
+      "context": {
+        "availability": "unavailable",
+        "is_current": false,
+        "is_forecast": false,
+        "historical_replay_eligible": false,
+        "source_asof": null,
+        "model_fit_asof": null,
+        "confidence_basis": null,
+        "reason": "quad_vector_missing"
+      },
+      "regime_evidence": {
+        "en": "Regime evidence is unavailable; diagnostic movement is not a forecast.",
+        "zh": "状态证据不可用；诊断性变化并非预测。"
+      },
+      "page_sha256": "fe0e345a42a0fd41297f03e1c898ff0be3efecd8fd914e62856fc7137b561a94",
+      "model_response_is_fixture": true,
+      "translation_stubbed": true,
+      "thesis_append_intercepted": true,
+      "production_adoption": false
+    }
+  ],
+  "production_adoption": false,
+  "scope": "Real reader + actual saved-output code + real full template; model/translation/ledger mocked. Existing saved prose is a fixture, not newly generated wording or a model-quality result."
+}

@@ -1,0 +1,6 @@
+{
+  "inspected_prs": 100,
+  "matches": [],
+  "limit": 100,
+  "scope": "Bounded first100 open PR inventories; not estate-wide completeness; shared CI manifest handled by exact hunks separately."
+}

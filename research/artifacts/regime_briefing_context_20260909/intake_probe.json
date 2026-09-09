@@ -1,0 +1,35 @@
+{
+  "source_pin": "a4d33f32dad140acdfa081b21f55ad6d8dcb94d4",
+  "source_py_sha256": "09b12bc99c2cbf54767e5e99b4aed5d6fd751b71a9f4c0811a171255b3ddc836",
+  "artifact_sha256": "c7cd0a0a42d9f84a3823ac16b87f681e3471076a8b7d5285fc509626d876b430",
+  "scope": "Read-only exact pinned direct-reader function; real committed input plus a labeled metadata mutation; not live generation or performance",
+  "input_date": "2026-09-08",
+  "original_probability_asof": "2026-09-08",
+  "original_probability": {
+    "Q1": 0.0,
+    "Q2": 0.0203,
+    "Q3": 0.979,
+    "Q4": 0.0007
+  },
+  "input_gaining": {
+    "gaining": "Q2",
+    "gaining_rate": 0.0003,
+    "losing": "Q3",
+    "losing_rate": -0.0004,
+    "window_sessions": 5
+  },
+  "mutated_probability_asof": "2000-01-01",
+  "output_unchanged_after_source_clock_and_basis_mutation": true,
+  "consumer_momentum": {
+    "gaining": "Q2",
+    "gaining_rate": 0.0003,
+    "losing": "Q3",
+    "losing_rate": -0.0004,
+    "window_sessions": 5,
+    "degraded": false,
+    "_instruction": "TRANSITION DIRECTION MUST COME FROM HERE. `gaining` is the quad gaining probability mass and `losing` the one shedding it, per session over the stated window. Any sentence about which regime this could tip into must name `gaining` \u2014 never infer a direction from the current label, the historical next-quad table, or the axis signs. If `degraded` is true, say the direction read is degraded rather than naming a quad."
+  },
+  "consumer_has_current_p": false,
+  "production_writes": false,
+  "model_calls": 0
+}
