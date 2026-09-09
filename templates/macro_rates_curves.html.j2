@@ -36,7 +36,7 @@
 {% set nav_search_placeholder_zh = "搜索任意股票 — 美股、A 股、港股、加股等…" %}
 {% include "_site_nav.html.j2" %}
 
-{% include "_curve_panel.html.j2" ignore missing %}
+{% include "_curve_panel.html.j2" %}
 {% if view.ok %}{{ shell.body(view) }}{% else %}{{ shell.degraded_body(view) }}{% endif %}
 
 <script src="theme.js" defer></script>

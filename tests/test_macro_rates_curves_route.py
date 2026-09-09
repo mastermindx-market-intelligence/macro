@@ -4,18 +4,19 @@ RED-first and fixture-driven. Every test builds a synthetic
 ``mastermind.macro_workspace_snapshot.v1`` snapshot (or a minimal series
 fixture). No test touches ``data/fred/*.parquet`` or the network.
 
-The twelve cases pin: the hero is rates_curves-only, ten nominal CMT tenors
+The cases pin: the hero is rates_curves-only, ten nominal CMT tenors
 in registry order, prior-close / prior-month arithmetic, honest nulls, the
 context_only ceiling, two arithmetic spreads, EN+ZH copy, whole-panel null,
-byte preservation of the bonds hub and the other thirteen suite pages, and
-no import of the yield-curve engine.
+byte preservation of the bonds hub sources, the include appearing in exactly
+one template, and no import of the yield-curve engine.
 """
 from __future__ import annotations
 
 import ast
+import hashlib
 import json
+import math
 import re
-import subprocess
 import sys
 from datetime import date, timedelta
 from pathlib import Path
@@ -46,12 +47,12 @@ TENOR_TO_SERIES = {
 }
 
 # Ceiling tokens that must never appear in the hero JSON or the panel HTML.
-# Word-boundary / exact-token checks: a tenor id like "3m" is not "band".
+# Plain substring matching per spec §10.5 — "probability" must fire on "prob".
 CEILING_EN = (
     "prob", "odds", "score", "rank", "band", "signal", "forecast",
     "bull", "bear", "lean",
 )
-CEILING_ZH = ("概率", "评分", "预测", "看多", "看空")
+CEILING_ZH = ("概率", "评分", "预测", "看多", "看空", "偏多", "偏空")
 
 SHAPE_NORMAL_EN = (
     "The curve is upward-sloping — longer maturities pay more than shorter ones."
@@ -63,8 +64,31 @@ SHAPE_INVERTED_EN = (
 SHAPE_INVERTED_ZH = "曲线出现倒挂 — 部分短期利率高于长期利率。"
 NULL_PANEL_EN = "The curve panel needs the Treasury data from tonight, which did not arrive."
 NULL_PANEL_ZH = "曲线面板需要当晚的美债数据，但数据未能到达。"
-NULL_TENOR_EN = "No reading for this maturity in tonight's data."
-NULL_TENOR_ZH = "本次数据未覆盖该期限。"
+NULL_SEVEN_EN = "No reading for the 7-year in tonight's data."
+NULL_SEVEN_ZH = "本次数据未覆盖7年期。"
+CHANGE_CLOSE_EN = "Change since prior close"
+CHANGE_CLOSE_ZH = "较上一交易日收盘变动"
+CHANGE_MONTH_EN = "Change over a month"
+CHANGE_MONTH_ZH = "较一个月前变动"
+SUBTITLE_EN = "today versus the prior close versus a month ago"
+SUBTITLE_ZH = "今日、上一交易日收盘与一个月前对比"
+
+# Pinned 2026-09-09 against the three source files the spec names. These are
+# sha256 of the working-tree bytes this packet must not rewrite. site/bonds.html
+# is a nightly build artefact and is not pinned. Recompute the constants only
+# when a later merge of this exclusive job is itself a bonds-hub change.
+# Seat R3 allowed a manifest; this packet pins the three sources as constants.
+_BONDS_SOURCE_SHA256 = {
+    "templates/bonds.html.j2": (
+        "9fe1cc0b49ffa4da6b0f6c4ba55658a712dbc32702542806c3bc23346431bef3"
+    ),
+    "scripts/build_bonds.py": (
+        "18d44adffc8889b66be9afe48b7a9d8a9ab1246f6bdd4af5dc67d1335b97748a"
+    ),
+    "engine/yield_curve.py": (
+        "51931aec691f724c99b206257797ed162118986dbb7bcba10a2a2bf75dd60bc1"
+    ),
+}
 
 ARTIFACT = {
     "path": "macrodata/workspaces/rates_curves/US/latest.json",
@@ -106,11 +130,25 @@ def _series_entry(tenor: str, points: list[dict[str, Any]] | None) -> dict[str, 
 
 
 def _complete_levels() -> dict[str, tuple[float, float, float]]:
-    """today, prior_close, prior_month per tenor. Upward-sloping today."""
-    # today values climb with maturity (normal curve)
+    """today, prior_close, prior_month per tenor. Upward-sloping today.
+
+    Every adjacent pair climbs with maturity so the shape sentence is the
+    normal one, matching this helper's name.
+    """
     today = {
-        "3m": 4.31, "6m": 4.28, "1y": 4.22, "2y": 4.10, "3y": 4.05,
-        "5y": 4.08, "7y": 4.12, "10y": 4.18, "20y": 4.45, "30y": 4.55,
+        "3m": 3.90, "6m": 3.95, "1y": 4.00, "2y": 4.08, "3y": 4.15,
+        "5y": 4.22, "7y": 4.28, "10y": 4.35, "20y": 4.48, "30y": 4.55,
+    }
+    close = {k: round(v + 0.01, 4) for k, v in today.items()}
+    month = {k: round(v + 0.07, 4) for k, v in today.items()}
+    return {k: (today[k], close[k], month[k]) for k in NOMINAL_TENORS}
+
+
+def _inverted_levels() -> dict[str, tuple[float, float, float]]:
+    """today, prior_close, prior_month per tenor. Downward-sloping today."""
+    today = {
+        "3m": 4.55, "6m": 4.48, "1y": 4.40, "2y": 4.32, "3y": 4.25,
+        "5y": 4.18, "7y": 4.12, "10y": 4.05, "20y": 3.95, "30y": 3.90,
     }
     close = {k: round(v + 0.01, 4) for k, v in today.items()}
     month = {k: round(v + 0.07, 4) for k, v in today.items()}
@@ -211,11 +249,11 @@ def _render_rates_page(snapshot: dict[str, Any]) -> str:
 
 
 def _ceiling_hits(text: str) -> list[str]:
+    """Plain substring matching. Spec §10.5: 'probability' must fire on 'prob'."""
     lowered = text.lower()
     hits: list[str] = []
     for token in CEILING_EN:
-        # Token as a whole word, so "3m" does not match "band" etc.
-        if re.search(rf"(?<![a-z0-9_]){re.escape(token)}(?![a-z0-9_])", lowered):
+        if token in lowered:
             hits.append(token)
     for token in CEILING_ZH:
         if token in text:
@@ -223,8 +261,11 @@ def _ceiling_hits(text: str) -> list[str]:
     return hits
 
 
-def _git_show(path: str) -> bytes:
-    return subprocess.check_output(["git", "show", f"origin/main:{path}"], cwd=ROOT)
+def _svg_inner(html: str) -> str:
+    start = html.find("<svg")
+    end = html.find("</svg>")
+    assert start != -1 and end != -1, "panel is missing an svg"
+    return html[start:end]
 
 
 # ---------------------------------------------------------------------------
@@ -332,6 +373,16 @@ def test_5_missing_tenor_is_an_honest_null_not_a_dropped_row() -> None:
         has5 = f"{x5}," in seg
         has10 = f"{x10}," in seg
         assert not (has5 and has10), seg
+    html = _render_panel(hero)
+    # autoescape turns the apostrophe into &#39;; the words still have to land.
+    assert "No reading for the 7-year" in html
+    assert NULL_SEVEN_ZH in html
+    svg = _svg_inner(html)
+    assert f"{x7}," not in svg
+    polylines = re.findall(r'<polyline class="mq-curve-line-today" points="([^"]*)">', svg)
+    assert len(polylines) >= 2
+    for points in polylines:
+        assert f"{x5}," not in points or f"{x10}," not in points, points
 
 
 # ---------------------------------------------------------------------------
@@ -357,6 +408,24 @@ def test_6_no_forecast_or_probability_content() -> None:
     hero_src = ast.get_source_segment(source, hero_fn) or ""
     assert "nyfed_prob" not in hero_src
     assert "nyfed" not in hero_src.lower()
+
+
+def test_6_ceiling_substring_fires_on_planted_surface_forms() -> None:
+    """RED control: the natural surface forms spec §10.5 named must bite.
+
+    The previous whole-word matcher let 'probability', 'bullish', 'forecasts'
+    and 'ranking' through. This planted string is the transcript of that miss.
+    """
+    planted = "probability bullish forecasts ranking"
+    hits = _ceiling_hits(planted)
+    assert "prob" in hits
+    assert "bull" in hits
+    assert "forecast" in hits
+    assert "rank" in hits
+    planted_zh = "概率评分预测看多看空偏多偏空"
+    zh_hits = _ceiling_hits(planted_zh)
+    for token in CEILING_ZH:
+        assert token in zh_hits, token
 
 
 # ---------------------------------------------------------------------------
@@ -390,17 +459,33 @@ def test_7_two_spreads_only_arithmetic_not_model_output() -> None:
     )
 
 
+def test_7_hero_2s10s_sign_equals_producer_formula_for_the_fixture() -> None:
+    """Producer curve_2s10s_level is 10y − 2y. The hero must share that sign."""
+    levels = _complete_levels()
+    producer_2s10s = levels["10y"][0] - levels["2y"][0]
+    hero = _hero(_snapshot(levels=levels))
+    today = next(s["today"] for s in hero["spreads"] if s["id"] == "2s10s")
+    assert math.copysign(1.0, today) == math.copysign(1.0, producer_2s10s)
+    assert today == pytest.approx(producer_2s10s)
+    inverted = _inverted_levels()
+    producer_inv = inverted["10y"][0] - inverted["2y"][0]
+    inv_today = next(
+        s["today"] for s in _hero(_snapshot(levels=inverted))["spreads"]
+        if s["id"] == "2s10s"
+    )
+    assert math.copysign(1.0, inv_today) == math.copysign(1.0, producer_inv)
+    assert inv_today == pytest.approx(producer_inv)
+
+
 # ---------------------------------------------------------------------------
 # T8
 # ---------------------------------------------------------------------------
 def test_8_en_and_zh_both_render() -> None:
     html = _render_rates_page(_snapshot())
-    assert SHAPE_NORMAL_EN in html or SHAPE_INVERTED_EN in html
-    assert SHAPE_NORMAL_ZH in html or SHAPE_INVERTED_ZH in html
     assert "The Treasury curve" in html
     assert "美债收益率曲线" in html
-    assert "today vs the prior close vs a month ago" in html
-    assert "今日 vs 上一交易日收盘 vs 一个月前" in html
+    assert SUBTITLE_EN in html
+    assert SUBTITLE_ZH in html
     assert "10-year minus 3-month" in html
     assert "10年期减3月期" in html
     assert "10-year minus 2-year" in html
@@ -410,6 +495,22 @@ def test_8_en_and_zh_both_render() -> None:
     assert "Today" in html and "今日" in html
     assert "Prior close" in html and "上一交易日收盘" in html
     assert "A month ago" in html and "一个月前" in html
+
+
+def test_8_normal_fixture_renders_the_normal_shape_sentence_only() -> None:
+    html = _render_panel(_hero(_snapshot(levels=_complete_levels())))
+    assert SHAPE_NORMAL_EN in html
+    assert SHAPE_NORMAL_ZH in html
+    assert SHAPE_INVERTED_EN not in html
+    assert SHAPE_INVERTED_ZH not in html
+
+
+def test_8_inverted_fixture_renders_the_inverted_shape_sentence_only() -> None:
+    html = _render_panel(_hero(_snapshot(levels=_inverted_levels())))
+    assert SHAPE_INVERTED_EN in html
+    assert SHAPE_INVERTED_ZH in html
+    assert SHAPE_NORMAL_EN not in html
+    assert SHAPE_NORMAL_ZH not in html
 
 
 # ---------------------------------------------------------------------------
@@ -423,68 +524,52 @@ def test_9_whole_panel_honest_null_when_snapshot_incomplete() -> None:
     assert NULL_PANEL_EN in html
     assert NULL_PANEL_ZH in html
     assert "<polyline" not in html
-    assert "<path" not in html or "mq-curve-null" in html
+    assert "<path" not in html
 
 
 # ---------------------------------------------------------------------------
 # T10
 # ---------------------------------------------------------------------------
-def test_10_bonds_hub_output_is_byte_identical() -> None:
-    """Preservation at the render artifact, not only a source diff.
+def test_10_bonds_hub_sources_match_the_pinned_sha256() -> None:
+    """Preservation of the three source files the spec names.
 
-    Invoking the bonds builder here would import the yield-curve engine into
-    this job's exclusive closure (forbidden by the ceiling) and would stamp
-    ``datetime.now`` into the page, so two consecutive builds are never
-    byte-identical. This test compares the committed bonds hub HTML and its
-    template to ``origin/main`` — the render-level proof that this packet did
-    not rebuild or rewrite them.
+    site/bonds.html is a nightly build artefact and is not pinned. This test
+    never shells to git and never compares against a moving ref.
     """
-    preserved = (  # ci-trigger-closure: data
-        "templates/bonds.html.j2",
-        "site/bonds.html",
-        "engine/yield_curve.py",
-        "scripts/build_bonds.py",
-    )
-    for rel in preserved:
-        assert (ROOT / rel).read_bytes() == _git_show(rel), rel
+    for rel, expected in _BONDS_SOURCE_SHA256.items():
+        digest = hashlib.sha256((ROOT / rel).read_bytes()).hexdigest()
+        assert digest == expected, rel
 
 
 # ---------------------------------------------------------------------------
 # T11
 # ---------------------------------------------------------------------------
-def test_11_thirteen_other_suite_pages_byte_identical(tmp_path: Path) -> None:
-    untouched = [
-        p for p in builder.SUITE_PAGES if p.workspace_id != "rates_curves"
-    ]
-    assert len(untouched) == 13
-    for page in untouched:
-        rel = f"templates/{page.template}"
-        assert (ROOT / rel).read_bytes() == _git_show(rel), rel
-    shared = (  # ci-trigger-closure: data
-        "templates/_macro_suite_shell.html.j2",
-        "templates/_macro_suite_nav.html.j2",
-        "templates/macro_monetary.html.j2",
-        "templates/macro_suite.css",
-        "templates/macro_suite.js",
-        "templates/_navlinks.html.j2",
-    )
-    for rel in shared:
-        assert (ROOT / rel).read_bytes() == _git_show(rel), rel
+def test_11_curve_panel_include_appears_in_exactly_one_template() -> None:
+    """Seat R3 allowed a manifest; this packet greps templates/ for the include.
 
-    # Render-level: the other thirteen pages do not carry the new hero.
-    out = tmp_path / "site"
-    pages = builder.render(
-        ROOT, data_root=ROOT / "site" / "macrodata",
-        out_dir=out, page_built_at=BUILT_AT,
-    )
-    by_name = {p.name: p.read_text(encoding="utf-8") for p in pages}
-    for page in untouched:
-        html = by_name[page.output]
-        assert "mq-curve-hero" not in html, page.output
-        assert "The Treasury curve" not in html, page.output
-        assert "美债收益率曲线" not in html, page.output
-    hub = by_name[builder.HUB_PAGE.output]
-    assert "mq-curve-hero" not in hub
+    The include must be the plain form (no ignore missing). Sibling suite
+    templates must not grow a second copy.
+    """
+    needle = '{% include "_curve_panel.html.j2" %}'
+    forbidden = '{% include "_curve_panel.html.j2" ignore missing %}'
+    hits: list[str] = []
+    for path in sorted((ROOT / "templates").rglob("*.j2")):
+        text = path.read_text(encoding="utf-8")
+        if forbidden in text:
+            hits.append(f"{path.name}#ignore-missing")
+        elif needle in text:
+            hits.append(path.name)
+        elif "_curve_panel.html.j2" in text and path.name != "_curve_panel.html.j2":
+            hits.append(f"{path.name}#mention")
+    assert hits == ["macro_rates_curves.html.j2"]
+    rates = (TEMPLATES / "macro_rates_curves.html.j2").read_text(encoding="utf-8")
+    assert "ignore missing" not in rates
+    for path in (ROOT / "templates").glob("macro_*.html.j2"):
+        if path.name == "macro_rates_curves.html.j2":
+            continue
+        text = path.read_text(encoding="utf-8")
+        assert "mq-curve-hero" not in text, path.name
+        assert "_curve_panel.html.j2" not in text, path.name
 
 
 # ---------------------------------------------------------------------------
@@ -520,3 +605,78 @@ def test_12_no_import_of_yield_curve_engine() -> None:
         "scripts.build_bonds",
     ):
         assert mod not in sys.modules, mod
+
+
+# ---------------------------------------------------------------------------
+# R1 — SVG ticks are tspans, never HTML spans
+# ---------------------------------------------------------------------------
+def test_svg_tick_labels_are_tspans_not_html_spans() -> None:
+    hero = _hero(_snapshot())
+    html = _render_panel(hero)
+    svg = _svg_inner(html)
+    assert "<span" not in svg
+    ticks = hero["chart"]["x_ticks"]
+    assert len(ticks) == 10
+    for tick in ticks:
+        x = tick["x"]
+        assert f'<text class="mq-curve-tick" x="{x}"' in svg
+        assert f'<tspan class="l-en">{tick["label"]["en"]}</tspan>' in svg
+        assert f'<tspan class="l-zh">{tick["label"]["zh"]}</tspan>' in svg
+
+
+# ---------------------------------------------------------------------------
+# R5 — degraded_view carries the honest-null hero
+# ---------------------------------------------------------------------------
+def test_degraded_view_sets_honest_null_curve_hero() -> None:
+    view = macro_suite_view.degraded_view(
+        workspace_id="rates_curves",
+        title=_pair("Rates & Curves", "利率与曲线"),
+        subtitle=_pair("The Treasury curve, node by node", "国债收益率曲线，逐节点"),
+        region_code="US",
+        region_display_name="United States",
+        page_built_at=BUILT_AT,
+        artifact=ARTIFACT,
+        failure_kind="SOURCE_FAILED",
+        failure_detail="test",
+    )
+    assert view["ok"] is False
+    hero = view["curve_hero"]
+    assert hero["ok"] is False
+    html = _render_panel(hero)
+    assert NULL_PANEL_EN in html
+    assert NULL_PANEL_ZH in html
+    other = macro_suite_view.degraded_view(
+        workspace_id="liquidity_regime",
+        title=_pair("Liquidity Regime", "流动性体制"),
+        subtitle=_pair("x", "x"),
+        region_code="US",
+        region_display_name="United States",
+        page_built_at=BUILT_AT,
+        artifact=ARTIFACT,
+        failure_kind="SOURCE_FAILED",
+        failure_detail="test",
+    )
+    assert "curve_hero" not in other
+
+
+# ---------------------------------------------------------------------------
+# R7 / R10 — units and change-row wording
+# ---------------------------------------------------------------------------
+def test_hero_numbers_carry_units_and_change_rows_are_not_legend_labels() -> None:
+    html = _render_panel(_hero(_snapshot()))
+    assert "percentage points" in html
+    assert "个百分点" in html
+    assert re.search(r"\d+\.\d{2}%", html), html
+    assert CHANGE_CLOSE_EN in html
+    assert CHANGE_CLOSE_ZH in html
+    assert CHANGE_MONTH_EN in html
+    assert CHANGE_MONTH_ZH in html
+    # Legend still names the plotted LEVELS; change rows must not reuse those
+    # labels as the only words in front of a delta.
+    legend_close = html.find("is-close")
+    deltas = html.find("mq-curve-deltas")
+    assert 0 <= legend_close < deltas
+    delta_block = html[deltas:]
+    assert CHANGE_CLOSE_EN in delta_block
+    assert "Prior close +" not in delta_block
+    assert "A month ago +" not in delta_block

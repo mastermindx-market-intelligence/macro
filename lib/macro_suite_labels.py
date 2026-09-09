@@ -216,6 +216,10 @@ BASIS: dict[str, dict[str, str]] = {
     "level": _pair("Level", "水平值"),
     "composite_prior_only": _pair("Composite, prior-only inputs", "复合指标（仅使用先验输入）"),
     "roc_over_owner_window": _pair("Rate of change over the owner window", "所有者窗口内的变化率"),
+    "constant_maturity_investment_basis": _pair(
+        "Constant-maturity investment basis",
+        "固定期限投资基准",
+    ),
 }
 
 # --- owner categorical readings ---------------------------------------------

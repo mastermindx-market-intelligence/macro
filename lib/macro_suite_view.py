@@ -965,6 +965,24 @@ _CURVE_NULL_TENOR = _pair(
     "No reading for this maturity in tonight's data.",
     "本次数据未覆盖该期限。",
 )
+_CURVE_NULL_SPREAD = _pair(
+    "No reading for this spread in tonight's data.",
+    "本次数据未覆盖该利差。",
+)
+_CURVE_CHANGE_CLOSE = _pair(
+    "Change since prior close",
+    "较上一交易日收盘变动",
+)
+_CURVE_CHANGE_MONTH = _pair(
+    "Change over a month",
+    "较一个月前变动",
+)
+_CURVE_UNIT_SPREAD = _pair("percentage points", "个百分点")
+_CURVE_HEADING = _pair("The Treasury curve", "美债收益率曲线")
+_CURVE_SUBTITLE = _pair(
+    "today versus the prior close versus a month ago",
+    "今日、上一交易日收盘与一个月前对比",
+)
 
 
 def _as_date(value: Any) -> date | None:
@@ -1044,6 +1062,14 @@ def _rows_for_tenor(index: Mapping[str, list[tuple[date, float]]], tenor: str) -
         if rows:
             return rows
     return []
+
+
+def _null_tenor_copy(tenor: str) -> dict[str, str]:
+    label = _CURVE_TENOR_LABELS[tenor]
+    return _pair(
+        f"No reading for the {label['en']} in tonight's data.",
+        f"本次数据未覆盖{label['zh']}。",
+    )
 
 
 def _shape_read(tenors: Sequence[Mapping[str, Any]]) -> dict[str, str]:
@@ -1133,7 +1159,7 @@ def _chart_payload(tenors: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     y_ticks = []
     for frac in (0.0, 0.5, 1.0):
         value = y_min + (y_max - y_min) * frac
-        y_ticks.append({"y": y_at(value), "text": f"{value:.2f}"})
+        y_ticks.append({"y": y_at(value), "text": f"{value:.2f}%"})
     return {
         "width": width,
         "height": height,
@@ -1155,10 +1181,9 @@ def _curve_hero(snapshot: Mapping[str, Any]) -> dict[str, Any]:
     """
     index = _series_points_index(snapshot)
     generation = snapshot.get("generation") or {}
-    as_of_candidates: list[date] = []
+    # Freshness is the producer's calculation stamp, never a max() of mixed
+    # tenor observation dates (a stale series must not inherit a fresher one).
     stamped = _as_date(generation.get("calculation_as_of"))
-    if stamped is not None:
-        as_of_candidates.append(stamped)
 
     tenors: list[dict[str, Any]] = []
     missing: list[str] = []
@@ -1166,8 +1191,6 @@ def _curve_hero(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         rows = _rows_for_tenor(index, tenor)
         today = rows[-1][1] if rows else None
         as_of_tenor = rows[-1][0] if rows else None
-        if as_of_tenor is not None:
-            as_of_candidates.append(as_of_tenor)
         prior_close = _prior_close_value(rows)
         prior_month = _prior_month_value(rows, as_of_tenor)
         if today is None:
@@ -1184,7 +1207,7 @@ def _curve_hero(snapshot: Mapping[str, Any]) -> dict[str, Any]:
 
     usable = sum(1 for row in tenors if row["today"] is not None)
     ok = usable >= _CURVE_MIN_USABLE
-    as_of = max(as_of_candidates).isoformat() if as_of_candidates else None
+    as_of = stamped.isoformat() if stamped is not None else None
     tenors_by_id = {row["tenor"]: row for row in tenors}
     spreads = [
         _spread_row(
@@ -1203,18 +1226,25 @@ def _curve_hero(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         "spreads": spreads,
         "shape_read": _shape_read(tenors) if ok else dict(_CURVE_NULL_PANEL),
         "missing_tenors": missing,
+        "missing_copy": [_null_tenor_copy(tenor) for tenor in missing],
         "null_panel": dict(_CURVE_NULL_PANEL),
         "null_tenor": dict(_CURVE_NULL_TENOR),
-        "heading": _pair("The Treasury curve", "美债收益率曲线"),
-        "subtitle": _pair(
-            "today vs the prior close vs a month ago",
-            "今日 vs 上一交易日收盘 vs 一个月前",
-        ),
+        "null_spread": dict(_CURVE_NULL_SPREAD),
+        "heading": dict(_CURVE_HEADING),
+        "subtitle": dict(_CURVE_SUBTITLE),
         "legend_today": _pair("Today", "今日"),
         "legend_close": _pair("Prior close", "上一交易日收盘"),
         "legend_month": _pair("A month ago", "一个月前"),
+        "change_close": dict(_CURVE_CHANGE_CLOSE),
+        "change_month": dict(_CURVE_CHANGE_MONTH),
+        "unit_spread": dict(_CURVE_UNIT_SPREAD),
         "chart": _chart_payload(tenors) if ok else None,
     }
+
+
+def _null_curve_hero() -> dict[str, Any]:
+    """Honest-null shape used by the degraded path and by an empty snapshot."""
+    return _curve_hero({"generation": {}, "series": {"items": []}})
 
 
 def build_view(snapshot: Mapping[str, Any], *, page_built_at: str,
@@ -1298,7 +1328,7 @@ def degraded_view(*, workspace_id: str, title: Mapping[str, str],
     exact receipt — and NOTHING that could be mistaken for a state. There is no
     zero, no neutral quadrant, no empty chart.
     """
-    return {
+    view = {
         "ok": False,
         "layout": LAYOUT_GRAMMAR,
         "decision_first": False,
@@ -1322,6 +1352,11 @@ def degraded_view(*, workspace_id: str, title: Mapping[str, str],
         },
         "artifact": dict(artifact),
     }
+    # Rates & Curves always includes the curve panel; the degraded path must
+    # still carry the honest-null hero so the null copy renders.
+    if workspace_id == "rates_curves":
+        view["curve_hero"] = _null_curve_hero()
+    return view
 
 
 # ==========================================================================
