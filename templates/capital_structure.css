@@ -206,28 +206,37 @@ body.cs-page.cs-modal-open { overflow: hidden; }
   padding: 8px 0 0;
   border-top: 1px solid var(--cs-line);
 }
-.cs-policy-row-list {
+.cs-prl {
   display: grid;
   margin: 6px 0 0;
   padding: 0;
   list-style: none;
   gap: 8px;
 }
-.cs-policy-row {
+.cs-pr {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 6px 12px;
   align-items: start;
 }
-.cs-policy-row a {
+.cs-pr a {
   color: var(--cs-cyan);
   text-decoration: none;
 }
-.cs-policy-row time {
+.cs-pr time {
   display: block;
   color: var(--cs-muted);
   font-family: var(--font-mono);
   font-size: 10px;
+}
+#cs-policy-projection {
+  scroll-margin-top: 12px;
+  scroll-margin-bottom: 120px;
+}
+@media (max-width: 640px) {
+  #cs-policy-projection {
+    padding-bottom: 120px;
+  }
 }
 
 .cs-workspace { display: grid; min-width: 0; grid-template-columns: minmax(272px, 320px) minmax(0, 1fr); align-items: start; gap: 16px; }

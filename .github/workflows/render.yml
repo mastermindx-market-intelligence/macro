@@ -110,10 +110,9 @@ on:
       - "scripts/build_canada.py"
       - "scripts/build_canada_library.py"
       # B-F09-6b (MO-PAID-067) trigger closure: the capital-markets policy
-      # projection leaf and its thin builder. A module-only edit must still
-      # re-bake the capital-structure page that cites the projection.
+      # projection leaf. The page builder is the producer. A module-only edit
+      # must still re-bake the capital-structure page that cites the projection.
       - "engine/capital_policy_projection.py"
-      - "scripts/build_capital_policy_projection.py"
       - "scripts/build_capital_structure_page.py"
       - "scripts/build_chart_data.py"
       - "scripts/build_china.py"

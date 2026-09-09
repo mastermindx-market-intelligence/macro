@@ -14,6 +14,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import shutil
 import sys
@@ -153,18 +154,21 @@ def _policy_watch(today=None) -> dict:
 
 
 # ── policy-projection:start (B-F09-6b, MO-PAID-067) ──
+ARTIFACT_BUDGET_BYTES = 32_768
+
+
 def _policy_projection(today=None) -> dict:
     """Dated-event ledger onto six frozen capital-markets windows. Context only.
 
     Strictly additive beside the merged Policy watch chip. Never raises into
-    the desk build; a failed leaf degrades to a falsy value so the template
-    guard skips the section.
+    the desk build; a failed leaf degrades to the typed unavailable shape.
     """
     try:
         from engine.capital_policy_projection import project
         return project(today=today)
     except Exception:  # noqa: BLE001 — a section must never crash the desk
-        return None
+        from engine.capital_policy_projection import typed_unavailable
+        return typed_unavailable(today=today)
 # ── policy-projection:end ──
 
 
@@ -182,6 +186,40 @@ def _atomic_copy(source: Path, destination: Path) -> None:
         temp.unlink(missing_ok=True)
 
 
+def _write_projection_artifact(root: Path, payload: dict) -> Path:
+    """Serialize the projection atomically under site/data/."""
+    text = json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
+    encoded = text.encode("utf-8")
+    if len(encoded) > ARTIFACT_BUDGET_BYTES:
+        raise RuntimeError(
+            f"artifact over budget: {len(encoded)} > {ARTIFACT_BUDGET_BYTES}"
+        )
+    dest = root / "site" / "data" / "capital_policy_projection.json"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    temp = _temp_sibling(dest)
+    try:
+        temp.write_bytes(encoded)
+        os.replace(temp, dest)
+    finally:
+        temp.unlink(missing_ok=True)
+    return dest
+
+
+def _section_html(html: str) -> str:
+    start = html.index('id="cs-policy-projection"')
+    end = html.index("</section>", start)
+    return html[html.rindex("<section", 0, start):end + len("</section>")]
+
+
+def _fence_section_budget(html: str) -> None:
+    from engine.capital_policy_projection import SECTION_BUDGET_BYTES
+    n = len(_section_html(html).encode("utf-8"))
+    if n > SECTION_BUDGET_BYTES:
+        raise RuntimeError(
+            f"policy-projection section over budget: {n} > {SECTION_BUDGET_BYTES}"
+        )
+
+
 def render(root: Path) -> Path:
     """Write a data-free desk shell plus exact CSS/JS companions."""
     root = root.resolve()
@@ -192,16 +230,37 @@ def render(root: Path) -> Path:
         autoescape=True,
         undefined=StrictUndefined,
     )
+    import engine.policy_calendar as _pc
+    _orig_cal = _pc.compute_policy_calendar
+    _cal_once: dict = {"used": False, "value": None}
+
+    def _compute_once(df=None, today=None):
+        if df is not None:
+            return _orig_cal(df=df, today=today)
+        if not _cal_once["used"]:
+            _cal_once["used"] = True
+            _cal_once["value"] = _orig_cal(today=today)
+        return _cal_once["value"]
+
+    _pc.compute_policy_calendar = _compute_once
+    try:
+        watch = _policy_watch()
+        payload = _policy_projection()
+    finally:
+        _pc.compute_policy_calendar = _orig_cal
+    _write_projection_artifact(root, payload)
     html = env.get_template("capital_structure.html.j2").render(
         active_section="research",
         active_page="capital_structure",
-        policy_watch=_policy_watch(),
-        policy_projection=_policy_projection(),
+        policy_watch=watch,
+        policy_projection=payload,
     )
     # Shared navigation templates intentionally contain indentation around
     # conditional blocks. Normalize generated-only blank-line whitespace so the
     # committed shell remains diff-clean without modifying global nav output.
     html = "\n".join(line.rstrip() for line in html.splitlines()) + "\n"
+    if payload and 'id="cs-policy-projection"' in html:
+        _fence_section_budget(html)
 
     # write_page owns the depth-aware data-base shim. Use its result through a
     # temporary file so even a standalone builder cannot expose a partial page.

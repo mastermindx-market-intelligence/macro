@@ -99,16 +99,14 @@
       <p class="cs-kicker" id="cs-pp-kicker">{{ t('Policy calendar', '政策日历') }}</p>
       <strong>{{ t('Dated steps on the public record', '公开记录上的既定日期节点') }}</strong>
       <span>{{ t(policy_projection.note_en, policy_projection.note_zh) }}</span>
-      {% if policy_projection.truncated %}<span>{{ t('Showing the next 12 dated steps.', '仅展示接下来的 12 个既定日期节点。') }}</span>{% endif %}
+      {% if policy_projection.truncated %}<span>{{ t(policy_projection.truncation_en, policy_projection.truncation_zh) }}</span>{% endif %}
       <div class="cs-policy-windows">{% for window in policy_projection.windows %}
         <div class="cs-policy-window">
           <p class="cs-kicker">{{ t(window.label_en, window.label_zh) }}</p>
           {% if window.state != 'present' %}<span>{{ t(window.reason_en, window.reason_zh) }}</span>
-          {% else %}<ul class="cs-policy-row-list">{% for row in window.rows %}
-            {% set parts = row.date.split('-') %}
-            {% set month_en = {'01':'Jan','02':'Feb','03':'Mar','04':'Apr','05':'May','06':'Jun','07':'Jul','08':'Aug','09':'Sep','10':'Oct','11':'Nov','12':'Dec'} %}
-            <li class="cs-policy-row"><strong>{{ t(row.event_en, row.event_zh) }}</strong> <time datetime="{{ row.date }}">{{ t(month_en[parts[1]] ~ ' ' ~ (parts[2]|int) ~ ', ' ~ parts[0], parts[0] ~ '年' ~ (parts[1]|int) ~ '月' ~ (parts[2]|int) ~ '日') }}</time> <a href="{{ row.source_url }}" rel="noopener">{{ t('Source', '来源') }}</a></li>
-          {% endfor %}</ul>{% endif %}
+          {% else %}<ul class="cs-prl">{% for row in window.rows %}
+            <li class="cs-pr"><strong>{{ t(row.event_en, row.event_zh) }}</strong> <time datetime="{{ row.date }}">{{ row.date }}</time> <a href="{{ row.source_url }}" rel="noopener">{{ t(row.source_label_en, row.source_label_zh) }}</a></li>
+          {% endfor %}</ul>{% if window.more_en %}<span>{{ t(window.more_en, window.more_zh) }}</span>{% endif %}{% endif %}
         </div>{% endfor %}
       </div>
     </div>

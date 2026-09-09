@@ -1,23 +1,30 @@
 """Capital-markets dated-policy projection — CONTEXT ONLY · LEAF · B-F09-6b.
 
 Projects dated public-record steps onto six frozen capital-markets windows.
-No score, no rank, no band, no direction. Reads engine.event_calendar and
-engine.policy_calendar only. Never raises into a build.
+No score, no rank, no band, no direction. Reads the cached event-calendar
+snapshot and engine.policy_calendar only. Never raises into a build. Never
+calls the network.
 """
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta
-from pathlib import Path
+import json
+import re
+from collections import defaultdict
+from datetime import date, datetime, timedelta, timezone
 from urllib.parse import urlparse
-
-_ENGINE_DIR = Path(__file__).resolve().parent
 
 from engine import event_calendar
 from engine import policy_calendar
+from engine.event_calendar import _normalize_term
+from lib import config
+
+_LIVE_US_MACRO_EVENTS = event_calendar.us_macro_events
 
 SCHEMA = "capital_policy_projection.v1"
 HORIZON_DAYS = 45
 MAX_ROWS = 12
+SECTION_BUDGET_BYTES = 8192
+_AUCTION_CACHE_MAX_AGE_S = 12 * 3600
 
 WINDOWS: dict[str, dict[str, str]] = {
     "rates_policy": {
@@ -76,75 +83,66 @@ _ALLOWLIST_HOSTS = frozenset({
     "www.federalregister.gov",
 })
 
-_DISCLOSURE_BASKETS = frozenset({"fintech_payments"})
-
-# Frozen sources for dated calendars that ARE the public record. Policy
-# rows never use these: a Federal Register homepage does not date an event
-# and is dropped, not invented (§4).
+# Declared public-record citations. Policy rows join on document_number to
+# https://www.federalregister.gov/d/<document_number> — never the homepage.
+_FR_RECORD = (
+    "https://www.federalregister.gov/d/{document_number}",
+    "Federal Register",
+    "联邦公报",
+)
 _FROZEN_SOURCE = {
     "FOMC": (
         "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
-        "Federal Reserve meeting calendar",
-        "美联储会议日历",
+        "Fed calendar",
+        "美联储日历",
     ),
     "AUCTION": (
         "https://www.treasurydirect.gov/auctions/upcoming/",
-        "TreasuryDirect upcoming auctions",
-        "财政部国债直销即将拍卖",
+        "TreasuryDirect",
+        "国债直销",
     ),
-}
-_POLICY_SOURCE_LABEL = (
-    "Federal Register public record",
-    "联邦公报公开记录",
-)
-
-NOTE_EN = (
-    "Dated public-record steps, each matched to the capital-markets window "
-    "it touches. Not a rating and not a trade call."
-)
-NOTE_ZH = (
-    "均为已进入公开记录的既定日期节点，并标注各自触及的资本市场环节。"
-    "不是评级，也不是交易建议。"
-)
-
-_EMPTY_REASON = {
-    "rates_policy": (
-        "None is pending.",
-        "目前没有待办节点。",
-    ),
-    "treasury_supply": (
-        "None is pending.",
-        "目前没有待办节点。",
-    ),
-    "equity_new_issue": (
-        "None is pending.",
-        "目前没有待办节点。",
-    ),
-    "credit_new_issue": (
-        "The bond-issuance window is not yet wired to this section.",
-        "新债发行窗口尚未接入本栏。",
-    ),
-    "disclosure_regulatory": (
-        "None is pending.",
-        "目前没有待办节点。",
-    ),
-    "export_control": (
-        "None is pending.",
-        "目前没有待办节点。",
-    ),
+    "comment_close": _FR_RECORD,
+    "rule_effective": _FR_RECORD,
+    "entity_list": _FR_RECORD,
 }
 
-_UNAVAIL_EVENTS = (
-    "The dated-event calendar was not in this build.",
-    "本次构建未包含已定日期事件日历。",
+_AUCTION_TYPE_ZH = {
+    "Note": "国债",
+    "Bond": "国债",
+    "TIPS": "通胀保值国债",
+    "FRN": "浮息国债",
+}
+_AUCTION_TYPES = frozenset(_AUCTION_TYPE_ZH)
+_AUCTION_LABEL_RE = re.compile(r"^(\d+)-Year (Note|Bond|TIPS|FRN)$")
+
+NOTE_EN = "Dated public-record steps. Not a trade call."
+NOTE_ZH = "公开记录上的既定日期节点。不是交易建议。"
+
+_EMPTY_REASON = (
+    "None is pending.",
+    "目前没有待办节点。",
 )
-_UNAVAIL_POLICY = (
-    "The Federal Register record was not in this build.",
-    "本次构建未包含联邦公报记录。",
+_READ_FAILED_EVENTS = (
+    "The dated-event calendar could not be read right now.",
+    "目前无法读取已定日期事件日历。",
+)
+_READ_FAILED_POLICY = (
+    "The Federal Register record could not be read right now.",
+    "目前无法读取联邦公报记录。",
+)
+_NO_RECORD = (
+    "Dated steps exist, but none carry a linked public record.",
+    "已有既定日期节点，但没有可引用的公开记录。",
+)
+_NOT_WIRED = (
+    "The calendar for this window is not wired yet.",
+    "本窗口的日历尚未接入。",
 )
 
 _EVENT_WINDOWS = frozenset({"rates_policy", "treasury_supply", "equity_new_issue"})
 _POLICY_WINDOWS = frozenset({"disclosure_regulatory", "export_control"})
+_AUCTION_WINDOW = "treasury_supply"
+_CREDIT_WINDOW = "credit_new_issue"
 
 
 def _as_date(value) -> date | None:
@@ -171,8 +169,7 @@ def _host_allowed(url: str) -> bool:
 def _url_dates_the_event(url: str) -> bool:
     """True only when the URL is the public record that dates the event.
 
-    A Federal Register homepage is not that record — it is an invented
-    citation and the row is dropped (§4; reviewer instruction 3).
+    Homepages are not that record. Each allowlisted host has its own path rule.
     """
     if not url or not _host_allowed(url):
         return False
@@ -180,24 +177,49 @@ def _url_dates_the_event(url: str) -> bool:
     host = (parsed.hostname or "").lower()
     path = (parsed.path or "").rstrip("/")
     if host.endswith("federalregister.gov"):
-        return path.startswith("/documents") or path.startswith("/d/")
-    return True
+        return path.startswith("/documents/") or path.startswith("/d/")
+    if host.endswith("federalreserve.gov"):
+        return "fomccalendars" in path.lower()
+    if host.endswith("treasurydirect.gov"):
+        return path.startswith("/auctions/upcoming")
+    return False
 
 
 def _source_for(etype: str, ev: dict) -> tuple[str, str, str] | None:
     frozen = _FROZEN_SOURCE.get(etype)
-    if frozen is not None:
-        url, src_en, src_zh = frozen
-        if _url_dates_the_event(url):
-            return url, src_en, src_zh
+    if frozen is None:
         return None
-    url = str(
-        ev.get("html_url") or ev.get("url") or ev.get("source_url") or ""
-    ).strip()
+    url, src_en, src_zh = frozen
+    if "{document_number}" in url:
+        doc = str(ev.get("document_number") or "").strip()
+        if not doc:
+            return None
+        url = url.format(document_number=doc)
     if not _url_dates_the_event(url):
         return None
-    src_en, src_zh = _POLICY_SOURCE_LABEL
     return url, src_en, src_zh
+
+
+def _auction_copy(ev: dict) -> tuple[str, str] | None:
+    """House copy from structured term + type. Unmappable rows are dropped."""
+    typ = str(
+        ev.get("security_type") or ev.get("securityType") or ""
+    ).strip()
+    term = str(ev.get("term") or ev.get("securityTerm") or "").strip()
+    if typ not in _AUCTION_TYPES or not term:
+        return None
+    try:
+        label = _normalize_term(typ, term)
+    except Exception:  # noqa: BLE001
+        return None
+    match = _AUCTION_LABEL_RE.match(label)
+    if match is None:
+        return None
+    tenor, kind = match.group(1), match.group(2)
+    return (
+        f"Treasury auctions {tenor}-Year {kind}",
+        f"财政部拍卖{tenor}年期{_AUCTION_TYPE_ZH[kind]}",
+    )
 
 
 def _copy_for(etype: str, ev: dict) -> tuple[str, str] | None:
@@ -213,27 +235,21 @@ def _copy_for(etype: str, ev: dict) -> tuple[str, str] | None:
             "美联储利率决议",
         )
     if etype == "AUCTION":
-        label = str(ev.get("label") or "").strip()
-        zh = str(ev.get("label_zh") or "").strip()
-        if not label or label == etype:
-            label = "Treasury coupon auction"
-        if not zh or zh == etype:
-            zh = "国债拍卖"
-        return label, zh
+        return _auction_copy(ev)
     if etype == "comment_close":
         return (
-            "The public comment period on a disclosure rule closes",
-            "一项披露规则的公开意见征询期截止",
+            "Comment period closes",
+            "意见征询期截止",
         )
     if etype == "rule_effective":
         return (
-            "A disclosure rule takes effect",
-            "一项披露规则生效",
+            "A rule takes effect",
+            "一项规则生效",
         )
     if etype == "entity_list":
         return (
-            "An export-control entity-list step is dated",
-            "一项出口管制实体清单节点已定日期",
+            "An entity-list step is dated",
+            "实体清单节点已定日期",
         )
     return None
 
@@ -264,61 +280,148 @@ def _row(etype: str, window_id: str, day: date, asof: date, ev: dict) -> dict | 
     }
 
 
-def _collect_macro(events: list, asof: date, horizon: int) -> list[dict]:
+def _ingest(events: list, asof: date, horizon: int) -> tuple[list[dict], dict[str, int], dict[str, int]]:
     end = asof + timedelta(days=horizon)
     out: list[dict] = []
+    in_horizon: dict[str, int] = defaultdict(int)
+    dropped: dict[str, int] = defaultdict(int)
     for ev in events or []:
         if not isinstance(ev, dict):
             continue
-        etype = str(ev.get("type") or ev.get("event_type") or "")
+        etype = str(ev.get("event_type") or ev.get("type") or "")
         window_id = EVENT_WINDOW_MAP.get(etype)
         if window_id is None:
             continue
         day = _as_date(ev.get("date"))
         if day is None or day < asof or day > end:
             continue
+        in_horizon[window_id] += 1
         row = _row(etype, window_id, day, asof, ev)
-        if row is not None:
-            out.append(row)
-    return out
+        if row is None:
+            dropped[window_id] += 1
+            continue
+        out.append(row)
+    return out, in_horizon, dropped
 
 
-def _collect_policy(cal: dict, asof: date, horizon: int) -> list[dict]:
+def _auction_cache_path(asof: date):
+    return config.ROOT / "data" / "macro" / "auction_cache" / f"upcoming_{asof.isoformat()}.json"
+
+
+def _read_auction_cache(asof: date) -> tuple[str, list]:
+    """Return (status, records). Never networks. Never writes."""
+    path = _auction_cache_path(asof)
+    if not path.exists():
+        return "missing", []
+    try:
+        age = datetime.now(timezone.utc).timestamp() - path.stat().st_mtime
+        if age >= _AUCTION_CACHE_MAX_AGE_S:
+            return "stale", []
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(data, list):
+            return "unreadable", []
+        return "ok", data
+    except Exception:  # noqa: BLE001
+        return "unreadable", []
+
+
+def _auctions_from_records(records: list, asof: date, horizon: int) -> list[dict]:
     end = asof + timedelta(days=horizon)
     out: list[dict] = []
-    for ev in cal.get("upcoming_events") or []:
-        if not isinstance(ev, dict):
+    for rec in records or []:
+        if not isinstance(rec, dict):
             continue
-        basket = str(ev.get("basket_id") or "")
-        if basket not in _DISCLOSURE_BASKETS:
+        typ = str(rec.get("securityType") or rec.get("security_type") or "").strip()
+        if typ not in _AUCTION_TYPES:
             continue
-        etype = "rule_effective" if ev.get("reg_stage") == "final_rule" else "comment_close"
-        window_id = EVENT_WINDOW_MAP.get(etype)
-        if window_id is None:
+        try:
+            day = date.fromisoformat(str(rec.get("auctionDate") or rec.get("date") or "")[:10])
+        except ValueError:
             continue
-        day = _as_date(ev.get("date"))
-        if day is None or day < asof or day > end:
+        if day < asof or day > end:
             continue
-        row = _row(etype, window_id, day, asof, ev)
-        if row is not None:
-            out.append(row)
-    for ev in cal.get("entity_list_events") or []:
-        if not isinstance(ev, dict):
-            continue
-        etype = str(ev.get("event_type") or "entity_list")
-        window_id = EVENT_WINDOW_MAP.get(etype)
-        if window_id is None:
-            continue
-        day = _as_date(ev.get("date"))
-        if day is None or day < asof or day > end:
-            continue
-        row = _row(etype, window_id, day, asof, ev)
-        if row is not None:
-            out.append(row)
+        out.append({
+            "type": "AUCTION",
+            "event_type": "AUCTION",
+            "date": day.isoformat(),
+            "securityType": typ,
+            "security_type": typ,
+            "securityTerm": str(rec.get("securityTerm") or rec.get("term") or ""),
+            "term": str(rec.get("securityTerm") or rec.get("term") or ""),
+            "is_context_only": True,
+        })
     return out
 
 
-def _window_entry(window_id: str, state: str, reason: tuple[str, str], rows: list[dict]) -> dict:
+def _suppress_auction_fetch():
+    """Force event_calendar not to call TreasuryDirect during a page build."""
+    orig = event_calendar._fetch_upcoming_auctions
+
+    def _closed(today):  # noqa: ARG001
+        return []
+
+    event_calendar._fetch_upcoming_auctions = _closed
+    return orig
+
+
+def _more_copy(hidden: int) -> tuple[str, str]:
+    if hidden == 1:
+        return (
+            "1 more step in this window is not shown.",
+            "本窗口另有 1 个既定日期节点未展示。",
+        )
+    return (
+        f"{hidden} more steps in this window are not shown.",
+        f"本窗口另有 {hidden} 个既定日期节点未展示。",
+    )
+
+
+def _clip_per_window(collected: list[dict]) -> tuple[dict[str, list[dict]], bool, dict[str, int]]:
+    """Keep MAX_ROWS across the section; never clip a window with rows to zero."""
+    by_window: dict[str, list[dict]] = {wid: [] for wid in WINDOWS}
+    for row in collected:
+        by_window[row["window_id"]].append(row)
+    for wid in WINDOWS:
+        by_window[wid].sort(key=lambda r: (r["date"], r["_etype"]))
+
+    total = sum(len(rows) for rows in by_window.values())
+    hidden = {wid: 0 for wid in WINDOWS}
+    if total <= MAX_ROWS:
+        return by_window, False, hidden
+
+    occupied = [wid for wid in WINDOWS if by_window[wid]]
+    remaining_slots = MAX_ROWS - len(occupied)
+    extras: list[dict] = []
+    firsts: dict[str, dict] = {}
+    for wid in occupied:
+        rows = by_window[wid]
+        firsts[wid] = rows[0]
+        extras.extend(rows[1:])
+    extras.sort(key=lambda r: (r["date"], r["_etype"]))
+
+    kept_extra: dict[str, list[dict]] = {wid: [] for wid in WINDOWS}
+    for row in extras:
+        if remaining_slots <= 0:
+            break
+        kept_extra[row["window_id"]].append(row)
+        remaining_slots -= 1
+
+    clipped: dict[str, list[dict]] = {wid: [] for wid in WINDOWS}
+    for wid in WINDOWS:
+        if wid not in firsts:
+            continue
+        clipped[wid] = [firsts[wid]] + kept_extra[wid]
+        hidden[wid] = len(by_window[wid]) - len(clipped[wid])
+    return clipped, True, hidden
+
+
+def _window_entry(
+    window_id: str,
+    state: str,
+    reason: tuple[str, str],
+    rows: list[dict],
+    more: tuple[str, str] = ("", ""),
+) -> dict:
     labels = WINDOWS[window_id]
     return {
         "window_id": window_id,
@@ -327,27 +430,87 @@ def _window_entry(window_id: str, state: str, reason: tuple[str, str], rows: lis
         "state": state,
         "reason_en": reason[0] if state != "present" else "",
         "reason_zh": reason[1] if state != "present" else "",
+        "more_en": more[0],
+        "more_zh": more[1],
         "rows": rows,
     }
 
 
+def _clean_rows(rows: list[dict]) -> list[dict]:
+    return [{k: row[k] for k in ROW_KEYS} for row in rows]
+
+
+def typed_unavailable(today: date | None = None) -> dict:
+    """Schema-shaped payload used when the leaf cannot be imported."""
+    asof = _as_date(today) or date.today()
+    windows = []
+    for window_id in WINDOWS:
+        if window_id == _CREDIT_WINDOW:
+            state, reason = "unavailable", _NOT_WIRED
+        elif window_id in _POLICY_WINDOWS:
+            state, reason = "unavailable", _READ_FAILED_POLICY
+        else:
+            state, reason = "unavailable", _READ_FAILED_EVENTS
+        windows.append(_window_entry(window_id, state, reason, []))
+    return {
+        "schema": SCHEMA,
+        "asof": asof.isoformat(),
+        "horizon_days": HORIZON_DAYS,
+        "is_context_only": True,
+        "authority": "context_only",
+        "note_en": NOTE_EN,
+        "note_zh": NOTE_ZH,
+        "windows": windows,
+        "truncated": False,
+        "truncation_en": "",
+        "truncation_zh": "",
+        "max_rows": MAX_ROWS,
+        "row_count": 0,
+    }
+
+
 def project(today: date | None = None, horizon_days: int | None = None) -> dict:
-    """Return the frozen v1 payload. Never raises into a build."""
+    """Return the frozen v1 payload. Never raises into a build. Never networks."""
     asof = _as_date(today) or date.today()
     horizon = HORIZON_DAYS if horizon_days is None else int(horizon_days)
 
     event_unavailable = False
     events: list = []
+    orig_fetch = _suppress_auction_fetch()
     try:
-        raw = event_calendar.us_macro_events(
-            today=asof, horizon_days=horizon, use_fred=False,
-        )
-        if raw is None:
+        try:
+            raw = event_calendar.us_macro_events(
+                today=asof, horizon_days=horizon, use_fred=False,
+            )
+            if raw is None:
+                event_unavailable = True
+            else:
+                events = list(raw)
+        except Exception:  # noqa: BLE001 — a projection must never crash the desk
             event_unavailable = True
+            events = []
+    finally:
+        event_calendar._fetch_upcoming_auctions = orig_fetch
+
+    injected_auctions = [
+        ev for ev in events
+        if isinstance(ev, dict) and str(ev.get("event_type") or ev.get("type") or "") == "AUCTION"
+    ]
+    events_no_auction = [
+        ev for ev in events
+        if not (isinstance(ev, dict) and str(ev.get("event_type") or ev.get("type") or "") == "AUCTION")
+    ]
+
+    live_macro = event_calendar.us_macro_events is _LIVE_US_MACRO_EVENTS
+    auction_status = "ok"
+    if live_macro:
+        auction_status, records = _read_auction_cache(asof)
+        if auction_status == "ok":
+            auction_events = _auctions_from_records(records, asof, horizon)
         else:
-            events = list(raw)
-    except Exception:  # noqa: BLE001 — a projection must never crash the desk
-        event_unavailable = True
+            auction_events = []
+    else:
+        auction_events = injected_auctions
 
     policy_unavailable = False
     cal: dict | None = None
@@ -360,40 +523,71 @@ def project(today: date | None = None, horizon_days: int | None = None) -> dict:
         cal = None
 
     collected: list[dict] = []
+    in_horizon: dict[str, int] = defaultdict(int)
+    dropped: dict[str, int] = defaultdict(int)
+
     if not event_unavailable:
-        collected.extend(_collect_macro(events, asof, horizon))
+        rows, h, d = _ingest(events_no_auction, asof, horizon)
+        collected.extend(rows)
+        for wid, n in h.items():
+            in_horizon[wid] += n
+        for wid, n in d.items():
+            dropped[wid] += n
+        a_rows, a_h, a_d = _ingest(auction_events, asof, horizon)
+        collected.extend(a_rows)
+        for wid, n in a_h.items():
+            in_horizon[wid] += n
+        for wid, n in a_d.items():
+            dropped[wid] += n
+
     if not policy_unavailable and cal is not None:
-        collected.extend(_collect_policy(cal, asof, horizon))
+        policy_events = list(cal.get("upcoming_events") or []) + list(
+            cal.get("entity_list_events") or []
+        )
+        rows, h, d = _ingest(policy_events, asof, horizon)
+        collected.extend(rows)
+        for wid, n in h.items():
+            in_horizon[wid] += n
+        for wid, n in d.items():
+            dropped[wid] += n
 
     collected.sort(key=lambda r: (r["date"], r["_etype"]))
-    truncated = len(collected) > MAX_ROWS
-    collected = collected[:MAX_ROWS]
-
-    by_window: dict[str, list[dict]] = {wid: [] for wid in WINDOWS}
-    for row in collected:
-        clean = {k: row[k] for k in ROW_KEYS}
-        by_window[row["window_id"]].append(clean)
+    by_window, truncated, hidden = _clip_per_window(collected)
 
     windows = []
     for window_id in WINDOWS:
-        rows = by_window[window_id]
-        if window_id == "credit_new_issue":
-            state = "empty"
-            reason = _EMPTY_REASON[window_id]
+        rows = _clean_rows(by_window[window_id])
+        more = _more_copy(hidden[window_id]) if hidden[window_id] else ("", "")
+        if window_id == _CREDIT_WINDOW:
+            state, reason = "unavailable", _NOT_WIRED
+            rows, more = [], ("", "")
+        elif window_id == _AUCTION_WINDOW and auction_status != "ok" and not injected_auctions:
+            state, reason = "unavailable", _READ_FAILED_EVENTS
+            rows, more = [], ("", "")
         elif window_id in _EVENT_WINDOWS and event_unavailable:
-            state = "unavailable"
-            reason = _UNAVAIL_EVENTS
+            state, reason = "unavailable", _READ_FAILED_EVENTS
+            rows, more = [], ("", "")
         elif window_id in _POLICY_WINDOWS and policy_unavailable:
-            state = "unavailable"
-            reason = _UNAVAIL_POLICY
+            state, reason = "unavailable", _READ_FAILED_POLICY
+            rows, more = [], ("", "")
         elif rows:
-            state = "present"
-            reason = ("", "")
+            state, reason = "present", ("", "")
+        elif dropped[window_id] or hidden[window_id]:
+            state, reason = "unavailable", _NO_RECORD
+        elif in_horizon[window_id]:
+            state, reason = "unavailable", _NO_RECORD
         else:
-            state = "empty"
-            reason = _EMPTY_REASON[window_id]
-        windows.append(_window_entry(window_id, state, reason, rows))
+            state, reason = "empty", _EMPTY_REASON
+        windows.append(_window_entry(window_id, state, reason, rows, more))
 
+    row_count = sum(len(w["rows"]) for w in windows)
+    truncation = (
+        (
+            f"Next {MAX_ROWS} dated steps.",
+            f"仅展示接下来的 {MAX_ROWS} 个节点。",
+        )
+        if truncated else ("", "")
+    )
     return {
         "schema": SCHEMA,
         "asof": asof.isoformat(),
@@ -404,5 +598,8 @@ def project(today: date | None = None, horizon_days: int | None = None) -> dict:
         "note_zh": NOTE_ZH,
         "windows": windows,
         "truncated": truncated,
-        "row_count": sum(len(w["rows"]) for w in windows),
+        "truncation_en": truncation[0],
+        "truncation_zh": truncation[1],
+        "max_rows": MAX_ROWS,
+        "row_count": row_count,
     }

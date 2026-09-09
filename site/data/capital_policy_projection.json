@@ -3,15 +3,20 @@
   "authority": "context_only",
   "horizon_days": 45,
   "is_context_only": true,
-  "note_en": "Dated public-record steps, each matched to the capital-markets window it touches. Not a rating and not a trade call.",
-  "note_zh": "均为已进入公开记录的既定日期节点，并标注各自触及的资本市场环节。不是评级，也不是交易建议。",
-  "row_count": 5,
+  "max_rows": 12,
+  "note_en": "Dated public-record steps. Not a trade call.",
+  "note_zh": "公开记录上的既定日期节点。不是交易建议。",
+  "row_count": 1,
   "schema": "capital_policy_projection.v1",
   "truncated": false,
+  "truncation_en": "",
+  "truncation_zh": "",
   "windows": [
     {
       "label_en": "Policy-rate decision",
       "label_zh": "政策利率决议",
+      "more_en": "",
+      "more_zh": "",
       "reason_en": "",
       "reason_zh": "",
       "rows": [
@@ -21,8 +26,8 @@
           "event_en": "Fed rate decision, with outlook",
           "event_zh": "美联储利率决议，含展望",
           "is_context_only": true,
-          "source_label_en": "Federal Reserve meeting calendar",
-          "source_label_zh": "美联储会议日历",
+          "source_label_en": "Fed calendar",
+          "source_label_zh": "美联储日历",
           "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
           "window_id": "rates_policy"
         }
@@ -33,80 +38,43 @@
     {
       "label_en": "Government borrowing",
       "label_zh": "政府举债",
-      "reason_en": "",
-      "reason_zh": "",
-      "rows": [
-        {
-          "date": "2026-09-09",
-          "days_out": 0,
-          "event_en": "10-Year Note auction (reopening)",
-          "event_zh": "10年期国债拍卖（续发行）",
-          "is_context_only": true,
-          "source_label_en": "TreasuryDirect upcoming auctions",
-          "source_label_zh": "财政部国债直销即将拍卖",
-          "source_url": "https://www.treasurydirect.gov/auctions/upcoming/",
-          "window_id": "treasury_supply"
-        },
-        {
-          "date": "2026-09-10",
-          "days_out": 1,
-          "event_en": "30-Year Bond auction (reopening)",
-          "event_zh": "30年期国债拍卖（续发行）",
-          "is_context_only": true,
-          "source_label_en": "TreasuryDirect upcoming auctions",
-          "source_label_zh": "财政部国债直销即将拍卖",
-          "source_url": "https://www.treasurydirect.gov/auctions/upcoming/",
-          "window_id": "treasury_supply"
-        },
-        {
-          "date": "2026-09-15",
-          "days_out": 6,
-          "event_en": "20-Year Bond auction (reopening)",
-          "event_zh": "20年期国债拍卖（续发行）",
-          "is_context_only": true,
-          "source_label_en": "TreasuryDirect upcoming auctions",
-          "source_label_zh": "财政部国债直销即将拍卖",
-          "source_url": "https://www.treasurydirect.gov/auctions/upcoming/",
-          "window_id": "treasury_supply"
-        },
-        {
-          "date": "2026-09-17",
-          "days_out": 8,
-          "event_en": "10-Year Note auction (reopening)",
-          "event_zh": "10年期国债拍卖（续发行）",
-          "is_context_only": true,
-          "source_label_en": "TreasuryDirect upcoming auctions",
-          "source_label_zh": "财政部国债直销即将拍卖",
-          "source_url": "https://www.treasurydirect.gov/auctions/upcoming/",
-          "window_id": "treasury_supply"
-        }
-      ],
-      "state": "present",
+      "more_en": "",
+      "more_zh": "",
+      "reason_en": "The dated-event calendar could not be read right now.",
+      "reason_zh": "目前无法读取已定日期事件日历。",
+      "rows": [],
+      "state": "unavailable",
       "window_id": "treasury_supply"
     },
     {
       "label_en": "New share sales",
       "label_zh": "新股发行",
-      "reason_en": "None is pending.",
-      "reason_zh": "目前没有待办节点。",
+      "more_en": "",
+      "more_zh": "",
+      "reason_en": "Dated steps exist, but none carry a linked public record.",
+      "reason_zh": "已有既定日期节点，但没有可引用的公开记录。",
       "rows": [],
-      "state": "empty",
+      "state": "unavailable",
       "window_id": "equity_new_issue"
     },
     {
       "label_en": "New bond sales",
       "label_zh": "新债发行",
-      "reason_en": "The bond-issuance window is not yet wired to this section.",
-      "reason_zh": "新债发行窗口尚未接入本栏。",
+      "more_en": "",
+      "more_zh": "",
+      "reason_en": "The calendar for this window is not wired yet.",
+      "reason_zh": "本窗口的日历尚未接入。",
       "rows": [],
-      "state": "empty",
+      "state": "unavailable",
       "window_id": "credit_new_issue"
     },
     {
       "label_en": "Disclosure rules",
       "label_zh": "披露规则",
-      "reason_en": "The Federal Register record was not in this build.",
-      "reason_zh": "本次构建未包含联邦公报记录。",
+      "more_en": "",
+      "more_zh": "",
+      "reason_en": "The Federal Register record could not be read right now.",
+      "reason_zh": "目前无法读取联邦公报记录。",
       "rows": [],
       "state": "unavailable",
       "window_id": "disclosure_regulatory"
@@ -114,8 +82,10 @@
     {
       "label_en": "Export controls",
       "label_zh": "出口管制",
-      "reason_en": "The Federal Register record was not in this build.",
-      "reason_zh": "本次构建未包含联邦公报记录。",
+      "more_en": "",
+      "more_zh": "",
+      "reason_en": "The Federal Register record could not be read right now.",
+      "reason_zh": "目前无法读取联邦公报记录。",
       "rows": [],
       "state": "unavailable",
       "window_id": "export_control"
