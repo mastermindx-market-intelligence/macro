@@ -104,10 +104,10 @@
       '尚未选择提醒类型 — 你不会收到提醒邮件。'],
     al_tz: ['Your time zone', '你的时区'],
     al_tz_placeholder: ['Not set yet', '尚未设置'],
-    al_tz_unset: ['Not saved yet — we’re using your browser’s time zone, ',
-      '尚未保存 — 暂时使用你浏览器的时区：'],
+    al_tz_unset: ['Not saved yet — we are using your browser’s time zone until you pick one.',
+      '尚未保存 — 在你选择之前，暂时使用你浏览器的时区。'],
     al_qh: ['Quiet hours', '免打扰时段'],
-    al_qh_hint: ['Nothing arrives between these times. Anything that fires waits and is sent when the window ends.',
+    al_qh_hint: ['Nothing is sent between these times. Alerts wait and are sent when the window ends.',
       '此时段内不发送。期间触发的提醒会等待，时段结束后补发。'],
     al_qh_s: ['Quiet hours start', '免打扰开始时间'],
     al_qh_e: ['Quiet hours end', '免打扰结束时间'],
@@ -383,6 +383,12 @@
     'Asia/Taipei',
     'UTC'
   ];
+  function _tzLabel(z) {
+    if (!z) return '';
+    if (z === 'UTC') return 'UTC';
+    var parts = String(z).split('/');
+    return parts[parts.length - 1].replace(/_/g, ' ');
+  }
   function _tzOptions(current) {
     var zones = (window.Intl && Intl.supportedValuesOf) ? Intl.supportedValuesOf('timeZone') : TZ_SHORTLIST.slice();
     var browserTz = 'UTC';
@@ -390,13 +396,14 @@
     if (zones.indexOf(browserTz) === -1) zones = [browserTz].concat(zones);
     var sel = current || browserTz;
     return zones.map(function (z) {
-      return '<option value="' + esc(z) + '"' + (z === sel ? ' selected' : '') + '>' + esc(z) + '</option>';
+      return '<option value="' + esc(z) + '"' + (z === sel ? ' selected' : '') + '>' + esc(_tzLabel(z)) + '</option>';
     }).join('');
   }
   function alertCatRow(cat, label, checked) {
     return '<div class="mmacc-row mmacc-row-toggle"><span class="mmacc-k">' + esc(label) + '</span>' +
       '<button type="button" class="mmacc-switch mmacc-switch-sm" role="switch" ' +
-        'aria-checked="' + (checked ? 'true' : 'false') + '" data-act="alert-cat" data-cat="' + cat + '"></button></div>';
+        'aria-checked="' + (checked ? 'true' : 'false') + '" aria-label="' + esc(label) + '" ' +
+        'data-act="alert-cat" data-cat="' + cat + '"></button></div>';
   }
   function alertPrefsGroupHTML(p, unset) {
     p = p || {}; unset = unset || [];
@@ -413,7 +420,7 @@
         '<div class="mmacc-row mmacc-row-toggle">' +
           '<span class="mmacc-k mmacc-k-lead">' + esc(T('al_master')) + '</span>' +
           '<button type="button" class="mmacc-switch" role="switch" aria-checked="' + (on ? 'true' : 'false') + '" ' +
-            'data-act="alert-optin"></button>' +
+            'aria-label="' + esc(T('al_master')) + '" data-act="alert-optin"></button>' +
         '</div>' +
         (!known ? '<div class="mmacc-hint mmacc-hint-unknown">' + esc(T('al_unknown')) + '</div>' :
           (!on ? '<div class="mmacc-hint mmacc-hint-off">' + esc(T('al_off')) + '</div>' : '')) +
@@ -423,10 +430,8 @@
           alertCatRow('thesis_window', T('al_cat_thes'), cats.indexOf('thesis_window') !== -1) +
           (cats.length === 0 ? '<div class="mmacc-hint mmacc-hint-none">' + esc(T('al_none')) + '</div>' : '') +
           '<div class="mmacc-sublabel">' + esc(T('al_tz')) + '</div>' +
-          '<select class="mmacc-input mmacc-select" id="mmacc-tz" data-act="alert-tz">' + _tzOptions(tz) + '</select>' +
-          (!tzKnown ? '<div class="mmacc-hint mmacc-hint-tz">' + esc(T('al_tz_unset')) +
-            esc((function () { try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (e) { return 'UTC'; } })()) +
-            '</div>' : '') +
+          '<select class="mmacc-input mmacc-select" id="mmacc-tz" data-act="alert-tz" aria-label="' + esc(T('al_tz')) + '">' + _tzOptions(tz) + '</select>' +
+          (!tzKnown ? '<div class="mmacc-hint mmacc-hint-tz">' + esc(T('al_tz_unset')) + '</div>' : '') +
           '<div class="mmacc-sublabel">' + esc(T('al_qh')) + '</div>' +
           '<div class="mmacc-timepair">' +
             '<input type="time" class="mmacc-input mmacc-time" id="mmacc-qh-start" aria-label="' + esc(T('al_qh_s')) + '" ' +

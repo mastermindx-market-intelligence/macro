@@ -6421,9 +6421,7 @@ jobs:
       - name: billing + lifecycle email tests (app/billing_emails.py)
         run: python -m pytest tests/test_billing_emails.py -v
       - name: account preference tests (app/account_prefs.py)
-        run: python -m pytest tests/test_account_prefs.py -v
-      - name: alert delivery preferences tests (app/account_prefs.py, lib/user_prefs.py — B-F08-1a)
-        run: python -m pytest tests/test_alert_prefs.py -v
+        run: python -m pytest tests/test_account_prefs.py tests/test_alert_prefs.py -v
       - name: shared preference atomics contract (templates/theme.js)
         run: python -m pytest tests/test_shared_pref_atomics.py -v
       - name: billing webhook spine regression (app/billing.py::_handle_event)

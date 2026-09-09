@@ -209,8 +209,8 @@ def test_coming_soon_string_removed_from_alert_group(account_js):
 
 _NEW_STR_KEYS = [
     "al_group", "al_master", "al_off", "al_unknown", "al_what", "al_cat_hold", "al_cat_thes",
-    "al_none", "al_tz", "al_tz_unset", "al_qh", "al_qh_hint", "al_qh_s", "al_qh_e", "al_clear",
-    "al_saved",
+    "al_none", "al_tz", "al_tz_placeholder", "al_tz_unset", "al_qh", "al_qh_hint", "al_qh_s",
+    "al_qh_e", "al_clear", "al_saved",
 ]
 
 
@@ -369,3 +369,113 @@ def test_get_prefs_unauthenticated_is_401(monkeypatch):
     with pytest.raises(HTTPException) as ei:
         account_prefs.read_prefs(user=account_prefs._current_user(None))
     assert ei.value.status_code == 401
+
+
+# --------------------------------------------------------------------------- #
+# freeze §8 pins that lived only in test_account_prefs.py (required here)
+# --------------------------------------------------------------------------- #
+def test_tz_select_shows_human_labels_not_raw_iana(account_js):
+    """REQUIRED 3: timezone labels the user sees must be human-readable city
+    names, not IANA ids like Asia/Hong_Kong. The option VALUE stays the IANA
+    id so the POST body is still a real zone."""
+    assert "function _tzLabel" in account_js
+    assert "replace(/_/g, ' ')" in account_js
+    assert "esc(_tzLabel(z))" in account_js
+    assert "esc(z) + '</option>'" not in account_js
+
+
+def test_quiet_hours_copy_says_alerts_wait_and_are_sent(account_js):
+    """REQUIRED 3: quiet-hours copy is a statement about the designed system
+    (V4 actually sends). Both languages must say alerts wait and go out when
+    the window ends — never 'fires' / machine cadence words."""
+    import re
+    m = re.search(
+        r"al_qh_hint:\s*\[\s*(['\"])(.*?)\1\s*,\s*(['\"])(.*?)\3",
+        account_js,
+    )
+    assert m, "al_qh_hint STR missing"
+    en, zh = m.group(2), m.group(4)
+    assert "wait" in en.lower()
+    assert "sent when the window ends" in en.lower()
+    assert "fires" not in en.lower()
+    assert "等待" in zh
+    assert "补发" in zh or "发送" in zh
+
+
+def test_alert_group_strings_have_no_machine_text(account_js):
+    """No snake_case keys, no 'null', no raw codes in the user-visible STR values."""
+    import re
+    for key in _NEW_STR_KEYS:
+        m = re.search(
+            re.escape(key) + r"\s*:\s*\[\s*(['\"])(.*?)\1\s*,\s*(['\"])(.*?)\3",
+            account_js,
+        )
+        assert m, f"STR key {key!r} not found"
+        en, zh = m.group(2), m.group(4)
+        for lang, text in (("en", en), ("zh", zh)):
+            assert "null" not in text.lower(), f"{key} {lang} contains 'null'"
+            assert "_" not in text, f"{key} {lang} contains underscore/snake_case: {text!r}"
+
+
+def test_field_error_messages_are_plain_sentences():
+    """API 400 detail.en / detail.zh are plain sentences, never machine keys."""
+    for key, (en, zh) in account_prefs._FIELD_ERR.items():
+        assert en and zh
+        assert en[0].isupper()
+        assert en.endswith(".")
+        assert "_" not in en
+        assert "null" not in en.lower()
+        assert "_" not in zh
+        assert "null" not in zh.lower()
+
+
+def test_get_prefs_returns_unset_and_categories_available():
+    """§8 GET readback: unset names never-written keys; categories_available is
+    the closed ALERT_CATEGORIES list."""
+    out = account_prefs.read_prefs(user=USER)
+    assert out["ok"] is True
+    assert "tz" in out["unset"]
+    assert "quiet_hours" in out["unset"]
+    assert "alert_email_optin" in out["unset"]
+    assert out["categories_available"] == list(user_prefs.ALERT_CATEGORIES)
+
+
+def test_quiet_hours_are_wall_clock_in_the_user_zone_not_ny(auth, store):
+    """§8: quiet hours are HH:MM in the user's zone. The prefs writer must not
+    convert them onto the NY board_date clock — stored pair is the wall-clock
+    the user typed."""
+    src = (ROOT / "app" / "account_prefs.py").read_text() + "\n" + (
+        ROOT / "lib" / "user_prefs.py").read_text()
+    assert "board_date" not in src
+    assert "America/New_York" not in src
+    out = account_prefs.save_prefs(
+        account_prefs.PrefsRequest(quiet_hours={"start": "22:00", "end": "07:00"}),
+        user=USER)
+    assert out["prefs"]["quiet_hours"] == {"start": "22:00", "end": "07:00"}
+
+
+def test_unknown_category_is_400_with_plain_word_detail(auth, store):
+    from fastapi import HTTPException
+    with pytest.raises(HTTPException) as ei:
+        account_prefs.save_prefs(
+            account_prefs.PrefsRequest(alert_categories=["not_a_real_category"]),
+            user=USER)
+    assert ei.value.status_code == 400
+    detail = ei.value.detail
+    assert detail["field"] == "alert_categories"
+    assert "_" not in detail["en"]
+    assert "null" not in detail["en"].lower()
+    assert detail["en"].endswith(".")
+    assert detail["zh"]
+    assert auth.calls == []
+
+
+def test_alerts_on_with_zh_lang_defaults_to_asia_shanghai(auth, store):
+    """§8 explicit default = account locale or UTC. zh → Asia/Shanghai."""
+    base_user = dict(USER, user_metadata=dict(USER["user_metadata"], lang="zh"))
+    assert "tz" not in base_user["user_metadata"]
+    out = account_prefs.save_prefs(
+        account_prefs.PrefsRequest(alert_email_optin=True), user=base_user)
+    assert out["prefs"]["tz"] == user_prefs.default_tz_for_lang("zh") == "Asia/Shanghai"
+    _, _, payload = auth.calls[0]
+    assert payload["user_metadata"]["tz"] == "Asia/Shanghai"

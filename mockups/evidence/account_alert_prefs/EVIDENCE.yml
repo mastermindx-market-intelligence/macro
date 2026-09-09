@@ -1,4 +1,5 @@
 schema: mastermind.page_evidence_receipt.v1
 changed_paths:
   - templates/theme.css
+  - templates/account.js
 manifest: mockups/evidence/account_alert_prefs/manifest.json
