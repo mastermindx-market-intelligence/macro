@@ -70,6 +70,7 @@
     "513": "B-F08-2 alert run receipts and outbox; its ledger rows are F08 alert rows outside this packet.",
     "515": "B-F12-2 was records-first: the account lifecycle spec that terminal#527 then built.",
     "517": "B-F08-3 alerts surface; its ledger rows are F08 alert rows outside this packet.",
+    "526": "B-F12-3 workspace-scoped settings and the invitation join; it was stacked under terminal#514 and its code reached master inside that merge (squash 83424c63), so MO-PAID-081 and MO-PAID-083 name terminal#514 as the merge that produced them rather than terminal#526.",
     "529": "B-PLAT-4 tenant scope contract; cited as a supporting producer on MO-PAID-082 rather than as the row's own merge."
   },
   "producer_paths_on_master": {
@@ -113,6 +114,7 @@
         "terminal/app/api/event-impact/route.ts",
         "terminal/components/EventImpactPanel.tsx"
       ],
+      "next_bounded_child": "",
       "residual": null
     },
     {
@@ -128,6 +130,7 @@
         "terminal/app/api/portfolio/route.ts",
         "terminal/components/PortfolioView.tsx"
       ],
+      "next_bounded_child": "",
       "residual": null
     },
     {
@@ -144,6 +147,7 @@
         "terminal/components/workspaces/ThesisWorkspace.tsx",
         "supabase/migrations/0012_thesis_objects.sql"
       ],
+      "next_bounded_child": "ONE child: reconcile the revision vocabulary — either carry an amended_from reference on the version row, or amend this acceptance sentence to name the shipped previous_version link. Nothing else about this row is open.",
       "residual": "The shipped store supersedes by a previous_version link on an immutable version row; the token amended_from appears nowhere in the Terminal tree, so the acceptance sentence is not literally satisfied."
     },
     {
@@ -160,6 +164,7 @@
         "terminal/lib/teams.ts",
         "supabase/migrations/0014_tenancy_foundation.sql"
       ],
+      "next_bounded_child": "",
       "residual": null
     },
     {
@@ -175,6 +180,7 @@
         "terminal/components/workspaces/ThesisWorkspace.tsx",
         "terminal/app/api/theses/route.ts"
       ],
+      "next_bounded_child": "",
       "residual": null
     },
     {
@@ -190,6 +196,7 @@
         "terminal/lib/teams.ts",
         "supabase/migrations/0015_team_roles_invitations.sql"
       ],
+      "next_bounded_child": "",
       "residual": null
     },
     {
@@ -205,6 +212,7 @@
         "terminal/app/api/teams/[id]/members/route.ts",
         "terminal/lib/tenantScope.ts"
       ],
+      "next_bounded_child": "",
       "residual": null
     },
     {
@@ -219,6 +227,7 @@
         "terminal/lib/teams.ts",
         "supabase/migrations/0015_team_roles_invitations.sql"
       ],
+      "next_bounded_child": "",
       "residual": null
     },
     {
@@ -233,6 +242,7 @@
         "terminal/app/api/account/export/route.ts",
         "terminal/lib/accountExport.ts"
       ],
+      "next_bounded_child": "",
       "residual": null
     },
     {
@@ -248,6 +258,7 @@
         "terminal/components/settings/SectionAccount.tsx",
         "supabase/migrations/0016_account_lifecycle_requests.sql"
       ],
+      "next_bounded_child": "",
       "residual": null
     },
     {
@@ -261,6 +272,7 @@
       "producer_paths": [
         "terminal/lib/portfolioRisk.ts"
       ],
+      "next_bounded_child": "The absorption into the MO-PAID-036 child is spent, because 036 closed on the concentration, factor and liquidity readout. ONE child remains here: per-user Sharpe, Sortino and beta over the same canonical holdings.",
       "residual": "No Sharpe, Sortino or beta is computed over a user's own holdings anywhere in the Terminal tree; only the concentration quarter of the acceptance sentence shipped."
     },
     {
@@ -274,7 +286,8 @@
       "producer_paths": [
         "terminal/lib/eventImpact.ts"
       ],
-      "residual": "The shipped event object carries direction, mechanism and timeframe but no invalidation field, and only the earnings calendar keys by ticker, so the two other published calendars stay unjoinable."
+      "next_bounded_child": "ONE child: add the F08 §9 invalidation element to the shipped event-object schema, so an event states the condition that would void it alongside direction, mechanism and timeframe — carried on this row because MO-PAID-028's own sentence is now met and its child is empty.",
+      "residual": "The shipped event object carries direction, mechanism and timeframe but no invalidation field, and only the earnings calendar keys by ticker, so the two other published calendars stay unjoinable. That invalidation element was part of the ONE child MO-PAID-028 carried at the base; MO-PAID-028's sentence is met and its child is empty, so this row now owns the child that would ship it."
     }
   ]
 }

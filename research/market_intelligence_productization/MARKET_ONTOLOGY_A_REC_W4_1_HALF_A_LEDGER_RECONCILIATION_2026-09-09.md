@@ -120,11 +120,15 @@ three pages: "All three: YES verified."
 
 The reason this needs a flag rather than a quiet close: **#6957 is OPEN (not merged, base
 `main`, head `claude/mo-b-a-spare-b-a-f01-2`) and its file list includes the exact same
-CSV** as part of a bundled records packet that also closes `MO-DELTA-008` and
-`MO-DELTA-013` (neither of which is in this packet's 9 rows — the overlap is specifically
-`MO-PAID-004`). Step 0 of this packet confirmed that live state. This packet applies the
-§2 edit. Whichever of this pull request and #6957 merges second on this row must rebase
-past the other's edit, not force it.
+CSV**. This round re-read that pull request's live hunk rather than only its file list
+(`gh api repos/mastermindx-market-intelligence/macro/pulls/6957/files`): the CSV change is
+`+1/-1`, and the only cell it moves is `MO-DELTA-008`'s `missing_contract_or_proof`
+(from "broad HY/IG aggregate credit surface (current instance single-issuer only)" to a
+sentence naming the shipped aggregate spread-gauge card). **#6957 does not touch
+`MO-PAID-004`.** The earlier reading of this caveat — that the two packets collide on the
+`MO-PAID-004` row — was drawn from the file list alone and is withdrawn. The collision is
+real but file-level: two open records packets edit one CSV, so whichever merges second must
+rebase past the other's edit, not force it. This packet applies the §2 edit.
 
 ## What this record deliberately does not do
 

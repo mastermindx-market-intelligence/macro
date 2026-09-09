@@ -207,10 +207,84 @@ def test_f12_rows_moved_to_built_not_proven(row_id: str) -> None:
     assert row["state_delta"] != "UNCHANGED", f"{row_id}: state_delta still says UNCHANGED"
 
 
-def test_the_untouched_f12_rows_stay_untouched() -> None:
+# Round-2 FIX-3: byte-identical to the base branch (ecaf8f8e), not merely an
+# open capability_state_c2 word — every other column of these rows could have
+# been rewritten and the prior assertion would still have passed.
+_UNTOUCHED_F12_ROWS_AT_BASE: dict[str, str] = {
+    'MO-PAID-084': 'MO-PAID-084,F12-TEAM-API-PLATFORM,NEW_BOUNDED_BUILD,NOT_BUILT,UNCHANGED,WS:MARKET-OS (F12 lane) — canonical auth/secrets owner + API projection,NONE (api_key hits = server-side secrets only),NONE,API key issuance/management,n/a,DEFER — dependency MO-PAID-055 public API,an issued key authenticates one request and is revocable,n/a,access_control_only,',
+    'MO-PAID-085': 'MO-PAID-085,F08-PORTFOLIO-ALERTS,UPGRADE_EXISTING_OWNER,NOT_BUILT,UNCHANGED,WS:MARKET-OS (F08 lane) — Market OS alerts + app/account_prefs.py (prefs sink),"app/account_prefs.py (no alert prefs) + engine/portfolio_digest.py (\'SEND PATH IS NOT WIRED, DELIBERATELY\')",NONE,alert/notification preference UI/API + mailer wiring,n/a,F08 delivery-path child includes prefs + app/mailer.py wiring (not rights-blocked),a set preference causes an actual send on the next matching alert,"email via existing app/mailer.py (unwired, not rights-blocked)",notification_only,',
+    'MO-PAID-088': 'MO-PAID-088,F13-OPS-LEARNING,UPGRADE_EXISTING_OWNER,PARTIAL,EVIDENCE-REFINED: /learn SEO hub (templates/seo_learn_index.html.j2 via build_free_content.py:1201) and an economic-release calendar widget exist but are NOT in-product help/FAQ/changelog; state unchanged,WS:MARKET-OS (F13 lane) — F13 lane + Market OS product/help owners,templates/methodology.html.j2 + app/support.py (tickets) + seo_learn_index (marketing surface),public SEO pages + support mailbox,/help FAQ template + genuine product changelog surface,ticket ids stable; no ticket-update path,bounded /help + changelog child (F01/F13 cheap-projection batch; 1-2 templates),an authenticated user reaches /help FAQs and a dated product changelog,Market OS product/help + release/receipt owners,operations_and_explanation_only,',
+}
+
+
+def test_the_untouched_f12_rows_keep_an_open_state_word() -> None:
     """B-REC-3 item 3: no half-B PR ships 084, 085 or 088 yet."""
     rows = _ledger_rows()
     for row_id in ("MO-PAID-084", "MO-PAID-085", "MO-PAID-088"):
         assert rows[row_id]["capability_state_c2"] in {"NOT_BUILT", "SPEC_ONLY", "PARTIAL"}, (
             f"{row_id}: nothing in this wave ships it, so it cannot read as built"
         )
+
+
+def test_the_untouched_f12_rows_are_byte_identical_to_base() -> None:
+    """B-REC-3 item 3, strengthened: 084/085/088 are not owned by this wave,
+    so their raw CSV line must match the base branch (ecaf8f8e) exactly —
+    not just keep an open capability_state_c2 word."""
+    raw_by_id = {
+        line.split(",", 1)[0]: line
+        for line in LEDGER.read_text(encoding="utf-8").splitlines()
+    }
+    for row_id, base_line in _UNTOUCHED_F12_ROWS_AT_BASE.items():
+        assert raw_by_id[row_id] == base_line, (
+            f"{row_id}: this wave does not own this row — its raw CSV line "
+            "must stay byte-identical to the base branch"
+        )
+
+
+# --------------------------------------------- CI scope closure (FIX-1, MAJOR)
+
+_LEGACY_JOBS = _ROOT / ".github" / "ci" / "legacy-jobs.yml"
+
+from tests.test_f00c_terminal_reconciliation import MANIFEST as _F00C_MANIFEST  # noqa: E402
+from tests.test_f00c_terminal_reconciliation import RECORDS_DOC as _F00C_RECORDS_DOC  # noqa: E402
+
+# Every record this packet's two suites (this file and test_f00c_terminal_-
+# reconciliation.py) read from disk. self-mod-fence is the only job that runs
+# either suite (see the run step at the bottom of its definition below), so an
+# edit that touches ONLY one of these paths must alone be able to select it —
+# otherwise the pin these suites enforce fires post-merge on main instead of
+# pre-merge on a PR.
+_PINNED_RECORD_PATHS = tuple(
+    str(path.relative_to(_ROOT))
+    for path in (
+        RECEIPT_0014,
+        RECEIPT_0015,
+        RECEIPT_0016,
+        DEC,
+        DSC_THREADS,
+        DSC_OVERLAP,
+        DOCKET,
+        LEDGER,
+        _F00C_MANIFEST,
+        _F00C_RECORDS_DOC,
+    )
+)
+
+
+def _self_mod_fence_paths() -> set[str]:
+    manifest = yaml.safe_load(_LEGACY_JOBS.read_text(encoding="utf-8"))
+    return set(manifest["jobs"]["self-mod-fence"].get("paths") or ())
+
+
+@pytest.mark.parametrize("record_path", _PINNED_RECORD_PATHS)
+def test_self_mod_fence_paths_cover_every_record_this_packets_suites_pin(
+    record_path: str,
+) -> None:
+    declared = _self_mod_fence_paths()
+    assert record_path in declared, (
+        f"{record_path!r} is read by this packet's suites but missing from "
+        "self-mod-fence's `paths:` list in .github/ci/legacy-jobs.yml — an "
+        "edit that touches only this file would never select the job that "
+        "pins it, so the pin would fire post-merge on main instead of "
+        "pre-merge on a PR"
+    )
