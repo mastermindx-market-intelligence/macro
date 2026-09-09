@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-08T22:07:26.504849+00:00",
-  "count": 2022,
+  "generated_at": "2026-09-09T00:48:38.036844+00:00",
+  "count": 2030,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -97,6 +97,47 @@
   ],
   "items": [
     {
+      "id": "marketdesk-0ntcflf0sib-f7ed6b",
+      "title": "ING Think europes pitch book if they invested europeans would prefer to do that in europe",
+      "institution": "ING",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-09T00:15:24Z",
+      "summary_points": [
+        "**Home Bias Magnitude**: ECB data reveals 50% of eurozone households' equity holdings in EU-issued stocks despite EU equity comprising only 10% of global market cap, indicating a 5x home bias vs.",
+        "global diversification.",
+        "**Capital Allocation Constraint**: Domestic preference limits capital availability for European companies, innovation, and growth, directly countering EU economic pessimism and constraining market scalability.",
+        "**Regional Flow Dynamics**: Q4 2024 data shows France/Germany prioritize domestic/EU holdings (low US exposure), while Spain/Portugal exhibit stronger EU preference, creating tactical positioning opportunities.",
+        "**Sentiment Allocation Data**: 40% of investors prefer domestic markets, 38% Europe, 32% global diversification (14% US, 11% Asia), critical for rebalancing portfolios toward European equity exposure."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xgziys0tbjx-925d70",
+      "title": "wep",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-09T00:10:05Z",
+      "summary_points": [
+        "**US Labor Market & Fed Policy Shift**: August non-farm payrolls beat at 162k (vs 55k expected), with AHE inflation easing to 3.1% y/y; Fed officials (Warsh) downplay wages as inflation driver, but mixed signals (Williams/Waller) on September hike odds amid robust manufacturing PMIs (ISM 55.6) and services price pressures (ISM Services 55.4).",
+        "**UK Fiscal & Housing Crisis**: Gilt yields at multi-year highs due to US-Iran tensions and energy shock (oil/gas spikes), squeezing fiscal headroom; mortgage approvals fell to 56k (below 6-mo avg), housing stagnation intensifies, threatening Chancellor Healey’s October Budget maneuverability.",
+        "**UK Energy Shock Amplifies Risks**: US strikes on Iran spiked oil/gas prices, pushing UK gilt yields to peaks, compounding fiscal constraints ahead of October 28 Budget; housing demand weakens via higher mortgage rates, with supply constraints only cushioning near-term price declines.",
+        "**RBA Policy Tightening Risk**: RBA may hike rates to 4.60% if August employment data surprises upward, reflecting policy tightening amid moderate economic cooling and persistent inflation pressures."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-4rm3cacuriq-fa7969",
       "title": "GS Callahan GS US TMT Day 1 GS Communacopia Technology Conference preview 8 Sep 2026",
       "institution": "S&T",
@@ -153,6 +194,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-mlepwgrpm4f-39f127",
+      "title": "GS Fishman Japanese Portfolio Reallocation Still Mostly Speculation 8 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T14:06:40Z",
+      "summary_points": [
+        "Document Missing**: No source document provided for extraction"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 1,
       "language": "en",
       "needs_metadata": false
     },
@@ -360,6 +418,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-onxim8y92iq-d513a9",
+      "title": "Europe Tissue Deflation persists into August, volume declines accelerate",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T13:17:09Z",
+      "summary_points": [
+        "**European tissue volume collapse**: Western European consumer tissue volumes fell -5.1% (4w to 9 Aug), with facial/bath/kitchen volumes down -8.3%/-4.4%/-3.7%, aligning with sector-wide jumbo-roll trends and signaling structural demand risks.",
+        "**Essity private-label vulnerability**: Private-label tissue volumes declined -6.1% (50% of tissue sales), a critical risk factor as branded volumes (+1.4%) failed to offset -1.3% price/mix decline amid market deflation.",
+        "**Competitive share gains amid decline**: Essity gained volume share in France/UK (largest markets) despite -5.5% Arbox sales drop, indicating structural competitive advantage versus EU category (Exhibit 4).",
+        "**Bearish valuation revision**: Essity target price cut to SEK 255 (vs.",
+        "closing 280.60 SEK), reflecting revised bearish sentiment after prior targets exceeded market price."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-yuqxzwqy7vg-c93e9f",
       "title": "Europe Paper & Forest Products Updating Estimates post 2Q26 and Marking to Market for Latest Commodity Price Movements",
       "institution": "Goldman Sachs",
@@ -377,6 +456,68 @@
       "tickers": [],
       "top_pick": false,
       "pages": 22,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-laonvueikb6-663575",
+      "title": "Europe Healthcare Medical Technology Reflecting on sector performance and key debates ahead of the 23rd European Medtech an...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T13:17:01Z",
+      "summary_points": [
+        "**European MedTech Valuation at Multi-Decade Low**: GSXEMEDT 12m FWD P/E below historical range, narrowest premium to MSCI Europe since 2015, signaling potential undervaluation despite sector underperformance (2021–2025).",
+        "**China VBP/Centralised Procurement as Critical Headwind**: Healthcare spending growth decelerated to -5.5% CAGR (2022–2025), turning negative vs.",
+        "US/EU, with pricing pressure and rising local competition suppressing near-term growth for European Medtech.",
+        "**Innovation Correlates with Outperformance**: Companies with sustained R&D (e.g., Demant’s Zeal/Reveal, ConvaTec launches) show higher organic revenue growth and equity returns, driving select buy cases.",
+        "**Pricing Power Limitation & Inflation Impact**: Fixed reimbursement and tender delays impede inflation pass-through, creating inverse correlation with performance (e.g., CPI spikes linked to underperformance in 2011–12, 2022, 2025–26)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 28,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-o6klsy6gwzd-344397",
+      "title": "SECO (IOT)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T13:16:47Z",
+      "summary_points": [
+        "**IoT Revenue Miss & Structural Weakness**: Q2 IoT software revenue (€3.4m) missed Goldman Sachs' estimate by 22% (€4.4m), indicating persistent structural weakness in core growth segment despite overall revenue beat.",
+        "**Customer Concentration Risk**: Top 10 clients drive ~55% of 2020 revenue, creating significant vulnerability to macroeconomic headwinds and supply chain constraints amid Q3 guidance miss (€60.0m actual vs.",
+        "€48.9m estimate, 23% variance).",
+        "**Guidance & Growth Trajectory**: FY26 revenue guidance reiterated at >€600m (accelerated H2 growth), with 3-year projections showing 37.5% revenue CAGR and 158% EBIT growth, supporting €3.50 target (current price €3.52, 0.6% downside)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-0vo8zl2knta-87004e",
+      "title": "Pulp & Paper Some Hardwood Momentum Building Into 4Q",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-08T13:16:43Z",
+      "summary_points": [
+        "**Hardwood Price Catalyst & Suzano Buy**: $10/t hardwood price hike expected (RMB strength, seasonality), though paper prices limit upside; order books rising with late Q4 volumes; Suzano recommended as core holding.",
+        "**China Pulp Inventory Overhang**: Inventories at 2.30mt (Aug), 20% above 5yr avg (1.9mt), exceeding historical levels by 3% m/m (+12% y/y), signaling potential price pressure.",
+        "**COPEC Sell Rating & Valuation Mismatch**: Sell rating maintained despite PT raised to ChP$6,083 (vs.",
+        "closing 6,350), with target below market price indicating overvaluation risk; critical for portfolio rebalancing.",
+        "**Target vs Closing Price Discrepancy**: Copel (COPEC.SN) target (6,057) below closing (6,350) and \"price target at removal\" events (01-May-26) signal underperformance risk requiring immediate risk assessment."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
       "language": "en",
       "needs_metadata": false
     },
@@ -1881,6 +2022,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xgzvob1zjeq-c10196",
+      "title": "THE WARSH DILEMMA",
+      "institution": "TS Lombard",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-07T10:40:31Z",
+      "summary_points": [
+        "**Fed Rate Hike Fundamentals**: Cooling consumer prices/payrolls reduce urgency for hikes; Fed missed 5-yr inflation target and cut rates in panic, shifting stance from prior hawkishness.",
+        "**September CPI Margin**: Fed’s September decision hinges on August CPI (0.2% vs 0.3% MoM core), with narrow margin dictating hike/no-hike outcome.",
+        "**Fed Credibility Narrative**: Political credibility (Trump influence) drives debate; 25bps hike framed as PR to counter \"sock puppet\" speculation, altering market expectations.",
+        "**Seasonal Adjustments Risk**: Early-year volatility in CPI/payrolls (post-COVID) risks misreading inflation; seasonal distortions (Aug/Sep/Nov/Dec) could trigger hawkish flip if misjudged."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
