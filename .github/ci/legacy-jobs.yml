@@ -2037,6 +2037,14 @@ jobs:
       - "site/options_structure/**"
       - "site/prophet/**"
       - "site/vol/**"
+      # F13-X1: build_site imports the source-bound help directory, whose
+      # fail-closed contract reads these exact existing owner templates.
+      - "templates/_navlinks.html.j2"
+      - "templates/_public_footer.html.j2"
+      - "templates/_public_nav.html.j2"
+      - "templates/measurement.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/support.html.j2"
       - "tests/test_build_chain_heat.py"
       - "tests/test_build_options_prophet.py"
       - "tests/test_build_options_screener.py"
@@ -6358,6 +6366,8 @@ jobs:
         run: python -m pytest tests/test_mailer.py -v
       - name: public support intake tests (app/support.py)
         run: python -m pytest tests/test_support_api.py -v
+      - name: plan-based support ticket routing (lib/help_directory.py route_for_tier, packet B-F13-3)
+        run: python -m pytest tests/test_support_tier_routing.py -v
       - name: admin support console tests (admin/support_tickets.py)
         run: python -m pytest tests/test_admin_support_tickets.py -v
       - name: support page contract + pinned design (templates/support.html.j2)
@@ -7643,6 +7653,14 @@ jobs:
       - "site/master_brief.json"
       - "site/prophet/**"
       - "site/vol/**"
+      # F13-X1: build_site imports the source-bound help directory, whose
+      # fail-closed contract reads these exact existing owner templates.
+      - "templates/_navlinks.html.j2"
+      - "templates/_public_footer.html.j2"
+      - "templates/_public_nav.html.j2"
+      - "templates/measurement.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/support.html.j2"
       - "tests/test_biocatalyst_change_classification.py"
       - "tests/test_biocatalyst_change_tape_values.py"
       - "tests/test_biocatalyst_endpoint_alignment.py"
@@ -8902,8 +8920,16 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pyyaml jinja2
+      # --deselect: test_build_site_renders_help_page_with_the_full_view_model imports
+      # scripts.build_site, which imports numpy/pandas/plotly -- none on this job's
+      # minimal line. It was collected fine (the import is inside the test body, not at
+      # module scope) but FAILED at run time under this exact venv (verified: ModuleNotFoundError:
+      # numpy), a second instance of the same class of break the B-F13-3 round-3 BLOCKER
+      # fixed for tests/test_support_tier_routing.py -- found empirically while proving
+      # THAT fix in a clean venv, not by the round-2 review. It now runs instead in
+      # unrun-site-surfaces, which already imports scripts.build_site under its full deps.
       - name: public fastlane split + rendered pricing copy pins
-        run: python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py -q
+        run: python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py -q --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
 
   press-lane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -9425,6 +9451,14 @@ jobs:
       - "site/vol/**"
       - "templates/government-revenue-dossiers.js"
       - "templates/government_revenue.html.j2"
+      # F13-X1: build_site imports the source-bound help directory, whose
+      # fail-closed contract reads these exact existing owner templates.
+      - "templates/_navlinks.html.j2"
+      - "templates/_public_footer.html.j2"
+      - "templates/_public_nav.html.j2"
+      - "templates/measurement.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/support.html.j2"
     # Install-dominated like its former host; the two batteries themselves
     # are ~30s.
     timeout-minutes: 8
@@ -10081,6 +10115,14 @@ jobs:
       # failure a reader sees.
       - name: US board freshness truth — vintage stamp, card date, delayed banner
         run: python -m pytest tests/test_us_board_freshness_truth.py -q
+      # B-F13-3 round-3: test_build_site_renders_help_page_with_the_full_view_model
+      # imports scripts.build_site, which needs numpy/pandas/plotly -- absent from
+      # public-render-fastlane's minimal (pytest pyyaml jinja2) line it used to run on.
+      # It rides this lane instead: scripts.build_site is already imported by every step
+      # above, so no new dependency is added, and this lane already owns build_site.py's
+      # panels/view-models. Deselected from public-render-fastlane's step (see that job).
+      - name: scripts/build_site.py's help page call shape (B-F13-3 BLOCKER-1 regression guard)
+        run: python -m pytest tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model -q
 
   unrun-release-forecast:
     # the macro-release forecast producer — projections, benchmarks and the graded forward ledger.
@@ -12814,6 +12856,14 @@ jobs:
       - "site/master_brief.json"
       - "site/prophet/**"
       - "site/vol/**"
+      # F13-X1: build_site imports the source-bound help directory, whose
+      # fail-closed contract reads these exact existing owner templates.
+      - "templates/_navlinks.html.j2"
+      - "templates/_public_footer.html.j2"
+      - "templates/_public_nav.html.j2"
+      - "templates/measurement.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/support.html.j2"
       - "tests/government_revenue_candidate_fixture.py"
       - "tests/test_government_revenue_candidate_api.py"
       - "tests/test_government_revenue_candidate_grader.py"
