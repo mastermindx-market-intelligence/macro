@@ -51,65 +51,33 @@
       "method_open-macro_labor_markets-dark-en-390.png",
       "method_open-macro_labor_markets-light-zh-390.png"
     ],
-    "read_word": [
-      "17-dark-en-1440.png",
-      "17b-light-en-1440.png",
-      "17c-dark-zh-1440.png",
-      "17d-light-zh-1440.png"
-    ],
-    "i2": [
-      "i2-macro_monetary-dark-en-390.png",
-      "i2-macro_monetary-dark-en-768.png",
-      "i2-macro_monetary-dark-zh-390.png",
-      "i2-macro_monetary-dark-zh-768.png",
-      "i2-macro_monetary-light-en-390.png",
-      "i2-macro_monetary-light-en-768.png",
-      "i2-macro_monetary-light-zh-390.png",
-      "i2-macro_monetary-light-zh-768.png",
-      "i2-macro_rates_curves-dark-en-390.png",
-      "i2-macro_rates_curves-dark-en-768.png",
-      "i2-macro_rates_curves-dark-zh-390.png",
-      "i2-macro_rates_curves-dark-zh-768.png",
-      "i2-macro_rates_curves-light-en-390.png",
-      "i2-macro_rates_curves-light-en-768.png",
-      "i2-macro_rates_curves-light-zh-390.png",
-      "i2-macro_rates_curves-light-zh-768.png",
-      "i2-macro_business_activity-dark-en-390.png",
-      "i2-macro_business_activity-dark-en-768.png",
-      "i2-macro_business_activity-dark-zh-390.png",
-      "i2-macro_business_activity-dark-zh-768.png",
-      "i2-macro_business_activity-light-en-390.png",
-      "i2-macro_business_activity-light-en-768.png",
-      "i2-macro_business_activity-light-zh-390.png",
-      "i2-macro_business_activity-light-zh-768.png",
-      "i2-macro_financial_conditions-dark-en-390.png",
-      "i2-macro_financial_conditions-dark-en-768.png",
-      "i2-macro_financial_conditions-dark-zh-390.png",
-      "i2-macro_financial_conditions-dark-zh-768.png",
-      "i2-macro_financial_conditions-light-en-390.png",
-      "i2-macro_financial_conditions-light-en-768.png",
-      "i2-macro_financial_conditions-light-zh-390.png",
-      "i2-macro_financial_conditions-light-zh-768.png",
-      "i2-macro_housing_real_estate-dark-en-390.png",
-      "i2-macro_housing_real_estate-dark-en-768.png",
-      "i2-macro_housing_real_estate-dark-zh-390.png",
-      "i2-macro_housing_real_estate-dark-zh-768.png",
-      "i2-macro_housing_real_estate-light-en-390.png",
-      "i2-macro_housing_real_estate-light-en-768.png",
-      "i2-macro_housing_real_estate-light-zh-390.png",
-      "i2-macro_housing_real_estate-light-zh-768.png"
-    ],
-    "half_null": [
-      "18-dark-en-1440.png",
-      "18b-dark-zh-1440.png",
-      "19-light-en-1440.png",
-      "19b-light-zh-1440.png",
-      "half-dark-en-390.png",
-      "half-dark-zh-390.png",
-      "half-light-en-390.png",
-      "half-light-zh-390.png"
+    "lineage_open": [
+      "lineage_open-macro_financial_conditions-dark-en-1440.png",
+      "lineage_open-macro_financial_conditions-dark-zh-1440.png",
+      "lineage_open-macro_financial_conditions-light-en-1440.png",
+      "lineage_open-macro_financial_conditions-light-zh-1440.png",
+      "lineage_open-macro_monetary_policy-dark-en-1440.png",
+      "lineage_open-macro_monetary_policy-dark-zh-1440.png",
+      "lineage_open-macro_monetary_policy-light-en-1440.png",
+      "lineage_open-macro_monetary_policy-light-zh-1440.png"
     ],
     "workspace": [
+      "ws-macro_labor_markets-closed-dark-en-1440.png",
+      "ws-macro_labor_markets-dark-en-390.png",
+      "ws-macro_labor_markets-closed-dark-zh-1440.png",
+      "ws-macro_labor_markets-dark-zh-390.png",
+      "ws-macro_labor_markets-closed-light-en-1440.png",
+      "ws-macro_labor_markets-light-en-390.png",
+      "ws-macro_labor_markets-closed-light-zh-1440.png",
+      "ws-macro_labor_markets-light-zh-390.png",
+      "ws-macro_monetary_policy-closed-dark-en-1440.png",
+      "ws-macro_monetary_policy-dark-en-390.png",
+      "ws-macro_monetary_policy-closed-dark-zh-1440.png",
+      "ws-macro_monetary_policy-dark-zh-390.png",
+      "ws-macro_monetary_policy-closed-light-en-1440.png",
+      "ws-macro_monetary_policy-light-en-390.png",
+      "ws-macro_monetary_policy-closed-light-zh-1440.png",
+      "ws-macro_monetary_policy-light-zh-390.png",
       "ws-macro_rates_curves-closed-dark-en-1440.png",
       "ws-macro_rates_curves-dark-en-390.png",
       "ws-macro_rates_curves-dark-en-390-open.png",
@@ -186,6 +154,64 @@
       "ws-macro_housing_real_estate-light-zh-390.png",
       "ws-macro_housing_real_estate-light-zh-390-open.png",
       "ws-macro_housing_real_estate-light-zh-768.png"
+    ],
+    "read_word": [
+      "17-dark-en-1440.png",
+      "17b-light-en-1440.png",
+      "17c-dark-zh-1440.png",
+      "17d-light-zh-1440.png"
+    ],
+    "i2": [
+      "i2-macro_monetary-dark-en-390.png",
+      "i2-macro_monetary-dark-en-768.png",
+      "i2-macro_monetary-dark-zh-390.png",
+      "i2-macro_monetary-dark-zh-768.png",
+      "i2-macro_monetary-light-en-390.png",
+      "i2-macro_monetary-light-en-768.png",
+      "i2-macro_monetary-light-zh-390.png",
+      "i2-macro_monetary-light-zh-768.png",
+      "i2-macro_rates_curves-dark-en-390.png",
+      "i2-macro_rates_curves-dark-en-768.png",
+      "i2-macro_rates_curves-dark-zh-390.png",
+      "i2-macro_rates_curves-dark-zh-768.png",
+      "i2-macro_rates_curves-light-en-390.png",
+      "i2-macro_rates_curves-light-en-768.png",
+      "i2-macro_rates_curves-light-zh-390.png",
+      "i2-macro_rates_curves-light-zh-768.png",
+      "i2-macro_business_activity-dark-en-390.png",
+      "i2-macro_business_activity-dark-en-768.png",
+      "i2-macro_business_activity-dark-zh-390.png",
+      "i2-macro_business_activity-dark-zh-768.png",
+      "i2-macro_business_activity-light-en-390.png",
+      "i2-macro_business_activity-light-en-768.png",
+      "i2-macro_business_activity-light-zh-390.png",
+      "i2-macro_business_activity-light-zh-768.png",
+      "i2-macro_financial_conditions-dark-en-390.png",
+      "i2-macro_financial_conditions-dark-en-768.png",
+      "i2-macro_financial_conditions-dark-zh-390.png",
+      "i2-macro_financial_conditions-dark-zh-768.png",
+      "i2-macro_financial_conditions-light-en-390.png",
+      "i2-macro_financial_conditions-light-en-768.png",
+      "i2-macro_financial_conditions-light-zh-390.png",
+      "i2-macro_financial_conditions-light-zh-768.png",
+      "i2-macro_housing_real_estate-dark-en-390.png",
+      "i2-macro_housing_real_estate-dark-en-768.png",
+      "i2-macro_housing_real_estate-dark-zh-390.png",
+      "i2-macro_housing_real_estate-dark-zh-768.png",
+      "i2-macro_housing_real_estate-light-en-390.png",
+      "i2-macro_housing_real_estate-light-en-768.png",
+      "i2-macro_housing_real_estate-light-zh-390.png",
+      "i2-macro_housing_real_estate-light-zh-768.png"
+    ],
+    "half_null": [
+      "18-dark-en-1440.png",
+      "18b-dark-zh-1440.png",
+      "19-light-en-1440.png",
+      "19b-light-zh-1440.png",
+      "half-dark-en-390.png",
+      "half-dark-zh-390.png",
+      "half-light-en-390.png",
+      "half-light-zh-390.png"
     ],
     "chip_material": [
       "chipmat-macro_rates_curves-dark-en-1440.png",
@@ -396,6 +422,102 @@
     {
       "file": "method_open-macro_labor_markets-light-zh-390.png",
       "family": "method_open"
+    },
+    {
+      "file": "lineage_open-macro_financial_conditions-dark-en-1440.png",
+      "family": "lineage_open"
+    },
+    {
+      "file": "lineage_open-macro_financial_conditions-dark-zh-1440.png",
+      "family": "lineage_open"
+    },
+    {
+      "file": "lineage_open-macro_financial_conditions-light-en-1440.png",
+      "family": "lineage_open"
+    },
+    {
+      "file": "lineage_open-macro_financial_conditions-light-zh-1440.png",
+      "family": "lineage_open"
+    },
+    {
+      "file": "lineage_open-macro_monetary_policy-dark-en-1440.png",
+      "family": "lineage_open"
+    },
+    {
+      "file": "lineage_open-macro_monetary_policy-dark-zh-1440.png",
+      "family": "lineage_open"
+    },
+    {
+      "file": "lineage_open-macro_monetary_policy-light-en-1440.png",
+      "family": "lineage_open"
+    },
+    {
+      "file": "lineage_open-macro_monetary_policy-light-zh-1440.png",
+      "family": "lineage_open"
+    },
+    {
+      "file": "ws-macro_labor_markets-closed-dark-en-1440.png",
+      "family": "workspace"
+    },
+    {
+      "file": "ws-macro_labor_markets-dark-en-390.png",
+      "family": "workspace"
+    },
+    {
+      "file": "ws-macro_labor_markets-closed-dark-zh-1440.png",
+      "family": "workspace"
+    },
+    {
+      "file": "ws-macro_labor_markets-dark-zh-390.png",
+      "family": "workspace"
+    },
+    {
+      "file": "ws-macro_labor_markets-closed-light-en-1440.png",
+      "family": "workspace"
+    },
+    {
+      "file": "ws-macro_labor_markets-light-en-390.png",
+      "family": "workspace"
+    },
+    {
+      "file": "ws-macro_labor_markets-closed-light-zh-1440.png",
+      "family": "workspace"
+    },
+    {
+      "file": "ws-macro_labor_markets-light-zh-390.png",
+      "family": "workspace"
+    },
+    {
+      "file": "ws-macro_monetary_policy-closed-dark-en-1440.png",
+      "family": "workspace"
+    },
+    {
+      "file": "ws-macro_monetary_policy-dark-en-390.png",
+      "family": "workspace"
+    },
+    {
+      "file": "ws-macro_monetary_policy-closed-dark-zh-1440.png",
+      "family": "workspace"
+    },
+    {
+      "file": "ws-macro_monetary_policy-dark-zh-390.png",
+      "family": "workspace"
+    },
+    {
+      "file": "ws-macro_monetary_policy-closed-light-en-1440.png",
+      "family": "workspace"
+    },
+    {
+      "file": "ws-macro_monetary_policy-light-en-390.png",
+      "family": "workspace"
+    },
+    {
+      "file": "ws-macro_monetary_policy-closed-light-zh-1440.png",
+      "family": "workspace"
+    },
+    {
+      "file": "ws-macro_monetary_policy-light-zh-390.png",
+      "family": "workspace"
     },
     {
       "file": "17-dark-en-1440.png",
@@ -1160,6 +1282,7 @@
       "details_open",
       "empty-e5",
       "half-null",
+      "lineage_open",
       "method_open",
       "rates_panel",
       "read_word",
@@ -1189,22 +1312,22 @@
     }
   },
   "excluded": [],
-  "generated_at": "2026-09-09T00:22:18Z",
-  "generated_at_start": "2026-09-09T00:22:18Z",
-  "generated_at_end": "2026-09-09T00:28:17Z",
-  "head_sha": "0f4a616db47d69cad42948d1614c6c48571f87ec",
-  "head_start": "0f4a616db47d69cad42948d1614c6c48571f87ec",
-  "head_end": "0f4a616db47d69cad42948d1614c6c48571f87ec",
-  "capture_sha": "0f4a616db47d69cad42948d1614c6c48571f87ec",
+  "generated_at": "2026-09-09T01:36:27Z",
+  "generated_at_start": "2026-09-09T01:36:27Z",
+  "generated_at_end": "2026-09-09T01:42:37Z",
+  "head_sha": "f20f08259ca24635b152cd2538109306fe07f1a1",
+  "head_start": "f20f08259ca24635b152cd2538109306fe07f1a1",
+  "head_end": "f20f08259ca24635b152cd2538109306fe07f1a1",
+  "capture_sha": "f20f08259ca24635b152cd2538109306fe07f1a1",
   "tree_clean_start": true,
   "tree_clean_end": true,
-  "commit_time_of_capture_sha": "2026-09-08T17:15:57-07:00",
+  "commit_time_of_capture_sha": "2026-09-08T18:36:07-07:00",
   "pre_commit": false,
   "honesty": {
     "access": "anonymous only; no credential is entered, stored, or synthesized",
     "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
     "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them",
-    "capture": "tree_clean_start=True; tree_clean_end=True; head_start=0f4a616db47d69cad42948d1614c6c48571f87ec; head_end=0f4a616db47d69cad42948d1614c6c48571f87ec; generated_at_start=2026-09-09T00:22:18Z; generated_at_end=2026-09-09T00:28:17Z; commit_time_of_capture_sha=2026-09-08T17:15:57-07:00"
+    "capture": "tree_clean_start=True; tree_clean_end=True; head_start=f20f08259ca24635b152cd2538109306fe07f1a1; head_end=f20f08259ca24635b152cd2538109306fe07f1a1; generated_at_start=2026-09-09T01:36:27Z; generated_at_end=2026-09-09T01:42:37Z; commit_time_of_capture_sha=2026-09-08T18:36:07-07:00"
   },
   "outcome": "captured",
   "pages": [
@@ -1221,7 +1344,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 765781,
+          "bytes": 765976,
           "captured": true,
           "file": "01-dark-en-1440.png",
           "family": "hub_fold",
@@ -1229,7 +1352,7 @@
           "height": 1800,
           "width": 2880,
           "locale": "en",
-          "sha256": "84dd82ff88fae7a926f266cb5c04a308e4ce1b21d889d0b24c6887b2cdc2724a",
+          "sha256": "76c1a1957e06158f130ca0418b92b41259c69f36ce8c7e3481b45952790f04e6",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -3029,7 +3152,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 1024753,
+          "bytes": 1017475,
           "captured": true,
           "file": "e5-dark-zh-1440.png",
           "family": "e5",
@@ -3037,7 +3160,7 @@
           "height": 1800,
           "width": 2880,
           "locale": "zh",
-          "sha256": "555746a32074e50c23deab73e0e01742bccae7836caf1383edcd35e791a6d9cf",
+          "sha256": "accee82c844579692bbdd5cf1952822bc83f9b8a9ad25df631d9b4e5bc8cf418",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -3059,7 +3182,7 @@
           "verified_how": "E5 cloned after stalled fragment \u22658000ms",
           "fixture": "builder-payload",
           "trigger": null,
-          "scroll_y_at_shot": 185,
+          "scroll_y_at_shot": 187,
           "ihdr_delta_px": {
             "w": 0,
             "h": 0
@@ -3535,7 +3658,7 @@
           "height": 5600,
           "width": 2880,
           "locale": "zh",
-          "sha256": "6ce278db0b9449105cee7f7d0d671762f3037739a5a58560621cabc6fc56b1e7",
+          "sha256": "fe3240a3a8992eff4d7c7846ac92bba2d59a18a9aa1ceeb625afc3b502adcb81",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -5794,7 +5917,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 317254,
+          "bytes": 317370,
           "captured": true,
           "file": "ws-macro_rates_curves-dark-zh-390.png",
           "family": "workspace",
@@ -5802,7 +5925,7 @@
           "height": 1744,
           "width": 780,
           "locale": "zh",
-          "sha256": "25b2394c3d1587499ad417f506dcd14e937454d2e77498584076a52deaee5f20",
+          "sha256": "ce555293fda99599f1e34f608f214872b23e5f4d0a333e1a19c82b44b598a565",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -5849,7 +5972,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 312929,
+          "bytes": 313006,
           "captured": true,
           "file": "ws-macro_rates_curves-dark-zh-390-open.png",
           "family": "workspace",
@@ -5857,7 +5980,7 @@
           "height": 1744,
           "width": 780,
           "locale": "zh",
-          "sha256": "72b467a3b966d648ab99034e66dcf25259873aa9bf811186d7daa7aeac285fe8",
+          "sha256": "226d4b77ce5249f5782dd56a39e8e2a6eae50d63da020859a87227a573813463",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -8210,7 +8333,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 288617,
+          "bytes": 288621,
           "captured": true,
           "file": "ws-macro_business_activity-dark-en-390-open.png",
           "family": "workspace",
@@ -8218,7 +8341,7 @@
           "height": 1744,
           "width": 780,
           "locale": "en",
-          "sha256": "9ff73a183f2f767a077eb786b62f4fd0afadd19272875b8b1b52f8df8ea0e4f9",
+          "sha256": "39999497696e14835cf4f57300e52651ad6d2b7a09974c251410b07f0f3f51a9",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -8265,7 +8388,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 305514,
+          "bytes": 305594,
           "captured": true,
           "file": "ws-macro_business_activity-dark-zh-390.png",
           "family": "workspace",
@@ -8273,7 +8396,7 @@
           "height": 1744,
           "width": 780,
           "locale": "zh",
-          "sha256": "89f9329fb8b27cc886066ba72de72221c652613f0ad4f0eb314c65546f10fd5a",
+          "sha256": "58493802e8e33a476709e590d74da0046c5c618a63af2a2650972c22e53ba892",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -8320,7 +8443,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 303386,
+          "bytes": 303307,
           "captured": true,
           "file": "ws-macro_business_activity-dark-zh-390-open.png",
           "family": "workspace",
@@ -8328,7 +8451,7 @@
           "height": 1744,
           "width": 780,
           "locale": "zh",
-          "sha256": "c825cdf3057797de758217c08d52c7b24d080fc35d0f882f08405d2615cefce7",
+          "sha256": "32f25468a660531c93957c77ac838b7639b52e091abd3c96e364b4d26913b1bc",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -8650,7 +8773,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 495512,
+          "bytes": 495497,
           "captured": true,
           "file": "ws-macro_business_activity-dark-zh-768.png",
           "family": "workspace",
@@ -8658,7 +8781,7 @@
           "height": 2144,
           "width": 1536,
           "locale": "zh",
-          "sha256": "a4dd0f818bf10ecaacc0f340ebc355017d09c7cc6ac2fd08e8c6744ed4beb70a",
+          "sha256": "5da9b8de02f31f284e27ded87e210f9ec5430f7b691a5b2c9f388297cfae5026",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -10238,7 +10361,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 1232308,
+          "bytes": 1232176,
           "captured": true,
           "file": "ws-macro_financial_conditions-closed-dark-en-1440.png",
           "family": "workspace",
@@ -10246,7 +10369,7 @@
           "height": 4800,
           "width": 2880,
           "locale": "en",
-          "sha256": "058fa82397729510d7a11f1f6b0e631bd8f7d240fd9a22a5040910cde7def8f9",
+          "sha256": "6e860c680ae4385f45595ad7ba942259531a75237af3c242508c5bc54c199e7e",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -10626,7 +10749,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 288644,
+          "bytes": 288647,
           "captured": true,
           "file": "ws-macro_financial_conditions-dark-en-390.png",
           "family": "workspace",
@@ -10634,7 +10757,7 @@
           "height": 1744,
           "width": 780,
           "locale": "en",
-          "sha256": "0cf51bcc31b36e259903f23e40d456c23fd316178053a4b65efb48ecc67676ae",
+          "sha256": "dac1a0d40be2c1c11c986f0d957a3b53f1c24876c7d774435b2fadf98c0db426",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -10681,7 +10804,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 285892,
+          "bytes": 285888,
           "captured": true,
           "file": "ws-macro_financial_conditions-dark-en-390-open.png",
           "family": "workspace",
@@ -10689,7 +10812,7 @@
           "height": 1744,
           "width": 780,
           "locale": "en",
-          "sha256": "665d96bc51d046af0a1c6049076418bf0cc68e80b610968336a0dc0af2f37070",
+          "sha256": "f287e1221ba4ffe14dfc5e052c0db6b2340433d4298194d3e81702fc9ca27294",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -10791,7 +10914,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 300748,
+          "bytes": 300630,
           "captured": true,
           "file": "ws-macro_financial_conditions-dark-zh-390-open.png",
           "family": "workspace",
@@ -10799,7 +10922,7 @@
           "height": 1744,
           "width": 780,
           "locale": "zh",
-          "sha256": "a615bead1b1998a1eae35e1232acfa2325b6a1a5e3b8e64c6c4b2e4e63160303",
+          "sha256": "6d7a336fe1731d5008c81cdebb7e062cec7a82d6584045d1975620f5f371843c",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -11121,7 +11244,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 475447,
+          "bytes": 475469,
           "captured": true,
           "file": "ws-macro_financial_conditions-dark-zh-768.png",
           "family": "workspace",
@@ -11129,7 +11252,7 @@
           "height": 2144,
           "width": 1536,
           "locale": "zh",
-          "sha256": "1042ed47ead964b8ca0d3010d2ada68a70ea3bb1a44e4fe8687d945cbc46a416",
+          "sha256": "36f00805ca506fd6fecf522735083d4274e380a549b6abc92c8a3bf30e049ba8",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -11305,10 +11428,10 @@
           "crop": true,
           "crop_selector": "section.mq-method .mq-axis-method",
           "crop_box": {
-            "x": 41,
+            "x": 41.0,
             "y": 1968.390625,
-            "width": 1098,
-            "height": 729
+            "width": 1098.0,
+            "height": 729.0
           },
           "selector": "section.mq-method .mq-axis-method",
           "full_page": false,
@@ -11322,19 +11445,60 @@
           "fixture": "builder-payload",
           "trigger": null,
           "crop_box_doc": {
-            "x": 41,
+            "x": 41.0,
             "y": 1968.390625,
-            "width": 1098,
-            "height": 729
+            "width": 1098.0,
+            "height": 729.0
           },
           "scroll_y_at_shot": 0.0,
           "ihdr_delta_px": {
             "w": 0,
             "h": 0
           },
-          "element_text_head": "Weights law\u6743\u91cd\u6cd5\u5219Weighted average of four channels, re-weighted over those that ar",
-          "element_text_sha256": "f13d9372dc5db35db3246d64e2b38f7d579b19330d4eb1136ecacccde6cd4b35",
+          "element_text_head": "WEIGHTS LAW Weighted average of four channels, re-weighted over those that are p",
+          "element_text_sha256": "e8a74f843f2aa10e65b8602b5ace83af0d469609d50a9ecb46f21de10433a2cc",
+          "visible_text_head": "WEIGHTS LAW Weighted average of four channels, re-weighted over those that are p",
+          "visible_text_sha256": "e8a74f843f2aa10e65b8602b5ace83af0d469609d50a9ecb46f21de10433a2cc",
           "openedBy": "click",
+          "occlusionSamples": [
+            {
+              "x": 590,
+              "y": 2332.890625,
+              "ok": true,
+              "hitTag": "DL",
+              "hitClass": "mq-method-grid"
+            },
+            {
+              "x": 260.6,
+              "y": 2114.190625,
+              "ok": true,
+              "hitTag": "DIV",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 2114.190625,
+              "ok": true,
+              "hitTag": "DD",
+              "hitClass": null
+            },
+            {
+              "x": 260.6,
+              "y": 2551.590625,
+              "ok": true,
+              "hitTag": "TH",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 2551.590625,
+              "ok": true,
+              "hitTag": "TD",
+              "hitClass": "mq-delta mq-delta-down"
+            }
+          ],
+          "shot_route": "/macro_financial_conditions.html",
+          "page_id": "macro_financial_conditions.html",
           "innerWidth": 1440,
           "innerHeight": 2800
         },
@@ -11361,9 +11525,9 @@
           "crop": true,
           "crop_selector": "section.mq-method .mq-axis-method",
           "crop_box": {
-            "x": 41,
+            "x": 41.0,
             "y": 1911.09375,
-            "width": 1098,
+            "width": 1098.0,
             "height": 617.4375
           },
           "selector": "section.mq-method .mq-axis-method",
@@ -11378,9 +11542,9 @@
           "fixture": "builder-payload",
           "trigger": null,
           "crop_box_doc": {
-            "x": 41,
+            "x": 41.0,
             "y": 1911.09375,
-            "width": 1098,
+            "width": 1098.0,
             "height": 617.4375
           },
           "scroll_y_at_shot": 0.0,
@@ -11388,9 +11552,50 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "Weights law\u6743\u91cd\u6cd5\u5219Weighted average of four channels, re-weighted over those that ar",
-          "element_text_sha256": "f13d9372dc5db35db3246d64e2b38f7d579b19330d4eb1136ecacccde6cd4b35",
+          "element_text_head": "\u6743\u91cd\u6cd5\u5219 \u56db\u4e2a\u6e20\u9053\u7684\u52a0\u6743\u5e73\u5747\uff0c\u6309\u5230\u4f4d\u6e20\u9053\u91cd\u65b0\u52a0\u6743\uff1a\u5229\u7387 30%\u3001\u4fe1\u8d37 30%\u3001\u7f8e\u5143\u878d\u8d44 20%\u3001\u80a1\u7968\u4e0e\u6ce2\u52a8 20%\u3002\u7b2c\u4e94\u4e2a\u5df2\u58f0\u660e\u6e20\u9053\uff08\u501f\u8d37\uff09\u6ca1\u6709\u6570\u636e\u6e90\uff0c\u4e0d\u8ba1\u5165\u6743",
+          "element_text_sha256": "c95cdf1e860e24b0e93b288521008a99589ab6d4e189866a46f866990475157d",
+          "visible_text_head": "\u6743\u91cd\u6cd5\u5219 \u56db\u4e2a\u6e20\u9053\u7684\u52a0\u6743\u5e73\u5747\uff0c\u6309\u5230\u4f4d\u6e20\u9053\u91cd\u65b0\u52a0\u6743\uff1a\u5229\u7387 30%\u3001\u4fe1\u8d37 30%\u3001\u7f8e\u5143\u878d\u8d44 20%\u3001\u80a1\u7968\u4e0e\u6ce2\u52a8 20%\u3002\u7b2c\u4e94\u4e2a\u5df2\u58f0\u660e\u6e20\u9053\uff08\u501f\u8d37\uff09\u6ca1\u6709\u6570\u636e\u6e90\uff0c\u4e0d\u8ba1\u5165\u6743",
+          "visible_text_sha256": "c95cdf1e860e24b0e93b288521008a99589ab6d4e189866a46f866990475157d",
           "openedBy": "click",
+          "occlusionSamples": [
+            {
+              "x": 590,
+              "y": 2219.8125,
+              "ok": true,
+              "hitTag": "DL",
+              "hitClass": "mq-method-grid"
+            },
+            {
+              "x": 260.6,
+              "y": 2034.58125,
+              "ok": true,
+              "hitTag": "DD",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 2034.58125,
+              "ok": true,
+              "hitTag": "SPAN",
+              "hitClass": "l-zh"
+            },
+            {
+              "x": 260.6,
+              "y": 2405.04375,
+              "ok": true,
+              "hitTag": "SPAN",
+              "hitClass": "mq-owner-field"
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 2405.04375,
+              "ok": true,
+              "hitTag": "TD",
+              "hitClass": null
+            }
+          ],
+          "shot_route": "/macro_financial_conditions.html",
+          "page_id": "macro_financial_conditions.html",
           "innerWidth": 1440,
           "innerHeight": 2800
         },
@@ -11417,10 +11622,10 @@
           "crop": true,
           "crop_selector": "section.mq-method .mq-axis-method",
           "crop_box": {
-            "x": 41,
+            "x": 41.0,
             "y": 1968.390625,
-            "width": 1098,
-            "height": 729
+            "width": 1098.0,
+            "height": 729.0
           },
           "selector": "section.mq-method .mq-axis-method",
           "full_page": false,
@@ -11434,19 +11639,60 @@
           "fixture": "builder-payload",
           "trigger": null,
           "crop_box_doc": {
-            "x": 41,
+            "x": 41.0,
             "y": 1968.390625,
-            "width": 1098,
-            "height": 729
+            "width": 1098.0,
+            "height": 729.0
           },
           "scroll_y_at_shot": 0.0,
           "ihdr_delta_px": {
             "w": 0,
             "h": 0
           },
-          "element_text_head": "Weights law\u6743\u91cd\u6cd5\u5219Weighted average of four channels, re-weighted over those that ar",
-          "element_text_sha256": "f13d9372dc5db35db3246d64e2b38f7d579b19330d4eb1136ecacccde6cd4b35",
+          "element_text_head": "WEIGHTS LAW Weighted average of four channels, re-weighted over those that are p",
+          "element_text_sha256": "e8a74f843f2aa10e65b8602b5ace83af0d469609d50a9ecb46f21de10433a2cc",
+          "visible_text_head": "WEIGHTS LAW Weighted average of four channels, re-weighted over those that are p",
+          "visible_text_sha256": "e8a74f843f2aa10e65b8602b5ace83af0d469609d50a9ecb46f21de10433a2cc",
           "openedBy": "click",
+          "occlusionSamples": [
+            {
+              "x": 590,
+              "y": 2332.890625,
+              "ok": true,
+              "hitTag": "DL",
+              "hitClass": "mq-method-grid"
+            },
+            {
+              "x": 260.6,
+              "y": 2114.190625,
+              "ok": true,
+              "hitTag": "DIV",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 2114.190625,
+              "ok": true,
+              "hitTag": "DD",
+              "hitClass": null
+            },
+            {
+              "x": 260.6,
+              "y": 2551.590625,
+              "ok": true,
+              "hitTag": "TH",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 2551.590625,
+              "ok": true,
+              "hitTag": "TD",
+              "hitClass": "mq-delta mq-delta-down"
+            }
+          ],
+          "shot_route": "/macro_financial_conditions.html",
+          "page_id": "macro_financial_conditions.html",
           "innerWidth": 1440,
           "innerHeight": 2800
         },
@@ -11473,9 +11719,9 @@
           "crop": true,
           "crop_selector": "section.mq-method .mq-axis-method",
           "crop_box": {
-            "x": 41,
+            "x": 41.0,
             "y": 1911.09375,
-            "width": 1098,
+            "width": 1098.0,
             "height": 617.4375
           },
           "selector": "section.mq-method .mq-axis-method",
@@ -11490,9 +11736,9 @@
           "fixture": "builder-payload",
           "trigger": null,
           "crop_box_doc": {
-            "x": 41,
+            "x": 41.0,
             "y": 1911.09375,
-            "width": 1098,
+            "width": 1098.0,
             "height": 617.4375
           },
           "scroll_y_at_shot": 0.0,
@@ -11500,9 +11746,50 @@
             "w": 0,
             "h": 0
           },
-          "element_text_head": "Weights law\u6743\u91cd\u6cd5\u5219Weighted average of four channels, re-weighted over those that ar",
-          "element_text_sha256": "f13d9372dc5db35db3246d64e2b38f7d579b19330d4eb1136ecacccde6cd4b35",
+          "element_text_head": "\u6743\u91cd\u6cd5\u5219 \u56db\u4e2a\u6e20\u9053\u7684\u52a0\u6743\u5e73\u5747\uff0c\u6309\u5230\u4f4d\u6e20\u9053\u91cd\u65b0\u52a0\u6743\uff1a\u5229\u7387 30%\u3001\u4fe1\u8d37 30%\u3001\u7f8e\u5143\u878d\u8d44 20%\u3001\u80a1\u7968\u4e0e\u6ce2\u52a8 20%\u3002\u7b2c\u4e94\u4e2a\u5df2\u58f0\u660e\u6e20\u9053\uff08\u501f\u8d37\uff09\u6ca1\u6709\u6570\u636e\u6e90\uff0c\u4e0d\u8ba1\u5165\u6743",
+          "element_text_sha256": "c95cdf1e860e24b0e93b288521008a99589ab6d4e189866a46f866990475157d",
+          "visible_text_head": "\u6743\u91cd\u6cd5\u5219 \u56db\u4e2a\u6e20\u9053\u7684\u52a0\u6743\u5e73\u5747\uff0c\u6309\u5230\u4f4d\u6e20\u9053\u91cd\u65b0\u52a0\u6743\uff1a\u5229\u7387 30%\u3001\u4fe1\u8d37 30%\u3001\u7f8e\u5143\u878d\u8d44 20%\u3001\u80a1\u7968\u4e0e\u6ce2\u52a8 20%\u3002\u7b2c\u4e94\u4e2a\u5df2\u58f0\u660e\u6e20\u9053\uff08\u501f\u8d37\uff09\u6ca1\u6709\u6570\u636e\u6e90\uff0c\u4e0d\u8ba1\u5165\u6743",
+          "visible_text_sha256": "c95cdf1e860e24b0e93b288521008a99589ab6d4e189866a46f866990475157d",
           "openedBy": "click",
+          "occlusionSamples": [
+            {
+              "x": 590,
+              "y": 2219.8125,
+              "ok": true,
+              "hitTag": "DL",
+              "hitClass": "mq-method-grid"
+            },
+            {
+              "x": 260.6,
+              "y": 2034.58125,
+              "ok": true,
+              "hitTag": "DD",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 2034.58125,
+              "ok": true,
+              "hitTag": "SPAN",
+              "hitClass": "l-zh"
+            },
+            {
+              "x": 260.6,
+              "y": 2405.04375,
+              "ok": true,
+              "hitTag": "SPAN",
+              "hitClass": "mq-owner-field"
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 2405.04375,
+              "ok": true,
+              "hitTag": "TD",
+              "hitClass": null
+            }
+          ],
+          "shot_route": "/macro_financial_conditions.html",
+          "page_id": "macro_financial_conditions.html",
           "innerWidth": 1440,
           "innerHeight": 2800
         },
@@ -11510,127 +11797,209 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 127828,
+          "bytes": 265841,
           "captured": true,
           "file": "method_open-macro_financial_conditions-dark-en-390.png",
           "family": "method_open",
           "force_state": "method_open",
-          "height": 2266,
-          "width": 946,
+          "height": 1800,
+          "width": 780,
           "locale": "en",
-          "sha256": "13d759b57ce4623e403242690e6a00133607269fde8f15345c4a3d4933287223",
+          "sha256": "3a978937d466869df6aa184664d09d5dec406773a559bf316d10f8e9b6965f08",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
-          "crop_width": 472.734375,
-          "viewport_css_width": 473.0,
-          "viewport_height": 872,
+          "crop_width": 390.0,
+          "viewport_css_width": 390.0,
+          "viewport_height": 900,
           "dpr": 2.0,
           "crop": true,
           "crop_selector": "section.mq-method .mq-axis-method",
           "crop_box": {
-            "x": -1,
-            "y": 27.25,
-            "width": 472.734375,
-            "height": 1132.578125
+            "x": 0.0,
+            "y": 0.0,
+            "width": 390.0,
+            "height": 900.0
           },
           "selector": "section.mq-method .mq-axis-method",
           "full_page": false,
           "device_px_span": {
-            "x0": -2,
-            "x1": 944,
-            "y0": 54,
-            "y1": 2320
+            "x0": 0,
+            "x1": 780,
+            "y0": 0,
+            "y1": 1800
           },
           "verified_how": "macro_financial_conditions.html method details opened by click; crop section.mq-method .mq-axis-method",
           "fixture": "builder-payload",
           "trigger": null,
           "crop_box_doc": {
-            "x": -1,
-            "y": 31.25,
-            "width": 472.734375,
-            "height": 1132.578125
+            "x": 0.0,
+            "y": 3010.0,
+            "width": 390.0,
+            "height": 900.0
           },
-          "scroll_y_at_shot": 4.0,
+          "scroll_y_at_shot": 3010.0,
           "ihdr_delta_px": {
             "w": 0,
             "h": 0
           },
-          "element_text_head": "Weights law\u6743\u91cd\u6cd5\u5219Weighted average of four channels, re-weighted over those that ar",
-          "element_text_sha256": "f13d9372dc5db35db3246d64e2b38f7d579b19330d4eb1136ecacccde6cd4b35",
+          "element_text_head": "WEIGHTS LAW Weighted average of four channels, re-weighted over those that are p",
+          "element_text_sha256": "e8a74f843f2aa10e65b8602b5ace83af0d469609d50a9ecb46f21de10433a2cc",
+          "visible_text_head": "WEIGHTS LAW Weighted average of four channels, re-weighted over those that are p",
+          "visible_text_sha256": "e8a74f843f2aa10e65b8602b5ace83af0d469609d50a9ecb46f21de10433a2cc",
           "openedBy": "click",
+          "occlusionSamples": [
+            {
+              "x": 235.3671875,
+              "y": 565.5390625,
+              "ok": true,
+              "hitTag": "DL",
+              "hitClass": "mq-method-grid"
+            },
+            {
+              "x": 93.546875,
+              "y": 225.765625,
+              "ok": true,
+              "hitTag": "SPAN",
+              "hitClass": "l-en"
+            },
+            {
+              "x": 377.1875,
+              "y": 225.765625,
+              "ok": true,
+              "hitTag": "SPAN",
+              "hitClass": "l-en"
+            },
+            {
+              "x": 235.3671875,
+              "y": 282.39453125,
+              "ok": true,
+              "hitTag": "SPAN",
+              "hitClass": "l-en"
+            },
+            {
+              "x": 235.3671875,
+              "y": 848.68359375,
+              "ok": true,
+              "hitTag": "TD",
+              "hitClass": null
+            }
+          ],
+          "shot_route": "/macro_financial_conditions.html",
+          "page_id": "macro_financial_conditions.html",
           "innerWidth": 390,
-          "innerHeight": 872
+          "innerHeight": 900
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 243121,
+          "bytes": 244569,
           "captured": true,
           "file": "method_open-macro_financial_conditions-light-zh-390.png",
           "family": "method_open",
           "force_state": "method_open",
-          "height": 2044,
+          "height": 1800,
           "width": 656,
           "locale": "zh",
-          "sha256": "8600b33c9139278edf72284d3e06c128278ef4bf5fb898eada918c37a997acee",
+          "sha256": "e10ccd087e44e3786914a8b5bf7f565b52dcdbcc383c0ea7e2ed23b55ca329f7",
           "theme": "light",
           "viewport": "mobile",
           "viewport_width": 390,
           "crop_width": 328.0,
           "viewport_css_width": 328.0,
-          "viewport_height": 872,
+          "viewport_height": 900,
           "dpr": 2.0,
           "crop": true,
           "crop_selector": "section.mq-method .mq-axis-method",
           "crop_box": {
-            "x": 31,
-            "y": 26.625,
-            "width": 328,
-            "height": 1021.015625
+            "x": 31.0,
+            "y": 0.0,
+            "width": 328.0,
+            "height": 900.0
           },
           "selector": "section.mq-method .mq-axis-method",
           "full_page": false,
           "device_px_span": {
             "x0": 62,
             "x1": 718,
-            "y0": 52,
-            "y1": 2096
+            "y0": 0,
+            "y1": 1800
           },
           "verified_how": "macro_financial_conditions.html method details opened by click; crop section.mq-method .mq-axis-method",
           "fixture": "builder-payload",
           "trigger": null,
           "crop_box_doc": {
-            "x": 31,
-            "y": 30.625,
-            "width": 328,
-            "height": 1021.015625
+            "x": 31.0,
+            "y": 3008.0,
+            "width": 328.0,
+            "height": 900.0
           },
-          "scroll_y_at_shot": 4.0,
+          "scroll_y_at_shot": 3008.0,
           "ihdr_delta_px": {
             "w": 0,
             "h": 0
           },
-          "element_text_head": "Weights law\u6743\u91cd\u6cd5\u5219Weighted average of four channels, re-weighted over those that ar",
-          "element_text_sha256": "f13d9372dc5db35db3246d64e2b38f7d579b19330d4eb1136ecacccde6cd4b35",
+          "element_text_head": "\u6743\u91cd\u6cd5\u5219 \u56db\u4e2a\u6e20\u9053\u7684\u52a0\u6743\u5e73\u5747\uff0c\u6309\u5230\u4f4d\u6e20\u9053\u91cd\u65b0\u52a0\u6743\uff1a\u5229\u7387 30%\u3001\u4fe1\u8d37 30%\u3001\u7f8e\u5143\u878d\u8d44 20%\u3001\u80a1\u7968\u4e0e\u6ce2\u52a8 20%\u3002\u7b2c\u4e94\u4e2a\u5df2\u58f0\u660e\u6e20\u9053\uff08\u501f\u8d37\uff09\u6ca1\u6709\u6570\u636e\u6e90\uff0c\u4e0d\u8ba1\u5165\u6743",
+          "element_text_sha256": "c95cdf1e860e24b0e93b288521008a99589ab6d4e189866a46f866990475157d",
+          "visible_text_head": "\u6743\u91cd\u6cd5\u5219 \u56db\u4e2a\u6e20\u9053\u7684\u52a0\u6743\u5e73\u5747\uff0c\u6309\u5230\u4f4d\u6e20\u9053\u91cd\u65b0\u52a0\u6743\uff1a\u5229\u7387 30%\u3001\u4fe1\u8d37 30%\u3001\u7f8e\u5143\u878d\u8d44 20%\u3001\u80a1\u7968\u4e0e\u6ce2\u52a8 20%\u3002\u7b2c\u4e94\u4e2a\u5df2\u58f0\u660e\u6e20\u9053\uff08\u501f\u8d37\uff09\u6ca1\u6709\u6570\u636e\u6e90\uff0c\u4e0d\u8ba1\u5165\u6743",
+          "visible_text_sha256": "c95cdf1e860e24b0e93b288521008a99589ab6d4e189866a46f866990475157d",
           "openedBy": "click",
+          "occlusionSamples": [
+            {
+              "x": 195,
+              "y": 509.1328125,
+              "ok": true,
+              "hitTag": "DT",
+              "hitClass": null
+            },
+            {
+              "x": 96.60000000000001,
+              "y": 202.828125,
+              "ok": true,
+              "hitTag": "SPAN",
+              "hitClass": "l-zh"
+            },
+            {
+              "x": 293.40000000000003,
+              "y": 202.828125,
+              "ok": true,
+              "hitTag": "SPAN",
+              "hitClass": "l-zh"
+            },
+            {
+              "x": 96.60000000000001,
+              "y": 815.4375,
+              "ok": true,
+              "hitTag": "SPAN",
+              "hitClass": "l-zh"
+            },
+            {
+              "x": 293.40000000000003,
+              "y": 815.4375,
+              "ok": true,
+              "hitTag": "TD",
+              "hitClass": "mq-delta mq-delta-down"
+            }
+          ],
+          "shot_route": "/macro_financial_conditions.html",
+          "page_id": "macro_financial_conditions.html",
           "innerWidth": 390,
-          "innerHeight": 872
+          "innerHeight": 900
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 242663,
+          "bytes": 84083,
           "captured": true,
-          "file": "method_open-macro_labor_markets-dark-en-1440.png",
-          "family": "method_open",
-          "force_state": "method_open",
-          "height": 1174,
+          "file": "lineage_open-macro_financial_conditions-dark-en-1440.png",
+          "family": "lineage_open",
+          "force_state": "lineage_open",
+          "height": 464,
           "width": 2196,
           "locale": "en",
-          "sha256": "a61df7e09725593c036ac06e64cdf2f8687fff9214187658bec813f301693414",
+          "sha256": "1da75e4f34e90e27375d85314ac6531620035ebfa3e29e0c2ed55d8fd22878cd",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -11639,38 +12008,79 @@
           "viewport_height": 2800,
           "dpr": 2.0,
           "crop": true,
-          "crop_selector": "section.mq-method .mq-axis-method",
+          "crop_selector": "section.mq-lineage",
           "crop_box": {
-            "x": 41,
-            "y": 1558.546875,
-            "width": 1098,
-            "height": 585.84375
+            "x": 41.0,
+            "y": 1589.53125,
+            "width": 1098.0,
+            "height": 231.453125
           },
-          "selector": "section.mq-method .mq-axis-method",
+          "selector": "section.mq-lineage",
           "full_page": false,
           "device_px_span": {
             "x0": 82,
             "x1": 2278,
-            "y0": 3116,
-            "y1": 4290
+            "y0": 3178,
+            "y1": 3642
           },
-          "verified_how": "macro_labor_markets.html method details opened by click; crop section.mq-method .mq-axis-method",
+          "verified_how": "macro_financial_conditions.html lineage details opened by click; crop section.mq-lineage",
           "fixture": "builder-payload",
           "trigger": null,
           "crop_box_doc": {
-            "x": 41,
-            "y": 1558.546875,
-            "width": 1098,
-            "height": 585.84375
+            "x": 41.0,
+            "y": 1589.53125,
+            "width": 1098.0,
+            "height": 231.453125
           },
           "scroll_y_at_shot": 0.0,
           "ihdr_delta_px": {
             "w": 0,
             "h": 0
           },
-          "element_text_head": "Weights law\u6743\u91cd\u6cd5\u5219Weighted average of the parts that are present: initial-claims mo",
-          "element_text_sha256": "877154fce24d539424092b53fbcc2ffff4bfe4d4aa4429117f8a80045412708d",
+          "element_text_head": "How this reading was revised Technical notes Technical receipt for operators \u2014 s",
+          "element_text_sha256": "07159e06074ef409d009d475c77919d938d9fc872275b95d96112c19de92e80f",
+          "visible_text_head": "How this reading was revised Technical notes Technical receipt for operators \u2014 s",
+          "visible_text_sha256": "07159e06074ef409d009d475c77919d938d9fc872275b95d96112c19de92e80f",
           "openedBy": "click",
+          "occlusionSamples": [
+            {
+              "x": 590,
+              "y": 1705.2578125,
+              "ok": true,
+              "hitTag": "P",
+              "hitClass": null
+            },
+            {
+              "x": 260.6,
+              "y": 1635.821875,
+              "ok": true,
+              "hitTag": "DETAILS",
+              "hitClass": "mc-details"
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 1635.821875,
+              "ok": true,
+              "hitTag": "DETAILS",
+              "hitClass": "mc-details"
+            },
+            {
+              "x": 260.6,
+              "y": 1774.69375,
+              "ok": true,
+              "hitTag": "DIV",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 1774.69375,
+              "ok": true,
+              "hitTag": "DD",
+              "hitClass": null
+            }
+          ],
+          "shot_route": "/macro_financial_conditions.html",
+          "page_id": "macro_financial_conditions.html",
           "innerWidth": 1440,
           "innerHeight": 2800
         },
@@ -11678,15 +12088,15 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 232455,
+          "bytes": 83380,
           "captured": true,
-          "file": "method_open-macro_labor_markets-dark-zh-1440.png",
-          "family": "method_open",
-          "force_state": "method_open",
-          "height": 1024,
+          "file": "lineage_open-macro_financial_conditions-dark-zh-1440.png",
+          "family": "lineage_open",
+          "force_state": "lineage_open",
+          "height": 392,
           "width": 2196,
           "locale": "zh",
-          "sha256": "3399e1519eca1dc980e8a987d460cae29ed312d06e0a9de5be57833885213921",
+          "sha256": "7681a3df8cb92cbd6e2f64d8ab90e159f8324bcbfe4c622ff0302872c7e4c179",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -11695,38 +12105,79 @@
           "viewport_height": 2800,
           "dpr": 2.0,
           "crop": true,
-          "crop_selector": "section.mq-method .mq-axis-method",
+          "crop_selector": "section.mq-lineage",
           "crop_box": {
-            "x": 41,
-            "y": 1521.5,
-            "width": 1098,
-            "height": 511.46875
+            "x": 41.0,
+            "y": 1518.0625,
+            "width": 1098.0,
+            "height": 195.8125
           },
-          "selector": "section.mq-method .mq-axis-method",
+          "selector": "section.mq-lineage",
           "full_page": false,
           "device_px_span": {
             "x0": 82,
             "x1": 2278,
-            "y0": 3042,
-            "y1": 4066
+            "y0": 3036,
+            "y1": 3428
           },
-          "verified_how": "macro_labor_markets.html method details opened by click; crop section.mq-method .mq-axis-method",
+          "verified_how": "macro_financial_conditions.html lineage details opened by click; crop section.mq-lineage",
           "fixture": "builder-payload",
           "trigger": null,
           "crop_box_doc": {
-            "x": 41,
-            "y": 1521.5,
-            "width": 1098,
-            "height": 511.46875
+            "x": 41.0,
+            "y": 1518.0625,
+            "width": 1098.0,
+            "height": 195.8125
           },
           "scroll_y_at_shot": 0.0,
           "ihdr_delta_px": {
             "w": 0,
             "h": 0
           },
-          "element_text_head": "Weights law\u6743\u91cd\u6cd5\u5219Weighted average of the parts that are present: initial-claims mo",
-          "element_text_sha256": "877154fce24d539424092b53fbcc2ffff4bfe4d4aa4429117f8a80045412708d",
+          "element_text_head": "\u672c\u8bfb\u6570\u5982\u4f55\u88ab\u4fee\u8ba2 \u6280\u672f\u8bf4\u660e \u7ed9\u64cd\u4f5c\u5458\u7684\u6280\u672f\u51ed\u636e \u2014 \u5e8f\u5217\u540d\u3001\u65f6\u95f4\u6233\u4e0e\u6587\u4ef6\u8def\u5f84\u3002\u4e0d\u662f\u7ed9\u5ba2\u6237\u770b\u7684\u8bfb\u6570\u3002 \u66f4\u6b63\u4e0e\u65b9\u6cd5\u6cbf\u9769 \u66f4\u6b63\u72b6\u6001 \u65e0\u66f4\u6b63\u8bb0\u5f55 \u524d\u4e00\u4ee3\u4ea7\u7269 \u5df2\u6709\u4e0a\u4e00\u5df2",
+          "element_text_sha256": "34309880d7ef8e821ca5f568672ba65ae348b6e70d2fced127d3ff1de2a92515",
+          "visible_text_head": "\u672c\u8bfb\u6570\u5982\u4f55\u88ab\u4fee\u8ba2 \u6280\u672f\u8bf4\u660e \u7ed9\u64cd\u4f5c\u5458\u7684\u6280\u672f\u51ed\u636e \u2014 \u5e8f\u5217\u540d\u3001\u65f6\u95f4\u6233\u4e0e\u6587\u4ef6\u8def\u5f84\u3002\u4e0d\u662f\u7ed9\u5ba2\u6237\u770b\u7684\u8bfb\u6570\u3002 \u66f4\u6b63\u4e0e\u65b9\u6cd5\u6cbf\u9769 \u66f4\u6b63\u72b6\u6001 \u65e0\u66f4\u6b63\u8bb0\u5f55 \u524d\u4e00\u4ee3\u4ea7\u7269 \u5df2\u6709\u4e0a\u4e00\u5df2",
+          "visible_text_sha256": "34309880d7ef8e821ca5f568672ba65ae348b6e70d2fced127d3ff1de2a92515",
           "openedBy": "click",
+          "occlusionSamples": [
+            {
+              "x": 590,
+              "y": 1615.96875,
+              "ok": true,
+              "hitTag": "P",
+              "hitClass": null
+            },
+            {
+              "x": 260.6,
+              "y": 1557.225,
+              "ok": true,
+              "hitTag": "SUMMARY",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 1557.225,
+              "ok": true,
+              "hitTag": "SUMMARY",
+              "hitClass": null
+            },
+            {
+              "x": 260.6,
+              "y": 1674.7125,
+              "ok": true,
+              "hitTag": "DD",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 1674.7125,
+              "ok": true,
+              "hitTag": "SPAN",
+              "hitClass": "l-zh"
+            }
+          ],
+          "shot_route": "/macro_financial_conditions.html",
+          "page_id": "macro_financial_conditions.html",
           "innerWidth": 1440,
           "innerHeight": 2800
         },
@@ -11734,15 +12185,15 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 247578,
+          "bytes": 84883,
           "captured": true,
-          "file": "method_open-macro_labor_markets-light-en-1440.png",
-          "family": "method_open",
-          "force_state": "method_open",
-          "height": 1174,
+          "file": "lineage_open-macro_financial_conditions-light-en-1440.png",
+          "family": "lineage_open",
+          "force_state": "lineage_open",
+          "height": 464,
           "width": 2196,
           "locale": "en",
-          "sha256": "c69dac4bd4f731ec74b7f3c0c1ba9cd0d8055e92c91c4b6f8259b09bb5e1c9e9",
+          "sha256": "6aec42e66d2518ffcc26a1e0aae3fc086997f885e17602af3b715b463987491c",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -11751,38 +12202,79 @@
           "viewport_height": 2800,
           "dpr": 2.0,
           "crop": true,
-          "crop_selector": "section.mq-method .mq-axis-method",
+          "crop_selector": "section.mq-lineage",
           "crop_box": {
-            "x": 41,
-            "y": 1558.546875,
-            "width": 1098,
-            "height": 585.84375
+            "x": 41.0,
+            "y": 1589.53125,
+            "width": 1098.0,
+            "height": 231.453125
           },
-          "selector": "section.mq-method .mq-axis-method",
+          "selector": "section.mq-lineage",
           "full_page": false,
           "device_px_span": {
             "x0": 82,
             "x1": 2278,
-            "y0": 3116,
-            "y1": 4290
+            "y0": 3178,
+            "y1": 3642
           },
-          "verified_how": "macro_labor_markets.html method details opened by click; crop section.mq-method .mq-axis-method",
+          "verified_how": "macro_financial_conditions.html lineage details opened by click; crop section.mq-lineage",
           "fixture": "builder-payload",
           "trigger": null,
           "crop_box_doc": {
-            "x": 41,
-            "y": 1558.546875,
-            "width": 1098,
-            "height": 585.84375
+            "x": 41.0,
+            "y": 1589.53125,
+            "width": 1098.0,
+            "height": 231.453125
           },
           "scroll_y_at_shot": 0.0,
           "ihdr_delta_px": {
             "w": 0,
             "h": 0
           },
-          "element_text_head": "Weights law\u6743\u91cd\u6cd5\u5219Weighted average of the parts that are present: initial-claims mo",
-          "element_text_sha256": "877154fce24d539424092b53fbcc2ffff4bfe4d4aa4429117f8a80045412708d",
+          "element_text_head": "How this reading was revised Technical notes Technical receipt for operators \u2014 s",
+          "element_text_sha256": "07159e06074ef409d009d475c77919d938d9fc872275b95d96112c19de92e80f",
+          "visible_text_head": "How this reading was revised Technical notes Technical receipt for operators \u2014 s",
+          "visible_text_sha256": "07159e06074ef409d009d475c77919d938d9fc872275b95d96112c19de92e80f",
           "openedBy": "click",
+          "occlusionSamples": [
+            {
+              "x": 590,
+              "y": 1705.2578125,
+              "ok": true,
+              "hitTag": "P",
+              "hitClass": null
+            },
+            {
+              "x": 260.6,
+              "y": 1635.821875,
+              "ok": true,
+              "hitTag": "DETAILS",
+              "hitClass": "mc-details"
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 1635.821875,
+              "ok": true,
+              "hitTag": "DETAILS",
+              "hitClass": "mc-details"
+            },
+            {
+              "x": 260.6,
+              "y": 1774.69375,
+              "ok": true,
+              "hitTag": "DIV",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 1774.69375,
+              "ok": true,
+              "hitTag": "DD",
+              "hitClass": null
+            }
+          ],
+          "shot_route": "/macro_financial_conditions.html",
+          "page_id": "macro_financial_conditions.html",
           "innerWidth": 1440,
           "innerHeight": 2800
         },
@@ -11790,15 +12282,15 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 237452,
+          "bytes": 84508,
           "captured": true,
-          "file": "method_open-macro_labor_markets-light-zh-1440.png",
-          "family": "method_open",
-          "force_state": "method_open",
-          "height": 1024,
+          "file": "lineage_open-macro_financial_conditions-light-zh-1440.png",
+          "family": "lineage_open",
+          "force_state": "lineage_open",
+          "height": 392,
           "width": 2196,
           "locale": "zh",
-          "sha256": "58125ccdc9bda3f08981d654889ea9774a3c62a904ab1d87a2a4eb045db84e98",
+          "sha256": "182873608dbe1be2608ba0b8f24f2ba031219d0bb0769b52995980c387d1d8ff",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -11807,152 +12299,81 @@
           "viewport_height": 2800,
           "dpr": 2.0,
           "crop": true,
-          "crop_selector": "section.mq-method .mq-axis-method",
+          "crop_selector": "section.mq-lineage",
           "crop_box": {
-            "x": 41,
-            "y": 1521.5,
-            "width": 1098,
-            "height": 511.46875
+            "x": 41.0,
+            "y": 1518.0625,
+            "width": 1098.0,
+            "height": 195.8125
           },
-          "selector": "section.mq-method .mq-axis-method",
+          "selector": "section.mq-lineage",
           "full_page": false,
           "device_px_span": {
             "x0": 82,
             "x1": 2278,
-            "y0": 3042,
-            "y1": 4066
+            "y0": 3036,
+            "y1": 3428
           },
-          "verified_how": "macro_labor_markets.html method details opened by click; crop section.mq-method .mq-axis-method",
+          "verified_how": "macro_financial_conditions.html lineage details opened by click; crop section.mq-lineage",
           "fixture": "builder-payload",
           "trigger": null,
           "crop_box_doc": {
-            "x": 41,
-            "y": 1521.5,
-            "width": 1098,
-            "height": 511.46875
+            "x": 41.0,
+            "y": 1518.0625,
+            "width": 1098.0,
+            "height": 195.8125
           },
           "scroll_y_at_shot": 0.0,
           "ihdr_delta_px": {
             "w": 0,
             "h": 0
           },
-          "element_text_head": "Weights law\u6743\u91cd\u6cd5\u5219Weighted average of the parts that are present: initial-claims mo",
-          "element_text_sha256": "877154fce24d539424092b53fbcc2ffff4bfe4d4aa4429117f8a80045412708d",
+          "element_text_head": "\u672c\u8bfb\u6570\u5982\u4f55\u88ab\u4fee\u8ba2 \u6280\u672f\u8bf4\u660e \u7ed9\u64cd\u4f5c\u5458\u7684\u6280\u672f\u51ed\u636e \u2014 \u5e8f\u5217\u540d\u3001\u65f6\u95f4\u6233\u4e0e\u6587\u4ef6\u8def\u5f84\u3002\u4e0d\u662f\u7ed9\u5ba2\u6237\u770b\u7684\u8bfb\u6570\u3002 \u66f4\u6b63\u4e0e\u65b9\u6cd5\u6cbf\u9769 \u66f4\u6b63\u72b6\u6001 \u65e0\u66f4\u6b63\u8bb0\u5f55 \u524d\u4e00\u4ee3\u4ea7\u7269 \u5df2\u6709\u4e0a\u4e00\u5df2",
+          "element_text_sha256": "34309880d7ef8e821ca5f568672ba65ae348b6e70d2fced127d3ff1de2a92515",
+          "visible_text_head": "\u672c\u8bfb\u6570\u5982\u4f55\u88ab\u4fee\u8ba2 \u6280\u672f\u8bf4\u660e \u7ed9\u64cd\u4f5c\u5458\u7684\u6280\u672f\u51ed\u636e \u2014 \u5e8f\u5217\u540d\u3001\u65f6\u95f4\u6233\u4e0e\u6587\u4ef6\u8def\u5f84\u3002\u4e0d\u662f\u7ed9\u5ba2\u6237\u770b\u7684\u8bfb\u6570\u3002 \u66f4\u6b63\u4e0e\u65b9\u6cd5\u6cbf\u9769 \u66f4\u6b63\u72b6\u6001 \u65e0\u66f4\u6b63\u8bb0\u5f55 \u524d\u4e00\u4ee3\u4ea7\u7269 \u5df2\u6709\u4e0a\u4e00\u5df2",
+          "visible_text_sha256": "34309880d7ef8e821ca5f568672ba65ae348b6e70d2fced127d3ff1de2a92515",
           "openedBy": "click",
+          "occlusionSamples": [
+            {
+              "x": 590,
+              "y": 1615.96875,
+              "ok": true,
+              "hitTag": "P",
+              "hitClass": null
+            },
+            {
+              "x": 260.6,
+              "y": 1557.225,
+              "ok": true,
+              "hitTag": "SUMMARY",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 1557.225,
+              "ok": true,
+              "hitTag": "SUMMARY",
+              "hitClass": null
+            },
+            {
+              "x": 260.6,
+              "y": 1674.7125,
+              "ok": true,
+              "hitTag": "DD",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 1674.7125,
+              "ok": true,
+              "hitTag": "SPAN",
+              "hitClass": "l-zh"
+            }
+          ],
+          "shot_route": "/macro_financial_conditions.html",
+          "page_id": "macro_financial_conditions.html",
           "innerWidth": 1440,
           "innerHeight": 2800
-        },
-        {
-          "access": "anonymous",
-          "applied_locale": "en",
-          "applied_theme": "dark",
-          "bytes": 116126,
-          "captured": true,
-          "file": "method_open-macro_labor_markets-dark-en-390.png",
-          "family": "method_open",
-          "force_state": "method_open",
-          "height": 2242,
-          "width": 892,
-          "locale": "en",
-          "sha256": "d9051dc7e48c288201869d8b18123243b978e07781ef4e69637be89d1d002a81",
-          "theme": "dark",
-          "viewport": "mobile",
-          "viewport_width": 390,
-          "crop_width": 445.234375,
-          "viewport_css_width": 446.0,
-          "viewport_height": 872,
-          "dpr": 2.0,
-          "crop": true,
-          "crop_selector": "section.mq-method .mq-axis-method",
-          "crop_box": {
-            "x": -1,
-            "y": 26.765625,
-            "width": 445.234375,
-            "height": 1119.578125
-          },
-          "selector": "section.mq-method .mq-axis-method",
-          "full_page": false,
-          "device_px_span": {
-            "x0": -2,
-            "x1": 890,
-            "y0": 52,
-            "y1": 2294
-          },
-          "verified_how": "macro_labor_markets.html method details opened by click; crop section.mq-method .mq-axis-method",
-          "fixture": "builder-payload",
-          "trigger": null,
-          "crop_box_doc": {
-            "x": -1,
-            "y": 30.765625,
-            "width": 445.234375,
-            "height": 1119.578125
-          },
-          "scroll_y_at_shot": 4.0,
-          "ihdr_delta_px": {
-            "w": 0,
-            "h": 0
-          },
-          "element_text_head": "Weights law\u6743\u91cd\u6cd5\u5219Weighted average of the parts that are present: initial-claims mo",
-          "element_text_sha256": "877154fce24d539424092b53fbcc2ffff4bfe4d4aa4429117f8a80045412708d",
-          "openedBy": "click",
-          "innerWidth": 390,
-          "innerHeight": 872
-        },
-        {
-          "access": "anonymous",
-          "applied_locale": "zh",
-          "applied_theme": "light",
-          "bytes": 211116,
-          "captured": true,
-          "file": "method_open-macro_labor_markets-light-zh-390.png",
-          "family": "method_open",
-          "force_state": "method_open",
-          "height": 1906,
-          "width": 656,
-          "locale": "zh",
-          "sha256": "8422bc6dd9ae442119afc75b98e75465477d85946daf239c1d5d79a2010cad0a",
-          "theme": "light",
-          "viewport": "mobile",
-          "viewport_width": 390,
-          "crop_width": 328.0,
-          "viewport_css_width": 328.0,
-          "viewport_height": 872,
-          "dpr": 2.0,
-          "crop": true,
-          "crop_selector": "section.mq-method .mq-axis-method",
-          "crop_box": {
-            "x": 31,
-            "y": 27.421875,
-            "width": 328,
-            "height": 952.234375
-          },
-          "selector": "section.mq-method .mq-axis-method",
-          "full_page": false,
-          "device_px_span": {
-            "x0": 62,
-            "x1": 718,
-            "y0": 54,
-            "y1": 1960
-          },
-          "verified_how": "macro_labor_markets.html method details opened by click; crop section.mq-method .mq-axis-method",
-          "fixture": "builder-payload",
-          "trigger": null,
-          "crop_box_doc": {
-            "x": 31,
-            "y": 31.421875,
-            "width": 328,
-            "height": 952.234375
-          },
-          "scroll_y_at_shot": 4.0,
-          "ihdr_delta_px": {
-            "w": 0,
-            "h": 0
-          },
-          "element_text_head": "Weights law\u6743\u91cd\u6cd5\u5219Weighted average of the parts that are present: initial-claims mo",
-          "element_text_sha256": "877154fce24d539424092b53fbcc2ffff4bfe4d4aa4429117f8a80045412708d",
-          "openedBy": "click",
-          "innerWidth": 390,
-          "innerHeight": 872
         }
       ]
     },
@@ -13879,7 +14300,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 315365,
+          "bytes": 315447,
           "captured": true,
           "file": "ws-macro_housing_real_estate-dark-zh-390.png",
           "family": "workspace",
@@ -13887,7 +14308,7 @@
           "height": 1744,
           "width": 780,
           "locale": "zh",
-          "sha256": "a9893d500b4ffa4d13fb4a21b32ea2d100a4a86fdfb161adcaad31e18101356a",
+          "sha256": "db4773f03c0b604f358d5e5a0c97bd44a99c33628d3cc39620c0743798aa17cf",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -13934,7 +14355,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 315285,
+          "bytes": 315464,
           "captured": true,
           "file": "ws-macro_housing_real_estate-dark-zh-390-open.png",
           "family": "workspace",
@@ -13942,7 +14363,7 @@
           "height": 1744,
           "width": 780,
           "locale": "zh",
-          "sha256": "d853903423e91e5a43f5501f5365b651f5513db9e0655fea6e3dd041258485e1",
+          "sha256": "1f14ee6804483862fe2b0f0c09116cdb9c60d3fe32d7564072cacedb7d738e61",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -14424,6 +14845,1702 @@
           "element_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "innerWidth": 768,
           "innerHeight": 1072
+        }
+      ]
+    },
+    {
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": [],
+      "page_id": "macro_monetary_policy.html",
+      "registry_route": "/macro_monetary_policy.html",
+      "route": "/macro_monetary_policy.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 1343069,
+          "captured": true,
+          "file": "ws-macro_monetary_policy-closed-dark-en-1440.png",
+          "family": "workspace",
+          "force_state": null,
+          "height": 4800,
+          "width": 2880,
+          "locale": "en",
+          "sha256": "8b71fb802dd927e0df34139111750800e6d5cda4c70b1f1983261b8e3ed4581a",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": null,
+          "viewport_css_width": 1440.0,
+          "viewport_height": 2400,
+          "dpr": 2.0,
+          "crop": false,
+          "crop_selector": null,
+          "crop_box": null,
+          "selector": null,
+          "full_page": false,
+          "device_px_span": {
+            "x0": 0,
+            "x1": 2880,
+            "y0": 0,
+            "y1": 4800
+          },
+          "verified_how": "macro_monetary_policy.html first screen; details closed",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "scroll_y_at_shot": 0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "shot_route": "/macro_monetary_policy.html",
+          "page_id": "macro_monetary_policy.html",
+          "innerWidth": 1440,
+          "innerHeight": 2400
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 1362417,
+          "captured": true,
+          "file": "ws-macro_monetary_policy-closed-dark-zh-1440.png",
+          "family": "workspace",
+          "force_state": null,
+          "height": 4800,
+          "width": 2880,
+          "locale": "zh",
+          "sha256": "cca765670879bbecdbdcfdca5906c5728ed724ac26cee7097d56164b9d37a720",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": null,
+          "viewport_css_width": 1440.0,
+          "viewport_height": 2400,
+          "dpr": 2.0,
+          "crop": false,
+          "crop_selector": null,
+          "crop_box": null,
+          "selector": null,
+          "full_page": false,
+          "device_px_span": {
+            "x0": 0,
+            "x1": 2880,
+            "y0": 0,
+            "y1": 4800
+          },
+          "verified_how": "macro_monetary_policy.html first screen; details closed",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "scroll_y_at_shot": 0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "shot_route": "/macro_monetary_policy.html",
+          "page_id": "macro_monetary_policy.html",
+          "innerWidth": 1440,
+          "innerHeight": 2400
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 1290901,
+          "captured": true,
+          "file": "ws-macro_monetary_policy-closed-light-en-1440.png",
+          "family": "workspace",
+          "force_state": null,
+          "height": 4800,
+          "width": 2880,
+          "locale": "en",
+          "sha256": "334496d4a128eea88c4dd4f7d34a02a099f3a268bf7154edb99083dc1bcffa20",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": null,
+          "viewport_css_width": 1440.0,
+          "viewport_height": 2400,
+          "dpr": 2.0,
+          "crop": false,
+          "crop_selector": null,
+          "crop_box": null,
+          "selector": null,
+          "full_page": false,
+          "device_px_span": {
+            "x0": 0,
+            "x1": 2880,
+            "y0": 0,
+            "y1": 4800
+          },
+          "verified_how": "macro_monetary_policy.html first screen; details closed",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "scroll_y_at_shot": 0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "shot_route": "/macro_monetary_policy.html",
+          "page_id": "macro_monetary_policy.html",
+          "innerWidth": 1440,
+          "innerHeight": 2400
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 1323447,
+          "captured": true,
+          "file": "ws-macro_monetary_policy-closed-light-zh-1440.png",
+          "family": "workspace",
+          "force_state": null,
+          "height": 4800,
+          "width": 2880,
+          "locale": "zh",
+          "sha256": "9d2d8590cc36ca1b9f2ecdf0d75d88d191cd95764ededae62a12405cccf2858e",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": null,
+          "viewport_css_width": 1440.0,
+          "viewport_height": 2400,
+          "dpr": 2.0,
+          "crop": false,
+          "crop_selector": null,
+          "crop_box": null,
+          "selector": null,
+          "full_page": false,
+          "device_px_span": {
+            "x0": 0,
+            "x1": 2880,
+            "y0": 0,
+            "y1": 4800
+          },
+          "verified_how": "macro_monetary_policy.html first screen; details closed",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "scroll_y_at_shot": 0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "shot_route": "/macro_monetary_policy.html",
+          "page_id": "macro_monetary_policy.html",
+          "innerWidth": 1440,
+          "innerHeight": 2400
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 286805,
+          "captured": true,
+          "file": "ws-macro_monetary_policy-dark-en-390.png",
+          "family": "workspace",
+          "force_state": null,
+          "height": 1688,
+          "width": 780,
+          "locale": "en",
+          "sha256": "2bcf360dd6e7bddcb5296933318d462b5e22f0c2ae645725f919ec5c155638ab",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "crop_width": null,
+          "viewport_css_width": 390.0,
+          "viewport_height": 844,
+          "dpr": 2.0,
+          "crop": false,
+          "crop_selector": null,
+          "crop_box": null,
+          "selector": null,
+          "full_page": false,
+          "device_px_span": {
+            "x0": 0,
+            "x1": 780,
+            "y0": 0,
+            "y1": 1688
+          },
+          "verified_how": "macro_monetary_policy.html 390 native; details closed",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "scroll_y_at_shot": 0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "shot_route": "/macro_monetary_policy.html",
+          "page_id": "macro_monetary_policy.html",
+          "innerWidth": 390,
+          "innerHeight": 844
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 293655,
+          "captured": true,
+          "file": "ws-macro_monetary_policy-dark-zh-390.png",
+          "family": "workspace",
+          "force_state": null,
+          "height": 1688,
+          "width": 780,
+          "locale": "zh",
+          "sha256": "4af6339ecc6d6f67f582e4b699d5db56844661c923f3c9a40f686faf80e52c69",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "crop_width": null,
+          "viewport_css_width": 390.0,
+          "viewport_height": 844,
+          "dpr": 2.0,
+          "crop": false,
+          "crop_selector": null,
+          "crop_box": null,
+          "selector": null,
+          "full_page": false,
+          "device_px_span": {
+            "x0": 0,
+            "x1": 780,
+            "y0": 0,
+            "y1": 1688
+          },
+          "verified_how": "macro_monetary_policy.html 390 native; details closed",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "scroll_y_at_shot": 0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "shot_route": "/macro_monetary_policy.html",
+          "page_id": "macro_monetary_policy.html",
+          "innerWidth": 390,
+          "innerHeight": 844
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 257124,
+          "captured": true,
+          "file": "ws-macro_monetary_policy-light-en-390.png",
+          "family": "workspace",
+          "force_state": null,
+          "height": 1688,
+          "width": 780,
+          "locale": "en",
+          "sha256": "35b3f4417c6b36ac97317bd3f11eec2485c8b7c4beb663ebbb9a1a85bf1e43db",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "crop_width": null,
+          "viewport_css_width": 390.0,
+          "viewport_height": 844,
+          "dpr": 2.0,
+          "crop": false,
+          "crop_selector": null,
+          "crop_box": null,
+          "selector": null,
+          "full_page": false,
+          "device_px_span": {
+            "x0": 0,
+            "x1": 780,
+            "y0": 0,
+            "y1": 1688
+          },
+          "verified_how": "macro_monetary_policy.html 390 native; details closed",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "scroll_y_at_shot": 0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "shot_route": "/macro_monetary_policy.html",
+          "page_id": "macro_monetary_policy.html",
+          "innerWidth": 390,
+          "innerHeight": 844
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 261776,
+          "captured": true,
+          "file": "ws-macro_monetary_policy-light-zh-390.png",
+          "family": "workspace",
+          "force_state": null,
+          "height": 1688,
+          "width": 780,
+          "locale": "zh",
+          "sha256": "a86bed38b55127e0017e2fd0a6f7271fd816dbc0a8a121364f556a05afd9ab39",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "crop_width": null,
+          "viewport_css_width": 390.0,
+          "viewport_height": 844,
+          "dpr": 2.0,
+          "crop": false,
+          "crop_selector": null,
+          "crop_box": null,
+          "selector": null,
+          "full_page": false,
+          "device_px_span": {
+            "x0": 0,
+            "x1": 780,
+            "y0": 0,
+            "y1": 1688
+          },
+          "verified_how": "macro_monetary_policy.html 390 native; details closed",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "scroll_y_at_shot": 0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "shot_route": "/macro_monetary_policy.html",
+          "page_id": "macro_monetary_policy.html",
+          "innerWidth": 390,
+          "innerHeight": 844
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 89876,
+          "captured": true,
+          "file": "lineage_open-macro_monetary_policy-dark-en-1440.png",
+          "family": "lineage_open",
+          "force_state": "lineage_open",
+          "height": 464,
+          "width": 2196,
+          "locale": "en",
+          "sha256": "b0f592d437b419b6a58599372c768fa3ff3f85e6a04405b0bb376320e16204d2",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": 1098.0,
+          "viewport_css_width": 1098.0,
+          "viewport_height": 2800,
+          "dpr": 2.0,
+          "crop": true,
+          "crop_selector": "section.mq-lineage",
+          "crop_box": {
+            "x": 41.0,
+            "y": 1334.109375,
+            "width": 1098.0,
+            "height": 231.453125
+          },
+          "selector": "section.mq-lineage",
+          "full_page": false,
+          "device_px_span": {
+            "x0": 82,
+            "x1": 2278,
+            "y0": 2668,
+            "y1": 3132
+          },
+          "verified_how": "macro_monetary_policy.html lineage details opened by click; crop section.mq-lineage",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "crop_box_doc": {
+            "x": 41.0,
+            "y": 1334.109375,
+            "width": 1098.0,
+            "height": 231.453125
+          },
+          "scroll_y_at_shot": 0.0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "element_text_head": "How this reading was revised Technical notes Technical receipt for operators \u2014 s",
+          "element_text_sha256": "9e19db717404e5082d8f8a10b37107484a5875e025279b7e3203a3eb63e2ad53",
+          "visible_text_head": "How this reading was revised Technical notes Technical receipt for operators \u2014 s",
+          "visible_text_sha256": "9e19db717404e5082d8f8a10b37107484a5875e025279b7e3203a3eb63e2ad53",
+          "openedBy": "click",
+          "occlusionSamples": [
+            {
+              "x": 590,
+              "y": 1449.8359375,
+              "ok": true,
+              "hitTag": "P",
+              "hitClass": null
+            },
+            {
+              "x": 260.6,
+              "y": 1380.4,
+              "ok": true,
+              "hitTag": "DETAILS",
+              "hitClass": "mc-details"
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 1380.4,
+              "ok": true,
+              "hitTag": "DETAILS",
+              "hitClass": "mc-details"
+            },
+            {
+              "x": 260.6,
+              "y": 1519.271875,
+              "ok": true,
+              "hitTag": "DIV",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 1519.271875,
+              "ok": true,
+              "hitTag": "DD",
+              "hitClass": null
+            }
+          ],
+          "shot_route": "/macro_monetary_policy.html",
+          "page_id": "macro_monetary_policy.html",
+          "innerWidth": 1440,
+          "innerHeight": 2800
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 89240,
+          "captured": true,
+          "file": "lineage_open-macro_monetary_policy-dark-zh-1440.png",
+          "family": "lineage_open",
+          "force_state": "lineage_open",
+          "height": 432,
+          "width": 2196,
+          "locale": "zh",
+          "sha256": "a7e90e8f9965bcbb8e695bccae5838ce36bdaa8b7ac26427972cb39cb45fa541",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": 1098.0,
+          "viewport_css_width": 1098.0,
+          "viewport_height": 2800,
+          "dpr": 2.0,
+          "crop": true,
+          "crop_selector": "section.mq-lineage",
+          "crop_box": {
+            "x": 41.0,
+            "y": 1319.9375,
+            "width": 1098.0,
+            "height": 214.40625
+          },
+          "selector": "section.mq-lineage",
+          "full_page": false,
+          "device_px_span": {
+            "x0": 82,
+            "x1": 2278,
+            "y0": 2638,
+            "y1": 3070
+          },
+          "verified_how": "macro_monetary_policy.html lineage details opened by click; crop section.mq-lineage",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "crop_box_doc": {
+            "x": 41.0,
+            "y": 1319.9375,
+            "width": 1098.0,
+            "height": 214.40625
+          },
+          "scroll_y_at_shot": 0.0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "element_text_head": "\u672c\u8bfb\u6570\u5982\u4f55\u88ab\u4fee\u8ba2 \u6280\u672f\u8bf4\u660e \u7ed9\u64cd\u4f5c\u5458\u7684\u6280\u672f\u51ed\u636e \u2014 \u5e8f\u5217\u540d\u3001\u65f6\u95f4\u6233\u4e0e\u6587\u4ef6\u8def\u5f84\u3002\u4e0d\u662f\u7ed9\u5ba2\u6237\u770b\u7684\u8bfb\u6570\u3002 \u66f4\u6b63\u4e0e\u65b9\u6cd5\u6cbf\u9769 \u66f4\u6b63\u72b6\u6001 \u5df2\u88ab\u53d6\u4ee3 \u524d\u4e00\u4ee3\u4ea7\u7269 \u5df2\u6709\u4e0a\u4e00\u5df2\u53d1",
+          "element_text_sha256": "d1e0c22d031c8dfb69635c2051215cdae3d1910c3dcca781a4f023cb10b0ff5e",
+          "visible_text_head": "\u672c\u8bfb\u6570\u5982\u4f55\u88ab\u4fee\u8ba2 \u6280\u672f\u8bf4\u660e \u7ed9\u64cd\u4f5c\u5458\u7684\u6280\u672f\u51ed\u636e \u2014 \u5e8f\u5217\u540d\u3001\u65f6\u95f4\u6233\u4e0e\u6587\u4ef6\u8def\u5f84\u3002\u4e0d\u662f\u7ed9\u5ba2\u6237\u770b\u7684\u8bfb\u6570\u3002 \u66f4\u6b63\u4e0e\u65b9\u6cd5\u6cbf\u9769 \u66f4\u6b63\u72b6\u6001 \u5df2\u88ab\u53d6\u4ee3 \u524d\u4e00\u4ee3\u4ea7\u7269 \u5df2\u6709\u4e0a\u4e00\u5df2\u53d1",
+          "visible_text_sha256": "d1e0c22d031c8dfb69635c2051215cdae3d1910c3dcca781a4f023cb10b0ff5e",
+          "openedBy": "click",
+          "occlusionSamples": [
+            {
+              "x": 590,
+              "y": 1427.140625,
+              "ok": true,
+              "hitTag": "P",
+              "hitClass": null
+            },
+            {
+              "x": 260.6,
+              "y": 1362.81875,
+              "ok": true,
+              "hitTag": "SUMMARY",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 1362.81875,
+              "ok": true,
+              "hitTag": "SUMMARY",
+              "hitClass": null
+            },
+            {
+              "x": 260.6,
+              "y": 1491.4625,
+              "ok": true,
+              "hitTag": "DIV",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 1491.4625,
+              "ok": true,
+              "hitTag": "DIV",
+              "hitClass": null
+            }
+          ],
+          "shot_route": "/macro_monetary_policy.html",
+          "page_id": "macro_monetary_policy.html",
+          "innerWidth": 1440,
+          "innerHeight": 2800
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 90826,
+          "captured": true,
+          "file": "lineage_open-macro_monetary_policy-light-en-1440.png",
+          "family": "lineage_open",
+          "force_state": "lineage_open",
+          "height": 464,
+          "width": 2196,
+          "locale": "en",
+          "sha256": "a22b2877ab38b639d5c4ec774fea8440a0848b027b8513aaa79f509878ab2ee6",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": 1098.0,
+          "viewport_css_width": 1098.0,
+          "viewport_height": 2800,
+          "dpr": 2.0,
+          "crop": true,
+          "crop_selector": "section.mq-lineage",
+          "crop_box": {
+            "x": 41.0,
+            "y": 1334.109375,
+            "width": 1098.0,
+            "height": 231.453125
+          },
+          "selector": "section.mq-lineage",
+          "full_page": false,
+          "device_px_span": {
+            "x0": 82,
+            "x1": 2278,
+            "y0": 2668,
+            "y1": 3132
+          },
+          "verified_how": "macro_monetary_policy.html lineage details opened by click; crop section.mq-lineage",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "crop_box_doc": {
+            "x": 41.0,
+            "y": 1334.109375,
+            "width": 1098.0,
+            "height": 231.453125
+          },
+          "scroll_y_at_shot": 0.0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "element_text_head": "How this reading was revised Technical notes Technical receipt for operators \u2014 s",
+          "element_text_sha256": "9e19db717404e5082d8f8a10b37107484a5875e025279b7e3203a3eb63e2ad53",
+          "visible_text_head": "How this reading was revised Technical notes Technical receipt for operators \u2014 s",
+          "visible_text_sha256": "9e19db717404e5082d8f8a10b37107484a5875e025279b7e3203a3eb63e2ad53",
+          "openedBy": "click",
+          "occlusionSamples": [
+            {
+              "x": 590,
+              "y": 1449.8359375,
+              "ok": true,
+              "hitTag": "P",
+              "hitClass": null
+            },
+            {
+              "x": 260.6,
+              "y": 1380.4,
+              "ok": true,
+              "hitTag": "DETAILS",
+              "hitClass": "mc-details"
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 1380.4,
+              "ok": true,
+              "hitTag": "DETAILS",
+              "hitClass": "mc-details"
+            },
+            {
+              "x": 260.6,
+              "y": 1519.271875,
+              "ok": true,
+              "hitTag": "DIV",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 1519.271875,
+              "ok": true,
+              "hitTag": "DD",
+              "hitClass": null
+            }
+          ],
+          "shot_route": "/macro_monetary_policy.html",
+          "page_id": "macro_monetary_policy.html",
+          "innerWidth": 1440,
+          "innerHeight": 2800
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 90609,
+          "captured": true,
+          "file": "lineage_open-macro_monetary_policy-light-zh-1440.png",
+          "family": "lineage_open",
+          "force_state": "lineage_open",
+          "height": 432,
+          "width": 2196,
+          "locale": "zh",
+          "sha256": "111f8bea983ca4de67cc3a8a393cc283c2c96b29cea06b87577e31d1932bd6f3",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": 1098.0,
+          "viewport_css_width": 1098.0,
+          "viewport_height": 2800,
+          "dpr": 2.0,
+          "crop": true,
+          "crop_selector": "section.mq-lineage",
+          "crop_box": {
+            "x": 41.0,
+            "y": 1319.9375,
+            "width": 1098.0,
+            "height": 214.40625
+          },
+          "selector": "section.mq-lineage",
+          "full_page": false,
+          "device_px_span": {
+            "x0": 82,
+            "x1": 2278,
+            "y0": 2638,
+            "y1": 3070
+          },
+          "verified_how": "macro_monetary_policy.html lineage details opened by click; crop section.mq-lineage",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "crop_box_doc": {
+            "x": 41.0,
+            "y": 1319.9375,
+            "width": 1098.0,
+            "height": 214.40625
+          },
+          "scroll_y_at_shot": 0.0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "element_text_head": "\u672c\u8bfb\u6570\u5982\u4f55\u88ab\u4fee\u8ba2 \u6280\u672f\u8bf4\u660e \u7ed9\u64cd\u4f5c\u5458\u7684\u6280\u672f\u51ed\u636e \u2014 \u5e8f\u5217\u540d\u3001\u65f6\u95f4\u6233\u4e0e\u6587\u4ef6\u8def\u5f84\u3002\u4e0d\u662f\u7ed9\u5ba2\u6237\u770b\u7684\u8bfb\u6570\u3002 \u66f4\u6b63\u4e0e\u65b9\u6cd5\u6cbf\u9769 \u66f4\u6b63\u72b6\u6001 \u5df2\u88ab\u53d6\u4ee3 \u524d\u4e00\u4ee3\u4ea7\u7269 \u5df2\u6709\u4e0a\u4e00\u5df2\u53d1",
+          "element_text_sha256": "d1e0c22d031c8dfb69635c2051215cdae3d1910c3dcca781a4f023cb10b0ff5e",
+          "visible_text_head": "\u672c\u8bfb\u6570\u5982\u4f55\u88ab\u4fee\u8ba2 \u6280\u672f\u8bf4\u660e \u7ed9\u64cd\u4f5c\u5458\u7684\u6280\u672f\u51ed\u636e \u2014 \u5e8f\u5217\u540d\u3001\u65f6\u95f4\u6233\u4e0e\u6587\u4ef6\u8def\u5f84\u3002\u4e0d\u662f\u7ed9\u5ba2\u6237\u770b\u7684\u8bfb\u6570\u3002 \u66f4\u6b63\u4e0e\u65b9\u6cd5\u6cbf\u9769 \u66f4\u6b63\u72b6\u6001 \u5df2\u88ab\u53d6\u4ee3 \u524d\u4e00\u4ee3\u4ea7\u7269 \u5df2\u6709\u4e0a\u4e00\u5df2\u53d1",
+          "visible_text_sha256": "d1e0c22d031c8dfb69635c2051215cdae3d1910c3dcca781a4f023cb10b0ff5e",
+          "openedBy": "click",
+          "occlusionSamples": [
+            {
+              "x": 590,
+              "y": 1427.140625,
+              "ok": true,
+              "hitTag": "P",
+              "hitClass": null
+            },
+            {
+              "x": 260.6,
+              "y": 1362.81875,
+              "ok": true,
+              "hitTag": "SUMMARY",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 1362.81875,
+              "ok": true,
+              "hitTag": "SUMMARY",
+              "hitClass": null
+            },
+            {
+              "x": 260.6,
+              "y": 1491.4625,
+              "ok": true,
+              "hitTag": "DIV",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 1491.4625,
+              "ok": true,
+              "hitTag": "DIV",
+              "hitClass": null
+            }
+          ],
+          "shot_route": "/macro_monetary_policy.html",
+          "page_id": "macro_monetary_policy.html",
+          "innerWidth": 1440,
+          "innerHeight": 2800
+        }
+      ]
+    },
+    {
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": [],
+      "page_id": "macro_labor_markets.html",
+      "registry_route": "/macro_labor_markets.html",
+      "route": "/macro_labor_markets.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 1254057,
+          "captured": true,
+          "file": "ws-macro_labor_markets-closed-dark-en-1440.png",
+          "family": "workspace",
+          "force_state": null,
+          "height": 4800,
+          "width": 2880,
+          "locale": "en",
+          "sha256": "75323b0b982a12e2a9fabb3fc09db68ada979e9948ce1b7ba23538abcbe9279a",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": null,
+          "viewport_css_width": 1440.0,
+          "viewport_height": 2400,
+          "dpr": 2.0,
+          "crop": false,
+          "crop_selector": null,
+          "crop_box": null,
+          "selector": null,
+          "full_page": false,
+          "device_px_span": {
+            "x0": 0,
+            "x1": 2880,
+            "y0": 0,
+            "y1": 4800
+          },
+          "verified_how": "macro_labor_markets.html first screen; details closed",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "scroll_y_at_shot": 0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "shot_route": "/macro_labor_markets.html",
+          "page_id": "macro_labor_markets.html",
+          "innerWidth": 1440,
+          "innerHeight": 2400
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 1284983,
+          "captured": true,
+          "file": "ws-macro_labor_markets-closed-dark-zh-1440.png",
+          "family": "workspace",
+          "force_state": null,
+          "height": 4800,
+          "width": 2880,
+          "locale": "zh",
+          "sha256": "aa9b2a7e11581b17281bbfdb828059ca40183ff3bc5b1cf0b4366acd4e6251e3",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": null,
+          "viewport_css_width": 1440.0,
+          "viewport_height": 2400,
+          "dpr": 2.0,
+          "crop": false,
+          "crop_selector": null,
+          "crop_box": null,
+          "selector": null,
+          "full_page": false,
+          "device_px_span": {
+            "x0": 0,
+            "x1": 2880,
+            "y0": 0,
+            "y1": 4800
+          },
+          "verified_how": "macro_labor_markets.html first screen; details closed",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "scroll_y_at_shot": 0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "shot_route": "/macro_labor_markets.html",
+          "page_id": "macro_labor_markets.html",
+          "innerWidth": 1440,
+          "innerHeight": 2400
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 1207338,
+          "captured": true,
+          "file": "ws-macro_labor_markets-closed-light-en-1440.png",
+          "family": "workspace",
+          "force_state": null,
+          "height": 4800,
+          "width": 2880,
+          "locale": "en",
+          "sha256": "25ab3bcc2c86230ff73c3af684d2ffa0d8ea29ae49cc2a8f6c38d9853113adc0",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": null,
+          "viewport_css_width": 1440.0,
+          "viewport_height": 2400,
+          "dpr": 2.0,
+          "crop": false,
+          "crop_selector": null,
+          "crop_box": null,
+          "selector": null,
+          "full_page": false,
+          "device_px_span": {
+            "x0": 0,
+            "x1": 2880,
+            "y0": 0,
+            "y1": 4800
+          },
+          "verified_how": "macro_labor_markets.html first screen; details closed",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "scroll_y_at_shot": 0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "shot_route": "/macro_labor_markets.html",
+          "page_id": "macro_labor_markets.html",
+          "innerWidth": 1440,
+          "innerHeight": 2400
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 1242484,
+          "captured": true,
+          "file": "ws-macro_labor_markets-closed-light-zh-1440.png",
+          "family": "workspace",
+          "force_state": null,
+          "height": 4800,
+          "width": 2880,
+          "locale": "zh",
+          "sha256": "4c254ccca1f4d993a11d4737b19fd99d0222ba434a2f2982ed4b0be021b5dfa2",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": null,
+          "viewport_css_width": 1440.0,
+          "viewport_height": 2400,
+          "dpr": 2.0,
+          "crop": false,
+          "crop_selector": null,
+          "crop_box": null,
+          "selector": null,
+          "full_page": false,
+          "device_px_span": {
+            "x0": 0,
+            "x1": 2880,
+            "y0": 0,
+            "y1": 4800
+          },
+          "verified_how": "macro_labor_markets.html first screen; details closed",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "scroll_y_at_shot": 0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "shot_route": "/macro_labor_markets.html",
+          "page_id": "macro_labor_markets.html",
+          "innerWidth": 1440,
+          "innerHeight": 2400
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 287547,
+          "captured": true,
+          "file": "ws-macro_labor_markets-dark-en-390.png",
+          "family": "workspace",
+          "force_state": null,
+          "height": 1688,
+          "width": 780,
+          "locale": "en",
+          "sha256": "199c02c3b631c60b9ea2288eed8b3df703f24ccc8fdb2b9f4ec35359f67640c5",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "crop_width": null,
+          "viewport_css_width": 390.0,
+          "viewport_height": 844,
+          "dpr": 2.0,
+          "crop": false,
+          "crop_selector": null,
+          "crop_box": null,
+          "selector": null,
+          "full_page": false,
+          "device_px_span": {
+            "x0": 0,
+            "x1": 780,
+            "y0": 0,
+            "y1": 1688
+          },
+          "verified_how": "macro_labor_markets.html 390 native; details closed",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "scroll_y_at_shot": 0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "shot_route": "/macro_labor_markets.html",
+          "page_id": "macro_labor_markets.html",
+          "innerWidth": 390,
+          "innerHeight": 844
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 297341,
+          "captured": true,
+          "file": "ws-macro_labor_markets-dark-zh-390.png",
+          "family": "workspace",
+          "force_state": null,
+          "height": 1688,
+          "width": 780,
+          "locale": "zh",
+          "sha256": "a8cf7779d049d02f2d952a478c401fafedc290b4c4b7d9507298a59c10853d8f",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "crop_width": null,
+          "viewport_css_width": 390.0,
+          "viewport_height": 844,
+          "dpr": 2.0,
+          "crop": false,
+          "crop_selector": null,
+          "crop_box": null,
+          "selector": null,
+          "full_page": false,
+          "device_px_span": {
+            "x0": 0,
+            "x1": 780,
+            "y0": 0,
+            "y1": 1688
+          },
+          "verified_how": "macro_labor_markets.html 390 native; details closed",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "scroll_y_at_shot": 0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "shot_route": "/macro_labor_markets.html",
+          "page_id": "macro_labor_markets.html",
+          "innerWidth": 390,
+          "innerHeight": 844
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 257656,
+          "captured": true,
+          "file": "ws-macro_labor_markets-light-en-390.png",
+          "family": "workspace",
+          "force_state": null,
+          "height": 1688,
+          "width": 780,
+          "locale": "en",
+          "sha256": "69b86497b8d348c4186fb56749ed98bba999bf4aba8d855d32d024a3600bfcd8",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "crop_width": null,
+          "viewport_css_width": 390.0,
+          "viewport_height": 844,
+          "dpr": 2.0,
+          "crop": false,
+          "crop_selector": null,
+          "crop_box": null,
+          "selector": null,
+          "full_page": false,
+          "device_px_span": {
+            "x0": 0,
+            "x1": 780,
+            "y0": 0,
+            "y1": 1688
+          },
+          "verified_how": "macro_labor_markets.html 390 native; details closed",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "scroll_y_at_shot": 0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "shot_route": "/macro_labor_markets.html",
+          "page_id": "macro_labor_markets.html",
+          "innerWidth": 390,
+          "innerHeight": 844
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 266366,
+          "captured": true,
+          "file": "ws-macro_labor_markets-light-zh-390.png",
+          "family": "workspace",
+          "force_state": null,
+          "height": 1688,
+          "width": 780,
+          "locale": "zh",
+          "sha256": "93d8e1480622c98a9af1e506636044fd4c965317f579b2e23e212ae8523e2145",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "crop_width": null,
+          "viewport_css_width": 390.0,
+          "viewport_height": 844,
+          "dpr": 2.0,
+          "crop": false,
+          "crop_selector": null,
+          "crop_box": null,
+          "selector": null,
+          "full_page": false,
+          "device_px_span": {
+            "x0": 0,
+            "x1": 780,
+            "y0": 0,
+            "y1": 1688
+          },
+          "verified_how": "macro_labor_markets.html 390 native; details closed",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "scroll_y_at_shot": 0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "shot_route": "/macro_labor_markets.html",
+          "page_id": "macro_labor_markets.html",
+          "innerWidth": 390,
+          "innerHeight": 844
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 242663,
+          "captured": true,
+          "file": "method_open-macro_labor_markets-dark-en-1440.png",
+          "family": "method_open",
+          "force_state": "method_open",
+          "height": 1174,
+          "width": 2196,
+          "locale": "en",
+          "sha256": "a61df7e09725593c036ac06e64cdf2f8687fff9214187658bec813f301693414",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": 1098.0,
+          "viewport_css_width": 1098.0,
+          "viewport_height": 2800,
+          "dpr": 2.0,
+          "crop": true,
+          "crop_selector": "section.mq-method .mq-axis-method",
+          "crop_box": {
+            "x": 41.0,
+            "y": 1558.546875,
+            "width": 1098.0,
+            "height": 585.84375
+          },
+          "selector": "section.mq-method .mq-axis-method",
+          "full_page": false,
+          "device_px_span": {
+            "x0": 82,
+            "x1": 2278,
+            "y0": 3116,
+            "y1": 4290
+          },
+          "verified_how": "macro_labor_markets.html method details opened by click; crop section.mq-method .mq-axis-method",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "crop_box_doc": {
+            "x": 41.0,
+            "y": 1558.546875,
+            "width": 1098.0,
+            "height": 585.84375
+          },
+          "scroll_y_at_shot": 0.0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "element_text_head": "WEIGHTS LAW Weighted average of the parts that are present: initial-claims momen",
+          "element_text_sha256": "ce989e8fe31b4a9dadeceb24caa35ace37b6a9180a77a9c867497d339110fc48",
+          "visible_text_head": "WEIGHTS LAW Weighted average of the parts that are present: initial-claims momen",
+          "visible_text_sha256": "ce989e8fe31b4a9dadeceb24caa35ace37b6a9180a77a9c867497d339110fc48",
+          "openedBy": "click",
+          "occlusionSamples": [
+            {
+              "x": 590,
+              "y": 1851.46875,
+              "ok": true,
+              "hitTag": "DL",
+              "hitClass": "mq-method-grid"
+            },
+            {
+              "x": 260.6,
+              "y": 1675.715625,
+              "ok": true,
+              "hitTag": "DD",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 1675.715625,
+              "ok": true,
+              "hitTag": "SPAN",
+              "hitClass": "l-en"
+            },
+            {
+              "x": 260.6,
+              "y": 2027.221875,
+              "ok": true,
+              "hitTag": "TH",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 2027.221875,
+              "ok": true,
+              "hitTag": "TD",
+              "hitClass": "mq-delta mq-delta-up"
+            }
+          ],
+          "shot_route": "/macro_labor_markets.html",
+          "page_id": "macro_labor_markets.html",
+          "innerWidth": 1440,
+          "innerHeight": 2800
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 232455,
+          "captured": true,
+          "file": "method_open-macro_labor_markets-dark-zh-1440.png",
+          "family": "method_open",
+          "force_state": "method_open",
+          "height": 1024,
+          "width": 2196,
+          "locale": "zh",
+          "sha256": "3399e1519eca1dc980e8a987d460cae29ed312d06e0a9de5be57833885213921",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": 1098.0,
+          "viewport_css_width": 1098.0,
+          "viewport_height": 2800,
+          "dpr": 2.0,
+          "crop": true,
+          "crop_selector": "section.mq-method .mq-axis-method",
+          "crop_box": {
+            "x": 41.0,
+            "y": 1521.5,
+            "width": 1098.0,
+            "height": 511.46875
+          },
+          "selector": "section.mq-method .mq-axis-method",
+          "full_page": false,
+          "device_px_span": {
+            "x0": 82,
+            "x1": 2278,
+            "y0": 3042,
+            "y1": 4066
+          },
+          "verified_how": "macro_labor_markets.html method details opened by click; crop section.mq-method .mq-axis-method",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "crop_box_doc": {
+            "x": 41.0,
+            "y": 1521.5,
+            "width": 1098.0,
+            "height": 511.46875
+          },
+          "scroll_y_at_shot": 0.0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "element_text_head": "\u6743\u91cd\u6cd5\u5219 \u6309\u5230\u4f4d\u5206\u9879\u7684\u52a0\u6743\u5e73\u5747\uff1a\u521d\u8bf7\u52a8\u91cf 40%\u3001\u804c\u4f4d\u53d1\u5e03\u52a8\u91cf 35%\u3001\u4ee3\u6263\u7a0e\u6536\u5165\u589e\u957f\u4ee3\u7406 25%\u3002 \u53d8\u6362 \u521d\u8bf7\u53d6\u53cd\uff0c\u521d\u8bf7\u5347\u9ad8\u8868\u793a\u9700\u6c42\u66f4\u5f31\u3002\u804c\u4f4d\u53d1\u5e03\u4e09\u4e2a\u6708\u53d8\u5316\u4e0e",
+          "element_text_sha256": "b6a83684b91524b4f3843baff58086dfc7ced5a3d79c9042f854ddacf5294cdd",
+          "visible_text_head": "\u6743\u91cd\u6cd5\u5219 \u6309\u5230\u4f4d\u5206\u9879\u7684\u52a0\u6743\u5e73\u5747\uff1a\u521d\u8bf7\u52a8\u91cf 40%\u3001\u804c\u4f4d\u53d1\u5e03\u52a8\u91cf 35%\u3001\u4ee3\u6263\u7a0e\u6536\u5165\u589e\u957f\u4ee3\u7406 25%\u3002 \u53d8\u6362 \u521d\u8bf7\u53d6\u53cd\uff0c\u521d\u8bf7\u5347\u9ad8\u8868\u793a\u9700\u6c42\u66f4\u5f31\u3002\u804c\u4f4d\u53d1\u5e03\u4e09\u4e2a\u6708\u53d8\u5316\u4e0e",
+          "visible_text_sha256": "b6a83684b91524b4f3843baff58086dfc7ced5a3d79c9042f854ddacf5294cdd",
+          "openedBy": "click",
+          "occlusionSamples": [
+            {
+              "x": 590,
+              "y": 1777.234375,
+              "ok": true,
+              "hitTag": "DL",
+              "hitClass": "mq-method-grid"
+            },
+            {
+              "x": 260.6,
+              "y": 1623.79375,
+              "ok": true,
+              "hitTag": "DT",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 1623.79375,
+              "ok": true,
+              "hitTag": "DT",
+              "hitClass": null
+            },
+            {
+              "x": 260.6,
+              "y": 1930.675,
+              "ok": true,
+              "hitTag": "TH",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 1930.675,
+              "ok": true,
+              "hitTag": "TD",
+              "hitClass": null
+            }
+          ],
+          "shot_route": "/macro_labor_markets.html",
+          "page_id": "macro_labor_markets.html",
+          "innerWidth": 1440,
+          "innerHeight": 2800
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 247578,
+          "captured": true,
+          "file": "method_open-macro_labor_markets-light-en-1440.png",
+          "family": "method_open",
+          "force_state": "method_open",
+          "height": 1174,
+          "width": 2196,
+          "locale": "en",
+          "sha256": "c69dac4bd4f731ec74b7f3c0c1ba9cd0d8055e92c91c4b6f8259b09bb5e1c9e9",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": 1098.0,
+          "viewport_css_width": 1098.0,
+          "viewport_height": 2800,
+          "dpr": 2.0,
+          "crop": true,
+          "crop_selector": "section.mq-method .mq-axis-method",
+          "crop_box": {
+            "x": 41.0,
+            "y": 1558.546875,
+            "width": 1098.0,
+            "height": 585.84375
+          },
+          "selector": "section.mq-method .mq-axis-method",
+          "full_page": false,
+          "device_px_span": {
+            "x0": 82,
+            "x1": 2278,
+            "y0": 3116,
+            "y1": 4290
+          },
+          "verified_how": "macro_labor_markets.html method details opened by click; crop section.mq-method .mq-axis-method",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "crop_box_doc": {
+            "x": 41.0,
+            "y": 1558.546875,
+            "width": 1098.0,
+            "height": 585.84375
+          },
+          "scroll_y_at_shot": 0.0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "element_text_head": "WEIGHTS LAW Weighted average of the parts that are present: initial-claims momen",
+          "element_text_sha256": "ce989e8fe31b4a9dadeceb24caa35ace37b6a9180a77a9c867497d339110fc48",
+          "visible_text_head": "WEIGHTS LAW Weighted average of the parts that are present: initial-claims momen",
+          "visible_text_sha256": "ce989e8fe31b4a9dadeceb24caa35ace37b6a9180a77a9c867497d339110fc48",
+          "openedBy": "click",
+          "occlusionSamples": [
+            {
+              "x": 590,
+              "y": 1851.46875,
+              "ok": true,
+              "hitTag": "DL",
+              "hitClass": "mq-method-grid"
+            },
+            {
+              "x": 260.6,
+              "y": 1675.715625,
+              "ok": true,
+              "hitTag": "DD",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 1675.715625,
+              "ok": true,
+              "hitTag": "SPAN",
+              "hitClass": "l-en"
+            },
+            {
+              "x": 260.6,
+              "y": 2027.221875,
+              "ok": true,
+              "hitTag": "TH",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 2027.221875,
+              "ok": true,
+              "hitTag": "TD",
+              "hitClass": "mq-delta mq-delta-up"
+            }
+          ],
+          "shot_route": "/macro_labor_markets.html",
+          "page_id": "macro_labor_markets.html",
+          "innerWidth": 1440,
+          "innerHeight": 2800
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 237452,
+          "captured": true,
+          "file": "method_open-macro_labor_markets-light-zh-1440.png",
+          "family": "method_open",
+          "force_state": "method_open",
+          "height": 1024,
+          "width": 2196,
+          "locale": "zh",
+          "sha256": "58125ccdc9bda3f08981d654889ea9774a3c62a904ab1d87a2a4eb045db84e98",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "crop_width": 1098.0,
+          "viewport_css_width": 1098.0,
+          "viewport_height": 2800,
+          "dpr": 2.0,
+          "crop": true,
+          "crop_selector": "section.mq-method .mq-axis-method",
+          "crop_box": {
+            "x": 41.0,
+            "y": 1521.5,
+            "width": 1098.0,
+            "height": 511.46875
+          },
+          "selector": "section.mq-method .mq-axis-method",
+          "full_page": false,
+          "device_px_span": {
+            "x0": 82,
+            "x1": 2278,
+            "y0": 3042,
+            "y1": 4066
+          },
+          "verified_how": "macro_labor_markets.html method details opened by click; crop section.mq-method .mq-axis-method",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "crop_box_doc": {
+            "x": 41.0,
+            "y": 1521.5,
+            "width": 1098.0,
+            "height": 511.46875
+          },
+          "scroll_y_at_shot": 0.0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "element_text_head": "\u6743\u91cd\u6cd5\u5219 \u6309\u5230\u4f4d\u5206\u9879\u7684\u52a0\u6743\u5e73\u5747\uff1a\u521d\u8bf7\u52a8\u91cf 40%\u3001\u804c\u4f4d\u53d1\u5e03\u52a8\u91cf 35%\u3001\u4ee3\u6263\u7a0e\u6536\u5165\u589e\u957f\u4ee3\u7406 25%\u3002 \u53d8\u6362 \u521d\u8bf7\u53d6\u53cd\uff0c\u521d\u8bf7\u5347\u9ad8\u8868\u793a\u9700\u6c42\u66f4\u5f31\u3002\u804c\u4f4d\u53d1\u5e03\u4e09\u4e2a\u6708\u53d8\u5316\u4e0e",
+          "element_text_sha256": "b6a83684b91524b4f3843baff58086dfc7ced5a3d79c9042f854ddacf5294cdd",
+          "visible_text_head": "\u6743\u91cd\u6cd5\u5219 \u6309\u5230\u4f4d\u5206\u9879\u7684\u52a0\u6743\u5e73\u5747\uff1a\u521d\u8bf7\u52a8\u91cf 40%\u3001\u804c\u4f4d\u53d1\u5e03\u52a8\u91cf 35%\u3001\u4ee3\u6263\u7a0e\u6536\u5165\u589e\u957f\u4ee3\u7406 25%\u3002 \u53d8\u6362 \u521d\u8bf7\u53d6\u53cd\uff0c\u521d\u8bf7\u5347\u9ad8\u8868\u793a\u9700\u6c42\u66f4\u5f31\u3002\u804c\u4f4d\u53d1\u5e03\u4e09\u4e2a\u6708\u53d8\u5316\u4e0e",
+          "visible_text_sha256": "b6a83684b91524b4f3843baff58086dfc7ced5a3d79c9042f854ddacf5294cdd",
+          "openedBy": "click",
+          "occlusionSamples": [
+            {
+              "x": 590,
+              "y": 1777.234375,
+              "ok": true,
+              "hitTag": "DL",
+              "hitClass": "mq-method-grid"
+            },
+            {
+              "x": 260.6,
+              "y": 1623.79375,
+              "ok": true,
+              "hitTag": "DT",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 1623.79375,
+              "ok": true,
+              "hitTag": "DT",
+              "hitClass": null
+            },
+            {
+              "x": 260.6,
+              "y": 1930.675,
+              "ok": true,
+              "hitTag": "TH",
+              "hitClass": null
+            },
+            {
+              "x": 919.4000000000001,
+              "y": 1930.675,
+              "ok": true,
+              "hitTag": "TD",
+              "hitClass": null
+            }
+          ],
+          "shot_route": "/macro_labor_markets.html",
+          "page_id": "macro_labor_markets.html",
+          "innerWidth": 1440,
+          "innerHeight": 2800
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 241689,
+          "captured": true,
+          "file": "method_open-macro_labor_markets-dark-en-390.png",
+          "family": "method_open",
+          "force_state": "method_open",
+          "height": 1800,
+          "width": 780,
+          "locale": "en",
+          "sha256": "139decb44ef1d0b3f1b00c63875026b553049889b9ab1fbb322344e229c8353f",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "crop_width": 390.0,
+          "viewport_css_width": 390.0,
+          "viewport_height": 900,
+          "dpr": 2.0,
+          "crop": true,
+          "crop_selector": "section.mq-method .mq-axis-method",
+          "crop_box": {
+            "x": 0.0,
+            "y": 0.0,
+            "width": 390.0,
+            "height": 900.0
+          },
+          "selector": "section.mq-method .mq-axis-method",
+          "full_page": false,
+          "device_px_span": {
+            "x0": 0,
+            "x1": 780,
+            "y0": 0,
+            "y1": 1800
+          },
+          "verified_how": "macro_labor_markets.html method details opened by click; crop section.mq-method .mq-axis-method",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "crop_box_doc": {
+            "x": 0.0,
+            "y": 2377.0,
+            "width": 390.0,
+            "height": 900.0
+          },
+          "scroll_y_at_shot": 2377.0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "element_text_head": "WEIGHTS LAW Weighted average of the parts that are present: initial-claims momen",
+          "element_text_sha256": "ce989e8fe31b4a9dadeceb24caa35ace37b6a9180a77a9c867497d339110fc48",
+          "visible_text_head": "WEIGHTS LAW Weighted average of the parts that are present: initial-claims momen",
+          "visible_text_sha256": "ce989e8fe31b4a9dadeceb24caa35ace37b6a9180a77a9c867497d339110fc48",
+          "openedBy": "click",
+          "occlusionSamples": [
+            {
+              "x": 221.6171875,
+              "y": 558.5546875,
+              "ok": true,
+              "hitTag": "SPAN",
+              "hitClass": "l-en"
+            },
+            {
+              "x": 88.046875,
+              "y": 222.68125,
+              "ok": true,
+              "hitTag": "DD",
+              "hitClass": null
+            },
+            {
+              "x": 355.1875,
+              "y": 222.68125,
+              "ok": true,
+              "hitTag": "DD",
+              "hitClass": null
+            },
+            {
+              "x": 88.046875,
+              "y": 894.428125,
+              "ok": true,
+              "hitTag": "TH",
+              "hitClass": null
+            },
+            {
+              "x": 355.1875,
+              "y": 894.428125,
+              "ok": true,
+              "hitTag": "TD",
+              "hitClass": "mq-delta mq-delta-up"
+            }
+          ],
+          "shot_route": "/macro_labor_markets.html",
+          "page_id": "macro_labor_markets.html",
+          "innerWidth": 390,
+          "innerHeight": 900
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 211797,
+          "captured": true,
+          "file": "method_open-macro_labor_markets-light-zh-390.png",
+          "family": "method_open",
+          "force_state": "method_open",
+          "height": 1800,
+          "width": 656,
+          "locale": "zh",
+          "sha256": "b3bcb4f2fd87b4c74e6d960b3d7a18e730873da885f05431fc9a25bcd5b489df",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "crop_width": 328.0,
+          "viewport_css_width": 328.0,
+          "viewport_height": 900,
+          "dpr": 2.0,
+          "crop": true,
+          "crop_selector": "section.mq-method .mq-axis-method",
+          "crop_box": {
+            "x": 31.0,
+            "y": 0.0,
+            "width": 328.0,
+            "height": 900.0
+          },
+          "selector": "section.mq-method .mq-axis-method",
+          "full_page": false,
+          "device_px_span": {
+            "x0": 62,
+            "x1": 718,
+            "y0": 0,
+            "y1": 1800
+          },
+          "verified_how": "macro_labor_markets.html method details opened by click; crop section.mq-method .mq-axis-method",
+          "fixture": "builder-payload",
+          "trigger": null,
+          "crop_box_doc": {
+            "x": 31.0,
+            "y": 2365.0,
+            "width": 328.0,
+            "height": 900.0
+          },
+          "scroll_y_at_shot": 2365.0,
+          "ihdr_delta_px": {
+            "w": 0,
+            "h": 0
+          },
+          "element_text_head": "\u6743\u91cd\u6cd5\u5219 \u6309\u5230\u4f4d\u5206\u9879\u7684\u52a0\u6743\u5e73\u5747\uff1a\u521d\u8bf7\u52a8\u91cf 40%\u3001\u804c\u4f4d\u53d1\u5e03\u52a8\u91cf 35%\u3001\u4ee3\u6263\u7a0e\u6536\u5165\u589e\u957f\u4ee3\u7406 25%\u3002 \u53d8\u6362 \u521d\u8bf7\u53d6\u53cd\uff0c\u521d\u8bf7\u5347\u9ad8\u8868\u793a\u9700\u6c42\u66f4\u5f31\u3002\u804c\u4f4d\u53d1\u5e03\u4e09\u4e2a\u6708\u53d8\u5316\u4e0e",
+          "element_text_sha256": "b6a83684b91524b4f3843baff58086dfc7ced5a3d79c9042f854ddacf5294cdd",
+          "visible_text_head": "\u6743\u91cd\u6cd5\u5219 \u6309\u5230\u4f4d\u5206\u9879\u7684\u52a0\u6743\u5e73\u5747\uff1a\u521d\u8bf7\u52a8\u91cf 40%\u3001\u804c\u4f4d\u53d1\u5e03\u52a8\u91cf 35%\u3001\u4ee3\u6263\u7a0e\u6536\u5165\u589e\u957f\u4ee3\u7406 25%\u3002 \u53d8\u6362 \u521d\u8bf7\u53d6\u53cd\uff0c\u521d\u8bf7\u5347\u9ad8\u8868\u793a\u9700\u6c42\u66f4\u5f31\u3002\u804c\u4f4d\u53d1\u5e03\u4e09\u4e2a\u6708\u53d8\u5316\u4e0e",
+          "visible_text_sha256": "b6a83684b91524b4f3843baff58086dfc7ced5a3d79c9042f854ddacf5294cdd",
+          "openedBy": "click",
+          "occlusionSamples": [
+            {
+              "x": 195,
+              "y": 475.5390625,
+              "ok": true,
+              "hitTag": "DD",
+              "hitClass": null
+            },
+            {
+              "x": 96.60000000000001,
+              "y": 189.86875,
+              "ok": true,
+              "hitTag": "SPAN",
+              "hitClass": "l-zh"
+            },
+            {
+              "x": 293.40000000000003,
+              "y": 189.86875,
+              "ok": true,
+              "hitTag": "SPAN",
+              "hitClass": "l-zh"
+            },
+            {
+              "x": 96.60000000000001,
+              "y": 761.209375,
+              "ok": true,
+              "hitTag": "SPAN",
+              "hitClass": "l-zh"
+            },
+            {
+              "x": 293.40000000000003,
+              "y": 761.209375,
+              "ok": true,
+              "hitTag": "TD",
+              "hitClass": "mq-delta mq-delta-up"
+            }
+          ],
+          "shot_route": "/macro_labor_markets.html",
+          "page_id": "macro_labor_markets.html",
+          "innerWidth": 390,
+          "innerHeight": 900
         }
       ]
     }
