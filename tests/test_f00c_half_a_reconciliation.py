@@ -50,6 +50,19 @@ LEDGER_COLUMNS = (
     "authority_ceiling", "adjudication_notes",
 )
 
+# The ONLY producer paths this packet may excuse from the on-disk check. They landed on
+# origin/main in merges (#6928, #6929) that are not ancestors of this stacked head, so
+# importing them here would breach the packet's named-files bound. Pinned in code, not
+# read from the fixture, so the fixture cannot widen the exemption: the skip below is
+# intersected with this set, and the fixture is asserted equal to it.
+STACKED_HEAD_ABSENT_PRODUCER_PATHS = frozenset(
+    {
+        "engine/uk_policy_brain.py",
+        "engine/market_ontology/exposure_map.py",
+        "engine/market_ontology/__init__.py",
+    }
+)
+
 
 def _manifest() -> dict:
     return json.loads(MANIFEST.read_text(encoding="utf-8"))
@@ -64,8 +77,14 @@ def _ledger_rows() -> dict[str, dict]:
         return {row["id"]: row for row in csv.DictReader(fh)}
 
 
-def _stacked_absent() -> set[str]:
+def _declared_absent() -> set[str]:
+    """What the fixture claims is absent at this stacked head."""
     return set(_manifest().get("stacked_head_absent_producer_paths") or ())
+
+
+def _stacked_absent() -> set[str]:
+    """The exemption actually honoured — never wider than the pinned set."""
+    return _declared_absent() & set(STACKED_HEAD_ABSENT_PRODUCER_PATHS)
 
 
 def test_manifest_exists_and_covers_the_nine_rows_once_each() -> None:
@@ -133,6 +152,25 @@ def test_producer_paths_exist_on_disk(row_id: str) -> None:
         assert on_disk, f"{row_id}: producer path {path} is missing from this worktree"
 
 
+def test_the_absent_producer_path_exemption_is_pinned_and_cannot_widen() -> None:
+    """The escape hatch is a closed set of three paths, and only the seat may move it.
+
+    Without this, `stacked_head_absent_producer_paths` is read from the same fixture the
+    suite polices, so the list could grow to cover every producer path and
+    `test_producer_paths_exist_on_disk` would assert nothing, silently.
+    """
+    declared = _declared_absent()
+    widened = sorted(declared - set(STACKED_HEAD_ABSENT_PRODUCER_PATHS))
+    assert not widened, (
+        "the stacked-head exemption may not widen; these paths are not in the pinned "
+        f"set and must exist on disk: {widened}"
+    )
+    assert declared == set(STACKED_HEAD_ABSENT_PRODUCER_PATHS), (
+        "the fixture must declare exactly the pinned exemption, got "
+        f"{sorted(declared)} != {sorted(STACKED_HEAD_ABSENT_PRODUCER_PATHS)}"
+    )
+
+
 @pytest.mark.parametrize("row_id", ROWS)
 def test_next_bounded_child_is_empty(row_id: str) -> None:
     ledger = _ledger_rows()[row_id]
@@ -159,11 +197,37 @@ def test_no_row_in_this_packet_claims_a_production_readback() -> None:
 
 
 def test_ledger_shape_is_unchanged() -> None:
+    """Column order and row width are durable; a whole-file row count is not.
+
+    This packet sits on unmerged stacked work, so a sibling records packet that adds a
+    ledger row must not red this suite for a reason unrelated to the nine rows it exists
+    to pin. What this packet owns is those nine rows, asserted by id below; the file may
+    only grow, never shrink.
+    """
     with LEDGER.open(newline="", encoding="utf-8") as fh:
         rows = list(csv.reader(fh))
     assert tuple(rows[0]) == LEDGER_COLUMNS, "the ledger's column order moved"
-    assert len(rows) == 131, f"the ledger gained or lost rows: {len(rows)} records incl. header"
     assert all(len(r) == len(LEDGER_COLUMNS) for r in rows), "a ledger row has the wrong width"
+    assert len(rows) >= 131, (
+        f"the ledger lost rows: {len(rows)} records incl. header, expected at least 131"
+    )
+    ids = [r[0] for r in rows[1:]]
+    for row_id in ROWS:
+        assert ids.count(row_id) == 1, (
+            f"{row_id}: expected exactly one ledger row, found {ids.count(row_id)}"
+        )
+    ledger = _ledger_rows()
+    for row_id in ROWS:
+        row = ledger[row_id]
+        assert row["capability_state_c2"] == "BUILT_NOT_PROVEN", (
+            f"{row_id}: capability_state_c2 is {row['capability_state_c2']!r}"
+        )
+        assert row["state_delta"].strip(), f"{row_id}: state_delta was emptied"
+        assert row["real_producer"].strip(), f"{row_id}: real_producer was emptied"
+        assert row["next_bounded_child"] == "", (
+            f"{row_id}: next_bounded_child should be empty, got "
+            f"{row['next_bounded_child']!r}"
+        )
 
 
 def test_records_doc_exists_and_names_every_row_and_both_caveats() -> None:
@@ -176,6 +240,26 @@ def test_records_doc_exists_and_names_every_row_and_both_caveats() -> None:
     assert "#6957" in text, "records document dropped the MO-PAID-004 collision flag"
     assert "BUILT_NOT_PROVEN" in text
     assert "PROVEN_LIVE" in text
+
+
+def test_the_6957_collision_is_recorded_as_file_level_not_row_level() -> None:
+    """macro#6957's live hunk is +1/-1 on MO-DELTA-008 only — it does not touch this row.
+
+    The first cut of this packet read #6957's file list rather than its hunk and recorded
+    a row-level collision on MO-PAID-004. That reading is withdrawn; the collision is real
+    but file-level. Pinned on both surfaces so it cannot drift back.
+    """
+    cell = _ledger_rows()["MO-PAID-004"]["state_delta"]
+    assert "#6957" in cell, "MO-PAID-004 must still flag the open packet on this file"
+    assert "MO-DELTA-008" in cell, "the CAUTION must name the row #6957 actually edits"
+    assert "edits this exact CSV row" not in cell, (
+        "withdrawn claim: #6957 does not edit the MO-PAID-004 row"
+    )
+    assert "file-level" in cell, "the CAUTION must say the collision is file-level"
+    doc = RECORDS_DOC.read_text(encoding="utf-8")
+    assert "MO-DELTA-008" in doc and "file-level" in doc, (
+        "the records document must carry the corrected #6957 hunk fact"
+    )
 
 
 def test_this_suite_is_not_waived() -> None:
