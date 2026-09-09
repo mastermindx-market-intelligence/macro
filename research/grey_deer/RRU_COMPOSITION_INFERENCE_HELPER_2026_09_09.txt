@@ -1,0 +1,22 @@
+def _qualify_composition_inference(result):
+    """Separate unreviewed legacy lookups from current forecasts and sizing."""
+    quality = result.get("composition") or {}
+    status = quality.get("calibration_status")
+    if status != "unreviewed_corrected_construction":
+        return result
+    reference = dict(result.get("legacy_calibration_reference") or {})
+    reference.setdefault("kind", "unreviewed_legacy_surface_lookup")
+    reference.setdefault("drawdown_prob", result.get("drawdown_prob"))
+    reference.setdefault("gross_factor", result.get("gross_factor"))
+    trajectory = result.get("trajectory")
+    if trajectory:
+        trajectory = dict(trajectory)
+        keys = ("odds_now", "odds_peak", "odds_delta")
+        reference.setdefault("trajectory_odds", {k: trajectory.get(k) for k in keys})
+        trajectory.update({k: None for k in keys})
+        trajectory["calibration_status"] = status
+        result["trajectory"] = trajectory
+    result["legacy_calibration_reference"] = reference
+    result["drawdown_prob"] = None
+    result["gross_factor"] = None
+    return result

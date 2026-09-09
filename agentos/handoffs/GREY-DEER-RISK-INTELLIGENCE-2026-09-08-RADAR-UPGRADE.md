@@ -42,6 +42,12 @@ verified:
   - claim: The new owned sparse worktree started clean with structurally valid Agent OS records.
     command: git status --porcelain; python3 scripts/agentos.py validate
     result: Baseline status empty; 1076 records, zero errors and 163 warnings in this sparse selection.
+  - claim: The current in-memory candidate passes composition, edge, raw-consumer and independent numerical checks.
+    command: python3 research/grey_deer/RRU_COMPOSITION_ACCEPTANCE_2026_09_08.py --candidate; python3 research/grey_deer/RRU_COMPOSITION_EDGE_TESTS_2026_09_08.py; python3 research/grey_deer/RRU_COMPOSITION_CONSUMER_CLOSURE_2026_09_09.py; python3 research/grey_deer/RRU_COMPOSITION_NUMERICAL_TESTS_2026_09_08.py
+    result: Native PID 71301 returned exit 0; 91 plus 8 plus 7 plus 20 tests passed, with production source unchanged.
+  - claim: Synthetic v4 card fixtures distinguish incomplete, unavailable and descriptive readings across the declared regional cases.
+    command: python3 research/grey_deer/RRU_COMPOSITION_BROWSER_2026_09_08.py
+    result: Same final chain recorded 104 passing cases and 208 screenshots; source-bound fixtures only, not production or market-performance proof.
 unverified:
   - claim: The candidate improves actual historical or current production radar output.
     what_would_verify: Pinned real-data impact replay, calibration-applicability review, normal source release and exact-bundle consumer proof.
@@ -59,11 +65,11 @@ unresolved:
   - PR 6685 remains the incumbent compact-homepage implementation; its release hold is not removed here.
   - No policy authority, new forecast promotion, automatic exit or worker placement is created by these records.
 next_actions:
-  - Consume the recovered independent review and DEC:RRU-ARITHMETIC-NEEDS-COMPOSITION-TRUTH; prepare the existing-field coverage and calibration-consumer contract before a source release.
-  - Resolve the RRU-1A source-owner/collision gate lawfully, then bind one bounded arithmetic repair under current procedure.
-  - Run pinned real-data and consumer impact before releasing corrected aggregation; preserve all original issued forecasts.
-  - Proceed to separate time/null hardening and the existing recovery-to-UI linkage with current-validity semantics.
-  - Leave PR 6685's existing owner to complete compact-homepage release; do not introduce new unrelated gates on it.
+  - Review the exact v4 composition candidate and its 126 passing tests plus 104 synthetic browser cases; do not redo the recovered contract or treat the fixture as production proof.
+  - Resolve lawful independent review, source custody and real-input calibration applicability without retrying the blocked operations or transferring an effectful writer.
+  - Close the five real sleeve-surface consumers and audit construction-identity boundary before installing the candidate through normal source ownership and publication.
+  - Preserve and expose independent recovery observations when comparison is unavailable; retained objects alone do not complete that UI journey.
+  - Continue the separate time, China gauge identity and full recovery experience waves; do not duplicate the incumbent PR 6685 homepage work.
 do_not_redo:
   - No duplicate risk engine, recovery module, envelope, episode store, grading ledger, alert queue or policy plane.
   - Do not recreate the large-panel removal already implemented in PR 6685.
@@ -216,3 +222,26 @@ bounded source implementation with actual consumer proof. No implementation work
 or production change is claimed. The new review packet, actual return, adjudication,
 proofs and decision must remain on the same6989 research branch; unread diagnostic
 outputs and interrupted empty receipts stay local and explicitly excluded.
+
+## 2026-09-09 composition-consumer continuation
+
+Current live Chairman continuation recovered local c5cef6d5c60726189805cfb35f9788db8e5dc552
+and the three dirty research scripts instead of creating another branch or losing them.
+Current procedure is Mastermind686af274d8ae1558f3f3ae35e0b3aae68be80a01, Skillpack1.0.1/bootstrap1.
+Current-main c3d7f1d4149176e35abf6077c18c96513abe6600 has the same four target source blobs
+as the pinned fixture. No production source, site, ledger, runtime or portfolio was changed.
+
+Research adjudication: `research/grey_deer/RRU_COMPOSITION_CONTINUATION_REVIEW_2026_09_09.md`.
+Final execution: `research/grey_deer/RRU_COMPOSITION_FINAL_V4_PROOF_2026_09_09.txt`.
+Browser identities: `research/grey_deer/rru_composition_browser_20260909_v4/receipt.json`.
+Five reproduced raw-consumer gaps and a later visual all-clear contradiction now pass
+in the uninstalled candidate. Old calibration lookups are explicitly retained as reference,
+not previously issued forecasts or active sizing. Existing policy authority remains unchanged.
+Independent catalysts survive unavailable comparison, but their full UI display is still owed.
+
+The new independent-review packet preparation and mutation command were platform-blocked.
+Their expected output files were confirmed ENOENT; neither operation was retried or rerouted.
+No reviewer was started and no new review/mutation PASS exists. Old unread real-data diagnostic
+outputs remain untracked and excluded. The live Executive connector is a fixture, not admission.
+The program remains PARTIAL / Draft-HOLD. No new worker, source release or production acceptance.
+The updated frontmatter next_actions supersede the older prepare-contract next-action prose.

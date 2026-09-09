@@ -130,7 +130,10 @@ def case_test(profile, case):
         if case not in ("all_missing", "old_score", "no_benchmark", "nonfinite"):
             self.assertIsNotNone(out.get("top_score"))
             self.assertIsNone(rd.get("dd21"), "Unreviewed old calibration is not a current forecast")
-            self.assertEqual(rd.get("legacy_drawdown_prob"), out.get("drawdown_prob"))
+            self.assertIsNone(out.get("drawdown_prob"))
+            self.assertIsNone(out.get("gross_factor"))
+            self.assertEqual(rd.get("legacy_drawdown_prob"),
+                             out["legacy_calibration_reference"]["drawdown_prob"])
         json.dumps(out, allow_nan=False)
     return test
 
@@ -149,13 +152,19 @@ class LegacyAcceptance(unittest.TestCase):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--bundle", type=Path)
+    parser.add_argument("--candidate", action="store_true", help="Use the existing in-memory candidate module")
     args = parser.parse_args()
     before = {path: (ROOT / path).read_bytes() for path in PATHS[:3]}
     for path, raw in before.items():
         if raw.decode() != SOURCES[path]:
             raise SystemExit(f"Current source differs from the pinned fixture: {path}")
+    if args.bundle and args.candidate:
+        parser.error("Choose either --bundle or --candidate")
     if args.bundle:
         apply_bundle(json.loads(args.bundle.read_text()))
+    if args.candidate:
+        from RRU_COMPOSITION_BUILD_BUNDLE_2026_09_08 import bundle
+        apply_bundle(bundle)
     suite = unittest.TestSuite([
         unittest.defaultTestLoader.loadTestsFromTestCase(CompositionAcceptance),
         unittest.defaultTestLoader.loadTestsFromTestCase(LegacyAcceptance)])
@@ -163,7 +172,7 @@ def main():
     unchanged = all((ROOT / p).read_bytes() == raw for p, raw in before.items())
     print(json.dumps(dict(tests=result.testsRun, failures=len(result.failures),
           errors=len(result.errors), source_unchanged=unchanged,
-          candidate=bool(args.bundle), synthetic_inputs=True)))
+          candidate=bool(args.bundle or args.candidate), synthetic_inputs=True)))
     raise SystemExit(0 if result.wasSuccessful() and unchanged else 1)
 
 if __name__ == "__main__":

@@ -27,3 +27,23 @@ Existing blocked census/result reads are not retried by this work.
 18. Test real module calls and the existing template in memory; no production source is overwritten.
 19. Acceptance includes missing groups, missing members, all missing, old score, restored inputs, non-finite values and legacy compatibility.
 20. Release still requires current source custody, independent review, real-input/calibration disposition and actual publication/browser proof.
+
+## 2026-09-09 consumer-closure amendment, before implementation
+
+Fresh actual-consumer probes found five assertion failures and one legacy-US control pass.
+The shared-card qualification is insufficient: raw probability, raw sizing, trajectory odds,
+and the real China sleeve consumer still expose unreviewed legacy-surface values. The
+incomparable recovery return also discards independent observed catalysts.
+
+For this still-uninstalled candidate, current forecast/sizing fields become unavailable.
+Retain the old surface lookup under an explicitly named `legacy_calibration_reference`,
+not as a previously issued historical forecast: it is a lookup using today's candidate state.
+Keep descriptive intensity/trajectory, and preserve independent catalyst objects when the
+composite comparison is unavailable. No such object confirms recovery or releases a policy.
+The real sleeve consumer must not turn unavailable calibration into Sleeve x1.00.
+Legacy artifacts lacking composition metadata keep their original semantics exactly.
+
+Do not rewrite `can_force`, `authority`, any previously published artifact, or a forward ledger.
+This candidate does NOT settle the audit/eligibility owner's construction-identity gate or
+prove that withholding a new inferred sizing field preserves every downstream policy.
+Source installation/release remains held until those real consumers and independent review pass.

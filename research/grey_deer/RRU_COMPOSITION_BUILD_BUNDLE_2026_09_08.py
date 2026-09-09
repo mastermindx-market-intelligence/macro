@@ -114,3 +114,77 @@ change(p, '      {% if rd.amp and rd.amp > 0 %}', coverage + '      {% if rd.amp
 # The separately reproduced snapshot failure must carry the same unavailable contract.
 change(PATHS[0], '                "market": getattr(profile, "key", None), "degraded_reason": "compute_error",',
        '                "market": getattr(profile, "key", None), "degraded_reason": "compute_error",\n                "composition": _composition_coverage(profile, {}, None, []),', ["snapshot"])
+
+# The edge suite rejects a calm checkmark on an incomplete current reading.
+p = PATHS[3]
+change(p, '{%- set _unknown = _q and not _q.score_current -%}', '''{%- set _unknown = _q and not _q.score_current -%}
+{%- set _partial = _q and _q.status == 'PARTIAL' -%}
+{%- set _limited = _unknown or _partial -%}''')
+change(p, "'var(--muted)' if _unknown else", "'var(--muted)' if _limited else")
+change(p, "'—' if _unknown else", "'—' if _limited else")
+change(p, "{{ t('Reading unavailable','读数暂缺') if _unknown else t(rd.state|upper, rd.state_zh) }}",
+       "{{ t('Reading unavailable','读数暂缺') if _unknown else (t('Partial reading','输入不完整') if _partial else t(rd.state|upper, rd.state_zh)) }}")
+change(p, 'class="rrx rrx-{{ rd.state }}',
+       'class="rrx rrx-{{ \'unavailable\' if _unknown else (\'partial\' if _partial else rd.state) }}')
+
+# 2026-09-09: close the five reproduced raw-consumer gaps; still research-only.
+p = PATHS[0]
+inference_helper = (HERE / "RRU_COMPOSITION_INFERENCE_HELPER_2026_09_09.txt").read_text().rstrip("\n") + "\n\n"
+change(p, "def compute(profile:", inference_helper + "def compute(profile:",
+       ["_qualify_composition_inference"])
+change(p, '    return {\n        "schema": "risk_radar_intl.v1",',
+       '    return _qualify_composition_inference({\n        "schema": "risk_radar_intl.v1",')
+change(p, '        "disclaimer": effective_disclaimer,\n    }\n\n\ndef snapshot',
+       '        "disclaimer": effective_disclaimer,\n    })\n\n\ndef snapshot')
+change(PATHS[1], '    legacy_dp = dp if reference_only else None',
+       '    legacy_dp = ((rr.get("legacy_calibration_reference") or {}).get("drawdown_prob", dp) if reference_only else None)')
+old = '''            return {"present": False, "assessment_status": "unavailable",
+                    "degraded_reason": "composition_not_comparable"}'''
+new = '''            market = rr.get("market") or "us"
+            cats = _liquidity_catalysts(latest, market)
+            mkt = _market_catalysts(latest) if market == "us" else None
+            return {"present": False, "assessment_status": "unavailable",
+                    "degraded_reason": "composition_not_comparable",
+                    "catalysts": cats, "market": mkt,
+                    "n_catalysts": len(cats), "n_fresh": sum(bool(c.get("fresh")) for c in cats),
+                    "receding": False, "turn_confirmed": False,
+                    "turn_confirmed_full": False if market == "us" else None}'''
+change(PATHS[2], old, new)
+old = '''        r = snapshot(CN_PROFILE, root)
+        state = r.get("state") or "unknown"'''
+new = '''        r = snapshot(CN_PROFILE, root)
+        quality = r.get("composition") or {}
+        if quality.get("calibration_status") == "unreviewed_corrected_construction":
+            return {
+                "sleeve_factor": None, "sleeve_status": "unavailable",
+                "radar_state": r.get("state"), "radar_as_of": r.get("asof"),
+                "can_force": bool(r.get("can_force", False)),
+                "composition": quality,
+                "legacy_calibration_reference": r.get("legacy_calibration_reference"),
+                "label_en": "Sizing unavailable — forecast calibration under review",
+                "label_zh": "仓位建议暂缺 — 预测校准待核验",
+                "dominant_driver_en": r.get("dominant_label_en"),
+                "dominant_driver_zh": r.get("dominant_label_zh"),
+                "passport": {"basis": "descriptive", "validation": None,
+                    "display_only": True, "degraded": True,
+                    "note": "Descriptive context only; not a current sizing instruction."},
+            }
+        state = r.get("state") or "unknown"'''
+change(PATHS[0], old, new, ["cn_sleeve_chip"])
+
+# Visual review found a complete-input all-clear despite unreviewed calibration.
+p = PATHS[3]
+change(p, "{%- set _limited = _unknown or _partial -%}",
+       "{%- set _unreviewed = _q and _q.calibration_status == 'unreviewed_corrected_construction' -%}\n{%- set _limited = _unknown or _partial or _unreviewed -%}")
+change(p, "else t(rd.state|upper, rd.state_zh)) }}",
+       "else (t('Descriptive reading','描述性读数') if _unreviewed else t(rd.state|upper, rd.state_zh))) }}")
+change(p, "('partial' if _partial else rd.state)",
+       "('partial' if _partial else ('descriptive' if _unreviewed else rd.state))")
+change(PATHS[1], 'else rr.get("dominant_label_en") or "calm")),',
+       'else ("Input-based reading; forecast calibration under review" if reference_only else rr.get("dominant_label_en") or "calm"))),')
+change(PATHS[1], 'else rr.get("dominant_label_zh") or "平静")),',
+       'else ("输入驱动的读数；预测校准待核验" if reference_only else rr.get("dominant_label_zh") or "平静"))),')
+change(p, "'Pullback-risk gauge. Use high readings to trim risk, not to pick stocks.'",
+       "'Descriptive input-based reading; not a calibrated forecast or sizing instruction.' if _unreviewed else 'Pullback-risk gauge. Use high readings to trim risk, not to pick stocks.'")
+change(p, "'回撤风险仪表。高读数用于降风险，不用于选股。'",
+       "'输入驱动的描述性读数，并非经校准的预测或仓位指令。' if _unreviewed else '回撤风险仪表。高读数用于降风险，不用于选股。'")
