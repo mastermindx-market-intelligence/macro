@@ -432,7 +432,7 @@ def _contract(**over) -> dict:
                 "check": "R1",
                 "description": "security_master row exists, security_state/superseded_by both null",
                 "artifact": "data/reference/security_master.parquet",
-                "reader": "scripts/build_stock_library.py::_read_security_state_identity_rows",
+                "reader": "scripts/security_state_producer.py::_read_security_state_identity_rows",
                 "values_read": [
                     {"field": "row_present", "value": True},
                     {"field": "security_state", "value": None},
@@ -1071,22 +1071,24 @@ def test_identity_disclosure_renders_a_plain_bilingual_sentence_not_the_raw_code
 
 
 def test_every_compile_path_refusal_code_has_house_copy_with_no_prettify_fallback() -> None:
-    """`engine/security_state.py` emits eight distinct refusal codes on its
+    """`engine/security_state.py` emits nine distinct refusal codes on its
     compile path (`identity_proof.refusals`, both `compile_security_state`'s
     R1..R8 gates and `compile_security_state_failure`'s M1/M2 shells). Every
     one of them must have a `_SS_GATES` house-copy entry carrying a REAL,
     distinct EN/ZH sentence. The code set is extracted from the engine
     source by regex, not hand-copied, so this test cannot go stale silently
     if a new refusal code is added there without a matching entry here
-    (macro#6920 round-3 review MAJOR-1).
+    (macro#6920 round-3 review MAJOR-1; heal-round h2 adds OWNER_IDENTITY_UNREAD).
 
-    Before this fix, only two of the eight codes (`COMPILER_FAILURE`,
+    Before this fix, only two of the eight then-known codes (`COMPILER_FAILURE`,
     `IDENTITY_UNRESOLVED`) had a `_SS_GATES` entry; the other six
     (`SECURITY_SUPERSEDED`, `ISSUER_GROUP_AMBIGUOUS`,
     `LISTING_KEY_INCOHERENT`, `IDENTITY_CORRECTED`,
     `SUBJECT_NATIVE_PARITY_FAILED`, `IDENTITY_BRIDGE_DISAGREEMENT`) fell
     through to `_ss_prettify(code)` for BOTH slots — the same English words
-    duplicated into the field the page treats as Chinese.
+    duplicated into the field the page treats as Chinese. Main later added
+    `OWNER_IDENTITY_UNREAD`; without a ninth house-copy entry the same
+    prettify fallback would print English slug words in EN and ZH.
     """
     from scripts.build_ticker_pages import _SS_GATES, _ss_prettify
 
@@ -1128,7 +1130,7 @@ def test_every_compile_path_refusal_code_has_house_copy_with_no_prettify_fallbac
     assert codes == {
         "SECURITY_SUPERSEDED", "IDENTITY_UNRESOLVED", "ISSUER_GROUP_AMBIGUOUS",
         "LISTING_KEY_INCOHERENT", "IDENTITY_CORRECTED", "SUBJECT_NATIVE_PARITY_FAILED",
-        "IDENTITY_BRIDGE_DISAGREEMENT", "COMPILER_FAILURE",
+        "IDENTITY_BRIDGE_DISAGREEMENT", "COMPILER_FAILURE", "OWNER_IDENTITY_UNREAD",
     }, (
         f"engine/security_state.py's emitted refusal-code set changed: {sorted(codes)} — "
         "this test's extraction regex and its house-copy coverage below must be updated together"
@@ -1163,6 +1165,40 @@ def test_every_compile_path_refusal_code_has_house_copy_with_no_prettify_fallbac
             f"{code}: rendered refusal does not match its _SS_GATES house copy: {refusal!r}"
         )
         assert refusal["en"] != pretty, f"{code}: rendered refusal fell back to the bare prettification"
+
+
+def test_ss_gates_and_leg_desc_user_facing_copy_has_no_batch_machine_words() -> None:
+    """macro#6920 heal-round h2 R3: user-facing `_SS_GATES` / `_SS_LEG_DESC`
+    strings must not say "batch" / "批处理". Those are pipeline nouns, not
+    what the reader is looking at. RED at 3ac3bb2f because IDENTITY_UNRESOLVED
+    clear_en/clear_zh and the R8 IDENTITY_UNRESOLVED leg description used both.
+    """
+    from scripts.build_ticker_pages import _SS_GATES, _SS_LEG_DESC
+
+    banned_ascii = ("batch",)
+    banned_zh = ("批处理",)
+    for code, entry in _SS_GATES.items():
+        for slot, text in entry.items():
+            hay = str(text)
+            for word in banned_ascii:
+                assert word not in hay.lower(), (
+                    f"_SS_GATES[{code!r}][{slot!r}] contains {word!r}: {hay!r}"
+                )
+            for word in banned_zh:
+                assert word not in hay, (
+                    f"_SS_GATES[{code!r}][{slot!r}] contains {word!r}: {hay!r}"
+                )
+    for key, entry in _SS_LEG_DESC.items():
+        for slot, text in entry.items():
+            hay = str(text)
+            for word in banned_ascii:
+                assert word not in hay.lower(), (
+                    f"_SS_LEG_DESC[{key!r}][{slot!r}] contains {word!r}: {hay!r}"
+                )
+            for word in banned_zh:
+                assert word not in hay, (
+                    f"_SS_LEG_DESC[{key!r}][{slot!r}] contains {word!r}: {hay!r}"
+                )
 
 
 def test_unmapped_disclosure_code_keeps_the_engine_description_not_a_prettified_slug() -> None:
@@ -1217,7 +1253,7 @@ def test_m1_shell_gate_description_renders_a_real_bilingual_sentence() -> None:
             "description": "owner-identity batch was unavailable this cycle; subject is the "
             "frozen pinned allowlist mapping for this ticker, never a live owner read",
             "artifact": "SecurityStateSubject (frozen pinned allowlist config, not a producer owner receipt)",
-            "reader": "scripts/build_stock_library.py::_read_security_state_identity_rows",
+            "reader": "scripts/security_state_producer.py::_read_security_state_identity_rows",
             "values_read": [{"field": "subject_ticker_display", "value": "MSFT"}],
             "result": "fail", "code": "IDENTITY_UNRESOLVED",
         }],

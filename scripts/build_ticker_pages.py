@@ -3515,8 +3515,8 @@ _SS_GATES: dict[str, dict[str, str]] = {
     # English-into-ZH `_ss_prettify` fallback.
     "IDENTITY_UNRESOLVED": {
         "en": "Identity could not be re-proven this cycle", "zh": "本周期未能重新确认身份",
-        "clear_en": "The owner identity batch runs again on the next scheduled cycle.",
-        "clear_zh": "来源身份批处理将在下一次计划周期重新运行。",
+        "clear_en": "The owner identity is read again on the next data update.",
+        "clear_zh": "所有者身份将在下一次数据更新时重新读取。",
     },
     # Chairman plain-language law (2026-09-06), macro#6920 round-3 review
     # MAJOR-1: `engine/security_state.py` emits eight distinct refusal codes
@@ -3560,6 +3560,16 @@ _SS_GATES: dict[str, dict[str, str]] = {
         "zh": "各来源对该证券的身份存在分歧",
         "clear_en": "Every source agrees on this identity again.",
         "clear_zh": "各来源对该身份重新达成一致。",
+    },
+    # Heal-round h2 (META-CEO B 2026-09-09): main's failure shell emits
+    # OWNER_IDENTITY_UNREAD (engine/security_state.py compile_security_state_failure
+    # owner_unread branch). Without this entry, both language slots fall through
+    # to `_ss_prettify` and print English slug words in EN and ZH.
+    "OWNER_IDENTITY_UNREAD": {
+        "en": "We could not read who owns this security, so this page does not name an owner.",
+        "zh": "我们无法读取该证券的所有者信息，因此本页不显示所有者。",
+        "clear_en": "The owner identity is read again on the next data update.",
+        "clear_zh": "所有者身份将在下一次数据更新时重新读取。",
     },
 }
 
@@ -3611,10 +3621,15 @@ _SS_DISCLOSURES: dict[str, dict[str, str]] = {
 # not something this PR's own new text may hide behind.
 _SS_LEG_DESC: dict[tuple[str, str], dict[str, str]] = {
     ("R8", "IDENTITY_UNRESOLVED"): {
-        "en": "This cycle's owner-identity batch was unavailable; this subject is the frozen "
+        "en": "This cycle could not re-read who owns this security; this subject is the frozen "
         "pinned-allowlist mapping for this ticker, not a live owner read.",
-        "zh": "本周期所有者身份批处理不可用；本证券主体为该股票代码的冻结准入映射，"
+        "zh": "本周期未能重新读取该证券的所有者；本证券主体为该股票代码的冻结准入映射，"
         "并非实时读取的所有者身份数据。",
+    },
+    ("R8", "OWNER_IDENTITY_UNREAD"): {
+        "en": "This cycle could not read who owns this security; no owner source ran, so this "
+        "page keeps only the frozen ticker and registration number.",
+        "zh": "本周期无法读取该证券的所有者；未运行所有者来源，因此本页仅保留冻结的股票代码与注册编号。",
     },
 }
 
