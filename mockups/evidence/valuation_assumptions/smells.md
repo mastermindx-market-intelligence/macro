@@ -2,12 +2,11 @@
 
 _Heuristics identify review targets; they do not determine that a page is bad._
 
-Generated 2026-09-09T12:00:00Z · schema `mastermind.ux_smell_report.v1`
+Generated 2026-09-09T11:48:29Z · schema `mastermind.ux_smell_report.v1`
 
 | route | page_id | words | h1 | panels | height px | h-overflow | slug hits | TODO hits | as-of | source | shots |
 | --- | --- | ---: | ---: | ---: | ---: | :---: | ---: | ---: | :---: | :---: | ---: |
-| /stocks-thin/AAPL.html | stocks-thin_AAPL.html | 303 | 0 | 4 | 1440 | no | 0 | 0 | no | yes | 1.0 |
-| /stocks/AAPL.html | stocks_AAPL.html | 315 | 0 | 4 | 1518 | no | 0 | 0 | no | yes | 1.0 |
+| /stocks/AAPL.html | stocks_AAPL.html | 1171 | 1 | 7 | 6654 | no | 0 | 0 | yes | yes | 1.0 |
 
 ## Metric notes
 
