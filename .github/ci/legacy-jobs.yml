@@ -1338,6 +1338,15 @@ jobs:
       # fixture dicts only. Own step per this job's precedent (step = masking unit).
       - name: security_state.v1 view-model projection (B1A)
         run: python -m pytest tests/test_security_state_view_model.py -q
+      # B-F07-2 closure 2026-09-09: tests/test_valuation_assumptions.py T5 asserts
+      # `shutil.which("node")` and HARD-FAILS when node is absent (a skipped
+      # Python/JS parity gate is worse than none). This job installed only
+      # actions/setup-python, so it passed on the ubuntu image's ambient node —
+      # unpinned, and a runner-image change would have turned it red with no
+      # local cause. Pin it explicitly, before the pytest steps that need it.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
       - name: valuation scenario V1 + user-adjustable assumptions (B-F07-1 / B-F07-2)
         run: >
           python -m pytest

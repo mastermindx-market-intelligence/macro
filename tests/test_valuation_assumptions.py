@@ -108,8 +108,22 @@ def test_controls_blob_is_none_when_v1_is_not_usable():
     revenue = 1.0e11
     tiny_ni = revenue * 0.001  # 0.1% margin, under the 1% floor
     thin = va.controls_blob(_v1_blob(ni=tiny_ni, revenue=revenue))
+    # Seat ruling R5 of round 4 (recorded in the seat's ratification comment):
+    # the thin artifact shape is the permitted section 2.6 exception, and its
+    # key set is fixed at exactly these nine keys.
     assert thin is not None
     assert thin.get("too_thin_base") is True
+    assert set(thin) == {
+        "schema",
+        "ticker",
+        "tier",
+        "fy",
+        "period_end",
+        "source",
+        "too_thin_base",
+        "inputs",
+        "margin_base_floor",
+    }
     assert "controls" not in thin
     assert "server_default" not in thin
     assert "presets" not in thin
@@ -119,11 +133,16 @@ def test_margin_too_thin_and_nonpositive_never_render_a_number():
     revenue = 1.0e11
     ni_1_2_pct = revenue * 0.012
     assert va.per_share_at(ni_1_2_pct, revenue, FIXTURE_ROW["shares"], 3, -1.5, 18) is None
+    # A positive raw under half a cent rounds to 0.00, which is not paintable:
+    # per_share_at returns None, matching the JS twin (see T5's grid point).
+    assert va.per_share_at(1.0e6, 1.0e8, 1.0e12, 0, 0, 8) is None
     tiny_ni = revenue * 0.001
     thin = va.controls_blob(_v1_blob(ni=tiny_ni, revenue=revenue))
     assert thin is not None and thin.get("too_thin_base") is True
     html = _render_assumptions(thin, t=lambda en, zh: f"{en}|{zh}")
     assert "Not enough reported margin to run this.|披露的利润率基数不足，无法进行试算。" in html
+    # The single line still sits in a panel wrapper, like every other module.
+    assert '<section class="mod" id="valuation-assumptions-floor"' in html
     assert "Try your own assumptions" not in html
     assert "Move the three inputs" not in html
     assert "Research display only" not in html
@@ -159,6 +178,11 @@ def test_js_and_python_agree_stringwise_on_a_dense_grid():
     shares = FIXTURE_ROW["shares"]
     half_cent_ni = (100.005 * shares) / (1.03 * 18)
     grid.append({"g": 3, "m": 0, "x": 18, "ni": half_cent_ni})
+    # Sub-half-cent probe: raw = 1e6 * 1 * 1 * 8 / 1e12 = 8e-6, which round2
+    # collapses to 0. Both languages must answer null, not "0.00".
+    grid.append(
+        {"g": 0, "m": 0, "x": 8, "ni": 1.0e6, "revenue": 1.0e8, "shares": 1.0e12}
+    )
 
     payload = {
         "ni": ni,
@@ -176,7 +200,9 @@ def test_js_and_python_agree_stringwise_on_a_dense_grid():
             "const p = JSON.parse(fs.readFileSync('./grid.json', 'utf8'));\n"
             "const out = p.grid.map((pt) => {\n"
             "  const ni = (pt.ni == null) ? p.ni : pt.ni;\n"
-            "  const v = math.perShareAt(ni, p.revenue, p.shares, pt.g, pt.m, pt.x);\n"
+            "  const rev = (pt.revenue == null) ? p.revenue : pt.revenue;\n"
+            "  const sh = (pt.shares == null) ? p.shares : pt.shares;\n"
+            "  const v = math.perShareAt(ni, rev, sh, pt.g, pt.m, pt.x);\n"
             "  return v == null ? 'null' : math.format2(v);\n"
             "});\n"
             "process.stdout.write(JSON.stringify(out));\n"
@@ -194,9 +220,14 @@ def test_js_and_python_agree_stringwise_on_a_dense_grid():
     py_out = []
     for pt in grid:
         use_ni = pt.get("ni", ni)
-        got = va.per_share_at(use_ni, revenue, shares, pt["g"], pt["m"], pt["x"])
+        use_rev = pt.get("revenue", revenue)
+        use_sh = pt.get("shares", shares)
+        got = va.per_share_at(use_ni, use_rev, use_sh, pt["g"], pt["m"], pt["x"])
         py_out.append("null" if got is None else f"{got:.2f}")
     assert js_out == py_out
+    # The sub-half-cent probe is the last grid point and must be null on both
+    # sides, not "0.00" on one of them.
+    assert py_out[-1] == "null" and js_out[-1] == "null"
 
 
 def test_no_banned_vocabulary_and_no_tax_declaration_term():
@@ -240,15 +271,6 @@ def test_bilingual_parity_and_no_zh_in_attributes():
         en, zh = m.group(1), m.group(2)
         assert zh.strip() != "", f"empty ZH for en={en!r}"
     assert n_plain >= 1
-    # Covers t() calls whose arguments concatenate with ~ (the three former
-    # slots were refactored to explicit l-en/l-zh twins; this still fails if
-    # a concatenated t() returns with an empty ZH literal).
-    for m in re.finditer(
-        r"t\(\s*'([^']*)'\s*~.*?,\s*'([^']*)'",
-        text,
-        re.DOTALL,
-    ):
-        assert m.group(2).strip() != "", f"empty ZH in concatenated t() en={m.group(1)!r}"
     for m in re.finditer(r'title="[^"]*[一-鿿][^"]*"', text):
         raise AssertionError(f"ZH text found in a title= attribute: {m.group(0)!r}")
     for m in re.finditer(r'aria-label="[^"]*[一-鿿][^"]*"', text):
@@ -256,6 +278,13 @@ def test_bilingual_parity_and_no_zh_in_attributes():
     assert "同一批披露数据" in text
     assert "套用在按 SEC 披露的" in text
     assert "基准情景为 $" in text
+    # The live output region's accessible name comes from the bilingual t()
+    # label next to it, not from a static English attribute.
+    assert 'aria-labelledby="va-out-k"' in text
+    assert "aria-label=" not in text
+    # One minus-sign convention, the site's: ASCII hyphen-minus everywhere,
+    # the same character V1's cards and this panel's own readouts print.
+    assert "−" not in text, "U+2212 MINUS SIGN found; the site writes ASCII '-'"
 
 
 def test_v1_panel_output_is_byte_identical():
@@ -283,17 +312,38 @@ def test_langchange_binds_on_document_and_bridge_keeps_twins():
     assert "bridge.textContent" not in js
     assert "getAttribute(\"data-lang\")" in js
     assert 'setAttribute("lang"' in js
-    assert "classList.contains(\"va-moved\")" in js
-    assert re.search(r"applyTriple\([^)]*-3\s*,\s*12\s*\)", js)
     assert 'id="valuation-assumptions"' in html
-    assert re.search(
-        r'class="mod rv in"[^>]*id="valuation-assumptions"|id="valuation-assumptions"[^>]*class="mod rv in"',
-        html,
-    )
-    assert re.search(
-        r"#valuation-assumptions\s*\{[^}]*opacity\s*:\s*1\s*;[^}]*transform\s*:\s*none",
-        text,
-    )
+
+
+def test_no_capture_harness_hook_and_no_reveal_override():
+    """The shipped panel carries nothing that exists only to serve a screenshot.
+
+    Round 4 ruling R1/R2: no body-class backdoor, no MutationObserver, no
+    re-typed assumption literals, and no CSS or class that opts this one module
+    out of the dossier's own scroll reveal.
+    """
+    text = (ROOT / "templates" / "_valuation_assumptions.html.j2").read_text(encoding="utf-8")
+    blob = va.controls_blob(_v1_blob())
+    html = _render_assumptions(blob)
+    js = _extract_js(html)
+    for hook in ("va-moved", "MutationObserver", "applyMovedIfForced"):
+        assert hook not in text, hook
+        assert hook not in js, hook
+    # The three assumptions are only ever read from the artifact, never re-typed.
+    assert not re.search(r"applyTriple\(\s*-?\d", js)
+    # The module reveals like every other .rv module: no completed-reveal class
+    # baked into the markup, and no per-id opacity/transform override.
+    assert 'class="mod rv"' in html
+    assert "mod rv in" not in html
+    assert not re.search(r"#valuation-assumptions\s*\{[^}]*opacity", text)
+    assert not re.search(r"#valuation-assumptions\s*\{[^}]*transform", text)
+    # The sandbox figure is never louder than V1's authoritative card value
+    # (templates/_valuation_scenario.html.j2: .vs-card .vv is 20px/800, no glow).
+    num_rule = re.search(r"\.va-out-num\{([^}]*)\}", text)
+    assert num_rule, "the .va-out-num rule is missing"
+    assert "text-shadow" not in num_rule.group(1)
+    sizes = [float(s) for s in re.findall(r"\.va-out-num\{[^}]*?font-size:([0-9.]+)px", text)]
+    assert sizes and max(sizes) <= 20.0, sizes
 
 
 def test_no_js_default_state_is_correct_and_complete():

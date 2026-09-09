@@ -86,7 +86,13 @@ def per_share_at(ni, revenue, shares, g, m_pp, mult):
     raw = ni_f * (1 + g_f / 100.0) * (1 + (m_f / 100.0) / net_margin_base) * mult_f / sh_f
     if raw != raw or raw <= 0 or raw == float("inf"):
         return None
-    return round2(raw)
+    out = round2(raw)
+    # round2 collapses a positive sub-half-cent raw to 0.0, and 0.00 is not a
+    # paintable per-share value. Return None, which is what the JS twin returns
+    # at the same point, so the two languages cannot disagree there.
+    if out is None or out <= 0:
+        return None
+    return out
 
 
 def _num(v):
