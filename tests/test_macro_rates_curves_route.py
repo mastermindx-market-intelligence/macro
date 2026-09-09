@@ -818,7 +818,6 @@ def test_12_no_import_of_yield_curve_engine() -> None:
         "engine.yield_curve",
         "engine.rates_inflation_command",
         "engine.yield_momentum",
-        "scripts.build_bonds",
         "from engine import yield_curve",
         "import yield_curve",
     )
@@ -834,6 +833,7 @@ def test_12_no_import_of_yield_curve_engine() -> None:
         text = path.read_text(encoding="utf-8")
         for token in forbidden:
             assert token not in text, f"{rel} imports {token}"
+        assert "build_bonds" not in text, rel
     # sys.modules assertion: building the rates_curves view must not load those
     # engines. Clear the probes first so this measures the view builder, not
     # any earlier import in the process.
@@ -841,7 +841,6 @@ def test_12_no_import_of_yield_curve_engine() -> None:
         "engine.yield_curve",
         "engine.rates_inflation_command",
         "engine.yield_momentum",
-        "scripts.build_bonds",
     )
     for mod in probes:
         sys.modules.pop(mod, None)
@@ -1340,15 +1339,6 @@ def _macro_suite_pages_job() -> dict[str, Any]:
     return job
 
 
-def _credit_desk_job() -> dict[str, Any]:
-    raw = yaml.safe_load(
-        (ROOT / ".github" / "ci" / "legacy-jobs.yml").read_text(encoding="utf-8")
-    )
-    job = raw["jobs"]["ccw-w4-credit-desk"]
-    assert isinstance(job, dict)
-    return job
-
-
 def test_packet_suite_is_the_first_pytest_step_in_the_job() -> None:
     job = _macro_suite_pages_job()
     steps = job["steps"]
@@ -1370,19 +1360,8 @@ def test_t11_site_pages_are_listed_in_the_exclusive_job_paths() -> None:
     paths = list(job["paths"])
     for rel in T11_SITE_PAGES:
         assert rel in paths, rel
-    assert "site/bonds.html" not in paths
-    assert "tests/test_macro_rates_curves_bonds_guard.py" not in paths
-
-
-def test_t10_lives_on_the_pandas_job() -> None:
-    job = _credit_desk_job()
-    runs = "\n".join(str(s.get("run") or "") for s in job["steps"])
-    assert "tests/test_macro_rates_curves_bonds_guard.py" in runs
-    paths = list(job["paths"])
-    assert "site/bonds.html" in paths
-    assert "scripts/build_bonds.py" in paths
-    assert "templates/bonds.html.j2" in paths
-    assert "tests/test_macro_rates_curves_bonds_guard.py" in paths
+    assert all(not p.endswith("bonds.html") for p in paths)
+    assert all("bonds_guard" not in p for p in paths)
 
 
 def test_shape_inverted_both_carries_a_gloss() -> None:

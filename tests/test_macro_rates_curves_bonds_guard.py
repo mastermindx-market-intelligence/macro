@@ -21,6 +21,7 @@ from datetime import datetime as _dt
 from pathlib import Path
 
 import pytest
+import yaml
 
 from lib.pages import externalize_css_text
 from scripts import build_bonds
@@ -234,3 +235,17 @@ def test_10_bonds_hub_page_builds_to_the_committed_bytes(tmp_path, monkeypatch) 
         )
     finally:
         _restore_bonds_dir(existed, snapshot)
+
+
+def test_t10_lives_on_the_pandas_job() -> None:
+    raw = yaml.safe_load(
+        (ROOT / ".github" / "ci" / "legacy-jobs.yml").read_text(encoding="utf-8")
+    )
+    job = raw["jobs"]["ccw-w4-credit-desk"]
+    runs = "\n".join(str(s.get("run") or "") for s in job["steps"])
+    assert "tests/test_macro_rates_curves_bonds_guard.py" in runs
+    paths = list(job["paths"])
+    assert "site/bonds.html" in paths
+    assert "scripts/build_bonds.py" in paths
+    assert "templates/bonds.html.j2" in paths
+    assert "tests/test_macro_rates_curves_bonds_guard.py" in paths
