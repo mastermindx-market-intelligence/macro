@@ -166,3 +166,161 @@ def test_history_with_today_appends_a_missing_session_and_folds_synthetics():
                                   {"a1": {"1W": 2.0}, "synthetic": {"1W": 3.0}}, "2026-07-30")
     assert [r["asof"] for r in rows] == ["2026-07-29", "2026-07-30"]
     assert "synthetic" in rows[-1]["subsectors"]
+
+
+# China keeps monthly member selection but must not discard current weekly evidence.
+def _china_rotation_inputs():
+    from engine import subsector_rotation_china as cn
+    members = [{"symbol": f"60000{i}.SS", "name": f"Member {i}",
+                "ret_20d": 0.30 - i * 0.01, "ret_5d": (2 - i) * 0.01,
+                "price_asof": "2026-09-07", "ret_5d_asof": "2026-09-07"}
+               for i in range(10)]
+    basket = {"id": "concept", "name": "Concept", "name_zh": "概念",
+              "category": "Technology", "category_zh": "科技",
+              "n_members": 10, "members": members,
+              "perf": {h: {"ret": 0.05} for h in ("1d", "5d", "20d", "60d", "mtd", "ytd")}}
+    source = {"as_of": "2026-09-07", "baskets": [basket], "chart": {"baskets": {}}}
+    return cn, source, {"as_of": "2026-09-07", "baskets": [], "chart": {"baskets": {}}}
+
+
+def test_china_weekly_member_returns_reach_the_existing_feed():
+    cn, source, curated = _china_rotation_inputs()
+    out = cn.compute_china_rotation(source, curated)
+    members = out["subsectors"][0]["members"]
+    assert len(members) == 8 and out["subsectors"][0]["n_members"] == 10
+    assert [m["t"] for m in members] == [f"60000{i}.SS" for i in range(8)]
+    assert [m["1W"] for m in members[:4]] == [2.0, 1.0, 0.0, -1.0]
+    assert all(m["price_asof"] == "2026-09-07" for m in members)
+    assert all(m["1W_asof"] == "2026-09-07" for m in members)
+
+
+def test_china_weekly_requires_matching_observation_evidence():
+    import copy
+    cn, source, curated = _china_rotation_inputs()
+    defects = [{"ret_5d_asof": None}, {"price_asof": None},
+               {"ret_5d_asof": "2026-09-04"}, {"price_asof": "2026-09-04"},
+               {"price_asof": "2026-09-08"}, {"ret_5d_asof": "invalid"},
+               {"ret_5d": None}, {"ret_5d": True}, {"ret_5d": "0.1"},
+               {"ret_5d": float("nan")}, {"ret_5d": float("inf")}]
+    for defect in defects:
+        data = copy.deepcopy(source)
+        data["baskets"][0]["members"][0].update(defect)
+        member = cn.compute_china_rotation(data, curated)["subsectors"][0]["members"][0]
+        assert member["1W"] is None, defect
+        assert member["1W_asof"] is None, defect
+        assert member["1M"] == 30.0
+    legacy = copy.deepcopy(source)
+    for member in legacy["baskets"][0]["members"]:
+        member.pop("price_asof")
+        member.pop("ret_5d_asof")
+    assert all(m["1W"] is None for m in
+               cn.compute_china_rotation(legacy, curated)["subsectors"][0]["members"])
+
+
+def test_china_weekly_does_not_reorder_groups_or_monthly_member_sample():
+    import copy
+    cn, source, curated = _china_rotation_inputs()
+    before = cn.compute_china_rotation(source, curated)
+    saved = copy.deepcopy(source)
+    changed = copy.deepcopy(source)
+    for member in changed["baskets"][0]["members"]:
+        member["ret_5d"] = -0.9
+    after = cn.compute_china_rotation(changed, curated)
+    for payload in [before, after]:
+        for sub in payload["subsectors"]:
+            for member in sub["members"]:
+                member.pop("1W")
+                member.pop("1W_asof")
+    assert before == after
+    assert source == saved
+
+
+def test_china_detail_builder_renders_weekly_and_missing_dates(tmp_path):
+    import json
+    from scripts import build_subsector_rotation_china_pages as pages
+    cn, source, curated = _china_rotation_inputs()
+    source["baskets"][0]["members"][1]["price_asof"] = "2026-09-04"
+    source["baskets"][0]["members"][2]["price_asof"] = None
+    payload = cn.compute_china_rotation(source, curated)
+    path = tmp_path / "marketdata" / "subsector_rotation_china.json"
+    path.parent.mkdir()
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    assert pages.build(site=tmp_path) == 1
+    html = (tmp_path / "rotation_china" / "concept.html").read_text()
+    assert "1W" in html and "1周" in html and "1M" in html
+    assert "2026-09-07" in html and "2026-09-04" in html
+    assert "Date unavailable" in html and "日期缺失" in html
+    # The shared bilingual macro wraps each language in separate spans. Test
+    # rendered text rather than requiring its markup to contain one raw phrase.
+    import re
+    meta = html.split('<div class="sd-member-meta">', 1)[1].split("</div>", 1)[0]
+    def visible(language):
+        hidden = "zh" if language == "en" else "en"
+        markup = re.sub(r'<span class="l-' + hidden + r'">.*?</span>', "", meta, flags=re.S)
+        return " ".join(re.sub(r"<[^>]+>", "", markup).split())
+    assert "8 of 10 shown" in visible("en")
+    assert "8 / 10只" in visible("zh")
+    assert "china_lookup.html#600000.SS" in html
+    assert "by 1-month return" in html
+
+
+def test_shared_detail_default_does_not_opt_other_regions_into_weekly_view():
+    from pathlib import Path
+    from jinja2 import Environment, FileSystemLoader
+    from scripts.build_subsector_rotation_pages import _fmt_pc
+    cn, source, curated = _china_rotation_inputs()
+    sub = cn.compute_china_rotation(source, curated)["subsectors"][0]
+    env = Environment(loader=FileSystemLoader(str(Path(cn.__file__).parents[1] / "templates")),
+                      autoescape=True)
+    env.globals["fmt_pc"] = _fmt_pc
+    html = env.get_template("subsector_rotation_detail.html.j2").render(
+        sub=sub, members=sub["members"], n_total=1, perf_rows=[],
+        q_cls="q-lead", q_en="Leading", q_zh="领先", qx_en="", qx_zh="",
+        lede_en="Context", lede_zh="背景")
+    assert "sd-weekly" not in html
+    assert "<i>1W</i>" not in html and "8 of 10 shown" not in html
+    assert "stock.html#600000.SS" in html
+
+
+def test_real_prices_flow_through_baskets_rotation_and_detail_page(tmp_path):
+    """One uninterrupted real path, including good, zero, negative and missing data."""
+    import json
+    import re
+    import numpy as np
+    import pandas as pd
+    from engine import baskets_region as producer
+    from engine import subsector_rotation_china as rotation
+    from scripts import build_subsector_rotation_china_pages as pages
+    idx = pd.bdate_range(end="2026-09-07", periods=40)
+    tickers = [f"60000{i}.SS" for i in range(8)]
+    closes = pd.DataFrame({t: np.linspace(85, 105, len(idx)) for t in tickers}, index=idx)
+    closes.iloc[-6:, 0] = [100, 101, 102, 103, 104, 105]
+    closes.iloc[-6:, 1] = [100, 100, 100, 100, 100, 100]
+    closes.iloc[-6:, 2] = [100, 99, 98, 97, 96, 95]
+    closes.iloc[-1, 3] = np.nan
+    closes.iloc[-3, 4] = np.nan
+    mem = {"baskets": {"concept": {"name": "Test concept", "category": "Technology",
+           "members": [{"ticker": t, "name": "Member " + t, "added": str(idx[0].date())}
+                       for t in tickers]}}}
+    basket = producer.compute_region_baskets(
+        closes, mem, closes[tickers[-1]].to_frame("close"), lambda _: None)
+    payload = rotation.compute_china_rotation(basket, {"baskets": [], "chart": {}})
+    members = {m["t"]: m for m in payload["subsectors"][0]["members"]}
+    assert [members[t]["1W"] for t in tickers[:3]] == [5.0, 0.0, -5.0]
+    assert members[tickers[3]]["1W"] is None
+    assert members[tickers[4]]["1W"] is None
+    src = tmp_path / "marketdata/subsector_rotation_china.json"
+    src.parent.mkdir()
+    src.write_text(json.dumps(payload), encoding="utf-8")
+    assert pages.build(site=tmp_path) == 1
+    html = (tmp_path / "rotation_china/concept.html").read_text()
+    for ticker in tickers:
+        match = re.search(r'<a class="sd-chip"[^>]*#' + re.escape(ticker) + r'">(.*?)</a>',
+                          html, flags=re.S)
+        assert match, ticker
+        card = match.group(1)
+        assert pages._fmt_pc(members[ticker]["1W"]) in card
+        assert "1W" in card and "1周" in card
+    assert str(idx[-2].date()) in html  # stale close is not re-dated to the snapshot
+    assert "Weekly coverage incomplete" in html
+    assert "周度数据不完整" in html

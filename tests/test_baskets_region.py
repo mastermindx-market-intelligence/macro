@@ -139,3 +139,55 @@ def test_canada_wrapper_delegates(monkeypatch):
     _wrapper_check(monkeypatch, bkca, "XIC.TO", "S&P/TSX")
     out = bkca.compute_canada_baskets()
     assert out is not None and out["benchmark_label"] == "S&P/TSX" and out["baskets"][0]["n_members"] == 3
+
+
+# Observation metadata does not replace or recompute the existing return series.
+def test_member_weekly_dates_distinguish_current_gap_and_stale_prices():
+    closes, idx = _frame(["A", "B", "C", "D"])
+    closes.loc[idx[-1], "B"] = np.nan
+    closes.loc[idx[-3], "C"] = np.nan
+    members = {"t": {"name": "T", "category": "C", "members": [
+        {"ticker": t, "added": "2025-01-02"} for t in "ABCD"]}}
+    out = reg.compute_region_baskets(closes, _mem(members), _bench(idx), lambda _: None)
+    rows = {m["symbol"]: m for m in out["baskets"][0]["members"]}
+    today = idx[-1].strftime("%Y-%m-%d")
+    assert rows["A"]["price_asof"] == rows["A"]["ret_5d_asof"] == today
+    assert rows["B"]["price_asof"] == idx[-2].strftime("%Y-%m-%d")
+    assert rows["B"]["ret_5d_asof"] is None
+    assert rows["C"]["price_asof"] == today and rows["C"]["ret_5d_asof"] is None
+    assert rows["D"]["ret_5d_asof"] == today
+    for ticker, row in rows.items():
+        expected = reg._trailing_return(closes[ticker].dropna(), 5)
+        assert row["ret_5d"] == round(expected, 4)
+
+
+def test_weekly_date_requires_six_complete_daily_observations():
+    import pytest
+    idx = pd.bdate_range("2026-08-25", periods=10)
+    series = pd.Series(np.arange(10) + 100.0, index=idx)
+    assert reg._member_price_dates(series)["ret_5d_asof"] == "2026-09-07"
+    assert reg._member_price_dates(series.iloc[-5:])["ret_5d_asof"] is None
+    for value in [np.nan, 0.0, -1.0, float("inf"), True, np.bool_(True), "100", 10**400]:
+        bad = series.astype(object)
+        bad.iloc[-3] = value
+        assert reg._member_price_dates(bad)["ret_5d_asof"] is None
+    assert reg._member_price_dates(series.iloc[::-1])["ret_5d_asof"] is None
+    duplicate = pd.concat([series, series.iloc[-1:]])
+    assert reg._member_price_dates(duplicate)["ret_5d_asof"] is None
+    intraday = series.copy()
+    intraday.index = intraday.index + pd.Timedelta(hours=14)
+    assert reg._member_price_dates(intraday)["ret_5d_asof"] is None
+    before = series.copy(deep=True)
+    reg._member_price_dates(series)
+    pd.testing.assert_series_equal(series, before)
+
+
+def test_old_price_is_not_relabelled_with_the_snapshot_date():
+    idx = pd.bdate_range("2026-08-25", periods=10)
+    series = pd.Series(np.arange(10) + 100.0, index=idx)
+    series.iloc[-2:] = np.nan
+    dates = reg._member_price_dates(series)
+    assert dates["price_asof"] == idx[-3].strftime("%Y-%m-%d")
+    assert dates["ret_5d_asof"] is None
+    empty = reg._member_price_dates(series * np.nan)
+    assert empty == {"price_asof": None, "ret_5d_asof": None}

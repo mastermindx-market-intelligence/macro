@@ -112,6 +112,7 @@ def compute_region_baskets(closes: pd.DataFrame | None, mem: dict | None,
                            # without one fall back to the English string, never to an empty cell.
                            "rationale_zh": m.get("rationale_zh") or m.get("rationale", ""),
                            "last": round(float(tc.iloc[-1]), 2),
+                           **_member_price_dates(closes[t]),
                            **{f"ret_{h}d": round(v, 4) if v is not None else None
                               for h, v in trailing.items()},
                            "ret_ytd": round(ry, 4) if ry is not None else None})
@@ -167,3 +168,35 @@ def compute_region_baskets(closes: pd.DataFrame | None, mem: dict | None,
                   "bench": [None if pd.isna(v) else round(float(v), 5) for v in bench],
                   "baskets": chart_baskets},
     }
+
+
+def _member_price_dates(prices: pd.Series) -> dict:
+    """Observation dates only; completeness is against the supplied daily index.
+
+    This does not infer an exchange calendar or point-in-time knowledge date, and
+    deliberately leaves the existing trailing-return calculations unchanged.
+    """
+    out = {"price_asof": None, "ret_5d_asof": None}
+    if not isinstance(prices, pd.Series) or prices.empty:
+        return out
+    idx = prices.index
+    if (not isinstance(idx, pd.DatetimeIndex) or idx.hasnans
+            or not idx.is_unique or not idx.is_monotonic_increasing
+            or not idx.equals(idx.normalize())):
+        return out
+
+    def valid(value):
+        if pd.api.types.is_bool(value) or not isinstance(value, (int, float, np.integer, np.floating)):
+            return False
+        try:
+            return bool(np.isfinite(value)) and value > 0
+        except (TypeError, ValueError, OverflowError):
+            return False
+
+    for position in range(len(prices) - 1, -1, -1):
+        if valid(prices.iloc[position]):
+            out["price_asof"] = idx[position].strftime("%Y-%m-%d")
+            break
+    if len(prices) >= 6 and all(valid(value) for value in prices.iloc[-6:]):
+        out["ret_5d_asof"] = idx[-1].strftime("%Y-%m-%d")
+    return out
