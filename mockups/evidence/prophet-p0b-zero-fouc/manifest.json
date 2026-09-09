@@ -25,11 +25,6 @@
   },
   "excluded": [],
   "generated_at": "2026-09-06T14:18:49Z",
-  "honesty": {
-    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
-    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
-    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
-  },
   "historical_baseline": {
     "candidate_head": "3fb76ea810a8e9ef6a05fe808bb6eaee87eb1f86",
     "candidate_tree": "b4dd8fd9b29b4eb769239d35df2a7911e793c7ec",
@@ -48,6 +43,11 @@
       "visual_manifest_screenshots": 16
     },
     "schema": "mastermind.prophet_p0b_historical_baseline.v1"
+  },
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
   },
   "outcome": "captured",
   "pages": [
@@ -534,7 +534,7 @@
         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
         "primary_cases": 48,
         "screenshots": 8,
-        "sha256": "8c29c4858c7841035bafb2bcd6ff047c263832bc2ea506091733d4b3d9c3fa94"
+        "sha256": "ae6751266cc8e22a64fce3db615295c2e4462f4b8862c8c2c3fcd6829f321d18"
       },
       "hk": {
         "degraded_control_cases": 16,
@@ -542,7 +542,7 @@
         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
         "primary_cases": 48,
         "screenshots": 8,
-        "sha256": "974a44aa70d06ddc605577094b162fade8f6129047daac25fe1f71e8ab7ef62f"
+        "sha256": "0f7eb8e6ce60bf5d8444ed45f3f3cb92ceab3120982cb5cbba3b9dd15f169c2f"
       }
     },
     "claims": {
@@ -553,7 +553,7 @@
     },
     "fixture_receipt": {
       "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-      "sha256": "2c246b28e5121b11ea6e9a7bf60793567f4e594523ac944c172afbe84c50bd95"
+      "sha256": "3d088a5705be46da3ce9770ddd353efd33ddfcaafcf5231afdda115f34eb8bad"
     },
     "operation": "prophet-cockpit-p0b-zero-fouc-20260904-sol-001",
     "pass": true,
@@ -561,7 +561,7 @@
     "screenshots": [
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-1440.png",
-        "sha256": "00d60198365c5bb9af26545d909bca7a68851efb3481239af44060d3bbe186ab"
+        "sha256": "019f6738b4851152061177a2a31fd0cfa922f6eb060a0bb9634121532b423d9a"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-390.png",
@@ -581,7 +581,7 @@
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-390.png",
-        "sha256": "b4469952921ec1deb64b597398bf2755f0a12bd42b7875ae14aa8dc4c97290b7"
+        "sha256": "a3abae0c1c90b96f93d90645965099d9e359470a8faf5f6c00e33963e44136a6"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-1440.png",
@@ -589,7 +589,7 @@
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-390.png",
-        "sha256": "a6c78214f100b368d9a04d0e9197686d6e1624c6a1b593e6ed192daa6fcf728c"
+        "sha256": "fc4c85551305ebcdf91891dbef8e6bebf0364b65e4d2f5984c661b16bfe242b4"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-1440.png",
@@ -597,7 +597,7 @@
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-390.png",
-        "sha256": "6a18dc9b135502379b6dddcad5be136b6ca2052241a769d08d78fdc1cc03ac0a"
+        "sha256": "97098bb6cb2eea102eb69d665c233a643f11cf519c30f00568172f44c9cf3d4f"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-1440.png",
