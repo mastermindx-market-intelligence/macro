@@ -1543,7 +1543,14 @@ def load_research_priority(root: Path) -> dict[str, Any]:
 
 
 def _research_priority_unavailable(rp: Any) -> dict[str, Any]:
-    """The §2.4 'unavailable' payload, built even when the module import is what failed."""
+    """The §2.4 'unavailable' payload, built even when the module import is what failed.
+
+    The hand-built branch below MIRRORS `to_payload`'s key set exactly, `n_dated`
+    and `n_undated` included (seat ruling R7a): the artifact
+    `site/basketdata/research_priority.json` must carry one schema, not two
+    depending on which failure produced it.
+    `test_import_failure_fallback_matches_the_to_payload_key_set` pins them together.
+    """
     if rp is not None:
         return rp.to_payload((), asof=None, state="unavailable")
     return {
@@ -1555,6 +1562,8 @@ def _research_priority_unavailable(rp: Any) -> dict[str, Any]:
         "state": "unavailable",
         "max_items": 12,
         "n_total": 0,
+        "n_dated": 0,
+        "n_undated": 0,
         "items": [],
     }
 

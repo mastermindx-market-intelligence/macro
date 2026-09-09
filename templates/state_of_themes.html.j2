@@ -13,7 +13,7 @@
 {% macro rp_date_zh(iso) -%}
 {%- if iso -%}
 {%- set p = (iso|string)[:10].split('-') -%}
-{%- if p|length == 3 -%}
+{%- if p|length == 3 and p[1]|int >= 1 and p[1]|int <= 12 -%}
 {{ p[0] }}年{{ p[1]|int }}月{{ p[2]|int }}日
 {%- endif -%}
 {%- endif -%}
@@ -337,25 +337,26 @@ html[data-theme="dark"] body::before{
 <section class="rp">
   <div class="sec-head">{{ t('What to look at first', '先看哪些主题') }}</div>
   {% if research_priority.state == 'empty' %}
-  <p class="sec-sub">{{ t('We have not recorded new evidence for any theme yet. This list fills in on the next nightly build.', '目前还没有记录到任何主题的新证据。下一次夜间构建后这里会有内容。') }}</p>
+  <p class="sec-sub">{{ t('We have not recorded new evidence for any theme yet. This list fills in after the next update.', '目前还没有记录到任何主题的新证据。下一次更新后，这里会显示内容。') }}</p>
   {% elif research_priority.state == 'unavailable' %}
   <p class="sec-sub">{{ t('The evidence record could not be read, so this list is not shown. Nothing else on this page is affected.', '无法读取证据记录，因此这份清单暂不显示。本页其他内容不受影响。') }}</p>
   {% else %}
-  <p class="sec-sub">{{ t('Start at the top. The list runs by the date something was last written down about each theme, newest first; themes written down on the same day run by how many statements were recorded that day. It is not where the best idea is.', '从最上面开始看。这份清单按每个主题最后一次被记录下内容的日期排列，最新的在前；同一天记录的主题，按当天记录的条数排列。它并不是最值得看的地方。') }}</p>
+  {% if research_priority.n_dated %}
+  <p class="sec-sub">{{ t('Start at the top. The list runs by the date something was last written down about each theme, newest first; themes written down on the same day run by how many statements were recorded that day. It is not where the best idea is.', '从最上面开始看。这份清单按每个主题最后一次被记录下内容的日期排列，最新的在前；同一天记录的主题，按当天记录的条数排列。排在最上面的并不代表它是最好的想法。') }}</p>
   <p class="rp-rule">{{ t("When the date and that day's count match, the list runs by name.", '日期和当天条数都相同时，按名称排列。') }}</p>
   <ol class="rp-list">
     {% for item in research_priority['items'] %}
     {% if item.last_recorded_date %}
     <li class="rp-item">
       <span class="rp-pos">{{ item.position }}.</span>
-      <span class="rp-name"><span class="l-en" lang="en">{{ item.name_en }}</span><span class="l-zh" lang="zh">{{ item.name_zh }}</span></span>
+      <span class="rp-name"><span class="l-en" lang="en">{{ item.name_en }}</span><span class="l-zh" lang="{{ 'zh' if (item.name_zh and item.name_zh|string|trim) else 'en' }}">{{ item.name_zh if (item.name_zh and item.name_zh|string|trim) else item.name_en }}</span></span>
       <span class="rp-meta">
         <span class="l-en">New evidence recorded {{ rp_date_en(item.last_recorded_date) }}</span><span class="l-zh">{{ rp_date_zh(item.last_recorded_date) }} 记录到新证据</span>
         ·
         {% if item.statements_recorded == 1 %}
-        {{ t('1 statement that day', '当天记录 1 条') }}
+        {{ t('1 statement that day', '当天有 1 条记录') }}
         {% else %}
-        <span class="l-en">{{ item.statements_recorded }} statements that day</span><span class="l-zh">当天记录 {{ item.statements_recorded }} 条</span>
+        <span class="l-en">{{ item.statements_recorded }} statements that day</span><span class="l-zh">当天有 {{ item.statements_recorded }} 条记录</span>
         {% endif %}
       </span>
     </li>
@@ -364,18 +365,25 @@ html[data-theme="dark"] body::before{
   </ol>
   <p class="rp-note">{{ t('This is a reading order, not a score. It does not say a theme is more likely to work, worth more, or already in the price.', '这只是阅读顺序，不是评分。它并不表示某个主题更可能奏效、价值更高，或已被价格消化。') }}</p>
   {% if research_priority.n_dated > research_priority.max_items %}
-  <p class="rp-note"><span class="l-en">Showing the 12 most recently updated of {{ research_priority.n_dated }} dated themes.</span><span class="l-zh">共 {{ research_priority.n_dated }} 个有日期的主题，显示最近更新的 12 个。</span></p>
+  <p class="rp-note"><span class="l-en">Showing the {{ research_priority.max_items }} most recently updated of {{ research_priority.n_dated }} dated themes.</span><span class="l-zh">共 {{ research_priority.n_dated }} 个有日期的主题，显示最近更新的 {{ research_priority.max_items }} 个。</span></p>
+  {% endif %}
+  {% else %}
+  <p class="sec-sub">{{ t('No tracked theme carries a dated entry yet, so there is no reading order to show.', '目前没有任何主题带有日期记录，因此暂时没有可显示的阅读顺序。') }}</p>
   {% endif %}
   {% if research_priority.n_undated %}
   <div class="rp-undated">
     <p class="rp-head">{{ t('No dated evidence yet', '尚无带日期的证据') }}</p>
     <p class="rp-note">{{ t('These themes are tracked, but nothing we hold about them carries a date, so they cannot take a place in the order above.', '这些主题在追踪范围内，但我们掌握的内容都没有日期，因此无法排入上面的顺序。') }}</p>
+    {% if research_priority.n_undated == 1 %}
+    <p class="rp-note"><span class="l-en">1 tracked theme has no dated entry yet.</span><span class="l-zh">另有 1 个主题尚无带日期的记录。</span></p>
+    {% else %}
     <p class="rp-note"><span class="l-en">{{ research_priority.n_undated }} tracked themes have no dated entry yet.</span><span class="l-zh">另有 {{ research_priority.n_undated }} 个主题尚无带日期的记录。</span></p>
+    {% endif %}
     <ol class="rp-list">
       {% for item in research_priority['items'] %}
       {% if not item.last_recorded_date %}
       <li class="rp-item">
-        <span class="rp-name"><span class="l-en" lang="en">{{ item.name_en }}</span><span class="l-zh" lang="zh">{{ item.name_zh }}</span></span>
+        <span class="rp-name"><span class="l-en" lang="en">{{ item.name_en }}</span><span class="l-zh" lang="{{ 'zh' if (item.name_zh and item.name_zh|string|trim) else 'en' }}">{{ item.name_zh if (item.name_zh and item.name_zh|string|trim) else item.name_en }}</span></span>
       </li>
       {% endif %}
       {% endfor %}

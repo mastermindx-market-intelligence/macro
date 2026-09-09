@@ -91,12 +91,23 @@ _STANCE_EN = (
 )
 _STANCE_ZH = (
     "从最上面开始看。这份清单按每个主题最后一次被记录下内容的日期排列，最新的在前；"
-    "同一天记录的主题，按当天记录的条数排列。它并不是最值得看的地方。"
+    "同一天记录的主题，按当天记录的条数排列。排在最上面的并不代表它是最好的想法。"
 )
 _TRUNC_EN = "Showing the 12 most recently updated of {n} dated themes."
 _TRUNC_ZH = "共 {n} 个有日期的主题，显示最近更新的 12 个。"
-_UNDATED_COUNT_EN = "{k} tracked themes have no dated entry yet."
+_NO_ORDER_EN = (
+    "No tracked theme carries a dated entry yet, so there is no reading order to show."
+)
+_NO_ORDER_ZH = "目前没有任何主题带有日期记录，因此暂时没有可显示的阅读顺序。"
+_UNDATED_COUNT_EN_ONE = "1 tracked theme has no dated entry yet."
+_UNDATED_COUNT_EN_MANY = "{k} tracked themes have no dated entry yet."
 _UNDATED_COUNT_ZH = "另有 {k} 个主题尚无带日期的记录。"
+
+
+def _undated_count_en(k: int) -> str:
+    """Seat ruling R1: the EN count carries a singular branch, as the per-row
+    statement count at the same template already does. The ZH half is invariant."""
+    return _UNDATED_COUNT_EN_ONE if k == 1 else _UNDATED_COUNT_EN_MANY.format(k=k)
 
 _ALLOWED_INT_KEYS = frozenset(
     {"position", "statements_recorded", "n_total", "n_dated", "n_undated", "max_items"}
@@ -648,6 +659,11 @@ def test_empty_store_renders_the_empty_line_not_a_dash(tmp_path):
     block = _rp_block(html)
     assert "We have not recorded new evidence for any theme yet." in block
     assert "目前还没有记录到任何主题的新证据。" in block
+    # Seat ruling R7l: plain wording, not release-engineering vocabulary.
+    assert "This list fills in after the next update." in block
+    assert "下一次更新后，这里会显示内容。" in block
+    assert "nightly build" not in block
+    assert "夜间构建" not in block
     assert "<ol" not in block
     visible = _visible_text(block)
     assert "—" not in visible
@@ -691,6 +707,27 @@ def test_missing_store_files_load_as_unavailable(tmp_path, monkeypatch):
     assert payload["items"] == []
     assert payload["n_total"] == 0
     assert payload["asof"] is None
+
+
+def test_import_failure_fallback_matches_the_to_payload_key_set(tmp_path):
+    """Seat ruling R7a: the rp-is-None branch (the module import itself failed)
+    emits exactly the key set to_payload emits — n_dated and n_undated included —
+    so site/basketdata/research_priority.json carries one schema, not two."""
+    import scripts.build_state_of_themes as sot
+    from engine.research_priority_ordering import to_payload
+
+    produced = to_payload((), asof=None, state="unavailable")
+    fallback = sot._research_priority_unavailable(None)
+    assert set(fallback) == set(produced)
+    assert fallback == produced
+    assert fallback["state"] == "unavailable"
+    assert fallback["n_dated"] == 0
+    assert fallback["n_undated"] == 0
+    # And the page still renders the honest unavailable line from it.
+    _copy_templates(tmp_path)
+    block = _rp_block(_render(tmp_path, _base_ctx(research_priority=fallback)))
+    assert "The evidence record could not be read" in block
+    assert "无法读取证据记录" in block
 
 
 def test_corrupt_parquet_loads_as_unavailable(tmp_path, monkeypatch):
@@ -882,15 +919,61 @@ def test_compose_binds_asof_from_the_payload_items(tmp_path, monkeypatch):
 
 
 def test_page_omits_the_asof_line_when_no_evidence_date_is_known(tmp_path):
-    """No dated evidence -> the line is omitted, never printed with a dash."""
+    """No dated evidence -> the line is omitted, never printed with a dash.
+
+    Seat ruling R2: this payload is state 'ok' with n_dated == 0, so the same
+    render must also withhold the stance and print the honest sentence in its
+    place. Asserted here, not only in the dedicated R2 test below.
+    """
     _copy_templates(tmp_path)
     payload = _payload_from_themes((_te("theme:quiet", "Quiet story", "安静主题"),))
+    assert payload["state"] == "ok"
+    assert payload["n_dated"] == 0
     block = _rp_block(_render(tmp_path, _base_ctx(research_priority=payload)))
     assert block
     assert "Evidence recorded up to" not in block
     assert "证据记录截至" not in block
     # …and no lone-dash placeholder is left standing in its place.
     assert re.search(r">\s*—\s*<", block) is None
+    assert _STANCE_EN not in block
+    assert _STANCE_ZH not in block
+    assert _NO_ORDER_EN in block
+    assert _NO_ORDER_ZH in block
+
+
+def test_all_undated_population_shows_no_order_and_no_stance(tmp_path):
+    """Seat ruling R2: state 'ok' with zero dated themes never prints the stance,
+    the tie-break sentence or an empty <ol>. It prints the honest sentence and
+    then every undated name."""
+    _copy_templates(tmp_path)
+    themes = tuple(
+        _te(f"theme:u{i:02d}", f"Quiet {i:02d}", f"安静{i:02d}") for i in range(4)
+    )
+    payload = _payload_from_themes(themes)
+    assert payload["state"] == "ok"
+    assert payload["n_dated"] == 0
+    assert payload["n_undated"] == 4
+    assert payload["asof"] is None
+    block = _rp_block(_render(tmp_path, _base_ctx(research_priority=payload)))
+    assert block
+    # The stance, the tie-break rule and the ordered list are all withheld.
+    assert _STANCE_EN not in block
+    assert _STANCE_ZH not in block
+    assert _RULE_EN not in block
+    assert _RULE_ZH not in block
+    head = block.split('class="rp-undated"', 1)[0]
+    assert "<ol" not in head
+    assert 'class="rp-pos"' not in block
+    # The honest sentence stands in their place, in both languages…
+    assert _NO_ORDER_EN in block
+    assert _NO_ORDER_ZH in block
+    # …and every undated theme is still named on screen.
+    undated_html = block.split('class="rp-undated"', 1)[1]
+    for i in range(4):
+        assert f"Quiet {i:02d}" in undated_html
+        assert f"安静{i:02d}" in undated_html
+    assert _undated_count_en(4) in block
+    assert _UNDATED_COUNT_ZH.format(k=4) in block
 
 
 def test_page_renders_unchanged_when_research_priority_is_absent_from_ctx(tmp_path):
@@ -933,6 +1016,17 @@ def test_every_new_label_has_both_en_and_zh(tmp_path):
     more_html = _rp_block(
         _render(tmp_path, _base_ctx(research_priority=_truncated_payload(18)))
     )
+    # state 'ok' with zero dated themes (seat ruling R2) is a rendered state too.
+    no_order_html = _rp_block(
+        _render(
+            tmp_path,
+            _base_ctx(
+                research_priority=_payload_from_themes(
+                    (_te("theme:quiet", "Quiet story", "安静主题"),)
+                )
+            ),
+        )
+    )
     pairs = [
         ("What to look at first", "先看哪些主题"),
         (_STANCE_EN, _STANCE_ZH),
@@ -943,8 +1037,8 @@ def test_every_new_label_has_both_en_and_zh(tmp_path):
         (_RULE_EN, _RULE_ZH),
         (_REFUSAL_EN, _REFUSAL_ZH),
         ("New evidence recorded", "记录到新证据"),
-        ("1 statement that day", "当天记录 1 条"),
-        ("4 statements that day", "当天记录 4 条"),
+        ("1 statement that day", "当天有 1 条记录"),
+        ("4 statements that day", "当天有 4 条记录"),
         ("No dated evidence yet", "尚无带日期的证据"),
         (
             "These themes are tracked, but nothing we hold about them carries a date, so they cannot take a place in the order above.",
@@ -954,17 +1048,19 @@ def test_every_new_label_has_both_en_and_zh(tmp_path):
         (_DETAILS_EN, _DETAILS_ZH),
         ("Evidence recorded up to", "证据记录截至"),
         ("We have not recorded new evidence for any theme yet.", "目前还没有记录到任何主题的新证据。"),
+        ("This list fills in after the next update.", "下一次更新后，这里会显示内容。"),
         (
             "The evidence record could not be read, so this list is not shown.",
             "无法读取证据记录，因此这份清单暂不显示。",
         ),
         (
-            _UNDATED_COUNT_EN.format(k=1),
+            _undated_count_en(1),
             _UNDATED_COUNT_ZH.format(k=1),
         ),
+        (_NO_ORDER_EN, _NO_ORDER_ZH),
     ]
     for en, zh in pairs:
-        haystack = ok_html + empty_html + unavail_html + more_html
+        haystack = ok_html + empty_html + unavail_html + more_html + no_order_html
         assert en in haystack, en
         assert zh in haystack, zh
 
@@ -978,6 +1074,29 @@ def test_truncation_line_states_the_same_criterion_as_the_order(tmp_path):
     assert _TRUNC_ZH.format(n=18) in block
     assert "in that order" not in block
     assert "按该顺序显示其中" not in block
+
+
+def test_truncation_sentence_follows_the_payload_max_items(tmp_path, monkeypatch):
+    """Seat ruling R7e: the sentence prints research_priority.max_items, never a
+    literal 12. Move MAX_ITEMS and the copy must move with it, in EN and ZH."""
+    import engine.research_priority_ordering as rp_mod
+
+    _copy_templates(tmp_path)
+    monkeypatch.setattr(rp_mod, "MAX_ITEMS", 9)
+    payload = _payload_from_themes(
+        tuple(
+            _te(f"theme:d{i:02d}", f"Dated {i:02d}", f"有日{i:02d}", "2026-09-08")
+            for i in range(11)
+        )
+    )
+    assert payload["max_items"] == 9
+    assert payload["n_dated"] == 11
+    assert len(payload["items"]) == 9
+    block = _rp_block(_render(tmp_path, _base_ctx(research_priority=payload)))
+    assert "Showing the 9 most recently updated of 11 dated themes." in block
+    assert "共 11 个有日期的主题，显示最近更新的 9 个。" in block
+    assert "Showing the 12" not in block
+    assert "显示最近更新的 12 个" not in block
 
 
 def test_eleven_dated_and_seven_undated_shows_every_name_and_no_truncation(tmp_path):
@@ -994,7 +1113,7 @@ def test_eleven_dated_and_seven_undated_shows_every_name_and_no_truncation(tmp_p
     assert _TRUNC_ZH.format(n=11) not in block
     assert "Showing the 12 most recently updated" not in block
     assert "显示最近更新的 12 个" not in block
-    assert _UNDATED_COUNT_EN.format(k=7) in block
+    assert _undated_count_en(7) in block
     assert _UNDATED_COUNT_ZH.format(k=7) in block
     numbered = re.findall(
         r'<span class="rp-pos">(\d+)\.</span>',
@@ -1024,7 +1143,7 @@ def test_fifteen_dated_and_three_undated_truncates_dated_and_lists_every_undated
     block = _rp_block(_render(tmp_path, _base_ctx(research_priority=payload)))
     assert _TRUNC_EN.format(n=15) in block
     assert _TRUNC_ZH.format(n=15) in block
-    assert _UNDATED_COUNT_EN.format(k=3) in block
+    assert _undated_count_en(3) in block
     assert _UNDATED_COUNT_ZH.format(k=3) in block
     numbered = re.findall(
         r'<span class="rp-pos">(\d+)\.</span>',
@@ -1050,6 +1169,39 @@ def test_fifteen_dated_and_three_undated_truncates_dated_and_lists_every_undated
     for i in range(3):
         assert f"Quiet {i:02d}" in undated_html
         assert f"安静{i:02d}" in undated_html
+
+
+def test_undated_count_line_is_singular_for_one_undated_theme(tmp_path):
+    """Seat ruling R1: n_undated == 1 reads "1 tracked theme has", never "themes have"."""
+    _copy_templates(tmp_path)
+    payload = _payload_from_themes(
+        (
+            _te("theme:d", "Dated one", "有日一", "2026-09-08"),
+            _te("theme:u", "Quiet one", "安静一"),
+        )
+    )
+    assert payload["n_undated"] == 1
+    block = _rp_block(_render(tmp_path, _base_ctx(research_priority=payload)))
+    assert "1 tracked theme has no dated entry yet." in block
+    assert "1 tracked themes have no dated entry yet." not in block
+    assert _UNDATED_COUNT_ZH.format(k=1) in block
+
+
+def test_undated_count_line_is_plural_for_two_undated_themes(tmp_path):
+    """Seat ruling R1: n_undated == 2 keeps the plural verb and noun."""
+    _copy_templates(tmp_path)
+    payload = _payload_from_themes(
+        (
+            _te("theme:d", "Dated one", "有日一", "2026-09-08"),
+            _te("theme:u1", "Quiet one", "安静一"),
+            _te("theme:u2", "Quiet two", "安静二"),
+        )
+    )
+    assert payload["n_undated"] == 2
+    block = _rp_block(_render(tmp_path, _base_ctx(research_priority=payload)))
+    assert "2 tracked themes have no dated entry yet." in block
+    assert "2 tracked theme has no dated entry yet." not in block
+    assert _UNDATED_COUNT_ZH.format(k=2) in block
 
 
 def test_undated_rows_carry_no_ordinal_in_payload_or_template(tmp_path):
@@ -1081,6 +1233,25 @@ def test_store_sourced_theme_names_render_in_a_plain_lang_span(tmp_path):
     )[0]
     assert "t(item.name_en" not in rp_section
     assert "t(item.name_zh" not in rp_section
+
+
+def test_blank_name_zh_falls_back_to_the_english_name(tmp_path):
+    """Seat ruling R7c: a blank or whitespace-only name_zh never renders an empty
+    span; the ZH slot carries the English name in a plain lang="en" span."""
+    _copy_templates(tmp_path)
+    payload = _payload_from_themes(
+        (
+            _te("theme:blank", "Blank ZH", "", "2026-09-08"),
+            _te("theme:space", "Spaces ZH", "   ", "2026-09-07"),
+            _te("theme:undated_blank", "Undated blank ZH", ""),
+        )
+    )
+    block = _rp_block(_render(tmp_path, _base_ctx(research_priority=payload)))
+    assert '<span class="l-zh" lang="en">Blank ZH</span>' in block
+    assert '<span class="l-zh" lang="en">Spaces ZH</span>' in block
+    assert '<span class="l-zh" lang="en">Undated blank ZH</span>' in block
+    assert '<span class="l-zh" lang="zh"></span>' not in block
+    assert re.search(r'<span class="l-zh" lang="zh">\s*</span>', block) is None
 
 
 def test_no_machine_text_in_the_rendered_block(tmp_path):
