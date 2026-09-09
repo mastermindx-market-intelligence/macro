@@ -5302,6 +5302,17 @@ jobs:
       - research/market_intelligence_productization/receipts/supabase_receipt_0014_tenancy_foundation_2026-09-08.json
       - research/market_intelligence_productization/receipts/supabase_receipt_0015_team_roles_invitations_2026-09-08.json
       - research/market_intelligence_productization/receipts/supabase_receipt_0016_account_lifecycle_requests_2026-09-09.json
+      # A-REC-W4-1 (round 3 MAJOR 2), added alongside B-REC-B5-1's block above and
+      # under the same rule stated at the top of it. tests/test_f00c_half_a_reconciliation.py
+      # (declared above) reads two more records from disk that no job claimed: its manifest
+      # fixture and its records document. Scope inference cannot reach the fixture at all —
+      # LITERAL_DIRS in scripts/ci_scope_dependencies.py has no `tests` entry, so the path
+      # literal fails fullmatch — and a PR editing ONLY that fixture selected no job that
+      # runs the suite, so a fixture-only break would merge green and land red on main.
+      # Both are declared explicitly whether or not inference would reach them, so the
+      # closure test in test_f00c_half_a_reconciliation.py can pin them by name.
+      - tests/fixtures/f00c_half_a_reconciliation_manifest.json
+      - research/market_intelligence_productization/MARKET_ONTOLOGY_A_REC_W4_1_HALF_A_LEDGER_RECONCILIATION_2026-09-09.md
       - tests/test_self_mod_fence.py
       - tests/test_ci_authority.py
       - tests/test_ci_semantic_proof.py

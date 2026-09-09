@@ -107,7 +107,7 @@ If a reviewer overturns this row, the correct `next_bounded_child` is not empty 
 "A-F04-W2-2 — the rendered/product surface over this composer (not confirmed merged)",
 not a restatement of the discharged `next_bounded_child` that already produced #6929.
 
-## Caveat: `MO-PAID-004` — this row is also being edited by an open PR right now
+## Caveat: `MO-PAID-004` — a file-level collision with open #6957, not a row edit
 
 `research/market_intelligence_productization/F01_FX_COMMODITY_SOURCE_RIGHTS_AND_DEPTH_2026-09.md`
 §3.1 names a verified engine-module-and-function chain for all three commodity pages
@@ -129,6 +129,10 @@ sentence naming the shipped aggregate spread-gauge card). **#6957 does not touch
 `MO-PAID-004` row — was drawn from the file list alone and is withdrawn. The collision is
 real but file-level: two open records packets edit one CSV, so whichever merges second must
 rebase past the other's edit, not force it. This packet applies the §2 edit.
+
+Scope of the close: this row closes the **commodities half only**. The credit half of
+the same F01 wiring trace sits inside the still-open macro#6957 as `MO-DELTA-008` and is
+not closed by this row or by this packet; `MO-PAID-004` stays `BUILT_NOT_PROVEN`.
 
 ## What this record deliberately does not do
 
