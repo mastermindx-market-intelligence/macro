@@ -1,0 +1,356 @@
+{
+  "ambient_inputs": [],
+  "effects": {
+    "collectors": false,
+    "ledger_advance": false,
+    "publish": false
+  },
+  "markets": {
+    "ca": {
+      "diagnostic_membership_overlay": {
+        "bytes": 1088,
+        "canonicalization": "utf-8 JSON; sort_keys=true; separators=(',', ':'); no trailing newline",
+        "payload": {
+          "card_population_mutation": "none",
+          "classification": "browser_contract_fixture_only",
+          "composer_rows": [
+            {
+              "sector": "Fixture finance",
+              "ticker": "PMZ-UN.TO"
+            },
+            {
+              "sector": "Fixture finance",
+              "ticker": "MTL.TO"
+            }
+          ],
+          "control": {
+            "remove_attributes": [
+              "disabled"
+            ],
+            "selector": "[data-action-id=\"FIXTURE-FINANCE\"] .anv2-name.ca-v36-an-row",
+            "set_attributes": {
+              "data-ca-lead-id": "FIXTURE-FINANCE",
+              "data-ca-lead-kind": "sector"
+            }
+          },
+          "delivery": "verifier-scoped JSON.parse overlay only when the call stack names the exact entitled composer and the input bytes equal #stocktable-data; the wrapper is removed after one consumption",
+          "group": {
+            "id": "FIXTURE-FINANCE",
+            "kind": "sector",
+            "name": "Fixture finance",
+            "research_href": "sectors/FIXTURE-FINANCE.html"
+          },
+          "market": "ca",
+          "members": [
+            {
+              "owner_lane": "watch",
+              "ticker": "PMZ-UN.TO"
+            },
+            {
+              "owner_lane": "watch",
+              "ticker": "MTL.TO"
+            }
+          ],
+          "owner_case": "normal",
+          "schema": "mastermind.stock_dashboard_membership_overlay.v1",
+          "source_identity_requirement": "every member must remain in its original server-owned watch/stage anchor and must not be an actionable card",
+          "table_population_mutation": "none"
+        },
+        "sha256": "954b75b0f91a1b8912df9360301694530c9aeff706e211a2001e460bc1af59c2"
+      },
+      "inputs": [
+        {
+          "path": "engine/i18n.py",
+          "role": "jinja_globals",
+          "sha256": "486116b2c2640bf164724a03d9a8871efef7977fb3b5bd7e8d5956e8d3675b44"
+        },
+        {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/inputs/canada-action-fixture.json",
+          "role": "frozen_action_fixture",
+          "sha256": "6a0d10249045cbffca6e7386458b45c0b3976408b7d57021254987df0c8a11f6"
+        },
+        {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/inputs/canada-owner-fixture.json",
+          "role": "frozen_owner_fixture",
+          "sha256": "dc93511b93517c9ecd096bcb5a79144d95f2ee565fc12d98a2410ff9aa1ad72b"
+        },
+        {
+          "path": "scripts/render_canada_opportunity_map_fixture.py",
+          "role": "recipe",
+          "sha256": "e6a7e7c82f1c47f0d718ad8f629ab3b2df4a5bf19059aa2243d13e649a235c18"
+        },
+        {
+          "path": "templates/_cmd_hero.css.j2",
+          "role": "jinja_template",
+          "sha256": "86d3c260212c477d990b82dd424078dcb2227e252dcc83a2ba92f3e629b5170e"
+        },
+        {
+          "path": "templates/_decision_card.html.j2",
+          "role": "jinja_template",
+          "sha256": "2c67a16a868f40bfced08d96be88571f0a235ca948169c8e9a44de827442ca76"
+        },
+        {
+          "path": "templates/_icons.html.j2",
+          "role": "jinja_template",
+          "sha256": "91e9ed18b6423b41793062ccde2406222b66f646f6f3928f272e71318c9e0dab"
+        },
+        {
+          "path": "templates/_lens.html.j2",
+          "role": "jinja_template",
+          "sha256": "1d6bbb2ff780b60a2fcd0397e7c94305e1a7f996ae76c517c4562385ccdc19ea"
+        },
+        {
+          "path": "templates/_market_state.css.j2",
+          "role": "jinja_template",
+          "sha256": "16f285a8a6857f6627ec756b7fbfc9009c130c8e6e6275b7438855f90d421a6c"
+        },
+        {
+          "path": "templates/_navlinks.html.j2",
+          "role": "jinja_template",
+          "sha256": "10ef03e1d39149ee0e94072bcdeebae3cdbdfa92c0e620efdf54b69a1109f7b8"
+        },
+        {
+          "path": "templates/_prophet_card.html.j2",
+          "role": "jinja_template",
+          "sha256": "27b08e4f5a5c1aa0ad29108ed9ec6bfc2ce970b820fc46ab3a066c0ba3798e35"
+        },
+        {
+          "path": "templates/_risk_radar_card.css.j2",
+          "role": "jinja_template",
+          "sha256": "07b56d52a6e426352ad9ca9cc9b117d50cb50bfd2c7d8de052aaaa4dad9bb2f2"
+        },
+        {
+          "path": "templates/_risk_radar_card.html.j2",
+          "role": "jinja_template",
+          "sha256": "fe784862a462a62eae7e76b4c9df32cb2aefb01738a138ce262e2d171188d2d3"
+        },
+        {
+          "path": "templates/_risk_radar_dlg.css.j2",
+          "role": "jinja_template",
+          "sha256": "186239255efa4f7a938c3b0abb9c33c59c99e0711993269b5909980da2adf1ac"
+        },
+        {
+          "path": "templates/_risk_radar_dlg.html.j2",
+          "role": "jinja_template",
+          "sha256": "a2ead084ec5feb4259c36423717a8a9b4273348c928e4b7b020b8c322e9cea43"
+        },
+        {
+          "path": "templates/_seo_head.html.j2",
+          "role": "jinja_template",
+          "sha256": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee"
+        },
+        {
+          "path": "templates/_site_nav.html.j2",
+          "role": "jinja_template",
+          "sha256": "164f3119fd04b8886d2d29703dc9c017e13bceeae1ecc49a36f9842353d9e482"
+        },
+        {
+          "path": "templates/canada.html.j2",
+          "role": "jinja_template",
+          "sha256": "e579449deb5d5cbc1acd3d5541e3c9ca8e60a9a444f1c3363d8cd63df6a9de86"
+        }
+      ],
+      "output": "canada_stocks.html",
+      "output_sha256": "c99557a2a20425c2fa5b4903415d354fea86e5de61e1bf7bbd7e607eea60c222",
+      "owner_cases": {
+        "normal": {
+          "input_transform": {
+            "bytes": 545,
+            "canonicalization": "utf-8 JSON; sort_keys=true; separators=(',', ':'); no trailing newline",
+            "payload": {
+              "market": "ca",
+              "operation": "preserve frozen owner input",
+              "owner_case": "normal",
+              "rendered_owner_identities": {
+                "buy": [
+                  "SU.TO",
+                  "SOBO.TO",
+                  "NWC.TO",
+                  "QSR.TO",
+                  "RCH.TO",
+                  "CSH-UN.TO",
+                  "TPZ.TO",
+                  "TVK.TO",
+                  "TOU.TO"
+                ],
+                "watch": [
+                  "PMZ-UN.TO",
+                  "MTL.TO",
+                  "QBR-B.TO",
+                  "BB.TO",
+                  "GWO.TO",
+                  "EIF.TO",
+                  "EXE.TO",
+                  "ARE.TO"
+                ]
+              },
+              "schema": "mastermind.stock_dashboard_owner_case.v1",
+              "source_owner_identities": {
+                "buy": [
+                  "SU.TO",
+                  "SOBO.TO",
+                  "NWC.TO",
+                  "QSR.TO",
+                  "RCH.TO",
+                  "CSH-UN.TO",
+                  "TPZ.TO",
+                  "TVK.TO",
+                  "TOU.TO"
+                ],
+                "watch": [
+                  "PMZ-UN.TO",
+                  "MTL.TO",
+                  "QBR-B.TO",
+                  "BB.TO",
+                  "GWO.TO",
+                  "EIF.TO",
+                  "EXE.TO",
+                  "ARE.TO"
+                ]
+              }
+            },
+            "sha256": "561e2696a225b71fa1b1dd2e443e506daf20a55813986519cc650f7abaff6747"
+          },
+          "output": "canada_stocks.html",
+          "output_sha256": "c99557a2a20425c2fa5b4903415d354fea86e5de61e1bf7bbd7e607eea60c222",
+          "owner_population": {
+            "board": 9,
+            "intersection": [],
+            "unique_total": 17,
+            "watch": 8
+          },
+          "route": "/canada_stocks.html"
+        },
+        "null-buy": {
+          "input_transform": {
+            "bytes": 504,
+            "canonicalization": "utf-8 JSON; sort_keys=true; separators=(',', ':'); no trailing newline",
+            "payload": {
+              "market": "ca",
+              "operation": "replace buy with JSON null; preserve every independent owner lane",
+              "owner_case": "null-buy",
+              "rendered_owner_identities": {
+                "buy": null,
+                "watch": [
+                  "PMZ-UN.TO",
+                  "MTL.TO",
+                  "QBR-B.TO",
+                  "BB.TO",
+                  "GWO.TO",
+                  "EIF.TO",
+                  "EXE.TO",
+                  "ARE.TO"
+                ]
+              },
+              "schema": "mastermind.stock_dashboard_owner_case.v1",
+              "source_owner_identities": {
+                "buy": [
+                  "SU.TO",
+                  "SOBO.TO",
+                  "NWC.TO",
+                  "QSR.TO",
+                  "RCH.TO",
+                  "CSH-UN.TO",
+                  "TPZ.TO",
+                  "TVK.TO",
+                  "TOU.TO"
+                ],
+                "watch": [
+                  "PMZ-UN.TO",
+                  "MTL.TO",
+                  "QBR-B.TO",
+                  "BB.TO",
+                  "GWO.TO",
+                  "EIF.TO",
+                  "EXE.TO",
+                  "ARE.TO"
+                ]
+              }
+            },
+            "sha256": "15f0d1d2753fa912c5911ff8c4371db69f596c0e2a0661275960a18c6f9b8f2b"
+          },
+          "output": "canada_stocks.null-buy.html",
+          "output_sha256": "85e24838a8eaa4dcc5d0df50e29f02b45bff357397b1f81e76e2739c812079ff",
+          "owner_population": {
+            "board": null,
+            "intersection": null,
+            "unique_total": null,
+            "watch": 8
+          },
+          "route": "/canada_stocks.html"
+        },
+        "watch-only": {
+          "input_transform": {
+            "bytes": 517,
+            "canonicalization": "utf-8 JSON; sort_keys=true; separators=(',', ':'); no trailing newline",
+            "payload": {
+              "market": "ca",
+              "operation": "replace buy with an explicit empty list; preserve every independent owner lane",
+              "owner_case": "watch-only",
+              "rendered_owner_identities": {
+                "buy": [],
+                "watch": [
+                  "PMZ-UN.TO",
+                  "MTL.TO",
+                  "QBR-B.TO",
+                  "BB.TO",
+                  "GWO.TO",
+                  "EIF.TO",
+                  "EXE.TO",
+                  "ARE.TO"
+                ]
+              },
+              "schema": "mastermind.stock_dashboard_owner_case.v1",
+              "source_owner_identities": {
+                "buy": [
+                  "SU.TO",
+                  "SOBO.TO",
+                  "NWC.TO",
+                  "QSR.TO",
+                  "RCH.TO",
+                  "CSH-UN.TO",
+                  "TPZ.TO",
+                  "TVK.TO",
+                  "TOU.TO"
+                ],
+                "watch": [
+                  "PMZ-UN.TO",
+                  "MTL.TO",
+                  "QBR-B.TO",
+                  "BB.TO",
+                  "GWO.TO",
+                  "EIF.TO",
+                  "EXE.TO",
+                  "ARE.TO"
+                ]
+              }
+            },
+            "sha256": "4f91a49be717ebde1e9f5683353438f9de7443d7f96751d826dc87b0589e5873"
+          },
+          "output": "canada_stocks.watch-only.html",
+          "output_sha256": "aa7a36a8f00673df22ea4a719b2bc63fca1cba805c981af94259676fb3c3795f",
+          "owner_population": {
+            "board": 0,
+            "intersection": [],
+            "unique_total": 8,
+            "watch": 8
+          },
+          "route": "/canada_stocks.html"
+        }
+      },
+      "owner_population": {
+        "board": 9,
+        "intersection": [],
+        "unique_total": 17,
+        "watch": 8
+      },
+      "route": "/canada_stocks.html"
+    }
+  },
+  "proof_class": "rendered_fixture",
+  "runtime": {
+    "jinja2": "3.1.6"
+  },
+  "schema": "mastermind.stock_dashboard_rendered_fixture.v1",
+  "transform": "jinja2_candidate_template_render_from_frozen_owner_and_action_fixtures"
+}
