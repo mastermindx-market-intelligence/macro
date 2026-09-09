@@ -1305,6 +1305,147 @@ def test_m1_shell_gate_description_renders_a_real_bilingual_sentence() -> None:
     )
 
 
+def test_unread_disclosures_have_house_copy_with_no_english_into_zh_leak() -> None:
+    """macro#6920 round-2/2 review MAJOR: engine UNREAD_DISCLOSURES
+    (CIK_LEG_OWNER_UNREAD, OWNER_COMPOSED_SUBJECT_UNREAD,
+    ISSUER_LINEAGE_UNREAD, ALIAS_EPOCH_UNREAD) had no `_SS_DISCLOSURES`
+    entries. `_ss_disclosure_rows` then duplicated the English engine
+    description — including machine field names — into both language slots.
+
+    RED at 59933d1a: OWNER_COMPOSED_SUBJECT_UNREAD rendered
+    `security_id, issuer_id, listing_key and ticker_display are the frozen
+    pinned fallback values; ...` in EN and ZH.
+    """
+    from engine.security_state import UNREAD_DISCLOSURES
+    from scripts.build_ticker_pages import _SS_DISCLOSURES, _ss_disclosure_rows, _ss_split_disclosure
+
+    rows = _ss_disclosure_rows(list(UNREAD_DISCLOSURES))
+    assert len(rows) == 4, rows
+    machine_tokens = (
+        "security_id", "issuer_id", "listing_key", "ticker_display",
+        "VendorAliasTable", "IssuerMaster",
+    )
+    for raw, row in zip(UNREAD_DISCLOSURES, rows):
+        code, _desc = _ss_split_disclosure(raw)
+        assert row["code"] == code
+        assert code in _SS_DISCLOSURES, (
+            f"{code}: no _SS_DISCLOSURES house-copy entry — EN leaks into ZH"
+        )
+        house = _SS_DISCLOSURES[code]
+        assert row["en"] == house["en"] and row["zh"] == house["zh"], (
+            f"{code}: rendered disclosure does not match house copy: {row!r}"
+        )
+        assert row["en"] != row["zh"], (
+            f"{code}: ZH slot duplicates English: {row!r}"
+        )
+        assert re.search(r"[一-鿿]", row["zh"]), f"{code}: zh is not Chinese: {row['zh']!r}"
+        hay = f"{row['en']} {row['zh']}"
+        for tok in machine_tokens:
+            assert tok not in hay, (
+                f"{code}: machine token {tok!r} in user-facing copy: {hay!r}"
+            )
+
+        contract = _contract(identity_proof={
+            "state": "BLOCKED_IDENTITY_BRIDGE", "method": "owner_backed_chain.v1",
+            "legs": [], "equalities": [], "refusals": [],
+            "disclosures": [raw],
+        })
+        view = build_security_state({"security_state": contract})
+        assert view is not None
+        rendered = next(d for d in view["identity"]["disclosures"] if d["code"] == code)
+        assert rendered["en"] == house["en"] and rendered["zh"] == house["zh"]
+
+
+def test_ss_leg_desc_identity_unresolved_is_plain_words_not_allowlist_jargon() -> None:
+    """macro#6920 round-2/2 review MINOR-1: `_SS_LEG_DESC[('R8','IDENTITY_UNRESOLVED')]`
+    still said 'frozen pinned-allowlist mapping' / '冻结准入映射' after the
+    batch/批处理 rewrite. Those are pipeline nouns, not what the reader is
+    looking at. RED at 59933d1a.
+    """
+    from scripts.build_ticker_pages import _SS_GATES, _SS_LEG_DESC
+
+    banned = (
+        "allowlist", "pinned-allowlist", "pinned allowlist",
+        "准入映射", "SecurityStateSubject",
+    )
+    for code, entry in _SS_GATES.items():
+        for slot, text in entry.items():
+            hay = str(text)
+            for word in banned:
+                assert word.lower() not in hay.lower() if word.isascii() else word not in hay, (
+                    f"_SS_GATES[{code!r}][{slot!r}] contains {word!r}: {hay!r}"
+                )
+    for key, entry in _SS_LEG_DESC.items():
+        for slot, text in entry.items():
+            hay = str(text)
+            for word in banned:
+                if word.isascii():
+                    assert word.lower() not in hay.lower(), (
+                        f"_SS_LEG_DESC[{key!r}][{slot!r}] contains {word!r}: {hay!r}"
+                    )
+                else:
+                    assert word not in hay, (
+                        f"_SS_LEG_DESC[{key!r}][{slot!r}] contains {word!r}: {hay!r}"
+                    )
+
+
+def test_m1_shell_artifact_and_reader_are_plain_bilingual_not_machine_paths() -> None:
+    """macro#6920 round-2/2 review MINOR-2: the M1 Identity checks panel
+    printed `artifact` and `reader` as raw English on the ZH page
+    (`SecurityStateSubject (frozen pinned allowlist config, ...)` and
+    `scripts/security_state_producer.py::_read_security_state_identity_rows`)
+    via the pass-through at build_ticker_pages.py. RED at 59933d1a.
+    """
+    from scripts.build_ticker_pages import _SS_ARTIFACT, _SS_READER
+
+    contract = _contract(identity_proof={
+        "state": "BLOCKED_IDENTITY_BRIDGE", "method": "owner_backed_chain.v1",
+        "legs": [{
+            "check": "R8",
+            "description": "owner-identity batch was unavailable this cycle; subject is the "
+            "frozen pinned allowlist mapping for this ticker, never a live owner read",
+            "artifact": "SecurityStateSubject (frozen pinned allowlist config, not a producer owner receipt)",
+            "reader": "scripts/security_state_producer.py::_read_security_state_identity_rows",
+            "values_read": [{"field": "subject_ticker_display", "value": "MSFT"}],
+            "result": "fail", "code": "IDENTITY_UNRESOLVED",
+        }],
+        "equalities": [], "refusals": ["IDENTITY_UNRESOLVED"], "disclosures": [],
+    })
+    view = build_security_state({"security_state": contract})
+    assert view is not None
+    leg = view["identity"]["legs"][0]
+
+    art = _SS_ARTIFACT[("R8", "IDENTITY_UNRESOLVED")]
+    rdr = _SS_READER[("R8", "IDENTITY_UNRESOLVED")]
+    assert leg["artifact_en"] == art["en"] and leg["artifact_zh"] == art["zh"]
+    assert leg["reader_en"] == rdr["en"] and leg["reader_zh"] == rdr["zh"]
+    assert leg["artifact_en"] != leg["artifact_zh"]
+    assert leg["reader_en"] != leg["reader_zh"]
+    assert re.search(r"[一-鿿]", leg["artifact_zh"])
+    assert re.search(r"[一-鿿]", leg["reader_zh"])
+    blob = " ".join([
+        leg["artifact_en"], leg["artifact_zh"],
+        leg["reader_en"], leg["reader_zh"],
+    ])
+    assert "SecurityStateSubject" not in blob
+    assert "scripts/" not in blob
+    assert "allowlist" not in blob.lower()
+    assert "准入映射" not in blob
+
+    import jinja2
+    env = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(str(REPO / "templates")),
+        undefined=jinja2.ChainableUndefined,
+    )
+    html = env.get_template("ticker.html.j2").render(
+        security_state=view, ticker="MSFT", name="Microsoft Corp.",
+    )
+    assert art["en"] in html and art["zh"] in html
+    assert rdr["en"] in html and rdr["zh"] in html
+    assert "SecurityStateSubject" not in html
+    assert "scripts/security_state_producer.py::_read_security_state_identity_rows" not in html
+
+
 def _prettify_words(code: str) -> str:
     words = re.sub(r"[^0-9A-Za-z]+", " ", code).strip().lower()
     return (words[:1].upper() + words[1:]) if words else ""

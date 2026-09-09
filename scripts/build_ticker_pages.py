@@ -3604,6 +3604,26 @@ _SS_DISCLOSURES: dict[str, dict[str, str]] = {
         "en": "This identity could not be re-confirmed this cycle; treat it as unresolved, not confirmed.",
         "zh": "本周期未能重新确认该身份；请视为未解析，而非已确认。",
     },
+    # Heal-round h2 r2 (macro#6920 review MAJOR): UNREAD_DISCLOSURES are the
+    # 1:1 unread counterparts of the four DISCLOSURES codes above. Without
+    # these entries, `_ss_disclosure_rows` duplicates the English engine
+    # description — including machine field names — into both language slots.
+    "CIK_LEG_OWNER_UNREAD": {
+        "en": "The issuer's registration number was not re-read this cycle; this page keeps the last known number, unverified.",
+        "zh": "本周期未重新读取发行人的注册编号；本页保留上次已知编号，未经核验。",
+    },
+    "OWNER_COMPOSED_SUBJECT_UNREAD": {
+        "en": "This page keeps the last known name and ticker for this security; the identity sources were not read this cycle.",
+        "zh": "本页保留该证券上次已知的名称与股票代码；本周期未读取身份来源。",
+    },
+    "ISSUER_LINEAGE_UNREAD": {
+        "en": "This cycle did not check the issuer's history or current identity.",
+        "zh": "本周期未核验发行人的历史沿革或当前身份。",
+    },
+    "ALIAS_EPOCH_UNREAD": {
+        "en": "This cycle did not cross-check this ticker against other names for the same security.",
+        "zh": "本周期未将该股票代码与同一证券的其他名称进行交叉核对。",
+    },
 }
 
 # Chairman plain-language law (2026-09-06), macro#6920 round-4 review MAJOR-2:
@@ -3621,15 +3641,41 @@ _SS_DISCLOSURES: dict[str, dict[str, str]] = {
 # not something this PR's own new text may hide behind.
 _SS_LEG_DESC: dict[tuple[str, str], dict[str, str]] = {
     ("R8", "IDENTITY_UNRESOLVED"): {
-        "en": "This cycle could not re-read who owns this security; this subject is the frozen "
-        "pinned-allowlist mapping for this ticker, not a live owner read.",
-        "zh": "本周期未能重新读取该证券的所有者；本证券主体为该股票代码的冻结准入映射，"
-        "并非实时读取的所有者身份数据。",
+        "en": "This cycle could not re-read who owns this security; this page keeps the last "
+        "known ticker mapping, not a live owner read.",
+        "zh": "本周期未能重新读取该证券的所有者；本页保留上次已知的股票代码对应关系，"
+        "并非实时读取的所有者身份。",
     },
     ("R8", "OWNER_IDENTITY_UNREAD"): {
         "en": "This cycle could not read who owns this security; no owner source ran, so this "
-        "page keeps only the frozen ticker and registration number.",
-        "zh": "本周期无法读取该证券的所有者；未运行所有者来源，因此本页仅保留冻结的股票代码与注册编号。",
+        "page keeps only the last known ticker and registration number.",
+        "zh": "本周期无法读取该证券的所有者；未运行所有者来源，因此本页仅保留上次已知的股票代码与注册编号。",
+    },
+}
+
+# Heal-round h2 r2 (macro#6920 review MINOR-2): the M1 Identity checks panel
+# printed `artifact` and `reader` as raw English on the ZH page. Keyed on
+# (check, code) like `_SS_LEG_DESC`. Unmapped legs still pass the engine
+# string through in both slots (pre-existing receipt-identifier behaviour
+# on the golden-MSFT R1..R9 path).
+_SS_ARTIFACT: dict[tuple[str, str], dict[str, str]] = {
+    ("R8", "IDENTITY_UNRESOLVED"): {
+        "en": "Last known ticker mapping (not a live owner record)",
+        "zh": "上次已知的股票代码对应关系（并非实时所有者记录）",
+    },
+    ("R8", "OWNER_IDENTITY_UNREAD"): {
+        "en": "Last known ticker and registration number (not a live owner record)",
+        "zh": "上次已知的股票代码与注册编号（并非实时所有者记录）",
+    },
+}
+_SS_READER: dict[tuple[str, str], dict[str, str]] = {
+    ("R8", "IDENTITY_UNRESOLVED"): {
+        "en": "this page's identity reader",
+        "zh": "本页的身份读取程序",
+    },
+    ("R8", "OWNER_IDENTITY_UNREAD"): {
+        "en": "this page's identity fallback",
+        "zh": "本页的身份备用读取",
     },
 }
 
@@ -4296,12 +4342,26 @@ def build_security_state(blob: dict | None) -> dict | None:
             # pre-existing behaviour as every other leg, MINOR-2).
             desc_house = _SS_LEG_DESC.get((leg_check, leg_code)) if leg_code else None
             desc_en, desc_zh = (desc_house["en"], desc_house["zh"]) if desc_house else (desc_raw, desc_raw)
+            artifact_raw = _clean_str(lg.get("artifact") or "")
+            reader_raw = _clean_str(lg.get("reader") or "")
+            art_house = _SS_ARTIFACT.get((leg_check, leg_code)) if leg_code else None
+            rdr_house = _SS_READER.get((leg_check, leg_code)) if leg_code else None
+            artifact_en, artifact_zh = (
+                (art_house["en"], art_house["zh"]) if art_house else (artifact_raw, artifact_raw)
+            )
+            reader_en, reader_zh = (
+                (rdr_house["en"], rdr_house["zh"]) if rdr_house else (reader_raw, reader_raw)
+            )
             id_legs.append({
                 "check": leg_check,
                 "desc_en": desc_en,
                 "desc_zh": desc_zh,
-                "artifact": _clean_str(lg.get("artifact") or ""),
-                "reader": _clean_str(lg.get("reader") or ""),
+                "artifact": artifact_en,
+                "artifact_en": artifact_en,
+                "artifact_zh": artifact_zh,
+                "reader": reader_en,
+                "reader_en": reader_en,
+                "reader_zh": reader_zh,
                 "reads": _ss_field_rows(lg.get("values_read")),
                 "result": res_code.lower(),
                 "result_en": res["en"], "result_zh": res["zh"],
