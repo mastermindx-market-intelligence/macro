@@ -702,7 +702,11 @@ def test_svg_tick_labels_are_tspans_not_html_spans() -> None:
     for tick in ticks:
         assert f'<span class="l-en">{tick["label"]["en"]}</span>' in overlay
         assert f'<span class="l-zh">{tick["label"]["zh"]}</span>' in overlay
+        assert f'<span class="l-en">{tick["short"]["en"]}</span>' in overlay
+        assert f'<span class="l-zh">{tick["short"]["zh"]}</span>' in overlay
     assert "is-last" in overlay
+    assert "mq-curve-xlabel-short" in overlay
+    assert "mq-curve-xlabel-long" in overlay
 
 
 # ---------------------------------------------------------------------------

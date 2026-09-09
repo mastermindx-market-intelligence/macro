@@ -989,6 +989,18 @@ _CURVE_TENOR_LABELS: dict[str, dict[str, str]] = {
     "20y": _pair("20-year", "20年期"),
     "30y": _pair("30-year", "30年期"),
 }
+_CURVE_TENOR_SHORT = {
+    "3m": _pair("3m", "3月"),
+    "6m": _pair("6m", "6月"),
+    "1y": _pair("1y", "1年"),
+    "2y": _pair("2y", "2年"),
+    "3y": _pair("3y", "3年"),
+    "5y": _pair("5y", "5年"),
+    "7y": _pair("7y", "7年"),
+    "10y": _pair("10y", "10年"),
+    "20y": _pair("20y", "20年"),
+    "30y": _pair("30y", "30年"),
+}
 _CURVE_MIN_USABLE = 6
 _CURVE_PRIOR_MONTH_DAYS = 30
 _CURVE_FLAT_BAND = 0.25  # |10y − 3m| in percentage points
@@ -1254,11 +1266,13 @@ def _chart_payload(tenors: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     x_ticks = []
     for i, row in enumerate(tenors):
         x = x_at(i)
+        tenor = row["tenor"]
         x_ticks.append({
             "x": x,
             "x_pct": round(100.0 * x / width, 3),
             "anchor": "end" if i == last_i else "middle",
-            "label": dict(row.get("label") or _CURVE_TENOR_LABELS[row["tenor"]]),
+            "label": dict(row.get("label") or _CURVE_TENOR_LABELS[tenor]),
+            "short": dict(_CURVE_TENOR_SHORT[tenor]),
         })
     y_ticks = []
     # Stay inside the plot, not on the baseline, so the lowest label cannot

@@ -58,6 +58,7 @@
     transform: translateX(-50%);
   }
   .mq-curve-xlabels li.is-last { transform: translateX(-100%); }
+  .mq-curve-xlabel-short { display: none; }
   .mq-curve-ylabels li {
     left: 0;
     width: 7.5%;
@@ -103,6 +104,8 @@
     .mq-curve-xlabels li,
     .mq-curve-ylabels li { font-size: 10px; }
     .mq-curve-ylabels li { width: 12%; }
+    .mq-curve-xlabel-long { display: none; }
+    .mq-curve-xlabel-short { display: inline; }
   }
 </style>
 <section class="mq-curve-hero{{ ' mq-curve-null-state' if not curve.ok else '' }}" id="mq-curve-hero">
@@ -143,7 +146,7 @@
       </ol>
       <ol class="mq-curve-xlabels">
         {% for tick in curve.chart.x_ticks %}
-        <li class="{{ 'is-last' if tick.anchor == 'end' else '' }}" style="left: {{ tick.x_pct }}%">{{ t(tick.label.en, tick.label.zh) }}</li>
+        <li class="{{ 'is-last' if tick.anchor == 'end' else '' }}" style="left: {{ tick.x_pct }}%"><span class="mq-curve-xlabel-long">{{ t(tick.label.en, tick.label.zh) }}</span><span class="mq-curve-xlabel-short">{{ t(tick.short.en, tick.short.zh) }}</span></li>
         {% endfor %}
       </ol>
     </div>
