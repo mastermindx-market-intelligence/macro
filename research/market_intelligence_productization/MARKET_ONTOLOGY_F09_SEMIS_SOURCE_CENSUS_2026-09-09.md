@@ -3,7 +3,7 @@
 - **Packet:** B-F09-B5-1 (Market Ontology Half B, family `F09-CAPITAL-MATERIALS`).
 - **Class:** research record. This packet builds nothing and integrates nothing. Naming a source is not clearing it.
 - **Ledger rows:** sequences from `MO-DELTA-029`; feeds `MO-PAID-040` and `MO-DELTA-027`.
-- **Base commit read:** `74ef4e223cb2a22a2b57df23af0142f737f852dd` (`origin/main` on 2026-09-09; later than spec base `e75998821888`).
+- **Base commit read:** base: f600fe054b15 (merge-base with main at commit time). Spec base was `e75998821888`.
 - **Date:** 2026-09-09.
 - **Authority ceiling:** research record only. **No rights are claimed, granted or cleared by this packet.** Naming a source is not clearing it.
 

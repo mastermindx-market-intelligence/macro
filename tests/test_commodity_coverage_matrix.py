@@ -273,7 +273,7 @@ def _census_data_rows():
     return data
 
 
-def test_11_semis_census_exists_and_is_marker_bounded():
+def test_census_exists_and_is_marker_bounded():
     assert _CENSUS.exists()
     text = _CENSUS.read_text(encoding="utf-8")
     assert text.count(_CENSUS_START) == 1
@@ -281,13 +281,13 @@ def test_11_semis_census_exists_and_is_marker_bounded():
     assert text.index(_CENSUS_START) < text.index(_CENSUS_END)
 
 
-def test_12_census_table_header_is_the_frozen_ten_columns():
+def test_census_table_header_is_the_frozen_ten_columns():
     rows = _census_table_rows()
     assert rows, "no table rows inside census markers"
     assert rows[0] == _CENSUS_HEADER
 
 
-def test_13_every_row_status_is_in_the_closed_vocabulary():
+def test_census_every_row_status_is_in_the_closed_vocabulary():
     for cells in _census_data_rows():
         assert len(cells) == 10, cells
         status = cells[8]
@@ -295,7 +295,7 @@ def test_13_every_row_status_is_in_the_closed_vocabulary():
         assert status in _STATUS_VOCAB, status
 
 
-def test_14_no_row_is_left_unverified():
+def test_census_no_row_is_left_unverified():
     text = _CENSUS.read_text(encoding="utf-8")
     start = text.index(_CENSUS_START)
     end = text.index(_CENSUS_END)
@@ -316,7 +316,7 @@ def test_14_no_row_is_left_unverified():
         assert "UNVERIFIED" not in cells[8], cells[8]
 
 
-def test_15_every_in_scope_subdomain_reaches_a_terminal_status():
+def test_census_every_in_scope_subdomain_reaches_a_terminal_status():
     by_sub = {s: [] for s in _IN_SUBDOMAINS}
     for cells in _census_data_rows():
         sub, status = cells[1], cells[8]
@@ -335,7 +335,7 @@ def test_15_every_in_scope_subdomain_reaches_a_terminal_status():
             assert status in _IN_TERMINAL, (sub, status)
 
 
-def test_16_commercial_gate_rows_name_vendor_and_licence_class():
+def test_census_commercial_gate_rows_name_vendor_and_licence_class():
     banned = {"", "unknown", "TBD", "n/a"}
     for cells in _census_data_rows():
         if cells[8] != "COMMERCIAL-GATE":
@@ -346,7 +346,7 @@ def test_16_commercial_gate_rows_name_vendor_and_licence_class():
         assert cells[5] not in banned, cells[5]
 
 
-def test_17_verified_negative_rows_carry_the_search_performed():
+def test_census_verified_negative_rows_carry_the_search_performed():
     for cells in _census_data_rows():
         statement = cells[9]
         if cells[8] == "VERIFIED-NEGATIVE":
@@ -356,7 +356,7 @@ def test_17_verified_negative_rows_carry_the_search_performed():
             assert statement == "n/a", cells
 
 
-def test_18_every_row_has_a_verification_method_and_provenance():
+def test_census_every_row_has_a_verification_method_and_provenance():
     for cells in _census_data_rows():
         method, provenance, status = cells[6], cells[7], cells[8]
         assert method, cells
@@ -366,7 +366,7 @@ def test_18_every_row_has_a_verification_method_and_provenance():
             assert status != "PUBLIC-BUILDABLE", cells
 
 
-def test_19_integrated_today_paths_resolve_or_say_NO():
+def test_census_integrated_today_paths_resolve_or_say_NO():
     for cells in _census_data_rows():
         integrated = cells[4]
         if integrated == "NO":
@@ -376,7 +376,7 @@ def test_19_integrated_today_paths_resolve_or_say_NO():
         assert (_REPO_ROOT / path).exists(), path
 
 
-def test_20_matrix_semis_row_cites_the_census():
+def test_semis_matrix_row_cites_the_census():
     lines = _MATRIX_CSV.read_text(encoding="utf-8").splitlines()
     assert len(lines) == 44
     semis = [ln for ln in lines if ln.startswith("semiconductors/critical-tech")]
