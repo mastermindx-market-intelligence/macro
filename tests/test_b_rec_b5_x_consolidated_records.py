@@ -82,6 +82,22 @@ FREEZE_SENTENCE = (
     "a builder may neither fork nor invent a formula before the matrix is ratified"
 )
 
+# The spec's BLOCKER 5 vocabulary. MO-DELTA-014 stays open, so none of these
+# words may sit beside the row id in either document.
+CLOSURE_WORDS = ("closed", "satisfied", "absorbed", "finished", "a closure")
+
+# Column order of the F08 metric adoption matrix table.
+MATRIX_COLUMNS = (
+    "metric",
+    "owning_module",
+    "definition",
+    "benchmark",
+    "horizon",
+    "annualization",
+    "version",
+    "may_not_be_used_for",
+)
+
 
 def _norm(s: str) -> str:
     s = (s or "").replace("`", "")
@@ -121,6 +137,37 @@ def _frontmatter(path: Path) -> dict:
     data = yaml.safe_load(parts[1])
     assert isinstance(data, dict), f"{path}: frontmatter did not parse as a mapping"
     return data
+
+
+def _matrix_rows(text: str) -> dict[str, list[str]]:
+    """Parse the F08 matrix table into {first cell -> list of cells}.
+
+    Row-anchored so an assertion about one metric cannot be satisfied by a
+    different metric's row somewhere else in the file.
+    """
+    rows: dict[str, list[str]] = {}
+    for line in text.splitlines():
+        line = line.strip()
+        if not line.startswith("|") or not line.endswith("|"):
+            continue
+        cells = [_norm(c) for c in line.strip("|").split("|")]
+        if len(cells) != len(MATRIX_COLUMNS):
+            continue
+        head = cells[0]
+        if not head or head.lower() == "metric" or set(head) <= set("-: "):
+            continue
+        assert head not in rows, f"matrix lists metric {head!r} on two rows"
+        rows[head] = cells
+    return rows
+
+
+def _matrix_row(text: str, metric: str) -> dict[str, str]:
+    rows = _matrix_rows(text)
+    assert metric in rows, (
+        f"the F08 matrix has no table row whose first cell is {metric!r}; "
+        f"rows present: {sorted(rows)}"
+    )
+    return dict(zip(MATRIX_COLUMNS, rows[metric]))
 
 
 def _edit_table(text: str) -> str:
@@ -261,13 +308,30 @@ def test_recorded_not_edited_rows_are_absent_from_the_edit_table(row_id: str) ->
 
 
 def test_mo_delta_014_is_not_described_as_closed() -> None:
-    text = RECORDS_DOC.read_text(encoding="utf-8").lower()
-    matrix = F08_MATRIX.read_text(encoding="utf-8").lower()
-    for blob, label in ((text, "consolidated document"), (matrix, "F08 matrix")):
-        # The row may be named. It must not be called closed / satisfied / absorbed.
-        window = blob
-        for banned in ("mo-delta-014 is closed", "mo-delta-014 closed", "014 a closure"):
-            assert banned not in window, f"{label} describes MO-DELTA-014 as closed"
+    """BLOCKER 5. The row is open; no document here may say otherwise.
+
+    Normalised through the module's own _norm(), which strips the backticks the
+    documents wrap the row id in, and matched as a regex within one sentence on
+    either side of the id, so `MO-DELTA-014` is absorbed is caught as readily as
+    the bare form.
+    """
+    alternation = "|".join(re.escape(word) for word in CLOSURE_WORDS)
+    gap = r"[^.!?]{0,90}"
+    patterns = (
+        re.compile(rf"mo-delta-014{gap}\b(?:{alternation})\b", re.IGNORECASE),
+        re.compile(rf"\b(?:{alternation})\b{gap}mo-delta-014", re.IGNORECASE),
+    )
+    for path, label in (
+        (RECORDS_DOC, "consolidated document"),
+        (F08_MATRIX, "F08 matrix"),
+    ):
+        blob = _norm(path.read_text(encoding="utf-8"))
+        for pattern in patterns:
+            hit = pattern.search(blob)
+            assert hit is None, (
+                f"{label} places a closure word beside MO-DELTA-014, which is open: "
+                f"{hit.group(0)!r}"
+            )
 
 
 # ------------------------------------------------------------ vocabulary
@@ -296,8 +360,6 @@ def test_fourteen_original_rows_use_the_closed_state_vocabulary() -> None:
 def test_no_row_in_this_packet_claims_proven_live() -> None:
     for spec in _edited():
         assert spec["new_capability_state_c2"] != "PROVEN_LIVE", spec["id"]
-    text = RECORDS_DOC.read_text(encoding="utf-8")
-    assert "PROVEN_LIVE" not in text or "no row" in text.lower() or "never" in text.lower()
     # Hard ban: do not claim any of the seven moved to PROVEN_LIVE.
     for row_id in _edited_ids():
         assert _ledger()[row_id]["capability_state_c2"] != "PROVEN_LIVE", row_id
@@ -331,22 +393,39 @@ def test_f08_matrix_document_exists_and_covers_every_manifest_metric() -> None:
     assert "engine/portfolio.py" in text and "HOUSE-only" in text
     assert "research-proposal-only" in text or "research proposal" in text.lower()
     for entry in _manifest()["f08_metrics"]:
-        assert entry["metric"] in text, f"matrix is missing metric {entry['metric']!r}"
+        metric = entry["metric"]
+        cells = _matrix_row(text, metric)
         if entry["owning_module"] == "NO-OWNER":
-            assert "NO-OWNER" in text
-            assert entry["may_not_be_used_for"], f"{entry['metric']}: empty may_not_be_used_for"
+            assert cells["owning_module"] == "NO-OWNER", (
+                f"{metric}: the owner cell on its own matrix row reads "
+                f"{cells['owning_module']!r}, not the literal token NO-OWNER"
+            )
+            assert entry["may_not_be_used_for"], f"{metric}: empty may_not_be_used_for"
         else:
-            assert entry["owning_module"] in text, (
-                f"{entry['metric']}: owning module {entry['owning_module']!r} not in matrix"
+            assert cells["owning_module"] == _norm(entry["owning_module"]), (
+                f"{metric}: the owner cell on its own matrix row reads "
+                f"{cells['owning_module']!r}, manifest wants "
+                f"{_norm(entry['owning_module'])!r}"
             )
             for attr in ("definition", "benchmark", "horizon", "annualization", "version"):
                 assert entry[attr] and entry[attr] != "NO-OWNER", (
-                    f"{entry['metric']}: owned metric missing {attr}"
+                    f"{metric}: owned metric missing {attr}"
+                )
+                assert cells[attr] == _norm(entry[attr]), (
+                    f"{metric}: the {attr} cell on its own matrix row reads "
+                    f"{cells[attr]!r}, manifest wants {_norm(entry[attr])!r}"
                 )
     for name in ("Sharpe", "Sortino", "beta"):
-        # Each of these three must appear as NO-OWNER, not as an invented owner.
-        pattern = re.compile(rf"{name}.*NO-OWNER|NO-OWNER.*{name}", re.DOTALL)
-        assert pattern.search(text), f"{name} is not pinned NO-OWNER in the matrix"
+        # Row-anchored: NO-OWNER must stand in every attribute cell of THIS
+        # metric's own row, not merely somewhere else in the file.
+        cells = _matrix_row(text, name)
+        for column in MATRIX_COLUMNS[1:-1]:
+            assert cells[column] == "NO-OWNER", (
+                f"{name}: the {column} cell on its own matrix row reads "
+                f"{cells[column]!r}, not NO-OWNER — an owner was invented for a "
+                "metric the freeze leaves unowned"
+            )
+        assert cells["may_not_be_used_for"], f"{name}: empty may-not-be-used-for cell"
     assert "validated" not in text.lower()
 
 

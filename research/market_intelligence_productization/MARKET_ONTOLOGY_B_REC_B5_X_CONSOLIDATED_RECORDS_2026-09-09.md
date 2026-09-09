@@ -19,7 +19,7 @@ scope is described as proposed, not shipped.
 | `MO-PAID-037` | `NOT_BUILT` / `NEW_BOUNDED_BUILD` | `NOT_BUILT` / `BLOCKED_RIGHTS` | Inherits 035 through the triple dependency 022+026+035. Same preservation of #6997's cells. |
 | `MO-DELTA-040` | `NOT_BUILT` / `REJECTED_BY_DESIGN` | `NOT_BUILT` / `REJECTED_BY_DESIGN` | Acceptance was "Sol docket ruling recorded" and that ruling already sat in `adjudication_notes`. `state_delta` now says the question is answered. The post-F12-tenancy revisit clause is unchanged. |
 | `MO-DELTA-029` | `PARTIAL` / `NEW_BOUNDED_BUILD` | `BUILT_NOT_PROVEN` / `NEW_BOUNDED_BUILD` | macro#6926 (merged `8e3bb1a4dd`) shipped the five-family coverage matrix. Not two-user-proven. |
-| `MO-PAID-067` | `PARTIAL` / `PROJECTION_ONLY` | `BUILT_NOT_PROVEN` / `PROJECTION_ONLY` | macro#6926 wired a dated policy step onto the capital-structure desk via `policy_calendar`. `foresight_cascade` is not wired. `next_bounded_child` is left populated (reviewer call). `real_consumer` still reads `NONE` and is owed, not silently skipped. |
+| `MO-PAID-067` | `PARTIAL` / `PROJECTION_ONLY` | `BUILT_NOT_PROVEN` / `PROJECTION_ONLY` | macro#6926 wired a dated policy step onto the capital-structure desk via `policy_calendar`. `foresight_cascade` is not wired. `next_bounded_child` is left populated (reviewer call). `real_consumer` still reads `untraced` and is owed, not silently skipped. |
 | `MO-PAID-057` | `PARTIAL` / `UPGRADE_EXISTING_OWNER` | `PARTIAL` / `UPGRADE_EXISTING_OWNER` | R9 only: `next_bounded_child` rewritten. No other cell on this row moves. B-F13-B5-1 is held until `DEC:F13-TIER-REFRESH-ACCEPTANCE-CONFLICT-2026-09-09` lands. |
 
 `BLOCKED_RIGHTS` is a `granular_disposition` value. It is never written into
@@ -105,7 +105,7 @@ signal. The cited engine is `policy_calendar`; `foresight_cascade` is not wired
 into this page and is not claimed. State moves to `BUILT_NOT_PROVEN`.
 `next_bounded_child` still names the wiring that has since happened; emptying
 it is a reviewer call and is not taken here. `real_consumer` still reads
-`NONE` on a row whose consumer is the capital-structure page — that column is
+`untraced` on a row whose consumer is the capital-structure page — that column is
 outside this packet's four and is named as owed.
 
 Neither row is two-user-proven in production.
@@ -134,7 +134,7 @@ Census packet 6 (`B-F08-B5-2`). The CSV half is already done by the base
 (macro#7003): `MO-PAID-036` is `BUILT_NOT_PROVEN` against terminal#524;
 `MO-DELTA-014` stays `PARTIAL` because Sharpe, Sortino and beta are computed
 nowhere for a user's own positions. This packet does not re-edit those two
-rows and does not treat `MO-DELTA-014` as finished.
+rows, and it leaves `MO-DELTA-014` open.
 
 The remaining work is the matrix itself, filed as an amendment at
 `research/MARKET_ONTOLOGY_F08_METRIC_ADOPTION_MATRIX_2026-09-09.md`, with
@@ -151,8 +151,8 @@ pinned `NO-OWNER`. `engine/portfolio.py` stays HOUSE-only. Ceiling
 `decision_support_only`. The Portfolio Constructor remains
 research-proposal-only and is visibly separate from any live book surface.
 
-The census was wrong to call `MO-DELTA-014` finished. Three of its four named
-metrics have no owner. A matrix that invented owners for them would be the
+The census was wrong about `MO-DELTA-014`: that row is still open. Three of
+its four named metrics have no owner. A matrix that invented owners for them would be the
 exact "fork nor invent" the freeze forbids.
 
 ## 6. What this packet deliberately did not do
@@ -190,7 +190,7 @@ See `DEC:F13-TIER-REFRESH-ACCEPTANCE-CONFLICT-2026-09-09`.
 
 1. Entry 29: #6925's public-API refusal is **not** carried into #6997.
 2. Entry 15: macro#6905 is **OPEN**, not merged.
-3. Entry 6: `MO-DELTA-014` is **not** finished; three of four metrics have no
+3. Entry 6: `MO-DELTA-014` is still **open**; three of four metrics have no
    owner.
 
 The census lives in the handoff kit, not this repository. A note in the next
