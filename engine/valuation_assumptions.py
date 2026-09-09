@@ -178,6 +178,15 @@ def controls_blob(v1_blob):
     default_ps = per_share_at(ni, revenue, shares, g, m_pp, mult)
     if default_ps is None:
         return None
+    # Section 2.6 makes this an equality, not a coincidence: the sandbox's first
+    # paint IS V1's Base card, so the two figures can never disagree on screen.
+    # The rules can disagree in principle -- round2 here is half-up, V1's
+    # round() is half-to-even, so an exact half-cent splits them -- and when
+    # they do, the panel is not shown at all rather than contradicting the
+    # authority directly above it. The null shape is the same one every other
+    # unusable-V1 branch returns.
+    if default_ps != base_ps:
+        return None
 
     presets = {}
     for key, g_s, m_s, mult_s in SCENARIOS:

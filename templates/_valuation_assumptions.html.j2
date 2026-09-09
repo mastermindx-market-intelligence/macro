@@ -10,8 +10,12 @@
 <style>
 .va-floor{margin:0;font-size:13px;line-height:1.55;color:var(--muted);}
 </style>
-<section class="mod" id="valuation-assumptions-floor" data-valuation-assumptions="floor">
+<section class="mod rv" id="valuation-assumptions-floor" data-valuation-assumptions="floor">
+  <div class="mod-hd">
+    <h2>{{ t('Try your own assumptions', '试试你自己的假设') }}</h2>
+  </div>
   <p class="va-floor">{{ t('Not enough reported margin to run this.', '披露的利润率基数不足，无法进行试算。') }}</p>
+  <div class="mod-ft">{{ t('Research display only — not advice.', '仅供研究展示，非投资建议。') }}</div>
 </section>
 {% else %}
 <style>
@@ -56,14 +60,14 @@
       {% if c.key == 'sales_growth_pct' %}
     <div class="va-ctl">
       <label for="va-ctl-sales_growth_pct">{{ t('Sales growth next year', '下一年销售增长') }}</label>
-      <span class="va-readout" id="va-read-sales_growth_pct">{{ '%+.1f'|format(sd.sales_growth_pct) }}%</span>
+      <span class="va-readout" id="va-read-sales_growth_pct">{{ '%+.1f'|format(sd.sales_growth_pct) if sd.sales_growth_pct else '%.1f'|format(sd.sales_growth_pct) }}%</span>
       <input type="range" id="va-ctl-sales_growth_pct" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.step }}" value="{{ sd.sales_growth_pct }}">
     </div>
       {% elif c.key == 'margin_delta_pp' %}
     <div class="va-ctl">
       <label for="va-ctl-margin_delta_pp">{{ t('Margin change', '利润率变化') }}</label>
       <span>
-        <span class="va-readout" id="va-read-margin_delta_pp">{{ '%+.1f'|format(sd.margin_delta_pp) }}</span>
+        <span class="va-readout" id="va-read-margin_delta_pp">{{ '%+.1f'|format(sd.margin_delta_pp) if sd.margin_delta_pp else '%.1f'|format(sd.margin_delta_pp) }}</span>
         <span class="va-unit">{{ t('percentage points', '个百分点') }}</span>
       </span>
       <input type="range" id="va-ctl-margin_delta_pp" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.step }}" value="{{ sd.margin_delta_pp }}">
@@ -77,11 +81,16 @@
       {% endif %}
     {% endfor %}
   </div>
-  <div class="va-out" id="va-out" aria-live="polite" aria-labelledby="va-out-k">
+  {#- The label sits inside the card but OUTSIDE the live region, so a slider
+      tick announces the value and not the label again; role="status" is what
+      makes the aria-labelledby name survive (role=generic prohibits a name). -#}
+  <div class="va-out">
     <div class="va-out-k" id="va-out-k">{{ t('Per share, on your assumptions', '按你的假设计算的每股价值') }}</div>
-    <div class="va-out-num num" id="va-out-num">${{ '%.2f'|format(sd.per_share) }}</div>
-    <div class="va-out-null" id="va-out-null" hidden>{{ t('Margins are too thin at this setting to produce a number.', '在该设置下利润率过低，无法算出数值。') }}</div>
-    <p class="va-bridge" id="va-bridge"><span class="l-en">Base case is ${{ '%.2f'|format(sd.per_share) }}. Your assumptions give ${{ '%.2f'|format(sd.per_share) }} (+0.0%).</span><span class="l-zh">基准情景为 ${{ '%.2f'|format(sd.per_share) }}，你的假设得出 ${{ '%.2f'|format(sd.per_share) }}（+0.0%）。</span></p>
+    <div id="va-out" role="status" aria-live="polite" aria-labelledby="va-out-k">
+      <div class="va-out-num num" id="va-out-num">${{ '%.2f'|format(sd.per_share) }}</div>
+      <div class="va-out-null" id="va-out-null" hidden>{{ t('Margins are too thin at this setting to produce a number.', '在该设置下利润率过低，无法算出数值。') }}</div>
+      <p class="va-bridge" id="va-bridge"><span class="l-en" lang="en">Base case is ${{ '%.2f'|format(sd.per_share) }}. Your assumptions give ${{ '%.2f'|format(sd.per_share) }} (0.0%).</span><span class="l-zh" lang="zh-CN">基准情景为 ${{ '%.2f'|format(sd.per_share) }}，你的假设得出 ${{ '%.2f'|format(sd.per_share) }}（0.0%）。</span></p>
+    </div>
   </div>
   <div class="va-presets" id="va-presets">
     <button type="button" class="gbtn gbtn-sm va-preset" data-va-preset="cautious">{{ t('Cautious', '保守') }}</button>
@@ -93,7 +102,7 @@
   <p class="va-note"><span class="l-en">Applied to FY{{ va.fy }} as disclosed to the SEC — revenue, net income and share count come straight from the disclosure, and are not editable here.</span><span class="l-zh">套用在按 SEC 披露的{{ va.fy }}财年数据上——营业收入、净利润与股数均直接取自披露文件，此处不可修改。</span></p>
   {#- One minus-sign convention across the panel: the site's ASCII hyphen-minus,
       the same character the V1 cards and this panel's own readouts print. -#}
-  <p class="va-note">{{ t('Sales growth -10% to +20%; margin change -3.0 to +3.0 percentage points; earnings multiple 8× to 35×.', '销售增长 -10% 至 +20%；利润率变化 -3.0 至 +3.0 个百分点；市盈率倍数 8 倍至 35 倍。') }}</p>
+  <p class="va-note">{{ t('Sales growth -10% to +20%; margin change -3.0 to +3.0 percentage points; earnings multiple 8× to 35×.', '销售增长 -10% 至 +20%；利润率变化 -3.0 至 +3.0 个百分点；市盈率倍数 8× 至 35×。') }}</p>
   <script>
 (function (root) {
   function round2(v) {
@@ -120,7 +129,22 @@
     var r = round2(v);
     return r == null ? null : r.toFixed(2);
   }
-  root.vsAssumptionMath = { round2: round2, perShareAt: perShareAt, format2: format2 };
+  // One sign convention for every signed figure the panel prints. A value that
+  // rounds to zero is neither a rise nor a fall, so it carries no sign at all:
+  // "-0.0%" beside two equal dollar figures is a formatting artifact, not
+  // plain language. The server render prints the same three strings.
+  function signedPct(v, digits) {
+    var n = Number(v);
+    var body = Math.abs(n).toFixed(digits);
+    if (Number(body) === 0) return body;
+    return (n < 0 ? "-" : "+") + body;
+  }
+  root.vsAssumptionMath = {
+    round2: round2,
+    perShareAt: perShareAt,
+    format2: format2,
+    signedPct: signedPct
+  };
   if (typeof module !== "undefined" && module.exports) {
     module.exports = root.vsAssumptionMath;
   }
@@ -149,13 +173,6 @@
 
   var basePs = Number(sd.per_share);
 
-  function signedPct(v, digits) {
-    var n = Number(v);
-    var body = Math.abs(n).toFixed(digits);
-    if (n > 0) return "+" + body;
-    if (n < 0) return "-" + body;
-    return "+" + body;
-  }
   function paintReadouts(g, m, x) {
     if (readG) readG.textContent = signedPct(g, 1) + "%";
     if (readM) readM.textContent = signedPct(m, 1);
@@ -179,7 +196,6 @@
     return "";
   }
   function paint() {
-    var liveLang = document.documentElement.getAttribute("data-lang") || "";
     var g = Number(elG.value);
     var m = Number(elM.value);
     var x = Number(elX.value);
@@ -188,7 +204,8 @@
     var y = perShareAt(inp.net_income, inp.revenue, inp.shares, g, m, x);
     var thin = !(y > 0);
     if (outWrap) {
-      outWrap.setAttribute("lang", liveLang === "zh" ? "zh-CN" : "en");
+      // Each twin declares its own language in the markup (lang="en" /
+      // lang="zh-CN"); nothing stamps one language on the node holding both.
       if (thin) outWrap.classList.add("va-is-null");
       else outWrap.classList.remove("va-is-null");
     }

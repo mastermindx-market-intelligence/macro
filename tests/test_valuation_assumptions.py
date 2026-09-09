@@ -98,6 +98,27 @@ def test_controls_blob_default_equals_v1_base_card():
     assert blob_defaults == defaults
 
 
+def test_controls_blob_returns_the_null_shape_when_v1_base_card_disagrees():
+    """Section 2.6's equality is enforced, not assumed (round 6 ruling R2(b)).
+
+    round2() here is half-up; V1's round() is half-to-even, so an exact
+    half-cent can split them. When the sandbox's first paint would not equal
+    the Base card printed directly above it, the panel is not shown at all --
+    controls_blob returns the same null shape every other unusable-V1 branch
+    returns, rather than painting a figure that contradicts the authority.
+    """
+    v1 = _v1_blob()
+    assert va.controls_blob(v1) is not None
+    by_key = {s["key"]: s for s in v1["scenarios"]}
+    assert va.controls_blob(v1)["server_default"]["per_share"] == by_key["base"]["per_share"]
+    for delta in (0.01, -0.01):
+        perturbed = json.loads(json.dumps(v1))
+        for s in perturbed["scenarios"]:
+            if s["key"] == "base":
+                s["per_share"] = round(s["per_share"] + delta, 2)
+        assert va.controls_blob(perturbed) is None, delta
+
+
 def test_controls_blob_is_none_when_v1_is_not_usable():
     assert va.controls_blob(None) is None
     assert va.controls_blob(_v1_blob(ni=None)) is None
@@ -108,9 +129,10 @@ def test_controls_blob_is_none_when_v1_is_not_usable():
     revenue = 1.0e11
     tiny_ni = revenue * 0.001  # 0.1% margin, under the 1% floor
     thin = va.controls_blob(_v1_blob(ni=tiny_ni, revenue=revenue))
-    # Seat ruling R5 of round 4 (recorded in the seat's ratification comment):
-    # the thin artifact shape is the permitted section 2.6 exception, and its
-    # key set is fixed at exactly these nine keys.
+    # Seat ruling R5, issued in the seat's round-4 rulings
+    # (ext/rul_m_f07_2_h4.txt) and recorded on this PR at ratification: the
+    # thin artifact shape is the permitted section 2.6 exception, and its key
+    # set is fixed at exactly these nine keys.
     assert thin is not None
     assert thin.get("too_thin_base") is True
     assert set(thin) == {
@@ -141,17 +163,22 @@ def test_margin_too_thin_and_nonpositive_never_render_a_number():
     assert thin is not None and thin.get("too_thin_base") is True
     html = _render_assumptions(thin, t=lambda en, zh: f"{en}|{zh}")
     assert "Not enough reported margin to run this.|披露的利润率基数不足，无法进行试算。" in html
-    # The single line still sits in a panel wrapper, like every other module.
-    assert '<section class="mod" id="valuation-assumptions-floor"' in html
-    assert "Try your own assumptions" not in html
+    # Round 6 ruling R2(j): the floor branch is a panel like every other module
+    # on the dossier -- it carries the same heading (so "this" has an
+    # antecedent), the same footer, and the same .rv reveal class. Section 2.3's
+    # "and nothing else" is read as "no controls, no output, no bridge".
+    assert '<section class="mod rv" id="valuation-assumptions-floor"' in html
+    assert "Try your own assumptions|试试你自己的假设" in html
+    assert "<h2>" in html
+    assert 'class="mod-ft"' in html
+    assert "Research display only — not advice.|仅供研究展示，非投资建议。" in html
     assert "Move the three inputs" not in html
-    assert "Research display only" not in html
-    assert "<h2" not in html
     assert "va-lede" not in html
     assert "va-ctls" not in html
     assert "va-bridge" not in html
-    assert "mod-ft" not in html
+    assert "va-out" not in html
     assert "$-" not in html
+    assert "$" not in html
 
 
 def test_js_and_python_agree_stringwise_on_a_dense_grid():
@@ -278,6 +305,16 @@ def test_bilingual_parity_and_no_zh_in_attributes():
     assert "同一批披露数据" in text
     assert "套用在按 SEC 披露的" in text
     assert "基准情景为 $" in text
+    # One notation for one unit inside one panel: the ZH footnote spells the
+    # multiple range the way the ZH readout above it prints the multiple
+    # (round 6 ruling R2(e)); "倍" never stands beside "×".
+    assert "8× 至 35×" in text
+    assert "8 倍至 35 倍" not in text
+    # "倍" never stands as the UNIT after a number anywhere in the panel; the
+    # control's frozen ZH label "市盈率倍数" (the noun) is what the footnote
+    # reuses, so label and readout name the same thing the same way.
+    for m in re.finditer(r"\d\s*倍", text):
+        raise AssertionError(f"ZH multiple printed with the 倍 unit: {m.group(0)!r}")
     # The live output region's accessible name comes from the bilingual t()
     # label next to it, not from a static English attribute.
     assert 'aria-labelledby="va-out-k"' in text
@@ -310,9 +347,46 @@ def test_langchange_binds_on_document_and_bridge_keeps_twins():
     assert 'class="l-zh"' in inner
     js = _extract_js(html)
     assert "bridge.textContent" not in js
-    assert "getAttribute(\"data-lang\")" in js
-    assert 'setAttribute("lang"' in js
+    # Round 6 ruling R2(g): each twin declares its own language in the markup;
+    # nothing stamps one language on the wrapper that holds both, so no hidden
+    # twin is ever declared in the language it is not written in.
+    assert 'setAttribute("lang"' not in js
+    assert 'class="l-en" lang="en"' in inner
+    assert 'class="l-zh" lang="zh-CN"' in inner
+    live = re.search(r'<div id="va-out"[^>]*>', html)
+    assert live, "the live region is missing"
+    assert "lang=" not in live.group(0)
     assert 'id="valuation-assumptions"' in html
+
+
+def _apply_triple_literal_args(js: str):
+    """Every applyTriple(...) call site whose ARGUMENT LIST holds a numeric
+    literal, in any position. Round 4's backdoor was
+    `applyTriple(sd.sales_growth_pct, -3, 12)`, which a first-argument-only
+    pin does not catch (round 6 ruling R2(a))."""
+    bad = []
+    for m in re.finditer(r"applyTriple\s*\(([^)]*)\)", js):
+        args = m.group(1)
+        if re.search(r"(?<![\w.$])-?\d", args):
+            bad.append(m.group(0))
+    return bad
+
+
+def _reveal_overrides_for_section(css_text: str):
+    """Every CSS rule whose SELECTOR names the module's section id, in any
+    selector form, and whose body touches opacity or transform. The round-4
+    override was welded on `#valuation-assumptions{opacity:1}`; `.mod#id`,
+    `[id="..."]`, `html #id.rv` and friends are the same override
+    (round 6 ruling R2(a))."""
+    bad = []
+    for block in re.findall(r"<style>(.*?)</style>", css_text, re.DOTALL | re.IGNORECASE):
+        for rule in re.finditer(r"([^{}]+)\{([^{}]*)\}", block):
+            selector, decls = rule.group(1), rule.group(2)
+            if "valuation-assumptions" not in selector:
+                continue
+            if "opacity" in decls or "transform" in decls:
+                bad.append(selector.strip() + " {" + decls.strip() + "}")
+    return bad
 
 
 def test_no_capture_harness_hook_and_no_reveal_override():
@@ -329,14 +403,37 @@ def test_no_capture_harness_hook_and_no_reveal_override():
     for hook in ("va-moved", "MutationObserver", "applyMovedIfForced"):
         assert hook not in text, hook
         assert hook not in js, hook
-    # The three assumptions are only ever read from the artifact, never re-typed.
-    assert not re.search(r"applyTriple\(\s*-?\d", js)
+    # The three assumptions are only ever read from the artifact, never re-typed
+    # -- in ANY argument position, not just the first.
+    assert _apply_triple_literal_args(js) == []
+    # The pin itself is checked against the exact round-4 offending call and
+    # against the two call sites that are allowed to stand, so it can never
+    # again be narrower than the body says it is.
+    assert _apply_triple_literal_args(
+        "applyTriple(sd.sales_growth_pct, -3, 12);"
+    ) == ["applyTriple(sd.sales_growth_pct, -3, 12)"]
+    assert _apply_triple_literal_args("applyTriple(-3, 12, 18);") == [
+        "applyTriple(-3, 12, 18)"
+    ]
+    assert _apply_triple_literal_args(
+        "applyTriple(p.sales_growth_pct, p.margin_delta_pp, p.earnings_multiple);"
+        "applyTriple(sd.sales_growth_pct, sd.margin_delta_pp, sd.earnings_multiple);"
+    ) == []
     # The module reveals like every other .rv module: no completed-reveal class
-    # baked into the markup, and no per-id opacity/transform override.
+    # baked into the markup, and no opacity/transform override under ANY
+    # selector form that names the section id.
     assert 'class="mod rv"' in html
     assert "mod rv in" not in html
-    assert not re.search(r"#valuation-assumptions\s*\{[^}]*opacity", text)
-    assert not re.search(r"#valuation-assumptions\s*\{[^}]*transform", text)
+    assert _reveal_overrides_for_section(text) == []
+    assert _reveal_overrides_for_section(
+        "<style>.mod#valuation-assumptions{opacity:1;}</style>"
+    ) == [".mod#valuation-assumptions {opacity:1;}"]
+    assert _reveal_overrides_for_section(
+        '<style>html.has-js [id="valuation-assumptions"]{transform:none}</style>'
+    ) == ['html.has-js [id="valuation-assumptions"] {transform:none}']
+    assert _reveal_overrides_for_section(
+        "<style>#valuation-assumptions-floor.rv{opacity:1}</style>"
+    ) == ["#valuation-assumptions-floor.rv {opacity:1}"]
     # The sandbox figure is never louder than V1's authoritative card value
     # (templates/_valuation_scenario.html.j2: .vs-card .vv is 20px/800, no glow).
     num_rule = re.search(r"\.va-out-num\{([^}]*)\}", text)
@@ -344,6 +441,66 @@ def test_no_capture_harness_hook_and_no_reveal_override():
     assert "text-shadow" not in num_rule.group(1)
     sizes = [float(s) for s in re.findall(r"\.va-out-num\{[^}]*?font-size:([0-9.]+)px", text)]
     assert sizes and max(sizes) <= 20.0, sizes
+
+
+def test_no_signed_zero_and_one_sign_convention_across_both_twins():
+    """A delta that rounds to zero carries no sign at all (round 6 ruling
+    R2(c)): "-0.0%" beside two equal dollar figures is a formatting artifact,
+    and the server render prints exactly what the JS twin prints."""
+    node = shutil.which("node")
+    assert node, "node is required; install Node.js (fail loudly, never skip)"
+    blob = va.controls_blob(_v1_blob())
+    html = _render_assumptions(blob)
+    js = _extract_js(html)
+    cases = [-0.049, -0.0001, 0, 0.049, -0.06, 0.06, -40.83, 34.52, 3, -1.5]
+    expected = ["0.0", "0.0", "0.0", "0.0", "-0.1", "+0.1", "-40.8", "+34.5", "+3.0", "-1.5"]
+    with tempfile.TemporaryDirectory() as td:
+        tdir = Path(td)
+        (tdir / "vs_math.js").write_text(js, encoding="utf-8")
+        (tdir / "cases.json").write_text(json.dumps(cases), encoding="utf-8")
+        (tdir / "harness.js").write_text(
+            "const math = require('./vs_math.js');\n"
+            "const fs = require('fs');\n"
+            "const cs = JSON.parse(fs.readFileSync('./cases.json', 'utf8'));\n"
+            "process.stdout.write(JSON.stringify(cs.map((c) => math.signedPct(c, 1))));\n",
+            encoding="utf-8",
+        )
+        proc = subprocess.run([node, "harness.js"], cwd=tdir, capture_output=True, text=True)
+        assert proc.returncode == 0, proc.stderr
+        assert json.loads(proc.stdout) == expected
+    # No signed zero anywhere a reader can see it, in either language, and the
+    # server-rendered readouts are the strings signedPct produces for the same
+    # defaults ("+3.0" for growth 3, "0.0" for margin 0). The script block is
+    # excluded because its comment quotes the artifact it exists to prevent.
+    visible = re.sub(r"<script[^>]*>.*?</script>", "", html, flags=re.DOTALL | re.I)
+    assert "-0.0" not in visible
+    assert 'id="va-read-sales_growth_pct">+3.0%<' in html
+    assert 'id="va-read-margin_delta_pp">0.0<' in html
+    assert "Your assumptions give $%.2f (0.0%%)." % blob["server_default"]["per_share"] in html
+    assert "你的假设得出 $%.2f（0.0%%）。" % blob["server_default"]["per_share"] in html
+
+
+def test_live_region_is_a_status_and_its_label_sits_outside_it():
+    """Round 6 ruling R2(f). role=generic is name-prohibited, so the
+    aria-labelledby name is liable to be discarded; role="status" is a live
+    region that takes a name. The label itself moves out of the live region so
+    a slider tick announces the value, not the label with the value."""
+    blob = va.controls_blob(_v1_blob())
+    html = _render_assumptions(blob)
+    m = re.search(r'<div id="va-out"[^>]*>', html)
+    assert m, "the live region is missing"
+    tag = m.group(0)
+    assert 'role="status"' in tag
+    assert 'aria-live="polite"' in tag
+    assert 'aria-labelledby="va-out-k"' in tag
+    # The label precedes the live region, so it cannot be a descendant of it.
+    assert html.index('id="va-out-k"') < html.index(tag)
+    # Both still sit inside the one output card.
+    assert html.index('<div class="va-out">') < html.index('id="va-out-k"')
+    # The value, the null line and the bridge all follow the live region's
+    # opening tag, so they are what a status announcement carries.
+    for node_id in ('id="va-out-num"', 'id="va-out-null"', 'id="va-bridge"'):
+        assert html.index(tag) < html.index(node_id), node_id
 
 
 def test_no_js_default_state_is_correct_and_complete():
