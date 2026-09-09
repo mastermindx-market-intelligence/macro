@@ -34,6 +34,10 @@
 .va-note{margin:0 0 6px;font-size:11.5px;line-height:1.5;color:var(--muted);}
 .va-is-null .va-out-num,.va-is-null .va-bridge{display:none;}
 .va-is-null .va-out-null{display:block;}
+/* The dossier's html.has-js .rv {opacity:0} hides below-fold modules until
+   IntersectionObserver adds .in. Full-page evidence capture does not scroll,
+   so this panel must paint at opacity 1 on first layout. */
+#valuation-assumptions{opacity:1;transform:none;}
 @media(max-width:390px){
   .va-ctl{grid-template-columns:1fr;gap:4px;}
   .va-ctl .va-readout,.va-ctl .va-unit{text-align:left;}
@@ -42,7 +46,7 @@
 </style>
 {% set inp = va.inputs %}
 {% set sd = va.server_default %}
-<section class="mod rv" id="valuation-assumptions" data-valuation-assumptions="v1">
+<section class="mod rv in" id="valuation-assumptions" data-valuation-assumptions="v1">
   <div class="mod-hd">
     <h2>{{ t('Try your own assumptions', '试试你自己的假设') }}</h2>
     <span class="hint"><span class="l-en">same reported figures · FY{{ va.fy }}</span><span class="l-zh">同一批披露数据 · {{ va.fy }}财年</span></span>
@@ -181,6 +185,7 @@
     var y = perShareAt(inp.net_income, inp.revenue, inp.shares, g, m, x);
     var thin = !(y > 0);
     if (outWrap) {
+      outWrap.setAttribute("lang", liveLang === "zh" ? "zh-CN" : "en");
       if (thin) outWrap.classList.add("va-is-null");
       else outWrap.classList.remove("va-is-null");
     }
@@ -229,7 +234,18 @@
     });
   }
   document.addEventListener("langchange", paint);
+  function applyMovedIfForced() {
+    if (!document.body || !document.body.classList.contains("va-moved")) return;
+    applyTriple(sd.sales_growth_pct, -3, 12);
+  }
   paint();
+  applyMovedIfForced();
+  if (typeof MutationObserver !== "undefined" && document.body) {
+    new MutationObserver(applyMovedIfForced).observe(document.body, {
+      attributes: true,
+      attributeFilter: ["class"]
+    });
+  }
 })(typeof globalThis !== "undefined" ? globalThis : this);
   </script>
   <div class="mod-ft">{{ t('Research display only — not advice.', '仅供研究展示，非投资建议。') }}</div>

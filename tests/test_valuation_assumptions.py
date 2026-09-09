@@ -282,6 +282,18 @@ def test_langchange_binds_on_document_and_bridge_keeps_twins():
     js = _extract_js(html)
     assert "bridge.textContent" not in js
     assert "getAttribute(\"data-lang\")" in js
+    assert 'setAttribute("lang"' in js
+    assert "classList.contains(\"va-moved\")" in js
+    assert re.search(r"applyTriple\([^)]*-3\s*,\s*12\s*\)", js)
+    assert 'id="valuation-assumptions"' in html
+    assert re.search(
+        r'class="mod rv in"[^>]*id="valuation-assumptions"|id="valuation-assumptions"[^>]*class="mod rv in"',
+        html,
+    )
+    assert re.search(
+        r"#valuation-assumptions\s*\{[^}]*opacity\s*:\s*1\s*;[^}]*transform\s*:\s*none",
+        text,
+    )
 
 
 def test_no_js_default_state_is_correct_and_complete():
