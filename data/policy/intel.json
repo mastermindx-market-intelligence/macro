@@ -621,9 +621,9 @@
       "text_zh": "短端美债需求保持强劲（票据拍卖认购充分，未被迫调整票息）。",
       "reviewed_on": "2026-09-08",
       "result_code": "confirmed",
-      "result_en": "Treasury cited growing private-sector bill demand, kept benchmark bill sizes steady near term, and did not force a shift into larger coupon issuance.",
-      "result_zh": "财政部指出私人部门短债需求增长，近期维持基准短债发行规模，并未被迫转向更大规模的票息债券发行。",
-      "result_source": "https://home.treasury.gov/news/press-releases/sb0590"
+      "result_en": "Late-August bill auctions remained well covered: the Aug. 27 28-day bill drew $272.9B of tenders for $100.0B accepted (2.73x bid-to-cover). P6 separately confirms there was no August coupon-size increase.",
+      "result_zh": "8月下旬国库券拍卖认购仍充足：8月27日28天期国库券投标2729亿美元、接受1000亿美元，投标倍数为2.73倍。P6另行确认8月没有上调票息债券拍卖规模。",
+      "result_source": "https://www.treasurydirect.gov/instit/annceresult/press/preanre/2026/R_20260827_1.pdf"
     },
     {
       "id": "P17",

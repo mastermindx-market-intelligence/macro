@@ -62,6 +62,8 @@ def test_policy_watch_review_batch_is_resolved_and_auditable():
     for pid in ("P6", "P16", "P40", "P41", "P43", "P44"):
         assert by_id[pid]["reviewed_on"] == "2026-09-08"
         assert by_id[pid]["result_en"] and by_id[pid]["result_zh"] and by_id[pid]["result_code"]
+    assert by_id["P16"]["result_source"].endswith("R_20260827_1.pdf")
+    assert "2.73x bid-to-cover" in by_id["P16"]["result_en"]
     assert by_id["P43"]["result_code"] == "outcome_predated_call"
     assert by_id["P44"]["result_code"] == "premise_broken_at_entry"
 
