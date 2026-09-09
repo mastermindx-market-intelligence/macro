@@ -48,7 +48,10 @@ can move again; nothing in this packet anticipates that.
 - `MO-PAID-087` — a deletion request returns a durable receipt with a reference code and the
   steps that follow. Also #527, over migration 0016, applied to production on 2026-09-09.
   The Supabase-side lifecycle behind it is still an out-of-repo fact and is recorded as
-  unverified in the row's notes rather than being quietly dropped.
+  unverified in the row's notes rather than being quietly dropped. Round 2, ruled (MINOR):
+  that Supabase-console lifecycle fact is external and unverified, not a bounded child owed
+  in this repository, so `next_bounded_child` stays empty for this row under the round-2
+  residual rule — the manifest's residual scoping is a disclosed choice, not an omission.
 - `MO-PAID-028` — an event object resolves to the positions it touches on a routed page.
   Shipped in #522, merged as `68b0d00a`.
 - `MO-DELTA-042` — the event object schema resolves to affected positions. Same merge. The
