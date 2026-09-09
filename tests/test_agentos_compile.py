@@ -1566,10 +1566,21 @@ from tests.agent_eval_continuity_cases import (  # noqa: E402,F401
     test_historical_handoff_names_both_live_source_gates_without_permission,
     test_real_compiler_recovers_new_handoff_and_excludes_old,
     test_unknown_effect_is_visible_not_cured_by_a_new_handoff,
-    test_malformed_new_handoff_never_silently_restores_obsolete_instructions,
+    test_schema_invalid_associated_latest_is_explicitly_excluded,
     test_later_workstream_completion_is_not_blocked_by_historical_case,
     test_e1_readiness_requires_the_runner_even_when_bridge_source_is_done,
     test_unparseable_latest_handoff_never_reactivates_older_work,
     test_unparseable_unrelated_or_older_handoff_keeps_valid_latest,
     test_unparseable_selection_evidence_changes_the_source_digest,
+    test_unassociated_canonical_latest_cannot_revive_history,
+    test_unresolved_non_binding_join_keeps_the_associated_latest,
 )
+
+
+def test_continuity_helper_cases_have_canonical_collection():
+    """Adding a helper case without importing it must fail the existing CI target."""
+    from tests import agent_eval_continuity_cases as cases
+    missing = sorted(name for name, value in vars(cases).items()
+                     if name.startswith("test_") and callable(value)
+                     and globals().get(name) is not value)
+    assert not missing, f"Continuity cases absent from canonical collection: {missing}"

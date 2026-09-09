@@ -28,6 +28,8 @@ changed:
     what: Reconciles protected milestones, true release and repair gates, supersession, and safely quoted PR references.
   - path: agentos/handoffs/AGENT-EVAL-FABRIC-2026-09-08.md
     what: Replaces obsolete continuation selection without deleting the historical handoff.
+  - path: scripts/agentos.py
+    what: Retains unusable or inconsistent canonical latest-handoff associations as explicit negative evidence, without stale fallback or new authority.
   - path: tests/agent_eval_continuity_cases.py
     what: Tests protected milestone recovery, real compiler selection, cited read-only output and adverse-state visibility.
   - path: tests/test_agentos_compile.py

@@ -195,3 +195,41 @@ accepted-source real-reader proof are still required before release. This repair
 no fleet-wide context refresh, autonomous E1 run, OL-V1 effect, model comparison or
 organizational speedup. Its direct capability is trustworthy continuation through the
 existing reader, including an explicit failure instead of silent obsolete instructions.
+
+
+## Independent review: association loss and collection coverage
+
+GitHub Codex review request 5601004383 received an explicit quota refusal5601006285,
+not a review or an unknown execution. A distinct, finite, tool-free Opus source review
+then completed through the existing authenticated Max subscription, native session
+`58762aa9-b8c3-4270-9239-348d05c5af36`. Its final response is retained under the existing
+operation evidence directory; result SHA256
+`4bc3cd552d2d647be17b7184d9868b1ee79a1936f84aff5e9efb69e7622cf238`.
+It independently recovered both correct next actions and no execution authority.
+Its PARTIAL verdict was not relabelled PASS.
+
+Two useful findings were tested and repaired within the same six paths. A parseable
+latest record can also lose its workstream association, so the kernel now retains exact
+canonical filename candidates with absent, invalid, unknown or conflicting associations
+as negative evidence. Four real-CLI counterexamples failed before this extension and
+passed afterward. A valid association to another workstream is never rewritten; an
+unresolved non-binding decision join retains the existing fail-open semantics. The
+existing store had zero such conflicts across106 exact-canonical dated handoff names.
+The dated handoff's changed-path list now explicitly includes the compiler, after a
+regression demonstrated the prior omission.
+
+The actual test-registration failure is now guarded mechanically: the canonical test
+module asserts that every test function in this continuity helper is exposed by its
+collection. It first failed on the two newly unimported functions, then passed after
+wiring them. This is not another collector, workflow, waiver or state gate. The suite
+also exercises both4000/8000 budgets and a dropped runner, which correctly does NOT
+satisfy E1's prerequisite. The reviewer's suggestion that dropped would unblock E1 was
+incorrect and is not promoted into organizational truth.
+
+A focused22-case selection passed on the extended kernel. The previous complete neighbor
+run separately concluded139passed/0fail/0error/0skip at2026-09-09T11:31:25Z; combined with
+its matching91-case compiler run that was230 passing cases on675ec9, not proof for a later
+head. New full compiler, validation and hosted results are recorded separately. No new
+literal work-state gate is introduced to pin future live workstream status. Non-latest
+corrupt records remain explicitly excluded as older; changing that diagnostic wording
+or the loader's already-consistent path representation is not a release prerequisite.

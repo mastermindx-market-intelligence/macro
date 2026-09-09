@@ -52,6 +52,9 @@ def test_historical_handoff_names_both_live_source_gates_without_permission() ->
     assert "HOLD" in actions and "EFFECT_UNKNOWN" in " ".join(handoff["do_not_redo"])
     assert "6760" in json.dumps(handoff["verified"])
     assert handoff["unverified"], "Pending proof must not disappear during records repair"
+    assert "scripts/agentos.py" in {row["path"] for row in handoff["changed"]}, (
+        "The historical repair handoff must disclose its compiler change"
+    )
 
 
 def case_store(tmp_path: Path) -> Path:
@@ -70,8 +73,9 @@ def digests(root: Path) -> dict[str, str]:
             for p in root.rglob("*.md")}
 
 
-def compile_case(root: Path, *, mentioned: bool = False, budget: int = 8000) -> dict:
-    target = [f"Continue WS:{KEY}"] if mentioned else ["--workstream", KEY]
+def compile_case(root: Path, *, mentioned: bool = False, budget: int = 8000,
+                 workstream: str = KEY) -> dict:
+    target = [f"Continue WS:{workstream}"] if mentioned else ["--workstream", workstream]
     env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1", GIT_OPTIONAL_LOCKS="0",
                MACRO_MASTERMIND_REPO=str(root / "absent-mastermind"),
                MACRO_TERMINAL_REPO=str(root / "absent-terminal"))
@@ -89,10 +93,11 @@ def section(bundle: dict, key: str) -> dict:
 
 
 @pytest.mark.parametrize("mentioned", [False, True])
-def test_real_compiler_recovers_new_handoff_and_excludes_old(tmp_path, mentioned) -> None:
+@pytest.mark.parametrize("budget", [4000, 8000])
+def test_real_compiler_recovers_new_handoff_and_excludes_old(tmp_path, mentioned, budget) -> None:
     root = case_store(tmp_path)
     before = digests(root)
-    bundle = compile_case(root, mentioned=mentioned)
+    bundle = compile_case(root, mentioned=mentioned, budget=budget)
     items = section(bundle, "handoff")["items"]
     assert len(items) == 1 and items[0]["path"].endswith(str(NEW))
     assert "Mastermind #162" in items[0]["excerpt"]
@@ -126,7 +131,7 @@ def test_unknown_effect_is_visible_not_cured_by_a_new_handoff(tmp_path) -> None:
     assert "never decides whether work may run" in section(bundle, "workstream")["authority_note"]
 
 
-def test_malformed_new_handoff_never_silently_restores_obsolete_instructions(tmp_path) -> None:
+def test_schema_invalid_associated_latest_is_explicitly_excluded(tmp_path) -> None:
     root = case_store(tmp_path)
     handoff = record(root / NEW)
     del handoff["unverified"]
@@ -155,7 +160,7 @@ def test_later_workstream_completion_is_not_blocked_by_historical_case(tmp_path)
     assert "not for permission" in section(bundle, "workstream")["title"]
 
 
-@pytest.mark.parametrize("runner_status, expected", [("in_progress", "blocked"), ("done", "ready")])
+@pytest.mark.parametrize("runner_status, expected", [("in_progress", "blocked"), ("done", "ready"), ("dropped", "blocked")])
 def test_e1_readiness_requires_the_runner_even_when_bridge_source_is_done(
     tmp_path: Path, runner_status: str, expected: str,
 ) -> None:
@@ -233,3 +238,44 @@ def test_unparseable_selection_evidence_changes_the_source_digest(tmp_path):
     assert not section(first, "handoff")["items"]
     assert not section(second, "handoff")["items"]
     assert first["source_records_digest"] != second["source_records_digest"]
+
+
+@pytest.mark.parametrize("association", [None, KEY, "WS:AGENT-EVAL-FABRIK", "WS:OTHER"])
+def test_unassociated_canonical_latest_cannot_revive_history(tmp_path, association):
+    root = case_store(tmp_path)
+    latest = record(root / NEW)
+    if association is None:
+        del latest["workstream"]
+    else:
+        latest["workstream"] = association
+    if association == "WS:OTHER":
+        other = record(root / WS)
+        other["key"] = "OTHER"
+        other_path = root / "workstreams/WS-OTHER.md"
+        shutil.copyfile(root / WS, other_path)
+        rewrite_record(other_path, other)
+    rewrite_record(root / NEW, latest)
+    before = digests(root)
+    bundle = compile_case(root)
+    assert section(bundle, "handoff")["items"] == []
+    assert any(x["path"].endswith(str(NEW)) and "association" in x["reason"]
+               for x in bundle["excluded"])
+    assert any(x["path"].endswith(str(OLD)) and "older_handoff" in x["reason"]
+               for x in bundle["excluded"])
+    assert any(str(NEW) in x for x in bundle["degraded"])
+    if association == "WS:OTHER":
+        # A canonical filename is negative evidence for this target, not authority
+        # to rewrite the valid authored association in another target's view.
+        foreign = section(compile_case(root, workstream="OTHER"), "handoff")["items"]
+        assert len(foreign) == 1 and foreign[0]["key"] == "WS:OTHER"
+    assert digests(root) == before
+
+
+def test_unresolved_non_binding_join_keeps_the_associated_latest(tmp_path):
+    root = case_store(tmp_path)
+    latest = record(root / NEW)
+    latest["decisions"] = ["DEC:UNAVAILABLE-JOIN"]
+    rewrite_record(root / NEW, latest)
+    bundle = compile_case(root)
+    items = section(bundle, "handoff")["items"]
+    assert len(items) == 1 and items[0]["path"].endswith(str(NEW))
