@@ -1,0 +1,280 @@
+{
+  "packet": "B-REC-B5-1",
+  "title": "F00C ledger reconciled against the merged half-B Terminal wave",
+  "recorded_at": "2026-09-09",
+  "recorded_by": "Meta-CEO B successor seat, harness session d640f3ef",
+  "terminal_repo": "mastermindx-market-intelligence/mastermind-terminal",
+  "terminal_master_sha": "db69d0723dd8426700aebb81f0e1d5715e2e7bbb",
+  "how_verified": "Each pull request's merge commit and file list was read once with `gh pr view N --json title,mergeCommit,files`; each producer path was confirmed present at the pinned Terminal master commit with `git cat-file -e origin/master:<path>` in a read-only clone. Nothing here is read from another checkout at test time - this file is the record the suite asserts against.",
+  "state_vocabulary": [
+    "NOT_BUILT",
+    "SPEC_ONLY",
+    "PARTIAL",
+    "BUILT_NOT_PROVEN",
+    "PROVEN_LIVE"
+  ],
+  "no_proven_live_reason": "The 0014, 0015 and 0016 receipts prove the migrations applied to production. They are not a user-facing proof, and no production readback of two people using any of these surfaces exists in the seat's records, so no row moves past BUILT_NOT_PROVEN.",
+  "terminal_prs": {
+    "513": {
+      "state": "MERGED",
+      "title": "[MO-BB1T] B-F08-2: Alert run receipts + fire-to-delivery outbox in the Terminal evaluator (migration 0013)",
+      "merge_sha": "be898be59a761768a0a61c424aea7f83c2b95087"
+    },
+    "514": {
+      "state": "MERGED",
+      "title": "[MO-BB1T] B-F12-1: Tenancy foundation: teams + team_id-scoped membership with a live Terminal API route (migration 0014)",
+      "merge_sha": "cff58ee8d4a25143b72d45191aa405b1ac88d697"
+    },
+    "515": {
+      "state": "MERGED",
+      "title": "[MO-BB2] B-F12-2: Account data export + deletion lifecycle: Supabase-side verification and a bounded spec (records first)",
+      "merge_sha": "7f7a9b05cecedd637bddcd42e2b8e32e7b537d74"
+    },
+    "517": {
+      "state": "MERGED",
+      "title": "[MO-BB2] B-F08-3: In-product alerts surface in the Terminal shell: list, drillback, calm/degraded states, delivery outcome",
+      "merge_sha": "ee88afaf0bc1aa68efb5a26f3e63286cbde9ab5a"
+    },
+    "520": {
+      "state": "MERGED",
+      "title": "[MO-BB3b] B-F11-2: Research management views over the Thesis objects (backend + UI + evidence; CI/merge pending)",
+      "merge_sha": "8255f48246c47bd92f52e8705aa52161bf39b1a8"
+    },
+    "522": {
+      "state": "MERGED",
+      "title": "[MO-BB3b] B-F08-5: What this event touches of yours: event to affected positions, with direction, mechanism and timeframe carried or printed as missing",
+      "merge_sha": "68b0d00a8ffe4145786c0e2aa9775e44a279ad80"
+    },
+    "524": {
+      "state": "MERGED",
+      "title": "[MO-BB3b] B-F08-4: What your holdings actually look like: concentration, factor and liquidity readout over the user's own positions, with coverage gaps that cannot read printed as such",
+      "merge_sha": "efcd98aaf4f432692ea1841655bf24c0045bbd02"
+    },
+    "526": {
+      "state": "MERGED",
+      "title": "[MO-BB3c] B-F12-3: Teams that actually have members: roles, invitations and workspace-scoped settings over the 0014 tenancy foundation",
+      "merge_sha": "83424c63f0537eb618ffcd3b7c43f28b2ebcef8a"
+    },
+    "527": {
+      "state": "MERGED",
+      "title": "[MO-BB3c] B-F12-4: Take your data with you or delete it: self-serve export, a deletion request with a receipt, and the password-change gap closed",
+      "merge_sha": "68bbe8ea6dce9dbffa868572eba0ade903c7c357"
+    },
+    "529": {
+      "state": "MERGED",
+      "title": "[MO-BB4] B-PLAT-4: Tenant scope contract: one pure function that decides whether an identity may see a team-scoped row",
+      "merge_sha": "6b983e1e26f4b424681d7762439d244d9884d8e0"
+    }
+  },
+  "prs_that_move_no_row_in_this_packet": {
+    "513": "B-F08-2 alert run receipts and outbox; its ledger rows are F08 alert rows outside this packet.",
+    "515": "B-F12-2 was records-first: the account lifecycle spec that terminal#527 then built.",
+    "517": "B-F08-3 alerts surface; its ledger rows are F08 alert rows outside this packet.",
+    "529": "B-PLAT-4 tenant scope contract; cited as a supporting producer on MO-PAID-082 rather than as the row's own merge."
+  },
+  "producer_paths_on_master": {
+    "terminal/app/api/teams/route.ts": true,
+    "terminal/app/api/teams/[id]/members/route.ts": true,
+    "terminal/app/api/teams/invitations/route.ts": true,
+    "terminal/app/api/account/export/route.ts": true,
+    "terminal/app/api/account/deletion/route.ts": true,
+    "terminal/app/api/alerts/receipts/route.ts": true,
+    "terminal/lib/tenantScope.ts": true,
+    "terminal/lib/teams.ts": true,
+    "terminal/lib/eventImpact.ts": true,
+    "terminal/app/api/event-impact/route.ts": true,
+    "terminal/components/EventImpactPanel.tsx": true,
+    "terminal/lib/portfolioRisk.ts": true,
+    "terminal/app/api/portfolio/route.ts": true,
+    "terminal/components/PortfolioView.tsx": true,
+    "terminal/lib/rmsViews.ts": true,
+    "terminal/app/api/theses/route.ts": true,
+    "terminal/lib/theses.ts": true,
+    "terminal/components/workspaces/ThesisWorkspace.tsx": true,
+    "terminal/lib/accountExport.ts": true,
+    "terminal/components/settings/SectionAccount.tsx": true,
+    "supabase/migrations/0012_thesis_objects.sql": true,
+    "supabase/migrations/0013_alert_runs_outbox.sql": true,
+    "supabase/migrations/0014_tenancy_foundation.sql": true,
+    "supabase/migrations/0015_team_roles_invitations.sql": true,
+    "supabase/migrations/0016_account_lifecycle_requests.sql": true
+  },
+  "rows": [
+    {
+      "id": "MO-PAID-028",
+      "family": "F08-PORTFOLIO-ALERTS",
+      "acceptance_test": "an event object resolves to the user positions it touches on a routed page",
+      "disposition": "SATISFIED",
+      "capability_state_c2": "BUILT_NOT_PROVEN",
+      "terminal_pr": 522,
+      "merge_sha": "68b0d00a8ffe4145786c0e2aa9775e44a279ad80",
+      "producer_paths": [
+        "terminal/lib/eventImpact.ts",
+        "terminal/app/api/event-impact/route.ts",
+        "terminal/components/EventImpactPanel.tsx"
+      ],
+      "residual": null
+    },
+    {
+      "id": "MO-PAID-036",
+      "family": "F08-PORTFOLIO-ALERTS",
+      "acceptance_test": "a user's actual holdings produce a concentration/factor/liquidity readout",
+      "disposition": "SATISFIED",
+      "capability_state_c2": "BUILT_NOT_PROVEN",
+      "terminal_pr": 524,
+      "merge_sha": "efcd98aaf4f432692ea1841655bf24c0045bbd02",
+      "producer_paths": [
+        "terminal/lib/portfolioRisk.ts",
+        "terminal/app/api/portfolio/route.ts",
+        "terminal/components/PortfolioView.tsx"
+      ],
+      "residual": null
+    },
+    {
+      "id": "MO-PAID-046",
+      "family": "F11-RESEARCH-WORKSPACE",
+      "acceptance_test": "a user creates/revises a Thesis via UI; revisions are new rows carrying amended_from; no in-place edit possible",
+      "disposition": "NOT_SATISFIED",
+      "capability_state_c2": "PARTIAL",
+      "terminal_pr": 520,
+      "merge_sha": "8255f48246c47bd92f52e8705aa52161bf39b1a8",
+      "producer_paths": [
+        "terminal/lib/theses.ts",
+        "terminal/app/api/theses/route.ts",
+        "terminal/components/workspaces/ThesisWorkspace.tsx",
+        "supabase/migrations/0012_thesis_objects.sql"
+      ],
+      "residual": "The shipped store supersedes by a previous_version link on an immutable version row; the token amended_from appears nowhere in the Terminal tree, so the acceptance sentence is not literally satisfied."
+    },
+    {
+      "id": "MO-PAID-051",
+      "family": "F12-TEAM-API-PLATFORM",
+      "acceptance_test": "a team_id-scoped membership row is created/read by a live route",
+      "disposition": "SATISFIED",
+      "capability_state_c2": "BUILT_NOT_PROVEN",
+      "terminal_pr": 514,
+      "merge_sha": "cff58ee8d4a25143b72d45191aa405b1ac88d697",
+      "producer_paths": [
+        "terminal/app/api/teams/route.ts",
+        "terminal/app/api/teams/[id]/members/route.ts",
+        "terminal/lib/teams.ts",
+        "supabase/migrations/0014_tenancy_foundation.sql"
+      ],
+      "residual": null
+    },
+    {
+      "id": "MO-PAID-053",
+      "family": "F11-RESEARCH-WORKSPACE",
+      "acceptance_test": "Coverage/Ideas/Notes/Theses/Catalysts/Risks/Reviews render as views over the same objects",
+      "disposition": "SATISFIED",
+      "capability_state_c2": "BUILT_NOT_PROVEN",
+      "terminal_pr": 520,
+      "merge_sha": "8255f48246c47bd92f52e8705aa52161bf39b1a8",
+      "producer_paths": [
+        "terminal/lib/rmsViews.ts",
+        "terminal/components/workspaces/ThesisWorkspace.tsx",
+        "terminal/app/api/theses/route.ts"
+      ],
+      "residual": null
+    },
+    {
+      "id": "MO-PAID-081",
+      "family": "F12-TEAM-API-PLATFORM",
+      "acceptance_test": "an invited email completes a join flow against a team_id",
+      "disposition": "SATISFIED",
+      "capability_state_c2": "BUILT_NOT_PROVEN",
+      "terminal_pr": 514,
+      "merge_sha": "cff58ee8d4a25143b72d45191aa405b1ac88d697",
+      "producer_paths": [
+        "terminal/app/api/teams/invitations/route.ts",
+        "terminal/lib/teams.ts",
+        "supabase/migrations/0015_team_roles_invitations.sql"
+      ],
+      "residual": null
+    },
+    {
+      "id": "MO-PAID-082",
+      "family": "F12-TEAM-API-PLATFORM",
+      "acceptance_test": "two roles produce two authorization outcomes on one route",
+      "disposition": "SATISFIED",
+      "capability_state_c2": "BUILT_NOT_PROVEN",
+      "terminal_pr": 514,
+      "merge_sha": "cff58ee8d4a25143b72d45191aa405b1ac88d697",
+      "producer_paths": [
+        "terminal/lib/teams.ts",
+        "terminal/app/api/teams/[id]/members/route.ts",
+        "terminal/lib/tenantScope.ts"
+      ],
+      "residual": null
+    },
+    {
+      "id": "MO-PAID-083",
+      "family": "F12-TEAM-API-PLATFORM",
+      "acceptance_test": "a workspace-scoped setting persists distinctly from user-level",
+      "disposition": "SATISFIED",
+      "capability_state_c2": "BUILT_NOT_PROVEN",
+      "terminal_pr": 514,
+      "merge_sha": "cff58ee8d4a25143b72d45191aa405b1ac88d697",
+      "producer_paths": [
+        "terminal/lib/teams.ts",
+        "supabase/migrations/0015_team_roles_invitations.sql"
+      ],
+      "residual": null
+    },
+    {
+      "id": "MO-PAID-086",
+      "family": "F12-TEAM-API-PLATFORM",
+      "acceptance_test": "an authenticated user downloads a CSV/JSON snapshot of their own data",
+      "disposition": "SATISFIED",
+      "capability_state_c2": "BUILT_NOT_PROVEN",
+      "terminal_pr": 527,
+      "merge_sha": "68bbe8ea6dce9dbffa868572eba0ade903c7c357",
+      "producer_paths": [
+        "terminal/app/api/account/export/route.ts",
+        "terminal/lib/accountExport.ts"
+      ],
+      "residual": null
+    },
+    {
+      "id": "MO-PAID-087",
+      "family": "F12-TEAM-API-PLATFORM",
+      "acceptance_test": "an authenticated user triggers deletion/export and receives a receipt",
+      "disposition": "SATISFIED",
+      "capability_state_c2": "BUILT_NOT_PROVEN",
+      "terminal_pr": 527,
+      "merge_sha": "68bbe8ea6dce9dbffa868572eba0ade903c7c357",
+      "producer_paths": [
+        "terminal/app/api/account/deletion/route.ts",
+        "terminal/components/settings/SectionAccount.tsx",
+        "supabase/migrations/0016_account_lifecycle_requests.sql"
+      ],
+      "residual": null
+    },
+    {
+      "id": "MO-DELTA-014",
+      "family": "F08-PORTFOLIO-ALERTS",
+      "acceptance_test": "per-user Sharpe/Sortino/beta/concentration over A1A/A1B holdings",
+      "disposition": "NOT_SATISFIED",
+      "capability_state_c2": "PARTIAL",
+      "terminal_pr": 524,
+      "merge_sha": "efcd98aaf4f432692ea1841655bf24c0045bbd02",
+      "producer_paths": [
+        "terminal/lib/portfolioRisk.ts"
+      ],
+      "residual": "No Sharpe, Sortino or beta is computed over a user's own holdings anywhere in the Terminal tree; only the concentration quarter of the acceptance sentence shipped."
+    },
+    {
+      "id": "MO-DELTA-042",
+      "family": "F08-PORTFOLIO-ALERTS",
+      "acceptance_test": "the event object schema resolves to affected positions",
+      "disposition": "SATISFIED",
+      "capability_state_c2": "BUILT_NOT_PROVEN",
+      "terminal_pr": 522,
+      "merge_sha": "68b0d00a8ffe4145786c0e2aa9775e44a279ad80",
+      "producer_paths": [
+        "terminal/lib/eventImpact.ts"
+      ],
+      "residual": "The shipped event object carries direction, mechanism and timeframe but no invalidation field, and only the earnings calendar keys by ticker, so the two other published calendars stay unjoinable."
+    }
+  ]
+}
