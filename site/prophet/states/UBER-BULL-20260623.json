@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "UBER-BULL-20260623",
-  "asof": "2026-09-05",
+  "asof": "2026-09-09",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 42.5,
@@ -10,21 +10,21 @@
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 100.0,
-    "progress": 13.2,
-    "pace": 10.0,
-    "retention": 22.5,
-    "overlay": 64.0
+    "validity": 78.4,
+    "progress": 0.0,
+    "pace": 4.7,
+    "retention": 0.0,
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.169,
-    "dist_to_t1_r": 1.331,
-    "dist_to_t2_r": 2.831,
-    "horizon_pct_used": 133.3,
-    "p1": 0.1125,
-    "p2": 0.0563,
+    "dist_to_stop_r": 0.835,
+    "dist_to_t1_r": 1.5,
+    "dist_to_t2_r": 3.0,
+    "horizon_pct_used": 142.2,
+    "p1": -0.11,
+    "p2": -0.055,
     "p3": null,
-    "move_r": 0.169,
+    "move_r": -0.165,
     "mfe_r": 0.751,
     "mae_r": -1.077
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-10",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 60,
-  "tau": 1.3333
+  "days_elapsed": 64,
+  "tau": 1.4222
 }

@@ -2,7 +2,7 @@
   "session": "2026-09-04",
   "attempts": [
     {
-      "capture_instant": "2026-09-05T05:44:03.707518+00:00",
+      "capture_instant": "2026-09-06T00:45:29.211605+00:00",
       "requested_underlyings": 375,
       "attempted_underlyings": 5,
       "successful_underlyings": 0,
@@ -20,6 +20,60 @@
       "aborted_early": true,
       "decision": "nothing_captured",
       "health": "failed"
+    },
+    {
+      "capture_instant": "2026-09-06T16:24:58.785418+00:00",
+      "requested_underlyings": 375,
+      "attempted_underlyings": null,
+      "successful_underlyings": null,
+      "coverage_pct": null,
+      "failure_reasons": {},
+      "failure_examples": {},
+      "aborted_early": false,
+      "decision": "skipped_outside_lease",
+      "health": "absent",
+      "lease": {
+        "valid": false,
+        "resolved_session": "2026-09-04",
+        "lease_end_et": "2026-09-05T03:00:00-04:00",
+        "write_kind": "first_write"
+      }
+    },
+    {
+      "capture_instant": "2026-09-07T04:34:58.924318+00:00",
+      "requested_underlyings": 375,
+      "attempted_underlyings": null,
+      "successful_underlyings": null,
+      "coverage_pct": null,
+      "failure_reasons": {},
+      "failure_examples": {},
+      "aborted_early": false,
+      "decision": "skipped_outside_lease",
+      "health": "absent",
+      "lease": {
+        "valid": false,
+        "resolved_session": "2026-09-04",
+        "lease_end_et": "2026-09-05T03:00:00-04:00",
+        "write_kind": "first_write"
+      }
+    },
+    {
+      "capture_instant": "2026-09-08T02:44:13.448407+00:00",
+      "requested_underlyings": 375,
+      "attempted_underlyings": null,
+      "successful_underlyings": null,
+      "coverage_pct": null,
+      "failure_reasons": {},
+      "failure_examples": {},
+      "aborted_early": false,
+      "decision": "skipped_outside_lease",
+      "health": "absent",
+      "lease": {
+        "valid": false,
+        "resolved_session": "2026-09-04",
+        "lease_end_et": "2026-09-05T03:00:00-04:00",
+        "write_kind": "first_write"
+      }
     }
   ]
 }

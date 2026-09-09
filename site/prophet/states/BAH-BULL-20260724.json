@@ -1,26 +1,26 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "BAH-BULL-20260724",
-  "asof": "2026-09-05",
+  "asof": "2026-09-09",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 40.9,
-  "raw_confidence": 39.4,
-  "delta_vs_base": -19.1,
+  "management_confidence": 39.2,
+  "raw_confidence": 38.9,
+  "delta_vs_base": -20.8,
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
     "validity": 96.6,
     "progress": 0.0,
-    "pace": 0.1,
+    "pace": 0.0,
     "retention": 50.0,
-    "overlay": 61.0
+    "overlay": 53.0
   },
   "geometry": {
     "dist_to_stop_r": 0.974,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 86.7,
+    "horizon_pct_used": 95.6,
     "p1": -0.017,
     "p2": -0.0085,
     "p3": null,
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-08",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 39,
-  "tau": 0.8667
+  "days_elapsed": 43,
+  "tau": 0.9556
 }

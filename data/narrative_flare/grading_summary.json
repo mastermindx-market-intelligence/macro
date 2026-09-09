@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-09-05T06:09:59.125932+00:00",
+  "generated_at": "2026-09-09T03:33:17.281079+00:00",
   "families": {
     "narrative_source_call": {
-      "n_claims": 334,
-      "n_resolved": 331,
+      "n_claims": 335,
+      "n_resolved": 332,
       "hit_rate": null,
       "accruing": true,
       "state": "ACCRUING"
     },
     "narrative_flare_state": {
-      "n_claims": 8,
+      "n_claims": 12,
       "n_resolved": 0,
       "hit_rate": null,
       "accruing": true,
@@ -30,7 +30,7 @@
     }
   },
   "source_registry_n": 2,
-  "source_registry_total_calls": 6793,
+  "source_registry_total_calls": 8088,
   "authority": {
     "tier": "display",
     "may_rank": false,

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "UTHR-BULL-20260825",
-  "asof": "2026-09-05",
+  "asof": "2026-09-09",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 14.9,
@@ -14,13 +14,13 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 61.0
+    "overlay": 53.0
   },
   "geometry": {
     "dist_to_stop_r": -0.96,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 24.4,
+    "horizon_pct_used": 33.3,
     "p1": -1.3065,
     "p2": -0.6532,
     "p3": null,
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-25",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 11,
-  "tau": 0.2444
+  "days_elapsed": 15,
+  "tau": 0.3333
 }

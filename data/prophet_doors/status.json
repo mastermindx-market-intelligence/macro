@@ -1,6 +1,6 @@
 {
-  "appended": 3,
-  "asof": "2026-09-04",
+  "appended": 0,
+  "asof": "2026-09-08",
   "candidates": {
     "R": 1,
     "T": 4,
@@ -8,45 +8,26 @@
   },
   "deduped": {
     "R": 1,
-    "T": 1,
+    "T": 4,
     "W": 4
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "asof": "2026-09-05",
-      "consulted": true,
-      "n_keys": 27,
-      "n_themes": 18,
-      "ok": true,
-      "reason": null,
-      "source": "site/basketdata/foresight_cascade.json"
+      "consulted": false
     },
     "ignition": {
       "coil_min_sessions": 293,
-      "consulted": true,
-      "null_reasons": {
-        "ohlcv_absent": 29
-      },
+      "consulted": false,
+      "null_reasons": {},
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
-      "themes_read": {
-        "Electric Vehicles": {
-          "theme_thrust_frac": 0.0909,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        },
-        "Energy Renewable": {
-          "theme_thrust_frac": 0.0227,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        }
-      },
+      "themes_read": {},
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 71,
-      "tickers_read": 100
+      "tickers_ok": 0,
+      "tickers_read": 0
     },
     "keys": [
       "relay_count_3d",
@@ -64,21 +45,10 @@
       "theme_thrust_reason"
     ],
     "relay": {
-      "consulted": true,
-      "high_lookback": 63,
-      "members_indexed": 166,
-      "n_covered": 93,
-      "reason": null,
-      "window_sessions": 21
+      "consulted": false
     },
     "turnover": {
-      "consulted": true,
-      "last_session": "2026-09-04",
-      "n_tickers": 1544,
-      "ok": true,
-      "reason": null,
-      "source": "data/{breadth,midcap_breadth,smallcap_breadth}/_volume_cache.parquet",
-      "window_max": 60
+      "consulted": false
     }
   },
   "feature_source_w": {
@@ -107,11 +77,7 @@
   },
   "flag_tickers": {
     "R": [],
-    "T": [
-      "F",
-      "LEA",
-      "VST"
-    ],
+    "T": [],
     "W": []
   },
   "n_universe": 1496,
@@ -120,41 +86,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-05 14:52:18",
-  "runtime_s": 102.1,
+  "run_utc": "2026-09-09 15:01:19",
+  "runtime_s": 105.6,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": 0,
-    "asof": "2026-09-04",
-    "n_members": 166,
+    "asof": "2026-09-08",
+    "n_members": 180,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 2.969,
+        "emerging_score": 2.908,
         "rank": 1,
-        "theme": "Agriculture & FoodTech"
+        "theme": "Energy Renewable"
       },
       {
-        "emerging_score": 2.712,
+        "emerging_score": 2.434,
         "rank": 2,
         "theme": "Electric Vehicles"
       },
       {
-        "emerging_score": 2.458,
+        "emerging_score": 2.219,
         "rank": 3,
-        "theme": "Commodities Agriculture"
+        "theme": "Commodities Energy"
       },
       {
-        "emerging_score": 2.183,
+        "emerging_score": 2.203,
         "rank": 4,
-        "theme": "Crypto & Blockchain"
+        "theme": "Semiconductors"
       },
       {
-        "emerging_score": 2.101,
+        "emerging_score": 2.063,
         "rank": 5,
-        "theme": "Energy Renewable"
+        "theme": "Commodities Agriculture"
       }
     ]
   },
@@ -164,15 +130,15 @@
       "3B"
     ],
     "aligned": 4,
-    "asof_max": "2026-09-04",
+    "asof_max": "2026-09-08",
     "asof_mismatch": 0,
-    "asof_run": "2026-09-04",
+    "asof_run": "2026-09-08",
     "evaluated": 713,
     "fresh": 4,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 20.7,
+    "runtime_s": 20.6,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 89,

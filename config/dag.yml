@@ -1258,6 +1258,8 @@ lanes:
         module: scripts.build_intel_hub
       - id: build_aibrief
         module: scripts.build_aibrief
+      - id: build_am_edition
+        module: scripts.build_am_edition
       - id: build_mastermind
         module: scripts.build_mastermind
       - id: build_ai_desk_page
@@ -2483,6 +2485,7 @@ lanes:
           cl_markets:
             - scripts.build_commodities
             - scripts.build_spr
+            - scripts.build_sanctions_map
             - scripts.build_forex
             - scripts.build_bonds
             - scripts.build_crossasset
@@ -2722,6 +2725,7 @@ lanes:
           cl_markets:
             - scripts.build_commodities
             - scripts.build_spr
+            - scripts.build_sanctions_map
             - scripts.build_forex
             - scripts.build_bonds
             - scripts.build_crossasset
@@ -2812,6 +2816,8 @@ lanes:
         module: scripts.build_calibration
       - id: build_aibrief
         module: scripts.build_aibrief
+      - id: build_am_edition
+        module: scripts.build_am_edition
       - id: build_mastermind
         module: scripts.build_mastermind
       - id: build_ai_desk_page

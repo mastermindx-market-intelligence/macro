@@ -54,7 +54,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script src="macro_suite_boot.js?v=768a4342" defer></script>
 <link rel="stylesheet" href="theme.css?v=f41f9a21">
-<link rel="stylesheet" href="macro_suite.css?v=f2fd5724">
+<link rel="stylesheet" href="macro_suite.css?v=ae0ccd5f">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
 <link rel="preload" as="style" href="navigation-refresh.css?v=c299c324">
 </head>
@@ -305,6 +305,85 @@
   </div>
 </nav>
 
+<nav class="mq-suitenav" aria-label="Macro and Monetary suite">
+  <a class="mq-suitenav-home" href="macro_monetary.html">
+    <span class="mq-suitenav-home-mark" aria-hidden="true">←</span>
+    <span class="mq-suitenav-home-text"><span class="l-en">Macro &amp; Monetary</span><span class="l-zh">宏观与货币</span></span>
+  </a>
+  <p class="mq-suitenav-label" id="mq-suitenav-label"><span class="l-en">Workspaces</span><span class="l-zh">工作区</span></p>
+  <ul class="mq-suitenav-rail" aria-labelledby="mq-suitenav-label">
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_liquidity_regime.html"
+         data-mq-workspace="liquidity_regime"><span class="l-en">Liquidity Regime Monitor</span><span class="l-zh">流动性体制监测</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_growth_real_economy.html"
+         data-mq-workspace="growth_real_economy"><span class="l-en">Growth &amp; Real Economy</span><span class="l-zh">增长与实体经济</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_business_activity.html"
+         data-mq-workspace="business_activity"><span class="l-en">Business Activity</span><span class="l-zh">商业活动</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_labor_markets.html"
+         data-mq-workspace="labor_markets"><span class="l-en">Labor Markets</span><span class="l-zh">劳动力市场</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_inflation_system.html"
+         data-mq-workspace="inflation_system"><span class="l-en">Inflation System</span><span class="l-zh">通胀体系</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_monetary_policy.html"
+         data-mq-workspace="monetary_policy"><span class="l-en">Monetary Policy</span><span class="l-zh">货币政策</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_financial_conditions.html"
+         data-mq-workspace="financial_conditions"><span class="l-en">Financial Conditions</span><span class="l-zh">金融条件</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill is-current"
+         href="macro_liquidity_central_banks.html"
+         data-mq-workspace="liquidity_central_banks" aria-current="page"><span class="l-en">Liquidity &amp; Central Banks</span><span class="l-zh">流动性与央行</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_capital_structure.html"
+         data-mq-workspace="capital_structure"><span class="l-en">Capital Structure</span><span class="l-zh">资本结构</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_housing_real_estate.html"
+         data-mq-workspace="housing_real_estate"><span class="l-en">Housing &amp; Real Estate</span><span class="l-zh">住房与房地产</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_consumer_payments.html"
+         data-mq-workspace="consumer_payments"><span class="l-en">Consumer &amp; Payments</span><span class="l-zh">消费与支付</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_national_debt_liabilities.html"
+         data-mq-workspace="national_debt_liabilities"><span class="l-en">National Debt &amp; Liabilities</span><span class="l-zh">国债与负债</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_rates_curves.html"
+         data-mq-workspace="rates_curves"><span class="l-en">Rates &amp; Curves</span><span class="l-zh">利率与曲线</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_trade_flows.html"
+         data-mq-workspace="trade_flows"><span class="l-en">Trade Flows</span><span class="l-zh">贸易流动</span></a>
+    </li>
+  </ul>
+</nav>
 <main class="mq-shell" id="mq-shell">
   <header class="mq-context" id="mq-context">
   <div class="mq-context-id">
@@ -321,7 +400,7 @@
   <div class="mq-context-state">
     <div class="mq-avail">
       <span class="mq-avail-label"><span class="l-en">Required-source availability</span><span class="l-zh">必需数据源可用性</span></span>
-      <strong class="mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></strong>
+      <strong class="mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></strong>
       <span class="mq-avail-note"><span class="l-en">Conservative over the required set — a degraded optional leg cannot turn this green.</span><span class="l-zh">在必需分项集合上取最保守值 — 可选分项降级不会让此处转绿。</span></span>
     </div>
     <dl class="mq-context-meta">
@@ -331,7 +410,7 @@
       <div><dt><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></dt>
            <dd><time>2026-09-04T11:03:41.497178+00:00</time></dd></div>
       <div class="mq-nonclock"><dt><span class="l-en">Page built</span><span class="l-zh">页面生成</span></dt>
-           <dd><time>2026-09-05T18:21:09Z</time></dd></div>
+           <dd><time>2026-09-09T08:23:23Z</time></dd></div>
     </dl>
     <p class="mq-context-caveat"><span class="l-en">Page build time is not an economic clock and never makes a source fresh. This page is a static publication — it does not poll for live data.</span><span class="l-zh">页面生成时间并非经济时钟，不会使数据源变新。本页为静态发布 — 不会实时轮询数据。</span></p>
   </div>
@@ -349,19 +428,19 @@
         <tr>
           <th scope="row"><span class="l-en">Global monetary impulse</span><span class="l-zh">全球货币脉冲</span></th>
           <td><span class="mq-chip mq-tone-warn"><span class="l-en">Partial</span><span class="l-zh">部分具备</span></span></td>
-          <td><span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span></td>
+          <td><span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span></td>
           <td><time>2026-08-28</time></td>
         </tr>
         <tr>
           <th scope="row"><span class="l-en">Global liquidity breadth</span><span class="l-zh">全球流动性广度</span></th>
           <td><span class="mq-chip mq-tone-warn"><span class="l-en">Partial</span><span class="l-zh">部分具备</span></span></td>
-          <td><span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span></td>
+          <td><span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span></td>
           <td><time>2026-08-28</time></td>
         </tr>
         <tr>
           <th scope="row"><span class="l-en">USD funding impulse</span><span class="l-zh">美元融资脉冲</span></th>
           <td><span class="mq-chip mq-tone-warn"><span class="l-en">Partial</span><span class="l-zh">部分具备</span></span></td>
-          <td><span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span></td>
+          <td><span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span></td>
           <td><time>2026-08-28</time></td>
         </tr>
         <tr>
@@ -539,32 +618,27 @@
       <tr>
         <th scope="row"><span class="l-en">Glt monetary impulse</span><span class="l-zh">Glt monetary impulse</span></th>
         <td>0.003956</td>
-        <td>0.003956</td>
-        <td class="mq-delta mq-delta-flat">0</td>
+        <td>0.003956</td><td class="mq-delta mq-delta-flat">0</td>
       </tr>
       <tr>
         <th scope="row"><span class="l-en">Glt monetary impulse z</span><span class="l-zh">Glt monetary impulse z</span></th>
         <td>0.07703</td>
-        <td>0.07703</td>
-        <td class="mq-delta mq-delta-flat">0</td>
+        <td>0.07703</td><td class="mq-delta mq-delta-flat">0</td>
       </tr>
       <tr>
         <th scope="row"><span class="l-en">Glt usd funding impulse</span><span class="l-zh">Glt usd funding impulse</span></th>
         <td>-0.1448</td>
-        <td>-0.1448</td>
-        <td class="mq-delta mq-delta-flat">0</td>
+        <td>-0.1448</td><td class="mq-delta mq-delta-flat">0</td>
       </tr>
       <tr>
         <th scope="row"><span class="l-en">Glt liquidity breadth</span><span class="l-zh">Glt liquidity breadth</span></th>
         <td>0.3333</td>
-        <td>0.3333</td>
-        <td class="mq-delta mq-delta-flat">0</td>
+        <td>0.3333</td><td class="mq-delta mq-delta-flat">0</td>
       </tr>
       <tr>
         <th scope="row"><span class="l-en">Cb fed balance sheet impulse 13w</span><span class="l-zh">Cb fed balance sheet impulse 13w</span></th>
         <td>0.38</td>
-        <td>0.38</td>
-        <td class="mq-delta mq-delta-flat">0</td>
+        <td>0.38</td><td class="mq-delta mq-delta-flat">0</td>
       </tr>
     </tbody>
   </table>
@@ -578,7 +652,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Glt monetary impulse</span><span class="l-zh">Glt monetary impulse</span></span>
-        <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
+        <span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">0.003956</span><span class="l-zh">0.003956</span><span class="mq-metric-unit"><span class="l-en">Z score pts</span><span class="l-zh">Z score pts</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">Higher more expansionary</span></p>
@@ -627,7 +701,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Glt monetary impulse z</span><span class="l-zh">Glt monetary impulse z</span></span>
-        <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
+        <span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">0.07703</span><span class="l-zh">0.07703</span><span class="mq-metric-unit"><span class="l-en">std dev</span><span class="l-zh">标准差</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">Higher more expansionary</span></p>
@@ -676,7 +750,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Glt monetary stance</span><span class="l-zh">Glt monetary stance</span></span>
-        <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
+        <span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">0.9433</span><span class="l-zh">0.9433</span><span class="mq-metric-unit"><span class="l-en">std dev</span><span class="l-zh">标准差</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">Higher more expansionary</span></p>
@@ -725,7 +799,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Glt orthogonalised impulse</span><span class="l-zh">Glt orthogonalised impulse</span></span>
-        <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
+        <span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">0.0165</span><span class="l-zh">0.0165</span><span class="mq-metric-unit"><span class="l-en">std dev</span><span class="l-zh">标准差</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">Higher more expansionary</span></p>
@@ -774,7 +848,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Glt liquidity breadth</span><span class="l-zh">Glt liquidity breadth</span></span>
-        <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
+        <span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">0.3333</span><span class="l-zh">0.3333</span><span class="mq-metric-unit"><span class="l-en">Share 0 to 1</span><span class="l-zh">Share 0 to 1</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher broader agreement</span><span class="l-zh">Higher broader agreement</span></p>
@@ -823,7 +897,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Glt usd funding impulse</span><span class="l-zh">Glt usd funding impulse</span></span>
-        <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
+        <span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">-0.1448</span><span class="l-zh">-0.1448</span><span class="mq-metric-unit"><span class="l-en">std dev</span><span class="l-zh">标准差</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher easier funding</span><span class="l-zh">Higher easier funding</span></p>
@@ -872,7 +946,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Glt policy liquidity impulse</span><span class="l-zh">Glt policy liquidity impulse</span></span>
-        <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
+        <span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">0.003956</span><span class="l-zh">0.003956</span><span class="mq-metric-unit"><span class="l-en">Z score pts</span><span class="l-zh">Z score pts</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">Higher more expansionary</span></p>
@@ -970,7 +1044,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Glt state label</span><span class="l-zh">Glt state label</span></span>
-        <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
+        <span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">Flat</span><span class="l-zh">Flat</span></strong>
       <p class="mq-metric-direction"></p>
@@ -1019,7 +1093,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Glt state quality label</span><span class="l-zh">Glt state quality label</span></span>
-        <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
+        <span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">Mixed</span><span class="l-zh">Mixed</span></strong>
       <p class="mq-metric-direction"></p>
@@ -1068,7 +1142,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Glt confidence</span><span class="l-zh">Glt confidence</span></span>
-        <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
+        <span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">0.8333</span><span class="l-zh">0.8333</span><span class="mq-metric-unit"><span class="l-en">Ratio 0 1</span><span class="l-zh">Ratio 0 1</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more coverage and pit reliability</span><span class="l-zh">Higher more coverage and pit reliability</span></p>
@@ -1117,7 +1191,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Glt monetary coverage ratio</span><span class="l-zh">Glt monetary coverage ratio</span></span>
-        <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
+        <span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">1.00</span><span class="l-zh">1.00</span><span class="mq-metric-unit"><span class="l-en">Ratio 0 1</span><span class="l-zh">Ratio 0 1</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more coverage</span><span class="l-zh">Higher more coverage</span></p>
@@ -1166,7 +1240,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Glt funding coverage ratio</span><span class="l-zh">Glt funding coverage ratio</span></span>
-        <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
+        <span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">1.00</span><span class="l-zh">1.00</span><span class="mq-metric-unit"><span class="l-en">Ratio 0 1</span><span class="l-zh">Ratio 0 1</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more coverage</span><span class="l-zh">Higher more coverage</span></p>
@@ -1215,7 +1289,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Glt fed monetary contribution z</span><span class="l-zh">Glt fed monetary contribution z</span></span>
-        <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
+        <span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">0.9704</span><span class="l-zh">0.9704</span><span class="mq-metric-unit"><span class="l-en">std dev</span><span class="l-zh">标准差</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">Higher more expansionary</span></p>
@@ -1264,7 +1338,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Glt ecb monetary contribution z</span><span class="l-zh">Glt ecb monetary contribution z</span></span>
-        <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
+        <span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">1.01</span><span class="l-zh">1.01</span><span class="mq-metric-unit"><span class="l-en">std dev</span><span class="l-zh">标准差</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">Higher more expansionary</span></p>
@@ -1313,7 +1387,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Glt boj monetary contribution z</span><span class="l-zh">Glt boj monetary contribution z</span></span>
-        <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
+        <span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">0.8508</span><span class="l-zh">0.8508</span><span class="mq-metric-unit"><span class="l-en">std dev</span><span class="l-zh">标准差</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more expansionary</span><span class="l-zh">Higher more expansionary</span></p>
@@ -1362,7 +1436,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Glt broad dollar contribution z</span><span class="l-zh">Glt broad dollar contribution z</span></span>
-        <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
+        <span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">0.262</span><span class="l-zh">0.262</span><span class="mq-metric-unit"><span class="l-en">std dev</span><span class="l-zh">标准差</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher easier funding</span><span class="l-zh">Higher easier funding</span></p>
@@ -1411,7 +1485,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Glt high yield oas contribution z</span><span class="l-zh">Glt high yield oas contribution z</span></span>
-        <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
+        <span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">0.05906</span><span class="l-zh">0.05906</span><span class="mq-metric-unit"><span class="l-en">std dev</span><span class="l-zh">标准差</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher easier funding</span><span class="l-zh">Higher easier funding</span></p>
@@ -1460,7 +1534,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Glt real yield 10y contribution z</span><span class="l-zh">Glt real yield 10y contribution z</span></span>
-        <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
+        <span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">-0.7553</span><span class="l-zh">-0.7553</span><span class="mq-metric-unit"><span class="l-en">std dev</span><span class="l-zh">标准差</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher easier funding</span><span class="l-zh">Higher easier funding</span></p>
@@ -1509,9 +1583,9 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Cb fed balance sheet level</span><span class="l-zh">Cb fed balance sheet level</span></span>
-        <span class="mq-chip mq-tone-bad"><span class="l-en">Source failed</span><span class="l-zh">数据源获取失败</span></span>
+        <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Source failed</span><span class="l-zh">数据源获取失败</span></span></span><span class="mq-metric-unit"><span class="l-en">Usd billions (×1, raw walcl is in billions)</span><span class="l-zh">Usd billions (×1, raw walcl is in billions)</span></span></strong>
+      <strong class="mq-metric-value"><span class="l-en">6,737.2</span><span class="l-zh">6,737.2</span><span class="mq-metric-unit"><span class="l-en">Usd billions</span><span class="l-zh">Usd billions</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more accommodative</span><span class="l-zh">Higher more accommodative</span></p>
       <dl class="mq-metric-meta">
         <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
@@ -1658,7 +1732,7 @@
         <span class="mq-metric-name"><span class="l-en">Cb ecb balance sheet level</span><span class="l-zh">Cb ecb balance sheet level</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">5,915,343.0</span><span class="l-zh">5,915,343.0</span><span class="mq-metric-unit"><span class="l-en">Eur billions</span><span class="l-zh">Eur billions</span></span></strong>
+      <strong class="mq-metric-value"><span class="l-en">5,915.3</span><span class="l-zh">5,915.3</span><span class="mq-metric-unit"><span class="l-en">Eur billions</span><span class="l-zh">Eur billions</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more accommodative</span><span class="l-zh">Higher more accommodative</span></p>
       <dl class="mq-metric-meta">
         <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
@@ -1805,7 +1879,7 @@
         <span class="mq-metric-name"><span class="l-en">Cb boj balance sheet level</span><span class="l-zh">Cb boj balance sheet level</span></span>
         <span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">6,446,620.0</span><span class="l-zh">6,446,620.0</span><span class="mq-metric-unit"><span class="l-en">Jpy trillions</span><span class="l-zh">Jpy trillions</span></span></strong>
+      <strong class="mq-metric-value"><span class="l-en">644,662.0</span><span class="l-zh">644,662.0</span><span class="mq-metric-unit"><span class="l-en">Jpy billions</span><span class="l-zh">Jpy billions</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more accommodative</span><span class="l-zh">Higher more accommodative</span></p>
       <dl class="mq-metric-meta">
         <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
@@ -2056,7 +2130,7 @@
   <dl class="mq-method-grid">
     <div><dt><span class="l-en">Correction state</span><span class="l-zh">更正状态</span></dt><dd><span class="l-en">No correction recorded</span><span class="l-zh">无更正记录</span></dd></div>
     <div><dt><span class="l-en">Predecessor generation</span><span class="l-zh">前一代产物</span></dt>
-         <dd><code>liquidity_central_banks-US-05c7b8485b9940a1</code></dd></div>
+         <dd><code>liquidity_central_banks-US-96076f98950a316c</code></dd></div>
     <div><dt><span class="l-en">Changed fingerprints</span><span class="l-zh">已变更指纹</span></dt>
          <dd><span class="mq-dash">—</span></dd></div>
     <div><dt><span class="l-en">Hysteresis</span><span class="l-zh">滞回</span></dt><dd>liquidity_central_banks has no headline model at all in architecture section 10.9 -- unlike liquidity_regime/financial_conditions/growth&#39;s explicit x/y quadrant blueprints or monetary_policy&#39;s own composition-list headline, section 10.9 has no headline-model subsection, only a required-composition list. headline.state_id stays null and this is not applicable by design, not by missing data; the real content (global monetary/funding impulse, Fed/ECB/BoJ balance-sheet impulses, the global-vs-Fed-desk agreement check) lives in metrics/drivers/implications instead. Region is published as US per every current Macro &amp; Monetary page even though this composer&#39;s owner inputs are explicitly global -- see the region_scope_disclosure implication for the reader-facing version of this note.</dd></div>
@@ -2136,7 +2210,7 @@
       <article class="mq-source">
         <header>
           <strong><span class="l-en">Global Liquidity Transmission state (monetary + funding impulse)</span><span class="l-zh">全球流动性传导状态（货币+融资脉冲）</span></strong>
-          <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
+          <span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span>
         </header>
         <dl class="mq-method-grid">
           <div><dt><span class="l-en">Provider</span><span class="l-zh">提供方</span></dt><dd>Macro/Data Producer W-LIQ.1</dd></div>
@@ -2182,7 +2256,7 @@
       <article class="mq-source">
         <header>
           <strong><span class="l-en">GLT quality &amp; coverage disclosure</span><span class="l-zh">GLT质量与覆盖率披露</span></strong>
-          <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
+          <span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span>
         </header>
         <dl class="mq-method-grid">
           <div><dt><span class="l-en">Provider</span><span class="l-zh">提供方</span></dt><dd>Macro/Data Producer W-LIQ.1</dd></div>
@@ -2228,7 +2302,7 @@
       <article class="mq-source">
         <header>
           <strong><span class="l-en">GLT per-component freshness receipts</span><span class="l-zh">GLT分项新鲜度回执</span></strong>
-          <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
+          <span class="mq-chip mq-tone-warn"><span class="l-en">Stale source</span><span class="l-zh">数据源已过期</span></span>
         </header>
         <dl class="mq-method-grid">
           <div><dt><span class="l-en">Provider</span><span class="l-zh">提供方</span></dt><dd>Macro/Data Producer W-LIQ.1</dd></div>
@@ -2370,11 +2444,11 @@
       <dl class="mq-clocks">
         <div class="mq-clock">
           <dt><span class="mq-clock-name"><span class="l-en">Artifact built</span><span class="l-zh">产物生成</span></span><span class="mq-clock-meaning"><span class="l-en">Producer generation time. Not an economic clock.</span><span class="l-zh">生产端生成时间，并非经济时钟。</span></span></dt>
-          <dd><time>2026-09-05T12:05:54Z</time></dd>
+          <dd><time>2026-09-09T07:31:47Z</time></dd>
         </div>
         <div class="mq-clock">
           <dt><span class="mq-clock-name"><span class="l-en">Page built</span><span class="l-zh">页面生成</span></span><span class="mq-clock-meaning"><span class="l-en">Static page render time. Not an economic clock.</span><span class="l-zh">静态页面渲染时间，并非经济时钟。</span></span></dt>
-          <dd><time>2026-09-05T18:21:09Z</time></dd>
+          <dd><time>2026-09-09T08:23:23Z</time></dd>
         </div>
       </dl>
     </section>
@@ -2384,11 +2458,11 @@
       <dl class="mq-method-grid">
         <div><dt><span class="l-en">Artifact path</span><span class="l-zh">产物路径</span></dt><dd><code>macrodata/workspaces/liquidity_central_banks/US/latest.json</code></dd></div>
         <div><dt><span class="l-en">Manifest path</span><span class="l-zh">清单路径</span></dt><dd><code>macrodata/workspaces/manifest.json</code></dd></div>
-        <div><dt><span class="l-en">Content hash</span><span class="l-zh">内容哈希</span></dt><dd><code class="mq-hash">d70fba4d531327bd5008f9bb4b1e272e7d5a16e666c6507aa7d4044909b1ba21</code></dd></div>
-        <div><dt><span class="l-en">Bytes</span><span class="l-zh">字节数</span></dt><dd>64345</dd></div>
-        <div><dt><span class="l-en">Generation id</span><span class="l-zh">产物代号</span></dt><dd><code>liquidity_central_banks-US-d70fba4d531327bd</code></dd></div>
+        <div><dt><span class="l-en">Content hash</span><span class="l-zh">内容哈希</span></dt><dd><code class="mq-hash">332b10f128ccad35bb76b6d9f135ff5e94ca6e7ceb7e34dcbf475e15c0c1dadc</code></dd></div>
+        <div><dt><span class="l-en">Bytes</span><span class="l-zh">字节数</span></dt><dd>62130</dd></div>
+        <div><dt><span class="l-en">Generation id</span><span class="l-zh">产物代号</span></dt><dd><code>liquidity_central_banks-US-332b10f128ccad35</code></dd></div>
         <div><dt><span class="l-en">Producer</span><span class="l-zh">生产者</span></dt><dd><code>engine.market_os.macro_workspaces.liquidity_central_banks</code></dd></div>
-        <div><dt><span class="l-en">Producer code version</span><span class="l-zh">生产端代码版本</span></dt><dd><code>cf2d84392d55d3894cea08b10c4acc0d4d347266</code></dd></div>
+        <div><dt><span class="l-en">Producer code version</span><span class="l-zh">生产端代码版本</span></dt><dd><code>6564d1646bc7fc7d43a0073fd73cef6f0e1bd74a</code></dd></div>
         <div><dt><span class="l-en">Client contract</span><span class="l-zh">客户端契约</span></dt><dd><code>mastermind.macro_workspace_snapshot.v1@1.0.0</code></dd></div>
       </dl>
       <p class="mq-lineage-note"><span class="l-en">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mismatch renders a refusal page instead of a state.</span><span class="l-zh">本页在渲染前已按封闭 schema 校验该产物并重新计算其内容哈希。若不匹配，将呈现拒绝页面而非任何状态读数。</span></p>
@@ -2399,5 +2473,6 @@
 
 <script src="theme.js?v=53939d13" defer></script>
 <script src="macro_suite.js?v=e202c862" defer></script>
+<script defer data-whb data-root="" src="wh_banner.js?v=4a53a176"></script>
 </body>
 </html>

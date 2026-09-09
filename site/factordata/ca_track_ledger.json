@@ -1,7 +1,7 @@
 {
  "schema": "track_ledger/v1",
  "market": "CA",
- "as_of": "2026-09-04",
+ "as_of": "2026-09-08",
  "state": "accruing",
  "bench": {
   "code": "_GSPTSE",
@@ -10,12 +10,12 @@
  },
  "summary": {
   "state": "accruing",
-  "n_calls": 169,
-  "n_logged": 169,
+  "n_calls": 192,
+  "n_logged": 192,
   "n_matured": 0,
   "n_beat": 0,
   "n_lag": 0,
-  "n_suspended": 55,
+  "n_suspended": 57,
   "hit_matured": null,
   "wilson_lo_pct": null,
   "wilson_hi_pct": null,
@@ -24,9 +24,471 @@
  },
  "rows": [
   {
-   "t": "SU.TO",
+   "t": "TVK.TO",
+   "nm": "TERRAVEST INDUSTRIES INC",
+   "sec": "Energy",
+   "grp": "entry_open",
+   "d": "2026-09-04",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 1,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "ca_prophet_branch_b_v1",
+   "ed": "2026-09-08"
+  },
+  {
+   "t": "ATRL.TO",
    "nm": null,
    "sec": null,
+   "grp": "entry_open",
+   "d": "2026-09-04",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 2,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "ca_prophet_branch_b_v1",
+   "ed": "2026-09-08"
+  },
+  {
+   "t": "ARE.TO",
+   "nm": null,
+   "sec": null,
+   "grp": "setting_up",
+   "d": "2026-09-04",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 3,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "ca_prophet_branch_b_v1",
+   "ed": "2026-09-08"
+  },
+  {
+   "t": "DOO.TO",
+   "nm": null,
+   "sec": null,
+   "grp": "setting_up",
+   "d": "2026-09-04",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 4,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "ca_prophet_branch_b_v1",
+   "ed": "2026-09-08"
+  },
+  {
+   "t": "NWC.TO",
+   "nm": null,
+   "sec": null,
+   "grp": "setting_up",
+   "d": "2026-09-04",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 5,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "ca_prophet_branch_b_v1",
+   "ed": "2026-09-08"
+  },
+  {
+   "t": "CCL-B.TO",
+   "nm": null,
+   "sec": null,
+   "grp": "setting_up",
+   "d": "2026-09-04",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 6,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "ca_prophet_branch_b_v1",
+   "ed": "2026-09-08"
+  },
+  {
+   "t": "RCH.TO",
+   "nm": null,
+   "sec": null,
+   "grp": "setting_up",
+   "d": "2026-09-04",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 7,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "ca_prophet_branch_b_v1",
+   "ed": "2026-09-08"
+  },
+  {
+   "t": "TPZ.TO",
+   "nm": null,
+   "sec": null,
+   "grp": "setting_up",
+   "d": "2026-09-04",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 8,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "ca_prophet_branch_b_v1",
+   "ed": "2026-09-08"
+  },
+  {
+   "t": "AIF.TO",
+   "nm": null,
+   "sec": null,
+   "grp": "setting_up",
+   "d": "2026-09-04",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 9,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "ca_prophet_branch_b_v1",
+   "ed": "2026-09-08"
+  },
+  {
+   "t": "PMZ-UN.TO",
+   "nm": null,
+   "sec": null,
+   "grp": "watch",
+   "d": "2026-09-04",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 10,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "ca_prophet_branch_b_v1",
+   "ed": "2026-09-08"
+  },
+  {
+   "t": "MTL.TO",
+   "nm": null,
+   "sec": null,
+   "grp": "watch",
+   "d": "2026-09-04",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 11,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "ca_prophet_branch_b_v1",
+   "ed": "2026-09-08"
+  },
+  {
+   "t": "BB.TO",
+   "nm": null,
+   "sec": null,
+   "grp": "watch",
+   "d": "2026-09-04",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 12,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "ca_prophet_branch_b_v1",
+   "ed": "2026-09-08"
+  },
+  {
+   "t": "GWO.TO",
+   "nm": null,
+   "sec": null,
+   "grp": "watch",
+   "d": "2026-09-04",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 13,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "ca_prophet_branch_b_v1",
+   "ed": "2026-09-08"
+  },
+  {
+   "t": "EIF.TO",
+   "nm": null,
+   "sec": null,
+   "grp": "watch",
+   "d": "2026-09-04",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 14,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "ca_prophet_branch_b_v1",
+   "ed": "2026-09-08"
+  },
+  {
+   "t": "TD.TO",
+   "nm": null,
+   "sec": null,
+   "grp": "watch",
+   "d": "2026-09-04",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 15,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "ca_prophet_branch_b_v1",
+   "ed": "2026-09-08"
+  },
+  {
+   "t": "EXE.TO",
+   "nm": null,
+   "sec": null,
+   "grp": "watch",
+   "d": "2026-09-04",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 16,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "ca_prophet_branch_b_v1",
+   "ed": "2026-09-08"
+  },
+  {
+   "t": "ACO-X.TO",
+   "nm": null,
+   "sec": null,
+   "grp": "watch",
+   "d": "2026-09-04",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 17,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "ca_prophet_branch_b_v1",
+   "ed": "2026-09-08"
+  },
+  {
+   "t": "QSR.TO",
+   "nm": null,
+   "sec": null,
+   "grp": "setting_up",
+   "d": "2026-09-04",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 4,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "ca_prophet_branch_b_v1",
+   "ed": "2026-09-08"
+  },
+  {
+   "t": "CCA.TO",
+   "nm": "COGECO COMMUNICATIONS INC",
+   "sec": "Communication",
+   "grp": "setting_up",
+   "d": "2026-09-04",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 6,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "ca_prophet_branch_b_v1",
+   "ed": "2026-09-08"
+  },
+  {
+   "t": "CSH-UN.TO",
+   "nm": null,
+   "sec": null,
+   "grp": "setting_up",
+   "d": "2026-09-04",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 7,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "ca_prophet_branch_b_v1",
+   "ed": "2026-09-08"
+  },
+  {
+   "t": "TOU.TO",
+   "nm": null,
+   "sec": null,
+   "grp": "setting_up",
+   "d": "2026-09-04",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 10,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "ca_prophet_branch_b_v1",
+   "ed": "2026-09-08"
+  },
+  {
+   "t": "RY.TO",
+   "nm": null,
+   "sec": null,
+   "grp": "watch",
+   "d": "2026-09-04",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 18,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "ca_prophet_branch_b_v1",
+   "ed": "2026-09-08"
+  },
+  {
+   "t": "SU.TO",
+   "nm": "SUNCOR ENERGY INC.",
+   "sec": "Energy",
    "grp": "setting_up",
    "d": "2026-09-03",
    "e": null,
@@ -46,8 +508,8 @@
   },
   {
    "t": "SOBO.TO",
-   "nm": null,
-   "sec": null,
+   "nm": "SOUTH BOW CORPORATION",
+   "sec": "Energy",
    "grp": "setting_up",
    "d": "2026-09-03",
    "e": null,
@@ -88,8 +550,8 @@
   },
   {
    "t": "QSR.TO",
-   "nm": "RESTAURANT BRANDS INTERNATIONAL",
-   "sec": "Consumer Discretionary",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-09-03",
    "e": null,
@@ -109,8 +571,8 @@
   },
   {
    "t": "RCH.TO",
-   "nm": "RICHELIEU HARDWARE LTD",
-   "sec": "Industrials",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-09-03",
    "e": null,
@@ -129,9 +591,30 @@
    "ed": "2026-09-04"
   },
   {
+   "t": "CSH-UN.TO",
+   "nm": null,
+   "sec": null,
+   "grp": "setting_up",
+   "d": "2026-09-03",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 6,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "ca_prophet_branch_b_v1",
+   "ed": "2026-09-04"
+  },
+  {
    "t": "TPZ.TO",
-   "nm": "TOPAZ ENERGY CORP",
-   "sec": "Energy",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-09-03",
    "e": null,
@@ -151,8 +634,8 @@
   },
   {
    "t": "TVK.TO",
-   "nm": null,
-   "sec": null,
+   "nm": "TERRAVEST INDUSTRIES INC",
+   "sec": "Energy",
    "grp": "setting_up",
    "d": "2026-09-03",
    "e": null,
@@ -172,8 +655,8 @@
   },
   {
    "t": "TOU.TO",
-   "nm": "TOURMALINE OIL CORP",
-   "sec": "Energy",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-09-03",
    "e": null,
@@ -340,8 +823,8 @@
   },
   {
    "t": "ARE.TO",
-   "nm": "AECON GROUP INC",
-   "sec": "Industrials",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-09-03",
    "e": null,
@@ -403,8 +886,8 @@
   },
   {
    "t": "ALA.TO",
-   "nm": null,
-   "sec": null,
+   "nm": "ALTAGAS LTD.",
+   "sec": "Utilities",
    "grp": "setting_up",
    "d": "2026-08-31",
    "e": null,
@@ -424,8 +907,8 @@
   },
   {
    "t": "SOBO.TO",
-   "nm": null,
-   "sec": null,
+   "nm": "SOUTH BOW CORPORATION",
+   "sec": "Energy",
    "grp": "setting_up",
    "d": "2026-08-31",
    "e": null,
@@ -508,8 +991,8 @@
   },
   {
    "t": "RCH.TO",
-   "nm": "RICHELIEU HARDWARE LTD",
-   "sec": "Industrials",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-08-31",
    "e": null,
@@ -529,8 +1012,8 @@
   },
   {
    "t": "TPZ.TO",
-   "nm": "TOPAZ ENERGY CORP",
-   "sec": "Energy",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-08-31",
    "e": null,
@@ -752,9 +1235,7 @@
    "m": false,
    "rk": 1,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "ca_prophet_branch_b_v1",
    "ed": "2026-08-31"
   },
@@ -773,9 +1254,7 @@
    "m": false,
    "rk": 2,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "ca_prophet_branch_b_v1",
    "ed": "2026-08-31"
   },
@@ -794,9 +1273,7 @@
    "m": false,
    "rk": 3,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "ca_prophet_branch_b_v1",
    "ed": "2026-08-31"
   },
@@ -815,9 +1292,7 @@
    "m": false,
    "rk": 4,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "ca_prophet_branch_b_v1",
    "ed": "2026-08-31"
   },
@@ -836,16 +1311,14 @@
    "m": false,
    "rk": 5,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "ca_prophet_branch_b_v1",
    "ed": "2026-08-31"
   },
   {
    "t": "RCH.TO",
-   "nm": "RICHELIEU HARDWARE LTD",
-   "sec": "Industrials",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-08-28",
    "e": null,
@@ -857,9 +1330,7 @@
    "m": false,
    "rk": 6,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "ca_prophet_branch_b_v1",
    "ed": "2026-08-31"
   },
@@ -878,9 +1349,7 @@
    "m": false,
    "rk": 7,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "ca_prophet_branch_b_v1",
    "ed": "2026-08-31"
   },
@@ -899,9 +1368,7 @@
    "m": false,
    "rk": 8,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "ca_prophet_branch_b_v1",
    "ed": "2026-08-31"
   },
@@ -920,9 +1387,7 @@
    "m": false,
    "rk": 9,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "ca_prophet_branch_b_v1",
    "ed": "2026-08-31"
   },
@@ -941,9 +1406,7 @@
    "m": false,
    "rk": 10,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "ca_prophet_branch_b_v1",
    "ed": "2026-08-31"
   },
@@ -962,9 +1425,7 @@
    "m": false,
    "rk": 11,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "ca_prophet_branch_b_v1",
    "ed": "2026-08-31"
   },
@@ -983,9 +1444,7 @@
    "m": false,
    "rk": 12,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "ca_prophet_branch_b_v1",
    "ed": "2026-08-31"
   },
@@ -1004,9 +1463,7 @@
    "m": false,
    "rk": 13,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "ca_prophet_branch_b_v1",
    "ed": "2026-08-31"
   },
@@ -1025,9 +1482,7 @@
    "m": false,
    "rk": 14,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "ca_prophet_branch_b_v1",
    "ed": "2026-08-31"
   },
@@ -1046,16 +1501,14 @@
    "m": false,
    "rk": 15,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "ca_prophet_branch_b_v1",
    "ed": "2026-08-31"
   },
   {
    "t": "ARE.TO",
-   "nm": "AECON GROUP INC",
-   "sec": "Industrials",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-28",
    "e": null,
@@ -1067,9 +1520,7 @@
    "m": false,
    "rk": 16,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "ca_prophet_branch_b_v1",
    "ed": "2026-08-31"
   },
@@ -1088,16 +1539,14 @@
    "m": false,
    "rk": 17,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "ca_prophet_branch_b_v1",
    "ed": "2026-08-31"
   },
   {
    "t": "SOBO.TO",
-   "nm": null,
-   "sec": null,
+   "nm": "SOUTH BOW CORPORATION",
+   "sec": "Energy",
    "grp": "setting_up",
    "d": "2026-08-28",
    "e": null,
@@ -1109,9 +1558,7 @@
    "m": false,
    "rk": 2,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "ca_prophet_branch_b_v1",
    "ed": "2026-08-31"
   },
@@ -1130,16 +1577,14 @@
    "m": false,
    "rk": 3,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "ca_prophet_branch_b_v1",
    "ed": "2026-08-31"
   },
   {
    "t": "AAUC.TO",
-   "nm": null,
-   "sec": null,
+   "nm": "ALLIED GOLD CORPORATION",
+   "sec": "Materials",
    "grp": "setting_up",
    "d": "2026-08-28",
    "e": null,
@@ -1151,9 +1596,7 @@
    "m": false,
    "rk": 7,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "ca_prophet_branch_b_v1",
    "ed": "2026-08-31"
   },
@@ -1172,9 +1615,7 @@
    "m": false,
    "rk": 8,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "ca_prophet_branch_b_v1",
    "ed": "2026-08-31"
   },
@@ -1275,8 +1716,8 @@
   },
   {
    "t": "RCH.TO",
-   "nm": "RICHELIEU HARDWARE LTD",
-   "sec": "Industrials",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-08-27",
    "e": null,
@@ -1446,8 +1887,8 @@
   },
   {
    "t": "ARE.TO",
-   "nm": "AECON GROUP INC",
-   "sec": "Industrials",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-27",
    "e": null,
@@ -1503,8 +1944,8 @@
   },
   {
    "t": "SOBO.TO",
-   "nm": null,
-   "sec": null,
+   "nm": "SOUTH BOW CORPORATION",
+   "sec": "Energy",
    "grp": "setting_up",
    "d": "2026-08-26",
    "e": null,
@@ -1541,8 +1982,8 @@
   },
   {
    "t": "RCH.TO",
-   "nm": "RICHELIEU HARDWARE LTD",
-   "sec": "Industrials",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-08-26",
    "e": null,
@@ -1712,8 +2153,8 @@
   },
   {
    "t": "ARE.TO",
-   "nm": "AECON GROUP INC",
-   "sec": "Industrials",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-26",
    "e": null,
@@ -1845,8 +2286,8 @@
   },
   {
    "t": "RCH.TO",
-   "nm": "RICHELIEU HARDWARE LTD",
-   "sec": "Industrials",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-08-25",
    "e": null,
@@ -1997,8 +2438,8 @@
   },
   {
    "t": "ARE.TO",
-   "nm": "AECON GROUP INC",
-   "sec": "Industrials",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-25",
    "e": null,
@@ -2244,8 +2685,8 @@
   },
   {
    "t": "ARE.TO",
-   "nm": "AECON GROUP INC",
-   "sec": "Industrials",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-24",
    "e": null,
@@ -2434,8 +2875,8 @@
   },
   {
    "t": "RCH.TO",
-   "nm": "RICHELIEU HARDWARE LTD",
-   "sec": "Industrials",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-08-21",
    "e": null,
@@ -2453,8 +2894,8 @@
   },
   {
    "t": "AAUC.TO",
-   "nm": null,
-   "sec": null,
+   "nm": "ALLIED GOLD CORPORATION",
+   "sec": "Materials",
    "grp": "setting_up",
    "d": "2026-08-21",
    "e": null,
@@ -2586,8 +3027,8 @@
   },
   {
    "t": "ARE.TO",
-   "nm": "AECON GROUP INC",
-   "sec": "Industrials",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-21",
    "e": null,
@@ -2928,8 +3369,8 @@
   },
   {
    "t": "ARE.TO",
-   "nm": "AECON GROUP INC",
-   "sec": "Industrials",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-20",
    "e": null,
@@ -3099,8 +3540,8 @@
   },
   {
    "t": "RCH.TO",
-   "nm": "RICHELIEU HARDWARE LTD",
-   "sec": "Industrials",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-08-19",
    "e": null,
@@ -3118,8 +3559,8 @@
   },
   {
    "t": "AAUC.TO",
-   "nm": null,
-   "sec": null,
+   "nm": "ALLIED GOLD CORPORATION",
+   "sec": "Materials",
    "grp": "setting_up",
    "d": "2026-08-19",
    "e": null,
@@ -3270,8 +3711,8 @@
   },
   {
    "t": "ARE.TO",
-   "nm": "AECON GROUP INC",
-   "sec": "Industrials",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-19",
    "e": null,
@@ -3346,11 +3787,11 @@
   }
  ],
  "meta": {
-  "n_total": 169,
+  "n_total": 192,
   "truncated": 0,
   "grain": "board_day",
   "survivorship": {
-   "n_suspended": 55,
+   "n_suspended": 57,
    "note": "no delisting archive — vanished names leave the sample"
   }
  },
@@ -3472,8 +3913,8 @@
    },
    {
     "t": "RCH.TO",
-    "nm": "RICHELIEU HARDWARE LTD",
-    "sec": "Industrials",
+    "nm": null,
+    "sec": null,
     "grp": "setting_up",
     "d": "2026-08-18",
     "e": null,
@@ -3510,8 +3951,8 @@
    },
    {
     "t": "AAUC.TO",
-    "nm": null,
-    "sec": null,
+    "nm": "ALLIED GOLD CORPORATION",
+    "sec": "Materials",
     "grp": "setting_up",
     "d": "2026-08-18",
     "e": null,
@@ -3605,8 +4046,8 @@
    },
    {
     "t": "ARE.TO",
-    "nm": "AECON GROUP INC",
-    "sec": "Industrials",
+    "nm": null,
+    "sec": null,
     "grp": "watch",
     "d": "2026-08-18",
     "e": null,
@@ -3776,8 +4217,8 @@
    },
    {
     "t": "SU.TO",
-    "nm": null,
-    "sec": null,
+    "nm": "SUNCOR ENERGY INC.",
+    "sec": "Energy",
     "grp": "setting_up",
     "d": "2026-08-17",
     "e": null,
@@ -3833,8 +4274,8 @@
    },
    {
     "t": "RCH.TO",
-    "nm": "RICHELIEU HARDWARE LTD",
-    "sec": "Industrials",
+    "nm": null,
+    "sec": null,
     "grp": "setting_up",
     "d": "2026-08-17",
     "e": null,
@@ -3852,8 +4293,8 @@
    },
    {
     "t": "AAUC.TO",
-    "nm": null,
-    "sec": null,
+    "nm": "ALLIED GOLD CORPORATION",
+    "sec": "Materials",
     "grp": "setting_up",
     "d": "2026-08-17",
     "e": null,
@@ -3890,8 +4331,8 @@
    },
    {
     "t": "ATRL.TO",
-    "nm": "ATKINSREALIS GROUP INC",
-    "sec": "Industrials",
+    "nm": null,
+    "sec": null,
     "grp": "setting_up",
     "d": "2026-08-17",
     "e": null,
@@ -3947,8 +4388,8 @@
    },
    {
     "t": "ARE.TO",
-    "nm": "AECON GROUP INC",
-    "sec": "Industrials",
+    "nm": null,
+    "sec": null,
     "grp": "watch",
     "d": "2026-08-17",
     "e": null,
@@ -4213,8 +4654,8 @@
    },
    {
     "t": "QSR.TO",
-    "nm": "RESTAURANT BRANDS INTERNATIONAL",
-    "sec": "Consumer Discretionary",
+    "nm": null,
+    "sec": null,
     "grp": "setting_up",
     "d": "2026-08-13",
     "e": null,
@@ -4327,8 +4768,8 @@
    },
    {
     "t": "ARE.TO",
-    "nm": "AECON GROUP INC",
-    "sec": "Industrials",
+    "nm": null,
+    "sec": null,
     "grp": "watch",
     "d": "2026-08-13",
     "e": null,
@@ -4555,8 +4996,8 @@
    },
    {
     "t": "QSR.TO",
-    "nm": "RESTAURANT BRANDS INTERNATIONAL",
-    "sec": "Consumer Discretionary",
+    "nm": null,
+    "sec": null,
     "grp": "setting_up",
     "d": "2026-08-12",
     "e": null,
@@ -4669,8 +5110,8 @@
    },
    {
     "t": "ARE.TO",
-    "nm": "AECON GROUP INC",
-    "sec": "Industrials",
+    "nm": null,
+    "sec": null,
     "grp": "watch",
     "d": "2026-08-12",
     "e": null,
@@ -4878,8 +5319,8 @@
    },
    {
     "t": "TVK.TO",
-    "nm": null,
-    "sec": null,
+    "nm": "TERRAVEST INDUSTRIES INC",
+    "sec": "Energy",
     "grp": "setting_up",
     "d": "2026-08-07",
     "e": null,
@@ -4897,8 +5338,8 @@
    },
    {
     "t": "ATRL.TO",
-    "nm": "ATKINSREALIS GROUP INC",
-    "sec": "Industrials",
+    "nm": null,
+    "sec": null,
     "grp": "setting_up",
     "d": "2026-08-07",
     "e": null,
@@ -4992,8 +5433,8 @@
    },
    {
     "t": "ARE.TO",
-    "nm": "AECON GROUP INC",
-    "sec": "Industrials",
+    "nm": null,
+    "sec": null,
     "grp": "watch",
     "d": "2026-08-07",
     "e": null,
@@ -5068,8 +5509,8 @@
    },
    {
     "t": "ALS.TO",
-    "nm": null,
-    "sec": null,
+    "nm": "ALTIUS MINERALS CORPORATION",
+    "sec": "Materials",
     "grp": "watch",
     "d": "2026-08-07",
     "e": null,
@@ -5258,8 +5699,8 @@
    },
    {
     "t": "TVK.TO",
-    "nm": null,
-    "sec": null,
+    "nm": "TERRAVEST INDUSTRIES INC",
+    "sec": "Energy",
     "grp": "setting_up",
     "d": "2026-08-05",
     "e": null,
@@ -5372,8 +5813,8 @@
    },
    {
     "t": "ARE.TO",
-    "nm": "AECON GROUP INC",
-    "sec": "Industrials",
+    "nm": null,
+    "sec": null,
     "grp": "watch",
     "d": "2026-08-05",
     "e": null,
@@ -5429,8 +5870,8 @@
    },
    {
     "t": "ALS.TO",
-    "nm": null,
-    "sec": null,
+    "nm": "ALTIUS MINERALS CORPORATION",
+    "sec": "Materials",
     "grp": "watch",
     "d": "2026-08-05",
     "e": null,
@@ -5714,8 +6155,8 @@
    },
    {
     "t": "ALS.TO",
-    "nm": null,
-    "sec": null,
+    "nm": "ALTIUS MINERALS CORPORATION",
+    "sec": "Materials",
     "grp": "watch",
     "d": "2026-07-31",
     "e": null,
@@ -5999,8 +6440,8 @@
    },
    {
     "t": "TOU.TO",
-    "nm": "TOURMALINE OIL CORP",
-    "sec": "Energy",
+    "nm": null,
+    "sec": null,
     "grp": "setting_up",
     "d": "2026-07-30",
     "e": null,
@@ -6094,8 +6535,8 @@
    },
    {
     "t": "ALS.TO",
-    "nm": null,
-    "sec": null,
+    "nm": "ALTIUS MINERALS CORPORATION",
+    "sec": "Materials",
     "grp": "watch",
     "d": "2026-07-30",
     "e": null,
@@ -6170,8 +6611,8 @@
    },
    {
     "t": "TVK.TO",
-    "nm": null,
-    "sec": null,
+    "nm": "TERRAVEST INDUSTRIES INC",
+    "sec": "Energy",
     "grp": "entry_open",
     "d": "2026-07-29",
     "e": null,
@@ -6227,8 +6668,8 @@
    },
    {
     "t": "CSH-UN.TO",
-    "nm": "CHARTWELL RETIREMENT RESIDENCES",
-    "sec": "Health Care",
+    "nm": null,
+    "sec": null,
     "grp": "setting_up",
     "d": "2026-07-29",
     "e": null,
@@ -6436,8 +6877,8 @@
    },
    {
     "t": "ALS.TO",
-    "nm": null,
-    "sec": null,
+    "nm": "ALTIUS MINERALS CORPORATION",
+    "sec": "Materials",
     "grp": "watch",
     "d": "2026-07-29",
     "e": null,
@@ -6645,8 +7086,8 @@
    },
    {
     "t": "RCH.TO",
-    "nm": "RICHELIEU HARDWARE LTD",
-    "sec": "Industrials",
+    "nm": null,
+    "sec": null,
     "grp": "setting_up",
     "d": "2026-07-28",
     "e": null,
@@ -6778,8 +7219,8 @@
    },
    {
     "t": "ALS.TO",
-    "nm": null,
-    "sec": null,
+    "nm": "ALTIUS MINERALS CORPORATION",
+    "sec": "Materials",
     "grp": "watch",
     "d": "2026-07-28",
     "e": null,
@@ -6873,8 +7314,8 @@
    },
    {
     "t": "TVK.TO",
-    "nm": null,
-    "sec": null,
+    "nm": "TERRAVEST INDUSTRIES INC",
+    "sec": "Energy",
     "grp": "entry_open",
     "d": "2026-07-27",
     "e": null,
@@ -6949,8 +7390,8 @@
    },
    {
     "t": "RCH.TO",
-    "nm": "RICHELIEU HARDWARE LTD",
-    "sec": "Industrials",
+    "nm": null,
+    "sec": null,
     "grp": "setting_up",
     "d": "2026-07-27",
     "e": null,
@@ -7158,8 +7599,8 @@
    },
    {
     "t": "ALS.TO",
-    "nm": null,
-    "sec": null,
+    "nm": "ALTIUS MINERALS CORPORATION",
+    "sec": "Materials",
     "grp": "watch",
     "d": "2026-07-27",
     "e": null,
@@ -7259,8 +7700,8 @@
     "d": "2026-07-24",
     "e": null,
     "l": null,
-    "p": 10.7,
-    "x": 7.16,
+    "p": 9.6,
+    "x": 6.09,
     "dy": 21,
     "st": "beat",
     "m": true,
@@ -7291,8 +7732,8 @@
    },
    {
     "t": "DOO.TO",
-    "nm": "BRP INC",
-    "sec": "Consumer Discretionary",
+    "nm": null,
+    "sec": null,
     "grp": "setting_up",
     "d": "2026-07-24",
     "e": null,
@@ -7348,8 +7789,8 @@
    },
    {
     "t": "TVK.TO",
-    "nm": null,
-    "sec": null,
+    "nm": "TERRAVEST INDUSTRIES INC",
+    "sec": "Energy",
     "grp": "setting_up",
     "d": "2026-07-24",
     "e": null,
@@ -7462,8 +7903,8 @@
    },
    {
     "t": "ALS.TO",
-    "nm": null,
-    "sec": null,
+    "nm": "ALTIUS MINERALS CORPORATION",
+    "sec": "Materials",
     "grp": "watch",
     "d": "2026-07-24",
     "e": null,
@@ -7652,8 +8093,8 @@
    },
    {
     "t": "TVK.TO",
-    "nm": null,
-    "sec": null,
+    "nm": "TERRAVEST INDUSTRIES INC",
+    "sec": "Energy",
     "grp": "setting_up",
     "d": "2026-07-21",
     "e": null,
@@ -7766,8 +8207,8 @@
    },
    {
     "t": "ALS.TO",
-    "nm": null,
-    "sec": null,
+    "nm": "ALTIUS MINERALS CORPORATION",
+    "sec": "Materials",
     "grp": "watch",
     "d": "2026-07-21",
     "e": null,
@@ -7924,8 +8365,8 @@
     "d": "2026-07-20",
     "e": null,
     "l": null,
-    "p": 22.0,
-    "x": 19.16,
+    "p": 20.3,
+    "x": 17.52,
     "dy": 21,
     "st": "beat",
     "m": true,
@@ -8013,8 +8454,8 @@
    },
    {
     "t": "TVK.TO",
-    "nm": null,
-    "sec": null,
+    "nm": "TERRAVEST INDUSTRIES INC",
+    "sec": "Energy",
     "grp": "setting_up",
     "d": "2026-07-20",
     "e": null,
@@ -8146,8 +8587,8 @@
    },
    {
     "t": "ALS.TO",
-    "nm": null,
-    "sec": null,
+    "nm": "ALTIUS MINERALS CORPORATION",
+    "sec": "Materials",
     "grp": "watch",
     "d": "2026-07-20",
     "e": null,
@@ -8355,8 +8796,8 @@
    },
    {
     "t": "TVK.TO",
-    "nm": null,
-    "sec": null,
+    "nm": "TERRAVEST INDUSTRIES INC",
+    "sec": "Energy",
     "grp": "setting_up",
     "d": "2026-07-17",
     "e": null,
@@ -8552,7 +8993,7 @@
     "e": null,
     "l": null,
     "p": 29.0,
-    "x": 24.89,
+    "x": 24.86,
     "dy": 21,
     "st": "beat",
     "m": true,
@@ -8925,8 +9366,8 @@
    },
    {
     "t": "ARE.TO",
-    "nm": "AECON GROUP INC",
-    "sec": "Industrials",
+    "nm": null,
+    "sec": null,
     "grp": "setting_up",
     "d": "2026-07-13",
     "e": null,
@@ -9217,7 +9658,7 @@
     "e": null,
     "l": null,
     "p": 16.6,
-    "x": 12.55,
+    "x": 12.51,
     "dy": 21,
     "st": "beat",
     "m": true,
@@ -9578,7 +10019,7 @@
     "e": null,
     "l": null,
     "p": 31.0,
-    "x": 27.05,
+    "x": 27.01,
     "dy": 21,
     "st": "beat",
     "m": true,
@@ -9742,8 +10183,8 @@
    },
    {
     "t": "ATRL.TO",
-    "nm": "ATKINSREALIS GROUP INC",
-    "sec": "Industrials",
+    "nm": null,
+    "sec": null,
     "grp": "setting_up",
     "d": "2026-07-09",
     "e": null,
@@ -10217,8 +10658,8 @@
    },
    {
     "t": "QSR.TO",
-    "nm": "RESTAURANT BRANDS INTERNATIONAL",
-    "sec": "Consumer Discretionary",
+    "nm": null,
+    "sec": null,
     "grp": "entry_open",
     "d": "2026-07-03",
     "e": null,
@@ -10692,8 +11133,8 @@
    },
    {
     "t": "CCO.TO",
-    "nm": null,
-    "sec": null,
+    "nm": "CAMECO CORP",
+    "sec": "Energy",
     "grp": "setting_up",
     "d": "2026-06-30",
     "e": null,

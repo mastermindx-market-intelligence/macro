@@ -1,14 +1,32 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-09-05T06:51:51+00:00",
-  "summary": "Budget exhausted after 0 tool-call batches (0 individual calls). Partial deliberation only.",
-  "what_fired": [],
-  "contradictions_review": "Incomplete \u2014 budget exhausted before contradictions review.",
-  "decaying_families": [],
-  "deserves_operator": [],
+  "as_of": "2026-09-09T13:23:51+00:00",
+  "summary": "Context-only committee read: the dashboard moved to MIXED with a new, low-confidence US Q3 stagflation label and a rising growth-scare caution score. The caution state is not a measured drawdown edge: its 21-session pullback rate is 16.0% versus a 17.8% base rate. Credit/funding remain healthy, volatility is normalizing, breadth above the 200-day average is about 65%, and systematic flows are aligned-adding. Treat the regime as fragile and internally mixed, not as authority for a position. Factor intelligence is immature: only nine panel dates, no survivors in the scorecard, composite non-tradeable, and factor-attention authority remains unearned. No hypothesis was staked because the available evidence does not justify spending the limited weekly budget.",
+  "what_fired": [
+    "US market-state verdict changed from RISK_ON to MIXED.",
+    "US regime changed from Q2 to Q3 with confidence 0.264 and only 0.06 flip margin.",
+    "Risk radar moved from watch to caution, led by growth/defensive rotation at 75.1.",
+    "JPY-carry is the sole confirmed/accruing global-breakdown leg; the growth legs are unconfirmed.",
+    "The confluence graph reports demand-versus-supply briefing divergences and five buy-lane names with rising put skew.",
+    "No Pair G factor contradiction fired; the ledger is dormant until at least 60 panel dates."
+  ],
+  "contradictions_review": "The principal tension is between the caution/new-Q3 narrative and a still-resilient measured tape: healthy credit, calm funding, normalizing volatility, breadth not yet weak, aligned systematic buying, and below-base measured drawdown incidence. Options contradictions are de-escalation context only and cannot support bearish origination. The China-equities overweight thesis conflicts with current China/HK Q4 growth-scare states, contracting liquidity, and weak-side HK-peg pressure. The thesis ledger also contains many overdue open items, limiting reliable comparison with current contradictions.",
+  "decaying_families": [
+    "Radar claims: signed excess is negative at 5-, 21-, and 63-day pooled horizons despite high statistical reliability; no row is armed.",
+    "Altdata: pooled 21- and 63-day signed excess is negative and the engine is held after losing out of sample.",
+    "Policy and policy-intent: negative signed excess with small or immature samples; remain unarmed/accruing.",
+    "AI, stock, and thematic desks: pooled 63-day signed excess is negative; tests are vacuous or unarmed.",
+    "Factor composite: negative-IC legs include investment, low-vol, low-beta, and composite; panel history floor is not met."
+  ],
+  "deserves_operator": [
+    "Check the possible future-dated business-cycle artifact: world state produced September 9 reports a September 30 leading-tier as-of date.",
+    "Review the weakly classified Q3/caution regime against resilient tape evidence using the pre-committed 21-session criterion.",
+    "Score, extend, or retire overdue master-brain theses; all 15 displayed entries remain open.",
+    "Review the China-equities overweight thesis against current Q4/contracting-liquidity/HK-peg contradiction."
+  ],
   "probation": {
     "schema": "neuralweb.cortex_probation.v1",
-    "as_of": "2026-09-04",
+    "as_of": "2026-09-08",
     "granted": false,
     "tier": "A0/A1 shadow",
     "reason": "insufficient-n: n=8 < min_n=25",
@@ -20,72 +38,74 @@
       "n": 8,
       "hits": 0,
       "base_rate": 0.5,
-      "ungradeable": 45,
-      "total_rows": 53
+      "ungradeable": 59,
+      "total_rows": 67
     },
     "is_context_only": true
   },
-  "tool_call_census": {},
+  "tool_call_census": {
+    "read_world_state": 1,
+    "read_factor_state": 1,
+    "query_spine": 1,
+    "read_contradictions": 1,
+    "list_factor_contradictions": 1,
+    "read_kernel": 1,
+    "read_master_brain_theses": 1,
+    "flag_attention": 1,
+    "write_memo": 1
+  },
   "is_context_only": true,
   "run_status": {
-    "status": "degraded",
-    "degraded": true,
-    "degradation_reason": "model_unavailable",
-    "model_used": "claude-sonnet-4-6",
+    "status": "ok",
+    "degraded": false,
+    "degradation_reason": null,
+    "model_used": "claude-opus-4-8",
     "provider_attempts": [
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "auth",
-        "error_message": "Error code: 403 - {'type': 'error', 'error': {'type': 'permission_error', 'message': 'OAuth authentication is currently not allowed for this organization.', 'details': {'error_code': 'oauth_not_allowed_for_organization'}}, 'request_id': 'req_011CejrG8yQVTJeYhRKqB7oN'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CejrGJqjWNDd7cNYFhHeM'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CejrHbRQqwT59LRK1NEvc'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CejrNCj3vr7gKiez2T1E8'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CejrbeqnutSHYWPq1TtVz'}"
-      },
-      {
-        "provider": "oauth",
-        "model": "claude-sonnet-4-6",
-        "attempted": true,
-        "ok": false,
-        "error_type": "auth",
-        "error_message": "Error code: 403 - {'type': 'error', 'error': {'type': 'permission_error', 'message': 'OAuth authentication is currently not allowed for this organization.', 'details': {'error_code': 'oauth_not_allowed_for_organization'}}, 'request_id': 'req_011Cejrbgn8BV2MTV5qJE2hW'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       }
     ],
-    "tool_call_batches": 0,
-    "individual_tool_calls": 0,
+    "tool_call_batches": 4,
+    "individual_tool_calls": 9,
     "expected_min_tool_calls": 1,
     "context_stale": false,
-    "context_as_of": "2026-09-05T03:19:59Z"
+    "context_as_of": "2026-09-09T10:45:18Z"
   }
 }

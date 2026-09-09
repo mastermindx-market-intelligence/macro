@@ -1,32 +1,27 @@
 {
-  "003013f7a43b": {
+  "5fcb9c4ec359": {
     "name_en": "Cross-sector cluster \u00b7 Industrials + Technology",
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Technology",
-    "score": 57.8
+    "score": 77.4
   },
-  "3a59ae439b08": {
-    "name_en": "Cross-sector cluster \u00b7 Utilities + Industrials",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Utilities + Industrials",
-    "score": 53.7
+  "7d900ee9871a": {
+    "name_en": "Emerging Communication Services cluster",
+    "name_zh": "\u65b0\u5174 Communication Services \u96c6\u7fa4",
+    "score": 45.5
   },
-  "65ba76410161": {
+  "800cf4fe40ca": {
     "name_en": "Cross-sector cluster \u00b7 Industrials + Consumer Cyclical",
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Consumer Cyclical",
     "score": 55.0
   },
-  "bfba2e4c6ed4": {
-    "name_en": "Emerging Industrials cluster",
-    "name_zh": "\u65b0\u5174 Industrials \u96c6\u7fa4",
-    "score": 53.1
+  "c86a037236f2": {
+    "name_en": "Cross-sector cluster \u00b7 Basic Materials + A-share",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Basic Materials + A-share",
+    "score": 49.5
   },
-  "cd7cb3d74bc6": {
-    "name_en": "Cross-sector cluster \u00b7 Consumer Cyclical + Communication Services",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Cyclical + Communication Services",
-    "score": 54.6
-  },
-  "e50c4e5719a2": {
-    "name_en": "Cross-sector cluster \u00b7 Industrials + Technology",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Technology",
-    "score": 74.4
+  "f9f60f144abf": {
+    "name_en": "Cross-sector cluster \u00b7 Consumer Defensive + Basic Materials",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Defensive + Basic Materials",
+    "score": 54.0
   }
 }

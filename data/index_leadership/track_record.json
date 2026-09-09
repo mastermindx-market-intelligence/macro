@@ -1,95 +1,95 @@
 {
   "schema": "index_leadership.track_record.v1",
   "as_of": "2026-09-04",
-  "generated_at": "2026-09-05T12:58:17.837810+00:00",
+  "generated_at": "2026-09-09T08:24:14.650241+00:00",
   "is_context_only": true,
-  "n_snapshots": 614,
+  "n_snapshots": 618,
   "n_days": 21,
   "horizons": {
     "5": {
-      "n_matured": 476,
+      "n_matured": 531,
       "by_stage": {
         "running": {
-          "n": 417,
-          "mean_fwd_rel": -0.0047,
-          "hit_rate": 0.463
+          "n": 467,
+          "mean_fwd_rel": -0.005,
+          "hit_rate": 0.452
         },
         "coiling": {
-          "n": 29,
-          "mean_fwd_rel": 0.0047,
-          "hit_rate": 0.621
+          "n": 32,
+          "mean_fwd_rel": 0.0036,
+          "hit_rate": 0.594
         },
         "coiling_primed": {
-          "n": 30,
-          "mean_fwd_rel": 0.0163,
-          "hit_rate": 0.733
+          "n": 32,
+          "mean_fwd_rel": 0.0139,
+          "hit_rate": 0.625
         }
       },
-      "running_ic": 0.06,
-      "running_ic_t_hac": 0.974,
+      "running_ic": -0.0191,
+      "running_ic_t_hac": -0.213,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "10": {
-      "n_matured": 399,
+      "n_matured": 468,
       "by_stage": {
         "running": {
-          "n": 351,
-          "mean_fwd_rel": -0.0035,
-          "hit_rate": 0.476
+          "n": 413,
+          "mean_fwd_rel": -0.0058,
+          "hit_rate": 0.446
         },
         "coiling": {
-          "n": 22,
-          "mean_fwd_rel": -0.0066,
-          "hit_rate": 0.318
+          "n": 26,
+          "mean_fwd_rel": -0.0055,
+          "hit_rate": 0.423
         },
         "coiling_primed": {
-          "n": 26,
-          "mean_fwd_rel": 0.0349,
-          "hit_rate": 0.731
+          "n": 29,
+          "mean_fwd_rel": 0.0289,
+          "hit_rate": 0.621
         }
       },
-      "running_ic": 0.0758,
-      "running_ic_t_hac": 2.353,
+      "running_ic": 0.029,
+      "running_ic_t_hac": 0.959,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 229,
+      "n_matured": 265,
       "by_stage": {
         "running": {
-          "n": 209,
-          "mean_fwd_rel": -0.0014,
-          "hit_rate": 0.531
+          "n": 237,
+          "mean_fwd_rel": -0.0012,
+          "hit_rate": 0.532
         },
         "coiling": {
-          "n": 10,
-          "mean_fwd_rel": -0.0138,
-          "hit_rate": 0.7
+          "n": 13,
+          "mean_fwd_rel": -0.004,
+          "hit_rate": 0.692
         },
         "coiling_primed": {
-          "n": 10,
-          "mean_fwd_rel": 0.0679,
-          "hit_rate": 0.7
+          "n": 15,
+          "mean_fwd_rel": 0.0604,
+          "hit_rate": 0.733
         }
       },
-      "running_ic": -0.1745,
-      "running_ic_t_hac": null,
+      "running_ic": -0.1483,
+      "running_ic_t_hac": -3.738,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "63": {
-      "n_matured": 19,
+      "n_matured": 33,
       "by_stage": {
         "running": {
-          "n": 15,
-          "mean_fwd_rel": -0.0388,
-          "hit_rate": 0.533
+          "n": 26,
+          "mean_fwd_rel": -0.0497,
+          "hit_rate": 0.385
         },
         "coiling": {
-          "n": 4,
-          "mean_fwd_rel": -0.0894,
-          "hit_rate": 0.25
+          "n": 7,
+          "mean_fwd_rel": -0.0742,
+          "hit_rate": 0.286
         }
       },
       "running_ic": null,
@@ -98,24 +98,40 @@
       "coiling_ic_t_hac": null
     }
   },
-  "lead_time_d": 10,
-  "peak_ic": 0.0758,
+  "lead_time_d": null,
+  "peak_ic": null,
   "proven": {
     "5": false,
-    "10": true,
+    "10": false,
     "21": false,
     "63": false
   },
   "any_matured": true,
-  "verdict": "validated",
-  "note": "Call-score IC is significant at the 10d horizon (measured). Context-only \u2014 informs the read, never sizes.",
+  "verdict": "measuring",
+  "note": "Accruing forward observations; no horizon clears the Newey-West significance bar yet. Early numbers are provisional, context-only.",
   "recent_misses": [
     {
       "date": "2026-08-13",
       "id": "russell:aerospace-defense",
       "name": "Aerospace & Defense",
       "stage": "running",
-      "fwd_rel": -0.1814,
+      "fwd_rel": -0.1749,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-13",
+      "id": "subsectors:travel-services",
+      "name": "Travel Services",
+      "stage": "running",
+      "fwd_rel": -0.1012,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-13",
+      "id": "subsectors:electronic-components",
+      "name": "Electronic Components",
+      "stage": "running",
+      "fwd_rel": -0.0949,
       "horizon_d": 21
     },
     {
@@ -128,10 +144,18 @@
     },
     {
       "date": "2026-08-13",
-      "id": "subsectors:electronic-components",
-      "name": "Electronic Components",
+      "id": "russell:broadcasting",
+      "name": "Broadcasting",
       "stage": "running",
-      "fwd_rel": -0.0804,
+      "fwd_rel": -0.0916,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-13",
+      "id": "russell:asset-management",
+      "name": "Asset Management",
+      "stage": "running",
+      "fwd_rel": -0.0734,
       "horizon_d": 21
     },
     {
@@ -139,39 +163,15 @@
       "id": "subsectors:packaging-containers",
       "name": "Packaging & Containers",
       "stage": "running",
-      "fwd_rel": -0.0467,
+      "fwd_rel": -0.0323,
       "horizon_d": 21
     },
     {
       "date": "2026-08-13",
-      "id": "russell:medical-devices",
-      "name": "Medical Devices",
+      "id": "russell:restaurants",
+      "name": "Restaurants",
       "stage": "running",
-      "fwd_rel": -0.0325,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-13",
-      "id": "subsectors:asset-management",
-      "name": "Asset Management",
-      "stage": "running",
-      "fwd_rel": -0.0317,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-12",
-      "id": "baskets:space-economy",
-      "name": "Space Economy",
-      "stage": "running",
-      "fwd_rel": -0.1888,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-12",
-      "id": "nasdaq:space-defense-tech",
-      "name": "Space & Defense Tech",
-      "stage": "running",
-      "fwd_rel": -0.1816,
+      "fwd_rel": -0.0305,
       "horizon_d": 21
     }
   ],
