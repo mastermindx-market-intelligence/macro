@@ -13955,11 +13955,13 @@ jobs:
       # A-F01-W4-1: ceiling-scoped Treasury curve-shape hero on rates_curves.
       - "templates/_curve_panel.html.j2"
       - "tests/test_macro_rates_curves_route.py"
-      # Explicit widening: T10 pins these three sources, so the exclusive job
-      # must fire when they change. Disclose in the PR body (R7). Adding
-      # yield_curve / build_bonds pulls their import closure; contract-delta
-      # requires those files in this job's paths (widening is the safe
-      # direction).
+      # Explicit widening: T10 builds site/bonds.html through
+      # scripts/build_bonds.py and compares it to the committed page, so the
+      # exclusive job must fire when any of those change. Disclosed in the PR
+      # body (R7). Adding yield_curve / build_bonds pulls their import closure;
+      # contract-delta requires those files in this job's paths (widening is
+      # the safe direction).
+      - "site/bonds.html"
       - "templates/bonds.html.j2"
       - "scripts/build_bonds.py"
       - "engine/yield_curve.py"

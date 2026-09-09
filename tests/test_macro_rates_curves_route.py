@@ -1290,3 +1290,7 @@ def test_t10_guarded_paths_are_in_the_exclusive_job_paths() -> None:
     paths = list(job["paths"])
     for rel in BONDS_GUARDED_SOURCES:
         assert rel in paths, rel
+    # T10 reads the committed page itself, so the guard has to fire when the
+    # page moves. check_contract_delta.py demands this entry for the same
+    # reason (widening is the safe direction).
+    assert "site/bonds.html" in paths
