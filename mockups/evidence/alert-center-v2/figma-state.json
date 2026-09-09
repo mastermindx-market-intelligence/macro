@@ -1,0 +1,26 @@
+{
+  "operation": "MMX-ALERT-CENTER-V2-ASTRA-20260908",
+  "file_key": "QO3CthsB5KzPVKdgfcVPMI",
+  "pages": {
+    "desktop_components": "0:1",
+    "evidence_responsive": "7:32",
+    "audit_comparison": "7:33"
+  },
+  "frames": {
+    "desktop_ship_candidate": "2:3",
+    "original_concept_audit": "8:32"
+  },
+  "components": {
+    "signal_row": "5:23"
+  },
+  "collections": {
+    "dark_source_tokens": "VariableCollectionId:3:3"
+  },
+  "limitations": [
+    "One variable mode per collection reported by Figma; no second mode claimed"
+  ],
+  "production_acceptance": false,
+  "tool_gate": "STARTER_PLAN_MCP_CALL_LIMIT_EXHAUSTED",
+  "last_attempt": "Auto Layout conversion refused; not claimed applied",
+  "resume": "Read existing canvas before further edits; complete mobile/light/evidence/partial/empty states on the same file"
+}

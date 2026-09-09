@@ -1,626 +1,86 @@
 {% from "_icons.html.j2" import icon %}
-{% macro t(en, zh='') -%}
-<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
-{%- endmacro %}
-{% macro help(en, zh='') -%}
-<span class="help">?<span class="tip"><span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span></span></span>
-{%- endmacro %}
-{% macro pct(v) -%}
-{%- if v is none -%}—{%- else -%}{{ '%.0f%%'|format(v*100) }}{%- endif -%}
-{%- endmacro %}
-{#- searchable haystack for client-side filtering (headline + detail + asset + source) -#}
-{% macro hay(a) -%}
-{{ (a.headline ~ ' ' ~ (a.detail or '') ~ ' ' ~ (a.asset or '') ~ ' ' ~ a.source_label ~ ' ' ~ a.type)|lower|replace('"',' ')|replace("'"," ") }}
-{%- endmacro %}
+{% macro t(en, zh='') -%}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh or en }}</span>{%- endmacro %}
+{% set public_ranked = alerts|rejectattr('source','equalto','watchlist')|list %}
+{% set xp = explorer if explorer is defined else {'signals': public_ranked, 'restricted_sources':['watchlist'], 'situations': [], 'history': [], 'sources': [], 'total_signals': public_ranked|length, 'history_total': 0, 'history_truncated': 0} %}
+{% set partial = coverage and coverage.state == 'partial' %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Alert Command Center — what the tape is saying, ranked & triaged</title>
-{% set seo_title = "Alert Command Center — Mastermind" %}{% set seo_desc = "What the tape is saying, ranked and triaged — every triggered alert with its meaning, through the day." %}{% set seo_path = "alerts.html" %}
-{% include "_seo_head.html.j2" %}
-<script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alerts — Mastermind</title>
+{% set seo_title = 'Alerts — Mastermind' %}{% set seo_desc = 'Review important market changes and investigate the original evidence.' %}{% set seo_path = 'alerts.html' %}
+{% include '_seo_head.html.j2' %}
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('theme')||'dark';document.documentElement.dataset.lang=localStorage.getItem('lang')||((navigator.language||'').slice(0,2)==='zh'?'zh':'en');}catch(e){}</script>
 <link rel="stylesheet" href="theme.css">
-<style>
-  * { box-sizing:border-box; }
-  body { background:var(--bg); color:var(--text); font:14px/1.55 var(--font-ui); margin:0; padding:18px; }
-  @media (min-width:1100px){ body{ padding:24px max(40px,calc((100vw - 1360px)/2)); } }
-  a { text-decoration:none; color:inherit; }
-  h1 { font-size:20px; margin:0; letter-spacing:-.01em; }
-  h2 { font-size:12px; margin:0 0 8px; color:var(--muted); text-transform:uppercase;
-       letter-spacing:.07em; font-weight:600; }
-  .mono { font-variant-numeric:tabular-nums; font-family:var(--font-mono); }
-  .muted { color:var(--muted); } .sm { font-size:12px; }
-  .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px;
-           padding:15px 17px; margin-bottom:13px; }
-
-  /* ── severity / semantic palette — language-STABLE tokens only ─────────────
-     (--up/--down flip red<->green in zh; --act/--warn/--ok/--info do not, so a
-     danger cue never turns green in Chinese.) */
-  .c-crit{ color:var(--ink-act, var(--act)); } .bg-crit{ background:var(--act); } .bd-crit{ border-color:color-mix(in srgb,var(--act) 55%,var(--line)); }
-  .c-major{ color:var(--ink-warn, var(--warn)); } .bg-major{ background:var(--warn); } .bd-major{ border-color:color-mix(in srgb,var(--warn) 55%,var(--line)); }
-  .c-minor{ color:var(--muted); } .bg-minor{ background:var(--muted); } .bd-minor{ border-color:var(--line); }
-  .c-ok{ color:var(--ink-ok, var(--ok)); } .c-info{ color:var(--ink-info, var(--info)); }
-
-  /* help tooltip */
-  .help { display:inline-flex; align-items:center; justify-content:center; width:15px;
-          height:15px; border-radius:50%; border:1px solid var(--muted); color:var(--muted);
-          font-size:10px; font-weight:600; cursor:help; position:relative; vertical-align:middle; margin-left:4px; flex:none; }
-  .help .tip { display:none; position:absolute; top:150%; left:0; width:min(320px,80vw);
-               background:var(--panel); border:1px solid var(--line); padding:9px 11px;
-               border-radius:8px; z-index:60; font-size:12px; line-height:1.45; color:var(--text);
-               font-weight:400; box-shadow:var(--popover-shadow); pointer-events:auto; cursor:auto;
-               max-height:min(60vh,420px); overflow-y:auto; overscroll-behavior:contain; text-transform:none; letter-spacing:normal; }
-  .help:hover::before { content:''; position:absolute; top:100%; left:-30px; right:-30px; height:12px; }
-  .help:hover .tip { display:block; }
-
-  /* ── HERO: the desk read ─────────────────────────────────────────────── */
-  .hero { background:var(--glass-bg); backdrop-filter:var(--glass-blur); -webkit-backdrop-filter:var(--glass-blur);
-          border:1px solid var(--glass-brd); border-radius:14px; padding:18px 20px; margin-bottom:13px;
-          box-shadow:var(--glass-shadow); }
-  .hero-top { display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 14px; }
-  .hero-eyebrow { font-size:11px; text-transform:uppercase; letter-spacing:.09em; color:var(--muted); font-weight:600; }
-  .hero-grid { display:grid; grid-template-columns:minmax(0,1.6fr) minmax(240px,1fr); gap:20px; margin-top:14px; align-items:center; }
-  @media (max-width:820px){ .hero-grid{ grid-template-columns:1fr; gap:16px; } }
-
-  .stance { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
-  .stance .word { font-size:30px; font-weight:800; letter-spacing:-.02em; line-height:1; }
-  .stance.risk-off .word{ color:var(--ink-act, var(--act)); } .stance.mixed .word{ color:var(--ink-warn, var(--warn)); } .stance.constructive .word{ color:var(--ink-ok, var(--ok)); }
-  /* PARTIAL is deliberately not a risk colour — it is an absence of evidence, not a reading */
-  .stance.partial .word{ color:var(--muted); font-size:24px; }
-  .stance .badge { font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; border:1px solid currentColor; }
-  .read-line { font-size:15px; line-height:1.5; margin-top:11px; max-width:62ch; }
-  /* pressure gauge — the signature element: a risk-desk pressure read */
-  .gauge { margin-top:14px; }
-  .gauge-track { position:relative; height:10px; border-radius:6px; overflow:hidden;
-                 background:linear-gradient(90deg, color-mix(in srgb,var(--ok) 60%,transparent) 0%,
-                   color-mix(in srgb,var(--warn) 55%,transparent) 50%, color-mix(in srgb,var(--act) 65%,transparent) 100%); }
-  .gauge-mark { position:absolute; top:-4px; width:3px; height:18px; border-radius:2px; background:var(--text);
-                box-shadow:0 0 0 2px var(--panel); transition:left .5s cubic-bezier(.2,.7,.2,1); }
-  .gauge-scale { display:flex; justify-content:space-between; font-size:10px; color:var(--muted); margin-top:5px; text-transform:uppercase; letter-spacing:.05em; }
-
-  /* scoreboard */
-  .score { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
-  .score .s { border:1px solid var(--line); border-radius:10px; padding:10px 12px; background:color-mix(in srgb,var(--panel) 70%,transparent); }
-  .score .s .n { font-size:23px; font-weight:800; line-height:1; font-variant-numeric:tabular-nums; }
-  .score .s .lab { font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-top:4px; }
-  .score .s.act .n{ color:var(--ink-act, var(--act)); } .score .s.watch .n{ color:var(--ink-warn, var(--warn)); }
-  .vol-pill { display:inline-flex; align-items:center; gap:6px; font-size:11.5px; margin-top:10px;
-              padding:4px 10px; border-radius:16px; border:1px solid var(--line); background:color-mix(in srgb,var(--panel) 60%,transparent); color:var(--muted); }
-  .vol-pill b { color:var(--text); }
-  /* partial-coverage strip — states WHICH evidence family is missing, never a traceback */
-  .covbar { display:flex; flex-wrap:wrap; align-items:center; gap:7px; margin-top:12px; font-size:12px;
-            padding:8px 11px; border-radius:10px; border:1px dashed color-mix(in srgb,var(--warn) 45%,var(--line));
-            background:color-mix(in srgb,var(--warn) 6%,transparent); }
-  .covpill { font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em;
-             color:var(--ink-warn, var(--warn)); border:1px solid currentColor; border-radius:14px; padding:2px 8px; }
-  .covsrc { font-size:11.5px; padding:2px 8px; border-radius:12px; border:1px solid var(--line);
-            background:color-mix(in srgb,var(--panel) 70%,transparent); }
-
-  /* ── storyline strip ─────────────────────────────────────────────────── */
-  .stories { display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:10px; }
-  .story { text-align:left; border:1px solid var(--line); border-left:3px solid var(--stroke,var(--muted)); border-radius:10px;
-           padding:11px 13px; background:var(--panel2); cursor:pointer; color:inherit; font:inherit;
-           transition:border-color .15s, transform .12s, box-shadow .15s; display:flex; flex-direction:column; gap:6px; }
-  .story:hover { transform:translateY(-1px); box-shadow:var(--card-shadow); }
-  .story.on { box-shadow:0 0 0 1px var(--stroke) inset; }
-  .story .st-top { display:flex; align-items:center; gap:8px; }
-  .story .st-ic { font-size:16px; } .story .st-name { font-weight:700; font-size:13.5px; }
-  .story .st-cnt { margin-left:auto; font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; }
-  .story .st-gist { font-size:12px; color:var(--muted); line-height:1.4; }
-  .story .st-line { font-size:12.5px; line-height:1.4; }
-  .story .st-tags { display:flex; flex-wrap:wrap; gap:5px; margin-top:1px; }
-  .st-tag { font-size:10px; font-weight:700; padding:1px 7px; border-radius:7px; border:1px solid var(--line); color:var(--muted); }
-  .st-tag.act{ color:var(--ink-act, var(--act)); border-color:color-mix(in srgb,var(--act) 45%,var(--line)); }
-  .st-tag.persist{ color:var(--ink-info, var(--info)); border-color:color-mix(in srgb,var(--info) 45%,var(--line)); }
-  .asset-chip { font-family:var(--font-mono); font-size:10.5px; padding:0 5px; border-radius:5px; background:color-mix(in srgb,var(--muted) 16%,transparent); color:var(--text); }
-
-  /* cluster stroke colours (language-stable) */
-  .cl-stress{ --stroke:var(--act); } .cl-regime{ --stroke:var(--q4); } .cl-liquidity{ --stroke:var(--info); }
-  .cl-rotation{ --stroke:var(--q2); } .cl-single_name{ --stroke:var(--orange); } .cl-other{ --stroke:var(--muted); }
-
-  /* ── backdrop strip ──────────────────────────────────────────────────── */
-  .ctx { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:10px; }
-  .ctx .cell { border:1px solid var(--line); border-radius:10px; padding:10px 12px; background:var(--panel2); }
-  .ctx .cell .k { font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); display:flex; align-items:center; }
-  .ctx .cell .vv { font-size:15px; font-weight:600; margin-top:3px; }
-  .ctx .cell .vsub { font-size:11.5px; color:var(--muted); margin-top:2px; }
-  .ca-confirm{ color:var(--ink-ok, var(--ok)); } .ca-diverge{ color:var(--ink-act, var(--act)); }
-
-  /* ── filter bar (sticky) ─────────────────────────────────────────────── */
-  .filterbar { position:sticky; top:0; z-index:30; background:color-mix(in srgb,var(--bg) 88%,transparent);
-               backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border:1px solid var(--line);
-               border-radius:12px; padding:10px 13px; margin-bottom:13px; }
-  .filterbar .row { display:flex; flex-wrap:wrap; gap:7px; align-items:center; }
-  .filterbar .row + .row { margin-top:9px; }
-  .fsearch { flex:1 1 220px; min-width:160px; display:flex; align-items:center; gap:7px; padding:6px 11px;
-             border:1px solid var(--line); border-radius:9px; background:var(--panel2); }
-  .fsearch input { flex:1; border:0; background:transparent; color:var(--text); font:13px var(--font-ui); outline:none; }
-  .flabel { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-right:3px; }
-  /* monoline icon base (shared _icons.html.j2 set) — inline SVG, stroke=currentColor,
-     so every glyph inherits its chip's ink and rides theme + 红涨绿跌 for free. Replaces
-     the emoji that were doing filter-chip duty (doctrine §5.8: emoji are not UI icons —
-     they read as clip-art on white and render inconsistently headless). */
-  .ic-svg { width:1em; height:1em; display:inline-block; flex:none; fill:none; stroke:currentColor;
-    stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; vertical-align:-.135em; }
-  .fic { width:14px; height:14px; margin-right:1px; opacity:.9; }
-  .fsearch .fic { opacity:.65; }
-
-  .fbtn { font:600 12px var(--font-ui); padding:5px 11px; border-radius:16px; border:1px solid var(--line);
-          background:var(--panel2); color:var(--muted); cursor:pointer; user-select:none; transition:.12s; display:inline-flex; align-items:center; gap:6px; }
-  .fbtn:hover { color:var(--text); }
-  .fbtn .cnt { font-size:10.5px; font-variant-numeric:tabular-nums; opacity:.7; }
-  .fbtn.on { color:var(--text); border-color:var(--text); background:color-mix(in srgb,var(--text) 8%,var(--panel2)); }
-  .fbtn.on .cnt { opacity:1; }
-  .fbtn.quick.on { color:var(--ink-info, var(--info)); border-color:var(--info); }
-  .showing { font-size:12px; color:var(--muted); margin-left:auto; }
-  .showing b { color:var(--text); }
-  .freset { font:600 12px var(--font-ui); color:var(--ink-link, var(--link)); cursor:pointer; background:none; border:0; padding:0; }
-  .freset:hover { text-decoration:underline; }
-  :focus-visible { outline:2px solid var(--info); outline-offset:2px; border-radius:4px; }
-
-  /* ── alert cards ─────────────────────────────────────────────────────── */
-  .feed { display:flex; flex-direction:column; gap:9px; }
-  .ac { display:grid; grid-template-columns:64px 1fr; border:1px solid var(--line);
-        border-radius:11px; overflow:hidden; background:var(--panel); scroll-margin-top:120px; }
-  .ac.hide { display:none; }
-  .ac .rail { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
-              padding:11px 6px; border-right:1px solid var(--line); background:var(--panel2); position:relative; }
-  .ac .pr { font-size:21px; font-weight:800; line-height:1; font-variant-numeric:tabular-nums; }
-  .ac .prl { font-size:8.5px; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); text-align:center; }
-  .ac .prbar { width:34px; height:3px; border-radius:2px; background:var(--line); overflow:hidden; }
-  .ac .prbar i { display:block; height:100%; border-radius:2px; }
-  .ac.sev-crit { border-left:4px solid var(--act); } .ac.sev-crit .pr{ color:var(--ink-act, var(--act)); }
-  .ac.sev-major{ border-left:4px solid var(--warn); } .ac.sev-major .pr{ color:var(--ink-warn, var(--warn)); }
-  .ac.sev-minor{ border-left:4px solid var(--line); }
-  .ac .body { padding:11px 14px; min-width:0; }
-  .ac .meta { display:flex; flex-wrap:wrap; align-items:center; gap:7px; font-size:11.5px; color:var(--muted); }
-  .ac .meta .src { color:var(--text); font-weight:600; }
-  .dot { width:8px; height:8px; border-radius:50%; display:inline-block; flex:none; }
-  .sevpill { font-size:10.5px; font-weight:700; padding:1px 8px; border-radius:8px; border:1px solid; display:inline-flex; align-items:center; gap:5px; text-transform:capitalize; }
-  .lifepill { font-size:10px; font-weight:700; padding:1px 8px; border-radius:8px; letter-spacing:.02em; }
-  .life-new{ color:var(--ink-info, var(--info)); border:1px solid color-mix(in srgb,var(--info) 45%,var(--line)); }
-  .life-recurring{ color:var(--ink-info, var(--info)); border:1px solid color-mix(in srgb,var(--info) 45%,var(--line)); background:color-mix(in srgb,var(--info) 8%,transparent); }
-  .life-persisting{ color:var(--ink-warn, var(--warn)); border:1px solid color-mix(in srgb,var(--warn) 50%,var(--line)); background:color-mix(in srgb,var(--warn) 8%,transparent); }
-  .life-fading{ color:var(--muted); border:1px dashed var(--line); }
-  .ac .hl { font-size:15px; font-weight:600; margin:6px 0 2px; line-height:1.35; }
-  .ac .dt { font-size:12.5px; color:var(--muted); line-height:1.45; }
-  .ac .row2 { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-top:9px; }
-  .pill { font-size:10.5px; font-weight:700; padding:2px 9px; border-radius:8px; white-space:nowrap;
-          border:1px solid var(--line); display:inline-flex; align-items:center; gap:4px; }
-  .a-high{ color:var(--ink-act, var(--act)); border-color:color-mix(in srgb,var(--act) 55%,var(--line)); }
-  .a-reduce{ color:var(--ink-warn, var(--warn)); border-color:color-mix(in srgb,var(--warn) 55%,var(--line)); }
-  .a-confirm{ color:var(--ink-info, var(--info)); border-color:color-mix(in srgb,var(--info) 50%,var(--line)); }
-  .a-watch{ color:var(--text); } .a-context{ color:var(--muted); }
-  .tag { font-size:10.5px; color:var(--muted); border:1px solid var(--line); border-radius:8px; padding:2px 8px; display:inline-flex; align-items:center; gap:4px; }
-  .tag.confirm{ color:var(--ink-ok, var(--ok)); border-color:color-mix(in srgb,var(--ok) 45%,var(--line)); }
-  .tag.diverge{ color:var(--ink-act, var(--act)); border-color:color-mix(in srgb,var(--act) 45%,var(--line)); }
-  .tag.ticker{ font-family:var(--font-mono); color:var(--text); }
-  .lnk { color:var(--ink-link, var(--link)); font-weight:600; }
-  .newdot { position:absolute; top:6px; right:6px; width:7px; height:7px; border-radius:50%; background:var(--info); box-shadow:0 0 0 2px var(--panel2); }
-  /* validation: honest, quiet unless there's a real measured verdict */
-  .val { font-size:11px; color:var(--muted); margin-top:9px; display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
-  .vpill { font-size:10px; font-weight:700; padding:1px 7px; border-radius:7px; border:1px solid var(--line); }
-  .vp-backtested{ color:var(--ink-ok, var(--ok)); border-color:color-mix(in srgb,var(--ok) 55%,var(--line)); font-weight:800; }
-  .vp-scored,.vp-calibrated{ color:var(--ink-ok, var(--ok)); border-color:color-mix(in srgb,var(--ok) 45%,var(--line)); }
-  .vp-confirmer{ color:var(--ink-info, var(--info)); border-color:color-mix(in srgb,var(--info) 45%,var(--line)); }
-  .vp-no_edge,.vp-killed{ color:var(--ink-act, var(--act)); border-color:color-mix(in srgb,var(--act) 40%,var(--line)); }
-  .vp-underpowered{ color:var(--muted); border-style:dashed; }
-  .vp-documented,.vp-display{ color:var(--muted); opacity:.85; }
-  .empty { color:var(--muted); padding:26px 18px; text-align:center; }
-  .empty .big { font-size:15px; color:var(--text); margin-bottom:4px; }
-  #noresults { display:none; }
-  details.method summary { cursor:pointer; font-weight:600; list-style:none; }
-  details.method summary::-webkit-details-marker { display:none; }
-  details.method summary::before { content:'▸ '; color:var(--muted); }
-  details.method[open] summary::before { content:'▾ '; }
-  details.method dl { margin:10px 0 0; } details.method dt { font-weight:600; margin-top:9px; }
-  details.method dd { margin:2px 0 0; color:var(--muted); font-size:12.5px; }
-  @media (prefers-reduced-motion:reduce){ *{ transition:none !important; } }
-  /* ── 红涨绿跌: directional colour flips for Chinese mode ── */
-  html[data-lang="zh"] .stance.constructive .word{ color:var(--ink-up, var(--up)); }
-  html[data-lang="zh"] .stance.risk-off .word{ color:var(--ink-down, var(--down)); }
-  html[data-lang="zh"] .gauge-track{ background:linear-gradient(90deg, color-mix(in srgb,var(--up) 60%,transparent) 0%, color-mix(in srgb,var(--warn) 55%,transparent) 50%, color-mix(in srgb,var(--down) 65%,transparent) 100%); }
-</style>
+<style>{% include 'alert_center.css' %}</style>
 </head>
-<body>
-
-{% include "_site_nav.html.j2" %}
-
-{% set br = board_read or {} %}
-{% set stance = br.stance or 'mixed' %}
-<!-- ── HERO: the desk read ────────────────────────────────────────────── -->
-<div class="hero">
-  <div class="hero-top">
-    <h1>{{ t('Alert Command Center', '警报指挥中心') }}</h1>
-    <span class="hero-eyebrow">{{ t('the tape right now','当下盘面') }} · {{ t('last','近') }} {{ window_days }}{{ t('d','天') }}</span>
-    <span style="flex:1"></span>
-    {% if summary.new_today %}<span class="hero-eyebrow c-info">● <b class="mono">{{ summary.new_today }}</b> {{ t('new today','今日新增') }}</span>{% endif %}
-  </div>
-  <div class="hero-grid">
-    <div>
-      <div class="stance {{ stance }}">
-        <span class="word">{{ t(
-          {'risk-off':'RISK-OFF','mixed':'MIXED','constructive':'CONSTRUCTIVE','partial':'PARTIAL READ'}[stance],
-          {'risk-off':'偏防御','mixed':'喜忧参半','constructive':'偏进攻','partial':'读数不完整'}[stance]) }}</span>
-        <span class="badge {{ 'c-crit' if stance=='risk-off' else ('c-major' if stance in ('mixed','partial') else 'c-ok') }}">
-          {{ t('pressure','压力') }} <span class="mono">{{ br.score if br.score is not none else '—' }}</span>/100{% if stance=='partial' %}{{ help(
-            'No pressure reading is shown because a consequential evidence family could not be read on this build. We will not compute a whole-tape score from a partial read — a missing risk feed must never be able to look like calm — and we will not substitute an invented cautious number either. Unknown stays unknown.',
-            '本次构建中有关键证据类别无法读取，因此不显示压力读数。我们不会用不完整的读数计算整体盘面分数 — 缺失的风险数据源绝不能看起来像市场平静 — 也不会用臆造的保守数字代替。未知即未知。') }}{% endif %}</span>
-      </div>
-      <p class="read-line">{{ t(br.one_liner or 'A quiet tape — no cross-asset alerts of note in the window.',
-                               br.one_liner_zh or '盘面平静 — 窗口内无值得注意的跨资产警报。') }}
-        {{ help('This is a DESCRIPTIVE read of what is firing right now plus the documented macro backdrop — not a forecast and not a probability the market falls. The pressure gauge is a transparent blend of how many act-tier and cross-asset-confirmed stress alerts are live; its parts are named in the sentence.',
-                '这是对当前触发情况与有据可查的宏观背景的描述性解读 — 并非预测，也不是市场下跌的概率。压力表是执行级与获跨资产佐证的压力类警报数量的透明混合；其构成已在句中列明。') }}</p>
-      {#- A partial read gets NO gauge. Drawing a needle from a subset of the evidence is
-          exactly how a missing risk feed comes to look like calm. -#}
-      {% if br.score is not none %}
-      <div class="gauge">
-        <div class="gauge-track"><div class="gauge-mark" style="left:calc({{ br.score }}% - 1px)"></div></div>
-        <div class="gauge-scale"><span>{{ t('constructive','偏进攻') }}</span><span>{{ t('mixed','喜忧参半') }}</span><span>{{ t('risk-off','偏防御') }}</span></div>
-      </div>
-      {% endif %}
-      {% if coverage and coverage.state == 'partial' %}
-      <div class="covbar">
-        <span class="covpill">{{ t('partial evidence','证据不完整') }}</span>
-        <span class="muted">{{ t('unavailable this build','本次构建无法读取') }}:</span>
-        {% for s in coverage.sources if s.state == 'unavailable' %}<span class="covsrc">{{ t(s.label, s.label_zh) }}</span>{% endfor %}
-        {% if coverage.backdrop_missing %}<span class="covsrc">{{ t('cross-asset backdrop','跨资产背景') }}</span>{% endif %}
-        {{ help('A source that failed to read is MISSING EVIDENCE, not zero alerts. The ranked list below is still real and still usable — it is simply not the whole tape, so the board declines to publish an overall stance or pressure score until every consequential family reads again.',
-                '读取失败的数据源意味着证据缺失，而非“没有警报”。下方的排序列表依然真实可用 — 只是它并非盘面的全部，因此在所有关键证据类别恢复读取之前，本看板不发布总体立场或压力分数。') }}
-      </div>
-      {% endif %}
+<body class="page-alerts">
+{% include '_site_nav.html.j2' %}
+<main id="alert-center" class="acx" data-coverage-state="{{ coverage.state if coverage else 'unknown' }}">
+  <header class="acx-header">
+    <div><div class="acx-eyebrow">{{ t('MONITOR / MARKET CHANGES', '监测 / 市场变化') }}</div><h1>{{ t('Alerts', '警报中心') }}</h1>
     </div>
-    <div>
-      <div class="score">
-        <div class="s act"><div class="n mono">{{ summary.actionable }}</div><div class="lab">{{ t('act now','立即行动') }}{{ help('Act-tier: a true cross-asset stress or regime call worth sizing around today.','执行级：值得今日据以调整仓位的真正跨资产压力或机制信号。') }}</div></div>
-        <div class="s watch"><div class="n mono">{{ summary.major }}</div><div class="lab">{{ t('worth watching','值得关注') }}</div></div>
-        <div class="s"><div class="n mono">{{ summary.recurring }}</div><div class="lab">{{ t('re-fired','重复触发') }}{{ help('Flags that have fired several times across a span of days rather than once. That is a fact about the LOG — it counts firings, it does not show the condition held continuously in between, so we call it re-fired, never persisting.','多次触发（而非一次性）的信号，其首末触发相隔数日。这是关于日志的事实 — 它统计触发次数，并不能证明该状态在此期间持续存在，因此我们称之为“重复触发”，而非“持续中”。') }}</div></div>
-        <div class="s"><div class="n mono">{{ summary.total }}</div><div class="lab">{{ t('live alerts','活跃警报') }}</div></div>
+    <div class="acx-session">{{ t('New York session', '纽约交易日') }}<strong>{{ board_date or '—' }}</strong></div>
+  </header>
+  <section class="acx-brief" aria-label="Evidence briefing">
+    {% if partial %}<div><strong>{{ t('Partial evidence', '证据不完整') }}</strong><p>{{ t('Missing evidence is not a quiet market', '证据缺失不代表市场平静') }}. {{ t('Review what is available; inspect coverage below.', '可查看现有记录，并检查下方的数据覆盖。') }} <span data-missing-sources>{{ (coverage.blocking or [])|join(', ') }}{% if coverage.backdrop_missing %} · {{ t('Market backdrop unavailable', '市场背景暂不可用') }}{% endif %}</span></p></div>
+    {% else %}<div><strong>{{ t('Review the changes. Follow the evidence.', '查看变化，追溯证据。') }}</strong><p>{{ t('Start with the highest-ranked observations, then investigate the full picture.', '先查看优先记录，再深入了解完整证据。') }}</p></div>{% endif %}
+    <a href="#coverage" class="acx-text-link">{{ t('Check coverage', '查看覆盖') }} <span aria-hidden="true">→</span></a>
+  </section>
+  <p class="acx-stale" id="ac-stale" role="status" hidden></p>
+  <nav class="acx-tabs" aria-label="Alert workspace">
+    {% for key,en,zh in [('now','Now','当前重点'),('situations','Situations','相关变化'),('signals','Signals','全部信号'),('history','History','历史记录')] %}
+    <button type="button" data-view="{{ key }}" aria-current="{{ 'page' if key == 'now' else 'false' }}" aria-controls="ac-results">{{ t(en,zh) }}</button>{% endfor %}
+  </nav>
+  <div class="acx-layout">
+    <section class="acx-workspace" aria-labelledby="ac-view-title">
+      <div class="acx-section-head"><div><h2 id="ac-view-title" tabindex="-1">{{ t('Review queue', '优先查看') }}</h2><p id="ac-view-note">{{ t('Original attention order — not trading instructions.', '原有关注优先级，并非交易指令。') }}</p></div><span id="ac-count" class="acx-count" role="status"></span></div>
+      <form class="acx-filters" id="ac-filters" role="search">
+        <label class="acx-search">{{ icon('search') }}<span class="acx-sr-only">{{ t('Search alerts', '搜索警报') }}</span><input id="ac-search" type="search" autocomplete="off" placeholder="Ticker, change or keyword" aria-label="Search alerts"></label>
+        <label><span class="acx-sr-only">{{ t('Source', '来源') }}</span><select id="ac-source" aria-label="Source"><option value="all">All sources</option></select></label>
+        <details id="ac-more-filters" class="acx-more-filters"><summary>{{ t("Filters", "筛选") }}</summary><div class="acx-advanced-filters">
+        <label><span class="acx-sr-only">{{ t('Priority', '优先级') }}</span><select id="ac-priority" aria-label="Priority"><option value="all">All priorities</option></select></label>
+        <label><span class="acx-sr-only">{{ t('Topic', '主题') }}</span><select id="ac-topic" aria-label="Topic"><option value="all">All topics</option></select></label>
+        <div class="acx-filter-actions"><button type="button" class="acx-chip" data-quick="new" aria-pressed="false">{{ t('Fired today', '今日触发') }}</button><button type="button" class="acx-chip" data-quick="recurring" aria-pressed="false">{{ t('Re-fired', '重复触发') }}</button><button type="button" id="ac-reset" class="acx-text-link">{{ t('Reset', '重置') }}</button></div>
+        </div></details>
+      </form>
+      <p id="ac-filter-note" class="acx-filter-note" hidden></p>
+      <div id="ac-results" class="acx-results" aria-busy="false">
+      {% for a in public_ranked[:8] %}<a class="acx-row" href="{{ a.link if a.link and a.link[0].isalnum() and ":" not in a.link and "\\" not in a.link else "#ac-fallback" }}"><span class="acx-rank">{{ loop.index }}</span><span class="acx-row-main"><span class="acx-row-meta">{{ t(a.source_label,a.source_label_zh) }} · {{ a.board_date or 'Date unknown' }}</span><strong>{{ t(a.headline,a.headline_zh) }}</strong>{% if a.fire_count|default(1) > 1 %}<span class="acx-row-sub" data-lifecycle="{{ a.lifecycle }}">{{ t("Re-fired", "重复触发") }} {{ a.fire_count }} · {{ t("Observed events, not continuous activity", "事件记录，不代表持续状态") }}</span>{% endif %}</span><span class="acx-row-action">{{ t('Review', '查看') }} →</span></a>{% else %}
+      <div class="acx-empty"><h3>{{ t('No observations in this window', '此时间段暂无记录') }}</h3><p>{{ t('Check source coverage before drawing a market conclusion.', '请先检查数据覆盖，不要据此判断市场。') }}</p></div>{% endfor %}
       </div>
-      {% if volume and volume.state %}
-      <span class="vol-pill">{{ '▲' if volume.state=='busier' else ('▼' if volume.state=='quieter' else '▬') }}
-        {{ t('last 7d','近7天') }} <b class="mono">{{ volume.last_7d }}</b> {{ t('fires','次触发') }} ·
-        <b>{{ t({'busier':'busier','quieter':'quieter','normal':'normal'}[volume.state],
-                 {'busier':'更繁忙','quieter':'更平静','normal':'正常'}[volume.state]) }}</b>
-        {{ t('than usual','于往常') }} (<span class="mono">{{ volume.ratio }}×</span>){{ help('Alert firings in the last 7 days vs this window own trailing weekly rate. Tells you if it is a genuinely loud week or ambient chatter. Descriptive.','近7天的警报触发次数对比本窗口自身的滚动周均值。用于判断这是真正嘈杂的一周还是背景噪音。描述性指标。') }}</span>
-      {% endif %}
-    </div>
+      <div id="ac-noresults" class="acx-empty" hidden><h3>{{ t('Nothing matches these filters', '没有符合筛选条件的记录') }}</h3><p>{{ t('Try another source, a wider topic, or reset the filters.', '请切换来源、扩大主题范围或重置筛选。') }}</p><button type="button" class="acx-button" id="ac-reset-empty">{{ t('Reset filters', '重置筛选') }}</button></div>
+      <div class="acx-queue-footer"><button type="button" class="acx-button" id="ac-show-more" hidden>{{ t('Show more', '显示更多') }}</button><button type="button" class="acx-text-link" id="ac-browse-all">{{ t('Browse all signals', '浏览全部信号') }} →</button><span id="ac-result-status" role="status"></span></div>
+    </section>
+    <aside class="acx-context" aria-label="Shared market context">
+      <section class="acx-context-panel"><h2>{{ t('Keep the context', '结合市场背景') }}</h2>
+        <dl><dt>{{ t('Market regime', '市场环境') }}</dt><dd>{{ t(regime.quad_name or 'Not available', regime.quad_name_zh or '暂无数据') }}</dd>
+        <dt>{{ t('Cross-asset context', '跨资产背景') }}</dt><dd>{{ t(cross_asset.verdict or 'Not available', cross_asset.verdict_zh or '暂无数据') }}</dd>
+        <dt>{{ t('Next scheduled catalyst', '下一预定事件') }}</dt><dd>{% if events.next %}{{ events.next.type }} · {{ events.next.md }}{% if events.next.time_et %}<small>{{ events.next.time_et }} ET</small>{% endif %}{% else %}{{ t('No event listed', '暂无事件记录') }}{% endif %}</dd></dl>
+        <p class="acx-footnote">{{ t('Backdrop observed', '背景观测于') }} {{ asof or '—' }}. {{ t('Context, not confirmation of every alert.', '背景信息，不代表逐条确认。') }}</p>
+      </section>
+      <section class="acx-context-panel acx-how"><h2>{{ t('Read it in context', '如何阅读') }}</h2><p>{{ t('An alert records a change. It does not prove the condition is still active.', '警报记录变化，并不证明状态仍在持续。') }}</p><p>{{ t('Open any observation to inspect its date, source and validation.', '打开记录，查看日期、来源与验证情况。') }}</p></section>
+    </aside>
   </div>
-</div>
-
-<!-- ── STORYLINES: the whole board as a handful of stories ────────────── -->
-{% if storylines %}
-<div class="panel">
-  <h2>{{ t('The stories behind the alerts','警报背后的脉络') }}
-    {{ help('Related alerts collapse into one narrative so the board reads as a few stories, not dozens of disconnected rows. Click a story to filter the feed to it.','相关警报归并为一条脉络，使看板呈现为若干故事，而非几十条零散记录。点击某条脉络可将下方信息流筛选至该类。') }}</h2>
-  <div class="stories">
-  {% for s in storylines %}
-    <button type="button" class="story cl-{{ s.cluster }}" data-story="{{ s.cluster }}">
-      <div class="st-top">
-        <span class="st-ic">{{ s.icon }}</span>
-        <span class="st-name">{{ t(s.label, s.label_zh) }}</span>
-        <span class="st-cnt">{{ s.count }}</span>
-      </div>
-      {% if s.gist %}<div class="st-gist">{{ t(s.gist, s.gist_zh) }}</div>{% endif %}
-      <div class="st-line">{{ t(s.top_headline[:70], (s.top_headline_zh or s.top_headline)[:70]) }}</div>
-      <div class="st-tags">
-        {% if s.act %}<span class="st-tag act">{{ icon('accel', 'fic') }} {{ s.act }} {{ t('act','执行') }}</span>{% endif %}
-        {% if s.critical %}<span class="st-tag act">{{ s.critical }} {{ t('critical','关键') }}</span>{% endif %}
-        {% if s.recurring %}<span class="st-tag persist">↻ {{ s.recurring }} {{ t('re-fired','重复触发') }}</span>{% endif %}
-        {% for tk in s.assets[:5] %}<span class="asset-chip">{{ tk }}</span>{% endfor %}
-      </div>
-    </button>
-  {% endfor %}
-  </div>
-</div>
-{% endif %}
-
-<!-- ── BACKDROP: the shared context every alert is read against ───────── -->
-<div class="panel">
-  <h2>{{ t('Backdrop — the context every alert is read against','背景 — 解读每条警报的共同语境') }}</h2>
-  <div class="ctx">
-    <div class="cell">
-      <div class="k">{{ t('Market regime','市场机制') }}</div>
-      <div class="vv">{{ t(regime.quad_name or regime.quad or '—', regime.quad_name_zh or regime.quad_name or regime.quad or '—') }}</div>
-      <div class="vsub">{{ t('cycle','周期') }}: {{ regime.cycle or '—' }}{% if regime.transition %} · {{ regime.transition }}{% endif %}</div>
-    </div>
-    <div class="cell">
-      <div class="k">{{ t('Cross-asset tape','跨资产盘面') }} {{ help('Kritzman-Page absorption: are the major markets moving as one bet or genuinely separate? A CONCENTRATED tape corroborates a stress alert; a DIVERSIFIED one argues against chasing it.','吸收比（Kritzman-Page）：主要市场是同一押注还是真正分散？集中的盘面会佐证压力类警报；分散的盘面则不支持追入。') }}</div>
-      <div class="vv {{ 'ca-diverge' if cross_asset.verdict=='concentrated' else ('ca-confirm' if cross_asset.verdict=='diversified') }}">{{ t((cross_asset.verdict or '—')|upper, cross_asset.verdict_zh or (cross_asset.verdict or '—')|upper) }}</div>
-      <div class="vsub">{{ t('moving together','同向变动') }}: {{ cross_asset.dominant_cluster|join(', ') if cross_asset.dominant_cluster else '—' }}</div>
-    </div>
-    <div class="cell">
-      <div class="k">{{ t('Risk backdrop','风险背景') }}</div>
-      <div class="vv">{{ t('recession','衰退') }}: {{ t(risk_backdrop.recession_band or '—', risk_backdrop.recession_band_zh or risk_backdrop.recession_band or '—') }}</div>
-      <div class="vsub">{{ t('drawdown','回撤') }}: {{ t(risk_backdrop.drawdown_band or '—', risk_backdrop.drawdown_band_zh or risk_backdrop.drawdown_band or '—') }} · NFCI {{ t(risk_backdrop.nfci_state or '—', risk_backdrop.nfci_state_zh or risk_backdrop.nfci_state or '—') }}</div>
-    </div>
-    <div class="cell">
-      <div class="k">{{ t('Next catalyst','下一个催化剂') }} {{ help('The nearest high-impact US event. Acting INTO a major print (CPI/FOMC/auction) is itself a risk — size for the event, not just the signal.','最近的高影响美国事件。在重大数据（CPI/FOMC/拍卖）前行动本身即是风险 — 应为事件而非仅为信号定仓。') }}</div>
-      {% if events.next %}
-      <div class="vv">{{ events.next.type }} · {{ events.next.md }}</div>
-      <div class="vsub">{% if events.next.days is not none %}{{ t('in','还有') }} {{ events.next.days }}{{ t('d','天') }}{% endif %}{% if events.next.time_et %} · {{ events.next.time_et }} ET{% endif %}</div>
-      {% else %}<div class="vv">—</div><div class="vsub">{{ t('none in the next 2 weeks','未来两周无') }}</div>{% endif %}
-    </div>
-  </div>
-</div>
-
-<!-- ── FILTER BAR (sticky) ────────────────────────────────────────────── -->
-<div class="filterbar">
-  <div class="row">
-    <label class="fsearch">{{ icon('search', 'fic') }} <input type="text" id="q" autocomplete="off" placeholder="Filter by ticker, theme or keyword…" data-ph-zh="按代码、主题或关键词筛选…" aria-label="Filter alerts"></label>
-    <button type="button" class="fbtn quick" data-quick="new" aria-pressed="false">{{ icon('spark', 'fic') }} {{ t('new today','今日新增') }}</button>
-    <button type="button" class="fbtn quick" data-quick="recurring" aria-pressed="false">{{ icon('swirl', 'fic') }} {{ t('re-fired','重复触发') }}</button>
-    <span class="showing"><span id="showN" class="mono">{{ summary.total }}</span> {{ t('of','/') }} <b class="mono">{{ summary.total }}</b> {{ t('shown','显示') }} · <button type="button" class="freset" id="reset">{{ t('reset','重置') }}</button></span>
-  </div>
-  <div class="row" role="group" aria-label="Priority filter">
-    <span class="flabel">{{ t('Priority','优先级') }}</span>
-    <button type="button" class="fbtn on" data-f="all" data-grp="sev" aria-pressed="true">{{ t('all','全部') }}</button>
-    <button type="button" class="fbtn" data-f="act" data-grp="sev" aria-pressed="false">{{ icon('accel', 'fic') }} {{ t('act now','立即行动') }} <span class="cnt"></span></button>
-    <button type="button" class="fbtn" data-f="critical" data-grp="sev" aria-pressed="false">{{ t('critical','关键') }} <span class="cnt"></span></button>
-    <button type="button" class="fbtn" data-f="major" data-grp="sev" aria-pressed="false">{{ t('major','重要') }} <span class="cnt"></span></button>
-    <span style="flex:1"></span>
-    <span class="flabel">{{ t('Story','脉络') }}</span>
-    <button type="button" class="fbtn on" data-f="all" data-grp="cl" aria-pressed="true">{{ t('all','全部') }}</button>
-    <button type="button" class="fbtn cl-stress" data-f="stress" data-grp="cl" aria-pressed="false">{{ icon('stress', 'fic') }} {{ t('stress','压力') }} <span class="cnt"></span></button>
-    <button type="button" class="fbtn" data-f="regime" data-grp="cl" aria-pressed="false">{{ icon('map', 'fic') }} {{ t('regime','机制') }} <span class="cnt"></span></button>
-    <button type="button" class="fbtn" data-f="liquidity" data-grp="cl" aria-pressed="false">{{ icon('droplet', 'fic') }} {{ t('liquidity','流动性') }} <span class="cnt"></span></button>
-    <button type="button" class="fbtn" data-f="rotation" data-grp="cl" aria-pressed="false">{{ icon('swirl', 'fic') }} {{ t('rotation','轮动') }} <span class="cnt"></span></button>
-    <button type="button" class="fbtn" data-f="single_name" data-grp="cl" aria-pressed="false">{{ icon('target', 'fic') }} {{ t('single-name','个股') }} <span class="cnt"></span></button>
-  </div>
-</div>
-
-<!-- ── THE RANKED FEED ────────────────────────────────────────────────── -->
-<div class="feed" id="feed">
-{% for a in alerts %}
-  {% set sevcls = 'crit' if a.severity=='critical' else ('major' if a.severity=='major' else 'minor') %}
-  {% set v = a.validation %}
-  <div class="ac sev-{{ sevcls }}" data-sev="{{ a.severity }}" data-tier="{{ a.tier }}" data-src="{{ a.source }}"
-       data-cluster="{{ a.cluster }}" data-life="{{ a.lifecycle }}" data-emit="{{ a.ts }}"
-       data-board="{{ a.board_date or '' }}" data-age="{{ '' if a.age_days is none else a.age_days }}"
-       data-id="{{ a.alert_id }}" data-q="{{ hay(a)|trim }}">
-    <div class="rail">
-      <div class="pr">{{ a.priority }}</div>
-      <div class="prbar"><i class="bg-{{ sevcls }}" style="width:{{ a.priority }}%"></i></div>
-      <div class="prl">{{ t('priority','优先级') }}{{ help(
-        'Triage priority 0-100 — how much this should grab attention NOW, not a probability it is right. = conviction ' ~ a.priority_components.conviction[0] ~ ' (' ~ a.priority_components.conviction[1] ~ ') + severity ' ~ a.priority_components.severity[0] ~ ' (' ~ a.priority_components.severity[1] ~ ') + recency ' ~ a.priority_components.recency[0] ~ ' (' ~ a.priority_components.recency[1] ~ ') + cross-asset ' ~ a.priority_components.cross_asset[0] ~ ' (' ~ a.priority_components.cross_asset[1] ~ ').',
-        '分诊优先级 0-100 — 表示此刻该给多少注意力，并非判断正确的概率。= 信念 ' ~ a.priority_components.conviction[0] ~ ' + 严重度 ' ~ a.priority_components.severity[0] ~ ' + 新鲜度 ' ~ a.priority_components.recency[0] ~ ' + 跨资产 ' ~ a.priority_components.cross_asset[0] ~ '。') }}</div>
-    </div>
-    <div class="body">
-      <div class="meta">
-        <span class="src">{{ a.source_icon }} {{ t(a.source_label, a.source_label_zh) }}</span>
-        <span class="sevpill bd-{{ sevcls }} c-{{ sevcls }}"><span class="dot bg-{{ sevcls }}"></span>{{ t(a.severity, {'critical':'关键','major':'重要','minor':'次要'}[a.severity]) }}</span>
-        {#- RECURRENCE, not persistence: the log proves how many times it fired and how far
-            apart, never that the condition held in between. "persisting" is reserved for a
-            source that verifies current-state continuity. -#}
-        {% if a.lifecycle=='new' %}<span class="lifepill life-new">🆕 {{ t('new','新') }}</span>
-        {% elif a.lifecycle=='recurring' %}<span class="lifepill life-recurring">↻ {{ t('re-fired','重复触发') }} {{ a.fire_count }}× {{ t('across','历时') }} {{ a.span_days }}{{ t('d','天') }}</span>
-        {% elif a.lifecycle=='persisting' %}<span class="lifepill life-persisting">↻ {{ t('persisting','持续') }} {{ a.span_days }}{{ t('d','天') }}</span>
-        {% elif a.lifecycle=='fading' %}<span class="lifepill life-fading">{{ t('fading','消退') }}</span>{% endif %}
-        {#- The date is the EVENT's board day (America/New_York), never our build clock.
-            An event whose time we cannot establish says so instead of borrowing today. -#}
-        {% if a.board_date %}
-        <span class="mono">{{ a.board_date }}{% if a.age_days==0 %} · {{ t('today','今天') }}{% elif a.age_days==1 %} · {{ t('1d ago','1天前') }}{% elif a.age_days is not none %} · {{ a.age_days }}{{ t('d ago','天前') }}{% endif %}</span>
-        {% if a.recorded_at and a.date_precision=='date' and a.recorded_at[:10] != a.board_date %}<span class="muted">{{ help('Event date, not build time — this read is drawn from the ' ~ a.board_date ~ ' session; we recorded it at ' ~ a.recorded_at ~ '.', '事件日期，非生成时间 — 该结论取自 ' ~ a.board_date ~ ' 交易日，我们于 ' ~ a.recorded_at ~ ' 记录。') }}</span>{% endif %}
-        {% else %}
-        <span class="mono muted">{{ t('date unknown','日期未知') }}{{ help('This alert reached us without a usable event time, so it earns no freshness credit and is never labelled today. We show it rather than invent a date for it.','该警报到达时没有可用的事件时间，因此不获得新鲜度加分，也绝不标注为“今天”。我们照实展示，而非为其编造日期。') }}</span>
-        {% endif %}
-        {% if a.fire_count>1 %}<span class="muted">· {{ t('re-fired','重复触发') }} <b class="mono">{{ a.fire_count }}×</b>{% if a.span_days>0 %} {{ t('across','历时') }} {{ a.span_days }}{{ t('d','天') }}{{ help('Elapsed distance from the first firing to the latest one — NOT a streak. The log records ' ~ a.fire_count ~ ' firings spanning ' ~ a.span_days ~ ' days; it does not show the condition was continuously active between them.', '自首次触发到最近一次触发的间隔 — 并非连续天数。日志记录了 ' ~ a.fire_count ~ ' 次触发，跨度 ' ~ a.span_days ~ ' 天；但并不能证明该状态在此期间持续存在。') }}{% endif %}</span>{% endif %}
-      </div>
-      <div class="hl">{{ t(a.headline, a.headline_zh) }}</div>
-      {% if a.detail %}<div class="dt">{{ t(a.detail[:200], a.detail_zh[:200]) }}</div>{% endif %}
-      <div class="row2">
-        {% set acls = {'high-conviction':'a-high','reduce risk':'a-reduce','confirm first':'a-confirm','watch':'a-watch','context':'a-context'}[a.action] %}
-        <span class="pill {{ acls }}">→ {{ t(a.action, a.action_zh) }}</span>
-        {% if a.cross_asset_tag != 'neutral' %}
-        <span class="tag {{ a.cross_asset_tag }}">{{ '✓' if a.cross_asset_tag=='confirm' else '⚠' }} {{ t('tape ' ~ a.cross_asset_tag, '盘面' ~ ({'confirm':'佐证','diverge':'背离'}[a.cross_asset_tag])) }}</span>
-        {% endif %}
-        {% if a.asset and a.asset not in (a.source, 'macro', 'rates', 'vector') and a.asset|length <= 6 %}
-        <span class="tag ticker">{{ a.asset }}</span>{% endif %}
-        <a class="lnk sm" href="{{ a.link }}">{{ t('open','打开') }} →</a>
-      </div>
-      <!-- validation: a measured number ONLY where it exists; quiet & honest otherwise -->
-      <div class="val">
-        {% set vmap = {
-          'backtested': ('vp-backtested','BACKTESTED ✓','已回测 ✓'),
-          'scored': ('vp-scored','SCORED','已计分'),
-          'confirmer': ('vp-confirmer','CONFIRMER','确认项'),
-          'calibrated': ('vp-calibrated','CALIBRATED','已校准'),
-          'no_edge': ('vp-no_edge','TESTED · NO EDGE','已检验·无边际'),
-          'underpowered': ('vp-underpowered','UNTESTABLE','样本不足'),
-          'documented': ('vp-documented','not backtested','未回测'),
-          'display': ('vp-display','display','仅展示'),
-          'killed': ('vp-killed','NO-GO','否决') } %}
-        {% set vv = vmap.get(v.verdict, vmap['documented']) %}
-        <span class="vpill {{ vv[0] }}">{{ t(vv[1], vv[2]) }}</span>
-        {% if v.hit is not none %}<span class="mono">{{ t('hit','命中') }} {{ pct(v.hit) }}{% if v.horizon %} @{{ v.horizon }}{% endif %}</span>{% endif %}
-        {% if v.ic is not none %}<span class="mono">IC {{ '%+.3f'|format(v.ic) }}</span>{% endif %}
-        {% if v.dsr is not none %}<span class="mono">DSR {{ '%.2f'|format(v.dsr) }}</span>{% endif %}
-        {% if v.note %}<span class="muted">— {{ t(v.note[:120], (v.note_zh or v.note)[:120]) }}</span>{% endif %}
-        {{ help(
-           (v.note or 'No standalone backtest for this alert family — the conviction is documented, not measured as a timing signal.') ~ (('  Validated as: ' ~ v.scorecard_name ~ '.') if v.scorecard_name else '') ~ '  See Signal Lab for the full battery.',
-           (v.note_zh or v.note or '该警报族无独立回测 — 信念有据可查，但未作为择时信号度量。') ~ (('  验证为：' ~ v.scorecard_name ~ '。') if v.scorecard_name else '') ~ '  详见信号实验室。') }}
-        <a class="lnk" href="{{ v.link }}">{{ t('Signal Lab','信号实验室') }} →</a>
-      </div>
-    </div>
-  </div>
-{% else %}
-  <div class="panel empty">
-    <div class="big">{{ t('A quiet tape.','盘面平静。') }}</div>
-    {{ t('No cross-asset alerts in the window. A quiet tape is a position too — nothing here needs your attention right now.','窗口内无跨资产警报。平静的盘面本身也是一种仓位 — 此刻无需你的关注。') }}
-  </div>
-{% endfor %}
-  <div class="panel empty" id="noresults">
-    <div class="big">{{ t('Nothing matches these filters.','没有符合当前筛选的警报。') }}</div>
-    {{ t('Try widening the priority or story filter, or clear the search.','请放宽优先级或脉络筛选，或清除搜索。') }}
-    <button type="button" class="freset" id="reset2">{{ t('Reset all','重置全部') }}</button>
-  </div>
-</div>
-
-<!-- ── METHODOLOGY (kept honest, moved out of the way) ────────────────── -->
-<div class="panel" style="margin-top:14px">
-  <details class="method">
-    <summary>{{ t('How this board ranks — and why it refuses to fake a hit-rate','本看板如何排序 — 以及为何拒绝编造命中率') }}</summary>
-    <dl>
-      <dt>{{ t('Triage priority (0-100)','分诊优先级 (0-100)') }}</dt>
-      <dd>{{ t('A transparent sum of four parts: conviction (act 40 / watch 22 / context 8), severity (critical 30 / major 18 / minor 6), recency (fresh 20 → old 2), and cross-asset agreement (+10 confirm, −6 diverge). It tells you what to LOOK at first. It is explicitly NOT a probability the call is correct.','四部分的透明加总：信念（执行40／观察22／背景8）、严重度（关键30／重要18／次要6）、新鲜度（新20→旧2）、跨资产一致性（佐证+10、背离−6）。它告诉你先看什么，明确不是判断正确的概率。') }}</dd>
-      <dt>{{ t('Severity you can trust — corroboration, not volume','可信的严重度 — 靠佐证，而非音量') }}</dt>
-      <dd>{{ t("Each engine has its own 'high/medium' scale, so a single-name flag can read as loud as a credit blow-out. We re-tier every alert by its TRUE cross-asset importance, then cap it back down unless something corroborates it — a measured edge, agreement from the cross-asset tape, or true act-tier weight. A severity band is only ever LOWERED, never inflated, so nothing shouts louder than it has earned.",'每个引擎有自己的“高／中”刻度，使单一个股信号看起来与信用崩溃一样响。我们按真正的跨资产重要性重新分级，再予以回调 — 除非有佐证：可测边际、跨资产盘面的一致性，或真正的执行级权重。严重度只会被下调，绝不虚高，因此没有信号会喊得超过它应得的音量。') }}</dd>
-      <dt>{{ t('Re-fired is a count, not a streak','“重复触发”是次数，不是连续天数') }}</dt>
-      <dd>{{ t("A flag that keeps coming back is worth seeing, so we keep the fire count and the span between the first and last firing instead of de-duplicating them away. But an event log can only prove WHEN something fired — never that the condition held continuously in between. Three firings scattered across 29 days are not a 29-day condition, so the card says 're-fired 3× across 29d' and the word 'persisting' is reserved for a source that actually verifies current-state continuity. Recurrence is also no longer allowed to corroborate a severity band: it is shown, it does not rank.",'反复出现的信号值得关注，因此我们保留触发次数以及首末触发之间的跨度，而非直接去重丢弃。但事件日志只能证明某事在何时触发 — 无法证明该状态在此期间持续存在。分散在 29 天里的三次触发并不构成一个持续 29 天的状态，因此卡片显示“重复触发 3 次，历时 29 天”，而“持续中”一词仅保留给真正验证了当前状态连续性的数据源。重复触发也不再被用作严重度的佐证：它只作展示，不参与排序权重。') }}</dd>
-      <dt>{{ t('Partial evidence is not a calm tape','证据不完整不等于盘面平静') }}</dt>
-      <dd>{{ t("Every source is read with an explicit outcome: it read fine, it read fine and had nothing to say, it has no store yet, or it could not be read at all. Those are not the same thing. If a consequential family — macro, bonds, commodity, the BTC risk regime — cannot be read, its alerts do not simply vanish into a quieter-looking board: the page says which evidence is missing and withholds the overall stance and the pressure score entirely. A missing risk feed must never be able to make the product look safer, and we do not substitute an invented cautious number either.",'每个数据源都带有明确的读取结果：读取正常、读取正常但无内容、尚无存储文件，或完全无法读取。这些并不等同。若关键证据类别 — 宏观、债券、大宗商品、比特币风险机制 — 无法读取，其警报不会悄然消失、使看板显得更平静：页面会指明缺失的证据类别，并完全不给出总体立场与压力分数。缺失的风险数据源绝不能让产品看起来更安全，我们也不会用臆造的保守数字来代替。') }}</dd>
-      <dt>{{ t('Measured edge, or honest silence','可测边际，或坦诚沉默') }}</dt>
-      <dd>{{ t("A hit-rate / IC / Deflated-Sharpe appears ONLY where the validation layer actually measured that signal family (the recession composite, the regime quad, the BTC risk regime, the commodity risk index). For condition-based alerts never backtested as timing signals, we say 'documented, not backtested' rather than invent a number.",'只有当验证层确实度量过该信号族（衰退综合、机制四象限、比特币风险机制、商品风险指数）时，才显示命中率／IC／去偏夏普。对于从未作为择时信号回测的条件型警报，我们标注“有据可查，但未回测”，而非编造数字。') }}</dd>
-    </dl>
+  <details class="acx-coverage" id="coverage"><summary>{{ t('What this board can see', '数据覆盖与读取情况') }}<span>{{ t('Source coverage and methodology', '来源覆盖与方法说明') }}</span></summary>
+    <p>{{ t('A successful read is not a freshness guarantee. No recent firing does not mean a broken source.', '读取成功不保证数据新鲜；近期未触发不代表来源故障。') }}</p>
+    <div class="acx-source-grid">{% for s in coverage.sources if coverage %}<div><strong>{{ t(s.label,s.label_zh) }}</strong><span>{{ t({'ok':'Records available','ok_zero_events':'Read succeeded · no events','no_coverage':'No coverage yet','unavailable':'Unavailable'}.get(s.state,'Unknown'),{'ok':'有可用记录','ok_zero_events':'读取成功 · 暂无事件','no_coverage':'尚无覆盖','unavailable':'暂不可用'}.get(s.state,'未知')) }}</span></div>{% endfor %}</div>
+    {% if partial %}<p class="acx-caveat">{{ t('Missing:', '缺失：') }} {{ (coverage.blocking or [])|join(', ') }}{% if coverage.backdrop_missing %} · {{ t('cross-asset backdrop', '跨资产背景') }}{% endif %}</p>{% endif %}
+    <details class="acx-method"><summary>{{ t('How attention order works', '关注优先级的计算方式') }}</summary><p>{{ t('Priority combines existing source conviction, severity, recency and cross-asset context. It is not a probability, position size or instruction to trade.', '优先级由原有来源等级、严重程度、时间与跨资产背景组成，并非概率、仓位或交易指令。') }}</p>
+      {% if board_read.score is not none %}<p data-overall-score="{{ board_read.score }}">{{ t('Legacy descriptive pressure', '原有描述性压力读数') }}: {{ board_read.score }}/100. {{ t('Calculated from the capped review queue, not the whole market.', '由有限的优先列表计算，并不代表整个市场。') }}</p>{% else %}<p>{{ t('Partial tape read — no overall score is shown.', '读数不完整，不展示整体分数。') }}</p>{% endif %}
+      <p>{{ t('Re-fired counts are observed events, never proof of continuous persistence. A situation groups distinct observations about one explicit subject; it is not independent confirmation.', '重复触发是记录次数，不代表状态持续。相关变化仅汇集同一明确对象的不同记录，并非独立确认。') }}</p>
+    </details>
   </details>
-</div>
-
-<div class="panel">
-  <p class="src muted sm" style="margin:0">
-    {{ t('Assembler','汇编') }}: engine/alert_triage.py · {{ t('feeds','数据源') }}: macro / bonds / forex / vector / commodity / themes / rotation / single-name ·
-    {{ t('window','窗口') }} {{ window_days }}{{ t('d','天') }} · {{ t('as-of','截至') }} {{ asof or '—' }} ·
-    {{ t('board day','看板交易日') }} {{ board_date or '—' }} ({{ board_tz or 'America/New_York' }}){{ help(
-      "Three separate clocks. Board day is the New York session this board is reading — what 'today' means on a US cross-asset desk. Each alert is dated by when its EVENT happened, not by when we processed it. 'Rendered' below is only when this page was built.",
-      '三个互不相同的时钟。看板交易日是本看板所读取的纽约交易日 — 即美股跨资产台面上“今天”的含义。每条警报按其事件发生的时间标注日期，而非我们处理它的时间。下方的“生成”仅表示本页构建的时刻。') }} ·
-    {{ t('rendered','生成') }} {{ generated_utc }} UTC</p>
-</div>
-
-<script>
-(function(){
-  var feed = document.getElementById('feed');
-  var cards = Array.prototype.slice.call(feed.querySelectorAll('.ac'));
-  var sel = { sev:'all', cl:'all', quick:null, q:'' };
-
-  // ---- "new since your last visit" badges (per-browser, localStorage) ------
-  try {
-    var LASTKEY = 'alerts_last_visit';
-    var prev = parseInt(localStorage.getItem(LASTKEY) || '0', 10);
-    var newest = 0;
-    cards.forEach(function(c){
-      // board day (ET), not the build clock — same date the card shows
-      var ts = Date.parse((c.dataset.board||c.dataset.emit||'').slice(0,10)) || 0;
-      if (ts > newest) newest = ts;
-      if (prev && ts > prev) { var d=document.createElement('span'); d.className='newdot'; c.querySelector('.rail').appendChild(d); }
-    });
-    localStorage.setItem(LASTKEY, String(Math.max(newest, Date.now())));
-  } catch(e){}
-
-  // ---- chip counts ----------------------------------------------------------
-  function count(pred){ return cards.filter(pred).length; }
-  document.querySelectorAll('.fbtn[data-grp]').forEach(function(b){
-    var grp = b.dataset.grp, f = b.dataset.f, cnt = b.querySelector('.cnt');
-    if (!cnt || f==='all') return;
-    var n = grp==='sev'
-      ? (f==='act' ? count(function(c){return c.dataset.tier==='act';}) : count(function(c){return c.dataset.sev===f;}))
-      : count(function(c){return c.dataset.cluster===f;});
-    cnt.textContent = n;
-  });
-
-  // ---- apply filters (AND across dimensions) --------------------------------
-  var showN = document.getElementById('showN');
-  var noRes = document.getElementById('noresults');
-  function matches(c){
-    if (sel.sev!=='all'){ if (sel.sev==='act'){ if(c.dataset.tier!=='act') return false; } else if (c.dataset.sev!==sel.sev) return false; }
-    if (sel.cl!=='all' && c.dataset.cluster!==sel.cl) return false;
-    if (sel.quick==='new' && c.dataset.age!=='0') return false;
-    if (sel.quick==='recurring' && c.dataset.life!=='recurring') return false;
-    if (sel.q){ if ((c.dataset.q||'').indexOf(sel.q)===-1) return false; }
-    return true;
-  }
-  function apply(){
-    var shown = 0;
-    cards.forEach(function(c){ var ok = matches(c); c.classList.toggle('hide', !ok); if(ok) shown++; });
-    if (showN) showN.textContent = shown;
-    if (noRes) noRes.style.display = (shown===0 && cards.length) ? '' : 'none';
-    writeHash();
-  }
-
-  // ---- URL hash state (shareable) -------------------------------------------
-  function writeHash(){
-    var p = [];
-    if (sel.sev!=='all') p.push('sev='+sel.sev);
-    if (sel.cl!=='all') p.push('cl='+sel.cl);
-    if (sel.quick) p.push('q='+sel.quick);
-    if (sel.q) p.push('s='+encodeURIComponent(sel.q));
-    var h = p.join('&');
-    try { history.replaceState(null,'', h ? '#'+h : location.pathname+location.search); } catch(e){}
-  }
-  function readHash(){
-    var h = (location.hash||'').replace(/^#/,''); if(!h) return;
-    h.split('&').forEach(function(kv){
-      var i = kv.indexOf('='); if(i<0) return;
-      var k = kv.slice(0,i), val = decodeURIComponent(kv.slice(i+1));
-      if (k==='sev') sel.sev = val;
-      else if (k==='cl') sel.cl = val;
-      else if (k==='q') sel.quick = val;
-      else if (k==='s') sel.q = val.toLowerCase();
-    });
-  }
-
-  // ---- wire chips -----------------------------------------------------------
-  function setActive(grp, f){
-    document.querySelectorAll('.fbtn[data-grp="'+grp+'"]').forEach(function(x){
-      var on = x.dataset.f===f; x.classList.toggle('on', on); x.setAttribute('aria-pressed', String(on));
-    });
-  }
-  function setQuick(){
-    document.querySelectorAll('.fbtn.quick').forEach(function(x){
-      var on = x.dataset.quick===sel.quick; x.classList.toggle('on', on); x.setAttribute('aria-pressed', String(on));
-    });
-  }
-  document.querySelectorAll('.fbtn[data-grp]').forEach(function(b){
-    b.addEventListener('click', function(){
-      var grp = b.dataset.grp; sel[grp] = b.dataset.f; setActive(grp, b.dataset.f); apply();
-    });
-  });
-  document.querySelectorAll('.fbtn.quick').forEach(function(b){
-    b.addEventListener('click', function(){
-      var q = b.dataset.quick; sel.quick = (sel.quick===q ? null : q);
-      setQuick();
-      apply();
-    });
-  });
-  // storyline cards -> cluster filter
-  document.querySelectorAll('.story').forEach(function(s){
-    s.addEventListener('click', function(){
-      var cl = s.dataset.story;
-      sel.cl = (sel.cl===cl ? 'all' : cl);
-      setActive('cl', sel.cl);
-      document.querySelectorAll('.story').forEach(function(x){ x.classList.toggle('on', x.dataset.story===sel.cl); });
-      apply();
-      feed.scrollIntoView({behavior: (matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'), block:'start'});
-    });
-  });
-  // search box
-  var qbox = document.getElementById('q');
-  if (qbox) {
-    qbox.addEventListener('input', function(){ sel.q = qbox.value.trim().toLowerCase(); apply(); });
-    // lang-aware placeholder (EN in the attribute, ZH in data-ph-zh; theme.js fires 'langchange')
-    var phEn = qbox.placeholder, phZh = qbox.getAttribute('data-ph-zh') || phEn;
-    var setPh = function(){ qbox.placeholder = document.documentElement.getAttribute('data-lang')==='zh' ? phZh : phEn; };
-    setPh(); document.addEventListener('langchange', setPh);
-  }
-  // reset
-  function reset(){
-    sel = { sev:'all', cl:'all', quick:null, q:'' };
-    if (qbox) qbox.value = '';
-    setActive('sev','all'); setActive('cl','all'); setQuick();
-    document.querySelectorAll('.story').forEach(function(x){ x.classList.remove('on'); });
-    apply();
-  }
-  var r1=document.getElementById('reset'), r2=document.getElementById('reset2');
-  if(r1) r1.addEventListener('click', reset); if(r2) r2.addEventListener('click', reset);
-
-  // ---- restore from hash, then paint ---------------------------------------
-  readHash();
-  if (qbox && sel.q) qbox.value = sel.q;
-  setActive('sev', sel.sev); setActive('cl', sel.cl); setQuick();
-  document.querySelectorAll('.story').forEach(function(x){ x.classList.toggle('on', x.dataset.story===sel.cl); });
-  apply();
-})();
-</script>
+  <section id="ac-fallback" class="acx-context-panel"><noscript><p>{{ t("Interactive browsing is unavailable without JavaScript.", "未启用 JavaScript，交互浏览暂不可用。") }}</p></noscript><h2>{{ t('Original evidence', '原始证据') }}</h2><p>{{ t('Interactive browsing is unavailable. These original source links remain available.', '交互浏览暂不可用，以下原始来源链接仍可使用。') }}</p>{% for a in xp.signals %}{% if a.link and a.link[0].isalnum() and ':' not in a.link and '\\' not in a.link %}<p><a href="{{ a.link }}">{{ t(a.headline,a.headline_zh) }}</a> · {{ a.board_date or 'Date unknown' }}</p>{% endif %}{% endfor %}</section>
+  <p class="acx-footnote">{{ t('Account-specific watchlist alerts stay in the Watchlist workspace. This view contains shared market evidence.', '账户自选警报保留在自选清单中；此页面仅展示共享市场证据。') }}</p>
+  <footer class="acx-footer">{{ t('Page built', '页面生成于') }} {{ generated_utc }} UTC · {{ t('Event dates belong to the New York session. Build time is not event time.', '事件日期按纽约交易日记录，生成时间不是事件时间。') }}</footer>
+</main>
+<dialog id="ac-detail" class="acx-inspector" aria-labelledby="ac-detail-title">
+  <div class="acx-inspector-bar"><span>{{ t('EVIDENCE / INVESTIGATE', '证据 / 深入查看') }}</span><button type="button" id="ac-close" aria-label="Close evidence"><span aria-hidden="true">×</span></button></div>
+  <div id="ac-detail-body"></div>
+  <div class="acx-inspector-footer"><a class="acx-button" id="ac-share" href="#">{{ t('Evidence permalink', '证据链接') }}</a><span id="ac-share-status" role="status"></span></div>
+</dialog>
+<script id="ac-data" type="application/json">{{ {'explorer': xp, 'top_ids': public_ranked|map(attribute='alert_id')|list, 'coverage': coverage, 'board_date': board_date, 'generated_utc': generated_utc}|tojson }}</script>
+<script>{% include 'alert_center.js' %}</script>
 <script src="theme.js"></script>
-</body>
-</html>
+</body></html>

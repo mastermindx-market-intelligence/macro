@@ -342,10 +342,10 @@ def test_page_renders_without_template_errors():
     env = Environment(loader=FileSystemLoader(config.ROOT / "templates"))
     env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip)
     html = env.get_template("alerts.html.j2").render(**_payload())
-    assert "Alert Command Center" in html
+    assert "<title>Alerts — Mastermind</title>" in html
     assert "{{" not in html and "{%" not in html          # no unrendered jinja
     assert "Undefined" not in html                        # no leaked missing keys
     # the honest framing + the transparent score must be present
-    assert "documented, not" in html
-    assert "Triage priority" in html
+    assert "not a probability" in html
+    assert "How attention order works" in html
     assert "Backdrop" in html

@@ -1,0 +1,116 @@
+{
+  "source_commit": "7692303dcc785c8af7f4438ffd88e91a7e9b0be5",
+  "generated_utc": "2026-09-09 19:38",
+  "proof_kind": "local_real_builder_committed_inputs",
+  "production_acceptance": false,
+  "inputs": [
+    {
+      "path": "data/regime/latest.json",
+      "present": true,
+      "sha256": "c7cd0a0a42d9f84a3823ac16b87f681e3471076a8b7d5285fc509626d876b430"
+    },
+    {
+      "path": "data/alerts/alerts_log.parquet",
+      "present": true,
+      "sha256": "ae5df96d7f6835c7a08cbce3a3b79c43e9b193f6b62e8eb30d03f680413d1c87"
+    },
+    {
+      "path": "data/alerts/rule_scorecard.json",
+      "present": true,
+      "sha256": "f4650bb501423b03a9914d880e51e650874baf675aec4b0c02a36c928bf6df89"
+    },
+    {
+      "path": "data/alerts/watchlist_alerts.jsonl",
+      "present": true,
+      "sha256": "c4a7278137fa34b0c317a459d58bb2deaf7d16e3472d8e0b7d034199f803df11"
+    },
+    {
+      "path": "data/spine/predictions.parquet",
+      "present": true,
+      "sha256": "f7eeb46b9ea9ef30ddf1fd361c36ead26ecdacce391568d9029801dc6ce8e4f0"
+    },
+    {
+      "path": "data/bonds/alerts.jsonl",
+      "present": true,
+      "sha256": "193557d109fab762acd83b363ebd210f8112f987748eb88467389aebd50ded7f"
+    },
+    {
+      "path": "data/forex/alerts.jsonl",
+      "present": true,
+      "sha256": "46e13ed15c94e151427143064888fee6a83a6c4a09980f4bcaae78470d9f8605"
+    },
+    {
+      "path": "data/vector/alerts.jsonl",
+      "present": true,
+      "sha256": "6066e6a9f994b40875cf15d2e544ed617cd1045954ae2a13c3e66890e39b9624"
+    },
+    {
+      "path": "data/commodity/alerts.jsonl",
+      "present": true,
+      "sha256": "4ca989c70e2a4c145e135bb71f3f70a40a752befeef2fa6f1ac7f1a222db56e6"
+    },
+    {
+      "path": "data/themes/alerts.jsonl",
+      "present": true,
+      "sha256": "25437012028abbc327310265120e5c232d7712a98e174188f2d95cc4a0bf2282"
+    },
+    {
+      "path": "data/emergence/alerts.jsonl",
+      "present": true,
+      "sha256": "57fe879ca18028658418d95dfd4974ef3d073c391fd705a4fcaf66e03364044d"
+    },
+    {
+      "path": "data/altdata/alerts.jsonl",
+      "present": true,
+      "sha256": "7a457c9d64f3722a737546aa41711e0e31de379b38acdbe975083b8a4130b4e3"
+    },
+    {
+      "path": "data/demand_chain/alerts.jsonl",
+      "present": true,
+      "sha256": "6788512ca99df3aeea15e7f190ac16abaff2e71e4a7f0c2a466ded3a392af1e9"
+    },
+    {
+      "path": "data/subsector_rotation/alerts.jsonl",
+      "present": true,
+      "sha256": "477d08fb7cf305cf719e994397fdc8c30d17ac7faed1600128e42863c729f20e"
+    },
+    {
+      "path": "data/oracle/oracle_alerts.jsonl",
+      "present": true,
+      "sha256": "c8005c01865f272d557652e8597cee6ac2b6443c5466d39cf77c9015339dabb6"
+    }
+  ],
+  "candidate_sources": {
+    "engine/alert_triage.py": "bd261e4b1717e9c37fc827f867b64ef6f7a6ebb483b1678c9652420a817084c6",
+    "engine/alert_center_view.py": "aa73db7fad77f7c410d34127c2f5fafbbfcef0ebb9d3b339a3a67a1ce57525ce",
+    "engine/alert_time.py": "321a2414a68a51c6d21f268cb7a26696d596f5242c832e38f2119dfc21642906",
+    "scripts/build_site.py": "3f6f4d27771cf0926aeb2643130e0acae6b796751649916bfc70d3afb358d911",
+    "scripts/prove_alert_center_v2.py": "a56df6765faedd922c8d4be22db985ba886162b7879affbb7711c55cef01e526",
+    "templates/alerts.html.j2": "6d3d5d69df9063ee0a5e1fc284bc846a88a75bada9c98f710a4bf9072d1071d7",
+    "templates/alert_center.css": "7ea6b569eaa12d94000b71f1b75263eaeb1c3766e64d54525046ee88d39162b6",
+    "templates/alert_center.js": "12d1f956c3bb60e3c19171a676ff47e7ea0813bdcee4bd231ef9d0fe25b0d563",
+    "templates/theme.css": "f41f9a211e2a7404150a58eb015c9919879222c49cd91cdb8edc53b95a1a21d6",
+    "templates/_site_nav.html.j2": "164f3119fd04b8886d2d29703dc9c017e13bceeae1ecc49a36f9842353d9e482",
+    "templates/_navlinks.html.j2": "10ef03e1d39149ee0e94072bcdeebae3cdbdfa92c0e620efdf54b69a1109f7b8",
+    "engine/i18n.py": "486116b2c2640bf164724a03d9a8871efef7977fb3b5bd7e8d5956e8d3675b44",
+    "lib/site_assets.py": "1c6b73e5a3691a95cfc172da689a3d8c87a90d9f584db338b3458550a4106829",
+    "scripts/build_live_overlay.py": "bbc7e85d30945103c7752c65806d60b524e4d4fb4eecb6f4108f645dec42e59e",
+    "templates/live.js": "f7bdf7cce1606c07d806408b7feb8b134c99e838acc3ee887bf5e1a15a9f4478",
+    "templates/nav_market.js": "24985e3240b509bfa197a5203b7bd28bb039b82b77a624481393203c74463497"
+  },
+  "source_commit_note": "HEAD identifies ancestry; candidate_sources binds the executed working-tree bytes. The named set is not a transitive dependency attestation.",
+  "sources_unchanged_during_build": true,
+  "inputs_unchanged_during_build": true,
+  "outputs": {
+    "alerts.html": "233b381b0169ce07a113517ff0b8b361d30675a6c6b9ab25c60c6b30160e1033",
+    "factordata/alerts_triage.json": "a15c5fd2c85e9d5b20cce00361455aa3a7fab65c4bc33ff7153422b88597b0c3",
+    "alertsdata/feed.json": "9d4145038793b5fb0fd619dc66b2eeded09f9064cabd68b20064e75bf389c45d"
+  },
+  "populations": {
+    "legacy_ranked": 60,
+    "shared_signals": 641,
+    "specific_subject_bundles": 131,
+    "published_firings": 1000,
+    "total_matched_firings": 1252
+  }
+}

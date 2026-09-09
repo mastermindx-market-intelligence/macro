@@ -1,0 +1,37 @@
+{
+  "observed_at": "2026-09-09T19:40:52.839850+00:00",
+  "baseline": "7692303dcc785c8af7f4438ffd88e91a7e9b0be5",
+  "board_day": "2026-09-09",
+  "baseline_module_sha256": "c59beafa36787def0602882d8e691e5d1bdff3be5dc397dbe470ad1939f7c927",
+  "candidate_module_sha256": "bd261e4b1717e9c37fc827f867b64ef6f7a6ebb483b1678c9652420a817084c6",
+  "legacy_fields_compared": [
+    "alerts",
+    "asof",
+    "board_date",
+    "board_read",
+    "board_tz",
+    "coverage",
+    "coverage_state",
+    "cross_asset",
+    "events",
+    "quarantined",
+    "regime",
+    "risk_backdrop",
+    "storylines",
+    "summary",
+    "volume",
+    "weights",
+    "window_days"
+  ],
+  "ignored_fields": [
+    "generated_utc",
+    "explorer"
+  ],
+  "differences": [],
+  "baseline_payload_sha256": "34d2c2b1ff487ab4326c5187545669e8a7e5a86f20814dbabea080f7009832d6",
+  "candidate_payload_sha256": "34d2c2b1ff487ab4326c5187545669e8a7e5a86f20814dbabea080f7009832d6",
+  "baseline_alerts": 60,
+  "candidate_alerts": 60,
+  "same_input_context": true,
+  "production_acceptance": false
+}
