@@ -1564,3 +1564,212 @@ def test_no_new_panel_reads_a_rank_score_size_or_gate_field() -> None:
         assert banned not in ss_py, f"new authority field {banned!r} in the projection"
         assert banned not in j2_src, f"new authority field {banned!r} in the template"
 
+
+
+# ---------------------------------------------------------------------------
+# B-F06-3 round 3 — an empty leg code is not a synonym for "this check proved
+# out". These three pin the guard that keeps the affirmative empty-code copy
+# off the legs the engine passed vacuously or carried through a failure shell.
+# ---------------------------------------------------------------------------
+
+_SCREAMING_SNAKE = re.compile(r"\b[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+\b")
+
+_CARRIED_OVER_EN = "Carried over from the owner read; not re-verified in this read."
+_CARRIED_OVER_ZH = "沿用所有者读数中的识别码，本次读数未重新核对。"
+_R9_UNAVAILABLE_EN = "No workspace listing was available to compare this cycle."
+_R9_UNAVAILABLE_ZH = "本周期没有可比对的工作区上市记录。"
+
+
+def _owner_receipts_article(html: str) -> _HtmlNode:
+    """The always-visible `Owner & model receipts` panel, never the dialog."""
+    section = _card_region(html)
+    tree = _parse_class_tree("<section " + section[section.find("id="):])
+    for node in tree.find_all_class("ss-cell"):
+        head = node.find_class("ss-axis")
+        if head is not None and _heading_label(head) in (
+            "Owner & model receipts", "所有者与模型凭证",
+        ):
+            return node
+    raise AssertionError("the Owner & model receipts panel did not render")
+
+
+def _compiler_failure_shell(*, owner_read_completed: bool = True) -> dict:
+    """The producer's own containment shell, compiled by the real engine."""
+    from jsonschema import Draft202012Validator
+
+    from engine import security_state as ss_engine
+
+    schema = json.loads(
+        (REPO / "contracts" / "market_os" / "security_state.v1.schema.json")
+        .read_text(encoding="utf-8")
+    )
+    Draft202012Validator.check_schema(schema)
+    subject = ss_engine.SecurityStateSubject(
+        security_id="SEC:US-XNAS-MSFT", issuer_id="ISS:US-XNAS-MSFT",
+        listing_key="US-XNAS-MSFT", ticker_display="MSFT", issuer_cik="0000789019",
+        owner_evidence=(
+            ("decision_date", "2026-09-04"),
+            ("alias_reader", "VendorAliasTable.resolve(store)"),
+            ("issuer_reader", "IssuerMaster.issuer_of_security"),
+            ("cik_reader", "IssuerMaster.cik_of_issuer"),
+        ),
+    )
+    return ss_engine.compile_security_state_failure(
+        subject=subject, validator=Draft202012Validator(schema),
+        now="2026-08-23T12:00:00Z", prior_state=None,
+        owner_read_completed=owner_read_completed,
+    )
+
+
+def test_compiler_failure_shell_r8_never_claims_a_check_this_read_did_not_run() -> None:
+    """The default failure path emits one R8 leg with result "pass" and a null
+    code, and says in its own words that it does NOT claim a full identity
+    chain. The affirmative empty-code house sentence must never print there —
+    it would be a bilingual verification claim on the page whose own banner
+    says the read could not be built.
+    """
+    from scripts.build_ticker_pages import _SS_LEG_DESC
+
+    state = _compiler_failure_shell(owner_read_completed=True)
+    assert state["identity_proof"]["state"] == "BLOCKED_IDENTITY_BRIDGE"
+    raw_legs = state["identity_proof"]["legs"]
+    assert [lg["check"] for lg in raw_legs] == ["R8"]
+    assert raw_legs[0]["result"] == "pass" and raw_legs[0]["code"] is None
+
+    view = build_security_state({"security_state": state})
+    assert view is not None
+    leg = view["identity"]["legs"][0]
+    affirmative = _SS_LEG_DESC[("R8", "")]
+    assert leg["desc_en"] != affirmative["en"]
+    assert leg["desc_zh"] != affirmative["zh"]
+    assert leg["desc_en"] == _CARRIED_OVER_EN
+    assert leg["desc_zh"] == _CARRIED_OVER_ZH
+    assert leg["result_en"] not in ("passed",) and leg["result_zh"] not in ("通过",)
+    assert leg["result_en"] == "carried over" and leg["result_zh"] == "沿用"
+    assert leg["ok"] is False
+    # The engine's own verdict is reported, never edited.
+    assert leg["result"] == "pass"
+
+    en_html = _render_section(view, lang="en")
+    zh_html = _render_section(view, lang="zh")
+    assert 'data-ss-result="pass"' in en_html
+    en_glance = " ".join(_owner_receipts_article(en_html).get_text().split())
+    zh_glance = " ".join(_owner_receipts_article(zh_html).get_text().split())
+    assert affirmative["en"] not in en_glance
+    assert affirmative["zh"] not in zh_glance
+    assert _CARRIED_OVER_EN in en_glance
+    assert _CARRIED_OVER_ZH in zh_glance
+    assert "passed" not in en_glance
+    assert "通过" not in zh_glance
+    # The engine's hedged machine sentence never reaches the glance surface.
+    assert "without claiming" not in en_glance
+
+
+def test_blocked_identity_bridge_hedges_every_empty_code_leg() -> None:
+    """The guard is on the receipt's identity-proof state, not on one check id."""
+    from scripts.build_ticker_pages import _SS_LEG_DESC
+
+    contract = _contract(identity_proof={
+        "state": "BLOCKED_IDENTITY_BRIDGE", "method": "owner_backed_chain.v1",
+        "legs": [
+            {"check": check, "description": "engine machine sentence",
+             "artifact": "a", "reader": "b",
+             "values_read": [{"field": "row_present", "value": True}],
+             "result": "pass", "code": None}
+            for check in ("R1", "R5", "R8")
+        ],
+        "equalities": [], "refusals": ["COMPILER_FAILURE"], "disclosures": [],
+    })
+    view = build_security_state({"security_state": contract})
+    assert view is not None
+    for leg in view["identity"]["legs"]:
+        assert leg["desc_en"] == _CARRIED_OVER_EN, leg["check"]
+        assert leg["desc_zh"] == _CARRIED_OVER_ZH, leg["check"]
+        assert leg["desc_en"] != _SS_LEG_DESC[(leg["check"], "")]["en"]
+        assert leg["result_en"] == "carried over" and leg["result_zh"] == "沿用"
+
+
+def test_r9_vacuous_pass_reports_that_no_workspace_listing_was_compared() -> None:
+    """`corroboration_state: UNAVAILABLE` is a pass with nothing compared. The
+    panel says so instead of asserting an agreement that was never checked.
+    """
+    from scripts.build_ticker_pages import _SS_LEG_DESC
+
+    def _r9(corroboration: str | None) -> dict:
+        values_read = ([] if corroboration is None
+                       else [{"field": "corroboration_state", "value": corroboration}])
+        return _contract(identity_proof={
+            "state": "PROVEN", "method": "owner_backed_chain.v1",
+            "legs": [{
+                "check": "R9",
+                "description": "corroboration: workspace primary alias agrees with the "
+                               "owner subject's current alias and listing venue",
+                "artifact": "event_workspace.v1 issuer.listings[]",
+                "reader": "engine.neuralweb.company_intelligence_reader."
+                          "load_workspace_with_disposition",
+                "values_read": values_read, "result": "pass", "code": None,
+            }],
+            "equalities": [], "refusals": [], "disclosures": [],
+        })
+
+    affirmative = _SS_LEG_DESC[("R9", "")]
+
+    view = build_security_state({"security_state": _r9("UNAVAILABLE")})
+    assert view is not None
+    leg = view["identity"]["legs"][0]
+    assert leg["desc_en"] == _R9_UNAVAILABLE_EN
+    assert leg["desc_zh"] == _R9_UNAVAILABLE_ZH
+    assert leg["desc_en"] != affirmative["en"]
+    assert leg["result_en"] == "not checked" and leg["result_zh"] == "未核对"
+    assert leg["result_en"] != "passed" and leg["result_zh"] != "通过"
+    assert leg["result"] == "pass"
+    en_glance = " ".join(_owner_receipts_article(_render_section(view, "en")).get_text().split())
+    zh_glance = " ".join(_owner_receipts_article(_render_section(view, "zh")).get_text().split())
+    assert _R9_UNAVAILABLE_EN in en_glance and affirmative["en"] not in en_glance
+    assert _R9_UNAVAILABLE_ZH in zh_glance and affirmative["zh"] not in zh_glance
+    assert "passed" not in en_glance and "通过" not in zh_glance
+
+    # A receipt that records no corroboration state at all cannot tell a real
+    # comparison from a vacuous one, so the sentence is presence-hedged.
+    silent = build_security_state({"security_state": _r9(None)})
+    assert silent is not None
+    silent_leg = silent["identity"]["legs"][0]
+    assert silent_leg["desc_en"].startswith("The workspace primary listing, when present,")
+    assert silent_leg["desc_zh"].startswith("若有工作区上市记录")
+    assert silent_leg["desc_en"] != silent_leg["desc_zh"]
+
+    # A real comparison still earns the affirmative sentence and the real label.
+    available = build_security_state({"security_state": _r9("AVAILABLE")})
+    assert available is not None
+    available_leg = available["identity"]["legs"][0]
+    assert available_leg["desc_en"] == affirmative["en"]
+    assert available_leg["desc_zh"] == affirmative["zh"]
+    assert available_leg["result_en"] == "passed"
+
+
+def test_no_machine_code_token_reaches_the_owner_receipts_glance_panel() -> None:
+    """The glance tier shows house copy only; the raw refusal code chip stays
+    inside `dlg-ss-evidence`.
+    """
+    codes = ("IDENTITY_UNRESOLVED", "IDENTITY_BRIDGE_DISAGREEMENT",
+             "LISTING_KEY_INCOHERENT", "SUBJECT_NATIVE_PARITY_FAILED")
+    contract = _contract(identity_proof={
+        "state": "BLOCKED_IDENTITY_BRIDGE", "method": "owner_backed_chain.v1",
+        "legs": [{
+            "check": f"R{i}", "description": "engine machine sentence",
+            "artifact": "data/reference/security_master.parquet",
+            "reader": "scripts/build_stock_library.py::_read_security_state_identity_rows",
+            "values_read": [], "result": "fail", "code": code,
+        } for i, code in enumerate(codes, start=5)],
+        "equalities": [], "refusals": list(codes), "disclosures": [],
+    })
+    view = build_security_state({"security_state": contract})
+    assert view is not None
+    for lang in ("en", "zh"):
+        html = _render_section(view, lang=lang)
+        glance = " ".join(_owner_receipts_article(html).get_text().split())
+        assert not _SCREAMING_SNAKE.findall(glance), (lang, glance)
+        for code in codes:
+            assert code not in glance, (lang, code)
+            # …and it is still on the page, in the receipt dialog.
+            assert code in html, (lang, code)

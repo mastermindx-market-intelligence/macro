@@ -3592,7 +3592,9 @@ _SS_DISCLOSURES: dict[str, dict[str, str]] = {
 # engine emits English machine prose; glance (and ZH) must print a registered
 # bilingual sentence instead. Keyed on (check, code) rather than the literal
 # sentence, because the same `check` id ("R8") carries several descriptions
-# depending on `code`. Empty code is the proven-path default for that check.
+# depending on `code`. Empty code is the proven-path default for that check —
+# and it is ONLY printed on a real proven-path pass; see the guard constants
+# under this table and the `desc_house` branch in `build_security_state`.
 _SS_LEG_DESC: dict[tuple[str, str], dict[str, str]] = {
     ("R1", ""): {
         "en": "This security record exists and has not been replaced.",
@@ -3636,6 +3638,42 @@ _SS_LEG_DESC: dict[tuple[str, str], dict[str, str]] = {
         "zh": "本周期所有者身份批处理不可用；本证券主体为该股票代码的冻结准入映射，"
         "并非实时读取的所有者身份数据。",
     },
+}
+
+# ── B-F06-3 round-3 R1/R2: an empty leg code is not a synonym for "proved" ──
+# `identity_proof.state` is one of PROVEN / PARTIAL / BLOCKED_IDENTITY_BRIDGE
+# (engine/security_state.py). PROVEN is the only state in which the empty-code
+# sentences above are a true statement about THIS read. The producer's own
+# containment shell, `compile_security_state_failure`, also emits an R8 leg
+# with result "pass" and a null code, and says in its own words that it does
+# not claim a full identity-chain pass — printing the affirmative sentence
+# there would turn an explicit non-claim into a claim, on the very page whose
+# banner says the read could not be built.
+_SS_IDENTITY_PROVEN = "PROVEN"
+
+_SS_LEG_CARRIED_OVER: dict[str, str] = {
+    "en": "Carried over from the owner read; not re-verified in this read.",
+    "zh": "沿用所有者读数中的识别码，本次读数未重新核对。",
+}
+_SS_RESULT_CARRIED_OVER: dict[str, str] = {"en": "carried over", "zh": "沿用"}
+
+# R9 is corroboration only, and the engine passes it VACUOUSLY when there is
+# no workspace primary listing to compare against (`corroboration_state`
+# UNAVAILABLE). The receipt records that state in `values_read`, so the page
+# reports what happened instead of asserting an agreement nothing checked.
+_SS_LEG_R9_UNAVAILABLE: dict[str, str] = {
+    "en": "No workspace listing was available to compare this cycle.",
+    "zh": "本周期没有可比对的工作区上市记录。",
+}
+_SS_RESULT_NOT_CHECKED: dict[str, str] = {"en": "not checked", "zh": "未核对"}
+
+# A receipt that does not record `corroboration_state` at all leaves the page
+# unable to tell a real comparison from a vacuous one, so it may only say what
+# holds when a listing IS present — the same hedge ("R7", "") already carries.
+_SS_LEG_R9_PRESENCE: dict[str, str] = {
+    "en": "The workspace primary listing, when present, agrees with this "
+          "security's current ticker and venue.",
+    "zh": "若有工作区上市记录，其与该证券当前代码及交易场所一致。",
 }
 
 
@@ -3866,6 +3904,24 @@ def _ss_field_rows(seq: Any) -> list[dict[str, str]]:
         elif isinstance(item, str) and item.strip():
             rows.append({"k": _clean_str(item), "v": ""})
     return rows
+
+
+def _ss_read_value(seq: Any, field: str) -> str | None:
+    """One `values_read` entry's value, exactly as the receipt carries it.
+
+    Returns `None` when the receipt does not record that field at all. "Not
+    recorded" and "recorded as empty" are different facts, and the page has to
+    tell them apart before it decides whether a check actually ran.
+    """
+    for item in (seq if isinstance(seq, (list, tuple)) else []):
+        if not isinstance(item, dict):
+            continue
+        if _clean_str(item.get("field") or item.get("name") or item.get("k") or "") != field:
+            continue
+        if ("value" not in item) and ("v" not in item):
+            return ""
+        return _ss_value(item.get("value", item.get("v")))
+    return None
 
 
 def _ss_split_lead(en: str, zh: str) -> tuple[dict[str, str], dict[str, str] | None]:
@@ -4314,6 +4370,30 @@ def build_security_state(blob: dict | None) -> dict | None:
             # omits that pair so ZH never prints English machine prose.
             desc_house = _SS_LEG_DESC.get((leg_check, leg_code))
             desc_en, desc_zh = (desc_house["en"], desc_house["zh"]) if desc_house else (desc_raw, desc_raw)
+            res_en, res_zh, res_tone = res["en"], res["zh"], res["tone"]
+            # The empty-code sentences are verification CLAIMS, so they only
+            # print where a verification really happened in this read. A leg
+            # that passed vacuously, or a leg carried by a failure shell, gets
+            # a non-claim and a result label that does not read as a pass. The
+            # engine's own verdict is never edited — it stays in `result`, in
+            # the receipt dialog's quoted fields, and in the page's data
+            # attribute.
+            hedged = False
+            if desc_house and not leg_code:
+                corroboration = (_ss_read_value(lg.get("values_read"), "corroboration_state")
+                                 if leg_check == "R9" else None)
+                if leg_check == "R9" and (corroboration or "").strip().upper() == "UNAVAILABLE":
+                    desc_en, desc_zh = _SS_LEG_R9_UNAVAILABLE["en"], _SS_LEG_R9_UNAVAILABLE["zh"]
+                    res_en, res_zh = _SS_RESULT_NOT_CHECKED["en"], _SS_RESULT_NOT_CHECKED["zh"]
+                    hedged = True
+                elif id_code != _SS_IDENTITY_PROVEN:
+                    desc_en, desc_zh = _SS_LEG_CARRIED_OVER["en"], _SS_LEG_CARRIED_OVER["zh"]
+                    res_en, res_zh = _SS_RESULT_CARRIED_OVER["en"], _SS_RESULT_CARRIED_OVER["zh"]
+                    hedged = True
+                elif leg_check == "R9" and corroboration is None:
+                    desc_en, desc_zh = _SS_LEG_R9_PRESENCE["en"], _SS_LEG_R9_PRESENCE["zh"]
+            if hedged:
+                res_tone = "off"
             id_legs.append({
                 "check": leg_check,
                 "desc_en": desc_en,
@@ -4322,9 +4402,9 @@ def build_security_state(blob: dict | None) -> dict | None:
                 "reader": _clean_str(lg.get("reader") or ""),
                 "reads": _ss_field_rows(lg.get("values_read")),
                 "result": res_code.lower(),
-                "result_en": res["en"], "result_zh": res["zh"],
-                "tone": res["tone"],
-                "ok": res_code == "PASS",
+                "result_en": res_en, "result_zh": res_zh,
+                "tone": res_tone,
+                "ok": res_code == "PASS" and not hedged,
                 "code": leg_code,
             })
 

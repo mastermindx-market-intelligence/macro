@@ -1119,11 +1119,11 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
     {% for a in ss.axes %}
     <article class="ss-cell ss-t-{{ a.tone }} ss-r-{{ a.rail }}{{ ' is-ok' if a.ok }}">
       <h3 class="ss-axis ss-b1b-h"><span>{{ t(a.title_en, a.title_zh) }}</span><span class="ss-chip">{{ t(a.cov_en, a.cov_zh) }}</span></h3>
-      {# State sentence prints once on the surface: Overview keeps it; the
-         grid card reprints the headline only when it would say something
-         different (design system §9.5). #}
-      {% set skip_dup_state = a.key == 'state' and ss.overview.state_summary and a.headline.en == ss.overview.state_summary.en and a.headline.zh == ss.overview.state_summary.zh %}
-      {% if a.headline and not skip_dup_state %}<p class="ss-head">{{ t(a.headline.en, a.headline.zh) }}</p>{% endif %}
+      {# State sentence prints once on the surface: Overview carries it, so
+         the state card never reprints it (design system §9.5). Overview reads
+         the same headline object this loop reads, so there is no case in
+         which the two would differ. #}
+      {% if a.headline and a.key != 'state' %}<p class="ss-head">{{ t(a.headline.en, a.headline.zh) }}</p>{% endif %}
       {% if a.clause %}<p class="ss-body">{{ t(a.clause.en, a.clause.zh) }}</p>{% endif %}
       {% if a.why %}<p class="{{ 'ss-why' if a.clause else 'ss-body' }}">{{ t(a.why.en, a.why.zh) }}</p>{% endif %}
 
@@ -1185,14 +1185,16 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
     <h3 class="ss-axis ss-b1b-h"><span>{{ t('Owner & model receipts', '所有者与模型凭证') }}</span><span class="ss-chip">{{ t(ss.identity.en, ss.identity.zh) }}</span></h3>
     <p class="ss-why">{{ t('Who read this, when, and the exact fingerprint of what was read.', '谁读取了这些数据、何时读取，以及所读内容的确切指纹。') }}</p>
     {% for lg in ss.identity.legs %}
-    <div class="ss-chk ss-t-{{ lg.tone }}">
+    {# The engine's own verdict for this leg is never edited: it rides the
+       data attribute even where the visible label is the house's hedge. #}
+    <div class="ss-chk ss-t-{{ lg.tone }}" data-ss-result="{{ lg.result }}">
       <div class="ss-chk-h">
         <span class="r">{{ lg.check }}</span>
         <span class="v">{{ t(lg.result_en, lg.result_zh) }}</span>
-        {% if lg.code %}<span class="c ss-id">{{ lg.code }}</span>{% endif %}
       </div>
-      {# Glance: bilingual house copy only. Artifact, reader, and field slugs
-         stay in dlg-ss-evidence — they are machine identifiers, not a ZH sentence. #}
+      {# Glance: bilingual house copy only. The refusal code chip, artifact,
+         reader, and field slugs stay in dlg-ss-evidence — they are machine
+         identifiers, not a ZH sentence. #}
       {% if lg.desc_en and lg.desc_zh and lg.desc_en != lg.desc_zh %}<p class="ss-chk-d">{{ t(lg.desc_en, lg.desc_zh) }}</p>{% endif %}
     </div>
     {% endfor %}
