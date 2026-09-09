@@ -13740,7 +13740,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install workspace-producer test dependencies
-        run: pip install pytest pyyaml jsonschema==4.26.0
+        run: pip install pytest pyyaml jsonschema==4.26.0 jinja2
       - name: Market OS macro workspaces — contract, composer, publisher, consumer
         run: >-
           python -m pytest
