@@ -53,7 +53,14 @@ can move again; nothing in this packet anticipates that.
   Shipped in #522, merged as `68b0d00a`.
 - `MO-DELTA-042` — the event object schema resolves to affected positions. Same merge. The
   object carries direction, mechanism and timeframe from the source or prints that the
-  source did not state them.
+  source did not state them. One element of F08 §9 did not ship with it: the object has no
+  `invalidation` field, and only the earnings calendar keys by ticker, so the two other
+  published calendars stay unjoinable and are disclosed as such on the surface. That
+  unshipped `invalidation` element used to be carried by `MO-PAID-028`'s next bounded
+  child, worded as one child shared between the pair. `MO-PAID-028`'s own sentence is now
+  met, so its child empties and this row takes the element over: `MO-DELTA-042` carries the
+  one bounded child that would add `invalidation` to the shipped schema. Exactly one row
+  owns it, and the row that owns it is the one whose column still names the gap.
 - `MO-PAID-036` — a person's actual holdings produce a concentration, factor and liquidity
   readout. Shipped in #524, merged as `efcd98aa`. The factor half is met by industry weight
   and company-size weight.
@@ -97,7 +104,10 @@ can move again; nothing in this packet anticipates that.
 `F00C_TERMINAL_WAVE_RECONCILIATION_MANIFEST_2026-09-09.json`, beside this file, carries the
 machine-readable version: each of the twelve rows with the pull request it names, that pull
 request's merge commit, the producer paths that were confirmed present on the Terminal
-default branch at commit `db69d072`, and the residual for each row that stayed open. The
+default branch at commit `db69d072`, the next bounded child each row carries after this
+packet, and the residual for each row that has one. It also accounts for all ten pull
+requests: five move a row here, and the other five — #513, #515, #517, #526 and #529 — are
+listed with the reason they move none, so no named pull request is left unexplained. The
 suite `tests/test_f00c_terminal_reconciliation.py` asserts the manifest and the ledger agree
 and that neither invents a state word. The suite reads the manifest, never the other
 repository, so it cannot pass or fail on the state of a checkout this repository does not
