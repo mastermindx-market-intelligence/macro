@@ -793,12 +793,24 @@
 <div class="mq-scrim" id="mq-scrim" hidden></div>
 {%- endmacro -%}
 
+{#- ── curve-shape hero slot (A-F01-W4-1) ──────────────────────────────────
+    Empty for every view that carries no `curve_hero`, and the whitespace is
+    controlled so a view without one renders byte-for-byte what it rendered
+    before this slot existed. The include sits below the suite bar and below
+    the <h1> that context_header emits, per the packet spec's §2.5 placement. -#}
+{%- macro hero_slot(view) -%}
+{%- if view.get('curve_hero') %}
+{% include "_curve_panel.html.j2" %}
+{%- endif %}
+{%- endmacro -%}
+
 {# ─────────────────────────── assembled page body ───────────────────────── #}
 {%- macro body(view) -%}
 {{ suitenav.suite_bar(suite_nav) }}
 {%- if view.decision_first %}{{ decision_first_body(view) }}{% else %}
 <main class="mq-shell" id="mq-shell">
   {{ context_header(view) }}
+  {{- hero_slot(view) }}
   {{ implications_ribbon(view) }}
   {{ headline_band(view) }}
 
@@ -922,6 +934,7 @@
       </dl>
     </div>
   </header>
+  {{- hero_slot(view) }}
 
   <section class="mq-refusal" aria-labelledby="mq-refusal-title">
     <span class="mq-refusal-mark" aria-hidden="true">⌁</span>

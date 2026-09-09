@@ -9,6 +9,11 @@
   scales with the viewBox and drops below 10 CSS px at a 390 viewport.
   HTML <span> inside SVG <text> is still forbidden (foreign-content
   breakout); overlays live outside the <svg>.
+
+  Where this renders: the hero slot inside _macro_suite_shell.html.j2's body
+  macro, immediately below the page's <h1>/identity block and below the
+  in-suite navigation bar, so the document outline stays h1 then h2. The slot
+  is empty for every view that carries no curve_hero.
 #}
 {% macro t(en, zh='') -%}
 <span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
@@ -61,7 +66,10 @@
   .mq-curve-xlabel-short { display: none; }
   .mq-curve-ylabels li {
     left: 0;
-    width: 7.5%;
+    /* Exactly pad_l/width from lib.macro_suite_view._chart_payload (64/640).
+       There is deliberately no media-query override of this width: a wider box
+       would overhang the plot and the lowest tick would sit under the data. */
+    width: 10%;
     text-align: right;
     transform: translateY(-50%);
     box-sizing: border-box;
@@ -103,9 +111,11 @@
     .mq-curve-spread dd { font-size: 18px; }
     .mq-curve-xlabels li,
     .mq-curve-ylabels li { font-size: 10px; }
-    .mq-curve-ylabels li { width: 12%; }
     .mq-curve-xlabel-long { display: none; }
     .mq-curve-xlabel-short { display: inline; }
+    /* Ten tenor labels cannot clear each other at 390. The five the builder
+       does not mark `mobile` keep their <li> and are hidden here only. */
+    .mq-curve-xlabels li.is-mobile-hidden { visibility: hidden; }
   }
 </style>
 <section class="mq-curve-hero{{ ' mq-curve-null-state' if not curve.ok else '' }}" id="mq-curve-hero">
@@ -146,7 +156,7 @@
       </ol>
       <ol class="mq-curve-xlabels">
         {% for tick in curve.chart.x_ticks %}
-        <li class="{{ 'is-last' if tick.anchor == 'end' else '' }}" style="left: {{ tick.x_pct }}%"><span class="mq-curve-xlabel-long">{{ t(tick.label.en, tick.label.zh) }}</span><span class="mq-curve-xlabel-short">{{ t(tick.short.en, tick.short.zh) }}</span></li>
+        <li class="{{ 'is-last' if tick.anchor == 'end' else '' }}{{ '' if tick.mobile else ' is-mobile-hidden' }}" style="left: {{ tick.x_pct }}%"><span class="mq-curve-xlabel-long">{{ t(tick.label.en, tick.label.zh) }}</span><span class="mq-curve-xlabel-short">{{ t(tick.short.en, tick.short.zh) }}</span></li>
         {% endfor %}
       </ol>
     </div>

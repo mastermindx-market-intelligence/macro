@@ -990,8 +990,8 @@ _CURVE_TENOR_LABELS: dict[str, dict[str, str]] = {
     "30y": _pair("30-year", "30年期"),
 }
 _CURVE_TENOR_SHORT = {
-    "3m": _pair("3m", "3月"),
-    "6m": _pair("6m", "6月"),
+    "3m": _pair("3m", "3个月"),
+    "6m": _pair("6m", "6个月"),
     "1y": _pair("1y", "1年"),
     "2y": _pair("2y", "2年"),
     "3y": _pair("3y", "3年"),
@@ -1001,6 +1001,11 @@ _CURVE_TENOR_SHORT = {
     "20y": _pair("20y", "20年"),
     "30y": _pair("30y", "30年"),
 }
+# At a 390 CSS px viewport ten overlay labels cannot clear each other: the ZH
+# short forms are ~26 px wide against a ~33 px tick pitch. These five stay
+# visible there; the other five keep their <li> in the <ol> and are hidden by
+# CSS alone, so the label list is never rewritten between viewports.
+_CURVE_MOBILE_TENORS: frozenset[str] = frozenset({"3m", "1y", "5y", "10y", "30y"})
 _CURVE_MIN_USABLE = 6
 _CURVE_PRIOR_MONTH_DAYS = 30
 _CURVE_FLAT_BAND = 0.25  # |10y − 3m| in percentage points
@@ -1013,7 +1018,7 @@ _SHAPE_NORMAL_LONG_DIP = _pair(
     "曲线呈正常形态 — 期限越长，收益率越高，仅在最长端有小幅回落。",
 )
 _SHAPE_FLAT = _pair(
-    "The curve is flat between three months and ten years.",
+    "The curve is close to flat between three months and ten years.",
     "三个月至十年期之间的曲线接近平坦。",
 )
 _SHAPE_INVERTED_FRONT = _pair(
@@ -1033,8 +1038,8 @@ _CURVE_NULL_PANEL = _pair(
     "曲线面板需要当晚的美债数据，但数据未能到达。",
 )
 _CURVE_NULL_FIRST_NIGHTLY = _pair(
-    "The curve history is still being built; the comparison lines arrive after tonight's run.",
-    "曲线历史仍在建立中，对比线将在今晚运行后出现。",
+    "The curve history is still being built; the comparison lines arrive after tonight's update.",
+    "曲线历史仍在建立中，对比线将在今晚的数据更新后出现。",
 )
 _CURVE_NULL_TENOR = _pair(
     "No reading for this maturity in tonight's data.",
@@ -1219,7 +1224,11 @@ def _chart_payload(tenors: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     The last x-tick is end-anchored so ``30-year`` cannot clip the viewBox.
     """
     width, height = 640, 200
-    pad_l, pad_r, pad_t, pad_b = 48, 16, 14, 28
+    # pad_l/width is also the CSS width of `.mq-curve-ylabels li` (10%), at
+    # every viewport and with no media override, so a y-tick label box ends
+    # exactly at the plot's left edge and no series can run through a glyph.
+    # 64/640 leaves 10 CSS px for a "5.28%"-shaped label at a 390 viewport.
+    pad_l, pad_r, pad_t, pad_b = 64, 16, 14, 28
     n = max(1, len(tenors) - 1)
     inner_w = width - pad_l - pad_r
     inner_h = height - pad_t - pad_b
@@ -1273,6 +1282,7 @@ def _chart_payload(tenors: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
             "anchor": "end" if i == last_i else "middle",
             "label": dict(row.get("label") or _CURVE_TENOR_LABELS[tenor]),
             "short": dict(_CURVE_TENOR_SHORT[tenor]),
+            "mobile": tenor in _CURVE_MOBILE_TENORS,
         })
     y_ticks = []
     # Stay inside the plot, not on the baseline, so the lowest label cannot
@@ -1307,6 +1317,36 @@ def _chart_payload(tenors: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     }
 
 
+def _curve_levels_caption(days: Sequence[date]) -> dict[str, str] | None:
+    """Plain bilingual caption for the days the PLOTTED levels actually carry.
+
+    Derived from the plotted rows, never from ``generation.calculation_as_of``:
+    a page-wide stamp over per-tenor last-available levels is exactly how a
+    stale tenor inherits a fresher one's date. When the plotted tenors span
+    more than one day the caption names the range in both languages.
+    """
+    if not days:
+        return None
+    first, last = min(days), max(days)
+    a = _plain_day_pair(first)
+    b = _plain_day_pair(last)
+    if a is None or b is None:
+        return None
+    if first == last:
+        return _pair(f"Levels as of {a['en']}", f"各期限水平截至 {a['zh']}")
+    if first.year == last.year and first.month == last.month:
+        en = f"{first.day}–{last.day} {_MONTHS_EN[first.month - 1]} {first.year}"
+        zh = f"{first.year}年{first.month}月{first.day}日至{last.day}日"
+    elif first.year == last.year:
+        en = (f"{first.day} {_MONTHS_EN[first.month - 1]} – "
+              f"{last.day} {_MONTHS_EN[last.month - 1]} {first.year}")
+        zh = f"{first.year}年{first.month}月{first.day}日至{last.month}月{last.day}日"
+    else:
+        en = f"{a['en']} – {b['en']}"
+        zh = f"{a['zh']}至{b['zh']}"
+    return _pair(f"Levels as of {en}", f"各期限水平截至 {zh}")
+
+
 def _curve_hero(snapshot: Mapping[str, Any]) -> dict[str, Any]:
     """Today vs prior close vs prior month for the ten nominal CMT tenors.
 
@@ -1315,10 +1355,11 @@ def _curve_hero(snapshot: Mapping[str, Any]) -> dict[str, Any]:
     today=None rather than being dropped.
     """
     index = _series_points_index(snapshot)
-    generation = snapshot.get("generation") or {}
-    # Freshness is the producer's calculation stamp, never a max() of mixed
-    # tenor observation dates (a stale series must not inherit a fresher one).
-    stamped = _as_date(generation.get("calculation_as_of"))
+    # The caption is per-tenor, taken from the rows this hero actually plots.
+    # generation.calculation_as_of is a page-wide stamp; printing it over
+    # per-tenor last-available levels is how a stale series inherits a fresher
+    # one's date. A tenor with no row is not plotted and never dated.
+    plotted_days: list[date] = []
 
     tenors: list[dict[str, Any]] = []
     missing: list[str] = []
@@ -1330,8 +1371,11 @@ def _curve_hero(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         prior_month = _prior_month_value(rows, as_of_tenor)
         if today is None:
             missing.append(tenor)
+        elif as_of_tenor is not None:
+            plotted_days.append(as_of_tenor)
         tenors.append({
             "tenor": tenor,
+            "as_of_tenor": as_of_tenor.isoformat() if as_of_tenor is not None else None,
             "label": dict(_CURVE_TENOR_LABELS[tenor]),
             "today": today,
             "prior_close": prior_close,
@@ -1342,12 +1386,8 @@ def _curve_hero(snapshot: Mapping[str, Any]) -> dict[str, Any]:
 
     usable = sum(1 for row in tenors if row["today"] is not None)
     ok = usable >= _CURVE_MIN_USABLE
-    as_of = stamped.isoformat() if stamped is not None else None
-    as_of_caption = None
-    if stamped is not None:
-        day = _plain_day_pair(stamped)
-        if day is not None:
-            as_of_caption = _pair(f"As of {day['en']}", f"截至 {day['zh']}")
+    as_of = min(plotted_days).isoformat() if plotted_days else None
+    as_of_caption = _curve_levels_caption(plotted_days) if ok else None
     availability_state = str(
         (snapshot.get("availability") or {}).get("state") or ""
     ).upper()
@@ -1390,12 +1430,12 @@ def _curve_hero(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         "legend_close": _pair("Prior close", "上一交易日收盘"),
         "legend_month": _pair("A month ago", "一个月前"),
         "legend_close_null": _pair(
-            "Prior close is not drawn — that comparison needs a second day of history.",
-            "未画出上一交易日收盘线 — 该对比需要第二天的历史。",
+            "Prior close is not drawn: that comparison needs two days of history.",
+            "未画出上一交易日收盘线：该对比需要两个交易日的数据。",
         ),
         "legend_month_null": _pair(
-            "A month ago is not drawn — that comparison needs at least a month of history.",
-            "未画出一个月前线 — 该对比需要至少一个月的历史。",
+            "A month ago is not drawn: that comparison needs a month of history.",
+            "未画出“一个月前”对比线：该对比需要一个月的历史数据。",
         ),
         "change_close": dict(_CURVE_CHANGE_CLOSE),
         "change_month": dict(_CURVE_CHANGE_MONTH),

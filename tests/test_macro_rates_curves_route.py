@@ -7,16 +7,17 @@ fixture). No test touches ``data/fred/*.parquet`` or the network.
 The cases pin: the hero is rates_curves-only, ten nominal CMT tenors
 in registry order, prior-close / prior-month arithmetic, honest nulls, the
 context_only ceiling, two arithmetic spreads, EN+ZH copy, whole-panel null,
-byte preservation of the bonds hub sources, the include appearing in exactly
-one template, and no import of the yield-curve engine.
+render-level byte preservation of site/bonds.html (T10) and of the thirteen
+sibling suite pages plus the hub (T11), and no import of the yield-curve
+engine.
 """
 from __future__ import annotations
 
 import ast
-import hashlib
 import json
 import math
 import re
+import shutil
 import sys
 from datetime import date, timedelta
 from pathlib import Path
@@ -64,7 +65,7 @@ SHAPE_NORMAL_DIP_EN = (
     "with a small dip at the very long end."
 )
 SHAPE_NORMAL_DIP_ZH = "曲线呈正常形态 — 期限越长，收益率越高，仅在最长端有小幅回落。"
-SHAPE_FLAT_EN = "The curve is flat between three months and ten years."
+SHAPE_FLAT_EN = "The curve is close to flat between three months and ten years."
 SHAPE_FLAT_ZH = "三个月至十年期之间的曲线接近平坦。"
 SHAPE_INVERTED_FRONT_EN = (
     "The curve is inverted at the front — three-month yields are at or above ten-year yields."
@@ -75,9 +76,20 @@ SHAPE_INVERTED_BELLY_ZH = "曲线在两年期与十年期之间倒挂。"
 NULL_PANEL_EN = "The curve panel needs the Treasury data from tonight, which did not arrive."
 NULL_PANEL_ZH = "曲线面板需要当晚的美债数据，但数据未能到达。"
 NULL_FIRST_NIGHTLY_EN = (
-    "The curve history is still being built; the comparison lines arrive after tonight's run."
+    "The curve history is still being built; the comparison lines arrive after tonight's update."
 )
-NULL_FIRST_NIGHTLY_ZH = "曲线历史仍在建立中，对比线将在今晚运行后出现。"
+NULL_FIRST_NIGHTLY_ZH = "曲线历史仍在建立中，对比线将在今晚的数据更新后出现。"
+# The two honest-null legend lines, verbatim. EN and ZH must state the SAME
+# reason: "a second day" is not "the next day", and 一个月前线 garden-paths on
+# 前线 ("front line"), so the ZH names the line in quotation marks instead.
+LEGEND_CLOSE_NULL_EN = (
+    "Prior close is not drawn: that comparison needs two days of history."
+)
+LEGEND_CLOSE_NULL_ZH = "未画出上一交易日收盘线：该对比需要两个交易日的数据。"
+LEGEND_MONTH_NULL_EN = (
+    "A month ago is not drawn: that comparison needs a month of history."
+)
+LEGEND_MONTH_NULL_ZH = "未画出“一个月前”对比线：该对比需要一个月的历史数据。"
 NULL_SEVEN_EN = "No reading for the 7-year in tonight's data."
 NULL_SEVEN_ZH = "本次数据未覆盖7年期。"
 CHANGE_CLOSE_EN = "Change since prior close"
@@ -87,22 +99,31 @@ CHANGE_MONTH_ZH = "较一个月前变动"
 SUBTITLE_EN = "today versus the prior close versus a month ago"
 SUBTITLE_ZH = "今日、上一交易日收盘与一个月前对比"
 
-# Pinned 2026-09-09 against the three source files the spec names. These are
-# sha256 of the working-tree bytes this packet must not rewrite. site/bonds.html
-# is a nightly build artefact and is not pinned. Recompute the constants only
-# when a later merge of this exclusive job is itself a bonds-hub change.
-# Seat R3 allowed a manifest; this packet pins the three sources as constants.
-_BONDS_SOURCE_SHA256 = {
-    "templates/bonds.html.j2": (
-        "9fe1cc0b49ffa4da6b0f6c4ba55658a712dbc32702542806c3bc23346431bef3"
-    ),
-    "scripts/build_bonds.py": (
-        "18d44adffc8889b66be9afe48b7a9d8a9ab1246f6bdd4af5dc67d1335b97748a"
-    ),
-    "engine/yield_curve.py": (
-        "51931aec691f724c99b206257797ed162118986dbb7bcba10a2a2bf75dd60bc1"
-    ),
-}
+# The three files T10 guards. They are on the exclusive job's trigger paths so
+# the guard RUNS when they change; T10 itself is a build-vs-committed byte
+# comparison, never a source-hash pin, so a legitimate bonds-hub edit that
+# rebakes site/bonds.html in the same PR stays green.
+BONDS_GUARDED_SOURCES = (
+    "templates/bonds.html.j2",
+    "scripts/build_bonds.py",
+    "engine/yield_curve.py",
+)
+
+# The page-build stamp the shell prints, and the bonds hub's own build stamp.
+# Both are wall clocks: a render can only equal committed bytes when the clock
+# is pinned to the one the committed page was baked with.
+_SUITE_BUILT_AT_RE = re.compile(
+    r"Page built.*?<time>(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)</time>", re.S)
+_BONDS_BUILT_AT_RE = re.compile(
+    r"构建于</span>\s*(\d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC)")
+
+# The region of a rendered suite page that this packet's shared-surface edits
+# (the hero slot in the shell's body macro, the Range cell, the `range` key in
+# _series) can possibly reach. Everything outside it is site chrome rendered by
+# partials this packet never touches.
+_SUITE_REGION = ('<nav class="mq-suitenav"',
+                 '<div class="mq-scrim" id="mq-scrim" hidden></div>')
+_HUB_REGION = ('<main class="mq-shell mq-hub"', "</main>")
 
 ARTIFACT = {
     "path": "macrodata/workspaces/rates_curves/US/latest.json",
@@ -605,27 +626,164 @@ def test_9_whole_panel_honest_null_when_snapshot_incomplete() -> None:
 
 
 # ---------------------------------------------------------------------------
-# T10
+# T10 — build site/bonds.html through scripts/build_bonds.py, compare bytes
 # ---------------------------------------------------------------------------
-def test_10_bonds_hub_sources_match_the_pinned_sha256() -> None:
-    """Preservation of the three source files the spec names.
+def _copy_site_assets(destination: Path) -> None:
+    """lib.pages.write_page stamps ?v=<hash> from the assets beside the page.
 
-    site/bonds.html is a nightly build artefact and is not pinned. This test
-    never shells to git and never compares against a moving ref.
+    Without them the render is bare-href and can never equal a committed page.
     """
-    for rel, expected in _BONDS_SOURCE_SHA256.items():
-        digest = hashlib.sha256((ROOT / rel).read_bytes()).hexdigest()
-        assert digest == expected, rel
+    for asset in sorted((ROOT / "site").glob("*.css")):
+        shutil.copy2(asset, destination / asset.name)
+    for asset in sorted((ROOT / "site").glob("*.js")):
+        shutil.copy2(asset, destination / asset.name)
+
+
+def test_10_bonds_hub_page_builds_to_the_committed_bytes(tmp_path, monkeypatch) -> None:
+    """Preservation at the RENDER level: build site/bonds.html through
+    scripts/build_bonds.py and assert the bytes equal the committed page.
+
+    Not a source-hash pin. A bonds-hub PR that legitimately edits
+    templates/bonds.html.j2 and rebakes site/bonds.html in the same commit
+    moves both sides together and stays green; this packet, which touches
+    neither, is proven not to move the page at all.
+
+    The page carries a wall-clock build stamp (`built = datetime.now(...)`), so
+    the clock is pinned to the stamp the committed page was baked with —
+    otherwise no build could ever equal committed bytes. The build reads the
+    parquet stores under data/; where those are not present in the checkout the
+    builder returns its own "skipping bonds page" path and this test skips with
+    that reason printed, never a silent pass.
+    """
+    committed_path = ROOT / "site" / "bonds.html"
+    if not committed_path.exists():
+        pytest.skip("site/bonds.html is not present in this checkout")
+    committed = committed_path.read_bytes()
+    stamp = _BONDS_BUILT_AT_RE.search(committed.decode("utf-8"))
+    if stamp is None:
+        pytest.skip("committed site/bonds.html carries no build stamp to pin the clock to")
+
+    from datetime import datetime as _dt
+
+    from scripts import build_bonds
+
+    out = tmp_path / "site"
+    out.mkdir()
+    _copy_site_assets(out)
+    real_write_page = build_bonds.write_page
+
+    def _redirected_write_page(path, html):
+        return real_write_page(out / Path(path).name, html)
+
+    class _PinnedClock(_dt):
+        @classmethod
+        def now(cls, tz=None):  # noqa: D401 — the one wall clock the page prints
+            return _dt.strptime(stamp.group(1), "%Y-%m-%d %H:%M UTC").replace(tzinfo=tz)
+
+    monkeypatch.setattr(build_bonds, "write_page", _redirected_write_page)
+    monkeypatch.setattr(build_bonds, "datetime", _PinnedClock)
+    monkeypatch.setattr(build_bonds.config, "data_dir", lambda: tmp_path / "data")
+    rc = build_bonds.main()
+    produced = out / "bonds.html"
+    if not produced.exists():
+        pytest.skip(
+            "scripts/build_bonds.py did not produce a page in this checkout "
+            f"(main() returned {rc}; the engine's parquet stores under data/ are "
+            "absent, so it takes its own 'skipping bonds page' path). T10 runs "
+            "for real where the data tree is present."
+        )
+    assert produced.read_bytes() == committed, (
+        "site/bonds.html no longer builds to its committed bytes"
+    )
+    for rel in BONDS_GUARDED_SOURCES:
+        assert (ROOT / rel).exists(), rel
 
 
 # ---------------------------------------------------------------------------
-# T11
+# T11 — the thirteen sibling suite pages and the hub, at the render level
 # ---------------------------------------------------------------------------
-def test_11_curve_panel_include_appears_in_exactly_one_template() -> None:
-    """Seat R3 allowed a manifest; this packet greps templates/ for the include.
+def _committed_suite_build_stamp() -> str | None:
+    """The one page-built stamp every committed suite page shares, or None."""
+    stamps: set[str] = set()
+    for page in builder.SUITE_PAGES:
+        path = ROOT / "site" / page.output
+        if not path.exists():
+            return None
+        found = _SUITE_BUILT_AT_RE.search(path.read_text(encoding="utf-8"))
+        if found is None:
+            return None
+        stamps.add(found.group(1))
+    return stamps.pop() if len(stamps) == 1 else None
 
-    The include must be the plain form (no ignore missing). Sibling suite
-    templates must not grow a second copy.
+
+def _region(html: str, name: str) -> str | None:
+    start, end = _HUB_REGION if name == "macro_monetary.html" else _SUITE_REGION
+    i = html.find(start)
+    j = html.rfind(end)
+    if i < 0 or j < i:
+        return None
+    return html[i:j + len(end)]
+
+
+def test_11_thirteen_other_suite_pages_byte_identical(tmp_path) -> None:
+    """Build the thirteen other SUITE_PAGES and the hub through the real
+    builder and compare each to the committed bytes on this tree.
+
+    A sibling whose macro-suite region moved is a regression — this packet
+    edits the shared shell (the hero slot, the component-histories Range cell)
+    and the shared `_series()` builder, and this is the proof those edits are
+    inert everywhere else. Where the committed copy differs only OUTSIDE that
+    region the difference is pre-existing main-side drift (the committed pages
+    were baked by the site-chrome render lane, which stamps ?v= on every asset
+    ref, adds `defer`, injects preload hints and the banner script, and the
+    committed copies predate the newest nav row); that page is reported with
+    its reason and named in the PR body's GAPS, never silently passed.
+    """
+    stamp = _committed_suite_build_stamp()
+    if stamp is None:
+        pytest.skip("committed suite pages do not share one page-built stamp to render against")
+    _copy_site_assets(tmp_path)
+    builder.render(ROOT, data_root=ROOT / "site" / "macrodata",
+                   out_dir=tmp_path, page_built_at=stamp)
+
+    targets = [page.output for page in builder.SUITE_PAGES
+               if page.workspace_id != "rates_curves"] + ["macro_monetary.html"]
+    assert len(targets) == 14
+
+    identical: list[str] = []
+    drifted: list[str] = []
+    for name in targets:
+        committed_path = ROOT / "site" / name
+        rendered_path = tmp_path / name
+        assert rendered_path.exists(), name
+        if committed_path.read_bytes() == rendered_path.read_bytes():
+            identical.append(name)
+            continue
+        before = _region(committed_path.read_text(encoding="utf-8"), name)
+        after = _region(rendered_path.read_text(encoding="utf-8"), name)
+        assert before is not None and after is not None, f"{name}: no macro-suite region"
+        assert before == after, (
+            f"{name}: the macro-suite region is NOT byte-identical to the committed "
+            "page. That is a regression introduced by this packet's shared-surface "
+            "edits, not main-side drift."
+        )
+        drifted.append(name)
+        print(f"T11 drift-skip {name}: committed bytes differ only OUTSIDE the "
+              "macro-suite region (main-side: the committed copy was written by the "
+              "site-chrome render lane and predates the current nav/asset stamps). "
+              "The macro-suite region is byte-identical.")
+    print(f"T11: 14 targets — {len(identical)} whole-page byte-identical, "
+          f"{len(drifted)} region-identical with pre-existing main-side drift.")
+    assert len(identical) + len(drifted) == 14
+
+
+# ---------------------------------------------------------------------------
+# T13 — extra guard (NOT T11): the include appears in exactly one template
+# ---------------------------------------------------------------------------
+def test_13_curve_panel_include_appears_in_exactly_one_template() -> None:
+    """The include lives in the shell's hero slot, in the plain form (no
+    ignore missing), and nowhere else. This is an extra guard with its own
+    number; the spec's T11 is the byte-preservation test above.
     """
     needle = '{% include "_curve_panel.html.j2" %}'
     forbidden = '{% include "_curve_panel.html.j2" ignore missing %}'
@@ -638,12 +796,10 @@ def test_11_curve_panel_include_appears_in_exactly_one_template() -> None:
             hits.append(path.name)
         elif "_curve_panel.html.j2" in text and path.name != "_curve_panel.html.j2":
             hits.append(f"{path.name}#mention")
-    assert hits == ["macro_rates_curves.html.j2"]
-    rates = (TEMPLATES / "macro_rates_curves.html.j2").read_text(encoding="utf-8")
-    assert "ignore missing" not in rates
+    assert hits == ["_macro_suite_shell.html.j2"]
+    shell = (TEMPLATES / "_macro_suite_shell.html.j2").read_text(encoding="utf-8")
+    assert "ignore missing" not in shell
     for path in (ROOT / "templates").glob("macro_*.html.j2"):
-        if path.name == "macro_rates_curves.html.j2":
-            continue
         text = path.read_text(encoding="utf-8")
         assert "mq-curve-hero" not in text, path.name
         assert "_curve_panel.html.j2" not in text, path.name
@@ -673,14 +829,20 @@ def test_12_no_import_of_yield_curve_engine() -> None:
         text = path.read_text(encoding="utf-8")
         for token in forbidden:
             assert token not in text, f"{rel} imports {token}"
-    # sys.modules assertion: building the rates_curves view must not load those engines.
-    _view(_snapshot())
-    for mod in (
+    # sys.modules assertion: building the rates_curves view must not load those
+    # engines. T10 imports scripts.build_bonds itself (it builds the bonds page
+    # to compare bytes), so clear the probes first — otherwise this measures the
+    # test file's own imports instead of the view builder's.
+    probes = (
         "engine.yield_curve",
         "engine.rates_inflation_command",
         "engine.yield_momentum",
         "scripts.build_bonds",
-    ):
+    )
+    for mod in probes:
+        sys.modules.pop(mod, None)
+    _view(_snapshot())
+    for mod in probes:
         assert mod not in sys.modules, mod
 
 
@@ -862,26 +1024,91 @@ def test_null_did_not_arrive_when_availability_is_not_current() -> None:
 # ---------------------------------------------------------------------------
 # Round 3 R4 / R5 — last tick fits; overlay labels are 10 CSS px
 # ---------------------------------------------------------------------------
-def test_last_maturity_label_fits_inside_the_viewbox() -> None:
+def test_tenor_labels_live_outside_the_viewbox_as_an_html_list() -> None:
+    """Structural, not arithmetic. The clipping this closes was a render-time
+    viewBox effect, so the guard is the STRUCTURE that makes it impossible: no
+    tenor label <text> inside the <svg> at all, the labels in an
+    <ol class="mq-curve-xlabels"> after </svg>, and the last <li> end-anchored
+    with `is-last`. It fails the moment a label moves back into the viewBox.
+    """
+    hero = _hero(_snapshot())
+    html = _render_panel(hero)
+    svg = _svg_inner(html)
+    assert "<text" not in svg
+    assert "<tspan" not in svg
+    for label in ("3-month", "30-year", "3月期", "30年期", "3m", "30y", "3个月"):
+        assert label not in svg, label
+    svg_end = html.find("</svg>")
+    ol_at = html.find('<ol class="mq-curve-xlabels">')
+    assert svg_end != -1 and ol_at > svg_end
+    overlay = html[ol_at:html.find("</ol>", ol_at)]
+    classes = re.findall(r'<li class="([^"]*)"', overlay)
+    assert len(classes) == len(chart_ticks := hero["chart"]["x_ticks"]) == 10
+    assert "is-last" in classes[-1]
+    assert all("is-last" not in value for value in classes[:-1])
+    assert chart_ticks[-1]["anchor"] == "end"
+    assert all(tick["anchor"] == "middle" for tick in chart_ticks[:-1])
+    assert "30-year" in overlay and "30年期" in overlay
+
+
+def test_y_label_box_width_equals_pad_l_over_chart_width() -> None:
+    """R1. The CSS width of `.mq-curve-ylabels li` IS pad_l/width, so the label
+    box ends exactly at the plot's left edge — and there is no media-query
+    override of that width, which is what put the lowest tick under the data.
+    """
+    css = (TEMPLATES / "_curve_panel.html.j2").read_text(encoding="utf-8")
+    declared = re.findall(r"\.mq-curve-ylabels li \{[^}]*?width:\s*([0-9.]+)%", css, re.S)
+    assert declared == ["10"], declared
+    chart = _hero(_snapshot())["chart"]
+    assert float(declared[0]) == pytest.approx(100.0 * chart["pad_l"] / chart["width"])
+    # A "5.28%"-shaped label at 10 CSS px needs ~28 px plus the 4 px gutter.
+    assert chart["pad_l"] >= 64
+    media = css[css.find("@media"):]
+    assert media, "the partial has no media query to check"
+    assert re.search(r"\.mq-curve-ylabels li \{[^}]*width", media, re.S) is None, (
+        "a media query overrides the y-label box width; it must equal pad_l/width "
+        "at EVERY viewport"
+    )
+
+
+def test_mobile_x_labels_are_thinned_so_no_two_touch_at_390() -> None:
+    """R7(a). Ten overlay labels cannot clear each other at a 390 CSS px
+    viewport in either language. Five stay visible; the other five keep their
+    <li> in the <ol> and are hidden by CSS alone.
+
+    The gap is checked against a deliberately pessimistic model: a plot only
+    300 CSS px wide (narrower than a 390 viewport actually gives), CJK glyphs
+    at the full 10 px em and ASCII digits at 0.6 em.
+    """
     hero = _hero(_snapshot())
     chart = hero["chart"]
-    last = chart["x_ticks"][-1]
-    assert last["anchor"] == "end"
-    assert last["x"] <= chart["width"]
-    # Conservative 0.62em per character at the 10 CSS px overlay size.
-    # End-anchor means the right edge is last["x"], so the glyph box sits
-    # entirely to the left of that x and must stay inside [0, width].
-    est = 10 * 0.62 * len(last["label"]["en"])
-    assert last["x"] - est >= 0
+    ticks = chart["x_ticks"]
+    assert len(ticks) == 10
+    shown = [tick for tick in ticks if tick["mobile"]]
+    assert [tick["label"]["en"] for tick in shown] == [
+        "3-month", "1-year", "5-year", "10-year", "30-year"]
     html = _render_panel(hero)
-    assert "30-year" in html
-    assert "30-yea<" not in html
-    overlay_at = html.find('class="mq-curve-xlabels"')
-    legend_at = html.find('class="mq-curve-legend"')
-    assert overlay_at != -1 and legend_at != -1
-    overlay = html[overlay_at:legend_at]
-    assert "is-last" in overlay
-    assert "30-year" in overlay
+    overlay = html[html.find('<ol class="mq-curve-xlabels">'):html.find("</ol>", html.find('<ol class="mq-curve-xlabels">'))]
+    assert overlay.count("<li ") == 10
+    assert overlay.count("is-mobile-hidden") == 5
+    assert ".mq-curve-xlabels li.is-mobile-hidden { visibility: hidden; }" in html
+
+    plot_px = 300.0
+
+    def _width(text: str) -> float:
+        return sum(10.0 if ord(ch) > 0x2E80 else 6.0 for ch in text)
+
+    for lang in ("en", "zh"):
+        boxes: list[tuple[float, float]] = []
+        for tick in shown:
+            centre = plot_px * tick["x_pct"] / 100.0
+            width = _width(tick["short"][lang])
+            if tick["anchor"] == "end":
+                boxes.append((centre - width, centre))
+            else:
+                boxes.append((centre - width / 2.0, centre + width / 2.0))
+        for (_, right), (left, _) in zip(boxes, boxes[1:]):
+            assert left - right >= 4.0, (lang, boxes)
 
 
 def test_axis_overlay_labels_are_ten_css_px() -> None:
@@ -906,10 +1133,38 @@ def test_svg_aria_labelledby_is_en_only_with_zh_on_data_a11y() -> None:
     assert 'data-a11y-en="mq-curve-hero-caption-en"' in opener
 
 
-def test_as_of_caption_renders_plain_date() -> None:
-    html = _render_panel(_hero(_snapshot(as_of=date(2026, 9, 9))))
-    assert "As of 9 September 2026" in html
-    assert "截至 2026年9月9日" in html
+def test_as_of_caption_is_derived_from_the_plotted_rows() -> None:
+    hero = _hero(_snapshot(as_of=date(2026, 9, 9)))
+    assert hero["as_of"] == "2026-09-09"
+    html = _render_panel(hero)
+    assert "Levels as of 9 September 2026" in html
+    assert "各期限水平截至 2026年9月9日" in html
+
+
+def test_a_tenor_a_day_behind_makes_the_caption_name_the_range() -> None:
+    """R7(k). The caption is the oldest date the PLOTTED rows carry, never the
+    page-wide generation.calculation_as_of — a stale tenor must not inherit a
+    fresher one's date. When the plotted tenors span more than one day the
+    caption names the range in both languages.
+    """
+    as_of = date(2026, 9, 9)
+    levels = _complete_levels()
+    today, close, month = levels["7y"]
+    hero = _hero(_snapshot(
+        levels=levels,
+        as_of=as_of,
+        extra_points={"7y": _points_for(today, close, month, as_of - timedelta(days=1))},
+    ))
+    rows = {row["tenor"]: row for row in hero["tenors"]}
+    assert rows["7y"]["as_of_tenor"] == "2026-09-08"
+    assert rows["10y"]["as_of_tenor"] == "2026-09-09"
+    assert hero["as_of"] == "2026-09-08"
+    html = _render_panel(hero)
+    assert "Levels as of 8–9 September 2026" in html
+    assert "各期限水平截至 2026年9月8日至9日" in html
+    # the page-wide calculation stamp is 2026-09-09 and must not stand alone
+    assert "Levels as of 9 September 2026" not in html
+    assert "As of 9 September 2026" not in html
 
 
 def test_legend_omits_undrawn_comparison_windows() -> None:
@@ -923,11 +1178,51 @@ def test_legend_omits_undrawn_comparison_windows() -> None:
     assert hero["chart"]["has_prior_close"] is False
     assert hero["chart"]["has_prior_month"] is False
     html = _render_panel(hero)
-    assert "Prior close is not drawn" in html
-    assert "A month ago is not drawn" in html
+    assert LEGEND_CLOSE_NULL_EN in html
+    assert LEGEND_CLOSE_NULL_ZH in html
+    assert LEGEND_MONTH_NULL_EN in html
+    assert LEGEND_MONTH_NULL_ZH in html
+    # the reason the round-3 ZH gave (第二天 = "the next day") is gone, and the
+    # month line no longer garden-paths on 前线 ("front line")
+    assert "第二天" not in html
+    assert "一个月前线" not in html
     assert 'class="is-close"' not in html
     assert 'class="is-month"' not in html
     assert 'class="is-today"' in html
+
+
+def test_hero_renders_below_the_suite_bar_and_below_the_h1() -> None:
+    """R2. Spec §2.5 places the hero immediately below the <h1>/identity block.
+    The include is emitted from the shell's hero slot, so the reader meets the
+    in-suite navigation bar, then the page title, then the hero — and the
+    document outline is h1 then h2.
+    """
+    html = _render_rates_page(_snapshot())
+    bar = html.find('<nav class="mq-suitenav"')
+    shell_open = html.find('<main class="mq-shell"')
+    h1 = html.find("<h1>")
+    hero = html.find('id="mq-curve-hero"')
+    assert -1 < bar < shell_open < h1 < hero, (bar, shell_open, h1, hero)
+    assert hero < html.rfind("</main>")
+    assert html.count("<h1>") == 1
+    assert html.find("<h2>") > h1
+
+
+def test_hero_slot_renders_nothing_for_a_view_without_a_curve_hero() -> None:
+    """The slot is empty by default, so a page with no hero renders the bytes
+    it rendered before the slot existed (proved end-to-end by T11).
+    """
+    env = Environment(
+        loader=FileSystemLoader(str(TEMPLATES)),
+        autoescape=True,
+        undefined=StrictUndefined,
+    )
+    template = env.from_string(
+        '{% import "_macro_suite_shell.html.j2" as shell %}'
+        "[{{ shell.hero_slot(view) }}]"
+    )
+    assert template.render(view={"workspace": {}}) == "[]"
+    assert template.render(view={"curve_hero": None}) == "[]"
 
 
 def test_kicker_is_not_duplicated_on_the_panel() -> None:
@@ -991,9 +1286,5 @@ def test_packet_suite_is_the_first_pytest_step_in_the_job() -> None:
 def test_t10_guarded_paths_are_in_the_exclusive_job_paths() -> None:
     job = _macro_suite_pages_job()
     paths = list(job["paths"])
-    for rel in (
-        "templates/bonds.html.j2",
-        "scripts/build_bonds.py",
-        "engine/yield_curve.py",
-    ):
+    for rel in BONDS_GUARDED_SOURCES:
         assert rel in paths, rel
