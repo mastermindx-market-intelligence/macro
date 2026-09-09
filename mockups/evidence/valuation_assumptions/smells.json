@@ -19,18 +19,18 @@
         "asof_present": false,
         "by_viewport": {
           "desktop": {
-            "document_height_px": 1422,
+            "document_height_px": 1536,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 2072,
+            "document_height_px": 2304,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           }
         },
         "console_error_count": 0,
-        "document_height_px": 1422,
+        "document_height_px": 1536,
         "duplicate_heading_texts": [],
         "elements_wider_than_viewport": 0,
         "heading_counts": {
@@ -50,16 +50,16 @@
           "viewport": "desktop"
         },
         "panel_count": 4,
-        "payload_bytes_total": 68192,
+        "payload_bytes_total": 73073,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
-        "request_count": 3,
+        "request_count": 10,
         "screenshot_completion": 1.0,
         "section_count": 0,
         "source_present": true,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 297
+        "visible_word_count": 317
       },
       "page_id": "stocks_AAPL.html",
       "route": "/stocks/AAPL.html"
@@ -69,18 +69,18 @@
         "asof_present": false,
         "by_viewport": {
           "desktop": {
-            "document_height_px": 1532,
+            "document_height_px": 1516,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 2276,
+            "document_height_px": 2283,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           }
         },
         "console_error_count": 0,
-        "document_height_px": 1532,
+        "document_height_px": 1516,
         "duplicate_heading_texts": [],
         "elements_wider_than_viewport": 0,
         "heading_counts": {
@@ -100,16 +100,16 @@
           "viewport": "desktop"
         },
         "panel_count": 4,
-        "payload_bytes_total": 60761,
+        "payload_bytes_total": 472699,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
-        "request_count": 3,
+        "request_count": 10,
         "screenshot_completion": 1.0,
         "section_count": 0,
         "source_present": true,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 353
+        "visible_word_count": 303
       },
       "page_id": "evidence_valuation-assumptions-no-js.html",
       "route": "/evidence/valuation-assumptions-no-js.html"
@@ -119,18 +119,18 @@
         "asof_present": false,
         "by_viewport": {
           "desktop": {
-            "document_height_px": 1035,
+            "document_height_px": 900,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 1417,
+            "document_height_px": 1135,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           }
         },
         "console_error_count": 0,
-        "document_height_px": 1035,
+        "document_height_px": 900,
         "duplicate_heading_texts": [
           "try your own assumptions"
         ],
@@ -152,16 +152,16 @@
           "viewport": "desktop"
         },
         "panel_count": 0,
-        "payload_bytes_total": 58169,
+        "payload_bytes_total": 467813,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
-        "request_count": 3,
+        "request_count": 10,
         "screenshot_completion": 1.0,
         "section_count": 0,
         "source_present": false,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 246
+        "visible_word_count": 155
       },
       "page_id": "evidence_valuation-assumptions-degraded.html",
       "route": "/evidence/valuation-assumptions-degraded.html"
@@ -171,10 +171,10 @@
   "target": {
     "base_url": null,
     "kind": "site_dir",
-    "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-cl-f07-2-r4-59c309fb5413f021",
-    "resolved_sha_or_none": "54b219713653da7e958c6c902019e86f10a86759",
-    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-cl-f07-2-r4-59c309fb5413f021 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
-    "site_dir": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mo-cl-f07-2-r4-59c309fb5413f021/.evidence_site"
+    "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-ext-fix-7004-6a713ebbf7a72e1b",
+    "resolved_sha_or_none": "ff3f80bea41d41d5d866548f03c819b07ca040eb",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-ext-fix-7004-6a713ebbf7a72e1b (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mo-ext-fix-7004-6a713ebbf7a72e1b/.evidence_site"
   },
   "tool": {
     "module_ref": "scripts/capture_page_evidence.py",
