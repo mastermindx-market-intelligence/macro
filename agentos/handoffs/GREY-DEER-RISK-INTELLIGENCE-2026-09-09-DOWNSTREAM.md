@@ -130,3 +130,47 @@ Mastermind remained686af274d8ae1558f3f3ae35e0b3aae68be80a01 at publication prefl
 Known local untracked evidence remains deliberately excluded, not deleted or silently
 committed. Latest source publication must be confirmed independently of these local
 proofs; none is hosted CI, production proof, lifecycle admission or final acceptance.
+
+## Further bounded step: legacy cohort isolation
+
+After semantic60873b4, actual audit/tuner source review found that preserved modern
+metadata was ignored by all three graded-evidence readers. New scoped tests reproduce
+that mixing; a contrasting modern fixture reverses outcomes, so old-surface sample,
+realized-odds and Brier parity are not established merely with repeated identical rows.
+The same in-memory bundle now uses one audit-owned legacy-cohort selector in scorecard,
+realized_odds and tuner. Explicit composition keys, including invalid values, never
+become implicit legacy. Scorecard/tuner report excluded counts. Old rows are not edited,
+new odds are not promoted, and no live file/path/grant/calibration effect was executed.
+Discovery: DSC:RRU-LEGACY-CALIBRATION-MIXES-COMPOSITION.
+
+Executed proof: seven methods produced ten expected baseline assertion failures
+(including five malformed-metadata subcases) and one passing legacy control; the
+candidate passes all seven. RRU_LEGACY_COHORT_CONTRAST_RED/GREEN_2026_09_09.txt records
+that comparison. RRU_COHORT_COMBINED_REGRESSION_2026_09_09.txt is one native179-test
+invocation, zero failures/errors, unchanged source bytes, process97318 exit0.
+This supersedes the earlier aggregate-only172 tally for the current candidate.
+The separate actual-force probe remains one failure/one legacy control, exit1:
+RRU_COHORT_AUTHORITY_STILL_RED_2026_09_09.txt. It is not a passing release test.
+
+Exact next action remains the existing audit/attachment and policy-owner disposition:
+prove that a grant applies to the assessed construction, and explicitly handle any
+already-active restriction before a source cutover. Cohort isolation does not fix
+runner grant attachment or justify clearing permission. Independent review, current
+source custody, real-input applicability, and production/browser proof remain held.
+No prior blocked operation was repeated; no new worker or watcher was created.
+
+Publication hygiene: two unittest RED receipts contained trailing spaces, and the
+helper had an extra trailing blank line. The raw receipts remain local-only under
+explicit .raw.local names; raw/published hashes and normalization are recorded in
+RRU_COHORT_PUBLICATION_NORMALIZATION_2026_09_09.json. No finding or numeric result
+was changed. RRU_COHORT_FINAL_REGRESSION_2026_09_09.txt binds the final helper bytes;
+use it rather than the earlier combined receipt for exact generated-source hashes.
+Agent OS verification returned1087 records, zero errors and163 baseline warnings
+(process8026); production paths still have zero diff against the fixture.
+
+Final normalized-candidate verification: process16477 returned179/179 passes,
+zero failures/errors, source unchanged, exit0. During publication preflight protected
+Mastermind advanced to63e3ddec6d8819dffe6509f3d13d41f2e94b9709. INDEX and the four
+required cold-start/reconcile/review/closeout skill blobs were fetched at that same
+commit and exactly matched the previously fully read compatible1.0.1/bootstrap1
+blobs. The new pin is publication procedure; it does not change the research fixture.

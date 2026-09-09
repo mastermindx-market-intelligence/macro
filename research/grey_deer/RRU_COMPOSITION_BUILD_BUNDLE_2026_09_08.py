@@ -263,3 +263,27 @@ def log_snapshot(''', '''        "graded": None,
 
 
 def log_snapshot(''', ['_entry_from_snapshot'])
+
+# Legacy scorecard and calibration must not silently mix in modern construction rows.
+p = 'engine/risk_radar_intl_audit.py'
+cohort_helper = (HERE / 'RRU_LEGACY_COHORT_HELPER_2026_09_09.txt').read_text()
+change(p, 'def realized_odds(', cohort_helper + 'def realized_odds(', ['_legacy_graded_cohort'])
+change(p, '\n    rows = [r for r in _read(_path(market, root)) if r.get("graded")]\n',
+       '\n    rows, _excluded = _legacy_graded_cohort(_read(_path(market, root)))\n', ['realized_odds'])
+change(p, '        rows = [r for r in _read(_path(market, root)) if r.get("graded")]\n',
+       '        rows, excluded = _legacy_graded_cohort(_read(_path(market, root)))\n', ['scorecard'])
+change(p, '        rows = []\n    if not rows:\n', '        rows, excluded = [], 0\n    if not rows:\n')
+change(p, 'return {"market": market, "n_graded": 0, "can_force": False,',
+       'return {"market": market, "n_graded": 0, "can_force": False,\n                "evidence_construction": "legacy_implicit", "excluded_composition_rows": excluded,')
+change(p, '        "n_graded": n,\n',
+       '        "n_graded": n,\n        "evidence_construction": "legacy_implicit",\n        "excluded_composition_rows": excluded,\n')
+
+p = 'engine/risk_radar_intl_tune.py'
+SOURCES[p] = committed(p)
+edited[p] = SOURCES[p]
+change(p, '        rows = [r for r in A._read(A._path(key, root)) if r.get("graded")]\n',
+       '        rows, excluded = A._legacy_graded_cohort(A._read(A._path(key, root)))\n', ['tune'])
+change(p, 'return {"status": "accruing", "n_graded": len(rows), "need": MIN_GRADED}',
+       'return {"status": "accruing", "n_graded": len(rows), "need": MIN_GRADED,\n                    "evidence_construction": "legacy_implicit", "excluded_composition_rows": excluded}')
+change(p, 'return {"status": decision, "n_graded": len(rows),\n',
+       'return {"status": decision, "n_graded": len(rows),\n                "evidence_construction": "legacy_implicit", "excluded_composition_rows": excluded,\n')
