@@ -29,6 +29,10 @@ changed:
   what: Producer validity, gap/date, Boolean and huge-integer regression cases.
 - path: tests/test_subsector_rotation.py
   what: Adapter/default-region cases and uninterrupted real prices-to-detail-page proof.
+- path: .github/ci/legacy-jobs.yml
+  what: Current fb6ac722 source preserves the 19 real import scopes and additionally registers the
+    two new owning suites in the EXISTING rc-r14 code-gated job, preserving its original event suites
+    and all other jobs.
 verified:
 - claim: The existing source computes weekly returns but the China adapter drops them.
   command: 'git show 0b30e044b6456a96f1d6e1a9885987691a2b46dc:engine/baskets_region.py; git show
@@ -89,6 +93,33 @@ verified:
     worktree/authenticated GitHub.
   result: Exit2/REMOTE_CENSUS_INCOMPLETE after122.83seconds. No valid checkpoint, no waiver and no
     repeated remote canary. Existing346 owns complete Macro-scale proof.
+- claim: Current source and real code-gate test execution are preserved.
+  command: Same-branch normal commit/push and exact remote readback; two independent pytest processes
+    using the existing code job dependency bundle in isolated Python3.12.
+  result: Headfb6ac722ccce1e96b87b71c983b3fff8132dc19c/tree5fea755a1d397142f18915363859825bf46d2801.
+    Original event suites55PASS; new owning producer/consumer suites28PASS, total83 without skips.
+    Overlapping original product selection45PASS. The absent-code-step regression was RED before
+    this manifest repair.
+- claim: The actual authoritative hosted plan now contains the new code-gated test step.
+  command: Download trusted-ci-plan artifact from natural run34408286798 and inspect its frozen source
+    identity and semantic_jobs.
+  result: Subjectfb6ac722; plan8c6654360cff2a82b1aac481c8d73ab5a219977aef54fc3f994f9eed071357a4;
+    tested tree45b988c9b096e77e9017253d35eb83d4d64827a3. Existing rc-r14 job in pack9 includes both
+    original events and new member stepc4705f923166134ffbf97f79b8586f8bf66a0a90319129926d4bdf7bf289cf8d.
+    This proves planning, not completed pack execution.
+- claim: Real cached price data reaches the existing producer and rotation consumer correctly.
+  command: Exact captured local China close matrix/membership/benchmark through existing compute_china_ths_baskets
+    and compute_china_rotation; independent raw-window value check and original-producer parity.
+  result: Frozen input ends2026-09-04,1270x1810closes;237baskets/3518member occurrences;233rotation
+    groups/1856shown occurrences.1757supported weekly values and99older unavailable cases. All1856values
+    match independent raw-window calculation; every old producer field/chart/order is equal; all3input
+    file hashes unchanged. No latest production or trading claim.
+- claim: Finite independent diagnostic assessment completed and was consumed.
+  command: Included-login Terra native01a08823-f6d9-7260-ab57-4af1b08f2be2, read-only exact-head
+    assessment; output and exit0; source comment5609247281.
+  result: No introduced blocker found by static reading; no tests or browser executed by reviewer.
+    Diagnostic child STOP/terminal, no watcher. This does not replace Source Continuity, release
+    review or visual/production acceptance.
 unverified:
 - claim: Outcome and side effects of the first new-regression run.
   what_would_verify: 'Same-device recovery of the exact red.log, process/session state and working-tree
@@ -101,18 +132,21 @@ unverified:
     exact source, followed by current source review/CI and natural producer/served-route proof. Two
     ChromeCLI fixtures timed out; Playwright harness append was refused and never executed.
 unresolved:
-- Historical September8 test exit remains unavailable; new current source/results are separately
-  witnessed.
-- Official current-source continuity and independent exact-head review remain required before release.
-- Browser evidence is unproven after completed CLI timeouts and a refused harness append.
-- Existing6992/6996 and346/6860/554/548 owners retain their own gates; no duplicate or bypass.
+- Source Continuity remains incomplete; ready peer proposal is not yet adopted/protected by its incumbent
+  owner.
+- Browser acceptance is unavailable; no denied harness operation has been repeated.
+- Natural current-head execution packs remain unproven while queued; new test registration and local
+  execution do not replace completion.
+- Historical September8 test exit remains unknown; it is not the later received verification.
+- Existing6992/6996/6871/6860 and Mastermind548/554 retain separate sources and release gates.
 next_actions:
-- Resolve the existing346 official source-proof dependency for7023 and consume its real current hosted
-  checks; do not repeat the unchanged incomplete proof or fabricate a collision receipt.
-- Obtain independent exact-head review and permitted real browser proof; do not repeat a refused
-  harness operation via another route.
-- Only after current source/visual/safety gates permit release, prove a normal producer/publication
-  and actual served-user result. No source reconstruction or replacement branch.
+- Consume the already-prepared Source Continuity peer correction through the existing346 incumbent
+  owner, not a new branch/writer or another unchanged remote scan. Current preimages were confirmed
+  equal; no source transfer has occurred.
+- Consume actual completed hosted execution for unchangedfb6ac722 and its exact current integration.
+  The authoritative plan contains the new code step, but queued packs are not passing tests.
+- Obtain permitted actual browser evidence and final source acceptance, then normal producer/publication/served-route
+  proof. Do not repeat a refused browser or release action through another route.
 do_not_redo:
 - Do not restart or duplicate terminal Mastermind544/545; their merges are ca833b63 and7afc6641.
 - Do not create a competing saturated-foreign-PR adapter; existing START is Mastermind346/comment5592292126.
@@ -237,3 +271,39 @@ Actual official checkpoint and independent review remain controlling gates.
 The actual current protected source checkpoint returned REMOTE_CENSUS_INCOMPLETE
 after122.83seconds (exit2). This adds7023as an affected consumer of the existing346
 owner; it neither establishes collisions nor permits an alternate proof.
+
+
+## Later September9 continuation — current head, code-gate and real-input proof
+
+Current source is fb6ac722ccce1e96b87b71c983b3fff8132dc19c, tree5fea755a1d397142f18915363859825bf46d2801.
+The earlier595014 and ddce heads remain historical evidence, not current source.
+The first import-scope repair made its natural contract-delta green but left the
+owning suite in a data-only job and the producer suite grandfathered/unrun. This
+was identified from the real authoritative hosted plan, not guessed from CI color.
+The existing code-gated rc-r14 job now runs the original55event cases and the new
+28producer/consumer cases. Its exact dependency bundle was exercised locally in
+two fresh pytest processes:55PASS plus28PASS. The new real hosted plan includes
+that new semantic step in pack9. Queue status is still not execution.
+
+Real frozen local caches through the actual producer/adapter yield1757weekly
+readings plus99honestly unavailable old observations across1856displayed member
+occurrences and233groups. Caches end September4, not September9. The real builder
+also generated233detail HTML files outside canonical publication. A proposed full
+DOM-value audit was platform-refused and was not rerouted, so no accepted complete
+DOM/browser receipt or live-page claim follows from generating those files.
+
+The diagnostic reviewer read the exact seven-file source and found no introduced
+blocker, but did not execute tests or cure source/visual/release gates. Its finite
+return was consumed and STOPped in7023/comment5609247281. No child watcher remains.
+
+Existing346 received consumer-side preimage reconciliation5609357423: incumbent
+three files still match the prepared peer preimages, with the peer's exact proposed
+hashes present. This is not authorization to overwrite the incumbent or a new
+verifier. HTTP conditional validation is not inflated into arbitrary byte equality.
+Exact native ownership/remaining effect settlement remain the incumbent's duty.
+
+Current retained evidence: gated-test-coverage-audit-20260909.json;
+code-gate-hosted-plan-proof-20260909.json; real-cache-pipeline-proof-20260909.json;
+diagnostic-review-20260909.md and its terminal exit. All are under the original
+operation evidence directory. The three existing source documents/records are
+retained rather than replaced by a parallel status store.
