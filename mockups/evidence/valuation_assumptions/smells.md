@@ -2,11 +2,13 @@
 
 _Heuristics identify review targets; they do not determine that a page is bad._
 
-Generated 2026-09-09T12:28:11Z · schema `mastermind.ux_smell_report.v1`
+Generated 2026-09-09T00:00:00Z · schema `mastermind.ux_smell_report.v1`
 
 | route | page_id | words | h1 | panels | height px | h-overflow | slug hits | TODO hits | as-of | source | shots |
 | --- | --- | ---: | ---: | ---: | ---: | :---: | ---: | ---: | :---: | :---: | ---: |
-| /stocks/AAPL.html | stocks_AAPL.html | 1171 | 1 | 7 | 6654 | no | 0 | 0 | yes | yes | 1.0 |
+| /evidence/valuation-assumptions-degraded.html | evidence_valuation-assumptions-degraded.html | 210 | 0 | 0 | 900 | no | 0 | 0 | no | no | 1.0 |
+| /evidence/valuation-assumptions-no-js.html | evidence_valuation-assumptions-no-js.html | 347 | 0 | 4 | 1370 | no | 0 | 0 | no | yes | 1.0 |
+| /evidence/valuation-assumptions.html | evidence_valuation-assumptions.html | 332 | 0 | 4 | 1340 | no | 0 | 0 | no | yes | 1.0 |
 
 ## Metric notes
 
