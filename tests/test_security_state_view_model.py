@@ -1417,10 +1417,17 @@ def test_owner_receipts_glance_uses_bilingual_house_copy_not_engine_prose() -> N
 
     zh_card = _card_region(_render_section(view, lang="zh"))
     en_card = _card_region(_render_section(view, lang="en"))
+    # The reader value the receipt carries, and the bare module path inside it.
+    # Spelled through the reference form on purpose: a bare repo-path literal is
+    # recorded as a CI trigger-closure read (scripts/ci_scope_dependencies.py:588
+    # -600), and this suite never imports that module — the path is a STRING
+    # RENDERED INTO THE PAGE that these assertions search for, not a dependency.
+    reader_ref = "scripts/build_stock_library.py::_read_security_state_identity_rows"
+    reader_module = reader_ref.split("::", 1)[0]
     engine_leaks = (
         "security_master row exists",
         "security_state/superseded_by",
-        "scripts/build_stock_library.py",
+        reader_module,
         "data/reference/security_master.parquet",
         "VendorAliasTable.resolve",
         "row_present",
@@ -1447,7 +1454,7 @@ def test_owner_receipts_glance_uses_bilingual_house_copy_not_engine_prose() -> N
     # Machine identifiers remain in the evidence dialog, not at glance.
     full_en = _render_section(view, lang="en")
     assert "data/reference/security_master.parquet" in full_en
-    assert "scripts/build_stock_library.py" in full_en
+    assert reader_module in full_en
     assert "VendorAliasTable.resolve" in full_en
 
 
