@@ -24,10 +24,11 @@
     }
   },
   "excluded": [],
-  "generated_at": "2026-09-09T15:02:36Z",
+  "generated_at": "2026-09-09T18:38:10Z",
   "honesty": {
     "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
     "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "fixture_cells": "two cells were rendered over a fixture payload rather than a build; each carries capture_note and force_state, and no measurement in this manifest is taken from them",
     "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
   },
   "outcome": "captured",
@@ -35,22 +36,22 @@
     {
       "console_errors": [
         {
-          "source_url": "http://127.0.0.1:59982/api/capital-structure/v1/coverage",
+          "source_url": "http://127.0.0.1:56674/api/capital-structure/v1/coverage",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:59982/api/capital-structure/v1/overview?limit=100",
+          "source_url": "http://127.0.0.1:56674/api/capital-structure/v1/overview?limit=100",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         }
       ],
       "failed_responses": [
         {
           "status": 404,
-          "url": "http://127.0.0.1:59982/api/capital-structure/v1/coverage"
+          "url": "http://127.0.0.1:56674/api/capital-structure/v1/coverage"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:59982/api/capital-structure/v1/overview?limit=100"
+          "url": "http://127.0.0.1:56674/api/capital-structure/v1/overview?limit=100"
         }
       ],
       "gaps": [
@@ -79,9 +80,9 @@
           "value": "loading"
         },
         {
-          "captured": false,
+          "captured": true,
           "dimension": "page_state",
-          "reason": "state not synthesizable against static output",
+          "reason": "unreachable from committed data (no window this checkout builds is `empty`); captured from a labelled fixture payload rendered through the real template — cells 2628d7cc0b61ceda.png (en), 50db6711880b5890.png (zh), each carrying capture_note",
           "value": "empty"
         },
         {
@@ -106,7 +107,7 @@
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 2210,
+            "document_height_px": 2251,
             "elements_wider_than_viewport": 1,
             "horizontal_overflow": false
           }
@@ -132,7 +133,7 @@
           "viewport": "desktop"
         },
         "panel_count": 0,
-        "payload_bytes_total": 630302,
+        "payload_bytes_total": 681376,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 21,
@@ -141,7 +142,7 @@
         "source_present": false,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 271
+        "visible_word_count": 274
       },
       "page_id": "capital_structure.html",
       "registry_route": "/capital_structure.html",
@@ -152,13 +153,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 411367,
+          "bytes": 412772,
           "captured": true,
-          "file": "7f45fc320d9eb0ad.png",
+          "file": "6d352ac2669ddbba.png",
           "force_state": null,
           "height": 1727,
           "locale": "en",
-          "sha256": "7f45fc320d9eb0addd5a64a4f47777c57d9f05ec92f7b2a13f73dd0fb3a1c031",
+          "sha256": "6d352ac2669ddbbad86e52b279a8e1c3c5863f83f2e5823096b2d3d24288652f",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -169,13 +170,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 427317,
+          "bytes": 429885,
           "captured": true,
-          "file": "f2f77a93f3b4214d.png",
+          "file": "1cf4b38945fe1d09.png",
           "force_state": null,
           "height": 1727,
           "locale": "en",
-          "sha256": "f2f77a93f3b4214d73ed251ddf42979e5046c191469a7c683dac79c9c69714c9",
+          "sha256": "1cf4b38945fe1d09a23e72ec7871c81df7bbe6fe150489d05c2e2a20bbf88ab6",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -186,13 +187,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 405118,
+          "bytes": 407459,
           "captured": true,
-          "file": "79f563872021d22d.png",
+          "file": "0580df103981b9ae.png",
           "force_state": null,
           "height": 1702,
           "locale": "zh",
-          "sha256": "79f563872021d22d5fc0bd2b200fb364ad03f13c75a638f86e91715ef23a71e3",
+          "sha256": "0580df103981b9aebe3de2fe21230d688e392917de1bcae8fcc319084b639b84",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -203,13 +204,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 414716,
+          "bytes": 417105,
           "captured": true,
-          "file": "ae37be44309cfb6f.png",
+          "file": "e316f31fce0a1090.png",
           "force_state": null,
           "height": 1702,
           "locale": "zh",
-          "sha256": "ae37be44309cfb6f023dea47fdf40c0fdcaace3fe0b099d94ccc05a4f68a33b7",
+          "sha256": "e316f31fce0a10902db4988d10f20091f9d677643653543c431f4928f9c15bf0",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -220,13 +221,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 285046,
+          "bytes": 286367,
           "captured": true,
-          "file": "12c396f6f674d9d1.png",
+          "file": "00f3baca838e16c7.png",
           "force_state": null,
-          "height": 2210,
+          "height": 2251,
           "locale": "en",
-          "sha256": "12c396f6f674d9d13bccb4164edb06b025a6fb22258c6cb3a3d65a5cc0af9f22",
+          "sha256": "00f3baca838e16c79c9ce9558406fb248d1e653fafa539095b8efc92a4499853",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -237,13 +238,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 293819,
+          "bytes": 294668,
           "captured": true,
-          "file": "99c7de3fb7cd8ff1.png",
+          "file": "e9e9cf348751d837.png",
           "force_state": null,
-          "height": 2210,
+          "height": 2251,
           "locale": "en",
-          "sha256": "99c7de3fb7cd8ff1f89b83cbac959922273b25e676e31414a07b50771a19e036",
+          "sha256": "e9e9cf348751d837454ae7e9e8317a6ceb01d65b921611b63438426c0ba54f47",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -254,13 +255,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 284261,
+          "bytes": 286524,
           "captured": true,
-          "file": "ba2a3bdc799cbc5c.png",
+          "file": "39578aefb406b66c.png",
           "force_state": null,
           "height": 2126,
           "locale": "zh",
-          "sha256": "ba2a3bdc799cbc5cb9380662ce8d83f155639ae08b3d816bf1bde4ab9bfb0f3a",
+          "sha256": "39578aefb406b66cf971ff6d2878d63c726e16578101d46ad7dd1cadb793cd35",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -271,18 +272,54 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 289700,
+          "bytes": 291870,
           "captured": true,
-          "file": "953bdf929f297991.png",
+          "file": "44d3c3c5c44fe626.png",
           "force_state": null,
           "height": 2126,
           "locale": "zh",
-          "sha256": "953bdf929f2979916263cdc113e1d09afc005996539e010474c7b95b6cd110d6",
+          "sha256": "44d3c3c5c44fe626047d311bc79c64ffc07356f600060cd58fa6323abf17e0ba",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
           "viewport_width": 390,
           "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 428208,
+          "capture_note": "fixture payload — not a real build; the empty state is unreachable from committed data",
+          "captured": true,
+          "file": "2628d7cc0b61ceda.png",
+          "force_state": "empty:fixture_payload",
+          "height": 1727,
+          "locale": "en",
+          "sha256": "2628d7cc0b61cedad54bf98e1c99a70fbdd9694f209a343d152578a2af8ce27a",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 417102,
+          "capture_note": "fixture payload — not a real build; the empty state is unreachable from committed data",
+          "captured": true,
+          "file": "50db6711880b5890.png",
+          "force_state": "empty:fixture_payload",
+          "height": 1702,
+          "locale": "zh",
+          "sha256": "50db6711880b5890533be6db7d1e6eb0d5845a1039291a794e605673d89f1d0e",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
         }
       ]
     }
@@ -305,7 +342,7 @@
     "base_url": null,
     "kind": "site_dir",
     "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-cl-f09-6b-r4-33a34e9912e59953",
-    "resolved_sha_or_none": "2624eadd3349ac9bf5094b03b147a39973111502",
+    "resolved_sha_or_none": "0ad00392482dbad96ea45ffdb306a1830b5c72f6",
     "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-cl-f09-6b-r4-33a34e9912e59953 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
     "site_dir": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mo-cl-f09-6b-r4-33a34e9912e59953/site"
   },
@@ -317,7 +354,7 @@
   },
   "totals": {
     "pages": 1,
-    "states_attempted": 8,
-    "states_captured": 8
+    "states_attempted": 10,
+    "states_captured": 10
   }
 }
