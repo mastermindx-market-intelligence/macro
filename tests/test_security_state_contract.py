@@ -166,6 +166,54 @@ def test_golden_fixture_self_validates_against_the_committed_schema() -> None:
     assert state == expected
 
 
+def test_identity_leg_reader_provenance_names_a_module_that_still_defines_it() -> None:
+    """MAJOR-1 (round-4 review, 2026-09-06): a producer-isolation refactor
+    (commit 6f5a1746, "isolate security-state producer closure") moved
+    ``_read_security_state_identity_rows`` out of
+    ``scripts/build_stock_library.py`` into
+    ``scripts/security_state_producer.py``, but six ``reader`` receipt
+    strings across the R1/R2/R3/R4/R6/R8 legs (and the failure shell's
+    genuine-owner-subject R8 leg) kept naming the OLD module -- a public
+    identity receipt asserting a provenance that no longer holds. This test
+    is RED against the pre-fix strings (module path in the reader string did
+    not contain the function's actual definition) and is generic: it does
+    not hardcode a module name, so a future move that forgets to update
+    every call site trips it again."""
+    root = Path(__file__).resolve().parents[1]
+    state = ss.compile_security_state(**_golden_input())
+    legs = state["identity_proof"]["legs"]
+    assert legs, "golden fixture must exercise at least one identity leg"
+    checked = 0
+    for leg in legs:
+        reader = leg["reader"]
+        if "::" not in reader or not reader.split("::", 1)[0].endswith(".py"):
+            continue  # dotted python import path (e.g. lib.dataos.identity.*), not a file::func receipt
+        path_part, func_name = reader.split("::", 1)
+        path_part = path_part.split(" ", 1)[0]  # strip trailing "(declared master artifact)" etc.
+        func_name = func_name.split(" ", 1)[0]
+        src = (root / path_part).read_text(encoding="utf-8")
+        assert f"def {func_name}(" in src, (
+            f"leg {leg['check']!r} claims reader {reader!r} but {path_part} "
+            f"defines no {func_name}()"
+        )
+        checked += 1
+    assert checked >= 6, f"expected at least 6 file::func receipts in the golden legs, saw {checked}"
+
+    # same check for the failure shell's genuine-owner-subject R8 leg (the
+    # `else` branch at security_state.py, NOT the UNREAD fallback branch).
+    failure_state = ss.compile_security_state_failure(
+        subject=_subject(), now="2026-09-06T12:00:00Z", validator=_validator(),
+    )
+    [r8_leg] = [leg for leg in failure_state["identity_proof"]["legs"] if leg["check"] == "R8"]
+    assert r8_leg["result"] == "pass"
+    path_part, func_name = r8_leg["reader"].split("::", 1)
+    src = (root / path_part).read_text(encoding="utf-8")
+    assert f"def {func_name}(" in src, (
+        f"failure-shell R8 leg claims reader {r8_leg['reader']!r} but "
+        f"{path_part} defines no {func_name}()"
+    )
+
+
 # ---------------------------------------------------------------------------
 # 1. golden current event (happy path)
 # ---------------------------------------------------------------------------
@@ -630,6 +678,197 @@ def test_compiler_failure_never_emits_dominant_degradation_none() -> None:
         )
         assert state["dominant_degradation"] == "COMPILER_FAILURE"
         assert state["dominant_degradation"] != "NONE"
+
+
+# ---------------------------------------------------------------------------
+# B2 (META-CEO ruling 2026-09-06): the fallback subjects (AAPL_SUBJECT /
+# MSFT_SUBJECT) must never let a failure shell claim owner provenance that
+# was never read this cycle.
+# ---------------------------------------------------------------------------
+
+def test_fallback_subjects_carry_explicit_unread_owner_evidence() -> None:
+    """AAPL_SUBJECT/MSFT_SUBJECT are selected ONLY when the owner-identity
+    batch itself failed -- no VendorAliasTable/IssuerMaster reader ever ran
+    for them this cycle. Their owner_evidence must say so explicitly: no
+    reader class/method name presented as if it executed, no ISO date, no
+    the-literal-word "fixture" presented as if it had been read."""
+    for subject in (ss.AAPL_SUBJECT, ss.MSFT_SUBJECT):
+        assert ss._owner_identity_unread(subject.owner_evidence) is True
+        values = dict(subject.owner_evidence)
+        for value in values.values():
+            assert "VendorAliasTable" not in value
+            assert "IssuerMaster" not in value
+            assert value != "fixture"
+
+
+def test_real_owner_composed_subject_is_not_flagged_unread() -> None:
+    """A genuine owner-composed subject (the shape
+    ``scripts/security_state_producer.py::_read_security_state_identity_rows``
+    builds every cycle the owner batch succeeds) must never collide with the
+    UNREAD marker -- it stamps a real ISO decision_date and the real reader
+    names, never the fixed UNREAD sentinel."""
+    assert ss._owner_identity_unread(_subject().owner_evidence) is False
+
+
+def test_failure_shell_for_unread_fallback_subject_refuses_owner_pass() -> None:
+    """B2 core fix. Before the fix, ``compile_security_state_failure`` built
+    an R8 leg with ``result='pass'`` and named live readers
+    (VendorAliasTable.resolve(store), IssuerMaster.issuer_of_security, ...)
+    for EVERY subject, including the frozen fallback used precisely when
+    those readers never ran. That is a public artifact fabricating
+    provenance. The fallback path must instead refuse: result='fail', a
+    named OWNER_IDENTITY_UNREAD refusal code, no reader-name values, and the
+    refusal recorded in identity_proof.refusals -- while still validating
+    and still carrying last_good when a prior is eligible."""
+    prior = ss.compile_security_state(**_load("golden_msft_input.json"))
+    assert prior["identity_proof"]["state"] == "PROVEN"
+    state = ss.compile_security_state_failure(
+        subject=ss.MSFT_SUBJECT, now="2026-09-06T12:00:00Z",
+        prior_state=prior, validator=_validator(),
+    )
+    identity_proof = state["identity_proof"]
+    assert identity_proof["state"] == "BLOCKED_IDENTITY_BRIDGE"
+    assert "OWNER_IDENTITY_UNREAD" in identity_proof["refusals"]
+    [r8_leg] = [leg for leg in identity_proof["legs"] if leg["check"] == "R8"]
+    assert r8_leg["result"] == "fail"
+    assert r8_leg["code"] == "OWNER_IDENTITY_UNREAD"
+    read_fields = {value["field"] for value in r8_leg["values_read"]}
+    read_values = {str(value["value"]) for value in r8_leg["values_read"]}
+    assert "owner_alias_reader" not in read_fields
+    assert "owner_issuer_reader" not in read_fields
+    assert "owner_cik_reader" not in read_fields
+    assert not any("VendorAliasTable" in v or "IssuerMaster" in v for v in read_values)
+    assert not any(v == "fixture" for v in read_values)
+    # still an honest, subject-bound CIK and a carried last_good.
+    assert {"field": "subject_issuer_cik", "value": ss.MSFT_SUBJECT.issuer_cik} in r8_leg["values_read"]
+    assert state["last_good"] == {
+        "generated_at": prior["generated_at"],
+        "content_sha256": prior["content_sha256"],
+        "dominant_degradation": prior["dominant_degradation"],
+        "reason": "prior cycle's committed security_state.v1",
+    }
+    validator = _validator()
+    assert list(validator.iter_errors(state)) == []
+
+
+def test_failure_shell_for_real_owner_subject_keeps_owner_pass_leg() -> None:
+    """Regression guard for the branch above: a REAL owner-composed subject
+    (owner reads DID run this cycle; compile_security_state raised for some
+    other reason) still gets the honest PASS leg -- B2 must narrow the fix
+    to the fallback path, never strip the legitimate owner-backed receipt."""
+    state = ss.compile_security_state_failure(
+        subject=_subject(), now="2026-09-06T12:00:00Z", validator=_validator(),
+    )
+    identity_proof = state["identity_proof"]
+    assert identity_proof["refusals"] == ["COMPILER_FAILURE"]
+    [r8_leg] = [leg for leg in identity_proof["legs"] if leg["check"] == "R8"]
+    assert r8_leg["result"] == "pass"
+    assert r8_leg["code"] is None
+    # regression guard for MAJOR-1/2 below: the real-owner-subject path must
+    # keep asserting owner composition -- only the UNREAD fallback path may
+    # not.
+    assert any(
+        d.startswith("OWNER_COMPOSED_SUBJECT_CURRENT_ONLY:")
+        for d in identity_proof["disclosures"]
+    )
+    assert "confirmed" in state["legs"]["risk"]["failed_gates"][0]["reason"]
+
+
+# ---------------------------------------------------------------------------
+# MAJOR-1/MAJOR-2 (round-3 review, 2026-09-06): the UNREAD fallback shell's
+# ``identity_proof.disclosures`` and its public ``null_reason``/failed-gate
+# ``reason`` strings must never assert that an owner reader executed or that
+# owner identity was composed -- that was true of the R8 leg fix (B2) but
+# NOT of these two other surfaces, which kept asserting it verbatim two keys
+# away from the leg that was fixed.
+# ---------------------------------------------------------------------------
+
+def test_failure_shell_for_unread_fallback_subject_disclosures_do_not_claim_owner_reads() -> None:
+    state = ss.compile_security_state_failure(
+        subject=ss.MSFT_SUBJECT, now="2026-09-06T12:00:00Z",
+        prior_state=None, validator=_validator(),
+    )
+    disclosures = state["identity_proof"]["disclosures"]
+    assert len(disclosures) == 4
+    for text in disclosures:
+        assert "VendorAliasTable" not in text
+        assert "IssuerMaster" not in text
+        assert "composed through current" not in text
+        assert "read through canonical" not in text
+    assert disclosures == list(ss.UNREAD_DISCLOSURES)
+    assert list(_validator().iter_errors(state)) == []
+
+
+def test_failure_shell_for_unread_fallback_subject_reason_does_not_claim_owner_composed() -> None:
+    state = ss.compile_security_state_failure(
+        subject=ss.AAPL_SUBJECT, now="2026-09-06T12:00:00Z",
+        prior_state=None, validator=_validator(),
+    )
+    null_reason = state["legs"]["opportunity_context"]["entry"]["null_reason"]
+    gate_reason = state["legs"]["risk"]["failed_gates"][0]["reason"]
+    assert null_reason == gate_reason
+    for text in (null_reason, gate_reason):
+        assert "composed" not in text
+        assert "security_state" not in text
+        assert "compiler" not in text
+    assert list(_validator().iter_errors(state)) == []
+
+
+# ---------------------------------------------------------------------------
+# M2 (META-CEO ruling 2026-09-06): a pre-PR-shaped prior (identity_proof.legs
+# == [], no R8 leg at all) must still count as a subject match for last_good
+# carry, so the first post-deploy failure cycle does not silently drop it.
+# ---------------------------------------------------------------------------
+
+def test_prior_matches_subject_accepts_legacy_no_r8_failure_shell() -> None:
+    subject = _subject()
+    legacy_prior = {
+        "schema": "security_state.v1",
+        "security_id": subject.security_id,
+        "issuer_id": subject.issuer_id,
+        "listing_key": subject.listing_key,
+        "ticker_display": subject.ticker_display,
+        "identity_proof": {
+            "state": "BLOCKED_IDENTITY_BRIDGE",
+            "legs": [],
+            "equalities": [],
+            "refusals": ["COMPILER_FAILURE"],
+        },
+        "dominant_degradation": "COMPILER_FAILURE",
+        "generated_at": "2026-08-01T00:00:00Z",
+        "content_sha256": "b" * 64,
+        "last_good": {
+            "generated_at": "2026-07-30T00:00:00Z",
+            "content_sha256": "c" * 64,
+            "dominant_degradation": "PARTIAL",
+            "reason": "prior cycle's committed security_state.v1",
+        },
+    }
+    assert ss._prior_matches_subject(legacy_prior, subject=subject) is True
+    # not itself eligible (its own dominant_degradation is COMPILER_FAILURE)
+    assert ss._is_last_good_eligible(legacy_prior, subject=subject) is False
+    # but derive_last_good carries the legacy prior's OWN last_good forward
+    # unchanged, rather than dropping it because no R8 CIK could be read.
+    assert ss.derive_last_good(legacy_prior, subject=subject) == legacy_prior["last_good"]
+
+
+def test_prior_matches_subject_rejects_legacy_shell_for_a_different_ticker() -> None:
+    """The legacy-shape acceptance is bounded to actual subject agreement --
+    a differently-tickered legacy shell must not be treated as a match just
+    because it also has no R8 leg."""
+    subject = _subject()
+    other_legacy_prior = {
+        "schema": "security_state.v1",
+        "security_id": "SEC:US-XNAS-MSFT",
+        "issuer_id": "ISS:US-XNAS-MSFT",
+        "listing_key": "US-XNAS-MSFT",
+        "ticker_display": "MSFT",
+        "identity_proof": {"state": "BLOCKED_IDENTITY_BRIDGE", "legs": [], "equalities": [], "refusals": ["COMPILER_FAILURE"]},
+        "dominant_degradation": "COMPILER_FAILURE",
+        "generated_at": "2026-08-01T00:00:00Z",
+        "content_sha256": "d" * 64,
+    }
+    assert ss._prior_matches_subject(other_legacy_prior, subject=subject) is False
 
 
 # ---------------------------------------------------------------------------
@@ -1284,6 +1523,42 @@ def test_unrelated_ticker_is_not_selected_for_security_state() -> None:
     mismatched = {"ticker": "MSFT"}
     assert producer._select_security_state_targets([("AAPL", mismatched)]) == []
     assert "security_state" not in mismatched
+
+
+def test_mismatched_security_state_targets_are_not_silently_dropped() -> None:
+    """MINOR 3 (review finding): ``_select_security_state_targets`` silently
+    filters a ticker/record mismatch out of its returned list, which -- per
+    this stage's own M1 rationale -- leaves the record's ``security_state``
+    key fully absent (reads downstream as "nothing built" rather than
+    "build failed"). ``_mismatched_security_state_targets`` is the companion
+    selector the caller uses to emit a typed failure shell for exactly these
+    instead of dropping them.
+
+    MINOR 2 (round-3 review, 2026-09-06): a row is "relevant" if EITHER the
+    write-loop key OR the record's own ``ticker`` field is allow-listed --
+    the pre-PR selection basis was ``rec.get("ticker") in
+    SECURITY_STATE_TICKERS`` alone. This test previously asserted the
+    OPPOSITE of that (a row whose write-loop key was not allow-listed but
+    whose ``rec["ticker"]`` was got silently dropped by both selectors) --
+    it is rewritten here to assert the corrected, complementary behavior."""
+    import scripts.security_state_producer as producer
+
+    aapl, msft, goog = ({"ticker": ticker} for ticker in ("AAPL", "MSFT", "GOOG"))
+    mismatched_msft = {"ticker": "GOOG"}  # allow-listed KEY, disagreeing record
+    to_write = [("AAPL", aapl), ("MSFT", mismatched_msft), ("GOOG", goog)]
+    assert producer._select_security_state_targets(to_write) == [("AAPL", aapl)]
+    assert producer._mismatched_security_state_targets(to_write) == [("MSFT", mismatched_msft)]
+
+    # a write-loop key that is NOT allow-listed, whose record's OWN ticker
+    # IS allow-listed, must still be caught -- it was silently dropped by
+    # both selectors before this fix.
+    assert producer._mismatched_security_state_targets([("GOOG", msft)]) == [("GOOG", msft)]
+
+    # a row where NEITHER the write-loop key nor the record's own ticker is
+    # allow-listed is genuinely irrelevant and stays uncaught by either
+    # selector.
+    assert producer._mismatched_security_state_targets([("ZZZZ", goog)]) == []
+    assert producer._select_security_state_targets([("ZZZZ", goog)]) == []
 
 
 # ---------------------------------------------------------------------------

@@ -1,15 +1,15 @@
 {
   "schema": "thematic_desk.v1",
-  "as_of": "2026-09-06",
-  "scored_total": 185,
-  "open": 93,
-  "unscored_soft": 43,
+  "as_of": "2026-09-09",
+  "scored_total": 189,
+  "open": 89,
+  "unscored_soft": 44,
   "overall": {
-    "n": 185,
-    "hits": 112,
+    "n": 189,
+    "hits": 116,
     "misses": 73,
-    "hit_rate": 0.605,
-    "dir_accuracy": 0.405
+    "hit_rate": 0.614,
+    "dir_accuracy": 0.407
   },
   "by_market": {
     "us": {
@@ -20,11 +20,11 @@
       "dir_accuracy": 0.472
     },
     "china": {
-      "n": 62,
-      "hits": 32,
+      "n": 64,
+      "hits": 34,
       "misses": 30,
-      "hit_rate": 0.516,
-      "dir_accuracy": 0.371
+      "hit_rate": 0.531,
+      "dir_accuracy": 0.375
     },
     "hk": {
       "n": 10,
@@ -34,20 +34,20 @@
       "dir_accuracy": 0.9
     },
     "canada": {
-      "n": 60,
-      "hits": 35,
+      "n": 62,
+      "hits": 37,
       "misses": 25,
-      "hit_rate": 0.583,
-      "dir_accuracy": 0.3
+      "hit_rate": 0.597,
+      "dir_accuracy": 0.306
     }
   },
   "by_conviction": {
     "low": {
-      "n": 184,
-      "hits": 112,
+      "n": 188,
+      "hits": 116,
       "misses": 72,
-      "hit_rate": 0.609,
-      "dir_accuracy": 0.408
+      "hit_rate": 0.617,
+      "dir_accuracy": 0.41
     },
     "medium": {
       "n": 1,
@@ -64,8 +64,48 @@
       "dir_accuracy": null
     }
   },
-  "calibration_note": "185 scored, hit-rate 0.605 (directional accuracy 0.405). Chance alone would land a hit-rate near 0.8505 (directional accuracy near 0.5103) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
+  "calibration_note": "189 scored, hit-rate 0.614 (directional accuracy 0.407). Chance alone would land a hit-rate near 0.8505 (directional accuracy near 0.5103) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
   "recent": [
+    {
+      "id": "china-2026-07-28-2",
+      "market": "china",
+      "subject": "Innovative Pharma & CXO",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": 0.0126,
+      "check_by": "2026-09-08"
+    },
+    {
+      "id": "canada-2026-07-27-2",
+      "market": "canada",
+      "subject": "Technology",
+      "lean": "avoid",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0046,
+      "check_by": "2026-09-07"
+    },
+    {
+      "id": "china-2026-08-07-20260808071300-1",
+      "market": "china",
+      "subject": "Industrial Metals",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0323,
+      "check_by": "2026-09-07"
+    },
+    {
+      "id": "canada-2026-08-07-20260808071627-3",
+      "market": "canada",
+      "subject": "Big Banks",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0193,
+      "check_by": "2026-09-07"
+    },
     {
       "id": "canada-2026-07-24-3",
       "market": "canada",
@@ -144,46 +184,6 @@
       "conviction": "low",
       "outcome": "miss",
       "realized": -0.051,
-      "check_by": "2026-09-04"
-    },
-    {
-      "id": "canada-2026-08-07-20260808213205-1",
-      "market": "canada",
-      "subject": "Base Metals & Copper",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.0019,
-      "check_by": "2026-09-04"
-    },
-    {
-      "id": "canada-2026-08-07-20260808213205-2",
-      "market": "canada",
-      "subject": "Gold Miners",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": 0.1007,
-      "check_by": "2026-09-04"
-    },
-    {
-      "id": "canada-2026-08-07-20260808213205-3",
-      "market": "canada",
-      "subject": "Technology",
-      "lean": "avoid",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.0467,
-      "check_by": "2026-09-04"
-    },
-    {
-      "id": "us-2026-08-07-20260810023749-1",
-      "market": "us",
-      "subject": "Silver Miners",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": 0.1892,
       "check_by": "2026-09-04"
     }
   ]

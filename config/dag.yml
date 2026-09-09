@@ -1258,6 +1258,8 @@ lanes:
         module: scripts.build_intel_hub
       - id: build_aibrief
         module: scripts.build_aibrief
+      - id: build_am_edition
+        module: scripts.build_am_edition
       - id: build_mastermind
         module: scripts.build_mastermind
       - id: build_ai_desk_page
@@ -1268,6 +1270,14 @@ lanes:
           B6 Watchlist buy-zone sentinel — operator Supabase watchlist x buy-zone
           enter-detection -> alert JSONL + Discord dispatch.  Fail-soft (missing
           creds/table/network -> one log line, exit 0).  Same-day idempotent.
+      - id: thesis_condition_monitor
+        module: scripts.run_thesis_condition_monitor
+        note: >
+          F11 thesis condition monitor — reads committed falsifiers.json +
+          tripwire_state.json and enqueues public.alert_outbox rows for newly
+          latched windows. Fail-soft (absent creds/tables -> typed
+          READ_UNAVAILABLE, 0 rows, exit 0). Dormant unless
+          THESIS_MONITOR_ENABLE=1. Delivery is F08's drain, never this step.
       - id: notify
         module: scripts.notify
       - id: push_alerts
@@ -2483,6 +2493,7 @@ lanes:
           cl_markets:
             - scripts.build_commodities
             - scripts.build_spr
+            - scripts.build_sanctions_map
             - scripts.build_forex
             - scripts.build_bonds
             - scripts.build_crossasset
@@ -2722,6 +2733,7 @@ lanes:
           cl_markets:
             - scripts.build_commodities
             - scripts.build_spr
+            - scripts.build_sanctions_map
             - scripts.build_forex
             - scripts.build_bonds
             - scripts.build_crossasset
@@ -2812,6 +2824,8 @@ lanes:
         module: scripts.build_calibration
       - id: build_aibrief
         module: scripts.build_aibrief
+      - id: build_am_edition
+        module: scripts.build_am_edition
       - id: build_mastermind
         module: scripts.build_mastermind
       - id: build_ai_desk_page
