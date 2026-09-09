@@ -968,6 +968,11 @@ on:
       - "scripts/materialize_capital_structure_share_counts.py"
       - "scripts/retain_capital_structure_share_counts.py"
       - "scripts/build_capital_structure_projection.py"
+      # B-F09-6b (MO-PAID-067) trigger closure: the capital-markets policy
+      # projection leaf and its thin builder. A module-only edit must still
+      # start CI so capital-structure-intelligence runs the named suite.
+      - "engine/capital_policy_projection.py"
+      - "scripts/build_capital_policy_projection.py"
       - "scripts/build_capital_structure_page.py"
       - "contracts/capital_structure_*.schema.json"
       - "docs/CAPITAL_STRUCTURE_INTELLIGENCE_CONTRACT.md"

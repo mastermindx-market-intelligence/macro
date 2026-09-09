@@ -152,6 +152,22 @@ def _policy_watch(today=None) -> dict:
 # ── policy-watch:end ──
 
 
+# ── policy-projection:start (B-F09-6b, MO-PAID-067) ──
+def _policy_projection(today=None) -> dict:
+    """Dated-event ledger onto six frozen capital-markets windows. Context only.
+
+    Strictly additive beside the merged Policy watch chip. Never raises into
+    the desk build; a failed leaf degrades to a falsy value so the template
+    guard skips the section.
+    """
+    try:
+        from engine.capital_policy_projection import project
+        return project(today=today)
+    except Exception:  # noqa: BLE001 — a section must never crash the desk
+        return None
+# ── policy-projection:end ──
+
+
 def _temp_sibling(path: Path) -> Path:
     return path.with_name(f".{path.name}.{os.getpid()}.tmp")
 
@@ -180,6 +196,7 @@ def render(root: Path) -> Path:
         active_section="research",
         active_page="capital_structure",
         policy_watch=_policy_watch(),
+        policy_projection=_policy_projection(),
     )
     # Shared navigation templates intentionally contain indentation around
     # conditional blocks. Normalize generated-only blank-line whitespace so the

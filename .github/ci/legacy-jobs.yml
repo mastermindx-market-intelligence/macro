@@ -2949,6 +2949,7 @@ jobs:
           tests/test_build_capital_structure_projection.py
           tests/test_capital_structure_page.py
           tests/test_capital_structure_policy_projection.py
+          tests/test_capital_policy_projection.py
           tests/test_capital_structure_api.py
           tests/test_capital_structure_source_identity.py
           tests/test_capital_structure_source_manifest.py
@@ -3529,6 +3530,12 @@ jobs:
       - "research/US_BOARD_MEASUREMENT.md"
       - "scripts/__init__.py"
       - "scripts/build_biocatalyst.py"
+      # B-F09-6b (MO-PAID-067) trigger closure: the capital-markets policy
+      # projection leaf and its thin builder. Exclusive scope replaces
+      # inference; a module-only edit must still select this job, which names
+      # the suite.
+      - "engine/capital_policy_projection.py"
+      - "scripts/build_capital_policy_projection.py"
       - "scripts/build_capital_structure_page.py"
       - "scripts/build_chart_data.py"
       - "scripts/build_fundamental_forensics.py"
@@ -7090,6 +7097,12 @@ jobs:
       - "scripts/__init__.py"
       - "scripts/biocatalyst_worker.py"
       - "scripts/build_biocatalyst.py"
+      # B-F09-6b (MO-PAID-067) trigger closure: the capital-markets policy
+      # projection leaf and its thin builder. Exclusive scope replaces
+      # inference; a module-only edit must still select this job, which names
+      # the suite.
+      - "engine/capital_policy_projection.py"
+      - "scripts/build_capital_policy_projection.py"
       - "scripts/build_capital_structure_page.py"
       - "scripts/build_chart_data.py"
       - "scripts/build_fundamental_forensics.py"
@@ -11034,6 +11047,12 @@ jobs:
       - "scripts/build_btc_strategy.py"
       - "scripts/build_canada.py"
       - "scripts/build_canada_library.py"
+      # B-F09-6b (MO-PAID-067) trigger closure: the capital-markets policy
+      # projection leaf and its thin builder. Exclusive scope replaces
+      # inference; a module-only edit must still select this job, which names
+      # the suite.
+      - "engine/capital_policy_projection.py"
+      - "scripts/build_capital_policy_projection.py"
       - "scripts/build_capital_structure_page.py"
       - "scripts/build_chart_data.py"
       - "scripts/build_china.py"
