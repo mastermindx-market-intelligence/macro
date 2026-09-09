@@ -319,6 +319,19 @@ def test_5_missing_tenor_is_an_honest_null_not_a_dropped_row() -> None:
     assert seven["today"] is None
     assert "7y" in hero["missing_tenors"]
     assert hero["ok"] is True  # nine of ten still draw the curve
+    # The missing 7y must break the polyline, not interpolate across the hole.
+    chart = hero["chart"]
+    assert chart is not None
+    xs = [tick["x"] for tick in chart["x_ticks"]]
+    x5, x7, x10 = xs[5], xs[6], xs[7]
+    segments = chart["today_segments"]
+    assert len(segments) >= 2
+    joined = " ".join(segments)
+    assert f"{x7}," not in joined
+    for seg in segments:
+        has5 = f"{x5}," in seg
+        has10 = f"{x10}," in seg
+        assert not (has5 and has10), seg
 
 
 # ---------------------------------------------------------------------------
@@ -355,14 +368,25 @@ def test_7_two_spreads_only_arithmetic_not_model_output() -> None:
     assert [s["id"] for s in spreads] == ["10y3m", "2s10s"]
     by_tenor = {row["tenor"]: row for row in hero["tenors"]}
     ten_minus_three = by_tenor["10y"]["today"] - by_tenor["3m"]["today"]
+    ten_minus_two = by_tenor["10y"]["today"] - by_tenor["2y"]["today"]
     two_minus_ten = by_tenor["2y"]["today"] - by_tenor["10y"]["today"]
     by_id = {s["id"]: s for s in spreads}
     assert by_id["10y3m"]["today"] == pytest.approx(ten_minus_three)
-    assert by_id["2s10s"]["today"] == pytest.approx(two_minus_ten)
+    # Same long-minus-short convention as this route's published 2s10s
+    # (rates_curves.py: curve_2s10s_level = 10y - 2y). Short-minus-long is
+    # the opposite sign and is forbidden here.
+    assert by_id["2s10s"]["today"] == pytest.approx(ten_minus_two)
+    assert by_id["2s10s"]["today"] != pytest.approx(two_minus_ten)
+    assert by_id["2s10s"]["label"]["en"] == "10-year minus 2-year"
+    assert by_id["2s10s"]["label"]["zh"] == "10年期减2年期"
     # Deltas are the same arithmetic on the comparison windows.
     close_10y3m = by_tenor["10y"]["prior_close"] - by_tenor["3m"]["prior_close"]
     assert by_id["10y3m"]["delta_close"] == pytest.approx(
         by_id["10y3m"]["today"] - close_10y3m
+    )
+    close_2s10s = by_tenor["10y"]["prior_close"] - by_tenor["2y"]["prior_close"]
+    assert by_id["2s10s"]["delta_close"] == pytest.approx(
+        by_id["2s10s"]["today"] - close_2s10s
     )
 
 
@@ -379,8 +403,10 @@ def test_8_en_and_zh_both_render() -> None:
     assert "今日 vs 上一交易日收盘 vs 一个月前" in html
     assert "10-year minus 3-month" in html
     assert "10年期减3月期" in html
-    assert "2-year minus 10-year" in html
-    assert "2年期减10年期" in html
+    assert "10-year minus 2-year" in html
+    assert "10年期减2年期" in html
+    assert "2-year minus 10-year" not in html
+    assert "2年期减10年期" not in html
     assert "Today" in html and "今日" in html
     assert "Prior close" in html and "上一交易日收盘" in html
     assert "A month ago" in html and "一个月前" in html
@@ -416,6 +442,8 @@ def test_10_bonds_hub_output_is_byte_identical() -> None:
     preserved = (  # ci-trigger-closure: data
         "templates/bonds.html.j2",
         "site/bonds.html",
+        "engine/yield_curve.py",
+        "scripts/build_bonds.py",
     )
     for rel in preserved:
         assert (ROOT / rel).read_bytes() == _git_show(rel), rel

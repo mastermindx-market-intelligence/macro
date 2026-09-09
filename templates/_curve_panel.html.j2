@@ -92,15 +92,15 @@
       {% for tick in curve.chart.y_ticks %}
       <text class="mq-curve-tick" x="36" y="{{ tick.y }}" text-anchor="end" dominant-baseline="middle">{{ tick.text }}</text>
       {% endfor %}
-      {% if curve.chart.prior_month %}
-      <polyline class="mq-curve-line-month" points="{{ curve.chart.prior_month }}"></polyline>
-      {% endif %}
-      {% if curve.chart.prior_close %}
-      <polyline class="mq-curve-line-close" points="{{ curve.chart.prior_close }}"></polyline>
-      {% endif %}
-      {% if curve.chart.today %}
-      <polyline class="mq-curve-line-today" points="{{ curve.chart.today }}"></polyline>
-      {% endif %}
+      {% for points in curve.chart.prior_month_segments %}
+      <polyline class="mq-curve-line-month" points="{{ points }}"></polyline>
+      {% endfor %}
+      {% for points in curve.chart.prior_close_segments %}
+      <polyline class="mq-curve-line-close" points="{{ points }}"></polyline>
+      {% endfor %}
+      {% for points in curve.chart.today_segments %}
+      <polyline class="mq-curve-line-today" points="{{ points }}"></polyline>
+      {% endfor %}
       {% for tick in curve.chart.x_ticks %}
       <text class="mq-curve-tick" x="{{ tick.x }}" y="{{ curve.chart.height - 8 }}" text-anchor="middle">{{ t(tick.label.en, tick.label.zh) }}</text>
       {% endfor %}

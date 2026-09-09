@@ -1058,18 +1058,17 @@ def _shape_read(tenors: Sequence[Mapping[str, Any]]) -> dict[str, str]:
 
 def _spread_row(tenors_by_id: Mapping[str, Mapping[str, Any]], *,
                 spread_id: str, short: str, long: str,
-                label: dict[str, str], subtract_long_from_short: bool) -> dict[str, Any]:
-    """Arithmetic difference of two already-published tenor levels. Not a model."""
+                label: dict[str, str]) -> dict[str, Any]:
+    """Long minus short — same arithmetic as this route's published slopes.
+
+    ``curve_2s10s_level`` in the producer is ``10y − 2y`` (higher = steeper).
+    The hero strip must not invert that sign.
+    """
     left = tenors_by_id.get(short) or {}
     right = tenors_by_id.get(long) or {}
-    if subtract_long_from_short:
-        today = _delta(left.get("today"), right.get("today"))
-        close = _delta(left.get("prior_close"), right.get("prior_close"))
-        month = _delta(left.get("prior_month"), right.get("prior_month"))
-    else:
-        today = _delta(right.get("today"), left.get("today"))
-        close = _delta(right.get("prior_close"), left.get("prior_close"))
-        month = _delta(right.get("prior_month"), left.get("prior_month"))
+    today = _delta(right.get("today"), left.get("today"))
+    close = _delta(right.get("prior_close"), left.get("prior_close"))
+    month = _delta(right.get("prior_month"), left.get("prior_month"))
     return {
         "id": spread_id,
         "label": dict(label),
@@ -1109,14 +1108,21 @@ def _chart_payload(tenors: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     def y_at(value: float) -> float:
         return round(pad_t + (y_max - value) / (y_max - y_min) * inner_h, 2)
 
-    def polyline(key: str) -> str:
-        parts: list[str] = []
+    def polyline_segments(key: str) -> list[str]:
+        """One polyline per contiguous run. A missing tenor breaks the line."""
+        segments: list[str] = []
+        current: list[str] = []
         for i, row in enumerate(tenors):
             value = row.get(key)
             if not _finite(value):
+                if len(current) >= 2:
+                    segments.append(" ".join(current))
+                current = []
                 continue
-            parts.append(f"{x_at(i)},{y_at(float(value))}")
-        return " ".join(parts)
+            current.append(f"{x_at(i)},{y_at(float(value))}")
+        if len(current) >= 2:
+            segments.append(" ".join(current))
+        return segments
 
     x_ticks = []
     for i, row in enumerate(tenors):
@@ -1132,9 +1138,9 @@ def _chart_payload(tenors: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "width": width,
         "height": height,
         "baseline_y": height - pad_b,
-        "today": polyline("today"),
-        "prior_close": polyline("prior_close"),
-        "prior_month": polyline("prior_month"),
+        "today_segments": polyline_segments("today"),
+        "prior_close_segments": polyline_segments("prior_close"),
+        "prior_month_segments": polyline_segments("prior_month"),
         "x_ticks": x_ticks,
         "y_ticks": y_ticks,
     }
@@ -1184,12 +1190,10 @@ def _curve_hero(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         _spread_row(
             tenors_by_id, spread_id="10y3m", short="3m", long="10y",
             label=_pair("10-year minus 3-month", "10年期减3月期"),
-            subtract_long_from_short=False,
         ),
         _spread_row(
             tenors_by_id, spread_id="2s10s", short="2y", long="10y",
-            label=_pair("2-year minus 10-year", "2年期减10年期"),
-            subtract_long_from_short=True,
+            label=_pair("10-year minus 2-year", "10年期减2年期"),
         ),
     ]
     return {
