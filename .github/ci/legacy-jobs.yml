@@ -5276,19 +5276,27 @@ jobs:
       - agentos/discoveries/DSC-COMMODITY-AND-FX-PRICE-SPINE-YAHOO-VENDOR-TERMS-ARE-RECORDED-ADVERSE.md
       - research/market_intelligence_productization/F01_FX_COMMODITY_SOURCE_RIGHTS_AND_DEPTH_2026-09.md
       - research/market_intelligence_productization/F01_FX_DISLOCATION_CHARTER_2026-09.md
-      # B-REC-B5-1 (round 3, FIX-1): records pinned by test_b_rec3_wave_boundary_records.py
-      # and test_f00c_terminal_reconciliation.py, both run only by this job's last step.
-      # Closure cannot name these itself: LITERAL_DIRS in ci_scope_dependencies.py has no
-      # `agentos` entry, and the receipts below are composed as `_RECEIPTS / "name.json"`
-      # rather than full-path literals, so an edit to any one of these paths alone must be
-      # declared here to select this job pre-merge.
+      # B-REC-B5-1 (round 3 FIX-1, widened in round 4): every record read from disk by the
+      # three suites this job's last step runs — test_b_rec2_wave_boundary_records.py,
+      # test_b_rec3_wave_boundary_records.py and test_f00c_terminal_reconciliation.py.
+      # Some of them inference cannot reach on its own: LITERAL_DIRS in
+      # ci_scope_dependencies.py has no `agentos` entry, and the 0014/0015/0016 receipts
+      # are composed as `_RECEIPTS / "name.json"` rather than full-path literals, so an
+      # edit touching only one of those selects no scoped job. The rest are single
+      # `research/` path literals inference already reaches. All twelve are declared here
+      # explicitly whether or not inference would reach them, so the closure test in
+      # test_b_rec3_wave_boundary_records.py can pin them by name; a declaration only ever
+      # widens this job's scope (infer_job_scopes() unions declared with inferred), so
+      # declaring a path inference already covers costs nothing.
       - agentos/decisions/DEC-SUPABASE-MIGRATION-NAMESPACE-TERMINAL-LEDGER-2026-09-06.md
       - agentos/discoveries/DSC-TERMINAL-MASTER-REQUIRES-RESOLVED-THREADS-SO-AN-ADVISORY-CODEQL-THREAD-BLOCKS-A-GREEN-HEAD.md
       - agentos/discoveries/DSC-SEAT-TRANSFER-OVERLAP-DUPLICATES-IRREVERSIBLE-ACTS.md
+      - agentos/handoffs/MARKET-ONTOLOGY-META-CEO-B-2026-09-07.md
       - research/market_intelligence_productization/MARKET_ONTOLOGY_HALF_A_K_CHAIN_GATE_DOCKET_2026-09-06.md
       - research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv
       - research/market_intelligence_productization/F00C_TERMINAL_WAVE_RECONCILIATION_MANIFEST_2026-09-09.json
       - research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_TERMINAL_WAVE_RECONCILIATION_2026-09-09.md
+      - research/market_intelligence_productization/receipts/supabase_receipt_0012_thesis_objects_2026-09-06.json
       - research/market_intelligence_productization/receipts/supabase_receipt_0014_tenancy_foundation_2026-09-08.json
       - research/market_intelligence_productization/receipts/supabase_receipt_0015_team_roles_invitations_2026-09-08.json
       - research/market_intelligence_productization/receipts/supabase_receipt_0016_account_lifecycle_requests_2026-09-09.json
