@@ -5272,6 +5272,7 @@ jobs:
       - tests/test_b_rec2_wave_boundary_records.py
       - tests/test_b_rec3_wave_boundary_records.py
       - tests/test_f00c_terminal_reconciliation.py
+      - tests/test_f00c_half_a_reconciliation.py
       - tests/test_f01_fx_commodity_source_rights.py
       - agentos/discoveries/DSC-COMMODITY-AND-FX-PRICE-SPINE-YAHOO-VENDOR-TERMS-ARE-RECORDED-ADVERSE.md
       - research/market_intelligence_productization/F01_FX_COMMODITY_SOURCE_RIGHTS_AND_DEPTH_2026-09.md
@@ -5399,7 +5400,7 @@ jobs:
           python3 scripts/agentos.py validate
           python -m pytest tests/test_agentos_schema.py tests/test_agentos_status.py \
             tests/test_agentos_compile.py tests/test_f01_fx_commodity_source_rights.py tests/test_b_rec2_wave_boundary_records.py \
-            tests/test_b_rec3_wave_boundary_records.py tests/test_f00c_terminal_reconciliation.py -q
+            tests/test_b_rec3_wave_boundary_records.py tests/test_f00c_terminal_reconciliation.py tests/test_f00c_half_a_reconciliation.py -q
 
   capability-broker:
     if: ${{ false }}
