@@ -13840,8 +13840,14 @@ jobs:
       # r5 MAJ-A: test_macro_command_p4_copy.py imports the P4 capture
       # helpers to pin generated gaps = declared − captured.
       - "scripts/capture_macro_command_p4.py"
+      # v16: pure capture-guard helpers imported by capture_macro_command_p5
+      # and tests/test_macro_command_capture_guards.py.
+      - "scripts/macro_command_capture_guards.py"
+      - "scripts/capture_macro_command_p5.py"
+      - "scripts/count_macro_command_machine_text.py"
       - "tests/test_macro_command_shell.py"
       - "tests/test_macro_command_copy_law.py"
+      - "tests/test_macro_command_capture_guards.py"
       - "tests/test_macro_command_read_strip.py"
       - "tests/test_macro_command_panels.py"
       # P5 v13: rendered-page gates read these committed site copies directly.
@@ -13879,6 +13885,6 @@ jobs:
       - name: install suite-page test dependencies
         run: pip install pytest jinja2 pyyaml jsonschema==4.26.0
       - name: Market OS macro suite pages — shell, labels, view model, builder
-        run: python -m pytest tests/test_macro_suite_pages.py tests/test_macro_command_shell.py tests/test_macro_command_copy_law.py tests/test_macro_command_read_strip.py tests/test_macro_command_panels.py tests/test_macro_command_empty_states.py tests/test_macro_command_p4_copy.py -q
+        run: python -m pytest tests/test_macro_suite_pages.py tests/test_macro_command_shell.py tests/test_macro_command_copy_law.py tests/test_macro_command_read_strip.py tests/test_macro_command_panels.py tests/test_macro_command_empty_states.py tests/test_macro_command_p4_copy.py tests/test_macro_command_capture_guards.py -q
       - name: Market OS macro suite hub — discoverability, ordering, honest absence
         run: python -m pytest tests/test_macro_monetary_hub.py -q

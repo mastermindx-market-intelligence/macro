@@ -1499,7 +1499,7 @@ def test_chipmat_collision_same_bytes_different_dom_raises() -> None:
 
 
 def test_chipmat_collision_same_bytes_same_dom_allowed() -> None:
-    """E-m2: identical PNG bytes with matching cropDomSha256 + identity pass."""
+    """E-m3: identical PNG bytes with matching cropDomSha256 + allowlist pass."""
     from scripts.capture_macro_command_p5 import _chipmat_collision_ratified
     box = {"left": 10, "right": 80, "top": 4, "bottom": 40}
     cell = {
@@ -1507,15 +1507,26 @@ def test_chipmat_collision_same_bytes_same_dom_allowed() -> None:
         "analystBox": box, "siblingPillBox": box, "cropBox": box,
         "chipmatPairFits": True,
     }
-    probes = {
-        "chip_material_macro_rates_curves_dark_en_390": cell,
+    # Cross-page pair listed in chipmat_identical_allowlist.yml.
+    probes_ok = {
+        "chip_material_macro_business_activity_dark_zh_390": dict(cell),
+        "chip_material_macro_financial_conditions_dark_zh_390": dict(cell),
+    }
+    files_ok = [
+        "chipmat-macro_business_activity-dark-zh-390.png",
+        "chipmat-macro_financial_conditions-dark-zh-390.png",
+    ]
+    assert _chipmat_collision_ratified(files_ok, probes_ok) is True
+    # Cross-page pair NOT on the allowlist must fail.
+    probes_bad = {
+        "chip_material_macro_rates_curves_dark_en_390": dict(cell),
         "chip_material_macro_financial_conditions_dark_en_390": dict(cell),
     }
-    files = [
+    files_bad = [
         "chipmat-macro_rates_curves-dark-en-390.png",
         "chipmat-macro_financial_conditions-dark-en-390.png",
     ]
-    assert _chipmat_collision_ratified(files, probes) is True
+    assert _chipmat_collision_ratified(files_bad, probes_bad) is False
 
 
 def test_synthetic_partial_binds_from_dom() -> None:
@@ -2244,13 +2255,28 @@ def test_lineage_open_family_photographs_restored_rows() -> None:
         assert state.get("crop_selector") == "section.mq-lineage"
         assert state.get("openedBy") == "click"
         assert state.get("occlusionSamples")
+        assert state.get("raw_box"), state.get("file")
         locale = state.get("locale") or "en"
         text = (probes.get("lineage_open_text") or {}).get(state["file"]) or ""
         assert text, state.get("file")
+        low = text.lower()
+        # n-A: typed unknown-kind fallback is NOT a lineage sentence.
+        assert "cannot summarise" not in low
+        assert "无法概括" not in text
         if locale == "zh":
-            assert "已变更指纹" in text or "滞回" in text
+            assert "已变更指纹" in text, (state.get("file"), text[:120])
+            assert "滞回" in text, (state.get("file"), text[:120])
+            assert (
+                "同一参考期" in text
+                or "取代上一期" in text
+                or "首次发布" in text
+                or "更晚的参考期" in text
+            ), (state.get("file"), text[:160])
+            assert (
+                "滞回带" in text
+                or "未配置滞回" in text
+            ), (state.get("file"), text[:160])
         else:
-            low = text.lower()
             assert "changed fingerprints" in low or "changed fingerprint" in low
             assert "hysteresis" in low
             assert (
@@ -2258,7 +2284,6 @@ def test_lineage_open_family_photographs_restored_rows() -> None:
                 or "replaces the prior one" in low
                 or "first published" in low
                 or "later reference period" in low
-                or "cannot summarise" in low
             )
             assert (
                 "hold-back band" in low
@@ -2282,7 +2307,60 @@ def test_manifest_page_routes_match_shot_routes() -> None:
                 assert state["page_id"] == page["page_id"], (
                     state.get("file"), state.get("page_id"), page["page_id"])
             shot = state.get("shot_route")
-            if not shot:
-                continue
+            assert shot, (state.get("file"), "missing shot_route")
             normalized = shot if str(shot).startswith("/") else f"/{shot}"
             assert normalized == route, (state.get("file"), shot, route)
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_labor_page_rest_matrix_eight_cells_healthy() -> None:
+    """m-B: labor carries the 8 required rest keys with empty health receipts."""
+    import json
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    labor = next(
+        p for p in manifest["pages"]
+        if p["page_id"] == "macro_labor_markets.html")
+    assert labor["route"] == "/macro_labor_markets.html"
+    assert labor["console_errors"] == []
+    assert labor["failed_responses"] == []
+    rest = [
+        s for s in labor["states"]
+        if str(s.get("file", "")).startswith("ws-macro_labor_markets")
+    ]
+    # Premise correction: checker requires 8 (2 viewports × 2 locales × 2 themes),
+    # not the r13 "12-cell" wording.
+    assert len(rest) == 8, [s.get("file") for s in rest]
+    keys = {
+        (s.get("viewport"), s.get("locale"), s.get("theme"))
+        for s in rest
+    }
+    assert len(keys) == 8
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_crop_selector_cells_carry_guard_receipts() -> None:
+    """M-C: every crop_selector cell has raw_box + occlusion + locale text."""
+    import json
+    from scripts.capture_macro_command_p5 import family_for
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    skip_families = {"workspace", "hub_fold", "hub_full", "hub_390", "hub_768",
+                     "tablet_768", "e5"}
+    missing = []
+    for page in manifest["pages"]:
+        for state in page["states"]:
+            fam = state.get("family") or family_for(state.get("file") or "")
+            if fam in skip_families and not state.get("crop_selector"):
+                assert state.get("raw_box") is not None or state.get("shot_route")
+                assert state.get("shot_route"), state.get("file")
+                continue
+            if not state.get("crop_selector"):
+                continue
+            for key in ("raw_box", "occlusionSamples", "visible_text_sha256",
+                        "cropDomSha256", "shot_route"):
+                if not state.get(key):
+                    missing.append((state.get("file"), key))
+    assert not missing, missing[:20]

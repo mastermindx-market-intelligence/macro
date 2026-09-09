@@ -594,8 +594,11 @@ def authority_ceiling_pair(token: Any) -> dict[str, str] | None:
 
 
 def coverage_floor_pair(ratio: Any) -> dict[str, str] | None:
-    from lib.macro_suite_labels import fmt_ratio_pct
-    pct = fmt_ratio_pct(ratio) if not isinstance(ratio, str) else ratio
+    from lib.macro_suite_labels import format_user_facing_number
+    if isinstance(ratio, str):
+        pct = ratio
+    else:
+        pct = format_user_facing_number(ratio, kind="percent_count")
     if not pct:
         return None
     return _pair(
@@ -607,14 +610,16 @@ def coverage_floor_pair(ratio: Any) -> dict[str, str] | None:
 def hysteresis_note_pair(hysteresis: Mapping[str, Any] | None) -> dict[str, str]:
     block = hysteresis or {}
     held = bool(block.get("held_prior"))
-    from lib.macro_suite_labels import fmt_number
+    from lib.macro_suite_labels import format_user_facing_number
     raw_band = block.get("band")
     try:
         band_n = float(raw_band) if raw_band is not None else None
     except (TypeError, ValueError):
         band_n = None
     configured = band_n is not None and band_n > 0
-    band = fmt_number(raw_band) if configured else None
+    band = (
+        format_user_facing_number(raw_band, kind="count") if configured else None
+    )
     note_l = str(block.get("note") or "").lower()
     # Producer "prior quadrant not held … moved beyond the band" means a real flip.
     crossed_beyond = (

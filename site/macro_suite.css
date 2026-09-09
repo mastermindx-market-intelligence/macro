@@ -684,6 +684,30 @@ html[data-theme="light"] .mq-hub-absent {
   /* Wide receipt tables scroll inside themselves rather than the page body. */
   .mq-table { display: block; overflow-x: auto; white-space: nowrap; }
   .mq-table th, .mq-table td { white-space: normal; }
+  /* P5 v16: method body must not expand the 390 phone canvas (EN prose is
+     longer than ZH). Constrain the section, wrap prose, keep the table as the
+     only horizontal scroller — functional overflow repair, not a restyle. */
+  section.mq-method,
+  section.mq-method details.mc-details,
+  section.mq-method .mq-axis-method,
+  section.mq-method .mc-details-body {
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  section.mq-method .mq-axis-method,
+  section.mq-method .mc-details-body {
+    overflow-x: auto;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  section.mq-method .mq-method-grid {
+    min-width: 0;
+    grid-template-columns: 1fr;
+  }
+  section.mq-method .mq-table {
+    max-width: 100%;
+  }
   .mq-clock { grid-template-columns: 1fr; gap: 2px; }
   /* Nav: the home link keeps its row; the rail takes the full width below it. */
   .mq-suitenav { grid-template-columns: 1fr; gap: 4px; margin-top: 14px; }

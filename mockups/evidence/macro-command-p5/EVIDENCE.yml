@@ -1,7 +1,12 @@
 schema: mastermind.page_evidence_receipt.v1
 changed_paths:
   - templates/macro_command.css
+  - templates/macro_suite.css
   - templates/_macro_suite_shell.html.j2
   - templates/macro_monetary.html.j2
   - templates/macro_command.js
+  - lib/macro_suite_disclosure.py
+  - lib/macro_suite_labels.py
+  - scripts/capture_macro_command_p5.py
+  - scripts/macro_command_capture_guards.py
 manifest: mockups/evidence/macro-command-p5/manifest.json

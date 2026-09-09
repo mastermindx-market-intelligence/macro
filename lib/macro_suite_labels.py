@@ -1304,7 +1304,8 @@ def format_user_facing_number(value: Any, *, kind: str = "momentum") -> str | No
     """Plain number at the builder/renderer boundary (P5 v9 E-m3).
 
     Momentum and z-scores use 2 decimals. Percentages use 1 decimal and the
-    ``%`` unit. Never ``repr(float)`` / ``str(float)`` / scientific notation.
+    ``%`` unit. ``kind="count"`` drops trailing zeros for whole values (5,
+    50%). Never ``repr(float)`` / ``str(float)`` / scientific notation.
     """
     if value is None or isinstance(value, bool):
         return None
@@ -1318,6 +1319,17 @@ def format_user_facing_number(value: Any, *, kind: str = "momentum") -> str | No
     number = float(value)
     if kind == "percent":
         text = f"{number:.1f}%"
+    elif kind == "count":
+        if abs(number - round(number)) < 1e-9:
+            text = f"{int(round(number))}"
+        else:
+            text = f"{number:.2f}".rstrip("0").rstrip(".")
+    elif kind == "percent_count":
+        pct = number if abs(number) > 1.0 + 1e-9 else number * 100.0
+        if abs(pct - round(pct)) < 1e-9:
+            text = f"{int(round(pct))}%"
+        else:
+            text = f"{pct:.1f}%"
     else:
         text = f"{number:.2f}"
     return fmt_true_minus(text) if number < 0 else text
