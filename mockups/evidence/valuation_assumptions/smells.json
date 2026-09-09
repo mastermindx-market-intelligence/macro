@@ -29,7 +29,7 @@
             "horizontal_overflow": false
           }
         },
-        "console_error_count": 0,
+        "console_error_count": 1,
         "document_height_px": 1536,
         "duplicate_heading_texts": [],
         "elements_wider_than_viewport": 0,
@@ -50,7 +50,7 @@
           "viewport": "desktop"
         },
         "panel_count": 4,
-        "payload_bytes_total": 73073,
+        "payload_bytes_total": 432388,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 10,
@@ -79,7 +79,7 @@
             "horizontal_overflow": false
           }
         },
-        "console_error_count": 0,
+        "console_error_count": 1,
         "document_height_px": 1516,
         "duplicate_heading_texts": [],
         "elements_wider_than_viewport": 0,
@@ -100,7 +100,7 @@
           "viewport": "desktop"
         },
         "panel_count": 4,
-        "payload_bytes_total": 472699,
+        "payload_bytes_total": 493558,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 10,
@@ -129,7 +129,7 @@
             "horizontal_overflow": false
           }
         },
-        "console_error_count": 0,
+        "console_error_count": 1,
         "document_height_px": 900,
         "duplicate_heading_texts": [
           "try your own assumptions"
@@ -152,7 +152,7 @@
           "viewport": "desktop"
         },
         "panel_count": 0,
-        "payload_bytes_total": 467813,
+        "payload_bytes_total": 441391,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 10,
@@ -172,7 +172,7 @@
     "base_url": null,
     "kind": "site_dir",
     "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-ext-fix-7004-6a713ebbf7a72e1b",
-    "resolved_sha_or_none": "ff3f80bea41d41d5d866548f03c819b07ca040eb",
+    "resolved_sha_or_none": "413189a6b580c1b16ca71fe26657cd9810f6ca0f",
     "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-ext-fix-7004-6a713ebbf7a72e1b (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
     "site_dir": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mo-ext-fix-7004-6a713ebbf7a72e1b/.evidence_site"
   },
