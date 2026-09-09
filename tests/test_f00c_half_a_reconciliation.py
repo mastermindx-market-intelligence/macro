@@ -286,13 +286,14 @@ def test_this_suite_is_not_waived() -> None:
 _LEGACY_JOBS = _ROOT / ".github" / "ci" / "legacy-jobs.yml"
 
 # Every artifact THIS suite reads from disk and pins. `self-mod-fence` is the only
-# job that runs this suite (see the last `run:` step of its definition in
-# .github/ci/legacy-jobs.yml), so an edit touching ONLY one of these paths must be
-# able to select that job on its own — otherwise the pin fires post-merge on main
-# instead of pre-merge on the PR. Round-3 MAJOR: the manifest fixture was read at
-# line 23 and named in no job's `paths:`; `tests` is absent from LITERAL_DIRS in
-# scripts/ci_scope_dependencies.py, so scope inference could not reach it either,
-# and a fixture-only break would have merged green. Modelled on
+# merge-gate (`gate: code`) job that runs this suite (see the last `run:` step of
+# its definition in .github/ci/legacy-jobs.yml); `engine-render-guards`
+# (`gate: data`) also runs it, off the gate. So an edit touching ONLY one of these
+# paths must be able to select the merge-gate job on its own — otherwise the pin
+# fires post-merge on main instead of pre-merge on the PR. Round-3 MAJOR: the
+# manifest fixture was read at line 23 and named in no job's `paths:`; `tests` is
+# absent from LITERAL_DIRS in scripts/ci_scope_dependencies.py, so scope inference
+# could not reach it either, and a fixture-only break would have merged green. Modelled on
 # tests/test_b_rec3_wave_boundary_records.py's `_PINNED_RECORD_PATHS`. Declaring a
 # path inference already covers costs nothing: infer_job_scopes() unions declared
 # with inferred, so a declaration only ever widens a job's scope.
@@ -316,11 +317,20 @@ def _self_mod_fence_paths() -> set[str]:
 def test_self_mod_fence_paths_cover_every_artifact_this_suite_pins(
     record_path: str,
 ) -> None:
+    """Every pinned artifact is declared on the merge-gate job's `paths:` list.
+
+    Declaration ownership is split across this stack: this PR declares three of the
+    four entries itself (this suite file, its manifest fixture and its records
+    document) and inherits the fourth, the F00C ledger CSV, from the base branch
+    `claude/mo-b-rec-b5-1-ledger-reconciliation` (#7003), so that one parameter
+    passes on the parent packet's declaration rather than on one this PR owns.
+    """
     declared = _self_mod_fence_paths()
     assert record_path in declared, (
         f"{record_path!r} is read by this suite, which self-mod-fence is the only "
-        "job to run, but it is missing from that job's `paths:` list in "
-        ".github/ci/legacy-jobs.yml — an edit touching only this file would select "
-        "no job that runs the suite, so the pin would fire post-merge on main "
-        "instead of pre-merge on a PR"
+        "merge-gate (`gate: code`) job to run — engine-render-guards (`gate: data`) "
+        "also runs it, off the gate — but it is missing from self-mod-fence's "
+        "`paths:` list in .github/ci/legacy-jobs.yml — an edit touching only this "
+        "file would select no merge-gate job that runs the suite, so the pin would "
+        "fire post-merge on main instead of pre-merge on a PR"
     )
