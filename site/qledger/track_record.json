@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-08T14:30:41.306099+00:00",
+  "generated_at": "2026-09-09T03:12:31.876932+00:00",
   "grade_horizons": [
     5,
     21,
@@ -2675,7 +2675,7 @@
     }
   },
   "counts": {
-    "n_claims": 87793,
+    "n_claims": 87796,
     "n_grades": 113487,
     "n_placebo": 1126,
     "n_rejected": 16,
@@ -2689,7 +2689,7 @@
       "explicit_unit_v1:calendar_days:US": 122,
       "explicit_unit_v1:trading_days:CN": 2009
     },
-    "n_claims_horizon_unit_declared": 41163,
+    "n_claims_horizon_unit_declared": 41166,
     "n_claims_unstamped_regime": 6537
   },
   "ladder_states": {
@@ -3554,12 +3554,12 @@
       },
       "21": {
         "eligible": false,
-        "reason": "Wilson CI lower bound 0.4086 <= 0.5 — the hit-rate interval does not clear a coin flip. AUTO-DEMOTE warranted. claim_family='intel_hub' horizon=21d: rolling Wilson CI lower bound=0.4086 <= 0.5 (coin-flip null) at n_dates=35. Auto-demote one rung. Pinned as of 2026-09-08 (narrative_regime precedent).",
+        "reason": "Wilson CI lower bound 0.4086 <= 0.5 — the hit-rate interval does not clear a coin flip. AUTO-DEMOTE warranted. claim_family='intel_hub' horizon=21d: rolling Wilson CI lower bound=0.4086 <= 0.5 (coin-flip null) at n_dates=35. Auto-demote one rung. Pinned as of 2026-09-09 (narrative_regime precedent).",
         "n_dates": 35,
         "wilson_ci_low": 0.408571,
         "current_state": "LEGACY_NOT_AUTHORITY_ELIGIBLE",
         "demote": true,
-        "pinned_reason": "claim_family='intel_hub' horizon=21d: rolling Wilson CI lower bound=0.4086 <= 0.5 (coin-flip null) at n_dates=35. Auto-demote one rung. Pinned as of 2026-09-08 (narrative_regime precedent).",
+        "pinned_reason": "claim_family='intel_hub' horizon=21d: rolling Wilson CI lower bound=0.4086 <= 0.5 (coin-flip null) at n_dates=35. Auto-demote one rung. Pinned as of 2026-09-09 (narrative_regime precedent).",
         "clock_basis": "legacy_calendar_unstamped",
         "clock_migration": false,
         "clock_prior_n_dates": {},
@@ -3858,12 +3858,12 @@
       },
       "21": {
         "eligible": false,
-        "reason": "Wilson CI lower bound 0.3386 <= 0.5 — the hit-rate interval does not clear a coin flip. AUTO-DEMOTE warranted. claim_family='radar' horizon=21d: rolling Wilson CI lower bound=0.3386 <= 0.5 (coin-flip null) at n_dates=39. Auto-demote one rung. Pinned as of 2026-09-08 (narrative_regime precedent).",
+        "reason": "Wilson CI lower bound 0.3386 <= 0.5 — the hit-rate interval does not clear a coin flip. AUTO-DEMOTE warranted. claim_family='radar' horizon=21d: rolling Wilson CI lower bound=0.3386 <= 0.5 (coin-flip null) at n_dates=39. Auto-demote one rung. Pinned as of 2026-09-09 (narrative_regime precedent).",
         "n_dates": 39,
         "wilson_ci_low": 0.338649,
         "current_state": "LEGACY_NOT_AUTHORITY_ELIGIBLE",
         "demote": true,
-        "pinned_reason": "claim_family='radar' horizon=21d: rolling Wilson CI lower bound=0.3386 <= 0.5 (coin-flip null) at n_dates=39. Auto-demote one rung. Pinned as of 2026-09-08 (narrative_regime precedent).",
+        "pinned_reason": "claim_family='radar' horizon=21d: rolling Wilson CI lower bound=0.3386 <= 0.5 (coin-flip null) at n_dates=39. Auto-demote one rung. Pinned as of 2026-09-09 (narrative_regime precedent).",
         "clock_basis": "legacy_calendar_unstamped",
         "clock_migration": false,
         "clock_prior_n_dates": {},
@@ -4286,7 +4286,7 @@
       }
     }
   },
-  "ladder_states_at": "2026-09-08T14:31:58.662729+00:00",
+  "ladder_states_at": "2026-09-09T03:13:39.754019+00:00",
   "promotion_readiness": {
     "altdata": {
       "5": {
@@ -6128,7 +6128,7 @@
         "ready": false,
         "approaching": true,
         "projected_ready_date": null,
-        "reason": "Wilson CI lower bound 0.3386 <= 0.5 — the hit-rate interval does not clear a coin flip. AUTO-DEMOTE warranted. claim_family='radar' horizon=21d: rolling Wilson CI lower bound=0.3386 <= 0.5 (coin-flip null) at n_dates=39. Auto-demote one rung. Pinned as of 2026-09-08 (narrative_regime precedent).",
+        "reason": "Wilson CI lower bound 0.3386 <= 0.5 — the hit-rate interval does not clear a coin flip. AUTO-DEMOTE warranted. claim_family='radar' horizon=21d: rolling Wilson CI lower bound=0.3386 <= 0.5 (coin-flip null) at n_dates=39. Auto-demote one rung. Pinned as of 2026-09-09 (narrative_regime precedent).",
         "clock_basis": "legacy_calendar_unstamped",
         "clock_migration": false,
         "clock_prior_n_dates": {},
@@ -7106,5 +7106,5 @@
       }
     }
   },
-  "promotion_readiness_at": "2026-09-08T14:33:25.464679+00:00"
+  "promotion_readiness_at": "2026-09-09T03:15:04.195409+00:00"
 }
