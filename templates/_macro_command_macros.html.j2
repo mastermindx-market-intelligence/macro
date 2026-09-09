@@ -1,0 +1,57 @@
+{#
+  Macro Command — shared null macro (F01 / Macro Command P1).
+
+  `nulled(en, zh)` is the ONE place this page emits a bare em dash. Every
+  invocation carries an `.mq-sr` sentence explaining the absence, so no dash
+  on this page is ever the only content of a cell, chip or panel (G4).
+  Grafted verbatim from the COMMAND draft §2.2 / frozen spec §2.7.
+
+  `t`/`bl` are defined locally here (never imported cross-file) because Jinja
+  macros are not visible across an `{% import %}` boundary without `with
+  context`, and this repo's established idiom — see
+  `_macro_suite_shell.html.j2:35-40` — is a local copy per macro-library file,
+  not a shared-context import.
+#}
+{%- macro t(en, zh='') -%}
+<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
+{%- endmacro %}
+
+{% macro nulled(en, zh) -%}
+<span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr">{{ t(en, zh) }}</span>
+{%- endmacro %}
+
+{#
+  D3 — one plain sentence per workspace: what that workspace answers.
+
+  Keyed on the workspace's own deep-link href, because that is the only
+  identifier the Overview loop variable carries: `_detail_link()` publishes
+  `{"title": {...}, "href": ...}` and nothing else
+  (scripts/build_macro_suite_pages.py:591-593). Reviewed copy, <=12 words each,
+  full EN/ZH parity, no stat names, no slugs, no internal state names (G2/G6),
+  and no string on the copy guard's banned list.
+
+  Fail-soft on purpose: an href with no entry renders NOTHING, so a future
+  fifteenth workspace degrades to title + arrow and can never print an English
+  fallback inside the `.l-zh` span.
+#}
+{% set ANSWERS = {
+  "macro_liquidity_regime.html":        {"en": "Whether cash in the system is getting easier or tighter.", "zh": "系统里的资金是在变宽松还是变紧。"},
+  "macro_liquidity_central_banks.html": {"en": "What central banks are adding to or draining from markets.", "zh": "央行正在向市场投放还是回收资金。"},
+  "macro_monetary_policy.html":         {"en": "Where the policy rate sits and where it is heading.", "zh": "政策利率处在什么位置，又将走向何方。"},
+  "macro_rates_curves.html":            {"en": "What bond yields say about growth and rate expectations.", "zh": "债券收益率对增长与利率预期的说法。"},
+  "macro_inflation_system.html":        {"en": "How fast prices are rising, and how broadly.", "zh": "物价上涨得有多快，涨势又有多普遍。"},
+  "macro_growth_real_economy.html":     {"en": "Whether the economy is speeding up or slowing down.", "zh": "经济是在加速还是在放缓。"},
+  "macro_business_activity.html":       {"en": "What companies are making, ordering and investing.", "zh": "企业在生产、下单和投资上的动向。"},
+  "macro_labor_markets.html":           {"en": "How hard it is to hire, and what pay is doing.", "zh": "招人有多难，工资又在怎么变。"},
+  "macro_housing_real_estate.html":     {"en": "What homes cost to buy, build and borrow against.", "zh": "买房、建房与房贷成本的变化。"},
+  "macro_consumer_payments.html":       {"en": "What households are spending, and how they pay.", "zh": "家庭花了多少钱，又用什么方式支付。"},
+  "macro_financial_conditions.html":    {"en": "How easy money is to raise across markets right now.", "zh": "当前在各市场融资的难易程度。"},
+  "macro_capital_structure.html":       {"en": "Who is borrowing, on what terms, at what risk.", "zh": "谁在借钱、条件如何、风险有多大。"},
+  "macro_national_debt_liabilities.html": {"en": "What governments owe and what servicing it costs.", "zh": "政府欠了多少，偿债成本有多高。"},
+  "macro_trade_flows.html":             {"en": "What is moving between countries, and on what terms.", "zh": "国与国之间的货物流向与贸易条件。"}
+} %}
+
+{% macro answers(href) -%}
+{%- set node = ANSWERS.get(href) -%}
+{%- if node %}<span class="mc-dest-answers">{{ t(node.en, node.zh) }}</span>{% endif -%}
+{%- endmacro %}
