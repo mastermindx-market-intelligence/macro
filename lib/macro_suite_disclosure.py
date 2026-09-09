@@ -660,6 +660,8 @@ def changed_sources_pair(fingerprints: Sequence[Any] | None) -> dict[str, str] |
 
 # Producer kinds enumerated from engine/market_os/macro_workspaces/*._corrections.
 # Distinguishing fact is the customer-visible phrase that must appear in EN.
+# `source_swap` was removed: no producer emits it (verified by
+# test_producer_lineage_notes_map_to_real_kinds). Do not re-add without a producer.
 LINEAGE_NOTE_KIND_SENTENCES: dict[str, dict[str, str]] = {
     "no_change_republication": _pair(
         "Same reference period as the predecessor print; no source value changed (no-change republication).",
@@ -668,10 +670,6 @@ LINEAGE_NOTE_KIND_SENTENCES: dict[str, dict[str, str]] = {
     "value_correction": _pair(
         "Same reference period as the predecessor print; a source value changed, so this print replaces the prior one.",
         "与上一期读数同一参考期；源值已变，本期取代上一期。",
-    ),
-    "source_swap": _pair(
-        "The source for this reading changed; the reference period is the same.",
-        "本读数的数据源已更换；参考期不变。",
     ),
     "reference_period_change": _pair(
         "This is a new observation for a later reference period, not a revision of the prior print.",
@@ -686,13 +684,11 @@ LINEAGE_NOTE_KIND_SENTENCES: dict[str, dict[str, str]] = {
 LINEAGE_NOTE_KIND_FACTS: dict[str, str] = {
     "no_change_republication": "no-change republication",
     "value_correction": "replaces the prior one",
-    "source_swap": "source for this reading changed",
     "reference_period_change": "later reference period",
     "first_known": "first published print",
 }
 
 _LINEAGE_KIND_MARKERS: tuple[tuple[str, tuple[str, ...]], ...] = (
-    ("source_swap", ("source swap", "source for this reading changed", "source was swapped")),
     ("value_correction", (
         "supersedes the prior one as a revision",
         "changed value: this print supersedes",
@@ -700,6 +696,7 @@ _LINEAGE_KIND_MARKERS: tuple[tuple[str, tuple[str, ...]], ...] = (
         "metrics changed value",
         "owner-native metrics changed value",
         "source components changed value",
+        "tier fields changed value",
     )),
     ("no_change_republication", (
         "no-change republication",
@@ -735,6 +732,11 @@ def _period_clause(effective_date: Any, prior_effective_date: Any) -> dict[str, 
     dated = date_display_pair(str(effective_date) if effective_date else "")
     prior = date_display_pair(str(prior_effective_date) if prior_effective_date else "")
     if dated and prior:
+        if dated["en"] == prior["en"] and dated["zh"] == prior["zh"]:
+            return _pair(
+                f" Both as of {dated['en']}.",
+                f"两期均截至{dated['zh']}。",
+            )
         return _pair(
             f" This print is as of {dated['en']}; the predecessor is as of {prior['en']}.",
             f"本期截至{dated['zh']}；上一期截至{prior['zh']}。",
@@ -769,10 +771,26 @@ def lineage_note_pair(
             f"::warning title=macro-suite-unknown-lineage-kind::unknown lineage note {text!r}",
             flush=True,
         )
-        fallback_en = "A correction note is on file for this reading."
-        fallback_zh = "本读数附有更正说明。"
-        if period:
-            return _pair(fallback_en + period["en"], fallback_zh + period["zh"])
+        # Typed plain-word fallback: names that classification failed, keeps
+        # the note's date/period, never reuses the old "correction on file" constant.
+        from lib.macro_suite_labels import date_display_pair
+        dated = date_display_pair(str(effective_date) if effective_date else "")
+        prior = date_display_pair(str(prior_effective_date) if prior_effective_date else "")
+        if dated and prior and dated["en"] == prior["en"]:
+            fallback_en = (
+                f"This page cannot summarise the correction note yet "
+                f"(both as of {dated['en']})."
+            )
+            fallback_zh = f"本页尚无法概括该更正说明（两期均截至{dated['zh']}）。"
+        elif dated:
+            fallback_en = (
+                f"This page cannot summarise the correction note yet "
+                f"(as of {dated['en']})."
+            )
+            fallback_zh = f"本页尚无法概括该更正说明（截至{dated['zh']}）。"
+        else:
+            fallback_en = "This page cannot summarise the correction note yet."
+            fallback_zh = "本页尚无法概括该更正说明。"
         return _pair(fallback_en, fallback_zh)
     sentence = dict(LINEAGE_NOTE_KIND_SENTENCES[kind])
     if period:

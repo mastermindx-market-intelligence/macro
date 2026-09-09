@@ -1952,7 +1952,6 @@ def test_lineage_note_kinds_render_distinct_facts() -> None:
             "owner-native source values changed: this print supersedes the prior "
             "one as a revision."
         ),
-        "source_swap": "The source for this reading changed; the reference period is the same.",
         "reference_period_change": (
             "Reference period differs from the predecessor print (a new observation, "
             "not a revision of the same period); no correction asserted."
@@ -1962,6 +1961,7 @@ def test_lineage_note_kinds_render_distinct_facts() -> None:
             "a prior accepted print exists."
         ),
     }
+    assert "source_swap" not in LINEAGE_NOTE_KIND_FACTS
     rendered: dict[str, str] = {}
     for kind, sample in samples.items():
         assert classify_lineage_kind(sample) == kind
@@ -1973,13 +1973,76 @@ def test_lineage_note_kinds_render_distinct_facts() -> None:
         assert "4 Sep 2026" in pair["en"]
         assert pair["zh"]
     assert len(set(rendered.values())) == len(rendered)
+    # Equal dates → single "both as of" clause (n1).
+    same_dates = lineage_note_pair(
+        samples["no_change_republication"],
+        effective_date="2026-09-04", prior_effective_date="2026-09-04")
+    assert same_dates is not None
+    assert "Both as of 4 Sep 2026" in same_dates["en"]
+    assert "This print is as of" not in same_dates["en"]
     with pytest.raises(KeyError, match="unknown lineage note kind"):
         classify_lineage_kind("engine.internal_revision_token v3")
     fallback = lineage_note_pair(
         "engine.internal_revision_token v3", effective_date="2026-09-04")
     assert fallback is not None
     assert "4 Sep 2026" in fallback["en"]
-    assert "A correction note is on file" in fallback["en"]
+    assert "cannot summarise the correction note yet" in fallback["en"]
+    assert "A correction note is on file" not in fallback["en"]
+
+
+def test_producer_lineage_notes_map_to_real_kinds() -> None:
+    """Every note string the 15 workspace producers can emit maps to a real kind."""
+    import ast
+    from pathlib import Path
+    from lib.macro_suite_disclosure import (
+        LINEAGE_NOTE_KIND_FACTS, classify_lineage_kind,
+    )
+    root = Path(__file__).resolve().parents[1] / "engine" / "market_os" / "macro_workspaces"
+    notes: list[tuple[str, str]] = []
+    for path in sorted(root.glob("*.py")):
+        if path.name in {"__init__.py", "build.py", "contract.py", "registry.py", "consumer.py"}:
+            continue
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.FunctionDef) or node.name != "_corrections":
+                continue
+            for sub in ast.walk(node):
+                if not isinstance(sub, ast.Dict):
+                    continue
+                for key, value in zip(sub.keys, sub.values):
+                    if not (isinstance(key, ast.Constant) and key.value == "note"):
+                        continue
+                    if isinstance(value, ast.Constant) and isinstance(value.value, str):
+                        notes.append((path.name, value.value))
+    assert len(notes) >= 40, notes  # 14 producers × ≥3 branches
+    producers = {name for name, _ in notes}
+    assert len(producers) >= 14, producers
+    unknown: list[str] = []
+    kinds_seen: set[str] = set()
+    for name, note in notes:
+        try:
+            kind = classify_lineage_kind(note)
+        except KeyError as exc:
+            unknown.append(f"{name}: {note!r} ({exc})")
+            continue
+        kinds_seen.add(kind)
+        assert kind in LINEAGE_NOTE_KIND_FACTS, (name, kind, note)
+    assert unknown == [], unknown
+    assert "source_swap" not in kinds_seen
+    assert kinds_seen == set(LINEAGE_NOTE_KIND_FACTS), (kinds_seen, set(LINEAGE_NOTE_KIND_FACTS))
+
+
+def test_unknown_lineage_fallback_is_typed_and_warns(capsys) -> None:
+    from lib.macro_suite_disclosure import lineage_note_pair
+    pair = lineage_note_pair(
+        "engine.internal_revision_token v3",
+        effective_date="2026-09-04", prior_effective_date="2026-09-04")
+    assert pair is not None
+    assert "cannot summarise" in pair["en"]
+    assert "both as of 4 Sep 2026" in pair["en"]
+    assert "A correction note is on file" not in pair["en"]
+    err = capsys.readouterr().out
+    assert err.startswith("::warning title=macro-suite-unknown-lineage-kind::")
 
 
 @pytest.mark.needs_full_checkout("site")
@@ -2084,19 +2147,64 @@ def test_method_open_family_photographs_disclosure_rows() -> None:
         if state.get("family") == "method_open" or family_for(state.get("file") or "") == "method_open"
     ]
     assert len(cells) >= 10, [c.get("file") for c in cells]
+    # Labor crops must live under the labor page entry, never FC.
+    labor_files = [c["file"] for c in cells if "labor_markets" in c["file"]]
+    for page in manifest.get("pages") or []:
+        for state in page.get("states") or []:
+            if "labor_markets" in str(state.get("file")):
+                assert page["page_id"] == "macro_labor_markets.html", (
+                    page["page_id"], state.get("file"))
+                assert state.get("shot_route") in (
+                    "/macro_labor_markets.html", "macro_labor_markets.html")
+    assert labor_files, "expected labor method_open cells"
+    text_hashes: set[str] = set()
     for state in cells:
         assert state.get("crop_selector") == "section.mq-method .mq-axis-method"
         assert state.get("openedBy") == "click"
-        head = state.get("element_text_head") or ""
-        assert "Weights law" in head or "权重法则" in head, (state.get("file"), head)
-        assert state.get("element_text_sha256")
+        locale = state.get("locale") or "en"
+        head = (
+            state.get("visible_text_head")
+            or state.get("element_text_head")
+            or ""
+        )
         text = (probes.get("method_open_text") or {}).get(state["file"]) or ""
         if not text:
             text = state.get("element_text") or ""
         assert text, state.get("file")
+        if locale == "zh":
+            assert "权重法则" in text, (state.get("file"), text[:80])
+            assert "Weights law" not in text and "WEIGHTS LAW" not in text, (
+                state.get("file"), text[:80])
+            assert "权重法则" in head or "坐标轴" in head or "方向" in head, (
+                state.get("file"), head)
+            assert "Weights law" not in head and "WEIGHTS LAW" not in head, (
+                state.get("file"), head)
+        else:
+            assert "weights law" in text.casefold(), (state.get("file"), text[:80])
+            assert "权重法则" not in text, (state.get("file"), text[:80])
+            assert "weights law" in head.casefold() or "axis method" in head.casefold(), (
+                state.get("file"), head)
+            assert "权重法则" not in head, (state.get("file"), head)
+        assert state.get("visible_text_sha256") or state.get("element_text_sha256")
+        text_hashes.add(
+            state.get("visible_text_sha256")
+            or state.get("element_text_sha256")
+        )
+        # Geometry guard receipts
+        box = state.get("crop_box") or {}
+        assert float(box.get("x", -1)) >= 0, (state.get("file"), box)
+        assert (
+            float(box["x"]) + float(box["width"])
+            <= float(state.get("viewport_width") or 0) + 0.51
+        ), (state.get("file"), box)
+        assert state.get("occlusionSamples"), state.get("file")
         for en, zh in COMPOSITION_DISCLOSURE_ROWS:
-            assert en in text, (state.get("file"), en)
-            assert zh in text, (state.get("file"), zh)
+            label = zh if locale == "zh" else en
+            # dt labels may be CSS-uppercased in visible text
+            assert label in text or label.upper() in text or label.casefold() in text.casefold(), (
+                state.get("file"), label)
+    # EN and ZH must not share a text hash once locale-visible text is used.
+    assert len(text_hashes) >= 4, text_hashes
     families = probes.get("declared_families") or declared_families()
     assert "method_open" in families
     details = [
@@ -2109,3 +2217,72 @@ def test_method_open_family_photographs_disclosure_rows() -> None:
     ]
     pairs = {(s.get("theme"), s.get("locale")) for s in details}
     assert pairs >= {("dark", "en"), ("dark", "zh"), ("light", "en"), ("light", "zh")}
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_lineage_open_family_photographs_restored_rows() -> None:
+    import json
+    from scripts.capture_macro_command_p5 import family_for
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    probes = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "probes.json")
+        .read_text(encoding="utf-8"))
+    cells = [
+        state
+        for page in manifest.get("pages") or []
+        for state in page.get("states") or []
+        if state.get("family") == "lineage_open"
+        or family_for(state.get("file") or "") == "lineage_open"
+    ]
+    assert len(cells) >= 8, [c.get("file") for c in cells]
+    pages = {c.get("file", "").split("-")[1] for c in cells}
+    assert "macro_financial_conditions" in pages
+    assert "macro_monetary_policy" in pages
+    for state in cells:
+        assert state.get("crop_selector") == "section.mq-lineage"
+        assert state.get("openedBy") == "click"
+        assert state.get("occlusionSamples")
+        locale = state.get("locale") or "en"
+        text = (probes.get("lineage_open_text") or {}).get(state["file"]) or ""
+        assert text, state.get("file")
+        if locale == "zh":
+            assert "已变更指纹" in text or "滞回" in text
+        else:
+            low = text.lower()
+            assert "changed fingerprints" in low or "changed fingerprint" in low
+            assert "hysteresis" in low
+            assert (
+                "same reference period" in low
+                or "replaces the prior one" in low
+                or "first published" in low
+                or "later reference period" in low
+                or "cannot summarise" in low
+            )
+            assert (
+                "hold-back band" in low
+                or "no hold-back band is configured" in low
+            )
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_manifest_page_routes_match_shot_routes() -> None:
+    import json
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    page_ids = {p["page_id"] for p in manifest["pages"]}
+    assert "macro_labor_markets.html" in page_ids
+    assert "macro_monetary_policy.html" in page_ids
+    for page in manifest["pages"]:
+        route = page["route"]
+        for state in page["states"]:
+            if state.get("page_id"):
+                assert state["page_id"] == page["page_id"], (
+                    state.get("file"), state.get("page_id"), page["page_id"])
+            shot = state.get("shot_route")
+            if not shot:
+                continue
+            normalized = shot if str(shot).startswith("/") else f"/{shot}"
+            assert normalized == route, (state.get("file"), shot, route)

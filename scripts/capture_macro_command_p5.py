@@ -73,12 +73,25 @@ WORKSPACE_PAGES = (
     "macro_financial_conditions.html",
     "macro_housing_real_estate.html",
 )
+# Honest labor page entry (option a): own rest matrix + method_open + health.
+# Not folded into WORKSPACE_PAGES so chipmat/i2/clearance stay on the four
+# already-probed workspaces; rest census only needs the 8 rest cells.
+LABOR_PAGE = "macro_labor_markets.html"
 METHOD_OPEN_PAGES = (
     "macro_financial_conditions.html",
-    "macro_labor_markets.html",
+    LABOR_PAGE,
 )
 METHOD_OPEN_SELECTOR = "section.mq-method .mq-axis-method"
 METHOD_OPEN_DETAILS = "section.mq-method details.mc-details"
+# True container for Changed fingerprints / Hysteresis / lineage sentence
+# (NOT section.mq-method — Method version / Owner / Trace live elsewhere;
+# see claims NOT DONE-AS-WRITTEN).
+LINEAGE_OPEN_PAGES = (
+    "macro_financial_conditions.html",
+    "macro_monetary_policy.html",
+)
+LINEAGE_OPEN_SELECTOR = "section.mq-lineage"
+LINEAGE_OPEN_DETAILS = "section.mq-lineage details.mc-details"
 FIVE_PAGES = ("macro_monetary.html",) + WORKSPACE_PAGES
 HUB_PAGE = "macro_monetary.html"
 CHIP_MATERIAL_WIDTHS = (1440, 768, 390)
@@ -219,6 +232,8 @@ def family_for(filename: str) -> str:
         return "half_null"
     if name.startswith("method_open-"):
         return "method_open"
+    if name.startswith("lineage_open-"):
+        return "lineage_open"
     if name.startswith(("15-", "15b-", "16-", "16b-")):
         return "details_open"
     if name.startswith("17"):
@@ -718,7 +733,9 @@ def _state(filename: str, theme: str, locale: str, viewport: str,
         "trigger": trigger,
     }
     for key in ("crop_box_doc", "scroll_y_at_shot", "ihdr_delta_px",
-                "element_text_head", "element_text_sha256", "openedBy",
+                "element_text_head", "element_text_sha256",
+                "visible_text_head", "visible_text_sha256", "openedBy",
+                "occlusionSamples", "shot_route", "page_id",
                 "innerWidth", "innerHeight",
                 "coordSpace", "hostFrameOffset", "host_scroll_y_at_shot",
                 "frameInnerWidth", "analystBox", "siblingPillBox"):
@@ -790,6 +807,293 @@ def _assert_method_dl_contained(body) -> None:
     if not _box_contains(outer, inner):
         raise RuntimeError(
             f"mq-axis-method crop does not contain its dl: {outer} vs {inner}")
+
+
+def _close_nav_overlay(target, *, host_page, viewport_width: int) -> None:
+    """Before any ≤768 element shot: close mobile nav and RAISE if still visible."""
+    if int(viewport_width) > 768:
+        return
+    target.evaluate(
+        """() => {
+            document.documentElement.classList.remove('nav-open');
+            document.body.classList.remove('nav-open');
+            document.querySelectorAll('.nav-open').forEach(el => {
+                el.classList.remove('nav-open');
+            });
+            document.querySelectorAll(
+                '.nav-dd.open, .nav-sub.open, .nav-drill.is-open'
+            ).forEach(el => {
+                el.classList.remove('open');
+                el.classList.remove('is-open');
+            });
+        }"""
+    )
+    host_page.wait_for_timeout(150)
+    still = target.evaluate(
+        """() => {
+            const open = document.querySelector(
+                '.has-nav-toggle.nav-open, .site-nav.nav-open, .topbar.nav-open'
+            );
+            if (!open) return null;
+            const links = open.querySelector('.nav-links');
+            if (!links) return 'nav-open-without-links';
+            const st = getComputedStyle(links);
+            if (st.display === 'none' || st.visibility === 'hidden'
+                || Number(st.opacity) === 0) {
+                return null;
+            }
+            const r = links.getBoundingClientRect();
+            if (r.width < 2 || r.height < 2) return null;
+            return 'nav-links-visible';
+        }"""
+    )
+    if still:
+        raise RuntimeError(
+            f"nav overlay still visible after close at ≤768 ({still})")
+
+
+def _assert_crop_geometry(
+        crop_box: Mapping[str, Any], *,
+        viewport_width: float, doc_height: float, name: str,
+        crop_box_doc: Mapping[str, Any] | None = None) -> None:
+    x = float(crop_box["x"])
+    y = float(crop_box["y"])
+    w = float(crop_box["width"])
+    h = float(crop_box["height"])
+    if x < -0.01 or y < -0.01:
+        raise RuntimeError(
+            f"{name}: crop_box origin out of range x={x} y={y}")
+    if x + w > float(viewport_width) + 0.51:
+        raise RuntimeError(
+            f"{name}: crop_box overflows viewport width "
+            f"x+w={x + w} vw={viewport_width}")
+    doc = crop_box_doc or crop_box
+    dy = float(doc["y"])
+    dh = float(doc["height"])
+    if dy < -0.01:
+        raise RuntimeError(f"{name}: crop_box_doc.y={dy} < 0")
+    if dy + dh > float(doc_height) + 1.0:
+        raise RuntimeError(
+            f"{name}: crop_box_doc overflows document height "
+            f"y+h={dy + dh} doc_h={doc_height}")
+
+
+def _clamp_box_to_viewport(
+        box: Mapping[str, float], *, vw: float, vh: float
+        ) -> dict[str, float]:
+    x0 = max(0.0, float(box["x"]))
+    y0 = max(0.0, float(box["y"]))
+    x1 = min(float(vw), float(box["x"]) + float(box["width"]))
+    y1 = min(float(vh), float(box["y"]) + float(box["height"]))
+    if x1 - x0 < 1.0 or y1 - y0 < 1.0:
+        raise RuntimeError(
+            f"crop/viewport intersection empty: box={dict(box)} vw={vw} vh={vh}")
+    return {"x": x0, "y": y0, "width": x1 - x0, "height": y1 - y0}
+
+
+def _locale_visible_text(locator, locale: str) -> str:
+    """Visible text for the active locale only (computed display/visibility)."""
+    return str(locator.evaluate(
+        """(el, locale) => {
+            const prefer = locale === 'zh' ? 'l-zh' : 'l-en';
+            const other = locale === 'zh' ? 'l-en' : 'l-zh';
+            const parts = [];
+            const pushVisible = (node) => {
+                if (!node || node.nodeType !== 1) return;
+                const st = getComputedStyle(node);
+                if (st.display === 'none' || st.visibility === 'hidden'
+                    || Number(st.opacity) === 0) {
+                    return;
+                }
+                if (node.classList && node.classList.contains(other)) {
+                    return;
+                }
+                if (node.classList && node.classList.contains(prefer)) {
+                    const t = (node.innerText || '').trim();
+                    if (t) parts.push(t);
+                    return;
+                }
+                // Descend; skip the other-locale subtree entirely.
+                for (const child of node.children || []) {
+                    pushVisible(child);
+                }
+            };
+            pushVisible(el);
+            if (parts.length) return parts.join(' ');
+            // Fallback: strip other-locale nodes from a clone.
+            const clone = el.cloneNode(true);
+            clone.querySelectorAll('.' + other).forEach(n => n.remove());
+            return (clone.innerText || '').trim();
+        }""",
+        locale,
+    ) or "")
+
+
+def _occlusion_samples(locator, *, n: int = 5) -> list[dict[str, Any]]:
+    """elementFromPoint samples inside the crop must resolve to the target subtree."""
+    samples = locator.evaluate(
+        """(el, n) => {
+            const r = el.getBoundingClientRect();
+            const doc = el.ownerDocument || document;
+            const win = doc.defaultView || window;
+            const pts = [];
+            const candidates = [
+                [0.5, 0.5], [0.2, 0.2], [0.8, 0.2], [0.2, 0.8], [0.8, 0.8],
+                [0.5, 0.25], [0.5, 0.75], [0.35, 0.5], [0.65, 0.5],
+            ];
+            for (const [fx, fy] of candidates) {
+                const x = r.left + r.width * fx;
+                const y = r.top + r.height * fy;
+                if (x < 1 || y < 1 || x > win.innerWidth - 1
+                    || y > win.innerHeight - 1) {
+                    continue;  // skip off-viewport samples for overflowing boxes
+                }
+                const hit = doc.elementFromPoint(x, y);
+                let cur = hit;
+                let inside = false;
+                while (cur) {
+                    if (cur === el) { inside = true; break; }
+                    cur = cur.parentElement;
+                }
+                pts.push({
+                    x, y, ok: inside,
+                    hitTag: hit ? hit.tagName : null,
+                    hitClass: hit && hit.className
+                        ? String(hit.className).slice(0, 80) : null,
+                });
+                if (pts.length >= Math.max(5, n)) break;
+            }
+            return pts;
+        }""",
+        n,
+    )
+    if len(samples) < 5:
+        raise RuntimeError(
+            f"occlusion guard needs ≥5 in-viewport samples, got {len(samples)}")
+    bad = [s for s in samples if not s.get("ok")]
+    if bad:
+        raise RuntimeError(
+            f"occlusion guard failed on {len(bad)}/{len(samples)} samples: "
+            f"{bad[:3]}")
+    return list(samples)
+
+
+def _shot_route_of(target) -> str:
+    return str(target.evaluate(
+        """() => {
+            const path = location.pathname || '';
+            const base = path.split('/').pop() || path;
+            return base.startsWith('/') ? base : '/' + base;
+        }"""
+    ))
+
+
+def _open_lineage_details_by_click(target, *, host_page) -> str:
+    """Open History tab then the lineage <details>. Lineage lives under a hidden panel."""
+    history_tab = target.locator('[data-mq-tab="history"]').first
+    if history_tab.count():
+        history_tab.wait_for(state="visible", timeout=15000)
+        history_tab.click(timeout=15000)
+        host_page.wait_for_timeout(120)
+        panel = target.locator('[data-mq-panel="history"]').first
+        panel.wait_for(state="visible", timeout=15000)
+    details = target.locator(LINEAGE_OPEN_DETAILS).first
+    details.wait_for(state="visible", timeout=15000)
+    details.scroll_into_view_if_needed(timeout=15000)
+    summary = details.locator("summary").first
+    summary.click(timeout=15000)
+    host_page.wait_for_timeout(120)
+    opened = bool(details.evaluate("el => el.open"))
+    if not opened:
+        raise RuntimeError("section.mq-lineage details did not open on click")
+    return "click"
+
+
+def _element_shot_guarded(
+        dest: Path, page, locator, *, selector: str, locale: str,
+        viewport_width: int, target_for_nav=None) -> dict[str, Any]:
+    """Element shot with nav-close, geometry clamp, occlusion, locale-visible text."""
+    nav_target = target_for_nav or page
+    _close_nav_overlay(nav_target, host_page=page, viewport_width=viewport_width)
+    locator.scroll_into_view_if_needed(timeout=15000)
+    page.wait_for_timeout(80)
+    box = _crop_box(locator)
+    win = _measure_window(page)
+    vw = float(viewport_width)
+    vh = float(win["innerHeight"])
+    # Clamp overflowing boxes into the viewport (RAISE if intersection empty).
+    clamped = _clamp_box_to_viewport(box, vw=vw, vh=vh)
+    scroll_y = float(win["scrollY"])
+    doc_h = float(win["scrollHeight"])
+    crop_box_doc = {
+        "x": clamped["x"],
+        "y": clamped["y"] + scroll_y,
+        "width": clamped["width"],
+        "height": clamped["height"],
+    }
+    _assert_crop_geometry(
+        clamped, viewport_width=vw, doc_height=doc_h, name=dest.name,
+        crop_box_doc=crop_box_doc)
+    # Prefer element screenshot when the box already fits; otherwise clip.
+    fits = (
+        abs(clamped["x"] - box["x"]) < 0.5
+        and abs(clamped["y"] - box["y"]) < 0.5
+        and abs(clamped["width"] - box["width"]) < 0.5
+        and abs(clamped["height"] - box["height"]) < 0.5
+    )
+    dpr = _measure_dpr(page)
+    extra: dict[str, Any] = {
+        "dpr": dpr,
+        "crop": True,
+        "full_page": False,
+        "crop_selector": selector,
+        "fixture": "builder-payload",
+        "locale": locale,
+    }
+    if fits:
+        locator.screenshot(path=str(dest), type="png")
+        extra["crop_box"] = {
+            "x": float(box["x"]), "y": float(box["y"]),
+            "width": float(box["width"]), "height": float(box["height"]),
+        }
+    else:
+        page.screenshot(path=str(dest), type="png", clip={
+            "x": clamped["x"], "y": clamped["y"],
+            "width": clamped["width"], "height": clamped["height"],
+        })
+        extra["crop_box"] = dict(clamped)
+    extra["crop_box_doc"] = crop_box_doc
+    extra["scroll_y_at_shot"] = scroll_y
+    extra["device_px_span"] = _device_px_span(extra["crop_box"], dpr)
+    extra["occlusionSamples"] = _occlusion_samples(locator, n=5)
+    visible = _locale_visible_text(locator, locale)
+    anchor = "权重法则" if locale == "zh" else "Weights law"
+    label_at = visible.find(anchor)
+    if label_at < 0:
+        label_at = visible.upper().find(anchor.upper())
+    head_src = visible[label_at:] if label_at >= 0 else visible
+    extra["visible_text_head"] = head_src.replace("\n", " ").strip()[:80]
+    extra["visible_text_sha256"] = hashlib.sha256(
+        visible.encode("utf-8")).hexdigest()
+    # Keep element_text_* as locale-visible too so EN/ZH never share a hash.
+    extra["element_text_head"] = extra["visible_text_head"]
+    extra["element_text_sha256"] = extra["visible_text_sha256"]
+    extra["_element_text"] = visible
+    extra["innerWidth"] = int(round(float(win["innerWidth"])))
+    extra["innerHeight"] = int(round(float(win["innerHeight"])))
+    _assert_shot_geometry(
+        dest, extra, int(round(vw)), int(round(vh)))
+    png = dest.read_bytes()
+    if png[:8] != b"\x89PNG\r\n\x1a\n" or b"IEND" not in png:
+        raise RuntimeError(f"{dest.name} is not a finished PNG")
+    pw, ph = _png_size(dest)
+    return {
+        **extra,
+        "bytes": len(png),
+        "sha256": hashlib.sha256(png).hexdigest(),
+        "width": pw,
+        "height": ph,
+    }
 
 
 def _open_ribbon_details(page) -> None:
@@ -2055,6 +2359,22 @@ def declared_cell_rows(
             add(f"method_open-{slug}-{theme}-{locale}-1440.png")
         add(f"method_open-{slug}-dark-en-390.png")
         add(f"method_open-{slug}-light-zh-390.png")
+    for page_name in LINEAGE_OPEN_PAGES:
+        slug = page_name.replace(".html", "")
+        for theme, locale in (
+            ("dark", "en"), ("dark", "zh"),
+            ("light", "en"), ("light", "zh"),
+        ):
+            add(f"lineage_open-{slug}-{theme}-{locale}-1440.png")
+    # Labor + monetary_policy rest matrices (8 cells each).
+    for page_name in (LABOR_PAGE, "macro_monetary_policy.html"):
+        slug = page_name.replace(".html", "")
+        for theme, locale in (
+            ("dark", "en"), ("dark", "zh"),
+            ("light", "en"), ("light", "zh"),
+        ):
+            add(f"ws-{slug}-closed-{theme}-{locale}-1440.png")
+            add(f"ws-{slug}-{theme}-{locale}-390.png")
     for n, theme, locale in (
         ("17", "dark", "en"), ("17b", "light", "en"),
         ("17c", "dark", "zh"), ("17d", "light", "zh"),
@@ -2976,9 +3296,65 @@ def main() -> int:
                     ))
                     ctx.close()
 
+            # Labor rest matrix — honest page entry (option a), not hung on FC.
+            labor_states: list[dict[str, Any]] = []
+            for theme, locale in (
+                ("dark", "en"), ("dark", "zh"),
+                ("light", "en"), ("light", "zh"),
+            ):
+                name = (
+                    f"ws-{LABOR_PAGE.replace('.html', '')}-"
+                    f"closed-{theme}-{locale}-1440.png"
+                )
+                print(f"capture {name}", flush=True)
+                ctx, page, _ = _open(
+                    browser=browser, origin=origin,
+                    path=f"/{LABOR_PAGE}", theme=theme, locale=locale,
+                    width=1440, height=2400)
+                page.wait_for_selector(".mq-implication-text", timeout=15000)
+                info = _viewport_shot(
+                    EVIDENCE / name, page, width=1440, height=2400)
+                info["shot_route"] = _shot_route_of(page)
+                info["page_id"] = LABOR_PAGE
+                labor_states.append(_state(
+                    name, theme, locale, "desktop", info,
+                    viewport_width=1440,
+                    verified_how=f"{LABOR_PAGE} first screen; details closed",
+                ))
+                ctx.close()
+            for theme, locale in (
+                ("dark", "en"), ("dark", "zh"),
+                ("light", "en"), ("light", "zh"),
+            ):
+                name = (
+                    f"ws-{LABOR_PAGE.replace('.html', '')}-"
+                    f"{theme}-{locale}-390.png"
+                )
+                print(f"capture {name}", flush=True)
+                # Native 390 viewport (no harness) so crop geometry is honest.
+                ctx, page, _ = _open(
+                    browser=browser, origin=origin,
+                    path=f"/{LABOR_PAGE}", theme=theme, locale=locale,
+                    width=390, height=844)
+                _close_nav_overlay(page, host_page=page, viewport_width=390)
+                page.locator(".mq-implication-text").first.wait_for(timeout=15000)
+                info = _viewport_shot(
+                    EVIDENCE / name, page, width=390, height=844)
+                info["shot_route"] = _shot_route_of(page)
+                info["page_id"] = LABOR_PAGE
+                labor_states.append(_state(
+                    name, theme, locale, "mobile", info, viewport_width=390,
+                    verified_how=f"{LABOR_PAGE} 390 native; details closed",
+                ))
+                ctx.close()
+
             # method_open: real click, crop the composition-law body
             for page_name in METHOD_OPEN_PAGES:
                 slug = page_name.replace(".html", "")
+                dest_list = (
+                    labor_states if page_name == LABOR_PAGE
+                    else ws_states[page_name]
+                )
                 cells = [
                     (theme, locale, 1440)
                     for theme, locale in (
@@ -2989,39 +3365,29 @@ def main() -> int:
                 for theme, locale, width in cells:
                     name = f"method_open-{slug}-{theme}-{locale}-{width}.png"
                     print(f"capture {name}", flush=True)
-                    if width == 390:
-                        ctx, page, frame = _open(
-                            browser=browser, origin=origin,
-                            path=f"/{page_name}", theme=theme, locale=locale,
-                            width=1440, height=900, iframe_width=390)
-                        target = frame
-                    else:
-                        ctx, page, _ = _open(
-                            browser=browser, origin=origin,
-                            path=f"/{page_name}", theme=theme, locale=locale,
-                            width=1440, height=2800)
-                        target = page
+                    # Native viewport at ≤768 — no harness URL chrome, real nav.
+                    ctx, page, _ = _open(
+                        browser=browser, origin=origin,
+                        path=f"/{page_name}", theme=theme, locale=locale,
+                        width=width if width <= 768 else 1440,
+                        height=900 if width <= 768 else 2800)
+                    target = page
+                    _close_nav_overlay(
+                        target, host_page=page, viewport_width=width)
                     opened_by = _open_method_details_by_click(
                         target, host_page=page)
                     body = target.locator(METHOD_OPEN_SELECTOR).first
                     body.wait_for(timeout=15000)
                     _assert_method_dl_contained(body)
-                    info = _shot(
+                    info = _element_shot_guarded(
                         EVIDENCE / name, page, body,
-                        selector=METHOD_OPEN_SELECTOR, locale=locale)
+                        selector=METHOD_OPEN_SELECTOR, locale=locale,
+                        viewport_width=width, target_for_nav=target)
                     info["openedBy"] = opened_by
-                    info.pop("_element_text", None)
-                    # textContent keeps source casing + both locales; innerText
-                    # applies CSS text-transform:uppercase on <dt> labels.
-                    raw_text = body.evaluate("el => el.textContent || ''")
+                    info["shot_route"] = _shot_route_of(target)
+                    info["page_id"] = page_name
+                    raw_text = str(info.pop("_element_text", "") or "")
                     probes["method_open_text"][name] = raw_text
-                    label_at = raw_text.find("Weights law")
-                    if label_at < 0:
-                        label_at = raw_text.find("权重法则")
-                    head_src = raw_text[label_at:] if label_at >= 0 else raw_text
-                    info["element_text_head"] = head_src.replace("\n", " ").strip()[:80]
-                    info["element_text_sha256"] = hashlib.sha256(
-                        raw_text.encode("utf-8")).hexdigest()
                     state = _state(
                         name, theme, locale,
                         "mobile" if width == 390 else "desktop",
@@ -3034,14 +3400,107 @@ def main() -> int:
                         force_state="method_open",
                         family="method_open",
                     )
-                    if page_name in ws_states:
-                        ws_states[page_name].append(state)
-                    else:
-                        # method_open-only pages have no rest matrix; hang the
-                        # crop on the already rest-covered financial_conditions
-                        # page so check_ui_visual_evidence does not invent a
-                        # bare page entry that fails the rest census.
-                        ws_states["macro_financial_conditions.html"].append(state)
+                    dest_list.append(state)
+                    ctx.close()
+
+            # lineage_open: photograph section.mq-lineage (Changed fingerprints,
+            # Hysteresis, real lineage sentence). Method version / Owner / Trace
+            # live elsewhere — reported NOT DONE-AS-WRITTEN in claims.
+            probes["lineage_open_text"] = {}
+            lineage_by_page: dict[str, list[dict[str, Any]]] = {
+                p: [] for p in LINEAGE_OPEN_PAGES
+            }
+            mp_rest_states: list[dict[str, Any]] = []
+            # Rest matrix for monetary_policy so its lineage_open page entry
+            # satisfies check_ui_visual_evidence's 8-cell rest census.
+            for theme, locale in (
+                ("dark", "en"), ("dark", "zh"),
+                ("light", "en"), ("light", "zh"),
+            ):
+                name = (
+                    f"ws-macro_monetary_policy-closed-"
+                    f"{theme}-{locale}-1440.png"
+                )
+                print(f"capture {name}", flush=True)
+                ctx, page, _ = _open(
+                    browser=browser, origin=origin,
+                    path="/macro_monetary_policy.html", theme=theme,
+                    locale=locale, width=1440, height=2400)
+                page.wait_for_selector("main, .mq-shell, body", timeout=15000)
+                info = _viewport_shot(
+                    EVIDENCE / name, page, width=1440, height=2400)
+                info["shot_route"] = _shot_route_of(page)
+                info["page_id"] = "macro_monetary_policy.html"
+                mp_rest_states.append(_state(
+                    name, theme, locale, "desktop", info,
+                    viewport_width=1440,
+                    verified_how=(
+                        "macro_monetary_policy.html first screen; details closed"
+                    ),
+                ))
+                ctx.close()
+            for theme, locale in (
+                ("dark", "en"), ("dark", "zh"),
+                ("light", "en"), ("light", "zh"),
+            ):
+                name = (
+                    f"ws-macro_monetary_policy-{theme}-{locale}-390.png"
+                )
+                print(f"capture {name}", flush=True)
+                ctx, page, _ = _open(
+                    browser=browser, origin=origin,
+                    path="/macro_monetary_policy.html", theme=theme,
+                    locale=locale, width=390, height=844)
+                _close_nav_overlay(page, host_page=page, viewport_width=390)
+                page.wait_for_selector("main, .mq-shell, body", timeout=15000)
+                info = _viewport_shot(
+                    EVIDENCE / name, page, width=390, height=844)
+                info["shot_route"] = _shot_route_of(page)
+                info["page_id"] = "macro_monetary_policy.html"
+                mp_rest_states.append(_state(
+                    name, theme, locale, "mobile", info, viewport_width=390,
+                    verified_how=(
+                        "macro_monetary_policy.html 390 native; details closed"
+                    ),
+                ))
+                ctx.close()
+            for page_name in LINEAGE_OPEN_PAGES:
+                slug = page_name.replace(".html", "")
+                for theme, locale in (
+                    ("dark", "en"), ("dark", "zh"),
+                    ("light", "en"), ("light", "zh"),
+                ):
+                    name = f"lineage_open-{slug}-{theme}-{locale}-1440.png"
+                    print(f"capture {name}", flush=True)
+                    ctx, page, _ = _open(
+                        browser=browser, origin=origin,
+                        path=f"/{page_name}", theme=theme, locale=locale,
+                        width=1440, height=2800)
+                    opened_by = _open_lineage_details_by_click(
+                        page, host_page=page)
+                    body = page.locator(LINEAGE_OPEN_SELECTOR).first
+                    body.wait_for(timeout=15000)
+                    info = _element_shot_guarded(
+                        EVIDENCE / name, page, body,
+                        selector=LINEAGE_OPEN_SELECTOR, locale=locale,
+                        viewport_width=1440, target_for_nav=page)
+                    info["openedBy"] = opened_by
+                    info["shot_route"] = _shot_route_of(page)
+                    info["page_id"] = page_name
+                    raw_text = str(info.pop("_element_text", "") or "")
+                    probes["lineage_open_text"][name] = raw_text
+                    state = _state(
+                        name, theme, locale, "desktop", info,
+                        viewport_width=1440,
+                        verified_how=(
+                            f"{page_name} lineage details opened by click; "
+                            f"crop {LINEAGE_OPEN_SELECTOR}"
+                        ),
+                        crop=True, selector=LINEAGE_OPEN_SELECTOR,
+                        force_state="lineage_open",
+                        family="lineage_open",
+                    )
+                    lineage_by_page[page_name].append(state)
                     ctx.close()
 
             probes["copy_15_ok"] = bool((probes.get("copy_15") or {}).get("ok"))
@@ -3077,9 +3536,34 @@ def main() -> int:
 
         pages_out = [_page_entry("macro_monetary.html", states)]
         for page_name in WORKSPACE_PAGES:
-            pages_out.append(_page_entry(page_name, ws_states.get(page_name, [])))
-        # METHOD_OPEN_PAGES outside WORKSPACE_PAGES hang on financial_conditions
-        # above — do not mint a rest-less page entry.
+            page_states = list(ws_states.get(page_name, []))
+            page_states.extend(lineage_by_page.get(page_name, []))
+            pages_out.append(_page_entry(page_name, page_states))
+        mp_states = list(mp_rest_states)
+        mp_states.extend(lineage_by_page.get("macro_monetary_policy.html", []))
+        pages_out.append(_page_entry("macro_monetary_policy.html", mp_states))
+        pages_out.append(_page_entry(LABOR_PAGE, labor_states))
+
+        # Route attribution guard: every state's page_id/shot_route must match
+        # the page entry it is filed under.
+        for page in pages_out:
+            route = str(page["route"])
+            page_id = str(page["page_id"])
+            for st in page["states"]:
+                if st.get("page_id") and st["page_id"] != page_id:
+                    raise RuntimeError(
+                        f"page_id mismatch: state {st.get('file')} has "
+                        f"page_id={st['page_id']!r} under entry {page_id!r}")
+                shot_route = st.get("shot_route")
+                if shot_route:
+                    normalized = (
+                        shot_route if str(shot_route).startswith("/")
+                        else f"/{shot_route}"
+                    )
+                    if normalized != route:
+                        raise RuntimeError(
+                            f"route mismatch: state {st.get('file')} "
+                            f"shot_route={shot_route!r} under {route!r}")
 
         for page_name, mode, theme, locale in _SKIP_WS_DUP:
             leftover = EVIDENCE / (
