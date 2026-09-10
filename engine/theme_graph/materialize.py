@@ -1101,9 +1101,15 @@ class _Builder:
                 if lt_node not in self._nodes:
                     continue
                 refs = [xwalk_ev] + ([cmap_ev] if cmap_ev else [])
+                # The curated code→canonical mapping is the crosswalk's claim, but
+                # it cannot become usable before the concept-map receipt that
+                # establishes the source-local code node. Delay validity to the
+                # latest required receipt rather than backdating current vocabulary.
+                resolution_date = max(
+                    d for d in (xwalk_date, self._cmap_asof) if d)
                 self._edge(edge_type="EXPRESSES", src=lt_node, dst=t_node,
-                           valid_from=xwalk_date, valid_to=None,
-                           evidence_time=xwalk_date, source_class="curated",
+                           valid_from=resolution_date, valid_to=None,
+                           evidence_time=resolution_date, source_class="curated",
                            date_provenance="crosswalk", evidence_refs=refs)
                 n_ltheme_expresses += 1
 

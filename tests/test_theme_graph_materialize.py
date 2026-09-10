@@ -972,3 +972,19 @@ def test_d2c_run_ths_cutover_never_waives_another_family_shrink(tree, monkeypatc
     before = _file_hashes(store.store_dir())
     assert bake.run(backfill=False, force_backfill=False) == 1
     assert _file_hashes(store.store_dir()) == before
+
+
+def test_ths_local_theme_canonical_edge_never_predates_concept_map(tree):
+    """The code-based vocabulary edge cannot predate the map that minted the node."""
+    root, _xwalk = tree
+    late_cmap_asof = "2026-08-29"
+    _write(root / "baskets_china_ths" / "concept_map.json", {
+        "asof": late_cmap_asof,
+        "map": {"测试概念": KNOWN_CODE, "另一概念": "900002", "第三概念": "900003"},
+    })
+    view = _build(tree)
+    src = f"ltheme:ths:{KNOWN_CODE}"
+    edges = [edge for edge in _by_type(view, "EXPRESSES")
+             if edge["src"] == src and edge["dst"] == "theme:solar"]
+    assert not edges or all(edge["valid_from"] >= late_cmap_asof for edge in edges), (
+        "local-theme vocabulary resolution must not be backdated before concept-map knowledge")
