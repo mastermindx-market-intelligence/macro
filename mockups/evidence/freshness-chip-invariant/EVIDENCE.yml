@@ -1,0 +1,16 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/theme.css
+  - templates/international_macro.html.j2
+  - templates/china_news.html.j2
+  - templates/committee.html.j2
+  - templates/dashboard.html.j2
+  - templates/foresight.html.j2
+  - templates/hk.html.j2
+  - templates/impulse.html.j2
+  - templates/macro_context.html.j2
+  - templates/sector_central_china.html.j2
+  - templates/stage_analysis.html.j2
+  - templates/_risk_radar_card.css.j2
+  - templates/_ignition_radar_card.css.j2
+manifest: mockups/evidence/freshness-chip-invariant/manifest.json
