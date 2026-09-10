@@ -517,6 +517,8 @@
      never force-switch the Top Picks / All Candidates population. applyFilter()
      (not setSource()) is what re-renders the grid here. */
   function activate(id) {
+    var item = state.sectors.find(function (x) { return x.id === id; });
+    if (!item || item.members == null) return;
     state.filter = id; applyFilter(); closeModal();
     var prophet = qs("#hk-v37-prophet"); if (prophet) prophet.scrollIntoView({ behavior: "smooth", block: "start" });
   }

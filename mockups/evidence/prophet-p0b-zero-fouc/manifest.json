@@ -534,7 +534,7 @@
         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
         "primary_cases": 48,
         "screenshots": 8,
-        "sha256": "e4821f1b12206b7d8a0f50c99eecadf8a7e9811b0f0fe8e20413c7a38905e104"
+        "sha256": "0c3a9cb1e23306ef320e3d85bd2e30b2814c161caefad5478a54b970d3452a38"
       },
       "hk": {
         "degraded_control_cases": 16,
@@ -542,7 +542,7 @@
         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
         "primary_cases": 48,
         "screenshots": 8,
-        "sha256": "05542607bfd8f28736af59a591e7fba2c2ed841b610d52db4adf7c51469c6689"
+        "sha256": "86bef4a16fd15f2f2200cb66023e61893ee1a8f500d58460bf06a75db795e24c"
       }
     },
     "claims": {
@@ -561,19 +561,19 @@
     "screenshots": [
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-1440.png",
-        "sha256": "00d60198365c5bb9af26545d909bca7a68851efb3481239af44060d3bbe186ab"
+        "sha256": "019f6738b4851152061177a2a31fd0cfa922f6eb060a0bb9634121532b423d9a"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-390.png",
-        "sha256": "46139d2a27b8e47f471414029e41940085cdacde8c87c64b3544e2ed935ddd39"
+        "sha256": "55426ebe75583d54719c967a599e21ba637d3bbfc5bb5e2dca9277f1c6a3ad57"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-1440.png",
-        "sha256": "35d89164e58ce3c136e3bcef7ca8e348f53b77e2d368dd14380dfd799bda71af"
+        "sha256": "e035566485fbed716f59d1adb6224456da1ae8ed1af18b8add7ff6dcf431cb3c"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-390.png",
-        "sha256": "5d1245a9ef4967a8bdc1be30e21a939a246fc720d22eacbedafe7358aa1928d6"
+        "sha256": "8b1cb24daab682a8e5adb7cf2cac9e04bb4789ff3f2fadd2c41588bc3340a764"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-1440.png",
@@ -585,7 +585,7 @@
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-1440.png",
-        "sha256": "862250222489e67a99acb0819cccde467584ec0b48eb1927fb11966eebc39001"
+        "sha256": "6bc3c589cdbe951bea9634356c37e4d7d026746b1a9264704060a09a0a47b89f"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-390.png",

@@ -929,3 +929,38 @@ def test_unknown_leadership_cursor_does_not_invite_activation():
     css = STOCK_CSS.read_text(encoding="utf-8")
     assert ".mx-stockdash--hk .hk-v37-lead-row:hover:not(:disabled)" in css
     assert re.search(r"\.mx-stockdash--hk \.hk-v37-lead-row:disabled\s*\{[^}]*cursor:\s*default", css)
+
+
+@pytest.mark.parametrize("membership", ["missing", "unknown", "empty", "populated"])
+def test_activation_sink_preserves_state_when_membership_unknown(membership):
+    import json
+    import subprocess
+
+    text = _composer_text()
+    match = re.search(r"^  function activate\b.*?(?=^  function |\Z)",
+                      text, re.MULTILINE | re.DOTALL)
+    assert match
+    setup = r"""
+var hits = [], state = {source: "top", filter: "KEEP", sectors: []};
+var membership = MEMBERSHIP;
+if (membership !== "missing") state.sectors.push({id:"TARGET", members:
+    membership === "unknown" ? null : new Set(membership === "empty" ? [] : ["A"])});
+function applyFilter(){ hits.push("apply"); }
+function closeModal(){ hits.push("close"); }
+function qs(){return {scrollIntoView(){ hits.push("scroll"); }};}
+""".replace("MEMBERSHIP", json.dumps(membership))
+    script = setup + match.group(0) + '\nactivate("TARGET"); console.log(JSON.stringify({filter:state.filter,source:state.source,hits}));'
+    result = subprocess.run(["node", "-e", script], capture_output=True,
+                            text=True, timeout=15, check=True)
+    actual = json.loads(result.stdout)
+    known = membership in {"empty", "populated"}
+    assert actual == {"filter": "TARGET" if known else "KEEP", "source": "top",
+                      "hits": ["apply", "close", "scroll"] if known else []}
+
+
+def test_unknown_modal_rows_do_not_advertise_activation():
+    css = STOCK_CSS.read_text(encoding="utf-8")
+    assert re.search(r"\.hk-v37-modal-table tbody tr\s*\{\s*cursor:\s*default", css)
+    assert re.search(r"\.hk-v37-modal-table tbody tr\[data-hk-modal-id\]\s*\{\s*cursor:\s*pointer", css)
+    assert ".hk-v37-modal-table tbody tr[data-hk-modal-id]:hover" in css
+    assert ".hk-v37-modal-table tbody tr:hover" not in css

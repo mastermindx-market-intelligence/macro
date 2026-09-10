@@ -1051,8 +1051,9 @@ html[data-theme=light] .mx-stockdash--ca .ca-v36-modal .ca-v36-modal-x:hover {
 .mx-stockdash--hk .hk-v37-modal-table td,
 .mx-stockdash--hk .hk-v37-modal-sb td { padding: 9px 10px; border-bottom: 1px solid var(--line); text-align: left; }
 .mx-stockdash--hk .hk-v37-modal-table th { color: var(--muted); font-size: 10.8px; }
-.mx-stockdash--hk .hk-v37-modal-table tbody tr { cursor: pointer; }
-.mx-stockdash--hk .hk-v37-modal-table tbody tr:hover { background: color-mix(in srgb, var(--link) 6%, transparent); }
+.mx-stockdash--hk .hk-v37-modal-table tbody tr { cursor: default; }
+.mx-stockdash--hk .hk-v37-modal-table tbody tr[data-hk-modal-id] { cursor: pointer; }
+.mx-stockdash--hk .hk-v37-modal-table tbody tr[data-hk-modal-id]:hover { background: color-mix(in srgb, var(--link) 6%, transparent); }
 .mx-stockdash--hk .hk-v37-modal-table .num,
 .mx-stockdash--hk .hk-v37-modal-table .leaders,
 .mx-stockdash--hk .hk-v37-sb-label { color: var(--muted); }
