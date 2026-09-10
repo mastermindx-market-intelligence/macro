@@ -3635,19 +3635,20 @@ _SS_DISCLOSURES: dict[str, dict[str, str]] = {
     },
 }
 
-# Chairman plain-language law (2026-09-06), macro#6920 round-4 review MAJOR-2:
-# `identity_proof.legs[].description` is the one-line gate sentence printed
-# under each identity-check header (`.ss-chk-d`) — it was passed straight
-# through from the engine (`lg.desc`) with no `t()` call, so a NEW string
-# added to `engine/security_state.py`'s M1 failure shell (owner-identity
-# batch never ran this cycle) rendered in English even on the ZH page, and
-# was the LARGEST text in that block. Keyed on (check, code) rather than the
-# literal sentence, because the same `check` id ("R8") carries several
-# different descriptions depending on `code` (round-2's `_leg_receipt` calls
-# in `engine/security_state.py`) — a code-only key would collide. Only the
-# M1-shell entry is listed: every other leg description in this file predates
-# this PR and is the pre-existing, separately-tracked MINOR-2 systemic issue,
-# not something this PR's own new text may hide behind.
+# Chairman plain-language law (2026-09-06), macro#6920 heal-round h5:
+# `identity_proof.legs[].description` / `artifact` / `reader` are customer
+# rows on the Identity-checks panel. Coded legs (a non-empty `code`) keep
+# the `(check, code)` tables `_SS_LEG_DESC` / `_SS_ARTIFACT` / `_SS_READER`.
+# Code-less legs MUST NOT share a `(check, "")` fallback: two different
+# code-less R8 legs exist (the proven-path PASS at engine :664 and the
+# compile-failed owner-confirmed PASS shell at :1805) and one house sentence
+# on both would print the proven-path sentence on a page whose compile
+# failed. Code-less legs are looked up in `_SS_LEG_HOUSE_BY_DESC` keyed on
+# `(check, engine description sentence)` — the exact engine string. An
+# engine sentence that changes makes the leg unmapped (row hidden,
+# completeness test RED). Unmapped legs render no description / artifact /
+# reader row: the EN slot never receives engine text and the ZH slot never
+# receives `_SS_COVERAGE_FALLBACK` ("暂不可用") for these three fields.
 _SS_LEG_DESC: dict[tuple[str, str], dict[str, str]] = {
     ("R8", "IDENTITY_UNRESOLVED"): {
         "en": "This cycle could not re-read who owns this security; this page keeps the last "
@@ -3662,11 +3663,12 @@ _SS_LEG_DESC: dict[tuple[str, str], dict[str, str]] = {
     },
 }
 
-# Heal-round h2 r2 (macro#6920 review MINOR-2): the M1 Identity checks panel
-# printed `artifact` and `reader` as raw English on the ZH page. Keyed on
-# (check, code) like `_SS_LEG_DESC`. Unmapped legs keep the engine string
-# in the EN slot; the ZH slot falls back to `_SS_COVERAGE_FALLBACK` ("暂不可用")
-# so raw engine English never occupies the Chinese page.
+# Heal-round h2 r2 (macro#6920 review MINOR-2) plus h5: coded-leg artifact
+# and reader rows. Keyed on (check, code) like `_SS_LEG_DESC`. To hide a
+# row, map it to `{"en": "", "zh": ""}` — a truthy dict with empty slots —
+# never a bare `""`, because `_ss_house_or_en_with_zh_fallback` tests
+# `if house:`. Unmapped coded legs, like unmapped code-less legs, render
+# no row (empty strings); they do not keep the engine string.
 _SS_ARTIFACT: dict[tuple[str, str], dict[str, str]] = {
     ("R8", "IDENTITY_UNRESOLVED"): {
         "en": "Last known ticker mapping (not a live owner record)",
@@ -3685,6 +3687,156 @@ _SS_READER: dict[tuple[str, str], dict[str, str]] = {
     ("R8", "OWNER_IDENTITY_UNREAD"): {
         "en": "this page's identity fallback",
         "zh": "本页的身份备用读取",
+    },
+}
+
+# Code-less identity legs. Keyed on (check, exact engine description).
+# Value is three house pairs. An engine sentence that is not a key here
+# is unmapped: description / artifact / reader all render as empty strings.
+# To hide an artifact or reader row, map it to {"en": "", "zh": ""} — a
+# truthy dict with empty slots — never a bare "".
+_SS_LEG_HOUSE_BY_DESC: dict[tuple[str, str], dict[str, dict[str, str]]] = {
+    ("R1", "security_master row exists, security_state/superseded_by both null"): {
+        "desc": {
+            "en": "This security has an active master record and has not been replaced.",
+            "zh": "该证券有一条有效的主档记录，且未被替换。",
+        },
+        "artifact": {
+            "en": "the security master reference table",
+            "zh": "证券主档参考表",
+        },
+        "reader": {
+            "en": "this page's identity reader",
+            "zh": "本页的身份读取程序",
+        },
+    },
+    ("R2", "security_master.issuer_id names the owner-composed issuer, issuer_state RESOLVED"): {
+        "desc": {
+            "en": "The master record names this security's owner and marks that owner as resolved.",
+            "zh": "主档记录标明了该证券的所有者，并将该所有者标记为已确认。",
+        },
+        "artifact": {
+            "en": "the security master reference table",
+            "zh": "证券主档参考表",
+        },
+        "reader": {
+            "en": "this page's identity reader",
+            "zh": "本页的身份读取程序",
+        },
+    },
+    ("R3", "issuer_master carries exactly one active row binding the owner-composed issuer and CIK"): {
+        "desc": {
+            "en": "The issuer master has exactly one active record matching this owner and its registration number.",
+            "zh": "发行人主档中恰好有一条有效记录，对应该所有者及其注册编号。",
+        },
+        "artifact": {
+            "en": "the issuer master reference table",
+            "zh": "发行人主档参考表",
+        },
+        "reader": {
+            "en": "this page's identity reader",
+            "zh": "本页的身份读取程序",
+        },
+    },
+    ("R4", "the owner-composed issuer's CURRENT security set is exactly this security"): {
+        "desc": {
+            "en": "This owner currently lists exactly this security, and no others.",
+            "zh": "该所有者当前只列出这一只证券，没有其他证券。",
+        },
+        "artifact": {
+            "en": "the security master reference table",
+            "zh": "证券主档参考表",
+        },
+        "reader": {
+            "en": "this page's identity reader",
+            "zh": "本页的身份读取程序",
+        },
+    },
+    ("R5", "listing_key round-trips to security_id via lib.dataos.identity.parse_listing_key"): {
+        "desc": {
+            "en": "The listing code on this page maps back to this same security.",
+            "zh": "本页上的上市代码可回环对应到同一只证券。",
+        },
+        "artifact": {
+            "en": "the security master reference table",
+            "zh": "证券主档参考表",
+        },
+        "reader": {
+            "en": "this page's listing-code reader",
+            "zh": "本页的上市代码读取程序",
+        },
+    },
+    ("R6", "zero matching rows in issuer_migrations.parquet/security_migrations.parquet"): {
+        "desc": {
+            "en": "No issuer or security migration records apply to this security this cycle.",
+            "zh": "本周期没有适用于该证券的发行人或证券迁移记录。",
+        },
+        "artifact": {
+            "en": "the issuer and security migration tables",
+            "zh": "发行人与证券迁移表",
+        },
+        "reader": {
+            "en": "this page's identity reader",
+            "zh": "本页的身份读取程序",
+        },
+    },
+    ("R7", "workspace parity: event_id/company_id/filing cik all bind to the owner-composed CIK "
+     "(vacuous pass when no workspace is available this cycle)"): {
+        "desc": {
+            "en": "This cycle's workspace, when present, uses the same owner registration number; with no workspace, the check still passes.",
+            "zh": "本周期如有工作区，其使用的所有者注册编号与此一致；如无工作区，此项核对仍通过。",
+        },
+        "artifact": {
+            "en": "this cycle's event workspace",
+            "zh": "本周期的事件工作区",
+        },
+        "reader": {
+            "en": "this page's workspace reader",
+            "zh": "本页的工作区读取程序",
+        },
+    },
+    ("R8", "master issuer_cik agrees with the owner-composed current CIK; "
+     "a present workspace also agrees"): {
+        "desc": {
+            "en": "The master registration number matches this owner's current registration number, and a present workspace agrees.",
+            "zh": "主档注册编号与该所有者当前注册编号一致，如有工作区也一致。",
+        },
+        "artifact": {
+            "en": "the security master reference table and this cycle's event workspace",
+            "zh": "证券主档参考表与本周期的事件工作区",
+        },
+        "reader": {
+            "en": "this page's identity reader",
+            "zh": "本页的身份读取程序",
+        },
+    },
+    ("R9", "corroboration: workspace primary alias agrees with the owner subject's current alias and listing venue"): {
+        "desc": {
+            "en": "The workspace's primary ticker and listing venue agree with this security's current ticker and venue.",
+            "zh": "工作区的主要股票代码与上市地点，与该证券当前的股票代码及地点一致。",
+        },
+        "artifact": {
+            "en": "this cycle's workspace listings",
+            "zh": "本周期工作区中的上市记录",
+        },
+        "reader": {
+            "en": "this page's workspace reader",
+            "zh": "本页的工作区读取程序",
+        },
+    },
+    ("R8", "failure shell retains the owner-composed current CIK without claiming a full identity-chain pass"): {
+        "desc": {
+            "en": "This page keeps the confirmed owner registration number, without claiming the full identity chain passed.",
+            "zh": "本页保留已确认的所有者注册编号，但不声称完整身份核对已通过。",
+        },
+        "artifact": {
+            "en": "the confirmed owner record",
+            "zh": "已确认的所有者记录",
+        },
+        "reader": {
+            "en": "this page's identity reader",
+            "zh": "本页的身份读取程序",
+        },
     },
 }
 
@@ -3816,13 +3968,38 @@ def _ss_equality_rows(raw_list: Any) -> list[dict[str, Any]]:
     return rows
 
 
+def _ss_leg_house_fields(
+    leg_check: str, leg_code: str, desc_raw: str,
+) -> tuple[dict[str, str] | None, dict[str, str] | None, dict[str, str] | None]:
+    """Return (desc, artifact, reader) house dicts for one identity leg.
+
+    Coded legs use `_SS_LEG_DESC` / `_SS_ARTIFACT` / `_SS_READER` keyed on
+    (check, code). Code-less legs use `_SS_LEG_HOUSE_BY_DESC` keyed on
+    (check, exact engine description). Unmapped → (None, None, None).
+    """
+    if leg_code:
+        return (
+            _SS_LEG_DESC.get((leg_check, leg_code)),
+            _SS_ARTIFACT.get((leg_check, leg_code)),
+            _SS_READER.get((leg_check, leg_code)),
+        )
+    entry = _SS_LEG_HOUSE_BY_DESC.get((leg_check, desc_raw))
+    if not entry:
+        return None, None, None
+    return entry.get("desc"), entry.get("artifact"), entry.get("reader")
+
+
 def _ss_house_or_en_with_zh_fallback(house: dict[str, str] | None, raw: str) -> tuple[str, str]:
-    """House copy when present; otherwise EN keeps the engine text, ZH falls back."""
+    """House copy when present; unmapped description/artifact/reader render no row.
+
+    A missing house entry yields empty strings so the template `{% if %}`
+    skips the row. Engine text never occupies the EN slot and
+    `_SS_COVERAGE_FALLBACK` never occupies the ZH slot for these three
+    fields. Reason codes keep `_ss_map_subread_reason`.
+    """
     if house:
-        return house["en"], house["zh"]
-    if not raw:
-        return "", ""
-    return raw, _SS_COVERAGE_FALLBACK["zh"]
+        return house.get("en") or "", house.get("zh") or ""
+    return "", ""
 
 
 # ── Plain words for the sub-reads the contract nests inside a leg ───────────
@@ -4502,16 +4679,15 @@ def build_security_state(blob: dict | None) -> dict | None:
             leg_check = _clean_str(lg.get("check") or lg.get("leg") or lg.get("name") or "")
             leg_code = _clean_str(lg.get("code") or "")
             desc_raw = _clean_str(lg.get("description") or "")
-            # macro#6920 round-4 review MAJOR-2: house-copy this leg's gate
-            # sentence when a mapping exists (see `_SS_LEG_DESC`); otherwise
-            # the raw engine description passes through unchanged (same
-            # pre-existing behaviour as every other leg, MINOR-2).
-            desc_house = _SS_LEG_DESC.get((leg_check, leg_code)) if leg_code else None
+            # macro#6920 heal-round h5: coded legs look up (check, code);
+            # code-less legs look up (check, exact engine description). An
+            # unmapped leg renders no description / artifact / reader row.
+            desc_house, art_house, rdr_house = _ss_leg_house_fields(
+                leg_check, leg_code, desc_raw,
+            )
             desc_en, desc_zh = _ss_house_or_en_with_zh_fallback(desc_house, desc_raw)
             artifact_raw = _clean_str(lg.get("artifact") or "")
             reader_raw = _clean_str(lg.get("reader") or "")
-            art_house = _SS_ARTIFACT.get((leg_check, leg_code)) if leg_code else None
-            rdr_house = _SS_READER.get((leg_check, leg_code)) if leg_code else None
             artifact_en, artifact_zh = _ss_house_or_en_with_zh_fallback(art_house, artifact_raw)
             reader_en, reader_zh = _ss_house_or_en_with_zh_fallback(rdr_house, reader_raw)
             id_legs.append({

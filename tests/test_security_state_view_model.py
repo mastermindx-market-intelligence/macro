@@ -384,28 +384,44 @@ def test_compiled_golden_object_reaches_the_view_model() -> None:
     contract_legs = compiled["identity_proof"]["legs"]
     assert contract_legs, "the golden object carries no identity legs"
     assert len(view["identity"]["legs"]) == len(contract_legs)
-    from scripts.build_ticker_pages import _SS_ARTIFACT, _SS_COVERAGE_FALLBACK, _SS_LEG_DESC, _SS_READER
+    from scripts.build_ticker_pages import (
+        _SS_ARTIFACT, _SS_LEG_DESC, _SS_LEG_HOUSE_BY_DESC, _SS_READER,
+    )
 
     for src, out in zip(contract_legs, view["identity"]["legs"]):
         assert out["check"] == src["check"]
-        # A5: unmapped legs keep the engine text in EN; ZH is the coverage
-        # fallback, never the raw English duplicated into the Chinese slot.
-        key = (out["check"], out["code"])
-        assert out["desc_en"] == src["description"]
-        if key in _SS_LEG_DESC:
-            assert out["desc_zh"] == _SS_LEG_DESC[key]["zh"]
+        # h5: coded legs use (check, code); code-less legs use
+        # (check, engine description). Unmapped legs render empty strings,
+        # never engine text and never 暂不可用.
+        code = out["code"] or ""
+        desc_raw = src["description"] or ""
+        if code:
+            desc_house = _SS_LEG_DESC.get((out["check"], code))
+            art_house = _SS_ARTIFACT.get((out["check"], code))
+            rdr_house = _SS_READER.get((out["check"], code))
         else:
-            assert out["desc_zh"] == _SS_COVERAGE_FALLBACK["zh"]
-        assert out["artifact"] == src["artifact"]
-        assert out["reader"] == src["reader"]
-        if key in _SS_ARTIFACT:
-            assert out["artifact_zh"] == _SS_ARTIFACT[key]["zh"]
+            triple = _SS_LEG_HOUSE_BY_DESC.get((out["check"], desc_raw)) or {}
+            desc_house = triple.get("desc")
+            art_house = triple.get("artifact")
+            rdr_house = triple.get("reader")
+        if desc_house:
+            assert out["desc_en"] == desc_house["en"]
+            assert out["desc_zh"] == desc_house["zh"]
         else:
-            assert out["artifact_zh"] == _SS_COVERAGE_FALLBACK["zh"]
-        if key in _SS_READER:
-            assert out["reader_zh"] == _SS_READER[key]["zh"]
+            assert out["desc_en"] == ""
+            assert out["desc_zh"] == ""
+        if art_house:
+            assert out["artifact_en"] == art_house["en"]
+            assert out["artifact_zh"] == art_house["zh"]
         else:
-            assert out["reader_zh"] == _SS_COVERAGE_FALLBACK["zh"]
+            assert out["artifact_en"] == ""
+            assert out["artifact_zh"] == ""
+        if rdr_house:
+            assert out["reader_en"] == rdr_house["en"]
+            assert out["reader_zh"] == rdr_house["zh"]
+        else:
+            assert out["reader_en"] == ""
+            assert out["reader_zh"] == ""
         assert out["result"] == str(src["result"]).lower()
         assert len(out["reads"]) == len(src["values_read"])
         for pair, row in zip(src["values_read"], out["reads"]):
@@ -736,12 +752,21 @@ def test_not_applicable_leg_is_not_displayed_as_available() -> None:
 
 
 def test_identity_receipts_render_their_actual_fields() -> None:
+    from scripts.build_ticker_pages import _SS_LEG_HOUSE_BY_DESC
+
     view = build_security_state({"security_state": _contract()})
     html = _render_section(view)
     assert "R1" in html
-    assert "security_master row exists" in html
-    assert "data/reference/security_master.parquet" in html
-    assert "_read_security_state_identity_rows" in html
+    house = _SS_LEG_HOUSE_BY_DESC.get((
+        "R1", "security_master row exists, security_state/superseded_by both null",
+    ))
+    assert house, "R1 code-less leg must have a house triple"
+    assert house["desc"]["en"] in html
+    assert house["artifact"]["en"] in html
+    assert house["reader"]["en"] in html
+    assert "security_master row exists" not in html
+    assert "data/reference/security_master.parquet" not in html
+    assert "_read_security_state_identity_rows" not in html
     assert "Master row found" in html
     assert "row_present" not in html
     assert "true" in html
@@ -1181,13 +1206,40 @@ def test_every_compile_path_refusal_code_has_house_copy_with_no_prettify_fallbac
         assert refusal["en"] != pretty, f"{code}: rendered refusal fell back to the bare prettification"
 
 
+def _iter_leg_house_copy_slots():
+    """Walk every user-facing string in the identity-leg house tables."""
+    from scripts.build_ticker_pages import (
+        _SS_ARTIFACT, _SS_LEG_DESC, _SS_LEG_HOUSE_BY_DESC, _SS_READER,
+    )
+    for key, entry in _SS_LEG_DESC.items():
+        for slot, text in entry.items():
+            yield f"_SS_LEG_DESC[{key!r}][{slot!r}]", str(text)
+    for key, entry in _SS_ARTIFACT.items():
+        for slot, text in entry.items():
+            yield f"_SS_ARTIFACT[{key!r}][{slot!r}]", str(text)
+    for key, entry in _SS_READER.items():
+        for slot, text in entry.items():
+            yield f"_SS_READER[{key!r}][{slot!r}]", str(text)
+    for key, triple in _SS_LEG_HOUSE_BY_DESC.items():
+        for field, entry in triple.items():
+            if not isinstance(entry, dict):
+                continue
+            for slot, text in entry.items():
+                yield (
+                    f"_SS_LEG_HOUSE_BY_DESC[{key!r}][{field!r}][{slot!r}]",
+                    str(text),
+                )
+
+
 def test_ss_gates_and_leg_desc_user_facing_copy_has_no_batch_machine_words() -> None:
     """macro#6920 heal-round h2 R3: user-facing `_SS_GATES` / `_SS_LEG_DESC`
     strings must not say "batch" / "批处理". Those are pipeline nouns, not
     what the reader is looking at. RED at 3ac3bb2f because IDENTITY_UNRESOLVED
     clear_en/clear_zh and the R8 IDENTITY_UNRESOLVED leg description used both.
+    Heal-round h5: also walk `_SS_LEG_HOUSE_BY_DESC`, `_SS_ARTIFACT`, and
+    `_SS_READER`.
     """
-    from scripts.build_ticker_pages import _SS_GATES, _SS_LEG_DESC
+    from scripts.build_ticker_pages import _SS_GATES
 
     banned_ascii = ("batch",)
     banned_zh = ("批处理",)
@@ -1202,17 +1254,11 @@ def test_ss_gates_and_leg_desc_user_facing_copy_has_no_batch_machine_words() -> 
                 assert word not in hay, (
                     f"_SS_GATES[{code!r}][{slot!r}] contains {word!r}: {hay!r}"
                 )
-    for key, entry in _SS_LEG_DESC.items():
-        for slot, text in entry.items():
-            hay = str(text)
-            for word in banned_ascii:
-                assert word not in hay.lower(), (
-                    f"_SS_LEG_DESC[{key!r}][{slot!r}] contains {word!r}: {hay!r}"
-                )
-            for word in banned_zh:
-                assert word not in hay, (
-                    f"_SS_LEG_DESC[{key!r}][{slot!r}] contains {word!r}: {hay!r}"
-                )
+    for label, hay in _iter_leg_house_copy_slots():
+        for word in banned_ascii:
+            assert word not in hay.lower(), f"{label} contains {word!r}: {hay!r}"
+        for word in banned_zh:
+            assert word not in hay, f"{label} contains {word!r}: {hay!r}"
 
 
 def test_unmapped_disclosure_code_keeps_the_engine_description_not_a_prettified_slug() -> None:
@@ -1297,17 +1343,15 @@ def test_m1_shell_gate_description_renders_a_real_bilingual_sentence() -> None:
     # The raw engine-only English sentence (pre-fix behaviour) is gone.
     assert "owner-identity batch was unavailable this cycle" not in html
 
-    # A DIFFERENT "R8" leg (no house-copy entry): EN keeps the engine text;
-    # ZH falls back to the coverage-unavailable pair (A5). Never blank the
-    # English, never put desc_raw in the ZH slot.
-    from scripts.build_ticker_pages import _SS_COVERAGE_FALLBACK
-
+    # A DIFFERENT code-less "R8" leg with no house-copy entry: all six slots
+    # are empty. The EN slot never receives engine text and the ZH slot never
+    # receives 暂不可用. The proven-path R8 sentence is a mapped key and must
+    # not be used here.
     other_contract = _contract(identity_proof={
         "state": "PROVEN", "method": "owner_backed_chain.v1",
         "legs": [{
             "check": "R8",
-            "description": "master issuer_cik agrees with the owner-composed current CIK; "
-            "a present workspace also agrees",
+            "description": "some future unmapped engine sentence",
             "artifact": "x", "reader": "y", "values_read": [], "result": "pass", "code": None,
         }],
         "equalities": [], "refusals": [], "disclosures": [],
@@ -1315,15 +1359,12 @@ def test_m1_shell_gate_description_renders_a_real_bilingual_sentence() -> None:
     other_view = build_security_state({"security_state": other_contract})
     assert other_view is not None
     other_leg = other_view["identity"]["legs"][0]
-    raw_desc = (
-        "master issuer_cik agrees with the owner-composed current CIK; a present workspace also agrees"
-    )
-    assert other_leg["desc_en"] == raw_desc
-    assert other_leg["desc_zh"] == _SS_COVERAGE_FALLBACK["zh"]
-    assert other_leg["artifact_en"] == "x"
-    assert other_leg["artifact_zh"] == _SS_COVERAGE_FALLBACK["zh"]
-    assert other_leg["reader_en"] == "y"
-    assert other_leg["reader_zh"] == _SS_COVERAGE_FALLBACK["zh"]
+    assert other_leg["desc_en"] == ""
+    assert other_leg["desc_zh"] == ""
+    assert other_leg["artifact_en"] == ""
+    assert other_leg["artifact_zh"] == ""
+    assert other_leg["reader_en"] == ""
+    assert other_leg["reader_zh"] == ""
 
 
 def test_unread_disclosures_have_house_copy_with_no_english_into_zh_leak() -> None:
@@ -1381,9 +1422,10 @@ def test_ss_leg_desc_identity_unresolved_is_plain_words_not_allowlist_jargon() -
     """macro#6920 round-2/2 review MINOR-1: `_SS_LEG_DESC[('R8','IDENTITY_UNRESOLVED')]`
     still said 'frozen pinned-allowlist mapping' / '冻结准入映射' after the
     batch/批处理 rewrite. Those are pipeline nouns, not what the reader is
-    looking at. RED at 59933d1a.
+    looking at. RED at 59933d1a. Heal-round h5: also walk the by-description
+    table and the artifact/reader tables.
     """
-    from scripts.build_ticker_pages import _SS_GATES, _SS_LEG_DESC
+    from scripts.build_ticker_pages import _SS_GATES
 
     banned = (
         "allowlist", "pinned-allowlist", "pinned allowlist",
@@ -1393,21 +1435,22 @@ def test_ss_leg_desc_identity_unresolved_is_plain_words_not_allowlist_jargon() -
         for slot, text in entry.items():
             hay = str(text)
             for word in banned:
-                assert word.lower() not in hay.lower() if word.isascii() else word not in hay, (
-                    f"_SS_GATES[{code!r}][{slot!r}] contains {word!r}: {hay!r}"
-                )
-    for key, entry in _SS_LEG_DESC.items():
-        for slot, text in entry.items():
-            hay = str(text)
-            for word in banned:
                 if word.isascii():
                     assert word.lower() not in hay.lower(), (
-                        f"_SS_LEG_DESC[{key!r}][{slot!r}] contains {word!r}: {hay!r}"
+                        f"_SS_GATES[{code!r}][{slot!r}] contains {word!r}: {hay!r}"
                     )
                 else:
                     assert word not in hay, (
-                        f"_SS_LEG_DESC[{key!r}][{slot!r}] contains {word!r}: {hay!r}"
+                        f"_SS_GATES[{code!r}][{slot!r}] contains {word!r}: {hay!r}"
                     )
+    for label, hay in _iter_leg_house_copy_slots():
+        for word in banned:
+            if word.isascii():
+                assert word.lower() not in hay.lower(), (
+                    f"{label} contains {word!r}: {hay!r}"
+                )
+            else:
+                assert word not in hay, f"{label} contains {word!r}: {hay!r}"
 
 
 def test_m1_shell_artifact_and_reader_are_plain_bilingual_not_machine_paths() -> None:
@@ -1572,46 +1615,54 @@ def _visible_page_text(html: str) -> str:
 
 
 def test_golden_msft_proven_path_zh_page_has_no_raw_engine_english() -> None:
-    """REQUIRED 5: a golden-MSFT PROVEN identity leg with no house-copy
-    entry keeps the engine text in EN and puts `_SS_COVERAGE_FALLBACK` ZH
-    ('暂不可用') in the ZH slot — never desc_raw / artifact_raw / reader_raw
-    in Chinese.
-
-    Heal-round h4 REQUIRED 4: also fail on dict-repr markers and on the
-    engine's field names appearing as visible text on the ZH page.
+    """Heal-round h5: every golden-MSFT identity leg is mapped to house copy.
+    The ZH Identity-checks panel never receives engine English and never
+    receives `_SS_COVERAGE_FALLBACK` ('暂不可用') on a passing row.
     """
-    from scripts.build_ticker_pages import _SS_COVERAGE_FALLBACK, _SS_ARTIFACT, _SS_LEG_DESC, _SS_READER
+    from scripts.build_ticker_pages import (
+        _SS_ARTIFACT, _SS_COVERAGE_FALLBACK, _SS_LEG_DESC, _SS_LEG_HOUSE_BY_DESC,
+        _SS_READER,
+    )
 
     fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_msft_expected_output.json"
     state = json.loads(fixture.read_text(encoding="utf-8"))
     view = build_security_state({"security_state": state})
     assert view is not None
     missing_house: list[tuple[str, str]] = []
-    for lg in view["identity"]["legs"]:
-        key = (lg["check"], lg["code"])
-        if key not in _SS_LEG_DESC:
-            assert lg["desc_zh"] == _SS_COVERAGE_FALLBACK["zh"], (
-                f"{key}: desc_zh must be the unavailable pair, got {lg['desc_zh']!r}"
-            )
-            assert lg["desc_en"], f"{key}: EN must keep the engine description"
-            missing_house.append((lg["check"], lg["code"] or ""))
-        if key not in _SS_ARTIFACT:
-            assert lg["artifact_zh"] == _SS_COVERAGE_FALLBACK["zh"]
-            assert lg["artifact_en"]
-        if key not in _SS_READER:
-            assert lg["reader_zh"] == _SS_COVERAGE_FALLBACK["zh"]
-            assert lg["reader_en"]
-    assert missing_house, "expected at least one unmapped golden-MSFT identity leg"
+    for src, lg in zip(state["identity_proof"]["legs"], view["identity"]["legs"]):
+        code = lg["code"] or ""
+        desc_raw = src["description"] or ""
+        if code:
+            desc_house = _SS_LEG_DESC.get((lg["check"], code))
+            art_house = _SS_ARTIFACT.get((lg["check"], code))
+            rdr_house = _SS_READER.get((lg["check"], code))
+        else:
+            triple = _SS_LEG_HOUSE_BY_DESC.get((lg["check"], desc_raw)) or {}
+            desc_house = triple.get("desc")
+            art_house = triple.get("artifact")
+            rdr_house = triple.get("reader")
+        if not (desc_house and desc_house.get("en") and desc_house.get("zh")):
+            missing_house.append((lg["check"], code))
+        else:
+            assert lg["desc_en"] == desc_house["en"]
+            assert lg["desc_zh"] == desc_house["zh"]
+            assert lg["desc_zh"] != _SS_COVERAGE_FALLBACK["zh"]
+        if art_house:
+            assert lg["artifact_en"] == art_house["en"]
+            assert lg["artifact_zh"] == art_house["zh"]
+        if rdr_house:
+            assert lg["reader_en"] == rdr_house["en"]
+            assert lg["reader_zh"] == rdr_house["zh"]
+    assert not missing_house, (
+        f"golden-MSFT identity legs missing house description: {missing_house}"
+    )
 
     zh_html = _render_section(view, lang="zh")
-    # desc/artifact/reader ZH slots are wrapped in t(); after stripping l-en,
-    # the engine path strings those slots used to duplicate must be gone.
-    # values_read dumps remain receipt identifiers (listed in GAPS).
     assert "scripts/security_state_producer.py" not in zh_html
     assert "data/reference/security_master.parquet" not in zh_html
-    assert _SS_COVERAGE_FALLBACK["zh"] in zh_html
 
     panel_text = _identity_checks_panel(zh_html).get_text()
+    assert _SS_COVERAGE_FALLBACK["zh"] not in panel_text
     assert "{" not in panel_text, panel_text
     assert "}" not in panel_text, panel_text
     assert "':" not in panel_text, panel_text
@@ -1620,9 +1671,6 @@ def test_golden_msft_proven_path_zh_page_has_no_raw_engine_english() -> None:
         assert not re.search(rf"\b{name}\b", visible), (
             f"{name!r} leaked as visible text on the ZH page"
         )
-    # Round-2 review MINOR 2: Identity-checks dumped raw engine field names
-    # via `<dt>{{ v.k }}</dt>`. Those keys must not appear as visible text
-    # on the ZH page either.
     for name in (
         "owner_alias_reader", "security_set", "workspace_native_cik",
         "subject_ticker_display",
@@ -1630,6 +1678,130 @@ def test_golden_msft_proven_path_zh_page_has_no_raw_engine_english() -> None:
         assert name not in panel_text, (
             f"{name!r} leaked as visible text on the ZH Identity-checks panel"
         )
+
+
+_IDENTITY_CHECKS_MACHINE_TOKENS = (
+    ".parquet", "::", "scripts/", "engine/", "data/",
+    "lib.dataos", "engine.neuralweb", "parse_listing_key",
+    "load_workspace_with_disposition", "event_workspace.v1",
+    "SecurityStateSubject", "_read_security_state_identity_rows",
+    "security_master", "issuer_master", "issuer_migrations",
+    "security_migrations",
+)
+_DOTTED_MODULE_RE = re.compile(r"[a-z_]+\.[a-z_]+\.[a-z_]+")
+
+
+def test_golden_msft_identity_checks_panel_has_no_machine_text() -> None:
+    """REQUIRED 1 (i): golden-MSFT Identity-checks panel (EN and ZH) contains
+    no engine paths, file stems, dotted module paths, or 暂不可用 on a
+    passing row. RED at 8ae0df1b on the golden-MSFT pages only; the M1 page
+    is already green via test_m1_shell_artifact_and_reader_are_plain_bilingual_not_machine_paths.
+    """
+    from scripts.build_ticker_pages import _SS_COVERAGE_FALLBACK
+
+    fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_msft_expected_output.json"
+    state = json.loads(fixture.read_text(encoding="utf-8"))
+    view = build_security_state({"security_state": state})
+    assert view is not None
+    snake_keys_printed: list[str] = []
+    for lg in view["identity"]["legs"]:
+        for row in lg["reads"]:
+            if not row["label_en"]:
+                snake_keys_printed.append(row["k"])
+    assert not snake_keys_printed, (
+        f"Identity-checks reads row printed a snake_case key with no label: "
+        f"{snake_keys_printed}"
+    )
+    for lang in ("en", "zh"):
+        html = _render_section(view, lang=lang)
+        panel = _identity_checks_panel(html)
+        text = panel.get_text()
+        for token in _IDENTITY_CHECKS_MACHINE_TOKENS:
+            assert token not in text, (
+                f"{lang} Identity-checks still has {token!r}: {text}"
+            )
+        dotted = _DOTTED_MODULE_RE.search(text)
+        assert dotted is None, (
+            f"{lang} Identity-checks still has dotted module path {dotted.group()!r}"
+        )
+        for chk in panel.find_all_class("ss-chk"):
+            chk_text = chk.get_text()
+            passed = ("passed" in chk_text) if lang == "en" else ("通过" in chk_text)
+            if passed:
+                assert _SS_COVERAGE_FALLBACK["zh"] not in chk_text, (
+                    f"{lang} PASS row still has 暂不可用: {chk_text}"
+                )
+
+
+def test_identity_leg_house_copy_covers_golden_msft_m1_and_compile_failed_shell() -> None:
+    """REQUIRED 1 (ii): every captured-path identity leg has a house
+    description. Walks golden-MSFT, the M1 shell, and the :1805
+    COMPILE_FAILED_AFTER_OWNER_CONFIRMED shell.
+    """
+    from engine.security_state import (
+        MSFT_CIK, MSFT_ISSUER_ID, MSFT_LISTING_KEY, MSFT_SECURITY_ID,
+        MSFT_SUBJECT, SecurityStateSubject, compile_security_state_failure,
+    )
+    from jsonschema import Draft202012Validator, FormatChecker
+    from scripts.build_ticker_pages import _SS_LEG_DESC, _SS_LEG_HOUSE_BY_DESC
+
+    def _desc_house(check: str, code: str | None, description: str):
+        code = code or ""
+        if code:
+            return _SS_LEG_DESC.get((check, code))
+        entry = _SS_LEG_HOUSE_BY_DESC.get((check, description or ""))
+        return (entry or {}).get("desc")
+
+    missing: list[tuple[str, str, str]] = []
+
+    def _walk(label: str, legs) -> None:
+        for lg in legs:
+            house = _desc_house(lg.get("check") or "", lg.get("code"), lg.get("description") or "")
+            if not (house and house.get("en") and house.get("zh")):
+                missing.append((label, lg.get("check") or "", lg.get("code") or ""))
+
+    fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_msft_expected_output.json"
+    golden = json.loads(fixture.read_text(encoding="utf-8"))
+    _walk("golden-msft", golden["identity_proof"]["legs"])
+
+    schema_path = REPO / "contracts" / "market_os" / "security_state.v1.schema.json"
+    validator = Draft202012Validator(
+        json.loads(schema_path.read_text(encoding="utf-8")),
+        format_checker=FormatChecker(),
+    )
+    m1 = compile_security_state_failure(
+        subject=MSFT_SUBJECT, validator=validator, now="2026-01-01T00:00:00Z",
+        prior_state=None, owner_read_completed=False,
+    )
+    _walk("m1", m1["identity_proof"]["legs"])
+
+    owner_subject = SecurityStateSubject(
+        security_id=MSFT_SECURITY_ID,
+        issuer_id=MSFT_ISSUER_ID,
+        listing_key=MSFT_LISTING_KEY,
+        ticker_display="MSFT",
+        issuer_cik=MSFT_CIK,
+        owner_evidence=(
+            ("decision_date", "2026-09-04"),
+            ("alias_reader", "VendorAliasTable.resolve(store)"),
+            ("issuer_reader", "IssuerMaster.issuer_of_security"),
+            ("cik_reader", "IssuerMaster.cik_of_issuer"),
+        ),
+    )
+    shell = compile_security_state_failure(
+        subject=owner_subject, validator=validator, now="2026-01-01T00:00:00Z",
+        prior_state=None, owner_read_completed=True,
+    )
+    assert shell["legs"]["opportunity_context"]["entry"]["null_reason"] == (
+        "COMPILE_FAILED_AFTER_OWNER_CONFIRMED"
+    )
+    assert any(
+        (lg.get("check") == "R8" and not lg.get("code"))
+        for lg in shell["identity_proof"]["legs"]
+    ), "expected the :1805 code-less R8 PASS shell"
+    _walk("compile-failed-after-owner-confirmed", shell["identity_proof"]["legs"])
+
+    assert not missing, f"identity legs missing house description: {missing}"
 
 
 def test_golden_msft_identity_checks_equalities_are_labeled_rows_not_dict_reprs() -> None:
