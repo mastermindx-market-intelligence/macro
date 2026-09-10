@@ -1351,9 +1351,9 @@ def main() -> int:
 
     vm = _build_view_model(snapshot, world_state, transitions, today, data_dir, regime_data=regime)
 
-    from engine.i18n import tr, td, t_pctile
+    from engine.i18n import tr, td
     env = Environment(loader=FileSystemLoader(str(root / "templates")), autoescape=True)
-    env.globals.update(tr=tr, td=td, t_pctile=t_pctile, ASSET_NAMES=ASSET_NAMES)
+    env.globals.update(tr=tr, td=td, ASSET_NAMES=ASSET_NAMES)
     html = env.get_template("macro_context.html.j2").render(
         vm=vm,
         built=built,
