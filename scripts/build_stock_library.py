@@ -13,6 +13,104 @@ Usage: python -m scripts.build_stock_library
 """
 from __future__ import annotations
 
+try:
+    # Round-2 review MINOR-1: this was a bare, unguarded module-level import
+    # while every actual *use* below is wrapped in `except Exception` -- so an
+    # import-time failure in the debt-maturity module (or one of ITS imports)
+    # killed the entire stockdata build before a single ticker was processed,
+    # the exact opposite of the "additive; must not break the stockdata
+    # build" contract this file's own comments state. `_dm_load` is checked
+    # for None at the one call site below.
+    from scripts.build_debt_maturity import load_debt_maturity_facts as _dm_load
+except Exception:  # noqa: BLE001 -- additive panel; an import failure must never break the whole build
+    _dm_load = None
+
+
+def _resolve_debt_maturity(ticker: str, sector: str, dm_asof) -> dict:
+    """Resolve the ``debt_maturity.v1`` block for one ticker (packet
+    B-F09-3). Extracted to a standalone, directly-callable function (round-3
+    review MAJOR-2) so its taxonomy decisions — the ETF/crypto structural
+    short-circuit, and the producer-fault degrade path — can be pinned by a
+    test that calls the REAL production code, not a hand-copied mirror of it
+    that silently stops tracking the source.
+
+    FOUR distinct statuses, never conflated (META-CEO ruling round 2,
+    MAJOR-1) -- an identity GAP is not fetch LAG:
+      * "not_applicable" -- this listing has no SEC filer identity by
+        CONSTRUCTION (crypto, or an ETF/commodity/FX/factor/credit macro
+        proxy carried under the "ETF / macro" sector sentinel `universe()`
+        itself stamps for every non-named curated_extras ticker -- see
+        `universe()`'s "an ETF / macro proxy" branch). No chip, no section:
+        a promise this listing could NEVER keep must never be made, so it
+        is decided here, before any CIK lookup at all.
+      * "unresolved" -- a CIK lookup was attempted (this IS a candidate
+        common-stock/ADR identity) and found nothing. An identity gap in
+        OUR ledger, not evidence the filer doesn't exist -- but also not a
+        "come back soon" promise, since there is no fetch pending to
+        resolve it. Its own terminal branch in the template.
+      * "not_loaded" -- a CIK exists but this producer has never completed
+        a fetch cycle for it (cache file absent), OR the lookup/extract
+        path faulted transiently (round-3 review MAJOR-3: a real filer's
+        transient producer fault must degrade here, never to
+        `not_applicable`, which would silently swallow its null
+        disclosure). The status whose own copy earns the "still catching
+        up, check back soon" promise.
+      * everything else (engine.debt_maturity.extract_maturity_ladder's own
+        "reported" / "no_maturity_facts" / "no_filings" /
+        "identity_mismatch") -- unchanged, a completed fetch cycle.
+    """
+    if ticker.endswith("-USD") or sector == "ETF / macro":
+        # Structural non-filer: crypto and every ETF/macro proxy this
+        # universe carries. Never attempts a CIK lookup for these -- there
+        # is no filer identity to look up. Pure string checks -- nothing
+        # here can raise, so `not_applicable` is never reached through the
+        # except below.
+        return {"schema": "debt_maturity.v1", "status": "not_applicable"}
+    try:
+        if _dm_load is None:
+            raise RuntimeError("scripts.build_debt_maturity import failed at module load")
+        _dm_cik, _dm_facts, _dm_state = _dm_load(ticker)
+        from engine.debt_maturity import extract_maturity_ladder as _dm_extract  # noqa: PLC0415
+        if _dm_state == "unresolved":
+            return {
+                "schema": "debt_maturity.v1", "status": "unresolved", "cik": None,
+                "buckets": [], "total_reported_usd": None, "total_display": None,
+                "near_share_pct": None, "buckets_reported": 0, "buckets_total": 6,
+                "as_of": dm_asof.isoformat(),
+            }
+        if _dm_state == "not_loaded":
+            return {
+                "schema": "debt_maturity.v1", "status": "not_loaded", "cik": _dm_cik,
+                "buckets": [], "total_reported_usd": None, "total_display": None,
+                "near_share_pct": None, "buckets_reported": 0, "buckets_total": 6,
+                "as_of": dm_asof.isoformat(),
+            }
+        if _dm_state == "confirmed_no_filings":
+            return _dm_extract(None, cik=_dm_cik, as_of=dm_asof)
+        return _dm_extract(_dm_facts, cik=_dm_cik, as_of=dm_asof)
+    except Exception as _dm_exc:  # noqa: BLE001 -- additive; must not break the stockdata build
+        # Round-3 review MAJOR-3: this listing IS a candidate SEC filer (it
+        # reached the else branch), so a transient fault here (import
+        # error, lookup crash, malformed cache) must degrade to
+        # `not_loaded` -- the status whose own copy already says "still
+        # catching up" -- never to `not_applicable`, which renders no chip
+        # and no section and would silently swallow a real filer's null
+        # disclosure. Loud (line-start ::warning, repo CI-annotation law)
+        # so a systemic fault is visible instead of invisible.
+        print(
+            f"::warning title=stock-library debt-maturity producer fault::{ticker} "
+            f"debt-maturity lookup raised {type(_dm_exc).__name__}: {_dm_exc} -- "
+            f"degrading to not_loaded, never not_applicable",
+            flush=True,
+        )
+        return {
+            "schema": "debt_maturity.v1", "status": "not_loaded", "cik": None,
+            "buckets": [], "total_reported_usd": None, "total_display": None,
+            "near_share_pct": None, "buckets_reported": 0, "buckets_total": 6,
+            "as_of": dm_asof.isoformat(),
+        }
+
+
 import json
 import math
 import logging
@@ -3951,6 +4049,14 @@ def main() -> int:
                 rec["sector_pulse"] = _sp_row
         except Exception as _spe2:  # noqa: BLE001 — additive; must not break the stockdata build
             pass
+        # ---- debt maturity ladder (packet B-F09-3, bounded pure producer) ----------
+        # Top-level block in each stockdata JSON: engine.debt_maturity.v1.
+        # Identity is CIK-only via scripts/build_debt_maturity.py's committed
+        # ticker->CIK ledger + issuer_master fallback (GATE 0, fixed 2026-09-06).
+        # Taxonomy + fault-handling now live in `_resolve_debt_maturity()`
+        # (module-level, round-3 review MAJOR-2) so they are directly
+        # unit-testable against the real production code.
+        rec["debt_maturity"] = _resolve_debt_maturity(ticker, sector, _dt.date.today())
         # ---- confluence block (frozen Terminal contract, 2026-07-06) ---------------
         # Top-level block in each stockdata JSON consumed by the charting-app Terminal.
         # Shape: {tier, weight, sub, ticks, bars_to_cross, provisional, not_topped,
@@ -4444,12 +4550,48 @@ def main() -> int:
         from engine import security_state as _security_state
         import engine.neuralweb.company_intelligence_reader as _security_state_reader
         _ss_targets = _security_state_producer._select_security_state_targets(to_write)
+        _ss_mismatched = _security_state_producer._mismatched_security_state_targets(to_write)
         _ss_validator = _security_state_producer._load_security_state_validator(
             _security_state.SCHEMA_PATH
         )
     except Exception as e:  # noqa: BLE001 — the whole stage is additive
         log.warning("security_state.v1 stage disabled this cycle (%s)", e)
         _ss_targets = []
+        _ss_mismatched = []
+    if _ss_mismatched:
+        # MINOR 3 (review finding): a ticker/record mismatch inside the
+        # frozen allowlist is a producer-side bug, never an expected
+        # condition (``_mismatched_security_state_targets`` docstring). The
+        # pre-fix behavior silently filtered these out of ``_ss_targets``,
+        # leaving the record's ``security_state`` key fully absent — the
+        # same "reads as nothing built, not build failed" hazard M1 already
+        # closed for the owner-identity-unavailable path below. Emit the
+        # same typed failure shell here instead of dropping it.
+        _ss_mismatch_now = pd.Timestamp.now(tz="UTC").isoformat()
+        for _ss_ticker, _ss_rec in _ss_mismatched:
+            log.warning(
+                "security_state.v1 ticker/record mismatch for %s (record ticker=%r)",
+                _ss_ticker, _ss_rec.get("ticker"),
+            )
+            _ss_pinned_subject = _security_state_producer._fallback_subject_for_ticker(_ss_ticker)
+            _ss_prior = _security_state_producer._read_prior_security_state(outdir, _ss_ticker)
+            _ss_state = (
+                _security_state_producer._compile_security_state_failure_for_exception(
+                    subject=_ss_pinned_subject, now=_ss_mismatch_now,
+                    diagnostic=RuntimeError("ticker/record mismatch"),
+                    prior_state=_ss_prior,
+                    validator=_ss_validator,
+                )
+            )
+            _ss_rec["security_state"] = _ss_state
+            for _ss_idx_row in index:
+                if _ss_idx_row.get("t") == _ss_ticker:
+                    _ss_idx_row["security_state"] = {
+                        "overall_state": _ss_state["coverage"]["overall_state"],
+                        "dominant_degradation": _ss_state["dominant_degradation"],
+                        "generated_at": _ss_state["generated_at"],
+                    }
+                    break
     if _ss_targets:
         _ss_now_timestamp = pd.Timestamp.now(tz="UTC")
         _ss_now = _ss_now_timestamp.isoformat()

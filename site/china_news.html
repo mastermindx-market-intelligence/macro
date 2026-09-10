@@ -33,8 +33,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>China Tape — Macro Dashboard</title>
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang');if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=f41f9a21">
-<link rel="stylesheet" href="assets/css/32655cfe.css?v=32655cfe">
+<link rel="stylesheet" href="theme.css?v=63df1679">
+<link rel="stylesheet" href="assets/css/00738b9b.css?v=00738b9b">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
 <link rel="preload" as="style" href="navigation-refresh.css?v=c299c324">
 
@@ -184,6 +184,7 @@
         </div>
         <a href="intl_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet cross-market · sectors</span><span class="l-zh">Prophet 跨市场 · 板块</span></span></a>
         <a href="baskets_intl.html"><span class="submenu-icon submenu-icon-baskets" aria-hidden="true"></span><span class="l-en">Thematic Baskets</span><span class="l-zh">主题篮子</span><span class="d"><span class="l-en">Cross-country theme baskets · ex-US</span><span class="l-zh">跨国主题篮子 · 除美</span></span></a>
+        <a href="sanctions_map.html"><span class="submenu-icon submenu-icon-policy" aria-hidden="true"></span><span class="l-en">Sanctions Map</span><span class="l-zh">制裁地图</span><span class="d"><span class="l-en">Where US sanctions point · OFAC public list</span><span class="l-zh">美国制裁指向何处 · OFAC 公开名单</span></span></a>
       </div>
     </div>
     <div class="nav-dd">
@@ -313,8 +314,8 @@
       
       
       <p class="cn-lead">
-        <span class="l-en"><b>24</b> stories cleared the macro filter; official policy tone steady. <b>5</b> rated high-impact, led by <b>consumer</b>.</span>
-        <span class="l-zh"><b>24</b> 条通过宏观筛选；官方政策基调平稳。其中 <b>5</b> 条高影响，主导<b>消费</b>。</span>
+        <span class="l-en"><b>24</b> stories cleared the macro filter; official policy tone steady. <b>16</b> rated high-impact, led by <b>PBOC & liquidity</b>.</span>
+        <span class="l-zh"><b>24</b> 条通过宏观筛选；官方政策基调平稳。其中 <b>16</b> 条高影响，主导<b>央行与流动性</b>。</span>
       </p>
       <p class="cn-asof"><span class="l-en">As of</span><span class="l-zh">截至</span>  · <span class="l-en">context, not trade calls</span><span class="l-zh">仅供参考，非交易信号</span></p>
       <div class="cn-glance">
@@ -322,8 +323,8 @@
         
         <span class="cn-gchip st-steady"><span class="dot"></span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span> <b><span class="l-en">steady</span><span class="l-zh">平稳</span></b></span>
         
-        <span class="cn-gchip hot"><span class="dot"></span><b>5</b> <span class="l-en">high-impact</span><span class="l-zh">高影响</span></span>
-        <span class="cn-gchip led th-markets"><span class="dot"></span><span class="l-en">Led by</span><span class="l-zh">主导</span> <b><span class="l-en">consumer</span><span class="l-zh">消费</span></b></span>
+        <span class="cn-gchip hot"><span class="dot"></span><b>16</b> <span class="l-en">high-impact</span><span class="l-zh">高影响</span></span>
+        <span class="cn-gchip led th-monetary"><span class="dot"></span><span class="l-en">Led by</span><span class="l-zh">主导</span> <b><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></b></span>
         <span class="cn-gchip"><b>24</b> <span class="l-en">on the tape</span><span class="l-zh">条在流</span></span>
         <span class="cn-gchip hidden" id="fresh"><span class="dot" style="background:var(--up)"></span><span id="fresh-t"></span></span>
       </div>
@@ -341,15 +342,15 @@
       
       <div class="tg-top">
         <div class="tg-state"><span class="l-en">steady</span><span class="l-zh">平稳</span></div>
-        <div class="tg-z">-0.1</div>
+        <div class="tg-z">-0.3</div>
       </div>
       
       
       <div class="tg-track"><span class="mid"></span>
-        <span class="tg-fill" style="right:50%;width:2.0%"></span>
+        <span class="tg-fill" style="right:50%;width:5.2%"></span>
       </div>
       <div class="tg-scale"><span><span class="l-en">cautious</span><span class="l-zh">谨慎</span></span><span><span class="l-en">neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">supportive</span><span class="l-zh">积极</span></span></div>
-      <p class="ov-foot"><span class="l-en">CCTV 新闻联播 tone · against the last</span><span class="l-zh">央视《新闻联播》基调 · 对比过去</span> 88<span class="l-en">d baseline</span><span class="l-zh">天基线</span> · 2026-09-08</p>
+      <p class="ov-foot"><span class="l-en">CCTV 新闻联播 tone · against the last</span><span class="l-zh">央视《新闻联播》基调 · 对比过去</span> 90<span class="l-en">d baseline</span><span class="l-zh">天基线</span> · 2026-09-10</p>
       
     </article>
 
@@ -361,43 +362,43 @@
         
         
         
-        <div class="mx-row th-markets">
-          <span class="mx-name"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-          <span class="mx-bar"><i style="width:100%"></i></span>
-          <span class="mx-n">9</span>
-        </div>
-        
-        
-        <div class="mx-row th-policy">
-          <span class="mx-name"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
-          <span class="mx-bar"><i style="width:56%"></i></span>
-          <span class="mx-n">5</span>
-        </div>
-        
-        
         <div class="mx-row th-monetary">
           <span class="mx-name"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
-          <span class="mx-bar"><i style="width:44%"></i></span>
-          <span class="mx-n">4</span>
+          <span class="mx-bar"><i style="width:100%"></i></span>
+          <span class="mx-n">12</span>
+        </div>
+        
+        
+        <div class="mx-row th-markets">
+          <span class="mx-name"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+          <span class="mx-bar"><i style="width:50%"></i></span>
+          <span class="mx-n">6</span>
         </div>
         
         
         <div class="mx-row th-inflation">
           <span class="mx-name"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
-          <span class="mx-bar"><i style="width:22%"></i></span>
+          <span class="mx-bar"><i style="width:17%"></i></span>
           <span class="mx-n">2</span>
         </div>
         
         
-        <div class="mx-row th-tech">
-          <span class="mx-name"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
-          <span class="mx-bar"><i style="width:22%"></i></span>
+        <div class="mx-row th-credit">
+          <span class="mx-name"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+          <span class="mx-bar"><i style="width:17%"></i></span>
           <span class="mx-n">2</span>
+        </div>
+        
+        
+        <div class="mx-row th-fiscal">
+          <span class="mx-name"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+          <span class="mx-bar"><i style="width:8%"></i></span>
+          <span class="mx-n">1</span>
         </div>
         
       
       
-      <p class="ov-foot"><span class="l-en">Sources</span><span class="l-zh">来源</span>: <span class="l-en">Chinese financial press</span><span class="l-zh">中国财经媒体</span> 21 · <span class="l-en">official releases</span><span class="l-zh">官方发布</span> 2 · <span class="l-en">global wire</span><span class="l-zh">国际通讯社</span> 1</p>
+      <p class="ov-foot"><span class="l-en">Sources</span><span class="l-zh">来源</span>: <span class="l-en">Chinese financial press</span><span class="l-zh">中国财经媒体</span> 18 · <span class="l-en">global wire</span><span class="l-zh">国际通讯社</span> 5 · <span class="l-en">official releases</span><span class="l-zh">官方发布</span> 1</p>
       
     </article>
 
@@ -408,7 +409,8 @@
       
       <div class="nx-when">
         
-          <span class="nx-days">2</span><span class="nx-unit"><span class="l-en">days out</span><span class="l-zh">天后</span></span>
+          <span class="nx-days" style="color:#d0554f"><span class="l-en">Today</span><span class="l-zh">今日</span></span>
+          
         
       </div>
       <p class="nx-name"><span class="l-en">CPI (consumer prices)</span><span class="l-zh">CPI（居民消费价格）</span></p>
@@ -433,21 +435,103 @@
       <div class="tp-feed" id="feed">
         
         
-        <a class="tp-item th-monetary lead" href="https://wallstreetcn.com/livenews/3162010" target="_blank" rel="noopener"
+        <a class="tp-item th-monetary lead" href="https://wallstreetcn.com/livenews/3163414" target="_blank" rel="noopener"
            data-theme="monetary" data-importance="high"
-           data-search="富国银行：美联储通常在加息/降息概率超过69%时才会行动 wells fargo: fed typically acts when odds of rate hike/cut exceed 69% 富国银行：美联储通常在加息/降息概率超过69%时才会行动 根据富国银行汇编的自2015年以来的数据，美联储传统上会在加息或降息的概率升至69%以上时才采取行动。该银行表示，周五公布的消费者物价指数（cpi）数据“很可能决定”央行在下周会议上的决策。 由ohsung kwon领衔的分析师在周二发布的报告中写道：“自2015年以来，加息或降息的概率从未落在38%-69%的区间内，而当市场对会议的定价超过69%时，美联储每次都采取了行动。” based on data compiled by wells fargo since 2015, the federal reserve has traditionally acted only when the probability of a rate hike or cut rises above 69%. the bank said friday's cpi data will 'likely determine' the central bank's decision at next week's meeting. analysts led by ohsung kwon wrote in a report released tuesday: 'since 2015, the probability of a rate hike or cut has never fallen within the 38%-69% range, and when market pricing for a meeting exceeded 69%, the fed acted every time.' 根据富国银行汇编的自2015年以来的数据，美联储传统上会在加息或降息的概率升至69%以上时才采取行动。该银行表示，周五公布的消费者物价指数（cpi）数据“很可能决定”央行在下周会议上的决策。 由ohsung kwon领衔的分析师在周二发布的报告中写道：“自2015年以来，加息或降息的概率从未落在38%-69%的区间内，而当市场对会议的定价超过69%时，美联储每次都采取了行动。” 华尔街见闻 pboc_liquidity consumer pboc & liquidity 央行与流动性 consumer 消费 512800.ss">
-          <time class="tp-when" data-t="2026-09-08T14:15:05+00:00" datetime="2026-09-08T14:15:05+00:00">09-08<br>14:15</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-08T14:15:05+00:00"></span></div>
+           data-search="报道：德鲁肯米勒称美国借贷成本仍“有点低” report: druckenmiller says us borrowing costs still "a bit low" 报道：德鲁肯米勒称美国借贷成本仍“有点低” 据德鲁肯米勒（stanley druckenmiller）发言记录及多位知情人士消息，德鲁肯米勒向一个华尔街私人听众表示，美国的借贷成本仍然“有点低”。 德鲁肯米勒在纽约由piper sandler主办的一场会议上称：“鉴于当前经济状况、资本支出热潮以及资本争夺战，如果说有什么的话，（债券收益率似乎）有点低了。” 他表示：“收益率的上涨一直是一种缓慢的、由基本面驱动的攀升。但我完全不觉得令人担忧。” 德鲁肯米勒还表示，降息“已不再必要”。 他认为，那些认为货币政策具有紧缩性的央行官员“荒谬可笑”。（英国金融时报） according to a transcript of stanley druckenmiller's remarks and multiple people familiar with the matter, druckenmiller told a private wall street audience that u.s. borrowing costs are still "a little low." speaking at a conference hosted by piper sandler in new york, druckenmiller said: "given the current economic situation, the capex boom and the fight for capital, if anything, (bond yields seem) a little low." he said: "the rise in yields has been a slow, fundamentals-driven grind. but i don't find it worrying at all." druckenmiller also said rate cuts are "no longer necessary." he called central bank officials who believe monetary policy is restrictive "ridiculous." (financial times) 据德鲁肯米勒（stanley druckenmiller）发言记录及多位知情人士消息，德鲁肯米勒向一个华尔街私人听众表示，美国的借贷成本仍然“有点低”。 德鲁肯米勒在纽约由piper sandler主办的一场会议上称：“鉴于当前经济状况、资本支出热潮以及资本争夺战，如果说有什么的话，（债券收益率似乎）有点低了。” 他表示：“收益率的上涨一直是一种缓慢的、由基本面驱动的攀升。但我完全不觉得令人担忧。” 德鲁肯米勒还表示，降息“已不再必要”。 他认为，那些认为货币政策具有紧缩性的央行官员“荒谬可笑”。（英国金融时报） 华尔街见闻 pboc_liquidity pboc & liquidity 央行与流动性 cbon">
+          <time class="tp-when" data-t="2026-09-10T17:25:16+00:00" datetime="2026-09-10T17:25:16+00:00">09-10<br>17:25</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10T17:25:16+00:00"></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
               <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
               <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-high"><b>100</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+              <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">Wells Fargo: Fed typically acts when odds of rate hike/cut exceed 69%</span><span class="l-zh">富国银行：美联储通常在加息/降息概率超过69%时才会行动</span></h2>
-            <p class="tp-sum"><span class="l-en">Based on data compiled by Wells Fargo since 2015, the Federal Reserve has traditionally acted only when the probability of a rate hike or cut rises above 69%. The bank said Friday's CPI data will 'likely determine' the central bank's decision at next week's meeting. Analysts led by Ohsung Kwon wrote in a report released Tuesday: 'Since 2015, the probability of a rate hike or cut has never fallen within the 38%-69% range, and when market pricing for a meeting exceeded 69%, the Fed acted every time.'</span><span class="l-zh">根据富国银行汇编的自2015年以来的数据，美联储传统上会在加息或降息的概率升至69%以上时才采取行动。该银行表示，周五公布的消费者物价指数（CPI）数据“很可能决定”央行在下周会议上的决策。 由Ohsung Kwon领衔的分析师在周二发布的报告中写道：“自2015年以来，加息或降息的概率从未落在38%-69%的区间内，而当市场对会议的定价超过69%时，美联储每次都采取了行动。”</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-tk">512800.SS</span></div>
+            <h2 class="tp-title"><span class="l-en">Report: Druckenmiller Says US Borrowing Costs Still "a Bit Low"</span><span class="l-zh">报道：德鲁肯米勒称美国借贷成本仍“有点低”</span></h2>
+            <p class="tp-sum"><span class="l-en">According to a transcript of Stanley Druckenmiller's remarks and multiple people familiar with the matter, Druckenmiller told a private Wall Street audience that U.S. borrowing costs are still "a little low." Speaking at a conference hosted by Piper Sandler in New York, Druckenmiller said: "Given the current economic situation, the capex boom and the fight for capital, if anything, (bond yields seem) a little low." He said: "The rise in yields has been a slow, fundamentals-driven grind. But I don't find it worrying at all." Druckenmiller also said rate cuts are "no longer necessary." He called central bank officials who believe monetary policy is restrictive "ridiculous." (Financial Times)</span><span class="l-zh">据德鲁肯米勒（Stanley Druckenmiller）发言记录及多位知情人士消息，德鲁肯米勒向一个华尔街私人听众表示，美国的借贷成本仍然“有点低”。 德鲁肯米勒在纽约由Piper Sandler主办的一场会议上称：“鉴于当前经济状况、资本支出热潮以及资本争夺战，如果说有什么的话，（债券收益率似乎）有点低了。” 他表示：“收益率的上涨一直是一种缓慢的、由基本面驱动的攀升。但我完全不觉得令人担忧。” 德鲁肯米勒还表示，降息“已不再必要”。 他认为，那些认为货币政策具有紧缩性的央行官员“荒谬可笑”。（英国金融时报）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-tk">CBON</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.stcn.com/article/detail/4180483.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="财政部部长助理常军红出席2026年第二次金砖国家财长和央行行长系列会议 assistant finance minister chang junhong attends the second brics finance ministers and central bank governors meeting series of 2026 财政部部长助理常军红出席2026年第二次金砖国家财长和央行行长系列会议    证券时报 pboc_liquidity fiscal_trade pboc & liquidity 央行与流动性 fiscal & trade 财政与贸易 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
+              <span class="cn-src">证券时报</span>
+              <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Assistant Finance Minister Chang Junhong Attends the Second BRICS Finance Ministers and Central Bank Governors Meeting Series of 2026</span><span class="l-zh">财政部部长助理常军红出席2026年第二次金砖国家财长和央行行长系列会议</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.stcn.com/article/detail/4179615.html" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="证监会：全力维护资本市场平稳运行 csrc: full efforts to maintain stable capital market operations 证监会：全力维护资本市场平稳运行    证券时报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">证券时报</span>
+              <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">CSRC: Full efforts to maintain stable capital market operations</span><span class="l-zh">证监会：全力维护资本市场平稳运行</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-inflation" href="https://www.cnstock.com/topicDetail/356068" target="_blank" rel="noopener"
+           data-theme="inflation" data-importance="high"
+           data-search="8月cpi、ppi同比均回暖 物价有望保持温和上涨态势 both cpi and ppi rebounded year-on-year in august; prices are expected to maintain a mild upward trend 8月cpi、ppi同比均回暖 物价有望保持温和上涨态势    上海证券报 consumer consumer 消费 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Both CPI and PPI rebounded year-on-year in August; prices are expected to maintain a mild upward trend</span><span class="l-zh">8月CPI、PPI同比均回暖 物价有望保持温和上涨态势</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-inflation" href="https://www.scmp.com/economy/china-economy/article/3366851/chinas-factory-gate-price-growth-picks-august-iran-war-fuels-energy-volatility?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="inflation" data-importance="high"
+           data-search="china’s factory-gate price growth picks up in august as iran war fuels energy volatility  中国8月工业品出厂价格涨幅回升，伊朗战争加剧能源波动 china’s factory-gate price growth accelerated in august, while consumer inflation picked up again, amid volatile energy and commodity costs linked to the us-israel war on iran.
+the producer price index rose 3.8 per cent year on year last month, up from 3.5 per cent in july, according to data released by the national bureau of statistics (nbs) on wednesday.
+the reading beat a 3.6 per cent projection from economists polled by financial data provider wind.
+meanwhile, the consumer price index (cpi),...  中国8月份工厂出厂价格增速加快，而消费者通胀再次抬头，原因在于与美以对伊朗战争相关的能源和大宗商品成本波动。国家统计局周三发布的数据显示，上月生产者价格指数同比上涨3.8%，高于7月份的3.5%。 scmp - china economy consumer commodities consumer 消费 commodities 大宗商品 ">
+          <time class="tp-when" data-t="2026-09-09T02:28:22+00:00" datetime="2026-09-09T02:28:22+00:00">09-09<br>02:28</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T02:28:22+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+              <span class="cn-src">SCMP - China Economy</span>
+              <span class="cn-imp imp-high"><b>84</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">China’s factory-gate price growth picks up in August as Iran war fuels energy volatility</span><span class="l-zh">中国8月工业品出厂价格涨幅回升，伊朗战争加剧能源波动</span></h2>
+            <p class="tp-sum"><span class="l-en">China’s factory-gate price growth accelerated in August, while consumer inflation picked up again, amid volatile energy and commodity costs linked to the US-Israel war on Iran.
+The producer price index rose 3.8 per cent year on year last month, up from 3.5 per cent in July, according to data released by the National Bureau of Statistics (NBS) on Wednesday.
+The reading beat a 3.6 per cent projection from economists polled by financial data provider Wind.
+Meanwhile, the consumer price index (CPI),...</span><span class="l-zh">中国8月份工厂出厂价格增速加快，而消费者通胀再次抬头，原因在于与美以对伊朗战争相关的能源和大宗商品成本波动。国家统计局周三发布的数据显示，上月生产者价格指数同比上涨3.8%，高于7月份的3.5%。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">commodities</span><span class="l-zh">大宗商品</span></span></div>
           </div>
         </a>
         
@@ -473,268 +557,295 @@ Friday’s consumer price index in the United States will take centre stage, wit
         </a>
         
         
-        <a class="tp-item th-inflation" href="https://flash.jin10.com/detail/20260908222039663800" target="_blank" rel="noopener"
-           data-theme="inflation" data-importance="high"
-           data-search="china council for the promotion of international trade vice chairman lin honghong meets hp inc. general counsel julie jacobs  中国贸促会副会长林红红会见惠普公司总法律顾问朱莉·雅各布斯 sept 8, beijing — china council for the promotion of international trade (ccpit) vice chairman lin honghong met hp inc. chief legal officer and general counsel julie jacobs. discussions covered support for foreign-invested firms operating in china, deepening international industr  9月8日，北京——中国国际贸易促进委员会（ccpit）副会长林红红会见了惠普公司首席法务官兼总法律顾问朱莉·雅各布斯。双方就支持在华外资企业运营、深化国际产业合作等议题进行了交流。 金十数据 consumer fiscal_trade consumer 消费 fiscal & trade 财政与贸易 ">
-          <time class="tp-when" data-t="2026-09-08T22:20:39+08:00" datetime="2026-09-08T22:20:39+08:00">09-08<br>22:20</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-08T22:20:39+08:00"></span></div>
+        <a class="tp-item th-monetary" href="https://wallstreetcn.com/livenews/3163410" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="德债收益率创十七年新高，交易员对欧洲央行加息前景的预期升温 german bond yields hit 17-year high as traders raise bets on ecb rate hikes 德债收益率创十七年新高，交易员对欧洲央行加息前景的预期升温 周四（9月10日）欧市尾盘，德国10年期国债收益率涨5.7个基点，报3.501%，最近两个交易日累计上涨13.5个基点，整体持续上扬，交投于3.424%-3.508%区间，欧洲央行宣布加息、行长拉加德在新闻发布会讲话、报道称央行官员考虑10月继续加息之际，北京时间23:14达到3.508%、突破2011年二季度顶部3.505%、逼近2009年二季度盘中最高位3.749%、以及2008年四季度最高位4.148%。 两年期德债收益率涨16.4个基点，报3.236%，最近四天累计上涨28.7个基点，20:15欧洲央行宣布加息之前维持微幅下跌状态、之后持续上涨， in late european trading on thursday (sept. 10), the german 10-year government bond yield rose 5.7 basis points to 3.501%, gaining 13.5 basis points over the past two trading days, extending its overall upward trend and trading in a range of 3.424%-3.508%. as the ecb announced a rate hike, president lagarde spoke at a press conference, and reports said central bank officials were considering another hike in october, the yield reached 3.508% at 23:14 beijing time, breaking above the 3.505% top from the second quarter of 2011, approaching the intraday high of 3.749% from the second quarter of 2009 and the high of 4.148% from the fourth quarter of 2008. the two-year german bond yield rose 16.4 basis points to 3.236%, gaining 28.7 basis points over the past four days. it held slight declines before the ecb announced the rate hike at 20:15 and then continued to rise, 周四（9月10日）欧市尾盘，德国10年期国债收益率涨5.7个基点，报3.501%，最近两个交易日累计上涨13.5个基点，整体持续上扬，交投于3.424%-3.508%区间，欧洲央行宣布加息、行长拉加德在新闻发布会讲话、报道称央行官员考虑10月继续加息之际，北京时间23:14达到3.508%、突破2011年二季度顶部3.505%、逼近2009年二季度盘中最高位3.749%、以及2008年四季度最高位4.148%。 两年期德债收益率涨16.4个基点，报3.236%，最近四天累计上涨28.7个基点，20:15欧洲央行宣布加息之前维持微幅下跌状态、之后持续上涨， 华尔街见闻 pboc_liquidity pboc & liquidity 央行与流动性 cbon">
+          <time class="tp-when" data-t="2026-09-10T17:14:42+00:00" datetime="2026-09-10T17:14:42+00:00">09-10<br>17:14</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10T17:14:42+00:00"></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
-              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
-              <span class="cn-src">金十数据</span>
-              <span class="cn-imp imp-high"><b>74</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">China Council for the Promotion of International Trade vice chairman Lin Honghong meets HP Inc. general counsel Julie Jacobs</span><span class="l-zh">中国贸促会副会长林红红会见惠普公司总法律顾问朱莉·雅各布斯</span></h2>
-            <p class="tp-sum"><span class="l-en">Sept 8, Beijing — China Council for the Promotion of International Trade (CCPIT) vice chairman Lin Honghong met HP Inc. chief legal officer and general counsel Julie Jacobs. Discussions covered support for foreign-invested firms operating in China, deepening international industr</span><span class="l-zh">9月8日，北京——中国国际贸易促进委员会（CCPIT）副会长林红红会见了惠普公司首席法务官兼总法律顾问朱莉·雅各布斯。双方就支持在华外资企业运营、深化国际产业合作等议题进行了交流。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3161911" target="_blank" rel="noopener"
-           data-theme="policy" data-importance="high"
-           data-search="丁薛祥在全国教材工作会议上强调 紧紧围绕立德树人根本任务 加快构建中国特色高质量教材体系 ding xuexiang stresses at national textbook work meeting: focus on fundamental task of moral education, accelerate building high-quality textbook system with chinese characteristics 丁薛祥在全国教材工作会议上强调 紧紧围绕立德树人根本任务 加快构建中国特色高质量教材体系 全国教材工作会议9月8日在京召开。中共中央政治局常委、国务院副总理丁薛祥出席会议并讲话。 a national textbook work conference was held in beijing on september 8. ding xuexiang, member of the standing committee of the political bureau of the cpc central committee and vice premier of the state council, attended and delivered a speech. 全国教材工作会议9月8日在京召开。中共中央政治局常委、国务院副总理丁薛祥出席会议并讲话。 华尔街见闻 policy policy 政策 ">
-          <time class="tp-when" data-t="2026-09-08T10:31:47+00:00" datetime="2026-09-08T10:31:47+00:00">09-08<br>10:31</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-08T10:31:47+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
               <span class="cn-src">华尔街见闻</span>
               <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">Ding Xuexiang stresses at national textbook work meeting: focus on fundamental task of moral education, accelerate building high-quality textbook system with Chinese characteristics</span><span class="l-zh">丁薛祥在全国教材工作会议上强调 紧紧围绕立德树人根本任务 加快构建中国特色高质量教材体系</span></h2>
-            <p class="tp-sum"><span class="l-en">A national textbook work conference was held in Beijing on September 8. Ding Xuexiang, member of the Standing Committee of the Political Bureau of the CPC Central Committee and Vice Premier of the State Council, attended and delivered a speech.</span><span class="l-zh">全国教材工作会议9月8日在京召开。中共中央政治局常委、国务院副总理丁薛祥出席会议并讲话。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
+            <h2 class="tp-title"><span class="l-en">German Bond Yields Hit 17-Year High as Traders Raise Bets on ECB Rate Hikes</span><span class="l-zh">德债收益率创十七年新高，交易员对欧洲央行加息前景的预期升温</span></h2>
+            <p class="tp-sum"><span class="l-en">In late European trading on Thursday (Sept. 10), the German 10-year government bond yield rose 5.7 basis points to 3.501%, gaining 13.5 basis points over the past two trading days, extending its overall upward trend and trading in a range of 3.424%-3.508%. As the ECB announced a rate hike, President Lagarde spoke at a press conference, and reports said central bank officials were considering another hike in October, the yield reached 3.508% at 23:14 Beijing time, breaking above the 3.505% top from the second quarter of 2011, approaching the intraday high of 3.749% from the second quarter of 2009 and the high of 4.148% from the fourth quarter of 2008. The two-year German bond yield rose 16.4 basis points to 3.236%, gaining 28.7 basis points over the past four days. It held slight declines before the ECB announced the rate hike at 20:15 and then continued to rise,</span><span class="l-zh">周四（9月10日）欧市尾盘，德国10年期国债收益率涨5.7个基点，报3.501%，最近两个交易日累计上涨13.5个基点，整体持续上扬，交投于3.424%-3.508%区间，欧洲央行宣布加息、行长拉加德在新闻发布会讲话、报道称央行官员考虑10月继续加息之际，北京时间23:14达到3.508%、突破2011年二季度顶部3.505%、逼近2009年二季度盘中最高位3.749%、以及2008年四季度最高位4.148%。 两年期德债收益率涨16.4个基点，报3.236%，最近四天累计上涨28.7个基点，20:15欧洲央行宣布加息之前维持微幅下跌状态、之后持续上涨，</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-tk">CBON</span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3161939" target="_blank" rel="noopener"
-           data-theme="policy" data-importance="medium"
-           data-search="李强：统筹推进住房、小区、社区到城区的更新改造，加快老旧街区厂区转型升级，积极导入新产业新业态 li qiang: coordinate renewal of housing, neighborhoods, communities to urban areas; accelerate transformation of old streets and factory zones, actively introduce new industries and business formats 李强：统筹推进住房、小区、社区到城区的更新改造，加快老旧街区厂区转型升级，积极导入新产业新业态 9月8日，国务院以“高质量推进城市更新、促进城市内涵式发展”为主题，进行第二十一次专题学习。国务院总理李强在主持学习时强调，要深入学习贯彻习近平总书记关于城市更新工作的重要指示精神和党中央有关决策部署，建立可持续的城市更新模式，促进城市结构优化、功能完善、文脉赓续、品质提升，以城市高质量发展更好满足人民美好生活需要。 on september 8, the state council held its 21st special study session themed 'advancing urban renewal with high quality and promoting connotative urban development.' during the session, premier li qiang emphasized the need to thoroughly study and implement general secretary xi jinping's important instructions on urban renewal work and relevant party central committee decisions, establish a sustainable urban renewal model, promote urban structure optimization, functional improvement, cultural heritage preservation, and quality enhancement, so as to better meet people's needs for a better life through high-quality urban development. 9月8日，国务院以“高质量推进城市更新、促进城市内涵式发展”为主题，进行第二十一次专题学习。国务院总理李强在主持学习时强调，要深入学习贯彻习近平总书记关于城市更新工作的重要指示精神和党中央有关决策部署，建立可持续的城市更新模式，促进城市结构优化、功能完善、文脉赓续、品质提升，以城市高质量发展更好满足人民美好生活需要。 华尔街见闻 policy policy 政策 ">
-          <time class="tp-when" data-t="2026-09-08T11:34:13+00:00" datetime="2026-09-08T11:34:13+00:00">09-08<br>11:34</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-08T11:34:13+00:00"></span></div>
+        <a class="tp-item th-monetary" href="https://wallstreetcn.com/livenews/3163449" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="美元指数涨超0.2% us dollar index rises over 0.2% 美元指数涨超0.2% 周四（9月10日）纽约尾盘，ice美元指数涨0.26%，报99.070点，日内交投区间为98.706-99.199点，欧洲股市开盘以来持续上扬、北京时间20:39（欧洲央行宣布加息之后）创9月4日以来新高，脱离周三所创8月21日以来最低位98.599点。 彭博美元指数涨0.30%，报1190.47点，日内交投区间为1185.81-1191.64点，脱离周三所创5月6日（最低1184.67点）以来盘中最低位1184.82点。 in late new york trading on thursday (sept. 10), the ice u.s. dollar index rose 0.26% to 99.070, with an intraday range of 98.706-99.199. it had been rising steadily since the european stock market opened and hit a new high since sept. 4 at 20:39 beijing time (after the ecb announced its rate hike), moving away from the lowest level since aug. 21 of 98.599 set on wednesday. the bloomberg dollar index rose 0.30% to 1190.47, with an intraday range of 1185.81-1191.64, moving away from the intraday low of 1184.82 set on wednesday, the lowest since may 6 (low of 1184.67). 周四（9月10日）纽约尾盘，ice美元指数涨0.26%，报99.070点，日内交投区间为98.706-99.199点，欧洲股市开盘以来持续上扬、北京时间20:39（欧洲央行宣布加息之后）创9月4日以来新高，脱离周三所创8月21日以来最低位98.599点。 彭博美元指数涨0.30%，报1190.47点，日内交投区间为1185.81-1191.64点，脱离周三所创5月6日（最低1184.67点）以来盘中最低位1184.82点。 华尔街见闻 pboc_liquidity pboc & liquidity 央行与流动性 ">
+          <time class="tp-when" data-t="2026-09-10T19:24:36+00:00" datetime="2026-09-10T19:24:36+00:00">09-10<br>19:24</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10T19:24:36+00:00"></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
-              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
               <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">Li Qiang: Coordinate renewal of housing, neighborhoods, communities to urban areas; accelerate transformation of old streets and factory zones, actively introduce new industries and business formats</span><span class="l-zh">李强：统筹推进住房、小区、社区到城区的更新改造，加快老旧街区厂区转型升级，积极导入新产业新业态</span></h2>
-            <p class="tp-sum"><span class="l-en">On September 8, the State Council held its 21st special study session themed 'Advancing Urban Renewal with High Quality and Promoting Connotative Urban Development.' During the session, Premier Li Qiang emphasized the need to thoroughly study and implement General Secretary Xi Jinping's important instructions on urban renewal work and relevant Party Central Committee decisions, establish a sustainable urban renewal model, promote urban structure optimization, functional improvement, cultural heritage preservation, and quality enhancement, so as to better meet people's needs for a better life through high-quality urban development.</span><span class="l-zh">9月8日，国务院以“高质量推进城市更新、促进城市内涵式发展”为主题，进行第二十一次专题学习。国务院总理李强在主持学习时强调，要深入学习贯彻习近平总书记关于城市更新工作的重要指示精神和党中央有关决策部署，建立可持续的城市更新模式，促进城市结构优化、功能完善、文脉赓续、品质提升，以城市高质量发展更好满足人民美好生活需要。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
+            <h2 class="tp-title"><span class="l-en">US Dollar Index Rises Over 0.2%</span><span class="l-zh">美元指数涨超0.2%</span></h2>
+            <p class="tp-sum"><span class="l-en">In late New York trading on Thursday (Sept. 10), the ICE U.S. Dollar Index rose 0.26% to 99.070, with an intraday range of 98.706-99.199. It had been rising steadily since the European stock market opened and hit a new high since Sept. 4 at 20:39 Beijing time (after the ECB announced its rate hike), moving away from the lowest level since Aug. 21 of 98.599 set on Wednesday. The Bloomberg Dollar Index rose 0.30% to 1190.47, with an intraday range of 1185.81-1191.64, moving away from the intraday low of 1184.82 set on Wednesday, the lowest since May 6 (low of 1184.67).</span><span class="l-zh">周四（9月10日）纽约尾盘，ICE美元指数涨0.26%，报99.070点，日内交投区间为98.706-99.199点，欧洲股市开盘以来持续上扬、北京时间20:39（欧洲央行宣布加息之后）创9月4日以来新高，脱离周三所创8月21日以来最低位98.599点。 彭博美元指数涨0.30%，报1190.47点，日内交投区间为1185.81-1191.64点，脱离周三所创5月6日（最低1184.67点）以来盘中最低位1184.82点。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3161925" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="medium"
-           data-search="江波龙：首次回购公司a股股份124.95万股 耗资4.48亿元 longsys: first buyback of 1.2495 million a-shares, spending 448 million yuan 江波龙：首次回购公司a股股份124.95万股 耗资4.48亿元 江波龙公告称，公司此前审议通过回购股份方案，拟使用4.00亿元-8.00亿元自有或自筹资金，以集中竞价方式回购股份用于股权激励或员工持股计划，回购价格不超过735.00元/股，回购期限为董事会审议通过之日起12个月内。2026年9月8日，公司首次以集中竞价方式回购a股股份124.9455万股，占公司a股总股本的0.29%，最高成交价365.38元/股，最低成交价353.52元/股，成交总金额4.48亿元（不含交易费用）。公司后续将根据市场情况在回购期限内继续实施回购方案。 longsys announced that its board previously approved a share buyback plan to repurchase shares via centralized bidding for equity incentives or employee stock ownership plans, using 400 million to 800 million yuan of its own or self-raised funds, at a price not exceeding 735.00 yuan per share, within 12 months from board approval. on september 8, 2026, the company repurchased 1,249,455 a-shares for the first time via centralized bidding, accounting for 0.29% of total a-shares, with highest transaction price of 365.38 yuan/share and lowest of 353.52 yuan/share, totaling 448 million yuan (excluding transaction fees). the company will continue implementing the buyback plan based on market conditions within the buyback period. 江波龙公告称，公司此前审议通过回购股份方案，拟使用4.00亿元-8.00亿元自有或自筹资金，以集中竞价方式回购股份用于股权激励或员工持股计划，回购价格不超过735.00元/股，回购期限为董事会审议通过之日起12个月内。2026年9月8日，公司首次以集中竞价方式回购a股股份124.9455万股，占公司a股总股本的0.29%，最高成交价365.38元/股，最低成交价353.52元/股，成交总金额4.48亿元（不含交易费用）。公司后续将根据市场情况在回购期限内继续实施回购方案。 华尔街见闻 markets equity market 股票市场 ">
-          <time class="tp-when" data-t="2026-09-08T11:05:50+00:00" datetime="2026-09-08T11:05:50+00:00">09-08<br>11:05</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-08T11:05:50+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Longsys: First buyback of 1.2495 million A-shares, spending 448 million yuan</span><span class="l-zh">江波龙：首次回购公司A股股份124.95万股 耗资4.48亿元</span></h2>
-            <p class="tp-sum"><span class="l-en">Longsys announced that its board previously approved a share buyback plan to repurchase shares via centralized bidding for equity incentives or employee stock ownership plans, using 400 million to 800 million yuan of its own or self-raised funds, at a price not exceeding 735.00 yuan per share, within 12 months from board approval. On September 8, 2026, the company repurchased 1,249,455 A-shares for the first time via centralized bidding, accounting for 0.29% of total A-shares, with highest transaction price of 365.38 yuan/share and lowest of 353.52 yuan/share, totaling 448 million yuan (excluding transaction fees). The company will continue implementing the buyback plan based on market conditions within the buyback period.</span><span class="l-zh">江波龙公告称，公司此前审议通过回购股份方案，拟使用4.00亿元-8.00亿元自有或自筹资金，以集中竞价方式回购股份用于股权激励或员工持股计划，回购价格不超过735.00元/股，回购期限为董事会审议通过之日起12个月内。2026年9月8日，公司首次以集中竞价方式回购A股股份124.9455万股，占公司A股总股本的0.29%，最高成交价365.38元/股，最低成交价353.52元/股，成交总金额4.48亿元（不含交易费用）。公司后续将根据市场情况在回购期限内继续实施回购方案。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-markets" href="https://mp.weixin.qq.com/s?__biz=MzAxNDQ4MzQzMQ==&mid=2649968078&idx=1&sn=5db3538a578348d1f03ceb5c4f3b60ce&chksm=8266c5e736785c27b8c306a49d0a63e9b790d068d971a3a82e128293ad8817f08e2927d3ddad&scene=0&xtrack=1#rd" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="medium"
-           data-search="林红红会见美国惠普公司首席法务官兼总法律顾问朱莉·雅各布斯 lin honghong meets julie jacobs, chief legal officer and general counsel of hp inc. 林红红会见美国惠普公司首席法务官兼总法律顾问朱莉·雅各布斯 金十数据9月8日讯，9月8日，中国贸促会副会长林红红在京会见美国惠普公司首席法务官兼总法律顾问朱莉·雅各布斯一行。双方围绕服务外资企业在华发展、深化产业链供应链国际合作、参与2026年apec系列工商界活动等议题进行交流。 on september 8, jin shi data reported that lin honghong, vice president of the china council for the promotion of international trade, met in beijing with julie jacobs, chief legal officer and general counsel of hp inc. and her delegation. the two sides exchanged views on topics including serving foreign enterprises' development in china, deepening international cooperation on industry and supply chains, and participating in apec business events in 2026. 金十数据9月8日讯，9月8日，中国贸促会副会长林红红在京会见美国惠普公司首席法务官兼总法律顾问朱莉·雅各布斯一行。双方围绕服务外资企业在华发展、深化产业链供应链国际合作、参与2026年apec系列工商界活动等议题进行交流。 金十数据 markets equity market 股票市场 ">
-          <time class="tp-when" data-t="2026-09-08T22:20:25+08:00" datetime="2026-09-08T22:20:25+08:00">09-08<br>22:20</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-08T22:20:25+08:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">金十数据</span>
-              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Lin Honghong meets Julie Jacobs, Chief Legal Officer and General Counsel of HP Inc.</span><span class="l-zh">林红红会见美国惠普公司首席法务官兼总法律顾问朱莉·雅各布斯</span></h2>
-            <p class="tp-sum"><span class="l-en">On September 8, Jin Shi Data reported that Lin Honghong, Vice President of the China Council for the Promotion of International Trade, met in Beijing with Julie Jacobs, Chief Legal Officer and General Counsel of HP Inc. and her delegation. The two sides exchanged views on topics including serving foreign enterprises' development in China, deepening international cooperation on industry and supply chains, and participating in APEC business events in 2026.</span><span class="l-zh">金十数据9月8日讯，9月8日，中国贸促会副会长林红红在京会见美国惠普公司首席法务官兼总法律顾问朱莉·雅各布斯一行。双方围绕服务外资企业在华发展、深化产业链供应链国际合作、参与2026年APEC系列工商界活动等议题进行交流。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-tech" href="https://news.10jqka.com.cn/20260908/c679714484.shtml" target="_blank" rel="noopener"
-           data-theme="tech" data-importance="medium"
-           data-search="美股开盘：美股三大指数涨跌不一 us stocks open mixed across three major indices 美股开盘：美股三大指数涨跌不一 美股三大指数涨跌不一，标普500指数跌0.09%，道指跌0.77%，纳指涨0.09%。大型科技股方面，超威半导体涨2.60%，英伟达涨1.02%，微软跌1.30%。中概股方面，哔哩哔哩涨4.27%，理想汽车涨2.43%，拼多多跌1.50%，京东跌1.66%，蔚来跌1.84%。 u.s. stocks were mixed across the three major indexes: the s&p 500 fell 0.09%, the dow fell 0.77%, and the nasdaq rose 0.09%. among major tech stocks, amd rose 2.60%, nvidia rose 1.02%, and microsoft fell 1.30%. among chinese adrs, bilibili rose 4.27%, li auto rose 2.43%, pinduoduo fell 1.50%, jd.com fell 1.66%, and nio fell 1.84%. 美股三大指数涨跌不一，标普500指数跌0.09%，道指跌0.77%，纳指涨0.09%。大型科技股方面，超威半导体涨2.60%，英伟达涨1.02%，微软跌1.30%。中概股方面，哔哩哔哩涨4.27%，理想汽车涨2.43%，拼多多跌1.50%，京东跌1.66%，蔚来跌1.84%。 同花顺 tech_policy tech policy 科技政策 512760.ss">
-          <time class="tp-when" data-t="2026-09-08T13:30:45+00:00" datetime="2026-09-08T13:30:45+00:00">09-08<br>13:30</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-08T13:30:45+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
-              <span class="cn-src">同花顺</span>
-              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">US stocks open mixed across three major indices</span><span class="l-zh">美股开盘：美股三大指数涨跌不一</span></h2>
-            <p class="tp-sum"><span class="l-en">U.S. stocks were mixed across the three major indexes: the S&P 500 fell 0.09%, the Dow fell 0.77%, and the Nasdaq rose 0.09%. Among major tech stocks, AMD rose 2.60%, NVIDIA rose 1.02%, and Microsoft fell 1.30%. Among Chinese ADRs, Bilibili rose 4.27%, Li Auto rose 2.43%, Pinduoduo fell 1.50%, JD.com fell 1.66%, and NIO fell 1.84%.</span><span class="l-zh">美股三大指数涨跌不一，标普500指数跌0.09%，道指跌0.77%，纳指涨0.09%。大型科技股方面，超威半导体涨2.60%，英伟达涨1.02%，微软跌1.30%。中概股方面，哔哩哔哩涨4.27%，理想汽车涨2.43%，拼多多跌1.50%，京东跌1.66%，蔚来跌1.84%。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">512760.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-fiscal" href="https://www.cnstock.com/topicDetail/118191" target="_blank" rel="noopener"
-           data-theme="fiscal" data-importance="medium"
-           data-search="财政部注资银行保险业： 为“主力军”添弹药，为“稳定器”加砝码 ministry of finance injects capital into banking and insurance: adds ammunition for 'main forces', bolsters 'stabilizers' 财政部注资银行保险业： 为“主力军”添弹药，为“稳定器”加砝码    上海证券报 fiscal_trade fiscal & trade 财政与贸易 512800.ss 512880.ss">
+        <a class="tp-item th-monetary" href="https://www.yicai.com/news/103359905.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="金融强国“十五五”规划出台：央行详解货币政策、人民币国际化等改革方向 “十五五”时期我国将推进金融高水平对外开放，推进人民币国际化，拓展人民币在国际贸易和投融资中的作用。 the financial powerhouse plan for the 15th five-year plan is introduced: the pboc explains in detail reform directions including monetary policy and renminbi internationalization. during the 15th five-year plan period, china will advance high-level financial opening-up, promote renminbi internationalization, and expand the role of the renminbi in international trade and investment and financing. 金融强国“十五五”规划出台：央行详解货币政策、人民币国际化等改革方向 “十五五”时期我国将推进金融高水平对外开放，推进人民币国际化，拓展人民币在国际贸易和投融资中的作用。    第一财经 pboc_liquidity yuan pboc & liquidity 央行与流动性 yuan & fx 人民币与汇率 cny">
           <time class="tp-when" data-t="" >—</time>
           <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">The financial powerhouse plan for the 15th Five-Year Plan is introduced: the PBOC explains in detail reform directions including monetary policy and renminbi internationalization. During the 15th Five-Year Plan period, China will advance high-level financial opening-up, promote renminbi internationalization, and expand the role of the renminbi in international trade and investment and financing.</span><span class="l-zh">金融强国“十五五”规划出台：央行详解货币政策、人民币国际化等改革方向 “十五五”时期我国将推进金融高水平对外开放，推进人民币国际化，拓展人民币在国际贸易和投融资中的作用。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.stcn.com/article/detail/4180007.html" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="证监会：年内中长期资金净买入a股超6000亿元 csrc: net purchases of a-shares by medium- and long-term funds exceeded 600 billion yuan during the year 证监会：年内中长期资金净买入a股超6000亿元    证券时报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">证券时报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">CSRC: Net purchases of A-shares by medium- and long-term funds exceeded 600 billion yuan during the year</span><span class="l-zh">证监会：年内中长期资金净买入A股超6000亿元</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.stcn.com/article/detail/4179973.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="央行：将完善存款准备金制度 pboc: will improve the deposit reserve system 央行：将完善存款准备金制度    证券时报 pboc_liquidity pboc & liquidity 央行与流动性 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
+              <span class="cn-src">证券时报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOC: Will improve the deposit reserve system</span><span class="l-zh">央行：将完善存款准备金制度</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.stcn.com/article/detail/4180418.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="央行将在9月中旬连续开展隔夜逆回购操作 the pboc will conduct consecutive overnight reverse repo operations in mid-september 央行将在9月中旬连续开展隔夜逆回购操作    证券时报 pboc_liquidity pboc & liquidity 央行与流动性 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
+              <span class="cn-src">证券时报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">The PBOC will conduct consecutive overnight reverse repo operations in mid-September</span><span class="l-zh">央行将在9月中旬连续开展隔夜逆回购操作</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.cnstock.com/commonDetail/788186" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="中国资产“确定性”筑牢资本市场内在稳定性 the "certainty" of chinese assets fortifies the intrinsic stability of the capital market 中国资产“确定性”筑牢资本市场内在稳定性    上海证券报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">The "certainty" of Chinese assets fortifies the intrinsic stability of the capital market</span><span class="l-zh">中国资产“确定性”筑牢资本市场内在稳定性</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.cnstock.com/commonDetail/788350" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="证监会副主席李超：努力将a股市场打造为境内优质企业上市首选地 csrc vice chairman li chao: striving to make the a-share market the preferred listing destination for high-quality domestic enterprises 证监会副主席李超：努力将a股市场打造为境内优质企业上市首选地    上海证券报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">CSRC Vice Chairman Li Chao: Striving to make the A-share market the preferred listing destination for high-quality domestic enterprises</span><span class="l-zh">证监会副主席李超：努力将A股市场打造为境内优质企业上市首选地</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.cnstock.com/commonDetail/788352" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="中国人民银行副行长陆磊：提高直接融资比重 更好发挥金融市场促进新质生产力发展作用 pboc deputy governor lu lei: increase the proportion of direct financing, better leverage financial markets to promote the development of new quality productive forces 中国人民银行副行长陆磊：提高直接融资比重 更好发挥金融市场促进新质生产力发展作用    上海证券报 pboc_liquidity pboc & liquidity 央行与流动性 512800.ss 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOC Deputy Governor Lu Lei: Increase the proportion of direct financing, better leverage financial markets to promote the development of new quality productive forces</span><span class="l-zh">中国人民银行副行长陆磊：提高直接融资比重 更好发挥金融市场促进新质生产力发展作用</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-tk">512800.SS</span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://news.futunn.com/flash/20732914/china-opposes-attempts-by-certain-countries-to-force-through-un" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="medium"
+           data-search="中方反对个别国强推安理会制裁伊朗 china opposes push by certain country to impose un security council sanctions on iran 中方反对个别国强推安理会制裁伊朗 当地时间9月10日上午，联合国安理会个别成员国不顾安理会在相关问题上仍存在巨大分歧，执意强推安理会恢复对伊朗制裁，推动安理会在已被终止的议题下举行会议。中国常驻联合国副代表孙磊在发言中对此表示严重关切和强烈反对。孙磊指出，目前，美国加大对伊朗单边制裁、对伊朗发动新一轮军事打击，美伊互袭，地区局势再度紧张，各方劝和促谈努力严重受挫。中方对此高度关切、深感担忧，呼吁美国承诺不再动武，同伊朗真诚谈判。当事方应摒弃诉诸武力或以武力相威胁，推动伊朗核问题重回政治外交解决轨道，就实现全面持久停火、达成和平协议、政治外交解决伊朗核问题等寻找兼顾各方合理诉求的最大公约数 on the morning of sept. 10 local time, certain member states of the un security council, disregarding the huge differences that still exist within the council on the relevant issue, insisted on pushing the security council to restore sanctions on iran and pushed the council to hold a meeting under a topic that had already been terminated. sun lei, china's deputy permanent representative to the united nations, expressed serious concern and strong opposition in his remarks. sun lei pointed out that at present, the united states has stepped up unilateral sanctions on iran and launched a new round of military strikes against iran, with the u.s. and iran attacking each other, tensions in the region have risen again, and efforts by all parties to promote peace and talks have been severely setbacks. china is highly concerned and deeply worried about this, and calls on the united states to commit to no longer using force and to negotiate in good faith with iran. the parties concerned should abandon recourse to force or the threat of force, push the iran nuclear issue back onto the track of political and diplomatic settlement, and seek the greatest common denominator that accommodates the reasonable demands of all sides regarding achieving a comprehensive and lasting ceasefire, reaching a peace agreement and a political and diplomatic solution to the iran nuclear issue 当地时间9月10日上午，联合国安理会个别成员国不顾安理会在相关问题上仍存在巨大分歧，执意强推安理会恢复对伊朗制裁，推动安理会在已被终止的议题下举行会议。中国常驻联合国副代表孙磊在发言中对此表示严重关切和强烈反对。孙磊指出，目前，美国加大对伊朗单边制裁、对伊朗发动新一轮军事打击，美伊互袭，地区局势再度紧张，各方劝和促谈努力严重受挫。中方对此高度关切、深感担忧，呼吁美国承诺不再动武，同伊朗真诚谈判。当事方应摒弃诉诸武力或以武力相威胁，推动伊朗核问题重回政治外交解决轨道，就实现全面持久停火、达成和平协议、政治外交解决伊朗核问题等寻找兼顾各方合理诉求的最大公约数 富途牛牛 fiscal fiscal/trade 财政/贸易 ">
+          <time class="tp-when" data-t="2026-09-10T18:45:44+00:00" datetime="2026-09-10T18:45:44+00:00">09-10<br>18:45</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10T18:45:44+00:00"></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
               <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
-              <span class="cn-src">上海证券报</span>
+              <span class="cn-src">富途牛牛</span>
               <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">Ministry of Finance injects capital into banking and insurance: Adds ammunition for 'main forces', bolsters 'stabilizers'</span><span class="l-zh">财政部注资银行保险业： 为“主力军”添弹药，为“稳定器”加砝码</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">512800.SS</span><span class="cn-tk">512880.SS</span></div>
+            <h2 class="tp-title"><span class="l-en">China Opposes Push by Certain Country to Impose UN Security Council Sanctions on Iran</span><span class="l-zh">中方反对个别国强推安理会制裁伊朗</span></h2>
+            <p class="tp-sum"><span class="l-en">On the morning of Sept. 10 local time, certain member states of the UN Security Council, disregarding the huge differences that still exist within the Council on the relevant issue, insisted on pushing the Security Council to restore sanctions on Iran and pushed the Council to hold a meeting under a topic that had already been terminated. Sun Lei, China's deputy permanent representative to the United Nations, expressed serious concern and strong opposition in his remarks. Sun Lei pointed out that at present, the United States has stepped up unilateral sanctions on Iran and launched a new round of military strikes against Iran, with the U.S. and Iran attacking each other, tensions in the region have risen again, and efforts by all parties to promote peace and talks have been severely setbacks. China is highly concerned and deeply worried about this, and calls on the United States to commit to no longer using force and to negotiate in good faith with Iran. The parties concerned should abandon recourse to force or the threat of force, push the Iran nuclear issue back onto the track of political and diplomatic settlement, and seek the greatest common denominator that accommodates the reasonable demands of all sides regarding achieving a comprehensive and lasting ceasefire, reaching a peace agreement and a political and diplomatic solution to the Iran nuclear issue</span><span class="l-zh">当地时间9月10日上午，联合国安理会个别成员国不顾安理会在相关问题上仍存在巨大分歧，执意强推安理会恢复对伊朗制裁，推动安理会在已被终止的议题下举行会议。中国常驻联合国副代表孙磊在发言中对此表示严重关切和强烈反对。孙磊指出，目前，美国加大对伊朗单边制裁、对伊朗发动新一轮军事打击，美伊互袭，地区局势再度紧张，各方劝和促谈努力严重受挫。中方对此高度关切、深感担忧，呼吁美国承诺不再动武，同伊朗真诚谈判。当事方应摒弃诉诸武力或以武力相威胁，推动伊朗核问题重回政治外交解决轨道，就实现全面持久停火、达成和平协议、政治外交解决伊朗核问题等寻找兼顾各方合理诉求的最大公约数</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-policy" href="https://www.cnstock.com/commonDetail/787306" target="_blank" rel="noopener"
-           data-theme="policy" data-importance="medium"
-           data-search="市场监管总局：到2030年 全国放心消费集聚区达5000个以上 samr: by 2030, nationwide consumer-confidence clusters to reach over 5,000 市场监管总局：到2030年 全国放心消费集聚区达5000个以上    上海证券报 consumer consumer 消费 512880.ss">
+        <a class="tp-item th-credit" href="https://wallstreetcn.com/livenews/3163417" target="_blank" rel="noopener"
+           data-theme="credit" data-importance="medium"
+           data-search="加拿大与乌克兰签署百年合作伙伴关系 canada and ukraine sign century-long partnership 加拿大与乌克兰签署百年合作伙伴关系 加拿大与乌克兰签署百年合作伙伴关系。 加拿大参照乌克兰模式推出全国无人机交易平台。 加拿大将向乌克兰提供4.3亿加元担保贷款，用于天然气项目。 canada and ukraine signed a century-long partnership. canada launched a national drone trading platform modeled on ukraine's. canada will provide ukraine with a c$430 million guaranteed loan for natural gas projects. 加拿大与乌克兰签署百年合作伙伴关系。 加拿大参照乌克兰模式推出全国无人机交易平台。 加拿大将向乌克兰提供4.3亿加元担保贷款，用于天然气项目。 华尔街见闻 credit_impulse credit & financing 信贷与社融 512800.ss">
+          <time class="tp-when" data-t="2026-09-10T17:32:37+00:00" datetime="2026-09-10T17:32:37+00:00">09-10<br>17:32</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10T17:32:37+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Canada and Ukraine Sign Century-Long Partnership</span><span class="l-zh">加拿大与乌克兰签署百年合作伙伴关系</span></h2>
+            <p class="tp-sum"><span class="l-en">Canada and Ukraine signed a century-long partnership. Canada launched a national drone trading platform modeled on Ukraine's. Canada will provide Ukraine with a C$430 million guaranteed loan for natural gas projects.</span><span class="l-zh">加拿大与乌克兰签署百年合作伙伴关系。 加拿大参照乌克兰模式推出全国无人机交易平台。 加拿大将向乌克兰提供4.3亿加元担保贷款，用于天然气项目。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">credit & financing</span><span class="l-zh">信贷与社融</span></span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.scmp.com/business/china-business/article/3366885/chinese-stock-recovery-faces-us-fed-and-oil-pressures-september-says-top-fund-manager?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="chinese stock recovery faces us fed and oil pressures in september, says top fund manager  顶级基金经理称，9月中国股市复苏面临美联储与油价压力 chinese stocks are likely to trade sideways through september, as resilient earnings growth is weighed down by concerns over potential monetary policy tightening in the united states, according to a recent strategy report by china asset management, the country’s second-largest mutual fund firm.
+mainland-listed companies posted double-digit profit growth in the first half of the year, providing a cushion that is expected to keep a floor under stock prices. but a hawkish tone from the us federal...  中国资产管理公司（国内第二大共同基金公司）近期的一份策略报告指出，中国股市9月份可能维持横盘走势，因为强劲的盈利增长受到对美国货币政策可能收紧的担忧所拖累。内地上市公司利润实现两位数增长， scmp - business fiscal_trade fiscal & trade 财政与贸易 ">
+          <time class="tp-when" data-t="2026-09-09T06:28:48+00:00" datetime="2026-09-09T06:28:48+00:00">09-09<br>06:28</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T06:28:48+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
+              <span class="cn-src">SCMP - Business</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Chinese stock recovery faces US Fed and oil pressures in September, says top fund manager</span><span class="l-zh">顶级基金经理称，9月中国股市复苏面临美联储与油价压力</span></h2>
+            <p class="tp-sum"><span class="l-en">Chinese stocks are likely to trade sideways through September, as resilient earnings growth is weighed down by concerns over potential monetary policy tightening in the United States, according to a recent strategy report by China Asset Management, the country’s second-largest mutual fund firm.
+Mainland-listed companies posted double-digit profit growth in the first half of the year, providing a cushion that is expected to keep a floor under stock prices. But a hawkish tone from the US Federal...</span><span class="l-zh">中国资产管理公司（国内第二大共同基金公司）近期的一份策略报告指出，中国股市9月份可能维持横盘走势，因为强劲的盈利增长受到对美国货币政策可能收紧的担忧所拖累。内地上市公司利润实现两位数增长，</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.cnstock.com/topicDetail/787818" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="专题 | 投洽会看新动向：中外资本加速双向奔赴 special report | new trends at cifit: chinese and foreign capital accelerate two-way flow 专题 | 投洽会看新动向：中外资本加速双向奔赴    上海证券报 markets equity market 股票市场 512880.ss">
           <time class="tp-when" data-t="" >—</time>
           <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
-              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
               <span class="cn-src">上海证券报</span>
               <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">SAMR: By 2030, nationwide consumer-confidence clusters to reach over 5,000</span><span class="l-zh">市场监管总局：到2030年 全国放心消费集聚区达5000个以上</span></h2>
+            <h2 class="tp-title"><span class="l-en">Special Report | New Trends at CIFIT: Chinese and Foreign Capital Accelerate Two-Way Flow</span><span class="l-zh">专题 | 投洽会看新动向：中外资本加速双向奔赴</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://roadshow.cnstock.com/fbh/hablxfreit202602" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="华安百联消费reit2026年中期业绩说明会 预告 09-11 10:00-11:00 hua'an bailian consumer reit 2026 interim results briefing preview sep 11, 10:00-11:00 华安百联消费reit2026年中期业绩说明会 预告 09-11 10:00-11:00    上海证券报 consumer consumer 消费 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Hua'an Bailian Consumer REIT 2026 Interim Results Briefing Preview Sep 11, 10:00-11:00</span><span class="l-zh">华安百联消费REIT2026年中期业绩说明会 预告 09-11 10:00-11:00</span></h2>
             
             <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-tk">512880.SS</span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-monetary" href="https://wallstreetcn.com/livenews/3161965" target="_blank" rel="noopener"
+        <a class="tp-item th-monetary" href="https://www.scmp.com/economy/china-economy/article/3367083/china-says-yuans-global-rise-irreversible-and-has-strategy-back-it?utm_source=rss_feed" target="_blank" rel="noopener"
            data-theme="monetary" data-importance="medium"
-           data-search="周二美股盘前你需要了解的全球要闻 global news to know before tuesday's us market open 周二美股盘前你需要了解的全球要闻 据新华社，习近平同英国首相伯纳姆通电话。 李强：统筹推进住房、小区、社区到城区的更新改造，加快老旧街区厂区转型升级。 布油逼近100大关！胡塞武装深入内陆，打击沙特能源设施。 据共同社，日本央行计划在9月的会议上将利率上调至1.25%。 霍尔木兹危机意外“救活”苏伊士运河：7月收入暴增42%创两年半新高。 据彭博，津巴布韦暂停锑和钨出口。 控制委石油还不够？报道：美国又将目光投向黄金等矿产资源。 英国以至少1998年以来最高的融资成本发行国债，但需求依然稳健。 苹果罕见签3-5年nand长约、或不设价格上限，ai挤占产能令存储议价权易主。 一周接连三项试 according to xinhua, xi jinping spoke by phone with uk prime minister burnham. li qiang: coordinate and advance renewal and renovation from housing, neighborhoods, and communities to urban districts, accelerating transformation and upgrading of old blocks and industrial zones. brent crude nears $100! houthis strike deep inland, targeting saudi energy facilities. according to kyodo news, the bank of japan plans to raise interest rates to 1.25% at its september meeting. the hormuz crisis unexpectedly 'revived' the suez canal: july revenue surged 42% to a two-and-a-half-year high. according to bloomberg, zimbabwe suspended antimony and tungsten exports. not enough to control opec oil? reports: u.s. sets sights on gold and other mineral resources. uk issued government bonds at the highest financing costs since at least 1998, yet demand remained solid. apple rarely signs 3-5 year nand long-term agreements, possibly without price caps; ai squeezing capacity shifts storage pricing power. three consecutive tests in one week. 据新华社，习近平同英国首相伯纳姆通电话。 李强：统筹推进住房、小区、社区到城区的更新改造，加快老旧街区厂区转型升级。 布油逼近100大关！胡塞武装深入内陆，打击沙特能源设施。 据共同社，日本央行计划在9月的会议上将利率上调至1.25%。 霍尔木兹危机意外“救活”苏伊士运河：7月收入暴增42%创两年半新高。 据彭博，津巴布韦暂停锑和钨出口。 控制委石油还不够？报道：美国又将目光投向黄金等矿产资源。 英国以至少1998年以来最高的融资成本发行国债，但需求依然稳健。 苹果罕见签3-5年nand长约、或不设价格上限，ai挤占产能令存储议价权易主。 一周接连三项试 华尔街见闻 pboc_liquidity fiscal_trade tech_policy pboc & liquidity 央行与流动性 fiscal & trade 财政与贸易 tech policy 科技政策 cbon">
-          <time class="tp-when" data-t="2026-09-08T12:47:40+00:00" datetime="2026-09-08T12:47:40+00:00">09-08<br>12:47</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-08T12:47:40+00:00"></span></div>
+           data-search="china says yuan’s global rise is ‘irreversible’ – and has a strategy to back it up  中国称人民币国际化趋势“不可逆转”——并已有配套战略 chinese financial authorities have pledged further steps to expand the yuan’s global use amid a broader de-dollarisation trend, while vowing to make listing on mainland stock exchanges the “primary” choice for top-tier domestic companies.
+“the internationalisation of the yuan is a continuous and steady process, and an irreversible trend,” said lu lei, deputy governor of the people’s bank of china (pboc), at a press conference on thursday.
+to meet growing demand from market participants seeking...  中国金融当局承诺采取进一步措施扩大人民币的全球使用，顺应更广泛的去美元化趋势，同时誓言将内地证券交易所上市打造为顶级国内企业的“首选”。
+“人民币国际化是一个持续稳定的过程，也是不可逆转的趋势，”陆磊表示。 scmp - china economy pboc_liquidity yuan pboc & liquidity 央行与流动性 yuan & fx 人民币与汇率 cny">
+          <time class="tp-when" data-t="2026-09-10T12:11:02+00:00" datetime="2026-09-10T12:11:02+00:00">09-10<br>12:11</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10T12:11:02+00:00"></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
               <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-medium"><b>49</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+              <span class="cn-src">SCMP - China Economy</span>
+              <span class="cn-imp imp-medium"><b>56</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">Global news to know before Tuesday's US market open</span><span class="l-zh">周二美股盘前你需要了解的全球要闻</span></h2>
-            <p class="tp-sum"><span class="l-en">According to Xinhua, Xi Jinping spoke by phone with UK Prime Minister Burnham. Li Qiang: Coordinate and advance renewal and renovation from housing, neighborhoods, and communities to urban districts, accelerating transformation and upgrading of old blocks and industrial zones. Brent crude nears $100! Houthis strike deep inland, targeting Saudi energy facilities. According to Kyodo News, the Bank of Japan plans to raise interest rates to 1.25% at its September meeting. The Hormuz crisis unexpectedly 'revived' the Suez Canal: July revenue surged 42% to a two-and-a-half-year high. According to Bloomberg, Zimbabwe suspended antimony and tungsten exports. Not enough to control OPEC oil? Reports: U.S. sets sights on gold and other mineral resources. UK issued government bonds at the highest financing costs since at least 1998, yet demand remained solid. Apple rarely signs 3-5 year NAND long-term agreements, possibly without price caps; AI squeezing capacity shifts storage pricing power. Three consecutive tests in one week.</span><span class="l-zh">据新华社，习近平同英国首相伯纳姆通电话。 李强：统筹推进住房、小区、社区到城区的更新改造，加快老旧街区厂区转型升级。 布油逼近100大关！胡塞武装深入内陆，打击沙特能源设施。 据共同社，日本央行计划在9月的会议上将利率上调至1.25%。 霍尔木兹危机意外“救活”苏伊士运河：7月收入暴增42%创两年半新高。 据彭博，津巴布韦暂停锑和钨出口。 控制委石油还不够？报道：美国又将目光投向黄金等矿产资源。 英国以至少1998年以来最高的融资成本发行国债，但需求依然稳健。 苹果罕见签3-5年NAND长约、或不设价格上限，AI挤占产能令存储议价权易主。 一周接连三项试</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">CBON</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-markets" href="https://finance.sina.com.cn/money/fund/etf/2026-09-08/doc-inircmeq9254947.shtml" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="medium"
-           data-search="行业轮动加速！cxo卷土重来，铜价新高带飞有色！“粮比金贵”持续演绎，华宝基金农牧渔etf续创反弹新高 sector rotation accelerates! cxo makes comeback, copper hits new high lifting nonferrous metals; 'grain more precious than gold' persists, huabao fund agriculture etf hits new rebound high 行业轮动加速！cxo卷土重来，铜价新高带飞有色！“粮比金贵”持续演绎，华宝基金农牧渔etf续创反弹新高    新浪财经股票 commodities commodities 大宗商品 512400.ss">
-          <time class="tp-when" data-t="2026-09-08" datetime="2026-09-08">09-08</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-08"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">新浪财经股票</span>
-              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Sector rotation accelerates! CXO makes comeback, copper hits new high lifting nonferrous metals; 'Grain more precious than gold' persists, Huabao Fund agriculture ETF hits new rebound high</span><span class="l-zh">行业轮动加速！CXO卷土重来，铜价新高带飞有色！“粮比金贵”持续演绎，华宝基金农牧渔ETF续创反弹新高</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">commodities</span><span class="l-zh">大宗商品</span></span><span class="cn-tk">512400.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-markets" href="https://finance.sina.com.cn/money/fund/etf/2026-09-08/doc-inircmeu4542209.shtml" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="medium"
-           data-search="中金三合一重要进展， 业绩弹性加速释放，“旗手”券商何时启动？ cicc's three-in-one key progress: earnings elasticity accelerates release; when will 'flag bearer' brokers start? 中金三合一重要进展， 业绩弹性加速释放，“旗手”券商何时启动？    新浪财经股票 markets equity market 股票市场 512880.ss">
-          <time class="tp-when" data-t="2026-09-08" datetime="2026-09-08">09-08</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-08"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">新浪财经股票</span>
-              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">CICC's three-in-one key progress: earnings elasticity accelerates release; when will 'flag bearer' brokers start?</span><span class="l-zh">中金三合一重要进展， 业绩弹性加速释放，“旗手”券商何时启动？</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-markets" href="https://finance.sina.com.cn/money/fund/etf/2026-09-08/doc-inircmeu4541014.shtml" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="medium"
-           data-search="铜价，创历史新高！大涨原因或已找到！北方铜业触板，华宝基金有色etf（159876）标的指数最高涨超2% copper hits record high! reason for surge may be found! northern copper nears limit up, huabao fund nonferrous etf (159876) underlying index up over 2% 铜价，创历史新高！大涨原因或已找到！北方铜业触板，华宝基金有色etf（159876）标的指数最高涨超2%    新浪财经股票 commodities commodities 大宗商品 512400.ss">
-          <time class="tp-when" data-t="2026-09-08" datetime="2026-09-08">09-08</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-08"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">新浪财经股票</span>
-              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Copper hits record high! Reason for surge may be found! Northern Copper nears limit up, Huabao Fund nonferrous ETF (159876) underlying index up over 2%</span><span class="l-zh">铜价，创历史新高！大涨原因或已找到！北方铜业触板，华宝基金有色ETF（159876）标的指数最高涨超2%</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">commodities</span><span class="l-zh">大宗商品</span></span><span class="cn-tk">512400.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-markets" href="https://finance.sina.com.cn/tob/2026-09-08/doc-inirayqw6063124.shtml" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="medium"
-           data-search="9月8日沪深两市涨停分析：亚盛集团、百大集团、爱仕达4连板 limit-up analysis for shanghai and shenzhen markets on sept 8: yasheng group, baida group, asd 4 consecutive limit-ups 9月8日沪深两市涨停分析：亚盛集团、百大集团、爱仕达4连板    新浪财经股票 markets equity market 股票市场 ashr">
-          <time class="tp-when" data-t="2026-09-08" datetime="2026-09-08">09-08</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-08"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">新浪财经股票</span>
-              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Limit-up analysis for Shanghai and Shenzhen markets on Sept 8: Yasheng Group, Baida Group, ASD 4 consecutive limit-ups</span><span class="l-zh">9月8日沪深两市涨停分析：亚盛集团、百大集团、爱仕达4连板</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">ASHR</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-markets" href="https://finance.sina.com.cn/stock/quanshang/qsyj/2026-09-08/doc-inircewu6069571.shtml" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="medium"
-           data-search="中金吸收合并东兴、信达获批！证券业头部整合浪潮再加速 cicc's absorption merger of dongxing and xinda approved! securities industry headwave consolidation accelerates 中金吸收合并东兴、信达获批！证券业头部整合浪潮再加速    新浪财经股票 markets equity market 股票市场 512880.ss">
-          <time class="tp-when" data-t="2026-09-08" datetime="2026-09-08">09-08</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-08"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">新浪财经股票</span>
-              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">CICC's absorption merger of Dongxing and Xinda approved! Securities industry headwave consolidation accelerates</span><span class="l-zh">中金吸收合并东兴、信达获批！证券业头部整合浪潮再加速</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+            <h2 class="tp-title"><span class="l-en">China says yuan’s global rise is ‘irreversible’ – and has a strategy to back it up</span><span class="l-zh">中国称人民币国际化趋势“不可逆转”——并已有配套战略</span></h2>
+            <p class="tp-sum"><span class="l-en">Chinese financial authorities have pledged further steps to expand the yuan’s global use amid a broader de-dollarisation trend, while vowing to make listing on mainland stock exchanges the “primary” choice for top-tier domestic companies.
+“The internationalisation of the yuan is a continuous and steady process, and an irreversible trend,” said Lu Lei, deputy governor of the People’s Bank of China (PBOC), at a press conference on Thursday.
+To meet growing demand from market participants seeking...</span><span class="l-zh">中国金融当局承诺采取进一步措施扩大人民币的全球使用，顺应更广泛的去美元化趋势，同时誓言将内地证券交易所上市打造为顶级国内企业的“首选”。
+“人民币国际化是一个持续稳定的过程，也是不可逆转的趋势，”陆磊表示。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span></div>
           </div>
         </a>
         
@@ -758,30 +869,11 @@ Friday’s consumer price index in the United States will take centre stage, wit
         </a>
         
         
-        <a class="tp-item th-fiscal" href="https://www.stcn.com/article/detail/4177098.html" target="_blank" rel="noopener"
-           data-theme="fiscal" data-importance="medium"
-           data-search="出口、进口，再次双位数增长！最新解读 exports and imports both grow double digits again! latest interpretation 出口、进口，再次双位数增长！最新解读    证券时报 fiscal_trade fiscal & trade 财政与贸易 512880.ss">
-          <time class="tp-when" data-t="" >—</time>
-          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
-              <span class="cn-src">证券时报</span>
-              <span class="cn-imp imp-medium"><b>58</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Exports and imports both grow double digits again! Latest interpretation</span><span class="l-zh">出口、进口，再次双位数增长！最新解读</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">512880.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3161997" target="_blank" rel="noopener"
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3163408" target="_blank" rel="noopener"
            data-theme="policy" data-importance="medium"
-           data-search="特斯拉等十余个品牌降价促销，专家：车企调节供需，而非价格战 tesla and over a dozen brands cut prices in promotions; experts: automakers adjusting supply-demand, not price war 特斯拉等十余个品牌降价促销，专家：车企调节供需，而非价格战 特斯拉降价再度引发市场对“车市价格战”的猜测。9月7日，特斯拉中国宣布推出限时现车激励，9月30日前下单提车，model3全系现车现金激励5000元，model y全系现车现金激励1万元，可叠加5年0息等政策。叠加权益后车型起售价下探，官方称当前model 3/y处于改款后价格低位，也是特斯拉组合福利政策最为丰富的阶段。 tesla's price cut has again sparked market speculation over a 'car market price war.' on september 7, tesla china announced limited-time incentives for existing vehicles: orders placed and vehicles delivered before september 30 receive 5,000 yuan cash incentives for all model 3 existing vehicles and 10,000 yuan for all model y existing vehicles, stackable with policies like 0% interest over 5 years. after incorporating the incentives, starting prices drop, with the company saying model 3/y are currently at post-facelift price lows and tesla's combined benefit policies are at their richest stage. 特斯拉降价再度引发市场对“车市价格战”的猜测。9月7日，特斯拉中国宣布推出限时现车激励，9月30日前下单提车，model3全系现车现金激励5000元，model y全系现车现金激励1万元，可叠加5年0息等政策。叠加权益后车型起售价下探，官方称当前model 3/y处于改款后价格低位，也是特斯拉组合福利政策最为丰富的阶段。 华尔街见闻 policy policy 政策 ">
-          <time class="tp-when" data-t="2026-09-08T13:53:32+00:00" datetime="2026-09-08T13:53:32+00:00">09-08<br>13:53</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-08T13:53:32+00:00"></span></div>
+           data-search="美国批准向阿根廷出售“黑鹰”直升机 us approves sale of black hawk helicopters to argentina 美国批准向阿根廷出售“黑鹰”直升机 9月10日，美国国务院批准向阿根廷出售uh-60l“黑鹰”直升机及相关设备，预计总金额为1.4亿美元。（央视） on sept. 10, the u.s. state department approved the sale of uh-60l black hawk helicopters and related equipment to argentina, with an estimated total value of $140 million. (cctv) 9月10日，美国国务院批准向阿根廷出售uh-60l“黑鹰”直升机及相关设备，预计总金额为1.4亿美元。（央视） 华尔街见闻 policy policy 政策 ">
+          <time class="tp-when" data-t="2026-09-10T17:11:31+00:00" datetime="2026-09-10T17:11:31+00:00">09-10<br>17:11</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10T17:11:31+00:00"></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
@@ -789,104 +881,32 @@ Friday’s consumer price index in the United States will take centre stage, wit
               <span class="cn-src">华尔街见闻</span>
               <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">Tesla and over a dozen brands cut prices in promotions; experts: automakers adjusting supply-demand, not price war</span><span class="l-zh">特斯拉等十余个品牌降价促销，专家：车企调节供需，而非价格战</span></h2>
-            <p class="tp-sum"><span class="l-en">Tesla's price cut has again sparked market speculation over a 'car market price war.' On September 7, Tesla China announced limited-time incentives for existing vehicles: orders placed and vehicles delivered before September 30 receive 5,000 yuan cash incentives for all Model 3 existing vehicles and 10,000 yuan for all Model Y existing vehicles, stackable with policies like 0% interest over 5 years. After incorporating the incentives, starting prices drop, with the company saying Model 3/Y are currently at post-facelift price lows and Tesla's combined benefit policies are at their richest stage.</span><span class="l-zh">特斯拉降价再度引发市场对“车市价格战”的猜测。9月7日，特斯拉中国宣布推出限时现车激励，9月30日前下单提车，Model3全系现车现金激励5000元，Model Y全系现车现金激励1万元，可叠加5年0息等政策。叠加权益后车型起售价下探，官方称当前Model 3/Y处于改款后价格低位，也是特斯拉组合福利政策最为丰富的阶段。</span></p>
+            <h2 class="tp-title"><span class="l-en">US Approves Sale of Black Hawk Helicopters to Argentina</span><span class="l-zh">美国批准向阿根廷出售“黑鹰”直升机</span></h2>
+            <p class="tp-sum"><span class="l-en">On Sept. 10, the U.S. State Department approved the sale of UH-60L Black Hawk helicopters and related equipment to Argentina, with an estimated total value of $140 million. (CCTV)</span><span class="l-zh">9月10日，美国国务院批准向阿根廷出售UH-60L“黑鹰”直升机及相关设备，预计总金额为1.4亿美元。（央视）</span></p>
             <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-tech" href="https://news.futunn.com/flash/20723445" target="_blank" rel="noopener"
-           data-theme="tech" data-importance="medium"
-           data-search="美股开市：纳指涨0.08%，高通涨近7% us stocks open: nasdaq up 0.08%, qualcomm up nearly 7% 美股开市：纳指涨0.08%，高通涨近7% 道指开盘跌0.57%，纳指涨0.08%，标普500跌0.01%。明星科技股高通涨6.91%，英特尔涨5.22%，美国超微公司涨2.38%。纳斯达克中国金龙指数跌1.36%，哔哩哔哩涨3.87%，百度跌7.75%。 the dow opened down 0.57%, the nasdaq rose 0.08%, and the s&p 500 fell 0.01%. among notable tech stocks, qualcomm rose 6.91%, intel rose 5.22%, and amd rose 2.38%. the nasdaq golden dragon china index fell 1.36%, bilibili rose 3.87%, and baidu fell 7.75%. 道指开盘跌0.57%，纳指涨0.08%，标普500跌0.01%。明星科技股高通涨6.91%，英特尔涨5.22%，美国超微公司涨2.38%。纳斯达克中国金龙指数跌1.36%，哔哩哔哩涨3.87%，百度跌7.75%。 富途牛牛 tech tech 科技 ">
-          <time class="tp-when" data-t="2026-09-08T13:30:00+00:00" datetime="2026-09-08T13:30:00+00:00">09-08<br>13:30</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-08T13:30:00+00:00"></span></div>
+        <a class="tp-item th-credit" href="https://www.scmp.com/business/banking-finance/article/3367096/record-china-us-gap-bond-yields-unlikely-trigger-capital-flight-marsh-investment?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="credit" data-importance="medium"
+           data-search="record china-us gap in bond yields unlikely to trigger capital flight: marsh investment  中美债券收益率差距创纪录不太可能引发资本外逃：marsh investment the widening yield spread between chinese and american government bonds is unlikely to trigger catastrophic capital flight from china, according to investment executives at marsh investment, who attribute the record spread to the united states’ fiscal pressures and global macro trends rather than a structural retreat for chinese assets.
+the spread between benchmark 10-year us treasury bonds and equivalent chinese sovereign bonds hit a record 3.17 percentage points this week. yields on us...  marsh investment的投资高管表示，中美政府债券收益率利差扩大不太可能引发资本从中国灾难性外流，他们将这一创纪录利差归因于美国的财政压力和全球宏观趋势，而非中国资产的结构性撤退。
+利差在 scmp - business credit credit 信用 cbon">
+          <time class="tp-when" data-t="2026-09-10T13:55:32+00:00" datetime="2026-09-10T13:55:32+00:00">09-10<br>13:55</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10T13:55:32+00:00"></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
-              <span class="cn-tag"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
-              <span class="cn-src">富途牛牛</span>
-              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+              <span class="cn-src">SCMP - Business</span>
+              <span class="cn-imp imp-medium"><b>56</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">US stocks open: Nasdaq up 0.08%, Qualcomm up nearly 7%</span><span class="l-zh">美股开市：纳指涨0.08%，高通涨近7%</span></h2>
-            <p class="tp-sum"><span class="l-en">The Dow opened down 0.57%, the Nasdaq rose 0.08%, and the S&P 500 fell 0.01%. Among notable tech stocks, Qualcomm rose 6.91%, Intel rose 5.22%, and AMD rose 2.38%. The Nasdaq Golden Dragon China Index fell 1.36%, Bilibili rose 3.87%, and Baidu fell 7.75%.</span><span class="l-zh">道指开盘跌0.57%，纳指涨0.08%，标普500跌0.01%。明星科技股高通涨6.91%，英特尔涨5.22%，美国超微公司涨2.38%。纳斯达克中国金龙指数跌1.36%，哔哩哔哩涨3.87%，百度跌7.75%。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Tech</span><span class="l-zh">科技</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3161971" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="medium"
-           data-search="糖业股大涨，上市公司回应 sugar stocks surge; listed companies respond 糖业股大涨，上市公司回应 9月8日，糖产业指数大涨5.94%，粤桂股份、中粮糖业涨停。消息面上，据多家媒体报道，全球第二产糖国泰国的糖产量在新榨季可能至少下降17%，全球糖供应面临的压力或将进一步加大。某糖产业头部上市公司人士回应称，北半球今年的榨季还没有开始，泰国和我国甘蔗榨季时间基本一致，因此目前还不好做出判断。“一般而言，甘蔗榨季是从当年11月份到第二年的2月份、3月份，榨好的糖第二年销售。”粤桂股份方面回应称。 on september 8, the sugar industry index jumped 5.94%, with yuegui co., ltd. and cofco sugar hitting the daily limit. on the news front, according to multiple media reports, sugar output in thailand, the world's second-largest sugar producer, may fall by at least 17% in the new crushing season, potentially intensifying pressure on global sugar supply. a source from a leading sugar industry listed company responded that the northern hemisphere's crushing season has not yet begun this year, and thailand's and china's sugarcane crushing seasons are basically aligned, so it is still hard to make a judgment. 'generally, the sugarcane crushing season runs from november to february or march of the following year, with the crushed sugar sold the following year,' yuegui co., ltd. responded. 9月8日，糖产业指数大涨5.94%，粤桂股份、中粮糖业涨停。消息面上，据多家媒体报道，全球第二产糖国泰国的糖产量在新榨季可能至少下降17%，全球糖供应面临的压力或将进一步加大。某糖产业头部上市公司人士回应称，北半球今年的榨季还没有开始，泰国和我国甘蔗榨季时间基本一致，因此目前还不好做出判断。“一般而言，甘蔗榨季是从当年11月份到第二年的2月份、3月份，榨好的糖第二年销售。”粤桂股份方面回应称。 华尔街见闻 markets equity market 股票市场 ">
-          <time class="tp-when" data-t="2026-09-08T12:59:51+00:00" datetime="2026-09-08T12:59:51+00:00">09-08<br>12:59</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-08T12:59:51+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Sugar stocks surge; listed companies respond</span><span class="l-zh">糖业股大涨，上市公司回应</span></h2>
-            <p class="tp-sum"><span class="l-en">On September 8, the sugar industry index jumped 5.94%, with Yuegui Co., Ltd. and COFCO Sugar hitting the daily limit. On the news front, according to multiple media reports, sugar output in Thailand, the world's second-largest sugar producer, may fall by at least 17% in the new crushing season, potentially intensifying pressure on global sugar supply. A source from a leading sugar industry listed company responded that the Northern Hemisphere's crushing season has not yet begun this year, and Thailand's and China's sugarcane crushing seasons are basically aligned, so it is still hard to make a judgment. 'Generally, the sugarcane crushing season runs from November to February or March of the following year, with the crushed sugar sold the following year,' Yuegui Co., Ltd. responded.</span><span class="l-zh">9月8日，糖产业指数大涨5.94%，粤桂股份、中粮糖业涨停。消息面上，据多家媒体报道，全球第二产糖国泰国的糖产量在新榨季可能至少下降17%，全球糖供应面临的压力或将进一步加大。某糖产业头部上市公司人士回应称，北半球今年的榨季还没有开始，泰国和我国甘蔗榨季时间基本一致，因此目前还不好做出判断。“一般而言，甘蔗榨季是从当年11月份到第二年的2月份、3月份，榨好的糖第二年销售。”粤桂股份方面回应称。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-inflation" href="https://www.stats.gov.cn/english/PressRelease/202608/t20260810_1965017.html" target="_blank" rel="noopener"
-           data-theme="inflation" data-importance="high"
-           data-search="industrial producer price indexes in july 2026  2026年7月工业生产者出厂价格指数    nbs industrial industry & manufacturing 工业与制造业 ">
-          <time class="tp-when" data-t="2026-08-10" datetime="2026-08-10">08-10</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-08-10"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
-              <span class="cn-src">NBS</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Industrial Producer Price Indexes in July 2026</span><span class="l-zh">2026年7月工业生产者出厂价格指数</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-markets" href="https://www.yicai.com/news/103356633.html" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="medium"
-           data-search="现场直击｜上海旅游节花车抢先看，文商旅体展联动促消费 第37届上海旅游节将通过21辆主题花车巡游、专属 city walk 精品路线、文旅联票及跨省分会场等多元举措，全面展现城市风貌并联动文商旅体展业态以拉动消费。 live from the scene | shanghai tourism festival floats preview: cultural, commercial, tourism, sports and exhibition linkages to boost consumption the 37th shanghai tourism festival will showcase the city's风貌 through 21 themed float parades, exclusive city walk routes, cultural-tourism combo tickets and cross-province sub-venues, linking cultural, commercial, tourism, sports and exhibition sectors to drive consumption. 现场直击｜上海旅游节花车抢先看，文商旅体展联动促消费 第37届上海旅游节将通过21辆主题花车巡游、专属 city walk 精品路线、文旅联票及跨省分会场等多元举措，全面展现城市风貌并联动文商旅体展业态以拉动消费。    第一财经 consumer consumer 消费 ">
-          <time class="tp-when" data-t="" >—</time>
-          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">第一财经</span>
-              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Live from the scene | Shanghai Tourism Festival floats preview: cultural, commercial, tourism, sports and exhibition linkages to boost consumption The 37th Shanghai Tourism Festival will showcase the city's风貌 through 21 themed float parades, exclusive City Walk routes, cultural-tourism combo tickets and cross-province sub-venues, linking cultural, commercial, tourism, sports and exhibition sectors to drive consumption.</span><span class="l-zh">现场直击｜上海旅游节花车抢先看，文商旅体展联动促消费 第37届上海旅游节将通过21辆主题花车巡游、专属 City Walk 精品路线、文旅联票及跨省分会场等多元举措，全面展现城市风貌并联动文商旅体展业态以拉动消费。</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-policy" href="https://www.yicai.com/news/103356578.html" target="_blank" rel="noopener"
-           data-theme="policy" data-importance="medium"
-           data-search="向居民消费和民营投资精准施策，培育中长期动能 下半年政策应进一步精准施策。 targeted policies toward household consumption and private investment to nurture medium- and long-term momentum policy in h2 should be more targeted. 向居民消费和民营投资精准施策，培育中长期动能 下半年政策应进一步精准施策。    第一财经 consumer consumer 消费 ">
-          <time class="tp-when" data-t="" >—</time>
-          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
-              <span class="cn-src">第一财经</span>
-              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Targeted policies toward household consumption and private investment to nurture medium- and long-term momentum Policy in H2 should be more targeted.</span><span class="l-zh">向居民消费和民营投资精准施策，培育中长期动能 下半年政策应进一步精准施策。</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
+            <h2 class="tp-title"><span class="l-en">Record China-US gap in bond yields unlikely to trigger capital flight: Marsh Investment</span><span class="l-zh">中美债券收益率差距创纪录不太可能引发资本外逃：Marsh Investment</span></h2>
+            <p class="tp-sum"><span class="l-en">The widening yield spread between Chinese and American government bonds is unlikely to trigger catastrophic capital flight from China, according to investment executives at Marsh Investment, who attribute the record spread to the United States’ fiscal pressures and global macro trends rather than a structural retreat for Chinese assets.
+The spread between benchmark 10-year US Treasury bonds and equivalent Chinese sovereign bonds hit a record 3.17 percentage points this week. Yields on US...</span><span class="l-zh">Marsh Investment的投资高管表示，中美政府债券收益率利差扩大不太可能引发资本从中国灾难性外流，他们将这一创纪录利差归因于美国的财政压力和全球宏观趋势，而非中国资产的结构性撤退。
+利差在</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Credit</span><span class="l-zh">信用</span></span><span class="cn-tk">CBON</span></div>
           </div>
         </a>
         
@@ -903,7 +923,7 @@ Friday’s consumer price index in the United States will take centre stage, wit
         
         <div class="cal-row">
           <div class="cal-when soon">
-            <span class="cd">2</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+            <span class="cd">·</span><span class="cu"><span class="l-en">today</span><span class="l-zh">今</span></span>
           </div>
           <div class="cal-name"><span class="cal-tag hi">CPI</span><span class="l-en">CPI (consumer prices)</span><span class="l-zh">CPI（居民消费价格）</span></div>
         </div>
@@ -911,7 +931,7 @@ Friday’s consumer price index in the United States will take centre stage, wit
         
         <div class="cal-row">
           <div class="cal-when soon">
-            <span class="cd">2</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+            <span class="cd">·</span><span class="cu"><span class="l-en">today</span><span class="l-zh">今</span></span>
           </div>
           <div class="cal-name"><span class="cal-tag hi">CREDIT</span><span class="l-en">Money supply, RMB loans & TSF</span><span class="l-zh">货币供应、人民币贷款与社融</span></div>
         </div>
@@ -919,7 +939,7 @@ Friday’s consumer price index in the United States will take centre stage, wit
         
         <div class="cal-row">
           <div class="cal-when soon">
-            <span class="cd">2</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+            <span class="cd">·</span><span class="cu"><span class="l-en">today</span><span class="l-zh">今</span></span>
           </div>
           <div class="cal-name"><span class="cal-tag hi">PPI</span><span class="l-en">PPI (producer prices)</span><span class="l-zh">PPI（工业生产者价格）</span></div>
         </div>
@@ -927,7 +947,7 @@ Friday’s consumer price index in the United States will take centre stage, wit
         
         <div class="cal-row">
           <div class="cal-when ">
-            <span class="cd">7</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+            <span class="cd">5</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
           </div>
           <div class="cal-name"><span class="cal-tag hi">ACTIVITY</span><span class="l-en">IP, FAI & retail sales</span><span class="l-zh">工业增加值、固投与社零</span></div>
         </div>
@@ -935,7 +955,7 @@ Friday’s consumer price index in the United States will take centre stage, wit
         
         <div class="cal-row">
           <div class="cal-when ">
-            <span class="cd">7</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+            <span class="cd">5</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
           </div>
           <div class="cal-name"><span class="cal-tag ">MLF</span><span class="l-en">MLF operation (PBoC)</span><span class="l-zh">MLF 操作（央行中期借贷便利）</span></div>
         </div>
@@ -943,7 +963,7 @@ Friday’s consumer price index in the United States will take centre stage, wit
         
         <div class="cal-row">
           <div class="cal-when ">
-            <span class="cd">13</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+            <span class="cd">11</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
           </div>
           <div class="cal-name"><span class="cal-tag hi">LPR</span><span class="l-en">LPR fix (loan prime rate)</span><span class="l-zh">LPR 报价（贷款市场报价利率）</span></div>
         </div>
@@ -956,25 +976,19 @@ Friday’s consumer price index in the United States will take centre stage, wit
         <div class="exp-pills">
           
           
-          <span class="exp-pill"><span class="tk">512880.SS</span><span class="nm"><span class="l-en">brokers</span><span class="l-zh">券商</span></span><span class="ct">×5</span></span>
+          <span class="exp-pill"><span class="tk">512880.SS</span><span class="nm"><span class="l-en">brokers</span><span class="l-zh">券商</span></span><span class="ct">×11</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">CBON</span><span class="nm"><span class="l-en">China bonds</span><span class="l-zh">中国债券</span></span><span class="ct">×3</span></span>
           
           
           <span class="exp-pill"><span class="tk">512800.SS</span><span class="nm"><span class="l-en">banks</span><span class="l-zh">银行</span></span><span class="ct">×3</span></span>
           
           
-          <span class="exp-pill"><span class="tk">512400.SS</span><span class="nm"><span class="l-en">metals</span><span class="l-zh">有色</span></span><span class="ct">×2</span></span>
+          <span class="exp-pill"><span class="tk">CNY</span><span class="nm"><span class="l-en">yuan</span><span class="l-zh">人民币</span></span><span class="ct">×2</span></span>
           
           
           <span class="exp-pill"><span class="tk">2800.HK</span><span class="nm"><span class="l-en">Hang Seng</span><span class="l-zh">恒生</span></span></span>
-          
-          
-          <span class="exp-pill"><span class="tk">512760.SS</span><span class="nm"><span class="l-en">chips</span><span class="l-zh">半导体</span></span></span>
-          
-          
-          <span class="exp-pill"><span class="tk">CBON</span><span class="nm"><span class="l-en">China bonds</span><span class="l-zh">中国债券</span></span></span>
-          
-          
-          <span class="exp-pill"><span class="tk">ASHR</span><span class="nm"><span class="l-en">A-shares</span><span class="l-zh">A股</span></span></span>
           
           
           <span class="exp-pill"><span class="tk">512200.SS</span><span class="nm"><span class="l-en">property</span><span class="l-zh">房地产</span></span></span>

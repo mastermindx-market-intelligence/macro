@@ -1,29 +1,17 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-08T21:52:51.362538+00:00",
-  "posts_seen": 6,
-  "seen_total": 170,
-  "evaluated": 3,
+  "as_of": "2026-09-10T19:42:35.214706+00:00",
+  "posts_seen": 17,
+  "seen_total": 181,
+  "evaluated": 1,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-09-08-fact-sheet-president-donald-j-trump-accelerates-veterans-access-to-benefits-and-",
-      "importance": 0,
+      "id": "wh-2026-09-10-trump-dividend-america-is-winning-and-americans-should-win-with-it",
+      "importance": 35,
       "activated": false,
-      "degraded_reason": "served_by:codex"
-    },
-    {
-      "id": "wh-2026-09-08-accelerating-access-to-veterans-benefits-and-employment-opportunities",
-      "importance": 0,
-      "activated": false,
-      "degraded_reason": null
-    },
-    {
-      "id": "wh-2026-09-08-adjusting-certain-delegations-under-the-defense-production-act-e2de",
-      "importance": 0,
-      "activated": false,
-      "degraded_reason": null
+      "degraded_reason": "served_by:deepseek"
     }
   ]
 }

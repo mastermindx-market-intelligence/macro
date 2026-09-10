@@ -332,11 +332,11 @@ html.has-js .rv.in{opacity:1;transform:none;transition:opacity .55s ease,transfo
    listing whose blob carries no security_state block must stay byte-for-byte
    what it was before this section existed. #}
 /* ══ SECURITY STATE — the Decision Spine ═══════════════════════════════════
-   Six separate reads on one listing, each carrying its own coverage state.
+   Eight panels on one listing, each carrying its own coverage state.
    The composition decisions, written down because they are choices:
 
-   · ONE panel holding six cells, not six floating panels. The job is "one
-     coherent answer you can audit"; six independent cards read as six
+   · ONE grid holding five axis cells, not five floating panels. The job is "one
+     coherent answer you can audit"; five independent cards read as five
      independent widgets. The cell is the .ci-lens idiom (panel2 tint, hairline,
      left rail) widened to a three-column grid — house idiom extended, not a
      second card system. Nesting depth stays 2.
@@ -886,6 +886,13 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
     {% if earnings %}<a href="#earnings">{{ t('Earnings', '财报') }}</a>{% endif %}
     {% if valuation %}<a href="#valuation">{{ t('Valuation', '估值') }}</a>{% endif %}
     {% if financials %}<a href="#financials">{{ t('Financials', '财务') }}</a>{% endif %}
+    {# META-CEO B r4 MAJOR-1 (amended to match the panel, with one ruled
+       asymmetry). Chip AND section for: reported (the loaded/success status),
+       no_filings, not_loaded, identity_mismatch, no_maturity_facts.
+       unresolved: the section's no-record sentence WITHOUT a chip (ruled
+       asymmetry — an identity gap has nothing pending to jump to).
+       not_applicable: neither chip nor section. Tests pin all seven. #}
+    {% if debt_maturity and debt_maturity.status not in ('not_applicable', 'unresolved') %}<a href="#debt-maturity">{{ t('Debt', '债务') }}</a>{% endif %}
     {% if options %}<a href="#options">{{ t('Options', '期权') }}</a>{% endif %}
     {% if ownership %}<a href="#ownership">{{ t('Holders', '持仓') }}</a>{% endif %}
     {% if news %}<a href="#news">{{ t('News', '新闻') }}</a>{% endif %}
@@ -1105,11 +1112,14 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
     <p class="ss-why">{{ t('What this security looks like right now, at a glance.', '这只证券当前状况的一目了然总览。') }}</p>
     {% if ss.overview.state_summary %}<p class="ss-head">{{ t(ss.overview.state_summary.en, ss.overview.state_summary.zh) }}</p>{% endif %}
     {# One sentence per population, worded once in the projection so EN and ZH
-       say the same thing about the same two counts. #}
+       say the same thing about the same two counts. The whole row (label and
+       values) is gated on at least one sentence, matching the clocks below. #}
+    {% if ss.coverage.req_sentence or ss.coverage.opt_sentence %}
     <div class="ss-note"><b>{{ t('Reads available', '可用读数') }}</b>
       {% if ss.coverage.req_sentence %}<span class="v">{{ t(ss.coverage.req_sentence.en, ss.coverage.req_sentence.zh) }}</span>{% endif %}
       {% if ss.coverage.opt_sentence %}<span class="v">{{ t(ss.coverage.opt_sentence.en, ss.coverage.opt_sentence.zh) }}</span>{% endif %}
     </div>
+    {% endif %}
     {% if ss.personal_impact %}
     <div class="ss-note"><b>{{ t(ss.personal_impact.title_en, ss.personal_impact.title_zh) }}</b><span class="v">{{ t(ss.personal_impact.headline.en, ss.personal_impact.headline.zh) }}</span>
       <button type="button" class="gbtn gbtn-sm" onclick="dsrOpenDlg('dlg-{{ ss.personal_impact.dlg }}')">{{ t('Receipts', '凭证') }}</button>
@@ -1471,6 +1481,7 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
     {% endif %}
   </section>
   {% endif %}
+  {% include "_debt_maturity.html.j2" %}
 
   {% if why_moving %}
   <section class="mod rv why" id="why">
@@ -1828,7 +1839,7 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
         <div class="dkv">
           {% for s in a.subreads %}<div class="r6d"><span class="k">{{ t(s.en, s.zh) }}</span><span class="vv ss-t-{{ s.tone }} ss-tone-ink">{{ t(s.cov_en, s.cov_zh) }}</span></div>{% endfor %}
         </div>
-        {% for s in a.subreads %}{% if s.reason %}<p class="ss-receipt">{{ t(s.en, s.zh) }} — {{ s.reason }}</p>{% endif %}{% endfor %}
+        {% for s in a.subreads %}{% if s.reason_en or s.reason_zh %}<p class="ss-receipt">{{ t(s.en, s.zh) }} — {{ t(s.reason_en, s.reason_zh) }}</p>{% endif %}{% endfor %}
         <div class="dfoot">{{ t('A read that is not available is left out. No rank, score or stand-in value is put in its place.', '不可用的读数即留空，不会以任何排名、评分或替代数值填补。') }}</div>
       </section>
       {% endif %}
@@ -1994,12 +2005,12 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
             {% if lg.code %}<span class="c ss-id">{{ lg.code }}</span>{% endif %}
           </div>
           {% if lg.desc_en %}<p class="ss-chk-d">{{ t(lg.desc_en, lg.desc_zh) }}</p>{% endif %}
-          {% if lg.artifact %}<p class="ss-chk-s"><span class="ss-id">{{ lg.artifact }}</span></p>{% endif %}
-          {% if lg.reader %}<p class="ss-chk-s">{{ t('read by', '读取方') }} <span class="ss-id">{{ lg.reader }}</span></p>{% endif %}
-          {% if lg.reads %}<dl class="ss-chk-v">{% for v in lg.reads %}<dt>{{ v.k }}</dt><dd>{{ v.v if v.v else '—' }}</dd>{% endfor %}</dl>{% endif %}
+          {% if lg.artifact_en %}<p class="ss-chk-s"><span class="ss-id">{{ t(lg.artifact_en, lg.artifact_zh) }}</span></p>{% endif %}
+          {% if lg.reader_en %}<p class="ss-chk-s">{{ t('read by', '读取方') }} <span class="ss-id">{{ t(lg.reader_en, lg.reader_zh) }}</span></p>{% endif %}
+          {% if lg.reads %}<dl class="ss-chk-v">{% for v in lg.reads %}<dt>{% if v.label_en %}{{ t(v.label_en, v.label_zh) }}{% else %}<span class="ss-id">{{ v.k }}</span>{% endif %}</dt><dd>{{ v.v if v.v else '—' }}</dd>{% endfor %}</dl>{% endif %}
         </div>
         {% endfor %}
-        {% if ss.identity.equalities %}<ul class="dnotes">{% for e in ss.identity.equalities %}<li class="ss-id">{{ e }}</li>{% endfor %}</ul>{% endif %}
+        {% if ss.identity.equalities %}<ul class="dnotes">{% for e in ss.identity.equalities %}<li>{% if e.label_en %}{{ t(e.label_en, e.label_zh) }}{% else %}<span class="ss-id">{{ e.check }}</span>{% endif %}: <span class="ss-id">{{ e.left_value }}</span> = <span class="ss-id">{{ e.right_value }}</span> — {{ t(e.verdict_en, e.verdict_zh) }}</li>{% endfor %}</ul>{% endif %}
         {% if ss.identity.refusals %}<div class="dfoot">{{ t('Held back', '暂不呈现') }}: {% for r in ss.identity.refusals %}<span class="dfoot-row">{{ t(r.en, r.zh) }} <span class="c ss-id">{{ r.code }}</span></span>{% if not loop.last %}<br>{% endif %}{% endfor %}</div>{% endif %}
         {% if ss.identity.disclosures %}<div class="dfoot">{% for d in ss.identity.disclosures %}<span class="dfoot-row">{{ t(d.en, d.zh) }}{% if d.code %} <span class="c ss-id">{{ d.code }}</span>{% endif %}</span>{% if not loop.last %}<br>{% endif %}{% endfor %}</div>{% endif %}
       </section>
