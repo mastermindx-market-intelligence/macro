@@ -1025,7 +1025,7 @@ def _state(filename: str, theme: str, locale: str, viewport: str,
                 "page_scroll_width", "matched", "element_key",
                 "visible_text_scope", "in_method_section",
                 "revealed", "reveal_ancestors", "census_path",
-                "census_visible", "visible_at_shot"):
+                "census_visible", "visible_at_shot", "header_tokens"):
         if info.get(key) is not None:
             row[key] = info[key]
     # content_overflows must be present on every crop (empty list is valid).
@@ -4024,6 +4024,25 @@ def _photograph_mq_table_390(
         tname = method_table_filename(
             pos, slug, theme, locale, 390, element_key=element_key)
         print(f"capture {tname}", flush=True)
+        raw_headers = table.evaluate(
+            """el => {
+                let cells = el.querySelectorAll('thead th');
+                if (!cells.length) {
+                    const first = el.querySelector('tr');
+                    cells = first
+                        ? first.querySelectorAll('th, td') : [];
+                }
+                const out = [];
+                for (const c of cells) {
+                    const t = (c.innerText || '')
+                        .replace(/\\s+/g, ' ').trim();
+                    if (t) out.push(t);
+                }
+                return out;
+            }"""
+        ) or []
+        header_tokens = [
+            str(t).strip() for t in raw_headers if str(t).strip()]
         scroll_rcpt = table.evaluate(
             """(el, args) => {
                 const want = args.pos;
@@ -4096,6 +4115,7 @@ def _photograph_mq_table_390(
         tinfo["visible_text_scope"] = "element"
         tinfo["visible_text_at_scroll"] = vis_at_scroll
         tinfo["visible_text_at_zero"] = text_zero
+        tinfo["header_tokens"] = header_tokens
         tinfo["shot_route"] = _shot_route_of(target)
         tinfo["page_id"] = page_name
         tinfo.pop("_element_text", None)

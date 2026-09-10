@@ -2591,7 +2591,8 @@ def test_method_table_390_contribution_union() -> None:
         assert m, key
         slug, ekey, theme, locale, width = m.groups()
         assert ekey, (key, "probe key missing element_key")
-        species, headers, demand_decimals = _classify_method_table(full, locale)
+        species, classified_headers, demand_decimals = _classify_method_table(
+            full, locale)
         start = by_file.get(method_table_filename(
             "start", slug, theme, locale, width, element_key=ekey))
         end = by_file.get(method_table_filename(
@@ -2640,6 +2641,13 @@ def test_method_table_390_contribution_union() -> None:
             parts.append(end_vis)
         union = " ".join(parts)
         unions[(slug, ekey, theme, width)][locale] = union
+        if species == "other":
+            receipt = start.get("header_tokens")
+            assert isinstance(receipt, (list, tuple)) and len(receipt) > 0, (
+                key, "other-species missing/empty header_tokens receipt")
+            headers = tuple(str(h) for h in receipt)
+        else:
+            headers = classified_headers
         for h in headers:
             assert _header_in_visible(h, union, locale), (
                 key, species, h, "header missing from start∪end — MUT-hdr must fail")
