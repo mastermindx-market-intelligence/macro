@@ -67,7 +67,7 @@ html.has-js .rv.in{opacity:1;transform:none;transition:opacity .55s ease,transfo
     <h2><span class="l-en">Try your own assumptions</span><span class="l-zh">试试你自己的假设</span></h2>
     <span class="hint"><span class="l-en">same reported figures · FY2025</span><span class="l-zh">同一批披露数据 · 2025财年</span></span>
   </div>
-  <p class="va-lede" id="va-lede-nojs"><span class="l-en">These inputs need JavaScript to move. The base case is shown.</span><span class="l-zh">这些输入需要启用 JavaScript 才能调整，当前显示的是基准情形。</span></p>
+  <p class="va-lede" id="va-lede-nojs"><span class="l-en">Interactive controls need JavaScript. The three cases above are computed on the server and always shown.</span><span class="l-zh">交互控件需要启用 JavaScript。上方三个情景由服务器计算，始终显示。</span></p>
   <p class="va-lede" id="va-lede-js" hidden><span class="l-en">Move the three inputs below. The per-share number updates as you move them. Nothing you set here is saved or sent anywhere.</span><span class="l-zh">调整下面三项输入，每股数值会随之更新。你在这里设置的内容不会被保存，也不会被发送到任何地方。</span></p>
   <script type="application/json" id="vs-assumption-inputs">{"controls": [{"default": 3, "key": "sales_growth_pct", "max": 20, "min": -10, "step": 0.5}, {"default": 0, "key": "margin_delta_pp", "max": 3.0, "min": -3.0, "step": 0.1}, {"default": 18, "key": "earnings_multiple", "max": 35, "min": 8, "step": 1}], "fy": 2025, "inputs": {"net_income": 1200000000.0, "net_margin_base": 0.012, "revenue": 100000000000.0, "shares": 14900000000.0}, "margin_base_floor": 0.01, "period_end": "2025-09-27", "presets": {"base": {"earnings_multiple": 18, "margin_delta_pp": 0, "sales_growth_pct": 3}, "cautious": {"earnings_multiple": 14, "margin_delta_pp": -1.5, "sales_growth_pct": -2}, "upbeat": {"earnings_multiple": 22, "margin_delta_pp": 1.5, "sales_growth_pct": 7}}, "schema": "valuation_scenario_controls.v1", "server_default": {"earnings_multiple": 18, "margin_delta_pp": 0, "per_share": 1.49, "sales_growth_pct": 3}, "source": "SEC filings", "ticker": "SYNTHETIC-FIXTURE", "tier": "research_display_only"}</script>
   <div class="va-ctls">
@@ -76,7 +76,7 @@ html.has-js .rv.in{opacity:1;transform:none;transition:opacity .55s ease,transfo
     <div class="va-ctl">
       <label for="va-ctl-sales_growth_pct"><span class="l-en">Sales growth next year</span><span class="l-zh">下一年销售增长</span></label>
       <span class="va-readout" id="va-read-sales_growth_pct">+3.0%</span>
-      <input type="range" id="va-ctl-sales_growth_pct" min="-10" max="20" step="0.5" value="3" disabled>
+      <input type="range" id="va-ctl-sales_growth_pct" min="-10" max="20" step="0.5" value="3" autocomplete="off" disabled>
     </div>
       
     
@@ -87,7 +87,7 @@ html.has-js .rv.in{opacity:1;transform:none;transition:opacity .55s ease,transfo
         <span class="va-readout" id="va-read-margin_delta_pp">0.0</span>
         <span class="va-unit"><span class="l-en">percentage points</span><span class="l-zh">个百分点</span></span>
       </span>
-      <input type="range" id="va-ctl-margin_delta_pp" min="-3.0" max="3.0" step="0.1" value="0" disabled>
+      <input type="range" id="va-ctl-margin_delta_pp" min="-3.0" max="3.0" step="0.1" value="0" autocomplete="off" disabled>
     </div>
       
     
@@ -95,7 +95,7 @@ html.has-js .rv.in{opacity:1;transform:none;transition:opacity .55s ease,transfo
     <div class="va-ctl">
       <label for="va-ctl-earnings_multiple"><span class="l-en">Earnings multiple</span><span class="l-zh">市盈率倍数</span></label>
       <span class="va-readout" id="va-read-earnings_multiple">18×</span>
-      <input type="range" id="va-ctl-earnings_multiple" min="8" max="35" step="1" value="18" disabled>
+      <input type="range" id="va-ctl-earnings_multiple" min="8" max="35" step="1" value="18" autocomplete="off" disabled>
     </div>
       
     
@@ -108,10 +108,10 @@ html.has-js .rv.in{opacity:1;transform:none;transition:opacity .55s ease,transfo
     </div>
   </div>
   <div class="va-presets" id="va-presets">
-    <button type="button" class="gbtn gbtn-sm va-preset" data-va-preset="cautious"><span class="l-en">Cautious</span><span class="l-zh">保守</span></button>
-    <button type="button" class="gbtn gbtn-sm va-preset va-preset-on" data-va-preset="base"><span class="l-en">Base</span><span class="l-zh">基准</span></button>
-    <button type="button" class="gbtn gbtn-sm va-preset" data-va-preset="upbeat"><span class="l-en">Upbeat</span><span class="l-zh">乐观</span></button>
-    <button type="button" class="gbtn gbtn-sm" id="va-reset"><span class="l-en">Reset to base</span><span class="l-zh">恢复基准</span></button>
+    <button type="button" class="gbtn gbtn-sm va-preset" data-va-preset="cautious" disabled><span class="l-en">Cautious</span><span class="l-zh">保守</span></button>
+    <button type="button" class="gbtn gbtn-sm va-preset va-preset-on" data-va-preset="base" disabled><span class="l-en">Base</span><span class="l-zh">基准</span></button>
+    <button type="button" class="gbtn gbtn-sm va-preset" data-va-preset="upbeat" disabled><span class="l-en">Upbeat</span><span class="l-zh">乐观</span></button>
+    <button type="button" class="gbtn gbtn-sm" id="va-reset" disabled><span class="l-en">Reset to base</span><span class="l-zh">恢复基准</span></button>
   </div>
   <p class="va-note"><span class="l-en">Applied to FY2025 as disclosed to the SEC — revenue, net income and share count come straight from the disclosure, and are not editable here.</span><span class="l-zh">套用在按 SEC 披露的2025财年数据上——营业收入、净利润与股数均直接取自披露文件，此处不可修改。</span></p><p class="va-note"><span class="l-en">Sales growth -10% to +20%; margin change -3.0 to +3.0 percentage points; earnings multiple 8× to 35×.</span><span class="l-zh">销售增长 -10% 至 +20%；利润率变化 -3.0 至 +3.0 个百分点；市盈率倍数 8 倍至 35 倍。</span></p>
   <script>
@@ -182,6 +182,8 @@ html.has-js .rv.in{opacity:1;transform:none;transition:opacity .55s ease,transfo
   elG.removeAttribute("disabled");
   elM.removeAttribute("disabled");
   elX.removeAttribute("disabled");
+  var bootBtns = document.querySelectorAll("#va-presets button");
+  for (var bi = 0; bi < bootBtns.length; bi++) bootBtns[bi].removeAttribute("disabled");
   var ledeNojs = document.getElementById("va-lede-nojs");
   var ledeJs = document.getElementById("va-lede-js");
   if (ledeNojs) ledeNojs.hidden = true;

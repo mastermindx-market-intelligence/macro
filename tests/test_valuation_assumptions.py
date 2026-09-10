@@ -538,10 +538,17 @@ def test_live_region_is_a_status_and_its_label_sits_outside_it():
 
 
 def test_no_js_default_state_is_correct_and_complete():
-    """T10 (round 8 R1 / R3(4)): server HTML ships disabled inputs, the no-JS
-    sentence in place of the move sentence, min/max/step on each input, and
-    each readout span.
+    """T10 (heal h9 R1/R2/R3): server HTML ships the frozen No-JS line in
+    place of the move sentence, all seven controls disabled, autocomplete=off
+    on the three ranges, min/max/step on each input, and each readout span.
     """
+    frozen_en = (
+        "Interactive controls need JavaScript. The three cases above are "
+        "computed on the server and always shown."
+    )
+    frozen_zh = "交互控件需要启用 JavaScript。上方三个情景由服务器计算，始终显示。"
+    fallback_en = "These inputs need JavaScript to move. The base case is shown."
+    fallback_zh = "这些输入需要启用 JavaScript 才能调整，当前显示的是基准情形。"
     blob = va.controls_blob(_v1_blob())
     html = _render_assumptions(blob)
     stripped = re.sub(
@@ -558,21 +565,32 @@ def test_no_js_default_state_is_correct_and_complete():
     assert 'value="0"' in stripped or "value='0'" in stripped
     assert 'value="18"' in stripped or "value='18'" in stripped
     by_key = {c["key"]: c for c in blob["controls"]}
-    for key, el_id in (
+    range_ids = (
         ("sales_growth_pct", "va-ctl-sales_growth_pct"),
         ("margin_delta_pp", "va-ctl-margin_delta_pp"),
         ("earnings_multiple", "va-ctl-earnings_multiple"),
-    ):
+    )
+    for key, el_id in range_ids:
         tag = re.search(rf"<input[^>]*id=\"{el_id}\"[^>]*>", stripped)
         assert tag, el_id
         src = tag.group(0)
         assert "disabled" in src, el_id
+        assert 'autocomplete="off"' in src, el_id
         spec = by_key[key]
         assert f'min="{spec["min"]}"' in src or f"min='{spec['min']}'" in src
         assert f'max="{spec["max"]}"' in src or f"max='{spec['max']}'" in src
         assert f'step="{spec["step"]}"' in src or f"step='{spec['step']}'" in src
         assert f'id="va-read-{key}"' in stripped
-    assert "These inputs need JavaScript to move. The base case is shown." in stripped
+    buttons = re.findall(r"<button\b[^>]*>", stripped)
+    assert len(buttons) == 4, buttons
+    for tag in buttons:
+        assert "disabled" in tag, tag
+    assert 'data-va-preset="cautious"' in stripped
+    assert 'data-va-preset="base"' in stripped
+    assert 'data-va-preset="upbeat"' in stripped
+    assert 'id="va-reset"' in stripped
+    assert frozen_en in stripped
+    assert fallback_en not in stripped
     zh_html = _render_assumptions(blob, t=lambda en, zh: zh)
     zh_stripped = re.sub(
         r"<script(?![^>]*type=\"application/json\")[^>]*>.*?</script>",
@@ -580,7 +598,8 @@ def test_no_js_default_state_is_correct_and_complete():
         zh_html,
         flags=re.DOTALL | re.IGNORECASE,
     )
-    assert "这些输入需要启用 JavaScript 才能调整，当前显示的是基准情形。" in zh_stripped
+    assert frozen_zh in zh_stripped
+    assert fallback_zh not in zh_stripped
     nojs_tag = re.search(r"<p[^>]*id=\"va-lede-nojs\"[^>]*>", stripped)
     assert nojs_tag and "hidden" not in nojs_tag.group(0)
     js_tag = re.search(r"<p[^>]*id=\"va-lede-js\"[^>]*>", stripped)
@@ -588,10 +607,14 @@ def test_no_js_default_state_is_correct_and_complete():
 
 
 def test_js_enables_inputs_and_shows_the_move_sentence():
-    """Round 8 R1 JS-path: bootstrap removes disabled and reveals the move
-    sentence. Run under node against a minimal document mock of the served
-    markup, not against source greps.
+    """Heal h9 JS-path: bootstrap clears disabled on all seven controls,
+    removes the frozen No-JS line, and reveals the move sentence. Run under
+    node against a minimal document mock of the served markup, not greps.
     """
+    frozen_en = (
+        "Interactive controls need JavaScript. The three cases above are "
+        "computed on the server and always shown."
+    )
     node = shutil.which("node")
     assert node, "node is required; install Node.js (fail loudly, never skip)"
     blob = va.controls_blob(_v1_blob())
@@ -634,9 +657,20 @@ function el(id, attrs) {
 const elG = el('va-ctl-sales_growth_pct', {value: '3', disabled: ''});
 const elM = el('va-ctl-margin_delta_pp', {value: '0', disabled: ''});
 const elX = el('va-ctl-earnings_multiple', {value: '18', disabled: ''});
-const ledeNojs = el('va-lede-nojs', {});
+const btnC = el('va-preset-cautious', {disabled: '', 'data-va-preset': 'cautious'});
+const btnB = el('va-preset-base', {disabled: '', 'data-va-preset': 'base'});
+const btnU = el('va-preset-upbeat', {disabled: '', 'data-va-preset': 'upbeat'});
+const btnReset = el('va-reset', {disabled: ''});
+const presetBtns = [btnC, btnB, btnU];
+const allBtns = [btnC, btnB, btnU, btnReset];
+const ledeNojs = el('va-lede-nojs', {
+  textContent: 'Interactive controls need JavaScript. The three cases above are computed on the server and always shown.'
+});
 ledeNojs.hidden = false;
-const ledeJs = el('va-lede-js', {hidden: true});
+const ledeJs = el('va-lede-js', {
+  hidden: true,
+  textContent: 'Move the three inputs below. The per-share number updates as you move them. Nothing you set here is saved or sent anywhere.'
+});
 ledeJs.hidden = true;
 const island = el('vs-assumption-inputs', {});
 island.textContent = JSON.stringify(data);
@@ -654,12 +688,17 @@ const byId = {
   'va-read-earnings_multiple': el('va-read-earnings_multiple', {}),
   'va-lede-nojs': ledeNojs,
   'va-lede-js': ledeJs,
-  'va-reset': null,
+  'va-reset': btnReset,
   'va-presets': el('va-presets', {})
 };
+function qsa(sel) {
+  if (sel === '[data-va-preset]') return presetBtns;
+  if (sel === '#va-presets button') return allBtns;
+  return [];
+}
 const document = {
   getElementById: function (id) { return Object.prototype.hasOwnProperty.call(byId, id) ? byId[id] : null; },
-  querySelectorAll: function () { return []; },
+  querySelectorAll: qsa,
   addEventListener: function () {}
 };
 vm.runInNewContext(src, {
@@ -675,17 +714,14 @@ vm.runInNewContext(src, {
   parseInt: parseInt,
   parseFloat: parseFloat
 });
-if (elG.getAttribute('disabled') !== null) {
-  throw new Error('sales_growth_pct still disabled');
-}
-if (elM.getAttribute('disabled') !== null) {
-  throw new Error('margin_delta_pp still disabled');
-}
-if (elX.getAttribute('disabled') !== null) {
-  throw new Error('earnings_multiple still disabled');
+const seven = [elG, elM, elX, btnC, btnB, btnU, btnReset];
+for (const node of seven) {
+  if (node.getAttribute('disabled') !== null) {
+    throw new Error(node.id + ' still disabled');
+  }
 }
 if (ledeNojs.hidden !== true) {
-  throw new Error('no-JS lede still visible');
+  throw new Error('frozen No-JS line still visible');
 }
 if (ledeJs.hidden !== false) {
   throw new Error('move sentence still hidden');
@@ -699,9 +735,13 @@ process.stdout.write('ok');
         )
         assert proc.returncode == 0, proc.stderr
         assert proc.stdout.strip() == "ok"
+    assert frozen_en in html
+    assert "These inputs need JavaScript to move. The base case is shown." not in html
     assert "Move the three inputs below. The per-share number updates as you move them." in html
     zh_html = _render_assumptions(blob, t=lambda en, zh: zh)
     assert "调整下面三项输入，每股数值会随之更新。" in zh_html
+    assert "交互控件需要启用 JavaScript。上方三个情景由服务器计算，始终显示。" in zh_html
+    assert "这些输入需要启用 JavaScript 才能调整，当前显示的是基准情形。" not in zh_html
 
 
 def test_degraded_capture_host_reveals_rv_modules_under_has_js():

@@ -45,14 +45,13 @@
   .va-ctl .va-readout,.va-ctl .va-unit{text-align:left;}
 }
 </style>
-{% set inp = va.inputs %}
 {% set sd = va.server_default %}
 <section class="mod rv" id="valuation-assumptions" data-valuation-assumptions="v1">
   <div class="mod-hd">
     <h2>{{ t('Try your own assumptions', '试试你自己的假设') }}</h2>
     <span class="hint"><span class="l-en">same reported figures · FY{{ va.fy }}</span><span class="l-zh">同一批披露数据 · {{ va.fy }}财年</span></span>
   </div>
-  <p class="va-lede" id="va-lede-nojs">{{ t('These inputs need JavaScript to move. The base case is shown.', '这些输入需要启用 JavaScript 才能调整，当前显示的是基准情形。') }}</p>
+  <p class="va-lede" id="va-lede-nojs">{{ t('Interactive controls need JavaScript. The three cases above are computed on the server and always shown.', '交互控件需要启用 JavaScript。上方三个情景由服务器计算，始终显示。') }}</p>
   <p class="va-lede" id="va-lede-js" hidden>{{ t('Move the three inputs below. The per-share number updates as you move them. Nothing you set here is saved or sent anywhere.', '调整下面三项输入，每股数值会随之更新。你在这里设置的内容不会被保存，也不会被发送到任何地方。') }}</p>
   <script type="application/json" id="vs-assumption-inputs">{{ va | tojson }}</script>
   <div class="va-ctls">
@@ -61,7 +60,7 @@
     <div class="va-ctl">
       <label for="va-ctl-sales_growth_pct">{{ t('Sales growth next year', '下一年销售增长') }}</label>
       <span class="va-readout" id="va-read-sales_growth_pct">{{ '%+.1f'|format(sd.sales_growth_pct) if sd.sales_growth_pct else '%.1f'|format(sd.sales_growth_pct) }}%</span>
-      <input type="range" id="va-ctl-sales_growth_pct" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.step }}" value="{{ sd.sales_growth_pct }}" disabled>
+      <input type="range" id="va-ctl-sales_growth_pct" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.step }}" value="{{ sd.sales_growth_pct }}" autocomplete="off" disabled>
     </div>
       {% elif c.key == 'margin_delta_pp' %}
     <div class="va-ctl">
@@ -70,13 +69,13 @@
         <span class="va-readout" id="va-read-margin_delta_pp">{{ '%+.1f'|format(sd.margin_delta_pp) if sd.margin_delta_pp else '%.1f'|format(sd.margin_delta_pp) }}</span>
         <span class="va-unit">{{ t('percentage points', '个百分点') }}</span>
       </span>
-      <input type="range" id="va-ctl-margin_delta_pp" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.step }}" value="{{ sd.margin_delta_pp }}" disabled>
+      <input type="range" id="va-ctl-margin_delta_pp" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.step }}" value="{{ sd.margin_delta_pp }}" autocomplete="off" disabled>
     </div>
       {% else %}
     <div class="va-ctl">
       <label for="va-ctl-earnings_multiple">{{ t('Earnings multiple', '市盈率倍数') }}</label>
       <span class="va-readout" id="va-read-earnings_multiple">{{ '%d'|format(sd.earnings_multiple) }}×</span>
-      <input type="range" id="va-ctl-earnings_multiple" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.step }}" value="{{ sd.earnings_multiple }}" disabled>
+      <input type="range" id="va-ctl-earnings_multiple" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.step }}" value="{{ sd.earnings_multiple }}" autocomplete="off" disabled>
     </div>
       {% endif %}
     {% endfor %}
@@ -93,10 +92,10 @@
     </div>
   </div>
   <div class="va-presets" id="va-presets">
-    <button type="button" class="gbtn gbtn-sm va-preset" data-va-preset="cautious">{{ t('Cautious', '保守') }}</button>
-    <button type="button" class="gbtn gbtn-sm va-preset va-preset-on" data-va-preset="base">{{ t('Base', '基准') }}</button>
-    <button type="button" class="gbtn gbtn-sm va-preset" data-va-preset="upbeat">{{ t('Upbeat', '乐观') }}</button>
-    <button type="button" class="gbtn gbtn-sm" id="va-reset">{{ t('Reset to base', '恢复基准') }}</button>
+    <button type="button" class="gbtn gbtn-sm va-preset" data-va-preset="cautious" disabled>{{ t('Cautious', '保守') }}</button>
+    <button type="button" class="gbtn gbtn-sm va-preset va-preset-on" data-va-preset="base" disabled>{{ t('Base', '基准') }}</button>
+    <button type="button" class="gbtn gbtn-sm va-preset" data-va-preset="upbeat" disabled>{{ t('Upbeat', '乐观') }}</button>
+    <button type="button" class="gbtn gbtn-sm" id="va-reset" disabled>{{ t('Reset to base', '恢复基准') }}</button>
   </div>
   <p class="va-note"><span class="l-en">Applied to FY{{ va.fy }} as disclosed to the SEC — revenue, net income and share count come straight from the disclosure, and are not editable here.</span><span class="l-zh">套用在按 SEC 披露的{{ va.fy }}财年数据上——营业收入、净利润与股数均直接取自披露文件，此处不可修改。</span></p>
   {#- One minus-sign convention across the panel: the site's ASCII hyphen-minus,
@@ -170,6 +169,8 @@
   elG.removeAttribute("disabled");
   elM.removeAttribute("disabled");
   elX.removeAttribute("disabled");
+  var bootBtns = document.querySelectorAll("#va-presets button");
+  for (var bi = 0; bi < bootBtns.length; bi++) bootBtns[bi].removeAttribute("disabled");
   var ledeNojs = document.getElementById("va-lede-nojs");
   var ledeJs = document.getElementById("va-lede-js");
   if (ledeNojs) ledeNojs.hidden = true;
