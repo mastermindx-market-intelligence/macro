@@ -52,3 +52,7 @@ The Chairman approved the audit and end-to-end redesign in the current conversat
 ## Post-open CI repair
 
 PR #7026 at c045687f4ac36c5e3c091ede0a7a616316af1257 produced a real contract-delta failure: the new pytest suite was not named by an owning workflow run step (check 102706309519). This repair adds tests/test_landing_mobile_reflow.py to the existing landing-navigation step in .github/ci/legacy-jobs.yml. No waiver, disabled check or new job is used. The 56-test suite still passes and YAML parsing succeeds. Full current-head CI remains required. The Vercel check separately reports its build-rate-limit; no billing upgrade or alternate production deployment is authorized by this handoff.
+
+## Independent R1 review and repair
+
+The native read-only Opus reviewer returned PARTIAL in session 82da0d98-44e7-45bb-8419-01cda0b0bdfc, with no source-correctness defect but material cache/evidence findings. REVIEW-R1.md and REVIEW-ADJUDICATION.md preserve its result and the repairs: all landing-family CSS consumers restamped, 320px baseline/after and readable crops committed, exact selector tests strengthened, and an additionally observed clipped date caption repaired. Current verification supersedes the historical 56-test count above. Re-review of the new exact committed head is owed; no final independent or production PASS is claimed.

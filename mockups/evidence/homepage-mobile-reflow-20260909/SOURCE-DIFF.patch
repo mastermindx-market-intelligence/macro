@@ -1,0 +1,143 @@
+diff --git a/templates/index.html b/templates/index.html
+index 83dc2cdef25f..1589cb781547 100644
+--- a/templates/index.html
++++ b/templates/index.html
+@@ -87,7 +87,7 @@
+      the body face and the display fallback, so there is nothing left to preload —
+      Inter's own weights are already discovered by that stylesheet. -->
+ <link rel="stylesheet" href="onboard.css?v=74613ad9">
+-<link rel="stylesheet" href="landing.css?v=a44e4256">
++<link rel="stylesheet" href="landing.css?v=689af9c0">
+ <link rel="stylesheet" href="scene-motion.css?v=f426716d">
+ </head>
+ <body>
+diff --git a/templates/landing.css b/templates/landing.css
+index 4866885b4abd..6911258bc83e 100644
+--- a/templates/landing.css
++++ b/templates/landing.css
+@@ -1342,6 +1342,9 @@ footer{background:#04070c;border-top:1px solid #10161f;padding:56px 0 48px;color
+   .tiers .tier.hot[data-founding-tier]{margin-top:17px}
+ }
+ @media (max-width:900px){
++  /* Match the existing shared public footer: readable columns, never page overflow. */
++  .f-cols{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 36px}
++  .f-col{min-width:0}
+   .nav-in{gap:12px}
+   .nav-toggle{display:flex}
+   .nav-links{display:none;position:absolute;top:calc(100% + 1px);left:var(--gutter);right:var(--gutter);max-height:calc(100dvh - 76px);overflow-y:auto;align-items:stretch;flex-direction:column;gap:3px;padding:10px;background:rgba(255,255,255,.98);border:1px solid var(--hair-2);border-radius:0 0 16px 16px;box-shadow:var(--sh-stage);z-index:96}
+@@ -1394,6 +1397,12 @@ footer{background:#04070c;border-top:1px solid #10161f;padding:56px 0 48px;color
+   .nav-right{gap:10px}
+   .tri3{grid-template-columns:1fr}
+   .demo{padding:13px}
++  /* Keep the score and timing visible at 320px; intrinsic no-wrap rows must not widen the page. */
++  .sits{grid-template-columns:minmax(0,1fr)}
++  .sit{min-width:0}
++  .sit .meter{flex-wrap:wrap}
++  .sit .early{max-width:100%;white-space:normal}
++  .ph-tag{max-width:100%;white-space:normal;flex-wrap:wrap;justify-content:center}
+   /* 318px of chrome cannot hold all four: the dots come off (decoration goes first)
+      and the honesty tag takes its own right-aligned line rather than being clipped
+      by the window's overflow:hidden — a cut-off "SCRIPTED DEM" discloses nothing. */
+diff --git a/tests/test_landing_mobile_reflow.py b/tests/test_landing_mobile_reflow.py
+new file mode 100644
+index 000000000000..9a7c5e35aeb8
+--- /dev/null
++++ b/tests/test_landing_mobile_reflow.py
+@@ -0,0 +1,97 @@
++"""Source contracts complement, not replace, the committed browser evidence."""
++from pathlib import Path
++import re
++import pytest
++from scripts.optimize_assets import _hash_bytes
++
++ROOT = Path(__file__).resolve().parents[1]
++
++
++def _media(css: str, width: int) -> str:
++    css = re.sub(r'/\*.*?\*/', '', css, flags=re.S)
++    match = re.search(r'@media\s*\(max-width:\s*' + str(width) + r'px\)\s*\{', css)
++    assert match, f'Missing existing {width}px responsive block'
++    depth, end, quote, escaped = 1, match.end(), None, False
++    while depth and end < len(css):
++        char = css[end]
++        if escaped:
++            escaped = False
++        elif quote and char == '\\':
++            escaped = True
++        elif quote:
++            if char == quote:
++                quote = None
++        elif char in ('"', "'"):
++            quote = char
++        else:
++            depth += (char == '{') - (char == '}')
++        end += 1
++    assert depth == 0, 'Unbalanced responsive block'
++    return css[match.end():end - 1]
++
++
++def _rule(block: str, selector: str) -> str:
++    selector_pattern = re.escape(selector).replace(r'\ ', r'\s+')
++    match = re.search(r'(?:^|})\s*' + selector_pattern + r'\s*\{([^}]+)\}', block)
++    assert match, f'Missing exact selector {selector}'
++    return re.sub(r'\s+', '', match.group(1))
++
++@pytest.mark.parametrize('surface', ['templates', 'site'])
++def test_footer_uses_shared_public_two_column_mobile_layout(surface):
++    css = (ROOT / surface / 'landing.css').read_text()
++    rule = _rule(_media(css, 900), '.f-cols')
++    for declaration in ('display:grid', 'width:100%', 'grid-template-columns:repeat(2,minmax(0,1fr))'):
++        assert declaration in rule
++
++
++@pytest.mark.parametrize('surface', ['templates', 'site'])
++def test_situation_score_and_timing_can_wrap_without_clipping(surface):
++    mobile = _media((ROOT / surface / 'landing.css').read_text(), 680)
++    assert 'grid-template-columns:minmax(0,1fr)' in _rule(mobile, '.sits')
++    assert 'min-width:0' in _rule(mobile, '.sit')
++    assert 'flex-wrap:wrap' in _rule(mobile, '.sit .meter')
++    timing = _rule(mobile, '.sit .early')
++    assert 'white-space:normal' in timing and 'max-width:100%' in timing
++
++
++def test_landing_styles_are_byte_paired():
++    assert (ROOT / 'templates/landing.css').read_bytes() == (ROOT / 'site/landing.css').read_bytes()
++
++
++def test_wrong_compound_selector_is_rejected():
++    with pytest.raises(AssertionError, match='Missing exact selector'):
++        _rule('.sit.early{white-space:normal}', '.sit .early')
++
++
++def test_meter_outside_mobile_breakpoint_is_rejected():
++    css = '@media(max-width:680px){.sit{min-width:0}} .sit .meter{flex-wrap:wrap}'
++    with pytest.raises(AssertionError, match='Missing exact selector'):
++        _rule(_media(css, 680), '.sit .meter')
++
++
++def test_media_scanner_ignores_quoted_and_commented_braces():
++    css = '@media(max-width:680px){.x{content:"}"}/* } */.sit{min-width:0}}'
++    assert 'min-width:0' in _rule(_media(css, 680), '.sit')
++
++
++@pytest.mark.parametrize('relative', [
++    'templates/index.html', 'site/index.html',
++    'templates/about.html', 'site/about.html',
++    'site/products/market-terminal.html',
++    'site/products/market-dashboards.html',
++    'site/products/mastermind-ai.html',
++])
++def test_landing_family_uses_current_stylesheet_cache_stamp(relative):
++    expected = _hash_bytes(ROOT / 'site/landing.css')
++    text = (ROOT / relative).read_text()
++    references = re.findall(r'landing\.css\?v=([a-f0-9]+)', text)
++    assert references, f'Expected landing stylesheet in {relative}'
++    assert set(references) == {expected}, f'Stale immutable CSS reference in {relative}'
++
++
++@pytest.mark.parametrize('surface', ['templates', 'site'])
++def test_delayed_example_caption_remains_readable_at_narrow_widths(surface):
++    mobile = _media((ROOT / surface / 'landing.css').read_text(), 680)
++    rule = _rule(mobile, '.ph-tag')
++    assert 'white-space:normal' in rule
++    assert 'flex-wrap:wrap' in rule and 'max-width:100%' in rule
