@@ -2727,16 +2727,16 @@
     }
   },
   "excluded": [],
-  "generated_at": "2026-09-10T18:35:53Z",
-  "generated_at_start": "2026-09-10T18:35:53Z",
-  "generated_at_end": "2026-09-10T18:55:39Z",
-  "head_sha": "5eadbee109a28da8da06547ddd58f2848a9772d6",
-  "head_start": "5eadbee109a28da8da06547ddd58f2848a9772d6",
-  "head_end": "5eadbee109a28da8da06547ddd58f2848a9772d6",
-  "capture_sha": "5eadbee109a28da8da06547ddd58f2848a9772d6",
+  "generated_at": "2026-09-10T19:14:00Z",
+  "generated_at_start": "2026-09-10T19:14:00Z",
+  "generated_at_end": "2026-09-10T19:34:17Z",
+  "head_sha": "172553a5f111808b2fb4e4f6d7bfbd8f32d5fa0f",
+  "head_start": "172553a5f111808b2fb4e4f6d7bfbd8f32d5fa0f",
+  "head_end": "172553a5f111808b2fb4e4f6d7bfbd8f32d5fa0f",
+  "capture_sha": "172553a5f111808b2fb4e4f6d7bfbd8f32d5fa0f",
   "tree_clean_start": true,
   "tree_clean_end": true,
-  "commit_time_of_capture_sha": "2026-09-10T11:35:16-07:00",
+  "commit_time_of_capture_sha": "2026-09-10T12:13:03-07:00",
   "pre_commit": false,
   "page_fits": [
     {
@@ -4904,7 +4904,7 @@
     "access": "anonymous only; no credential is entered, stored, or synthesized",
     "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
     "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them",
-    "capture": "tree_clean_start=True; tree_clean_end=True; head_start=5eadbee109a28da8da06547ddd58f2848a9772d6; head_end=5eadbee109a28da8da06547ddd58f2848a9772d6; generated_at_start=2026-09-10T18:35:53Z; generated_at_end=2026-09-10T18:55:39Z; commit_time_of_capture_sha=2026-09-10T11:35:16-07:00"
+    "capture": "tree_clean_start=True; tree_clean_end=True; head_start=172553a5f111808b2fb4e4f6d7bfbd8f32d5fa0f; head_end=172553a5f111808b2fb4e4f6d7bfbd8f32d5fa0f; generated_at_start=2026-09-10T19:14:00Z; generated_at_end=2026-09-10T19:34:17Z; commit_time_of_capture_sha=2026-09-10T12:13:03-07:00"
   },
   "outcome": "captured",
   "pages": [
@@ -8399,7 +8399,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 765790,
+          "bytes": 765781,
           "captured": true,
           "file": "01-dark-en-1440.png",
           "family": "hub_fold",
@@ -8407,7 +8407,7 @@
           "height": 1800,
           "width": 2880,
           "locale": "en",
-          "sha256": "26c4bebe2b903968d7e0e7ec256576b536cc08b51ba897801af716d6ebf0e695",
+          "sha256": "84dd82ff88fae7a926f266cb5c04a308e4ce1b21d889d0b24c6887b2cdc2724a",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -14246,7 +14246,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 1017475,
+          "bytes": 1024753,
           "captured": true,
           "file": "e5-dark-zh-1440.png",
           "family": "e5",
@@ -14254,7 +14254,7 @@
           "height": 1800,
           "width": 2880,
           "locale": "zh",
-          "sha256": "accee82c844579692bbdd5cf1952822bc83f9b8a9ad25df631d9b4e5bc8cf418",
+          "sha256": "555746a32074e50c23deab73e0e01742bccae7836caf1383edcd35e791a6d9cf",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -14276,7 +14276,7 @@
           "verified_how": "E5 cloned after stalled fragment \u22658000ms",
           "fixture": "builder-payload",
           "trigger": null,
-          "scroll_y_at_shot": 187,
+          "scroll_y_at_shot": 185,
           "ihdr_delta_px": {
             "w": 0,
             "h": 0
@@ -15686,7 +15686,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 1284037,
+          "bytes": 1283914,
           "captured": true,
           "file": "18-dark-en-1440.png",
           "family": "half_null",
@@ -15694,7 +15694,7 @@
           "height": 5600,
           "width": 2880,
           "locale": "en",
-          "sha256": "0a8b72311f5760ef8b4273bb9434580fe589f1fb3dd05c8102e4141a13e1e676",
+          "sha256": "44d172459cae8e661fad25fa840183b98c8794495233893fa364f5f20fe26d3f",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -23113,7 +23113,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 317370,
+          "bytes": 317254,
           "captured": true,
           "file": "ws-macro_rates_curves-dark-zh-390.png",
           "family": "workspace",
@@ -23121,7 +23121,7 @@
           "height": 1744,
           "width": 780,
           "locale": "zh",
-          "sha256": "ce555293fda99599f1e34f608f214872b23e5f4d0a333e1a19c82b44b598a565",
+          "sha256": "25b2394c3d1587499ad417f506dcd14e937454d2e77498584076a52deaee5f20",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -25578,7 +25578,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -25821,7 +25827,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -26064,7 +26076,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -26297,7 +26315,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -26530,7 +26554,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -26763,7 +26793,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -27006,7 +27042,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -27249,7 +27292,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -27492,7 +27542,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -27725,7 +27782,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -27958,7 +28022,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -28191,7 +28262,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -28434,7 +28512,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u5177\u5907\u60c5\u51b5",
+            "\u65b0\u9c9c\u5ea6",
+            "\u6570\u636e\u6e90\u622a\u6b62"
+          ]
         },
         {
           "access": "anonymous",
@@ -28677,7 +28761,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u5177\u5907\u60c5\u51b5",
+            "\u65b0\u9c9c\u5ea6",
+            "\u6570\u636e\u6e90\u622a\u6b62"
+          ]
         },
         {
           "access": "anonymous",
@@ -28920,7 +29010,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u5177\u5907\u60c5\u51b5",
+            "\u65b0\u9c9c\u5ea6",
+            "\u6570\u636e\u6e90\u622a\u6b62"
+          ]
         },
         {
           "access": "anonymous",
@@ -29133,7 +29229,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u6307\u6807",
+            "\u4e0a\u671f",
+            "\u5f53\u524d",
+            "\u53d8\u5316"
+          ]
         },
         {
           "access": "anonymous",
@@ -29376,7 +29478,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -29619,7 +29728,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -29852,7 +29968,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -30085,7 +30208,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -30318,7 +30448,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -30561,7 +30698,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -30804,7 +30947,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -31047,7 +31196,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -31280,7 +31435,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -31513,7 +31674,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -31746,7 +31913,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -31989,7 +32162,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -32232,7 +32412,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -32475,7 +32662,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -32708,7 +32902,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -32941,7 +33142,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -33174,7 +33382,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -33417,7 +33632,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u5177\u5907\u60c5\u51b5",
+            "\u65b0\u9c9c\u5ea6",
+            "\u6570\u636e\u6e90\u622a\u6b62"
+          ]
         },
         {
           "access": "anonymous",
@@ -33660,7 +33881,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u5177\u5907\u60c5\u51b5",
+            "\u65b0\u9c9c\u5ea6",
+            "\u6570\u636e\u6e90\u622a\u6b62"
+          ]
         },
         {
           "access": "anonymous",
@@ -33903,7 +34130,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u5177\u5907\u60c5\u51b5",
+            "\u65b0\u9c9c\u5ea6",
+            "\u6570\u636e\u6e90\u622a\u6b62"
+          ]
         },
         {
           "access": "anonymous",
@@ -34116,7 +34349,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u6307\u6807",
+            "\u4e0a\u671f",
+            "\u5f53\u524d",
+            "\u53d8\u5316"
+          ]
         },
         {
           "access": "anonymous",
@@ -34359,7 +34598,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -34602,7 +34848,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -34835,7 +35088,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -35068,7 +35328,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -35301,7 +35568,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         }
       ]
     },
@@ -40422,7 +40696,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 1316362,
+          "bytes": 1316116,
           "captured": true,
           "file": "ws-macro_business_activity-closed-dark-zh-1440.png",
           "family": "workspace",
@@ -40430,7 +40704,7 @@
           "height": 4800,
           "width": 2880,
           "locale": "zh",
-          "sha256": "516fd4d353fef1081d184d073d17fe433baf806a1500ff5c90a8ca63f94dc827",
+          "sha256": "c9c5c6845798899434fa0684180e911aa010bb2894013fab0dacac882bb098e9",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -41414,7 +41688,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 290194,
+          "bytes": 290197,
           "captured": true,
           "file": "ws-macro_business_activity-dark-en-390-open.png",
           "family": "workspace",
@@ -41422,7 +41696,7 @@
           "height": 1744,
           "width": 780,
           "locale": "en",
-          "sha256": "7a35350d87c5511d657c91c186cbb6ef3c12c121a6da3d4691e62cedad7c441b",
+          "sha256": "2a9ecfd532b4d9d9bdba140079b7206eaf7830f1b1333278665b7c90f93f79f9",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -41650,7 +41924,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 305603,
+          "bytes": 305477,
           "captured": true,
           "file": "ws-macro_business_activity-dark-zh-390.png",
           "family": "workspace",
@@ -41658,7 +41932,7 @@
           "height": 1744,
           "width": 780,
           "locale": "zh",
-          "sha256": "928a1ef85ecf5ad5b4e1ed2a89a33f1949488eb24dbcae5c03630333f2729594",
+          "sha256": "807d482157edbf0dead5b12f697720776213901a8121b4eda74d7c775476bcc1",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -41875,7 +42149,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 303287,
+          "bytes": 303223,
           "captured": true,
           "file": "ws-macro_business_activity-dark-zh-390-open.png",
           "family": "workspace",
@@ -41883,7 +42157,7 @@
           "height": 1744,
           "width": 780,
           "locale": "zh",
-          "sha256": "0b1f1c087e7e90fe6a2a40e0d9c80ce5708ac731025f7f51ba2097aa92b82ebb",
+          "sha256": "5fa134739bea3e8ab3f1df42af823011ea51c3cb99457f428c179cd6db198381",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -43022,7 +43296,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 485584,
+          "bytes": 485591,
           "captured": true,
           "file": "ws-macro_business_activity-dark-en-768.png",
           "family": "workspace",
@@ -43030,7 +43304,7 @@
           "height": 2144,
           "width": 1536,
           "locale": "en",
-          "sha256": "36a6e0d91e1c1cebe3c3ce672ffd32fb1e8dbce5685d437a9baa84489bdab7f7",
+          "sha256": "ee76f573776adfba45ab9ea6b8f6da80e394ccf630927600ad3b5a84189f93d0",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -43236,7 +43510,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 495497,
+          "bytes": 495512,
           "captured": true,
           "file": "ws-macro_business_activity-dark-zh-768.png",
           "family": "workspace",
@@ -43244,7 +43518,7 @@
           "height": 2144,
           "width": 1536,
           "locale": "zh",
-          "sha256": "5da9b8de02f31f284e27ded87e210f9ec5430f7b691a5b2c9f388297cfae5026",
+          "sha256": "a4dd0f818bf10ecaacc0f340ebc355017d09c7cc6ac2fd08e8c6744ed4beb70a",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -44115,7 +44389,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -44358,7 +44638,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -44591,7 +44877,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -44824,7 +45116,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -45057,7 +45355,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -45280,7 +45584,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u5177\u5907\u60c5\u51b5",
+            "\u65b0\u9c9c\u5ea6",
+            "\u6570\u636e\u6e90\u622a\u6b62"
+          ]
         },
         {
           "access": "anonymous",
@@ -45513,7 +45823,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u6307\u6807",
+            "\u4e0a\u671f",
+            "\u5f53\u524d",
+            "\u53d8\u5316"
+          ]
         },
         {
           "access": "anonymous",
@@ -45746,7 +46062,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u6307\u6807",
+            "\u4e0a\u671f",
+            "\u5f53\u524d",
+            "\u53d8\u5316"
+          ]
         },
         {
           "access": "anonymous",
@@ -45989,7 +46311,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -46232,7 +46560,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -46465,7 +46799,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -46698,7 +47038,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -46931,7 +47277,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -47154,7 +47506,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u5177\u5907\u60c5\u51b5",
+            "\u65b0\u9c9c\u5ea6",
+            "\u6570\u636e\u6e90\u622a\u6b62"
+          ]
         },
         {
           "access": "anonymous",
@@ -47387,7 +47745,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u6307\u6807",
+            "\u4e0a\u671f",
+            "\u5f53\u524d",
+            "\u53d8\u5316"
+          ]
         },
         {
           "access": "anonymous",
@@ -47620,7 +47984,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u6307\u6807",
+            "\u4e0a\u671f",
+            "\u5f53\u524d",
+            "\u53d8\u5316"
+          ]
         }
       ]
     },
@@ -52741,7 +53111,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 1251262,
+          "bytes": 1251131,
           "captured": true,
           "file": "ws-macro_financial_conditions-closed-dark-zh-1440.png",
           "family": "workspace",
@@ -52749,7 +53119,7 @@
           "height": 4800,
           "width": 2880,
           "locale": "zh",
-          "sha256": "cb4e52cd415e84a9649e9b6c7c4b3cf53311f4967ed9154236de06162f30f966",
+          "sha256": "40ec88cbc33847328a79508906d8ced8fecf87dca9f81823320d678a79b1338b",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -53497,7 +53867,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 289164,
+          "bytes": 289170,
           "captured": true,
           "file": "ws-macro_financial_conditions-dark-en-390.png",
           "family": "workspace",
@@ -53505,7 +53875,7 @@
           "height": 1744,
           "width": 780,
           "locale": "en",
-          "sha256": "7a4549870955733a9219d78a536803b1544e6debcc35124720ab97f0f7fe6894",
+          "sha256": "2863e11794db81aaea3ee96fe61ff5982de62689000091abfe8e6dab97e93184",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -54194,7 +54564,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 301467,
+          "bytes": 301374,
           "captured": true,
           "file": "ws-macro_financial_conditions-dark-zh-390-open.png",
           "family": "workspace",
@@ -54202,7 +54572,7 @@
           "height": 1744,
           "width": 780,
           "locale": "zh",
-          "sha256": "779a50aa5e7f15b2c282b83300b2ee80b1bd7d6ffa5e6e553dfc8448d783de2a",
+          "sha256": "4efc85cd022994572bc4a3330556860bc947604fb20ac73316607c419598af5c",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -55341,7 +55711,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 465579,
+          "bytes": 465607,
           "captured": true,
           "file": "ws-macro_financial_conditions-dark-en-768.png",
           "family": "workspace",
@@ -55349,7 +55719,7 @@
           "height": 2144,
           "width": 1536,
           "locale": "en",
-          "sha256": "620137f45b7c5a8e75858df4e539cc077b1b1da725901294fea588ccc9c2740b",
+          "sha256": "a5a45c99a1cdaee128be275aacb166418b43e7d133286c335a23afb3e91639a7",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -57482,7 +57852,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -57725,7 +58101,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -57968,7 +58350,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -58211,7 +58599,13 @@
           ],
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -58454,7 +58848,13 @@
           ],
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -58697,7 +59097,13 @@
           ],
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -58930,7 +59336,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -59163,7 +59576,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -59396,7 +59816,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -59629,7 +60056,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -59862,7 +60296,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -60095,7 +60536,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -60328,7 +60776,14 @@
           "in_method_section": true,
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(1) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "RAW",
+            "STANDARDIZED",
+            "WEIGHT",
+            "CONTRIBUTION"
+          ]
         },
         {
           "access": "anonymous",
@@ -60561,7 +61016,14 @@
           "in_method_section": true,
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(1) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "RAW",
+            "STANDARDIZED",
+            "WEIGHT",
+            "CONTRIBUTION"
+          ]
         },
         {
           "access": "anonymous",
@@ -60794,7 +61256,14 @@
           "in_method_section": true,
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(1) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "RAW",
+            "STANDARDIZED",
+            "WEIGHT",
+            "CONTRIBUTION"
+          ]
         },
         {
           "access": "anonymous",
@@ -61037,7 +61506,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(2) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "RAW",
+            "STANDARDIZED",
+            "WEIGHT",
+            "CONTRIBUTION"
+          ]
         },
         {
           "access": "anonymous",
@@ -61280,7 +61756,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(2) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "RAW",
+            "STANDARDIZED",
+            "WEIGHT",
+            "CONTRIBUTION"
+          ]
         },
         {
           "access": "anonymous",
@@ -61523,7 +62006,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(2) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "RAW",
+            "STANDARDIZED",
+            "WEIGHT",
+            "CONTRIBUTION"
+          ]
         },
         {
           "access": "anonymous",
@@ -62010,7 +62500,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u5177\u5907\u60c5\u51b5",
+            "\u65b0\u9c9c\u5ea6",
+            "\u6570\u636e\u6e90\u622a\u6b62"
+          ]
         },
         {
           "access": "anonymous",
@@ -62253,7 +62749,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u5177\u5907\u60c5\u51b5",
+            "\u65b0\u9c9c\u5ea6",
+            "\u6570\u636e\u6e90\u622a\u6b62"
+          ]
         },
         {
           "access": "anonymous",
@@ -62476,7 +62978,13 @@
           ],
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u6307\u6807",
+            "\u4e0a\u671f",
+            "\u5f53\u524d",
+            "\u53d8\u5316"
+          ]
         },
         {
           "access": "anonymous",
@@ -62709,7 +63217,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -62942,7 +63457,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -63175,7 +63697,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -63408,7 +63937,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -63641,7 +64177,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -63874,7 +64417,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -64107,7 +64657,14 @@
           "in_method_section": true,
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(1) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u539f\u59cb\u503c",
+            "\u6807\u51c6\u5316\u503c",
+            "\u6743\u91cd",
+            "\u8d21\u732e"
+          ]
         },
         {
           "access": "anonymous",
@@ -64340,7 +64897,14 @@
           "in_method_section": true,
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(1) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u539f\u59cb\u503c",
+            "\u6807\u51c6\u5316\u503c",
+            "\u6743\u91cd",
+            "\u8d21\u732e"
+          ]
         },
         {
           "access": "anonymous",
@@ -64583,7 +65147,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(2) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u539f\u59cb\u503c",
+            "\u6807\u51c6\u5316\u503c",
+            "\u6743\u91cd",
+            "\u8d21\u732e"
+          ]
         },
         {
           "access": "anonymous",
@@ -64826,7 +65397,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(2) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u539f\u59cb\u503c",
+            "\u6807\u51c6\u5316\u503c",
+            "\u6743\u91cd",
+            "\u8d21\u732e"
+          ]
         },
         {
           "access": "anonymous",
@@ -65313,7 +65891,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -65556,7 +66140,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -65799,7 +66389,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -66042,7 +66638,13 @@
           ],
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -66285,7 +66887,13 @@
           ],
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -66528,7 +67136,13 @@
           ],
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -66761,7 +67375,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -66994,7 +67615,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -67227,7 +67855,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -67460,7 +68095,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -67693,7 +68335,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -67926,7 +68575,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -68159,7 +68815,14 @@
           "in_method_section": true,
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(1) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "RAW",
+            "STANDARDIZED",
+            "WEIGHT",
+            "CONTRIBUTION"
+          ]
         },
         {
           "access": "anonymous",
@@ -68392,7 +69055,14 @@
           "in_method_section": true,
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(1) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "RAW",
+            "STANDARDIZED",
+            "WEIGHT",
+            "CONTRIBUTION"
+          ]
         },
         {
           "access": "anonymous",
@@ -68625,7 +69295,14 @@
           "in_method_section": true,
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(1) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "RAW",
+            "STANDARDIZED",
+            "WEIGHT",
+            "CONTRIBUTION"
+          ]
         },
         {
           "access": "anonymous",
@@ -68868,7 +69545,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(2) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "RAW",
+            "STANDARDIZED",
+            "WEIGHT",
+            "CONTRIBUTION"
+          ]
         },
         {
           "access": "anonymous",
@@ -69111,7 +69795,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(2) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "RAW",
+            "STANDARDIZED",
+            "WEIGHT",
+            "CONTRIBUTION"
+          ]
         },
         {
           "access": "anonymous",
@@ -69354,7 +70045,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(2) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "RAW",
+            "STANDARDIZED",
+            "WEIGHT",
+            "CONTRIBUTION"
+          ]
         },
         {
           "access": "anonymous",
@@ -69841,7 +70539,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u5177\u5907\u60c5\u51b5",
+            "\u65b0\u9c9c\u5ea6",
+            "\u6570\u636e\u6e90\u622a\u6b62"
+          ]
         },
         {
           "access": "anonymous",
@@ -70084,7 +70788,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u5177\u5907\u60c5\u51b5",
+            "\u65b0\u9c9c\u5ea6",
+            "\u6570\u636e\u6e90\u622a\u6b62"
+          ]
         },
         {
           "access": "anonymous",
@@ -70307,7 +71017,13 @@
           ],
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u6307\u6807",
+            "\u4e0a\u671f",
+            "\u5f53\u524d",
+            "\u53d8\u5316"
+          ]
         },
         {
           "access": "anonymous",
@@ -70540,7 +71256,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -70773,7 +71496,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -71006,7 +71736,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -71239,7 +71976,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -71472,7 +72216,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -71705,7 +72456,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -71938,7 +72696,14 @@
           "in_method_section": true,
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(1) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u539f\u59cb\u503c",
+            "\u6807\u51c6\u5316\u503c",
+            "\u6743\u91cd",
+            "\u8d21\u732e"
+          ]
         },
         {
           "access": "anonymous",
@@ -72171,7 +72936,14 @@
           "in_method_section": true,
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(1) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u539f\u59cb\u503c",
+            "\u6807\u51c6\u5316\u503c",
+            "\u6743\u91cd",
+            "\u8d21\u732e"
+          ]
         },
         {
           "access": "anonymous",
@@ -72414,7 +73186,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(2) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u539f\u59cb\u503c",
+            "\u6807\u51c6\u5316\u503c",
+            "\u6743\u91cd",
+            "\u8d21\u732e"
+          ]
         },
         {
           "access": "anonymous",
@@ -72657,7 +73436,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(2) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u539f\u59cb\u503c",
+            "\u6807\u51c6\u5316\u503c",
+            "\u6743\u91cd",
+            "\u8d21\u732e"
+          ]
         },
         {
           "access": "anonymous",
@@ -83586,7 +84372,7 @@
           "height": 1744,
           "width": 780,
           "locale": "en",
-          "sha256": "326aff32bb3fd9c133cbcd931dcd7df06e36a230a3419be4c3942fa9c307cc06",
+          "sha256": "c2f309dfd3b756d038e8e710880828ad7939627624e5983313cd80da84780b76",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -83814,7 +84600,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 299249,
+          "bytes": 299316,
           "captured": true,
           "file": "ws-macro_housing_real_estate-dark-en-390-open.png",
           "family": "workspace",
@@ -83822,7 +84608,7 @@
           "height": 1744,
           "width": 780,
           "locale": "en",
-          "sha256": "412eacbee0a3623abf22935966f6d93b3428264835ef0340fc6946336f0082ec",
+          "sha256": "5581b8d055d7ed56b76a207f30bd0cd88211a2c4958d2ba16838bc5ac4bacfa7",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -86515,7 +87301,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -86758,7 +87550,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -87001,7 +87799,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -87234,7 +88038,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -87467,7 +88277,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -87700,7 +88516,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -87943,7 +88765,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -88186,7 +89015,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -88429,7 +89265,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -88662,7 +89505,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -88895,7 +89745,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -89128,7 +89985,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -89371,7 +90235,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u5177\u5907\u60c5\u51b5",
+            "\u65b0\u9c9c\u5ea6",
+            "\u6570\u636e\u6e90\u622a\u6b62"
+          ]
         },
         {
           "access": "anonymous",
@@ -89614,7 +90484,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u5177\u5907\u60c5\u51b5",
+            "\u65b0\u9c9c\u5ea6",
+            "\u6570\u636e\u6e90\u622a\u6b62"
+          ]
         },
         {
           "access": "anonymous",
@@ -89827,7 +90703,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u6307\u6807",
+            "\u4e0a\u671f",
+            "\u5f53\u524d",
+            "\u53d8\u5316"
+          ]
         },
         {
           "access": "anonymous",
@@ -90070,7 +90952,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -90313,7 +91202,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -90546,7 +91442,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -90779,7 +91682,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -91012,7 +91922,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -91255,7 +92172,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -91498,7 +92421,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -91741,7 +92670,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -91974,7 +92909,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -92207,7 +93148,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -92440,7 +93387,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -92683,7 +93636,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -92926,7 +93886,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -93169,7 +94136,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -93402,7 +94376,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -93635,7 +94616,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -93868,7 +94856,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -94111,7 +95106,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u5177\u5907\u60c5\u51b5",
+            "\u65b0\u9c9c\u5ea6",
+            "\u6570\u636e\u6e90\u622a\u6b62"
+          ]
         },
         {
           "access": "anonymous",
@@ -94354,7 +95355,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u5177\u5907\u60c5\u51b5",
+            "\u65b0\u9c9c\u5ea6",
+            "\u6570\u636e\u6e90\u622a\u6b62"
+          ]
         },
         {
           "access": "anonymous",
@@ -94567,7 +95574,13 @@
           "in_method_section": false,
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u6307\u6807",
+            "\u4e0a\u671f",
+            "\u5f53\u524d",
+            "\u53d8\u5316"
+          ]
         },
         {
           "access": "anonymous",
@@ -94810,7 +95823,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -95053,7 +96073,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -95286,7 +96313,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -95519,7 +96553,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -95752,7 +96793,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         }
       ]
     },
@@ -99120,7 +100168,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 1252785,
+          "bytes": 1252720,
           "captured": true,
           "file": "ws-macro_labor_markets-closed-dark-en-1440.png",
           "family": "workspace",
@@ -99128,7 +100176,7 @@
           "height": 4800,
           "width": 2880,
           "locale": "en",
-          "sha256": "c2bb02dd7fccd74ce80ac729bc55bf59986c320331a0547ec60281419369fa44",
+          "sha256": "b03f0ea786ff4d7cf90134246aa514584880018766acd7c01a40d08091ead21d",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -99432,7 +100480,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 257903,
+          "bytes": 257917,
           "captured": true,
           "file": "ws-macro_labor_markets-light-en-390.png",
           "family": "workspace",
@@ -99440,7 +100488,7 @@
           "height": 1688,
           "width": 780,
           "locale": "en",
-          "sha256": "08fd5a7977530c496250978815b6ad94549628f1b22c4d82b87e98e32c0caa71",
+          "sha256": "0fa3e8bff26f9e016a8a5ecdb4884d586c97c7659e894d522a0959a6f7e676b9",
           "theme": "light",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -100821,7 +101869,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -101064,7 +102118,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -101307,7 +102367,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -101550,7 +102616,13 @@
           ],
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -101793,7 +102865,13 @@
           ],
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -102026,7 +103104,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -102259,7 +103344,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -102492,7 +103584,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -102725,7 +103824,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -102958,7 +104064,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -103191,7 +104304,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -103424,7 +104544,14 @@
           "in_method_section": true,
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(1) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "RAW",
+            "STANDARDIZED",
+            "WEIGHT",
+            "CONTRIBUTION"
+          ]
         },
         {
           "access": "anonymous",
@@ -103657,7 +104784,14 @@
           "in_method_section": true,
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(1) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "RAW",
+            "STANDARDIZED",
+            "WEIGHT",
+            "CONTRIBUTION"
+          ]
         },
         {
           "access": "anonymous",
@@ -103890,7 +105024,14 @@
           "in_method_section": true,
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(1) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "RAW",
+            "STANDARDIZED",
+            "WEIGHT",
+            "CONTRIBUTION"
+          ]
         },
         {
           "access": "anonymous",
@@ -104133,7 +105274,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(2) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "RAW",
+            "STANDARDIZED",
+            "WEIGHT",
+            "CONTRIBUTION"
+          ]
         },
         {
           "access": "anonymous",
@@ -104376,7 +105524,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(2) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "RAW",
+            "STANDARDIZED",
+            "WEIGHT",
+            "CONTRIBUTION"
+          ]
         },
         {
           "access": "anonymous",
@@ -104619,7 +105774,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(2) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "RAW",
+            "STANDARDIZED",
+            "WEIGHT",
+            "CONTRIBUTION"
+          ]
         },
         {
           "access": "anonymous",
@@ -105106,7 +106268,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u5177\u5907\u60c5\u51b5",
+            "\u65b0\u9c9c\u5ea6",
+            "\u6570\u636e\u6e90\u622a\u6b62"
+          ]
         },
         {
           "access": "anonymous",
@@ -105349,7 +106517,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u5177\u5907\u60c5\u51b5",
+            "\u65b0\u9c9c\u5ea6",
+            "\u6570\u636e\u6e90\u622a\u6b62"
+          ]
         },
         {
           "access": "anonymous",
@@ -105572,7 +106746,13 @@
           ],
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u6307\u6807",
+            "\u4e0a\u671f",
+            "\u5f53\u524d",
+            "\u53d8\u5316"
+          ]
         },
         {
           "access": "anonymous",
@@ -105805,7 +106985,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -106038,7 +107225,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -106271,7 +107465,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -106504,7 +107705,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -106737,7 +107945,14 @@
           "in_method_section": true,
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(1) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u539f\u59cb\u503c",
+            "\u6807\u51c6\u5316\u503c",
+            "\u6743\u91cd",
+            "\u8d21\u732e"
+          ]
         },
         {
           "access": "anonymous",
@@ -106970,7 +108185,14 @@
           "in_method_section": true,
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(1) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u539f\u59cb\u503c",
+            "\u6807\u51c6\u5316\u503c",
+            "\u6743\u91cd",
+            "\u8d21\u732e"
+          ]
         },
         {
           "access": "anonymous",
@@ -107213,7 +108435,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(2) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u539f\u59cb\u503c",
+            "\u6807\u51c6\u5316\u503c",
+            "\u6743\u91cd",
+            "\u8d21\u732e"
+          ]
         },
         {
           "access": "anonymous",
@@ -107456,7 +108685,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(2) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u539f\u59cb\u503c",
+            "\u6807\u51c6\u5316\u503c",
+            "\u6743\u91cd",
+            "\u8d21\u732e"
+          ]
         },
         {
           "access": "anonymous",
@@ -107943,7 +109179,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -108186,7 +109428,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -108429,7 +109677,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "PRESENCE",
+            "FRESHNESS",
+            "SOURCE AS-OF"
+          ]
         },
         {
           "access": "anonymous",
@@ -108672,7 +109926,13 @@
           ],
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -108915,7 +110175,13 @@
           ],
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "METRIC",
+            "PRIOR",
+            "CURRENT",
+            "CHANGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -109148,7 +110414,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -109381,7 +110654,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -109614,7 +110894,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -109847,7 +111134,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -110080,7 +111374,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -110313,7 +111614,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "DRIVER",
+            "READING",
+            "UNIT",
+            "PUSH",
+            "COVERAGE"
+          ]
         },
         {
           "access": "anonymous",
@@ -110546,7 +111854,14 @@
           "in_method_section": true,
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(1) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "RAW",
+            "STANDARDIZED",
+            "WEIGHT",
+            "CONTRIBUTION"
+          ]
         },
         {
           "access": "anonymous",
@@ -110779,7 +112094,14 @@
           "in_method_section": true,
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(1) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "RAW",
+            "STANDARDIZED",
+            "WEIGHT",
+            "CONTRIBUTION"
+          ]
         },
         {
           "access": "anonymous",
@@ -111012,7 +112334,14 @@
           "in_method_section": true,
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(1) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "RAW",
+            "STANDARDIZED",
+            "WEIGHT",
+            "CONTRIBUTION"
+          ]
         },
         {
           "access": "anonymous",
@@ -111255,7 +112584,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(2) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "RAW",
+            "STANDARDIZED",
+            "WEIGHT",
+            "CONTRIBUTION"
+          ]
         },
         {
           "access": "anonymous",
@@ -111498,7 +112834,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(2) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "RAW",
+            "STANDARDIZED",
+            "WEIGHT",
+            "CONTRIBUTION"
+          ]
         },
         {
           "access": "anonymous",
@@ -111741,7 +113084,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(2) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "COMPONENT",
+            "RAW",
+            "STANDARDIZED",
+            "WEIGHT",
+            "CONTRIBUTION"
+          ]
         },
         {
           "access": "anonymous",
@@ -112228,7 +113578,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u5177\u5907\u60c5\u51b5",
+            "\u65b0\u9c9c\u5ea6",
+            "\u6570\u636e\u6e90\u622a\u6b62"
+          ]
         },
         {
           "access": "anonymous",
@@ -112471,7 +113827,13 @@
           ],
           "census_path": "#mq-context > details.mc-details > div.mc-details-body.mq-sourcerow > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u5177\u5907\u60c5\u51b5",
+            "\u65b0\u9c9c\u5ea6",
+            "\u6570\u636e\u6e90\u622a\u6b62"
+          ]
         },
         {
           "access": "anonymous",
@@ -112694,7 +114056,13 @@
           ],
           "census_path": "#mq-panel-current > section.mq-changed:nth-of-type(2) > div.tbl-scroll:nth-of-type(2) > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u6307\u6807",
+            "\u4e0a\u671f",
+            "\u5f53\u524d",
+            "\u53d8\u5316"
+          ]
         },
         {
           "access": "anonymous",
@@ -112927,7 +114295,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -113160,7 +114535,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(2) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -113393,7 +114775,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -113626,7 +115015,14 @@
           "in_method_section": false,
           "census_path": "#mq-panel-drivers > section.mq-drivers:nth-of-type(1) > div.mq-driver-group:nth-of-type(3) > div.tbl-scroll > table.mq-table",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u9a71\u52a8\u56e0\u5b50",
+            "\u8bfb\u6570",
+            "\u5355\u4f4d",
+            "\u63a8\u529b",
+            "\u8986\u76d6"
+          ]
         },
         {
           "access": "anonymous",
@@ -113859,7 +115255,14 @@
           "in_method_section": true,
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(1) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u539f\u59cb\u503c",
+            "\u6807\u51c6\u5316\u503c",
+            "\u6743\u91cd",
+            "\u8d21\u732e"
+          ]
         },
         {
           "access": "anonymous",
@@ -114092,7 +115495,14 @@
           "in_method_section": true,
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(1) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u539f\u59cb\u503c",
+            "\u6807\u51c6\u5316\u503c",
+            "\u6743\u91cd",
+            "\u8d21\u732e"
+          ]
         },
         {
           "access": "anonymous",
@@ -114335,7 +115745,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(2) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u539f\u59cb\u503c",
+            "\u6807\u51c6\u5316\u503c",
+            "\u6743\u91cd",
+            "\u8d21\u732e"
+          ]
         },
         {
           "access": "anonymous",
@@ -114578,7 +115995,14 @@
           ],
           "census_path": "#mq-panel-drivers > section.mq-method:nth-of-type(2) > details.mc-details:nth-of-type(2) > div.mc-details-body.mq-axis-method > div.tbl-scroll > table.mq-table.mq-table-compact",
           "census_visible": true,
-          "visible_at_shot": true
+          "visible_at_shot": true,
+          "header_tokens": [
+            "\u5206\u9879",
+            "\u539f\u59cb\u503c",
+            "\u6807\u51c6\u5316\u503c",
+            "\u6743\u91cd",
+            "\u8d21\u732e"
+          ]
         }
       ]
     }
