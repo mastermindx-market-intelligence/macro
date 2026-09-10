@@ -231,7 +231,7 @@
   "target": {
     "kind": "standalone_harness_html",
     "resolved_gitdir_or_none": null,
-    "resolved_sha_or_none": null,
+    "resolved_sha_or_none": "49604161767d634ecc9ec2ea79dd0bb96ead4ddb",
     "site_dir": null
   },
   "tool": {
