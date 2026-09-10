@@ -299,10 +299,16 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
     no_earlier_move = (
         raw_vector is None or movement_state == "NO_EARLIER_PUBLICATION"
     )
+    vector_incomplete = (
+        not no_earlier_move
+        and vector.get("status") == "PRESENT"
+        and (vector.get("dx") is None or vector.get("dy") is None)
+    )
     vector_present = (
         not no_earlier_move
         and vector.get("status") == "PRESENT"
         and vector.get("dx") is not None
+        and vector.get("dy") is not None
     )
     return {
         "state_id": headline.get("state_id"),
@@ -338,6 +344,7 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
         },
         "vector": {
             "present": vector_present,
+            "incomplete": vector_incomplete,
             "dx": L.fmt_signed(vector.get("dx")),
             "dy": L.fmt_signed(vector.get("dy")),
             "dx_raw": vector.get("dx"),
@@ -345,7 +352,8 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
             "absence": (
                 None if vector_present
                 else (_no_earlier_absence(vector.get("null_reason")) if no_earlier_move
-                      else _absence(vector.get("null_reason")))
+                      else (_absence("VECTOR_INCOMPLETE") if vector_incomplete
+                            else _absence(vector.get("null_reason"))))
             ),
             "status": L.label("presence", vector.get("status")),
         },

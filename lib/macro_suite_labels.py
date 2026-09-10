@@ -74,6 +74,7 @@ NULL_REASON: dict[str, dict[str, str]] = {
     "COMPUTATION_REFUSED": _pair("Computation refused", "拒绝计算"),
     "OUT_OF_REGION": _pair("Outside this region", "超出该地区范围"),
     "NOT_COVERED": _pair("Not covered", "未覆盖"),
+    "VECTOR_INCOMPLETE": _pair("Vector incomplete", "位移向量不完整"),
 }
 
 PRESENCE: dict[str, dict[str, str]] = {

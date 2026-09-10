@@ -1537,6 +1537,49 @@ def test_axis_method_and_metric_none_fields_render_em_dash_not_token() -> None:
     _assert_no_standalone_none_in_page(html)
 
 
+_NO_PRIOR_VECTOR_EN = (
+    "No vector is drawn: there is no method-comparable prior print to move from."
+)
+_NO_PRIOR_VECTOR_ZH = "不绘制向量：不存在方法可比的历史读数作为起点。"
+_INCOMPLETE_VECTOR_EN = (
+    "The vector is not drawn: one of its two components is missing this cycle."
+)
+_INCOMPLETE_VECTOR_ZH = "不绘制向量：本周期缺少其中一个分量。"
+
+
+def test_incomplete_present_vector_does_not_print_none_or_false_no_prior() -> None:
+    """Heal h8 REQUIRED 1. A PRESENT vector missing dy must not print the
+    machine token, must not claim there is no prior print, and must take
+    the typed incomplete-vector branch. Defensive: no producer emits a
+    half-vector today; this is a synthetic fixture.
+    """
+    snap = _snapshot()
+    snap["headline"]["one_month_vector"] = {
+        "status": "PRESENT", "dx": 0.12, "dy": None,
+    }
+    html = _render_rates_page(snap)
+    _assert_no_standalone_none_in_page(html)
+    assert _NO_PRIOR_VECTOR_EN not in html
+    assert _NO_PRIOR_VECTOR_ZH not in html
+    assert _INCOMPLETE_VECTOR_EN in html
+    assert _INCOMPLETE_VECTOR_ZH in html
+    vec = _view(snap)["headline"]["vector"]
+    assert vec["incomplete"] is True
+    assert vec["present"] is False
+
+    control = _snapshot()
+    control["headline"]["one_month_vector"] = {
+        "status": "PRESENT", "dx": 0.12, "dy": -0.05,
+    }
+    control_html = _render_rates_page(control)
+    assert "Δx +0.12 · Δy -0.05" in control_html
+    control_vec = _view(control)["headline"]["vector"]
+    assert control_vec["incomplete"] is False
+    assert control_vec["present"] is True
+    assert _INCOMPLETE_VECTOR_EN not in control_html
+    assert _NO_PRIOR_VECTOR_EN not in control_html
+
+
 _NONE_TOKEN = re.compile(r"\bNone\b")
 _SCRIPT_OR_STYLE = re.compile(
     r"<(script|style)\b[^>]*>.*?</\1>", re.I | re.S,
