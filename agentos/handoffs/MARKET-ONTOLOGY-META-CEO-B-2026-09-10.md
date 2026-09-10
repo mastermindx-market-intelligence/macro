@@ -11,7 +11,7 @@ mission: >
   Wave 2 checkpoint for Meta-CEO B (Chairman override of 2026-09-05/06; charter
   research/MARKET_ONTOLOGY_META_CEO_CHARTER_2026_09_06.md). Half B is F06 F07 F08 F09 F11 F12
   F13 plus the Supabase migration namespace, the identity/tenant contracts and the A-spare
-  packets. This record covers the window from 2026-09-09 00:00Z to 2026-09-10 22:30Z: what
+  packets. This record covers the window from 2026-09-09 00:00Z to 2026-09-10 22:35Z: what
   merged in both repos, which production migrations were applied and with which receipts, the
   exact state of every open half-B PR at the boundary, the laws this wave minted, and the way
   the seat runs now. It is written so a cold successor on any account can resume from GitHub
@@ -45,6 +45,9 @@ verified:
   - claim: "Production Terminal is NOT on master: live data-dpl-id is ee320e39 (#551) while master is eab65ff7."
     command: "terminal_reviews/_post_merge.sh <pr> after #549, #562, #547 and #563; each run reads the served data-dpl-id"
     result: "Every post-merge deploy since #558 fails on the box with a type-check error in ../ingest/suite_alerts.ts. Root cause: /opt/terminal/terminal-build.sh stages only origin/master:terminal, so ../ingest and ../scripts resolve to the stale live tree; #558 added a terminal/ test importing ../../../ingest/suite_alerts and pulled that stale file into Next's TS program. The fix is Terminal #561 (nested stage), which must be installed on the box by hand once because a failing build never reaches the step that would install it."
+  - claim: "Terminal #561 (the ops fix that nests the deploy stage) merged as 8872328a4 at 22:30:05Z 2026-09-10, five minutes before this record's boundary."
+    command: "merge-on-green at the ratified head 7409e82b; git fetch origin master; git log origin/master"
+    result: "master = 8872328a4. The new ops/terminal-build.sh is on master but NOT yet on the box: it must be installed by hand (backup the old file, compare md5 with master's copy) before terminal_reviews/_post_merge.sh 561 can produce a green deploy. Every armed head is BEHIND this master and needs the merge-only refresh."
   - claim: "Every Terminal migration merge needs its own ledger-flip PR, and the flip must also carry the carrier's test pins."
     command: "python3 -m pytest tests/test_supabase_migration_namespace.py -q -p no:cacheprovider on each flip head; grep terminal/lib/__tests__ for the packet prefix"
     result: "#560 (0023, merged b25123ba), #562 (0018, merged 5fe8026b) and #563 (0017, merged eab65ff7) are that pattern. The namespace test fails PR-side with OPEN_PR_STATE_STALE whenever a .sql file is present on the tree and its RESERVATIONS.json row still says open, so an armed head goes red until the flip lands."
@@ -57,7 +60,7 @@ unverified:
   - claim: "macro #7032 concludes green, and the update-branch round it unblocks turns #7020, #7003, #6905, #6958 and #6909 green."
     what_would_verify: "gh pr view 7032 MERGED; then a refreshed head on each of the five with the pack reds gone."
 unresolved:
-  - "Terminal production is behind master: live ee320e39, master eab65ff7. #561 (7409e82b) is ratified and armed; on merge, install ops/terminal-build.sh on the box by hand (backup the old file, compare md5 with master's copy), then run terminal_reviews/_post_merge.sh 561 and confirm the served data-dpl-id equals master. Nothing merged since #551 is live."
+  - "Terminal production is behind master: live ee320e39, master 8872328a4. #561 merged at 22:30:05Z, so the fix is on master but not on the box: install ops/terminal-build.sh by hand (backup the old file, compare md5 with master's copy), then run terminal_reviews/_post_merge.sh 561 and confirm the served data-dpl-id equals master. Nothing merged since #551 is live until that happens."
   - "DDL queue in ledger order: 0019 and 0020 ride with Terminal #550 (armed, 25c0fb07); 0021 rides with #548 (merge-heal 2 lane running); 0022 (#559) and 0023 (#552) are already on master and stay unapplied until 0019-0021 are applied. After each apply: receipts in ddl/ and records_queue/, a receipt comment on the carrier, then a ledger-flip PR that updates RESERVATIONS.json and every pin the carrier shipped."
   - "macro #6981 (B-REC-2, the Wave 1 record carrier) is still open at 21:31Z 2026-09-10 at head 9576278c, merge-blocked with packs 9 and 10 plus ci-gate red. macro #7003 (B-REC-B5-1) carries the same content; whichever lands first, the other closes as SUPERSEDED with the per-file two-dot proof."
   - "macro #7032 (suite-labels heal) had not merged as of 21:31Z 2026-09-10 (packs still pending) and the update-branch round on #7020, #7003, #6905, #6958 and #6909 has therefore not run. #6958 was red again at 22:17Z on pack-4 plus ci-gate, which is the same pre-heal red it carried in the 21:31Z baseline, not a new fault."
@@ -113,7 +116,7 @@ discoveries:
   - "DSC:SHARED-CLONE-PACK-STORM-STALLS-THE-FLEET"
 ---
 
-# Meta-CEO B — Wave 2 checkpoint (2026-09-09 00:00Z to 2026-09-10 22:30Z)
+# Meta-CEO B — Wave 2 checkpoint (2026-09-09 00:00Z to 2026-09-10 22:35Z)
 
 Seat: harness session d640f3ef, model Fable, sole owner of half B for the whole window.
 
@@ -140,12 +143,16 @@ Terminal, on master: #501, #527, #538, #539, #540, #541, #544, #545, #543, #555,
 #552, then #560 (ledger flip 0023, b25123ba), #551 (ee320e39), #558 (b969b987), #549 (DDL 0018
 carrier, cd1269fe), #562 (ledger flip 0018, 5fe8026b), #547 (B-F13-5, the DDL 0017 carrier,
 b7aa0981 at 20:43Z) and #563 (ledger flip 0017, which also records 0017 and 0018 as applied,
-eab65ff7 at 21:49:36Z, hand-merged on concluded green). Master ends the wave at eab65ff7.
+eab65ff7 at 21:49:36Z, hand-merged on concluded green) and #561 (the ops fix that nests the
+deploy stage, 8872328a4 at 22:30:05Z). Master ends the wave at 8872328a4.
 
 Every merge through #551 was proved live by the post-merge deploy chain; from #558 on the deploy
 fails on the box because the old build script stages only the terminal/ tree and #558's new test
-imports ../ingest, so production stays on ee320e39 until #561 (nested stage: ingest, hub,
-signal_layer, config and contracts beside the app) lands and is installed by hand. #557 is the
+imports ../ingest. #561 (nested stage: ingest, hub, signal_layer, config and contracts beside the
+app) merged at 22:30:05Z, five minutes before this boundary, but the merged script still has to be
+installed on the box by hand — a failing build never reaches the step that would install it — so
+production is still on ee320e39 at the boundary and every Terminal merge since #551 is unproven
+live. #557 is the
 exception and the wave's main correction: it squashed into #550's branch, not master.
 
 Two heads had to be fixed by the seat's own hand rather than by a lane, both because a merge
@@ -177,11 +184,11 @@ says open: #560 (0023), #562 (0018) and #563 (0017) are that pattern, and 0019/0
 need the same. #563 taught the rest of the law: a flip must also update every vitest contract pin
 the carrier shipped, or the unit shard goes red on the carrier's own test.
 
-## Open half-B state at 22:30Z 2026-09-10
+## Open half-B state at 22:35Z 2026-09-10
 
 | Repo | PR | Head | State | Next act |
 |---|---|---|---|---|
-| terminal | #561 ops nested stage | 7409e82b | ratified, armed on master eab65ff7; the GNU-tar rollback fault is fixed with a regression test and the Ingest shard is green; browser shards pending | on merge: install ops/terminal-build.sh on the box by hand, then _post_merge 561 and prove live data-dpl-id = master |
+| terminal | #561 ops nested stage | MERGED 8872328a4 22:30:05Z | landed at the ratified head 7409e82b (the GNU-tar rollback fault fixed with a regression test) | install ops/terminal-build.sh on the box by hand (backup, md5 against master's copy), then _post_merge 561 and prove live data-dpl-id = master |
 | terminal | #554 B-F13-6 | 072f1278 | merge-heal + ownership PASS, seat restamped master's B-F13-5 lock row, ratified, ready, armed, refreshed merge-only | merge on green |
 | terminal | #553 B-F12-B5-3b | 2fb3f648 | merge-heal ratified, refreshed merge-only onto eab65ff7 | merge on green |
 | terminal | #550 B-F12-8 | 25c0fb07 | merge-heal 2 ratified (strip crops recaptured; the f12-9 lock's capturedAtHead is the tip's direct parent), refreshed, ready, armed; carries DDL 0019 + 0020 | merge on green, then apply 0019 then 0020 with receipts and open the ledger flip |
@@ -199,6 +206,12 @@ the carrier shipped, or the unit shard goes red on the carrier's own test.
 | macro | #7008 | 3ef72d55 | h8 PASS, ratified, ready, armed (VECTOR_INCOMPLETE typed state; 16 cells recaptured at e6dd2c49) | merge on concluded green; follow-on: restore the T10 single-banner check |
 | macro | #7006 #7010 | aa64751c / 232a1a99 | ratified, armed | merge on concluded green |
 | macro | #7007 | 664119e1 | draft on #6920's branch; h6 lane queued on the mini | refresh onto #6920's final tip; retarget after #6920 lands |
+
+#561's merge moved master from eab65ff7 to 8872328a4 at 22:30:05Z, so the four remaining armed
+Terminal heads (#554, #553, #550, #546) are BEHIND: each needs the update-branch refresh, the
+merge-only proof (equal md5 over the sorted three-dot +/- lines, equal file count, master an
+ancestor) and its note, and any packet lock row that pins a file this merge changed needs a
+restamp. #561 touched ops/ and tests only, so no lock row should move.
 
 Watchers at the boundary: one Terminal armed watcher, one merged-PR sweep, one macro armed
 watcher tracking #7008 and #7006, and one lane monitor. One watcher per endpoint, re-armed after
