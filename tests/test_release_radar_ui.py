@@ -729,14 +729,18 @@ def test_retail_sales_name_in_rn_map():
 # ---------------------------------------------------------------------------
 
 def test_interval_bar_handles_null_point():
-    """intervalBar renders the band when the point is null: the band's own validity
-    (#6868 _rrBand: finite, ordered, non-degenerate) gates the bar, and the point
-    only gates the tick — which is never clamped to an edge."""
+    """#6868 A1: a band is drawn only for a forecast that has a point.  With no
+    point the producer centres the quantiles on 0.0 (engine/release_forecast.py
+    ``_compute_quantiles(errors, 0.0)``) — residual spread, not a band — so a null
+    point shows "Interval unavailable" instead of a bar.  The band's own validity
+    (_rrBand: finite, ordered, non-degenerate) still gates the bar, and the tick is
+    drawn only inside its band, never clamped to an edge."""
     src = _rr_section_src()
     fn_start = src.find("function intervalBar(")
     fn_body = src[fn_start:fn_start + 1600] if fn_start >= 0 else ""
-    assert "var b = _rrBand(proj);" in fn_body and "if (!b.outer)" in fn_body, (
-        "intervalBar must guard on the band itself (null point should still render bar)"
+    assert "var b = _rrBand(proj);" in fn_body
+    assert "if (!b.outer || _rrNum(proj.point) === null)" in fn_body, (
+        "intervalBar must refuse a band whose forecast has no point"
     )
     assert "(pt !== null && pt >= p10 && pt <= p90)" in fn_body
 

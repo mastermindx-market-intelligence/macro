@@ -180,10 +180,10 @@ def assess_bands(source: Mapping | None) -> dict:
                 out.update(status="unavailable",
                            reason="missing" if kinds[key] == "missing" else "invalid_value")
                 return out
-        if not ordered:
-            out.update(status="unavailable", reason="quantiles_out_of_order")
-        elif vals[lo] > vals[hi]:
+        if vals[lo] > vals[hi]:
             out.update(status="unavailable", reason="reversed")
+        elif not ordered:
+            out.update(status="unavailable", reason="quantiles_out_of_order")
         elif vals[lo] == vals[hi]:
             out.update(status="unavailable", reason="zero_width")
         else:
@@ -248,6 +248,13 @@ def _primary(item: Mapping) -> dict:
     point = _num(source.get("point"))
     median = _num(source.get("p50"))
     bands = assess_bands(source)
+    if point_kind != "ok":
+        # Without a point the producer builds the quantiles around zero
+        # (engine/release_forecast.py, ``_compute_quantiles(errors, 0.0)``):
+        # residual spread, not a band for this forecast.
+        bands = {**bands,
+                 "band_80": {"status": "unavailable", "reason": "point_unavailable"},
+                 "band_50": {"status": "unavailable", "reason": "point_unavailable"}}
     if point is None:
         relation = "point_unavailable"
     elif median is None or bands["median_p50"] != "available":
@@ -512,14 +519,21 @@ def _market(item: Mapping) -> dict:
     if not isinstance(mi, Mapping):
         return {"status": "malformed", "raw_ref": raw_ref}
     out = {"source": _text(mi.get("source")), "raw_ref": raw_ref}
-    period, target = mi.get("period"), mi.get("target")
+    period, target, unit = mi.get("period"), mi.get("target"), mi.get("unit")
     if period is None and target is None:
         return {**out, "status": "unverified_identity",
                 "reason": "no_structured_target_period_or_unit"}
-    if period != item.get("period"):
+    item_period, item_target = _text(item.get("period")), _text(item.get("target"))
+    if not (_text(period) and _text(target) and item_period and item_target):
+        # both sides must carry the structure; None == None proves nothing
+        return {**out, "status": "unverified_identity",
+                "reason": "incomplete_structured_identity"}
+    if period != item_period:
         return {**out, "status": "incompatible", "reason": "period_mismatch"}
-    if target != item.get("target"):
+    if target != item_target:
         return {**out, "status": "incompatible", "reason": "target_mismatch"}
+    if unit is not None and unit not in {item_target, (UNITS.get(item_target) or {}).get("level")}:
+        return {**out, "status": "incompatible", "reason": "unit_mismatch"}
     if _num(mi.get("implied_median")) is None:
         return {**out, "status": "unverified_value", "reason": "no_numeric_value"}
     return {**out, "status": "verified", "reason": None}
@@ -569,14 +583,20 @@ def _performance(item: Mapping, primary: Mapping, scoreboard: Any) -> dict:
         return {"status": "unavailable", "reason": "no_exact_epoch_lane_for_champion",
                 "scored_horizon": scored_horizon}
     release_type = _text(item.get("release_type"))
+    if not (release_type and _text(primary.get("model_epoch")) and _text(primary.get("target_epoch"))):
+        return {"status": "unavailable", "reason": "lane_identity_incomplete",
+                "scored_horizon": scored_horizon}
     lane = f"{release_type}:{model}:{primary.get('model_epoch')}:{primary.get('target_epoch')}"
     lanes = _mapping(scoreboard.get("by_shadow_epoch")) or {}
     entry = _mapping(lanes.get(lane))
     at_horizon = _mapping((_mapping(entry.get("by_cutoff")) or {}).get("T-1")) if entry else None
     n = _int(at_horizon.get("n")) if at_horizon else None
     mae = _num(at_horizon.get("mae_ours")) if at_horizon else None
-    if not n or mae is None:
+    if not at_horizon or n == 0:
         return {"status": "unavailable", "reason": "no_scored_releases_in_exact_lane",
+                "lane": lane, "scored_horizon": scored_horizon}
+    if n is None or n < 0 or mae is None or mae < 0:
+        return {"status": "unavailable", "reason": "malformed_lane_entry",
                 "lane": lane, "scored_horizon": scored_horizon}
     return {"status": "available", "lane": lane, "scored_horizon": scored_horizon,
             "n": n, "mae_pp": mae,

@@ -508,7 +508,7 @@ def test_primary_mirrors_selection_policy_and_binds_its_own_band(fx):
 
 @pytest.mark.parametrize("p10,p90,reason", [
     (None, 0.5, "missing"), (float("nan"), 0.5, "invalid_value"), (True, 0.5, "invalid_value"),
-    ("0.1", 0.5, "invalid_value"), (0.6, 0.5, "quantiles_out_of_order"),
+    ("0.1", 0.5, "invalid_value"), (0.6, 0.5, "reversed"), (0.35, 0.5, "quantiles_out_of_order"),
 ])
 def test_band_statuses(p10, p90, reason):
     bands = rd.assess_bands({"p10": p10, "p25": 0.2, "p50": 0.3, "p75": 0.4, "p90": p90})
@@ -523,7 +523,8 @@ def test_band_nominal_coverage_is_80_and_50_only(fx):
     blob = json.dumps(d)
     assert "0.9" not in blob and "p05" not in blob and "p95" not in blob
     reversed_ = rd.assess_bands({"p10": 0.1, "p25": 0.5, "p50": 0.3, "p75": 0.4, "p90": 0.9})
-    assert reversed_["band_50"]["reason"] == "quantiles_out_of_order"
+    assert reversed_["band_50"]["reason"] == "reversed"
+    assert reversed_["band_80"]["reason"] == "quantiles_out_of_order"
     zero = rd.assess_bands({"p10": 0.5, "p90": 0.5})
     assert zero["band_80"]["reason"] == "zero_width"
 
@@ -820,3 +821,128 @@ def test_renderer_selection_helpers_are_mirrored_verbatim():
     assert ("return !!(item && item.primary_forecast_basis === 'combined_v1_benchmark_augmented' "
             "&& comb && comb.combined_point != null);") in body
     assert "if (!contextBasis) return primaryBasis !== 'combined_v1_benchmark_augmented';" in body
+
+
+# ---------------------------------------------------------------------------
+# Red-team round 2 (independent Opus review of head 7d3d9121)
+# ---------------------------------------------------------------------------
+
+def test_no_point_means_no_band_anywhere(fx, tmp_path):
+    """The producer centres quantiles on 0.0 when the point is missing
+    (engine/release_forecast.py ``_compute_quantiles(errors, 0.0)``): residual
+    spread, not a band for this release."""
+    item = _item(fx, "nfp_2026_09")
+    assert item["projection"]["point"] is None and item["projection"]["p10"] < 0 < item["projection"]["p90"]
+    prim = rd.build_item_diagnostics(item)["primary"]
+    assert prim["status"] == "unavailable"
+    assert prim["band_80"] == prim["band_50"] == {"status": "unavailable", "reason": "point_unavailable"}
+    for variant in (item, _with_diag(fx, item)):
+        overview = _pane(_modal(variant, tmp_path), "t0")
+        assert "No point forecast for this release, so no median or band is shown." in overview
+        assert "本次发布无点预测，因此不显示中位数或区间。" in overview
+        assert "Nominal 80% band" not in overview and "Median (p50)" not in overview
+        assert "<svg" not in overview
+
+
+def test_market_identity_needs_structure_on_both_sides_and_a_matching_unit(fx):
+    item = _item(fx, "cpi_core_2026_09")
+    mi = item["benchmark_set"]["market_implied"]
+    mi.update(period=item["period"], implied_median=0.3)
+    item.pop("target", None)
+    got = rd.build_item_diagnostics(item)["benchmarks"]["market_implied"]
+    assert got["status"] == "unverified_identity" and got["reason"] == "incomplete_structured_identity"
+    item = _item(fx, "cpi_core_2026_09")
+    item["benchmark_set"]["market_implied"].update(period=item["period"], target=item["target"],
+                                                   unit="yoy_pct", implied_median=0.3)
+    got = rd.build_item_diagnostics(item)["benchmarks"]["market_implied"]
+    assert (got["status"], got["reason"]) == ("incompatible", "unit_mismatch")
+    item["benchmark_set"]["market_implied"]["unit"] = item["target"]
+    assert rd.build_item_diagnostics(item)["benchmarks"]["market_implied"]["status"] == "verified"
+    assert got["raw_ref"] == "benchmark_set.market_implied"
+
+
+def test_performance_lane_needs_full_identity_and_a_well_formed_entry(fx):
+    lane = "cpi_headline:combined_v1:combined_v1_legacy_target_v1:mixed_legacy_cross_vintage_v0"
+    def perf(entry, item=None):
+        board = {"by_shadow_epoch": {lane: {"by_cutoff": {"T-1": entry}}}}
+        return rd.build_item_diagnostics(item or _item(fx, "cpi_headline_2026_08"), scoreboard=board)["performance"]
+    assert perf({"n": -2, "mae_ours": 0.1})["reason"] == "malformed_lane_entry"
+    assert perf({"n": 2, "mae_ours": -0.1})["reason"] == "malformed_lane_entry"
+    assert perf({"n": True, "mae_ours": 0.1})["reason"] == "malformed_lane_entry"
+    assert perf({"n": 0, "mae_ours": None})["reason"] == "no_scored_releases_in_exact_lane"
+    item = _item(fx, "cpi_headline_2026_08")
+    item["combined"].pop("model_epoch", None)
+    got = perf({"n": 2, "mae_ours": 0.1}, item)
+    assert got["status"] == "unavailable" and got["reason"] == "lane_identity_incomplete"
+
+
+def test_a_receipt_for_another_forecast_reads_as_not_recorded(fx, tmp_path):
+    item = _with_diag(fx, _item(fx, "cpi_headline_2026_08"))
+    assert item["diagnostics"]["primary"]["basis"] == "combined_v1_benchmark_augmented"
+    item["diagnostics"]["primary"]["basis"] = "champion"   # stale or foreign receipt
+    modal = _modal(item, tmp_path)
+    overview = _pane(modal, "t0")
+    assert "Input checks not recorded for this forecast." in overview
+    assert "No scored record yet for this exact model" not in _pane(modal, "t3")
+
+
+def test_malformed_counts_and_unknown_statuses_never_reach_the_page(fx, tmp_path):
+    item = _with_diag(fx, _item(fx, "cpi_headline_2026_08"))
+    inp = item["diagnostics"]["inputs"]
+    inp["present"] = "9"
+    inp["economic_coverage"] = {"status": "weird_internal_code"}
+    item["diagnostics"]["performance"] = {"status": "available", "n": None, "mae_pp": 0.1}
+    modal = _modal(item, tmp_path)
+    overview = _pane(modal, "t0")
+    assert "undefined" not in overview and "weird_internal_code" not in overview
+    assert "not recorded" in overview and "不可用" in overview
+    history = _pane(modal, "t3")
+    assert "null" not in history and "scored release" not in history
+    assert "Track record unavailable for this forecast." in history
+
+
+def test_history_never_claims_a_model_lane_without_a_model(fx, tmp_path):
+    retail = _with_diag(fx, _item(fx, "retail_sales_nodata"))
+    history = _pane(_modal(retail, tmp_path), "t3")
+    assert "No model forecast to score." in history and "this exact model" not in history
+    overview = _pane(_modal(retail, tmp_path), "t0")
+    assert not re.search(r"·\s*·", re.sub(r"<[^>]+>", "", overview))
+    pce = _with_diag(fx, _item(fx, "pce_headline_2026_08"))
+    assert pce["diagnostics"]["performance"]["reason"] == "horizon_not_scored"
+    history = _pane(_modal(pce, tmp_path), "t3")
+    assert "Only the forecast frozen the day before release is scored" in history
+    assert "仅对发布前一日冻结的预测评分" in history
+
+
+def test_bridge_waterfall_names_the_forecast_it_explains(fx, tmp_path):
+    item = _with_diag(fx, _item(fx, "cpi_headline_2026_08"))
+    comp = _pane(_modal(item, tmp_path), "t2")
+    assert "breakdown of its own forecast (0.20%)" in comp
+    assert "it does not explain the champion or the displayed blend" in comp
+    assert "并不解释冠军模型或所显示的混合预测" in comp
+
+
+def test_benchmark_gap_uses_the_true_median_and_no_signed_zero(fx, tmp_path):
+    item = _with_diag(fx, _item(fx, "cpi_headline_2026_08"))
+    bs = item["benchmark_set"]
+    vals = sorted(v for v in (bs.get(k) for k in ("naive_prior", "trailing_3m", "ar_model",
+                                                  "cleveland_nowcast", "expanding_mean"))
+                  if isinstance(v, float))
+    assert len(vals) % 2 == 0
+    median = (vals[len(vals) // 2 - 1] + vals[len(vals) // 2]) / 2
+    delta = item["combined"]["combined_point"] - median
+    overview = _pane(_modal(item, tmp_path), "t0")
+    assert f"{delta:+.2f}pp" in overview and "相对基准中位数" in overview
+    assert "vs基准" not in overview
+    item["benchmark_set"]["naive_prior"] = -0.0001
+    models = _pane(_modal(item, tmp_path), "t1")
+    assert "-0.00" not in models and "0.00%" in models
+
+
+def test_an_expectation_column_names_its_source(fx, tmp_path):
+    item = _item(fx, "cpi_headline_2026_08")
+    item["expectation_read"] = {"expectation_median": 0.31, "sources": []}
+    card = _card(item, tmp_path)
+    assert "nowcast" not in card.lower() and "临近预测" not in card
+    item["expectation_read"] = {"expectation_median": 0.31, "sources": ["cleveland_nowcast"]}
+    assert "Cleveland" in _card(item, tmp_path)
