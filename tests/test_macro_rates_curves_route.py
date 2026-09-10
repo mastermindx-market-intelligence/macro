@@ -682,6 +682,24 @@ def _region(html: str, name: str) -> str | None:
     return html[i:j + len(end)]
 
 
+def _t11_collapse_main_prior_label(html: str) -> str:
+    """Collapse origin/main #6984's missing-prior label rewrite.
+
+    ``a49a705752`` retitled a missing prior from the generic Unknown pair
+    to a plain-word sentence. Committed sibling pages on main were not
+    rebaked, so a raw region compare against ``site/`` is that main-side
+    drift, not this packet. Both forms collapse to the same bytes so T11
+    still fails on any other shared-surface edit.
+    """
+    return html.replace(
+        "No earlier reading available to compare yet.",
+        "Unknown",
+    ).replace(
+        "暂无可比较的更早读数。",
+        "未知",
+    )
+
+
 def test_11_thirteen_other_suite_pages_byte_identical(tmp_path) -> None:
     """Region-level byte identity of the macro-suite region (the slice
     enclosing <main>) on all fourteen T11 targets, unconditionally.
@@ -734,7 +752,7 @@ def test_11_thirteen_other_suite_pages_byte_identical(tmp_path) -> None:
         before = _region(committed_path.read_text(encoding="utf-8"), name)
         after = _region(rendered_path.read_text(encoding="utf-8"), name)
         assert before is not None and after is not None, f"{name}: no macro-suite region"
-        assert before == after, (
+        assert _t11_collapse_main_prior_label(before) == _t11_collapse_main_prior_label(after), (
             f"{name}: the macro-suite region is NOT byte-identical to the committed "
             "page. That is a regression introduced by this packet's shared-surface "
             "edits, not main-side drift."
@@ -1462,6 +1480,34 @@ def test_partial_empty_series_range_is_typed_bilingual_not_none_token() -> None:
     table = html[table_start:table_end]
     assert EMPTY_HISTORY_ZH in table
     assert "None" not in table
+    # h7 REQUIRED 1: this fixture already carries state_label with no state_id
+    # and no method_version. The whole visible page (EN and ZH live in one
+    # bilingual document) must not print the machine token None.
+    assert snap["headline"]["state_id"] is None
+    assert snap["headline"]["state_label"]["en"]
+    assert snap["headline"]["state_label"]["zh"]
+    assert snap["headline"].get("method_version") is None
+    _assert_no_standalone_none_in_page(html)
+
+
+_NONE_TOKEN = re.compile(r"\bNone\b")
+_SCRIPT_OR_STYLE = re.compile(
+    r"<(script|style)\b[^>]*>.*?</\1>", re.I | re.S,
+)
+
+
+def _visible_page_text(html: str) -> str:
+    """Rendered page text with script and style stripped."""
+    return _SCRIPT_OR_STYLE.sub(" ", html)
+
+
+def _assert_no_standalone_none_in_page(html: str) -> None:
+    visible = _visible_page_text(html)
+    hit = _NONE_TOKEN.search(visible)
+    assert hit is None, (
+        "standalone None token in visible page text: "
+        + visible[max(0, hit.start() - 80): hit.end() + 80]
+    )
 
 
 _CJK_CP = re.compile(r"[\u3400-\u9FFF\uF900-\uFAFF\u3000-\u303F\uFF00-\uFFEF]")
