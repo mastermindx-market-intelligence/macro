@@ -130,6 +130,78 @@ html[data-theme="dark"] .theme-switch .knob::before{content:"🌙"}
 .dotbar{display:inline-flex;gap:4px;margin:10px 0 2px}
 .dotbar i{width:9px;height:9px;border-radius:50%;background:var(--grid);display:inline-block}
 .dotbar i.on{background:var(--green)}.dotbar i.warn{background:var(--amber)}
+
+/* ---------- credit issuance window (the bond side of the triad) ---------- */
+.tcard.cw{--tcc:var(--acc);display:flex;flex-direction:column}
+.tcard.cw.good{--tcc:var(--green)}.tcard.cw.warn{--tcc:var(--amber)}.tcard.cw.red{--tcc:var(--red)}
+/* MINOR-5 (review repair round 3): the two lanes sit in the same `.grid.cols-2`
+   row and already stretch to equal overall height, but the footer's POSITION
+   inside that shared height still tracked how tall .cw-change rendered above
+   it — a two-line change sentence on one lane pushed its stance chip below
+   the other lane's. Pin the footer row to the card bottom regardless. */
+.tcard.cw .tc-foot{margin-top:auto}
+
+/* DARK — an inset trough milled into the card; the marker carries a restrained bloom */
+.cw-rail{position:relative;height:10px;margin:14px 0 5px;background:var(--bg);
+  box-shadow:inset 0 1px 2px color-mix(in srgb,var(--ink) 26%,transparent)}
+/* MINOR-2 (review repair round 4): the band marks a FIXED zone of the rail —
+   0 to seg.rail.easy_pct (the tight/easy end of the 1y range) — the same
+   zone regardless of which state (open/neutral/shut) the card itself is
+   currently in. Painting it from --tcc (the card's own state colour) made a
+   state-invariant region carry state colour: on a "shut" (red) lane the
+   easy zone rendered red — reading as danger — and on an "open" (green)
+   lane it happened to render green. Fixed to a fixed semantic token
+   (--green, "the easy end of the range") so the band's colour never swings
+   with the card's current stance. --tcc stays correct on .cw-mark (today's
+   ACTUAL position, which should track the current stance colour) and
+   .cw-change (the state-scoped change-copy strip). */
+.cw-band{position:absolute;left:0;top:0;bottom:0;
+  background:color-mix(in srgb,var(--green) 22%,transparent)}
+.cw-mark{position:absolute;top:-3px;bottom:-3px;width:2px;margin-left:-1px;background:var(--ink);
+  box-shadow:0 0 7px color-mix(in srgb,var(--tcc) 60%,transparent)}
+.cw-rail.is-null{background:var(--card);box-shadow:inset 0 0 0 1px var(--grid);opacity:.55}
+.cw-scale{display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;
+  letter-spacing:.05em;text-transform:uppercase;color:var(--faint)}
+
+.cw-inputs{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+.cw-in{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:12.5px;
+  padding-left:9px;border-left:3px solid var(--grid)}
+.cw-in.open{border-left-color:var(--green)}
+.cw-in.neutral{border-left-color:var(--amber)}
+.cw-in.shut{border-left-color:var(--red)}
+.cw-in-k{color:var(--ink);font-weight:700}
+.cw-in-d{color:var(--faint);font-size:11px;font-weight:600;white-space:nowrap}
+.cw-in-v{grid-column:1/-1;color:var(--muted);font-weight:600;line-height:1.4}
+
+.cw-change{margin-top:12px;padding:9px 11px;font-size:12.5px;line-height:1.45;color:var(--muted);
+  background:color-mix(in srgb,var(--tcc) 7%,var(--card));
+  border-left:3px solid color-mix(in srgb,var(--tcc) 55%,var(--grid))}
+.cw-change b{display:block;color:var(--ink);font-weight:700;font-size:11px;
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:3px}
+.cw-null{margin-top:14px;max-width:74ch;line-height:1.5}
+
+/* LIGHT — research workspace: the trough becomes a ruled measure, the bloom becomes structure */
+html[data-theme="light"] .cw-rail{background:var(--card);box-shadow:none;
+  border:1px solid color-mix(in srgb,var(--ink) 16%,transparent)}
+html[data-theme="light"] .cw-band{background:color-mix(in srgb,var(--green) 18%,transparent);
+  border-right:1px solid color-mix(in srgb,var(--green) 45%,transparent)}
+html[data-theme="light"] .cw-mark{box-shadow:0 1px 2px color-mix(in srgb,var(--ink) 30%,transparent)}
+html[data-theme="light"] .cw-mark::after{content:'';position:absolute;left:-3px;top:-6px;
+  width:8px;height:5px;background:var(--ink);clip-path:polygon(50% 100%,0 0,100% 0)}
+html[data-theme="light"] .cw-rail::before,
+html[data-theme="light"] .cw-rail::after{content:'';position:absolute;top:-4px;bottom:-4px;width:1px;
+  background:color-mix(in srgb,var(--ink) 24%,transparent)}
+html[data-theme="light"] .cw-rail::before{left:0}
+html[data-theme="light"] .cw-rail::after{right:0}
+html[data-theme="light"] .cw-rail.is-null{opacity:.7;border-style:dashed}
+html[data-theme="light"] .cw-change{background:color-mix(in srgb,var(--tcc) 6%,var(--card))}
+
+@media(max-width:640px){
+  .cw-in{grid-template-columns:1fr}
+  .cw-in-d{grid-row:3}
+  .cw-scale{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){.tcard.cw{animation:none}}
 /* arc gauge (froth) */
 .arc{display:block;width:130px;height:70px;margin:6px auto 0}
 .arc path{fill:none;stroke-linecap:round}
