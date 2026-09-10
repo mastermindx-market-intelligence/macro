@@ -138,8 +138,8 @@
     var date = (pub.split('T')[0]) || '';
     return {
       id: x.id || '',
-      inst: (x.institution || '').trim() || 'Unknown',
-      logo: logoFor(x.institution),
+      inst: canonInst((x.institution || '').trim()) || 'Unknown',
+      logo: logoFor(canonInst((x.institution || '').trim())),
       desk: x.desk || '',
       side: (x.side || 'independent').toLowerCase(),
       date: date,
@@ -173,9 +173,24 @@
     return isFinite(n) && n >= 0 ? Math.floor(n) : null;
   }
 
-  /* side stamp */
-  function stampLabel(side) { return side === 'buy' ? T('BUY', '看多') : (side === 'sell' ? T('SELL', '看空') : T('IND', '独立')); }
-  function stampClass(side) { return side === 'buy' ? 'buy' : (side === 'sell' ? 'sell' : 'indep'); }
+  /* desk-type chip — `side` is buy-side/sell-side institution type, never a rating */
+  var INST_CANON = { blackrock: 'BlackRock', scotiabank: 'Scotiabank', commbank: 'CommBank',
+                     'commonwealth bank': 'CommBank', ing: 'ING', 'ing econ': 'ING', 'ing direct': 'ING' };
+  var NON_DESK = { 'new folder': 1, 's&t': 1, other: 1, prime: 1, pb: 1, 'sg prime': 1,
+                   'week ahead': 1, 'weekly preview': 1, '13f summary': 1, 'greed and fear': 1,
+                   nuclear: 1, 'zh ai': 1 };
+  function canonInst(name) {
+    var s = String(name || '').trim();
+    if (!s) return s;
+    return INST_CANON[s.toLowerCase()] || s;
+  }
+  function isDeskInst(name) {
+    var s = String(name || '').trim();
+    if (!s || s === 'Unknown') return false;
+    return !NON_DESK[s.toLowerCase()];
+  }
+  function stampLabel(side) { return side === 'buy' ? T('Buy-side', '买方') : (side === 'sell' ? T('Sell-side', '卖方') : T('Independent', '独立')); }
+  function stampClass(side) { return side === 'buy' ? 'buy-side' : (side === 'sell' ? 'sell-side' : 'indep'); }
   function fmtDate(d) {
     if (!d) return T('date pending', '日期待定');
     var p = d.split('-');
@@ -311,7 +326,7 @@
     }
     var wk = ITEMS.filter(isThisWeek);
     var derivedNewN = wk.length;
-    var desks = {}; wk.forEach(function (x) { if (x.inst && x.inst !== 'Unknown') desks[x.inst] = 1; });
+    var desks = {}; wk.forEach(function (x) { if (isDeskInst(x.inst)) desks[x.inst] = 1; });
     var derivedDeskN = Object.keys(desks).length;
     // most-covered theme this week (falls back to all-time if none this week)
     var pool = wk.length ? wk : ITEMS;
@@ -376,12 +391,12 @@
     var rosterUnknown = CATALOG_PREVIEW && !summaryHasRoster;
     var counts = {};
     if (!rosterUnknown && !summaryHasRoster) {
-      ITEMS.forEach(function (x) { var n = x.inst; if (n && n !== 'Unknown') counts[n] = (counts[n] || 0) + 1; });
+      ITEMS.forEach(function (x) { var n = x.inst; if (isDeskInst(n)) counts[n] = (counts[n] || 0) + 1; });
     }
     var roster = summaryHasRoster
       ? CATALOG_SUMMARY.institutions.map(function (x) {
           return { name: String(x && x.name || '').trim(), count: Math.max(0, Number(x && x.count) || 0) };
-        }).filter(function (x) { return x.name && x.name !== 'Unknown'; })
+        }).filter(function (x) { return isDeskInst(x.name); })
       : Object.keys(counts).map(function (n) { return { name: n, count: counts[n] }; });
     roster.sort(function (a, b) { return b.count - a.count || a.name.localeCompare(b.name); });
     var N = roster.length;
@@ -557,7 +572,7 @@
     // keep the "All" button; rebuild the rest from the catalog institutions (top 6 by count)
     grp.querySelectorAll('.aff:not([data-v=""])').forEach(function (b) { b.remove(); });
     var counts = {}; ITEMS.forEach(function (x) { if (x.inst && x.inst !== 'Unknown') counts[x.inst] = (counts[x.inst] || 0) + 1; });
-    Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a]; }).slice(0, 6).forEach(function (inst) {
+    Object.keys(counts).filter(isDeskInst).sort(function (a, b) { return counts[b] - counts[a]; }).slice(0, 6).forEach(function (inst) {
       var b = doc.createElement('button'); b.className = 'aff'; b.setAttribute('data-f', 'inst'); b.setAttribute('data-v', inst); b.textContent = inst;
       grp.appendChild(b);
     });
@@ -748,7 +763,7 @@
 
   /* active-filter chips */
   function labelFor(dim, val) {
-    if (dim === 'side') return val === 'buy' ? T('Buy-side', '看多') : (val === 'sell' ? T('Sell-side', '看空') : T('Independent', '独立'));
+    if (dim === 'side') return val === 'buy' ? T('Buy-side', '买方') : (val === 'sell' ? T('Sell-side', '卖方') : T('Independent', '独立'));
     return val;
   }
   function renderActiveChips() {

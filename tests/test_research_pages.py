@@ -201,7 +201,8 @@ def test_page_has_canonical_and_funnel_cta():
     html = _norm_render(_ITEM)
     assert '<link rel="canonical"' in html
     assert f'?doc={_ITEM["id"]}' in html                   # deep-link back to the viewer
-    assert "J.P. Morgan" in html and "SELL" in html
+    assert "J.P. Morgan" in html and "Sell-side" in html
+    assert "SELL" not in html and "BUY" not in html
 
 
 # --- sitemap merge ---------------------------------------------------------

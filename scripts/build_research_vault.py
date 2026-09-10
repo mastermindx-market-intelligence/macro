@@ -34,7 +34,12 @@ from jinja2 import Environment, FileSystemLoader
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from engine.research_vault import catalog as catalog_mod  # noqa: E402
-from engine.research_vault.sidecar import clean_title  # noqa: E402
+from engine.research_vault.sidecar import (  # noqa: E402
+    canon_institution,
+    clean_summary_points,
+    clean_title,
+    desk_type,
+)
 from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
@@ -85,10 +90,16 @@ def load_catalog() -> dict:
 def _public_item(item: dict) -> dict:
     pub = {k: item.get(k) for k in _ITEM_FIELDS}
     # Render-side guard: the committed snapshot is data we do not control (the
-    # upstream desk truncates its own ticker parentheticals), and it feeds the SSR
-    # cards + the JSON island + every /research/ landing page below. Repair here so
-    # a stale snapshot can never ship an unbalanced "(" into a public surface.
+    # upstream desk truncates its own ticker parentheticals, and MarketDesk's
+    # summarizer — out of this repo — emits markdown ** and splits on "vs."),
+    # and it feeds the SSR cards + the JSON island + every /research/ landing
+    # page below. Repair here so a stale snapshot can never ship those artifacts
+    # onto a public surface. sidecar.normalize is the ingest-side twin.
     pub["title"] = clean_title(pub.get("title")) or (pub.get("title") or "")
+    pub["summary_points"] = clean_summary_points(pub.get("summary_points") or [])
+    inst = canon_institution(str(pub.get("institution") or "").strip())
+    if inst:
+        pub["institution"] = inst
     return pub
 
 
@@ -105,7 +116,6 @@ def _public_catalog(cat: dict) -> dict:
 
 
 _MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-_STAMP = {"buy": "BUY", "sell": "SELL", "independent": "IND"}
 
 
 def _e(s) -> str:
@@ -161,8 +171,7 @@ def _ssr_card(x: dict) -> str:
     chrome around it stays bilingual via the template's l-en/l-zh spans."""
     inst = (x.get("institution") or "Unknown").strip() or "Unknown"
     side = (x.get("side") or "independent").lower()
-    stamp_cls = "buy" if side == "buy" else ("sell" if side == "sell" else "indep")
-    stamp = _STAMP.get(side, "IND")
+    stamp_en, stamp_zh, stamp_cls = desk_type(side)
     desk = x.get("desk") or ""
     top = bool(x.get("top_pick"))
     needs = bool(x.get("needs_metadata"))
@@ -185,7 +194,8 @@ def _ssr_card(x: dict) -> str:
         f'<span class="rep-logo">{_e(_logo_for(inst))}</span>'
         f'<span class="rep-unread" aria-hidden="true"></span>'
         f'<span class="rep-inst">{_e(inst)}</span>{desk_bits}'
-        f'<span class="stamp {stamp_cls}"><span class="dt"></span>{stamp}</span>{pin}'
+        f'<span class="stamp {stamp_cls}"><span class="dt"></span>'
+        f'<span class="l-en">{_e(stamp_en)}</span><span class="l-zh">{_e(stamp_zh)}</span></span>{pin}'
         f'</div>'
         f'<h3>{_title_link(x)}</h3>{pts_html}'
         f'<div class="rep-foot"><div class="rep-meta">'
@@ -267,7 +277,11 @@ def render(catalog: dict | None = None) -> str:
     # title/summary containing it can't break out of the island.
     catalog_json = json.dumps(baked_catalog, ensure_ascii=False).replace("</", "<\\/")
     ssr_feed = _ssr_feed(catalog)
-    return tmpl.render(catalog_json=catalog_json, ssr_feed=ssr_feed)
+    return tmpl.render(
+        catalog_json=catalog_json,
+        ssr_feed=ssr_feed,
+        summary=baked_catalog.get("summary") or {},
+    )
 
 
 def build() -> Path:

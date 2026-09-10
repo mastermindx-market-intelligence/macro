@@ -248,6 +248,58 @@ def test_clean_title_never_raises_on_junk():
         assert isinstance(sidecar_mod.clean_title(junk), str)
 
 
+def test_clean_title_collapses_repeated_lead_and_trailing_calendar_date():
+    assert sidecar_mod.clean_title("GS Vol Views GS Vol Views 9 Sep 2026") == "GS Vol Views"
+    assert sidecar_mod.clean_title("GS Vol Views") == "GS Vol Views"
+    # month+day without a year is a real title, not auto-titler furniture
+    assert sidecar_mod.clean_title("US Econ Notes July 24") == "US Econ Notes July 24"
+
+
+def test_clean_summary_points_strips_markdown_and_rejoins_vs_split():
+    pts = sidecar_mod.clean_summary_points([
+        "**China’s Economic Data & Structural Risks**: CPI at 0.8% y-o-y (up from 0.5%), PPI at 3.8% y-o-y (vs.",
+        "6% consensus); tobacco monopoly’s $54bn capital funding signals inflationary pressures and bad loan risks.",
+        "**Volatility Compression**: the range holds.",
+    ])
+    assert pts == [
+        "China’s Economic Data & Structural Risks: CPI at 0.8% y-o-y (up from 0.5%), PPI at 3.8% y-o-y (vs. 6% consensus); tobacco monopoly’s $54bn capital funding signals inflationary pressures and bad loan risks.",
+        "Volatility Compression: the range holds.",
+    ]
+    assert all("**" not in p for p in pts)
+
+
+def test_clean_summary_points_does_not_glue_finished_bullets():
+    pts = sidecar_mod.clean_summary_points(["Only 33% looks credible.", "Hyperscalers control 42%."])
+    assert pts == ["Only 33% looks credible.", "Hyperscalers control 42%."]
+
+
+def test_normalize_cleans_summary_markdown():
+    item = sidecar_mod.normalize({
+        "title": "T", "institution": "GS",
+        "summary_points": ["**Thesis**: the range holds."],
+    })
+    assert item["summary_points"] == ["Thesis: the range holds."]
+
+
+def test_desk_type_is_never_a_rating():
+    assert sidecar_mod.desk_type("sell") == ("Sell-side", "卖方", "sell-side")
+    assert sidecar_mod.desk_type("buy") == ("Buy-side", "买方", "buy-side")
+    assert sidecar_mod.desk_type("independent") == ("Independent", "独立", "indep")
+    assert sidecar_mod.desk_type("wat") == ("Independent", "独立", "indep")
+    for _, zh, _ in (sidecar_mod.desk_type(s) for s in ("buy", "sell", "independent")):
+        assert zh not in ("看多", "看空")
+
+
+def test_canon_institution_merges_spellings_and_drops_folder_names_from_facet():
+    assert sidecar_mod.canon_institution("Blackrock") == "BlackRock"
+    assert sidecar_mod.canon_institution("ScotiaBank") == "Scotiabank"
+    assert sidecar_mod.canon_institution("ING Direct") == "ING"
+    assert sidecar_mod.canon_institution("Goldman Sachs") == "Goldman Sachs"
+    assert sidecar_mod.institution_is_desk("New folder") is False
+    assert sidecar_mod.institution_is_desk("S&T") is False
+    assert sidecar_mod.institution_is_desk("Goldman Sachs") is True
+
+
 def test_clean_title_is_slug_stable_for_paren_repair():
     """The repair must never move an already-indexed /research/ URL.
 
@@ -438,6 +490,40 @@ def test_public_summary_describes_the_full_catalog_not_a_preview_slice():
             {"name": "Desk C", "count": 1},
         ],
     }
+
+
+def test_public_summary_merges_institution_spellings_and_drops_folder_names():
+    cat = {
+        "items": [
+            {"id": "a", "institution": "Blackrock", "published_at": "2026-07-31T10:00:00Z"},
+            {"id": "b", "institution": "BlackRock", "published_at": "2026-07-30T10:00:00Z"},
+            {"id": "c", "institution": "New folder", "published_at": "2026-07-29T10:00:00Z"},
+            {"id": "d", "institution": "S&T", "published_at": "2026-07-28T10:00:00Z"},
+        ]
+    }
+    summary = catalog_mod.public_summary(
+        cat, now=datetime(2026, 7, 31, 12, tzinfo=timezone.utc)
+    )
+    names = [row["name"] for row in summary["institutions"]]
+    assert names == ["BlackRock"]
+    assert summary["institutions"][0]["count"] == 2
+    assert "New folder" not in names and "S&T" not in names
+
+
+def test_heal_display_repairs_published_summaries_without_touching_id():
+    cat = _cat([{
+        "id": "keep-me",
+        "title": "GS Vol Views GS Vol Views 9 Sep 2026",
+        "institution": "Blackrock",
+        "summary_points": ["**Heading**: PPI at 3.8% (vs.", "6% consensus)."],
+    }])
+    n = catalog_mod.heal_display(cat)
+    assert n >= 3
+    row = cat["items"][0]
+    assert row["id"] == "keep-me"
+    assert row["title"] == "GS Vol Views"
+    assert row["institution"] == "BlackRock"
+    assert row["summary_points"] == ["Heading: PPI at 3.8% (vs. 6% consensus)."]
 
 
 def test_catalog_upsert_is_idempotent_by_id():

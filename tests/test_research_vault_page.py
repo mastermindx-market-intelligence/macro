@@ -133,7 +133,13 @@ def test_browse_and_filter(page_seeded):
     assert 'id="tree"' in page_seeded                     # browse rail tree host
     assert 'id="q"' in page_seeded                        # search box
     assert 'data-dim="inst"' in page_seeded               # institution facet group
-    assert 'data-dim="side"' in page_seeded               # rating facet group
+    assert 'data-dim="side"' in page_seeded               # desk-type facet group
+    assert "Desk type" in page_seeded and "机构类型" in page_seeded
+    assert "买方" in page_seeded and "卖方" in page_seeded
+    facet = re.search(r'data-dim="side">(.*?)</div>', page_seeded, re.S)
+    assert facet, "missing side facet group"
+    assert "Rating" not in facet.group(1) and "评级" not in facet.group(1)
+    assert "看多" not in page_seeded and "看空" not in page_seeded
     assert 'data-dim="theme"' in page_seeded              # theme facet group
 
 
@@ -388,6 +394,53 @@ def test_empty_state_has_no_fake_cards(page_empty):
 def test_ssr_projection_never_leaks_body(page_seeded):
     # the private full-text body must not appear anywhere in the baked page
     assert "SECRET FULL TEXT" not in page_seeded
+
+
+def test_side_renders_as_desk_type_not_a_rating(page_seeded):
+    """`side` is buy-side/sell-side desk type. A Goldman card must not read SELL."""
+    assert "Sell-side" in page_seeded
+    assert "卖方" in page_seeded
+    assert re.search(r'class="stamp sell"', page_seeded) is None
+    assert ">SELL<" not in page_seeded and ">BUY<" not in page_seeded
+    assert "stamp sell-side" in page_seeded
+    js = (bld.ROOT / "site" / "research_vault_app.js").read_text(encoding="utf-8")
+    assert "T('Buy-side', '买方')" in js
+    assert "T('Sell-side', '卖方')" in js
+    assert "T('BUY', '看多')" not in js
+    assert "T('SELL', '看空')" not in js
+
+
+def test_ssr_summary_strips_markdown_and_rejoins_split_sentences(monkeypatch):
+    catalog = {
+        "schema": "research_vault.catalog.v1",
+        "generated_at": "2026-07-22T18:00:00Z",
+        "count": 1,
+        "institutions": ["Rabobank"],
+        "items": [{
+            "id": "rabo-2026-09-09-china",
+            "title": "China note",
+            "institution": "Rabobank",
+            "side": "sell",
+            "desk": "Economics",
+            "published_at": "2026-09-09T10:00:00Z",
+            "summary_points": [
+                "**China’s Economic Data & Structural Risks**: CPI at 0.8% y-o-y (up from 0.5%), PPI at 3.8% y-o-y (vs.",
+                "6% consensus); tobacco monopoly’s $54bn capital funding signals inflationary pressures.",
+            ],
+            "tags": ["China"], "tickers": [], "top_pick": False, "pages": 4,
+            "needs_metadata": False,
+        }],
+    }
+    html = _render(monkeypatch, catalog)
+    assert "**" not in html.split("id=\"feed\"", 1)[-1].split("</div>", 1)[0]
+    assert "vs. 6% consensus" in html
+    assert "(vs.</li>" not in html
+
+
+def test_ssr_hero_figs_use_summary_not_bare_dash(page_seeded):
+    assert re.search(r'id="fig-total">\d+', page_seeded)
+    assert re.search(r'id="fig-new">\d+', page_seeded)
+    assert 'id="fig-total">—' not in page_seeded
 
 
 # --- bilingual + compliance -------------------------------------------------

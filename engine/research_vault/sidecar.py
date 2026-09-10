@@ -207,7 +207,174 @@ def clean_title(title: str) -> str:
             out.append(")")
         else:
             del out[i:]                    # bare trailing "(" — nothing to close
-    return re.sub(r"\s+", " ", "".join(out)).strip()
+    return _finish_title(re.sub(r"\s+", " ", "".join(out)).strip())
+
+
+# Trailing calendar dates the auto-titler appends after a real headline
+# ("GS Vol Views 9 Sep 2026"). Month+day without a year ("July 24") and
+# month+year without a day ("july 2026") are left alone — those are real titles.
+_TRAILING_DAY_MON_YEAR = re.compile(
+    r"\s+\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}\s*$",
+    re.I,
+)
+_TRAILING_MON_DAY_YEAR = re.compile(
+    r"\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2},?\s+\d{4}\s*$",
+    re.I,
+)
+
+# Markdown emphasis the upstream summarizer wraps around bullet headings.
+# The producer lives outside this repo (MarketDesk); we clean at ingest.
+_MD_BOLD = re.compile(r"\*\*(.+?)\*\*")
+_MD_ITALIC = re.compile(r"(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)")
+_ABBREV_END = re.compile(
+    r"(?:\b(?:vs|v|e\.g|i\.e|etc|mr|mrs|ms|dr|prof|inc|ltd|jr|sr|al)|u\.s|u\.k)\.?$",
+    re.I,
+)
+
+# side is DESK TYPE (buy-side / sell-side / independent), never a rating.
+_DESK_TYPE = {
+    "buy": ("Buy-side", "买方", "buy-side"),
+    "sell": ("Sell-side", "卖方", "sell-side"),
+    "independent": ("Independent", "独立", "indep"),
+}
+
+# Preferred spellings for the Institution facet. Keys are casefolded.
+_INSTITUTION_CANON = {
+    "blackrock": "BlackRock",
+    "scotiabank": "Scotiabank",
+    "commbank": "CommBank",
+    "commonwealth bank": "CommBank",
+    "ing": "ING",
+    "ing econ": "ING",
+    "ing direct": "ING",
+}
+
+# Filesystem / document-type labels that are not research desks. Kept on the
+# row (we do not invent a bank name) but excluded from the Institution facet.
+_NON_INSTITUTION = {
+    "new folder", "s&t", "other", "prime", "pb", "sg prime",
+    "week ahead", "weekly preview", "13f summary", "greed and fear",
+    "nuclear", "zh ai",
+}
+
+
+def desk_type(side: str) -> tuple[str, str, str]:
+    """``(en_label, zh_label, css_class)`` for a sidecar ``side`` value.
+
+    ``side`` is buy-side / sell-side / independent desk type, never a
+    BUY/SELL rating. Unknown values degrade to Independent. Never raises.
+    """
+    return _DESK_TYPE.get((side or "").strip().lower(), _DESK_TYPE["independent"])
+
+
+def canon_institution(name: str) -> str:
+    """Collapse known spelling variants; unknown names pass through unchanged."""
+    s = (name or "").strip()
+    if not s:
+        return s
+    return _INSTITUTION_CANON.get(s.casefold(), s)
+
+
+def institution_is_desk(name: str) -> bool:
+    """False for blank, Unknown, and non-institution folder/doc-type labels."""
+    s = (name or "").strip()
+    if not s or s == _UNKNOWN_INSTITUTION:
+        return False
+    return s.casefold() not in _NON_INSTITUTION
+
+
+def _collapse_repeated_lead(s: str) -> str:
+    """'GS Vol Views GS Vol Views …' → 'GS Vol Views …'. Requires a 2+ word repeat."""
+    words = s.split()
+    n = len(words)
+    for k in range(n // 2, 1, -1):
+        if words[:k] == words[k:2 * k]:
+            return " ".join(words[:k] + words[2 * k:])
+    return s
+
+
+def _strip_trailing_calendar_date(s: str) -> str:
+    stripped = _TRAILING_DAY_MON_YEAR.sub("", s)
+    stripped = _TRAILING_MON_DAY_YEAR.sub("", stripped).strip()
+    if stripped and stripped != s and len(stripped.split()) >= 2:
+        return stripped
+    return s
+
+
+def _finish_title(s: str) -> str:
+    """Display-only title polish after paren/dedupe repair. Idempotent."""
+    if not s:
+        return s
+    s = _collapse_repeated_lead(s)
+    return _strip_trailing_calendar_date(s)
+
+
+def _strip_markdown_markup(text: str) -> str:
+    s = str(text or "")
+    s = _MD_BOLD.sub(r"\1", s)
+    s = _MD_ITALIC.sub(r"\1", s)
+    s = s.replace("**", "").replace("__", "")
+    return re.sub(r"\s+", " ", s).strip()
+
+
+def _incomplete_point(s: str) -> bool:
+    """True when ``s`` was cut mid-sentence (abbrev, unclosed paren, dangling join).
+
+    A bullet that merely lacks terminal punctuation is NOT incomplete — short
+    headings and one-word points must stay separate. The producer defect this
+    repairs is a split on ``vs.`` / ``e.g.`` or an open ``(``.
+    """
+    t = (s or "").rstrip()
+    if not t:
+        return False
+    last = t[-1]
+    if last in "(,;:—–-":
+        return True
+    if t.count("(") > t.count(")"):
+        return True
+    if last == ".":
+        return bool(_ABBREV_END.search(t))
+    return False
+
+
+def _continuation_point(s: str) -> bool:
+    t = (s or "").lstrip()
+    if not t:
+        return False
+    return t[0].islower() or t[0].isdigit() or t[0] in ")]}"
+
+
+def _join_points(a: str, b: str) -> str:
+    if a.endswith("(") or b[:1] in ")]},;.":
+        joiner = "" if b[:1] in ")]}" else " "
+    else:
+        joiner = " "
+    return re.sub(r"\s+", " ", a + joiner + b).strip()
+
+
+def clean_summary_points(points: list[str] | None) -> list[str]:
+    """Strip markdown emphasis and rejoin bullets split mid-sentence.
+
+    The upstream summarizer (out of this repo) emits ``**Heading**: …`` and
+    splits on ``vs.``. This is the in-repo ingest producer: new sidecars and
+    catalog heals both run through here so a public surface never sees either
+    artifact. Idempotent, never raises, clamps to ``_MAX_SUMMARY_POINTS``.
+    """
+    try:
+        raw = [_strip_markdown_markup(p) for p in (points or [])]
+        raw = [p for p in raw if p]
+        out: list[str] = []
+        i = 0
+        while i < len(raw):
+            cur = raw[i]
+            while i + 1 < len(raw) and _incomplete_point(cur) and _continuation_point(raw[i + 1]):
+                cur = _join_points(cur, raw[i + 1])
+                i += 1
+            out.append(cur)
+            i += 1
+        return out[:_MAX_SUMMARY_POINTS]
+    except Exception:  # noqa: BLE001 — a summary is never worth failing an ingest
+        return [str(p).strip() for p in (points or []) if str(p).strip()][:_MAX_SUMMARY_POINTS]
 
 
 def normalize(
@@ -278,6 +445,7 @@ def normalize(
     if not institution:
         institution = _UNKNOWN_INSTITUTION
         needs_metadata = True
+    institution = canon_institution(institution) or institution
 
     # --- side --------------------------------------------------------------
     side = _as_str(sc.get("side")).lower()
@@ -288,7 +456,7 @@ def normalize(
     published_at = _as_str(sc.get("published_at")) or _as_str(fallback_published_at)
 
     # --- summary / tags / tickers -----------------------------------------
-    summary_points = _as_str_list(sc.get("summary_points"))[:_MAX_SUMMARY_POINTS]
+    summary_points = clean_summary_points(_as_str_list(sc.get("summary_points")))
     tags = _as_str_list(sc.get("tags"))
     tickers = [t.upper() for t in _as_str_list(sc.get("tickers"))]
 

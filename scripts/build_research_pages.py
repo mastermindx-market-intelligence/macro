@@ -2,7 +2,7 @@
 
 For every report in the vault catalog we generate ``site/research/<slug>.html``: a
 lightweight, crawlable landing page that surfaces the report's TITLE, institution,
-date, rating, tickers/themes, a ONE-LINE public snippet and the public FIRST-PAGES
+date, desk type, tickers/themes, a ONE-LINE public snippet and the public FIRST-PAGES
 EXCERPT — with the full summary + the original PDF behind the Pro gate. JSON-LD
 (``Article`` with ``isAccessibleForFree:false`` + ``hasPart``) marks the page as
 paywalled so Google indexes the public part without it counting as cloaking (the
@@ -46,6 +46,7 @@ sys.path.insert(0, str(_ROOT))
 # import into build() (below, #3648) fixed that for jinja2 specifically; the leaf
 # module closes the class for any heavy import added here later. Do not move
 # these definitions back.
+from engine.research_vault.sidecar import clean_summary_points, desk_type
 from engine.research_vault.slugs import _slug, _title, slug_map  # noqa: F401 (re-export)
 
 log = logging.getLogger("build_research_pages")
@@ -71,7 +72,7 @@ except Exception:  # noqa: BLE001 — never let a missing import break the build
     CANONICAL_BASE = "https://www.mastermind-x.com"
 
 _MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-_STAMP = {"buy": ("BUY", "buy"), "sell": ("SELL", "sell"), "independent": ("IND", "indep")}
+
 _EMPTY_XML = ('<?xml version="1.0" encoding="UTF-8"?>\n'
               '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n</urlset>')
 
@@ -118,15 +119,17 @@ def _trunc(s: str, n: int) -> str:
 def _norm(item: dict) -> dict:
     inst = (item.get("institution") or "Unknown").strip() or "Unknown"
     side = (item.get("side") or "independent").lower()
-    pts = [p for p in (item.get("summary_points") or []) if _clean(p)]
-    stamp_txt, stamp_cls = _STAMP.get(side, ("IND", "indep"))
+    pts = [p for p in clean_summary_points(item.get("summary_points") or []) if _clean(p)]
+    stamp_en, stamp_zh, stamp_cls = desk_type(side)
     return {
         "id": item.get("id") or "",
         "title": _title(item) or "Untitled research",
         "inst": inst,
         "mono": _monogram(inst),
         "side": side,
-        "stamp": stamp_txt,
+        "stamp": stamp_en,
+        "stamp_en": stamp_en,
+        "stamp_zh": stamp_zh,
         "stamp_cls": stamp_cls,
         "desk": item.get("desk") or "",
         "pub_iso": (item.get("published_at") or ""),
