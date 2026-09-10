@@ -1077,15 +1077,19 @@ class _Builder:
                 if code not in wanted:
                     continue
                 association_date = getattr(self, "_ths_basket_concept_dates", {}).get(b_node)
-                if not association_date or association_date > xwalk_date:
-                    # A current basket→concept association cannot certify an older
-                    # canonical join.  The local edge remains visible at its own
-                    # observation date; the canonical edge declines honestly.
+                if not association_date:
+                    # No dated basket→concept receipt means the canonical join is
+                    # unavailable; never infer it from the current node alone.
                     continue
                 refs = [xwalk_ev] + ([cmap_ev] if cmap_ev else [])
+                # The mapping may become usable only once BOTH its curated
+                # crosswalk and source-local association are knowable. A later
+                # association delays the edge; it does not erase a still-valid
+                # one-hop canonical mapping forever.
+                mapping_date = max(xwalk_date, association_date)
                 self._edge(edge_type="EXPRESSES", src=b_node, dst=t_node,
-                           valid_from=xwalk_date, valid_to=None,
-                           evidence_time=xwalk_date, source_class="curated",
+                           valid_from=mapping_date, valid_to=None,
+                           evidence_time=mapping_date, source_class="curated",
                            date_provenance="crosswalk", evidence_refs=refs)
                 n_expresses += 1
 

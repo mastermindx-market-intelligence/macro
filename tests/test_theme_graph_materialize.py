@@ -301,15 +301,17 @@ def test_ths_per_suite_keeps_coverage_disclosure_fields(tree):
     assert ths_member["date_provenance"] == "membership_pit"
 
 
-def test_ths_canonical_join_declines_a_mapping_receipted_after_the_crosswalk(tree):
+def test_ths_canonical_join_delays_a_mapping_receipted_after_the_crosswalk(tree):
     root, _xwalk = tree
     doc = _ths_doc()
     doc["version"] = "2026-07-10"  # after the crosswalk's 2026-07-09 receipt
     _write(root / "baskets_china_ths" / "membership.json", doc)
     view = _build(tree)
-    assert not [edge for edge in _by_type(view, "EXPRESSES")
-                if edge["src"] == f"basket:baskets_china_ths:thsc{KNOWN_CODE}"
-                and edge["dst"] == "theme:solar"]
+    edges = [edge for edge in _by_type(view, "EXPRESSES")
+             if edge["src"] == f"basket:baskets_china_ths:thsc{KNOWN_CODE}"
+             and edge["dst"] == "theme:solar"]
+    assert len(edges) == 1
+    assert edges[0]["valid_from"] == edges[0]["evidence_time"] == "2026-07-10"
 
 
 # ---------------------------------------------------------------------------
@@ -814,22 +816,24 @@ def test_ths_membership_doc_generation_never_closes_a_pit_uncovered_pair(tree):
         "disclosed coverage gap, not a fabricated exit")
 
 
-def test_ths_canonical_join_declines_when_concept_map_asof_is_later_than_crosswalk(tree):
-    """Review BLOCKER 2: the concept-map clock must gate the canonical join too — a
-    membership doc dated BEFORE the crosswalk must still decline if the concept map
-    that resolved it was reloaded AFTER the crosswalk."""
+def test_ths_canonical_join_delays_when_concept_map_asof_is_later_than_crosswalk(tree):
+    """Review BLOCKER 2: every required clock delays the canonical one-hop join.
+
+    The mapping remains useful once knowable, but it can never be backdated before
+    the current concept map that resolved the source-local code.
+    """
     root, _xwalk = tree
     late_cmap_asof = "2026-08-29"  # after XWALK_DATE (2026-07-09)
     _write(root / "baskets_china_ths" / "concept_map.json", {
         "asof": late_cmap_asof,
         "map": {"测试概念": KNOWN_CODE, "另一概念": "900002", "第三概念": "900003"},
     })
-    view = _build(tree)  # membership doc stays at THS_DOC_DATE (2026-06-30, before xwalk)
-    assert not [edge for edge in _by_type(view, "EXPRESSES")
-                if edge["src"] == f"basket:baskets_china_ths:thsc{KNOWN_CODE}"
-                and edge["dst"] == "theme:solar"], (
-        "a concept map reloaded after the crosswalk must decline the canonical join "
-        "even though the membership doc itself predates the crosswalk")
+    view = _build(tree)  # membership doc stays at THS_DOC_DATE (2026-06-30)
+    edges = [edge for edge in _by_type(view, "EXPRESSES")
+             if edge["src"] == f"basket:baskets_china_ths:thsc{KNOWN_CODE}"
+             and edge["dst"] == "theme:solar"]
+    assert len(edges) == 1
+    assert edges[0]["valid_from"] == edges[0]["evidence_time"] == late_cmap_asof
 
 
 # D2C actual nightly-orchestrator proof
@@ -988,3 +992,19 @@ def test_ths_local_theme_canonical_edge_never_predates_concept_map(tree):
              if edge["src"] == src and edge["dst"] == "theme:solar"]
     assert not edges or all(edge["valid_from"] >= late_cmap_asof for edge in edges), (
         "local-theme vocabulary resolution must not be backdated before concept-map knowledge")
+
+
+def test_ths_basket_canonical_edge_delays_to_latest_required_receipt(tree):
+    """A later concept-map receipt delays the one-hop basket mapping, not erases it."""
+    root, _xwalk = tree
+    late_cmap_asof = "2026-08-29"
+    _write(root / "baskets_china_ths" / "concept_map.json", {
+        "asof": late_cmap_asof,
+        "map": {"测试概念": KNOWN_CODE, "另一概念": "900002", "第三概念": "900003"},
+    })
+    view = _build(tree)
+    src = f"basket:baskets_china_ths:thsc{KNOWN_CODE}"
+    edges = [edge for edge in _by_type(view, "EXPRESSES")
+             if edge["src"] == src and edge["dst"] == "theme:solar"]
+    assert len(edges) == 1, "the canonical one-hop mapping must become usable once knowable"
+    assert edges[0]["valid_from"] == edges[0]["evidence_time"] == late_cmap_asof
