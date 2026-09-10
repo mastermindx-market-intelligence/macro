@@ -50,7 +50,7 @@ verified:
     command: python -m pytest -q tests in the private V9 package.
     result: 10 passed after the expected red checkpoint; not this records PR's source CI or evidence of trading edge.
   - claim: The prior source CI hard failure was an owned discovery-record defect, not a runner outage.
-    command: Read #7009 run 34425846264 and scripts/agentos.py provenance rule; retain V8 repair.
+    command: Read PR 7009 run 34425846264 and scripts/agentos.py provenance rule; retain V8 repair.
     result: Runnable falsifier supplied without changing validation law; current exact-head CI remains independently required.
 unverified:
   - claim: The source host, intended volume and producer are restored and accepted.
