@@ -1,23 +1,10 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-10T01:04:14.976762+00:00",
+  "as_of": "2026-09-10T05:58:40.321375+00:00",
   "posts_seen": 15,
   "seen_total": 179,
-  "evaluated": 2,
+  "evaluated": 0,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": [
-    {
-      "id": "wh-2026-09-09-patriot-day-2026-the-25th-anniversary-of-the-september-11-terrorist-attacks",
-      "importance": 0,
-      "activated": false,
-      "degraded_reason": "served_by:codex"
-    },
-    {
-      "id": "wh-2026-09-09-first-lady-melania-trumps-personal-vision-to-preserve-americas-story-through",
-      "importance": 2,
-      "activated": false,
-      "degraded_reason": null
-    }
-  ]
+  "gate_scores": []
 }
