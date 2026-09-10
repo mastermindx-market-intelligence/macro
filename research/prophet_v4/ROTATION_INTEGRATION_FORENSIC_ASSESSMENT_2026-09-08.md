@@ -251,3 +251,157 @@ All file paths below refer to Macro commit `eb9e91961ddc4f3043d0dad358602525e66e
 Completed: intent recovery; pinned source/artifact inspection; four-market method and action-state census; identification of the actual China fallback; separation of US missing evidence from legitimate macro cross-sectional exclusion; recovery of existing programs; and a bounded recommended recovery delta.
 
 Not completed: exact four-row upstream root cause; full point-in-time rotation-to-stock recall census; authenticated current production-byte and browser matrix; implementation or release; independently validated return improvement; worker placement or durable unattended continuation. These remain explicit next actions, not hidden behind the report's existence.
+
+
+## 12. September 10 re-observation: input freshness and screening truth are separate failures
+
+This continuation rechecks the original four-market mission against immutable Macro
+`34b1a66b0dc01155ca2812c31ce0a2e09114b2fe`. It does not restate September 8 facts as
+current, certify authenticated production bytes, or claim better investment returns.
+Current procedure is protected Mastermind
+`f3f2d9155796876009f2d427bfdecc7ee7b63e74`, compatible Skillpack 1.0.1 / bootstrap 1.
+
+### 12.1 Market-native differences remain material
+
+| Market | Board / basket dates | Published board universe | Legacy buy-array rows | Basket population inspected | Principal remaining boundary |
+|---|---|---:|---:|---:|---|
+| US | Sep 8 / Sep 8 | 1,592 | 62 | 49 | Majority underlying price observation is Sep 4; five active Fusion families, theme structure and fundamental quality still abstaining. |
+| China | Sep 9 / Sep 9 | 1,622 | 24 | 22 curated | Only 1,618 ranked rows have measured intelligence; four missing edge records still deactivate intelligence-first ordering globally. |
+| Hong Kong | Sep 9 / Sep 9 | 156 | 11 | 17 | Extension evidence is unknown for all 11 buy-array rows, including four featured rows; current policy permits disclosure rather than an invented safe value. |
+| Canada | Sep 8 / Sep 8 | 215 | 10 | 16 | Explicit screen authority; official_pick_authority=false. The ten-row legacy array is not ten official or available trades. |
+
+These basket counts are the respective published basket files, not a full sector,
+ETF, curated-theme and THS-concept union. China's 22 curated baskets are not its
+233-subsector THS output. Each row retains its own date and authority. No cross-market
+method equivalence, current entry permission or full membership coverage is inferred.
+
+### 12.2 US new-plan starvation has an observed input/validation cause
+
+The US board's own staleness receipt reports price_through=2026-09-04,
+sessions_behind=2, delayed=true, basis=panel_majority and mixed_vintage=true.
+Its latest individual panel timestamp is September 9, but only 199 of 3,038 panel
+members reach that date. That 3,038-name panel is not the 1,592-name ranked board.
+The existing freshness owner deliberately uses the modal price date rather than
+pretending the latest stock refresh makes the whole panel current.
+
+The same commit's plan index has wall-clock asof September 9, source_asof September 4,
+source_board_asof September 8, source_mixed_vintage=true and gate_go=false. It reports:
+
+```text
+buy_rows=62; admitted=35; eligible_after_skips=7
+validation_failed=7; originated=0; unaccounted=0
+```
+
+All seven failure receipts are clock_provenance failures, including stale-price
+and mixed-vintage refusals. This is more specific than an apparently quiet market:
+initially qualifying names exist, but no new plan passed the later validation.
+The safety gate must stay intact. Raising sector weights, bypassing the gate or
+stamping the cache with a newer date would not repair its unavailable inputs.
+
+The board delayed=true and retained index source_delayed=false are not enough to
+prove a propagation bug: these artifacts can reflect different producer generations.
+Resolve the exact generations before making that narrower allegation. The current
+index retains 380 historical plans and 294 open plans, not 380 fresh opportunities.
+
+### 12.3 The explanation contradicts the failed validation
+
+Every one of those seven validation-failed names appears in the eight-name
+plan_not_built receipt. Its line says “Cleared every check — no entry plan came
+together tonight” and “各项检查都通过 — 但今晚没能形成完整计划”.
+
+The source explains the mismatch: engine/prophet_bridge.py::refusal_receipts
+reuses the initial screening predicates, not the completed plan's price/clock
+validation. templates/_prophet_receipts.html.j2 mirrors that overbroad message
+for disclosure. A stock passing initial screening is not a validated entry plan.
+The intended bounded correction says only that initial screening passed and that
+no validated entry plan was produced; it cannot invent the later failure cause
+when that call site does not receive it.
+
+Source operation prophet-intake-validation-copy-20260910-sol-001 was admitted in
+6805/comment5610998691 after a complete 155-open-PR scoped census and 260-worktree
+check found no edited competing owner on its three paths. A normal fresh sparse
+worktree was created at 16b6c14cd4791dde7cd7217a6945987805b0fa16, branch
+claude/prophet-intake-validation-copy-20260910-sol-001.
+
+The FIRST regression append was platform-refused. No test/source patch was written,
+no feature commit or source PR exists, and no alternate tool/worker repeated it.
+Fresh status was clean and the test blob remained
+3388d8df746f87d1012cbb45b4ec473dc8eca686, equal to HEAD. Same-carrier STOP/BLOCKED is
+6805/comment5611114826. The workspace and evidence are preserved; capability is
+NOT_BUILT, not a repair waiting merely for deployment.
+
+### 12.4 Test and execution limits are part of the current state
+
+The unchanged why-not suite ran before the denied append: 44 passed and four
+failed. One still references the removed end .nbgrid comment; three omit the
+existing us_stance_projection global from their fixture environment. The actual
+production builder and current dashboard-render fixture register that helper.
+These are inherited test-harness failures, not evidence of a newly introduced
+product defect. No green suite or red result for the unwritten regression is claimed.
+
+The owning why-not job is data-gated, not presently a demonstrated selected
+code-gate for this new correction. Future lawful continuation must explicitly
+repair the fixture drift and provide actual code-gated execution; no tests may be
+hidden, deselected or replaced with a source-string-only substitute. No manifest,
+runner, job policy or fourth source path changed in this attempt.
+
+The separate withdrawal-consumer characterization also remains UNEXECUTED: only
+part of its external test file was written before an append was refused. No API
+server, B1 writer, temporary generation test or authenticated proof ran from it.
+An exact provider-parent excerpt query and a release-qualification query were
+separately refused and not rerouted. There is no new native binding or release
+permission established by those attempts. Ordinary tool availability still works;
+the app permission configuration was already allow-all and was not changed.
+
+A later combined current incident/run read was refused with safety status
+undetermined. The current status of daily run 34295147946 was not recovered from
+that request. Do not revive its dated queued-time alert as a fresh liveness fact.
+
+### 12.5 Recovery priority and continuation
+
+The first US dependency is a coherent refreshed price population through the
+existing collection and publication owners, not a new model. Source/artifact
+findings were delivered to existing incident #7005 in comment5611131001, preserving
+#6813 staleness and #6783 host/runner ownership. Correlate their actual current run
+and input generation before an operation; the denied metadata read did not do so.
+No new rescue, scheduler, price store, cancellation or dispatch was created.
+
+China's refreshed September 9 board still runs the old ordering because four
+ranked records lack intelligence evidence. The existing #6992 input repair and
+#6866 safety/controlled-activation work remain the relevant owners. The four-record
+count was reverified; their current identities were not rederived, so the old
+September 7 names must not be silently presented as the newer generation's proof.
+Do not fabricate zeros, drop uncovered names or waive the existing safety comparison.
+
+The US Fusion gap still needs company-specific theme/fundamental evidence under
+its existing promotion law. A market-wide hawkishness number is not a new stock-
+selection vote. Unknown extension remains explicit for all 62 US buy-array rows,
+including seven featured rows; disclosure is not proof that chasing is safe.
+
+Existing #7023 weekly-member implementation, #6996 waiting-copy source, #6840
+reviewed audit repair proposal and merged Mastermind #552 retain their exact
+previous evidence. They were not erased or rebuilt. #7023's current hosted planning
+checks succeeded but all twelve execution packs remained queued at the recheck.
+The source-continuity #346 and release/browser gates were not bypassed. No new
+code fix, production installation, improved pick quality or return gain occurred
+in this observation and blocked copy-repair attempt.
+
+### 12.6 Exact immutable evidence hashes
+
+All nine files below were read from `34b1a66b0dc01155ca2812c31ce0a2e09114b2fe`.
+
+| Path | SHA-256 |
+|---|---|
+| `site/factordata/us_standouts.json` | `7d7d1b926d34f2f8ac6afd5745ff48c924deb893d3ab0bc123a340a4eede14ff` |
+| `site/basketdata/baskets.json` | `9a46b6f863c6b4f24288106d4d3f1dea60f915e7c284f28faa66ce1e71eb98d4` |
+| `site/factordata/china_standouts.json` | `90093a0dade67f24cca9ca639061580d4f37f7e9fdd220565c09d412d19bebcc` |
+| `site/chinabasketdata/baskets.json` | `a7ae9d01a1b959bc46bb5f3113e84d424b6df53332b0e6b8177ed11da3609bb9` |
+| `site/factordata/hk_standouts.json` | `29704f5ca88fd55ac5e7da9d107feb6cbeff605fa1003b9a12d955c3a77e4bf2` |
+| `site/hkbasketdata/baskets.json` | `db8c26732ff083d1d60e58fa93d30be76d968db120aeca2bf4ea72bd123f828f` |
+| `site/factordata/canada_standouts.json` | `45c6ef2e4514cc5b51a3a90fce0814c59596456a8591affa0a2e74c886e4e258` |
+| `site/canadabasketdata/baskets.json` | `515ee5b97da7c6c614eb5b2c01050212afdbaf27b5838c45f2f929526bb1b825` |
+| `site/prophet/index.json` | `5d17152c17772026d29ef9cc2bad69dded43edbf4753c749e9fc2446840eef27` |
+
+Machine receipt and source-preparation/STOP facts remain in
+`exec-prestage-receipts/prophet-intake-validation-copy-20260910-sol-001/`.
+These are not sandbox links or served-user proof.
