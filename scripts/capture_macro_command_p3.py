@@ -368,41 +368,29 @@ HAIRLINE_JS = """() => {
 RAIL_VIEWPORT_JS = """() => {
   /* BLOCKER-E1: measure the RAIL VIEWPORT, not each chip's own box.
      Content-sized chips have scrollWidth==clientWidth by construction;
-     truncation is the list scroller + fade + pinned analyst.
-     MAJOR-A: fadeWidth is parsed from the computed mask-image, never
-     a harness constant echoing itself. */
+     truncation is the list scroller + sticky cap + pinned analyst.
+     MAJOR-A: reserved-band width is the computed sticky ::after cap
+     (dark 28 / light 20), never a harness constant echoing itself. */
   const list = document.querySelector('.mc-rail-list');
   const analyst = document.querySelector('.mc-analyst');
   const content = [...document.querySelectorAll('.mc-rail-link:not(.mc-analyst)')];
   if (!list || !analyst || !content.length) {
     return {ok: false, reason: 'missing rail-list/analyst/chips'};
   }
-  const fadeMin = 24;
-  const listCs = getComputedStyle(list);
-  const maskImage = listCs.maskImage;
-  const webkitMaskImage = listCs.webkitMaskImage;
-  const maskRaw = (webkitMaskImage && webkitMaskImage !== 'none')
-    ? webkitMaskImage
-    : (maskImage || 'none');
-  const maskOk = maskRaw !== 'none' && maskRaw !== '';
+  const capCs = getComputedStyle(list, '::after');
+  const capWidth = parseFloat(capCs.width) || 0;
+  const capPosition = String(capCs.position || '');
+  const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+  const expectedCap = theme === 'light' ? 20 : 28;
+  if (!(capCs.position === 'sticky')) {
+    throw new Error('rail sticky cap missing: position=' + JSON.stringify(capPosition)
+      + ' content=' + JSON.stringify(capCs.content));
+  }
+  if (Math.abs(capWidth - expectedCap) > 0.5) {
+    throw new Error('rail cap width ' + capWidth + ' != ' + expectedCap
+      + ' (' + theme + ')');
+  }
   const maxScrollLeft = Math.max(0, list.scrollWidth - list.clientWidth);
-
-  const parseFadeWidth = (raw, listWidth) => {
-    const text = String(raw || '').trim();
-    if (!text || text === 'none') {
-      throw new Error('rail fade mask-image is none/empty: ' + JSON.stringify(raw));
-    }
-    const calc = [...text.matchAll(/calc\\(\\s*100%\\s*-\\s*([\\d.]+)px\\s*\\)/g)];
-    if (calc.length) {
-      return Number(calc[calc.length - 1][1]);
-    }
-    const stops = [...text.matchAll(/(-?[\\d.]+)%/g)].map((m) => Number(m[1]));
-    const opaque = stops.filter((p) => p < 100);
-    if (opaque.length) {
-      return (opaque[opaque.length - 1] / 100) * listWidth;
-    }
-    throw new Error('unparsable mask-image: ' + text);
-  };
 
   const chipOwn = (el) => {
     const cs = getComputedStyle(el);
@@ -438,7 +426,7 @@ RAIL_VIEWPORT_JS = """() => {
     list.scrollLeft = scrollLeft;
     const listBox = list.getBoundingClientRect();
     const analystBox = analyst.getBoundingClientRect();
-    const fadeWidth = parseFadeWidth(maskRaw, listBox.width);
+    const fadeWidth = capWidth;
     const fadeLeft = listBox.right - fadeWidth;
     const fadeBeginsBeforeAnalyst = analystBox.left - fadeLeft;
     return {
@@ -450,7 +438,8 @@ RAIL_VIEWPORT_JS = """() => {
       fadeWidth,
       fadeLeft,
       fadeBeginsBeforeAnalyst,
-      maskRaw,
+      capWidth,
+      capPosition,
       chips: content.map((el) => visibleFraction(el, listBox, analystBox, fadeLeft)),
     };
   };
@@ -498,25 +487,30 @@ RAIL_VIEWPORT_JS = """() => {
     });
   }
 
-  const fadeBandOk = at0.fadeWidth >= fadeMin - 0.5
-    && at0.fadeBeginsBeforeAnalyst >= fadeMin - 0.5
-    && maskOk;
+  const lastAtMax = atMax.chips[atMax.chips.length - 1] || {};
+  const lastRight = lastAtMax.box ? lastAtMax.box.right : NaN;
+  const endHonest = Number.isFinite(lastRight)
+    && lastRight <= atMax.listBox.right - capWidth + 0.5;
+  const capBandOk = capPosition === 'sticky'
+    && Math.abs(capWidth - expectedCap) <= 0.5;
   const everyReachable = fullyVisibleAt.every((row) => row.fullyVisible);
   const ownLabelOk = fullyVisibleAt.every(
     (row) => !row.selfClips && row.whiteSpace === 'nowrap'
       && row.overflow !== 'hidden');
   /* (d) alone is never a pass. */
-  const ok = firstFullyVisibleAt0 && everyReachable && fadeBandOk;
+  const ok = firstFullyVisibleAt0 && everyReachable && capBandOk
+    && (maxScrollLeft <= 0 || endHonest);
   return {
     ok,
     firstFullyVisibleAt0,
     everyReachable,
-    fadeBandOk,
-    maskOk,
+    fadeBandOk: capBandOk,
+    capOk: capBandOk,
+    capWidth,
+    capPosition,
+    expectedCap,
+    endHonest,
     ownLabelOk,
-    maskImage,
-    webkitMaskImage,
-    maskRaw,
     fadeWidth: at0.fadeWidth,
     fadeLeft: at0.fadeLeft,
     fadeBeginsBeforeAnalyst: at0.fadeBeginsBeforeAnalyst,

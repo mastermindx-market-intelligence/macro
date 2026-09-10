@@ -3315,42 +3315,51 @@ WORKSPACE_RAIL_VIEWPORT_JS = """() => {
   const list = document.querySelector('.mq-suitenav-rail')
     || document.querySelector('.mq-tabbar');
   const analyst = document.querySelector('.mc-analyst');
-  const content = [...document.querySelectorAll(
-    '.mq-suitenav-pill:not(.mc-analyst), .mq-tab')];
+  const content = [...list.querySelectorAll(
+    '.mq-suitenav-pill:not(.mc-analyst), .mq-tab, .mc-rail-link:not(.mc-analyst)')];
   if (!list || !content.length) {
     return {ok: false, reason: 'missing workspace rail/tab strip'};
   }
-  const fadeMin = 24;
   const listCs = getComputedStyle(list);
-  const maskImage = listCs.maskImage;
-  const webkitMaskImage = listCs.webkitMaskImage;
-  const maskRaw = (webkitMaskImage && webkitMaskImage !== 'none')
-    ? webkitMaskImage : (maskImage || 'none');
-  const maskOk = maskRaw !== 'none' && maskRaw !== '';
+  const capCs = getComputedStyle(list, '::after');
+  const capWidth = parseFloat(capCs.width) || 0;
+  const capPosition = String(capCs.position || '');
+  const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+  const expectedCap = theme === 'light' ? 20 : 28;
+  if (!(capCs.position === 'sticky')) {
+    throw new Error('workspace rail sticky cap missing: position='
+      + JSON.stringify(capPosition)
+      + ' content=' + JSON.stringify(capCs.content));
+  }
+  if (Math.abs(capWidth - expectedCap) > 0.5) {
+    throw new Error('workspace rail cap width ' + capWidth + ' != '
+      + expectedCap + ' (' + theme + ')');
+  }
   const maxScrollLeft = Math.max(0, list.scrollWidth - list.clientWidth);
-  const parseFadeWidth = (raw, listWidth) => {
-    const text = String(raw || '').trim();
-    if (!text || text === 'none') return 0;
-    const calc = [...text.matchAll(/calc\\(\\s*100%\\s*-\\s*([\\d.]+)px\\s*\\)/g)];
-    if (calc.length) return Number(calc[calc.length - 1][1]);
-    const stops = [...text.matchAll(/(-?[\\d.]+)%/g)].map((m) => Number(m[1]));
-    const opaque = stops.filter((p) => p < 100);
-    if (opaque.length) return (opaque[opaque.length - 1] / 100) * listWidth;
-    return 0;
-  };
-  const listBox = list.getBoundingClientRect();
-  const fadeWidth = parseFadeWidth(maskRaw, listBox.width);
   const analystBox = analyst ? analyst.getBoundingClientRect() : null;
+  list.scrollLeft = maxScrollLeft;
+  const listBox = list.getBoundingClientRect();
+  const lastPill = content[content.length - 1];
+  const lastBox = lastPill.getBoundingClientRect();
+  const endHonest = lastBox.right <= listBox.right - capWidth + 0.5;
+  list.scrollLeft = 0;
+  const capOk = capPosition === 'sticky'
+    && Math.abs(capWidth - expectedCap) <= 0.5;
   return {
-    ok: maskOk && fadeWidth >= fadeMin - 0.5,
-    maskOk,
-    maskRaw,
-    fadeWidth,
+    ok: capOk && (maxScrollLeft <= 0 || endHonest),
+    capOk,
+    capWidth,
+    capPosition,
+    expectedCap,
+    endHonest,
+    fadeWidth: capWidth,
     maxScrollLeft,
     listOverflowX: listCs.overflowX,
     analystPresent: Boolean(analyst),
     analystLeft: analystBox ? analystBox.left : null,
     tabCount: content.length,
+    lastPillRight: lastBox.right,
+    railRight: listBox.right,
   };
 }"""
 
@@ -5380,7 +5389,7 @@ def main() -> int:
                             ))
                         ctx.close()
 
-            # Rail-viewport: hub uses P3's parsed-mask probe; workspace
+            # Rail-viewport: hub uses P3's sticky-cap probe; workspace
             # measures the suite-nav rail / tab strip at 390 and 768.
             for page_name in clear_pages:
                 for width in (390, 768):

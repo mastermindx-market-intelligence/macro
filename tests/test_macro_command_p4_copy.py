@@ -1160,9 +1160,9 @@ def test_p3_clearance_and_rail_import_contract() -> None:
     assert capture._device_px_span_from_crop_box_doc is p3._device_px_span_from_crop_box_doc
 
     assert callable(capture._run_clearance)
-    assert "parseFadeWidth" in capture.RAIL_VIEWPORT_JS
-    assert "maskRaw" in capture.RAIL_VIEWPORT_JS
-    assert "mask-image" in capture.RAIL_VIEWPORT_JS
+    assert "getComputedStyle(list, '::after')" in capture.RAIL_VIEWPORT_JS
+    assert "capWidth" in capture.RAIL_VIEWPORT_JS
+    assert "position === 'sticky'" in capture.RAIL_VIEWPORT_JS
     assert "fadeWidth" in capture.RAIL_VIEWPORT_JS
 
     span = capture._device_px_span(

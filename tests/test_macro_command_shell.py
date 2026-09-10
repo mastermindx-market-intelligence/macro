@@ -319,15 +319,57 @@ def test_le768_hides_mmb_boot_on_mc_page_only(macro_command_css: str) -> None:
         assert "macro_command.css" in text
 
 
-def test_le768_rail_mask_ends_24px_before_the_analyst(
+def test_le768_rail_cap_is_its_own_reserved_band(
         macro_command_css: str) -> None:
-    """r9-m3 evidence: fade finishes ≥24px before the analyst chip."""
+    """The sticky ::after cap is the reserved trailing band; the fade mask is gone."""
     block = re.search(r'@media \(max-width: 768px\) \{(.*?)(?=\n@media|\Z)',
                       macro_command_css, re.S)
     assert block
     body = _strip_css_comments(block.group(1))
-    assert "margin-right: 24px" in body
-    assert "calc(100% - 24px)" in body
+    list_rule = re.search(r'\.mc-rail-list\s*\{([^}]+)\}', body)
+    assert list_rule, "missing ≤768 .mc-rail-list"
+    list_text = list_rule.group(1)
+    assert "margin-right: 24px" in list_text
+    assert "padding-inline-end: 0" in list_text
+    assert "scroll-padding-inline-end: 28px" in list_text
+    assert "scroll-snap-type: inline proximity" in list_text
+    assert "mandatory" not in list_text
+    assert "overflow: hidden" not in list_text
+
+    after = re.search(r'\.mc-rail-list::after\s*\{([^}]+)\}', body)
+    assert after, "missing ≤768 .mc-rail-list::after"
+    after_text = after.group(1)
+    assert 'content: ""' in after_text
+    assert "position: sticky" in after_text
+    assert "inset-inline-end: 0" in after_text
+    assert "flex: 0 0 28px" in after_text
+    assert "pointer-events: none" in after_text
+    assert "transition" not in after_text
+    assert "animation" not in after_text
+
+    light = re.search(
+        r'html\[data-theme="light"\] \.mc-rail-list::after\s*\{([^}]+)\}',
+        body)
+    assert light, "missing light .mc-rail-list::after"
+    light_text = light.group(1)
+    assert "flex-basis: 20px" in light_text
+    assert "border-inline-end: 1px solid var(--mq-line-strong)" in light_text
+    assert "transition" not in light_text
+    assert "animation" not in light_text
+
+    dark_basis = int(re.search(r'flex:\s*0\s+0\s+(\d+)px', after_text).group(1))
+    light_basis = int(re.search(r'flex-basis:\s*(\d+)px', light_text).group(1))
+    assert light_basis <= dark_basis
+
+    stripped = _strip_css_comments(macro_command_css)
+    for match in re.finditer(r'([^{}]+)\{([^{}]*)\}', stripped):
+        sel, rule = match.group(1), match.group(2)
+        if ".mc-rail-list" in sel:
+            assert "mask-image" not in rule, sel
+            if "::after" not in sel:
+                assert "overflow: hidden" not in rule, sel
+        if re.search(r'\.mc-rail-link(?![\w-])', sel):
+            assert "overflow: hidden" not in rule, sel
 
 
 def test_i1_rail_list_scrolls_inside_its_own_box(macro_command_css: str) -> None:
@@ -669,7 +711,13 @@ def test_workspace_pages_carry_analyst_chip_and_page_class() -> None:
     assert "body.mc-page #mmb-boot" in mobile
     assert "html:has(.mc-shell)" not in css
     suite = (TEMPLATES / "macro_suite.css").read_text(encoding="utf-8")
-    assert "calc(100% - 24px)" in suite
+    cap = re.search(r'\.mq-suitenav-rail::after\s*\{([^}]+)\}', suite)
+    assert cap, "missing .mq-suitenav-rail::after"
+    cap_text = cap.group(1)
+    assert "position: sticky" in cap_text
+    assert "inset-inline-end: 0" in cap_text
+    assert "flex: 0 0 28px" in cap_text
+    assert "mask-image" not in suite
     for name in WORKSPACE_P5:
         text = (TEMPLATES / name).read_text(encoding="utf-8")
         assert 'class="mq-page mc-page mq-suite-page"' in text
@@ -699,8 +747,32 @@ def test_workspace_analyst_is_suite_nav_pill_material() -> None:
 
 
 def test_workspace_tab_strip_never_cuts_mid_word() -> None:
+    """Never-cuts-mid-word is snap + reserved band, not a fade mask.
+
+    Cap/snap are authored at the top level (not inside ≤768); only
+    `.mq-suitenav-pill { white-space: nowrap }` stays block-scoped.
+    """
     suite = (TEMPLATES / "macro_suite.css").read_text(encoding="utf-8")
     block = suite.split("@media (max-width: 768px)")[1].split("@media (max-width: 760px)")[0]
-    assert "calc(100% - 24px)" in block
-    assert "overflow-x: auto" in suite
     assert "white-space: nowrap" in block
+    assert "overflow-x: auto" in suite
+    rail = re.search(r'\.mq-suitenav-rail\s*\{([^}]+)\}', suite)
+    assert rail, "missing .mq-suitenav-rail"
+    rail_text = rail.group(1)
+    assert "scroll-snap-type: inline proximity" in rail_text
+    assert "scroll-padding-inline-end: 28px" in rail_text
+    pill = re.search(r'\.mq-suitenav-pill\s*\{([^}]+)\}', suite)
+    assert pill, "missing .mq-suitenav-pill"
+    assert "scroll-snap-align: start" in pill.group(1)
+    after = re.search(r'\.mq-suitenav-rail::after\s*\{([^}]+)\}', suite)
+    assert after, "missing .mq-suitenav-rail::after"
+    light = re.search(
+        r'html\[data-theme="light"\] \.mq-suitenav-rail::after\s*\{([^}]+)\}',
+        suite)
+    assert light, "missing light .mq-suitenav-rail::after"
+    dark_basis = int(re.search(r'flex:\s*0\s+0\s+(\d+)px', after.group(1)).group(1))
+    light_basis = int(re.search(r'flex-basis:\s*(\d+)px', light.group(1)).group(1))
+    assert dark_basis == 28
+    assert light_basis == 20
+    assert light_basis <= dark_basis
+    assert "mask-image" not in suite
