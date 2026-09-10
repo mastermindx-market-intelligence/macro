@@ -134,6 +134,9 @@ COMPARABILITY: dict[str, dict[str, str]] = {
     "COMPARABLE": _pair("Comparable with the prior accepted print",
                         "与上一已接受读数可比"),
     "NO_PRIOR": _pair("No comparable prior print", "没有可比的历史读数"),
+    "NO_EARLIER_PUBLICATION": _pair(
+        "No earlier reading available to compare yet.",
+        "暂无可比较的更早读数。"),
     "METHOD_CHANGED": _pair("Method version changed — shown as a method change, not a delta",
                             "方法版本已变更 — 按方法变更呈现，而非数值变化"),
     "DEFINITION_INCOMPARABLE": _pair("Definitions are not comparable — numeric comparison refused",

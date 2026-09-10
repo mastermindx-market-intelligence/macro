@@ -294,7 +294,16 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
     axis_by_id = {a["axis_id"]: a for a in axes}
     boundary_axis = axis_by_id.get(boundary.get("axis"))
 
-    vector_present = vector.get("status") == "PRESENT" and vector.get("dx") is not None
+    movement_state = headline.get("movement_state")
+    raw_vector = headline.get("one_month_vector")
+    no_earlier_move = (
+        raw_vector is None or movement_state == "NO_EARLIER_PUBLICATION"
+    )
+    vector_present = (
+        not no_earlier_move
+        and vector.get("status") == "PRESENT"
+        and vector.get("dx") is not None
+    )
     return {
         "state_id": headline.get("state_id"),
         "state_label": _bilingual(headline.get("state_label")),
@@ -333,7 +342,11 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
             "dy": L.fmt_signed(vector.get("dy")),
             "dx_raw": vector.get("dx"),
             "dy_raw": vector.get("dy"),
-            "absence": None if vector_present else _absence(vector.get("null_reason")),
+            "absence": (
+                None if vector_present
+                else (_no_earlier_absence(vector.get("null_reason")) if no_earlier_move
+                      else _absence(vector.get("null_reason")))
+            ),
             "status": L.label("presence", vector.get("status")),
         },
         "hysteresis": {
@@ -416,9 +429,36 @@ def _quadrant_map(headline: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]
 
 # --- what changed -------------------------------------------------------------
 
+def _no_earlier_absence(null_reason: Any = None) -> dict[str, Any]:
+    """Plain-word typed absence for a missing earlier publication.
+
+    Never ``None`` / ``nan`` / a fabricated 0 — the shell prints this label.
+    """
+    token = "NO_EARLIER_PUBLICATION"
+    return {
+        "token": token,
+        "label": L.label("comparability", token) or _pair(
+            "No earlier reading available to compare yet.",
+            "暂无可比较的更早读数。"),
+        "display": EM_DASH,
+        "null_reason": null_reason,
+    }
+
+
+def _current_unavailable_absence(null_reason: Any = None) -> dict[str, Any]:
+    """Plain-word typed absence when the earlier reading exists but this one does not."""
+    return {
+        "token": "CURRENT_UNAVAILABLE",
+        "label": _pair("Current reading not available", "当前读数不可用"),
+        "display": EM_DASH,
+        "null_reason": null_reason,
+    }
+
+
 def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
     changes = snapshot.get("changes") or {}
     comparability = changes.get("comparability")
+    no_earlier = comparability == "NO_EARLIER_PUBLICATION"
     deltas = []
     for delta in changes.get("deltas") or []:
         prior_raw, current_raw = delta.get("prior_value"), delta.get("current_value")
@@ -430,7 +470,18 @@ def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         prior_present = _finite(prior_raw)
         current_present = _finite(current_raw)
         delta_present = _finite(delta_raw)
+        if prior_present and current_present and delta_raw is None and not no_earlier:
+            # Both readings exist under a genuine COMPARABLE block: a missing
+            # delta is a computation defect, not an absence. Compute it.
+            delta_raw = float(current_raw) - float(prior_raw)
+            delta_present = True
         comparable_row = prior_present and current_present and delta_present
+        row_absence = None
+        if not comparable_row:
+            if no_earlier or not prior_present:
+                row_absence = _no_earlier_absence(delta.get("null_reason"))
+            else:
+                row_absence = _current_unavailable_absence(delta.get("null_reason"))
         deltas.append({
             "metric_id": delta.get("metric_id"),
             "label": L.label("metric", delta.get("metric_id")),
@@ -447,10 +498,24 @@ def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
             "current": L.fmt_number(current_raw) if current_present else None,
             "delta": L.fmt_signed(delta_raw) if delta_present else None,
             "sign": _sign(delta_raw),
-            "absence": None if comparable_row else _absence(delta.get("null_reason")),
+            "absence": row_absence,
             "note": delta.get("note"),
         })
     comparable = comparability == "COMPARABLE"
+    if no_earlier:
+        block_absence = _no_earlier_absence(changes.get("null_reason"))
+    elif comparability in ("METHOD_CHANGED", "DEFINITION_INCOMPARABLE"):
+        block_absence = {
+            "token": comparability,
+            "label": L.label("comparability", comparability) or _pair(
+                str(comparability), str(comparability)),
+            "display": EM_DASH,
+            "null_reason": changes.get("null_reason"),
+        }
+    elif not (comparable and deltas):
+        block_absence = _absence(changes.get("null_reason"))
+    else:
+        block_absence = None
     return {
         "comparability": comparability,
         "comparability_label": L.label("comparability", comparability),
@@ -459,7 +524,7 @@ def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         "prior_generation_id": changes.get("prior_generation_id"),
         "prior_effective_date": L.date_or_none(changes.get("prior_effective_date")),
         "prior_method_version": changes.get("prior_method_version"),
-        "absence": None if comparable and deltas else _absence(changes.get("null_reason")),
+        "absence": block_absence,
         "status": L.label("presence", changes.get("status")),
     }
 
@@ -930,6 +995,38 @@ def _next_action(context: Mapping[str, Any],
     }
 
 
+def _rows_say_currents_missing(changes: Mapping[str, Any]) -> bool:
+    """True only when every non-comparable row has a prior and no current."""
+    deltas = list(changes.get("deltas") or [])
+    non_comp = [d for d in deltas if not d.get("comparable")]
+    if not non_comp:
+        return False
+    return all(
+        d.get("prior_present") and not d.get("current_present")
+        for d in non_comp
+    )
+
+
+def _glance_change_absence(
+    changes: Mapping[str, Any],
+    comparable_rows: list[Any],
+) -> dict[str, Any] | None:
+    """Preserve the block's reviewed absence pair; mint CURRENT_UNAVAILABLE
+    only when the rows themselves say the current reading is missing."""
+    if comparable_rows and changes.get("comparable"):
+        return None
+    block = changes.get("absence")
+    if _rows_say_currents_missing(changes):
+        return block or _current_unavailable_absence()
+    if block:
+        return block
+    for delta in changes.get("deltas") or []:
+        row_abs = delta.get("absence") if isinstance(delta, Mapping) else None
+        if row_abs:
+            return row_abs
+    return None
+
+
 def _glance(changes: Mapping[str, Any],
             implications: Mapping[str, Any]) -> dict[str, Any]:
     """The bounded brief: one change, one meaning, both owner-published.
@@ -954,7 +1051,7 @@ def _glance(changes: Mapping[str, Any],
             # rather than an empty section the reader has to interpret.
             "comparable_count": len(comparable),
             "total_count": len(deltas),
-            "absence": None if comparable else _absence(changes.get("null_reason")),
+            "absence": _glance_change_absence(changes, comparable),
         },
         "meaning": {
             "present": lead_implication is not None,
