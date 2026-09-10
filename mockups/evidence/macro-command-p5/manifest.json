@@ -2727,16 +2727,16 @@
     }
   },
   "excluded": [],
-  "generated_at": "2026-09-10T19:14:00Z",
-  "generated_at_start": "2026-09-10T19:14:00Z",
-  "generated_at_end": "2026-09-10T19:34:17Z",
-  "head_sha": "172553a5f111808b2fb4e4f6d7bfbd8f32d5fa0f",
-  "head_start": "172553a5f111808b2fb4e4f6d7bfbd8f32d5fa0f",
-  "head_end": "172553a5f111808b2fb4e4f6d7bfbd8f32d5fa0f",
-  "capture_sha": "172553a5f111808b2fb4e4f6d7bfbd8f32d5fa0f",
+  "generated_at": "2026-09-10T20:13:48Z",
+  "generated_at_start": "2026-09-10T20:13:48Z",
+  "generated_at_end": "2026-09-10T20:36:33Z",
+  "head_sha": "e47d45f6c0c740cda973502b1c52303bd4e99ea2",
+  "head_start": "e47d45f6c0c740cda973502b1c52303bd4e99ea2",
+  "head_end": "e47d45f6c0c740cda973502b1c52303bd4e99ea2",
+  "capture_sha": "e47d45f6c0c740cda973502b1c52303bd4e99ea2",
   "tree_clean_start": true,
   "tree_clean_end": true,
-  "commit_time_of_capture_sha": "2026-09-10T12:13:03-07:00",
+  "commit_time_of_capture_sha": "2026-09-10T13:11:33-07:00",
   "pre_commit": false,
   "page_fits": [
     {
@@ -4904,7 +4904,7 @@
     "access": "anonymous only; no credential is entered, stored, or synthesized",
     "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
     "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them",
-    "capture": "tree_clean_start=True; tree_clean_end=True; head_start=172553a5f111808b2fb4e4f6d7bfbd8f32d5fa0f; head_end=172553a5f111808b2fb4e4f6d7bfbd8f32d5fa0f; generated_at_start=2026-09-10T19:14:00Z; generated_at_end=2026-09-10T19:34:17Z; commit_time_of_capture_sha=2026-09-10T12:13:03-07:00"
+    "capture": "tree_clean_start=True; tree_clean_end=True; head_start=e47d45f6c0c740cda973502b1c52303bd4e99ea2; head_end=e47d45f6c0c740cda973502b1c52303bd4e99ea2; generated_at_start=2026-09-10T20:13:48Z; generated_at_end=2026-09-10T20:36:33Z; commit_time_of_capture_sha=2026-09-10T13:11:33-07:00"
   },
   "outcome": "captured",
   "pages": [
@@ -8399,7 +8399,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 765781,
+          "bytes": 765976,
           "captured": true,
           "file": "01-dark-en-1440.png",
           "family": "hub_fold",
@@ -8407,7 +8407,7 @@
           "height": 1800,
           "width": 2880,
           "locale": "en",
-          "sha256": "84dd82ff88fae7a926f266cb5c04a308e4ce1b21d889d0b24c6887b2cdc2724a",
+          "sha256": "76c1a1957e06158f130ca0418b92b41259c69f36ce8c7e3481b45952790f04e6",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -8555,7 +8555,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 1583681,
+          "bytes": 1560154,
           "captured": true,
           "file": "02-dark-zh-1440-full.png",
           "family": "hub_full",
@@ -8563,7 +8563,7 @@
           "height": 3848,
           "width": 2880,
           "locale": "zh",
-          "sha256": "d652675b093b9bf4c31f0074cc3b9e2e75e86ad5e9a02dd096408ee27860ecbb",
+          "sha256": "f3f22fdbe627c5e4ab8554d3bb02d155cd60f1d5623c48c5fa65bdc458d9a05d",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -8600,7 +8600,7 @@
             "height": 900.0
           },
           "scrollWidth": 1440,
-          "painted_fraction": 0.9950623700623701,
+          "painted_fraction": 0.9955821205821206,
           "page_id": "macro_monetary.html"
         },
         {
@@ -14726,7 +14726,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 750236,
+          "bytes": 753640,
           "captured": true,
           "file": "e5-light-en-1440.png",
           "family": "e5",
@@ -14734,7 +14734,7 @@
           "height": 1800,
           "width": 2880,
           "locale": "en",
-          "sha256": "6b36d549ba6a558dfab189adc5e11eb10e0c84727da5549b429b5e19e72cb969",
+          "sha256": "d22c03c9d1323d190363150b3051db70da98e1a07fad4fda53a7ec9d77ea6027",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -14756,7 +14756,7 @@
           "verified_how": "E5 cloned after stalled fragment \u22658000ms",
           "fixture": "builder-payload",
           "trigger": null,
-          "scroll_y_at_shot": 271,
+          "scroll_y_at_shot": 269,
           "ihdr_delta_px": {
             "w": 0,
             "h": 0
@@ -15206,7 +15206,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 833417,
+          "bytes": 728557,
           "captured": true,
           "file": "e5-light-zh-1440.png",
           "family": "e5",
@@ -15214,7 +15214,7 @@
           "height": 1800,
           "width": 2880,
           "locale": "zh",
-          "sha256": "b026d1a0fbac9b8c383670c08d8c676e08f5634e1613d849cc5ca3688e443922",
+          "sha256": "f5563088a4c5207c10d4220ae99b99393dbe042ffe481feb8e3f9b1707c98550",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -15236,7 +15236,7 @@
           "verified_how": "E5 cloned after stalled fragment \u22658000ms",
           "fixture": "builder-payload",
           "trigger": null,
-          "scroll_y_at_shot": 193,
+          "scroll_y_at_shot": 274,
           "ihdr_delta_px": {
             "w": 0,
             "h": 0
@@ -22485,7 +22485,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 1279633,
+          "bytes": 1279857,
           "captured": true,
           "file": "ws-macro_rates_curves-closed-dark-zh-1440.png",
           "family": "workspace",
@@ -22493,7 +22493,7 @@
           "height": 4800,
           "width": 2880,
           "locale": "zh",
-          "sha256": "83c7927c6ce28d13b2fe7b0ef2e2752a2cacf40f558a65bd33a051f8f4d5761e",
+          "sha256": "5fb02e2f684cb6129432d5ae47750383e7ef45bb2a8425acb0939e5a90360868",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -22641,7 +22641,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 286888,
+          "bytes": 286892,
           "captured": true,
           "file": "ws-macro_rates_curves-dark-en-390.png",
           "family": "workspace",
@@ -22649,7 +22649,7 @@
           "height": 1744,
           "width": 780,
           "locale": "en",
-          "sha256": "5ef2baf9bb22eead9d45d46cb000bf6b227707a97c41908119f1c060684d7987",
+          "sha256": "c888e5be22774eea7728d82a5ec689be3bda322e1f8b21ee4e831ad087357bee",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -22877,7 +22877,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 283861,
+          "bytes": 283859,
           "captured": true,
           "file": "ws-macro_rates_curves-dark-en-390-open.png",
           "family": "workspace",
@@ -22885,7 +22885,7 @@
           "height": 1744,
           "width": 780,
           "locale": "en",
-          "sha256": "f236fdc945f70eb87c39b990f5adfe0528c5d28e7ccc3b4e6b3c67a31be8b4d0",
+          "sha256": "3b3d49deac954ce8909e248ff9628f82000b3d03238b2a98852b50778a779d81",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -23338,7 +23338,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 313006,
+          "bytes": 312929,
           "captured": true,
           "file": "ws-macro_rates_curves-dark-zh-390-open.png",
           "family": "workspace",
@@ -23346,7 +23346,7 @@
           "height": 1744,
           "width": 780,
           "locale": "zh",
-          "sha256": "226d4b77ce5249f5782dd56a39e8e2a6eae50d63da020859a87227a573813463",
+          "sha256": "72b467a3b966d648ab99034e66dcf25259873aa9bf811186d7daa7aeac285fe8",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -24485,7 +24485,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 476939,
+          "bytes": 476921,
           "captured": true,
           "file": "ws-macro_rates_curves-dark-en-768.png",
           "family": "workspace",
@@ -24493,7 +24493,7 @@
           "height": 2144,
           "width": 1536,
           "locale": "en",
-          "sha256": "c051e635ed3ce77dbfb25f2980f501571bf3360d87341dca65eef25aa360e8da",
+          "sha256": "3eba66db3825d456926e8057d6fe4a229beba1fe196baf53e09fce229d2ef1c6",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -25584,7 +25584,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -25833,7 +25834,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -26082,7 +26084,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -26321,7 +26324,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -26560,7 +26564,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -26799,7 +26804,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -27049,7 +27055,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -27299,7 +27306,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -27549,7 +27557,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -27789,7 +27798,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -28029,7 +28039,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -28269,7 +28280,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -28518,7 +28530,8 @@
             "\u5177\u5907\u60c5\u51b5",
             "\u65b0\u9c9c\u5ea6",
             "\u6570\u636e\u6e90\u622a\u6b62"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -28767,7 +28780,8 @@
             "\u5177\u5907\u60c5\u51b5",
             "\u65b0\u9c9c\u5ea6",
             "\u6570\u636e\u6e90\u622a\u6b62"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -29016,7 +29030,8 @@
             "\u5177\u5907\u60c5\u51b5",
             "\u65b0\u9c9c\u5ea6",
             "\u6570\u636e\u6e90\u622a\u6b62"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -29235,7 +29250,8 @@
             "\u4e0a\u671f",
             "\u5f53\u524d",
             "\u53d8\u5316"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -29485,7 +29501,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -29735,7 +29752,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -29975,7 +29993,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -30215,7 +30234,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -30455,7 +30475,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -30704,7 +30725,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -30953,7 +30975,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -31202,7 +31225,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -31441,7 +31465,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -31680,7 +31705,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -31919,7 +31945,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -32169,7 +32196,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -32419,7 +32447,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -32669,7 +32698,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -32909,7 +32939,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -33149,7 +33180,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -33389,7 +33421,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -33638,7 +33671,8 @@
             "\u5177\u5907\u60c5\u51b5",
             "\u65b0\u9c9c\u5ea6",
             "\u6570\u636e\u6e90\u622a\u6b62"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -33887,7 +33921,8 @@
             "\u5177\u5907\u60c5\u51b5",
             "\u65b0\u9c9c\u5ea6",
             "\u6570\u636e\u6e90\u622a\u6b62"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -34136,7 +34171,8 @@
             "\u5177\u5907\u60c5\u51b5",
             "\u65b0\u9c9c\u5ea6",
             "\u6570\u636e\u6e90\u622a\u6b62"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -34355,7 +34391,8 @@
             "\u4e0a\u671f",
             "\u5f53\u524d",
             "\u53d8\u5316"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -34605,7 +34642,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -34855,7 +34893,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -35095,7 +35134,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -35335,7 +35375,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -35575,7 +35616,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         }
       ]
     },
@@ -40444,7 +40486,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 1338385,
+          "bytes": 1338088,
           "captured": true,
           "file": "ws-macro_business_activity-closed-dark-en-1440.png",
           "family": "workspace",
@@ -40452,7 +40494,7 @@
           "height": 4800,
           "width": 2880,
           "locale": "en",
-          "sha256": "5dd75f20f6d0cd10023e952d27f566179927a6d1c7d64a778300f4ce050a4c5a",
+          "sha256": "1469c71caa48789cb146bcdf5c43dca961a7e25db7a49b7caba8a2df7a336cb7",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -41452,7 +41494,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 292312,
+          "bytes": 292314,
           "captured": true,
           "file": "ws-macro_business_activity-dark-en-390.png",
           "family": "workspace",
@@ -41460,7 +41502,7 @@
           "height": 1744,
           "width": 780,
           "locale": "en",
-          "sha256": "ec47c383e2428ec2e8600154cf099bd1ad4c69faf9685a8a72ecf18b219bdbe5",
+          "sha256": "0fcb6c3c4f5e0b763bb65da778e0631ccab192ca97b998ecf0f6ae7ec0ea6d04",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -42149,7 +42191,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 303223,
+          "bytes": 303287,
           "captured": true,
           "file": "ws-macro_business_activity-dark-zh-390-open.png",
           "family": "workspace",
@@ -42157,7 +42199,7 @@
           "height": 1744,
           "width": 780,
           "locale": "zh",
-          "sha256": "5fa134739bea3e8ab3f1df42af823011ea51c3cb99457f428c179cd6db198381",
+          "sha256": "0b1f1c087e7e90fe6a2a40e0d9c80ce5708ac731025f7f51ba2097aa92b82ebb",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -44395,7 +44437,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -44644,7 +44687,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -44883,7 +44927,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -45122,7 +45167,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -45361,7 +45407,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -45590,7 +45637,8 @@
             "\u5177\u5907\u60c5\u51b5",
             "\u65b0\u9c9c\u5ea6",
             "\u6570\u636e\u6e90\u622a\u6b62"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -45829,7 +45877,8 @@
             "\u4e0a\u671f",
             "\u5f53\u524d",
             "\u53d8\u5316"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -46068,7 +46117,8 @@
             "\u4e0a\u671f",
             "\u5f53\u524d",
             "\u53d8\u5316"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -46317,7 +46367,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -46566,7 +46617,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -46805,7 +46857,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -47044,7 +47097,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -47283,7 +47337,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -47512,7 +47567,8 @@
             "\u5177\u5907\u60c5\u51b5",
             "\u65b0\u9c9c\u5ea6",
             "\u6570\u636e\u6e90\u622a\u6b62"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -47751,7 +47807,8 @@
             "\u4e0a\u671f",
             "\u5f53\u524d",
             "\u53d8\u5316"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -47990,7 +48047,8 @@
             "\u4e0a\u671f",
             "\u5f53\u524d",
             "\u53d8\u5316"
-          ]
+          ],
+          "header_cell_count": 4
         }
       ]
     },
@@ -53867,7 +53925,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 289170,
+          "bytes": 289077,
           "captured": true,
           "file": "ws-macro_financial_conditions-dark-en-390.png",
           "family": "workspace",
@@ -53875,7 +53933,7 @@
           "height": 1744,
           "width": 780,
           "locale": "en",
-          "sha256": "2863e11794db81aaea3ee96fe61ff5982de62689000091abfe8e6dab97e93184",
+          "sha256": "e249d492bf0054f37367c285ff8387a8c4c18be02a0a4fe5318299419f5d2d3f",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -54103,7 +54161,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 286276,
+          "bytes": 286271,
           "captured": true,
           "file": "ws-macro_financial_conditions-dark-en-390-open.png",
           "family": "workspace",
@@ -54111,7 +54169,7 @@
           "height": 1744,
           "width": 780,
           "locale": "en",
-          "sha256": "db32ae4ad61374d811bc66d8b55520317d1a624dbaee3e022ad6183149c71917",
+          "sha256": "fb0e2e6adcee0e60cf3f93a9cef291f7cd43cbf953fa5533dda6dee6e8d46ed4",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -54564,7 +54622,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 301374,
+          "bytes": 301467,
           "captured": true,
           "file": "ws-macro_financial_conditions-dark-zh-390-open.png",
           "family": "workspace",
@@ -54572,7 +54630,7 @@
           "height": 1744,
           "width": 780,
           "locale": "zh",
-          "sha256": "4efc85cd022994572bc4a3330556860bc947604fb20ac73316607c419598af5c",
+          "sha256": "779a50aa5e7f15b2c282b83300b2ee80b1bd7d6ffa5e6e553dfc8448d783de2a",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -55711,7 +55769,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 465607,
+          "bytes": 465579,
           "captured": true,
           "file": "ws-macro_financial_conditions-dark-en-768.png",
           "family": "workspace",
@@ -55719,7 +55777,7 @@
           "height": 2144,
           "width": 1536,
           "locale": "en",
-          "sha256": "a5a45c99a1cdaee128be275aacb166418b43e7d133286c335a23afb3e91639a7",
+          "sha256": "620137f45b7c5a8e75858df4e539cc077b1b1da725901294fea588ccc9c2740b",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -55925,7 +55983,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 474428,
+          "bytes": 474454,
           "captured": true,
           "file": "ws-macro_financial_conditions-dark-zh-768.png",
           "family": "workspace",
@@ -55933,7 +55991,7 @@
           "height": 2144,
           "width": 1536,
           "locale": "zh",
-          "sha256": "cc326a74b13e86f568d5a6e5943fb37a99833bf690e72d2273f6f8d1a854a9c0",
+          "sha256": "5cbf72e238eea3106843eca65e47493db97b5367c7d57d06c5f9691dd192bf95",
           "theme": "dark",
           "viewport": "tablet",
           "viewport_width": 768,
@@ -57858,7 +57916,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -58107,7 +58166,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -58356,7 +58416,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -58605,7 +58666,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -58854,7 +58916,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -59103,7 +59166,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -59343,7 +59407,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -59583,7 +59648,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -59823,7 +59889,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -60063,7 +60130,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -60303,7 +60371,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -60543,7 +60612,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -60783,7 +60853,8 @@
             "STANDARDIZED",
             "WEIGHT",
             "CONTRIBUTION"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -61023,7 +61094,8 @@
             "STANDARDIZED",
             "WEIGHT",
             "CONTRIBUTION"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -61263,7 +61335,8 @@
             "STANDARDIZED",
             "WEIGHT",
             "CONTRIBUTION"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -61513,7 +61586,8 @@
             "STANDARDIZED",
             "WEIGHT",
             "CONTRIBUTION"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -61763,7 +61837,8 @@
             "STANDARDIZED",
             "WEIGHT",
             "CONTRIBUTION"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -62013,7 +62088,8 @@
             "STANDARDIZED",
             "WEIGHT",
             "CONTRIBUTION"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -62506,7 +62582,8 @@
             "\u5177\u5907\u60c5\u51b5",
             "\u65b0\u9c9c\u5ea6",
             "\u6570\u636e\u6e90\u622a\u6b62"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -62755,7 +62832,8 @@
             "\u5177\u5907\u60c5\u51b5",
             "\u65b0\u9c9c\u5ea6",
             "\u6570\u636e\u6e90\u622a\u6b62"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -62984,7 +63062,8 @@
             "\u4e0a\u671f",
             "\u5f53\u524d",
             "\u53d8\u5316"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -63224,7 +63303,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -63464,7 +63544,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -63704,7 +63785,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -63944,7 +64026,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -64184,7 +64267,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -64424,7 +64508,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -64664,7 +64749,8 @@
             "\u6807\u51c6\u5316\u503c",
             "\u6743\u91cd",
             "\u8d21\u732e"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -64904,7 +64990,8 @@
             "\u6807\u51c6\u5316\u503c",
             "\u6743\u91cd",
             "\u8d21\u732e"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -65154,7 +65241,8 @@
             "\u6807\u51c6\u5316\u503c",
             "\u6743\u91cd",
             "\u8d21\u732e"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -65404,7 +65492,8 @@
             "\u6807\u51c6\u5316\u503c",
             "\u6743\u91cd",
             "\u8d21\u732e"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -65897,7 +65986,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -66146,7 +66236,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -66395,7 +66486,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -66644,7 +66736,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -66893,7 +66986,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -67142,7 +67236,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -67382,7 +67477,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -67622,7 +67718,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -67862,7 +67959,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -68102,7 +68200,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -68342,7 +68441,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -68582,7 +68682,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -68822,7 +68923,8 @@
             "STANDARDIZED",
             "WEIGHT",
             "CONTRIBUTION"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -69062,7 +69164,8 @@
             "STANDARDIZED",
             "WEIGHT",
             "CONTRIBUTION"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -69302,7 +69405,8 @@
             "STANDARDIZED",
             "WEIGHT",
             "CONTRIBUTION"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -69552,7 +69656,8 @@
             "STANDARDIZED",
             "WEIGHT",
             "CONTRIBUTION"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -69802,7 +69907,8 @@
             "STANDARDIZED",
             "WEIGHT",
             "CONTRIBUTION"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -70052,7 +70158,8 @@
             "STANDARDIZED",
             "WEIGHT",
             "CONTRIBUTION"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -70545,7 +70652,8 @@
             "\u5177\u5907\u60c5\u51b5",
             "\u65b0\u9c9c\u5ea6",
             "\u6570\u636e\u6e90\u622a\u6b62"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -70794,7 +70902,8 @@
             "\u5177\u5907\u60c5\u51b5",
             "\u65b0\u9c9c\u5ea6",
             "\u6570\u636e\u6e90\u622a\u6b62"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -71023,7 +71132,8 @@
             "\u4e0a\u671f",
             "\u5f53\u524d",
             "\u53d8\u5316"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -71263,7 +71373,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -71503,7 +71614,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -71743,7 +71855,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -71983,7 +72096,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -72223,7 +72337,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -72463,7 +72578,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -72703,7 +72819,8 @@
             "\u6807\u51c6\u5316\u503c",
             "\u6743\u91cd",
             "\u8d21\u732e"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -72943,7 +73060,8 @@
             "\u6807\u51c6\u5316\u503c",
             "\u6743\u91cd",
             "\u8d21\u732e"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -73193,7 +73311,8 @@
             "\u6807\u51c6\u5316\u503c",
             "\u6743\u91cd",
             "\u8d21\u732e"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -73443,7 +73562,8 @@
             "\u6807\u51c6\u5316\u503c",
             "\u6743\u91cd",
             "\u8d21\u732e"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -83356,7 +83476,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 1376748,
+          "bytes": 1376552,
           "captured": true,
           "file": "ws-macro_housing_real_estate-closed-dark-en-1440.png",
           "family": "workspace",
@@ -83364,7 +83484,7 @@
           "height": 4800,
           "width": 2880,
           "locale": "en",
-          "sha256": "a7f836aa630d6d6b1f9c1b9dcd939d05147bc213cf6ccb5b454ffa8b5022c02e",
+          "sha256": "18fd65e96b65e0e029d26ed1f6c60cced4782abf7ffb1242cce5de007484ffe8",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -83608,7 +83728,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 1333443,
+          "bytes": 1333458,
           "captured": true,
           "file": "ws-macro_housing_real_estate-closed-dark-zh-1440.png",
           "family": "workspace",
@@ -83616,7 +83736,7 @@
           "height": 4800,
           "width": 2880,
           "locale": "zh",
-          "sha256": "9c7beb40e77adaa8f997114e5266e09e7a3ebede1b666c9de416f72fbbc50f9b",
+          "sha256": "0cd06f39900b10ff8b2de39d1fa7e46f9d8c69fad4faf1d6316e39518506fc89",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -84372,7 +84492,7 @@
           "height": 1744,
           "width": 780,
           "locale": "en",
-          "sha256": "c2f309dfd3b756d038e8e710880828ad7939627624e5983313cd80da84780b76",
+          "sha256": "326aff32bb3fd9c133cbcd931dcd7df06e36a230a3419be4c3942fa9c307cc06",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -84600,7 +84720,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 299316,
+          "bytes": 299249,
           "captured": true,
           "file": "ws-macro_housing_real_estate-dark-en-390-open.png",
           "family": "workspace",
@@ -84608,7 +84728,7 @@
           "height": 1744,
           "width": 780,
           "locale": "en",
-          "sha256": "5581b8d055d7ed56b76a207f30bd0cd88211a2c4958d2ba16838bc5ac4bacfa7",
+          "sha256": "412eacbee0a3623abf22935966f6d93b3428264835ef0340fc6946336f0082ec",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -85061,7 +85181,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 315464,
+          "bytes": 315285,
           "captured": true,
           "file": "ws-macro_housing_real_estate-dark-zh-390-open.png",
           "family": "workspace",
@@ -85069,7 +85189,7 @@
           "height": 1744,
           "width": 780,
           "locale": "zh",
-          "sha256": "1f14ee6804483862fe2b0f0c09116cdb9c60d3fe32d7564072cacedb7d738e61",
+          "sha256": "d853903423e91e5a43f5501f5365b651f5513db9e0655fea6e3dd041258485e1",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -87307,7 +87427,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -87556,7 +87677,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -87805,7 +87927,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -88044,7 +88167,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -88283,7 +88407,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -88522,7 +88647,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -88772,7 +88898,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -89022,7 +89149,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -89272,7 +89400,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -89512,7 +89641,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -89752,7 +89882,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -89992,7 +90123,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -90241,7 +90373,8 @@
             "\u5177\u5907\u60c5\u51b5",
             "\u65b0\u9c9c\u5ea6",
             "\u6570\u636e\u6e90\u622a\u6b62"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -90490,7 +90623,8 @@
             "\u5177\u5907\u60c5\u51b5",
             "\u65b0\u9c9c\u5ea6",
             "\u6570\u636e\u6e90\u622a\u6b62"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -90709,7 +90843,8 @@
             "\u4e0a\u671f",
             "\u5f53\u524d",
             "\u53d8\u5316"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -90959,7 +91094,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -91209,7 +91345,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -91449,7 +91586,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -91689,7 +91827,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -91929,7 +92068,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -92178,7 +92318,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -92427,7 +92568,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -92676,7 +92818,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -92915,7 +93058,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -93154,7 +93298,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -93393,7 +93538,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -93643,7 +93789,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -93893,7 +94040,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -94143,7 +94291,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -94383,7 +94532,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -94623,7 +94773,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -94863,7 +95014,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -95112,7 +95264,8 @@
             "\u5177\u5907\u60c5\u51b5",
             "\u65b0\u9c9c\u5ea6",
             "\u6570\u636e\u6e90\u622a\u6b62"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -95361,7 +95514,8 @@
             "\u5177\u5907\u60c5\u51b5",
             "\u65b0\u9c9c\u5ea6",
             "\u6570\u636e\u6e90\u622a\u6b62"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -95580,7 +95734,8 @@
             "\u4e0a\u671f",
             "\u5f53\u524d",
             "\u53d8\u5316"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -95830,7 +95985,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -96080,7 +96236,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -96320,7 +96477,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -96560,7 +96718,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -96800,7 +96959,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         }
       ]
     },
@@ -97077,7 +97237,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 293957,
+          "bytes": 294024,
           "captured": true,
           "file": "ws-macro_monetary_policy-dark-zh-390.png",
           "family": "workspace",
@@ -97085,7 +97245,7 @@
           "height": 1688,
           "width": 780,
           "locale": "zh",
-          "sha256": "930d89fddd99d26bf852451379a581ed589c82285cb1ce5714a34a4f8d121944",
+          "sha256": "933e0158e4db1a0a11b71b435ada6190397134ea049eaa5250e0be18a2f9d0d6",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -100168,7 +100328,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 1252720,
+          "bytes": 1252785,
           "captured": true,
           "file": "ws-macro_labor_markets-closed-dark-en-1440.png",
           "family": "workspace",
@@ -100176,7 +100336,7 @@
           "height": 4800,
           "width": 2880,
           "locale": "en",
-          "sha256": "b03f0ea786ff4d7cf90134246aa514584880018766acd7c01a40d08091ead21d",
+          "sha256": "c2bb02dd7fccd74ce80ac729bc55bf59986c320331a0547ec60281419369fa44",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
@@ -100428,7 +100588,7 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 297431,
+          "bytes": 297341,
           "captured": true,
           "file": "ws-macro_labor_markets-dark-zh-390.png",
           "family": "workspace",
@@ -100436,7 +100596,7 @@
           "height": 1688,
           "width": 780,
           "locale": "zh",
-          "sha256": "fac41b394b86b51f9debef2d66b775294497c7429658b6f5d244a660297cab62",
+          "sha256": "a8cf7779d049d02f2d952a478c401fafedc290b4c4b7d9507298a59c10853d8f",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -100480,7 +100640,7 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 257917,
+          "bytes": 257904,
           "captured": true,
           "file": "ws-macro_labor_markets-light-en-390.png",
           "family": "workspace",
@@ -100488,7 +100648,7 @@
           "height": 1688,
           "width": 780,
           "locale": "en",
-          "sha256": "0fa3e8bff26f9e016a8a5ecdb4884d586c97c7659e894d522a0959a6f7e676b9",
+          "sha256": "d9f1bc1ff4d3034c54f73f51a3c62d32e365a92baf94d8923f2d05228e2e8034",
           "theme": "light",
           "viewport": "mobile",
           "viewport_width": 390,
@@ -101875,7 +102035,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -102124,7 +102285,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -102373,7 +102535,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -102622,7 +102785,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -102871,7 +103035,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -103111,7 +103276,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -103351,7 +103517,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -103591,7 +103758,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -103831,7 +103999,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -104071,7 +104240,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -104311,7 +104481,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -104551,7 +104722,8 @@
             "STANDARDIZED",
             "WEIGHT",
             "CONTRIBUTION"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -104791,7 +104963,8 @@
             "STANDARDIZED",
             "WEIGHT",
             "CONTRIBUTION"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -105031,7 +105204,8 @@
             "STANDARDIZED",
             "WEIGHT",
             "CONTRIBUTION"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -105281,7 +105455,8 @@
             "STANDARDIZED",
             "WEIGHT",
             "CONTRIBUTION"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -105531,7 +105706,8 @@
             "STANDARDIZED",
             "WEIGHT",
             "CONTRIBUTION"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -105781,7 +105957,8 @@
             "STANDARDIZED",
             "WEIGHT",
             "CONTRIBUTION"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -106274,7 +106451,8 @@
             "\u5177\u5907\u60c5\u51b5",
             "\u65b0\u9c9c\u5ea6",
             "\u6570\u636e\u6e90\u622a\u6b62"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -106523,7 +106701,8 @@
             "\u5177\u5907\u60c5\u51b5",
             "\u65b0\u9c9c\u5ea6",
             "\u6570\u636e\u6e90\u622a\u6b62"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -106752,7 +106931,8 @@
             "\u4e0a\u671f",
             "\u5f53\u524d",
             "\u53d8\u5316"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -106992,7 +107172,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -107232,7 +107413,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -107472,7 +107654,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -107712,7 +107895,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -107952,7 +108136,8 @@
             "\u6807\u51c6\u5316\u503c",
             "\u6743\u91cd",
             "\u8d21\u732e"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -108192,7 +108377,8 @@
             "\u6807\u51c6\u5316\u503c",
             "\u6743\u91cd",
             "\u8d21\u732e"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -108442,7 +108628,8 @@
             "\u6807\u51c6\u5316\u503c",
             "\u6743\u91cd",
             "\u8d21\u732e"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -108692,7 +108879,8 @@
             "\u6807\u51c6\u5316\u503c",
             "\u6743\u91cd",
             "\u8d21\u732e"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -109185,7 +109373,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -109434,7 +109623,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -109683,7 +109873,8 @@
             "PRESENCE",
             "FRESHNESS",
             "SOURCE AS-OF"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -109932,7 +110123,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -110181,7 +110373,8 @@
             "PRIOR",
             "CURRENT",
             "CHANGE"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -110421,7 +110614,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -110661,7 +110855,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -110901,7 +111096,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -111141,7 +111337,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -111381,7 +111578,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -111621,7 +111819,8 @@
             "UNIT",
             "PUSH",
             "COVERAGE"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -111861,7 +112060,8 @@
             "STANDARDIZED",
             "WEIGHT",
             "CONTRIBUTION"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -112101,7 +112301,8 @@
             "STANDARDIZED",
             "WEIGHT",
             "CONTRIBUTION"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -112341,7 +112542,8 @@
             "STANDARDIZED",
             "WEIGHT",
             "CONTRIBUTION"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -112591,7 +112793,8 @@
             "STANDARDIZED",
             "WEIGHT",
             "CONTRIBUTION"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -112841,7 +113044,8 @@
             "STANDARDIZED",
             "WEIGHT",
             "CONTRIBUTION"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -113091,7 +113295,8 @@
             "STANDARDIZED",
             "WEIGHT",
             "CONTRIBUTION"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -113584,7 +113789,8 @@
             "\u5177\u5907\u60c5\u51b5",
             "\u65b0\u9c9c\u5ea6",
             "\u6570\u636e\u6e90\u622a\u6b62"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -113833,7 +114039,8 @@
             "\u5177\u5907\u60c5\u51b5",
             "\u65b0\u9c9c\u5ea6",
             "\u6570\u636e\u6e90\u622a\u6b62"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -114062,7 +114269,8 @@
             "\u4e0a\u671f",
             "\u5f53\u524d",
             "\u53d8\u5316"
-          ]
+          ],
+          "header_cell_count": 4
         },
         {
           "access": "anonymous",
@@ -114302,7 +114510,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -114542,7 +114751,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -114782,7 +114992,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -115022,7 +115233,8 @@
             "\u5355\u4f4d",
             "\u63a8\u529b",
             "\u8986\u76d6"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -115262,7 +115474,8 @@
             "\u6807\u51c6\u5316\u503c",
             "\u6743\u91cd",
             "\u8d21\u732e"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -115502,7 +115715,8 @@
             "\u6807\u51c6\u5316\u503c",
             "\u6743\u91cd",
             "\u8d21\u732e"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -115752,7 +115966,8 @@
             "\u6807\u51c6\u5316\u503c",
             "\u6743\u91cd",
             "\u8d21\u732e"
-          ]
+          ],
+          "header_cell_count": 5
         },
         {
           "access": "anonymous",
@@ -116002,7 +116217,8 @@
             "\u6807\u51c6\u5316\u503c",
             "\u6743\u91cd",
             "\u8d21\u732e"
-          ]
+          ],
+          "header_cell_count": 5
         }
       ]
     }
