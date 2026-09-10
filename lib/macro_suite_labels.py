@@ -114,7 +114,8 @@ CONTRADICTION_KIND: dict[str, dict[str, str]] = {
     "trade_balance_identity_disagreement": _pair(
         "Trade balance parts do not add up", "贸易差额各分项对不上"),
     "spending_on_credit_vs_confidence_divergence": _pair(
-        "Spending on credit while confidence falls", "靠信贷消费，信心却在下降"),
+        "Confidence rising, but spending may rely more on credit",
+        "信心上升，但消费可能更依赖信贷"),
     "nominal_real_breakeven_decomposition_disagreement": _pair(
         "Nominal, real and breakeven yields do not add up",
         "名义、实际与盈亏平衡收益率对不上"),
@@ -132,7 +133,8 @@ CONTRADICTION_KIND: dict[str, dict[str, str]] = {
     "dots_vs_market_path": _pair(
         "Fed dots and the market path disagree", "美联储点阵图与市场路径相悖"),
     "broad_stress_vs_risk_appetite": _pair(
-        "Broad stress while risk appetite holds", "整体承压，风险偏好却未减"),
+        "Official stress reads calm; market appetite is risk-off",
+        "官方压力读数平静，市场却偏向避险"),
 }
 
 CONTRADICTION_KIND_TONE: dict[str, str] = {

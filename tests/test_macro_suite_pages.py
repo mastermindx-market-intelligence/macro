@@ -346,6 +346,74 @@ def test_every_engine_contradiction_kind_has_a_reviewed_label() -> None:
     assert unlabelled == set(), unlabelled
 
 
+def test_the_two_healed_contradiction_labels_agree_with_their_producers() -> None:
+    """Producer -> display: a contradiction label must not contradict the engine
+    sentence printed beside it.
+
+    ``lib/macro_suite_view.py:124`` resolves the CONTRADICTION_KIND label and
+    ``:126`` carries the producer's own EN/ZH sentence, so the two land in one
+    block and a reversed label is refuted where the reader meets it. Nothing
+    else in this file joins the two: the coverage test above asserts only that
+    a label EXISTS, and the producer-side suites never read display text --
+    which is how two frozen pairs came to state the opposite of the engine.
+
+    So call the detectors that EMIT these kinds, take the kind they emit (an
+    engine rename fails here rather than quietly relabelling nothing), install
+    the emitted contradiction on a copy of the shipped snapshot and read the
+    label off the real view. Reverting either pair fails this test.
+    """
+    # Local import: this is the only test that needs the producers, and the
+    # claim under test is precisely the join between them and the label table.
+    from engine.market_os.macro_workspaces import consumer_payments, financial_conditions
+
+    def _label_a_reader_meets(emitted: Mapping[str, Any]) -> dict[str, str]:
+        snapshot = json.loads(_body_path(DATA_ROOT).read_text(encoding="utf-8"))
+        snapshot["availability"]["contradiction"] = {
+            "present": True,
+            "kind": emitted["kind"],
+            "en": emitted["en"],
+            "zh": emitted["zh"],
+            "components": list(emitted.get("components") or []),
+        }
+        view = _view_of(snapshot)["context"]["contradiction"]
+        assert view is not None
+        assert view["kind_raw"] == emitted["kind"]
+        return view["kind"]
+
+    # -- pair 1: consumer_payments, all three legs beyond their flat bands ----
+    emitted = consumer_payments._detect_contradiction(
+        sentiment_yoy=2.0, revolving_yoy=4.0, saving_rate_change_3m=-0.5)
+    assert len(emitted) == 1, emitted
+    credit = emitted[0]
+    assert credit["kind"] == "spending_on_credit_vs_confidence_divergence"
+    # The producer's own sentence says confidence is RISING, not falling.
+    assert credit["en"].startswith("Consumer sentiment is rising year-over-year"), credit["en"]
+    assert "消费者信心同比上升" in credit["zh"], credit["zh"]
+    credit_label = _label_a_reader_meets(credit)
+    assert "Confidence rising" in credit_label["en"], credit_label["en"]
+    assert "confidence falls" not in credit_label["en"], credit_label["en"]
+    assert "falling" not in credit_label["en"], credit_label["en"]
+    assert "信心上升" in credit_label["zh"], credit_label["zh"]
+    assert "信心却在下降" not in credit_label["zh"], credit_label["zh"]
+
+    # -- pair 2: financial_conditions, calm official stress vs a risk-off tape -
+    stress = financial_conditions._detect_contradiction(
+        {"state": "calm"}, {"state": "risk-off (elevated)"})
+    assert stress["present"] is True, stress
+    assert stress["kind"] == "broad_stress_vs_risk_appetite"
+    # The producer's own sentence says stress reads CALM and appetite risk-OFF.
+    assert "reads calm" in stress["en"], stress["en"]
+    assert "risk-off" in stress["en"], stress["en"]
+    assert "平静" in stress["zh"] and "风险规避" in stress["zh"], stress["zh"]
+    stress_label = _label_a_reader_meets(stress)
+    assert "calm" in stress_label["en"], stress_label["en"]
+    assert "risk-off" in stress_label["en"], stress_label["en"]
+    assert "Broad stress" not in stress_label["en"], stress_label["en"]
+    assert "平静" in stress_label["zh"], stress_label["zh"]
+    assert "避险" in stress_label["zh"], stress_label["zh"]
+    assert "整体承压" not in stress_label["zh"], stress_label["zh"]
+
+
 def test_every_published_horizon_and_region_has_a_reviewed_name() -> None:
     """`current` / `weeks` and an English region name are producer tokens; a
     Chinese reader must not meet either of them raw."""
