@@ -5945,3 +5945,11 @@
 {"id":"ob-2026-09-10-a69796cb91","from":"approved","to":"posting","at":"2026-09-10T17:26:37Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-09-10-a69796cb91","from":"posting","to":"posted","at":"2026-09-10T17:26:38Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aa2e84e5d99b304274486b3","external_url":null,"at":"2026-09-10T17:26:22Z","booked_at":"2026-09-10T17:26:22Z"}}
 {"id":"ob-2026-09-10-974201e78c","from":"approved","to":"quarantined","at":"2026-09-10T17:26:38Z","actor":"publisher","note":"orphaned context brief: alert is unresolved","receipt":null}
+{"id":"ob-2026-09-10-0bdf492bb1","from":"queued","to":"approved","at":"2026-09-10T17:31:55Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-09-10-1473a24276","from":"queued","to":"approved","at":"2026-09-10T17:31:55Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-09-10-e92038717e","from":"queued","to":"approved","at":"2026-09-10T17:31:55Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-09-10-0bdf492bb1","from":"approved","to":"quarantined","at":"2026-09-10T17:31:57Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
+{"id":"ob-2026-09-10-1473a24276","from":"approved","to":"posting","at":"2026-09-10T17:32:05Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-09-10-1473a24276","from":"posting","to":"posted","at":"2026-09-10T17:32:07Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aa2e99629a128225341bebf","external_url":null,"at":"2026-09-10T17:31:55Z","booked_at":"2026-09-10T17:31:55Z"}}
+{"id":"ob-2026-09-10-e92038717e","from":"approved","to":"posting","at":"2026-09-10T17:32:12Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-09-10-e92038717e","from":"posting","to":"posted","at":"2026-09-10T17:32:13Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aa2e99ceb97ca19e9d668ff","external_url":null,"at":"2026-09-10T17:31:55Z","booked_at":"2026-09-10T17:31:55Z"}}
