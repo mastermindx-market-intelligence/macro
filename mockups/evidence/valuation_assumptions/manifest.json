@@ -24,7 +24,7 @@
     }
   },
   "excluded": [],
-  "generated_at": "2026-09-09T00:00:00Z",
+  "generated_at": "2026-09-10T00:00:00Z",
   "honesty": {
     "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
     "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
@@ -281,14 +281,54 @@
     {
       "console_errors": [
         {
-          "source_url": "http://127.0.0.1:64622/nav_market.js?v=20260814-sf-inter-font-upgrade",
+          "source_url": "http://127.0.0.1:51389/product-nav-icons.css?v=093ad1ea",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:51389/fonts/Inter-700.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:51389/fonts/Inter-600.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:51389/account.js?v=20260814-sf-inter-font-upgrade",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:51389/fonts/Inter-400.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:51389/terminal_overlay.js",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         }
       ],
       "failed_responses": [
         {
           "status": 404,
-          "url": "http://127.0.0.1:64622/nav_market.js?v=20260814-sf-inter-font-upgrade"
+          "url": "http://127.0.0.1:51389/product-nav-icons.css?v=093ad1ea"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:51389/fonts/Inter-700.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:51389/fonts/Inter-600.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:51389/account.js?v=20260814-sf-inter-font-upgrade"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:51389/fonts/Inter-400.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:51389/terminal_overlay.js"
         }
       ],
       "gaps": [
@@ -339,18 +379,18 @@
         "asof_present": false,
         "by_viewport": {
           "desktop": {
-            "document_height_px": 1516,
+            "document_height_px": 1536,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 2283,
+            "document_height_px": 2304,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           }
         },
         "console_error_count": 1,
-        "document_height_px": 1516,
+        "document_height_px": 1536,
         "duplicate_heading_texts": [],
         "elements_wider_than_viewport": 0,
         "heading_counts": {
@@ -370,16 +410,16 @@
           "viewport": "desktop"
         },
         "panel_count": 4,
-        "payload_bytes_total": 493558,
+        "payload_bytes_total": 352422,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
-        "request_count": 10,
+        "request_count": 9,
         "screenshot_completion": 1.0,
         "section_count": 0,
         "source_present": true,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 303
+        "visible_word_count": 308
       },
       "page_id": "evidence_valuation-assumptions-no-js.html",
       "registry_route": "/evidence/valuation-assumptions-no-js.html",
@@ -390,13 +430,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 273556,
+          "bytes": 276667,
           "captured": true,
-          "file": "e29365c9b8ad0b2f.png",
+          "file": "dd1707a5621cf289.png",
           "force_state": null,
-          "height": 1516,
+          "height": 1536,
           "locale": "en",
-          "sha256": "e29365c9b8ad0b2f9777c0dbb75adaf6d7d138f1853de65e60a6d78902431ec2",
+          "sha256": "dd1707a5621cf289ba5601c516dc8020d707a69c1af23507efade8f4608ac67e",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -407,13 +447,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 278965,
+          "bytes": 282293,
           "captured": true,
-          "file": "ba7055d48f3f5f9a.png",
+          "file": "1aa074bb1a35ca08.png",
           "force_state": null,
-          "height": 1516,
+          "height": 1536,
           "locale": "en",
-          "sha256": "ba7055d48f3f5f9a64565c1a292c599a8a828a5914fd53a415c1aee4837056c5",
+          "sha256": "1aa074bb1a35ca087ca3f730f1333b4bb16f0f7cb9ec7b2da18dc3d8a9cc6232",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -424,13 +464,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 290028,
+          "bytes": 290161,
           "captured": true,
-          "file": "b1742d995e149c69.png",
+          "file": "968545c2b9e16a2d.png",
           "force_state": null,
           "height": 1481,
           "locale": "zh",
-          "sha256": "b1742d995e149c69841fbe8741677ba26ac831db7803469999ec231398dde985",
+          "sha256": "968545c2b9e16a2dcf98013ebf896518a8c1e8e3650001f28d7bab51ae75b18e",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -441,13 +481,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 294666,
+          "bytes": 294636,
           "captured": true,
-          "file": "b677c56416b77817.png",
+          "file": "546c44b8b0624c22.png",
           "force_state": null,
           "height": 1481,
           "locale": "zh",
-          "sha256": "b677c56416b77817184d899998f00e3ca32d801b3d73481c447bd9609465647f",
+          "sha256": "546c44b8b0624c22b495fa9282a9e4346e27487ba4b9d14c4bd4a2f52eab8d04",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -458,13 +498,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 227646,
+          "bytes": 230342,
           "captured": true,
-          "file": "eab8b120f958bc1b.png",
+          "file": "2b1bd9ea6c82bb9e.png",
           "force_state": null,
-          "height": 2283,
+          "height": 2304,
           "locale": "en",
-          "sha256": "eab8b120f958bc1b2b06ad7734edcbe925ca62ac71a98dd6987416bfced3de58",
+          "sha256": "2b1bd9ea6c82bb9e29bcdb99e95377b2e209828278ef54a4c45f4be4f822776e",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -475,13 +515,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 232797,
+          "bytes": 235177,
           "captured": true,
-          "file": "25992632fb2ddced.png",
+          "file": "d1125652905e256b.png",
           "force_state": null,
-          "height": 2283,
+          "height": 2304,
           "locale": "en",
-          "sha256": "25992632fb2ddceda7b7ecdde670498d77025b37c7606b692615a3f82d0925af",
+          "sha256": "d1125652905e256bb6dd0317058637e3f40c5fc8fa03c8d4a80b85ebb04e5bc7",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -492,13 +532,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 242399,
+          "bytes": 242516,
           "captured": true,
-          "file": "2d24ec850bc0ad4b.png",
+          "file": "602fd88b7e1bfbac.png",
           "force_state": null,
           "height": 2167,
           "locale": "zh",
-          "sha256": "2d24ec850bc0ad4bda1c2225c1551211209bbba7ad9f95f882066c6632117945",
+          "sha256": "602fd88b7e1bfbac04cae1d198ab32a1fce37da446f48b96f88f80d1cfe782df",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -509,13 +549,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 246648,
+          "bytes": 246665,
           "captured": true,
-          "file": "af38d0d76dd3ce4e.png",
+          "file": "37506064573bf387.png",
           "force_state": null,
           "height": 2167,
           "locale": "zh",
-          "sha256": "af38d0d76dd3ce4ec2668f0f025802aeaab4d6acdd79a60bedde4802538b1d72",
+          "sha256": "37506064573bf387052ab8b490453d8c7e232b898790fbd780140b20992cd381",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -793,7 +833,7 @@
     "base_url": null,
     "kind": "site_dir",
     "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-ext-fix-7004-6a713ebbf7a72e1b",
-    "resolved_sha_or_none": "413189a6b580c1b16ca71fe26657cd9810f6ca0f",
+    "resolved_sha_or_none": "a4f59e6358800b674082c0de34f78359defdaa38",
     "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-ext-fix-7004-6a713ebbf7a72e1b (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
     "site_dir": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mo-ext-fix-7004-6a713ebbf7a72e1b/.evidence_site"
   },
