@@ -409,10 +409,10 @@ body[data-regime="deflation"]{--field-tint:#e2e6ee}
 body[data-regime="stagflation"]{--field-tint:#f0e7d4}
 .cover .tx-curtain{height:58%}
 .cov-copy{position:relative;z-index:40;text-align:center;max-width:880px;margin:0 auto;padding-bottom:0}
-/* 7vw floor-band keeps the three authored <br> lines intact once the display
-   face is genuinely expanded (the old 2.15rem floor overflowed to 5 ragged
-   lines on phones); >=698px still caps at 3.05rem, so desktop is unchanged. */
-.cov-copy h1{font-family:var(--display);font-weight:800;letter-spacing:-.02em;line-height:.99;font-size:clamp(1.4rem,7vw,3.05rem);margin:16px 0 0}
+/* Connected-research hero: keep the responsive 7vw phone scale and the approved
+   4rem desktop cap in this one canonical rule. Do not add a later fixed mobile
+   floor that overrides the narrow-screen composition. */
+.cov-copy h1{font-family:var(--display);font-weight:800;letter-spacing:-.02em;line-height:1.03;font-size:clamp(1.4rem,7vw,4rem);margin:16px 0 0}
 /* Chinese full stops occupy a square advance but draw their ink in the lower-left
    corner.  Centring that advance leaves every punctuated hero line looking about
    one-third of a glyph too far left.  Keep each authored line on the hero axis and
@@ -1470,7 +1470,7 @@ footer{background:#04070c;border-top:1px solid #10161f;padding:56px 0 48px;color
 .hero-demos{margin:0 0 28px;position:relative;z-index:10}
 .hero-demos summary{cursor:pointer;text-align:center;color:var(--muted);font-size:13px;padding:12px}
 .hero-demos>p{text-align:center;color:var(--muted);font-size:12px;line-height:1.6}
-.cov-copy h1{font-size:clamp(32px,5vw,64px);line-height:1.03}
+
 @media(max-width:900px){
  .re-steps{grid-template-columns:minmax(0,1fr)}
  .re-step+.re-step{border-left:0;border-top:1px solid var(--hair)}

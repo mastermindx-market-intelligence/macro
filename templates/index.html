@@ -87,7 +87,7 @@
      the body face and the display fallback, so there is nothing left to preload —
      Inter's own weights are already discovered by that stylesheet. -->
 <link rel="stylesheet" href="onboard.css?v=74613ad9">
-<link rel="stylesheet" href="landing.css?v=796dbcb3">
+<link rel="stylesheet" href="landing.css?v=eb97cf9e">
 <link rel="stylesheet" href="scene-motion.css?v=f426716d">
 </head>
 <body>
@@ -245,7 +245,7 @@
       <p class="re-step-label"><span>02</span> <span data-zh="检验另一面">Test the counterpoint</span></p>
       <h3 data-zh="企业质量与估值，分开看。">Examine quality and price separately.</h3>
       <p class="re-value">47.63<span>×</span></p>
-      <p class="re-value-label" data-zh="市值 / 自由现金流 · 2026年9月9日快照">Price / free cash flow · 9 Sep 2026 snapshot</p>
+      <p class="re-value-label" data-zh="行业中位数 28.77× · 市值 / 自由现金流 · 2026年9月9日快照">Sector median 28.77× · Price / free cash flow · 9 Sep 2026 snapshot</p>
       <p data-zh="这样的估值隐含了怎样的增长预期？与同行比较，并检查假设。">What growth does this valuation assume? Compare peers and examine the assumptions.</p>
       <a class="re-source" href="stocks/AAPL.html#valuation" data-zh="检查估值对比 →">Inspect the valuation →</a>
     </article>
@@ -308,7 +308,7 @@
 
       <!-- today's read — front card, drives the cycle -->
       <div class="pcard pp3" id="pp-read">
-        <p class="kicker mk" data-zh="今日研判 · 美国 <span class='asof'>演示</span>">TODAY'S READ · US <span class="asof">demo</span></p>
+        <p class="kicker mk" data-zh="美国市场 · 示例 <span class='asof'>演示</span>">US MARKET · DEMO <span class="asof">demo</span></p>
         <span class="chip-reg" id="reg-chip" tabindex="0" role="button" aria-describedby="quad-pop">
           <span class="dotg"></span><span class="lbl" data-zh="温和增长 · 转变中">Goldilocks · shifting</span>
           <span class="quad-pop" id="quad-pop" role="tooltip">
@@ -341,7 +341,7 @@
 
       <!-- what to act on now -->
       <div class="pcard pp4">
-        <p class="kicker mk" data-zh="现在该做什么 <span class='asof'>演示</span>">WHAT TO ACT ON NOW <span class="asof">demo</span></p>
+        <p class="kicker mk" data-zh="示例研究清单 <span class='asof'>演示</span>">DEMO RESEARCH CHECKLIST <span class="asof">demo</span></p>
         <div class="pl-lane">
           <p class="pl-h" data-zh="<i></i>立即买入"><i></i>BUY NOW</p>
           <div id="act-chips"></div>
@@ -550,7 +550,7 @@
     <div class="rv" style="--d:.1s">
       <div class="demo">
         <span class="live-tag" data-zh="<i></i>预览"><i></i>PREVIEW</span>
-        <p class="dk" data-zh="现在该做什么">WHAT TO ACT ON NOW</p>
+        <p class="dk" data-zh="示例研究清单">DEMO RESEARCH CHECKLIST</p>
         <div class="lanes" id="lanes">
           <div class="lane l-buy" data-lane="buy"><p class="lh" data-zh="<i></i>立即买入"><i></i>BUY NOW</p></div>
           <div class="lane l-alm" data-lane="alm"><p class="lh" data-zh="<i></i>即将就绪"><i></i>ALMOST READY</p></div>
@@ -1621,6 +1621,10 @@ const STILL = document.documentElement.classList.contains('still');
   const centre=()=>{ if(getComputedStyle(pyr).display==='flex')
     pyr.scrollLeft=c.offsetLeft-(pyr.clientWidth-c.offsetWidth)/2; };
   requestAnimationFrame(centre); addEventListener('resize',centre);
+  const disclosure=pyr.closest('details.hero-demos');
+  if(disclosure) disclosure.addEventListener('toggle',()=>{
+    if(disclosure.open) requestAnimationFrame(centre);
+  });
 })();
 
 
