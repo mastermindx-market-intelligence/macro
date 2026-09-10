@@ -65,9 +65,10 @@ unresolved:
     reporting gates remain necessary. Historical cohort identities are not invented.
 next_actions:
   - >
-    Sol resolves the exact existing-owner producer-to-card boundary for the
-    current-recommendation-truth vertical, then admits one included-capacity
-    Codex/Terra receiver only when custody and transport gates are actually clear.
+    Preserve the existing 6805 critical path: reconcile and repair the SAME
+    6840 return through its current source owner; B2-1 and B3 remain real
+    predecessors before new B4 Availability authority. The recommendation-truth
+    acceptance profile does not authorize skipping those gates or a second writer.
   - >
     In parallel, perform a finite source/clock/population feasibility check and
     freeze the new absolute-downside/path study before its outcome access;
@@ -113,3 +114,24 @@ The authorized host became unavailable for process results after initial success
 read-only inspection. Its owned read-only process has no claimed result beyond the
 last successful read. This was not used as a reason to restart another worker's
 process or redirect a refused source operation.
+
+## Final parent-frontier reconciliation (supersedes any looser sequencing inference)
+
+After the first records commit, the current full issue 6805 and current PR 6840
+were read directly. PR 6840 remains Draft/unmerged at
+`0f09647fafbc27692abd483cec466cab87f5e13e`, with REQUEST_CHANGES and the prepared
+normalization repair still unapplied. Its `mergeable=true` summary does not close
+that review or prove latest-main integration. Issue 6805 explicitly holds new B4
+Availability authority until correction-safe B2 and orthogonal B3 gates close.
+
+This narrows the operational reading of research sections 13 and 16: the proposed
+current-recommendation-truth acceptance profile is the destination, not permission
+to assign a new B4 builder now. Continue the existing same-return repair and
+subsequent admitted verticals; do not commission B2-0 again. An independently
+bounded maintenance correction by an existing surface owner is not equivalent
+to B4 completion and does not acquire B4 authority.
+
+The absolute-downside/source-feasibility research is independent and need not
+wait for B4; its outputs remain non-authoritative until their own evaluation and
+policy gates close. This record does not restart the old diagnostic child or
+redirect a refused source write.
