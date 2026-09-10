@@ -4757,6 +4757,21 @@ def declared_families(
 FITS_TRUE_END_EXCLUDED_REASON = "fits:true — no end owed"
 
 
+def _paired_end_filename(fname: str) -> str | None:
+    """Paired end crop for a start filename, or None if not a start.
+
+    Two naming shapes exist in this capture:
+      suffix — ``{stem}-start.png`` → ``{stem}-end.png`` (hub rail)
+      prefix — ``method_table_390_start-{rest}`` → ``method_table_390_end-{rest}``
+    """
+    if fname.endswith("-start.png"):
+        return fname[: -len("-start.png")] + "-end.png"
+    marker = "method_table_390_start-"
+    if marker in fname:
+        return fname.replace(marker, "method_table_390_end-", 1)
+    return None
+
+
 def fits_true_unowed_ends(
         states: Sequence[Mapping[str, Any]],
         captured_files: set[str] | None = None,
@@ -4764,6 +4779,8 @@ def fits_true_unowed_ends(
     """End filenames whose matching start was captured with fits:true.
 
     An end that was actually captured is not unowed (leave it declared).
+    Pairing covers both the suffix ``*-start.png`` shape and the prefix
+    ``method_table_390_start-*`` shape.
     """
     captured = captured_files if captured_files is not None else {
         str(st.get("file") or "") for st in states if st.get("file")
@@ -4772,11 +4789,11 @@ def fits_true_unowed_ends(
     seen: set[str] = set()
     for st in states:
         fname = str(st.get("file") or "")
-        if not fname.endswith("-start.png"):
+        end_name = _paired_end_filename(fname)
+        if end_name is None:
             continue
         if st.get("fits") is not True and st.get("table_fits") is not True:
             continue
-        end_name = fname.replace("-start.png", "-end.png", 1)
         if end_name in captured or end_name in seen:
             continue
         seen.add(end_name)

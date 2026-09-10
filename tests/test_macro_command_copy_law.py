@@ -1098,10 +1098,49 @@ def test_fits_true_ends_subtracted_from_declared_and_excluded() -> None:
     }]
 
 
+def test_fits_true_unowed_ends_suffix_and_prefix_shapes() -> None:
+    """G4 helper: committed hubrail absentees + synthetic prefix-named start."""
+    import json
+    from scripts.capture_macro_command_p5 import fits_true_unowed_ends
+
+    manifest_path = ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json"
+    if not manifest_path.is_file():
+        pytest.skip("P5 evidence manifest is not in this checkout")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    states = [
+        st
+        for page in manifest.get("pages") or []
+        for st in page.get("states") or []
+    ]
+    captured = {
+        str(st["file"]) for st in states if st.get("captured") and st.get("file")
+    }
+    got = fits_true_unowed_ends(states, captured)
+    hubrail = [name for name in got if name.startswith("hubrail-")]
+    assert hubrail == [
+        "hubrail-subtabs-dark-zh-390-end.png",
+        "hubrail-subtabs-light-zh-390-end.png",
+    ]
+
+    prefix_start = (
+        "method_table_390_start-macro_rates_curves__nth-99-dark-en-390.png"
+    )
+    prefix_end = (
+        "method_table_390_end-macro_rates_curves__nth-99-dark-en-390.png"
+    )
+    syn_got = fits_true_unowed_ends(
+        [{"file": prefix_start, "table_fits": True, "captured": True}],
+        {prefix_start},
+    )
+    assert syn_got == [prefix_end]
+
+
 def test_committed_manifest_gaps_equal_declared_minus_captured() -> None:
     """Tests recompute gaps and IHDR equalities from the committed manifest."""
     import json
-    from scripts.capture_macro_command_p5 import declared_cells
+    from scripts.capture_macro_command_p5 import (
+        declared_cells, fits_true_unowed_ends,
+    )
 
     manifest_path = ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json"
     probes_path = ROOT / "mockups" / "evidence" / "macro-command-p5" / "probes.json"
@@ -1111,30 +1150,37 @@ def test_committed_manifest_gaps_equal_declared_minus_captured() -> None:
     probes = json.loads(probes_path.read_text(encoding="utf-8"))
     if "declared_cells" not in probes:
         pytest.skip("r4 recapture has not written declared_cells yet")
-    captured = {
-        st["file"]
+    states = [
+        st
         for page in manifest.get("pages") or []
         for st in page.get("states") or []
+    ]
+    captured = {
+        st["file"]
+        for st in states
         if st.get("captured") and st.get("file")
     }
     assert any(name.startswith("chipmat-") for name in captured)
-    expected = sorted(set(declared_cells(probes.get("e5_applicability"))) - captured)
+    declared_set = set(declared_cells(probes.get("e5_applicability")))
+    expected = sorted(declared_set - captured)
     recorded = [
         row["file"] for row in (probes.get("gaps") or [])
         if isinstance(row, dict) and row.get("reason") == "declared minus captured"
     ]
     # New capture shape (packet GUARDS): fits:true ends are subtracted from
-    # declared and recorded in manifest.excluded with a reason. Pre-honesty
-    # committed manifests keep excluded: [] and this path is unchanged.
-    excluded_fits = {
+    # declared and recorded in manifest.excluded. Pre-honesty committed
+    # manifests keep excluded: [] and this path is unchanged. Subtract the
+    # independently derived unowed set, never the artifact's own excluded
+    # list; when excluded is non-empty it must equal derivation ∩ declared.
+    derived_unowed = set(fits_true_unowed_ends(states, captured))
+    excluded_files = {
         row["file"]
         for row in (manifest.get("excluded") or [])
-        if isinstance(row, dict)
-        and row.get("file")
-        and "fits:true" in str(row.get("reason") or "")
+        if isinstance(row, dict) and row.get("file")
     }
-    if excluded_fits:
-        expected = sorted(set(expected) - excluded_fits)
+    if excluded_files:
+        assert excluded_files == (derived_unowed & declared_set)
+        expected = sorted(set(expected) - derived_unowed)
     assert recorded == expected
     assert manifest.get("tree_clean_start") is True
     assert manifest.get("tree_clean_end") is True
@@ -2664,7 +2710,9 @@ def _assert_header_cell_count_consistent(
     """header_cell_count is a second tamper site, not an independent DOM count."""
     for st in crop_states:
         rec = st.get("header_tokens")
-        rec_list = [str(h) for h in rec] if isinstance(rec, (list, tuple)) else []
+        assert isinstance(rec, (list, tuple)), (
+            key, st.get("file"), "header_tokens missing")
+        rec_list = [str(h) for h in rec]
         assert st.get("header_cell_count") == len(rec_list), (
             key, st.get("file"), st.get("header_cell_count"), len(rec_list),
             "receipt count field inconsistent (tamper indicator)")
