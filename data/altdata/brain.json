@@ -6,36 +6,36 @@
     "granted": false,
     "lift_lb": null,
     "reason": "insufficient-n: n=17 < min_n=25",
-    "evidence_asof": "2026-09-06",
-    "evaluated_at": "2026-09-06T23:53:10+00:00"
+    "evidence_asof": "2026-09-10",
+    "evaluated_at": "2026-09-10T09:53:26+00:00"
   },
-  "generated_at": "2026-09-06T23:53:10.378549+00:00",
-  "state_asof": "2026-09-06",
+  "generated_at": "2026-09-10T09:53:26.545535+00:00",
+  "state_asof": "2026-09-10",
   "model": "claude-opus-4-8",
-  "regime_read": "The pack shows a broad semiconductor/AI-infrastructure convergence (MU, AMAT, NVDA, INTC) with political-actor holdings and patent activity rather than a single clean trade; healthcare names (MRK, ABBV) carry a distinct catalyst channel but no supporting actor cluster, while a label-mismatch flags HUT as a concealed AI-infrastructure pivot behind an American Bitcoin crypto label. No track record exists yet, so all reads are held at low conviction: the actionable axis default is caution, not confirmation.",
-  "regime_read_zh": "\u8bc1\u636e\u5305\u663e\u793a\u534a\u5bfc\u4f53/AI\u57fa\u7840\u8bbe\u65bd\u51fa\u73b0\u5e7f\u6cdb\u7684\u805a\u5408\u4fe1\u53f7\uff08MU\u3001AMAT\u3001NVDA\u3001INTC\uff09\uff0c\u4f34\u968f\u653f\u6cbb\u4eba\u7269\u6301\u4ed3\u548c\u4e13\u5229\u6d3b\u52a8\uff0c\u4f46\u5e76\u975e\u5355\u4e00\u6e05\u6670\u7684\u4ea4\u6613\uff1b\u533b\u7597\u4fdd\u5065\uff08MRK\u3001ABBV\uff09\u867d\u6709\u50ac\u5316\u5242\u901a\u9053\u4f46\u7f3a\u4e4f\u4eba\u7269\u96c6\u7fa4\u652f\u6301\uff0c\u540c\u65f6\u6807\u7b7e\u9519\u914d\u63d0\u793a HUT \u5b9e\u4e3a\u9690\u85cf\u5728\u2018\u7f8e\u56fd\u6bd4\u7279\u5e01\u2019\u52a0\u5bc6\u6807\u7b7e\u80cc\u540e\u7684 AI \u57fa\u7840\u8bbe\u65bd\u8f6c\u578b\u3002\u5c1a\u65e0\u5386\u53f2\u6218\u7ee9\uff0c\u56e0\u6b64\u6240\u6709\u5224\u65ad\u5747\u4fdd\u6301\u4f4e\u7f6e\u4fe1\u5ea6\uff1a\u53ef\u64cd\u4f5c\u8f74\u5fc3\u9ed8\u8ba4\u8c28\u614e\uff0c\u800c\u975e\u786e\u8ba4\u3002",
+  "regime_read": "The pack shows a dense US-China semiconductor and AI-infrastructure convergence: MU, AMAT, NVDA, INTC, plus MSFT and PLTR carry overlapping congressional, patent, analyst and federal-flow signals, while healthcare names (MRK, ABBV) sit on clinical catalysts. No track record exists yet, so all conviction is held modest; nothing here is extreme enough to force an avoid on entry alone, though PLTR's 29pp RS is the closest to extended.",
+  "regime_read_zh": "\u4eca\u65e5\u8bc1\u636e\u5305\u663e\u793a\u7f8e\u4e2d\u534a\u5bfc\u4f53\u4e0eAI\u57fa\u7840\u8bbe\u65bd\u4e3b\u9898\u9ad8\u5ea6\u6536\u655b\uff1aMU\u3001AMAT\u3001NVDA\u3001INTC \u4ee5\u53ca MSFT\u3001PLTR \u540c\u65f6\u5e26\u6709\u56fd\u4f1a\u3001\u4e13\u5229\u3001\u5206\u6790\u5e08\u4e0e\u8054\u90a6\u8d44\u91d1\u6d41\u4fe1\u53f7\uff0c\u533b\u7597\u5065\u5eb7\u6807\u7684\uff08MRK\u3001ABBV\uff09\u5219\u53e0\u52a0\u4e34\u5e8a\u50ac\u5316\u5242\u3002\u5f53\u524d\u5c1a\u65e0\u5386\u53f2\u6218\u7ee9\uff0c\u6545\u6240\u6709\u786e\u4fe1\u5ea6\u4fdd\u6301\u514b\u5236\uff1b\u5355\u5c31\u5165\u573a\u800c\u8a00\u6ca1\u6709\u6807\u7684\u6781\u7aef\u5230\u5fc5\u987b\u56de\u907f\uff0c\u4f46 PLTR \u76f8\u5bf9\u6807\u666e29\u4e2a\u767e\u5206\u70b9\u7684\u5f3a\u5ea6\u6700\u63a5\u8fd1\u8fc7\u70ed\u3002",
   "theses": [
     {
       "ticker": "MU",
       "lean": "overweight",
-      "conviction": "low",
+      "conviction": "medium",
       "action": "ACCUMULATE",
-      "horizon_d": 60,
-      "thesis": "MU is the highest-weighted scored cluster (2.4) with five independent channels converging: congress_cluster (net 6, 3 members), insider_mspr at 100.0 (top decile), 400 patents, bull-biased stocktwits (1.0), and a disclosed qualitative affiliation with Rep. Ro Khanna [actor:Ro Khanna]. With rs_vs_spy_60d at only 7.6 and not extended, entry is not yet gone; this reads as early-stage alignment in memory/semis rather than a chase.",
-      "thesis_zh": "MU \u662f\u6743\u91cd\u6700\u9ad8\u7684\u53ef\u8bc4\u5206\u96c6\u7fa4\uff082.4\uff09\uff0c\u4e94\u4e2a\u72ec\u7acb\u901a\u9053\u6c47\u805a\uff1a\u56fd\u4f1a\u96c6\u7fa4\uff08\u51c06\uff0c3\u4eba\uff09\u3001insider_mspr \u8fbe\u5230100.0\uff08\u6700\u9ad8\u5341\u5206\u4f4d\uff09\u3001400\u9879\u4e13\u5229\u3001\u770b\u591a\u7684 Stocktwits\uff081.0\uff09\uff0c\u4ee5\u53ca\u4e0e\u56fd\u4f1a\u8bae\u5458 Ro Khanna \u7684\u62ab\u9732\u7ea7\u5b9a\u6027\u5173\u8054\u300260\u65e5\u76f8\u5bf9\u5f3a\u5ea6\u4ec57.6\u4e14\u672a\u8d85\u4e70\uff0c\u5165\u573a\u7a97\u53e3\u5c1a\u672a\u5173\u95ed\uff1b\u8fd9\u662f\u5b58\u50a8\u5668/\u534a\u5bfc\u4f53\u7684\u65e9\u671f\u62d0\u70b9\u4fe1\u53f7\uff0c\u800c\u975e\u8ffd\u9ad8\u3002",
+      "horizon_d": 40,
+      "thesis": "MU carries five independent channels: congressional cluster (net 6, 3 members) [congress_cluster], full 1.0 insider MSPR (no selling by tracked insiders) [insider_mspr], a large 400-patent cluster [patent_cluster], federal grant money with 0.32 acceleration [gov_grant_accel], and maximal Stocktwits bull ratio with over 213k watchers [stocktwits_bull]. Relative strength vs SPY is only 1.7, so the entry is not extended. Earnings sit 20 days out with a historically strong 18.6% surprise mark; the cluster is a bet on memory-cycle strength confirmed by insider and legislative alignment.",
+      "thesis_zh": "MU \u6c47\u805a\u4e94\u6761\u72ec\u7acb\u6e20\u9053\uff1a\u56fd\u4f1a\u7fa4\u96c6\uff08\u51c0+6\u30013\u540d\u8bae\u5458\uff09[congress_cluster]\u3001\u6ee1\u52061.0\u7684\u5185\u90e8\u4ebaMSPR\uff08\u88ab\u8ffd\u8e2a\u5185\u90e8\u4eba\u65e0\u5356\u51fa\uff09[insider_mspr]\u3001\u591a\u8fbe400\u9879\u7684\u4e13\u5229\u7fa4 [patent_cluster]\u3001\u8054\u90a6\u62e8\u6b3e\u52a0\u901f0.32 [gov_grant_accel]\uff0c\u4ee5\u53caBull\u6bd4\u73871.0\u4e14\u8d8521.3\u4e07\u5173\u6ce8\u8005\u7684Stocktwits\u60c5\u7eea [stocktwits_bull]\u3002\u76f8\u5bf9\u6807\u666e\u5f3a\u5ea6\u4ec51.7\uff0c\u5165\u573a\u5e76\u672a\u8fc7\u70ed\u3002\u8ddd\u8d22\u62a520\u5929\u4e14\u5386\u53f2\u8d85\u9884\u671f18.6%\uff1b\u8be5\u7fa4\u96c6\u62bc\u6ce8\u7684\u662f\u7531\u5185\u90e8\u4eba\u4e0e\u7acb\u6cd5\u9762\u5171\u540c\u786e\u8ba4\u7684\u5b58\u50a8\u5468\u671f\u8d70\u5f3a\u3002",
       "second_order": [
-        "AMAT \u2014 memory capex implies wafer-fab equipment pull-through",
-        "INTC \u2014 shared US semiconductor policy beneficiary via gov_grant + patent clusters",
-        "LRCX? \u2014 not in pack but memory-cyclical equipment peer implied by MU capex"
+        "AMAT \u2014 memory capex read-through feeds semiconductor equipment demand",
+        "NVDA \u2014 HBM/content growth is a direct input-cost and demand complement",
+        "INTC \u2014 US memory/fab reshoring policy tailwind overlaps"
       ],
       "evidence": [
-        "congress_cluster (net 6, 3 members)",
-        "insider_mspr 100.0",
-        "patent_cluster 400",
-        "stocktwits_bull 1.0 / 213,009 watchers",
-        "actor:Ro Khanna AFFILIATES_WITH"
+        "[congress_cluster] net 6, 3 members",
+        "[insider_mspr] 1.0",
+        "[patent_cluster] 400 patents",
+        "[gov_grant_accel] 0.32",
+        "[stocktwits_bull] 1.0 bull, 213009 watchers"
       ],
-      "dissent": "A single qualitative political affiliation plus retail bullishness can be noise: insider_mspr 100 may reflect a one-off filing, and the congress net of 6 across 3 members is modest relative to names like NVDA.",
+      "dissent": "The 1.0 insider MSPR likely reflects no tracked insiders selling rather than fresh buying; Stocktwits 1.0 bull with a hot name is often late retail euphoria ahead of a memory-price top.",
       "weighted_score": 2.4,
       "channels": [
         "affiliation",
@@ -44,112 +44,21 @@
         "patent_cluster",
         "stocktwits_bull"
       ],
-      "rs_vs_spy_60d": 7.6,
+      "rs_vs_spy_60d": 1.7,
       "extended": false,
       "scorable": true,
       "falsifier": {
-        "text": "MU's 60-day relative strength breaks above +35pp against SPY and the name flags extended, or the next insider filing shows net selling despite today's 100.0 mspr reading.",
+        "text": "MU guidance or spot DRAM/NAND pricing commentary at the Sept 30 print signals memory prices rolling over quarter-on-quarter",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "MU",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
-          "horizon_d": 60
+          "horizon_d": 40
         }
       },
-      "check_by": "2026-11-27"
-    },
-    {
-      "ticker": "HUT",
-      "lean": "underweight",
-      "conviction": "low",
-      "action": "WATCH",
-      "horizon_d": 50,
-      "thesis": "HUT is surfaced not by a scored cluster but by a label_mismatch: the entity 'American Bitcoin' (ticker ABTC, brand_theme crypto) is 80% owned by Hut 8, which has pivoted to AI power/data-center infrastructure with a disclosed Anthropic/Fluidstack 245MW Dec-2025 deal, a $9.8B Beacon Point lease May-2026, a >$16.8B pipeline, and 8.6GW in development. This is a second-order AI-infrastructure play hiding behind a crypto label; the mismatch itself is the signal, so the proper action is WATCH until the cluster data confirms.",
-      "thesis_zh": "HUT \u5e76\u975e\u6765\u81ea\u8bc4\u5206\u96c6\u7fa4\uff0c\u800c\u662f\u7531\u6807\u7b7e\u9519\u914d\u6d6e\u51fa\uff1a\u5b9e\u4f53\u2018\u7f8e\u56fd\u6bd4\u7279\u5e01\u2019\uff08ABTC\uff0c\u52a0\u5bc6\u54c1\u724c\u4e3b\u9898\uff09\u7ea680%\u80a1\u6743\u7531 Hut 8 \u6301\u6709\uff0c\u540e\u8005\u5df2\u8f6c\u5411 AI \u7535\u529b/\u6570\u636e\u4e2d\u5fc3\u57fa\u7840\u8bbe\u65bd\uff0c\u62ab\u9732\u6709 2025\u5e7412\u6708 Anthropic/Fluidstack 245MW \u4ea4\u6613\u30012026\u5e745\u6708 $9.8B Beacon Point \u79df\u8d41\u3001>$16.8B \u7ba1\u7ebf\u53ca8.6GW\u5728\u5f00\u53d1\u3002\u8fd9\u662f\u85cf\u5728\u52a0\u5bc6\u6807\u7b7e\u540e\u7684\u4e8c\u9636 AI \u57fa\u7840\u8bbe\u65bd\u6807\u7684\uff1b\u9519\u914d\u672c\u8eab\u5c31\u662f\u4fe1\u53f7\uff0c\u56e0\u6b64\u5728\u96c6\u7fa4\u6570\u636e\u786e\u8ba4\u4e4b\u524d\u6b63\u786e\u52a8\u4f5c\u662f WATCH\u3002",
-      "second_order": [
-        "NVDA \u2014 AI compute demand from HUT's data-center buildout",
-        "AMAT \u2014 semiconductor equipment for AI server expansion",
-        "MU \u2014 memory demand from AI server buildouts"
-      ],
-      "evidence": [
-        "label_mismatch ABTC -> HUT (confidence 0.85)",
-        "Anthropic/Fluidstack 245MW Dec-2025",
-        "$9.8B Beacon Point lease May-2026",
-        "8.6GW in development / >$16.8B pipeline"
-      ],
-      "dissent": "Label-mismatch is a manual correction, not a deterministic signal; HUT's pivot is already partially public and may be priced, and the crypto label may still dominate investor perception near-term.",
-      "weighted_score": null,
-      "channels": null,
-      "rs_vs_spy_60d": null,
-      "extended": false,
-      "scorable": false,
-      "falsifier": {
-        "text": "HUT fails to convert the disclosed pipeline into reported AI-infra revenue, or the ABTC/HUT ownership structure changes materially from the 80% stake.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "HUT",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 50
-        }
-      },
-      "check_by": "2026-11-13",
-      "clamped": "lean 'overweight' \u2192 'underweight' (deterministic witness)",
-      "det_baseline": {
-        "action": "WATCH",
-        "conviction": "low",
-        "lean": "underweight"
-      }
-    },
-    {
-      "ticker": "NVDA",
-      "lean": "overweight",
-      "conviction": "low",
-      "action": "WATCH",
-      "horizon_d": 70,
-      "thesis": "NVDA shows the densest actor graph in the pack: three sitting politicians hold stakes (Pelosi, Marjorie Taylor Greene, McCaul), Jensen Huang CONTROLS, Jim Cramer TALKS_ABOUT, and Paul Pelosi is affiliated. Six channels fire (affiliation, analyst_upgrade_cluster, github_momentum, patent_cluster, retail_buzz, special_situation). Yet congress_position_usd of $211.5M and rs_vs_spy_60d of 8.5 with heavy retail coverage mean this is crowded, not early: WATCH rather than accumulate, despite the alignment.",
-      "thesis_zh": "NVDA \u5728\u8bc1\u636e\u5305\u4e2d\u62e5\u6709\u6700\u5bc6\u96c6\u7684\u4eba\u7269\u56fe\u8c31\uff1a\u4e09\u4f4d\u5728\u4efb\u653f\u6cbb\u4eba\u7269\u6301\u80a1\uff08Pelosi\u3001Marjorie Taylor Greene\u3001McCaul\uff09\u3001Jensen Huang \u63a7\u5236\u3001Jim Cramer \u516c\u5f00\u8c08\u8bba\u3001Paul Pelosi \u5173\u8054\u3002\u516d\u4e2a\u901a\u9053\u540c\u65f6\u89e6\u53d1\u3002\u4f46\u5176\u56fd\u4f1a\u6301\u4ed3\u9ad8\u8fbe $211.5M\u300160\u65e5\u76f8\u5bf9\u5f3a\u5ea68.5\u4e14\u96f6\u552e\u8986\u76d6\u6781\u91cd\uff0c\u8bf4\u660e\u8fd9\u662f\u62e5\u6324\u800c\u975e\u65e9\u671f\u6807\u7684\uff1a\u5c3d\u7ba1\u4fe1\u53f7\u5bf9\u9f50\uff0c\u4e5f\u5e94 WATCH \u800c\u975e\u7d2f\u79ef\u3002",
-      "second_order": [
-        "MU \u2014 HBM/memory content per NVDA GPU rises",
-        "AMAT \u2014 NVDA's foundry/supplier capex pulls equipment",
-        "INTC \u2014 competitor/beneficiary of AI compute policy tailwinds"
-      ],
-      "evidence": [
-        "actor:Nancy Pelosi HOLDS_STAKE",
-        "actor:Marjorie Taylor Greene HOLDS_STAKE",
-        "actor:Michael McCaul HOLDS_STAKE",
-        "actor:Jensen Huang CONTROLS",
-        "actor:Jim Cramer TALKS_ABOUT",
-        "congress_position_usd $211,491,000"
-      ],
-      "dissent": "The actor concentration is so dense that the name trades as a consensus AI play; political holdings are disclosed quarterly and may be stale, and Cramer's involvement is noise, not signal.",
-      "weighted_score": 1.9,
-      "channels": [
-        "affiliation",
-        "analyst_upgrade_cluster",
-        "github_momentum",
-        "patent_cluster",
-        "retail_buzz",
-        "special_situation"
-      ],
-      "rs_vs_spy_60d": 8.5,
-      "extended": false,
-      "scorable": true,
-      "falsifier": {
-        "text": "NVDA's 60-day relative strength crosses +35pp against SPY, or a subsequent congressional disclosure shows Pelosi/McCaul reducing their stakes.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "NVDA",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 70
-        }
-      },
-      "check_by": "2026-12-11"
+      "check_by": "2026-11-05"
     },
     {
       "ticker": "AMAT",
@@ -157,21 +66,20 @@
       "conviction": "low",
       "action": "AVOID",
       "horizon_d": 60,
-      "thesis": "AMAT carries a four-channel convergence (analyst_upgrade_cluster, congress_cluster, patent_cluster, unusual_options) with 256 patents, $40.9M in congress positions across 3 members, and a 0.97 analyst bull ratio. The unusual_options put/call of 1.07 is slightly protective but the 0.611 vol/OI ratio indicates elevated positioning. rs_vs_spy_60d of -14.9 means the name has lagged badly and is non-extended \u2014 an interesting contrarian setup tied to the MU/NVDA capex cycle, but the option data is mixed, so WATCH.",
-      "thesis_zh": "AMAT \u5448\u73b0\u56db\u901a\u9053\u6c47\u805a\uff08\u5206\u6790\u5e08\u4e0a\u8c03\u96c6\u7fa4\u3001\u56fd\u4f1a\u96c6\u7fa4\u3001\u4e13\u5229\u96c6\u7fa4\u3001\u5f02\u5e38\u671f\u6743\uff09\uff0c\u62e5\u6709256\u9879\u4e13\u5229\u30013\u540d\u8bae\u5458\u5408\u8ba1 $40.9M \u56fd\u4f1a\u6301\u4ed3\u30010.97 \u5206\u6790\u5e08\u770b\u591a\u6bd4\u4f8b\u3002\u671f\u6743 Put/Call 1.07 \u7565\u504f\u4fdd\u62a4\uff0c\u4f46 vol/OI 0.611 \u663e\u793a\u6301\u4ed3\u660e\u663e\u300260\u65e5\u76f8\u5bf9\u5f3a\u5ea6 -14.9 \u610f\u5473\u7740\u5927\u5e45\u843d\u540e\u4e14\u672a\u8d85\u4e70\u2014\u2014\u8fd9\u662f\u4e0e MU/NVDA \u8d44\u672c\u5f00\u652f\u5468\u671f\u7ed1\u5b9a\u7684\u9006\u5411\u5e03\u5c40\uff0c\u4f46\u671f\u6743\u4fe1\u53f7\u6df7\u6742\uff0c\u56e0\u6b64 WATCH\u3002",
+      "thesis": "AMAT is a laggard (RS -20.3) with four channels: analyst-upgrade cluster with 0.97 bull ratio [analyst_upgrade_cluster], congressional net +4 across 3 members [congress_cluster], a 256-patent cluster [patent_cluster], and unusual options activity with put/call 1.07 and OI/vol 0.611 [unusual_options]. The -20.3 RS means it has not priced the semiconductor-equipment recovery that MU's memory strength implies; this is the lower-multiple equipment exposure behind the memory thesis.",
+      "thesis_zh": "AMAT \u662f\u843d\u540e\u6807\u7684\uff08\u76f8\u5bf9\u6807\u666e -20.3\uff09\uff0c\u5177\u5907\u56db\u6761\u6e20\u9053\uff1a\u5206\u6790\u5e08\u4e0a\u8c03\u7fa4\u96c6Bull\u6bd4\u73870.97 [analyst_upgrade_cluster]\u30013\u540d\u8bae\u5458\u51c0+4\u7684\u56fd\u4f1a\u7fa4\u96c6 [congress_cluster]\u3001256\u9879\u4e13\u5229\u7fa4 [patent_cluster]\uff0c\u4ee5\u53ca\u770b\u8dcc/\u770b\u6da81.07\u3001\u6301\u4ed3\u91cf/\u6210\u4ea4\u91cf0.611\u7684\u5f02\u5e38\u671f\u6743\u6d3b\u52a8 [unusual_options]\u3002-20.3\u7684\u76f8\u5bf9\u5f3a\u5ea6\u8bf4\u660e\u5e02\u573a\u5c1a\u672a\u53cd\u6620MU\u5b58\u50a8\u8d70\u5f3a\u5bf9\u534a\u5bfc\u4f53\u8bbe\u5907\u7684\u4f20\u5bfc\uff1b\u8fd9\u662f\u5b58\u50a8\u4e3b\u9898\u80cc\u540e\u4f30\u503c\u66f4\u4f4e\u7684\u8bbe\u5907\u7aef\u66b4\u9732\u3002",
       "second_order": [
-        "MU \u2014 AMAT's equipment goes into memory fabs",
-        "NVDA \u2014 AMAT supplies semiconductor manufacturing for AI chips",
-        "INTC \u2014 US fab buildouts need AMAT tools"
+        "MU \u2014 stronger memory pricing drives AMAT tool orders",
+        "NVDA \u2014 advanced packaging/HBM equipment is a shared capex driver",
+        "INTC \u2014 fab buildouts compete for the same equipment suppliers"
       ],
       "evidence": [
-        "analyst_upgrade_cluster (bull ratio 0.97)",
-        "congress_cluster (3 members, $40.9M)",
-        "patent_cluster 256",
-        "unusual_options (vol_oi 0.611, put_call 1.07)",
-        "rs_vs_spy_60d -14.9"
+        "[analyst_upgrade_cluster] 0.97 bull",
+        "[congress_cluster] net 4, 3 members",
+        "[patent_cluster] 256 patents",
+        "[unusual_options] OI/vol 0.611, put/call 1.07"
       ],
-      "dissent": "Put/call above 1 suggests some traders are positioning for downside, and the -14.9 underperformance may reflect a structural cyclical downturn in equipment, not just a dislocation.",
+      "dissent": "Put/call of 1.07 is not clearly bullish positioning; the options signal could be hedging rather than accumulation, and a -20.3 RS laggard may be discounting structural share loss to ASML or Lam.",
       "weighted_score": 2.2,
       "channels": [
         "analyst_upgrade_cluster",
@@ -179,11 +87,11 @@
         "patent_cluster",
         "unusual_options"
       ],
-      "rs_vs_spy_60d": -14.9,
+      "rs_vs_spy_60d": -20.3,
       "extended": false,
       "scorable": true,
       "falsifier": {
-        "text": "AMAT's unusual_options put/call ratio rises further above 1.2 while vol/OI stays elevated, or the congressional stakes decline in the next disclosure.",
+        "text": "AMAT's next earnings commentary or a major memory customer capex update shows tool orders being pushed out rather than pulled forward",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "AMAT",
@@ -193,8 +101,8 @@
           "horizon_d": 60
         }
       },
-      "check_by": "2026-11-27",
-      "clamped": "lean 'overweight' \u2192 'underweight' (deterministic witness); action 'WATCH' \u2192 'AVOID' (deterministic ceiling)",
+      "check_by": "2026-12-03",
+      "clamped": "lean 'overweight' \u2192 'underweight' (deterministic witness); action 'ACCUMULATE' \u2192 'AVOID' (deterministic ceiling)",
       "det_baseline": {
         "action": "AVOID",
         "conviction": "low",
@@ -202,25 +110,165 @@
       }
     },
     {
-      "ticker": "MRK",
+      "ticker": "PLTR",
       "lean": "overweight",
       "conviction": "low",
       "action": "WATCH",
-      "horizon_d": 60,
-      "thesis": "MRK shows a distinct catalyst pattern: trump_side buy, 11 Phase 3 starts against 3 halts, FDA label expansion, and special_situation, with $39.0M in congress positions. This is a catalyst-driven healthcare setup, but there are no actors and the rs_vs_spy_60d of 20.7 is elevated; the entry is not extended by the +35pp threshold but is not early either. WATCH for the catalyst to land.",
-      "thesis_zh": "MRK \u5c55\u793a\u51fa\u72ec\u7279\u7684\u50ac\u5316\u5242\u6a21\u5f0f\uff1atrump \u4fa7\u4e70\u5165\u300111\u9879 III \u671f\u542f\u52a8\u5bf93\u9879\u4e2d\u6b62\u3001FDA \u6807\u7b7e\u6269\u5c55\u3001\u7279\u6b8a\u4e8b\u4ef6\uff0c\u4ee5\u53ca $39.0M \u56fd\u4f1a\u6301\u4ed3\u3002\u8fd9\u662f\u50ac\u5316\u5242\u9a71\u52a8\u7684\u533b\u7597\u4fdd\u5065\u914d\u7f6e\uff0c\u4f46\u65e0\u4eba\u7269\u8282\u70b9\u4e1460\u65e5\u76f8\u5bf9\u5f3a\u5ea620.7\u504f\u9ad8\uff1b\u672a\u8fbe+35pp\u8d85\u4e70\u9608\u503c\u4f46\u4e5f\u975e\u65e9\u671f\u3002WATCH \u7b49\u5f85\u50ac\u5316\u5242\u843d\u5730\u3002",
+      "horizon_d": 45,
+      "thesis": "PLTR shows the highest convergence score in the pack (6) with six channels, but RS +29.4 is the warmest entry on the list, so this is a watch not an accumulate. Government contract acceleration is decisive: $26.4M awarded in 30 days at 1.76 acceleration [gov_contract], plus disclosed stakes from Rep. Marjorie Taylor Greene [actor:Marjorie Taylor Greene] and Cathie Wood affiliation [actor:Cathie Wood], retail buzz and a 1.0 Stocktwits bull ratio [retail_buzz][stocktwits_bull]. The trump-linked 'sell' tag [trump] is a headwind marker against the other flows.",
+      "thesis_zh": "PLTR \u5728\u672c\u6b21\u8bc1\u636e\u5305\u4e2d\u6536\u655b\u8bc4\u5206\u6700\u9ad8\uff086\uff09\uff0c\u5177\u5907\u516d\u6761\u6e20\u9053\uff0c\u4f46\u76f8\u5bf9\u5f3a\u5ea6+29.4\u662f\u5217\u8868\u4e2d\u6700\u70ed\u7684\u5165\u573a\u70b9\uff0c\u56e0\u6b64\u53ea\u80fd\u89c2\u5bdf\u800c\u975e\u7d2f\u79ef\u3002\u653f\u5e9c\u5408\u540c\u52a0\u901f\u6700\u4e3a\u5173\u952e\uff1a30\u5929\u5185\u6388\u4e882637\u4e07\u7f8e\u5143\u3001\u52a0\u901f1.76 [gov_contract]\uff0c\u53e0\u52a0\u4f17\u8bae\u5458Marjorie Taylor Greene\u7684\u516c\u5f00\u6301\u4ed3 [actor:Marjorie Taylor Greene]\u3001Cathie Wood\u7684\u5173\u8054 [actor:Cathie Wood]\u3001\u6563\u6237\u70ed\u5ea6\u4ee5\u53ca1.0\u7684Stocktwits Bull\u6bd4\u7387 [retail_buzz][stocktwits_bull]\u3002\u7279\u6717\u666e\u76f8\u5173\u7684\u201c\u5356\u51fa\u201d\u6807\u7b7e [trump] \u6784\u6210\u4e0e\u5176\u4ed6\u8d44\u91d1\u6d41\u76f8\u53cd\u7684\u538b\u529b\u4fe1\u53f7\u3002",
       "second_order": [
-        "ABBV \u2014 correlated healthcare catalyst (9 Phase 3 starts, FDA label expansion)",
-        "UNH? \u2014 Medicare coverage bills (HR10087) may shift oncology payment flows"
+        "MSFT \u2014 government AI/defense cloud budgets often flow to the same primes",
+        "NVDA \u2014 AI compute spend underpinning Palantir use cases",
+        "Defense-IT services names \u2014 PLTR wins pull along adjacent federal integrators"
       ],
       "evidence": [
-        "trump_side buy",
-        "clinical_phase3_starts 11 vs halts 3",
-        "fda_label_expansion",
-        "special_situation",
-        "congress_position_usd $38,997,000"
+        "[gov_contract] $26.4M 30d, 1.76 accel",
+        "[actor:Marjorie Taylor Greene] disclosed stake",
+        "[actor:Cathie Wood] disclosed affiliation",
+        "[retail_buzz] wsb_mentions 91",
+        "[stocktwits_bull] 1.0, 324401 watchers"
       ],
-      "dissent": "Trump-linked buy signals are directional noise, not fundamental edge; 3 clinical halts against 11 starts is not a clean readout, and MRK's 20.7 60-day relative strength means much of the move may already be booked.",
+      "dissent": "RS +29.4 means much of the government-contract narrative is already priced; the trump 'sell' tag and a 1.0 retail bull ratio at high speed often mark late-stage enthusiasm.",
+      "weighted_score": 2.1,
+      "channels": [
+        "affiliation",
+        "analyst_upgrade_cluster",
+        "gov_contract",
+        "retail_buzz",
+        "stocktwits_bull",
+        "trump"
+      ],
+      "rs_vs_spy_60d": 29.4,
+      "extended": false,
+      "scorable": true,
+      "falsifier": {
+        "text": "PLTR's next quarter shows government contract revenue decelerating or a major disclosed holder trimming while the stock is still extended",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "PLTR",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 45
+        }
+      },
+      "check_by": "2026-11-12"
+    },
+    {
+      "ticker": "NVDA",
+      "lean": "overweight",
+      "conviction": "low",
+      "action": "ACCUMULATE",
+      "horizon_d": 60,
+      "thesis": "NVDA sits at convergence 6 and RS +6 \u2014 not extended. Four disclosed politicians hold stakes including Pelosi [actor:Nancy Pelosi] and MTG [actor:Marjorie Taylor Greene], and Jensen Huang controls the company [actor:Jensen Huang]. The analytical edge is modest: DPI 0.402 at z 0.64 [hf_model_momentum] is mildly positive, analyst bull ratio 1.0 [analyst_upgrade_cluster], retail buzz with 207 WSB mentions [retail_buzz], and a 218-patent cluster. This is a broad, well-known AI-infrastructure alignment rather than an unusual hidden edge, so conviction stays low.",
+      "thesis_zh": "NVDA \u6536\u655b\u8bc4\u52066\u4e14\u76f8\u5bf9\u5f3a\u5ea6+6\uff0c\u672a\u8fc7\u70ed\u3002\u5305\u62ecPelosi [actor:Nancy Pelosi]\u3001MTG [actor:Marjorie Taylor Greene]\u5728\u5185\u7684\u56db\u540d\u516c\u5f00\u653f\u5ba2\u6301\u6709\u6301\u4ed3\uff0c\u9ec4\u4ec1\u52cb\u4e3a\u5b9e\u9645\u63a7\u5236\u4eba [actor:Jensen Huang]\u3002\u5206\u6790\u9762\u4f18\u52bf\u6e29\u548c\uff1aDPI 0.402\uff08z\u503c0.64\uff09[hf_model_momentum] \u7565\u504f\u6b63\uff0c\u5206\u6790\u5e08Bull\u6bd4\u73871.0 [analyst_upgrade_cluster]\uff0cWSB\u63d0\u53ca207 [retail_buzz]\uff0c218\u9879\u4e13\u5229\u7fa4\u3002\u8fd9\u662f\u5e7f\u4e3a\u4eba\u77e5\u7684AI\u57fa\u7840\u8bbe\u65bd\u5171\u632f\uff0c\u800c\u975e\u7f55\u89c1\u7684\u9690\u6027\u4f18\u52bf\uff0c\u6545\u786e\u4fe1\u5ea6\u4fdd\u6301\u4f4e\u4f4d\u3002",
+      "second_order": [
+        "MU \u2014 HBM is a core input and margin driver",
+        "AMAT \u2014 NVDA-led AI capex pulls equipment vendors",
+        "MSFT \u2014 hyperscaler GPU procurement is the demand anchor"
+      ],
+      "evidence": [
+        "[actor:Nancy Pelosi] disclosed stake",
+        "[actor:Marjorie Taylor Greene] disclosed stake",
+        "[actor:Jensen Huang] controls",
+        "[hf_model_momentum] DPI 0.402, z 0.64",
+        "[analyst_upgrade_cluster] 1.0",
+        "[retail_buzz] wsb_mentions 207"
+      ],
+      "dissent": "Multiple disclosed politician holdings are backward-looking and slow-moving; the modest DPI z-score of 0.64 is not a decisive smart-money signal, and retail buzz is high enough to be noise.",
+      "weighted_score": 1.95,
+      "channels": [
+        "affiliation",
+        "analyst_upgrade_cluster",
+        "hf_model_momentum",
+        "patent_cluster",
+        "retail_buzz",
+        "special_situation"
+      ],
+      "rs_vs_spy_60d": 6.0,
+      "extended": false,
+      "scorable": true,
+      "falsifier": {
+        "text": "A major AI-hyperscaler capex guidance cut or an export-control tightening that directly caps NVDA's China revenue trajectory",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "NVDA",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 60
+        }
+      },
+      "check_by": "2026-12-03"
+    },
+    {
+      "ticker": "MSFT",
+      "lean": "overweight",
+      "conviction": "low",
+      "action": "ACCUMULATE",
+      "horizon_d": 50,
+      "thesis": "MSFT carries five channels including the only outright trump 'buy' tag among the pack [trump], a massive app-demand footprint (4.77 rating, 20M+ reviews, 31.3M downloads in 30d) [app_demand], GitHub momentum at 191.5k stars [github_momentum], 431 patents [patent_cluster], and Aktman affiliation [actor:Bill Ackman]. The Sam Altman partnership [actor:Sam Altman] adds an OpenAI/AI-infrastructure read. RS +23 is elevated but below the +35 warning threshold; entry is intact but not cheap.",
+      "thesis_zh": "MSFT \u5177\u5907\u4e94\u6761\u6e20\u9053\uff0c\u5305\u62ec\u5168\u5305\u4e2d\u552f\u4e00\u660e\u786e\u7684\u7279\u6717\u666e\u201c\u4e70\u5165\u201d\u6807\u7b7e [trump]\u3001\u5e9e\u5927\u7684\u5e94\u7528\u9700\u6c42\u8db3\u8ff9\uff08\u8bc4\u52064.77\u3001\u8d852009\u4e07\u6761\u8bc4\u8bba\u300130\u5929\u4e0b\u8f7d3133\u4e07\uff09[app_demand]\u3001GitHub\u52a8\u91cf19.15\u4e07\u661f [github_momentum]\u3001431\u9879\u4e13\u5229 [patent_cluster]\uff0c\u4ee5\u53caBill Ackman\u7684\u5173\u8054 [actor:Bill Ackman]\u3002Sam Altman\u7684\u5408\u4f5c\u5173\u7cfb [actor:Sam Altman] \u53e0\u52a0OpenAI/AI\u57fa\u7840\u8bbe\u65bd\u903b\u8f91\u3002\u76f8\u5bf9\u5f3a\u5ea6+23\u504f\u9ad8\u4f46\u672a\u89e6\u53ca+35\u8b66\u793a\u7ebf\uff1b\u5165\u573a\u6709\u6548\u4f46\u4ef7\u683c\u4e0d\u4fbf\u5b9c\u3002",
+      "second_order": [
+        "NVDA \u2014 OpenAI/Microsoft GPU and infrastructure demand",
+        "AI data-centers/power themes \u2014 Azure capex is the anchor buyer",
+        "PLTR \u2014 enterprise AI adoption tailwind overlaps"
+      ],
+      "evidence": [
+        "[trump] buy",
+        "[app_demand] 4.77 rating, 20.1M reviews, 31.3M downloads 30d",
+        "[github_momentum] 191509 stars",
+        "[patent_cluster] 431 patents",
+        "[actor:Bill Ackman] disclosed affiliation",
+        "[actor:Sam Altman] partners"
+      ],
+      "dissent": "The 23.0 RS means much of the OpenAI/Azure narrative is already in the price; trump 'buy' tags are unreliable as a durable thesis and the AI moat is widely known.",
+      "weighted_score": 2.1,
+      "channels": [
+        "affiliation",
+        "app_demand",
+        "github_momentum",
+        "patent_cluster",
+        "trump"
+      ],
+      "rs_vs_spy_60d": 23.0,
+      "extended": false,
+      "scorable": true,
+      "falsifier": {
+        "text": "Azure growth decelerates at the next print or OpenAI shifts meaningful compute/infrastructure share away from Microsoft",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "MSFT",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 50
+        }
+      },
+      "check_by": "2026-11-19"
+    },
+    {
+      "ticker": "MRK",
+      "lean": "overweight",
+      "conviction": "low",
+      "action": "ACCUMULATE",
+      "horizon_d": 60,
+      "thesis": "MRK is a healthcare tactical with four channels: 11 Phase 3 starts against 3 halts [clinical_phase3_start], FDA label expansion [fda_label_expansion], special-situation flag [special_situation], and a trump 'buy' tag [trump]. RS +21.8 is elevated for a large pharma, but the clinical catalyst mix is concretely positive and the name is not yet extended by the +35 test. Worth a modest overweight knowing the Senate healthcare bills (cancer care planning, nurse overtime, provider reimbursement) are compounding regulatory flux [bill_catalysts].",
+      "thesis_zh": "MRK \u662f\u5177\u5907\u56db\u6761\u6e20\u9053\u7684\u533b\u7597\u4fdd\u5065\u6218\u672f\u6807\u7684\uff1a11\u9879III\u671f\u542f\u52a8\u5bf93\u9879\u7ec8\u6b62 [clinical_phase3_start]\u3001FDA\u6807\u7b7e\u6269\u5c55 [fda_label_expansion]\u3001\u7279\u6b8a\u60c5\u5883\u6807\u8bb0 [special_situation]\uff0c\u4ee5\u53ca\u7279\u6717\u666e\u201c\u4e70\u5165\u201d\u6807\u7b7e [trump]\u3002\u76f8\u5bf9\u5f3a\u5ea6+21.8\u5bf9\u5927\u578b\u836f\u4f01\u800c\u8a00\u504f\u9ad8\uff0c\u4f46\u4e34\u5e8a\u50ac\u5316\u5242\u7ec4\u5408\u660e\u786e\u504f\u6b63\uff0c\u4e14\u5c1a\u672a\u89e6\u53ca+35\u8fc7\u70ed\u6807\u51c6\u3002\u53c2\u8bae\u9662\u591a\u9879\u533b\u7597\u6cd5\u6848\uff08\u764c\u75c7\u7167\u62a4\u89c4\u5212\u3001\u62a4\u58eb\u52a0\u73ed\u3001\u62a5\u9500\u7a33\u5b9a\u6027\uff09[bill_catalysts] \u6784\u6210\u53e0\u52a0\u7684\u653f\u7b56\u53d8\u91cf\uff0c\u53ef\u4f5c\u9002\u5ea6\u8d85\u914d\u3002",
+      "second_order": [
+        "ABBV \u2014 shared large-pharma clinical/FDA catalyst beta",
+        "Hospital/healthcare-services names \u2014 Medicare reimbursement bills create sector-level flow",
+        "Pharma-services CROs \u2014 phase 3 activity converts to trial services demand"
+      ],
+      "evidence": [
+        "[clinical_phase3_start] 11 starts, 3 halts",
+        "[fda_label_expansion]",
+        "[special_situation]",
+        "[trump] buy",
+        "[bill_catalysts] HR10087, S5180, HR10056"
+      ],
+      "dissent": "RS +21.8 in a large pharma with no earnings catalyst in the next 30 days could simply be defensive rotation; three clinical halts against eleven starts is not a decisive success ratio.",
       "weighted_score": 1.6,
       "channels": [
         "clinical_phase3_start",
@@ -228,11 +276,11 @@
         "special_situation",
         "trump"
       ],
-      "rs_vs_spy_60d": 20.7,
+      "rs_vs_spy_60d": 21.8,
       "extended": false,
       "scorable": true,
       "falsifier": {
-        "text": "MRK's 60-day relative strength climbs toward +35pp against SPY, or a Phase 3 start converts into a public clinical halt/safety signal.",
+        "text": "A Phase 3 readout or FDA action on an MRK label expansion that fails or misses its primary endpoint while the stock sits near highs",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "MRK",
@@ -242,7 +290,7 @@
           "horizon_d": 60
         }
       },
-      "check_by": "2026-11-27"
+      "check_by": "2026-12-03"
     },
     {
       "ticker": "ABBV",
@@ -250,30 +298,30 @@
       "conviction": "low",
       "action": "WATCH",
       "horizon_d": 60,
-      "thesis": "ABBV carries a compact three-channel pattern: 9 Phase 3 starts against 2 halts, FDA label expansion, and two material 8-K filings in 30 days, plus $62.4M in congress positions. No actors and no trump flag, so this is a pure catalyst read with modest breadth. rs_vs_spy_60d of 8.4 is benign; WATCH, as the 8-K and Phase 3 activity are the only independent confirmations.",
-      "thesis_zh": "ABBV \u5448\u73b0\u7d27\u51d1\u7684\u4e09\u901a\u9053\u6a21\u5f0f\uff1a9\u9879 III \u671f\u542f\u52a8\u5bf92\u9879\u4e2d\u6b62\u3001FDA \u6807\u7b7e\u6269\u5c55\u300130\u5929\u5185\u4e24\u4efd\u91cd\u5927 8-K\uff0c\u53e6\u6709 $62.4M \u56fd\u4f1a\u6301\u4ed3\u3002\u65e0\u4eba\u7269\u8282\u70b9\u3001\u65e0 trump \u6807\u8bb0\uff0c\u56e0\u6b64\u8fd9\u662f\u4e00\u4e2a\u7eaf\u7cb9\u7684\u50ac\u5316\u5242\u5224\u65ad\uff0c\u5e7f\u5ea6\u4e00\u822c\u300260\u65e5\u76f8\u5bf9\u5f3a\u5ea68.4\u6e29\u548c\uff1bWATCH\uff0c\u56e0\u4e3a 8-K \u4e0e III \u671f\u6d3b\u52a8\u662f\u552f\u4e00\u7684\u72ec\u7acb\u786e\u8ba4\u4fe1\u53f7\u3002",
+      "thesis": "ABBV has only three channels and convergence 3, so this is a watch. Seven Phase 3 starts against two halts [clinical_phase3_start], FDA label expansion [fda_label_expansion], and two material 8-Ks in 30 days [material_8k]. RS +7.9 is quiet. The signal is real but thinner than MRK's; second-order to the healthcare legislative agenda rather than a standalone edge.",
+      "thesis_zh": "ABBV \u4ec5\u6709\u4e09\u6761\u6e20\u9053\u4e14\u6536\u655b\u8bc4\u52063\uff0c\u56e0\u6b64\u53ea\u662f\u89c2\u5bdf\u30027\u9879III\u671f\u542f\u52a8\u5bf92\u9879\u7ec8\u6b62 [clinical_phase3_start]\u3001FDA\u6807\u7b7e\u6269\u5c55 [fda_label_expansion] \u4ee5\u53ca30\u5929\u5185\u4e24\u4efd\u91cd\u59278-K [material_8k]\u3002\u76f8\u5bf9\u5f3a\u5ea6+7.9\u5e73\u6de1\u3002\u4fe1\u53f7\u771f\u5b9e\u4f46\u8584\u4e8eMRK\uff1b\u5c5e\u533b\u7597\u7acb\u6cd5\u8bae\u7a0b\u7684\u6b21\u751f\u914d\u7f6e\u800c\u975e\u72ec\u7acb\u4f18\u52bf\u3002",
       "second_order": [
-        "MRK \u2014 shared Medicare oncology policy tailwind (HR10087)",
-        "REGN? \u2014 branded pharma FDA-catalyst cluster peer"
+        "MRK \u2014 shared large-pharma catalyst beta",
+        "Immunology/dermatology biologics \u2014 ABBV's label expansions feed that niche",
+        "Pharma-services CROs \u2014 additional clinical activity"
       ],
       "evidence": [
-        "clinical_phase3_starts 9 vs halts 2",
-        "fda_label_expansion",
-        "material_8k_30d 2",
-        "congress_position_usd $62,433,000"
+        "[clinical_phase3_start] 7 starts, 2 halts",
+        "[fda_label_expansion]",
+        "[material_8k] 2 in 30d"
       ],
-      "dissent": "Two 8-Ks in 30 days could be routine (exec comp/indenture), not necessarily value-accretive; 9 Phase 3 starts without any disclosure of endpoints or timelines is thin.",
+      "dissent": "Two material 8-Ks in 30 days could just as easily be negative operational disclosures as positive catalysts; the clinical ratio alone is too thin for a standalone overweight.",
       "weighted_score": 1.45,
       "channels": [
         "clinical_phase3_start",
         "fda_label_expansion",
         "material_8k"
       ],
-      "rs_vs_spy_60d": 8.4,
+      "rs_vs_spy_60d": 7.9,
       "extended": false,
       "scorable": true,
       "falsifier": {
-        "text": "ABBV's material_8k count drops to zero over the next 30 days, or a Phase 3 start converts into a clinical halt.",
+        "text": "ABBV's next material 8-K or FDA correspondence reveals a label-expansion setback or a Phase 3 futility stop",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "ABBV",
@@ -283,14 +331,100 @@
           "horizon_d": 60
         }
       },
-      "check_by": "2026-11-27"
+      "check_by": "2026-12-03"
+    },
+    {
+      "ticker": "HUT",
+      "lean": "underweight",
+      "conviction": "low",
+      "action": "WATCH",
+      "horizon_d": 60,
+      "thesis": "HUT is not in the main cluster list but is surfaced by the label-mismatch layer with 0.85 confidence: the entity branded 'American Bitcoin' (ABTC) is actually ~80% owned by Hut 8, which has pivoted to AI power/data-center infrastructure with a $7B Anthropic/Fluidstack 245MW deal, a $9.8B Beacon Point lease, and a >$16.8B pipeline [label_mismatches, entity:American Bitcoin]. This is a repointed identity: the crypto-branded wrapper now has an AI-infrastructure real theme. No direct cluster channels, so conviction stays low and this is a watch.",
+      "thesis_zh": "HUT \u4e0d\u5728\u4e3b\u7fa4\u96c6\u5217\u8868\uff0c\u4f46\u7531\u6807\u7b7e\u9519\u914d\u5c42\u4ee50.85\u7f6e\u4fe1\u5ea6\u6d6e\u51fa\uff1a\u88ab\u54c1\u724c\u5305\u88c5\u4e3a\u201cAmerican Bitcoin\u201d\uff08ABTC\uff09\u7684\u5b9e\u4f53\u5b9e\u4e3aHut 8\u6301\u6709\u7ea680%\u80a1\u6743\u7684\u516c\u53f8\uff0c\u540e\u8005\u5df2\u8f6c\u5411AI\u7535\u529b\u4e0e\u6570\u636e\u4e2d\u5fc3\u57fa\u7840\u8bbe\u65bd\uff0c\u6d89\u53caAnthropic/Fluidstack\u76842.45\u4ebf\u74e6\u300170\u4ebf\u7f8e\u5143\u4ea4\u6613\u300198\u4ebf\u7f8e\u5143Beacon Point\u79df\u7ea6\u53ca\u8d85168\u4ebf\u7f8e\u5143\u7ba1\u7ebf [label_mismatches, entity:American Bitcoin]\u3002\u8fd9\u662f\u4e00\u4e2a\u8eab\u4efd\u91cd\u5b9a\uff1a\u52a0\u5bc6\u8d27\u5e01\u5916\u58f3\u4e0b\u7684\u771f\u5b9e\u4e3b\u9898\u662fAI\u57fa\u7840\u8bbe\u65bd\u3002\u56e0\u7f3a\u4e4f\u76f4\u63a5\u7fa4\u96c6\u6e20\u9053\uff0c\u786e\u4fe1\u5ea6\u4fdd\u6301\u4f4e\u4f4d\uff0c\u4ec5\u4f5c\u89c2\u5bdf\u3002",
+      "second_order": [
+        "AI data-center power/logistics names \u2014 Hut 8's pivot is a demand signal for that niche",
+        "MSFT/NVDA \u2014 anchor AI-infrastructure spend",
+        "HUT's power suppliers/partners \u2014 the pipeline monetization pull-through"
+      ],
+      "evidence": [
+        "[label_mismatches] entity:American Bitcoin, confidence 0.85",
+        "[label_mismatches] parent:Hut 8, ~80% ownership",
+        "[label_mismatches] $7B Anthropic/Fluidstack, $9.8B Beacon Point, >$16.8B pipeline"
+      ],
+      "dissent": "This is a single-signal, qualitative repoint with no independent cluster confirmation in today's pack; the crypto-branded wrapper can still carry volatility unrelated to the AI-infrastructure pivot.",
+      "weighted_score": null,
+      "channels": null,
+      "rs_vs_spy_60d": null,
+      "extended": false,
+      "scorable": false,
+      "falsifier": {
+        "text": "Hut 8 fails to execute the Anthropic/Fluidstack or Beacon Point milestones, or the >$16.8B pipeline fails to convert into signed revenue",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "HUT",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 60
+        }
+      },
+      "check_by": "2026-12-03",
+      "clamped": "lean 'overweight' \u2192 'underweight' (deterministic witness)",
+      "det_baseline": {
+        "action": "WATCH",
+        "conviction": "low",
+        "lean": "underweight"
+      }
+    },
+    {
+      "ticker": "IEP",
+      "lean": "underweight",
+      "conviction": "low",
+      "action": "WATCH",
+      "horizon_d": 60,
+      "thesis": "IEP is another label-mismatch repoint at 0.88 confidence: the entity 'CVR Energy' (CVI) is branded as energy-transition but is actually the energy segment inside Carl Icahn's activist-value holding company [label_mismatches, entity:CVR Energy]. The real theme is activist value investing, parent IEP. No direct cluster channels today, so this is a watch on structural value rather than a convergence edge.",
+      "thesis_zh": "IEP \u662f\u53e6\u4e00\u9879\u6807\u7b7e\u9519\u914d\u91cd\u6574\uff08\u7f6e\u4fe1\u5ea60.88\uff09\uff1a\u88ab\u5305\u88c5\u4e3a\u80fd\u6e90\u8f6c\u578b\u6807\u7684\u7684\u201cCVR Energy\u201d\uff08CVI\uff09\u5b9e\u4e3aCarl Icahn\u79ef\u6781\u7684\u7ef4\u6743\u578b\u63a7\u80a1\u516c\u53f8\u5185\u90e8\u7684\u80fd\u6e90\u677f\u5757 [label_mismatches, entity:CVR Energy]\u3002\u771f\u5b9e\u4e3b\u9898\u662f\u7ef4\u6743\u4ef7\u503c\u6295\u8d44\uff0c\u6bcd\u4f53\u4e3aIEP\u3002\u4eca\u65e5\u65e0\u76f4\u63a5\u7fa4\u96c6\u6e20\u9053\uff0c\u56e0\u6b64\u8fd9\u662f\u5bf9\u7ed3\u6784\u6027\u4ef7\u503c\u7684\u89c2\u5bdf\u800c\u975e\u6536\u655b\u578b\u4f18\u52bf\u3002",
+      "second_order": [
+        "CVI \u2014 IEP's energy segment directly benefits from parent-level value surface",
+        "Automotive/real-estate value names \u2014 IEP's diversified activist holdings",
+        "Broad energy-refining complex \u2014 CVR exposure overlaps"
+      ],
+      "evidence": [
+        "[label_mismatches] entity:CVR Energy, confidence 0.88",
+        "[label_mismatches] parent:IEP, Icahn Enterprises",
+        "[label_mismatches] energy, automotive, real estate segments"
+      ],
+      "dissent": "A label repoint is not an informational edge about cash flows or catalysts; IEP is a diversified holding company with no cluster signal today, so it could simply track broad market value.",
+      "weighted_score": null,
+      "channels": null,
+      "rs_vs_spy_60d": null,
+      "extended": false,
+      "scorable": false,
+      "falsifier": {
+        "text": "IEP's consolidated NAV or Icahn's disclosed positioning shows the energy/auto/real-estate segments deteriorating on a sum-of-parts basis without a catalyst",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "IEP",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 60
+        }
+      },
+      "check_by": "2026-12-03",
+      "clamped": "lean 'overweight' \u2192 'underweight' (deterministic witness)",
+      "det_baseline": {
+        "action": "WATCH",
+        "conviction": "low",
+        "lean": "underweight"
+      }
     }
   ],
   "track_record": {
     "schema": "altdata_brain_track_record.v1",
-    "as_of": "2026-09-06",
+    "as_of": "2026-09-10",
     "scored_total": 0,
-    "open": 16,
+    "open": 19,
     "unscored_soft": 0,
     "expired": 0,
     "overall": {
@@ -347,7 +481,7 @@
   },
   "confidence": "low",
   "n_clusters": 12,
-  "raw_text": "{\n  \"regime_read\": \"The pack shows a broad semiconductor/AI-infrastructure convergence (MU, AMAT, NVDA, INTC) with political-actor holdings and patent activity rather than a single clean trade; healthcare names (MRK, ABBV) carry a distinct catalyst channel but no supporting actor cluster, while a label-mismatch flags HUT as a concealed AI-infrastructure pivot behind an American Bitcoin crypto label. No track record exists yet, so all reads are held at low conviction: the actionable axis default is caution, not confirmation.\",\n  \"regime_read_zh\": \"\u8bc1\u636e\u5305\u663e\u793a\u534a\u5bfc\u4f53/AI\u57fa\u7840\u8bbe\u65bd\u51fa\u73b0\u5e7f\u6cdb\u7684\u805a\u5408\u4fe1\u53f7\uff08MU\u3001AMAT\u3001NVDA\u3001INTC\uff09\uff0c\u4f34\u968f\u653f\u6cbb\u4eba\u7269\u6301\u4ed3\u548c\u4e13\u5229\u6d3b\u52a8\uff0c\u4f46\u5e76\u975e\u5355\u4e00\u6e05\u6670\u7684\u4ea4\u6613\uff1b\u533b\u7597\u4fdd\u5065\uff08MRK\u3001ABBV\uff09\u867d\u6709\u50ac\u5316\u5242\u901a\u9053\u4f46\u7f3a\u4e4f\u4eba\u7269\u96c6\u7fa4\u652f\u6301\uff0c\u540c\u65f6\u6807\u7b7e\u9519\u914d\u63d0\u793a HUT \u5b9e\u4e3a\u9690\u85cf\u5728\u2018\u7f8e\u56fd\u6bd4\u7279\u5e01\u2019\u52a0\u5bc6\u6807\u7b7e\u80cc\u540e\u7684 AI \u57fa\u7840\u8bbe\u65bd\u8f6c\u578b\u3002\u5c1a\u65e0\u5386\u53f2\u6218\u7ee9\uff0c\u56e0\u6b64\u6240\u6709\u5224\u65ad\u5747\u4fdd\u6301\u4f4e\u7f6e\u4fe1\u5ea6\uff1a\u53ef\u64cd\u4f5c\u8f74\u5fc3\u9ed8\u8ba4\u8c28\u614e\uff0c\u800c\u975e\u786e\u8ba4\u3002\",\n  \"theses\": [\n    {\n      \"ticker\": \"MU\",\n      \"lean\": \"overweight\",\n      \"conviction\": \"low\",\n      \"action\": \"ACCUMULATE\",\n      \"horizon_d\": 60,\n      \"thesis\": \"MU is the highest-weighted scored cluster (2.4) with five independent channels converging: congress_cluster (net 6, 3 members), insider_mspr at 100.0 (top decile), 400 patents, bull-biased stocktwits (1.0), and a disclosed qualitative affiliation with Rep. Ro Khanna [actor:Ro Khanna]. With rs_vs_spy_60d at only 7.6 and not extended, entry is not yet gone; this reads as early-stage alignment in memory/semis rather than a chase.\",\n      \"thesis_zh\": \"MU \u662f\u6743\u91cd\u6700\u9ad8\u7684\u53ef\u8bc4\u5206\u96c6\u7fa4\uff082.4\uff09\uff0c\u4e94\u4e2a\u72ec\u7acb\u901a\u9053\u6c47\u805a\uff1a\u56fd\u4f1a\u96c6\u7fa4\uff08\u51c06\uff0c3\u4eba\uff09\u3001insider_mspr \u8fbe\u5230100.0\uff08\u6700\u9ad8\u5341\u5206\u4f4d\uff09\u3001400\u9879\u4e13\u5229\u3001\u770b\u591a\u7684 Stocktwits\uff081.0\uff09\uff0c\u4ee5\u53ca\u4e0e\u56fd\u4f1a\u8bae\u5458 Ro Khanna \u7684\u62ab\u9732\u7ea7\u5b9a\u6027\u5173\u8054\u300260\u65e5\u76f8\u5bf9\u5f3a\u5ea6\u4ec57.6\u4e14\u672a\u8d85\u4e70\uff0c\u5165\u573a\u7a97\u53e3\u5c1a\u672a\u5173\u95ed\uff1b\u8fd9\u662f\u5b58\u50a8\u5668/\u534a\u5bfc\u4f53\u7684\u65e9\u671f\u62d0\u70b9\u4fe1\u53f7\uff0c\u800c\u975e\u8ffd\u9ad8\u3002\",\n      \"second_order\": [\n        \"AMAT \u2014 memory capex implies wafer-fab equipment pull-through\",\n        \"INTC \u2014 shared US semiconductor policy beneficiary via gov_grant + patent clusters\",\n        \"LRCX? \u2014 not in pack but memory-cyclical equipment peer implied by MU capex\"\n      ],\n      \"evidence\": [\n        \"congress_cluster (net 6, 3 members)\",\n        \"insider_mspr 100.0\",\n        \"patent_cluster 400\",\n        \"stocktwits_bull 1.0 / 213,009 watchers\",\n        \"actor:Ro Khanna AFFILIATES_WITH\"\n      ],\n      \"dissent\": \"A single qualitative political affiliation plus retail bullishness can be noise: insider_mspr 100 may reflect a one-off filing, and the congress net of 6 across 3 members is modest relative to names like NVDA.\",\n      \"falsifier_text\": \"MU's 60-day relative strength breaks above +35pp against SPY and the name flags extended, or the next insider filing shows net selling despite today's 100.0 mspr reading.\"\n    },\n    {\n      \"ticker\": \"HUT\",\n      \"lean\": \"overweight\",\n      \"conviction\": \"low\",\n      \"action\": \"WATCH\",\n      \"horizon_d\": 50,\n      \"thesis\": \"HUT is surfaced not by a scored cluster but by a label_mismatch: the entity 'American Bitcoin' (ticker ABTC, brand_theme crypto) is 80% owned by Hut 8, which has pivoted to AI power/data-center infrastructure with a disclosed Anthropic/Fluidstack 245MW Dec-2025 deal, a $9.8B Beacon Point lease May-2026, a >$16.8B pipeline, and 8.6GW in development. This is a second-order AI-infrastructure play hiding behind a crypto label; the mismatch itself is the signal, so the proper action is WATCH until the cluster data confirms.\",\n      \"thesis_zh\": \"HUT \u5e76\u975e\u6765\u81ea\u8bc4\u5206\u96c6\u7fa4\uff0c\u800c\u662f\u7531\u6807\u7b7e\u9519\u914d\u6d6e\u51fa\uff1a\u5b9e\u4f53\u2018\u7f8e\u56fd\u6bd4\u7279\u5e01\u2019\uff08ABTC\uff0c\u52a0\u5bc6\u54c1\u724c\u4e3b\u9898\uff09\u7ea680%\u80a1\u6743\u7531 Hut 8 \u6301\u6709\uff0c\u540e\u8005\u5df2\u8f6c\u5411 AI \u7535\u529b/\u6570\u636e\u4e2d\u5fc3\u57fa\u7840\u8bbe\u65bd\uff0c\u62ab\u9732\u6709 2025\u5e7412\u6708 Anthropic/Fluidstack 245MW \u4ea4\u6613\u30012026\u5e745\u6708 $9.8B Beacon Point \u79df\u8d41\u3001>$16.8B \u7ba1\u7ebf\u53ca8.6GW\u5728\u5f00\u53d1\u3002\u8fd9\u662f\u85cf\u5728\u52a0\u5bc6\u6807\u7b7e\u540e\u7684\u4e8c\u9636 AI \u57fa\u7840\u8bbe\u65bd\u6807\u7684\uff1b\u9519\u914d\u672c\u8eab\u5c31\u662f\u4fe1\u53f7\uff0c\u56e0\u6b64\u5728\u96c6\u7fa4\u6570\u636e\u786e\u8ba4\u4e4b\u524d\u6b63\u786e\u52a8\u4f5c\u662f WATCH\u3002\",\n      \"second_order\": [\n        \"NVDA \u2014 AI compute demand from HUT's data-center buildout\",\n        \"AMAT \u2014 semiconductor equipment for AI server expansion\",\n        \"MU \u2014 memory demand from AI server buildouts\"\n      ],\n      \"evidence\": [\n        \"label_mismatch ABTC -> HUT (confidence 0.85)\",\n        \"Anthropic/Fluidstack 245MW Dec-2025\",\n        \"$9.8B Beacon Point lease May-2026\",\n        \"8.6GW in development / >$16.8B pipeline\"\n      ],\n      \"dissent\": \"Label-mismatch is a manual correction, not a deterministic signal; HUT's pivot is already partially public and may be priced, and the crypto label may still dominate investor perception near-term.\",\n      \"falsifier_text\": \"HUT fails to convert the disclosed pipeline into reported AI-infra revenue, or the ABTC/HUT ownership structure changes materially from the 80% stake.\"\n    },\n    {\n      \"ticker\": \"NVDA\",\n      \"lean\": \"overweight\",\n      \"conviction\": \"low\",\n      \"action\": \"WATCH\",\n      \"horizon_d\": 70,\n      \"thesis\": \"NVDA shows the densest actor graph in the pack: three sitting politicians hold stakes (Pelosi, Marjorie Taylor Greene, McCaul), Jensen Huang CONTROLS, Jim Cramer TALKS_ABOUT, and Paul Pelosi is affiliated. Six channels fire (affiliation, analyst_upgrade_cluster, github_momentum, patent_cluster, retail_buzz, special_situation). Yet congress_position_usd of $211.5M and rs_vs_spy_60d of 8.5 with heavy retail coverage mean this is crowded, not early: WATCH rather than accumulate, despite the alignment.\",\n      \"thesis_zh\": \"NVDA \u5728\u8bc1\u636e\u5305\u4e2d\u62e5\u6709\u6700\u5bc6\u96c6\u7684\u4eba\u7269\u56fe\u8c31\uff1a\u4e09\u4f4d\u5728\u4efb\u653f\u6cbb\u4eba\u7269\u6301\u80a1\uff08Pelosi\u3001Marjorie Taylor Greene\u3001McCaul\uff09\u3001Jensen Huang \u63a7\u5236\u3001Jim Cramer \u516c\u5f00\u8c08\u8bba\u3001Paul Pelosi \u5173\u8054\u3002\u516d\u4e2a\u901a\u9053\u540c\u65f6\u89e6\u53d1\u3002\u4f46\u5176\u56fd\u4f1a\u6301\u4ed3\u9ad8\u8fbe $211.5M\u300160\u65e5\u76f8\u5bf9\u5f3a\u5ea68.5\u4e14\u96f6\u552e\u8986\u76d6\u6781\u91cd\uff0c\u8bf4\u660e\u8fd9\u662f\u62e5\u6324\u800c\u975e\u65e9\u671f\u6807\u7684\uff1a\u5c3d\u7ba1\u4fe1\u53f7\u5bf9\u9f50\uff0c\u4e5f\u5e94 WATCH \u800c\u975e\u7d2f\u79ef\u3002\",\n      \"second_order\": [\n        \"MU \u2014 HBM/memory content per NVDA GPU rises\",\n        \"AMAT \u2014 NVDA's foundry/supplier capex pulls equipment\",\n        \"INTC \u2014 competitor/beneficiary of AI compute policy tailwinds\"\n      ],\n      \"evidence\": [\n        \"actor:Nancy Pelosi HOLDS_STAKE\",\n        \"actor:Marjorie Taylor Greene HOLDS_STAKE\",\n        \"actor:Michael McCaul HOLDS_STAKE\",\n        \"actor:Jensen Huang CONTROLS\",\n        \"actor:Jim Cramer TALKS_ABOUT\",\n        \"congress_position_usd $211,491,000\"\n      ],\n      \"dissent\": \"The actor concentration is so dense that the name trades as a consensus AI play; political holdings are disclosed quarterly and may be stale, and Cramer's involvement is noise, not signal.\",\n      \"falsifier_text\": \"NVDA's 60-day relative strength crosses +35pp against SPY, or a subsequent congressional disclosure shows Pelosi/McCaul reducing their stakes.\"\n    },\n    {\n      \"ticker\": \"AMAT\",\n      \"lean\": \"overweight\",\n      \"conviction\": \"low\",\n      \"action\": \"WATCH\",\n      \"horizon_d\": 60,\n      \"thesis\": \"AMAT carries a four-channel convergence (analyst_upgrade_cluster, congress_cluster, patent_cluster, unusual_options) with 256 patents, $40.9M in congress positions across 3 members, and a 0.97 analyst bull ratio. The unusual_options put/call of 1.07 is slightly protective but the 0.611 vol/OI ratio indicates elevated positioning. rs_vs_spy_60d of -14.9 means the name has lagged badly and is non-extended \u2014 an interesting contrarian setup tied to the MU/NVDA capex cycle, but the option data is mixed, so WATCH.\",\n      \"thesis_zh\": \"AMAT \u5448\u73b0\u56db\u901a\u9053\u6c47\u805a\uff08\u5206\u6790\u5e08\u4e0a\u8c03\u96c6\u7fa4\u3001\u56fd\u4f1a\u96c6\u7fa4\u3001\u4e13\u5229\u96c6\u7fa4\u3001\u5f02\u5e38\u671f\u6743\uff09\uff0c\u62e5\u6709256\u9879\u4e13\u5229\u30013\u540d\u8bae\u5458\u5408\u8ba1 $40.9M \u56fd\u4f1a\u6301\u4ed3\u30010.97 \u5206\u6790\u5e08\u770b\u591a\u6bd4\u4f8b\u3002\u671f\u6743 Put/Call 1.07 \u7565\u504f\u4fdd\u62a4\uff0c\u4f46 vol/OI 0.611 \u663e\u793a\u6301\u4ed3\u660e\u663e\u300260\u65e5\u76f8\u5bf9\u5f3a\u5ea6 -14.9 \u610f\u5473\u7740\u5927\u5e45\u843d\u540e\u4e14\u672a\u8d85\u4e70\u2014\u2014\u8fd9\u662f\u4e0e MU/NVDA \u8d44\u672c\u5f00\u652f\u5468\u671f\u7ed1\u5b9a\u7684\u9006\u5411\u5e03\u5c40\uff0c\u4f46\u671f\u6743\u4fe1\u53f7\u6df7\u6742\uff0c\u56e0\u6b64 WATCH\u3002\",\n      \"second_order\": [\n        \"MU \u2014 AMAT's equipment goes into memory fabs\",\n        \"NVDA \u2014 AMAT supplies semiconductor manufacturing for AI chips\",\n        \"INTC \u2014 US fab buildouts need AMAT tools\"\n      ],\n      \"evidence\": [\n        \"analyst_upgrade_cluster (bull ratio 0.97)\",\n        \"congress_cluster (3 members, $40.9M)\",\n        \"patent_cluster 256\",\n        \"unusual_options (vol_oi 0.611, put_call 1.07)\",\n        \"rs_vs_spy_60d -14.9\"\n      ],\n      \"dissent\": \"Put/call above 1 suggests some traders are positioning for downside, and the -14.9 underperformance may reflect a structural cyclical downturn in equipment, not just a dislocation.\",\n      \"falsifier_text\": \"AMAT's unusual_options put/call ratio rises further above 1.2 while vol/OI stays elevated, or the congressional stakes decline in the next disclosure.\"\n    },\n    {\n      \"ticker\": \"MRK\",\n      \"lean\": \"overweight\",\n      \"conviction\": \"low\",\n      \"action\": \"WATCH\",\n      \"horizon_d\": 60,\n      \"thesis\": \"MRK shows a distinct catalyst pattern: trump_side buy, 11 Phase 3 starts against 3 halts, FDA label expansion, and special_situation, with $39.0M in congress positions. This is a catalyst-driven healthcare setup, but there are no actors and the rs_vs_spy_60d of 20.7 is elevated; the entry is not extended by the +35pp threshold but is not early either. WATCH for the catalyst to land.\",\n      \"thesis_zh\": \"MRK \u5c55\u793a\u51fa\u72ec\u7279\u7684\u50ac\u5316\u5242\u6a21\u5f0f\uff1atrump \u4fa7\u4e70\u5165\u300111\u9879 III \u671f\u542f\u52a8\u5bf93\u9879\u4e2d\u6b62\u3001FDA \u6807\u7b7e\u6269\u5c55\u3001\u7279\u6b8a\u4e8b\u4ef6\uff0c\u4ee5\u53ca $39.0M \u56fd\u4f1a\u6301\u4ed3\u3002\u8fd9\u662f\u50ac\u5316\u5242\u9a71\u52a8\u7684\u533b\u7597\u4fdd\u5065\u914d\u7f6e\uff0c\u4f46\u65e0\u4eba\u7269\u8282\u70b9\u4e1460\u65e5\u76f8\u5bf9\u5f3a\u5ea620.7\u504f\u9ad8\uff1b\u672a\u8fbe+35pp\u8d85\u4e70\u9608\u503c\u4f46\u4e5f\u975e\u65e9\u671f\u3002WATCH \u7b49\u5f85\u50ac\u5316\u5242\u843d\u5730\u3002\",\n      \"second_order\": [\n        \"ABBV \u2014 correlated healthcare catalyst (9 Phase 3 starts, FDA label expansion)\",\n        \"UNH? \u2014 Medicare coverage bills (HR10087) may shift oncology payment flows\"\n      ],\n      \"evidence\": [\n        \"trump_side buy\",\n        \"clinical_phase3_starts 11 vs halts 3\",\n        \"fda_label_expansion\",\n        \"special_situation\",\n        \"congress_position_usd $38,997,000\"\n      ],\n      \"dissent\": \"Trump-linked buy signals are directional noise, not fundamental edge; 3 clinical halts against 11 starts is not a clean readout, and MRK's 20.7 60-day relative strength means much of the move may already be booked.\",\n      \"falsifier_text\": \"MRK's 60-day relative strength climbs toward +35pp against SPY, or a Phase 3 start converts into a public clinical halt/safety signal.\"\n    },\n    {\n      \"ticker\": \"ABBV\",\n      \"lean\": \"overweight\",\n      \"conviction\": \"low\",\n      \"action\": \"WATCH\",\n      \"horizon_d\": 60,\n      \"thesis\": \"ABBV carries a compact three-channel pattern: 9 Phase 3 starts against 2 halts, FDA label expansion, and two material 8-K filings in 30 days, plus $62.4M in congress positions. No actors and no trump flag, so this is a pure catalyst read with modest breadth. rs_vs_spy_60d of 8.4 is benign; WATCH, as the 8-K and Phase 3 activity are the only independent confirmations.\",\n      \"thesis_zh\": \"ABBV \u5448\u73b0\u7d27\u51d1\u7684\u4e09\u901a\u9053\u6a21\u5f0f\uff1a9\u9879 III \u671f\u542f\u52a8\u5bf92\u9879\u4e2d\u6b62\u3001FDA \u6807\u7b7e\u6269\u5c55\u300130\u5929\u5185\u4e24\u4efd\u91cd\u5927 8-K\uff0c\u53e6\u6709 $62.4M \u56fd\u4f1a\u6301\u4ed3\u3002\u65e0\u4eba\u7269\u8282\u70b9\u3001\u65e0 trump \u6807\u8bb0\uff0c\u56e0\u6b64\u8fd9\u662f\u4e00\u4e2a\u7eaf\u7cb9\u7684\u50ac\u5316\u5242\u5224\u65ad\uff0c\u5e7f\u5ea6\u4e00\u822c\u300260\u65e5\u76f8\u5bf9\u5f3a\u5ea68.4\u6e29\u548c\uff1bWATCH\uff0c\u56e0\u4e3a 8-K \u4e0e III \u671f\u6d3b\u52a8\u662f\u552f\u4e00\u7684\u72ec\u7acb\u786e\u8ba4\u4fe1\u53f7\u3002\",\n      \"second_order\": [\n        \"MRK \u2014 shared Medicare oncology policy tailwind (HR10087)\",\n        \"REGN? \u2014 branded pharma FDA-catalyst cluster peer\"\n      ],\n      \"evidence\": [\n        \"clinical_phase3_starts 9 vs halts 2\",\n        \"fda_label_expansion\",\n        \"material_8k_30d 2\",\n        \"congress_position_usd $62,433,000\"\n      ],\n      \"dissent\": \"Two 8-Ks in 30 days could be routine (exec comp/indenture), not necessarily value-accretive; 9 Phase 3 starts without any disclosure of endpoints or timelines is thin.\",\n      \"falsifier_text\": \"ABBV's material_8k count drops to zero over the next 30 days, or a Phase 3 start converts into a clinical halt.\"\n    }\n  ],\n  \"confidence\": \"low\"\n}",
+  "raw_text": "{\n  \"regime_read\": \"The pack shows a dense US-China semiconductor and AI-infrastructure convergence: MU, AMAT, NVDA, INTC, plus MSFT and PLTR carry overlapping congressional, patent, analyst and federal-flow signals, while healthcare names (MRK, ABBV) sit on clinical catalysts. No track record exists yet, so all conviction is held modest; nothing here is extreme enough to force an avoid on entry alone, though PLTR's 29pp RS is the closest to extended.\",\n  \"regime_read_zh\": \"\u4eca\u65e5\u8bc1\u636e\u5305\u663e\u793a\u7f8e\u4e2d\u534a\u5bfc\u4f53\u4e0eAI\u57fa\u7840\u8bbe\u65bd\u4e3b\u9898\u9ad8\u5ea6\u6536\u655b\uff1aMU\u3001AMAT\u3001NVDA\u3001INTC \u4ee5\u53ca MSFT\u3001PLTR \u540c\u65f6\u5e26\u6709\u56fd\u4f1a\u3001\u4e13\u5229\u3001\u5206\u6790\u5e08\u4e0e\u8054\u90a6\u8d44\u91d1\u6d41\u4fe1\u53f7\uff0c\u533b\u7597\u5065\u5eb7\u6807\u7684\uff08MRK\u3001ABBV\uff09\u5219\u53e0\u52a0\u4e34\u5e8a\u50ac\u5316\u5242\u3002\u5f53\u524d\u5c1a\u65e0\u5386\u53f2\u6218\u7ee9\uff0c\u6545\u6240\u6709\u786e\u4fe1\u5ea6\u4fdd\u6301\u514b\u5236\uff1b\u5355\u5c31\u5165\u573a\u800c\u8a00\u6ca1\u6709\u6807\u7684\u6781\u7aef\u5230\u5fc5\u987b\u56de\u907f\uff0c\u4f46 PLTR \u76f8\u5bf9\u6807\u666e29\u4e2a\u767e\u5206\u70b9\u7684\u5f3a\u5ea6\u6700\u63a5\u8fd1\u8fc7\u70ed\u3002\",\n  \"theses\": [\n    {\n      \"ticker\": \"MU\",\n      \"lean\": \"overweight\",\n      \"conviction\": \"medium\",\n      \"action\": \"ACCUMULATE\",\n      \"horizon_d\": 40,\n      \"thesis\": \"MU carries five independent channels: congressional cluster (net 6, 3 members) [congress_cluster], full 1.0 insider MSPR (no selling by tracked insiders) [insider_mspr], a large 400-patent cluster [patent_cluster], federal grant money with 0.32 acceleration [gov_grant_accel], and maximal Stocktwits bull ratio with over 213k watchers [stocktwits_bull]. Relative strength vs SPY is only 1.7, so the entry is not extended. Earnings sit 20 days out with a historically strong 18.6% surprise mark; the cluster is a bet on memory-cycle strength confirmed by insider and legislative alignment.\",\n      \"thesis_zh\": \"MU \u6c47\u805a\u4e94\u6761\u72ec\u7acb\u6e20\u9053\uff1a\u56fd\u4f1a\u7fa4\u96c6\uff08\u51c0+6\u30013\u540d\u8bae\u5458\uff09[congress_cluster]\u3001\u6ee1\u52061.0\u7684\u5185\u90e8\u4ebaMSPR\uff08\u88ab\u8ffd\u8e2a\u5185\u90e8\u4eba\u65e0\u5356\u51fa\uff09[insider_mspr]\u3001\u591a\u8fbe400\u9879\u7684\u4e13\u5229\u7fa4 [patent_cluster]\u3001\u8054\u90a6\u62e8\u6b3e\u52a0\u901f0.32 [gov_grant_accel]\uff0c\u4ee5\u53caBull\u6bd4\u73871.0\u4e14\u8d8521.3\u4e07\u5173\u6ce8\u8005\u7684Stocktwits\u60c5\u7eea [stocktwits_bull]\u3002\u76f8\u5bf9\u6807\u666e\u5f3a\u5ea6\u4ec51.7\uff0c\u5165\u573a\u5e76\u672a\u8fc7\u70ed\u3002\u8ddd\u8d22\u62a520\u5929\u4e14\u5386\u53f2\u8d85\u9884\u671f18.6%\uff1b\u8be5\u7fa4\u96c6\u62bc\u6ce8\u7684\u662f\u7531\u5185\u90e8\u4eba\u4e0e\u7acb\u6cd5\u9762\u5171\u540c\u786e\u8ba4\u7684\u5b58\u50a8\u5468\u671f\u8d70\u5f3a\u3002\",\n      \"second_order\": [\n        \"AMAT \u2014 memory capex read-through feeds semiconductor equipment demand\",\n        \"NVDA \u2014 HBM/content growth is a direct input-cost and demand complement\",\n        \"INTC \u2014 US memory/fab reshoring policy tailwind overlaps\"\n      ],\n      \"evidence\": [\n        \"[congress_cluster] net 6, 3 members\",\n        \"[insider_mspr] 1.0\",\n        \"[patent_cluster] 400 patents\",\n        \"[gov_grant_accel] 0.32\",\n        \"[stocktwits_bull] 1.0 bull, 213009 watchers\"\n      ],\n      \"dissent\": \"The 1.0 insider MSPR likely reflects no tracked insiders selling rather than fresh buying; Stocktwits 1.0 bull with a hot name is often late retail euphoria ahead of a memory-price top.\",\n      \"falsifier_text\": \"MU guidance or spot DRAM/NAND pricing commentary at the Sept 30 print signals memory prices rolling over quarter-on-quarter\",\n      \"second_order_reasons_zh\": [\n        \"AMAT \u2014 \u5b58\u50a8\u8d44\u672c\u5f00\u652f\u4f20\u5bfc\u5229\u597d\u534a\u5bfc\u4f53\u8bbe\u5907\u9700\u6c42\",\n        \"NVDA \u2014 HBM/\u5b58\u50a8\u589e\u957f\u662f\u76f4\u63a5\u7684\u6295\u5165\u6210\u672c\u4e0e\u9700\u6c42\u4e92\u8865\u9879\",\n        \"INTC \u2014 \u7f8e\u56fd\u672c\u571f\u5b58\u50a8/\u6676\u5706\u56de\u6d41\u653f\u7b56\u987a\u98ce\u53e0\u52a0\"\n      ]\n    },\n    {\n      \"ticker\": \"AMAT\",\n      \"lean\": \"overweight\",\n      \"conviction\": \"low\",\n      \"action\": \"ACCUMULATE\",\n      \"horizon_d\": 60,\n      \"thesis\": \"AMAT is a laggard (RS -20.3) with four channels: analyst-upgrade cluster with 0.97 bull ratio [analyst_upgrade_cluster], congressional net +4 across 3 members [congress_cluster], a 256-patent cluster [patent_cluster], and unusual options activity with put/call 1.07 and OI/vol 0.611 [unusual_options]. The -20.3 RS means it has not priced the semiconductor-equipment recovery that MU's memory strength implies; this is the lower-multiple equipment exposure behind the memory thesis.\",\n      \"thesis_zh\": \"AMAT \u662f\u843d\u540e\u6807\u7684\uff08\u76f8\u5bf9\u6807\u666e -20.3\uff09\uff0c\u5177\u5907\u56db\u6761\u6e20\u9053\uff1a\u5206\u6790\u5e08\u4e0a\u8c03\u7fa4\u96c6Bull\u6bd4\u73870.97 [analyst_upgrade_cluster]\u30013\u540d\u8bae\u5458\u51c0+4\u7684\u56fd\u4f1a\u7fa4\u96c6 [congress_cluster]\u3001256\u9879\u4e13\u5229\u7fa4 [patent_cluster]\uff0c\u4ee5\u53ca\u770b\u8dcc/\u770b\u6da81.07\u3001\u6301\u4ed3\u91cf/\u6210\u4ea4\u91cf0.611\u7684\u5f02\u5e38\u671f\u6743\u6d3b\u52a8 [unusual_options]\u3002-20.3\u7684\u76f8\u5bf9\u5f3a\u5ea6\u8bf4\u660e\u5e02\u573a\u5c1a\u672a\u53cd\u6620MU\u5b58\u50a8\u8d70\u5f3a\u5bf9\u534a\u5bfc\u4f53\u8bbe\u5907\u7684\u4f20\u5bfc\uff1b\u8fd9\u662f\u5b58\u50a8\u4e3b\u9898\u80cc\u540e\u4f30\u503c\u66f4\u4f4e\u7684\u8bbe\u5907\u7aef\u66b4\u9732\u3002\",\n      \"second_order\": [\n        \"MU \u2014 stronger memory pricing drives AMAT tool orders\",\n        \"NVDA \u2014 advanced packaging/HBM equipment is a shared capex driver\",\n        \"INTC \u2014 fab buildouts compete for the same equipment suppliers\"\n      ],\n      \"evidence\": [\n        \"[analyst_upgrade_cluster] 0.97 bull\",\n        \"[congress_cluster] net 4, 3 members\",\n        \"[patent_cluster] 256 patents\",\n        \"[unusual_options] OI/vol 0.611, put/call 1.07\"\n      ],\n      \"dissent\": \"Put/call of 1.07 is not clearly bullish positioning; the options signal could be hedging rather than accumulation, and a -20.3 RS laggard may be discounting structural share loss to ASML or Lam.\",\n      \"falsifier_text\": \"AMAT's next earnings commentary or a major memory customer capex update shows tool orders being pushed out rather than pulled forward\"\n    },\n    {\n      \"ticker\": \"PLTR\",\n      \"lean\": \"overweight\",\n      \"conviction\": \"low\",\n      \"action\": \"WATCH\",\n      \"horizon_d\": 45,\n      \"thesis\": \"PLTR shows the highest convergence score in the pack (6) with six channels, but RS +29.4 is the warmest entry on the list, so this is a watch not an accumulate. Government contract acceleration is decisive: $26.4M awarded in 30 days at 1.76 acceleration [gov_contract], plus disclosed stakes from Rep. Marjorie Taylor Greene [actor:Marjorie Taylor Greene] and Cathie Wood affiliation [actor:Cathie Wood], retail buzz and a 1.0 Stocktwits bull ratio [retail_buzz][stocktwits_bull]. The trump-linked 'sell' tag [trump] is a headwind marker against the other flows.\",\n      \"thesis_zh\": \"PLTR \u5728\u672c\u6b21\u8bc1\u636e\u5305\u4e2d\u6536\u655b\u8bc4\u5206\u6700\u9ad8\uff086\uff09\uff0c\u5177\u5907\u516d\u6761\u6e20\u9053\uff0c\u4f46\u76f8\u5bf9\u5f3a\u5ea6+29.4\u662f\u5217\u8868\u4e2d\u6700\u70ed\u7684\u5165\u573a\u70b9\uff0c\u56e0\u6b64\u53ea\u80fd\u89c2\u5bdf\u800c\u975e\u7d2f\u79ef\u3002\u653f\u5e9c\u5408\u540c\u52a0\u901f\u6700\u4e3a\u5173\u952e\uff1a30\u5929\u5185\u6388\u4e882637\u4e07\u7f8e\u5143\u3001\u52a0\u901f1.76 [gov_contract]\uff0c\u53e0\u52a0\u4f17\u8bae\u5458Marjorie Taylor Greene\u7684\u516c\u5f00\u6301\u4ed3 [actor:Marjorie Taylor Greene]\u3001Cathie Wood\u7684\u5173\u8054 [actor:Cathie Wood]\u3001\u6563\u6237\u70ed\u5ea6\u4ee5\u53ca1.0\u7684Stocktwits Bull\u6bd4\u7387 [retail_buzz][stocktwits_bull]\u3002\u7279\u6717\u666e\u76f8\u5173\u7684\u201c\u5356\u51fa\u201d\u6807\u7b7e [trump] \u6784\u6210\u4e0e\u5176\u4ed6\u8d44\u91d1\u6d41\u76f8\u53cd\u7684\u538b\u529b\u4fe1\u53f7\u3002\",\n      \"second_order\": [\n        \"MSFT \u2014 government AI/defense cloud budgets often flow to the same primes\",\n        \"NVDA \u2014 AI compute spend underpinning Palantir use cases\",\n        \"Defense-IT services names \u2014 PLTR wins pull along adjacent federal integrators\"\n      ],\n      \"evidence\": [\n        \"[gov_contract] $26.4M 30d, 1.76 accel\",\n        \"[actor:Marjorie Taylor Greene] disclosed stake\",\n        \"[actor:Cathie Wood] disclosed affiliation\",\n        \"[retail_buzz] wsb_mentions 91\",\n        \"[stocktwits_bull] 1.0, 324401 watchers\"\n      ],\n      \"dissent\": \"RS +29.4 means much of the government-contract narrative is already priced; the trump 'sell' tag and a 1.0 retail bull ratio at high speed often mark late-stage enthusiasm.\",\n      \"falsifier_text\": \"PLTR's next quarter shows government contract revenue decelerating or a major disclosed holder trimming while the stock is still extended\"\n    },\n    {\n      \"ticker\": \"NVDA\",\n      \"lean\": \"overweight\",\n      \"conviction\": \"low\",\n      \"action\": \"ACCUMULATE\",\n      \"horizon_d\": 60,\n      \"thesis\": \"NVDA sits at convergence 6 and RS +6 \u2014 not extended. Four disclosed politicians hold stakes including Pelosi [actor:Nancy Pelosi] and MTG [actor:Marjorie Taylor Greene], and Jensen Huang controls the company [actor:Jensen Huang]. The analytical edge is modest: DPI 0.402 at z 0.64 [hf_model_momentum] is mildly positive, analyst bull ratio 1.0 [analyst_upgrade_cluster], retail buzz with 207 WSB mentions [retail_buzz], and a 218-patent cluster. This is a broad, well-known AI-infrastructure alignment rather than an unusual hidden edge, so conviction stays low.\",\n      \"thesis_zh\": \"NVDA \u6536\u655b\u8bc4\u52066\u4e14\u76f8\u5bf9\u5f3a\u5ea6+6\uff0c\u672a\u8fc7\u70ed\u3002\u5305\u62ecPelosi [actor:Nancy Pelosi]\u3001MTG [actor:Marjorie Taylor Greene]\u5728\u5185\u7684\u56db\u540d\u516c\u5f00\u653f\u5ba2\u6301\u6709\u6301\u4ed3\uff0c\u9ec4\u4ec1\u52cb\u4e3a\u5b9e\u9645\u63a7\u5236\u4eba [actor:Jensen Huang]\u3002\u5206\u6790\u9762\u4f18\u52bf\u6e29\u548c\uff1aDPI 0.402\uff08z\u503c0.64\uff09[hf_model_momentum] \u7565\u504f\u6b63\uff0c\u5206\u6790\u5e08Bull\u6bd4\u73871.0 [analyst_upgrade_cluster]\uff0cWSB\u63d0\u53ca207 [retail_buzz]\uff0c218\u9879\u4e13\u5229\u7fa4\u3002\u8fd9\u662f\u5e7f\u4e3a\u4eba\u77e5\u7684AI\u57fa\u7840\u8bbe\u65bd\u5171\u632f\uff0c\u800c\u975e\u7f55\u89c1\u7684\u9690\u6027\u4f18\u52bf\uff0c\u6545\u786e\u4fe1\u5ea6\u4fdd\u6301\u4f4e\u4f4d\u3002\",\n      \"second_order\": [\n        \"MU \u2014 HBM is a core input and margin driver\",\n        \"AMAT \u2014 NVDA-led AI capex pulls equipment vendors\",\n        \"MSFT \u2014 hyperscaler GPU procurement is the demand anchor\"\n      ],\n      \"evidence\": [\n        \"[actor:Nancy Pelosi] disclosed stake\",\n        \"[actor:Marjorie Taylor Greene] disclosed stake\",\n        \"[actor:Jensen Huang] controls\",\n        \"[hf_model_momentum] DPI 0.402, z 0.64\",\n        \"[analyst_upgrade_cluster] 1.0\",\n        \"[retail_buzz] wsb_mentions 207\"\n      ],\n      \"dissent\": \"Multiple disclosed politician holdings are backward-looking and slow-moving; the modest DPI z-score of 0.64 is not a decisive smart-money signal, and retail buzz is high enough to be noise.\",\n      \"falsifier_text\": \"A major AI-hyperscaler capex guidance cut or an export-control tightening that directly caps NVDA's China revenue trajectory\"\n    },\n    {\n      \"ticker\": \"MSFT\",\n      \"lean\": \"overweight\",\n      \"conviction\": \"low\",\n      \"action\": \"ACCUMULATE\",\n      \"horizon_d\": 50,\n      \"thesis\": \"MSFT carries five channels including the only outright trump 'buy' tag among the pack [trump], a massive app-demand footprint (4.77 rating, 20M+ reviews, 31.3M downloads in 30d) [app_demand], GitHub momentum at 191.5k stars [github_momentum], 431 patents [patent_cluster], and Aktman affiliation [actor:Bill Ackman]. The Sam Altman partnership [actor:Sam Altman] adds an OpenAI/AI-infrastructure read. RS +23 is elevated but below the +35 warning threshold; entry is intact but not cheap.\",\n      \"thesis_zh\": \"MSFT \u5177\u5907\u4e94\u6761\u6e20\u9053\uff0c\u5305\u62ec\u5168\u5305\u4e2d\u552f\u4e00\u660e\u786e\u7684\u7279\u6717\u666e\u201c\u4e70\u5165\u201d\u6807\u7b7e [trump]\u3001\u5e9e\u5927\u7684\u5e94\u7528\u9700\u6c42\u8db3\u8ff9\uff08\u8bc4\u52064.77\u3001\u8d852009\u4e07\u6761\u8bc4\u8bba\u300130\u5929\u4e0b\u8f7d3133\u4e07\uff09[app_demand]\u3001GitHub\u52a8\u91cf19.15\u4e07\u661f [github_momentum]\u3001431\u9879\u4e13\u5229 [patent_cluster]\uff0c\u4ee5\u53caBill Ackman\u7684\u5173\u8054 [actor:Bill Ackman]\u3002Sam Altman\u7684\u5408\u4f5c\u5173\u7cfb [actor:Sam Altman] \u53e0\u52a0OpenAI/AI\u57fa\u7840\u8bbe\u65bd\u903b\u8f91\u3002\u76f8\u5bf9\u5f3a\u5ea6+23\u504f\u9ad8\u4f46\u672a\u89e6\u53ca+35\u8b66\u793a\u7ebf\uff1b\u5165\u573a\u6709\u6548\u4f46\u4ef7\u683c\u4e0d\u4fbf\u5b9c\u3002\",\n      \"second_order\": [\n        \"NVDA \u2014 OpenAI/Microsoft GPU and infrastructure demand\",\n        \"AI data-centers/power themes \u2014 Azure capex is the anchor buyer\",\n        \"PLTR \u2014 enterprise AI adoption tailwind overlaps\"\n      ],\n      \"evidence\": [\n        \"[trump] buy\",\n        \"[app_demand] 4.77 rating, 20.1M reviews, 31.3M downloads 30d\",\n        \"[github_momentum] 191509 stars\",\n        \"[patent_cluster] 431 patents\",\n        \"[actor:Bill Ackman] disclosed affiliation\",\n        \"[actor:Sam Altman] partners\"\n      ],\n      \"dissent\": \"The 23.0 RS means much of the OpenAI/Azure narrative is already in the price; trump 'buy' tags are unreliable as a durable thesis and the AI moat is widely known.\",\n      \"falsifier_text\": \"Azure growth decelerates at the next print or OpenAI shifts meaningful compute/infrastructure share away from Microsoft\"\n    },\n    {\n      \"ticker\": \"MRK\",\n      \"lean\": \"overweight\",\n      \"conviction\": \"low\",\n      \"action\": \"ACCUMULATE\",\n      \"horizon_d\": 60,\n      \"thesis\": \"MRK is a healthcare tactical with four channels: 11 Phase 3 starts against 3 halts [clinical_phase3_start], FDA label expansion [fda_label_expansion], special-situation flag [special_situation], and a trump 'buy' tag [trump]. RS +21.8 is elevated for a large pharma, but the clinical catalyst mix is concretely positive and the name is not yet extended by the +35 test. Worth a modest overweight knowing the Senate healthcare bills (cancer care planning, nurse overtime, provider reimbursement) are compounding regulatory flux [bill_catalysts].\",\n      \"thesis_zh\": \"MRK \u662f\u5177\u5907\u56db\u6761\u6e20\u9053\u7684\u533b\u7597\u4fdd\u5065\u6218\u672f\u6807\u7684\uff1a11\u9879III\u671f\u542f\u52a8\u5bf93\u9879\u7ec8\u6b62 [clinical_phase3_start]\u3001FDA\u6807\u7b7e\u6269\u5c55 [fda_label_expansion]\u3001\u7279\u6b8a\u60c5\u5883\u6807\u8bb0 [special_situation]\uff0c\u4ee5\u53ca\u7279\u6717\u666e\u201c\u4e70\u5165\u201d\u6807\u7b7e [trump]\u3002\u76f8\u5bf9\u5f3a\u5ea6+21.8\u5bf9\u5927\u578b\u836f\u4f01\u800c\u8a00\u504f\u9ad8\uff0c\u4f46\u4e34\u5e8a\u50ac\u5316\u5242\u7ec4\u5408\u660e\u786e\u504f\u6b63\uff0c\u4e14\u5c1a\u672a\u89e6\u53ca+35\u8fc7\u70ed\u6807\u51c6\u3002\u53c2\u8bae\u9662\u591a\u9879\u533b\u7597\u6cd5\u6848\uff08\u764c\u75c7\u7167\u62a4\u89c4\u5212\u3001\u62a4\u58eb\u52a0\u73ed\u3001\u62a5\u9500\u7a33\u5b9a\u6027\uff09[bill_catalysts] \u6784\u6210\u53e0\u52a0\u7684\u653f\u7b56\u53d8\u91cf\uff0c\u53ef\u4f5c\u9002\u5ea6\u8d85\u914d\u3002\",\n      \"second_order\": [\n        \"ABBV \u2014 shared large-pharma clinical/FDA catalyst beta\",\n        \"Hospital/healthcare-services names \u2014 Medicare reimbursement bills create sector-level flow\",\n        \"Pharma-services CROs \u2014 phase 3 activity converts to trial services demand\"\n      ],\n      \"evidence\": [\n        \"[clinical_phase3_start] 11 starts, 3 halts\",\n        \"[fda_label_expansion]\",\n        \"[special_situation]\",\n        \"[trump] buy\",\n        \"[bill_catalysts] HR10087, S5180, HR10056\"\n      ],\n      \"dissent\": \"RS +21.8 in a large pharma with no earnings catalyst in the next 30 days could simply be defensive rotation; three clinical halts against eleven starts is not a decisive success ratio.\",\n      \"falsifier_text\": \"A Phase 3 readout or FDA action on an MRK label expansion that fails or misses its primary endpoint while the stock sits near highs\"\n    },\n    {\n      \"ticker\": \"ABBV\",\n      \"lean\": \"overweight\",\n      \"conviction\": \"low\",\n      \"action\": \"WATCH\",\n      \"horizon_d\": 60,\n      \"thesis\": \"ABBV has only three channels and convergence 3, so this is a watch. Seven Phase 3 starts against two halts [clinical_phase3_start], FDA label expansion [fda_label_expansion], and two material 8-Ks in 30 days [material_8k]. RS +7.9 is quiet. The signal is real but thinner than MRK's; second-order to the healthcare legislative agenda rather than a standalone edge.\",\n      \"thesis_zh\": \"ABBV \u4ec5\u6709\u4e09\u6761\u6e20\u9053\u4e14\u6536\u655b\u8bc4\u52063\uff0c\u56e0\u6b64\u53ea\u662f\u89c2\u5bdf\u30027\u9879III\u671f\u542f\u52a8\u5bf92\u9879\u7ec8\u6b62 [clinical_phase3_start]\u3001FDA\u6807\u7b7e\u6269\u5c55 [fda_label_expansion] \u4ee5\u53ca30\u5929\u5185\u4e24\u4efd\u91cd\u59278-K [material_8k]\u3002\u76f8\u5bf9\u5f3a\u5ea6+7.9\u5e73\u6de1\u3002\u4fe1\u53f7\u771f\u5b9e\u4f46\u8584\u4e8eMRK\uff1b\u5c5e\u533b\u7597\u7acb\u6cd5\u8bae\u7a0b\u7684\u6b21\u751f\u914d\u7f6e\u800c\u975e\u72ec\u7acb\u4f18\u52bf\u3002\",\n      \"second_order\": [\n        \"MRK \u2014 shared large-pharma catalyst beta\",\n        \"Immunology/dermatology biologics \u2014 ABBV's label expansions feed that niche\",\n        \"Pharma-services CROs \u2014 additional clinical activity\"\n      ],\n      \"evidence\": [\n        \"[clinical_phase3_start] 7 starts, 2 halts\",\n        \"[fda_label_expansion]\",\n        \"[material_8k] 2 in 30d\"\n      ],\n      \"dissent\": \"Two material 8-Ks in 30 days could just as easily be negative operational disclosures as positive catalysts; the clinical ratio alone is too thin for a standalone overweight.\",\n      \"falsifier_text\": \"ABBV's next material 8-K or FDA correspondence reveals a label-expansion setback or a Phase 3 futility stop\"\n    },\n    {\n      \"ticker\": \"HUT\",\n      \"lean\": \"overweight\",\n      \"conviction\": \"low\",\n      \"action\": \"WATCH\",\n      \"horizon_d\": 60,\n      \"thesis\": \"HUT is not in the main cluster list but is surfaced by the label-mismatch layer with 0.85 confidence: the entity branded 'American Bitcoin' (ABTC) is actually ~80% owned by Hut 8, which has pivoted to AI power/data-center infrastructure with a $7B Anthropic/Fluidstack 245MW deal, a $9.8B Beacon Point lease, and a >$16.8B pipeline [label_mismatches, entity:American Bitcoin]. This is a repointed identity: the crypto-branded wrapper now has an AI-infrastructure real theme. No direct cluster channels, so conviction stays low and this is a watch.\",\n      \"thesis_zh\": \"HUT \u4e0d\u5728\u4e3b\u7fa4\u96c6\u5217\u8868\uff0c\u4f46\u7531\u6807\u7b7e\u9519\u914d\u5c42\u4ee50.85\u7f6e\u4fe1\u5ea6\u6d6e\u51fa\uff1a\u88ab\u54c1\u724c\u5305\u88c5\u4e3a\u201cAmerican Bitcoin\u201d\uff08ABTC\uff09\u7684\u5b9e\u4f53\u5b9e\u4e3aHut 8\u6301\u6709\u7ea680%\u80a1\u6743\u7684\u516c\u53f8\uff0c\u540e\u8005\u5df2\u8f6c\u5411AI\u7535\u529b\u4e0e\u6570\u636e\u4e2d\u5fc3\u57fa\u7840\u8bbe\u65bd\uff0c\u6d89\u53caAnthropic/Fluidstack\u76842.45\u4ebf\u74e6\u300170\u4ebf\u7f8e\u5143\u4ea4\u6613\u300198\u4ebf\u7f8e\u5143Beacon Point\u79df\u7ea6\u53ca\u8d85168\u4ebf\u7f8e\u5143\u7ba1\u7ebf [label_mismatches, entity:American Bitcoin]\u3002\u8fd9\u662f\u4e00\u4e2a\u8eab\u4efd\u91cd\u5b9a\uff1a\u52a0\u5bc6\u8d27\u5e01\u5916\u58f3\u4e0b\u7684\u771f\u5b9e\u4e3b\u9898\u662fAI\u57fa\u7840\u8bbe\u65bd\u3002\u56e0\u7f3a\u4e4f\u76f4\u63a5\u7fa4\u96c6\u6e20\u9053\uff0c\u786e\u4fe1\u5ea6\u4fdd\u6301\u4f4e\u4f4d\uff0c\u4ec5\u4f5c\u89c2\u5bdf\u3002\",\n      \"second_order\": [\n        \"AI data-center power/logistics names \u2014 Hut 8's pivot is a demand signal for that niche\",\n        \"MSFT/NVDA \u2014 anchor AI-infrastructure spend\",\n        \"HUT's power suppliers/partners \u2014 the pipeline monetization pull-through\"\n      ],\n      \"evidence\": [\n        \"[label_mismatches] entity:American Bitcoin, confidence 0.85\",\n        \"[label_mismatches] parent:Hut 8, ~80% ownership\",\n        \"[label_mismatches] $7B Anthropic/Fluidstack, $9.8B Beacon Point, >$16.8B pipeline\"\n      ],\n      \"dissent\": \"This is a single-signal, qualitative repoint with no independent cluster confirmation in today's pack; the crypto-branded wrapper can still carry volatility unrelated to the AI-infrastructure pivot.\",\n      \"falsifier_text\": \"Hut 8 fails to execute the Anthropic/Fluidstack or Beacon Point milestones, or the >$16.8B pipeline fails to convert into signed revenue\"\n    },\n    {\n      \"ticker\": \"IEP\",\n      \"lean\": \"overweight\",\n      \"conviction\": \"low\",\n      \"action\": \"WATCH\",\n      \"horizon_d\": 60,\n      \"thesis\": \"IEP is another label-mismatch repoint at 0.88 confidence: the entity 'CVR Energy' (CVI) is branded as energy-transition but is actually the energy segment inside Carl Icahn's activist-value holding company [label_mismatches, entity:CVR Energy]. The real theme is activist value investing, parent IEP. No direct cluster channels today, so this is a watch on structural value rather than a convergence edge.\",\n      \"thesis_zh\": \"IEP \u662f\u53e6\u4e00\u9879\u6807\u7b7e\u9519\u914d\u91cd\u6574\uff08\u7f6e\u4fe1\u5ea60.88\uff09\uff1a\u88ab\u5305\u88c5\u4e3a\u80fd\u6e90\u8f6c\u578b\u6807\u7684\u7684\u201cCVR Energy\u201d\uff08CVI\uff09\u5b9e\u4e3aCarl Icahn\u79ef\u6781\u7684\u7ef4\u6743\u578b\u63a7\u80a1\u516c\u53f8\u5185\u90e8\u7684\u80fd\u6e90\u677f\u5757 [label_mismatches, entity:CVR Energy]\u3002\u771f\u5b9e\u4e3b\u9898\u662f\u7ef4\u6743\u4ef7\u503c\u6295\u8d44\uff0c\u6bcd\u4f53\u4e3aIEP\u3002\u4eca\u65e5\u65e0\u76f4\u63a5\u7fa4\u96c6\u6e20\u9053\uff0c\u56e0\u6b64\u8fd9\u662f\u5bf9\u7ed3\u6784\u6027\u4ef7\u503c\u7684\u89c2\u5bdf\u800c\u975e\u6536\u655b\u578b\u4f18\u52bf\u3002\",\n      \"second_order\": [\n        \"CVI \u2014 IEP's energy segment directly benefits from parent-level value surface\",\n        \"Automotive/real-estate value names \u2014 IEP's diversified activist holdings\",\n        \"Broad energy-refining complex \u2014 CVR exposure overlaps\"\n      ],\n      \"evidence\": [\n        \"[label_mismatches] entity:CVR Energy, confidence 0.88\",\n        \"[label_mismatches] parent:IEP, Icahn Enterprises\",\n        \"[label_mismatches] energy, automotive, real estate segments\"\n      ],\n      \"dissent\": \"A label repoint is not an informational edge about cash flows or catalysts; IEP is a diversified holding company with no cluster signal today, so it could simply track broad market value.\",\n      \"falsifier_text\": \"IEP's consolidated NAV or Icahn's disclosed positioning shows the energy/auto/real-estate segments deteriorating on a sum-of-parts basis without a catalyst\"\n    }\n  ],\n  \"confidence\": \"low\"\n}",
   "degraded_reason": null,
   "disclaimer": "An AI reading of the desk's own deterministic convergence \u2014 accountable and checkable, not a guarantee. Every call cites the channels/actors it is based on, is graded vs SPY over the horizon, and can be wrong or overconfident. The Mastermind sizes it through its own risk framework; treat as odds, not a forecast."
 }

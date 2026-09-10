@@ -1,8 +1,8 @@
 {
   "schema": "edgar_phrase_velocity.v1",
   "vocab_version": 1,
-  "as_of": "2026-09-07",
-  "generated_at": "2026-09-08T03:35:28.964319+00:00",
+  "as_of": "2026-09-09",
+  "generated_at": "2026-09-10T04:02:40.437907+00:00",
   "authority": {
     "may_rank": false,
     "may_gate": false,
@@ -116,17 +116,7 @@
     "space_satellite": {
       "theme_id": "space_satellite",
       "ticker_count": 15,
-      "top_accelerating": [
-        {
-          "phrase": "supply constrained",
-          "recent_count": 2,
-          "prior_count": 1,
-          "recent_filers": 2,
-          "prior_filers": 1,
-          "velocity_z": 1.0,
-          "is_affinity_phrase": false
-        }
-      ],
+      "top_accelerating": [],
       "coverage_note": "15 basket tickers; 30d/60d PIT windows.",
       "coverage_note_zh": "篮子成员15个；PIT窗口30天/60天。"
     },
