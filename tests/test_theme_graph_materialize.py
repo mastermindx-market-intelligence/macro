@@ -830,3 +830,145 @@ def test_ths_canonical_join_declines_when_concept_map_asof_is_later_than_crosswa
                 and edge["dst"] == "theme:solar"], (
         "a concept map reloaded after the crosswalk must decline the canonical join "
         "even though the membership doc itself predates the crosswalk")
+
+
+# D2C actual nightly-orchestrator proof
+
+def _d2c_run_fixture(tree, monkeypatch):
+    from scripts import build_theme_graph as bake
+
+    root, xwalk = tree
+    actual_build = materialize.build
+
+    def fixture_build(**kwargs):
+        return actual_build(
+            **kwargs, data_dir=root, crosswalk_path=xwalk,
+            finviz_seed_path=root / "absent-seed.json",
+            finviz_history_path=root / "absent-history.jsonl",
+            finviz_live_tree_path=root / "absent-live.json",
+            substrate_dir=root,
+        )
+
+    monkeypatch.setattr(materialize, "build", fixture_build)
+    monkeypatch.setattr(materialize, "utc_today", lambda: "2026-08-12")
+    monkeypatch.setattr(materialize, "utc_now_stamp", lambda: "2026-08-12T01:00:00Z")
+    monkeypatch.setattr(bake, "_newest_raw_snapshot", lambda: None)
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    return bake, root
+
+
+def _legacy_ths_edge(symbol="600001.SS"):
+    src = f"co:cn:{symbol}"
+    dst = f"basket:baskets_china_ths:thsc{KNOWN_CODE}"
+    row = {
+        "edge_id": materialize.edge_id_for("MEMBER_OF", src, dst, CN_SEED),
+        "type": "MEMBER_OF", "src": src, "dst": dst,
+        "valid_from": CN_SEED, "valid_to": None,
+        "evidence_time": THS_DOC_DATE, "belief_time": "2026-08-01",
+        "era": "reconstruction", "source_class": "scrape",
+        "date_provenance": "seed_constant",
+        "evidence_refs": ["ev:deadbeefdeadbeef"],
+        "confidence_basis": "membership_doc.v1",
+        "computed_at": "2026-08-01T01:00:00Z",
+        "engine_version": store.ENGINE_VERSION,
+    }
+    row.update({field: None for field in store.RESERVED_EDGE_FIELDS})
+    return row
+
+
+def _file_hashes(root):
+    from hashlib import sha256
+
+    return {
+        str(path.relative_to(root)): sha256(path.read_bytes()).hexdigest()
+        for path in root.rglob("*") if path.is_file()
+    }
+
+
+def test_d2c_run_retracts_only_pit_covered_legacy_and_preserves_history(tree, monkeypatch):
+    bake, _root = _d2c_run_fixture(tree, monkeypatch)
+    covered, uncovered = _legacy_ths_edge(), _legacy_ths_edge("600099.SS")
+    assert store.write_edges([covered, uncovered], lane="nightly") == 2
+    history_before = store.read_edges(latest_belief=False)
+
+    assert bake.run(backfill=False, force_backfill=False) == 0
+
+    latest = store.read_edges()
+    closed = latest[latest["edge_id"] == covered["edge_id"]].iloc[0]
+    assert closed["valid_from"] == closed["valid_to"] == THS_DOC_DATE
+    still_open = latest[latest["edge_id"] == uncovered["edge_id"]].iloc[0]
+    assert still_open["valid_from"] == CN_SEED and pd.isna(still_open["valid_to"])
+    active = latest[(latest["type"] == "MEMBER_OF") & latest["valid_to"].isna()]
+    assert len(active[(active["src"] == covered["src"])
+                      & (active["dst"] == covered["dst"])]) == 1
+    retained = store.read_edges(latest_belief=False)
+    old_rows = retained[retained["belief_time"] == "2026-08-01"].reset_index(drop=True)
+    old_records = old_rows.astype(object).where(pd.notna(old_rows), None).to_dict("records")
+    before_records = (history_before.astype(object)
+                      .where(pd.notna(history_before), None).to_dict("records"))
+    assert old_records == before_records
+    assert store.read_meta()["rows_appended"]["edges"] > 0
+
+
+def test_d2c_run_swallowed_ths_producer_error_returns_failure_without_writes(tree, monkeypatch):
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    assert store.write_edges([_legacy_ths_edge()], lane="nightly") == 1
+    before = _file_hashes(root)
+
+    def broken_plane(_self):
+        raise ValueError("controlled THS producer failure")
+
+    monkeypatch.setattr(materialize._Builder, "build_ths_membership_history", broken_plane)
+    assert bake.run(backfill=False, force_backfill=False) == 1
+    assert _file_hashes(root) == before
+
+
+def test_d2c_run_empty_pit_never_retracts_or_auto_waives(tree, monkeypatch):
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    legacy = _legacy_ths_edge()
+    assert store.write_edges([legacy], lane="nightly") == 1
+    history_path = root / "baskets_china_ths" / "membership_history.parquet"
+    pd.read_parquet(history_path).iloc[:0].to_parquet(history_path, index=False)
+    actual_wall = materialize.source_shrink_refusals
+    observed_allow = []
+
+    def observe_wall(*args, **kwargs):
+        observed_allow.append(set(kwargs.get("allow", ())))
+        return actual_wall(*args, **kwargs)
+
+    monkeypatch.setattr(materialize, "source_shrink_refusals", observe_wall)
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    assert observed_allow == [set()]
+    latest = store.read_edges()
+    old = latest[latest["edge_id"] == legacy["edge_id"]].iloc[0]
+    assert old["valid_from"] == CN_SEED and pd.isna(old["valid_to"])
+    assert not (latest["confidence_basis"] == "membership_pit.ths.v1").any()
+
+
+def test_d2c_run_off_lane_preserves_every_fixture_and_store_byte(tree, monkeypatch):
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    assert store.write_edges([_legacy_ths_edge()], lane="nightly") == 1
+    before = _file_hashes(root)
+    monkeypatch.setenv("COLLECT_LANE", "render")
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    assert _file_hashes(root) == before
+
+
+def test_d2c_run_identical_second_night_appends_no_edge_belief(tree, monkeypatch):
+    bake, _root = _d2c_run_fixture(tree, monkeypatch)
+    assert store.write_edges([_legacy_ths_edge()], lane="nightly") == 1
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    first = store.read_edges(latest_belief=False)
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    pd.testing.assert_frame_equal(store.read_edges(latest_belief=False), first)
+    assert store.read_meta()["rows_appended"]["edges"] == 0
+
+
+def test_d2c_run_ths_cutover_never_waives_another_family_shrink(tree, monkeypatch):
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    assert store.write_edges([_legacy_ths_edge()], lane="nightly") == 1
+    _write(root / "baskets" / "membership.json", _us_doc(removed="2026-08-11"))
+    before = _file_hashes(store.store_dir())
+    assert bake.run(backfill=False, force_backfill=False) == 1
+    assert _file_hashes(store.store_dir()) == before
