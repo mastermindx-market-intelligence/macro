@@ -70,6 +70,8 @@ from __future__ import annotations
 from hashlib import sha256
 from typing import Any, Mapping
 
+from lib.macro_suite_labels import axis_clause_from_axis, quadrant_reading_text
+
 METHOD_VERSION = "financial_conditions.compose.v1"
 DEFINITION_VERSION = "1.0.0"
 PRODUCER = "engine.market_os.macro_workspaces.financial_conditions"
@@ -506,7 +508,8 @@ def compose(regime_latest: Mapping[str, Any], *, built_at: str,
                             equities_vol_components),
         "changes": changes,
         "implications": {"items": _implications(
-            headline, level_value, impulse_value, contradiction, worst, coverage_ratio)},
+            headline, level_value, impulse_value, contradiction, worst, coverage_ratio,
+            x_axis=axes_items[0], y_axis=axes_items[1])},
         "scenario_contract": _scenario_contract(),
         "alert_contract": _alert_contract(),
         "sources": {"items": _sources(asof, vintages, stale_inputs, vol_regime, rates)},
@@ -980,7 +983,8 @@ def _band(v, lo, hi):
     return "LOW" if v < lo else ("HIGH" if v > hi else "MEDIUM")
 
 
-def _implications(headline, level_value, impulse_value, contradiction, worst_freshness, coverage_ratio) -> list[dict]:
+def _implications(headline, level_value, impulse_value, contradiction, worst_freshness, coverage_ratio,
+                  x_axis=None, y_axis=None) -> list[dict]:
     conf = {
         "data_coverage": _band(coverage_ratio, 0.5, 0.99),
         "source_health": "HIGH" if worst_freshness == "CURRENT" else "LOW",
@@ -994,24 +998,21 @@ def _implications(headline, level_value, impulse_value, contradiction, worst_fre
     if state_id is not None:
         label_en = _QUADRANTS[state_id]["en"]
         label_zh = _QUADRANTS[state_id]["zh"]
-        def _plain_num(v) -> tuple[str, str]:
-            # C-n3: never raise on None/non-numeric; print plain-word null.
-            if v is None:
-                return "unavailable", "暂无"
-            try:
-                s = f"{float(v):.1f}"
-                return s, s
-            except (TypeError, ValueError):
-                return "unavailable", "暂无"
-        level_s, level_zh = _plain_num(level_value)
-        impulse_s, impulse_zh = _plain_num(impulse_value)
         items.append({
             "implication_id": "state_descriptive",
-            "text": _bil(
-                f"US financial conditions read {state_id} - {label_en} "
-                f"(level {level_s}, impulse {impulse_s}, boundary 50).",
-                f"美国金融条件读数为 {state_id} - {label_zh}"
-                f"（水平 {level_zh}，边际冲量 {impulse_zh}，分界 50）。"),
+            "text": quadrant_reading_text(
+                lead_en="US financial conditions read:",
+                lead_zh="美国金融条件读数：",
+                label_en=label_en, label_zh=label_zh,
+                x_clause=axis_clause_from_axis(
+                    x_axis or {"value": level_value},
+                    name_en="Conditions level", name_zh="条件水平"),
+                y_clause=axis_clause_from_axis(
+                    y_axis or {"value": impulse_value},
+                    name_en="Conditions impulse", name_zh="条件边际冲量",
+                    gloss_en="the recent direction of travel",
+                    gloss_zh="近期变化方向"),
+            ),
             "evidence_class": "DESCRIPTIVE",
             "confidence": conf,
             "horizon": "current",

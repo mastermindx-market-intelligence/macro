@@ -310,6 +310,100 @@ def test_an_unknown_token_degrades_to_readable_text_and_is_reported() -> None:
     labels.reset_unknown_tokens()
 
 
+def test_deslug_preserves_series_codes_and_still_splits_future_states() -> None:
+    """Frozen spec §c deslug preserve-guard (seat deviation 3)."""
+    assert labels.deslug("RSAFS") == "RSAFS"
+    assert labels.deslug("SOME_FUTURE_STATE") == "Some future state"
+
+
+def test_refusal_note_quotes_the_degraded_headline_byte_for_byte() -> None:
+    """Frozen spec §b.4: the ZH notice in the shell matches degraded_view."""
+    shell = (ROOT / "templates" / "_macro_suite_shell.html.j2").read_text(
+        encoding="utf-8")
+    headline_zh = "本工作区当前不呈现任何状态"
+    assert headline_zh in shell
+    assert '「' + headline_zh + '」' in shell
+    from lib.macro_suite_view import degraded_view
+    view = degraded_view(
+        workspace_id="x", title={"en": "X", "zh": "X"},
+        subtitle={"en": "", "zh": ""}, region_code="US",
+        region_display_name="United States", page_built_at="2026-09-10T00:00:00Z",
+        artifact={"path": "p", "manifest_path": "m", "min_client_contract": "c"},
+        failure_kind="SOURCE_FAILED", failure_detail="d")
+    assert view["failure"]["headline"]["zh"] == headline_zh
+
+
+def test_reference_display_worked_examples_match_frozen_spec() -> None:
+    """Frozen spec §c.4 examples 1–10."""
+    cases = [
+        ("data/fred/RSAFS.parquet", "FRED series · RSAFS", "FRED 数据序列 · RSAFS", "R1", True),
+        ("data/regime/latest.json#conditions",
+         "Nightly regime snapshot · Conditions", "每日体制快照 · 条件", "R1", True),
+        ("collectors.fred[RSAFS]", "Collector · FRED · RSAFS", "采集器 · FRED · RSAFS", "R2", True),
+        ("data/treasury/tga.parquet",
+         "US Treasury file · Treasury General Account (TGA)",
+         "美国财政部数据 · 财政部一般账户（TGA）", "R1", True),
+        ("data/bis/us_dsr.parquet", "BIS · US debt-service ratio",
+         "BIS · 美国债务偿付比率", "R1", True),
+        ("data/zori/national.parquet", "Zillow rent index · National",
+         "Zillow 租金指数 · 全国", "R1", True),
+        ("fred.RSAFS.retail_sales", "FRED · RSAFS · Retail sales",
+         "FRED · RSAFS · 零售销售", "R2", True),
+        ("engine.conditions.financial_conditions",
+         "Mastermind engine · Conditions · Financial conditions",
+         "本平台引擎 · 条件 · 金融条件", "R2", True),
+        ("business_cycle.tiers.leading.diffusion",
+         "Business cycle · Tiers · Leading · Diffusion",
+         "商业周期 · 分层 · 领先 · 扩散度", "R2", True),
+        ("NONE -- no lawful ISM/PMI or regional-Fed survey collector is wired in this repository",
+         "No collector is wired for this input, so nothing is claimed here.",
+         "本项尚未接入采集器，因此不作任何主张。", "R4", False),
+    ]
+    labels.reset_unknown_tokens()
+    for raw, en, zh, rule, receipt in cases:
+        got = labels.reference_display(raw)
+        assert got["en"] == en, raw
+        assert got["zh"] == zh, raw
+        assert got["rule"] == rule, raw
+        assert got["show_receipt"] is receipt, raw
+    labels.reset_unknown_tokens()
+
+
+def test_frozen_quadrant_prose_passes_the_copy_predicate() -> None:
+    """Frozen spec §a.5 site 1 at the ledger values; copy-law must stay green."""
+    axis_x = {
+        "value": 56.93,
+        "thresholds": {
+            "low_label": {"en": "Easy conditions", "zh": "宽松条件"},
+            "high_label": {"en": "Tight conditions", "zh": "紧张条件"},
+        },
+    }
+    axis_y = {
+        "value": 49.67,
+        "thresholds": {
+            "low_label": {"en": "Easing impulse", "zh": "边际放松"},
+            "high_label": {"en": "Tightening impulse", "zh": "边际收紧"},
+        },
+    }
+    pair = labels.quadrant_reading_text(
+        lead_en="US financial conditions read:",
+        lead_zh="美国金融条件读数：",
+        label_en="Tight conditions / Tightening impulse",
+        label_zh="紧张条件 / 边际收紧",
+        x_clause=labels.axis_clause_from_axis(
+            axis_x, name_en="Conditions level", name_zh="条件水平"),
+        y_clause=labels.axis_clause_from_axis(
+            axis_y, name_en="Conditions impulse", name_zh="条件边际冲量",
+            gloss_en="the recent direction of travel", gloss_zh="近期变化方向"),
+    )
+    assert pair["en"].startswith("US financial conditions read: Tight conditions")
+    assert "B -" not in pair["en"]
+    assert "x=" not in pair["en"]
+    assert "boundary 50" not in pair["en"]
+    assert labels.machine_text_hits(pair["en"]) == []
+    assert labels.machine_text_hits(pair["zh"]) == []
+
+
 def test_every_published_horizon_and_region_has_a_reviewed_name() -> None:
     """`current` / `weeks` and an English region name are producer tokens; a
     Chinese reader must not meet either of them raw."""

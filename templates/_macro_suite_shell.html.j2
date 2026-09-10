@@ -67,6 +67,27 @@
 
 {#- vis_time is a date face only. The machine value stays in datetime=;
     a second Details toggle per cell (m4) is not emitted. -#}
+{#- KEEP-RAW-NAME-FIRST (frozen spec §c): derived name on the reading line,
+    raw token on a subordinate selectable receipt line. R0 hashes stay raw;
+    R4 prose has no receipt; a missing value keeps the name and a bare dash. -#}
+{%- macro ref_lines(raw) -%}
+{%- if not raw or raw == '—' -%}
+{%- set disp = none|ref_display -%}
+<span class="mq-ref-name">{{ t(disp.en, disp.zh) }}</span>
+<span class="mq-dash">—</span>
+{%- else -%}
+{%- set disp = raw|ref_display -%}
+{%- if disp.rule == 'R0' -%}
+<code>{{ raw }}</code>
+{%- elif not disp.show_receipt -%}
+<span class="mq-ref-name">{{ t(disp.en, disp.zh) }}</span>
+{%- else -%}
+<span class="mq-ref-name">{{ t(disp.en, disp.zh) }}</span>
+<code class="mq-receipt">{{ raw }}</code>
+{%- endif -%}
+{%- endif -%}
+{%- endmacro -%}
+
 {%- macro vis_time(value) -%}
 {%- if value -%}
 {%- set face = value|date_pair -%}
@@ -904,12 +925,12 @@
         </header>
         <dl class="mq-method-grid">
           <div><dt>{{ t('Provider', '提供方') }}</dt><dd>{{ source.provider or '—' }}</dd></div>
-          <div><dt>{{ t('Owner', '所有者') }}</dt><dd><code>{{ source.owner_ref }}</code></dd></div>
-          <div><dt>{{ t('Artifact', '产物') }}</dt><dd><code>{{ source.artifact_ref or '—' }}</code></dd></div>
+          <div><dt>{{ t('Computed by', '计算来源') }}</dt><dd>{{ ref_lines(source.owner_ref) }}</dd></div>
+          <div><dt>{{ t('Source file', '来源文件') }}</dt><dd>{{ ref_lines(source.artifact_ref) }}</dd></div>
           <div><dt>{{ t('Rights', '授权') }}</dt><dd>{{ bl(source.rights) }}</dd></div>
           <div><dt>{{ t('Correction', '更正') }}</dt><dd>{{ bl(source.correction) }}</dd></div>
           <div><dt>{{ t('Definition', '定义') }}</dt>
-               <dd>{% if source.definition_id %}<code>{{ source.definition_id }}</code>{% if source.definition_version %} · v{{ source.definition_version }}{% endif %}{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
+               <dd>{% if source.definition_id %}{{ ref_lines(source.definition_id) }}{% if source.definition_version %} · v{{ source.definition_version }}{% endif %}{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
           <div><dt>{{ t('Transform', '变换') }}</dt><dd>{{ source.transform or '—' }}</dd></div>
         </dl>
         {{ clock_list(source.clocks) }}
@@ -932,16 +953,16 @@
     <section class="mq-drawer-section">
       <h3>{{ t('Publication receipt', '发布凭据') }}</h3>
       <dl class="mq-method-grid">
-        <div><dt>{{ t('Artifact path', '产物路径') }}</dt><dd><code>{{ evidence.artifact.path }}</code></dd></div>
-        <div><dt>{{ t('Manifest path', '清单路径') }}</dt><dd><code>{{ evidence.artifact.manifest_path }}</code></dd></div>
+        <div><dt>{{ t('Artifact path', '产物路径') }}</dt><dd>{{ ref_lines(evidence.artifact.path) }}</dd></div>
+        <div><dt>{{ t('Manifest path', '清单路径') }}</dt><dd>{{ ref_lines(evidence.artifact.manifest_path) }}</dd></div>
         <div><dt>{{ t('Content hash', '内容哈希') }}</dt><dd><code class="mq-hash">{{ evidence.generation.content_sha256 }}</code></dd></div>
         <div><dt>{{ t('Bytes', '字节数') }}</dt><dd>{{ evidence.artifact.bytes }}</dd></div>
         <div><dt>{{ t('Generation id', '产物代号') }}</dt><dd><code>{{ evidence.generation.generation_id }}</code></dd></div>
-        <div><dt>{{ t('Producer', '生产者') }}</dt><dd><code>{{ evidence.generation.producer }}</code></dd></div>
+        <div><dt>{{ t('Producer', '生产者') }}</dt><dd>{{ ref_lines(evidence.generation.producer) }}</dd></div>
         <div><dt>{{ t('Producer code version', '生产端代码版本') }}</dt><dd><code>{{ evidence.generation.code_version }}</code></dd></div>
         <div><dt>{{ t('Client contract', '客户端契约') }}</dt><dd><code>{{ evidence.artifact.min_client_contract }}</code></dd></div>
       </dl>
-      <p class="mq-lineage-note">{{ t('The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mismatch renders a refusal page instead of a state.', '本页在渲染前已按封闭 schema 校验该产物并重新计算其内容哈希。若不匹配，将呈现拒绝页面而非任何状态读数。') }}</p>
+      <p class="mq-lineage-note">{{ t('Before this page rendered, we checked the published data file against its agreed structure and re-computed its content hash — a fingerprint of the exact bytes. If either check had failed, this page would show no reading at all, only the notice "This workspace is not rendering a state".', '本页渲染前，我们已核对已发布数据文件是否符合约定结构，并重新计算其内容哈希（该文件确切字节的指纹）。若任一项未通过，本页不会给出任何读数，只会显示提示「本工作区当前不呈现任何状态」。') }}</p>
     </section>
     </div>
   </details>
@@ -1100,8 +1121,8 @@
       <dl class="mq-method-grid">
         <div class="mq-nonclock"><dt>{{ t('Page built', '页面生成') }}</dt><dd><time>{{ view.page_built_at }}</time></dd></div>
         <div><dt>{{ t('Detail', '详情') }}</dt><dd><code class="mq-refusal-detail">{{ view.failure.detail }}</code></dd></div>
-        <div><dt>{{ t('Artifact path', '产物路径') }}</dt><dd><code>{{ view.artifact.path }}</code></dd></div>
-        <div><dt>{{ t('Manifest path', '清单路径') }}</dt><dd><code>{{ view.artifact.manifest_path }}</code></dd></div>
+        <div><dt>{{ t('Artifact path', '产物路径') }}</dt><dd>{{ ref_lines(view.artifact.path) }}</dd></div>
+        <div><dt>{{ t('Manifest path', '清单路径') }}</dt><dd>{{ ref_lines(view.artifact.manifest_path) }}</dd></div>
         <div><dt>{{ t('Client contract', '客户端契约') }}</dt><dd><code>{{ view.artifact.min_client_contract }}</code></dd></div>
       </dl>
       </div>

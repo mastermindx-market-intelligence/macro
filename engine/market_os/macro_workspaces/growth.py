@@ -69,6 +69,8 @@ from __future__ import annotations
 from hashlib import sha256
 from typing import Any, Mapping
 
+from lib.macro_suite_labels import axis_clause_from_axis, quadrant_reading_text
+
 METHOD_VERSION = "growth_real_economy.compose.v1"
 AXIS_DEFINITION_VERSION = "1.0.0"
 PRODUCER = "engine.market_os.macro_workspaces.growth"
@@ -192,17 +194,6 @@ def _cycle_freshness(value_present: bool, bc_available: Any, artifact_stale: boo
 
 def _bil(en: str | None, zh: str | None) -> dict:
     return {"en": en, "zh": zh}
-
-
-
-def _plain_axis_num(v, *, zh: bool = False) -> str:
-    """C-n3: format an axis score; None/non-numeric → plain-word null."""
-    if v is None:
-        return "暂无" if zh else "unavailable"
-    try:
-        return f"{float(v):.1f}"
-    except (TypeError, ValueError):
-        return "暂无" if zh else "unavailable"
 
 
 
@@ -535,6 +526,7 @@ def compose(regime_latest: Mapping[str, Any], *, built_at: str,
         "changes": changes,
         "implications": {"items": _implications(
             headline, x_value, y_value, contradiction, worst, coverage_ratio, bc, calibration,
+            x_axis=axis_growth_momentum, y_axis=axis_growth_level_breadth,
         )},
         "scenario_contract": _scenario_contract(),
         "alert_contract": _alert_contract(),
@@ -965,7 +957,7 @@ def _drivers(x_components: list[dict], y_components: list[dict]) -> dict:
 
 
 def _implications(headline, x_value, y_value, contradiction, worst_freshness,
-                  coverage_ratio, bc, calibration) -> list[dict]:
+                  coverage_ratio, bc, calibration, x_axis=None, y_axis=None) -> list[dict]:
     conf = {
         "data_coverage": _band(coverage_ratio, 0.5, 0.99),
         "source_health": "HIGH" if worst_freshness == "CURRENT" else "LOW",
@@ -981,11 +973,19 @@ def _implications(headline, x_value, y_value, contradiction, worst_freshness,
         label_zh = _QUADRANTS[state_id]["zh"]
         items.append({
             "implication_id": "state_descriptive",
-            "text": _bil(
-                f"US growth regime reads {state_id} - {label_en} (growth momentum {_plain_axis_num(x_value)}, "
-                f"growth level/breadth {_plain_axis_num(y_value)}, boundary 50).",
-                f"美国增长体制读数为 {state_id} - {label_zh}（增长动能 {_plain_axis_num(x_value, zh=True)}，"
-                f"增长水平/广度 {_plain_axis_num(y_value, zh=True)}，分界 50）。"),
+            "text": quadrant_reading_text(
+                lead_en="US growth reads:",
+                lead_zh="美国经济增长读数：",
+                label_en=label_en, label_zh=label_zh,
+                x_clause=axis_clause_from_axis(
+                    x_axis or {"value": x_value},
+                    name_en="Growth momentum", name_zh="增长动能"),
+                y_clause=axis_clause_from_axis(
+                    y_axis or {"value": y_value},
+                    name_en="Growth level and breadth", name_zh="增长水平与广度",
+                    gloss_en="how widely the strength is shared",
+                    gloss_zh="强势在多大范围内共享"),
+            ),
             "evidence_class": "DESCRIPTIVE",
             "confidence": conf,
             "horizon": "current",

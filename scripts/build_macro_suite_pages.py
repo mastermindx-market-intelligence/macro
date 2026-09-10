@@ -536,6 +536,7 @@ def _environment(root: Path) -> Environment:
     env.filters["date_pair"] = (
         lambda value: L.date_display_pair(str(value)) if value else None
     )
+    env.filters["ref_display"] = L.reference_display
     return env
 
 

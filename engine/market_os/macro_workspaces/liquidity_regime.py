@@ -34,6 +34,8 @@ import copy
 from hashlib import sha256
 from typing import Any, Mapping
 
+from lib.macro_suite_labels import axis_clause_from_axis, quadrant_reading_text
+
 METHOD_VERSION = "liquidity_regime.compose.v1"
 # Bumped 1.0.0 -> 1.1.0: adversarial review round 1 finding F1 corrected the
 # hysteresis crossing rule (a method change to axes[*]/headline.hysteresis
@@ -153,16 +155,6 @@ def _bil(en: str, zh: str | None) -> dict:
 # --------------------------------------------------------------------------- #
 # axis component construction
 # --------------------------------------------------------------------------- #
-
-def _plain_axis_num(v, *, zh: bool = False) -> str:
-    """C-n3: format an axis score; None/non-numeric → plain-word null."""
-    if v is None:
-        return "暂无" if zh else "unavailable"
-    try:
-        return f"{float(v):.1f}"
-    except (TypeError, ValueError):
-        return "暂无" if zh else "unavailable"
-
 
 
 def _component(component_id, label_en, label_zh, owner_field, owner_ref, raw,
@@ -370,13 +362,13 @@ def compose(regime_latest: Mapping[str, Any], *, built_at: str,
         },
         "headline": headline,
         "axes": {"items": [
-            _axis("funding_pressure", "Funding pressure", "融资压力",
+            (axis_funding := _axis("funding_pressure", "Funding pressure", "融资压力",
                   "higher_tighter", x_value, x_status, x_null, x_components, x_avail,
                   low_en="Easy funding", low_zh="宽松融资", high_en="Tight funding", high_zh="紧张融资",
                   weights_law="weighted mean of standardized components, weights renormalized over present components; NFCI pctile 0.30, OFR FSI pctile 0.30, HY OAS z 0.20, rates scare 0.20",
                   transformation="percentiles x100; z-score mapped 50+clamp(z/2.5,-1,1)*50; scare score passthrough (already 0-100); prior-only owner reads, no in-composer estimation",
-                  frequency_alignment="mixed: NFCI/ANFCI weekly (Fri), OFR FSI ~2-business-day lag, HY OAS daily, rates scare daily; each carried with its own source clock"),
-            _axis("balance_sheet_support", "Balance-sheet support", "资产负债表支持",
+                  frequency_alignment="mixed: NFCI/ANFCI weekly (Fri), OFR FSI ~2-business-day lag, HY OAS daily, rates scare daily; each carried with its own source clock")),
+            (axis_support := _axis("balance_sheet_support", "Balance-sheet support", "资产负债表支持",
                   "higher_stronger", y_value, y_status, y_null, y_components, y_avail,
                   low_en="Weak support", low_zh="弱支持", high_en="Strong support", high_zh="强支持",
                   weights_law="weighted mean of standardized components, weights renormalized over present; quality label 0.40, overlay level 0.35, net-liquidity RoC 0.25",
@@ -384,7 +376,7 @@ def compose(regime_latest: Mapping[str, Any], *, built_at: str,
                                  f"RRP buffer disclosure (informational, not axis-weighted): a balance at or below {RRP_FLOOR_BN}bn carries an exhausted-floor flag in "
                                  "the implications and drivers while the value itself remains published; a negative balance is physically impossible for a facility "
                                  "and is treated as a failed source reading",
-                  frequency_alignment="net-liquidity quantity/quality is weekly (Fed H.4.1 Wed, released Thu) with a 3-business-day owner lag; overlay/quality share the same cadence"),
+                  frequency_alignment="net-liquidity quantity/quality is weekly (Fed H.4.1 Wed, released Thu) with a 3-business-day owner lag; overlay/quality share the same cadence")),
         ]},
         "metrics": {"items": _metrics(r, lq, cond, stress_overlay, asof, vintages,
                                       x_value, y_value, x_components, y_components)},
@@ -396,7 +388,8 @@ def compose(regime_latest: Mapping[str, Any], *, built_at: str,
         "drivers": _drivers(x_components, y_components, rrp_floor=rrp_floor_flag),
         "changes": changes,
         "implications": {"items": _implications(headline, x_value, y_value, contradiction,
-                                               worst, coverage_ratio, lq)},
+                                               worst, coverage_ratio, lq,
+                                               x_axis=axis_funding, y_axis=axis_support)},
         "scenario_contract": _scenario_contract(),
         "alert_contract": _alert_contract(),
         "sources": {"items": _sources(asof, vintages, lq, stale_inputs)},
@@ -802,7 +795,7 @@ def _band(v, lo, hi):
 
 
 def _implications(headline, x_value, y_value, contradiction, worst_freshness,
-                  coverage_ratio, lq) -> list[dict]:
+                  coverage_ratio, lq, x_axis=None, y_axis=None) -> list[dict]:
     conf = {
         "data_coverage": _band(coverage_ratio, 0.5, 0.99),
         "source_health": "HIGH" if worst_freshness == "CURRENT" else "LOW",
@@ -820,10 +813,19 @@ def _implications(headline, x_value, y_value, contradiction, worst_freshness,
         label_zh = _QUADRANTS[state_id]["zh"]
         items.append({
             "implication_id": "state_descriptive",
-            "text": _bil(
-                f"US liquidity regime reads {state_id} - {label_en} (funding pressure {_plain_axis_num(x_value)}, "
-                f"balance-sheet support {_plain_axis_num(y_value)}, boundary 50).",
-                f"美国流动性体制读数为 {state_id} - {label_zh}（融资压力 {_plain_axis_num(x_value, zh=True)}，资产负债表支持 {_plain_axis_num(y_value, zh=True)}，分界 50）。"),
+            "text": quadrant_reading_text(
+                lead_en="US market liquidity reads:",
+                lead_zh="美国市场流动性读数：",
+                label_en=label_en, label_zh=label_zh,
+                x_clause=axis_clause_from_axis(
+                    x_axis or {"value": x_value},
+                    name_en="Funding pressure", name_zh="融资压力"),
+                y_clause=axis_clause_from_axis(
+                    y_axis or {"value": y_value},
+                    name_en="Balance-sheet support", name_zh="资产负债表支持",
+                    gloss_en="how much central-bank cash is standing behind the market",
+                    gloss_zh="央行资金对市场的支撑力度"),
+            ),
             "evidence_class": "DESCRIPTIVE",
             "confidence": conf,
             "horizon": "current",

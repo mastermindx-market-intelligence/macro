@@ -254,6 +254,8 @@ import datetime as _dt
 from hashlib import sha256
 from typing import Any, Mapping
 
+from lib.macro_suite_labels import axis_clause_from_axis, quadrant_reading_text
+
 METHOD_VERSION = "consumer_payments.compose.v1"
 DEFINITION_VERSION = "1.0.0"
 AXIS_DEFINITION_VERSION = "1.0.0"
@@ -404,16 +406,6 @@ def _clamp(v: float, lo: float, hi: float) -> float:
 
 def _bil(en: str | None, zh: str | None) -> dict:
     return {"en": en, "zh": zh}
-
-
-def _plain_axis(v, *, zh: bool = False) -> str:
-    """C-n3: format an axis score; None/non-numeric → plain-word null."""
-    if v is None:
-        return "暂无" if zh else "unavailable"
-    try:
-        return f"{float(v):.1f}"
-    except (TypeError, ValueError):
-        return "暂无" if zh else "unavailable"
 
 
 def _band(v, lo, hi):
@@ -959,20 +951,20 @@ def compose(fred_frames: Mapping[str, Any] | None, *, built_at: str,
         },
         "headline": headline,
         "axes": {"items": [
-            _axis("cash_flow_momentum", "Cash-flow / spending momentum", "现金流/支出动能",
+            (axis_cash := _axis("cash_flow_momentum", "Cash-flow / spending momentum", "现金流/支出动能",
                   "higher_stronger", x_value, x_status, x_null, x_components, x_avail,
                   low_en="Weak momentum", low_zh="动能疲弱", high_en="Strong momentum", high_zh="动能强劲",
                   weights_law="weighted mean of standardized components, BOTH legs required present (coverage_floor=1.0, judgment call 6); retail sales YoY 0.50, real disposable income YoY 0.50",
                   transformation="YoY percent changes mapped 50+clamp(v/scale,-1,1)*50; prior-only owner reads, no in-composer estimation",
                   frequency_alignment="both legs monthly, period-start dated; RSAFS ~M+1 mid-month release, DSPIC96 ~M+1 month-end BEA release",
-                  min_components=_X_MIN_COMPONENTS, coverage_floor=_X_COVERAGE_FLOOR),
-            _axis("credit_stress", "Consumer credit stress", "消费信贷压力",
+                  min_components=_X_MIN_COMPONENTS, coverage_floor=_X_COVERAGE_FLOOR)),
+            (axis_credit := _axis("credit_stress", "Consumer credit stress", "消费信贷压力",
                   "higher_more_stress", y_value, y_status, y_null, y_components, y_avail,
                   low_en="Low stress", low_zh="压力低", high_en="High stress", high_zh="压力高",
                   weights_law="weighted mean of standardized components, weights renormalized over present components (min 2 of 4, coverage_floor=0.5, judgment call 7); revolving-credit YoY 0.30, saving rate (inverted) 0.25, cc delinquency 0.25, mortgage delinquency 0.20",
                   transformation="revolving-credit YoY mapped 50+clamp(v/scale,-1,1)*50 (sign=+1); saving rate mapped 50-clamp((v-neutral)/scale,-1,1)*50 (sign=-1, judgment call 9); delinquency rates mapped linearly floor->ceil (disclosed anchors, judgment call 8)",
                   frequency_alignment="mixed: G.19 revolving credit monthly (~5th business day of M+2), saving rate monthly (BEA, ~M+1 month-end), delinquency quarterly (~70d after quarter end)",
-                  min_components=_Y_MIN_COMPONENTS, coverage_floor=_Y_COVERAGE_FLOOR),
+                  min_components=_Y_MIN_COMPONENTS, coverage_floor=_Y_COVERAGE_FLOOR)),
         ]},
         "metrics": {"items": metrics},
         "series": {
@@ -984,7 +976,7 @@ def compose(fred_frames: Mapping[str, Any] | None, *, built_at: str,
         "changes": changes,
         "implications": {"items": _implications(
             metrics_by_id, contradictions, worst, coverage_ratio,
-            x_value, y_value, headline)},
+            x_value, y_value, headline, x_axis=axis_cash, y_axis=axis_credit)},
         "scenario_contract": _scenario_contract(),
         "alert_contract": _alert_contract(),
         "sources": {"items": _sources(retail, sentiment, credit_total, credit_revolving,
@@ -1488,7 +1480,8 @@ def _drivers(metrics_by_id: dict) -> dict:
 # implications
 # --------------------------------------------------------------------------- #
 def _implications(metrics_by_id: dict, contradictions: list[dict], worst_freshness: str,
-                   coverage_ratio: float, x_value, y_value, headline: dict) -> list[dict]:
+                   coverage_ratio: float, x_value, y_value, headline: dict,
+                   x_axis=None, y_axis=None) -> list[dict]:
     conf = {
         "data_coverage": _band(coverage_ratio, 0.5, 0.99),
         "source_health": "HIGH" if worst_freshness == "CURRENT" else "LOW",
@@ -1503,11 +1496,17 @@ def _implications(metrics_by_id: dict, contradictions: list[dict], worst_freshne
         label = _QUADRANTS[headline["state_id"]]
         items.append({
             "implication_id": "headline_computed",
-            "text": _bil(
-                f"Consumer & Payments reads {headline['state_id']} - {label['en']} "
-                f"(cash-flow momentum {_plain_axis(x_value)}, credit stress {_plain_axis(y_value)}, boundary 50).",
-                f"消费与支付读数为 {headline['state_id']} - {label['zh']}"
-                f"（现金流动能 {_plain_axis(x_value, zh=True)}，信贷压力 {_plain_axis(y_value, zh=True)}，分界 50）。"),
+            "text": quadrant_reading_text(
+                lead_en="Consumer & Payments reads:",
+                lead_zh="消费与支付读数：",
+                label_en=label["en"], label_zh=label["zh"],
+                x_clause=axis_clause_from_axis(
+                    x_axis or {"value": x_value},
+                    name_en="Cash-flow and spending momentum", name_zh="现金流与支出动能"),
+                y_clause=axis_clause_from_axis(
+                    y_axis or {"value": y_value},
+                    name_en="Consumer credit stress", name_zh="消费信贷压力"),
+            ),
             "evidence_class": "DESCRIPTIVE", "confidence": conf, "horizon": "current",
             "channels": ["consumer", "spending", "credit"],
             "contradictions": [c["kind"] for c in contradictions],

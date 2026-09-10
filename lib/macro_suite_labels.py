@@ -1196,6 +1196,220 @@ _VOCABULARIES: dict[str, dict[str, dict[str, str]]] = {
 }
 
 
+# --- detail-tier axis prose (frozen spec §a) --------------------------------
+_MIDPOINT = 50.0
+# Provider series codes (FRED etc.) are public identifiers; never prettify.
+_SERIES_RE = re.compile(r"^[A-Z][A-Z0-9]{1,11}$")
+_HASH_RE = re.compile(r"^[0-9a-f]{32,}$")
+_VERSION_SEG_RE = re.compile(r"^v\d+$")
+_BRACKET_SEG_RE = re.compile(r"^([a-z0-9_]+)\[([A-Za-z0-9_.:-]+)\]$")
+_R0_FIELDS = frozenset({
+    "content_sha256", "generation_id", "code_version",
+    "min_client_contract", "changed_fingerprints",
+})
+_SCALE_EN = "Both are 0–100 scores; 50 is the midpoint."
+_SCALE_ZH = "两项均为 0–100 评分，50 为中值。"
+
+
+def _lower_first(text: str) -> str:
+    text = str(text or "").strip()
+    if not text:
+        return ""
+    return text[0].lower() + text[1:]
+
+
+def _compound_en(anchor: str) -> str:
+    """Lowercased compound modifier: 'tight conditions' → 'tight-conditions'.
+
+    Slash-separated alternatives keep the slash ('broad / persistent').
+    """
+    text = _lower_first(anchor)
+    parts = [part.strip().replace(" ", "-") for part in text.split("/")]
+    return " / ".join(part for part in parts if part)
+
+
+def _numeric_score(value: Any) -> float | None:
+    if value is None or isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+    return None
+
+
+def _score_text(value: Any) -> str:
+    number = _numeric_score(value)
+    if number is None:
+        return ""
+    return f"{number:.2f}"
+
+
+def side_en(value: Any, low: str, high: str) -> str:
+    """Three-branch EN side phrase for an axis score vs 50."""
+    number = _numeric_score(value)
+    if number is None:
+        return ""
+    if number > _MIDPOINT:
+        return f"above 50, on the {_compound_en(high)} side"
+    if number < _MIDPOINT:
+        return f"below 50, on the {_compound_en(low)} side"
+    return (
+        f"exactly on the 50 line between {_lower_first(low)} and {_lower_first(high)}"
+    )
+
+
+def side_zh(value: Any, low: str, high: str) -> str:
+    """Three-branch ZH side phrase for an axis score vs 50."""
+    number = _numeric_score(value)
+    if number is None:
+        return ""
+    if number > _MIDPOINT:
+        return f"高于 50，处于{high}一侧"
+    if number < _MIDPOINT:
+        return f"低于 50，处于{low}一侧"
+    return f"恰好位于 50 分界线上（{low}与{high}之间）"
+
+
+def axis_score_clause(
+    *,
+    name_en: str,
+    name_zh: str,
+    value: Any,
+    low_en: str,
+    low_zh: str,
+    high_en: str,
+    high_zh: str,
+    gloss_en: str = "",
+    gloss_zh: str = "",
+) -> dict[str, str]:
+    """One axis clause of the frozen 4-clause grammar. None → typed absence."""
+    if _numeric_score(value) is None:
+        return _pair(
+            f"{name_en} is not available.",
+            f"{name_zh}暂无可用读数。",
+        )
+    en_gloss = f" ({gloss_en})" if gloss_en else ""
+    zh_gloss = f"（{gloss_zh}）" if gloss_zh else ""
+    text = _score_text(value)
+    return _pair(
+        f"{name_en}{en_gloss} is {text} — {side_en(value, low_en, high_en)}.",
+        f"{name_zh}{zh_gloss}为 {text}，{side_zh(value, low_zh, high_zh)}。",
+    )
+
+
+def axis_clause_from_axis(
+    axis: Mapping[str, Any] | None,
+    *,
+    name_en: str,
+    name_zh: str,
+    gloss_en: str = "",
+    gloss_zh: str = "",
+) -> dict[str, str]:
+    """Build an axis clause from a snapshot axis object (anchors from the axis)."""
+    axis = axis or {}
+    thresholds = axis.get("thresholds") or {}
+    low = thresholds.get("low_label") or {}
+    high = thresholds.get("high_label") or {}
+    return axis_score_clause(
+        name_en=name_en,
+        name_zh=name_zh,
+        value=axis.get("value"),
+        low_en=str(low.get("en") or ""),
+        low_zh=str(low.get("zh") or ""),
+        high_en=str(high.get("en") or ""),
+        high_zh=str(high.get("zh") or ""),
+        gloss_en=gloss_en,
+        gloss_zh=gloss_zh,
+    )
+
+
+def quadrant_reading_text(
+    *,
+    lead_en: str,
+    lead_zh: str,
+    label_en: str,
+    label_zh: str,
+    x_clause: Mapping[str, str],
+    y_clause: Mapping[str, str],
+) -> dict[str, str]:
+    """Join subject + state + two axis clauses + the once-only scale footer."""
+    return _pair(
+        f"{lead_en} {label_en}. {x_clause['en']} {y_clause['en']} {_SCALE_EN}",
+        f"{lead_zh}{label_zh}。{x_clause['zh']}{y_clause['zh']}{_SCALE_ZH}",
+    )
+
+
+# --- provenance KEEP-RAW-NAME-FIRST (frozen spec §c) ------------------------
+# 13 stores collapse the path population; ~20 roots collapse dotted refs.
+STORE: dict[str, dict[str, str]] = {
+    "fred": _pair("FRED series", "FRED 数据序列"),
+    "regime": _pair("Nightly regime snapshot", "每日体制快照"),
+    "treasury": _pair("US Treasury file", "美国财政部数据"),
+    "bis": _pair("BIS", "BIS"),
+    "zori": _pair("Zillow rent index", "Zillow 租金指数"),
+    "redfin_hf": _pair("Redfin high-frequency data", "Redfin 高频数据"),
+    "rates_command": _pair("Rates command snapshot", "利率指令快照"),
+    "intl_risk": _pair("International-risk file", "国际风险数据"),
+    "release_forecast": _pair("Release-forecast file", "发布预测数据"),
+    "treasury_auctions": _pair("Treasury auction file", "国债拍卖数据"),
+    "macro": _pair("Macro file", "宏观数据"),
+    "macrodata": _pair("Published workspace snapshot", "已发布工作区快照"),
+    "workspaces": _pair("Workspace snapshot", "工作区快照"),
+}
+
+ROOT: dict[str, dict[str, str]] = {
+    "engine": _pair("Mastermind engine", "本平台引擎"),
+    "fred": _pair("FRED", "FRED"),
+    "bis": _pair("BIS", "BIS"),
+    "axes": _pair("Axes", "坐标轴"),
+    "board": _pair("Board", "看板"),
+    "business_cycle": _pair("Business cycle", "商业周期"),
+    "cb_desk": _pair("Central-bank desk", "央行交易台"),
+    "bonds_desk": _pair("Bond desk", "债券交易台"),
+    "conditions": _pair("Conditions", "条件"),
+    "treasury_dts": _pair("Treasury daily statement", "财政部每日报表"),
+    "treasury_auctions": _pair("Treasury auctions", "国债拍卖"),
+    "zori": _pair("Zillow rent index", "Zillow 租金指数"),
+    "liquidity_quality": _pair("Liquidity quality", "流动性质量"),
+    "labor_nowcast": _pair("Labor nowcast", "劳动力即时读数"),
+    "released_state": _pair("Released state", "已发布状态"),
+    "regime_vector": _pair("Regime vector", "体制向量"),
+    "vol_regime": _pair("Volatility regime", "波动体制"),
+    "risk_state": _pair("Risk state", "风险状态"),
+    "rate_inflation_transmission": _pair("Rate-inflation transmission", "利率—通胀传导"),
+    "capital_structure": _pair("Capital structure", "资本结构"),
+    "collectors": _pair("Collector", "采集器"),
+    "business_activity": _pair("Business activity", "商业活动"),
+}
+
+SEGMENT: dict[str, dict[str, str]] = {
+    "fred": _pair("FRED", "FRED"),
+    "tga": _pair("Treasury General Account (TGA)", "财政部一般账户（TGA）"),
+    "us_dsr": _pair("US debt-service ratio", "美国债务偿付比率"),
+    "dsr": _pair("DSR", "DSR"),
+    "gap": _pair("GAP", "GAP"),
+    "rrp": _pair("RRP", "RRP"),
+    "oas": _pair("OAS", "OAS"),
+    "nfci": _pair("NFCI", "NFCI"),
+    "fsi": _pair("FSI", "FSI"),
+    "retail_sales": _pair("Retail sales", "零售销售"),
+    "financial_conditions": _pair("Financial conditions", "金融条件"),
+    "conditions": _pair("Conditions", "条件"),
+    "tiers": _pair("Tiers", "分层"),
+    "leading": _pair("Leading", "领先"),
+    "diffusion": _pair("Diffusion", "扩散度"),
+    "national": _pair("National", "全国"),
+    "recession_signal": _pair("Recession signal", "衰退信号"),
+    "compose": _pair("Compose", "组合"),
+}
+
+PROSE_REF: dict[str, dict[str, str]] = {
+    "NONE -- no lawful ISM/PMI or regional-Fed survey collector is wired in this repository": _pair(
+        "No collector is wired for this input, so nothing is claimed here.",
+        "本项尚未接入采集器，因此不作任何主张。",
+    ),
+}
+
+
 def deslug(token: str) -> str:
     """Readable fallback for a token with no reviewed label.
 
@@ -1203,9 +1417,136 @@ def deslug(token: str) -> str:
     is sentence-cased, so an unmapped ``rate_pressure`` reads ``Rate pressure``
     and an unmapped enum ``SOME_FUTURE_STATE`` reads ``Some future state``
     rather than shouting a producer identifier at the reader.
+
+    Preserve-guard (frozen spec §c R4/deslug): a segment matching
+    ``^[A-Z][A-Z0-9]{1,11}$`` with no underscore is a public series code and
+    is returned verbatim (``RSAFS`` stays ``RSAFS``, never ``Rsafs``).
     """
-    text = str(token).replace("_", " ").replace("-", " ").strip().lower()
+    raw = str(token).strip()
+    if _SERIES_RE.fullmatch(raw) and "_" not in raw:
+        return raw
+    text = raw.replace("_", " ").replace("-", " ").strip().lower()
     return text[:1].upper() + text[1:] if text else ""
+
+
+def _join_ref_parts(parts: list[dict[str, str]]) -> dict[str, str]:
+    kept = [part for part in parts if part and (part.get("en") or part.get("zh"))]
+    if not kept:
+        return _pair("", "")
+    return _pair(
+        " · ".join(part["en"] for part in kept if part.get("en")),
+        " · ".join(part["zh"] for part in kept if part.get("zh")),
+    )
+
+
+def _part_pair(segment: str) -> dict[str, str]:
+    found = SEGMENT.get(segment)
+    if found:
+        return dict(found)
+    if _SERIES_RE.fullmatch(segment):
+        return _pair(segment, segment)
+    readable = deslug(segment)
+    return _pair(readable, readable)
+
+
+def _expand_segment(segment: str) -> list[dict[str, str]]:
+    match = _BRACKET_SEG_RE.fullmatch(segment)
+    if match:
+        name, key = match.group(1), match.group(2)
+        return [_part_pair(name), _pair(key, key)]
+    return [_part_pair(segment)]
+
+
+def _path_display(token: str) -> dict[str, str]:
+    path, frag = token.split("#", 1) if "#" in token else (token, "")
+    trailing_dir = path.endswith("/")
+    path = path.rstrip("/")
+    segs = [seg for seg in path.split("/") if seg]
+    if not segs:
+        readable = deslug(token)
+        return _pair(readable, readable)
+    store_key = segs[1] if segs[0] == "data" and len(segs) > 1 else segs[0]
+    store_pair = STORE.get(store_key)
+    if store_pair is None:
+        _UNKNOWN.add(f"ref_store:{store_key}")
+        store_pair = _pair(deslug(store_key), deslug(store_key))
+    filename = segs[-1]
+    subject_pair: dict[str, str] | None = None
+    if store_key == filename and (trailing_dir or "." not in filename):
+        subject_pair = None
+    else:
+        base = filename.rsplit(".", 1)[0] if "." in filename else filename
+        if base == "latest":
+            subject_pair = None
+        elif _SERIES_RE.fullmatch(base):
+            subject_pair = _pair(base, base)
+        else:
+            subject_pair = _part_pair(base)
+    frag_pair: dict[str, str] | None = None
+    if frag:
+        frag_pair = _part_pair(frag.split(".")[-1])
+    parts = [store_pair]
+    if subject_pair:
+        parts.append(subject_pair)
+    if frag_pair:
+        parts.append(frag_pair)
+    return _join_ref_parts(parts)
+
+
+def _dotted_display(token: str) -> dict[str, str]:
+    bits = token.split(".")
+    root, tail = bits[0], bits[1:]
+    versions = [seg for seg in tail if _VERSION_SEG_RE.fullmatch(seg)]
+    tail = [seg for seg in tail if not _VERSION_SEG_RE.fullmatch(seg)]
+    root_pair = ROOT.get(root)
+    if root_pair is None:
+        _UNKNOWN.add(f"ref_root:{root}")
+        root_pair = _pair(deslug(root), deslug(root))
+    parts: list[dict[str, str]] = [root_pair]
+    for seg in tail:
+        parts.extend(_expand_segment(seg))
+    joined = _join_ref_parts(parts)
+    if versions:
+        suffix = f" ({versions[-1]})"
+        joined = _pair(joined["en"] + suffix, joined["zh"] + suffix)
+    return joined
+
+
+def reference_display(token: Any, *, field: str | None = None) -> dict[str, Any]:
+    """Derived plain name for a machine reference (frozen spec §c R0–R4).
+
+    Returns ``en`` / ``zh`` plus ``rule`` and ``show_receipt``. Never blocks:
+    unknown roots/stores deslug and are recorded in :func:`unknown_tokens`.
+    """
+    if token is None:
+        return {
+            "en": "No file is recorded",
+            "zh": "未记录来源文件",
+            "rule": "absent",
+            "show_receipt": False,
+        }
+    text = str(token).strip()
+    if text in ("", "—", "-", "–"):
+        return {
+            "en": "No file is recorded",
+            "zh": "未记录来源文件",
+            "rule": "absent",
+            "show_receipt": False,
+        }
+    if field in _R0_FIELDS or _HASH_RE.fullmatch(text):
+        return {"en": "", "zh": "", "rule": "R0", "show_receipt": False}
+    if " " in text:
+        seeded = PROSE_REF.get(text)
+        pair = dict(seeded) if seeded else _pair(text, text)
+        return {**pair, "rule": "R4", "show_receipt": False}
+    if "/" in text:
+        pair = _path_display(text)
+        return {**pair, "rule": "R1", "show_receipt": True}
+    if "." in text:
+        pair = _dotted_display(text)
+        return {**pair, "rule": "R2", "show_receipt": True}
+    pair = _part_pair(text)
+    return {**pair, "rule": "R3", "show_receipt": True}
 
 
 def label(vocabulary: str, token: Any) -> dict[str, str] | None:

@@ -73,6 +73,8 @@ import copy
 from hashlib import sha256
 from typing import Any, Mapping
 
+from lib.macro_suite_labels import axis_clause_from_axis, quadrant_reading_text
+
 METHOD_VERSION = "labor_markets.compose.v1"
 AXIS_DEFINITION_VERSION = "1.0.0"
 PRODUCER = "engine.market_os.macro_workspaces.labor"
@@ -139,17 +141,6 @@ def _round(v: float | None, n: int = 2) -> float | None:
 
 def _bil(en: str, zh: str | None) -> dict:
     return {"en": en, "zh": zh}
-
-
-
-def _plain_axis_num(v, *, zh: bool = False) -> str:
-    """C-n3: format an axis score; None/non-numeric → plain-word null."""
-    if v is None:
-        return "暂无" if zh else "unavailable"
-    try:
-        return f"{float(v):.1f}"
-    except (TypeError, ValueError):
-        return "暂无" if zh else "unavailable"
 
 
 
@@ -379,18 +370,18 @@ def compose(regime_latest: Mapping[str, Any], *, built_at: str,
         },
         "headline": headline,
         "axes": {"items": [
-            _axis("labor_demand", "Labor demand", "劳动力需求",
+            (axis_demand := _axis("labor_demand", "Labor demand", "劳动力需求",
                   "higher_stronger", x_value, x_status, x_null, x_components, x_avail,
                   low_en="Weakening demand", low_zh="需求走弱", high_en="Strengthening demand", high_zh="需求走强",
                   weights_law="weighted mean of standardized components, weights renormalized over present components; initial-claims momentum 0.40, Indeed job-postings momentum 0.35, withheld-tax income-growth proxy 0.25",
                   transformation="claims z-score inverted and mapped 50-clamp(z/2.5,-1,1)*50 (elevated claims = weaker demand); Indeed 3m change and withheld-tax YoY mapped 50+clamp(pct/scale,-1,1)*50; prior-only owner reads, no in-composer estimation",
-                  frequency_alignment="mixed: initial-claims 4-week average is weekly (Thu, DOL/FRED); Indeed job-postings index refreshes weekly (Indeed Hiring Lab); withheld-tax YoY is a daily-accrual Treasury proxy; each carried against the same shared calculation_as_of because the current owner artifact (data/regime/latest.json#labor_nowcast) does not yet publish a per-field vintage the way conditions.vintages does for nfci/ofr_fsi/hy_oas -- a disclosed limitation, not a silent one"),
-            _axis("labor_supply_tightness", "Labor supply / tightness", "劳动力供给 / 紧张度",
+                  frequency_alignment="mixed: initial-claims 4-week average is weekly (Thu, DOL/FRED); Indeed job-postings index refreshes weekly (Indeed Hiring Lab); withheld-tax YoY is a daily-accrual Treasury proxy; each carried against the same shared calculation_as_of because the current owner artifact (data/regime/latest.json#labor_nowcast) does not yet publish a per-field vintage the way conditions.vintages does for nfci/ofr_fsi/hy_oas -- a disclosed limitation, not a silent one")),
+            (axis_supply := _axis("labor_supply_tightness", "Labor supply / tightness", "劳动力供给 / 紧张度",
                   "higher_tighter", y_value, y_status, y_null, y_components, y_avail,
                   low_en="Loose market", low_zh="市场宽松", high_en="Tight market", high_zh="市场偏紧",
                   weights_law="weighted mean of standardized components, weights renormalized over present; Sahm rule level 0.55, claims-based recession subscore 0.45",
                   transformation=f"Sahm rule inverted and mapped 50-clamp(sahm/{SAHM_SCALE},-1,1)*50 against the canonical {SAHM_SCALE}-point NBER/Sahm recession-trigger scale (lower sahm = tighter); claims-recession subscore inverted 100-clamp(score,0,1)*100",
-                  frequency_alignment="Sahm rule is derived from the monthly BLS unemployment rate (first Friday, Employment Situation); the claims-based recession subscore shares the weekly claims cadence used on the demand axis -- two different native cadences carried under one axis, each with its own owner_ref"),
+                  frequency_alignment="Sahm rule is derived from the monthly BLS unemployment rate (first Friday, Employment Situation); the claims-based recession subscore shares the weekly claims cadence used on the demand axis -- two different native cadences carried under one axis, each with its own owner_ref")),
         ]},
         "metrics": {"items": _metrics(labor, recession, asof, x_value, y_value,
                                       x_components, y_components, vintages, stale_inputs)},
@@ -402,7 +393,8 @@ def compose(regime_latest: Mapping[str, Any], *, built_at: str,
         "drivers": _drivers(x_components, y_components),
         "changes": changes,
         "implications": {"items": _implications(headline, x_value, y_value, contradiction,
-                                               worst, coverage_ratio)},
+                                               worst, coverage_ratio,
+                                               x_axis=axis_demand, y_axis=axis_supply)},
         "scenario_contract": _scenario_contract(),
         "alert_contract": _alert_contract(),
         "sources": {"items": _sources(asof, vintages, stale_inputs)},
@@ -854,7 +846,8 @@ def _band(v, lo, hi):
     return "LOW" if v < lo else ("HIGH" if v > hi else "MEDIUM")
 
 
-def _implications(headline, x_value, y_value, contradiction, worst_freshness, coverage_ratio) -> list[dict]:
+def _implications(headline, x_value, y_value, contradiction, worst_freshness, coverage_ratio,
+                  x_axis=None, y_axis=None) -> list[dict]:
     conf = {
         "data_coverage": _band(coverage_ratio, 0.5, 0.99),
         "source_health": "HIGH" if worst_freshness == "CURRENT" else "LOW",
@@ -870,11 +863,19 @@ def _implications(headline, x_value, y_value, contradiction, worst_freshness, co
         label_zh = _QUADRANTS[state_id]["zh"]
         items.append({
             "implication_id": "state_descriptive",
-            "text": _bil(
-                f"US labor market reads {state_id} - {label_en} (labor demand {_plain_axis_num(x_value)}, "
-                f"labor supply/tightness {_plain_axis_num(y_value)}, boundary 50).",
-                f"美国劳动力市场读数为 {state_id} - {label_zh}（劳动力需求 {_plain_axis_num(x_value, zh=True)}，"
-                f"劳动力供给/紧张度 {_plain_axis_num(y_value, zh=True)}，分界 50）。"),
+            "text": quadrant_reading_text(
+                lead_en="US labor market reads:",
+                lead_zh="美国劳动力市场读数：",
+                label_en=label_en, label_zh=label_zh,
+                x_clause=axis_clause_from_axis(
+                    x_axis or {"value": x_value},
+                    name_en="Labor demand", name_zh="劳动力需求"),
+                y_clause=axis_clause_from_axis(
+                    y_axis or {"value": y_value},
+                    name_en="Labor supply and tightness", name_zh="劳动力供给与紧张度",
+                    gloss_en="how hard it is to hire",
+                    gloss_zh="招人有多难"),
+            ),
             "evidence_class": "DESCRIPTIVE",
             "confidence": conf,
             "horizon": "current",

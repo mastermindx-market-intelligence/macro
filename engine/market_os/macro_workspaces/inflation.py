@@ -71,6 +71,8 @@ from __future__ import annotations
 from hashlib import sha256
 from typing import Any, Mapping
 
+from lib.macro_suite_labels import axis_clause_from_axis, quadrant_reading_text
+
 METHOD_VERSION = "inflation_system.compose.v1"
 DEFINITION_VERSION = "1.0.0"
 PRODUCER = "engine.market_os.macro_workspaces.inflation"
@@ -144,16 +146,6 @@ def _round(v: float | None, n: int = 2) -> float | None:
 def _bil(en: str, zh: str | None) -> dict:
     return {"en": en, "zh": zh}
 
-
-
-def _plain_axis_num(v, *, zh: bool = False) -> str:
-    """C-n3: format an axis score; None/non-numeric → plain-word null."""
-    if v is None:
-        return "暂无" if zh else "unavailable"
-    try:
-        return f"{float(v):.1f}"
-    except (TypeError, ValueError):
-        return "暂无" if zh else "unavailable"
 
 
 
@@ -416,18 +408,18 @@ def compose(inflation_intelligence: Mapping[str, Any], *, built_at: str,
         },
         "headline": headline,
         "axes": {"items": [
-            _axis(_AXIS_ID_X, "Inflation impulse", "通胀冲量",
+            (axis_impulse := _axis(_AXIS_ID_X, "Inflation impulse", "通胀冲量",
                   "higher_more_inflationary", x_value, x_status, x_null, x_components, x_avail,
                   low_en="Disinflationary", low_zh="通缩/降温", high_en="Inflationary", high_zh="通胀/升温",
                   weights_law="weighted mean of standardized components, weights renormalized over present components; core CPI 3m ann. 0.35, headline CPI 3m ann. 0.20, core CPI YoY 0.20, current-month core nowcast (annualized) 0.25",
                   transformation=f"each %/pp value mapped 50+((v-{IMPULSE_CENTER_PCT})/{IMPULSE_SCALE_PCT})*50, clamped [0,100], centered on the Fed's 2% objective (a policy constant, not a forecast); the nowcast leg compounds one owner MoM point to an annualized rate via ((1+x/100)^12-1)*100 before the same mapping; no raw-series re-derivation",
-                  frequency_alignment="CPI-family monthly release, ~1-2 calendar month publication lag per the owner's own freshness policy; the current-month nowcast leg is a distinct, faster (intra-month) clock, carried as SIMULATED never CURRENT"),
-            _axis(_AXIS_ID_Y, "Persistence & breadth", "持续性与广度",
+                  frequency_alignment="CPI-family monthly release, ~1-2 calendar month publication lag per the owner's own freshness policy; the current-month nowcast leg is a distinct, faster (intra-month) clock, carried as SIMULATED never CURRENT")),
+            (axis_persist := _axis(_AXIS_ID_Y, "Persistence & breadth", "持续性与广度",
                   "higher_more_persistent_broad", y_value, y_status, y_null, y_components, y_avail,
                   low_en="Narrow / transitory", low_zh="狭窄/短暂", high_en="Broad / persistent", high_zh="广泛/顽固",
                   weights_law="weighted mean of standardized components, weights renormalized over present; sticky-minus-flexible 3m ann. spread 0.35, core 3m-vs-6m acceleration 0.25, sticky-price 3m-vs-6m acceleration 0.20, core-minus-headline YoY gap 0.20",
                   transformation=f"each spread/pp value mapped 50+(v/scale)*50 clamped [0,100] around a 0 center (scale={SPREAD_SCALE_STICKY_PP}pp for the sticky-flexible spread, {SPREAD_SCALE_ACCEL_PP}pp for the two acceleration legs, {SPREAD_SCALE_COREHEAD_PP}pp for the core-headline gap); every spread is an algebraic difference of two owner-published scalars, never a fresh parquet read",
-                  frequency_alignment="same monthly CPI-family cadence and publication lag as the x-axis; all four legs share the owner's released_state clock"),
+                  frequency_alignment="same monthly CPI-family cadence and publication lag as the x-axis; all four legs share the owner's released_state clock")),
         ]},
         "metrics": {"items": _metrics(r, released, headline_e, core_e, sticky_e, flexible_e,
                                       next_release, current_pressure, x_value, y_value)},
@@ -439,7 +431,8 @@ def compose(inflation_intelligence: Mapping[str, Any], *, built_at: str,
         "drivers": _drivers(x_components, y_components),
         "changes": changes,
         "implications": {"items": _implications(headline, x_value, y_value, contradiction,
-                                               worst, coverage_ratio, next_release)},
+                                               worst, coverage_ratio, next_release,
+                                               x_axis=axis_impulse, y_axis=axis_persist)},
         "scenario_contract": _scenario_contract(),
         "alert_contract": _alert_contract(),
         "sources": {"items": _sources(released, next_release)},
@@ -841,7 +834,7 @@ def _band(v, lo, hi):
 
 
 def _implications(headline, x_value, y_value, contradiction, worst_freshness,
-                  coverage_ratio, next_release) -> list[dict]:
+                  coverage_ratio, next_release, x_axis=None, y_axis=None) -> list[dict]:
     conf = {
         "data_coverage": _band(coverage_ratio, 0.5, 0.99),
         "source_health": "HIGH" if worst_freshness == "LATE_WITHIN_TOLERANCE" else "LOW",
@@ -857,10 +850,21 @@ def _implications(headline, x_value, y_value, contradiction, worst_freshness,
         label_zh = _QUADRANTS[state_id]["zh"]
         items.append({
             "implication_id": "state_descriptive",
-            "text": _bil(
-                f"US inflation regime reads {state_id} - {label_en} (impulse {_plain_axis_num(x_value)}, "
-                f"persistence/breadth {_plain_axis_num(y_value)}, boundary 50).",
-                f"美国通胀体制读数为 {state_id} - {label_zh}（冲量 {_plain_axis_num(x_value, zh=True)}，持续性/广度 {_plain_axis_num(y_value, zh=True)}，分界 50）。"),
+            "text": quadrant_reading_text(
+                lead_en="US inflation reads:",
+                lead_zh="美国通胀读数：",
+                label_en=label_en, label_zh=label_zh,
+                x_clause=axis_clause_from_axis(
+                    x_axis or {"value": x_value},
+                    name_en="Inflation impulse", name_zh="通胀冲量",
+                    gloss_en="how fast prices are moving now",
+                    gloss_zh="当前价格变化速度"),
+                y_clause=axis_clause_from_axis(
+                    y_axis or {"value": y_value},
+                    name_en="Persistence and breadth", name_zh="持续性与广度",
+                    gloss_en="how sticky it is and how widely it has spread",
+                    gloss_zh="有多顽固、涉及面有多广"),
+            ),
             "evidence_class": "DESCRIPTIVE",
             "confidence": conf,
             "horizon": "current",
