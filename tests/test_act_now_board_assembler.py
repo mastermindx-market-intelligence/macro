@@ -137,17 +137,95 @@ def test_guard_fires_when_board_html_names_a_triage_artifact():
             _assert_absent(f"<div>{token}</div>", TRIAGE_ARTIFACTS, "html")
 
 
-def test_guard_fires_when_hosts_cross_include():
-    """R10 case 4 self-check. A host that includes the other board must fail."""
-    fake_alerts = '{% include "_us_act_now_board.html.j2" %}'
-    assert BOARD_INCLUDE in _included_templates(fake_alerts)
-    fake_host = '{% include "alerts.html.j2" %}'
-    assert ALERTS_INCLUDE in _included_templates(fake_host)
-    with pytest.raises(AssertionError, match="alerts.html.j2"):
-        included = _included_templates(fake_host)
+_HOST_FIXTURE_DUMMY = "{# host fixture #}"
+_BOARD_INCLUDE_TAG = '{% include "_us_act_now_board.html.j2" %}'
+
+
+def _assert_hosts_disjoint(alerts_src, board_src, dashboard_src, sector_src):
+    """Standing R10 case 4 assertions. Shared by the real-repo test and the
+    cross-read self-check so inverting one assertion cannot leave the
+    self-check green."""
+    assert alerts_src and board_src and dashboard_src and sector_src
+
+    alerts_includes = _included_templates(alerts_src)
+    assert BOARD_INCLUDE not in alerts_includes, (
+        "templates/alerts.html.j2 includes _us_act_now_board.html.j2 — "
+        "the two boards' hosts are no longer disjoint"
+    )
+
+    dashboard_includes = _included_templates(dashboard_src)
+    sector_includes = _included_templates(sector_src)
+    board_includes = _included_templates(board_src)
+
+    assert BOARD_INCLUDE in dashboard_includes, (
+        "templates/dashboard.html.j2 no longer includes _us_act_now_board.html.j2"
+    )
+    assert BOARD_INCLUDE in sector_includes, (
+        "templates/sector_central.html.j2 no longer includes _us_act_now_board.html.j2"
+    )
+
+    for label, included in (
+        ("_us_act_now_board.html.j2", board_includes),
+        ("dashboard.html.j2", dashboard_includes),
+        ("sector_central.html.j2", sector_includes),
+    ):
         assert ALERTS_INCLUDE not in included, (
-            f"host includes {ALERTS_INCLUDE} — the two boards' hosts are not disjoint"
+            f"templates/{label} includes alerts.html.j2 — the two boards' hosts "
+            "are no longer disjoint"
         )
+
+
+@pytest.mark.parametrize(
+    "host, read, match",
+    [
+        (
+            "alerts",
+            '{% include "_us_act_now_board.html.j2" %}',
+            r"templates/alerts\.html\.j2",
+        ),
+        ("board", '{% include "alerts.html.j2" %}', r"templates/_us_act_now_board\.html\.j2"),
+        ("board", '{% import "alerts.html.j2" as at %}', r"templates/_us_act_now_board\.html\.j2"),
+        ("board", '{% from "alerts.html.j2" import x %}', r"templates/_us_act_now_board\.html\.j2"),
+        ("board", '{% extends "alerts.html.j2" %}', r"templates/_us_act_now_board\.html\.j2"),
+        ("dashboard", '{% include "alerts.html.j2" %}', r"templates/dashboard\.html\.j2"),
+        ("dashboard", '{% import "alerts.html.j2" as at %}', r"templates/dashboard\.html\.j2"),
+        ("dashboard", '{% from "alerts.html.j2" import x %}', r"templates/dashboard\.html\.j2"),
+        ("dashboard", '{% extends "alerts.html.j2" %}', r"templates/dashboard\.html\.j2"),
+        ("sector", '{% include "alerts.html.j2" %}', r"templates/sector_central\.html\.j2"),
+        ("sector", '{% import "alerts.html.j2" as at %}', r"templates/sector_central\.html\.j2"),
+        ("sector", '{% from "alerts.html.j2" import x %}', r"templates/sector_central\.html\.j2"),
+        ("sector", '{% extends "alerts.html.j2" %}', r"templates/sector_central\.html\.j2"),
+    ],
+    ids=[
+        "alerts-include-board",
+        "board-include-alerts",
+        "board-import-alerts",
+        "board-from-alerts",
+        "board-extends-alerts",
+        "dashboard-include-alerts",
+        "dashboard-import-alerts",
+        "dashboard-from-alerts",
+        "dashboard-extends-alerts",
+        "sector-include-alerts",
+        "sector-import-alerts",
+        "sector-from-alerts",
+        "sector-extends-alerts",
+    ],
+)
+def test_guard_fires_when_hosts_cross_read(host, read, match):
+    """R10 case 4 self-check. A host that reads the other board must fail."""
+    dummy = _HOST_FIXTURE_DUMMY
+    board_inc = _BOARD_INCLUDE_TAG
+    if host == "alerts":
+        args = (read, dummy, board_inc, board_inc)
+    elif host == "board":
+        args = (dummy, read, board_inc, board_inc)
+    elif host == "dashboard":
+        args = (dummy, dummy, board_inc + read, board_inc)
+    else:
+        args = (dummy, dummy, board_inc, board_inc + read)
+    with pytest.raises(AssertionError, match=match):
+        _assert_hosts_disjoint(*args)
 
 
 # --- Standing proof against the two real producers ----------------------------
@@ -178,36 +256,9 @@ def test_board_template_is_self_sufficient_and_writes_none_of_the_triage_artifac
 def test_the_two_boards_hosts_are_disjoint():
     """R10 case 4. alerts.html.j2 does not include the act-now board; neither
     the board template nor its two hosts include alerts.html.j2."""
-    alerts_src = ALERTS_TPL.read_text(encoding="utf-8")
-    board_src = BOARD_TPL.read_text(encoding="utf-8")
-    dashboard_src = DASHBOARD_TPL.read_text(encoding="utf-8")
-    sector_src = SECTOR_CENTRAL_TPL.read_text(encoding="utf-8")
-
-    assert alerts_src and board_src and dashboard_src and sector_src
-
-    alerts_includes = _included_templates(alerts_src)
-    assert BOARD_INCLUDE not in alerts_includes, (
-        "templates/alerts.html.j2 includes _us_act_now_board.html.j2 — "
-        "the two boards' hosts are no longer disjoint"
+    _assert_hosts_disjoint(
+        ALERTS_TPL.read_text(encoding="utf-8"),
+        BOARD_TPL.read_text(encoding="utf-8"),
+        DASHBOARD_TPL.read_text(encoding="utf-8"),
+        SECTOR_CENTRAL_TPL.read_text(encoding="utf-8"),
     )
-
-    dashboard_includes = _included_templates(dashboard_src)
-    sector_includes = _included_templates(sector_src)
-    board_includes = _included_templates(board_src)
-
-    assert BOARD_INCLUDE in dashboard_includes, (
-        "templates/dashboard.html.j2 no longer includes _us_act_now_board.html.j2"
-    )
-    assert BOARD_INCLUDE in sector_includes, (
-        "templates/sector_central.html.j2 no longer includes _us_act_now_board.html.j2"
-    )
-
-    for label, included in (
-        ("_us_act_now_board.html.j2", board_includes),
-        ("dashboard.html.j2", dashboard_includes),
-        ("sector_central.html.j2", sector_includes),
-    ):
-        assert ALERTS_INCLUDE not in included, (
-            f"templates/{label} includes alerts.html.j2 — the two boards' hosts "
-            "are no longer disjoint"
-        )
