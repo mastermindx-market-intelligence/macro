@@ -42,7 +42,7 @@ from engine.us_board_rank import (  # noqa: E402
 )
 from lib import config, site_assets, store  # noqa: E402
 from lib.chat_allowance import chat_allowance_view_model  # noqa: E402
-from lib.help_directory import help_directory_view_model  # noqa: E402
+from lib.help_directory import help_page_view_model  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -3737,8 +3737,15 @@ def build_help_page(env: Environment, site: Path, generated: str) -> None:
 
     This is deliberately fail-closed. A missing source label or invalid target
     aborts the render instead of leaving a stale or inferred help destination.
+
+    Uses lib.help_directory.help_page_view_model — the SAME builder
+    scripts.build_public_pages.build calls — so this render path can never
+    drift from that one and hand the template a partial context again
+    (review finding B-F13-3 BLOCKER-1: this call site used to splat only
+    entries/categories/directory_state and raise UndefinedError on
+    ``changelog``, which this function's except-and-log swallowed silently).
     """
-    vm = help_directory_view_model(config.ROOT)
+    vm = help_page_view_model(config.ROOT)
     html = env.get_template("help.html.j2").render(generated_utc=generated, **vm)
     write_page(site / "help.html", html)
     log.info("wrote help.html (%d source-validated links)", len(vm["entries"]))
@@ -6918,6 +6925,30 @@ def main() -> int:
         log.warning("news_feed build failed: %s", _e)
         _news_feed = []
 
+    # F05/MO-PAID-017: bounded chronicle consequence surface for News Feed.
+    # Read-time projection over a recent window — never a nightly-committed
+    # impact.jsonl dump. Explicitly not a Market-Feed-branded surface.
+    _chronicle_impact = None
+    try:
+        from engine.chronicle import impact as _impact_mod  # noqa: PLC0415
+        from engine.chronicle import spine as _spine_mod  # noqa: PLC0415
+        _ev_path = Path(config.data_dir()) / "chronicle" / "events.jsonl"
+        _evs = _spine_mod.load_events_jsonl(_ev_path) if _ev_path.exists() else []
+        _chronicle_impact = _impact_mod.glance_consequence_surface(_evs)
+    except Exception as _e:  # noqa: BLE001 — additive; never fatal
+        log.warning("chronicle_impact glance failed: %s", _e)
+        _chronicle_impact = {
+            "served_as_market_feed": False,
+            "market_feed_disposition": "explicitly_does_not_serve_market_feed",
+            "stance_en": "Not available yet",
+            "stance_zh": "暂不可用",
+            "reason_en": "Consequence projection failed to load.",
+            "reason_zh": "后果投影未能加载。",
+            "families": {},
+            "rows": [],
+            "event_count": 0,
+        }
+
     out_news = site / "news.html"
     # vm already carries a 'macro_news' key (assigned above), so we must NOT splat
     # **vm AND pass macro_news= explicitly — that collides at argument binding and
@@ -6938,6 +6969,7 @@ def main() -> int:
             news_calibration=_news_calibration_data,
             financial_news=_financial_news_data,
             news_feed=_news_feed,
+            chronicle_impact=_chronicle_impact,
         )
     except Exception as _e:  # noqa: BLE001 — degrade, never raise
         log.error("news.html render failed (%s: %s) — retrying without side-artifacts",
@@ -6951,6 +6983,7 @@ def main() -> int:
                 news_calibration=None,
                 financial_news=None,
                 news_feed=_news_feed,
+                chronicle_impact=_chronicle_impact,
             )
         except Exception as _e2:  # noqa: BLE001 — degrade, never raise
             log.error("news.html artifact-free render failed too (%s: %s) — "

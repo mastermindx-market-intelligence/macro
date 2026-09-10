@@ -50,7 +50,7 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=f41f9a21">
+<link rel="stylesheet" href="theme.css?v=63df1679">
 <link rel="stylesheet" href="tier_preview.css?v=d390f599">
 <link rel="stylesheet" href="portfolio_import.css?v=1">
 <script>
@@ -61,7 +61,7 @@
   window.WL_STARTERS   = ["SPY", "QQQ", "BTC-USD", "GC=F"];
   // L3 regime input (baked risk_radar state + dominant label + vol regime).
   // null/absent => the book-read subline stays book-only. Book-derived text is client-side.
-  window.WRI_REGIME    = {"state": "caution", "dominant_label_en": "Growth scare / defensive rotation", "dominant_label_zh": "\u589e\u957f\u6050\u614c/\u9632\u5fa1\u8f6e\u52a8", "vol_regime": "normalizing", "asof": "2026-09-08"};
+  window.WRI_REGIME    = {"state": "watch", "dominant_label_en": "Growth scare / defensive rotation", "dominant_label_zh": "\u589e\u957f\u6050\u614c/\u9632\u5fa1\u8f6e\u52a8", "vol_regime": "normalizing", "asof": "2026-09-09"};
   // Sector / theme names arrive as raw English on each index record, so the rows
   // this page paints client-side have no td() to reach. This is the glossary's
   // answer for the finite vocabulary (engine.i18n.sector_lexicon); a name it does
@@ -205,6 +205,7 @@
         </div>
         <a href="intl_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet cross-market · sectors</span><span class="l-zh">Prophet 跨市场 · 板块</span></span></a>
         <a href="baskets_intl.html"><span class="submenu-icon submenu-icon-baskets" aria-hidden="true"></span><span class="l-en">Thematic Baskets</span><span class="l-zh">主题篮子</span><span class="d"><span class="l-en">Cross-country theme baskets · ex-US</span><span class="l-zh">跨国主题篮子 · 除美</span></span></a>
+        <a href="sanctions_map.html"><span class="submenu-icon submenu-icon-policy" aria-hidden="true"></span><span class="l-en">Sanctions Map</span><span class="l-zh">制裁地图</span><span class="d"><span class="l-en">Where US sanctions point · OFAC public list</span><span class="l-zh">美国制裁指向何处 · OFAC 公开名单</span></span></a>
       </div>
     </div>
     <div class="nav-dd">
@@ -644,10 +645,9 @@
 <script src="portfolio_import_ui.js?v=2"></script>
 <script src="mtf.js?v=b62aea2f" defer></script>
 <script src="theme.js?v=53939d13" defer></script>
-<p class="muted" style="font-size:12px; text-align:center"><span class="l-en">Generated</span><span class="l-zh">生成于</span> 2026-09-09 07:31 UTC</p>
+<p class="muted" style="font-size:12px; text-align:center"><span class="l-en">Generated</span><span class="l-zh">生成于</span> 2026-09-10 19:33 UTC</p>
 <footer class="site-footer">
   <span class="made">© 2026 Mastermind Inc</span>
 </footer>
-<script defer data-whb data-root="" src="wh_banner.js?v=4a53a176"></script>
 </body>
 </html>

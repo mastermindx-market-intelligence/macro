@@ -564,6 +564,7 @@ def _prior(method=housing.METHOD_VERSION, mortgage_level=6.50,
            gen="housing_real_estate-US-deadbeefdeadbeef") -> dict:
     prior = _compose()
     prior["headline"]["method_version"] = method
+    prior["headline"]["effective_date"] = "2026-01-01"
     prior["generation"]["generation_id"] = gen
     for m in prior["metrics"]["items"]:
         if m["metric_id"] == "mortgage_30y_rate_level":

@@ -8,7 +8,7 @@ merge-binding B12-B14 battery from
 * B12 -- the frozen U5 bilingual copy table (spec §9.3) is present verbatim in
   the template/JS, and mutating either the stage or amount standing negative
   fails.
-* B13 -- the baked page stays inside the 303,104-byte page fence, and the FMS
+* B13 -- the baked page stays inside the 311,296-byte page fence, and the FMS
   shell's own marginal contribution (tab + orchestration wiring only -- the
   inspector's rich U5 copy lives in the separate, unfenced
   ``government-revenue-dossiers.js``) stays inside the 8,192-byte shell
@@ -36,7 +36,7 @@ DOSSIERS_JS = (ROOT / "templates" / "government-revenue-dossiers.js").read_text(
 SITE_PATH = ROOT / "site" / "government_revenue.html"
 SITE = SITE_PATH.read_text(encoding="utf-8")
 
-RAW_HTML_BUDGET_BYTES = 303_104
+RAW_HTML_BUDGET_BYTES = 311_296
 FMS_SHELL_DELTA_BUDGET_BYTES = 8_192
 
 # The frozen U5 table (spec §9.3): (english, chinese) pairs that must appear

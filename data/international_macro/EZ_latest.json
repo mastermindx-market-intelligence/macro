@@ -8,7 +8,7 @@
   "scope_en": "Euro area aggregate (current EA21 composition), not the European Union. STOXX Europe 600 is broader market context only.",
   "scope_zh": "欧元区当前21国总量（EA21），并非欧盟整体。STOXX Europe 600仅作更广泛市场背景。",
   "asof": "2026-09-08",
-  "built": "2026-09-09 10:09 UTC",
+  "built": "2026-09-10 09:37 UTC",
   "regime": {
     "quad": "Q3",
     "name": "Stagflation",
@@ -204,17 +204,17 @@
   },
   "risk": {
     "state": "calm",
-    "top_score": 39,
+    "top_score": 41,
     "dominant_en": "Calm — no driver elevated",
     "dominant_zh": "平静 — 无驱动升高",
     "h21": 0.2,
     "measure": ">=5% index pullback within h business days (measured on this market's own history)",
     "trajectory": {
-      "intensity": 38.9,
+      "intensity": 41.1,
       "peak": 79.6,
       "peak_days_ago": 29,
-      "off_peak": 40.7,
-      "velocity": -4.8,
+      "off_peak": 38.5,
+      "velocity": -2.6,
       "phase": "receding",
       "reached_risk": true,
       "state_now": "calm",
@@ -245,16 +245,16 @@
         53.4,
         45.4,
         50.6,
-        38.9
+        41.1
       ],
-      "spark_pts": "3.0,4.7 6.9,3.5 10.8,3.0 14.7,8.2 18.7,7.3 22.6,6.3 26.5,4.6 30.4,5.3 34.3,11.9 38.2,17.0 42.1,20.9 46.0,19.6 50.0,20.9 53.9,23.0 57.8,19.6 61.7,20.2 65.6,13.2 69.5,13.7 73.4,11.1 77.3,8.2 81.3,7.4 85.2,10.4 89.1,8.5 93.0,12.9",
+      "spark_pts": "3.0,4.7 6.9,3.5 10.8,3.0 14.7,8.2 18.7,7.3 22.6,6.3 26.5,4.6 30.4,5.3 34.3,11.9 38.2,17.0 42.1,20.9 46.0,19.6 50.0,20.9 53.9,23.0 57.8,19.6 61.7,20.2 65.6,13.2 69.5,13.7 73.4,11.1 77.3,8.2 81.3,7.4 85.2,10.4 89.1,8.5 93.0,12.1",
       "spark_peak": {
         "x": 10.8,
         "y": 3.0
       },
       "spark_last": {
         "x": 93.0,
-        "y": 12.9
+        "y": 12.1
       },
       "spark_w": 96,
       "spark_h": 26,
@@ -266,17 +266,17 @@
         "tier": "A",
         "label_en": "US rate shock",
         "label_zh": "美债利率冲击",
-        "score": 59.1,
+        "score": 60.8,
         "band": "watch",
         "firing_legs": [
           {
             "leg": "us_rate_2y",
-            "pctile": 0.741,
+            "pctile": 0.764,
             "confirmed": false
           },
           {
             "leg": "us_rate_10y",
-            "pctile": 0.575,
+            "pctile": 0.604,
             "confirmed": false
           }
         ]
@@ -506,9 +506,9 @@
       "bank": "ECB",
       "name_en": "European Central Bank Governing Council",
       "name_zh": "欧洲央行管理委员会",
-      "state": "upcoming",
-      "outcome_en": "Scheduled — no outcome yet",
-      "outcome_zh": "已排期——尚无结果",
+      "state": "today",
+      "outcome_en": "Decision due today",
+      "outcome_zh": "决议今日公布",
       "source": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html"
     },
     {
@@ -536,7 +536,7 @@
     {
       "metric": "cpi_yoy",
       "asof": "2026-07",
-      "age_days": 70,
+      "age_days": 71,
       "state": "fresh",
       "label_en": "Inflation",
       "label_zh": "通胀"
@@ -544,7 +544,7 @@
     {
       "metric": "gdp",
       "asof": "2026-04",
-      "age_days": 161,
+      "age_days": 162,
       "state": "stale",
       "label_en": "Growth",
       "label_zh": "增长"
@@ -552,7 +552,7 @@
     {
       "metric": "unemployment",
       "asof": "2026-07",
-      "age_days": 70,
+      "age_days": 71,
       "state": "fresh",
       "label_en": "Labour",
       "label_zh": "就业"
@@ -560,7 +560,7 @@
     {
       "metric": "yield_10y",
       "asof": "2026-01",
-      "age_days": 251,
+      "age_days": 252,
       "state": "stale",
       "label_en": "Rates",
       "label_zh": "利率"

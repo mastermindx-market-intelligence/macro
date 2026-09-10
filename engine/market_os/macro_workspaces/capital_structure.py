@@ -140,6 +140,14 @@ import datetime as _dt
 from hashlib import sha256
 from typing import Any, Mapping
 
+from engine.market_os.macro_workspaces.publication_prior import (
+    apply_headline_publication_fields,
+    attach_prior_publication,
+    date_key,
+    no_earlier_publication,
+    resolve_publication_prior,
+)
+
 METHOD_VERSION = "capital_structure.compose.v1"
 DEFINITION_VERSION = "1.0.0"
 PRODUCER = "engine.market_os.macro_workspaces.capital_structure"
@@ -575,6 +583,31 @@ def _metrics(as_of, coverage: Mapping, coverage_ok: bool, records_ok: bool,
     return items
 
 
+def _publication_as_of(projection: Mapping[str, Any]) -> str | None:
+    """Latest input-series date the composer actually used. Date only.
+
+    The owner's ``as_of`` / ``generated_at`` are build clocks, not a
+    publication date. When no series date is derivable, return None so every
+    rebuild is the same publication (typed null), never a new one.
+    """
+    dates: list[str] = []
+    records = projection.get("records")
+    if isinstance(records, list):
+        for rec in records:
+            if not isinstance(rec, Mapping):
+                continue
+            latest = rec.get("latest_observed_event")
+            if not isinstance(latest, Mapping):
+                continue
+            for key in ("filing_date", "event_date"):
+                dk = date_key(latest.get(key))
+                if dk:
+                    dates.append(dk)
+    if dates:
+        return max(dates)
+    return None
+
+
 # --------------------------------------------------------------------------- #
 # headline (always COMPUTATION_REFUSED -- see module docstring)
 # --------------------------------------------------------------------------- #
@@ -614,11 +647,15 @@ def _headline(as_of, prior_snapshot) -> dict:
 # --------------------------------------------------------------------------- #
 # changes / corrections
 # --------------------------------------------------------------------------- #
-def _changes(metrics_by_id: dict, prior_snapshot: Mapping | None) -> dict:
+def _changes(metrics_by_id: dict, prior_snapshot: Mapping | None,
+             current_effective_date) -> dict:
     if prior_snapshot is None:
         return {"comparability": "NO_PRIOR", "prior_generation_id": None,
                 "prior_effective_date": None, "prior_method_version": None,
                 "deltas": [], "status": "ABSENT", "null_reason": "WARMUP"}
+    prior_snapshot = resolve_publication_prior(prior_snapshot, current_effective_date)
+    if prior_snapshot is None:
+        return no_earlier_publication()
     prior_method = _get(prior_snapshot, "headline", "method_version")
     prior_gen = _get(prior_snapshot, "generation", "generation_id")
     prior_eff = _get(prior_snapshot, "headline", "effective_date")
@@ -942,6 +979,7 @@ def compose(projection: Mapping[str, Any], *, built_at: str,
 
     as_of = p.get("as_of")
     generated_at = p.get("generated_at")
+    publication_as_of = _publication_as_of(p)
 
     coverage = _get(p, "coverage")
     coverage_ok = isinstance(coverage, Mapping)
@@ -1000,8 +1038,10 @@ def compose(projection: Mapping[str, Any], *, built_at: str,
     if contradiction:
         reasons.append(f"contradiction={contradiction['kind']}")
 
-    headline = _headline(as_of, prior_snapshot)
-    changes = _changes(metrics_by_id, prior_snapshot)
+    publication_prior = resolve_publication_prior(prior_snapshot, publication_as_of)
+    headline = _headline(publication_as_of, publication_prior)
+    apply_headline_publication_fields(headline, publication_prior, raw_prior=prior_snapshot)
+    changes = _changes(metrics_by_id, prior_snapshot, publication_as_of)
 
     snapshot = {
         "schema": {"contract": "mastermind.macro_workspace_snapshot.v1", "version": "1.0.0"},
@@ -1057,7 +1097,7 @@ def compose(projection: Mapping[str, Any], *, built_at: str,
         "scenario_contract": _scenario_contract(),
         "alert_contract": _alert_contract(),
         "sources": {"items": _sources(as_of, generated_at, fresh, source_receipt)},
-        "corrections": _corrections(metrics_by_id, as_of, prior_snapshot),
+        "corrections": _corrections(metrics_by_id, publication_as_of, prior_snapshot),
         "learning": {
             "instrumentation": "first_party",
             "event_names": [
@@ -1068,4 +1108,4 @@ def compose(projection: Mapping[str, Any], *, built_at: str,
             "privacy_note": "Event definitions reuse the existing first-party analytics owner; no second analytics store, no user identity copied into the artifact.",
         },
     }
-    return snapshot
+    return attach_prior_publication(snapshot, publication_prior)

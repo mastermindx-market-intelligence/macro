@@ -1,80 +1,80 @@
 {
   "schema": "index_leadership.track_record.v1",
-  "as_of": "2026-09-04",
-  "generated_at": "2026-09-09T08:24:14.650241+00:00",
+  "as_of": "2026-09-08",
+  "generated_at": "2026-09-10T08:19:06.423004+00:00",
   "is_context_only": true,
-  "n_snapshots": 618,
-  "n_days": 21,
+  "n_snapshots": 639,
+  "n_days": 22,
   "horizons": {
     "5": {
-      "n_matured": 531,
+      "n_matured": 579,
       "by_stage": {
         "running": {
-          "n": 467,
-          "mean_fwd_rel": -0.005,
-          "hit_rate": 0.452
+          "n": 513,
+          "mean_fwd_rel": -0.0047,
+          "hit_rate": 0.45
         },
         "coiling": {
-          "n": 32,
-          "mean_fwd_rel": 0.0036,
-          "hit_rate": 0.594
+          "n": 33,
+          "mean_fwd_rel": 0.0041,
+          "hit_rate": 0.576
         },
         "coiling_primed": {
-          "n": 32,
-          "mean_fwd_rel": 0.0139,
-          "hit_rate": 0.625
+          "n": 33,
+          "mean_fwd_rel": 0.0131,
+          "hit_rate": 0.606
         }
       },
-      "running_ic": -0.0191,
-      "running_ic_t_hac": -0.213,
+      "running_ic": -0.0451,
+      "running_ic_t_hac": -0.473,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "10": {
-      "n_matured": 468,
+      "n_matured": 531,
       "by_stage": {
         "running": {
-          "n": 413,
-          "mean_fwd_rel": -0.0058,
-          "hit_rate": 0.446
+          "n": 467,
+          "mean_fwd_rel": -0.0072,
+          "hit_rate": 0.433
         },
         "coiling": {
-          "n": 26,
-          "mean_fwd_rel": -0.0055,
-          "hit_rate": 0.423
+          "n": 32,
+          "mean_fwd_rel": -0.0001,
+          "hit_rate": 0.469
         },
         "coiling_primed": {
-          "n": 29,
-          "mean_fwd_rel": 0.0289,
-          "hit_rate": 0.621
+          "n": 32,
+          "mean_fwd_rel": 0.0245,
+          "hit_rate": 0.562
         }
       },
-      "running_ic": 0.029,
-      "running_ic_t_hac": 0.959,
+      "running_ic": -0.0523,
+      "running_ic_t_hac": -0.741,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 265,
+      "n_matured": 305,
       "by_stage": {
         "running": {
-          "n": 237,
-          "mean_fwd_rel": -0.0012,
-          "hit_rate": 0.532
+          "n": 269,
+          "mean_fwd_rel": -0.004,
+          "hit_rate": 0.517
         },
         "coiling": {
-          "n": 13,
-          "mean_fwd_rel": -0.004,
-          "hit_rate": 0.692
+          "n": 16,
+          "mean_fwd_rel": -0.0062,
+          "hit_rate": 0.562
         },
         "coiling_primed": {
-          "n": 15,
-          "mean_fwd_rel": 0.0604,
-          "hit_rate": 0.733
+          "n": 20,
+          "mean_fwd_rel": 0.051,
+          "hit_rate": 0.75
         }
       },
-      "running_ic": -0.1483,
-      "running_ic_t_hac": -3.738,
+      "running_ic": -0.1205,
+      "running_ic_t_hac": -2.242,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -83,12 +83,12 @@
       "by_stage": {
         "running": {
           "n": 26,
-          "mean_fwd_rel": -0.0497,
+          "mean_fwd_rel": -0.0467,
           "hit_rate": 0.385
         },
         "coiling": {
           "n": 7,
-          "mean_fwd_rel": -0.0742,
+          "mean_fwd_rel": -0.0789,
           "hit_rate": 0.286
         }
       },
@@ -111,67 +111,67 @@
   "note": "Accruing forward observations; no horizon clears the Newey-West significance bar yet. Early numbers are provisional, context-only.",
   "recent_misses": [
     {
-      "date": "2026-08-13",
-      "id": "russell:aerospace-defense",
-      "name": "Aerospace & Defense",
+      "date": "2026-08-18",
+      "id": "subsectors:engineering-construction",
+      "name": "Engineering & Construction",
       "stage": "running",
-      "fwd_rel": -0.1749,
+      "fwd_rel": -0.0461,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-13",
-      "id": "subsectors:travel-services",
-      "name": "Travel Services",
-      "stage": "running",
-      "fwd_rel": -0.1012,
+      "date": "2026-08-18",
+      "id": "subsectors:packaged-foods",
+      "name": "Packaged Foods",
+      "stage": "coiling",
+      "fwd_rel": -0.0297,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-13",
-      "id": "subsectors:electronic-components",
-      "name": "Electronic Components",
+      "date": "2026-08-18",
+      "id": "subsectors:railroads",
+      "name": "Railroads",
       "stage": "running",
-      "fwd_rel": -0.0949,
+      "fwd_rel": -0.0279,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-13",
-      "id": "baskets:ai-infra",
-      "name": "AI Infrastructure",
-      "stage": "running",
-      "fwd_rel": -0.093,
+      "date": "2026-08-18",
+      "id": "baskets:defensives",
+      "name": "Defensives",
+      "stage": "coiling",
+      "fwd_rel": -0.0198,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-13",
-      "id": "russell:broadcasting",
-      "name": "Broadcasting",
-      "stage": "running",
-      "fwd_rel": -0.0916,
+      "date": "2026-08-18",
+      "id": "baskets:us-sector-staples",
+      "name": "Consumer Staples (Equal-Weight)",
+      "stage": "coiling",
+      "fwd_rel": -0.0131,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-13",
-      "id": "russell:asset-management",
-      "name": "Asset Management",
+      "date": "2026-08-18",
+      "id": "russell:banks-regional",
+      "name": "Banks - Regional",
       "stage": "running",
-      "fwd_rel": -0.0734,
+      "fwd_rel": -0.0087,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-13",
-      "id": "subsectors:packaging-containers",
-      "name": "Packaging & Containers",
+      "date": "2026-08-18",
+      "id": "subsectors:drug-manufacturers-general",
+      "name": "Drug Manufacturers - General",
       "stage": "running",
-      "fwd_rel": -0.0323,
+      "fwd_rel": -0.0064,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-13",
+      "date": "2026-08-18",
       "id": "russell:restaurants",
       "name": "Restaurants",
       "stage": "running",
-      "fwd_rel": -0.0305,
+      "fwd_rel": -0.0056,
       "horizon_d": 21
     }
   ],

@@ -961,6 +961,7 @@ def _prior(method=tf.METHOD_VERSION, trade_balance_level=-68000.0,
            gen="trade_flows-US-deadbeefdeadbeef") -> dict:
     prior = _compose(fred_frames=_populated_frames())
     prior["headline"]["method_version"] = method
+    prior["headline"]["effective_date"] = "2026-01-01"
     prior["generation"]["generation_id"] = gen
     for m in prior["metrics"]["items"]:
         if m["metric_id"] == "trade_balance_level":
@@ -975,7 +976,8 @@ def test_changes_no_prior_yields_warmup() -> None:
 
 
 def test_changes_method_mismatch_refuses_numeric_comparison() -> None:
-    snap = _compose(prior_snapshot=_prior(method="trade_flows.compose.v0"))
+    snap = _compose(fred_frames=_populated_frames(),
+                    prior_snapshot=_prior(method="trade_flows.compose.v0"))
     assert snap["changes"]["comparability"] == "METHOD_CHANGED"
     assert snap["changes"]["deltas"] == []
     assert snap["changes"]["null_reason"] == "COMPUTATION_REFUSED"
