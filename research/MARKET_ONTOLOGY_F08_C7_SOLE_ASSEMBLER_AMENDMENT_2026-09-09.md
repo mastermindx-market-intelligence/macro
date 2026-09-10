@@ -5,6 +5,7 @@ product_effect: NONE
 runtime_effect: NONE
 data_effect: NONE
 amends: MARKET_ONTOLOGY_F08_ARCHITECTURE_FREEZE_2026-09-05.md §1 owner table and §13 row C7
+authority: Meta-CEO B seat ruling SB-5 on spec B-F08-B5-3 (2026-09-09), successor seat session d640f3ef — PROPOSED — seat ratifies
 date: 2026-09-09
 freeze_file_edited: false
 ---
@@ -38,10 +39,7 @@ sector-setup lookup. Called once at `:6186-6187`, persisted to
 pattern documented at `:47` and `:386`). The template's own header states the
 same thing (`templates/_us_act_now_board.html.j2:3-19`).
 
-`engine/alert_triage.py` is a pure assembler over six alert engines (`:1-9`)
-and owns exactly three artifacts via `scripts/build_site.py::build_alerts_page`
-(`:35-48`): `site/alerts.html`, `site/factordata/alerts_triage.json`,
-`site/alertsdata/feed.json`. A token scan of `engine/alert_triage.py` for
+`engine/alert_triage.py` is a pure assembler over six alert engines (`engine/alert_triage.py:1-9`) and owns exactly three artifacts, named in its own docstring at `engine/alert_triage.py:35-48`, via the single page owner `scripts/build_site.py::build_alerts_page`: `site/alerts.html`, `site/factordata/alerts_triage.json`, `site/alertsdata/feed.json`. A token scan of `engine/alert_triage.py` for
 `action_board`, `act_now`, `basketdata`, `us_act_now`, `sector_timing` returns
 zero hits. `action_board()`'s inputs are none of those engines; it writes none
 of those three artifacts. The one occurrence of the string "alert" in the board

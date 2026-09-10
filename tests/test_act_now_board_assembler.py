@@ -17,9 +17,6 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-pytest.importorskip("jinja2")
-import jinja2  # noqa: E402
-
 TRIAGE_SRC = ROOT / "engine" / "alert_triage.py"
 BUILD_SITE_SRC = ROOT / "scripts" / "build_site.py"
 BOARD_TPL = ROOT / "templates" / "_us_act_now_board.html.j2"
@@ -55,8 +52,11 @@ TRIAGE_ARTIFACTS = (
 BOARD_INCLUDE = "_us_act_now_board.html.j2"
 ALERTS_INCLUDE = "alerts.html.j2"
 
-_INCLUDE_RE = re.compile(
-    r"""\{%-?\s*include\s+['\"]([^'\"]+)['\"]""",
+_READ_RE = re.compile(
+    r"""\{%-?\+?\s*(?:include|import|extends|from)\s+['\"]([^'\"]+)['\"]"""
+)
+_READ_TAG_RE = re.compile(
+    r"""\{%-?\+?\s*(?:include|import|extends|from)\b"""
 )
 
 
@@ -89,7 +89,8 @@ def _action_board_slice(src: str) -> str:
 
 
 def _included_templates(src: str) -> set[str]:
-    return set(_INCLUDE_RE.findall(src))
+    """Literal template names read through include, import, from … import, or extends."""
+    return set(_READ_RE.findall(src))
 
 
 def _minimal_board() -> dict:
@@ -106,6 +107,7 @@ def _minimal_board() -> dict:
 
 
 def _render_board(board: dict) -> str:
+    jinja2 = pytest.importorskip("jinja2")
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader(str(ROOT / "templates")),
         autoescape=False,
@@ -146,6 +148,17 @@ def _assert_hosts_disjoint(alerts_src, board_src, dashboard_src, sector_src):
     cross-read self-check so inverting one assertion cannot leave the
     self-check green."""
     assert alerts_src and board_src and dashboard_src and sector_src
+
+    for label, src in (
+        ("alerts.html.j2", alerts_src),
+        ("_us_act_now_board.html.j2", board_src),
+        ("dashboard.html.j2", dashboard_src),
+        ("sector_central.html.j2", sector_src),
+    ):
+        assert len(_READ_TAG_RE.findall(src)) == len(_READ_RE.findall(src)), (
+            f"templates/{label} has a read tag without a quoted literal name — "
+            "the fence cannot see what it reads"
+        )
 
     alerts_includes = _included_templates(alerts_src)
     assert BOARD_INCLUDE not in alerts_includes, (
