@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-09-10T00:17:51.127144+00:00",
+  "generated_utc": "2026-09-10T01:48:22.050590+00:00",
   "as_of": "2026-09-10",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -26576,17 +26576,17 @@
         {
           "ticker": "RSG",
           "buy_usd": 1091423536.0,
-          "sell_usd": 380304.0,
-          "net_usd": 1091043232.0,
+          "sell_usd": 0.0,
+          "net_usd": 1091423536.0,
           "buyers": 72,
-          "sellers": 1
+          "sellers": 0
         },
         {
           "ticker": "NMM",
-          "buy_usd": 849749782.0,
+          "buy_usd": 849497078.0,
           "sell_usd": 0.0,
-          "net_usd": 849749782.0,
-          "buyers": 45,
+          "net_usd": 849497078.0,
+          "buyers": 42,
           "sellers": 0
         },
         {
