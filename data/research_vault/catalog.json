@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-09T18:06:56.280211+00:00",
-  "count": 2080,
+  "generated_at": "2026-09-10T15:32:10.871274+00:00",
+  "count": 2085,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -96,6 +96,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-5wdraceeyrf-0f39b4",
+      "title": "GS Vol Views GS Vol Views 9 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-09T19:10:17Z",
+      "summary_points": [
+        "**Volatility Compression & Catalyst Timing**: NDX avg stock 1m ATM vol ↓57v→40v, flattest put-call skew in 20 years; near-term CPI/earnings catalysts drive positioning with vol cheap for convexity.",
+        "**S&P 6m Realized Correlation at Record Low (0.11)**: Historic low correlation implies unsustainable regime, triggering index volatility convexity as fundamental risk factor.",
+        "**HOOD Call Spread Opportunity**: Buy HOOD Nov 145/180 call spread ($4.50) to monetize steep call skew and capitalize on Rothera’s scaling potential ($19.5B bull-case), P/E 39.2x vs 22% growth.",
+        "**Tech Sector Basket Concentration**: 8 companies (7 IT, 1 CS) highly concentrated in growth tech, sensitive to AI regulation and semiconductor supply chain risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-xhdzmiea2zl-f5164a",
       "title": "Global daily even more and less of the same things",
@@ -276,6 +296,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-1mbelut0n7v-f2f852",
+      "title": "Global Markets Daily AI Funding Needs and Strong Demand Fuel Record Convertible Supply",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-09T13:49:35Z",
+      "summary_points": [
+        "**AI Convertible Supply Surge**: $135B YTD USD convertible volume (record), 44% from AI borrowers (Alphabet $19B, Oracle $5B), driven by hyperscaler capex needs and balance sheet optimization.",
+        "**Demand Catalysts**: Implied volatility near 20-yr highs + Russell 2000 outperformance (15% since Apr 2025 vs S&P 500) amplify conversion option value, fueling asymmetric risk/reward demand.",
+        "**Market Dynamics Shift**: Secondary market premiums shrink to 30% (from 70%), conversion premiums near 2021 highs, and zero-coupon issuance at 30% (down from 40% YoY), boosting equity convexity.",
+        "**Performance Validation**: Convertible index up 47% vs 13% for high-yield credit since Apr 2025, confirming structural advantage in tight credit spreads with tech dispersion."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-strlhaj2q4l-7cbd40",
       "title": "China Both CPI and PPI inflation picked up in August",
       "institution": "Goldman Sachs",
@@ -297,6 +337,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-f9t4qhadqll-7e6f5f",
+      "title": "Asia Pacific Portfolio Strategy Asian equity market daily update",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-09T13:49:16Z",
+      "summary_points": [
+        "**Sector Concentration Risk**: Korea (104% return, 21% weight) and Info Tech (85% return, 42% weight) dominate MXAPJ, creating severe overexposure and vulnerability to sector-specific downturns.",
+        "**Valuation Overextension**: MXAPJ forward P/E at 10.6x (2.4 s.d.",
+        "above average) and 462bp equity/bond yield gap signal overvaluation, with TOPIX P/E at 15.5x (above average) and negative yield gap (-163bp) amplifying risk.",
+        "**FII Outflows vs DII Inflows**: EM Asia ex-China FII outflows (-160bn in Aug-26) contrast sharply with DII inflows (119.73bn in 2025 YTD), indicating capital flight from foreign investors offsetting institutional confidence but heightening volatility.",
+        "**Market Breadth Divergence**: MXAPJ negative 1-year breadth (-1% at Sep-26) with Indonesia (-56%) and Australia (-30%) severely underperforming versus Philippines (11%), signaling regional risk asymmetry and potential outflows from weak markets."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-50uicgsuprj-3d0aa7",
       "title": "Japan September Reuters Tankan Semiconductor Related Demand Contributes to Improvement in Manufacturers' and Non manufactur...",
       "institution": "Goldman Sachs",
@@ -313,6 +374,47 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-irqfawmgahz-6af5bd",
+      "title": "GS Utilities Daily Pennon Group Strategic update set to address leverage concerns",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-09T13:48:58Z",
+      "summary_points": [
+        "**Spain Grid Vulnerability**: Record 29% gas plant unavailability (7 GW) in 2026 signals acute energy security risk, accelerating renewable/nuclear adoption and threatening grid stability.",
+        "**Electrification & Agentic AI Demand Surge**: \"Hyper-electrification\" drives 5% annual power demand growth (Spain/France/Nordics); Agentic AI adds 25% datacenter energy needs, creating structural tailwinds for utilities.",
+        "**Utility Valuation Upgrade**: Revised power demand assumptions (1.5-2% pa) and electrification momentum justify target P/E of 16x (above mid-cycle), with 9% EPS CAGR (2025-30).",
+        "**Vestas Italy Wind Execution**: Secured 105 MW orders (45 MW Castellani, 60 MW undisclosed) with H1 2027 delivery, critical for wind sector pipeline validation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-mosonfzhens-ad46aa",
+      "title": "Westgold Resources (WGX.AX) Refreshed 3yr outlook 600koz aspiration in line with GSe, though accelerated capex moderates ne...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-09T13:48:39Z",
+      "summary_points": [
+        "**Production Growth Trajectory**: FY27-29 production guidance (385-425koz → 425-470koz → 460-510koz) with aspirational >600koz beyond FY29 (Fletcher Zone), exceeding consensus peak (~500koz) and positioning WGX as top-5 Australian gold producer by FY32E.",
+        "**Cost & Capex Dynamics**: FY27 AISC ~A$2,980-3,380/oz (above consensus) and capex peak at A$450-480m, moderating to FY29 AISC ~A$2,640-3,000/oz; cost decline driven by production growth and mill expansions (Meekatharra/Cue).",
+        "**Murchison Mill Expansion Catalyst**: Meekatharra throughput to 2.9Mtpa (FY28) and Cue to 1.7Mtpa (FY28), enabling 335koz production in FY28 (vs.",
+        "290koz in FY27), accelerating growth beyond prior outlook.",
+        "**Valuation Upside & FCF Yield**: Trades at 0.80x NAV (vs peer avg 0.95x) with 13% upside (NAV A$7.48 vs share price A$6.17); medium-term FCF yields 7-20% (FY33E: 24% yield), supported by production growth and cost efficiency."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 17,
       "language": "en",
       "needs_metadata": false
     },

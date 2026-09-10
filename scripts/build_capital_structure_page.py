@@ -2,10 +2,17 @@
 
 The browser receives its issuer rows and filing evidence only through the
 authenticated Capital Structure API. This builder deliberately writes no data
-projection: it emits the premium desk shell and its paired assets so an
-ordinary full-site render cannot leave the page stale. The one exception is a
-read-only Policy watch chip (B-F09-6, MO-PAID-067), which cites a single
-dated policy_calendar step — display-only, no score/rank/direction.
+projection of its own and still copies only `_ASSETS`. Two read-only
+exceptions, both display-only (no score/rank/direction):
+
+- B-F09-4: it reads the nightly-written `premium_featured.json` receipt so the
+  desk can show one classified deal's dated premium. That receipt is
+  server-rendered into the anonymously-fetchable HTML shell specifically
+  because the page's live API is paid-gated (`site_full` —
+  app/capital_structure.py:53), so an API-delivered premium could never be
+  anonymously verified.
+- B-F09-6 (MO-PAID-067): a read-only Policy watch chip that cites a single
+  dated policy_calendar step.
 
 Usage:
     python -m scripts.build_capital_structure_page
@@ -27,6 +34,20 @@ from jinja2 import Environment, FileSystemLoader, StrictUndefined
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(_REPO_ROOT))
 _ASSETS = ("capital_structure_boot.js", "capital_structure.css", "capital_structure.js")
+_PREMIUM_RECEIPT = ("data", "special_situations", "premium_featured.json")
+
+
+def _featured_premium(root: Path) -> dict | None:
+    """Read the nightly premium receipt. Returns None when the receipt is absent,
+    unreadable, or not the expected schema — the shell then prints its plain-word null."""
+    path = root.joinpath(*_PREMIUM_RECEIPT)
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if not isinstance(payload, dict) or payload.get("schema") != "special_situations.premium.v1":
+        return None
+    return payload
 
 
 # ── policy-watch:start (B-F09-6, MO-PAID-067) ──
@@ -274,6 +295,7 @@ def render(root: Path) -> Path:
     html = env.get_template("capital_structure.html.j2").render(
         active_section="research",
         active_page="capital_structure",
+        premium=_featured_premium(root),
         policy_watch=watch,
         policy_projection=payload,
     )

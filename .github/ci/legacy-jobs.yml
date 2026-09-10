@@ -1378,7 +1378,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: chronicle engine tests
-        run: python -m pytest tests/test_chronicle.py -q
+        run: python -m pytest tests/test_chronicle.py tests/test_chronicle_impact.py -q
 
   cycle-ontology-js:
     if: ${{ false }}
@@ -1713,6 +1713,7 @@ jobs:
       - "engine/confluence_tiers.py"
       - "engine/cross_asset.py"
       - "engine/cycles.py"
+      - "engine/debt_maturity.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
       - "engine/earnings_qual.py"
@@ -1920,6 +1921,7 @@ jobs:
       - "engine/signal_gate.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
+      - "engine/special_situations_premium.py"
       - "engine/stock_dossier.py"
       - "engine/stock_events.py"
       - "engine/stock_fundamentals.py"
@@ -1979,6 +1981,7 @@ jobs:
       - "scripts/__init__.py"
       - "scripts/audit_options_episode_outcome_coverage.py"
       - "scripts/audit_options_market_memory_context.py"
+      - "scripts/build_debt_maturity.py"
       # AD-1T1: the T1 store's historical backfill driver — RF3/RF4 add a
       # writer-lock/store-agreement check exercised by test_topup_thetadata_daily.py.
       - "scripts/backfill_thetadata_eod.py"
@@ -2037,6 +2040,14 @@ jobs:
       - "site/options_structure/**"
       - "site/prophet/**"
       - "site/vol/**"
+      # F13-X1: build_site imports the source-bound help directory, whose
+      # fail-closed contract reads these exact existing owner templates.
+      - "templates/_navlinks.html.j2"
+      - "templates/_public_footer.html.j2"
+      - "templates/_public_nav.html.j2"
+      - "templates/measurement.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/support.html.j2"
       - "tests/test_build_chain_heat.py"
       - "tests/test_build_options_prophet.py"
       - "tests/test_build_options_screener.py"
@@ -2334,12 +2345,20 @@ jobs:
       # pair pins (visibility declarations, stance/lane inks, light-presence
       # fence, token cleanliness via scripts.check_design_system.scan_text —
       # repo-import only, no new deps), full checkout has site/. No new job.
+      # tests/test_debt_maturity.py (packet B-F09-3, contract-delta
+      # 2026-09-06) rides this step: engine.debt_maturity is a pure module
+      # already covered by this job's engine/*.py glob, and the Jinja
+      # render tests exercise templates/_debt_maturity.html.j2 the same way
+      # test_stock_dashboard_css.py's neighbours already render real stock
+      # page partials — pandas/pyarrow/jinja2 are already on this step's
+      # install line. No new job.
       - name: render-guard + engine-contract tests (rot sweep 2026-07-02)
         run: >
           python -m pytest
           tests/test_canada_build.py tests/test_canada_canonical_board.py
           tests/test_canada_v36_composer.py
           tests/test_stock_dashboard_css.py
+          tests/test_debt_maturity.py
           tests/test_hk_v37_composer.py
           tests/test_commodity_signals.py
           tests/test_commodity_index.py
@@ -2926,6 +2945,15 @@ jobs:
       # reports every file inside one step, and adds no job to a manifest at the
       # narrow-diff ceiling.  No dependency widened: probed at RUN time it loads
       # pandas/numpy/pyarrow/pyyaml/requests, all already on the install line above.
+      #
+      # Same backfill, packet B-F09-5 (review round 2): tests/test_covenant_terms.py and
+      # tests/test_compile_capital_structure_covenant_terms.py were named by no `run:`
+      # step in any workflow either -- the covenant-terms producer, its compile script,
+      # and its daily.yml wiring would have shipped with zero CI owner, exactly the
+      # #1052/#1253 pattern this file already warns about. Joins the same step for the
+      # same reason: no new dependency (jsonschema/pandas already installed above), and
+      # appended last so an upstream capital-structure regression is still the first
+      # failure a reader sees.
       - name: capital-structure contracts, compilers, projection, graph, source store, and legacy boundary
         # FOUR nightly-wiring suites ride HERE on purpose, and they only mean
         # anything together — each states one side of the same 2026-08-06 split:
@@ -2968,6 +2996,7 @@ jobs:
           tests/test_capital_structure_projection.py
           tests/test_build_capital_structure_projection.py
           tests/test_capital_structure_page.py
+          tests/test_special_situations_premium.py
           tests/test_capital_structure_policy_projection.py
           tests/test_capital_policy_projection.py
           tests/test_capital_structure_api.py
@@ -2989,7 +3018,9 @@ jobs:
           tests/test_capital_structure_evidence_identity.py
           tests/test_capital_structure_closed_bundle.py
           tests/test_nwqs_c_dilution.py
-          tests/test_compile_capital_structure_registration_lifecycles.py -q
+          tests/test_compile_capital_structure_registration_lifecycles.py
+          tests/test_covenant_terms.py
+          tests/test_compile_capital_structure_covenant_terms.py -q
 
   stock-seasonality:
     if: ${{ false }}
@@ -3557,6 +3588,7 @@ jobs:
       - "engine/capital_policy_projection.py"
       - "scripts/build_capital_structure_page.py"
       - "scripts/build_chart_data.py"
+      - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_index_leadership.py"
       - "scripts/build_intelligence_registry.py"
@@ -5326,6 +5358,7 @@ jobs:
       - tests/test_warp_session_start_sparse.py
       - tests/test_worktree_gc.py
       - tests/test_worktree_placement.py
+      - tests/test_worktree_sparse.py
     # F2 (Metabolism Phase 0 / R-AUT-5): self-modification fence.
     # Hard-fails any PR whose branch name or commit trailers carry the loop
     # namespace (metabolism/* or claude/loop-*, or 'Loop-Authored:' trailer)
@@ -5360,7 +5393,7 @@ jobs:
         # host that has hit runner ENOSPC twice. tests/test_worktree_gc.py ran in NO
         # workflow before this line; it is grandfathered-dark rather than waived, so
         # contract-delta never asked for it.
-        run: python -m pytest tests/test_ship_loop_guard.py tests/test_ship_loop_semantic.py tests/test_agent_worktree_roots.py tests/test_sparse_worktree_profile.py tests/test_warp_session_start_sparse.py tests/test_worktree_gc.py tests/test_worktree_placement.py -q
+        run: python -m pytest tests/test_ship_loop_guard.py tests/test_ship_loop_semantic.py tests/test_agent_worktree_roots.py tests/test_sparse_worktree_profile.py tests/test_warp_session_start_sparse.py tests/test_worktree_gc.py tests/test_worktree_placement.py tests/test_worktree_sparse.py -q
       - name: self-mod-fence live check (loop PR + immutable → BLOCKED)
         run: |
           # CI_HEAD_REF is the validated API identity published by the upgraded
@@ -6247,7 +6280,7 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy pyarrow pyyaml openpyxl requests
       - name: CCW-W3 credit momentum tests
-        run: python -m pytest tests/test_credit_momentum.py tests/test_corp_bond_holdings.py tests/test_finra_corp_bonds.py -v
+        run: python -m pytest tests/test_credit_momentum.py tests/test_corp_bond_holdings.py tests/test_finra_corp_bonds.py tests/test_credit_window.py -v
 
   ccw-w4-credit-desk:
     if: ${{ false }}
@@ -6308,7 +6341,7 @@ jobs:
     gate: data
     # Support + Email estate: the W1 spine (app/mailer.py, app/support.py,
     # admin/support_tickets.py) plus the W2 public surface (templates/support.html.j2, the
-    # pinned email base). Five suites, all fully offline — no SMTP, no Supabase, no live
+    # pinned email base). Thirteen suites, all fully offline — no SMTP, no Supabase, no live
     # admin state, no network:
     #   test_mailer.py            — LEDGER-FIRST idempotency (a duplicate idem_key sends
     #                               nothing), mail-off skip, marketing suppression +
@@ -6364,6 +6397,8 @@ jobs:
         run: python -m pytest tests/test_mailer.py -v
       - name: public support intake tests (app/support.py)
         run: python -m pytest tests/test_support_api.py -v
+      - name: plan-based support ticket routing (lib/help_directory.py route_for_tier, packet B-F13-3)
+        run: python -m pytest tests/test_support_tier_routing.py -v
       - name: admin support console tests (admin/support_tickets.py)
         run: python -m pytest tests/test_admin_support_tickets.py -v
       - name: support page contract + pinned design (templates/support.html.j2)
@@ -6382,6 +6417,10 @@ jobs:
         run: python -m pytest tests/test_admin_email_center.py -v
       - name: unsubscribe page + per-matcher serving boundary (templates/unsubscribe.html.j2)
         run: python -m pytest tests/test_unsubscribe_page.py -v
+      - name: pinned alert email message type (app/mailer.py alert template)
+        run: python -m pytest tests/test_mailer_alert_template.py -v
+      - name: alert outbox delivery drain (engine/alert_delivery_drain.py, scripts/drain_alert_outbox.py)
+        run: python -m pytest tests/test_alert_delivery_drain.py -v
 
   serving-observability:
     if: ${{ false }}
@@ -6795,6 +6834,7 @@ jobs:
       - "engine/ai_desk.py"
       - "engine/ai_desk_scorer.py"
       - "engine/alert_triage.py"
+      - "engine/debt_maturity.py"
       # engine/alert_triage.py imports engine/alert_time.py (the Alert Center
       # three-clock / ET board-day contract, Wave 7 2026-08-20), so this curated
       # scope's import closure reaches it. Declared here because a curated
@@ -7047,6 +7087,7 @@ jobs:
       - "engine/sp500_heatmap.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
+      - "engine/special_situations_premium.py"
       - "engine/spine.py"
       - "engine/spotlight.py"
       - "engine/stock_dossier.py"
@@ -7155,6 +7196,7 @@ jobs:
       - "engine/capital_policy_projection.py"
       - "scripts/build_capital_structure_page.py"
       - "scripts/build_chart_data.py"
+      - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_index_leadership.py"
       - "scripts/build_live_overlay.py"
@@ -7401,6 +7443,7 @@ jobs:
       - "engine/china_validation.py"
       - "engine/cn_newswires.py"
       - "engine/codex_provider.py"
+      - "engine/debt_maturity.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
       - "engine/earnings_qual.py"
@@ -7583,6 +7626,7 @@ jobs:
       - "engine/signal_quality.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
+      - "engine/special_situations_premium.py"
       - "engine/spotlight.py"
       - "engine/stock_dossier.py"
       - "engine/stock_events.py"
@@ -7622,6 +7666,12 @@ jobs:
       # scripts/snapshot_shadow_book.rows_from_board for the shadow-book
       # snapshot (one percentile definition), so exclusive scope must name it.
       - "scripts/snapshot_shadow_book.py"
+      # Import-closure entry (B-F09-3, 2026-09-06): build_stock_library
+      # loads the debt-maturity ladder via
+      # scripts.build_debt_maturity.load_debt_maturity_facts, so exclusive
+      # scope must name this module too (engine/debt_maturity.py, its own
+      # dependency, is already declared above).
+      - "scripts/build_debt_maturity.py"
       - "scripts/check_board_contradictions.py"
       - "scripts/check_signal_gate_coherence.py"
       - "scripts/check_stretch_oracle_contract.py"
@@ -7654,6 +7704,14 @@ jobs:
       - "site/master_brief.json"
       - "site/prophet/**"
       - "site/vol/**"
+      # F13-X1: build_site imports the source-bound help directory, whose
+      # fail-closed contract reads these exact existing owner templates.
+      - "templates/_navlinks.html.j2"
+      - "templates/_public_footer.html.j2"
+      - "templates/_public_nav.html.j2"
+      - "templates/measurement.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/support.html.j2"
       - "tests/test_biocatalyst_change_classification.py"
       - "tests/test_biocatalyst_change_tape_values.py"
       - "tests/test_biocatalyst_endpoint_alignment.py"
@@ -8913,8 +8971,16 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pyyaml jinja2
+      # --deselect: test_build_site_renders_help_page_with_the_full_view_model imports
+      # scripts.build_site, which imports numpy/pandas/plotly -- none on this job's
+      # minimal line. It was collected fine (the import is inside the test body, not at
+      # module scope) but FAILED at run time under this exact venv (verified: ModuleNotFoundError:
+      # numpy), a second instance of the same class of break the B-F13-3 round-3 BLOCKER
+      # fixed for tests/test_support_tier_routing.py -- found empirically while proving
+      # THAT fix in a clean venv, not by the round-2 review. It now runs instead in
+      # unrun-site-surfaces, which already imports scripts.build_site under its full deps.
       - name: public fastlane split + rendered pricing copy pins
-        run: python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py -q
+        run: python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py -q --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
 
   press-lane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -9417,6 +9483,12 @@ jobs:
       # scripts/snapshot_shadow_book.rows_from_board for the shadow-book
       # snapshot (one percentile definition), so exclusive scope must name it.
       - "scripts/snapshot_shadow_book.py"
+      # Import-closure entry (packet B-F09-3, contract-delta 2026-09-06):
+      # build_stock_library now imports scripts.build_debt_maturity's
+      # load_debt_maturity_facts for the debt-maturity-ladder panel; that
+      # module's own top-level import already pulls in engine/debt_maturity.py,
+      # which this job's flat "engine/*.py" glob already covers.
+      - "scripts/build_debt_maturity.py"
       - "scripts/check_board_contradictions.py"
       - "scripts/check_signal_gate_coherence.py"
       - "scripts/check_stretch_oracle_contract.py"
@@ -9436,6 +9508,14 @@ jobs:
       - "site/vol/**"
       - "templates/government-revenue-dossiers.js"
       - "templates/government_revenue.html.j2"
+      # F13-X1: build_site imports the source-bound help directory, whose
+      # fail-closed contract reads these exact existing owner templates.
+      - "templates/_navlinks.html.j2"
+      - "templates/_public_footer.html.j2"
+      - "templates/_public_nav.html.j2"
+      - "templates/measurement.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/support.html.j2"
     # Install-dominated like its former host; the two batteries themselves
     # are ~30s.
     timeout-minutes: 8
@@ -9729,9 +9809,13 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
-      - name: factor hypothesis registry + intelligence state + measurement evidence gap
-        run: python -m pytest tests/test_register_factor_hypotheses.py tests/test_factor_intelligence_state.py tests/test_build_measurement_evidence_gap.py -q
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn pillow
+      # F10-X1 implication-card contract and rendered Measurement projection
+      # stay in the existing factor/measurement owner lane. Register both new
+      # suites on arrival so their artifact-identity, zero-authority, bilingual,
+      # generated-page and hostile-null pins never sit outside CI.
+      - name: factor registry + measurement evidence and research implications
+        run: python -m pytest tests/test_register_factor_hypotheses.py tests/test_factor_intelligence_state.py tests/test_build_measurement_evidence_gap.py tests/test_research_implication_card.py tests/test_measurement_research_implications.py -q
       - name: look-ahead tripwire over engine/ + collectors/ (feature-leak guard)
         run: python -m pytest tests/test_no_lookahead.py -q
       - name: study + trial lanes (OOS, divergence, drift, fingerprints, gauntlets)
@@ -10092,6 +10176,14 @@ jobs:
       # failure a reader sees.
       - name: US board freshness truth — vintage stamp, card date, delayed banner
         run: python -m pytest tests/test_us_board_freshness_truth.py -q
+      # B-F13-3 round-3: test_build_site_renders_help_page_with_the_full_view_model
+      # imports scripts.build_site, which needs numpy/pandas/plotly -- absent from
+      # public-render-fastlane's minimal (pytest pyyaml jinja2) line it used to run on.
+      # It rides this lane instead: scripts.build_site is already imported by every step
+      # above, so no new dependency is added, and this lane already owns build_site.py's
+      # panels/view-models. Deselected from public-render-fastlane's step (see that job).
+      - name: scripts/build_site.py's help page call shape (B-F13-3 BLOCKER-1 regression guard)
+        run: python -m pytest tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model -q
 
   unrun-release-forecast:
     # the macro-release forecast producer — projections, benchmarks and the graded forward ledger.
@@ -10641,6 +10733,7 @@ jobs:
       - "engine/ai_desk.py"
       - "engine/ai_desk_scorer.py"
       - "engine/alert_triage.py"
+      - "engine/debt_maturity.py"
       # engine/alert_triage.py imports engine/alert_time.py (the Alert Center
       # three-clock / ET board-day contract, Wave 7 2026-08-20), so this curated
       # scope's import closure reaches it. Declared here because a curated
@@ -10760,6 +10853,16 @@ jobs:
       - "engine/china_standout_track.py"
       - "engine/china_strategies.py"
       - "engine/china_validation.py"
+      # F05 glance consumer on News (PR #6896): build_site imports
+      # engine.chronicle.impact, so this exclusive job's closure now
+      # reaches the chronicle package. Widening is the safe direction.
+      - "engine/chronicle/__init__.py"
+      - "engine/chronicle/adapters.py"
+      - "engine/chronicle/earnings_calls.py"
+      - "engine/chronicle/impact.py"
+      - "engine/chronicle/schema.py"
+      - "engine/chronicle/spine.py"
+      - "engine/chronicle/state_log.py"
       - "engine/close_pass/**"
       - "engine/cn_ai_semis_confirmer.py"
       - "engine/cn_newswires.py"
@@ -10777,6 +10880,10 @@ jobs:
       - "engine/confluence_tiers.py"
       - "engine/conviction_accrual.py"
       - "engine/conviction_delta.py"
+      # B-F09-2 closure widening 2026-09-08 (contract-delta): scripts/build_ipo.py
+      # now imports engine/credit_window.py for the HY/IG issuance-window panel.
+      # Exclusive scope replaces inference, so the new module must be named.
+      - "engine/credit_window.py"
       - "engine/cross_asset.py"
       - "engine/cross_asset_confirm.py"
       - "engine/cross_asset_trend.py"
@@ -10965,6 +11072,7 @@ jobs:
       - "engine/risk_sizing.py"
       - "engine/risk_state.py"
       - "engine/roc_blowoff.py"
+      - "engine/seasonality/contracts.py"
       - "engine/sector_cycles.py"
       - "engine/sector_ignition.py"
       - "engine/sector_legs.py"
@@ -10987,6 +11095,7 @@ jobs:
       - "engine/sp500_heatmap.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
+      - "engine/special_situations_premium.py"
       - "engine/spine.py"
       - "engine/spotlight.py"
       - "engine/spvector_overlay.py"
@@ -11112,6 +11221,7 @@ jobs:
       - "scripts/build_china_strategies.py"
       - "scripts/build_commodity_strategies.py"
       - "scripts/build_crossmarket.py"
+      - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_hk.py"
       - "scripts/build_index_leadership.py"
@@ -12573,6 +12683,7 @@ jobs:
       - "engine/china_validation.py"
       - "engine/cn_newswires.py"
       - "engine/codex_provider.py"
+      - "engine/debt_maturity.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
       - "engine/earnings_qual.py"
@@ -12755,6 +12866,7 @@ jobs:
       - "engine/signal_quality.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
+      - "engine/special_situations_premium.py"
       - "engine/spotlight.py"
       - "engine/stock_dossier.py"
       - "engine/stock_events.py"
@@ -12807,6 +12919,7 @@ jobs:
       - "research/DO_NOT_REBUILD.md"
       - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
       - "scripts/__init__.py"
+      - "scripts/build_debt_maturity.py"
       - "scripts/build_government_revenue.py"
       - "scripts/build_government_revenue_candidates.py"
       # engine/htf_durability.py reads site/basketdata/fear_greed.json and
@@ -12830,6 +12943,14 @@ jobs:
       - "site/master_brief.json"
       - "site/prophet/**"
       - "site/vol/**"
+      # F13-X1: build_site imports the source-bound help directory, whose
+      # fail-closed contract reads these exact existing owner templates.
+      - "templates/_navlinks.html.j2"
+      - "templates/_public_footer.html.j2"
+      - "templates/_public_nav.html.j2"
+      - "templates/measurement.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/support.html.j2"
       - "tests/government_revenue_candidate_fixture.py"
       - "tests/test_government_revenue_candidate_api.py"
       - "tests/test_government_revenue_candidate_grader.py"
@@ -13242,16 +13363,19 @@ jobs:
       - engine/alerts.py
       - engine/falsifier_tripwires.py
       - engine/i18n.py
+      - engine/thesis_condition_monitor.py
       - engine/top_maturation.py
       - scripts/build_top_maturation.py
       - scripts/build_vector.py
       - scripts/build_winner_health_page.py
       - scripts/export_top_anatomy_library.py
+      - scripts/run_thesis_condition_monitor.py
       - tests/test_alert_zh_completeness.py
       - tests/test_falsifier_tripwires.py
       - tests/test_json_strict.py
       - tests/test_massive_local_staleness.py
       - tests/test_price_pressure.py
+      - tests/test_thesis_condition_monitor.py
       - tests/test_top_anatomy.py
       - tests/test_top_anatomy_oot_receipt.py
       - tests/test_top_maturation.py
@@ -13269,6 +13393,15 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx
       - name: falsifier tripwire state and v2 gate contracts
         run: python -m pytest tests/test_falsifier_tripwires.py -q
+      # F11 packet B-F11-1: a pure projection over this owner's own
+      # falsifier_tripwires latch + data/cycle_ontology corpus, joined to
+      # Supabase Thesis Objects by subject. Named by no run: step at merge
+      # (contract-delta round-2/3 blocker) — wired here rather than left in
+      # config/unrun_test_waivers.yml because this owner already installs
+      # every dependency the suite needs and already gates on the same
+      # data/cycle_ontology paths.
+      - name: thesis condition monitor — plain-language projection over the tripwire latch (F11 B-F11-1)
+        run: python -m pytest tests/test_thesis_condition_monitor.py -q
       # The zh half of every macro alert body must be fully Chinese. Six rules
       # interpolated an English-valued token straight into message_zh (#4700), and
       # the cycle-falsifier body quoted a curator-written English thesis (#4712).
@@ -13870,6 +14003,7 @@ jobs:
       - "tests/test_macro_workspace_liquidity_regime.py"
       - "tests/test_macro_workspace_monetary_policy.py"
       - "tests/test_macro_workspace_national_debt.py"
+      - "tests/test_macro_workspace_prior_publication.py"
       # Expansion 2026-09-04: Rates & Curves + Trade Flows composer suites.
       - "tests/test_macro_workspace_rates_curves.py"
       - "tests/test_macro_workspace_trade_flows.py"
@@ -13881,7 +14015,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install workspace-producer test dependencies
-        run: pip install pytest pyyaml jsonschema==4.26.0
+        run: pip install pytest pyyaml jsonschema==4.26.0 jinja2
       - name: Market OS macro workspaces — contract, composer, publisher, consumer
         run: >-
           python -m pytest
@@ -13900,6 +14034,7 @@ jobs:
           tests/test_macro_workspace_liquidity_regime.py
           tests/test_macro_workspace_monetary_policy.py
           tests/test_macro_workspace_national_debt.py
+          tests/test_macro_workspace_prior_publication.py
           tests/test_macro_workspace_rates_curves.py
           tests/test_macro_workspace_trade_flows.py
           -q
@@ -13961,6 +14096,7 @@ jobs:
       - "scripts/build_macro_suite_pages.py"
       - "site/macrodata/workspaces/**"
       - "tests/test_macro_suite_pages.py"
+      - "tests/test_macro_workspace_prior_publication.py"
       # F01 R1 2026-09-05: the suite hub + shared in-suite navigation. Same job as
       # the workspace pages because it is the same subject: one builder, one shell,
       # one view model. A hub that disagreed with the pages it links to would be a
@@ -13978,6 +14114,6 @@ jobs:
       - name: install suite-page test dependencies
         run: pip install pytest jinja2 pyyaml jsonschema==4.26.0
       - name: Market OS macro suite pages — shell, labels, view model, builder
-        run: python -m pytest tests/test_macro_suite_pages.py -q
+        run: python -m pytest tests/test_macro_suite_pages.py tests/test_macro_workspace_prior_publication.py -q
       - name: Market OS macro suite hub — discoverability, ordering, honest absence
         run: python -m pytest tests/test_macro_monetary_hub.py -q
