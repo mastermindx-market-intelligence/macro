@@ -6274,7 +6274,7 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy pyarrow pyyaml openpyxl requests
       - name: CCW-W3 credit momentum tests
-        run: python -m pytest tests/test_credit_momentum.py tests/test_corp_bond_holdings.py tests/test_finra_corp_bonds.py -v
+        run: python -m pytest tests/test_credit_momentum.py tests/test_corp_bond_holdings.py tests/test_finra_corp_bonds.py tests/test_credit_window.py -v
 
   ccw-w4-credit-desk:
     if: ${{ false }}
@@ -10855,6 +10855,10 @@ jobs:
       - "engine/confluence_tiers.py"
       - "engine/conviction_accrual.py"
       - "engine/conviction_delta.py"
+      # B-F09-2 closure widening 2026-09-08 (contract-delta): scripts/build_ipo.py
+      # now imports engine/credit_window.py for the HY/IG issuance-window panel.
+      # Exclusive scope replaces inference, so the new module must be named.
+      - "engine/credit_window.py"
       - "engine/cross_asset.py"
       - "engine/cross_asset_confirm.py"
       - "engine/cross_asset_trend.py"
