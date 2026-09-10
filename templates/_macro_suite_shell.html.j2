@@ -52,6 +52,15 @@
 {%- if node %}<span class="mq-chip mq-tone-{{ tone }}{{ ' mq-chip-' ~ kind if kind else '' }}">{{ bl(node) }}</span>{% endif -%}
 {%- endmacro -%}
 
+{#- A scalar cell, or the same em dash Effective-date uses. 0 is a real value. -#}
+{%- macro scalar_or_dash(value, as_code=False) -%}
+{%- if value is not none and value != '' -%}
+{%- if as_code -%}<code>{{ value }}</code>{%- else -%}{{ value }}{%- endif -%}
+{%- else -%}
+<span class="mq-dash">—</span>
+{%- endif -%}
+{%- endmacro -%}
+
 {%- macro clock_list(rows) -%}
 <dl class="mq-clocks">
   {%- for row in rows %}
@@ -524,13 +533,13 @@
         <div><dt>{{ t('Reference period', '参考期') }}</dt>
              <dd>{% if metric.reference_period %}<time>{{ metric.reference_period }}</time>{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
         <div><dt>{{ t('Basis', '基准') }}</dt><dd>{{ bl(metric.basis) }}</dd></div>
-        <div><dt>{{ t('Definition', '定义') }}</dt><dd><code>{{ metric.definition_id }}</code> · v{{ metric.definition_version }}</dd></div>
+        <div><dt>{{ t('Definition', '定义') }}</dt><dd>{% if metric.definition_id %}<code>{{ metric.definition_id }}</code>{% else %}<span class="mq-dash">—</span>{% endif %}{% if metric.definition_version %} · v{{ metric.definition_version }}{% endif %}</dd></div>
       </dl>
       <details class="mq-metric-clocks">
         <summary>{{ t('Clocks and owner', '时钟与所有者') }}</summary>
         {{ clock_list(metric.clocks) }}
-        <p class="mq-owner"><span>{{ t('Owner', '所有者') }}</span><code>{{ metric.owner_ref }}</code></p>
-        <p class="mq-owner"><span>{{ t('Authority ceiling', '权限上限') }}</span><code>{{ metric.authority_ceiling }}</code></p>
+        <p class="mq-owner"><span>{{ t('Owner', '所有者') }}</span>{{ scalar_or_dash(metric.owner_ref, True) }}</p>
+        <p class="mq-owner"><span>{{ t('Authority ceiling', '权限上限') }}</span>{{ scalar_or_dash(metric.authority_ceiling, True) }}</p>
       </details>
     </article>
     {%- endfor %}
@@ -599,7 +608,7 @@
       <tbody>
         {%- for row in group.rows %}
         <tr>
-          <th scope="row">{{ bl(row.label) }}<span class="mq-owner-field"><code>{{ row.owner_field }}</code></span></th>
+          <th scope="row">{{ bl(row.label) }}<span class="mq-owner-field">{{ scalar_or_dash(row.owner_field, True) }}</span></th>
           <td>{% if row.value %}{{ bl(row.value) }}{% else %}{{ absent(row.absence, True) }}{% endif %}</td>
           <td>{{ bl(row.unit) }}</td>
           <td class="mq-delta{% if row.impact_present %} mq-delta-{{ row.impact_sign }}{% else %} mq-delta-unavailable{% endif %}">
@@ -627,14 +636,14 @@
     <summary><span>{{ bl(axis.label) }}</span><span class="mq-axis-method-value">{% if axis.value %}{{ axis.value }}{% else %}{{ absent(axis.absence, True) }}{% endif %}</span></summary>
     <dl class="mq-method-grid">
       <div><dt>{{ t('Direction', '方向') }}</dt><dd>{{ bl(axis.direction) }}</dd></div>
-      <div><dt>{{ t('Weights law', '权重法则') }}</dt><dd>{{ axis.weights_law }}</dd></div>
-      <div><dt>{{ t('Transformation', '变换') }}</dt><dd>{{ axis.transformation }}</dd></div>
-      <div><dt>{{ t('Frequency alignment', '频率对齐') }}</dt><dd>{{ axis.frequency_alignment }}</dd></div>
-      <div><dt>{{ t('Revision behaviour', '修订行为') }}</dt><dd>{{ axis.revision_behavior }}</dd></div>
-      <div><dt>{{ t('Components present', '已具备分项') }}</dt><dd>{{ axis.components_available }} / {{ t('minimum', '最少') }} {{ axis.min_components }}</dd></div>
-      <div><dt>{{ t('Coverage floor', '覆盖下限') }}</dt><dd>{{ axis.coverage_floor }}</dd></div>
-      <div><dt>{{ t('Definition version', '定义版本') }}</dt><dd><code>{{ axis.definition_version }}</code></dd></div>
-      <div><dt>{{ t('Authority ceiling', '权限上限') }}</dt><dd><code>{{ axis.authority_ceiling }}</code></dd></div>
+      <div><dt>{{ t('Weights law', '权重法则') }}</dt><dd>{{ scalar_or_dash(axis.weights_law) }}</dd></div>
+      <div><dt>{{ t('Transformation', '变换') }}</dt><dd>{{ scalar_or_dash(axis.transformation) }}</dd></div>
+      <div><dt>{{ t('Frequency alignment', '频率对齐') }}</dt><dd>{{ scalar_or_dash(axis.frequency_alignment) }}</dd></div>
+      <div><dt>{{ t('Revision behaviour', '修订行为') }}</dt><dd>{{ scalar_or_dash(axis.revision_behavior) }}</dd></div>
+      <div><dt>{{ t('Components present', '已具备分项') }}</dt><dd>{{ scalar_or_dash(axis.components_available) }} / {{ t('minimum', '最少') }} {{ scalar_or_dash(axis.min_components) }}</dd></div>
+      <div><dt>{{ t('Coverage floor', '覆盖下限') }}</dt><dd>{{ scalar_or_dash(axis.coverage_floor) }}</dd></div>
+      <div><dt>{{ t('Definition version', '定义版本') }}</dt><dd>{{ scalar_or_dash(axis.definition_version, True) }}</dd></div>
+      <div><dt>{{ t('Authority ceiling', '权限上限') }}</dt><dd>{{ scalar_or_dash(axis.authority_ceiling, True) }}</dd></div>
     </dl>
     <table class="mq-table mq-table-compact">
       <thead><tr>
@@ -647,10 +656,10 @@
       <tbody>
         {%- for component in axis.components %}
         <tr>
-          <th scope="row">{{ bl(component.label) }}<span class="mq-owner-field"><code>{{ component.owner_field }}</code></span></th>
+          <th scope="row">{{ bl(component.label) }}<span class="mq-owner-field">{{ scalar_or_dash(component.owner_field, True) }}</span></th>
           <td>{% if component.raw %}{{ bl(component.raw) }}{% else %}{{ absent(component.raw_absence, True) }}{% endif %}</td>
           <td>{% if component.standardized_present %}{{ component.standardized }}{% else %}{{ absent(component.standardized_absence, True) }}{% endif %}</td>
-          <td>{{ component.weight }}</td>
+          <td>{{ scalar_or_dash(component.weight) }}</td>
           <td class="mq-delta{% if component.contribution_present %} mq-delta-{{ component.contribution_sign }}{% else %} mq-delta-unavailable{% endif %}">
             {%- if component.contribution_present %}{{ component.contribution }}{% else %}{{ absent(component.contribution_absence, True) }}{% endif -%}
           </td>
@@ -749,7 +758,7 @@
         </header>
         <dl class="mq-method-grid">
           <div><dt>{{ t('Provider', '提供方') }}</dt><dd>{{ source.provider or '—' }}</dd></div>
-          <div><dt>{{ t('Owner', '所有者') }}</dt><dd><code>{{ source.owner_ref }}</code></dd></div>
+          <div><dt>{{ t('Owner', '所有者') }}</dt><dd>{{ scalar_or_dash(source.owner_ref, True) }}</dd></div>
           <div><dt>{{ t('Artifact', '产物') }}</dt><dd><code>{{ source.artifact_ref or '—' }}</code></dd></div>
           <div><dt>{{ t('Rights', '授权') }}</dt><dd>{{ bl(source.rights) }}</dd></div>
           <div><dt>{{ t('Correction', '更正') }}</dt><dd>{{ bl(source.correction) }}</dd></div>

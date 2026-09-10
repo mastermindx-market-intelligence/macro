@@ -1490,6 +1490,53 @@ def test_partial_empty_series_range_is_typed_bilingual_not_none_token() -> None:
     _assert_no_standalone_none_in_page(html)
 
 
+def test_axis_method_and_metric_none_fields_render_em_dash_not_token() -> None:
+    """Addendum 8 / REQUIRED 1. An axis whose method receipts are Python None
+    (and a metric whose definition/owner/ceiling fields are None) must not
+    print the machine token. The empty-axes fixture never reaches these
+    interpolations; this injects one axis and one metric into that snapshot.
+    """
+    snap = _snapshot()
+    snap["axes"] = {"items": [{
+        "axis_id": "poison_axis",
+        "label": _pair("Poison axis", "毒化坐标轴"),
+        "value": None,
+        "null_reason": "NOT_APPLICABLE",
+        "components": [{
+            "component_id": "poison_leg",
+            "label": _pair("Poison leg", "毒化分项"),
+            "owner_field": None,
+            "weight": None,
+            "raw_value": None,
+            "standardized_value": None,
+            "contribution": None,
+            "null_reason": "NOT_APPLICABLE",
+        }],
+        "weights_law": None,
+        "transformation": None,
+        "frequency_alignment": None,
+        "revision_behavior": None,
+        "components_available": None,
+        "min_components": None,
+        "coverage_floor": None,
+        "definition_version": None,
+        "authority_ceiling": None,
+    }]}
+    snap["metrics"] = {"items": [{
+        "metric_id": None,
+        "value": None,
+        "null_reason": "NOT_APPLICABLE",
+        "definition_id": None,
+        "definition_version": None,
+        "owner_ref": None,
+        "authority_ceiling": None,
+    }]}
+    html = _render_rates_page(snap)
+    assert 'class="mq-method"' in html
+    assert 'class="mq-metrics"' in html
+    _assert_no_standalone_none_in_page(html)
+
+
 _NONE_TOKEN = re.compile(r"\bNone\b")
 _SCRIPT_OR_STYLE = re.compile(
     r"<(script|style)\b[^>]*>.*?</\1>", re.I | re.S,
