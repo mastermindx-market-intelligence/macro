@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/index.html
+  - templates/landing.css
+manifest: mockups/evidence/homepage-research-entry-20260910/manifest.json
