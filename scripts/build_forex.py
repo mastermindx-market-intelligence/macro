@@ -655,7 +655,11 @@ def _stance(dollar_dir: str | None, active_scenarios: list[str],
     else:
         headline_en, headline_zh = "Dollar mixed", "美元分化"
 
-    # plain sentence (≤14 words) from direction + top-2 headwind + top-1 tailwind
+    # plain sentence (≤14 words). Mirror engine/forex_transmission.py:169-173:
+    # hp = headwind if strengthening else tailwind; word matches the list.
+    # headwind_for / tailwind_for are the effect of a STRENGTHENING dollar
+    # (ripple table column "If USD rises"), so a soft dollar must not "lean on"
+    # those headwind assets.
     hw = headwind_for or []
     tw = tailwind_for or []
     hw_names = [_PLAIN_ASSET_EN.get(k, k) for k in hw[:2]]
@@ -668,7 +672,7 @@ def _stance(dollar_dir: str | None, active_scenarios: list[str],
                       else "mixed"))
     dir_word_zh = "走强" if dir_word == "firm" else ("偏软" if dir_word == "soft" else "走势分化")
 
-    if hw_names and dir_word != "mixed":
+    if hw_names and dir_word == "firm":
         parts = " and ".join(hw_names)
         sentence_en = f"A {dir_word} dollar is leaning on {parts}."
         parts_zh = "与".join(hw_names_zh)
