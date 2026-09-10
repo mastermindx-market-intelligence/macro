@@ -1,13 +1,13 @@
 {
-  "asof": "2026-09-06",
-  "universe_n": 2946,
-  "n_with_chip": 244,
+  "asof": "2026-09-09",
+  "universe_n": 2945,
+  "n_with_chip": 245,
   "counts_by_state": {
-    "neutral": 244
+    "neutral": 245
   },
   "counts_by_band": {
     "elevated": 40,
-    "extended": 27,
+    "extended": 28,
     "neutral": 123,
     "washed": 54
   },
@@ -651,6 +651,14 @@
       "score_pct": 0.179,
       "whale": 49.9,
       "whale_chg": -1.4
+    },
+    {
+      "ticker": "EL",
+      "state": "neutral",
+      "band": "extended",
+      "score_pct": 0.986,
+      "whale": 52.5,
+      "whale_chg": 7.8
     },
     {
       "ticker": "ELV",

@@ -1,95 +1,95 @@
 {
   "schema": "index_leadership.track_record.v1",
   "as_of": "2026-09-04",
-  "generated_at": "2026-09-06T22:24:46.787609+00:00",
+  "generated_at": "2026-09-09T08:24:14.650241+00:00",
   "is_context_only": true,
   "n_snapshots": 618,
   "n_days": 21,
   "horizons": {
     "5": {
-      "n_matured": 485,
+      "n_matured": 531,
       "by_stage": {
         "running": {
-          "n": 424,
-          "mean_fwd_rel": -0.0046,
-          "hit_rate": 0.465
+          "n": 467,
+          "mean_fwd_rel": -0.005,
+          "hit_rate": 0.452
         },
         "coiling": {
-          "n": 31,
-          "mean_fwd_rel": 0.0037,
-          "hit_rate": 0.677
+          "n": 32,
+          "mean_fwd_rel": 0.0036,
+          "hit_rate": 0.594
         },
         "coiling_primed": {
-          "n": 30,
-          "mean_fwd_rel": 0.0162,
-          "hit_rate": 0.733
+          "n": 32,
+          "mean_fwd_rel": 0.0139,
+          "hit_rate": 0.625
         }
       },
-      "running_ic": 0.0461,
-      "running_ic_t_hac": 0.779,
+      "running_ic": -0.0191,
+      "running_ic_t_hac": -0.213,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "10": {
-      "n_matured": 413,
+      "n_matured": 468,
       "by_stage": {
         "running": {
-          "n": 363,
-          "mean_fwd_rel": -0.0037,
-          "hit_rate": 0.474
+          "n": 413,
+          "mean_fwd_rel": -0.0058,
+          "hit_rate": 0.446
         },
         "coiling": {
-          "n": 24,
-          "mean_fwd_rel": -0.008,
-          "hit_rate": 0.375
+          "n": 26,
+          "mean_fwd_rel": -0.0055,
+          "hit_rate": 0.423
         },
         "coiling_primed": {
-          "n": 26,
-          "mean_fwd_rel": 0.0362,
-          "hit_rate": 0.731
+          "n": 29,
+          "mean_fwd_rel": 0.0289,
+          "hit_rate": 0.621
         }
       },
-      "running_ic": 0.0658,
-      "running_ic_t_hac": 2.438,
+      "running_ic": 0.029,
+      "running_ic_t_hac": 0.959,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 235,
+      "n_matured": 265,
       "by_stage": {
         "running": {
-          "n": 214,
-          "mean_fwd_rel": -0.0028,
-          "hit_rate": 0.528
+          "n": 237,
+          "mean_fwd_rel": -0.0012,
+          "hit_rate": 0.532
         },
         "coiling": {
-          "n": 10,
-          "mean_fwd_rel": -0.012,
-          "hit_rate": 0.7
+          "n": 13,
+          "mean_fwd_rel": -0.004,
+          "hit_rate": 0.692
         },
         "coiling_primed": {
-          "n": 11,
-          "mean_fwd_rel": 0.0735,
-          "hit_rate": 0.727
+          "n": 15,
+          "mean_fwd_rel": 0.0604,
+          "hit_rate": 0.733
         }
       },
-      "running_ic": -0.191,
-      "running_ic_t_hac": -7.355,
+      "running_ic": -0.1483,
+      "running_ic_t_hac": -3.738,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "63": {
-      "n_matured": 24,
+      "n_matured": 33,
       "by_stage": {
         "running": {
-          "n": 18,
-          "mean_fwd_rel": -0.0488,
-          "hit_rate": 0.333
+          "n": 26,
+          "mean_fwd_rel": -0.0497,
+          "hit_rate": 0.385
         },
         "coiling": {
-          "n": 6,
-          "mean_fwd_rel": -0.0794,
-          "hit_rate": 0.167
+          "n": 7,
+          "mean_fwd_rel": -0.0742,
+          "hit_rate": 0.286
         }
       },
       "running_ic": null,
@@ -98,24 +98,40 @@
       "coiling_ic_t_hac": null
     }
   },
-  "lead_time_d": 10,
-  "peak_ic": 0.0658,
+  "lead_time_d": null,
+  "peak_ic": null,
   "proven": {
     "5": false,
-    "10": true,
+    "10": false,
     "21": false,
     "63": false
   },
   "any_matured": true,
-  "verdict": "validated",
-  "note": "Call-score IC is significant at the 10d horizon (measured). Context-only \u2014 informs the read, never sizes.",
+  "verdict": "measuring",
+  "note": "Accruing forward observations; no horizon clears the Newey-West significance bar yet. Early numbers are provisional, context-only.",
   "recent_misses": [
     {
       "date": "2026-08-13",
       "id": "russell:aerospace-defense",
       "name": "Aerospace & Defense",
       "stage": "running",
-      "fwd_rel": -0.1763,
+      "fwd_rel": -0.1749,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-13",
+      "id": "subsectors:travel-services",
+      "name": "Travel Services",
+      "stage": "running",
+      "fwd_rel": -0.1012,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-13",
+      "id": "subsectors:electronic-components",
+      "name": "Electronic Components",
+      "stage": "running",
+      "fwd_rel": -0.0949,
       "horizon_d": 21
     },
     {
@@ -128,10 +144,18 @@
     },
     {
       "date": "2026-08-13",
-      "id": "subsectors:electronic-components",
-      "name": "Electronic Components",
+      "id": "russell:broadcasting",
+      "name": "Broadcasting",
       "stage": "running",
-      "fwd_rel": -0.0804,
+      "fwd_rel": -0.0916,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-13",
+      "id": "russell:asset-management",
+      "name": "Asset Management",
+      "stage": "running",
+      "fwd_rel": -0.0734,
       "horizon_d": 21
     },
     {
@@ -144,34 +168,10 @@
     },
     {
       "date": "2026-08-13",
-      "id": "subsectors:asset-management",
-      "name": "Asset Management",
+      "id": "russell:restaurants",
+      "name": "Restaurants",
       "stage": "running",
-      "fwd_rel": -0.0218,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-13",
-      "id": "russell:medical-devices",
-      "name": "Medical Devices",
-      "stage": "running",
-      "fwd_rel": -0.0218,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-13",
-      "id": "russell:information-technology-services",
-      "name": "Information Technology Services",
-      "stage": "running",
-      "fwd_rel": -0.0203,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-12",
-      "id": "baskets:space-economy",
-      "name": "Space Economy",
-      "stage": "running",
-      "fwd_rel": -0.1888,
+      "fwd_rel": -0.0305,
       "horizon_d": 21
     }
   ],
