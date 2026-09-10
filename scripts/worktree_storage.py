@@ -16,6 +16,7 @@ from pathlib import Path
 import plistlib
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import uuid
@@ -590,6 +591,82 @@ def create_immutable_local(policy: dict, repo: Path, name: str, session: str, co
         return dest
 
 
+def _preservation_git(cwd: Path, *args: str, input_bytes: bytes | None = None) -> bytes | None:
+    """Read index/status facts without optional refresh, fsmonitor or lazy fetch."""
+    try:
+        result = subprocess.run(
+            ['git', '--no-optional-locks', '-c', 'core.fsmonitor=false', '-C', str(cwd), *args],
+            input=input_bytes, capture_output=True, timeout=20,
+            env=dict(os.environ, GIT_OPTIONAL_LOCKS='0', GIT_NO_LAZY_FETCH='1'))
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return result.stdout if result.returncode == 0 else None
+
+
+def materialized_index_safe(cwd: Path, *, allow_sparse: bool = False) -> bool | None:
+    """False preserves hidden work; None preserves an index we cannot inspect.
+
+    An uppercase S entry is admissible only when it is absent through regular
+    directory ancestors AND Git's current sparse rules positively exclude it.
+    A present S entry, assume-unchanged flag or conflict is never clean proof.
+    This is read-only: never reset flags or ask status to refresh them away.
+    """
+    raw = _preservation_git(cwd, 'ls-files', '-v', '--stage', '-z')
+    if raw is None or (raw and not raw.endswith(b'\0')):
+        return None
+    absent = []
+    for record in raw.split(b'\0'):
+        if not record:
+            continue
+        try:
+            header, name = record.split(b'\t', 1)
+            flag, mode, oid, stage = header.split()
+        except ValueError:
+            return None
+        if (mode not in (b'100644', b'100755', b'120000', b'160000')
+                or len(oid) not in (40, 64) or re.fullmatch(b'[0-9a-f]+', oid) is None
+                or not name or any(p in (b'', b'.', b'..') for p in name.split(b'/'))):
+            return None
+        if stage != b'0' or flag not in (b'H', b'S'):
+            return False
+        if flag == b'H':
+            continue
+        if not allow_sparse:
+            return False
+        # lexists() would turn permission errors into false absence. Inspect
+        # ancestors too, so a dangling/replaced symlink is not sparse absence.
+        cursor = Path(cwd)
+        for part in name.split(b'/'):
+            cursor = cursor / os.fsdecode(part)
+            try:
+                entry = cursor.lstat()
+            except FileNotFoundError:
+                absent.append(name)
+                break
+            except OSError:
+                return None
+            if not stat.S_ISDIR(entry.st_mode):
+                return False
+        else:
+            return False  # even a directory materialized at the tracked path
+    if absent:
+        enabled = _preservation_git(cwd, 'config', '--bool', '--default=false',
+                                    '--get', 'core.sparseCheckout')
+        if enabled is None:
+            return None
+        if enabled.strip() != b'true':
+            return False
+        included = _preservation_git(cwd, 'sparse-checkout', 'check-rules', '-z',
+                                     input_bytes=b'\0'.join(absent) + b'\0')
+        if included is None or (included and not included.endswith(b'\0')):
+            return None
+        # A missing, manually skipped IN-cone file is a hidden deletion, not
+        # a legitimate sparse omission. Unknown/unsupported rule reads refuse.
+        if included:
+            return False
+    return True
+
+
 def protect_worktree(policy: dict, cwd: Path, *, sparsify: bool = True) -> bool:
     """Protect a newly opened external linked checkout; grandfather internal ones."""
     cwd = Path(cwd).resolve()
@@ -605,13 +682,30 @@ def protect_worktree(policy: dict, cwd: Path, *, sparsify: bool = True) -> bool:
     if not lock.exists():
         git(cwd, 'worktree', 'lock', '--reason', LOCK_REASON, str(cwd))
     profile = cwd / 'config/sparse_worktree.json'
-    sparse = subprocess.run(['git', '-C', str(cwd), 'config', '--get', 'core.sparseCheckout'], capture_output=True, text=True).stdout.strip()
-    if sparsify and sparse != 'true' and profile.exists() and not git(cwd, 'status', '--porcelain'):
-        config = json.loads(profile.read_text())
-        if config.get('enabled'):
-            dirs = git(cwd, 'ls-tree', '-d', '--name-only', 'HEAD').splitlines()
-            selected = [p for p in dirs if p not in config.get('exclude_dirs', [])]
-            git(cwd, 'sparse-checkout', 'set', '--cone', '--', *selected)
+    if not sparsify or not profile.exists():
+        return True
+    sparse = _preservation_git(cwd, 'config', '--bool', '--default=false',
+                               '--get', 'core.sparseCheckout')
+    if sparse is None or sparse.strip() not in (b'true', b'false'):
+        raise StorageError('could not inspect worktree sparse configuration')
+    if sparse.strip() == b'true':
+        return True
+    config = json.loads(profile.read_text())
+    if not config.get('enabled'):
+        return True
+    safe = materialized_index_safe(cwd)
+    if safe is None:
+        raise StorageError('could not inspect worktree index; sparse conversion refused')
+    if not safe:
+        return True
+    dirty = _preservation_git(cwd, 'status', '--porcelain=v1', '-z',
+                              '--untracked-files=all', '--ignore-submodules=none')
+    if dirty is None:
+        raise StorageError('could not inspect worktree status; sparse conversion refused')
+    if not dirty:
+        dirs = git(cwd, 'ls-tree', '-d', '--name-only', 'HEAD').splitlines()
+        selected = [p for p in dirs if p not in config.get('exclude_dirs', [])]
+        git(cwd, 'sparse-checkout', 'set', '--cone', '--', *selected)
     return True
 
 

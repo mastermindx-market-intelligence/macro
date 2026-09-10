@@ -844,4 +844,280 @@ class F4ManagedAutoProfileTests(unittest.TestCase):
                 self.assertEqual(self.snapshot(root), before)
 
 
+class F5F6HiddenIndexSafetyTests(F4ManagedAutoProfileTests):
+    """Exact installed and external-GC routes; destructive GC calls are intercepted."""
+
+    def cli(self, root):
+        import io
+        import sys
+        original = self.storage.git
+        applications = []
+        def observed(repo, *args):
+            if args[:2] == ('sparse-checkout', 'set'):
+                applications.append(args)
+            return original(repo, *args)
+        with patch.object(self.storage, 'load_policy', return_value=self.policy), \
+             patch.object(self.storage, 'volume_info', return_value=self.info), \
+             patch.object(self.storage, 'git', side_effect=observed), \
+             patch.object(sys, 'argv', ['storage', 'session-start']), \
+             patch.object(sys, 'stdin', io.StringIO(json.dumps({'cwd': str(root)}))), \
+             patch.object(sys, 'stdout', io.StringIO()), patch.object(sys, 'stderr', io.StringIO()):
+            rc = self.storage.main()
+        return rc, applications
+
+    def unchanged_and_locked(self, repo, root, before):
+        self.assertEqual(self.snapshot(root), before)
+        self.assertIn('locked ' + self.storage.LOCK_REASON,
+                      self.git(repo, 'worktree', 'list', '--porcelain').decode())
+
+    def failed_read(self, command, *, malformed=False):
+        original = subprocess.run
+        def run(args, *positional, **kwargs):
+            if command in args:
+                binary = b'malformed-index\0' if malformed else b''
+                out = binary.decode() if kwargs.get('text') else binary
+                err = 'fixture read failure' if kwargs.get('text') else b'fixture read failure'
+                return subprocess.CompletedProcess(args, 0 if malformed else 128, out, err)
+            return original(args, *positional, **kwargs)
+        return patch.object(self.storage.subprocess, 'run', side_effect=run)
+
+    def gc_fixture(self, name, *, sparse=False):
+        from scripts import worktree_gc
+        repo, root = self.full_checkout(name)
+        self.git(repo, 'update-ref', 'refs/remotes/origin/main', 'HEAD')
+        if sparse:
+            self.git(root, 'sparse-checkout', 'set', '--cone', 'src', 'config')
+        self.git(repo, 'worktree', 'lock', '--reason', self.storage.LOCK_REASON, str(root))
+        wt = next(w for w in worktree_gc.parse_worktree_list(
+            self.git(repo, 'worktree', 'list', '--porcelain').decode()) if w.path == root)
+        return worktree_gc, repo, root, wt
+
+    def classify_gc(self, gc, repo, wt):
+        with patch.object(gc, 'worktree_storage', self.storage), \
+             patch.object(self.storage, 'volume_info', return_value=self.info), \
+             patch.object(gc, 'activity_age_days', return_value=(8, {'fixture': 8})):
+            gc.classify(wt, repo, {**gc.DEFAULT_CONFIG, 'min_age_days': 0,
+                                  '_storage_policy': self.policy}, {}, {}, True, repo, 0)
+
+    def apply_gc(self, gc, repo, root, wt, *, after_status=None):
+        original = gc._git
+        effects = []
+        injected = []
+        def intercepted(where, *args, **kwargs):
+            if args[:2] in (('worktree', 'unlock'), ('worktree', 'remove')):
+                effects.append(args)
+                # Record admission without touching a lock or removing any checkout.
+                return (0, '', '') if args[1] == 'unlock' else (1, '', 'fixture removal intercepted')
+            if args[:2] in (('worktree', 'prune'), ('branch', '-D')):
+                return 0, '', ''
+            result = original(where, *args, **kwargs)
+            if after_status and 'status' in args and not injected:
+                injected.append(True)
+                after_status()
+            return result
+        with patch.object(gc, 'worktree_storage', self.storage), \
+             patch.object(self.storage, 'volume_info', return_value=self.info), \
+             patch.object(gc, 'proc_cwd_map', return_value={}), \
+             patch.object(gc, '_ledger_write'), patch.object(gc, '_git', side_effect=intercepted), \
+             patch.object(gc.shutil, 'rmtree', side_effect=AssertionError('destructive GC primitive reached')):
+            result = gc.apply_deletions(repo, [wt],
+                {'_storage_policy': self.policy, 'delete_local_branches': False},
+                [Path(self.policy['root'])])
+        self.assertTrue(root.exists())
+        self.assertIn('locked ' + self.storage.LOCK_REASON,
+                      self.git(repo, 'worktree', 'list', '--porcelain').decode())
+        return result, effects
+
+    def test_f5_installed_session_start_preserves_hidden_edits(self):
+        for flag in ('--assume-unchanged', '--skip-worktree'):
+            with self.subTest(flag=flag):
+                repo, root = self.full_checkout('f5-' + flag[2:])
+                self.git(root, 'update-index', flag, 'data/heavy.txt')
+                (root / 'data/heavy.txt').write_text('hidden unfinished work\n')
+                before = self.snapshot(root)
+                self.assertEqual(self.cli(root), (0, []))
+                self.unchanged_and_locked(repo, root, before)
+
+    def test_f5_installed_session_start_preserves_visible_dirty_work(self):
+        for kind in ('unstaged', 'staged', 'untracked'):
+            with self.subTest(kind=kind):
+                repo, root = self.full_checkout('f5-' + kind)
+                path = root / ('data/new.txt' if kind == 'untracked' else 'data/heavy.txt')
+                path.write_text('unfinished work\n')
+                if kind == 'staged':
+                    self.git(root, 'add', 'data/heavy.txt')
+                before = self.snapshot(root)
+                self.assertEqual(self.cli(root), (0, []))
+                self.unchanged_and_locked(repo, root, before)
+
+    def test_f5_installed_session_start_preserves_conflicted_index(self):
+        repo, root = self.full_checkout('f5-conflict')
+        blob = self.git(root, 'rev-parse', 'HEAD:src/code.py').decode().strip()
+        entries = '0 ' + '0' * 40 + '\tsrc/code.py\n'
+        entries += ''.join(f'100644 {blob} {stage}\tsrc/code.py\n' for stage in (1, 2, 3))
+        self.git(root, 'update-index', '--index-info', input_bytes=entries.encode())
+        before = self.snapshot(root)
+        self.assertEqual(self.cli(root), (0, []))
+        self.unchanged_and_locked(repo, root, before)
+
+    def test_f5_installed_session_start_unknown_reads_refuse(self):
+        for command in ('config', 'ls-files', 'status'):
+            with self.subTest(command=command):
+                repo, root = self.full_checkout('f5-unknown-' + command)
+                before = self.snapshot(root)
+                with self.failed_read(command):
+                    self.assertEqual(self.cli(root), (1, []))
+                self.unchanged_and_locked(repo, root, before)
+
+    def test_f5_installed_session_start_malformed_index_refuses(self):
+        repo, root = self.full_checkout('f5-malformed')
+        before = self.snapshot(root)
+        with self.failed_read('ls-files', malformed=True):
+            self.assertEqual(self.cli(root), (1, []))
+        self.unchanged_and_locked(repo, root, before)
+
+    def test_f5_installed_session_start_clean_full_is_still_sparsified(self):
+        repo, root = self.full_checkout('f5-clean')
+        rc, applications = self.cli(root)
+        self.assertEqual(rc, 0)
+        self.assertEqual(len(applications), 1)
+        self.assertFalse((root / 'data/heavy.txt').exists())
+        self.assertTrue((root / 'src/code.py').exists())
+        self.assertIn('locked ' + self.storage.LOCK_REASON,
+                      self.git(repo, 'worktree', 'list', '--porcelain').decode())
+
+    def test_f5_installed_session_start_preserves_existing_sparse_and_disabled(self):
+        for state in ('sparse', 'disabled'):
+            with self.subTest(state=state):
+                repo, root = self.full_checkout('f5-' + state)
+                if state == 'sparse':
+                    self.git(root, 'sparse-checkout', 'set', '--cone', 'src', 'config')
+                    self.assertFalse((root / 'data/heavy.txt').exists())
+                else:
+                    (root / 'config/sparse_worktree.json').write_text(json.dumps({'enabled': False}))
+                before = self.snapshot(root)
+                self.assertEqual(self.cli(root), (0, []))
+                self.unchanged_and_locked(repo, root, before)
+
+    def test_f6_classification_preserves_hidden_materialized_work(self):
+        for flag in ('--assume-unchanged', '--skip-worktree'):
+            with self.subTest(flag=flag):
+                gc, repo, root, wt = self.gc_fixture('f6-class-' + flag[2:])
+                self.git(root, 'update-index', flag, 'data/heavy.txt')
+                (root / 'data/heavy.txt').write_text('hidden unfinished GC work\n')
+                before = self.snapshot(root)
+                self.classify_gc(gc, repo, wt)
+                self.assertNotIn(wt.verdict, gc.SAFE_VERDICTS)
+                result, effects = self.apply_gc(gc, repo, root, wt)
+                self.assertEqual(effects, [])
+                self.assertEqual(result['deleted'], [])
+                self.unchanged_and_locked(repo, root, before)
+
+    def test_f6_final_guard_preserves_work_hidden_after_classification(self):
+        for flag in ('--assume-unchanged', '--skip-worktree'):
+            with self.subTest(flag=flag):
+                gc, repo, root, wt = self.gc_fixture('f6-final-' + flag[2:])
+                self.classify_gc(gc, repo, wt)
+                self.assertEqual(wt.verdict, 'SAFE_MERGED')
+                self.git(root, 'update-index', flag, 'data/heavy.txt')
+                (root / 'data/heavy.txt').write_text('new hidden GC work\n')
+                before = self.snapshot(root)
+                result, effects = self.apply_gc(gc, repo, root, wt)
+                self.assertEqual(effects, [])
+                self.assertEqual(result['deleted'], [])
+                self.assertTrue(result['errors'])
+                self.unchanged_and_locked(repo, root, before)
+
+    def test_f6_final_guard_keeps_materialized_skip_entry_in_sparse_checkout(self):
+        gc, repo, root, wt = self.gc_fixture('f6-present-sparse', sparse=True)
+        self.classify_gc(gc, repo, wt)
+        self.assertEqual(wt.verdict, 'SAFE_MERGED')
+        (root / 'data').mkdir(exist_ok=True)
+        (root / 'data/heavy.txt').write_text('materialized hidden work\n')
+        before = self.snapshot(root)
+        result, effects = self.apply_gc(gc, repo, root, wt)
+        self.assertEqual(effects, [])
+        self.assertEqual(result['deleted'], [])
+        self.unchanged_and_locked(repo, root, before)
+
+    def test_f6_clean_full_and_legitimate_absent_sparse_are_admissible(self):
+        for sparse in (False, True):
+            with self.subTest(sparse=sparse):
+                gc, repo, root, wt = self.gc_fixture('f6-clean-' + str(sparse), sparse=sparse)
+                if sparse:
+                    self.assertFalse((root / 'data/heavy.txt').exists())
+                before = self.snapshot(root)
+                self.classify_gc(gc, repo, wt)
+                self.assertEqual(wt.verdict, 'SAFE_MERGED')
+                result, effects = self.apply_gc(gc, repo, root, wt)
+                self.assertEqual([x[:2] for x in effects], [('worktree', 'unlock'), ('worktree', 'remove')])
+                self.assertEqual(result['deleted'], [])  # removal was intercepted
+                self.unchanged_and_locked(repo, root, before)
+
+    def test_f6_absent_skipped_included_file_is_not_legitimate_sparse_omission(self):
+        gc, repo, root, wt = self.gc_fixture('f6-hidden-deletion', sparse=True)
+        self.classify_gc(gc, repo, wt)
+        self.assertEqual(wt.verdict, 'SAFE_MERGED')
+        self.git(root, 'update-index', '--skip-worktree', 'src/code.py')
+        (root / 'src/code.py').unlink()
+        before = self.snapshot(root)
+        result, effects = self.apply_gc(gc, repo, root, wt)
+        self.assertEqual(effects, [])
+        self.assertEqual(result['deleted'], [])
+        self.unchanged_and_locked(repo, root, before)
+
+    def test_f6_unknown_index_config_or_rules_keeps_lock_at_both_gates(self):
+        for gate in ('classify', 'apply'):
+            for command in ('ls-files', 'config', 'check-rules'):
+                with self.subTest(gate=gate, command=command):
+                    gc, repo, root, wt = self.gc_fixture('f6-unknown-' + gate + command, sparse=True)
+                    self.classify_gc(gc, repo, wt)
+                    self.assertEqual(wt.verdict, 'SAFE_MERGED')
+                    before = self.snapshot(root)
+                    with self.failed_read(command):
+                        if gate == 'classify':
+                            self.classify_gc(gc, repo, wt)
+                            self.assertNotIn(wt.verdict, gc.SAFE_VERDICTS)
+                        result, effects = self.apply_gc(gc, repo, root, wt)
+                    self.assertEqual(effects, [])
+                    self.assertEqual(result['deleted'], [])
+                    self.unchanged_and_locked(repo, root, before)
+
+    def test_f6_unknown_materialization_stat_keeps_lock_at_both_gates(self):
+        original = Path.lstat
+        for gate in ('classify', 'apply'):
+            with self.subTest(gate=gate):
+                gc, repo, root, wt = self.gc_fixture('f6-stat-' + gate, sparse=True)
+                self.classify_gc(gc, repo, wt)
+                self.assertEqual(wt.verdict, 'SAFE_MERGED')
+                before = self.snapshot(root)
+                def denied(path, *args, **kwargs):
+                    if path == root / 'data':
+                        raise PermissionError('fixture inspection denied')
+                    return original(path, *args, **kwargs)
+                with patch.object(Path, 'lstat', denied):
+                    if gate == 'classify':
+                        self.classify_gc(gc, repo, wt)
+                        self.assertNotIn(wt.verdict, gc.SAFE_VERDICTS)
+                    result, effects = self.apply_gc(gc, repo, root, wt)
+                self.assertEqual(effects, [])
+                self.assertEqual(result['deleted'], [])
+                self.unchanged_and_locked(repo, root, before)
+
+    def test_f6_hidden_edit_during_final_status_still_blocks_unlock(self):
+        gc, repo, root, wt = self.gc_fixture('f6-last-boundary')
+        self.classify_gc(gc, repo, wt)
+        self.assertEqual(wt.verdict, 'SAFE_MERGED')
+        injected = []
+        def introduce_hidden_edit():
+            self.git(root, 'update-index', '--assume-unchanged', 'data/heavy.txt')
+            (root / 'data/heavy.txt').write_text('hidden after final status\n')
+            injected.append(self.snapshot(root))
+        result, effects = self.apply_gc(gc, repo, root, wt, after_status=introduce_hidden_edit)
+        self.assertEqual(len(injected), 1)
+        self.assertEqual(effects, [])
+        self.assertEqual(result['deleted'], [])
+        self.unchanged_and_locked(repo, root, injected[0])
+
+
 if __name__=='__main__': unittest.main()

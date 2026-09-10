@@ -581,6 +581,14 @@ def classify(
         wt.reasons.append("directory has no live worktree registration")
         return
 
+    if external:
+        index_safe = worktree_storage.materialized_index_safe(wt.path, allow_sparse=True)
+        if index_safe is not True:
+            wt.verdict = "ERROR" if index_safe is None else "DIRTY"
+            wt.reasons.append("external index inspection unavailable" if index_safe is None
+                              else "hidden or materialized index entries retained")
+            return
+
     clean = status_clean(wt)
     if clean is None:
         wt.verdict = "ERROR"
@@ -751,13 +759,23 @@ def apply_deletions(
             if wt.orphan or wt.verdict == "ORPHAN":
                 summary["errors"].append(f"{wt.path}: external orphan retained")
                 continue
+            # Inspect hidden flags before status can conceal/refresh them.
+            if worktree_storage.materialized_index_safe(wt.path, allow_sparse=True) is not True:
+                summary["errors"].append(f"{wt.path}: external index preservation guard refused")
+                continue
             rc, listing, err = _git(primary, "worktree", "list", "--porcelain")
             current = next((w for w in parse_worktree_list(listing) if w.path == wt.path), None)
-            rc2, status, _ = _git(wt.path, "status", "--porcelain", "--untracked-files=all")
+            rc2, status, _ = _git(wt.path, "--no-optional-locks", "-c", "core.fsmonitor=false",
+                                  "status", "--porcelain", "--untracked-files=all")
             procs = proc_cwd_map([wt.path])
             if (rc or rc2 or current is None or current.head != wt.head or status.strip()
                     or procs is None or any(ps for cwd, ps in procs.items() if _under(Path(cwd), wt.path))):
                 summary["errors"].append(f"{wt.path}: external deletion revalidation failed")
+                continue
+            # The report and even the preceding status/process reads can age.
+            # Recheck at the storage-owned unlock/removal boundary as well.
+            if worktree_storage.materialized_index_safe(wt.path, allow_sparse=True) is not True:
+                summary["errors"].append(f"{wt.path}: final external index preservation guard refused")
                 continue
             if current.locked:
                 if current.lock_reason != worktree_storage.LOCK_REASON:
