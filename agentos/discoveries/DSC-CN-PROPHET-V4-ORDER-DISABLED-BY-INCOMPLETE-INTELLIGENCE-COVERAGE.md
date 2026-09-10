@@ -1,48 +1,62 @@
 ---
 key: CN-PROPHET-V4-ORDER-DISABLED-BY-INCOMPLETE-INTELLIGENCE-COVERAGE
-claim: >
-  The 2026-09-07 cn_prophet_v4 output uses v3_coverage_fallback because four
-  raw-ineligible stocks have no_edge_evidence: 600038.SS, 600606.SS, 000069.SZ
-  and 603899.SS. The builder raw universe includes a breadth-cache source that
-  the Intelligence search/deep trajectory readers do not consume; these four
-  are absent from the latter two sources at the inspected immutable pin.
-falsifier: >
-  Run git show 19cad7eaa11ffeeb73c081ff3de84696ae2ee4e6:site/factordata/china_standouts.json
-  and inspect ranking.ordering plus ranking.input_coverage.intel_interest.
-  Read the candidate ledger at that same immutable commit with Python/pandas.
-  Filter stamp_date=2026-09-07 and
-  board_definition=cn_prophet_v4; a different missing set, eligible status, or
-  source availability disproves the pinned diagnosis. A later natural generation
-  with genuine complete input coverage and intel_order_active=true clears live
-  degradation, but neither a synthetic fixture nor a source merge proves that.
-so_what: >
-  Adopt source repair PR6992 and China recovery issue6866 instead of diagnosing
-  the four names again or building a new ranker. Preserve real zero versus
-  unavailable, reader precedence, raw-input provenance, current-session freshness
-  and the global coverage rule. Input restoration can activate a different global
-  ordering, so review and explicit serving activation remain separate from code.
+claim: 'The 2026-09-07 cn_prophet_v4 output uses v3_coverage_fallback because four raw-ineligible
+  stocks have no_edge_evidence: 600038.SS, 600606.SS, 000069.SZ and 603899.SS. The builder raw universe
+  includes a breadth-cache source that the Intelligence search/deep trajectory readers do not consume;
+  these four are absent from the latter two sources at the inspected immutable pin. The later September
+  9 board at immutable Macro34b1a66b0dc01155ca2812c31ce0a2e09114b2fe still uses cn_prophet_v3_score
+  with intel_order_active=false: 1618of1622 ranked rows measured and4no_edge_evidence. The latest
+  four identities were not separately reverified.'
+falsifier: 'Run git show 19cad7eaa11ffeeb73c081ff3de84696ae2ee4e6:site/factordata/china_standouts.json
+  and inspect ranking.ordering plus ranking.input_coverage.intel_interest. Read the candidate ledger
+  at that same immutable commit with Python/pandas. Filter stamp_date=2026-09-07 and board_definition=cn_prophet_v4;
+  a different missing set, eligible status, or source availability disproves the pinned diagnosis.
+  A later natural generation with genuine complete input coverage and intel_order_active=true clears
+  live degradation, but neither a synthetic fixture nor a source merge proves that. For the later
+  count, inspect that exact34b1 China board: differing1622total/1618measured/4missing, effectiveorder
+  or activeflag disproves only the later observation, not the datedSeptember7 identity proof.'
+so_what: 'Adopt source repair PR6992 and China recovery issue6866 instead of diagnosing the four names
+  again or building a new ranker. Preserve real zero versus unavailable, reader precedence, raw-input
+  provenance, current-session freshness and the global coverage rule. Input restoration can activate
+  a different global ordering, so review and explicit serving activation remain separate from code.
+
+  '
 kind: data
-verified_at: 2026-09-08
-verified_by: >
-  Read-only git show at Macro19cad7eaa11ffeeb73c081ff3de84696ae2ee4e6;
-  pandas filter of data/china_prophet_rank/candidates.parquet
-  (blob32485ef806c8de4c7af1ece2a4cf0e34287fd482) returned the four rows, each
-  raw_eligible=false, lane=not_raw_eligible, intel_basis=fallback_v3 and
-  intel_unavailable_reason=no_edge_evidence. PyArrow schema and member-index
-  reads found no search columns/rows; git ls-tree found no per-name deep files.
-  Source comparison of builder universe(), CII _trajectories and hub price
-  readers proves the source-universe mismatch. Current source/artifact paths
-  were byte-identical at 3d0703aa0bb473f8a198e8ed579aebf3b08bafa9.
+verified_at: '2026-09-10'
+verified_by: Read-only git show at Macro19cad7eaa11ffeeb73c081ff3de84696ae2ee4e6; pandas filter of
+  data/china_prophet_rank/candidates.parquet (blob32485ef806c8de4c7af1ece2a4cf0e34287fd482) returned
+  the four rows, each raw_eligible=false, lane=not_raw_eligible, intel_basis=fallback_v3 and intel_unavailable_reason=no_edge_evidence.
+  PyArrow schema and member-index reads found no search columns/rows; git ls-tree found no per-name
+  deep files. Source comparison of builder universe(), CII _trajectories and hub price readers proves
+  the source-universe mismatch. Current source/artifact paths were byte-identical at 3d0703aa0bb473f8a198e8ed579aebf3b08bafa9.
+  Later continuation read the exact September9 China board JSON at34b1a66b0dc01155ca2812c31ce0a2e09114b2fe;
+  SHA256 90093a0dade67f24cca9ca639061580d4f37f7e9fdd220565c09d412d19bebcc. Verified ranking.ordering
+  and ranking.input_coverage.intel_interest, not served order or current candidate identity records.
 scope:
-  - macro
-  - WS:CHINA-ALPHA-INTELLIGENCE
-  - WS:PROPHET-US-V4-RECOVERY
-  - engine/china_intel_interest.py
-  - scripts/build_china_library.py
-  - data/china_prophet_rank/candidates.parquet
-  - site/factordata/china_standouts.json
+- macro
+- WS:CHINA-ALPHA-INTELLIGENCE
+- WS:PROPHET-US-V4-RECOVERY
+- engine/china_intel_interest.py
+- scripts/build_china_library.py
+- data/china_prophet_rank/candidates.parquet
+- site/factordata/china_standouts.json
 confidence: verified
 ---
+
+# Latest pinned recovery observation — September 10, 2026
+
+The original four-name diagnosis remains tied to its September7 ledger and source pin. A separate read of the September9 board at34b1a66b0dc01155ca2812c31ce0a2e09114b2fe verifies1618measured of1622ranked rows,4missing no_edge_evidence, intel_order_active=false and effectivecn_prophet_v3_score. It does not independently verify the latest four identities. China source/session dates areSeptember9; the intelligence-order fallback is not a claim that the whole market feed is stale.
+
+Current implementation is still existing6992, sourcea51bae222eedd4c53f4101998f3a3c4bc103f554, built but not accepted into serving. Global ordering can change if inputs are repaired, so6866safety and controlled activation remain required. No fabricatedzero, missing-name deletion, alternate ranker or new data store.
+
+The companion four-market observation is now in section12of the existing forensic report. US majority price reach remainsSeptember4 despite newer individual inputs, and seven initially eligible names failed plan clock validation with zero newplans. An existing receipt nevertheless says every check passed; the bounded new copy operation stopped at its first denied regression append in6805/comment5611114826, preserving a clean prepared16b6worktree. It has no product patch or sourcePR. That specific write refusal is not absent tool capability; app permission was alreadyallow-all. The old test baseline44PASS/4FAIL contains inherited renderer-fixture drift and is not a successful newtest run.
+
+Upstream US evidence was delivered to existing staleness incident7005/comment5611131001; no duplicate rescue/host/runner owner or dispatch was created. A blocked later run-status read supplies no current execution result. Existing7023weekly code,6996copy source,6840audit repair proposal and mergedMastermind552remain intact; they are not undone by this observation. Source346, release554and actual browser/served proof remain distinct.
+
+The older sections below retain their historical state and next actions only. In particular, do not repeat source544/545alreadyprotected operations or treat older source/CI headlines as their current release status. The current protected procedural pin for this continuation is Mastermindf3f2d9155796876009f2d427bfdecc7ee7b63e74, Skillpack1.0.1/bootstrap1.
+
+---
+
 
 # Current recovery checkpoint — September 8, 2026
 
