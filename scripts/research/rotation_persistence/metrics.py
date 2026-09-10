@@ -372,16 +372,16 @@ def classify_temporal_shape(curve: Mapping[int, float | None]) -> dict:
     clean = {int(h): value for h, raw in curve.items() if (value := _finite(raw)) is not None}
     short_values = [clean[h] for h in (1, 2, 3, 5) if h in clean]
     long_values = [clean[h] for h in (10, 15, 20) if h in clean]
-    if len(short_values) < 2 or len(long_values) < 2:
+    short = float(np.median(short_values)) if len(short_values) >= 2 else None
+    long = float(np.median(long_values)) if len(long_values) >= 2 else None
+    if short is None or long is None:
         return {
             "label": "INSUFFICIENT_HISTORY",
-            "short_median": None,
-            "long_median": None,
+            "short_median": short,
+            "long_median": long,
             "n_short": len(short_values),
             "n_long": len(long_values),
         }
-    short = float(np.median(short_values))
-    long = float(np.median(long_values))
     if short <= -0.05 and long >= 0.05:
         label = "MULTI_SCALE"
     elif short <= -0.05 and long < 0.05:

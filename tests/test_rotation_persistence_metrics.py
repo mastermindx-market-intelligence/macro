@@ -233,3 +233,15 @@ def test_classify_temporal_shape_uses_frozen_thresholds(
     result = classify_temporal_shape(curve)
 
     assert result["label"] == expected
+
+
+def test_classify_temporal_shape_preserves_measured_side_when_other_side_is_thin() -> None:
+    result = classify_temporal_shape(
+        {1: -0.20, 2: -0.10, 3: -0.10, 5: -0.20, 10: 0.20}
+    )
+
+    assert result["label"] == "INSUFFICIENT_HISTORY"
+    assert result["short_median"] == pytest.approx(-0.15)
+    assert result["long_median"] is None
+    assert result["n_short"] == 4
+    assert result["n_long"] == 1
