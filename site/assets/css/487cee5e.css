@@ -222,8 +222,8 @@ tr.open .exp-btn{transform:rotate(90deg);color:var(--ink-info, var(--info))}
   color:color-mix(in srgb,var(--sc) 90%,var(--text));cursor:help;white-space:nowrap}
 .stagechip .glyph{width:16px;height:12px;flex:0 0 auto}
 .stagechip.st1{--sc:var(--s1)} .stagechip.st2{--sc:var(--s2)} .stagechip.st3{--sc:var(--s3)} .stagechip.st4{--sc:var(--s4)}
-.freshdot{width:6px;height:6px;border-radius:50%;background:var(--up);
-  box-shadow:0 0 0 3px color-mix(in srgb,var(--up) 22%,transparent);display:inline-block;margin-left:1px}
+.freshdot{width:6px;height:6px;border-radius:var(--r-pill, 999px);background:var(--ok);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--ok) 22%,transparent);display:inline-block;margin-left:1px}
 
 /* tag pills in table */
 .tagcell{display:inline-flex;gap:4px;flex-wrap:nowrap}

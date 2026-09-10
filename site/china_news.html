@@ -34,7 +34,7 @@
 <title>China Tape — Macro Dashboard</title>
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang');if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css?v=63df1679">
-<link rel="stylesheet" href="assets/css/32655cfe.css?v=32655cfe">
+<link rel="stylesheet" href="assets/css/00738b9b.css?v=00738b9b">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
 <link rel="preload" as="style" href="navigation-refresh.css?v=c299c324">
 
@@ -184,6 +184,7 @@
         </div>
         <a href="intl_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet cross-market · sectors</span><span class="l-zh">Prophet 跨市场 · 板块</span></span></a>
         <a href="baskets_intl.html"><span class="submenu-icon submenu-icon-baskets" aria-hidden="true"></span><span class="l-en">Thematic Baskets</span><span class="l-zh">主题篮子</span><span class="d"><span class="l-en">Cross-country theme baskets · ex-US</span><span class="l-zh">跨国主题篮子 · 除美</span></span></a>
+        <a href="sanctions_map.html"><span class="submenu-icon submenu-icon-policy" aria-hidden="true"></span><span class="l-en">Sanctions Map</span><span class="l-zh">制裁地图</span><span class="d"><span class="l-en">Where US sanctions point · OFAC public list</span><span class="l-zh">美国制裁指向何处 · OFAC 公开名单</span></span></a>
       </div>
     </div>
     <div class="nav-dd">
@@ -313,8 +314,8 @@
       
       
       <p class="cn-lead">
-        <span class="l-en"><b>24</b> stories cleared the macro filter; official policy tone leans cautious. <b>13</b> rated high-impact, led by <b>equity market</b>.</span>
-        <span class="l-zh"><b>24</b> 条通过宏观筛选；官方政策基调偏谨慎。其中 <b>13</b> 条高影响，主导<b>股票市场</b>。</span>
+        <span class="l-en"><b>24</b> stories cleared the macro filter; official policy tone leans cautious. <b>17</b> rated high-impact, led by <b>consumer</b>.</span>
+        <span class="l-zh"><b>24</b> 条通过宏观筛选；官方政策基调偏谨慎。其中 <b>17</b> 条高影响，主导<b>消费</b>。</span>
       </p>
       <p class="cn-asof"><span class="l-en">As of</span><span class="l-zh">截至</span>  · <span class="l-en">context, not trade calls</span><span class="l-zh">仅供参考，非交易信号</span></p>
       <div class="cn-glance">
@@ -322,8 +323,8 @@
         
         <span class="cn-gchip st-cautious"><span class="dot"></span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span> <b><span class="l-en">leans cautious</span><span class="l-zh">偏谨慎</span></b></span>
         
-        <span class="cn-gchip hot"><span class="dot"></span><b>13</b> <span class="l-en">high-impact</span><span class="l-zh">高影响</span></span>
-        <span class="cn-gchip led th-monetary"><span class="dot"></span><span class="l-en">Led by</span><span class="l-zh">主导</span> <b><span class="l-en">equity market</span><span class="l-zh">股票市场</span></b></span>
+        <span class="cn-gchip hot"><span class="dot"></span><b>17</b> <span class="l-en">high-impact</span><span class="l-zh">高影响</span></span>
+        <span class="cn-gchip led th-monetary"><span class="dot"></span><span class="l-en">Led by</span><span class="l-zh">主导</span> <b><span class="l-en">consumer</span><span class="l-zh">消费</span></b></span>
         <span class="cn-gchip"><b>24</b> <span class="l-en">on the tape</span><span class="l-zh">条在流</span></span>
         <span class="cn-gchip hidden" id="fresh"><span class="dot" style="background:var(--up)"></span><span id="fresh-t"></span></span>
       </div>
@@ -364,34 +365,34 @@
         <div class="mx-row th-monetary">
           <span class="mx-name"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
           <span class="mx-bar"><i style="width:100%"></i></span>
-          <span class="mx-n">9</span>
-        </div>
-        
-        
-        <div class="mx-row th-markets">
-          <span class="mx-name"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-          <span class="mx-bar"><i style="width:67%"></i></span>
           <span class="mx-n">6</span>
         </div>
         
         
         <div class="mx-row th-inflation">
           <span class="mx-name"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
-          <span class="mx-bar"><i style="width:33%"></i></span>
+          <span class="mx-bar"><i style="width:83%"></i></span>
+          <span class="mx-n">5</span>
+        </div>
+        
+        
+        <div class="mx-row th-policy">
+          <span class="mx-name"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+          <span class="mx-bar"><i style="width:67%"></i></span>
+          <span class="mx-n">4</span>
+        </div>
+        
+        
+        <div class="mx-row th-markets">
+          <span class="mx-name"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+          <span class="mx-bar"><i style="width:50%"></i></span>
           <span class="mx-n">3</span>
         </div>
         
         
-        <div class="mx-row th-growth">
-          <span class="mx-name"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
-          <span class="mx-bar"><i style="width:22%"></i></span>
-          <span class="mx-n">2</span>
-        </div>
-        
-        
-        <div class="mx-row th-tech">
-          <span class="mx-name"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
-          <span class="mx-bar"><i style="width:22%"></i></span>
+        <div class="mx-row th-credit">
+          <span class="mx-name"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+          <span class="mx-bar"><i style="width:33%"></i></span>
           <span class="mx-n">2</span>
         </div>
         
@@ -433,11 +434,68 @@
       <div class="tp-feed" id="feed">
         
         
-        <a class="tp-item th-monetary lead" href="https://wallstreetcn.com/livenews/3162578" target="_blank" rel="noopener"
+        <a class="tp-item th-inflation lead" href="https://wallstreetcn.com/livenews/3162850" target="_blank" rel="noopener"
+           data-theme="inflation" data-importance="high"
+           data-search="华尔街见闻早餐 | 2026年9月10日 wallstreetcn breakfast | september 10, 2026 华尔街见闻早餐 | 2026年9月10日 油价破百叠加通胀数据前夕，美股三连跌，meta逆势大涨6%，美债全线走低。 震撼大手笔落空，美财政部长债回购三倍扩容，60亿仅达预期低端，10年期美债收益率升破4.84%、创2023年11月以来新高。 特朗普称美国中选后伊朗战事会“立即”结束。伊朗宣布设立新的海上”制裁区域”并袭击美军基地，美军打击伊朗油轮，中东局势升级推动布伦特原油一个多月来首次站上100美元、收报101.21美元。 中国商务部：美方ai蒸馏指控是推行科技霸权、搞算力垄断，中方坚决反对。 中国8月cpi同比涨幅扩大至0.8%、ppi同比涨3.8%，双双环比转正，国际油价与食品季节性上涨 oil breaks above $100, combined with the eve of inflation data, us stocks fall for a third straight day, meta bucks the trend with a 6% surge, us treasuries decline across the board. a much-anticipated blockbuster move falls flat as the us treasury secretary triples the size of long-bond buybacks, with $6 billion only reaching the low end of expectations; the 10-year us treasury yield rises above 4.84%, hitting a new high since november 2023. trump says the iran war will end "immediately" after the us midterms. iran announces the establishment of a new maritime "sanctions zone" and attacks a us military base; us forces strike iranian oil tankers; escalating middle east tensions push brent crude above $100 for the first time in over a month, closing at $101.21. china's ministry of commerce: the us allegation of ai distillation is an exercise of technological hegemony and computing-power monopoly, which china firmly opposes. china's august cpi year-on-year rise widens to 0.8%, ppi up 3.8% year-on-year, both turning positive month-on-month, driven by international oil prices and seasonal food price increases. 油价破百叠加通胀数据前夕，美股三连跌，meta逆势大涨6%，美债全线走低。 震撼大手笔落空，美财政部长债回购三倍扩容，60亿仅达预期低端，10年期美债收益率升破4.84%、创2023年11月以来新高。 特朗普称美国中选后伊朗战事会“立即”结束。伊朗宣布设立新的海上”制裁区域”并袭击美军基地，美军打击伊朗油轮，中东局势升级推动布伦特原油一个多月来首次站上100美元、收报101.21美元。 中国商务部：美方ai蒸馏指控是推行科技霸权、搞算力垄断，中方坚决反对。 中国8月cpi同比涨幅扩大至0.8%、ppi同比涨3.8%，双双环比转正，国际油价与食品季节性上涨 华尔街见闻 consumer fiscal_trade tech_policy commodities consumer 消费 fiscal & trade 财政与贸易 tech policy 科技政策 commodities 大宗商品 cbon">
+          <time class="tp-when" data-t="2026-09-09T23:15:08+00:00" datetime="2026-09-09T23:15:08+00:00">09-09<br>23:15</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T23:15:08+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>100</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Wallstreetcn Breakfast | September 10, 2026</span><span class="l-zh">华尔街见闻早餐 | 2026年9月10日</span></h2>
+            <p class="tp-sum"><span class="l-en">Oil breaks above $100, combined with the eve of inflation data, US stocks fall for a third straight day, Meta bucks the trend with a 6% surge, US Treasuries decline across the board. A much-anticipated blockbuster move falls flat as the US Treasury Secretary triples the size of long-bond buybacks, with $6 billion only reaching the low end of expectations; the 10-year US Treasury yield rises above 4.84%, hitting a new high since November 2023. Trump says the Iran war will end "immediately" after the US midterms. Iran announces the establishment of a new maritime "sanctions zone" and attacks a US military base; US forces strike Iranian oil tankers; escalating Middle East tensions push Brent crude above $100 for the first time in over a month, closing at $101.21. China's Ministry of Commerce: the US allegation of AI distillation is an exercise of technological hegemony and computing-power monopoly, which China firmly opposes. China's August CPI year-on-year rise widens to 0.8%, PPI up 3.8% year-on-year, both turning positive month-on-month, driven by international oil prices and seasonal food price increases.</span><span class="l-zh">油价破百叠加通胀数据前夕，美股三连跌，Meta逆势大涨6%，美债全线走低。 震撼大手笔落空，美财政部长债回购三倍扩容，60亿仅达预期低端，10年期美债收益率升破4.84%、创2023年11月以来新高。 特朗普称美国中选后伊朗战事会“立即”结束。伊朗宣布设立新的海上”制裁区域”并袭击美军基地，美军打击伊朗油轮，中东局势升级推动布伦特原油一个多月来首次站上100美元、收报101.21美元。 中国商务部：美方AI蒸馏指控是推行科技霸权、搞算力垄断，中方坚决反对。 中国8月CPI同比涨幅扩大至0.8%、PPI同比涨3.8%，双双环比转正，国际油价与食品季节性上涨</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-cchip"><span class="l-en">commodities</span><span class="l-zh">大宗商品</span></span><span class="cn-tk">CBON</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3162839" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="high"
+           data-search="定向可转债市场化改革提速，在房地产行业应用场景有望进一步丰富 market-oriented reform of targeted convertible bonds accelerates, application scenarios in the real estate sector are expected to be further enriched 定向可转债市场化改革提速，在房地产行业应用场景有望进一步丰富 中国证监会8月底发布《关于资本市场支持构建房地产发展新模式的意见》，支持上市房企通过向特定对象发行方式再融资，并支持上市房企综合运用股份、定向可转债、现金等工具收购涉房资产。从已发行案例看，定向可转债在并购重组中主要扮演兼具债底保护与股性弹性的创新支付工具角色。业内人士认为，在房地产领域，定向可转债此前主要承担项目融资功能，未来随着行业并购需求上升，其在房地产行业中的应用场景有望进一步丰富。业内人士表示，今年已披露预案的定向可转债已达12只，远高于去年同期，具备发行扩容的基础。（上证报） at the end of august, the china securities regulatory commission (csrc) issued the "opinions on supporting the construction of a new model for real estate development in the capital market," supporting listed real estate companies to refinance through targeted issuance to specific investors, and supporting listed real estate companies to comprehensively use tools such as shares, targeted convertible bonds and cash to acquire real-estate-related assets. based on issued cases, targeted convertible bonds mainly play the role of an innovative payment tool combining debt-floor protection and equity-like flexibility in m&a and restructuring. industry insiders believe that in the real estate sector, targeted convertible bonds previously mainly served a project financing function, and in the future, as industry m&a demand rises, their application scenarios in the real estate industry are expected to be further enriched. industry insiders say that 12 targeted convertible bonds have already disclosed preliminary plans this year, far exceeding the same period last year, providing a foundation for issuance expansion. (shanghai securities news) 中国证监会8月底发布《关于资本市场支持构建房地产发展新模式的意见》，支持上市房企通过向特定对象发行方式再融资，并支持上市房企综合运用股份、定向可转债、现金等工具收购涉房资产。从已发行案例看，定向可转债在并购重组中主要扮演兼具债底保护与股性弹性的创新支付工具角色。业内人士认为，在房地产领域，定向可转债此前主要承担项目融资功能，未来随着行业并购需求上升，其在房地产行业中的应用场景有望进一步丰富。业内人士表示，今年已披露预案的定向可转债已达12只，远高于去年同期，具备发行扩容的基础。（上证报） 华尔街见闻 property markets property 房地产 equity market 股票市场 510300.ss 512200.ss">
+          <time class="tp-when" data-t="2026-09-09T22:37:05+00:00" datetime="2026-09-09T22:37:05+00:00">09-09<br>22:37</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T22:37:05+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>96</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Market-oriented reform of targeted convertible bonds accelerates, application scenarios in the real estate sector are expected to be further enriched</span><span class="l-zh">定向可转债市场化改革提速，在房地产行业应用场景有望进一步丰富</span></h2>
+            <p class="tp-sum"><span class="l-en">At the end of August, the China Securities Regulatory Commission (CSRC) issued the "Opinions on Supporting the Construction of a New Model for Real Estate Development in the Capital Market," supporting listed real estate companies to refinance through targeted issuance to specific investors, and supporting listed real estate companies to comprehensively use tools such as shares, targeted convertible bonds and cash to acquire real-estate-related assets. Based on issued cases, targeted convertible bonds mainly play the role of an innovative payment tool combining debt-floor protection and equity-like flexibility in M&A and restructuring. Industry insiders believe that in the real estate sector, targeted convertible bonds previously mainly served a project financing function, and in the future, as industry M&A demand rises, their application scenarios in the real estate industry are expected to be further enriched. Industry insiders say that 12 targeted convertible bonds have already disclosed preliminary plans this year, far exceeding the same period last year, providing a foundation for issuance expansion. (Shanghai Securities News)</span><span class="l-zh">中国证监会8月底发布《关于资本市场支持构建房地产发展新模式的意见》，支持上市房企通过向特定对象发行方式再融资，并支持上市房企综合运用股份、定向可转债、现金等工具收购涉房资产。从已发行案例看，定向可转债在并购重组中主要扮演兼具债底保护与股性弹性的创新支付工具角色。业内人士认为，在房地产领域，定向可转债此前主要承担项目融资功能，未来随着行业并购需求上升，其在房地产行业中的应用场景有望进一步丰富。业内人士表示，今年已披露预案的定向可转债已达12只，远高于去年同期，具备发行扩容的基础。（上证报）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">510300.SS</span><span class="cn-tk">512200.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-credit" href="https://news.10jqka.com.cn/20260910/c679762276.shtml" target="_blank" rel="noopener"
+           data-theme="credit" data-importance="high"
+           data-search="经济日报金观平：注资金融央企固根基利长远 economic daily jin guanping: injecting capital into financial central soes solidifies the foundation and benefits the long term 经济日报金观平：注资金融央企固根基利长远 经济日报金观平刊文称，作为国民经济的血脉，金融是国家核心竞争力的重要组成部分。发行特别国债支持有关中央金融企业补充资本，是未雨绸缪的前瞻性安排、强本固基的长远之举，对建设金融强国、助力宏观经济平稳运行意义重大。2025年，财政部发行5000亿元特别国债，支持中国银行、建设银行、交通银行、邮储银行补充核心一级资本，4家银行核心一级资本充足率提升约0.5个至1.4个百分点，稳健经营能力、信贷投放能力和风险抵御能力显著增强，充分显示出增资效果。今年再次进行注资，反映了国家持续强力支持中央金融企业当好服务实体经济的主力军、维护金融稳定的压舱石。服务实体经济是金融 economic daily's jin guanping published an article stating that as the lifeblood of the national economy, finance is an important component of a country's core competitiveness. issuing special government bonds to support relevant central financial enterprises in replenishing capital is a forward-looking arrangement to prepare for bad times and a long-term move to strengthen the foundation, and is of great significance for building a financial powerhouse and helping the macroeconomy run smoothly. in 2025, the ministry of finance issued 500 billion yuan of special government bonds to support bank of china, china construction bank, bank of communications and postal savings bank of china in replenishing core tier-1 capital. the core tier-1 capital adequacy ratios of the four banks rose by about 0.5 to 1.4 percentage points, significantly enhancing their prudent operating capacity, credit lending capacity and risk resistance, fully demonstrating the effect of the capital injection. another capital injection this year reflects the state's continued strong support for central financial enterprises to serve as the main force in serving the real economy and the ballast stone for maintaining financial stability. serving the real economy is what finance 经济日报金观平刊文称，作为国民经济的血脉，金融是国家核心竞争力的重要组成部分。发行特别国债支持有关中央金融企业补充资本，是未雨绸缪的前瞻性安排、强本固基的长远之举，对建设金融强国、助力宏观经济平稳运行意义重大。2025年，财政部发行5000亿元特别国债，支持中国银行、建设银行、交通银行、邮储银行补充核心一级资本，4家银行核心一级资本充足率提升约0.5个至1.4个百分点，稳健经营能力、信贷投放能力和风险抵御能力显著增强，充分显示出增资效果。今年再次进行注资，反映了国家持续强力支持中央金融企业当好服务实体经济的主力军、维护金融稳定的压舱石。服务实体经济是金融 同花顺 credit_impulse fiscal_trade credit & financing 信贷与社融 fiscal & trade 财政与贸易 cbon 512800.ss">
+          <time class="tp-when" data-t="2026-09-10T00:07:46+00:00" datetime="2026-09-10T00:07:46+00:00">09-10<br>00:07</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10T00:07:46+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+              <span class="cn-src">同花顺</span>
+              <span class="cn-imp imp-high"><b>90</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Economic Daily Jin Guanping: Injecting capital into financial central SOEs solidifies the foundation and benefits the long term</span><span class="l-zh">经济日报金观平：注资金融央企固根基利长远</span></h2>
+            <p class="tp-sum"><span class="l-en">Economic Daily's Jin Guanping published an article stating that as the lifeblood of the national economy, finance is an important component of a country's core competitiveness. Issuing special government bonds to support relevant central financial enterprises in replenishing capital is a forward-looking arrangement to prepare for bad times and a long-term move to strengthen the foundation, and is of great significance for building a financial powerhouse and helping the macroeconomy run smoothly. In 2025, the Ministry of Finance issued 500 billion yuan of special government bonds to support Bank of China, China Construction Bank, Bank of Communications and Postal Savings Bank of China in replenishing core tier-1 capital. The core tier-1 capital adequacy ratios of the four banks rose by about 0.5 to 1.4 percentage points, significantly enhancing their prudent operating capacity, credit lending capacity and risk resistance, fully demonstrating the effect of the capital injection. Another capital injection this year reflects the state's continued strong support for central financial enterprises to serve as the main force in serving the real economy and the ballast stone for maintaining financial stability. Serving the real economy is what finance</span><span class="l-zh">经济日报金观平刊文称，作为国民经济的血脉，金融是国家核心竞争力的重要组成部分。发行特别国债支持有关中央金融企业补充资本，是未雨绸缪的前瞻性安排、强本固基的长远之举，对建设金融强国、助力宏观经济平稳运行意义重大。2025年，财政部发行5000亿元特别国债，支持中国银行、建设银行、交通银行、邮储银行补充核心一级资本，4家银行核心一级资本充足率提升约0.5个至1.4个百分点，稳健经营能力、信贷投放能力和风险抵御能力显著增强，充分显示出增资效果。今年再次进行注资，反映了国家持续强力支持中央金融企业当好服务实体经济的主力军、维护金融稳定的压舱石。服务实体经济是金融</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">credit & financing</span><span class="l-zh">信贷与社融</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">CBON</span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://wallstreetcn.com/livenews/3162835" target="_blank" rel="noopener"
            data-theme="monetary" data-importance="high"
-           data-search="国家发展改革委召开“六张网”重大项目协调推进会 研究加强要素保障工作 ndrc convenes coordinated promotion meeting for major projects across 'six networks'; studies strengthening factor guarantees 国家发展改革委召开“六张网”重大项目协调推进会 研究加强要素保障工作 近日，国家发展改革委党组成员、副主任岳修虎同志主持召开“六张网”重大项目协调推进会，研究加强要素保障工作。会议提出，要充分发挥各级要素保障机制作用，主动加强与项目单位的对接，精准高效做好用地、用海、环评等要素保障，共同推动“六张网”重大项目加快落地实施。国家发展改革委、财政部、自然资源部、生态环境部、中国人民银行、国家能源局、国家数据局、国家林草局有关司局负责同志参加会议。 yue xiuhu, deputy director of the national development and reform commission, recently chaired a coordination meeting on major projects under the "six networks" initiative, focusing on strengthening factor support. the meeting emphasized leveraging factor guarantee mechanisms at all levels, proactively coordinating with project units, and providing precise and efficient support for land, sea use, and environmental assessments to accelerate project implementation. officials from the ndrc, ministry of finance, ministry of natural resources, ministry of ecology and environment, people's bank of china, national energy administration, national data administration, and national forestry and grassland administration attended. 近日，国家发展改革委党组成员、副主任岳修虎同志主持召开“六张网”重大项目协调推进会，研究加强要素保障工作。会议提出，要充分发挥各级要素保障机制作用，主动加强与项目单位的对接，精准高效做好用地、用海、环评等要素保障，共同推动“六张网”重大项目加快落地实施。国家发展改革委、财政部、自然资源部、生态环境部、中国人民银行、国家能源局、国家数据局、国家林草局有关司局负责同志参加会议。 华尔街见闻 pboc_liquidity fiscal_trade pboc & liquidity 央行与流动性 fiscal & trade 财政与贸易 512800.ss">
-          <time class="tp-when" data-t="2026-09-09T11:27:19+00:00" datetime="2026-09-09T11:27:19+00:00">09-09<br>11:27</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T11:27:19+00:00"></span></div>
+           data-search="提醒：日内请重点关注（以下均为北京时间） reminder: key events to watch today (all in beijing time) 提醒：日内请重点关注（以下均为北京时间） ① 时间待定 日本央行审议委员kazuyuki masu（增一行）讲话； ② 时间待定 deepseek可能会正式发布v4.1 flash模型，亚太经合组织(apec)第16届能源部长会议举行（至9月11日）； ③ 13:30 台积电公布8月份营业额报告； ④ 14:00 德国8月cpi终值； ⑤ 15:00 国新办就金融领域贯彻落实“十五五”规划、推动金融强国建设有关情况举行新闻发布会； ⑥ 19:00 土耳其央行公布利率决议； ⑦ 时间待定 石油输出国组织（opec，欧佩克）公布月度原油市场报告； ⑧ 20:15 欧洲央行公布利率决议（含主要再融资利 ① time tbd: speech by bank of japan policy board member kazuyuki masu; ② time tbd: deepseek may officially release the v4.1 flash model; the 16th apec energy ministerial meeting is held (through september 11); ③ 13:30: tsmc releases its august revenue report; ④ 14:00: germany's august final cpi; ⑤ 15:00: the state council information office holds a press conference on the financial sector's implementation of the "15th five-year plan" and promoting the building of a financial powerhouse; ⑥ 19:00: turkey's central bank announces its interest rate decision; ⑦ time tbd: opec publishes its monthly crude oil market report; ⑧ 20:15: the european central bank announces its interest rate decision (including the main refinancing ① 时间待定 日本央行审议委员kazuyuki masu（增一行）讲话； ② 时间待定 deepseek可能会正式发布v4.1 flash模型，亚太经合组织(apec)第16届能源部长会议举行（至9月11日）； ③ 13:30 台积电公布8月份营业额报告； ④ 14:00 德国8月cpi终值； ⑤ 15:00 国新办就金融领域贯彻落实“十五五”规划、推动金融强国建设有关情况举行新闻发布会； ⑥ 19:00 土耳其央行公布利率决议； ⑦ 时间待定 石油输出国组织（opec，欧佩克）公布月度原油市场报告； ⑧ 20:15 欧洲央行公布利率决议（含主要再融资利 华尔街见闻 pboc_liquidity consumer commodities pboc & liquidity 央行与流动性 consumer 消费 commodities 大宗商品 ">
+          <time class="tp-when" data-t="2026-09-09T22:30:30+00:00" datetime="2026-09-09T22:30:30+00:00">09-09<br>22:30</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T22:30:30+00:00"></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
@@ -445,66 +503,47 @@
               <span class="cn-src">华尔街见闻</span>
               <span class="cn-imp imp-high"><b>90</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">NDRC convenes coordinated promotion meeting for major projects across 'six networks'; studies strengthening factor guarantees</span><span class="l-zh">国家发展改革委召开“六张网”重大项目协调推进会 研究加强要素保障工作</span></h2>
-            <p class="tp-sum"><span class="l-en">Yue Xiuhu, Deputy Director of the National Development and Reform Commission, recently chaired a coordination meeting on major projects under the "six networks" initiative, focusing on strengthening factor support. The meeting emphasized leveraging factor guarantee mechanisms at all levels, proactively coordinating with project units, and providing precise and efficient support for land, sea use, and environmental assessments to accelerate project implementation. Officials from the NDRC, Ministry of Finance, Ministry of Natural Resources, Ministry of Ecology and Environment, People's Bank of China, National Energy Administration, National Data Administration, and National Forestry and Grassland Administration attended.</span><span class="l-zh">近日，国家发展改革委党组成员、副主任岳修虎同志主持召开“六张网”重大项目协调推进会，研究加强要素保障工作。会议提出，要充分发挥各级要素保障机制作用，主动加强与项目单位的对接，精准高效做好用地、用海、环评等要素保障，共同推动“六张网”重大项目加快落地实施。国家发展改革委、财政部、自然资源部、生态环境部、中国人民银行、国家能源局、国家数据局、国家林草局有关司局负责同志参加会议。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">512800.SS</span></div>
+            <h2 class="tp-title"><span class="l-en">Reminder: Key events to watch today (all in Beijing time)</span><span class="l-zh">提醒：日内请重点关注（以下均为北京时间）</span></h2>
+            <p class="tp-sum"><span class="l-en">① Time TBD: Speech by Bank of Japan Policy Board member Kazuyuki Masu; ② Time TBD: DeepSeek may officially release the V4.1 Flash model; the 16th APEC Energy Ministerial Meeting is held (through September 11); ③ 13:30: TSMC releases its August revenue report; ④ 14:00: Germany's August final CPI; ⑤ 15:00: The State Council Information Office holds a press conference on the financial sector's implementation of the "15th Five-Year Plan" and promoting the building of a financial powerhouse; ⑥ 19:00: Turkey's central bank announces its interest rate decision; ⑦ Time TBD: OPEC publishes its monthly crude oil market report; ⑧ 20:15: The European Central Bank announces its interest rate decision (including the main refinancing</span><span class="l-zh">① 时间待定 日本央行审议委员Kazuyuki Masu（增一行）讲话； ② 时间待定 DeepSeek可能会正式发布V4.1 Flash模型，亚太经合组织(APEC)第16届能源部长会议举行（至9月11日）； ③ 13:30 台积电公布8月份营业额报告； ④ 14:00 德国8月CPI终值； ⑤ 15:00 国新办就金融领域贯彻落实“十五五”规划、推动金融强国建设有关情况举行新闻发布会； ⑥ 19:00 土耳其央行公布利率决议； ⑦ 时间待定 石油输出国组织（OPEC，欧佩克）公布月度原油市场报告； ⑧ 20:15 欧洲央行公布利率决议（含主要再融资利</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">commodities</span><span class="l-zh">大宗商品</span></span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-monetary" href="https://www.stcn.com/article/detail/4178294.html" target="_blank" rel="noopener"
-           data-theme="monetary" data-importance="high"
-           data-search="重要发布会就在明日，央行、金融监管总局、证监会、外汇局相关负责人将介绍情况 key press conference tomorrow: pboc, financial regulators, csrc, and safe officials to brief on the situation 重要发布会就在明日，央行、金融监管总局、证监会、外汇局相关负责人将介绍情况    证券时报 pboc_liquidity markets pboc & liquidity 央行与流动性 equity market 股票市场 512880.ss">
-          <time class="tp-when" data-t="" >—</time>
-          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+        <a class="tp-item th-growth" href="https://flash.jin10.com/detail/20260910083500367800" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="【a股温度计】股债性价比指标维持在逾一年高位水平 【a-share thermometer】the stock-bond cost-performance indicator remains at a level above one-year high 【a股温度计】股债性价比指标维持在逾一年高位水平 9月9日，巴菲特指数（沪深300市值/gdp）反弹至92.67%，近期一直维持窄幅波动状态。股债性价比指标——沪深300指数股权风险溢价（erp）为5.67%，维持在2025年8月15日的高点水平附近；从大周期来看该指标从过去五年波动区间下端逐步向中间区域靠近，暗示目前股市相对国债收益的优势有所上升，回归中性水平。 <br/>--------<br/>注：1、巴菲特指数是通过将股市总市值和gdp来比较，判断目前股市是否高估，通常70-100%为正常估值，低于该区间为低估，高于该区间为高估。<br/>2、沪深300指数风险溢价（erp）主要对比沪深300收 on september 9, the buffett indicator (csi 300 market capitalization/gdp) rebounded to 92.67%, having recently remained in a state of narrow fluctuation. the stock-bond cost-effectiveness indicator—the csi 300 index equity risk premium (erp)—stood at 5.67%, remaining near its high point of august 15, 2025; from a major-cycle perspective, the indicator has gradually moved from the lower end of its past five-year fluctuation range toward the middle, suggesting that the advantage of stocks relative to government bond yields has risen somewhat and returned to a neutral level. <br/>--------<br/>note: 1. the buffett indicator compares total stock market capitalization with gdp to judge whether the stock market is currently overvalued; normally 70-100% is a reasonable valuation, below that range is undervalued, and above that range is overvalued.<br/>2. the csi 300 index risk premium (erp) mainly compares csi 300 closing 9月9日，巴菲特指数（沪深300市值/gdp）反弹至92.67%，近期一直维持窄幅波动状态。股债性价比指标——沪深300指数股权风险溢价（erp）为5.67%，维持在2025年8月15日的高点水平附近；从大周期来看该指标从过去五年波动区间下端逐步向中间区域靠近，暗示目前股市相对国债收益的优势有所上升，回归中性水平。 <br/>--------<br/>注：1、巴菲特指数是通过将股市总市值和gdp来比较，判断目前股市是否高估，通常70-100%为正常估值，低于该区间为低估，高于该区间为高估。<br/>2、沪深300指数风险溢价（erp）主要对比沪深300收 金十数据 markets equity market 股票市场 510300.ss ashr cbon">
+          <time class="tp-when" data-t="2026-09-10T08:35:00+08:00" datetime="2026-09-10T08:35:00+08:00">09-10<br>08:35</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10T08:35:00+08:00"></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
-              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
-              <span class="cn-src">证券时报</span>
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">金十数据</span>
               <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">Key press conference tomorrow: PBOC, financial regulators, CSRC, and SAFE officials to brief on the situation</span><span class="l-zh">重要发布会就在明日，央行、金融监管总局、证监会、外汇局相关负责人将介绍情况</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+            <h2 class="tp-title"><span class="l-en">【A-share Thermometer】The stock-bond cost-performance indicator remains at a level above one-year high</span><span class="l-zh">【A股温度计】股债性价比指标维持在逾一年高位水平</span></h2>
+            <p class="tp-sum"><span class="l-en">On September 9, the Buffett Indicator (CSI 300 market capitalization/GDP) rebounded to 92.67%, having recently remained in a state of narrow fluctuation. The stock-bond cost-effectiveness indicator—the CSI 300 Index equity risk premium (ERP)—stood at 5.67%, remaining near its high point of August 15, 2025; from a major-cycle perspective, the indicator has gradually moved from the lower end of its past five-year fluctuation range toward the middle, suggesting that the advantage of stocks relative to government bond yields has risen somewhat and returned to a neutral level. <br/>--------<br/>Note: 1. The Buffett Indicator compares total stock market capitalization with GDP to judge whether the stock market is currently overvalued; normally 70-100% is a reasonable valuation, below that range is undervalued, and above that range is overvalued.<br/>2. The CSI 300 Index risk premium (ERP) mainly compares CSI 300 closing</span><span class="l-zh">9月9日，巴菲特指数（沪深300市值/GDP）反弹至92.67%，近期一直维持窄幅波动状态。股债性价比指标——沪深300指数股权风险溢价（ERP）为5.67%，维持在2025年8月15日的高点水平附近；从大周期来看该指标从过去五年波动区间下端逐步向中间区域靠近，暗示目前股市相对国债收益的优势有所上升，回归中性水平。 <br/>--------<br/>注：1、巴菲特指数是通过将股市总市值和GDP来比较，判断目前股市是否高估，通常70-100%为正常估值，低于该区间为低估，高于该区间为高估。<br/>2、沪深300指数风险溢价（ERP）主要对比沪深300收</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">510300.SS</span><span class="cn-tk">ASHR</span><span class="cn-tk">CBON</span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-monetary" href="https://news.futunn.com/flash/20726871/foreign-investors-remain-bullish-on-the-long-term-trend-of" target="_blank" rel="noopener"
+        <a class="tp-item th-monetary" href="https://news.futunn.com/flash/20729083/a-major-press-conference-regarding-the-building-of-a-strong" target="_blank" rel="noopener"
            data-theme="monetary" data-importance="high"
-           data-search="外资看好a股长期趋势 foreign investors upbeat on a-shares' long-term prospects 外资看好a股长期趋势 随着上市公司2026年半年报披露完毕，qfii最新持仓也浮出水面。数据显示，2026年中报披露完毕，共有52家qfii出现在1724家a股公司的前十大流通股东名单中，持仓市值合计超过3400亿元，较一季度末增加超1917亿元。从持股变化来看，相较一季度末，qfii新进950只个股、增持379只、减持371只。从最新持仓变化来看，海外投资者对中国市场的关注度明显回升。业内人士认为，政策落地效果、上市公司盈利变化以及海外利率等因素，仍将影响外资的阶段性配置节奏。但从中长期看，随着中国资本市场开放机制进一步完善，以及更多优质资产持续涌现，人民币资产对境外长期资 with the completion of 2026 interim report disclosures, qfii latest holdings have emerged. data shows 52 qfiis appeared among the top ten circulating shareholders of 1,724 a-share companies, with total holdings exceeding 340 billion yuan, up over 191.7 billion yuan from end-q1. compared to q1-end, qfiis newly entered 950 stocks, increased stakes in 379, and reduced in 371. the shifts indicate overseas investors' renewed interest in the chinese market. insiders note that policy implementation effects, corporate earnings changes, and overseas interest rates will still influence foreign capital's phased allocation pace, but long-term, improved capital market opening mechanisms and more quality assets will sustain rmb assets' appeal to overseas long-term investors. 随着上市公司2026年半年报披露完毕，qfii最新持仓也浮出水面。数据显示，2026年中报披露完毕，共有52家qfii出现在1724家a股公司的前十大流通股东名单中，持仓市值合计超过3400亿元，较一季度末增加超1917亿元。从持股变化来看，相较一季度末，qfii新进950只个股、增持379只、减持371只。从最新持仓变化来看，海外投资者对中国市场的关注度明显回升。业内人士认为，政策落地效果、上市公司盈利变化以及海外利率等因素，仍将影响外资的阶段性配置节奏。但从中长期看，随着中国资本市场开放机制进一步完善，以及更多优质资产持续涌现，人民币资产对境外长期资 富途牛牛 markets yuan equity market 股票市场 yuan & fx 人民币与汇率 cny">
-          <time class="tp-when" data-t="2026-09-09T10:54:32+00:00" datetime="2026-09-09T10:54:32+00:00">09-09<br>10:54</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T10:54:32+00:00"></span></div>
+           data-search="事关金融强国建设，重要发布会今天下午3时举行 related to building a financial powerhouse, an important press conference will be held at 3 p.m. today 事关金融强国建设，重要发布会今天下午3时举行 国务院新闻办公室将于今天（10日）下午3时举行“开局起步‘十五五’”系列主题新闻发布会，请中国人民银行副行长陆磊，金融监管总局副局长丛林，中国证监会副主席李超，国家外汇局新闻发言人、副局长李斌介绍金融领域贯彻落实“十五五”规划、推动金融强国建设有关情况，并答记者问。（央视） the state council information office will hold a "starting off, '15th five-year plan'" series themed press conference at 3 p.m. today (the 10th), inviting pboc deputy governor lu lei, national financial regulatory administration deputy director cong lin, csrc vice chairman li chao, and safe spokesperson and deputy administrator li bin to introduce the financial sector's implementation of the "15th five-year plan" and the promotion of building a financial powerhouse, and to answer questions from reporters. (cctv) 国务院新闻办公室将于今天（10日）下午3时举行“开局起步‘十五五’”系列主题新闻发布会，请中国人民银行副行长陆磊，金融监管总局副局长丛林，中国证监会副主席李超，国家外汇局新闻发言人、副局长李斌介绍金融领域贯彻落实“十五五”规划、推动金融强国建设有关情况，并答记者问。（央视） 富途牛牛 pboc_liquidity markets pboc & liquidity 央行与流动性 equity market 股票市场 512800.ss">
+          <time class="tp-when" data-t="2026-09-09T22:29:43+00:00" datetime="2026-09-09T22:29:43+00:00">09-09<br>22:29</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T22:29:43+00:00"></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
               <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
               <span class="cn-src">富途牛牛</span>
-              <span class="cn-imp imp-high"><b>74</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+              <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">Foreign investors upbeat on A-shares' long-term prospects</span><span class="l-zh">外资看好A股长期趋势</span></h2>
-            <p class="tp-sum"><span class="l-en">With the completion of 2026 interim report disclosures, QFII latest holdings have emerged. Data shows 52 QFIIs appeared among the top ten circulating shareholders of 1,724 A-share companies, with total holdings exceeding 340 billion yuan, up over 191.7 billion yuan from end-Q1. Compared to Q1-end, QFIIs newly entered 950 stocks, increased stakes in 379, and reduced in 371. The shifts indicate overseas investors' renewed interest in the Chinese market. Insiders note that policy implementation effects, corporate earnings changes, and overseas interest rates will still influence foreign capital's phased allocation pace, but long-term, improved capital market opening mechanisms and more quality assets will sustain RMB assets' appeal to overseas long-term investors.</span><span class="l-zh">随着上市公司2026年半年报披露完毕，QFII最新持仓也浮出水面。数据显示，2026年中报披露完毕，共有52家QFII出现在1724家A股公司的前十大流通股东名单中，持仓市值合计超过3400亿元，较一季度末增加超1917亿元。从持股变化来看，相较一季度末，QFII新进950只个股、增持379只、减持371只。从最新持仓变化来看，海外投资者对中国市场的关注度明显回升。业内人士认为，政策落地效果、上市公司盈利变化以及海外利率等因素，仍将影响外资的阶段性配置节奏。但从中长期看，随着中国资本市场开放机制进一步完善，以及更多优质资产持续涌现，人民币资产对境外长期资</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-inflation" href="https://wallstreetcn.com/livenews/3162577" target="_blank" rel="noopener"
-           data-theme="inflation" data-importance="high"
-           data-search="德国10年期国债发行收益率创2009年以来新高 germany's 10-year bond issuance yield hits highest since 2009 德国10年期国债发行收益率创2009年以来新高 德国10年期国债的借贷成本创出2009年以来的最高水平，投资者要求对持续高企的通胀和日益加剧的政治不确定性给予更高的补偿。该国财政部周三标售了42亿欧元（49亿美元）将于2036年8月到期的债券，平均收益率为3.39%，创该期限债券17年以来的最高水平。（彭博） germany's 10-year bond borrowing costs hit their highest level since 2009 as investors demanded greater compensation for persistently high inflation and rising political uncertainty. the finance ministry sold 4.2 billion euros ($4.9 billion) of bonds maturing august 2036 on wednesday at an average yield of 3.39%, the highest for that maturity in 17 years. (bloomberg) 德国10年期国债的借贷成本创出2009年以来的最高水平，投资者要求对持续高企的通胀和日益加剧的政治不确定性给予更高的补偿。该国财政部周三标售了42亿欧元（49亿美元）将于2036年8月到期的债券，平均收益率为3.39%，创该期限债券17年以来的最高水平。（彭博） 华尔街见闻 fiscal_trade fiscal & trade 财政与贸易 cbon">
-          <time class="tp-when" data-t="2026-09-09T11:27:17+00:00" datetime="2026-09-09T11:27:17+00:00">09-09<br>11:27</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T11:27:17+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-high"><b>76</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Germany's 10-year bond issuance yield hits highest since 2009</span><span class="l-zh">德国10年期国债发行收益率创2009年以来新高</span></h2>
-            <p class="tp-sum"><span class="l-en">Germany's 10-year bond borrowing costs hit their highest level since 2009 as investors demanded greater compensation for persistently high inflation and rising political uncertainty. The finance ministry sold 4.2 billion euros ($4.9 billion) of bonds maturing August 2036 on Wednesday at an average yield of 3.39%, the highest for that maturity in 17 years. (Bloomberg)</span><span class="l-zh">德国10年期国债的借贷成本创出2009年以来的最高水平，投资者要求对持续高企的通胀和日益加剧的政治不确定性给予更高的补偿。该国财政部周三标售了42亿欧元（49亿美元）将于2036年8月到期的债券，平均收益率为3.39%，创该期限债券17年以来的最高水平。（彭博）</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">CBON</span></div>
+            <h2 class="tp-title"><span class="l-en">Related to building a financial powerhouse, an important press conference will be held at 3 p.m. today</span><span class="l-zh">事关金融强国建设，重要发布会今天下午3时举行</span></h2>
+            <p class="tp-sum"><span class="l-en">The State Council Information Office will hold a "Starting Off, '15th Five-Year Plan'" series themed press conference at 3 p.m. today (the 10th), inviting PBOC Deputy Governor Lu Lei, National Financial Regulatory Administration Deputy Director Cong Lin, CSRC Vice Chairman Li Chao, and SAFE spokesperson and Deputy Administrator Li Bin to introduce the financial sector's implementation of the "15th Five-Year Plan" and the promotion of building a financial powerhouse, and to answer questions from reporters. (CCTV)</span><span class="l-zh">国务院新闻办公室将于今天（10日）下午3时举行“开局起步‘十五五’”系列主题新闻发布会，请中国人民银行副行长陆磊，金融监管总局副局长丛林，中国证监会副主席李超，国家外汇局新闻发言人、副局长李斌介绍金融领域贯彻落实“十五五”规划、推动金融强国建设有关情况，并答记者问。（央视）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512800.SS</span></div>
           </div>
         </a>
         
@@ -534,6 +573,63 @@ Meanwhile, the consumer price index (CPI),...</span><span class="l-zh">中国8�
         </a>
         
         
+        <a class="tp-item th-inflation" href="https://www.cnstock.com/topicDetail/356068" target="_blank" rel="noopener"
+           data-theme="inflation" data-importance="high"
+           data-search="8月cpi、ppi同比均回暖 物价有望保持温和上涨态势 august cpi and ppi both rebounded year-on-year, prices are expected to maintain a moderate upward trend 8月cpi、ppi同比均回暖 物价有望保持温和上涨态势    上海证券报 consumer consumer 消费 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">August CPI and PPI both rebounded year-on-year, prices are expected to maintain a moderate upward trend</span><span class="l-zh">8月CPI、PPI同比均回暖 物价有望保持温和上涨态势</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://news.10jqka.com.cn/20260910/c679760192.shtml" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="high"
+           data-search="赴港上市与回a节奏提速 双向奔赴料持续 the pace of listing in hong kong and returning to a-shares accelerates, two-way traffic is expected to continue 赴港上市与回a节奏提速 双向奔赴料持续 今年以来，a股与港股双向奔赴的节奏越来越密。一边是a股硬科技、消费制造类龙头集中登陆港交所发行h股，成为港股ipo市场的重要供给之一；另一边是港股ai、机器人、创新药等科创企业加速推进回a申报，制度优势打通了未盈利企业的回归路径。南开大学金融学教授田利辉表示，“a+h”持续扩容，这种双向流动打破了市场分割，促进了监管规则与信息披露标准深度接轨，定价权的双向传导有助于缩小跨境估值差异，提升中国资产的整体定价效率。这不仅提升了中国资产在全球配置中的权重，更为构建规范、透明、开放、有活力、有韧性的中国特色现代资本市场体系提供了重要实践样本。市场普遍预期，在当前 since the start of this year, the two-way flow between a-shares and hong kong stocks has become increasingly frequent. on one hand, a-share leaders in hard technology and consumer manufacturing have concentrated on listing h-shares on the hong kong stock exchange, becoming one of the important sources of supply in the hong kong ipo market; on the other hand, hong kong-listed science and technology innovation companies in ai, robotics, innovative drugs and other fields are accelerating their applications to return to a-shares, with institutional advantages opening a return path for unprofitable enterprises. nankai university finance professor tian lihui said that as "a+h" continues to expand, this two-way flow breaks market segmentation, promotes deep alignment of regulatory rules and information disclosure standards, and the two-way transmission of pricing power helps narrow cross-border valuation differences and improves the overall pricing efficiency of chinese assets. this not only raises the weight of chinese assets in global allocation, but also provides an important practical sample for building a regulated, transparent, open, dynamic and resilient modern capital market system with chinese characteristics. the market generally expects that at the current 今年以来，a股与港股双向奔赴的节奏越来越密。一边是a股硬科技、消费制造类龙头集中登陆港交所发行h股，成为港股ipo市场的重要供给之一；另一边是港股ai、机器人、创新药等科创企业加速推进回a申报，制度优势打通了未盈利企业的回归路径。南开大学金融学教授田利辉表示，“a+h”持续扩容，这种双向流动打破了市场分割，促进了监管规则与信息披露标准深度接轨，定价权的双向传导有助于缩小跨境估值差异，提升中国资产的整体定价效率。这不仅提升了中国资产在全球配置中的权重，更为构建规范、透明、开放、有活力、有韧性的中国特色现代资本市场体系提供了重要实践样本。市场普遍预期，在当前 同花顺 consumer markets tech_policy consumer 消费 equity market 股票市场 tech policy 科技政策 ">
+          <time class="tp-when" data-t="2026-09-09T23:47:52+00:00" datetime="2026-09-09T23:47:52+00:00">09-09<br>23:47</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T23:47:52+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">同花顺</span>
+              <span class="cn-imp imp-high"><b>74</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">The pace of listing in Hong Kong and returning to A-shares accelerates, two-way traffic is expected to continue</span><span class="l-zh">赴港上市与回A节奏提速 双向奔赴料持续</span></h2>
+            <p class="tp-sum"><span class="l-en">Since the start of this year, the two-way flow between A-shares and Hong Kong stocks has become increasingly frequent. On one hand, A-share leaders in hard technology and consumer manufacturing have concentrated on listing H-shares on the Hong Kong Stock Exchange, becoming one of the important sources of supply in the Hong Kong IPO market; on the other hand, Hong Kong-listed science and technology innovation companies in AI, robotics, innovative drugs and other fields are accelerating their applications to return to A-shares, with institutional advantages opening a return path for unprofitable enterprises. Nankai University finance professor Tian Lihui said that as "A+H" continues to expand, this two-way flow breaks market segmentation, promotes deep alignment of regulatory rules and information disclosure standards, and the two-way transmission of pricing power helps narrow cross-border valuation differences and improves the overall pricing efficiency of Chinese assets. This not only raises the weight of Chinese assets in global allocation, but also provides an important practical sample for building a regulated, transparent, open, dynamic and resilient modern capital market system with Chinese characteristics. The market generally expects that at the current</span><span class="l-zh">今年以来，A股与港股双向奔赴的节奏越来越密。一边是A股硬科技、消费制造类龙头集中登陆港交所发行H股，成为港股IPO市场的重要供给之一；另一边是港股AI、机器人、创新药等科创企业加速推进回A申报，制度优势打通了未盈利企业的回归路径。南开大学金融学教授田利辉表示，“A+H”持续扩容，这种双向流动打破了市场分割，促进了监管规则与信息披露标准深度接轨，定价权的双向传导有助于缩小跨境估值差异，提升中国资产的整体定价效率。这不仅提升了中国资产在全球配置中的权重，更为构建规范、透明、开放、有活力、有韧性的中国特色现代资本市场体系提供了重要实践样本。市场普遍预期，在当前</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-tech" href="https://wallstreetcn.com/livenews/3162838" target="_blank" rel="noopener"
+           data-theme="tech" data-importance="medium"
+           data-search="券商秋季策略会展望：a股“金秋行情”有望延续，扩散和均衡主导配置 brokerage autumn strategy meetings outlook: a-share 'golden autumn rally' is expected to continue, with diffusion and balance dominating allocation 券商秋季策略会展望：a股“金秋行情”有望延续，扩散和均衡主导配置 金秋九月，2026年券商秋季策略会密集召开。截至9月9日，华福证券、西部证券、财通证券、天风证券等多家券商已召开秋季策略会。梳理发现，在外围市场不确定性延续的背景下，券商普遍对国内资本市场后市表现持积极态度。同时，券商投研重心已由上半年的科技“一枝独秀”明显转向“多元均衡”配置，大消费、地产链等板块的关注度显著回升。（上证报） in golden september, the 2026 autumn strategy meetings of securities firms are being held intensively. as of september 9, a number of securities firms including huafu securities, western securities, caitong securities and tianfeng securities have held autumn strategy meetings. a review found that, against the backdrop of continued uncertainty in external markets, securities firms are generally positive about the future performance of the domestic capital market. at the same time, the focus of securities firms' investment research has clearly shifted from the "one standout" technology sector in the first half to "diversified and balanced" allocation, with attention to sectors such as major consumption and the real estate chain rising significantly. (shanghai securities news) 金秋九月，2026年券商秋季策略会密集召开。截至9月9日，华福证券、西部证券、财通证券、天风证券等多家券商已召开秋季策略会。梳理发现，在外围市场不确定性延续的背景下，券商普遍对国内资本市场后市表现持积极态度。同时，券商投研重心已由上半年的科技“一枝独秀”明显转向“多元均衡”配置，大消费、地产链等板块的关注度显著回升。（上证报） 华尔街见闻 consumer markets consumer 消费 equity market 股票市场 510300.ss 512880.ss">
+          <time class="tp-when" data-t="2026-09-09T22:33:08+00:00" datetime="2026-09-09T22:33:08+00:00">09-09<br>22:33</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T22:33:08+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>66</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Brokerage autumn strategy meetings outlook: A-share 'golden autumn rally' is expected to continue, with diffusion and balance dominating allocation</span><span class="l-zh">券商秋季策略会展望：A股“金秋行情”有望延续，扩散和均衡主导配置</span></h2>
+            <p class="tp-sum"><span class="l-en">In golden September, the 2026 autumn strategy meetings of securities firms are being held intensively. As of September 9, a number of securities firms including Huafu Securities, Western Securities, Caitong Securities and Tianfeng Securities have held autumn strategy meetings. A review found that, against the backdrop of continued uncertainty in external markets, securities firms are generally positive about the future performance of the domestic capital market. At the same time, the focus of securities firms' investment research has clearly shifted from the "one standout" technology sector in the first half to "diversified and balanced" allocation, with attention to sectors such as major consumption and the real estate chain rising significantly. (Shanghai Securities News)</span><span class="l-zh">金秋九月，2026年券商秋季策略会密集召开。截至9月9日，华福证券、西部证券、财通证券、天风证券等多家券商已召开秋季策略会。梳理发现，在外围市场不确定性延续的背景下，券商普遍对国内资本市场后市表现持积极态度。同时，券商投研重心已由上半年的科技“一枝独秀”明显转向“多元均衡”配置，大消费、地产链等板块的关注度显著回升。（上证报）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">510300.SS</span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
         <a class="tp-item th-monetary" href="https://www.scmp.com/business/china-business/article/3366736/hong-kong-stocks-face-double-threat-us-inflation-and-yen-carry-trade-risks?utm_source=rss_feed" target="_blank" rel="noopener"
            data-theme="monetary" data-importance="high"
            data-search="hong kong stocks face double threat: us inflation and yen carry-trade risks  香港股市面临双重威胁：美国通胀与日元套息交易风险 hong kong and mainland chinese stocks face a high-stakes week as investors navigate us inflation data, a strengthening japanese yen and looming monetary policy decisions by two of the world’s most influential central banks.
@@ -555,161 +651,104 @@ Friday’s consumer price index in the United States will take centre stage, wit
         </a>
         
         
-        <a class="tp-item th-markets" href="https://news.10jqka.com.cn/20260909/c679750830.shtml" target="_blank" rel="noopener"
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/stock/marketresearch/2026-09-10/doc-inirhvxe7965095.shtml" target="_blank" rel="noopener"
            data-theme="markets" data-importance="high"
-           data-search="*st数源：公司收到行政处罚事先告知书，拟罚800万元 *st shuyuan: company receives advance notice of administrative penalty; proposed fine of 8 million yuan *st数源：公司收到行政处罚事先告知书，拟罚800万元 *st数源公告，公司此前于2026年4月22日因涉嫌信息披露违法违规收到中国证监会《立案告知书》；2026年9月9日，公司及相关当事人收到浙江证监局《行政处罚事先告知书》。浙江证监局调查完毕，拟对公司责令改正、给予警告并处以800万元罚款，对章国经等6人分别处以400万元、200万元、100万元、80万元、60万元、50万元罚款，并拟对章国经采取8年证券市场禁入措施。 *st suyuan announced it received a case filing notice from the csrc on april 22, 2026, for suspected information disclosure violations. on september 9, 2026, the company and related parties received an advance penalty notice from the zhejiang regulatory bureau. the bureau concluded its investigation and plans to order corrections, issue warnings, and fine the company 8 million yuan; six individuals including zhang guojing face fines of 4 million, 2 million, 1 million, 800,000, 600,000, and 500,000 yuan respectively, with zhang guojing also facing an 8-year market ban. *st数源公告，公司此前于2026年4月22日因涉嫌信息披露违法违规收到中国证监会《立案告知书》；2026年9月9日，公司及相关当事人收到浙江证监局《行政处罚事先告知书》。浙江证监局调查完毕，拟对公司责令改正、给予警告并处以800万元罚款，对章国经等6人分别处以400万元、200万元、100万元、80万元、60万元、50万元罚款，并拟对章国经采取8年证券市场禁入措施。 同花顺 markets equity market 股票市场 512880.ss">
-          <time class="tp-when" data-t="2026-09-09T11:35:23+00:00" datetime="2026-09-09T11:35:23+00:00">09-09<br>11:35</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T11:35:23+00:00"></span></div>
+           data-search="上海证券报头版：中国资产“确定性”筑牢资本市场内在稳定性 shanghai securities news front page: the 'certainty' of chinese assets strengthens the inherent stability of the capital market 上海证券报头版：中国资产“确定性”筑牢资本市场内在稳定性    新浪财经股票 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-09-10" datetime="2026-09-10">09-10</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10"></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
               <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">同花顺</span>
+              <span class="cn-src">新浪财经股票</span>
               <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">*ST Shuyuan: Company receives advance notice of administrative penalty; proposed fine of 8 million yuan</span><span class="l-zh">*ST数源：公司收到行政处罚事先告知书，拟罚800万元</span></h2>
-            <p class="tp-sum"><span class="l-en">*ST Suyuan announced it received a case filing notice from the CSRC on April 22, 2026, for suspected information disclosure violations. On September 9, 2026, the company and related parties received an advance penalty notice from the Zhejiang Regulatory Bureau. The bureau concluded its investigation and plans to order corrections, issue warnings, and fine the company 8 million yuan; six individuals including Zhang Guojing face fines of 4 million, 2 million, 1 million, 800,000, 600,000, and 500,000 yuan respectively, with Zhang Guojing also facing an 8-year market ban.</span><span class="l-zh">*ST数源公告，公司此前于2026年4月22日因涉嫌信息披露违法违规收到中国证监会《立案告知书》；2026年9月9日，公司及相关当事人收到浙江证监局《行政处罚事先告知书》。浙江证监局调查完毕，拟对公司责令改正、给予警告并处以800万元罚款，对章国经等6人分别处以400万元、200万元、100万元、80万元、60万元、50万元罚款，并拟对章国经采取8年证券市场禁入措施。</span></p>
+            <h2 class="tp-title"><span class="l-en">Shanghai Securities News front page: The 'certainty' of Chinese assets strengthens the inherent stability of the capital market</span><span class="l-zh">上海证券报头版：中国资产“确定性”筑牢资本市场内在稳定性</span></h2>
+            
             <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-monetary" href="https://flash.jin10.com/detail/20260909200004298800" target="_blank" rel="noopener"
+        <a class="tp-item th-monetary" href="https://wallstreetcn.com/livenews/3162833" target="_blank" rel="noopener"
            data-theme="monetary" data-importance="high"
-           data-search="智利央行预计2027年国内生产总值增长2%-3% chile's central bank projects gdp growth of 2%-3% by 2027 智利央行预计2027年国内生产总值增长2%-3% 智利央行预计2027年国内生产总值增长2%-3%。 chile's central bank expects gdp growth of 2%-3% in 2027. 智利央行预计2027年国内生产总值增长2%-3%。 金十数据 pboc_liquidity pboc & liquidity 央行与流动性 ">
-          <time class="tp-when" data-t="2026-09-09T20:00:04+08:00" datetime="2026-09-09T20:00:04+08:00">09-09<br>20:00</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T20:00:04+08:00"></span></div>
+           data-search="上证报头版文章：中国资产“确定性”筑牢资本市场内在稳定性 shanghai securities news front-page article: the 'certainty' of chinese assets strengthens the inherent stability of the capital market 上证报头版文章：中国资产“确定性”筑牢资本市场内在稳定性 近期，市场对“流动性”的讨论有所升温。从全球市场看，以美债为代表的多国国债收益率飙升，引发市场对流动性挤压的普遍担忧；从a股市场看，近两天成交额有所缩减，有声音解读为市场流动性趋紧的信号。多位市场专家接受采访认为，当前a股流动性仍处于健康区间，从长期看，中国经济及政策稳定性、科技创新加快引领产业格局变迁以及全球市场对中国资产安全性的认可，都将推动a股独立定价能力进一步夯实。 recently, discussion of "liquidity" in the market has heated up somewhat. from a global market perspective, surging government bond yields in many countries, represented by us treasuries, have triggered widespread concerns about a liquidity squeeze; from an a-share market perspective, trading volume has shrunk somewhat in the past two days, which some voices have interpreted as a signal of tightening market liquidity. several market experts said in interviews that current a-share liquidity remains in a healthy range, and that in the long run, china's economic and policy stability, the acceleration of technological innovation leading changes in the industrial landscape, and global market recognition of the safety of chinese assets will all help further solidify a-shares' independent pricing capability. 近期，市场对“流动性”的讨论有所升温。从全球市场看，以美债为代表的多国国债收益率飙升，引发市场对流动性挤压的普遍担忧；从a股市场看，近两天成交额有所缩减，有声音解读为市场流动性趋紧的信号。多位市场专家接受采访认为，当前a股流动性仍处于健康区间，从长期看，中国经济及政策稳定性、科技创新加快引领产业格局变迁以及全球市场对中国资产安全性的认可，都将推动a股独立定价能力进一步夯实。 华尔街见闻 markets equity market 股票市场 510300.ss cbon">
+          <time class="tp-when" data-t="2026-09-09T22:19:01+00:00" datetime="2026-09-09T22:19:01+00:00">09-09<br>22:19</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T22:19:01+00:00"></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
               <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
-              <span class="cn-src">金十数据</span>
+              <span class="cn-src">华尔街见闻</span>
               <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">Chile's central bank projects GDP growth of 2%-3% by 2027</span><span class="l-zh">智利央行预计2027年国内生产总值增长2%-3%</span></h2>
-            <p class="tp-sum"><span class="l-en">Chile's central bank expects GDP growth of 2%-3% in 2027.</span><span class="l-zh">智利央行预计2027年国内生产总值增长2%-3%。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
+            <h2 class="tp-title"><span class="l-en">Shanghai Securities News front-page article: The 'certainty' of Chinese assets strengthens the inherent stability of the capital market</span><span class="l-zh">上证报头版文章：中国资产“确定性”筑牢资本市场内在稳定性</span></h2>
+            <p class="tp-sum"><span class="l-en">Recently, discussion of "liquidity" in the market has heated up somewhat. From a global market perspective, surging government bond yields in many countries, represented by US Treasuries, have triggered widespread concerns about a liquidity squeeze; from an A-share market perspective, trading volume has shrunk somewhat in the past two days, which some voices have interpreted as a signal of tightening market liquidity. Several market experts said in interviews that current A-share liquidity remains in a healthy range, and that in the long run, China's economic and policy stability, the acceleration of technological innovation leading changes in the industrial landscape, and global market recognition of the safety of Chinese assets will all help further solidify A-shares' independent pricing capability.</span><span class="l-zh">近期，市场对“流动性”的讨论有所升温。从全球市场看，以美债为代表的多国国债收益率飙升，引发市场对流动性挤压的普遍担忧；从A股市场看，近两天成交额有所缩减，有声音解读为市场流动性趋紧的信号。多位市场专家接受采访认为，当前A股流动性仍处于健康区间，从长期看，中国经济及政策稳定性、科技创新加快引领产业格局变迁以及全球市场对中国资产安全性的认可，都将推动A股独立定价能力进一步夯实。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">510300.SS</span><span class="cn-tk">CBON</span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-inflation" href="https://news.10jqka.com.cn/20260909/c679751095.shtml" target="_blank" rel="noopener"
-           data-theme="inflation" data-importance="high"
-           data-search="9月9日 周三《新闻联播》要闻20条 september 9, wednesday: 20 key items from 'news simulcast' 9月9日 周三《新闻联播》要闻20条 1、在第四十二个教师节到来之际 习近平向全国广大教师和教育工作者致以节日祝贺和诚挚问候； 2、央视快评：在全社会营造尊师重教良好氛围 汇聚起教育强国建设的强大合力； 3、习近平就朝鲜国庆78周年向朝鲜最高领导人致贺电； 4、习近平同英国首相通电话； 5、丁薛祥出席2026年全球服务贸易峰会并会见与会外国政要； 6、【赓续长征精神 奋进复兴征程】江西：从长征出发地到发展新高地； 7、【“十五五”开好局起好步】发展社会主义民主凝聚中国式现代化合力； 8、8月份我国cpi同比上涨0.8%； 9、我国不断加大民生保障力度 持续增进民生福祉； 10、我国发布第八批 1. on the occasion of the 42nd teachers' day, xi jinping extends festive congratulations and sincere regards to teachers and educators nationwide; 2. cctv commentary: foster a society-wide atmosphere of respect for teachers and education to build strong momentum for education powerhouse; 3. xi jinping sends congratulatory message to north korea's top leader on the 78th anniversary of its founding; 4. xi jinping holds phone call with uk prime minister; 5. ding xuexiang attends 2026 global services trade summit and meets foreign leaders; 6. [carrying forward long march spirit, advancing rejuvenation journey] jiangxi: from long march starting point to new development highland; 7. [good start for 15th five-year plan] developing socialist democracy to unite strength for chinese modernization; 8. august cpi up 0.8% year-on-year; 9. china strengthens livelihood safeguards to enhance public welfare; 10. china releases eighth batch... 1、在第四十二个教师节到来之际 习近平向全国广大教师和教育工作者致以节日祝贺和诚挚问候； 2、央视快评：在全社会营造尊师重教良好氛围 汇聚起教育强国建设的强大合力； 3、习近平就朝鲜国庆78周年向朝鲜最高领导人致贺电； 4、习近平同英国首相通电话； 5、丁薛祥出席2026年全球服务贸易峰会并会见与会外国政要； 6、【赓续长征精神 奋进复兴征程】江西：从长征出发地到发展新高地； 7、【“十五五”开好局起好步】发展社会主义民主凝聚中国式现代化合力； 8、8月份我国cpi同比上涨0.8%； 9、我国不断加大民生保障力度 持续增进民生福祉； 10、我国发布第八批 同花顺 consumer consumer 消费 ">
-          <time class="tp-when" data-t="2026-09-09T11:43:27+00:00" datetime="2026-09-09T11:43:27+00:00">09-09<br>11:43</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T11:43:27+00:00"></span></div>
+        <a class="tp-item th-markets" href="https://news.10jqka.com.cn/20260910/c679764136.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="昨日etf资金整体净流入33.83亿元 yesterday etf funds saw a net inflow of 3.383 billion yuan overall 昨日etf资金整体净流入33.83亿元 据同花顺ifind数据显示，2026年9月9日，etf资金整体净流入33.83亿元，股票型净流出22.17亿元，宽基型净流出32.37亿元。当日etf资金净流入榜单排名前3依次为：海富通上证基准做市公司债etf（511190）净流入6.54亿元，华夏上证科创板50成份etf（588000）净流入6.49亿元，易方达上证基准做市公司债etf（511110）净流入5.78亿元。 according to tonghuashun ifind data, on september 9, 2026, etf funds saw overall net inflows of 3.383 billion yuan, with equity-type net outflows of 2.217 billion yuan and broad-based net outflows of 3.237 billion yuan. the top 3 in that day's etf net inflow rankings were: haitong ftse shanghai benchmark market-making corporate bond etf (511190) with net inflows of 654 million yuan, china amc sse star 50 etf (588000) with net inflows of 649 million yuan, and e fund sse benchmark market-making corporate bond etf (511110) with net inflows of 578 million yuan. 据同花顺ifind数据显示，2026年9月9日，etf资金整体净流入33.83亿元，股票型净流出22.17亿元，宽基型净流出32.37亿元。当日etf资金净流入榜单排名前3依次为：海富通上证基准做市公司债etf（511190）净流入6.54亿元，华夏上证科创板50成份etf（588000）净流入6.49亿元，易方达上证基准做市公司债etf（511110）净流入5.78亿元。 同花顺 markets equity market 股票市场 510300.ss">
+          <time class="tp-when" data-t="2026-09-10T00:23:36+00:00" datetime="2026-09-10T00:23:36+00:00">09-10<br>00:23</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10T00:23:36+00:00"></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
-              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
               <span class="cn-src">同花顺</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">September 9, Wednesday: 20 key items from 'News Simulcast'</span><span class="l-zh">9月9日 周三《新闻联播》要闻20条</span></h2>
-            <p class="tp-sum"><span class="l-en">1. On the occasion of the 42nd Teachers' Day, Xi Jinping extends festive congratulations and sincere regards to teachers and educators nationwide; 2. CCTV commentary: Foster a society-wide atmosphere of respect for teachers and education to build strong momentum for education powerhouse; 3. Xi Jinping sends congratulatory message to North Korea's top leader on the 78th anniversary of its founding; 4. Xi Jinping holds phone call with UK Prime Minister; 5. Ding Xuexiang attends 2026 Global Services Trade Summit and meets foreign leaders; 6. [Carrying forward Long March spirit, advancing rejuvenation journey] Jiangxi: From Long March starting point to new development highland; 7. [Good start for 15th Five-Year Plan] Developing socialist democracy to unite strength for Chinese modernization; 8. August CPI up 0.8% year-on-year; 9. China strengthens livelihood safeguards to enhance public welfare; 10. China releases eighth batch...</span><span class="l-zh">1、在第四十二个教师节到来之际 习近平向全国广大教师和教育工作者致以节日祝贺和诚挚问候； 2、央视快评：在全社会营造尊师重教良好氛围 汇聚起教育强国建设的强大合力； 3、习近平就朝鲜国庆78周年向朝鲜最高领导人致贺电； 4、习近平同英国首相通电话； 5、丁薛祥出席2026年全球服务贸易峰会并会见与会外国政要； 6、【赓续长征精神 奋进复兴征程】江西：从长征出发地到发展新高地； 7、【“十五五”开好局起好步】发展社会主义民主凝聚中国式现代化合力； 8、8月份我国CPI同比上涨0.8%； 9、我国不断加大民生保障力度 持续增进民生福祉； 10、我国发布第八批</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-monetary" href="https://news.futunn.com/flash/20726743/deputy-governor-of-the-czech-national-bank-i-see-no" target="_blank" rel="noopener"
-           data-theme="monetary" data-importance="high"
-           data-search="捷克央行副行长：我认为本月没有调整利率的理由 czech central bank deputy governor: i see no reason to adjust rates this month 捷克央行副行长：我认为本月没有调整利率的理由 捷克央行副行长：我认为本月没有调整利率的理由。 czech central bank vice governor: i see no reason to adjust rates this month. 捷克央行副行长：我认为本月没有调整利率的理由。 富途牛牛 pboc_liquidity pboc & liquidity 央行与流动性 ">
-          <time class="tp-when" data-t="2026-09-09T10:40:18+00:00" datetime="2026-09-09T10:40:18+00:00">09-09<br>10:40</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T10:40:18+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
-              <span class="cn-src">富途牛牛</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Czech central bank deputy governor: I see no reason to adjust rates this month</span><span class="l-zh">捷克央行副行长：我认为本月没有调整利率的理由</span></h2>
-            <p class="tp-sum"><span class="l-en">Czech central bank vice governor: I see no reason to adjust rates this month.</span><span class="l-zh">捷克央行副行长：我认为本月没有调整利率的理由。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-markets" href="https://www.gelonghui.com/live/2659445" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="medium"
-           data-search="刘纪鹏：国家拉动的股市得让人民挣到钱 股市不兴 消费不起 liu jipeng: state-driven stock market must let people make money; without a thriving market, consumption cannot rise 刘纪鹏：国家拉动的股市得让人民挣到钱 股市不兴 消费不起 中国政法大学教授刘纪鹏发文指出，大多数投资者赔钱，直接影响信心和消费。上证指数去年10月见到4000点，从4月7日的3040点涨了960点到10月，现在9个月过去了，又从4000点往回退。中国历史上重复好几次了——牛市牛不过一年。第三次冲破4000点，能不能长久、能不能克服“牛短熊长”的局面，取决于制度变化。 刘纪鹏指出，这次是国家拉动的股市。国家队平准基金的使命，就是在股市困难时肩负起重任。但肩负使命，不能低吸高抛，不能与民争利——要透明。股市上的人民性就是要建一个好的股市，让大家都能挣到钱——起码大多数人能挣到钱，这在理论上应该是成立的。你不能把股市 liu jipeng, professor at china university of political science and law, notes that most investors losing money directly impacts confidence and consumption. the shanghai composite index hit 4,000 in october last year after rising 960 points from 3,040 on april 7, but has retreated from 4,000 over the past nine months. this pattern has repeated several times in china's history—bull markets rarely last more than a year. whether the third breakout above 4,000 can be sustained and overcome the "short bull, long bear" dynamic depends on institutional changes. liu points out this is a state-driven market rally. the national team's stabilization fund mission is to shoulder responsibility during market difficulties, but it must not buy low and sell high or compete with the public for profits—transparency is key. the people-centered nature of the stock market means building a good market where most can profit, which should hold theoretically. you cannot turn the stock market... 中国政法大学教授刘纪鹏发文指出，大多数投资者赔钱，直接影响信心和消费。上证指数去年10月见到4000点，从4月7日的3040点涨了960点到10月，现在9个月过去了，又从4000点往回退。中国历史上重复好几次了——牛市牛不过一年。第三次冲破4000点，能不能长久、能不能克服“牛短熊长”的局面，取决于制度变化。 刘纪鹏指出，这次是国家拉动的股市。国家队平准基金的使命，就是在股市困难时肩负起重任。但肩负使命，不能低吸高抛，不能与民争利——要透明。股市上的人民性就是要建一个好的股市，让大家都能挣到钱——起码大多数人能挣到钱，这在理论上应该是成立的。你不能把股市 格隆汇 consumer markets consumer 消费 equity market 股票市场 510300.ss">
-          <time class="tp-when" data-t="2026-09-09T11:58:49+00:00" datetime="2026-09-09T11:58:49+00:00">09-09<br>11:58</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T11:58:49+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">格隆汇</span>
-              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Liu Jipeng: State-driven stock market must let people make money; without a thriving market, consumption cannot rise</span><span class="l-zh">刘纪鹏：国家拉动的股市得让人民挣到钱 股市不兴 消费不起</span></h2>
-            <p class="tp-sum"><span class="l-en">Liu Jipeng, professor at China University of Political Science and Law, notes that most investors losing money directly impacts confidence and consumption. The Shanghai Composite Index hit 4,000 in October last year after rising 960 points from 3,040 on April 7, but has retreated from 4,000 over the past nine months. This pattern has repeated several times in China's history—bull markets rarely last more than a year. Whether the third breakout above 4,000 can be sustained and overcome the "short bull, long bear" dynamic depends on institutional changes. Liu points out this is a state-driven market rally. The national team's stabilization fund mission is to shoulder responsibility during market difficulties, but it must not buy low and sell high or compete with the public for profits—transparency is key. The people-centered nature of the stock market means building a good market where most can profit, which should hold theoretically. You cannot turn the stock market...</span><span class="l-zh">中国政法大学教授刘纪鹏发文指出，大多数投资者赔钱，直接影响信心和消费。上证指数去年10月见到4000点，从4月7日的3040点涨了960点到10月，现在9个月过去了，又从4000点往回退。中国历史上重复好几次了——牛市牛不过一年。第三次冲破4000点，能不能长久、能不能克服“牛短熊长”的局面，取决于制度变化。 刘纪鹏指出，这次是国家拉动的股市。国家队平准基金的使命，就是在股市困难时肩负起重任。但肩负使命，不能低吸高抛，不能与民争利——要透明。股市上的人民性就是要建一个好的股市，让大家都能挣到钱——起码大多数人能挣到钱，这在理论上应该是成立的。你不能把股市</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">510300.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-growth" href="https://wallstreetcn.com/livenews/3162508" target="_blank" rel="noopener"
-           data-theme="growth" data-importance="medium"
-           data-search="商务部新增84个全国重点外资项目，总投资额194.6亿美元 mofcom adds 84 new key national foreign-funded projects, totaling $19.46 billion 商务部新增84个全国重点外资项目，总投资额194.6亿美元 第二十六届中国国际投资贸易洽谈会消息，近日，商务部新增84个全国重点外资项目，总投资额194.6亿美元。据了解，新增项目主要集中在制造业，涉及机电装备、化工能源、汽车、医疗健康等领域。 at the 26th china international fair for investment and trade, the ministry of commerce recently added 84 new national key foreign-invested projects totaling $19.46 billion in investment. the new projects are mainly in manufacturing, covering electromechanical equipment, chemicals and energy, automobiles, and healthcare. 第二十六届中国国际投资贸易洽谈会消息，近日，商务部新增84个全国重点外资项目，总投资额194.6亿美元。据了解，新增项目主要集中在制造业，涉及机电装备、化工能源、汽车、医疗健康等领域。 华尔街见闻 industrial industry & manufacturing 工业与制造业 ">
-          <time class="tp-when" data-t="2026-09-09T09:37:44+00:00" datetime="2026-09-09T09:37:44+00:00">09-09<br>09:37</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T09:37:44+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-medium"><b>66</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">MOFCOM adds 84 new key national foreign-funded projects, totaling $19.46 billion</span><span class="l-zh">商务部新增84个全国重点外资项目，总投资额194.6亿美元</span></h2>
-            <p class="tp-sum"><span class="l-en">At the 26th China International Fair for Investment and Trade, the Ministry of Commerce recently added 84 new national key foreign-invested projects totaling $19.46 billion in investment. The new projects are mainly in manufacturing, covering electromechanical equipment, chemicals and energy, automobiles, and healthcare.</span><span class="l-zh">第二十六届中国国际投资贸易洽谈会消息，近日，商务部新增84个全国重点外资项目，总投资额194.6亿美元。据了解，新增项目主要集中在制造业，涉及机电装备、化工能源、汽车、医疗健康等领域。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3162470" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="medium"
-           data-search="知情人士证实deepseek备战科创板ipo，中信已入场尽调 insiders confirm deepseek preparing for star market ipo; citic has started due diligence 知情人士证实deepseek备战科创板ipo，中信已入场尽调 有市场消息称，deepseek已委托中信证券筹备科创板ipo。从知情人士处获悉，该消息属实。目前，中信证券已与deepseek方面接洽并进入尽职调查阶段，但双方尚未签订正式的上市辅导协议。（21财经） market reports suggest deepseek has commissioned citic securities to prepare for a star market ipo. sources with knowledge of the matter confirm this. citic securities has engaged with deepseek and entered due diligence, though no formal listing advisory agreement has been signed. (21st century business herald) 有市场消息称，deepseek已委托中信证券筹备科创板ipo。从知情人士处获悉，该消息属实。目前，中信证券已与deepseek方面接洽并进入尽职调查阶段，但双方尚未签订正式的上市辅导协议。（21财经） 华尔街见闻 markets equity market 股票市场 512880.ss">
-          <time class="tp-when" data-t="2026-09-09T08:46:49+00:00" datetime="2026-09-09T08:46:49+00:00">09-09<br>08:46</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T08:46:49+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">华尔街见闻</span>
               <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">Insiders confirm DeepSeek preparing for STAR Market IPO; CITIC has started due diligence</span><span class="l-zh">知情人士证实DeepSeek备战科创板IPO，中信已入场尽调</span></h2>
-            <p class="tp-sum"><span class="l-en">Market reports suggest DeepSeek has commissioned CITIC Securities to prepare for a STAR Market IPO. Sources with knowledge of the matter confirm this. CITIC Securities has engaged with DeepSeek and entered due diligence, though no formal listing advisory agreement has been signed. (21st Century Business Herald)</span><span class="l-zh">有市场消息称，DeepSeek已委托中信证券筹备科创板IPO。从知情人士处获悉，该消息属实。目前，中信证券已与DeepSeek方面接洽并进入尽职调查阶段，但双方尚未签订正式的上市辅导协议。（21财经）</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+            <h2 class="tp-title"><span class="l-en">Yesterday ETF funds saw a net inflow of 3.383 billion yuan overall</span><span class="l-zh">昨日ETF资金整体净流入33.83亿元</span></h2>
+            <p class="tp-sum"><span class="l-en">According to Tonghuashun iFinD data, on September 9, 2026, ETF funds saw overall net inflows of 3.383 billion yuan, with equity-type net outflows of 2.217 billion yuan and broad-based net outflows of 3.237 billion yuan. The top 3 in that day's ETF net inflow rankings were: Haitong FTSE Shanghai Benchmark Market-Making Corporate Bond ETF (511190) with net inflows of 654 million yuan, China AMC SSE STAR 50 ETF (588000) with net inflows of 649 million yuan, and E Fund SSE Benchmark Market-Making Corporate Bond ETF (511110) with net inflows of 578 million yuan.</span><span class="l-zh">据同花顺iFinD数据显示，2026年9月9日，ETF资金整体净流入33.83亿元，股票型净流出22.17亿元，宽基型净流出32.37亿元。当日ETF资金净流入榜单排名前3依次为：海富通上证基准做市公司债ETF（511190）净流入6.54亿元，华夏上证科创板50成份ETF（588000）净流入6.49亿元，易方达上证基准做市公司债ETF（511110）净流入5.78亿元。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">510300.SS</span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-monetary" href="https://www.stcn.com/article/detail/4178633.html" target="_blank" rel="noopener"
-           data-theme="monetary" data-importance="high"
-           data-search="央行：存款保险不是商业保险 保费无需储户承担 pboc: deposit insurance is not commercial insurance; premiums need not be borne by depositors 央行：存款保险不是商业保险 保费无需储户承担    证券时报 pboc_liquidity pboc & liquidity 央行与流动性 512880.ss">
+        <a class="tp-item th-credit" href="https://www.yicai.com/news/103358504.html" target="_blank" rel="noopener"
+           data-theme="credit" data-importance="high"
+           data-search="3倍！美国财政部宣布回购60亿美元长债，难阻收益率快速拉升 国际油价大涨引发新担忧。 3x! the u.s. treasury announced a $6 billion buyback of long-term bonds, but it failed to stop the rapid rise in yields. a sharp rise in international oil prices has triggered new concerns. 3倍！美国财政部宣布回购60亿美元长债，难阻收益率快速拉升 国际油价大涨引发新担忧。    第一财经 fiscal_trade fiscal & trade 财政与贸易 cbon">
           <time class="tp-when" data-t="" >—</time>
           <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
-              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
-              <span class="cn-src">证券时报</span>
+              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+              <span class="cn-src">第一财经</span>
               <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">PBOC: Deposit insurance is not commercial insurance; premiums need not be borne by depositors</span><span class="l-zh">央行：存款保险不是商业保险 保费无需储户承担</span></h2>
+            <h2 class="tp-title"><span class="l-en">3x! The U.S. Treasury announced a $6 billion buyback of long-term bonds, but it failed to stop the rapid rise in yields. A sharp rise in international oil prices has triggered new concerns.</span><span class="l-zh">3倍！美国财政部宣布回购60亿美元长债，难阻收益率快速拉升 国际油价大涨引发新担忧。</span></h2>
             
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-tk">512880.SS</span></div>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">CBON</span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-monetary" href="https://www.yicai.com/news/103358064.html" target="_blank" rel="noopener"
+        <a class="tp-item th-markets" href="https://www.cnstock.com/commonDetail/788186" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="中国资产“确定性”筑牢资本市场内在稳定性 the 'certainty' of chinese assets strengthens the inherent stability of the capital market 中国资产“确定性”筑牢资本市场内在稳定性    上海证券报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">The 'certainty' of Chinese assets strengthens the inherent stability of the capital market</span><span class="l-zh">中国资产“确定性”筑牢资本市场内在稳定性</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.yicai.com/news/103358554.html" target="_blank" rel="noopener"
            data-theme="monetary" data-importance="high"
-           data-search="全球央行加息阴影扰动港股，恒生科技指数连跌一个月｜市场观察 半年业绩期后流动性将主导港股走势。 global central bank rate-hike shadows weigh on hong kong stocks; hang seng tech index falls for a month | market watch: liquidity to steer hong kong stocks after half-year results season 全球央行加息阴影扰动港股，恒生科技指数连跌一个月｜市场观察 半年业绩期后流动性将主导港股走势。    第一财经 pboc_liquidity pboc & liquidity 央行与流动性 ">
+           data-search="布油重返100美元！恐慌抛售再起，全球加息潮会从欧央行扩散吗 日本央行、英国央行或紧随其后。 brent oil returns to $100! panic selling re-emerges. will the global wave of rate hikes spread from the ecb? the bank of japan and the bank of england may follow closely behind. 布油重返100美元！恐慌抛售再起，全球加息潮会从欧央行扩散吗 日本央行、英国央行或紧随其后。    第一财经 pboc_liquidity pboc & liquidity 央行与流动性 ">
           <time class="tp-when" data-t="" >—</time>
           <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
           <div class="tp-body">
@@ -719,9 +758,123 @@ Friday’s consumer price index in the United States will take centre stage, wit
               <span class="cn-src">第一财经</span>
               <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">Global central bank rate-hike shadows weigh on Hong Kong stocks; Hang Seng Tech Index falls for a month | Market Watch: Liquidity to steer Hong Kong stocks after half-year results season</span><span class="l-zh">全球央行加息阴影扰动港股，恒生科技指数连跌一个月｜市场观察 半年业绩期后流动性将主导港股走势。</span></h2>
+            <h2 class="tp-title"><span class="l-en">Brent oil returns to $100! Panic selling re-emerges. Will the global wave of rate hikes spread from the ECB? The Bank of Japan and the Bank of England may follow closely behind.</span><span class="l-zh">布油重返100美元！恐慌抛售再起，全球加息潮会从欧央行扩散吗 日本央行、英国央行或紧随其后。</span></h2>
             
             <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-inflation" href="https://www.yicai.com/news/103358368.html" target="_blank" rel="noopener"
+           data-theme="inflation" data-importance="high"
+           data-search="8月物价双升背后：内需修复仍不均衡 能源价格涨幅由7月的0.6%扩大至8月的4.1%，影响cpi同比上涨约0.28个百分点。 behind the dual rise in august prices: domestic demand recovery remains uneven. the increase in energy prices widened from 0.6% in july to 4.1% in august, contributing about 0.28 percentage points to the year-on-year rise in cpi. 8月物价双升背后：内需修复仍不均衡 能源价格涨幅由7月的0.6%扩大至8月的4.1%，影响cpi同比上涨约0.28个百分点。    第一财经 consumer consumer 消费 ">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Behind the dual rise in August prices: Domestic demand recovery remains uneven. The increase in energy prices widened from 0.6% in July to 4.1% in August, contributing about 0.28 percentage points to the year-on-year rise in CPI.</span><span class="l-zh">8月物价双升背后：内需修复仍不均衡 能源价格涨幅由7月的0.6%扩大至8月的4.1%，影响CPI同比上涨约0.28个百分点。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://wallstreetcn.com/livenews/3162836" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="medium"
+           data-search="第二十七届中国国际光电博览会在深圳开幕，ai和国产化双轮驱动，光通信全产业链持续高景气 the 27th china international optoelectronic exposition opens in shenzhen, driven by both ai and domestic substitution, the entire optical communications industry chain continues to boom 第二十七届中国国际光电博览会在深圳开幕，ai和国产化双轮驱动，光通信全产业链持续高景气 从光纤到光模块，从光芯片到电芯片，每一个相关上市公司的展台都被围得水泄不通。9月9日，第二十七届中国国际光电博览会（cioe中国光博会）在深圳国际会展中心开幕。多位业内人士表示：在全球ai（人工智能）算力基础设施持续扩张的背景下，光通信产业有望以更高的增速成长；共封装光学（cpo）、近封装光学（npo）、全光交换机（ocs）等技术正在以超预期速度迭代，并带动上游光纤光缆、pcb（印制电路板）、片式陶瓷电容器（mlcc）等持续高景气。（上证报） from optical fiber to optical modules, from optical chips to electrical chips, every related listed company's booth was packed. on september 9, the 27th china international optoelectronic exposition (cioe) opened at the shenzhen world exhibition & convention center. multiple industry insiders said: against the backdrop of continuous global expansion of ai (artificial intelligence) computing infrastructure, the optical communications industry is expected to grow at a higher rate; technologies such as co-packaged optics (cpo), near-packaged optics (npo) and optical circuit switching (ocs) are iterating at a faster-than-expected pace, driving continued high prosperity in upstream optical fiber and cable, pcb (printed circuit boards), multilayer ceramic capacitors (mlcc) and more. (shanghai securities news) 从光纤到光模块，从光芯片到电芯片，每一个相关上市公司的展台都被围得水泄不通。9月9日，第二十七届中国国际光电博览会（cioe中国光博会）在深圳国际会展中心开幕。多位业内人士表示：在全球ai（人工智能）算力基础设施持续扩张的背景下，光通信产业有望以更高的增速成长；共封装光学（cpo）、近封装光学（npo）、全光交换机（ocs）等技术正在以超预期速度迭代，并带动上游光纤光缆、pcb（印制电路板）、片式陶瓷电容器（mlcc）等持续高景气。（上证报） 华尔街见闻 markets tech_policy equity market 股票市场 tech policy 科技政策 510300.ss">
+          <time class="tp-when" data-t="2026-09-09T22:26:27+00:00" datetime="2026-09-09T22:26:27+00:00">09-09<br>22:26</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T22:26:27+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">The 27th China International Optoelectronic Exposition opens in Shenzhen, driven by both AI and domestic substitution, the entire optical communications industry chain continues to boom</span><span class="l-zh">第二十七届中国国际光电博览会在深圳开幕，AI和国产化双轮驱动，光通信全产业链持续高景气</span></h2>
+            <p class="tp-sum"><span class="l-en">From optical fiber to optical modules, from optical chips to electrical chips, every related listed company's booth was packed. On September 9, the 27th China International Optoelectronic Exposition (CIOE) opened at the Shenzhen World Exhibition & Convention Center. Multiple industry insiders said: against the backdrop of continuous global expansion of AI (artificial intelligence) computing infrastructure, the optical communications industry is expected to grow at a higher rate; technologies such as co-packaged optics (CPO), near-packaged optics (NPO) and optical circuit switching (OCS) are iterating at a faster-than-expected pace, driving continued high prosperity in upstream optical fiber and cable, PCB (printed circuit boards), multilayer ceramic capacitors (MLCC) and more. (Shanghai Securities News)</span><span class="l-zh">从光纤到光模块，从光芯片到电芯片，每一个相关上市公司的展台都被围得水泄不通。9月9日，第二十七届中国国际光电博览会（CIOE中国光博会）在深圳国际会展中心开幕。多位业内人士表示：在全球AI（人工智能）算力基础设施持续扩张的背景下，光通信产业有望以更高的增速成长；共封装光学（CPO）、近封装光学（NPO）、全光交换机（OCS）等技术正在以超预期速度迭代，并带动上游光纤光缆、PCB（印制电路板）、片式陶瓷电容器（MLCC）等持续高景气。（上证报）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">510300.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3162877" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="medium"
+           data-search="特斯拉降价后有门店爆单，多个汽车品牌开启促销 tesla stores see order surge after price cuts, multiple car brands launch promotions 特斯拉降价后有门店爆单，多个汽车品牌开启促销 特斯拉降价冲上热搜后，多家门店爆单了。“昨天（9月7日）早上政策一出来，订单消息就没断过。”9月8日，某特斯拉体验中心销售顾问告诉记者，model y长续航版是消费者最关注的车型，截至9月7日下午，其所在的门店已锁定20多个订单。9月7日，特斯拉中国宣布，即日起至9月30日（含）前下单并提车，model 3全系现车现金激励5000元，model y全系现车现金激励1万元。这并非孤立事件。据记者不完全统计，截至目前已有超过十家车企在9月集中释放购车权益，覆盖新势力、自主、合资与豪华品牌。（每经网） after tesla's price cuts trended on social media, many stores saw a surge in orders. "as soon as the policy came out yesterday morning (september 7), the order messages never stopped." on september 8, a sales consultant at a tesla experience center told reporters that the model y long range version is the model consumers care about most, and as of the afternoon of september 7, the store had locked in more than 20 orders. on september 7, tesla china announced that for orders placed and vehicles delivered from that day through september 30 (inclusive), the entire model 3 lineup in stock would receive a 5,000 yuan cash incentive, and the entire model y lineup in stock would receive a 10,000 yuan cash incentive. this is not an isolated event. according to reporters' incomplete statistics, more than ten automakers have concentrated their release of car-purchase benefits in september so far, covering new forces, independent, joint-venture and luxury brands. (national business daily) 特斯拉降价冲上热搜后，多家门店爆单了。“昨天（9月7日）早上政策一出来，订单消息就没断过。”9月8日，某特斯拉体验中心销售顾问告诉记者，model y长续航版是消费者最关注的车型，截至9月7日下午，其所在的门店已锁定20多个订单。9月7日，特斯拉中国宣布，即日起至9月30日（含）前下单并提车，model 3全系现车现金激励5000元，model y全系现车现金激励1万元。这并非孤立事件。据记者不完全统计，截至目前已有超过十家车企在9月集中释放购车权益，覆盖新势力、自主、合资与豪华品牌。（每经网） 华尔街见闻 consumer consumer 消费 ">
+          <time class="tp-when" data-t="2026-09-10T00:50:03+00:00" datetime="2026-09-10T00:50:03+00:00">09-10<br>00:50</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10T00:50:03+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Tesla stores see order surge after price cuts, multiple car brands launch promotions</span><span class="l-zh">特斯拉降价后有门店爆单，多个汽车品牌开启促销</span></h2>
+            <p class="tp-sum"><span class="l-en">After Tesla's price cuts trended on social media, many stores saw a surge in orders. "As soon as the policy came out yesterday morning (September 7), the order messages never stopped." On September 8, a sales consultant at a Tesla experience center told reporters that the Model Y Long Range version is the model consumers care about most, and as of the afternoon of September 7, the store had locked in more than 20 orders. On September 7, Tesla China announced that for orders placed and vehicles delivered from that day through September 30 (inclusive), the entire Model 3 lineup in stock would receive a 5,000 yuan cash incentive, and the entire Model Y lineup in stock would receive a 10,000 yuan cash incentive. This is not an isolated event. According to reporters' incomplete statistics, more than ten automakers have concentrated their release of car-purchase benefits in September so far, covering new forces, independent, joint-venture and luxury brands. (National Business Daily)</span><span class="l-zh">特斯拉降价冲上热搜后，多家门店爆单了。“昨天（9月7日）早上政策一出来，订单消息就没断过。”9月8日，某特斯拉体验中心销售顾问告诉记者，Model Y长续航版是消费者最关注的车型，截至9月7日下午，其所在的门店已锁定20多个订单。9月7日，特斯拉中国宣布，即日起至9月30日（含）前下单并提车，Model 3全系现车现金激励5000元，Model Y全系现车现金激励1万元。这并非孤立事件。据记者不完全统计，截至目前已有超过十家车企在9月集中释放购车权益，覆盖新势力、自主、合资与豪华品牌。（每经网）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://www.gelonghui.com/live/2660417" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="medium"
+           data-search="特斯拉降价后有门店爆单 多个汽车品牌开启促销 “价格战”又来了？ tesla stores see order surge after price cuts; multiple car brands launch promotions—is another 'price war' coming? 特斯拉降价后有门店爆单 多个汽车品牌开启促销 “价格战”又来了？ 据每经，特斯拉降价冲上热搜后，多家门店爆单了。“昨天（9月7日）早上政策一出来，订单消息就没断过。”9月8日，某特斯拉体验中心销售顾问表示，model y长续航版是消费者最关注的车型，截至9月7日下午，其所在的门店已锁定20多个订单。 9月7日，特斯拉中国宣布，即日起至9月30日（含）前下单并提车，model 3全系现车现金激励5000元，model y全系现车现金激励1万元。这并非孤立事件，据不完全统计，截至目前已有超过十家车企在9月集中释放购车权益，覆盖新势力、自主、合资与豪华品牌。 according to national business daily, after tesla's price cuts trended on social media, many stores saw a surge in orders. "as soon as the policy came out yesterday morning (september 7), the order messages never stopped." on september 8, a sales consultant at a tesla experience center said that the model y long range version is the model consumers care about most, and as of the afternoon of september 7, the store had locked in more than 20 orders. on september 7, tesla china announced that for orders placed and vehicles delivered from that day through september 30 (inclusive), the entire model 3 lineup in stock would receive a 5,000 yuan cash incentive, and the entire model y lineup in stock would receive a 10,000 yuan cash incentive. this is not an isolated event. according to incomplete statistics, more than ten automakers have concentrated their release of car-purchase benefits in september so far, covering new forces, independent, joint-venture and luxury brands. 据每经，特斯拉降价冲上热搜后，多家门店爆单了。“昨天（9月7日）早上政策一出来，订单消息就没断过。”9月8日，某特斯拉体验中心销售顾问表示，model y长续航版是消费者最关注的车型，截至9月7日下午，其所在的门店已锁定20多个订单。 9月7日，特斯拉中国宣布，即日起至9月30日（含）前下单并提车，model 3全系现车现金激励5000元，model y全系现车现金激励1万元。这并非孤立事件，据不完全统计，截至目前已有超过十家车企在9月集中释放购车权益，覆盖新势力、自主、合资与豪华品牌。 格隆汇 consumer consumer 消费 ">
+          <time class="tp-when" data-t="2026-09-10T00:48:43+00:00" datetime="2026-09-10T00:48:43+00:00">09-10<br>00:48</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10T00:48:43+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">格隆汇</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Tesla stores see order surge after price cuts; multiple car brands launch promotions—is another 'price war' coming?</span><span class="l-zh">特斯拉降价后有门店爆单 多个汽车品牌开启促销 “价格战”又来了？</span></h2>
+            <p class="tp-sum"><span class="l-en">According to National Business Daily, after Tesla's price cuts trended on social media, many stores saw a surge in orders. "As soon as the policy came out yesterday morning (September 7), the order messages never stopped." On September 8, a sales consultant at a Tesla experience center said that the Model Y Long Range version is the model consumers care about most, and as of the afternoon of September 7, the store had locked in more than 20 orders. On September 7, Tesla China announced that for orders placed and vehicles delivered from that day through September 30 (inclusive), the entire Model 3 lineup in stock would receive a 5,000 yuan cash incentive, and the entire Model Y lineup in stock would receive a 10,000 yuan cash incentive. This is not an isolated event. According to incomplete statistics, more than ten automakers have concentrated their release of car-purchase benefits in September so far, covering new forces, independent, joint-venture and luxury brands.</span><span class="l-zh">据每经，特斯拉降价冲上热搜后，多家门店爆单了。“昨天（9月7日）早上政策一出来，订单消息就没断过。”9月8日，某特斯拉体验中心销售顾问表示，Model Y长续航版是消费者最关注的车型，截至9月7日下午，其所在的门店已锁定20多个订单。 9月7日，特斯拉中国宣布，即日起至9月30日（含）前下单并提车，Model 3全系现车现金激励5000元，Model Y全系现车现金激励1万元。这并非孤立事件，据不完全统计，截至目前已有超过十家车企在9月集中释放购车权益，覆盖新势力、自主、合资与豪华品牌。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://www.gelonghui.com/live/2660411" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="medium"
+           data-search="11月起新规实施 这七类服务费用由付款企业代扣代缴增值税 new rules take effect from november: vat on these seven types of service fees to be withheld and remitted by paying enterprises 11月起新规实施 这七类服务费用由付款企业代扣代缴增值税 财政部、税务总局近期发布《境内单位代扣代缴自然人增值税管理办法》，从今年11月1日起施行。《办法》明确，今后企业或机构向个人支付研发、软件、设计、咨询、影视制作、文化、教育这七类服务费用时，要代扣代缴这笔业务对应的增值税。 the ministry of finance and the state taxation administration recently issued the "measures for the administration of withholding and remitting vat on natural persons by domestic entities," effective from november 1 this year. the measures clarify that from now on, when enterprises or institutions pay individuals for seven categories of services—r&d, software, design, consulting, film and television production, culture, and education—they must withhold and remit the vat corresponding to that business. 财政部、税务总局近期发布《境内单位代扣代缴自然人增值税管理办法》，从今年11月1日起施行。《办法》明确，今后企业或机构向个人支付研发、软件、设计、咨询、影视制作、文化、教育这七类服务费用时，要代扣代缴这笔业务对应的增值税。 格隆汇 fiscal_trade fiscal & trade 财政与贸易 ">
+          <time class="tp-when" data-t="2026-09-10T00:45:37+00:00" datetime="2026-09-10T00:45:37+00:00">09-10<br>00:45</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10T00:45:37+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">格隆汇</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">New rules take effect from November: VAT on these seven types of service fees to be withheld and remitted by paying enterprises</span><span class="l-zh">11月起新规实施 这七类服务费用由付款企业代扣代缴增值税</span></h2>
+            <p class="tp-sum"><span class="l-en">The Ministry of Finance and the State Taxation Administration recently issued the "Measures for the Administration of Withholding and Remitting VAT on Natural Persons by Domestic Entities," effective from November 1 this year. The Measures clarify that from now on, when enterprises or institutions pay individuals for seven categories of services—R&D, software, design, consulting, film and television production, culture, and education—they must withhold and remit the VAT corresponding to that business.</span><span class="l-zh">财政部、税务总局近期发布《境内单位代扣代缴自然人增值税管理办法》，从今年11月1日起施行。《办法》明确，今后企业或机构向个人支付研发、软件、设计、咨询、影视制作、文化、教育这七类服务费用时，要代扣代缴这笔业务对应的增值税。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-inflation" href="https://www.gelonghui.com/live/2660409" target="_blank" rel="noopener"
+           data-theme="inflation" data-importance="medium"
+           data-search="中金：后续通胀走势仍有赖于政策发力推动内需改善 cicc: future inflation trend still depends on policy efforts to boost domestic demand improvement 中金：后续通胀走势仍有赖于政策发力推动内需改善 中金公司研报表示，8月cpi环比上涨0.4%，同比由0.5%回升至0.8%，能源价格反弹是主要推动因素。ppi环比由下降0.7%转为上涨0.4%，同比由3.5%回升至3.8%，主要受原油、煤炭及有色金属价格上涨所带动。但在终端需求偏弱下，上游涨价向生活资料和终端消费品的传导相对有限，价格修复仍呈现明显的结构性特征。近期中东地缘局势反复，国际油价再度走高，我们认为，短期输入性通胀仍有粘性，但后续通胀走势仍有赖于政策发力推动内需改善。 cicc research report says august cpi rose 0.4% month-on-month, with the year-on-year rate rebounding from 0.5% to 0.8%, mainly driven by the rebound in energy prices. ppi turned from a 0.7% month-on-month decline to a 0.4% increase, with the year-on-year rate rebounding from 3.5% to 3.8%, mainly driven by rises in crude oil, coal and nonferrous metal prices. however, given weak end demand, the transmission of upstream price increases to consumer goods and terminal consumer products is relatively limited, and price repair still shows clear structural characteristics. with recent repeated middle east geopolitical tensions and international oil prices rising again, we believe short-term imported inflation remains sticky, but the subsequent inflation trend still depends on policy efforts to drive improvement in domestic demand. 中金公司研报表示，8月cpi环比上涨0.4%，同比由0.5%回升至0.8%，能源价格反弹是主要推动因素。ppi环比由下降0.7%转为上涨0.4%，同比由3.5%回升至3.8%，主要受原油、煤炭及有色金属价格上涨所带动。但在终端需求偏弱下，上游涨价向生活资料和终端消费品的传导相对有限，价格修复仍呈现明显的结构性特征。近期中东地缘局势反复，国际油价再度走高，我们认为，短期输入性通胀仍有粘性，但后续通胀走势仍有赖于政策发力推动内需改善。 格隆汇 consumer commodities consumer 消费 commodities 大宗商品 512400.ss">
+          <time class="tp-when" data-t="2026-09-10T00:44:37+00:00" datetime="2026-09-10T00:44:37+00:00">09-10<br>00:44</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10T00:44:37+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+              <span class="cn-src">格隆汇</span>
+              <span class="cn-imp imp-medium"><b>52</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">CICC: Future inflation trend still depends on policy efforts to boost domestic demand improvement</span><span class="l-zh">中金：后续通胀走势仍有赖于政策发力推动内需改善</span></h2>
+            <p class="tp-sum"><span class="l-en">CICC research report says August CPI rose 0.4% month-on-month, with the year-on-year rate rebounding from 0.5% to 0.8%, mainly driven by the rebound in energy prices. PPI turned from a 0.7% month-on-month decline to a 0.4% increase, with the year-on-year rate rebounding from 3.5% to 3.8%, mainly driven by rises in crude oil, coal and nonferrous metal prices. However, given weak end demand, the transmission of upstream price increases to consumer goods and terminal consumer products is relatively limited, and price repair still shows clear structural characteristics. With recent repeated Middle East geopolitical tensions and international oil prices rising again, we believe short-term imported inflation remains sticky, but the subsequent inflation trend still depends on policy efforts to drive improvement in domestic demand.</span><span class="l-zh">中金公司研报表示，8月CPI环比上涨0.4%，同比由0.5%回升至0.8%，能源价格反弹是主要推动因素。PPI环比由下降0.7%转为上涨0.4%，同比由3.5%回升至3.8%，主要受原油、煤炭及有色金属价格上涨所带动。但在终端需求偏弱下，上游涨价向生活资料和终端消费品的传导相对有限，价格修复仍呈现明显的结构性特征。近期中东地缘局势反复，国际油价再度走高，我们认为，短期输入性通胀仍有粘性，但后续通胀走势仍有赖于政策发力推动内需改善。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">commodities</span><span class="l-zh">大宗商品</span></span><span class="cn-tk">512400.SS</span></div>
           </div>
         </a>
         
@@ -743,158 +896,6 @@ mainland-listed companies posted double-digit profit growth in the first half of
             <p class="tp-sum"><span class="l-en">Chinese stocks are likely to trade sideways through September, as resilient earnings growth is weighed down by concerns over potential monetary policy tightening in the United States, according to a recent strategy report by China Asset Management, the country’s second-largest mutual fund firm.
 Mainland-listed companies posted double-digit profit growth in the first half of the year, providing a cushion that is expected to keep a floor under stock prices. But a hawkish tone from the US Federal...</span><span class="l-zh">中国资产管理公司（国内第二大共同基金公司）近期的一份策略报告指出，中国股市9月份可能维持横盘走势，因为强劲的盈利增长受到对美国货币政策可能收紧的担忧所拖累。内地上市公司利润实现两位数增长，</span></p>
             <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-fiscal" href="https://wallstreetcn.com/livenews/3162590" target="_blank" rel="noopener"
-           data-theme="fiscal" data-importance="medium"
-           data-search="何立峰会见加拿大加中贸易理事会名誉主席安德烈·德马雷 he lifeng meets andré desmarais, honorary chairman of canada-china business council 何立峰会见加拿大加中贸易理事会名誉主席安德烈·德马雷 据新华社，中共中央政治局委员、国务院副总理何立峰9日下午在人民大会堂会见加拿大加中贸易理事会名誉主席安德烈·德马雷。 according to xinhua, he lifeng, politburo member and vice premier, met with andré desmarais, honorary chairman of the canada-china business council, at the great hall of the people on the afternoon of september 9. 据新华社，中共中央政治局委员、国务院副总理何立峰9日下午在人民大会堂会见加拿大加中贸易理事会名誉主席安德烈·德马雷。 华尔街见闻 fiscal fiscal/trade 财政/贸易 ">
-          <time class="tp-when" data-t="2026-09-09T11:44:16+00:00" datetime="2026-09-09T11:44:16+00:00">09-09<br>11:44</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T11:44:16+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">He Lifeng meets André Desmarais, honorary chairman of Canada-China Business Council</span><span class="l-zh">何立峰会见加拿大加中贸易理事会名誉主席安德烈·德马雷</span></h2>
-            <p class="tp-sum"><span class="l-en">According to Xinhua, He Lifeng, Politburo member and Vice Premier, met with André Desmarais, honorary chairman of the Canada-China Business Council, at the Great Hall of the People on the afternoon of September 9.</span><span class="l-zh">据新华社，中共中央政治局委员、国务院副总理何立峰9日下午在人民大会堂会见加拿大加中贸易理事会名誉主席安德烈·德马雷。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-growth" href="https://www.stcn.com/article/detail/4178652.html" target="_blank" rel="noopener"
-           data-theme="growth" data-importance="medium"
-           data-search="国金证券宋雪涛：ai进入“棋至中盘”兑现期，中国制造业优势有望再次被定价 guojin securities' song xuetao: ai enters mid-game realization period; china's manufacturing edge may be re-priced 国金证券宋雪涛：ai进入“棋至中盘”兑现期，中国制造业优势有望再次被定价    证券时报 industrial tech_policy industry & manufacturing 工业与制造业 tech policy 科技政策 512880.ss">
-          <time class="tp-when" data-t="" >—</time>
-          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
-              <span class="cn-src">证券时报</span>
-              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Guojin Securities' Song Xuetao: AI enters mid-game realization period; China's manufacturing edge may be re-priced</span><span class="l-zh">国金证券宋雪涛：AI进入“棋至中盘”兑现期，中国制造业优势有望再次被定价</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">512880.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-markets" href="https://www.gelonghui.com/live/2659447" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="medium"
-           data-search="多只连板股提示风险 multiple consecutive-limit-up stocks flag risks 多只连板股提示风险 今日晚间，多家a股上市公司发布股价异动公告，并进行相应的风险提示。 3连板中百集团公告称，公司股票连续两个交易日收盘价格涨幅偏离值累计超过20%，属于股票交易异常波动。敬请广大投资者注意二级市场交易风险，理性决策，审慎投资。 2连板红棉股份公告称，制糖业务收入占比68.07%，原糖价格上涨等对公司短期业绩影响不确定。 2连板精艺股份公告称，铜价上涨对公司经营不存在利好。 2连板黑猫股份公告称，炭黑产品价格上调仅为成本传导举措，并不必然导致公司利润同步增长。 2连板精华制药公告称，公司股票于9月8日、9月9日连续两个交易日收盘价格涨幅偏离值累计超过20%， multiple a-share companies issued announcements this evening regarding unusual stock price movements with risk warnings. zhongbai group, up three consecutive limit-ups, stated its cumulative closing price gain deviation exceeded 20% over two trading days, constituting abnormal trading. red cotton holdings, up two consecutive limit-ups, said sugar business accounts for 68.07% of revenue, with raw sugar price increases having uncertain short-term impact. jingyi shares, up two consecutive limit-ups, noted copper price rises offer no benefit to operations. black cat carbon, up two consecutive limit-ups, said carbon black price hikes are merely cost-pass-through measures and won't necessarily boost profits. essence pharmaceuticals, up two consecutive limit-ups, reported cumulative closing price gain deviation exceeding 20% on september 8 and 9. 今日晚间，多家a股上市公司发布股价异动公告，并进行相应的风险提示。 3连板中百集团公告称，公司股票连续两个交易日收盘价格涨幅偏离值累计超过20%，属于股票交易异常波动。敬请广大投资者注意二级市场交易风险，理性决策，审慎投资。 2连板红棉股份公告称，制糖业务收入占比68.07%，原糖价格上涨等对公司短期业绩影响不确定。 2连板精艺股份公告称，铜价上涨对公司经营不存在利好。 2连板黑猫股份公告称，炭黑产品价格上调仅为成本传导举措，并不必然导致公司利润同步增长。 2连板精华制药公告称，公司股票于9月8日、9月9日连续两个交易日收盘价格涨幅偏离值累计超过20%， 格隆汇 markets commodities equity market 股票市场 commodities 大宗商品 ">
-          <time class="tp-when" data-t="2026-09-09T12:00:59+00:00" datetime="2026-09-09T12:00:59+00:00">09-09<br>12:00</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T12:00:59+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">格隆汇</span>
-              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Multiple consecutive-limit-up stocks flag risks</span><span class="l-zh">多只连板股提示风险</span></h2>
-            <p class="tp-sum"><span class="l-en">Multiple A-share companies issued announcements this evening regarding unusual stock price movements with risk warnings. Zhongbai Group, up three consecutive limit-ups, stated its cumulative closing price gain deviation exceeded 20% over two trading days, constituting abnormal trading. Red Cotton Holdings, up two consecutive limit-ups, said sugar business accounts for 68.07% of revenue, with raw sugar price increases having uncertain short-term impact. Jingyi Shares, up two consecutive limit-ups, noted copper price rises offer no benefit to operations. Black Cat Carbon, up two consecutive limit-ups, said carbon black price hikes are merely cost-pass-through measures and won't necessarily boost profits. Essence Pharmaceuticals, up two consecutive limit-ups, reported cumulative closing price gain deviation exceeding 20% on September 8 and 9.</span><span class="l-zh">今日晚间，多家A股上市公司发布股价异动公告，并进行相应的风险提示。 3连板中百集团公告称，公司股票连续两个交易日收盘价格涨幅偏离值累计超过20%，属于股票交易异常波动。敬请广大投资者注意二级市场交易风险，理性决策，审慎投资。 2连板红棉股份公告称，制糖业务收入占比68.07%，原糖价格上涨等对公司短期业绩影响不确定。 2连板精艺股份公告称，铜价上涨对公司经营不存在利好。 2连板黑猫股份公告称，炭黑产品价格上调仅为成本传导举措，并不必然导致公司利润同步增长。 2连板精华制药公告称，公司股票于9月8日、9月9日连续两个交易日收盘价格涨幅偏离值累计超过20%，</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-cchip"><span class="l-en">commodities</span><span class="l-zh">大宗商品</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-policy" href="https://www.yicai.com/news/103358125.html" target="_blank" rel="noopener"
-           data-theme="policy" data-importance="medium"
-           data-search="多地再出新政提振楼市，激活住房消费新动能 多地开始做准备销售政策调整的相关细则。 multiple regions introduce new policies to boost the property market, activating new momentum in housing consumption; localities begin drafting detailed rules for sales policy adjustments. 多地再出新政提振楼市，激活住房消费新动能 多地开始做准备销售政策调整的相关细则。    第一财经 property consumer property 房地产 consumer 消费 ">
-          <time class="tp-when" data-t="" >—</time>
-          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
-              <span class="cn-src">第一财经</span>
-              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Multiple regions introduce new policies to boost the property market, activating new momentum in housing consumption; localities begin drafting detailed rules for sales policy adjustments.</span><span class="l-zh">多地再出新政提振楼市，激活住房消费新动能 多地开始做准备销售政策调整的相关细则。</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-markets" href="https://www.yicai.com/news/103357958.html" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="medium"
-           data-search="连板股追踪丨a股今日共49只个股涨停 这只零售股收获5连板 零售板块百大集团收获5连板、中百集团3连板。一图速览今日连板股>> limit-up stock tracker: a total of 49 stocks hit daily limit-up in a-shares today; this retail stock logs its 5th consecutive limit-up. in the retail sector, baida group hits a 5-day limit-up streak and zhongbai group a 3-day streak. see the chart for today's limit-up stocks>> 连板股追踪丨a股今日共49只个股涨停 这只零售股收获5连板 零售板块百大集团收获5连板、中百集团3连板。一图速览今日连板股>>    第一财经 consumer markets consumer 消费 equity market 股票市场 ">
-          <time class="tp-when" data-t="" >—</time>
-          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">第一财经</span>
-              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Limit-up stock tracker: A total of 49 stocks hit daily limit-up in A-shares today; this retail stock logs its 5th consecutive limit-up. In the retail sector, Baida Group hits a 5-day limit-up streak and Zhongbai Group a 3-day streak. See the chart for today's limit-up stocks>></span><span class="l-zh">连板股追踪丨A股今日共49只个股涨停 这只零售股收获5连板 零售板块百大集团收获5连板、中百集团3连板。一图速览今日连板股>></span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-tech" href="https://news.futunn.com/flash/20726993/enflame-technology-shares-to-list-on-the-star-market-on" target="_blank" rel="noopener"
-           data-theme="tech" data-importance="medium"
-           data-search="燧原科技：股票将于2026年9月11日科创板上市 suixiang technology (suixiang yuan): shares to list on the star market on september 11, 2026. 燧原科技：股票将于2026年9月11日科创板上市 燧原科技公告，公司股票将于2026年9月11日在上海证券交易所科创板上市；截至公告披露日，公司尚未盈利，自上市之日起纳入科创成长层。本次发行后总股本为4.3亿股，上市初期无限售流通股数量为1790.03万股，占本次发行后总股本的比例为4.1595%。 suiyuan technology announced its shares will list on the shanghai stock exchange star market on september 11, 2026. as of the disclosure date, the company has yet to turn profitable and will enter the star growth tier upon listing. post-issuance total share capital is 430 million shares, with initial unrestricted floating shares of 17.9003 million, representing 4.1595% of total share capital. 燧原科技公告，公司股票将于2026年9月11日在上海证券交易所科创板上市；截至公告披露日，公司尚未盈利，自上市之日起纳入科创成长层。本次发行后总股本为4.3亿股，上市初期无限售流通股数量为1790.03万股，占本次发行后总股本的比例为4.1595%。 富途牛牛 tech tech 科技 512880.ss">
-          <time class="tp-when" data-t="2026-09-09T11:03:08+00:00" datetime="2026-09-09T11:03:08+00:00">09-09<br>11:03</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T11:03:08+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
-              <span class="cn-src">富途牛牛</span>
-              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Suixiang Technology (Suixiang Yuan): Shares to list on the STAR Market on September 11, 2026.</span><span class="l-zh">燧原科技：股票将于2026年9月11日科创板上市</span></h2>
-            <p class="tp-sum"><span class="l-en">Suiyuan Technology announced its shares will list on the Shanghai Stock Exchange STAR Market on September 11, 2026. As of the disclosure date, the company has yet to turn profitable and will enter the STAR Growth tier upon listing. Post-issuance total share capital is 430 million shares, with initial unrestricted floating shares of 17.9003 million, representing 4.1595% of total share capital.</span><span class="l-zh">燧原科技公告，公司股票将于2026年9月11日在上海证券交易所科创板上市；截至公告披露日，公司尚未盈利，自上市之日起纳入科创成长层。本次发行后总股本为4.3亿股，上市初期无限售流通股数量为1790.03万股，占本次发行后总股本的比例为4.1595%。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Tech</span><span class="l-zh">科技</span></span><span class="cn-tk">512880.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-tech" href="https://wallstreetcn.com/livenews/3162567" target="_blank" rel="noopener"
-           data-theme="tech" data-importance="medium"
-           data-search="燧原科技：股票将于9月11日在科创板上市 suixiang technology (suixiang yuan): shares to list on the star market on september 11. 燧原科技：股票将于9月11日在科创板上市 燧原科技公告，公司股票将于2026年9月11日在上海证券交易所科创板上市，发行价格142.18元/股。公司预计2026年1-9月营业收入23亿至30亿元，同比增长325.78%至455.36%。 suiyuan technology announced its shares will list on the shanghai stock exchange star market on september 11, 2026, at an issue price of 142.18 yuan per share. the company projects revenue of 2.3 billion to 3 billion yuan for january-september 2026, up 325.78% to 455.36% year-on-year. 燧原科技公告，公司股票将于2026年9月11日在上海证券交易所科创板上市，发行价格142.18元/股。公司预计2026年1-9月营业收入23亿至30亿元，同比增长325.78%至455.36%。 华尔街见闻 tech tech 科技 512880.ss">
-          <time class="tp-when" data-t="2026-09-09T11:02:30+00:00" datetime="2026-09-09T11:02:30+00:00">09-09<br>11:02</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T11:02:30+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Suixiang Technology (Suixiang Yuan): Shares to list on the STAR Market on September 11.</span><span class="l-zh">燧原科技：股票将于9月11日在科创板上市</span></h2>
-            <p class="tp-sum"><span class="l-en">Suiyuan Technology announced its shares will list on the Shanghai Stock Exchange STAR Market on September 11, 2026, at an issue price of 142.18 yuan per share. The company projects revenue of 2.3 billion to 3 billion yuan for January-September 2026, up 325.78% to 455.36% year-on-year.</span><span class="l-zh">燧原科技公告，公司股票将于2026年9月11日在上海证券交易所科创板上市，发行价格142.18元/股。公司预计2026年1-9月营业收入23亿至30亿元，同比增长325.78%至455.36%。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Tech</span><span class="l-zh">科技</span></span><span class="cn-tk">512880.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3162546" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="medium"
-           data-search="中加基金公开“海选”总经理 zhongjia fund publicly 'open-sources' hiring for a general manager. 中加基金公开“海选”总经理 近日，北京银行启动子公司管理人员公开招聘，其中包括旗下基金公司——中加基金总经理职务。事实上，自上一任总经理李莹于去年底离职后，中加基金总经理职务一直由首席信息官陈昕代任，目前代任时长已超过半年。如今，股东方启动公开招聘，或意在尽快填补总经理一职的长期空缺。（中国基金报） bank of beijing recently launched a public recruitment for subsidiary management positions, including the general manager role at its fund unit, bank of china jiaming fund. since former general manager li ying departed late last year, cio chen xin has been acting gm for over half a year. the shareholder's public recruitment may aim to fill the long-vacant position promptly. (china fund news) 近日，北京银行启动子公司管理人员公开招聘，其中包括旗下基金公司——中加基金总经理职务。事实上，自上一任总经理李莹于去年底离职后，中加基金总经理职务一直由首席信息官陈昕代任，目前代任时长已超过半年。如今，股东方启动公开招聘，或意在尽快填补总经理一职的长期空缺。（中国基金报） 华尔街见闻 markets equity market 股票市场 512800.ss">
-          <time class="tp-when" data-t="2026-09-09T10:28:22+00:00" datetime="2026-09-09T10:28:22+00:00">09-09<br>10:28</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T10:28:22+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Zhongjia Fund publicly 'open-sources' hiring for a general manager.</span><span class="l-zh">中加基金公开“海选”总经理</span></h2>
-            <p class="tp-sum"><span class="l-en">Bank of Beijing recently launched a public recruitment for subsidiary management positions, including the general manager role at its fund unit, Bank of China Jiaming Fund. Since former general manager Li Ying departed late last year, CIO Chen Xin has been acting GM for over half a year. The shareholder's public recruitment may aim to fill the long-vacant position promptly. (China Fund News)</span><span class="l-zh">近日，北京银行启动子公司管理人员公开招聘，其中包括旗下基金公司——中加基金总经理职务。事实上，自上一任总经理李莹于去年底离职后，中加基金总经理职务一直由首席信息官陈昕代任，目前代任时长已超过半年。如今，股东方启动公开招聘，或意在尽快填补总经理一职的长期空缺。（中国基金报）</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512800.SS</span></div>
           </div>
         </a>
         
@@ -964,22 +965,28 @@ Mainland-listed companies posted double-digit profit growth in the first half of
         <div class="exp-pills">
           
           
-          <span class="exp-pill"><span class="tk">512880.SS</span><span class="nm"><span class="l-en">brokers</span><span class="l-zh">券商</span></span><span class="ct">×7</span></span>
+          <span class="exp-pill"><span class="tk">510300.SS</span><span class="nm"><span class="l-en">CSI 300</span><span class="l-zh">沪深300</span></span><span class="ct">×6</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">CBON</span><span class="nm"><span class="l-en">China bonds</span><span class="l-zh">中国债券</span></span><span class="ct">×5</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">512880.SS</span><span class="nm"><span class="l-en">brokers</span><span class="l-zh">券商</span></span><span class="ct">×4</span></span>
           
           
           <span class="exp-pill"><span class="tk">512800.SS</span><span class="nm"><span class="l-en">banks</span><span class="l-zh">银行</span></span><span class="ct">×3</span></span>
           
           
-          <span class="exp-pill"><span class="tk">CNY</span><span class="nm"><span class="l-en">yuan</span><span class="l-zh">人民币</span></span></span>
+          <span class="exp-pill"><span class="tk">512200.SS</span><span class="nm"><span class="l-en">property</span><span class="l-zh">房地产</span></span></span>
           
           
-          <span class="exp-pill"><span class="tk">CBON</span><span class="nm"><span class="l-en">China bonds</span><span class="l-zh">中国债券</span></span></span>
+          <span class="exp-pill"><span class="tk">ASHR</span><span class="nm"><span class="l-en">A-shares</span><span class="l-zh">A股</span></span></span>
           
           
           <span class="exp-pill"><span class="tk">2800.HK</span><span class="nm"><span class="l-en">Hang Seng</span><span class="l-zh">恒生</span></span></span>
           
           
-          <span class="exp-pill"><span class="tk">510300.SS</span><span class="nm"><span class="l-en">CSI 300</span><span class="l-zh">沪深300</span></span></span>
+          <span class="exp-pill"><span class="tk">512400.SS</span><span class="nm"><span class="l-en">metals</span><span class="l-zh">有色</span></span></span>
           
         </div>
       </section>

@@ -1,6 +1,6 @@
 {
-  "generated_utc": "2026-09-09T22:33:40.797767+00:00",
-  "as_of": "2026-09-09",
+  "generated_utc": "2026-09-10T00:17:51.127144+00:00",
+  "as_of": "2026-09-10",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
   "note": "Deterministic alt-data signals + normalized event feed for the reasoning brain. Display/context-only \u2014 not a scored axis.",
@@ -5949,15 +5949,6 @@
           "parties": "D"
         },
         {
-          "ticker": "SPCX",
-          "net": 8,
-          "buys": 8,
-          "sells": 0,
-          "members": 4,
-          "est_usd": 113004.0,
-          "parties": "D/Democratic/R/Republican"
-        },
-        {
           "ticker": "BRK.B",
           "net": 8,
           "buys": 8,
@@ -5974,6 +5965,15 @@
           "members": 3,
           "est_usd": 48003.0,
           "parties": "D/R"
+        },
+        {
+          "ticker": "SPCX",
+          "net": 6,
+          "buys": 6,
+          "sells": 0,
+          "members": 3,
+          "est_usd": 97003.0,
+          "parties": "Democratic/R/Republican"
         },
         {
           "ticker": "AVGO",
@@ -6060,9 +6060,9 @@
       "sells": [
         {
           "ticker": "CPAY",
-          "net": -14,
+          "net": -12,
           "buys": 0,
-          "sells": 14,
+          "sells": 12,
           "members": 1,
           "est_usd": 0.0,
           "parties": "D"
@@ -6084,15 +6084,6 @@
           "members": 8,
           "est_usd": 97003.0,
           "parties": "D/Democratic/R"
-        },
-        {
-          "ticker": "BLK",
-          "net": -10,
-          "buys": 0,
-          "sells": 10,
-          "members": 2,
-          "est_usd": 0.0,
-          "parties": "R"
         },
         {
           "ticker": "MKL",
@@ -6140,13 +6131,22 @@
           "parties": "D/R"
         },
         {
-          "ticker": "WAB",
+          "ticker": "BLK",
           "net": -8,
           "buys": 0,
           "sells": 8,
-          "members": 1,
+          "members": 2,
           "est_usd": 0.0,
-          "parties": "D"
+          "parties": "R"
+        },
+        {
+          "ticker": "ABT",
+          "net": -6,
+          "buys": 2,
+          "sells": 8,
+          "members": 5,
+          "est_usd": 16001.0,
+          "parties": "D/Democratic/R"
         },
         {
           "ticker": "ADBE",
@@ -6167,15 +6167,6 @@
           "parties": "D/R"
         },
         {
-          "ticker": "ADI",
-          "net": -6,
-          "buys": 0,
-          "sells": 6,
-          "members": 2,
-          "est_usd": 0.0,
-          "parties": "R"
-        },
-        {
           "ticker": "CARR",
           "net": -6,
           "buys": 0,
@@ -6185,13 +6176,22 @@
           "parties": "R"
         },
         {
-          "ticker": "CSCO",
+          "ticker": "CLH",
           "net": -6,
           "buys": 0,
           "sells": 6,
-          "members": 2,
+          "members": 1,
           "est_usd": 0.0,
-          "parties": "R"
+          "parties": "D"
+        },
+        {
+          "ticker": "WAB",
+          "net": -6,
+          "buys": 0,
+          "sells": 6,
+          "members": 1,
+          "est_usd": 0.0,
+          "parties": "D"
         }
       ]
     },
@@ -6460,7 +6460,7 @@
     "material_8k": [
       {
         "ticker": "NWS",
-        "count": 20,
+        "count": 19,
         "items": "8.01"
       },
       {
@@ -6472,11 +6472,6 @@
         "ticker": "MSTR",
         "count": 5,
         "items": "7.01, 8.01"
-      },
-      {
-        "ticker": "TSN",
-        "count": 5,
-        "items": "1.01, 2.03, 7.01, 8.01"
       },
       {
         "ticker": "ASPI",
@@ -6494,19 +6489,14 @@
         "items": "1.01, 2.01, 2.03, 5.02, 7.01, 8.01"
       },
       {
-        "ticker": "O",
-        "count": 4,
-        "items": "2.03, 7.01, 8.01"
-      },
-      {
         "ticker": "QBTS",
         "count": 4,
         "items": "1.01, 5.02, 7.01, 8.01"
       },
       {
-        "ticker": "APO",
-        "count": 3,
-        "items": "7.01"
+        "ticker": "TSN",
+        "count": 4,
+        "items": "1.01, 2.03, 7.01, 8.01"
       },
       {
         "ticker": "BNY",
@@ -6534,6 +6524,11 @@
         "items": "5.02"
       },
       {
+        "ticker": "O",
+        "count": 3,
+        "items": "2.03, 7.01, 8.01"
+      },
+      {
         "ticker": "PM",
         "count": 3,
         "items": "7.01"
@@ -6559,11 +6554,6 @@
         "items": "5.02, 7.01, 8.01"
       },
       {
-        "ticker": "WEC",
-        "count": 3,
-        "items": "1.01, 5.02, 7.01"
-      },
-      {
         "ticker": "ABBV",
         "count": 2,
         "items": "7.01, 8.01"
@@ -6579,9 +6569,19 @@
         "items": "1.01, 2.03, 5.02"
       },
       {
-        "ticker": "AME",
+        "ticker": "AON",
         "count": 2,
-        "items": "8.01"
+        "items": "1.01, 5.02, 7.01"
+      },
+      {
+        "ticker": "APO",
+        "count": 2,
+        "items": "7.01"
+      },
+      {
+        "ticker": "ARE",
+        "count": 2,
+        "items": "1.01, 2.03, 8.01"
       }
     ],
     "special_situations": [
@@ -26103,7 +26103,7 @@
       },
       {
         "ticker": "GSK",
-        "phase3_starts": 29,
+        "phase3_starts": 27,
         "halts": 0,
         "hot": true,
         "sample": "A Study on the Efficacy of a Vaccine Against Influenza in Adults \u226565 Years of Age"
@@ -26334,34 +26334,6 @@
         "top_issue": "Foreign Relations"
       },
       {
-        "ticker": "WEN",
-        "spend_usd": 0.0,
-        "filings": 1,
-        "spike_x": null,
-        "top_issue": "Small Business"
-      },
-      {
-        "ticker": "HWM",
-        "spend_usd": 130000.0,
-        "filings": 1,
-        "spike_x": 13.0,
-        "top_issue": "Defense"
-      },
-      {
-        "ticker": "MOS",
-        "spend_usd": 510000.0,
-        "filings": 1,
-        "spike_x": 3.0,
-        "top_issue": "Taxation/Internal Revenue Code"
-      },
-      {
-        "ticker": "MASS",
-        "spend_usd": 50000.0,
-        "filings": 1,
-        "spike_x": 2.22,
-        "top_issue": "Budget/Appropriations"
-      },
-      {
         "ticker": "TAL",
         "spend_usd": 271000.0,
         "filings": 2,
@@ -26381,13 +26353,6 @@
         "filings": 1,
         "spike_x": 0.86,
         "top_issue": "Health Issues"
-      },
-      {
-        "ticker": "EMN",
-        "spend_usd": 680000.0,
-        "filings": 1,
-        "spike_x": 0.68,
-        "top_issue": "Taxation/Internal Revenue Code"
       },
       {
         "ticker": "CRMD",
@@ -26411,17 +26376,52 @@
         "top_issue": "Taxation/Internal Revenue Code"
       },
       {
+        "ticker": "PRU",
+        "spend_usd": 50000.0,
+        "filings": 1,
+        "spike_x": 0.12,
+        "top_issue": "Taxation/Internal Revenue Code"
+      },
+      {
+        "ticker": "SLNO",
+        "spend_usd": 10000.0,
+        "filings": 1,
+        "spike_x": 0.12,
+        "top_issue": "Health Issues"
+      },
+      {
         "ticker": "STT",
-        "spend_usd": 80000.0,
-        "filings": 2,
-        "spike_x": 0.2,
+        "spend_usd": 40000.0,
+        "filings": 1,
+        "spike_x": 0.09,
         "top_issue": "Financial Institutions/Investments/Securities"
       },
       {
         "ticker": "HOOD",
+        "spend_usd": 60000.0,
+        "filings": 1,
+        "spike_x": 0.08,
+        "top_issue": "Financial Institutions/Investments/Securities"
+      },
+      {
+        "ticker": "BUD",
         "spend_usd": 120000.0,
         "filings": 2,
-        "spike_x": 0.17,
+        "spike_x": 0.07,
+        "top_issue": "Taxation/Internal Revenue Code"
+      },
+      {
+        "ticker": "MH",
+        "spend_usd": 80000.0,
+        "filings": 1,
+        "spike_x": 0.07,
+        "top_issue": "Financial Institutions/Investments/Securities"
+      },
+      {
+        "ticker": "GS",
+        "spend_usd": 60000.0,
+        "filings": 1,
+        "spike_x": 0.06,
         "top_issue": "Financial Institutions/Investments/Securities"
       }
     ],
@@ -26706,10 +26706,10 @@
         {
           "ticker": "CRWV",
           "buy_usd": 0.0,
-          "sell_usd": 1234852584.0,
-          "net_usd": -1234852584.0,
+          "sell_usd": 1204426611.0,
+          "net_usd": -1204426611.0,
           "buyers": 0,
-          "sellers": 986
+          "sellers": 964
         },
         {
           "ticker": "BIRK",
@@ -27838,14 +27838,14 @@
         "sentiment": 0.107
       },
       {
-        "ticker": "QQQ",
-        "mentions": 25,
-        "sentiment": 0.074
-      },
-      {
         "ticker": "MSFT",
         "mentions": 25,
         "sentiment": 0.015
+      },
+      {
+        "ticker": "QQQ",
+        "mentions": 25,
+        "sentiment": 0.074
       },
       {
         "ticker": "OKLO",
@@ -29507,74 +29507,81 @@
     ],
     "earnings": [
       {
-        "ticker": "ASO",
-        "next_date": "2026-09-09",
-        "days_to": 0,
-        "eps_forecast": 2.04,
-        "last_surprise_pct": -3.6
-      },
-      {
         "ticker": "ADBE",
         "next_date": "2026-09-10",
-        "days_to": 1,
+        "days_to": 0,
         "eps_forecast": 4.86,
         "last_surprise_pct": -3.4
       },
       {
         "ticker": "ORCL",
         "next_date": "2026-09-10",
-        "days_to": 1,
+        "days_to": 0,
         "eps_forecast": 1.4,
         "last_surprise_pct": 13.3
       },
       {
         "ticker": "FIZZ",
         "next_date": "2026-09-10",
-        "days_to": 1,
+        "days_to": 0,
         "eps_forecast": null,
         "last_surprise_pct": null
       },
       {
         "ticker": "LEN",
         "next_date": "2026-09-16",
-        "days_to": 7,
+        "days_to": 6,
         "eps_forecast": 1.31,
         "last_surprise_pct": 6.5
       },
       {
         "ticker": "AZO",
         "next_date": "2026-09-22",
-        "days_to": 13,
+        "days_to": 12,
         "eps_forecast": 54.97,
         "last_surprise_pct": 5.2
       },
       {
         "ticker": "GIS",
         "next_date": "2026-09-23",
-        "days_to": 14,
+        "days_to": 13,
         "eps_forecast": 0.71,
         "last_surprise_pct": 15.8
       },
       {
         "ticker": "COST",
         "next_date": "2026-09-24",
-        "days_to": 15,
+        "days_to": 14,
         "eps_forecast": 6.5,
         "last_surprise_pct": null
       },
       {
         "ticker": "FDS",
         "next_date": "2026-09-30",
-        "days_to": 21,
+        "days_to": 20,
         "eps_forecast": 4.3,
         "last_surprise_pct": 2.0
       },
       {
         "ticker": "MU",
         "next_date": "2026-09-30",
-        "days_to": 21,
+        "days_to": 20,
         "eps_forecast": 31.17,
         "last_surprise_pct": 18.6
+      },
+      {
+        "ticker": "ACN",
+        "next_date": "2026-10-01",
+        "days_to": 21,
+        "eps_forecast": 3.19,
+        "last_surprise_pct": 2.7
+      },
+      {
+        "ticker": "NKE",
+        "next_date": "2026-10-01",
+        "days_to": 21,
+        "eps_forecast": 0.45,
+        "last_surprise_pct": 81.8
       }
     ],
     "retail": [
@@ -29765,7 +29772,7 @@
           "congress_cluster",
           "special_situation"
         ],
-        "why": "13f_add: ONTARIO TEACHERS PENSION PLAN BOARD +$8,658,544,075 \u00b7 congress_cluster: 4 members net +8 \u00b7 special_situation: Acquisitions"
+        "why": "13f_add: ONTARIO TEACHERS PENSION PLAN BOARD +$8,658,544,075 \u00b7 congress_cluster: 3 members net +6 \u00b7 special_situation: Acquisitions"
       },
       {
         "ticker": "SMCI",
@@ -29788,17 +29795,6 @@
           "insider_mspr"
         ],
         "why": "13f_add: Ascentis Wealth Management, LLC +$2,679,146,768 \u00b7 analyst_upgrade_cluster: net upgrades +25 revision delta \u00b7 insider_mspr: MSPR 100.0"
-      },
-      {
-        "ticker": "MOS",
-        "score": 3,
-        "weighted_score": 1.25,
-        "channel_list": [
-          "lobbying_spike",
-          "material_8k",
-          "special_situation"
-        ],
-        "why": "lobbying_spike: $510,000, 3.0x spike \u00b7 material_8k: 3 material 8-Ks (items 2.03, 8.01) \u00b7 special_situation: Issuer Tenders"
       },
       {
         "ticker": "AMD",
@@ -29918,16 +29914,6 @@
         "why": "gov_grant: $6,756,531 federal grant/loan \u00b7 insider_mspr: MSPR 100.0"
       },
       {
-        "ticker": "HWM",
-        "score": 2,
-        "weighted_score": 1.05,
-        "channel_list": [
-          "insider_mspr",
-          "lobbying_spike"
-        ],
-        "why": "insider_mspr: MSPR 100.0 \u00b7 lobbying_spike: $130,000, 13.0x spike"
-      },
-      {
         "ticker": "ADBE",
         "score": 2,
         "weighted_score": 1.05,
@@ -29946,6 +29932,28 @@
           "unusual_options"
         ],
         "why": "analyst_upgrade_cluster: net upgrades +23 revision delta \u00b7 unusual_options: 4.28\u00d7 vol/OI, call-skew"
+      },
+      {
+        "ticker": "VST",
+        "score": 3,
+        "weighted_score": 0.95,
+        "channel_list": [
+          "insider_mspr",
+          "news_sentiment",
+          "special_situation"
+        ],
+        "why": "insider_mspr: MSPR 100.0 \u00b7 news_sentiment: 0.9 bullish news (50 art) \u00b7 special_situation: Spin-Offs"
+      },
+      {
+        "ticker": "SBUX",
+        "score": 3,
+        "weighted_score": 0.95,
+        "channel_list": [
+          "analyst_upgrade_cluster",
+          "app_demand",
+          "special_situation"
+        ],
+        "why": "analyst_upgrade_cluster: net upgrades +25 revision delta \u00b7 app_demand: 4.89\u2605 \u00d7 8,256,956 reviews \u00b7 special_situation: Strategic Reviews"
       }
     ]
   }
