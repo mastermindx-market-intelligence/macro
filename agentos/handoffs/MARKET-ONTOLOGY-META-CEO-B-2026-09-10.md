@@ -4,7 +4,7 @@ session: |
   harness session d640f3ef-1305-4b6c-aa5d-2d6d5e3dc515 (Claude 5 runtime, Fable), holder of the
   Meta-CEO B seat since 2026-09-08 21:1xZ; bound on macro#6819 with issuecomment-5592587864 (the
   ACK issuecomment-5557271957 and the Wave 1 comment issuecomment-5577816742 are never repeated).
-  Wave 2 comment on macro#6819: <issuecomment id pasted by the seat after posting>
+  Wave 2 comment on macro#6819: issuecomment-5626381233 (posted 2026-09-10 22:4xZ; never repeated).
 model: fable
 ended_because: complete
 mission: >
