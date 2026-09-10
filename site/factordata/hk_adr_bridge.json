@@ -10,16 +10,6 @@
       "lag_days": 1,
       "state": "fresh"
     },
-    "BABA": {
-      "asof": "2026-09-09",
-      "lag_days": 1,
-      "state": "fresh"
-    },
-    "TCOM": {
-      "asof": "2026-09-09",
-      "lag_days": 1,
-      "state": "fresh"
-    },
     "BIDU": {
       "asof": "2026-09-09",
       "lag_days": 1,
@@ -31,6 +21,16 @@
       "state": "fresh"
     },
     "KWEB": {
+      "asof": "2026-09-09",
+      "lag_days": 1,
+      "state": "fresh"
+    },
+    "BABA": {
+      "asof": "2026-09-09",
+      "lag_days": 1,
+      "state": "fresh"
+    },
+    "TCOM": {
       "asof": "2026-09-09",
       "lag_days": 1,
       "state": "fresh"
