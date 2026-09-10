@@ -25,7 +25,24 @@ html[data-theme="light"] {
   --mq-line-strong: color-mix(in srgb, #1c2430 24%, transparent);
   --mq-surface: color-mix(in srgb, var(--panel) 96%, transparent);
   --mq-raised: color-mix(in srgb, var(--panel2) 92%, var(--panel));
-  --mq-shadow: 0 22px 60px -50px rgba(25, 37, 53, .34), inset 0 1px 0 rgba(255, 255, 255, .8);
+  /* LIGHT elevation is a CAST shadow, not a recolour of dark's geometry. Dark's
+     token is carried by its inset lit edge; the same inset on a white panel
+     paints nothing, and the old large-blur near-cancelling-spread form left
+     ~2px of a faint shadow below the box — light shipped with no elevation
+     at any plane. Layer 1 is theme.css's own --card-shadow (this token).
+     Layer 2 is the shipped .mc-panel light depth, inlined at the seven
+     consumers below: a px/color-mix custom property is a ratchet literal
+     (macro_command.css:13-16). No inset: white on white paints nothing. */
+  --mq-shadow: var(--card-shadow);
+}
+html[data-theme="light"] .mq-context,
+html[data-theme="light"] .mq-ribbon,
+html[data-theme="light"] .mq-headline,
+html[data-theme="light"] .mq-workspace,
+html[data-theme="light"] .mq-withheld,
+html[data-theme="light"] .mq-refusal,
+html[data-theme="light"] .mq-hub-head {
+  box-shadow: var(--mq-shadow), 0 8px 24px -18px color-mix(in srgb, var(--text) 22%, transparent);
 }
 
 /* 18px keeps the shared nav's drop-down gap contract (>=14px above .site-nav). */
@@ -121,6 +138,26 @@ code { font-family: var(--font-mono); font-size: 10.5px; word-break: break-all; 
 .mq-context-meta dt, .mq-metric-meta dt, .mq-headline-meta dt, .mq-method-grid dt {
   margin: 0 0 2px; color: var(--mq-muted); font-size: 9.5px; font-weight: 800;
   letter-spacing: .1em; text-transform: uppercase;
+}
+/* House eyebrow spec (MPDS §4): --fs-label / 600 / .08em. The shared rule at
+   :121-124 ships 9.5px / 800 / .1em — below the reading-path floor this page
+   pinned at 11px (macro_command.css:598-600, which refuses --fs-micro for the
+   sibling .mc-details-key inside this same disclosure body). Scoped to the
+   method panel so the context / metric / headline eyebrows are not repainted
+   by this packet. */
+section.mq-method .mq-method-grid dt {
+  font-size: var(--fs-label, 11px);
+  font-weight: 600;
+  letter-spacing: .08em;
+}
+/* Uppercase + tracking mangle mixed CJK/Latin strings (MPDS §4). macro_command.css
+   resets both for .mc-chip-label (:256), .mc-dests-title (:520) and
+   .mc-details-key (:604); the method grid and the method table head were never
+   covered — macro_suite.css carries no html[data-lang="zh"] rule at all. */
+html[data-lang="zh"] section.mq-method .mq-method-grid dt,
+html[data-lang="zh"] section.mq-method .mq-table thead th {
+  letter-spacing: 0;
+  text-transform: none;
 }
 .mq-context-meta dd, .mq-metric-meta dd, .mq-headline-meta dd, .mq-method-grid dd { margin: 0; font-size: 12px; }
 .mq-nonclock dd { color: var(--mq-muted); }
@@ -295,10 +332,47 @@ code { font-family: var(--font-mono); font-size: 10.5px; word-break: break-all; 
 .mq-driver-group { margin-top: 14px; }
 .mq-driver-group h4 { margin-bottom: 8px; font-size: 12.5px; }
 .mq-axis-method { padding: 11px 14px; margin-top: 10px; border: 1px solid var(--mq-line); border-radius: 12px; background: var(--mq-raised); }
+/* LIGHT — the methods appendix is a RULED BAND on the sheet, never a grey
+   well. Dark keeps its raised plate: a luminance step UP is depth on the
+   dark canvas (measured 0.01025 -> 0.01426). The same declaration on paper
+   is a step DOWN (1.000 -> 0.886), i.e. a recess — and this page already
+   reserves a grey fill for "nobody filled this in" (.mc-empty light,
+   macro_command.css:611-613) and has already ruled the well illegal for a
+   delivered data block (.mc-figure light, macro_command.css:409-418). Same
+   idiom, applied to the element that was missed. Depth for this plane lives
+   on the E1 panel above it (--mq-shadow), not on every nested box: one
+   shadow per plane. */
+html[data-theme="light"] .mq-axis-method {
+  background: transparent;
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--mq-ink) 12%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--mq-ink) 12%, transparent);
+  border-radius: 0;
+  padding: 14px 0;
+}
 .mq-axis-method summary { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; color: var(--mq-ink); font-size: 12.5px; }
 .mq-axis-method-value { color: var(--mq-muted); font-variant-numeric: tabular-nums; }
 .mq-method-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px 18px; margin: 4px 0 12px; }
 .mq-method-grid dd { max-width: 62ch; color: var(--mq-muted); }
+/* LIGHT — with no plate to group them, the definition rows are paced by rule.
+   At <=760 the grid collapses to one column (macro_suite.css:682), so nine
+   unruled receipt rows otherwise stack as a wall at 390. Dark needs none: its
+   plate does the grouping. Same two-job law the movement rows already state
+   (macro_command.css:446-455: dark decorative, light load-bearing). */
+html[data-theme="light"] section.mq-method .mq-method-grid > div + div {
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--mq-ink) 10%, transparent);
+}
+/* LIGHT degraded — an unfilled receipt on a ruled sheet reads as a printing
+   fault unless it is shaded, the way a paper form shades a field nobody filled
+   in (the .mc-empty light ruling, macro_command.css:609-613). DARK takes no
+   fill by the same ruling's other half: 2% on near-black is mud. */
+html[data-theme="light"] section.mq-method .mq-method-grid dd:has(> .mq-dash) {
+  margin-inline: -6px;
+  padding: 2px 6px;
+  border-radius: var(--r-ctl, 8px);
+  background: color-mix(in srgb, var(--mq-ink) 2%, transparent);
+}
 .mq-lineage-note { max-width: 78ch; margin: 8px 0 0; color: var(--mq-muted); font-size: 11px; }
 
 /* ── withheld capabilities ──────────────────────────────────────────────── */
@@ -376,8 +450,51 @@ code { font-family: var(--font-mono); font-size: 10.5px; word-break: break-all; 
   scrollbar-width: none;
   /* The rail is the only horizontally scrolling thing here; the page body is not. */
   overscroll-behavior-x: contain;
+  scroll-padding-inline-end: 28px;   /* keyboard focus lands clear of the cap */
+  scroll-snap-type: inline proximity;
 }
 .mq-suitenav-rail::-webkit-scrollbar { display: none; }
+/* Scroll affordance. A sticky pseudo INSIDE the scroller: it is the last flex
+   item, so it paints above the pills, AND its natural resting place is the
+   trailing 28px of content — so at max scroll it sits over its own empty band
+   and paints ground on ground. It therefore cannot claim "more to the right"
+   when there is none, with no scroll listener: the suite nav is contractually
+   script-free (_macro_suite_nav.html.j2:24-25).
+   DARK: the chip recedes into the bezel — occlusion by the page's own opaque
+   ground (--bg; the rail's ground at <=768 is --bg, macro_suite.css:660),
+   never an alpha mask. A mask greys the ink; an occlusion covers it. */
+.mq-suitenav-rail::after {
+  content: "";
+  flex: 0 0 28px;
+  align-self: stretch;
+  position: sticky;
+  inset-inline-end: 0;
+  pointer-events: none;
+  background: linear-gradient(to left,
+    var(--bg) 0%,
+    color-mix(in srgb, var(--bg) 55%, transparent) 45%,
+    transparent 100%);
+}
+/* LIGHT: not a dissolve. Dark ink fading to transparent over paper is the
+   signature of DISABLED text (doctrine §5.8 blur-teaser/smudge family), so the
+   strip is CROPPED instead: a short occlusion by the canvas, terminated by a
+   ruled margin — a printed table running off the edge of the sheet. The
+   affordance is the visibly cropped pill; the rule is typographic, not a
+   component boundary, so the MPDS §14 3:1 bar does not bind it. Narrower than
+   dark's on purpose: on paper a long fade is smear, a short crop is a margin.
+   Cap width must stay <= dark's 28px band so max-scroll still self-gates. */
+html[data-theme="light"] .mq-suitenav-rail::after {
+  flex-basis: 20px;
+  background: linear-gradient(to left, var(--bg) 0%, var(--bg) 60%, transparent 100%);
+  border-inline-end: 1px solid var(--mq-line-strong);
+}
+/* The cap is a gradient; forced-colors drops it and the rail would lose every
+   scroll cue. Hand the affordance back to the UA. Theme-independent by
+   construction — forced-colors overrides both palettes. */
+@media (forced-colors: active) {
+  .mq-suitenav-rail::after { display: none; }
+  .mq-suitenav-rail { scrollbar-width: thin; }
+}
 .mq-suitenav-analyst { flex: 0 0 auto; list-style: none; }
 .mq-suitenav-analyst .mc-analyst {
   appearance: none; cursor: pointer;
@@ -389,6 +506,7 @@ code { font-family: var(--font-mono); font-size: 10.5px; word-break: break-all; 
   border: 1px solid transparent; border-radius: var(--r-pill,999px);
   color: var(--mq-muted); text-decoration: none;
   font-size: 11.5px; white-space: nowrap;
+  scroll-snap-align: start;
 }
 .mq-suitenav-pill:hover { color: var(--mq-ink); border-color: var(--mq-line); background: var(--mq-raised); }
 .mq-suitenav-pill.is-current {
@@ -653,8 +771,8 @@ html[data-theme="light"] .mq-hub-absent {
 }
 
 @media (max-width: 768px) {
-  /* Same ≤768 law as the hub: sticky strip, fade mask, page-scoped FAB hide
-     lives on body.mc-page in macro_command.css. */
+  /* Same ≤768 law as the hub: sticky strip, sticky-cap affordance, page-scoped
+     FAB hide lives on body.mc-page in macro_command.css. */
   .mq-suitenav {
     position: sticky; top: 60px; z-index: 4;
     background: var(--bg);
@@ -665,8 +783,6 @@ html[data-theme="light"] .mq-hub-absent {
     flex-wrap: nowrap;
     min-width: 0;
     margin-right: 24px;
-    mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
-    -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
   }
   .mq-suitenav-pill { white-space: nowrap; }
 }
