@@ -46,6 +46,7 @@ jobs:
     # retained because the selftest reads fixtures through the same traversal.
     scope: exclusive
     paths:
+      - "scripts/__init__.py"
       - "scripts/worktree_storage.py"
       - "config/**"
       - "data/**"
@@ -1162,6 +1163,7 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "scripts/__init__.py"
       - "scripts/worktree_storage.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/__init__.py"
@@ -12462,6 +12464,7 @@ jobs:
     # exact uncovered file — add it here.
     scope: exclusive
     paths:
+      - "scripts/__init__.py"
       - "scripts/worktree_storage.py"
       - "collectors/base.py"
       - "collectors/fda_shortages.py"
