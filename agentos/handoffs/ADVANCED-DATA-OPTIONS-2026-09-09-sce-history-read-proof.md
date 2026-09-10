@@ -4,95 +4,104 @@ session: sol/sce-data-proof-records-20260909
 model: sol
 ended_because: complete
 mission: >-
-  Preserve the bounded SCE source, accounting and mechanism-research progress while
-  leaving the full program PARTIAL and existing source/runtime ownership unchanged.
-  Complete refers only to the recorded research subtasks, not product or alpha acceptance.
+  Preserve bounded SCE source and mechanism-research progress while the full
+  reconstruction remains PARTIAL. Complete refers to the recorded subtasks,
+  not source recovery, production, alpha or portfolio acceptance.
 state_before: >-
-  Earlier native reads proved bounded stored-history and quote access; later research
-  supplied XLE accounting examples, a paired payoff probe and an August threshold path.
-  Exact core and overlay rules remained unidentified.
+  Earlier native reads proved bounded stored-history and options access. V6 added
+  synthetic qualified-profile logic and an initialization audit, but the real
+  profile consumer, exact core rules and current M1 source access were unproved.
 changed:
   - path: research/nextsignals/SCE_HISTORY_ACCESS_AND_REPLAY_BOUNDARY_2026-09-09.md
-    what: Retain the earlier dated access, accounting and version-specific threshold evidence.
+    what: Retain earlier dated access, accounting and version-specific threshold evidence.
   - path: research/nextsignals/SCE_V6_INITIALIZATION_AND_VALUE_STATE_2026-09-09.md
-    what: Record initialization falsifiers, clock-safe synthetic value-state consumption and the new current source gate.
+    what: Preserve initialization, tolerance sensitivity, qualified synthetic consumption and initial source failure.
+  - path: research/nextsignals/SCE_V7_PUBLISHED_PROFILE_AND_SOURCE_LOCALITY_2026-09-10.md
+    what: Record real published-summary arithmetic, qualified-feed gaps, historical filter falsifier, own clock qualification and source locality.
   - path: agentos/discoveries/DSC-SCE-THETA-HISTORY-ACCESS-AND-GLD-CACHE-GAP.md
-    what: Preserve the original dated cache-versus-vendor observation; it is not current liveness.
+    what: Keep the original dated cache-versus-vendor observation as history, not present liveness.
 verified:
-  - claim: Earlier bounded native reads found stored SPY/XLE tiers and historical XLE/GLD vendor examples.
-    command: Previously retained canonical resolver, parquet metadata and bounded existing-Terminal requests.
-    result: Historical evidence retained; not generalized into present access or complete contract/date coverage.
-  - claim: The selected XLE research quotes support a bounded funded accounting example and paired payoff diagnostic.
-    command: Retained fixed-time quote audits and private one-contract accounting tests.
-    result: Fifteen expected afternoon observations retained for the investigative legs; not actual creator positions or fills.
-  - claim: The close endpoint agreement of one filter candidate depends materially on initialization.
-    command: Fixed-coefficient historical warm-up plus affine common-seed feasibility tests against retained runway observations.
-    result: Historical warm-up changes the endpoint; no tested constant-EMA grid point fits the full uncensored path under the declared vertical budgets.
-  - claim: A stateless original value-state consumer works on explicit synthetic completed-profile facts.
-    command: V6 profile_replay_cli and tests for clocks, availability, revisions, retraction, nulls and grid identity.
-    result: Qualified or unavailable research observations only; no real profile feed, producer, position or trading authority.
-  - claim: A fresh canonical stored-data read is blocked by unavailable external-volume targets.
-    command: Existing resolve_thetadata_store call, bounded native path/symlink metadata and intended-volume stat.
-    result: Root and manifest present; EOD/OI/Greeks external targets unavailable. No mount, path override or source restart attempted.
-  - claim: V6 research adapters pass their local behavioral tests.
-    command: python -m pytest -q tests in the private V6 research package.
-    result: 87 passed; not this records PR's CI, empirical strategy validation or production proof.
+  - claim: Earlier bounded source reads and selected XLE examples remain retained historical evidence.
+    command: Retained resolver/parquet/request receipts and research-accounting files.
+    result: Not actual creator positions, full-history coverage or current producer health.
+  - claim: V6 initialization and tolerance results do not identify or robustly exclude the whole EMA family.
+    command: V6 historical warm-up, common-seed grid and expanded vertical-tolerance sensitivity.
+    result: Warm-up changes the endpoint; approximately 4.48659-pixel half-width restores path-only grid feasibility. Final V6 suite passed 92 tests.
+  - claim: A real published numerical profile can be audited without manufacturing historical source qualification.
+    command: Public creator image reading, V7 published_profile CLI and independent rational-number arithmetic.
+    result: Downward value migration and the original V6 inequality reproduced; feed/grid/availability/version gaps remain unavailable.
+  - claim: The attributed 2022 direct-recursion envelope does not fit the tested August threshold path.
+    command: V7 fixed interval reachability and independent linear feasibility checks.
+    result: 24 declared cases retained with positive controls; 12 first-block independent-formulation checks agree. No general KAMA or strategy rejection.
+  - claim: The current source-access failure has a separate-host metadata reconciliation lead.
+    command: Bounded M1 path/physical-disk reads and Studio mounted-volume/manifest metadata reads.
+    result: Original M1 targets unavailable; Studio manifest matches retained M1 bytes. Physical identity, full parity and producer recovery are not proved.
+  - claim: The retained XLE account requires a component-clock qualification.
+    command: Metadata-only review of retained quote_episode source and event ledger plus component-clock tests.
+    result: Fixed-time option marks are combined with daily cash-proxy inputs lacking original availability. No financial values recalculated.
+  - claim: V7 research adapters pass local behavioral checks.
+    command: python -m pytest -q tests and python -m scripts.reproduce in the private V7 package.
+    result: 67 passed; no network/P&L sweep or trading authority; not this records PR's source CI.
 unverified:
-  - claim: The current external source volume has been restored.
-    what_would_verify: Existing source/host owner reconciles the intended volume and canonical resolver succeeds without a parallel store.
-  - claim: The real value-profile input is suitable for point-in-time exit research.
-    what_would_verify: Original available-at evidence, complete session identity and stable comparable profile grids from the existing data owner.
-  - claim: The descriptive options-context feature has a measured forward relationship.
-    what_would_verify: Qualified source recovery followed by the frozen, maturity- and split-aware research protocol; population and association were not run.
-  - claim: The full SCE transition, entry, exit and sizing mechanism is identified and robust.
-    what_would_verify: Independent version-matched observations, frozen specification, funded adverse replay and forward evidence.
+  - claim: The intended source volume, source host and producer are restored and accepted.
+    what_would_verify: Existing owner reconciles expected volume identity, accepted source parity and producer/resolver health without a parallel store.
+  - claim: The published profile summary is a qualified original point-in-time market observation.
+    what_would_verify: Exact source construction, prior session/grid, profile type, original availability and revision history; a screenshot alone is insufficient.
+  - claim: The full SCE transition, eligibility, exit and sizing mechanism is identified and robust.
+    what_would_verify: Version-matched rule observations, frozen complete specification, funded adverse replay and prospective evidence.
+  - claim: Descriptive options-context features have a measured incremental outcome relationship.
+    what_would_verify: Qualified population and mature split-aware labels followed by the frozen evaluation; population/association not executed.
 unresolved:
-  - The new external-volume access failure has no established cause or recovery worker assignment.
-  - The older selected GLD fixed-time payload gap remains distinct from the current volume failure.
-  - Historical stock-quote entitlement remains distinct from earlier options access.
-  - Current historical data, image-fit seeds and later model versions are not original point-in-time model state.
-  - A refused remote append left an unimported incomplete research file; no empirical options population was extracted.
+  - A matching manifest on another host does not identify the original physical disk or prove completed recovery/migration.
+  - The older GLD fixed-time payload gap remains distinct from the current source-host problem.
+  - Historical stock-quote entitlement remains distinct from verified historical options examples.
+  - Published profile and retained daily closes differ; cause unknown and neither silently replaces the other.
+  - The previously refused remote append and broad portfolio operation remain unexecuted, not retried through another writer.
 next_actions:
-  - The existing source/host owner reconciles the intended external volume and proves the canonical resolver; do not infer recovery from an observation-only notification.
-  - Sol obtains a source-qualified real profile pair for a version-matched transition and tests the stateless research consumer without outcome fitting.
-  - Seek a second independently observed numerical threshold and initial-state convention before declaring a core formula recovered.
+  - Obtain a source-qualified version-matched profile construction and complete armed/entry/exit transition; use the existing qualified consumer without outcome fitting.
+  - Seek a second independent numerical core threshold and initialization/reset convention before claiming the private rule recovered.
+  - Existing host/source owner reconciles intended host, expected volume identity, data parity and producer health before any source repointing.
 do_not_redo:
-  - Do not repeat completed XLE access probes merely to show activity; retained examples remain useful historical evidence.
-  - Do not equate an intact old manifest with current source access or infer data destruction from an absent mount.
-  - Do not bypass a blocked research operation through another tool or finish the refused remote append through another writer.
-  - Do not silently treat daily-bar profile proxies as traded-volume/TPO input or chart-seeded filters as historically generated rules.
-  - Do not promote watch-only context, create another Terminal/store/queue/lifecycle, or alter AD acceptance from this record.
+  - Do not repeat completed options-access examples merely to show activity.
+  - Do not treat an old matching manifest or a new file creation time as source liveness, physical identity or migration acceptance.
+  - Do not bypass a blocked research operation or complete the refused append through another tool.
+  - Do not promote a published summary into a qualified historical profile or daily-bar proxies into intraday TPO/volume facts.
+  - Do not invent prior close/date, overwrite a conflicting published price, or treat chart-fitted initial state as historical state.
+  - Do not create a Terminal/store/queue/lifecycle or alter AD-1T1/AD-1T2 acceptance from these research records.
 danger_areas:
-  - Same premium is not same delta/gamma; retained prior-day Greeks with next-day outlays are not contemporaneous matched-risk evidence.
-  - XLE corporate-action-crossing labels require explicit adjustment semantics or exclusion; immature and overlapping labels cannot inflate evidence.
-  - Unknown availability, retraction and profile-grid changes must remain unavailable, not silently become hold or exit decisions.
-  - This repository is public; raw licensed observations and private host/session paths remain in the Chairman's research package only.
+  - A selected example checking a predicate is not an independent performance population.
+  - Profile row height is not market tick size; preserve exact source price precision.
+  - Higher return on premium is not equal-risk superiority; prior-day Greeks are not contemporaneous entry exposures.
+  - Component price times, available-at times and valuation times must be explicit before claiming synchronized NAV.
+  - This repository is public; licensed excerpts, host paths, volume UUIDs and private Slack identifiers remain in the private package.
 discoveries:
   - DSC:SCE-THETA-HISTORY-ACCESS-AND-GLD-CACHE-GAP
 ---
 
 ## State
 
-The full SCE program remains PARTIAL. Earlier bounded source-access/accounting
-subtasks retain their dated evidence; a newer native read found the intended
-external store targets unavailable. That is a current dependency failure, not a
-retroactive deletion of AD-1T1 proof or a claim of vendor revocation.
+The full SCE program remains PARTIAL. V7 can reproduce descriptive arithmetic on
+one dated creator summary while explicitly refusing qualified historical replay.
+The current M1 source path remains unavailable; separate Studio metadata provides
+a reconciliation lead, not restoration. Earlier source and AD acceptance history
+is preserved rather than rewritten from a new local observation.
 
 ## Research continuation
 
-Read `research/nextsignals/SCE_V6_INITIALIZATION_AND_VALUE_STATE_2026-09-09.md`
-for the new initialization and profile-consumption boundaries. Retained-input
-mechanism work can proceed independently of the source-volume reconciliation.
-A synthetic consumer is not a production profile pipeline or recovered auction rule.
+Read `research/nextsignals/SCE_V7_PUBLISHED_PROFILE_AND_SOURCE_LOCALITY_2026-09-10.md`.
+It supplements the earlier source and V6 memos. The next identification evidence
+is a qualified profile construction and complete transition, plus a second core
+threshold. No new portfolio sweep or empirical options-context result exists.
 
 ## Source continuation
 
-The private CEO control-room message was an observation-only FYI. No worker,
-watcher, mount, collector restart, source replacement or recovery START was armed.
-The canonical host/source owner keeps the recovery scope. Current GitHub CI and
-merge state must be read separately before calling these source records accepted.
+The existing private observation thread received an informational metadata update.
+It was not a worker commission, START, reassignment, recovery instruction or claim
+of an active recovery worker. No mount, source override, recovery process, collector,
+Terminal or subscription was changed. Source-owner reconciliation is still owed.
 
 ## Outside scope
 
-No production, trading, model promotion, runtime lifecycle, subscription or
-credential change. No independent alpha or full nextSignals replication is claimed.
+No production, trade, model promotion, runtime lifecycle, source-host migration,
+credential or subscription action. Source CI, merge, research acceptance and final
+strategy acceptance remain separate. Pending CI is not green.
