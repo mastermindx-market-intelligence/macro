@@ -14,6 +14,7 @@ from pathlib import Path
 from urllib.parse import urlparse, urlunparse
 from zoneinfo import ZoneInfo
 
+from engine.macro_news import OFFICIAL_FEEDS as _OFFICIAL_FEEDS
 from engine.marketing import fomc_diff, fomc_statements
 
 log = logging.getLogger(__name__)
@@ -38,7 +39,18 @@ _RELEVANT_FED_FEED_MARKERS = (
     "press_all.xml",
     "speeches.xml",
 )
+# The exact set of Fed feed URLs a "complete" policy check must cover — taken
+# from the existing catalog, not duplicated by hand. A feed row is only
+# "relevant" when its URL matches one of these exactly; a spoofed name or an
+# off-host URL that merely contains one of the marker filenames as a substring
+# must never count.
+_RELEVANT_FED_FEED_URLS = frozenset(
+    f["url"] for f in _OFFICIAL_FEEDS
+    if urlparse(f["url"]).hostname in _ADMITTED_HOSTS
+    and f["url"].rsplit("/", 1)[-1] in _RELEVANT_FED_FEED_MARKERS
+)
 _ET = ZoneInfo("America/New_York")
+_CONTROL_CHARS_RE = re.compile(r"[\x00-\x1f\x7f]")
 
 
 def build_current(root: Path, now: datetime | None = None) -> dict:
@@ -141,18 +153,25 @@ def _calendar(now: datetime) -> dict:
 def _admit_url(url: object, *, allow_query: bool = False) -> tuple[str, str] | None:
     """Return (canonical, kind) or None. Exact Fed host, https, no credentials."""
     raw = str(url or "").strip()
-    if not raw:
+    if not raw or _CONTROL_CHARS_RE.search(raw):
         return None
-    parsed = urlparse(raw)
-    if parsed.scheme != "https":
-        return None
-    if parsed.username or parsed.password:
-        return None
-    if parsed.port is not None:
+    try:
+        # A malformed authority — a bad port (":bad"), an unbalanced IPv6
+        # bracket, embedded userinfo/host garbage — raises ValueError lazily
+        # from these accessors rather than parsing to None. One bad row must
+        # never crash the whole build; reject it instead.
+        parsed = urlparse(raw)
+        if parsed.scheme != "https":
+            return None
+        if parsed.username or parsed.password:
+            return None
+        if parsed.port is not None:
+            return None
+        host = (parsed.hostname or "").lower()
+    except ValueError:
         return None
     if not allow_query and (parsed.query or parsed.fragment):
         return None
-    host = (parsed.hostname or "").lower()
     if host not in _ADMITTED_HOSTS:
         return None
     path = parsed.path or ""
@@ -172,12 +191,17 @@ def _admit_url(url: object, *, allow_query: bool = False) -> tuple[str, str] | N
 def _admit_headline_url(url: object) -> tuple[str, str] | None:
     # Headlines may arrive with fragments from feed entries; strip only after host check.
     raw = str(url or "").strip()
-    if not raw:
+    if not raw or _CONTROL_CHARS_RE.search(raw):
         return None
-    parsed = urlparse(raw)
-    if parsed.scheme != "https" or parsed.username or parsed.password or parsed.port is not None:
+    try:
+        parsed = urlparse(raw)
+        if parsed.scheme != "https" or parsed.username or parsed.password:
+            return None
+        if parsed.port is not None:
+            return None
+        host = (parsed.hostname or "").lower()
+    except ValueError:
         return None
-    host = (parsed.hostname or "").lower()
     if host not in _ADMITTED_HOSTS:
         return None
     # Rebuild without query/credentials for dedup; reject non-https already done.
@@ -284,21 +308,38 @@ def _load_cache(path: Path) -> dict | None:
 
 
 def _is_relevant_fed_feed(feed: dict) -> bool:
-    blob = f"{feed.get('name') or ''} {feed.get('url') or ''}".lower()
-    return any(marker in blob for marker in _RELEVANT_FED_FEED_MARKERS)
+    # Exact URL match against the existing catalog — a spoofed name field or an
+    # off-host URL that merely contains a marker filename must never count.
+    return str(feed.get("url") or "") in _RELEVANT_FED_FEED_URLS
 
 
 def _fed_feed_health(blob: dict) -> str | None:
-    """Return 'failed' if a relevant Fed feed failed, 'ok' if present+ok, else None."""
+    """Return 'ok' only for COMPLETE relevant Fed feed coverage, 'failed' if any
+    relevant feed row failed, else None (unknown/partial — never a claim of
+    freshness).
+
+    Per-feed detail is authoritative when present. Absent that, fall back to the
+    cache's own aggregate feed_status/degraded_reason — a top-level
+    "failed"/"error" acquisition is not a scoped success just because it
+    carries no row-level breakdown.
+    """
     feeds = blob.get("feeds")
-    if not isinstance(feeds, list) or not feeds:
-        return None
-    relevant = [f for f in feeds if isinstance(f, dict) and _is_relevant_fed_feed(f)]
-    if not relevant:
-        return None
-    if any(str(f.get("status") or "") != "ok" for f in relevant):
+    relevant = [f for f in feeds if isinstance(f, dict) and _is_relevant_fed_feed(f)] if isinstance(feeds, list) else []
+    if relevant:
+        if any(str(f.get("status") or "") != "ok" for f in relevant):
+            return "failed"
+        seen_urls = {f.get("url") for f in relevant}
+        # A single successful feed (e.g. press_monetary alone) cannot claim
+        # coverage for the whole policy check — every expected Fed feed must
+        # have reported in and succeeded.
+        return "ok" if _RELEVANT_FED_FEED_URLS.issubset(seen_urls) else None
+    status = str(blob.get("feed_status") or "").lower()
+    degraded = str(blob.get("degraded_reason") or "")
+    if status in {"failed", "error"} or degraded == "official_fetch_error":
         return "failed"
-    return "ok"
+    # No per-feed rows at all means no authoritative Fed feed evidence — an
+    # aggregate "ok" alone cannot claim complete scoped Fed coverage.
+    return None
 
 
 def _empty_headlines(state: str, saved_date: str | None = None) -> dict:
@@ -314,7 +355,7 @@ def _empty_headlines(state: str, saved_date: str | None = None) -> dict:
     }
 
 
-def _headlines_from_blob(blob: dict, saved_date: str, now: datetime, *, force_state: str | None = None) -> dict:
+def _headlines_from_blob(blob: dict, saved_date: str, now: datetime) -> dict:
     items = _select_items(blob.get("articles"), now)
     raw_fetched = blob.get("fetched_at")
     fetched_at = None
@@ -333,15 +374,19 @@ def _headlines_from_blob(blob: dict, saved_date: str, now: datetime, *, force_st
         feed_status = str(feed_status)
 
     age_hours = None
-    fresh = False
+    is_recent = False
     if acquired is not None and not acquisition_invalid:
         age = now - acquired
         age_hours = round(age.total_seconds() / 3600.0, 3)
-        fresh = age <= _ACQUIRE_STALE
+        is_recent = age <= _ACQUIRE_STALE
+    # "fresh" is a stricter externally-visible signal than age alone: a claimed
+    # fetch time with no corroborating feed receipt is not a verified check.
+    fresh = is_recent and feed_health == "ok"
 
-    if force_state:
-        state = force_state
-    elif acquisition_invalid:
+    if acquisition_invalid:
+        # No fallback (last_good or otherwise) bypasses an invalid/future
+        # receipt — a corrupt or not-yet-real timestamp must not resurrect
+        # stale items as current.
         state = "invalid_newest"
         fresh = False
         items = []
@@ -349,27 +394,32 @@ def _headlines_from_blob(blob: dict, saved_date: str, now: datetime, *, force_st
         state = "source_outage"
         fresh = False
     elif not items:
-        # Successful Fed acquisition with zero admitted monetary/speech rows.
-        if feed_health == "ok" or (feed_health is None and not acquisition_invalid and raw_fetched):
-            state = "no_new"
-        elif raw_fetched is None:
-            state = "empty"
-        else:
-            state = "no_new"
+        # Successful Fed acquisition with zero admitted monetary/speech rows —
+        # never "fresh" itself: there is no new item for that signal to describe.
+        # A bare acquisition timestamp alone (no verified, complete feed
+        # coverage) never proves a successful empty check — that is unknown/
+        # unverified, not a confirmed "no new items".
         fresh = False
+        if feed_health == "ok":
+            state = "no_new" if is_recent else "stale"
+        else:
+            state = "empty"
     elif acquired is None:
         # Legacy cache: filename day only — never fresh.
         state = "ok"
-        fresh = False
-    elif not fresh:
+    elif not is_recent:
         state = "stale"
     else:
         state = "ok"
 
+    fetched_at_display = (
+        acquired.astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M UTC") if fetched_at else None
+    )
     return {
         "state": state,
         "saved_date": saved_date,
         "fetched_at": fetched_at,
+        "fetched_at_display": fetched_at_display,
         "verified_at": None,
         "fresh": fresh,
         "items": items if state != "invalid_newest" else [],
@@ -388,7 +438,14 @@ def _find_last_good(files: list[tuple[date, Path]], now: datetime, skip_day: dat
         blob = _load_cache(path)
         if blob is None:
             continue
-        view = _headlines_from_blob(blob, day.isoformat(), now, force_state="last_good")
+        # Evaluate the candidate's OWN health first — an invalid/future receipt
+        # or a failed feed is not relabeled into a trustworthy fallback; keep
+        # searching further back instead of hiding a bad receipt behind
+        # "last_good".
+        view = _headlines_from_blob(blob, day.isoformat(), now)
+        if view["state"] in ("invalid_newest", "source_outage"):
+            continue
+        view["state"] = "last_good"
         view["fresh"] = False
         return view
     return None
@@ -424,11 +481,14 @@ def _headlines(root: Path, now: datetime) -> dict:
     return view
 
 
-def _ledger_by_date(root: Path) -> dict[str, dict] | None:
-    """Bounded ledger read. None => unreadable/oversized/malformed beyond use."""
+def _ledger_by_date(root: Path) -> tuple[dict[str, dict], bool] | None:
+    """Bounded ledger read -> (rows_by_date, overflowed). None => unreadable/
+    oversized/malformed beyond use. `overflowed` is True when the file holds
+    more rows than the cap — a date absent from the returned dict is then
+    genuinely UNKNOWN, not confidently "not yet recorded"."""
     path = fomc_statements.ledger_path(root)
     if not path.exists():
-        return {}
+        return {}, False
     try:
         size = path.stat().st_size
     except OSError:
@@ -436,10 +496,12 @@ def _ledger_by_date(root: Path) -> dict[str, dict] | None:
     if size > _LEDGER_MAX_BYTES:
         return None
     out: dict[str, dict] = {}
+    overflowed = False
     try:
         with path.open(encoding="utf-8") as fh:
             for idx, line in enumerate(fh):
                 if idx >= _LEDGER_ROW_CAP:
+                    overflowed = True
                     break
                 line = line.strip()
                 if not line:
@@ -457,7 +519,7 @@ def _ledger_by_date(root: Path) -> dict[str, dict] | None:
     except OSError as exc:
         log.warning("policy_watch_current: ledger unreadable %s: %s", path, exc)
         return None
-    return out
+    return out, overflowed
 
 
 def _read_statement_bounded(root: Path, day: str) -> list[str] | None:
@@ -497,6 +559,55 @@ def _empty_comparison() -> dict:
     }
 
 
+def _validate_receipt(paragraphs: list[str] | None, row: dict | None, day: str, now: datetime) -> str | None:
+    """Shared read-only receipt validation for any statement record — current,
+    prior (comparison), or historical fallback. Checks URL admission, that
+    fetched_at is present-or-past (never future/invalid), and the ledger's own
+    sha when the row carries one. Returns the admitted URL on success, else
+    None. A row with no sha is not rejected for lacking one — never invent a
+    hash to compare against."""
+    if not paragraphs or row is None:
+        return None
+    admitted_url = _admit_statement_url(row.get("url"), day)
+    if admitted_url is None:
+        return None
+    collected = row.get("fetched_at")
+    if collected:
+        collected_dt = _parse_dt(collected)
+        if collected_dt is None or collected_dt > now:
+            return None
+    row_sha = row.get("sha")
+    if row_sha:
+        expected_sha = fomc_statements.statement_sha(fomc_statements.statement_text(paragraphs))
+        if str(row_sha) != expected_sha:
+            return None
+    return admitted_url
+
+
+def _last_recorded_statement(prior_days: list[str], ledger: dict[str, dict], root: Path, now: datetime) -> dict | None:
+    """Most recent PRIOR decision with a validated statement record, most-recent
+    first. Explicitly separate from the current/awaiting record so a missing
+    newest decision never gets confused with — or silently erases — the last
+    one actually recorded. A corrupted/invalid record (bad sha, future
+    receipt) is skipped in favor of an earlier valid one, never presented."""
+    for day in reversed(prior_days):
+        row = ledger.get(day)
+        paragraphs = _read_statement_bounded(root, day)
+        admitted_url = _validate_receipt(paragraphs, row, day, now)
+        if admitted_url is None:
+            continue
+        collected = row.get("fetched_at")
+        return {
+            "decision_date": day,
+            "url": admitted_url,
+            "facts": fomc_diff.extract_facts(paragraphs),
+            "collected_at": str(collected) if collected else None,
+            "seed": bool(row.get("seed") or row.get("mode") == "seed"),
+            "source_date": day,
+        }
+    return None
+
+
 def _statement(root: Path, now: datetime) -> tuple[dict, dict]:
     dates = fomc_statements.decision_dates()
     empty_comparison = _empty_comparison()
@@ -511,8 +622,8 @@ def _statement(root: Path, now: datetime) -> tuple[dict, dict]:
         return _none_statement(), empty_comparison
 
     latest = elapsed[-1]
-    ledger = _ledger_by_date(root)
-    if ledger is None:
+    ledger_read = _ledger_by_date(root)
+    if ledger_read is None:
         unavailable = {
             "state": "unavailable",
             "decision_date": latest,
@@ -522,6 +633,25 @@ def _statement(root: Path, now: datetime) -> tuple[dict, dict]:
             "seed": False,
             "source_date": None,
             "reason": "ledger_unreadable",
+        }
+        return unavailable, empty_comparison
+    ledger, ledger_overflowed = ledger_read
+    if ledger_overflowed:
+        # The ledger holds more rows than the bounded read scans. A correction
+        # to the record we're about to use could sit past the cap (e.g. row
+        # 501) — the truncated set can never be trusted for current, prior
+        # comparison, or historical fallback, even if the date we need
+        # happened to be found within it.
+        unavailable = {
+            "state": "unavailable",
+            "decision_date": latest,
+            "url": None,
+            "facts": None,
+            "collected_at": None,
+            "seed": False,
+            "source_date": None,
+            "reason": "ledger_overflow",
+            "elapsed_decision": latest,
         }
         return unavailable, empty_comparison
 
@@ -551,10 +681,11 @@ def _statement(root: Path, now: datetime) -> tuple[dict, dict]:
             "seed": False,
             "source_date": None,
             "elapsed_decision": latest,
+            "last_recorded": _last_recorded_statement(elapsed[:-1], ledger, root, now),
         }
         return awaiting, empty_comparison
 
-    admitted_url = _admit_statement_url(row.get("url"), latest)
+    admitted_url = _validate_receipt(paragraphs, row, latest, now)
     if admitted_url is None:
         unavailable = {
             "state": "unavailable",
@@ -564,13 +695,13 @@ def _statement(root: Path, now: datetime) -> tuple[dict, dict]:
             "collected_at": None,
             "seed": False,
             "source_date": None,
-            "reason": "statement_url_rejected",
+            "reason": "statement_receipt_invalid",
             "elapsed_decision": latest,
         }
         return unavailable, empty_comparison
 
-    facts = fomc_diff.extract_facts(paragraphs)
     collected = row.get("fetched_at")
+    facts = fomc_diff.extract_facts(paragraphs)
     statement = {
         "state": "recorded",
         "decision_date": latest,
@@ -586,10 +717,9 @@ def _statement(root: Path, now: datetime) -> tuple[dict, dict]:
         return statement, empty_comparison
     prior_row = ledger.get(prior)
     prior_paragraphs = _read_statement_bounded(root, prior)
-    if prior_row is None or prior_paragraphs is None or not prior_paragraphs:
-        return statement, empty_comparison
-    prior_url = _admit_statement_url(prior_row.get("url"), prior)
-    if prior_url is None:
+    if _validate_receipt(prior_paragraphs, prior_row, prior, now) is None:
+        # Same receipt bar as current: an invalid/corrupted prior (bad sha,
+        # future fetch, rejected URL) cannot supply a comparison.
         return statement, empty_comparison
 
     diff = fomc_diff.diff_statements(prior_paragraphs, paragraphs)
@@ -605,5 +735,6 @@ def _statement(root: Path, now: datetime) -> tuple[dict, dict]:
         "removed_phrases": list(diff.get("removed_phrases") or []),
         "added_sentences": list(diff.get("added_sentences") or []),
         "removed_sentences": list(diff.get("removed_sentences") or []),
+        "prior_vote": fomc_diff.extract_facts(prior_paragraphs).get("vote"),
     }
     return statement, comparison

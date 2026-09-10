@@ -1,4 +1,18 @@
 {# Display-only current-source panel. Parent supplies t/bl macros and `current`. #}
+{% set SOURCES_CHECKED_LABEL = ('Sources checked','来源已获取') %}
+{% set LEGACY_UNVERIFIED_LABEL = ('Saved records — acquisition unverified','已保存记录—获取情况未核实') %}
+{% set STATE_LABELS = {
+  'source_outage': ('Some sources did not answer','部分来源未响应'),
+  'stale': ('Updates delayed','更新延迟'),
+  'invalid_newest': ('Latest update unavailable','最新更新不可用'),
+  'last_good': ('Earlier usable records','更早可用记录'),
+  'no_new': ('No new official items','暂无新官方条目'),
+} %}
+{% set UNKNOWN_STATE_LABEL = ('Official updates unavailable','官方动态暂不可用') %}
+{% set FEED_STATUS_LABELS = {
+  'mixed': ('Some sources did not answer','部分来源未响应'),
+  'failed': ('Some sources did not answer','部分来源未响应'),
+} %}
 {% set cal = current.calendar if current else none %}
 {% set stmt = current.statement if current else none %}
 {% set news = current.headlines if current else none %}
@@ -6,6 +20,12 @@
 {% set action = stmt.facts.action if stmt and stmt.facts else none %}
 {% set ns = namespace(headline_rows=[], news_state='') %}
 {% if news %}{% set ns.news_state = news.state or '' %}{% endif %}
+{# "Sources checked" is a strong claim — only print it when the acquisition is
+   BOTH a complete, verified Fed feed check AND has a valid fetched_at. A raw
+   aggregate feed_status of "ok" or a legacy state of "ok" with no receipt
+   must never bypass this into the same wording. #}
+{% set ns_checked = news and news.fed_feed_health == 'ok' and news.fetched_at %}
+{% set meta_source = (news.last_good if ns.news_state == 'invalid_newest' and news.last_good else news) %}
 <div class="pw-current" data-pw-current="1">
   <div class="pw-glance-grid">
     <article class="pw-card" id="pw-last-decision">
@@ -13,6 +33,13 @@
       {% if stmt and stmt.state == 'awaiting_statement' %}
       <p class="pw-primary">{{ t('The latest decision is not yet available. An older recorded statement is not treated as current.','最新决议尚不可用。更早收录的声明不作为当前决议。') }}</p>
       <p class="pw-mini-copy">{{ t('Elapsed decision','已过决议日') }} {{ stmt.elapsed_decision or stmt.decision_date }}</p>
+      {% if stmt.last_recorded %}
+      <p class="pw-mini-copy" data-historical-decision="{{ stmt.last_recorded.decision_date }}">
+        <span class="pw-chip">{{ t('Historical decision','历史决议') }}</span>
+        {{ t('Not the current decision —','并非当前决议 —') }} {{ stmt.last_recorded.decision_date }}
+        {% if stmt.last_recorded.url %} · <a class="gbtn gbtn-sm" href="{{ stmt.last_recorded.url }}" target="_blank" rel="noopener">{{ t('Open','打开') }}</a>{% endif %}
+      </p>
+      {% endif %}
       {% elif stmt and stmt.state == 'recorded' %}
       <p class="pw-primary">
         {% if action == 'maintain' %}{{ t('The Committee maintained the federal funds target range at','委员会将联邦基金目标区间维持在') }}
@@ -25,6 +52,12 @@
       </p>
       <div class="pw-meta-row">
         {% if stmt.source_date %}<span class="pw-chip" data-statement-date="{{ stmt.source_date }}">{{ t('Statement date','声明日期') }} {{ stmt.source_date }}</span>{% endif %}
+        {% if stmt.facts and stmt.facts.vote %}
+        <span class="pw-chip" data-vote-for="{{ stmt.facts.vote.for }}" data-vote-against="{{ stmt.facts.vote.against }}">
+          {{ t('Vote','表决') }} {{ stmt.facts.vote.for }}–{{ stmt.facts.vote.against }}
+          {% if cmp and cmp.state == 'available' and cmp.prior_vote %} ({{ t('prior','上一次') }} {{ cmp.prior_vote.for }}–{{ cmp.prior_vote.against }}){% endif %}
+        </span>
+        {% endif %}
       </div>
       {% elif stmt and stmt.state == 'unavailable' %}
       <p class="pw-primary">{{ t('The latest recorded statement record could not be used.','最新声明记录无法使用。') }}</p>
@@ -46,8 +79,11 @@
       {% elif ns.news_state == 'missing' %}
       <p class="pw-primary">{{ t('Official updates are not available in this update.','本次更新没有官方动态。') }}</p>
       {% set ns.headline_rows = [] %}
-      {% elif ns.news_state == 'no_new' or ns.news_state == 'empty' %}
+      {% elif ns.news_state == 'no_new' %}
       <p class="pw-primary">{{ t('No new admitted Federal Reserve monetary or speech items since the last check.','自最近获取以来，没有新的可收录美联储货币或讲话条目。') }}</p>
+      {% set ns.headline_rows = [] %}
+      {% elif ns.news_state == 'empty' %}
+      <p class="pw-primary">{{ t('Official updates unavailable.','官方动态暂不可用。') }}</p>
       {% set ns.headline_rows = [] %}
       {% else %}
       {% set ns.headline_rows = news['items'] if news else [] %}
@@ -66,8 +102,12 @@
         {% endfor %}
       </div>
       {% endif %}
-      {% if news and news.fetched_at %}
-      <p class="pw-mini-copy">{{ t('Last checked','最近获取') }} {{ news.fetched_at }}</p>
+      {% if ns.news_state == 'invalid_newest' and news.last_good and news.last_good.fetched_at %}
+      <p class="pw-mini-copy" data-fetched-at="{{ news.last_good.fetched_at }}">{{ t('Earlier usable record','更早可用记录') }} {{ news.last_good.fetched_at_display or news.last_good.fetched_at }}</p>
+      {% elif ns.news_state == 'invalid_newest' and news.last_good and news.last_good.saved_date %}
+      <p class="pw-mini-copy" data-saved-date="{{ news.last_good.saved_date }}">{{ t('Earlier usable record (acquisition time not recorded)','更早可用记录（未记录获取时间）') }} {{ news.last_good.saved_date }}</p>
+      {% elif news and news.fetched_at %}
+      <p class="pw-mini-copy" data-fetched-at="{{ news.fetched_at }}">{{ t('Last checked','最近获取') }} {{ news.fetched_at_display or news.fetched_at }}</p>
       {% elif news and news.saved_date and ns.news_state != 'missing' %}
       <p class="pw-mini-copy">{{ t('Saved day (acquisition time not recorded)','保存日期（未记录获取时间）') }} {{ news.saved_date }}</p>
       {% endif %}
@@ -79,9 +119,11 @@
     <div class="pw-detail-body">
       {% if news %}
       <p class="pw-mini-copy">{{ t('Official headlines method','官方头条方法') }}:
-        {% if news.fetched_at %}{{ t('Last checked','最近获取') }} {{ news.fetched_at }}{% elif news.saved_date %}{{ t('Saved day','保存日期') }} {{ news.saved_date }}{% else %}{{ t('Unavailable','不可用') }}{% endif %}
-        {% if news.feed_status %} · {{ t('Feed status','源状态') }} {{ news.feed_status }}{% endif %}
-        {% if news.state %} · {{ t('State','状态') }} {{ news.state }}{% endif %}.
+        {% if news.fetched_at %}{{ t('Last checked','最近获取') }} <span data-fetched-at="{{ news.fetched_at }}">{{ news.fetched_at }}</span>{% elif news.saved_date %}{{ t('Saved day','保存日期') }} {{ news.saved_date }}{% else %}{{ t('Unavailable','不可用') }}{% endif %}
+        {% set feed_status_label = (SOURCES_CHECKED_LABEL if ns_checked else LEGACY_UNVERIFIED_LABEL) if news.feed_status == 'ok' else FEED_STATUS_LABELS.get(news.feed_status, UNKNOWN_STATE_LABEL) if news.feed_status else none %}
+        {% if feed_status_label %} · {{ t('Feed status','源状态') }} {{ t(feed_status_label[0], feed_status_label[1]) }}{% endif %}
+        {% set state_label = (SOURCES_CHECKED_LABEL if ns_checked else LEGACY_UNVERIFIED_LABEL) if news.state == 'ok' else STATE_LABELS.get(news.state, UNKNOWN_STATE_LABEL) if news.state else none %}
+        {% if state_label %} · {{ t('State','状态') }} {{ t(state_label[0], state_label[1]) }}{% endif %}.
       </p>
       {% endif %}
       {% if stmt and stmt.collected_at %}

@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import shutil
 from pathlib import Path
 
 from scripts.build_policy_watch import (
@@ -78,15 +79,35 @@ def test_policy_watch_template_uses_macro_ui_roles_and_plain_labels():
         assert new_copy in template
 
 
-def test_generated_policy_watch_links_resolvable_page_css():
-    page = (ROOT / "site" / "policy_watch.html").read_text(encoding="utf-8")
+def test_generated_policy_watch_links_resolvable_page_css(monkeypatch, tmp_path):
+    """Renders the REAL page via build_policy_watch.main() + externalize_css, in an
+    isolated tmp_path — never against a stale committed site/policy_watch.html and
+    never mutating the shared rotation/fed-stance history files."""
+    import scripts.build_policy_watch as bpw
+    from scripts import externalize_css
+    from engine import fed_stance as _fs
+    from engine import policy_rotation_check as _rotc
+    from lib.pages import write_page as _real_write_page
+
+    site_dir = tmp_path / "site"
+    site_dir.mkdir()
+    monkeypatch.setattr(_fs, "append_history", lambda *a, **k: False)
+    monkeypatch.setattr(_rotc, "append_history", lambda *a, **k: False)
+    monkeypatch.setattr(
+        bpw, "write_page", lambda path, html: _real_write_page(site_dir / Path(path).name, html)
+    )
+    assert bpw.main() == 0
+    externalize_css.externalize(site_dir)
+
+    page = (site_dir / "policy_watch.html").read_text(encoding="utf-8")
     match = re.search(r'href="assets/css/([0-9a-f]{8})\.css\?v=\1"', page)
     assert match, "policy_watch.html must link its content-hashed page stylesheet"
-    css = (ROOT / "site" / "assets" / "css" / f"{match.group(1)}.css").read_text(encoding="utf-8")
+    css = (site_dir / "assets" / "css" / f"{match.group(1)}.css").read_text(encoding="utf-8")
 
     assert 'url("/fonts/InterDisplay-600.woff2")' in css
     assert 'url("fonts/InterDisplay-600.woff2")' not in css
-    assert "The policy moves that matter for markets. Last verified" in page
+    hero = page.split('class="pw-hero ', 1)[1].split("</section>", 1)[0]
+    assert "The policy moves that matter for markets." in hero
     assert "See all calls" in page
     assert "Under review after the ceasefire collapsed" in page
     assert "READ BEING UPDATED" not in page
@@ -747,9 +768,15 @@ def test_rendered_page_drops_fixed_bottom_line_and_view_copy():
     assert "The Fed is staying tough on inflation while Treasury tries to lower borrowing costs" not in html
 
 
-def test_rendered_page_keeps_44_calls_and_july_13_verification():
+def test_rendered_page_keeps_44_calls_and_july_13_verification(tmp_path):
     intel = json.loads((ROOT / "data" / "policy" / "intel.json").read_text(encoding="utf-8"))
-    html = _render_current_page(build_current(ROOT, now=_CUTOFF), intel=intel)
+    _write_fomc(tmp_path, [_july_row()], {"2026-07-29": _JULY_STMT})
+    _write_official_cache(tmp_path, "2026-09-06", {"articles": [
+        _fed_item("Waller, The Economic Outlook",
+                  "https://www.federalreserve.gov/newsevents/speech/waller20260903a.htm",
+                  "2026-09-03T12:30:00+00:00"),
+    ]})
+    html = _render_current_page(build_current(tmp_path, now=_CUTOFF), intel=intel)
     assert html.count("P44") >= 1
     assert len(intel["predictions"]) == 44
     for pred in intel["predictions"]:
@@ -1131,3 +1158,443 @@ def test_builder_composer_problem_renders_explanation(tmp_path, monkeypatch):
     assert "Current official view problem" in html or "当前官方视图问题" in html
     assert "composer exploded" in html or "RuntimeError" in html
     assert "July 13, 2026" in html
+
+
+# --------------------------------------------------------------------------- #
+# R1 repair-1 — consolidated adversarial/regression suite (from the removed
+# tests/test_policy_watch_release_regressions.py, folded in so CI's selected
+# test_policy_watch_ui.py actually exercises it).
+# --------------------------------------------------------------------------- #
+
+from engine import macro_news as _r1_macro_news  # noqa: E402
+
+_R1_NOW = datetime(2026, 9, 9, 22, 0, tzinfo=timezone.utc)
+_R1_URL = "https://www.federalreserve.gov/newsevents/speech/waller20260903a.htm"
+_R1_FEEDS = [
+    {"url": f"https://www.federalreserve.gov/feeds/{name}.xml", "status": "ok"}
+    for name in ("press_monetary", "press_all", "speeches")
+]
+
+
+def _r1_item(url: str = _R1_URL) -> dict:
+    return {"title": "Source statement", "url": url, "seendate": "2026-09-03T12:30:00Z"}
+
+
+def _r1_write(root: Path, day: str, blob: dict) -> Path:
+    path = root / f"data/macro/official_news_cache/official_v3_{day}.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(blob))
+    return path
+
+
+def test_r1_aggregate_failure_is_not_quiet(tmp_path):
+    _r1_write(tmp_path, "2026-09-09", {
+        "articles": [], "feed_status": "failed",
+        "degraded_reason": "official_fetch_error", "fetched_at": "2026-09-09T20:00:00Z",
+    })
+    view = build_current(tmp_path, now=_R1_NOW)
+    assert view["headlines"]["state"] == "source_outage"
+
+
+def test_r1_legacy_aggregate_failure_without_timestamp_is_not_empty(tmp_path):
+    _r1_write(tmp_path, "2026-09-09", {"articles": [], "degraded_reason": "official_fetch_error"})
+    assert build_current(tmp_path, now=_R1_NOW)["headlines"]["state"] == "source_outage"
+
+
+def test_r1_invalid_earlier_snapshot_is_not_last_good(tmp_path):
+    _r1_write(tmp_path, "2026-09-07", {"articles": [_r1_item()], "fetched_at": "2099-01-01T00:00:00Z"})
+    bad = _r1_write(tmp_path, "2026-09-09", {"articles": []})
+    bad.write_text("{broken")
+    fallback = build_current(tmp_path, now=_R1_NOW)["headlines"].get("last_good")
+    assert not fallback or not fallback["items"]
+
+
+def test_r1_one_bad_url_does_not_remove_valid_updates(tmp_path):
+    _r1_write(tmp_path, "2026-09-09", {"articles": [
+        _r1_item("https://www.federalreserve.gov:bad/newsevents/speech/x.htm"), _r1_item(),
+    ]})
+    view = build_current(tmp_path, now=_R1_NOW)
+    assert [row["url"] for row in view["headlines"]["items"]] == [_R1_URL]
+
+
+def test_r1_embedded_control_char_url_is_rejected_sibling_survives(tmp_path):
+    _r1_write(tmp_path, "2026-09-09", {"articles": [
+        _r1_item("https://www.federalreserve.gov/newsevents/speech/x\r\nEvil: 1.htm"), _r1_item(),
+    ]})
+    view = build_current(tmp_path, now=_R1_NOW)
+    assert [row["url"] for row in view["headlines"]["items"]] == [_R1_URL]
+
+
+def test_r1_userinfo_in_url_is_rejected_sibling_survives(tmp_path):
+    _r1_write(tmp_path, "2026-09-09", {"articles": [
+        _r1_item("https://user:pass@www.federalreserve.gov/newsevents/speech/x.htm"), _r1_item(),
+    ]})
+    view = build_current(tmp_path, now=_R1_NOW)
+    assert [row["url"] for row in view["headlines"]["items"]] == [_R1_URL]
+
+
+def test_r1_ledger_overflow_reports_unavailable_not_awaiting(tmp_path):
+    shutil.copytree(ROOT / "data/marketing/fomc", tmp_path / "data/marketing/fomc")
+    ledger = tmp_path / "data/marketing/fomc/statements.jsonl"
+    rows = [json.loads(line) for line in ledger.read_text().splitlines()]
+    padding = [{"date": f"1999-01-{(i % 28) + 1:02d}", "fetched_at": "1999-01-01T00:00:00Z", "url": ""}
+               for i in range(600)]
+    ledger.write_text("".join(json.dumps(row) + "\n" for row in padding + rows))
+    statement = build_current(tmp_path, now=_R1_NOW)["statement"]
+    assert statement["state"] == "unavailable"
+    assert statement.get("reason") == "ledger_overflow"
+
+
+def test_r1_overflow_does_not_hide_corrections_after_current_record(tmp_path):
+    shutil.copytree(ROOT / "data/marketing/fomc", tmp_path / "data/marketing/fomc")
+    ledger = tmp_path / "data/marketing/fomc/statements.jsonl"
+    rows = [json.loads(line) for line in ledger.read_text().splitlines()]
+    ledger.write_text("".join(json.dumps(row) + "\n" for row in rows) + ("{}\n" * 501))
+    assert build_current(tmp_path, now=_R1_NOW)["statement"]["state"] == "unavailable"
+
+
+def test_r1_stale_successful_empty_feed_stays_stale(tmp_path):
+    _r1_write(tmp_path, "2026-09-07", {
+        "articles": [], "fetched_at": "2026-09-07T12:00:00Z", "feeds": _R1_FEEDS, "feed_status": "ok",
+    })
+    assert build_current(tmp_path, now=_R1_NOW)["headlines"]["state"] == "stale"
+
+
+def test_r1_no_source_receipt_is_not_a_fresh_check(tmp_path):
+    _r1_write(tmp_path, "2026-09-09", {"articles": [_r1_item()], "fetched_at": "2026-09-09T20:00:00Z"})
+    assert build_current(tmp_path, now=_R1_NOW)["headlines"]["fresh"] is False
+
+
+def test_r1_unknown_empty_acquisition_is_not_confirmed_no_new(tmp_path):
+    _r1_write(tmp_path, "2026-09-09", {"articles": [], "fetched_at": "2026-09-09T20:00:00Z"})
+    assert build_current(tmp_path, now=_R1_NOW)["headlines"]["state"] != "no_new"
+
+
+def test_r1_missing_new_decision_preserves_explicit_historical_record(tmp_path):
+    shutil.copytree(ROOT / "data/marketing/fomc", tmp_path / "data/marketing/fomc")
+    view = build_current(tmp_path, now=datetime(2026, 9, 17, 18, tzinfo=timezone.utc))
+    assert view["statement"]["state"] == "awaiting_statement"
+    assert "2026-07-29" in json.dumps(view), "Latest missing must not erase last recorded historical decision"
+
+
+def test_r1_html_login_is_not_a_successful_empty_feed():
+    feed = {"name": "Federal Reserve - Monetary Policy", "url": "https://www.federalreserve.gov/feeds/press_monetary.xml"}
+    rejected = False
+    try:
+        _r1_macro_news._parse_feed("<html><body><h1>Login required</h1></body></html>", feed)
+    except (ValueError, _r1_macro_news.ET.ParseError):
+        rejected = True
+    assert rejected, "HTTP200 HTML is not an empty RSS/Atom success"
+
+
+def test_r1_statement_hash_mismatch_is_not_a_verified_record(tmp_path):
+    shutil.copytree(ROOT / "data/marketing/fomc", tmp_path / "data/marketing/fomc")
+    ledger = tmp_path / "data/marketing/fomc/statements.jsonl"
+    rows = [json.loads(line) for line in ledger.read_text().splitlines()]
+    rows[-1]["sha"] = "0" * 64
+    ledger.write_text("".join(json.dumps(row) + "\n" for row in rows))
+    statement = build_current(tmp_path, now=_R1_NOW)["statement"]
+    assert statement["state"] == "unavailable"
+
+
+def test_r1_future_statement_acquisition_is_not_a_verified_record(tmp_path):
+    shutil.copytree(ROOT / "data/marketing/fomc", tmp_path / "data/marketing/fomc")
+    ledger = tmp_path / "data/marketing/fomc/statements.jsonl"
+    rows = [json.loads(line) for line in ledger.read_text().splitlines()]
+    rows[-1]["fetched_at"] = "2099-01-01T00:00:00Z"
+    ledger.write_text("".join(json.dumps(row) + "\n" for row in rows))
+    statement = build_current(tmp_path, now=_R1_NOW)["statement"]
+    assert statement["state"] == "unavailable"
+
+
+def test_r1_prior_body_hash_mismatch_cannot_supply_comparison(tmp_path):
+    shutil.copytree(ROOT / "data/marketing/fomc", tmp_path / "data/marketing/fomc")
+    ledger = tmp_path / "data/marketing/fomc/statements.jsonl"
+    rows = [json.loads(line) for line in ledger.read_text().splitlines()]
+    rows[0]["sha"] = "0" * 64
+    ledger.write_text("".join(json.dumps(row) + "\n" for row in rows))
+    v = build_current(tmp_path, now=_R1_NOW)
+    assert v["statement"]["state"] == "recorded"
+    assert v["comparison"]["state"] == "unavailable"
+
+
+def test_r1_prior_future_acquisition_cannot_supply_comparison(tmp_path):
+    shutil.copytree(ROOT / "data/marketing/fomc", tmp_path / "data/marketing/fomc")
+    ledger = tmp_path / "data/marketing/fomc/statements.jsonl"
+    rows = [json.loads(line) for line in ledger.read_text().splitlines()]
+    rows[0]["fetched_at"] = "2099-01-01T00:00:00Z"
+    ledger.write_text("".join(json.dumps(row) + "\n" for row in rows))
+    assert build_current(tmp_path, now=_R1_NOW)["comparison"]["state"] == "unavailable"
+
+
+def test_r1_historical_fallback_uses_same_receipt_validation(tmp_path):
+    shutil.copytree(ROOT / "data/marketing/fomc", tmp_path / "data/marketing/fomc")
+    ledger = tmp_path / "data/marketing/fomc/statements.jsonl"
+    rows = [json.loads(line) for line in ledger.read_text().splitlines()]
+    rows[-1]["sha"] = "0" * 64
+    ledger.write_text("".join(json.dumps(row) + "\n" for row in rows))
+    v = build_current(tmp_path, now=datetime(2026, 9, 17, 18, tzinfo=timezone.utc))
+    assert (v["statement"].get("last_recorded") or {}).get("decision_date") != "2026-07-29"
+
+
+def test_r1_spoofed_feed_name_or_url_cannot_establish_freshness(tmp_path):
+    _r1_write(tmp_path, "2026-09-09", {
+        "articles": [_r1_item()], "fetched_at": "2026-09-09T20:00:00Z",
+        "feeds": [{
+            "name": "press_all.xml speeches.xml press_monetary.xml",
+            "url": "https://example.invalid/feeds/press_all.xml", "status": "ok",
+        }],
+    })
+    assert build_current(tmp_path, now=_R1_NOW)["headlines"]["fresh"] is False
+
+
+def test_r1_incomplete_fed_feed_coverage_does_not_claim_fresh(tmp_path):
+    _r1_write(tmp_path, "2026-09-09", {"articles": [_r1_item()], "fetched_at": "2026-09-09T20:00:00Z", "feeds": _R1_FEEDS[:1]})
+    assert build_current(tmp_path, now=_R1_NOW)["headlines"]["fresh"] is False
+
+
+def test_r1_last_good_skips_bad_candidate_to_find_valid_older_snapshot(tmp_path):
+    _r1_write(tmp_path, "2026-09-06", {"articles": [_r1_item()], "fetched_at": "2026-09-06T20:00:00Z", "feeds": _R1_FEEDS})
+    _r1_write(tmp_path, "2026-09-07", {"articles": [_r1_item()], "fetched_at": "2099-01-01T00:00:00Z", "feeds": _R1_FEEDS})
+    _r1_write(tmp_path, "2026-09-09", {"articles": []}).write_text("{broken")
+    fallback = build_current(tmp_path, now=_R1_NOW)["headlines"].get("last_good")
+    assert fallback and fallback["saved_date"] == "2026-09-06" and fallback["items"]
+
+
+def test_r1_last_good_does_not_hide_failed_candidate_receipt(tmp_path):
+    _r1_write(tmp_path, "2026-09-06", {"articles": [_r1_item()], "fetched_at": "2026-09-06T20:00:00Z", "feeds": _R1_FEEDS})
+    _r1_write(tmp_path, "2026-09-07", {"articles": [_r1_item()], "fetched_at": "2026-09-07T20:00:00Z", "feed_status": "failed"})
+    _r1_write(tmp_path, "2026-09-09", {"articles": []}).write_text("{broken")
+    fallback = build_current(tmp_path, now=_R1_NOW)["headlines"].get("last_good")
+    assert fallback and fallback["saved_date"] == "2026-09-06"
+
+
+def _r1_render_page(current, intel=None, catalysts=None):
+    from jinja2 import Environment, FileSystemLoader
+
+    if intel is None:
+        intel = json.loads((ROOT / "data" / "policy" / "intel.json").read_text(encoding="utf-8"))
+    preds = intel.get("predictions") or []
+    uk_desk = {
+        "state": "gate_off", "jurisdiction_en": "United Kingdom", "jurisdiction_zh": "英国",
+        "body_en": "HM Treasury", "body_zh": "英国财政部", "source_label": "GOV.UK",
+        "headline": None, "stance": None, "model_unavailable": False,
+    }
+    env = Environment(loader=FileSystemLoader(str(ROOT / "templates")), autoescape=True)
+    return env.get_template("policy_watch.html.j2").render(
+        intel=intel,
+        counts={"total": len(preds), "open": 0, "hit": 0, "miss": 0,
+                "policy_action": 0, "market_outcome": 0, "hit_rate": None},
+        desk=None, fed_stance=None, fed_hist={}, rot=None, rot_hist={},
+        dates={"staleness": {"age_days": 57}}, catalysts=catalysts, scorecard=None,
+        generated_utc="2026-09-08 12:00 UTC", verified_en="July 13, 2026", verified_zh="2026年7月13日",
+        source_links=[], featured_predictions=[], brief=brief,
+        active_section="research", active_page="policy_watch",
+        lifecycle=None, current=current, uk_desk=uk_desk, background_unavailable=False,
+    )
+
+
+def test_r1_historical_record_is_visible_in_real_current_panel(tmp_path):
+    shutil.copytree(ROOT / "data/marketing/fomc", tmp_path / "data/marketing/fomc")
+    current = build_current(tmp_path, now=datetime(2026, 9, 17, 18, tzinfo=timezone.utc))
+    html = _r1_render_page(current)
+    panel = html.split('id="pw-last-decision">', 1)[1].split("</article>", 1)[0]
+    assert "2026-07-29" in panel, "Historical record exists in Python but must reach the user"
+    assert any(word in panel.lower() for word in ["historical", "earlier recorded", "earlier decision"])
+
+
+def test_r1_recorded_vote_uses_source_facts_and_changes_with_input(tmp_path):
+    _write_fomc(tmp_path, [_july_row()], {"2026-07-29": _JULY_STMT})
+    html = _r1_render_page(build_current(tmp_path, now=_R1_NOW))
+    panel = html.split('id="pw-last-decision">', 1)[1].split("</article>", 1)[0]
+    assert "9" in panel and "3" in panel
+
+    # A different (unanimous) elapsed decision must change the visible vote text
+    # — not a fixed "9/3" baked into the template.
+    tmp2 = tmp_path.parent / (tmp_path.name + "_2")
+    june_row = {**_june_row(), "fetched_at": "2026-06-18T00:00:00Z"}
+    _write_fomc(tmp2, [june_row], {"2026-06-17": _JUNE_STMT})
+    html2 = _r1_render_page(build_current(tmp2, now=datetime(2026, 7, 1, tzinfo=timezone.utc)))
+    panel2 = html2.split('id="pw-last-decision">', 1)[1].split("</article>", 1)[0]
+    assert "12" in panel2 and "0" in panel2
+    assert panel != panel2
+
+
+def test_r1_missing_background_does_not_render_dead_toc_links(tmp_path):
+    empty = {"as_of": "", "predictions": [], "fed": {"task_forces": []},
+             "administration": {"verified_levers": [], "theaters": []},
+             "rotation": {"targeted": [], "starved": []}, "sources": []}
+    html = _r1_render_page(build_current(tmp_path, now=_R1_NOW), intel=empty)
+    nav = html.split('<nav class="pw-toc"', 1)[1].split("</nav>", 1)[0]
+    ids = set(re.findall(r'\bid="([^"]+)"', html))
+    dead = [target for target in re.findall(r'href="#([^"]+)"', nav) if target not in ids]
+    assert not dead, f"TOC links to absent sections: {dead}"
+
+
+def test_r1_missing_background_does_not_invent_legacy_fed_claims(tmp_path):
+    empty = {"as_of": "", "predictions": [], "fed": {"task_forces": []},
+             "administration": {"verified_levers": [], "theaters": []},
+             "rotation": {"targeted": [], "starved": []}, "sources": []}
+    html = _r1_render_page(build_current(tmp_path, now=_R1_NOW), intel=empty)
+    assert "Warsh is pushing a stricter 2% target" not in html
+    assert "Rule changes could make a later pivot easier" not in html
+
+
+def test_r1_positive_calendar_uses_existing_next_decision(tmp_path):
+    assert build_current(tmp_path, now=_R1_NOW)["calendar"]["meetings"][0]["date"] == "2026-09-16"
+
+
+def test_r1_positive_valid_empty_rss_remains_empty():
+    feed = {"name": "Federal Reserve", "url": "https://www.federalreserve.gov/feeds/press_monetary.xml"}
+    assert _r1_macro_news._parse_feed('<rss version="2.0"><channel><title>Fed</title></channel></rss>', feed) == []
+
+
+def test_r1_positive_valid_update_survives_with_original_date(tmp_path):
+    _r1_write(tmp_path, "2026-09-09", {"articles": [_r1_item()], "fetched_at": "2026-09-09T20:00:00Z", "feeds": _R1_FEEDS})
+    v = build_current(tmp_path, now=_R1_NOW)
+    assert v["headlines"]["items"][0]["published_at"].startswith("2026-09-03")
+    assert v["headlines"]["fresh"] is True
+
+
+def test_r1_positive_original_44_calls_preserved_in_fresh_render():
+    intel = json.loads((ROOT / "data" / "policy" / "intel.json").read_text())
+    assert len(intel["predictions"]) == 44
+
+
+# --------------------------------------------------------------------------- #
+# R1 repair-1 — final UI treatment (scoped nowrap date column, minute-precision
+# acquired label, closed bilingual Sources state labels, other-dates group)
+# --------------------------------------------------------------------------- #
+
+def test_r1_official_row_date_column_is_scoped_nowrap():
+    template = (ROOT / "templates" / "policy_watch.html.j2").read_text(encoding="utf-8")
+    assert '.pw-current .pw-event{grid-template-columns:100px minmax(0,1fr) auto}' in template
+    assert '.pw-current .pw-date{white-space:nowrap;overflow-wrap:normal;word-break:normal}' in template
+
+
+def test_r1_glance_shows_minute_precision_acquired_label(tmp_path):
+    _r1_write(tmp_path, "2026-09-09", {
+        "articles": [_r1_item()], "fetched_at": "2026-09-09T20:00:00Z", "feeds": _R1_FEEDS,
+    })
+    current = build_current(tmp_path, now=_R1_NOW)
+    assert current["headlines"]["fetched_at_display"] == "2026-09-09 20:00 UTC"
+    html = _r1_render_page(current)
+    glance = html.split('id="pw-official-updates">', 1)[1].split("</article>", 1)[0]
+    assert "Last checked" in glance and "2026-09-09 20:00 UTC" in glance
+    visible_text = re.sub(r'\sdata-[\w-]+="[^"]*"', "", glance)
+    assert "2026-09-09T20:00:00Z" not in visible_text
+    sources = html.split('id="pw-sources-changes">', 1)[1]
+    assert "2026-09-09T20:00:00Z" in sources
+
+
+def test_r1_sources_state_labels_are_closed_bilingual_not_raw_tokens(tmp_path):
+    _r1_write(tmp_path, "2026-09-09", {
+        "articles": [], "feed_status": "failed",
+        "degraded_reason": "official_fetch_error", "fetched_at": "2026-09-09T20:00:00Z",
+    })
+    current = build_current(tmp_path, now=_R1_NOW)
+    assert current["headlines"]["state"] == "source_outage"
+    html = _r1_render_page(current)
+    sources = html.split('id="pw-sources-changes">', 1)[1]
+    assert "Some sources did not answer" in sources and "部分来源未响应" in sources
+    assert "source_outage" not in sources
+
+
+def test_r1_unknown_headline_state_falls_back_to_closed_default_label():
+    current = {
+        "schema": "policy_watch_current.v1", "calendar": {"state": "scheduled", "meetings": []},
+        "headlines": {"state": "totally_unrecognized_token", "items": [], "fetched_at": None, "saved_date": None},
+        "statement": {"state": "none"}, "comparison": {"state": "unavailable"},
+    }
+    html = _r1_render_page(current)
+    assert "Official updates unavailable" in html and "官方动态暂不可用" in html
+    assert "totally_unrecognized_token" not in html
+
+
+def test_r1_other_policy_dates_group_shown_when_non_fomc_upcoming_exists():
+    catalysts = {"spine": [
+        {"date": "2026-09-25", "event_en": "CPI release", "event_zh": "CPI 数据发布", "past": False, "days_to": 16},
+        {"date": "2026-09-16", "event_en": "FOMC rate decision", "event_zh": "FOMC 利率决议", "past": False, "days_to": 7},
+    ]}
+    html = _r1_render_page({"calendar": {"state": "scheduled", "meetings": []},
+                             "headlines": {"state": "missing", "items": []},
+                             "statement": {"state": "none"}, "comparison": {"state": "unavailable"}},
+                            catalysts=catalysts)
+    assert "Other policy dates" in html and "其他政策日期" in html
+    assert "CPI release" in html
+
+
+def test_r1_other_policy_dates_excludes_actual_producer_decision_label():
+    # data/policy/intel.json's real catalyst spine uses "FOMC rate decision",
+    # not "FOMC decision" (that's the calendar-meetings label) — both aliases
+    # must be excluded, case-insensitively, or this duplicates the decision.
+    catalysts = {"spine": [
+        {"date": "2026-09-16", "event_en": "FOMC rate decision", "event_zh": "FOMC 利率决议", "past": False, "days_to": 7},
+        {"date": "2026-10-28", "event_en": "fomc decision", "event_zh": "FOMC决议", "past": False, "days_to": 50},
+    ]}
+    html = _r1_render_page({"calendar": {"state": "scheduled", "meetings": []},
+                             "headlines": {"state": "missing", "items": []},
+                             "statement": {"state": "none"}, "comparison": {"state": "unavailable"}},
+                            catalysts=catalysts)
+    other = html.split("Other policy dates", 1)[1] if "Other policy dates" in html else ""
+    assert "FOMC rate decision" not in other
+    assert "fomc decision" not in other.lower()
+
+
+def test_r1_other_policy_dates_keeps_legitimate_fomc_related_event():
+    catalysts = {"spine": [
+        {"date": "2026-09-20", "event_en": "FOMC minutes release", "event_zh": "FOMC会议纪要发布", "past": False, "days_to": 11},
+    ]}
+    html = _r1_render_page({"calendar": {"state": "scheduled", "meetings": []},
+                             "headlines": {"state": "missing", "items": []},
+                             "statement": {"state": "none"}, "comparison": {"state": "unavailable"}},
+                            catalysts=catalysts)
+    assert "Other policy dates" in html
+    assert "FOMC minutes release" in html
+
+
+def test_r1_other_policy_dates_group_hidden_when_empty():
+    html = _r1_render_page({"calendar": {"state": "scheduled", "meetings": []},
+                             "headlines": {"state": "missing", "items": []},
+                             "statement": {"state": "none"}, "comparison": {"state": "unavailable"}},
+                            catalysts=None)
+    assert "Other policy dates" not in html and "其他政策日期" not in html
+
+
+def test_r1_legacy_snapshot_cannot_render_sources_checked(tmp_path):
+    _r1_write(tmp_path, "2026-09-07", {"articles": [_r1_item()]})
+    view = build_current(tmp_path, now=_R1_NOW)
+    html = _r1_render_page(view)
+    details = html.split('id="pw-sources-changes">', 1)[1].split("</details>", 1)[0]
+    assert "Sources checked" not in details
+    assert "Saved records" in details and "已保存记录" in details
+
+
+def test_r1_fallback_metadata_matches_the_records_actually_shown(tmp_path):
+    _r1_write(tmp_path, "2026-09-07", {
+        "articles": [_r1_item()], "fetched_at": "2026-09-07T20:00:00Z", "feeds": _R1_FEEDS,
+    })
+    _r1_write(tmp_path, "2026-09-09", {"articles": []}).write_text("{broken")
+    view = build_current(tmp_path, now=_R1_NOW)
+    html = _r1_render_page(view)
+    panel = html.split('id="pw-official-updates">', 1)[1].split("</article>", 1)[0]
+    assert 'data-fetched-at="2026-09-07T20:00:00Z"' in panel
+    assert "Last checked" not in panel  # earlier fallback, never labeled a new check
+
+
+def test_r1_complete_current_receipt_can_render_sources_checked(tmp_path):
+    _r1_write(tmp_path, "2026-09-09", {
+        "articles": [_r1_item()], "fetched_at": "2026-09-09T20:00:00Z", "feeds": _R1_FEEDS,
+    })
+    html = _r1_render_page(build_current(tmp_path, now=_R1_NOW))
+    details = html.split('id="pw-sources-changes">', 1)[1].split("</details>", 1)[0]
+    assert "Sources checked" in details
+
+
+def test_r1_aggregate_ok_alone_cannot_claim_scoped_fed_freshness(tmp_path):
+    _r1_write(tmp_path, "2026-09-09", {
+        "articles": [_r1_item()], "fetched_at": "2026-09-09T20:00:00Z", "feed_status": "ok",
+    })
+    view = build_current(tmp_path, now=_R1_NOW)
+    assert view["headlines"]["fed_feed_health"] is None
+    assert view["headlines"]["fresh"] is False

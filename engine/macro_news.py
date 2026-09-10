@@ -875,6 +875,15 @@ def _xml_text(el, name: str) -> str:
 
 def _parse_feed(xml_text: str, feed: dict) -> list[dict]:
     root = ET.fromstring(xml_text)
+    root_tag = root.tag.split("}")[-1].lower()
+    if root_tag == "rss":
+        if root.find("channel") is None:
+            raise ValueError("RSS root missing <channel>")
+    elif root_tag != "feed":
+        # HTTP 200 HTML (login walls, error pages, …) parses as well-formed XML
+        # but is not an RSS/Atom document — must not be treated as a successful
+        # empty feed.
+        raise ValueError(f"not an RSS/Atom feed root: <{root_tag}>")
     items = root.findall(".//item")
     if not items:  # Atom
         items = root.findall(".//{http://www.w3.org/2005/Atom}entry")
