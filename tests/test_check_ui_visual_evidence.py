@@ -497,6 +497,60 @@ def test_force_state_cell_with_corrupted_sha256_reds(tmp_path, capsys):
     assert "sha256" in out and "force_state" in out
 
 
+def test_force_state_cell_with_absent_sha256_key_passes(tmp_path, capsys):
+    """r2 BLOCKER-1: some capture schemas (e.g. the freshness-chip-invariant
+    clipped-element cells — bytes/width/height/css_width/clip_target, no
+    sha256 key at all) never record a sha256 for a force_state cell. Absence
+    must never be compared against the actual PNG's real sha256 — that
+    produced 44 false findings on the real committed
+    freshness-chip-invariant/EVIDENCE.yml before this fix (BLOCKER-1)."""
+    png_bytes = b"\x89PNG\r\n\x1a\nno-sha-key-cell"
+    force_cell = {
+        "viewport": "desktop", "locale": "en", "theme": "light", "access": "anonymous",
+        "viewport_width": 1440, "viewport_height": 900, "force_state": "clip_only",
+        "captured": True, "file": "clip_only.png",
+        "bytes": len(png_bytes), "width": 100, "height": 20,
+        "applied_theme": "light", "applied_locale": "en",
+        # deliberately no "sha256" key at all
+    }
+    manifest = make_manifest(states=make_full_states() + [force_cell])
+    manifest_path = write_manifest(tmp_path, "mockups/evidence/tp1/manifest.json", manifest)
+    (manifest_path.parent / force_cell["file"]).write_bytes(png_bytes)
+    write_receipt(
+        tmp_path, "mockups/evidence/tp1/EVIDENCE.yml",
+        changed_paths=["templates/stock-dashboard.css"],
+        manifest="mockups/evidence/tp1/manifest.json",
+    )
+    rc = guard.main(["--diff-file", "-", "--repo-root", str(tmp_path)],
+                     stdin_text=css_diff())
+    assert rc == 0, capsys.readouterr().out
+
+
+def test_force_state_cell_with_none_sha256_passes(tmp_path, capsys):
+    """Same absence, different shape — sha256 present but explicitly null
+    (e.g. a YAML/JSON `null`) rather than the key being missing entirely.
+    Both must skip the comparison, never compare None against actual bytes."""
+    png_bytes = b"\x89PNG\r\n\x1a\nnull-sha-cell"
+    force_cell = {
+        "viewport": "desktop", "locale": "en", "theme": "light", "access": "anonymous",
+        "viewport_width": 1440, "viewport_height": 900, "force_state": "clip_only",
+        "captured": True, "file": "clip_only.png", "sha256": None,
+        "bytes": len(png_bytes), "width": 100, "height": 20,
+        "applied_theme": "light", "applied_locale": "en",
+    }
+    manifest = make_manifest(states=make_full_states() + [force_cell])
+    manifest_path = write_manifest(tmp_path, "mockups/evidence/tp1/manifest.json", manifest)
+    (manifest_path.parent / force_cell["file"]).write_bytes(png_bytes)
+    write_receipt(
+        tmp_path, "mockups/evidence/tp1/EVIDENCE.yml",
+        changed_paths=["templates/stock-dashboard.css"],
+        manifest="mockups/evidence/tp1/manifest.json",
+    )
+    rc = guard.main(["--diff-file", "-", "--repo-root", str(tmp_path)],
+                     stdin_text=css_diff())
+    assert rc == 0, capsys.readouterr().out
+
+
 def test_force_state_cell_with_wrong_byte_length_reds(tmp_path, capsys):
     png_bytes = b"\x89PNG\r\n\x1a\nreal-force-state-bytes"
     force_cell = make_force_state_cell(png_bytes=png_bytes)
@@ -637,6 +691,128 @@ def test_mixed_tool_manifest_list_missing_a_cell_value_reds(tmp_path, capsys):
     assert "does not cover" in out
 
 
+def test_tool_hash_coverage_attribution_resolves_on_sanctions_map_shape(tmp_path, capsys):
+    """MINOR-4: list-form tool.module_sha256 attribution is one-directional —
+    element 0 is the CONTRACTUAL default tool every unstamped cell implicitly
+    used; a cell needs its own capture_tool_module_sha256 only when it
+    disagrees with element 0. Shaped exactly like the real sanctions_map
+    manifest: 8 required rest cells + 2 extra unstamped force_state cells
+    (10 unstamped total) + 1 stamped force_state cell (theme toggle) — must
+    pass with no tool-coverage finding."""
+    default_sha = "9" * 64
+    stamped_sha = "3" * 64
+    rung1_bytes = b"\x89PNG\r\n\x1a\nrung1"
+    rung2_bytes = b"\x89PNG\r\n\x1a\nrung2"
+    toggle_bytes = b"\x89PNG\r\n\x1a\ntoggle"
+    unstamped_extra_1 = make_force_state_cell(force_state="unknown_rung", file="rung1.png",
+                                                png_bytes=rung1_bytes)
+    unstamped_extra_2 = make_force_state_cell(force_state="unknown_rung", file="rung2.png",
+                                                png_bytes=rung2_bytes)
+    stamped_cell = make_force_state_cell(force_state="theme_toggle_dark_to_light", file="toggle.png",
+                                          png_bytes=toggle_bytes)
+    stamped_cell["capture_tool_module_sha256"] = stamped_sha
+    states = make_full_states() + [unstamped_extra_1, unstamped_extra_2, stamped_cell]
+    assert len(states) == 11, "shape must match the real sanctions_map manifest (10 unstamped + 1 stamped)"
+    manifest = make_manifest(states=states)
+    manifest["tool"] = {"module_ref": "scripts/capture_page_evidence.py",
+                         "module_sha256": [default_sha, stamped_sha],
+                         "user_agent": "test-agent/1.0", "version": "1.0.0"}
+    manifest_path = write_manifest(tmp_path, "mockups/evidence/tp1/manifest.json", manifest)
+    # write_manifest plants a fixed placeholder PNG for every captured file;
+    # these three cells assert a REAL sha256 via make_force_state_cell, so
+    # their actual on-disk bytes must match what that sha256 was computed
+    # from (test_force_state_cell_with_valid_evidence_passes does the same).
+    (manifest_path.parent / "rung1.png").write_bytes(rung1_bytes)
+    (manifest_path.parent / "rung2.png").write_bytes(rung2_bytes)
+    (manifest_path.parent / "toggle.png").write_bytes(toggle_bytes)
+    write_receipt(
+        tmp_path, "mockups/evidence/tp1/EVIDENCE.yml",
+        changed_paths=["templates/stock-dashboard.css"],
+        manifest="mockups/evidence/tp1/manifest.json",
+    )
+    rc = guard.main(["--diff-file", "-", "--repo-root", str(tmp_path)],
+                     stdin_text=css_diff())
+    assert rc == 0, capsys.readouterr().out
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_sanctions_map_manifest_tool_sha_list_default_element_is_first():
+    """MINOR-4: the real committed sanctions_map manifest must satisfy the
+    attribution contract it documents — element 0 of tool.module_sha256 is
+    97b44358... (the default tool every unstamped cell implicitly used),
+    listed BEFORE 3301a5f9... (the tool sha only the one explicitly
+    re-captured theme_toggle_dark_to_light force_state cell carries). If this
+    order were ever wrong, fixing the manifest's list order is the ONLY
+    permitted manifest edit for this finding (ruling 4) — never the code."""
+    manifest_path = guard.REPO_ROOT / "mockups" / "evidence" / "sanctions_map" / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    top_sha = manifest["tool"]["module_sha256"]
+    assert isinstance(top_sha, list) and len(top_sha) >= 1
+    assert top_sha[0] == "97b4435815440fde008cd35b73c551cf704ba01ea71f18f04a2b23ebc7a0a6b7", (
+        f"sanctions_map manifest tool.module_sha256[0]={top_sha[0]!r}, expected the default tool "
+        "97b44358... first — fix the manifest's list ORDER if this ever fails, never the code")
+
+
+def test_cell_capture_tool_module_sha256_non_string_reds(tmp_path, capsys):
+    """MINOR-5: a non-string cell-level capture_tool_module_sha256 must
+    become a finding (malformed cell tool sha), never be silently skipped —
+    silently skipping it hid a real mixed-tool disagreement."""
+    states = make_full_states()
+    states[0]["capture_tool_module_sha256"] = 12345
+    manifest = make_manifest(states=states)
+    write_manifest(tmp_path, "mockups/evidence/tp1/manifest.json", manifest)
+    write_receipt(
+        tmp_path, "mockups/evidence/tp1/EVIDENCE.yml",
+        changed_paths=["templates/stock-dashboard.css"],
+        manifest="mockups/evidence/tp1/manifest.json",
+    )
+    rc = guard.main(["--diff-file", "-", "--repo-root", str(tmp_path)],
+                     stdin_text=css_diff())
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert "malformed" in out.lower() and "capture_tool_module_sha256" in out
+
+
+def test_cell_capture_tool_module_sha256_empty_string_reds(tmp_path, capsys):
+    """MINOR-5: an empty-string cell-level capture_tool_module_sha256 must
+    also red — an empty string is falsy but still a "present" value that
+    must not be silently treated as absent."""
+    states = make_full_states()
+    states[0]["capture_tool_module_sha256"] = ""
+    manifest = make_manifest(states=states)
+    write_manifest(tmp_path, "mockups/evidence/tp1/manifest.json", manifest)
+    write_receipt(
+        tmp_path, "mockups/evidence/tp1/EVIDENCE.yml",
+        changed_paths=["templates/stock-dashboard.css"],
+        manifest="mockups/evidence/tp1/manifest.json",
+    )
+    rc = guard.main(["--diff-file", "-", "--repo-root", str(tmp_path)],
+                     stdin_text=css_diff())
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert "malformed" in out.lower()
+
+
+def test_cell_capture_tool_module_sha256_wrong_length_reds(tmp_path, capsys):
+    """MINOR-5: shape validation — a non-empty string that is not 64
+    lowercase hex chars (consistent with page_tree_sha's shape check) must
+    red rather than be accepted as a real sha256."""
+    states = make_full_states()
+    states[0]["capture_tool_module_sha256"] = "not-a-real-sha256"
+    manifest = make_manifest(states=states)
+    write_manifest(tmp_path, "mockups/evidence/tp1/manifest.json", manifest)
+    write_receipt(
+        tmp_path, "mockups/evidence/tp1/EVIDENCE.yml",
+        changed_paths=["templates/stock-dashboard.css"],
+        manifest="mockups/evidence/tp1/manifest.json",
+    )
+    rc = guard.main(["--diff-file", "-", "--repo-root", str(tmp_path)],
+                     stdin_text=css_diff())
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert "malformed" in out.lower()
+
+
 def test_single_tool_manifest_is_unaffected_by_mixed_tool_check(tmp_path, capsys):
     # No cell carries capture_tool_module_sha256 at all — the ordinary,
     # overwhelmingly common case. Must pass with no mixed-tool finding.
@@ -749,6 +925,44 @@ def test_missing_mockups_evidence_dir_handled_gracefully(tmp_path, capsys):
     rc = guard.main(["--diff-file", "-", "--repo-root", str(tmp_path)],
                      stdin_text=css_diff())
     assert rc == 0
+
+
+# ---------------------------------------------------------------------------
+# MAJOR-2: committed evidence corpus regression. Every test above builds a
+# synthetic tmp_path fixture — none of them read the REAL committed
+# receipts/manifests under mockups/refs and mockups/evidence. That gap is
+# exactly what let BLOCKER-1 (44 false findings against the real committed
+# freshness-chip-invariant/EVIDENCE.yml) ship undetected: a corpus test would
+# have caught it on the same PR that introduced it.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_committed_evidence_corpus_has_zero_findings():
+    """Every discoverable receipt/manifest actually committed to this repo
+    must validate cleanly. A red here means either a genuinely corrupted
+    committed receipt, or (as with BLOCKER-1) a gate defect being exercised
+    for the first time against real data instead of a synthetic fixture."""
+    records = guard.discover_receipts(guard.REPO_ROOT)
+    assert records, (
+        "no committed EVIDENCE.yml receipts discovered under mockups/refs or "
+        "mockups/evidence — this test would be vacuously green; something is "
+        "wrong with discovery or the checkout, not with the corpus"
+    )
+    all_findings: list[str] = []
+    for record in records:
+        if record.data is None:
+            all_findings.append(f"{record.path}: {record.error}")
+            continue
+        shape_errors = guard.validate_receipt_shape(record)
+        if shape_errors:
+            all_findings.extend(shape_errors)
+            continue
+        all_findings.extend(guard.validate_manifest_evidence(record, guard.REPO_ROOT))
+    assert all_findings == [], (
+        f"{len(all_findings)} finding(s) against the committed evidence corpus "
+        f"({len(records)} receipt(s) checked):\n" + "\n".join(all_findings)
+    )
 
 
 # ---------------------------------------------------------------------------
