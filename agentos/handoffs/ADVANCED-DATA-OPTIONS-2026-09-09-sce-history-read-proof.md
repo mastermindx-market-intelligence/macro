@@ -4,112 +4,128 @@ session: sol/sce-data-proof-records-20260909
 model: sol
 ended_because: complete
 mission: >-
-  Preserve bounded SCE source and mechanism-research progress while the full
-  reconstruction remains PARTIAL. Complete refers to recorded research subtasks,
-  not source recovery, production, alpha, source merge or portfolio acceptance.
+  Preserve bounded SCE investigation and the Chairman-requested integration plan.
+  Complete refers to recorded research/design subtasks; the full reconstruction,
+  source recovery, strategy validation and product integration remain PARTIAL.
 state_before: >-
-  V4-V7 retained selected options-accounting examples, initialization and profile
-  hypotheses, a real published descriptive profile and source-locality uncertainty.
-  No full SCE mechanism or qualified whole-period economic NAV was established.
+  V4-V8 retained source/accounting examples, profile and core hypotheses and favorable
+  conditional drawdown consistency, but did not identify the full private method.
+  The eventual cross-repository product and portfolio placement was not specified.
 changed:
   - path: research/nextsignals/SCE_HISTORY_ACCESS_AND_REPLAY_BOUNDARY_2026-09-09.md
-    what: Retain earlier dated access, accounting and version-specific threshold evidence.
+    what: Preserve the earlier dated source and replay observations.
   - path: research/nextsignals/SCE_V6_INITIALIZATION_AND_VALUE_STATE_2026-09-09.md
-    what: Preserve initialization, tolerance sensitivity, qualified synthetic consumption and initial source failure.
+    what: Preserve initialization and tolerance sensitivity and the original source failure.
   - path: research/nextsignals/SCE_V7_PUBLISHED_PROFILE_AND_SOURCE_LOCALITY_2026-09-10.md
-    what: Preserve real-summary arithmetic, historical qualification gaps and source-locality evidence.
+    what: Preserve real-summary arithmetic, qualified-feed gaps, source locality and mixed clocks.
   - path: research/nextsignals/SCE_V8_CONDITIONAL_DRAWDOWN_BOUND_2026-09-10.md
-    what: Record the favorable conditional drawdown feasibility finding, distinct calendars, limits and source-release repair.
+    what: Preserve favorable conditional portfolio feasibility and its limits.
+  - path: research/nextsignals/SCE_INTEGRATION_PLACEMENT_AND_GATES_2026-09-10.md
+    what: Recommend existing Quant Lab METHODS, separate later portfolio admission and shared Macro/Terminal views.
   - path: agentos/discoveries/DSC-SCE-THETA-HISTORY-ACCESS-AND-GLD-CACHE-GAP.md
-    what: Fix the actual CI-rejected provenance shape with a runnable census while preserving the dated claim.
+    what: Retain the dated discovery and V8 runnable-falsifier repair; no fresh source claim.
 verified:
-  - claim: Earlier bounded source reads remain retained historical evidence, not current liveness.
-    command: Retained resolver, parquet, historical-request and component-accounting receipts.
-    result: No actual creator positions, full-history coverage or accepted source recovery established.
-  - claim: V6-V7 narrowed hypotheses without identifying the private core or a qualified auction feed.
-    command: Retained initialization, tolerance, interval, published_profile CLI and component-clock tests.
-    result: Source generations, missing profile fields and mixed-clock accounting remain explicitly separated.
-  - claim: The restricted image-fitting quantity family does not force a contradiction of the live drawdown number.
-    command: python -m scripts.run_full_calendar_bounds in the private V8 package.
-    result: Shared-vector numerical bounds preserve 16 image constraints and 19 known valuations; the twentieth date remains missing.
-  - claim: The accounting construction and integer examples have independent arithmetic checks.
-    command: python -m scripts.independent_design_audit and python -m scripts.integer_family_audit in V8.
-    result: Direct Decimal cashflows reconcile coefficients; finite enumeration checks funded integer families without the continuous solver.
-  - claim: V8 research adapters pass local behavioral checks.
-    command: python -m pytest -q tests in the private V8 package.
-    result: 45 passed at the recorded checkpoint; not source CI, market truth or proof of alpha.
-  - claim: The previous source CI failure was an owned discovery-record defect.
-    command: Read #7009 CI run 34425846264, job 102712351047, and scripts/agentos.py provenance rule.
-    result: One hard unfalsifiable-claim error; literal runnable-census repair made without changing validators or other records' warnings.
+  - claim: Earlier source reads and selected contracts remain bounded historical evidence.
+    command: Retained resolver, parquet, historical-quote and accounting receipts in the research memos.
+    result: Not actual creator positions, complete coverage or current producer recovery.
+  - claim: V6-V7 do not identify the complete core or a qualified auction feed.
+    command: Retained initialization, tolerance, interval and published_profile CLI checks.
+    result: Version, grid, missingness and component-clock qualifications remain controlling.
+  - claim: V8's restricted family does not force a contradiction of the live drawdown claim.
+    command: python -m scripts.run_full_calendar_bounds and independent_design_audit in the retained V8 package.
+    result: Shared quantities retain image constraints and known valuations; missing dates and original-as-of clocks remain unproved.
+  - claim: A non-ranking external-method product home already exists.
+    command: Read engine/quant_lab/specs.py, engine/quant_lab/page.py and research/QUANT_LAB_MASTERPLAN_FINTEL_RECREATION.md at Macro 2db16a02cb301eced6c74cbf5db4321294490206.
+    result: METHODS separates claims from numeric artifacts and does not force strategy timing into a per-name ranker.
+  - claim: The proposed ETF/options mandate must not be silently inserted into the current US Brain or archived ETF book.
+    command: Read Mastermind portfolio/registry.py at dd553d1b0b8eed9511da2d3d5ec02cc9cd8edca1.
+    result: US Brain is single_name_equity_only; ETF Brain and Flagship are archived; no registry entry was changed.
+  - claim: Existing account, publisher, options and chart owners expose concrete integration boundaries.
+    command: Read portfolio/paper_account.py, bridge/build_portfolio.py, OA-0 ownership design, Macro site semantics and Terminal intraday route at the V9 pins.
+    result: Share-oriented account seam and display-epoch chart data require qualification; derivative lifecycle and production liveness were not inferred.
+  - claim: A finite disclosure partition narrows the next missing fact without another financial replay.
+    command: python scripts/disclosure_partition.py source/v8_integer_family.csv results/disclosure_partition.json in the private V9 package.
+    result: Of 44 retained inventory combinations, SPY count leaves 44, XLE count at most 4, GLD count at most 13; both option counts leave one row, not exact cash or a rule.
+  - claim: The new finite-partition analysis passes local behavioral tests.
+    command: python -m pytest -q tests in the private V9 package.
+    result: 10 passed after the expected red checkpoint; not this records PR's source CI or evidence of trading edge.
+  - claim: The prior source CI hard failure was an owned discovery-record defect, not a runner outage.
+    command: Read #7009 run 34425846264 and scripts/agentos.py provenance rule; retain V8 repair.
+    result: Runnable falsifier supplied without changing validation law; current exact-head CI remains independently required.
 unverified:
-  - claim: The intended source volume, host and producer are restored and accepted.
-    what_would_verify: Existing owner reconciles expected physical identity, source parity and resolver/producer health without a parallel store.
-  - claim: The public profile summary is a qualified original point-in-time market observation.
-    what_would_verify: Exact construction, prior session/grid, original availability and revision history.
-  - claim: The whole SCE strategy is identified, economically reproducible and robust.
-    what_would_verify: Version-matched complete rules, funded synchronized replay, adverse validation and prospective evidence.
-  - claim: This records PR is source-accepted and merged.
-    what_would_verify: Current exact-head CI and review conclude successfully, followed by the permitted source merge and readback.
+  - claim: The source host, intended volume and producer are restored and accepted.
+    what_would_verify: Existing owner reconciles physical identity, source parity and resolver/producer health without a parallel store.
+  - claim: The full external SCE strategy is identified and economically robust.
+    what_would_verify: Version-matched complete rules and inventory, source-qualified clocks, funded adverse replay and prospective evidence.
+  - claim: An options-bearing deterministic book is admitted and supported by the existing account.
+    what_would_verify: Existing portfolio owner establishes exact instrument lifecycle, funding and marks, then separately admits a tested mandate.
+  - claim: Quant Lab, Macro and Terminal integration is implemented and production-proven.
+    what_would_verify: Research/design/rights gates pass and real producer-to-consumer vertical slices are released with required visual and negative-state proof.
+  - claim: This records PR is accepted and merged.
+    what_would_verify: Current exact-head checks and review conclude successfully, then permitted source merge and readback.
 unresolved:
-  - The missing GLD fixed-time observation remains distinct from source-host availability.
-  - Same-name volume and matching old manifest do not prove physical identity, accepted migration or data parity.
-  - Historical stock-quote entitlement is separate from historical options examples.
-  - Constant inventory and selected contracts are investigative assumptions, not recovered creator positions.
-  - Known-date drawdown ranges omit the missing day and intraday path; they are not whole-history bounds.
-  - Original availability and component clocks remain unproved for synchronized historical NAV.
-  - Previously blocked population and portfolio operations were not retried through another tool.
+  - Actual episode positions, open marks, version, eligibility and exit rules remain unidentified.
+  - A second independent core threshold and initialization/reset convention remain required for rule identification.
+  - The GLD fixed-time gap is distinct from source-host availability and is not filled by this plan.
+  - The account and retained results are not certified synchronized original-as-of NAV.
+  - A matching old manifest on another host does not prove physical identity, full parity or recovery.
+  - The referenced 09_DELIVERABLE_CONTRACT.md contents have not been recovered; no compliance claim is made.
+  - Previously blocked source/population/portfolio actions remain unexecuted and were not rerouted.
 next_actions:
-  - Recover one version-matched, independently specified armed/entry/exit transition and source-qualified profile pair; evaluate with the existing funded replay rather than fit a new return curve.
-  - Obtain a second independent numerical core threshold and initialization/reset convention before claiming rule identification.
-  - Existing source owner reconciles intended host, volume identity, source parity and producer health independently.
-  - Reconcile the current same-carrier source CI after the owned falsifier repair; do not bypass pending or failed proof.
+  - Sol adjudicates a bounded external-method dossier using a version-matched episode disclosure and independent threshold; register any original candidate separately if identification remains limited.
+  - When the rule is sufficiently specified, existing source/episode/account owners complete the qualified rule-to-account replay and validation.
+  - After research and design acceptance, implement one existing Quant Lab METHODS artifact-to-visible-result slice; do not activate an account or change macro scoring.
+  - Admit a distinct deterministic paper mandate through the existing portfolio lifecycle only if the evidence and instrument support justify it, then project that same book into Macro and Terminal.
+  - Existing source owner reconciles host, volume identity, parity and producer health independently; release proof for this same records carrier remains separate.
 do_not_redo:
-  - Do not repeat completed options-access examples merely to show activity.
-  - Do not infer false portfolio drawdown from a selected option's large decline; retain the favorable V8 feasibility result.
-  - Do not treat feasible quantity counts as probabilities, independent strategies or recovered positions.
-  - Do not drop image-gap dates from the economic calendar when retained component observations exist.
-  - Do not fill the GLD gap from later EOD data or certify mixed-clock inputs as synchronized original-asof NAV.
-  - Do not treat an old manifest or new file creation time as producer health or migration acceptance.
-  - Do not bypass blocked research actions, invent missing profile facts or create another Terminal, store, queue or lifecycle.
-  - Do not alter AD-1T1/AD-1T2 acceptance from these research records.
+  - Do not repeat completed options-access or interchangeable chart-fit examples merely to show activity.
+  - Do not infer false whole-portfolio drawdown from a selected option's decline; retain V8's favorable consistency result.
+  - Do not count feasible quantities as probabilities, independent trials or recovered positions.
+  - Do not force SCE into Quant Lab per-name ranking or automatically fuse it into Prophet, Market State or Risk Radar.
+  - Do not reactivate archived ETF/Flagship history or change US Brain's single-name mandate.
+  - Do not treat a shares-based account as proof of complete option expiry/assignment/deliverable support.
+  - Do not impute missing marks, relabel chart display epochs as UTC availability, or fit historical initialization from the target image without disclosure.
+  - Do not create a source store, Terminal instance, lifecycle, portfolio registry, auth layer or issuance queue alongside existing owners.
+  - Do not bypass refused operations or rewrite AD-1T1/AD-1T2 acceptance from this research/design record.
 danger_areas:
-  - A selected public example and a consistency witness do not constitute a representative outcome population.
-  - Profile row height differs from market tick size; preserve source precision and disagreements.
-  - Higher return on premium is not equal-risk superiority; prior-day Greeks are not entry-time exposures.
-  - The live book and Efficiency book have different windows and possibly conventions; their drawdown cards are not interchangeable.
-  - This repository is public; raw licensed observations and private host, volume and Slack identities remain outside it.
+  - Research acceptance, strategy promotion, paper admission, source CI, merge and production proof are different outcomes.
+  - A negative strategy result can still support useful descriptive research; it does not authorize decision influence.
+  - Raw licensed data and private host/Slack/volume identities must not enter public static artifacts or this repository.
+  - Login alone is not a redistribution-rights decision; use the existing entitlement/source owners.
+  - Higher premium return and more context are not evidence of equal-risk superiority or independent confirmation.
 discoveries:
   - DSC:SCE-THETA-HISTORY-ACCESS-AND-GLD-CACHE-GAP
 ---
 
-## State and ruling
+## State and placement ruling
 
-The full SCE program remains PARTIAL. V8 finds that the short image-fitting family
-contains funded examples whose known-date marked drawdown does not exceed the live
-card. Preserve this favorable evidence; do not turn a hypothesis of exit-recognized
-display into a conclusion that the published portfolio risk must be false.
+The full SCE investigation and integration remain PARTIAL. The current Chairman
+asked for eventual integration after research completion. The chosen recommendation
+is the existing Quant Lab non-ranking METHODS home, a separately admitted portfolio
+mandate only if earned, and read-only projections through the existing Macro and
+Terminal products. This is a plan, not an active portfolio or source-law admission.
 
-The result remains conditional on selected instruments, dates, source values,
-constant core inventory, image tolerance, costs and mixed clocks. It identifies
-neither the private strategy nor its complete daily or intraday risk.
+The new V9 memo cites exact source seams and preserves the favorable V8 accounting
+finding. The finite hypothesis partition prioritizes a useful missing disclosure;
+it is not another P&L experiment. A source answer outside the family rejects that
+restricted model rather than discrediting the publisher.
 
 ## Research continuation
 
-Read `research/nextsignals/SCE_V8_CONDITIONAL_DRAWDOWN_BOUND_2026-09-10.md` alongside
-the prior source, V6 and V7 memos. The next identification inputs remain a qualified
-profile construction and complete transition, plus another independent core threshold.
-The V8 inverse-accounting calculation does not replace those dependencies.
+Read `research/nextsignals/SCE_INTEGRATION_PLACEMENT_AND_GATES_2026-09-10.md` together
+with the preceding memos. Do not leave the inquiry indefinitely waiting for private
+code: after the bounded evidence effort, either replay a sufficiently specified
+version or record a limited-identification result. A new original candidate is
+separate research with its own controls; it inherits no external performance.
 
 ## Source and release continuation
 
-No new source health or recovery is established in this continuation. Existing
-private notifications remain information-only, not a worker commission or START.
-The previously pending CI has now returned an actual authored discovery error,
-which was repaired on this carrier. The corrected exact-head source checks and
-merge outcome must still be read. Local research tests cannot clear that gate.
+No new stored-data liveness or recovery is established by this continuation. Earlier
+private source messages remain information-only. No worker, watcher, Executive job,
+new program parent, account, production signal or deployment was created. The existing
+records PR remains its own release obligation; pending checks do not pass that gate.
 
-## Outside scope
+## Scope
 
-No production, trade, promotion, source migration, credential, subscription or
-runtime change. Source CI, merge, research acceptance and final strategy acceptance
-remain separate; pending is not green.
+Records and private research analysis only. No source-host migration, collector,
+subscription, credential, brokerage, scoring, portfolio or product runtime change.
