@@ -742,9 +742,12 @@ def test_identity_receipts_render_their_actual_fields() -> None:
     assert "security_master row exists" in html
     assert "data/reference/security_master.parquet" in html
     assert "_read_security_state_identity_rows" in html
-    assert "row_present" in html
+    assert "Master row found" in html
+    assert "row_present" not in html
     assert "true" in html
-    assert "security_state</dt>" in html and "null" in html
+    assert "Security status" in html
+    assert "security_state</dt>" not in html
+    assert "null" in html
 
 
 def test_provenance_copy_is_two_register_and_bilingual() -> None:
@@ -1617,6 +1620,16 @@ def test_golden_msft_proven_path_zh_page_has_no_raw_engine_english() -> None:
         assert not re.search(rf"\b{name}\b", visible), (
             f"{name!r} leaked as visible text on the ZH page"
         )
+    # Round-2 review MINOR 2: Identity-checks dumped raw engine field names
+    # via `<dt>{{ v.k }}</dt>`. Those keys must not appear as visible text
+    # on the ZH page either.
+    for name in (
+        "owner_alias_reader", "security_set", "workspace_native_cik",
+        "subject_ticker_display",
+    ):
+        assert name not in panel_text, (
+            f"{name!r} leaked as visible text on the ZH Identity-checks panel"
+        )
 
 
 def test_golden_msft_identity_checks_equalities_are_labeled_rows_not_dict_reprs() -> None:
@@ -1651,15 +1664,57 @@ def test_golden_msft_identity_checks_equalities_are_labeled_rows_not_dict_reprs(
         text = panel.get_text()
         notes = panel.find_all_class("dnotes")
         assert notes, f"{lang} Identity-checks missing equalities list"
-        notes_text = notes[0].get_text()
-        assert "{" not in notes_text, f"{lang} equalities still has '{{': {notes_text}"
-        assert "}" not in notes_text, f"{lang} equalities still has '}}': {notes_text}"
-        assert "':" not in notes_text, f"{lang} equalities still has \"'\": {notes_text}"
-        assert "{'" not in text, f"{lang} Identity-checks still has a dict repr"
+        # REQUIRED 1 RED-first: the whole Identity-checks *section* (not just
+        # the equalities list) contains no dict-repr / set-repr markers.
+        # Pinning only `.dnotes` left `{SEC:…}` in the R4 description green.
+        assert "{" not in text, f"{lang} Identity-checks still has '{{': {text}"
+        assert "}" not in text, f"{lang} Identity-checks still has '}}': {text}"
         assert "':" not in text, f"{lang} Identity-checks still has dict-repr \"'\": {text}"
         for row in rows:
             label = row["label_en"] if lang == "en" else row["label_zh"]
             assert label in text, f"{lang} Identity-checks missing label {label!r}"
+
+
+def test_golden_msft_identity_checks_read_fields_are_plain_labels() -> None:
+    """Round-2 review MINOR 2: Identity-checks `values_read` keys render as
+    frozen EN/ZH labels, never as engine field names (`owner_alias_reader`,
+    `security_set`, `workspace_native_cik`, `subject_ticker_display`).
+    """
+    from scripts.build_ticker_pages import _SS_READ_FIELD
+
+    fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_msft_expected_output.json"
+    state = json.loads(fixture.read_text(encoding="utf-8"))
+    view = build_security_state({"security_state": state})
+    assert view is not None
+    emitted: set[str] = set()
+    for lg in state["identity_proof"]["legs"]:
+        for pair in lg.get("values_read") or []:
+            emitted.add(pair["field"])
+    missing = emitted - set(_SS_READ_FIELD)
+    assert not missing, f"_SS_READ_FIELD missing engine fields: {sorted(missing)}"
+    for lg in view["identity"]["legs"]:
+        for row in lg["reads"]:
+            assert row["label_en"], f"{row['k']!r}: missing EN label"
+            assert row["label_zh"], f"{row['k']!r}: missing ZH label"
+            assert re.search(r"[一-鿿]", row["label_zh"]), row["label_zh"]
+            assert row["label_en"] != row["label_zh"]
+    banned = (
+        "owner_alias_reader", "security_set", "workspace_native_cik",
+        "subject_ticker_display",
+    )
+    for lang in ("en", "zh"):
+        html = _render_section(view, lang=lang)
+        panel_text = _identity_checks_panel(html).get_text()
+        for name in banned:
+            assert name not in panel_text, (
+                f"{lang} Identity-checks still shows engine field {name!r}"
+            )
+        for lg in view["identity"]["legs"]:
+            for row in lg["reads"]:
+                label = row["label_en"] if lang == "en" else row["label_zh"]
+                assert label in panel_text, (
+                    f"{lang} Identity-checks missing field label {label!r}"
+                )
 
 
 def test_unknown_equality_check_falls_back_to_ss_id_never_a_repr() -> None:
@@ -1721,6 +1776,7 @@ def test_m1_zh_page_reason_text_has_no_latin_letters() -> None:
     assert prophet_house["en"] not in zh_html
     assert "no current Prophet US owner output" not in zh_html
     assert "PROPHET_OWNER_OUTPUT_ABSENT" not in zh_html
+    assert "subject_ticker_display" not in _identity_checks_panel(zh_html).get_text()
 
 
 def test_ss_map_subread_reason_prose_keeps_en_and_falls_back_zh() -> None:

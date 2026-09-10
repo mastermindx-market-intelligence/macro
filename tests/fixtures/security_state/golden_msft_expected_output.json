@@ -6,7 +6,7 @@
   "listing_key": "US-XNAS-MSFT",
   "ticker_display": "MSFT",
   "generated_at": "2026-09-04T12:00:00Z",
-  "content_sha256": "8c27ab69ec320a17cd58d35c8d8183bbb4a0b57f697cdd0fb1e57465f582111e",
+  "content_sha256": "04cad0db4915506353f4269a7db4638b93968dcebddff915e3e444b432cc8a08",
   "as_of": {
     "market_at": "2026-09-04",
     "source_frontier_at": "2026-07-30T20:30:28Z",
@@ -109,7 +109,7 @@
       },
       {
         "check": "R4",
-        "description": "the owner-composed issuer's CURRENT security set is exactly {SEC:US-XNAS-MSFT}",
+        "description": "the owner-composed issuer's CURRENT security set is exactly this security",
         "artifact": "data/reference/security_master.parquet",
         "reader": "scripts/security_state_producer.py::_read_security_state_identity_rows",
         "values_read": [

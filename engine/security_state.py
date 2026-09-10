@@ -556,7 +556,7 @@ def _run_identity_chain(
         "R4", "issuer.security_set", security_set, "expected_security_set", [subject.security_id],
     ))
     legs.append(_leg_receipt(
-        "R4", f"the owner-composed issuer's CURRENT security set is exactly {{{subject.security_id}}}",
+        "R4", "the owner-composed issuer's CURRENT security set is exactly this security",
         "data/reference/security_master.parquet",
         "scripts/security_state_producer.py::_read_security_state_identity_rows",
         [("security_set", security_set), ("count", len(security_set))],

@@ -1943,7 +1943,7 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
           {% if lg.desc_en %}<p class="ss-chk-d">{{ t(lg.desc_en, lg.desc_zh) }}</p>{% endif %}
           {% if lg.artifact_en %}<p class="ss-chk-s"><span class="ss-id">{{ t(lg.artifact_en, lg.artifact_zh) }}</span></p>{% endif %}
           {% if lg.reader_en %}<p class="ss-chk-s">{{ t('read by', '读取方') }} <span class="ss-id">{{ t(lg.reader_en, lg.reader_zh) }}</span></p>{% endif %}
-          {% if lg.reads %}<dl class="ss-chk-v">{% for v in lg.reads %}<dt>{{ v.k }}</dt><dd>{{ v.v if v.v else '—' }}</dd>{% endfor %}</dl>{% endif %}
+          {% if lg.reads %}<dl class="ss-chk-v">{% for v in lg.reads %}<dt>{% if v.label_en %}{{ t(v.label_en, v.label_zh) }}{% else %}<span class="ss-id">{{ v.k }}</span>{% endif %}</dt><dd>{{ v.v if v.v else '—' }}</dd>{% endfor %}</dl>{% endif %}
         </div>
         {% endfor %}
         {% if ss.identity.equalities %}<ul class="dnotes">{% for e in ss.identity.equalities %}<li>{% if e.label_en %}{{ t(e.label_en, e.label_zh) }}{% else %}<span class="ss-id">{{ e.check }}</span>{% endif %}: <span class="ss-id">{{ e.left_value }}</span> = <span class="ss-id">{{ e.right_value }}</span> — {{ t(e.verdict_en, e.verdict_zh) }}</li>{% endfor %}</ul>{% endif %}

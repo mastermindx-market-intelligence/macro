@@ -3757,6 +3757,41 @@ _SS_EQUALITY_VERDICT = {
     False: {"en": "differ", "zh": "不一致"},
 }
 
+# Identity-check `values_read` field names. The engine emits these as receipt
+# keys; the Identity-checks panel must print a frozen EN/ZH label, never the
+# raw key (`owner_alias_reader`, `security_set`, …). Unknown keys fall back
+# to the key itself inside `<span class="ss-id">`, never a repr.
+_SS_READ_FIELD: dict[str, dict[str, str]] = {
+    "row_present": {"en": "Master row found", "zh": "已找到主数据行"},
+    "security_state": {"en": "Security status", "zh": "证券状态"},
+    "superseded_by": {"en": "Replaced by", "zh": "被替换为"},
+    "owner_alias_reader": {"en": "Alias reader", "zh": "别名读取方"},
+    "owner_cik_reader": {"en": "Registration-number reader", "zh": "注册编号读取方"},
+    "owner_decision_date": {"en": "Owner decision date", "zh": "所有者判定日期"},
+    "owner_issuer_reader": {"en": "Issuer reader", "zh": "发行人读取方"},
+    "issuer_id": {"en": "Issuer identifier", "zh": "发行人标识"},
+    "issuer_state": {"en": "Issuer status", "zh": "发行人状态"},
+    "cik": {"en": "Registration number", "zh": "注册编号"},
+    "matching_row_count": {"en": "Matching record count", "zh": "匹配记录数"},
+    "status": {"en": "Record status", "zh": "记录状态"},
+    "security_set": {"en": "Security list", "zh": "证券列表"},
+    "count": {"en": "Count", "zh": "数量"},
+    "listing_key": {"en": "Listing code", "zh": "上市代码"},
+    "derived_security_id": {"en": "Derived security identifier", "zh": "推导出的证券标识"},
+    "issuer_migration_matches": {"en": "Issuer migration matches", "zh": "发行人迁移匹配数"},
+    "security_migration_matches": {"en": "Security migration matches", "zh": "证券迁移匹配数"},
+    "workspace_available": {"en": "Workspace available", "zh": "工作区可用"},
+    "event_id": {"en": "Event identifier", "zh": "事件标识"},
+    "company_id": {"en": "Company identifier", "zh": "公司标识"},
+    "filing_cik": {"en": "Filing registration number", "zh": "披露文件注册编号"},
+    "master_issuer_cik": {"en": "Master registration number", "zh": "主数据注册编号"},
+    "subject_issuer_cik": {"en": "Subject registration number", "zh": "标的注册编号"},
+    "workspace_native_cik": {"en": "Workspace registration number", "zh": "工作区注册编号"},
+    "corroboration_state": {"en": "Corroboration", "zh": "旁证状态"},
+    "subject_ticker_display": {"en": "Ticker", "zh": "股票代码"},
+    "owner_identity": {"en": "Owner identity", "zh": "所有者身份"},
+}
+
 
 def _ss_equality_rows(raw_list: Any) -> list[dict[str, Any]]:
     """Project `identity_proof.equalities` into labeled view-model rows."""
@@ -4016,6 +4051,25 @@ def _ss_field_rows(seq: Any) -> list[dict[str, str]]:
             rows.append({"k": k, "v": _ss_value(item.get("value", item.get("v"))) if has_v else ""})
         elif isinstance(item, str) and item.strip():
             rows.append({"k": _clean_str(item), "v": ""})
+    return rows
+
+
+def _ss_identity_read_rows(seq: Any) -> list[dict[str, str]]:
+    """Project identity `values_read` into labeled receipt rows.
+
+    Axis `a.fields` keep the raw engine key (that panel is "fields read,
+    exactly as recorded"). Identity-checks print a frozen label; an unknown
+    key falls back to the key inside `<span class="ss-id">`.
+    """
+    rows: list[dict[str, str]] = []
+    for row in _ss_field_rows(seq):
+        house = _SS_READ_FIELD.get(row["k"])
+        rows.append({
+            "k": row["k"],
+            "v": row["v"],
+            "label_en": (house or {}).get("en") or "",
+            "label_zh": (house or {}).get("zh") or "",
+        })
     return rows
 
 
@@ -4470,7 +4524,7 @@ def build_security_state(blob: dict | None) -> dict | None:
                 "reader": reader_en,
                 "reader_en": reader_en,
                 "reader_zh": reader_zh,
-                "reads": _ss_field_rows(lg.get("values_read")),
+                "reads": _ss_identity_read_rows(lg.get("values_read")),
                 "result": res_code.lower(),
                 "result_en": res["en"], "result_zh": res["zh"],
                 "tone": res["tone"],
