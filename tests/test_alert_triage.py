@@ -349,3 +349,125 @@ def test_page_renders_without_template_errors():
     assert "documented, not" in html
     assert "Triage priority" in html
     assert "Backdrop" in html
+
+
+# --- EN truncation heal (W3) --------------------------------------------------
+# The page used to slice a.detail[:200] and v.note[:120] at render. EN is less
+# dense than ZH, so those caps amputated EN mid-word (and deleted the impulse-
+# radar BLIND caveat) while ZH siblings survived. Caps belong on the Telegram
+# formatter only (engine/alert_triage.py:_format_push_payload).
+
+_BLIND_CAVEAT = (
+    "BLIND to slow/options-calm flushes (e.g. it did NOT lead the 2026-06-24 cascade)."
+)
+_IMPULSE_EDGE = (
+    "Forward de-risk window from a verified LEADING precursor cross "
+    "(impulse radar). Holdout-validated, leak-free; act early — the "
+    "edge decays in ~2-4 days. " + _BLIND_CAVEAT
+)
+_EMERGING_DETAIL = (
+    "Utilities (Equal-Weight) entered the emerging phase — accelerating "
+    "relative strength before it is extended (score 38) — held 2 consecutive "
+    "sessions (constructive label shifts wait for a second session; risk "
+    "label shifts fire immediately)."
+)
+
+
+def _render(payload: dict) -> str:
+    env = Environment(loader=FileSystemLoader(config.ROOT / "templates"))
+    env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip)
+    return env.get_template("alerts.html.j2").render(**payload)
+
+
+def _synthetic_card(*, detail: str, note: str) -> dict:
+    return {
+        "source": "themes", "type": "theme_emerging", "asset": "util",
+        "source_icon": "🧺", "source_label": "Theme Rotation",
+        "source_label_zh": "主题轮动",
+        "severity": "major", "lifecycle": "new", "fire_count": 1, "span_days": 0,
+        "board_date": "2026-06-14", "age_days": 0, "recorded_at": None,
+        "date_precision": "date",
+        "headline": "Utilities (Equal-Weight) is emerging",
+        "headline_zh": "公用事业（等权）进入新兴阶段",
+        "detail": detail, "detail_zh": detail,
+        "action": "watch", "action_zh": "观察",
+        "cross_asset_tag": "neutral", "link": "sector_central.html",
+        "priority": 40,
+        "priority_components": {
+            "conviction": (22, "watch"), "severity": (18, "major"),
+            "recency": (20, "fresh"), "cross_asset": (0, "neutral"),
+        },
+        "cluster": "rotation", "ts": "2026-06-14", "alert_id": "deadbeef0001",
+        "validation": {
+            "verdict": "calibrated", "note": note, "note_zh": note,
+            "hit": None, "ic": None, "dsr": None, "horizon": None,
+            "scorecard_name": None, "link": "signal_lab.html",
+        },
+    }
+
+
+def test_template_does_not_slice_page_copy_at_200_or_120():
+    src = (config.ROOT / "templates" / "alerts.html.j2").read_text()
+    assert "[:200]" not in src
+    assert "[:120]" not in src
+
+
+def test_impulse_radar_edge_carries_the_blind_caveat_past_the_old_cap():
+    from engine.btc_alerts import _conviction
+    edge = _conviction("impulse_warn_down")["edge"]
+    assert _BLIND_CAVEAT in edge
+    assert len(edge) > 120
+    assert edge[:120] != edge          # the old cap would have amputated it
+
+
+def test_page_keeps_long_bodies_and_the_blind_caveat():
+    assert len(_EMERGING_DETAIL) > 200
+    assert len(_IMPULSE_EDGE) > 120
+    p = _payload()
+    p["alerts"] = [_synthetic_card(detail=_EMERGING_DETAIL, note=_IMPULSE_EDGE)] + p["alerts"]
+    html = _render(p)
+    assert "{{" not in html and "Undefined" not in html
+    assert _BLIND_CAVEAT in html
+    assert _EMERGING_DETAIL in html
+    # red-on-revert: a 200/120 slice would leave the EN span at exactly those lengths
+    import re
+    en_spans = re.findall(r'<span class="l-en">(.*?)</span>', html, flags=re.S)
+    matching_edge = [s for s in en_spans if s.startswith("Forward de-risk")]
+    matching_detail = [s for s in en_spans if "entered the emerging phase" in s]
+    assert matching_edge and _BLIND_CAVEAT in matching_edge[0]
+    assert len(matching_edge[0]) != 120
+    assert matching_detail and len(matching_detail[0]) != 200
+    assert "wait for a second session" in matching_detail[0]
+
+
+def test_macro_raw_rewrites_transition_enum_in_detail(tmp_path, monkeypatch):
+    import pandas as pd
+    monkeypatch.setattr(at.config, "data_dir", lambda: tmp_path)
+    (tmp_path / "alerts").mkdir()
+    pd.DataFrame([{
+        "date": "2026-06-14",
+        "rule": "transition_state_change",
+        "severity": "act",
+        "message": "Transition state NEW_REGIME -> TRANSITIONING (4 flags active)",
+        "message_zh": "转换状态 NEW_REGIME -> TRANSITIONING（4 个预警激活）",
+    }]).to_parquet(tmp_path / "alerts" / "alerts_log.parquet")
+    raw = at._macro_raw(TODAY, datetime.date(2026, 6, 1))
+    evs = raw["events"]
+    assert evs, "the fixture row did not reach the macro feed"
+    detail, detail_zh = evs[0]["detail"], evs[0]["detail_zh"]
+    assert "TRANSITIONING" not in detail
+    assert "NEW_REGIME" not in detail
+    assert "shifting" in detail
+    assert "TRANSITIONING" not in detail_zh
+    assert "NEW_REGIME" not in detail_zh
+    assert "转换中" in detail_zh
+
+
+def test_enum_en_maps_nfci_and_transition():
+    assert at.enum_en("nfci", "loose") == "easy"
+    assert at.enum_en("transition", "TRANSITIONING") == "shifting"
+    assert at.enum_en("transition", "NEW_REGIME") == "a new regime"
+    assert at.enum_zh("transition", "TRANSITIONING") == "转换中"
+    assert at.enum_zh("cycle", "late") == "晚期"
+    assert at.enum_en("nfci", "brand_new") == "brand_new"
+    assert at.enum_en("nfci", None) is None

@@ -322,9 +322,9 @@
   <h2>{{ t('Backdrop — the context every alert is read against','背景 — 解读每条警报的共同语境') }}</h2>
   <div class="ctx">
     <div class="cell">
-      <div class="k">{{ t('Market regime','市场机制') }}</div>
+      <div class="k">{{ t('Market regime','市场机制') }} {{ help('The current cycle tag and whether the regime’s footing is holding or shifting. Shifting means warning flags are stacking — re-check risk, not a trade by itself.','当前周期标签，以及机制基础是稳固还是正在转换。转换中表示预警在堆积 — 应重新检视风险，本身并非交易。') }}</div>
       <div class="vv">{{ t(regime.quad_name or regime.quad or '—', regime.quad_name_zh or regime.quad_name or regime.quad or '—') }}</div>
-      <div class="vsub">{{ t('cycle','周期') }}: {{ regime.cycle or '—' }}{% if regime.transition %} · {{ regime.transition }}{% endif %}</div>
+      <div class="vsub">{{ t('cycle','周期') }}: {{ t(regime.cycle_en or regime.cycle or '—', regime.cycle_zh or regime.cycle or '—') }}{% if regime.transition_en or regime.transition %} · {{ t(regime.transition_en or regime.transition, regime.transition_zh or regime.transition) }}{% endif %}</div>
     </div>
     <div class="cell">
       <div class="k">{{ t('Cross-asset tape','跨资产盘面') }} {{ help('Kritzman-Page absorption: are the major markets moving as one bet or genuinely separate? A CONCENTRATED tape corroborates a stress alert; a DIVERSIFIED one argues against chasing it.','吸收比（Kritzman-Page）：主要市场是同一押注还是真正分散？集中的盘面会佐证压力类警报；分散的盘面则不支持追入。') }}</div>
@@ -334,7 +334,7 @@
     <div class="cell">
       <div class="k">{{ t('Risk backdrop','风险背景') }}</div>
       <div class="vv">{{ t('recession','衰退') }}: {{ t(risk_backdrop.recession_band or '—', risk_backdrop.recession_band_zh or risk_backdrop.recession_band or '—') }}</div>
-      <div class="vsub">{{ t('drawdown','回撤') }}: {{ t(risk_backdrop.drawdown_band or '—', risk_backdrop.drawdown_band_zh or risk_backdrop.drawdown_band or '—') }} · NFCI {{ t(risk_backdrop.nfci_state or '—', risk_backdrop.nfci_state_zh or risk_backdrop.nfci_state or '—') }}</div>
+      <div class="vsub">{{ t('drawdown','回撤') }}: {{ t(risk_backdrop.drawdown_band or '—', risk_backdrop.drawdown_band_zh or risk_backdrop.drawdown_band or '—') }} · {{ t('credit conditions','金融条件') }}: {{ t(risk_backdrop.nfci_state_en or risk_backdrop.nfci_state or '—', risk_backdrop.nfci_state_zh or risk_backdrop.nfci_state or '—') }}{{ help('Chicago Fed National Financial Conditions Index — easy (loose) means credit is readily available; tight means stressed.','芝加哥联储全国金融状况指数 — 宽松表示信贷容易获得；收紧表示承压。') }}</div>
     </div>
     <div class="cell">
       <div class="k">{{ t('Next catalyst','下一个催化剂') }} {{ help('The nearest high-impact US event. Acting INTO a major print (CPI/FOMC/auction) is itself a risk — size for the event, not just the signal.','最近的高影响美国事件。在重大数据（CPI/FOMC/拍卖）前行动本身即是风险 — 应为事件而非仅为信号定仓。') }}</div>
@@ -409,7 +409,7 @@
         {% if a.fire_count>1 %}<span class="muted">· {{ t('re-fired','重复触发') }} <b class="mono">{{ a.fire_count }}×</b>{% if a.span_days>0 %} {{ t('across','历时') }} {{ a.span_days }}{{ t('d','天') }}{{ help('Elapsed distance from the first firing to the latest one — NOT a streak. The log records ' ~ a.fire_count ~ ' firings spanning ' ~ a.span_days ~ ' days; it does not show the condition was continuously active between them.', '自首次触发到最近一次触发的间隔 — 并非连续天数。日志记录了 ' ~ a.fire_count ~ ' 次触发，跨度 ' ~ a.span_days ~ ' 天；但并不能证明该状态在此期间持续存在。') }}{% endif %}</span>{% endif %}
       </div>
       <div class="hl">{{ t(a.headline, a.headline_zh) }}</div>
-      {% if a.detail %}<div class="dt">{{ t(a.detail[:200], a.detail_zh[:200]) }}</div>{% endif %}
+      {% if a.detail %}<div class="dt">{{ t(a.detail, a.detail_zh) }}</div>{% endif %}
       <div class="row2">
         {% set acls = {'high-conviction':'a-high','reduce risk':'a-reduce','confirm first':'a-confirm','watch':'a-watch','context':'a-context'}[a.action] %}
         <span class="pill {{ acls }}">→ {{ t(a.action, a.action_zh) }}</span>
@@ -437,7 +437,7 @@
         {% if v.hit is not none %}<span class="mono">{{ t('hit','命中') }} {{ pct(v.hit) }}{% if v.horizon %} @{{ v.horizon }}{% endif %}</span>{% endif %}
         {% if v.ic is not none %}<span class="mono">IC {{ '%+.3f'|format(v.ic) }}</span>{% endif %}
         {% if v.dsr is not none %}<span class="mono">DSR {{ '%.2f'|format(v.dsr) }}</span>{% endif %}
-        {% if v.note %}<span class="muted">— {{ t(v.note[:120], (v.note_zh or v.note)[:120]) }}</span>{% endif %}
+        {% if v.note %}<span class="muted">— {{ t(v.note, v.note_zh or v.note) }}</span>{% endif %}
         {{ help(
            (v.note or 'No standalone backtest for this alert family — the conviction is documented, not measured as a timing signal.') ~ (('  Validated as: ' ~ v.scorecard_name ~ '.') if v.scorecard_name else '') ~ '  See Signal Lab for the full battery.',
            (v.note_zh or v.note or '该警报族无独立回测 — 信念有据可查，但未作为择时信号度量。') ~ (('  验证为：' ~ v.scorecard_name ~ '。') if v.scorecard_name else '') ~ '  详见信号实验室。') }}
@@ -479,7 +479,7 @@
 
 <div class="panel">
   <p class="src muted sm" style="margin:0">
-    {{ t('Assembler','汇编') }}: engine/alert_triage.py · {{ t('feeds','数据源') }}: macro / bonds / forex / vector / commodity / themes / rotation / single-name ·
+    {{ t('Sources','数据源') }}: macro / bonds / forex / vector / commodity / themes / rotation / single-name ·
     {{ t('window','窗口') }} {{ window_days }}{{ t('d','天') }} · {{ t('as-of','截至') }} {{ asof or '—' }} ·
     {{ t('board day','看板交易日') }} {{ board_date or '—' }} ({{ board_tz or 'America/New_York' }}){{ help(
       "Three separate clocks. Board day is the New York session this board is reading — what 'today' means on a US cross-asset desk. Each alert is dated by when its EVENT happened, not by when we processed it. 'Rendered' below is only when this page was built.",
