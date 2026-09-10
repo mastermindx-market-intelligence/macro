@@ -485,7 +485,7 @@ def _contract(**over) -> dict:
             },
             "opportunity_context": {
                 "prophet": {"ref": None, "state": "UNAVAILABLE",
-                            "reason": "no current Prophet US owner output for this security"},
+                            "reason": "PROPHET_OWNER_OUTPUT_ABSENT"},
                 "entry": {"state": "AVAILABLE", "available": True, "null_reason": None},
                 "market_incorporation": {"ref": None, "state": "NOT_COVERED"},
                 "dislocation": {"ref": None, "state": "NOT_COVERED"},
@@ -1499,7 +1499,10 @@ def test_m1_subread_reason_is_house_copy_never_english_on_zh_page() -> None:
     zh_html = _render_section(view, lang="zh")
     assert house["zh"] in zh_html
     assert house["en"] not in zh_html
-    assert "OWNER_IDENTITY_BATCH_UNAVAILABLE" not in zh_html
+    # REQUIRED 3 puts this code on M1 failed_gates, so the raw identifier may
+    # appear inside an ss-id chip. It must not appear as the reason sentence.
+    stripped = re.sub(r'<span class="(?:c )?ss-id">.*?</span>', "", zh_html)
+    assert "OWNER_IDENTITY_BATCH_UNAVAILABLE" not in stripped
     assert "compiler failed" not in zh_html
     assert "security_state compiler" not in zh_html
 
@@ -1546,11 +1549,33 @@ def test_pinned_identity_not_owner_read_house_copy_is_the_frozen_pair() -> None:
     assert re.search(r"[一-鿿]", rows[0]["zh"])
 
 
+def _identity_checks_panel(html: str) -> _HtmlNode:
+    """The Identity-checks `.dpanel` from a language-stripped ticker render."""
+    root = _parse_class_tree(html)
+    for panel in root.find_all_class("dpanel"):
+        for child in panel.children:
+            if child.tag == "h3" and (
+                "Identity checks" in child.get_text() or "身份核对" in child.get_text()
+            ):
+                return panel
+    raise AssertionError("Identity checks panel not found")
+
+
+def _visible_page_text(html: str) -> str:
+    """Tag-stripped text with style/script dropped, for field-name leakage."""
+    html = re.sub(r"<script\b[^>]*>.*?</script>", " ", html, flags=re.S | re.I)
+    html = re.sub(r"<style\b[^>]*>.*?</style>", " ", html, flags=re.S | re.I)
+    return re.sub(r"<[^>]+>", " ", html)
+
+
 def test_golden_msft_proven_path_zh_page_has_no_raw_engine_english() -> None:
     """REQUIRED 5: a golden-MSFT PROVEN identity leg with no house-copy
     entry keeps the engine text in EN and puts `_SS_COVERAGE_FALLBACK` ZH
     ('暂不可用') in the ZH slot — never desc_raw / artifact_raw / reader_raw
     in Chinese.
+
+    Heal-round h4 REQUIRED 4: also fail on dict-repr markers and on the
+    engine's field names appearing as visible text on the ZH page.
     """
     from scripts.build_ticker_pages import _SS_COVERAGE_FALLBACK, _SS_ARTIFACT, _SS_LEG_DESC, _SS_READER
 
@@ -1582,5 +1607,179 @@ def test_golden_msft_proven_path_zh_page_has_no_raw_engine_english() -> None:
     assert "scripts/security_state_producer.py" not in zh_html
     assert "data/reference/security_master.parquet" not in zh_html
     assert _SS_COVERAGE_FALLBACK["zh"] in zh_html
+
+    panel_text = _identity_checks_panel(zh_html).get_text()
+    assert "{" not in panel_text, panel_text
+    assert "}" not in panel_text, panel_text
+    assert "':" not in panel_text, panel_text
+    visible = _visible_page_text(zh_html)
+    for name in ("left_value", "right_value", "values_read", "artifact", "reader", "check"):
+        assert not re.search(rf"\b{name}\b", visible), (
+            f"{name!r} leaked as visible text on the ZH page"
+        )
+
+
+def test_golden_msft_identity_checks_equalities_are_labeled_rows_not_dict_reprs() -> None:
+    """Heal-round h4 REQUIRED 1: equalities are view-model rows with a frozen
+    label, the two values, and a match/differ verdict — never a Python dict
+    repr. EN and ZH Identity-checks sections contain no dict-repr markers,
+    and every equality row carries a label.
+    """
+    from scripts.build_ticker_pages import _SS_EQUALITY
+
+    fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_msft_expected_output.json"
+    state = json.loads(fixture.read_text(encoding="utf-8"))
+    view = build_security_state({"security_state": state})
+    assert view is not None
+    rows = view["identity"]["equalities"]
+    assert rows, "golden MSFT carries equality receipts"
+    emitted = {e["check"] for e in state["identity_proof"]["equalities"]}
+    missing = emitted - set(_SS_EQUALITY)
+    assert not missing, f"_SS_EQUALITY missing engine checks: {sorted(missing)}"
+    for row in rows:
+        assert isinstance(row, dict), f"equality must be a row dict, got {row!r}"
+        assert row["label_en"], f"{row.get('check')!r}: missing EN label"
+        assert row["label_zh"], f"{row.get('check')!r}: missing ZH label"
+        assert re.search(r"[一-鿿]", row["label_zh"])
+        assert row["label_en"] != row["label_zh"]
+        assert row["verdict_en"] in ("match", "differ")
+        assert row["verdict_zh"] in ("一致", "不一致")
+        assert "{" not in row["label_en"] and "{" not in row["label_zh"]
+    for lang in ("en", "zh"):
+        html = _render_section(view, lang=lang)
+        panel = _identity_checks_panel(html)
+        text = panel.get_text()
+        notes = panel.find_all_class("dnotes")
+        assert notes, f"{lang} Identity-checks missing equalities list"
+        notes_text = notes[0].get_text()
+        assert "{" not in notes_text, f"{lang} equalities still has '{{': {notes_text}"
+        assert "}" not in notes_text, f"{lang} equalities still has '}}': {notes_text}"
+        assert "':" not in notes_text, f"{lang} equalities still has \"'\": {notes_text}"
+        assert "{'" not in text, f"{lang} Identity-checks still has a dict repr"
+        assert "':" not in text, f"{lang} Identity-checks still has dict-repr \"'\": {text}"
+        for row in rows:
+            label = row["label_en"] if lang == "en" else row["label_zh"]
+            assert label in text, f"{lang} Identity-checks missing label {label!r}"
+
+
+def test_unknown_equality_check_falls_back_to_ss_id_never_a_repr() -> None:
+    """Heal-round h4 REQUIRED 1: an unknown `check` key renders inside
+    `<span class="ss-id">`, never as a Python dict repr.
+    """
+    contract = _contract()
+    contract["identity_proof"]["equalities"] = [{
+        "check": "R99",
+        "left": "left.field",
+        "left_value": "1",
+        "right": "right.field",
+        "right_value": "2",
+        "equal": False,
+    }]
+    view = build_security_state({"security_state": contract})
+    assert view is not None
+    row = view["identity"]["equalities"][0]
+    assert row["check"] == "R99"
+    assert row["label_en"] == ""
+    assert row["label_zh"] == ""
+    assert row["verdict_en"] == "differ"
+    assert row["verdict_zh"] == "不一致"
+    html = _render_section(view, lang="en")
+    assert '<span class="ss-id">R99</span>' in html
+    assert "{'check'" not in html
+    assert '"check":' not in html
+
+
+def test_m1_zh_page_reason_text_has_no_latin_letters() -> None:
+    """Heal-round h4 REQUIRED 2: M1 ZH reason slots are house copy, never
+    English prose and never a Latin-letter reason.
+    """
+    from engine.security_state import MSFT_SUBJECT, compile_security_state_failure
+    from jsonschema import Draft202012Validator, FormatChecker
+    from scripts.build_ticker_pages import _SS_REASON
+
+    schema_path = REPO / "contracts" / "market_os" / "security_state.v1.schema.json"
+    validator = Draft202012Validator(
+        json.loads(schema_path.read_text(encoding="utf-8")),
+        format_checker=FormatChecker(),
+    )
+    state = compile_security_state_failure(
+        subject=MSFT_SUBJECT, validator=validator, now="2026-01-01T00:00:00Z",
+        prior_state=None, owner_read_completed=False,
+    )
+    view = build_security_state({"security_state": state})
+    assert view is not None
+    prophet_house = _SS_REASON["PROPHET_OWNER_OUTPUT_ABSENT"]
+    owner_house = _SS_REASON["OWNER_IDENTITY_BATCH_UNAVAILABLE"]
+    for s in _axis(view, "opportunity_context")["subreads"]:
+        if s["reason_zh"]:
+            assert not re.search(r"[A-Za-z]", s["reason_zh"]), (
+                f"M1 ZH reason still has Latin letters: {s['reason_zh']!r}"
+            )
+    zh_html = _render_section(view, lang="zh")
+    assert prophet_house["zh"] in zh_html
+    assert owner_house["zh"] in zh_html
+    assert prophet_house["en"] not in zh_html
+    assert "no current Prophet US owner output" not in zh_html
+    assert "PROPHET_OWNER_OUTPUT_ABSENT" not in zh_html
+
+
+def test_ss_map_subread_reason_prose_keeps_en_and_falls_back_zh() -> None:
+    """Heal-round h4 REQUIRED 2: the mapper's last branch keeps engine prose
+    in EN and never copies it into ZH.
+    """
+    from scripts.build_ticker_pages import _SS_COVERAGE_FALLBACK, _ss_map_subread_reason
+
+    en, zh = _ss_map_subread_reason("some unmapped engine sentence")
+    assert en == "some unmapped engine sentence"
+    assert zh == _SS_COVERAGE_FALLBACK["zh"]
+    assert en != zh
+
+
+def test_m1_failed_gate_is_owner_identity_not_compiler_failure() -> None:
+    """Heal-round h4 REQUIRED 3: M1 failed_gates carries
+    OWNER_IDENTITY_BATCH_UNAVAILABLE, never COMPILER_FAILURE's
+    'Read could not be built' false cause.
+    """
+    from engine.security_state import MSFT_SUBJECT, compile_security_state_failure
+    from jsonschema import Draft202012Validator, FormatChecker
+    from scripts.build_ticker_pages import _SS_GATES
+
+    schema_path = REPO / "contracts" / "market_os" / "security_state.v1.schema.json"
+    validator = Draft202012Validator(
+        json.loads(schema_path.read_text(encoding="utf-8")),
+        format_checker=FormatChecker(),
+    )
+    state = compile_security_state_failure(
+        subject=MSFT_SUBJECT, validator=validator, now="2026-01-01T00:00:00Z",
+        prior_state=None, owner_read_completed=False,
+    )
+    gate = state["legs"]["risk"]["failed_gates"][0]
+    assert gate["code"] == "OWNER_IDENTITY_BATCH_UNAVAILABLE"
+    assert gate["reason"] == "OWNER_IDENTITY_BATCH_UNAVAILABLE"
+    house = _SS_GATES["OWNER_IDENTITY_BATCH_UNAVAILABLE"]
+    assert house["en"] == "Owner-identity read did not run"
+    assert house["zh"] == "未执行所有者身份读取"
+    view = build_security_state({"security_state": state})
+    assert view is not None
+    rendered = next(
+        g for a in view["axes"] for g in a["gates"]
+        if g["code"] == "OWNER_IDENTITY_BATCH_UNAVAILABLE"
+    )
+    assert rendered["en"] == house["en"]
+    assert rendered["zh"] == house["zh"]
+    zh_html = _render_section(view, lang="zh")
+    assert house["zh"] in zh_html
+    # Dominant degradation stays COMPILER_FAILURE (the shell still did not
+    # compile). The false-cause residue was the failed_gates CODE, which
+    # must render this house pair and not the compiler-failure sentence.
+    assert f'<span class="c ss-id">{gate["code"]}</span>' in zh_html
+    risk_panel = next(
+        (p for p in _parse_class_tree(zh_html).find_all_class("ss-gate")
+         if house["zh"] in p.get_text()),
+        None,
+    )
+    assert risk_panel is not None, "M1 failed-gate house copy missing from the gate receipt"
+    assert "读数无法生成" not in risk_panel.get_text()
+    assert "Read could not be built" not in risk_panel.get_text()
 
 

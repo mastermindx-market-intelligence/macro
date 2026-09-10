@@ -250,7 +250,7 @@ _WARNING_TEXT: dict[str, dict[str, str]] = {
     },
 }
 
-_PROPHET_REASON = "no current Prophet US owner output for this security"
+_PROPHET_REASON = "PROPHET_OWNER_OUTPUT_ABSENT"
 
 # Decision Spine required axes (Sol blocker 1): state + change. legs.evidence
 # REMAINS a leg but is supporting metadata for change's provenance, not its
@@ -1317,7 +1317,7 @@ def _build_risk_leg(
         })
     ladder = blob.get("ladder") if isinstance(blob.get("ladder"), Mapping) else {}
     if ladder.get("dir") == "down":
-        failed_gates.append({"code": "LADDER_DOWNTREND", "reason": "ladder.dir=down"})
+        failed_gates.append({"code": "LADDER_DOWNTREND", "reason": "LADDER_DIRECTION_DOWN"})
 
     conflicted_leg_names = [
         name for name, leg in (("evidence", evidence_leg), ("opportunity_context", opportunity_leg))
@@ -1593,7 +1593,7 @@ def compile_security_state(
     return state
 
 
-_LAST_GOOD_REASON = "prior cycle's committed security_state.v1"
+_LAST_GOOD_REASON = "PRIOR_CYCLE_COMMITTED_STATE"
 
 
 def _prior_matches_subject(
@@ -1745,6 +1745,7 @@ def compile_security_state_failure(
         # Packet M1 path: the owner-identity batch read itself never ran.
         # public_reason is a CODE, never prose — the ticker page maps it.
         public_reason = "OWNER_IDENTITY_BATCH_UNAVAILABLE"
+        gate_code = "OWNER_IDENTITY_BATCH_UNAVAILABLE"
         unread_by_code = {item.split(":", 1)[0]: item for item in UNREAD_DISCLOSURES}
         identity_proof = {
             "state": "BLOCKED_IDENTITY_BRIDGE", "method": "owner_backed_chain.v1",
@@ -1771,10 +1772,8 @@ def compile_security_state_failure(
         }
     elif owner_unread:
         # Main B2/MAJOR-2 path: fallback subject carries explicit UNREAD evidence.
-        public_reason = (
-            "This security's information could not be updated this cycle "
-            "because ownership data was unavailable."
-        )
+        public_reason = "OWNER_IDENTITY_UNAVAILABLE_THIS_CYCLE"
+        gate_code = "COMPILER_FAILURE"
         r8_leg = _leg_receipt(
             "R8",
             "owner identity batch failed this cycle; no owner reader ran for "
@@ -1799,10 +1798,8 @@ def compile_security_state_failure(
             "disclosures": list(UNREAD_DISCLOSURES),
         }
     else:
-        public_reason = (
-            "This security's information could not be finished this cycle "
-            "after its ownership was confirmed."
-        )
+        public_reason = "COMPILE_FAILED_AFTER_OWNER_CONFIRMED"
+        gate_code = "COMPILER_FAILURE"
         identity_proof = {
             "state": "BLOCKED_IDENTITY_BRIDGE", "method": "owner_backed_chain.v1",
             "legs": [_leg_receipt(
@@ -1844,7 +1841,7 @@ def compile_security_state_failure(
         "coverage_state": "UNAVAILABLE",
     }
     risk_leg = {
-        "risk_refs": [], "failed_gates": [{"code": "COMPILER_FAILURE", "reason": public_reason}],
+        "risk_refs": [], "failed_gates": [{"code": gate_code, "reason": public_reason}],
         "strongest_unresolved_fact": {"state": "unavailable", "leg": None, "code": None, "en": None, "zh": None},
         "coverage_state": "UNAVAILABLE",
     }

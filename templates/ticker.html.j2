@@ -1946,7 +1946,7 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
           {% if lg.reads %}<dl class="ss-chk-v">{% for v in lg.reads %}<dt>{{ v.k }}</dt><dd>{{ v.v if v.v else '—' }}</dd>{% endfor %}</dl>{% endif %}
         </div>
         {% endfor %}
-        {% if ss.identity.equalities %}<ul class="dnotes">{% for e in ss.identity.equalities %}<li class="ss-id">{{ e }}</li>{% endfor %}</ul>{% endif %}
+        {% if ss.identity.equalities %}<ul class="dnotes">{% for e in ss.identity.equalities %}<li>{% if e.label_en %}{{ t(e.label_en, e.label_zh) }}{% else %}<span class="ss-id">{{ e.check }}</span>{% endif %}: <span class="ss-id">{{ e.left_value }}</span> = <span class="ss-id">{{ e.right_value }}</span> — {{ t(e.verdict_en, e.verdict_zh) }}</li>{% endfor %}</ul>{% endif %}
         {% if ss.identity.refusals %}<div class="dfoot">{{ t('Held back', '暂不呈现') }}: {% for r in ss.identity.refusals %}<span class="dfoot-row">{{ t(r.en, r.zh) }} <span class="c ss-id">{{ r.code }}</span></span>{% if not loop.last %}<br>{% endif %}{% endfor %}</div>{% endif %}
         {% if ss.identity.disclosures %}<div class="dfoot">{% for d in ss.identity.disclosures %}<span class="dfoot-row">{{ t(d.en, d.zh) }}{% if d.code %} <span class="c ss-id">{{ d.code }}</span>{% endif %}</span>{% if not loop.last %}<br>{% endif %}{% endfor %}</div>{% endif %}
       </section>

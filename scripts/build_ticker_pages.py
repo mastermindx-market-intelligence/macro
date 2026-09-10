@@ -3571,6 +3571,15 @@ _SS_GATES: dict[str, dict[str, str]] = {
         "clear_en": "The owner identity is read again on the next data update.",
         "clear_zh": "所有者身份将在下一次数据更新时重新读取。",
     },
+    # Heal-round h4 REQUIRED 3: M1 failed_gates carries this code, never
+    # COMPILER_FAILURE ("Read could not be built"). Frozen pair is the
+    # shorter gate sentence; the longer subread pair lives in `_SS_REASON`.
+    "OWNER_IDENTITY_BATCH_UNAVAILABLE": {
+        "en": "Owner-identity read did not run",
+        "zh": "未执行所有者身份读取",
+        "clear_en": "The owner identity is read again on the next data update.",
+        "clear_zh": "所有者身份将在下一次数据更新时重新读取。",
+    },
 }
 
 # Chairman plain-language law (2026-09-06), macro#6920 round-3 MAJOR #2:
@@ -3688,6 +3697,26 @@ _SS_REASON: dict[str, dict[str, str]] = {
         "en": "This cycle's owner-identity read did not run, so this security's identity was not checked.",
         "zh": "本周期未执行所有者身份读取，因此未核对该证券的身份。",
     },
+    "PROPHET_OWNER_OUTPUT_ABSENT": {
+        "en": "No owner output is published for this security this cycle.",
+        "zh": "本周期没有发布该证券的所有者输出。",
+    },
+    "PRIOR_CYCLE_COMMITTED_STATE": {
+        "en": "This is the last complete read from a previous cycle.",
+        "zh": "这是上一周期的最后一次完整读数。",
+    },
+    "OWNER_IDENTITY_UNAVAILABLE_THIS_CYCLE": {
+        "en": "This security's information could not be updated this cycle because ownership data was unavailable.",
+        "zh": "本周期因所有权数据不可用，未能更新该证券的信息。",
+    },
+    "COMPILE_FAILED_AFTER_OWNER_CONFIRMED": {
+        "en": "This security's information could not be finished this cycle after its ownership was confirmed.",
+        "zh": "本周期在确认所有权后，未能完成该证券的信息。",
+    },
+    "LADDER_DIRECTION_DOWN": {
+        "en": "The price ladder is pointing down.",
+        "zh": "价格阶梯指向下行。",
+    },
 }
 _SS_REASON_CODE_RE = re.compile(r"^[A-Z][A-Z0-9_]+$")
 
@@ -3696,7 +3725,8 @@ def _ss_map_subread_reason(raw: str) -> tuple[str, str]:
     """Map a subread reason code to house copy.
 
     Mapped codes use `_SS_REASON`. Unmapped codes (ALL_CAPS identifiers) use
-    `_SS_COVERAGE_FALLBACK`. Prose that is not a code is left unchanged.
+    `_SS_COVERAGE_FALLBACK`. Prose that is not a code keeps the engine text
+    in EN; ZH never receives English.
     """
     if not raw:
         return "", ""
@@ -3705,7 +3735,50 @@ def _ss_map_subread_reason(raw: str) -> tuple[str, str]:
         return house["en"], house["zh"]
     if _SS_REASON_CODE_RE.fullmatch(raw):
         return _SS_COVERAGE_FALLBACK["en"], _SS_COVERAGE_FALLBACK["zh"]
-    return raw, raw
+    return raw, _SS_COVERAGE_FALLBACK["zh"]
+
+
+# Identity-proof equalities — keyed on `check` (every value `engine/security_state.py`
+# `_equality()` emits: R2, R3, R4, R5, R7a, R7b, R7c, R8, R9). An unknown check
+# falls back to the check key itself inside `<span class="ss-id">`, never a repr.
+_SS_EQUALITY: dict[str, dict[str, str]] = {
+    "R2": {"en": "Issuer identifier", "zh": "发行人标识"},
+    "R3": {"en": "Issuer record count", "zh": "发行人记录数"},
+    "R4": {"en": "Issuer security set", "zh": "发行人证券集合"},
+    "R5": {"en": "Listing key round-trip", "zh": "上市代码回环核对"},
+    "R7a": {"en": "Event identifier", "zh": "事件标识"},
+    "R7b": {"en": "Company identifier", "zh": "公司标识"},
+    "R7c": {"en": "Registration number on the filing", "zh": "披露文件上的注册编号"},
+    "R8": {"en": "Issuer registration number", "zh": "发行人注册编号"},
+    "R9": {"en": "Primary ticker alias", "zh": "主要股票代码别名"},
+}
+_SS_EQUALITY_VERDICT = {
+    True: {"en": "match", "zh": "一致"},
+    False: {"en": "differ", "zh": "不一致"},
+}
+
+
+def _ss_equality_rows(raw_list: Any) -> list[dict[str, Any]]:
+    """Project `identity_proof.equalities` into labeled view-model rows."""
+    rows: list[dict[str, Any]] = []
+    for item in (raw_list or []):
+        if not isinstance(item, dict):
+            continue
+        check = _clean_str(item.get("check") or "")
+        house = _SS_EQUALITY.get(check)
+        equal = bool(item.get("equal"))
+        verdict = _SS_EQUALITY_VERDICT[equal]
+        rows.append({
+            "check": check,
+            "label_en": (house or {}).get("en") or "",
+            "label_zh": (house or {}).get("zh") or "",
+            "left_value": _ss_value(item.get("left_value")),
+            "right_value": _ss_value(item.get("right_value")),
+            "verdict_en": verdict["en"],
+            "verdict_zh": verdict["zh"],
+            "ok": equal,
+        })
+    return rows
 
 
 def _ss_house_or_en_with_zh_fallback(house: dict[str, str] | None, raw: str) -> tuple[str, str]:
@@ -4446,11 +4519,12 @@ def build_security_state(blob: dict | None) -> dict | None:
         lg_deg_code = _clean_str(last_good.get("dominant_degradation") or "").upper()
         lg_deg = _SS_DEGRADATION.get(lg_deg_code) if lg_deg_code else None
         lg_ok = bool(lg_at) and lg_deg_code != "COMPILER_FAILURE"
-        lg_reason = _ss_pair(last_good, "reason")
-        if lg_reason and re.fullmatch(r"[a-z0-9_.:-]+", lg_reason["en"] or ""):
-            # A bare machine code is not a sentence; it reads as words here and
-            # keeps its exact form nowhere else, because nowhere else asked.
-            lg_reason = {"en": _ss_prettify(lg_reason["en"]), "zh": _ss_prettify(lg_reason["en"])}
+        reason_raw = _clean_str(last_good.get("reason") or "")
+        if reason_raw:
+            reason_en, reason_zh = _ss_map_subread_reason(reason_raw)
+            lg_reason = {"en": reason_en, "zh": reason_zh} if reason_en or reason_zh else None
+        else:
+            lg_reason = None
 
         return {
             "version": _clean_str(ss.get("schema") or ss.get("version") or "security_state.v1"),
@@ -4474,7 +4548,7 @@ def build_security_state(blob: dict | None) -> dict | None:
                 "en": idc["en"], "zh": idc["zh"],
                 "why_en": idc["why_en"], "why_zh": idc["why_zh"],
                 "legs": id_legs,
-                "equalities": [_clean_str(e) for e in (ident_raw.get("equalities") or []) if _clean_str(e)],
+                "equalities": _ss_equality_rows(ident_raw.get("equalities") or []),
                 # Chairman plain-language law (2026-09-06): a refusal is a
                 # machine code (`COMPILER_FAILURE`, `IDENTITY_UNRESOLVED`, …)
                 # and must never render as bare English prose duplicated into

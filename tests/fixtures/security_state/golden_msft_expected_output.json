@@ -6,7 +6,7 @@
   "listing_key": "US-XNAS-MSFT",
   "ticker_display": "MSFT",
   "generated_at": "2026-09-04T12:00:00Z",
-  "content_sha256": "62e7f7818a4cdd2c62eb7f5d38927c195e2d764277560f64c7660f8e63e08489",
+  "content_sha256": "8c27ab69ec320a17cd58d35c8d8183bbb4a0b57f697cdd0fb1e57465f582111e",
   "as_of": {
     "market_at": "2026-09-04",
     "source_frontier_at": "2026-07-30T20:30:28Z",
@@ -372,7 +372,7 @@
       "prophet": {
         "ref": null,
         "state": "UNAVAILABLE",
-        "reason": "no current Prophet US owner output for this security"
+        "reason": "PROPHET_OWNER_OUTPUT_ABSENT"
       },
       "entry": {
         "state": "AVAILABLE",

@@ -435,7 +435,8 @@ def test_case5_prophet_unavailable() -> None:
     prophet = state["legs"]["opportunity_context"]["prophet"]
     assert prophet["ref"] is None
     assert prophet["state"] == "UNAVAILABLE"
-    assert prophet["reason"] == "no current Prophet US owner output for this security"
+    assert prophet["reason"] == ss._PROPHET_REASON
+    assert prophet["reason"] == "PROPHET_OWNER_OUTPUT_ABSENT"
 
 
 def test_case6_entry_unavailable() -> None:
@@ -646,7 +647,7 @@ def test_case12_compiler_failure_with_last_good() -> None:
         "generated_at": prior["generated_at"],
         "content_sha256": prior["content_sha256"],
         "dominant_degradation": prior["dominant_degradation"],
-        "reason": "prior cycle's committed security_state.v1",
+        "reason": ss._LAST_GOOD_REASON,
     }
     assert state["coverage"]["overall_state"] == "UNAVAILABLE"
     for leg in state["legs"].values():
@@ -745,7 +746,7 @@ def test_failure_shell_for_unread_fallback_subject_refuses_owner_pass() -> None:
         "generated_at": prior["generated_at"],
         "content_sha256": prior["content_sha256"],
         "dominant_degradation": prior["dominant_degradation"],
-        "reason": "prior cycle's committed security_state.v1",
+        "reason": ss._LAST_GOOD_REASON,
     }
     validator = _validator()
     assert list(validator.iter_errors(state)) == []
@@ -771,7 +772,9 @@ def test_failure_shell_for_real_owner_subject_keeps_owner_pass_leg() -> None:
         d.startswith("OWNER_COMPOSED_SUBJECT_CURRENT_ONLY:")
         for d in identity_proof["disclosures"]
     )
-    assert "confirmed" in state["legs"]["risk"]["failed_gates"][0]["reason"]
+    assert state["legs"]["risk"]["failed_gates"][0]["reason"] == (
+        "COMPILE_FAILED_AFTER_OWNER_CONFIRMED"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -807,6 +810,7 @@ def test_failure_shell_for_unread_fallback_subject_reason_does_not_claim_owner_c
     null_reason = state["legs"]["opportunity_context"]["entry"]["null_reason"]
     gate_reason = state["legs"]["risk"]["failed_gates"][0]["reason"]
     assert null_reason == gate_reason
+    assert null_reason == "OWNER_IDENTITY_UNAVAILABLE_THIS_CYCLE"
     for text in (null_reason, gate_reason):
         assert "composed" not in text
         assert "security_state" not in text
@@ -897,7 +901,7 @@ def test_last_good_eligibility_matrix() -> None:
     assert ss._is_last_good_eligible(eligible_prior, subject=subject) is True
     assert ss.derive_last_good(eligible_prior, subject=subject) == {
         "generated_at": "2026-08-20T00:00:00Z", "content_sha256": "a" * 64,
-        "dominant_degradation": "PARTIAL", "reason": "prior cycle's committed security_state.v1",
+        "dominant_degradation": "PARTIAL", "reason": ss._LAST_GOOD_REASON,
     }
 
     # identity_proof.state != PROVEN is never eligible, regardless of
@@ -958,7 +962,7 @@ def test_last_good_carries_forward_unchanged_across_two_consecutive_failures() -
         "generated_at": success_state["generated_at"],
         "content_sha256": success_state["content_sha256"],
         "dominant_degradation": success_state["dominant_degradation"],
-        "reason": "prior cycle's committed security_state.v1",
+        "reason": ss._LAST_GOOD_REASON,
     }
 
     failure_1 = ss.compile_security_state_failure(
@@ -980,7 +984,7 @@ def test_last_good_carries_forward_unchanged_across_two_consecutive_failures() -
     assert failure_2["last_good"] == expected_snapshot
     assert failure_2["last_good"] != {
         "generated_at": failure_1["generated_at"], "content_sha256": failure_1["content_sha256"],
-        "dominant_degradation": failure_1["dominant_degradation"], "reason": "prior cycle's committed security_state.v1",
+        "dominant_degradation": failure_1["dominant_degradation"], "reason": ss._LAST_GOOD_REASON,
     }
 
 
@@ -1968,6 +1972,12 @@ def test_disclosures_only_retire_cik_and_namespace_limits_where_the_fix_lands() 
     assert unresolved["legs"]["opportunity_context"]["entry"]["null_reason"] == (
         "OWNER_IDENTITY_BATCH_UNAVAILABLE"
     )
+    assert unresolved["legs"]["risk"]["failed_gates"][0]["code"] == (
+        "OWNER_IDENTITY_BATCH_UNAVAILABLE"
+    )
     assert unresolved["legs"]["risk"]["failed_gates"][0]["reason"] == (
         "OWNER_IDENTITY_BATCH_UNAVAILABLE"
+    )
+    assert unresolved["legs"]["opportunity_context"]["prophet"]["reason"] == (
+        "PROPHET_OWNER_OUTPUT_ABSENT"
     )
