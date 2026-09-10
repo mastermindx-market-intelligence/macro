@@ -101,6 +101,39 @@ body.mq-page.mq-modal-open { overflow: hidden; }
 code { font-family: var(--font-mono); font-size: 10.5px; word-break: break-all; }
 .mq-hash { font-size: 9.5px; }
 
+/* Provenance receipt line (frozen spec §c.5). Dark separates by luminance
+   (shallow recess); light separates by a drawn left rail — not a token swap. */
+.mq-ref-name {
+  display: block;
+  color: var(--mq-ink);
+  font-size: 12px;
+  line-height: 1.45;
+}
+code.mq-receipt {
+  display: block;
+  margin-top: 4px;
+  user-select: all;
+  color: var(--mq-muted);
+  background: color-mix(in srgb, var(--text) 5%, transparent);
+  border: none;
+  border-radius: 4px;
+  padding: 3px 6px;
+  word-break: break-all;
+}
+code.mq-receipt::selection {
+  background: color-mix(in srgb, var(--mq-accent) 22%, transparent);
+}
+html[data-theme="light"] code.mq-receipt {
+  background: transparent;
+  border-radius: 0;
+  border-left: 2px solid var(--mq-line-strong);
+  padding: 3px 0 3px 8px;
+  color: color-mix(in srgb, var(--mq-ink) 78%, transparent);
+}
+html[data-theme="light"] code.mq-receipt::selection {
+  background: color-mix(in srgb, var(--mq-accent) 14%, transparent);
+}
+
 /* ── 1. context header ──────────────────────────────────────────────────── */
 .mq-context {
   display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
