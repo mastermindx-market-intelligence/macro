@@ -769,10 +769,13 @@ def test_identity_receipts_render_their_actual_fields() -> None:
     assert "_read_security_state_identity_rows" not in html
     assert "Master row found" in html
     assert "row_present" not in html
-    assert "true" in html
+    panel_text = _identity_checks_panel(html).get_text()
+    assert "yes" in panel_text
+    assert "true" not in panel_text
     assert "Security status" in html
     assert "security_state</dt>" not in html
-    assert "null" in html
+    assert "—" in panel_text
+    assert "null" not in panel_text
 
 
 def test_provenance_copy_is_two_register_and_bilingual() -> None:
@@ -1210,6 +1213,7 @@ def _iter_leg_house_copy_slots():
     """Walk every user-facing string in the identity-leg house tables."""
     from scripts.build_ticker_pages import (
         _SS_ARTIFACT, _SS_LEG_DESC, _SS_LEG_HOUSE_BY_DESC, _SS_READER,
+        _SS_READ_KEY_VALUE, _SS_READ_VALUE,
     )
     for key, entry in _SS_LEG_DESC.items():
         for slot, text in entry.items():
@@ -1229,6 +1233,12 @@ def _iter_leg_house_copy_slots():
                     f"_SS_LEG_HOUSE_BY_DESC[{key!r}][{field!r}][{slot!r}]",
                     str(text),
                 )
+    for key, entry in _SS_READ_VALUE.items():
+        for slot, text in entry.items():
+            yield f"_SS_READ_VALUE[{key!r}][{slot!r}]", str(text)
+    for key, entry in _SS_READ_KEY_VALUE.items():
+        for slot, text in entry.items():
+            yield f"_SS_READ_KEY_VALUE[{key!r}][{slot!r}]", str(text)
 
 
 def test_ss_gates_and_leg_desc_user_facing_copy_has_no_batch_machine_words() -> None:
@@ -1607,6 +1617,32 @@ def _identity_checks_panel(html: str) -> _HtmlNode:
     raise AssertionError("Identity checks panel not found")
 
 
+def _without_ss_id(node: _HtmlNode) -> _HtmlNode:
+    """Drop ``ss-id`` / ``c ss-id`` subtrees (receipt chips and identifiers).
+
+    `_HtmlNode` has no subtree-exclusion of its own. The receipt code chip is
+    the sanctioned home for a machine code; the ALL_CAPS_SNAKE and ZH Latin-run
+    rules apply to what remains after those spans are removed.
+    """
+    clone = _HtmlNode(node.tag, node.classes)
+    clone.text_parts = list(node.text_parts)
+    for child in node.children:
+        if "ss-id" in child.classes:
+            continue
+        clone.children.append(_without_ss_id(child))
+    return clone
+
+
+def _spaced_text(node: _HtmlNode) -> str:
+    """Visible text with a gap between child elements so labels do not glue to values."""
+    bits = [part for part in node.text_parts if part.strip()]
+    for child in node.children:
+        child_text = _spaced_text(child)
+        if child_text:
+            bits.append(child_text)
+    return " ".join(bits)
+
+
 def _visible_page_text(html: str) -> str:
     """Tag-stripped text with style/script dropped, for field-name leakage."""
     html = re.sub(r"<script\b[^>]*>.*?</script>", " ", html, flags=re.S | re.I)
@@ -1680,6 +1716,10 @@ def test_golden_msft_proven_path_zh_page_has_no_raw_engine_english() -> None:
         )
 
 
+_PANEL_CUSTOMER_TOKENS = frozenset({
+    "ISS", "SEC", "XNAS", "XNYS", "MSFT", "AAPL", "cik", "evt", "results",
+    "CIK", "ISIN", "CUSIP", "NYSE", "NASDAQ",
+})
 _IDENTITY_CHECKS_MACHINE_TOKENS = (
     ".parquet", "::", "scripts/", "engine/", "data/",
     "lib.dataos", "engine.neuralweb", "parse_listing_key",
@@ -1688,49 +1728,110 @@ _IDENTITY_CHECKS_MACHINE_TOKENS = (
     "security_master", "issuer_master", "issuer_migrations",
     "security_migrations",
 )
-_DOTTED_MODULE_RE = re.compile(r"[a-z_]+\.[a-z_]+\.[a-z_]+")
+_CAMEL_RE = re.compile(r"\b[A-Z][a-z]+[A-Z][A-Za-z]+\b")
+_DOTTED_MODULE_RE = re.compile(
+    r"[A-Za-z_]+\.[A-Za-z_]+\.[A-Za-z_]+|[A-Za-z_]+\.[a-z_]+\("
+)
+_CALL_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\(")
+_ALL_CAPS_SNAKE_RE = re.compile(r"\b[A-Z]{3,}(?:_[A-Z0-9]+)*\b")
+_BARE_LITERAL_RE = re.compile(r"\b(?:true|false|null|None)\b")
+_ZH_LATIN_RUN_RE = re.compile(r"[A-Za-z]{3,}")
 
 
-def test_golden_msft_identity_checks_panel_has_no_machine_text() -> None:
-    """REQUIRED 1 (i): golden-MSFT Identity-checks panel (EN and ZH) contains
-    no engine paths, file stems, dotted module paths, or 暂不可用 on a
-    passing row. RED at 8ae0df1b on the golden-MSFT pages only; the M1 page
-    is already green via test_m1_shell_artifact_and_reader_are_plain_bilingual_not_machine_paths.
+def _identity_checks_machine_hits(text: str, *, lang: str) -> list[str]:
+    """Collect machine-text hits in Identity-checks visible text (ss-id stripped)."""
+    hits: list[str] = []
+    for token in _IDENTITY_CHECKS_MACHINE_TOKENS:
+        if token in text:
+            hits.append(token)
+    for rx, label in (
+        (_CAMEL_RE, "CamelCase"),
+        (_DOTTED_MODULE_RE, "dotted-path"),
+        (_CALL_RE, "call"),
+        (_BARE_LITERAL_RE, "literal"),
+        (_ALL_CAPS_SNAKE_RE, "ALL_CAPS"),
+    ):
+        for m in rx.finditer(text):
+            tok = m.group(0)
+            if tok in _PANEL_CUSTOMER_TOKENS:
+                continue
+            hits.append(f"{label}:{tok}")
+    if "::" in text and "::" not in hits:
+        hits.append("::")
+    if lang == "zh":
+        for m in _ZH_LATIN_RUN_RE.finditer(text):
+            tok = m.group(0)
+            if tok in _PANEL_CUSTOMER_TOKENS:
+                continue
+            hits.append(f"zh-latin:{tok}")
+    return hits
+
+
+def test_identity_checks_panel_has_no_machine_text_on_golden_msft_and_m1() -> None:
+    """Heal-round h6 REQUIRED 2: panel-wide machine-text guard.
+
+    Renders golden-MSFT and M1 Identity-checks in EN and ZH, strips ``ss-id``
+    subtrees (receipt chips and customer identifiers), and fails on CamelCase
+    identifiers, dotted paths, parenthesised calls, ``::``, ``.parquet`` /
+    ``.py``, ``scripts/`` / ``engine/`` / ``data/``, bare ``true`` / ``false``
+    / ``null`` / ``None``, and ALL_CAPS_SNAKE of three or more letters.
+    ZH additionally fails on a Latin run of three or more letters outside
+    `_PANEL_CUSTOMER_TOKENS`. Supersedes
+    ``test_golden_msft_identity_checks_panel_has_no_machine_text``.
+    RED at b53b05b8 on reads values (VendorAliasTable.resolve(store),
+    IssuerMaster.cik_of_issuer, IssuerMaster.issuer_of_security, true, null,
+    RESOLVED, AVAILABLE, active).
     """
-    from scripts.build_ticker_pages import _SS_COVERAGE_FALLBACK
+    from engine.security_state import MSFT_SUBJECT, compile_security_state_failure
+    from jsonschema import Draft202012Validator, FormatChecker
+    from scripts.build_ticker_pages import _SS_ARTIFACT, _SS_COVERAGE_FALLBACK
 
+    pages: list[tuple[str, dict]] = []
     fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_msft_expected_output.json"
-    state = json.loads(fixture.read_text(encoding="utf-8"))
-    view = build_security_state({"security_state": state})
-    assert view is not None
-    snake_keys_printed: list[str] = []
-    for lg in view["identity"]["legs"]:
-        for row in lg["reads"]:
-            if not row["label_en"]:
-                snake_keys_printed.append(row["k"])
-    assert not snake_keys_printed, (
-        f"Identity-checks reads row printed a snake_case key with no label: "
-        f"{snake_keys_printed}"
+    golden = json.loads(fixture.read_text(encoding="utf-8"))
+    golden_view = build_security_state({"security_state": golden})
+    assert golden_view is not None
+    pages.append(("golden-msft", golden_view))
+
+    schema_path = REPO / "contracts" / "market_os" / "security_state.v1.schema.json"
+    validator = Draft202012Validator(
+        json.loads(schema_path.read_text(encoding="utf-8")),
+        format_checker=FormatChecker(),
     )
-    for lang in ("en", "zh"):
-        html = _render_section(view, lang=lang)
-        panel = _identity_checks_panel(html)
-        text = panel.get_text()
-        for token in _IDENTITY_CHECKS_MACHINE_TOKENS:
-            assert token not in text, (
-                f"{lang} Identity-checks still has {token!r}: {text}"
-            )
-        dotted = _DOTTED_MODULE_RE.search(text)
-        assert dotted is None, (
-            f"{lang} Identity-checks still has dotted module path {dotted.group()!r}"
-        )
-        for chk in panel.find_all_class("ss-chk"):
-            chk_text = chk.get_text()
-            passed = ("passed" in chk_text) if lang == "en" else ("通过" in chk_text)
-            if passed:
-                assert _SS_COVERAGE_FALLBACK["zh"] not in chk_text, (
-                    f"{lang} PASS row still has 暂不可用: {chk_text}"
-                )
+    m1 = compile_security_state_failure(
+        subject=MSFT_SUBJECT, validator=validator, now="2026-01-01T00:00:00Z",
+        prior_state=None, owner_read_completed=False,
+    )
+    m1_view = build_security_state({"security_state": m1})
+    assert m1_view is not None
+    pages.append(("m1", m1_view))
+
+    failures: list[str] = []
+    for label, view in pages:
+        for lang in ("en", "zh"):
+            html = _render_section(view, lang=lang)
+            panel = _identity_checks_panel(html)
+            scanned = _spaced_text(_without_ss_id(panel))
+            hits = _identity_checks_machine_hits(scanned, lang=lang)
+            for hit in hits:
+                failures.append(f"{label}/{lang}: {hit}")
+            for chk in panel.find_all_class("ss-chk"):
+                chk_text = chk.get_text()
+                passed = ("passed" in chk_text) if lang == "en" else ("通过" in chk_text)
+                if passed:
+                    assert _SS_COVERAGE_FALLBACK["zh"] not in chk_text, (
+                        f"{label}/{lang} PASS row still has 暂不可用: {chk_text}"
+                    )
+    assert not failures, (
+        "Identity-checks panel still prints machine text: " + "; ".join(failures)
+    )
+
+    m1_en = _identity_checks_panel(_render_section(pages[1][1], lang="en")).get_text()
+    artifact_en = _SS_ARTIFACT[("R8", "IDENTITY_UNRESOLVED")]["en"]
+    assert "(not a live owner record)" in artifact_en
+    assert "(not a live owner record)" in m1_en, (
+        "M1 EN artifact sentence missing from Identity-checks: " + m1_en
+    )
 
 
 def test_identity_leg_house_copy_covers_golden_msft_m1_and_compile_failed_shell() -> None:
