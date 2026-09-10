@@ -41,11 +41,33 @@ session's identity. A caller without an identity gets a new random carrier;
 identity-less repeats are not reuse proof. The final stdout line is the absolute
 worktree path; errors go to stderr and return nonzero.
 
-The helper verifies the mount's UUID, external APFS identity, writeability,
+The helper verifies the mount's UUID, external volume identity, supported filesystem, writeability,
 available space, path containment and device identity before directory creation.
 It rejects symlinks and parent traversal. No unavailable, wrong, read-only or
 low-space volume permits an internal fallback. Directory creation walks open
 directory descriptors with `O_NOFOLLOW`.
+
+Supported filesystem metadata comes from `diskutil info -plist`. APFS retains
+its existing `FilesystemType=apfs` admission; if `FilesystemName` is present it
+must be `APFS` or `Case-sensitive APFS`, and HFS journal extents or an affirmative
+`Journaled` flag are inconsistent with APFS. An optional `Journaled` field must
+be boolean false on APFS.
+
+Journaled HFS+ requires `FilesystemType=hfs`, exactly `Journaled HFS+` or
+`Case-sensitive Journaled HFS+` as `FilesystemName`, and strictly positive
+integer `JournalOffset` and `JournalSize` fields (booleans are not integers for
+this check). If `Journaled` is present, it must be boolean true. Missing,
+nonjournaled, contradictory or unsupported filesystem metadata refuses before
+allocation. This is not a blanket allowance for HFS, exFAT or NTFS.
+
+The 2026-09-09 M1 census identified `/Volumes/STORAGE` as the case-sensitive
+journaled HFS+ variant, UUID `61F1C39F-EEC5-3F91-9F4E-5A357037CF1D`, with
+`JournalOffset=30523392` and `JournalSize=83886080`. Its existing host policy
+selects `/Volumes/STORAGE/agent-workspaces` and retains the 100 GiB floor. This
+source amendment changes no installed helper, host policy or volume format.
+The observed `GlobalPermissionsEnabled=false` remains unchanged and does not
+prove permission isolation or fleet eligibility. Exact-source installation,
+real HFS+ filesystem checks and native first creation remain separate proofs.
 
 The repository's origin default branch is fetched into a request-specific ref
 and resolved to an immutable commit. `pr-N` names select the requested PR head.
@@ -156,6 +178,13 @@ Codex's actual auto entry point, operator locks, safe GC removal, work becoming
 dirty after classification, and drive disappearance during removal. Installer
 tests cover unrelated settings, staged hooks and concurrent-update refusal.
 
+Filesystem admission tests use the observed M1 journal metadata, retain APFS
+positive cases, reject incomplete or contradictory records before allocation,
+and exercise identity, space, containment, symlink and same-device guards across
+accepted types. The existing real-Git storage tests also run with the HFS+ probe
+fixture. Those disposable files reside on the test runner's external SSD; mocked
+HFS+ metadata is not evidence of native HFS+ mechanics or a client first mint.
+
 Live smoke evidence belongs under the SSD `audit/` directory and must include
 volume/device identity, actual hook command, clean sparse Git status and locked
 registration. Simulate a wrong UUID in a separate test policy; never disconnect
@@ -167,3 +196,43 @@ References: [Codex worktrees](https://learn.chatgpt.com/docs/environments/git-wo
 [Claude Desktop](https://code.claude.com/docs/en/desktop#work-in-parallel-with-sessions),
 [Claude WorktreeCreate](https://code.claude.com/docs/en/hooks#worktreecreate),
 [Git worktree](https://git-scm.com/docs/git-worktree).
+
+
+## Local F4 composition and regression evidence (2026-09-10 UTC)
+
+The managed external `auto_profile` entry point protects the removable-volume
+registration before disabled/already-sparse exits. For an enabled full checkout,
+it reads raw index flags and status without optional Git locks or fsmonitor.
+Assume-unchanged, skip-worktree, conflicts, staged/unstaged changes and untracked
+files skip sparse application; an unknown index/status read refuses it. Only a
+positively clean managed full checkout reaches the existing profile and lock
+healing path. Portable behavior and explicit sparse selections are preserved.
+This is a bounded startup guard, not hostile-writer transaction isolation.
+
+The named-file composition used base
+`83f24c82dfc8d08e55e6de33fabd405bb76786f7`, preserving final PR #6971 behavior
+and later base CI entries. The same existing source carrier retained HEAD and
+index; it is not a whole-checkout integration at that base. Fifty-seven finite
+baseline support paths were authenticated separately from the fifteen feature
+paths. Earlier F1-F3, immutable-local and filesystem-admission code/tests remain.
+
+Real disposable Git fixtures reproduced eight reported failures before the
+guard (including subtest failures). The guarded new cases then passed: eight
+tests and eleven subtests. The ten commissioned suites, with explicit local
+test-policy isolation, finished: **263 passed, 146 subtests passed in 52.24s**. Compilation without bytecode,
+exact additive CI comparison, support identity and `git diff --check` passed.
+
+The original failures are retained: the first attempt lacked pytest's local
+`py.py` shim; the first integrated run had one portable-hook test inherit the
+host policy (262 tests and 146 subtests passed). That run left a zero-byte
+host-policy lock for its disposable donor before default-base refusal; the
+derived destination parent was absent. The local test bootstrap now selects an
+absent fixture policy before imports, while SSD tests retain explicit policies.
+The baseline portable test itself is unchanged. This local harness qualification
+must accompany the result; it is not native client creation proof.
+
+Raw output, input hashes, the full fifteen-path base-to-composed map, support
+map, runtime amendment, effect reconciliation and cumulative child ledger are
+under `/Volumes/Mastermind/agent-workspaces/audit/f4-local-composition-20260910T062415Z`.
+`HOLD-FOR-SOL` and `FULL_REREVIEW_REQUIRED` remain. This source unit does not
+publish, install, activate clients, run a host GC sweep or grant fleet capacity.

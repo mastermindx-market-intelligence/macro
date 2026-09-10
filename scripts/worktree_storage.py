@@ -68,6 +68,22 @@ def is_managed_worktree_path(policy: dict, path: Path) -> bool:
     return any(root in Path(path).parents for root in client_roots(policy))
 
 
+def _supported_filesystem(info: dict) -> bool:
+    """Admit APFS or positively identified journaled HFS+, never plain `hfs`."""
+    if info.get('FilesystemType') == 'apfs':
+        return (info.get('FilesystemName', 'APFS') in ('APFS', 'Case-sensitive APFS')
+                and info.get('Journaled', False) is False
+                and 'JournalOffset' not in info and 'JournalSize' not in info)
+    if info.get('FilesystemType') != 'hfs':
+        return False
+    # diskutil may omit Journaled; its canonical name and journal extent must
+    # still agree. A display label alone is not evidence of an active journal.
+    return (info.get('FilesystemName') in ('Journaled HFS+', 'Case-sensitive Journaled HFS+')
+            and info.get('Journaled', True) is True
+            and all(type(info.get(key)) is int and info[key] > 0
+                    for key in ('JournalOffset', 'JournalSize')))
+
+
 def check_storage(policy: dict, target: Path | None = None, *, check_space: bool = True) -> Path:
     mount, root = Path(policy['mount_point']), Path(policy['root'])
     target = Path(target or root)
@@ -81,7 +97,7 @@ def check_storage(policy: dict, target: Path | None = None, *, check_space: bool
     info = volume_info(mount)
     if (info.get('VolumeUUID') != policy['volume_uuid'] or info.get('MountPoint') != str(mount)
             or info.get('Internal') is not False or info.get('Writable') is not True
-            or info.get('FilesystemType') != 'apfs'):
+            or not _supported_filesystem(info)):
         raise StorageError('SSD identity, mount, filesystem or writeability check failed')
     ancestor = target
     while not ancestor.exists():
@@ -227,6 +243,353 @@ def create_worktree(policy: dict, repo: Path, name: str, session: str, *, base: 
         return dest
 
 
+
+# Immutable-local mode is separate from ordinary create. Its per-Git timeout and
+# cooperative flock are not a transaction deadline or descendant-drain guarantee.
+# Partial/unknown effects are retained; this helper never rolls them back.
+def _immutable_git(repo: Path, *args: str, input: bytes | None = None,
+                   allowed: tuple[int, ...] = (0,)) -> bytes:
+    env = {k: v for k, v in os.environ.items() if not k.startswith('GIT_')}
+    env.update(GIT_OPTIONAL_LOCKS='0', GIT_NO_LAZY_FETCH='1', GIT_ALLOW_PROTOCOL='',
+               GIT_NO_REPLACE_OBJECTS='1', GIT_GRAFT_FILE=os.devnull,
+               GIT_TERMINAL_PROMPT='0')
+    argv = ['git', '--no-optional-locks', '--literal-pathspecs', '-c',
+            'protocol.allow=never', '-c', 'maintenance.auto=false', '-c', 'gc.auto=0',
+            '-c', 'core.fsmonitor=false', '-c', 'core.quotePath=false', '-C', str(repo), *args]
+    try:
+        result = subprocess.run(argv, input=input, capture_output=True, env=env, timeout=20)
+    except subprocess.TimeoutExpired as exc:
+        raise StorageError('immutable-local Git timed out; any partial effect is retained, not retried') from exc
+    if result.returncode not in allowed:
+        raise StorageError(f'immutable-local git {args[0]} refused (exit {result.returncode})')
+    return result.stdout
+
+
+def _immutable_path(raw: bytes) -> str:
+    """Explicit subset: UTF-8, no control characters, backslash, double quote or edge spaces."""
+    try:
+        value = raw.decode('utf-8', 'strict')
+    except UnicodeDecodeError as exc:
+        raise StorageError('immutable-local refuses non-UTF8 pathnames') from exc
+    if (not value or any(ord(c) < 32 or 127 <= ord(c) <= 159 or c == '\\' for c in value)
+            or '"' in value or any(p in ('.', '..') or p != p.strip(' ') for p in value.split('/'))):
+        raise StorageError('immutable-local refuses unsupported pathname characters')
+    return value
+
+
+def _immutable_git_path(repo: Path, *args: str) -> Path:
+    raw = _immutable_git(repo, 'rev-parse', '--path-format=absolute', *args)
+    return Path(_immutable_path(raw.removesuffix(b'\n')))
+
+
+def _immutable_snapshot(path: Path) -> dict:
+    if path.is_symlink():
+        raise StorageError('immutable-local refuses symlinked attribute/config input')
+    if not path.exists():
+        return dict(path=str(path), sha256=None)
+    if not path.is_file():
+        raise StorageError('immutable-local attribute/config input is not a regular file')
+    return dict(path=str(path), sha256=hashlib.sha256(path.read_bytes()).hexdigest())
+
+
+def _immutable_controls(repo: Path) -> dict:
+    """Capture actual config/global/info inputs without displaying driver commands."""
+    raw = _immutable_git(repo, 'config', '--null', '--list', '--show-origin')
+    fields = raw.split(b'\0')
+    if fields[-1:] != [b''] or len(fields[:-1]) % 2:
+        raise StorageError('unrecognized Git configuration output')
+    configs, settings = {}, {}
+    for i in range(0, len(fields) - 1, 2):
+        origin, entry = fields[i:i + 2]
+        key, _, value = entry.partition(b'\n')
+        if key == b'core.hookspath':
+            raise StorageError('immutable-local refuses custom hooksPath configuration')
+        settings[key] = value
+        if origin.startswith(b'file:'):
+            path = Path(_immutable_path(origin[5:])).expanduser()
+            if not path.is_absolute():
+                path = repo / path
+            configs[str(path)] = _immutable_snapshot(path)
+    hooks = _immutable_git_path(repo, '--git-path', 'hooks')
+    if any(os.access(hooks / name, os.X_OK)
+           for name in ('post-checkout', 'post-index-change', 'reference-transaction')):
+        raise StorageError('immutable-local refuses executable checkout/index/reference hooks')
+    variables = _immutable_git(repo, 'var', '-l')
+    attrs = {}
+    for line in variables.split(b'\n'):
+        key, _, value = line.partition(b'=')
+        if key in (b'GIT_ATTR_SYSTEM', b'GIT_ATTR_GLOBAL'):
+            path = Path(_immutable_path(value))
+            attrs[key.decode('ascii')] = _immutable_snapshot(path)
+    if set(attrs) != {'GIT_ATTR_SYSTEM', 'GIT_ATTR_GLOBAL'}:
+        raise StorageError('Git cannot identify effective system/global attribute sources')
+    info = _immutable_git_path(repo, '--git-path', 'info/attributes')
+    attrs['info'] = _immutable_snapshot(info)
+    return dict(config_sha256=hashlib.sha256(raw).hexdigest(),
+                config_sources=sorted(configs.values(), key=lambda x: x['path']),
+                attribute_sources=attrs)
+
+
+def _immutable_attributes(repo: Path, paths: list[str], commit: str | None = None) -> dict:
+    before = _immutable_controls(repo)
+    working = {}
+    if commit is None:
+        # Include absent ancestors: a newly added, untracked .gitattributes can
+        # affect status without altering the commit, index tree or source repo.
+        for name in paths:
+            parent = Path(name).parent
+            while True:
+                candidate = repo / parent / '.gitattributes'
+                working[str(candidate)] = _immutable_snapshot(candidate)
+                if parent == Path('.'):
+                    break
+                parent = parent.parent
+    stdin = b''.join(p.encode('utf-8') + b'\0' for p in paths)
+    source = ['--source=' + commit] if commit else []
+    raw = _immutable_git(repo, 'check-attr', *source, '--stdin', '-z', 'filter', input=stdin)
+    fields = raw.split(b'\0')
+    if fields[-1:] != [b''] or len(fields[:-1]) != len(paths) * 3:
+        raise StorageError('unrecognized source-aware Git attribute output')
+    for i, name in enumerate(paths):
+        path, attribute, value = fields[i * 3:i * 3 + 3]
+        if path != name.encode('utf-8') or attribute != b'filter':
+            raise StorageError('Git attribute pathname identity changed')
+        if value not in (b'unspecified', b'unset'):
+            raise StorageError('immutable-local materialized path selects a filter')
+    if _immutable_controls(repo) != before:
+        raise StorageError('attribute/config input changed during inspection')
+    if any(_immutable_snapshot(Path(p)) != value for p, value in working.items()):
+        raise StorageError('worktree attributes changed during inspection')
+    return dict(controls=before, working_attributes=sorted(working.values(), key=lambda x: x['path']),
+                filter_sha256=hashlib.sha256(raw).hexdigest())
+
+
+def _immutable_plan(repo: Path, commit: str) -> dict:
+    help_text = _immutable_git(repo, 'check-attr', '-h', allowed=(0, 129))
+    if any(option not in help_text for option in (b'--source', b'--stdin', b'-z')):
+        raise StorageError('Git lacks source-aware NUL-delimited attribute inspection')
+    if _immutable_git(repo, 'cat-file', '-t', commit) != b'commit\n':
+        raise StorageError('immutable-local requires an existing local commit object')
+    tree = _immutable_git(repo, 'rev-parse', '--verify', commit + '^{tree}').decode('ascii').strip()
+    raw = _immutable_git(repo, 'ls-tree', '-r', '-t', '-z', commit)
+    entries, index_entries = [], {}
+    for row in raw.split(b'\0'):
+        if row:
+            meta, name = row.split(b'\t', 1)
+            mode, kind, oid = meta.split()
+            if name.split(b'/')[-1] == b'.gitattributes' and mode not in (b'100644', b'100755'):
+                raise StorageError('immutable-local attribute source is not a regular committed file')
+            entries.append((kind, oid.decode('ascii'), _immutable_path(name)))
+            if kind != b'tree':
+                index_entries[name] = (mode, oid, b'0')
+    profile_entry = [x for x in entries if x[2] == 'config/sparse_worktree.json']
+    profile = None
+    if profile_entry:
+        if len(profile_entry) != 1 or profile_entry[0][0] != b'blob':
+            raise StorageError('immutable sparse profile is not a blob')
+        profile = json.loads(_immutable_git(repo, 'cat-file', 'blob', profile_entry[0][1]))
+        if not isinstance(profile, dict) or not isinstance(profile.get('enabled', False), bool):
+            raise StorageError('invalid immutable sparse profile')
+    sparse = bool(profile and profile.get('enabled'))
+    excluded = profile.get('exclude_dirs', []) if sparse else []
+    if not isinstance(excluded, list) or any(not isinstance(x, str) for x in excluded):
+        raise StorageError('invalid immutable sparse exclusions')
+    selected = sorted(name for kind, oid, name in entries
+                      if kind == b'tree' and '/' not in name and name not in excluded)
+    materialized = [x for x in entries if x[0] != b'tree'
+                    and (not sparse or '/' not in x[2] or x[2].split('/', 1)[0] in selected)]
+    if any(kind != b'blob' for kind, oid, name in materialized):
+        raise StorageError('immutable-local does not initialize submodule/gitlink paths')
+    paths = [name for kind, oid, name in materialized]
+    objects = sorted({oid for kind, oid, name in materialized})
+    if objects:
+        actual = _immutable_git(repo, 'cat-file', '--batch-check=%(objectname) %(objecttype)',
+                                input=('\n'.join(objects) + '\n').encode()).splitlines()
+        if actual != [(oid + ' blob').encode() for oid in objects]:
+            raise StorageError('required checkout blobs are not all local; refusing fetch')
+    if sparse and _immutable_git(repo, 'config', '--bool', '--get', 'extensions.worktreeConfig',
+                                  allowed=(0, 1)) != b'true\n':
+        raise StorageError('sparse worktree config isolation must already be enabled')
+    attributes = _immutable_attributes(repo, paths, commit)
+    return dict(tree=tree, sparse=sparse, selected=selected, paths=paths, index_entries=index_entries,
+                excluded_paths=[name for kind, oid, name in entries if kind != b'tree' and name not in paths],
+                profile_oid=profile_entry[0][1] if profile_entry else None,
+                attributes=attributes)
+
+
+def _immutable_index_guard(repo: Path, plan: dict) -> None:
+    """Read index metadata only; do not refresh it or run content conversions."""
+    # Without --sparse, ls-files expands sparse directory entries in memory.
+    # -v exposes assume-unchanged as lowercase and skip-worktree as S.
+    raw = _immutable_git(repo, 'ls-files', '--stage', '-v', '-z', '--full-name')
+    actual, flags = {}, {}
+    for row in raw.split(b'\0'):
+        if not row:
+            continue
+        try:
+            metadata, name = row.split(b'\t', 1)
+            flag, mode, oid, stage = metadata.split()
+        except ValueError as exc:
+            raise StorageError('unrecognized immutable-local index output') from exc
+        if name in actual or stage != b'0':
+            raise StorageError('immutable-local index does not match immutable tree; retained')
+        actual[name], flags[name] = (mode, oid, stage), flag
+    if actual != plan['index_entries']:
+        raise StorageError('immutable-local index does not match immutable tree; retained')
+    required = {name.encode('utf-8') for name in plan['paths']}
+    for name, flag in flags.items():
+        if name in required:
+            if flag != b'H':
+                raise StorageError('immutable-local required materialized path has index flags; retained')
+        elif flag != b'S':
+            raise StorageError('immutable-local excluded path has unexpected index flags; retained')
+
+
+def _immutable_sparse_state(repo: Path, plan: dict) -> dict:
+    if any(not os.path.lexists(repo / name) for name in plan['paths']):
+        raise StorageError('immutable-local required materialized path is absent; retained')
+    if any(os.path.lexists(repo / name) for name in plan['excluded_paths']):
+        raise StorageError('immutable-local excluded tracked path is present; retained')
+    values = {}
+    for key in ('core.sparseCheckout', 'core.sparseCheckoutCone', 'index.sparse'):
+        raw = _immutable_git(repo, 'config', '--bool', '--get', key, allowed=(0, 1))
+        if raw not in (b'', b'true\n', b'false\n'):
+            raise StorageError('invalid effective sparse configuration')
+        values[key] = raw == b'true\n'
+    if values['core.sparseCheckout'] != plan['sparse']:
+        raise StorageError('immutable-local sparse mode changed')
+    if plan['sparse']:
+        if not values['core.sparseCheckoutCone']:
+            raise StorageError('immutable-local sparse cone mode changed')
+        actual = _immutable_git(repo, 'sparse-checkout', 'list')
+        listed = [_immutable_path(p) for p in actual.split(b'\n') if p]
+        if sorted(listed) != plan['selected']:
+            raise StorageError('immutable-local sparse selection changed')
+    pattern_path = _immutable_git_path(repo, '--git-path', 'info/sparse-checkout')
+    return dict(settings=values, patterns=_immutable_snapshot(pattern_path))
+
+
+def _immutable_registered(repo: Path, dest: Path, common: Path, commit: str) -> bool:
+    if _immutable_git_path(dest, '--git-common-dir') != common:
+        return False
+    records = _immutable_git(repo, 'worktree', 'list', '--porcelain', '-z').split(b'\0\0')
+    for record in records:
+        fields = record.split(b'\0')
+        if b'worktree ' + str(dest).encode() in fields:
+            return (b'HEAD ' + commit.encode() in fields and b'detached' in fields
+                    and b'locked ' + LOCK_REASON.encode() in fields
+                    and not any(x.startswith((b'branch ', b'prunable')) for x in fields))
+    return False
+
+
+def _immutable_fsync_directory(path: Path) -> None:
+    fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
+def _immutable_write_receipt(path: Path, value: dict) -> None:
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+    with os.fdopen(fd, 'w') as out:
+        json.dump(value, out, sort_keys=True)
+        out.write('\n')
+        out.flush()
+        os.fsync(out.fileno())
+    _immutable_fsync_directory(path.parent)
+
+
+def create_immutable_local(policy: dict, repo: Path, name: str, session: str, commit: str) -> Path:
+    if (not isinstance(commit, str) or not re.fullmatch(r'(?:[0-9a-f]{40}|[0-9a-f]{64})', commit)
+            or not isinstance(session, str) or not session.strip()
+            or not isinstance(name, str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,99}', name)):
+        raise StorageError('immutable-local requires a full commit OID, safe name and actual session_id')
+    repo = Path(repo)
+    if not repo.is_absolute():
+        raise StorageError('immutable-local cwd must be absolute')
+    _immutable_path(os.fsencode(repo))
+    repo = repo.resolve(strict=True)
+    check_storage(policy)
+    plan = _immutable_plan(repo, commit)
+    common = _immutable_git_path(repo, '--git-common-dir')
+    key = hashlib.sha256((str(common) + '\0' + session + '\0' + name
+                          + '\0immutable-local\0' + commit).encode()).hexdigest()
+    repo_key = hashlib.sha256(str(common).encode()).hexdigest()[:16]
+    root = prepare_root(policy)
+    dest = root / 'claude' / repo_key / f'{name}-{key[:16]}'
+    lock_dir, receipt_dir = root / '.storage-locks', root / '.storage-receipts'
+    _mkdir_on_volume(policy, lock_dir)
+    _mkdir_on_volume(policy, receipt_dir)
+    lock_fd = os.open(lock_dir / (repo_key + '.lock'), os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
+    with os.fdopen(lock_fd, 'w') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        check_storage(policy, dest)
+        stable = dict(version=2, mode='immutable-local', key=key, common=str(common),
+                      path=str(dest), branch=None, commit=commit, tree=plan['tree'],
+                      session_sha256=hashlib.sha256(session.encode()).hexdigest(),
+                      sparse=plan['sparse'], selected=plan['selected'], profile_oid=plan['profile_oid'],
+                      paths_sha256=hashlib.sha256(b''.join(p.encode() + b'\0' for p in plan['paths'])).hexdigest())
+        receipt = receipt_dir / (key + '.json')
+        if dest.exists():
+            try:
+                if receipt.is_symlink():
+                    raise ValueError('symlink')
+                saved = json.loads(receipt.read_text())
+                if (set(saved) != set(stable) | {'state', 'attributes', 'materialization'}
+                        or any(saved[k] != v for k, v in stable.items()) or saved['state'] != 'COMPLETE'):
+                    raise ValueError('receipt mismatch')
+            except (OSError, TypeError, ValueError):
+                raise StorageError(f'unreceipted or foreign destination retained: {dest}') from None
+            if not _immutable_registered(repo, dest, common, commit):
+                raise StorageError('immutable-local destination identity changed; retained')
+            # Attribute and exact index checks must precede status: status itself
+            # may execute a filter selected by an unexpected staged path.
+            attributes = _immutable_attributes(dest, plan['paths'])
+            materialization = _immutable_sparse_state(dest, plan)
+            if attributes != saved['attributes'] or materialization != saved['materialization']:
+                raise StorageError('immutable-local attribute/config/sparse drift; retained without repair')
+            _immutable_index_guard(dest, plan)
+            if _immutable_git(dest, 'status', '--porcelain=v1', '--untracked-files=all'):
+                raise StorageError('immutable-local destination is dirty; retained without adoption')
+            return dest
+        if os.path.lexists(receipt):
+            raise StorageError('receipted worktree is missing; refusing replacement')
+        if _immutable_plan(repo, commit) != plan:
+            raise StorageError('immutable-local preflight changed before creation')
+        _mkdir_on_volume(policy, dest.parent)
+        pending = dict(stable, state='PREPARING')
+        _immutable_write_receipt(receipt, pending)
+        try:
+            _immutable_git(repo, 'worktree', 'add', '--lock', '--reason', LOCK_REASON,
+                           '--no-checkout', '--detach', str(dest), commit)
+            # Destination-specific config (including conditional includes) may differ.
+            _immutable_attributes(dest, plan['paths'], commit)
+            if plan['sparse']:
+                _immutable_git(dest, 'sparse-checkout', 'set', '--cone', '--', *plan['selected'])
+            _immutable_git(dest, 'read-tree', '-mu', 'HEAD')
+            check_storage(policy, dest)
+            if not _immutable_registered(repo, dest, common, commit):
+                raise StorageError('immutable-local creation identity postcondition failed')
+            attributes = _immutable_attributes(dest, plan['paths'])
+            materialization = _immutable_sparse_state(dest, plan)
+            _immutable_index_guard(dest, plan)
+            if _immutable_git(dest, 'status', '--porcelain=v1', '--untracked-files=all'):
+                raise StorageError('immutable-local created worktree is dirty')
+            if receipt.is_symlink() or json.loads(receipt.read_text()) != pending:
+                raise StorageError('pending receipt changed; partial state retained')
+            complete = dict(stable, state='COMPLETE', attributes=attributes, materialization=materialization)
+            temp = receipt.with_name(receipt.name + '.' + uuid.uuid4().hex + '.tmp')
+            _immutable_write_receipt(temp, complete)
+            os.replace(temp, receipt)
+            _immutable_fsync_directory(receipt_dir)
+        except Exception as exc:
+            # File and receipt-directory fsync request metadata settlement. They do
+            # not establish universal power-loss durability across hardware/Git stores.
+            raise StorageError(f'creation incomplete; partial state and any lock retained at {dest}: {exc}') from exc
+        return dest
+
+
 def protect_worktree(policy: dict, cwd: Path, *, sparsify: bool = True) -> bool:
     """Protect a newly opened external linked checkout; grandfather internal ones."""
     cwd = Path(cwd).resolve()
@@ -255,7 +618,7 @@ def protect_worktree(policy: dict, cwd: Path, *, sparsify: bool = True) -> bool:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config', type=Path)
-    parser.add_argument('command', choices=['check', 'create', 'check-path', 'session-start'])
+    parser.add_argument('command', choices=['check', 'create', 'create-immutable-local', 'check-path', 'session-start'])
     parser.add_argument('path', nargs='?', type=Path)
     args = parser.parse_args()
     try:
@@ -266,6 +629,14 @@ def main() -> int:
             payload = json.load(sys.stdin)
             protected = protect_worktree(policy, Path(payload['cwd']))
             print('External SSD worktree verified and protected.' if protected else 'Existing checkout retained. Create new worktrees through the required external SSD storage helper; no internal fallback.')
+        elif args.command == 'create-immutable-local':
+            payload = json.load(sys.stdin)
+            if (not isinstance(payload, dict) or set(payload) != {'cwd', 'name', 'session_id', 'commit'}
+                    or any(not isinstance(payload[k], str) or not payload[k].strip() for k in payload)):
+                raise StorageError('immutable-local requires exactly cwd/name/session_id/commit strings')
+            result = create_immutable_local(policy, Path(payload['cwd']), payload['name'],
+                                            payload['session_id'], payload['commit'])
+            print(result)
         elif args.command == 'create':
             payload = json.load(sys.stdin)
             result = create_worktree(policy, Path(payload['cwd']), payload['name'], payload.get('session_id') or str(uuid.uuid4()))

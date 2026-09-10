@@ -72,6 +72,7 @@ from __future__ import annotations
 
 import argparse
 import glob as globmod
+import importlib.util
 import json
 import logging
 import os
@@ -87,10 +88,21 @@ from pathlib import Path
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
-try:
+_ADJACENT_STORAGE = Path(__file__).resolve().with_name("worktree_storage.py")
+if Path(__file__).resolve().parent.name != "scripts":
+    if not _ADJACENT_STORAGE.is_file():
+        raise ModuleNotFoundError(
+            f"extracted GC bundle is missing {_ADJACENT_STORAGE.name}"
+        )
+    _storage_spec = importlib.util.spec_from_file_location(
+        "_worktree_gc_bundled_storage", _ADJACENT_STORAGE
+    )
+    if _storage_spec is None or _storage_spec.loader is None:
+        raise ImportError(f"cannot load extracted storage helper {_ADJACENT_STORAGE}")
+    worktree_storage = importlib.util.module_from_spec(_storage_spec)
+    _storage_spec.loader.exec_module(worktree_storage)
+else:
     from scripts import worktree_storage
-except ModuleNotFoundError:
-    import worktree_storage
 
 log = logging.getLogger("worktree_gc")
 
@@ -182,7 +194,12 @@ def path_under_session_root(path: Path, rel_roots: list[str]) -> bool:
     return False
 
 
-def host_checkouts(primary: Path, registered: list["Worktree"], rel_roots: list[str]) -> list[Path]:
+def host_checkouts(
+    primary: Path,
+    registered: list["Worktree"],
+    rel_roots: list[str],
+    policy: dict | None = None,
+) -> list[Path]:
     """Every checkout that can HOST session worktrees, primary first.
 
     The configured roots are repo-RELATIVE, and until 2026-08-20 they were only
@@ -204,7 +221,8 @@ def host_checkouts(primary: Path, registered: list["Worktree"], rel_roots: list[
             path = wt.path.resolve()
         except OSError:
             continue
-        if path in hosts or path_under_session_root(path, rel_roots):
+        if (path in hosts or path_under_session_root(path, rel_roots)
+                or (policy is not None and worktree_storage.is_managed_worktree_path(policy, path))):
             continue
         hosts.append(path)
     return hosts
@@ -280,7 +298,7 @@ def proc_cwd_map(roots: list[Path]) -> dict[str, list[str]] | None:
         return None
     hits: dict[str, list[str]] = {}
     pid = cmd = ""
-    root_strs = [str(r.resolve()) + os.sep for r in roots]
+    root_strs = [(str(r.resolve()), str(r.resolve()) + os.sep) for r in roots]
     for line in out.splitlines():
         if not line:
             continue
@@ -290,8 +308,8 @@ def proc_cwd_map(roots: list[Path]) -> dict[str, list[str]] | None:
         elif tag == "c":
             cmd = val
         elif tag == "n":
-            for rs in root_strs:
-                if val.startswith(rs):
+            for exact, prefix in root_strs:
+                if val == exact or val.startswith(prefix):
                     hits.setdefault(val, []).append(f"{pid}:{cmd}")
                     break
     return hits
@@ -946,7 +964,8 @@ def main(argv: list[str] | None = None) -> int:
 
     rel_roots = [r for r in cfg["roots"]
                  if not r.startswith("~") and not os.path.isabs(r)]
-    hosts = host_checkouts(primary, registered, rel_roots)
+    policy = cfg.get("_storage_policy")
+    hosts = host_checkouts(primary, registered, rel_roots, policy)
     roots = expand_roots(hosts, list(cfg["roots"]))
 
     in_scope: list[Worktree] = []
@@ -958,7 +977,6 @@ def main(argv: list[str] | None = None) -> int:
                 break
     # External roots contain app/repository grouping directories; the Git
     # registry is authoritative there, not a depth-one orphan directory scan.
-    policy = cfg.get("_storage_policy")
     orphan_roots = [r for r in roots if policy is None or not (
         r in worktree_storage.client_roots(policy) or worktree_storage.is_managed_worktree_path(policy, r))]
     orphans = scan_orphans(hosts, orphan_roots, registered)
