@@ -20,3 +20,7 @@ The public landing intentionally retains its light acquisition header/canvas in 
 ## Limitations
 This is local built-site evidence, not production acceptance. The static server cannot serve `/api/billing/offers/founding_pro`, so the canonical capture truthfully records its 404; the fallback offer display must not be described as a live billing response. Authenticated, loading, stale, empty and error states remain explicit capture gaps.
 The manifest's resolved Git SHA is the baseline at capture time, not a claim that an uncommitted patch was already deployed. This PR carries the exact source diff and paired asset stamp. Independent review, current-base CI, merge and a deployed mobile click-through are separate remaining gates.
+
+## R1 repair supersedes the initial evidence limits
+
+The original claim that review was unavailable is historical: a native read-only review completed and returned PARTIAL. REVIEW-ADJUDICATION.md explains every finding. All five landing-family pages now request the same current CSS hash. Reproducible 320/390px component crops and original 320px baseline are retained in-repo; narrow-layout.json identifies the intentionally clipped carousel descendants. The date caption discovered during that inspection now wraps at narrow widths. The latest source fingerprint file and captures bind the repaired source, not the old initial screenshot set.

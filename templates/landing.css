@@ -1402,6 +1402,7 @@ footer{background:#04070c;border-top:1px solid #10161f;padding:56px 0 48px;color
   .sit{min-width:0}
   .sit .meter{flex-wrap:wrap}
   .sit .early{max-width:100%;white-space:normal}
+  .ph-tag{max-width:100%;white-space:normal;flex-wrap:wrap;justify-content:center}
   /* 318px of chrome cannot hold all four: the dots come off (decoration goes first)
      and the honesty tag takes its own right-aligned line rather than being clipped
      by the window's overflow:hidden — a cut-off "SCRIPTED DEM" discloses nothing. */
