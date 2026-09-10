@@ -1,7 +1,7 @@
 {
-  "date": "2026-09-06",
+  "date": "2026-09-09",
   "regime": "mixed / no clear trend",
-  "breadth": 0.31,
+  "breadth": 0.23,
   "favored": [
     "equity_us",
     "equity_sm",
@@ -9,26 +9,25 @@
     "copper",
     "equity_intl"
   ],
-  "correlation": "converging",
-  "asof": "2026-09-06",
+  "correlation": "diversified",
+  "asof": "2026-09-09",
   "flows": {
     "schema": "crossasset_flows.v2",
     "display_only": true,
     "regime": "mixed / no clear trend",
     "correlation": {
-      "verdict": "converging",
-      "absorption_pctile": 0.73,
+      "verdict": "diversified",
+      "absorption_pctile": 0.35,
       "n_markets": 6,
-      "absorption_ratio": 0.389,
-      "mean_abs_corr": 0.255,
+      "absorption_ratio": 0.35,
+      "mean_abs_corr": 0.221,
       "dominant_cluster": [
-        "US",
         "Crypto",
         "Commodities",
+        "US",
         "Dollar"
       ],
       "spark_w": [
-        0.34,
         0.331,
         0.344,
         0.374,
@@ -131,11 +130,12 @@
         0.396,
         0.369,
         0.37,
-        0.389
+        0.392,
+        0.35
       ],
-      "spark_asof": "2026-09-04"
+      "spark_asof": "2026-09-11"
     },
-    "breadth": 0.31,
+    "breadth": 0.23,
     "trend_top": [
       {
         "asset": "equity_us",
@@ -171,32 +171,32 @@
     "trend_summary": {
       "n": 13,
       "n_up": 5,
-      "n_down": 1
+      "n_down": 2
     },
     "intermarket": [
       {
         "pair": "copper_gold",
-        "ratio": 0.001,
+        "ratio": 0.002,
         "trend": "mid",
-        "pctile": 59.0
+        "pctile": 66.0
       },
       {
         "pair": "gold_silver",
-        "ratio": 67.067,
+        "ratio": 66.033,
         "trend": "mid",
-        "pctile": 28.0
+        "pctile": 26.0
       },
       {
         "pair": "oil_gold",
-        "ratio": 0.02,
+        "ratio": 0.021,
         "trend": "mid",
-        "pctile": 60.0
+        "pctile": 67.0
       },
       {
         "pair": "stocks_gold",
-        "ratio": 0.172,
+        "ratio": 0.174,
         "trend": "mid",
-        "pctile": 41.0
+        "pctile": 44.0
       }
     ],
     "carry": {
@@ -205,7 +205,7 @@
           "key": "rates_term",
           "label_en": "Rates term-spread (10y-3m)",
           "label_zh": "\u5229\u7387\u671f\u9650\u5229\u5dee (10\u5e74-3\u6708)",
-          "value": 1.02,
+          "value": 1.01,
           "unit": "%",
           "state": "positive carry"
         },
@@ -235,16 +235,16 @@
           "leader": "Dollar",
           "follower": "HK",
           "lag": 1,
-          "r": 0.284,
-          "t": 4.611,
+          "r": 0.281,
+          "t": 4.575,
           "q": 0.0
         },
         {
           "leader": "US",
           "follower": "HK",
           "lag": 1,
-          "r": 0.316,
-          "t": 4.175,
+          "r": 0.315,
+          "t": 4.166,
           "q": 0.0
         },
         {
@@ -252,7 +252,7 @@
           "follower": "HK",
           "lag": 1,
           "r": 0.272,
-          "t": 4.102,
+          "t": 4.107,
           "q": 0.0
         },
         {
@@ -260,7 +260,7 @@
           "follower": "China",
           "lag": 1,
           "r": 0.248,
-          "t": 3.559,
+          "t": 3.573,
           "q": 0.015
         }
       ],
@@ -280,10 +280,10 @@
       "impulse_13w": null
     },
     "funding_stress": {
-      "asof": "2026-09-03",
+      "asof": "2026-09-04",
       "state": "calm",
-      "score": 48.0,
-      "spread_bp": 3.0
+      "score": 44.0,
+      "spread_bp": 2.0
     },
     "confirm": {
       "verdict": "confirm",
@@ -293,13 +293,13 @@
       "asof": "2026-09-04"
     },
     "dollar": {
-      "usd_dir": "flat",
+      "usd_dir": "weakening",
       "regime": "Global reflation",
       "risk": "risk-on",
       "corr_top": [
         {
           "key": "GC=F",
-          "corr": -0.69
+          "corr": -0.65
         },
         {
           "key": "HG=F",
@@ -307,20 +307,20 @@
         },
         {
           "key": "BTC",
-          "corr": -0.44
+          "corr": -0.43
         }
       ],
       "unstable_n": 0,
       "fx_stress": {
         "dominant": null,
-        "top_key": "intervention_risk",
-        "top_val": 23.3
+        "top_key": "carry_unwind",
+        "top_val": 16.9
       }
     },
     "shadow": {
-      "pressure_pctile": 0.73,
-      "incumbent_state": "watch",
-      "shadow_state": "watch",
+      "pressure_pctile": 0.35,
+      "incumbent_state": "caution",
+      "shadow_state": "caution",
       "escalated": false
     },
     "note": "display-only regime read; TSMOM fails DSR (cross-asset-phase0), lead/lag=lag-1 timezone (cross-asset-leadlag-phase0) \u2014 not a strategy/hedge-ratio"
