@@ -4,9 +4,9 @@ claim: >-
   On 2026-09-09, the canonical ThetaData store resolved with SPY and XLE historical
   EOD/OI/Greeks files for 2023-2026, while GLD was absent from that stored universe
   despite a successful bounded GLD historical request through the existing Terminal.
-falsifier: >-
-  From the authorized source checkout, run the read-only census:
-  python -c "import json; from engine.thetadata_store import resolve_thetadata_store; s=resolve_thetadata_store(required=True,purpose='sce-history-falsifier'); m=json.loads((s/'_manifest.json').read_text()); print({'gld_manifest':m.get('per_root',{}).get('GLD'),'gld_tiers':{k:(s/k/'GLD').is_dir() for k in ('eod','oi','greeks')}})".
+falsifier: |-
+  From the authorized source checkout, run the following read-only census command.
+  python -c "import json; from engine.thetadata_store import resolve_thetadata_store; s=resolve_thetadata_store(required=True,purpose='sce-history-falsifier'); m=json.loads((s/'_manifest.json').read_text()); print({'gld_manifest':m.get('per_root',{}).get('GLD'),'gld_tiers':{k:(s/k/'GLD').is_dir() for k in ('eod','oi','greeks')}})"
   Compare that result with the dated manifest and original request receipts retained
   for #7009. A contemporaneous content-bearing GLD history contradicts the historical
   cache claim; an unsuccessful original vendor response contradicts request success.
