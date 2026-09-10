@@ -2482,16 +2482,85 @@ def test_inner_scrollports_have_method_table_pair() -> None:
     assert not offenders, offenders[:10]
 
 
+# V24-T1: per-element method_table_390 photographs multiple table species.
+# Classify by the photographed table's own header tokens. Decimal-union is
+# composition-only; every species still owes header-token union coverage.
+_COMPOSITION_HEADERS = {
+    "en": ("Component", "Raw", "Standardized", "Weight", "Contribution"),
+    "zh": ("分项", "原始", "标准化", "权重", "贡献"),
+}
+_CHANGED_HEADERS = {
+    "en": ("Metric", "Prior", "Current", "Change"),
+    "zh": ("指标", "上期", "当前", "变化"),
+}
+_COVERAGE_HEADERS = {
+    "en": ("Component", "Presence", "Freshness", "Source", "as-of"),
+    "zh": ("分项", "具备情况", "新鲜度", "数据源截止"),
+}
+
+
+def _headers_in_text(text: str, headers: tuple[str, ...], locale: str) -> bool:
+    blob = text.casefold() if locale == "en" else text
+    if locale == "en":
+        return all(h.casefold() in blob for h in headers)
+    return all(h in blob for h in headers)
+
+
+def _leading_non_numeric_tokens(full: str, locale: str) -> list[str]:
+    out: list[str] = []
+    for tok in full.split():
+        if re.fullmatch(r"[+\-−]?\d+(?:\.\d+)?%?", tok) or re.search(r"\d", tok):
+            break
+        if locale == "en":
+            if not re.search(r"[A-Za-z]", tok):
+                break
+        elif not re.search(r"[\u4e00-\u9fff]", tok):
+            break
+        out.append(tok)
+        if len(out) >= 8:
+            break
+    return out
+
+
+def _classify_method_table(
+        full: str, locale: str) -> tuple[str, tuple[str, ...], bool]:
+    """Return (species, headers, demand_decimals) from the table's own headers."""
+    composition = _COMPOSITION_HEADERS[locale]
+    changed = _CHANGED_HEADERS[locale]
+    coverage = _COVERAGE_HEADERS[locale]
+    # Component is shared with the coverage table; require the distinctive rest.
+    if _headers_in_text(full, composition[1:], locale):
+        return "composition", composition, True
+    if _headers_in_text(full, changed, locale):
+        return "changed", changed, False
+    if _headers_in_text(full, coverage[1:], locale):
+        return "coverage", coverage, False
+    headers = tuple(_leading_non_numeric_tokens(full, locale))
+    assert headers, ("unclassified table has no header tokens", full[:160])
+    return "other", headers, False
+
+
+def _header_in_visible(token: str, text: str, locale: str) -> bool:
+    if locale == "en":
+        return token.casefold() in text.casefold()
+    return token in text
+
+
 @pytest.mark.needs_full_checkout("mockups")
 def test_method_table_390_contribution_union() -> None:
-    """E-B1(3)/C-m1/E-M1: every header + component label + value in start∪end.
+    """E-B1(3)/C-m1/E-M1/V24-T1: header-token union for every photographed species.
 
+    Classify each table by its own header tokens. Composition keeps the
+    decimal-union assertion; What-changed keeps Metric/Prior/Current/Change;
+    any other species (coverage, driver, …) still asserts full header-token
+    union, EN/ZH distinctness, and last-column-present-in-end — no decimal
+    demand. No species is exempt from union coverage.
     Reads MANIFEST cells' visible_text_at_scroll FIRST (MUT-a1 / MUT-hdr:
     blanking manifest receipts alone must FAIL). Missing end is accepted
     only when start has table_fits: true.
     """
     import json
-    import re
+    from collections import defaultdict
     probes = json.loads(
         (ROOT / "mockups" / "evidence" / "macro-command-p5" / "probes.json")
         .read_text(encoding="utf-8"))
@@ -2507,12 +2576,8 @@ def test_method_table_390_contribution_union() -> None:
     table_probes = probes.get("method_table_390_text") or {}
     assert table_probes, "method_table_390_text probe missing"
     vis_map = probes.get("method_table_390_visible") or {}
-    from scripts.capture_macro_command_p5 import (
-        METHOD_OPEN_PAGES, method_table_filename,
-    )
-    contrib_slugs = {p.replace(".html", "") for p in METHOD_OPEN_PAGES}
-    en_headers = ("COMPONENT", "RAW", "STANDARDIZED", "WEIGHT", "CONTRIBUTION")
-    zh_headers = ("分项", "原始", "标准化", "权重", "贡献")
+    from scripts.capture_macro_command_p5 import method_table_filename
+    unions: dict[tuple, dict[str, str]] = defaultdict(dict)
     for key, full in table_probes.items():
         m = re.match(
             r"method_table_390-(.+?)(?:__([A-Za-z0-9_.-]+))?-"
@@ -2520,8 +2585,7 @@ def test_method_table_390_contribution_union() -> None:
         assert m, key
         slug, ekey, theme, locale, width = m.groups()
         assert ekey, (key, "probe key missing element_key")
-        contribs = re.findall(r"[+\-−]?\d+(?:\.\d+)?", full)
-        values = [v for v in contribs if "." in v]
+        species, headers, demand_decimals = _classify_method_table(full, locale)
         start = by_file.get(method_table_filename(
             "start", slug, theme, locale, width, element_key=ekey))
         end = by_file.get(method_table_filename(
@@ -2547,6 +2611,7 @@ def test_method_table_390_contribution_union() -> None:
             assert vis_map[start["file"]] == start_vis, (
                 key, "probes map != manifest start")
         parts = [start_vis]
+        end_vis = ""
         if end is not None:
             end_vis = str(end.get("visible_text_at_scroll") or "")
             assert end_vis, (key, "blank manifest end visible_text_at_scroll")
@@ -2555,43 +2620,53 @@ def test_method_table_390_contribution_union() -> None:
                     key, "probes map != manifest end")
             parts.append(end_vis)
         union = " ".join(parts)
-        assert values, (key, full[:120])
-        for v in values:
-            assert v in full, (key, v)
-            assert v in union, (key, v, "missing from start∪end visible text")
-        # Extra pages photograph the What-changed table (METRIC/PRIOR/CURRENT),
-        # not the composition-law WEIGHT/CONTRIBUTION grid. Pair + values
-        # still apply; header/label union is the method-section instance only.
-        if slug not in contrib_slugs or not start.get("in_method_section"):
-            continue
-        headers = en_headers if locale == "en" else zh_headers
+        unions[(slug, ekey, theme, width)][locale] = union
         for h in headers:
-            assert h.casefold() in union.casefold(), (
-                key, h, "header missing from start∪end — MUT-hdr must fail")
-        # Component labels: EN by token, ZH by exact substring of row label.
-        if locale == "en":
-            labels = re.findall(
-                r"([A-Za-z][\w/]*(?:\s+channel)?)", full)
-            # Prefer multi-word channel labels when present.
-            channel_labels = re.findall(
-                r"([A-Za-z][\w/]*\s+channel)", full, flags=re.I)
-            check = channel_labels or [
-                t for t in labels
-                if t.upper() not in en_headers and not re.fullmatch(r"[\d.+−\-]+", t)
-            ]
-            for lab in check[:8]:
-                tok = lab.split()[0]
-                assert tok.casefold() in union.casefold(), (
-                    key, lab, "component label missing from start∪end")
+            assert _header_in_visible(h, union, locale), (
+                key, species, h, "header missing from start∪end — MUT-hdr must fail")
+        last = headers[-1]
+        if end is not None:
+            assert _header_in_visible(last, end_vis, locale), (
+                key, species, last, "last column missing from end")
         else:
-            # Strip headers + numbers; remaining CJK phrases are row labels.
-            body = full
-            for h in zh_headers:
-                body = body.replace(h, " ")
-            body = re.sub(r"[+\-−]?\d+(?:\.\d+)?", " ", body)
-            for lab in [p for p in body.split() if len(p) >= 2][:8]:
-                assert lab in union, (
-                    key, lab, "ZH component label missing from start∪end")
+            assert _header_in_visible(last, start_vis, locale), (
+                key, species, last, "last column missing from fitting start")
+        if demand_decimals:
+            contribs = re.findall(r"[+\-−]?\d+(?:\.\d+)?", full)
+            values = [v for v in contribs if "." in v]
+            assert values, (key, species, full[:120])
+            for v in values:
+                assert v in full, (key, v)
+                assert v in union, (key, v, "missing from start∪end visible text")
+            # Component labels: EN by token, ZH by exact substring of row label.
+            if locale == "en":
+                labels = re.findall(
+                    r"([A-Za-z][\w/]*(?:\s+channel)?)", full)
+                channel_labels = re.findall(
+                    r"([A-Za-z][\w/]*\s+channel)", full, flags=re.I)
+                skip = {h.upper() for h in headers}
+                check = channel_labels or [
+                    t for t in labels
+                    if t.upper() not in skip and not re.fullmatch(r"[\d.+−\-]+", t)
+                ]
+                for lab in check[:8]:
+                    tok = lab.split()[0]
+                    assert tok.casefold() in union.casefold(), (
+                        key, lab, "component label missing from start∪end")
+            else:
+                body = full
+                for h in headers:
+                    body = body.replace(h, " ")
+                body = re.sub(r"[+\-−]?\d+(?:\.\d+)?", " ", body)
+                for lab in [p for p in body.split() if len(p) >= 2][:8]:
+                    assert lab in union, (
+                        key, lab, "ZH component label missing from start∪end")
+    collisions = [
+        ident for ident, locs in unions.items()
+        if "en" in locs and "zh" in locs
+        and locs["en"].casefold() == locs["zh"].casefold()
+    ]
+    assert not collisions, ("EN/ZH visible union not distinct", collisions[:8])
 
 
 @pytest.mark.needs_full_checkout("mockups")
@@ -2940,79 +3015,126 @@ def test_receipt_document_on_every_crop() -> None:
     assert not missing, missing[:10]
 
 
+def _semantic_station_id(state: dict, fam: str) -> str:
+    """Station id from manifest fields — never a filename numeric prefix.
+
+    V24-T2(b): hub_390 files 09/10/11/12 are different names for the same
+    station; locale is the varying axis. Per-element tables include
+    element_key so instances do not collide.
+    """
+    force = state.get("force_state")
+    ekey = str(state.get("element_key") or "").strip()
+    crop = str(state.get("crop_selector") or "").strip()
+    if ekey:
+        return f"{force or fam}::{ekey}"
+    if force:
+        return str(force)
+    if crop:
+        return str(crop)
+    return fam or "station"
+
+
+def _station_axis(state: dict, page: dict, fam: str) -> tuple:
+    return (
+        fam,
+        state.get("page_id") or page.get("page"),
+        state.get("theme"),
+        state.get("viewport_width") or state.get("viewport"),
+        _semantic_station_id(state, fam),
+    )
+
+
+def _peer_start_semantic(semantic: str) -> str | None:
+    s = str(semantic or "")
+    if "_end::" in s:
+        return s.replace("_end::", "_start::", 1)
+    if s.endswith("_end"):
+        return s[:-4] + "_start"
+    if s.endswith("-end"):
+        return s[:-4] + "-start"
+    return None
+
+
+def _peer_end_semantic(semantic: str) -> str | None:
+    s = str(semantic or "")
+    if "_start::" in s:
+        return s.replace("_start::", "_end::", 1)
+    if s.endswith("_start"):
+        return s[:-6] + "_end"
+    if s.endswith("-start"):
+        return s[:-6] + "-end"
+    return None
+
+
 @pytest.mark.needs_full_checkout("mockups")
 def test_en_zh_visible_text_distinct_all_stations() -> None:
-    """E-M2: EN ≠ ZH visible_text_sha256 at every two-locale station."""
+    """E-M2/V24-T2: EN ≠ ZH visible_text_sha256 at every two-locale station.
+
+    Station keys come from manifest fields (family, page, theme, width,
+    semantic station id) — not filename prefixes. A locale that has no end
+    cell is still paired when the same family/element carries table_fits or
+    hub fits:true; the fits receipt is that locale's account. Missing both
+    the cell and any fits receipt still fails.
+    """
     import json
     from collections import defaultdict
     from scripts.capture_macro_command_p5 import family_for
     manifest = json.loads(
         (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
         .read_text(encoding="utf-8"))
-    stations: dict[tuple, dict[str, str]] = defaultdict(dict)
+    stations: dict[tuple, dict[str, tuple]] = defaultdict(dict)
+    fits_at: dict[tuple, dict[str, bool]] = defaultdict(dict)
     for page in manifest["pages"]:
         for state in page["states"]:
+            fam = state.get("family") or family_for(state.get("file") or "")
+            loc = state.get("locale")
+            if not loc:
+                continue
+            key = _station_axis(state, page, fam)
+            if state.get("fits") is True or state.get("table_fits") is True:
+                fits_at[key][loc] = True
+                end_sem = _peer_end_semantic(str(key[-1] or ""))
+                if end_sem:
+                    fits_at[key[:-1] + (end_sem,)][loc] = True
             if not state.get("crop_selector"):
                 continue
-            fam = state.get("family") or family_for(state.get("file") or "")
-            key = (
-                fam,
-                state.get("page_id") or page.get("page"),
-                state.get("theme"),
-                state.get("viewport_width") or state.get("viewport"),
-                state.get("force_state") or state.get("file", "").rsplit("-", 3)[0],
-            )
-            loc = state.get("locale")
             digest = state.get("visible_text_sha256")
             head = state.get("visible_text_head")
             assert head, state.get("file")
-            if loc and digest:
-                scope = state.get("visible_text_scope")
-                assert scope in {"page", "element"}, (
-                    state.get("file"), "visible_text_scope", scope)
-                if fam == "method_table_390":
-                    assert scope == "element", state.get("file")
-                if fam == "hub_rail":
-                    assert scope == "page", state.get("file")
-                    assert "visible_text_at_scroll" in state, state.get("file")
-                    assert "visible_text_at_zero" in state, state.get("file")
-                stations[key][loc] = (scope, digest)
+            if not digest:
+                continue
+            scope = state.get("visible_text_scope")
+            assert scope in {"page", "element"}, (
+                state.get("file"), "visible_text_scope", scope)
+            if fam == "method_table_390":
+                assert scope == "element", state.get("file")
+            if fam == "hub_rail":
+                assert scope == "page", state.get("file")
+                assert "visible_text_at_scroll" in state, state.get("file")
+                assert "visible_text_at_zero" in state, state.get("file")
+            stations[key][loc] = (scope, digest)
     collisions = []
     missing_locale = []
-    fits_by_start: dict[tuple, dict[str, bool]] = defaultdict(dict)
-    for page in manifest["pages"]:
-        for state in page["states"]:
-            if not state.get("crop_selector"):
-                continue
-            fam = state.get("family") or family_for(state.get("file") or "")
-            start_key = (
-                fam,
-                state.get("page_id") or page.get("page"),
-                state.get("theme"),
-                state.get("viewport_width") or state.get("viewport"),
-                str(state.get("force_state") or "").replace("_end", "_start"),
-            )
-            loc = state.get("locale")
-            if loc and (
-                state.get("fits") is True or state.get("table_fits") is True
-            ):
-                fits_by_start[start_key][loc] = True
     for key, locs in stations.items():
-        if "en" not in locs or "zh" not in locs:
-            missing = {"en", "zh"} - set(locs)
-            force = str(key[-1] or "")
-            if force.endswith("_end") or force.endswith("-end"):
-                start_force = force.replace("_end", "_start").replace(
-                    "-end", "-start")
-                start_key = key[:-1] + (start_force,)
-                if all(fits_by_start.get(start_key, {}).get(ml)
-                       for ml in missing):
-                    continue
+        accounted = set(locs) | set(fits_at.get(key, {}))
+        peer = _peer_start_semantic(str(key[-1] or ""))
+        if peer:
+            accounted |= set(fits_at.get(key[:-1] + (peer,), {}))
+        missing = {"en", "zh"} - accounted
+        if missing:
             missing_locale.append((key, "missing locale(s)", sorted(missing)))
             continue
-        assert locs["en"][0] == locs["zh"][0], (key, "scope mismatch")
-        if locs["en"][1] == locs["zh"][1]:
-            collisions.append(key)
+        if "en" in locs and "zh" in locs:
+            assert locs["en"][0] == locs["zh"][0], (key, "scope mismatch")
+            if locs["en"][1] == locs["zh"][1]:
+                collisions.append(key)
+            continue
+        # One locale has a cell; the other is accounted by a fits receipt.
+        other = ({"en", "zh"} - set(locs)).pop()
+        has_fits = bool(fits_at.get(key, {}).get(other))
+        if not has_fits and peer:
+            has_fits = bool(fits_at.get(key[:-1] + (peer,), {}).get(other))
+        assert has_fits, (key, "paired locale missing fits receipt", other)
     assert not missing_locale, missing_locale[:20]
     assert not collisions, collisions[:20]
 
