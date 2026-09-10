@@ -6335,7 +6335,7 @@ jobs:
     gate: data
     # Support + Email estate: the W1 spine (app/mailer.py, app/support.py,
     # admin/support_tickets.py) plus the W2 public surface (templates/support.html.j2, the
-    # pinned email base). Five suites, all fully offline — no SMTP, no Supabase, no live
+    # pinned email base). Thirteen suites, all fully offline — no SMTP, no Supabase, no live
     # admin state, no network:
     #   test_mailer.py            — LEDGER-FIRST idempotency (a duplicate idem_key sends
     #                               nothing), mail-off skip, marketing suppression +
@@ -6411,6 +6411,10 @@ jobs:
         run: python -m pytest tests/test_admin_email_center.py -v
       - name: unsubscribe page + per-matcher serving boundary (templates/unsubscribe.html.j2)
         run: python -m pytest tests/test_unsubscribe_page.py -v
+      - name: pinned alert email message type (app/mailer.py alert template)
+        run: python -m pytest tests/test_mailer_alert_template.py -v
+      - name: alert outbox delivery drain (engine/alert_delivery_drain.py, scripts/drain_alert_outbox.py)
+        run: python -m pytest tests/test_alert_delivery_drain.py -v
 
   serving-observability:
     if: ${{ false }}
