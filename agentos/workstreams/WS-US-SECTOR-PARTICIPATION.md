@@ -27,14 +27,17 @@ waves:
 next_action: >
   Reconcile actual placement and the first preflight return on Mastermind X
   C0BSBM78V1N root 1789063697.492969 for
-  us-sector-participation-w1-20260910-sol-001. Consume the local input receipt;
-  Sol adjudicates exact source paths before product source edits.
+  us-sector-participation-w1-20260910-sol-001. Chairman has approved W1
+  after the research; use RESEARCH_GATE_DISPOSITION_2026-09-10.md to resolve
+  only the qualified source-basis and exact-custody seam, then implement the
+  existing Money & Breadth journey. No second broad research/design approval.
 decisions:
   - DEC:SKYLIT-INTEGRATE-EXISTING-SECTOR-INTELLIGENCE
 artifacts:
   - research/skylit/INTEGRATION_RULING_2026-09-10.md
   - research/skylit/US_SECTOR_PARTICIPATION_W1_2026-09-10.md
   - research/skylit/LOCAL_INPUT_PREFLIGHT_2026-09-10.md
+  - research/skylit/RESEARCH_GATE_DISPOSITION_2026-09-10.md
 landmines:
   - Current/reference roster reconstruction is not historic constituent membership or point-in-time replay.
   - A builder output-directory override does not isolate the existing grader and event-store writers.
@@ -62,3 +65,24 @@ Completion: real existing inputs through the original producer/consumer/publicat
 Macro #7035 carries the original four-record head `e204242e6e3bd26a45f272a30aa235278062e347`. The exact W1 capacity request was sent and read back on `C0BSBM78V1N / 1789063697.492969`; no receiver or START had returned at the latest recorded read. Placement is still pending, not execution.
 
 Read-only Mac inspection found 503 reference constituents and 370 price-history rows. That checkout ends September 4, 2026 versus the existing calendar's September 9 expectation. This is useful development input, not evidence that the production store is current or stale. Both input files were byte-identical after inspection. The full dated receipt and remaining preflight boundary are in `research/skylit/LOCAL_INPUT_PREFLIGHT_2026-09-10.md`.
+
+## Research gate disposition and current approval
+
+The current live Chairman approved W1 after additional research. The same PR now carries
+`research/skylit/RESEARCH_GATE_DISPOSITION_2026-09-10.md`, first published at91cb3e3c
+and reconciled atb7da54ee. It records28 executed synthetic mathematical checks (not
+product tests), three public specification manifests, the existing Money & Breadth
+view, the existing commercial-data entitlement and the remaining single-basis source
+qualification. No private model, live API parity or trading advantage was recovered.
+
+The broad research dependency is no longer the blocker. Concrete receiver/ACK/START
+had not returned on the exact carrier at the last read; source custody and a properly
+qualified production price input remain unproven. This is approved bounded engineering,
+not a claim of an active worker, product source implementation or a live release.
+Do not apply the commercial license for one source to the Yahoo-derived cache, relabel
+raw flat-file prices as adjusted, or treat Data OS vocabulary as a conversion engine.
+Keep W1 descriptive context outside the existing grader input and preserve old boards.
+
+Read-only host process27490 completed with exit0; its successful targeted output reads
+settled the earlier unknown research-process result without retry. A later Not connected
+error does not change that known exit or justify a source-writer/device failover.
