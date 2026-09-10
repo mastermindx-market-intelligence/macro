@@ -80,14 +80,16 @@ def _receding_latest():
             "fed_path": {"implied_cuts_12m": 3.0}}
 
 
-def test_assess_present_and_turn_confirmed():
+def test_assess_present_but_unconfirmed_without_local_evidence():
     rec = risk_radar_recovery.assess(_receding_latest())
     assert rec and rec["present"] is True
-    assert rec["receding"] is True
-    assert rec["turn_confirmed"] is True   # risk derating + a fresh liquidity injection
+    # This fixture has no eligibility or local confirmation. The former True
+    # expectation encoded the incident; supported confirmation has its own test.
+    assert rec["receding"] is False
+    assert rec["turn_confirmed"] is False
     assert rec["headline_en"] and rec["sub_en"] and rec["do_en"] and rec["caveat_en"]
     assert 0 <= rec["strength"] <= 100
-    assert rec["n_fresh"] >= 1
+    assert rec["n_catalysts"] >= 1  # context is retained, not an all-clear
 
 
 def test_assess_absent_when_rising():
@@ -166,7 +168,7 @@ def test_intl_market_channel_is_not_applicable():
     assert rec["channels"]["market"] is None         # N/A, not False
     assert rec["channels"]["veto"] is None
     assert rec["turn_confirmed_full"] is None        # conjunction not computed off-US
-    assert isinstance(rec["turn_confirmed"], bool)   # legacy liquidity-only turn unchanged
+    assert isinstance(rec["turn_confirmed"], bool)   # presentation flag remains Boolean, now fail-closed
 
 
 def test_us_market_channel_attached():

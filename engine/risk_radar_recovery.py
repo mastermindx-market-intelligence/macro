@@ -1,45 +1,26 @@
-"""Risk Radar DE-ESCALATION — the "risk has peaked / the risk-off may be ending" read.
+"""Descriptive risk-recovery context; never position-changing advice.
 
-DISPLAY-ONLY · LEAF · NEVER RAISES. The mirror image of the rising-risk radar. It surfaces
-ONLY after the radar has been genuinely hot, when two things line up:
+An older peak comparison is not a latest-session improvement. Missing or invalid
+recovery eligibility, missing same-market confirmation, and an unknown/active
+local veto cannot produce the shared card's green TURN presentation. International
+market internals remain N/A; US internals never stand in for another market.
 
-  (a) RISK DERATING — the radar's own intensity has peaked and the pullback odds are rolling
-      over (engine/risk_radar.trajectory; leak-free, from the same causal sub-score history); and
-  (b) a LIQUIDITY TURN — the macro money tide is turning supportive: Fed net liquidity expanding
-      (TGA drawdown / reserves rising), the Fed pricing or signalling cuts (incl. an emergency
-      cut), the PBoC easing (RRR / LPR), or the global central-bank balance-sheet tide
-      (Fed + ECB + BoJ) expanding.
+The existing trajectory and numerical estimates are retained, not recalibrated.
+``phase`` carries the raw trajectory; ``receding``/``turn_confirmed`` are stricter
+presentation flags requiring explicit eligibility, local confirmation, a clear
+veto and a dated liquidity catalyst. ``turn_confirmed_full`` stays None off-US.
+These observations are not a forward-validated re-entry or sizing signal.
 
-When risk DERATES while liquidity is INJECTED, history says the risk-off is often nearing its
-end — so we ILLUSTRATE that turn (a "↘ receding / TURN" panel on the .rrx card) rather than
-leave the user staring at a still-red alert.
-
-HONESTY (this never moves money on its own):
-  • The rising radar earns the right to CAP Market State because its legs cleared a strict
-    forward-lift bar. This recovery read has NOT been forward-tested to that bar yet, so it is
-    a CONTEXT ILLUSTRATION only. It is wired in as a display-only sibling field on the radar
-    view-model and DOES NOT relax the radar's one-directional score ceiling
-    (engine/market_state._radar_override) — the guardrail stays intact.
-  • The de-risk → re-risk response is SIZING: scale exposure back in deliberately, in tranches,
-    keep stops, let price confirm. Never a single buy call.
-  • BoJ has no isolated easing detector freely available, so it enters ONLY via the aggregate
-    global central-bank tide (global_liquidity, which sums Fed+ECB+BoJ); the chip says so.
-  • Every input is display-only context already on the page; every field degrades to absent,
-    never crashes the build.
-
-MARKET CHANNEL (added W1, RRX-R2..R7):
-  • engine/risk_radar_market_catalysts.py adds 7 market-internal confirmation chips (C1–C7)
-    plus a vol-instability veto (C8). Each chip is ACCRUING / display-only — not forward-tested
-    yet. Forward-grading is managed by engine/risk_radar_recovery_audit.py on the rebound ruler
-    pre-declared in research/RISK_RADAR_EXPANSION_MASTERPLAN_BY_FABLE.md §3.
-  • turn_confirmed_full (new sibling key) = liquidity channel AND market channel confirmed.
-    The existing turn_confirmed field is UNCHANGED for backward compat.
-  • channels dict (new sibling key) exposes {liquidity, market, veto} booleans separately.
+Liquidity quantity, Fed policy, reserve/funding conditions and local repair are
+separate. Undated expanding/dovish categories are context, not fresh policy events.
+The existing recovery audit remains the research owner; no new ledger, score,
+ceiling, portfolio policy or execution authority is created here.
 """
 from __future__ import annotations
 
 import json
 import logging
+import math
 from datetime import date, datetime
 from pathlib import Path
 
@@ -63,10 +44,10 @@ def _load_liquidity_plumbing() -> dict:
 
 def _num(v):
     try:
-        if v is None:
+        if v is None or isinstance(v, bool):
             return None
         f = float(v)
-        return f if f == f else None   # drop NaN
+        return f if math.isfinite(f) else None
     except (TypeError, ValueError):
         return None
 
@@ -77,7 +58,7 @@ def _recent(date_str: str | None, days: int = 60) -> bool:
         return False
     try:
         d = datetime.strptime(str(date_str)[:10], "%Y-%m-%d").date()
-        return (date.today() - d).days <= days
+        return 0 <= (date.today() - d).days <= days
     except (TypeError, ValueError):
         return False
 
@@ -120,80 +101,64 @@ def _market_catalysts(latest: dict | None = None) -> dict | None:
 
 
 def _fed_netliq_detail() -> tuple[str, str]:
-    """Build enriched EN+ZH detail strings for the fed_netliq catalyst chip (RLT-R5).
+    """Describe stored US quantity, policy and funding separately; never infer a cause.
 
-    Reads liquidity_plumbing.json for netliq Δ20d and tga_impulse magnitude.
-    Falls back to the prior generic string if the artifact is absent or the
-    fields are null. NEVER raises.
+    Component changes retain their producer-reported windows. The snapshot date
+    is not substituted for a missing raw-source clock or a dated policy turn.
     """
+    fallback = (
+        "US net-liquidity proxy context; component detail unavailable. "
+        "This is not a Fed-policy or bank-reserve measure.",
+        "美国净流动性代理指标背景；成分明细暂缺。这不是美联储政策或银行准备金指标。",
+    )
     try:
-        lp = _load_liquidity_plumbing()
-        if not lp:
-            raise ValueError("empty")
-
-        # Strip envelope if present (same pattern as world_state._compose_liquidity_plumbing)
-        try:
-            from engine.neuralweb.envelope import strip_envelope  # noqa: PLC0415
-            payload = strip_envelope(lp)
-        except Exception:  # noqa: BLE001
-            payload = lp
-
+        payload = _load_liquidity_plumbing()
+        if not isinstance(payload, dict) or not payload:
+            return fallback
         qty = payload.get("quantity") or {}
+        fed = payload.get("fed") or {}
+        funding = payload.get("funding") or {}
+        components = payload.get("components") or {}
         treasury = payload.get("treasury") or {}
-        chg20 = qty.get("netliq_chg_20d_bn")
-        tga_imp = treasury.get("tga_impulse") or {}
-
-        parts_en = ["Net liquidity (WALCL − RRP − TGA) rising"]
-        parts_zh = ["净流动性（WALCL − RRP − TGA）上升"]
-
-        if chg20 is not None:
-            sign = "+" if chg20 >= 0 else ""
-            parts_en.append(f"({sign}${chg20:.0f}B/20d)")
-            parts_zh.append(f"（{sign}{chg20*10:.0f}亿美元/20日）")
-
-        if tga_imp.get("active") and tga_imp.get("magnitude_bn") is not None:
-            mag = tga_imp["magnitude_bn"]
-            direction = tga_imp.get("direction", "drawdown")
-            since = tga_imp.get("since", "")
-            since_str = ""
-            if since:
-                try:
-                    from datetime import datetime as _dt  # noqa: PLC0415
-                    d = _dt.strptime(since[:10], "%Y-%m-%d")
-                    since_str = f" since {d.strftime('%b %-d')}"
-                    since_zh = f"自{d.month}月{d.day}日起"
-                except Exception:  # noqa: BLE001
-                    since_str = f" since {since[:10]}"
-                    since_zh = f"自{since[:10]}起"
-            else:
-                since_zh = ""
-
-            if direction == "drawdown":
-                parts_en.append(
-                    f"— Treasury spent down ${mag:.0f}B{since_str} "
-                    "(cash flows into system)"
-                )
-                parts_zh.append(
-                    f"— 财政部{since_zh}动用现金账户{mag*10:.0f}亿美元（资金流入系统）"
-                )
-            else:
-                # direction == "build": TGA refilling absorbs cash, but net-liq is
-                # expanding via WALCL growth — describe that channel, not a drawdown.
-                parts_en.append("— WALCL expansion driving net-liq rise")
-                parts_zh.append("— WALCL扩表推动净流动性上升")
-        else:
-            parts_en.append("— TGA drawdown / reserves added")
-            parts_zh.append("— TGA 回落／准备金注入")
-
-        detail_en = " ".join(parts_en) + "."
-        detail_zh = "".join(parts_zh) + "。"
-        return detail_en, detail_zh
-
-    except Exception:  # noqa: BLE001
-        return (
-            "Net liquidity (WALCL − RRP − TGA) rising — TGA drawdown / reserves added.",
-            "净流动性（WALCL − RRP − TGA）上升 — TGA 回落／准备金注入。",
-        )
+        en = ["US net-liquidity proxy (WALCL − RRP − TGA); not Fed policy or bank reserves"]
+        zh = ["美国净流动性代理指标（WALCL − RRP − TGA）；不代表美联储政策或银行准备金"]
+        asof = payload.get("asof")
+        if isinstance(asof, str) and asof:
+            en.append(f"snapshot {asof[:10]} (component clocks may differ)")
+            zh.append(f"快照日期{asof[:10]}（各成分日期可能不同）")
+        for value, label_en, label_zh in [
+            (qty.get("netliq_chg_20d_bn"), "proxy", "代理指标"),
+            (fed.get("assets_chg_20d_bn"), "Fed assets", "美联储资产"),
+            ((components.get("reserves") or {}).get("d20_bn"), "bank reserves", "银行准备金"),
+        ]:
+            number = _num(value)
+            if number is not None:
+                en.append(f"{label_en} {number:+.0f}B USD / reported 20d")
+                zh.append(f"{label_zh}{number * 10:+.0f}亿美元／报告的20日期间")
+        if _num(qty.get("netliq_chg_20d_bn")) is None:
+            en.append("quantity change unavailable")
+            zh.append("数量变化暂缺")
+        stance = fed.get("policy_stance")
+        if stance in ("hawkish", "dovish", "neutral"):
+            en.append(f"Fed policy: {stance}")
+            zh.append("美联储政策：" + {"hawkish": "鹰派", "dovish": "鸽派", "neutral": "中性"}[stance])
+        scarcity = funding.get("reserve_scarcity_state")
+        if scarcity in ("tightening", "scarce", "ample", "neutral", "unknown"):
+            en.append(f"reserve conditions: {scarcity}")
+            zh.append("准备金状况：" + {"tightening": "趋紧", "scarce": "紧缺", "ample": "充裕",
+                                       "neutral": "中性", "unknown": "未知"}[scarcity])
+        impulse = treasury.get("tga_impulse") or {}
+        magnitude = _num(impulse.get("magnitude_bn"))
+        direction = impulse.get("direction")
+        if impulse.get("active") is True and magnitude is not None and magnitude >= 0:
+            if direction in ("drawdown", "build"):
+                verb = "drawdown" if direction == "drawdown" else "refill"
+                en.append(f"Treasury account {verb}: ${magnitude:.0f}B in its reported window")
+                zh.append(f"财政部现金账户{'动用' if direction == 'drawdown' else '补充'}"
+                          f"{magnitude * 10:.0f}亿美元（其报告期间）")
+        return "; ".join(en) + ".", "；".join(zh) + "。"
+    except (AttributeError, TypeError, ValueError):
+        return fallback
 
 
 def _liquidity_catalysts(latest: dict, market: str = "us") -> list[dict]:
@@ -216,21 +181,14 @@ def _liquidity_catalysts(latest: dict, market: str = "us") -> list[dict]:
         # Fail-open: falls back to the generic string when the artifact is absent.
         detail_en, detail_zh = _fed_netliq_detail()
         cats.append({
-            "key": "fed_netliq", "icon": "💵", "region": "US", "fresh": True,
-            "label_en": "Fed liquidity expanding", "label_zh": "美联储流动性扩张",
+            "key": "fed_netliq", "icon": "💵", "region": "US", "fresh": False,
+            "label_en": "US net-liquidity proxy rising", "label_zh": "美国净流动性代理指标上升",
             "detail_en": detail_en,
             "detail_zh": detail_zh,
-            # RLT-R5: salience — measured odds edge from LIQUIDITY_LADDER, plain words,
-            # never 'validated' (CI guard). Shown only when the catalyst is fresh/active.
-            "salience_en": (
-                "When liquidity is expanding like this, buying dips has historically "
-                "worked ~6pp more often over the next month "
-                "(a measured odds edge, not a promise)."
-            ),
-            "salience_zh": (
-                "历史上，在流动性扩张期间逢低买入的成功率比平均高约6个百分点（次月维度）"
-                "——这是一个经过回测的概率优势，不是承诺。"
-            ),
+            # A quantity category does not establish a dated liquidity turn, Fed
+            # easing, or a transferable market-specific dip-buying advantage.
+            "salience_en": "US context only; not Fed easing or local-market recovery.",
+            "salience_zh": "仅为美国背景信息，不代表美联储宽松或本地市场修复。",
         })
 
     # 2) Fed policy easing / emergency cut — market pricing + reaction-function read (display-only;
@@ -243,18 +201,17 @@ def _liquidity_catalysts(latest: dict, market: str = "us") -> list[dict]:
     dovish = (fs.get("stance") == "dovish")
     easing_guide = ((fs.get("guidance") or "") == "easing")
     if dovish or easing_guide or (cuts is not None and cuts >= 1.5):
-        big = cuts is not None and cuts >= 3
         if cuts is not None and cuts >= 1:
-            det_en = f"Market prices ~{cuts:.0f} cut{'s' if cuts >= 2 else ''} over 12m — dovish reaction function."
-            det_zh = f"市场为未来12个月定价约{cuts:.0f}次降息 — 鸽派反应函数。"
+            det_en = f"Market prices ~{cuts:.0f} cut{'s' if cuts >= 2 else ''} over 12m — market expectations, not an announced cut."
+            det_zh = f"市场为未来12个月定价约{cuts:.0f}次降息 — 市场预期，并非已宣布的降息。"
         else:
-            det_en = "Dovish Fed guidance — policy turning supportive."
-            det_zh = "美联储鸽派指引 — 政策转向宽松。"
+            det_en = "Dovish Fed-policy classification; no dated policy action established."
+            det_zh = "美联储政策分类偏鸽；尚无有日期支持的政策行动。"
         cats.append({
             "key": "fed_policy", "icon": "🏛", "region": "US",
-            "fresh": bool(easing_guide or big),
-            "label_en": "Fed easing — aggressive" if big else "Fed easing / cuts priced",
-            "label_zh": "美联储宽松（大幅）" if big else "美联储宽松／降息定价",
+            "fresh": False,  # pricing/guidance categories do not date a policy event
+            "label_en": "Fed cuts priced" if cuts is not None and cuts >= 1 else "Dovish Fed-policy context",
+            "label_zh": "美联储降息预期定价" if cuts is not None and cuts >= 1 else "美联储偏鸽政策背景",
             "detail_en": det_en, "detail_zh": det_zh,
         })
 
@@ -293,7 +250,7 @@ def _liquidity_catalysts(latest: dict, market: str = "us") -> list[dict]:
         imp_txt = f"+{imp}%" if isinstance(imp, (int, float)) and imp > 0 else (f"{imp}%" if imp is not None else "")
         cats.append({
             "key": "global_cb", "icon": "🌊", "region": "GLOBAL",
-            "fresh": (accel == "accelerating"),
+            "fresh": False,  # acceleration alone is not a dated turn event
             "label_en": "Global CB liquidity expanding", "label_zh": "全球央行流动性扩张",
             "detail_en": f"Fed + ECB + BoJ balance-sheet tide {imp_txt} (13w), {accel}.".replace("  ", " "),
             "detail_zh": f"美欧日央行资产负债表 13周 {imp_txt}（{accel}）。",
@@ -314,10 +271,10 @@ def assess(latest: dict) -> dict | None:
             return None
         market = rr.get("market") or "us"   # 'us' | 'cn' | 'hk' | 'ca' (intl reads Fed legs globally)
         phase = traj.get("phase")
-        reached = bool(traj.get("reached_risk"))
+        reached = traj.get("reached_risk") is True
         cats = _liquidity_catalysts(latest, market)
         n_cat = len(cats)
-        n_fresh = sum(1 for c in cats if c.get("fresh"))
+        n_fresh = sum(1 for c in cats if c.get("fresh") is True)
 
         # Market-internal confirmation channel (W1, accruing — not yet forward-tested).
         # US-ONLY: the chips read US stores (S&P breadth, SPY, VIX term, HY OAS) — attaching
@@ -333,35 +290,28 @@ def assess(latest: dict) -> dict | None:
         if not present:
             return {"present": False}
 
-        # ONE risk voice per page (2026-07-02 incident): the radar publishes the
-        # de-escalation verdict beside its scares (risk_radar.deescalation); this
-        # panel is a DERIVATIVE of it, not an independent opinion. When the radar
-        # says not eligible (dominant risk-off scare escalating / pullback odds
-        # rising), the green "receding" presentation is suppressed — the panel may
-        # still narrate what IS fading, never an all-clear. Absent block (older
-        # artifact) degrades to the standalone behavior.
+        # Missing/invalid permission is not recovery evidence. Raw trajectory and
+        # numerical estimates remain available below, without a green all-clear.
         deesc = rr.get("deescalation")
-        suppressed = bool(deesc) and deesc.get("eligible") is False
-
-        receding = (phase == "receding") and not suppressed
-        peaking = (phase == "peaking") and not suppressed
-        turn_confirmed = bool(receding and n_fresh >= 1)   # risk derating + liquidity injection (UNCHANGED)
-
-        # Market channel: accruing, not yet forward-tested. On intl radars (mkt is None by
-        # the scoping above) the channel is N/A: channels.market / turn_confirmed_full stay
-        # None so the card can distinguish "not confirmed" from "not applicable".
-        if market == "us":
-            mkt_confirmed = bool(mkt and mkt.get("market_confirmed"))
-            mkt_veto = bool(mkt and mkt.get("veto", {}).get("active"))
-            # turn_confirmed_full requires BOTH liquidity AND market channels
-            turn_confirmed_full = bool(turn_confirmed and mkt_confirmed)
-        else:
-            mkt_confirmed = mkt_veto = turn_confirmed_full = None
-        channels = {
-            "liquidity": bool(n_fresh >= 1),
-            "market": mkt_confirmed,
-            "veto": mkt_veto,
-        }
+        eligible = isinstance(deesc, dict) and deesc.get("eligible") is True
+        mkt_confirmed = mkt_veto = None
+        if market == "us" and isinstance(mkt, dict):
+            raw_confirmed = mkt.get("market_confirmed")
+            veto = mkt.get("veto")
+            raw_veto = veto.get("active") if isinstance(veto, dict) else None
+            mkt_confirmed = raw_confirmed if type(raw_confirmed) is bool else None
+            mkt_veto = raw_veto if type(raw_veto) is bool else None
+        local_confirmed = mkt_confirmed is True and mkt_veto is False
+        suppressed = not (eligible and local_confirmed)
+        # International internals remain N/A; US inputs are never borrowed as
+        # local confirmation. The legacy liquidity-only TURN was unsafe.
+        turn_confirmed = bool(phase == "receding" and eligible
+                              and local_confirmed and n_fresh >= 1)
+        receding = turn_confirmed  # the shared card uses this flag for green
+        peaking = bool(phase == "peaking" and eligible and local_confirmed)
+        turn_confirmed_full = turn_confirmed if market == "us" else None
+        channels = {"liquidity": bool(n_fresh >= 1),
+                    "market": mkt_confirmed, "veto": mkt_veto}
 
         off = traj.get("off_peak") or 0.0
         vel = traj.get("velocity") or 0.0
@@ -375,64 +325,39 @@ def assess(latest: dict) -> dict | None:
         odds_delta = _num(traj.get("odds_delta"))
         days = int(traj.get("peak_days_ago") or 0)
 
-        # ---- bilingual copy ----
-        if suppressed:
-            dom_en = rr.get("dominant_label_en") or (rr.get("dominant_scare") or "risk")
-            dom_zh = rr.get("dominant_label_zh") or "风险"
-            fading = (deesc or {}).get("receding_scare")
-            if fading:
-                head_en = f"Mixed: {fading} scare fading — {dom_en} still escalating"
-                head_zh = f"分化：{fading} 风险消退 — {dom_zh}仍在升级"
-            else:
-                head_en = f"Not receding — {dom_en} still escalating"
-                head_zh = f"风险未回落 — {dom_zh}仍在升级"
-        elif turn_confirmed:
-            head_en, head_zh = "Risk receding — liquidity turning supportive", "风险回落 — 流动性转向支持"
-        elif receding:
-            head_en, head_zh = "Risk receding — pullback odds rolling over", "风险回落 — 回撤概率见顶回落"
+        # One descriptive voice. Neither a lower old-peak comparison nor a
+        # supportive component grants position-changing authority.
+        if turn_confirmed:
+            head_en = "Risk measures easing — local internals agree"
+            head_zh = "风险指标缓和 — 本地市场内部指标一致"
+        elif isinstance(deesc, dict) and deesc.get("eligible") is False:
+            head_en = "Recovery not confirmed — risk warning remains"
+            head_zh = "修复尚未确认 — 风险警示仍在"
+        elif phase == "receding":
+            head_en = "Recovery not confirmed — some measures below their peak"
+            head_zh = "修复尚未确认 — 部分指标低于此前峰值"
         else:
-            head_en, head_zh = "Risk may be peaking", "风险或已见顶"
+            head_en = "Recovery not confirmed — local evidence incomplete"
+            head_zh = "修复尚未确认 — 本地证据不完整"
 
-        # one-line sub headline with the concrete odds turn
-        if suppressed:
-            sub_en = (deesc or {}).get("reason") or "The dominant scare is still escalating."
-            sub_zh = "主导风险仍在升级，回撤概率上行。"
-        elif odds_now is not None and odds_peak is not None and odds_peak > odds_now:
-            sub_en = (f"Pullback odds {round(odds_peak*100)}% → {round(odds_now*100)}% "
-                      f"(peaked {days} day{'s' if days != 1 else ''} ago).")
-            sub_zh = f"回撤概率 {round(odds_peak*100)}% → {round(odds_now*100)}%（{days} 日前见顶）。"
-        elif peaking:
-            sub_en = f"Pullback odds have stopped climbing (peaked {days} day{'s' if days != 1 else ''} ago)."
-            sub_zh = f"回撤概率已停止攀升（{days} 日前见顶）。"
+        if (odds_now is not None and odds_peak is not None
+                and 0 <= odds_now <= odds_peak <= 1):
+            sub_en = (f"Model estimate {round(odds_now * 100)}%; earlier window peak "
+                      f"{round(odds_peak * 100)}% — not a latest-session change.")
+            sub_zh = (f"模型估计{round(odds_now * 100)}%；此前窗口峰值"
+                      f"{round(odds_peak * 100)}% — 并非最近交易日的变化。")
         else:
-            sub_en = "The radar's intensity is rolling over."
-            sub_zh = "雷达强度正见顶回落。"
-
-        if suppressed:
-            do_en = ("An older scare is fading but the dominant one is still escalating — this is "
-                     "rotation, not recovery. No all-clear: keep the de-risked posture and stops.")
-            do_zh = ("旧风险消退但主导风险仍在升级 — 这是轮动而非复苏。并非解除警报：维持降险仓位与止损。")
-        elif turn_confirmed:
-            do_en = ("The risk-off may be nearing its end. Begin scaling exposure back in tranches — "
-                     "keep stops, let price confirm the low. Don't chase the first bounce.")
-            do_zh = ("避险或已接近尾声。可分批逐步回补敞口 — 保留止损，待价格确认低点，切勿追逐首次反弹。")
-        elif receding:
-            do_en = ("Odds are rolling over but no liquidity catalyst yet. Stop forced de-grossing; "
-                     "ready a buy plan and wait for a liquidity turn to confirm.")
-            do_zh = ("概率回落，但尚无流动性催化。停止被动减仓；备好买入计划，待流动性转向确认。")
-        else:
-            do_en = ("Risk has stopped climbing. Don't de-gross into the hole — ready a buy list and "
-                     "wait for the roll-over (and a liquidity turn) before adding.")
-            do_zh = ("风险已停止攀升。勿在低位被动减仓 — 备好买入清单，待见顶回落（及流动性转向）再加仓。")
-
-        caveat_en = ("Illustrative context, not a buy trigger. It reads the radar's own intensity "
-                     "trajectory (leak-free) plus the display-only central-bank liquidity series; "
-                     "unlike the alert legs it is not forward-tested yet, and risk can re-accelerate. "
-                     "The de-risk → re-risk response is sizing, scaled in deliberately. BoJ enters "
-                     "only via the aggregate global central-bank tide (no isolated BoJ feed).")
-        caveat_zh = ("仅为示意性背景，并非买入信号。它读取雷达自身的强度轨迹（无未来函数）以及仅供展示的"
-                     "央行流动性序列；不同于警报腿，此读数尚未经前瞻检验，风险可能再度加速。降险→回补的"
-                     "应对是仓位管理、分批进行。日本央行仅通过全球央行总潮汐体现（无独立日本数据源）。")
+            sub_en = "Historical risk context; a comparable latest-session change is unavailable."
+            sub_zh = "历史风险背景；可比的最近交易日变化暂缺。"
+        do_en = ("Watch whether local breadth and price repair persists. Context only; "
+                 "this panel does not authorize exposure changes.")
+        do_zh = "观察本地广度与价格修复能否持续。仅供背景参考；此面板不授权调整敞口。"
+        caveat_en = ("Descriptive context, not a re-entry signal. "
+                     "Policy stance, liquidity quantity, funding quality and local repair "
+                     "are separate. Missing confirmation is unknown, not an all-clear. "
+                     "The existing risk scores, probabilities and restrictions are unchanged.")
+        caveat_zh = ("描述性背景，并非再入场信号。政策立场、流动性数量、融资质量"
+                     "与本地修复分别呈现。缺少确认代表未知，并非解除警报。既有风险评分、概率与限制不变。")
 
         # RRX2 WA-3: mirror the drivers block (which scares faded / warm) from trajectory.
         # Old artifacts without a drivers key → None → template renders nothing.
