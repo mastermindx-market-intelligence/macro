@@ -90,6 +90,55 @@ PRESENCE_TONE: dict[str, str] = {
     "DISAGREEMENT": "bad",
 }
 
+# Typed contradiction kinds a workspace engine may attach to
+# availability.contradiction.kind. Closed: an unreviewed kind degrades
+# through label() and is reported by unknown_tokens().
+CONTRADICTION_KIND: dict[str, dict[str, str]] = {
+    "quantity_vs_quality": _pair(
+        "Quantity rising while quality weakens", "数量上升，质量走弱"),
+    "hollow_expansion": _pair(
+        "Expansion without solid backing", "扩张缺乏实质支撑"),
+    "depth_breadth_divergence": _pair(
+        "Depth and breadth disagree", "深度与广度相悖"),
+    "nowcast_vs_hard_data": _pair(
+        "Nowcast and hard data disagree", "即时预测与实际数据相悖"),
+    "narrow_breadth_despite_level": _pair(
+        "High level, narrow breadth", "整体水平高，但广度狭窄"),
+    "sticky_led_but_headline_disinflationary": _pair(
+        "Sticky prices lead while headline inflation eases",
+        "粘性价格领涨，整体通胀却在回落"),
+    "low_hires_low_fires": _pair(
+        "Few hires and few layoffs", "招聘少，裁员也少"),
+    "claims_income_divergence": _pair(
+        "Jobless claims and income disagree", "失业申领与收入相悖"),
+    "trade_balance_identity_disagreement": _pair(
+        "Trade balance parts do not add up", "贸易差额各分项对不上"),
+    "spending_on_credit_vs_confidence_divergence": _pair(
+        "Spending on credit while confidence falls", "靠信贷消费，信心却在下降"),
+    "nominal_real_breakeven_decomposition_disagreement": _pair(
+        "Nominal, real and breakeven yields do not add up",
+        "名义、实际与盈亏平衡收益率对不上"),
+    "issuer_event_contradiction": _pair(
+        "Issuer events contradict the read", "发行人事件与判断相悖"),
+    "issuance_demand_stress_vs_bond_desk_calm": _pair(
+        "Issuance demand stressed while the bond desk is calm",
+        "发行需求承压，债券交易台却平静"),
+    "home_price_vs_rent_divergence": _pair(
+        "Home prices and rents disagree", "房价与租金相悖"),
+    "hawk_ease_split": _pair(
+        "Hawkish talk, easier conditions", "言辞偏鹰，条件却在放松"),
+    "global_state_vs_fed_desk": _pair(
+        "Global state and the Fed desk disagree", "全球状态与美联储交易台相悖"),
+    "dots_vs_market_path": _pair(
+        "Fed dots and the market path disagree", "美联储点阵图与市场路径相悖"),
+    "broad_stress_vs_risk_appetite": _pair(
+        "Broad stress while risk appetite holds", "整体承压，风险偏好却未减"),
+}
+
+CONTRADICTION_KIND_TONE: dict[str, str] = {
+    kind: "warn" for kind in CONTRADICTION_KIND
+}
+
 # --- section 8.1 evidence classes -------------------------------------------
 EVIDENCE_CLASS: dict[str, dict[str, str]] = {
     "DESCRIPTIVE": _pair("Descriptive", "描述性"),
@@ -310,6 +359,7 @@ _VOCABULARIES: dict[str, dict[str, dict[str, str]]] = {
     "freshness": FRESHNESS,
     "null_reason": NULL_REASON,
     "presence": PRESENCE,
+    "contradiction_kind": CONTRADICTION_KIND,
     "evidence_class": EVIDENCE_CLASS,
     "evidence_claim": EVIDENCE_CLAIM,
     "confidence_band": CONFIDENCE_BAND,
@@ -368,6 +418,8 @@ def tone(vocabulary: str, token: Any, default: str = "neutral") -> str:
         return FRESHNESS_TONE.get(str(token), default)
     if vocabulary == "presence":
         return PRESENCE_TONE.get(str(token), default)
+    if vocabulary == "contradiction_kind":
+        return CONTRADICTION_KIND_TONE.get(str(token), default)
     return default
 
 

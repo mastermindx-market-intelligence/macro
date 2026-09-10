@@ -300,6 +300,52 @@ def test_an_unknown_token_degrades_to_readable_text_and_is_reported() -> None:
     labels.reset_unknown_tokens()
 
 
+_ENGINE_CONTRADICTION_KINDS = (
+    "quantity_vs_quality",
+    "hollow_expansion",
+    "depth_breadth_divergence",
+    "nowcast_vs_hard_data",
+    "narrow_breadth_despite_level",
+    "sticky_led_but_headline_disinflationary",
+    "low_hires_low_fires",
+    "claims_income_divergence",
+    "trade_balance_identity_disagreement",
+    "spending_on_credit_vs_confidence_divergence",
+    "nominal_real_breakeven_decomposition_disagreement",
+    "issuer_event_contradiction",
+    "issuance_demand_stress_vs_bond_desk_calm",
+    "home_price_vs_rent_divergence",
+    "hawk_ease_split",
+    "global_state_vs_fed_desk",
+    "dots_vs_market_path",
+    "broad_stress_vs_risk_appetite",
+)
+
+_KIND_LITERAL = re.compile(r'(?:kind\s*=\s*|"kind"\s*:\s*)"([^"]+)"')
+_CJK_ADJOINING_SPACE = re.compile(r"(?:[\u3400-\u9fff] )|(?: [\u3400-\u9fff])")
+
+
+def test_every_engine_contradiction_kind_has_a_reviewed_label() -> None:
+    labels.reset_unknown_tokens()
+    for kind in _ENGINE_CONTRADICTION_KINDS:
+        pair = labels.label("contradiction_kind", kind)
+        assert pair is not None
+        assert pair["en"] and pair["zh"]
+        fallback = labels.deslug(kind)
+        assert pair["en"] != fallback and pair["zh"] != fallback, kind
+        assert _CJK_ADJOINING_SPACE.search(pair["zh"]) is None, pair["zh"]
+    assert labels.unknown_tokens() == ()
+
+    engine_kinds: set[str] = set()
+    engine_dir = ROOT / "engine" / "market_os" / "macro_workspaces"
+    for path in engine_dir.glob("*.py"):
+        for match in _KIND_LITERAL.finditer(path.read_text(encoding="utf-8")):
+            engine_kinds.add(match.group(1))
+    unlabelled = engine_kinds - set(labels.known("alert_kind")) - set(
+        _ENGINE_CONTRADICTION_KINDS)
+    assert unlabelled == set(), unlabelled
+
+
 def test_every_published_horizon_and_region_has_a_reviewed_name() -> None:
     """`current` / `weeks` and an English region name are producer tokens; a
     Chinese reader must not meet either of them raw."""
@@ -749,7 +795,10 @@ def test_the_named_pages_never_print_python_none(page: str, built_pages: dict[st
 
 
 def _boundary_view(distance: Any) -> dict[str, Any]:
+    """Neutralise the snapshot copy's contradiction so these tests exercise the boundary rule, not the contradiction precedence."""
     snapshot = json.loads(_body_path(DATA_ROOT).read_text(encoding="utf-8"))
+    snapshot["availability"]["contradiction"] = {
+        "present": False, "kind": None, "en": None, "zh": None, "components": []}
     snapshot["headline"]["nearest_boundary"] = {
         "axis": snapshot["axes"]["items"][0]["axis_id"],
         "distance": distance, "null_reason": None}
