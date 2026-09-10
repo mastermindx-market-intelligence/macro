@@ -4297,6 +4297,13 @@ def build(root: Path, dry_run: bool = False) -> dict:
         else "shadow_candidate_withheld_no_valid_current_projection"
     )
 
+    # A1 (macro#6868): additive, display-only per-item diagnostics.  Runs after
+    # every ledger, scoring and scoreboard consumer above, so nothing numerical
+    # can read it back; the subtree self-declares its schema.
+    from engine.release_diagnostics import attach_release_diagnostics, snapshot_loader
+    attach_release_diagnostics(
+        upcoming_block, scoreboard=scoreboard, load_snapshot=snapshot_loader(root))
+
     # 10. Assemble latest.json artifact (schema release_forecast.v2)
     latest = {
         "schema": "release_forecast.v2",

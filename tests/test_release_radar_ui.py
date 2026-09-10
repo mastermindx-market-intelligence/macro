@@ -322,9 +322,11 @@ def test_r24_expectation_chip_defined():
 
 
 def test_r24_coverage_chip_defined():
-    """coverageChip() helper is defined in template source."""
+    """#6868 replaced the one-word coverage tier with the four-fact inputs summary:
+    leg availability is not freshness, and neither is economic coverage."""
     src = _rr_section_src()
-    assert "function coverageChip(" in src, "coverageChip helper missing"
+    assert "function coverageChip(" not in src, "the fresh/partial/stale tier must not return"
+    assert "function inputsSummary(" in src, "inputsSummary helper missing"
 
 
 def test_r24_cpi_bridge_waterfall_defined():
@@ -449,20 +451,22 @@ def test_r24_card_tap_for_detail_prompt():
 # ---------------------------------------------------------------------------
 
 def test_r24_coverage_chip_tier_labels_bilingual():
-    """Coverage chip tier labels are bilingual."""
+    """The inputs summary labels are bilingual (EN + ZH)."""
     src = _rr_section_src()
-    for en, zh in [("fresh", "充分"), ("partial", "部分"), ("stale", "陈旧"), ("prior-heavy", "以先验为主")]:
-        assert en in src, f"EN coverage tier label missing: {en!r}"
-        assert zh in src, f"ZH coverage tier label missing: {zh!r}"
+    for en, zh in [("Inputs present", "输入可用"), ("Point-in-time data", "时点数据"),
+                   ("Freshness", "新鲜度"), ("Economic coverage", "经济覆盖"),
+                   ("not verified", "未验证"), ("not measured", "未测量")]:
+        assert en in src, f"EN inputs label missing: {en!r}"
+        assert zh in src, f"ZH inputs label missing: {zh!r}"
 
 
 def test_r24_coverage_chip_wired_into_rendermodal():
-    """coverageChip() is called inside renderModal."""
+    """inputsSummary() is called inside renderModal."""
     src = _rr_section_src()
     rm_start = src.find("function renderModal(")
     rm_end = src.find("\n    /* ---- modal open", rm_start) if rm_start >= 0 else -1
     modal_body = src[rm_start:rm_end] if rm_end > rm_start else src[rm_start:rm_start + 10000]
-    assert "coverageChip(" in modal_body, "coverageChip not called in renderModal"
+    assert "inputsSummary(item)" in modal_body, "inputsSummary not called in renderModal"
 
 
 # ---------------------------------------------------------------------------
@@ -670,7 +674,7 @@ def test_new_helpers_bilingual_labels():
     # Sample a few bilingual pairs from new helpers
     pairs = [
         ("above expectations", "高于预期"),
-        ("fresh", "充分"),
+        ("Freshness", "新鲜度"),  # #6868: availability is not painted as freshness
         ("Component-bridge waterfall", "组件桥接瀑布"),
         ("V3 Factor · comparison model", "V3 因子 · 对比模型"),
     ]
@@ -700,8 +704,11 @@ def test_no_affirmative_consensus_reference():
             continue
         if "consensus" in stripped_line.lower():
             low = stripped_line.lower()
+            # #6868: stating that street consensus is NOT available is the
+            # disclosure MRI-R5 exists to force, not an affirmative claim.
             neg_patterns = ["not consensus", "not a consensus", "non consensus",
-                            "非共识", "nonconsensus", "never says", "never consensus"]
+                            "非共识", "nonconsensus", "never says", "never consensus",
+                            "consensus: not available"]
             if any(p in low for p in neg_patterns):
                 continue
             violations.append(stripped_line[:120])
@@ -722,16 +729,16 @@ def test_retail_sales_name_in_rn_map():
 # ---------------------------------------------------------------------------
 
 def test_interval_bar_handles_null_point():
-    """intervalBar renders cone when point is null (uses p50 as tick or skips tick)."""
+    """intervalBar renders the band when the point is null: the band's own validity
+    (#6868 _rrBand: finite, ordered, non-degenerate) gates the bar, and the point
+    only gates the tick — which is never clamped to an edge."""
     src = _rr_section_src()
     fn_start = src.find("function intervalBar(")
-    fn_body = src[fn_start:fn_start + 1000] if fn_start >= 0 else ""
-    # Should NOT require pt != null to render the bar itself (only the tick)
-    # Guard is now: if (p10 == null || p90 == null) return ''
-    # (removed '|| pt == null' from old guard)
-    assert "p10 == null || p90 == null" in fn_body or "p10==null||p90==null" in fn_body, (
-        "intervalBar must guard on p10/p90 only (null point should still render bar)"
+    fn_body = src[fn_start:fn_start + 1600] if fn_start >= 0 else ""
+    assert "var b = _rrBand(proj);" in fn_body and "if (!b.outer)" in fn_body, (
+        "intervalBar must guard on the band itself (null point should still render bar)"
     )
+    assert "(pt !== null && pt >= p10 && pt <= p90)" in fn_body
 
 
 # ---------------------------------------------------------------------------
@@ -826,12 +833,17 @@ def test_r39_model_dot_plot_market_implied_basis_guard():
     never plotted on shared axis when basis differs (e.g., Polymarket Core CPI YoY level)."""
     src = _rr_section_src()
     fn_start = src.find("function modelDotPlot(")
-    fn_body = src[fn_start:fn_start + 6000] if fn_start >= 0 else ""
-    # Market-implied must be in its own row with basis tag, NOT on the shared axis
-    assert "different basis" in fn_body or "event_title" in fn_body, (
-        "modelDotPlot missing basis-guard for market-implied (MRI-R39 RR-6)"
+    fn_end = src.find("function surpriseAnatomyTable(", fn_start)
+    fn_body = src[fn_start:fn_end] if fn_start >= 0 else ""
+    # Market-implied is never on the shared axis: modelDotPlot appends it via marketNote
+    assert "market_implied" not in fn_body and "return html + marketNote(item)" in fn_body, (
+        "modelDotPlot must keep market-implied off the shared axis (MRI-R39 RR-6)"
     )
-    assert "rr-mkt-row" in fn_body, "modelDotPlot market-implied missing rr-mkt-row class"
+    # #6868: the price is shown only when its record names the SAME period and target
+    note_start = src.find("function marketNote(")
+    note_body = src[note_start:src.find("function coherentNote(", note_start)]
+    assert "_rrMarketVerified(item, mi)" in note_body and "rr-mkt-row" in note_body
+    assert "contract month and unit can’t be verified" in note_body
 
 
 def test_r39_model_comparison_keeps_native_text_and_shared_axis():
@@ -1086,12 +1098,15 @@ def test_r39a_expected_value_market_implied_excluded_from_bench_median():
 
 
 def test_r39a_expected_value_source_tag_cle_mkt():
-    """MRI-R39a: source tag is 'CLE' for cleveland_nowcast, 'MKT' for kalshi/polymarket."""
+    """MRI-R39a, amended by #6868: the column names its source ('Cleveland' for a
+    Cleveland-only read) and skips reads built on a market price, whose record
+    carries no structured contract month/unit; levels carry the target unit."""
     src = _rr_section_src()
     fn_start = src.find("function _expectedVal(")
-    fn_body = src[fn_start:fn_start + 2000] if fn_start >= 0 else ""
-    assert "CLE" in fn_body, "_expectedVal missing CLE source tag for cleveland_nowcast"
-    assert "MKT" in fn_body, "_expectedVal missing MKT source tag for kalshi/polymarket"
+    fn_body = src[fn_start:src.find("function _usesBenchmarkAugmentedPrimary(", fn_start)]
+    assert "'Cleveland'" in fn_body, "_expectedVal must name the Cleveland source"
+    assert "!marketBased" in fn_body, "_expectedVal must skip market-based reads"
+    assert "'pp'" not in fn_body, "_expectedVal must not suffix a level with pp"
 
 
 def test_r39a_no_consensus_in_new_strings():
@@ -1310,7 +1325,10 @@ def test_r40_combined_primary_requires_declared_benchmark_augmented_basis():
     card_end = src.find("function renderModal(", card_start)
     card = src[card_start:card_end]
     assert "var displayPoint = usesBenchmarkBlend ? comb.combined_point : proj.point;" in card
-    assert "var displayP10 = (usesBenchmarkBlend && comb.p10 != null)" in card
+    # #6868: a blend never borrows the champion's quantiles
+    assert "comb.p10 != null) ? comb.p10 : proj.p10" not in src
+    modal = src[card_end:src.find("/* ---- modal open", card_end)]
+    assert "var prim = _rrPrimary(item);" in modal
 
 
 def test_r40_combined_primary_has_bilingual_blend_label_and_champion_fallback():
@@ -1354,8 +1372,9 @@ def test_r40_mismatched_context_metrics_are_suppressed():
     assert "if (!isBenchmarkOnly && contextMetricsAligned)" in card
 
     modal = src[card_end:]
-    aligned_start = modal.find("if (contextMetricsAligned){")
-    aligned_end = modal.find("chips += coverageChip", aligned_start)
+    aligned_start = modal.find("&& contextMetricsAligned){")
+    aligned_end = modal.find("if (chips)", aligned_start)
+    assert aligned_start >= 0 and aligned_end > aligned_start
     aligned_block = modal[aligned_start:aligned_end]
     assert "expectationChip" in aligned_block
     assert "skewChip" in aligned_block

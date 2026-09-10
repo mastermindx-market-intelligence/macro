@@ -8913,7 +8913,7 @@ html[data-theme="light"] :is(
     background:color-mix(in srgb,var(--muted) 10%,var(--panel));border:1px solid color-mix(in srgb,var(--line) 84%,transparent);
     margin:9px 0 6px;overflow:visible;box-shadow:inset 0 1px 2px color-mix(in srgb,var(--text) 8%,transparent)}
   .rr-interval-fill{position:absolute;top:2px;bottom:2px;border-radius:999px;
-    background:color-mix(in srgb,var(--up) 38%,transparent)}
+    background:color-mix(in srgb,var(--text) 24%,transparent)}
   .rr-interval-tick{position:absolute;top:-4px;width:2px;height:18px;
     background:var(--text);border-radius:2px;box-shadow:0 0 0 2px color-mix(in srgb,var(--panel2) 85%,transparent)}
   .rr-interval-labels{display:flex;justify-content:space-between;
@@ -8937,6 +8937,16 @@ html[data-theme="light"] :is(
   .rr-track-table td{padding:2px 5px;font-variant-numeric:tabular-nums;
     border-bottom:1px solid color-mix(in srgb,var(--line) 40%,transparent)}
   .rr-empty{font-size:11.5px;color:var(--muted);font-style:italic;padding:4px 0}
+  /* A1 (#6868) truth labels: level unit, band/point notes, explicit unavailable
+     states, and the four-fact inputs list.  Neutral inks only — none of these
+     is a direction, so none may inherit the ZH up/down swap. */
+  .rr-unit{font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:.01em}
+  .rr-band-note{font-size:10px;line-height:1.5;color:var(--muted);margin-top:6px}
+  .rr-band-note b{color:var(--text);font-weight:650;font-variant-numeric:tabular-nums}
+  .rr-na{font-size:10.5px;line-height:1.5;color:var(--muted);font-style:italic;margin-top:6px}
+  .rr-dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:2px 0 0;font-size:11px;line-height:1.45}
+  .rr-dl dt{color:var(--muted)}
+  .rr-dl dd{margin:0;color:var(--text);font-variant-numeric:tabular-nums}
   /* general */
   .rr-placeholder{color:var(--muted);font-size:12px;font-style:italic;padding:8px 0}
   .rr-asof{font-size:10px;color:var(--muted);margin-top:10px}
@@ -8964,7 +8974,7 @@ html[data-theme="light"] :is(
   .rr-conf-bar-wrap{display:flex;height:12px;border-radius:999px;overflow:hidden;
     border:1px solid color-mix(in srgb,var(--line) 82%,transparent);background:var(--panel);
     box-shadow:inset 0 1px 2px color-mix(in srgb,var(--text) 8%,transparent)}
-  .rr-conf-seg-known{background:color-mix(in srgb,var(--up) 70%,transparent)}
+  .rr-conf-seg-known{background:color-mix(in srgb,var(--ok) 70%,transparent)}
   .rr-conf-seg-proxy{background:color-mix(in srgb,var(--warn) 65%,transparent)}
   .rr-conf-seg-residual{background:color-mix(in srgb,var(--muted) 40%,transparent)}
   .rr-conf-legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;font-size:9.5px;color:var(--muted)}
@@ -9179,10 +9189,67 @@ html[data-theme="light"] :is(
 
     /* ---- base helpers ---- */
     function esc(s){ return s == null ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-    function fmtNum(v, digits){ return (v == null || isNaN(v)) ? '—' : Number(v).toFixed(digits != null ? digits : 2); }
-    function fmtPct(v){ return (v == null || isNaN(v)) ? '—' : (Number(v)*100).toFixed(0) + '%'; }
+    /* A1 (#6868): a displayable number is a finite JS number — never a boolean
+       (true - false === 1 draws a band), a string posing as one, NaN or ±Infinity. */
+    function _rrNum(v){ return (typeof v === 'number' && isFinite(v)) ? v : null; }
+    function fmtNum(v, digits){ return _rrNum(v) === null ? '—' : v.toFixed(digits != null ? digits : 2); }
+    function fmtPct(v){ return _rrNum(v) === null ? '—' : (v*100).toFixed(0) + '%'; }
     /* claims / nfp level formatting: values in thousands */
-    function fmtK(v){ return (v == null || isNaN(v)) ? '—' : Number(v).toFixed(0) + 'k'; }
+    function fmtK(v){ return _rrNum(v) === null ? '—' : v.toFixed(0) + 'k'; }
+
+    /* ---- A1 (#6868): units, the selected forecast and its own band ---- */
+    var RR_DIAG_SCHEMA = 'release_forecast.item_diagnostics.v1';
+    function _rrDiag(item){
+      var d = item && item.diagnostics;
+      return (d && d.schema === RR_DIAG_SCHEMA && d.status !== 'error') ? d : null;
+    }
+    /* The level unit comes from the structured target only.  A level is "%";
+       a difference of two levels, or an additive contribution, is "pp". */
+    function _rrUnitIsPct(item){ return !!item && item.target === 'mom_sa_pct'; }
+    function _rrUsesK(item){
+      var rel = ((item && item.release) || '').toLowerCase();
+      return rel === 'claims' || rel === 'nfp';
+    }
+    function fmtLevel(v, item){
+      if (_rrUsesK(item)) return fmtK(v);
+      var s = fmtNum(v, 2);
+      return (s !== '—' && _rrUnitIsPct(item)) ? s + '%' : s;
+    }
+    function _rrUnitCaption(item){
+      if (_rrUsesK(item) || !_rrUnitIsPct(item)) return '';
+      return '<div class="rr-unit"><span class="l-en">% month-on-month, seasonally adjusted</span>'
+        +'<span class="l-zh">环比%，季节调整后</span></div>';
+    }
+    /* p10–p90 is a nominal 80% band and p25–p75 a nominal 50% band.  A band is
+       drawn only when its bounds are finite, lower < upper, and every present
+       quantile is ordered p10 ≤ p25 ≤ p50 ≤ p75 ≤ p90 — never repaired or recentred. */
+    function _rrBand(q){
+      q = q || {};
+      var present = [];
+      ['p10','p25','p50','p75','p90'].forEach(function(k){
+        var v = _rrNum(q[k]); if (v !== null) present.push(v);
+      });
+      var ordered = true;
+      for (var i = 1; i < present.length; i++) if (present[i] < present[i-1]) ordered = false;
+      var lo = _rrNum(q.p10), hi = _rrNum(q.p90), q25 = _rrNum(q.p25), q75 = _rrNum(q.p75);
+      var outer = ordered && lo !== null && hi !== null && lo < hi;
+      return {outer: outer, inner: outer && q25 !== null && q75 !== null && q25 < q75,
+              p10: lo, p25: q25, p50: ordered ? _rrNum(q.p50) : null, p75: q75, p90: hi};
+    }
+    /* The forecast the existing policy selected (_usesBenchmarkAugmentedPrimary,
+       unchanged) with ITS OWN quantiles only: a blend never borrows the
+       champion's band.  The diagnostics subtree, when present, can only narrow. */
+    function _rrPrimary(item){
+      var proj = item.projection || {};
+      var blend = _usesBenchmarkAugmentedPrimary(item);
+      var src = blend ? item.combined : proj;
+      var band = _rrBand(src);
+      var d = _rrDiag(item);
+      var dp = d && d.primary;
+      if (dp && dp.band_80 && dp.band_80.status !== 'available') { band.outer = false; band.inner = false; }
+      if (dp && dp.band_50 && dp.band_50.status !== 'available') band.inner = false;
+      return {blend: blend, point: _rrNum(blend ? item.combined.combined_point : proj.point), band: band};
+    }
 
     /* release name bilingual map — covers all active release types */
     var RN_EN = {
@@ -9246,50 +9313,62 @@ html[data-theme="light"] :is(
         +'</span>';
     }
 
-    /* source coverage chip (coverage_flags) */
-    function coverageChip(cf){
-      if (!cf) return '';
-      var wc = cf.weight_coverage != null ? Number(cf.weight_coverage) : 0;
-      var fp = cf.fresh_proxy_coverage != null ? Number(cf.fresh_proxy_coverage) : 0;
-      var nv = cf.non_vintaged_share != null ? Number(cf.non_vintaged_share) : 0;
-      var mm = cf.model_maturity != null ? cf.model_maturity : 0;
-      /* derive tier: fresh ≥0.85wc + ≥0.6fp; partial: wc≥0.5; stale: wc≥0.1; else prior-heavy */
-      var tier, cls;
-      if (wc >= 0.85 && fp >= 0.6){ tier='fresh'; cls='rr-cov-fresh'; }
-      else if (wc >= 0.5){ tier='partial'; cls='rr-cov-partial'; }
-      else if (wc >= 0.1){ tier='stale'; cls='rr-cov-stale'; }
-      else { tier='prior-heavy'; cls='rr-cov-prior'; }
-      var tierEN = tier==='fresh'?'fresh':tier==='partial'?'partial':tier==='stale'?'stale':'prior-heavy';
-      var tierZH = tier==='fresh'?'充分':tier==='partial'?'部分':tier==='stale'?'陈旧':'以先验为主';
-      var nStr = mm > 0 ? ' (n='+mm+' scored)' : '';
-      return '<span class="rr-cov '+esc(cls)+'">'
-        +'<span class="l-en">'+esc(tierEN)+esc(nStr)+'</span>'
-        +'<span class="l-zh">'+esc(tierZH)+(mm>0?' (n='+mm+' scored)':'')+'</span>'
-        +'</span>';
+    /* A1: availability, point-in-time vintage, freshness and economic coverage are
+       four facts, not one "fresh" tier (weight_coverage only says legs are present;
+       fresh_proxy_coverage is a present-leg approximation).  Read from the
+       diagnostics subtree; without it, say the checks were not recorded. */
+    function inputsSummary(item){
+      var d = _rrDiag(item);
+      var inp = d && d.inputs;
+      if (!inp || inp.status !== 'available'){
+        return '<div class="rr-na"><span class="l-en">Input checks not recorded for this forecast.</span>'
+          +'<span class="l-zh">此预测未记录输入检查。</span></div>';
+      }
+      var v = inp.vintage || {};
+      var f = inp.freshness || {};
+      var ec = inp.economic_coverage || {};
+      var rows = [
+        ['Inputs present', '输入可用', inp.present+' of '+inp.declared, inp.present+'/'+inp.declared],
+        v.status === 'recorded'
+          ? ['Point-in-time data', '时点数据', v.point_in_time+' of '+inp.declared, v.point_in_time+'/'+inp.declared]
+          : ['Point-in-time data', '时点数据', 'not recorded', '未记录'],
+        f.status === 'verified'
+          ? ['Freshness', '新鲜度', f.fresh+' of '+f.of_present+' verified', '已核实 '+f.fresh+'/'+f.of_present]
+          : ['Freshness', '新鲜度', 'not verified', '未验证'],
+        ec.status === 'not_measured' || !ec.status
+          ? ['Economic coverage', '经济覆盖', 'not measured', '未测量']
+          : ['Economic coverage', '经济覆盖', String(ec.status), String(ec.status)]
+      ];
+      return '<dl class="rr-dl">'+rows.map(function(r){
+        return '<dt><span class="l-en">'+esc(r[0])+'</span><span class="l-zh">'+esc(r[1])+'</span></dt>'
+          +'<dd><span class="l-en">'+esc(r[2])+'</span><span class="l-zh">'+esc(r[3])+'</span></dd>';
+      }).join('')+'</dl>';
     }
 
     /* interval cone bar (p10–p90, tick at point) */
     function intervalBar(proj){
       if (!proj) return '';
-      var p10 = proj.p10, p90 = proj.p90, pt = proj.point;
-      if (p10 == null || p90 == null) return '';
-      var span = p90 - p10;
-      if (span <= 0) return '';
-      var fillL = 0, fillW = 100, tickX = 50;
-      var p25 = proj.p25, p75 = proj.p75;
-      if (p25 != null && p75 != null) {
-        fillL = Math.max(0, Math.min(100, (p25-p10)/span*100));
-        fillW = Math.max(0, Math.min(100, (p75-p25)/span*100));
+      var b = _rrBand(proj);
+      if (!b.outer){
+        return '<div class="rr-na"><span class="l-en">Interval unavailable</span>'
+          +'<span class="l-zh">区间不可用</span></div>';
       }
-      /* tick at point if present, else p50, else center */
-      var tickSrc = pt != null ? pt : (proj.p50 != null ? proj.p50 : null);
-      if (tickSrc != null) tickX = Math.max(0, Math.min(100, (tickSrc-p10)/span*100));
+      var p10 = b.p10, p90 = b.p90, span = p90 - p10;
+      var fillL = 0, fillW = 100;
+      if (b.inner) {
+        fillL = (b.p25-p10)/span*100;
+        fillW = (b.p75-b.p25)/span*100;
+      }
+      /* tick at the point only when it lies inside its band — never clamped to an edge */
+      var pt = _rrNum(proj.point);
+      var tickX = (pt !== null && pt >= p10 && pt <= p90) ? (pt-p10)/span*100 : null;
       return '<div class="rr-interval-bar">'
-        +'<div class="rr-interval-fill" style="left:'+fillL.toFixed(1)+'%;width:'+fillW.toFixed(1)+'%"></div>'
-        +(tickSrc != null ? '<div class="rr-interval-tick" style="left:'+tickX.toFixed(1)+'%"></div>' : '')
+        +(b.inner ? '<div class="rr-interval-fill" style="left:'+fillL.toFixed(1)+'%;width:'+fillW.toFixed(1)+'%"></div>' : '')
+        +(tickX !== null ? '<div class="rr-interval-tick" style="left:'+tickX.toFixed(1)+'%"></div>' : '')
         +'</div>'
         +'<div class="rr-interval-labels">'
         +'<span>p10 '+fmtNum(p10,2)+'</span>'
+        +'<span><span class="l-en">nominal 80%</span><span class="l-zh">名义80%</span></span>'
         +'<span>p90 '+fmtNum(p90,2)+'</span>'
         +'</div>';
     }
@@ -9359,7 +9438,10 @@ html[data-theme="light"] :is(
       return '<div class="rr-policy">'+items.join('')+'</div>';
     }
 
-    /* scoreboard sub-block */
+    /* scoreboard sub-block — A1: the page receives only the LATEST clean scored
+       print per release (last_scored, champion rows).  One print is not a track
+       record, and the rows carry our_surprise / surprise_vs_naive (never our_mae),
+       so nothing is averaged here and a missing error stays "—", never 0.000. */
     function scoreboardBlock(lastScored){
       if (!lastScored || !Array.isArray(lastScored) || !lastScored.length) {
         return '<div class="rr-scoreboard">'
@@ -9370,47 +9452,59 @@ html[data-theme="light"] :is(
           +'</div>'
           +'</div>';
       }
-      var byRel = {};
-      lastScored.forEach(function(row){
-        var k = (row.release||'other').toLowerCase();
-        if (!byRel[k]) byRel[k] = {n:0, mae_ours:0, mae_naive:0, skew_hits:0};
-        byRel[k].n += 1;
-        if (row.our_mae != null) byRel[k].mae_ours += Number(row.our_mae);
-        if (row.naive_mae != null) byRel[k].mae_naive += Number(row.naive_mae);
-        if (row.skew_hit) byRel[k].skew_hits += 1;
-      });
       var thead = '<tr>'
         +'<th><span class="l-en">Release</span><span class="l-zh">数据</span></th>'
-        +'<th><span class="l-en">n</span><span class="l-zh">n</span></th>'
-        +'<th><span class="l-en">MAE ours</span><span class="l-zh">本方MAE</span></th>'
-        +'<th><span class="l-en">MAE naive</span><span class="l-zh">朴素MAE</span></th>'
-        +'<th><span class="l-en">Skew hit%</span><span class="l-zh">偏态命中%</span></th>'
+        +'<th><span class="l-en">Period</span><span class="l-zh">期间</span></th>'
+        +'<th><span class="l-en">Champion miss</span><span class="l-zh">冠军模型误差</span></th>'
+        +'<th><span class="l-en">Naive miss</span><span class="l-zh">朴素误差</span></th>'
         +'</tr>';
-      var rows = Object.keys(byRel).map(function(k){
-        var g = byRel[k];
-        var maeO = g.n ? (g.mae_ours/g.n).toFixed(3) : '—';
-        var maeN = g.n ? (g.mae_naive/g.n).toFixed(3) : '—';
-        var skhit = g.n ? (g.skew_hits/g.n*100).toFixed(0)+'%' : '—';
-        return '<tr><td>'+relName(k,'')+'</td><td>'+g.n+'</td>'
-          +'<td>'+esc(maeO)+'</td><td>'+esc(maeN)+'</td><td>'+esc(skhit)+'</td></tr>';
+      var rows = lastScored.map(function(row){
+        var rt = String((row && row.release) || '');
+        var useK = rt === 'claims' || rt === 'nfp';
+        function miss(v){
+          var n = _rrNum(v);
+          if (n === null) return '—';
+          return useK ? fmtK(Math.abs(n)) : Math.abs(n).toFixed(2)+'pp';
+        }
+        return '<tr><td>'+relName(rt.split('_')[0], rt)+'</td><td>'+esc((row && row.period) || '—')+'</td>'
+          +'<td>'+esc(miss(row && row.our_surprise))+'</td><td>'+esc(miss(row && row.surprise_vs_naive))+'</td></tr>';
       }).join('');
       return '<div class="rr-scoreboard">'
-        +'<div class="rr-scoreboard-title"><span class="l-en">Track record</span><span class="l-zh">历史评分</span></div>'
+        +'<div class="rr-scoreboard-title"><span class="l-en">Latest scored prints</span><span class="l-zh">最新评分数据</span></div>'
         +'<table class="rr-track-table"><thead>'+thead+'</thead><tbody>'+rows+'</tbody></table>'
+        +'<div class="rr-band-note"><span class="l-en">One scored print per release — not an accuracy record. A miss is the absolute gap to the first print.</span>'
+        +'<span class="l-zh">每项数据仅一次评分——并非准确度记录。误差为与首次公布值的绝对差距。</span></div>'
         +'</div>';
     }
 
     /* component breakdown bar — reads contribution_pp (cpi_bridge schema) or contrib_pp (legacy) */
+    /* A1: 'ok' | 'zero' (every contribution is 0 — shares are 0/0, undefined) |
+       'bad' (a row is missing a name or its value is not a finite number). */
+    function _rrAttributionState(components){
+      if (!Array.isArray(components) || !components.length) return 'none';
+      var maxAbs = 0, bad = false;
+      components.forEach(function(c){
+        var v = c ? _rrNum(c.contribution_pp != null ? c.contribution_pp : c.contrib_pp) : null;
+        if (!c || v === null || !(c.block || c.name)) { bad = true; return; }
+        maxAbs = Math.max(maxAbs, Math.abs(v));
+      });
+      return bad ? 'bad' : (maxAbs === 0 ? 'zero' : 'ok');
+    }
+    var RR_ZERO_ATTRIBUTION = '<div class="rr-na"><span class="l-en">Attribution shares undefined — every contribution is zero.</span>'
+      +'<span class="l-zh">归因占比无定义——各项贡献均为零。</span></div>';
     function componentsBar(components, rel){
-      if (!Array.isArray(components) || !components.length) return '';
+      var state = _rrAttributionState(components);
+      if (state === 'none') return '';
+      if (state === 'bad'){
+        return '<div class="rr-na"><span class="l-en">Attribution unavailable — a contribution is missing or not a number.</span>'
+          +'<span class="l-zh">归因不可用——存在缺失或非数值的贡献。</span></div>';
+      }
       var maxAbs = 0;
       components.forEach(function(c){
-        var v = c.contribution_pp != null ? c.contribution_pp : (c.contrib_pp != null ? c.contrib_pp : null);
-        if (v != null) maxAbs = Math.max(maxAbs, Math.abs(v));
+        maxAbs = Math.max(maxAbs, Math.abs(_rrNum(c.contribution_pp != null ? c.contribution_pp : c.contrib_pp)));
       });
-      if (maxAbs === 0) return '';
       var COMP_NAME_EN = {
-        energy:'Energy', shelter:'Shelter', core_persistence:'Core persist.',
+        energy:'Energy', shelter:'Shelter', core_persistence:'Persistence (lagged inflation)',
         pipeline:'Pipeline', private:'Private', government:'Govt.',
         'birth-death':'Birth-death', residual:'Residual',
         energy_gasoline:'Gasoline', energy_electricity:'Electricity',
@@ -9418,7 +9512,7 @@ html[data-theme="light"] :is(
         core_services_ex_shelter:'Core svcs ex-shlt', unmodelled_residual:'Unmod. residual'
       };
       var COMP_NAME_ZH = {
-        energy:'能源', shelter:'住房', core_persistence:'核心持续',
+        energy:'能源', shelter:'住房', core_persistence:'持续性（滞后通胀）',
         pipeline:'管道', private:'私人', government:'政府',
         'birth-death':'出生死亡', residual:'残差',
         energy_gasoline:'汽油', energy_electricity:'电力',
@@ -9426,12 +9520,10 @@ html[data-theme="light"] :is(
         core_services_ex_shelter:'核心服务(不含住房)', unmodelled_residual:'未建模残差'
       };
       var rows = components.map(function(c){
-        if (!c) return '';
-        var cv = c.contribution_pp != null ? c.contribution_pp : (c.contrib_pp != null ? c.contrib_pp : null);
-        if (cv == null) return '';
+        var cv = _rrNum(c.contribution_pp != null ? c.contribution_pp : c.contrib_pp);
         var name = c.block || c.name || '';
         var isResidual = name === 'residual' || name === 'birth-death' || name === 'unmodelled_residual';
-        var pct = Math.abs(cv) / maxAbs * 50;
+        var pct = maxAbs > 0 ? Math.abs(cv) / maxAbs * 50 : 0;
         var isPos = cv >= 0;
         var nameEN = COMP_NAME_EN[name] || name;
         var nameZH = COMP_NAME_ZH[name] || name;
@@ -9454,27 +9546,28 @@ html[data-theme="light"] :is(
           +'</div>';
       }).join('');
       return '<div class="rr-comp-section">'
-        +'<div class="rr-comp-label">'
-        +'<span class="l-en">What is driving the number</span>'
-        +'<span class="l-zh">驱动因素分解</span>'
-        +'</div>'
         +'<div class="rr-comp-rows">'+rows+'</div>'
+        +(state === 'zero' ? RR_ZERO_ATTRIBUTION : '')
         +'</div>';
     }
 
-    /* confidence composition bar — uses coverage_flags (fresh_proxy/non_vintaged) as proxy */
-    function confidenceBar(cv2, cv2comps){
-      if (cv2 == null || !cv2comps) return '';
-      var wk = cv2comps.w_known != null ? cv2comps.w_known : 0;
-      var wp = cv2comps.w_proxy != null ? cv2comps.w_proxy : 0;
-      var wr = cv2comps.w_residual != null ? cv2comps.w_residual : 0;
+    /* A1: shares of the champion's standardized attribution by input provenance —
+       confidence_components_v2: w_known = energy (direct prices), w_proxy =
+       shelter + pipeline (leading proxies), w_residual = core persistence (lagged
+       inflation).  Drawn only when RECORDED; never synthesized from coverage flags,
+       never a probability.  All-zero shares are 0/0: undefined, not 0%. */
+    function confidenceBar(item){
+      var cv = item.confidence_components_v2;
+      if (!cv || typeof cv !== 'object') return '';
+      var wk = _rrNum(cv.w_known), wp = _rrNum(cv.w_proxy), wr = _rrNum(cv.w_residual);
+      if (wk === null || wp === null || wr === null || wk < 0 || wp < 0 || wr < 0) return '';
       var total = wk + wp + wr;
-      if (total <= 0) return '';
+      if (total === 0) return RR_ZERO_ATTRIBUTION;
       var pK = (wk/total*100).toFixed(1), pP = (wp/total*100).toFixed(1), pR = (100 - parseFloat(pK) - parseFloat(pP)).toFixed(1);
       return '<div class="rr-conf-section">'
         +'<div class="rr-comp-label">'
-        +'<span class="l-en">Data quality composition</span>'
-        +'<span class="l-zh">数据质量构成</span>'
+        +'<span class="l-en">Where the attribution comes from</span>'
+        +'<span class="l-zh">归因来源构成</span>'
         +'</div>'
         +'<div class="rr-conf-bar-wrap">'
         +'<div class="rr-conf-seg-known" style="width:'+pK+'%"></div>'
@@ -9482,12 +9575,12 @@ html[data-theme="light"] :is(
         +'<div class="rr-conf-seg-residual" style="width:'+pR+'%"></div>'
         +'</div>'
         +'<div class="rr-conf-legend">'
-        +'<span><span class="rr-conf-leg-dot" style="background:color-mix(in srgb,var(--up) 70%,transparent)"></span>'
-        +'<span class="l-en">Known '+pK+'%</span><span class="l-zh">已知 '+pK+'%</span></span>'
-        +'<span><span class="rr-conf-leg-dot" style="background:color-mix(in srgb,var(--warn) 65%,transparent)"></span>'
-        +'<span class="l-en">Proxy '+pP+'%</span><span class="l-zh">代理 '+pP+'%</span></span>'
-        +'<span><span class="rr-conf-leg-dot" style="background:color-mix(in srgb,var(--muted) 40%,transparent)"></span>'
-        +'<span class="l-en">Residual '+pR+'%</span><span class="l-zh">残差 '+pR+'%</span></span>'
+        +'<span><span class="rr-conf-leg-dot rr-conf-seg-known"></span>'
+        +'<span class="l-en">Direct prices '+pK+'%</span><span class="l-zh">直接价格 '+pK+'%</span></span>'
+        +'<span><span class="rr-conf-leg-dot rr-conf-seg-proxy"></span>'
+        +'<span class="l-en">Leading proxies '+pP+'%</span><span class="l-zh">领先代理 '+pP+'%</span></span>'
+        +'<span><span class="rr-conf-leg-dot rr-conf-seg-residual"></span>'
+        +'<span class="l-en">Persistence (lagged inflation) '+pR+'%</span><span class="l-zh">持续性（滞后通胀） '+pR+'%</span></span>'
         +'</div>'
         +'</div>';
     }
@@ -9696,14 +9789,17 @@ html[data-theme="light"] :is(
       var isNfp = rel === 'nfp';
       var useK = isClaims || isNfp;
       var er = item.expectation_read;
-      /* (a) expectation_read.expectation_median when non-null */
-      if (er && er.expectation_median != null){
-        var srcs = er.sources || [];
-        var srcTag = '';
-        if (srcs.indexOf('cleveland_nowcast') !== -1) srcTag = 'CLE';
-        else if (srcs.indexOf('kalshi') !== -1 || srcs.indexOf('polymarket') !== -1) srcTag = 'MKT';
-        var valStr = useK ? fmtK(er.expectation_median) : fmtNum(er.expectation_median,2)+'pp';
-        return {val:valStr, labelEN:'exp', labelZH:'预期', src:srcTag};
+      /* (a) expectation_read.expectation_median when it is a finite number.  A read
+             built on a market price is skipped: the market record carries no
+             structured contract month/unit, so it cannot be shown as this
+             release's benchmark (A1).  The column names its source; no street
+             survey stands behind it. */
+      var srcs = (er && Array.isArray(er.sources)) ? er.sources : [];
+      var marketBased = srcs.indexOf('kalshi') !== -1 || srcs.indexOf('polymarket') !== -1;
+      if (er && _rrNum(er.expectation_median) !== null && !marketBased){
+        var onlyCle = srcs.length === 1 && srcs[0] === 'cleveland_nowcast';
+        return {val:fmtLevel(er.expectation_median, item),
+                labelEN: onlyCle ? 'Cleveland' : 'nowcast', labelZH: onlyCle ? '克利夫兰' : '临近预测', src:null};
       }
       /* (b) bench median: naive_prior, trailing_3m (or trailing_4w for claims), ar_model,
              cleveland_nowcast, expanding_mean — EXCLUDE market_implied */
@@ -9713,16 +9809,15 @@ html[data-theme="light"] :is(
         : ['naive_prior','trailing_3m','ar_model','cleveland_nowcast','expanding_mean'];
       var vals = [];
       benchKeys.forEach(function(k){
-        var v = bs[k];
-        if (v != null && !isNaN(Number(v))) vals.push(Number(v));
+        var v = _rrNum(bs[k]);
+        if (v !== null) vals.push(v);
       });
       if (!vals.length) return null;
       vals.sort(function(a,b){return a-b;});
       var med = vals.length % 2 === 0
         ? (vals[vals.length/2-1]+vals[vals.length/2])/2
         : vals[Math.floor(vals.length/2)];
-      var valStr = useK ? fmtK(med) : fmtNum(med,2)+'pp';
-      return {val:valStr, labelEN:'bench', labelZH:'基准', src:null};
+      return {val:fmtLevel(med, item), labelEN:'bench', labelZH:'基准', src:null};
     }
 
     /* MRI-R40 honesty: a benchmark-augmented point is not "ours" alone. */
@@ -9785,10 +9880,6 @@ html[data-theme="light"] :is(
       var usesBenchmarkBlend = _usesBenchmarkAugmentedPrimary(item);
       var contextMetricsAligned = _contextMetricsMatchPrimary(item);
       var displayPoint = usesBenchmarkBlend ? comb.combined_point : proj.point;
-      var displayP10 = (usesBenchmarkBlend && comb.p10 != null) ? comb.p10 : proj.p10;
-      var displayP90 = (usesBenchmarkBlend && comb.p90 != null) ? comb.p90 : proj.p90;
-      var displayP25 = (usesBenchmarkBlend && comb.p25 != null) ? comb.p25 : proj.p25;
-      var displayP75 = (usesBenchmarkBlend && comb.p75 != null) ? comb.p75 : proj.p75;
       var primaryLabel = usesBenchmarkBlend
         ? '<span class="l-en">Model + benchmark blend</span><span class="l-zh">模型与基准混合</span>'
         : '<span class="l-en">ours</span><span class="l-zh">本方</span>';
@@ -9799,7 +9890,7 @@ html[data-theme="light"] :is(
       /* --- OURS column --- */
       var oursVal = '—';
       if (!isBenchmarkOnly && displayPoint != null){
-        oursVal = useK ? fmtK(displayPoint) : fmtNum(displayPoint,2)+'pp';
+        oursVal = fmtLevel(displayPoint, item);
       }
       /* for NFP None-point: ours = '—' (fall through) */
 
@@ -9880,51 +9971,48 @@ html[data-theme="light"] :is(
     /* Tabs: 0=OVERVIEW 1=MODELS 2=COMPONENTS 3=HISTORY 4=CONTEXT */
     /* Null tabs (no content) hidden entirely. */
 
-    /* inline SVG interval cone with benchmark ticks — spec: viewBox 0 0 320 56 */
-    function intervalConeSVG(proj, bs, rel){
-      if (!proj) return '';
-      var p10 = proj.p10, p90 = proj.p90, pt = proj.point;
-      if (p10 == null || p90 == null) return '';
-      var span = p90 - p10;
-      if (span <= 0) return '';
-      var p25 = proj.p25, p75 = proj.p75;
-      var W = 320, H = 56, PAD = 24;
+    /* inline SVG interval cone with benchmark ticks — spec: viewBox 0 0 320 56.
+       A1: draws only a band that passed _rrBand; the point marker is drawn only
+       when the point lies inside its own band — never clamped to an edge. */
+    function intervalConeSVG(b, pt, bs, rel){
+      if (!b || !b.outer) return '';
+      var p10 = b.p10, p90 = b.p90, span = p90 - p10;
+      var W = 320, PAD = 24;
       var iW = W - 2*PAD;
-      function xOf(v){ return PAD + Math.max(0,Math.min(iW,(v-p10)/span*iW)); }
-      /* p25-p75 shaded box */
-      var boxL = p25 != null ? xOf(p25) : xOf(p10);
-      var boxR = p75 != null ? xOf(p75) : xOf(p90);
-      /* point marker */
-      var ptX = pt != null ? xOf(pt) : (proj.p50 != null ? xOf(proj.p50) : null);
+      function xOf(v){ return PAD + (v-p10)/span*iW; }
       var isClaims = (rel||'').toLowerCase() === 'claims';
       var isNfp = (rel||'').toLowerCase() === 'nfp';
       var useK = isClaims || isNfp;
+      var ptIn = pt !== null && pt >= p10 && pt <= p90;
       /* benchmark ticks — same-basis only (not market_implied which is YoY/level) */
       var benchKeys = ['naive_prior','trailing_3m','trailing_4w','ar_model','cleveland_nowcast','expanding_mean'];
       var benchLabels = {naive_prior:'naive',trailing_3m:'3m',trailing_4w:'4w',ar_model:'AR',cleveland_nowcast:'CLE',expanding_mean:'xmn'};
       var ticks = [];
       if (bs) {
         benchKeys.forEach(function(k){
-          var v = bs[k];
-          if (v == null || v < p10 || v > p90) return;
+          var v = _rrNum(bs[k]);
+          if (v === null || v < p10 || v > p90) return;
           ticks.push({x:xOf(v), label:benchLabels[k]||k, v:v});
         });
       }
-      var svgParts = ['<svg viewBox="0 0 320 56" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:56px;display:block;overflow:visible">'];
+      var svgParts = ['<svg viewBox="0 0 320 56" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:56px;display:block;overflow:visible" role="img" aria-label="p10 to p90 band">'];
       /* whisker line p10-p90 */
       svgParts.push('<line x1="'+xOf(p10)+'" y1="28" x2="'+xOf(p90)+'" y2="28" stroke="var(--line)" stroke-width="2"/>');
       /* end caps */
       svgParts.push('<line x1="'+xOf(p10)+'" y1="22" x2="'+xOf(p10)+'" y2="34" stroke="var(--muted)" stroke-width="1.5"/>');
       svgParts.push('<line x1="'+xOf(p90)+'" y1="22" x2="'+xOf(p90)+'" y2="34" stroke="var(--muted)" stroke-width="1.5"/>');
-      /* p25-p75 shaded box */
-      svgParts.push('<rect x="'+boxL+'" y="20" width="'+(boxR-boxL)+'" height="16" fill="color-mix(in srgb,var(--up) 28%,transparent)" rx="2"/>');
+      /* p25-p75 shaded box — neutral ink (a band is not a direction) */
+      if (b.inner){
+        svgParts.push('<rect x="'+xOf(b.p25)+'" y="20" width="'+(xOf(b.p75)-xOf(b.p25))+'" height="16" fill="color-mix(in srgb,var(--text) 18%,transparent)" rx="2"/>');
+      }
       /* benchmark ticks (muted) */
       ticks.forEach(function(t){
         svgParts.push('<line x1="'+t.x+'" y1="15" x2="'+t.x+'" y2="41" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2,2"/>');
         svgParts.push('<text x="'+t.x+'" y="12" text-anchor="middle" font-size="8" fill="var(--muted)" font-family="ui-monospace,monospace">'+esc(t.label)+'</text>');
       });
       /* point marker */
-      if (ptX != null){
+      if (ptIn){
+        var ptX = xOf(pt);
         var ptLabel = useK ? fmtK(pt) : fmtNum(pt,2);
         svgParts.push('<line x1="'+ptX+'" y1="14" x2="'+ptX+'" y2="42" stroke="var(--text)" stroke-width="2.5"/>');
         svgParts.push('<text x="'+ptX+'" y="52" text-anchor="middle" font-size="9" fill="var(--text)" font-family="ui-monospace,monospace" font-weight="bold">'+esc(ptLabel)+'</text>');
@@ -9936,70 +10024,104 @@ html[data-theme="light"] :is(
       return svgParts.join('');
     }
 
+    /* A1: a market price is this release's benchmark only when its record names
+       the SAME period and target in structured fields and carries a numeric value.
+       Today's feeds do not (the contract month lives only in prose titles), so the
+       row says so instead of printing the price.  The raw record stays in the data. */
+    function _rrMarketVerified(item, mi){
+      if (!mi || typeof mi !== 'object') return false;
+      var d = _rrDiag(item);
+      var md = d && d.benchmarks && d.benchmarks.market_implied;
+      if (md && md.status !== 'verified') return false;
+      return mi.period === item.period && mi.target === item.target && _rrNum(mi.implied_median) !== null;
+    }
+    function marketNote(item){
+      var mi = (item.benchmark_set||{}).market_implied || null;
+      if (!mi) return '';
+      if (_rrMarketVerified(item, mi)){
+        var src = mi.source === 'kalshi' ? 'Kalshi' : mi.source === 'polymarket' ? 'Polymarket' : String(mi.source||'');
+        return '<div class="rr-mkt-row">'
+          +'<span class="rr-mkt-label"><span class="l-en">Market-implied</span><span class="l-zh">市场隐含</span></span>'
+          +'<span class="rr-mkt-val">'+esc(fmtLevel(mi.implied_median, item))+'</span>'
+          +'<span class="rr-mkt-source">'+esc(src)+'</span>'
+          +'</div>';
+      }
+      return '<div class="rr-na"><span class="l-en">Market-implied: not shown — contract month and unit can’t be verified.</span>'
+        +'<span class="l-zh">市场隐含：不显示——无法核实合约月份与单位。</span></div>';
+    }
+    /* coherent-target challenger: "not scheduled at this horizon" only when the
+       diagnostics prove it (the challenger runs only the day before release). */
+    function coherentNote(item){
+      var d = _rrDiag(item);
+      var co = d && d.challengers && d.challengers.coherent_ridge_v1;
+      if (!co || co.status === 'projected') return '';
+      if (co.status === 'not_scheduled_at_horizon'){
+        return '<div class="rr-na"><span class="l-en">coherent_ridge_v1: not scheduled at this horizon (runs the day before release)</span>'
+          +'<span class="l-zh">coherent_ridge_v1：此时间点不运行（仅在发布前一日运行）</span></div>';
+      }
+      return '<div class="rr-na"><span class="l-en">coherent_ridge_v1: not available</span>'
+        +'<span class="l-zh">coherent_ridge_v1：不可用</span></div>';
+    }
+
     /* model dot plot — shared HTML/CSS axis; text remains native and never stretches */
     function modelDotPlot(item, isBenchmarkOnly, isClaims, isNfp){
       if (isBenchmarkOnly) return '';
       var proj = item.projection || {};
       var shadows = item.shadows || {};
-      var mi = (item.benchmark_set||{}).market_implied;
       var useK = isClaims || isNfp;
-      /* collect model points: champion, v3_factor, cpi_bridge, mf_energy */
+      var d = _rrDiag(item);
+      var coStatus = d && d.challengers && d.challengers.coherent_ridge_v1 && d.challengers.coherent_ridge_v1.status;
+      /* collect model points: champion, v3_factor, cpi_bridge, mf_energy, coherent_ridge_v1 */
       var models = [];
-      if (proj.point != null) models.push({key:'champion',pt:proj.point,p10:proj.p10,p90:proj.p90,shape:'filled',label:'Champion'});
-      var v3 = shadows.v3_factor;
-      if (v3 && v3.point != null) models.push({key:'v3_factor',pt:v3.point,p10:v3.p10,p90:v3.p90,shape:'hollow',label:'v3_factor'});
-      var bridge = shadows.cpi_bridge;
-      if (bridge && bridge.point != null) models.push({key:'cpi_bridge',pt:bridge.point,shape:'diamond',label:'cpi_bridge'});
-      var mfe = shadows.mf_energy;
-      if (mfe && mfe.point != null) models.push({key:'mf_energy',pt:mfe.point,p10:mfe.p10,p90:mfe.p90,shape:'triangle',label:'mf_energy'});
-      if (!models.length) return '';
-      /* axis range: min/max of all model points + p10/p90 */
-      var allVals = [];
-      models.forEach(function(m){ allVals.push(m.pt); if(m.p10!=null)allVals.push(m.p10); if(m.p90!=null)allVals.push(m.p90); });
-      var vMin = Math.min.apply(null,allVals), vMax = Math.max.apply(null,allVals);
-      if (vMin === vMax){ vMin -= 0.05; vMax += 0.05; }
-      var span = vMax - vMin;
-      function pctOf(v){ return Math.max(0,Math.min(100,(v-vMin)/span*100)); }
-      var rows = models.map(function(m){
-        var pointPct = pctOf(m.pt);
-        var range = '';
-        if (m.p10 != null && m.p90 != null){
-          var rangeL = pctOf(m.p10), rangeR = pctOf(m.p90);
-          range = '<span class="rr-model-range" style="left:'+rangeL.toFixed(1)+'%;width:'+Math.max(0,rangeR-rangeL).toFixed(1)+'%"></span>';
-        }
-        var valStr = useK ? fmtK(m.pt) : fmtNum(m.pt,2);
-        return '<div class="rr-model-row'+(m.key==='champion'?' rr-model-row-champion':'')+'">'
-          +'<span class="rr-model-name">'+esc(m.label)+'</span>'
-          +'<span class="rr-model-track">'+range
-          +'<span class="rr-model-marker rr-marker-'+esc(m.shape)+'" style="left:'+pointPct.toFixed(1)+'%"></span>'
-          +'</span>'
-          +'<span class="rr-model-value">'+esc(valStr)+'</span>'
-          +'</div>';
-      }).join('');
-      var lowLabel = useK ? fmtK(vMin) : fmtNum(vMin,2);
-      var highLabel = useK ? fmtK(vMax) : fmtNum(vMax,2);
-      var html = '<div class="rr-model-plot" role="img" aria-label="Model comparison on one shared scale">'
-        +rows
-        +'<div class="rr-model-scale"><span></span><span class="rr-model-scale-track">'
-        +'<span>'+esc(lowLabel)+'</span>'
-        +'<span class="rr-model-scale-label"><span class="l-en">shared scale</span><span class="l-zh">统一刻度</span></span>'
-        +'<span>'+esc(highLabel)+'</span>'
-        +'</span><span></span></div>'
-        +'</div>';
-      /* market-implied in own row, explicit basis tag, NEVER on shared axis */
-      if (mi){
-        var miVal = mi.implied_median != null ? fmtNum(mi.implied_median,2) : (mi.implied != null ? String(mi.implied) : '—');
-        var miSrc = mi.source === 'kalshi' ? 'Kalshi' : mi.source === 'polymarket' ? 'Polymarket' : esc(mi.source||'');
-        var basisNote = esc(mi.event_title||'');
-        html += '<div class="rr-mkt-row">'
-          +'<span class="rr-mkt-label"><span class="l-en">Market-implied</span><span class="l-zh">市场隐含</span></span>'
-          +'<span class="rr-mkt-val">'+esc(miVal)+'</span>'
-          +'<span class="rr-mkt-source">'+esc(miSrc)+'</span>'
-          +(basisNote?'<span style="font-size:9px;color:var(--muted);margin-left:4px" title="'+esc(basisNote)+'">'
-            +'<span class="l-en">different basis</span><span class="l-zh">不同基准</span></span>':'')
+      function add(key, src, shape, label){
+        var pt = _rrNum(src && src.point);
+        if (pt === null) return;
+        var b = _rrBand(src);
+        models.push({key:key, pt:pt, p10:b.outer?b.p10:null, p90:b.outer?b.p90:null, shape:shape, label:label});
+      }
+      add('champion', proj, 'filled', 'Champion');
+      add('v3_factor', shadows.v3_factor, 'hollow', 'v3_factor');
+      add('cpi_bridge', shadows.cpi_bridge ? {point: shadows.cpi_bridge.point} : null, 'diamond', 'cpi_bridge');
+      add('mf_energy', shadows.mf_energy, 'triangle', 'mf_energy');
+      if (coStatus === 'projected') add('coherent_ridge_v1', shadows.coherent_ridge_v1, 'hollow', 'coherent_ridge_v1');
+      var html = '';
+      if (models.length){
+        /* axis range: min/max of all model points + p10/p90 */
+        var allVals = [];
+        models.forEach(function(m){ allVals.push(m.pt); if(m.p10!==null)allVals.push(m.p10); if(m.p90!==null)allVals.push(m.p90); });
+        var vMin = Math.min.apply(null,allVals), vMax = Math.max.apply(null,allVals);
+        if (vMin === vMax){ vMin -= 0.05; vMax += 0.05; }
+        var span = vMax - vMin;
+        var pctOf = function(v){ return Math.max(0,Math.min(100,(v-vMin)/span*100)); };
+        var rows = models.map(function(m){
+          var pointPct = pctOf(m.pt);
+          var range = '';
+          if (m.p10 !== null && m.p90 !== null){
+            var rangeL = pctOf(m.p10), rangeR = pctOf(m.p90);
+            range = '<span class="rr-model-range" style="left:'+rangeL.toFixed(1)+'%;width:'+Math.max(0,rangeR-rangeL).toFixed(1)+'%"></span>';
+          }
+          var valStr = useK ? fmtK(m.pt) : fmtNum(m.pt,2);
+          return '<div class="rr-model-row'+(m.key==='champion'?' rr-model-row-champion':'')+'">'
+            +'<span class="rr-model-name">'+esc(m.label)+'</span>'
+            +'<span class="rr-model-track">'+range
+            +'<span class="rr-model-marker rr-marker-'+esc(m.shape)+'" style="left:'+pointPct.toFixed(1)+'%"></span>'
+            +'</span>'
+            +'<span class="rr-model-value">'+esc(valStr)+'</span>'
+            +'</div>';
+        }).join('');
+        var lowLabel = useK ? fmtK(vMin) : fmtNum(vMin,2);
+        var highLabel = useK ? fmtK(vMax) : fmtNum(vMax,2);
+        html = '<div class="rr-model-plot" role="img" aria-label="Model comparison on one shared scale">'
+          +rows
+          +'<div class="rr-model-scale"><span></span><span class="rr-model-scale-track">'
+          +'<span>'+esc(lowLabel)+'</span>'
+          +'<span class="rr-model-scale-label"><span class="l-en">shared scale</span><span class="l-zh">统一刻度</span></span>'
+          +'<span>'+esc(highLabel)+'</span>'
+          +'</span><span></span></div>'
           +'</div>';
       }
-      return html;
+      /* market-implied in its own row, NEVER on the shared axis, and only when verified */
+      return html + marketNote(item) + coherentNote(item);
     }
 
     /* surprise anatomy mini-table for history tab */
@@ -10065,35 +10187,26 @@ html[data-theme="light"] :is(
       var v3 = shadows.v3_factor || null;
       var bridge = shadows.cpi_bridge || null;
       var mfe = shadows.mf_energy || null;
-      var cf = item.coverage_flags || null;
-      var conf = item.confidence;
       var er = item.expectation_read;
       var sk = item.surprise_skew;
       var pi = item.print_integrity || null;
       var piRegime = pi ? (pi.regime || 'normal') : null;
-      /* MRI-R40: combined block */
+      /* MRI-R40: combined block.  A1: the selected forecast carries its own band only. */
       var comb = item.combined || null;
       var usesBenchmarkBlend = _usesBenchmarkAugmentedPrimary(item);
       var contextMetricsAligned = _contextMetricsMatchPrimary(item);
-      var dispPt = usesBenchmarkBlend ? comb.combined_point : proj.point;
-      var dispP10 = (usesBenchmarkBlend && comb.p10 != null) ? comb.p10 : proj.p10;
-      var dispP90 = (usesBenchmarkBlend && comb.p90 != null) ? comb.p90 : proj.p90;
-      var dispP25 = (usesBenchmarkBlend && comb.p25 != null) ? comb.p25 : proj.p25;
-      var dispP75 = (usesBenchmarkBlend && comb.p75 != null) ? comb.p75 : proj.p75;
-      /* build a display-proj object for intervalConeSVG */
-      var dispProj = usesBenchmarkBlend ? {
-        point: dispPt, p10: dispP10, p25: dispP25,
-        p50: (comb.p50 != null ? comb.p50 : proj.p50),
-        p75: dispP75, p90: dispP90
-      } : proj;
+      var prim = _rrPrimary(item);
+      var dispPt = prim.point;
+      var band = prim.band;
+      var diag = _rrDiag(item);
 
       /* ---- TAB 0: OVERVIEW ---- */
       var tab0 = '';
       {
         /* large point — sources the declared primary basis */
         var ptStr = '—';
-        if (!isBenchmarkOnly && !isNoData && dispPt != null)
-          ptStr = useK ? fmtK(dispPt) : fmtNum(dispPt,2)+(rt.indexOf('nfp')===-1?'pp':'');
+        if (!isBenchmarkOnly && !isNoData && dispPt !== null)
+          ptStr = fmtLevel(dispPt, item);
         /* "Blend of N inputs" receipt line — models and benchmarks are distinct. */
         var combInputs = (usesBenchmarkBlend && comb && comb.combined_components
           && Array.isArray(comb.combined_components.inputs_used))
@@ -10113,31 +10226,61 @@ html[data-theme="light"] :is(
         var pointLabelZH = usesBenchmarkBlend ? '模型与基准混合' : '本方预测';
         tab0 += '<div class="rr-grp">'
           +'<div style="font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1">'+esc(ptStr)+'</div>'
+          +(ptStr !== '—' ? _rrUnitCaption(item) : '')
           +'<div style="font-size:10px;color:var(--muted);margin-top:2px">'
           +'<span class="l-en">'+pointLabelEN+' · '+esc(item.period||'')+(item.release_date?' · '+esc(item.release_date):'')+'</span>'
           +'<span class="l-zh">'+pointLabelZH+' · '+esc(item.period||'')+(item.release_date?' · '+esc(item.release_date):'')+'</span>'
           +'</div>'
           +combSubtitle
           +'</div>';
-        /* SVG cone — use combined interval when available */
-        if (!isBenchmarkOnly && !isNoData && dispP10 != null){
-          tab0 += '<div class="rr-grp">'+intervalConeSVG(dispProj, item.benchmark_set, rel)+'</div>';
-        }
-        /* chips + coverage */
-        var chips = '';
+        /* A1: point vs predictive median (labelled distinctly, never recentred),
+           the nominal band of the SAME selected forecast, and its calibration status */
         if (!isBenchmarkOnly && !isNoData){
-          if (contextMetricsAligned){
-            chips += expectationChip(er||null);
-            chips += skewChip(sk||null);
+          var medStr = band.p50 !== null ? fmtLevel(band.p50, item) : null;
+          var ptLine = '<div class="rr-band-note">'
+            +'<span class="l-en">Point forecast <b>'+esc(ptStr)+'</b> · '
+              +(medStr ? 'Median (p50) <b>'+esc(medStr)+'</b>' : 'Median (p50) unavailable')+'</span>'
+            +'<span class="l-zh">点预测 <b>'+esc(ptStr)+'</b> · '
+              +(medStr ? '中位数（p50） <b>'+esc(medStr)+'</b>' : '中位数（p50）不可用')+'</span>'
+            +'</div>';
+          var bandHTML;
+          if (band.outer){
+            var outside = dispPt !== null && (dispPt < band.p10 || dispPt > band.p90);
+            bandHTML = intervalConeSVG(band, dispPt, item.benchmark_set, rel)
+              +'<div class="rr-band-note">'
+              +'<span class="l-en">Nominal 80% band (p10–p90)'
+                +(band.inner ? ' · shaded: nominal 50% (p25–p75)' : ' · 50% band unavailable')
+                +' · experimental, not calibrated'+(outside ? ' · the point lies outside its band' : '')+'</span>'
+              +'<span class="l-zh">名义80%区间（p10–p90）'
+                +(band.inner ? ' · 阴影：名义50%（p25–p75）' : ' · 50%区间不可用')
+                +' · 试验性，未经校准'+(outside ? ' · 点预测位于区间之外' : '')+'</span>'
+              +'</div>';
+          } else {
+            bandHTML = '<div class="rr-na"><span class="l-en">Interval unavailable — band values are missing, not numbers, or out of order.</span>'
+              +'<span class="l-zh">区间不可用——区间数值缺失、非数值或顺序错误。</span></div>';
           }
-          chips += coverageChip(cf||null);
+          tab0 += '<div class="rr-grp">'+ptLine+bandHTML
+            +'<div class="rr-band-note"><span class="l-en">Calibration not established — these bands have not yet been checked against enough outcomes.</span>'
+            +'<span class="l-zh">校准尚未确立——这些区间尚未经足够多的实际结果检验。</span></div>'
+            +'</div>';
+        }
+        /* chips — context metrics describe the displayed basis only */
+        var chips = '';
+        if (!isBenchmarkOnly && !isNoData && contextMetricsAligned){
+          chips += expectationChip(er||null);
+          chips += skewChip(sk||null);
         }
         if (chips) tab0 += '<div class="rr-grp"><div class="rr-chips-row">'+chips+'</div></div>';
+        /* A1: inputs — availability, vintage, freshness and economic coverage, separately */
+        if (!isBenchmarkOnly && !isNoData){
+          tab0 += '<div class="rr-grp"><div class="rr-grp-label"><span class="l-en">Inputs</span><span class="l-zh">输入数据</span></div>'
+            +inputsSummary(item)+'</div>';
+        }
         /* vs strongest benchmark delta — use display point */
-        if (!isBenchmarkOnly && !isNoData && dispPt != null && item.benchmark_set){
+        if (!isBenchmarkOnly && !isNoData && dispPt !== null && item.benchmark_set){
           var bs2 = item.benchmark_set;
           var bVals = [bs2.naive_prior, bs2.trailing_3m, bs2.ar_model, bs2.cleveland_nowcast, bs2.expanding_mean];
-          bVals = bVals.filter(function(v){return v != null;});
+          bVals = bVals.filter(function(v){return _rrNum(v) !== null;});
           if (bVals.length){
             var bMedian = bVals.slice().sort(function(a,b){return a-b;})[Math.floor(bVals.length/2)];
             var delta = dispPt - bMedian;
@@ -10162,13 +10305,9 @@ html[data-theme="light"] :is(
             +'<span class="l-zh">待数据 — 系列未入库，系统就绪。</span>'
             +'</div>';
         }
-        /* confidence */
-        if (!isBenchmarkOnly && !isNoData && conf != null){
-          tab0 += '<div style="font-size:10px;color:var(--muted);margin-top:6px">'
-            +'<span class="l-en">Confidence: <b style="color:var(--text)">'+esc(fmtPct(conf))+'</b></span>'
-            +'<span class="l-zh">置信度：<b style="color:var(--text)">'+esc(fmtPct(conf))+'</b></span>'
-            +'</div>';
-        }
+        /* A1: the legacy "Confidence" (a band-width rank × input completeness) is not a
+           probability and has no established calibration — the calibration line above
+           replaces it; the machine artifact names it in diagnostics.scores. */
       }
 
       /* ---- TAB 1: MODELS ---- */
@@ -10182,7 +10321,9 @@ html[data-theme="light"] :is(
             +modelDotPlot(item, isBenchmarkOnly, isClaims, isNfp)
             +'</div>';
         }
-        /* benchmark table */
+        /* benchmark table — no street-consensus source is collected (A1) */
+        var RR_STREET_NA = '<div class="rr-na"><span class="l-en">Street consensus: not available</span>'
+          +'<span class="l-zh">市场一致预期：暂无</span></div>';
         if (item.benchmark_set){
           tab1 += '<div class="rr-grp"><div class="rr-grp-label">'
             +'<span class="l-en">Benchmarks (not investment advice)</span><span class="l-zh">基准对比（非投资建议）</span>'
@@ -10191,21 +10332,23 @@ html[data-theme="light"] :is(
           var isCl2 = isClaims;
           var bench2rows = [];
           if (bs.naive_prior != null)
-            bench2rows.push(['<span class="l-en">Naive prior</span><span class="l-zh">朴素先验</span>', useK?fmtK(bs.naive_prior):fmtNum(bs.naive_prior,2)]);
+            bench2rows.push(['<span class="l-en">Naive prior</span><span class="l-zh">朴素先验</span>', fmtLevel(bs.naive_prior, item)]);
           if (isCl2 && bs.trailing_4w != null)
             bench2rows.push(['<span class="l-en">Trailing 4w</span><span class="l-zh">近4周均值</span>', fmtK(bs.trailing_4w)]);
           if (!isCl2 && bs.trailing_3m != null)
-            bench2rows.push(['<span class="l-en">Trailing 3m</span><span class="l-zh">近3月均值</span>', useK?fmtK(bs.trailing_3m):fmtNum(bs.trailing_3m,2)]);
+            bench2rows.push(['<span class="l-en">Trailing 3m</span><span class="l-zh">近3月均值</span>', fmtLevel(bs.trailing_3m, item)]);
           if (bs.ar_model != null)
-            bench2rows.push(['AR model', useK?fmtK(bs.ar_model):fmtNum(bs.ar_model,2)]);
+            bench2rows.push(['AR model', fmtLevel(bs.ar_model, item)]);
           if (!isCl2 && !isNfp && bs.cleveland_nowcast != null)
-            bench2rows.push(['Cleveland nowcast', fmtNum(bs.cleveland_nowcast,2)]);
+            bench2rows.push(['Cleveland nowcast', fmtLevel(bs.cleveland_nowcast, item)]);
           if (bs.expanding_mean != null)
-            bench2rows.push(['<span class="l-en">Expanding mean</span><span class="l-zh">累积均值</span>', useK?fmtK(bs.expanding_mean):fmtNum(bs.expanding_mean,2)]);
+            bench2rows.push(['<span class="l-en">Expanding mean</span><span class="l-zh">累积均值</span>', fmtLevel(bs.expanding_mean, item)]);
           tab1 += bench2rows.map(function(r){
             return '<div class="rr-bench-row"><span class="rr-bench-name">'+r[0]+'</span><span class="rr-bench-val">'+esc(r[1])+'</span></div>';
           }).join('');
-          tab1 += '</div>';
+          tab1 += RR_STREET_NA + '</div>';
+        } else if (!isNoData){
+          tab1 += '<div class="rr-grp">'+RR_STREET_NA+'</div>';
         }
         /* v3_factor shadow */
         if (!isBenchmarkOnly && v3){
@@ -10214,17 +10357,17 @@ html[data-theme="light"] :is(
         /* MRI-R40: combined_v1 weight receipt (technical detail — hover/receipt per DESIGN_DOCTRINE) */
         if (!isBenchmarkOnly && comb && comb.combined_components){
           var cc = comb.combined_components;
-          var ccInputs = cc.inputs_used || [];
+          var ccInputs = Array.isArray(cc.inputs_used) ? cc.inputs_used : [];
           var ccWeights = cc.weights || {};
           var ccPoints = cc.points || {};
           var ccMAE = cc.MAE_shrunk_i || {};
           var ccCold = cc.cold_start;
           var ccRows = ccInputs.map(function(iid){
             var w = ccWeights[iid]; var pt = ccPoints[iid];
-            var wStr = w != null ? (Math.round(w*1000)/10).toFixed(1)+'%' : '—';
-            var ptStr2 = pt != null ? fmtNum(pt,2) : '—';
+            var wStr = _rrNum(w) !== null ? (Math.round(w*1000)/10).toFixed(1)+'%' : '—';
+            var ptStr2 = fmtLevel(pt, item);
             return '<div class="rr-bench-row"><span class="rr-bench-name">'+esc(iid)+'</span>'
-              +'<span class="rr-bench-val">'+esc(ptStr2)+'pp &nbsp; <span style="color:var(--muted)">w='+esc(wStr)+'</span></span></div>';
+              +'<span class="rr-bench-val">'+esc(ptStr2)+' &nbsp; <span style="color:var(--muted)">w='+esc(wStr)+'</span></span></div>';
           }).join('');
           var coldNote = ccCold
             ? '<div style="font-size:9.5px;color:var(--muted);margin-top:3px">'
@@ -10260,16 +10403,39 @@ html[data-theme="light"] :is(
 
       /* ---- TAB 2: COMPONENTS ---- */
       var tab2 = '';
-      /* champion attribution — gated on !isBenchmarkOnly */
-      var champComponents = (item.components && Array.isArray(item.components) && item.components.length) ? item.components : null;
+      /* A1: the champion's attribution explains the CHAMPION forecast only.  Absent
+         attribution is stated, never synthesized from coverage flags; all-zero
+         contributions leave every share undefined; the baseline is never inferred. */
+      var champComponents = (Array.isArray(item.components) && item.components.length) ? item.components : null;
+      var attrLabel = '<div class="rr-grp-label">'
+        +'<span class="l-en">Model attribution — champion model</span><span class="l-zh">模型归因 — 冠军模型</span>'
+        +'</div>';
       if (!isBenchmarkOnly && !isNoData && champComponents){
-        tab2 += '<div class="rr-grp"><div class="rr-grp-label">'
-          +'<span class="l-en">Champion attribution</span><span class="l-zh">冠军归因</span>'
-          +'</div>'
+        var attrState = _rrAttributionState(champComponents);
+        var isStandardized = rt === 'cpi_headline' || rt === 'cpi_core';
+        var champPtStr = fmtLevel(_rrNum(proj.point), item);
+        var attrCaption = '<div class="rr-band-note">'
+          +(isStandardized
+            ? '<span class="l-en">Standardized contributions in pp, excluding the model’s baseline (intercept).'
+              +(usesBenchmarkBlend ? ' Explains the champion forecast ('+esc(champPtStr)+'), not the displayed blend.' : '')+'</span>'
+              +'<span class="l-zh">标准化贡献（百分点），不含模型基线（截距）。'
+              +(usesBenchmarkBlend ? '解释冠军模型预测（'+esc(champPtStr)+'），而非所显示的混合值。' : '')+'</span>'
+            : '<span class="l-en">Contributions in pp as recorded by the champion model.'
+              +(usesBenchmarkBlend ? ' Explains the champion forecast ('+esc(champPtStr)+'), not the displayed blend.' : '')+'</span>'
+              +'<span class="l-zh">冠军模型记录的贡献（百分点）。'
+              +(usesBenchmarkBlend ? '解释冠军模型预测（'+esc(champPtStr)+'），而非所显示的混合值。' : '')+'</span>')
+          +'</div>';
+        tab2 += '<div class="rr-grp">'+attrLabel+attrCaption
           +componentsBar(champComponents, rel)
+          +(attrState === 'ok' ? confidenceBar(item) : '')
+          +'</div>';
+      } else if (!isBenchmarkOnly && !isNoData){
+        tab2 += '<div class="rr-grp">'+attrLabel
+          +'<div class="rr-na"><span class="l-en">Attribution not available for this model.</span>'
+          +'<span class="l-zh">该模型暂无归因数据。</span></div>'
           +'</div>';
       }
-      /* CPI bridge waterfall — gated on !isBenchmarkOnly */
+      /* CPI bridge waterfall — the bridge model's own decomposition, gated on !isBenchmarkOnly */
       if (!isBenchmarkOnly && !isNoData && bridge){
         tab2 += '<div class="rr-grp"><div class="rr-grp-label">'
           +'<span class="l-en">Component-bridge waterfall</span><span class="l-zh">组件桥接瀑布</span>'
@@ -10277,35 +10443,33 @@ html[data-theme="light"] :is(
           +cpiBridgeWaterfall(bridge)
           +'</div>';
       }
-      /* confidence composition — gated on !isBenchmarkOnly */
-      var cv2 = item.confidence_v2 != null ? item.confidence_v2 : conf;
-      var cv2comps = item.confidence_components_v2 || null;
-      if (!isBenchmarkOnly && !isNoData && cv2 != null){
-        if (!cv2comps && cf && cf.weight_coverage > 0){
-          var wc2 = Number(cf.weight_coverage||0);
-          var fp2 = Number(cf.fresh_proxy_coverage||0);
-          var nv2 = Number(cf.non_vintaged_share||0);
-          cv2comps = {w_known:wc2*(1-nv2),w_proxy:wc2*nv2+(1-wc2)*fp2,w_residual:Math.max(0,1-wc2*(1-nv2)-wc2*nv2-(1-wc2)*fp2)};
-        }
-        if (!isBenchmarkOnly && cv2comps){
-          tab2 += '<div class="rr-grp"><div class="rr-grp-label">'
-            +'<span class="l-en">Confidence composition</span><span class="l-zh">置信度构成</span>'
-            +'</div>'
-            +confidenceBar(cv2, cv2comps)
-            +'</div>';
-        }
-      }
 
       /* ---- TAB 3: HISTORY ---- */
       var tab3 = '';
       {
-        /* scoreboard — accruing note when empty */
+        /* A1: performance only from the exact model / target / horizon lane */
+        var perf = diag && diag.performance;
+        var perfEN, perfZH;
+        if (!perf){
+          perfEN = 'Track record unavailable for this forecast.';
+          perfZH = '此预测暂无历史评分。';
+        } else if (perf.status === 'available' && _rrNum(perf.mae_pp) !== null){
+          var perfUnit = useK ? 'k' : ' pp';
+          perfEN = perf.n+' scored release'+(perf.n === 1 ? '' : 's')+' for this exact model, target and horizon · mean absolute error '+perf.mae_pp.toFixed(2)+perfUnit;
+          perfZH = '该模型、目标与时点共'+perf.n+'次评分 · 平均绝对误差 '+perf.mae_pp.toFixed(2)+(useK ? 'k' : '个百分点');
+        } else if (perf.status === 'not_applicable'){
+          perfEN = 'No model forecast to score.';
+          perfZH = '无模型预测可评分。';
+        } else {
+          perfEN = 'No scored record yet for this exact model, target and horizon.';
+          perfZH = '该模型、目标与时点尚无评分记录。';
+        }
         tab3 += '<div class="rr-grp"><div class="rr-grp-label">'
           +'<span class="l-en">Track record</span><span class="l-zh">历史评分</span>'
           +'</div>'
           +'<div class="rr-empty">'
-          +'<span class="l-en">Accruing — first scored prints land this month.</span>'
-          +'<span class="l-zh">积累中 — 本月首批评分数据到来。</span>'
+          +'<span class="l-en">'+esc(perfEN)+'</span>'
+          +'<span class="l-zh">'+esc(perfZH)+'</span>'
           +'</div>'
           +'</div>';
         /* NFP revision context */
@@ -10530,6 +10694,22 @@ html[data-theme="light"] :is(
         +'</span>';
     }
 
+    /* A1: cutoff_label ("T-1"/"early") is a queue position, not a data cutoff.  The
+       only input date shown is the input snapshot's own date, verified against the
+       item (prediction id + inputs hash) — date precision, no invented time or zone. */
+    function _rrInputsAsOfLabels(item){
+      var d = _rrDiag(item);
+      var c = d && d.cutoff;
+      var m = (c && c.status === 'verified' && c.precision === 'date')
+        ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(c.inputs_asof||'')) : null;
+      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      if (m && Number(m[2]) >= 1 && Number(m[2]) <= 12){
+        var mo = Number(m[2]), dy = Number(m[3]);
+        return {en:'Inputs as of '+months[mo-1]+' '+dy+', '+m[1], zh:'输入截至'+m[1]+'年'+mo+'月'+dy+'日'};
+      }
+      return {en:'Input date unavailable', zh:'输入日期不可用'};
+    }
+
     function openModal(item){
       if (!RR_OVERLAY || !RR_MODAL_INNER) return;
       var rel = item.release || '';
@@ -10548,8 +10728,7 @@ html[data-theme="light"] :is(
       var periodLabels = _rrPeriodLabels(item.period);
       var dateLabels = item.release_date ? _rrDateLabels(item.release_date) : null;
       var countdownLabels = item.days_to != null ? _rrCountdownLabels(item.days_to) : null;
-      var cutoff = item.cutoff_label ? String(item.cutoff_label).replace(/-/g,'−') : '';
-      var cutoffLabels = cutoff ? {en:'Data through '+cutoff,zh:'数据截至 '+cutoff} : null;
+      var cutoffLabels = _rrInputsAsOfLabels(item);
       var titleHTML = '<div class="rr-modal-title">'+relName(rel, rt)+'</div>'
         +'<div class="rr-modal-sub">'
         +_rrMetaChip(periodLabels,true,hasDue?'<span class="rr-health-dot" title="Capture health: past-due score"></span>':'')

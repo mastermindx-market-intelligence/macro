@@ -10208,6 +10208,13 @@ jobs:
       # and combined_v1 exclusion under the release-forecast owner lane.
       - name: Release Radar — coherent-target ridge governance (Wave 2B)
         run: python -m pytest tests/test_release_cpi_coherent_governance.py tests/test_release_cpi_coherent_shadow.py -q
+      # A1 (#6868): Release Radar diagnostic truth — the additive per-item
+      # diagnostics adapter, its single producer seam (byte-identical artifacts
+      # with and without it), and the EXECUTED Release Radar renderer: the
+      # template's own script runs in Node (the pack runner's setup-node), and
+      # the suite FAILS rather than skips when node is absent under CI.
+      - name: Release Radar — diagnostic truth adapter, producer seam, executed renderer (#6868)
+        run: python -m pytest tests/test_release_diagnostics.py -q
 
   unrun-brain-desks:
     # master brain / AI desk / alt-data / risk brains behind the shipped desk verdicts.
