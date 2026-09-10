@@ -360,16 +360,26 @@ def test_page_renders_without_template_errors():
 _BLIND_CAVEAT = (
     "BLIND to slow/options-calm flushes (e.g. it did NOT lead the 2026-06-24 cascade)."
 )
+_BLIND_CAVEAT_ZH = "对缓慢/期权平静式下跌无效（例如未能领先 2026-06-24 的下跌）。"
 _IMPULSE_EDGE = (
     "Forward de-risk window from a verified LEADING precursor cross "
     "(impulse radar). Holdout-validated, leak-free; act early — the "
     "edge decays in ~2-4 days. " + _BLIND_CAVEAT
+)
+_IMPULSE_EDGE_ZH = (
+    "来自经验证的领先前兆突破的前瞻减仓窗口（脉冲雷达）。"
+    "已通过留出样本、无前视；应尽早行动 — 优势在约 2-4 天内衰减。"
+    + _BLIND_CAVEAT_ZH
 )
 _EMERGING_DETAIL = (
     "Utilities (Equal-Weight) entered the emerging phase — accelerating "
     "relative strength before it is extended (score 38) — held 2 consecutive "
     "sessions (constructive label shifts wait for a second session; risk "
     "label shifts fire immediately)."
+)
+_EMERGING_DETAIL_ZH = (
+    "公用事业（等权） 进入「新兴」阶段 — 相对强度加速且尚未过度延展（评分 38），"
+    "已连续 2 个交易日确认（进取方向需连续确认，风险方向即时）。"
 )
 
 
@@ -379,7 +389,8 @@ def _render(payload: dict) -> str:
     return env.get_template("alerts.html.j2").render(**payload)
 
 
-def _synthetic_card(*, detail: str, note: str) -> dict:
+def _synthetic_card(*, detail: str, note: str,
+                    detail_zh: str | None = None, note_zh: str | None = None) -> dict:
     return {
         "source": "themes", "type": "theme_emerging", "asset": "util",
         "source_icon": "🧺", "source_label": "Theme Rotation",
@@ -389,17 +400,18 @@ def _synthetic_card(*, detail: str, note: str) -> dict:
         "date_precision": "date",
         "headline": "Utilities (Equal-Weight) is emerging",
         "headline_zh": "公用事业（等权）进入新兴阶段",
-        "detail": detail, "detail_zh": detail,
+        "detail": detail, "detail_zh": detail_zh if detail_zh is not None else detail,
         "action": "watch", "action_zh": "观察",
         "cross_asset_tag": "neutral", "link": "sector_central.html",
-        "priority": 40,
+        "priority": 40, "tier": "watch",
         "priority_components": {
             "conviction": (22, "watch"), "severity": (18, "major"),
             "recency": (20, "fresh"), "cross_asset": (0, "neutral"),
         },
         "cluster": "rotation", "ts": "2026-06-14", "alert_id": "deadbeef0001",
         "validation": {
-            "verdict": "calibrated", "note": note, "note_zh": note,
+            "verdict": "calibrated", "note": note,
+            "note_zh": note_zh if note_zh is not None else note,
             "hit": None, "ic": None, "dsr": None, "horizon": None,
             "scorecard_name": None, "link": "signal_lab.html",
         },
@@ -414,30 +426,89 @@ def test_template_does_not_slice_page_copy_at_200_or_120():
 
 def test_impulse_radar_edge_carries_the_blind_caveat_past_the_old_cap():
     from engine.btc_alerts import _conviction
-    edge = _conviction("impulse_warn_down")["edge"]
+    conv = _conviction("impulse_warn_down")
+    edge, edge_zh = conv["edge"], conv["edge_zh"]
     assert _BLIND_CAVEAT in edge
+    assert _BLIND_CAVEAT_ZH in edge_zh
     assert len(edge) > 120
     assert edge[:120] != edge          # the old cap would have amputated it
+    assert edge_zh == _IMPULSE_EDGE_ZH
 
 
 def test_page_keeps_long_bodies_and_the_blind_caveat():
     assert len(_EMERGING_DETAIL) > 200
     assert len(_IMPULSE_EDGE) > 120
     p = _payload()
-    p["alerts"] = [_synthetic_card(detail=_EMERGING_DETAIL, note=_IMPULSE_EDGE)] + p["alerts"]
+    p["alerts"] = [_synthetic_card(
+        detail=_EMERGING_DETAIL, note=_IMPULSE_EDGE,
+        detail_zh=_EMERGING_DETAIL_ZH, note_zh=_IMPULSE_EDGE_ZH,
+    )] + p["alerts"]
     html = _render(p)
     assert "{{" not in html and "Undefined" not in html
     assert _BLIND_CAVEAT in html
+    assert _BLIND_CAVEAT_ZH in html
     assert _EMERGING_DETAIL in html
+    assert _EMERGING_DETAIL_ZH in html
     # red-on-revert: a 200/120 slice would leave the EN span at exactly those lengths
     import re
     en_spans = re.findall(r'<span class="l-en">(.*?)</span>', html, flags=re.S)
+    zh_spans = re.findall(r'<span class="l-zh">(.*?)</span>', html, flags=re.S)
     matching_edge = [s for s in en_spans if s.startswith("Forward de-risk")]
     matching_detail = [s for s in en_spans if "entered the emerging phase" in s]
+    matching_edge_zh = [s for s in zh_spans if s.startswith("来自经验证的领先前兆")]
+    matching_detail_zh = [s for s in zh_spans if "进入「新兴」阶段" in s]
     assert matching_edge and _BLIND_CAVEAT in matching_edge[0]
     assert len(matching_edge[0]) != 120
     assert matching_detail and len(matching_detail[0]) != 200
     assert "wait for a second session" in matching_detail[0]
+    assert matching_edge_zh and matching_edge_zh[0] == _IMPULSE_EDGE_ZH
+    assert matching_detail_zh and matching_detail_zh[0] == _EMERGING_DETAIL_ZH
+
+
+def test_story_strip_ellipsizes_long_headlines_word_safe():
+    src = (config.ROOT / "templates" / "alerts.html.j2").read_text()
+    assert "top_headline[:70]" not in src
+    assert "(s.top_headline_zh or s.top_headline)[:70]" not in src
+    long_en = (
+        "Utilities (Equal-Weight) is emerging as leadership handoff continues "
+        "into a second confirmed session"
+    )
+    assert len(long_en) > 70
+    assert long_en[69].isalnum() and long_en[70].isalnum()
+    long_zh = (
+        "公用事业（等权）进入新兴阶段并且相对强度仍在加速尚未过度延展"
+        "需要连续两个交易日确认进取方向不得即时报为领涨"
+        "领涨交接仍在进行中请勿把未确认的翻转当成已完成的轮动"
+    )
+    assert len(long_zh) > 70
+    p = _payload()
+    p["storylines"] = [{
+        "cluster": "rotation",
+        "label": "Sector & theme rotation", "label_zh": "板块与主题轮动",
+        "icon": "🔄",
+        "gist": "leadership is handing off between themes",
+        "gist_zh": "领涨在主题之间交接",
+        "count": 1, "act": 0, "critical": 0, "recurring": 0, "persisting": 0,
+        "top_headline": long_en, "top_headline_zh": long_zh,
+        "assets": ["UTIL"],
+    }]
+    html = _render(p)
+    import re
+    block = re.search(r'<div class="st-line">(.*?)</div>', html, flags=re.S)
+    assert block, "story strip headline missing"
+    en = re.search(r'<span class="l-en">(.*?)</span>', block.group(1), flags=re.S)
+    zh = re.search(r'<span class="l-zh">(.*?)</span>', block.group(1), flags=re.S)
+    assert en and zh
+    en_txt, zh_txt = en.group(1), zh.group(1)
+    assert en_txt.endswith("…")
+    assert zh_txt.endswith("…")
+    assert long_en[:70] not in en_txt          # naive mid-word slice is gone
+    assert en_txt[:-1].endswith("continues")   # backed up to the last full word
+    assert "into" not in en_txt
+    assert zh_txt.endswith("…")
+    assert long_zh.startswith(zh_txt[:-1])     # CJK has no spaces; char + ellipsis
+    assert len(zh_txt) <= 70
+
 
 
 def test_macro_raw_rewrites_transition_enum_in_detail(tmp_path, monkeypatch):
@@ -466,7 +537,8 @@ def test_macro_raw_rewrites_transition_enum_in_detail(tmp_path, monkeypatch):
 def test_enum_en_maps_nfci_and_transition():
     assert at.enum_en("nfci", "loose") == "easy"
     assert at.enum_en("transition", "TRANSITIONING") == "shifting"
-    assert at.enum_en("transition", "NEW_REGIME") == "a new regime"
+    assert at.enum_en("transition", "NEW_REGIME") == "new regime forming"
+    assert at.enum_en("cycle", "late") == "late"
     assert at.enum_zh("transition", "TRANSITIONING") == "转换中"
     assert at.enum_zh("cycle", "late") == "晚期"
     assert at.enum_en("nfci", "brand_new") == "brand_new"

@@ -304,7 +304,7 @@
         <span class="st-cnt">{{ s.count }}</span>
       </div>
       {% if s.gist %}<div class="st-gist">{{ t(s.gist, s.gist_zh) }}</div>{% endif %}
-      <div class="st-line">{{ t(s.top_headline[:70], (s.top_headline_zh or s.top_headline)[:70]) }}</div>
+      <div class="st-line">{{ t(s.top_headline|truncate(70, false, '…', 0), (s.top_headline_zh or s.top_headline)|truncate(70, false, '…', 0)) }}</div>
       <div class="st-tags">
         {% if s.act %}<span class="st-tag act">{{ icon('accel', 'fic') }} {{ s.act }} {{ t('act','执行') }}</span>{% endif %}
         {% if s.critical %}<span class="st-tag act">{{ s.critical }} {{ t('critical','关键') }}</span>{% endif %}
@@ -334,7 +334,7 @@
     <div class="cell">
       <div class="k">{{ t('Risk backdrop','风险背景') }}</div>
       <div class="vv">{{ t('recession','衰退') }}: {{ t(risk_backdrop.recession_band or '—', risk_backdrop.recession_band_zh or risk_backdrop.recession_band or '—') }}</div>
-      <div class="vsub">{{ t('drawdown','回撤') }}: {{ t(risk_backdrop.drawdown_band or '—', risk_backdrop.drawdown_band_zh or risk_backdrop.drawdown_band or '—') }} · {{ t('credit conditions','金融条件') }}: {{ t(risk_backdrop.nfci_state_en or risk_backdrop.nfci_state or '—', risk_backdrop.nfci_state_zh or risk_backdrop.nfci_state or '—') }}{{ help('Chicago Fed National Financial Conditions Index — easy (loose) means credit is readily available; tight means stressed.','芝加哥联储全国金融状况指数 — 宽松表示信贷容易获得；收紧表示承压。') }}</div>
+      <div class="vsub">{{ t('drawdown','回撤') }}: {{ t(risk_backdrop.drawdown_band or '—', risk_backdrop.drawdown_band_zh or risk_backdrop.drawdown_band or '—') }} · {{ t('financial conditions','金融条件') }}: {{ t(risk_backdrop.nfci_state_en or risk_backdrop.nfci_state or '—', risk_backdrop.nfci_state_zh or risk_backdrop.nfci_state or '—') }}{{ help('Chicago Fed National Financial Conditions Index — easy (loose) means credit is readily available; tight means stressed.','芝加哥联储全国金融状况指数 — 宽松表示信贷容易获得；收紧表示承压。') }}</div>
     </div>
     <div class="cell">
       <div class="k">{{ t('Next catalyst','下一个催化剂') }} {{ help('The nearest high-impact US event. Acting INTO a major print (CPI/FOMC/auction) is itself a risk — size for the event, not just the signal.','最近的高影响美国事件。在重大数据（CPI/FOMC/拍卖）前行动本身即是风险 — 应为事件而非仅为信号定仓。') }}</div>

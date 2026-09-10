@@ -771,8 +771,9 @@ _QUAD_ZH = {"Goldilocks": "金发经济", "Reflation": "再通胀", "Inflation":
             "Stagflation": "滞胀", "Deflation": "通缩", "Disinflation": "去通胀",
             "Growth": "增长", "Slowdown": "放缓", "Recovery": "复苏", "Contraction": "收缩"}
 _CYCLE_ZH = {"early": "早期", "mid": "中期", "late": "晚期", "overdue": "逾期"}
+_CYCLE_EN = {"early": "early", "mid": "mid", "late": "late", "overdue": "overdue"}
 _TS_EN = {"STABLE": "steady", "WEAKENING": "weakening",
-          "TRANSITIONING": "shifting", "NEW_REGIME": "a new regime"}
+          "TRANSITIONING": "shifting", "NEW_REGIME": "new regime forming"}
 _TS_ZH = {"STABLE": "稳定", "WEAKENING": "走弱",
           "TRANSITIONING": "转换中", "NEW_REGIME": "新周期"}
 
@@ -793,7 +794,7 @@ def enum_en(kind: str, value):
     through so a new upstream state degrades to English, never crashes."""
     if value is None:
         return None
-    return {"nfci": _NFCI_EN, "transition": _TS_EN}.get(kind, {}).get(value, value)
+    return {"nfci": _NFCI_EN, "transition": _TS_EN, "cycle": _CYCLE_EN}.get(kind, {}).get(value, value)
 
 
 # RECURRENCE IS NOT PERSISTENCE (2026-08-20).
