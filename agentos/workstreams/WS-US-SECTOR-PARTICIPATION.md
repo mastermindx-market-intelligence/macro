@@ -25,14 +25,16 @@ waves:
       its finite read-only source/input/access preflight and Sol's same-carrier
       exact-path clearance before product source edits.
 next_action: >
-  Publish the bounded records and request one included-capacity Terra builder.
-  Reconcile actual receiver and continuation on the new exact child root;
-  adjudicate preflight rather than repeating broad competitor research.
+  Reconcile actual placement and the first preflight return on Mastermind X
+  C0BSBM78V1N root 1789063697.492969 for
+  us-sector-participation-w1-20260910-sol-001. Consume the local input receipt;
+  Sol adjudicates exact source paths before product source edits.
 decisions:
   - DEC:SKYLIT-INTEGRATE-EXISTING-SECTOR-INTELLIGENCE
 artifacts:
   - research/skylit/INTEGRATION_RULING_2026-09-10.md
   - research/skylit/US_SECTOR_PARTICIPATION_W1_2026-09-10.md
+  - research/skylit/LOCAL_INPUT_PREFLIGHT_2026-09-10.md
 landmines:
   - Current/reference roster reconstruction is not historic constituent membership or point-in-time replay.
   - A builder output-directory override does not isolate the existing grader and event-store writers.
@@ -54,3 +56,9 @@ The existing program is verified by WS-INSTITUTIONAL-PRODUCT-EXPERIENCE-V2. That
 Record basis: Mastermind protected `dd553d1b0b8eed9511da2d3d5ec02cc9cd8edca1`, Macro implementation archaeology `11e145774d6193bf777ed1d355173a27c6ba693d`. Actual source pickup must refresh the relevant material code and custody.
 
 Completion: real existing inputs through the original producer/consumer/publication path to the usable page, truthful null/stale/reconstructed-history states, preserved entitlement and old-field/grader invariance, independent review, current required CI and actual served-browser proof. A docs PR or green fixture does not satisfy this.
+
+## Latest bounded evidence
+
+Macro #7035 carries the original four-record head `e204242e6e3bd26a45f272a30aa235278062e347`. The exact W1 capacity request was sent and read back on `C0BSBM78V1N / 1789063697.492969`; no receiver or START had returned at the latest recorded read. Placement is still pending, not execution.
+
+Read-only Mac inspection found 503 reference constituents and 370 price-history rows. That checkout ends September 4, 2026 versus the existing calendar's September 9 expectation. This is useful development input, not evidence that the production store is current or stale. Both input files were byte-identical after inspection. The full dated receipt and remaining preflight boundary are in `research/skylit/LOCAL_INPUT_PREFLIGHT_2026-09-10.md`.
