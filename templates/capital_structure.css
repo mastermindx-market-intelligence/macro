@@ -233,6 +233,10 @@ body.cs-page.cs-modal-open { overflow: hidden; }
   scroll-margin-top: 12px;
   scroll-margin-bottom: 120px;
 }
+#cs-policy-projection > div {
+  flex: 1 1 auto;
+  min-width: 0;
+}
 @media (max-width: 640px) {
   #cs-policy-projection {
     padding-bottom: 120px;

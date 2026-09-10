@@ -225,6 +225,26 @@ def _render_section(tmp_path, monkeypatch, payload) -> str:
     return _section(html)
 
 
+def _pin_builder_today(monkeypatch, day=TODAY):
+    """Pin the page builder's date.today() so render() cannot drift off TODAY."""
+    class FrozenDate(date):
+        @classmethod
+        def today(cls):
+            return day
+
+    monkeypatch.setattr(page_builder, "date", FrozenDate)
+
+
+def _write_auction_cache(root: Path, asof: date, records: list) -> Path:
+    path = (
+        root / "data" / "macro" / "auction_cache"
+        / f"upcoming_{asof.isoformat()}.json"
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(records), encoding="utf-8")
+    return path
+
+
 def test_1_schema_and_frozen_keys(monkeypatch):
     _patch_engines(
         monkeypatch,
@@ -236,6 +256,8 @@ def test_1_schema_and_frozen_keys(monkeypatch):
     assert payload["schema"] == SCHEMA
     assert payload["authority"] == "context_only"
     assert payload["is_context_only"] is True
+    assert "max_rows" not in payload
+    assert "max_rows" not in typed_unavailable(today=TODAY)
     rows = _all_rows(payload)
     assert rows, "expected at least one FOMC row"
     for row in rows:
@@ -482,6 +504,7 @@ def test_12_artifact_budget_and_atomic_write(tmp_path, monkeypatch, capsys):
     )
     monkeypatch.setattr(page_builder, "_policy_watch", lambda today=None: _stub_watch())
     _copy_templates(tmp_path)
+    _pin_builder_today(monkeypatch)
     page_builder.render(tmp_path)
     path = tmp_path / "site" / "data" / "capital_policy_projection.json"
     body = path.read_bytes()
@@ -613,12 +636,12 @@ def test_15_section_raw_budget_holds_at_max_rows(tmp_path, monkeypatch):
         "themes": {},
         "upcoming_events": [
             _policy_event(
-                day=(TODAY + timedelta(days=34 + (i % 12))).isoformat(),
+                day=(TODAY + timedelta(days=33 + i)).isoformat(),
                 event_type="comment_close",
                 document_number=REAL_FR_DOC,
                 title="disclosure comment",
             )
-            for i in range(40)
+            for i in range(13)
         ],
         "entity_list_events": [],
         "latency_summary": {},
@@ -634,7 +657,7 @@ def test_15_section_raw_budget_holds_at_max_rows(tmp_path, monkeypatch):
         assert row["source_url"] == f"https://www.federalregister.gov/d/{REAL_FR_DOC}"
         assert len(row["source_url"]) == 44
         assert row["window_id"] == "disclosure_regulatory"
-        assert row["days_out"] >= 34
+        assert row["days_out"] >= 33
     html = _render_section(tmp_path, monkeypatch, payload)
     n = len(html.encode("utf-8"))
     assert n <= SECTION_BUDGET_BYTES, n
@@ -818,7 +841,7 @@ def test_r3_federal_register_document_url(monkeypatch):
             )],
             "entity_list_events": [_policy_event(
                 day="2026-09-30", event_type="entity_list",
-                document_number="2026-54321",
+                document_number="2026-54321", is_upcoming=True,
             )],
             "latency_summary": {},
             "note": "fixture",
@@ -1003,8 +1026,8 @@ def test_r4_6_engine_carries_no_denylisted_token(tmp_path, monkeypatch):
     assert leaked == [], leaked
 
 
-def test_r4_7_ceiling_note_carries_the_merged_chips_wording(tmp_path, monkeypatch):
-    """R3: the section's ceiling note is not thinner than the chip above it."""
+def test_r4_7_ceiling_note_omits_the_public_record_clause(tmp_path, monkeypatch):
+    """The section note is the authority clause only, not the chip's live wording."""
     assert NOTE_EN == "Not a rating, not a trade call."
     assert NOTE_ZH == "不是评级，也不是交易建议。"
     # The heading already carries the "dated steps on the public record"
@@ -1106,6 +1129,7 @@ def test_r8_policy_calendar_runs_once_per_build(tmp_path, monkeypatch):
         "engine.capital_policy_projection.config.ROOT", tmp_path,
     )
     _copy_templates(tmp_path)
+    _pin_builder_today(monkeypatch)
     page_builder.render(tmp_path)
     assert calls["n"] == 1
 
@@ -1183,8 +1207,8 @@ def test_r6_2_section_uses_one_chinese_name_for_the_object(tmp_path, monkeypatch
     assert section.count("节点") >= 3, section.count("节点")
 
 
-def test_r6_3_entity_list_step_reads_as_a_plain_sentence(monkeypatch):
-    """R6(R4 c): the export-control row is a sentence, not a label fragment."""
+def test_r6_3_export_control_copy_follows_is_upcoming(monkeypatch):
+    """Export-control copy is typed by is_upcoming, never Entity List."""
     _patch_engines(
         monkeypatch,
         events=[],
@@ -1192,19 +1216,33 @@ def test_r6_3_entity_list_step_reads_as_a_plain_sentence(monkeypatch):
             "asof": TODAY.isoformat(),
             "themes": {},
             "upcoming_events": [],
-            "entity_list_events": [_policy_event(
-                day="2026-09-30", event_type="entity_list",
-                document_number=REAL_FR_DOC,
-            )],
+            "entity_list_events": [
+                _policy_event(
+                    day="2026-09-30", event_type="entity_list",
+                    document_number="2026-19427", is_upcoming=True,
+                ),
+                _policy_event(
+                    day=TODAY.isoformat(), event_type="entity_list",
+                    document_number="2026-19428", is_upcoming=False,
+                ),
+            ],
             "latency_summary": {},
             "note": "fixture",
         },
     )
     payload = project(today=TODAY)
-    row = _window(payload, "export_control")["rows"][0]
-    assert row["event_en"] == "An Entity List update takes effect"
-    assert row["event_zh"] == "实体清单更新生效"
-    assert "已定日期" not in row["event_zh"]
+    rows = _window(payload, "export_control")["rows"]
+    assert [r["event_en"] for r in rows] == [
+        "A Federal Register document is published",
+        "Comment period closes on a Federal Register document",
+    ]
+    assert [r["event_zh"] for r in rows] == [
+        "一份联邦公报文件发布",
+        "一份联邦公报文件的意见征询期截止",
+    ]
+    blob = json.dumps(payload, ensure_ascii=False)
+    assert "Entity List" not in blob
+    assert "实体清单" not in blob
 
 
 def test_r6_4_auction_chinese_distinguishes_note_from_bond(monkeypatch):
@@ -1292,6 +1330,7 @@ def test_r6_6_the_build_memo_refuses_a_second_day(tmp_path, monkeypatch):
     monkeypatch.setattr("engine.capital_policy_projection.config.ROOT", tmp_path)
     monkeypatch.setattr(page_builder, "_policy_watch", lambda today=None: _stub_watch())
     _copy_templates(tmp_path)
+    _pin_builder_today(monkeypatch)
 
     seen = {}
     real_projection = page_builder._policy_projection
@@ -1299,10 +1338,12 @@ def test_r6_6_the_build_memo_refuses_a_second_day(tmp_path, monkeypatch):
     def capture(today=None):
         import engine.policy_calendar as _pc
         seen["fn"] = _pc.compute_policy_calendar
+        seen["today"] = today
         return real_projection(today=today)
 
     monkeypatch.setattr(page_builder, "_policy_projection", capture)
     page_builder.render(tmp_path)
+    assert seen["today"] == TODAY
 
     # The guard did not fire on the real build: one call, and the window the
     # policy calendar feeds is filled rather than blanked.
@@ -1321,3 +1362,213 @@ def test_r6_6_the_build_memo_refuses_a_second_day(tmp_path, monkeypatch):
     with pytest.raises(RuntimeError, match="one day only"):
         wrapper(today=other_day)
     assert calls["n"] == 1
+
+
+def test_heal_export_control_copy_is_type_neutral(monkeypatch):
+    """REQUIRED 1 / A1: each reachable entity_list shape has a true sentence."""
+    _patch_engines(
+        monkeypatch,
+        events=[],
+        calendar={
+            "asof": TODAY.isoformat(),
+            "themes": {},
+            "upcoming_events": [],
+            "entity_list_events": [_policy_event(
+                day="2026-09-30", event_type="entity_list",
+                document_number=REAL_FR_DOC, is_upcoming=True,
+                title="Addition of Entities to the Entity List",
+            )],
+            "latency_summary": {},
+            "note": "fixture",
+        },
+    )
+    upcoming = project(today=TODAY)
+    row = _window(upcoming, "export_control")["rows"][0]
+    assert row["event_en"] == "Comment period closes on a Federal Register document"
+    assert row["event_zh"] == "一份联邦公报文件的意见征询期截止"
+    assert "Entity List" not in json.dumps(upcoming)
+
+    _patch_engines(
+        monkeypatch,
+        events=[],
+        calendar={
+            "asof": TODAY.isoformat(),
+            "themes": {},
+            "upcoming_events": [],
+            "entity_list_events": [_policy_event(
+                day=TODAY.isoformat(), event_type="entity_list",
+                document_number="2026-19428", is_upcoming=False,
+                title="Entity List investigation notice",
+            )],
+            "latency_summary": {},
+            "note": "fixture",
+        },
+    )
+    published = project(today=TODAY)
+    row = _window(published, "export_control")["rows"][0]
+    assert row["event_en"] == "A Federal Register document is published"
+    assert row["event_zh"] == "一份联邦公报文件发布"
+    blob = json.dumps(published, ensure_ascii=False)
+    assert "Entity List" not in blob
+    assert "实体清单" not in blob
+
+
+def test_heal_same_date_comment_close_rows_collapse(monkeypatch):
+    """REQUIRED 3 / A3: seven same-day comment_close rows collapse; auctions do not."""
+    docs = [
+        "2026-70007", "2026-70001", "2026-70003", "2026-70002",
+        "2026-70006", "2026-70005", "2026-70004",
+    ]
+    _patch_engines(
+        monkeypatch,
+        events=[
+            _auction_event("2026-09-20", tenor="10", kind="Note"),
+            _auction_event("2026-09-20", tenor="30", kind="Bond"),
+            _macro_event("FOMC", "2026-09-20", label="FOMC decision"),
+        ],
+        calendar={
+            "asof": TODAY.isoformat(),
+            "themes": {},
+            "upcoming_events": [
+                _policy_event(
+                    day="2026-09-20", event_type="comment_close",
+                    document_number=doc,
+                )
+                for doc in docs
+            ],
+            "entity_list_events": [],
+            "latency_summary": {},
+            "note": "fixture",
+        },
+    )
+    payload = project(today=TODAY)
+    disc = _window(payload, "disclosure_regulatory")
+    assert len(disc["rows"]) == 1
+    row = disc["rows"][0]
+    assert row["event_en"] == (
+        "Comment periods close on 7 Federal Register documents"
+    )
+    assert row["event_zh"] == "7 份联邦公报文件的意见征询期截止"
+    assert row["source_url"] == "https://www.federalregister.gov/d/2026-70001"
+    treasury = _window(payload, "treasury_supply")
+    assert len(treasury["rows"]) == 2
+    rates = _window(payload, "rates_policy")
+    assert len(rates["rows"]) == 1
+    assert "max_rows" not in payload
+
+
+def test_heal_hidden_implies_a_surviving_row(monkeypatch):
+    """REQUIRED 7: hidden>0 cannot empty a window; the dead disjunct is gone."""
+    events = [
+        _macro_event("FOMC", (TODAY + timedelta(days=i)).isoformat(),
+                     label="FOMC decision")
+        for i in range(20)
+    ]
+    _patch_engines(monkeypatch, events=events, calendar=_empty_calendar())
+    payload = project(today=TODAY)
+    rates = _window(payload, "rates_policy")
+    assert rates["more_en"]
+    assert len(rates["rows"]) >= 1
+    assert rates["state"] == "present"
+    source = (ROOT / "engine" / "capital_policy_projection.py").read_text(
+        encoding="utf-8"
+    )
+    assert "or hidden[window_id]" not in source
+
+
+def test_heal_auction_cache_survives_event_calendar_failure(tmp_path, monkeypatch):
+    """REQUIRED 5 / A5 half 1: the auction window renders from its own cache."""
+    def boom(*args, **kwargs):
+        raise RuntimeError("dated-event calendar missing")
+
+    monkeypatch.setattr("engine.event_calendar.us_macro_events", boom)
+    monkeypatch.setattr(engine_projection, "_LIVE_US_MACRO_EVENTS", boom)
+    monkeypatch.setattr("engine.capital_policy_projection.config.ROOT", tmp_path)
+    monkeypatch.setattr(
+        "engine.policy_calendar.compute_policy_calendar",
+        lambda df=None, today=None: _empty_calendar(),
+    )
+    _write_auction_cache(tmp_path, TODAY, [{
+        "securityType": "Note",
+        "auctionDate": "2026-09-20",
+        "securityTerm": "10-Year",
+    }])
+    payload = project(today=TODAY)
+    treasury = _window(payload, "treasury_supply")
+    assert treasury["state"] == "present"
+    assert treasury["rows"][0]["event_en"] == "Treasury auctions 10-Year Note"
+    rates = _window(payload, "rates_policy")
+    assert rates["state"] == "unavailable"
+    assert rates["reason_en"] == _READ_FAILED_EVENTS[0]
+    assert treasury["reason_en"] != _READ_FAILED_EVENTS[0]
+
+
+def test_heal_auction_reason_only_when_auction_cache_fails(tmp_path, monkeypatch):
+    """REQUIRED 5 / A5 half 2: _READ_FAILED_AUCTIONS only when the cache fails."""
+    monkeypatch.setattr("engine.capital_policy_projection.config.ROOT", tmp_path)
+    monkeypatch.setattr(
+        "engine.policy_calendar.compute_policy_calendar",
+        lambda df=None, today=None: _empty_calendar(),
+    )
+    payload = project(today=TODAY)
+    treasury = _window(payload, "treasury_supply")
+    assert treasury["state"] == "unavailable"
+    assert treasury["reason_en"] == _READ_FAILED_AUCTIONS[0]
+    assert treasury["reason_zh"] == _READ_FAILED_AUCTIONS[1]
+    assert treasury["reason_en"] != _READ_FAILED_EVENTS[0]
+
+
+def test_heal_render_resolves_one_day_for_both_callees(tmp_path, monkeypatch):
+    """REQUIRED 6 / A6: a clock that advances between the two calls still agrees."""
+    calls = {"n": 0}
+
+    class Advancing(date):
+        @classmethod
+        def today(cls):
+            d = TODAY + timedelta(days=calls["n"])
+            calls["n"] += 1
+            return d
+
+    monkeypatch.setattr(page_builder, "date", Advancing)
+    monkeypatch.setattr(engine_projection, "date", Advancing)
+    monkeypatch.setattr(
+        "engine.policy_calendar.compute_policy_calendar",
+        lambda df=None, today=None: {
+            "asof": (today or TODAY).isoformat() if not isinstance(today, date)
+            else today.isoformat(),
+            "themes": {},
+            "upcoming_events": [_policy_event(
+                day=(TODAY + timedelta(days=16)).isoformat(),
+                event_type="comment_close",
+                document_number=REAL_FR_DOC,
+            )],
+            "entity_list_events": [],
+            "latency_summary": {},
+            "note": "fixture",
+        },
+    )
+    monkeypatch.setattr(
+        "engine.event_calendar.us_macro_events",
+        lambda today=None, horizon_days=14, use_fred=True: [],
+    )
+    monkeypatch.setattr("engine.capital_policy_projection.config.ROOT", tmp_path)
+    _copy_templates(tmp_path)
+    page_builder.render(tmp_path)
+    artifact = json.loads(
+        (tmp_path / "site" / "data" / "capital_policy_projection.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert artifact["asof"] == TODAY.isoformat()
+    assert _window(artifact, "disclosure_regulatory")["state"] == "present"
+    assert calls["n"] == 1
+
+
+def test_heal_empty_reason_is_the_frozen_sentence(monkeypatch):
+    """REQUIRED 9: empty EN is the frozen sentence; ZH is unchanged."""
+    _patch_engines(monkeypatch, events=[], calendar=_empty_calendar())
+    payload = project(today=TODAY)
+    rates = _window(payload, "rates_policy")
+    assert rates["reason_en"] == "No dated step is pending right now."
+    assert rates["reason_zh"] == "目前没有待办的既定日期节点。"
+

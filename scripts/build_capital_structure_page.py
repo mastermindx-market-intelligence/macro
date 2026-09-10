@@ -287,9 +287,14 @@ def render(root: Path) -> Path:
         return _cal_once["value"]
 
     _pc.compute_policy_calendar = _compute_once
+    # One wall-clock read for the whole page. `_cal_once["day"]` is not
+    # relied on: it stays None when the parquet is absent or `_policy_watch`
+    # is stubbed, and a clock that advances between the two callees would
+    # otherwise split the chip and the section across midnight.
+    day = date.today()
     try:
-        watch = _policy_watch()
-        payload = _policy_projection()
+        watch = _policy_watch(today=day)
+        payload = _policy_projection(today=day)
     finally:
         _pc.compute_policy_calendar = _orig_cal
     html = env.get_template("capital_structure.html.j2").render(

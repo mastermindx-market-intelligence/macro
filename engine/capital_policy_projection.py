@@ -123,16 +123,17 @@ _AUCTION_TYPES = frozenset({"Note", "Bond", "TIPS", "FRN"})
 _AUCTION_LABEL_RE = re.compile(r"^(\d+)-Year (Note|Bond|TIPS|FRN)$")
 
 # Authority ceiling. The heading already says these are dated steps on the
-# public record, so the note carries only the ceiling clause, in the exact
-# wording the merged Policy watch chip ships live on main. The frozen §4 string
-# has a third clause that cannot be written anywhere in this packet: §2.3
-# denylists the EN and the ZH word it is built from. The PR body's numbered
-# DEVIATIONS record the drop and the contradiction.
+# public record, so the note carries only the ceiling clause. This string is
+# not the merged Policy watch chip's live wording (main ships "Not a rating
+# and not a trade call."). The frozen §4 string has a third clause that cannot
+# be written anywhere in this packet: §2.3 denylists the EN and the ZH word it
+# is built from. The PR body's numbered DEVIATIONS record the drop and the
+# contradiction.
 NOTE_EN = "Not a rating, not a trade call."
 NOTE_ZH = "不是评级，也不是交易建议。"
 
 _EMPTY_REASON = (
-    "None is pending.",
+    "No dated step is pending right now.",
     "目前没有待办的既定日期节点。",
 )
 _READ_FAILED_EVENTS = (
@@ -291,10 +292,21 @@ def _copy_for(etype: str, ev: dict) -> tuple[str, str] | None:
             "一项规则生效",
         )
     if etype == "entity_list":
-        return (
-            "An Entity List update takes effect",
-            "实体清单更新生效",
-        )
+        # Typed by the event's is_upcoming flag (policy_calendar), never by
+        # days_out. The matched documents include notices and investigations,
+        # so the copy is type-neutral; the window label carries the subject.
+        flag = ev.get("is_upcoming")
+        if flag is True:
+            return (
+                "Comment period closes on a Federal Register document",
+                "一份联邦公报文件的意见征询期截止",
+            )
+        if flag is False:
+            return (
+                "A Federal Register document is published",
+                "一份联邦公报文件发布",
+            )
+        return None
     return None
 
 
@@ -450,13 +462,43 @@ def _more_copy(hidden: int) -> tuple[str, str]:
     )
 
 
+def _collapse_comment_close(rows: list[dict]) -> list[dict]:
+    """Same-date comment_close rows that render identically collapse to one.
+
+    Auction and FOMC rows never collapse. The count lives in the copy; the
+    frozen §4 object gains no key. The surviving citation is the lowest
+    source_url of the group.
+    """
+    kept: list[dict] = []
+    groups: dict[tuple, list[dict]] = defaultdict(list)
+    for row in rows:
+        if row.get("_etype") != "comment_close":
+            kept.append(row)
+            continue
+        key = (row["date"], row["window_id"], row["event_en"], row["event_zh"])
+        groups[key].append(row)
+    for group in groups.values():
+        if len(group) == 1:
+            kept.append(group[0])
+            continue
+        group.sort(key=lambda r: r["source_url"])
+        survivor = dict(group[0])
+        n = len(group)
+        survivor["event_en"] = (
+            f"Comment periods close on {n} Federal Register documents"
+        )
+        survivor["event_zh"] = f"{n} 份联邦公报文件的意见征询期截止"
+        kept.append(survivor)
+    return kept
+
+
 def _clip_per_window(collected: list[dict]) -> tuple[dict[str, list[dict]], bool, dict[str, int]]:
     """Keep MAX_ROWS across the section; never clip a window with rows to zero."""
     by_window: dict[str, list[dict]] = {wid: [] for wid in WINDOWS}
     for row in collected:
         by_window[row["window_id"]].append(row)
     for wid in WINDOWS:
-        by_window[wid].sort(key=lambda r: (r["date"], r["_etype"]))
+        by_window[wid].sort(key=lambda r: (r["date"], r["_etype"], r["source_url"]))
 
     total = sum(len(rows) for rows in by_window.values())
     hidden = {wid: 0 for wid in WINDOWS}
@@ -471,7 +513,7 @@ def _clip_per_window(collected: list[dict]) -> tuple[dict[str, list[dict]], bool
         rows = by_window[wid]
         firsts[wid] = rows[0]
         extras.extend(rows[1:])
-    extras.sort(key=lambda r: (r["date"], r["_etype"]))
+    extras.sort(key=lambda r: (r["date"], r["_etype"], r["source_url"]))
 
     kept_extra: dict[str, list[dict]] = {wid: [] for wid in WINDOWS}
     for row in extras:
@@ -540,7 +582,6 @@ def typed_unavailable(today: date | None = None) -> dict:
         "truncated": False,
         "truncation_en": "",
         "truncation_zh": "",
-        "max_rows": MAX_ROWS,
         "row_count": 0,
     }
 
@@ -615,7 +656,7 @@ def project(today: date | None = None, horizon_days: int | None = None) -> dict:
 
     if not event_unavailable:
         _absorb(events_no_auction)
-        _absorb(auction_events)
+    _absorb(auction_events)
 
     if not policy_unavailable and cal is not None:
         _absorb(
@@ -623,7 +664,8 @@ def project(today: date | None = None, horizon_days: int | None = None) -> dict:
             + list(cal.get("entity_list_events") or [])
         )
 
-    collected.sort(key=lambda r: (r["date"], r["_etype"]))
+    collected = _collapse_comment_close(collected)
+    collected.sort(key=lambda r: (r["date"], r["_etype"], r["source_url"]))
     by_window, truncated, hidden = _clip_per_window(collected)
 
     windows = []
@@ -639,15 +681,19 @@ def project(today: date | None = None, horizon_days: int | None = None) -> dict:
             # section read successfully one window above.
             state, reason = "unavailable", _READ_FAILED_AUCTIONS
             rows, more = [], ("", "")
-        elif window_id in _EVENT_WINDOWS and event_unavailable:
-            state, reason = "unavailable", _READ_FAILED_EVENTS
-            rows, more = [], ("", "")
         elif window_id in _POLICY_WINDOWS and policy_unavailable:
             state, reason = "unavailable", _READ_FAILED_POLICY
             rows, more = [], ("", "")
         elif rows:
             state, reason = "present", ("", "")
-        elif dropped[window_id] or hidden[window_id]:
+        elif (
+            window_id in _EVENT_WINDOWS
+            and window_id != _AUCTION_WINDOW
+            and event_unavailable
+        ):
+            state, reason = "unavailable", _READ_FAILED_EVENTS
+            rows, more = [], ("", "")
+        elif dropped[window_id]:
             state, reason = "unavailable", _NO_RECORD
         elif unsourced[window_id]:
             # Every step this window saw belongs to an event type wired to no
@@ -679,6 +725,5 @@ def project(today: date | None = None, horizon_days: int | None = None) -> dict:
         "truncated": truncated,
         "truncation_en": truncation[0],
         "truncation_zh": truncation[1],
-        "max_rows": MAX_ROWS,
         "row_count": row_count,
     }

@@ -3,7 +3,6 @@
   "authority": "context_only",
   "horizon_days": 45,
   "is_context_only": true,
-  "max_rows": 12,
   "note_en": "Not a rating, not a trade call.",
   "note_zh": "不是评级，也不是交易建议。",
   "row_count": 1,
