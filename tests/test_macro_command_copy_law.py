@@ -2512,6 +2512,34 @@ def _headers_in_text(text: str, headers: tuple[str, ...], locale: str) -> bool:
     return all(h in blob for h in headers)
 
 
+def _canonical_member_count(
+        text: str, headers: tuple[str, ...], locale: str) -> int:
+    blob = text.casefold() if locale == "en" else text
+    n = 0
+    for h in headers:
+        needle = h.casefold() if locale == "en" else h
+        if needle in blob:
+            n += 1
+    return n
+
+
+def _canonical_tuple_in_order(
+        receipt: list[str], headers: tuple[str, ...], locale: str) -> bool:
+    blob = " ".join(receipt)
+    if locale == "en":
+        blob = blob.casefold()
+        needles = [h.casefold() for h in headers]
+    else:
+        needles = list(headers)
+    pos = 0
+    for needle in needles:
+        i = blob.find(needle, pos)
+        if i < 0:
+            return False
+        pos = i + len(needle)
+    return True
+
+
 def _leading_non_numeric_tokens(full: str, locale: str) -> list[str]:
     out: list[str] = []
     for tok in full.split():
@@ -2582,8 +2610,10 @@ def test_method_table_390_contribution_union() -> None:
     table_probes = probes.get("method_table_390_text") or {}
     assert table_probes, "method_table_390_text probe missing"
     vis_map = probes.get("method_table_390_visible") or {}
+    probe_headers = probes.get("method_table_390_headers") or {}
     from scripts.capture_macro_command_p5 import method_table_filename
     unions: dict[tuple, dict[str, str]] = defaultdict(dict)
+    species_census: dict[tuple[str, str], int] = defaultdict(int)
     for key, full in table_probes.items():
         m = re.match(
             r"method_table_390-(.+?)(?:__([A-Za-z0-9_.-]+))?-"
@@ -2593,6 +2623,7 @@ def test_method_table_390_contribution_union() -> None:
         assert ekey, (key, "probe key missing element_key")
         species, classified_headers, demand_decimals = _classify_method_table(
             full, locale)
+        species_census[(locale, species)] += 1
         start = by_file.get(method_table_filename(
             "start", slug, theme, locale, width, element_key=ekey))
         end = by_file.get(method_table_filename(
@@ -2618,6 +2649,7 @@ def test_method_table_390_contribution_union() -> None:
             assert vis_map[start["file"]] == start_vis, (
                 key, "probes map != manifest start")
         parts = [start_vis]
+        crop_states = [start]
         n = 1
         while True:
             mid = by_file.get(method_table_filename(
@@ -2630,6 +2662,7 @@ def test_method_table_390_contribution_union() -> None:
                 assert vis_map[mid["file"]] == mid_vis, (
                     key, f"probes map != manifest mid{n}")
             parts.append(mid_vis)
+            crop_states.append(mid)
             n += 1
         end_vis = ""
         if end is not None:
@@ -2639,9 +2672,43 @@ def test_method_table_390_contribution_union() -> None:
                 assert vis_map[end["file"]] == end_vis, (
                     key, "probes map != manifest end")
             parts.append(end_vis)
+            crop_states.append(end)
         union = " ".join(parts)
         unions[(slug, ekey, theme, width)][locale] = union
+        start_receipt = start.get("header_tokens")
+        assert isinstance(start_receipt, (list, tuple)) and len(start_receipt) > 0, (
+            key, "missing/empty header_tokens receipt")
+        start_receipt = [str(h) for h in start_receipt]
+        for st in crop_states:
+            rec = st.get("header_tokens")
+            assert isinstance(rec, (list, tuple)), (
+                key, st.get("file"), "header_tokens missing")
+            rec = [str(h) for h in rec]
+            assert rec == start_receipt, (
+                key, st.get("file"), rec, start_receipt,
+                "header_tokens != start")
+            assert st.get("header_cell_count") == len(rec), (
+                key, st.get("file"), st.get("header_cell_count"), len(rec),
+                "header_cell_count != len(header_tokens)")
+        stored = probe_headers.get(key)
+        assert stored == start_receipt, (
+            key, stored, start_receipt, "manifest start != probes headers")
+        joined = " ".join(start_receipt)
+        assert full.casefold().startswith(joined.casefold()), (
+            key, joined, "header_tokens not prefix of full probe text")
+        if species in ("composition", "changed", "coverage"):
+            assert _canonical_tuple_in_order(
+                start_receipt, classified_headers, locale), (
+                key, species, start_receipt, classified_headers,
+                "receipt missing canonical header tuple in order")
         if species == "other":
+            for sname, tup in (
+                    ("composition", _COMPOSITION_HEADERS[locale]),
+                    ("changed", _CHANGED_HEADERS[locale]),
+                    ("coverage", _COVERAGE_HEADERS[locale])):
+                n_hit = _canonical_member_count(full, tup, locale)
+                assert n_hit < len(tup) - 1, (
+                    key, "other near-miss of", sname, tup, n_hit)
             receipt = start.get("header_tokens")
             assert isinstance(receipt, (list, tuple)) and len(receipt) > 0, (
                 key, "other-species missing/empty header_tokens receipt")
@@ -2694,6 +2761,14 @@ def test_method_table_390_contribution_union() -> None:
         and locs["en"].casefold() == locs["zh"].casefold()
     ]
     assert not collisions, ("EN/ZH visible union not distinct", collisions[:8])
+    for loc in ("en", "zh"):
+        assert species_census[(loc, "composition")] >= 8, (
+            loc, "composition census floor",
+            species_census[(loc, "composition")])
+        assert species_census[(loc, "changed")] >= 10, (
+            loc, "changed census floor", species_census[(loc, "changed")])
+        assert species_census[(loc, "coverage")] >= 10, (
+            loc, "coverage census floor", species_census[(loc, "coverage")])
 
 
 @pytest.mark.needs_full_checkout("mockups")
@@ -3547,6 +3622,8 @@ def test_method_table_390_sweep_positions_collapses_or_fills() -> None:
     assert [p for p, _ in nth2] == ["start", "mid1", "end"]
     assert nth2[-1][1] == 264.0
     assert nth2[1][1] == 132.0
+    with pytest.raises(RuntimeError, match=r"scrollport too narrow for sweep"):
+        method_table_390_sweep_positions(400, 60, tname="narrow.png")
 
 
 def test_parse_method_table_name_rejects_keyless() -> None:

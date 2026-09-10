@@ -231,7 +231,8 @@ def method_table_filename(
 
 
 def method_table_390_sweep_positions(
-        scroll_width: float, client_width: float) -> list[tuple[str, float]]:
+        scroll_width: float, client_width: float, *,
+        tname: str = "") -> list[tuple[str, float]]:
     """(pos_tag, scrollLeft) for one overflowing method_table_390 instance.
 
     Fits (scrollWidth ≤ clientWidth + 1) → start only. Overflow → start at
@@ -247,6 +248,9 @@ def method_table_390_sweep_positions(
     cw = float(client_width or 0)
     if sw <= cw + 1.0:
         return [("start", 0.0)]
+    if cw <= 60:
+        raise RuntimeError(
+            f"{tname}: scrollport too narrow for sweep (cw={cw})")
     max_sl = max(0.0, sw - cw)
     if max_sl <= 0.0:
         return [("start", 0.0)]
@@ -1025,7 +1029,8 @@ def _state(filename: str, theme: str, locale: str, viewport: str,
                 "page_scroll_width", "matched", "element_key",
                 "visible_text_scope", "in_method_section",
                 "revealed", "reveal_ancestors", "census_path",
-                "census_visible", "visible_at_shot", "header_tokens"):
+                "census_visible", "visible_at_shot", "header_tokens",
+                "header_cell_count"):
         if info.get(key) is not None:
             row[key] = info[key]
     # content_overflows must be present on every crop (empty list is valid).
@@ -3999,9 +4004,9 @@ def _photograph_mq_table_390(
         """el => (el.innerText || '')
             .replace(/\\s+/g, ' ').trim()"""
     ) or "")
-    probes["method_table_390_text"][
-        f"method_table_390-{slug}__{element_key}-{theme}-{locale}-390"
-    ] = full_text
+    probe_key = (
+        f"method_table_390-{slug}__{element_key}-{theme}-{locale}-390")
+    probes["method_table_390_text"][probe_key] = full_text
     fit_rcpt = table.evaluate(
         """(el) => ({
             scrollWidth: el.scrollWidth,
@@ -4013,36 +4018,42 @@ def _photograph_mq_table_390(
     table.evaluate("el => { el.scrollLeft = 0; }")
     page.wait_for_timeout(40)
     text_zero = str(table.evaluate(_MQ_TABLE_VISIBLE_TEXT_JS, locale) or "")
+    raw_headers = table.evaluate(
+        """el => {
+            let cells = el.querySelectorAll('thead th');
+            if (!cells.length) {
+                const first = el.querySelector('tr');
+                cells = first
+                    ? first.querySelectorAll('th, td') : [];
+            }
+            const out = [];
+            for (const c of cells) {
+                const t = (c.innerText || '')
+                    .replace(/\\s+/g, ' ').trim();
+                if (t) out.push(t);
+            }
+            return out;
+        }"""
+    ) or []
+    header_tokens = [
+        str(t).strip() for t in raw_headers if str(t).strip()]
+    header_cell_count = len(header_tokens)
+    probes.setdefault("method_table_390_headers", {})[probe_key] = list(
+        header_tokens)
+    start_name = method_table_filename(
+        "start", slug, theme, locale, 390, element_key=element_key)
     if table_fits:
         positions: list[tuple[str, float]] = [("start", 0.0)]
     else:
         positions = method_table_390_sweep_positions(
             fit_rcpt.get("scrollWidth") or 0,
             fit_rcpt.get("clientWidth") or 0,
+            tname=start_name,
         )
     for pos, scroll_to in positions:
         tname = method_table_filename(
             pos, slug, theme, locale, 390, element_key=element_key)
         print(f"capture {tname}", flush=True)
-        raw_headers = table.evaluate(
-            """el => {
-                let cells = el.querySelectorAll('thead th');
-                if (!cells.length) {
-                    const first = el.querySelector('tr');
-                    cells = first
-                        ? first.querySelectorAll('th, td') : [];
-                }
-                const out = [];
-                for (const c of cells) {
-                    const t = (c.innerText || '')
-                        .replace(/\\s+/g, ' ').trim();
-                    if (t) out.push(t);
-                }
-                return out;
-            }"""
-        ) or []
-        header_tokens = [
-            str(t).strip() for t in raw_headers if str(t).strip()]
         scroll_rcpt = table.evaluate(
             """(el, args) => {
                 const want = args.pos;
@@ -4115,7 +4126,8 @@ def _photograph_mq_table_390(
         tinfo["visible_text_scope"] = "element"
         tinfo["visible_text_at_scroll"] = vis_at_scroll
         tinfo["visible_text_at_zero"] = text_zero
-        tinfo["header_tokens"] = header_tokens
+        tinfo["header_tokens"] = list(header_tokens)
+        tinfo["header_cell_count"] = header_cell_count
         tinfo["shot_route"] = _shot_route_of(target)
         tinfo["page_id"] = page_name
         tinfo.pop("_element_text", None)
