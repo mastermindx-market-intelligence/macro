@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SON-BULL-20260617",
-  "asof": "2026-09-05",
+  "asof": "2026-09-10",
   "phase": "pre_trigger",
   "detection_phase": "pre_trigger",
-  "management_confidence": 46.5,
-  "raw_confidence": 44.3,
-  "delta_vs_base": -13.5,
+  "management_confidence": 39.8,
+  "raw_confidence": 36.7,
+  "delta_vs_base": -20.2,
   "recommended_action": "wait",
   "human_state": "Approaching Trigger",
   "components": {
-    "validity": 37.2,
+    "validity": 23.1,
     "progress": 0.0,
-    "pace": 46.9,
+    "pace": 20.3,
     "retention": 50.0,
-    "overlay": 55.0
+    "overlay": 47.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.481,
+    "dist_to_stop_r": 0.338,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 33.3,
-    "p1": -0.346,
-    "p2": -0.173,
+    "horizon_pct_used": 44.4,
+    "p1": -0.4415,
+    "p2": -0.2208,
     "p3": null,
-    "move_r": -0.519,
+    "move_r": -0.662,
     "mfe_r": 0.0,
-    "mae_r": -0.526
+    "mae_r": -0.662
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "",
+  "change_reason": "Nearing Invalidation",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.0,
-  "_mae": -7.630001525878903,
+  "_mae": -9.610001068115231,
   "_max_p1": 0.0,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 15,
-  "tau": 0.3333
+  "days_elapsed": 20,
+  "tau": 0.4444
 }

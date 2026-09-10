@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-09-06",
+  "as_of": "2026-09-10",
   "authority": {
     "may_alert": false,
     "may_auto_promote": false,
@@ -38,7 +38,7 @@
   },
   "family": "pss_cr1_challenge_resilience_prospective",
   "gate_open": true,
-  "generated_utc": "2026-09-06T04:40:53.902216+00:00",
+  "generated_utc": "2026-09-10T07:17:27.665388+00:00",
   "ledger": {
     "advanced_today": 0,
     "appended_today": 0,
@@ -61,8 +61,10 @@
   "registration_ok": true,
   "scan_census": {
     "derived_events": 0,
-    "eligible_future_rh1_sources": 0,
-    "reasons": {}
+    "eligible_future_rh1_sources": 1,
+    "reasons": {
+      "awaiting_challenge_window": 1
+    }
   },
   "schema": "personality_challenge_resilience.state/v1",
   "status": "prospective_accrual_only"
