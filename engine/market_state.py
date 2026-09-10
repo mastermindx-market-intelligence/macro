@@ -588,6 +588,12 @@ def _radar_to_rd(rr: dict) -> dict:
     dp = rr.get("drawdown_prob") or {}
     _mkt = rr.get("market") or "us"
     _track = _rr_scorecard_track(_mkt)
+    _forward_log = rr.get("forward_log")
+    _change = (_forward_log.get("publication_change")
+               if isinstance(_forward_log, dict) else None)
+    _top_display = round(top, 1) if top is not None else None
+    if _top_display is not None and float(_top_display).is_integer():
+        _top_display = int(_top_display)
     # Explicit authority is emitted by current radar producers. For older artifacts, only an
     # actual loud alert may bind; a legacy caution payload is advisory by construction.
     _can_force = (bool(rr.get("can_force")) if "can_force" in rr else
@@ -605,7 +611,8 @@ def _radar_to_rd(rr: dict) -> dict:
     # optional, wall-clock scorecard must not silently rewrite an identical producer payload.
     return {
         "state": state,
-        "top_score": round(top) if top is not None else None,
+        "market": _mkt,
+        "top_score": _top_display,
         "label_en": rr.get("dominant_label_en") or "calm",
         "label_zh": rr.get("dominant_label_zh") or "平静",
         "state_zh": _RADAR_ZH.get(state, state or ""),
@@ -628,12 +635,19 @@ def _radar_to_rd(rr: dict) -> dict:
         "scares": rr.get("scares") or [],
         # the radar's own forward-grade scorecard (engine/risk_radar_intl_audit) — drives the
         # card's "self-audit" line. None on the US radar (which logs via market_state_audit).
-        "forward_log": rr.get("forward_log"),
+        "forward_log": _forward_log,
+        # Display-only comparison against the existing canonical publication ledger.
+        "change": _change,
         # election-cycle MODULATOR (engine/election_cycle.py) — display chip + sizing prior; only
         # set on the US radar (the intl radars carry no midterm prior — the backtest refuted it).
         "cycle": rr.get("cycle_context"),
         # RC-R11 washout counter-read — display-tier context chip beside the banner (US radar only).
         "counterread": rr.get("counterread"),
+        # Optional display enrichments are attached by some builders after this transform.
+        # Defaults keep the shared card safe when the pure mapper is rendered directly.
+        "contagion": rr.get("contagion"),
+        "fx_context": rr.get("fx_context"),
+        "cross_asset": rr.get("cross_asset"),
         "amp": 0, "amp_keys": [], "amp_flags_en": [], "amp_flags_zh": [],
         "severe_gated": False, "ceiling": None, "candidate_ceiling": None,
         # amplification-provenance defaults (the US override fills them in when the radar is
