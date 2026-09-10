@@ -51,7 +51,9 @@ def test_hub_feed_plainifies_transition_receipt(monkeypatch, isolated_hub_siblin
     assert "TRANSITIONING" not in row["detail"]
     assert "STABLE" not in row["detail"]
     assert "WEAKENING" not in row["detail"]
-    assert row["detail_zh"] == "转换状态 新周期 -> 转换中（4 个预警激活）"
+    assert row["detail_zh"] == "周期状态由「新周期」转为「转换中」（4 个预警激活）"
+    assert " -> " not in row["detail_zh"]
+    assert "->" not in row["detail_zh"]
     assert "NEW_REGIME" not in row["detail_zh"]
     assert "TRANSITIONING" not in row["detail_zh"]
 
@@ -68,6 +70,8 @@ def test_hub_feed_transition_singular_flag(monkeypatch, isolated_hub_sibling_fee
     assert "WEAKENING" not in row["detail"]
     assert "STABLE" not in row["detail"]
     assert "走弱" in row["detail_zh"] and "稳定" in row["detail_zh"]
+    assert " -> " not in row["detail_zh"]
+    assert "->" not in row["detail_zh"]
 
 
 # ---------------------------------------------------------------------------
@@ -98,6 +102,28 @@ def test_hub_mom_chip_uses_minus1_to_plus1_scale():
     assert down == "Strong down-momentum"
     assert down_zh == "动量偏强向下"
 
+    # Vote roster is the engine's actual momentum votes (engine/btc_signals.py
+    # momentum(): ema_trend, ema_cross, macd_hist, sma200, roc20, rsi_zone,
+    # sopr_momentum, sth_cost_basis) — not a shortened "trend, MACD, RSI, SOPR".
+    _, _, tip_en, tip_zh = bv._hub_mom_chip({"momentum": 0.63})
+    for token in ("EMA trend", "EMA cross", "MACD", "200-day SMA",
+                  "20-day ROC", "RSI", "SOPR", "short-term holder cost"):
+        assert token in tip_en
+    for token in ("EMA 趋势", "EMA 交叉", "MACD", "200日均线",
+                  "20日涨跌幅", "RSI", "SOPR", "短线持有成本"):
+        assert token in tip_zh
+
+
+def test_hub_mom_chip_unavailable_is_a_worded_null():
+    en, zh, tip_en, tip_zh = bv._hub_mom_chip({"momentum": None})
+    assert en == "Momentum: no reading yet"
+    assert zh == "动量：暂无读数"
+    assert en != "Momentum" and zh != "动量"
+    assert "unavailable" in tip_en.lower()
+    empty_en, empty_zh, _, _ = bv._hub_mom_chip({})
+    assert empty_en == "Momentum: no reading yet"
+    assert empty_zh == "动量：暂无读数"
+
 
 def test_hub_health_chip_states_scale_and_late_cycle():
     out = bv._hub_health_chip({"score": 88, "phase": "late", "label": "healthy"})
@@ -127,6 +153,13 @@ def test_g_vectors_chips_carry_lens_tips():
     assert "Risk index 2/100" in html
     assert "Momentum 0.63" in html
     assert "Bond health 88/100" in html
+    assert "EMA trend" in html
+    null_html = bv._g_vectors(
+        {"risk_on": True, "risk_word": "ON", "risk_index": 2, "momentum": None},
+        None, None, None, None, None, None, None)
+    assert "Momentum: no reading yet" in null_html
+    assert "动量：暂无读数" in null_html
+    assert ">Momentum<" not in null_html
 
 
 # ---------------------------------------------------------------------------
@@ -182,6 +215,45 @@ def test_cn_hk_chips_use_company_names_not_numeric_tickers(tmp_path, monkeypatch
     assert "Tencent Holdings" in html and "腾讯控股" in html
     assert "600519" not in html
     assert "0700" not in html
+    assert 'class="sb-tickers">' in html
+    assert "sb-tickers-code" not in html  # CN/HK names stay proportional
+
+
+def test_cn_hk_missing_name_falls_back_to_ticker(tmp_path, monkeypatch):
+    from lib import config
+    fact = tmp_path / "site" / "factordata"
+    fact.mkdir(parents=True)
+    (fact / "china_standouts.json").write_text(json.dumps({
+        "buy": [{"ticker": "600000.SS"}],
+    }))
+    (fact / "hk_standouts.json").write_text(json.dumps({
+        "buy": [{"ticker": "0001.HK", "name": "", "name_zh": ""}],
+    }))
+    monkeypatch.setattr(config, "ROOT", tmp_path)
+    assert bv._standout_labels("china") == [("600000", "600000")]
+    assert bv._standout_labels("hk") == [("0001", "0001")]
+
+
+def test_cn_hk_slash_in_english_name_is_not_truncated(tmp_path, monkeypatch):
+    from lib import config
+    fact = tmp_path / "site" / "factordata"
+    fact.mkdir(parents=True)
+    (fact / "hk_standouts.json").write_text(json.dumps({
+        "buy": [
+            {"ticker": "1299.HK", "name": "AIA Group / Swire joint"},
+            {"ticker": "0700.HK", "name": "Tencent Holdings / 腾讯控股"},
+            {"ticker": "0941.HK", "name": "China Mobile / 中国移动",
+             "name_zh": "中国移动"},
+        ],
+    }))
+    monkeypatch.setattr(config, "ROOT", tmp_path)
+    labels = bv._standout_labels("hk")
+    # English name containing " / " and no CJK half must stay intact.
+    assert labels[0] == ("AIA Group / Swire joint", "AIA Group / Swire joint")
+    # Combined EN / 中文 form still splits when the right half is CJK.
+    assert labels[1] == ("Tencent Holdings", "腾讯控股")
+    # Explicit name_zh wins; the CJK half is still stripped from EN.
+    assert labels[2] == ("China Mobile", "中国移动")
 
 
 def test_us_standout_labels_stay_tickers(tmp_path, monkeypatch):
@@ -198,6 +270,11 @@ def test_us_standout_labels_stay_tickers(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "ROOT", tmp_path)
     assert bv._standout_tickers("us") == ["AAA", "BBB", "CCC"]
     assert bv._standout_labels("us") == [("AAA", "AAA"), ("BBB", "BBB"), ("CCC", "CCC")]
+    html = bv._g_markets(_market_blob(), 3, 0, 0, standout_tickers={
+        "US": [("AAA", "AAA"), ("BBB", "BBB")],
+    })
+    assert 'class="sb-tickers sb-tickers-code"' in html
+    assert "AAA" in html and "BBB" in html
 
 
 # ---------------------------------------------------------------------------
@@ -248,7 +325,13 @@ def test_hub_hero_uses_loading_skeleton_not_em_dash():
         watchlist={"present": False})
     assert "hub-clock-skel" in html
     assert 'class="hub-clock-skel skel"' in html
+    assert 'class="hub-clock-static"' in html
     assert "Live · —" not in html
     assert "实时 · —" not in html
     assert "hub-clock-wrap" in html
     assert "is-live" in html  # JS adds the class after the first tick
+    # No-JS / never-ran: the liveness WORD is outside .hub-clock-live so the
+    # CSS that hides the live clock until is-live cannot blank the cell.
+    assert ".hub-clock-wrap.is-live .hub-clock-static{display:none}" in html
+    assert "@media(scripting:none){.hub-clock-skel{display:none}}" in html
+    assert ".sb-tickers-code{font-family:var(--font-mono)}" in html

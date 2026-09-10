@@ -1583,6 +1583,11 @@ def _market_stocks_state(market: str) -> dict:
         return {"label": "", "n_setups": 0}
 
 
+def _name_has_cjk(s: str) -> bool:
+    """True when s carries a CJK ideograph (the ZH half of a combined name)."""
+    return any("\u4e00" <= ch <= "\u9fff" for ch in s)
+
+
 def _clean_standout_ticker(tkr: str) -> str:
     """Strip exchange suffix (.SS .SZ .HK) for compact display."""
     if "." in tkr:
@@ -1653,11 +1658,16 @@ def _standout_labels(market: str = "us") -> list[tuple[str, str]]:
         raw = str(r.get("name") or r.get("name_en") or "").strip()
         zh = str(r.get("name_zh") or "").strip()
         en = raw
+        # Combined artifact form is "English / 中文". Only split when the
+        # right half is actually CJK — an English name that legitimately
+        # contains " / " (and has no name_zh) must stay intact. Prefer the
+        # explicit name_zh field when the producer supplied one.
         if " / " in raw:
             left, right = raw.split(" / ", 1)
-            en = left.strip()
-            if not zh:
-                zh = right.strip()
+            if _name_has_cjk(right) and not _name_has_cjk(left):
+                en = left.strip()
+                if not zh:
+                    zh = right.strip()
         if not en:
             en = t
         if not zh:
@@ -2045,11 +2055,14 @@ def home_alert_feed() -> list[dict]:
             if not stored_zh or _zh_needs_rebuild(r["rule"]):
                 stored_zh = _translate_macro_detail(r["message"], r["rule"]) or stored_zh
             detail_zh = stored_zh or r["message"]
-            # Presentation-tier EN receipt: alert_view already rewrites
+            # Presentation-tier EN/ZH receipt: alert_view already rewrites
             # transition_state_change enums (NEW_REGIME/TRANSITIONING) via
-            # _plain_transition_msg. The parquet row keeps the raw string so
-            # _translate_macro_detail can still match it for ZH. Do not copy
-            # r["message"] onto the hub — that is the start.html glance defect.
+            # _plain_transition_msg onto v["message"] / v["message_zh"]. The
+            # parquet row keeps the raw string so _translate_macro_detail can
+            # still match it; that translator's ZH branch still emits the
+            # machine "A -> B" arrow, so the hub must prefer the view's ZH
+            # the same way it prefers the view's EN. Do not copy r["message"]
+            # (or the translator arrow) onto the glance card.
             out.append({
                 "source": "macro", "source_label": h["macro_label"],
                 "source_label_zh": _tr(h["macro_label"]),
@@ -2058,7 +2071,8 @@ def home_alert_feed() -> list[dict]:
                 "type": r["rule"],
                 "headline": v["icon"] + " " + v["plain_en"],
                 "headline_zh": v["icon"] + " " + (v.get("plain_zh") or v["plain_en"]),
-                "detail": v.get("message") or r["message"], "detail_zh": detail_zh,
+                "detail": v.get("message") or r["message"],
+                "detail_zh": (v.get("message_zh") or "").strip() or detail_zh,
                 "what": v["what_en"], "what_zh": v.get("what_zh") or v["what_en"],
                 "link": link, "tier": v["tier"],
                 "edge": v["edge_en"], "edge_zh": v.get("edge_zh") or v["edge_en"],
@@ -2205,10 +2219,11 @@ html[data-lang="zh"] .hub-signin .l-zh{display:inline}
 .hub-page.nav-search-focus .globe-deck{opacity:.58;filter:saturate(.68)}
 .hub-live-meta{display:flex;justify-content:center;align-items:center;margin-top:14px}
 .hub-live-meta .eyebrow{margin-bottom:0}
-.hub-clock-wrap{display:inline-flex;align-items:center;min-height:1em}
+.hub-clock-wrap{display:inline-flex;align-items:center;gap:.35em;min-height:1em}
 .hub-clock-skel{display:inline-block;width:18ch;height:.85em;vertical-align:-.1em}
 .hub-clock-wrap:not(.is-live) .hub-clock-live{display:none}
-.hub-clock-wrap.is-live .hub-clock-skel{display:none}
+.hub-clock-wrap.is-live .hub-clock-skel,.hub-clock-wrap.is-live .hub-clock-static{display:none}
+@media(scripting:none){.hub-clock-skel{display:none}}
 .chips .pill[data-tip-en]{cursor:help}
 /* a soft, feathered radial --bg scrim sits BEHIND the hero text (own stacking
    context via isolation) so the bright sun/moon disc never washes the headline
@@ -2727,8 +2742,11 @@ html[data-lang="zh"] .hub-seg .l-zh{display:inline}
 }
 .go-tx{display:inline}
 
-/* ===== standout name chips in stock splitbtn em ===== */
+/* ===== standout name chips in stock splitbtn em =====
+   Mono for ticker CODES (US letter chips); proportional for company NAMES
+   (CN/HK). The previous blanket mono drop leaked onto the US card. */
 .sb-tickers{display:inline;font-size:10.5px;opacity:.8;letter-spacing:.01em}
+.sb-tickers-code{font-family:var(--font-mono)}
 
 /* ===== report teaser badge on reports card ===== */
 .rep-latest{font-size:11px;opacity:.82;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:32ch;display:block;margin-top:2px}
@@ -3070,9 +3088,11 @@ def _g_markets(blob, us_n, cn_n, hk_n,
                 else:
                     en_parts.append(str(item))
                     zh_parts.append(str(item))
-            chip_en = ('<span class="sb-tickers"> · '
+            # US letter-tickers stay mono; CN/HK company names stay proportional.
+            cls = "sb-tickers sb-tickers-code" if cc == "US" else "sb-tickers"
+            chip_en = ('<span class="' + cls + '"> · '
                        + _esc(" · ".join(en_parts)) + '</span>')
-            chip_zh = ('<span class="sb-tickers"> · '
+            chip_zh = ('<span class="' + cls + '"> · '
                        + _esc(" · ".join(zh_parts)) + '</span>')
             return ('<span class="l-en">' + en + chip_en + '</span>'
                     '<span class="l-zh">' + zh + chip_zh + '</span>')
@@ -3180,7 +3200,8 @@ def _hub_mom_chip(vm: dict) -> tuple[str, str, str, str]:
     except (TypeError, ValueError):
         m = None
     if m is None:
-        return "Momentum", "动量", "Momentum reading unavailable.", "动量读数暂缺。"
+        return ("Momentum: no reading yet", "动量：暂无读数",
+                "Momentum reading unavailable.", "动量读数暂缺。")
     if m > 0.5:
         glance_en, glance_zh = "Strong up-momentum", "动量偏强向上"
     elif m < -0.5:
@@ -3191,10 +3212,11 @@ def _hub_mom_chip(vm: dict) -> tuple[str, str, str, str]:
         glance_en, glance_zh = "Mild down-momentum", "动量温和向下"
     else:
         glance_en, glance_zh = "Flat momentum", "动量持平"
-    tip_en = (f"Momentum {m:g} on a −1 to +1 vote ensemble (trend, MACD, RSI, "
-              "SOPR). |score| above 0.5 is strong.")
-    tip_zh = (f"动量 {m:g}，标尺 −1 到 +1（趋势、MACD、RSI、SOPR 投票合成）。"
-              "绝对值高于 0.5 为偏强。")
+    tip_en = (f"Momentum {m:g} on a −1 to +1 vote ensemble (EMA trend, EMA cross, "
+              "MACD, 200-day SMA, 20-day ROC, RSI, SOPR, short-term holder cost). "
+              "|score| above 0.5 is strong.")
+    tip_zh = (f"动量 {m:g}，标尺 −1 到 +1（EMA 趋势、EMA 交叉、MACD、200日均线、"
+              "20日涨跌幅、RSI、SOPR、短线持有成本 投票合成）。绝对值高于 0.5 为偏强。")
     return glance_en, glance_zh, tip_en, tip_zh
 
 
@@ -3707,6 +3729,7 @@ def _hub_html(vm: dict, macro: dict, alerts: list, china: dict | None = None,
                     "一套框架，看清全球主要市场。") + '</p></div></div>'
         '<div class="hub-live-meta"><span class="eyebrow"><span class="live"></span>'
         '<span class="hub-clock-wrap">'
+        '<span class="hub-clock-static">' + _bi("Live", "实时") + '</span>'
         '<span class="hub-clock-skel skel" aria-hidden="true"></span>'
         '<span class="hub-clock-live">'
         + _bi('Live · <span class="hub-clock" data-loc="en"></span>',
