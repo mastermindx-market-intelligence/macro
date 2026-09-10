@@ -1921,6 +1921,7 @@ jobs:
       - "engine/signal_gate.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
+      - "engine/special_situations_premium.py"
       - "engine/stock_dossier.py"
       - "engine/stock_events.py"
       - "engine/stock_fundamentals.py"
@@ -2995,6 +2996,7 @@ jobs:
           tests/test_capital_structure_projection.py
           tests/test_build_capital_structure_projection.py
           tests/test_capital_structure_page.py
+          tests/test_special_situations_premium.py
           tests/test_capital_structure_policy_projection.py
           tests/test_capital_structure_api.py
           tests/test_capital_structure_source_identity.py
@@ -5350,6 +5352,7 @@ jobs:
       - tests/test_warp_session_start_sparse.py
       - tests/test_worktree_gc.py
       - tests/test_worktree_placement.py
+      - tests/test_worktree_sparse.py
     # F2 (Metabolism Phase 0 / R-AUT-5): self-modification fence.
     # Hard-fails any PR whose branch name or commit trailers carry the loop
     # namespace (metabolism/* or claude/loop-*, or 'Loop-Authored:' trailer)
@@ -5384,7 +5387,7 @@ jobs:
         # host that has hit runner ENOSPC twice. tests/test_worktree_gc.py ran in NO
         # workflow before this line; it is grandfathered-dark rather than waived, so
         # contract-delta never asked for it.
-        run: python -m pytest tests/test_ship_loop_guard.py tests/test_ship_loop_semantic.py tests/test_agent_worktree_roots.py tests/test_sparse_worktree_profile.py tests/test_warp_session_start_sparse.py tests/test_worktree_gc.py tests/test_worktree_placement.py -q
+        run: python -m pytest tests/test_ship_loop_guard.py tests/test_ship_loop_semantic.py tests/test_agent_worktree_roots.py tests/test_sparse_worktree_profile.py tests/test_warp_session_start_sparse.py tests/test_worktree_gc.py tests/test_worktree_placement.py tests/test_worktree_sparse.py -q
       - name: self-mod-fence live check (loop PR + immutable → BLOCKED)
         run: |
           # CI_HEAD_REF is the validated API identity published by the upgraded
@@ -6271,7 +6274,7 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy pyarrow pyyaml openpyxl requests
       - name: CCW-W3 credit momentum tests
-        run: python -m pytest tests/test_credit_momentum.py tests/test_corp_bond_holdings.py tests/test_finra_corp_bonds.py -v
+        run: python -m pytest tests/test_credit_momentum.py tests/test_corp_bond_holdings.py tests/test_finra_corp_bonds.py tests/test_credit_window.py -v
 
   ccw-w4-credit-desk:
     if: ${{ false }}
@@ -6332,7 +6335,7 @@ jobs:
     gate: data
     # Support + Email estate: the W1 spine (app/mailer.py, app/support.py,
     # admin/support_tickets.py) plus the W2 public surface (templates/support.html.j2, the
-    # pinned email base). Five suites, all fully offline — no SMTP, no Supabase, no live
+    # pinned email base). Thirteen suites, all fully offline — no SMTP, no Supabase, no live
     # admin state, no network:
     #   test_mailer.py            — LEDGER-FIRST idempotency (a duplicate idem_key sends
     #                               nothing), mail-off skip, marketing suppression +
@@ -6408,6 +6411,10 @@ jobs:
         run: python -m pytest tests/test_admin_email_center.py -v
       - name: unsubscribe page + per-matcher serving boundary (templates/unsubscribe.html.j2)
         run: python -m pytest tests/test_unsubscribe_page.py -v
+      - name: pinned alert email message type (app/mailer.py alert template)
+        run: python -m pytest tests/test_mailer_alert_template.py -v
+      - name: alert outbox delivery drain (engine/alert_delivery_drain.py, scripts/drain_alert_outbox.py)
+        run: python -m pytest tests/test_alert_delivery_drain.py -v
 
   serving-observability:
     if: ${{ false }}
@@ -7074,6 +7081,7 @@ jobs:
       - "engine/sp500_heatmap.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
+      - "engine/special_situations_premium.py"
       - "engine/spine.py"
       - "engine/spotlight.py"
       - "engine/stock_dossier.py"
@@ -7607,6 +7615,7 @@ jobs:
       - "engine/signal_quality.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
+      - "engine/special_situations_premium.py"
       - "engine/spotlight.py"
       - "engine/stock_dossier.py"
       - "engine/stock_events.py"
@@ -10846,6 +10855,10 @@ jobs:
       - "engine/confluence_tiers.py"
       - "engine/conviction_accrual.py"
       - "engine/conviction_delta.py"
+      # B-F09-2 closure widening 2026-09-08 (contract-delta): scripts/build_ipo.py
+      # now imports engine/credit_window.py for the HY/IG issuance-window panel.
+      # Exclusive scope replaces inference, so the new module must be named.
+      - "engine/credit_window.py"
       - "engine/cross_asset.py"
       - "engine/cross_asset_confirm.py"
       - "engine/cross_asset_trend.py"
@@ -11056,6 +11069,7 @@ jobs:
       - "engine/sp500_heatmap.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
+      - "engine/special_situations_premium.py"
       - "engine/spine.py"
       - "engine/spotlight.py"
       - "engine/spvector_overlay.py"
@@ -12821,6 +12835,7 @@ jobs:
       - "engine/signal_quality.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
+      - "engine/special_situations_premium.py"
       - "engine/spotlight.py"
       - "engine/stock_dossier.py"
       - "engine/stock_events.py"

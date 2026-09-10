@@ -273,3 +273,10 @@
 {"asof": "2026-09-09", "domain": "commodity", "field": "gold_action", "from_value": "HOLD", "to_value": "SELL", "macro_context_id": "2850b2554922f814"}
 {"asof": "2026-09-09", "domain": "china", "field": "china_property_regime", "from_value": "Deep contraction (easing)", "to_value": "Contraction (easing)", "macro_context_id": "2850b2554922f814"}
 {"asof": "2026-09-09", "domain": "china", "field": "china_fe_band", "from_value": "Neutral", "to_value": "Greed", "macro_context_id": "2850b2554922f814"}
+{"asof": "2026-09-10", "domain": "us", "field": "us_transition_state", "from_value": "NEW_REGIME", "to_value": "TRANSITIONING", "macro_context_id": "9c054242a6ddd6f3"}
+{"asof": "2026-09-10", "domain": "us", "field": "us_risk_radar", "from_value": "caution", "to_value": "watch", "macro_context_id": "9c054242a6ddd6f3"}
+{"asof": "2026-09-10", "domain": "us", "field": "us_rate_pressure", "from_value": "neutral", "to_value": "pressure", "macro_context_id": "9c054242a6ddd6f3"}
+{"asof": "2026-09-10", "domain": "us", "field": "us_gamma_regime", "from_value": "long", "to_value": "short", "macro_context_id": "9c054242a6ddd6f3"}
+{"asof": "2026-09-10", "domain": "us", "field": "cross_asset_verdict", "from_value": "confirm", "to_value": "diverge", "macro_context_id": "9c054242a6ddd6f3"}
+{"asof": "2026-09-10", "domain": "commodity", "field": "commodity_mtf_grade", "from_value": "BUY-THE-DIP", "to_value": "TREND-FOLLOW", "macro_context_id": "9c054242a6ddd6f3"}
+{"asof": "2026-09-10", "domain": "commodity", "field": "commodity_ladder", "from_value": "TOP WATCH", "to_value": "TURN SIGNALED", "macro_context_id": "9c054242a6ddd6f3"}
