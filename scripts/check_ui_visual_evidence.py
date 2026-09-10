@@ -17,7 +17,23 @@ THIS SCRIPT DOES NOT JUDGE TASTE. It checks two mechanical things only:
      and every page in it carries all eight REST cells this gate requires:
      desktop/mobile x en/zh x dark/light, each genuinely captured with the
      requested theme/locale/viewport actually applied and its screenshot PNG
-     present on disk.
+     present on disk. A page may ALSO carry `force_state` cells (an
+     additional interaction state beyond the eight, e.g. sanctions_map's
+     `theme_toggle_dark_to_light`) — those are outside the required matrix
+     (never counted toward the eight), but each one still gets its own
+     integrity floor: captured, PNG present on disk, sha256/byte-length match
+     the recorded values, and pixel dimensions are sane. This is the same
+     "is this evidence real" check as the rest cells get, not a taste
+     judgment (MINOR-3).
+  3. A manifest whose cells disagree on which tool captured them (a cell-level
+     `capture_tool_module_sha256` differing from the manifest's top-level
+     `tool.module_sha256`) must disclose every tool sha it used at the top
+     level — the top-level field becomes a list once more than one tool
+     revision is present (NIT-1). A page may optionally carry a
+     `page_tree_sha` — the git tree/blob content address of the captured page
+     bytes, which (unlike a commit sha) survives a squash merge; when present
+     its shape is validated (NIT-B). This is a forward-compat field: no
+     existing manifest is required to carry one.
 
 NO SECOND EVIDENCE PLANE. This module never defines a screenshot cell, a page
 identity, a capture lifecycle, or a manifest schema of its own. The ONLY new
@@ -48,6 +64,7 @@ Usage::
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import sys
@@ -83,6 +100,11 @@ VIEWPORT_WIDTHS: dict[str, int] = {"desktop": 1440, "mobile": 390}
 REQUIRED_VIEWPORTS: tuple[str, ...] = ("desktop", "mobile")
 REQUIRED_LOCALES: tuple[str, ...] = ("en", "zh")
 REQUIRED_THEMES: tuple[str, ...] = ("dark", "light")
+
+# A git object sha: 40 hex chars (sha1, the default) or 64 hex chars (a sha256
+# object-format repo). Used both by the mixed-tool reconciliation below and by
+# the optional `page_tree_sha` forward-compat field (NIT-B).
+_GIT_SHA_RE = re.compile(r"^(?:[0-9a-f]{40}|[0-9a-f]{64})$")
 
 # --- material-change detection -------------------------------------------
 # Deliberately narrow. Three shapes only, matching the frozen spec exactly:
@@ -478,9 +500,79 @@ def validate_manifest_evidence(record: ReceiptRecord, repo_root: Path) -> list[s
         return [f"{record.path}: manifest '{manifest_rel}' carries no pages"]
 
     findings: list[str] = []
+    findings.extend(_validate_tool_hash_coverage(record.path, manifest_rel, manifest))
     for page in pages:
         findings.extend(_validate_page_cells(record.path, manifest_path, manifest_rel, page))
     return findings
+
+
+def _validate_tool_hash_coverage(receipt_path: Path, manifest_rel: str,
+                                  manifest: dict[str, Any]) -> list[str]:
+    """NIT-1: a manifest whose cells were captured by more than one tool
+    revision must disclose EVERY tool sha at the top level, not just the one
+    recorded when the manifest was first created.
+
+    A capture row may carry its own ``capture_tool_module_sha256`` (the tool
+    that actually produced THAT screenshot) alongside the manifest-level
+    ``tool.module_sha256`` (the tool as of the manifest's own header). When a
+    manifest is re-captured incrementally — some cells refreshed under a
+    newer tool revision, others left from an earlier capture — those two can
+    silently disagree: the top-level field reads as one tool, but the truth
+    is split cell-by-cell. That is a MIXED-TOOL manifest, and the disagreement
+    must be visible at the top level (where a human skims first), not only by
+    reading every cell. The fix is not to demand a single tool — repeated
+    incremental capture is normal — but to require the top-level field become
+    a LIST that covers every cell-level value once more than one is present.
+    """
+    pages = manifest.get("pages")
+    if not isinstance(pages, list):
+        return []
+    cell_shas: set[str] = set()
+    for page in pages:
+        if not isinstance(page, dict):
+            continue
+        states = page.get("states")
+        if not isinstance(states, list):
+            continue
+        for state in states:
+            if not isinstance(state, dict):
+                continue
+            sha = state.get("capture_tool_module_sha256")
+            if isinstance(sha, str) and sha:
+                cell_shas.add(sha)
+    if not cell_shas:
+        return []  # no per-cell tool identity recorded; nothing to reconcile
+
+    tool = manifest.get("tool")
+    top_sha = tool.get("module_sha256") if isinstance(tool, dict) else None
+
+    if isinstance(top_sha, list):
+        top_set = {s for s in top_sha if isinstance(s, str)}
+        missing = sorted(cell_shas - top_set)
+        if missing:
+            return [
+                f"{receipt_path}: manifest '{manifest_rel}' top-level tool.module_sha256 list "
+                f"does not cover cell-level capture_tool_module_sha256 value(s) {missing} "
+                "(a mixed-tool manifest's top-level field must list every tool sha used by any cell)"
+            ]
+        return []
+
+    if isinstance(top_sha, str) and top_sha:
+        extra = sorted(cell_shas - {top_sha})
+        if extra:
+            return [
+                f"{receipt_path}: manifest '{manifest_rel}' is a mixed-tool manifest — cell-level "
+                f"capture_tool_module_sha256 value(s) {extra} disagree with the single top-level "
+                f"tool.module_sha256 {top_sha!r}; top-level tool.module_sha256 must be a list "
+                "covering every cell-level value"
+            ]
+        return []
+
+    return [
+        f"{receipt_path}: manifest '{manifest_rel}' carries cell-level capture_tool_module_sha256 "
+        f"value(s) {sorted(cell_shas)} but top-level tool.module_sha256 is missing/invalid "
+        f"({top_sha!r})"
+    ]
 
 
 def _rest_cell_key(state: dict[str, Any]) -> tuple[Any, Any, Any] | None:
@@ -502,10 +594,15 @@ def _validate_page_cells(receipt_path: Path, manifest_path: Path, manifest_rel: 
         return [f"{receipt_path}: page '{page_id}' in '{manifest_rel}' has no states list"]
 
     rest_cells: dict[tuple[Any, Any, Any], dict[str, Any]] = {}
+    force_state_cells: list[dict[str, Any]] = []
     for state in states:
+        if not isinstance(state, dict):
+            continue
         key = _rest_cell_key(state)
         if key is not None:
             rest_cells[key] = state
+        elif state.get("force_state") is not None:
+            force_state_cells.append(state)
 
     findings: list[str] = []
     for viewport in REQUIRED_VIEWPORTS:
@@ -515,7 +612,109 @@ def _validate_page_cells(receipt_path: Path, manifest_path: Path, manifest_rel: 
                     _validate_one_cell(receipt_path, manifest_path, manifest_rel, page_id,
                                         viewport, locale, theme, rest_cells.get((viewport, locale, theme)))
                 )
+    for state in force_state_cells:
+        findings.extend(
+            _validate_force_state_cell(receipt_path, manifest_path, manifest_rel, page_id, state)
+        )
+    findings.extend(
+        _validate_optional_page_tree_sha(receipt_path, manifest_rel, page_id, page.get("page_tree_sha"))
+    )
     return findings
+
+
+def _validate_force_state_cell(receipt_path: Path, manifest_path: Path, manifest_rel: str,
+                                page_id: Any, state: dict[str, Any]) -> list[str]:
+    """MINOR-3: `_rest_cell_key` deliberately excludes a `force_state` cell
+    (e.g. sanctions_map's `theme_toggle_dark_to_light`) from the REQUIRED
+    viewport x locale x theme matrix — a force_state cell documents an
+    additional, non-required interaction state, not one of the eight rest
+    cells the gate demands on every page. That exclusion was previously total:
+    a force_state cell received NO validation at all, so a corrupted or
+    hand-edited force_state row (wrong sha, truncated PNG, deleted file)
+    passed silently. This checks the same integrity floor a rest cell gets:
+    captured, the PNG actually exists, its bytes match the recorded sha256
+    and byte length, and its recorded pixel dimensions are sane (present,
+    positive integers) — not a taste judgment, just "is this evidence real".
+    """
+    label = f"{page_id} force_state={state.get('force_state')!r}"
+    findings: list[str] = []
+
+    if state.get("captured") is not True:
+        reason = state.get("reason", "not captured")
+        findings.append(f"{receipt_path}: {label} was not captured ({reason})")
+        return findings
+
+    file_rel = state.get("file")
+    if not file_rel:
+        findings.append(f"{receipt_path}: {label} has no screenshot file recorded")
+        return findings
+
+    png_path = manifest_path.parent / file_rel
+    if not png_path.exists():
+        findings.append(
+            f"{receipt_path}: {label} references screenshot '{file_rel}' which does not "
+            f"exist at {png_path}"
+        )
+        return findings
+
+    try:
+        actual_bytes = png_path.read_bytes()
+    except OSError as exc:
+        findings.append(f"{receipt_path}: {label} screenshot '{file_rel}' could not be read: {exc}")
+        return findings
+
+    recorded_sha256 = state.get("sha256")
+    actual_sha256 = hashlib.sha256(actual_bytes).hexdigest()
+    if recorded_sha256 != actual_sha256:
+        findings.append(
+            f"{receipt_path}: {label} sha256={recorded_sha256!r} does not match the "
+            f"screenshot's actual sha256 {actual_sha256!r}"
+        )
+
+    recorded_bytes = state.get("bytes")
+    actual_byte_length = len(actual_bytes)
+    if recorded_bytes != actual_byte_length:
+        findings.append(
+            f"{receipt_path}: {label} bytes={recorded_bytes!r} does not match the "
+            f"screenshot's actual byte length {actual_byte_length}"
+        )
+
+    width = state.get("width")
+    height = state.get("height")
+    if not isinstance(width, int) or isinstance(width, bool) or width <= 0 \
+            or not isinstance(height, int) or isinstance(height, bool) or height <= 0:
+        findings.append(
+            f"{receipt_path}: {label} has non-sane captured PNG pixel dimensions "
+            f"(width={width!r}, height={height!r})"
+        )
+
+    return findings
+
+
+def _validate_optional_page_tree_sha(receipt_path: Path, manifest_rel: str, page_id: Any,
+                                      page_tree_sha: Any) -> list[str]:
+    """NIT-B: capture manifests currently record only commit shas
+    (``updated_sha`` / ``captured_sha``), which go unreachable once the
+    branch that produced them is squash-merged — the manifest still names a
+    sha, but `git show <sha>` can no longer resolve it. A git TREE/BLOB sha
+    (the content address of the page bytes at capture time) stays reachable
+    as long as the blob is referenced by ANY commit, squashed or not.
+
+    This is forward-compat only: no existing manifest carries `page_tree_sha`
+    yet (NIT-B explicitly forbids rewriting historical manifests beyond the
+    NIT-1 metadata fix), so absence is never a finding. When a future capture
+    DOES record one, this validates only its SHAPE — a 40- or 64-char
+    lowercase hex git object id — catching a malformed value instead of
+    silently accepting whatever a writer puts there.
+    """
+    if page_tree_sha is None:
+        return []
+    if not isinstance(page_tree_sha, str) or not _GIT_SHA_RE.match(page_tree_sha):
+        return [
+            f"{receipt_path}: manifest '{manifest_rel}' page '{page_id}' carries a malformed "
+            f"page_tree_sha {page_tree_sha!r} (expected a 40- or 64-char lowercase hex git object sha)"
+        ]
+    return []
 
 
 def _validate_one_cell(receipt_path: Path, manifest_path: Path, manifest_rel: str, page_id: Any,

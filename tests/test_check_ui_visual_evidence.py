@@ -16,6 +16,7 @@ FAILED row carries only `{"captured": False, "reason": ...}` and nothing else.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import subprocess
 from pathlib import Path
@@ -424,6 +425,279 @@ def test_failed_capture_entry_handled_without_exception(tmp_path, capsys):
     assert rc == 1
     out = capsys.readouterr().out
     assert "desktop/en/dark" in out
+
+
+
+# ---------------------------------------------------------------------------
+# force_state cells (MINOR-3, PR #6986 r2 accepted-as-debt) — `_rest_cell_key`
+# deliberately excludes a force_state cell from the required 8-cell matrix,
+# but that must not mean ZERO validation of the cell itself.
+# ---------------------------------------------------------------------------
+
+
+def make_force_state_cell(*, force_state: str = "theme_toggle_dark_to_light",
+                           file: str = "force_state_shot.png",
+                           png_bytes: bytes = b"\x89PNG\r\n\x1a\nreal-force-state-bytes",
+                           width: int = 1440, height: int = 900, captured: bool = True) -> dict:
+    """A force_state cell with a REAL sha256/byte-length (unlike `make_state`,
+    which fixes a fake `"f" * 64` sha256 that the rest-cell path never checks
+    — the force_state path now does check it, so the fixture must be honest).
+    """
+    if not captured:
+        return {
+            "viewport": "desktop", "locale": "en", "theme": "light", "access": "anonymous",
+            "viewport_width": 1440, "viewport_height": 900, "force_state": force_state,
+            "captured": False, "reason": "fixture failure",
+        }
+    return {
+        "viewport": "desktop", "locale": "en", "theme": "light", "access": "anonymous",
+        "viewport_width": 1440, "viewport_height": 900, "force_state": force_state,
+        "captured": True, "file": file,
+        "sha256": hashlib.sha256(png_bytes).hexdigest(), "bytes": len(png_bytes),
+        "width": width, "height": height,
+        "applied_theme": "light", "applied_locale": "en",
+    }
+
+
+def test_force_state_cell_with_valid_evidence_passes(tmp_path, capsys):
+    png_bytes = b"\x89PNG\r\n\x1a\nreal-force-state-bytes"
+    force_cell = make_force_state_cell(png_bytes=png_bytes)
+    manifest = make_manifest(states=make_full_states() + [force_cell])
+    manifest_path = write_manifest(tmp_path, "mockups/evidence/tp1/manifest.json", manifest)
+    (manifest_path.parent / force_cell["file"]).write_bytes(png_bytes)
+    write_receipt(
+        tmp_path, "mockups/evidence/tp1/EVIDENCE.yml",
+        changed_paths=["templates/stock-dashboard.css"],
+        manifest="mockups/evidence/tp1/manifest.json",
+    )
+    rc = guard.main(["--diff-file", "-", "--repo-root", str(tmp_path)],
+                     stdin_text=css_diff())
+    assert rc == 0, capsys.readouterr().out
+
+
+def test_force_state_cell_with_corrupted_sha256_reds(tmp_path, capsys):
+    # The cell CLAIMS a sha256 for `png_bytes`, but the PNG actually committed
+    # to disk is different content — exactly a hand-edited/corrupted evidence
+    # row. Without MINOR-3's fix, `_rest_cell_key` would exclude this cell
+    # from all checking and the corruption would pass silently.
+    png_bytes = b"\x89PNG\r\n\x1a\nreal-force-state-bytes"
+    force_cell = make_force_state_cell(png_bytes=png_bytes)
+    manifest = make_manifest(states=make_full_states() + [force_cell])
+    manifest_path = write_manifest(tmp_path, "mockups/evidence/tp1/manifest.json", manifest)
+    (manifest_path.parent / force_cell["file"]).write_bytes(b"\x89PNG\r\n\x1a\ncorrupted-different-bytes")
+    write_receipt(
+        tmp_path, "mockups/evidence/tp1/EVIDENCE.yml",
+        changed_paths=["templates/stock-dashboard.css"],
+        manifest="mockups/evidence/tp1/manifest.json",
+    )
+    rc = guard.main(["--diff-file", "-", "--repo-root", str(tmp_path)],
+                     stdin_text=css_diff())
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert "sha256" in out and "force_state" in out
+
+
+def test_force_state_cell_with_wrong_byte_length_reds(tmp_path, capsys):
+    png_bytes = b"\x89PNG\r\n\x1a\nreal-force-state-bytes"
+    force_cell = make_force_state_cell(png_bytes=png_bytes)
+    force_cell["bytes"] = len(png_bytes) + 500  # disagrees with the real file size
+    manifest = make_manifest(states=make_full_states() + [force_cell])
+    manifest_path = write_manifest(tmp_path, "mockups/evidence/tp1/manifest.json", manifest)
+    (manifest_path.parent / force_cell["file"]).write_bytes(png_bytes)
+    write_receipt(
+        tmp_path, "mockups/evidence/tp1/EVIDENCE.yml",
+        changed_paths=["templates/stock-dashboard.css"],
+        manifest="mockups/evidence/tp1/manifest.json",
+    )
+    rc = guard.main(["--diff-file", "-", "--repo-root", str(tmp_path)],
+                     stdin_text=css_diff())
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert "bytes=" in out
+
+
+def test_force_state_cell_with_nonsane_dims_reds(tmp_path, capsys):
+    png_bytes = b"\x89PNG\r\n\x1a\nreal-force-state-bytes"
+    force_cell = make_force_state_cell(png_bytes=png_bytes, width=0, height=900)
+    manifest = make_manifest(states=make_full_states() + [force_cell])
+    manifest_path = write_manifest(tmp_path, "mockups/evidence/tp1/manifest.json", manifest)
+    (manifest_path.parent / force_cell["file"]).write_bytes(png_bytes)
+    write_receipt(
+        tmp_path, "mockups/evidence/tp1/EVIDENCE.yml",
+        changed_paths=["templates/stock-dashboard.css"],
+        manifest="mockups/evidence/tp1/manifest.json",
+    )
+    rc = guard.main(["--diff-file", "-", "--repo-root", str(tmp_path)],
+                     stdin_text=css_diff())
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert "non-sane" in out
+
+
+def test_force_state_cell_with_missing_screenshot_reds(tmp_path, capsys):
+    png_bytes = b"\x89PNG\r\n\x1a\nreal-force-state-bytes"
+    force_cell = make_force_state_cell(png_bytes=png_bytes)
+    manifest = make_manifest(states=make_full_states() + [force_cell])
+    manifest_path = write_manifest(tmp_path, "mockups/evidence/tp1/manifest.json", manifest)
+    # Simulate a deleted/never-committed screenshot for the force_state cell only.
+    (manifest_path.parent / force_cell["file"]).unlink()
+    write_receipt(
+        tmp_path, "mockups/evidence/tp1/EVIDENCE.yml",
+        changed_paths=["templates/stock-dashboard.css"],
+        manifest="mockups/evidence/tp1/manifest.json",
+    )
+    rc = guard.main(["--diff-file", "-", "--repo-root", str(tmp_path)],
+                     stdin_text=css_diff())
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert "does not exist" in out
+
+
+def test_force_state_cell_failed_capture_reds_without_exception(tmp_path, capsys):
+    force_cell = make_force_state_cell(captured=False)
+    manifest = make_manifest(states=make_full_states() + [force_cell])
+    write_manifest(tmp_path, "mockups/evidence/tp1/manifest.json", manifest)
+    write_receipt(
+        tmp_path, "mockups/evidence/tp1/EVIDENCE.yml",
+        changed_paths=["templates/stock-dashboard.css"],
+        manifest="mockups/evidence/tp1/manifest.json",
+    )
+    rc = guard.main(["--diff-file", "-", "--repo-root", str(tmp_path)],
+                     stdin_text=css_diff())
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert "was not captured" in out
+
+
+# ---------------------------------------------------------------------------
+# mixed-tool manifest reconciliation (NIT-1, PR #6986 r2 accepted-as-debt)
+# ---------------------------------------------------------------------------
+
+
+def test_mixed_tool_manifest_single_top_level_string_reds(tmp_path, capsys):
+    # A cell-level capture_tool_module_sha256 disagrees with the single
+    # top-level tool.module_sha256 string — exactly the sanctions_map defect
+    # (97b44358... at top level, 3301a5f9... on the toggle cell) before the
+    # manifest fix.
+    states = make_full_states()
+    states[0]["capture_tool_module_sha256"] = "3" * 64
+    manifest = make_manifest(states=states)
+    manifest["tool"] = {"module_ref": "scripts/capture_page_evidence.py", "module_sha256": "9" * 64,
+                         "user_agent": "test-agent/1.0", "version": "1.0.0"}
+    write_manifest(tmp_path, "mockups/evidence/tp1/manifest.json", manifest)
+    write_receipt(
+        tmp_path, "mockups/evidence/tp1/EVIDENCE.yml",
+        changed_paths=["templates/stock-dashboard.css"],
+        manifest="mockups/evidence/tp1/manifest.json",
+    )
+    rc = guard.main(["--diff-file", "-", "--repo-root", str(tmp_path)],
+                     stdin_text=css_diff())
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert "mixed-tool" in out
+
+
+def test_mixed_tool_manifest_list_covering_every_cell_value_passes(tmp_path, capsys):
+    states = make_full_states()
+    states[0]["capture_tool_module_sha256"] = "3" * 64
+    manifest = make_manifest(states=states)
+    manifest["tool"] = {"module_ref": "scripts/capture_page_evidence.py",
+                         "module_sha256": ["9" * 64, "3" * 64],
+                         "user_agent": "test-agent/1.0", "version": "1.0.0"}
+    write_manifest(tmp_path, "mockups/evidence/tp1/manifest.json", manifest)
+    write_receipt(
+        tmp_path, "mockups/evidence/tp1/EVIDENCE.yml",
+        changed_paths=["templates/stock-dashboard.css"],
+        manifest="mockups/evidence/tp1/manifest.json",
+    )
+    rc = guard.main(["--diff-file", "-", "--repo-root", str(tmp_path)],
+                     stdin_text=css_diff())
+    assert rc == 0, capsys.readouterr().out
+
+
+def test_mixed_tool_manifest_list_missing_a_cell_value_reds(tmp_path, capsys):
+    # Top-level IS a list (so the writer knew to reconcile), but it still
+    # does not cover a cell-level value that is actually present.
+    states = make_full_states()
+    states[0]["capture_tool_module_sha256"] = "3" * 64
+    manifest = make_manifest(states=states)
+    manifest["tool"] = {"module_ref": "scripts/capture_page_evidence.py",
+                         "module_sha256": ["9" * 64],
+                         "user_agent": "test-agent/1.0", "version": "1.0.0"}
+    write_manifest(tmp_path, "mockups/evidence/tp1/manifest.json", manifest)
+    write_receipt(
+        tmp_path, "mockups/evidence/tp1/EVIDENCE.yml",
+        changed_paths=["templates/stock-dashboard.css"],
+        manifest="mockups/evidence/tp1/manifest.json",
+    )
+    rc = guard.main(["--diff-file", "-", "--repo-root", str(tmp_path)],
+                     stdin_text=css_diff())
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert "does not cover" in out
+
+
+def test_single_tool_manifest_is_unaffected_by_mixed_tool_check(tmp_path, capsys):
+    # No cell carries capture_tool_module_sha256 at all — the ordinary,
+    # overwhelmingly common case. Must pass with no mixed-tool finding.
+    manifest = make_manifest()
+    write_manifest(tmp_path, "mockups/evidence/tp1/manifest.json", manifest)
+    write_receipt(
+        tmp_path, "mockups/evidence/tp1/EVIDENCE.yml",
+        changed_paths=["templates/stock-dashboard.css"],
+        manifest="mockups/evidence/tp1/manifest.json",
+    )
+    rc = guard.main(["--diff-file", "-", "--repo-root", str(tmp_path)],
+                     stdin_text=css_diff())
+    assert rc == 0, capsys.readouterr().out
+
+
+# ---------------------------------------------------------------------------
+# optional page_tree_sha forward-compat field (NIT-B, #6986 r2 accepted-as-debt)
+# ---------------------------------------------------------------------------
+
+
+def test_page_tree_sha_absent_is_not_a_finding(tmp_path, capsys):
+    manifest = make_manifest()
+    write_manifest(tmp_path, "mockups/evidence/tp1/manifest.json", manifest)
+    write_receipt(
+        tmp_path, "mockups/evidence/tp1/EVIDENCE.yml",
+        changed_paths=["templates/stock-dashboard.css"],
+        manifest="mockups/evidence/tp1/manifest.json",
+    )
+    rc = guard.main(["--diff-file", "-", "--repo-root", str(tmp_path)],
+                     stdin_text=css_diff())
+    assert rc == 0, capsys.readouterr().out
+
+
+def test_page_tree_sha_well_formed_passes(tmp_path, capsys):
+    manifest = make_manifest()
+    manifest["pages"][0]["page_tree_sha"] = "a" * 40
+    write_manifest(tmp_path, "mockups/evidence/tp1/manifest.json", manifest)
+    write_receipt(
+        tmp_path, "mockups/evidence/tp1/EVIDENCE.yml",
+        changed_paths=["templates/stock-dashboard.css"],
+        manifest="mockups/evidence/tp1/manifest.json",
+    )
+    rc = guard.main(["--diff-file", "-", "--repo-root", str(tmp_path)],
+                     stdin_text=css_diff())
+    assert rc == 0, capsys.readouterr().out
+
+
+def test_page_tree_sha_malformed_reds(tmp_path, capsys):
+    manifest = make_manifest()
+    manifest["pages"][0]["page_tree_sha"] = "not-a-real-sha"
+    write_manifest(tmp_path, "mockups/evidence/tp1/manifest.json", manifest)
+    write_receipt(
+        tmp_path, "mockups/evidence/tp1/EVIDENCE.yml",
+        changed_paths=["templates/stock-dashboard.css"],
+        manifest="mockups/evidence/tp1/manifest.json",
+    )
+    rc = guard.main(["--diff-file", "-", "--repo-root", str(tmp_path)],
+                     stdin_text=css_diff())
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert "page_tree_sha" in out
 
 
 def test_material_path_not_listed_in_any_receipt_reds(tmp_path, capsys):
