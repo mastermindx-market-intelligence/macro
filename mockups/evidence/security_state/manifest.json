@@ -25,19 +25,28 @@
     }
   },
   "excluded": [],
-  "generated_at": "2026-09-10T17:25:43Z",
+  "generated_at": "2026-09-10T21:35:26Z",
   "honesty": {
     "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
     "authority": "this harness measures and screenshots; it scores, ranks, and judges nothing",
     "capture_method": "NOT a live `/stocks/MSFT.html` site route capture. The real `engine.security_state.compile_security_state_failure` (owner_read_completed=False, the M1 shell) and the real committed golden MSFT fixture were each passed through `scripts.build_ticker_pages.build_security_state()` and rendered through `templates/ticker.html.j2`. The Identity checks `.dpanel` was extracted from `#dlg-ss-evidence` `.dsr-dlg-body` into a standalone harness with the template's inline `<style>` and `templates/theme.css`, no other page chrome. Both panels are stacked on one harness page.",
     "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them",
-    "light_theme_judgment": "Judged as a design, not a token swap: light renders a white/near-white cool canvas, hairline 1px dividers between R1..R9 receipts, and dark ink text \u2014 a materially different surface from dark's luminance-depth panel.",
-    "source_hashes": "heal-round h4 r2 recapture after Identity-checks section-level brace ban and labeled values_read fields. git HEAD=cafafdb2fc3e66b5c539449d981314c7890bb76c. sha256(templates/ticker.html.j2)=c797347beec66e2226611b127ab5e0ef0000a7177a31cb7e3875f736f7bf6699. sha256(templates/theme.css)=63df1679c57976ef2130022690fd31bbb23bf41982658b87a6117457fb02bdab. sha256(scripts/build_ticker_pages.py)=0b4a0c233aaf04ecc69a65d7a8de144b138c30ec304493b6ba99df6726fa65a3."
+    "light_theme_judgment": "Judged as a design, not a token swap: light renders a white/near-white cool canvas, hairline 1px dividers between R1..R9 receipts, and dark ink text — a materially different surface from dark's luminance-depth panel.",
+    "source_hashes": "heal-round h5 recapture after house-copy of golden-MSFT identity legs. git HEAD=47f476cf463ed0d46936de513814bdc030e13b27. sha256(templates/ticker.html.j2)=c797347beec66e2226611b127ab5e0ef0000a7177a31cb7e3875f736f7bf6699. sha256(templates/theme.css)=63df1679c57976ef2130022690fd31bbb23bf41982658b87a6117457fb02bdab. sha256(scripts/build_ticker_pages.py)=1ade331e2c11beb2d0ec7fec1cbe7ca89df23db4e13804f42d7118b36b0570c4."
   },
   "outcome": "captured",
   "pages": [
     {
-      "console_errors": [],
+      "console_errors": [
+        "error: Failed to load resource: net::ERR_FILE_NOT_FOUND",
+        "error: Failed to load resource: net::ERR_FILE_NOT_FOUND",
+        "error: Failed to load resource: net::ERR_FILE_NOT_FOUND",
+        "error: Failed to load resource: net::ERR_FILE_NOT_FOUND",
+        "error: Failed to load resource: net::ERR_FILE_NOT_FOUND",
+        "error: Failed to load resource: net::ERR_FILE_NOT_FOUND",
+        "error: Failed to load resource: net::ERR_FILE_NOT_FOUND",
+        "error: Failed to load resource: net::ERR_FILE_NOT_FOUND"
+      ],
       "failed_responses": [],
       "gaps": [
         {
@@ -50,7 +59,7 @@
           "captured": false,
           "dimension": "route",
           "value": "live /stocks/MSFT.html",
-          "reason": "MSFT has never been rendered by the real pipeline into site/ \u2014 see honesty.capture_method"
+          "reason": "MSFT has never been rendered by the real pipeline into site/ — see honesty.capture_method"
         },
         {
           "captured": false,
@@ -67,156 +76,156 @@
           "viewport": "desktop"
         },
         "panel_count": 2,
-        "note": "panel_count=2: the golden-MSFT (labeled equalities + labeled values_read) and M1-shell Identity checks panels stacked on one harness page"
+        "note": "panel_count=2: the golden-MSFT (house-copy identity legs) and M1-shell Identity checks panels stacked on one harness page"
       },
       "page_id": "macro:security_state_identity_checks_panel",
       "registry_route": null,
-      "route": "isolated component harness (not a live site route \u2014 see honesty.capture_method)",
+      "route": "isolated component harness (not a live site route — see honesty.capture_method)",
       "route_kind": "harness",
       "states": [
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 461142,
+          "bytes": 509901,
           "captured": true,
-          "file": "2c77e3f31d50c2f5.png",
+          "file": "7e31fbb8a8e5e1af.png",
           "force_state": null,
-          "height": 2460,
+          "height": 2306,
           "locale": "en",
-          "sha256": "2c77e3f31d50c2f52db34072185514daeda6095e5a4d0866a292d32cc9b2a413",
+          "sha256": "7e31fbb8a8e5e1afa8636cb8a17011adb4fa9eb0b35af8b737a509fe8f8d6b81",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
           "viewport_width": 1440,
           "width": 1440,
-          "console_error_count": 0
+          "console_error_count": 1
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 336334,
+          "bytes": 391090,
           "captured": true,
-          "file": "2b50e3f331ef8076.png",
+          "file": "3544debb21ff26f4.png",
           "force_state": null,
-          "height": 3373,
+          "height": 2698,
           "locale": "en",
-          "sha256": "2b50e3f331ef8076aa485fb7a7e236415a5d0acf953700de74206f2c017e96e6",
+          "sha256": "3544debb21ff26f4c0abbe01a3c79e27465b5dedb013581f7e2abcf452c940be",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
           "viewport_width": 390,
           "width": 390,
-          "console_error_count": 0
+          "console_error_count": 1
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 372483,
+          "bytes": 514796,
           "captured": true,
-          "file": "e6ef5c0ae9dc9fcc.png",
+          "file": "bdb4989784bc25a0.png",
           "force_state": null,
-          "height": 2451,
+          "height": 2297,
           "locale": "zh",
-          "sha256": "e6ef5c0ae9dc9fcc3adfef509cd6ef111c95e36c75da08ba7a15ee5fdb1ea645",
+          "sha256": "bdb4989784bc25a0d3872ea09a565f229d743785af4cc4daa82c5f9eebfed908",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
           "viewport_width": 1440,
           "width": 1440,
-          "console_error_count": 0
+          "console_error_count": 1
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 235265,
+          "bytes": 396046,
           "captured": true,
-          "file": "2454534db742d2bb.png",
+          "file": "d118e271e8022af0.png",
           "force_state": null,
-          "height": 2665,
+          "height": 2491,
           "locale": "zh",
-          "sha256": "2454534db742d2bbcc6aebd2967958c172157a4274efc061cee1b88de8ac0842",
+          "sha256": "d118e271e8022af0da588e5ec9ab82b43f26d1fb669bab220e6a6bc8f1efc8f6",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
           "viewport_width": 390,
           "width": 390,
-          "console_error_count": 0
+          "console_error_count": 1
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 449637,
+          "bytes": 488327,
           "captured": true,
-          "file": "8ccf57b68cb4886a.png",
+          "file": "44aea188fac67e8a.png",
           "force_state": null,
-          "height": 2460,
+          "height": 2306,
           "locale": "en",
-          "sha256": "8ccf57b68cb4886a673cd80744db837ac180a6dc9eaf6694edf376184acbaa77",
+          "sha256": "44aea188fac67e8a377ab0fee1fe668b064b9db47b69a15078c1abb6cb661a24",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
           "viewport_width": 1440,
           "width": 1440,
-          "console_error_count": 0
+          "console_error_count": 1
         },
         {
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 333274,
+          "bytes": 382226,
           "captured": true,
-          "file": "28b9c793e0ea6622.png",
+          "file": "eba56c7d085030ca.png",
           "force_state": null,
-          "height": 3373,
+          "height": 2698,
           "locale": "en",
-          "sha256": "28b9c793e0ea66227b41927fbb4a9da60a1c545f564627dab29b9672220b8112",
+          "sha256": "eba56c7d085030ca55eaf912bef785b9756c9174a196329a1603030ba3a736f9",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
           "viewport_width": 390,
           "width": 390,
-          "console_error_count": 0
+          "console_error_count": 1
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 365457,
+          "bytes": 496258,
           "captured": true,
-          "file": "d0ca6070bba9a005.png",
+          "file": "c8a8b880784c3979.png",
           "force_state": null,
-          "height": 2451,
+          "height": 2297,
           "locale": "zh",
-          "sha256": "d0ca6070bba9a005f028def7c9cf93f4b0ab31d20915d1a08d7f28b2bed71d93",
+          "sha256": "c8a8b880784c39798c0ee074362955ba3b3c79c4f5ea22f07cc7245678f99a86",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
           "viewport_width": 1440,
           "width": 1440,
-          "console_error_count": 0
+          "console_error_count": 1
         },
         {
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 235217,
+          "bytes": 388398,
           "captured": true,
-          "file": "f67b3ef32962ab1c.png",
+          "file": "551db65ca077e031.png",
           "force_state": null,
-          "height": 2665,
+          "height": 2491,
           "locale": "zh",
-          "sha256": "f67b3ef32962ab1c74cf527cdea647ad6c839e571fe66f39340030115e0df46b",
+          "sha256": "551db65ca077e031be67cde33a1aaa509d42016d81168b259bcdd6ae505a777a",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
           "viewport_width": 390,
           "width": 390,
-          "console_error_count": 0
+          "console_error_count": 1
         }
       ]
     }
@@ -231,11 +240,11 @@
   "target": {
     "kind": "standalone_harness_html",
     "resolved_gitdir_or_none": null,
-    "resolved_sha_or_none": "cafafdb2fc3e66b5c539449d981314c7890bb76c",
+    "resolved_sha_or_none": "47f476cf463ed0d46936de513814bdc030e13b27",
     "site_dir": null
   },
   "tool": {
-    "module_ref": "ad hoc capture for macro#6920 heal-round h4 r2 (not scripts/capture_page_evidence.py \u2014 that tool serves live registry routes from a built site/ directory; this PR has no rendered site/stocks/MSFT.html to serve)",
+    "module_ref": "ad hoc capture for macro#6920 heal-round h5 (not scripts/capture_page_evidence.py — that tool serves live registry routes from a built site/ directory; this PR has no rendered site/stocks/MSFT.html to serve)",
     "driver": "playwright.sync_api (chromium), same engine scripts/capture_page_evidence.py uses",
     "user_agent": "chromium (playwright default)"
   },
