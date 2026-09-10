@@ -5,10 +5,13 @@ claim: >-
   EOD/OI/Greeks files for 2023-2026, while GLD was absent from that stored universe
   despite a successful bounded GLD historical request through the existing Terminal.
 falsifier: >-
-  Repeat resolve_thetadata_store and inspect the dated per-root manifest and the
-  eod/GLD, oi/GLD and greeks/GLD directories; a contemporaneous content-bearing
-  GLD history contradicts the cache observation, while the original bounded
-  Terminal response can independently falsify the request-success observation.
+  From the authorized source checkout, run the read-only census:
+  python -c "import json; from engine.thetadata_store import resolve_thetadata_store; s=resolve_thetadata_store(required=True,purpose='sce-history-falsifier'); m=json.loads((s/'_manifest.json').read_text()); print({'gld_manifest':m.get('per_root',{}).get('GLD'),'gld_tiers':{k:(s/k/'GLD').is_dir() for k in ('eod','oi','greeks')}})".
+  Compare that result with the dated manifest and original request receipts retained
+  for #7009. A contemporaneous content-bearing GLD history contradicts the historical
+  cache claim; an unsuccessful original vendor response contradicts request success.
+  A later census establishes later liveness only and does not erase the earlier
+  observation. An unresolved store must fail rather than select another path.
 so_what: >-
   Continue SCE research through the existing source owner and resolver. Treat the
   GLD cache gap separately from vendor access, and verify exact timestamped quote
@@ -37,3 +40,12 @@ and exact research continuation are in
 The successful requests cover individual examples, not full history. The normalized
 EOD schema does not preserve every field needed for executable-time valuation.
 Raw licensed data and private host identifiers remain outside this public record.
+
+## Record-shape repair, 2026-09-10
+
+CI run 34425846264 correctly rejected the original prose-only falsifier on head
+83f9eb1511e5466b984b1f40295b41d1094e3ded: it contained no runnable or openable token.
+This correction supplies the actual read-only resolver/manifest census and the
+original-record comparison. It changes no validator, data source or historical
+claim. The source-read command was syntax-checked, not executed as a new liveness
+probe. Full source validation remains the exact-head CI obligation.
