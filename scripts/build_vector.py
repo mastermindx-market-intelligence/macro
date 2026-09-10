@@ -17,6 +17,7 @@ import re
 import sys
 from datetime import datetime, timezone
 from functools import lru_cache
+from html import escape as _esc
 from pathlib import Path
 
 import numpy as np
@@ -1573,7 +1574,7 @@ def _us_stocks_state() -> dict:
 def _market_stocks_state(market: str) -> dict:
     """Stock-dashboard stat for the China/HK hero half-cards — the live label/count
     written by build_china / build_hk to data/<market>_stocks/latest.json (e.g.
-    '12 mean-reversion setups', '24 beta exposures'). Falls back to a generic label."""
+    '12 mean-reversion setups', '24 standout setups'). Falls back to a generic label."""
     site = config.ROOT / config.load()["storage"]["site_dir"]
     try:
         d = json.loads((config.data_dir() / f"{market}_stocks" / "latest.json").read_text())
@@ -1582,11 +1583,22 @@ def _market_stocks_state(market: str) -> dict:
         return {"label": "", "n_setups": 0}
 
 
-def _standout_tickers(market: str = "us") -> list[str]:
-    """Return up to 3 top-ranked standout tickers from the committed factordata artifact.
-    Reads site/factordata/{market}_standouts.json (display-tier, committed artifact).
-    Returns [] if the artifact is absent or has no qualifying rows.
-    CN/HK exchange suffixes (.SS/.SZ/.HK) are stripped for compact display."""
+def _clean_standout_ticker(tkr: str) -> str:
+    """Strip exchange suffix (.SS .SZ .HK) for compact display."""
+    if "." in tkr:
+        base, sfx = tkr.rsplit(".", 1)
+        if sfx.upper() in ("SS", "SZ", "HK"):
+            return base
+    return tkr
+
+
+def _standout_buy_rows(market: str = "us") -> list[dict]:
+    """Up to 3 top-ranked standout buy rows from the committed factordata artifact.
+
+    Same selection as the historical ticker chip: US prefers BUY ZONE then buy[:3];
+    CN/HK take buy[:3]. Returns [] if the artifact is absent or has no qualifying
+    rows. Each row carries ``_display_ticker`` (suffix-stripped).
+    """
     try:
         site = config.ROOT / config.load()["storage"]["site_dir"]
         p = site / "factordata" / f"{market}_standouts.json"
@@ -1594,32 +1606,64 @@ def _standout_tickers(market: str = "us") -> list[str]:
             return []
         d = json.loads(p.read_text())
         buy = d.get("buy", [])
-
-        def _clean(tkr: str) -> str:
-            """Strip exchange suffix (.SS .SZ .HK) for display."""
-            if "." in tkr:
-                base = tkr.rsplit(".", 1)[0]
-                # Only strip if suffix is a known exchange code (2 letters)
-                sfx = tkr.rsplit(".", 1)[1].upper()
-                if sfx in ("SS", "SZ", "HK"):
-                    return base
-            return tkr
-
         # US standouts: prefer label=='BUY ZONE' entries first, then fallback.
         # PRIORITY-ORDER DEPENDENCY (intentional): both [:3] slices take the artifact
         # in its emitted order (us_prophet_v1 = stage bucket, priority score desc,
         # ticker), so re-ordering the buy lane changes WHICH tickers this card names —
         # pinned by tests/test_us_board_rank.py::TestArtifactOrderConsumers.
         if market == "us":
-            zone = [r["ticker"] for r in buy if r.get("label") == "BUY ZONE"][:3]
-            if zone:
-                return [_clean(t) for t in zone]
-            return [_clean(r["ticker"]) for r in buy[:3]]
-        # CN/HK standouts: top 3 buy list tickers (cleaned)
-        tickers = [_clean(r.get("ticker", "")) for r in buy[:3] if r.get("ticker")]
-        return [t for t in tickers if t]
+            zone = [r for r in buy if r.get("label") == "BUY ZONE"][:3]
+            selected = zone or list(buy[:3])
+        else:
+            selected = [r for r in buy[:3] if r.get("ticker")]
+        out: list[dict] = []
+        for r in selected:
+            t = _clean_standout_ticker(str(r.get("ticker") or ""))
+            if not t:
+                continue
+            row = dict(r)
+            row["_display_ticker"] = t
+            out.append(row)
+        return out
     except Exception:  # noqa: BLE001
         return []
+
+
+def _standout_tickers(market: str = "us") -> list[str]:
+    """Return up to 3 top-ranked standout tickers from the committed factordata artifact.
+    Reads site/factordata/{market}_standouts.json (display-tier, committed artifact).
+    Returns [] if the artifact is absent or has no qualifying rows.
+    CN/HK exchange suffixes (.SS/.SZ/.HK) are stripped for compact display."""
+    return [r["_display_ticker"] for r in _standout_buy_rows(market)]
+
+
+def _standout_labels(market: str = "us") -> list[tuple[str, str]]:
+    """Glance-tier labels for the hub stock-card chips.
+
+    US keeps letter tickers (the readable precedent). CN/HK numeric codes are
+    replaced with company display names from the standouts artifact; missing
+    names fall back to the cleaned ticker. Returns (en, zh) pairs.
+    """
+    rows = _standout_buy_rows(market)
+    if market == "us":
+        return [(r["_display_ticker"], r["_display_ticker"]) for r in rows]
+    out: list[tuple[str, str]] = []
+    for r in rows:
+        t = r["_display_ticker"]
+        raw = str(r.get("name") or r.get("name_en") or "").strip()
+        zh = str(r.get("name_zh") or "").strip()
+        en = raw
+        if " / " in raw:
+            left, right = raw.split(" / ", 1)
+            en = left.strip()
+            if not zh:
+                zh = right.strip()
+        if not en:
+            en = t
+        if not zh:
+            zh = en
+        out.append((en, zh))
+    return out
 
 
 def _spvector_state() -> dict:
@@ -1664,12 +1708,14 @@ def _ipo_state() -> dict:
                 "verdict": d.get("verdict"), "priced_90d": d.get("priced_90d"),
                 "gap_5y_pp": (round(gap * 100, 1) if gap is not None else None),
                 "next_lockup": d.get("next_lockup"),
+                "next_lockup_company": d.get("next_lockup_company"),
                 "next_lockup_date": d.get("next_lockup_date"),
                 "lockups_approaching": d.get("lockups_approaching")}
     except Exception:  # noqa: BLE001
         return {"present": present, "band": "—", "verdict": None,
                 "priced_90d": None, "gap_5y_pp": None,
-                "next_lockup": None, "next_lockup_date": None,
+                "next_lockup": None, "next_lockup_company": None,
+                "next_lockup_date": None,
                 "lockups_approaching": None}
 
 
@@ -1999,6 +2045,11 @@ def home_alert_feed() -> list[dict]:
             if not stored_zh or _zh_needs_rebuild(r["rule"]):
                 stored_zh = _translate_macro_detail(r["message"], r["rule"]) or stored_zh
             detail_zh = stored_zh or r["message"]
+            # Presentation-tier EN receipt: alert_view already rewrites
+            # transition_state_change enums (NEW_REGIME/TRANSITIONING) via
+            # _plain_transition_msg. The parquet row keeps the raw string so
+            # _translate_macro_detail can still match it for ZH. Do not copy
+            # r["message"] onto the hub — that is the start.html glance defect.
             out.append({
                 "source": "macro", "source_label": h["macro_label"],
                 "source_label_zh": _tr(h["macro_label"]),
@@ -2007,7 +2058,7 @@ def home_alert_feed() -> list[dict]:
                 "type": r["rule"],
                 "headline": v["icon"] + " " + v["plain_en"],
                 "headline_zh": v["icon"] + " " + (v.get("plain_zh") or v["plain_en"]),
-                "detail": r["message"], "detail_zh": detail_zh,
+                "detail": v.get("message") or r["message"], "detail_zh": detail_zh,
                 "what": v["what_en"], "what_zh": v.get("what_zh") or v["what_en"],
                 "link": link, "tier": v["tier"],
                 "edge": v["edge_en"], "edge_zh": v.get("edge_zh") or v["edge_en"],
@@ -2154,6 +2205,11 @@ html[data-lang="zh"] .hub-signin .l-zh{display:inline}
 .hub-page.nav-search-focus .globe-deck{opacity:.58;filter:saturate(.68)}
 .hub-live-meta{display:flex;justify-content:center;align-items:center;margin-top:14px}
 .hub-live-meta .eyebrow{margin-bottom:0}
+.hub-clock-wrap{display:inline-flex;align-items:center;min-height:1em}
+.hub-clock-skel{display:inline-block;width:18ch;height:.85em;vertical-align:-.1em}
+.hub-clock-wrap:not(.is-live) .hub-clock-live{display:none}
+.hub-clock-wrap.is-live .hub-clock-skel{display:none}
+.chips .pill[data-tip-en]{cursor:help}
 /* a soft, feathered radial --bg scrim sits BEHIND the hero text (own stacking
    context via isolation) so the bright sun/moon disc never washes the headline
    out. Radial + fully transparent edges = no hard rectangular line across the body. */
@@ -2671,8 +2727,8 @@ html[data-lang="zh"] .hub-seg .l-zh{display:inline}
 }
 .go-tx{display:inline}
 
-/* ===== standout ticker chips in stock splitbtn em ===== */
-.sb-tickers{display:inline;font-family:var(--font-mono);font-size:10.5px;opacity:.8;letter-spacing:.01em}
+/* ===== standout name chips in stock splitbtn em ===== */
+.sb-tickers{display:inline;font-size:10.5px;opacity:.8;letter-spacing:.01em}
 
 /* ===== report teaser badge on reports card ===== */
 .rep-latest{font-size:11px;opacity:.82;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:32ch;display:block;margin-top:2px}
@@ -2978,6 +3034,14 @@ def _bi(en, zh):
     return '<span class="l-en">' + str(en) + '</span><span class="l-zh">' + str(zh) + '</span>'
 
 
+def _tip_attrs(en: str, zh: str) -> str:
+    """LENS hover-tier attributes. Raw figures live here, never at rest."""
+    return (
+        ' data-tip-en="' + _esc(str(en), quote=True) + '"'
+        ' data-tip-zh="' + _esc(str(zh), quote=True) + '"'
+    )
+
+
 def _g_legend(blob):
     out = []
     for m in blob:
@@ -2988,7 +3052,7 @@ def _g_legend(blob):
 
 
 def _g_markets(blob, us_n, cn_n, hk_n,
-               standout_tickers: "dict[str, list[str]] | None" = None):
+               standout_tickers: "dict[str, list] | None" = None):
     by = {m["cc"]: m for m in blob}
     _tickers = standout_tickers or {}
     # Each entry: (href, ic, ten, tzh, ten_s, tzh_s, sen, szh)
@@ -2997,10 +3061,21 @@ def _g_markets(blob, us_n, cn_n, hk_n,
     def _stock_em(cc: str, en: str, zh: str) -> str:
         t = _tickers.get(cc, [])
         if t:
-            ticker_str = " · ".join(t)
-            chip = '<span class="sb-tickers"> · ' + ticker_str + '</span>'
-            return ('<span class="l-en">' + en + chip + '</span>'
-                    '<span class="l-zh">' + zh + chip + '</span>')
+            en_parts: list[str] = []
+            zh_parts: list[str] = []
+            for item in t:
+                if isinstance(item, (tuple, list)) and len(item) >= 2:
+                    en_parts.append(str(item[0]))
+                    zh_parts.append(str(item[1]))
+                else:
+                    en_parts.append(str(item))
+                    zh_parts.append(str(item))
+            chip_en = ('<span class="sb-tickers"> · '
+                       + _esc(" · ".join(en_parts)) + '</span>')
+            chip_zh = ('<span class="sb-tickers"> · '
+                       + _esc(" · ".join(zh_parts)) + '</span>')
+            return ('<span class="l-en">' + en + chip_en + '</span>'
+                    '<span class="l-zh">' + zh + chip_zh + '</span>')
         return _bi(en, zh)
 
     SUB = {
@@ -3009,7 +3084,7 @@ def _g_markets(blob, us_n, cn_n, hk_n,
         "CN": [("china.html", "📊", "Macro Dashboard", "宏观看板", "Macro", "宏观", "A-share regime · cycle", "A股周期 · 阶段"),
                ("china_stocks.html", "📈", "Stock Dashboard", "个股看板", "Stocks · " + str(cn_n), "个股 · " + str(cn_n), _stock_em("CN", str(cn_n) + " setups · screener", str(cn_n) + " 形态 · 筛选"), "")],
         "HK": [("hk.html", "📊", "Macro Dashboard", "宏观看板", "Macro", "宏观", "Regime · risk overlay", "周期 · 风险叠加"),
-               ("hk_stocks.html", "📈", "Stock Dashboard", "个股看板", "Stocks · " + str(hk_n), "个股 · " + str(hk_n), _stock_em("HK", str(hk_n) + " beta exposures", str(hk_n) + " 个 beta 敞口"), "")],
+               ("hk_stocks.html", "📈", "Stock Dashboard", "个股看板", "Stocks · " + str(hk_n), "个股 · " + str(hk_n), _stock_em("HK", str(hk_n) + " standout setups", str(hk_n) + " 只精选个股"), "")],
         "CA": [("canada.html", "📊", "Macro Dashboard", "宏观看板", "Macro", "宏观", "Regime · CAD overlay", "周期 · 加元叠加"),
                ("canada_stocks.html", "📈", "Stock Dashboard", "个股看板", "Stocks", "个股", "TSX names & sectors", "TSX 个股与板块")],
     }
@@ -3053,13 +3128,146 @@ def _latest_report_data() -> dict | None:
         return None
 
 
+# Bond-health cycle clock — copied from engine.bonds._PHASE_WORD so a glance
+# rewrite cannot drift from the producer that minted `cycle_phase`.
+_HUB_BOND_PHASE = {
+    "recession": ("recession", "衰退"),
+    "early": ("early-cycle recovery", "周期早段复苏"),
+    "mid": ("mid-cycle", "周期中段"),
+    "late": ("late-cycle", "周期晚段"),
+}
+_HUB_BOND_LABEL = {
+    "healthy": ("Healthy", "健康"),
+    "mixed": ("Mixed", "中性"),
+    "stressed": ("Stressed", "承压"),
+}
+
+
+def _hub_risk_chip(vm: dict) -> tuple[str, str, str, str]:
+    """Glance + tip for the Bitcoin Vector risk chip.
+
+    Producer: engine/btc_signals.risk — risk_index is 0..100 (0 calm, 100 max
+    stress); risk_on means the tape is in the low-stress / risk-taking regime
+    (vm['risk_label'] is already 'Low Risk' / 'High Risk').
+    """
+    on = bool(vm.get("risk_on"))
+    glance_en, glance_zh = ("Low risk", "低风险") if on else ("High risk", "高风险")
+    idx = vm.get("risk_index")
+    idx_s = str(idx) if idx is not None else "—"
+    if on:
+        tip_en = (f"Risk index {idx_s}/100 (0 = calm, 100 = max stress). "
+                  "Risk-on means the Bitcoin tape is in a low-stress, "
+                  "risk-taking regime.")
+        tip_zh = (f"风险指数 {idx_s}/100（0 为平静，100 为最大压力）。"
+                  "风险开启表示比特币处于低压力、可承担风险的状态。")
+    else:
+        tip_en = (f"Risk index {idx_s}/100 (0 = calm, 100 = max stress). "
+                  "Risk-off means the Bitcoin tape is in a high-stress regime.")
+        tip_zh = (f"风险指数 {idx_s}/100（0 为平静，100 为最大压力）。"
+                  "风险关闭表示比特币处于高压力状态。")
+    return glance_en, glance_zh, tip_en, tip_zh
+
+
+def _hub_mom_chip(vm: dict) -> tuple[str, str, str, str]:
+    """Glance + tip for the Bitcoin Vector momentum chip.
+
+    Producer: engine/btc_signals.momentum — clipped vote ensemble on [-1, +1];
+    |score| > 0.5 is the engine's own 'Strong' cut (vm['mom_strength']).
+    """
+    raw = vm.get("momentum")
+    try:
+        m = float(raw) if raw is not None else None
+    except (TypeError, ValueError):
+        m = None
+    if m is None:
+        return "Momentum", "动量", "Momentum reading unavailable.", "动量读数暂缺。"
+    if m > 0.5:
+        glance_en, glance_zh = "Strong up-momentum", "动量偏强向上"
+    elif m < -0.5:
+        glance_en, glance_zh = "Strong down-momentum", "动量偏强向下"
+    elif m > 0:
+        glance_en, glance_zh = "Mild up-momentum", "动量温和向上"
+    elif m < 0:
+        glance_en, glance_zh = "Mild down-momentum", "动量温和向下"
+    else:
+        glance_en, glance_zh = "Flat momentum", "动量持平"
+    tip_en = (f"Momentum {m:g} on a −1 to +1 vote ensemble (trend, MACD, RSI, "
+              "SOPR). |score| above 0.5 is strong.")
+    tip_zh = (f"动量 {m:g}，标尺 −1 到 +1（趋势、MACD、RSI、SOPR 投票合成）。"
+              "绝对值高于 0.5 为偏强。")
+    return glance_en, glance_zh, tip_en, tip_zh
+
+
+def _hub_health_chip(bonds: dict | None) -> tuple[str, str, str, str] | None:
+    """Glance + tip for the Bonds health chip, or None when there is no score.
+
+    Producer: engine/bonds snapshot — health_score 0..100 with healthy ≥ 67
+    and stressed < 40 (config bonds.health); cycle_phase is the curve×credit
+    four-box clock (recession / early / mid / late).
+    """
+    b = bonds or {}
+    score = b.get("score")
+    if score is None:
+        return None
+    try:
+        hs = int(round(float(score)))
+    except (TypeError, ValueError):
+        return None
+    try:
+        hcfg = (config.load().get("bonds") or {}).get("health") or {}
+        healthy_cut = int(hcfg.get("healthy_score", 67))
+        stressed_cut = int(hcfg.get("stressed_score", 40))
+    except Exception:  # noqa: BLE001
+        healthy_cut, stressed_cut = 67, 40
+    label = str(b.get("label") or "").strip().lower()
+    if label not in _HUB_BOND_LABEL:
+        if hs >= healthy_cut:
+            label = "healthy"
+        elif hs < stressed_cut:
+            label = "stressed"
+        else:
+            label = "mixed"
+    lab_en, lab_zh = _HUB_BOND_LABEL[label]
+    phase = str(b.get("phase") or "").strip().lower()
+    pw_en, pw_zh = _HUB_BOND_PHASE.get(phase, ("", ""))
+    glance_en = lab_en + ((" · " + pw_en) if pw_en else "")
+    glance_zh = lab_zh + ((" · " + pw_zh) if pw_zh else "")
+    tip_en = (f"Bond health {hs}/100 (healthy ≥ {healthy_cut}, "
+              f"stressed < {stressed_cut}).")
+    tip_zh = (f"债券健康度 {hs}/100（健康 ≥ {healthy_cut}，承压 < {stressed_cut}）。")
+    if phase == "late":
+        tip_en += " Late-cycle: credit is tight or the yield curve is flattening."
+        tip_zh += " 周期晚段：信用偏紧或收益率曲线走平。"
+    elif pw_en:
+        tip_en += f" Cycle clock: {pw_en}."
+        tip_zh += f" 周期时钟：{pw_zh}。"
+    return glance_en, glance_zh, tip_en, tip_zh
+
+
+def _hub_ipo_lockup_line(ipo: dict) -> tuple[str, str] | None:
+    """Glance copy for the IPO Radar lock-up line, or None when no next ticker."""
+    ticker = str(ipo.get("next_lockup") or "").strip()
+    if not ticker:
+        return None
+    company = str(ipo.get("next_lockup_company") or "").strip()
+    name = _esc(company or ticker)
+    date = str(ipo.get("next_lockup_date") or "")
+    md = _esc(date[5:] if len(date) >= 10 else date)
+    en = "🔓 Next un-lock: " + name + ((" " + md) if md else "")
+    zh = "🔓 下一解禁：" + name + ((" " + md) if md else "")
+    n = ipo.get("lockups_approaching")
+    if n:
+        en += " · " + str(n) + " lock-ups approaching"
+        zh += " · 临近 " + str(n) + " 只解禁"
+    return en, zh
+
+
 def _g_vectors(vm, commodities, forex, bonds, crossasset, etf, strategies, watchlist,
                latest_report: "dict | None" = None, ipo: "dict | None" = None):
     risk_cls = "on" if vm["risk_on"] else "off"
     mom_cls = "neg" if (vm.get("momentum") is not None and vm["momentum"] < 0) else ""
     fav = ", ".join((commodities or {}).get("favored", []))
     b_score = (bonds or {}).get("score")
-    b_phase = (bonds or {}).get("phase") or ""
     fx_risk = (forex or {}).get("risk", "")
 
     def card(cls, ic, h_en, h_zh, h_en_s, h_zh_s, body, go_en, go_zh, href, attrs=""):
@@ -3068,13 +3276,24 @@ def _g_vectors(vm, commodities, forex, bonds, crossasset, etf, strategies, watch
                 '<h3 class="card-h"><span class="ch-full">' + _bi(h_en, h_zh) + '</span><span class="ch-mini">' + _bi(h_en_s, h_zh_s) + '</span></h3></div>' + body
                 + '<span class="go"><span class="go-tx">' + _bi(go_en, go_zh) + '</span></span></a>')
 
+    r_en, r_zh, r_tip_en, r_tip_zh = _hub_risk_chip(vm)
+    m_en, m_zh, m_tip_en, m_tip_zh = _hub_mom_chip(vm)
     btc = ('<div class="bar b-risk"><i style="width:' + str(vm["risk_index"]) + '%"></i></div>'
-           '<div class="chips"><span class="pill ' + risk_cls + '">' + _bi("Risk " + vm["risk_word"] + " · " + str(vm["risk_index"]),
-           "风险" + ("开启" if vm["risk_on"] else "关闭") + " · " + str(vm["risk_index"]))
-           + '</span><span class="pill ' + mom_cls + '">' + _bi("Mom " + str(vm["momentum"]), "动量 " + str(vm["momentum"])) + '</span></div>')
+           '<div class="chips"><span class="pill ' + risk_cls + '"'
+           + _tip_attrs(r_tip_en, r_tip_zh) + '>' + _bi(r_en, r_zh)
+           + '</span><span class="pill ' + mom_cls + '"'
+           + _tip_attrs(m_tip_en, m_tip_zh) + '>' + _bi(m_en, m_zh)
+           + '</span></div>')
     bd_bar = ('<div class="bar b-health"><i style="width:' + str(b_score) + '%"></i></div>') if b_score is not None else ""
-    bd_pill = (_bi("Health " + str(b_score) + " · " + (b_phase or "late"), "健康 " + str(b_score) + " · " + ("晚期" if str(b_phase).startswith("late") else b_phase))) if b_score is not None else _bi("Bond health", "债券健康")
-    bd = bd_bar + '<div class="chips"><span class="pill">' + bd_pill + '</span></div>'
+    health = _hub_health_chip(bonds)
+    if health is None:
+        bd_pill = _bi("Bond health", "债券健康")
+        bd_tip = ""
+    else:
+        h_en, h_zh, h_tip_en, h_tip_zh = health
+        bd_pill = _bi(h_en, h_zh)
+        bd_tip = _tip_attrs(h_tip_en, h_tip_zh)
+    bd = bd_bar + '<div class="chips"><span class="pill"' + bd_tip + '>' + bd_pill + '</span></div>'
     com_label = (commodities or {}).get("label", "—")
     com_q = _GQUAD_CLS.get(com_label, "")   # tint the pill by regime quadrant (was a no-op guard)
     # zh users previously saw the English regime word ("Goldilocks") — translate it
@@ -3133,19 +3352,11 @@ def _g_vectors(vm, commodities, forex, bonds, crossasset, etf, strategies, watch
         }
         _iaft = ipo.get("verdict")
         _aft = ('<div class="ipo-line">' + _bi(*_aft_map[_iaft]) + '</div>') if _iaft in _aft_map else ""
-        # next lock-up cliff (ticker · MM-DD · N approaching)
-        _itk = ipo.get("next_lockup")
-        _idate = ipo.get("next_lockup_date") or ""
-        _iappr = ipo.get("lockups_approaching")
-        _imd = _idate[5:] if len(_idate) >= 10 else _idate   # YYYY-MM-DD -> MM-DD
+        # next lock-up cliff (company · MM-DD · N lock-ups approaching)
         _cliff = ""
-        if _itk:
-            _cl_en = "🔓 Next un-lock: " + _itk + ((" " + _imd) if _imd else "")
-            _cl_zh = "🔓 下一解禁：" + _itk + ((" " + _imd) if _imd else "")
-            if _iappr:
-                _cl_en += " · " + str(_iappr) + " approaching"
-                _cl_zh += " · 临近 " + str(_iappr) + " 只"
-            _cliff = '<div class="ipo-line">' + _bi(_cl_en, _cl_zh) + '</div>'
+        _cl = _hub_ipo_lockup_line(ipo)
+        if _cl:
+            _cliff = '<div class="ipo-line">' + _bi(_cl[0], _cl[1]) + '</div>'
         ipo_body = ('<div class="chips"><span class="pill ' + _bcls + '">' + _bi(_bw_en, _bw_zh) + '</span>'
                     '<span class="pill">' + _bi(_ist_en, _ist_zh) + '</span></div>'
                     + _aft + _cliff)
@@ -3389,9 +3600,9 @@ def _hub_html(vm: dict, macro: dict, alerts: list, china: dict | None = None,
     legend = _g_legend(blob)
     globe_deck = _GLOBE_DECK_DOM.replace("__LEGEND__", legend)
     # --- new hub sections ---
-    _tickers: dict[str, list[str]] = {}
+    _tickers: dict[str, list[tuple[str, str]]] = {}
     for _mkt, _key in (("US", "us"), ("CN", "china"), ("HK", "hk")):
-        _t = _standout_tickers(_key)
+        _t = _standout_labels(_key)
         if _t:
             _tickers[_mkt] = _t
     latest_rpt = _latest_report_data()
@@ -3495,9 +3706,12 @@ def _hub_html(vm: dict, macro: dict, alerts: list, china: dict | None = None,
         '<p>' + _bi("One disciplined view across every major market.",
                     "一套框架，看清全球主要市场。") + '</p></div></div>'
         '<div class="hub-live-meta"><span class="eyebrow"><span class="live"></span>'
-        + _bi('Live · <span class="hub-clock" data-loc="en">—</span>',
-              '实时 · <span class="hub-clock" data-loc="zh-CN">—</span>')
-        + '</span></div></header>'
+        '<span class="hub-clock-wrap">'
+        '<span class="hub-clock-skel skel" aria-hidden="true"></span>'
+        '<span class="hub-clock-live">'
+        + _bi('Live · <span class="hub-clock" data-loc="en"></span>',
+              '实时 · <span class="hub-clock" data-loc="zh-CN"></span>')
+        + '</span></span></span></div></header>'
         + globe_deck
         + '<div class="hub-views" id="hub-views" data-view="mk">'
         + _HUB_SEG_HTML
@@ -3519,8 +3733,10 @@ def _hub_html(vm: dict, macro: dict, alerts: list, china: dict | None = None,
         # eyebrow clock — ticks the viewer's own browser local time, second by second
         '<script>(function(){var els=document.querySelectorAll(".hub-clock");if(!els.length)return;'
         'var opt={year:"numeric",month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false,timeZoneName:"short"};'
+        'var wrap=document.querySelector(".hub-clock-wrap");'
         'function tick(){var d=new Date();for(var i=0;i<els.length;i++){var l=els[i].getAttribute("data-loc")||undefined;'
-        'try{els[i].textContent=d.toLocaleString(l,opt);}catch(e){els[i].textContent=d.toLocaleString(undefined,opt);}}}'
+        'try{els[i].textContent=d.toLocaleString(l,opt);}catch(e){els[i].textContent=d.toLocaleString(undefined,opt);}}'
+        'if(wrap)wrap.classList.add("is-live");}'
         'tick();setInterval(tick,1000);})();</script>'
         # personal welcome — name greeting + a short market-aware read (real #globe-data,
         # no LLM), paced with pauses, then a slow dissolve to the brand. Engine + topic/

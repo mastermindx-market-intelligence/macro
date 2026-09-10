@@ -329,6 +329,7 @@ def test_lockup_summary_counts():
     s = il.summary(il.lockup_rows(_lockcal(), None))
     assert s["approaching"] >= 1 and s["just_expired"] >= 1
     assert s["next_ticker"] in ("APPR", "FRESH")   # soonest upcoming expiry
+    assert s["next_company"] in ("Approaching Co", "Fresh Co")
 
 
 def test_ipo_lockup_scored_flag_false():
