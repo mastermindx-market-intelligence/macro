@@ -1,6 +1,6 @@
 {
   "schema": "contagion_links.v1",
-  "built": "2026-09-09T10:09:19.839720+00:00",
+  "built": "2026-09-10T09:38:05.000764+00:00",
   "params": {
     "structural_version": "structural.v1",
     "dy_window": 150,
@@ -452,46 +452,46 @@
   },
   "severity": {
     "us": {
-      "sigma": 0.1609,
-      "dd21": 0.0161,
-      "ret10": 0.0027,
-      "as_of": "2026-09-08"
+      "sigma": 0.2085,
+      "dd21": 0.0209,
+      "ret10": -0.0053,
+      "as_of": "2026-09-09"
     },
     "cn": {
-      "sigma": 0.1247,
-      "dd21": 0.0125,
-      "ret10": 0.0131,
-      "as_of": "2026-09-08"
+      "sigma": 0.0972,
+      "dd21": 0.0097,
+      "ret10": 0.01,
+      "as_of": "2026-09-09"
     },
     "hk": {
-      "sigma": 0.2662,
-      "dd21": 0.0266,
-      "ret10": -0.0076,
-      "as_of": "2026-09-08"
+      "sigma": 0.2824,
+      "dd21": 0.0282,
+      "ret10": -0.0147,
+      "as_of": "2026-09-09"
     },
     "ca": {
-      "sigma": 0.23,
-      "dd21": 0.0226,
-      "ret10": -0.0161,
-      "as_of": "2026-09-08"
+      "sigma": 0.4063,
+      "dd21": 0.0284,
+      "ret10": -0.0284,
+      "as_of": "2026-09-09"
     },
     "kr": {
-      "sigma": 0.0,
-      "dd21": 0.0,
-      "ret10": 0.0373,
-      "as_of": "2026-09-09"
+      "sigma": 0.1826,
+      "dd21": 0.0183,
+      "ret10": 0.003,
+      "as_of": "2026-09-10"
     },
     "jp": {
-      "sigma": 0.5112,
-      "dd21": 0.0511,
-      "ret10": -0.0088,
-      "as_of": "2026-09-09"
+      "sigma": 0.7078,
+      "dd21": 0.0708,
+      "ret10": -0.0274,
+      "as_of": "2026-09-10"
     },
     "tw": {
-      "sigma": 0.0,
-      "dd21": 0.0,
-      "ret10": 0.0343,
-      "as_of": "2026-09-09"
+      "sigma": 0.1422,
+      "dd21": 0.0142,
+      "ret10": 0.0164,
+      "as_of": "2026-09-10"
     },
     "in": {
       "sigma": 0.4106,
@@ -500,10 +500,10 @@
       "as_of": "2026-09-08"
     },
     "au": {
-      "sigma": 0.3551,
-      "dd21": 0.0335,
-      "ret10": -0.0249,
-      "as_of": "2026-09-09"
+      "sigma": 0.4684,
+      "dd21": 0.0468,
+      "ret10": -0.031,
+      "as_of": "2026-09-10"
     },
     "gb": {
       "sigma": 0.0684,
@@ -520,91 +520,91 @@
   },
   "pressure": {
     "us": {
-      "raw": 0.201,
+      "raw": 0.2949,
       "pct": 0.5853,
       "level": "low",
       "line_en": "Pressure from abroad: low",
       "line_zh": "海外传导压力：低",
       "top_exporters": [
         {
-          "market": "jp",
-          "name_en": "Japan",
-          "name_zh": "日本",
-          "weight": 0.0888,
-          "dd21": 0.0511,
-          "ret10": -0.0088,
-          "sigma": 0.5112,
-          "contribution": 0.0454
-        },
-        {
           "market": "ca",
           "name_en": "Canada",
           "name_zh": "加拿大",
           "weight": 0.1899,
-          "dd21": 0.0226,
-          "ret10": -0.0161,
-          "sigma": 0.23,
-          "contribution": 0.0437
+          "dd21": 0.0284,
+          "ret10": -0.0284,
+          "sigma": 0.4063,
+          "contribution": 0.0771
+        },
+        {
+          "market": "jp",
+          "name_en": "Japan",
+          "name_zh": "日本",
+          "weight": 0.0888,
+          "dd21": 0.0708,
+          "ret10": -0.0274,
+          "sigma": 0.7078,
+          "contribution": 0.0628
         },
         {
           "market": "au",
           "name_en": "Australia",
           "name_zh": "澳大利亚",
           "weight": 0.1154,
-          "dd21": 0.0335,
-          "ret10": -0.0249,
-          "sigma": 0.3551,
-          "contribution": 0.041
+          "dd21": 0.0468,
+          "ret10": -0.031,
+          "sigma": 0.4684,
+          "contribution": 0.054
         }
       ],
-      "shadow_state": "caution",
-      "incumbent_state": "caution",
-      "incumbent_as_of": "2026-09-08"
+      "shadow_state": "watch",
+      "incumbent_state": "watch",
+      "incumbent_as_of": "2026-09-09"
     },
     "cn": {
-      "raw": 0.1879,
+      "raw": 0.268,
       "pct": 0.5615,
       "level": "low",
       "line_en": "Pressure from abroad: low",
       "line_zh": "海外传导压力：低",
       "top_exporters": [
         {
-          "market": "hk",
-          "name_en": "Hong Kong",
-          "name_zh": "香港",
-          "weight": 0.1288,
-          "dd21": 0.0266,
-          "ret10": -0.0076,
-          "sigma": 0.2662,
-          "contribution": 0.0343
+          "market": "ca",
+          "name_en": "Canada",
+          "name_zh": "加拿大",
+          "weight": 0.1296,
+          "dd21": 0.0284,
+          "ret10": -0.0284,
+          "sigma": 0.4063,
+          "contribution": 0.0527
         },
         {
           "market": "jp",
           "name_en": "Japan",
           "name_zh": "日本",
           "weight": 0.0657,
-          "dd21": 0.0511,
-          "ret10": -0.0088,
-          "sigma": 0.5112,
-          "contribution": 0.0336
+          "dd21": 0.0708,
+          "ret10": -0.0274,
+          "sigma": 0.7078,
+          "contribution": 0.0465
         },
         {
-          "market": "ca",
-          "name_en": "Canada",
-          "name_zh": "加拿大",
-          "weight": 0.1296,
-          "dd21": 0.0226,
-          "ret10": -0.0161,
-          "sigma": 0.23,
-          "contribution": 0.0298
+          "market": "hk",
+          "name_en": "Hong Kong",
+          "name_zh": "香港",
+          "weight": 0.1288,
+          "dd21": 0.0282,
+          "ret10": -0.0147,
+          "sigma": 0.2824,
+          "contribution": 0.0364
         }
       ],
-      "shadow_state": "caution",
-      "incumbent_state": "caution",
-      "incumbent_as_of": "2026-09-08"
+      "shadow_state": "elevated",
+      "incumbent_state": "elevated",
+      "incumbent_as_of": "2026-09-09"
     },
     "hk": {
-      "raw": 0.1886,
+      "raw": 0.2579,
       "pct": 0.5913,
       "level": "low",
       "line_en": "Pressure from abroad: low",
@@ -615,38 +615,38 @@
           "name_en": "Japan",
           "name_zh": "日本",
           "weight": 0.1083,
-          "dd21": 0.0511,
-          "ret10": -0.0088,
-          "sigma": 0.5112,
-          "contribution": 0.0554
+          "dd21": 0.0708,
+          "ret10": -0.0274,
+          "sigma": 0.7078,
+          "contribution": 0.0767
         },
         {
           "market": "au",
           "name_en": "Australia",
           "name_zh": "澳大利亚",
           "weight": 0.1251,
-          "dd21": 0.0335,
-          "ret10": -0.0249,
-          "sigma": 0.3551,
-          "contribution": 0.0444
+          "dd21": 0.0468,
+          "ret10": -0.031,
+          "sigma": 0.4684,
+          "contribution": 0.0586
         },
         {
-          "market": "cn",
-          "name_en": "China",
-          "name_zh": "中国",
-          "weight": 0.1482,
-          "dd21": 0.0125,
-          "ret10": 0.0131,
-          "sigma": 0.1247,
-          "contribution": 0.0185
+          "market": "us",
+          "name_en": "United States",
+          "name_zh": "美国",
+          "weight": 0.1072,
+          "dd21": 0.0209,
+          "ret10": -0.0053,
+          "sigma": 0.2085,
+          "contribution": 0.0223
         }
       ],
       "shadow_state": "calm",
       "incumbent_state": "calm",
-      "incumbent_as_of": "2026-09-08"
+      "incumbent_as_of": "2026-09-09"
     },
     "ca": {
-      "raw": 0.2134,
+      "raw": 0.2878,
       "pct": 0.6369,
       "level": "low",
       "line_en": "Pressure from abroad: low",
@@ -657,38 +657,38 @@
           "name_en": "Australia",
           "name_zh": "澳大利亚",
           "weight": 0.1851,
-          "dd21": 0.0335,
-          "ret10": -0.0249,
-          "sigma": 0.3551,
-          "contribution": 0.0657
+          "dd21": 0.0468,
+          "ret10": -0.031,
+          "sigma": 0.4684,
+          "contribution": 0.0867
         },
         {
           "market": "jp",
           "name_en": "Japan",
           "name_zh": "日本",
           "weight": 0.1072,
-          "dd21": 0.0511,
-          "ret10": -0.0088,
-          "sigma": 0.5112,
-          "contribution": 0.0548
+          "dd21": 0.0708,
+          "ret10": -0.0274,
+          "sigma": 0.7078,
+          "contribution": 0.0759
         },
         {
           "market": "us",
           "name_en": "United States",
           "name_zh": "美国",
           "weight": 0.1758,
-          "dd21": 0.0161,
-          "ret10": 0.0027,
-          "sigma": 0.1609,
-          "contribution": 0.0283
+          "dd21": 0.0209,
+          "ret10": -0.0053,
+          "sigma": 0.2085,
+          "contribution": 0.0367
         }
       ],
       "shadow_state": "watch",
       "incumbent_state": "watch",
-      "incumbent_as_of": "2026-09-08"
+      "incumbent_as_of": "2026-09-09"
     },
     "kr": {
-      "raw": 0.2148,
+      "raw": 0.3062,
       "pct": 0.6329,
       "level": "low",
       "line_en": "Pressure from abroad: low",
@@ -699,38 +699,38 @@
           "name_en": "Japan",
           "name_zh": "日本",
           "weight": 0.1978,
-          "dd21": 0.0511,
-          "ret10": -0.0088,
-          "sigma": 0.5112,
-          "contribution": 0.1011
+          "dd21": 0.0708,
+          "ret10": -0.0274,
+          "sigma": 0.7078,
+          "contribution": 0.14
         },
         {
           "market": "au",
           "name_en": "Australia",
           "name_zh": "澳大利亚",
           "weight": 0.0937,
-          "dd21": 0.0335,
-          "ret10": -0.0249,
-          "sigma": 0.3551,
-          "contribution": 0.0333
+          "dd21": 0.0468,
+          "ret10": -0.031,
+          "sigma": 0.4684,
+          "contribution": 0.0439
         },
         {
-          "market": "us",
-          "name_en": "United States",
-          "name_zh": "美国",
-          "weight": 0.0976,
-          "dd21": 0.0161,
-          "ret10": 0.0027,
-          "sigma": 0.1609,
-          "contribution": 0.0157
+          "market": "tw",
+          "name_en": "Taiwan",
+          "name_zh": "台湾",
+          "weight": 0.2319,
+          "dd21": 0.0142,
+          "ret10": 0.0164,
+          "sigma": 0.1422,
+          "contribution": 0.033
         }
       ],
       "shadow_state": "calm",
       "incumbent_state": "calm",
-      "incumbent_as_of": "2026-09-09"
+      "incumbent_as_of": "2026-09-10"
     },
     "jp": {
-      "raw": 0.1344,
+      "raw": 0.2192,
       "pct": 0.4643,
       "level": "low",
       "line_en": "Pressure from abroad: low",
@@ -741,38 +741,38 @@
           "name_en": "Australia",
           "name_zh": "澳大利亚",
           "weight": 0.1322,
-          "dd21": 0.0335,
-          "ret10": -0.0249,
-          "sigma": 0.3551,
-          "contribution": 0.047
+          "dd21": 0.0468,
+          "ret10": -0.031,
+          "sigma": 0.4684,
+          "contribution": 0.0619
         },
         {
-          "market": "in",
-          "name_en": "India",
-          "name_zh": "印度",
-          "weight": 0.045,
-          "dd21": 0.0342,
-          "ret10": -0.0287,
-          "sigma": 0.4106,
-          "contribution": 0.0185
+          "market": "kr",
+          "name_en": "South Korea",
+          "name_zh": "韩国",
+          "weight": 0.2,
+          "dd21": 0.0183,
+          "ret10": 0.003,
+          "sigma": 0.1826,
+          "contribution": 0.0365
         },
         {
-          "market": "us",
-          "name_en": "United States",
-          "name_zh": "美国",
-          "weight": 0.0978,
-          "dd21": 0.0161,
-          "ret10": 0.0027,
-          "sigma": 0.1609,
-          "contribution": 0.0157
+          "market": "tw",
+          "name_en": "Taiwan",
+          "name_zh": "台湾",
+          "weight": 0.1577,
+          "dd21": 0.0142,
+          "ret10": 0.0164,
+          "sigma": 0.1422,
+          "contribution": 0.0224
         }
       ],
       "shadow_state": "calm",
       "incumbent_state": "calm",
-      "incumbent_as_of": "2026-09-09"
+      "incumbent_as_of": "2026-09-10"
     },
     "tw": {
-      "raw": 0.2086,
+      "raw": 0.3171,
       "pct": 0.5893,
       "level": "low",
       "line_en": "Pressure from abroad: low",
@@ -783,38 +783,38 @@
           "name_en": "Japan",
           "name_zh": "日本",
           "weight": 0.1752,
-          "dd21": 0.0511,
-          "ret10": -0.0088,
-          "sigma": 0.5112,
-          "contribution": 0.0896
+          "dd21": 0.0708,
+          "ret10": -0.0274,
+          "sigma": 0.7078,
+          "contribution": 0.124
         },
         {
           "market": "au",
           "name_en": "Australia",
           "name_zh": "澳大利亚",
           "weight": 0.1096,
-          "dd21": 0.0335,
-          "ret10": -0.0249,
-          "sigma": 0.3551,
-          "contribution": 0.0389
+          "dd21": 0.0468,
+          "ret10": -0.031,
+          "sigma": 0.4684,
+          "contribution": 0.0513
         },
         {
-          "market": "in",
-          "name_en": "India",
-          "name_zh": "印度",
-          "weight": 0.0445,
-          "dd21": 0.0342,
-          "ret10": -0.0287,
-          "sigma": 0.4106,
-          "contribution": 0.0183
+          "market": "kr",
+          "name_en": "South Korea",
+          "name_zh": "韩国",
+          "weight": 0.269,
+          "dd21": 0.0183,
+          "ret10": 0.003,
+          "sigma": 0.1826,
+          "contribution": 0.0491
         }
       ],
       "shadow_state": "calm",
       "incumbent_state": "calm",
-      "incumbent_as_of": "2026-09-09"
+      "incumbent_as_of": "2026-09-10"
     },
     "in": {
-      "raw": 0.1991,
+      "raw": 0.2821,
       "pct": 0.6131,
       "level": "low",
       "line_en": "Pressure from abroad: low",
@@ -825,30 +825,30 @@
           "name_en": "Japan",
           "name_zh": "日本",
           "weight": 0.1074,
-          "dd21": 0.0511,
-          "ret10": -0.0088,
-          "sigma": 0.5112,
-          "contribution": 0.0549
+          "dd21": 0.0708,
+          "ret10": -0.0274,
+          "sigma": 0.7078,
+          "contribution": 0.076
         },
         {
           "market": "au",
           "name_en": "Australia",
           "name_zh": "澳大利亚",
           "weight": 0.1457,
-          "dd21": 0.0335,
-          "ret10": -0.0249,
-          "sigma": 0.3551,
-          "contribution": 0.0517
+          "dd21": 0.0468,
+          "ret10": -0.031,
+          "sigma": 0.4684,
+          "contribution": 0.0683
         },
         {
           "market": "ca",
           "name_en": "Canada",
           "name_zh": "加拿大",
           "weight": 0.1066,
-          "dd21": 0.0226,
-          "ret10": -0.0161,
-          "sigma": 0.23,
-          "contribution": 0.0245
+          "dd21": 0.0284,
+          "ret10": -0.0284,
+          "sigma": 0.4063,
+          "contribution": 0.0433
         }
       ],
       "shadow_state": "calm",
@@ -856,7 +856,7 @@
       "incumbent_as_of": "2026-09-08"
     },
     "au": {
-      "raw": 0.1925,
+      "raw": 0.275,
       "pct": 0.5913,
       "level": "low",
       "line_en": "Pressure from abroad: low",
@@ -867,10 +867,20 @@
           "name_en": "Japan",
           "name_zh": "日本",
           "weight": 0.1542,
-          "dd21": 0.0511,
-          "ret10": -0.0088,
-          "sigma": 0.5112,
-          "contribution": 0.0788
+          "dd21": 0.0708,
+          "ret10": -0.0274,
+          "sigma": 0.7078,
+          "contribution": 0.1091
+        },
+        {
+          "market": "ca",
+          "name_en": "Canada",
+          "name_zh": "加拿大",
+          "weight": 0.0876,
+          "dd21": 0.0284,
+          "ret10": -0.0284,
+          "sigma": 0.4063,
+          "contribution": 0.0356
         },
         {
           "market": "in",
@@ -881,24 +891,14 @@
           "ret10": -0.0287,
           "sigma": 0.4106,
           "contribution": 0.0297
-        },
-        {
-          "market": "ca",
-          "name_en": "Canada",
-          "name_zh": "加拿大",
-          "weight": 0.0876,
-          "dd21": 0.0226,
-          "ret10": -0.0161,
-          "sigma": 0.23,
-          "contribution": 0.0201
         }
       ],
       "shadow_state": "calm",
       "incumbent_state": "calm",
-      "incumbent_as_of": "2026-09-09"
+      "incumbent_as_of": "2026-09-10"
     },
     "gb": {
-      "raw": 0.2348,
+      "raw": 0.3266,
       "pct": 0.6667,
       "level": "low",
       "line_en": "Pressure from abroad: low",
@@ -909,20 +909,20 @@
           "name_en": "Japan",
           "name_zh": "日本",
           "weight": 0.138,
-          "dd21": 0.0511,
-          "ret10": -0.0088,
-          "sigma": 0.5112,
-          "contribution": 0.0705
+          "dd21": 0.0708,
+          "ret10": -0.0274,
+          "sigma": 0.7078,
+          "contribution": 0.0977
         },
         {
           "market": "au",
           "name_en": "Australia",
           "name_zh": "澳大利亚",
           "weight": 0.1439,
-          "dd21": 0.0335,
-          "ret10": -0.0249,
-          "sigma": 0.3551,
-          "contribution": 0.0511
+          "dd21": 0.0468,
+          "ret10": -0.031,
+          "sigma": 0.4684,
+          "contribution": 0.0674
         },
         {
           "market": "in",
@@ -940,7 +940,7 @@
       "incumbent_as_of": "2026-09-08"
     },
     "ez": {
-      "raw": 0.2042,
+      "raw": 0.2828,
       "pct": 0.6091,
       "level": "low",
       "line_en": "Pressure from abroad: low",
@@ -951,10 +951,20 @@
           "name_en": "Japan",
           "name_zh": "日本",
           "weight": 0.1443,
-          "dd21": 0.0511,
-          "ret10": -0.0088,
-          "sigma": 0.5112,
-          "contribution": 0.0737
+          "dd21": 0.0708,
+          "ret10": -0.0274,
+          "sigma": 0.7078,
+          "contribution": 0.1021
+        },
+        {
+          "market": "au",
+          "name_en": "Australia",
+          "name_zh": "澳大利亚",
+          "weight": 0.0807,
+          "dd21": 0.0468,
+          "ret10": -0.031,
+          "sigma": 0.4684,
+          "contribution": 0.0378
         },
         {
           "market": "in",
@@ -965,16 +975,6 @@
           "ret10": -0.0287,
           "sigma": 0.4106,
           "contribution": 0.0362
-        },
-        {
-          "market": "au",
-          "name_en": "Australia",
-          "name_zh": "澳大利亚",
-          "weight": 0.0807,
-          "dd21": 0.0335,
-          "ret10": -0.0249,
-          "sigma": 0.3551,
-          "contribution": 0.0286
         }
       ],
       "shadow_state": "calm",
@@ -983,18 +983,18 @@
     }
   },
   "data_sessions": {
-    "us": "2026-09-08",
-    "cn": "2026-09-08",
-    "hk": "2026-09-08",
-    "ca": "2026-09-08",
-    "kr": "2026-09-09",
-    "jp": "2026-09-09",
-    "tw": "2026-09-09",
+    "us": "2026-09-09",
+    "cn": "2026-09-09",
+    "hk": "2026-09-09",
+    "ca": "2026-09-09",
+    "kr": "2026-09-10",
+    "jp": "2026-09-10",
+    "tw": "2026-09-10",
     "in": "2026-09-08",
-    "au": "2026-09-09",
+    "au": "2026-09-10",
     "gb": "2026-09-08",
     "ez": "2026-09-08"
   },
   "gaps": [],
-  "timing_sec": 0.41
+  "timing_sec": 0.35
 }
