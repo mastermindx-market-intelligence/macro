@@ -445,6 +445,12 @@ def _find_last_good(files: list[tuple[date, Path]], now: datetime, skip_day: dat
         view = _headlines_from_blob(blob, day.isoformat(), now)
         if view["state"] in ("invalid_newest", "source_outage"):
             continue
+        # An empty snapshot with no complete Fed feed receipt is not "good" —
+        # it cannot prove either a successful empty check or usable records.
+        # Keep searching for an older snapshot with admitted items or verified
+        # complete feed coverage instead of manufacturing a fallback label.
+        if not view["items"] and view.get("fed_feed_health") != "ok":
+            continue
         view["state"] = "last_good"
         view["fresh"] = False
         return view
@@ -533,7 +539,15 @@ def _read_statement_bounded(root: Path, day: str) -> list[str] | None:
         return None
     if size > _STMT_MAX_BYTES:
         return None
-    paragraphs = fomc_statements.read_statement(day, root)
+    try:
+        paragraphs = fomc_statements.read_statement(day, root)
+    except (OSError, UnicodeError) as exc:
+        # ``read_statement`` already converts normal I/O failures to ``[]``,
+        # but malformed UTF-8 can still escape from pathlib. A corrupt stored
+        # body is unavailable evidence, not a page-wide exception and not the
+        # same state as an absent statement awaiting collection.
+        log.warning("policy_watch_current: statement unreadable %s: %s", path, exc)
+        return None
     return paragraphs
 
 

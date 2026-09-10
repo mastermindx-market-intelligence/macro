@@ -68,7 +68,7 @@
     <article class="pw-card blue{% if ns.news_state in ['invalid_newest','missing','source_outage','stale'] %} pw-current-degraded{% endif %}" id="pw-official-updates">
       <h3 class="pw-card-title">{{ t('Official updates','官方动态') }}</h3>
       {% if ns.news_state == 'invalid_newest' %}
-      <p class="pw-mini-copy">{{ t('Official updates delayed. An earlier successful copy may be shown; it is not a fresh check.','官方动态延迟。可能显示更早一次成功副本；不是新的获取。') }}</p>
+      <p class="pw-mini-copy">{{ t('Official updates delayed. An earlier saved copy may be shown; its acquisition status is shown below and it is not a fresh check.','官方动态延迟。可能显示更早的已保存副本；其获取状态见下方，且并非新的获取。') }}</p>
       {% set ns.headline_rows = (news.last_good['items'] if news.last_good else []) %}
       {% elif ns.news_state == 'source_outage' %}
       <p class="pw-mini-copy">{{ t('Official updates delayed. A relevant Federal Reserve feed did not succeed.','官方动态延迟。相关美联储源未成功获取。') }}</p>

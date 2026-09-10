@@ -121,10 +121,17 @@ def _render_policy_watch_with_lifecycle(lifecycle_fixture, monkeypatch, tmp_path
     the lifecycle view so every other context var (intel, dates, fed_stance, ...) is the
     real production shape — avoids re-guessing the whole context surface."""
     import scripts.build_policy_watch as bpw
+    from engine import fed_stance as _fs
     from engine import policy_intent_desk as _pid
+    from engine import policy_rotation_check as _rotc
 
     monkeypatch.setattr(_pid, "lifecycle_view", lambda root=None: lifecycle_fixture)
     monkeypatch.setattr(_pid, "ingest_lifecycle", lambda root=None: 0)
+    # This helper is a render-only fixture. Production history appenders are
+    # deliberately disabled so the test cannot mutate the repository merely
+    # because today's idempotency row is absent from an older feature base.
+    monkeypatch.setattr(_fs, "append_history", lambda *args, **kwargs: False)
+    monkeypatch.setattr(_rotc, "append_history", lambda *args, **kwargs: False)
 
     captured = {}
 
@@ -1598,3 +1605,42 @@ def test_r1_aggregate_ok_alone_cannot_claim_scoped_fed_freshness(tmp_path):
     view = build_current(tmp_path, now=_R1_NOW)
     assert view["headlines"]["fed_feed_health"] is None
     assert view["headlines"]["fresh"] is False
+
+
+# --------------------------------------------------------------------------- #
+# R1 final fail-closed repair — fallback proof and unreadable statement bodies
+# --------------------------------------------------------------------------- #
+
+
+def test_r1_unknown_empty_snapshot_is_not_last_good(tmp_path):
+    """An empty cache with no acquisition/feed receipt is not a usable fallback."""
+    _r1_write(tmp_path, "2026-09-08", {"articles": []})
+    _r1_write(tmp_path, "2026-09-09", {"articles": []}).write_text("{broken")
+
+    fallback = build_current(tmp_path, now=_R1_NOW)["headlines"].get("last_good")
+
+    assert fallback is None
+
+
+def test_r1_invalid_utf8_statement_is_unavailable_not_exception(tmp_path):
+    """A corrupt stored statement must fail closed without taking down the page."""
+    shutil.copytree(ROOT / "data/marketing/fomc", tmp_path / "data/marketing/fomc")
+    statement_path = tmp_path / "data/marketing/fomc/statements/2026-07-29.txt"
+    statement_path.write_bytes(b"\xff\xfe\x80")
+
+    statement = build_current(tmp_path, now=_R1_NOW)["statement"]
+
+    assert statement["state"] == "unavailable"
+    assert statement.get("reason") == "statement_oversized_or_unreadable"
+
+
+def test_r1_unverified_fallback_copy_does_not_claim_success(tmp_path):
+    """A legacy saved record may be shown, but its acquisition was not proven."""
+    _r1_write(tmp_path, "2026-09-08", {"articles": [_r1_item()]})
+    _r1_write(tmp_path, "2026-09-09", {"articles": []}).write_text("{broken")
+
+    html = _r1_render_page(build_current(tmp_path, now=_R1_NOW))
+    panel = html.split('id="pw-official-updates">', 1)[1].split("</article>", 1)[0]
+
+    assert "earlier successful copy" not in panel.lower()
+    assert "earlier saved copy" in panel.lower()

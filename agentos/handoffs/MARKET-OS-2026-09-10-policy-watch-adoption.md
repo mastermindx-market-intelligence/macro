@@ -13,15 +13,15 @@ state_before: >
   shared global source census was incomplete due to unrelated PR6657.
 changed:
   - path: engine/policy_watch_current.py
-    what: Exact reviewed V3 adopted; source health, safe fallback and statement receipt validation.
+    what: Exact reviewed V3 adopted; source health, safe fallback and statement receipt validation. Final Sol repair rejects unknown-empty fallbacks and converts corrupt statement text into an explicit unavailable state.
   - path: engine/macro_news.py
     what: Reject non-feed HTML rather than claim a successful empty acquisition.
   - path: templates/policy_watch.html.j2
     what: Current calendar and independent UK preserved; historical disclosure and valid navigation.
   - path: templates/_policy_watch_current.html.j2
-    what: Actual vote comparison, historical retention, readable bilingual source status and dates.
+    what: Actual vote comparison, historical retention, readable bilingual source status and dates. Fallback copy now says saved rather than claiming an unverified successful acquisition.
   - path: tests/test_policy_watch_ui.py
-    what: Critical regressions live in the existing CI-selected test file.
+    what: Critical regressions live in the existing CI-selected test file; render fixtures are hermetic and cover unknown-empty fallback plus corrupt statement decoding.
 verified:
   - claim: Reviewed V3 exactly reproduced in the source branch
     command: python3 /Volumes/Mastermind/agent-workspaces/claude/handoffs/policy-watch-recovery-20260908/apply_reviewed_v3.py
@@ -29,6 +29,12 @@ verified:
   - claim: Actual adopted Policy Watch, news and UK test files pass with isolated data writes
     command: python3 /Volumes/Mastermind/agent-workspaces/claude/handoffs/policy-watch-recovery-20260908/verify_adopted_source.py
     result: 155 passed; exit0; 15.93 seconds; diagnostic isolation is not hosted CI proof.
+  - claim: Final fail-closed repair passes the full targeted suite without repository mutation
+    command: MM_DATA_GUARD=trace python -m pytest tests/test_policy_watch_ui.py tests/test_macro_news.py tests/test_uk_policy_brain.py -q --disable-warnings --maxfail=1
+    result: 158 passed; data/ and site/ remained clean after the lifecycle fixture appenders were isolated.
+  - claim: Final repair passes static, UX and repository governance guards
+    command: git diff --check; py_compile; ruff E9,F63,F7,F82; check_design_system; check_runtime_style_injection; check_ui_visual_evidence; check_template_site_sync; agentos validate
+    result: All gates exit0; zero added design findings; 98 template/site pairs synchronized; zero AgentOS errors.
   - claim: Real official-source collector and actual builder/externalizer produce the current panel
     command: python3 /Volumes/Mastermind/agent-workspaces/claude/handoffs/policy-watch-recovery-20260908/prove_adopted_commit.py
     result: Exit0; c3f67 semantic files unchanged; production data untouched.
@@ -72,3 +78,18 @@ was made. The old Source Continuity refusal remains honest; required release che
 Full destination remains Now / Policy pipeline / Communications / World / Influence / Exposure.
 The R1 semantic proof binds c3f67ba9b6200ebd54bf89b3aa4104f0dcd6fb0e and the exact file hashes
 in mockups/evidence/policy-watch-r1/source-proof.json. Publication is still a separate outcome.
+
+## Sol release-continuation repair
+
+The release continuation re-audited trust boundaries rather than accepting the prior green suite as
+sufficient. Two exact-head defects reproduced: a corrupt UTF-8 statement body escaped the promised
+fail-closed composer, and an empty cache with neither admitted items nor complete feed receipt was
+relabeled `last_good`. The UI also called an unverified legacy fallback “successful.” The narrow
+repair closes all three claims without changing the 44-call corpus, lifecycle model, UK desk, source
+collector, deployment topology or Vercel posture. The lifecycle render fixture now disables the two
+production history appenders, so tests cannot modify canonical history merely because an older base
+lacks today's idempotency row.
+
+This is source verification, not production completion. A new pushed head still requires current-head
+hosted checks, a clean latest-main integration proof, independent review of that exact repaired head,
+normal Macro publication and public browser verification before this handoff can leave `blocked`.
