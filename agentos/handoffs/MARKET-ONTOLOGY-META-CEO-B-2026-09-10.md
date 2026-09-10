@@ -55,7 +55,7 @@ verified:
     command: "one-word engine smokes (grok, cursor-agent, codex, claude -p) on both hosts"
     result: "Grok Build returned HTTP 402 (balance exhausted) at 16:11Z on both machines; Cursor hit its Ultra monthly limit (resets 2026-09-13); Codex under a ChatGPT login rejected every model the installed CLI accepts. A headless claude engine was added to ext/lane.py and ext/lane_m1.py as the fallback. At 16:27Z the Chairman refreshed the Grok limits and every lane went back to Grok; the claude engine stays as the fallback."
 unverified:
-  - claim: "The Terminal armed set (#561, #554, #553, #550, #546) lands on the checks now running, and #548's merge-heal 2 head lands after it."
+  - claim: "The Terminal armed set left after #561 (#554, #553, #550, #546) lands on the checks now running, and #548's merge-heal 2 head lands after it."
     what_would_verify: "the armed watcher reporting MERGED for each, then a green post-merge deploy whose live data-dpl-id equals master."
   - claim: "macro #7032 concludes green, and the update-branch round it unblocks turns #7020, #7003, #6905, #6958 and #6909 green."
     what_would_verify: "gh pr view 7032 MERGED; then a refreshed head on each of the five with the pack reds gone."
@@ -70,7 +70,7 @@ unresolved:
   - "supabase/migrations/README.md on master still shows 0017 as not applied and has no 0018 row; the application table refresh for 0017/0018 is owed as its own small PR."
 next_actions:
   - "Let the armed Terminal set land; after every master move, verify each refreshed head is merge-only (md5 of the sorted three-dot +/- lines, equal file count, master is an ancestor) and post the note; restamp any packet lock row that pins a file the merge changed."
-  - "Install the new build script on the box the moment #561 merges, then re-run the deploy and prove the live data-dpl-id."
+  - "#561 has merged (8872328a4): install the new build script on the box now — backup the old file, compare md5 with master's copy — then re-run the deploy and prove the live data-dpl-id."
   - "Apply 0019 then 0020 after #550 merges, and 0021 after #548, each with a receipt comment and a ledger-flip PR."
   - "Post exactly ONE Wave 2 comment on macro#6819 naming this record, and paste its issuecomment id into this file's session field. Never re-ACK, never repeat the Wave 1 comment."
   - "Hand-merge the armed macro PRs as their checks conclude green, starting with #7032, then run the update-branch round it unblocks."
