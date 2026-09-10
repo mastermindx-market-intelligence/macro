@@ -4749,6 +4749,63 @@ def declared_families(
     return families
 
 
+# Honesty.gaps: a fits:true start means the paired end was never owed.
+# Static declared_cell_rows still lists both positions (discovery is at
+# capture); write-time arithmetic subtracts the unowed end and records it
+# in manifest.excluded with this reason. Forward-only — committed
+# manifests are not rewritten.
+FITS_TRUE_END_EXCLUDED_REASON = "fits:true — no end owed"
+
+
+def fits_true_unowed_ends(
+        states: Sequence[Mapping[str, Any]],
+        captured_files: set[str] | None = None,
+        ) -> list[str]:
+    """End filenames whose matching start was captured with fits:true.
+
+    An end that was actually captured is not unowed (leave it declared).
+    """
+    captured = captured_files if captured_files is not None else {
+        str(st.get("file") or "") for st in states if st.get("file")
+    }
+    ends: list[str] = []
+    seen: set[str] = set()
+    for st in states:
+        fname = str(st.get("file") or "")
+        if not fname.endswith("-start.png"):
+            continue
+        if st.get("fits") is not True and st.get("table_fits") is not True:
+            continue
+        end_name = fname.replace("-start.png", "-end.png", 1)
+        if end_name in captured or end_name in seen:
+            continue
+        seen.add(end_name)
+        ends.append(end_name)
+    return ends
+
+
+def subtract_fits_true_ends_from_declared(
+        declared_rows: Sequence[Mapping[str, Any]],
+        states: Sequence[Mapping[str, Any]],
+        captured_files: set[str],
+        ) -> tuple[list[dict[str, Any]], list[dict[str, str]]]:
+    """Drop declared ends that a fits:true start says are not owed.
+
+    Returns (kept declared rows, excluded rows with reason) so the
+    honesty.gaps contract is met at the next capture. Existing committed
+    manifests keep excluded: [] and are judged by the pre-honesty path.
+    """
+    declared_names = {str(row.get("file") or "") for row in declared_rows}
+    excluded = [
+        {"file": name, "reason": FITS_TRUE_END_EXCLUDED_REASON}
+        for name in sorted(fits_true_unowed_ends(states, captured_files))
+        if name in declared_names
+    ]
+    skip = {row["file"] for row in excluded}
+    kept = [dict(row) for row in declared_rows if row.get("file") not in skip]
+    return kept, excluded
+
+
 def _fallback_counts(html: str) -> dict[str, int]:
     from lib.macro_suite_labels import PLAIN_FALLBACK
     return {
@@ -6189,6 +6246,11 @@ def main() -> int:
             if str(fname).startswith("method_table_390_"):
                 declared_rows.append(
                     {"file": fname, "family": "method_table_390"})
+        all_states = [
+            st for page in pages_out for st in page.get("states") or []
+        ]
+        declared_rows, excluded_fits = subtract_fits_true_ends_from_declared(
+            declared_rows, all_states, captured_files)
         declared = [row["file"] for row in declared_rows]
         for leftover in EVIDENCE.glob("*.png"):
             if leftover.name not in captured_files:
@@ -6233,7 +6295,7 @@ def main() -> int:
                     "tablet": [768, 844],
                 },
             },
-            "excluded": [],
+            "excluded": excluded_fits,
             "generated_at": generated_at_start,
             "generated_at_start": generated_at_start,
             "generated_at_end": generated_at_end,

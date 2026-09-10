@@ -22,7 +22,9 @@ runs against a moving target.
 from __future__ import annotations
 
 import re
+from collections.abc import Mapping, Sequence
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -1059,6 +1061,43 @@ def test_declared_cells_minus_captured_is_gaps() -> None:
     assert "ws-macro_rates_curves-closed-dark-en-1440.png" in declared
 
 
+def test_fits_true_ends_subtracted_from_declared_and_excluded() -> None:
+    """G4: fits:true start subtracts the declared end and records a reason.
+
+    Static declared_cell_rows still lists both positions; write-time
+    arithmetic is what meets honesty.gaps. Synthetic states only — no
+    committed-evidence rewrite.
+    """
+    from scripts.capture_macro_command_p5 import (
+        FITS_TRUE_END_EXCLUDED_REASON,
+        subtract_fits_true_ends_from_declared,
+    )
+    declared_rows = [
+        {"file": "hubrail-subtabs-dark-zh-390-start.png", "family": "hub_rail"},
+        {"file": "hubrail-subtabs-dark-zh-390-end.png", "family": "hub_rail"},
+        {"file": "hubrail-subtabs-dark-en-390-start.png", "family": "hub_rail"},
+        {"file": "hubrail-subtabs-dark-en-390-end.png", "family": "hub_rail"},
+    ]
+    states = [
+        {"file": "hubrail-subtabs-dark-zh-390-start.png",
+         "fits": True, "captured": True},
+        {"file": "hubrail-subtabs-dark-en-390-start.png",
+         "fits": False, "captured": True},
+        {"file": "hubrail-subtabs-dark-en-390-end.png",
+         "captured": True},
+    ]
+    captured = {str(st["file"]) for st in states}
+    kept, excluded = subtract_fits_true_ends_from_declared(
+        declared_rows, states, captured)
+    kept_files = [row["file"] for row in kept]
+    assert "hubrail-subtabs-dark-zh-390-end.png" not in kept_files
+    assert "hubrail-subtabs-dark-en-390-end.png" in kept_files
+    assert excluded == [{
+        "file": "hubrail-subtabs-dark-zh-390-end.png",
+        "reason": FITS_TRUE_END_EXCLUDED_REASON,
+    }]
+
+
 def test_committed_manifest_gaps_equal_declared_minus_captured() -> None:
     """Tests recompute gaps and IHDR equalities from the committed manifest."""
     import json
@@ -1084,6 +1123,18 @@ def test_committed_manifest_gaps_equal_declared_minus_captured() -> None:
         row["file"] for row in (probes.get("gaps") or [])
         if isinstance(row, dict) and row.get("reason") == "declared minus captured"
     ]
+    # New capture shape (packet GUARDS): fits:true ends are subtracted from
+    # declared and recorded in manifest.excluded with a reason. Pre-honesty
+    # committed manifests keep excluded: [] and this path is unchanged.
+    excluded_fits = {
+        row["file"]
+        for row in (manifest.get("excluded") or [])
+        if isinstance(row, dict)
+        and row.get("file")
+        and "fits:true" in str(row.get("reason") or "")
+    }
+    if excluded_fits:
+        expected = sorted(set(expected) - excluded_fits)
     assert recorded == expected
     assert manifest.get("tree_clean_start") is True
     assert manifest.get("tree_clean_end") is True
@@ -2503,6 +2554,12 @@ _COVERAGE_HEADERS = {
     "en": ("Component", "Presence", "Freshness", "Source", "as-of"),
     "zh": ("分项", "具备情况", "新鲜度", "数据源截止"),
 }
+# Tight ratchet: floors sit at today's committed census (8/10/10 per locale).
+_SPECIES_CENSUS_FLOORS = {
+    "composition": 8,
+    "changed": 10,
+    "coverage": 10,
+}
 
 
 def _headers_in_text(text: str, headers: tuple[str, ...], locale: str) -> bool:
@@ -2578,6 +2635,86 @@ def _header_in_visible(token: str, text: str, locale: str) -> bool:
     if locale == "en":
         return token.casefold() in text.casefold()
     return token in text
+
+
+def _header_receipt_tokens(state: Mapping[str, Any], *, key: str) -> list[str]:
+    receipt = state.get("header_tokens")
+    assert isinstance(receipt, (list, tuple)) and len(receipt) > 0, (
+        key, "missing/empty header_tokens receipt")
+    return [str(h) for h in receipt]
+
+
+def _assert_header_tokens_state_identity(
+        crop_states: Sequence[Mapping[str, Any]],
+        start_receipt: Sequence[str],
+        *, key: str) -> None:
+    start_list = [str(h) for h in start_receipt]
+    for st in crop_states:
+        rec = st.get("header_tokens")
+        assert isinstance(rec, (list, tuple)), (
+            key, st.get("file"), "header_tokens missing")
+        rec = [str(h) for h in rec]
+        assert rec == start_list, (
+            key, st.get("file"), rec, start_list,
+            "header_tokens != start")
+
+
+def _assert_header_cell_count_consistent(
+        crop_states: Sequence[Mapping[str, Any]], *, key: str) -> None:
+    """header_cell_count is a second tamper site, not an independent DOM count."""
+    for st in crop_states:
+        rec = st.get("header_tokens")
+        rec_list = [str(h) for h in rec] if isinstance(rec, (list, tuple)) else []
+        assert st.get("header_cell_count") == len(rec_list), (
+            key, st.get("file"), st.get("header_cell_count"), len(rec_list),
+            "receipt count field inconsistent (tamper indicator)")
+
+
+def _assert_header_store_equals_start(
+        stored: Any, start_receipt: Sequence[str], *, key: str) -> None:
+    start_list = [str(h) for h in start_receipt]
+    assert stored == start_list, (
+        key, stored, start_list, "manifest start != probes headers")
+
+
+def _assert_header_tokens_prefix_of_full(
+        start_receipt: Sequence[str], full: str, *, key: str) -> None:
+    joined = " ".join(str(h) for h in start_receipt)
+    assert full.casefold().startswith(joined.casefold()), (
+        key, joined, "header_tokens not prefix of full probe text")
+
+
+def _assert_canonical_tuple_minted(
+        start_receipt: Sequence[str], species: str,
+        classified_headers: tuple[str, ...], locale: str, *, key: str) -> None:
+    if species not in ("composition", "changed", "coverage"):
+        return
+    receipt = [str(h) for h in start_receipt]
+    assert _canonical_tuple_in_order(receipt, classified_headers, locale), (
+        key, species, receipt, classified_headers,
+        "receipt missing canonical header tuple in order")
+
+
+def _assert_other_species_near_miss(
+        start_receipt: Sequence[str], locale: str, *, key: str) -> None:
+    """Near-miss is counted on the start header receipt, not body text."""
+    blob = " ".join(str(h) for h in start_receipt)
+    for sname, tup in (
+            ("composition", _COMPOSITION_HEADERS[locale]),
+            ("changed", _CHANGED_HEADERS[locale]),
+            ("coverage", _COVERAGE_HEADERS[locale])):
+        n_hit = _canonical_member_count(blob, tup, locale)
+        assert n_hit < len(tup) - 1, (
+            key, "other near-miss of", sname, tup, n_hit)
+
+
+def _assert_species_census_floors(
+        species_census: Mapping[tuple[str, str], int]) -> None:
+    for loc in ("en", "zh"):
+        for species, floor in _SPECIES_CENSUS_FLOORS.items():
+            got = int(species_census.get((loc, species), 0))
+            assert got >= floor, (
+                loc, f"{species} census floor", got)
 
 
 @pytest.mark.needs_full_checkout("mockups")
@@ -2675,40 +2812,18 @@ def test_method_table_390_contribution_union() -> None:
             crop_states.append(end)
         union = " ".join(parts)
         unions[(slug, ekey, theme, width)][locale] = union
-        start_receipt = start.get("header_tokens")
-        assert isinstance(start_receipt, (list, tuple)) and len(start_receipt) > 0, (
-            key, "missing/empty header_tokens receipt")
-        start_receipt = [str(h) for h in start_receipt]
-        for st in crop_states:
-            rec = st.get("header_tokens")
-            assert isinstance(rec, (list, tuple)), (
-                key, st.get("file"), "header_tokens missing")
-            rec = [str(h) for h in rec]
-            assert rec == start_receipt, (
-                key, st.get("file"), rec, start_receipt,
-                "header_tokens != start")
-            assert st.get("header_cell_count") == len(rec), (
-                key, st.get("file"), st.get("header_cell_count"), len(rec),
-                "header_cell_count != len(header_tokens)")
-        stored = probe_headers.get(key)
-        assert stored == start_receipt, (
-            key, stored, start_receipt, "manifest start != probes headers")
-        joined = " ".join(start_receipt)
-        assert full.casefold().startswith(joined.casefold()), (
-            key, joined, "header_tokens not prefix of full probe text")
-        if species in ("composition", "changed", "coverage"):
-            assert _canonical_tuple_in_order(
-                start_receipt, classified_headers, locale), (
-                key, species, start_receipt, classified_headers,
-                "receipt missing canonical header tuple in order")
+        start_receipt = _header_receipt_tokens(start, key=key)
+        _assert_header_tokens_state_identity(
+            crop_states, start_receipt, key=key)
+        _assert_header_cell_count_consistent(crop_states, key=key)
+        _assert_header_store_equals_start(
+            probe_headers.get(key), start_receipt, key=key)
+        _assert_header_tokens_prefix_of_full(start_receipt, full, key=key)
+        _assert_canonical_tuple_minted(
+            start_receipt, species, classified_headers, locale, key=key)
         if species == "other":
-            for sname, tup in (
-                    ("composition", _COMPOSITION_HEADERS[locale]),
-                    ("changed", _CHANGED_HEADERS[locale]),
-                    ("coverage", _COVERAGE_HEADERS[locale])):
-                n_hit = _canonical_member_count(full, tup, locale)
-                assert n_hit < len(tup) - 1, (
-                    key, "other near-miss of", sname, tup, n_hit)
+            _assert_other_species_near_miss(
+                start_receipt, locale, key=key)
             receipt = start.get("header_tokens")
             assert isinstance(receipt, (list, tuple)) and len(receipt) > 0, (
                 key, "other-species missing/empty header_tokens receipt")
@@ -2761,14 +2876,140 @@ def test_method_table_390_contribution_union() -> None:
         and locs["en"].casefold() == locs["zh"].casefold()
     ]
     assert not collisions, ("EN/ZH visible union not distinct", collisions[:8])
-    for loc in ("en", "zh"):
-        assert species_census[(loc, "composition")] >= 8, (
-            loc, "composition census floor",
-            species_census[(loc, "composition")])
-        assert species_census[(loc, "changed")] >= 10, (
-            loc, "changed census floor", species_census[(loc, "changed")])
-        assert species_census[(loc, "coverage")] >= 10, (
-            loc, "coverage census floor", species_census[(loc, "coverage")])
+    _assert_species_census_floors(species_census)
+
+
+def _synthetic_crop(
+        tokens: Sequence[str], *,
+        file: str = "start.png",
+        count: int | None = None) -> dict[str, Any]:
+    rec = [str(h) for h in tokens]
+    return {
+        "file": file,
+        "header_tokens": rec,
+        "header_cell_count": len(rec) if count is None else count,
+    }
+
+
+def test_mut_hdrtok_truncated_receipt_rejected() -> None:
+    """MUT-hdrtok: single-site truncated crop receipt must fail identity."""
+    start = ["DRIVER", "READING", "UNIT", "PUSH", "COVERAGE"]
+    crops = [
+        _synthetic_crop(start, file="start.png"),
+        _synthetic_crop(start[:1], file="end.png"),
+    ]
+    with pytest.raises(AssertionError) as ei:
+        _assert_header_tokens_state_identity(crops, start, key="k")
+    assert "header_tokens != start" in str(ei.value)
+
+
+def test_mut_hdrstore_mismatched_store_rejected() -> None:
+    """MUT-hdrstore: probe header store != start receipt must fail."""
+    start = ["DRIVER", "READING", "UNIT", "PUSH", "COVERAGE"]
+    with pytest.raises(AssertionError) as ei:
+        _assert_header_store_equals_start(["DRIVER"], start, key="k")
+    assert "manifest start != probes headers" in str(ei.value)
+
+
+def test_mut_hdrcount_wrong_count_rejected() -> None:
+    """MUT-hdrcount: header_cell_count tamper must fail the consistency check."""
+    start = ["DRIVER", "READING", "UNIT", "PUSH", "COVERAGE"]
+    crops = [_synthetic_crop(start, file="start.png", count=1)]
+    with pytest.raises(AssertionError) as ei:
+        _assert_header_cell_count_consistent(crops, key="k")
+    assert "receipt count field inconsistent (tamper indicator)" in str(ei.value)
+
+
+def test_mut_hdrprefix_non_prefix_tokens_rejected() -> None:
+    """MUT-hdrprefix: receipt tokens that are not a prefix of full text fail."""
+    with pytest.raises(AssertionError) as ei:
+        _assert_header_tokens_prefix_of_full(
+            ["NOTAHEADER", "ALSOFAKE"],
+            "Component Raw Standardized Weight Contribution 1.25",
+            key="k")
+    assert "header_tokens not prefix of full probe text" in str(ei.value)
+
+
+def test_mut_mint_canonical_tuple_missing_rejected() -> None:
+    """MUT-mint: known-species receipt missing the canonical tuple must fail."""
+    with pytest.raises(AssertionError) as ei:
+        _assert_canonical_tuple_minted(
+            ["Component", "Raw", "Standardized", "Contrib."],
+            "composition", _COMPOSITION_HEADERS["en"], "en", key="k")
+    assert "receipt missing canonical header tuple in order" in str(ei.value)
+
+
+def test_mut_nearmiss_n_minus_1_hit_rejected() -> None:
+    """MUT-species: n-1 canonical members on the START receipt must fail.
+
+    G2: the near-miss domain is the header receipt, not the table body.
+    """
+    # 3 of 4 changed headers → n_hit == len(tup)-1 → reject.
+    receipt = ["Metric", "Prior", "Current", "Other"]
+    with pytest.raises(AssertionError) as ei:
+        _assert_other_species_near_miss(receipt, "en", key="k")
+    assert "other near-miss of" in str(ei.value)
+    assert "changed" in str(ei.value)
+
+
+def test_mut_floor_census_breach_rejected() -> None:
+    """MUT-floor: dropping one composition instance below the floor must fail."""
+    census = {
+        ("en", "composition"): 7,
+        ("zh", "composition"): 8,
+        ("en", "changed"): 10,
+        ("zh", "changed"): 10,
+        ("en", "coverage"): 10,
+        ("zh", "coverage"): 10,
+    }
+    with pytest.raises(AssertionError) as ei:
+        _assert_species_census_floors(census)
+    assert "composition census floor" in str(ei.value)
+
+
+def test_v27_receipt_predicates_accept_well_formed_synthetic() -> None:
+    """Positive control: well-formed in-memory receipts pass every predicate."""
+    start = ["Component", "Raw", "Standardized", "Weight", "Contribution"]
+    crops = [
+        _synthetic_crop(start, file="start.png"),
+        _synthetic_crop(start, file="end.png"),
+    ]
+    _assert_header_tokens_state_identity(crops, start, key="k")
+    _assert_header_cell_count_consistent(crops, key="k")
+    _assert_header_store_equals_start(list(start), start, key="k")
+    _assert_header_tokens_prefix_of_full(
+        start, "Component Raw Standardized Weight Contribution 1.25 extra",
+        key="k")
+    _assert_canonical_tuple_minted(
+        start, "composition", _COMPOSITION_HEADERS["en"], "en", key="k")
+    _assert_other_species_near_miss(
+        ["DRIVER", "READING", "UNIT", "PUSH", "COVERAGE"], "en", key="k")
+    _assert_species_census_floors({
+        ("en", "composition"): 8, ("zh", "composition"): 8,
+        ("en", "changed"): 10, ("zh", "changed"): 10,
+        ("en", "coverage"): 10, ("zh", "coverage"): 10,
+    })
+
+
+def test_mut_census_contrib_abbrev_still_reds() -> None:
+    """MUT-census defense: Contribution→Contrib. on the receipt is a near-miss.
+
+    A consistent copy edit reclassifies composition as other; G2 still counts
+    members on the receipt, so n_hit=4 of 5 reds. Prefix is a separate layer
+    (text-only edit) and the census floor is the backstop.
+    """
+    receipt = ["Component", "Raw", "Standardized", "Weight", "Contrib."]
+    with pytest.raises(AssertionError) as ei:
+        _assert_other_species_near_miss(receipt, "en", key="k")
+    assert "other near-miss of" in str(ei.value)
+    assert "composition" in str(ei.value)
+    # Text-only rename (receipt still has Contribution) is a prefix miss.
+    with pytest.raises(AssertionError) as ej:
+        _assert_header_tokens_prefix_of_full(
+            ["Component", "Raw", "Standardized", "Weight", "Contribution"],
+            "Component Raw Standardized Weight Contrib. 1.25",
+            key="k")
+    assert "header_tokens not prefix of full probe text" in str(ej.value)
 
 
 @pytest.mark.needs_full_checkout("mockups")
