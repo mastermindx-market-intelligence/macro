@@ -127,7 +127,7 @@
   .turn-chip.turning    { color:var(--ink-warn, var(--warn)); border-color:color-mix(in srgb,#fb923c 40%,var(--line)); }
   .turn-chip.confirmed  { color:var(--ink-up, var(--up)); border-color:color-mix(in srgb,#4ade80 40%,var(--line)); }
   /* ---- signal tier chip ---- */
-  .sig-fresh { color:var(--ink-up, var(--up)); font-size:8px; vertical-align:middle; margin-left:2px; }
+  .sig-fresh { color:var(--ink-ok, var(--ok)); font-size:8px; vertical-align:middle; margin-left:2px; }
   .sig-chip { display:inline-block; font-size:10px; font-weight:700; padding:0 5px;
     border-radius:5px; vertical-align:1px; color:var(--ink-up, var(--up));
     border:1px solid color-mix(in srgb,var(--up) 40%,var(--line)); margin-left:4px; }
@@ -180,7 +180,6 @@
   /* zh 红涨绿跌 (operator ruling 2026-07-21): strong=bullish→red; confirmed=basing→turning→red */
   html[data-lang="zh"] .score-badge.strong { color:#e06464; border-color:color-mix(in srgb,#e06464 40%,var(--line)); background:color-mix(in srgb,#e06464 8%,transparent); }
   html[data-lang="zh"] .turn-chip.confirmed { color:#e06464; border-color:color-mix(in srgb,#e06464 40%,var(--line)); }
-  html[data-lang="zh"] .sig-fresh { color:#e06464; }
   /* --red is not defined on this theme.css page (it's a vector-family token) — literal hex */
   html[data-lang="zh"] .sig-chip { color:#e06464; border-color:color-mix(in srgb,#e06464 40%,var(--line)); }
   /* category filter chips for performance table */
