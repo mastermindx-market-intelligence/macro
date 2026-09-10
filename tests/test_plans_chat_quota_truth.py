@@ -151,6 +151,16 @@ def _mutate(**lanes) -> dict:
     return cq
 
 
+def _section(html: str, aria: str) -> str:
+    match = re.search(
+        rf'<section\b[^>]*aria-label="{re.escape(aria)}"[^>]*>.*?</section>',
+        html,
+        flags=re.DOTALL,
+    )
+    assert match, f"missing section aria-label={aria!r}"
+    return match.group(0)
+
+
 def test_plans_page_renders_every_configured_lane():
     """All SIX lane values, not the four an earlier cut checked — a plain reprice of
     `essential.deep` or a re-hardcode of `free.deep` would otherwise pass unnoticed."""
@@ -162,9 +172,11 @@ def test_plans_page_renders_every_configured_lane():
     # rendered no number at all.
     free_en, _ = _long(vm["free"]["fast"])
     ess_en, _ = _long(vm["essential"]["fast"])
+    ess_deep_en, _ = _long(vm["essential"]["deep"])
     deep_en, _ = _long(vm["pro"]["deep"])
     assert f">{vm['free']['fast']['limit']} quick questions {free_en}<" in html
     assert f">{vm['essential']['fast']['limit']} {ess_en}<" in html
+    assert f">{vm['essential']['deep']['limit']} {ess_deep_en}<" in html
     assert f">{vm['pro']['deep']['limit']} {deep_en}<" in html
     for tier in DISPLAY_TIERS:
         for lane in ("fast", "deep"):
@@ -197,6 +209,9 @@ def test_plans_page_renders_every_configured_lane():
         # substring of "300 a month" and would fire on the untouched Essential fast
         # lane — a needle that matches the thing it is not testing proves nothing.
         ({"essential_deep": {"limit": 0}}, [], [">0<small>", ">0 a month<"]),
+        # Essential Deep Opus on the card AND the Pro who-line is derived, not a
+        # leftover "10 a month" literal. A reprice must move both surfaces.
+        ({"essential_deep": {"limit": 25}}, [">25 a month<", ">每月 25 次<"], [">10 a month<"]),
     ],
 )
 def test_plans_page_moves_when_the_config_moves(lanes, present, absent):
@@ -215,6 +230,82 @@ def test_pulling_a_lane_adds_exactly_one_cross_cell():
     before = _render_plans().count('<td class="no">✗</td>')
     after = _render_plans(_mutate(essential_deep={"limit": 0})).count('<td class="no">✗</td>')
     assert after == before + 1
+
+
+def test_essential_card_carries_derived_deep_lane():
+    """Essential's tier card must sell Deep Opus from chat_quotas, matching the matrix.
+
+    The matrix row was already data-driven; the card omitted the lane, so the page
+    disagreed with itself and with config/brain.yml (Essential deep = 10/month).
+    """
+    src = (ROOT / "templates" / "plans.html.j2").read_text(encoding="utf-8")
+    ess_src = src.split('aria-label="Essential plan"', 1)[1].split(
+        'aria-label="Pro plan"', 1
+    )[0]
+    assert "chatqty(chat_quotas.essential.deep" in ess_src
+    assert "chatqty(chat_quotas.essential.fast" in ess_src
+
+    html = _render_plans()
+    vm = chat_allowance_view_model()
+    card = _section(html, "Essential plan")
+    ess_en, ess_zh = _long(vm["essential"]["deep"])
+    assert "Deep Opus chat" in card
+    assert "深度 Opus 对话" in card
+    assert f">{vm['essential']['deep']['limit']} {ess_en}<" in card
+    assert f">{ess_zh} {vm['essential']['deep']['limit']} 次<" in card
+
+
+def test_plans_copy_does_not_claim_deep_lane_is_pro_exclusive():
+    """Who-line and FAQ used to say Essential lacks the deep lane. That is false."""
+    src = (ROOT / "templates" / "plans.html.j2").read_text(encoding="utf-8")
+    html = _render_plans()
+    for hay in (src, html):
+        assert "plus the deep Opus chat lane" not in hay
+        assert "Pro adds the deep Opus chat lane" not in hay
+        assert "the deep Opus chat lane for real research" not in hay
+        assert "另加用于深度研究的 Opus 对话通道" not in hay
+        assert "Pro 另加深度 Opus 对话通道" not in hay
+        assert "the only tier with the Opus chat lane" not in hay
+    who = re.search(r'<p class="who">.*?</p>', _section(html, "Pro plan"), flags=re.DOTALL)
+    assert who, "Pro who-line missing"
+    who_html = who.group(0)
+    vm = chat_allowance_view_model()
+    pro_en, pro_zh = _long(vm["pro"]["deep"])
+    ess_en, ess_zh = _long(vm["essential"]["deep"])
+    assert "far larger Deep Opus allowance" in who_html
+    assert "更大的深度 Opus 额度" in who_html
+    assert f">{vm['pro']['deep']['limit']} {pro_en}<" in who_html
+    assert f">{pro_zh} {vm['pro']['deep']['limit']} 次<" in who_html
+    assert f">{vm['essential']['deep']['limit']} {ess_en}<" in who_html
+    assert f">{ess_zh} {vm['essential']['deep']['limit']} 次<" in who_html
+    assert "includes the deep Opus lane with a small monthly allowance" in html
+    assert "并包含每月少量的深度 Opus 额度" in html
+    assert "multiplies that Deep Opus allowance" in html
+    assert "将深度 Opus 额度大幅提升" in html
+    faq_src = src.split("the difference between Essential and Pro?", 1)[1].split(
+        "Is the charts terminal really free?", 1
+    )[0]
+    assert "chatqty(chat_quotas.pro.fast" in faq_src
+
+
+def test_plans_matrix_group_headers_are_bilingual():
+    src = (ROOT / "templates" / "plans.html.j2").read_text(encoding="utf-8")
+    assert "{{ t('MASTERMIND AI', '操盘大脑') }}" in src
+    assert "{{ t('TERMINAL', '终端') }}" in src
+    assert '<tr class="grp"><td colspan="4">MASTERMIND AI</td></tr>' not in src
+    assert '<tr class="grp"><td colspan="4">TERMINAL</td></tr>' not in src
+    html = _render_plans()
+    assert (
+        '<tr class="grp"><td colspan="4"><span class="l-en">MASTERMIND AI</span>'
+        '<span class="l-zh">操盘大脑</span></td></tr>'
+    ) in html
+    assert (
+        '<tr class="grp"><td colspan="4"><span class="l-en">TERMINAL</span>'
+        '<span class="l-zh">终端</span></td></tr>'
+    ) in html
+    assert "Terminal 图表" not in src
+    assert "Terminal 图表" not in html
+    assert "终端图表" in html
 
 
 # --------------------------------------------------------------------------- #

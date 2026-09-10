@@ -9,9 +9,10 @@
 
    Design: house glass system (theme.css tokens, dark-first + full light + ZH swap).
    Each tier carries a stance colour that encodes real capability — Free = steel,
-   Essential = the house signal-blue (--info), Pro = the Mastermind-orb violet (the only
-   tier with the Opus chat lane). Signature = the billing toggle that live-morphs the
-   prices and blooms the "save N%" badges (annual default, masterplan §2.1).
+   Essential = the house signal-blue (--info), Pro = the Mastermind-orb violet (the
+   far larger Deep Opus allowance plus unlimited fast chat). Signature = the billing
+   toggle that live-morphs the prices and blooms the "save N%" badges (annual default,
+   masterplan §2.1).
 
    Bilingual EN/ZH via l-en / l-zh dual-spans (theme.css flips them off [data-lang]).
    No translated text in title= (CI-guarded); help/detail lives in .l-en/.l-zh spans. -#}
@@ -467,7 +468,7 @@
           <li>{{ t('Special situations', '特殊事件') }} — <b>{{ t('the 3 newest filings', '最新 3 份披露文件') }}</b></li>
           <li>{{ t('Committee &amp; brief — a teaser', '委员会与简报 — 预览') }}</li>
           <li>{{ t('Mastermind chat', '操盘大脑对话') }} — <b>{{ chatqty(chat_quotas.free.fast, ' quick questions', ' 个快速提问') }}</b></li>
-          <li>{{ t('Terminal charting', 'Terminal 图表') }} — <b>{{ terminal_indicators.core_count }} {{ t('core indicators', '个核心指标') }}</b> + {{ t('Candle Painter', 'K 线着色器') }}</li>
+          <li>{{ t('Terminal charting', '终端图表') }} — <b>{{ terminal_indicators.core_count }} {{ t('core indicators', '个核心指标') }}</b> + {{ t('Candle Painter', 'K 线着色器') }}</li>
         </ul>
         <button class="btn" data-act="free" type="button"><span class="btxt">{{ t('Sign in — it’s free', '登录 — 完全免费') }}</span></button>
         <p class="cta-note" id="free-note"><span class="l-en">Your current plan.</span><span class="l-zh">你当前的方案。</span></p>
@@ -495,6 +496,7 @@
           <li><b>{{ t('The special situations desk', '完整特殊事件交易台') }}</b> — {{ t('activist, M&amp;A, spin-offs, take-privates', '维权、并购、分拆、私有化') }}</li>
           <li>{{ t('Committee, brief &amp; track record', '委员会、简报与业绩记录') }} — {{ t('in full', '完整版') }}</li>
           <li>{{ t('Mastermind chat', '操盘大脑对话') }} — <b>{{ chatqty(chat_quotas.essential.fast, '', ' 次') }}</b></li>
+          <li><b>{{ t('Deep Opus chat', '深度 Opus 对话') }}</b> — {{ chatqty(chat_quotas.essential.deep, '', ' 次') }}</li>
           <li><b>{{ terminal_indicators.access.essential }} / {{ terminal_indicators.advanced_total }} {{ t('advanced indicator modules', '个高级指标模块') }}</b> — {{ t('Trend Engine, market structure &amp; oscillator signals', '趋势引擎、市场结构与振荡器信号') }}</li>
           <li>{{ t('Terminal live options', '终端实时期权') }} — <b>{{ t('included', '含') }}</b></li>
         </ul>
@@ -513,7 +515,7 @@
                data-offer-cap="{{ founding.cap }}">
         <span class="hot-tab" data-offer-ribbon><span class="l-en">Founding rate</span><span class="l-zh">创始会员价</span></span>
         <h3>{{ pro.name }}</h3>
-        <p class="who">{{ t('Everything in Essential, plus the deep Opus chat lane for real research.', 'Essential 全部内容，另加用于深度研究的 Opus 对话通道。') }}</p>
+        <p class="who">{{ t('Everything in Essential, plus a far larger Deep Opus allowance (', 'Essential 全部内容，另加更大的深度 Opus 额度（') }}{{ chatqty(chat_quotas.pro.deep, '', ' 次') }}{{ t(' vs Essential’s ', '，相对 Essential ') }}{{ chatqty(chat_quotas.essential.deep, '', ' 次') }}{{ t(') and ', '）以及') }}{{ chatqty(chat_quotas.pro.fast) }}{{ t(' fast chat.', '的快速对话。') }}</p>
         <div class="price">
           <span class="was" data-offer-rack>${{ founding.regular_annual_pm }}</span><span class="cur">$</span><span class="amt" data-price>{{ founding.annual_pm }}</span>
           <span class="per" data-per><span class="l-en">/mo billed annually</span><span class="l-zh">/月 · 年付</span></span>
@@ -625,7 +627,7 @@
             <td class="ok">✓</td>
           </tr>
 
-          <tr class="grp"><td colspan="4">MASTERMIND AI</td></tr>
+          <tr class="grp"><td colspan="4">{{ t('MASTERMIND AI', '操盘大脑') }}</td></tr>
           <tr>
             <td class="feat has-tip"><span class="ft">{{ t('Mastermind chat', '操盘大脑对话') }}</span><span class="tipbox">{{ t('The fast lane — quick market questions, answered on any page.', '快速通道——在任意页面提出快速市场问题。') }}</span></td>
             {{ chattd(chat_quotas.free.fast) }}
@@ -639,7 +641,7 @@
             {{ chattd(chat_quotas.pro.deep) }}
           </tr>
 
-          <tr class="grp"><td colspan="4">TERMINAL</td></tr>
+          <tr class="grp"><td colspan="4">{{ t('TERMINAL', '终端') }}</td></tr>
           <tr>
             <td class="feat has-tip"><span class="ft">{{ t('Charts terminal', '图表终端') }}</span><span class="tipbox up">{{ t('Live charting in the browser — nothing to install, free for everyone.', '浏览器内实时图表——无需安装，所有人免费。') }}</span></td>
             <td class="val">{{ t('Free', '免费') }}</td>
@@ -690,8 +692,8 @@
       </details>
       <details>
         <summary>{{ t('What’s the difference between Essential and Pro?', 'Essential 和 Pro 有什么区别？') }}{{ chev|safe }}</summary>
-        <div class="ans">{{ t('Essential unlocks the entire site and the fast chat lane. Pro adds the deep Opus chat lane — the heavyweight model for real research — plus far more chat every month.',
-                              'Essential 解锁整个网站与快速对话通道。Pro 另加深度 Opus 对话通道——用于真正研究的重量级模型——并大幅提升每月对话额度。') }}</div>
+        <div class="ans">{{ t('Essential unlocks the entire site and the fast chat lane, and includes the deep Opus lane with a small monthly allowance. Pro multiplies that Deep Opus allowance; fast chat is ',
+                              'Essential 解锁整个网站与快速对话通道，并包含每月少量的深度 Opus 额度。Pro 将深度 Opus 额度大幅提升；快速对话为') }}{{ chatqty(chat_quotas.pro.fast, '', ' 次') }}{{ t('.', '。') }}</div>
       </details>
       <details>
         <summary>{{ t('Is the charts terminal really free?', '图表终端真的免费吗？') }}{{ chev|safe }}</summary>
