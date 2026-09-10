@@ -154,3 +154,19 @@ Exact next action: resolve one actual receiver on C0BSBM78V1N/1789063697.492969 
 Current-head source was read through GitHub and public documentation through the web. The complete public OpenAPI manifest re-fetch did not yield an inspectable result: a read-only Studio process PID27490 was launched with a65-second bound, but subsequent result reads timed out. Its exit/output is unconfirmed, not a successful schema hash census. No product file, market-data store or runtime state was written by that diagnostic. It was not replayed through another worker/device. A separate public-document tool reported exhausted credits; no top-up or paid fallback was used.
 
 The actual research test runner is local to the ChatGPT sandbox and completed with exit0. Do not confuse it with the unresolved host diagnostic. Repository publication and actual worker consumption require separate readback. The records PR remains Draft/HOLD unless a later verified owner action changes it. No new workstream, watcher, lifecycle, collector, source database, source-worker effect, merge, deployment or signal authority follows from this dossier alone.
+
+## 8. Same-process reconciliation after publication
+
+This section supersedes only the unconfirmed-exit/manifest limitation in section7. A later successful read of the **same** Studio process27490 proved exit0 and runtime10.00seconds; it was not restarted. Targeted output reads recovered all three public-specification manifests, while some larger output reads still timed out. The device later returned Not connected. The process completion is known; full inspection of every printed schema is not claimed.
+
+| Public specification | Bytes | HTTP operations | Schema definitions | SHA-256 |
+|---|---:|---:|---:|---|
+| flowseeker-openapi.yaml | 191186 | 47 | 146 | 04447f283e80f7ee4ba63dfb7d2846b9b3aca686719119720b784ad8e1e798d2 |
+| openapi.yaml | 16089 | 4 | 4 | 56d6a2a9d14fddbffea52c1b72cdd1ae29de7b6ff33b9d150b234a05fac425c2 |
+| atlas-openapi.yaml | 24859 | 5 | 8 | c1b51815c16a14e22a658aded48db09df7fad2b6a27e552271490027c2331a62 |
+
+These are separate documentation-surface counts, not independent algorithms, available entitlements or proven live endpoints. Reads occurred at2026-09-10T20:16:53–54Z. The raw specifications were parsed in memory; no competitor corpus, private code or credentials were stored.
+
+The recovered FlowTradeScores schema explicitly describes the multiplier applied to baseDirection to obtain flowScore, the directional range[-100,100], and unsigned conviction bonus[0,100]. It still does not disclose private feature coefficients or calibration. The Atlas history contract adds useful specifics: [from,to) windows, sided buy/sell/unclassified volume where available, tier-based window caps rather than per-display-resolution caps, and explicit rejection rather than silent range truncation. Its published example tier caps are90trading days for minute bars,720for hour-tier bars and2600for daily-tier bars. Cache freshness differs for today, prior session and older history. A cache labelled immutable remains a transport promise, not proof that economic inputs can never be corrected.
+
+No W1 source-custody or worker gate was changed by recovery of this unrelated read-only research process. The exact child remains on its existing carrier and must obtain actual receiver consumption before any execution claim.
