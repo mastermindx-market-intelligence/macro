@@ -1443,7 +1443,11 @@ class StoreUnreadable(RuntimeError):
 
 
 def _assert_theme_store_readable(store: Any) -> None:
-    """Raise StoreUnreadable when either store file is missing or unparseable.
+    """Raise StoreUnreadable when a required store file is missing or unparseable.
+
+    The probe demands nodes and edges only. ``node_lifecycle.parquet`` stays in
+    the loop (a corrupt sidecar is still unreadable) but is exempt from the
+    missing-file raise: the store treats that sidecar as optional.
 
     Column-projected so the probe reads the parquet footer plus one column, not the
     whole table; a truncated or non-parquet file raises here exactly as it would in
@@ -1457,11 +1461,27 @@ def _assert_theme_store_readable(store: Any) -> None:
         (store.node_lifecycle_path(), "node_id"),
     ):
         if not path.exists():
+            if path.name == "node_lifecycle.parquet":
+                continue
             raise StoreUnreadable(f"{path.name} does not exist")
         try:
             pd.read_parquet(path, columns=[column])
         except Exception as exc:  # noqa: BLE001
             raise StoreUnreadable(f"{path.name} is unreadable ({exc})") from exc
+
+
+def _display_name(value: object) -> str:
+    """Normalise a theme name for the reading-order list.
+
+    None, float NaN, non-strings and whitespace-only values are blank. A node
+    blank in both languages is dropped by the loader, not rendered as 'nan'
+    or an empty span.
+    """
+    if isinstance(value, str):
+        return value.strip()
+    if isinstance(value, float) and value != value:
+        return ""
+    return ""
 
 
 def load_research_priority(root: Path) -> dict[str, Any]:
@@ -1491,6 +1511,7 @@ def load_research_priority(root: Path) -> dict[str, Any]:
         edges = store.read_edges(latest_belief=True)
 
         theme_nodes: dict[str, tuple[str, str]] = {}
+        dropped_unnamed = 0
         if nodes is not None and len(nodes):
             node_view = nodes[["node_id", "kind", "name_en", "name_zh", "status"]]
             for rec in node_view.itertuples(index=False):
@@ -1504,8 +1525,11 @@ def load_research_priority(root: Path) -> dict[str, Any]:
                 nid = "" if rec.node_id is None else str(rec.node_id)
                 if not nid:
                     continue
-                name_en = "" if rec.name_en is None else str(rec.name_en)
-                name_zh = "" if rec.name_zh is None else str(rec.name_zh)
+                name_en = _display_name(rec.name_en)
+                name_zh = _display_name(rec.name_zh)
+                if not name_en and not name_zh:
+                    dropped_unnamed += 1
+                    continue
                 theme_nodes[nid] = (name_en, name_zh)
 
         dates_by_node: dict[str, list[str]] = {nid: [] for nid in theme_nodes}
@@ -1534,8 +1558,14 @@ def load_research_priority(root: Path) -> dict[str, Any]:
         ]
         ordered = rp.order_items(themes)
         state_name = "empty" if not ordered else "ok"
+        log.info(
+            "research_priority: dropped %d theme node(s) with no name in either language",
+            dropped_unnamed,
+        )
+        # asof=None: to_payload derives the horizon from the items; compose
+        # must not compute a second clock here.
         return rp.to_payload(
-            ordered, asof=rp.max_recorded_date(ordered), state=state_name
+            ordered, asof=None, state=state_name
         )
     except Exception as exc:  # noqa: BLE001
         log.warning("research_priority load failed (%s); page will show unavailable", exc)

@@ -93,12 +93,31 @@ _STANCE_ZH = (
     "从最上面开始看。这份清单按每个主题最后一次被记录下内容的日期排列，最新的在前；"
     "同一天记录的主题，按当天记录的条数排列。排在最上面的并不代表它是最好的想法。"
 )
-_TRUNC_EN = "Showing the 12 most recently updated of {n} dated themes."
-_TRUNC_ZH = "共 {n} 个有日期的主题，显示最近更新的 12 个。"
+_TRUNC_EN = "Showing the first 12 of {n} dated themes in this order."
+_TRUNC_ZH = "共 {n} 个有日期的主题，按此顺序显示前 12 个。"
 _NO_ORDER_EN = (
     "No tracked theme carries a dated entry yet, so there is no reading order to show."
 )
 _NO_ORDER_ZH = "目前没有任何主题带有日期记录，因此暂时没有可显示的阅读顺序。"
+_NO_ORDER_REFUSAL_EN = (
+    "When an order is shown, it is a reading order, not a score."
+)
+_NO_ORDER_REFUSAL_ZH = "显示顺序时，那只是阅读顺序，不是评分。"
+_UNDATED_NOTE_DATED_EN = (
+    "These themes are tracked, but nothing we hold about them carries a date, "
+    "so they cannot take a place in the order above."
+)
+_UNDATED_NOTE_DATED_ZH = (
+    "这些主题在追踪范围内，但我们掌握的内容都没有日期，因此无法排入上面的顺序。"
+)
+_UNDATED_NOTE_NO_ORDER_EN = (
+    "These themes are tracked, but nothing we hold about them carries a date."
+)
+_UNDATED_NOTE_NO_ORDER_ZH = "这些主题在追踪范围内，但我们掌握的内容都没有日期。"
+_DETAILS_SUMMARY_DATED_EN = "How this order is made"
+_DETAILS_SUMMARY_DATED_ZH = "这个顺序是怎么排的"
+_DETAILS_SUMMARY_NO_ORDER_EN = "How a reading order is made"
+_DETAILS_SUMMARY_NO_ORDER_ZH = "阅读顺序是怎么排的"
 _UNDATED_COUNT_EN_ONE = "1 tracked theme has no dated entry yet."
 _UNDATED_COUNT_EN_MANY = "{k} tracked themes have no dated entry yet."
 _UNDATED_COUNT_ZH = "另有 {k} 个主题尚无带日期的记录。"
@@ -232,7 +251,8 @@ def _fifteen_dated_three_undated():
 
 
 def _write_theme_store(store_dir: Path, nodes: list[dict], edges: list[dict],
-                       lifecycle: list[dict] | None = None) -> None:
+                       lifecycle: list[dict] | None = None, *,
+                       write_lifecycle: bool = True) -> None:
     """Write a REAL parquet store, so the loader meets the real read conditions."""
     pd = pytest.importorskip("pandas")
     pytest.importorskip("pyarrow")
@@ -245,12 +265,13 @@ def _write_theme_store(store_dir: Path, nodes: list[dict], edges: list[dict],
     store_dir.mkdir(parents=True, exist_ok=True)
     node_frame = pd.DataFrame(nodes, columns=list(NODE_COLUMNS))
     edge_frame = pd.DataFrame(edges, columns=list(EDGE_COLUMNS))
-    life_frame = pd.DataFrame(
-        lifecycle or [], columns=list(NODE_LIFECYCLE_COLUMNS)
-    )
     node_frame.to_parquet(store_dir / "nodes.parquet", index=False)
     edge_frame.to_parquet(store_dir / "edges.parquet", index=False)
-    life_frame.to_parquet(store_dir / "node_lifecycle.parquet", index=False)
+    if write_lifecycle:
+        life_frame = pd.DataFrame(
+            lifecycle or [], columns=list(NODE_LIFECYCLE_COLUMNS)
+        )
+        life_frame.to_parquet(store_dir / "node_lifecycle.parquet", index=False)
 
 
 def _node(node_id: str, name_en: str, name_zh: str, *, kind: str = "theme",
@@ -304,7 +325,14 @@ def _visible_text(html: str) -> str:
 
 def _strip_refusals(html: str) -> str:
     out = html
-    for blob in (_REFUSAL_EN, _REFUSAL_ZH, _DETAILS_EN, _DETAILS_ZH):
+    for blob in (
+        _REFUSAL_EN,
+        _REFUSAL_ZH,
+        _NO_ORDER_REFUSAL_EN,
+        _NO_ORDER_REFUSAL_ZH,
+        _DETAILS_EN,
+        _DETAILS_ZH,
+    ):
         out = out.replace(blob, "")
     return out
 
@@ -747,6 +775,35 @@ def test_corrupt_parquet_loads_as_unavailable(tmp_path, monkeypatch):
     assert payload["asof"] is None
 
 
+def test_missing_node_lifecycle_still_renders_the_ordinary_ok_state(
+    tmp_path, monkeypatch
+):
+    """Heal REQUIRED 3 / A2: node_lifecycle.parquet is a lineage sidecar the
+    store treats as optional. Nodes + edges present, no lifecycle file → the
+    section renders in its ordinary populated state. A corrupt file still
+    raises (test_corrupt_node_lifecycle_loads_as_unavailable)."""
+    import scripts.build_state_of_themes as sot
+
+    store_dir = tmp_path / "theme_graph"
+    _write_theme_store(
+        store_dir,
+        nodes=[_node("theme:solar", "Solar", "太阳能")],
+        edges=[_edge("e1", "company:acme", "theme:solar", "2026-07-09")],
+        write_lifecycle=False,
+    )
+    assert not (store_dir / "node_lifecycle.parquet").exists()
+    _point_store_at(monkeypatch, store_dir)
+    _copy_templates(tmp_path)
+    payload = sot.load_research_priority(tmp_path)
+    assert payload["state"] == "ok"
+    assert payload["n_dated"] == 1
+    assert payload["items"][0]["name_en"] == "Solar"
+    block = _rp_block(_render(tmp_path, _base_ctx(research_priority=payload)))
+    assert "Solar" in block
+    assert "太阳能" in block
+    assert "The evidence record could not be read" not in block
+
+
 def test_corrupt_node_lifecycle_loads_as_unavailable(tmp_path, monkeypatch):
     """node_lifecycle.parquet is on the §2.4 readability probe; garbage is unavailable."""
     import scripts.build_state_of_themes as sot
@@ -855,6 +912,16 @@ def test_asof_never_outruns_the_newest_row_the_page_shows(tmp_path):
     assert max_recorded_date(()) is None
     block = _rp_block(_render(tmp_path, _base_ctx(research_priority=payload)))
     assert "Evidence recorded up to 8 September 2026" in block
+    assert "证据记录截至 2026年9月8日" in block
+
+
+def test_zh_recorded_on_has_no_ascii_space_between_date_and_text(tmp_path):
+    """Heal REQUIRED 5 / A4: only the per-row ZH recorded-on line drops the
+    ASCII space; the asof line keeps its space before the digit-led date."""
+    _copy_templates(tmp_path)
+    block = _rp_block(_render(tmp_path, _base_ctx(research_priority=_populated_payload())))
+    assert "2026年9月8日记录到新证据" in block
+    assert "2026年9月8日 记录到新证据" not in block
     assert "证据记录截至 2026年9月8日" in block
 
 
@@ -976,6 +1043,81 @@ def test_all_undated_population_shows_no_order_and_no_stance(tmp_path):
     assert _UNDATED_COUNT_ZH.format(k=4) in block
 
 
+def test_zero_dated_undated_note_does_not_point_at_an_order(tmp_path):
+    """Heal REQUIRED 1(a): when n_dated is 0 the undated note must not point at
+    an order the page has just denied. Dated-state copy stays byte-identical."""
+    _copy_templates(tmp_path)
+    no_order = _rp_block(
+        _render(
+            tmp_path,
+            _base_ctx(
+                research_priority=_payload_from_themes(
+                    (_te("theme:quiet", "Quiet story", "安静主题"),)
+                )
+            ),
+        )
+    )
+    dated = _rp_block(_render(tmp_path, _base_ctx(research_priority=_populated_payload())))
+    assert _UNDATED_NOTE_NO_ORDER_EN in no_order
+    assert _UNDATED_NOTE_NO_ORDER_ZH in no_order
+    assert "so they cannot take a place in the order above" not in no_order
+    assert "因此无法排入上面的顺序" not in no_order
+    assert _UNDATED_NOTE_DATED_EN in dated
+    assert _UNDATED_NOTE_DATED_ZH in dated
+
+
+def test_zero_dated_details_summary_does_not_claim_this_order(tmp_path):
+    """Heal REQUIRED 1(b): the no-order <summary> names a reading order in the
+    abstract; dated state keeps 'How this order is made'."""
+    _copy_templates(tmp_path)
+    no_order = _rp_block(
+        _render(
+            tmp_path,
+            _base_ctx(
+                research_priority=_payload_from_themes(
+                    (_te("theme:quiet", "Quiet story", "安静主题"),)
+                )
+            ),
+        )
+    )
+    dated = _rp_block(_render(tmp_path, _base_ctx(research_priority=_populated_payload())))
+    assert _DETAILS_SUMMARY_NO_ORDER_EN in no_order
+    assert _DETAILS_SUMMARY_NO_ORDER_ZH in no_order
+    assert _DETAILS_SUMMARY_DATED_EN not in no_order
+    assert _DETAILS_SUMMARY_DATED_ZH not in no_order
+    assert _DETAILS_SUMMARY_DATED_EN in dated
+    assert _DETAILS_SUMMARY_DATED_ZH in dated
+    assert _DETAILS_SUMMARY_NO_ORDER_EN not in dated
+    assert _DETAILS_SUMMARY_NO_ORDER_ZH not in dated
+
+
+def test_zero_dated_shows_visible_refusal_after_the_no_order_sentence(tmp_path):
+    """Heal REQUIRED 1(c): the no-order route prints its own refusal directly
+    after the honest sentence, so the authority ceiling is never one click away."""
+    _copy_templates(tmp_path)
+    block = _rp_block(
+        _render(
+            tmp_path,
+            _base_ctx(
+                research_priority=_payload_from_themes(
+                    (_te("theme:quiet", "Quiet story", "安静主题"),)
+                )
+            ),
+        )
+    )
+    assert _NO_ORDER_EN in block
+    assert _NO_ORDER_ZH in block
+    assert _NO_ORDER_REFUSAL_EN in block
+    assert _NO_ORDER_REFUSAL_ZH in block
+    en_at = block.index(_NO_ORDER_EN)
+    refusal_at = block.index(_NO_ORDER_REFUSAL_EN)
+    assert refusal_at > en_at
+    assert _REFUSAL_EN not in block
+    dated = _rp_block(_render(tmp_path, _base_ctx(research_priority=_populated_payload())))
+    assert _NO_ORDER_REFUSAL_EN not in dated
+    assert _REFUSAL_EN in dated
+
+
 def test_page_renders_unchanged_when_research_priority_is_absent_from_ctx(tmp_path):
     _copy_templates(tmp_path)
     ctx = _base_ctx()
@@ -1040,11 +1182,11 @@ def test_every_new_label_has_both_en_and_zh(tmp_path):
         ("1 statement that day", "当天有 1 条记录"),
         ("4 statements that day", "当天有 4 条记录"),
         ("No dated evidence yet", "尚无带日期的证据"),
-        (
-            "These themes are tracked, but nothing we hold about them carries a date, so they cannot take a place in the order above.",
-            "这些主题在追踪范围内，但我们掌握的内容都没有日期，因此无法排入上面的顺序。",
-        ),
-        ("How this order is made", "这个顺序是怎么排的"),
+        (_UNDATED_NOTE_DATED_EN, _UNDATED_NOTE_DATED_ZH),
+        (_UNDATED_NOTE_NO_ORDER_EN, _UNDATED_NOTE_NO_ORDER_ZH),
+        (_DETAILS_SUMMARY_DATED_EN, _DETAILS_SUMMARY_DATED_ZH),
+        (_DETAILS_SUMMARY_NO_ORDER_EN, _DETAILS_SUMMARY_NO_ORDER_ZH),
+        (_NO_ORDER_REFUSAL_EN, _NO_ORDER_REFUSAL_ZH),
         (_DETAILS_EN, _DETAILS_ZH),
         ("Evidence recorded up to", "证据记录截至"),
         ("We have not recorded new evidence for any theme yet.", "目前还没有记录到任何主题的新证据。"),
@@ -1072,8 +1214,8 @@ def test_truncation_line_states_the_same_criterion_as_the_order(tmp_path):
     assert block
     assert _TRUNC_EN.format(n=18) in block
     assert _TRUNC_ZH.format(n=18) in block
-    assert "in that order" not in block
-    assert "按该顺序显示其中" not in block
+    assert "most recently updated" not in block
+    assert "显示最近更新的" not in block
 
 
 def test_truncation_sentence_follows_the_payload_max_items(tmp_path, monkeypatch):
@@ -1093,10 +1235,10 @@ def test_truncation_sentence_follows_the_payload_max_items(tmp_path, monkeypatch
     assert payload["n_dated"] == 11
     assert len(payload["items"]) == 9
     block = _rp_block(_render(tmp_path, _base_ctx(research_priority=payload)))
-    assert "Showing the 9 most recently updated of 11 dated themes." in block
-    assert "共 11 个有日期的主题，显示最近更新的 9 个。" in block
-    assert "Showing the 12" not in block
-    assert "显示最近更新的 12 个" not in block
+    assert "Showing the first 9 of 11 dated themes in this order." in block
+    assert "共 11 个有日期的主题，按此顺序显示前 9 个。" in block
+    assert "Showing the first 12" not in block
+    assert "按此顺序显示前 12 个" not in block
 
 
 def test_eleven_dated_and_seven_undated_shows_every_name_and_no_truncation(tmp_path):
@@ -1111,8 +1253,8 @@ def test_eleven_dated_and_seven_undated_shows_every_name_and_no_truncation(tmp_p
     block = _rp_block(_render(tmp_path, _base_ctx(research_priority=payload)))
     assert _TRUNC_EN.format(n=11) not in block
     assert _TRUNC_ZH.format(n=11) not in block
-    assert "Showing the 12 most recently updated" not in block
-    assert "显示最近更新的 12 个" not in block
+    assert "Showing the first 12 of" not in block
+    assert "按此顺序显示前 12 个" not in block
     assert _undated_count_en(7) in block
     assert _UNDATED_COUNT_ZH.format(k=7) in block
     numbered = re.findall(
@@ -1237,7 +1379,8 @@ def test_store_sourced_theme_names_render_in_a_plain_lang_span(tmp_path):
 
 def test_blank_name_zh_falls_back_to_the_english_name(tmp_path):
     """Seat ruling R7c: a blank or whitespace-only name_zh never renders an empty
-    span; the ZH slot carries the English name in a plain lang="en" span."""
+    span; the ZH slot carries the English name in a plain lang="en" span.
+    Heal round: both span kinds are asserted."""
     _copy_templates(tmp_path)
     payload = _payload_from_themes(
         (
@@ -1247,11 +1390,107 @@ def test_blank_name_zh_falls_back_to_the_english_name(tmp_path):
         )
     )
     block = _rp_block(_render(tmp_path, _base_ctx(research_priority=payload)))
+    assert '<span class="l-en" lang="en">Blank ZH</span>' in block
     assert '<span class="l-zh" lang="en">Blank ZH</span>' in block
+    assert '<span class="l-en" lang="en">Spaces ZH</span>' in block
     assert '<span class="l-zh" lang="en">Spaces ZH</span>' in block
+    assert '<span class="l-en" lang="en">Undated blank ZH</span>' in block
     assert '<span class="l-zh" lang="en">Undated blank ZH</span>' in block
     assert '<span class="l-zh" lang="zh"></span>' not in block
     assert re.search(r'<span class="l-zh" lang="zh">\s*</span>', block) is None
+    assert re.search(r'<span class="l-en" lang="en">\s*</span>', block) is None
+
+
+def test_blank_name_en_falls_back_to_the_zh_name_in_both_spans(tmp_path):
+    """Heal REQUIRED 2 / A1: blank name_en with a ZH name — both spans print
+    the ZH name, and the EN span flips lang to zh."""
+    _copy_templates(tmp_path)
+    payload = _payload_from_themes(
+        (
+            _te("theme:blank_en", "", "太阳能", "2026-09-08"),
+            _te("theme:space_en", "   ", "铜", "2026-09-07"),
+            _te("theme:undated_blank_en", "", "安静主题"),
+        )
+    )
+    block = _rp_block(_render(tmp_path, _base_ctx(research_priority=payload)))
+    assert '<span class="l-en" lang="zh">太阳能</span>' in block
+    assert '<span class="l-zh" lang="zh">太阳能</span>' in block
+    assert '<span class="l-en" lang="zh">铜</span>' in block
+    assert '<span class="l-zh" lang="zh">铜</span>' in block
+    assert '<span class="l-en" lang="zh">安静主题</span>' in block
+    assert '<span class="l-zh" lang="zh">安静主题</span>' in block
+    assert '<span class="l-en" lang="en"></span>' not in block
+
+
+def test_nan_theme_name_is_treated_as_blank_and_falls_back(tmp_path, monkeypatch, caplog):
+    """Heal REQUIRED 2: float NaN in either name column is blank, not the
+    string 'nan'. A ZH name still renders; a both-NaN node is dropped."""
+    import logging
+
+    import scripts.build_state_of_themes as sot
+
+    store_dir = tmp_path / "theme_graph"
+    named = _node("theme:solar", "Solar", "太阳能")
+    nan_en = _node("theme:copper", "Copper", "铜")
+    nan_en["name_en"] = float("nan")
+    both_nan = _node("theme:blank", "Gone", "消失")
+    both_nan["name_en"] = float("nan")
+    both_nan["name_zh"] = float("nan")
+    _write_theme_store(
+        store_dir,
+        nodes=[named, nan_en, both_nan],
+        edges=[
+            _edge("e1", "company:acme", "theme:solar", "2026-07-09"),
+            _edge("e2", "company:brox", "theme:copper", "2026-06-30"),
+            _edge("e3", "company:crux", "theme:blank", "2026-06-01"),
+        ],
+    )
+    _point_store_at(monkeypatch, store_dir)
+    _copy_templates(tmp_path)
+    with caplog.at_level(logging.INFO, logger="build_state_of_themes"):
+        payload = sot.load_research_priority(tmp_path)
+    ids = [item["node_id"] for item in payload["items"]]
+    assert "theme:blank" not in ids
+    copper = next(item for item in payload["items"] if item["node_id"] == "theme:copper")
+    assert copper["name_en"] == ""
+    assert copper["name_zh"] == "铜"
+    assert "nan" not in copper["name_en"].lower()
+    block = _rp_block(_render(tmp_path, _base_ctx(research_priority=payload)))
+    assert '<span class="l-en" lang="zh">铜</span>' in block
+    assert '<span class="l-zh" lang="zh">铜</span>' in block
+    assert "nan" not in _visible_text(block).lower()
+    assert "theme:blank" not in block
+    assert "dropped 1 theme node" in caplog.text
+
+
+def test_node_blank_in_both_names_is_dropped_from_the_list(
+    tmp_path, monkeypatch, caplog
+):
+    """Heal REQUIRED 2: a node blank in both languages is absent from the
+    payload (no extra key) and counted on the success-path log line."""
+    import logging
+
+    import scripts.build_state_of_themes as sot
+
+    store_dir = tmp_path / "theme_graph"
+    named = _node("theme:solar", "Solar", "太阳能")
+    blank = _node("theme:ghost", "   ", "")
+    _write_theme_store(
+        store_dir,
+        nodes=[named, blank],
+        edges=[
+            _edge("e1", "company:acme", "theme:solar", "2026-07-09"),
+            _edge("e2", "company:brox", "theme:ghost", "2026-08-01"),
+        ],
+    )
+    _point_store_at(monkeypatch, store_dir)
+    with caplog.at_level(logging.INFO, logger="build_state_of_themes"):
+        payload = sot.load_research_priority(tmp_path)
+    assert "n_dropped" not in payload
+    assert "dropped" not in payload
+    assert [item["node_id"] for item in payload["items"]] == ["theme:solar"]
+    assert payload["n_total"] == 1
+    assert "dropped 1 theme node" in caplog.text
 
 
 def test_no_machine_text_in_the_rendered_block(tmp_path):

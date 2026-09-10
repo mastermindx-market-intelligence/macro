@@ -349,9 +349,9 @@ html[data-theme="dark"] body::before{
     {% if item.last_recorded_date %}
     <li class="rp-item">
       <span class="rp-pos">{{ item.position }}.</span>
-      <span class="rp-name"><span class="l-en" lang="en">{{ item.name_en }}</span><span class="l-zh" lang="{{ 'zh' if (item.name_zh and item.name_zh|string|trim) else 'en' }}">{{ item.name_zh if (item.name_zh and item.name_zh|string|trim) else item.name_en }}</span></span>
+      <span class="rp-name"><span class="l-en" lang="{{ 'en' if (item.name_en and item.name_en|string|trim) else 'zh' }}">{{ item.name_en if (item.name_en and item.name_en|string|trim) else item.name_zh }}</span><span class="l-zh" lang="{{ 'zh' if (item.name_zh and item.name_zh|string|trim) else 'en' }}">{{ item.name_zh if (item.name_zh and item.name_zh|string|trim) else item.name_en }}</span></span>
       <span class="rp-meta">
-        <span class="l-en">New evidence recorded {{ rp_date_en(item.last_recorded_date) }}</span><span class="l-zh">{{ rp_date_zh(item.last_recorded_date) }} 记录到新证据</span>
+        <span class="l-en">New evidence recorded {{ rp_date_en(item.last_recorded_date) }}</span><span class="l-zh">{{ rp_date_zh(item.last_recorded_date) }}记录到新证据</span>
         ·
         {% if item.statements_recorded == 1 %}
         {{ t('1 statement that day', '当天有 1 条记录') }}
@@ -365,15 +365,20 @@ html[data-theme="dark"] body::before{
   </ol>
   <p class="rp-note">{{ t('This is a reading order, not a score. It does not say a theme is more likely to work, worth more, or already in the price.', '这只是阅读顺序，不是评分。它并不表示某个主题更可能奏效、价值更高，或已被价格消化。') }}</p>
   {% if research_priority.n_dated > research_priority.max_items %}
-  <p class="rp-note"><span class="l-en">Showing the {{ research_priority.max_items }} most recently updated of {{ research_priority.n_dated }} dated themes.</span><span class="l-zh">共 {{ research_priority.n_dated }} 个有日期的主题，显示最近更新的 {{ research_priority.max_items }} 个。</span></p>
+  <p class="rp-note"><span class="l-en">Showing the first {{ research_priority.max_items }} of {{ research_priority.n_dated }} dated themes in this order.</span><span class="l-zh">共 {{ research_priority.n_dated }} 个有日期的主题，按此顺序显示前 {{ research_priority.max_items }} 个。</span></p>
   {% endif %}
   {% else %}
   <p class="sec-sub">{{ t('No tracked theme carries a dated entry yet, so there is no reading order to show.', '目前没有任何主题带有日期记录，因此暂时没有可显示的阅读顺序。') }}</p>
+  <p class="rp-note">{{ t('When an order is shown, it is a reading order, not a score.', '显示顺序时，那只是阅读顺序，不是评分。') }}</p>
   {% endif %}
   {% if research_priority.n_undated %}
   <div class="rp-undated">
     <p class="rp-head">{{ t('No dated evidence yet', '尚无带日期的证据') }}</p>
+    {% if research_priority.n_dated %}
     <p class="rp-note">{{ t('These themes are tracked, but nothing we hold about them carries a date, so they cannot take a place in the order above.', '这些主题在追踪范围内，但我们掌握的内容都没有日期，因此无法排入上面的顺序。') }}</p>
+    {% else %}
+    <p class="rp-note">{{ t('These themes are tracked, but nothing we hold about them carries a date.', '这些主题在追踪范围内，但我们掌握的内容都没有日期。') }}</p>
+    {% endif %}
     {% if research_priority.n_undated == 1 %}
     <p class="rp-note"><span class="l-en">1 tracked theme has no dated entry yet.</span><span class="l-zh">另有 1 个主题尚无带日期的记录。</span></p>
     {% else %}
@@ -383,7 +388,7 @@ html[data-theme="dark"] body::before{
       {% for item in research_priority['items'] %}
       {% if not item.last_recorded_date %}
       <li class="rp-item">
-        <span class="rp-name"><span class="l-en" lang="en">{{ item.name_en }}</span><span class="l-zh" lang="{{ 'zh' if (item.name_zh and item.name_zh|string|trim) else 'en' }}">{{ item.name_zh if (item.name_zh and item.name_zh|string|trim) else item.name_en }}</span></span>
+        <span class="rp-name"><span class="l-en" lang="{{ 'en' if (item.name_en and item.name_en|string|trim) else 'zh' }}">{{ item.name_en if (item.name_en and item.name_en|string|trim) else item.name_zh }}</span><span class="l-zh" lang="{{ 'zh' if (item.name_zh and item.name_zh|string|trim) else 'en' }}">{{ item.name_zh if (item.name_zh and item.name_zh|string|trim) else item.name_en }}</span></span>
       </li>
       {% endif %}
       {% endfor %}
@@ -391,7 +396,11 @@ html[data-theme="dark"] body::before{
   </div>
   {% endif %}
   <details>
+    {% if research_priority.n_dated %}
     <summary>{{ t('How this order is made', '这个顺序是怎么排的') }}</summary>
+    {% else %}
+    <summary>{{ t('How a reading order is made', '阅读顺序是怎么排的') }}</summary>
+    {% endif %}
     <p class="rp-body">{{ t('Every line here comes from the theme evidence record. We read two things only: the day a statement about the theme was written down, and how many were written down that day. We do not read, and this page does not show, any measure of size, direction, how sure we are, or how much is already in the price — those are not built yet.', '这里的每一行都来自主题证据记录。我们只读两样东西：关于该主题的说法是哪一天记录的，以及当天记录了多少条。我们不读取、本页也不显示任何关于幅度、方向、把握程度或价格已消化程度的度量——这些尚未建成。') }}</p>
   </details>
   {% if research_priority.asof %}
