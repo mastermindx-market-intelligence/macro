@@ -1149,7 +1149,7 @@ html[data-theme="light"] {
           {% if rl.netliq_pctile is not none %}
           <div class="liq-stat">
             <div class="liq-stat-k">{{ t('vs history', '历史分位') }}</div>
-            <div class="liq-stat-v c-info">{{ rl.netliq_pctile }}<span style="font-size:10px;font-weight:600">{{ t('th pct','%') }}</span></div>
+            <div class="liq-stat-v c-info">{{ t_pctile(rl.netliq_pctile) }}</div>
           </div>
           {% endif %}
         </div>
