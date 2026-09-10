@@ -126,23 +126,23 @@ def _overlay_committed_chrome(produced: str, committed: str) -> str:
     class of chrome T11's seat amendment named: this packet cannot reach it,
     and whole-page identity is otherwise unattainable. The bonds body stays
     the rebuild's own bytes.
+
+    A rebuild that lacks a nav, footer or banner fails loudly — there is no
+    silent prepend/append fallback.
     """
     nav = _NAV_RE.search(committed)
     footer = _FOOTER_RE.search(committed)
     banner = _BANNER_RE.search(committed)
+    assert nav is not None, "committed site/bonds.html has no <nav> span"
+    assert footer is not None, "committed site/bonds.html has no <footer> span"
+    assert banner is not None, "committed site/bonds.html has no banner span"
     html = produced
-    if nav:
-        html, n = _NAV_RE.subn(nav.group(0), html, count=1)
-        if n == 0:
-            html = nav.group(0) + html
-    if footer:
-        html, n = _FOOTER_RE.subn(footer.group(0), html, count=1)
-        if n == 0:
-            html = html + footer.group(0)
-    if banner:
-        html, n = _BANNER_RE.subn(banner.group(0), html, count=1)
-        if n == 0:
-            html = html.replace("</body>", banner.group(0) + "</body>")
+    html, n = _NAV_RE.subn(nav.group(0), html, count=1)
+    assert n == 1, "rebuild is missing a <nav> to overlay"
+    html, n = _FOOTER_RE.subn(footer.group(0), html, count=1)
+    assert n == 1, "rebuild is missing a <footer> to overlay"
+    html, n = _BANNER_RE.subn(banner.group(0), html, count=1)
+    assert n == 1, "rebuild is missing a banner to overlay"
     return html
 
 
@@ -221,10 +221,25 @@ def test_10_bonds_hub_page_builds_to_the_committed_bytes(tmp_path, monkeypatch) 
         rendered = _finalize_like_render_lane(
             produced.read_text(encoding="utf-8")
         )
+        pre_bytes = rendered.encode("utf-8")
+        nav_m = _NAV_RE.search(committed_text)
+        footer_m = _FOOTER_RE.search(committed_text)
+        banner_m = _BANNER_RE.search(committed_text)
+        print(
+            "T10 pre-overlay verdict: "
+            + ("identical" if pre_bytes == committed else "drifted")
+        )
+        print(
+            "T10 masked span sizes: "
+            f"nav={len(nav_m.group(0)) if nav_m else 0} "
+            f"footer={len(footer_m.group(0)) if footer_m else 0} "
+            f"banner={len(banner_m.group(0)) if banner_m else 0}"
+        )
         comparable = _overlay_committed_chrome(rendered, committed_text)
         produced.write_text(comparable, encoding="utf-8")
         produced_bytes = produced.read_bytes()
         if produced_bytes == committed:
+            print("identical after overlay")
             print("T10 identical: ['bonds.html']")
             print("T10 drifted: []")
         else:
@@ -241,7 +256,11 @@ def test_t10_lives_on_the_pandas_job() -> None:
     raw = yaml.safe_load(
         (ROOT / ".github" / "ci" / "legacy-jobs.yml").read_text(encoding="utf-8")
     )
-    job = raw["jobs"]["ccw-w4-credit-desk"]
+    code_job = raw["jobs"]["ccw-w4-credit-desk"]
+    code_runs = "\n".join(str(s.get("run") or "") for s in code_job["steps"])
+    assert "tests/test_macro_rates_curves_bonds_guard.py" not in code_runs
+    job = raw["jobs"]["unrun-macro-panels"]
+    assert job["gate"] == "data"
     runs = "\n".join(str(s.get("run") or "") for s in job["steps"])
     assert "tests/test_macro_rates_curves_bonds_guard.py" in runs
     paths = list(job["paths"])

@@ -138,8 +138,8 @@
            aria-labelledby="mq-curve-hero-caption-en"
            data-a11y-en="mq-curve-hero-caption-en"
            data-a11y-zh="mq-curve-hero-caption-zh">
-        <title id="mq-curve-hero-caption-en" class="l-en">{{ curve.heading.en }} — {{ curve.subtitle.en }}{% if curve.as_of_caption %} {{ curve.as_of_caption.en }}{% endif %}</title>
-        <title id="mq-curve-hero-caption-zh" class="l-zh">{{ curve.heading.zh }} — {{ curve.subtitle.zh }}{% if curve.as_of_caption %} {{ curve.as_of_caption.zh }}{% endif %}</title>
+        <title id="mq-curve-hero-caption-en" class="l-en">{{ curve.heading.en }} — {{ curve.subtitle.en }}{% if curve.as_of_caption %} — {{ curve.as_of_caption.en }}{% endif %}</title>
+        <title id="mq-curve-hero-caption-zh" class="l-zh">{{ curve.heading.zh }}——{{ curve.subtitle.zh }}{% if curve.as_of_caption %}——{{ curve.as_of_caption.zh }}{% endif %}</title>
         <line class="mq-curve-axis" x1="{{ curve.chart.pad_l }}" y1="{{ curve.chart.baseline_y }}"
               x2="{{ curve.chart.width - curve.chart.pad_r }}" y2="{{ curve.chart.baseline_y }}"></line>
         {% for points in curve.chart.prior_month_segments %}

@@ -60,18 +60,18 @@ CEILING_ZH = ("概率", "评分", "预测", "看多", "看空", "偏多", "偏�
 SHAPE_NORMAL_EN = (
     "The curve is upward-sloping — longer maturities pay more than shorter ones."
 )
-SHAPE_NORMAL_ZH = "曲线呈正常形态 — 期限越长，收益率越高。"
+SHAPE_NORMAL_ZH = "曲线呈正常形态——期限越长，收益率越高。"
 SHAPE_NORMAL_DIP_EN = (
     "The curve is upward-sloping — longer maturities pay more than shorter ones, "
     "with a small dip at the very long end."
 )
-SHAPE_NORMAL_DIP_ZH = "曲线呈正常形态 — 期限越长，收益率越高，仅在最长端有小幅回落。"
+SHAPE_NORMAL_DIP_ZH = "曲线呈正常形态——期限越长，收益率越高，仅在最长端有小幅回落。"
 SHAPE_FLAT_EN = "The curve is close to flat — long and short maturities pay about the same."
 SHAPE_FLAT_ZH = "曲线接近平坦——长短期限的收益率大致相同。"
 SHAPE_INVERTED_FRONT_EN = (
     "The curve is inverted at the front — three-month yields are at or above ten-year yields."
 )
-SHAPE_INVERTED_FRONT_ZH = "曲线在短端倒挂 — 三个月期收益率已不低于十年期。"
+SHAPE_INVERTED_FRONT_ZH = "曲线在短端倒挂——三个月期收益率已不低于十年期。"
 SHAPE_INVERTED_BELLY_EN = (
     "The curve is inverted between two and ten years — two-year yields are at or above ten-year yields."
 )
@@ -110,6 +110,8 @@ LEGEND_MONTH_NULL_EN = (
 LEGEND_MONTH_NULL_ZH = "未画出“一个月前”对比线：该对比需要一个月的历史数据。"
 NULL_SEVEN_EN = "No reading for the 7-year maturity in tonight's data."
 NULL_SEVEN_ZH = "本次数据未覆盖7年期。"
+EMPTY_HISTORY_EN = "No history published for this series in tonight's data."
+EMPTY_HISTORY_ZH = "本次数据未发布该序列的历史。"
 CHANGE_CLOSE_EN = "Change since prior close"
 CHANGE_CLOSE_ZH = "较上一交易日收盘变动"
 CHANGE_MONTH_EN = "Change over a month"
@@ -1422,3 +1424,107 @@ def test_spread_level_drops_forced_plus_and_is_labelled_spread_now() -> None:
     assert CHANGE_CLOSE_ZH in html
     assert CHANGE_MONTH_EN in html
     assert CHANGE_MONTH_ZH in html
+
+
+def test_partial_empty_series_range_is_typed_bilingual_not_none_token() -> None:
+    """REQUIRED 1 / A1. A PARTIAL snapshot with one empty CMT entry (and any
+    other zero-usable-points series) must emit the frozen bilingual range
+    sentence. first/last stay None. The page must not print the token None.
+    """
+    snap = _snapshot(skip_tenors=frozenset({"7y"}))
+    assert snap["series"]["status"] == "PARTIAL"
+    snap["series"]["items"].append({
+        "series_id": "other_non_cmt",
+        "label": _pair("Other published series", "其他已发布序列"),
+        "unit": "percent",
+        "basis": "constant_maturity_investment_basis",
+        "points": [],
+        "source_ref": "TEST:other",
+        "freshness": "SOURCE_FAILED",
+        "revision_behavior": "recomputed each owner cadence from prior-only owner reads",
+    })
+    view = _view(snap)
+    by_id = {item["series_id"]: item for item in view["series"]["entries"]}
+    for series_id in ("us7y", "other_non_cmt"):
+        item = by_id[series_id]
+        assert item["count"] == 0
+        assert item["first"] is None
+        assert item["last"] is None
+        assert item["range"] == {"en": EMPTY_HISTORY_EN, "zh": EMPTY_HISTORY_ZH}
+    html = _render_rates_page(snap)
+    # autoescape turns the apostrophe in tonight's into &#39;
+    assert "No history published for this series in tonight&#39;s data." in html
+    assert EMPTY_HISTORY_ZH in html
+    assert "None → None" not in html
+    table_start = html.find('<section class="mq-series"')
+    assert table_start != -1
+    table_end = html.find("</section>", table_start)
+    table = html[table_start:table_end]
+    assert EMPTY_HISTORY_ZH in table
+    assert "None" not in table
+
+
+_CJK_CP = re.compile(r"[\u3400-\u9FFF\uF900-\uFAFF\u3000-\u303F\uFF00-\uFFEF]")
+_CURVE_BLOCK_START = "_CURVE_TENOR_LABELS"
+_ZH_TITLE_EXACT = (
+    "{{ curve.heading.zh }}——{{ curve.subtitle.zh }}"
+    "{% if curve.as_of_caption %}——{{ curve.as_of_caption.zh }}{% endif %}"
+)
+
+
+def _is_cjk(ch: str) -> bool:
+    return bool(ch) and _CJK_CP.match(ch) is not None
+
+
+def _ascii_space_adjoining_cjk(text: str) -> list[str]:
+    """Snippets where an ASCII space sits next to a CJK codepoint."""
+    hits: list[str] = []
+    for i, ch in enumerate(text):
+        if ch != " ":
+            continue
+        left = text[i - 1] if i else ""
+        right = text[i + 1] if i + 1 < len(text) else ""
+        if _is_cjk(left) or _is_cjk(right):
+            hits.append(text[max(0, i - 12): i + 13])
+    return hits
+
+
+def _zh_string_literals_in_curve_block() -> list[str]:
+    """ZH string literals in the curve block. Comments are outside the AST."""
+    src = (ROOT / "lib" / "macro_suite_view.py").read_text(encoding="utf-8")
+    lines = src.splitlines()
+    start = next(
+        i for i, line in enumerate(lines, 1) if line.startswith(_CURVE_BLOCK_START)
+    )
+    end = next(
+        i for i, line in enumerate(lines, 1)
+        if line.startswith("def build_view")
+    )
+    tree = ast.parse(src)
+    found: list[str] = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Constant) or not isinstance(node.value, str):
+            continue
+        lineno = getattr(node, "lineno", 0)
+        if start <= lineno < end and _CJK_CP.search(node.value):
+            found.append(node.value)
+    assert found, "curve block yielded no ZH literals"
+    return found
+
+
+def test_r95_zh_curve_copy_has_no_ascii_space_adjoining_cjk() -> None:
+    """REQUIRED 5 / A4. No ZH literal in the curve block, and no ZH text the
+    panel renders, may put an ASCII space next to a CJK codepoint. The ZH
+    SVG title is the frozen A4 form.
+    """
+    for literal in _zh_string_literals_in_curve_block():
+        hits = _ascii_space_adjoining_cjk(literal)
+        assert not hits, (literal, hits)
+    panel_src = (TEMPLATES / "_curve_panel.html.j2").read_text(encoding="utf-8")
+    assert _ZH_TITLE_EXACT in panel_src
+    html = _render_panel(_hero(_snapshot()))
+    cjk_runs = [chunk for chunk in re.findall(r">([^<]+)<", html) if _CJK_CP.search(chunk)]
+    assert cjk_runs, "panel rendered no CJK text"
+    for chunk in cjk_runs:
+        hits = _ascii_space_adjoining_cjk(chunk)
+        assert not hits, (chunk, hits)

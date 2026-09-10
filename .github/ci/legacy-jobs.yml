@@ -6303,17 +6303,11 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly
       - name: CCW-W4 credit desk vm tests
         run: python -m pytest tests/test_bonds_corp_credit_vm.py -v
-      - name: A-F01-W4-1 bonds hub byte-preservation guard (T10)
-        run: python -m pytest tests/test_macro_rates_curves_bonds_guard.py -q
-    # T10 lives here, not in market-os-macro-suite-pages: that exclusive job
-    # installs only pytest/jinja2/pyyaml/jsonschema (pandas-free by law). T10
-    # calls scripts.build_bonds.main(), which imports numpy and pandas at
-    # module scope. Declared paths are unioned with inference from both
-    # pytest files; listed so an edit to a T10 subject starts this job.
+    # T10 moved to unrun-macro-panels (gate: data). That job already installs
+    # pandas/numpy/pyarrow/jinja2/plotly; T10's verdict can flip on a nightly
+    # data commit, so it must not live on this gate: code job.
     paths:
       - "tests/test_bonds_corp_credit_vm.py"
-      - "tests/test_macro_rates_curves_bonds_guard.py"
-      - "site/bonds.html"
       - "scripts/build_bonds.py"
       - "templates/bonds.html.j2"
       - "lib/macro_suite_view.py"
@@ -11765,6 +11759,40 @@ jobs:
       # pandas/numpy/pyarrow/pyyaml, all already on the install line above.
       - name: commodities / forex / rates / news / policy panels and their calibration guards
         run: python -m pytest tests/test_factor_universe_hold.py tests/test_build_dispersion_regime.py tests/test_build_factor_panel.py tests/test_commodity_mtf_verdict_honesty.py tests/test_congress_score.py tests/test_context_risk.py tests/test_cross_asset_context.py tests/test_crossasset_flows.py tests/test_financial_news.py tests/test_forex.py tests/test_forex_context_bus.py tests/test_news_event_ledger.py tests/test_phase_buildout.py tests/test_policy_lever.py tests/test_rates_command.py tests/test_yield_momentum.py tests/test_inputs_yield_curve.py tests/test_reflexivity_overlay.py tests/test_scorecard_incremental.py tests/test_us_sector_rotation_wiring.py tests/test_validation.py tests/test_whitehouse_build.py tests/test_commodities_ignition_copy.py -q
+      - name: A-F01-W4-1 bonds hub byte-preservation guard (T10)
+        run: python -m pytest tests/test_macro_rates_curves_bonds_guard.py -q
+    # T10 lives here (gate: data), not on ccw-w4-credit-desk (gate: code).
+    # Install already covers pandas/numpy/pyarrow/jinja2/plotly. Declared
+    # paths must cover every pytest file the commands name (pack validator);
+    # no exclusive scope, so inference still unions the rest of the closure.
+    paths:
+      - "tests/test_factor_universe_hold.py"
+      - "tests/test_build_dispersion_regime.py"
+      - "tests/test_build_factor_panel.py"
+      - "tests/test_commodity_mtf_verdict_honesty.py"
+      - "tests/test_congress_score.py"
+      - "tests/test_context_risk.py"
+      - "tests/test_cross_asset_context.py"
+      - "tests/test_crossasset_flows.py"
+      - "tests/test_financial_news.py"
+      - "tests/test_forex.py"
+      - "tests/test_forex_context_bus.py"
+      - "tests/test_news_event_ledger.py"
+      - "tests/test_phase_buildout.py"
+      - "tests/test_policy_lever.py"
+      - "tests/test_rates_command.py"
+      - "tests/test_yield_momentum.py"
+      - "tests/test_inputs_yield_curve.py"
+      - "tests/test_reflexivity_overlay.py"
+      - "tests/test_scorecard_incremental.py"
+      - "tests/test_us_sector_rotation_wiring.py"
+      - "tests/test_validation.py"
+      - "tests/test_whitehouse_build.py"
+      - "tests/test_commodities_ignition_copy.py"
+      - "tests/test_macro_rates_curves_bonds_guard.py"
+      - "scripts/build_bonds.py"
+      - "site/bonds.html"
+      - "templates/bonds.html.j2"
 
   unrun-market-plumbing:
     # live quotes / tape / GEX / options-flow / theme + tech-lab feeds behind the intraday lanes.

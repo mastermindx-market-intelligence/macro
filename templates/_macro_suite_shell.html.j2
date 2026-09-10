@@ -565,7 +565,7 @@
         <th scope="row">{{ bl(item.label) }}</th>
         <td>{{ bl(item.unit) }}</td>
         <td>{{ item.count }}</td>
-        <td>{% if item.range %}{{ bl(item.range) }}{% else %}<time>{{ item.first }}</time> → <time>{{ item.last }}</time>{% endif %}</td>
+        <td>{% if item.range %}{{ bl(item.range) }}{% elif item.first is not none and item.last is not none %}<time>{{ item.first }}</time> → <time>{{ item.last }}</time>{% endif %}</td>
         <td>{{ chip(item.freshness, item.freshness_tone) }}</td>
       </tr>
       {%- endfor %}

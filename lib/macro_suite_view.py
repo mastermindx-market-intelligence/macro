@@ -523,6 +523,12 @@ def _plain_range_pair(first: Any, last: Any) -> dict[str, str] | None:
     return _pair(f"From {a['en']} to {b['en']}", zh)
 
 
+_EMPTY_HISTORY_RANGE = _pair(
+    "No history published for this series in tonight's data.",
+    "本次数据未发布该序列的历史。",
+)
+
+
 def _series(snapshot: Mapping[str, Any]) -> dict[str, Any]:
     block = snapshot.get("series") or {}
     items = []
@@ -531,6 +537,12 @@ def _series(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         first = points[0]["t"] if points else None
         last = points[-1]["t"] if points else None
         series_id = entry.get("series_id")
+        if not points:
+            range_pair = _EMPTY_HISTORY_RANGE
+        elif series_id in _CMT_COMPONENT_SERIES_IDS:
+            range_pair = _plain_range_pair(first, last)
+        else:
+            range_pair = None
         items.append({
             "series_id": series_id,
             "label": _bilingual(entry.get("label")),
@@ -539,10 +551,7 @@ def _series(snapshot: Mapping[str, Any]) -> dict[str, Any]:
             "count": len(points),
             "first": first,
             "last": last,
-            "range": (
-                _plain_range_pair(first, last)
-                if series_id in _CMT_COMPONENT_SERIES_IDS else None
-            ),
+            "range": range_pair,
             "freshness": L.label("freshness", entry.get("freshness")),
             "freshness_tone": L.tone("freshness", entry.get("freshness")),
             "revision_behavior": entry.get("revision_behavior"),
@@ -1011,11 +1020,11 @@ _CURVE_PRIOR_MONTH_DAYS = 30
 _CURVE_FLAT_BAND = 0.25  # |10y − 3m| in percentage points
 _SHAPE_NORMAL = _pair(
     "The curve is upward-sloping — longer maturities pay more than shorter ones.",
-    "曲线呈正常形态 — 期限越长，收益率越高。",
+    "曲线呈正常形态——期限越长，收益率越高。",
 )
 _SHAPE_NORMAL_LONG_DIP = _pair(
     "The curve is upward-sloping — longer maturities pay more than shorter ones, with a small dip at the very long end.",
-    "曲线呈正常形态 — 期限越长，收益率越高，仅在最长端有小幅回落。",
+    "曲线呈正常形态——期限越长，收益率越高，仅在最长端有小幅回落。",
 )
 _SHAPE_FLAT = _pair(
     "The curve is close to flat — long and short maturities pay about the same.",
@@ -1023,7 +1032,7 @@ _SHAPE_FLAT = _pair(
 )
 _SHAPE_INVERTED_FRONT = _pair(
     "The curve is inverted at the front — three-month yields are at or above ten-year yields.",
-    "曲线在短端倒挂 — 三个月期收益率已不低于十年期。",
+    "曲线在短端倒挂——三个月期收益率已不低于十年期。",
 )
 _SHAPE_INVERTED_BELLY = _pair(
     "The curve is inverted between two and ten years — two-year yields are at or above ten-year yields.",
