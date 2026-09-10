@@ -30,6 +30,36 @@ DD_THRESHOLDS = (0.05, 0.08)                       # a >=5% pullback = a "drawdo
 PRIMARY_DD = 0.05
 ALERT_STATES = ("elevated", "risk-off")            # which states count as a loud alert for precision
 
+# Display vocabulary for the publication-change read model.  The canonical ledger stores
+# stable machine keys; this map translates only the compact user-facing explanation.  Unknown
+# future legs remain visible as de-snake-cased text rather than being dropped.
+_LEG_DISPLAY = {
+    "credit_oas_roc": ("HY credit spreads widening", "高收益利差走阔"),
+    "credit_hyg_tlt": ("HY bonds lagging Treasuries", "高收益债跑输国债"),
+    "rates_move": ("Bond volatility", "债市波动"),
+    "rates_realrate": ("Real yields jumping", "实际利率跳升"),
+    "bubble_ext": ("S&P trend extension", "标普趋势延伸"),
+    "bubble_leadership": ("Narrow semiconductor leadership", "半导体领涨过窄"),
+    "growth_defensives": ("Defensives outperforming", "防御股跑赢"),
+    "growth_cyc_def": ("Cyclicals fading vs defensives", "周期股弱于防御"),
+    "vol_term": ("VIX term-structure stress", "VIX 期限结构紧张"),
+    "vol_putcall": ("Put/call skew", "认沽/认购偏斜"),
+    "vol_gex": ("Dealer gamma stress", "做市商 Gamma 压力"),
+    "corr_floor_break": ("Stocks moving together", "个股联动上升"),
+    "global_breadth": ("Global breadth breakdown", "全球广度破位"),
+    "jpy_carry": ("Yen carry stress", "日元套利压力"),
+    "nh_contraction": ("New-high participation contracting", "创新高参与度收缩"),
+    "ai_breadth_divergence": ("AI breadth divergence", "AI 广度背离"),
+}
+_STATE_DISPLAY = {
+    "calm": ("Calm", "平静"),
+    "watch": ("Watch", "关注"),
+    "caution": ("Caution", "警戒"),
+    "elevated": ("Elevated", "偏高"),
+    "risk-off": ("Risk-off", "避险"),
+}
+_CHANGE_HISTORY_POINTS = 22
+
 
 def ledger_lane_armed() -> bool:
     """True only on a ledger-advancing collect lane (COLLECT_LANE=nightly, legacy
@@ -314,6 +344,226 @@ def scorecard(root=None) -> dict:
     }
 
 
+
+def _change_num(value) -> float | None:
+    """Finite one-decimal score for display/comparison; typed absence otherwise."""
+    try:
+        out = float(value)
+    except (TypeError, ValueError):
+        return None
+    return round(out, 1) if np.isfinite(out) else None
+
+
+def _scare_map(payload: dict) -> dict[str, dict]:
+    """Normalize live list-shaped scares and ledger dict-shaped scares."""
+    raw = (payload or {}).get("scares") or {}
+    if isinstance(raw, dict):
+        return {str(k): (v if isinstance(v, dict) else {}) for k, v in raw.items()}
+    out: dict[str, dict] = {}
+    for row in raw if isinstance(raw, list) else []:
+        if isinstance(row, dict) and row.get("scare"):
+            out[str(row["scare"])] = row
+    return out
+
+
+def _leg_ids(scare: dict) -> list[str]:
+    out: list[str] = []
+    for row in (scare or {}).get("firing_legs") or []:
+        key = row.get("leg") if isinstance(row, dict) else None
+        if key and key not in out:
+            out.append(str(key))
+    return out
+
+
+def _leg_label(key: str, language: str) -> str:
+    pair = _LEG_DISPLAY.get(key)
+    if pair:
+        return pair[0 if language == "en" else 1]
+    return key.replace("_", " ") if language == "en" else key
+
+
+def _history_point(payload: dict) -> dict:
+    return {
+        "asof": str((payload or {}).get("asof") or ""),
+        "state": (payload or {}).get("state"),
+        "dominant_scare": (payload or {}).get("dominant_scare"),
+        "top_score": _change_num((payload or {}).get("top_score")),
+    }
+
+
+def _state_label(state, language: str) -> str:
+    key = str(state or "")
+    pair = _STATE_DISPLAY.get(key)
+    if pair:
+        return pair[0 if language == "en" else 1]
+    return key.replace("_", " ").title() if language == "en" else key
+
+
+def _compact_labels(keys: list[str], language: str, limit: int = 2) -> str:
+    labels = [_leg_label(k, language) for k in keys[:limit]]
+    if len(keys) > limit:
+        labels.append(f"+{len(keys) - limit}")
+    return (", ".join(labels) if language == "en" else "、".join(labels))
+
+
+def publication_change(snap: dict, root=None) -> dict:
+    """Compare ``snap`` with earlier canonical Risk-Radar publications.
+
+    This is a READ MODEL over ``forward_log.jsonl`` — never a second history store.  The
+    comparator is deliberately the latest row with ``asof < current_asof`` because the nightly
+    lane appends today's row before this function runs.  Selecting the ledger tail would therefore
+    manufacture a zero delta on the very lane that owns the publication.
+    """
+    current_asof = str((snap or {}).get("asof") or "")
+    base = {
+        "available": False,
+        "basis": "prior_publication",
+        "null_reason": None,
+        "current_asof": current_asof or None,
+        "prior_asof": None,
+        "score": None,
+        "state": None,
+        "scares": [],
+        "week": {"available": False, "null_reason": "NO_WEEK_REFERENCE"},
+        "history": [_history_point(snap)] if current_asof else [],
+        "summary_en": "",
+        "summary_zh": "",
+    }
+    if not current_asof:
+        return {**base, "null_reason": "CURRENT_ASOF_MISSING"}
+
+    try:
+        current_ts = pd.Timestamp(current_asof).normalize()
+        # Keep the first publication for each date: the ledger's own contract is
+        # FIRST-WRITER-WINS, and comparison must preserve that identity if malformed duplicate
+        # rows ever appear.
+        by_day: dict[str, tuple[pd.Timestamp, dict]] = {}
+        for row in _read(_path(root)):
+            day = str((row or {}).get("asof") or "")
+            if not day or day in by_day:
+                continue
+            try:
+                ts = pd.Timestamp(day).normalize()
+            except Exception:  # noqa: BLE001 — malformed ledger row is skipped, not fatal
+                continue
+            by_day[day] = (ts, row)
+        ordered = sorted(by_day.values(), key=lambda item: item[0])
+        earlier = [(ts, row) for ts, row in ordered if ts < current_ts]
+        history_rows = earlier[-(_CHANGE_HISTORY_POINTS - 1):]
+        base["history"] = [_history_point(row) for _, row in history_rows] + [
+            _history_point(snap)
+        ]
+        if not earlier:
+            return {**base, "null_reason": "NO_EARLIER_PUBLICATION"}
+
+        prior_ts, prior = earlier[-1]
+        current_score = _change_num(snap.get("top_score"))
+        prior_score = _change_num(prior.get("top_score"))
+        delta = (round(current_score - prior_score, 1)
+                 if current_score is not None and prior_score is not None else None)
+        direction = ("rising" if delta is not None and delta > 0
+                     else "easing" if delta is not None and delta < 0
+                     else "flat")
+
+        current_state, prior_state = snap.get("state"), prior.get("state")
+        current_scares, prior_scares = _scare_map(snap), _scare_map(prior)
+        scare_changes: list[dict] = []
+        for key in sorted(set(current_scares) | set(prior_scares)):
+            cur = current_scares.get(key, {})
+            old = prior_scares.get(key, {})
+            cur_score, old_score = _change_num(cur.get("score")), _change_num(old.get("score"))
+            scare_delta = (round(cur_score - old_score, 1)
+                           if cur_score is not None and old_score is not None else None)
+            cur_legs, old_legs = _leg_ids(cur), _leg_ids(old)
+            old_set, cur_set = set(old_legs), set(cur_legs)
+            added = [leg for leg in cur_legs if leg not in old_set]
+            cleared = [leg for leg in old_legs if leg not in cur_set]
+            label_en = cur.get("label_en") or old.get("label_en") or key.replace("_", " ").title()
+            label_zh = cur.get("label_zh") or old.get("label_zh") or key
+            scare_changes.append({
+                "scare": key,
+                "label_en": label_en,
+                "label_zh": label_zh,
+                "prior": old_score,
+                "current": cur_score,
+                "delta": scare_delta,
+                "prior_band": old.get("band"),
+                "current_band": cur.get("band"),
+                "band_changed": old.get("band") != cur.get("band"),
+                "added_legs": added,
+                "cleared_legs": cleared,
+                "added_labels_en": [_leg_label(k, "en") for k in added],
+                "added_labels_zh": [_leg_label(k, "zh") for k in added],
+                "cleared_labels_en": [_leg_label(k, "en") for k in cleared],
+                "cleared_labels_zh": [_leg_label(k, "zh") for k in cleared],
+            })
+        scare_changes.sort(key=lambda row: (
+            -(abs(row["delta"]) if row["delta"] is not None else -1.0), row["scare"]
+        ))
+
+        week_candidates = [(ts, row) for ts, row in earlier
+                           if ts <= current_ts - pd.Timedelta(days=7)]
+        if week_candidates:
+            week_ts, week_row = week_candidates[-1]
+            week_score = _change_num(week_row.get("top_score"))
+            week_delta = (round(current_score - week_score, 1)
+                          if current_score is not None and week_score is not None else None)
+            week = {"available": True, "asof": str(week_row.get("asof")),
+                    "score": week_score, "delta": week_delta}
+        else:
+            week = {"available": False, "null_reason": "NO_WEEK_REFERENCE"}
+
+        dominant = str(snap.get("dominant_scare") or "")
+        dominant_change = next((row for row in scare_changes if row["scare"] == dominant), None)
+        subject = dominant_change
+        if subject and subject["prior"] is not None and subject["current"] is not None:
+            lead_en = f"{subject['label_en']} {subject['prior']:.1f}→{subject['current']:.1f}"
+            lead_zh = f"{subject['label_zh']} {subject['prior']:.1f}→{subject['current']:.1f}"
+        elif prior_score is not None and current_score is not None:
+            lead_en = f"Radar {prior_score:.1f}→{current_score:.1f}"
+            lead_zh = f"雷达 {prior_score:.1f}→{current_score:.1f}"
+        else:
+            lead_en, lead_zh = "Risk Radar changed", "风险雷达发生变化"
+        summary_en, summary_zh = [lead_en], [lead_zh]
+        if prior_state != current_state:
+            summary_en.append(f"{_state_label(prior_state, 'en')}→{_state_label(current_state, 'en')}")
+            summary_zh.append(f"{_state_label(prior_state, 'zh')}→{_state_label(current_state, 'zh')}")
+        if prior.get("dominant_scare") != snap.get("dominant_scare"):
+            summary_en.append(
+                f"Lead {_state_label(prior.get('dominant_scare'), 'en')}→"
+                f"{_state_label(snap.get('dominant_scare'), 'en')}"
+            )
+            summary_zh.append(
+                f"主导 {_state_label(prior.get('dominant_scare'), 'zh')}→"
+                f"{_state_label(snap.get('dominant_scare'), 'zh')}"
+            )
+        if subject:
+            if subject["cleared_legs"]:
+                summary_en.append(f"{_compact_labels(subject['cleared_legs'], 'en')} cleared")
+                summary_zh.append(f"{_compact_labels(subject['cleared_legs'], 'zh')}解除")
+            if subject["added_legs"]:
+                summary_en.append(f"{_compact_labels(subject['added_legs'], 'en')} added")
+                summary_zh.append(f"{_compact_labels(subject['added_legs'], 'zh')}新增")
+
+        return {
+            **base,
+            "available": True,
+            "null_reason": None,
+            "prior_asof": str(prior.get("asof")),
+            "score": {"current": current_score, "prior": prior_score,
+                      "delta": delta, "direction": direction},
+            "state": {"current": current_state, "prior": prior_state,
+                      "changed": current_state != prior_state},
+            "scares": scare_changes,
+            "week": week,
+            "summary_en": " · ".join(summary_en),
+            "summary_zh": " · ".join(summary_zh),
+        }
+    except Exception as exc:  # noqa: BLE001 — display read model must never break a build
+        log.warning("risk_radar publication-change read failed: %s", exc)
+        return {**base, "null_reason": "COMPARISON_ERROR"}
+
+
 def snapshot_and_grade(snap: dict, root=None) -> dict:
     """Convenience for run.py: log today's snapshot, grade matured entries, return the scorecard
     (which the engine attaches to latest['risk_radar']['forward_log']).
@@ -323,4 +573,6 @@ def snapshot_and_grade(snap: dict, root=None) -> dict:
     closing-bell / engine-render / render lanes without advancing the ledger."""
     log_snapshot(snap, root=root)
     grade_log(root=root)
-    return scorecard(root=root)
+    out = dict(scorecard(root=root))
+    out["publication_change"] = publication_change(snap, root=root)
+    return out
