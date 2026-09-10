@@ -70,7 +70,7 @@ def test_stock_identity_owns_no_etf():
 
     hits = []
     for path in stock_identity_dir.rglob("*.py"):
-        if "__pycache__" in path.parts:
+        if "__pycache__" in path.relative_to(stock_identity_dir).parts:
             continue
         if "etf" in path.read_text(encoding="utf-8").lower():
             hits.append(path)
