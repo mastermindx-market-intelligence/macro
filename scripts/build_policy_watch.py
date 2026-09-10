@@ -74,10 +74,70 @@ def source_label(url: object) -> str:
         "congress.gov": "Congress",
         "supremecourt.gov": "Supreme Court",
         "cmegroup.com": "CME Group",
+        "gov.uk": "GOV.UK", "www.gov.uk": "GOV.UK",
     }
     if host in known:
         return known[host]
     return host or "Source"
+
+
+def _uk_labels(iso: object, *, with_time: bool = False) -> tuple[str, str]:
+    """EN/ZH display labels for an ISO instant. Returns (\'\', \'\') when unparseable."""
+    raw = str(iso or "").strip()
+    try:
+        dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        return "", ""
+    en = dt.strftime("%b %-d, %Y")
+    zh = f"{dt.year}\u5e74{dt.month}\u6708{dt.day}\u65e5"
+    if with_time:
+        en += dt.strftime(" %H:%M UTC")
+        zh += dt.strftime(" %H:%M UTC")
+    return en, zh
+
+
+# Must match engine.uk_policy_brain._STATES — pinned by test_view_states_match_engine.
+_UK_VIEW_STATES = frozenset({"ok", "no_new", "source_outage", "stale", "gate_off", "model_unavailable"})
+_UK_VIEW_STANCES = frozenset({"supportive", "restrictive", "mixed", "routine"})
+
+
+def _uk_doc_version_labels(raw: object) -> tuple[str | None, str | None]:
+    """Plain-word document-update labels. Raw content_id@iso never reaches the page."""
+    s = str(raw or "").strip()
+    if not s:
+        return None, None
+    ts = s.split("@", 1)[-1] if "@" in s else s
+    en, zh = _uk_labels(ts)
+    if not en:
+        return None, None
+    return f"Updated {en}", f"更新于{zh}"
+
+
+def _uk_desk_view(raw: dict | None) -> dict:
+    """Always returns a renderable view. Absent artifact -> the gate-off state.
+
+    Every branch here is on a TYPED value (state / stance / None), never on a
+    formatted display string: a formatted label can be an em dash (truthy) or
+    \'0\' (falsey) and would decide the wrong way.
+    Unknown states collapse to gate_off. Unknown or missing stance stays None —
+    never a fabricated 'routine' the model did not produce.
+    """
+    if not isinstance(raw, dict):
+        return {"state": "gate_off", "stance": None,
+                "jurisdiction_en": "United Kingdom", "jurisdiction_zh": "\u82f1\u56fd",
+                "body_en": "HM Treasury", "body_zh": "\u82f1\u56fd\u8d22\u653f\u90e8",
+                "source_label": "GOV.UK", "headline": None,
+                "doc_version_en": None, "doc_version_zh": None}
+    view = dict(raw)
+    view.pop("raw_text", None)
+    state = view.get("state")
+    view["state"] = state if state in _UK_VIEW_STATES else "gate_off"
+    stance = view.get("stance")
+    view["stance"] = stance if stance in _UK_VIEW_STANCES else None
+    view["published_label_en"], view["published_label_zh"] = _uk_labels(view.get("published_iso"))
+    view["known_at_label_en"], view["known_at_label_zh"] = _uk_labels(view.get("known_at_iso"), with_time=True)
+    view["doc_version_en"], view["doc_version_zh"] = _uk_doc_version_labels(view.get("doc_version"))
+    return view
 
 
 def _verified_labels(as_of: object) -> tuple[str, str]:
@@ -87,6 +147,81 @@ def _verified_labels(as_of: object) -> tuple[str, str]:
     except ValueError:
         return raw, raw
     return parsed.strftime("%b %-d, %Y"), f"{parsed.year}年{parsed.month}月{parsed.day}日"
+
+
+_MONTH_FULL = (
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December",
+)
+_MONTH_ABBR = (
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+)
+_STOP_EN = {"proposed": "Proposed", "passed": "Passed", "in_force": "In force", "enforced": "Enforced"}
+_STOP_ZH = {"proposed": "提出", "passed": "通过", "in_force": "生效", "enforced": "执行"}
+
+
+def format_lifecycle_date(raw: object, precision: str = "day") -> tuple[str, str]:
+    """Plain EN/ZH lifecycle date. Day → 'May 1, 2026' / '2026年5月1日';
+    month → 'Nov 2025' / '2025年11月'; undated → 'date not published' /
+    '日期未公布'. Locale-free; ISO stays only in data-*."""
+    if precision == "undated":
+        return "date not published", "日期未公布"
+    text = str(raw or "").strip()[:10]
+    if not text:
+        return "", ""
+    try:
+        parsed = datetime.strptime(text, "%Y-%m-%d")
+    except ValueError:
+        return text, text
+    month_i = parsed.month - 1
+    if precision == "month":
+        return f"{_MONTH_ABBR[month_i]} {parsed.year}", f"{parsed.year}年{parsed.month}月"
+    return (
+        f"{_MONTH_FULL[month_i]} {parsed.day}, {parsed.year}",
+        f"{parsed.year}年{parsed.month}月{parsed.day}日",
+    )
+
+
+def decorate_lifecycle_view(lifecycle: dict | None) -> dict | None:
+    """Attach EN/ZH plain dates and the section-level shared-gap line."""
+    if not isinstance(lifecycle, dict):
+        return lifecycle
+    items = [dict(it) for it in (lifecycle.get("items") or [])]
+    as_of_prec = lifecycle.get("as_of_precision") or "day"
+    if not lifecycle.get("as_of_precision") and lifecycle.get("as_of"):
+        for it in items:
+            ka = str(it.get("known_at") or "")[:10]
+            sa = str(it.get("state_asof") or "")[:10]
+            if ka == lifecycle["as_of"] or sa == lifecycle["as_of"]:
+                as_of_prec = it.get("date_precision") or "day"
+                break
+    as_of_en, as_of_zh = format_lifecycle_date(lifecycle.get("as_of"), as_of_prec)
+    intel_en, intel_zh = format_lifecycle_date(lifecycle.get("intel_as_of"), "day")
+    decorated = []
+    for it in items:
+        prec = it.get("date_precision") or "day"
+        en, zh = format_lifecycle_date(it.get("state_asof"), prec)
+        it["state_asof_en"] = en
+        it["state_asof_zh"] = zh
+        decorated.append(it)
+    gap_tuples = [tuple(it.get("gaps") or []) for it in decorated]
+    shared = None
+    if decorated and len(set(gap_tuples)) == 1 and gap_tuples[0]:
+        shared = list(gap_tuples[0])
+    shared_en = ", ".join(_STOP_EN.get(g, g) for g in shared) if shared else ""
+    shared_zh = "、".join(_STOP_ZH.get(g, g) for g in shared) if shared else ""
+    out = dict(lifecycle)
+    out["items"] = decorated
+    out["as_of_en"] = as_of_en
+    out["as_of_zh"] = as_of_zh
+    out["as_of_precision"] = as_of_prec
+    out["intel_as_of_en"] = intel_en
+    out["intel_as_of_zh"] = intel_zh
+    out["shared_gap_set"] = shared
+    out["shared_gap_en"] = shared_en
+    out["shared_gap_zh"] = shared_zh
+    return out
 
 
 def _featured_predictions(preds: list[dict], dates: object, limit: int = 6) -> list[dict]:
@@ -150,6 +285,15 @@ def main() -> int:
         desk = None
 
     # explicit Fed reaction-function read (display-only) from the regime latest.json
+    # UK policy desk -- engine.uk_policy_brain writes site/uk_policy.json in CI.
+    # Absent locally -> the panel renders its gate-off state, never a blank.
+    uk_raw = None
+    try:
+        uk_raw = json.loads((site / "uk_policy.json").read_text())
+    except Exception:  # noqa: BLE001
+        uk_raw = None
+    uk_desk = _uk_desk_view(uk_raw)
+
     fed_stance = None
     fed_hist = {}
     try:
@@ -217,6 +361,15 @@ def main() -> int:
     except Exception as e:  # noqa: BLE001
         log.warning("scorecard skipped: %s", e)
 
+    # deterministic policy lifecycle (no LLM) — owner: engine.policy_intent_desk
+    lifecycle = None
+    try:
+        from engine import policy_intent_desk as _pid
+        _pid.ingest_lifecycle(config.ROOT)      # nightly-gated, idempotent
+        lifecycle = decorate_lifecycle_view(_pid.lifecycle_view(config.ROOT))
+    except Exception as e:  # noqa: BLE001
+        log.warning("policy lifecycle skipped: %s", e)
+
     verified_en, verified_zh = _verified_labels(intel.get("as_of"))
     source_links = [{"url": url, "label": source_label(url)} for url in intel.get("sources", [])]
     featured_predictions = _featured_predictions(preds, dates)
@@ -227,7 +380,9 @@ def main() -> int:
         rot=rot, rot_hist=rot_hist, dates=dates, catalysts=catalysts, scorecard=scorecard,
         generated_utc=built, verified_en=verified_en, verified_zh=verified_zh,
         source_links=source_links, featured_predictions=featured_predictions, brief=brief,
+        uk_desk=uk_desk,
         active_section="research", active_page="policy_watch",
+        lifecycle=lifecycle,
     )
     # Jinja's language branches leave indentation on otherwise-empty lines.
     # Normalize it here so the committed artifact stays diff-clean after every build.

@@ -1,16 +1,16 @@
 {
   "schema": "us_track_history/v1",
-  "as_of": "2026-09-05",
-  "generated": "2026-09-05T14:58:33.296935+00:00",
+  "as_of": "2026-09-10",
+  "generated": "2026-09-10T10:33:57.130892+00:00",
   "cohort_rollup": {
     "horizons": {
       "h5": {
         "accruing": true,
-        "raw_n": 3967,
+        "raw_n": 4407,
         "effective_n": 2,
-        "win_rate": 0.4648,
-        "avg_excess": -0.0015,
-        "med_excess": -0.0043,
+        "win_rate": 0.4629,
+        "avg_excess": -0.0016,
+        "med_excess": -0.0045,
         "wilson_lo": 0.0945,
         "wilson_hi": 0.9055,
         "cohort_series": [
@@ -72,45 +72,53 @@
           },
           {
             "week": "2026-08-03/2026-08-09",
-            "raw_n": 144,
+            "raw_n": 145,
             "effective_n": 1,
-            "win_rate": 0.4167,
-            "avg_excess": -0.0165,
-            "med_excess": -0.0146
+            "win_rate": 0.4207,
+            "avg_excess": -0.0163,
+            "med_excess": -0.0142
           },
           {
             "week": "2026-08-10/2026-08-16",
-            "raw_n": 443,
+            "raw_n": 480,
             "effective_n": 1,
-            "win_rate": 0.4808,
+            "win_rate": 0.4854,
             "avg_excess": 0.0032,
-            "med_excess": -0.0017
+            "med_excess": -0.0015
           },
           {
             "week": "2026-08-17/2026-08-23",
-            "raw_n": 636,
+            "raw_n": 719,
             "effective_n": 1,
-            "win_rate": 0.4403,
-            "avg_excess": -0.0028,
-            "med_excess": -0.0066
+            "win_rate": 0.4437,
+            "avg_excess": -0.0019,
+            "med_excess": -0.0068
           },
           {
             "week": "2026-08-24/2026-08-30",
-            "raw_n": 618,
+            "raw_n": 698,
             "effective_n": 1,
-            "win_rate": 0.335,
-            "avg_excess": -0.0139,
-            "med_excess": -0.0174
+            "win_rate": 0.3438,
+            "avg_excess": -0.0133,
+            "med_excess": -0.0156
+          },
+          {
+            "week": "2026-08-31/2026-09-06",
+            "raw_n": 239,
+            "effective_n": 1,
+            "win_rate": 0.431,
+            "avg_excess": -0.0046,
+            "med_excess": -0.0074
           }
         ]
       },
       "h10": {
         "accruing": true,
-        "raw_n": 2723,
+        "raw_n": 3143,
         "effective_n": 2,
-        "win_rate": 0.4513,
-        "avg_excess": -0.0039,
-        "med_excess": -0.0084,
+        "win_rate": 0.441,
+        "avg_excess": -0.0058,
+        "med_excess": -0.01,
         "wilson_lo": 0.0945,
         "wilson_hi": 0.9055,
         "cohort_series": [
@@ -156,45 +164,53 @@
           },
           {
             "week": "2026-07-27/2026-08-02",
-            "raw_n": 594,
+            "raw_n": 613,
             "effective_n": 1,
-            "win_rate": 0.367,
-            "avg_excess": -0.0113,
-            "med_excess": -0.0281
+            "win_rate": 0.3719,
+            "avg_excess": -0.011,
+            "med_excess": -0.0261
           },
           {
             "week": "2026-08-03/2026-08-09",
-            "raw_n": 134,
+            "raw_n": 145,
             "effective_n": 1,
-            "win_rate": 0.4627,
-            "avg_excess": -0.0073,
-            "med_excess": -0.0078
+            "win_rate": 0.469,
+            "avg_excess": -0.0071,
+            "med_excess": -0.007
           },
           {
             "week": "2026-08-10/2026-08-16",
-            "raw_n": 418,
+            "raw_n": 470,
             "effective_n": 1,
-            "win_rate": 0.433,
-            "avg_excess": -0.0001,
+            "win_rate": 0.434,
+            "avg_excess": -0.0008,
             "med_excess": -0.0074
           },
           {
             "week": "2026-08-17/2026-08-23",
-            "raw_n": 630,
+            "raw_n": 713,
             "effective_n": 1,
-            "win_rate": 0.3603,
-            "avg_excess": -0.0186,
-            "med_excess": -0.0197
+            "win_rate": 0.3675,
+            "avg_excess": -0.0174,
+            "med_excess": -0.0183
+          },
+          {
+            "week": "2026-08-24/2026-08-30",
+            "raw_n": 255,
+            "effective_n": 1,
+            "win_rate": 0.3255,
+            "avg_excess": -0.0254,
+            "med_excess": -0.0285
           }
         ]
       },
       "h21": {
         "accruing": true,
-        "raw_n": 1361,
+        "raw_n": 1642,
         "effective_n": 1,
-        "win_rate": 0.3791,
-        "avg_excess": -0.0182,
-        "med_excess": -0.0337,
+        "win_rate": 0.3934,
+        "avg_excess": -0.015,
+        "med_excess": -0.0295,
         "wilson_lo": 0.0,
         "wilson_hi": 0.7935,
         "cohort_series": [
@@ -208,43 +224,51 @@
           },
           {
             "week": "2026-07-06/2026-07-12",
-            "raw_n": 172,
+            "raw_n": 173,
             "effective_n": 1,
-            "win_rate": 0.4826,
-            "avg_excess": -0.0005,
-            "med_excess": -0.004
+            "win_rate": 0.4855,
+            "avg_excess": -0.0003,
+            "med_excess": -0.0034
           },
           {
             "week": "2026-07-13/2026-07-19",
-            "raw_n": 190,
+            "raw_n": 197,
             "effective_n": 1,
-            "win_rate": 0.4474,
-            "avg_excess": -0.0095,
-            "med_excess": -0.0112
+            "win_rate": 0.4569,
+            "avg_excess": -0.0074,
+            "med_excess": -0.0109
           },
           {
             "week": "2026-07-20/2026-07-26",
-            "raw_n": 226,
+            "raw_n": 240,
             "effective_n": 1,
-            "win_rate": 0.3717,
-            "avg_excess": -0.0131,
-            "med_excess": -0.0343
+            "win_rate": 0.3708,
+            "avg_excess": -0.0122,
+            "med_excess": -0.0328
           },
           {
             "week": "2026-07-27/2026-08-02",
-            "raw_n": 506,
+            "raw_n": 599,
             "effective_n": 1,
-            "win_rate": 0.3123,
-            "avg_excess": -0.0311,
-            "med_excess": -0.0507
+            "win_rate": 0.3472,
+            "avg_excess": -0.0227,
+            "med_excess": -0.0441
           },
           {
             "week": "2026-08-03/2026-08-09",
-            "raw_n": 122,
+            "raw_n": 142,
             "effective_n": 1,
-            "win_rate": 0.2623,
-            "avg_excess": -0.055,
-            "med_excess": -0.063
+            "win_rate": 0.2817,
+            "avg_excess": -0.0479,
+            "med_excess": -0.059
+          },
+          {
+            "week": "2026-08-10/2026-08-16",
+            "raw_n": 146,
+            "effective_n": 1,
+            "win_rate": 0.4178,
+            "avg_excess": -0.0169,
+            "med_excess": -0.0199
           }
         ]
       },
@@ -258,57 +282,57 @@
     },
     "accruing": false,
     "return_distribution_21d": {
-      "raw_n": 1361,
+      "raw_n": 1642,
       "bins": [
         {
           "lo": -0.5574,
-          "hi": -0.4022,
+          "hi": -0.3736,
           "count": 5
         },
         {
-          "lo": -0.4022,
-          "hi": -0.2469,
-          "count": 26
+          "lo": -0.3736,
+          "hi": -0.1897,
+          "count": 87
         },
         {
-          "lo": -0.2469,
-          "hi": -0.0916,
-          "count": 297
+          "lo": -0.1897,
+          "hi": -0.0059,
+          "count": 867
         },
         {
-          "lo": -0.0916,
-          "hi": 0.0636,
-          "count": 772
+          "lo": -0.0059,
+          "hi": 0.178,
+          "count": 574
         },
         {
-          "lo": 0.0636,
-          "hi": 0.2189,
-          "count": 201
+          "lo": 0.178,
+          "hi": 0.3618,
+          "count": 83
         },
         {
-          "lo": 0.2189,
-          "hi": 0.3741,
-          "count": 37
+          "lo": 0.3618,
+          "hi": 0.5457,
+          "count": 18
         },
         {
-          "lo": 0.3741,
-          "hi": 0.5294,
-          "count": 16
+          "lo": 0.5457,
+          "hi": 0.7295,
+          "count": 4
         },
         {
-          "lo": 0.5294,
-          "hi": 0.6846,
-          "count": 3
+          "lo": 0.7295,
+          "hi": 0.9134,
+          "count": 2
         },
         {
-          "lo": 0.6846,
-          "hi": 0.8399,
+          "lo": 0.9134,
+          "hi": 1.0972,
           "count": 1
         },
         {
-          "lo": 0.8399,
-          "hi": 0.9951,
-          "count": 3
+          "lo": 1.0972,
+          "hi": 1.2811,
+          "count": 1
         }
       ],
       "accruing": true
@@ -483,6 +507,16 @@
       },
       {
         "as_of": "2026-09-04",
+        "total": 0,
+        "by_lane": {}
+      },
+      {
+        "as_of": "2026-09-08",
+        "total": 0,
+        "by_lane": {}
+      },
+      {
+        "as_of": "2026-09-09",
         "total": 0,
         "by_lane": {}
       }

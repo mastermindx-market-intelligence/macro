@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "REZI-BULL-20260703",
-  "asof": "2026-09-05",
+  "asof": "2026-09-10",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 13.5,
@@ -14,19 +14,19 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 67.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -1.21,
+    "dist_to_stop_r": -1.408,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 126.7,
-    "p1": -1.4733,
-    "p2": -0.7366,
+    "horizon_pct_used": 137.8,
+    "p1": -1.6053,
+    "p2": -0.8026,
     "p3": null,
-    "move_r": -2.21,
+    "move_r": -2.408,
     "mfe_r": 1.111,
-    "mae_r": -2.329
+    "mae_r": -2.408
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 5.610001525878907,
-  "_mae": -11.759999313354491,
+  "_mae": -12.160000839233398,
   "_max_p1": 0.7405942608420997,
   "_first_trigger_ts": "2026-07-11",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 57,
-  "tau": 1.2667
+  "days_elapsed": 62,
+  "tau": 1.3778
 }

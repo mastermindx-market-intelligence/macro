@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.liquidity_plumbing.v1",
-  "asof": "2026-09-04",
+  "asof": "2026-09-09",
   "phase_status": {
     "p0_p1_quantity_quality": "integrated",
     "p3_funding_spreads": "integrated",
@@ -19,109 +19,97 @@
     "hard_gate": false
   },
   "headline": {
-    "state": "neutral_hollow",
-    "summary": "Net liquidity is neutral but RRP exhausted or composition is mechanical — buffer is hollow; net-neutral read with limited downside cushion. RRP buffer is empty — the next liquidity drain hits bank reserves directly."
+    "state": "mechanical_liquidity_tailwind",
+    "summary": "Net liquidity is expanding on Treasury/RRP plumbing (e.g. the Treasury spending down its cash account), not Fed asset growth — a real but transient tailwind. Credit and funding stress gauges are not confirming stress. RRP buffer is empty — the next liquidity drain hits bank reserves directly."
   },
   "fed": {
     "assets_bn": 6737.204,
     "assets_chg_20d_bn": -11.363,
     "reserve_balances_bn": 2894.531,
-    "walcl_stale_days": 2,
+    "walcl_stale_days": 5,
     "policy_stance": "hawkish",
     "administered_rate_posture": "on_hold",
-    "asof": "2026-09-04"
+    "asof": "2026-09-09"
   },
   "treasury": {
-    "tga_bn": 903.928,
-    "tga_chg_20d_bn": -57.798,
-    "net_issuance_20d_bn": 276.519,
+    "tga_bn": 880.019,
+    "tga_chg_20d_bn": -86.832,
+    "net_issuance_20d_bn": 245.099,
     "expected_tga_pressure": "unknown_until_financing_estimates_parser",
     "coupon_supply_pressure": "context_only",
     "tga_impulse": {
-      "active": false,
-      "direction": null,
-      "magnitude_bn": null,
-      "days": null,
-      "since": null,
+      "active": true,
+      "direction": "drawdown",
+      "magnitude_bn": 86.8,
+      "days": 10,
+      "since": "2026-08-24",
       "quarter_end_adjacent": false,
-      "summary_en": "No TGA impulse detected.",
-      "summary_zh": "未检测到TGA冲量。"
+      "summary_en": "Treasury spent down $87B of its cash account since Aug 24 — that cash re-enters the financial system (supportive while it lasts).",
+      "summary_zh": "自8月24日起，美国财政部已动用现金账户中的$87B — 这部分资金重新流入金融体系（短期内具支撑性）。"
     },
-    "asof": "2026-09-03"
+    "asof": "2026-09-08"
   },
   "rrp": {
-    "rrp_bn": 0.675,
-    "rrp_chg_20d_bn": -0.775,
+    "rrp_bn": 0.432,
+    "rrp_chg_20d_bn": -0.818,
     "buffer_state": "exhausted"
   },
   "quantity": {
-    "netliq_bn": 5832.601,
-    "netliq_chg_20d_bn": 39.597,
-    "netliq_chg_65d_bn": -33.251,
-    "netliq_pctile_expanding": 0.779602,
-    "overlay": "neutral"
+    "netliq_bn": 5856.753,
+    "netliq_chg_20d_bn": 106.766,
+    "netliq_chg_65d_bn": -8.681,
+    "netliq_pctile_expanding": 0.785029,
+    "overlay": "expanding"
   },
   "quality": {
-    "label": "neutral-hollow",
-    "fed_share": 0.27,
+    "label": "stress-expansion",
+    "fed_share": 0.15,
     "mechanical": true,
     "stress_confirming": false,
     "stress_overlay": {
-      "hy_oas_pct": 2.65,
-      "hy_oas_z": -0.2,
+      "hy_oas_pct": 2.67,
+      "hy_oas_z": -0.16,
       "nfci": -0.558,
       "nfci_trend": "loose",
       "confirming_stress": false
     },
-    "walcl_stale_days": 2
+    "walcl_stale_days": 5
   },
   "funding": {
     "effr_minus_iorb_bp": -2.0,
     "effr_minus_iorb_d20_bp": 0.0,
-    "effr_minus_iorb_pctile": 0.9141,
-    "sofr_minus_iorb_bp": 1.0,
+    "effr_minus_iorb_pctile": 0.9142,
+    "sofr_minus_iorb_bp": -1.0,
     "sofr_minus_iorb_d20_bp": 1.0,
-    "sofr_minus_iorb_pctile": 0.9348,
-    "sofr_99pctl_minus_iorb_bp": 9.0,
-    "sofr_99pctl_minus_iorb_d20_bp": 1.0,
-    "sofr_99pctl_minus_iorb_pctile": 0.8821,
+    "sofr_minus_iorb_pctile": 0.8706,
+    "sofr_99pctl_minus_iorb_bp": 8.0,
+    "sofr_99pctl_minus_iorb_d20_bp": 2.0,
+    "sofr_99pctl_minus_iorb_pctile": 0.8509,
     "srf_takeup_bn": null,
     "discount_window_primary_credit_bn": null,
     "reserve_scarcity_state": "tightening",
-    "asof": "2026-09-03"
+    "asof": "2026-09-08"
   },
   "components": {
     "walcl": {
       "level_bn": 6737.2,
       "d20_bn": -11.4,
       "d65_bn": 25.7,
-      "pctile": 0.768
+      "pctile": 0.7681
     },
     "rrp": {
-      "level_bn": 0.7,
+      "level_bn": 0.4,
       "d20_bn": -0.8,
-      "d65_bn": -0.4,
-      "pctile": 0.1645
+      "d65_bn": -1.4,
+      "pctile": 0.1294
     },
     "tga": {
-      "level_bn": 903.9,
-      "d20_bn": -50.2,
-      "d65_bn": 59.4,
-      "pctile": 0.9281
+      "level_bn": 880.0,
+      "d20_bn": -117.3,
+      "d65_bn": 35.8,
+      "pctile": 0.9209
     },
     "netliq_sparkline_90d": [
-      {
-        "d": "2026-06-08",
-        "v": 5865.4
-      },
-      {
-        "d": "2026-06-09",
-        "v": 5880.5
-      },
-      {
-        "d": "2026-06-10",
-        "v": 5923.9
-      },
       {
         "d": "2026-06-11",
         "v": 5925.4
@@ -364,7 +352,15 @@
       },
       {
         "d": "2026-09-04",
-        "v": 5832.6
+        "v": 5847.6
+      },
+      {
+        "d": "2026-09-08",
+        "v": 5856.6
+      },
+      {
+        "d": "2026-09-09",
+        "v": 5856.8
       }
     ],
     "reserves": {
@@ -383,8 +379,8 @@
     "asof": "2026-09-02"
   },
   "entry_effect": {
-    "direction": "neutral",
-    "quality": "neutral",
+    "direction": "tailwind",
+    "quality": "low_quality_tailwind",
     "measured_basis": "cycle_ladder_21d_odds",
     "use": "support existing buy setup, never originate one"
   },
@@ -394,7 +390,7 @@
   "degraded": false,
   "schema_version": 1,
   "produced_by": "scripts/build_liquidity_plumbing.py",
-  "produced_at": "2026-09-05T14:36:54Z",
-  "inputs_hash": "sha256:a0947d65fb6ae57c8b75dec5e25831fae6bfa7c3bb03eec35c86e85452fe5997",
+  "produced_at": "2026-09-10T10:03:11Z",
+  "inputs_hash": "sha256:a313592fc5d51218fae42de553f9a061ae2a19b2d3dfafbf3d5fd736cf56a5fb",
   "tier": "shadow"
 }

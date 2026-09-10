@@ -1,0 +1,1033 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-09-08T06:31:13Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_error_reverification": {
+        "at": "2026-09-08T08:41:39Z",
+        "at_sha": "44519bd31d5ef141db389bd5dfe1aa5f0036515f",
+        "finding": "the recorded pageerror \"(intermediate value)(...) is not a function\" was thrown by the capture harness, not by the page or the shared chrome: scripts/capture_page_evidence.py emitted the state-seed init script as an unterminated IIFE \"(fn)(state)\" and the (uncommitted) capture wrapper appended a second IIFE after a newline, so the two parsed as one call-of-a-call. Reproduced at <anonymous>:10:13 with that exact concatenation against these page bytes; absent with the terminating semicolon, which state_seed_source now emits.",
+        "page_console_error_count_now": 0,
+        "sibling_page_same_chrome": {
+          "pageerrors": 0,
+          "route": "/country_cycles.html"
+        },
+        "stock_tool_reruns": {
+          "external_requests": 0,
+          "pageerrors": 0,
+          "runs": 3,
+          "served_bytes": "byte-identical to the original capture worktree for every requested file",
+          "states_per_run": 8
+        },
+        "tool_module_sha256": "3301a5f9f5a21b2bd6fada86b3c685af1f3f9baf9fa52cbd712ab5591e980b05"
+      },
+      "console_errors": [
+        {
+          "attributed_to": "capture-harness init-script concatenation (see console_error_reverification); not the page, not theme.js / nav_market.js",
+          "source_url": null,
+          "text": "pageerror: (intermediate value)(...) is not a function"
+        }
+      ],
+      "failed_responses": [],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": true,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 2248,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 2479,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 1,
+        "document_height_px": 2248,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 3,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "light",
+          "viewport": "desktop"
+        },
+        "panel_count": 9,
+        "payload_bytes_total": 532290,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 15,
+        "screenshot_completion": 1.0,
+        "section_count": 7,
+        "source_present": true,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 226
+      },
+      "page_id": "macro:sanctions_map",
+      "registry_route": "/sanctions_map.html",
+      "route": "/sanctions_map.html",
+      "route_kind": "page",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 962261,
+          "captured": true,
+          "file": "60a8df18a555ad33.png",
+          "force_state": null,
+          "height": 4496,
+          "language_probe": {
+            "cjk_in_body": false,
+            "data_lang": "en",
+            "en_body_hits": [
+              "Sanctions map",
+              "Where US sanctions point today",
+              "Use this to read country risk",
+              "Most-named countries",
+              "All countries named"
+            ],
+            "en_display": "block",
+            "ok": true,
+            "zh_display": "none"
+          },
+          "locale": "en",
+          "map_rect": {
+            "bottom": 909.34375,
+            "height": 572,
+            "left": 149,
+            "right": 1291,
+            "top": 337.34375,
+            "width": 1142,
+            "x": 149,
+            "y": 337.34375
+          },
+          "pixel_samples": {
+            "canvas_rgb": [
+              227,
+              232,
+              240
+            ],
+            "computed_body_bg": "rgb(232, 235, 241)",
+            "computed_panel_bg": "rgb(255, 255, 255)",
+            "computed_rung0_fill": "color(srgb 0.950824 0.953412 0.958824)",
+            "panel_rgb": [
+              255,
+              255,
+              255
+            ],
+            "rung0_iso3": "TZA",
+            "rung0_rgb": [
+              242,
+              243,
+              245
+            ],
+            "sample_xy_device": {
+              "canvas": [
+                24,
+                228
+              ],
+              "panel": [
+                1440,
+                244
+              ],
+              "rung0": [
+                1640,
+                1261
+              ]
+            }
+          },
+          "sha256": "60a8df18a555ad3320e9a9a1a550a8ccfa7d4bf69edb2c4899d2ed9063fede52",
+          "theme": "light",
+          "theme_sheets": [
+            "theme.css",
+            "product-nav-icons.css",
+            "navigation-refresh.css"
+          ],
+          "verified_how": "playwright full-page; theme/lang seeded in localStorage + data-* before load; prefers-reduced-motion:reduce; device_scale_factor=2; computed-style language gate; PNG 2880x4496; map rect inside clip",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 929681,
+          "captured": true,
+          "file": "8745b83e8e93d062.png",
+          "force_state": null,
+          "height": 4494,
+          "language_probe": {
+            "cjk_in_body": false,
+            "data_lang": "en",
+            "en_body_hits": [
+              "Sanctions map",
+              "Where US sanctions point today",
+              "Use this to read country risk",
+              "Most-named countries",
+              "All countries named"
+            ],
+            "en_display": "block",
+            "ok": true,
+            "zh_display": "none"
+          },
+          "locale": "en",
+          "map_rect": {
+            "bottom": 908.34375,
+            "height": 571,
+            "left": 149,
+            "right": 1291,
+            "top": 337.34375,
+            "width": 1142,
+            "x": 149,
+            "y": 337.34375
+          },
+          "pixel_samples": {
+            "canvas_rgb": [
+              16,
+              21,
+              36
+            ],
+            "computed_body_bg": "rgb(13, 16, 24)",
+            "computed_panel_bg": "rgb(21, 24, 32)",
+            "computed_rung0_fill": "color(srgb 0.13851 0.151843 0.184471)",
+            "panel_rgb": [
+              21,
+              24,
+              32
+            ],
+            "rung0_iso3": "TZA",
+            "rung0_rgb": [
+              35,
+              39,
+              47
+            ],
+            "sample_xy_device": {
+              "canvas": [
+                24,
+                228
+              ],
+              "panel": [
+                1440,
+                244
+              ],
+              "rung0": [
+                1640,
+                1260
+              ]
+            }
+          },
+          "sha256": "8745b83e8e93d062390844d61619dac4869c4aa5a96ab18cdef15e274462dd62",
+          "theme": "dark",
+          "theme_sheets": [
+            "theme.css",
+            "product-nav-icons.css",
+            "navigation-refresh.css"
+          ],
+          "verified_how": "playwright full-page; theme/lang seeded in localStorage + data-* before load; prefers-reduced-motion:reduce; device_scale_factor=2; computed-style language gate; PNG 2880x4494; map rect inside clip",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 968669,
+          "captured": true,
+          "file": "92a8a2f0d0dd4e4f.png",
+          "force_state": null,
+          "height": 4692,
+          "language_probe": {
+            "cjk_in_body": true,
+            "data_lang": "zh",
+            "en_body_hits": [],
+            "en_display": "none",
+            "ok": true,
+            "zh_display": "block"
+          },
+          "locale": "zh",
+          "map_rect": {
+            "bottom": 929.34375,
+            "height": 572,
+            "left": 149,
+            "right": 1291,
+            "top": 357.34375,
+            "width": 1142,
+            "x": 149,
+            "y": 357.34375
+          },
+          "pixel_samples": {
+            "canvas_rgb": [
+              227,
+              232,
+              240
+            ],
+            "computed_body_bg": "rgb(232, 235, 241)",
+            "computed_panel_bg": "rgb(255, 255, 255)",
+            "computed_rung0_fill": "color(srgb 0.950824 0.953412 0.958824)",
+            "panel_rgb": [
+              255,
+              255,
+              255
+            ],
+            "rung0_iso3": "TZA",
+            "rung0_rgb": [
+              242,
+              243,
+              245
+            ],
+            "sample_xy_device": {
+              "canvas": [
+                24,
+                228
+              ],
+              "panel": [
+                1440,
+                244
+              ],
+              "rung0": [
+                1640,
+                1301
+              ]
+            }
+          },
+          "sha256": "92a8a2f0d0dd4e4ff6e974b6c54a112058c4426e6aa512c0a876164304b86c57",
+          "theme": "light",
+          "theme_sheets": [
+            "theme.css",
+            "product-nav-icons.css",
+            "navigation-refresh.css"
+          ],
+          "verified_how": "playwright full-page; theme/lang seeded in localStorage + data-* before load; prefers-reduced-motion:reduce; device_scale_factor=2; computed-style language gate; PNG 2880x4692; map rect inside clip",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 931721,
+          "captured": true,
+          "file": "733aa8b9d61c9fd0.png",
+          "force_state": null,
+          "height": 4690,
+          "language_probe": {
+            "cjk_in_body": true,
+            "data_lang": "zh",
+            "en_body_hits": [],
+            "en_display": "none",
+            "ok": true,
+            "zh_display": "block"
+          },
+          "locale": "zh",
+          "map_rect": {
+            "bottom": 928.34375,
+            "height": 571,
+            "left": 149,
+            "right": 1291,
+            "top": 357.34375,
+            "width": 1142,
+            "x": 149,
+            "y": 357.34375
+          },
+          "pixel_samples": {
+            "canvas_rgb": [
+              16,
+              21,
+              36
+            ],
+            "computed_body_bg": "rgb(13, 16, 24)",
+            "computed_panel_bg": "rgb(21, 24, 32)",
+            "computed_rung0_fill": "color(srgb 0.13851 0.151843 0.184471)",
+            "panel_rgb": [
+              21,
+              24,
+              32
+            ],
+            "rung0_iso3": "TZA",
+            "rung0_rgb": [
+              35,
+              39,
+              47
+            ],
+            "sample_xy_device": {
+              "canvas": [
+                24,
+                228
+              ],
+              "panel": [
+                1440,
+                244
+              ],
+              "rung0": [
+                1640,
+                1300
+              ]
+            }
+          },
+          "sha256": "733aa8b9d61c9fd0e04cf9f20dc15c29a49df6e32a258bdc25ece332c6ac647d",
+          "theme": "dark",
+          "theme_sheets": [
+            "theme.css",
+            "product-nav-icons.css",
+            "navigation-refresh.css"
+          ],
+          "verified_how": "playwright full-page; theme/lang seeded in localStorage + data-* before load; prefers-reduced-motion:reduce; device_scale_factor=2; computed-style language gate; PNG 2880x4690; map rect inside clip",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 592854,
+          "captured": true,
+          "file": "43f7e9691375582c.png",
+          "force_state": null,
+          "height": 4958,
+          "language_probe": {
+            "cjk_in_body": false,
+            "data_lang": "en",
+            "en_body_hits": [
+              "Sanctions map",
+              "Where US sanctions point today",
+              "Use this to read country risk",
+              "Most-named countries",
+              "All countries named"
+            ],
+            "en_display": "block",
+            "ok": true,
+            "zh_display": "none"
+          },
+          "locale": "en",
+          "map_rect": {
+            "bottom": 644.34375,
+            "height": 157,
+            "left": 39,
+            "right": 351,
+            "top": 487.34375,
+            "width": 312,
+            "x": 39,
+            "y": 487.34375
+          },
+          "pixel_samples": {
+            "canvas_rgb": [
+              232,
+              235,
+              241
+            ],
+            "computed_body_bg": "rgb(232, 235, 241)",
+            "computed_panel_bg": "rgb(255, 255, 255)",
+            "computed_rung0_fill": "color(srgb 0.950824 0.953412 0.958824)",
+            "panel_rgb": [
+              255,
+              255,
+              255
+            ],
+            "rung0_iso3": "TZA",
+            "rung0_rgb": [
+              242,
+              243,
+              245
+            ],
+            "sample_xy_device": {
+              "canvas": [
+                20,
+                774
+              ],
+              "panel": [
+                390,
+                352
+              ],
+              "rung0": [
+                449,
+                1141
+              ]
+            }
+          },
+          "sha256": "43f7e9691375582cc38143c633fb0ffea4f950c7dab2dd17359e125a9f5ca472",
+          "theme": "light",
+          "theme_sheets": [
+            "theme.css",
+            "product-nav-icons.css",
+            "navigation-refresh.css"
+          ],
+          "verified_how": "playwright full-page; theme/lang seeded in localStorage + data-* before load; prefers-reduced-motion:reduce; device_scale_factor=2; computed-style language gate; PNG 780x4958; map rect inside clip",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 780
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 608112,
+          "captured": true,
+          "file": "ce6cbb978907a555.png",
+          "force_state": null,
+          "height": 4956,
+          "language_probe": {
+            "cjk_in_body": false,
+            "data_lang": "en",
+            "en_body_hits": [
+              "Sanctions map",
+              "Where US sanctions point today",
+              "Use this to read country risk",
+              "Most-named countries",
+              "All countries named"
+            ],
+            "en_display": "block",
+            "ok": true,
+            "zh_display": "none"
+          },
+          "locale": "en",
+          "map_rect": {
+            "bottom": 643.34375,
+            "height": 156,
+            "left": 39,
+            "right": 351,
+            "top": 487.34375,
+            "width": 312,
+            "x": 39,
+            "y": 487.34375
+          },
+          "pixel_samples": {
+            "canvas_rgb": [
+              13,
+              16,
+              24
+            ],
+            "computed_body_bg": "rgb(13, 16, 24)",
+            "computed_panel_bg": "rgb(21, 24, 32)",
+            "computed_rung0_fill": "color(srgb 0.13851 0.151843 0.184471)",
+            "panel_rgb": [
+              21,
+              24,
+              32
+            ],
+            "rung0_iso3": "TZA",
+            "rung0_rgb": [
+              35,
+              39,
+              47
+            ],
+            "sample_xy_device": {
+              "canvas": [
+                20,
+                774
+              ],
+              "panel": [
+                390,
+                352
+              ],
+              "rung0": [
+                449,
+                1140
+              ]
+            }
+          },
+          "sha256": "ce6cbb978907a555bc8c94d2090e89aff6081d79fabc1a85d25672fafc662090",
+          "theme": "dark",
+          "theme_sheets": [
+            "theme.css",
+            "product-nav-icons.css",
+            "navigation-refresh.css"
+          ],
+          "verified_how": "playwright full-page; theme/lang seeded in localStorage + data-* before load; prefers-reduced-motion:reduce; device_scale_factor=2; computed-style language gate; PNG 780x4956; map rect inside clip",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 780
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 586817,
+          "captured": true,
+          "file": "556e4e480fd4a976.png",
+          "force_state": null,
+          "height": 5150,
+          "language_probe": {
+            "cjk_in_body": true,
+            "data_lang": "zh",
+            "en_body_hits": [],
+            "en_display": "none",
+            "ok": true,
+            "zh_display": "block"
+          },
+          "locale": "zh",
+          "map_rect": {
+            "bottom": 616.34375,
+            "height": 157,
+            "left": 39,
+            "right": 351,
+            "top": 459.34375,
+            "width": 312,
+            "x": 39,
+            "y": 459.34375
+          },
+          "pixel_samples": {
+            "canvas_rgb": [
+              232,
+              235,
+              241
+            ],
+            "computed_body_bg": "rgb(232, 235, 241)",
+            "computed_panel_bg": "rgb(255, 255, 255)",
+            "computed_rung0_fill": "color(srgb 0.950824 0.953412 0.958824)",
+            "panel_rgb": [
+              255,
+              255,
+              255
+            ],
+            "rung0_iso3": "TZA",
+            "rung0_rgb": [
+              242,
+              243,
+              245
+            ],
+            "sample_xy_device": {
+              "canvas": [
+                20,
+                762
+              ],
+              "panel": [
+                390,
+                352
+              ],
+              "rung0": [
+                449,
+                1085
+              ]
+            }
+          },
+          "sha256": "556e4e480fd4a97638d7f294c6fedb0963448abaadd42efc479c78d87068c2df",
+          "theme": "light",
+          "theme_sheets": [
+            "theme.css",
+            "product-nav-icons.css",
+            "navigation-refresh.css"
+          ],
+          "verified_how": "playwright full-page; theme/lang seeded in localStorage + data-* before load; prefers-reduced-motion:reduce; device_scale_factor=2; computed-style language gate; PNG 780x5150; map rect inside clip",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 780
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 601911,
+          "captured": true,
+          "file": "9d12c43e4270482f.png",
+          "force_state": null,
+          "height": 5148,
+          "language_probe": {
+            "cjk_in_body": true,
+            "data_lang": "zh",
+            "en_body_hits": [],
+            "en_display": "none",
+            "ok": true,
+            "zh_display": "block"
+          },
+          "locale": "zh",
+          "map_rect": {
+            "bottom": 615.34375,
+            "height": 156,
+            "left": 39,
+            "right": 351,
+            "top": 459.34375,
+            "width": 312,
+            "x": 39,
+            "y": 459.34375
+          },
+          "pixel_samples": {
+            "canvas_rgb": [
+              13,
+              16,
+              24
+            ],
+            "computed_body_bg": "rgb(13, 16, 24)",
+            "computed_panel_bg": "rgb(21, 24, 32)",
+            "computed_rung0_fill": "color(srgb 0.13851 0.151843 0.184471)",
+            "panel_rgb": [
+              21,
+              24,
+              32
+            ],
+            "rung0_iso3": "TZA",
+            "rung0_rgb": [
+              35,
+              39,
+              47
+            ],
+            "sample_xy_device": {
+              "canvas": [
+                20,
+                762
+              ],
+              "panel": [
+                390,
+                352
+              ],
+              "rung0": [
+                449,
+                1084
+              ]
+            }
+          },
+          "sha256": "9d12c43e4270482f5fae002aebefd6014104f7e403c4c5941d81efa08d3c181d",
+          "theme": "dark",
+          "theme_sheets": [
+            "theme.css",
+            "product-nav-icons.css",
+            "navigation-refresh.css"
+          ],
+          "verified_how": "playwright full-page; theme/lang seeded in localStorage + data-* before load; prefers-reduced-motion:reduce; device_scale_factor=2; computed-style language gate; PNG 780x5148; map rect inside clip",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 780
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 887943,
+          "captured": true,
+          "file": "662dcf3f834864a8.png",
+          "fixture": "tests/fixtures/sanctions_map/unresolved_sdn.csv",
+          "force_state": "unknown_rung",
+          "height": 3138,
+          "locale": "en",
+          "pixel_samples": {
+            "canvas_rgb": [
+              227,
+              232,
+              240
+            ],
+            "computed_body_bg": "rgb(232, 235, 241)",
+            "computed_hatch_fill": "url(\"#sm-hatch\")",
+            "computed_panel_bg": "rgb(255, 255, 255)",
+            "hatch_rgb": [
+              204,
+              208,
+              213
+            ],
+            "hatch_xy_device": [
+              624,
+              900
+            ],
+            "panel_rgb": [
+              255,
+              255,
+              255
+            ]
+          },
+          "sha256": "662dcf3f834864a848c712635dcf098056f3863537aa9fd08577755a36eef2ec",
+          "theme": "light",
+          "verified_how": "real builder on tests/fixtures/sanctions_map/unresolved_sdn.csv (coverage.unresolved>0) into /tmp/sm_unknown_site; playwright full-page 1440; dsf=2; reduced-motion; theme/lang seeded before load",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 843864,
+          "captured": true,
+          "file": "b17aa17f9015214b.png",
+          "fixture": "tests/fixtures/sanctions_map/unresolved_sdn.csv",
+          "force_state": "unknown_rung",
+          "height": 3136,
+          "locale": "en",
+          "pixel_samples": {
+            "canvas_rgb": [
+              16,
+              21,
+              36
+            ],
+            "computed_body_bg": "rgb(13, 16, 24)",
+            "computed_hatch_fill": "url(\"#sm-hatch\")",
+            "computed_panel_bg": "rgb(21, 24, 32)",
+            "hatch_rgb": [
+              34,
+              38,
+              46
+            ],
+            "hatch_xy_device": [
+              896,
+              900
+            ],
+            "panel_rgb": [
+              21,
+              24,
+              32
+            ]
+          },
+          "sha256": "b17aa17f9015214b30acfb0535e7d4d64d97d0d0aab61f602c0dc7ed3eb13207",
+          "theme": "dark",
+          "verified_how": "real builder on tests/fixtures/sanctions_map/unresolved_sdn.csv (coverage.unresolved>0) into /tmp/sm_unknown_site; playwright full-page 1440; dsf=2; reduced-motion; theme/lang seeded before load",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 963783,
+          "capture_tool_module_sha256": "3301a5f9f5a21b2bd6fada86b3c685af1f3f9baf9fa52cbd712ab5591e980b05",
+          "captured": true,
+          "captured_at": "2026-09-08T08:41:39Z",
+          "captured_sha": "44519bd31d5ef141db389bd5dfe1aa5f0036515f",
+          "captured_tree_dirty_for_page_inputs": false,
+          "console_error_count": 0,
+          "console_errors": [],
+          "file": "b7b66af730eff459.png",
+          "force_state": "theme_toggle_dark_to_light",
+          "height": 4496,
+          "locale": "en",
+          "pixel_samples": {
+            "canvas_rgb": [
+              227,
+              232,
+              240
+            ],
+            "computed_body_bg": "rgb(232, 235, 241)",
+            "computed_rung0_fill": "color(srgb 0.950824 0.953412 0.958824)",
+            "panel_rgb": [
+              255,
+              255,
+              255
+            ],
+            "rung0_iso3": "TZA",
+            "rung0_rgb": [
+              242,
+              243,
+              245
+            ],
+            "sample_xy_device": {
+              "canvas": [
+                24,
+                228
+              ],
+              "panel": [
+                1440,
+                244
+              ],
+              "rung0": [
+                1640,
+                1261
+              ]
+            }
+          },
+          "seeded_theme": "dark",
+          "sha256": "b7b66af730eff459e605a888064e9ade39d3c55ffaac15df08c6a5436a45c009",
+          "theme": "light",
+          "toggle": {
+            "action": "after load: click gear, popover opens (aria-expanded=true), click Light; theme.js setTheme(\"light\") writes data-theme + localStorage.theme and fires themechange; Escape was issued but the popover remained open at screenshot time",
+            "control": "shared-chrome settings gear #settings-open (theme.js initSettings moves the _site_nav.html.j2 .theme-switch behind it) -> popover #settings-pop -> segment #set-theme-light",
+            "opened": {
+              "computed_body_bg": "rgb(13, 16, 24)",
+              "computed_rung0_fill": "color(srgb 0.13851 0.151843 0.184471)",
+              "data_lang": "en",
+              "data_theme": "dark",
+              "en_display": "block",
+              "gear_expanded": "true",
+              "gear_visible": true,
+              "ls_theme": "dark",
+              "pop_open": true,
+              "seg_light_pressed": "false",
+              "theme_sheets": [
+                "theme.css",
+                "product-nav-icons.css",
+                "navigation-refresh.css"
+              ],
+              "zh_display": "none"
+            },
+            "post": {
+              "computed_body_bg": "rgb(232, 235, 241)",
+              "computed_rung0_fill": "color(srgb 0.950824 0.953412 0.958824)",
+              "data_lang": "en",
+              "data_theme": "light",
+              "en_display": "block",
+              "gear_expanded": "true",
+              "gear_visible": true,
+              "ls_theme": "light",
+              "pop_open": true,
+              "popover_closed_before_screenshot": false,
+              "seg_light_pressed": "true",
+              "theme_sheets": [
+                "theme.css",
+                "product-nav-icons.css",
+                "navigation-refresh.css"
+              ],
+              "zh_display": "none"
+            },
+            "pre": {
+              "computed_body_bg": "rgb(13, 16, 24)",
+              "computed_rung0_fill": "color(srgb 0.13851 0.151843 0.184471)",
+              "data_lang": "en",
+              "data_theme": "dark",
+              "en_display": "block",
+              "gear_expanded": "false",
+              "gear_visible": true,
+              "ls_theme": "dark",
+              "pop_open": true,
+              "seg_light_pressed": "false",
+              "theme_sheets": [
+                "theme.css",
+                "product-nav-icons.css",
+                "navigation-refresh.css"
+              ],
+              "zh_display": "none"
+            },
+            "probe_notes": "pop_open reads true pre-click; this probe does not discriminate popover state — gear_expanded and seg_light_pressed are the discriminating probes"
+          },
+          "verified_how": "playwright full-page; dark/en seeded before load through scripts/capture_page_evidence.py state_seed_source (terminated IIFE); load + 400ms settle; pre-probe data-theme=dark; IN-PAGE settings gear #settings-open clicked, popover open, #set-theme-light clicked; 700ms; post-probe data-theme=light + localStorage.theme=light + computed styles; prefers-reduced-motion:reduce; device_scale_factor=2; PNG 2880x4496; pageerror + console.error listeners live for the whole session",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 2880
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/sanctions_map.html"
+    ],
+    "max_pages": 1,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 327,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-release-6826",
+    "resolved_sha_note": "pre-commit disclosure: frames captured on HEAD 8e6b133952cfe805f62354d98a2cb2dd92ae253d with the uncommitted r2 chrome/figure-ground/fixture rebuild of site/sanctions_map.html; the commit that lands this receipt is the evidence head",
+    "resolved_sha_or_none": "8e6b133952cfe805f62354d98a2cb2dd92ae253d",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-release-6826 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/mo-release-6826/site"
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "97b4435815440fde008cd35b73c551cf704ba01ea71f18f04a2b23ebc7a0a6b7",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.2.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 11,
+    "states_captured": 11
+  },
+  "updated_at": "2026-09-08T08:41:39Z",
+  "updated_sha": "44519bd31d5ef141db389bd5dfe1aa5f0036515f"
+}

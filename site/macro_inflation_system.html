@@ -53,8 +53,8 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script src="macro_suite_boot.js?v=768a4342" defer></script>
-<link rel="stylesheet" href="theme.css?v=f41f9a21">
-<link rel="stylesheet" href="macro_suite.css?v=f2fd5724">
+<link rel="stylesheet" href="theme.css?v=63df1679">
+<link rel="stylesheet" href="macro_suite.css?v=ae0ccd5f">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
 <link rel="preload" as="style" href="navigation-refresh.css?v=c299c324">
 </head>
@@ -188,6 +188,7 @@
         </div>
         <a href="intl_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet cross-market · sectors</span><span class="l-zh">Prophet 跨市场 · 板块</span></span></a>
         <a href="baskets_intl.html"><span class="submenu-icon submenu-icon-baskets" aria-hidden="true"></span><span class="l-en">Thematic Baskets</span><span class="l-zh">主题篮子</span><span class="d"><span class="l-en">Cross-country theme baskets · ex-US</span><span class="l-zh">跨国主题篮子 · 除美</span></span></a>
+        <a href="sanctions_map.html"><span class="submenu-icon submenu-icon-policy" aria-hidden="true"></span><span class="l-en">Sanctions Map</span><span class="l-zh">制裁地图</span><span class="d"><span class="l-en">Where US sanctions point · OFAC public list</span><span class="l-zh">美国制裁指向何处 · OFAC 公开名单</span></span></a>
       </div>
     </div>
     <div class="nav-dd">
@@ -305,6 +306,85 @@
   </div>
 </nav>
 
+<nav class="mq-suitenav" aria-label="Macro and Monetary suite">
+  <a class="mq-suitenav-home" href="macro_monetary.html">
+    <span class="mq-suitenav-home-mark" aria-hidden="true">←</span>
+    <span class="mq-suitenav-home-text"><span class="l-en">Macro &amp; Monetary</span><span class="l-zh">宏观与货币</span></span>
+  </a>
+  <p class="mq-suitenav-label" id="mq-suitenav-label"><span class="l-en">Workspaces</span><span class="l-zh">工作区</span></p>
+  <ul class="mq-suitenav-rail" aria-labelledby="mq-suitenav-label">
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_liquidity_regime.html"
+         data-mq-workspace="liquidity_regime"><span class="l-en">Liquidity Regime Monitor</span><span class="l-zh">流动性体制监测</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_growth_real_economy.html"
+         data-mq-workspace="growth_real_economy"><span class="l-en">Growth &amp; Real Economy</span><span class="l-zh">增长与实体经济</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_business_activity.html"
+         data-mq-workspace="business_activity"><span class="l-en">Business Activity</span><span class="l-zh">商业活动</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_labor_markets.html"
+         data-mq-workspace="labor_markets"><span class="l-en">Labor Markets</span><span class="l-zh">劳动力市场</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill is-current"
+         href="macro_inflation_system.html"
+         data-mq-workspace="inflation_system" aria-current="page"><span class="l-en">Inflation System</span><span class="l-zh">通胀体系</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_monetary_policy.html"
+         data-mq-workspace="monetary_policy"><span class="l-en">Monetary Policy</span><span class="l-zh">货币政策</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_financial_conditions.html"
+         data-mq-workspace="financial_conditions"><span class="l-en">Financial Conditions</span><span class="l-zh">金融条件</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_liquidity_central_banks.html"
+         data-mq-workspace="liquidity_central_banks"><span class="l-en">Liquidity &amp; Central Banks</span><span class="l-zh">流动性与央行</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_capital_structure.html"
+         data-mq-workspace="capital_structure"><span class="l-en">Capital Structure</span><span class="l-zh">资本结构</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_housing_real_estate.html"
+         data-mq-workspace="housing_real_estate"><span class="l-en">Housing &amp; Real Estate</span><span class="l-zh">住房与房地产</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_consumer_payments.html"
+         data-mq-workspace="consumer_payments"><span class="l-en">Consumer &amp; Payments</span><span class="l-zh">消费与支付</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_national_debt_liabilities.html"
+         data-mq-workspace="national_debt_liabilities"><span class="l-en">National Debt &amp; Liabilities</span><span class="l-zh">国债与负债</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_rates_curves.html"
+         data-mq-workspace="rates_curves"><span class="l-en">Rates &amp; Curves</span><span class="l-zh">利率与曲线</span></a>
+    </li>
+    <li>
+      <a class="mq-suitenav-pill"
+         href="macro_trade_flows.html"
+         data-mq-workspace="trade_flows"><span class="l-en">Trade Flows</span><span class="l-zh">贸易流动</span></a>
+    </li>
+  </ul>
+</nav>
 <main class="mq-shell" id="mq-shell">
   <header class="mq-context" id="mq-context">
   <div class="mq-context-id">
@@ -329,9 +409,9 @@
       <div><dt><span class="l-en">Last accepted source cut</span><span class="l-zh">最近已接受数据截止</span></dt>
            <dd><time>2026-07</time></dd></div>
       <div><dt><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></dt>
-           <dd><time>2026-09-05</time></dd></div>
+           <dd><time>2026-09-09</time></dd></div>
       <div class="mq-nonclock"><dt><span class="l-en">Page built</span><span class="l-zh">页面生成</span></dt>
-           <dd><time>2026-09-05T18:21:09Z</time></dd></div>
+           <dd><time>2026-09-10T18:36:25Z</time></dd></div>
     </dl>
     <p class="mq-context-caveat"><span class="l-en">Page build time is not an economic clock and never makes a source fresh. This page is a static publication — it does not poll for live data.</span><span class="l-zh">页面生成时间并非经济时钟，不会使数据源变新。本页为静态发布 — 不会实时轮询数据。</span></p>
   </div>
@@ -450,10 +530,10 @@
     <h2 id="mq-headline-title"><span class="mq-state-letter" aria-hidden="true">A</span><span class="l-en">Disinflating headline, broad/sticky underlying</span><span class="l-zh">总体降温，但内部广泛/顽固</span></h2>
     <dl class="mq-headline-meta">
       <div><dt><span class="l-en">Effective date</span><span class="l-zh">生效日期</span></dt>
-           <dd><time>2026-09-05</time></dd></div>
+           <dd><time>2026-09-09</time></dd></div>
       <div><dt><span class="l-en">Method version</span><span class="l-zh">方法版本</span></dt><dd><code>inflation_system.compose.v1</code></dd></div>
       <div><dt><span class="l-en">Prior accepted print</span><span class="l-zh">上一已接受读数</span></dt>
-           <dd><strong>A</strong> <time>2026-09-04</time></dd></div>
+           <dd><strong>A</strong> <time>2026-09-07</time></dd></div>
     </dl>
   </div>
 
@@ -615,14 +695,12 @@
       <tr>
         <th scope="row"><span class="l-en">Inflation impulse</span><span class="l-zh">Inflation impulse</span></th>
         <td>49.59</td>
-        <td>49.59</td>
-        <td class="mq-delta mq-delta-flat">0</td>
+        <td>49.59</td><td class="mq-delta mq-delta-flat">0</td>
       </tr>
       <tr>
         <th scope="row"><span class="l-en">Persistence breadth</span><span class="l-zh">Persistence breadth</span></th>
         <td>57.89</td>
-        <td>57.89</td>
-        <td class="mq-delta mq-delta-flat">0</td>
+        <td>57.89</td><td class="mq-delta mq-delta-flat">0</td>
       </tr>
     </tbody>
   </table>
@@ -642,7 +720,7 @@
       <p class="mq-metric-direction"><span class="l-en">Higher more inflationary</span><span class="l-zh">Higher more inflationary</span></p>
       <dl class="mq-metric-meta">
         <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-09-05</time></dd></div>
+             <dd><time>2026-09-09</time></dd></div>
         <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Composite, prior-only inputs</span><span class="l-zh">复合指标（仅使用先验输入）</span></dd></div>
         <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>axes.inflation_impulse</code> · v1.0.0</dd></div>
       </dl>
@@ -651,11 +729,11 @@
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-05</time></dd>
+    <dd><time>2026-09-09</time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-05</time></dd>
+    <dd><time>2026-09-09</time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -675,7 +753,7 @@
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
-    <dd><time>2026-09-05</time></dd>
+    <dd><time>2026-09-09</time></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.market_os.macro_workspaces.inflation</code></p>
@@ -691,7 +769,7 @@
       <p class="mq-metric-direction"><span class="l-en">Higher more persistent broad</span><span class="l-zh">Higher more persistent broad</span></p>
       <dl class="mq-metric-meta">
         <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-09-05</time></dd></div>
+             <dd><time>2026-09-09</time></dd></div>
         <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Composite, prior-only inputs</span><span class="l-zh">复合指标（仅使用先验输入）</span></dd></div>
         <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>axes.persistence_breadth</code> · v1.0.0</dd></div>
       </dl>
@@ -700,11 +778,11 @@
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-05</time></dd>
+    <dd><time>2026-09-09</time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-05</time></dd>
+    <dd><time>2026-09-09</time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -724,7 +802,7 @@
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
-    <dd><time>2026-09-05</time></dd>
+    <dd><time>2026-09-09</time></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.market_os.macro_workspaces.inflation</code></p>
@@ -1116,7 +1194,7 @@
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
-    <dd><time>2026-09-05T03:16:18Z</time></dd>
+    <dd><time>2026-09-09T10:42:27Z</time></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.market_os.macro_workspaces.inflation</code></p>
@@ -1165,7 +1243,7 @@
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
-    <dd><time>2026-09-05</time></dd>
+    <dd><time>2026-09-09</time></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.market_os.macro_workspaces.inflation</code></p>
@@ -1214,7 +1292,7 @@
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
-    <dd><time>2026-09-05</time></dd>
+    <dd><time>2026-09-09</time></dd>
   </div>
 </dl>
         <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.market_os.macro_workspaces.inflation</code></p>
@@ -1450,7 +1528,7 @@
   <dl class="mq-method-grid">
     <div><dt><span class="l-en">Correction state</span><span class="l-zh">更正状态</span></dt><dd><span class="l-en">No correction recorded</span><span class="l-zh">无更正记录</span></dd></div>
     <div><dt><span class="l-en">Predecessor generation</span><span class="l-zh">前一代产物</span></dt>
-         <dd><code>inflation_system-US-43cad161319afe30</code></dd></div>
+         <dd><code>inflation_system-US-738f023322f61851</code></dd></div>
     <div><dt><span class="l-en">Changed fingerprints</span><span class="l-zh">已变更指纹</span></dt>
          <dd><span class="mq-dash">—</span></dd></div>
     <div><dt><span class="l-en">Hysteresis</span><span class="l-zh">滞回</span></dt><dd>raw classification already matches the prior print; no boundary crossing, hysteresis not engaged</dd></div>
@@ -1672,11 +1750,11 @@
       <dl class="mq-clocks">
         <div class="mq-clock">
           <dt><span class="mq-clock-name"><span class="l-en">Artifact built</span><span class="l-zh">产物生成</span></span><span class="mq-clock-meaning"><span class="l-en">Producer generation time. Not an economic clock.</span><span class="l-zh">生产端生成时间，并非经济时钟。</span></span></dt>
-          <dd><time>2026-09-05T12:05:54Z</time></dd>
+          <dd><time>2026-09-10T07:27:52Z</time></dd>
         </div>
         <div class="mq-clock">
           <dt><span class="mq-clock-name"><span class="l-en">Page built</span><span class="l-zh">页面生成</span></span><span class="mq-clock-meaning"><span class="l-en">Static page render time. Not an economic clock.</span><span class="l-zh">静态页面渲染时间，并非经济时钟。</span></span></dt>
-          <dd><time>2026-09-05T18:21:09Z</time></dd>
+          <dd><time>2026-09-10T18:36:25Z</time></dd>
         </div>
       </dl>
     </section>
@@ -1686,11 +1764,11 @@
       <dl class="mq-method-grid">
         <div><dt><span class="l-en">Artifact path</span><span class="l-zh">产物路径</span></dt><dd><code>macrodata/workspaces/inflation_system/US/latest.json</code></dd></div>
         <div><dt><span class="l-en">Manifest path</span><span class="l-zh">清单路径</span></dt><dd><code>macrodata/workspaces/manifest.json</code></dd></div>
-        <div><dt><span class="l-en">Content hash</span><span class="l-zh">内容哈希</span></dt><dd><code class="mq-hash">e692b72bd17d657c7770953a4934d0d247e709ce3a0edf737365203d4e450c2f</code></dd></div>
+        <div><dt><span class="l-en">Content hash</span><span class="l-zh">内容哈希</span></dt><dd><code class="mq-hash">dde62ebf4b302b08f3a32a275e36d01f6015f3a6b9af0ff44ee5c49fbff1805e</code></dd></div>
         <div><dt><span class="l-en">Bytes</span><span class="l-zh">字节数</span></dt><dd>45820</dd></div>
-        <div><dt><span class="l-en">Generation id</span><span class="l-zh">产物代号</span></dt><dd><code>inflation_system-US-e692b72bd17d657c</code></dd></div>
+        <div><dt><span class="l-en">Generation id</span><span class="l-zh">产物代号</span></dt><dd><code>inflation_system-US-dde62ebf4b302b08</code></dd></div>
         <div><dt><span class="l-en">Producer</span><span class="l-zh">生产者</span></dt><dd><code>engine.market_os.macro_workspaces.inflation</code></dd></div>
-        <div><dt><span class="l-en">Producer code version</span><span class="l-zh">生产端代码版本</span></dt><dd><code>cf2d84392d55d3894cea08b10c4acc0d4d347266</code></dd></div>
+        <div><dt><span class="l-en">Producer code version</span><span class="l-zh">生产端代码版本</span></dt><dd><code>2c9a2d35ba0dd38618f59a2fadc80b6815ec5281</code></dd></div>
         <div><dt><span class="l-en">Client contract</span><span class="l-zh">客户端契约</span></dt><dd><code>mastermind.macro_workspace_snapshot.v1@1.0.0</code></dd></div>
       </dl>
       <p class="mq-lineage-note"><span class="l-en">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mismatch renders a refusal page instead of a state.</span><span class="l-zh">本页在渲染前已按封闭 schema 校验该产物并重新计算其内容哈希。若不匹配，将呈现拒绝页面而非任何状态读数。</span></p>

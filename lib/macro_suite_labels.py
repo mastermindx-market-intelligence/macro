@@ -134,6 +134,9 @@ COMPARABILITY: dict[str, dict[str, str]] = {
     "COMPARABLE": _pair("Comparable with the prior accepted print",
                         "与上一已接受读数可比"),
     "NO_PRIOR": _pair("No comparable prior print", "没有可比的历史读数"),
+    "NO_EARLIER_PUBLICATION": _pair(
+        "No earlier reading available to compare yet.",
+        "暂无可比较的更早读数。"),
     "METHOD_CHANGED": _pair("Method version changed — shown as a method change, not a delta",
                             "方法版本已变更 — 按方法变更呈现，而非数值变化"),
     "DEFINITION_INCOMPARABLE": _pair("Definitions are not comparable — numeric comparison refused",
@@ -228,14 +231,20 @@ OWNER_VALUE: dict[str, dict[str, str]] = {
     "stable": _pair("Stable", "平稳"),
     "deteriorating": _pair("Deteriorating", "恶化"),
     "improving": _pair("Improving", "改善"),
-    # The liquidity_regime producer's quality scale is HYPHENATED, so the
-    # underscored keys above never match it. `neutral-hollow` is the value the
-    # shipped artifact carries today, and without a reviewed entry it deslugs to
-    # a raw token on the page -- the exact leak this table exists to prevent, and
-    # the failure `test_the_shipped_artifact_needs_no_unreviewed_label` reports.
-    # "Hollow" is the producer's own word for support whose LEVEL reads neutral
-    # while its COMPOSITION is mechanical or exhausted; the reviewed copy says
-    # that in plain words rather than shipping the jargon.
+    # The liquidity_regime producer's quality scale is HYPHENATED
+    # (`_QUALITY_SUPPORT`: benign-expansion 85, stress-expansion 55, neutral 50,
+    # neutral-hollow 40, contracting 20). Only `neutral` and `contracting` matched
+    # the underscored keys above, so three of its five values had no reviewed
+    # label and would deslug to a raw token on the page — the exact leak this
+    # table exists to prevent. `neutral-hollow` is the one the shipped artifact
+    # carries today, which is how the gap surfaced.
+    #
+    # "Hollow" is the producer's own term for support whose LEVEL reads neutral
+    # while its COMPOSITION is mechanical or exhausted (module docstring: "quantity
+    # expanding while quality is hollow/stressed -> a typed contradiction"). The
+    # reviewed copy says that in plain words rather than shipping the jargon.
+    "benign-expansion": _pair("Benign expansion", "良性扩张"),
+    "stress-expansion": _pair("Stressed expansion", "承压扩张"),
     "neutral-hollow": _pair("Neutral level, weak composition", "中性水平，结构偏弱"),
 }
 

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CAVA-BULL-20260813",
-  "asof": "2026-09-05",
+  "asof": "2026-09-10",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
   "management_confidence": 30.2,
@@ -10,23 +10,23 @@
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 3.9,
+    "validity": 1.5,
     "progress": 0.0,
-    "pace": 10.1,
+    "pace": 5.0,
     "retention": 50.0,
-    "overlay": 61.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.134,
+    "dist_to_stop_r": 0.087,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 51.1,
-    "p1": -0.5772,
-    "p2": -0.2886,
+    "horizon_pct_used": 62.2,
+    "p1": -0.6085,
+    "p2": -0.3043,
     "p3": null,
-    "move_r": -0.866,
+    "move_r": -0.913,
     "mfe_r": 0.11,
-    "mae_r": -0.866
+    "mae_r": -0.913
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.449997253417962,
-  "_mae": -11.420001678466804,
+  "_mae": -12.04000061035157,
   "_max_p1": 0.0732877055050777,
   "_first_trigger_ts": "2026-08-13",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 23,
-  "tau": 0.5111
+  "days_elapsed": 28,
+  "tau": 0.6222
 }
