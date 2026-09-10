@@ -123,7 +123,7 @@
 <body class="page-macro mx4-grid">
 
 
-<div class="mx5-aurora au-yellow" aria-hidden="true"><div class="mx5-a3"></div><div class="mx5-a4"></div></div>
+<div class="mx5-aurora" aria-hidden="true"><div class="mx5-a3"></div><div class="mx5-a4"></div></div>
 <div class="mx5-popover-backdrop" id="mx5PopBackdrop" onclick="if(window.mx5CloseAllPopovers)mx5CloseAllPopovers()"></div>
 
 
@@ -408,15 +408,15 @@
 
 
     
-    <div class="mx2-hero ms-front ms ms-yellow">
+    <div class="mx2-hero ms-front ms ms-green">
       
       <div class="mx4-bzone-eyebrow mx4-grid-only"><span class="l-en">The Regime</span><span class="l-zh">当前周期</span></div>
       
       <section class="ms-verdict">
         
-        <p class="v-thesis ms-yellow"><span class="l-en">Mixed / transition — the signals disagree. Trade smaller, favour quality, take profits faster; don&#39;t position aggressively.</span><span class="l-zh">混合 / 转换 — 信号分歧。缩小仓位、偏好质量、更快获利了结；勿激进布局。</span></p>
-        <p class="v-override"><span class="ic">⚠</span><span class="l-en">An act-level alert is firing — capped at Mixed pending review.</span><span class="l-zh">有行动级警报触发 — 暂封顶为「混合」待复核。</span></p>
-        <p class="v-flip"><span class="l-en">→ Green if the act-level alert clears. → Red if 3 of the 6 legs turn together.</span><span class="l-zh">→ 若行动级警报解除，则转「偏多」。→ 若6 项中有 3 项同时反转，则转「避险」。</span></p>
+        <p class="v-thesis ms-green"><span class="l-en">Risk-on — the tape, breadth and cross-asset signals line up. Trend-following and adding on strength is supported.</span><span class="l-zh">风险偏好 — 价格、广度与跨资产信号一致。顺势交易与逢强加仓得到支持。</span></p>
+        
+        <p class="v-flip"><span class="l-en">→ Mixed if trend &amp; technicals breaks down (now 64/100).</span><span class="l-zh">→ 若趋势与技术走坏（现 64/100），则转「混合」。</span></p>
         <div class="hero-sub mx2-hero-sub">
           
           
@@ -431,11 +431,11 @@
         
         <div class="mx2-score-block">
           <div class="mx2-score-top">
-            <span class="v-score" id="ms-score">59</span>
+            <span class="v-score" id="ms-score">72</span>
             <span class="v-outof">/100</span>
             <div class="mx2-score-label-stack">
               <span class="mx2-score-label"><span class="l-en">Market state</span><span class="l-zh">市场状态</span></span>
-              <p class="v-word" id="ms-word"><span class="l-en">Mixed</span><span class="l-zh">混合</span><span class="arr">▶</span></p>
+              <p class="v-word" id="ms-word"><span class="l-en">Risk-on</span><span class="l-zh">风险偏好</span><span class="arr">▲</span></p>
             </div>
             <div class="mx2-score-live-wrap">
               <span class="ms-live" id="ms-live-pill"></span>
@@ -444,8 +444,8 @@
           </div>
           <div class="mx2-prog-wrap">
             <div class="mx2-prog-track">
-              <div class="mx2-prog-fill" style="width:59%"></div>
-              <span class="tick" id="ms-tick" style="left:59%"></span>
+              <div class="mx2-prog-fill" style="width:72%"></div>
+              <span class="tick" id="ms-tick" style="left:72%"></span>
             </div>
             <div class="mx2-prog-labels">
               
@@ -488,7 +488,7 @@
             <div class="ms-alerts-wrap">
               <label class="ms-alerts" for="ms-alerts-toggle" tabindex="0" aria-haspopup="dialog" aria-controls="ms-alerts-pop">
                 <span class="dot"></span><span class="l-en">Fired alerts</span><span class="l-zh">已触发警报</span>
-                <span class="ct">6</span>
+                <span class="ct">1</span>
               </label>
               <div class="ms-alerts-pop" id="ms-alerts-pop" role="dialog" aria-label="Fired alerts · 已触发警报">
                 <div class="ms-pop-head">
@@ -505,54 +505,9 @@
                   
                   
                   
-                  <a class="ms-sig sev-act" data-ms-jump href="#regime-radar">
-                    <div class="ms-sig-head"><span class="ms-sig-ico">🧭</span><span class="ms-sig-title"><span class="l-en">Regime radar moved — the market “weather” may be shifting</span><span class="l-zh">转换雷达变动 — 市场“天气”可能正在转变</span></span><span class="ms-sig-jump"><span class="l-en">View ↓</span><span class="l-zh">查看 ↓</span></span></div>
-                    <div class="ms-sig-detail"><span class="l-en">The regime&#39;s footing went from a new regime to shifting (4 warning flags active)</span><span class="l-zh">周期状态由「新周期」转为「转换中」（4 个预警激活）</span></div>
-                    <div class="ms-sig-what"><span class="l-en">Tracks whether the current market regime is holding or starting to break down, based on how many warning flags are stacking up. A change here is a cue to re-check your risk — not a trade on its own.</span><span class="l-zh">根据累积的预警旗数量，追踪当前市场周期是稳固还是开始瓦解。此处的变化是重新检视风险的提示 — 本身并非交易信号。</span></div>
-                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">High — a regime shift re-prices everything downstream.</span><span class="l-zh">高 — 周期转变会重新定价其下游的一切。</span></div>
-                  </a>
-                  
-                  
-                  
-                  <a class="ms-sig sev-warn" href="macro_context.html#board">
-                    <div class="ms-sig-head"><span class="ms-sig-ico">🧲</span><span class="ms-sig-title"><span class="l-en">Options “gravity” flipped — bigger swings more likely</span><span class="l-zh">期权“引力”反转 — 波动可能加大</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
-                    <div class="ms-sig-detail"><span class="l-en">GEX: spot crossed the gamma flip (net -31bn, spot vs flip -0.4%)</span><span class="l-zh">GEX：现价穿越 gamma 翻转点（净 -31bn，现价相对翻转点 -0.4%）</span></div>
-                    <div class="ms-sig-what"><span class="l-en">Dealer gamma (GEX) measures how options hedging pushes the market around. Positive gamma damps moves (calmer); negative amplifies them (sharper swings, both ways). This flag means that backdrop just changed — expect the market to move more freely until it flips back.</span><span class="l-zh">做市商 gamma（GEX）衡量期权对冲如何推动市场。正 gamma 抑制波动（更平静）；负 gamma 放大波动（双向更剧烈）。此信号表示该背景刚刚改变 —在它再次反转前，市场可能波动得更自由。</span></div>
-                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Medium — changes the volatility backdrop, not the direction.</span><span class="l-zh">中 — 改变的是波动背景，而非方向。</span></div>
-                  </a>
-                  
-                  
-                  
-                  <a class="ms-sig sev-info" href="us_stocks.html#holdings">
-                    <div class="ms-sig-head"><span class="ms-sig-ico">🐳</span><span class="ms-sig-title"><span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
-                    <div class="ms-sig-detail"><span class="l-en">ARKK: manager added RKLB UQ by +160% of position (2026-08-28..2026-09-09, flow-normalized)</span><span class="l-zh">ARKK：经理 加仓 RKLB UQ 仓位 +160%（2026-08-28..2026-09-09，已按资金流标准化）</span></div>
-                    <div class="ms-sig-what"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
-                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Context — what an active manager did, not a recommendation.</span><span class="l-zh">背景 — 主动经理的动作，并非建议。</span></div>
-                  </a>
-                  
-                  
-                  
-                  <a class="ms-sig sev-info" href="us_stocks.html#holdings">
-                    <div class="ms-sig-head"><span class="ms-sig-ico">🐳</span><span class="ms-sig-title"><span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
-                    <div class="ms-sig-detail"><span class="l-en">ARKW: manager cut AMD by -25% of position (2026-08-28..2026-09-09, flow-normalized)</span><span class="l-zh">ARKW：经理 减仓 AMD 仓位 -25%（2026-08-28..2026-09-09，已按资金流标准化）</span></div>
-                    <div class="ms-sig-what"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
-                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Context — what an active manager did, not a recommendation.</span><span class="l-zh">背景 — 主动经理的动作，并非建议。</span></div>
-                  </a>
-                  
-                  
-                  
-                  <a class="ms-sig sev-info" href="us_stocks.html#holdings">
-                    <div class="ms-sig-head"><span class="ms-sig-ico">🐳</span><span class="ms-sig-title"><span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
-                    <div class="ms-sig-detail"><span class="l-en">ARKW: manager added NVDA by +41% of position (2026-08-28..2026-09-09, flow-normalized)</span><span class="l-zh">ARKW：经理 加仓 NVDA 仓位 +41%（2026-08-28..2026-09-09，已按资金流标准化）</span></div>
-                    <div class="ms-sig-what"><span class="l-en">One of the tracked funds (ARK, etc.) meaningfully added to or cut a position, after stripping out mechanical fund-flow effects — so it reflects genuine conviction. It’s information about what active managers are doing, not a recommendation to copy it.</span><span class="l-zh">在剔除机械性资金流影响后，某只跟踪基金（如 ARK）显著加仓或减仓 —因此反映了真实的信念。这是关于主动经理动作的信息，并非照搬的建议。</span></div>
-                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Context — what an active manager did, not a recommendation.</span><span class="l-zh">背景 — 主动经理的动作，并非建议。</span></div>
-                  </a>
-                  
-                  
-                  
                   <a class="ms-sig sev-warn" data-ms-dlg="dlg-events" href="#dlg-events">
                     <div class="ms-sig-head"><span class="ms-sig-ico">📅</span><span class="ms-sig-title"><span class="l-en">Major event on deck — expect bigger swings either way</span><span class="l-zh">重大事件临近 — 双向波动或加大</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
-                    <div class="ms-sig-detail"><span class="l-en">Event-risk window: PPI (producer prices) today — elevated two-sided volatility expected. Not a sell signal; size for the noise.</span><span class="l-zh">事件风险窗口：生产者物价指数（PPI）（今天）—— 预计升高的两面性波动。非卖出信号；按噪声调整仓位。</span></div>
+                    <div class="ms-sig-detail"><span class="l-en">Event-risk window: CPI (consumer prices) today — high two-sided volatility expected. Not a sell signal; size for the noise.</span><span class="l-zh">事件风险窗口：消费者物价指数（CPI）（今天）—— 预计偏高的两面性波动。非卖出信号；按噪声调整仓位。</span></div>
                     <div class="ms-sig-what"><span class="l-en">A high-impact scheduled release (CPI, Fed decision, jobs report) lands in the coming sessions — the message says which and when. Moves around these prints are two-sided and often retraced — a volatility warning, not a directional call. Size positions for the noise; avoid forcing new trades right into the print.</span><span class="l-zh">未来数个交易日内将有高影响力的既定事件（CPI、美联储决议、就业报告）——具体是哪个、何时，见提示内容。事件前后的波动是双向的、常被回补 —这是波动性提示，并非方向判断。按噪声调整仓位，避免在数据公布前强行开新仓。</span></div>
                     <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Context — a volatility window, not a direction call. Size for the noise.</span><span class="l-zh">背景 — 波动窗口而非方向判断。按噪声调整仓位。</span></div>
                   </a>
@@ -565,8 +520,8 @@
             
             
             <span class="v2chip c-warn" style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-              <span class="l-en" style="max-width:200px;display:inline-block;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;white-space:nowrap">PPI (producer prices) 09-10</span>
-              <span class="l-zh" style="max-width:200px;display:inline-block;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;white-space:nowrap">生产者物价指数（PPI） 09-10</span>
+              <span class="l-en" style="max-width:200px;display:inline-block;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;white-space:nowrap">CPI (consumer prices) 09-11</span>
+              <span class="l-zh" style="max-width:200px;display:inline-block;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;white-space:nowrap">消费者物价指数（CPI） 09-11</span>
             </span>
             
           </div>
@@ -689,16 +644,16 @@
       
       <div class="mx5-flipctx-anchor">
       
-      <div class="mx5-regime-pill rp-yellow" tabindex="0">
+      <div class="mx5-regime-pill" tabindex="0">
         <div class="mx5-dot"></div>
         <span class="l-en"><span class="l-en">Stagflation</span><span class="l-zh">滞胀</span> &nbsp;&middot;&nbsp; Shifting — not all-clear</span>
         <span class="l-zh"><span class="l-en">Stagflation</span><span class="l-zh">滞胀</span> &nbsp;&middot;&nbsp; 转换中 — 非全面利好</span>
         <span class="mx5-pill-info">ⓘ</span>
       </div>
-      <div class="mx5-sc-gauge-row mx5-score-yellow">
+      <div class="mx5-sc-gauge-row mx5-score-green">
         
         <svg class="mx5-gauge-svg" viewBox="0 -4 140 101" fill="none"
-             aria-label="Mixed — score 59; capped from six-signal blend 72"
+             aria-label="Risk-on — score 72"
              data-gauge-arc-len="175.93"
              data-gauge-radius="56"
              data-gauge-cx="70" data-gauge-cy="75">
@@ -717,7 +672,7 @@
           
           <path id="mx5-gauge-arc-fill"
                 d="M 14 75 A 56 56 0 0 1 126 75" stroke="#f59e0b" stroke-width="10" stroke-linecap="round" fill="none"
-                stroke-dasharray="103.8 72.1" filter="url(#mx5ArcGlow)"/>
+                stroke-dasharray="126.7 49.2" filter="url(#mx5ArcGlow)"/>
           
           <g stroke="rgba(255,255,255,.22)" stroke-width="1.2">
             <line x1="70" y1="19" x2="70" y2="26" transform="rotate(-90 70 75)"/>
@@ -733,19 +688,19 @@
           
           <g id="mx5-gauge-needle" class="odo-needle odo-needle--compact"
              style="--odo-accent:var(--mx5-gauge,var(--warn))"
-             transform="rotate(16.2 70 75)" filter="url(#mx5NeedleGlow)">
+             transform="rotate(39.6 70 75)" filter="url(#mx5NeedleGlow)">
             <line x1="70" y1="75" x2="70" y2="24" stroke="rgba(255,255,255,.30)" stroke-width="5" stroke-linecap="round"/>
             <polygon points="69,75 71,75 70.5,24 69.5,24" fill="white" opacity=".94"/>
             <circle cx="70" cy="75" r="7"  fill="rgba(255,255,255,.10)"/>
-            <circle class="odo-needle-hub" cx="70" cy="75" r="4.5" style="stroke:var(--warn)" stroke-width="1.5" fill="rgba(8,12,18,.8)"/>
-            <circle cx="70" cy="75" r="2"  style="fill:var(--warn)"/>
-            <circle cx="70" cy="25.5" r="2.5" style="fill:var(--warn);filter:drop-shadow(0 0 4px var(--warn))"/>
+            <circle class="odo-needle-hub" cx="70" cy="75" r="4.5" style="stroke:var(--up)" stroke-width="1.5" fill="rgba(8,12,18,.8)"/>
+            <circle cx="70" cy="75" r="2"  style="fill:var(--up)"/>
+            <circle cx="70" cy="25.5" r="2.5" style="fill:var(--up);filter:drop-shadow(0 0 4px var(--up))"/>
           </g>
           
           <text id="mx5-score-numeral"
                 x="70" y="62" font-size="24" font-weight="800"
                 text-anchor="middle" font-family="Inter,-apple-system,sans-serif"
-                style="fill:var(--warn);filter:drop-shadow(0 0 10px color-mix(in srgb,var(--warn) 70%,transparent))">59</text>
+                style="fill:var(--up);filter:drop-shadow(0 0 10px color-mix(in srgb,var(--up) 70%,transparent))">72</text>
           <text x="70" y="73" fill="rgba(255,255,255,.32)" font-size="11"
                 text-anchor="middle" font-family="Inter,-apple-system,sans-serif">/ 100</text>
         </svg>
@@ -753,14 +708,12 @@
         
         <div>
           <div class="mx5-score-line">
-            <span class="mx5-big-score">59</span>
-            <span class="mx5-verdict-word"><span class="l-en">Mixed</span><span class="l-zh">混合</span></span>
+            <span class="mx5-big-score">72</span>
+            <span class="mx5-verdict-word"><span class="l-en">Risk-on</span><span class="l-zh">风险偏好</span></span>
           </div>
           <div class="mx5-sub-line">
-            <span class="l-en">YELLOW &mdash; Trade with caution</span>
-            <span class="l-zh">谨慎操作</span>
-            
-            <span class="help">?<span class="tip"><span class="l-en">The dial is capped at 59; the six-signal blend is 72. The cap can only pull the dial down, never up.</span><span class="l-zh">刻度盘上限为 59；六项信号合成为 72。上限只能压低刻度盘，不会抬高。</span></span></span>
+            <span class="l-en">GREEN &mdash; Trend-following supported</span>
+            <span class="l-zh">偏多 — 顺势而为受支撑</span>
             
           </div>
         </div>
@@ -921,8 +874,8 @@
 
       
       <div class="mx5-thesis">
-        <span class="l-en">Mixed / transition — the signals disagree. Trade smaller, favour quality, take profits faster; don&#39;t position aggressively.</span>
-        <span class="l-zh">混合 / 转换 — 信号分歧。缩小仓位、偏好质量、更快获利了结；勿激进布局。</span>
+        <span class="l-en">Risk-on — the tape, breadth and cross-asset signals line up. Trend-following and adding on strength is supported.</span>
+        <span class="l-zh">风险偏好 — 价格、广度与跨资产信号一致。顺势交易与逢强加仓得到支持。</span>
       </div>
 
       
@@ -934,8 +887,8 @@
       
       <div class="mx5-flip">
         <span class="mx5-flip-arrow">&#8594;</span>
-        <span class="l-en">Green if the act-level alert clears. → Red if 3 of the 6 legs turn together.</span>
-        <span class="l-zh">若行动级警报解除，则转「偏多」。→ 若6 项中有 3 项同时反转，则转「避险」。</span>
+        <span class="l-en">Mixed if trend &amp; technicals breaks down (now 64/100).</span>
+        <span class="l-zh">若趋势与技术走坏（现 64/100），则转「混合」。</span>
       </div>
       
 
@@ -1814,7 +1767,7 @@
           
         
         
-        <span class="mx5-pl-today" style="left:98.8%;top:27.464%;color:var(--warn)"></span>
+        <span class="mx5-pl-today" style="left:98.8%;top:27.464%;color:var(--up)"></span>
       </div>
       
       <div class="mx5-path-cross" aria-hidden="true"></div>
@@ -2094,7 +2047,7 @@
 
 
 
-<div class="panel span12 gde-band" id="risk-envelope-band" data-bundle-id="503c8ff875676ee1" data-settled-session="2026-09-09">
+<div class="panel span12 gde-band" id="risk-envelope-band" data-bundle-id="a9ed7450f16bf454" data-settled-session="2026-09-09">
 
   <div class="gde-head">
     <div>
@@ -2120,8 +2073,8 @@
   
   <p class="gde-lead">
     
-      <span class="l-en"><b>Not fully.</b> One read can't be made cleanly today. What we can see is shown below, unchanged.</span>
-      <span class="l-zh"><b>并不完全一致。</b>今日有一项无法干净判读，可见部分原样列于下方，未做平均。</span>
+      <span class="l-en"><b>No — they disagree.</b> The trend read and the damage read point opposite ways. Both are shown, unchanged.</span>
+      <span class="l-zh"><b>不一致。</b>趋势判读与损伤判读方向相反。两者原样并列，未做平均。</span>
     
   </p>
 
@@ -2129,22 +2082,22 @@
   <div class="gde-reads is-split">
 
     
-    <div class="gde-read" style="--gde-c: var(--ink-2)">
+    <div class="gde-read" style="--gde-c: var(--ink-up)">
      <div class="gde-row">
       <span class="gde-q"><span class="l-en">Is the trend still there?</span><span class="l-zh">趋势还在吗？</span></span>
       <p class="gde-a">
         
-          <span class="l-en">Mixed</span><span class="l-zh">混合</span
+          <span class="l-en">Risk-on</span><span class="l-zh">风险偏好</span
           ><span
-            class="gde-arr" aria-hidden="true">▶</span>
+            class="gde-arr" aria-hidden="true">▲</span>
         
       </p>
       <p class="gde-c">
         
           <span class="l-en">Slow trend read, carried unchanged from the score above —
-            <a class="gde-quote tnum" href="#regime-radar">59<span class="gde-outof">/100</span></a>.</span>
+            <a class="gde-quote tnum" href="#regime-radar">72<span class="gde-outof">/100</span></a>.</span>
           <span class="l-zh">慢速趋势判读，原样取自上方评分 —
-            <a class="gde-quote tnum" href="#regime-radar">59<span class="gde-outof">/100</span></a>。</span>
+            <a class="gde-quote tnum" href="#regime-radar">72<span class="gde-outof">/100</span></a>。</span>
         
       </p>
       
@@ -2178,8 +2131,8 @@
       
       <details class="gde-disc">
         <summary>
-          <span class="l-en">Evidence — 3 sources, 1 disagreement</span>
-          <span class="l-zh">证据 — 3 个来源，1 处分歧</span>
+          <span class="l-en">Evidence — 3 sources, 2 disagreements</span>
+          <span class="l-zh">证据 — 3 个来源，2 处分歧</span>
         </summary>
         <div class="gde-disc-body">
           <div class="gde-tblwrap">
@@ -2194,7 +2147,7 @@
               
                 <tr>
                   <td class="l"><span class="l-en">Market state</span><span class="l-zh">市场状态</span></td>
-                  <td class="tnum">MIXED · 59</td>
+                  <td class="tnum">RISK_ON · 72</td>
                   <td class="tnum">2026-09-09</td>
                   <td>
                     <span class="l-en">This session</span><span class="l-zh">本交易日</span>
@@ -2231,6 +2184,11 @@
           <ul class="gde-conflicts">
             
             <li>
+              <span class="l-en">Market state reads <b>RISK_ON</b> while Leadership cohort reads <b>BROKEN</b>.</span>
+              <span class="l-zh">市场状态 读为 <b>RISK_ON</b>，而 龙头股群体 读为 <b>BROKEN</b>。</span>
+            </li>
+            
+            <li>
               <span class="l-en">Leadership cohort reads <b>BROKEN</b> while Cross-asset scares reads <b>watch</b>.</span>
               <span class="l-zh">龙头股群体 读为 <b>BROKEN</b>，而 跨资产风险扫描 读为 <b>watch</b>。</span>
             </li>
@@ -2239,9 +2197,9 @@
           
 
           <p class="gde-receipt tnum">
-            grey-deer-v1-2026-08-19 · bundle 503c8ff875676ee1 ·
+            grey-deer-v1-2026-08-19 · bundle a9ed7450f16bf454 ·
             coverage FRESH ·
-            coherence MIXED (scope market_reads) ·
+            coherence CONTRADICTORY (scope market_reads) ·
             stage FRAGILE (observed_settled_evidence) ·
             stage_since null (no_episode_lifecycle_in_v0) ·
             engine/risk_envelope.py
@@ -2296,22 +2254,22 @@
         
         
         <div class="mx5-action-item mx5-action-primary" data-wtd-primary>
-          <div class="mx5-action-icon mx5-ai-yellow">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <div class="mx5-action-icon mx5-ai-green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#22d97a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-              <circle cx="12" cy="12" r="3"/>
+              <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+              <polyline points="16 7 22 7 22 13"/>
               
             </svg>
           </div>
           <div class="mx5-action-text">
             <div class="mx5-action-label">
-              <span class="l-en">Trade small. Stay selective.</span>
-              <span class="l-zh">缩小仓位，精选标的。</span>
+              <span class="l-en">Follow the trend. Add on strength.</span>
+              <span class="l-zh">顺势而为，强势中加仓。</span>
             </div>
             <div class="mx5-action-sub">
-              <span class="l-en">Mixed &middot; 59/100</span>
-              <span class="l-zh">混合 &middot; 59/100</span>
+              <span class="l-en">Risk-on &middot; 72/100</span>
+              <span class="l-zh">风险偏好 &middot; 72/100</span>
             </div>
           </div>
         </div>
@@ -2336,8 +2294,8 @@
           </div>
           <div class="mx5-action-text">
             <div class="mx5-action-label">
-              <span class="l-en">PPI (producer prices): expect noise; ignore the first move.</span>
-              <span class="l-zh">生产者物价指数（PPI）：波动会放大，忽略初动。</span>
+              <span class="l-en">CPI (consumer prices): expect noise; ignore the first move.</span>
+              <span class="l-zh">消费者物价指数（CPI）：波动会放大，忽略初动。</span>
             </div>
           </div>
         </div>
@@ -2380,53 +2338,14 @@
       </div>
       <div class="mx5-events-sub">
         
-        <span class="l-en">3 high-impact prints ahead</span>
-        <span class="l-zh">3 项高影响数据待发</span>
+        <span class="l-en">2 high-impact prints ahead</span>
+        <span class="l-zh">2 项高影响数据待发</span>
         
       </div>
       
       <div class="mx5-timeline">
         <div class="mx5-timeline-rail"></div>
         <div class="mx5-tl-items">
-          
-          
-          
-          
-          <div class="mx5-tl-item">
-            <div class="mx5-tl-nodezone"><div class="mx5-tl-dot mx5-dot-high"></div></div>
-            <div class="mx5-tl-date">Sep 10</div>
-            <div class="mx5-tl-name"><span class="l-en">PPI (producer pr…</span><span class="l-zh">生产者物价指数…</span></div>
-            <div class="mx5-tl-badge high">
-              <span class="l-en">HIGH</span>
-              <span class="l-zh">高</span>
-            </div>
-          </div>
-          
-          
-          
-          
-          <div class="mx5-tl-item">
-            <div class="mx5-tl-nodezone"><div class="mx5-tl-dot mx5-dot-med"></div></div>
-            <div class="mx5-tl-date">Sep 10</div>
-            <div class="mx5-tl-name"><span class="l-en">Initial jobless …</span><span class="l-zh">初请失业金</span></div>
-            <div class="mx5-tl-badge med">
-              <span class="l-en">MED</span>
-              <span class="l-zh">中</span>
-            </div>
-          </div>
-          
-          
-          
-          
-          <div class="mx5-tl-item">
-            <div class="mx5-tl-nodezone"><div class="mx5-tl-dot mx5-dot-med"></div></div>
-            <div class="mx5-tl-date">Sep 10</div>
-            <div class="mx5-tl-name"><span class="l-en">30-Year Bond auc…</span><span class="l-zh">30年期国债拍…</span></div>
-            <div class="mx5-tl-badge med">
-              <span class="l-en">MED</span>
-              <span class="l-zh">中</span>
-            </div>
-          </div>
           
           
           
@@ -2448,6 +2367,45 @@
             <div class="mx5-tl-nodezone"><div class="mx5-tl-dot mx5-dot-med"></div></div>
             <div class="mx5-tl-date">Sep 15</div>
             <div class="mx5-tl-name"><span class="l-en">20-Year Bond auc…</span><span class="l-zh">20年期国债拍…</span></div>
+            <div class="mx5-tl-badge med">
+              <span class="l-en">MED</span>
+              <span class="l-zh">中</span>
+            </div>
+          </div>
+          
+          
+          
+          
+          <div class="mx5-tl-item">
+            <div class="mx5-tl-nodezone"><div class="mx5-tl-dot mx5-dot-high"></div></div>
+            <div class="mx5-tl-date">Sep 16</div>
+            <div class="mx5-tl-name"><span class="l-en">FOMC rate decisi…</span><span class="l-zh">美联储议息会议…</span></div>
+            <div class="mx5-tl-badge high">
+              <span class="l-en">HIGH</span>
+              <span class="l-zh">高</span>
+            </div>
+          </div>
+          
+          
+          
+          
+          <div class="mx5-tl-item">
+            <div class="mx5-tl-nodezone"><div class="mx5-tl-dot mx5-dot-med"></div></div>
+            <div class="mx5-tl-date">Sep 17</div>
+            <div class="mx5-tl-name"><span class="l-en">Initial jobless …</span><span class="l-zh">初请失业金</span></div>
+            <div class="mx5-tl-badge med">
+              <span class="l-en">MED</span>
+              <span class="l-zh">中</span>
+            </div>
+          </div>
+          
+          
+          
+          
+          <div class="mx5-tl-item">
+            <div class="mx5-tl-nodezone"><div class="mx5-tl-dot mx5-dot-med"></div></div>
+            <div class="mx5-tl-date">Sep 17</div>
+            <div class="mx5-tl-name"><span class="l-en">10-Year Note auc…</span><span class="l-zh">10年期国债拍…</span></div>
             <div class="mx5-tl-badge med">
               <span class="l-en">MED</span>
               <span class="l-zh">中</span>
@@ -4457,18 +4415,18 @@
     
     
     <div class="plf-stance-row" style="margin-bottom:4px">
-      <svg width="8" height="8" viewBox="0 0 8 8" style="flex-shrink:0;margin-top:2px"><circle cx="4" cy="4" r="4" fill="var(--warn)"/></svg>
+      <svg width="8" height="8" viewBox="0 0 8 8" style="flex-shrink:0;margin-top:2px"><circle cx="4" cy="4" r="4" fill="var(--down)"/></svg>
       <span style="font-size:12px;font-weight:600">
-        <span class="l-en">Two-sided — watch the tape</span>
-        <span class="l-zh">双向——观察市场走势</span>
+        <span class="l-en">Hike expectations rising now</span>
+        <span class="l-zh">加息预期正在升温</span>
       </span>
     </div>
     
     
     
     <div style="font-size:11px;color:var(--ink-2,rgba(255,255,255,.6));line-height:1.4;margin-bottom:6px">
-      <span class="l-en">Outlook is two-sided: futures price about two hikes; hawkish and easing inputs are roughly balanced (4 vs 3)</span>
-      <span class="l-zh">前景双向：期货定价约两次加息；鹰派与宽松因素大体制衡（4对3）</span>
+      <span class="l-en">Futures now price about three hikes over the next year — hawkish repricing is underway</span>
+      <span class="l-zh">期货目前为未来一年定价约三次加息——加息定价正在进行</span>
     </div>
     
     
@@ -4481,16 +4439,16 @@
             <stop offset="100%" stop-color="var(--isle-policy)" stop-opacity="0"/>
           </linearGradient>
         </defs>
-        <path d="M0,32.0 L30,26.3 L60,18.1 L90,9.3 L120,0.0 L120,36 L0,36 Z" fill="url(#rcSpkGrad)"/>
-        <polyline points="0,32.0 30,26.3 60,18.1 90,9.3 120,0.0" fill="none" stroke="var(--isle-policy)" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+        <path d="M0,32.0 L30,26.2 L60,18.4 L90,9.7 L120,0.0 L120,36 L0,36 Z" fill="url(#rcSpkGrad)"/>
+        <polyline points="0,32.0 30,26.2 60,18.4 90,9.7 120,0.0" fill="none" stroke="var(--isle-policy)" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
       </svg>
     </div>
     
     
     
     <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));line-height:1.4">
-      <span class="l-en">Market prices ~2 hikes over the next 12m (funds 3.63% → 4.25%)</span>
-      <span class="l-zh">市场为未来12个月定价约加息2次（基金利率 3.63% → 4.25%）</span>
+      <span class="l-en">Market prices ~3 hikes over the next 12m (funds 3.63% → 4.29%)</span>
+      <span class="l-zh">市场为未来12个月定价约加息3次（基金利率 3.63% → 4.29%）</span>
     </div>
     
     
@@ -4613,8 +4571,8 @@
         </span>
         
         <span class="mx5-sector-chip cold">
-          <span class="l-en">Technology (Equal-Weight)</span>
-          <span class="l-zh">信息技术（等权）</span>
+          <span class="l-en">Big Pharma</span>
+          <span class="l-zh">大型药企</span>
         </span>
         
         <span class="mx5-sector-chip cold">
@@ -4700,7 +4658,7 @@
         
         
         
-        <div class="mx5-sector-heat-col" data-tip-en="Technology (Equal-Weight) — cooling" data-tip-zh="信息技术（等权） — 退潮">
+        <div class="mx5-sector-heat-col" data-tip-en="Big Pharma — cooling" data-tip-zh="大型药企 — 退潮">
           <div class="mx5-sector-heat-bar mx5-shb-cool" style="height:16px;opacity:0.22;"></div>
         </div>
         
@@ -4963,15 +4921,13 @@
       
       <div class="mx5-ai-ticker-pills">
         
-        <span class="mx5-ai-ticker-pill">QQQ</span>
-        
         <span class="mx5-ai-ticker-pill">USO</span>
         
-        <span class="mx5-ai-ticker-pill">XLE</span>
+        <span class="mx5-ai-ticker-pill">IEF</span>
         
-        <span class="mx5-ai-ticker-pill">QQQ</span>
+        <span class="mx5-ai-ticker-pill">SPY</span>
         
-        <span class="mx5-ai-ticker-pill">XLK</span>
+        <span class="mx5-ai-ticker-pill">XLF</span>
         
       </div>
       
@@ -4979,14 +4935,14 @@
       <div class="mx5-ai-body">
         
         <span class="l-en">
-          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">7 High-Impact Items</span><br>
+          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">2 High-Impact Items</span><br>
           Dominant channel: <span style="color:var(--mx5-accent-ink);font-weight:600">fiscal &amp; trade</span><br>
-          7 high-impact signals across channels
+          2 high-impact signals across channels
         </span>
         <span class="l-zh">
-          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">7 条高影响信息</span><br>
+          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">2 条高影响信息</span><br>
           主导频道：<span style="color:var(--mx5-accent-ink);font-weight:600">财政与贸易</span><br>
-          7 条高影响信号
+          2 条高影响信号
         </span>
         
       </div>
@@ -5024,8 +4980,8 @@
         <div class="mx5-card-title"><span class="l-en">Alerts Centre</span><span class="l-zh">警报中心</span></div>
         
         <div class="mx5-card-badge" style="color:var(--mx5-warn-ink);background:var(--mx5-warn-dim);border:1px solid rgba(245,158,11,.20);">
-          <span class="l-en">3 FIRED</span>
-          <span class="l-zh">3 条触发</span>
+          <span class="l-en">1 FIRED</span>
+          <span class="l-zh">1 条触发</span>
         </div>
         
       </div>
@@ -5038,35 +4994,17 @@
         
         
         
-        <div class="mx5-alert-item info">
-          <div class="mx5-alert-dot info"></div>
-          <div class="mx5-alert-content">
-            <div class="mx5-alert-title info">
-              <span style="font-size:12px;margin-right:3px">🧭</span>
-              <span class="l-en">Regime radar moved — the market “weather” may be shifting</span>
-              <span class="l-zh">转换雷达变动 — 市场“天气”可能正在转变</span>
-            </div>
-            <div class="mx5-alert-detail">
-              <span class="l-en">The regime&#39;s footing went from a new regime to shifting (4 warning flags active)</span>
-              <span class="l-zh">周期状态由「新周期」转为「转换中」（4 个预警激活）</span>
-            </div>
-          </div>
-        </div>
-        
-        
-        
-        
         <div class="mx5-alert-item warn">
           <div class="mx5-alert-dot warn"></div>
           <div class="mx5-alert-content">
             <div class="mx5-alert-title warn">
-              <span style="font-size:12px;margin-right:3px">🧲</span>
-              <span class="l-en">Options “gravity” flipped — bigger swings more likely</span>
-              <span class="l-zh">期权“引力”反转 — 波动可能加大</span>
+              <span style="font-size:12px;margin-right:3px">📅</span>
+              <span class="l-en">Major event on deck — expect bigger swings either way</span>
+              <span class="l-zh">重大事件临近 — 双向波动或加大</span>
             </div>
             <div class="mx5-alert-detail">
-              <span class="l-en">GEX: spot crossed the gamma flip (net -31bn, spot vs flip -0.4%)</span>
-              <span class="l-zh">GEX：现价穿越 gamma 翻转点（净 -31bn，现价相对翻转点 -0.4%）</span>
+              <span class="l-en">Event-risk window: CPI (consumer prices) today — high two-sided volatility expected. Not a sell signal; size for the noi…</span>
+              <span class="l-zh">事件风险窗口：消费者物价指数（CPI）（今天）—— 预计偏高的两面性波动。非卖出信号；按噪声调整仓位。</span>
             </div>
           </div>
         </div>
@@ -5080,11 +5018,11 @@
           <div class="mx5-alert-content">
             <div class="mx5-alert-title">
               <span style="font-size:12px;margin-right:3px">📰</span>
-              <span class="l-en">Gloo outlines $200M FY2026 revenue outlook while targeting adjusted EBITDA profi…</span>
-              <span class="l-zh">Gloo 公布 2026 财年 2 亿美元营收展望，同时目标在第四季度实现调整后 EBITDA 盈利</span>
+              <span class="l-en">10-year Treasury yield tops 4.9%, highest since 2023, as oil surge raises inflat…</span>
+              <span class="l-zh">10年期美国国债收益率突破4.9%，创2023年以来新高，因油价飙升加剧通胀担忧</span>
             </div>
             <div class="mx5-alert-detail">
-              <span>Seeking Alpha - Market Currents</span> · 
+              <span>CNBC - Stock Blog</span> · 
               <span style="color:var(--mx5-warn-ink,#9c6212);font-weight:600"><span class="l-en">High impact</span><span class="l-zh">高影响</span></span>
             </div>
           </div>
@@ -5094,13 +5032,11 @@
         
         
         
-        
-        
       </div>
       <div class="mx5-alert-footer">
         <span>
-          <span class="l-en">Showing 2 of 6 in feed</span>
-          <span class="l-zh">显示 2 / 6 条</span>
+          <span class="l-en">Showing 1 of 1 in feed</span>
+          <span class="l-zh">显示 1 / 1 条</span>
         </span>
         <button type="button" class="gbtn gbtn-sm gbtn-quiet" onclick="event.stopPropagation();mx5OpenDlg('dlg-news')">
           <span class="l-en">View all &#8594;</span>
@@ -5127,11 +5063,11 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
             <span class="l-en">Week ahead</span><span class="l-zh">本周日历</span>
           </div>
-          <div class="wnx-state"><span class="l-en">PPI (producer prices)</span><span class="l-zh">生产者物价指数（PPI）</span></div>
+          <div class="wnx-state"><span class="l-en">CPI (consumer prices)</span><span class="l-zh">消费者物价指数（CPI）</span></div>
           <div class="wnx-line">
             
-            <span class="l-en">Sep 10 · big print — expect swings</span>
-            <span class="l-zh">9月10日 · 重磅数据，或有波动</span>
+            <span class="l-en">Sep 11 · big print — expect swings</span>
+            <span class="l-zh">9月11日 · 重磅数据，或有波动</span>
             
           </div>
           <span class="wnx-go"><span class="l-en">See the week</span><span class="l-zh">查看日历</span> &rarr;</span>
@@ -5197,11 +5133,11 @@
         <div class="mx5-dlg-eyebrow"><span class="l-en">Composite Score</span><span class="l-zh">综合评分</span></div>
         <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:20px">
           
-          <span style="font-size:40px;font-weight:900;font-variant-numeric:tabular-nums;color:var(--warn);line-height:1">59</span>
+          <span style="font-size:40px;font-weight:900;font-variant-numeric:tabular-nums;color:var(--up);line-height:1">72</span>
           <div>
-            <div style="font-size:14px;font-weight:700;color:var(--warn)">
-              <span class="l-en">Mixed</span>
-              <span class="l-zh">混合</span>
+            <div style="font-size:14px;font-weight:700;color:var(--up)">
+              <span class="l-en">Risk-on</span>
+              <span class="l-zh">风险偏好</span>
             </div>
             <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));margin-top:3px">
               <span class="l-en">Blended 0–100 · ≥60 risk-on · 42–59 mixed · &lt;42 risk-off</span>
@@ -5449,69 +5385,6 @@
           
           
           
-          <div class="mx5-dlg-cal-card hot" data-cal-date="2026-09-10" data-cal-type="PPI">
-            <div class="mx5-dlg-cal-date">Sep 10</div>
-            <div class="mx5-dlg-cal-title">
-              <span class="l-en">PPI (producer prices)</span>
-              <span class="l-zh">生产者物价指数（PPI）</span>
-            </div>
-            <div class="mx5-dlg-cal-meta">
-              <span class="mx5-dlg-cal-time">08:30 ET</span>
-              <span class="mx5-dlg-cal-badge high">
-                <span class="l-en">HIGH</span>
-                <span class="l-zh">高</span>
-              </span>
-            </div>
-            
-            
-            
-            
-          </div>
-          
-          
-          
-          <div class="mx5-dlg-cal-card" data-cal-date="2026-09-10" data-cal-type="CLAIMS">
-            <div class="mx5-dlg-cal-date">Sep 10</div>
-            <div class="mx5-dlg-cal-title">
-              <span class="l-en">Initial jobless claims</span>
-              <span class="l-zh">初请失业金</span>
-            </div>
-            <div class="mx5-dlg-cal-meta">
-              <span class="mx5-dlg-cal-time">08:30 ET</span>
-              <span class="mx5-dlg-cal-badge med">
-                <span class="l-en">MED</span>
-                <span class="l-zh">中</span>
-              </span>
-            </div>
-            
-            
-            
-            
-          </div>
-          
-          
-          
-          <div class="mx5-dlg-cal-card" data-cal-date="2026-09-10" data-cal-type="AUCTION">
-            <div class="mx5-dlg-cal-date">Sep 10</div>
-            <div class="mx5-dlg-cal-title">
-              <span class="l-en">30-Year Bond auction (reopening)</span>
-              <span class="l-zh">30年期国债拍卖（续发行）</span>
-            </div>
-            <div class="mx5-dlg-cal-meta">
-              <span class="mx5-dlg-cal-time">13:00 ET</span>
-              <span class="mx5-dlg-cal-badge med">
-                <span class="l-en">MED</span>
-                <span class="l-zh">中</span>
-              </span>
-            </div>
-            
-            
-            
-            
-          </div>
-          
-          
-          
           <div class="mx5-dlg-cal-card hot" data-cal-date="2026-09-11" data-cal-type="CPI">
             <div class="mx5-dlg-cal-date">Sep 11</div>
             <div class="mx5-dlg-cal-title">
@@ -5604,6 +5477,67 @@
             </div>
             <div class="mx5-dlg-cal-meta">
               <span class="mx5-dlg-cal-time">13:00 ET</span>
+              <span class="mx5-dlg-cal-badge med">
+                <span class="l-en">MED</span>
+                <span class="l-zh">中</span>
+              </span>
+            </div>
+            
+            
+            
+            
+          </div>
+          
+          
+          
+          <div class="mx5-dlg-cal-card" data-cal-date="2026-09-18" data-cal-type="OPEX">
+            <div class="mx5-dlg-cal-date">Sep 18</div>
+            <div class="mx5-dlg-cal-title">
+              <span class="l-en">Quad-witching expiration</span>
+              <span class="l-zh">四巫日期权到期</span>
+            </div>
+            <div class="mx5-dlg-cal-meta">
+              <span class="mx5-dlg-cal-time">16:00 ET</span>
+              <span class="mx5-dlg-cal-badge med">
+                <span class="l-en">MED</span>
+                <span class="l-zh">中</span>
+              </span>
+            </div>
+            
+            
+            
+            
+            
+            
+            
+            <div style="margin-top:7px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+              <span style="font-size:10px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.5));letter-spacing:.04em;text-transform:uppercase">
+                <span class="l-en">Dealer pressure: quiet</span>
+                <span class="l-zh">经销商压力：平静</span>
+              </span>
+              
+              <span style="font-size:10px;color:var(--ink-3,rgba(255,255,255,.36))">2/2</span>
+              
+            </div>
+            
+            <div style="font-size:10px;color:var(--ink-3,rgba(255,255,255,.36));margin-top:4px;line-height:1.4" title="OPEX window risk — display context only. Never a buy/sell signal.">
+              <span class="l-en">Mid-cycle. dealer books stretched, expiry-week exposure crowded. Low dealer pressure — hold positions, stay patient. (2/2 signals active)</span>
+              <span class="l-zh">Mid-cycle。做市商持仓拉满，到期周敞口拥挤。低经销商压力 — 持仓，保持耐心。（2/2项信号激活）</span>
+            </div>
+            
+            
+          </div>
+          
+          
+          
+          <div class="mx5-dlg-cal-card" data-cal-date="2026-09-24" data-cal-type="CLAIMS">
+            <div class="mx5-dlg-cal-date">Sep 24</div>
+            <div class="mx5-dlg-cal-title">
+              <span class="l-en">Initial jobless claims</span>
+              <span class="l-zh">初请失业金</span>
+            </div>
+            <div class="mx5-dlg-cal-meta">
+              <span class="mx5-dlg-cal-time">08:30 ET</span>
               <span class="mx5-dlg-cal-badge med">
                 <span class="l-en">MED</span>
                 <span class="l-zh">中</span>
@@ -5930,8 +5864,8 @@
             
             <div class="mx5-dlg-sector-row">
               <span class="mx5-dlg-sector-arr cool">&#9661;</span>
-              <span class="mx5-dlg-sector-name"><span class="l-en">Technology (Equal-Weight)</span><span class="l-zh">信息技术（等权）</span></span>
-              <span class="mx5-dlg-sector-rk">#12</span>
+              <span class="mx5-dlg-sector-name"><span class="l-en">Big Pharma</span><span class="l-zh">大型药企</span></span>
+              <span class="mx5-dlg-sector-rk">#14</span>
             </div>
             
             <div class="mx5-dlg-sector-row">
@@ -6223,16 +6157,16 @@
               <div class="rlx-viz" style="--rlx-c:var(--up,#22c55e)">
                 <div class="rlx-bars">
                   <div class="rlx-bar-row">
-                    <span class="rlx-bar-lbl"><span class="l-en">Japan</span><span class="l-zh">日本</span></span>
-                    <span class="rlx-bar-track"><span class="rlx-bar-fill" style="--rlx-w:15%"></span></span>
+                    <span class="rlx-bar-lbl"><span class="l-en">Canada</span><span class="l-zh">加拿大</span></span>
+                    <span class="rlx-bar-track"><span class="rlx-bar-fill" style="--rlx-w:9%"></span></span>
                   </div>
                   <div class="rlx-bar-row">
-                    <span class="rlx-bar-lbl"><span class="l-en">Canada</span><span class="l-zh">加拿大</span></span>
-                    <span class="rlx-bar-track"><span class="rlx-bar-fill muted" style="--rlx-w:8%"></span></span>
+                    <span class="rlx-bar-lbl"><span class="l-en">Japan</span><span class="l-zh">日本</span></span>
+                    <span class="rlx-bar-track"><span class="rlx-bar-fill muted" style="--rlx-w:21%"></span></span>
                   </div>
                   <div class="rlx-bar-row">
                     <span class="rlx-bar-lbl"><span class="l-en">Australia</span><span class="l-zh">澳大利亚</span></span>
-                    <span class="rlx-bar-track"><span class="rlx-bar-fill muted" style="--rlx-w:9%"></span></span>
+                    <span class="rlx-bar-track"><span class="rlx-bar-fill muted" style="--rlx-w:15%"></span></span>
                   </div>
                   
                 </div>
@@ -6252,8 +6186,8 @@
                 </div>
               </div>
               <div class="lens-receipt">
-                <span class="l-en">Pressure: low · jp 5% · ca 2% · au 3% · display context</span>
-                <span class="l-zh">压力：低 · jp 5% · ca 2% · au 3% · 展示背景</span>
+                <span class="l-en">Pressure: low · ca 3% · jp 7% · au 5% · display context</span>
+                <span class="l-zh">压力：低 · ca 3% · jp 7% · au 5% · 展示背景</span>
               </div>
             </span>
           </div>
@@ -6295,9 +6229,9 @@
             
             
             
-            <a href="intl.html" class="rkc-ov is-alert" style="--rkc-v:84;--rkc-c:var(--warn,#f59e0b)" data-rpop>
+            <a href="intl.html" class="rkc-ov is-alert" style="--rkc-v:87;--rkc-c:var(--down,#ef4444)" data-rpop>
               
-              <span class="rkc-ov-ring"><span class="rkc-ov-val">84</span></span>
+              <span class="rkc-ov-ring"><span class="rkc-ov-val">87</span></span>
               
               <span class="rkc-ov-name">
                 <span class="l-en">China A</span>
@@ -6322,7 +6256,7 @@
                     <span class="l-zh">中国A股</span>
                   </span>
                   
-                  <span class="row-pop-kind"><span class="l-en">Pullback risk</span><span class="l-zh">回撤风险</span> 84/100</span>
+                  <span class="row-pop-kind"><span class="l-en">Pullback risk</span><span class="l-zh">回撤风险</span> 87/100</span>
                   
                 </div>
                 <div class="row-pop-div"></div>
@@ -6331,7 +6265,7 @@
                 <ul class="row-pop-why">
                   <li>
                     
-                    <span class="l-en">Graded 2026-09-09.</span><span class="l-zh">评级日期 2026-09-09。</span>
+                    <span class="l-en">Graded 2026-09-10.</span><span class="l-zh">评级日期 2026-09-10。</span>
                     
                   </li>
                 </ul>
@@ -6368,9 +6302,9 @@
             
             
             
-            <a href="intl.html" class="rkc-ov" style="--rkc-v:47;--rkc-c:var(--info,#4d8ef5)" data-rpop>
+            <a href="intl.html" class="rkc-ov" style="--rkc-v:51;--rkc-c:var(--info,#4d8ef5)" data-rpop>
               
-              <span class="rkc-ov-ring"><span class="rkc-ov-val">47</span></span>
+              <span class="rkc-ov-ring"><span class="rkc-ov-val">51</span></span>
               
               <span class="rkc-ov-name">
                 <span class="l-en">Hong Kong</span>
@@ -6395,7 +6329,7 @@
                     <span class="l-zh">港股</span>
                   </span>
                   
-                  <span class="row-pop-kind"><span class="l-en">Pullback risk</span><span class="l-zh">回撤风险</span> 47/100</span>
+                  <span class="row-pop-kind"><span class="l-en">Pullback risk</span><span class="l-zh">回撤风险</span> 51/100</span>
                   
                 </div>
                 <div class="row-pop-div"></div>
@@ -6404,7 +6338,7 @@
                 <ul class="row-pop-why">
                   <li>
                     
-                    <span class="l-en">Graded 2026-09-09.</span><span class="l-zh">评级日期 2026-09-09。</span>
+                    <span class="l-en">Graded 2026-09-10.</span><span class="l-zh">评级日期 2026-09-10。</span>
                     
                   </li>
                 </ul>
@@ -6441,9 +6375,9 @@
             
             
             
-            <a href="intl.html" class="rkc-ov" style="--rkc-v:47;--rkc-c:var(--info,#4d8ef5)" data-rpop>
+            <a href="intl.html" class="rkc-ov" style="--rkc-v:53;--rkc-c:var(--info,#4d8ef5)" data-rpop>
               
-              <span class="rkc-ov-ring"><span class="rkc-ov-val">47</span></span>
+              <span class="rkc-ov-ring"><span class="rkc-ov-val">53</span></span>
               
               <span class="rkc-ov-name">
                 <span class="l-en">Taiwan</span>
@@ -6468,7 +6402,7 @@
                     <span class="l-zh">台股</span>
                   </span>
                   
-                  <span class="row-pop-kind"><span class="l-en">Pullback risk</span><span class="l-zh">回撤风险</span> 47/100</span>
+                  <span class="row-pop-kind"><span class="l-en">Pullback risk</span><span class="l-zh">回撤风险</span> 53/100</span>
                   
                 </div>
                 <div class="row-pop-div"></div>
@@ -6477,7 +6411,7 @@
                 <ul class="row-pop-why">
                   <li>
                     
-                    <span class="l-en">Graded 2026-09-09.</span><span class="l-zh">评级日期 2026-09-09。</span>
+                    <span class="l-en">Graded 2026-09-10.</span><span class="l-zh">评级日期 2026-09-10。</span>
                     
                   </li>
                 </ul>
@@ -6520,9 +6454,9 @@
             
             
             
-            <a href="intl.html" class="rkc-ov" style="--rkc-v:44;--rkc-c:var(--info,#4d8ef5)" data-rpop>
+            <a href="intl.html" class="rkc-ov" style="--rkc-v:46;--rkc-c:var(--info,#4d8ef5)" data-rpop>
               
-              <span class="rkc-ov-ring"><span class="rkc-ov-val">44</span></span>
+              <span class="rkc-ov-ring"><span class="rkc-ov-val">46</span></span>
               
               <span class="rkc-ov-name">
                 <span class="l-en">Korea</span>
@@ -6547,7 +6481,7 @@
                     <span class="l-zh">韩股</span>
                   </span>
                   
-                  <span class="row-pop-kind"><span class="l-en">Pullback risk</span><span class="l-zh">回撤风险</span> 44/100</span>
+                  <span class="row-pop-kind"><span class="l-en">Pullback risk</span><span class="l-zh">回撤风险</span> 46/100</span>
                   
                 </div>
                 <div class="row-pop-div"></div>
@@ -6556,7 +6490,7 @@
                 <ul class="row-pop-why">
                   <li>
                     
-                    <span class="l-en">Graded 2026-09-09.</span><span class="l-zh">评级日期 2026-09-09。</span>
+                    <span class="l-en">Graded 2026-09-10.</span><span class="l-zh">评级日期 2026-09-10。</span>
                     
                   </li>
                 </ul>
@@ -6599,9 +6533,9 @@
             
             
             
-            <a href="intl.html" class="rkc-ov" style="--rkc-v:45;--rkc-c:var(--info,#4d8ef5)" data-rpop>
+            <a href="intl.html" class="rkc-ov" style="--rkc-v:44;--rkc-c:var(--info,#4d8ef5)" data-rpop>
               
-              <span class="rkc-ov-ring"><span class="rkc-ov-val">45</span></span>
+              <span class="rkc-ov-ring"><span class="rkc-ov-val">44</span></span>
               
               <span class="rkc-ov-name">
                 <span class="l-en">Japan</span>
@@ -6626,7 +6560,7 @@
                     <span class="l-zh">日股</span>
                   </span>
                   
-                  <span class="row-pop-kind"><span class="l-en">Pullback risk</span><span class="l-zh">回撤风险</span> 45/100</span>
+                  <span class="row-pop-kind"><span class="l-en">Pullback risk</span><span class="l-zh">回撤风险</span> 44/100</span>
                   
                 </div>
                 <div class="row-pop-div"></div>
@@ -6635,7 +6569,7 @@
                 <ul class="row-pop-why">
                   <li>
                     
-                    <span class="l-en">Graded 2026-09-09.</span><span class="l-zh">评级日期 2026-09-09。</span>
+                    <span class="l-en">Graded 2026-09-10.</span><span class="l-zh">评级日期 2026-09-10。</span>
                     
                   </li>
                 </ul>
@@ -6678,9 +6612,9 @@
             
             
             
-            <a href="intl.html" class="rkc-ov" style="--rkc-v:68;--rkc-c:var(--warn,#f59e0b)" data-rpop>
+            <a href="intl.html" class="rkc-ov" style="--rkc-v:66;--rkc-c:var(--warn,#f59e0b)" data-rpop>
               
-              <span class="rkc-ov-ring"><span class="rkc-ov-val">68</span></span>
+              <span class="rkc-ov-ring"><span class="rkc-ov-val">66</span></span>
               
               <span class="rkc-ov-name">
                 <span class="l-en">Canada</span>
@@ -6696,8 +6630,6 @@
               
               
               
-              <span class="rkc-ov-age"><span class="l-en">graded Sep 8</span><span class="l-zh">评级于 9月8日</span></span>
-              
               
               <span class="rp-src" hidden>
                 
@@ -6707,17 +6639,16 @@
                     <span class="l-zh">加股</span>
                   </span>
                   
-                  <span class="row-pop-kind"><span class="l-en">Pullback risk</span><span class="l-zh">回撤风险</span> 68/100</span>
+                  <span class="row-pop-kind"><span class="l-en">Pullback risk</span><span class="l-zh">回撤风险</span> 66/100</span>
                   
                 </div>
                 <div class="row-pop-div"></div>
                 
                 
                 <ul class="row-pop-why">
-                  <li class="row-pop-stale">
+                  <li>
                     
-                    <span class="l-en">Last graded 2026-09-08, before this board’s date (2026-09-09) — treat it as last known, not current.</span>
-                    <span class="l-zh">最后评级于 2026-09-08，早于本页日期（2026-09-09） — 仅代表最后已知状态，非当前读数。</span>
+                    <span class="l-en">Graded 2026-09-09.</span><span class="l-zh">评级日期 2026-09-09。</span>
                     
                   </li>
                 </ul>
@@ -6754,9 +6685,9 @@
             
             
             
-            <a href="intl.html" class="rkc-ov" style="--rkc-v:30;--rkc-c:var(--up,#22c55e)" data-rpop>
+            <a href="intl.html" class="rkc-ov" style="--rkc-v:32;--rkc-c:var(--up,#22c55e)" data-rpop>
               
-              <span class="rkc-ov-ring"><span class="rkc-ov-val">30</span></span>
+              <span class="rkc-ov-ring"><span class="rkc-ov-val">32</span></span>
               
               <span class="rkc-ov-name">
                 <span class="l-en">Australia</span>
@@ -6781,7 +6712,7 @@
                     <span class="l-zh">澳股</span>
                   </span>
                   
-                  <span class="row-pop-kind"><span class="l-en">Pullback risk</span><span class="l-zh">回撤风险</span> 30/100</span>
+                  <span class="row-pop-kind"><span class="l-en">Pullback risk</span><span class="l-zh">回撤风险</span> 32/100</span>
                   
                 </div>
                 <div class="row-pop-div"></div>
@@ -6790,7 +6721,7 @@
                 <ul class="row-pop-why">
                   <li>
                     
-                    <span class="l-en">Graded 2026-09-09.</span><span class="l-zh">评级日期 2026-09-09。</span>
+                    <span class="l-en">Graded 2026-09-10.</span><span class="l-zh">评级日期 2026-09-10。</span>
                     
                   </li>
                 </ul>
@@ -7096,7 +7027,7 @@
             
             
             
-            <span class="mx5-pop-intl-leg" data-tip-en="US high-yield credit spread velocity — rising spreads signal stress reaching US credit markets. Reading: 2.68 (quiet)." data-tip-zh="美国高收益信用利差速度——利差走阔信号显示压力已传至美国信贷市场。 当前读数：2.68（平静）。">
+            <span class="mx5-pop-intl-leg" data-tip-en="US high-yield credit spread velocity — rising spreads signal stress reaching US credit markets. Reading: 2.67 (quiet)." data-tip-zh="美国高收益信用利差速度——利差走阔信号显示压力已传至美国信贷市场。 当前读数：2.67（平静）。">
               <span class="mx5-leg-dot"></span>
               <span class="l-en">Credit spreads</span>
               <span class="l-zh">信用利差</span>
@@ -7105,7 +7036,7 @@
             
             
             
-            <span class="mx5-pop-intl-leg" data-tip-en="Regional bank stocks vs broad market (KRE/SPY ratio) — bank underperformance flags funding stress. Reading: -1.3 (quiet)." data-tip-zh="地区银行股vs大盘（KRE/SPY比率）——银行股跑输预示融资压力。 当前读数：-1.3（平静）。">
+            <span class="mx5-pop-intl-leg" data-tip-en="Regional bank stocks vs broad market (KRE/SPY ratio) — bank underperformance flags funding stress. Reading: -3.3 (quiet)." data-tip-zh="地区银行股vs大盘（KRE/SPY比率）——银行股跑输预示融资压力。 当前读数：-3.3（平静）。">
               <span class="mx5-leg-dot"></span>
               <span class="l-en">Bank stocks</span>
               <span class="l-zh">银行股</span>
@@ -7114,7 +7045,7 @@
             
             
             
-            <span class="mx5-pop-intl-leg" data-tip-en="MOVE index percentile — elevated rates volatility precedes spread-widening and risk-off moves. Reading: 76.14 (quiet)." data-tip-zh="MOVE指数分位数——利率波动率偏高往往先于利差走阔和避险行情。 当前读数：76.14（平静）。">
+            <span class="mx5-pop-intl-leg" data-tip-en="MOVE index percentile — elevated rates volatility precedes spread-widening and risk-off moves. Reading: 76.74 (quiet)." data-tip-zh="MOVE指数分位数——利率波动率偏高往往先于利差走阔和避险行情。 当前读数：76.74（平静）。">
               <span class="mx5-leg-dot"></span>
               <span class="l-en">Rates volatility</span>
               <span class="l-zh">利率波动</span>
@@ -7123,7 +7054,7 @@
             
             
             
-            <span class="mx5-pop-intl-leg" data-tip-en="SOFR vs IORB corridor — positive gap signals funding pressure in overnight money markets. Reading: 0.0 (quiet)." data-tip-zh="SOFR与IORB走廊——正差值预示隔夜货币市场融资压力。 当前读数：0.0（平静）。">
+            <span class="mx5-pop-intl-leg" data-tip-en="SOFR vs IORB corridor — positive gap signals funding pressure in overnight money markets. Reading: -0.01 (quiet)." data-tip-zh="SOFR与IORB走廊——正差值预示隔夜货币市场融资压力。 当前读数：-0.01（平静）。">
               <span class="mx5-leg-dot"></span>
               <span class="l-en">Funding stress</span>
               <span class="l-zh">融资压力</span>
@@ -7190,7 +7121,7 @@
               <span class="l-en">Global breadth breakdown</span>
               <span class="l-zh">全球广度破位</span>
               
-              <span style="font-size:10px;font-weight:400;color:var(--ink-3,rgba(255,255,255,.36));margin-left:5px"><span class="l-en">· data 1 day behind</span><span class="l-zh">· 数据滞后1天</span></span>
+              <span style="font-size:10px;font-weight:400;color:var(--ink-3,rgba(255,255,255,.36));margin-left:5px"><span class="l-en">· data 2 days behind</span><span class="l-zh">· 数据滞后2天</span></span>
               
               
             </span>
@@ -7476,7 +7407,7 @@
             
             <a class="riskdlg-theme up" href="basket/ai_software.html">
               <span class="riskdlg-tn"><span class="l-en">AI Software</span><span class="l-zh">AI 软件</span></span>
-              <span class="riskdlg-tm">#2 · ▲5 5d</span>
+              <span class="riskdlg-tm">#2 · ▲2 5d</span>
             </a>
             
             
@@ -7492,7 +7423,7 @@
             
             <a class="riskdlg-theme down" href="basket/non_ai_software.html">
               <span class="riskdlg-tn"><span class="l-en">Other Software</span><span class="l-zh">其他软件</span></span>
-              <span class="riskdlg-tm">#21 · ▼11 5d</span>
+              <span class="riskdlg-tm">#19 · ▼11 5d</span>
             </a>
             
             
@@ -7503,7 +7434,7 @@
             
             <a class="riskdlg-theme down riskdlg-theme-more" href="basket/ai_semiconductors.html">
               <span class="riskdlg-tn"><span class="l-en">AI Semis</span><span class="l-zh">AI 半导体</span></span>
-              <span class="riskdlg-tm">#19 · •0 5d</span>
+              <span class="riskdlg-tm">#20 · ▲1 5d</span>
             </a>
             
             
@@ -7511,7 +7442,7 @@
             
             <a class="riskdlg-theme flat riskdlg-theme-more" href="basket/ai_infra.html">
               <span class="riskdlg-tn"><span class="l-en">AI Infrastructure</span><span class="l-zh">AI 基础设施</span></span>
-              <span class="riskdlg-tm">#11 · ▲11 5d</span>
+              <span class="riskdlg-tm">#11 · ▲13 5d</span>
             </a>
             
             
@@ -7527,7 +7458,7 @@
             
             <a class="riskdlg-theme up riskdlg-theme-more" href="basket/memory_storage.html">
               <span class="riskdlg-tn"><span class="l-en">Memory &amp; Storage</span><span class="l-zh">存储与内存</span></span>
-              <span class="riskdlg-tm">#9 · ▲18 5d</span>
+              <span class="riskdlg-tm">#9 · ▲16 5d</span>
             </a>
             
             </details>
@@ -8194,32 +8125,32 @@
     <div class="aib2-icon" aria-hidden="true">AI</div>
     <div class="aib2-hdr-meta">
       <div class="aib2-hdr-title"><span class="l-en">AI Daily Brief · cross-asset synthesis</span><span class="l-zh">AI 每日简报 · 跨资产综合</span></div>
-      <div class="aib2-hdr-sub"><span class="aib2-hdr-date num">2026-09-08</span>
+      <div class="aib2-hdr-sub"><span class="aib2-hdr-date num">2026-09-09</span>
         <span class="aib2-cadence"><span class="l-en">Updated daily</span><span class="l-zh">每日更新</span></span></div>
     </div><span class="aib2-badge"><span class="l-en">A read-through of existing signals — not a signal source</span><span class="l-zh">仅为现有信号的汇总解读 — 非独立信号源</span></span>
   </div><div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">The gist</span><span class="l-zh">要点</span></span></div>
   <div class="aib2-gist">
-    <ul class="aib2-gist-list"><li><span class="l-en"><b>Main driver</b>: Chip stocks lead, but the market remains narrow.</span><span class="l-zh"><b>主要驱动力</b>：芯片股领涨，但市场涨势仍较集中。</span></li><li><span class="l-en"><b>Regime shift</b>: Stagflation is new, with Reflation gaining ground.</span><span class="l-zh"><b>格局转变</b>：滞胀成为新主导，再通胀势头增强。</span></li><li><span class="l-en"><b>Credit calm</b>: Bonds and credit are not worried about stocks.</span><span class="l-zh"><b>信贷平稳</b>：债券和信贷市场并不担忧股市。</span></li><li><span class="l-en"><b>China weak</b>: China and Hong Kong remain in a growth scare.</span><span class="l-zh"><b>中国疲弱</b>：中国内地和香港仍处于增长恐慌之中。</span></li></ul><div class="aib2-stance aib2-stance--accent">
+    <ul class="aib2-gist-list"><li><span class="l-en"><b>Map</b>: Still Stagflation, already showing Reflation colors — growth is re-strengthening.</span><span class="l-zh"><b>图谱</b>：仍处滞胀，已现再通胀迹象——增长正在重新走强。</span></li><li><span class="l-en"><b>Flip</b>: One day into a countdown that would call this Reflation.</span><span class="l-zh"><b>翻转</b>：进入倒计时一天，这将被称为再通胀。</span></li><li><span class="l-en"><b>Driver</b>: AI chip leadership on a narrow, low-conviction tape.</span><span class="l-zh"><b>驱动因素</b>：AI芯片领涨，但市场广度窄、信心不足。</span></li><li><span class="l-en"><b>Bonds</b>: Healthy and calm, but no longer a hedge for stocks.</span><span class="l-zh"><b>债券</b>：健康平稳，但不再是股票的对冲工具。</span></li></ul><div class="aib2-stance aib2-stance--accent">
       <span class="aib2-stance-mark" aria-hidden="true">&#x25B8;</span>
       <span class="aib2-stance-body">
         <span class="l-en"><b>What to do</b>: Get ready</span>
-        <span class="l-zh"><b>应对策略</b>：做好准备</span>
+        <span class="l-zh"><b>该怎么做</b>：做好准备</span>
       </span>
     </div>
   </div>
   <div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">Key readings</span><span class="l-zh">关键读数</span></span></div>
   <div class="aib2-kf-rail"><span class="aib2-kf aib2-kf--warn">
       <span class="aib2-kf-k"><span class="l-en">Regime</span><span class="l-zh">市场格局</span></span>
-      <span class="aib2-kf-v"><span class="l-en">Stagflation</span><span class="l-zh">滞胀</span></span>
+      <span class="aib2-kf-v"><span class="l-en">Stagflation · shifting</span><span class="l-zh">滞胀 · 转换中</span></span>
     </span><span class="aib2-kf aib2-kf--good">
       <span class="aib2-kf-k"><span class="l-en">Market risk</span><span class="l-zh">市场风险</span></span>
       <span class="aib2-kf-v"><span class="l-en">Low</span><span class="l-zh">低</span></span>
     </span><span class="aib2-kf aib2-kf--good">
       <span class="aib2-kf-k"><span class="l-en">Money</span><span class="l-zh">资金面</span></span>
       <span class="aib2-kf-v"><span class="l-en">Expanding</span><span class="l-zh">扩张</span></span>
-    </span><span class="aib2-kf aib2-kf--good">
+    </span><span class="aib2-kf aib2-kf--warn">
       <span class="aib2-kf-k"><span class="l-en">Bonds vs stocks</span><span class="l-zh">债股关系</span></span>
-      <span class="aib2-kf-v"><span class="l-en">Agree</span><span class="l-zh">一致</span></span>
+      <span class="aib2-kf-v"><span class="l-en">Disagree — bonds worried</span><span class="l-zh">分歧 — 债市担忧</span></span>
     </span><span class="aib2-kf aib2-kf--good">
       <span class="aib2-kf-k"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
       <span class="aib2-kf-v"><span class="l-en">Tight</span><span class="l-zh">偏紧</span></span>
@@ -8228,63 +8159,59 @@
       <span class="aib2-kf-v"><span class="l-en">AI / semis</span><span class="l-zh">AI / semis</span></span>
     </span></div><div class="aib2-conf">
     <div class="aib2-conf-bar" role="img"
-         data-tip-en="Confidence Low — how firmly the read holds, from the AI synthesis."
-         data-tip-zh="置信度 低 — 该解读的把握程度，来自 AI 综合。">
+         data-tip-en="Confidence Medium — how firmly the read holds, from the AI synthesis."
+         data-tip-zh="置信度 中 — 该解读的把握程度，来自 AI 综合。">
+      <span class="aib2-conf-seg on"></span>
       <span class="aib2-conf-seg on"></span>
       <span class="aib2-conf-seg"></span>
-      <span class="aib2-conf-seg"></span>
     </div>
-    <span class="aib2-conf-label"><span class="l-en">Confidence: Low</span><span class="l-zh">置信度：低</span></span><span class="aib2-conf-asof"><span class="l-en">as of</span><span class="l-zh">数据截至</span> 2026-09-08</span></div>
+    <span class="aib2-conf-label"><span class="l-en">Confidence: Medium</span><span class="l-zh">置信度：中</span></span><span class="aib2-conf-asof"><span class="l-en">as of</span><span class="l-zh">数据截至</span> 2026-09-09</span></div>
   <div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">The full read</span><span class="l-zh">完整解读</span></span></div>
   <div class="aib2-regime">
-    <span class="l-en">The US has just moved into Stagflation on the map, so treat it as a change in odds, not a settled outcome. Reflation is gaining ground as recent growth improves and inflation cools.
-
-Chip stocks are today’s main driver. Their leadership is narrow, while broader participation lacks conviction.</span>
-    <span class="l-zh">美国在图表上刚刚进入滞胀区间，因此应将其视为概率变化，而非既定结果。随着近期增长改善、通胀降温，再通胀情景的可能性正在上升。
-
-芯片股是今日市场的主要驱动力。其领涨范围较窄，而更广泛的市场参与缺乏信心。</span>
+    <span class="l-en">We are still on the Stagflation part of the map, but the ground has shifted under the label. Growth has firmed from mildly negative to mildly positive over the past week, while inflation keeps warming on a 20-day view. The system says we are one day into a seven-day countdown toward Reflation — the old label no longer matches the fresh readings. The dominant driver is a narrow AI-chip-led tape, with growth stocks and big names doing the work.</span>
+    <span class="l-zh">我们仍处于地图上的滞胀区域，但标签下的基本面已经发生变化。过去一周，增长从轻度负值回升至轻度正值，而20日维度的通胀持续升温。系统显示我们已进入向再通胀过渡的七天倒计时的第一天——旧标签已不再匹配最新读数。主导驱动力是由AI芯片引领的窄幅行情，成长股和权重股在贡献主要涨幅。</span>
   </div>
   <div class="aib2-grid"><div class="aib2-card aib2-card--conflicts">
       <div class="aib2-eyebrow"><span class="l-en">&#x2696;&#xFE0E; Where signals disagree</span><span class="l-zh">&#x2696;&#xFE0E; 信号分歧</span></div>
-      <ul class="aib2-items"><li><span class="l-en"><b>Market breadth</b>: Stock prices show narrow chip leadership, while bonds and credit stay calm — risk appetite holds, but participation is thin.</span><span class="l-zh"><b>市场广度</b>：股价呈现芯片股领涨面狭窄的局面，而债券和信贷市场保持平稳——风险偏好仍在，但参与度较低。</span></li><li><span class="l-en"><b>Global split</b>: US risk appetite remains firm, while China and Hong Kong face weak growth and contracting liquidity — overseas support is missing.</span><span class="l-zh"><b>全球分化</b>：美国风险偏好依然稳固，而中国内地和香港面临增长疲软及流动性收缩——缺乏海外支撑。</span></li><li><span class="l-en"><b>Liquidity split</b>: US liquidity is expanding, but real yields remain restrictive — rate-sensitive assets still face pressure.</span><span class="l-zh"><b>流动性分化</b>：美国流动性正在扩张，但实际收益率仍具有限制性——利率敏感型资产依然承压。</span></li></ul>
+      <ul class="aib2-items"><li><span class="l-en"><b>Currency strain</b>: The bond desk reads calm, but the dollar desk is running three red flags — a soft dollar is leaning on US and emerging stocks while the tape stays risk-on.</span><span class="l-zh"><b>汇率压力</b>：债券部门读数平静，但美元部门亮起三盏红灯——美元走软正施压美股和新兴市场股票，而市场整体仍保持风险偏好。</span></li><li><span class="l-en"><b>Participation</b>: The trend is broad, but only a third of fresh entries clear the buy filter — narrow leadership, not wide conviction.</span><span class="l-zh"><b>参与度</b>：趋势本身是广泛的，但新进场标的中只有三分之一通过买入筛选——属于窄幅领涨，而非广泛共识。</span></li></ul>
     </div><div class="aib2-card aib2-card--tx">
       <div class="aib2-eyebrow"><span class="l-en">&#x26D3;&#xFE0E; Chain reactions</span><span class="l-zh">&#x26D3;&#xFE0E; 连锁反应</span></div>
-      <ul class="aib2-items"><li><span class="l-en">If restrictive real yields keep rising → long-duration technology, Bitcoin, and long bonds feel more pressure</span><span class="l-zh">如果具有限制性的实际收益率继续上升 → 长久期科技股、Bitcoin和长期债券将面临更大压力</span></li><li><span class="l-en">If the soft dollar keeps up → pressure on US and emerging-market stocks persists</span><span class="l-zh">若美元持续走软 → 美股和新兴市场股票的压力将延续</span></li></ul>
-    </div></div><div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">What to watch</span><span class="l-zh">关注事项</span></span></div>
+      <ul class="aib2-items"><li><span class="l-en">If the soft dollar keeps up → pressure builds on US stocks, emerging stocks, gold, and Bitcoin.</span><span class="l-zh">如果美元持续走软→美股、新兴市场股票、黄金和比特币的压力将逐步累积。</span></li><li><span class="l-en">If real long-term yields keep rising → long-duration stocks and Bitcoin feel the squeeze.</span><span class="l-zh">如果实际长期收益率继续上升 → 长久期股票和比特币将承压。</span></li></ul>
+    </div></div>
+  <div class="aib2-card aib2-card--full aib2-card--playbook">
+    <div class="aib2-eyebrow"><span class="l-en">&#x267B;&#xFE0E; Playbook check</span><span class="l-zh">&#x267B;&#xFE0E; 剧本对照</span></div>
+    <div class="aib2-prose">
+      <span class="l-en">The playbook&#39;s opening leg — US chips — is still leading, but ex-US legs look weak: China and Hong Kong sit in contraction with Hong Kong&#39;s currency on the weak side.</span>
+      <span class="l-zh">策略组合的第一段——美国芯片——仍在领跑，但美国以外的部分表现疲弱：中国和香港处于收缩区间，港元汇率偏弱。</span>
+    </div>
+  </div><div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">What to watch</span><span class="l-zh">关注事项</span></span></div>
   <div class="aib2-card aib2-card--full">
     <ul class="aib2-watch"><li class="aib2-watch-row">
         <span class="aib2-watch-mark" aria-hidden="true">&#x25B9;</span>
         <span class="aib2-watch-body">
-          <span class="l-en"><b>Broader stock leadership</b>: raises confidence in the risk-on move</span>
-          <span class="l-zh"><b>股票领涨范围扩大</b>：增强对风险偏好行情的信心</span>
+          <span class="l-en"><b>CPI tomorrow</b>: hot print would harden the hawkish Fed read.</span>
+          <span class="l-zh"><b>明日CPI</b>：数据偏热将强化美联储鹰派解读。</span>
         </span>
       </li><li class="aib2-watch-row">
         <span class="aib2-watch-mark" aria-hidden="true">&#x25B9;</span>
         <span class="aib2-watch-body">
-          <span class="l-en"><b>Chip leadership reverses</b>: today’s main driver is fading</span>
-          <span class="l-zh"><b>芯片股领涨态势逆转</b>：今日主要驱动力正在减弱</span>
+          <span class="l-en"><b>FOMC in six days</b>: hold or hike tone sets the front-end path.</span>
+          <span class="l-zh"><b>六天后FOMC</b>：按兵不动还是加息的基调将决定短端路径。</span>
         </span>
       </li><li class="aib2-watch-row">
         <span class="aib2-watch-mark" aria-hidden="true">&#x25B9;</span>
         <span class="aib2-watch-body">
-          <span class="l-en"><b>China liquidity stops contracting</b>: overseas risk appetite may recover</span>
-          <span class="l-zh"><b>中国流动性停止收缩</b>：海外风险偏好或将回升</span>
+          <span class="l-en"><b>Reversal in chip leadership</b>: kills the only current leadership read.</span>
+          <span class="l-zh"><b>芯片龙头地位逆转</b>：扼杀当前唯一的领涨逻辑。</span>
         </span>
       </li><li class="aib2-watch-row">
         <span class="aib2-watch-mark" aria-hidden="true">&#x25B9;</span>
         <span class="aib2-watch-body">
-          <span class="l-en"><b>Growth keeps improving</b>: strengthens the drift toward Reflation</span>
-          <span class="l-zh"><b>增长持续改善</b>：强化向再通胀方向演变的趋势</span>
+          <span class="l-en"><b>Countdown to Reflation</b>: seven sessions of firmer growth confirms the flip.</span>
+          <span class="l-zh"><b>再通胀倒计时</b>：七个交易日的增长走强将确认拐点。</span>
         </span>
       </li></ul>
   </div>
-  <div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">Upcoming catalysts</span><span class="l-zh">即将到来的催化剂</span></span></div>
-  <div class="aib2-card aib2-card--full">
-    <div class="aib2-cat-rail"><span class="aib2-cat"><span class="aib2-cat-d num">09-10</span> PPI (producer prices)</span><span class="aib2-cat"><span class="aib2-cat-d num">09-11</span> CPI (consumer prices)</span><span class="aib2-cat"><span class="aib2-cat-d num">09-16</span> FOMC rate decision (SEP · dot-plot)</span></div>
-    <div class="aib2-cat-read">
-      <span class="l-en">Inflation data arrives before the Fed decision, making price pressure the main test for the Reflation drift.</span>
-      <span class="l-zh">Inflation data arrives before the Fed decision, making price pressure the main test for the Reflation drift.</span>
-    </div></div>
         <div class="isle-aibrief-footer"><span></span><a href="aibrief.html" class="isle-aibrief-link"><span class="l-en">Full brief page (China &amp; Bitcoin lenses) →</span><span class="l-zh">完整简报页（中国与比特币视角）→</span></a></div>
         
 </div>
@@ -8315,44 +8242,6 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
           
           
           
-          <div style="display:flex;gap:10px;padding:12px;background:rgba(255,255,255,.03);border-radius:10px;border:1px solid rgba(255,255,255,.06)">
-            <div style="width:8px;height:8px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.36));flex-shrink:0;margin-top:5px"></div>
-            <div style="flex:1;min-width:0">
-              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:4px">
-                <div style="font-size:13px;font-weight:600;color:var(--ink-1,rgba(255,255,255,.92))">
-                  <span style="font-size:12px;margin-right:3px">🧭</span>
-                  <span class="l-en">Regime radar moved — the market “weather” may be shifting</span><span class="l-zh">转换雷达变动 — 市场“天气”可能正在转变</span>
-                </div>
-                
-                
-                <span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.25);white-space:nowrap"><span class="l-en">Act</span><span class="l-zh">行动</span></span>
-                
-              </div>
-              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));line-height:1.5"><span class="l-en">The regime&#39;s footing went from a new regime to shifting (4 warning flags active)</span><span class="l-zh">周期状态由「新周期」转为「转换中」（4 个预警激活）</span></div>
-            </div>
-          </div>
-          
-          
-          
-          <div style="display:flex;gap:10px;padding:12px;background:rgba(245,158,11,.06);border-radius:10px;border:1px solid rgba(245,158,11,.18)">
-            <div style="width:8px;height:8px;border-radius:50%;background:var(--mx5-warn);flex-shrink:0;margin-top:5px"></div>
-            <div style="flex:1;min-width:0">
-              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:4px">
-                <div style="font-size:13px;font-weight:600;color:var(--mx5-warn)">
-                  <span style="font-size:12px;margin-right:3px">🧲</span>
-                  <span class="l-en">Options “gravity” flipped — bigger swings more likely</span><span class="l-zh">期权“引力”反转 — 波动可能加大</span>
-                </div>
-                
-                
-                <span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:rgba(245,158,11,.12);color:var(--mx5-warn-ink,#9c6212);border:1px solid rgba(245,158,11,.22);white-space:nowrap"><span class="l-en">Watch</span><span class="l-zh">关注</span></span>
-                
-              </div>
-              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));line-height:1.5"><span class="l-en">GEX: spot crossed the gamma flip (net -31bn, spot vs flip -0.4%)</span><span class="l-zh">GEX：现价穿越 gamma 翻转点（净 -31bn，现价相对翻转点 -0.4%）</span></div>
-            </div>
-          </div>
-          
-          
-          
           <div style="display:flex;gap:10px;padding:12px;background:rgba(245,158,11,.06);border-radius:10px;border:1px solid rgba(245,158,11,.18)">
             <div style="width:8px;height:8px;border-radius:50%;background:var(--mx5-warn);flex-shrink:0;margin-top:5px"></div>
             <div style="flex:1;min-width:0">
@@ -8366,60 +8255,13 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
                 <span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:rgba(245,158,11,.12);color:var(--mx5-warn-ink,#9c6212);border:1px solid rgba(245,158,11,.22);white-space:nowrap"><span class="l-en">Event</span><span class="l-zh">事件</span></span>
                 
               </div>
-              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));line-height:1.5"><span class="l-en">Event-risk window: PPI (producer prices) today — elevated two-sided volatility expected. Not a sell signal; size for the noise.</span><span class="l-zh">事件风险窗口：生产者物价指数（PPI）（今天）—— 预计升高的两面性波动。非卖出信号；按噪声调整仓位。</span></div>
+              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));line-height:1.5"><span class="l-en">Event-risk window: CPI (consumer prices) today — high two-sided volatility expected. Not a sell signal; size for the noise.</span><span class="l-zh">事件风险窗口：消费者物价指数（CPI）（今天）—— 预计偏高的两面性波动。非卖出信号；按噪声调整仓位。</span></div>
             </div>
           </div>
           
         </div>
         
         
-        
-        <div class="isle-head"><div class="isle-head-dot"></div><span class="isle-head-label"><span class="l-en">Context</span><span class="l-zh">背景</span></span><div class="isle-head-line"></div></div>
-        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;opacity:.8">
-          
-          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
-            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
-            <div style="flex:1;min-width:0">
-              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
-                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
-                  <span style="font-size:11px;margin-right:3px">🐳</span>
-                  <span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span>
-                </div>
-                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
-              </div>
-              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">ARKK: manager added RKLB UQ by +160% of position (2026-08-28..2026-09-09, flow-normalized)</span><span class="l-zh">ARKK：经理 加仓 RKLB UQ 仓位 +160%（2026-08-28..2026-09-09，已按资金流标准化）</span></div>
-            </div>
-          </div>
-          
-          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
-            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
-            <div style="flex:1;min-width:0">
-              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
-                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
-                  <span style="font-size:11px;margin-right:3px">🐳</span>
-                  <span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span>
-                </div>
-                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
-              </div>
-              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">ARKW: manager cut AMD by -25% of position (2026-08-28..2026-09-09, flow-normalized)</span><span class="l-zh">ARKW：经理 减仓 AMD 仓位 -25%（2026-08-28..2026-09-09，已按资金流标准化）</span></div>
-            </div>
-          </div>
-          
-          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
-            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
-            <div style="flex:1;min-width:0">
-              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
-                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
-                  <span style="font-size:11px;margin-right:3px">🐳</span>
-                  <span class="l-en">A star fund manager made a notable move</span><span class="l-zh">明星基金经理出现显著动作</span>
-                </div>
-                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
-              </div>
-              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">ARKW: manager added NVDA by +41% of position (2026-08-28..2026-09-09, flow-normalized)</span><span class="l-zh">ARKW：经理 加仓 NVDA 仓位 +41%（2026-08-28..2026-09-09，已按资金流标准化）</span></div>
-            </div>
-          </div>
-          
-        </div>
         
         
         
@@ -8432,64 +8274,10 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4641446-gloo-outlines-200m-fy2026-revenue-outlook-while-targeting-adjusted-ebitda-profitability-in-q4?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
-              <span class="nbx-title"><span class="l-en">Gloo outlines $200M FY2026 revenue outlook while targeting adjusted EBITDA profitability in Q4</span><span class="l-zh">Gloo 公布 2026 财年 2 亿美元营收展望，同时目标在第四季度实现调整后 EBITDA 盈利</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 10</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.marketwatch.com/story/trump-promises-5-000-checks-if-republicans-win-the-midterms-but-he-also-promised-tariff-dividends-last-year-that-never-came-d062c602?mod=mw_rss_topstories" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Fiscal</span><span class="l-zh">财政</span></span>
-              <span class="nbx-title"><span class="l-en">Trump promises $5,000 checks if Republicans win the midterms. He also teased tariff and ‘DOGE’ dividends last year that never came.</span><span class="l-zh">特朗普承诺如果共和党赢得中期选举，将发放 5,000 美元支票。他去年还曾暗示关税和‘DOGE’分红，但从未兑现。</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 10</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://seekingalpha.com/news/4641427-amd-backed-ai-startup-upstage-considers-pre-ipo-funding-amid-rising-ai-capital-needs---report?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Deals</span><span class="l-zh">并购/IPO</span></span>
-              <span class="nbx-title"><span class="l-en">AMD-backed AI startup Upstage considers pre-IPO funding amid rising AI capital needs - report</span><span class="l-zh">AMD 支持的 AI 初创公司 Upstage 考虑在 IPO 前融资，因 AI 资本需求上升 - 报道</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 10</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://seekingalpha.com/news/4641425-guru-organic-energy-announces-ceo-succession-as-carl-goyette-steps-down-tyler-ricks-named-executive-chair?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4641755-amazon-investing-230m-in-higher-pay-benefits-for-whole-foods-employees?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">GURU Organic Energy announces CEO succession as Carl Goyette steps down; Tyler Ricks named Executive Chair</span><span class="l-zh">GURU Organic Energy 宣布 CEO 继任，Carl Goyette 卸任；Tyler Ricks 被任命为执行主席</span></span>
+              <span class="nbx-title"><span class="l-en">Amazon investing $230M in higher pay, benefits for Whole Foods employees</span><span class="l-zh">亚马逊投资2.3亿美元，用于提高 Whole Foods 员工的薪酬和福利</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -8504,28 +8292,28 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
           
           
           
-          <a class="nbx-item" href="https://www.cnbc.com/2026/09/08/qualcomm-amazon-data-center-infrastructure-deal.html" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://www.cnbc.com/2026/09/10/us-treasurys-bonds-yield.html" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Inflation</span><span class="l-zh">通胀</span></span>
+              <span class="nbx-title"><span class="l-en">10-year Treasury yield tops 4.9%, highest since 2023, as oil surge raises inflation fears</span><span class="l-zh">10年期美国国债收益率突破4.9%，创2023年以来新高，因油价飙升加剧通胀担忧</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Sep 10</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://www.cnbc.com/2026/09/10/openai-chatgpt-for-financial-services-targets-work-of-junior-bankers.html" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">Qualcomm issues warrants to Amazon to acquire $4 billion worth of chipmaker&#39;s stock as part of AI infrastructure deal</span><span class="l-zh">高通向亚马逊发行认股权证，作为AI基础设施交易的一部分，可收购这家芯片制造商价值40亿美元的股票</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 8</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.cnbc.com/2026/09/10/trump-dividend-midterms-gop.html" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
-              <span class="nbx-title"><span class="l-en">World’s largest contract chipmaker TSMC sees August revenue surge over 53% to record high</span><span class="l-zh">全球最大合约芯片制造商台积电 8 月营收激增逾 53%，创历史新高</span></span>
+              <span class="nbx-title"><span class="l-en">OpenAI targets work of Wall Street junior bankers with new ChatGPT for Financial Services</span><span class="l-zh">OpenAI 推出面向金融服务的新版 ChatGPT，瞄准华尔街初级银行家的工作</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -8540,33 +8328,15 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4641448-aerovironment-reiterates-fy2027-revenue-2_125b-2_225b-while-scaling-locust-and-titan-capacity?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
-              <span class="nbx-title"><span class="l-en">AeroVironment reiterates FY2027 revenue $2.125B-$2.225B while scaling LOCUST and Titan capacity</span><span class="l-zh">AeroVironment 重申 2027 财年营收 21.25 亿至 22.25 亿美元，同时扩大 LOCUST 和 Titan 产能</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 10</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.cnbc.com/2026/09/09/trump-republicans-congress-stock-trading-ban-midterm-convention.html" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://www.cnbc.com/2026/09/10/ai-is-losing-its-stranglehold-on-the-us-stock-market-heres-why.html" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">Republicans to tout congressional stock-trading ban at midterm convention as Trump trades</span><span class="l-zh">共和党人将在中期选举大会上宣传国会股票交易禁令，而特朗普仍在交易</span></span>
+              <span class="nbx-title"><span class="l-en">AI is losing its stranglehold on the U.S. stock market. Here&#39;s why</span><span class="l-zh">人工智能正在失去对美国股市的主导地位。原因如下</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 9</span>
+              <span class="nbx-date">Sep 10</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -8576,15 +8346,87 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
           
           
           
-          <a class="nbx-item" href="https://www.marketwatch.com/story/running-the-numbers-on-trumps-5-000-dividend-proposal-from-its-cost-to-the-impact-on-average-americans-finances-a708cba5?mod=mw_rss_topstories" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4641761-lesaka-outlines-fy-27-adjusted-eps-of-zar-7_50-to-zar-8_50-while-targeting-bank-zero-close?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Fed</span><span class="l-zh">美联储</span></span>
-              <span class="nbx-title"><span class="l-en">Oil’s surge back above $100 fuels fresh inflation fears at a crucial time for interest rates</span><span class="l-zh">油价重新突破 100 美元，在利率关键时刻加剧新的通胀担忧</span></span>
+              <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
+              <span class="nbx-title"><span class="l-en">Lesaka outlines FY &#39;27 adjusted EPS of ZAR 7.50 to ZAR 8.50 while targeting Bank Zero close before year-end 2026</span><span class="l-zh">Lesaka 公布2027财年调整后每股收益为7.50至8.50南非兰特，同时目标在2026年底前完成对 Bank Zero 的收购</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 9</span>
+              <span class="nbx-date">Sep 10</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://www.marketwatch.com/story/treasury-yields-surge-toward-the-danger-zone-for-stocks-as-inflation-pressures-heat-up-fe0f9aa6?mod=mw_rss_topstories" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Inflation</span><span class="l-zh">通胀</span></span>
+              <span class="nbx-title"><span class="l-en">Treasury yields surge toward the danger zone for stocks, as inflation pressures heat up</span><span class="l-zh">随着通胀压力升温，美国国债收益率飙升逼近股市危险区</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Sep 10</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://seekingalpha.com/news/4641753-eaton-autodesk-link-building-data-across-design-and-operations?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
+              <span class="nbx-title"><span class="l-en">Eaton, Autodesk link building data across design and operations</span><span class="l-zh">Eaton 与 Autodesk 打通设计与运营环节的建筑数据</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Sep 10</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://seekingalpha.com/news/4641756-the-nfls-next-media-rights-deal-could-look-a-lot-different-than-todays?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
+              <span class="nbx-title"><span class="l-en">The NFL&#39;s next media rights deal could look a lot different from today&#39;s</span><span class="l-zh">NFL 的下一份媒体版权协议可能与当前大不相同</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Sep 10</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://www.marketwatch.com/story/nows-your-chance-to-make-money-during-the-best-bond-market-for-yields-in-decades-if-you-get-over-treasury-jitters-4209f805?mod=mw_rss_topstories" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Rates</span><span class="l-zh">利率</span></span>
+              <span class="nbx-title"><span class="l-en">Now’s your chance to make money during the best bond market for yields in decades — if you get over Treasury jitters</span><span class="l-zh">现在是你在数十年来债券收益率最佳的市场中赚钱的机会——前提是你克服对美债的紧张情绪</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Sep 10</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -8665,14 +8507,14 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
       <div style="margin-bottom:16px">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
           <span style="font-size:13px;font-weight:700;padding:3px 8px;border-radius:4px;background:rgba(255,255,255,.07)">
-            <span class="l-en">Two-sided — watch the tape</span>
-            <span class="l-zh">双向——观察市场走势</span>
+            <span class="l-en">Hike expectations rising now</span>
+            <span class="l-zh">加息预期正在升温</span>
           </span>
-          <span style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36))">2026-09-08</span>
+          <span style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36))">2026-09-09</span>
         </div>
         <div style="font-size:13px;color:var(--ink-2,rgba(255,255,255,.7));line-height:1.6">
-          <span class="l-en">Outlook is two-sided: futures price about two hikes; hawkish and easing inputs are roughly balanced (4 vs 3). Front-end futures repricing and a deeper equity pullback are pulling against each other.</span>
-          <span class="l-zh">前景双向：期货定价约两次加息；鹰派与宽松因素大体制衡（4对3）。 期货利率重新定价与股市进一步回调相互制衡。</span>
+          <span class="l-en">Futures now price about three hikes over the next year — hawkish repricing is underway. Front-end futures repricing is the main pressure; easing inputs is the offset to watch.</span>
+          <span class="l-zh">期货目前为未来一年定价约三次加息——加息定价正在进行。 期货利率重新定价是主要压力；宽松因素是需要关注的对冲。</span>
         </div>
       </div>
       <div class="mx5-dlg-sep"></div>
@@ -8693,9 +8535,9 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
       <div class="fbm-beam-wrap">
         <div class="fbm-beam-heads">
           <span class="fbm-beam-head hawk"><span class="fbm-wt">4</span><span class="l-en">Hawkish</span><span class="l-zh">鹰派</span></span>
-          <span class="fbm-beam-head ease"><span class="l-en">Easing</span><span class="l-zh">宽松</span><span class="fbm-wt">3</span></span>
+          <span class="fbm-beam-head ease"><span class="l-en">Easing</span><span class="l-zh">宽松</span><span class="fbm-wt">1</span></span>
         </div>
-        <div class="fbm-beam-stage" style="--tilt:3deg">
+        <div class="fbm-beam-stage" style="--tilt:9deg">
           <div class="fbm-beam-bar"></div>
           <div class="fbm-fulcrum"></div>
           <div class="fbm-beam-pans">
@@ -8704,15 +8546,15 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
                 
                 
                 <span class="fbm-leg hawk on"
-                      data-tip-en="Futures added +27.2bp of 12-month rate over the last month."
-                      data-tip-zh="期货在过去一个月内将12个月利率上调了+27.2个基点。">
+                      data-tip-en="Futures added +27.8bp of 12-month rate over the last month."
+                      data-tip-zh="期货在过去一个月内将12个月利率上调了+27.8个基点。">
                   <span class="fbm-dot"></span><span class="l-en">Rate futures</span><span class="l-zh">利率期货</span>
                 </span>
                 
                 
                 <span class="fbm-leg hawk on"
-                      data-tip-en="10y breakeven moved +10.0bp over 20 days (threshold: +8bp)."
-                      data-tip-zh="10年期盈亏平衡点20天变动+10.0个基点（阈值：+8bp）。">
+                      data-tip-en="10y breakeven moved +11.0bp over 20 days (threshold: +8bp)."
+                      data-tip-zh="10年期盈亏平衡点20天变动+11.0个基点（阈值：+8bp）。">
                   <span class="fbm-dot"></span><span class="l-en">Breakevens</span><span class="l-zh">盈亏平衡</span>
                 </span>
                 
@@ -8750,9 +8592,9 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
               <div class="fbm-beam-chips">
                 
                 
-                <span class="fbm-leg ease on"
-                      data-tip-en="Equity radar in &#39;caution&#39; — risk-off pressure historically cools inflation and rate expectations."
-                      data-tip-zh="股票雷达处于&#39;caution&#39;状态——历史上风险规避会压制通胀和加息预期。">
+                <span class="fbm-leg ease "
+                      data-tip-en="Equity radar in &#39;watch&#39; — not triggering offset."
+                      data-tip-zh="股票雷达处于&#39;watch&#39;状态——未触发对冲条件。">
                   <span class="fbm-dot"></span><span class="l-en">Equity risk-off</span><span class="l-zh">股市避险</span>
                 </span>
                 
@@ -8772,8 +8614,8 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
                 
                 
                 <span class="fbm-leg ease "
-                      data-tip-en="HY OAS z-score: -0.82 (threshold: +1.0)."
-                      data-tip-zh="高收益利差z分数：-0.82（阈值：+1.0）。">
+                      data-tip-en="HY OAS z-score: -0.85 (threshold: +1.0)."
+                      data-tip-zh="高收益利差z分数：-0.85（阈值：+1.0）。">
                   <span class="fbm-dot"></span><span class="l-en">Credit stress</span><span class="l-zh">信用压力</span>
                 </span>
                 
@@ -8789,8 +8631,8 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
           </div>
         </div>
         <div class="fbm-beam-verdict">
-          <span class="l-en">Forces 4 vs 3 — <span class="fbm-lean hawk">leaning hawkish</span>. Filled chips are live now; hover any for its trigger.</span>
-          <span class="l-zh">力量对比 4 对 3 — <span class="fbm-lean hawk">偏鹰</span>。实心因素为当前生效；悬停查看触发条件。</span>
+          <span class="l-en">Forces 4 vs 1 — <span class="fbm-lean hawk">leaning hawkish</span>. Filled chips are live now; hover any for its trigger.</span>
+          <span class="l-zh">力量对比 4 对 1 — <span class="fbm-lean hawk">偏鹰</span>。实心因素为当前生效；悬停查看触发条件。</span>
         </div>
       </div>
       <div class="mx5-dlg-sep"></div>
@@ -8830,37 +8672,37 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
             </linearGradient>
           </defs>
           
-          <path class="fbm-chart-area" d="M54,127.8 L187.0,113.8 L320.0,93.5 L453.0,71.9 L586,49.0 L586,176 L54,176 Z" fill="url(#fbmChartGrad)"/>
+          <path class="fbm-chart-area" d="M54,129.4 L187.0,114.7 L320.0,95.0 L453.0,72.9 L586,48.4 L586,176 L54,176 Z" fill="url(#fbmChartGrad)"/>
           
-          <line x1="54" y1="127.8" x2="586" y2="127.8" stroke="rgba(255,255,255,.15)" stroke-width="1" stroke-dasharray="4,4"/>
+          <line x1="54" y1="129.4" x2="586" y2="129.4" stroke="rgba(255,255,255,.15)" stroke-width="1" stroke-dasharray="4,4"/>
           
-          <polyline class="fbm-chart-line" style="--dash:900" points="54,127.8 187.0,113.8 320.0,93.5 453.0,71.9 586,49.0" fill="none" stroke="var(--isle-policy)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-          
-          
-          
-          <circle class="fbm-chart-node" cx="54" cy="127.8" r="4.5" fill="var(--isle-policy)" stroke="rgba(13,17,24,.85)" stroke-width="1.5"/>
-          <text class="fbm-chart-node" x="54" y="117.8" text-anchor="middle" font-size="11" font-weight="700" fill="var(--isle-policy)" font-family="Inter,-apple-system,sans-serif" font-variant-numeric="tabular-nums">3.63%</text>
-          
-          
-          <circle class="fbm-chart-node" cx="187.0" cy="113.8" r="4.5" fill="var(--isle-policy)" stroke="rgba(13,17,24,.85)" stroke-width="1.5"/>
-          <text class="fbm-chart-node" x="187.0" y="103.8" text-anchor="middle" font-size="11" font-weight="700" fill="var(--isle-policy)" font-family="Inter,-apple-system,sans-serif" font-variant-numeric="tabular-nums">3.74%</text>
-          
-          
-          <circle class="fbm-chart-node" cx="320.0" cy="93.5" r="4.5" fill="var(--isle-policy)" stroke="rgba(13,17,24,.85)" stroke-width="1.5"/>
-          <text class="fbm-chart-node" x="320.0" y="83.5" text-anchor="middle" font-size="11" font-weight="700" fill="var(--isle-policy)" font-family="Inter,-apple-system,sans-serif" font-variant-numeric="tabular-nums">3.90%</text>
-          
-          
-          <circle class="fbm-chart-node" cx="453.0" cy="71.9" r="4.5" fill="var(--isle-policy)" stroke="rgba(13,17,24,.85)" stroke-width="1.5"/>
-          <text class="fbm-chart-node" x="453.0" y="61.900000000000006" text-anchor="middle" font-size="11" font-weight="700" fill="var(--isle-policy)" font-family="Inter,-apple-system,sans-serif" font-variant-numeric="tabular-nums">4.07%</text>
-          
-          
-          <circle class="fbm-chart-node" cx="586" cy="49.0" r="4.5" fill="var(--isle-policy)" stroke="rgba(13,17,24,.85)" stroke-width="1.5"/>
-          <text class="fbm-chart-node" x="586" y="39.0" text-anchor="middle" font-size="11" font-weight="700" fill="var(--isle-policy)" font-family="Inter,-apple-system,sans-serif" font-variant-numeric="tabular-nums">4.25%</text>
+          <polyline class="fbm-chart-line" style="--dash:900" points="54,129.4 187.0,114.7 320.0,95.0 453.0,72.9 586,48.4" fill="none" stroke="var(--isle-policy)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
           
           
           
+          <circle class="fbm-chart-node" cx="54" cy="129.4" r="4.5" fill="var(--isle-policy)" stroke="rgba(13,17,24,.85)" stroke-width="1.5"/>
+          <text class="fbm-chart-node" x="54" y="119.4" text-anchor="middle" font-size="11" font-weight="700" fill="var(--isle-policy)" font-family="Inter,-apple-system,sans-serif" font-variant-numeric="tabular-nums">3.63%</text>
           
-          <polygon class="fbm-chart-diamond" points="586,99.2 593,106.2 586,113.2 579,106.2" fill="var(--warn,#f59e0b)" fill-opacity=".9" stroke="rgba(13,17,24,.7)" stroke-width="1"/>
+          
+          <circle class="fbm-chart-node" cx="187.0" cy="114.7" r="4.5" fill="var(--isle-policy)" stroke="rgba(13,17,24,.85)" stroke-width="1.5"/>
+          <text class="fbm-chart-node" x="187.0" y="104.7" text-anchor="middle" font-size="11" font-weight="700" fill="var(--isle-policy)" font-family="Inter,-apple-system,sans-serif" font-variant-numeric="tabular-nums">3.75%</text>
+          
+          
+          <circle class="fbm-chart-node" cx="320.0" cy="95.0" r="4.5" fill="var(--isle-policy)" stroke="rgba(13,17,24,.85)" stroke-width="1.5"/>
+          <text class="fbm-chart-node" x="320.0" y="85.0" text-anchor="middle" font-size="11" font-weight="700" fill="var(--isle-policy)" font-family="Inter,-apple-system,sans-serif" font-variant-numeric="tabular-nums">3.91%</text>
+          
+          
+          <circle class="fbm-chart-node" cx="453.0" cy="72.9" r="4.5" fill="var(--isle-policy)" stroke="rgba(13,17,24,.85)" stroke-width="1.5"/>
+          <text class="fbm-chart-node" x="453.0" y="62.900000000000006" text-anchor="middle" font-size="11" font-weight="700" fill="var(--isle-policy)" font-family="Inter,-apple-system,sans-serif" font-variant-numeric="tabular-nums">4.09%</text>
+          
+          
+          <circle class="fbm-chart-node" cx="586" cy="48.4" r="4.5" fill="var(--isle-policy)" stroke="rgba(13,17,24,.85)" stroke-width="1.5"/>
+          <text class="fbm-chart-node" x="586" y="38.4" text-anchor="middle" font-size="11" font-weight="700" fill="var(--isle-policy)" font-family="Inter,-apple-system,sans-serif" font-variant-numeric="tabular-nums">4.29%</text>
+          
+          
+          
+          
+          <polygon class="fbm-chart-diamond" points="586,101.5 593,108.5 586,115.5 579,108.5" fill="var(--warn,#f59e0b)" fill-opacity=".9" stroke="rgba(13,17,24,.7)" stroke-width="1"/>
           
           
           
@@ -8904,18 +8746,18 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         </div>
         
         <div class="fbm-chart-take">
-          <span class="l-en">At end-2026 the market implies 3.90% vs the Fed&#39;s 3.80% median dot (+10bp — market ≈ the Fed). The near-term forward spread is positive — no cuts priced near-term (+0.76pp).</span>
-          <span class="l-zh">在end-2026，市场隐含 3.90% 对比美联储 3.80% 的中位点（+10基点 — 市场与美联储基本一致）。近端远期利差为正——近端未为降息定价（+0.76个百分点）。</span>
+          <span class="l-en">At end-2026 the market implies 3.91% vs the Fed&#39;s 3.80% median dot (+11bp — market ≈ the Fed). The near-term forward spread is positive — no cuts priced near-term (+0.75pp).</span>
+          <span class="l-zh">在end-2026，市场隐含 3.91% 对比美联储 3.80% 的中位点（+11基点 — 市场与美联储基本一致）。近端远期利差为正——近端未为降息定价（+0.75个百分点）。</span>
         </div>
         
         
         
         <div style="margin-top:8px">
           <span class="fbm-gap-chip"
-            data-tip-en="At end-2026: market prices 3.9%, the Fed projects 3.8%. Gap +10bp — small means market and Fed agree on where rates land."
-            data-tip-zh="end-2026：市场定价 3.9%，美联储预测 3.8%。差距 +10bp — 差距小表示市场与美联储对终点利率看法一致。">
-            <span class="l-en">market ≈ the Fed — +10bp at end-2026</span>
-            <span class="l-zh">市场与美联储基本一致 — end-2026 相差 +10bp</span>
+            data-tip-en="At end-2026: market prices 3.91%, the Fed projects 3.8%. Gap +11bp — small means market and Fed agree on where rates land."
+            data-tip-zh="end-2026：市场定价 3.91%，美联储预测 3.8%。差距 +11bp — 差距小表示市场与美联储对终点利率看法一致。">
+            <span class="l-en">market ≈ the Fed — +11bp at end-2026</span>
+            <span class="l-zh">市场与美联储基本一致 — end-2026 相差 +11bp</span>
           </span>
         </div>
         
@@ -8949,11 +8791,11 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
       
       
       <div class="fbm-row">
-        <span class="fbm-row-state" style="color:var(--down,#ef4444)"><span class="fbm-row-dot" style="background:var(--down,#ef4444)"></span><span class="l-en">Next CPI · 2d</span><span class="l-zh">下次CPI · 2天</span></span>
+        <span class="fbm-row-state" style="color:var(--down,#ef4444)"><span class="fbm-row-dot" style="background:var(--down,#ef4444)"></span><span class="l-en">Next CPI · 1d</span><span class="l-zh">下次CPI · 1天</span></span>
         <span class="fbm-row-line"><span class="l-en">Recent data leans hotter than forecast — a print either way can reset the read.</span><span class="l-zh">近期数据偏热于预期 — 任一方向的数据都可能重置解读。</span></span>
         <span class="fbm-tip"
-          data-tip-en="Release 2026-09-11 (2 days out). Surprise skew: hotter, 1.60σ."
-          data-tip-zh="发布 2026-09-11（2 天后）。惊喜偏向：偏热，1.60σ。">?</span>
+          data-tip-en="Release 2026-09-11 (1 days out). Surprise skew: hotter, 1.60σ."
+          data-tip-zh="发布 2026-09-11（1 天后）。惊喜偏向：偏热，1.60σ。">?</span>
       </div>
       
       <div class="mx5-dlg-sep"></div>
@@ -8974,8 +8816,8 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         <span class="fbm-row-state" style="color:var(--warn,#f59e0b)"><span class="fbm-row-dot" style="background:var(--warn,#f59e0b)"></span><span class="l-en">Moderate</span><span class="l-zh">中等</span></span>
         <span class="fbm-row-line"><span class="l-en">Real rates are moving at a middling pace — a heads-up on volatility, not a direction call.</span><span class="l-zh">实际利率变动速度中等 — 提示波动，非方向判断。</span></span>
         <span class="fbm-tip"
-          data-tip-en="Real-rate speed sits in the 52th percentile of the past decade. Flags risk, not return — high percentile = fast real-rate moves, not directional signal."
-          data-tip-zh="实际利率波速处于过去十年第 52 百分位。标记风险而非收益——高百分位表示实际利率快速波动，并非方向性信号。">?</span>
+          data-tip-en="Real-rate speed sits in the 50th percentile of the past decade. Flags risk, not return — high percentile = fast real-rate moves, not directional signal."
+          data-tip-zh="实际利率波速处于过去十年第 50 百分位。标记风险而非收益——高百分位表示实际利率快速波动，并非方向性信号。">?</span>
       </div>
       
       
@@ -8984,8 +8826,8 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         <span class="fbm-row-state" style="color:var(--down,#ef4444)"><span class="fbm-row-dot" style="background:var(--down,#ef4444)"></span><span class="l-en">Bear flattener</span><span class="l-zh">熊市变平</span></span>
         <span class="fbm-row-line"><span class="l-en">Long-end yields are rising faster than the front — driven by fiscal and risk-premium, not a growth call.</span><span class="l-zh">长端收益率上升快于短端 — 由财政与风险溢价驱动，非增长判断。</span></span>
         <span class="fbm-tip"
-          data-tip-en="Curve shape: Bear flattener. Term premium rising (+13bp). Kim-Wright model (FRED THREEFYTP10); ACM pending."
-          data-tip-zh="曲线形态：熊市变平。期限溢价上升（+13bp）。Kim-Wright模型（FRED THREEFYTP10）；ACM待接入。">?</span>
+          data-tip-en="Curve shape: Bear flattener. Term premium rising (+12bp). Kim-Wright model (FRED THREEFYTP10); ACM pending."
+          data-tip-zh="曲线形态：熊市变平。期限溢价上升（+12bp）。Kim-Wright模型（FRED THREEFYTP10）；ACM待接入。">?</span>
       </div>
       
       <div class="mx5-dlg-sep"></div>
@@ -9013,18 +8855,18 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <span class="fbm-chip"
-          data-tip-en="Fed officials made 2 public comments in the last 7 days, 28 in the last 30 — more talk often precedes a shift in guidance."
-          data-tip-zh="美联储官员近7天公开发言 2 次，近30天 28 次 — 发声增多往往先于指引调整。">
+          data-tip-en="Fed officials made 1 public comments in the last 7 days, 25 in the last 30 — more talk often precedes a shift in guidance."
+          data-tip-zh="美联储官员近7天公开发言 1 次，近30天 25 次 — 发声增多往往先于指引调整。">
           <span class="fbm-chip-k"><span class="l-en">Comments</span><span class="l-zh">发声</span></span>
-          <span><span class="l-en">2 this week</span><span class="l-zh">本周 2 次</span></span>
+          <span><span class="l-en">1 this week</span><span class="l-zh">本周 1 次</span></span>
         </span>
         
         
         <span class="fbm-chip"
-          data-tip-en="Policy intel is 58 days old (as of 2026-07-13)."
-          data-tip-zh="政策情报为 58 天前（截至 2026-07-13）。">
+          data-tip-en="Policy intel is 59 days old (as of 2026-07-13)."
+          data-tip-zh="政策情报为 59 天前（截至 2026-07-13）。">
           <span class="fbm-chip-k"><span class="l-en">Intel</span><span class="l-zh">情报</span></span>
-          <span><span class="l-en">58d old</span><span class="l-zh">58天前</span></span>
+          <span><span class="l-en">59d old</span><span class="l-zh">59天前</span></span>
         </span>
         
       </div>
@@ -9033,8 +8875,8 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
       
       <div class="fbm-chips">
         <span class="fbm-chip warn"
-          data-tip-en="Intel as of 2026-07-13 (58d old) — Conditions only, no direction or probability assigned."
-          data-tip-zh="情报截至2026-07-13（58天前） — 条件性观察，不赋予方向或概率。">
+          data-tip-en="Intel as of 2026-07-13 (59d old) — Conditions only, no direction or probability assigned."
+          data-tip-zh="情报截至2026-07-13（59天前） — 条件性观察，不赋予方向或概率。">
           <span class="fbm-chip-k"><span class="l-en">Geopolitics</span><span class="l-zh">地缘</span></span>
           <span><span class="l-en">Iran / Middle East -- ceasefire COLLAPSED (as of 7/8)</span><span class="l-zh">伊朗/中东 —— 停火已崩溃（截至7/8）</span></span>
         </span>
@@ -9059,8 +8901,8 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
           
         </span>
         <span class="fbm-tip"
-          data-tip-en="Futures added +27.2bp of 12-month rate over the last month."
-          data-tip-zh="期货在过去一个月内将12个月利率上调了+27.2个基点。">?</span>
+          data-tip-en="Futures added +27.8bp of 12-month rate over the last month."
+          data-tip-zh="期货在过去一个月内将12个月利率上调了+27.8个基点。">?</span>
       </div>
       
       
@@ -9072,8 +8914,8 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
           
         </span>
         <span class="fbm-tip"
-          data-tip-en="Equity radar in &#39;caution&#39; — risk-off pressure historically cools inflation and rate expectations."
-          data-tip-zh="股票雷达处于&#39;caution&#39;状态——历史上风险规避会压制通胀和加息预期。">?</span>
+          data-tip-en="Policy easing transmission chain active — supports lower rate expectations."
+          data-tip-zh="政策宽松传导链活跃——支持降低加息预期。">?</span>
       </div>
       
       
@@ -9116,12 +8958,6 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         <div class="fbm-bench-label"><span class="l-en">Next Fed decision</span><span class="l-zh">下次美联储决议</span></div>
       </div>
       
-      <div class="fbm-bench-arrow pos"
-           data-tip-en="Odds moved +2.0 points since the last update."
-           data-tip-zh="自上次更新以来概率变动 +2.0 个百分点。">
-        ▲ +2.0
-      </div>
-      
     </div>
     
     
@@ -9132,25 +8968,19 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         <div class="fbm-bench-label"><span class="l-en">Fed cuts this year</span><span class="l-zh">今年降息次数</span></div>
       </div>
       
-      <div class="fbm-bench-arrow pos"
-           data-tip-en="Odds moved +0.3 points since the last update."
-           data-tip-zh="自上次更新以来概率变动 +0.3 个百分点。">
-        ▲ +0.3
-      </div>
-      
     </div>
     
     
     <div class="fbm-bench-row">
-      <div class="fbm-bench-odds">54<small>%</small></div>
+      <div class="fbm-bench-odds">8<small>%</small></div>
       <div class="fbm-bench-body">
-        <div class="fbm-bench-outcome"><span class="l-en">0.2%</span><span class="l-zh">0.2%</span></div>
-        <div class="fbm-bench-label"><span class="l-en">CPI outcome market</span><span class="l-zh">CPI市场预期</span></div>
+        <div class="fbm-bench-outcome"><span class="l-en">US recession by end of 2026?</span><span class="l-zh">US recession by end of 2026?</span></div>
+        <div class="fbm-bench-label"><span class="l-en">US recession</span><span class="l-zh">美国衰退</span></div>
       </div>
       
     </div>
     
-    <div class="fbm-bench-src"><span class="l-en">Source: Polymarket (as of 2026-09-08)</span><span class="l-zh">来源：Polymarket（截至 2026-09-08）</span></div>
+    <div class="fbm-bench-src"><span class="l-en">Source: Polymarket (as of 2026-09-09)</span><span class="l-zh">来源：Polymarket（截至 2026-09-09）</span></div>
   </div>
   
       
@@ -9173,9 +9003,9 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
       
       <div class="mx5-dlg-sep"></div>
       <div style="font-size:10.5px;color:var(--ink-3,rgba(255,255,255,.4));line-height:1.6;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-        <span class="l-en">As of 2026-09-08 — a read on conditions, not a forecast. Some inputs are display-only or a few days stale.</span>
-        <span class="l-zh">截至 2026-09-08 — 对条件的解读，非预测。部分输入仅供展示或略有滞后。</span>
-        <span class="fbm-tip" data-tip-en="Data notes: futures-implied path reflects risk premium not stripped — not a forecast · All legs are display-tier context only; no scoring or authority. · commodity/shock_state.json oil entry is 8d old (&gt;7d threshold) — H3 leg judged on trend+cause_badge only · policy/intel.json is 58d old — policy row quotes as-of 2026-07-13" data-tip-zh="数据说明：futures-implied path reflects risk premium not stripped — not a forecast · All legs are display-tier context only; no scoring or authority. · commodity/shock_state.json oil entry is 8d old (&gt;7d threshold) — H3 leg judged on trend+cause_badge only · policy/intel.json is 58d old — policy row quotes as-of 2026-07-13" style="width:14px;height:14px;font-size:9px">?</span>
+        <span class="l-en">As of 2026-09-09 — a read on conditions, not a forecast. Some inputs are display-only or a few days stale.</span>
+        <span class="l-zh">截至 2026-09-09 — 对条件的解读，非预测。部分输入仅供展示或略有滞后。</span>
+        <span class="fbm-tip" data-tip-en="Data notes: futures-implied path reflects risk premium not stripped — not a forecast · All legs are display-tier context only; no scoring or authority. · commodity/shock_state.json oil entry is 9d old (&gt;7d threshold) — H3 leg judged on trend+cause_badge only · policy/intel.json is 59d old — policy row quotes as-of 2026-07-13" data-tip-zh="数据说明：futures-implied path reflects risk premium not stripped — not a forecast · All legs are display-tier context only; no scoring or authority. · commodity/shock_state.json oil entry is 9d old (&gt;7d threshold) — H3 leg judged on trend+cause_badge only · policy/intel.json is 59d old — policy row quotes as-of 2026-07-13" style="width:14px;height:14px;font-size:9px">?</span>
       </div>
       
 
@@ -9228,34 +9058,34 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         
-        <div class="mx5-dlg-factor-row fg-greed" style="--sg-c:#22d97a" data-rpop tabindex="0" role="button" aria-label="SPX momentum (vs 125d MA) — sentiment gauge detail">
+        <div class="mx5-dlg-factor-row fg-neutral" style="--sg-c:#f59e0b" data-rpop tabindex="0" role="button" aria-label="SPX momentum (vs 125d MA) — sentiment gauge detail">
           <div>
             <div class="mx5-dlg-factor-name"><span class="l-en">SPX momentum (vs 125d MA)</span><span class="l-zh">标普动量（对比125日均线）</span><span class="sg-hint" aria-hidden="true">i</span></div>
-            <div class="mx5-dlg-factor-read" style="color:var(--fg-col, #22d97a)">
+            <div class="mx5-dlg-factor-read" style="color:var(--fg-col, #f59e0b)">
               <span class="l-en">Above trend — buyers still in control</span><span class="l-zh">高于趋势 — 买方仍占主导</span>
               
             </div>
           </div>
-          <div class="mx5-dlg-factor-bar"><div class="mx5-dlg-factor-fill" style="width:63.0%;background:var(--fg-col, #22d97a)"></div></div>
-          <div class="mx5-dlg-factor-score" style="color:var(--fg-col, #22d97a)">63</div>
+          <div class="mx5-dlg-factor-bar"><div class="mx5-dlg-factor-fill" style="width:58.0%;background:var(--fg-col, #f59e0b)"></div></div>
+          <div class="mx5-dlg-factor-score" style="color:var(--fg-col, #f59e0b)">58</div>
           
           <span class="rp-src" hidden>
             <div class="row-pop-hd">
               <span class="row-pop-name"><span class="l-en">SPX momentum (vs 125d MA)</span><span class="l-zh">标普动量（对比125日均线）</span></span>
-              <span class="row-pop-tag up"><span class="l-en">Greed</span><span class="l-zh">贪婪</span></span>
+              <span class="row-pop-tag warn"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span>
             </div>
             <div class="row-pop-div"></div>
-            <div class="sg-pop-dialwrap"><div class="sg-dial" style="--sg-c:#22d97a">
+            <div class="sg-pop-dialwrap"><div class="sg-dial" style="--sg-c:#f59e0b">
 <svg viewBox="0 0 132 74" preserveAspectRatio="xMidYMid meet" role="img" aria-hidden="true">
 <path class="sg-dial-track" d="M14 64 A52 52 0 0 1 118 64" fill="none" stroke-width="9" stroke-linecap="round"/>
 <path class="sg-dial-band-fear"  d="M14 64 A52 52 0 0 1 40.7 20.5" fill="none" stroke-width="9" stroke-linecap="round"/>
 <path class="sg-dial-band-neu"   d="M46.9 16.6 A52 52 0 0 1 85.1 16.6" fill="none" stroke-width="9"/>
 <path class="sg-dial-band-greed" d="M91.3 20.5 A52 52 0 0 1 118 64" fill="none" stroke-width="9" stroke-linecap="round"/>
-<line class="sg-dial-ptr" x1="66" y1="64" x2="66" y2="22" transform="rotate(23.4 66 64)"/>
+<line class="sg-dial-ptr" x1="66" y1="64" x2="66" y2="22" transform="rotate(14.4 66 64)"/>
 <circle class="sg-dial-hub" cx="66" cy="64" r="4.5"/>
 </svg>
-<div class="sg-dial-val">63</div>
-<div class="sg-dial-cap">Greed</div>
+<div class="sg-dial-val">58</div>
+<div class="sg-dial-cap">Neutral</div>
 </div></div>
             <div class="sg-pop-expl">
               
@@ -9273,14 +9103,14 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
               <div class="sg-spark">
 <svg viewBox="0 0 320 36" preserveAspectRatio="none" role="img" aria-hidden="true">
 <line x1="0" y1="18.0" x2="320" y2="18.0" stroke="var(--line)" stroke-width="1"/>
-<polyline fill="none" stroke="#22d97a" stroke-width="1.8" stroke-linejoin="round" points="0.0,10.92 5.42,7.29 10.85,8.58 16.27,11.82 21.69,9.51 27.12,10.44 32.54,14.22 37.97,14.58 43.39,14.28 48.81,16.53 54.24,12.24 59.66,10.5 65.08,11.04 70.51,11.58 75.93,9.63 81.36,10.95 86.78,11.88 92.2,9.96 97.63,9.15 103.05,11.16 108.47,10.44 113.9,9.66 119.32,11.19 124.75,13.77 130.17,14.37 135.59,12.45 141.02,12.87 146.44,16.5 151.86,16.38 157.29,16.47 162.71,16.05 168.14,20.22 173.56,15.99 178.98,14.01 184.41,10.62 189.83,7.11 195.25,7.53 200.68,8.01 206.1,7.14 211.53,7.32 216.95,8.07 222.37,7.74 227.8,6.78 233.22,7.29 238.64,8.34 244.07,10.2 249.49,9.9 254.92,12.21 260.34,11.46 265.76,12.39 271.19,11.82 276.61,11.94 282.03,10.53 287.46,11.37 292.88,12.36 298.31,14.28 303.73,13.38 309.15,11.1 314.58,12.3 320.0,13.95 "/>
+<polyline fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linejoin="round" points="0.0,7.29 5.42,8.58 10.85,11.82 16.27,9.51 21.69,10.44 27.12,14.22 32.54,14.58 37.97,14.28 43.39,16.53 48.81,12.24 54.24,10.5 59.66,11.04 65.08,11.58 70.51,9.63 75.93,10.95 81.36,11.88 86.78,9.96 92.2,9.15 97.63,11.16 103.05,10.44 108.47,9.66 113.9,11.19 119.32,13.77 124.75,14.37 130.17,12.45 135.59,12.87 141.02,16.5 146.44,16.38 151.86,16.47 157.29,16.05 162.71,20.22 168.14,15.99 173.56,14.01 178.98,10.62 184.41,7.11 189.83,7.53 195.25,8.01 200.68,7.14 206.1,7.32 211.53,8.07 216.95,7.74 222.37,6.78 227.8,7.29 233.22,8.34 238.64,10.2 244.07,9.9 249.49,12.21 254.92,11.46 260.34,12.39 265.76,11.82 271.19,11.94 276.61,10.53 282.03,11.37 287.46,12.36 292.88,14.28 298.31,13.38 303.73,11.1 309.15,12.3 314.58,13.95 320.0,15.66 "/>
 </svg>
 </div>
             </div>
             
             <div class="row-pop-ft">
-              <span class="l-en">Reading: 5.06 · 63/100 in its own history</span>
-              <span class="l-zh">读数：5.06 · 历史百分位 63/100</span>
+              <span class="l-en">Reading: 4.47 · 58/100 in its own history</span>
+              <span class="l-zh">读数：4.47 · 历史百分位 58/100</span>
             </div>
           </span>
         </div>
@@ -9484,8 +9314,8 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
               
             </div>
           </div>
-          <div class="mx5-dlg-factor-bar"><div class="mx5-dlg-factor-fill" style="width:30.0%;background:var(--fg-col, #ef4444)"></div></div>
-          <div class="mx5-dlg-factor-score" style="color:var(--fg-col, #ef4444)">30</div>
+          <div class="mx5-dlg-factor-bar"><div class="mx5-dlg-factor-fill" style="width:34.0%;background:var(--fg-col, #ef4444)"></div></div>
+          <div class="mx5-dlg-factor-score" style="color:var(--fg-col, #ef4444)">34</div>
           
           <span class="rp-src" hidden>
             <div class="row-pop-hd">
@@ -9499,10 +9329,10 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
 <path class="sg-dial-band-fear"  d="M14 64 A52 52 0 0 1 40.7 20.5" fill="none" stroke-width="9" stroke-linecap="round"/>
 <path class="sg-dial-band-neu"   d="M46.9 16.6 A52 52 0 0 1 85.1 16.6" fill="none" stroke-width="9"/>
 <path class="sg-dial-band-greed" d="M91.3 20.5 A52 52 0 0 1 118 64" fill="none" stroke-width="9" stroke-linecap="round"/>
-<line class="sg-dial-ptr" x1="66" y1="64" x2="66" y2="22" transform="rotate(-36.0 66 64)"/>
+<line class="sg-dial-ptr" x1="66" y1="64" x2="66" y2="22" transform="rotate(-28.8 66 64)"/>
 <circle class="sg-dial-hub" cx="66" cy="64" r="4.5"/>
 </svg>
-<div class="sg-dial-val">30</div>
+<div class="sg-dial-val">34</div>
 <div class="sg-dial-cap">Fear</div>
 </div></div>
             <div class="sg-pop-expl">
@@ -9521,14 +9351,14 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
               <div class="sg-spark">
 <svg viewBox="0 0 320 36" preserveAspectRatio="none" role="img" aria-hidden="true">
 <line x1="0" y1="18.0" x2="320" y2="18.0" stroke="var(--line)" stroke-width="1"/>
-<polyline fill="none" stroke="#ef4444" stroke-width="1.8" stroke-linejoin="round" points="0.0,25.8 5.42,23.1 10.85,25.41 16.27,27.06 21.69,26.28 27.12,25.2 32.54,27.21 37.97,28.86 43.39,28.47 48.81,29.16 54.24,27.96 59.66,25.59 65.08,24.6 70.51,24.3 75.93,22.71 81.36,16.26 86.78,18.42 92.2,14.37 97.63,10.26 103.05,11.73 108.47,13.02 113.9,16.89 119.32,15.27 124.75,15.15 130.17,15.15 135.59,13.47 141.02,9.69 146.44,9.03 151.86,9.27 157.29,8.94 162.71,12.9 168.14,17.31 173.56,14.37 178.98,11.04 184.41,10.65 189.83,9.57 195.25,10.2 200.68,10.89 206.1,11.16 211.53,9.12 216.95,10.56 222.37,10.23 227.8,9.0 233.22,6.39 238.64,6.6 244.07,10.08 249.49,13.5 254.92,11.49 260.34,9.81 265.76,10.59 271.19,11.49 276.61,11.16 282.03,13.2 287.46,16.47 292.88,18.99 298.31,21.99 303.73,20.22 309.15,19.08 314.58,21.15 320.0,24.03 "/>
+<polyline fill="none" stroke="#ef4444" stroke-width="1.8" stroke-linejoin="round" points="0.0,23.1 5.42,25.41 10.85,27.06 16.27,26.28 21.69,25.2 27.12,27.21 32.54,28.86 37.97,28.47 43.39,29.16 48.81,27.96 54.24,25.59 59.66,24.6 65.08,24.3 70.51,22.71 75.93,16.26 81.36,18.42 86.78,14.37 92.2,10.26 97.63,11.73 103.05,13.02 108.47,16.89 113.9,15.27 119.32,15.15 124.75,15.15 130.17,13.47 135.59,9.69 141.02,9.03 146.44,9.27 151.86,8.94 157.29,12.9 162.71,17.31 168.14,14.37 173.56,11.04 178.98,10.65 184.41,9.57 189.83,10.2 195.25,10.89 200.68,11.16 206.1,9.12 211.53,10.56 216.95,10.23 222.37,9.0 227.8,6.39 233.22,6.6 238.64,10.08 244.07,13.5 249.49,11.49 254.92,9.81 260.34,10.59 265.76,11.49 271.19,11.16 276.61,13.2 282.03,16.47 287.46,18.99 292.88,21.99 298.31,20.22 303.73,19.08 309.15,21.15 314.58,24.03 320.0,22.89 "/>
 </svg>
 </div>
             </div>
             
             <div class="row-pop-ft">
-              <span class="l-en">Reading: -1.47 · 30/100 in its own history</span>
-              <span class="l-zh">读数：-1.47 · 历史百分位 30/100</span>
+              <span class="l-en">Reading: -0.88 · 34/100 in its own history</span>
+              <span class="l-zh">读数：-0.88 · 历史百分位 34/100</span>
             </div>
           </span>
         </div>
@@ -10313,12 +10143,12 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
     </div>
     <svg class="sct-trace" viewBox="0 0 132 30" fill="none" aria-hidden="true">
       <line class="sct-base" x1="8" y1="15" x2="124" y2="15"/>
-      <path class="sct-ln" d="M8 16.6 L124 13.4"/>
-      <circle class="sct-dot-old" cx="8" cy="16.6" r="2.4"/>
-      <circle class="sct-dot-now" cx="124" cy="13.4" r="3.4"/>
+      <path class="sct-ln" d="M8 15.6 L124 14.4"/>
+      <circle class="sct-dot-old" cx="8" cy="15.6" r="2.4"/>
+      <circle class="sct-dot-now" cx="124" cy="14.4" r="3.4"/>
     </svg>
     <div class="sct-delta">
-      <span class="sct-delta-v">+5</span>
+      <span class="sct-delta-v">+2</span>
       <span class="sct-delta-k"><span class="l-en">vs 5d</span><span class="l-zh">对比5日</span></span>
     </div>
   </div>
@@ -10333,12 +10163,12 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
     </div>
     <svg class="sct-trace" viewBox="0 0 132 30" fill="none" aria-hidden="true">
       <line class="sct-base" x1="8" y1="15" x2="124" y2="15"/>
-      <path class="sct-ln" d="M8 17.9 L124 12.1"/>
-      <circle class="sct-dot-old" cx="8" cy="17.9" r="2.4"/>
-      <circle class="sct-dot-now" cx="124" cy="12.1" r="3.4"/>
+      <path class="sct-ln" d="M8 18.2 L124 11.8"/>
+      <circle class="sct-dot-old" cx="8" cy="18.2" r="2.4"/>
+      <circle class="sct-dot-now" cx="124" cy="11.8" r="3.4"/>
     </svg>
     <div class="sct-delta">
-      <span class="sct-delta-v">+9</span>
+      <span class="sct-delta-v">+10</span>
       <span class="sct-delta-k"><span class="l-en">vs 5d</span><span class="l-zh">对比5日</span></span>
     </div>
   </div>
@@ -10353,12 +10183,12 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
     </div>
     <svg class="sct-trace" viewBox="0 0 132 30" fill="none" aria-hidden="true">
       <line class="sct-base" x1="8" y1="15" x2="124" y2="15"/>
-      <path class="sct-ln" d="M8 15.3 L124 14.7"/>
-      <circle class="sct-dot-old" cx="8" cy="15.3" r="2.4"/>
-      <circle class="sct-dot-now" cx="124" cy="14.7" r="3.4"/>
+      <path class="sct-ln" d="M8 16.0 L124 14.0"/>
+      <circle class="sct-dot-old" cx="8" cy="16.0" r="2.4"/>
+      <circle class="sct-dot-now" cx="124" cy="14.0" r="3.4"/>
     </svg>
     <div class="sct-delta">
-      <span class="sct-delta-v">+1</span>
+      <span class="sct-delta-v">+3</span>
       <span class="sct-delta-k"><span class="l-en">vs 5d</span><span class="l-zh">对比5日</span></span>
     </div>
   </div>
@@ -10396,25 +10226,25 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
   <div class="sct-rung" style="--sct-c:var(--down,#ef4444)">
     <span class="sct-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v13M6 12l6 6 6-6"/></svg></span>
     <div class="sct-body">
-      <div class="sct-name"><span class="l-en">Technology (Equal-Weight)</span><span class="l-zh">信息技术（等权）</span></div>
+      <div class="sct-name"><span class="l-en">Big Pharma</span><span class="l-zh">大型药企</span></div>
       <div class="sct-sub">
-        <span class="sct-rk">#12</span>
+        <span class="sct-rk">#14</span>
         <span class="sct-stance"><span class="l-en">neutral</span><span class="l-zh">neutral</span></span>
       </div>
     </div>
     <svg class="sct-trace" viewBox="0 0 132 30" fill="none" aria-hidden="true">
       <line class="sct-base" x1="8" y1="15" x2="124" y2="15"/>
-      <path class="sct-ln" d="M8 14.0 L124 16.0"/>
-      <circle class="sct-dot-old" cx="8" cy="14.0" r="2.4"/>
-      <circle class="sct-dot-now" cx="124" cy="16.0" r="3.4"/>
+      <path class="sct-ln" d="M8 13.7 L124 16.3"/>
+      <circle class="sct-dot-old" cx="8" cy="13.7" r="2.4"/>
+      <circle class="sct-dot-now" cx="124" cy="16.3" r="3.4"/>
     </svg>
     <div class="sct-delta">
-      <span class="sct-delta-v">-3</span>
+      <span class="sct-delta-v">-4</span>
       <span class="sct-delta-k"><span class="l-en">vs 5d</span><span class="l-zh">对比5日</span></span>
     </div>
   </div>
-  <div class="sct-rung" style="--sct-c:var(--up,#22d97a)">
-    <span class="sct-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V6M6 12l6-6 6 6"/></svg></span>
+  <div class="sct-rung" style="--sct-c:var(--down,#ef4444)">
+    <span class="sct-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v13M6 12l6 6 6-6"/></svg></span>
     <div class="sct-body">
       <div class="sct-name"><span class="l-en">Health Care (Equal-Weight)</span><span class="l-zh">医疗保健（等权）</span></div>
       <div class="sct-sub">
@@ -10424,12 +10254,12 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
     </div>
     <svg class="sct-trace" viewBox="0 0 132 30" fill="none" aria-hidden="true">
       <line class="sct-base" x1="8" y1="15" x2="124" y2="15"/>
-      <path class="sct-ln" d="M8 15.6 L124 14.4"/>
-      <circle class="sct-dot-old" cx="8" cy="15.6" r="2.4"/>
-      <circle class="sct-dot-now" cx="124" cy="14.4" r="3.4"/>
+      <path class="sct-ln" d="M8 13.1 L124 16.9"/>
+      <circle class="sct-dot-old" cx="8" cy="13.1" r="2.4"/>
+      <circle class="sct-dot-now" cx="124" cy="16.9" r="3.4"/>
     </svg>
     <div class="sct-delta">
-      <span class="sct-delta-v">+2</span>
+      <span class="sct-delta-v">-6</span>
       <span class="sct-delta-k"><span class="l-en">vs 5d</span><span class="l-zh">对比5日</span></span>
     </div>
   </div>
@@ -10444,12 +10274,12 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
     </div>
     <svg class="sct-trace" viewBox="0 0 132 30" fill="none" aria-hidden="true">
       <line class="sct-base" x1="8" y1="15" x2="124" y2="15"/>
-      <path class="sct-ln" d="M8 10.2 L124 19.8"/>
-      <circle class="sct-dot-old" cx="8" cy="10.2" r="2.4"/>
-      <circle class="sct-dot-now" cx="124" cy="19.8" r="3.4"/>
+      <path class="sct-ln" d="M8 10.8 L124 19.2"/>
+      <circle class="sct-dot-old" cx="8" cy="10.8" r="2.4"/>
+      <circle class="sct-dot-now" cx="124" cy="19.2" r="3.4"/>
     </svg>
     <div class="sct-delta">
-      <span class="sct-delta-v">-15</span>
+      <span class="sct-delta-v">-13</span>
       <span class="sct-delta-k"><span class="l-en">vs 5d</span><span class="l-zh">对比5日</span></span>
     </div>
   </div>
@@ -10794,7 +10624,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
     <summary><span class="l-en">Data health</span><span class="l-zh">数据健康度</span>
       <span class="help">?<span class="tip"><span class="l-en">Every data source this dashboard depends on. OK = fresh. STALE = no new data lately (signal confidence reduced automatically). FAILED = today&#39;s fetch broke (yesterday&#39;s data still used). BLOCKED = a known, documented limitation — not a malfunction. DEAD = failed 3+ runs and paused until it recovers.</span><span class="l-zh">本仪表盘所依赖的每个数据源。OK = 新鲜。STALE = 近期无新数据（信号置信度已自动下调）。FAILED = 今日抓取失败（仍沿用昨日数据）。BLOCKED = 已知且有记录的限制 — 并非故障。DEAD = 连续 3 次以上失败，已暂停直至恢复。</span></span></span>
       
-      <span class="fold-stat">11 <span class="l-en">need attention</span><span class="l-zh">需关注</span> · 189 <span class="l-en">sources</span><span class="l-zh">数据源</span></span>
+      <span class="fold-stat">18 <span class="l-en">need attention</span><span class="l-zh">需关注</span> · 189 <span class="l-en">sources</span><span class="l-zh">数据源</span></span>
       <span class="fold-caret">▾</span>
     </summary>
     <table>
@@ -10940,7 +10770,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>522</td><td>2026-09-09</td>
+        <td>522</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10948,9 +10778,9 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         <td class="l">china_board_breadth</td>
         
         
-        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-09</td>
-        <td class="l muted"></td>
+        <td class="l"><span class="pill pill-blocked"><span class="l-en">blocked</span><span class="l-zh">已屏蔽</span></span></td>
+        <td>0</td><td>—</td>
+        <td class="l muted">whole-board A-share snapshot unavailable (Tushare gated / Sina throttled)</td>
       </tr>
       
       <tr>
@@ -10958,7 +10788,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>702</td><td>2026-09-09</td>
+        <td>703</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10967,7 +10797,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>251</td><td>2026-09-09</td>
+        <td>251</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10975,9 +10805,9 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         <td class="l">china_cgb_curve</td>
         
         
-        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>29</td><td>2026-09-09</td>
-        <td class="l muted"></td>
+        <td class="l"><span class="pill pill-blocked"><span class="l-en">blocked</span><span class="l-zh">已屏蔽</span></span></td>
+        <td>0</td><td>—</td>
+        <td class="l muted">bond_china_yield blocked (non-CN IP / endpoint drift) — CGB curve context only</td>
       </tr>
       
       <tr>
@@ -10985,7 +10815,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>180</td><td>2026-09-09</td>
+        <td>180</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11003,7 +10833,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-09</td>
+        <td>1</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11011,9 +10841,9 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         <td class="l">china_filings</td>
         
         
-        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-09</td>
-        <td class="l muted"></td>
+        <td class="l"><span class="pill pill-failed"><span class="l-en">failed</span><span class="l-zh">失败</span></span></td>
+        <td>0</td><td>—</td>
+        <td class="l muted">RuntimeError: china_filings: all exchanges failed — sse: HTTPConnectionPool(host=&#39;www.cnin</td>
       </tr>
       
       <tr>
@@ -11021,7 +10851,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>5</td><td>2026-09-09</td>
+        <td>5</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11039,7 +10869,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>2376</td><td>2026-09-09</td>
+        <td>2377</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11048,7 +10878,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-09</td>
+        <td>1</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11056,9 +10886,9 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         <td class="l">china_irm</td>
         
         
-        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-09</td>
-        <td class="l muted"></td>
+        <td class="l"><span class="pill pill-failed"><span class="l-en">failed</span><span class="l-zh">失败</span></span></td>
+        <td>0</td><td>—</td>
+        <td class="l muted">RuntimeError: china_irm: every leg failed at transport level (39/39 names + velocity)</td>
       </tr>
       
       <tr>
@@ -11066,7 +10896,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-09</td>
+        <td>1</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11075,7 +10905,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>2538</td><td>2026-09-09</td>
+        <td>2538</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11084,7 +10914,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>180</td><td>2026-09-08</td>
+        <td>180</td><td>2026-09-09</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11093,7 +10923,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-09</td>
+        <td>1</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11102,7 +10932,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>6</td><td>2026-09-09</td>
+        <td>6</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11111,7 +10941,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-09</td>
+        <td>1</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11120,7 +10950,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-09</td>
+        <td>1</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11129,7 +10959,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-09</td>
+        <td>1</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11138,7 +10968,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>9015</td><td>2026-09-09</td>
+        <td>9017</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11147,7 +10977,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>6946</td><td>2026-09-09</td>
+        <td>9146</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11156,7 +10986,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>8121</td><td>2026-09-09</td>
+        <td>744</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11165,7 +10995,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>4430</td><td>2026-09-09</td>
+        <td>4432</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11174,7 +11004,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-09</td>
+        <td>1</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11183,7 +11013,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>143097</td><td>2026-09-09</td>
+        <td>143159</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11192,7 +11022,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>75030</td><td>2026-09-09</td>
+        <td>84682</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11201,7 +11031,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>50959</td><td>2026-09-09</td>
+        <td>54364</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11209,17 +11039,17 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         <td class="l">china_trade_detail</td>
         
         
-        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-09</td>
-        <td class="l muted"></td>
+        <td class="l"><span class="pill pill-failed"><span class="l-en">failed</span><span class="l-zh">失败</span></span></td>
+        <td>0</td><td>—</td>
+        <td class="l muted">RuntimeError: china_trade_detail: monthly index unreachable (HTTPConnectionPool(host=&#39;engl</td>
       </tr>
       
       <tr>
         <td class="l">china_tushare</td>
         
         
-        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-09</td>
+        <td class="l"><span class="pill pill-stale"><span class="l-en">stale</span><span class="l-zh">过期</span></span></td>
+        <td>1</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11227,9 +11057,9 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         <td class="l">china_universe</td>
         
         
-        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-09</td>
-        <td class="l muted"></td>
+        <td class="l"><span class="pill pill-failed"><span class="l-en">failed</span><span class="l-zh">失败</span></span></td>
+        <td>0</td><td>—</td>
+        <td class="l muted">ConnectionError: HTTPSConnectionPool(host=&#39;vip.stock.finance.sina.com.cn&#39;, port=443): Max </td>
       </tr>
       
       <tr>
@@ -11237,7 +11067,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-09</td>
+        <td>1</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11246,7 +11076,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>982</td><td>2026-09-09</td>
+        <td>983</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11489,7 +11319,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>0</td><td>2026-09-09</td>
+        <td>0</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11615,7 +11445,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>5760</td><td>2026-09-09</td>
+        <td>5761</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11624,7 +11454,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>711</td><td>2026-09-09</td>
+        <td>712</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11633,7 +11463,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-09</td>
+        <td>1</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11642,7 +11472,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-09</td>
+        <td>1</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11651,7 +11481,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>45</td><td>2026-09-09</td>
+        <td>45</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11660,7 +11490,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>4955</td><td>2026-09-09</td>
+        <td>4957</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11678,7 +11508,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-09</td>
+        <td>1</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11687,7 +11517,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-09</td>
+        <td>1</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11695,9 +11525,9 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         <td class="l">hk_indices</td>
         
         
-        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1489</td><td>2026-09-08</td>
-        <td class="l muted"></td>
+        <td class="l"><span class="pill pill-failed"><span class="l-en">failed</span><span class="l-zh">失败</span></span></td>
+        <td>0</td><td>—</td>
+        <td class="l muted">RuntimeError: hk_indices: all HSTECH sources failed — sina: HTTPSConnectionPool(host=&#39;fina</td>
       </tr>
       
       <tr>
@@ -11705,7 +11535,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-09</td>
+        <td>1</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11714,7 +11544,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>180</td><td>2026-09-09</td>
+        <td>188</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11741,7 +11571,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-09</td>
+        <td>1</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11750,7 +11580,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-08</td>
+        <td>1</td><td>2026-09-09</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11759,7 +11589,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>29330</td><td>2026-09-09</td>
+        <td>49478</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11768,7 +11598,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-09</td>
+        <td>1</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11776,9 +11606,9 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         <td class="l">hk_valuation</td>
         
         
-        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>367</td><td>2026-09-09</td>
-        <td class="l muted"></td>
+        <td class="l"><span class="pill pill-failed"><span class="l-en">failed</span><span class="l-zh">失败</span></span></td>
+        <td>0</td><td>—</td>
+        <td class="l muted">RuntimeError: hk_valuation: no series resolved for any name — 0700.HK/pe: Failed to perfor</td>
       </tr>
       
       <tr>
@@ -11786,7 +11616,7 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>100</td><td>2026-09-08</td>
+        <td>100</td><td>2026-09-10</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12503,9 +12333,9 @@ Chip stocks are today’s main driver. Their leadership is narrow, while broader
       
     </table>
     <p class="muted"><span class="l-en">A failed source never crashes the dashboard — affected signals just lose confidence until it heals.
-       Generated 2026-09-10 07:27 UTC · <a href="aibrief.html">AI daily brief</a> ·
+       Generated 2026-09-10 18:08 UTC · <a href="aibrief.html">AI daily brief</a> ·
        <a href="history.html">history & charts</a></span><span class="l-zh">数据源失败绝不会让仪表盘崩溃 — 受影响的信号只是降低置信度，直到其恢复。
-       生成于 2026-09-10 07:27 UTC · <a href="aibrief.html">AI每日简报</a> ·
+       生成于 2026-09-10 18:08 UTC · <a href="aibrief.html">AI每日简报</a> ·
        <a href="history.html">历史与图表</a></span></p>
   </details>
   
@@ -12760,6 +12590,5 @@ window.__CHART_SWAP__ = {
 <footer class="site-footer">
   <span class="made">© 2026 Mastermind Inc</span>
 </footer>
-<script defer data-whb data-root="" src="wh_banner.js?v=4a53a176"></script>
 </body>
 </html>
