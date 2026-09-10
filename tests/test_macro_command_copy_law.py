@@ -2740,14 +2740,9 @@ def test_no_stitched_keys_and_no_repeated_band() -> None:
     assert not repeated, repeated[:5]
 
 
-@pytest.mark.needs_full_checkout("mockups")
-def test_occlusion_y_coverage_from_raw_box() -> None:
-    """E-B2/C-M1/C-M2: coverage from samples vs raw_box; only grid:short exempt."""
-    import json
+def _y_coverage_offenders(manifest) -> list:
+    """Shared y_coverage comparison (test_occlusion_y_coverage_from_raw_box + MUT-cov)."""
     from scripts.macro_command_capture_guards import y_coverage
-    manifest = json.loads(
-        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
-        .read_text(encoding="utf-8"))
     bad = []
     for page in manifest["pages"]:
         for state in page["states"]:
@@ -2805,6 +2800,17 @@ def test_occlusion_y_coverage_from_raw_box() -> None:
                 bad.append((state.get("file"), "top", min(ys), top))
             if ys and max(ys) < bottom - 4.0:
                 bad.append((state.get("file"), "bottom", max(ys), bottom))
+    return bad
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_occlusion_y_coverage_from_raw_box() -> None:
+    """E-B2/C-M1/C-M2: coverage from samples vs raw_box; only grid:short exempt."""
+    import json
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    bad = _y_coverage_offenders(manifest)
     assert not bad, bad[:15]
 
 
@@ -2972,11 +2978,42 @@ def test_en_zh_visible_text_distinct_all_stations() -> None:
                     assert "visible_text_at_zero" in state, state.get("file")
                 stations[key][loc] = (scope, digest)
     collisions = []
+    missing_locale = []
+    fits_by_start: dict[tuple, dict[str, bool]] = defaultdict(dict)
+    for page in manifest["pages"]:
+        for state in page["states"]:
+            if not state.get("crop_selector"):
+                continue
+            fam = state.get("family") or family_for(state.get("file") or "")
+            start_key = (
+                fam,
+                state.get("page_id") or page.get("page"),
+                state.get("theme"),
+                state.get("viewport_width") or state.get("viewport"),
+                str(state.get("force_state") or "").replace("_end", "_start"),
+            )
+            loc = state.get("locale")
+            if loc and (
+                state.get("fits") is True or state.get("table_fits") is True
+            ):
+                fits_by_start[start_key][loc] = True
     for key, locs in stations.items():
-        if "en" in locs and "zh" in locs:
-            assert locs["en"][0] == locs["zh"][0], (key, "scope mismatch")
-            if locs["en"][1] == locs["zh"][1]:
-                collisions.append(key)
+        if "en" not in locs or "zh" not in locs:
+            missing = {"en", "zh"} - set(locs)
+            force = str(key[-1] or "")
+            if force.endswith("_end") or force.endswith("-end"):
+                start_force = force.replace("_end", "_start").replace(
+                    "-end", "-start")
+                start_key = key[:-1] + (start_force,)
+                if all(fits_by_start.get(start_key, {}).get(ml)
+                       for ml in missing):
+                    continue
+            missing_locale.append((key, "missing locale(s)", sorted(missing)))
+            continue
+        assert locs["en"][0] == locs["zh"][0], (key, "scope mismatch")
+        if locs["en"][1] == locs["zh"][1]:
+            collisions.append(key)
+    assert not missing_locale, missing_locale[:20]
     assert not collisions, collisions[:20]
 
 
@@ -3290,6 +3327,42 @@ def test_method_table_filename_roundtrip_includes_element_key() -> None:
     }
 
 
+def test_parse_method_table_name_rejects_keyless() -> None:
+    from scripts.capture_macro_command_p5 import parse_method_table_name
+    with pytest.raises(RuntimeError, match="element_key"):
+        parse_method_table_name(
+            "method_table_390_start-macro_rates_curves-dark-zh-390.png")
+
+
+def test_method_table_pair_ratified_rejects_empty_key() -> None:
+    from scripts.capture_macro_command_p5 import (
+        _method_table_390_pair_ratified,
+    )
+    files = [
+        "method_table_390_start-macro_rates_curves-dark-en-390.png",
+        "method_table_390_end-macro_rates_curves-dark-en-390.png",
+    ]
+    with pytest.raises(RuntimeError, match="element_key"):
+        _method_table_390_pair_ratified(files, [])
+
+
+def test_method_table_declared_start_floor_is_five_slugs_times_2x2() -> None:
+    from scripts.capture_macro_command_p5 import (
+        METHOD_TABLE_390_START_FLOOR, METHOD_TABLE_PAGES,
+    )
+    assert METHOD_TABLE_390_START_FLOOR == len(METHOD_TABLE_PAGES) * 2 * 2
+    assert METHOD_TABLE_390_START_FLOOR == 20
+
+
+def test_assert_method_dl_contained_waits_before_count() -> None:
+    import inspect
+    from scripts.capture_macro_command_p5 import _assert_method_dl_contained
+    src = inspect.getsource(_assert_method_dl_contained)
+    wait_at = src.find("wait_for")
+    count_at = src.find(".count(")
+    assert 0 <= wait_at < count_at, src[:400]
+
+
 def test_table_fits_branches_on_synthetic_cells() -> None:
     """C-m3 unit: both table_fits branches on synthetic cells."""
     def check(start, end):
@@ -3371,7 +3444,17 @@ def test_painted_fraction_present_on_every_cell() -> None:
         )
         print(line, flush=True)
         printed.append(line)
-    assert printed, printed
+    undocumented = [
+        str(st.get("file") or "")
+        for st in tied
+        if str(st.get("file") or "") not in causes
+        and not str(st.get("file") or "").startswith("chipmat-")
+        and st.get("crop")
+    ]
+    assert not undocumented, (
+        "painted_fraction lowest-tie cells missing a documented cause",
+        undocumented[:8])
+    assert len(printed) == len(tied), (len(printed), len(tied), printed)
 
 
 def test_page_overflow_error_type() -> None:
@@ -3415,6 +3498,62 @@ def test_shot_raises_on_multi_match_selector() -> None:
     finally:
         pw.stop()
         dest.unlink(missing_ok=True)
+
+
+def test_mq_table_path_nth_of_type_uses_same_tag_index() -> None:
+    """V23-FIX0: mixed-tag siblings; built path resolves back to the same node."""
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        pytest.skip("Playwright not installed")
+    from scripts.capture_macro_command_p5 import _mq_table_path_eval_js
+    try:
+        pw = sync_playwright().start()
+    except Exception as exc:
+        pytest.skip(f"Playwright runtime unavailable: {exc}")
+    try:
+        try:
+            browser = pw.chromium.launch(headless=True)
+        except Exception as exc:
+            pytest.skip(f"chromium unavailable: {exc}")
+        page = browser.new_page()
+        # Mixed-tag siblings: all-children index of tbl-scroll is 4
+        # (h2, div, span, div.tbl-scroll) but same-tag nth-of-type is 2.
+        page.set_content(
+            """<html><body>
+                 <div id="host">
+                   <p class="note">note</p>
+                   <span class="gap">gap</span>
+                   <section class="mq-changed">
+                     <h2>x</h2>
+                     <div class="pad">pad</div>
+                     <span class="y">y</span>
+                     <div class="tbl-scroll">
+                       <table class="mq-table" data-k="t1"><tr><td>a</td></tr></table>
+                     </div>
+                   </section>
+                 </div>
+               </body></html>"""
+        )
+        path_js = _mq_table_path_eval_js()
+        loc = page.locator("table.mq-table")
+        built = loc.evaluate(path_js)
+        assert built, built
+        n = page.locator(built).count()
+        assert n == 1, (built, n)
+        resolved = page.locator(built).evaluate(
+            "el => el.getAttribute('data-k')")
+        assert resolved == "t1", (built, resolved)
+        assert ":nth-of-type(" in built, built
+        assert "div.tbl-scroll:nth-of-type(2)" in built.replace(" ", ""), (
+            "same-tag index must be 2, not all-children 4", built)
+        wrong = built.replace(
+            "div.tbl-scroll:nth-of-type(2)",
+            "div.tbl-scroll:nth-of-type(4)")
+        assert page.locator(wrong).count() == 0, (wrong, built)
+        browser.close()
+    finally:
+        pw.stop()
 
 
 def test_page_fits_overflow_writes_false_and_raises() -> None:
@@ -3538,12 +3677,138 @@ def test_mut_elem_deleting_one_instance_on_a_two_instance_page_fails() -> None:
     ), offenders[:16]
 
 
+def _overflow_census_key_offenders(manifest, probes) -> list:
+    """Per page × theme × locale: overflow-entry keys == census keys == cell keys."""
+    from collections import defaultdict
+    from scripts.capture_macro_command_p5 import _registry_match_selector
+
+    census = probes.get("mq_table_census") or {}
+    overflow: dict[tuple, set[str]] = defaultdict(set)
+    cells: dict[tuple, set[str]] = defaultdict(set)
+    for page in manifest["pages"]:
+        for st in page["states"]:
+            w = st.get("viewport_width") or st.get("viewport")
+            if str(w) not in {"390", "mobile"} and w != 390:
+                continue
+            page_id = str(st.get("page_id") or page.get("page") or "")
+            theme = st.get("theme")
+            locale = st.get("locale")
+            combo = (page_id, theme, locale)
+            if (
+                st.get("family") == "method_table_390"
+                and st.get("element_key")
+                and st.get("table_fits") is not True
+            ):
+                cells[combo].add(str(st["element_key"]))
+            for entry in st.get("content_overflows") or []:
+                sel = _registry_match_selector(
+                    str(entry.get("selector") or ""))
+                if sel != "table.mq-table":
+                    continue
+                ekey = str(entry.get("element_key") or "")
+                if ekey:
+                    overflow[combo].add(ekey)
+    offenders = []
+    combos = set(overflow) | set(cells)
+    for combo in sorted(combos, key=lambda c: (str(c[0]), str(c[1]), str(c[2]))):
+        page_id, theme, locale = combo
+        slug = str(page_id).replace(".html", "")
+        census_rows = census.get(f"{slug}-{theme}-{locale}") or []
+        census_overflow = {
+            str(r.get("element_key") or "")
+            for r in census_rows
+            if r.get("overflowing") and r.get("element_key")
+        }
+        ov = overflow.get(combo) or set()
+        cell_keys = cells.get(combo) or set()
+        if ov != census_overflow:
+            offenders.append((combo, "overflow!=census",
+                              sorted(ov), sorted(census_overflow)))
+        if cell_keys != census_overflow:
+            offenders.append((combo, "cells!=census",
+                              sorted(cell_keys), sorted(census_overflow)))
+    return offenders
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_overflow_entry_keys_match_census_keys() -> None:
+    """V23-m2: overflow-entry key set == census overflowing keys per combo."""
+    import json
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    probes = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "probes.json")
+        .read_text(encoding="utf-8"))
+    offenders = _overflow_census_key_offenders(manifest, probes)
+    assert not offenders, offenders[:12]
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_mut_key_fabricated_element_key_fails() -> None:
+    """MUT-key: rename one cell's element_key; census==overflow test catches it."""
+    import copy
+    import json
+
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    probes = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "probes.json")
+        .read_text(encoding="utf-8"))
+    planted = copy.deepcopy(manifest)
+    victim = None
+    for page in planted["pages"]:
+        for st in page["states"]:
+            if st.get("family") != "method_table_390":
+                continue
+            if not st.get("element_key"):
+                continue
+            if st.get("table_fits") is True:
+                continue
+            st["element_key"] = "fabricated-key"
+            victim = st
+            break
+        if victim is not None:
+            break
+    assert victim is not None
+    offenders = _overflow_census_key_offenders(planted, probes)
+    assert any(
+        "cells!=census" in str(row) or "fabricated-key" in str(row)
+        for row in offenders
+    ), offenders[:12]
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_method_table_cells_record_census_path_and_shot_visibility() -> None:
+    import json
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    missing = []
+    for page in manifest["pages"]:
+        for st in page["states"]:
+            if st.get("family") != "method_table_390":
+                continue
+            if not st.get("census_path"):
+                missing.append((st.get("file"), "census_path"))
+            if st.get("visible_at_shot") is not True:
+                missing.append((st.get("file"), "visible_at_shot"))
+            if st.get("revealed"):
+                if st.get("openedBy") != "reveal":
+                    missing.append((st.get("file"), "openedBy"))
+                if "reveal" not in str(st.get("verified_how") or "").lower():
+                    missing.append((st.get("file"), "verified_how"))
+                if not st.get("reveal_ancestors"):
+                    missing.append((st.get("file"), "reveal_ancestors"))
+    assert not missing, missing[:12]
+
+
 @pytest.mark.needs_full_checkout("mockups")
 def test_mut_cov_stored_y_coverage_mismatch_fails() -> None:
     """MUT-cov: stored y_coverage ≠ recomputed (±1e-9) must fail."""
     import copy
     import json
-    from scripts.macro_command_capture_guards import y_coverage
 
     manifest = json.loads(
         (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
@@ -3565,17 +3830,11 @@ def test_mut_cov_stored_y_coverage_mismatch_fails() -> None:
         if victim is not None:
             break
     assert victim is not None
-    bad = []
-    for page in planted["pages"]:
-        for state in page["states"]:
-            if state is not victim:
-                continue
-            samples = state.get("occlusionSamples") or []
-            raw = state.get("raw_box") or {}
-            cov = y_coverage(samples, raw)
-            if abs(float(state["y_coverage"]) - cov) > 1e-9:
-                bad.append((state.get("file"), float(state["y_coverage"]), cov))
-    assert bad, "MUT-cov must detect stored≠recomputed"
+    bad = _y_coverage_offenders(planted)
+    assert any(
+        row[0] == victim.get("file") and row[1] == "stored!=recomputed"
+        for row in bad
+    ), bad[:12]
 
 
 @pytest.mark.needs_full_checkout("mockups")

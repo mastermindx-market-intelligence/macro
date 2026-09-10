@@ -19,7 +19,9 @@ table.mq-table:
     reporting pages the photographed overflowing table is the What-changed
     METRIC/PRIOR/CURRENT/CHANGE grid; FC and labor also photograph the
     method-section WEIGHT/CONTRIBUTION composition table when it overflows.
-    table_fits binds only its own element_key.
+    table_fits binds only its own element_key: a table that does not
+    overflow in a given page × theme × locale gets a table_fits:true
+    receipt cell (start only, no end PNG).
 
 ul.mc-rail-list:
   kind: designed-rail

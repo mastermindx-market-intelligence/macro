@@ -202,13 +202,18 @@ METHOD_OPEN_PAGES = (
 # (E-M1 / C-M1). METHOD_OPEN_PAGES is the composition-law crop set; the
 # table family is the five workspace+labor pages that overflow the table.
 METHOD_TABLE_PAGES = WORKSPACE_PAGES + (LABOR_PAGE,)
+# V23-n1: filenames include capture-discovered element_key, so exact names
+# cannot be static in declared_cell_rows. Floor = 5 slugs × 2 themes ×
+# 2 locales start cells; write_manifest raises if captured starts are
+# below this. See claims_p5_v23.md.
+METHOD_TABLE_390_START_FLOOR = len(METHOD_TABLE_PAGES) * 2 * 2
 _METHOD_TABLE_NAME_RE = re.compile(
     r"^method_table_390_(?P<pos>start|end)-"
     r"(?P<slug>.+?)(?:__(?P<element_key>[A-Za-z0-9_.-]+))?"
     r"-(?P<theme>dark|light)-(?P<locale>en|zh)-(?P<width>\d+)\.png$"
 )
 _METHOD_TABLE_PROBE_RE = re.compile(
-    r"^method_table_390-(.+?)(?:__([A-Za-z0-9_.-]+))?-"
+    r"^method_table_390-(.+?)__([A-Za-z0-9_.-]+)-"
     r"(dark|light)-(en|zh)-(\d+)$"
 )
 
@@ -229,7 +234,9 @@ def parse_method_table_name(name: str) -> dict[str, str] | None:
     m = _METHOD_TABLE_NAME_RE.match(name)
     if not m:
         return None
-    return {k: (v or "") for k, v in m.groupdict().items()}
+    if not (m.group("element_key") or "").strip():
+        raise RuntimeError(f"method_table name missing element_key: {name}")
+    return {k: v for k, v in m.groupdict().items()}
 
 
 METHOD_OPEN_SELECTOR = "section.mq-method"  # E-n1: section with padding, every cell
@@ -980,7 +987,9 @@ def _state(filename: str, theme: str, locale: str, viewport: str,
                 "raw_box_in_shot_viewport", "hidden_fixed",
                 "shoot_box", "table_fits", "page_fits",
                 "page_scroll_width", "matched", "element_key",
-                "visible_text_scope", "in_method_section"):
+                "visible_text_scope", "in_method_section",
+                "revealed", "reveal_ancestors", "census_path",
+                "census_visible", "visible_at_shot"):
         if info.get(key) is not None:
             row[key] = info[key]
     # content_overflows must be present on every crop (empty list is valid).
@@ -1044,21 +1053,39 @@ def _open_method_details_by_click(target, *, host_page) -> str:
     return "click"
 
 
-def _assert_method_dl_contained(body) -> None:
-    # n5: never .first. The opened axis details holds exactly one dl;
-    # the method section itself has one dl per axis.
+def _assert_method_dl_contained(body, *, required: bool = True) -> str:
+    """Containment: the opened axis details holds exactly one dl.
+
+    ``method_open`` ``section.mq-method`` is REQUIRED to have one
+    ``details.mc-details[open] dl`` (the composition-law axis). A
+    zero-match on a non-required caller is a typed skip
+    (``skip:zero-open-details-dl``), not a crash. Wait before count so
+    a slow open still retries.
+    """
     dl = body.locator("details.mc-details[open] dl")
+    try:
+        dl.wait_for(state="attached", timeout=8000)
+    except Exception as exc:
+        n = dl.count()
+        if n == 0:
+            if required:
+                raise RuntimeError(
+                    "method section has zero details.mc-details[open] dl "
+                    "(required for method_open composition-law axis)"
+                ) from exc
+            return "skip:zero-open-details-dl"
+        raise
     n = dl.count()
     if n != 1:
         raise RuntimeError(
             f"method section open-details dl matched {n} "
             "(must be exactly one; never .first)")
-    dl.wait_for(timeout=8000)
     outer = _crop_box(body)
     inner = _crop_box(dl)
     if not _box_contains(outer, inner):
         raise RuntimeError(
             f"method section crop does not contain its dl: {outer} vs {inner}")
+    return "ok"
 
 
 # Fixed/sticky chrome that may lawfully intersect a crop (topbar + in-suite nav).
@@ -1403,38 +1430,19 @@ def _content_overflows_receipt(locator) -> list[dict[str, Any]]:
     registry = _load_sanctioned_scrollers()
     registry_keys = list(registry.keys())
     rows = locator.evaluate(
-        """(el, registryKeys) => {
+        "(el, registryKeys) => {\n"
+        + _mq_table_identity_js()
+        + """
             const crop = el.getBoundingClientRect();
             const cropRight = crop.right;
             const allTables = [...document.querySelectorAll('table.mq-table')];
-            const sectionIdOf = (node) => {
-                let cur = node;
-                while (cur && cur.nodeType === 1) {
-                    if (cur.tagName === 'SECTION' && cur.id) return cur.id;
-                    cur = cur.parentElement;
-                }
-                return null;
-            };
-            const tableSectionIds = allTables.map(sectionIdOf);
-            const tableIdCounts = {};
-            for (const sid of tableSectionIds) {
-                if (!sid) continue;
-                tableIdCounts[sid] = (tableIdCounts[sid] || 0) + 1;
-            }
+            const keyRows = mqTableElementKeys(allTables);
             const tableKeyOf = (node) => {
                 const i = allTables.indexOf(node);
                 if (i < 0) return null;
-                const sid = tableSectionIds[i];
-                if (sid && tableIdCounts[sid] === 1) return sid;
-                return 'nth-' + i;
+                return keyRows[i].element_key;
             };
-            const elementKeyOf = (node) => {
-                const tk = tableKeyOf(node);
-                if (tk) return tk;
-                const sid = sectionIdOf(node);
-                if (sid) return sid;
-                return null;
-            };
+            const elementKeyOf = (node) => tableKeyOf(node);
             const isA11yClip = (node) => {
                 if (!node || node.nodeType !== 1) return false;
                 if (node.classList && node.classList.contains('mq-sr')) return true;
@@ -3584,6 +3592,9 @@ def _method_table_390_pair_ratified(
         parsed.append({**row, "file": name})
     if {row["pos"] for row in parsed} != {"start", "end"}:
         return False
+    keys = {str(r.get("element_key") or "").strip() for r in parsed}
+    if not keys or any(not k for k in keys):
+        return False
     if len({
         (r["slug"], r["element_key"], r["theme"], r["locale"], r["width"])
         for r in parsed
@@ -3759,18 +3770,24 @@ def _scroll_hub_scroller(target, selector: str, *, pos: str) -> dict[str, Any]:
     ) or {"ok": False}
 
 
-_MQ_TABLE_CENSUS_JS = """() => {
-    const reveal = (el) => {
-      let p = el;
-      while (p && p.nodeType === 1) {
-        if (p.tagName === 'DETAILS' && !p.open) p.open = true;
-        if (p.hasAttribute && p.hasAttribute('hidden')) {
-          p.removeAttribute('hidden');
-        }
-        p = p.parentElement;
+def _mq_table_identity_js() -> str:
+    """Shared DOM identity: same-tag nth-of-type path + element_key.
+
+    Used by the table census AND the content_overflows writer so both
+    assign identical keys and the crop selector round-trips.
+    """
+    return r"""
+    const mqNthOfType = (node) => {
+      const parent = node.parentElement;
+      if (!parent) return 1;
+      let n = 1;
+      for (const c of parent.children) {
+        if (c === node) return n;
+        if (c.tagName === node.tagName) n++;
       }
+      return n;
     };
-    const path = (el) => {
+    const mqTablePath = (el) => {
       const parts = [];
       let node = el;
       while (node && node.nodeType === 1
@@ -3781,14 +3798,14 @@ _MQ_TABLE_CENSUS_JS = """() => {
         }
         let sel = node.tagName.toLowerCase();
         const cls = (node.getAttribute('class') || '')
-          .trim().split(/\\s+/).filter(Boolean).slice(0, 3);
+          .trim().split(/\s+/).filter(Boolean).slice(0, 3);
         if (cls.length) sel += '.' + cls.join('.');
         const parent = node.parentElement;
         if (parent) {
-          const kids = [...parent.children];
-          const same = kids.filter((c) => c.tagName === node.tagName);
+          const same = [...parent.children].filter(
+            (c) => c.tagName === node.tagName);
           if (same.length > 1) {
-            sel += ':nth-of-type(' + (kids.indexOf(node) + 1) + ')';
+            sel += ':nth-of-type(' + mqNthOfType(node) + ')';
           }
         }
         parts.unshift(sel);
@@ -3796,45 +3813,94 @@ _MQ_TABLE_CENSUS_JS = """() => {
       }
       return parts.join(' > ');
     };
-    const tables = [...document.querySelectorAll('table.mq-table')];
-    for (const el of tables) reveal(el);
-    const sectionIdOf = (el) => {
-      let cur = el;
-      while (cur && cur.nodeType === 1) {
-        if (cur.tagName === 'SECTION' && cur.id) return cur.id;
-        cur = cur.parentElement;
+    const mqTableElementKeys = (tables) => {
+      const sectionIdOf = (el) => {
+        let cur = el;
+        while (cur && cur.nodeType === 1) {
+          if (cur.tagName === 'SECTION' && cur.id) return cur.id;
+          cur = cur.parentElement;
+        }
+        return null;
+      };
+      const sectionIds = tables.map(sectionIdOf);
+      const idCounts = {};
+      for (const sid of sectionIds) {
+        if (!sid) continue;
+        idCounts[sid] = (idCounts[sid] || 0) + 1;
       }
-      return null;
+      const seen = new Set();
+      return tables.map((el, i) => {
+        const sid = sectionIds[i];
+        let key = (sid && idCounts[sid] === 1) ? sid : ('nth-' + i);
+        if (seen.has(key)) key = 'nth-' + i;
+        seen.add(key);
+        return {element_key: key, section_id: sid, index: i};
+      });
     };
-    const sectionIds = tables.map(sectionIdOf);
-    const idCounts = {};
-    for (const sid of sectionIds) {
-      if (!sid) continue;
-      idCounts[sid] = (idCounts[sid] || 0) + 1;
-    }
-    const keys = [];
-    const seen = new Set();
+"""
+
+
+def _mq_table_path_eval_js() -> str:
+    return (
+        "(el) => {\n"
+        + _mq_table_identity_js()
+        + "\n    return mqTablePath(el);\n}"
+    )
+
+
+_MQ_TABLE_CENSUS_JS = (
+    "() => {\n"
+    + _mq_table_identity_js()
+    + r"""
+    const reveal = (el) => {
+      const opened = [];
+      let p = el;
+      while (p && p.nodeType === 1) {
+        if (p.tagName === 'DETAILS' && !p.open) {
+          p.open = true;
+          opened.push({
+            tag: 'DETAILS',
+            id: p.id || '',
+            className: String(p.className || ''),
+            action: 'open',
+          });
+        }
+        if (p.hasAttribute && p.hasAttribute('hidden')) {
+          p.removeAttribute('hidden');
+          opened.push({
+            tag: p.tagName,
+            id: p.id || '',
+            className: String(p.className || ''),
+            action: 'unhide',
+          });
+        }
+        p = p.parentElement;
+      }
+      return opened;
+    };
+    const tables = [...document.querySelectorAll('table.mq-table')];
+    const revealByIndex = tables.map(reveal);
+    const keyRows = mqTableElementKeys(tables);
+    const keys = keyRows.map((r) => r.element_key);
     const rows = tables.map((el, i) => {
-      const sid = sectionIds[i];
-      let key = (sid && idCounts[sid] === 1) ? sid : ('nth-' + i);
-      if (seen.has(key)) key = 'nth-' + i;
-      seen.add(key);
-      keys.push(key);
       const r = el.getBoundingClientRect();
       const st = getComputedStyle(el);
       const visible = r.width > 1 && r.height > 1
         && st.display !== 'none' && st.visibility !== 'hidden';
       const inMethod = !!(el.closest && el.closest('section.mq-method'));
+      const ancestors = revealByIndex[i] || [];
       return {
         index: i,
-        element_key: key,
-        section_id: sid,
-        selector: path(el),
+        element_key: keyRows[i].element_key,
+        section_id: keyRows[i].section_id,
+        selector: mqTablePath(el),
         scrollWidth: el.scrollWidth,
         clientWidth: el.clientWidth,
         overflowing: el.scrollWidth > el.clientWidth + 1,
         visible,
         in_method_section: inMethod,
+        reveal_ancestors: ancestors,
+        revealed: ancestors.length > 0,
       };
     });
     if (new Set(keys).size !== keys.length) {
@@ -3842,6 +3908,7 @@ _MQ_TABLE_CENSUS_JS = """() => {
     }
     return {ok: true, rows, n: rows.length};
 }"""
+)
 
 
 _MQ_TABLE_VISIBLE_TEXT_JS = """(el, locale) => {
@@ -3888,7 +3955,8 @@ def _photograph_mq_table_390(
         dest_list: list[dict[str, Any]], probes: dict[str, Any],
         slug: str, page_name: str, theme: str, locale: str,
         element_key: str, in_method_section: bool = False,
-        receipt_locator=None) -> None:
+        receipt_locator=None, census_row: Mapping[str, Any] | None = None,
+        ) -> None:
     """Shoot start (+ end unless table_fits) of one table.mq-table at 390."""
     probes.setdefault("method_table_390_text", {})
     full_text = str(table.evaluate(
@@ -3943,6 +4011,19 @@ def _photograph_mq_table_390(
         page.wait_for_timeout(80)
         vis_at_scroll = str(
             table.evaluate(_MQ_TABLE_VISIBLE_TEXT_JS, locale) or "")
+        visible_now = bool(table.evaluate(
+            """el => {
+                const r = el.getBoundingClientRect();
+                const st = getComputedStyle(el);
+                return r.width > 1 && r.height > 1
+                    && st.display !== 'none'
+                    && st.visibility !== 'hidden';
+            }"""
+        ))
+        if not visible_now:
+            raise RuntimeError(
+                f"{tname}: photographed element not visible at shot time "
+                f"selector={table_sel!r}")
         tinfo = _element_shot_guarded(
             EVIDENCE / tname, page, table,
             selector=table_sel, locale=locale,
@@ -3956,6 +4037,16 @@ def _photograph_mq_table_390(
             tinfo["table_fits"] = True
         tinfo["element_key"] = element_key
         tinfo["in_method_section"] = bool(in_method_section)
+        tinfo["census_path"] = table_sel
+        tinfo["visible_at_shot"] = True
+        row = dict(census_row or {})
+        if row.get("visible") is not None:
+            tinfo["census_visible"] = bool(row.get("visible"))
+        ancestors = list(row.get("reveal_ancestors") or [])
+        if ancestors or row.get("revealed"):
+            tinfo["revealed"] = True
+            tinfo["openedBy"] = "reveal"
+            tinfo["reveal_ancestors"] = ancestors
         tinfo["visible_text_head"] = vis_at_scroll[:200]
         tinfo["visible_text_sha256"] = hashlib.sha256(
             vis_at_scroll.encode("utf-8")).hexdigest()
@@ -3967,14 +4058,17 @@ def _photograph_mq_table_390(
         tinfo.pop("_element_text", None)
         probes.setdefault(
             "method_table_390_visible", {})[tname] = vis_at_scroll
+        verified = (
+            f"{page_name} method table element_key={element_key} "
+            f"scrollLeft={pos}; crop {table_sel}"
+            + ("; table_fits" if table_fits else "")
+            + ("; revealed by opening ancestor details/hidden"
+               if tinfo.get("revealed") else "")
+        )
         dest_list.append(_state(
             tname, theme, locale, "mobile", tinfo,
             viewport_width=390,
-            verified_how=(
-                f"{page_name} method table element_key={element_key} "
-                f"scrollLeft={pos}; crop {table_sel}"
-                + ("; table_fits" if table_fits else "")
-            ),
+            verified_how=verified,
             crop=True, selector=table_sel,
             force_state=f"method_table_390_{pos}",
             family="method_table_390",
@@ -3989,22 +4083,25 @@ def _capture_all_overflowing_mq_tables_390(
     """R1: photograph EVERY overflowing table.mq-table instance at 390.
 
     element_key is nearest unique ancestor section[id], else nth-of-match
-    in document order (asserted unique). Never .first.
+    in document order (asserted unique). Never .first. A table that fits
+    this page×theme×locale gets a table_fits:true start cell bound to the
+    same element_key (no end PNG).
     """
     census = host.evaluate(_MQ_TABLE_CENSUS_JS) or {}
     if not census.get("ok"):
         raise RuntimeError(
             f"method_table_390-{slug}: table census failed {census}")
     rows = list(census.get("rows") or [])
+    probes.setdefault("mq_table_census", {})[
+        f"{slug}-{theme}-{locale}"] = rows
     keys = [str(r.get("element_key") or "") for r in rows]
     if not keys and host.locator("table.mq-table").count() == 0:
         return
     if len(set(keys)) != len(keys) or any(not k for k in keys):
         raise RuntimeError(
             f"method_table_390-{slug}: element_key not unique/stable {keys}")
-    overflowing = [r for r in rows if r.get("overflowing")]
     target = shot_target if shot_target is not None else page
-    for row in overflowing:
+    for row in rows:
         table_sel = str(row.get("selector") or "")
         element_key = str(row.get("element_key") or "")
         if not table_sel or not element_key:
@@ -4015,6 +4112,8 @@ def _capture_all_overflowing_mq_tables_390(
             raise RuntimeError(
                 f"method_table_390-{slug}: crop_selector {table_sel!r} "
                 f"matched {n_table} (must be exactly one; never .first)")
+        if not row.get("overflowing") and not row.get("visible"):
+            continue
         table = host.locator(table_sel)
         _photograph_mq_table_390(
             page=page, target=target, table=table, table_sel=table_sel,
@@ -4023,6 +4122,7 @@ def _capture_all_overflowing_mq_tables_390(
             element_key=element_key,
             in_method_section=bool(row.get("in_method_section")),
             receipt_locator=receipt_locator,
+            census_row=row,
         )
 
 
@@ -4444,8 +4544,12 @@ def declared_cell_rows(
         ):
             add(f"method_open-{slug}-{theme}-{locale}-390.png")
     # method_table_390 instance cells are discovered at capture (one start/end
-    # pair per overflowing element_key). They are coverage-gated, not a
-    # static declared floor — extras exemption is method_table_390_*.
+    # pair per overflowing element_key, plus a table_fits start cell per
+    # fitting instance). Exact filenames cannot be static here because they
+    # include the capture-discovered element_key. V23-n1 floor =
+    # METHOD_TABLE_390_START_FLOOR (5 slugs × 2 themes × 2 locales start
+    # cells) is enforced at write_manifest; extras exemption stays
+    # method_table_390_*.
     for page_name in LINEAGE_OPEN_PAGES:
         slug = page_name.replace(".html", "")
         for theme, locale in (
@@ -5996,6 +6100,15 @@ def main() -> int:
         }
         appl = probes.get("e5_applicability") or {}
         declared_rows = declared_cell_rows(appl)
+        starts = [
+            n for n in captured_files
+            if str(n).startswith("method_table_390_start-")
+        ]
+        if len(starts) < METHOD_TABLE_390_START_FLOOR:
+            raise RuntimeError(
+                "method_table_390 start-cell floor "
+                f"{METHOD_TABLE_390_START_FLOOR} (5 slugs × 2×2) not met: "
+                f"got {len(starts)}")
         for fname in sorted(captured_files):
             if str(fname).startswith("method_table_390_"):
                 declared_rows.append(

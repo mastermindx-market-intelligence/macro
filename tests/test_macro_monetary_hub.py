@@ -347,9 +347,18 @@ def test_a_manifest_that_omits_a_workspace_still_keeps_the_full_rail(tmp_path: P
 # --------------------------------------------------------------------------
 
 def _command_eyebrow_asof(authored: str) -> str:
-    idx = authored.index('class="mc-eyebrow-asof')
-    end = authored.index("</p>", idx)
-    return authored[idx:end]
+    """The command-header as-of span. Exactly one match in that scope."""
+    hdr = re.search(
+        r'<header class="mc-command">(.*?)</header>', authored, flags=re.S)
+    assert hdr, "missing header.mc-command"
+    scope = hdr.group(1)
+    matches = list(re.finditer(r'class="mc-eyebrow-asof', scope))
+    assert len(matches) == 1, (
+        f"mc-eyebrow-asof matched {len(matches)} in header.mc-command "
+        "(must be exactly one; never first-of-N)")
+    brow = re.search(r'<p class="mc-eyebrow">.*?</p>', scope, flags=re.S)
+    assert brow, "missing p.mc-eyebrow in header.mc-command"
+    return brow.group(0)
 
 
 def test_the_hub_shows_a_dated_or_honestly_absent_as_of(
