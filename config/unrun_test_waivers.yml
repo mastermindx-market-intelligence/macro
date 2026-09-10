@@ -105,6 +105,17 @@ tests/test_f01_credit_wiring_trace.py: >-
   Meta-CEO B, lane F01. Delete this row and wire the file into the
   research-resident F01/credit signal-contract step when one exists.
 
+tests/test_market_ontology_f06_scope.py: >-
+  Packet B-F06-2 (records-only): pins the F06 scope-freeze doc (the no-ranker
+  ceiling for MO-DELTA-002 and the 8-panel display-only B1B cockpit map for
+  MO-PAID-021) against
+  research/market_intelligence_productization/MARKET_ONTOLOGY_F06_SCREENER_AND_COCKPIT_SCOPE_2026-09-06.md.
+  Not wired into .github/ci/legacy-jobs.yml because that file is a global CI
+  invalidator (full 194-job suite, a ci-authority hit) and this suite only reads
+  one static research/market_intelligence_productization markdown file — no
+  engine or signal-contract path. Owner: Meta-CEO B, lane F06. Adopted by a
+  market-ontology-records CI job when one is commissioned (Meta-CEO B,
+  B-PLAT-5); delete this row then.
 tests/test_market_ontology_half_a_k_chain_docket.py: >-
   Packet B-A-F04-K1 (records-only): pins the Half-A K-chain gate docket + its DEC
   record against MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv. Not
@@ -113,3 +124,43 @@ tests/test_market_ontology_half_a_k_chain_docket.py: >-
   research/agentos markdown files plus one CSV — no engine or signal-contract path.
   Owner: Meta-CEO B, lane F04 (+F05 spillover). Adopted by a market-ontology-records
   CI job when one is commissioned (Meta-CEO B, B-PLAT-5); delete this row then.
+
+tests/test_market_ontology_f11_post_vertical_contract.py: >-
+  MO-BB4 packet B-F11-3 (PR #6963): records-only contract doc + agentos DEC test for
+  F00C ledger rows MO-PAID-031/032/054. Suite is pure text assertions (no network,
+  no data/, no site/) and passes locally via
+  `python -m pytest tests/test_market_ontology_f11_post_vertical_contract.py -q`
+  (16 passed). Owner: WS:MARKET-OS. Exit condition: adopted by the
+  market-ontology-records CI job when it lands (Meta-CEO B, B-PLAT-5, in flight);
+  delete this row then.
+
+tests/test_market_ontology_f13_accuracy_ledger_spec.py: >-
+  Records-only spec-freeze suite for packet B-F13-4 (MO-DELTA-007 personal accuracy
+  ledger spec, F13-OPS-LEARNING). Wiring it into a legacy-jobs.yml signal-contract step
+  is a global CI invalidator (full 194-job suite) and a ci-authority hit for a suite
+  that only reads one markdown file. Owner: Meta-CEO B, lane F13. Adopted by the
+  market-ontology-records CI job when it is commissioned (Meta-CEO B, B-PLAT-5);
+  delete this row then.
+
+tests/test_market_ontology_f12_commercial_scope.py: >-
+  Packet B-F12-6 (records-only): pins the F12 post-tenancy commercial/account scope
+  doc's ledger-row answers (MO-PAID-079 commercial_only, MO-PAID-080 account_only),
+  the Chairman pricing-defer blockquote, the sibling-boundary bullets, and the
+  typed-null / no-fabrication / no-"validated" invariants. Not wired into
+  .github/ci/legacy-jobs.yml because that file is a global CI invalidator (full
+  194-job suite, a ci-authority hit) and this suite only reads one static research/
+  markdown doc plus the repo's own file tree — no engine or signal-contract path.
+  Run directly via `python3 -m pytest tests/test_market_ontology_f12_commercial_scope.py -q`
+  in CI triage / local verification. Owner: Meta-CEO B, lane F12. Adopted by the
+  market-ontology-records CI job when it is commissioned (Meta-CEO B, B-PLAT-5);
+  delete this row then.
+
+tests/test_market_ontology_half_b_rights_docket.py: >-
+  Records-only regression for packet B-F09-7 (Half-B rights/upstream-gate docket):
+  asserts shape of a new research/ doc + a new agentos/decisions/ DEC record + 20
+  cell edits in the F00C ledger CSV. No engine/scripts subject owns this file, and
+  listing it in .github/ci/legacy-jobs.yml is a global CI invalidator (full-suite,
+  ci-authority hit) for a records-only, no-render packet. Run directly via
+  `python -m pytest tests/test_market_ontology_half_b_rights_docket.py -q` in CI
+  triage / local verification. Owner: Meta-CEO B wave, lane F09. Delete this row
+  if a market-ontology-records CI step is ever commissioned.
