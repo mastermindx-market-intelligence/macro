@@ -1,7 +1,7 @@
 {
   "schema": "altdata.mastermind.v1",
   "as_of": "2026-09-10",
-  "generated_utc": "2026-09-10T01:48:43.899052+00:00",
+  "generated_utc": "2026-09-10T04:09:54.718918+00:00",
   "contract": "Actionable alt-data axis for the Mastermind bot. Each signal: signal_score 0-100 (composite of weighted convergence + brain conviction + price confirm \u2212 extension), action \u2208 {ACCUMULATE,WATCH,AVOID}, direction \u2208 {long,short,neutral}, source \u2208 {brain,deterministic}. The bot sizes through its OWN risk framework; this is an input, not an order. Brain calls are graded vs SPY (see calibration). An extended name is never ACCUMULATE. trump_linked / affiliations flag actor ties. rolling_over names (off_high\u2264\u221215% AND 20d<0 AND below 50dma) appear in broken_signals only \u2014 crowd attention, NOT entries. entry_tier (T1/T2/T3) = validated confluence buy gate signal.",
   "regime_read": "The desk's deterministic channels are clustering around AI-infrastructure and semiconductor capital-equipment names, with the tightest convergence in NVDA (5 channels + Pelosi stake + Cramer chatter) and PLTR (gov-contract acceleration + Trump-linked, though the trump_side flag reads 'sell'). Track record is empty, so every read here is uncalibrated and must stay modest.",
   "brain_present": true,
@@ -20,8 +20,8 @@
     "open": 19,
     "note": "No theses scored yet \u2014 the track record begins once the first check-by dates pass. Keep conviction modest until it does."
   },
-  "n_signals": 81,
-  "n_broken": 34,
+  "n_signals": 79,
+  "n_broken": 32,
   "signals": [
     {
       "ticker": "NVDA",
@@ -30,12 +30,11 @@
       "action": "ACCUMULATE",
       "direction": "long",
       "source": "brain",
-      "weighted_score": 2.2,
-      "convergence_score": 7,
+      "weighted_score": 1.95,
+      "convergence_score": 6,
       "channels": [
         "affiliation",
         "analyst_upgrade_cluster",
-        "cnbc_pick",
         "hf_model_momentum",
         "patent_cluster",
         "retail_buzz",
@@ -163,20 +162,21 @@
     },
     {
       "ticker": "MSFT",
-      "signal_score": 63,
+      "signal_score": 72,
       "conviction": "high",
       "action": "WATCH",
       "direction": "neutral",
       "source": "deterministic",
-      "weighted_score": 1.6,
-      "convergence_score": 4,
+      "weighted_score": 2.1,
+      "convergence_score": 5,
       "channels": [
         "affiliation",
         "app_demand",
         "github_momentum",
-        "patent_cluster"
+        "patent_cluster",
+        "trump"
       ],
-      "trump_linked": false,
+      "trump_linked": true,
       "rs_vs_spy_60d": 22.7,
       "no_price_data": false,
       "extended": false,
@@ -643,47 +643,6 @@
       "clamped": null
     },
     {
-      "ticker": "ORCL",
-      "signal_score": 40,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 1.3,
-      "convergence_score": 3,
-      "channels": [
-        "affiliation",
-        "cnbc_pick",
-        "insider_mspr"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": -15.5,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": false,
-      "off_high_252": -49.9,
-      "ret_20d": 7.6,
-      "above_50dma": true,
-      "entry_tier": null,
-      "affiliations": [
-        {
-          "actor": "Larry Ellison",
-          "rel": "CONTROLS",
-          "kind": "exec"
-        },
-        {
-          "actor": "Larry Ellison",
-          "rel": "CONTROLS",
-          "kind": "exec"
-        }
-      ],
-      "n_affiliated_actors": 2,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
       "ticker": "CEG",
       "signal_score": 39,
       "conviction": "medium",
@@ -734,6 +693,36 @@
       "rolling_over": false,
       "off_high_252": -12.9,
       "ret_20d": 7.7,
+      "above_50dma": true,
+      "entry_tier": null,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
+      "ticker": "TMO",
+      "signal_score": 38,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 0.95,
+      "convergence_score": 3,
+      "channels": [
+        "cnbc_pick",
+        "news_sentiment",
+        "trump"
+      ],
+      "trump_linked": true,
+      "rs_vs_spy_60d": 22.8,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": false,
+      "off_high_252": -5.5,
+      "ret_20d": 0.6,
       "above_50dma": true,
       "entry_tier": null,
       "affiliations": [],
@@ -925,6 +914,35 @@
       "clamped": null
     },
     {
+      "ticker": "PRGO",
+      "signal_score": 32,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 0.7,
+      "convergence_score": 2,
+      "channels": [
+        "special_situation",
+        "trump"
+      ],
+      "trump_linked": true,
+      "rs_vs_spy_60d": 29.1,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": false,
+      "off_high_252": -31.9,
+      "ret_20d": 13.9,
+      "above_50dma": true,
+      "entry_tier": null,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
       "ticker": "REGN",
       "signal_score": 32,
       "conviction": "medium",
@@ -948,6 +966,46 @@
       "entry_tier": null,
       "affiliations": [],
       "n_affiliated_actors": 0,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
+      "ticker": "ORCL",
+      "signal_score": 32,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 1.05,
+      "convergence_score": 2,
+      "channels": [
+        "affiliation",
+        "insider_mspr"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": -15.5,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": false,
+      "off_high_252": -49.9,
+      "ret_20d": 7.6,
+      "above_50dma": true,
+      "entry_tier": null,
+      "affiliations": [
+        {
+          "actor": "Larry Ellison",
+          "rel": "CONTROLS",
+          "kind": "exec"
+        },
+        {
+          "actor": "Larry Ellison",
+          "rel": "CONTROLS",
+          "kind": "exec"
+        }
+      ],
+      "n_affiliated_actors": 2,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
@@ -1035,35 +1093,6 @@
       "clamped": null
     },
     {
-      "ticker": "PRGO",
-      "signal_score": 31,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 0.7,
-      "convergence_score": 2,
-      "channels": [
-        "special_situation",
-        "trump"
-      ],
-      "trump_linked": true,
-      "rs_vs_spy_60d": 26.9,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": false,
-      "off_high_252": -38.2,
-      "ret_20d": 41.2,
-      "above_50dma": true,
-      "entry_tier": null,
-      "affiliations": [],
-      "n_affiliated_actors": 0,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
       "ticker": "NOW",
       "signal_score": 31,
       "conviction": "medium",
@@ -1127,36 +1156,6 @@
       "second_order": [],
       "falsifier": null,
       "clamped": null
-    },
-    {
-      "ticker": "VST",
-      "signal_score": 30,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 0.95,
-      "convergence_score": 3,
-      "channels": [
-        "insider_mspr",
-        "news_sentiment",
-        "special_situation"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": -0.3,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": false,
-      "off_high_252": -30.1,
-      "ret_20d": 6.2,
-      "above_50dma": true,
-      "entry_tier": "T2",
-      "affiliations": [],
-      "n_affiliated_actors": 0,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
     }
   ],
   "broken_signals": [
@@ -1193,17 +1192,18 @@
     },
     {
       "ticker": "BA",
-      "signal_score": 44,
-      "conviction": "medium",
+      "signal_score": 49,
+      "conviction": "high",
       "action": "WATCH",
       "direction": "neutral",
       "source": "deterministic",
-      "weighted_score": 1.4,
-      "convergence_score": 3,
+      "weighted_score": 1.55,
+      "convergence_score": 4,
       "channels": [
         "affiliation",
         "gov_grant",
-        "patent_cluster"
+        "patent_cluster",
+        "stocktwits_bull"
       ],
       "trump_linked": false,
       "rs_vs_spy_60d": -9.0,
@@ -1219,43 +1219,6 @@
           "actor": "Jim Cramer",
           "rel": "ENDORSES",
           "kind": "influencer"
-        }
-      ],
-      "n_affiliated_actors": 1,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
-      "ticker": "UBER",
-      "signal_score": 42,
-      "conviction": "high",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 1.25,
-      "convergence_score": 4,
-      "channels": [
-        "affiliation",
-        "app_demand",
-        "special_situation",
-        "stocktwits_bull"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": 1.1,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": true,
-      "off_high_252": -26.9,
-      "ret_20d": -6.3,
-      "above_50dma": false,
-      "entry_tier": null,
-      "affiliations": [
-        {
-          "actor": "Bill Ackman",
-          "rel": "AFFILIATES_WITH",
-          "kind": "fund"
         }
       ],
       "n_affiliated_actors": 1,
@@ -1359,6 +1322,42 @@
       "entry_tier": null,
       "affiliations": [],
       "n_affiliated_actors": 0,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
+      "ticker": "UBER",
+      "signal_score": 38,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 1.1,
+      "convergence_score": 3,
+      "channels": [
+        "affiliation",
+        "app_demand",
+        "special_situation"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": 1.1,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": true,
+      "off_high_252": -26.9,
+      "ret_20d": -6.3,
+      "above_50dma": false,
+      "entry_tier": null,
+      "affiliations": [
+        {
+          "actor": "Bill Ackman",
+          "rel": "AFFILIATES_WITH",
+          "kind": "fund"
+        }
+      ],
+      "n_affiliated_actors": 1,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
@@ -1676,6 +1675,35 @@
       "clamped": null
     },
     {
+      "ticker": "REBN",
+      "signal_score": 18,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 0.8,
+      "convergence_score": 2,
+      "channels": [
+        "insider_buy",
+        "special_situation"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": -54.1,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": true,
+      "off_high_252": -75.5,
+      "ret_20d": -50.7,
+      "above_50dma": false,
+      "entry_tier": null,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
       "ticker": "MAIR",
       "signal_score": 18,
       "conviction": "medium",
@@ -1890,35 +1918,6 @@
       "clamped": null
     },
     {
-      "ticker": "WMT",
-      "signal_score": 16,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 0.65,
-      "convergence_score": 2,
-      "channels": [
-        "app_demand",
-        "cnbc_pick"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": -15.9,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": true,
-      "off_high_252": -20.8,
-      "ret_20d": -5.6,
-      "above_50dma": false,
-      "entry_tier": null,
-      "affiliations": [],
-      "n_affiliated_actors": 0,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
       "ticker": "PINS",
       "signal_score": 16,
       "conviction": "medium",
@@ -1967,35 +1966,6 @@
       "rolling_over": true,
       "off_high_252": -29.0,
       "ret_20d": -1.8,
-      "above_50dma": false,
-      "entry_tier": null,
-      "affiliations": [],
-      "n_affiliated_actors": 0,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
-      "ticker": "DDOG",
-      "signal_score": 16,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 0.65,
-      "convergence_score": 2,
-      "channels": [
-        "analyst_upgrade_cluster",
-        "github_momentum"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": -14.3,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": true,
-      "off_high_252": -27.0,
-      "ret_20d": -19.4,
       "above_50dma": false,
       "entry_tier": null,
       "affiliations": [],
@@ -2088,6 +2058,35 @@
       "rolling_over": true,
       "off_high_252": -55.1,
       "ret_20d": -11.3,
+      "above_50dma": false,
+      "entry_tier": null,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
+      "ticker": "GSK",
+      "signal_score": 9,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 0.4,
+      "convergence_score": 2,
+      "channels": [
+        "clinical_phase3_start",
+        "special_situation"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": -11.4,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": true,
+      "off_high_252": -18.6,
+      "ret_20d": -6.1,
       "above_50dma": false,
       "entry_tier": null,
       "affiliations": [],

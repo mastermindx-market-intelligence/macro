@@ -37,7 +37,7 @@
         "macd_curl": false,
         "basing": false,
         "days_in_base": 0,
-        "flatness": 0.1175,
+        "flatness": 0.1447,
         "armed": false,
         "stoch_curl_recent": false,
         "stoch_traverse": false,
