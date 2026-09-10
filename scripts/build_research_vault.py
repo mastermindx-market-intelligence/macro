@@ -38,7 +38,10 @@ from engine.research_vault.sidecar import (  # noqa: E402
     canon_institution,
     clean_summary_points,
     clean_title,
+    desk_stamp_classes,
     desk_type,
+    display_title,
+    institution_display_pair,
 )
 from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
@@ -160,8 +163,10 @@ def _title_link(x: dict) -> str:
 
     The hydrated Pro feed restores the interactive viewer link. Keeping the
     no-JS public baseline plain ensures its three summaries cannot open a report.
+    Display polish (repeat-collapse, trailing date) is applied here, never in
+    the slug path.
     """
-    return _e(x.get("title"))
+    return _e(display_title(x.get("title")))
 
 
 def _ssr_card(x: dict) -> str:
@@ -169,9 +174,11 @@ def _ssr_card(x: dict) -> str:
     re-renders the full interactive feed on hydrate; this is the no-JS baseline.
     English content only (report text is the analyst's source language); the page
     chrome around it stays bilingual via the template's l-en/l-zh spans."""
-    inst = (x.get("institution") or "Unknown").strip() or "Unknown"
+    inst_raw = (x.get("institution") or "Unknown").strip() or "Unknown"
+    inst_en, inst_zh = institution_display_pair(inst_raw)
     side = (x.get("side") or "independent").lower()
-    stamp_en, stamp_zh, stamp_cls = desk_type(side)
+    stamp_en, stamp_zh, _ = desk_type(side)
+    stamp_cls = desk_stamp_classes(side)
     desk = x.get("desk") or ""
     top = bool(x.get("top_pick"))
     needs = bool(x.get("needs_metadata"))
@@ -188,12 +195,19 @@ def _ssr_card(x: dict) -> str:
     tags_html = "".join(f'<span class="rep-tag">{_e(t)}</span>' for t in tags)
     cal = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>'
     cls = "rep glass" + (" pick" if top else "") + (" needs" if needs else "")
+    if inst_en == inst_zh:
+        inst_html = f'<span class="rep-inst">{_e(inst_en)}</span>'
+    else:
+        inst_html = (
+            f'<span class="rep-inst"><span class="l-en">{_e(inst_en)}</span>'
+            f'<span class="l-zh">{_e(inst_zh)}</span></span>'
+        )
     return (
         f'<article class="{cls}" data-id="{_e(x.get("id"))}">'
         f'<div class="rep-top">'
-        f'<span class="rep-logo">{_e(_logo_for(inst))}</span>'
+        f'<span class="rep-logo">{_e(_logo_for(inst_raw))}</span>'
         f'<span class="rep-unread" aria-hidden="true"></span>'
-        f'<span class="rep-inst">{_e(inst)}</span>{desk_bits}'
+        f'{inst_html}{desk_bits}'
         f'<span class="stamp {stamp_cls}"><span class="dt"></span>'
         f'<span class="l-en">{_e(stamp_en)}</span><span class="l-zh">{_e(stamp_zh)}</span></span>{pin}'
         f'</div>'

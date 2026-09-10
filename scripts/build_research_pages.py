@@ -46,7 +46,13 @@ sys.path.insert(0, str(_ROOT))
 # import into build() (below, #3648) fixed that for jinja2 specifically; the leaf
 # module closes the class for any heavy import added here later. Do not move
 # these definitions back.
-from engine.research_vault.sidecar import clean_summary_points, desk_type
+from engine.research_vault.sidecar import (
+    clean_summary_points,
+    desk_stamp_classes,
+    desk_type,
+    display_title,
+    institution_display,
+)
 from engine.research_vault.slugs import _slug, _title, slug_map  # noqa: F401 (re-export)
 
 log = logging.getLogger("build_research_pages")
@@ -120,17 +126,17 @@ def _norm(item: dict) -> dict:
     inst = (item.get("institution") or "Unknown").strip() or "Unknown"
     side = (item.get("side") or "independent").lower()
     pts = [p for p in clean_summary_points(item.get("summary_points") or []) if _clean(p)]
-    stamp_en, stamp_zh, stamp_cls = desk_type(side)
+    stamp_en, stamp_zh, _ = desk_type(side)
     return {
         "id": item.get("id") or "",
-        "title": _title(item) or "Untitled research",
-        "inst": inst,
+        "title": display_title(_title(item)) or "Untitled research",
+        "inst": institution_display(inst) or inst,
         "mono": _monogram(inst),
         "side": side,
         "stamp": stamp_en,
         "stamp_en": stamp_en,
         "stamp_zh": stamp_zh,
-        "stamp_cls": stamp_cls,
+        "stamp_cls": desk_stamp_classes(side),
         "desk": item.get("desk") or "",
         "pub_iso": (item.get("published_at") or ""),
         "date_disp": _fmt_date(item.get("published_at") or ""),
@@ -360,7 +366,8 @@ def build(catalog: dict | None = None) -> int:
     slug_by_id: dict[str, str] = {}
     for n, it in zip(all_norm, items):
         s = (it.get("slug") or "").strip()          # reuse the vault build's slug if injected
-        slug_by_id[n["id"]] = s or _slug(n["title"], n["id"], seen)
+        # Slug from clean_title (via _title), never from the display-polished n.title.
+        slug_by_id[n["id"]] = s or _slug(_title(it), n["id"], seen)
         seen.add(slug_by_id[n["id"]])
 
     RESEARCH_DIR.mkdir(parents=True, exist_ok=True)

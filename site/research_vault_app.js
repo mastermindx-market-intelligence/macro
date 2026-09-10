@@ -175,8 +175,9 @@
 
   /* desk-type chip — `side` is buy-side/sell-side institution type, never a rating */
   var INST_CANON = { blackrock: 'BlackRock', scotiabank: 'Scotiabank', commbank: 'CommBank',
-                     'commonwealth bank': 'CommBank', ing: 'ING', 'ing econ': 'ING', 'ing direct': 'ING' };
-  var NON_DESK = { 'new folder': 1, 's&t': 1, other: 1, prime: 1, pb: 1, 'sg prime': 1,
+                     'commonwealth bank': 'CommBank', ing: 'ING', 'ing econ': 'ING', 'ing direct': 'ING',
+                     'sg prime': 'Société Générale' };
+  var NON_DESK = { 'new folder': 1, 's&t': 1, other: 1, prime: 1, pb: 1,
                    'week ahead': 1, 'weekly preview': 1, '13f summary': 1, 'greed and fear': 1,
                    nuclear: 1, 'zh ai': 1 };
   function canonInst(name) {
@@ -189,8 +190,29 @@
     if (!s || s === 'Unknown') return false;
     return !NON_DESK[s.toLowerCase()];
   }
+  function instDisplay(name) {
+    var s = canonInst(name);
+    if (!s) return 'Unknown';
+    if (s === 'Unknown') return s;
+    if (!isDeskInst(s)) return T('Institutional desk', '机构研究台');
+    return s;
+  }
+  function displayTitle(t) {
+    var s = String(t || '').replace(/\s+/g, ' ').trim();
+    if (!s) return s;
+    var words = s.split(' '), n = words.length, k, i, same;
+    for (k = Math.floor(n / 2); k >= 2; k--) {
+      same = true;
+      for (i = 0; i < k; i++) { if (words[i] !== words[k + i]) { same = false; break; } }
+      if (same) { s = words.slice(0, k).concat(words.slice(2 * k)).join(' '); break; }
+    }
+    var stripped = s.replace(/\s+\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}\s*$/i, '');
+    stripped = stripped.replace(/\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2},?\s+\d{4}\s*$/i, '').trim();
+    if (stripped && stripped !== s && stripped.split(/\s+/).length >= 2) s = stripped;
+    return s;
+  }
   function stampLabel(side) { return side === 'buy' ? T('Buy-side', '买方') : (side === 'sell' ? T('Sell-side', '卖方') : T('Independent', '独立')); }
-  function stampClass(side) { return side === 'buy' ? 'buy-side' : (side === 'sell' ? 'sell-side' : 'indep'); }
+  function stampClass(side) { return side === 'buy' ? 'buy-side buy' : (side === 'sell' ? 'sell-side sell' : 'indep'); }
   function fmtDate(d) {
     if (!d) return T('date pending', '日期待定');
     var p = d.split('-');
@@ -743,13 +765,13 @@
       + '<div class="rep-top">'
         + '<span class="rep-logo">' + esc(x.logo) + '</span>'
         + '<span class="rep-unread" aria-hidden="true"></span>'
-        + '<span class="rep-inst">' + esc(x.inst) + '</span>' + deskBits
+        + '<span class="rep-inst">' + esc(instDisplay(x.inst)) + '</span>' + deskBits
         + '<span class="stamp ' + stampClass(x.side) + '"><span class="dt"></span>' + stampLabel(x.side) + '</span>' + pinBadge
         + '<button class="rep-savebtn' + (saved ? ' on' : '') + '" aria-pressed="' + (saved ? 'true' : 'false') + '" aria-label="' + T('Save report', '收藏报告') + '" data-act="save">' + BOOK_SVG + '</button>'
       + '</div>'
       + '<h3>' + (x.slug && feedUnlocked()
-          ? '<a class="rep-titlelink" href="research/' + esc(x.slug) + '.html" data-act="view">' + esc(x.title) + '</a>'
-          : esc(x.title)) + '</h3>'
+          ? '<a class="rep-titlelink" href="research/' + esc(x.slug) + '.html" data-act="view">' + esc(displayTitle(x.title)) + '</a>'
+          : esc(displayTitle(x.title))) + '</h3>'
       + ptsHtml + moreBtn
       + '<div class="rep-foot"><div class="rep-meta">'
         + '<span class="rep-date">' + CAL_SVG + esc(fmtWhen(x.at, x.date)) + '</span>'
@@ -876,10 +898,10 @@
 
     // header
     $('vh-logo').textContent = x.logo;
-    $('vh-inst').textContent = x.inst;
+    $('vh-inst').textContent = instDisplay(x.inst);
     var dk = $('vh-desk'); dk.textContent = x.desk || '';
     $('vh-desk-sep').style.display = x.desk ? '' : 'none';
-    $('vh-title').textContent = x.title;
+    $('vh-title').textContent = displayTitle(x.title);
     var st = $('vh-stamp'); st.className = 'stamp ' + stampClass(x.side); st.innerHTML = '<span class="dt"></span>' + stampLabel(x.side);
     buildRelated(x);
 

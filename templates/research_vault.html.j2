@@ -49,9 +49,6 @@
   --rv-dim: rgba(79,143,247,.13);
   --rv-glow: rgba(79,143,247,.34);
   --gold:#d8b26a;              /* editorial highlight (Top Picks) — brass, not neon */
-
-  /* desk-type chips — buy-side/sell-side is institution type, never a rating. */
-  --desk:#8c93c8;
 }
 html[data-theme="light"]{
   --mx5-glass-bg:      rgba(255,255,255,.82);
@@ -65,7 +62,6 @@ html[data-theme="light"]{
   --rv:#285fff; --rv-2:#0f8fd8; --rv-ink:#1b49c8;
   --rv-dim: rgba(40,95,255,.10); --rv-glow: rgba(40,95,255,.26);
   --gold:#a9812e;
-  --desk:#5b62a8;
 }
 
 /* ── page shell (body top padding satisfies check_nav_gap ≥14px) ──
@@ -365,11 +361,16 @@ a.rep-ticker:hover{ border-color:var(--rv); }
 .btn.primary:hover{ filter:brightness(1.06); }
 .btn.ghost{ background:transparent; }
 
+/* Desk-type stamp: a NEUTRAL METADATA chip in both themes — never semantic
+   state color. Shared quiet-chip idiom: hairline --line, muted foreground,
+   transparent fill, no glow/shadow. Intentionally differing mechanisms: NONE. */
 .stamp{ display:inline-flex; align-items:center; gap:5px; font-family:var(--num); font-size:10px;
-  font-weight:700; letter-spacing:.04em; padding:3px 9px; border-radius:6px; border:1.5px solid currentColor;
-  color:var(--desk); }
-.stamp.buy-side, .stamp.sell-side, .stamp.indep{ color:var(--desk); }
-.stamp .dt{ width:5px; height:5px; border-radius:50%; background:currentColor; }
+  font-weight:600; letter-spacing:.02em; padding:3px 9px; border-radius:6px;
+  color:var(--muted); border:1px solid var(--line); background:transparent; box-shadow:none; }
+.stamp.buy, .stamp.sell, .stamp.indep,
+.stamp.buy-side, .stamp.sell-side{ color:var(--muted); border-color:var(--line);
+  background:transparent; box-shadow:none; }
+.stamp .dt{ width:5px; height:5px; border-radius:50%; background:currentColor; opacity:.7; }
 .rep .backfill{ font-size:11px; color:var(--muted); font-style:italic; }
 
 .rv-empty{ padding:40px 24px; text-align:center; }
@@ -677,7 +678,7 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
     </button>
     <button class="rv-lane" role="tab" aria-selected="false" data-lane="saved">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-      {{ t('Saved', '收藏') }}<span class="badge" id="badge-saved">—</span>
+      {{ t('Saved', '收藏') }}<span class="badge" id="badge-saved">{{ t('none yet', '暂无') }}</span>
     </button>
     <span class="rv-unread"><b id="unread-n">—</b> {{ t('unread', '未读') }}</span>
   </div>

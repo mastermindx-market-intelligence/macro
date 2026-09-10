@@ -403,6 +403,8 @@ def test_side_renders_as_desk_type_not_a_rating(page_seeded):
     assert re.search(r'class="stamp sell"', page_seeded) is None
     assert ">SELL<" not in page_seeded and ">BUY<" not in page_seeded
     assert "stamp sell-side" in page_seeded
+    # F7: dual class so origin/main .stamp.sell still matches during the bake skew
+    assert "stamp sell-side sell" in page_seeded
     js = (bld.ROOT / "site" / "research_vault_app.js").read_text(encoding="utf-8")
     assert "T('Buy-side', '买方')" in js
     assert "T('Sell-side', '卖方')" in js
@@ -441,6 +443,69 @@ def test_ssr_hero_figs_use_summary_not_bare_dash(page_seeded):
     assert re.search(r'id="fig-total">\d+', page_seeded)
     assert re.search(r'id="fig-new">\d+', page_seeded)
     assert 'id="fig-total">—' not in page_seeded
+
+
+def test_badge_saved_is_worded_null_not_bare_dash(page_seeded):
+    assert 'id="badge-saved"' in page_seeded
+    assert re.search(r'id="badge-saved"[^>]*>—\s*<', page_seeded) is None
+    assert "none yet" in page_seeded
+    assert "暂无" in page_seeded
+
+
+def test_ssr_card_uses_display_title_not_doubled_lead(monkeypatch):
+    catalog = {
+        "schema": "research_vault.catalog.v1",
+        "generated_at": "2026-09-09T10:00:00Z",
+        "count": 1,
+        "institutions": ["Goldman Sachs"],
+        "items": [{
+            "id": "gs-abc123",
+            "title": "GS Vol Views GS Vol Views 9 Sep 2026",
+            "institution": "Goldman Sachs",
+            "side": "sell",
+            "desk": "Vol",
+            "published_at": "2026-09-09T10:00:00Z",
+            "summary_points": ["Range holds."],
+            "tags": [], "tickers": [], "top_pick": False, "pages": 4,
+            "needs_metadata": False,
+        }],
+    }
+    html = _render(monkeypatch, catalog)
+    feed = html.split('id="feed"', 1)[-1].split('id="rv-catalog"', 1)[0]
+    assert "GS Vol Views" in feed
+    assert "GS Vol Views GS Vol Views" not in feed
+
+
+def test_ssr_card_does_not_print_folder_institution(monkeypatch):
+    catalog = {
+        "schema": "research_vault.catalog.v1",
+        "generated_at": "2026-09-09T10:00:00Z",
+        "count": 2,
+        "institutions": ["S&T", "New folder"],
+        "items": [
+            {
+                "id": "st-1", "title": "Note A", "institution": "S&T",
+                "side": "sell", "desk": "", "published_at": "2026-09-09T10:00:00Z",
+                "summary_points": ["A."], "tags": [], "tickers": [],
+                "top_pick": False, "pages": 1, "needs_metadata": False,
+            },
+            {
+                "id": "nf-1", "title": "Note B", "institution": "New folder",
+                "side": "independent", "desk": "", "published_at": "2026-09-08T10:00:00Z",
+                "summary_points": ["B."], "tags": [], "tickers": [],
+                "top_pick": False, "pages": 1, "needs_metadata": False,
+            },
+        ],
+    }
+    html = _render(monkeypatch, catalog)
+    feed = html.split('id="feed"', 1)[-1].split('id="rv-catalog"', 1)[0]
+    assert "S&amp;T" not in feed
+    assert "S&T" not in feed
+    assert "New folder" not in feed
+    assert "Institutional desk" in feed
+    js = (bld.ROOT / "site" / "research_vault_app.js").read_text(encoding="utf-8")
+    assert "instDisplay(x.inst)" in js
+    assert "function instDisplay(" in js
 
 
 # --- bilingual + compliance -------------------------------------------------

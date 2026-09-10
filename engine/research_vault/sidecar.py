@@ -179,6 +179,10 @@ def clean_title(title: str) -> str:
     are stripped. :func:`normalize`'s PDF-``/Title`` recovery is still preferred
     where it fires — it restores the FULL name; this is the last-resort repair
     for the documents where it cannot.
+
+    This function is the SLUG input. Repeat-collapse and trailing-date trim live
+    in :func:`display_title` and must never run here — they delete words, which
+    would move already-indexed ``/research/<slug>.html`` URLs.
     """
     s = re.sub(r"\s+", " ", str(title or "")).strip()
     prev = None
@@ -207,7 +211,7 @@ def clean_title(title: str) -> str:
             out.append(")")
         else:
             del out[i:]                    # bare trailing "(" — nothing to close
-    return _finish_title(re.sub(r"\s+", " ", "".join(out)).strip())
+    return re.sub(r"\s+", " ", "".join(out)).strip()
 
 
 # Trailing calendar dates the auto-titler appends after a real headline
@@ -224,12 +228,14 @@ _TRAILING_MON_DAY_YEAR = re.compile(
 
 # Markdown emphasis the upstream summarizer wraps around bullet headings.
 # The producer lives outside this repo (MarketDesk); we clean at ingest.
+# Italic follows markdown flanking: opener not followed by space, closer not
+# preceded by space, neither delimiter intra-word. Lone/footnote/multiplication
+# asterisks (EBITDA*, 3*ATR) must survive.
 _MD_BOLD = re.compile(r"\*\*(.+?)\*\*")
-_MD_ITALIC = re.compile(r"(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)")
-_ABBREV_END = re.compile(
-    r"(?:\b(?:vs|v|e\.g|i\.e|etc|mr|mrs|ms|dr|prof|inc|ltd|jr|sr|al)|u\.s|u\.k)\.?$",
-    re.I,
-)
+_MD_ITALIC = re.compile(r"(?<![\w*])\*(?![\s*])(.+?)(?<![\s*])\*(?![\w*])")
+# Mid-clause split marker the producer actually emits. Sentence-final
+# abbreviations (U.S., etc., Inc.) are NOT continuations.
+_VS_END = re.compile(r"\bvs\.?$", re.I)
 
 # side is DESK TYPE (buy-side / sell-side / independent), never a rating.
 _DESK_TYPE = {
@@ -247,15 +253,20 @@ _INSTITUTION_CANON = {
     "ing": "ING",
     "ing econ": "ING",
     "ing direct": "ING",
+    "sg prime": "Société Générale",
 }
 
 # Filesystem / document-type labels that are not research desks. Kept on the
-# row (we do not invent a bank name) but excluded from the Institution facet.
+# row (we do not invent a bank name) but excluded from the Institution facet
+# and replaced on cards by :func:`institution_display`.
 _NON_INSTITUTION = {
-    "new folder", "s&t", "other", "prime", "pb", "sg prime",
+    "new folder", "s&t", "other", "prime", "pb",
     "week ahead", "weekly preview", "13f summary", "greed and fear",
     "nuclear", "zh ai",
 }
+
+_GENERIC_DESK_EN = "Institutional desk"
+_GENERIC_DESK_ZH = "机构研究台"
 
 
 def desk_type(side: str) -> tuple[str, str, str]:
@@ -265,6 +276,21 @@ def desk_type(side: str) -> tuple[str, str, str]:
     BUY/SELL rating. Unknown values degrade to Independent. Never raises.
     """
     return _DESK_TYPE.get((side or "").strip().lower(), _DESK_TYPE["independent"])
+
+
+def desk_stamp_classes(side: str) -> str:
+    """CSS classes for the desk-type stamp, new name first then origin/main.
+
+    ``buy-side buy`` / ``sell-side sell`` / ``indep`` so new JS matches the
+    still-baked ``.stamp.buy/.sell/.indep`` selectors until the render lane
+    rebakes, and new CSS matches a cached old JS class after the bake.
+    """
+    _, _, cls = desk_type(side)
+    if cls == "buy-side":
+        return "buy-side buy"
+    if cls == "sell-side":
+        return "sell-side sell"
+    return "indep"
 
 
 def canon_institution(name: str) -> str:
@@ -281,6 +307,23 @@ def institution_is_desk(name: str) -> bool:
     if not s or s == _UNKNOWN_INSTITUTION:
         return False
     return s.casefold() not in _NON_INSTITUTION
+
+
+def institution_display_pair(name: str) -> tuple[str, str]:
+    """``(en, zh)`` card/report institution label. Folder names are not printed."""
+    s = canon_institution((name or "").strip())
+    if not s:
+        return (_UNKNOWN_INSTITUTION, "未知")
+    if s == _UNKNOWN_INSTITUTION:
+        return (s, "未知")
+    if not institution_is_desk(s):
+        return (_GENERIC_DESK_EN, _GENERIC_DESK_ZH)
+    return (s, s)
+
+
+def institution_display(name: str) -> str:
+    """English institution label for a card or report page."""
+    return institution_display_pair(name)[0]
 
 
 def _collapse_repeated_lead(s: str) -> str:
@@ -309,6 +352,19 @@ def _finish_title(s: str) -> str:
     return _strip_trailing_calendar_date(s)
 
 
+def display_title(title: str) -> str:
+    """Title for cards, SSR, report pages, facets. Never a slug input.
+
+    Runs :func:`clean_title` (paren/dedupe, slug-stable) then the repeat-lead
+    collapse and trailing-calendar-date strip. Idempotent, never raises.
+    """
+    try:
+        s = clean_title(title)
+    except Exception:  # noqa: BLE001 — a title is never worth failing a render
+        s = re.sub(r"\s+", " ", str(title or "")).strip()
+    return _finish_title(s) if s else s
+
+
 def _strip_markdown_markup(text: str) -> str:
     s = str(text or "")
     s = _MD_BOLD.sub(r"\1", s)
@@ -318,23 +374,18 @@ def _strip_markdown_markup(text: str) -> str:
 
 
 def _incomplete_point(s: str) -> bool:
-    """True when ``s`` was cut mid-sentence (abbrev, unclosed paren, dangling join).
+    """True when ``s`` was cut mid-clause — ``vs.`` or an unbalanced open paren.
 
-    A bullet that merely lacks terminal punctuation is NOT incomplete — short
-    headings and one-word points must stay separate. The producer defect this
-    repairs is a split on ``vs.`` / ``e.g.`` or an open ``(``.
+    Sentence-final abbreviations (U.S., etc., Inc.) are complete bullets.
+    A trailing comma or missing period is not a split. The producer defect
+    this repairs is a cut on ``(vs.`` / ``vs.`` or an open ``(``.
     """
     t = (s or "").rstrip()
     if not t:
         return False
-    last = t[-1]
-    if last in "(,;:—–-":
-        return True
     if t.count("(") > t.count(")"):
         return True
-    if last == ".":
-        return bool(_ABBREV_END.search(t))
-    return False
+    return bool(_VS_END.search(t))
 
 
 def _continuation_point(s: str) -> bool:
@@ -353,12 +404,12 @@ def _join_points(a: str, b: str) -> str:
 
 
 def clean_summary_points(points: list[str] | None) -> list[str]:
-    """Strip markdown emphasis and rejoin bullets split mid-sentence.
+    """Strip paired markdown emphasis and rejoin bullets split on ``vs.``.
 
     The upstream summarizer (out of this repo) emits ``**Heading**: …`` and
-    splits on ``vs.``. This is the in-repo ingest producer: new sidecars and
-    catalog heals both run through here so a public surface never sees either
-    artifact. Idempotent, never raises, clamps to ``_MAX_SUMMARY_POINTS``.
+    splits on ``vs.``. Rejoin only that mid-clause cut (or an unbalanced open
+    paren). Complete bullets, including ones that end in U.S./etc./Inc., stay
+    separate. Idempotent, never raises, clamps to ``_MAX_SUMMARY_POINTS``.
     """
     try:
         raw = [_strip_markdown_markup(p) for p in (points or [])]
