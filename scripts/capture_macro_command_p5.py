@@ -202,6 +202,36 @@ METHOD_OPEN_PAGES = (
 # (E-M1 / C-M1). METHOD_OPEN_PAGES is the composition-law crop set; the
 # table family is the five workspace+labor pages that overflow the table.
 METHOD_TABLE_PAGES = WORKSPACE_PAGES + (LABOR_PAGE,)
+_METHOD_TABLE_NAME_RE = re.compile(
+    r"^method_table_390_(?P<pos>start|end)-"
+    r"(?P<slug>.+?)(?:__(?P<element_key>[A-Za-z0-9_.-]+))?"
+    r"-(?P<theme>dark|light)-(?P<locale>en|zh)-(?P<width>\d+)\.png$"
+)
+_METHOD_TABLE_PROBE_RE = re.compile(
+    r"^method_table_390-(.+?)(?:__([A-Za-z0-9_.-]+))?-"
+    r"(dark|light)-(en|zh)-(\d+)$"
+)
+
+
+def method_table_filename(
+        pos: str, slug: str, theme: str, locale: str, width: int | str = 390,
+        *, element_key: str) -> str:
+    key = str(element_key or "").strip()
+    if not key:
+        raise RuntimeError("method_table filename requires element_key")
+    return (
+        f"method_table_390_{pos}-{slug}__{key}-"
+        f"{theme}-{locale}-{width}.png"
+    )
+
+
+def parse_method_table_name(name: str) -> dict[str, str] | None:
+    m = _METHOD_TABLE_NAME_RE.match(name)
+    if not m:
+        return None
+    return {k: (v or "") for k, v in m.groupdict().items()}
+
+
 METHOD_OPEN_SELECTOR = "section.mq-method"  # E-n1: section with padding, every cell
 METHOD_OPEN_DETAILS = "section.mq-method details.mc-details"
 # True container for Changed fingerprints / Hysteresis / lineage sentence
@@ -949,7 +979,8 @@ def _state(filename: str, theme: str, locale: str, viewport: str,
                 "text_receipt_paths", "shot_viewport",
                 "raw_box_in_shot_viewport", "hidden_fixed",
                 "shoot_box", "table_fits", "page_fits",
-                "page_scroll_width", "matched"):
+                "page_scroll_width", "matched", "element_key",
+                "visible_text_scope", "in_method_section"):
         if info.get(key) is not None:
             row[key] = info[key]
     # content_overflows must be present on every crop (empty list is valid).
@@ -1014,7 +1045,14 @@ def _open_method_details_by_click(target, *, host_page) -> str:
 
 
 def _assert_method_dl_contained(body) -> None:
-    dl = body.locator("dl").first
+    # n5: never .first. The opened axis details holds exactly one dl;
+    # the method section itself has one dl per axis.
+    dl = body.locator("details.mc-details[open] dl")
+    n = dl.count()
+    if n != 1:
+        raise RuntimeError(
+            f"method section open-details dl matched {n} "
+            "(must be exactly one; never .first)")
     dl.wait_for(timeout=8000)
     outer = _crop_box(body)
     inner = _crop_box(dl)
@@ -1368,6 +1406,35 @@ def _content_overflows_receipt(locator) -> list[dict[str, Any]]:
         """(el, registryKeys) => {
             const crop = el.getBoundingClientRect();
             const cropRight = crop.right;
+            const allTables = [...document.querySelectorAll('table.mq-table')];
+            const sectionIdOf = (node) => {
+                let cur = node;
+                while (cur && cur.nodeType === 1) {
+                    if (cur.tagName === 'SECTION' && cur.id) return cur.id;
+                    cur = cur.parentElement;
+                }
+                return null;
+            };
+            const tableSectionIds = allTables.map(sectionIdOf);
+            const tableIdCounts = {};
+            for (const sid of tableSectionIds) {
+                if (!sid) continue;
+                tableIdCounts[sid] = (tableIdCounts[sid] || 0) + 1;
+            }
+            const tableKeyOf = (node) => {
+                const i = allTables.indexOf(node);
+                if (i < 0) return null;
+                const sid = tableSectionIds[i];
+                if (sid && tableIdCounts[sid] === 1) return sid;
+                return 'nth-' + i;
+            };
+            const elementKeyOf = (node) => {
+                const tk = tableKeyOf(node);
+                if (tk) return tk;
+                const sid = sectionIdOf(node);
+                if (sid) return sid;
+                return null;
+            };
             const isA11yClip = (node) => {
                 if (!node || node.nodeType !== 1) return false;
                 if (node.classList && node.classList.contains('mq-sr')) return true;
@@ -1434,13 +1501,14 @@ def _content_overflows_receipt(locator) -> list[dict[str, Any]]:
             };
             const out = [];
             const seen = new Set();
-            const push = (sel, kind, right, x, y, nearest) => {
+            const push = (sel, kind, right, x, y, nearest, node) => {
                 if (!sel || sel === 'text') return;
+                const ekey = node ? elementKeyOf(node) : null;
                 const key = sel + '|' + kind + '|' + Math.round(right * 10)
-                    + '|' + (nearest || '');
+                    + '|' + (nearest || '') + '|' + (ekey || '');
                 if (seen.has(key)) return;
                 seen.add(key);
-                out.push({
+                const row = {
                     selector: sel,
                     kind,
                     right,
@@ -1448,7 +1516,9 @@ def _content_overflows_receipt(locator) -> list[dict[str, Any]]:
                     x: x,
                     y: y,
                     nearest_registered_scroller: nearest,
-                });
+                };
+                if (ekey) row.element_key = ekey;
+                out.push(row);
             };
             const isHScroll = (cur) => {
                 if (!cur || cur.nodeType !== 1) return false;
@@ -1486,7 +1556,8 @@ def _content_overflows_receipt(locator) -> list[dict[str, Any]]:
                     for (const r of rects) {
                         if (r.width < 0.5 || r.height < 0.5) continue;
                         if (r.right > cropRight + 0.5) {
-                            push(selOf(parent), 'text', r.right, r.left, r.top, null);
+                            push(selOf(parent), 'text', r.right, r.left, r.top,
+                                 null, parent);
                             break;
                         }
                     }
@@ -1507,7 +1578,7 @@ def _content_overflows_receipt(locator) -> list[dict[str, Any]]:
                     }
                     push(regKey || sel, 'scrollport',
                          br.left + node.scrollWidth, br.left, br.top,
-                         regKey || nearestSelf);
+                         regKey || nearestSelf, node);
                 }
                 if (!nearestSelf) {
                     let insidePort = false;
@@ -1523,7 +1594,8 @@ def _content_overflows_receipt(locator) -> list[dict[str, Any]]:
                         const br = node.getBoundingClientRect();
                         if (br.width >= 1 && br.height >= 1
                             && br.right > cropRight + 0.5) {
-                            push(selOf(node), 'box', br.right, br.left, br.top, null);
+                            push(selOf(node), 'box', br.right, br.left, br.top,
+                                 null, node);
                         }
                     }
                 }
@@ -1560,6 +1632,11 @@ def _content_overflows_receipt(locator) -> list[dict[str, Any]]:
         for key in ("x", "y", "right", "crop_right"):
             if key not in row or row[key] is None:
                 row[key] = float(row.get(key) or 0.0)
+        if str(row.get("selector") or "") == "table.mq-table":
+            if not row.get("element_key"):
+                raise RuntimeError(
+                    "content_overflows table.mq-table entry missing "
+                    f"element_key: {row}")
         normalized.append(row)
     return normalized
 
@@ -1709,12 +1786,13 @@ def _occlusion_samples(locator, *, cols: int = 3, rows: int = 5,
     else:
         judged = _judge_occlusion(samples, min_samples=len(pts))
     cov = y_coverage(judged, box)
-    # C-n4: honest floor from the 4px inset grid — no epsilon.
+    # R4: floor with 1e-3 epsilon. Exact floor is (h-8)/h; receipts may
+    # sit a fraction of a CSS pixel below it.
     floor = ((crop_h - 8.0) / crop_h) if crop_h >= 40.0 else 0.0
-    if (not short) and cov < floor:
+    if (not short) and cov < (floor - 1e-3):
         raise RuntimeError(
             f"y_coverage {cov:.6f} < floor {floor:.6f}=(h-8)/h "
-            f"for crop h={crop_h} "
+            f"with 1e-3 epsilon for crop h={crop_h} "
             f"(samples ys={[s.get('y') for s in judged]})")
     ys = [float(s["y"]) for s in judged if "y" in s]
     top = float(box["y"])
@@ -1949,50 +2027,52 @@ def _assert_page_fits(target, *, name: str, route: str = "",
 
 
 def _probe_page_fits_matrix(browser, *, origin: str) -> list[dict[str, Any]]:
-    """C-M1: one page_fits probe per route × width × locale (one theme)."""
+    """C-M1 / R5-n4: one page_fits probe per route × width × locale × theme."""
     from scripts.build_macro_suite_pages import HUB_PAGE, SUITE_PAGES
     routes = [HUB_PAGE.output] + [page.output for page in SUITE_PAGES]
     widths = (320, 390, 768, 1440)
     locales = ("en", "zh")
-    theme = "dark"
+    themes = ("dark", "light")
     rows: list[dict[str, Any]] = []
     for route in routes:
         for width in widths:
             for locale in locales:
-                ctx, page, frame = _open(
-                    browser=browser, origin=origin,
-                    path=f"/{route}", theme=theme, locale=locale,
-                    width=1440 if width < 1440 else width,
-                    height=900,
-                    iframe_width=width if width < 1440 else None,
-                )
-                try:
-                    target = (
-                        frame.locator("html") if frame is not None
-                        else page.locator("html"))
-                    target.wait_for(state="attached", timeout=15000)
-                    page.wait_for_timeout(80)
-                    measure = target.evaluate(
-                        """() => {
-                            const doc = document;
-                            const win = doc.defaultView || window;
-                            const se = doc.scrollingElement || doc.documentElement;
-                            const sw = se ? se.scrollWidth : 0;
-                            const iw = win.innerWidth || 0;
-                            return {
-                                page_scroll_width: sw,
-                                page_fits: sw <= iw + 1,
-                                innerWidth: iw,
-                            };
-                        }"""
-                    ) or {}
-                    row = _page_fits_receipt(
-                        measure, route=route, width=width,
-                        locale=locale, theme=theme)
-                    rows.append(row)
-                    _commit_page_fits_row(row)
-                finally:
-                    ctx.close()
+                for theme in themes:
+                    ctx, page, frame = _open(
+                        browser=browser, origin=origin,
+                        path=f"/{route}", theme=theme, locale=locale,
+                        width=1440 if width < 1440 else width,
+                        height=900,
+                        iframe_width=width if width < 1440 else None,
+                    )
+                    try:
+                        target = (
+                            frame.locator("html") if frame is not None
+                            else page.locator("html"))
+                        target.wait_for(state="attached", timeout=15000)
+                        page.wait_for_timeout(80)
+                        measure = target.evaluate(
+                            """() => {
+                                const doc = document;
+                                const win = doc.defaultView || window;
+                                const se = doc.scrollingElement
+                                    || doc.documentElement;
+                                const sw = se ? se.scrollWidth : 0;
+                                const iw = win.innerWidth || 0;
+                                return {
+                                    page_scroll_width: sw,
+                                    page_fits: sw <= iw + 1,
+                                    innerWidth: iw,
+                                };
+                            }"""
+                        ) or {}
+                        row = _page_fits_receipt(
+                            measure, route=route, width=width,
+                            locale=locale, theme=theme)
+                        rows.append(row)
+                        _commit_page_fits_row(row)
+                    finally:
+                        ctx.close()
     return rows
 
 
@@ -2301,6 +2381,7 @@ def _element_shot_guarded(
     extra["visible_text_head"] = head_src.replace("\n", " ").strip()[:80]
     extra["visible_text_sha256"] = hashlib.sha256(
         visible.encode("utf-8")).hexdigest()
+    extra["visible_text_scope"] = "page"
     extra["element_text_head"] = independent.replace("\n", " ").strip()[:80]
     extra["element_text_sha256"] = hashlib.sha256(
         independent.encode("utf-8")).hexdigest()
@@ -3495,21 +3576,18 @@ def _method_table_390_pair_ratified(
     """
     if len(files) != 2:
         return False
-    pat = re.compile(
-        r"^method_table_390_(start|end)-(.+)-(dark|light)-(en|zh)-(\d+)\.png$"
-    )
     parsed = []
     for name in files:
-        m = pat.match(name)
-        if not m:
+        row = parse_method_table_name(name)
+        if not row:
             return False
-        parsed.append({
-            "pos": m.group(1), "slug": m.group(2), "theme": m.group(3),
-            "locale": m.group(4), "width": m.group(5), "file": name,
-        })
+        parsed.append({**row, "file": name})
     if {row["pos"] for row in parsed} != {"start", "end"}:
         return False
-    if len({(r["slug"], r["theme"], r["locale"], r["width"]) for r in parsed}) != 1:
+    if len({
+        (r["slug"], r["element_key"], r["theme"], r["locale"], r["width"])
+        for r in parsed
+    }) != 1:
         return False
     by_file = {
         st["file"]: st
@@ -3681,21 +3759,17 @@ def _scroll_hub_scroller(target, selector: str, *, pos: str) -> dict[str, Any]:
     ) or {"ok": False}
 
 
-_OVERFLOWING_MQ_TABLE_JS = """() => {
-    const tables = [...document.querySelectorAll('table.mq-table')];
-    const vis = tables.filter((el) => {
-      const r = el.getBoundingClientRect();
-      const st = getComputedStyle(el);
-      return r.width > 1 && r.height > 1
-        && st.display !== 'none' && st.visibility !== 'hidden';
-    });
-    const overflowing = vis.filter(
-      (el) => el.scrollWidth > el.clientWidth + 1);
-    const pick = overflowing[0] || null;
-    if (!pick) {
-      return {ok: false, n: tables.length, nVisible: vis.length,
-              nOverflow: overflowing.length};
-    }
+_MQ_TABLE_CENSUS_JS = """() => {
+    const reveal = (el) => {
+      let p = el;
+      while (p && p.nodeType === 1) {
+        if (p.tagName === 'DETAILS' && !p.open) p.open = true;
+        if (p.hasAttribute && p.hasAttribute('hidden')) {
+          p.removeAttribute('hidden');
+        }
+        p = p.parentElement;
+      }
+    };
     const path = (el) => {
       const parts = [];
       let node = el;
@@ -3722,72 +3796,55 @@ _OVERFLOWING_MQ_TABLE_JS = """() => {
       }
       return parts.join(' > ');
     };
-    return {
-      ok: true,
-      selector: path(pick),
-      scrollWidth: pick.scrollWidth,
-      clientWidth: pick.clientWidth,
+    const tables = [...document.querySelectorAll('table.mq-table')];
+    for (const el of tables) reveal(el);
+    const sectionIdOf = (el) => {
+      let cur = el;
+      while (cur && cur.nodeType === 1) {
+        if (cur.tagName === 'SECTION' && cur.id) return cur.id;
+        cur = cur.parentElement;
+      }
+      return null;
     };
+    const sectionIds = tables.map(sectionIdOf);
+    const idCounts = {};
+    for (const sid of sectionIds) {
+      if (!sid) continue;
+      idCounts[sid] = (idCounts[sid] || 0) + 1;
+    }
+    const keys = [];
+    const seen = new Set();
+    const rows = tables.map((el, i) => {
+      const sid = sectionIds[i];
+      let key = (sid && idCounts[sid] === 1) ? sid : ('nth-' + i);
+      if (seen.has(key)) key = 'nth-' + i;
+      seen.add(key);
+      keys.push(key);
+      const r = el.getBoundingClientRect();
+      const st = getComputedStyle(el);
+      const visible = r.width > 1 && r.height > 1
+        && st.display !== 'none' && st.visibility !== 'hidden';
+      const inMethod = !!(el.closest && el.closest('section.mq-method'));
+      return {
+        index: i,
+        element_key: key,
+        section_id: sid,
+        selector: path(el),
+        scrollWidth: el.scrollWidth,
+        clientWidth: el.clientWidth,
+        overflowing: el.scrollWidth > el.clientWidth + 1,
+        visible,
+        in_method_section: inMethod,
+      };
+    });
+    if (new Set(keys).size !== keys.length) {
+      return {ok: false, reason: 'duplicate element_key', rows};
+    }
+    return {ok: true, rows, n: rows.length};
 }"""
 
 
-def _photograph_mq_table_390(
-        *, page, target, table, table_sel: str,
-        dest_list: list[dict[str, Any]], probes: dict[str, Any],
-        slug: str, page_name: str, theme: str, locale: str,
-        receipt_locator=None) -> None:
-    """Shoot start (+ end unless table_fits) of one table.mq-table at 390."""
-    probes.setdefault("method_table_390_text", {})
-    full_text = str(table.evaluate(
-        """el => (el.innerText || '')
-            .replace(/\\s+/g, ' ').trim()"""
-    ) or "")
-    probes["method_table_390_text"][
-        f"method_table_390-{slug}-{theme}-{locale}-390"
-    ] = full_text
-    fit_rcpt = table.evaluate(
-        """(el) => ({
-            scrollWidth: el.scrollWidth,
-            clientWidth: el.clientWidth,
-            table_fits: el.scrollWidth <= el.clientWidth + 1,
-        })"""
-    ) or {}
-    table_fits = bool(fit_rcpt.get("table_fits"))
-    positions = [("start", 0)]
-    if not table_fits:
-        positions.append(("end", None))
-    for pos, _scroll_to in positions:
-        tname = (
-            f"method_table_390_{pos}-{slug}-"
-            f"{theme}-{locale}-390.png"
-        )
-        print(f"capture {tname}", flush=True)
-        scroll_rcpt = table.evaluate(
-            """(el, args) => {
-                const want = args.pos;
-                if (want === 'end') {
-                  el.scrollLeft = el.scrollWidth;
-                } else {
-                  el.scrollLeft = 0;
-                }
-                const st = getComputedStyle(el);
-                return {
-                  scroll_container_selector:
-                    'table.mq-table',
-                  scrollWidth: el.scrollWidth,
-                  clientWidth: el.clientWidth,
-                  scrollLeft: el.scrollLeft,
-                  overflow_x: st.overflowX,
-                  table_fits: el.scrollWidth
-                    <= el.clientWidth + 1,
-                };
-            }""",
-            {"pos": pos},
-        )
-        page.wait_for_timeout(80)
-        vis_at_scroll = str(table.evaluate(
-            """(el, locale) => {
-                const prefer = locale === 'zh' ? 'l-zh' : 'l-en';
+_MQ_TABLE_VISIBLE_TEXT_JS = """(el, locale) => {
                 const other = locale === 'zh' ? 'l-en' : 'l-zh';
                 const cr = el.getBoundingClientRect();
                 const parts = [];
@@ -3823,9 +3880,69 @@ def _photograph_mq_table_390(
                   if (t) parts.push(t);
                 }
                 return parts.join(' ').replace(/\\s+/g, ' ').trim();
+            }"""
+
+
+def _photograph_mq_table_390(
+        *, page, target, table, table_sel: str,
+        dest_list: list[dict[str, Any]], probes: dict[str, Any],
+        slug: str, page_name: str, theme: str, locale: str,
+        element_key: str, in_method_section: bool = False,
+        receipt_locator=None) -> None:
+    """Shoot start (+ end unless table_fits) of one table.mq-table at 390."""
+    probes.setdefault("method_table_390_text", {})
+    full_text = str(table.evaluate(
+        """el => (el.innerText || '')
+            .replace(/\\s+/g, ' ').trim()"""
+    ) or "")
+    probes["method_table_390_text"][
+        f"method_table_390-{slug}__{element_key}-{theme}-{locale}-390"
+    ] = full_text
+    fit_rcpt = table.evaluate(
+        """(el) => ({
+            scrollWidth: el.scrollWidth,
+            clientWidth: el.clientWidth,
+            table_fits: el.scrollWidth <= el.clientWidth + 1,
+        })"""
+    ) or {}
+    table_fits = bool(fit_rcpt.get("table_fits"))
+    table.evaluate("el => { el.scrollLeft = 0; }")
+    page.wait_for_timeout(40)
+    text_zero = str(table.evaluate(_MQ_TABLE_VISIBLE_TEXT_JS, locale) or "")
+    positions = [("start", 0)]
+    if not table_fits:
+        positions.append(("end", None))
+    for pos, _scroll_to in positions:
+        tname = method_table_filename(
+            pos, slug, theme, locale, 390, element_key=element_key)
+        print(f"capture {tname}", flush=True)
+        scroll_rcpt = table.evaluate(
+            """(el, args) => {
+                const want = args.pos;
+                if (want === 'end') {
+                  el.scrollLeft = Math.max(
+                    0, el.scrollWidth - el.clientWidth);
+                } else {
+                  el.scrollLeft = 0;
+                }
+                const st = getComputedStyle(el);
+                return {
+                  scroll_container_selector:
+                    'table.mq-table',
+                  scrollWidth: el.scrollWidth,
+                  clientWidth: el.clientWidth,
+                  scrollLeft: el.scrollLeft,
+                  overflow_x: st.overflowX,
+                  table_fits: el.scrollWidth
+                    <= el.clientWidth + 1,
+                  element_key: args.element_key,
+                };
             }""",
-            locale,
-        ) or "")
+            {"pos": pos, "element_key": element_key},
+        )
+        page.wait_for_timeout(80)
+        vis_at_scroll = str(
+            table.evaluate(_MQ_TABLE_VISIBLE_TEXT_JS, locale) or "")
         tinfo = _element_shot_guarded(
             EVIDENCE / tname, page, table,
             selector=table_sel, locale=locale,
@@ -3837,10 +3954,14 @@ def _photograph_mq_table_390(
         tinfo.update(scroll_rcpt or {})
         if pos == "start" and table_fits:
             tinfo["table_fits"] = True
+        tinfo["element_key"] = element_key
+        tinfo["in_method_section"] = bool(in_method_section)
         tinfo["visible_text_head"] = vis_at_scroll[:200]
         tinfo["visible_text_sha256"] = hashlib.sha256(
             vis_at_scroll.encode("utf-8")).hexdigest()
+        tinfo["visible_text_scope"] = "element"
         tinfo["visible_text_at_scroll"] = vis_at_scroll
+        tinfo["visible_text_at_zero"] = text_zero
         tinfo["shot_route"] = _shot_route_of(target)
         tinfo["page_id"] = page_name
         tinfo.pop("_element_text", None)
@@ -3850,7 +3971,7 @@ def _photograph_mq_table_390(
             tname, theme, locale, "mobile", tinfo,
             viewport_width=390,
             verified_how=(
-                f"{page_name} method table "
+                f"{page_name} method table element_key={element_key} "
                 f"scrollLeft={pos}; crop {table_sel}"
                 + ("; table_fits" if table_fits else "")
             ),
@@ -3860,70 +3981,73 @@ def _photograph_mq_table_390(
         ))
 
 
+def _capture_all_overflowing_mq_tables_390(
+        *, page, host, dest_list: list[dict[str, Any]],
+        probes: dict[str, Any], slug: str, page_name: str,
+        theme: str, locale: str, receipt_locator=None,
+        shot_target=None) -> None:
+    """R1: photograph EVERY overflowing table.mq-table instance at 390.
+
+    element_key is nearest unique ancestor section[id], else nth-of-match
+    in document order (asserted unique). Never .first.
+    """
+    census = host.evaluate(_MQ_TABLE_CENSUS_JS) or {}
+    if not census.get("ok"):
+        raise RuntimeError(
+            f"method_table_390-{slug}: table census failed {census}")
+    rows = list(census.get("rows") or [])
+    keys = [str(r.get("element_key") or "") for r in rows]
+    if not keys and host.locator("table.mq-table").count() == 0:
+        return
+    if len(set(keys)) != len(keys) or any(not k for k in keys):
+        raise RuntimeError(
+            f"method_table_390-{slug}: element_key not unique/stable {keys}")
+    overflowing = [r for r in rows if r.get("overflowing")]
+    target = shot_target if shot_target is not None else page
+    for row in overflowing:
+        table_sel = str(row.get("selector") or "")
+        element_key = str(row.get("element_key") or "")
+        if not table_sel or not element_key:
+            raise RuntimeError(
+                f"method_table_390-{slug}: incomplete census row {row}")
+        n_table = host.locator(table_sel).count()
+        if n_table != 1:
+            raise RuntimeError(
+                f"method_table_390-{slug}: crop_selector {table_sel!r} "
+                f"matched {n_table} (must be exactly one; never .first)")
+        table = host.locator(table_sel)
+        _photograph_mq_table_390(
+            page=page, target=target, table=table, table_sel=table_sel,
+            dest_list=dest_list, probes=probes, slug=slug,
+            page_name=page_name, theme=theme, locale=locale,
+            element_key=element_key,
+            in_method_section=bool(row.get("in_method_section")),
+            receipt_locator=receipt_locator,
+        )
+
+
 def _capture_method_table_390_pair(
         *, page, target, body, dest_list: list[dict[str, Any]],
         probes: dict[str, Any], slug: str, page_name: str,
         theme: str, locale: str) -> None:
-    """Photograph the composition table inside section.mq-method at 390."""
-    table_rel = (
-        "> details.mc-details:first-of-type "
-        ".tbl-scroll table.mq-table"
+    """Photograph every overflowing table.mq-table on a method-open page."""
+    _capture_all_overflowing_mq_tables_390(
+        page=page, host=target, dest_list=dest_list, probes=probes,
+        slug=slug, page_name=page_name, theme=theme, locale=locale,
+        shot_target=target,
     )
-    table_sel = f"{METHOD_OPEN_SELECTOR} {table_rel}"
-    n_table = body.locator(table_rel).count()
-    if n_table == 0:
-        n_loose = body.locator("table.mq-table").count()
-        if n_loose == 0:
-            return
-        raise RuntimeError(
-            f"method_table_390-{slug}: composition table missing "
-            f"(loose table.mq-table matched {n_loose})")
-    if n_table != 1:
-        raise RuntimeError(
-            f"method_table_390-{slug}: crop_selector {table_sel!r} "
-            f"matched {n_table}")
-    table = body.locator(table_rel)
-    _photograph_mq_table_390(
-        page=page, target=target, table=table, table_sel=table_sel,
-        dest_list=dest_list, probes=probes, slug=slug,
-        page_name=page_name, theme=theme, locale=locale)
 
 
 def _capture_overflowing_mq_table_390(
         *, page, host, dest_list: list[dict[str, Any]],
         probes: dict[str, Any], slug: str, page_name: str,
         theme: str, locale: str, receipt_locator=None) -> None:
-    """E-M1: pages without a method-section table still report table.mq-table.
-
-    Photograph the visible overflowing instance (unique CSS path, never .first).
-    """
-    simple = "section.mq-changed table.mq-table"
-    n_simple = host.locator(simple).count()
-    found = host.evaluate(_OVERFLOWING_MQ_TABLE_JS) or {}
-    if n_simple == 1:
-        found = {"ok": True, "selector": simple}
-    if not found.get("ok"):
-        tab = host.locator('[data-mq-tab="drivers"]')
-        if tab.count() == 1:
-            tab.click(timeout=15000)
-            page.wait_for_timeout(120)
-            found = host.evaluate(_OVERFLOWING_MQ_TABLE_JS) or {}
-    if not found.get("ok") or not found.get("selector"):
-        raise RuntimeError(
-            f"method_table_390-{slug}: table.mq-table reported as a "
-            f"scrollport but none overflow at 390 ({found})")
-    table_sel = str(found["selector"])
-    n_table = host.locator(table_sel).count()
-    if n_table != 1:
-        raise RuntimeError(
-            f"method_table_390-{slug}: crop_selector {table_sel!r} "
-            f"matched {n_table} (must be exactly one; never .first)")
-    table = host.locator(table_sel)
-    _photograph_mq_table_390(
-        page=page, target=page, table=table, table_sel=table_sel,
-        dest_list=dest_list, probes=probes, slug=slug,
-        page_name=page_name, theme=theme, locale=locale,
-        receipt_locator=receipt_locator)
+    """Photograph every overflowing table.mq-table at 390 (no .first)."""
+    _capture_all_overflowing_mq_tables_390(
+        page=page, host=host, dest_list=dest_list, probes=probes,
+        slug=slug, page_name=page_name, theme=theme, locale=locale,
+        receipt_locator=receipt_locator, shot_target=page,
+    )
 
 
 def _capture_hub_rail_family(browser, *, origin: str,
@@ -4319,16 +4443,9 @@ def declared_cell_rows(
             ("light", "en"), ("light", "zh"),
         ):
             add(f"method_open-{slug}-{theme}-{locale}-390.png")
-    for page_name in METHOD_TABLE_PAGES:
-        slug = page_name.replace(".html", "")
-        for theme, locale in (
-            ("dark", "en"), ("dark", "zh"),
-            ("light", "en"), ("light", "zh"),
-        ):
-            add(f"method_table_390_start-{slug}-{theme}-{locale}-390.png")
-            # End crop is conditional at capture (table_fits); still declared so
-            # captured ends remain ⊆ declared (E-m1).
-            add(f"method_table_390_end-{slug}-{theme}-{locale}-390.png")
+    # method_table_390 instance cells are discovered at capture (one start/end
+    # pair per overflowing element_key). They are coverage-gated, not a
+    # static declared floor — extras exemption is method_table_390_*.
     for page_name in LINEAGE_OPEN_PAGES:
         slug = page_name.replace(".html", "")
         for theme, locale in (
@@ -4563,7 +4680,7 @@ def main() -> int:
             browser = playwright.chromium.launch(headless=True)
 
             # C-M1: page_fits once per route × width × locale BEFORE any crop.
-            print("probe page_fits matrix (15×4×2)", flush=True)
+            print("probe page_fits matrix (15×4×2×2)", flush=True)
             page_fits_rows = _probe_page_fits_matrix(browser, origin=origin)
             probes["page_fits"] = page_fits_rows
 
@@ -5879,6 +5996,10 @@ def main() -> int:
         }
         appl = probes.get("e5_applicability") or {}
         declared_rows = declared_cell_rows(appl)
+        for fname in sorted(captured_files):
+            if str(fname).startswith("method_table_390_"):
+                declared_rows.append(
+                    {"file": fname, "family": "method_table_390"})
         declared = [row["file"] for row in declared_rows]
         for leftover in EVIDENCE.glob("*.png"):
             if leftover.name not in captured_files:
@@ -5890,14 +6011,17 @@ def main() -> int:
                 f"evidence dir has PNGs not produced by this capture: {orphans}")
         extras = sorted(
             f for f in (captured_files - set(declared))
-            if not str(f).startswith("method_table_390_end-")
+            if not str(f).startswith("method_table_390_")
         )
         if extras:
             raise RuntimeError(f"captured minus declared: {extras}")
         computed_gaps = sorted(set(declared) - captured_files)
         probes["declared_cells"] = declared
         probes["declared_rows"] = declared_rows
-        probes["declared_families"] = declared_families(appl)
+        declared_fams: dict[str, list[str]] = {}
+        for row in declared_rows:
+            declared_fams.setdefault(row["family"], []).append(row["file"])
+        probes["declared_families"] = declared_fams
         probes["captured_cells"] = sorted(captured_files)
         probes["tree_pngs"] = sorted(tree_pngs)
         probes["gaps"] = [

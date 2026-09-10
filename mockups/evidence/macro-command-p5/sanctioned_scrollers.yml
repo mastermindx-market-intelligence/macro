@@ -14,9 +14,12 @@ table.mq-table:
   kind: table
   covering_family: method_table_390
   reason: >-
-    Method contribution table; start/end (or table_fits) pair crops cover
-    scrolled-out headers and values on every page that reports this
-    scrollport.
+    Every overflowing table.mq-table instance (including .mq-table-compact)
+    is photographed start+end at 390, keyed by element_key. On 3 of the 5
+    reporting pages the photographed overflowing table is the What-changed
+    METRIC/PRIOR/CURRENT/CHANGE grid; FC and labor also photograph the
+    method-section WEIGHT/CONTRIBUTION composition table when it overflows.
+    table_fits binds only its own element_key.
 
 ul.mc-rail-list:
   kind: designed-rail

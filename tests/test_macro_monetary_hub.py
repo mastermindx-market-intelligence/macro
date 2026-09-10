@@ -346,9 +346,57 @@ def test_a_manifest_that_omits_a_workspace_still_keeps_the_full_rail(tmp_path: P
 # truthful first viewport / no machine text
 # --------------------------------------------------------------------------
 
-def test_the_hub_shows_a_dated_or_honestly_absent_as_of(hub: str) -> None:
+def _command_eyebrow_asof(authored: str) -> str:
+    idx = authored.index('class="mc-eyebrow-asof')
+    end = authored.index("</p>", idx)
+    return authored[idx:end]
+
+
+def test_the_hub_shows_a_dated_or_honestly_absent_as_of(
+        hub: str, tmp_path: Path) -> None:
+    """Dated hub reading renders <time> matching the state's date; absence
+    renders the exact copy and no <time> in the command eyebrow."""
+    from lib.macro_suite_labels import date_display_pair
+
     authored = _authored(hub)
-    assert "<time" in authored or "No dated reading yet" in authored
+    brow = _command_eyebrow_asof(authored)
+    live = re.search(r'<time datetime="(\d{4}-\d{2}-\d{2})"', brow)
+    if live:
+        pair = date_display_pair(live.group(1))
+        assert pair is not None
+        assert pair["en"] in brow
+        assert pair["zh"] in brow
+        assert "No dated reading yet" not in brow
+    else:
+        assert "No dated reading yet" in brow
+        assert "<time" not in brow
+
+    data_root = _data_copy(tmp_path)
+
+    def _strip_dates(node):
+        if isinstance(node, dict):
+            for key in list(node):
+                if key in {"as_of", "as_of_display", "effective_date",
+                           "source_asof"}:
+                    node[key] = None
+                else:
+                    _strip_dates(node[key])
+        elif isinstance(node, list):
+            for item in node:
+                _strip_dates(item)
+
+    for path in data_root.rglob("*.json"):
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+        _strip_dates(payload)
+        path.write_text(json.dumps(payload), encoding="utf-8")
+    absent_hub = _render(tmp_path, data_root)[builder.HUB_PAGE.output]
+    absent = _authored(absent_hub)
+    absent_brow = _command_eyebrow_asof(absent)
+    assert "No dated reading yet" in absent_brow
+    assert "<time" not in absent_brow
 
 
 def test_no_machine_receipt_reaches_the_hub_reading_path(hub: str) -> None:

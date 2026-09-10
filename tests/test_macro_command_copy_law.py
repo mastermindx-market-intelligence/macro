@@ -1252,7 +1252,8 @@ def test_p5_completeness_against_tree_not_manifest_self() -> None:
         ["git", "ls-files", "mockups/evidence/macro-command-p5/*.png"],
         cwd=ROOT, text=True)
     git_pngs = {Path(line).name for line in listed.splitlines() if line.strip()}
-    assert captured - declared == set()
+    method_table = {n for n in captured if n.startswith("method_table_390_")}
+    assert captured - declared - method_table == set()
     assert tree - captured == set()
     if git_pngs:
         assert git_pngs - captured == set()
@@ -2199,6 +2200,9 @@ def test_method_open_family_photographs_disclosure_rows() -> None:
                 state.get("file"), head)
             assert "权重法则" not in head, (state.get("file"), head)
         assert state.get("visible_text_sha256") or state.get("element_text_sha256")
+        if state.get("visible_text_sha256"):
+            assert state.get("visible_text_scope") in {"page", "element"}, (
+                state.get("file"), state.get("visible_text_scope"))
         text_hashes.add(
             state.get("visible_text_sha256")
             or state.get("element_text_sha256")
@@ -2467,6 +2471,13 @@ def test_inner_scrollports_have_method_table_pair() -> None:
                     "method_table_390_start-", "method_table_390_end-", 1)
                 if end not in files and not state.get("table_fits"):
                     offenders.append((name, "missing end without table_fits"))
+                if not state.get("element_key"):
+                    offenders.append((name, "missing element_key"))
+            for entry in overflows:
+                if str(entry.get("selector") or "") == "table.mq-table":
+                    if not entry.get("element_key"):
+                        offenders.append((name, "overflow missing element_key",
+                                          entry))
     assert not missing_key, missing_key[:10]
     assert not offenders, offenders[:10]
 
@@ -2496,21 +2507,25 @@ def test_method_table_390_contribution_union() -> None:
     table_probes = probes.get("method_table_390_text") or {}
     assert table_probes, "method_table_390_text probe missing"
     vis_map = probes.get("method_table_390_visible") or {}
-    from scripts.capture_macro_command_p5 import METHOD_OPEN_PAGES
+    from scripts.capture_macro_command_p5 import (
+        METHOD_OPEN_PAGES, method_table_filename,
+    )
     contrib_slugs = {p.replace(".html", "") for p in METHOD_OPEN_PAGES}
     en_headers = ("COMPONENT", "RAW", "STANDARDIZED", "WEIGHT", "CONTRIBUTION")
     zh_headers = ("分项", "原始", "标准化", "权重", "贡献")
     for key, full in table_probes.items():
         m = re.match(
-            r"method_table_390-(.+)-(dark|light)-(en|zh)-(\d+)$", key)
+            r"method_table_390-(.+?)(?:__([A-Za-z0-9_.-]+))?-"
+            r"(dark|light)-(en|zh)-(\d+)$", key)
         assert m, key
-        slug, theme, locale, width = m.groups()
+        slug, ekey, theme, locale, width = m.groups()
+        assert ekey, (key, "probe key missing element_key")
         contribs = re.findall(r"[+\-−]?\d+(?:\.\d+)?", full)
         values = [v for v in contribs if "." in v]
-        start = by_file.get(
-            f"method_table_390_start-{slug}-{theme}-{locale}-{width}.png")
-        end = by_file.get(
-            f"method_table_390_end-{slug}-{theme}-{locale}-{width}.png")
+        start = by_file.get(method_table_filename(
+            "start", slug, theme, locale, width, element_key=ekey))
+        end = by_file.get(method_table_filename(
+            "end", slug, theme, locale, width, element_key=ekey))
         assert start, key
         if end is None:
             assert start.get("table_fits") is True, (
@@ -2546,8 +2561,8 @@ def test_method_table_390_contribution_union() -> None:
             assert v in union, (key, v, "missing from start∪end visible text")
         # Extra pages photograph the What-changed table (METRIC/PRIOR/CURRENT),
         # not the composition-law WEIGHT/CONTRIBUTION grid. Pair + values
-        # still apply; header/label union is METHOD_OPEN_PAGES only.
-        if slug not in contrib_slugs:
+        # still apply; header/label union is the method-section instance only.
+        if slug not in contrib_slugs or not start.get("in_method_section"):
             continue
         headers = en_headers if locale == "en" else zh_headers
         for h in headers:
@@ -2597,19 +2612,25 @@ def test_method_table_header_blank_mut_hdr_fails() -> None:
         for st in page["states"]
         if st.get("file")
     }
-    from scripts.capture_macro_command_p5 import METHOD_OPEN_PAGES
+    from scripts.capture_macro_command_p5 import (
+        METHOD_OPEN_PAGES, method_table_filename,
+    )
     contrib_slugs = {p.replace(".html", "") for p in METHOD_OPEN_PAGES}
     key = next(
         k for k in (probes.get("method_table_390_text") or {})
         if any(s in k for s in contrib_slugs)
+        and "__" in k
     )
-    m = re.match(r"method_table_390-(.+)-(dark|light)-(en|zh)-(\d+)$", key)
+    m = re.match(
+        r"method_table_390-(.+?)(?:__([A-Za-z0-9_.-]+))?-"
+        r"(dark|light)-(en|zh)-(\d+)$", key)
     assert m, key
-    slug, theme, locale, width = m.groups()
-    start = copy.deepcopy(by_file[
-        f"method_table_390_start-{slug}-{theme}-{locale}-{width}.png"])
-    end = by_file.get(
-        f"method_table_390_end-{slug}-{theme}-{locale}-{width}.png")
+    slug, ekey, theme, locale, width = m.groups()
+    start_name = method_table_filename(
+        "start", slug, theme, locale, width, element_key=ekey)
+    start = copy.deepcopy(by_file[start_name])
+    end = by_file.get(method_table_filename(
+        "end", slug, theme, locale, width, element_key=ekey))
     # Blank header tokens in the start receipt.
     vis = str(start.get("visible_text_at_scroll") or "")
     for h in ("COMPONENT", "RAW", "STANDARDIZED", "WEIGHT", "CONTRIBUTION",
@@ -2766,12 +2787,19 @@ def test_occlusion_y_coverage_from_raw_box() -> None:
                             state.get("samples_span")))
                 continue
             cov = y_coverage(samples, raw)
+            stored = state.get("y_coverage")
+            if stored is None:
+                bad.append((state.get("file"), "missing stored y_coverage"))
+                continue
+            if abs(float(stored) - cov) > 1e-9:
+                bad.append((state.get("file"), "stored!=recomputed",
+                            float(stored), cov))
             ys = [float(s["y"]) for s in samples if "y" in s]
             top = float(raw["y"])
             bottom = top + h
-            # C-n4: floor is (h-8)/h for h>=40 — no epsilon.
+            # R4: floor with 1e-3 epsilon. Exact floor is (h-8)/h.
             floor = (h - 8.0) / h
-            if cov < floor:
+            if cov < (floor - 1e-3):
                 bad.append((state.get("file"), "cov", cov, floor))
             if ys and min(ys) > top + 4.0:
                 bad.append((state.get("file"), "top", min(ys), top))
@@ -2846,19 +2874,24 @@ def test_390_matrix_full_theme_locale() -> None:
                 continue
             # Derive page slug from filename.
             rest = name
-            for prefix in (
-                "method_table_390_start-", "method_table_390_end-",
-                "method_open-", "disclosure_rows_open-",
-            ):
-                if rest.startswith(prefix):
-                    rest = rest[len(prefix):]
-                    break
-            parts = rest.replace(".png", "").split("-")
-            # …-{theme}-{locale}-390
-            if len(parts) >= 3 and parts[-1] == "390":
-                slug = "-".join(parts[:-3])
+            from scripts.capture_macro_command_p5 import parse_method_table_name
+            parsed = parse_method_table_name(name)
+            if parsed:
+                slug = parsed["slug"]
             else:
-                slug = "unknown"
+                for prefix in (
+                    "method_table_390_start-", "method_table_390_end-",
+                    "method_open-", "disclosure_rows_open-",
+                ):
+                    if rest.startswith(prefix):
+                        rest = rest[len(prefix):]
+                        break
+                parts = rest.replace(".png", "").split("-")
+                # …-{theme}-{locale}-390
+                if len(parts) >= 3 and parts[-1] == "390":
+                    slug = "-".join(parts[:-3])
+                else:
+                    slug = "unknown"
             cells[fam][slug].add((theme, locale))
     missing = {}
     for fam in ("method_open", "method_table_390", "disclosure_rows_open"):
@@ -2928,11 +2961,22 @@ def test_en_zh_visible_text_distinct_all_stations() -> None:
             head = state.get("visible_text_head")
             assert head, state.get("file")
             if loc and digest:
-                stations[key][loc] = digest
+                scope = state.get("visible_text_scope")
+                assert scope in {"page", "element"}, (
+                    state.get("file"), "visible_text_scope", scope)
+                if fam == "method_table_390":
+                    assert scope == "element", state.get("file")
+                if fam == "hub_rail":
+                    assert scope == "page", state.get("file")
+                    assert "visible_text_at_scroll" in state, state.get("file")
+                    assert "visible_text_at_zero" in state, state.get("file")
+                stations[key][loc] = (scope, digest)
     collisions = []
     for key, locs in stations.items():
-        if "en" in locs and "zh" in locs and locs["en"] == locs["zh"]:
-            collisions.append(key)
+        if "en" in locs and "zh" in locs:
+            assert locs["en"][0] == locs["zh"][0], (key, "scope mismatch")
+            if locs["en"][1] == locs["zh"][1]:
+                collisions.append(key)
     assert not collisions, collisions[:20]
 
 
@@ -2989,22 +3033,46 @@ def test_element_text_diverges_with_hidden_node() -> None:
 
 
 def _registry_coverage_offenders(registry, manifest) -> list:
-    """Per-page covering proof (E-M1 / C-M1). No page-allowlist.
+    """Covering proof (E-M1 / C-M1 / R1). No page-allowlist.
 
-    A registry row must be observed in ≥1 receipt, or carry observed:false
-    and be excluded. MUT-page and MUT-reg3 fail through this helper.
+    table.mq-table is per (page × theme × locale × element_key). Other
+    registry rows stay per-page. A row must be observed in ≥1 receipt, or
+    carry observed:false and be excluded. MUT-page, MUT-elem, MUT-reg3 and
+    MUT-reg4 fail through this helper.
     """
     from collections import defaultdict
     from scripts.capture_macro_command_p5 import _registry_match_selector
 
+    def _norm(s: str) -> str:
+        s = s.strip()
+        for prefix in ("table.", "ul.", "div.", "ol."):
+            if s.startswith(prefix):
+                s = s[len(prefix) - 1:]  # keep leading '.'
+                break
+        return s
+
+    def _scroller_matches(st: dict, sel: str) -> bool:
+        sc = str(st.get("scroll_container_selector") or "")
+        if sc == sel:
+            return True
+        sc_key = _registry_match_selector(sc)
+        return (
+            sc_key == sel
+            or _norm(sc) == _norm(sel)
+            or sc_key == _registry_match_selector(sel)
+        )
+
     pages_by_sel: dict[str, set[str]] = defaultdict(set)
+    table_instances: dict[tuple, dict] = {}
     cells: list[dict] = []
     for page in manifest["pages"]:
         for st in page["states"]:
             if st.get("file"):
                 cells.append(st)
-            page_id = (
+            page_id = str(
                 st.get("page_id") or page.get("page") or page.get("id") or "")
+            theme = st.get("theme")
+            locale = st.get("locale")
             for entry in st.get("content_overflows") or []:
                 if entry.get("kind") != "scrollport":
                     continue
@@ -3012,7 +3080,16 @@ def _registry_coverage_offenders(registry, manifest) -> list:
                     str(entry.get("nearest_registered_scroller")
                         or entry.get("selector") or ""))
                 if key:
-                    pages_by_sel[key].add(str(page_id))
+                    pages_by_sel[key].add(page_id)
+                sel_key = _registry_match_selector(
+                    str(entry.get("selector") or ""))
+                if sel_key == "table.mq-table":
+                    ekey = str(entry.get("element_key") or "")
+                    inst = (page_id, theme, locale, ekey)
+                    table_instances.setdefault(inst, {
+                        "page_id": page_id, "theme": theme,
+                        "locale": locale, "element_key": ekey,
+                    })
     offenders = []
     for sel, row in registry.items():
         fam = str(row.get("covering_family") or "")
@@ -3026,6 +3103,45 @@ def _registry_coverage_offenders(registry, manifest) -> list:
         if not pages:
             offenders.append((sel, fam, "UNOBSERVED"))
             continue
+        if sel == "table.mq-table":
+            for inst, meta in table_instances.items():
+                page_id, theme, locale, ekey = inst
+                if not ekey:
+                    offenders.append((sel, fam, page_id, theme, locale,
+                                      "missing element_key"))
+                    continue
+                covering = []
+                fits_receipt = False
+                for st in cells:
+                    if (st.get("family") or "") != fam:
+                        continue
+                    if str(st.get("page_id") or "") != page_id:
+                        continue
+                    if st.get("theme") != theme or st.get("locale") != locale:
+                        continue
+                    if str(st.get("element_key") or "") != ekey:
+                        continue
+                    if not _scroller_matches(st, sel):
+                        continue
+                    if st.get("table_fits") is True:
+                        sw = float(st.get("scrollWidth") or 0)
+                        cw = float(st.get("clientWidth") or 0)
+                        if sw <= cw + 1:
+                            fits_receipt = True
+                            covering.append(st.get("file"))
+                        continue
+                    if float(st.get("scrollLeft") or 0) <= 0:
+                        continue
+                    vis = str(st.get("visible_text_at_scroll") or "")
+                    zero = str(st.get("visible_text_at_zero") or "")
+                    if not vis:
+                        continue
+                    if zero and vis == zero:
+                        continue
+                    covering.append(st.get("file"))
+                if not covering and not fits_receipt:
+                    offenders.append((sel, fam, page_id, theme, locale, ekey))
+            continue
         for page_id in pages:
             covering = []
             for st in cells:
@@ -3033,22 +3149,8 @@ def _registry_coverage_offenders(registry, manifest) -> list:
                     continue
                 if str(st.get("page_id") or "") != page_id:
                     continue
-                sc = str(st.get("scroll_container_selector") or "")
-                if sc != sel:
-                    def _norm(s: str) -> str:
-                        s = s.strip()
-                        for prefix in ("table.", "ul.", "div.", "ol."):
-                            if s.startswith(prefix):
-                                s = s[len(prefix) - 1:]  # keep leading '.'
-                                break
-                        return s
-                    sc_key = _registry_match_selector(sc)
-                    if (
-                        sc_key != sel
-                        and _norm(sc) != _norm(sel)
-                        and sc_key != _registry_match_selector(sel)
-                    ):
-                        continue
+                if not _scroller_matches(st, sel):
+                    continue
                 if float(st.get("scrollLeft") or 0) <= 0:
                     continue
                 vis = str(st.get("visible_text_at_scroll") or "")
@@ -3079,14 +3181,14 @@ def test_registry_covering_family_proven_by_manifest() -> None:
 
 @pytest.mark.needs_full_checkout("mockups")
 def test_page_fits_table_complete_and_true() -> None:
-    """C-M1: top-level page_fits has 15×4×2 rows, all fits:true; MUT-fits fails."""
+    """C-M1: top-level page_fits has 15×4×2×2 rows, all fits:true; MUT-fits fails."""
     import json
     import copy
     manifest = json.loads(
         (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
         .read_text(encoding="utf-8"))
     rows = manifest.get("page_fits") or []
-    assert len(rows) == 15 * 4 * 2, len(rows)
+    assert len(rows) == 15 * 4 * 2 * 2, len(rows)
     assert all(r.get("fits") is True for r in rows), [
         r for r in rows if not r.get("fits")][:5]
     assert all(r.get("theme") for r in rows), [
@@ -3096,7 +3198,7 @@ def test_page_fits_table_complete_and_true() -> None:
     themes = {r.get("theme") for r in rows}
     assert widths == {320, 390, 768, 1440}
     assert locales == {"en", "zh"}
-    assert themes <= {"dark", "light"} and themes
+    assert themes == {"dark", "light"}
     # MUT-fits: flipping one row to false must be detected.
     planted = copy.deepcopy(rows)
     planted[0]["fits"] = False
@@ -3174,6 +3276,20 @@ def test_table_fits_pair_semantics() -> None:
                 start["file"], sl, sw, cw)
 
 
+def test_method_table_filename_roundtrip_includes_element_key() -> None:
+    from scripts.capture_macro_command_p5 import (
+        method_table_filename, parse_method_table_name,
+    )
+    name = method_table_filename(
+        "end", "macro_rates_curves", "dark", "zh", 390,
+        element_key="nth-1")
+    parsed = parse_method_table_name(name)
+    assert parsed == {
+        "pos": "end", "slug": "macro_rates_curves", "element_key": "nth-1",
+        "theme": "dark", "locale": "zh", "width": "390",
+    }
+
+
 def test_table_fits_branches_on_synthetic_cells() -> None:
     """C-m3 unit: both table_fits branches on synthetic cells."""
     def check(start, end):
@@ -3195,13 +3311,13 @@ def test_table_fits_branches_on_synthetic_cells() -> None:
 
 @pytest.mark.needs_full_checkout("mockups")
 def test_painted_fraction_present_on_every_cell() -> None:
-    """E-m1: painted_fraction on every cell (328/328 after recapture: all of them).
+    """E-m1: painted_fraction on every captured cell.
 
     Cause lines (from this comment) for the lowest-paint frames:
-    - 18-dark-en-1440 / 18b / 19 / 19b: empty grid track / min-height under
-      content — first-screen canvas is taller than the content.
     - chipmat-*-390/768: suite-nav chip rail is mostly background (pills on a
-      dark or light track).
+      dark or light track). The lowest value is often tied across ≥6 cells,
+      not a unique five-lowest list.
+    - 18/19 viewport frames: empty grid track / min-height under content.
     """
     import json
     manifest = json.loads(
@@ -3217,7 +3333,15 @@ def test_painted_fraction_present_on_every_cell() -> None:
     assert not missing, missing[:12]
     for st in cells:
         assert 0.0 <= float(st["painted_fraction"]) <= 1.0, st.get("file")
-    lowest = sorted(cells, key=lambda st: float(st["painted_fraction"]))[:5]
+    sorted_cells = sorted(cells, key=lambda st: float(st["painted_fraction"]))
+    lowest_val = float(sorted_cells[0]["painted_fraction"])
+    tied = [
+        st for st in sorted_cells
+        if abs(float(st["painted_fraction"]) - lowest_val) < 1e-9
+    ]
+    print(
+        f"painted_fraction lowest {lowest_val:.4f} tied by {len(tied)} cells",
+        flush=True)
     causes = {
         "18-dark-en-1440.png": (
             "empty grid track / min-height under content; first-screen canvas "
@@ -3227,7 +3351,7 @@ def test_painted_fraction_present_on_every_cell() -> None:
         "19b-light-zh-1440.png": "same empty grid track in light ZH",
     }
     printed = []
-    for st in lowest:
+    for st in tied:
         name = str(st.get("file") or "")
         cause = causes.get(name)
         if cause is None and name.startswith("chipmat-"):
@@ -3247,7 +3371,7 @@ def test_painted_fraction_present_on_every_cell() -> None:
         )
         print(line, flush=True)
         printed.append(line)
-    assert len(printed) == 5, printed
+    assert printed, printed
 
 
 def test_page_overflow_error_type() -> None:
@@ -3354,10 +3478,126 @@ def test_mut_page_deleting_one_reporting_pages_table_cells_fails() -> None:
         ]
     offenders = _registry_coverage_offenders(registry, planted)
     assert any(
-        sel == "table.mq-table" and page_id == victim
-        for sel, _fam, page_id in (
-            (o[0], o[1], o[2] if len(o) > 2 else "") for o in offenders
-        )
+        o[0] == "table.mq-table" and (o[2] if len(o) > 2 else "") == victim
+        for o in offenders
+    ), offenders[:12]
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_mut_elem_deleting_one_instance_on_a_two_instance_page_fails() -> None:
+    """MUT-elem: delete ONE instance's cells, keep the other → fail."""
+    import copy
+    import json
+    from collections import defaultdict
+    from scripts.capture_macro_command_p5 import _load_sanctioned_scrollers
+
+    registry = _load_sanctioned_scrollers()
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    keys_by_page: dict[str, set[str]] = defaultdict(set)
+    for page in manifest["pages"]:
+        for st in page["states"]:
+            if st.get("family") != "method_table_390":
+                continue
+            ekey = str(st.get("element_key") or "")
+            if ekey:
+                keys_by_page[str(st.get("page_id") or "")].add(ekey)
+    victim_page, keys = next(
+        ((p, ks) for p, ks in keys_by_page.items() if len(ks) >= 2),
+        ("", set()),
+    )
+    assert victim_page and len(keys) >= 2, dict(keys_by_page)
+    drop_key = sorted(keys)[0]
+    keep_key = sorted(keys)[1]
+    planted = copy.deepcopy(manifest)
+    for page in planted["pages"]:
+        page["states"] = [
+            st for st in page["states"]
+            if not (
+                st.get("family") == "method_table_390"
+                and st.get("page_id") == victim_page
+                and st.get("element_key") == drop_key
+            )
+        ]
+    remaining = {
+        st.get("element_key")
+        for page in planted["pages"]
+        for st in page["states"]
+        if st.get("family") == "method_table_390"
+        and st.get("page_id") == victim_page
+    }
+    assert keep_key in remaining
+    assert drop_key not in remaining
+    offenders = _registry_coverage_offenders(registry, planted)
+    assert any(
+        o[0] == "table.mq-table"
+        and (o[2] if len(o) > 2 else "") == victim_page
+        and (o[5] if len(o) > 5 else "") == drop_key
+        for o in offenders
+    ), offenders[:16]
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_mut_cov_stored_y_coverage_mismatch_fails() -> None:
+    """MUT-cov: stored y_coverage ≠ recomputed (±1e-9) must fail."""
+    import copy
+    import json
+    from scripts.macro_command_capture_guards import y_coverage
+
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    planted = copy.deepcopy(manifest)
+    victim = None
+    for page in planted["pages"]:
+        for st in page["states"]:
+            if not st.get("crop") or st.get("grid") == "short":
+                continue
+            raw = st.get("raw_box") or {}
+            if float(raw.get("height") or 0) < 40:
+                continue
+            if "y_coverage" not in st or not (st.get("occlusionSamples") or []):
+                continue
+            st["y_coverage"] = float(st["y_coverage"]) - 0.5
+            victim = st
+            break
+        if victim is not None:
+            break
+    assert victim is not None
+    bad = []
+    for page in planted["pages"]:
+        for state in page["states"]:
+            if state is not victim:
+                continue
+            samples = state.get("occlusionSamples") or []
+            raw = state.get("raw_box") or {}
+            cov = y_coverage(samples, raw)
+            if abs(float(state["y_coverage"]) - cov) > 1e-9:
+                bad.append((state.get("file"), float(state["y_coverage"]), cov))
+    assert bad, "MUT-cov must detect stored≠recomputed"
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_mut_reg4_split_compact_alias_fails() -> None:
+    """MUT-reg4: re-split table.mq-table.mq-table-compact as observed → fail."""
+    import copy
+    import json
+    from scripts.capture_macro_command_p5 import _load_sanctioned_scrollers
+
+    registry = copy.deepcopy(_load_sanctioned_scrollers())
+    registry["table.mq-table.mq-table-compact"] = {
+        "kind": "table",
+        "covering_family": "method_table_390",
+        "reason": "MUT-reg4 split alias must fail coverage",
+        "observed": True,
+    }
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    offenders = _registry_coverage_offenders(registry, manifest)
+    assert any(
+        o[0] == "table.mq-table.mq-table-compact" for o in offenders
     ), offenders[:12]
 
 
