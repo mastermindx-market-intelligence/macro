@@ -13983,6 +13983,7 @@ jobs:
       - "tests/test_macro_workspace_liquidity_regime.py"
       - "tests/test_macro_workspace_monetary_policy.py"
       - "tests/test_macro_workspace_national_debt.py"
+      - "tests/test_macro_workspace_prior_publication.py"
       # Expansion 2026-09-04: Rates & Curves + Trade Flows composer suites.
       - "tests/test_macro_workspace_rates_curves.py"
       - "tests/test_macro_workspace_trade_flows.py"
@@ -13994,7 +13995,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install workspace-producer test dependencies
-        run: pip install pytest pyyaml jsonschema==4.26.0
+        run: pip install pytest pyyaml jsonschema==4.26.0 jinja2
       - name: Market OS macro workspaces — contract, composer, publisher, consumer
         run: >-
           python -m pytest
@@ -14013,6 +14014,7 @@ jobs:
           tests/test_macro_workspace_liquidity_regime.py
           tests/test_macro_workspace_monetary_policy.py
           tests/test_macro_workspace_national_debt.py
+          tests/test_macro_workspace_prior_publication.py
           tests/test_macro_workspace_rates_curves.py
           tests/test_macro_workspace_trade_flows.py
           -q
@@ -14074,6 +14076,7 @@ jobs:
       - "scripts/build_macro_suite_pages.py"
       - "site/macrodata/workspaces/**"
       - "tests/test_macro_suite_pages.py"
+      - "tests/test_macro_workspace_prior_publication.py"
       # F01 R1 2026-09-05: the suite hub + shared in-suite navigation. Same job as
       # the workspace pages because it is the same subject: one builder, one shell,
       # one view model. A hub that disagreed with the pages it links to would be a
@@ -14091,6 +14094,6 @@ jobs:
       - name: install suite-page test dependencies
         run: pip install pytest jinja2 pyyaml jsonschema==4.26.0
       - name: Market OS macro suite pages — shell, labels, view model, builder
-        run: python -m pytest tests/test_macro_suite_pages.py -q
+        run: python -m pytest tests/test_macro_suite_pages.py tests/test_macro_workspace_prior_publication.py -q
       - name: Market OS macro suite hub — discoverability, ordering, honest absence
         run: python -m pytest tests/test_macro_monetary_hub.py -q
