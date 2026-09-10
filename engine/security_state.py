@@ -629,7 +629,7 @@ def _run_identity_chain(
     if event_id:
         try:
             parsed_event_company_id, _period, _event_type = parse_canonical_event_id(event_id)
-        except Exception:  # canonical owner parser defines the refusal boundary
+        except ContractError:  # canonical owner parser's declared refusal type (MINOR 4)
             parsed_event_company_id = None
     expected_company_id = f"cik:{subject.issuer_cik}"
     event_id_ok = parsed_event_company_id == expected_company_id
@@ -1031,9 +1031,17 @@ def _consume_k1_bundle(
     """Verify and consume a producer-prepared Evidence Foundation receipt.
 
     Evidence Foundation's public compiler validates its schemas from disk. The
-    producer owns that I/O boundary and injects the resulting receipt here;
-    this pure compiler independently re-derives every subject-bearing K1 ID so
-    the receipt cannot switch security, CIK, reference, or block.
+    producer owns that I/O boundary and injects the resulting receipt here.
+    This is a self-consistency check, not an independent derivation (MINOR 1
+    review finding): the producer's own ``_prepare_security_state_k1_bundle``
+    (``scripts/security_state_producer.py``) builds the injected bundle by
+    calling this module's OWN private ``_build_k1_recipe`` /
+    ``_build_k1_reference`` / ``_build_k1_block`` — the same functions this
+    method re-derives its expected IDs from. What this check actually proves
+    is that the bundle the producer handed back still agrees with what those
+    builders produce for THIS subject, so a swapped or foreign bundle (one
+    built for a different security, CIK, reference, or block) is refused here
+    rather than silently consumed.
     """
     if not isinstance(bundle, Mapping):
         raise SecurityStateCompilationError("producer-prepared K1 bundle must be a mapping")
@@ -1499,7 +1507,16 @@ def compile_security_state(
         workspace=effective_workspace, workspace_disposition=effective_disposition,
         event_id=event_id, generation_id=generation_id, now_date=now_dt.date(),
     )
-    if identity_blocked and workspace_disposition == "found":
+    if identity_blocked:
+        # MINOR 2 (review finding): an identity-blocked subject must show the
+        # IDENTITY refusal as the null cause on every disposition, not only
+        # "found". Before this fix, a "not_published"/"fetch_failed"
+        # disposition fell straight through to `_build_change_leg`'s own
+        # workspace-level summary ("No current earnings-change event is
+        # published" / "an owner fetch failure, not an absence") even though
+        # the actual refusal was the identity chain, never the workspace read
+        # — a glance-tier cause mislabel (the real refusal stays visible in
+        # identity_proof either way, so this never hid the null itself).
         change_leg = {
             **change_leg,
             "summary": _bilingual(
@@ -1725,8 +1742,10 @@ def compile_security_state_failure(
     subject = _require_subject(subject)
     owner_unread = _owner_identity_unread(subject.owner_evidence)
     if not owner_read_completed:
-        # Packet M1 path: the owner-identity BATCH read itself never ran.
-        public_reason = "security_state compiler failed before this cycle's owner identity read completed"
+        # Packet M1 path: the owner-identity batch read itself never ran.
+        # public_reason is a CODE, never prose — the ticker page maps it.
+        public_reason = "OWNER_IDENTITY_BATCH_UNAVAILABLE"
+        unread_by_code = {item.split(":", 1)[0]: item for item in UNREAD_DISCLOSURES}
         identity_proof = {
             "state": "BLOCKED_IDENTITY_BRIDGE", "method": "owner_backed_chain.v1",
             "legs": [_leg_receipt(
@@ -1746,10 +1765,8 @@ def compile_security_state_failure(
                 "IDENTITY_BRIDGE_UNRESOLVED_THIS_CYCLE: the owner-backed identity chain could "
                 "not be re-proven this cycle; treat this shell as an unresolved identity, not "
                 "a confirmed one",
-                "ISSUERMASTER_CURRENT_IDENTITY_ONLY: no asof-scoped issuer lineage; proof is "
-                "current-identity",
-                "ALIAS_EPOCH_VALID_FROM: corroboration alias window start is a placeholder "
-                "floor, not evidence",
+                unread_by_code["ISSUER_LINEAGE_UNREAD"],
+                unread_by_code["ALIAS_EPOCH_UNREAD"],
             ],
         }
     elif owner_unread:

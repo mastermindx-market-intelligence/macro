@@ -1097,15 +1097,24 @@ def test_msft_clean_no_event_stays_proven_and_truthfully_not_published() -> None
     assert "No current earnings-change event is published" in state["legs"]["change"]["summary"]["en"]
 
 
-def test_identity_refusal_preserves_upstream_fetch_failed_disposition() -> None:
+def test_identity_refusal_overrides_fetch_failed_disposition_summary() -> None:
+    """MINOR 2 (review finding, fixed): an identity-blocked subject must show
+    the IDENTITY refusal as the change leg's null cause on every
+    disposition, not only "found". Before the fix this case fell straight
+    through to the workspace-level "fetch failure" summary even though the
+    actual refusal was the upstream identity bridge (R1: superseded_by is
+    set) -- a glance-tier cause mislabel this test used to pin as correct.
+    The real refusal remains visible in identity_proof either way."""
     inp = _load("golden_msft_input.json")
     inp["security_master_row"]["superseded_by"] = "SEC:US-XNAS-MSFT.2"
     inp["workspace"] = None
     inp["workspace_disposition"] = "fetch_failed"
     inp["manifest_sha256"] = None
     state = ss.compile_security_state(**inp)
+    assert state["identity_proof"]["state"] == "BLOCKED_IDENTITY_BRIDGE"
     summary = state["legs"]["change"]["summary"]["en"].lower()
-    assert "fetch failure" in summary
+    assert "identity bridge" in summary
+    assert "fetch failure" not in summary
     assert "not published" not in summary
 
 
@@ -1747,7 +1756,7 @@ def test_compile_security_state_rejects_malformed_blob_without_expected_typed_st
 )
 def test_golden_expected_output_is_byte_exact(input_name: str, expected_name: str) -> None:
     state = ss.compile_security_state(**_load(input_name))
-    expected = _load(expected_name) if False else json.loads(
+    expected = json.loads(
         (FIXTURE_DIR / expected_name).read_text(encoding="utf-8")
     )
     assert state == expected
@@ -1937,10 +1946,28 @@ def test_disclosures_only_retire_cik_and_namespace_limits_where_the_fix_lands() 
         subject=ss.MSFT_SUBJECT, validator=_validator(), now="2026-01-01T00:00:00Z",
         prior_state=None, owner_read_completed=False,
     )
-    unresolved_joined = "\n".join(unresolved["identity_proof"]["disclosures"])
+    unresolved_disclosures = unresolved["identity_proof"]["disclosures"]
+    unresolved_joined = "\n".join(unresolved_disclosures)
     assert "CIK_LEG_UNOWNED_ACCESS" not in unresolved_joined
     assert "NO_GENERAL_NAMESPACE_RENDERER" not in unresolved_joined
     assert "OWNER_COMPOSED_SUBJECT_CURRENT_ONLY" not in unresolved_joined
     assert "PINNED_IDENTITY_NOT_OWNER_READ_THIS_CYCLE" in unresolved_joined
+    assert "IDENTITY_BRIDGE_UNRESOLVED_THIS_CYCLE" in unresolved_joined
+    assert "ISSUER_LINEAGE_UNREAD" in unresolved_joined
+    assert "ALIAS_EPOCH_UNREAD" in unresolved_joined
+    # A3: no DISCLOSURES member may appear on the M1 path (reader claims on
+    # a cycle with no reader). Not tuple-equality with UNREAD_DISCLOSURES.
+    for disclosure in ss.DISCLOSURES:
+        code = disclosure.split(":", 1)[0]
+        assert disclosure not in unresolved_disclosures
+        assert not any(item.startswith(code + ":") for item in unresolved_disclosures), (
+            f"M1 disclosures must not carry DISCLOSURES member {code}: {unresolved_disclosures!r}"
+        )
     assert unresolved["identity_proof"]["refusals"] == ["IDENTITY_UNRESOLVED"]
     assert unresolved["identity_proof"]["equalities"] == []
+    assert unresolved["legs"]["opportunity_context"]["entry"]["null_reason"] == (
+        "OWNER_IDENTITY_BATCH_UNAVAILABLE"
+    )
+    assert unresolved["legs"]["risk"]["failed_gates"][0]["reason"] == (
+        "OWNER_IDENTITY_BATCH_UNAVAILABLE"
+    )

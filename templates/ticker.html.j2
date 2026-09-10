@@ -1775,7 +1775,7 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
         <div class="dkv">
           {% for s in a.subreads %}<div class="r6d"><span class="k">{{ t(s.en, s.zh) }}</span><span class="vv ss-t-{{ s.tone }} ss-tone-ink">{{ t(s.cov_en, s.cov_zh) }}</span></div>{% endfor %}
         </div>
-        {% for s in a.subreads %}{% if s.reason %}<p class="ss-receipt">{{ t(s.en, s.zh) }} — {{ s.reason }}</p>{% endif %}{% endfor %}
+        {% for s in a.subreads %}{% if s.reason_en or s.reason_zh %}<p class="ss-receipt">{{ t(s.en, s.zh) }} — {{ t(s.reason_en, s.reason_zh) }}</p>{% endif %}{% endfor %}
         <div class="dfoot">{{ t('A read that is not available is left out. No rank, score or stand-in value is put in its place.', '不可用的读数即留空，不会以任何排名、评分或替代数值填补。') }}</div>
       </section>
       {% endif %}

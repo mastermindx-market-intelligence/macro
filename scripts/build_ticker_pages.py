@@ -3597,8 +3597,8 @@ _SS_DISCLOSURES: dict[str, dict[str, str]] = {
         "zh": "用于交叉核对该身份的起始日期为占位下限，并非已确认的证据。",
     },
     "PINNED_IDENTITY_NOT_OWNER_READ_THIS_CYCLE": {
-        "en": "This cycle used a frozen reference mapping for this ticker; the identity sources were not re-read.",
-        "zh": "本周期使用该证券的冻结参考映射；未重新读取身份来源。",
+        "en": "This cycle used the last known identity for this security; the identity sources were not re-read.",
+        "zh": "本周期使用该证券上次已知的身份记录；未重新读取身份来源。",
     },
     "IDENTITY_BRIDGE_UNRESOLVED_THIS_CYCLE": {
         "en": "This identity could not be re-confirmed this cycle; treat it as unresolved, not confirmed.",
@@ -3655,9 +3655,9 @@ _SS_LEG_DESC: dict[tuple[str, str], dict[str, str]] = {
 
 # Heal-round h2 r2 (macro#6920 review MINOR-2): the M1 Identity checks panel
 # printed `artifact` and `reader` as raw English on the ZH page. Keyed on
-# (check, code) like `_SS_LEG_DESC`. Unmapped legs still pass the engine
-# string through in both slots (pre-existing receipt-identifier behaviour
-# on the golden-MSFT R1..R9 path).
+# (check, code) like `_SS_LEG_DESC`. Unmapped legs keep the engine string
+# in the EN slot; the ZH slot falls back to `_SS_COVERAGE_FALLBACK` ("暂不可用")
+# so raw engine English never occupies the Chinese page.
 _SS_ARTIFACT: dict[tuple[str, str], dict[str, str]] = {
     ("R8", "IDENTITY_UNRESOLVED"): {
         "en": "Last known ticker mapping (not a live owner record)",
@@ -3678,6 +3678,43 @@ _SS_READER: dict[tuple[str, str], dict[str, str]] = {
         "zh": "本页的身份备用读取",
     },
 }
+
+# Subread reason codes (engine public_reason on the M1 path, and any later
+# reason that is a CODE rather than prose). Keyed on the reason code alone —
+# subread reasons carry no (check, code). An unmapped code renders
+# `_SS_COVERAGE_FALLBACK`, never the raw code and never English into ZH.
+_SS_REASON: dict[str, dict[str, str]] = {
+    "OWNER_IDENTITY_BATCH_UNAVAILABLE": {
+        "en": "This cycle's owner-identity read did not run, so this security's identity was not checked.",
+        "zh": "本周期未执行所有者身份读取，因此未核对该证券的身份。",
+    },
+}
+_SS_REASON_CODE_RE = re.compile(r"^[A-Z][A-Z0-9_]+$")
+
+
+def _ss_map_subread_reason(raw: str) -> tuple[str, str]:
+    """Map a subread reason code to house copy.
+
+    Mapped codes use `_SS_REASON`. Unmapped codes (ALL_CAPS identifiers) use
+    `_SS_COVERAGE_FALLBACK`. Prose that is not a code is left unchanged.
+    """
+    if not raw:
+        return "", ""
+    house = _SS_REASON.get(raw)
+    if house:
+        return house["en"], house["zh"]
+    if _SS_REASON_CODE_RE.fullmatch(raw):
+        return _SS_COVERAGE_FALLBACK["en"], _SS_COVERAGE_FALLBACK["zh"]
+    return raw, raw
+
+
+def _ss_house_or_en_with_zh_fallback(house: dict[str, str] | None, raw: str) -> tuple[str, str]:
+    """House copy when present; otherwise EN keeps the engine text, ZH falls back."""
+    if house:
+        return house["en"], house["zh"]
+    if not raw:
+        return "", ""
+    return raw, _SS_COVERAGE_FALLBACK["zh"]
 
 
 # ── Plain words for the sub-reads the contract nests inside a leg ───────────
@@ -4261,12 +4298,14 @@ def _ss_fill_opportunity(out: dict[str, Any], leg: dict) -> None:
         if not code and node.get("available") is True:
             code = "AVAILABLE"
         cov = _SS_COVERAGE.get(code, _SS_COVERAGE_FALLBACK)
-        reason = _clean_str(node.get("reason") or node.get("null_reason") or "")
+        reason_raw = _clean_str(node.get("reason") or node.get("null_reason") or "")
+        reason_en, reason_zh = _ss_map_subread_reason(reason_raw)
         subs.append({
             "en": en, "zh": zh,
             "cov": code, "tone": cov["tone"], "rail": cov["rail"],
             "cov_en": cov["en"], "cov_zh": cov["zh"],
-            "reason": reason,
+            "reason_en": reason_en,
+            "reason_zh": reason_zh,
             "ref": _clean_str(node.get("ref") or ""),
         })
     out["subreads"] = subs
@@ -4341,17 +4380,13 @@ def build_security_state(blob: dict | None) -> dict | None:
             # the raw engine description passes through unchanged (same
             # pre-existing behaviour as every other leg, MINOR-2).
             desc_house = _SS_LEG_DESC.get((leg_check, leg_code)) if leg_code else None
-            desc_en, desc_zh = (desc_house["en"], desc_house["zh"]) if desc_house else (desc_raw, desc_raw)
+            desc_en, desc_zh = _ss_house_or_en_with_zh_fallback(desc_house, desc_raw)
             artifact_raw = _clean_str(lg.get("artifact") or "")
             reader_raw = _clean_str(lg.get("reader") or "")
             art_house = _SS_ARTIFACT.get((leg_check, leg_code)) if leg_code else None
             rdr_house = _SS_READER.get((leg_check, leg_code)) if leg_code else None
-            artifact_en, artifact_zh = (
-                (art_house["en"], art_house["zh"]) if art_house else (artifact_raw, artifact_raw)
-            )
-            reader_en, reader_zh = (
-                (rdr_house["en"], rdr_house["zh"]) if rdr_house else (reader_raw, reader_raw)
-            )
+            artifact_en, artifact_zh = _ss_house_or_en_with_zh_fallback(art_house, artifact_raw)
+            reader_en, reader_zh = _ss_house_or_en_with_zh_fallback(rdr_house, reader_raw)
             id_legs.append({
                 "check": leg_check,
                 "desc_en": desc_en,
