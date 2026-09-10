@@ -365,9 +365,19 @@
     syncActNow(focus ? tone : null);
     if (historyMode !== false) writeActionHash(tone, historyMode === "replace" ? "replace" : "push");
   }
+  function staticThemeForFilter(id) {
+    var node = qsa('[data-ca-lead-kind="theme"][data-ca-lead-id]').find(function (el) {
+      return el.getAttribute("data-ca-lead-id") === id && el.hasAttribute("data-ca-members");
+    });
+    if (!node) return null;
+    var members = new Set(String(node.getAttribute("data-ca-members") || "").split(",").map(ticker).filter(Boolean));
+    return { kind: "theme", id: id, members: members, count: members.size,
+      name: dual(qs(".ca-theme-name b", node)) };
+  }
   function itemForFilter() {
     if (!state.filter) return null;
-    return (state.filter.kind === "theme" ? state.themes : state.sectors).find(function (x) { return x.id === state.filter.id; }) || null;
+    var item = (state.filter.kind === "theme" ? state.themes : state.sectors).find(function (x) { return x.id === state.filter.id; }) || null;
+    return item || (state.filter.kind === "theme" ? staticThemeForFilter(state.filter.id) : null);
   }
   function sourceSet() { return state.source === "top" ? new Set(state.cards.slice(0, 5).map(function (c) { return ticker(c.getAttribute("data-ticker")); })) : null; }
   function allowed(tk) {
@@ -609,6 +619,7 @@
     ]).then(function (parts) {
       state.themes = collectThemes(parts[0], parts[1]);
       renderLeadership();
+      applyFilter();
     });
   }
 

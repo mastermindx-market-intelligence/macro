@@ -1363,7 +1363,11 @@ def test_rendered_fixture_recipe_is_committed_self_binding_and_deterministic(
 
     assert receipts[0] == receipts[1]
     receipt = receipts[0]
-    assert receipt == json.loads(_read(EVIDENCE_DIR / "rendered-fixture.json"))
+    # P0B remains the current-source evidence owner for HK. Canada now has a
+    # bounded successor receipt in test_canada_theme_action_map.py so the old
+    # Canada P0B evidence stays immutable rather than being silently rewritten.
+    p0b = json.loads(_read(EVIDENCE_DIR / "rendered-fixture.json"))
+    assert receipt["markets"]["hk"] == p0b["markets"]["hk"]
     assert receipt["schema"] == "mastermind.stock_dashboard_rendered_fixture.v1"
     assert receipt["proof_class"] == "rendered_fixture"
     assert receipt["transform"] == (
@@ -1491,7 +1495,6 @@ def test_rendered_fixture_recipe_is_committed_self_binding_and_deterministic(
     ("market", "receipt_name", "composer"),
     (
         ("hk", "mobile-layout.json", "hk-stock-v36.js"),
-        ("ca", "mobile-layout-canada.json", "canada-stock-v36.js"),
     ),
 )
 def test_committed_browser_receipts_are_self_binding_fixture_proof(

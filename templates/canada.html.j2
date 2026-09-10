@@ -865,6 +865,13 @@ html[data-lang="zh"][data-theme="light"] body.page-canada .ms-red .cax-big-score
 {% set _ca_red = (_ca_actions.get('take_profits', []) + _ca_actions.get('avoid', [])) if _ca_action_owner_valid else [] %}
 {% set _ca_action_has_rows = _ca_action_owner_valid and (_ca_buy or _ca_pull or _ca_bot or _ca_red) %}
 {% set _ca_action_default = 'buy' if _ca_buy else ('near' if _ca_pull else ('wait' if _ca_bot else ('avoid' if _ca_red else 'buy'))) %}
+{% set _ca_theme = theme_actions if (theme_actions is defined and theme_actions is mapping) else none %}
+{% set _ca_theme_lanes = _ca_theme.get('lanes') if (_ca_theme and _ca_theme.get('lanes') is mapping) else none %}
+{% set _ca_theme_valid = _ca_theme_lanes is mapping
+  and _ca_theme_lanes.get('buy_now') is sequence and _ca_theme_lanes.get('buy_now') is not string and _ca_theme_lanes.get('buy_now') is not mapping
+  and _ca_theme_lanes.get('in_favour') is sequence and _ca_theme_lanes.get('in_favour') is not string and _ca_theme_lanes.get('in_favour') is not mapping
+  and _ca_theme_lanes.get('watch') is sequence and _ca_theme_lanes.get('watch') is not string and _ca_theme_lanes.get('watch') is not mapping
+  and _ca_theme_lanes.get('reduce') is sequence and _ca_theme_lanes.get('reduce') is not string and _ca_theme_lanes.get('reduce') is not mapping %}
 {% if mode == 'stocks' and _ca_action_owner_valid %}
 <!-- ===== Act-Now v2 — four-lane board, matching china_stocks.html ===== -->
 <style>
@@ -873,6 +880,18 @@ html[data-lang="zh"][data-theme="light"] body.page-canada .ms-red .cax-big-score
 .anv2-board .anv2-name-link:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-radius:4px}
 .anv2-board .anv2-go{font-size:10px;opacity:.55;margin-left:3px}
 .anv2-board .anv2-empty{padding:10px 13px;color:var(--muted);font-size:11px}
+/* Canada Stocks opportunity map: separate theme owner above the 12 ETF-proxy pulse. */
+.ca-theme-action{margin:4px 12px 12px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:color-mix(in srgb,var(--panel2) 72%,transparent)}
+.ca-theme-action-hd{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding:10px 12px;border-bottom:1px solid var(--line)}
+.ca-theme-action-hd>div:first-child{display:flex;align-items:baseline;gap:8px}.ca-theme-action-hd b{font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.ca-theme-action-hd span,.ca-theme-action-meta{color:var(--muted);font-size:10.5px}.ca-theme-lanes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.ca-theme-lane{min-width:0;border-right:1px solid var(--line)}.ca-theme-lane:last-child{border-right:0}.ca-theme-lane-hd{display:flex;justify-content:space-between;gap:6px;padding:7px 9px;border-bottom:1px solid var(--line);border-top:2px solid currentColor;font-size:10.5px;font-weight:750;text-transform:uppercase;letter-spacing:.02em}
+.ca-theme-lane--buy .ca-theme-lane-hd{color:var(--ink-pv-buy,var(--pv-buy))}.ca-theme-lane--near .ca-theme-lane-hd{color:var(--ink-link,var(--link))}.ca-theme-lane--watch .ca-theme-lane-hd{color:var(--ink-pv-wait,var(--pv-wait))}.ca-theme-lane--avoid .ca-theme-lane-hd{color:var(--ink-pv-avoid,var(--pv-avoid))}.ca-theme-lane-hd b{color:var(--muted);font-variant-numeric:tabular-nums}
+.ca-theme-action-row-w{display:flex;align-items:stretch;border-bottom:1px solid color-mix(in srgb,var(--line) 70%,transparent)}.ca-theme-action-row{flex:1;display:grid;grid-template-columns:24px minmax(0,1fr) auto;grid-template-areas:'rank name state' 'rank prophet state';gap:1px 7px;align-items:center;min-height:43px;padding:6px 8px;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer}.ca-theme-action-row:hover:not(:disabled),.ca-theme-action-row.is-active{background:color-mix(in srgb,var(--link) 6%,transparent)}.ca-theme-action-row:disabled{cursor:default}
+.ca-theme-rank{grid-area:rank;color:var(--muted);font-size:10px;font-variant-numeric:tabular-nums}.ca-theme-name{grid-area:name;min-width:0}.ca-theme-name b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11.8px}.ca-theme-name small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:9.5px;font-weight:500}.ca-theme-prophet{grid-area:prophet;color:var(--muted);font-size:9.5px}.ca-theme-state{grid-area:state;max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:9.5px;font-weight:700}.ca-theme-action-go{flex:none;display:inline-flex;align-items:center;padding:0 8px;border-left:1px dashed color-mix(in srgb,var(--line) 80%,transparent);color:var(--muted);text-decoration:none}.ca-theme-action-go:hover{color:var(--text);background:color-mix(in srgb,var(--link) 6%,transparent)}.ca-theme-more>summary{padding:6px 8px;color:var(--muted);font-size:10px;font-weight:650;text-align:center;cursor:pointer;list-style:none}.ca-theme-more>summary::-webkit-details-marker{display:none}.ca-theme-empty{min-height:43px;display:grid;place-items:center;color:var(--muted)}
+.ca-sector-scope b{font-size:10.5px;text-transform:uppercase;letter-spacing:.04em}.ca-sector-scope a{color:var(--ink-link,var(--link));text-decoration:none}.ca-sector-scope a:hover{text-decoration:underline}.ca-theme-lead-subhead{padding:4px 14px 0;color:var(--muted);font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+@media(max-width:980px){.ca-theme-lanes{grid-template-columns:repeat(2,minmax(0,1fr))}.ca-theme-lane:nth-child(2n){border-right:0}.ca-theme-lane:nth-child(n+3){border-top:1px solid var(--line)}}
+@media(max-width:680px){.ca-theme-action-hd{align-items:flex-start;flex-direction:column;gap:3px}.ca-theme-lanes{grid-template-columns:1fr}.ca-theme-lane{border-right:0;border-top:1px solid var(--line)}.ca-theme-lane:first-child{border-top:0}}
 /* Hover-card mark — monoline (doctrine §5.8, emoji are not UI icons). Draws from
    templates/_icons.html.j2 (24×24, stroke=currentColor) so it inherits .row-pop-mark's
    ink (--link). Overrides this page's 1em inline .ic-svg base (head <style>) on
@@ -904,10 +923,11 @@ html[data-lang="zh"][data-theme="light"] body.page-canada .ms-red .cax-big-score
           body=('This is a structure and risk map for sectors — not an allocation rule.','这是板块的结构与风险图 — 不是配置规则。'),
           receipt=('sector positioning · timed by cycle stage · re-drawn nightly','板块定位 · 按周期阶段定时机 · 每晚重绘')) }}
     </h2>
-    <div class="anv2-meta">
-      <span class="muted" style="font-size:11px">{{ t('sectors as of', '板块截至') }} {{ latest.date }}</span>
+    <div class="anv2-meta ca-sector-scope">
+      <span class="muted" style="font-size:11px"><b>{{ t('Sector ETF pulse', '板块 ETF 脉搏') }}</b> · {{ sectors|length }} {{ t('tracked proxies', '个追踪代理') }} · {{ t('as of', '截至') }} {{ latest.date }}{% if _ca_theme_valid %} · <a href="#ca-v36-leadership">{{ (_ca_theme.get('n_themes') or 0) }} {{ t('Canadian themes below', '个加拿大主题见下方') }} ↓</a>{% endif %}</span>
     </div>
   </div>
+
   {% if not _ca_action_has_rows %}<p class="anv2-empty ca-v36-an-all-empty">{{ t('No sector actions are open on this board.', '本期榜单暂无板块行动。') }}</p>{% endif %}
   <div class="ca-v36-an-body" id="ca-v36-an-body">
   <div class="ca-v36-an-seg">
@@ -2684,10 +2704,45 @@ html[data-lang="zh"][data-theme="light"] body.page-canada .ms-red .cax-big-score
 
 <section class="ca-v36-panel" id="ca-v36-leadership">
   <div class="ca-v36-sec-hd">
-    <h2>{{ t('Leadership & Rotation', '领先与轮动') }}</h2>
+    <h2>{{ t('Canadian Opportunity Map', '加拿大机会地图') }}</h2>
     <span class="ca-v36-sec-spacer"></span>
     <a class="ca-v36-link" href="baskets_canada.html">{{ t('Thematic Baskets', '主题篮子') }} ↗</a>
   </div>
+  {% if _ca_theme_valid %}
+  <div class="ca-theme-action" id="ca-theme-action" data-theme-authority="descriptive_rotation">
+    <div class="ca-theme-action-hd">
+      <div><b>{{ t('Canadian themes', '加拿大主题') }}</b><span>{{ (_ca_theme.get('n_themes') or 0) }} {{ t('tracked themes', '个已追踪主题') }}{% if _ca_theme.get('n_distinct_members') is not none %} · {{ _ca_theme.get('n_distinct_members') }} {{ t('distinct constituents', '个不同主题成分') }}{% endif %}{% if _ca_theme.get('n_prophet_current') is not none %} · {{ _ca_theme.get('n_prophet_current') }} {{ t('current Prophet names', '只当前 Prophet 候选') }}{% endif %}</span></div>
+      <div class="ca-theme-action-meta">{{ t('descriptive rotation · does not originate Prophet picks', '描述性轮动 · 不产生 Prophet 选股') }} · {{ t('as of', '截至') }} {{ _ca_theme.get('as_of') or '—' }}</div>
+    </div>
+    {%- macro _ca_theme_row(it) -%}
+      <div class="ca-theme-action-row-w">
+        <button class="ca-theme-action-row" type="button"{% if it.get('membership_known') %} data-ca-lead-kind="theme" data-ca-lead-id="{{ it.get('id') }}" data-ca-members="{{ (it.get('members') or [])|join(',') }}"{% else %} disabled{% endif %}>
+          <span class="ca-theme-rank">{% if it.get('rank') is not none %}#{{ it.get('rank') }}{% else %}—{% endif %}</span>
+          <span class="ca-theme-name"><b>{{ t(it.get('name') or it.get('id'), it.get('name_zh') or it.get('name') or it.get('id')) }}</b><small>{% if it.get('category') %}{{ t(it.get('category'), it.get('category_zh') or it.get('category')) }}{% if it.get('leaders') %} · {% endif %}{% endif %}{% if it.get('leaders') %}{{ it.get('leaders')|join(' · ') }}{% elif it.get('n_members') is not none %}{{ it.get('n_members') }} {{ t('members','成分') }}{% endif %}</small></span>
+          {% if it.get('prophet_count') is not none %}<span class="ca-theme-prophet">{{ it.get('prophet_count') }} · Prophet</span>{% endif %}
+          <span class="ca-theme-state">{{ t(it.get('action_en') or it.get('action') or '—', it.get('action_zh') or it.get('action_en') or it.get('action') or '—') }}</span>
+        </button>
+        <a class="ca-theme-action-go" href="{{ it.get('href') or ('baskets_canada.html#theme-' ~ it.get('id','')) }}" aria-label="{{ it.get('name') or it.get('id') }} theme research">↗</a>
+      </div>
+    {%- endmacro -%}
+    {%- macro _ca_theme_lane(cls, title_en, title_zh, items) -%}
+      <div class="ca-theme-lane ca-theme-lane--{{ cls }}">
+        <div class="ca-theme-lane-hd"><span>{{ t(title_en, title_zh) }}</span><b>{{ items|length }}</b></div>
+        {% for it in items[:3] %}{{ _ca_theme_row(it) }}{% endfor %}
+        {% if items|length > 3 %}<details class="ca-theme-more"><summary>{{ t('View all', '查看全部') }} {{ items|length }}</summary>{% for it in items[3:] %}{{ _ca_theme_row(it) }}{% endfor %}</details>{% endif %}
+        {% if not items %}<div class="ca-theme-empty">—</div>{% endif %}
+      </div>
+    {%- endmacro -%}
+    <div class="ca-theme-lanes">
+      {{ _ca_theme_lane('buy', 'Buy now', '现在买入', _ca_theme_lanes.get('buy_now')) }}
+      {{ _ca_theme_lane('near', 'In favour', '看好', _ca_theme_lanes.get('in_favour')) }}
+      {{ _ca_theme_lane('watch', 'Conflicted / watch', '分歧 / 观察', _ca_theme_lanes.get('watch')) }}
+      {{ _ca_theme_lane('avoid', 'Reduce / avoid', '减仓 / 回避', _ca_theme_lanes.get('reduce')) }}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="ca-theme-lead-subhead">{{ t('Theme leadership · owner-ranked', '主题领先 · 既有排名') }}</div>
   <div class="ca-v36-lead-cols" id="ca-v36-lead-cols">
     <div class="ca-v36-empty ca-v36-static-state">{{ t('Theme leadership is unavailable until the optional evidence feed arrives.', '可选证据源到达前，主题领先数据暂不可用。') }}</div>
   </div>
