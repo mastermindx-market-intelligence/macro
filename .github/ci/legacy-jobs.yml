@@ -1921,6 +1921,7 @@ jobs:
       - "engine/signal_gate.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
+      - "engine/special_situations_premium.py"
       - "engine/stock_dossier.py"
       - "engine/stock_events.py"
       - "engine/stock_fundamentals.py"
@@ -2995,6 +2996,7 @@ jobs:
           tests/test_capital_structure_projection.py
           tests/test_build_capital_structure_projection.py
           tests/test_capital_structure_page.py
+          tests/test_special_situations_premium.py
           tests/test_capital_structure_policy_projection.py
           tests/test_capital_structure_api.py
           tests/test_capital_structure_source_identity.py
@@ -7075,6 +7077,7 @@ jobs:
       - "engine/sp500_heatmap.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
+      - "engine/special_situations_premium.py"
       - "engine/spine.py"
       - "engine/spotlight.py"
       - "engine/stock_dossier.py"
@@ -7608,6 +7611,7 @@ jobs:
       - "engine/signal_quality.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
+      - "engine/special_situations_premium.py"
       - "engine/spotlight.py"
       - "engine/stock_dossier.py"
       - "engine/stock_events.py"
@@ -11057,6 +11061,7 @@ jobs:
       - "engine/sp500_heatmap.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
+      - "engine/special_situations_premium.py"
       - "engine/spine.py"
       - "engine/spotlight.py"
       - "engine/spvector_overlay.py"
@@ -12822,6 +12827,7 @@ jobs:
       - "engine/signal_quality.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
+      - "engine/special_situations_premium.py"
       - "engine/spotlight.py"
       - "engine/stock_dossier.py"
       - "engine/stock_events.py"
