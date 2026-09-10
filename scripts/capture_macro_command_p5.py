@@ -208,7 +208,7 @@ METHOD_TABLE_PAGES = WORKSPACE_PAGES + (LABOR_PAGE,)
 # below this. See claims_p5_v23.md.
 METHOD_TABLE_390_START_FLOOR = len(METHOD_TABLE_PAGES) * 2 * 2
 _METHOD_TABLE_NAME_RE = re.compile(
-    r"^method_table_390_(?P<pos>start|end)-"
+    r"^method_table_390_(?P<pos>start|end|mid\d+)-"
     r"(?P<slug>.+?)(?:__(?P<element_key>[A-Za-z0-9_.-]+))?"
     r"-(?P<theme>dark|light)-(?P<locale>en|zh)-(?P<width>\d+)\.png$"
 )
@@ -228,6 +228,42 @@ def method_table_filename(
         f"method_table_390_{pos}-{slug}__{key}-"
         f"{theme}-{locale}-{width}.png"
     )
+
+
+def method_table_390_sweep_positions(
+        scroll_width: float, client_width: float) -> list[tuple[str, float]]:
+    """(pos_tag, scrollLeft) for one overflowing method_table_390 instance.
+
+    Fits (scrollWidth ≤ clientWidth + 1) → start only. Overflow → start at
+    0, then mids advancing by (clientWidth − 40) px, then end at exactly
+    scrollWidth − clientWidth. When the first step would land at or past
+    sw−cw, the arithmetic sequence collapses to start+end; if that pair
+    is still ≥80 px apart a distinct mid1 at (sw−cw)/2 is kept, because
+    two crops do not suffice — the motivating Driver/Reading table is
+    1.80 crop widths, so (cw−40) overshoots max_sl and start∪end miss
+    the middle header under full-containment.
+    """
+    sw = float(scroll_width or 0)
+    cw = float(client_width or 0)
+    if sw <= cw + 1.0:
+        return [("start", 0.0)]
+    max_sl = max(0.0, sw - cw)
+    if max_sl <= 0.0:
+        return [("start", 0.0)]
+    step = max(1.0, cw - 40.0)
+    out: list[tuple[str, float]] = [("start", 0.0)]
+    nxt = step
+    mid_n = 1
+    while nxt < max_sl:
+        out.append((f"mid{mid_n}", float(nxt)))
+        mid_n += 1
+        nxt += step
+    if mid_n == 1:
+        half = max_sl / 2.0
+        if half >= 40.0 and (max_sl - half) >= 40.0:
+            out.append(("mid1", float(half)))
+    out.append(("end", float(max_sl)))
+    return out
 
 
 def parse_method_table_name(name: str) -> dict[str, str] | None:
@@ -3957,7 +3993,7 @@ def _photograph_mq_table_390(
         element_key: str, in_method_section: bool = False,
         receipt_locator=None, census_row: Mapping[str, Any] | None = None,
         ) -> None:
-    """Shoot start (+ end unless table_fits) of one table.mq-table at 390."""
+    """Shoot start (+ mids + end unless table_fits) of one table.mq-table at 390."""
     probes.setdefault("method_table_390_text", {})
     full_text = str(table.evaluate(
         """el => (el.innerText || '')
@@ -3977,10 +4013,14 @@ def _photograph_mq_table_390(
     table.evaluate("el => { el.scrollLeft = 0; }")
     page.wait_for_timeout(40)
     text_zero = str(table.evaluate(_MQ_TABLE_VISIBLE_TEXT_JS, locale) or "")
-    positions = [("start", 0)]
-    if not table_fits:
-        positions.append(("end", None))
-    for pos, _scroll_to in positions:
+    if table_fits:
+        positions: list[tuple[str, float]] = [("start", 0.0)]
+    else:
+        positions = method_table_390_sweep_positions(
+            fit_rcpt.get("scrollWidth") or 0,
+            fit_rcpt.get("clientWidth") or 0,
+        )
+    for pos, scroll_to in positions:
         tname = method_table_filename(
             pos, slug, theme, locale, 390, element_key=element_key)
         print(f"capture {tname}", flush=True)
@@ -3990,8 +4030,10 @@ def _photograph_mq_table_390(
                 if (want === 'end') {
                   el.scrollLeft = Math.max(
                     0, el.scrollWidth - el.clientWidth);
-                } else {
+                } else if (want === 'start') {
                   el.scrollLeft = 0;
+                } else {
+                  el.scrollLeft = Number(args.scrollLeft) || 0;
                 }
                 const st = getComputedStyle(el);
                 return {
@@ -4006,7 +4048,8 @@ def _photograph_mq_table_390(
                   element_key: args.element_key,
                 };
             }""",
-            {"pos": pos, "element_key": element_key},
+            {"pos": pos, "scrollLeft": scroll_to,
+             "element_key": element_key},
         )
         page.wait_for_timeout(80)
         vis_at_scroll = str(
@@ -4085,7 +4128,8 @@ def _capture_all_overflowing_mq_tables_390(
     element_key is nearest unique ancestor section[id], else nth-of-match
     in document order (asserted unique). Never .first. A table that fits
     this page×theme×locale gets a table_fits:true start cell bound to the
-    same element_key (no end PNG).
+    same element_key (no mid/end PNG). Overflowing instances get start +
+    zero-or-more mids + end.
     """
     census = host.evaluate(_MQ_TABLE_CENSUS_JS) or {}
     if not census.get("ok"):
@@ -4543,13 +4587,13 @@ def declared_cell_rows(
             ("light", "en"), ("light", "zh"),
         ):
             add(f"method_open-{slug}-{theme}-{locale}-390.png")
-    # method_table_390 instance cells are discovered at capture (one start/end
-    # pair per overflowing element_key, plus a table_fits start cell per
-    # fitting instance). Exact filenames cannot be static here because they
-    # include the capture-discovered element_key. V23-n1 floor =
-    # METHOD_TABLE_390_START_FLOOR (5 slugs × 2 themes × 2 locales start
-    # cells) is enforced at write_manifest; extras exemption stays
-    # method_table_390_*.
+    # method_table_390 instance cells are discovered at capture (start +
+    # zero-or-more mids + end per overflowing element_key, plus a
+    # table_fits start cell per fitting instance). Exact filenames cannot
+    # be static here because they include the capture-discovered
+    # element_key. V23-n1 floor = METHOD_TABLE_390_START_FLOOR (5 slugs ×
+    # 2 themes × 2 locales start cells) is enforced at write_manifest;
+    # extras exemption stays method_table_390_*.
     for page_name in LINEAGE_OPEN_PAGES:
         slug = page_name.replace(".html", "")
         for theme, locale in (

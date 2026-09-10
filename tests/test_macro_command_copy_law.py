@@ -2466,6 +2466,7 @@ def test_inner_scrollports_have_method_table_pair() -> None:
                     if not key or key not in registry:
                         offenders.append((name, "free box/text", entry))
             # method_table_390: missing end only OK under table_fits.
+            # midN cells are family members of an overflowing start+end.
             if fam == "method_table_390" and "method_table_390_start-" in name:
                 end = name.replace(
                     "method_table_390_start-", "method_table_390_end-", 1)
@@ -2473,6 +2474,11 @@ def test_inner_scrollports_have_method_table_pair() -> None:
                     offenders.append((name, "missing end without table_fits"))
                 if not state.get("element_key"):
                     offenders.append((name, "missing element_key"))
+            if fam == "method_table_390" and "_mid" in name:
+                if not state.get("element_key"):
+                    offenders.append((name, "missing element_key"))
+                if state.get("table_fits") is True:
+                    offenders.append((name, "mid cell with table_fits"))
             for entry in overflows:
                 if str(entry.get("selector") or "") == "table.mq-table":
                     if not entry.get("element_key"):
@@ -2611,6 +2617,19 @@ def test_method_table_390_contribution_union() -> None:
             assert vis_map[start["file"]] == start_vis, (
                 key, "probes map != manifest start")
         parts = [start_vis]
+        n = 1
+        while True:
+            mid = by_file.get(method_table_filename(
+                f"mid{n}", slug, theme, locale, width, element_key=ekey))
+            if mid is None:
+                break
+            mid_vis = str(mid.get("visible_text_at_scroll") or "")
+            assert mid_vis, (key, f"blank manifest mid{n} visible_text_at_scroll")
+            if mid["file"] in vis_map:
+                assert vis_map[mid["file"]] == mid_vis, (
+                    key, f"probes map != manifest mid{n}")
+            parts.append(mid_vis)
+            n += 1
         end_vis = ""
         if end is not None:
             end_vis = str(end.get("visible_text_at_scroll") or "")
@@ -2962,6 +2981,8 @@ def test_390_matrix_full_theme_locale() -> None:
             else:
                 for prefix in (
                     "method_table_390_start-", "method_table_390_end-",
+                    "method_table_390_mid1-", "method_table_390_mid2-",
+                    "method_table_390_mid3-",
                     "method_open-", "disclosure_rows_open-",
                 ):
                     if rest.startswith(prefix):
@@ -3046,6 +3067,12 @@ def _station_axis(state: dict, page: dict, fam: str) -> tuple:
 
 def _peer_start_semantic(semantic: str) -> str | None:
     s = str(semantic or "")
+    m = re.search(r"_mid\d+::", s)
+    if m:
+        return s[:m.start()] + "_start::" + s[m.end():]
+    m = re.search(r"_mid\d+$", s)
+    if m:
+        return s[:m.start()] + "_start"
     if "_end::" in s:
         return s.replace("_end::", "_start::", 1)
     if s.endswith("_end"):
@@ -3118,8 +3145,11 @@ def test_en_zh_visible_text_distinct_all_stations() -> None:
     for key, locs in stations.items():
         accounted = set(locs) | set(fits_at.get(key, {}))
         peer = _peer_start_semantic(str(key[-1] or ""))
+        is_mid_station = bool(re.search(r"_mid\d+", str(key[-1] or "")))
         if peer:
             accounted |= set(fits_at.get(key[:-1] + (peer,), {}))
+            if is_mid_station:
+                accounted |= set(stations.get(key[:-1] + (peer,), {}))
         missing = {"en", "zh"} - accounted
         if missing:
             missing_locale.append((key, "missing locale(s)", sorted(missing)))
@@ -3129,11 +3159,15 @@ def test_en_zh_visible_text_distinct_all_stations() -> None:
             if locs["en"][1] == locs["zh"][1]:
                 collisions.append(key)
             continue
-        # One locale has a cell; the other is accounted by a fits receipt.
+        # One locale has a cell; the other is accounted by a fits receipt
+        # or (for midN) by the same element's start cell — sweeps are
+        # per-locale, so a shorter locale may have no mid.
         other = ({"en", "zh"} - set(locs)).pop()
         has_fits = bool(fits_at.get(key, {}).get(other))
         if not has_fits and peer:
             has_fits = bool(fits_at.get(key[:-1] + (peer,), {}).get(other))
+        if not has_fits and is_mid_station and peer:
+            has_fits = other in stations.get(key[:-1] + (peer,), {})
         assert has_fits, (key, "paired locale missing fits receipt", other)
     assert not missing_locale, missing_locale[:20]
     assert not collisions, collisions[:20]
@@ -3402,7 +3436,9 @@ def test_iframe_coord_space_receipts() -> None:
 def test_table_fits_pair_semantics() -> None:
     """C-m3: table_fits False ⇒ end at max scroll; True ⇒ no end + fits."""
     import json
-    from scripts.capture_macro_command_p5 import family_for
+    from scripts.capture_macro_command_p5 import (
+        family_for, method_table_filename, parse_method_table_name,
+    )
     manifest = json.loads(
         (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
         .read_text(encoding="utf-8"))
@@ -3433,6 +3469,23 @@ def test_table_fits_pair_semantics() -> None:
             sl = float(end.get("scrollLeft") or 0)
             assert abs(sl - (sw - cw)) <= 1.5 or sl >= max(0.0, sw - cw - 1.5), (
                 start["file"], sl, sw, cw)
+            # mids (if any) sit strictly between start and end.
+            parsed = parse_method_table_name(str(start["file"]))
+            if parsed:
+                prev_sl = float(start.get("scrollLeft") or 0)
+                n = 1
+                while True:
+                    mid = by_file.get(method_table_filename(
+                        f"mid{n}", parsed["slug"], parsed["theme"],
+                        parsed["locale"], parsed["width"],
+                        element_key=parsed["element_key"]))
+                    if mid is None:
+                        break
+                    mid_sl = float(mid.get("scrollLeft") or 0)
+                    assert prev_sl < mid_sl < sl + 1e-9, (
+                        start["file"], n, prev_sl, mid_sl, sl)
+                    prev_sl = mid_sl
+                    n += 1
 
 
 def test_method_table_filename_roundtrip_includes_element_key() -> None:
@@ -3447,6 +3500,45 @@ def test_method_table_filename_roundtrip_includes_element_key() -> None:
         "pos": "end", "slug": "macro_rates_curves", "element_key": "nth-1",
         "theme": "dark", "locale": "zh", "width": "390",
     }
+    mid = method_table_filename(
+        "mid1", "macro_financial_conditions", "dark", "en", 390,
+        element_key="nth-2")
+    parsed_mid = parse_method_table_name(mid)
+    assert parsed_mid == {
+        "pos": "mid1", "slug": "macro_financial_conditions",
+        "element_key": "nth-2", "theme": "dark", "locale": "en",
+        "width": "390",
+    }
+
+
+def test_method_table_390_sweep_positions_collapses_or_fills() -> None:
+    """V25-1: arithmetic (cw−40) sweep; collapse; halfway mid when needed."""
+    from scripts.capture_macro_command_p5 import method_table_390_sweep_positions
+    assert method_table_390_sweep_positions(300, 350) == [("start", 0.0)]
+    # first step (310) lands past max_sl=250 and half=125 is ≥40 from both
+    # ends → mid1 at halfway, not a bare start+end (two crops would miss
+    # a middle header under full-containment).
+    overshoot = method_table_390_sweep_positions(600, 350)
+    assert [p for p, _ in overshoot] == ["start", "mid1", "end"]
+    assert overshoot[0][1] == 0.0
+    assert overshoot[-1][1] == 250.0
+    assert overshoot[1][1] == 125.0
+    # tiny overflow: half < 40 → collapse to start+end.
+    tiny = method_table_390_sweep_positions(370, 350)
+    assert [p for p, _ in tiny] == ["start", "end"]
+    assert tiny[-1][1] == 20.0
+    # three arithmetic positions: cw=350, step=310, sw=1000, max_sl=650
+    # 310 < 650 → mid1@310; 620 < 650 → mid2@620; end@650.
+    wide = method_table_390_sweep_positions(1000, 350)
+    assert [p for p, _ in wide] == ["start", "mid1", "mid2", "end"]
+    assert wide[1][1] == 310.0
+    assert wide[2][1] == 620.0
+    assert wide[-1][1] == 650.0
+    # motivating nth-2 shape: sw=592, cw=328, max_sl=264, step=288 overshoots.
+    nth2 = method_table_390_sweep_positions(592, 328)
+    assert [p for p, _ in nth2] == ["start", "mid1", "end"]
+    assert nth2[-1][1] == 264.0
+    assert nth2[1][1] == 132.0
 
 
 def test_parse_method_table_name_rejects_keyless() -> None:
@@ -3864,6 +3956,129 @@ def test_overflow_entry_keys_match_census_keys() -> None:
         .read_text(encoding="utf-8"))
     offenders = _overflow_census_key_offenders(manifest, probes)
     assert not offenders, offenders[:12]
+
+
+def _method_table_390_family_offenders(manifest) -> list:
+    """Pair semantics: start + zero-or-more mids + end; end at sw−cw."""
+    from collections import defaultdict
+    from scripts.capture_macro_command_p5 import (
+        method_table_390_sweep_positions, parse_method_table_name,
+    )
+    families: dict[tuple, dict[str, dict]] = defaultdict(dict)
+    for page in manifest["pages"]:
+        for st in page["states"]:
+            parsed = parse_method_table_name(str(st.get("file") or ""))
+            if not parsed:
+                continue
+            key = (
+                parsed["slug"], parsed["element_key"], parsed["theme"],
+                parsed["locale"], parsed["width"],
+            )
+            families[key][parsed["pos"]] = st
+    offenders = []
+    for key, by_pos in families.items():
+        start = by_pos.get("start")
+        if start is None:
+            offenders.append((key, "missing start", sorted(by_pos)))
+            continue
+        sw = float(start.get("scrollWidth") or 0)
+        cw = float(start.get("clientWidth") or 0)
+        if start.get("table_fits") is True:
+            extra = sorted(p for p in by_pos if p != "start")
+            if extra:
+                offenders.append((key, "fits family has extra pos", extra))
+            continue
+        expected = [
+            p for p, _ in method_table_390_sweep_positions(sw, cw)]
+        got = ["start"] if "start" in by_pos else []
+        n = 1
+        while f"mid{n}" in by_pos:
+            got.append(f"mid{n}")
+            n += 1
+        stray = sorted(
+            p for p in by_pos if p.startswith("mid") and p not in got)
+        if stray:
+            offenders.append((key, "gapped mids", stray, list(got)))
+        if "end" in by_pos:
+            got.append("end")
+        if got != expected:
+            offenders.append((key, "pos set != sweep", list(got), expected))
+        end = by_pos.get("end")
+        if end is None:
+            offenders.append((key, "missing end without table_fits"))
+            continue
+        end_sl = float(end.get("scrollLeft") or 0)
+        max_sl = max(
+            0.0,
+            float(end.get("scrollWidth") or sw)
+            - float(end.get("clientWidth") or cw),
+        )
+        if abs(end_sl - max_sl) > 1.5 and end_sl < max_sl - 1.5:
+            offenders.append((key, "end not at sw-cw", end_sl, max_sl))
+        prev = float(start.get("scrollLeft") or 0)
+        for pos in got[1:]:
+            sl = float(by_pos[pos].get("scrollLeft") or 0)
+            if not (sl > prev):
+                offenders.append(
+                    (key, "scrollLeft not strictly increasing", pos, prev, sl))
+            prev = sl
+    return offenders
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_method_table_390_family_shape() -> None:
+    """V25-2: overflowing family = start + 0-N mids + end; mids increasing."""
+    import json
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    offenders = _method_table_390_family_offenders(manifest)
+    assert not offenders, offenders[:12]
+
+
+@pytest.mark.needs_full_checkout("mockups")
+def test_mut_mid_deleting_one_mid_from_three_position_table_fails() -> None:
+    """MUT-mid: delete one mid cell from a ≥3-position table → family-shape fails."""
+    import copy
+    import json
+    from collections import defaultdict
+    from scripts.capture_macro_command_p5 import parse_method_table_name
+
+    manifest = json.loads(
+        (ROOT / "mockups" / "evidence" / "macro-command-p5" / "manifest.json")
+        .read_text(encoding="utf-8"))
+    families: dict[tuple, list] = defaultdict(list)
+    for page in manifest["pages"]:
+        for st in page["states"]:
+            parsed = parse_method_table_name(str(st.get("file") or ""))
+            if not parsed:
+                continue
+            key = (
+                parsed["slug"], parsed["element_key"], parsed["theme"],
+                parsed["locale"], parsed["width"],
+            )
+            families[key].append((parsed["pos"], st.get("file")))
+    victim = None
+    drop_file = None
+    for key, members in families.items():
+        poss = {p for p, _ in members}
+        mids = sorted(p for p in poss if p.startswith("mid"))
+        if "start" in poss and "end" in poss and mids:
+            victim = key
+            drop_pos = mids[0]
+            drop_file = next(fn for p, fn in members if p == drop_pos)
+            break
+    assert victim and drop_file, (
+        "MUT-mid needs a ≥3-position table; none in manifest",
+        {k: [p for p, _ in v] for k, v in list(families.items())[:8]},
+    )
+    planted = copy.deepcopy(manifest)
+    for page in planted["pages"]:
+        page["states"] = [
+            st for st in page["states"] if st.get("file") != drop_file
+        ]
+    offenders = _method_table_390_family_offenders(planted)
+    assert offenders, (victim, drop_file)
 
 
 @pytest.mark.needs_full_checkout("mockups")
