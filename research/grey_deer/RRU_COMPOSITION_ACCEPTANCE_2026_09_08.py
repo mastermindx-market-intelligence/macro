@@ -19,7 +19,13 @@ sys.path.insert(0, str(ROOT))
 from engine import risk_radar_intl as radar, market_state, risk_radar_recovery as recovery
 from engine import risk_radar_intl_audit as radar_audit
 from engine import risk_radar_intl_tune as radar_tune
-PIN = "eb9e91961ddc4f3043d0dad358602525e66eccda"
+from engine import international_macro_dashboard as intl_dashboard
+from scripts import build_international_macro as intl_builder
+# Test-only immutable source selection; historical receipts retain their default pin.
+import os
+PIN = os.environ.get("RRU_SOURCE_PIN", "eb9e91961ddc4f3043d0dad358602525e66eccda")
+if len(PIN) != 40 or any(c not in "0123456789abcdef" for c in PIN):
+    raise ValueError("RRU_SOURCE_PIN must be a full immutable lowercase commit SHA")
 PATHS = ("engine/risk_radar_intl.py", "engine/market_state.py",
          "engine/risk_radar_recovery.py", "templates/_risk_radar_card.html.j2")
 
@@ -38,7 +44,9 @@ def apply_bundle(bundle):
     global TEMPLATE
     modules = {PATHS[0]: radar, PATHS[1]: market_state, PATHS[2]: recovery,
                "engine/risk_radar_intl_audit.py": radar_audit,
-               "engine/risk_radar_intl_tune.py": radar_tune}
+               "engine/risk_radar_intl_tune.py": radar_tune,
+               "engine/international_macro_dashboard.py": intl_dashboard,
+               "scripts/build_international_macro.py": intl_builder}
     for path, entry in bundle.items():
         text = SOURCES.get(path) or committed(path)
         if hashlib.sha256(text.encode()).hexdigest() != entry["base_sha256"]:

@@ -14,7 +14,7 @@ import RRU_COMPOSITION_ACCEPTANCE_2026_09_08 as a
 import RRU_COMPOSITION_BUILD_BUNDLE_2026_09_08 as candidate
 
 HERE = Path(__file__).resolve().parent
-OUT = HERE / 'rru_force_patch_export_20260909_v2'
+OUT = HERE / ('rru_intl_complete_patch_20260910_' + a.PIN[:12])
 
 def sha(raw):
     return hashlib.sha256(raw).hexdigest()
@@ -22,7 +22,9 @@ def sha(raw):
 def main():
     OUT.mkdir(exist_ok=False)
     paths = sorted(candidate.bundle)
-    assert len(paths) == 14 and all(Path(p).parts[0] in ('engine', 'templates', 'scripts') for p in paths)
+    prior = json.loads((HERE/'rru_force_patch_export_20260909_v2/manifest.json').read_text())
+    expected_paths = set(prior['paths']) | {'templates/international_macro.html.j2', 'scripts/build_international_macro.py', 'engine/international_macro_dashboard.py'}
+    assert set(paths) == expected_paths and len(paths) == 17
     original = {p: candidate.SOURCES[p].encode() for p in paths}
     expected = {p: candidate.edited[p].encode() for p in paths}
     def state(p):
@@ -36,7 +38,8 @@ def main():
     manifest = dict(source_pin=a.PIN, capability='uninstalled_research_candidate',
         patch_format='unified_zero_context; exact before hashes required',
         paths={p:dict(before_sha256=sha(original[p]), after_sha256=sha(expected[p])) for p in paths},
-        patch_sha256=sha(patch_path.read_bytes()), production=False)
+        patch_sha256=sha(patch_path.read_bytes()), production=False, release_ready=False,
+        remaining_release_gates=['independent full-candidate review', 'source custody and current integration', 'real-input applicability', 'installed-policy cutover', 'production publication and entitled browser proof'])
     (OUT/'manifest.json').write_text(json.dumps(manifest, indent=2)+'\n')
     with tempfile.TemporaryDirectory(prefix='rru-force-copy-proof-', dir=HERE) as directory:
         root = Path(directory)

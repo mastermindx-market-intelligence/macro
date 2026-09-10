@@ -1,0 +1,11 @@
+{
+  "patch_exit": 0,
+  "files": 17,
+  "exact_candidate": true,
+  "original_source_unchanged": true,
+  "extra_files": [],
+  "stdout": "patching file 'engine/international_macro_dashboard.py'\npatching file 'engine/intl_run.py'\npatching file 'engine/market_state.py'\npatching file 'engine/risk_radar_intl.py'\npatching file 'engine/risk_radar_intl_audit.py'\npatching file 'engine/risk_radar_intl_tune.py'\npatching file 'engine/risk_radar_recovery.py'\npatching file 'scripts/build_canada.py'\npatching file 'scripts/build_china.py'\npatching file 'scripts/build_china_risk_state.py'\npatching file 'scripts/build_hk.py'\npatching file 'scripts/build_international_macro.py'\npatching file 'templates/_risk_radar_card.html.j2'\npatching file 'templates/baskets_desk.js'\npatching file 'templates/china.html.j2'\npatching file 'templates/cn_reversal_sleeve.html.j2'\npatching file 'templates/international_macro.html.j2'\n",
+  "stderr": "",
+  "production": false,
+  "full_pipeline": false
+}

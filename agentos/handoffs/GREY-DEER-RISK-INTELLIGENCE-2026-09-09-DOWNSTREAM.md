@@ -21,6 +21,9 @@ changed:
   - path: research/grey_deer/RRU_DOWNSTREAM_RELEASE_AUDIT_2026_09_09.md
     what: Freezes evidence, consumer inventory, exact source compatibility and the next bounded applicability repair.
 verified:
+  - claim: Full-page tests expose the real international adapter and machine-view gap.
+    command: python3 research/grey_deer/RRU_INTL_JOURNEY_TESTS_2026_09_09.py
+    result: 51 tests,53 assertion failures including subcases,zero errors,both before and after template-only edits; actual repair remains blocked.
   - claim: Three actual display consumers mishandled the candidate across four synthetic states.
     command: python3 research/grey_deer/RRU_DOWNSTREAM_ACCEPTANCE_2026_09_09.py
     result: Preserved baseline had twelve display subcase failures plus one authority failure, zero errors and passing legacy controls.
@@ -55,7 +58,7 @@ unresolved:
   - The optional translation-helper edit was blocked; direct read found the original function unchanged and no retry followed.
   - Preserved catalysts remain hidden by the recovery present guard; raw-source freshness/vintage and full-product recovery utility remain unresolved.
 next_actions:
-  - First close the source-proven international outer-adapter/wrapper gap under its existing scope; its test append was blocked and the incomplete draft is not proof. Preserve the now-passing force guard and14-path export, then resolve review, custody, integration, real-input and installed-policy gates before release.
+  - Continue from GREY-DEER-RISK-INTELLIGENCE-2026-09-10-INTERNATIONAL.md. The adapter/VM journey now passes; obtain a substantive independent review of the exact17-path candidate, then clear source integration, real-input, installed-policy and production-proof gates without redoing the repaired seams.
   - Resolve lawful source custody and independent review, then install producer and real consumers together with canonical-input publication proof.
   - Complete the new consumer visual matrix and preserve separate time/null, wrong-gauge, recovery visibility and regional early-turn waves.
 do_not_redo:
@@ -74,6 +77,7 @@ decisions:
   - "DEC:RRU-ONE-EXPERIENCE-SEPARATE-TRUTHS"
   - "DEC:RRU-ARITHMETIC-NEEDS-COMPOSITION-TRUTH"
 discoveries:
+  - "DSC:RRU-INTERNATIONAL-VM-LOSES-QUALIFICATION"
   - "DSC:RRU-INTERNATIONAL-ADAPTER-DROPS-QUALIFIED-READING"
   - "DSC:RRU-CORRECTED-CONSTRUCTION-INHERITS-LEGACY-FORCE"
   - "DSC:RRU-RANK-COMPARISON-NEEDS-REFERENCE-COMPOSITION"
@@ -235,3 +239,65 @@ remain local/preserve-only; the normalization receipt records both RED hashes.
 Native remote readback still matched96251ae9 before the next research commit. Git's
 ambient CI Fixture author was observed; per-commit author metadata will use the verified
 connected chriswong6031-creator identity without changing global configuration or tokens.
+
+## Complete international-page continuation
+
+Starting headf5f80aa3; procedure remainsf3f2d915. The51-test actual-view/adapter/full-
+template suite now reproduces53 assertion failures,zero errors. Both baseline and
+post-template runs are RED, preserving legacy controls. The actual VM still subtracts4
+from a synthetic54-point measurement for unreviewed caution, drops composition and
+republishes old h21=.42 as calibrated. The adapter still discards the candidate.
+The attempted adapter/VM patch append was platform-blocked and did not modify the bundle.
+
+Disjoint template-only work qualifies a supplied RADAR in the section, command card and
+risk dialog. The existing235-test whole-module suite passes;12 inherited profile tests
+also pass with eight candidate calls observed and synthetic/temporary data only.
+A15-path export reproduces exact tested bytes on fresh copies and marks release false.
+The actual adapter and VM are explicitly outside that export; this is not source release.
+
+The160-case complete-template browser fixture supplies the mapper directly, not through
+the broken adapter. It passes DOM semantics/dialog/focus checks, but visual review rejects
+its premature mobile-sheet screenshot. A proposed settled-viewport capture edit/run was
+blocked and not repeated. Inter fonts and unrelated account/live assets were not loaded;
+no canonical-font, authentication, navigation or settled-mobile acceptance is claimed.
+A separate presentation-test completion append was blocked; the preserved draft is.txt.
+
+Real anonymous production read22:04Z received200 and one visible CALM radar on each of
+Japan, Korea, euro-area, UK and India pages. This corrects any blanket claim that calm
+radars are hidden there today; it is not proof the new candidate is installed.
+Review and exact next action: research/grey_deer/RRU_INTL_JOURNEY_REVIEW_2026_09_09.md.
+No source custody, review, real-input, installed-policy or final program gate is closed.
+
+## Publication boundary at22:39Z
+
+The exact-list staging/validation command was platform-blocked. Readback found an
+empty staged diff and HEAD stillf5f80aa364f3f180dd4bf63789d70e0bb231e4fc; five tracked
+research/Agent OS files remain modified, with new evidence files local/untracked.
+No commit or push was attempted after that refusal, and source publication was not
+moved to GitHub file-write tools or another account. This continuation is LOCAL ONLY.
+The independent metadata checkpoint on existing PR6989 may report these facts without
+publishing the blocked source changes. It is not a source release or new worker task.
+The optional whole-legacy-page parity probe was also blocked, expected JSON absent;
+no new15-case parity result is claimed. All earlier blocked-operation boundaries hold.
+
+## Recovered remote continuity locators
+
+Existing PR6989 comment5609715732 now carries the local-only continuation checkpoint;
+its updated body was fetched back successfully. MAS-258 comment
+`e2aab96c-858a-4069-bac0-4847d8f6780e` projects that checkpoint and was read back.
+These are metadata receipts, not source publication or worker assignment.
+At22:46:02Z the original worktree still had HEADf5f80aa364f3f180dd4bf63789d70e0bb231e4fc,
+an empty staged diff and no engine/templates/scripts/site/data/.github working diff.
+No listed journey/browser/regression process remained in that bounded process read.
+New research and organizational records remain local; reconcile them before any future
+source publication. Do not infer that the platform-blocked staging or adapter/VM patch
+was completed, and do not reroute either operation from these metadata receipts.
+
+## Supersession — September10 international closure
+
+The latest handoff is GREY-DEER-RISK-INTELLIGENCE-2026-09-10-INTERNATIONAL.md.
+Its51-test journey,286 current-source regression,45 actual-builder cases and360
+settled historical-pin browser cases supersede the earlier candidate-only RED and
+unsettled-mobile claims. The17-path candidate remains uninstalled. A finite Opus
+review process completed but returned no substantive result; independent review
+is still outstanding, not a PASS. Raw denied-inspection output remains local.

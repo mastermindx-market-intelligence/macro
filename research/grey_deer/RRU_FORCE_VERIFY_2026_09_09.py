@@ -15,7 +15,7 @@ NAMES = ['RRU_COMPOSITION_ACCEPTANCE_2026_09_08', 'RRU_COMPOSITION_EDGE_TESTS_20
     'RRU_DOWNSTREAM_ACCEPTANCE_2026_09_09', 'RRU_CONSTRUCTION_SERIALIZATION_2026_09_09',
     'RRU_REFERENCE_WINDOW_TESTS_2026_09_09', 'RRU_LEGACY_COHORT_TESTS_2026_09_09',
     'RRU_FORCE_APPLICABILITY_TESTS_2026_09_09', 'RRU_FORCE_BLOCK_TESTS_2026_09_09',
-    'RRU_FORCE_FULL_CONSUMER_2026_09_09']
+    'RRU_FORCE_FULL_CONSUMER_2026_09_09', 'RRU_INTL_JOURNEY_TESTS_2026_09_09']
 
 def main():
     parser = argparse.ArgumentParser()
@@ -30,11 +30,11 @@ def main():
     if args.full_modules:
         # Load whole amended engine modules, not only selected function AST nodes.
         # No runner/build function is invoked, and source files remain unchanged.
-        for module in (a.radar, a.market_state, a.recovery, a.radar_audit, a.radar_tune):
-            path = 'engine/' + module.__name__.rsplit('.', 1)[-1] + '.py'
+        for module in (a.radar, a.market_state, a.recovery, a.radar_audit, a.radar_tune, a.intl_dashboard, a.intl_builder):
+            path = ('scripts/' if module is a.intl_builder else 'engine/') + module.__name__.rsplit('.', 1)[-1] + '.py'
             exec(compile(candidate.edited[path], path, 'exec'), module.__dict__)
     suites = [unittest.defaultTestLoader.loadTestsFromModule(m) for m in modules]
-    print(json.dumps(dict(mode='whole_modules' if args.full_modules else 'function_injection',
+    print(json.dumps(dict(source_pin=a.PIN, mode='whole_modules' if args.full_modules else 'function_injection',
         counts={n:s.countTestCases() for n,s in zip(NAMES,suites)},
         source_hashes={p:hashlib.sha256(candidate.edited[p].encode()).hexdigest()
                        for p in candidate.bundle})), flush=True)

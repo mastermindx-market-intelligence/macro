@@ -347,3 +347,103 @@ change(p, '    {%- if _fl_n > 0 %}', '''    {%- if rd.authority and rd.authority
 # Keep added reported-grant provenance off unchanged legacy projections.
 change(PATHS[1], '        "reported_can_force": _reported_can_force,',
        '        **({"reported_can_force": _reported_can_force} if "composition" in rr else {}),')
+
+# Template-only qualification of a supplied modern RADAR. Adapter/VM repair is held.
+p = 'templates/international_macro.html.j2'
+SOURCES[p] = committed(p)
+edited[p] = SOURCES[p]
+change(p, '{% import "_risk_radar_card.html.j2" as rrc %}', '''{% import "_risk_radar_card.html.j2" as rrc %}
+{% set _qualified_radar = RADAR and RADAR.authority and RADAR.authority.reason == 'construction_not_promoted' %}''')
+change(p, '''{{ t("Odds measured on this market's own history — windows, not certainties, re-drawn nightly.",'概率基于本市场自身历史测算 — 是概率窗口而非定论，每晚重算。') }}''',
+       '''{{ t('Read the inputs; a calibrated forecast is not available.','观察输入；当前不提供经校准的预测。') if _qualified_radar else t("Odds measured on this market's own history — windows, not certainties, re-drawn nightly.",'概率基于本市场自身历史测算 — 是概率窗口而非定论，每晚重算。') }}''')
+change(p, "{{ t('Calibrated risk monitor','校准风险监测') }}",
+       "{{ t('Risk evidence','风险证据') if _qualified_radar else t('Calibrated risk monitor','校准风险监测') }}")
+change(p, "{{ t('Forward pullback odds stay separate from the descriptive macro score.','前瞻回撤概率与描述性宏观分数严格分开。') }}",
+       "{{ t('Check the observations and what remains unknown.','查看已观测的信息与仍未知的部分。') if _qualified_radar else t('Forward pullback odds stay separate from the descriptive macro score.','前瞻回撤概率与描述性宏观分数严格分开。') }}")
+change(p, "{% call dialog('dlg-risk','Calibrated risk receipt','校准风险凭证') %}",
+       "{% call dialog('dlg-risk','Risk evidence' if _qualified_radar else 'Calibrated risk receipt','风险证据' if _qualified_radar else '校准风险凭证') %}")
+
+# Detail presentation consumes the same qualified RADAR rather than old VM odds.
+change(p, '''<div class="imd-cols">
+  <div class="imd-receipt"><h3>{{ t('21-session pullback probability','21交易日回撤概率') }}''', '''<div class="imd-cols">
+  {% if _qualified_radar %}
+  <div class="imd-receipt"><h3>{{ t('Forecast not available','预测暂不可用') }}</h3><p>{{ t('The current inputs do not provide a calibrated pullback forecast.','当前输入不提供经校准的回撤预测。') }}</p></div>
+  <div class="imd-receipt"><h3>{{ t('Input reading','输入读数') }}</h3><p><b>{{ t('Reading unavailable','读数暂缺') if not RADAR.composition.score_current else (t('Partial reading','输入不完整') if RADAR.composition.status == 'PARTIAL' else t('Descriptive reading','描述性读数')) }}</b><br>{{ t(RADAR.label_en,RADAR.label_zh) }}</p></div>
+  {% else %}
+  <div class="imd-receipt"><h3>{{ t('21-session pullback probability','21交易日回撤概率') }}''')
+change(p, '''{{ t(D.risk.dominant_en or 'No dominant scare',D.risk.dominant_zh or '无主导风险') }}</p></div>
+</div>
+<h3 style="margin-top:18px">{{ t('Active scare families','活跃风险类别') }}''', '''{{ t(D.risk.dominant_en or 'No dominant scare',D.risk.dominant_zh or '无主导风险') }}</p></div>
+  {% endif %}
+</div>
+<h3 style="margin-top:18px">{{ t('Risk drivers','风险驱动') if _qualified_radar else t('Active scare families','活跃风险类别') }}''')
+change(p, "{{ t('No calibrated scare data','无校准风险数据') }}",
+       "{{ t('Risk observations unavailable','风险观测暂缺') if _qualified_radar else t('No calibrated scare data','无校准风险数据') }}")
+
+# An unavailable modern assessment is not a measured zero active-family count.
+change(p, '''        {% if RADAR %}
+        {% set _live = (D.risk.scares or []) | rejectattr('band', 'equalto', 'calm') | list %}''', '''        {% if _qualified_radar %}
+        <div class="imd-face-kpi"><strong>{{ RADAR.composition.members_available|default('—') }} / {{ RADAR.composition.members_expected|default('—') }}</strong><span>{{ t('Input coverage','输入覆盖') }}</span></div>
+        {% elif RADAR %}
+        {% set _live = (D.risk.scares or []) | rejectattr('band', 'equalto', 'calm') | list %}''')
+
+# Same-carrier continuation: preserve qualified readings through the real page adapter.
+p = 'scripts/build_international_macro.py'
+SOURCES[p] = committed(p)
+edited[p] = SOURCES[p]
+change(p, '''    radar = record.get("risk_radar") or {}
+    if not radar.get("state"):
+        return None
+    if (radar.get("drawdown_prob") or {}).get("h21") is None:
+        # No calibrated odds -> the card would carry less than the tile it replaces.
+        return None
+''', '''    radar = record.get("risk_radar") or {}
+    if not isinstance(radar, dict):
+        return None
+    if "composition" not in radar:
+        if not radar.get("state"):
+            return None
+        if (radar.get("drawdown_prob") or {}).get("h21") is None:
+            return None
+    # Explicit input quality is a displayable assessment, not a promise of odds.
+''', ['_radar_display'])
+
+# Preserve measured macro scoring and construction identity in the existing view.
+p = 'engine/international_macro_dashboard.py'
+SOURCES[p] = committed(p)
+edited[p] = SOURCES[p]
+change(p, '''        radar.get("state"),
+    )
+    return round(max(0.0, min(100.0, sum(parts.values())))), parts''',
+       '''        radar.get("state") if "composition" not in radar else None,
+    )
+    return round(max(0.0, min(100.0, sum(parts.values())))), parts''', ['decision_score'])
+change(p, '''    drawdown_prob = radar.get("drawdown_prob") or {}
+
+    metrics = []''', '''    modern = "composition" in radar
+    drawdown_prob = {} if modern else (radar.get("drawdown_prob") or {})
+    from copy import deepcopy
+    composition_fields = {"composition": deepcopy(radar["composition"])} if modern else {}
+
+    metrics = []''', ['build_country_view'])
+change(p, '''            "calibrated": _finite(drawdown_prob.get("h21")) is not None,
+''', '''            "calibrated": _finite(drawdown_prob.get("h21")) is not None,
+            **composition_fields,
+''')
+change(p, '''"method_en": "50 + growth impulse − inflation pressure − recession stress + liquidity + current calibrated-risk state. Descriptive, not a forecast.",''',
+       '''"method_en": ("Growth, inflation, recession stress and liquidity. Risk observations remain separate; no calibrated forecast is available." if modern else "50 + growth impulse − inflation pressure − recession stress + liquidity + current calibrated-risk state. Descriptive, not a forecast."),''')
+change(p, '''"method_zh": "50 + 增长脉冲 − 通胀压力 − 衰退压力 + 流动性 + 当前校准风险状态。仅作描述，不是预测。",''',
+       '''"method_zh": ("综合增长、通胀、衰退压力与流动性；风险观测单独呈现，当前不提供经校准的预测。" if modern else "50 + 增长脉冲 − 通胀压力 − 衰退压力 + 流动性 + 当前校准风险状态。仅作描述，不是预测。"),''')
+
+# Full-builder negative controls: producer prose cannot restore a green/calm badge.
+p = PATHS[3]
+change(p, '''{%- set _unknown = _q and not _q.score_current -%}
+{%- set _partial = _q and _q.status == 'PARTIAL' -%}
+{%- set _unreviewed = _q and _q.calibration_status == 'unreviewed_corrected_construction' -%}''',
+       '''{%- set _unreviewed = (rd.authority and rd.authority.reason == 'construction_not_promoted') or (_q and _q.calibration_status == 'unreviewed_corrected_construction') -%}
+{%- set _unknown = _unreviewed and (_q is not mapping or _q.score_current is not sameas true or _q.status not in ['COMPLETE', 'PARTIAL']) -%}
+{%- set _partial = not _unknown and _q and _q.status == 'PARTIAL' -%}''')
+change(p, '{{ _q.members_available }} / {{ _q.members_expected }}.',
+       "{{ _q.members_available|default('—') }} / {{ _q.members_expected|default('—') }}.")
+change(p, '{{ _q.groups_available }} / {{ _q.groups_expected }}.',
+       "{{ _q.groups_available|default('—') }} / {{ _q.groups_expected|default('—') }}.")
