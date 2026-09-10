@@ -1,6 +1,6 @@
 # A-F04-W4-1 Theme Tracker reading-order section — theme treatments
 
-Anonymous fixture render of `templates/state_of_themes.html.j2`, not the live VPS page. Theme and language were set on `<html>` via `localStorage` + `add_init_script` **before** load. `prefers-reduced-motion: reduce`. No mid-toggle. Frames are full-page captures of the Theme Tracker fixture (desktop 1440×900, mobile 390×844). Recaptured at git HEAD `b93aabd5f160` (the code commit the frames depict). The fixture files that produced these frames are committed under `fixtures/` (`ok.html`, `no_order.html`, `empty.html`, `unavailable.html`, `theme.css`, `theme.js`) so the capture reproduces.
+Anonymous fixture render of `templates/state_of_themes.html.j2`, not the live VPS page. Theme and language were set on `<html>` via `localStorage` + `add_init_script` **before** load. `prefers-reduced-motion: reduce`. No mid-toggle. Frames are full-page captures of the Theme Tracker fixture (desktop 1440×900, mobile 390×844). Recaptured at git HEAD `70cc5c00ca50` (the heal-round code commit the frames depict). The fixture files that produced these frames are committed under `fixtures/` (`ok.html`, `no_order.html`, `empty.html`, `unavailable.html`, `theme.css`, `theme.js`) so the capture reproduces.
 
 The populated `/ok.html` frames use a **constructed** theme population: fifteen dated themes with staggered last-recorded dates (8 September 2026 down to 25 August 2026) plus three undated names. That is not the live store. Production currently records one evidence date (2026-07-09) across all 18 theme nodes, so clause 1 of the ordering rule does not separate those rows in production — the visible live sequence comes from the within-day count and then the name. These frames show the dated-slice, truncation sentence, and undated block the round-3 ruling requires, not a nightly snapshot.
 
@@ -15,9 +15,9 @@ the enclosure, rule-weight and ink mechanisms described below are the real ones.
 
 Which frames are which:
 
-- `/ok.html` — constructed populated list (eight cells: desktop/mobile × en/zh × dark/light). Twelve numbered dated rows, truncation sentence naming 12 of 15 dated themes, three undated names with no ordinal.
+- `/ok.html` — constructed populated list (eight cells: desktop/mobile × en/zh × dark/light). Twelve numbered dated rows, truncation sentence naming the first 12 of 15 dated themes in this order, three undated names with no ordinal. Per-row ZH recorded-on has no ASCII space between the date and the text.
 - `/empty.html` — honest empty state: title plus “We have not recorded new evidence for any theme yet.” / “目前还没有记录到任何主题的新证据。” No list, no dash, no zero.
-- `/no_order.html` — the fourth honest null (seat round-4 ruling R2): state `ok` with zero dated themes. Title plus “No tracked theme carries a dated entry yet, so there is no reading order to show.” / “目前没有任何主题带有日期记录，因此暂时没有可显示的阅读顺序。”, then the three undated names. No stance, no tie-break sentence, no `<ol class="rp-list">` above the undated block, no ordinal, no dash.
+- `/no_order.html` — the fourth honest null (seat round-4 ruling R2, heal-round REQUIRED 1): state `ok` with zero dated themes. Title plus “No tracked theme carries a dated entry yet, so there is no reading order to show.” / “目前没有任何主题带有日期记录，因此暂时没有可显示的阅读顺序。”, then the visible refusal “When an order is shown, it is a reading order, not a score.” / “显示顺序时，那只是阅读顺序，不是评分。”, then the three undated names. The undated note does not point at an order. The details summary is “How a reading order is made” / “阅读顺序是怎么排的”. No stance, no tie-break sentence, no `<ol class="rp-list">` above the undated block, no ordinal, no dash.
 - `/unavailable.html` — honest unavailable state: title plus “The evidence record could not be read, so this list is not shown.” / “无法读取证据记录，因此这份清单暂不显示。” No list, no dash, no zero.
 
 ## DARK TREATMENT
