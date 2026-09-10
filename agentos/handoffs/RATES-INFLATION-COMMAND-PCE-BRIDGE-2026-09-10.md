@@ -3,96 +3,97 @@ workstream: WS:RATES-INFLATION-COMMAND
 session: sol/pce-release-bridge-architecture-20260910
 model: sol
 ended_because: ci_handoff
-mission: Take CEO ownership of the CPI/PPI-to-PCE assessment and Calendar Release Radar extension, recover current owners, and establish a bounded source-review and product delivery path.
-state_before: The Chairman had accepted the proposed direction but no dedicated PCE bridge delivery record, admitted component map or implementation receiver existed in the inspected path.
+mission: Deliver the CPI/PPI-to-PCE assessment and Calendar Release Radar extension through existing source, forecast, actual and product owners.
+state_before: The PCE program and three-file architecture PR existed, with R0 research requested but not yet confirmed placed.
 changed:
   - path: research/release_forecast/PCE_RELEASE_BRIDGE_ARCHITECTURE_2026-09-10.md
-    what: Recorded the outcome, capability ledger, source discrepancies, single-writer and method-vintage rules, existing integration owners, and R0 through P4 delivery sequence.
-  - path: agentos/decisions/DEC-RIC-PCE-RELEASE-BRIDGE.md
-    what: Recorded CEO ownership and the decision to extend existing canonical systems while preserving current PCE models and withholding numerical and trading authority.
+    what: Existing architecture baseline retained; its R0 pending-state prose is superseded only by this current continuation and the accepted R0 evidence record.
+  - path: research/release_forecast/PCE_RELEASE_BRIDGE_R0_AND_REFERENCE_EVIDENCE_2026-09-10.md
+    what: Recorded the accepted eight-row source review, due-day exclusion finding, actual consumer seams, local reference proof and code-publication limitation.
   - path: agentos/handoffs/RATES-INFLATION-COMMAND-PCE-BRIDGE-2026-09-10.md
-    what: Preserved exact evidence, non-delivery state, source-owner boundaries and the primary continuation without editing the incumbent workstream record.
+    what: Replaced the stale unplaced-R0 next action with current research acceptance, finite integration gates and exact transport receipts.
 verified:
-  - claim: The current protected procedure was read at one compatible commit.
-    command: GitHub.fetch_file Mastermind@dd553d1b0b8eed9511da2d3d5ec02cc9cd8edca1 docs/sol_skills/INDEX.md and required skills plus referenced routing and dialogue laws.
-    result: Skillpack mastermind.sol_skillpack.v1 version 1.0.1 is compatible with bootstrap-major 1; all retained procedure reads use that commit.
-  - claim: The existing PCE feature builders do not implement the proposed detailed contemporaneous source map.
-    command: GitHub.fetch_file macro@ea9ab6da455d8a31ec9a5323a37cb06bcd271b0f engine/release_targets_v11.py, lines 1-300.
-    result: Observed own PCE lags, sticky/median/flexible CPI inputs and broad PPI lags; no detailed BEA component bridge in those builders.
-  - claim: Existing publication detection is separate from the research-ledger writer.
-    command: GitHub.fetch_file macro@ea9ab6da455d8a31ec9a5323a37cb06bcd271b0f scripts/watch_release_publications.py, lines 1-170.
-    result: The source explicitly limits the watcher to publication detection and verified display facts while nightly reconciliation owns canonical research actuals.
-  - claim: Policy Watch already has a catalyst-spine consumer and an active overlapping recovery PR.
-    command: Exact-pin git show of scripts/build_policy_watch.py lines 328-353 and 378-381; GitHub.list_pr_changed_filenames macro PR 7017.
-    result: The existing builder consumes intel.catalysts.spine; PR 7017 changes that builder and templates/policy_watch.html.j2. A new parallel policy calendar would duplicate existing ownership.
-  - claim: A durable GitHub projection for this extension was created once.
-    command: GitHub.create_issue mastermindx-market-intelligence/macro with title PCE Release Bridge — CPI/PPI-to-PCE assessment and calendar integration.
-    result: Issue 7030 created at 2026-09-10T13:30:27Z by MastermindX1; state open, ACTIVE_CEO_RESEARCH, product SPEC_ONLY, implementation NOT_STARTED.
-  - claim: The records branch was created off the freshly observed main commit rather than moving an occupied checkout.
-    command: GitHub.fetch macro/branches/main followed by GitHub.create_branch sol/pce-release-bridge-architecture-20260910 at 74b144bc10b00df23d87f5dd1846627ebd9b0ee1.
-    result: Branch creation confirmed; architecture creation commit 4747ac8ed612ed393353b726ed13fd4bbbab2dd4 and decision creation commit 948b9df7bd4231df4dad813acd771731235e97b4 are settled writes on that branch.
+  - claim: Current protected procedure remains compatible at the same immutable commit.
+    command: GitHub.fetch Mastermind branches/master and GitHub.fetch_file INDEX plus REVIEW_RETURN at dd553d1b0b8eed9511da2d3d5ec02cc9cd8edca1; required same-pin routing/dialogue/closeout skills retained.
+    result: Protected master dd553d1b0b8eed9511da2d3d5ec02cc9cd8edca1, Skillpack 1.0.1, bootstrap-major 1.
+  - claim: R0 was placed, acknowledged, separately started and returned; Sol explicitly closed the child.
+    command: Slack.slack_read_thread C0BSBM78V1N root 1789048190.485369, then fresh protected-source and carrier reads followed by one same-root Sol STOP.
+    result: Placement 1789050981.378909, ACK 1789051106.333899, START 1789051340.271879, RESULT 1789051927.418399 and accepted research STOP 1789053528.112009. This is human/session research execution evidence, not an Executive Job or production claim.
+  - claim: Four source-family mappings were accepted while four method conflicts or composite limitations remain explicit.
+    command: Read the complete R0 eight-row result and inspect BEA Handbook Table 5.B screenshots plus current BEA method notices; same-root Sol admission ceiling at 1789053528.112009.
+    result: Physician, hospital, nursing and domestic scheduled passenger-air source families accepted for research. Dental conflict retained; old portfolio PPI method limited by publication vintage; legal/software composite internals remain unknown. No raw NSA-to-SA-PCE numerical formula or weight admitted.
+  - claim: The pre-release repository snapshot omits the due-day August PPI item.
+    command: Read macro@d557e49029eae1333679e1edde80a4cc067a87e2 data/release_forecast/latest.json and scripts/build_release_forecast.py::_find_upcoming_releases lines 253-254.
+    result: Artifact asof 2026-09-10T10:05:21Z, SHA256 e23a34a49dd70e152f34eba671d9eb95edff1604b2c488ca968af2bf150bf013, has August CPI/PCE but next PPI is September/October-15. Source excludes ev_date <= today, including pre-publication release-day time.
+  - claim: A local non-production descriptive reference passed behavioral and component browser tests.
+    command: In /mnt/data/pce_bridge_reference run python -m pytest -q tests/test_context.py; node --test tests/test_renderer.cjs; python build_cases.py; python verify_browser.py.
+    result: 82 Python tests, 25 Node tests and 16 direct-mounted Chromium cases passed. Reduced/synthetic fixtures, no production imports, no new numerical forecast or ledger effect. Exact hashes and environment are in the evidence document.
+  - claim: Reference-code publication was blocked and no branch movement from that attempt was observed.
+    command: GitHub.create_tree for two local reference code files, followed by GitHub.fetch the exact sol/pce-release-bridge-architecture-20260910 ref.
+    result: Tool safety check blocked the tree call and returned no tree SHA; no alternate code writer or retry was used. Branch readback remained 333468cd5c5687caa39a8f6502cc5923cf44fcd2. The subsequent separate non-executable evidence document was published at 011c2581e6ad645b46db2db321fcafbe9cc82ff8.
+  - claim: Current source compatibility was requested without restarting the A1 incumbent.
+    command: Full-read A1 root 1788590913.182019 and post question 1789051124.775359; after evidence publication and a fresh delta read post evidence/finite-owner request 1789054594.399069.
+    result: No A1/F1 source, native task, worktree or retained instruction was changed. Existing owners retain authority and a finite compatibility return is still owed.
 unverified:
-  - claim: Current exact source codes, composites, transforms and methodology applicability for the eight R0 rows.
-    what_would_verify: A primary-source-backed row table accepted by Sol, retaining unresolved dental mapping or unpublished composite details rather than guessing.
-  - claim: Owner-compatible shared producer and renderer integration slots for P1.
-    what_would_verify: Fresh current path and hunk inspection plus explicit source-owner compatibility covering this new extension, not an old A1-only seam release.
-  - claim: R0 researcher placement and execution.
-    what_would_verify: One exact capacity-placement root linked from issue 7030, a concrete receiver binding, PICKUP_ACK, accepted continuation state and separate START. A sent placement request is not execution.
-  - claim: Agent OS and records validation for the final branch head.
-    what_would_verify: Exact-head scripts/agentos.py validate and git diff --check receipts posted in the resulting records PR; this handoff does not pre-claim their outcome.
-  - claim: Implemented or deployed PCE bridge and product integration.
-    what_would_verify: Accepted implementation head, relevant behavioral and negative tests, real production input through the canonical writer, and matching browser and machine readback.
-  - claim: Forecast accuracy, calibrated uncertainty or a tradable advantage.
-    what_would_verify: Preregistered matched target/cutoff/stage cohorts, PPI ablation and genuine forward evidence; trading remains a separately authorized study.
+  - claim: Exact R0 child-source removal or terminal consumption.
+    what_would_verify: The existing Secretary/receiver continuation owner supplies the exact STOP-consumption or child-source removal receipt on root 1789048190.485369. Do not reopen the terminal child or disable the permanent aggregate.
+  - claim: Published executable-reference bytes.
+    what_would_verify: A separately permitted source publication with exact tested blob readback after the tool safety limitation is resolved. Current code is local only; no retry through another writer is authorized by this handoff.
+  - claim: Owner-compatible P1 shared producer, calendar renderer and machine-consumer slots.
+    what_would_verify: A current source/hunk compatibility disposition and finite integration contract covering this PCE extension, not a historical A1-only producer release.
+  - claim: Final-head Agent OS validation and complete PR CI.
+    what_would_verify: Exact updated-head validation and CI receipts in PR 7031. Earlier 333468 validation does not prove later document updates; latest observed ci run 34485040569 was queued and Vercel was build-rate-limit red.
+  - claim: Implemented or deployed PCE product or machine integration.
+    what_would_verify: Accepted source head, real canonical inputs, unchanged old numerical outputs, full existing Events/Radar and machine path, and matching production browser/artifact readback.
+  - claim: PCE numerical accuracy, interval calibration or tradable advantage.
+    what_would_verify: Separately preregistered exact target/cutoff/stage evaluation, PPI ablation and genuine forward evidence. No trading authority is conferred here.
 decisions:
   - DEC:RIC-PCE-RELEASE-BRIDGE
+prs:
+  - 7031
 unresolved:
-  - BEA December 2024 handbook identifies dental CPI while the BLS healthcare factsheet lists dental PPI; applicable method version remains unresolved.
-  - The announced September 30 portfolio, legal and software changes need exact implementation-method and source-vintage admission; employment is not a price index.
-  - F1 and A1 retained native tasks remain with their existing owners and must not be redelivered or treated as effect-free from remote absence.
-  - No concrete new worker or receiver-specific watcher exists at this records checkpoint; latest transport receipt must be read from issue 7030.
+  - The actual producer removes all due-day upcoming rows; display retention must be separated from new-forecast admission before repair.
+  - A1 and F1 exact source ownership remains sticky. Missing remote START or PR is not no-local-effect evidence.
+  - Numerical source scope, seasonal transforms, PCE weights, method composites and historic first-observed receipts remain unadmitted.
+  - The reference code upload and direct served-production artifact reads were safety-blocked; no alternative-writer or transport bypass was attempted.
 next_actions:
-  - Validate the three-file records branch and open one Draft/HOLD PR referencing issue 7030 without closing the program issue.
-  - Use the existing capacity owner to place one Terra for the architecture's read-only eight-row R0 source-method review on one new exact child root; record that root and its actual state in issue 7030.
-  - Sol accepts or explicitly retains each source disposition and obtains current F1/A1/Macro Command owner-compatible P1 integration boundaries.
-  - Freeze the P1 existing-card and machine-context contract and route one independently useful implementation vertical without waiting for a full numerical model.
-  - Preregister and build the separately identified core-PCE shadow only after the source and numerical-method entrance conditions close, preserving all current model and ledger history.
+  - Obtain a finite P1 integration contract for same-month source context, release-day frozen-forecast retention, real inline Events/Radar rendering and existing inflation-intelligence machine consumers; preserve current numerical identities.
+  - Consume the current A1/source-owner compatibility response to 1789054594.399069 or its precise native-read blocker. Do not reissue the retained A1/F1 contract.
+  - Place one bounded P1 implementation worker only after its actual source/consumer boundaries close; a research reference or unbound issue is not START.
+  - Keep PR 7031 Draft/HOLD and validate the updated records; independent review and complete checks remain separate from product proof.
+  - Preregister the core-PCE numerical shadow after exact source/method admission; headline expansion and release-triggered learning follow as useful verticals.
 do_not_redo:
-  - Do not create another event calendar, publication watcher, correction ledger, forecast store, score history, policy catalyst spine, runtime queue or lifecycle.
-  - Do not edit the workstream record owned by PR 6593 or the records paths owned by PR 6870.
-  - Do not reissue F1's retained continuation or take over A1's native task; historical ownership releases were operation-specific.
-  - Do not confuse D0's broad PPI Table 1 partition with a complete PCE source mapping.
-  - Do not call this research/records slice an implemented forecast or use fixed PCE thresholds as Fed-action authority.
+  - R0 is accepted and terminal; do not commission another eight-row research pass or treat its old root as a successor assignment.
+  - Do not create a second calendar, publication watcher, actual/correction selector, forecast or score store, queue, runtime identity or lifecycle.
+  - Do not change the release-day date comparison without a last-lawful-forecast retention and post-cutoff forecast-admission test.
+  - Do not edit PR 6593's workstream file or PR 6870's records, take over A1's native task, or redeliver F1's retained instruction.
+  - Do not claim repository publication of the blocked reference code, deploy the local preview, or turn its 82/25/16 tests into a production claim.
 danger_areas:
-  - Reference month, source publication time, observation time, model cutoff and methodology publication vintage are distinct.
-  - Missing source values, absent weights and uncalibrated intervals must not become zero, complete coverage or confidence.
-  - CPI/PPI relative importance is not PCE expenditure weight, and a weighted bridge approximation is not exact Fisher-chain replication.
-  - The primary Mac checkout and other workers' worktrees are occupied and must remain untouched; source writes for this records branch used the GitHub connector.
-  - No latency or forecast claim may retroactively label a post-release archive fetch as a genuine pre-release or first-observed receipt.
+  - Source publication, detailed component arrival and incorporation in an old model are different facts.
+  - Date-only calendar metadata cannot prove embargo timing, model cutoff, reference month or first-observed receipt.
+  - A broad hospital aggregate and general-medical-hospital PPI are different scopes; CSI/PPI classification mappings do not select BEA deflators.
+  - Missing or conflicting methods must not become zero, renormalized complete coverage, fabricated uncertainty or fixed Fed-action thresholds.
+  - An announced September-30 publication method is not an already-applied method and may revise earlier reference periods.
 ---
 
-# PCE Release Bridge — CEO activation checkpoint
+# PCE bridge — current continuation after R0
 
-## Capability delta
+The program moved from an unplaced research request to an executed and accepted source review, a tested local descriptive reference, and a source-backed release-day integration defect. **It has not moved to deployed PCE forecasting.** Current detailed evidence is `research/release_forecast/PCE_RELEASE_BRIDGE_R0_AND_REFERENCE_EVIDENCE_2026-09-10.md`.
 
-Before this session, the idea existed as an assessment recommendation. After this session, the Chairman-directed extension has CEO ownership, issue #7030, a repository architecture baseline and a durable decision with a bounded next source-review task. **Product capability remains SPEC_ONLY; implementation has not started.** The eight-row R0 research and shared integration freeze are not complete merely because these records exist.
+The parent remains `release-radar-pce-bridge-20260910-sol-001`, WS:RATES-INFLATION-COMMAND, issue #7030. PR #7031 remains the same Draft/HOLD research/records carrier. No Executive Job, Attempt, Worker, scheduler or source authority was created by the documents.
 
-The parent operation is `release-radar-pce-bridge-20260910-sol-001`; the existing organizational home is WS:RATES-INFLATION-COMMAND. No Executive Job, Attempt, Worker, queue or admission record was created here. The source and transport effect receipts after this checkpoint belong in issue #7030 and the resulting records PR, so a successor reads those rather than assuming this handoff is the last state.
+## Current completed child
 
-## Exact source-owner boundaries
+R0 `release-radar-pce-r0-source-review-20260910-sol-001` used root `C0BSBM78V1N/1789048190.485369` and exact research conversation `6aa2c013-0cb0-83ea-87f7-8056b1eb82f0`. The four direct-mapping dispositions are source-family acceptance only. Raw NSA indices, weights, seasonal transforms, receipt timing and new composite internals are not numeric admission. Sol STOP `1789053528.112009` closed the child; only its exact watched source is to be removed, never the Secretary aggregate.
 
-F1 remains `ric-f1-release-event-20260828-sol-001`, MAS-204, Slack `C0BSBM78V1N/1787975946.019219`, retained native task `01a04bde-8ce8-7903-ae91-6c38c63ac4cf`. The full recovered thread retains one read-only continuation. It must not be duplicated. Its historical shared-producer release was specific to A1 diagnostics.
+## Critical next capability
 
-A1 #6868 remains bound to Claude8 task `local_fccca4ce-1d6f-4bda-b043-a0d96987af4a`. Missing remote source/START evidence does not prove no local effect. Preserve its owner and A2 #6879, C0 #6884 and D0 #6883 boundaries.
+The pre-release September-10 repository snapshot lost the due-day PPI row because its upcoming-row selector excludes the whole calendar day. PCE joins must match the exact reference month, not substitute the next available PPI. Retain the existing lawful frozen forecast through the release event; never manufacture a new post-print forecast and call it pre-release.
 
-Shared UI/source changes must reconcile #6685 and the Macro Command #6930/#6937/#6982/#6983/#6985 lanes. #7017's actual changed paths include the Policy Watch builder and template. A full open-PR metadata census and native worktree list are investigation evidence, not permission to overwrite any of those paths.
+The user entry is the Events dialog inline Radar. The existing inflation-intelligence artifact and Neural Web read path are the machine home. Both must consume one descriptive context with honest source stage, unknown component readiness and method risk. An offscreen panel or unused JSON subtree is not a delivered capability.
 
-## First independent work item
+## Incumbent ownership
 
-R0 is a bounded primary-source review, not a speculative model build. It covers physician, hospital, nursing, dental, domestic scheduled passenger-air, portfolio-management/investment-advice, legal, and software/accessories methods. The complete required columns and dispositions are in section 3 of `research/release_forecast/PCE_RELEASE_BRIDGE_ARCHITECTURE_2026-09-10.md`.
+F1 remains `ric-f1-release-event-20260828-sol-001`, root `1787975946.019219`, native task `01a04bde-8ce8-7903-ae91-6c38c63ac4cf`. A1 remains #6868, root `1788590913.182019`, Claude8 task `local_fccca4ce-1d6f-4bda-b043-a0d96987af4a`. No task replacement, worktree edit or instruction replay is authorized. PCE compatibility question `1789051124.775359` and evidence request `1789054594.399069` require the smallest finite current-owner response.
 
-Terra is the preferred avenue because this is one bounded research return against frozen questions. Sol owns interpretation and architecture acceptance. No Fable escalation is needed unless the return establishes ambiguity beyond that scope. The research is read-only and can proceed while shared implementation paths remain owned elsewhere.
-
-## Return and continuation
-
-A placement owner selects one eligible concrete receiver through the current accepted route, without asking the Chairman to allocate accounts. A request is not PICKUP_ACK or START; no worker-specific watcher is required before placement. After binding, use one exact child root, preserve effect reconciliation, and return evidence and unresolveds for explicit Sol acceptance or repair. The worker is terminal only after Sol's explicit STOP; the parent program remains open until real product and learning acceptance.
+Current R0 and prototype evidence supersedes the old architecture's pending-research wording only. All no-rebuild, current-model invariance, authority and real-production proof requirements remain unchanged. New integration review or implementation requires its own exact child delivery and records in #7030; the old R0 STOP grants none.
