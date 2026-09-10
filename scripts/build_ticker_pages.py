@@ -3950,11 +3950,20 @@ _SS_READ_VALUE: dict[str, dict[str, str]] = {
     "RESOLVED": {"en": "resolved", "zh": "已确定"},
     "AVAILABLE": {"en": "available", "zh": "可用"},
     "active": {"en": "active", "zh": "有效"},
+    "inactive": {"en": "not active", "zh": "无效"},
     "UNREAD": {"en": "unread", "zh": "未读取"},
+    "UNAVAILABLE": {"en": "not available", "zh": "暂不可用"},
+    "DIVERGENT": {"en": "does not match", "zh": "不一致"},
+    "SUPERSEDED_DUPLICATE_MINT": {
+        "en": "superseded (duplicate record)",
+        "zh": "已被取代（重复记录）",
+    },
+    "NO_ISSUER_EVIDENCE": {"en": "no issuer record", "zh": "无发行人记录"},
 }
 
 # Code-identifier VALUES replaced by a per-KEY house pair. A code-identifier
-# value whose key is not in this table has its row dropped, never blanked.
+# value whose key is not in this table renders the dash pair and a stderr
+# warning; the row is never dropped.
 _SS_READ_KEY_VALUE: dict[str, dict[str, str]] = {
     "owner_alias_reader": {
         "en": "the vendor alias table",
@@ -3984,15 +3993,77 @@ _SS_CODE_IDENT_RE = re.compile(
     r"|\.parquet\b"
     r"|\.py\b"
 )
-_SS_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}(?:[T ].*)?$")
+# Customer-identifier shapes. ss-id is reserved for values that MATCH one of
+# these. ALL_CAPS_SNAKE and bare lowercase words never receive ss-id.
+# Ticker and CUSIP are key-gated: DIVERGENT/AVAILABLE are nine uppercase
+# characters (CUSIP-shaped) and STALE is ticker-shaped.
+_SS_ID_SHAPES: tuple[re.Pattern[str], ...] = (
+    re.compile(r"^\d{4}-\d{2}-\d{2}"),
+    re.compile(r"^-?\d+(?:\.\d+)?$"),
+    re.compile(r"^(?:ISS|SEC|cik|CIK)[:_]|^evt_"),
+    re.compile(r"^US-X[A-Z]{3}-[A-Z0-9.]+$"),
+    re.compile(r"^[A-Z]{2,4}:[A-Z0-9]{1,5}(?:\.[A-Z])?$"),
+    re.compile(r"^\d{4,}$"),
+    re.compile(r"^[A-Z]{2}[A-Z0-9]{9}\d$"),
+)
+_SS_ID_TICKER = re.compile(r"^[A-Z]{1,5}(?:\.[A-Z])?$")
+_SS_ID_CUSIP = re.compile(r"^[A-Z0-9]{9}$")
+_SS_UNMAPPED_WARNED: set[tuple[str, str]] = set()
 
 
-def _ss_equality_display(raw: Any) -> tuple[str, str, bool]:
-    """Boolean/null mapping for equality left/right; other values stay verbatim.
+def _ss_warn_unmapped_identity(key: str, token: str) -> None:
+    """One stderr line per distinct unmapped token per process. Never fails the build."""
+    pair = (key, token)
+    if pair in _SS_UNMAPPED_WARNED:
+        return
+    _SS_UNMAPPED_WARNED.add(pair)
+    print(f"identity read value unmapped: {key}={token}", file=sys.stderr)
 
-    Booleans become yes/no. None becomes the panel dash. Numbers, dates,
-    tickers, CIKs and composite identifiers stay as recorded. House words
-    never carry ``ss-id``; verbatim customer identifiers do.
+
+def _ss_is_id_shape(s: str, key: str = "") -> bool:
+    """True when *s* matches a customer-identifier shape under *key*'s gates."""
+    if not s:
+        return False
+    for rx in _SS_ID_SHAPES:
+        if rx.search(s):
+            return True
+    key_l = (key or "").lower()
+    if _SS_ID_TICKER.fullmatch(s) and ("ticker" in key_l or "symbol" in key_l):
+        return True
+    if _SS_ID_CUSIP.fullmatch(s) and "cusip" in key_l:
+        return True
+    return False
+
+
+def _ss_project_identity_token(s: str, key: str) -> dict[str, Any]:
+    """Map one string token. Never returns None; never sets ss-id on a word.
+
+    Order: mapped token → code-identifier house pair → identifier shape →
+    dash + warning. A code identifier with no `_SS_READ_KEY_VALUE` entry
+    takes the dash pair (the row is not dropped).
+    """
+    token = _SS_READ_VALUE.get(s)
+    if token:
+        return {**token, "is_id": False}
+    if _ss_is_code_identifier(s):
+        house = _SS_READ_KEY_VALUE.get(key)
+        if house:
+            return {**house, "is_id": False}
+        _ss_warn_unmapped_identity(key, s)
+        return {**_SS_READ_ABSENT, "is_id": False}
+    if _ss_is_id_shape(s, key):
+        return {"en": s, "zh": s, "is_id": True}
+    _ss_warn_unmapped_identity(key, s)
+    return {**_SS_READ_ABSENT, "is_id": False}
+
+
+def _ss_equality_display(raw: Any, key: str = "") -> tuple[str, str, bool]:
+    """Boolean/null mapping for equality left/right; identifiers keep shape.
+
+    Booleans become yes/no. None becomes the panel dash. Mapped tokens become
+    their house pair. Identifier-shaped values stay verbatim in ss-id.
+    Anything else is the dash pair plus a warning. *key* is the equality
+    check id so ticker/CUSIP gates can fire.
     """
     if raw is None:
         return _SS_READ_ABSENT["en"], _SS_READ_ABSENT["zh"], False
@@ -4001,12 +4072,12 @@ def _ss_equality_display(raw: Any) -> tuple[str, str, bool]:
         return pair["en"], pair["zh"], False
     if isinstance(raw, (int, float)):
         s = _clean_str(f"{raw:g}" if isinstance(raw, float) else str(raw))
-        return s, s, False
+        return s, s, True
     s = _clean_str(raw)
     if not s:
         return _SS_READ_ABSENT["en"], _SS_READ_ABSENT["zh"], False
-    is_id = not bool(_SS_DATE_RE.fullmatch(s))
-    return s, s, is_id
+    mapped = _ss_project_identity_token(s, key)
+    return mapped["en"], mapped["zh"], mapped["is_id"]
 
 
 def _ss_equality_rows(raw_list: Any) -> list[dict[str, Any]]:
@@ -4019,8 +4090,8 @@ def _ss_equality_rows(raw_list: Any) -> list[dict[str, Any]]:
         house = _SS_EQUALITY.get(check)
         equal = bool(item.get("equal"))
         verdict = _SS_EQUALITY_VERDICT[equal]
-        left_en, left_zh, left_is_id = _ss_equality_display(item.get("left_value"))
-        right_en, right_zh, right_is_id = _ss_equality_display(item.get("right_value"))
+        left_en, left_zh, left_is_id = _ss_equality_display(item.get("left_value"), check)
+        right_en, right_zh, right_is_id = _ss_equality_display(item.get("right_value"), check)
         rows.append({
             "check": check,
             "label_en": (house or {}).get("en") or "",
@@ -4314,11 +4385,13 @@ def _ss_is_code_identifier(s: str) -> bool:
     return bool(_SS_CODE_IDENT_RE.search(s))
 
 
-def _ss_map_identity_read_value(k: str, raw: Any, has_v: bool) -> dict[str, Any] | None:
+def _ss_map_identity_read_value(k: str, raw: Any, has_v: bool) -> dict[str, Any]:
     """Typed mapping for one Identity-checks reads VALUE.
 
-    Walks the RAW value (None is still None). Returns ``None`` to drop the
-    row. ``is_id`` is True only for verbatim customer identifiers.
+    Walks the RAW value (None is still None). Never returns ``None`` — an
+    unmapped token becomes the dash pair plus a warning, and the row stays.
+    ``is_id`` is True only for values that match `_SS_ID_SHAPES` (or the
+    key-gated ticker/CUSIP shapes).
     """
     if not has_v or raw is None or raw == "":
         return {**_SS_READ_ABSENT, "is_id": False}
@@ -4326,22 +4399,13 @@ def _ss_map_identity_read_value(k: str, raw: Any, has_v: bool) -> dict[str, Any]
         return {**_SS_READ_BOOL[raw], "is_id": False}
     if isinstance(raw, (int, float)):
         s = _clean_str(f"{raw:g}" if isinstance(raw, float) else str(raw))
-        return {"en": s, "zh": s, "is_id": False}
+        return {"en": s, "zh": s, "is_id": True}
     s = _clean_str(raw)
     if not s or s in ("null", "None"):
         return {**_SS_READ_ABSENT, "is_id": False}
     if s in ("true", "false"):
         return {**_SS_READ_BOOL[s == "true"], "is_id": False}
-    token = _SS_READ_VALUE.get(s)
-    if token:
-        return {**token, "is_id": False}
-    if _ss_is_code_identifier(s):
-        house = _SS_READ_KEY_VALUE.get(k)
-        if not house:
-            return None
-        return {**house, "is_id": False}
-    is_id = not bool(_SS_DATE_RE.fullmatch(s))
-    return {"en": s, "zh": s, "is_id": is_id}
+    return _ss_project_identity_token(s, k)
 
 
 def _ss_identity_read_rows(seq: Any) -> list[dict[str, Any]]:
@@ -4350,8 +4414,8 @@ def _ss_identity_read_rows(seq: Any) -> list[dict[str, Any]]:
     Walks the RAW sequence so a Python None is seen before `_ss_value` would
     stringify it to "null". Axis `a.fields` keep `_ss_field_rows` / `_ss_value`.
     Identity-checks print a frozen label; an unknown key falls back to the
-    key inside `<span class="ss-id">`. A code-identifier value with no
-    `_SS_READ_KEY_VALUE` entry drops the row entirely.
+    key inside `<span class="ss-id">`. An unmapped value keeps the row and
+    prints the dash pair.
     """
     rows: list[dict[str, Any]] = []
     for item in (seq if isinstance(seq, (list, tuple)) else []):

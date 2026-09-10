@@ -1736,6 +1736,26 @@ _CALL_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\(")
 _ALL_CAPS_SNAKE_RE = re.compile(r"\b[A-Z]{3,}(?:_[A-Z0-9]+)*\b")
 _BARE_LITERAL_RE = re.compile(r"\b(?:true|false|null|None)\b")
 _ZH_LATIN_RUN_RE = re.compile(r"[A-Za-z]{3,}")
+# h7 REQUIRED (5): `.py` cannot join the substring tuple (consumed by
+# `if token in text`). Word-boundary regex, never the bare substring "py".
+_PY_RE = re.compile(r"\.py\b")
+
+# h7 REQUIRED (3): discovery extractor over engine/security_state.py.
+# Single-capture r'(\w*(?:state|status))\W{1,4}["\']([A-Za-z_]+)["\']' finds
+# UNAVAILABLE at :681 and DIVERGENT at the :703/:704 comparisons (addendum:
+# :691 is `= "AVAILABLE" if agrees else "DIVERGENT"` and the first literal
+# wins). Identity-row assertion (c) uses a separate assignment/== scan of
+# the four values_read keys so :691's DIVERGENT is still in the reachable set.
+_ENGINE_STATE_STATUS_ASSIGN_RE = re.compile(
+    r"""(\w*(?:state|status))\W{1,4}['"]([A-Za-z_]+)['"]"""
+)
+_QUOTED_TOKEN_RE = re.compile(r"""['"]([A-Za-z_]+)['"]""")
+_IDENTITY_ROW_STATE_STATUS_KEYS = frozenset({
+    "security_state", "issuer_state", "status", "corroboration_state",
+})
+_IDENTITY_ROW_ASSIGN_RE = re.compile(
+    r"\b(?:security_state|issuer_state|corroboration_state|status)\b\s*(?:=|==)\s*(.+)$"
+)
 
 
 def _identity_checks_machine_hits(text: str, *, lang: str) -> list[str]:
@@ -1744,6 +1764,8 @@ def _identity_checks_machine_hits(text: str, *, lang: str) -> list[str]:
     for token in _IDENTITY_CHECKS_MACHINE_TOKENS:
         if token in text:
             hits.append(token)
+    for m in _PY_RE.finditer(text):
+        hits.append(".py")
     for rx, label in (
         (_CAMEL_RE, "CamelCase"),
         (_DOTTED_MODULE_RE, "dotted-path"),
@@ -1765,6 +1787,65 @@ def _identity_checks_machine_hits(text: str, *, lang: str) -> list[str]:
                 continue
             hits.append(f"zh-latin:{tok}")
     return hits
+
+
+def _extract_engine_state_status_tokens(src: str) -> set[str]:
+    """Discovery (3)(a): group-2 of every *state/*status-then-quoted pair."""
+    return {m.group(2) for m in _ENGINE_STATE_STATUS_ASSIGN_RE.finditer(src)}
+
+
+def _walk_json_state_status_values(obj: object, *, keys: frozenset[str] | None) -> set[str]:
+    """Collect string values of keys ending in state/status, optionally filtered."""
+    found: set[str] = set()
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            if isinstance(k, str) and k.endswith(("state", "status")):
+                if keys is None or k in keys:
+                    if isinstance(v, str) and v:
+                        found.add(v)
+            found |= _walk_json_state_status_values(v, keys=keys)
+    elif isinstance(obj, list):
+        for item in obj:
+            found |= _walk_json_state_status_values(item, keys=keys)
+    return found
+
+
+def _extract_engine_identity_row_tokens(src: str) -> set[str]:
+    """Quoted literals assigned to (or ``==``-compared with) the four identity keys."""
+    out: set[str] = set()
+    for line in src.splitlines():
+        m = _IDENTITY_ROW_ASSIGN_RE.search(line)
+        if not m:
+            continue
+        for qm in _QUOTED_TOKEN_RE.finditer(m.group(1)):
+            tok = qm.group(1)
+            if tok not in _IDENTITY_ROW_STATE_STATUS_KEYS:
+                out.add(tok)
+    return out
+
+
+def _identity_checks_panel_html(html: str) -> str:
+    """The Identity-checks ``<section>`` HTML, ss-id spans included."""
+    for m in re.finditer(r'<section class="dpanel">.*?</section>', html, flags=re.S):
+        blob = m.group(0)
+        if "Identity checks" in blob or "身份核对" in blob:
+            return blob
+    raise AssertionError("Identity checks panel HTML not found")
+
+
+def _inject_identity_read_values(state: dict, updates: dict[str, object]) -> dict:
+    """Copy *state* and overwrite matching ``values_read`` fields. Never writes disk."""
+    clone = json.loads(json.dumps(state))
+    remaining = dict(updates)
+    for leg in clone.get("identity_proof", {}).get("legs") or []:
+        for item in leg.get("values_read") or []:
+            if isinstance(item, dict) and item.get("field") in remaining:
+                item["value"] = remaining.pop(item["field"])
+    assert not remaining, (
+        "golden-MSFT values_read missing fields to inject: "
+        + ", ".join(sorted(str(k) for k in remaining))
+    )
+    return clone
 
 
 def test_identity_checks_panel_has_no_machine_text_on_golden_msft_and_m1() -> None:
@@ -1832,6 +1913,165 @@ def test_identity_checks_panel_has_no_machine_text_on_golden_msft_and_m1() -> No
     assert "(not a live owner record)" in m1_en, (
         "M1 EN artifact sentence missing from Identity-checks: " + m1_en
     )
+    # h7 REQUIRED (5): \.py\b must not false-positive on the captured panels.
+    for label, view in pages:
+        for lang in ("en", "zh"):
+            scanned = _spaced_text(_without_ss_id(
+                _identity_checks_panel(_render_section(view, lang=lang))
+            ))
+            assert _PY_RE.search(scanned) is None, (
+                f"{label}/{lang} false-positive on .py: {scanned}"
+            )
+            assert ".py" not in scanned
+
+
+def test_identity_row_state_status_tokens_have_house_pairs() -> None:
+    """h7 REQUIRED (3): every identity-row state/status token has a house pair.
+
+    Discovery walks engine/security_state.py and tests/fixtures/security_state/*.json.
+    The assertion is scoped to values reachable under the four identity
+    values_read keys ending in state/status (addendum 2026-09-10 23:05Z):
+    security_state, issuer_state, status, corroboration_state.
+    RED-first at h6 head 9990a4a9: UNAVAILABLE, DIVERGENT,
+    SUPERSEDED_DUPLICATE_MINT, NO_ISSUER_EVIDENCE missing from _SS_READ_VALUE.
+    ``inactive`` is defensive vocabulary (not in either extractor half) and is
+    guarded only by the injection test.
+    """
+    from scripts.build_ticker_pages import _SS_READ_KEY_VALUE, _SS_READ_VALUE
+
+    engine_src = (REPO / "engine" / "security_state.py").read_text(encoding="utf-8")
+    engine_tokens = _extract_engine_state_status_tokens(engine_src)
+    assert "UNAVAILABLE" in engine_tokens, (
+        "extractor missed UNAVAILABLE (expected at engine/security_state.py:681)"
+    )
+    assert "DIVERGENT" in engine_tokens, (
+        "extractor missed DIVERGENT (expected at engine/security_state.py:703/:704; "
+        "the :691 assignment yields AVAILABLE first under the single-capture regex)"
+    )
+
+    fixture_dir = REPO / "tests" / "fixtures" / "security_state"
+    fixture_tokens: set[str] = set()
+    fixture_identity: set[str] = set()
+    for path in sorted(fixture_dir.glob("*.json")):
+        blob = json.loads(path.read_text(encoding="utf-8"))
+        fixture_tokens |= _walk_json_state_status_values(blob, keys=None)
+        fixture_identity |= _walk_json_state_status_values(
+            blob, keys=_IDENTITY_ROW_STATE_STATUS_KEYS,
+        )
+
+    engine_identity = _extract_engine_identity_row_tokens(engine_src)
+    reachable = engine_identity | fixture_identity
+
+    missing = sorted(
+        tok for tok in reachable
+        if tok not in _SS_READ_VALUE and tok not in _SS_READ_KEY_VALUE
+    )
+    assert not missing, (
+        "identity-row state/status tokens missing a house pair: "
+        + ", ".join(missing)
+        + f" (discovery engine={sorted(engine_tokens)}; "
+        f"fixtures={sorted(fixture_tokens)}; reachable={sorted(reachable)})"
+    )
+
+
+def test_identity_checks_injected_unmapped_state_tokens_render_as_house_copy() -> None:
+    """h7 REQUIRED (4): inject UNAVAILABLE / SUPERSEDED_DUPLICATE_MINT / inactive
+    into golden-MSFT at render time. The whole Identity-checks panel subtree
+    (ss-id included) must show the house phrases and none of the three raw
+    tokens, and the panel-wide machine scan must stay empty.
+    RED-first at h6 head 9990a4a9: all three raw tokens printed inside ss-id.
+    """
+    # Frozen house phrases from REQUIRED (2) / addendum (6). Looked up as
+    # literals so the RED-first run on the h6 mapper fails on the raw tokens
+    # rather than KeyErroring on a table that does not yet contain them.
+    house = {
+        "UNAVAILABLE": {"en": "not available", "zh": "暂不可用"},
+        "SUPERSEDED_DUPLICATE_MINT": {
+            "en": "superseded (duplicate record)",
+            "zh": "已被取代（重复记录）",
+        },
+        "inactive": {"en": "not active", "zh": "无效"},
+    }
+
+    fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_msft_expected_output.json"
+    golden = json.loads(fixture.read_text(encoding="utf-8"))
+    injected = _inject_identity_read_values(golden, {
+        "corroboration_state": "UNAVAILABLE",
+        "security_state": "SUPERSEDED_DUPLICATE_MINT",
+        "status": "inactive",
+    })
+    view = build_security_state({"security_state": injected})
+    assert view is not None
+
+    raw_tokens = ("UNAVAILABLE", "SUPERSEDED_DUPLICATE_MINT", "inactive")
+
+    failures: list[str] = []
+    for lang in ("en", "zh"):
+        html = _render_section(view, lang=lang)
+        panel = _identity_checks_panel(html)
+        panel_html = _identity_checks_panel_html(html)
+        slot = "en" if lang == "en" else "zh"
+        for token in raw_tokens:
+            if token in panel_html or token in panel.get_text():
+                failures.append(f"{lang} still prints raw {token!r}")
+            phrase = house[token][slot]
+            if phrase not in panel_html:
+                failures.append(f"{lang} missing house phrase {phrase!r}")
+        scanned = _spaced_text(_without_ss_id(panel))
+        hits = _identity_checks_machine_hits(scanned, lang=lang)
+        for hit in hits:
+            failures.append(f"{lang} machine-hit {hit}")
+    assert not failures, (
+        "injected identity-row tokens still leak or lack house copy: "
+        + "; ".join(failures)
+    )
+    from scripts.build_ticker_pages import _SS_READ_VALUE
+    for tok, pair in house.items():
+        assert _SS_READ_VALUE[tok] == pair
+
+
+def test_ss_id_is_only_reached_through_id_shapes() -> None:
+    """h7 REQUIRED (1): ss-id only for `_SS_ID_SHAPES` (plus key-gated ticker/CUSIP).
+
+    ALL_CAPS_SNAKE and bare lowercase never receive ss-id. DIVERGENT/AVAILABLE
+    match the ungated CUSIP shape and STALE matches the ungated ticker shape;
+    the key gates must hold or HOLE A returns. A code identifier with no
+    house pair keeps the row as the dash pair.
+    """
+    from scripts.build_ticker_pages import (
+        _SS_READ_ABSENT, _ss_is_id_shape, _ss_map_identity_read_value,
+    )
+
+    assert _ss_is_id_shape("XNAS:MSFT", "") is True
+    assert _ss_is_id_shape("ISS:US-XNAS-MSFT", "") is True
+    assert _ss_is_id_shape("US-XNAS-MSFT", "") is True
+    assert _ss_is_id_shape("2026-09-04", "owner_decision_date") is True
+    assert _ss_is_id_shape("MSFT", "subject_ticker_display") is True
+    assert _ss_is_id_shape("MSFT", "status") is False
+    assert _ss_is_id_shape("DIVERGENT", "corroboration_state") is False
+    assert _ss_is_id_shape("AVAILABLE", "corroboration_state") is False
+    assert _ss_is_id_shape("STALE", "corroboration_state") is False
+    assert _ss_is_id_shape("UNAVAILABLE", "corroboration_state") is False
+    assert _ss_is_id_shape("inactive", "status") is False
+
+    for token, key in (
+        ("UNAVAILABLE", "corroboration_state"),
+        ("DIVERGENT", "corroboration_state"),
+        ("SUPERSEDED_DUPLICATE_MINT", "security_state"),
+        ("inactive", "status"),
+        ("NO_ISSUER_EVIDENCE", "issuer_state"),
+    ):
+        mapped = _ss_map_identity_read_value(key, token, True)
+        assert mapped is not None
+        assert mapped["is_id"] is False, token
+        assert mapped["en"] not in ("", "—") or token == "never", token
+
+    dropped = _ss_map_identity_read_value(
+        "unknown_reader", "VendorAliasTable.resolve(store)", True,
+    )
+    assert dropped is not None
+    assert dropped["is_id"] is False
+    assert dropped["en"] == _SS_READ_ABSENT["en"]
 
 
 def test_identity_leg_house_copy_covers_golden_msft_m1_and_compile_failed_shell() -> None:
