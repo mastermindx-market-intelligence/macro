@@ -246,7 +246,12 @@ def test_an_unreadable_workspace_never_renders_as_calm_or_zero(tmp_path: Path) -
     victim.unlink()
 
     hub = _render(tmp_path, data_root)[builder.HUB_PAGE.output]
-    block = hub[hub.index('data-mq-workspace="housing_real_estate"'):][:1200]
+    # The absence class sits on the <li> that OWNS the card, one line BEFORE the
+    # data-mq-workspace attribute, so a window sliced from that attribute
+    # structurally excludes it — slice from the owning <li> inside the grid.
+    grid_start = hub.index("mq-hub-grid")
+    card = hub.index('data-mq-workspace="housing_real_estate"', grid_start)
+    block = hub[hub.rindex("<li", grid_start, card):][:1200]
     assert "mq-hub-absent" in block
     assert "0%" not in block
 
