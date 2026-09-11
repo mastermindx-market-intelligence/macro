@@ -17,21 +17,21 @@ owns_paths:
   - research/skylit/US_SECTOR_PARTICIPATION_W1_2026-09-10.md
   - research/skylit/RESEARCH_GATE_DISPOSITION_2026-09-10.md
   - research/skylit/W1_SOURCE_IMPLEMENTATION_RULING_2026-09-11.md
+  - research/skylit/W1_PR7060_SOL_REVIEW_2026-09-11.md
   - agentos/decisions/DEC-SKYLIT-INTEGRATE-EXISTING-SECTOR-INTELLIGENCE.md
 waves:
   - id: W1
-    title: Additive sector participation vertical; preflight consumed, source custody pending
+    title: Additive sector participation vertical; source PR returned and held in review
     status: in_progress
     next_action: >
-      Continue the already placed Claude8 receiver under Sol ruling1789088118.422639.
-      Qualify exact current source custody and actual code-gated test registration;
-      emit a truthful source-writing START before the approved implementation.
+      Continue the same Claude8 source writer in Macro PR7060 under Sol review
+      5174640493 and Slack repair1789096018.269229. Complete the connected producer,
+      derived contract, Money & Breadth calendar and dated constituent journey.
 next_action: >
-  Reconcile consumption of source ruling1789088118.422639 on Mastermind X
-  C0BSBM78V1N root1789063697.492969 by desktop conversation
-  local_5d8fbb60-c212-4162-9e9c-5cb6b1a41ce8. Then close exact pre-write
-  custody and begin the licensed-history participation-to-constituent vertical.
-  Do not request another receiver or repeat broad competitor research.
+  Reconcile one authorized delivery of repair1789096018.269229 to desktop
+  conversation local_5d8fbb60-c212-4162-9e9c-5cb6b1a41ce8 after Chairman-consent
+  receipt1789103018.475449. Then consume the repaired immutable PR7060 return;
+  no replacement worker, follow-up UI PR or new broad research wave.
 decisions:
   - DEC:SKYLIT-INTEGRATE-EXISTING-SECTOR-INTELLIGENCE
 artifacts:
@@ -40,83 +40,76 @@ artifacts:
   - research/skylit/LOCAL_INPUT_PREFLIGHT_2026-09-10.md
   - research/skylit/RESEARCH_GATE_DISPOSITION_2026-09-10.md
   - research/skylit/W1_SOURCE_IMPLEMENTATION_RULING_2026-09-11.md
+  - research/skylit/W1_PR7060_SOL_REVIEW_2026-09-11.md
 landmines:
-  - Reference-roster reconstruction is not historic constituent membership or point-in-time replay.
-  - A builder output-directory override does not isolate existing grader and event-store writers.
-  - Existing Yahoo usage is not data-use-rights evidence; raw flat-file prices are not split-adjusted.
-  - A test named beside an executed file or placed only in data-health CI is not code-gated execution.
-  - Current source custody is not established by inspecting only PR6990 and this records PR.
+  - Reference-roster reconstruction is not historical membership or PIT replay.
+  - Missing price columns must remain in expected membership and exclusions.
+  - Requesting adjusted data does not prove the returned response is adjusted or complete.
+  - Summary, member evidence and clocks must come from one validated generation.
+  - The inherited BreadthAdapter path must not activate W1 for regional/size siblings.
+  - A new test file/manifest position is not proof of code-gated execution.
+  - Delivery, START, source effects, CI, merge, publication and acceptance remain distinct.
 do_not_redo:
-  - Do not reopen completed XPV2 reference cycles or claim W1 completes the full R3C migration.
+  - Do not reopen completed XPV2 reference cycles or claim W1 completes full R3C.
   - Do not create another dashboard, collector, price store, calendar, identity, auth, retry or publication owner.
-  - Do not change existing50/200 outputs, Act-Now, Prophet rank/entry/size, option authority or graders.
-  - Preserve existing China, Canada, ticker-page, options and shared-CI source writers.
-  - Do not place another receiver; desktop and scratch identifiers are different namespaces.
+  - Do not change existing 50/200, Act-Now, Prophet, options authority or graders.
+  - Do not split the originally commissioned calendar/constituent journey into another feature PR.
+  - Do not replace the started/effectful Claude8 writer or reuse another carrier.
 ---
 
 # Current phase and capability boundary
 
-**Organizational wave active; product capability SPEC_ONLY.** Active/in_progress here
-records actual assigned and STARTed preflight work plus continuing CEO adjudication.
-It is not an Executive Job/Attempt/lease, a claim of an active coding process, or proof
-that product-source implementation has started. At this checkpoint no product-writing
-START, source PR or production result has been consumed.
+**Organizational wave active; product capability PARTIAL / disconnected.** PR7060
+contains source helpers and tests, but no real producer, complete derived contract or
+usable Money & Breadth journey. It is Draft/HOLD and has an exact Sol
+`CHANGES_REQUESTED` review; it is not accepted, merged, deployed or production-proven.
 
-This September11 UTC update supersedes the earlier no-receiver/proposed projection,
-not the original product thesis, research limits or production acceptance rules.
-Macro PR7035 remains the same records carrier; a branch/PR record is not a merged-main
-organizational publication. The existing sector-rotation-intelligence program remains
-the parent. Completed XPV2 reference work is not reopened and full R3C is not admitted.
+This update supersedes the prior statement that no product-source PR had returned. It
+does not supersede the original thesis, W1 contract, licensed-source ruling, source
+ownership, no-rebuild boundaries or completion proof.
 
-## Consumed actual placement and preflight
+## Current implementation and review
 
-Placement1789080002.429829 binds one Claude8 desktop conversation,
-`local_5d8fbb60-c212-4162-9e9c-5cb6b1a41ce8`, title "Sector Central W1 preflight analysis",
-on included Sonnet5/Extra capacity (Terra avenue). First ACK/result1789080626.612169
-had no separate START. Secretary reconciliation1789081638.904849 verifies the same
-desktop and registered continuation; scratch id is neither a second desktop nor a
-verified Code UUID. Preserve the initial chronology gap without backdating.
+Implementation PR: Macro #7060, head
+`16d0cc47368705cdb4ad7c7dc2ba588f5f327fef`, pickup base
+`43470274d542fdf0cfd59f77a938338f5778dea3`. Changed paths are the shared CI
+manifest, breadth collector, Sector Central builder and one new test file. The worker
+edited before a discrete source-writing START; preserve the chronology failure while
+keeping the same writer sticky.
 
-Sol REQUEST_CHANGES1789086875.831989 was delivered once in1789087500.946659. A new
-separate read-only START1789087528.375289 preceded repaired RESULT1789087661.181939.
-Sol's source-direction continuation1789088118.422639 and supporting1789088819.696629
-remain on the same root. Do not infer absent local effects from silence after delivery.
+Sol review `5174640493` and same-root repair `1789096018.269229` require the complete
+connected vertical in the same PR. The main blockers are disconnected producer/UI,
+false expected denominators, unqualified source-response metadata, false artifact
+availability and insufficient integrated sibling/CI evidence.
 
-## Current source ruling
+A read-only exact-head falsifier executed twelve adversarial cases and exposed twelve
+unmet requirements, including missing-symbol denominator inflation, mixed Boolean
+admission, omitted zero-covered sectors, wrong-ticker/adjusted/status/continuation
+acceptance, conflicting duplicate sessions, out-of-range rows and invalid closes.
+Details and exact blobs live in `research/skylit/W1_PR7060_SOL_REVIEW_2026-09-11.md`.
 
-Add a bounded licensed split-adjusted daily-history read inside the existing breadth
-owner, reusing Adapter/config and the existing collector/publication path. Re-fetch
-complete required windows; do not splice old adjusted cache vintages or persist a new
-raw-price/response store. Keep old50/200 outputs unchanged. Publish only derived
-participation and matching dated constituent states. Money & Breadth consumes it after
-the existing grader boundary, preserving navigation and old premium rows.
+Fences on the immutable head succeeded; full CI was queued at the review checkpoint.
+The worker's reported focused local passes are not independently accepted completion.
+Macro main later moved beyond the pickup base; current integration proof remains owed.
 
-No new corporate-action engine or feed purchase is required by this architecture.
-The existing workflow already supplies the provider secret references. A sanctioned
-local diagnostic found no key and sent zero requests; this is not a company entitlement
-failure or permission to copy another worker's credentials. Current endpoint/input
-qualification and actual serving proof remain release requirements.
+## Current reciprocal edge
 
-Full exact-path/local-writer custody is still required before the first source edit;
-work only in a new owned isolated worktree, not the shared foreign branch. Actual
-code-gated test selection and import closure must be proved. A supplementary Sol host
-gate-query helper was safety-blocked and not rerouted or delegated for reproduction.
+Secretary's first delivery attempt for the Sol repair was denied by the native safety
+layer and readback proved no message retained. Current live Chairman direction to
+continue was converted into exact payload/destination consent at Slack
+`1789103018.475449`: deliver the existing repair once to the same verified desktop
+conversation only. At this record's creation, consumption and repair START were not
+yet proven. No second receiver, delivery variant or cross-carrier failover is allowed.
 
-## Evidence and completion
+## Completion
 
-Procedure pin: Mastermind964bd8e7b30c91e5e83caee0ba37513ba7d07e70, compatible1.0.1/bootstrap1.
-Source reconnaissance: Macro14dc3b38111081a0d559d27b9c36ab995c8aa441 and
-Terminal9b7e7a41ad28ab43f74681960c1d5e4758389ffa. Older503-name local-cache and public
-specification evidence retains its original dates; it is not refreshed by this record.
+W1 completes only when approved real inputs flow through the existing owner to one
+validated derived generation, the existing Money & Breadth page exposes the calendar
+and matching dated constituent evidence, existing research links work, and zero,
+missing, stale, reconstruction and access states are truthful. Existing 50/200 output,
+grader, premium gating and sibling collectors remain invariant.
 
-The source-ruling dossier preserves27 additional research-only numerical checks
-(5 intended naive-baseline failures, then27 passes) and the bounded synthetic timing.
-They do not replace the earlier28 research checks or the original26 product tests.
-No current full-store validation, complete CI, independent product review, live-input,
-served-browser or performance-improvement claim is made here.
-
-Completion remains the real source -> derived product -> usable calendar -> matching
-constituents -> existing research path, with truthful zero/missing/stale/history states,
-old-field/grader/entitlement invariance, current code-gated tests, independent review
-and actual published/browser proof. Sol must issue a same-root CONTINUE/repair or STOP
-on a material return; preserve the existing Secretary aggregate and sibling sources.
+Required closeout remains immutable implementation evidence, actual code-gated CI,
+independent review, current-base integration, qualified real-input proof, served
+browser/publication proof and an explicit terminal dialogue edge. No records commit,
+helper method, green focused test or delivered continuation alone satisfies that.
