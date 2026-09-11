@@ -82,7 +82,37 @@ def test_self_mod_live_check_uses_exact_synthetic_parents_and_fails_closed() -> 
 
     assert 'git rev-list --parents -n 1 "$GITHUB_SHA"' in command
     assert "expected one synthetic merge with exactly two parents" in command
-    assert 'MERGE_BASE=$(git merge-base "$TESTED_BASE_SHA" "$SUBJECT_HEAD_SHA")' in command
+
+    merge_base = 'MERGE_BASE=$(git merge-base "$TESTED_BASE_SHA" "$SUBJECT_HEAD_SHA")'
+    assert command.count(merge_base) == 2
+    first_probe = command.index(merge_base)
+    fetch = command.index("git fetch")
+    second_probe = command.rindex(merge_base)
+    assert first_probe < fetch < second_probe
+    assert command.count("git fetch") == 1
+
+    for required in (
+        "--no-tags",
+        "--no-recurse-submodules",
+        "--filter=blob:none",
+        "--deepen=4096",
+        '"+$TESTED_BASE_SHA:refs/ci-fence/base"',
+        '"+$SUBJECT_HEAD_SHA:refs/ci-fence/head"',
+        "initial bounded checkout did not reach the exact PR merge base",
+        "exact-parent ancestry deepening failed",
+        "could not establish exact PR ancestry after bounded exact-parent deepening",
+    ):
+        assert required in command
+
+    for forbidden in (
+        "origin/${{ github.base_ref",
+        "origin/main",
+        "refs/pull/",
+        "--unshallow",
+        "--depth=0",
+    ):
+        assert forbidden not in command
+
     assert (
         'git log --format="%B" "$MERGE_BASE..$SUBJECT_HEAD_SHA" '
         '> "$TRAILERS_FILE"' in command
@@ -90,9 +120,6 @@ def test_self_mod_live_check_uses_exact_synthetic_parents_and_fails_closed() -> 
     assert (
         'git diff --name-only -z "$MERGE_BASE" "$SUBJECT_HEAD_SHA"' in command
     )
-    assert "could not establish exact PR ancestry inside the bounded checkout" in command
-    assert "git fetch " not in command
-    assert "origin/${{ github.base_ref" not in command
 
 
 def test_both_live_fences_use_only_bounded_file_handles() -> None:
