@@ -38,10 +38,10 @@ log = logging.getLogger(__name__)
 # --------------------------------------------------------------------------- #
 _LABELS: dict[str, tuple[str, str]] = {
     # BOTTOM capitulation group
-    "shock_bottom":      ("Exogenous washout", "外生冲击洗盘"),
+    "shock_bottom":      ("Washout from outside selling", "外部抛压把价格洗出"),
     "oversold_ltf":      ("Oversold short-term", "短周期超卖"),
     "oversold_htf":      ("Oversold longer-term", "中周期超卖"),
-    "cot_short":         ("COT crowded short", "COT大幅偏空"),
+    "cot_short":         ("Big speculators are crowded short", "大投机者拥挤做空"),
     "stretch_below":     ("Deeply below its 200-day trend", "深跌破200日均线"),
     # BOTTOM turn group
     "curl":              ("Momentum curl up", "动量上钩"),
@@ -51,10 +51,10 @@ _LABELS: dict[str, tuple[str, str]] = {
     # INDEX-only bottom
     "breadth_bottom":    ("Sector breadth washout", "板块广度超卖"),
     # TOP euphoria group
-    "shock_top":         ("Exogenous blow-off bid", "外生吹顶买盘"),
+    "shock_top":         ("Blow-off from outside buying", "外部买盘把价格买到喷发"),
     "overbought_ltf":    ("Overbought short-term", "短周期超买"),
     "overbought_htf":    ("Overbought longer-term", "中周期超买"),
-    "cot_long":          ("COT crowded long", "COT大幅偏多"),
+    "cot_long":          ("Big speculators are crowded long", "大投机者拥挤做多"),
     "stretch":           ("Price stretched above 200-day", "价格大幅偏离200日均线"),
     # TOP rollover group
     "curl_dn":           ("Momentum rolling over", "动量下钩"),
@@ -64,11 +64,26 @@ _LABELS: dict[str, tuple[str, str]] = {
     "breadth_top":       ("Sector breadth euphoric", "板块广度亢奋"),
 }
 
+# Machine terms demoted to data-tip-rc receipts. Face copy above stays plain.
+_TIPS: dict[str, tuple[str, str]] = {
+    "shock_bottom": ("Engine flag: exogenous washout", "引擎标记：外生冲击洗盘"),
+    "shock_top":    ("Engine flag: exogenous blow-off bid", "引擎标记：外生吹顶买盘"),
+    "cot_short":    ("COT crowded short", "COT大幅偏空"),
+    "cot_long":     ("COT crowded long", "COT大幅偏多"),
+}
+
+_UNLABELLED = ("Unlabelled condition", "未标注条件")
+
 
 def _lbl(code: str) -> dict[str, str]:
-    """Return a label dict for the receipt."""
-    en, zh = _LABELS.get(code, (code, code))
-    return {"code": code, "label_en": en, "label_zh": zh}
+    """Return a label dict for the receipt. A raw slug never reaches a lane."""
+    pair = _LABELS.get(code)
+    en, zh = pair if pair is not None else _UNLABELLED
+    out: dict[str, str] = {"code": code, "label_en": en, "label_zh": zh}
+    tip = _TIPS.get(code)
+    if tip:
+        out["tip_en"], out["tip_zh"] = tip
+    return out
 
 
 # --------------------------------------------------------------------------- #

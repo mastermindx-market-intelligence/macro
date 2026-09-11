@@ -134,6 +134,32 @@ def _r(v, n=2):
     return round(float(v), n) if v is not None and pd.notna(v) else None
 
 
+# One window, one helper — heat-grid, detail, and asset_vm all read this.
+# 22 sessions ≈ 1 calendar month of trading days (pct_change(22) = last vs iloc[-23]).
+CHG_1M_BARS = 22
+CHG_1D_BARS = 1
+# Dispersion ceiling for "one trend" / "in sync". Same truth for hero and chip.
+SYNC_DIVERSITY_MAX = 0.4
+
+
+def _chg_pct(close, bars: int = CHG_1M_BARS) -> float | None:
+    """Percent change from `bars` sessions ago. None when the window is short."""
+    if close is None:
+        return None
+    c = close.dropna() if hasattr(close, "dropna") else close
+    need = bars + 1
+    if len(c) < need:
+        return None
+    prev, last = c.iloc[-need], c.iloc[-1]
+    try:
+        prev_f, last_f = float(prev), float(last)
+    except (TypeError, ValueError):
+        return None
+    if prev_f == 0 or pd.isna(prev) or pd.isna(last):
+        return None
+    return _r(100 * (last_f / prev_f - 1), 1)
+
+
 # --------------------------------------------------------------------------- #
 # alert timeline (mirrors build_vector._group_timeline)
 # --------------------------------------------------------------------------- #
@@ -438,7 +464,8 @@ def asset_vm(asset: str, df: pd.DataFrame, calib: dict, drivers: dict | None = N
              alert_tilt_val: float | None = None) -> dict:
     last = df.iloc[-1]
     close = df["close"]
-    chg = _r(100 * (close.iloc[-1] / close.iloc[-22] - 1), 1)  # ~1-month
+    chg = _chg_pct(close, CHG_1M_BARS)
+    chg_1d = _chg_pct(close, CHG_1D_BARS)
     cal_a = calib.get("assets", {}).get(asset, {})
     verdicts = {s: e.get("verdict", "") for s, e in cal_a.get("signals", {}).items()}
     if cal_a.get("risk_drawdown"):
@@ -452,6 +479,7 @@ def asset_vm(asset: str, df: pd.DataFrame, calib: dict, drivers: dict | None = N
         "unit": META[asset]["unit"], "price": _r(close.iloc[-1], 2),
         "price_fmt": (f"{float(close.iloc[-1]):,.2f}" if close.iloc[-1] is not None else None),
         "chg": chg,
+        "chg_1d": chg_1d,
         # canonical front-month futures symbol so live.js refreshes the price tile
         "sym": {"gold": "GC=F", "silver": "SI=F", "copper": "HG=F", "oil": "CL=F"}.get(asset),
         "alloc_pct": alloc_pct, "market_mode": last.get("market_mode", "—"),
@@ -664,6 +692,53 @@ def _plain_shock(s: str | None) -> tuple[str, str]:
     return SHOCK_STATE_LABELS.get(s, (s, s))
 
 
+# Heat-grid legend: each (tone, token, en, zh) is reachable from _heat_cell.
+HEAT_LEGEND: list[tuple[str, str, str, str]] = [
+    ("c-up",      "--up",    "Momentum up",   "短期动量向上"),
+    ("c-dn",      "--dn",    "Momentum down", "短期动量转弱"),
+    ("c-blowoff", "--amb",   "Blow-off",      "喷发"),
+    ("c-washout", "--blue",  "Washing out",   "洗盘"),
+    ("c-flat",    "--line2", "Mixed",         "中性"),
+]
+
+
+def _heat_cell(shock_st: str | None, mom_state: str | None) -> tuple[str, str, str]:
+    """Heat-grid tone + short-state. Shock outranks momentum so a blow-off
+    can never paint as trending-up green."""
+    shock_st = (shock_st or "").strip()
+    mom_state = (mom_state or "").strip()
+    if shock_st == "blowoff":
+        en, zh = _plain_shock("blowoff")
+        return "c-blowoff", en, zh
+    if shock_st == "washout":
+        en, zh = _plain_shock("washout")
+        return "c-washout", en, zh
+    if mom_state == "bull":
+        en, zh = _plain_mom_state("bull")
+        return "c-up", en, zh
+    if mom_state == "bear":
+        en, zh = _plain_mom_state("bear")
+        return "c-dn", en, zh
+    en, zh = _plain_mom_state(mom_state if mom_state else None)
+    return "c-flat", en, zh
+
+
+def _sync_read(diversity) -> dict:
+    """ONE dispersion truth for the hero 'in sync' clause and the index chip."""
+    if diversity is None:
+        return {"in_sync": None, "sync_en": None, "sync_zh": None}
+    try:
+        div = float(diversity)
+    except (TypeError, ValueError):
+        return {"in_sync": None, "sync_en": None, "sync_zh": None}
+    in_sync = div <= SYNC_DIVERSITY_MAX
+    return {
+        "in_sync": in_sync,
+        "sync_en": "one trend" if in_sync else "many trends",
+        "sync_zh": "一致" if in_sync else "多方向",
+    }
+
+
 def _plain_cycle(s: str | None) -> tuple[str, str]:
     if not s:
         return ("—", "—")
@@ -750,15 +825,15 @@ def _mtf_grade_plain(grade: str | None) -> tuple[str, str]:
 # --------------------------------------------------------------------------- #
 # sector_stance helper
 # --------------------------------------------------------------------------- #
-def sector_stance(conf: dict, breadth: dict) -> dict:
+def sector_stance(conf: dict, breadth: dict, in_sync: bool | None = None) -> dict:
     """Return the plain-word sector stance for the hero section.
 
     tone ∈ {act, getready, watch, protect, standaside}
     Rules (in priority order):
-      1. Many members Euphoric/Extended → protect
+      1. ANY take-profits / euphoric member → protect (hero must not outrank the board)
       2. Many Washout bottom-forming     → getready
       3. 12-mo broad but short-term thin (n_bull_momentum/n_members < 0.4) → watch
-      4. Broad + strong momentum         → act
+      4. Broad + strong momentum         → act (says "in sync" only when in_sync is True)
       else                               → standaside
     """
     _null = {
@@ -780,12 +855,14 @@ def sector_stance(conf: dict, breadth: dict) -> dict:
         n_top = sum(1 for m in members_conf if (m.get("state") or "") in top_states)
         n_bot = sum(1 for m in members_conf if (m.get("state") or "") in bottom_states)
 
-        frac_top = n_top / n_members
         frac_bot = n_bot / n_members
         frac_up  = n_up  / n_members
         frac_mom = n_bull / n_members
+        if in_sync is None:
+            in_sync = _sync_read(breadth.get("trend_diversity")).get("in_sync")
 
-        if frac_top >= 0.25:
+        # Any take-profits row on the board outranks an "Act / in sync" hero.
+        if n_top >= 1:
             return {
                 "word_en": "Protect gains",  "word_zh": "保护利润",
                 "sub_en":  f"{n_top} of {int(n_members)} commodities are stretched or euphoric — trim, don't add.",
@@ -811,12 +888,21 @@ def sector_stance(conf: dict, breadth: dict) -> dict:
                 "tone":    "watch",
             }
         if frac_up >= 0.5 and frac_mom >= 0.4:
+            if in_sync is True:
+                sync_en = "the complex is in sync."
+                sync_zh = "整体共振。"
+            elif in_sync is False:
+                sync_en = "but members are telling different stories."
+                sync_zh = "但各品种走势并不一致。"
+            else:
+                sync_en = "breadth is broad."
+                sync_zh = "广度较宽。"
             return {
                 "word_en": "Act",  "word_zh": "行动",
                 "sub_en":  (f"Broad trend ({int(n_up)}/{int(n_members)} up) with solid momentum "
-                            f"({int(n_bull)}/{int(n_members)}) — the complex is in sync."),
+                            f"({int(n_bull)}/{int(n_members)}) — {sync_en}"),
                 "sub_zh":  (f"趋势广泛（{int(n_up)}/{int(n_members)}向上），"
-                            f"动量稳健（{int(n_bull)}/{int(n_members)}）——整体共振。"),
+                            f"动量稳健（{int(n_bull)}/{int(n_members)}）——{sync_zh}"),
                 "tone":    "act",
             }
         return _null
@@ -860,8 +946,11 @@ def _build_sector_vm_inner(
     idx_snap     = index_snap.get("index") or {}
     members_conf = (conf.get("members") or []) if isinstance(conf, dict) else []
 
+    # --- one dispersion truth (hero + index chip) -----------------------------
+    sync = _sync_read(breadth_snap.get("trend_diversity"))
+
     # --- stance ---------------------------------------------------------------
-    stance = sector_stance(conf, breadth_snap)
+    stance = sector_stance(conf, breadth_snap, in_sync=sync.get("in_sync"))
 
     # --- breadth block --------------------------------------------------------
     n_members = breadth_snap.get("n_members") or 0
@@ -871,6 +960,9 @@ def _build_sector_vm_inner(
         "n_bull_momentum": breadth_snap.get("n_bull_momentum") or 0,
         "n_low_risk":      breadth_snap.get("n_low_risk") or 0,
         "trend_diversity": _r(breadth_snap.get("trend_diversity"), 2),
+        "in_sync":         sync.get("in_sync"),
+        "sync_en":         sync.get("sync_en"),
+        "sync_zh":         sync.get("sync_zh"),
     }
 
     # --- index block ----------------------------------------------------------
@@ -963,7 +1055,7 @@ def _build_sector_vm_inner(
             continue
         last = df.iloc[-1]
         cl = df["close"].dropna()
-        chg = _r(100 * (cl.iloc[-1] / cl.iloc[-23] - 1), 1) if len(cl) >= 23 else None
+        chg = _chg_pct(cl, CHG_1M_BARS)
         mom_state = str(last.get("momentum_state", "") or "")
         shock_st  = str(last.get("shock_state", "") or "")
         cycle_ph  = (_cycle_positions.get(name) or {}).get("phase")
@@ -971,17 +1063,7 @@ def _build_sector_vm_inner(
         _basing   = bool(_mconf.get("basing"))
         _igniting = bool(_mconf.get("armed_recent"))
         _dual     = _dual_read(mom_state, str(last.get("ts_trend", "") or ""), _roc20(cl))
-        # tone class for the cell left-border
-        if mom_state == "bull":
-            tone = "c-up"
-        elif shock_st in ("washout", "blowoff"):
-            tone = "c-wash"
-        elif mom_state == "bear":
-            tone = "c-dn"
-        else:
-            tone = "c-flat"
-
-        mom_en, mom_zh = _plain_mom_state(mom_state if mom_state else None)
+        tone, mom_en, mom_zh = _heat_cell(shock_st, mom_state)
         cyc_en, cyc_zh = _plain_cycle_state(cycle_ph, _basing)
         chg_sign = "up" if (chg or 0) >= 0 else "dn"
 
@@ -1089,11 +1171,14 @@ def _build_sector_vm_inner(
         en, zh = MEMBER_LABELS.get(name, (name.replace("_", " ").title(), name))
         df = member_results.get(name)
         if df is None or not isinstance(df, pd.DataFrame) or df.empty:
-            detail.append({"name": name, "label_en": en, "label_zh": zh, "available": False})
+            detail.append({
+                "name": name, "label_en": en, "label_zh": zh, "available": False,
+                "dollar_usd_dir": None, "dollar_effect": None,
+            })
             continue
         last = df.iloc[-1]
         cl = df["close"].dropna()
-        chg = _r(100 * (cl.iloc[-1] / cl.iloc[-23] - 1), 1) if len(cl) >= 23 else None
+        chg = _chg_pct(cl, CHG_1M_BARS)
 
         # confluence call
         mconf = conf_by_name.get(name, {})
@@ -1152,6 +1237,8 @@ def _build_sector_vm_inner(
             "mtf_rows":     mtf_rows,
             "verdict":      verdict,
             "is_core4":     name in core4,
+            "dollar_usd_dir": (a_vm or {}).get("dollar_usd_dir"),
+            "dollar_effect":  (a_vm or {}).get("dollar_effect"),
             # --- W-C display-tier chips (never scored, never ranked) ----------
             "basing":          _basing,
             "igniting":        bool(mconf.get("armed_recent")),

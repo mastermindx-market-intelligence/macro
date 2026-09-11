@@ -355,8 +355,10 @@ body.page-commod .aurora.au-red .au-a3   { background: radial-gradient(ellipse, 
 .cell:hover { transform: translateY(-1px); border-color: var(--line2); box-shadow: 0 4px 14px rgba(0,0,0,.25); }
 .cell.c-up   { border-left-color: var(--up); }
 .cell.c-dn   { border-left-color: var(--dn); }
-.cell.c-wash { border-left-color: var(--blue); }
 .cell.c-flat { border-left-color: var(--line2); }
+/* post-stack: consolidate */
+.cell.c-blowoff { border-left-color: var(--amb); }
+.cell.c-washout, .cell.c-wash { border-left-color: var(--blue); }
 .cell .cn { display: flex; justify-content: space-between; align-items: baseline; gap: 4px; }
 .cell .cnm { font-weight: 600; font-size: 13px; }
 .cell .cpc { font-size: 12.5px; font-weight: 600; }
@@ -378,7 +380,10 @@ body.page-commod .aurora.au-red .au-a3   { background: radial-gradient(ellipse, 
   max-width: 100%; transition: width .7s ease-out;
 }
 .cell.c-up .chg-bar, .cell.c-flat.pos .chg-bar  { background: var(--up); }
-.cell.c-dn .chg-bar, .cell.c-wash .chg-bar, .cell.c-flat.neg .chg-bar { background: var(--dn); }
+.cell.c-dn .chg-bar, .cell.c-flat.neg .chg-bar { background: var(--dn); }
+/* post-stack: consolidate */
+.cell.c-blowoff .chg-bar { background: var(--amb); }
+.cell.c-washout .chg-bar, .cell.c-wash .chg-bar { background: var(--blue); }
 .grp { font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
        color: var(--faint); margin: 16px 0 8px; }
 
@@ -637,7 +642,7 @@ html[data-theme="light"] :is(
         <span class="cnt amb">{{ n_mom }} / {{ n_tot }}</span>
       </div>
       <div class="dotrow">
-        <span class="lbl">{{ t('Low risk / calm', '低风险 / 平稳') }}</span>
+        <span class="lbl">{{ t('Members calm', '品种平稳') }}</span>
         <div class="dots">
           {% set n_lr = (br.n_low_risk or 0)|int %}
           {% for i in range(n_tot) %}<span class="dot{{ ' on-amb' if i < n_lr else '' }}"></span>{% endfor %}
@@ -693,10 +698,11 @@ html[data-theme="light"] :is(
     <div class="kpi-val amb" style="font-size:15px">
       <span class="l-en">{{ ix.shock_en }}</span><span class="l-zh">{{ ix.shock_zh }}</span>
     </div>
+    <div class="kpi-sub">{{ t('Index-level shock', '指数层面冲击') }}</div>
     {% else %}
     <div class="kpi-val up" style="font-size:15px">{{ t('Calm', '平稳') }}</div>
+    <div class="kpi-sub">{{ t('No shock at the index level', '指数层面无冲击') }}</div>
     {% endif %}
-    <div class="kpi-sub">{{ t('market calm = no shock', '市场平稳=无冲击') }}</div>
   </div>
 </div>
 
@@ -708,14 +714,15 @@ html[data-theme="light"] :is(
     ('HG=F', 'Copper', '铜',   'HG'),
     ('CL=F', 'Oil · WTI', '原油', 'CL'),
   ] %}
-  {# Build a price lookup from assets list (core-4); price_fmt is pre-formatted Python-side #}
+  {# Build a price lookup from assets list (core-4); price_fmt is pre-formatted Python-side.
+     Live tiles SSR the 1-day change so pre-hydration matches live.js (which paints a day change). #}
   {% set _price_map = {} %}
   {% set _chg_map = {} %}
   {% for a in assets %}
-    {% if a.key == 'gold'   %}{% if _price_map.update({'GC=F': a.price_fmt, 'GC=F_chg': a.chg}) %}{% endif %}{% endif %}
-    {% if a.key == 'silver' %}{% if _price_map.update({'SI=F': a.price_fmt, 'SI=F_chg': a.chg}) %}{% endif %}{% endif %}
-    {% if a.key == 'copper' %}{% if _price_map.update({'HG=F': a.price_fmt, 'HG=F_chg': a.chg}) %}{% endif %}{% endif %}
-    {% if a.key == 'oil'    %}{% if _price_map.update({'CL=F': a.price_fmt, 'CL=F_chg': a.chg}) %}{% endif %}{% endif %}
+    {% if a.key == 'gold'   %}{% if _price_map.update({'GC=F': a.price_fmt, 'GC=F_chg': a.chg_1d}) %}{% endif %}{% endif %}
+    {% if a.key == 'silver' %}{% if _price_map.update({'SI=F': a.price_fmt, 'SI=F_chg': a.chg_1d}) %}{% endif %}{% endif %}
+    {% if a.key == 'copper' %}{% if _price_map.update({'HG=F': a.price_fmt, 'HG=F_chg': a.chg_1d}) %}{% endif %}{% endif %}
+    {% if a.key == 'oil'    %}{% if _price_map.update({'CL=F': a.price_fmt, 'CL=F_chg': a.chg_1d}) %}{% endif %}{% endif %}
   {% endfor %}
   {% for sym, name_en, name_zh, abbr in _lp %}
   {% set _px  = _price_map.get(sym) %}
@@ -782,12 +789,12 @@ html[data-theme="light"] :is(
         <b class="{{ 'up' if ix.velocity_20 >= 0 else 'dn' }}">{{ t('quick','快') if (ix.velocity_20|abs) > 1 else t('flat','平') }}</b>
       </span>
       {% endif %}
-      {% if br.trend_diversity is not none %}
+      {% if br.sync_en %}
       <span class="chip"
         data-tip-en="Whether the 17 commodities are moving together or telling different stories. Together = one macro force (often the dollar). Different = pick your spots."
         data-tip-zh="17个品种是步调一致还是各说各话。一致=单一宏观驱动（常为美元）。分化=精选品种。">
         {{ t('One story or many?', '步调一致还是分化？') }}
-        <b>{{ t('many trends','多方向') if (br.trend_diversity or 0) > 0.4 else t('one trend','一致') }}</b>
+        <b>{{ t(br.sync_en, br.sync_zh) }}</b>
       </span>
       {% endif %}
       {% for bname, bdata in ix.benchmarks.items() %}
@@ -851,7 +858,7 @@ html[data-theme="light"] :is(
           {% if row.receipt %}
           <div class="rcpt-list">{{ t('stacking up:','已出现：') }}
             {% for rc in row.receipt[:4] %}
-              <span class="l-en">{{ rc.label_en }}</span><span class="l-zh">{{ rc.label_zh }}</span>{% if not loop.last %} · {% endif %}
+              <span class="l-en"{% if rc.get('tip_en') %} data-tip-en="{{ rc.label_en }}" data-tip-zh="{{ rc.label_zh }}" data-tip-rc-en="{{ rc.tip_en }}" data-tip-rc-zh="{{ rc.tip_zh }}"{% endif %}>{{ rc.label_en }}</span><span class="l-zh">{{ rc.label_zh }}</span>{% if not loop.last %} · {% endif %}
             {% endfor %}
           </div>
           {% endif %}
@@ -891,7 +898,7 @@ html[data-theme="light"] :is(
           {% if row.receipt %}
           <div class="rcpt-list">{{ t('stacking up:','已出现：') }}
             {% for rc in row.receipt[:4] %}
-              <span class="l-en">{{ rc.label_en }}</span><span class="l-zh">{{ rc.label_zh }}</span>{% if not loop.last %} · {% endif %}
+              <span class="l-en"{% if rc.get('tip_en') %} data-tip-en="{{ rc.label_en }}" data-tip-zh="{{ rc.label_zh }}" data-tip-rc-en="{{ rc.tip_en }}" data-tip-rc-zh="{{ rc.tip_zh }}"{% endif %}>{{ rc.label_en }}</span><span class="l-zh">{{ rc.label_zh }}</span>{% if not loop.last %} · {% endif %}
             {% endfor %}
           </div>
           {% endif %}
@@ -914,10 +921,11 @@ html[data-theme="light"] :is(
   <p class="sub">{{ t('1-month move · short-term momentum · long cycle', '1月涨跌 · 短期动量 · 长周期') }}</p>
 </div>
 <div class="legend">
-  <span><span class="sw" style="background:var(--up)"></span>{{ t('Trending up','趋势向上') }}</span>
-  <span><span class="sw" style="background:var(--dn)"></span>{{ t('Euphoric / falling','亢奋/下跌') }}</span>
-  <span><span class="sw" style="background:var(--blue)"></span>{{ t('Washing out','洗盘中') }}</span>
-  <span><span class="sw" style="background:var(--line2)"></span>{{ t('Flat / mixed','横盘/混合') }}</span>
+  <span><span class="sw" style="background:var(--up)"></span>{{ t('Momentum up','短期动量向上') }}</span>
+  <span><span class="sw" style="background:var(--dn)"></span>{{ t('Momentum down','短期动量转弱') }}</span>
+  <span><span class="sw" style="background:var(--amb)"></span>{{ t('Blow-off','喷发') }}</span>
+  <span><span class="sw" style="background:var(--blue)"></span>{{ t('Washing out','洗盘') }}</span>
+  <span><span class="sw" style="background:var(--line2)"></span>{{ t('Mixed','中性') }}</span>
 </div>
 {% for grp in vm.grid %}
 <div class="grp"><span class="l-en">{{ grp.group_en }}</span><span class="l-zh">{{ grp.group_zh }}</span></div>
@@ -992,7 +1000,7 @@ html[data-theme="light"] :is(
       <div style="margin-top:8px;font-size:12px;color:var(--mut);line-height:1.6">
         {{ t('stacking up:','已出现：') }}
         {% for rc in show_fired[:6] %}
-          <span class="l-en">{{ rc.label_en }}</span><span class="l-zh">{{ rc.label_zh }}</span>{% if not loop.last %} · {% endif %}
+          <span class="l-en"{% if rc.get('tip_en') %} data-tip-en="{{ rc.label_en }}" data-tip-zh="{{ rc.label_zh }}" data-tip-rc-en="{{ rc.tip_en }}" data-tip-rc-zh="{{ rc.tip_zh }}"{% endif %}>{{ rc.label_en }}</span><span class="l-zh">{{ rc.label_zh }}</span>{% if not loop.last %} · {% endif %}
         {% endfor %}
       </div>
       {% else %}
@@ -1064,16 +1072,17 @@ html[data-theme="light"] :is(
         {% if cv.sub %}<div style="margin-top:5px;font-size:12px;color:var(--faint)">{{ t(cv.sub, cv.sub_zh) }}</div>{% endif %}
       </div>
       {% endif %}
-      {# M6: B3 USD-sensitivity chip — plain bilingual, one line, all fields guarded #}
-      {% if d.dollar_usd_dir is not none or d.dollar_effect is not none %}
+      {# M6: B3 USD-sensitivity chip — truthiness via d.get (a missing key is not None).
+         Missing data: omit the row (designed empty is the cycle sentence, not "Dollar: ·"). #}
+      {% set _usd_dir = d.get('dollar_usd_dir') %}
+      {% set _usd_eff = d.get('dollar_effect') %}
+      {% if _usd_dir or (_usd_eff and _usd_eff != 'neutral') %}
       <div style="margin-top:10px;font-size:12px;color:var(--mut)">
         <span class="faint">{{ t('Dollar', '美元') }}:</span>
-        {% if d.dollar_usd_dir is not none %}
-          {% if d.dollar_usd_dir == 'up' %}{{ t('rising', '走强') }}{% elif d.dollar_usd_dir == 'down' %}{{ t('falling', '走软') }}{% else %}{{ t(d.dollar_usd_dir, d.dollar_usd_dir) }}{% endif %}
-        {% endif %}
-        {% if d.dollar_effect is not none and d.dollar_effect != 'neutral' %}
-          <span class="faint">·</span>
-          {% if d.dollar_effect == 'headwind' %}{{ t('headwind for this commodity', '对该品种形成压制') }}{% elif d.dollar_effect == 'tailwind' %}{{ t('tailwind for this commodity', '对该品种形成提振') }}{% endif %}
+        {% if _usd_dir == 'up' %}{{ t('rising', '走强') }}{% elif _usd_dir == 'down' %}{{ t('falling', '走软') }}{% elif _usd_dir %}{{ t(_usd_dir, _usd_dir) }}{% endif %}
+        {% if _usd_eff and _usd_eff != 'neutral' %}
+          {% if _usd_dir %}<span class="faint">·</span>{% endif %}
+          {% if _usd_eff == 'headwind' %}{{ t('headwind for this commodity', '对该品种形成压制') }}{% elif _usd_eff == 'tailwind' %}{{ t('tailwind for this commodity', '对该品种形成提振') }}{% endif %}
         {% endif %}
       </div>
       {% endif %}
