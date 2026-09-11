@@ -7,12 +7,26 @@ from __future__ import annotations
 
 from engine.i18n import _ordinal_suffix, tr
 
-# Doctrine §3 / #2206 lanes. Named glance leaks remap to the ratified words;
-# every unknown/unmapped cycle label routes to the cautious lane (never a raw slug).
+# Doctrine §3 / #2206 lanes. Face labels are engine.cycles.STATE_DISPLAY
+# `label` values, mapped by that table's own parenthetical action word.
+# ZH for Almost ready / In favour / Take profits is verbatim from
+# templates/_us_act_now_board.html.j2 (the three lanes not already
+# ratified on hk.html). Genuinely unknown strings → cautious lane.
 CAUTIOUS_LANE: tuple[str, str] = ("Stand aside", "观望")
+_LANE_BUY_NOW: tuple[str, str] = ("Buy now", "立即买入")
+_LANE_ALMOST_READY: tuple[str, str] = ("Almost ready", "接近就绪")
+_LANE_IN_FAVOUR: tuple[str, str] = ("In favour", "看好 — 勿追高")
+_LANE_TAKE_PROFITS: tuple[str, str] = ("Take profits", "止盈")
 CYCLE_LANE: dict[str, tuple[str, str]] = {
-    "BUY ZONE": ("Buy now", "立即买入"),
-    "UNCONFIRMED TURN": CAUTIOUS_LANE,
+    "BUY ZONE": _LANE_BUY_NOW,              # BUY
+    "BOTTOMING": _LANE_ALMOST_READY,        # BUY SETUP
+    "NEARING A LOW": _LANE_ALMOST_READY,    # GET READY
+    "UPTREND": _LANE_IN_FAVOUR,             # HOLD
+    "NEARING A HIGH": _LANE_TAKE_PROFITS,   # TAKE PROFITS
+    "TOPPING": _LANE_TAKE_PROFITS,          # SELL SETUP
+    "DOWNTREND": CAUTIOUS_LANE,             # AVOID
+    "TURN IN PROGRESS": CAUTIOUS_LANE,      # WATCH — DON'T CHASE
+    "UNCONFIRMED TURN": CAUTIOUS_LANE,      # HIGH-RISK · NIMBLE ONLY
 }
 _FACE_LANE_BY_EN = {en: (en, zh) for en, zh in CYCLE_LANE.values()}
 
@@ -88,7 +102,11 @@ def chg_word(sign: str) -> tuple[str, str]:
 
 
 def cycle_lane(label: str | None, label_zh: str | None = None) -> tuple[str, str]:
-    """Glance-tier cycle label → doctrine §3 lane. Unknown states → cautious lane."""
+    """Glance-tier cycle label → doctrine §3 lane.
+
+    Each STATE_DISPLAY face label has its own ratified lane. A genuinely
+    unknown/unmapped string routes to the cautious lane (never a raw slug).
+    """
     lab = str(label) if label else ""
     zh = str(label_zh) if label_zh else ""
     if not lab:

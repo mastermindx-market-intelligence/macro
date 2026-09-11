@@ -1980,19 +1980,19 @@ html[data-lang="zh"][data-theme="light"] body.page-hk .ms-red .hkx-big-score { t
     {% for tile in market_tiles %}
     {# USD/HKD tile gets peg-warn accent when near weak edge — matched by kind=='peg' #}
     {% set _peg_warn = (tile.kind is defined and tile.kind == 'peg' and gv and gv.peg and gv.peg.level is defined and gv.peg.level > 7.83) %}
-    {% set _sign = tile.chg_sign if (tile.chg_sign is defined and tile.chg_sign) else ('up' if tile.tone in ('pos','bull') else ('down' if tile.tone in ('neg','bear') else 'flat')) %}
+    {% set _sign = tile.chg_sign if (tile.chg_sign is defined and tile.chg_sign) else 'flat' %}
     <div class="hkx-card hkx-cat{{ ' peg-warn warn' if _peg_warn else '' }}" role="button" tabindex="0" onclick="hkxOpenDlg('hkx-dlg-policy')">
       <div class="cat-tag">{% if tile.tag_en is defined %}{{ t(tile.tag_en, tile.tag_zh) }}{% else %}{{ tile.tag if tile.tag is defined else tile.label }}{% endif %}</div>
       <div class="cat-val">{{ tile.level if tile.level is defined else '—' }}</div>
       {% if tile.chg is not none and tile.chg is defined and tile.chg is number %}
-      <div class="cat-chg {{ 'hkx-tt-up' if (tile.chg >= 0) else 'hkx-tt-dn' }}">{{ ('%+.2f'|format(tile.chg)) }}{% if tile.pct is defined and tile.pct and not (tile.is_rate is defined and tile.is_rate) %} {{ tile.pct }}{% endif %}</div>
+      <div class="cat-chg {{ 'hkx-tt-up' if (tile.chg >= 0) else 'hkx-tt-dn' }}">{{ ('%+.2f'|format(tile.chg)) }}{% if tile.chg_unit_en is defined and tile.chg_unit_en %} {{ t(tile.chg_unit_en, tile.chg_unit_zh) }}{% endif %}{% if tile.pct is defined and tile.pct and not (tile.is_rate is defined and tile.is_rate) %} {{ tile.pct }}{% endif %}</div>
       {% elif tile.chg is defined and tile.chg %}
-      <div class="cat-chg {{ 'hkx-tt-up' if _sign == 'up' else ('hkx-tt-dn' if _sign == 'down' else '') }}">{{ tile.chg }}{% if tile.pct is defined and tile.pct and not (tile.is_rate is defined and tile.is_rate) %} {{ tile.pct }}{% endif %}</div>
+      <div class="cat-chg {{ 'hkx-tt-up' if _sign == 'up' else ('hkx-tt-dn' if _sign == 'down' else '') }}">{{ tile.chg }}{% if tile.chg_unit_en is defined and tile.chg_unit_en %} {{ t(tile.chg_unit_en, tile.chg_unit_zh) }}{% endif %}{% if tile.pct is defined and tile.pct and not (tile.is_rate is defined and tile.is_rate) %} {{ tile.pct }}{% endif %}</div>
       {% endif %}
       {% if tile.meaning_en is defined and tile.meaning_en %}
       <div class="cat-mean">{{ t(tile.meaning_en, tile.meaning_zh or tile.meaning_en) }}</div>
       {% endif %}
-      {# chip word follows the SIGN of the displayed change, never inverted risk-tone #}
+      {# chip word and colour follow the SIGN of the displayed change #}
       <span class="cat-tone {{ 'bull' if _sign == 'up' else ('bear' if _sign == 'down' else 'neu') }}">{% if tile.chg_word_en is defined %}{{ t(tile.chg_word_en, tile.chg_word_zh) }}{% else %}{{ t('Up','涨') if _sign == 'up' else (t('Down','跌') if _sign == 'down' else t('Flat','平')) }}{% endif %}</span>
       {% if _peg_warn %}<div style="font-size:9px;color:var(--ink-warn, var(--warn));margin-top:2px">{{ t('near weak edge','接近弱方') }}</div>{% endif %}
     </div>

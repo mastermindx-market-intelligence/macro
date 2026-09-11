@@ -636,35 +636,33 @@ def _hk_signal_stack(latest: dict) -> dict | None:
         return None
 
 
-def _tile_payload(chg: float, *, invert: bool = False, decimals: int | None = None) -> dict:
-    """Tone vs sign split for the cross-asset strip.
+def _tile_payload(chg: float, *, decimals: int | None = None) -> dict:
+    """Chip word and sign for the cross-asset strip.
 
-    `chg_sign` / `chg_word_*` follow the SIGN of the displayed change — a negative
-    print can never render as "Up", and a move that rounds to 0.0 is Flat. `tone`
-    keeps the (optional) risk-on/off invert for colouring that is NOT the chip word.
+    Follows the SIGN of the displayed change — a negative print can never
+    render as "Up", and a move that rounds to 0.0 is Flat. Colour uses this
+    same sign via the page's --up/--down tokens (zh 红涨绿跌 is the lang swap).
     """
     from engine.hk_tier1 import chg_sign, chg_word
     sign = chg_sign(chg, decimals=decimals)
     word_en, word_zh = chg_word(sign)
-    if sign == "flat":
-        tone = "muted"
-    else:
-        tone = "pos" if chg > 0 else "neg"
-        if invert:      # weaker HKD / yuan / stronger USD = risk-off
-            tone = "neg" if chg > 0 else "pos"
-    return {"chg_sign": sign, "chg_word_en": word_en, "chg_word_zh": word_zh, "tone": tone}
+    return {"chg_sign": sign, "chg_word_en": word_en, "chg_word_zh": word_zh}
 
 
 def _tile_move(chg: float, pct: float, *, is_rate: bool, chg_dec: int) -> dict:
     """Glance-tier move. Rate tiles keep percentage POINTS and drop the relative %."""
-    out = {"chg": f"{chg:+.{chg_dec}f}{' pp' if is_rate else ''}", "chg_raw": chg}
-    if not is_rate:
+    out = {"chg": f"{chg:+.{chg_dec}f}", "chg_raw": chg}
+    if is_rate:
+        out["chg_unit_en"] = "pp"
+        out["chg_unit_zh"] = "百分点"
+    else:
         out["pct"] = f"{pct:+.1f}%"
     return out
 
 
-# (store group, name, column, en, zh, kind, decimals, is_rate, invert_tone)
-# invert=True rows MUST disclose quote orientation in TILE_COPY meaning (peg pattern).
+# (store group, name, column, en, zh, kind, decimals, is_rate, invert)
+# invert is a quote-orientation flag: True rows MUST disclose what 'higher'
+# means in TILE_COPY meaning (peg pattern). It does not invert colour.
 MARKET_TILE_SPEC: list[tuple] = [
     ("hk", "HSTECH", "close", "HS-TECH", "恒生科技", "growth", 0, False, False),
     ("hk", "HKD=X", "close", "USD / HKD", "美元兑港元", "peg", 4, False, True),
@@ -682,7 +680,7 @@ def _hk_market_tiles() -> list[dict]:
     live in the Market State tape; this strip is the cross-asset complement."""
     from engine.hk_tier1 import TILE_COPY
     out: list[dict] = []
-    for grp, name, col, en, zh, kind, dec, is_rate, invert in MARKET_TILE_SPEC:
+    for grp, name, col, en, zh, kind, dec, is_rate, _invert in MARKET_TILE_SPEC:
         try:
             df = store.read(grp, name)
             if (df is None or df.empty or col not in df.columns) and name == "HSTECH":
@@ -698,7 +696,7 @@ def _hk_market_tiles() -> list[dict]:
             pct = (last / prev - 1) * 100 if prev else 0.0
             copy = TILE_COPY[kind]
             chg_dec = max(dec, 1)                # never collapse a sub-unit move to "+0" (e.g. gold)
-            payload = _tile_payload(chg, invert=invert, decimals=chg_dec)
+            payload = _tile_payload(chg, decimals=chg_dec)
             out.append({
                 "label": Markup('<span class="l-en">{}</span><span class="l-zh">{}</span>').format(en, zh),
                 "tag": Markup('<span class="l-en">{}</span><span class="l-zh">{}</span>').format(

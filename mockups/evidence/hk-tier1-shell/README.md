@@ -10,22 +10,22 @@ Harness note (M3): `window.setTheme()` fires `skyToggleFx()` — a ~1100ms cresc
 
 ## Crops
 
-- `hero/desktop/en/dark -> fb2eead9372fe6dd.png`
+- `hero/desktop/en/dark -> 7ef6a47ed8737f91.png`
 - `hero/desktop/en/light -> e0b8e77243389563.png`
 - `hero/desktop/zh/dark -> 9c60f2a8606030ec.png`
-- `hero/desktop/zh/light -> e1db611670a8f76a.png`
+- `hero/desktop/zh/light -> 0638460e7ff87e38.png`
 - `hero/mobile/en/dark -> ee4ec7104e7191cf.png`
 - `hero/mobile/en/light -> 38530e6f31dfee08.png`
 - `hero/mobile/zh/dark -> b7b76aa99d5d0264.png`
-- `hero/mobile/zh/light -> a8f5a79059eaa84d.png`
+- `hero/mobile/zh/light -> bf5745e2786ce15e.png`
 - `strip/desktop/en/dark -> 41c573be41ada763.png`
 - `strip/desktop/en/light -> ca01febcb4e8f00d.png`
-- `strip/desktop/zh/dark -> a10ef463643dba5a.png`
-- `strip/desktop/zh/light -> b46af0d43b98a126.png`
+- `strip/desktop/zh/dark -> 86e14ce6fc4b1600.png`
+- `strip/desktop/zh/light -> a70b9c44fc8dfa04.png`
 - `strip/mobile/en/dark -> 9682e3d8f75f73f6.png`
 - `strip/mobile/en/light -> 1c2188f9612c8891.png`
-- `strip/mobile/zh/dark -> b43a9f514d10eedf.png`
-- `strip/mobile/zh/light -> d76ed58a3d555657.png`
+- `strip/mobile/zh/dark -> 6751f1c3bbc640be.png`
+- `strip/mobile/zh/light -> c3952431024bcb92.png`
 - `signal-row/desktop/en/dark -> 8fffc928a12f5140.png`
 - `signal-row/desktop/en/light -> 0a0bd75e5787515c.png`
 - `signal-row/desktop/zh/dark -> be2a1b3e1539cbb3.png`
