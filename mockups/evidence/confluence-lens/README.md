@@ -35,6 +35,10 @@ material (light). Token substitution is not the proof.
 | `08b-dark-en-1440-chips.png` | dark | EN | 1440 | Rank-01 chips ("entering at random", "held up in both eras") |
 | `08c-light-en-1440-honesty.png` | light | EN | 1440 | same honesty region |
 | `08d-light-en-1440-chips.png` | light | EN | 1440 | same chips |
+| `08e-dark-zh-1440-honesty.png` | dark | ZH | 1440 | Honesty bullet 「将鼠标移到任一胜率上…」 in view |
+| `08f-dark-zh-1440-chips.png` | dark | ZH | 1440 | Gated chips: 「较随机入场高 N 个百分点」 + 「更早年份未能印证」 |
+| `08g-light-zh-1440-honesty.png` | light | ZH | 1440 | same honesty region |
+| `08h-light-zh-1440-chips.png` | light | ZH | 1440 | same gated chips |
 | `rest-dark-en-1440-numeral.png` | dark | EN | 1440 | At-rest numeral — dim dotted rule |
 | `rest-light-en-1440-numeral.png` | light | EN | 1440 | At-rest numeral — solid hairline |
 
@@ -51,11 +55,26 @@ T4 `data-tip-rc-en` on the rendered rank-01 card:
 
 Matches. Toggle receipts: `toggle_receipts.json`.
 
+## G4 row 8 ZH (r2)
+
+Live top-3 combos are all `consistent=true`, so the healed false-branch
+copy would not appear on the artifact page. `08e`–`08h` render
+`confluence_screener_row8zh.html`: rank-2 forced `consistent=false` with
+positive `edge_test_pp` (「更早年份未能印证」), rank-3 forced
+`consistent=false` and `edge_test_pp=-2.4` (「近段未能跑赢随机入场」).
+Honesty copy is unchanged. Mutation is recorded in `toggle_receipts.json`
+(`row8_zh_mutation` + per-crop `zh_money` in-view flags). Same rig:
+`setTheme`/`setLang` then re-read `html[data-theme]`/`html[data-lang]`.
+Row-8 ZH captures hide the sitewide `.sky-fx` sun/moon (theme.js flourish
+pinned at viewport center) so it cannot occlude the chips.
+
 ## Deviation from frozen CSS
 
-`check_design_system.py --mode enforce-added` blocks `border-radius:4px`
-(`radius-literal`). The frozen `.cs-tipped` rule used that literal for the
-light-hover wash corner. Substituted the house idiom
-`border-radius:var(--r-ctl,8px)` (`--r-ctl` is not yet at `:root`; fallback
-is the specimen's 8px). Mechanism (dotted-dim vs solid-hairline + wash) is
-unchanged.
+`check_design_system.py --mode enforce-added` still blocks the ratified 4px
+carriage. Attempted page-scoped
+`.cs-tipped{--cs-tip-r:4px; border-radius:var(--cs-tip-r);}`
+(`/* post-stack: consolidate to theme.css */`). Checker: `blocking=2` —
+`literal-custom-property` on `--cs-tip-r: 4px` and `radius-literal` on
+`border-radius: var(--cs-tip-r)` (`RADIUS_TOKEN_RE` only accepts
+`var(--r-*)`). Kept `border-radius:var(--r-ctl,8px)`. Mechanism
+(dotted-dim vs solid-hairline + wash) is unchanged.

@@ -416,19 +416,19 @@ def test_render_html_lens_receipts_carry_counts_from_context():
     asof = ctx["asof"]
 
     assert (
-        f'data-tip-rc-en="Gates: ≥40 fires pooled · ≥15 fires and ≥12 distinct months since {split} · horizon 21 trading days"'
+        f'data-tip-rc-en="Gates: ≥40 fires pooled · ≥24 distinct months pooled · ≥10 tickers · ≥15 fires and ≥12 distinct months since {split} · horizon 21 trading days"'
         in html
     )
     assert (
-        f'data-tip-rc-zh="门槛：合计触发 ≥40 次 · {split} 起触发 ≥15 次且覆盖 ≥12 个不同月份 · 持有期 21 个交易日"'
+        f'data-tip-rc-zh="门槛：合计触发 ≥40 次 · 合计 ≥24 个不同月份 · ≥10 只股票 · {split} 起触发 ≥15 次且覆盖 ≥12 个不同月份 · 持有期 21 个交易日"'
         in html
     )
     assert (
-        'data-tip-rc-en="Wilson lower bound on the month-collapsed win rate, 21-day horizon, recent half"'
+        'data-tip-rc-en="Wilson lower bound on the month-collapsed win rate, minus the random-entry baseline, 21-day horizon, recent half"'
         in html
     )
     assert (
-        'data-tip-rc-zh="按月合并胜率的 Wilson 置信下限 · 21 日持有期 · 近期样本"'
+        'data-tip-rc-zh="按月合并胜率的 Wilson 置信下限，减去随机入场基准 · 21 日持有期 · 近期样本"'
         in html
     )
     assert (
@@ -518,3 +518,92 @@ def test_render_html_lens_hosts_and_no_leg_text_tip():
         for tag in html.split("<")
         if "data-tip-en=" in tag
     )
+
+
+def test_gates_receipt_literals_match_minerconfig_defaults():
+    """T1 Gates numbers are literals; they must track MinerConfig defaults."""
+    from engine.tech_confluence import MinerConfig
+
+    cfg = MinerConfig()
+    src = (_ROOT / "templates" / "confluence_screener.html.j2").read_text(
+        encoding="utf-8"
+    )
+    assert cfg.min_fires == 40
+    assert cfg.min_months == 24
+    assert cfg.min_tickers == 10
+    assert cfg.min_test_fires == 15
+    assert cfg.min_test_months == 12
+    assert f"≥{cfg.min_fires} fires pooled" in src
+    assert f"≥{cfg.min_months} distinct months pooled" in src
+    assert f"≥{cfg.min_tickers} tickers" in src
+    assert (
+        f"≥{cfg.min_test_fires} fires and ≥{cfg.min_test_months} distinct months"
+        in src
+    )
+    assert f"合计触发 ≥{cfg.min_fires} 次" in src
+    assert f"合计 ≥{cfg.min_months} 个不同月份" in src
+    assert f"≥{cfg.min_tickers} 只股票" in src
+    assert (
+        f"触发 ≥{cfg.min_test_fires} 次且覆盖 ≥{cfg.min_test_months} 个不同月份"
+        in src
+    )
+
+
+def test_render_html_t9b_sign_conditional_and_edge_chip_sign():
+    """M1+m1: two-part T9b only when edge_test_pp > 0; edge chip never '+-'."""
+    src = (_ROOT / "templates" / "confluence_screener.html.j2").read_text(
+        encoding="utf-8"
+    )
+    assert "+{{ _edge }}" not in src
+    assert "+{{" not in src.split("points better than entering at random", 1)[0][-40:]
+
+    html_pos = _rendered_html()
+    assert (
+        'data-tip-en="It beat random entry recently, but not in the older years — so the recent reading is the only one supporting it."'
+        in html_pos
+    )
+    assert (
+        "data-tip-zh=\"它近年跑赢了随机入场，但在更早年份没有——因此只有近年读数在支持它。\""
+        in html_pos
+    )
+    assert "older years didn't back it up" in html_pos
+    assert "更早年份未能印证" in html_pos
+    assert "Hasn't beaten random entry in the recent half" not in html_pos
+    assert "近段未能跑赢随机入场" not in html_pos
+    assert "+20 points better than entering at random" in html_pos
+    assert "较随机入场高 20 个百分点" in html_pos
+    assert "+-" not in html_pos
+
+    raw_neg = _make_raw()
+    for combo in raw_neg["combos"]["long"]:
+        if not combo.get("consistent"):
+            combo["edge_wr_test"] = -0.02
+    html_neg = render_html(_ROOT, build_context(raw_neg, {}))
+    assert "Hasn't beaten random entry in the recent half" in html_neg
+    assert "近段未能跑赢随机入场" in html_neg
+    assert (
+        "data-tip-en=\"Hasn't beaten random entry in the recent half — so the recent reading is not supporting it.\""
+        in html_neg
+    )
+    assert (
+        "data-tip-zh=\"近段未能跑赢随机入场——因此近年读数并不支持它。\""
+        in html_neg
+    )
+    assert "beat random entry recently" not in html_neg
+    assert "它近年跑赢了随机入场，但在更早年份没有" not in html_neg
+    assert "older years didn't back it up" not in html_neg
+    assert "更早年份未能印证" not in html_neg
+    assert "-2 points better than entering at random" in html_neg
+    assert "较随机入场 -2 个百分点" in html_neg
+    assert "+-" not in html_neg
+    assert "+-2" not in html_neg
+
+    raw_zero = _make_raw()
+    for combo in raw_zero["combos"]["long"]:
+        if not combo.get("consistent"):
+            combo["edge_wr_test"] = 0
+    html_zero = render_html(_ROOT, build_context(raw_zero, {}))
+    assert "Hasn't beaten random entry in the recent half" in html_zero
+    assert "近段未能跑赢随机入场" in html_zero
+    assert "beat random entry recently" not in html_zero
+    assert "+-" not in html_zero

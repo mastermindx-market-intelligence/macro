@@ -9,6 +9,7 @@ opened by focusing (desktop) or clicking (mobile 390, hover:none) the rank-01
 """
 from __future__ import annotations
 
+import copy
 import http.server
 import json
 import shutil
@@ -109,6 +110,20 @@ def main() -> int:
     raw = json.loads(Path("/tmp/tech_confluence.json").read_text(encoding="utf-8"))
     ctx = build_context(raw, {})
     html = render_html(ROOT, ctx)
+    # Live top-3 are all consistent=true, so the healed false-branch ZH
+    # copy never appears. Row-8 ZH crops render a disclosed clone: rank-2
+    # keeps a positive edge (ratified two-part claim) and rank-3 is forced
+    # to edge_test_pp <= 0 (honest recent-half copy). Honesty copy is
+    # identical on both documents.
+    ctx_row8 = copy.deepcopy(ctx)
+    if len(ctx_row8["combos"]) >= 2:
+        ctx_row8["combos"][1]["consistent"] = False
+        if ctx_row8["combos"][1].get("edge_test_pp", 0) <= 0:
+            ctx_row8["combos"][1]["edge_test_pp"] = 8.0
+    if len(ctx_row8["combos"]) >= 3:
+        ctx_row8["combos"][2]["consistent"] = False
+        ctx_row8["combos"][2]["edge_test_pp"] = -2.4
+    html_row8 = render_html(ROOT, ctx_row8)
     rank1 = ctx["combos"][0]
     t4_rc = (
         f"{rank1['months_test']} months · {rank1['n_test']} fires · "
@@ -117,6 +132,7 @@ def main() -> int:
 
     tmp = Path(tempfile.mkdtemp(prefix="confluence-lens-"))
     (tmp / "confluence_screener.html").write_text(html, encoding="utf-8")
+    (tmp / "confluence_screener_row8zh.html").write_text(html_row8, encoding="utf-8")
     shutil.copy(ROOT / "templates" / "theme.css", tmp / "theme.css")
     shutil.copy(ROOT / "templates" / "theme.js", tmp / "theme.js")
     for extra in (
@@ -136,7 +152,7 @@ def main() -> int:
 
             def shot(name: str, *, theme: str, lang: str, width: int, height: int,
                      mobile: bool, subject: str, selectors: list[str],
-                     open_tip: bool) -> None:
+                     open_tip: bool, page_url: str | None = None) -> None:
                 context = browser.new_context(
                     viewport={"width": width, "height": height},
                     device_scale_factor=1,
@@ -145,9 +161,17 @@ def main() -> int:
                     locale="zh-CN" if lang == "zh" else "en-US",
                 )
                 page = context.new_page()
-                page.goto(url, wait_until="domcontentloaded", timeout=20000)
+                page.goto(page_url or url, wait_until="domcontentloaded", timeout=20000)
                 page.wait_for_selector(".lc.free .lc-wr-big", timeout=10000)
                 applied = _apply(page, theme, lang)
+                # Sitewide .sky-fx sun/moon sits at viewport center and occludes
+                # the rank-2 consistency chip. Hide it on the row-8 ZH document
+                # so the healed copy is actually legible in the crop.
+                if (page_url or url).endswith("row8zh.html"):
+                    page.evaluate(
+                        "() => document.querySelectorAll('.sky-fx')"
+                        ".forEach(e => { e.style.display = 'none'; })"
+                    )
                 if open_tip:
                     _open_tip(page, mobile=mobile)
                     page.wait_for_timeout(200)
@@ -156,6 +180,9 @@ def main() -> int:
                     page.wait_for_timeout(80)
                 elif subject == "chips":
                     page.locator(".lc.free .lc-foot").first.scroll_into_view_if_needed()
+                    page.wait_for_timeout(80)
+                elif subject == "chips-gated":
+                    page.locator(".lc.gated .lc-foot").first.scroll_into_view_if_needed()
                     page.wait_for_timeout(80)
                 dest = OUT / f"{name}.png"
                 # Desktop G4 crops must be ≥1200px wide — take the full
@@ -176,6 +203,24 @@ def main() -> int:
                 t4_attr = page.locator(".lc.free .lc-wr-big").first.get_attribute(
                     "data-tip-rc-en"
                 )
+                zh_money = page.evaluate(
+                    """() => {
+                      const inView = (el) => {
+                        const r = el.getBoundingClientRect();
+                        return r.width > 0 && r.height > 0 && r.bottom > 0
+                          && r.top < window.innerHeight
+                          && r.left < window.innerWidth && r.right > 0;
+                      };
+                      const find = (pred) => [...document.querySelectorAll('.l-zh')]
+                        .find(e => pred(e.innerText || '') && inView(e));
+                      return {
+                        hover_promise_in_view: !!find(t => t.includes('将鼠标移到任一胜率上')),
+                        edge_high_in_view: !!find(t => /较随机入场高\\s*-?\\d+\\s*个百分点/.test(t)),
+                        older_years_in_view: !!find(t => t.includes('更早年份未能印证')),
+                        recent_half_in_view: !!find(t => t.includes('近段未能跑赢随机入场')),
+                      };
+                    }"""
+                )
                 receipts.append({
                     "file": dest.name,
                     "want_theme": theme,
@@ -188,6 +233,8 @@ def main() -> int:
                     "pop_open": pop_open,
                     "sheet_scrim_lock": sheet,
                     "t4_rc_en": t4_attr,
+                    "zh_money": zh_money,
+                    "page": "row8zh" if (page_url or url).endswith("row8zh.html") else "live",
                     "bytes": dest.stat().st_size,
                     "clip": {k: round(v, 1) for k, v in clip.items()},
                 })
@@ -230,6 +277,22 @@ def main() -> int:
                  width=1440, height=900, mobile=False, subject="chips",
                  selectors=[".lc.free .lc-foot"], open_tip=False)
 
+            # G4 8 ZH — live top-3 are consistent=true, so these four use
+            # confluence_screener_row8zh.html (disclosed mutation).
+            url_row8 = url.rsplit("/", 1)[0] + "/confluence_screener_row8zh.html"
+            shot("08e-dark-zh-1440-honesty", theme="dark", lang="zh",
+                 width=1440, height=900, mobile=False, subject="honesty",
+                 selectors=[".honesty"], open_tip=False, page_url=url_row8)
+            shot("08f-dark-zh-1440-chips", theme="dark", lang="zh",
+                 width=1440, height=900, mobile=False, subject="chips-gated",
+                 selectors=[".lc.gated .lc-foot"], open_tip=False, page_url=url_row8)
+            shot("08g-light-zh-1440-honesty", theme="light", lang="zh",
+                 width=1440, height=900, mobile=False, subject="honesty",
+                 selectors=[".honesty"], open_tip=False, page_url=url_row8)
+            shot("08h-light-zh-1440-chips", theme="light", lang="zh",
+                 width=1440, height=900, mobile=False, subject="chips-gated",
+                 selectors=[".lc.gated .lc-foot"], open_tip=False, page_url=url_row8)
+
             # Paired at-rest numeral so dotted (dark) vs solid hairline (light)
             # is visible without the open card covering the rule.
             shot("rest-dark-en-1440-numeral", theme="dark", lang="en",
@@ -253,6 +316,19 @@ def main() -> int:
             "split_date": ctx["split_date"],
             "asof": ctx["asof"],
         },
+        "row8_zh_mutation": {
+            "reason": "live top-3 consistent=true; false-branch ZH copy would not appear",
+            "rank2": {
+                "combo_id": ctx_row8["combos"][1]["combo_id"] if len(ctx_row8["combos"]) > 1 else None,
+                "consistent": ctx_row8["combos"][1]["consistent"] if len(ctx_row8["combos"]) > 1 else None,
+                "edge_test_pp": ctx_row8["combos"][1]["edge_test_pp"] if len(ctx_row8["combos"]) > 1 else None,
+            },
+            "rank3": {
+                "combo_id": ctx_row8["combos"][2]["combo_id"] if len(ctx_row8["combos"]) > 2 else None,
+                "consistent": ctx_row8["combos"][2]["consistent"] if len(ctx_row8["combos"]) > 2 else None,
+                "edge_test_pp": ctx_row8["combos"][2]["edge_test_pp"] if len(ctx_row8["combos"]) > 2 else None,
+            },
+        },
         "crops": receipts,
     }
     (OUT / "toggle_receipts.json").write_text(
@@ -266,6 +342,23 @@ def main() -> int:
     mismatch = [r for r in receipts if r["t4_rc_en"] != t4_rc]
     if mismatch:
         print("FAILED T4 receipt mismatch", file=sys.stderr)
+        return 1
+    honesty_zh = [r for r in receipts if r["file"] in {
+        "08e-dark-zh-1440-honesty.png", "08g-light-zh-1440-honesty.png",
+    }]
+    chips_zh = [r for r in receipts if r["file"] in {
+        "08f-dark-zh-1440-chips.png", "08h-light-zh-1440-chips.png",
+    }]
+    if len(honesty_zh) != 2 or len(chips_zh) != 2:
+        print("FAILED row-8 ZH crop count", file=sys.stderr)
+        return 1
+    missing_h = [r["file"] for r in honesty_zh if not r["zh_money"]["hover_promise_in_view"]]
+    missing_c = [
+        r["file"] for r in chips_zh
+        if not (r["zh_money"]["edge_high_in_view"] and r["zh_money"]["older_years_in_view"])
+    ]
+    if missing_h or missing_c:
+        print("FAILED ZH money copy not in view", missing_h, missing_c, file=sys.stderr)
         return 1
     return 0
 

@@ -227,8 +227,8 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
         <h1 class="hero-state" tabindex="0"
             data-tip-en="How many proven signal line-ups are firing across the large-cap list today. A line-up only appears here if it cleared the history gates below."
             data-tip-zh="今日在大盘股名单中触发的、且已通过历史门槛的信号组合数量。未达门槛的组合不会出现在这里。"
-            data-tip-rc-en="Gates: ≥40 fires pooled · ≥15 fires and ≥12 distinct months since {{ split_date }} · horizon 21 trading days"
-            data-tip-rc-zh="门槛：合计触发 ≥40 次 · {{ split_date }} 起触发 ≥15 次且覆盖 ≥12 个不同月份 · 持有期 21 个交易日">
+            data-tip-rc-en="Gates: ≥40 fires pooled · ≥24 distinct months pooled · ≥10 tickers · ≥15 fires and ≥12 distinct months since {{ split_date }} · horizon 21 trading days"
+            data-tip-rc-zh="门槛：合计触发 ≥40 次 · 合计 ≥24 个不同月份 · ≥10 只股票 · {{ split_date }} 起触发 ≥15 次且覆盖 ≥12 个不同月份 · 持有期 21 个交易日">
           <span class="l-en"><span class="n">{{ _n_today }}</span> {{ 'setup' if _n_today == 1 else 'setups' }} lining up today</span>
           <span class="l-zh"><span class="n">{{ _n_today }}</span> 组信号今日共振</span>
         </h1>
@@ -272,8 +272,8 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
         <div class="lc-rank cs-tipped" tabindex="0"
              data-tip-en="Ranked by the cautious end of its recent win rate — a line-up with fewer months behind it is pushed down, not up."
              data-tip-zh="按近年胜率的保守下限排序——历史月份越少的组合排名越靠后，而非靠前。"
-             data-tip-rc-en="Wilson lower bound on the month-collapsed win rate, 21-day horizon, recent half"
-             data-tip-rc-zh="按月合并胜率的 Wilson 置信下限 · 21 日持有期 · 近期样本">{{ '%02d'|format(c.rank) }}</div>
+             data-tip-rc-en="Wilson lower bound on the month-collapsed win rate, minus the random-entry baseline, 21-day horizon, recent half"
+             data-tip-rc-zh="按月合并胜率的 Wilson 置信下限，减去随机入场基准 · 21 日持有期 · 近期样本">{{ '%02d'|format(c.rank) }}</div>
         <div class="lc-title-wrap">
           <div class="lc-title"><span class="l-en">{{ c.name_en }}</span><span class="l-zh">{{ c.name_zh }}</span></div>
           <div class="lc-since" tabindex="0"
@@ -323,24 +323,36 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
           <span class="l-en">{{ (c.wr_test_pct/10)|round(1) }} in 10 recently</span>
           <span class="l-zh">近年 {{ (c.wr_test_pct/10)|round(1) }}/10</span></span>
         {% set _edge = c.edge_test_pp|round|int %}
+        {% set _edge_s = '%+d'|format(_edge) %}
         <span class="chip cs-tipped" tabindex="0"
               data-tip-en="Against a baseline of entering the same stocks on random dates over the same period. Points are percentage points of win rate, not return."
               data-tip-zh="对照基准为：同期在相同股票上随机选日入场。此处的「个百分点」指胜率的百分点，而非收益率。"
               data-tip-rc-en="Random-entry baseline, month-collapsed win rate, 21-day horizon, {{ split_date }} → {{ asof }}"
               data-tip-rc-zh="随机入场基准 · 按月合并胜率 · 21 日持有期 · {{ split_date }} 至 {{ asof }}">
-          <span class="l-en">+{{ _edge }} points better than entering at random</span>
+          <span class="l-en">{{ _edge_s }} points better than entering at random</span>
+          {% if _edge > 0 %}
           <span class="l-zh">较随机入场高 {{ _edge }} 个百分点</span>
+          {% else %}
+          <span class="l-zh">较随机入场 {{ _edge_s }} 个百分点</span>
+          {% endif %}
         </span>
         {% if c.consistent %}
         <span class="chip ok cs-tipped" tabindex="0"
               data-tip-en="It beat random entry in the older years as well as the recent ones. Both halves had to clear the bar, not just the recent one."
               data-tip-zh="在更早年份与近年，它都跑赢了随机入场。两段样本须同时达标，而非只看近年。">✓ <span class="l-en">held up in both eras</span><span class="l-zh">两期均稳</span></span>
-        {% else %}
+        {% elif c.edge_test_pp > 0 %}
         <span class="chip cs-tipped" tabindex="0"
               data-tip-en="It beat random entry recently, but not in the older years — so the recent reading is the only one supporting it."
               data-tip-zh="它近年跑赢了随机入场，但在更早年份没有——因此只有近年读数在支持它。">
           <span class="l-en">older years didn't back it up</span>
           <span class="l-zh">更早年份未能印证</span>
+        </span>
+        {% else %}
+        <span class="chip cs-tipped" tabindex="0"
+              data-tip-en="Hasn't beaten random entry in the recent half — so the recent reading is not supporting it."
+              data-tip-zh="近段未能跑赢随机入场——因此近年读数并不支持它。">
+          <span class="l-en">Hasn't beaten random entry in the recent half</span>
+          <span class="l-zh">近段未能跑赢随机入场</span>
         </span>
         {% endif %}
       </div>

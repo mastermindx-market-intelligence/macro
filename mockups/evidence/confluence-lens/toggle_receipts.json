@@ -7,6 +7,19 @@
     "split_date": "2018-01-01",
     "asof": "2026-09-10"
   },
+  "row8_zh_mutation": {
+    "reason": "live top-3 consistent=true; false-branch ZH copy would not appear",
+    "rank2": {
+      "combo_id": "L0132",
+      "consistent": false,
+      "edge_test_pp": 7.93
+    },
+    "rank3": {
+      "combo_id": "L0139",
+      "consistent": false,
+      "edge_test_pp": -2.4
+    }
+  },
   "crops": [
     {
       "file": "01-dark-en-1440-tip-open.png",
@@ -20,6 +33,13 @@
       "pop_open": true,
       "sheet_scrim_lock": false,
       "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "zh_money": {
+        "hover_promise_in_view": false,
+        "edge_high_in_view": false,
+        "older_years_in_view": false,
+        "recent_half_in_view": false
+      },
+      "page": "live",
       "bytes": 380274,
       "clip": {
         "x": 0,
@@ -40,6 +60,13 @@
       "pop_open": true,
       "sheet_scrim_lock": false,
       "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "zh_money": {
+        "hover_promise_in_view": false,
+        "edge_high_in_view": true,
+        "older_years_in_view": false,
+        "recent_half_in_view": false
+      },
+      "page": "live",
       "bytes": 372712,
       "clip": {
         "x": 0,
@@ -60,6 +87,13 @@
       "pop_open": true,
       "sheet_scrim_lock": true,
       "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "zh_money": {
+        "hover_promise_in_view": false,
+        "edge_high_in_view": false,
+        "older_years_in_view": false,
+        "recent_half_in_view": false
+      },
+      "page": "live",
       "bytes": 148806,
       "clip": {
         "x": 0,
@@ -80,6 +114,13 @@
       "pop_open": true,
       "sheet_scrim_lock": true,
       "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "zh_money": {
+        "hover_promise_in_view": false,
+        "edge_high_in_view": false,
+        "older_years_in_view": false,
+        "recent_half_in_view": false
+      },
+      "page": "live",
       "bytes": 142503,
       "clip": {
         "x": 0,
@@ -100,6 +141,13 @@
       "pop_open": true,
       "sheet_scrim_lock": false,
       "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "zh_money": {
+        "hover_promise_in_view": false,
+        "edge_high_in_view": false,
+        "older_years_in_view": false,
+        "recent_half_in_view": false
+      },
+      "page": "live",
       "bytes": 374288,
       "clip": {
         "x": 0,
@@ -120,6 +168,13 @@
       "pop_open": true,
       "sheet_scrim_lock": false,
       "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "zh_money": {
+        "hover_promise_in_view": false,
+        "edge_high_in_view": true,
+        "older_years_in_view": false,
+        "recent_half_in_view": false
+      },
+      "page": "live",
       "bytes": 366555,
       "clip": {
         "x": 0,
@@ -140,6 +195,13 @@
       "pop_open": true,
       "sheet_scrim_lock": true,
       "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "zh_money": {
+        "hover_promise_in_view": false,
+        "edge_high_in_view": false,
+        "older_years_in_view": false,
+        "recent_half_in_view": false
+      },
+      "page": "live",
       "bytes": 153218,
       "clip": {
         "x": 0,
@@ -160,6 +222,13 @@
       "pop_open": false,
       "sheet_scrim_lock": false,
       "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "zh_money": {
+        "hover_promise_in_view": false,
+        "edge_high_in_view": false,
+        "older_years_in_view": false,
+        "recent_half_in_view": false
+      },
+      "page": "live",
       "bytes": 313885,
       "clip": {
         "x": 0,
@@ -180,6 +249,13 @@
       "pop_open": false,
       "sheet_scrim_lock": false,
       "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "zh_money": {
+        "hover_promise_in_view": false,
+        "edge_high_in_view": false,
+        "older_years_in_view": false,
+        "recent_half_in_view": false
+      },
+      "page": "live",
       "bytes": 343146,
       "clip": {
         "x": 0,
@@ -200,6 +276,13 @@
       "pop_open": false,
       "sheet_scrim_lock": false,
       "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "zh_money": {
+        "hover_promise_in_view": false,
+        "edge_high_in_view": false,
+        "older_years_in_view": false,
+        "recent_half_in_view": false
+      },
+      "page": "live",
       "bytes": 297620,
       "clip": {
         "x": 0,
@@ -220,7 +303,122 @@
       "pop_open": false,
       "sheet_scrim_lock": false,
       "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "zh_money": {
+        "hover_promise_in_view": false,
+        "edge_high_in_view": false,
+        "older_years_in_view": false,
+        "recent_half_in_view": false
+      },
+      "page": "live",
       "bytes": 335878,
+      "clip": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "file": "08e-dark-zh-1440-honesty.png",
+      "want_theme": "dark",
+      "want_lang": "zh",
+      "applied_theme": "dark",
+      "applied_lang": "zh",
+      "viewport": "1440x900",
+      "subject": "honesty",
+      "open_tip": false,
+      "pop_open": false,
+      "sheet_scrim_lock": false,
+      "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "zh_money": {
+        "hover_promise_in_view": true,
+        "edge_high_in_view": false,
+        "older_years_in_view": false,
+        "recent_half_in_view": true
+      },
+      "page": "row8zh",
+      "bytes": 287092,
+      "clip": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "file": "08f-dark-zh-1440-chips.png",
+      "want_theme": "dark",
+      "want_lang": "zh",
+      "applied_theme": "dark",
+      "applied_lang": "zh",
+      "viewport": "1440x900",
+      "subject": "chips-gated",
+      "open_tip": false,
+      "pop_open": false,
+      "sheet_scrim_lock": false,
+      "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "zh_money": {
+        "hover_promise_in_view": false,
+        "edge_high_in_view": true,
+        "older_years_in_view": true,
+        "recent_half_in_view": true
+      },
+      "page": "row8zh",
+      "bytes": 197797,
+      "clip": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "file": "08g-light-zh-1440-honesty.png",
+      "want_theme": "light",
+      "want_lang": "zh",
+      "applied_theme": "light",
+      "applied_lang": "zh",
+      "viewport": "1440x900",
+      "subject": "honesty",
+      "open_tip": false,
+      "pop_open": false,
+      "sheet_scrim_lock": false,
+      "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "zh_money": {
+        "hover_promise_in_view": true,
+        "edge_high_in_view": false,
+        "older_years_in_view": false,
+        "recent_half_in_view": true
+      },
+      "page": "row8zh",
+      "bytes": 273141,
+      "clip": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "file": "08h-light-zh-1440-chips.png",
+      "want_theme": "light",
+      "want_lang": "zh",
+      "applied_theme": "light",
+      "applied_lang": "zh",
+      "viewport": "1440x900",
+      "subject": "chips-gated",
+      "open_tip": false,
+      "pop_open": false,
+      "sheet_scrim_lock": false,
+      "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "zh_money": {
+        "hover_promise_in_view": false,
+        "edge_high_in_view": true,
+        "older_years_in_view": true,
+        "recent_half_in_view": true
+      },
+      "page": "row8zh",
+      "bytes": 193998,
       "clip": {
         "x": 0,
         "y": 0,
@@ -240,6 +438,13 @@
       "pop_open": false,
       "sheet_scrim_lock": false,
       "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "zh_money": {
+        "hover_promise_in_view": false,
+        "edge_high_in_view": false,
+        "older_years_in_view": false,
+        "recent_half_in_view": false
+      },
+      "page": "live",
       "bytes": 5766,
       "clip": {
         "x": 1067.4,
@@ -260,6 +465,13 @@
       "pop_open": false,
       "sheet_scrim_lock": false,
       "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "zh_money": {
+        "hover_promise_in_view": false,
+        "edge_high_in_view": false,
+        "older_years_in_view": false,
+        "recent_half_in_view": false
+      },
+      "page": "live",
       "bytes": 5730,
       "clip": {
         "x": 1067.4,
