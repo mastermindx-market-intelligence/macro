@@ -10336,6 +10336,17 @@ jobs:
         run: python -m pytest tests/test_prophet_doors.py tests/test_gate_crash_failopen.py -q
       - name: prophet arena (frozen challenger policies, closure-replay ruler, ledger lane gate, pick-chain fence)
         run: python -m pytest tests/test_prophet_arena.py -q
+      # §6.9 R5 PR-time copy contract. The complete why-not suite stays in its
+      # existing data-gated job during this bootstrap: current main still carries four
+      # known harness failures that #7059 repairs, so moving the whole file first would
+      # make the prerequisite red on its own base. These four hermetic copy laws are the
+      # source-change contract that must execute before #7059 can merge. The first two
+      # names exist on the current base; #7059 adds the latter two, so this selector
+      # bootstraps green and expands automatically on that exact head.
+      - name: Prophet intake receipt copy contract (PR-time hermetic subset)
+        run: >-
+          python -m pytest tests/test_prophet_whynot_receipts.py -q
+          -k "every_order_code_has_non_empty_bilingual_copy or template_copy_mirrors_the_engine_copy_exactly or plan_not_built_copy_never_claims_every_check_passed or validated_word_is_confined_to_the_exact_negative_disclaimer"
       - name: washout-turn organ (depth-gated weekly cross, PIT completed-bars pin, ledger gate)
         run: python -m pytest tests/test_washout_turn.py tests/test_mtf_upturn.py tests/test_oracle_memory_analogues_step.py tests/test_stock_events.py tests/test_event_atlas.py -q
       - name: leader-pullback organ (§6.9 R4 — RS-leader reset detection, self-containment + no-authority pins)
