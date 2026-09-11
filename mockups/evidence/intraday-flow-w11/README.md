@@ -1,4 +1,4 @@
-# Intraday Flow W11 r3 — 16-cell evidence matrix
+# Intraday Flow W11 r4 — 16-cell evidence matrix
 
 S1 rig: Playwright against fixture feeds on the real `body.page-intraday-flow` page
 (not an overlay-column crop). `data-theme` / `data-lang` applied via `setTheme` /
@@ -14,7 +14,11 @@ Recapture: `python3 mockups/evidence/intraday-flow-w11/capture.py`
 with `See all 12` / `查看全部 12 只`; expansion renders exactly 12 rows. It is
 count-true. It is not 116; 12 is what the fixture actually holds.
 
-Captured 2026-09-11T07:52:23Z. 64 cells, 64 overlay-clean.
+Captured 2026-09-11T08:28:12Z at committed head `02bc128e3a76487bf9028684d70ce8eced82e7ff`
+with empty `git status --porcelain` (rig-enforced). 64 cells, 64 overlay-clean.
+57 PNGs on disk; the 7-file delta is content-addressed reuse (`f-board-default-*`
+byte-identical to `baseline-board-*`; `a-market-open-light-en-1440` identical to
+`baseline-hero-light-en-1440`). README cells↔PNGs reconcile 64/64, no orphans.
 
 ## DARK TREATMENT
 
@@ -85,14 +89,14 @@ overlay-clean is per-crop (viewport frame after overlay removal).
 
 | Cell | File | Theme | Lang | Viewport | overlay-clean | In frame |
 |---|---|---|---|---|---|---|
-| `baseline-hero-dark-en-1440` | `5dc839795b9caa4d.png` | dark | en | 1440×900 | true | LENS tip; stamp all-feeds-carrying |
-| `baseline-hero-light-en-1440` | `7b494906dffbf389.png` | light | en | 1440×900 | true | LENS tip on white; act name in spotlight |
-| `baseline-hero-dark-zh-1440` | `7d50d3d9d2e21dee.png` | dark | zh | 1440×900 | true | LENS tip; 各路数据已送达 |
-| `baseline-hero-light-zh-1440` | `7562f4b09be64e5a.png` | light | zh | 1440×900 | true | LENS tip on white |
+| `baseline-hero-dark-en-1440` | `02b013b7832b3bb0.png` | dark | en | 1440×900 | true | LENS tip 3 rows: quotes · carrying prices / tape · carrying trades / options · carrying flow; stamp all feeds carrying |
+| `baseline-hero-light-en-1440` | `94080dd1cb5d3055.png` | light | en | 1440×900 | true | LENS tip 3 rows on white; act name in spotlight |
+| `baseline-hero-dark-zh-1440` | `886bdd8419690c41.png` | dark | zh | 1440×900 | true | LENS tip 3 rows: 行情 · 报价已送达 / 资金带 · 成交已送达 / 期权流 · 流数据已送达; 各路数据已送达 |
+| `baseline-hero-light-zh-1440` | `73d0176c58f27d87.png` | light | zh | 1440×900 | true | LENS tip 3 rows on white |
 | `baseline-hero-dark-en-390` | `30802381dd2428c9.png` | dark | en | 390×844 | true | mobile reduction |
 | `baseline-hero-light-en-390` | `887348238580f804.png` | light | en | 390×844 | true | mobile reduction |
-| `baseline-hero-dark-zh-390` | `9accce784e6ee462.png` | dark | zh | 390×844 | true | mobile reduction |
-| `baseline-hero-light-zh-390` | `7593a0766968ed43.png` | light | zh | 390×844 | true | mobile reduction |
+| `baseline-hero-dark-zh-390` | `9b547bebf767ef25.png` | dark | zh | 390×844 | true | mobile reduction |
+| `baseline-hero-light-zh-390` | `160fc89a8f805f9d.png` | light | zh | 390×844 | true | mobile reduction |
 | `baseline-board-dark-en-1440` | `f4413ff63f3ceca8.png` | dark | en | 1440×900 | true | chips `big block`/`new position`; `~2.4% expected move`; See all 12 |
 | `baseline-board-light-en-1440` | `a70b9d8f2118760c.png` | light | en | 1440×900 | true | chips on white; See-all ink-link |
 | `baseline-board-dark-zh-1440` | `f1b599fe3349af6a.png` | dark | zh | 1440×900 | true | chips `大单`/`新建仓`; `~预期波动约2.4%`; 查看全部 12 只 |
@@ -101,28 +105,28 @@ overlay-clean is per-crop (viewport frame after overlay removal).
 | `baseline-board-light-en-390` | `9db8d8554732e083.png` | light | en | 390×844 | true | See-all; chips hidden |
 | `baseline-board-dark-zh-390` | `75ca84800d6ac9e7.png` | dark | zh | 390×844 | true | 查看全部 12 只 |
 | `baseline-board-light-zh-390` | `95f85b6a7ce7b1df.png` | light | zh | 390×844 | true | 查看全部 12 只 |
-| `a-market-open-dark-en-1440` | `6a5e1031a3f5ea35.png` | dark | en | 1440×900 | true | ≥1 act (NVDA Buy now) |
-| `a-market-open-light-en-1440` | `6196917b86eba8b6.png` | light | en | 1440×900 | true | ≥1 act on white |
-| `a-market-open-dark-zh-1440` | `019d09c6167fc8d6.png` | dark | zh | 1440×900 | true | 现在买入 |
-| `a-market-open-light-zh-1440` | `b941a6100b03426f.png` | light | zh | 1440×900 | true | 现在买入 |
-| `b-skeleton-dark-en-1440` | `de6c3994eb187e92.png` | dark | en | 1440×900 | true | r2 wordless skels in hero/spot/board |
+| `a-market-open-dark-en-1440` | `7e795cd4d062ae7e.png` | dark | en | 1440×900 | true | ≥1 act (NVDA Buy now); LENS tip 3 rows |
+| `a-market-open-light-en-1440` | `94080dd1cb5d3055.png` | light | en | 1440×900 | true | ≥1 act on white (reuse of baseline-hero-light-en-1440) |
+| `a-market-open-dark-zh-1440` | `068f73014b47d867.png` | dark | zh | 1440×900 | true | 现在买入 |
+| `a-market-open-light-zh-1440` | `38b89f9cdfdb7576.png` | light | zh | 1440×900 | true | 现在买入 |
+| `b-skeleton-dark-en-1440` | `c2eb82d3515fa259.png` | dark | en | 1440×900 | true | r2 wordless skels in hero/spot/board |
 | `b-skeleton-light-en-1440` | `03676edbedcf6910.png` | light | en | 1440×900 | true | skels on white, no glow |
 | `b-skeleton-dark-zh-1440` | `430480fb4e25aac6.png` | dark | zh | 1440×900 | true | wordless (bilingual CSS) |
-| `b-skeleton-light-zh-1440` | `10b1223643ff0e99.png` | light | zh | 1440×900 | true | wordless |
+| `b-skeleton-light-zh-1440` | `0f71d73205a225f2.png` | light | zh | 1440×900 | true | wordless |
 | `b-skeleton-dark-en-390` | `fb0978990af9a9e8.png` | dark | en | 390×844 | true | mobile skels |
 | `b-skeleton-dark-zh-390` | `18711a2da60bb9eb.png` | dark | zh | 390×844 | true | mobile skels |
 | `c-spotlight-empty-dark-en-1440` | `42e6da651af4a719.png` | dark | en | 1440×900 | true | live empty: No fresh setups (r1 DNT #2) |
 | `c-spotlight-empty-light-en-1440` | `e12016f3d9978cf7.png` | light | en | 1440×900 | true | same empty on white |
-| `c-spotlight-empty-dark-zh-1440` | `e98f3a67b5e0fe29.png` | dark | zh | 1440×900 | true | 当前无新布局 |
-| `c-spotlight-empty-light-zh-1440` | `40b9790b7dc71efa.png` | light | zh | 1440×900 | true | 当前无新布局 |
-| `d-quotes-outage-dark-en-1440` | `f18f871d70a26b7d.png` | dark | en | 1440×900 | true | P0: No read rows; stamp prices not coming through; no freshness-claiming live/实时 string; the labelled signal-count 'setups live' is present and seat-ratified 2026-09-11 |
-| `d-quotes-outage-light-en-1440` | `dba64794252f1398.png` | light | en | 1440×900 | true | No read on white; setups live seat-ratified |
+| `c-spotlight-empty-dark-zh-1440` | `528e5a344748a3d6.png` | dark | zh | 1440×900 | true | 当前无新布局 |
+| `c-spotlight-empty-light-zh-1440` | `28f9b4640b500fbd.png` | light | zh | 1440×900 | true | 当前无新布局 |
+| `d-quotes-outage-dark-en-1440` | `516214af0411122b.png` | dark | en | 1440×900 | true | P0: No read rows; stamp prices not coming through; no freshness-claiming live/实时 string; the labelled signal-count 'setups live' is present and seat-ratified 2026-09-11 |
+| `d-quotes-outage-light-en-1440` | `f5519f2b6c747688.png` | light | en | 1440×900 | true | No read on white; setups live seat-ratified |
 | `d-quotes-outage-dark-zh-1440` | `48f1384b26a057cd.png` | dark | zh | 1440×900 | true | 暂无判断; 行情数据未送达 |
-| `d-quotes-outage-light-zh-1440` | `cf2e3181ebe01cac.png` | light | zh | 1440×900 | true | 暂无判断 |
-| `e-options-outage-dark-en-1440` | `00d24df3ac2de8cc.png` | dark | en | 1440×900 | true | stamp `options flow not coming through` |
-| `e-options-outage-light-en-1440` | `36e5ff6a8ed30d42.png` | light | en | 1440×900 | true | same headline on white |
+| `d-quotes-outage-light-zh-1440` | `3f0a7ef89c4b6849.png` | light | zh | 1440×900 | true | 暂无判断 |
+| `e-options-outage-dark-en-1440` | `6140ca12a24ad20a.png` | dark | en | 1440×900 | true | stamp `options flow not coming through`; tip rows tape · carrying trades / options · flow not coming through |
+| `e-options-outage-light-en-1440` | `e8135693007e4a63.png` | light | en | 1440×900 | true | same headline on white; tip 3 rows |
 | `e-options-outage-dark-zh-1440` | `1c2a7437c1412b83.png` | dark | zh | 1440×900 | true | 期权流数据未送达 |
-| `e-options-outage-light-zh-1440` | `5f5d871604700fe5.png` | light | zh | 1440×900 | true | 期权流数据未送达 |
+| `e-options-outage-light-zh-1440` | `13f891d3fa0840e2.png` | light | zh | 1440×900 | true | 期权流数据未送达 |
 | `f-board-default-dark-en-1440` | `f4413ff63f3ceca8.png` | dark | en | 1440×900 | true | Showing 8 of 12 · See all 12 |
 | `f-board-default-light-en-1440` | `a70b9d8f2118760c.png` | light | en | 1440×900 | true | See all 12 ink-link |
 | `f-board-default-dark-zh-1440` | `f1b599fe3349af6a.png` | dark | zh | 1440×900 | true | 显示 8 / 12 只 · 查看全部 12 只 |
@@ -135,20 +139,21 @@ overlay-clean is per-crop (viewport frame after overlay removal).
 | `g-board-expanded-light-zh-1440` | `45374d959555cff9.png` | light | zh | 1440×900 | true | 只看前 8 只 |
 | `g-board-expanded-dark-en-390` | `ebead736fe59dfb4.png` | dark | en | 390×844 | true | Show top 8 ↑ |
 | `g-board-expanded-dark-zh-390` | `b095f980549195bd.png` | dark | zh | 390×844 | true | 只看前 8 只 |
-| `h-basket-grid-dark-en-1440` | `f6d03a2a0ab02843.png` | dark | en | 1440×900 | true | Power Grid chip; 4 leaders; Power Grid sub-labels |
+| `h-basket-grid-dark-en-1440` | `c5b4341c7d6d7913.png` | dark | en | 1440×900 | true | Power Grid chip; 4 leaders; Power Grid sub-labels |
 | `h-basket-grid-light-en-1440` | `9935d815cf67732a.png` | light | en | 1440×900 | true | same on white |
-| `h-basket-grid-dark-zh-1440` | `7f8d544a9da8c18f.png` | dark | zh | 1440×900 | true | M2: 电网 chip active; row sub-labels 电网; 共 4 只 |
-| `h-basket-grid-light-zh-1440` | `ef5a39cac0964e00.png` | light | zh | 1440×900 | true | 电网 on white |
-| `i-search-narrow-dark-en-1440` | `35946d3aae3a49af.png` | dark | en | 1440×900 | true | `1 leader`; no See-all |
-| `i-search-narrow-light-en-1440` | `590598526aa573f5.png` | light | en | 1440×900 | true | `1 leader` |
-| `i-search-narrow-dark-zh-1440` | `845c3549082e1183.png` | dark | zh | 1440×900 | true | `共 1 只`; no 查看全部 |
-| `i-search-narrow-light-zh-1440` | `6f5f33098128a4a5.png` | light | zh | 1440×900 | true | `共 1 只` |
+| `h-basket-grid-dark-zh-1440` | `dffb12688dff7430.png` | dark | zh | 1440×900 | true | M2: 电网 chip active; row sub-labels 电网; 共 4 只 |
+| `h-basket-grid-light-zh-1440` | `549c23523282b969.png` | light | zh | 1440×900 | true | 电网 on white |
+| `i-search-narrow-dark-en-1440` | `de1da5669563db88.png` | dark | en | 1440×900 | true | `1 leader`; no See-all |
+| `i-search-narrow-light-en-1440` | `c911e0eadaf82609.png` | light | en | 1440×900 | true | `1 leader` |
+| `i-search-narrow-dark-zh-1440` | `17db00e01582c59c.png` | dark | zh | 1440×900 | true | `共 1 只`; no 查看全部 |
+| `i-search-narrow-light-zh-1440` | `710065e4876f5640.png` | light | zh | 1440×900 | true | `共 1 只` |
 | `i-search-narrow-dark-en-390` | `aa57a8379db1845c.png` | dark | en | 390×844 | true | `1 leader` |
 | `i-search-narrow-dark-zh-390` | `c58ff69fe9f5c878.png` | dark | zh | 390×844 | true | `共 1 只` |
 | `j-row-expanded-dark-en-1440` | `daf594d0abea0293.png` | dark | en | 1440×900 | true | Tier-2 detail: VWAP, expected move (day), receipts |
 | `j-row-expanded-light-en-1440` | `e12973a753299b53.png` | light | en | 1440×900 | true | detail on white |
-| `j-row-expanded-dark-zh-1440` | `5cfe6b1c92c901d6.png` | dark | zh | 1440×900 | true | 当日VWAP / 预期波动（日） |
-| `j-row-expanded-light-zh-1440` | `c6dc8fe37ed87798.png` | light | zh | 1440×900 | true | detail on white |
+| `j-row-expanded-dark-zh-1440` | `f83bd2add9d2e941.png` | dark | zh | 1440×900 | true | 当日VWAP / 预期波动（日） |
+| `j-row-expanded-light-zh-1440` | `733a83a2162d2c2a.png` | light | zh | 1440×900 | true | detail on white |
 
-Every r2-changed subject (stamp, tip, control, skeletons, outage stance)
-appears in a fresh full-frame cell. No r2 crop is reused.
+Volume-column session-anchored tip (`This session's volume vs a normal day at this exact time` / `本时段成交量与同一时段正常水平之比`) lives on the header `help()`; the matrix does not hover that control, so the string is source-proven (r4 whole-template sweep) rather than in-frame. Feed-status tip rows and headlines are in-frame on the hero/outage cells above.
+
+r4 recapture at committed head `02bc128e3a76`; porcelain empty at capture. Content-addressed reuse is honest (cells.json 64 rows, 57 PNGs, 7 shared files, no orphans).
