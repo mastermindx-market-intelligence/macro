@@ -292,14 +292,27 @@ def defect_unknown_posture_vm(vm: dict | None = None) -> dict:
     return _vm_with_dial(copy.deepcopy(vm or fixture_vm()), posture="FRESH BUY")
 
 
-# Four defect-state cells (dark+light EN, 1440). Named in the README. Not
-# extra manifest pages — the visual-evidence gate requires 8 REST cells on
-# every page, and these close a fixture gap rather than a G7 subject.
+def defect_hero_reconcile_vm(vm: dict | None = None) -> dict:
+    """AGGRESSIVE playbook vs risk-off tape, with a visible headline."""
+    base = _vm_with_dial(copy.deepcopy(vm or fixture_vm()), posture="AGGRESSIVE")
+    ms = dict(base["market_state"])
+    ms["color"] = "red"
+    ms["score"] = 28
+    ms["headline_en"] = "Breadth is breaking — every boat is sinking."
+    ms["headline_zh"] = "广度破裂——所有船都在沉。"
+    base["market_state"] = ms
+    return base
+
+
+# Defect-state cells (dark+light EN, 1440). Named in the README. Not extra
+# manifest pages — the visual-evidence gate requires 8 REST cells on every
+# page, and these close a fixture gap rather than a G7 subject.
 DEFECT_CELLS: tuple[tuple[str, str, str, object], ...] = (
     ("mixed-money", "todo", '[data-ev="todo"]', defect_mixed_vm),
     ("majority-money", "todo", '[data-ev="todo"]', defect_majority_vm),
     ("worded-empty", "todo", '[data-ev="todo"]', defect_empty_vm),
     ("unknown-posture", "hero", '[data-ev="hero"]', defect_unknown_posture_vm),
+    ("hero-reconcile", "hero", '[data-ev="hero"]', defect_hero_reconcile_vm),
 )
 
 
@@ -798,7 +811,7 @@ def _capture(scratch: Path) -> dict:
 
 def _write_readme(manifest: dict) -> str:
     lines = [
-        "# China Archetype-D S1 — evidence matrix (round 4)",
+        "# China Archetype-D S1 — evidence matrix (round 5)",
         "",
         "Five L1 subjects × dark/light × EN/ZH × 1440/390.",
         "Spec G7 names this the 20-crop matrix; the product of those axes is "
@@ -816,7 +829,11 @@ def _write_readme(manifest: dict) -> str:
         "",
         "- No `_site_nav` chrome (two global nav families; this crop is the glance wrap).",
         "- No dialogs, heatmap, or stocks-mode board.",
-        "- No live quote hydration — CSI 300 / ChiNext stay at skeleton geometry.",
+        "- No live quote hydration — CSI 300 / ChiNext stay at skeleton geometry. "
+        "This is capture-time state: the fixture has no live.js quote feed, and "
+        "the template bakes those two tiles as `mx-skel` plates (`data-sym` "
+        "000300.SS / 399006.SZ). Live `site/china.html` hydrates the same plates; "
+        "they do not remain skeleton indefinitely. Intended, not a hang.",
         "- Numbers are representative (southbound +¥4.6bn / +¥46亿, events 4 of 5, "
         "pullback 87, date 2026-09-10), not that night's bake.",
         "- Sparse checkout has no `data/`; this is why the wrap is fixture-rendered.",
@@ -908,9 +925,9 @@ def _write_readme(manifest: dict) -> str:
         "## Defect-state cells",
         "",
         "The happy-path fixture pins posture NEUTRAL + three firing reasons, so it "
-        "never exercises mixed/majority/empty/unknown. These four extra cells "
-        "(dark+light EN, 1440) close that gap. They are aliases in `cells/`, not "
-        "extra G7 subjects (the visual-evidence gate still requires eight REST "
+        "never exercises mixed/majority/empty/unknown/reconcile. These five extra "
+        "cells (dark+light EN, 1440) close that gap. They are aliases in `cells/`, "
+        "not extra G7 subjects (the visual-evidence gate still requires eight REST "
         "cells on each of the five L1 subjects).",
         "",
         "| Cell | Subject | What it exercises | Aliases |",
@@ -923,6 +940,9 @@ def _write_readme(manifest: dict) -> str:
         "`defect-worded-empty-dark-en-desktop.png`, `defect-worded-empty-light-en-desktop.png` |",
         "| unknown-posture | hero | unmapped posture → cautious lane | "
         "`defect-unknown-posture-dark-en-desktop.png`, `defect-unknown-posture-light-en-desktop.png` |",
+        "| hero-reconcile | hero | AGGRESSIVE + risk-off tape; headline visible "
+        "with the reconciliation beneath | "
+        "`defect-hero-reconcile-dark-en-desktop.png`, `defect-hero-reconcile-light-en-desktop.png` |",
         "",
     ]
     return "\n".join(lines) + "\n"

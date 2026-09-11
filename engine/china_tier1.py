@@ -13,6 +13,8 @@ from __future__ import annotations
 
 import re
 
+from engine.china_playbook import MARGIN_CROWDED_PCTILE
+
 # Keys are engine.china_playbook._POSTURES. Lane words are the
 # engine.master_brain._STANCE_LAW set (Act · Get ready · Watch — don't chase ·
 # Stand aside), plus the Neutral snapshot (spec §1.4 / §3.1a). Genuinely
@@ -45,8 +47,7 @@ _POSTURE_TONE = {
     "AGGRESSIVE": "up",
 }
 
-# Matches engine.china_playbook._dial: margin crowded fires at pctile >= 85.
-MARGIN_CROWDED_PCTILE = 85
+# Producer constant (engine.china_playbook.MARGIN_CROWDED_PCTILE). Do not restate.
 _MARGIN_TOP_PCT = 100 - MARGIN_CROWDED_PCTILE  # 15
 
 _BULLISH_POSTURES = frozenset({"AGGRESSIVE", "CONSTRUCTIVE"})
@@ -64,28 +65,15 @@ _FACE_GROWTH = {
     ),
     "tip_zh": "本页历史记录中，过往增长恐慌阶段约有七成最终走高。是窗口，不是定论——每晚重新校准。",
 }
-_TIP_MONEY_UNAN_EN = (
-    "Three inputs — money supply (M2), the short-minus-long growth gap, and "
-    "total social financing — all point the same way. Counted once, as a "
-    "single monetary-conditions read."
-)
-_TIP_MONEY_UNAN_ZH = "三项输入——货币供应（M2）、剪刀差、社会融资规模——方向一致，合并为一次货币条件读数。"
-_TIP_MONEY_MAJ_EN = (
-    "Three inputs — money supply (M2), the short-minus-long growth gap, and "
-    "total social financing — most point the same way. Counted once, as a "
-    "single monetary-conditions read."
-)
-_TIP_MONEY_MAJ_ZH = "三项输入——货币供应（M2）、剪刀差、社会融资规模——多数方向一致，合并为一次货币条件读数。"
 _FACE_MONEY_MIXED = {
     "sign": "ℹ",
     "en": "Money at the central bank is mixed — no single vote yet.",
     "zh": "央行货币条件方向不一——尚无单一投票。",
     "tip_en": (
-        "Three inputs — money supply (M2), the short-minus-long growth gap, and "
-        "total social financing — do not agree. Counted once, as a single "
-        "monetary-conditions read; no net vote."
+        "The available monetary-conditions inputs do not agree. Counted once, "
+        "as a single monetary-conditions read; no net vote."
     ),
-    "tip_zh": "三项输入——货币供应（M2）、剪刀差、社会融资规模——方向不一，合并为一次货币条件读数；无净投票。",
+    "tip_zh": "可用的货币条件输入方向不一，合并为一次货币条件读数；无净投票。",
 }
 _FACE_MARGIN_CROWDED = {
     "sign": "−",
@@ -143,9 +131,19 @@ _ZH_CHAR_BUDGET = 34
 
 _LEGS_EN = re.compile(r"(\d+)\s*/\s*(\d+)\s*legs", re.I)
 _LEGS_ZH = re.compile(r"(\d+)\s*/\s*(\d+)\s*项")
+_MIXED_COUNTS_EN = re.compile(
+    r"(\d+)\s+easing\s*/\s*(\d+)\s+tightening\s*/\s*(\d+)\s+neutral",
+    re.I,
+)
 _MIXED_EN = re.compile(r"\bmixed\b|no net vote", re.I)
 _TIGHT_EN = re.compile(r"conditions\s+tightening|\btilting\s+tightening\b", re.I)
 _EASY_EN = re.compile(r"conditions\s+(?:tilting\s+)?easing", re.I)
+_CONTRAST_EN = re.compile(
+    r"^(?:but|yet|though|although|however|unless|while|not)\b",
+    re.I,
+)
+_CONTRAST_ZH = re.compile(r"^(?:但|然而|并未|尚未|却)")
+_LEAD_PUNCT = re.compile(r"^[,;:，。、；：—–\s]+")
 
 
 def posture_lane(posture: str | None) -> tuple[str, str]:
@@ -181,11 +179,27 @@ def _en_words(s: str) -> list[str]:
     return s.replace("—", " — ").replace("–", " – ").split()
 
 
+def _remainder_inverts(dropped: list[str], *, zh: bool = False) -> bool:
+    """True if a dropped segment opens with a contrastive/negating connective.
+
+    Keeping the leading clause would invert the meaning (the negation lives
+    in the dropped tail). Caller then returns worded-empty.
+    """
+    cue = _CONTRAST_ZH if zh else _CONTRAST_EN
+    for part in dropped:
+        s = _LEAD_PUNCT.sub("", (part or "").strip())
+        if s and cue.match(s):
+            return True
+    return False
+
+
 def _clamp_en(s: str, budget: int = _EN_WORD_BUDGET) -> str:
     """Keep whole clauses that fit the word budget; never amputate mid-clause.
 
     If even the first comma/em-dash/semicolon segment exceeds the budget,
-    return "" so the caller can fall back to the worded-empty face.
+    return "" so the caller can fall back to the worded-empty face. If a
+    dropped remainder opens with a contrastive connective, also return "" —
+    the surviving clause would invert the sentence.
     """
     text = (s or "").strip()
     if not text:
@@ -202,6 +216,9 @@ def _clamp_en(s: str, budget: int = _EN_WORD_BUDGET) -> str:
             break
     if not acc:
         return ""
+    dropped = parts[len(acc):]
+    if _remainder_inverts(dropped, zh=False):
+        return ""
     out = " ".join(acc).rstrip(" .,;:—–")
     if not out:
         return ""
@@ -211,7 +228,11 @@ def _clamp_en(s: str, budget: int = _EN_WORD_BUDGET) -> str:
 
 
 def _clamp_zh(s: str, budget: int = _ZH_CHAR_BUDGET) -> str:
-    """Keep whole ZH clauses that fit; never amputate mid-clause."""
+    """Keep whole ZH clauses that fit; never amputate mid-clause.
+
+    A dropped remainder that opens with 但/然而/并未/尚未/却 inverts the
+    surviving clause — return "" (worded-empty) instead.
+    """
     compact = (s or "").strip()
     if not compact:
         return ""
@@ -226,6 +247,9 @@ def _clamp_zh(s: str, budget: int = _ZH_CHAR_BUDGET) -> str:
         else:
             break
     if not acc:
+        return ""
+    dropped = parts[len(acc):]
+    if _remainder_inverts(dropped, zh=True):
         return ""
     out = "".join(acc).rstrip("，。、；：—–")
     if not out:
@@ -249,57 +273,133 @@ def _leg_counts(r_en: str, r_zh: str) -> tuple[int | None, int | None]:
     return int(m.group(1)), int(m.group(2))
 
 
-def _agree_bits(n: int | None, m: int | None) -> tuple[str, str, str, str]:
-    """Bind the agreement clause to the producer's n/m. Missing counts ≠ unanimous."""
-    unanimous = n is not None and m is not None and m > 0 and n == m
-    if unanimous:
+def _available_m(r_en: str, r_zh: str) -> int | None:
+    """Parsed input count: n/m legs, else mixed easing/tightening/neutral sum."""
+    _n, m = _leg_counts(r_en, r_zh)
+    if m is not None:
+        return m
+    hit = _MIXED_COUNTS_EN.search(r_en or "")
+    if hit:
+        return int(hit.group(1)) + int(hit.group(2)) + int(hit.group(3))
+    return None
+
+
+def _agree_level(n: int | None, m: int | None) -> str:
+    """Parsed-count agreement contract.
+
+    n==m with m>=2 → unanimous; n*2 > m and n < m (m>=2) → majority;
+    plurality that is not a majority, 1/1, and parse-fail → none.
+    """
+    if n is None or m is None or m < 2:
+        return "none"
+    if n == m:
+        return "unanimous"
+    if n * 2 > m:
+        return "majority"
+    return "none"
+
+
+def _money_tips(m: int | None, level: str) -> tuple[str, str]:
+    """Parameterize the LENS tip by parsed m. Never hardcode 'Three inputs'."""
+    if m is None or m < 1:
+        if level == "mixed":
+            return (
+                "The available monetary-conditions inputs do not agree. "
+                "Counted once, as a single monetary-conditions read; no net vote.",
+                "可用的货币条件输入方向不一，合并为一次货币条件读数；无净投票。",
+            )
         return (
-            "and every part of that read agrees.",
-            "该判读的各个部分方向一致。",
-            _TIP_MONEY_UNAN_EN,
-            _TIP_MONEY_UNAN_ZH,
+            "Counted once, as a single monetary-conditions read.",
+            "合并为一次货币条件读数。",
+        )
+    unit_en = "input" if m == 1 else "inputs"
+    head_en = f"{m} {unit_en}"
+    head_zh = f"{m}项输入"
+    if level == "unanimous":
+        return (
+            f"{head_en} — all point the same way. Counted once, as a "
+            "single monetary-conditions read.",
+            f"{head_zh}——方向一致，合并为一次货币条件读数。",
+        )
+    if level == "majority":
+        return (
+            f"{head_en} — most point the same way. Counted once, as a "
+            "single monetary-conditions read.",
+            f"{head_zh}——多数方向一致，合并为一次货币条件读数。",
+        )
+    if level == "mixed":
+        return (
+            f"{head_en} — they do not agree. Counted once, as a single "
+            "monetary-conditions read; no net vote.",
+            f"{head_zh}——方向不一，合并为一次货币条件读数；无净投票。",
         )
     return (
-        "and most of that read agrees.",
-        "该判读的多数方向一致。",
-        _TIP_MONEY_MAJ_EN,
-        _TIP_MONEY_MAJ_ZH,
+        f"{head_en} — counted once, as a single monetary-conditions read.",
+        f"{head_zh}——合并为一次货币条件读数。",
     )
 
 
+def _agree_bits(n: int | None, m: int | None) -> tuple[str, str, str, str]:
+    """Bind the agreement clause to parsed n/m. Missing or non-majority → none."""
+    level = _agree_level(n, m)
+    tip_en, tip_zh = _money_tips(m, level)
+    if level == "unanimous":
+        return (
+            "and every part of that read agrees.",
+            "该判读的各个部分方向一致。",
+            tip_en,
+            tip_zh,
+        )
+    if level == "majority":
+        return (
+            "and most of that read agrees.",
+            "该判读的多数方向一致。",
+            tip_en,
+            tip_zh,
+        )
+    return ("", "", tip_en, tip_zh)
+
+
 def _money_kind(sign: str, r_en: str, r_zh: str) -> str:
-    """Classify on producer structure: mixed → tightening → easing."""
+    """Honour an explicit +/-/i sign before free-text mixed/tight/easy regexes."""
     sig = (sign or "").strip()
+    if sig in ("+", "-", "−"):
+        return "easy" if sig == "+" else "tight"
     if sig in ("i", "ℹ") or _MIXED_EN.search(r_en) or "分歧" in r_zh or "无净投票" in r_zh:
         return "mixed"
-    if sig in ("-", "−") or _TIGHT_EN.search(r_en) or "趋紧" in r_zh:
+    if _TIGHT_EN.search(r_en) or "趋紧" in r_zh:
         return "tight"
-    if sig == "+" or _EASY_EN.search(r_en) or "趋宽" in r_zh:
+    if _EASY_EN.search(r_en) or "趋宽" in r_zh:
         return "easy"
     return "mixed"
 
 
 def _money_face(sign: str, r_en: str, r_zh: str) -> dict:
     kind = _money_kind(sign, r_en, r_zh)
+    n, m_legs = _leg_counts(r_en, r_zh)
+    m = _available_m(r_en, r_zh)
     if kind == "mixed":
-        return dict(_FACE_MONEY_MIXED)
-    n, m = _leg_counts(r_en, r_zh)
-    agree_en, agree_zh, tip_en, tip_zh = _agree_bits(n, m)
+        face = dict(_FACE_MONEY_MIXED)
+        tip_en, tip_zh = _money_tips(m, "mixed")
+        face["tip_en"] = tip_en
+        face["tip_zh"] = tip_zh
+        return face
+    agree_en, agree_zh, tip_en, tip_zh = _agree_bits(n, m_legs)
     if kind == "easy":
-        return {
-            "sign": "+",
-            "en": f"Money is getting easier at the central bank, {agree_en}",
-            "zh": f"央行层面的货币条件正在放松，{agree_zh}",
-            "tip_en": tip_en,
-            "tip_zh": tip_zh,
-        }
-    return {
-        "sign": "−",
-        "en": f"Money is getting tighter at the central bank, {agree_en}",
-        "zh": f"央行层面的货币条件正在收紧，{agree_zh}",
-        "tip_en": tip_en,
-        "tip_zh": tip_zh,
-    }
+        if agree_en:
+            en = f"Money is getting easier at the central bank, {agree_en}"
+            zh = f"央行层面的货币条件正在放松，{agree_zh}"
+        else:
+            en = "Money is tilting easier at the central bank."
+            zh = "央行层面的货币条件正在趋宽。"
+        return {"sign": "+", "en": en, "zh": zh, "tip_en": tip_en, "tip_zh": tip_zh}
+    if agree_en:
+        en = f"Money is getting tighter at the central bank, {agree_en}"
+        zh = f"央行层面的货币条件正在收紧，{agree_zh}"
+    else:
+        en = "Money is tilting tighter at the central bank."
+        zh = "央行层面的货币条件正在趋紧。"
+    return {"sign": "−", "en": en, "zh": zh, "tip_en": tip_en, "tip_zh": tip_zh}
 
 
 def _empty_face(tip_en: str = "", tip_zh: str = "") -> dict:
@@ -329,7 +429,7 @@ def _reconcile_clause(posture: str) -> tuple[str, str]:
     )
 
 
-def _face_one(item) -> dict:
+def _unpack_reason(item) -> tuple[str, str, str]:
     sign, r_en, r_zh = "", "", ""
     if isinstance(item, (list, tuple)) and len(item) >= 3:
         sign, r_en, r_zh = item[0], item[1] or "", item[2] or ""
@@ -337,6 +437,11 @@ def _face_one(item) -> dict:
         sign = item.get("sign") or ""
         r_en = item.get("en") or item.get("r_en") or ""
         r_zh = item.get("zh") or item.get("r_zh") or ""
+    return str(sign), r_en, r_zh
+
+
+def _face_one(item) -> dict:
+    sign, r_en, r_zh = _unpack_reason(item)
     if "Growth-scare" in r_en or "contrarian bottom" in r_en or "增长恐慌是实测" in r_zh:
         face = dict(_FACE_GROWTH)
     elif "PBoC monetary" in r_en or "央行货币" in r_zh:
@@ -365,16 +470,20 @@ def _face_one(item) -> dict:
 
 
 def reason_faces(reasons=None, n: int = 3) -> list[dict]:
-    """First n playbook reasons → glance faces; missing slots get §9.12 empty."""
+    """First n playbook reasons → glance faces; missing slots get §9.12 empty.
+
+    Dedupe on producer identity (sign, en, zh), not the rendered face, so two
+    distinct reasons that both clamp to worded-empty still occupy two slots
+    and a later reason is not promoted into the visible top-n.
+    """
     out: list[dict] = []
     seen: set[tuple[str, str, str]] = set()
     for item in list(reasons or []):
-        face = _face_one(item)
-        key = (face.get("en") or "", face.get("zh") or "", face.get("sign") or "")
+        key = _unpack_reason(item)
         if key in seen:
             continue
         seen.add(key)
-        out.append(face)
+        out.append(_face_one(item))
         if len(out) >= n:
             break
     while len(out) < n:
@@ -383,19 +492,26 @@ def reason_faces(reasons=None, n: int = 3) -> list[dict]:
 
 
 def hero_clause(pb: dict | None, ms: dict | None = None) -> tuple[str, str]:
-    """Plain clause under the h1. Producer headline, else playbook phase+quad."""
+    """Plain clause under the h1. Producer headline, else playbook phase+quad.
+
+    When the tape and the playbook disagree, render the headline AND the
+    reconciliation together so the clause refers to a headline the user can
+    see. No headline → no reconciliation (no dangling 'headline' referent).
+    """
     ms = ms or {}
     pb = pb or {}
     posture = ""
     dial = pb.get("dial") or {}
     if isinstance(dial, dict):
         posture = str(dial.get("posture") or "").strip()
-    if _axes_disagree(posture, ms):
-        return _reconcile_clause(posture)
     head_en = (ms.get("headline_en") or "").strip()
+    head_zh = (ms.get("headline_zh") or "").strip()
+    if _axes_disagree(posture, ms) and head_en:
+        rec_en, rec_zh = _reconcile_clause(posture)
+        zh = head_zh or EMPTY_CLAUSE[1]
+        return (f"{head_en} {rec_en}", f"{zh}{rec_zh}")
     if head_en:
-        zh = (ms.get("headline_zh") or "").strip()
-        return (head_en, zh or EMPTY_CLAUSE[1])
+        return (head_en, head_zh or EMPTY_CLAUSE[1])
     progress = pb.get("progress") or {}
     qm = pb.get("quad_meaning") or {}
     meaning_en = qm.get("en") or ""

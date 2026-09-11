@@ -25,6 +25,9 @@ from lib import config
 
 log = logging.getLogger(__name__)
 
+# Margin crowding fire. china_tier1 imports this so glance copy cannot drift.
+MARGIN_CROWDED_PCTILE = 85
+
 
 def _strip_internal_ids(s: str) -> str:
     """Remove parentheticals containing internal ruling IDs (§, SS prefix) from
@@ -152,7 +155,7 @@ def _dial(latest: dict, internals: dict) -> dict:
     # --- NON-MONETARY CONTEXT LEGS (unchanged) ---
     m = (internals or {}).get("margin")
     if m and m.get("pctile") is not None:
-        if m["pctile"] >= 85:
+        if m["pctile"] >= MARGIN_CROWDED_PCTILE:
             score -= 1
             reasons.append(("-", f"Margin leverage crowded ({m['pctile']}th percentile of float) — late-stage froth, tighten risk.",
                             f"融资杠杆拥挤（占流通市值 {m['pctile']} 分位）— 后期泡沫，收紧风险。"))

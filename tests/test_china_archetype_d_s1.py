@@ -472,41 +472,120 @@ def test_money_mixed_sentence_renders_mixed_face():
     assert "方向不一" in face["zh"]
 
 
-def test_money_majority_and_unanimous_wording():
-    """B1-b: 2/3 is majority; 3/3 is unanimity. Never claim unanimity from 2/3."""
+def test_money_parsed_count_agreement_contract():
+    """B1-b: parsed n/m contract — 1/3, 1/2, 2/3, 3/3, 1/1, no-counts."""
     from engine.china_tier1 import reason_faces
 
-    easy_23 = (
+    def face(sign, en, zh="央行货币条件趋宽。"):
+        return reason_faces([(sign, en, zh)], n=1)[0]
+
+    # 1/3 plurality, not majority — direction only, no agreement claim.
+    f_13 = face(
+        "+",
+        "PBoC monetary conditions tilting easing (1/3 legs). ONE monetary-conditions vote.",
+        "央行货币条件趋宽（1/3项指标同意）— 综合M2/剪刀差/社融的单次货币投票。",
+    )
+    assert f_13["en"] == "Money is tilting easier at the central bank."
+    assert f_13["zh"] == "央行层面的货币条件正在趋宽。"
+    assert "most of that read agrees" not in f_13["en"]
+    assert "every part of that read agrees" not in f_13["en"]
+    assert "多数方向一致" not in f_13["zh"]
+    assert "各个部分方向一致" not in f_13["zh"]
+
+    # 1/2 plurality, not majority.
+    f_12 = face(
+        "-",
+        "PBoC monetary conditions tightening (1/2 legs). ONE monetary-conditions vote.",
+        "央行货币条件趋紧（1/2项指标同意）— 综合M2/剪刀差/社融的单次货币投票。",
+    )
+    assert f_12["en"] == "Money is tilting tighter at the central bank."
+    assert f_12["zh"] == "央行层面的货币条件正在趋紧。"
+    assert "most of that read agrees" not in f_12["en"]
+    assert "every part of that read agrees" not in f_12["en"]
+
+    # 2/3 majority.
+    f_23 = face(
         "+",
         "PBoC monetary conditions tilting easing (2/3 legs). ONE monetary-conditions vote.",
         "央行货币条件趋宽（2/3项指标同意）— 综合M2/剪刀差/社融的单次货币投票。",
     )
-    tight_23 = (
-        "-",
-        "PBoC monetary conditions tightening (2/3 legs agree). ONE monetary-conditions vote.",
-        "央行货币条件趋紧（2/3项指标同意）— 综合M2/剪刀差/社融的单次货币投票。",
+    assert f_23["en"] == (
+        "Money is getting easier at the central bank, and most of that read agrees."
     )
-    tight_33 = (
+    assert "every part of that read agrees" not in f_23["en"]
+    assert "多数方向一致" in f_23["zh"]
+
+    # 3/3 unanimity (m>=2).
+    f_33 = face(
         "-",
         "PBoC monetary conditions tightening (3/3 legs agree). ONE monetary-conditions vote.",
         "央行货币条件趋紧（3/3项指标同意）— 综合M2/剪刀差/社融的单次货币投票。",
     )
-    f_e = reason_faces([easy_23], n=1)[0]
-    f_t = reason_faces([tight_23], n=1)[0]
-    f_u = reason_faces([tight_33], n=1)[0]
-    assert "easier" in f_e["en"]
-    assert "most of that read agrees" in f_e["en"]
-    assert "every part of that read agrees" not in f_e["en"]
-    assert "多数方向一致" in f_e["zh"]
-    assert "tighter" in f_t["en"]
-    assert "most of that read agrees" in f_t["en"]
-    assert "every part of that read agrees" not in f_t["en"]
-    assert "多数方向一致" in f_t["zh"]
-    assert "every part of that read agrees" in f_u["en"]
-    assert "most of that read agrees" not in f_u["en"]
-    assert "各个部分方向一致" in f_u["zh"]
-    assert "all point the same way" in f_u["tip_en"]
-    assert "all point the same way" not in f_t["tip_en"]
+    assert f_33["en"] == (
+        "Money is getting tighter at the central bank, and every part of that read agrees."
+    )
+    assert "most of that read agrees" not in f_33["en"]
+    assert "各个部分方向一致" in f_33["zh"]
+
+    # 1/1: n==m but m<2 — no agreement claim.
+    f_11 = face(
+        "+",
+        "PBoC monetary conditions tilting easing (1/1 legs). ONE monetary-conditions vote.",
+        "央行货币条件趋宽（1/1项指标同意）— 综合M2/剪刀差/社融的单次货币投票。",
+    )
+    assert f_11["en"] == "Money is tilting easier at the central bank."
+    assert "most of that read agrees" not in f_11["en"]
+    assert "every part of that read agrees" not in f_11["en"]
+
+    # Parse-fail / missing counts — direction only.
+    f_nc = face(
+        "+",
+        "PBoC monetary conditions easing. ONE monetary-conditions vote.",
+        "央行货币条件趋宽。",
+    )
+    assert f_nc["en"] == "Money is tilting easier at the central bank."
+    assert "most of that read agrees" not in f_nc["en"]
+    assert "every part of that read agrees" not in f_nc["en"]
+
+
+def test_money_tips_parameterized_by_m():
+    """MAJOR-2: 1/1 and 2/2 tips name m, never 'Three inputs'."""
+    from engine.china_tier1 import reason_faces
+
+    f_11 = reason_faces([
+        ("+",
+         "PBoC monetary conditions tilting easing (1/1 legs). ONE monetary-conditions vote.",
+         "央行货币条件趋宽（1/1项指标同意）。"),
+    ], n=1)[0]
+    assert "Three inputs" not in f_11["tip_en"]
+    assert "三项输入" not in f_11["tip_zh"]
+    assert "1 input" in f_11["tip_en"]
+    assert "1项输入" in f_11["tip_zh"]
+    assert "all point the same way" not in f_11["tip_en"]
+    assert "three inputs agree" not in f_11["tip_en"].lower()
+
+    f_22 = reason_faces([
+        ("+",
+         "PBoC monetary conditions easing (2/2 legs agree). ONE monetary-conditions vote.",
+         "央行货币条件趋宽（2/2项指标同意）。"),
+    ], n=1)[0]
+    assert f_22["en"] == (
+        "Money is getting easier at the central bank, and every part of that read agrees."
+    )
+    assert "Three inputs" not in f_22["tip_en"]
+    assert "三项输入" not in f_22["tip_zh"]
+    assert "2 inputs" in f_22["tip_en"]
+    assert "2项输入" in f_22["tip_zh"]
+    assert "all point the same way" in f_22["tip_en"]
+
+    f_mix = reason_faces([
+        ("i",
+         "PBoC monetary conditions mixed (1 easing / 1 tightening / 0 neutral) — no net vote.",
+         "央行货币条件分歧 — 无净投票。"),
+    ], n=1)[0]
+    assert "Three inputs" not in f_mix["tip_en"]
+    assert "2 inputs" in f_mix["tip_en"]
+    assert "do not agree" in f_mix["tip_en"]
 
 
 def test_clamp_does_not_amputate_unless_policy():
@@ -534,13 +613,41 @@ def test_clamp_does_not_amputate_unless_policy():
     assert "sawn" not in kept
 
 
+def test_clamp_contrastive_remainder_is_worded_empty():
+    """MAJOR-3: dropping a 'but/yet/…' tail inverts meaning — whole face empty."""
+    from engine.china_tier1 import EMPTY_REASON, _clamp_en, _clamp_zh, reason_faces
+
+    probe = (
+        "The rebound looks broad across every single mainland exchange and every "
+        "major sector board today, but it is not at all confirmed by southbound money."
+    )
+    assert _clamp_en(probe) == ""
+    zh_probe = (
+        "反弹看起来覆盖每一家内地交易所和每一个主要板块，"
+        "但并未得到南向资金的任何确认。"
+    )
+    assert _clamp_zh(zh_probe) == ""
+    face = reason_faces([("+", probe, zh_probe)], n=1)[0]
+    assert face["empty"] is True
+    assert face["en"] == EMPTY_REASON["en"]
+    assert "rebound looks broad" not in face["en"]
+    yet = (
+        "Southbound money is buying aggressively and mainland desks are adding "
+        "index exposure, yet policy support has not been confirmed by the tape "
+        "this session."
+    )
+    assert _clamp_en(yet) == ""
+
+
 def test_margin_crowded_band_matches_producer_threshold():
-    """M-e: glance copy tracks china_playbook's pctile >= 85 fire, not 'top tenth'."""
+    """M-e / MINOR-6: glance copy imports china_playbook.MARGIN_CROWDED_PCTILE."""
+    from engine.china_playbook import MARGIN_CROWDED_PCTILE as PLAYBOOK_MARGIN
     from engine.china_tier1 import MARGIN_CROWDED_PCTILE, reason_faces
 
     assert MARGIN_CROWDED_PCTILE == 85
+    assert MARGIN_CROWDED_PCTILE == PLAYBOOK_MARGIN
     src = (ROOT / "engine" / "china_playbook.py").read_text(encoding="utf-8")
-    assert 'm["pctile"] >= 85' in src
+    assert "m[\"pctile\"] >= MARGIN_CROWDED_PCTILE" in src
     face = reason_faces([
         ("-", "Margin leverage crowded (90th percentile of float) — late-stage froth, tighten risk.",
          "融资杠杆拥挤（占流通市值 90 分位）— 后期泡沫，收紧风险。"),
@@ -588,7 +695,7 @@ def test_hero_clause_zh_does_not_fall_back_to_english():
 
 
 def test_hero_clause_reconciles_disagreement():
-    """m-j: AGGRESSIVE under a red tape names the Act stance in the clause."""
+    """m-j: AGGRESSIVE under a red tape keeps the headline AND names Act."""
     from engine.china_tier1 import hero_clause
 
     pb = {"dial": {"posture": "AGGRESSIVE"}, "progress": {}, "quad_meaning": {}}
@@ -598,10 +705,35 @@ def test_hero_clause_reconciles_disagreement():
         "headline_zh": "广度破裂——所有船都在沉。",
     }
     en, zh = hero_clause(pb, ms)
+    assert en.startswith("Breadth is breaking — every boat is sinking.")
     assert "Act" in en
     assert "行动" in zh
     assert "disagree" in en
-    assert "Breadth is breaking" not in en
+    assert "广度破裂" in zh
+    assert en.index("Breadth is breaking") < en.index("Act")
+
+
+def test_hero_clause_reconcile_requires_headline():
+    """MAJOR-4 C2: disagreement without a headline does not dangle 'headline'."""
+    from engine.china_tier1 import EMPTY_CLAUSE, _MID_SCARE_CLAUSE, hero_clause
+
+    pb = {
+        "dial": {"posture": "AGGRESSIVE"},
+        "progress": {"phase": "mid"},
+        "quad_meaning": {
+            "en": "Growth-scare — both growth and prices falling, fear peaking.",
+            "zh": "增长恐慌 — 增长与物价齐跌、恐慌见顶。",
+        },
+    }
+    ms = {"color": "red", "headline_en": "", "headline_zh": ""}
+    en, zh = hero_clause(pb, ms)
+    assert en == _MID_SCARE_CLAUSE[0]
+    assert "headline" not in en.lower()
+    assert "disagree" not in en
+    empty_pb = {"dial": {"posture": "AGGRESSIVE"}, "progress": {}, "quad_meaning": {}}
+    en2, zh2 = hero_clause(empty_pb, ms)
+    assert (en2, zh2) == EMPTY_CLAUSE
+    assert "headline" not in en2.lower()
 
 
 def test_duplicate_reasons_dedupe():
@@ -615,6 +747,53 @@ def test_duplicate_reasons_dedupe():
     assert sum(1 for f in faces if not f.get("empty")) == 1
     assert sum(1 for f in faces if f.get("empty")) == 2
     assert faces[1]["en"] == EMPTY_REASON["en"]
+
+
+def test_dedupe_does_not_promote_fourth_over_distinct_empties():
+    """NIT-7: two distinct worded-empty reasons occupy two slots; 4th stays out."""
+    from engine.china_tier1 import EMPTY_REASON, reason_faces
+
+    long_a = (
+        "The rebound looks broad across every single mainland exchange and every "
+        "major sector board today, but it is not at all confirmed by southbound money."
+    )
+    long_b = (
+        "Southbound money is buying aggressively and mainland desks are adding "
+        "index exposure, yet policy support has not been confirmed by the tape "
+        "this session."
+    )
+    zh_a = "反弹看起来覆盖每一家内地交易所和每一个主要板块，但并未得到南向资金的任何确认。"
+    zh_b = "南向资金在积极买入而且内地席位还在继续加仓指数敞口，然而政策支持尚未被盘面确认。"
+    fourth = (
+        "+",
+        "Southbound buying strong — mainland money leaning risk-on.",
+        "南向资金大幅净买入 — 内地资金偏向风险偏好。",
+    )
+    faces = reason_faces(
+        [("+", long_a, zh_a), ("+", long_b, zh_b), fourth, ("-", "other", "其他")],
+        n=3,
+    )
+    assert faces[0]["empty"] is True
+    assert faces[1]["empty"] is True
+    assert faces[0]["en"] == EMPTY_REASON["en"]
+    assert faces[1]["en"] == EMPTY_REASON["en"]
+    assert "Southbound buying strong" in faces[2]["en"] or "Southbound" in faces[2]["en"]
+    assert "other" not in faces[2]["en"]
+
+
+def test_explicit_sign_outranks_mixed_regex():
+    """MINOR-5: sign '-' beats an unanchored 'mixed' later in the sentence."""
+    from engine.china_tier1 import reason_faces
+
+    face = reason_faces([
+        ("-",
+         "PBoC monetary conditions tightening (2/3 legs agree). mixed signals elsewhere",
+         "央行货币条件趋紧（2/3项指标同意）。"),
+    ], n=1)[0]
+    assert face["sign"] == "−"
+    assert "tighter" in face["en"]
+    assert "no single vote" not in face["en"]
+    assert "mixed — no single vote" not in face["en"]
 
 
 def test_mobile_dial_clips_overflow():
@@ -633,7 +812,7 @@ def test_docstring_cites_real_stance_precedent():
 
 
 def test_defect_state_cells_named_in_readme():
-    """Evidence gap: README names the four defect-state cells."""
+    """Evidence gap: README names the defect-state cells including hero-reconcile."""
     from scripts.capture_china_archetype_d_evidence import DEFECT_CELLS
 
     readme = (ROOT / "mockups" / "evidence" / "china-archetype-d" / "README.md").read_text(
@@ -641,6 +820,14 @@ def test_defect_state_cells_named_in_readme():
     )
     assert "Defect-state cells" in readme
     names = {row[0] for row in DEFECT_CELLS}
-    assert names == {"mixed-money", "majority-money", "worded-empty", "unknown-posture"}
+    assert names == {
+        "mixed-money",
+        "majority-money",
+        "worded-empty",
+        "unknown-posture",
+        "hero-reconcile",
+    }
     for name in names:
         assert name in readme
+    assert "defect-hero-reconcile-dark-en-desktop.png" in readme
+    assert "defect-hero-reconcile-light-en-desktop.png" in readme
