@@ -17,7 +17,7 @@
         "E    +  and   datetime.date(2026, 9, 8) = date(2026, 9, 8)",
         "=========================== short test summary info ============================",
         "FAILED tests/test_rotation_persistence_metrics.py::test_nth_session_after_uses_exchange_sessions_not_calendar_days",
-        "1 failed in 0.82s"
+        "1 failed in 0.77s"
       ],
       "target_test": "tests/test_rotation_persistence_metrics.py::test_nth_session_after_uses_exchange_sessions_not_calendar_days"
     },
@@ -34,7 +34,7 @@
         "E   assert 2 == 1",
         "=========================== short test summary info ============================",
         "FAILED tests/test_rotation_persistence_metrics.py::test_build_surface_uses_exact_endpoint_dates_and_does_not_forward_fill",
-        "1 failed in 0.37s"
+        "1 failed in 0.36s"
       ],
       "target_test": "tests/test_rotation_persistence_metrics.py::test_build_surface_uses_exact_endpoint_dates_and_does_not_forward_fill"
     },
@@ -76,7 +76,7 @@
         "E     Use -v to get more diff",
         "=========================== short test summary info ============================",
         "FAILED tests/test_rotation_persistence_cli.py::test_cli_writes_strict_result_and_markdown",
-        "1 failed in 1.63s"
+        "1 failed in 1.56s"
       ],
       "target_test": "tests/test_rotation_persistence_cli.py::test_cli_writes_strict_result_and_markdown"
     },
@@ -101,11 +101,11 @@
   ],
   "notes": [
     "Each mutation ran in an isolated temporary copy; the source worktree was not modified.",
-    "Exit code 1 with the named targeted pytest failure is the expected successful mutation-kill receipt.",
-    "The earlier harness attempt that omitted contracts.py produced collection errors and is superseded by this complete rerun."
+    "Exit code 1 with the named targeted pytest failure is the expected successful mutation-kill receipt."
   ],
-  "observed_at": "2026-09-11T04:06:35Z",
+  "observed_at": "2026-09-11T04:12:03Z",
   "operation_key": "leadership-persistence-rph0-20260910-sol-001",
   "schema_version": "research.rotation_persistence.mutation_self_review.v1",
-  "source_head": "9b1890901a16281635c4feea2a2dbae79c56aa9e"
+  "source_head": "254641cbbe2017bd57e2ae7018417b42964cf956",
+  "source_tree": "d9284540feec918533615dbc94a35ed17c37a7cc"
 }

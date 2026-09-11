@@ -22,16 +22,17 @@ owns_paths:
   - docs/superpowers/plans/2026-09-10-leadership-persistence-rph0.md
   - agentos/workstreams/WS-LEADERSHIP-PERSISTENCE-INTELLIGENCE.md
   - agentos/decisions/DEC-LEADERSHIP-PERSISTENCE-*.md
+  - agentos/handoffs/LEADERSHIP-PERSISTENCE-INTELLIGENCE-*.md
 decisions:
   - DEC:LEADERSHIP-PERSISTENCE-CROSS-OWNER-BOUNDARY
 waves:
   - id: RPH0
     title: Frozen published-output persistence, transition and leader-residency harness
-    status: in_progress
+    status: awaiting_ci
     next_action: >
-      Finish current-base reconciliation, exact-head tests, Agent OS validation, Draft/HOLD source
-      publication and independent review on the existing sol/rotation-persistence-rph0-20260910
-      carrier. Keep all authority false and retain the structural-unestimability receipt.
+      Review exact Draft/HOLD PR #7064 after final record-head CI, hosted contract-delta and
+      independent adversarial review conclude. Keep all authority false, preserve the structurally
+      unestimable temporal-shape receipt and do not merge or project into a product in this wave.
   - id: RPH1
     title: Separately preregistered estimable-window and deeper point-in-time stratification
     status: todo
@@ -62,10 +63,13 @@ artifacts:
   - research/rotation_persistence/results/result.json
   - research/rotation_persistence/results/report.md
   - research/rotation_persistence/evidence/open_pr_path_census_2026-09-11.json
+  - research/rotation_persistence/evidence/mutation_self_review_2026-09-11.json
+  - research/rotation_persistence/evidence/verification_2026-09-11.json
   - docs/superpowers/plans/2026-09-10-leadership-persistence-rph0.md
 next_action: >
-  Complete the current RPH0 source publication and exact-head acceptance on its one existing carrier;
-  then preregister RPH1 without changing or relabelling the frozen RPH0 result.
+  Complete hosted exact-head CI, contract-delta and independent review for Draft/HOLD PR #7064;
+  preserve the source and records on the same branch. Only after accepted RPH0 review may a separate
+  preregistered RPH1 be designed without changing or relabelling the frozen RPH0 result.
 ---
 
 ## Owner boundary

@@ -1,0 +1,94 @@
+{
+  "authority": {
+    "is_context_only": true,
+    "may_gate": false,
+    "may_modify_oracle": false,
+    "may_modify_prophet": false,
+    "may_rank": false,
+    "may_size": false,
+    "may_trade": false
+  },
+  "branch": "sol/rotation-persistence-rph0-20260910",
+  "checks": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /Users/chriswong/lanes/venv/bin/python -m pytest tests/test_rotation_persistence_archive.py tests/test_rotation_persistence_metrics.py tests/test_rotation_persistence_survival.py tests/test_rotation_persistence_cli.py -q --tb=short -p no:cacheprovider",
+      "name": "focused_rph0_suite",
+      "result": "50 passed in 6.01s",
+      "state": "PASS",
+      "subject_head": "254641cbbe2017bd57e2ae7018417b42964cf956"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /usr/bin/python3 /tmp/rph0_mutation_runner.py",
+      "evidence_path": "research/rotation_persistence/evidence/mutation_self_review_2026-09-11.json",
+      "name": "mutation_self_review",
+      "result": "5 of 5 false-green mutations killed by the named targeted tests",
+      "state": "PASS",
+      "subject_head": "254641cbbe2017bd57e2ae7018417b42964cf956"
+    },
+    {
+      "command": "run the frozen CLI twice with produced_at=2026-09-10T21:00:00Z and cmp both outputs",
+      "name": "deterministic_real_archive_output",
+      "result": {
+        "report_sha256": "15e5c9142257a96cd44df3bd5542787e9a735e5a4bfe7a77b877e5f57b433c1c",
+        "result_sha256": "eb6eaa16896c1582e6e8b1c6cb9d8fc03cd30cc69f145156fab2228749286b19"
+      },
+      "state": "PASS",
+      "subject_head": "254641cbbe2017bd57e2ae7018417b42964cf956"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /Users/chriswong/lanes/venv/bin/python scripts/agentos.py validate",
+      "name": "agentos_validate_before_final_handoff_commit",
+      "result": "1094 records; 0 errors; 46 warnings after adding the handoff and workstream update",
+      "state": "PASS"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /Users/chriswong/lanes/venv/bin/python scripts/check_trial_registration.py",
+      "name": "trial_registration",
+      "result": "no new unregistered multiple-testing harness; 33 grandfathered",
+      "state": "PASS",
+      "subject_head": "254641cbbe2017bd57e2ae7018417b42964cf956"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /Users/chriswong/lanes/venv/bin/python scripts/run_ci_pack.py --workflow .github/ci/legacy-jobs.yml --validate-only --changed-from origin/main",
+      "name": "ci_manifest_validate_only_pre_record_update",
+      "result": "212 legacy jobs validated; 136 in scope for the then-current 19-path diff; selected pack 0 with 67 jobs",
+      "state": "PASS",
+      "subject_head": "254641cbbe2017bd57e2ae7018417b42964cf956"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /Users/chriswong/lanes/venv/bin/python scripts/check_contract_delta.py --base origin/main",
+      "name": "local_contract_delta",
+      "next_proof": "normal hosted exact-head contract-delta on PR 7064",
+      "reconciliation": "the script cleanup completed; no contract-delta-base temp directory, process or registered worktree remained; source worktree stayed clean",
+      "result": "full detached base checkout hit ENOSPC while materializing the large parquet estate with approximately 6.7 GiB free",
+      "state": "INFRASTRUCTURE_BLOCKED_NO_SEMANTIC_VERDICT",
+      "subject_head": "254641cbbe2017bd57e2ae7018417b42964cf956"
+    }
+  ],
+  "notes": [
+    "A local infrastructure refusal is neither a contract-delta pass nor a candidate failure.",
+    "No Ready, merge, deployment or product projection is authorized by this receipt."
+  ],
+  "operation_key": "leadership-persistence-rph0-20260910-sol-001",
+  "pending": [
+    "fresh final-record-head Agent OS focused suite",
+    "fresh final-record-head CI manifest selection",
+    "hosted exact-head CI including contract-delta",
+    "independent exact-head semantic and statistical review"
+  ],
+  "pr_number": 7064,
+  "protected_procedure": {
+    "bootstrap_major": 1,
+    "commit": "797cfd0b1001d9dfe6fe9030af80ecdab0e1220d",
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "skillpack_version": "1.0.1"
+  },
+  "recorded_at": "2026-09-11T04:14:49Z",
+  "repository": "mastermindx-market-intelligence/macro",
+  "schema_version": "research.rotation_persistence.verification.v1",
+  "source_subject": {
+    "base": "1f8eeab603fc37def47e1cfc6f7f3788c0300ad3",
+    "head": "254641cbbe2017bd57e2ae7018417b42964cf956",
+    "tree": "d9284540feec918533615dbc94a35ed17c37a7cc"
+  }
+}
