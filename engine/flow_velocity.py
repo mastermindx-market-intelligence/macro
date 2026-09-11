@@ -156,6 +156,7 @@ def _kinetics(flow: pd.Series, cfg: dict, vin: float = 0.5, vout: float = -0.5,
     if len(flow) < cfg["min_obs"]:
         return None
     # causal (point-in-time) offset removal — never a full-sample mean
+    raw = flow
     dm = cfg.get("demean")
     if dm:
         dm = min(dm, max(30, len(flow) // 2))
@@ -181,7 +182,12 @@ def _kinetics(flow: pd.Series, cfg: dict, vin: float = 0.5, vout: float = -0.5,
         a = indicators.rolling_slope(vser, cfg["accel_w"]).iloc[-1]
         accel = float(a) if a is not None and np.isfinite(a) else np.nan
     vmid = vel.get(cfg["primary"])
-    en, zh = _classify(vmid, accel, vin, vout)
+    abs_last = None
+    if len(raw) >= pw:
+        _am = raw.rolling(pw, min_periods=pw).mean()
+        if len(_am) and np.isfinite(_am.iloc[-1]):
+            abs_last = float(_am.iloc[-1])
+    en, zh = _classify(vmid, accel, vin, vout, abs_value=abs_last)
     return {"vel": vel, "vel_primary": vmid, "primary": cfg["primary"],
             "accel": round(accel, 3) if np.isfinite(accel) else None,
             "state": en, "state_zh": zh, "n": int(len(flow))}
@@ -240,8 +246,9 @@ def _kinetics_series(flow: pd.Series, cfg: dict, vin: float = 0.5, vout: float =
     # paths agree everywhere `_kinetics` itself would, boundary sessions included —
     # tests/test_flow_velocity.py's parity test pins this against the same threshold.
     vel_for_classify = vser.round(2)
-    states = [_classify(v if pd.notna(v) else None, a if pd.notna(a) else 0.0, vin, vout)
-             for v, a in zip(vel_for_classify, out["accel"])]
+    states = [_classify(v if pd.notna(v) else None, a if pd.notna(a) else 0.0, vin, vout,
+                        abs_value=(ar if pd.notna(ar) else None))
+             for v, a, ar in zip(vel_for_classify, out["accel"], out["abs_rate"])]
     out["state_en"] = [s[0] for s in states]
     out["state_zh"] = [s[1] for s in states]
     return out
@@ -250,7 +257,8 @@ def _kinetics_series(flow: pd.Series, cfg: dict, vin: float = 0.5, vout: float =
 kinetics_series = _kinetics_series
 
 
-def _classify(vel: float | None, accel: float, vin: float = 0.5, vout: float = -0.5) -> tuple[str, str]:
+def _classify(vel: float | None, accel: float, vin: float = 0.5, vout: float = -0.5,
+              abs_value: float | None = None) -> tuple[str, str]:
     """Direction (velocity sign) × momentum-of-direction (acceleration sign).
 
     Vocabulary v2 (masterplan §6 — replaces the old "accelerating in"/"outflow easing"
@@ -266,6 +274,9 @@ def _classify(vel: float | None, accel: float, vin: float = 0.5, vout: float = -
     DEC-FLOW-OBSERVATORY-V2-W5-METHOD-SELECTION — the R1 names tau=0.3 selection was
     computed on the breadth-tilt state series and misapplied to this per-name surface,
     breaching the frozen 25% neutral floor; withdrawn).
+
+    `abs_value` binds the easing word to the absolute direction (M-j): a net-buyer
+    whose relative pace is fading is "buying slowing", never "selling easing".
     """
     if vel is None or not np.isfinite(vel):
         return "no data", "无数据"
@@ -273,7 +284,11 @@ def _classify(vel: float | None, accel: float, vin: float = 0.5, vout: float = -
     if vel >= vin:
         return ("above norm, rising", "高于常态·升温") if a > 0 else ("above norm, cooling", "高于常态·降温")
     if vel <= vout:
-        return ("below norm, worsening", "低于常态·加剧") if a < 0 else ("below norm, easing", "低于常态·趋缓")
+        if a < 0:
+            return ("below norm, worsening", "低于常态·加剧")
+        if abs_value is not None and np.isfinite(abs_value) and abs_value > 0:
+            return ("buying slowing", "买入放缓")
+        return ("selling easing", "卖出趋缓")
     return ("near its norm", "接近常态")
 
 
@@ -615,8 +630,8 @@ def ashare_sector_velocity(wide: pd.DataFrame | None = None, kmap: dict | None =
     n_unscored = max(0, len(mem["baskets"]) - len(rows))
     return {"cadence": "daily", "as_of": str(wide.index.max().date()),
             "n": len(rows), "n_unscored": n_unscored, "primary": _WK["primary"],
-            "note": "Per-sector big-money flow = equal-weight member main-money net-rate, ranked by 4-week velocity vs the sector's own trailing norm. Expand a sector for its biggest-moving member names.",
-            "note_zh": "板块主力资金＝等权成分股主力净占比，按4周流速（相对板块自身常态）排序。展开板块查看流向最强的成分股。",
+            "note": "Equal-weight large-order pressure across the curated theme set — not official sectors.",
+            "note_zh": "精选主题等权主力大单压力——非官方行业分类。",
             "rows": rows}
 
 

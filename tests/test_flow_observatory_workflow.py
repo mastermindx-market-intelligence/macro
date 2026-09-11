@@ -21,7 +21,6 @@ after temporarily blanking ``REPLAY_CAPTION_LEAD_EN``/``_ZH`` in
 from __future__ import annotations
 
 import re
-import subprocess
 
 import numpy as np
 import pandas as pd
@@ -729,40 +728,14 @@ def test_w7_beacon_indifference_call_site_is_defensively_wrapped():
 
 
 def test_w7_no_banned_vocabulary_and_visible_text_is_byte_identical_to_pre_w7():
-    """spec §3 test 5: no banned vocabulary introduced; EN/ZH untouched — this wave adds
-    no visible copy, so the rendered page's VISIBLE TEXT (tags and <script> blocks
-    stripped) must be byte-identical to the pre-W7 committed template
-    (fa48c606c33c — the commit that landed the frozen spec, immediately before this
-    wave's implementation), rendered against the identical fixture."""
-    from jinja2 import ChoiceLoader, DictLoader
-
+    """spec §3 test 5: no banned vocabulary introduced. The original W7 pin also
+    required visible text byte-identical to fa48c606c33c (telemetry-only wave).
+    Later copy heals (W13 r1) change visible text by design — the identity half
+    is retired; banned-vocab still binds."""
     v2 = _v2_with_everything()
     html_new = _render(v2, known_tickers={"600104.SS"})
     for bad in BANNED_VOCAB:
         assert bad not in html_new, f"banned vocabulary {bad!r} in the W7-instrumented page"
-
-    old_src = subprocess.run(
-        ["git", "show", "fa48c606c33c:templates/flow_velocity.html.j2"],
-        cwd=ROOT, capture_output=True, text=True, check=True,
-    ).stdout
-    env_old = Environment(
-        loader=ChoiceLoader([DictLoader({"flow_velocity.html.j2": old_src}), FileSystemLoader(str(TMPL))]),
-        autoescape=True,
-    )
-    env_old.globals.update(td=i18n.td, tr=i18n.tr, quadrant_labels=QUADRANT_LABELS,
-                           status_word=STATUS_WORD, terminal_link=wf.terminal_link)
-    html_old = env_old.get_template("flow_velocity.html.j2").render(
-        C=C, snap=v2, built="test", known_tickers={"600104.SS"})
-
-    def _visible_text(h: str) -> str:
-        h = re.sub(r"<script\b.*?</script>", "", h, flags=re.S)
-        h = re.sub(r"<[^>]+>", "\n", h)
-        return re.sub(r"\s+", " ", h).strip()
-
-    assert _visible_text(html_new) == _visible_text(html_old), (
-        "W7 changed the page's visible text — this wave is telemetry-only "
-        "(data-ev attributes + a new <script> block), never a copy change"
-    )
 
 
 # ═══════════════ W7 repair round (PR #6815 independent review, B1-B4/N1-N3) ═══════════
@@ -852,7 +825,7 @@ def test_w7_aggregate_row_carries_data_cmp_lens_aggregate():
         "outflow": [],
     })
     html = _render(v2, known_tickers={"600104.SS"})
-    row = re.search(r'<tr class="sector-row allnames open"[^>]*>', html)
+    row = re.search(r'<tr class="sector-row allnames"[^>]*>', html)
     assert row, "the __all__ (aggregate) row did not render — fixture needs ashare_names.inflow/outflow"
     assert 'data-cmp-lens="aggregate"' in row.group(0), (
         f"__all__ row missing data-cmp-lens=\"aggregate\": {row.group(0)}"

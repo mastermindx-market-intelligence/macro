@@ -22,14 +22,21 @@ SCHEMA = "flow_observatory.v2"
 AUTHORITY = "context_only"
 
 # ── quadrant enum — masterplan §6 table, EXACT strings (language law) ─────────────────
+# B1: the near-norm band reuses VOCAB_V2["balanced"] ("near its norm"/"接近常态")
+# inside a quiet wrapper; a genuinely-unknown read is a SEPARATE key mapped to
+# VOCAB_V2["n/a"] so "quiet — near its norm" and "insufficient coverage" can
+# never fuse again. Coverage-floor groups still render the dedicated
+# "insufficient coverage" chip — they must not borrow either of these labels.
 QUADRANT_LABELS: dict[str, tuple[str, str]] = {
     "true_accumulation": ("real inflow, above norm", "真实流入·高于常态"),
     "improving_but_still_selling": ("still selling, pressure easing", "仍净流出·压力改善"),
     "weakening_but_still_buying": ("still buying, pace fading", "仍净流入·动能转弱"),
     "true_distribution": ("real outflow, below norm", "真实流出·低于常态"),
-    "neutral_or_unknown": ("quiet / insufficient data", "平静 / 数据不足"),
+    "neutral_or_unknown": ("quiet — near its norm", "平静·接近常态"),
+    "unknown": ("no data", "无数据"),
 }
 NEUTRAL_OR_UNKNOWN = "neutral_or_unknown"
+UNKNOWN = "unknown"
 
 # relative-axis vocabulary v2 — masterplan §6 table (replaces engine :147-156's absolute
 # words on a relative measure). Keys are the OLD strings so a migration/mutation check can
@@ -38,7 +45,7 @@ VOCAB_V2: dict[str, tuple[str, str]] = {
     "accelerating in": ("above norm, rising", "高于常态·升温"),
     "inflow cooling": ("above norm, cooling", "高于常态·降温"),
     "accelerating out": ("below norm, worsening", "低于常态·加剧"),
-    "outflow easing": ("below norm, easing", "低于常态·趋缓"),
+    "outflow easing": ("selling easing", "卖出趋缓"),
     "balanced": ("near its norm", "接近常态"),
     "n/a": ("no data", "无数据"),
 }
@@ -49,6 +56,8 @@ _ACCEL_BUCKET: dict[str, str] = {
     "above norm, cooling": "cooling",
     "below norm, worsening": "worsening",
     "below norm, easing": "easing",
+    "selling easing": "easing",
+    "buying slowing": "easing",
     "near its norm": NEUTRAL_OR_UNKNOWN,
     "no data": NEUTRAL_OR_UNKNOWN,
 }
@@ -106,11 +115,15 @@ def rel_direction(vel: float | None, thresh: float = REL_THRESH) -> str:
 def quadrant(abs_dir: str, rel_dir: str, sufficient: bool = True) -> str:
     """abs_dir/rel_dir in {positive,negative,neutral,unknown} -> the quadrant enum.
 
-    ``sufficient=False``, either axis ``unknown``, or either axis ``neutral`` all fall to
-    ``neutral_or_unknown`` — the honest neutral band (spec §1.2): a near-threshold or
-    partially-missing read must never be forced into one of the four "loud" quadrants.
+    ``sufficient=False`` or either axis ``unknown`` → ``unknown`` ("no data") — a
+    genuinely missing read, never the near-norm band. Either axis ``neutral`` →
+    ``neutral_or_unknown`` ("quiet — near its norm"). A near-threshold or
+    partially-missing read must never be forced into one of the four "loud"
+    quadrants, and the two quiet states must never share a label (B1).
     """
-    if not sufficient or abs_dir in ("unknown", "neutral") or rel_dir in ("unknown", "neutral"):
+    if not sufficient or abs_dir == "unknown" or rel_dir == "unknown":
+        return UNKNOWN
+    if abs_dir == "neutral" or rel_dir == "neutral":
         return NEUTRAL_OR_UNKNOWN
     if abs_dir == "positive" and rel_dir == "positive":
         return "true_accumulation"
@@ -120,7 +133,7 @@ def quadrant(abs_dir: str, rel_dir: str, sufficient: bool = True) -> str:
         return "weakening_but_still_buying"
     if abs_dir == "negative" and rel_dir == "negative":
         return "true_distribution"
-    return NEUTRAL_OR_UNKNOWN                     # unreachable with the 4 known dirs; fail safe
+    return UNKNOWN                                # unreachable with the 4 known dirs; fail safe
 
 
 def quadrant_labels(q: str) -> tuple[str, str]:
@@ -239,7 +252,7 @@ SOURCE_META: dict[str, dict[str, str]] = {
 
 _STATE_WORDS = {
     "current": ("current", "最新"),
-    "expected_lag": ("expected T−1", "预期T−1"),
+    "expected_lag": ("normally one session behind by design", "按设计通常滞后一个交易日"),
     # {date} is substituted by the caller (build_sources) with the leg's own effective_date.
     "behind": ("behind — showing {date} data", "滞后 · 显示{date}数据"),
     # S9: a coverage-collapse DEGRADED (gap_sessions == 0 — the leg IS today's date, just
@@ -363,15 +376,23 @@ def _parse_date(value):
         return None
 
 
-def _coverage_line(coverage: dict[str, Any]) -> str:
+def _coverage_line(coverage: dict[str, Any]) -> tuple[str, str]:
+    """Bilingual coverage figure with nouns (M-e). Never a bare ``1,521 · 84.3%``.
+
+    Returns ``(en, zh)``; a missing observation is the em-dash in both lanes.
+    """
     n_obs, n_sized, pct = coverage.get("n_observed"), coverage.get("n_sized"), coverage.get("pct_names")
     if n_obs is None:
-        return "—"
+        return "—", "—"
     if n_sized is not None:
-        return f"{n_obs:,} ({n_sized:,} sized)"
+        return (f"{n_obs:,} names ({n_sized:,} sized)",
+                f"{n_obs:,}只（{n_sized:,}只有规模）")
     if pct is not None:
-        return f"{n_obs:,} · {pct:g}%"
-    return f"{n_obs:,}"
+        return (f"{n_obs:,} names · {pct:g}% coverage",
+                f"{n_obs:,}只已评分 · 覆盖率{pct:g}%")
+    if n_obs == 1:
+        return "1 name", "1只"
+    return f"{n_obs:,} names", f"{n_obs:,}只"
 
 
 def _source_leg(source_id: str, *, provider: str, market: str, effective_date: str | None,
@@ -395,6 +416,7 @@ def _source_leg(source_id: str, *, provider: str, market: str, effective_date: s
         tip_en = f"{tip_en} {suf_en}".strip()
     if suf_zh:
         tip_zh = f"{tip_zh} {suf_zh}".strip()
+    cov_en, cov_zh = _coverage_line(coverage)
     return {
         "source_id": source_id, "source_kind": source_kind, "provider": provider,
         "market": market, "effective_date": effective_date,
@@ -404,7 +426,7 @@ def _source_leg(source_id: str, *, provider: str, market: str, effective_date: s
         "revised": revised, "ui_state": ui_state,
         "name_en": meta.get("name_en", source_id), "name_zh": meta.get("name_zh", source_id),
         "tip_en": tip_en, "tip_zh": tip_zh,
-        "coverage_line": _coverage_line(coverage),
+        "coverage_line": cov_en, "coverage_line_en": cov_en, "coverage_line_zh": cov_zh,
         "state_word_en": word_en.format(date=date_str), "state_word_zh": word_zh.format(date=date_str),
     }
 

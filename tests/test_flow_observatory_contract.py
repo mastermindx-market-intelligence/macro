@@ -26,9 +26,11 @@ from jinja2 import Environment, FileSystemLoader
 from engine import i18n
 from engine.cn_theme_tape import build_cn_theme_tape
 from engine.flow_observatory import changes as fo_changes
+from engine import flow_velocity as fv
 from engine.flow_observatory.contract import (
     QUADRANT_LABELS,
     STATUS_WORD,
+    UNKNOWN,
     ContractError,
     build_sources,
     build_v2,
@@ -178,11 +180,13 @@ def test_absolute_positive_relative_negative_is_weakening_but_still_buying():
 
 
 def test_quadrant_insufficient_or_unknown_is_neutral():
-    assert quadrant("positive", "positive", sufficient=False) == "neutral_or_unknown"
-    for bad_abs, bad_rel in [("unknown", "positive"), ("positive", "unknown"),
-                             ("neutral", "positive"), ("positive", "neutral")]:
-        assert quadrant(bad_abs, bad_rel) == "neutral_or_unknown"
-    # de-minimis bands feed the SAME neutral verdict
+    # B1: missing/unknown is a DISTINCT key from the near-norm quiet band.
+    assert quadrant("positive", "positive", sufficient=False) == "unknown"
+    for bad_abs, bad_rel in [("unknown", "positive"), ("positive", "unknown")]:
+        assert quadrant(bad_abs, bad_rel) == "unknown"
+    for neu_abs, neu_rel in [("neutral", "positive"), ("positive", "neutral")]:
+        assert quadrant(neu_abs, neu_rel) == "neutral_or_unknown"
+    # de-minimis bands feed the near-norm quiet verdict, not "no data"
     assert direction_from_value(0.05, "pct_rate") == "neutral"
     assert direction_from_value(0.3, "cny_b") == "neutral"
     assert rel_direction(0.2) == "neutral"
@@ -206,7 +210,9 @@ def test_autos_fixture_cannot_render_unqualified_inflow():
     # tooltip-only — the exact "single inflow-colored number" defect the mission cites.
     visible = _visible_only(html)
     assert "0.9" in visible, "the raw abs 4wk figure must be visible at rest"
-    assert "2.58" in visible or "2.6" in visible, "the rel (velocity σ) figure must be visible at rest"
+    # M-c option (i): the vbar σ numeral moved to the tip; the relative rate (%)
+    # stays at rest so abs and rel cannot collapse into one inflow-colored number.
+    assert "1.9" in visible, "the relative (vs-norm) rate must be visible at rest"
 
 
 def test_southbound_fixture_keeps_absolute_and_relative_visible():
@@ -840,3 +846,292 @@ def test_all_flow_observatory_suites_are_wired_into_the_ci_lane():
         "add the new file to the run: command in .github/ci/legacy-jobs.yml (and its "
         "matching path-gate entry in .github/workflows/ci.yml) in this SAME commit before "
         "this test will pass.")
+
+
+# ── W13 heal (B1, B2, M-b, M-c option i, M-d, M-e, M-f, M-i, M-j) ─────────────────────
+_THEME_CATEGORIES = [
+    "Financials & Value",
+    "Cyclicals & Resources",
+    "Technology & AI",
+    "New Energy & Autos",
+    "Consumer & Brands",
+    "Advanced Manufacturing",
+]
+_LATIN3_NO_CJK = re.compile(r"[A-Za-z]{3,}")
+_CJK = re.compile(r"[\u4e00-\u9fff]")
+
+
+def _theme(i, **over):
+    row = _autos_row(id=f"cn_t{i:02d}", name=f"Theme {i:02d}", name_zh=f"主题{i:02d}",
+                     category=_THEME_CATEGORIES[i % 6],
+                     vel=0.1, rate_4wk=0.02, rate_rel=0.0, accel=0.0,
+                     state="near its norm", state_zh="接近常态")
+    row.update(over)
+    return row
+
+
+def _official(i, **over):
+    row = {
+        "id": f"sw_{i:03d}", "name": f"Sector {i:02d}", "name_zh": f"行业{i:02d}",
+        "n_members": 10, "n_covered": 10, "coverage_pct": 100.0,
+        "coverage_state": "ok", "vel": 0.2, "rate_4wk": -0.5, "members": [],
+        "state": "near its norm", "state_zh": "接近常态",
+        "quadrant": "neutral_or_unknown",
+        "quadrant_en": "quiet — near its norm", "quadrant_zh": "平静·接近常态",
+    }
+    row.update(over)
+    return row
+
+
+def _table(html, table_id):
+    m = re.search(rf'<table class="board" id="{table_id}">(.*?)</table>', html, re.S)
+    assert m, f"#{table_id} missing"
+    return m.group(1)
+
+
+def _sector_row_classes(block):
+    return re.findall(r'<tr class="(sector-row[^"]*)"', block)
+
+
+def test_w13_b1_near_norm_and_unknown_are_unfusable_both_lanes():
+    """B1: quiet-near-norm and genuinely-unknown use distinct keys AND distinct copy;
+    'insufficient coverage' never shares a label with near-norm; no chip/row/summary
+    says 'insufficient data' while its tip says near-norm. Both lanes."""
+    assert QUADRANT_LABELS["neutral_or_unknown"] == ("quiet — near its norm", "平静·接近常态")
+    assert QUADRANT_LABELS["unknown"] == ("no data", "无数据")
+    assert QUADRANT_LABELS["neutral_or_unknown"] != QUADRANT_LABELS["unknown"]
+    assert quadrant("neutral", "neutral") == "neutral_or_unknown"
+    assert quadrant("unknown", "positive") == UNKNOWN
+    assert quadrant("positive", "positive", sufficient=False) == UNKNOWN
+
+    near = _theme(0, vel=0.1, rate_4wk=0.02)
+    missing = _theme(1, vel=None, rate_4wk=None, rate_rel=None, state="no data",
+                     state_zh="无数据")
+    insuff = _official(1, coverage_state="insufficient_coverage", n_covered=1,
+                       n_members=20, coverage_pct=5.0, vel=None, rate_4wk=None,
+                       state="insufficient coverage", state_zh="覆盖不足")
+    v2 = _v2(ashare_sectors={"cadence": "daily", "as_of": "2026-09-01", "n": 2,
+                             "n_unscored": 0, "primary": "4wk",
+                             "note": "n", "note_zh": "n",
+                             "rows": [near, missing]},
+             official_sectors={"available": True, "rows": [insuff],
+                               "seed_date": "2026-01-01", "n": 1})
+    rows = {r["id"]: r for r in v2["ashare_sectors"]["rows"]}
+    assert rows["cn_t00"]["quadrant"] == "neutral_or_unknown"
+    assert rows["cn_t00"]["quadrant_en"] == "quiet — near its norm"
+    assert rows["cn_t00"]["quadrant_zh"] == "平静·接近常态"
+    assert rows["cn_t01"]["quadrant"] == "unknown"
+    assert rows["cn_t01"]["quadrant_en"] == "no data"
+    assert rows["cn_t01"]["quadrant_zh"] == "无数据"
+
+    html = _render(v2)
+    assert "quiet / insufficient data" not in html
+    assert "平静 / 数据不足" not in html
+    assert "quiet — near its norm" in html
+    assert "平静·接近常态" in html
+    assert ">no data<" in html.replace(" ", "") or "no data" in html
+    assert "无数据" in html
+    assert "insufficient coverage" in html
+    assert "覆盖不足" in html
+    # no rendered host says "insufficient data" while its own tip says near-norm
+    for m in re.finditer(r"<[^>]+data-tip-en=\"([^\"]*)\"[^>]*>([^<]*)<", html):
+        tip, text = m.group(1), m.group(2)
+        if "near its norm" in tip.lower() or "near-norm" in tip.lower():
+            assert "insufficient data" not in text.lower(), (
+                f"B1 fuse: visible {text!r} with near-norm tip {tip!r}")
+    for m in re.finditer(r'class="qchip[^"]*"[^>]*>.*?</span>', html, re.S):
+        chip = m.group(0)
+        if "insufficient coverage" in chip or "覆盖不足" in chip:
+            assert "quiet — near its norm" not in chip
+            assert "平静·接近常态" not in chip
+
+
+def test_w13_b2_hero_summary_rowcount_agree_with_quality_and_revision():
+    """B2: hero integer == summary integer == li.fv-chg-row count when the render
+    contains ≥1 quality transition and ≥1 source revision."""
+    transitions = [{"id": f"cn_t{i:02d}", "from_quadrant": "true_distribution",
+                    "to_quadrant": "improving_but_still_selling"} for i in range(3)]
+    rank_movers = [{"id": f"cn_t{i:02d}", "from_rank": 10, "to_rank": 4} for i in range(3, 6)]
+    quality = [{"kind": "quality", "id": "cn_large_order_proxy",
+                "from_status": "HEALTHY", "to_status": "STALE"}]
+    revisions = [{"kind": "revision", "id": "southbound", "entity_kind": "market",
+                  "effective_session": "2026-09-01",
+                  "from": {"quadrant": "weakening_but_still_buying"},
+                  "to": {"quadrant": "weakening_but_still_buying", "vel": -1.5}}]
+    extra = [{"id": f"cn_t{i:02d}", "from_quadrant": "true_accumulation",
+              "to_quadrant": "weakening_but_still_buying"} for i in range(6, 8)]
+    all_n = len(transitions) + len(rank_movers) + len(quality) + len(revisions) + len(extra)
+    assert all_n > 8
+    v2 = _v2(ashare_sectors={"cadence": "daily", "as_of": "2026-09-01", "n": 8,
+                             "n_unscored": 0, "primary": "4wk", "note": "n", "note_zh": "n",
+                             "rows": [_theme(i) for i in range(8)]})
+    v2["change_summary"] = {
+        "material_change": True, "previous_valid_session": "2026-08-31",
+        "transitions": transitions + extra, "rank_movers": rank_movers,
+        "quality_transitions": quality, "source_revisions": revisions,
+    }
+    html = _render(v2)
+    hero = re.search(
+        r'data-goto-sec="changed"[\s\S]*?<span class="tnum">(\d+)</span>', html)
+    assert hero, "hero changed-today count missing"
+    summary = re.search(r"all (\d+) changes", html)
+    assert summary, "collapsed 'all N changes' summary missing (need N>8)"
+    rows = len(re.findall(r'class="fv-chg-row', html))
+    assert int(hero.group(1)) == int(summary.group(1)) == rows == all_n
+    assert "kind" in str(quality[0]) and "cn_large_order_proxy" in html
+    assert "data revised" in html or "数据已修正" in html
+
+
+def test_w13_mb_theme_categories_render_cjk_in_zh_lane():
+    """M-b: all six theme categories render CJK in the l-zh lane; the
+    ≥3-Latin-letters-no-CJK scan over .cat l-zh spans is 0."""
+    rows = [_theme(i, category=_THEME_CATEGORIES[i]) for i in range(6)]
+    v2 = _v2(ashare_sectors={"cadence": "daily", "as_of": "2026-09-01", "n": 6,
+                             "n_unscored": 0, "primary": "4wk", "note": "n", "note_zh": "n",
+                             "rows": rows})
+    html = _render(v2)
+    cats = re.findall(r'<span class="cat">(.*?)</span>', html, re.S)
+    assert len(cats) >= 6, f"expected 6 category chips, got {len(cats)}"
+    bad = []
+    for block in cats:
+        for zh in re.findall(r'<span class="l-zh">(.*?)</span>', block, re.S):
+            text = re.sub(r"<[^>]+>", "", zh)
+            if _LATIN3_NO_CJK.search(text) and not _CJK.search(text):
+                bad.append(text)
+    assert bad == [], f"l-zh category spans with ≥3 Latin letters and no CJK: {bad}"
+    for en in _THEME_CATEGORIES:
+        assert en.replace("&", "&amp;") in html or en in html
+
+
+def test_w13_mc_sigma_demoted_to_tipped_meaning_sentence_both_lanes():
+    """M-c option (i): no vbar-sig at rest; every valued vbar tip carries σ WITH
+    a meaning sentence in both lanes; never a bare σ beside a .vstate word."""
+    v2 = _v2()
+    html = _render(v2)
+    assert 'class="vbar-sig"' not in html
+    tips_en = re.findall(r'class="vbar[^"]*"[^>]*data-tip-en="([^"]+)"', html)
+    tips_zh = re.findall(r'class="vbar[^"]*"[^>]*data-tip-zh="([^"]+)"', html)
+    assert tips_en, "valued vbars must carry an EN meaning-sentence tip"
+    assert tips_zh, "valued vbars must carry a ZH meaning-sentence tip"
+    for tip in tips_en:
+        assert "σ" in tip and "normal pace" in tip, tip
+        assert "—" in tip or "-" in tip
+    for tip in tips_zh:
+        assert "σ" in tip and "自身常态" in tip, tip
+    # no .vstate host whose own text contains σ
+    for block in re.findall(r'<span class="vstate[^"]*">.*?</span>', html, re.S):
+        visible = re.sub(r"<[^>]+>", "", block)
+        assert "σ" not in visible
+
+
+def test_w13_md_theme_and_official_boards_cap_at_eight_with_count_true_control():
+    """M-d: 8 rows at rest + counted See all N (N == expanding population) + collapse
+    copy + sort-reset; N==8 boundary renders a plain count and no control."""
+    nine = [_theme(i, vel=1.0 + i * 0.1, rate_4wk=-0.9) for i in range(9)]
+    nine_off = [_official(i) for i in range(9)]
+    v2 = _v2(ashare_sectors={"cadence": "daily", "as_of": "2026-09-01", "n": 9,
+                             "n_unscored": 0, "primary": "4wk", "note": "n", "note_zh": "n",
+                             "rows": nine},
+             official_sectors={"available": True, "rows": nine_off,
+                               "seed_date": "2026-01-01", "n": 9})
+    html = _render(v2)
+    theme_rows = _sector_row_classes(_table(html, "sectortbl"))
+    off_rows = _sector_row_classes(_table(html, "officialtbl"))
+    assert len(theme_rows) == 9
+    assert len(off_rows) == 9
+    assert sum("fv-over" not in c for c in theme_rows) == 8
+    assert sum("fv-over" in c for c in theme_rows) == 1
+    assert sum("fv-over" not in c for c in off_rows) == 8
+    assert sum("fv-over" in c for c in off_rows) == 1
+    assert "See all 9 themes" in html
+    assert "全部9个主题" in html
+    assert "See all 9 sectors" in html
+    assert "全部9个行业" in html
+    assert "Show fewer" in html
+    assert "收起" in html
+    assert "fv-cap-toggle" in html
+    assert "tog.checked=false" in html  # cap resets on sort
+
+    eight = [_theme(i, vel=1.0 + i * 0.1, rate_4wk=-0.9) for i in range(8)]
+    v2_8 = _v2(ashare_sectors={"cadence": "daily", "as_of": "2026-09-01", "n": 8,
+                               "n_unscored": 0, "primary": "4wk", "note": "n", "note_zh": "n",
+                               "rows": eight})
+    html8 = _render(v2_8)
+    rows8 = _sector_row_classes(_table(html8, "sectortbl"))
+    assert len(rows8) == 8
+    assert all("fv-over" not in c for c in rows8)
+    assert "See all" not in html8
+    assert "8 themes" in html8
+    assert "8个主题" in html8
+
+
+def test_w13_me_board_label_and_chip_figures_carry_nouns_same_formatting():
+    """M-e: board label is the scored population; board figure formatting matches
+    the chip; chip figures carry nouns in both lanes."""
+    v2 = _v2(ashare_names={
+        "cadence": "daily", "as_of": "2026-09-01", "n": 1521, "n_unscored": 283,
+        "primary": "4wk", "note": "note", "note_zh": "note_zh",
+        "market_read": market_read(
+            [{"vel": 1.0, "rate_4wk": 0.5, "state": "above norm, rising"}] * 10, unscored=283),
+        "inflow": [_member()], "outflow": [],
+    })
+    html = _render(v2)
+    assert "A-share names we could score" in html
+    assert "已评分A股" in html
+    assert "All A-share names" not in html
+    assert "1,521" in html
+    cn = next(s for s in v2["sources"] if s["source_id"] == "cn_large_order_proxy")
+    assert "names" in cn["coverage_line_en"]
+    assert "coverage" in cn["coverage_line_en"]
+    assert "只已评分" in cn["coverage_line_zh"]
+    assert "覆盖率" in cn["coverage_line_zh"]
+    assert cn["coverage_line_en"] in html
+    assert cn["coverage_line_zh"] in html
+
+
+def test_w13_mf_exactly_one_h1():
+    html = _render(_v2())
+    assert html.count("<h1") == 1
+    assert "Capital Flow Velocity" in html.split("<h1", 1)[1].split("</h1>", 1)[0]
+
+
+def test_w13_mi_zero_untipped_bare_dash_rank_spans():
+    v2 = _v2(ashare_names={
+        "cadence": "daily", "as_of": "2026-09-01", "n": 10, "n_unscored": 3,
+        "primary": "4wk", "note": "note", "note_zh": "note_zh",
+        "market_read": market_read(
+            [{"vel": 1.0, "rate_4wk": 0.5, "state": "above norm, rising"}] * 10, unscored=3),
+        "inflow": [_member()], "outflow": [],
+    })
+    html = _render(v2)
+    untipped = re.findall(r'<span class="rk na"(?! [^>]*data-tip-)[^>]*>—</span>', html)
+    assert untipped == [], f"untipped bare-dash rank spans: {untipped}"
+
+
+def test_w13_mj_net_buyer_never_renders_selling_easing():
+    """M-j: easing is bound to absolute direction — a net-buyer never renders
+    'selling easing' / '卖出趋缓'."""
+    assert fv._classify(-1.0, 0.1, abs_value=7.1)[0] == "buying slowing"
+    assert fv._classify(-1.0, 0.1, abs_value=7.1)[1] == "买入放缓"
+    assert fv._classify(-1.0, 0.1, abs_value=-2.0)[0] == "selling easing"
+    assert fv._classify(-1.0, 0.1, abs_value=-2.0)[1] == "卖出趋缓"
+
+    snap_over = _snap()
+    for chan in snap_over["aggregate"]:
+        if chan["key"] == "southbound":
+            chan["vel_primary"] = -1.0
+            chan["accel"] = 0.1
+            chan["flow_1m_b"] = 7.1
+            chan["state"] = "buying slowing"
+            chan["state_zh"] = "买入放缓"
+            chan["vel"] = {"1w": -0.8, "1m": -1.0, "3m": -0.5}
+    v2 = build_v2(snap_over, log_rows=[], market_session="2026-09-01",
+                  generated_at="2026-09-01T12:00:00+00:00", seats_as_of="2026-08-30")
+    html = _render(v2)
+    idx = html.find("Southbound — mainland money into HK")
+    assert idx != -1
+    card = html[idx:idx + 2500]
+    assert "selling easing" not in card
+    assert "卖出趋缓" not in card
+    assert "still buying, pace fading" in card or "buying slowing" in card
+    assert "仍净流入·动能转弱" in card or "买入放缓" in card
