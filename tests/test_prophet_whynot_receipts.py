@@ -416,12 +416,12 @@ def test_shelf_carries_no_title_attribute():
 #:   · the operator's front-facing ban (verdict/falsification language), and
 #:   · every INTERNAL token — machine status words, gate names, and the reason codes
 #:     themselves, which must stay in the JSON and never become a class or an attribute.
-#: Deliberately NOT listed: `validated`, because the approved ``plan_not_built`` line
-#: uses it to distinguish initial screening from an entry plan that actually survived
-#: validation; nor the bare English words `watch`, `hold`, `exit`, `avoid`. The lede's
-#: operator-ratified stance line is literally "Watch — don't chase", so a bare substring
-#: ban on those would fail on the copy the doctrine requires. Their machine forms
-#: (`bounce_wait`, `wait_pullback`, `await_confluence`, …) ARE checked.
+#: ``validated`` is guarded separately below: it is legal only inside the exact negative
+#: ``plan_not_built`` disclaimer. Also deliberately not listed are the bare English words
+#: `watch`, `hold`, `exit`, `avoid`. The lede's operator-ratified stance line is literally
+#: "Watch — don't chase", so a bare substring ban on those would fail on the copy the
+#: doctrine requires. Their machine forms (`bounce_wait`, `wait_pullback`,
+#: `await_confluence`, …) ARE checked.
 BANNED = (
     "falsifier", "refuted", "证伪", "已确认", "已触发",
     "fired", "confirmed", "triggered",
@@ -429,6 +429,22 @@ BANNED = (
     "intake", "buy_soon", "bounce_wait", "wait_pullback", "buy_now",
     "await_confluence", "extended", "topping", "T4", "conviction.band",
 ) + tuple(REFUSAL_ORDER)
+
+
+def test_validated_word_is_confined_to_the_exact_negative_disclaimer():
+    """The approved hedge must not become a blanket licence for positive claims."""
+    expected = "Passed initial screening — no validated entry plan was produced."
+    validated_copy = {
+        reason: en for reason, (en, _zh) in REFUSAL_COPY.items()
+        if "validated" in en.lower()
+    }
+    assert validated_copy == {"plan_not_built": expected}
+
+    cx = refusal_receipts(
+        _board(_row("CLEAR", score=88)), open_keys=(), originated_tickers=set())
+    html = _shelf(cx)
+    assert expected in html
+    assert "validated" not in html.replace(expected, "").lower()
 
 
 def test_shelf_leaks_no_banned_vocabulary():
