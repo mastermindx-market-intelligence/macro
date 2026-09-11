@@ -181,19 +181,20 @@ body.page-commod .aurora.au-red .au-a3   { background: radial-gradient(ellipse, 
 /* ── section header ─── */
 .sechd { display: flex; align-items: center; gap: 9px; margin: 22px 0 2px; }
 .sechd h2 { font-size: 15px; font-weight: 600; margin: 0; letter-spacing: .01em; }
-.sechd .q {
+.sechd .q, .stance-sub .q {
   width: 16px; height: 16px; border-radius: 50%; border: 1px solid var(--line2);
   color: var(--faint); font-size: 10px; display: inline-flex; align-items: center;
   justify-content: center; cursor: help; flex-shrink: 0;
   background: transparent; padding: 0; font: inherit; font-size: 10px; font-weight: 700;
   line-height: 1; position: relative;
 }
+.stance-sub .q { margin-top: 3px; }
 .rcpt-list .lens-q { width: 18px; height: 18px; margin-left: 4px; vertical-align: middle; }
 .sechd .q:focus-visible, .lens-q:focus-visible {
   outline: 2px solid color-mix(in srgb, var(--blue) 70%, transparent); outline-offset: 2px;
 }
 @media (max-width: 430px) {
-  .sechd .q.lens-q { width: 32px; height: 32px; font-size: 13px; }
+  .sechd .q.lens-q, .stance-sub .q.lens-q { width: 32px; height: 32px; font-size: 13px; }
   .rcpt-list .lens-q { width: 22px; height: 22px; }
 }
 .sechd .sub { font-size: 12px; color: var(--faint); margin: 0; }
@@ -225,7 +226,9 @@ body.page-commod .aurora.au-red .au-a3   { background: radial-gradient(ellipse, 
 .big-stance.t-standaside { color: var(--mut); text-shadow: none; }
 @media(max-width:560px){ .big-stance { font-size: 36px; } }
 
-.stance-sub { font-size: 14px; color: var(--tx); max-width: 44ch; line-height: 1.55; margin-bottom: 12px; }
+.stance-sub { font-size: 14px; color: var(--tx); max-width: 44ch; line-height: 1.55; margin-bottom: 12px;
+              display: flex; align-items: flex-start; gap: 8px; }
+.stance-sub-copy { flex: 1; min-width: 0; }
 .stance-tag {
   display: inline-flex; align-items: center; gap: 6px; margin-top: 10px;
   font-size: 12px; color: var(--faint); border: 1px solid var(--line2);
@@ -360,6 +363,11 @@ body.page-commod .aurora.au-red .au-a3   { background: radial-gradient(ellipse, 
 .legend { display: flex; gap: 16px; font-size: 11.5px; color: var(--faint); margin: 2px 0 12px; flex-wrap: wrap; }
 .legend span { display: flex; align-items: center; gap: 6px; }
 .sw { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+/* Legend miniatures of the cell treatments: filled wash vs edge ring. */
+.sw-blowoff { background: var(--amb); border: 1px solid color-mix(in srgb, var(--amb) 80%, transparent); }
+.sw-extended { background: transparent; border: 2px solid var(--amb); box-sizing: border-box; }
+[data-theme='light'] .sw-blowoff { box-shadow: none; }
+[data-theme='light'] .sw-extended { border-width: 1.5px; }
 .hgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 9px; }
 .cell {
   background: var(--panel2); border: 1px solid var(--line); border-left: 3px solid var(--line2);
@@ -372,10 +380,22 @@ body.page-commod .aurora.au-red .au-a3   { background: radial-gradient(ellipse, 
 .cell.c-dn   { border-left-color: var(--dn); }
 .cell.c-flat { border-left-color: var(--line2); }
 /* post-stack: consolidate */
-.cell.c-blowoff { border-left-color: var(--amb); }
-/* Board-stretched + normal shock: amber EDGE, no blow-off fill. */
+/* Blow-off = amber FILL (wash + bar). Dark: luminance mix; light: tint, no glow. */
+.cell.c-blowoff {
+  border-left-color: var(--amb);
+  background: color-mix(in srgb, var(--amb) 16%, var(--panel2));
+}
+/* Board-stretched + normal shock: amber EDGE only, no fill wash, default bar. */
 .cell.c-extended { border-left-color: var(--amb); }
 .cell.c-washout { border-left-color: var(--blue); }
+[data-theme='light'] .cell.c-blowoff {
+  background: color-mix(in srgb, var(--amb) 10%, var(--panel2));
+  box-shadow: none;
+}
+[data-theme='light'] .cell.c-extended {
+  background: var(--panel2);
+  box-shadow: none;
+}
 .cell .cn { display: flex; justify-content: space-between; align-items: baseline; gap: 4px; }
 .cell .cnm { font-weight: 600; font-size: 13px; }
 .cell .cpc { font-size: 12.5px; font-weight: 600; }
@@ -610,7 +630,15 @@ html[data-theme="light"] :is(
   <div class="panel">
     <p class="kick">{{ t('Where commodities stand today', '大宗商品今日处境') }}</p>
     <div class="big-stance t-{{ st.tone }}">{{ t(st.word_en, st.word_zh) }}</div>
-    <div class="stance-sub">{{ t(st.sub_en, st.sub_zh) }}</div>
+    <div class="stance-sub">
+      <span class="stance-sub-copy">{{ t(st.sub_en, st.sub_zh) }}</span>
+      {% if st.tip_en %}
+      <button type="button" class="q lens-q" aria-label="Which members"
+        data-aria-en="Which members" data-aria-zh="哪些品种"
+        data-tip-en="{{ st.tip_en }}"
+        data-tip-zh="{{ st.tip_zh }}">?</button>
+      {% endif %}
+    </div>
     <div class="stance-tag">
       <span class="faint">{{ t('Macro backdrop', '宏观背景') }}</span> ·
       {{ t('dollar', '美元') }} <b>{{ td(complex.dollar_dir) }}</b> ·
@@ -869,7 +897,7 @@ html[data-theme="light"] :is(
           {% elif 'Blowing' in row.state %}
           <span class="badge euf">{{ t('Blow-off','喷发') }}</span>
           {% else %}
-          <span class="badge top">{{ t('Extended','超涨') }}</span>
+          <span class="badge top">{{ t('Extended','超涨延伸') }}</span>
           {% endif %}
         </div>
         <div class="st">
@@ -942,8 +970,8 @@ html[data-theme="light"] :is(
 <div class="legend">
   <span><span class="sw" style="background:var(--up)"></span>{{ t('Momentum up','短期动量向上') }}</span>
   <span><span class="sw" style="background:var(--dn)"></span>{{ t('Momentum down','短期动量转弱') }}</span>
-  <span><span class="sw" style="background:var(--amb)"></span>{{ t('Blow-off','喷发') }}</span>
-  <span><span class="sw" style="background:var(--amb)"></span>{{ t('Extended','超涨延伸') }}</span>
+  <span><span class="sw sw-blowoff"></span>{{ t('Blow-off','喷发') }}</span>
+  <span><span class="sw sw-extended"></span>{{ t('Extended','超涨延伸') }}</span>
   <span><span class="sw" style="background:var(--blue)"></span>{{ t('Washing out','洗盘') }}</span>
   <span><span class="sw" style="background:var(--line2)"></span>{{ t('Mixed','中性') }}</span>
 </div>

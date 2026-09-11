@@ -40,6 +40,7 @@ from scripts.build_commodities import (  # noqa: E402
     CHG_1M_BARS,
     FRAC_TOP_PROTECT,
     HEAT_LEGEND,
+    MEMBER_LABELS,
     _UNLABELLED_STATE,
     _build_sector_vm_inner,
     _chg_pct,
@@ -47,6 +48,7 @@ from scripts.build_commodities import (  # noqa: E402
     _heat_cell,
     _plain_mom_state,
     _plain_shock,
+    _stretched_name_list,
     _sync_read,
     asset_vm,
     is_board_stretched,
@@ -177,10 +179,18 @@ def test_every_legend_word_is_reachable_from_a_real_branch() -> None:
         assert en in legend, f"legend missing reachable word {en!r}"
         assert zh in legend, f"legend missing ZH twin {zh!r}"
 
+    css = _tpl()
     for tone, token, en, zh in HEAT_LEGEND:
         assert en in legend, f"HEAT_LEGEND EN {en!r} not in template legend"
         assert zh in legend, f"HEAT_LEGEND ZH {zh!r} not in template legend"
-        assert f"var({token})" in legend, f"legend swatch missing var({token})"
+        if tone == "c-blowoff":
+            assert "sw-blowoff" in legend
+            assert f"var({token})" in css
+        elif tone == "c-extended":
+            assert "sw-extended" in legend
+            assert f"var({token})" in css
+        else:
+            assert f"var({token})" in legend, f"legend swatch missing var({token})"
         assert tone in reachable_tones, f"legend tone {tone} has no producing branch"
         assert en in reachable_en, f"legend word {en!r} has no producing branch"
 
@@ -201,6 +211,16 @@ def test_page_css_splits_blowoff_and_washout() -> None:
     assert ".cell.c-blowoff" in src
     assert ".cell.c-washout" in src
     assert ".cell.c-extended" in src
+    blow_rule = src[src.index(".cell.c-blowoff {"): src.index(".cell.c-extended")]
+    assert "color-mix(in srgb, var(--amb)" in blow_rule
+    ext_rule = src[src.index(".cell.c-extended {"):
+                   src.index(".cell.c-washout {")]
+    assert "border-left-color: var(--amb)" in ext_rule
+    assert "color-mix" not in ext_rule
+    assert "background:" not in ext_rule
+    assert ".sw-blowoff" in src and ".sw-extended" in src
+    assert "[data-theme='light'] .cell.c-blowoff" in src
+    assert "[data-theme='light'] .cell.c-extended" in src
     # n5: producer cannot emit c-wash; don't keep a dead back-compat selector.
     assert ".cell.c-wash," not in src
     assert ".cell.c-wash " not in src
@@ -448,7 +468,7 @@ def test_hero_current_shaped_board_is_selective() -> None:
     """origin/main latest.json shape: 3 stretched of 17, index Neutral/normal.
 
     3/17 ≈ 0.176 < 0.25 → In favour, not Act, not Protect.
-    Sub names the counted members so the count is auditable at Tier 2.
+    Glance sub is count+stance; names live on the LENS tip (Tier 2).
     """
     st = sector_stance(
         {"members": _board({
@@ -463,12 +483,18 @@ def test_hero_current_shaped_board_is_selective() -> None:
     assert st["tone"] == "selective"
     assert st["word_en"] == "In favour"
     assert "3 of 17 stretched" in st["sub_en"]
-    assert "Heating Oil" in st["sub_en"]
-    assert "Corn" in st["sub_en"]
-    assert "Soybeans" in st["sub_en"]
-    assert "取暖油" in st["sub_zh"]
-    assert "玉米" in st["sub_zh"]
-    assert "大豆" in st["sub_zh"]
+    assert "Heating Oil" not in st["sub_en"]
+    assert "Corn" not in st["sub_en"]
+    assert "Soybeans" not in st["sub_en"]
+    assert "取暖油" not in st["sub_zh"]
+    assert "玉米" not in st["sub_zh"]
+    assert "大豆" not in st["sub_zh"]
+    assert "Heating Oil" in st["tip_en"]
+    assert "Corn" in st["tip_en"]
+    assert "Soybeans" in st["tip_en"]
+    assert "取暖油" in st["tip_zh"]
+    assert "玉米" in st["tip_zh"]
+    assert "大豆" in st["tip_zh"]
     assert "in sync" not in st["sub_en"]
     assert st["word_en"] != "Act"
     assert st["tone"] != "protect"
@@ -827,12 +853,62 @@ def test_capture_fixture_matches_production_shape() -> None:
     assert ho["chg_tone"] == "amb"
     assert su["tone"] == "c-blowoff"
     assert su["state_short_en"] == "Blow-off"
-    assert "Heating Oil" in vm["stance"]["sub_en"]
-    assert "Corn" in vm["stance"]["sub_en"]
-    assert "Soybeans" in vm["stance"]["sub_en"]
+    assert "Heating Oil" not in vm["stance"]["sub_en"]
+    assert "Corn" not in vm["stance"]["sub_en"]
+    assert "Soybeans" not in vm["stance"]["sub_en"]
+    assert "Heating Oil" in vm["stance"]["tip_en"]
+    assert "Corn" in vm["stance"]["tip_en"]
+    assert "Soybeans" in vm["stance"]["tip_en"]
 
     cats = fixture_vm()["catalysts"]
     assert all("label_zh" in c and c["label_zh"] for c in cats)
     assert cats[0]["label_zh"] == "美联储议息决议"
     assert cats[1]["label"] == "EIA crude/petroleum inventories"
     assert cats[1]["label_zh"] == "EIA 原油库存周报"
+
+
+# --------------------------------------------------------------------------- #
+# W6 r5 — glance names → LENS tip; legend discriminates; ZH state word
+# --------------------------------------------------------------------------- #
+@pytest.mark.parametrize("n_top", [3, 9, 17])
+def test_hero_glance_sub_has_no_member_names(n_top: int) -> None:
+    """R4-M1: glance sub is count+stance; tip lists the exact counted set."""
+    states = {n: "Blowing off — extended" for n in _COMPLEX_NAMES[:n_top]}
+    members = _board(states)
+    st = sector_stance({"members": members}, _breadth(diversity=0.2))
+    counted = stretched_members(members)
+    assert [m["name"] for m in counted] == _COMPLEX_NAMES[:n_top]
+    names_en, names_zh = _stretched_name_list(counted)
+    for _slug, (en, zh) in MEMBER_LABELS.items():
+        assert en not in st["sub_en"], n_top
+        assert zh not in st["sub_zh"], n_top
+    assert st["tip_en"] == names_en
+    assert st["tip_zh"] == names_zh
+    assert [p.strip() for p in st["tip_en"].split(",")] == [
+        MEMBER_LABELS[n][0] for n in _COMPLEX_NAMES[:n_top]
+    ]
+    assert st["tip_zh"].split("、") == [
+        MEMBER_LABELS[n][1] for n in _COMPLEX_NAMES[:n_top]
+    ]
+
+
+def test_hero_sub_lens_hosts_counted_names() -> None:
+    src = _tpl()
+    start = src.index('<div class="stance-sub">')
+    block = src[start: start + 900]
+    assert "st.tip_en" in block
+    assert "st.tip_zh" in block
+    assert "lens-q" in block
+    assert 'data-aria-en="Which members"' in block
+    assert 'data-aria-zh="哪些品种"' in block
+    assert "data-cmdty-tip" not in src
+
+
+def test_extended_zh_state_word_is_unified() -> None:
+    """R4-n1: badge / legend / grid name the state 超涨延伸. Prose may keep 超涨."""
+    src = _tpl()
+    assert "t('Extended','超涨延伸')" in src
+    assert "t('Extended','超涨')" not in src
+    legend = _legend_block()
+    assert "超涨延伸" in legend
+    assert _heat_cell("normal", "bull", "Extended — late cycle")[2] == "超涨延伸"

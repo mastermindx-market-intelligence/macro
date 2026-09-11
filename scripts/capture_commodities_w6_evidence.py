@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Element-screenshot evidence for commodities.html W6 (round 4).
+"""Element-screenshot evidence for commodities.html W6 (round 5).
 
 Captures dark+light × EN+ZH × 1440/390 of the page plus the packet's named
 proof crops on a fixture-rendered commodities wrap (sparse trees have no
@@ -42,6 +42,18 @@ _STRETCHED = {
     "heating_oil": "Extended — late cycle",
     "corn": "Blowing off — extended",
     "soybeans": "Blowing off — extended",
+}
+# R4-M1: n_top=9 degraded-state crop (energy 4 + metals 5).
+_STRETCHED_NINE = {
+    "oil": "Blowing off — extended",
+    "natgas": "Blowing off — extended",
+    "gasoline": "Blowing off — extended",
+    "heating_oil": "Extended — late cycle",
+    "gold": "Blowing off — extended",
+    "silver": "Blowing off — extended",
+    "platinum": "Blowing off — extended",
+    "palladium": "Blowing off — extended",
+    "copper": "Blowing off — extended",
 }
 
 # Heat-grid (shock, mom, chg_1m, cycle_phase). Shock outranks momentum.
@@ -142,10 +154,10 @@ def content_address_png(png: bytes, output_dir: Path) -> tuple[str, str, int, in
     return name, digest, int(width), int(height)
 
 
-def fixture_vm() -> dict:
+def fixture_vm(*, stretched: dict[str, str] | None = None) -> dict:
     """Current-shaped commodities VM. Sparse trees have no data/; this is the
     W6 r2 page-test idiom (test_hero_current_shaped_board_is_selective), not a
-    live bake.
+    live bake. Pass `stretched` to pin a larger counted set (n_top=9 crop).
     """
     from datetime import date as _date
 
@@ -164,12 +176,13 @@ def fixture_vm() -> dict:
         sector_stance,
     )
 
+    stretched_map = dict(_STRETCHED if stretched is None else stretched)
     names = [n for _k, _e, _z, ns in _GRID_GROUPS for n in ns]
     members = []
     for n in names:
-        state = _STRETCHED.get(n, "Neutral")
-        top = 72.0 if n in _STRETCHED else 0.0
-        fired = [_lbl("shock_top"), _lbl("cot_long"), _lbl("overbought_ltf")] if n in _STRETCHED else []
+        state = stretched_map.get(n, "Neutral")
+        top = 72.0 if n in stretched_map else 0.0
+        fired = [_lbl("shock_top"), _lbl("cot_long"), _lbl("overbought_ltf")] if n in stretched_map else []
         members.append({
             "name": n, "state": state,
             "top_score": top, "bottom_score": 0.0,
@@ -188,7 +201,7 @@ def fixture_vm() -> dict:
         cells = []
         for name in grp_members:
             shock, mom, chg, cycle = _HEAT[name]
-            tone, st_en, st_zh = _heat_cell(shock, mom, _STRETCHED.get(name, "Neutral"))
+            tone, st_en, st_zh = _heat_cell(shock, mom, stretched_map.get(name, "Neutral"))
             cyc_en, cyc_zh = _plain_cycle_state(cycle, False) if cycle else ("", "")
             en, zh = MEMBER_LABELS[name]
             cells.append({
@@ -203,7 +216,7 @@ def fixture_vm() -> dict:
     def _detail(name: str) -> dict:
         en, zh = MEMBER_LABELS[name]
         shock, mom, chg, cycle = _HEAT[name]
-        state = _STRETCHED.get(name, "Neutral")
+        state = stretched_map.get(name, "Neutral")
         action_en, action_zh = _conf_action(state)
         cyc_en, cyc_zh = _plain_cycle_state(cycle, False) if cycle else ("", "")
         shock_en, shock_zh = ("", "")
@@ -214,12 +227,12 @@ def fixture_vm() -> dict:
         dollar_dir = dollar_eff = None
         if name == "oil":
             dollar_dir, dollar_eff = "up", "headwind"
-        top_fired = [_lbl("shock_top"), _lbl("cot_long")] if name in _STRETCHED else []
+        top_fired = [_lbl("shock_top"), _lbl("cot_long")] if name in stretched_map else []
         return {
             "name": name, "label_en": en, "label_zh": zh, "available": True,
             "price": None, "chg_1m_pct": chg,
             "action_en": action_en, "action_zh": action_zh, "state": state,
-            "bot_score": 0, "top_score": 72 if name in _STRETCHED else 12,
+            "bot_score": 0, "top_score": 72 if name in stretched_map else 12,
             "bottom_fired": [], "top_fired": top_fired,
             "cycle_phase": cycle, "cycle_phase_en": cyc_en or None,
             "cycle_phase_zh": cyc_zh or None, "cycle_hazard": False,
@@ -244,7 +257,7 @@ def fixture_vm() -> dict:
     detail = [_detail(n) for n in names]
 
     tops = []
-    for n, state in _STRETCHED.items():
+    for n, state in stretched_map.items():
         en, zh = MEMBER_LABELS[n]
         action_en, action_zh = _conf_action(state)
         tops.append({
@@ -378,6 +391,9 @@ def write_fixture_site(scratch: Path) -> None:
     if icons.exists():
         shutil.copy(icons, scratch / "product-nav-icons.css")
     (scratch / "commodities_w6.html").write_text(render_page(), encoding="utf-8")
+    (scratch / "commodities_w6_ntop9.html").write_text(
+        render_page(fixture_vm(stretched=_STRETCHED_NINE)), encoding="utf-8"
+    )
 
 
 def _git_head_of_repo() -> tuple[str | None, str | None]:
@@ -569,6 +585,14 @@ def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
         "full_viewport": True, "clip_sels": None,
         "action": "tap-lens", "touch": True,
     })
+    # R4-M1: n_top=9 LENS tip lists every counted member (degraded glance).
+    jobs.append({
+        "subject": "h-hero-ntop9-tip", "viewport": "desktop", "locale": "en",
+        "theme": "dark", "width": 1440, "height": 900,
+        "full_viewport": False, "clip_sels": [".hero", ".lens-pop"],
+        "action": "open-hero-tip", "touch": False,
+        "html": "commodities_w6_ntop9.html",
+    })
     if subjects:
         jobs = [j for j in jobs if j["subject"] in subjects]
 
@@ -597,7 +621,9 @@ def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
                     theme=theme, touch=bool(job.get("touch")),
                 )
                 try:
-                    response = page.goto(base, wait_until="load", timeout=30000)
+                    html_name = job.get("html", "commodities_w6.html")
+                    url = f"http://127.0.0.1:{port}/{html_name}"
+                    response = page.goto(url, wait_until="load", timeout=30000)
                     if response is None or not response.ok:
                         raise RuntimeError(f"HTTP {getattr(response, 'status', 'none')}")
                     page.wait_for_timeout(120)
@@ -737,6 +763,36 @@ def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
                         if box and box.get("width", 0) >= 4 and box.get("height", 0) >= 4:
                             job["_direct_clip"] = box
                             job["full_viewport"] = False
+                    elif action == "open-hero-tip":
+                        btn = page.locator(".stance-sub .lens-q").first
+                        btn.scroll_into_view_if_needed()
+                        btn.evaluate("el => el.click()")
+                        page.wait_for_selector(".lens-pop.open", timeout=4000)
+                        page.wait_for_timeout(280)
+                        job["tap_opened"] = True
+                        box = page.evaluate(
+                            """() => {
+                              const hero = document.querySelector('.hero');
+                              const pop = document.querySelector('.lens-pop.open');
+                              const els = [hero, pop].filter(Boolean);
+                              if (!els.length) return null;
+                              let x=Infinity,y=Infinity,r=-Infinity,b=-Infinity;
+                              for (const el of els) {
+                                const rect = el.getBoundingClientRect();
+                                x=Math.min(x,rect.x); y=Math.min(y,rect.y);
+                                r=Math.max(r,rect.right); b=Math.max(b,rect.bottom);
+                              }
+                              const pad = 12;
+                              return {
+                                x: Math.max(0, x-pad),
+                                y: Math.max(0, y-pad),
+                                width: Math.min(window.innerWidth - Math.max(0, x-pad), r-x+2*pad),
+                                height: Math.min(window.innerHeight, b-y+2*pad)
+                              };
+                            }"""
+                        )
+                        if box and box.get("width", 0) >= 4:
+                            job["_direct_clip"] = box
                     clip_sels = job.get("clip_sels")
                     if action in ("scroll-grains", "scroll-energy-heat"):
                         needle = "Energy|能源" if action == "scroll-energy-heat" else "Grains|谷物"
@@ -830,7 +886,7 @@ def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
         "generated_at": generated_at,
         "tool": {
             "module_ref": "scripts/capture_commodities_w6_evidence.py",
-            "version": "w6-r3-element",
+            "version": "w6-r5-element",
             "capture_method": (
                 "playwright viewport/clip screenshot on a fixture-rendered "
                 "commodities.html.j2 (page CSS + _state_inks + _vector_polish + "
@@ -873,7 +929,9 @@ def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
             "authority": "this tool screenshots; it scores nothing",
             "page": (
                 "commodities.html.j2 rendered with a current-shaped fixture VM "
-                "(3 of 17 stretched → In favour). No data/ reads. Omitted vs live: "
+                "(3 of 17 stretched → In favour; names on LENS tip). "
+                "n_top=9 crop uses commodities_w6_ntop9.html. No data/ reads. "
+                "Omitted vs live: "
                 "_site_nav chrome, live.js quote hydration, oil-episode banner, "
                 "coverage matrix, Inter webfonts (system fallback). "
                 "Capture sets window.__skyDeck and strips leftover .sky-fx / "
@@ -888,7 +946,7 @@ def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
 
 def _write_readme(manifest: dict) -> str:
     lines = [
-        "# Commodities W6 — evidence matrix (round 4)",
+        "# Commodities W6 — evidence matrix (round 5)",
         "",
         "Packet REQUIRED EVIDENCE MATRIX: dark × light × EN × ZH × 1440/390 "
         "(8 base shots) plus named proof crops (a)–(g).",
@@ -900,7 +958,8 @@ def _write_readme(manifest: dict) -> str:
         "- VM: `scripts/capture_commodities_w6_evidence.fixture_vm` "
         "(current-shaped board from `tests/test_commodities_w6_truth.py::"
         "test_hero_current_shaped_board_is_selective`: heating oil / corn / "
-        "soybeans stretched → hero **In favour — 3 of 17 stretched**).",
+        "soybeans stretched → hero **In favour — 3 of 17 stretched**; names "
+        "on the hero LENS tip). n_top=9 crop is a second fixture.",
         "- Theme/lang: Playwright seeds localStorage then calls `window.setTheme` / "
         "`window.setLang`; a mismatch refuses the cell.",
         "- `window.__skyDeck = true` in the init script (skyToggleFx bow-out) and "
@@ -944,7 +1003,8 @@ def _write_readme(manifest: dict) -> str:
         "| (a) heat-grid blow-off | Legend (incl. Extended) beside Sugar/Corn/Soybeans; blow-off ≠ green | `a-heat-blowoff-*` | see table | PENDING-JUDGE |",
         "| (a2) Extended member | Heating oil amber-edge Extended, not green Momentum up | `a-heat-extended-*` | see table | PENDING-JUDGE |",
         "| (b) one number per window | Live oil 1-day beside oil grid 1-month | `b-live-oil-*` | see table | PENDING-JUDGE |",
-        "| (c) ATF 1440 hero = board | Hero names counted members (Heating Oil, Corn, Soybeans) | `atf-*-desktop` | see table | PENDING-JUDGE |",
+        "| (c) ATF 1440 hero = board | Hero sub is count+stance only; names in LENS tip | `atf-*-desktop` | see table | PENDING-JUDGE |",
+        "| (h) n_top=9 LENS tip | Tip lists all 9 counted members; sub has none | `h-hero-ntop9-tip-*` | see table | PENDING-JUDGE |",
         "| (d) missing cycle | Cotton detail shows the sentence, not a dash | `d-cycle-missing-*` | see table | PENDING-JUDGE |",
         "| (e) Dollar row | Oil: value; cotton: omitted (never `Dollar: ·`) | `e-dollar-*` | see table | PENDING-JUDGE |",
         "| (f) ZH catalysts + timeline | Production-shaped label_zh; no EN leaks | `f-catalysts-zh-*`, `f-timeline-zh-*` | see table | PENDING-JUDGE |",

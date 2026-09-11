@@ -973,6 +973,7 @@ def sector_stance(
         "sub_en":  "Not enough signal to read the complex right now.",
         "sub_zh":  "目前信号不足，无法判断大宗商品整体走势。",
         "tone":    "standaside",
+        "tip_en":  "", "tip_zh": "",
     }
     try:
         members_conf = (conf.get("members") or []) if isinstance(conf, dict) else []
@@ -1000,45 +1001,45 @@ def sector_stance(
         shock_firing = (index_shock or "") in _INDEX_BLOWOFF_SHOCKS
         index_protect = index_top or shock_firing
 
+        # Glance sub = count + stance only. Counted names live on tip_en/tip_zh
+        # (hero LENS, Tier 2) — auditable, no cap.
+        tip_en = names_en
+        tip_zh = names_zh
+
         # 3. Protect — proportional board gate or index-level shock.
         if frac_top >= FRAC_TOP_PROTECT or index_protect:
             total = int(n_board)
             if n_top <= 0:
                 sub_en = "The index itself is blowing off — trim, don't add."
                 sub_zh = "指数本身处于喷发——减仓，勿追加。"
+                tip_en = tip_zh = ""
             elif n_top == 1:
-                named = f" ({names_en})" if names_en else ""
-                named_zh = f"（{names_zh}）" if names_zh else ""
                 sub_en = (f"1 of {total} commodities is stretched or euphoric"
-                          f"{named} — trim, don't add.")
-                sub_zh = f"{total}个品种中有1个处于超买或亢奋状态{named_zh}——减仓，勿追加。"
+                          " — trim, don't add.")
+                sub_zh = f"{total}个品种中有1个处于超买或亢奋状态——减仓，勿追加。"
             else:
-                named = f" ({names_en})" if names_en else ""
-                named_zh = f"（{names_zh}）" if names_zh else ""
                 sub_en = (f"{n_top} of {total} commodities are stretched or euphoric"
-                          f"{named} — trim, don't add.")
-                sub_zh = f"{total}个品种中有{n_top}个处于超买或亢奋状态{named_zh}——减仓，勿追加。"
+                          " — trim, don't add.")
+                sub_zh = f"{total}个品种中有{n_top}个处于超买或亢奋状态——减仓，勿追加。"
             return {
                 "word_en": "Protect gains",  "word_zh": "保护利润",
                 "sub_en":  sub_en, "sub_zh": sub_zh, "tone": "protect",
+                "tip_en":  tip_en, "tip_zh": tip_zh,
             }
 
         # 2. Scoped middle — some stretched, below the complex-level gate.
         if n_top >= 1:
             total = int(n_board)
             if n_top == 1:
-                named = f" ({names_en})" if names_en else ""
-                named_zh = f"（{names_zh}）" if names_zh else ""
-                sub_en = f"1 of {total} stretched{named}; trim that, don't add"
-                sub_zh = f"{total}个品种中有1个超涨{named_zh}——减那个，勿追加。"
+                sub_en = f"1 of {total} stretched — trim that, don't add"
+                sub_zh = f"{total}个品种中有1个超涨——减那个，勿追加。"
             else:
-                named = f" ({names_en})" if names_en else ""
-                named_zh = f"（{names_zh}）" if names_zh else ""
-                sub_en = f"{n_top} of {total} stretched{named}; trim those, don't add"
-                sub_zh = f"{total}个品种中有{n_top}个超涨{named_zh}——减那些，勿追加。"
+                sub_en = f"{n_top} of {total} stretched — trim those, don't add"
+                sub_zh = f"{total}个品种中有{n_top}个超涨——减那些，勿追加。"
             return {
                 "word_en": "In favour",  "word_zh": "倾向做多",
                 "sub_en":  sub_en, "sub_zh": sub_zh, "tone": "selective",
+                "tip_en":  tip_en, "tip_zh": tip_zh,
             }
 
         if frac_bot >= 0.20:
@@ -1047,6 +1048,7 @@ def sector_stance(
                 "sub_en":  f"{n_bot} of {int(n_breadth)} commodities are washing out or basing — watch for early turns.",
                 "sub_zh":  f"{int(n_breadth)}个品种中有{n_bot}个正在洗盘或筑底——关注早期转势信号。",
                 "tone":    "getready",
+                "tip_en":  "", "tip_zh": "",
             }
         if frac_up >= 0.6 and frac_mom < 0.4:
             return {
@@ -1058,6 +1060,7 @@ def sector_stance(
                             f"但短期动量偏弱（{int(n_bull)}/{int(n_breadth)}）。"
                             "并非新突破——后期走势背离。"),
                 "tone":    "watch",
+                "tip_en":  "", "tip_zh": "",
             }
         if frac_up >= 0.5 and frac_mom >= 0.4:
             if in_sync is True:
@@ -1076,6 +1079,7 @@ def sector_stance(
                 "sub_zh":  (f"趋势广泛（{int(n_up)}/{int(n_breadth)}向上），"
                             f"动量稳健（{int(n_bull)}/{int(n_breadth)}）——{sync_zh}"),
                 "tone":    "act",
+                "tip_en":  "", "tip_zh": "",
             }
         return _null
     except Exception:  # noqa: BLE001 — always returns a safe dict
