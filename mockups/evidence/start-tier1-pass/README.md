@@ -1,6 +1,6 @@
 # start.html Tier-1 plain-language pass — 8-cell composition evidence
 
-PR #7048 r2. The signed-in hub's Other Features chips, hero clock skeleton,
+PR #7048 r3. The signed-in hub's Other Features chips, hero clock failsafe,
 and What-changed first card now speak in plain words. These crops show that
 presentation on the real theme/lang mechanism.
 
@@ -25,19 +25,22 @@ Each cell was refused unless the observed `html[data-theme]` and
 - **(a) Other Features chip row** — Bitcoin Vector pills
   ("Low risk" / "Strong down-momentum" · 「低风险」/「动量偏强向下」) and
   Bonds ("Healthy · late-cycle" / 「健康 · 周期晚段」).
-- **(b) Hero clock skeleton** — `.hub-clock-wrap` is **not** `is-live`
-  (clock IIFE short-circuited in the capture HTML only). The static
-  "Live" / 「实时」 word is visible beside the shimmer bar — the no-JS
-  fallback. JS-on would hide the static word and the skeleton together
-  once it stamps `is-live`.
-- **(c) What-changed first card** — plain EN
+- **(b) Hero clock** — capture skips `tick()` so `is-live` never lands;
+  the JS failsafe stamps `no-clock` after 2s and hides the skeleton, the
+  live clock, and the static "Live" / 「实时」 word. Failure shows
+  nothing where the clock was (no false LIVE beside a dead loader).
+  `scripting:none` still shows the static word with the shimmer off.
+- **(c) What-changed first card** — EN chip **"1 signal"** (not
+  "1 signals"); ZH 「1 条信号」. Plain EN receipt
   "The regime's footing went from a new regime to shifting (4 warning
   flags active)" and plain ZH
-  「周期状态由「新周期」转为「转换中」（4 个预警激活）」. No ` -> ` arrow.
+  「周期状态由「新周期」转为「转换中」（4 个预警激活）」 in the UI face
+  (not monospace). No ` -> ` arrow.
 
 `start-tier1-dark-en-1440.png` also shows the LENS hover tip on the
-momentum pill (vote roster: EMA trend, EMA cross, MACD, 200-day SMA,
-20-day ROC, RSI, SOPR, short-term holder cost).
+momentum pill (up to eight votes: EMA trend, EMA cross, MACD, 200-day
+SMA, 20-day ROC, RSI; SOPR and short-term holder cost only when chain
+data is present).
 
 ## 390 wrap verdict
 
@@ -109,11 +112,14 @@ The attribute stamp is the same DOM state `setTheme` would leave.
   `#mmb-boot`. Vector cards other than Bitcoin Vector and Bonds were
   `display:none` so the 4-col desktop grid packs those two to the start.
 - At 390, a capture-only stylesheet un-hides `.nav.vc .chips` and
-  `.h .eyebrow` and restores column card geometry so wrap/skeleton can
+  `.h .eyebrow` and restores column card geometry so wrap/clock can
   be seen. Live product still compact-hides those at `max-width:560px`.
-- The clock IIFE is short-circuited (`return` as the first statement)
-  so `.hub-clock-wrap` never gains `is-live` — the crop is the skeleton
-  + static "Live" word, not a ticking clock.
+- At ≤560px the card CTA (`.nav.vc .go .go-tx`) compact-hides, leaving
+  the `.go::after` "→" alone — unlabeled EN and ZH alike. Pre-existing
+  compact rule; shown in the 390 crops.
+- Capture skips `tick()` so `.hub-clock-wrap` never gains `is-live`;
+  the failsafe timeout stamps `no-clock` and the crop is the empty
+  wrap, not a ticking clock and not LIVE beside a dead shimmer.
 - Theme CSS is the repo file (`templates/theme.css` +
   `product-nav-icons.css` + self-hosted `templates/fonts/Inter-*.woff2`),
   served next to the rendered HTML. Inter loads; no Google Fonts.

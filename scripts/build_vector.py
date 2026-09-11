@@ -2055,14 +2055,14 @@ def home_alert_feed() -> list[dict]:
             if not stored_zh or _zh_needs_rebuild(r["rule"]):
                 stored_zh = _translate_macro_detail(r["message"], r["rule"]) or stored_zh
             detail_zh = stored_zh or r["message"]
-            # Presentation-tier EN/ZH receipt: alert_view already rewrites
-            # transition_state_change enums (NEW_REGIME/TRANSITIONING) via
-            # _plain_transition_msg onto v["message"] / v["message_zh"]. The
-            # parquet row keeps the raw string so _translate_macro_detail can
-            # still match it; that translator's ZH branch still emits the
-            # machine "A -> B" arrow, so the hub must prefer the view's ZH
-            # the same way it prefers the view's EN. Do not copy r["message"]
-            # (or the translator arrow) onto the glance card.
+            # Presentation-tier EN/ZH receipt. This call site passes NO
+            # message_zh, so v["message_zh"] is empty for every rule except
+            # transition_state_change, where alert_view overwrites it with
+            # _plain_transition_msg's prose ZH. Prefer that view ZH when
+            # present; otherwise keep stored parquet ZH / _zh_needs_rebuild.
+            # Do not pass r["message_zh"] into alert_view — stored parquet ZH
+            # would then outrank the rebuild. Do not copy r["message"] (or
+            # the translator's "A -> B" arrow) onto the glance card.
             out.append({
                 "source": "macro", "source_label": h["macro_label"],
                 "source_label_zh": _tr(h["macro_label"]),
@@ -2223,6 +2223,7 @@ html[data-lang="zh"] .hub-signin .l-zh{display:inline}
 .hub-clock-skel{display:inline-block;width:18ch;height:.85em;vertical-align:-.1em}
 .hub-clock-wrap:not(.is-live) .hub-clock-live{display:none}
 .hub-clock-wrap.is-live .hub-clock-skel,.hub-clock-wrap.is-live .hub-clock-static{display:none}
+.hub-clock-wrap.no-clock .hub-clock-skel,.hub-clock-wrap.no-clock .hub-clock-live,.hub-clock-wrap.no-clock .hub-clock-static{display:none}
 @media(scripting:none){.hub-clock-skel{display:none}}
 .chips .pill[data-tip-en]{cursor:help}
 /* a soft, feathered radial --bg scrim sits BEHIND the hero text (own stacking
@@ -2368,11 +2369,11 @@ html[data-lang="zh"] .sb-tx b{letter-spacing:0}
 .ha-what{font-size:12.5px;color:var(--text);line-height:1.55}
 .ha-edge{font-size:12px;color:var(--muted);line-height:1.45;margin-top:6px}
 .ha-edge b{color:var(--text);font-weight:700}
-/* the measurement is a receipt, not the explanation — demote it to a mono readout,
-   but ONLY when plain words sit above it (some feeds carry no `what`, and there the
-   measurement is all the row has, so it must stay body text). */
+/* the measurement is a receipt, not the explanation — demote it (smaller, muted)
+   when plain words sit above it. It is now plain prose, so it stays in the UI
+   face; mono is reserved for ticker codes (.sb-tickers-code). */
 .ha-what ~ .ha-foot,.ha-edge ~ .ha-foot{margin-top:9px;padding-top:8px;border-top:1px solid color-mix(in srgb,var(--line) 60%,transparent)}
-.ha-what ~ .ha-foot .ha-read,.ha-edge ~ .ha-foot .ha-read{font-family:var(--font-mono);font-size:11.5px;color:var(--muted)}
+.ha-what ~ .ha-foot .ha-read,.ha-edge ~ .ha-foot .ha-read{font-size:11.5px;color:var(--muted)}
 .al-more{display:block;text-align:center;padding:11px 0 6px;font-size:12.5px;font-weight:700;color:var(--link);text-decoration:none}
 .al-more:hover{text-decoration:underline}
 .ha-toggle{display:block;width:100%;background:none;border:none;border-top:1px solid color-mix(in srgb,var(--line) 70%,transparent);padding:9px 0;font-family:inherit;font-size:12.5px;font-weight:700;color:var(--link);cursor:pointer;text-align:center}
@@ -3212,11 +3213,13 @@ def _hub_mom_chip(vm: dict) -> tuple[str, str, str, str]:
         glance_en, glance_zh = "Mild down-momentum", "动量温和向下"
     else:
         glance_en, glance_zh = "Flat momentum", "动量持平"
-    tip_en = (f"Momentum {m:g} on a −1 to +1 vote ensemble (EMA trend, EMA cross, "
-              "MACD, 200-day SMA, 20-day ROC, RSI, SOPR, short-term holder cost). "
+    tip_en = (f"Momentum {m:g} on a −1 to +1 vote ensemble of up to eight votes "
+              "(EMA trend, EMA cross, MACD, 200-day SMA, 20-day ROC, RSI; "
+              "SOPR and short-term holder cost only when chain data is present). "
               "|score| above 0.5 is strong.")
-    tip_zh = (f"动量 {m:g}，标尺 −1 到 +1（EMA 趋势、EMA 交叉、MACD、200日均线、"
-              "20日涨跌幅、RSI、SOPR、短线持有成本 投票合成）。绝对值高于 0.5 为偏强。")
+    tip_zh = (f"动量 {m:g}，标尺 −1 到 +1，最多八票合成（EMA 趋势、EMA 交叉、MACD、"
+              "200日均线、20日涨跌幅、RSI；SOPR 与短线持有成本仅在链上数据存在时计入）。"
+              "绝对值高于 0.5 为偏强。")
     return glance_en, glance_zh, tip_en, tip_zh
 
 
@@ -3423,12 +3426,12 @@ def _g_alerts(alerts):
     deduped = deduped[:12]
     total = len(deduped)
     shown = min(total, 5)
-    # 2a: chip text: "X of N signals" when N>shown, plain "N signals" otherwise
+    # 2a: chip text: "X of N signals" when N>shown, plain "1 signal" / "N signals"
     if total > shown:
         chip_en = str(shown) + " of " + str(total) + " signals"
         chip_zh = "显示 " + str(shown) + " / " + str(total) + " 条信号"
     else:
-        chip_en = str(total) + " signals"
+        chip_en = str(total) + (" signal" if total == 1 else " signals")
         chip_zh = str(total) + " 条信号"
     head = ('<div class="band"><h2>' + _bi("What changed", "近期变化") + '</h2><span class="ln"></span>'
             '<span class="cnt">' + _bi(chip_en, chip_zh) + '</span></div>')
@@ -3754,13 +3757,15 @@ def _hub_html(vm: dict, macro: dict, alerts: list, china: dict | None = None,
         # live_config.js + live.js already load through the canonical product nav
         # emitted by _hub_product_nav_html(); do not parse/execute them twice here.
         # eyebrow clock — ticks the viewer's own browser local time, second by second
-        '<script>(function(){var els=document.querySelectorAll(".hub-clock");if(!els.length)return;'
+        '<script>(function(){var wrap=document.querySelector(".hub-clock-wrap");'
+        'function fail(){if(wrap&&!wrap.classList.contains("is-live"))wrap.classList.add("no-clock");}'
+        'setTimeout(fail,2000);'
+        'try{var els=document.querySelectorAll(".hub-clock");if(!els.length){fail();return;}'
         'var opt={year:"numeric",month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false,timeZoneName:"short"};'
-        'var wrap=document.querySelector(".hub-clock-wrap");'
         'function tick(){var d=new Date();for(var i=0;i<els.length;i++){var l=els[i].getAttribute("data-loc")||undefined;'
         'try{els[i].textContent=d.toLocaleString(l,opt);}catch(e){els[i].textContent=d.toLocaleString(undefined,opt);}}'
         'if(wrap)wrap.classList.add("is-live");}'
-        'tick();setInterval(tick,1000);})();</script>'
+        'tick();setInterval(tick,1000);}catch(e){fail();}})();</script>'
         # personal welcome — name greeting + a short market-aware read (real #globe-data,
         # no LLM), paced with pauses, then a slow dissolve to the brand. Engine + topic/
         # phrasing rotation + same-day visit recall live in hub-welcome.js.

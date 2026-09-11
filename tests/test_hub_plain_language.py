@@ -7,6 +7,7 @@ sparse tree (no data/ / site/).
 """
 from __future__ import annotations
 
+import inspect
 import json
 
 import pandas as pd
@@ -74,6 +75,20 @@ def test_hub_feed_transition_singular_flag(monkeypatch, isolated_hub_sibling_fee
     assert "->" not in row["detail_zh"]
 
 
+def test_hub_feed_alert_view_does_not_pass_stored_message_zh():
+    """Hub call site must not pass parquet message_zh into alert_view.
+
+    Passing r['message_zh'] would let stored ZH silently outrank
+    _zh_needs_rebuild and revive the half-translated class the rebuild
+    exists to kill. Pin the three-arg call.
+    """
+    src = inspect.getsource(bv.home_alert_feed)
+    assert 'v = alert_view(r["rule"], r["severity"], r["message"])' in src
+    assert 'alert_view(r["rule"], r["severity"], r["message"],' not in src
+    call_line = src.split("v = alert_view", 1)[1].splitlines()[0]
+    assert "message_zh" not in call_line
+
+
 # ---------------------------------------------------------------------------
 # P2 — Other Features chips
 # ---------------------------------------------------------------------------
@@ -112,6 +127,10 @@ def test_hub_mom_chip_uses_minus1_to_plus1_scale():
     for token in ("EMA 趋势", "EMA 交叉", "MACD", "200日均线",
                   "20日涨跌幅", "RSI", "SOPR", "短线持有成本"):
         assert token in tip_zh
+    assert "up to eight" in tip_en
+    assert "chain data is present" in tip_en
+    assert "最多八" in tip_zh
+    assert "链上数据存在" in tip_zh
 
 
 def test_hub_mom_chip_unavailable_is_a_worded_null():
@@ -335,3 +354,36 @@ def test_hub_hero_uses_loading_skeleton_not_em_dash():
     assert ".hub-clock-wrap.is-live .hub-clock-static{display:none}" in html
     assert "@media(scripting:none){.hub-clock-skel{display:none}}" in html
     assert ".sb-tickers-code{font-family:var(--font-mono)}" in html
+    # JS-enabled-but-IIFE-crashed: stamp no-clock, hide skeleton AND the
+    # static "Live" word — failure shows nothing where the clock was.
+    assert 'function fail(){if(wrap&&!wrap.classList.contains("is-live"))wrap.classList.add("no-clock");}' in html
+    assert "setTimeout(fail,2000);" in html
+    assert "}catch(e){fail();}" in html
+    assert ".hub-clock-wrap.no-clock .hub-clock-skel" in html
+    assert ".hub-clock-wrap.no-clock .hub-clock-static{display:none}" in html
+    # Receipt line is prose in the UI face; mono stays on ticker codes only.
+    assert ".ha-what ~ .ha-foot .ha-read,.ha-edge ~ .ha-foot .ha-read{font-size:11.5px;color:var(--muted)}" in html
+    assert "ha-read{font-family:var(--font-mono)" not in html
+
+
+def _what_changed_alert(i=0):
+    return {
+        "source": "macro", "source_label": "Macro", "source_label_zh": "宏观",
+        "ts": f"2026-08-0{1 + (i % 9)}", "severity": "high",
+        "headline": f"📡 Regime radar moved {i}",
+        "headline_zh": f"📡 周期雷达变动 {i}",
+        "detail": "The regime's footing went from a new regime to shifting",
+        "detail_zh": "周期状态由「新周期」转为「转换中」",
+        "link": "macro.html",
+    }
+
+
+def test_what_changed_chip_singular_and_plural_en():
+    one = bv._g_alerts([_what_changed_alert(0)])
+    assert "1 signal" in one
+    assert "1 signals" not in one
+    assert "1 条信号" in one
+    three = bv._g_alerts([_what_changed_alert(i) for i in range(3)])
+    assert "3 signals" in three
+    assert "3 条信号" in three
+    assert ">3 signal<" not in three and "cnt\">3 signal<" not in three
