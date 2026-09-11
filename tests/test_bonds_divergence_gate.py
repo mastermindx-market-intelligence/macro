@@ -647,9 +647,11 @@ def test_delayed_card_three_true_causes():
     assert stale["state"] == "delayed"
     assert stale["cause"] == "stale"
     assert stale["last_obs"] == "01 Aug 2026"
+    assert stale["last_obs_zh"] == "2026年8月1日"
     stale_card = _card_html(_render(div_card=stale, as_of_iso=AS_OF))
     assert "Data delayed since 01 Aug 2026" in stale_card
-    assert "数据自 01 Aug 2026 起未更新" in stale_card
+    assert "数据自 2026年8月1日 起未更新" in stale_card
+    assert "数据自 01 Aug 2026 起未更新" not in stale_card
     assert "The daily series has not updated" in stale_card
     assert "isn't live yet" not in stale_card
     assert "awaiting the daily series" not in stale_card
@@ -684,6 +686,36 @@ def test_delayed_card_three_true_causes():
     assert "数据延迟——等待日度序列" in missing_card
     assert "Data delayed since" not in missing_card
     assert "isn't live yet" not in missing_card
+
+
+def test_delayed_card_unparseable_as_of_with_last_obs_is_cause_neutral():
+    """m1: as_of None / garbage + real last_obs is not 'series isn't available'."""
+    last = "2026-09-03"
+    for ao in (None, "not-a-date"):
+        dc = divergence_card_state(False, None, last, ao)
+        assert dc["state"] == "delayed", ao
+        assert dc["cause"] == "unknown", ao
+        assert dc["last_obs"] is None, ao
+        assert dc["last_obs_zh"] is None, ao
+        card = _card_html(_render(div_card=dc, as_of_iso=ao or AS_OF))
+        assert "Data delayed — this comparison can't be scored right now." in card
+        assert "数据延迟——该比较暂无法评分。" in card
+        assert "awaiting the daily series" not in card
+        assert "isn't available yet" not in card
+        assert "等待日度序列" not in card
+        assert "日度序列尚不可用" not in card
+        assert "Data delayed since" not in card
+        assert "isn't live yet" not in card
+        assert "03 Sep" not in card
+        assert "2026-09-03" not in card
+
+
+def test_delayed_card_stays_flat_on_hover():
+    """n1: .cc-delayed:hover outranks .card:hover so the refusal card stays flat."""
+    css = (TMPL / "bonds.html.j2").read_text(encoding="utf-8")
+    style = css.split("<style>", 1)[1].split("</style>", 1)[0]
+    assert ".cc-delayed:hover" in style
+    assert re.search(r"\.cc-delayed:hover\{[^}]*box-shadow:\s*none", style)
 
 
 def test_base_ctx_watching_follows_producer():

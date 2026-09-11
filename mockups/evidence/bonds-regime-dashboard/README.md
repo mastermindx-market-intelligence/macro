@@ -8,7 +8,7 @@ Spec G4 names a 4-subject 32-crop matrix; the seat and the round-2 brief expand 
 - Source: `templates/bonds.html.j2` L1 wrap + page-scoped `<style>` (site-nav / seo / vector-polish stripped).
 - VM: `scripts/capture_bonds_regime_dashboard_evidence.fixture_vm` (starts from `tests.test_bonds_divergence_gate._base_ctx`, the page-test idiom). Watching is `_watching(vm)` — un-inverted fixture no longer presupposes inversion.
 - Theme/lang: Playwright seeds `window.__skyDeck = true` then localStorage, then calls `window.setTheme` / `window.setLang`; a mismatch refuses the cell. `__skyDeck` bows out of `theme.js` `skyToggleFx` (the ~1100ms sun/moon disc).
-- Decorative hide (disclosed): `#mmb-boot`, `#mmb-launch`, `#mmb-root`, `.sky-fx`, `.mx5-aurora`, `.theme-fab`. This page does not ship an aurora or theme FAB; the hide is belt-and-suspenders. Overlay probe runs after every recaptured shot.
+- Decorative hide (disclosed): `#mmb-boot`, `#mmb-launch`, `#mmb-root`, `.sky-fx`, `.mx5-aurora`, `.theme-fab`. This page does not ship an aurora or theme FAB; the hide is belt-and-suspenders. Overlay probe runs after every recaptured shot. Only the 24 recaptured cells carry the overlay column; the other 28 predate the probe.
 
 ## Honest differences from live `site/bonds.html`
 

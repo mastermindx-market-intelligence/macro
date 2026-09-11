@@ -385,7 +385,7 @@ html[data-theme="dark"] .depth a:hover{background:var(--panel2);box-shadow:none}
 html[data-theme="light"] .depth a:hover{box-shadow:0 2px 6px color-mix(in srgb,var(--ink) 10%,transparent)}
 .depth a small{color:var(--muted);font-weight:400}
 .empty-why{color:var(--muted);font-size:13px;margin-top:6px;line-height:1.45}
-.cc-delayed{background:var(--panel2);box-shadow:none}
+.cc-delayed, .cc-delayed:hover{background:var(--panel2);box-shadow:none}
 html[data-theme="light"] .cc-delayed{background:var(--card);box-shadow:none;border:1px solid var(--line)}
 .world-list{margin:8px 0 0;padding:0;list-style:none;max-width:36rem}
 .world-list li{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px}
@@ -1197,9 +1197,11 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
     {% else %}
     <p class="cc-verdict-lead">
       {% if div_card.cause == 'stale' and div_card.last_obs %}
-      <span class="l-en">Data delayed since {{ div_card.last_obs }}</span><span class="l-zh">数据自 {{ div_card.last_obs }} 起未更新</span>
+      <span class="l-en">Data delayed since {{ div_card.last_obs }}</span><span class="l-zh">数据自 {{ div_card.last_obs_zh }} 起未更新</span>
       {% elif div_card.cause == 'unbuilt' %}
       <span class="l-en">This read isn't live yet — the comparison engine hasn't produced it</span><span class="l-zh">该读数尚未上线——比较引擎尚未产出</span>
+      {% elif div_card.cause == 'unknown' %}
+      <span class="l-en">Data delayed — this comparison can't be scored right now.</span><span class="l-zh">数据延迟——该比较暂无法评分。</span>
       {% else %}
       <span class="l-en">Data delayed — awaiting the daily series</span><span class="l-zh">数据延迟——等待日度序列</span>
       {% endif %}
@@ -1209,6 +1211,8 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
       <span class="l-en">The daily series has not updated, so the divergence read cannot be scored.</span><span class="l-zh">日度序列尚未更新，因此无法计算背离读数。</span>
       {% elif div_card.cause == 'unbuilt' %}
       <span class="l-en">No scored comparison is on this page until that engine run exists.</span><span class="l-zh">在该引擎产出之前，本页不会显示已评分的比较读数。</span>
+      {% elif div_card.cause == 'unknown' %}
+      <span class="l-en">This comparison can't be scored right now.</span><span class="l-zh">该比较暂无法评分。</span>
       {% else %}
       <span class="l-en">The daily series isn't available yet, so the divergence read cannot be scored.</span><span class="l-zh">日度序列尚不可用，因此无法计算背离读数。</span>
       {% endif %}

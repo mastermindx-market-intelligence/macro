@@ -160,37 +160,48 @@ def divergence_card_state(ready, ready_date, last_obs, as_of) -> dict:
 
     READY — divergence_ready is true (placeholder yields; the scored read is out of scope).
     BUILDING — not ready AND ready_date parses AND ready_date > as_of (strict).
-    DELAYED — every other case (missing/None/unparseable/<= as_of). Three honest
+    DELAYED — every other case (missing/None/unparseable/<= as_of). Four honest
     causes; last_obs is emitted only when it is strictly older than as_of:
-      stale    — last_obs < as_of (dated delay copy)
+      stale    — last_obs < as_of (dated delay copy; last_obs_zh via _fmt_asof_zh)
       unbuilt  — last_obs >= as_of (series current; the comparison engine is not live)
-      awaiting — last_obs missing/unparseable, or as_of unparseable so stale cannot
-                 be proved. Never "delayed since today".
+      unknown  — last_obs is a real date but as_of is missing/unparseable, so
+                 stale vs unbuilt cannot be proved. Cause-neutral copy; no date.
+      awaiting — last_obs missing/unparseable. Never "delayed since today".
     """
     if ready:
-        return {"state": "ready", "ready_date": None, "last_obs": None, "cause": None}
+        return {
+            "state": "ready", "ready_date": None,
+            "last_obs": None, "last_obs_zh": None, "cause": None,
+        }
     rd = _parse_iso_date(ready_date)
     ao = _parse_iso_date(as_of)
     if rd is not None and ao is not None and rd > ao:
         return {
             "state": "building", "ready_date": _fmt_card_date(rd),
-            "last_obs": None, "cause": None,
+            "last_obs": None, "last_obs_zh": None, "cause": None,
         }
     lo = _parse_iso_date(last_obs)
     if lo is not None and ao is not None and lo < ao:
         return {
             "state": "delayed", "ready_date": None,
-            "last_obs": _fmt_card_date(lo), "cause": "stale",
+            "last_obs": _fmt_card_date(lo), "last_obs_zh": _fmt_asof_zh(lo),
+            "cause": "stale",
         }
     if lo is not None and ao is not None:
         # last_obs >= as_of: series is current (or ahead). Do not date-claim a delay.
         return {
             "state": "delayed", "ready_date": None,
-            "last_obs": None, "cause": "unbuilt",
+            "last_obs": None, "last_obs_zh": None, "cause": "unbuilt",
+        }
+    if lo is not None:
+        # Series has a date; as_of does not. Cannot attribute a cause.
+        return {
+            "state": "delayed", "ready_date": None,
+            "last_obs": None, "last_obs_zh": None, "cause": "unknown",
         }
     return {
         "state": "delayed", "ready_date": None,
-        "last_obs": None, "cause": "awaiting",
+        "last_obs": None, "last_obs_zh": None, "cause": "awaiting",
     }
 
 
