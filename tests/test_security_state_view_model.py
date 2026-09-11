@@ -2517,11 +2517,15 @@ def test_owner_receipts_glance_uses_bilingual_house_copy_not_engine_prose() -> N
     assert "八项读数" not in zh_card
 
     # Artifact/reader rows are house sentences, never the engine paths.
-    # Field values (VendorAliasTable.resolve, …) stay in the receipt dialog.
+    # Field values stay in the receipt dialog. After #6920 h7, the owner-alias
+    # reader value is projected through `_SS_READ_KEY_VALUE` as house copy
+    # ("the vendor alias table" / "供应商别名表"), not the raw token.
     full_en = _render_section(view, lang="en")
+    full_zh = _render_section(view, lang="zh")
     assert "data/reference/security_master.parquet" not in full_en
     assert reader_module not in full_en
-    assert "VendorAliasTable.resolve" in full_en
+    assert "the vendor alias table" in full_en
+    assert "供应商别名表" in full_zh
     r1 = _SS_LEG_HOUSE_BY_DESC[(
         "R1", "security_master row exists, security_state/superseded_by both null",
     )]
