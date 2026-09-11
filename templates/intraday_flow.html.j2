@@ -1380,7 +1380,7 @@ function dealerCompact(d, quote) {
     out.push('<div class="dealer-line">'+lz('ceiling','天花板')+' ~$'+fmtNum(d.call_wall,0)+hard+'</div>');
   }
   if (d.put_wall != null) out.push('<div class="dealer-line">'+lz('floor','地板')+' ~$'+fmtNum(d.put_wall,0)+'</div>');
-  if (d.expected_move_daily_pct != null) out.push('<div class="dealer-line muted">'+lz('~'+fmtNum(d.expected_move_daily_pct,1)+'% move today','~今日约'+fmtNum(d.expected_move_daily_pct,1)+'%波动')+'</div>');
+  if (d.expected_move_daily_pct != null) out.push('<div class="dealer-line muted">'+lz('~'+fmtNum(d.expected_move_daily_pct,1)+'% expected move','~预期波动约'+fmtNum(d.expected_move_daily_pct,1)+'%')+'</div>');
   if (d.vol_hole_state && d.vol_hole_state !== 'NONE') {
     var vh = { IN_HOLE: lz('pinned between walls','被夹在墙位间'), COILED_UP: lz('coiled — upward','蓄势向上'),
       COILED_DOWN: lz('coiled — downward','蓄势向下'), EXPANSION: lz('breaking out','正在扩张') }[d.vol_hole_state];
