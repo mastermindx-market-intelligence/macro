@@ -2313,6 +2313,8 @@ def sector_setup_view(latest: dict, timing: dict | None = None) -> dict | None:
             r["rate_n"] = br.get("n") if br else None
             r["rate_exc"] = br.get("exc63") if br else None
             r["season_str"], _ = _compact_season(st.get("season_this"))
+            _sm = r["season_str"]
+            r["season_magnitude"] = _sm.split(" (", 1)[0] if _sm and " (" in _sm else _sm
             r["season_tip"] = _season_tooltip(st.get("season_all"), st.get("season_month") or month)
             # TS-R6 two-reads reconciliation chip: when this ETF's setup-side verdict
             # (3D tactical) conflicts with the cycle timing action (slow, cap-weighted).
@@ -2640,19 +2642,56 @@ def _policy_lever_view() -> dict | None:
         return None
 
 
-def holdings_rows() -> list[dict]:
-    """Compact teaser for the dashboard's "real fund moves" panel: the top
-    conviction-ranked ACCUMULATION decisions across the thematic/active fund
-    universe (same engine as the full radar at etfs.html). Conviction = pp of
-    fund weight committed, so a tiny-position double doesn't outrank a real add."""
-    from engine.holdings_signals import top_etf_accumulation
+def _sector_residual_universe_n() -> int | None:
+    """Count residual movers across sector SPDRs BEFORE the panel slice.
+
+    Cheap half of ``top_sector_residuals``: weight_decomposition only, no
+    cycle/ladder lookup. None means the count is not cheaply knowable — the
+    template must then drop the number rather than print the sliced length.
+    """
+    try:
+        from engine.holdings_signals import weight_decomposition
+        funds = config.load()["sponsors"]["sector_funds"]
+        n = 0
+        for fund in funds:
+            try:
+                dec = weight_decomposition(fund)
+            except Exception:  # noqa: BLE001 — one fund must not kill the count
+                continue
+            if dec is None or getattr(dec, "empty", True):
+                continue
+            for _tk, row in dec.iterrows():
+                ac = row.get("active_change")
+                try:
+                    if ac is None or float(ac) == 0.0:
+                        continue
+                    if ac != ac:  # NaN
+                        continue
+                except (TypeError, ValueError):
+                    continue
+                n += 1
+        return n
+    except Exception:  # noqa: BLE001 — additive label, never fatal
+        return None
+
+
+def holdings_panel() -> tuple[list[dict], int | None]:
+    """Sliced teaser rows + true accumulation-universe N (before panel_top_n).
+
+    Universe is every positive-conviction fund decision after split events are
+    dropped — the same set the whales page ranks, not the 12-row teaser.
+    """
+    from engine.holdings_signals import all_etf_signals, drop_split_events
     n = config.load()["holdings_signals"].get("panel_top_n", 12)
     try:
-        acc = top_etf_accumulation().get("accumulation", [])[:n]
+        raw = drop_split_events(all_etf_signals())
+        acc_all = [r for r in raw if (r.get("conviction_pp") or 0) > 0]
+        universe_n = len(acc_all)
+        acc = sorted(acc_all, key=lambda r: -r["conviction_pp"])[:n]
     except Exception as e:  # noqa: BLE001 — panel is additive, never fatal
         log.error("fund moves panel failed: %s", e)
-        return []
-    return [{
+        return [], None
+    rows = [{
         "fund": s["etf"], "fund_name": s.get("etf_name", s["etf"]),
         "ticker": s["ticker"], "name": s["name"], "sector": s.get("sector", ""),
         "weight_pct": s.get("weight_pct"), "conviction_pp": s.get("conviction_pp"),
@@ -2660,6 +2699,39 @@ def holdings_rows() -> list[dict]:
         "is_active": s.get("is_active", False), "confirmed": s.get("confirmed", False),
         "ladder": s.get("ladder"), "window": s.get("window", ""),
     } for s in acc]
+    return rows, universe_n
+
+
+def holdings_rows() -> list[dict]:
+    """Compact teaser for the dashboard's "real fund moves" panel: the top
+    conviction-ranked ACCUMULATION decisions across the thematic/active fund
+    universe (same engine as the full radar at etfs.html). Conviction = pp of
+    fund weight committed, so a tiny-position double doesn't outrank a real add."""
+    rows, _uni = holdings_panel()
+    return rows
+
+
+def accumulation_panel() -> tuple[list[dict], int | None]:
+    """Sliced accumulation-watch rows + true residual-universe N (before slice)."""
+    from engine.holdings_signals import top_sector_residuals
+    from engine.playbook import SECTOR_NAMES
+    n = config.load()["holdings_signals"].get("panel_top_n", 12)
+    rows = []
+    try:
+        for s in top_sector_residuals(n):
+            rows.append({
+                "fund": s["fund"], "sector": SECTOR_NAMES.get(s["fund"], s["fund"]),
+                "ticker": s["ticker"], "name": s["name"],
+                "raw_change": s["raw_change"], "active_change": s["active_change"],
+                "active_pct": s["active_pct"],
+                "flow_str": _fmt_money_mn(s["est_flow_mn"]) if s.get("est_flow_mn") is not None else "—",
+                "flow_mn": s["est_flow_mn"] if s.get("est_flow_mn") is not None else None,
+                "direction": s["direction"], "confirmed": s["confirmed"],
+                "ladder": s["ladder"], "window": f"{s['t0']}..{s['t1']}"})
+    except Exception as e:  # noqa: BLE001 — panel is additive, never fatal
+        log.error("accumulation panel failed: %s", e)
+        return [], None
+    return rows, _sector_residual_universe_n()
 
 
 def accumulation_rows() -> list[dict]:
@@ -2670,20 +2742,7 @@ def accumulation_rows() -> list[dict]:
     Uses ``top_sector_residuals`` (the strongest residual movers, no alert gate) so
     the panel is always populated — on passive SPDRs the residual is tiny by
     construction and the thresholded list is almost always empty."""
-    from engine.holdings_signals import top_sector_residuals
-    from engine.playbook import SECTOR_NAMES
-    n = config.load()["holdings_signals"].get("panel_top_n", 12)
-    rows = []
-    for s in top_sector_residuals(n):
-        rows.append({
-            "fund": s["fund"], "sector": SECTOR_NAMES.get(s["fund"], s["fund"]),
-            "ticker": s["ticker"], "name": s["name"],
-            "raw_change": s["raw_change"], "active_change": s["active_change"],
-            "active_pct": s["active_pct"],
-            "flow_str": _fmt_money_mn(s["est_flow_mn"]) if s.get("est_flow_mn") is not None else "—",
-            "flow_mn": s["est_flow_mn"] if s.get("est_flow_mn") is not None else None,
-            "direction": s["direction"], "confirmed": s["confirmed"],
-            "ladder": s["ladder"], "window": f"{s['t0']}..{s['t1']}"})
+    rows, _uni = accumulation_panel()
     return rows
 
 
@@ -6700,6 +6759,9 @@ def main() -> int:
     _fx_context = _build_fx_context()
     _msig_stances_val = _msig_stances(_us_ms_view, _chart_liq_meta, f)
 
+    _hold_rows, _hold_uni = holdings_panel()
+    _acc_rows, _acc_uni = accumulation_panel()
+
     vm = dict(
         latest=latest,
         risk_envelope=_risk_envelope,
@@ -6749,9 +6811,11 @@ def main() -> int:
         msig_stances=_msig_stances_val,          # MSX-2: stance {en,zh} pairs per section
         fx_context=_fx_context,                  # MSX-2: FX context block (fail-open None)
         positioning=positioning_rows(f),
-        holdings_changes=holdings_rows(),
+        holdings_changes=_hold_rows,
+        holdings_universe_n=_hold_uni,
         holdings_threshold=config.load()["holdings"]["active_change_alert_pct"],
-        accumulation=accumulation_rows(),
+        accumulation=_acc_rows,
+        accumulation_universe_n=_acc_uni,
         flows_html=flows_html_table(),
         health=health_rows(),
         factor_leadership=factor_leadership,

@@ -331,7 +331,7 @@
           width: 15px; height: 15px; border-radius: 50%; border: 1px solid var(--muted);
           color: var(--muted); font-size: 10px; font-weight: 600; cursor: help;
           position: relative; vertical-align: middle; margin-left: 5px; flex: none; }
-  .help:focus-visible { outline: 2px solid var(--ink-info, var(--link)); outline-offset: 2px; }
+  .help:focus-visible { outline: 2px solid var(--ink-info); outline-offset: 2px; }
   .help .tip { display: none; position: absolute; bottom: 140%; left: 50%;
                transform: translateX(-50%); width: 330px;
                background: var(--panel); border: 1px solid var(--line);
@@ -2244,8 +2244,11 @@
   body.page-stocks .mx5-aurora{display:none}
   @media (max-width: 560px){
     #holdings h2 a{float:none !important;display:inline-block;margin:4px 12px 0 0 !important}
-    #accumulation h2 .muted{float:none;display:inline-block;margin:4px 0 0}
   }
+  body.page-stocks #holdings .tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  body.page-stocks #holdings .tbl-scroll table{min-width:640px}
+  body.page-stocks #holdings .tbl-scroll th,
+  body.page-stocks #holdings .tbl-scroll td{white-space:nowrap}
   /* post-stack: consolidate */
   .dtp-token.loading{color:var(--muted);border-color:var(--line)}
   .dtp-token.loading .dtp-dot{background:var(--muted);animation:none}
@@ -17491,7 +17494,7 @@ html[data-theme="light"] :is(
         <th>{{ t('Momentum (3D)', '动量（3 日）') }} {{ help("Two momentum readings on the 3-day chart. High means the move is stretched and late; turning up from the low end is the bottoming tell, falling out of the high end is the topping tell. The readings themselves (RSI · stochastic) are on each cell.", "3 日图上的两个动量读数。数值高说明这波已经拉得很开、偏晚；从低位转上来是见底的迹象，从高位掉下来是见顶的迹象。具体读数（RSI · 随机指标）见各单元格悬停。") }}</th>
         <th>{{ t('3mo vs mkt', '3 月对比市场') }} {{ help("Relative strength vs the S&P 500 over the past ~60 trading days.", "过去约 60 个交易日相对标普 500 的强弱。") }}</th>
         <th>{{ t('seasonality', '季节性') }} {{ help("This sector's average return in the current calendar month. Hover for the full 12-month picture. Weak evidence — context only, never a signal on its own.", "该板块在当前日历月的平均回报。悬停查看完整 12 个月全貌。弱证据——仅供参考，绝不单独作为信号。") }}</th>
-        <th>{{ t('base rate', '基础概率') }} {{ help("The MEASURED forward 63-day excess vs SPY for this state across the 11 sector ETFs 1998-2026 — the signal's honest track record, not a promise. Hit-rates run ~50–56% across states — the edge is in size and in avoidance, not in win-rate. Each row's own sample count and up-rate are on that cell.", "该状态实测的未来 63 日对 SPY 超额，跨 11 个板块 ETF、1998–2026——信号的真实历史记录，并非承诺。各状态胜率约 50–56% — 优势在于幅度与「回避」，而非胜率。每一行自己的样本数与收涨比例见该单元格悬停。") }}</th>
+        <th>{{ t('base rate', '基础概率') }} {{ help("The MEASURED forward 63-day excess vs SPY for this state across the 11 sector ETFs 1998-2026 — the signal's honest track record, not a promise. Hit-rates run ~50–56% across states — below 55 is even odds, 55 and above is more often up. The edge is in size and in avoidance, not in win-rate. Each row's own sample count and up-rate are on that cell.", "该状态实测的未来 63 日对 SPY 超额，跨 11 个板块 ETF、1998–2026——信号的真实历史记录，并非承诺。各状态胜率约 50–56% — 低于 55 为胜率接近五五，55 及以上为多数时候上涨。优势在于幅度与「回避」，而非胜率。每一行自己的样本数与收涨比例见该单元格悬停。") }}</th>
       </tr>
       {% for r in sector_setups.sectors %}
       <tr>
@@ -17518,17 +17521,17 @@ html[data-theme="light"] :is(
           </div>
           {% endif %}
         </td>
-        <td class="l" style="font-size:12px"{% if r.get('flags') and r.flags.get('macd_dn_3d') %} data-tip-en="3-day MACD has crossed down. This is the rolling-over case the column describes — the signal that fired is a down-cross, not an entry." data-tip-zh="3 日 MACD 已下穿。即本列所说的「回落」情形 — 触发的是下穿信号，不是入场。"{% endif %}>{% if r.get('flags') and r.flags.get('macd_dn_3d') %}<span class="l-en">rolling over</span><span class="l-zh">正在回落</span>{% else %}{{ r.signal_txt }}{% endif %}</td>
+        <td class="l" style="font-size:12px"{% if r.get('flags') and r.flags.get('macd_dn_3d') %} data-tip-en="3-day MACD has crossed down. This is the rolling-over case the column describes — the signal that fired is a down-cross, not an entry." data-tip-zh="3 日 MACD 已下穿。即本列所说的「回落」情形 — 触发的是下穿信号，不是入场。"{% elif r.get('flags') and r.flags.get('macd_up_3d') %} data-tip-en="3-day MACD has crossed up. This is the turning-up case — the signal that fired is an up-cross, not an entry." data-tip-zh="3 日 MACD 已上穿。即「转强」情形 — 触发的是上穿信号，不是入场。"{% endif %}>{% if r.get('flags') and r.flags.get('macd_dn_3d') %}<span class="l-en">rolling over</span><span class="l-zh">正在回落</span>{% elif r.get('flags') and r.flags.get('macd_up_3d') %}<span class="l-en">turning up</span><span class="l-zh">正在转强</span>{% else %}{{ r.signal_txt }}{% endif %}</td>
         <td class="{{ 'pos' if r.tech_ok else '' }}" style="font-size:12px">{{ r.tech_str }}</td>
         <td style="font-size:12px"{% if r.get('stoch_3d') is number %} data-tip-en="RSI {{ r.rsi_3d|round|int if r.get('rsi_3d') is number else '—' }} · Stochastic {{ r.stoch_3d|round|int }} on the 3-day chart. Under 20 on the stochastic is the washed-out end; over 80 is the stretched end. Momentum readings only — never a signal on their own." data-tip-zh="3 日图上 RSI {{ r.rsi_3d|round|int if r.get('rsi_3d') is number else '—' }} · 随机指标 {{ r.stoch_3d|round|int }}。随机指标低于 20 为超卖端，高于 80 为拉伸端。仅为动量读数，绝不单独作为信号。"{% endif %}>{% if r.get('stoch_3d') is number %}{% if r.stoch_3d <= 20 %}<span class="l-en">washed out</span><span class="l-zh">超卖</span>{% elif r.stoch_3d >= 80 %}<span class="l-en">stretched</span><span class="l-zh">拉伸</span>{% else %}<span class="l-en">mid-range</span><span class="l-zh">中位</span>{% endif %}{% else %}{{ r.osc_str }}{% endif %}</td>
         <td class="{% if r.rs_60d and r.rs_60d > 0 %}pos{% elif r.rs_60d and r.rs_60d < 0 %}neg{% endif %}" data-sort="{{ r.rs_60d or 0 }}">{{ r.rs_str }}</td>
         <td>
           <span class="help" style="width:auto;height:auto;border:none;margin:0">
-            <span style="cursor:help">{{ (r.season_str.split(' (')[0] if r.season_str and ' (' in r.season_str else r.season_str) }}</span>
+            <span style="cursor:help">{{ r.season_magnitude if r.get('season_magnitude') is not none else r.season_str }}</span>
             <span class="tip tip-seas">{{ r.season_tip }}</span>
           </span>
         </td>
-        <td class="{% if r.rate_pos %}pos{% elif r.rate_pos is none %}muted{% else %}neg{% endif %}" style="font-size:11.5px"{% if r.get('rate_hit') is number and r.get('rate_n') is number and r.get('rate_exc') is number %} data-tip-en="{{ r.rate_hit }}% of {{ '{:,}'.format(r.rate_n|int) }} measured 63-day windows closed up. Measured across the 11 sector ETFs, 1998–2026. Windows overlap — this ranks the state, it is not an independent sample." data-tip-zh="{{ '{:,}'.format(r.rate_n|int) }} 个实测 63 日窗口中有 {{ r.rate_hit }}% 收涨。跨 11 个板块 ETF、1998–2026 实测。窗口互相重叠，因此这是对该状态的排序，并非独立样本。"{% endif %}>{% if r.get('rate_hit') is number and r.get('rate_exc') is number %}<span class="l-en">{{ '%+.1f'|format(r.rate_exc) }}% vs SPY · {% if r.rate_hit < 55 %}even odds{% elif r.rate_hit < 65 %}more often up{% else %}usually up{% endif %}</span><span class="l-zh">对SPY {{ '%+.1f'|format(r.rate_exc) }}% · {% if r.rate_hit < 55 %}胜率接近五五{% elif r.rate_hit < 65 %}多数时候上涨{% else %}通常上涨{% endif %}</span>{% else %}{{ r.rate_str }}{% endif %}</td>
+        <td class="{% if r.rate_pos %}pos{% elif r.rate_pos is none %}muted{% else %}neg{% endif %}" style="font-size:11.5px"{% if r.get('rate_hit') is number and r.get('rate_n') is number and r.get('rate_exc') is number %} data-tip-en="{{ r.rate_hit }}% of {{ '{:,}'.format(r.rate_n|int) }} measured 63-day windows closed up. Measured across the 11 sector ETFs, 1998–2026. Windows overlap — this ranks the state, it is not an independent sample." data-tip-zh="{{ '{:,}'.format(r.rate_n|int) }} 个实测 63 日窗口中有 {{ r.rate_hit }}% 收涨。跨 11 个板块 ETF、1998–2026 实测。窗口互相重叠，因此这是对该状态的排序，并非独立样本。"{% endif %}>{% if r.get('rate_hit') is number and r.get('rate_exc') is number %}<span class="l-en">{{ '%+.1f'|format(r.rate_exc) }}% vs SPY · {% if r.rate_hit < 55 %}even odds{% else %}more often up{% endif %}</span><span class="l-zh">对SPY {{ '%+.1f'|format(r.rate_exc) }}% · {% if r.rate_hit < 55 %}胜率接近五五{% else %}多数时候上涨{% endif %}</span>{% else %}{{ r.rate_str }}{% endif %}</td>
       </tr>
       {% endfor %}
     </table></div>{# /tbl-scroll #}
@@ -17589,13 +17592,13 @@ html[data-theme="light"] :is(
       stocks is the only consumer). -#}
 
   <!-- ======================= HOLDINGS / FLOWS ======================= -->
-  {%- set _hold_n = (holdings_changes | length) if holdings_changes else 0 -%}
+  {%- set _hold_uni = holdings_universe_n if (holdings_universe_n is defined and holdings_universe_n) else none -%}
   {%- set _hold_rows = holdings_changes[:8] if holdings_changes else [] -%}
   <div class="panel span12" id="holdings">
     <h2>{{ t("Real fund moves — strongest conviction", '基金真实动作 — 信念最强') }}
       {{ help("The top conviction-ranked ACCUMULATION decisions across curated thematic/industry funds (SPDR sector, Global X) and actively managed funds (ARK), with mechanical flow AND price moves stripped out. Conviction = percentage POINTS of fund weight the manager actually committed — so a real add to a meaningful position outranks a tiny position doubling. The full board (incl. trims & every fund) is the 🐳 Real fund moves page.", "在精选的主题／行业基金（SPDR 板块、Global X）与主动管理基金（ARK）中，按信念排序的最强增持决策，已剔除机械性资金流与价格变动。信念 = 经理人实际投入的基金权重百分点——因此对有意义仓位的真实增持会胜过微小仓位的翻倍。完整看板（含减持与全部基金）见 🐳 基金真实动作 页面。") }}
       <a href="sector_central.html#accumulation-section" class="muted" style="font-size:12px;font-weight:400;float:right;margin-right:12px"><span class="l-en">Accumulation watch → Sector Intelligence</span><span class="l-zh">增持监测 → 行业情报页</span></a>
-      <a href="etfs.html" class="muted" style="font-size:12px;font-weight:400;float:right">{% if _hold_n > 8 %}{{ t('See all ' ~ _hold_n ~ ' →', '查看全部 ' ~ _hold_n ~ ' 项 →') }}{% else %}{{ t('Full board →', '完整看板 →') }}{% endif %}</a>
+      <a href="etfs.html" class="muted" style="font-size:12px;font-weight:400;float:right">{% if _hold_uni and _hold_uni > 8 %}{{ t('See all ' ~ _hold_uni ~ ' →', '查看全部 ' ~ _hold_uni ~ ' 项 →') }}{% else %}{{ t('Full board →', '完整看板 →') }}{% endif %}</a>
     </h2>
     {% if _hold_rows %}
       <div class="tbl-scroll"><table>

@@ -48,11 +48,12 @@ def _sector_row(**over) -> dict:
     r = {
         "ticker": "XLK", "state": "BUY", "side": "buy",
         "label": "BUY", "label_zh": "买入", "verdict": "BUY",
-        "action_txt": "act", "signal_txt": "MACD ↑",
+        "action_txt": "act", "signal_txt": "no fresh cross",
         "conv_dots": "●", "conv_txt": "high", "color": "#00bfff",
         "priority": 1, "tech_str": "✓200d ✓50d", "tech_ok": True,
         "osc_str": "RSI 42 · Stoch 6", "rs_60d": 0.4, "rs_str": "+0.4%",
-        "season_str": "-1.1% (50%)", "season_tip": "<table></table>",
+        "season_str": "-1.1% (50%)", "season_magnitude": "-1.1%",
+        "season_tip": "<table></table>",
         "rate_str": "+0.4% vs SPY · 50% up · n=1295",
         "rate_pos": True, "href": "sectors/XLK.html",
         "name": "Information Technology",
@@ -60,7 +61,7 @@ def _sector_row(**over) -> dict:
         "two_reads_chip": None,
         "rsi_3d": 42.0, "stoch_3d": 6.0,
         "rate_hit": 50, "rate_n": 1295, "rate_exc": 0.4,
-        "flags": {"macd_dn_3d": False},
+        "flags": {"macd_dn_3d": False, "macd_up_3d": False},
     }
     r.update(over)
     return r
@@ -136,22 +137,31 @@ def test_sector_central_landing_anchors_exist_and_l1_count_unchanged():
 
 
 def test_holdings_capped_at_eight_with_counted_see_all():
-    """S2 §3.1 / §0.2."""
+    """S2 §3.1 / §0.2. Label is the unsliced universe, not panel_top_n."""
     rows = [_hold_row(i) for i in range(12)]
-    html = _stocks(holdings_changes=rows)
+    html = _stocks(holdings_changes=rows, holdings_universe_n=24)
     hold = html[html.index('id="holdings"'):]
     hold = hold[:hold.index("</div>", hold.index("<table>"))]
     assert hold.count("<tr>") == 9  # header + 8 data
-    assert "See all 12 →" in hold
-    assert "查看全部 12 项 →" in hold
+    assert "See all 24 →" in hold
+    assert "查看全部 24 项 →" in hold
+    assert "See all 12 →" not in hold
     assert "no signal yet" in hold
     assert "暂无信号" in hold
     assert 'href="sector_central.html#accumulation-section"' in hold
     assert "Accumulation watch → Sector Intelligence" in hold
 
 
+def test_holdings_drops_count_when_universe_unknown():
+    """A wrong count is worse than none — sliced length must not publish as N."""
+    html = _stocks(holdings_changes=[_hold_row(i) for i in range(12)])
+    hold = html[html.index('id="holdings"'):]
+    assert "Full board →" in hold
+    assert "See all 12 →" not in hold
+
+
 def test_holdings_full_board_when_not_capped():
-    html = _stocks(holdings_changes=[_hold_row(1)])
+    html = _stocks(holdings_changes=[_hold_row(1)], holdings_universe_n=1)
     hold = html[html.index('id="holdings"'):]
     assert "Full board →" in hold
     assert "完整看板 →" in hold
@@ -180,11 +190,11 @@ def test_sectors_receipt_sweep_and_band_boundaries():
     """S2 §2 frozen presentation bands at the cutoffs, plus banned vocab gone."""
     rows = [
         _sector_row(ticker="A", stoch_3d=20, rsi_3d=42, rate_hit=54, rate_n=100,
-                    rate_exc=0.1, flags={"macd_dn_3d": True}),
+                    rate_exc=0.1, flags={"macd_dn_3d": True, "macd_up_3d": False}),
         _sector_row(ticker="B", stoch_3d=21, rsi_3d=50, rate_hit=55, rate_n=200,
-                    rate_exc=0.2, flags={"macd_dn_3d": False}),
+                    rate_exc=0.2, flags={"macd_dn_3d": False, "macd_up_3d": True}),
         _sector_row(ticker="C", stoch_3d=79, rsi_3d=60, rate_hit=64, rate_n=1295,
-                    rate_exc=0.4, season_str="-1.1% (50%)"),
+                    rate_exc=0.4, season_str="-1.1% (50%)", season_magnitude="-1.1%"),
         _sector_row(ticker="D", stoch_3d=80, rsi_3d=70, rate_hit=65, rate_n=300,
                     rate_exc=1.0),
     ]
@@ -195,9 +205,11 @@ def test_sectors_receipt_sweep_and_band_boundaries():
     assert "stretched" in sec and "拉伸" in sec
     assert "even odds" in sec and "胜率接近五五" in sec
     assert "more often up" in sec and "多数时候上涨" in sec
-    assert "usually up" in sec and "通常上涨" in sec
+    assert "usually up" not in sec and "通常上涨" not in sec
     assert "rolling over" in sec and "正在回落" in sec
+    assert "turning up" in sec and "正在转强" in sec
     assert "MACD ↓" not in sec
+    assert "MACD ↑" not in sec
     assert "RSI 42 · Stoch 6" not in sec
     assert "-1.1% (50%)" not in sec
     assert ">-1.1%<" in sec or ">-1.1%" in sec
@@ -243,17 +255,29 @@ def _acc_row(i: int) -> dict:
 
 
 def test_accumulation_cap_label_present_when_n_gt_8():
-    """Seat ruling: labelled cap, no link. N is the producer list length."""
+    """Label is the unsliced universe, not the sliced panel length."""
     html = _env().get_template("_accumulation_watch.html.j2").render(
-        accumulation=[_acc_row(i) for i in range(12)])
-    assert "Top 8 · 12 tracked" in html
-    assert "前 8 · 共 12 项跟踪" in html
+        accumulation=[_acc_row(i) for i in range(12)],
+        accumulation_universe_n=110)
+    assert "Top 8 · 110 tracked" in html
+    assert "前 8 · 共 110 项跟踪" in html
+    assert "Top 8 · 12 tracked" not in html
     assert html.count("<tr>") == 9  # header + 8 data
     h2 = html[html.index("<h2>"):html.index("</h2>")]
     assert "<a " not in h2
     assert "See all" not in html
     assert "查看全部" not in html
     assert 'class="tbl-scroll"' in html
+    assert "#accumulation .help" in html
+    assert "#accumulation .tbl-scroll" in html
+
+
+def test_accumulation_drops_count_when_universe_unknown():
+    html = _env().get_template("_accumulation_watch.html.j2").render(
+        accumulation=[_acc_row(i) for i in range(12)])
+    assert "Top 8" in html
+    assert "Top 8 · 12 tracked" not in html
+    assert "共 12 项跟踪" not in html
 
 
 def test_accumulation_cap_label_absent_when_n_le_8():
@@ -295,16 +319,21 @@ def test_evidence_fixture_render_carries_subjects_and_control_has_no_tape():
         assert f'id="{pid}"' in html, pid
     assert 'class="acb-tape"' in html
     assert "Theme heat &amp; reasons → Sector Intelligence" in html
-    assert "See all 12 →" in html
+    assert "See all 24 →" in html
+    assert "See all 12 →" not in html
     assert "新型 GPU 云服务商 / AI 数据中心" in html
     assert "no signal yet" in html
     assert 'class="mtf-skel"' in html
     assert "body.page-stocks #holdings{display:none!important}" not in html
     assert "body.page-stocks .mx5-aurora{display:none}" in html
+    assert 'class="page-stocks"' in html
     ctrl = render_sector_central_control()
     assert 'id="action-board"' in ctrl
     assert "acb-tape" not in ctrl
     assert "Mega-cap tape" not in ctrl
+    assert "macro-desk page-baskets" in ctrl
+    assert 'id="accumulation"' in ctrl
+    assert 'id="theme-tape"' in ctrl
 
 
 def test_macro_mode_untouched_by_demotion():
@@ -313,3 +342,59 @@ def test_macro_mode_untouched_by_demotion():
     assert 'id="accumulation"' not in html
     assert 'id="theme-tape"' not in html
     assert "acb-tape" not in html
+
+
+def _theme_tape_fixture() -> dict:
+    from tests.test_theme_tape import _build
+    return _build()
+
+
+def _sc_builder_ctx(**over) -> dict:
+    """scripts/build_sector_central.py:524-531 context shape (no `mode`)."""
+    ctx = dict(
+        flows_html="",
+        pgate=None,
+        bottoming=None,
+        theme_context=None,
+        factor_season=None,
+        flow=None,
+        basket_member_syms=[],
+        action_board=None,
+        accumulation=[_acc_row(i) for i in range(12)],
+        accumulation_universe_n=24,
+        theme_tape=_theme_tape_fixture(),
+        generated_utc="2026-09-10",
+    )
+    ctx.update(over)
+    return ctx
+
+
+def test_sector_central_real_path_renders_landings_and_does_not_leak_tape():
+    """M3: render sector_central.html.j2 via the builder context, not a
+    standalone partial. Board-less else branch + both landing includes."""
+    html = _env().get_template("sector_central.html.j2").render(**_sc_builder_ctx())
+    assert 'id="accumulation-section"' in html
+    assert 'id="theme-heat-section"' in html
+    assert 'id="accumulation"' in html
+    assert 'id="theme-tape"' in html
+    assert "#accumulation .help" in html
+    assert "#accumulation .tbl-scroll" in html
+    assert "#theme-tape .help" in html
+    assert "Refreshing the action board" in html or "正在刷新操作板" in html
+    assert "acb-tape" not in html
+    assert "Mega-cap tape" not in html
+    assert 'class="panel span12" id="megacap-tape"' not in html
+    assert "Top 8 · 24 tracked" in html
+    assert "Top 8 · 12 tracked" not in html
+
+    ab = {
+        "total": 1, "buy_now": [], "buy_soon": [], "on_the_run": [],
+        "take_profits": [], "hold": [], "avoid": [],
+    }
+    with_board = _env().get_template("sector_central.html.j2").render(
+        **_sc_builder_ctx(action_board=ab))
+    assert 'id="action-board"' in with_board
+    assert "acb-tape" not in with_board
+    assert "Mega-cap tape" not in with_board
+    assert 'id="accumulation"' in with_board
+    assert 'id="theme-tape"' in with_board

@@ -1114,7 +1114,7 @@ def test_the_shelf_list_is_not_a_member_roster():
     assert "tt-names" not in shelf, "the shelf roster is caught by the tier gate"
     assert "tt-load" in shelf
     css = _panel_css()
-    assert ".tt-names,body.page-stocks.tt-load{display:flex" in css, (
+    assert ".tt-names,#theme-tape.tt-load{display:flex" in css, (
         "the two lists must share ONE declaration — a second copy of the "
         "atomic-wrap fix will drift from the first")
 

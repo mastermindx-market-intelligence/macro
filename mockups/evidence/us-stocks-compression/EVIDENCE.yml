@@ -4,4 +4,6 @@ changed_paths:
   - templates/_us_act_now_board.html.j2
   - templates/dashboard.html.j2
   - templates/_accumulation_watch.html.j2
+  - templates/_theme_tape.html.j2
+  - templates/sector_central.html.j2
 manifest: mockups/evidence/us-stocks-compression/manifest.json

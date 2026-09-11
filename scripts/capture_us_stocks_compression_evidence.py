@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
-"""Element-screenshot evidence for us_stocks.html S2 compression (round 2).
+"""Element-screenshot evidence for us_stocks.html S2 compression (round 3).
 
 Captures dark+light × EN+ZH × 1440/390 of the spec's G-gate subjects on a
 fixture-rendered dashboard.html.j2 stocks-mode page (sparse trees have no
-data/). Playwright applies theme/lang the way theme.js does and refuses a
+data/), plus the two demotion landings on the REAL sector_central.html.j2
+path. Playwright applies theme/lang the way theme.js does and refuses a
 cell whose observed data-theme/data-lang does not match the request.
 
-One extra crop: sector_central's shared action board (no mode='stocks')
-proving the megacap strip does not leak.
+Decorative layers (.mx5-aurora, .rvx-aurora, .sky-fx, #mmb-boot FAB) are
+removed for capture; window.__skyDeck is set so setTheme does not mint a
+sun/moon glyph. Disclosed in the README.
+
+One extra crop: sector_central's shared action board on the full page
+skeleton (body.macro-desk.page-baskets, no mode='stocks') proving the
+megacap strip does not leak.
 
 Usage::
 
@@ -33,14 +39,23 @@ TEMPLATES_DIR = REPO_ROOT / "templates"
 OUT_DIR = REPO_ROOT / "mockups" / "evidence" / "us-stocks-compression"
 CELLS_DIR = OUT_DIR / "cells"
 
-# Four G-gate subjects × 8 REST cells, plus one sector_central control crop.
+# Four G-gate subjects × 8 REST cells, plus two landing subjects on the
+# real sector_central path, plus one sector_central action-board control.
 SUBJECTS: tuple[tuple[str, str], ...] = (
     ("action-board", "#action-board"),
     ("sectors", "#sectors"),
     ("holdings", "#holdings"),
     ("dash-mtf", "#dash-mtf-section"),
 )
+LANDING_SUBJECTS: tuple[tuple[str, str, str], ...] = (
+    ("accumulation-landing", "#accumulation", "moving"),
+    ("theme-tape-landing", "#theme-tape", "explore"),
+)
 CONTROL_SUBJECT = ("sector-central-action", "#action-board")
+OVERLAY_SELECTORS = (
+    ".mx5-aurora", ".rvx-aurora", ".sky-fx",
+    "#mmb-root", "#mmb-boot", ".mx-tier-gate",
+)
 
 VIEWPORTS = {
     "desktop": (1440, 900),
@@ -53,6 +68,7 @@ THEMES = ("dark", "light")
 _STATE_SEED_SCRIPT = """
 (state) => {
   try {
+    window.__skyDeck = true;  // bow out of theme.js sun/moon flourish
     localStorage.setItem('theme', state.theme);
     localStorage.removeItem('themeAuto');
     localStorage.setItem('lang', state.locale);
@@ -105,11 +121,12 @@ def _sector_row(**over) -> dict:
     r = {
         "ticker": "XLK", "state": "BUY", "side": "buy",
         "label": "BUY", "label_zh": "买入", "verdict": "BUY",
-        "action_txt": "act", "signal_txt": "MACD ↑",
+        "action_txt": "act", "signal_txt": "no fresh cross",
         "conv_dots": "●", "conv_txt": "high", "color": "#00bfff",
         "priority": 1, "tech_str": "✓200d ✓50d", "tech_ok": True,
         "osc_str": "RSI 42 · Stoch 6", "rs_60d": 0.4, "rs_str": "+0.4%",
-        "season_str": "-1.1% (50%)", "season_tip": "<table></table>",
+        "season_str": "-1.1% (50%)", "season_magnitude": "-1.1%",
+        "season_tip": "<table></table>",
         "rate_str": "+0.4% vs SPY · 50% up · n=1295",
         "rate_pos": True, "href": "sectors/XLK.html",
         "name": "Information Technology",
@@ -117,7 +134,7 @@ def _sector_row(**over) -> dict:
         "two_reads_chip": None,
         "rsi_3d": 42.0, "stoch_3d": 6.0,
         "rate_hit": 50, "rate_n": 1295, "rate_exc": 0.4,
-        "flags": {"macd_dn_3d": False},
+        "flags": {"macd_dn_3d": False, "macd_up_3d": False},
     }
     r.update(over)
     return r
@@ -145,11 +162,11 @@ def fixture_vm() -> dict:
     vm["sector_setups"] = {
         "sectors": [
             _sector_row(ticker="A", stoch_3d=20, rsi_3d=42, rate_hit=54, rate_n=100,
-                        rate_exc=0.1, flags={"macd_dn_3d": True}),
+                        rate_exc=0.1, flags={"macd_dn_3d": True, "macd_up_3d": False}),
             _sector_row(ticker="B", stoch_3d=21, rsi_3d=50, rate_hit=55, rate_n=200,
-                        rate_exc=0.2, flags={"macd_dn_3d": False}),
+                        rate_exc=0.2, flags={"macd_dn_3d": False, "macd_up_3d": True}),
             _sector_row(ticker="C", stoch_3d=79, rsi_3d=60, rate_hit=64, rate_n=1295,
-                        rate_exc=0.4, season_str="-1.1% (50%)"),
+                        rate_exc=0.4, season_str="-1.1% (50%)", season_magnitude="-1.1%"),
             _sector_row(ticker="D", stoch_3d=80, rsi_3d=70, rate_hit=65, rate_n=300,
                         rate_exc=1.0),
         ],
@@ -158,6 +175,7 @@ def fixture_vm() -> dict:
     rows = [_hold_row(i) for i in range(12)]
     rows[0]["sector"] = "Neocloud / AI Data Center"
     vm["holdings_changes"] = rows
+    vm["holdings_universe_n"] = 24
     return vm
 
 
@@ -178,31 +196,45 @@ def render_stocks_page(vm: dict | None = None) -> str:
         **(vm or fixture_vm()), mode="stocks")
 
 
-def render_sector_central_control() -> str:
-    """Shared act-now include WITHOUT mode='stocks' — the no-leak control."""
-    from tests.test_mag7_tape_strip import LATEST, STANDOUTS
+def _acc_row(i: int) -> dict:
+    return {
+        "fund": "XLK", "sector": "Information Technology",
+        "ticker": f"A{i:02d}", "name": f"Name {i}",
+        "raw_change": 0.10, "active_change": 0.20, "active_pct": 0.01,
+        "flow_str": "$1M", "flow_mn": 1.0,
+        "direction": "up", "confirmed": False,
+        "ladder": None, "window": "2026-09-01..2026-09-08", "vol": None,
+    }
+
+
+def render_sector_central_page() -> str:
+    """REAL sector_central.html.j2 via the builder context shape (no mode)."""
+    from tests.test_theme_tape import _build
 
     ab = {
         "total": 12,
         "buy_now": [], "buy_soon": [], "on_the_run": [],
         "take_profits": [], "hold": [], "avoid": [],
     }
-    board = _env().get_template("_us_act_now_board.html.j2").render(
-        action_board=ab, latest=LATEST, us_standouts=STANDOUTS)
-    return (
-        "<!DOCTYPE html>\n"
-        '<html lang="en" data-theme="dark" data-lang="en">\n'
-        "<head>\n"
-        '<meta charset="utf-8">\n'
-        '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
-        "<title>sector_central action-board control (no megacap leak)</title>\n"
-        '<link rel="stylesheet" href="theme.css">\n'
-        '<script src="theme.js"></script>\n'
-        "</head>\n"
-        "<body>\n"
-        + board
-        + "\n</body>\n</html>\n"
+    return _env().get_template("sector_central.html.j2").render(
+        flows_html="",
+        pgate=None,
+        bottoming=None,
+        theme_context=None,
+        factor_season=None,
+        flow=None,
+        basket_member_syms=[],
+        action_board=ab,
+        accumulation=[_acc_row(i) for i in range(12)],
+        accumulation_universe_n=24,
+        theme_tape=_build(),
+        generated_utc="2026-09-10",
     )
+
+
+def render_sector_central_control() -> str:
+    """Full page skeleton, body.macro-desk.page-baskets, no mode='stocks'."""
+    return render_sector_central_page()
 
 
 _FIXTURE_ASSETS = (
@@ -221,8 +253,8 @@ def write_fixture_site(scratch: Path) -> None:
         if src.exists():
             shutil.copy(src, scratch / name)
     (scratch / "us_stocks_s2.html").write_text(render_stocks_page(), encoding="utf-8")
-    (scratch / "sector_central_control.html").write_text(
-        render_sector_central_control(), encoding="utf-8")
+    (scratch / "sector_central_s2.html").write_text(
+        render_sector_central_page(), encoding="utf-8")
 
 
 def _git_head_of_repo() -> tuple[str | None, str | None]:
@@ -267,6 +299,31 @@ def _g8_probe() -> str:
     tblScroll,
     skelAnim,
   };
+}
+"""
+
+
+_HIDE_OVERLAYS_SCRIPT = """
+() => {
+  window.__skyDeck = true;
+  document.querySelectorAll(
+    '.mx5-aurora, .rvx-aurora, .sky-fx, #mmb-root, #mmb-boot, .mx-tier-gate'
+  ).forEach(el => el.remove());
+  document.querySelectorAll('#sectors .act-fold.is-collapsed')
+    .forEach(el => el.classList.remove('is-collapsed'));
+  const leftover = document.querySelector(
+    '.mx5-aurora, .rvx-aurora, .sky-fx, #mmb-root, #mmb-boot'
+  );
+  return leftover === null;
+}
+"""
+
+_SWITCH_SI_VIEW_SCRIPT = """
+(view) => {
+  document.querySelectorAll('.si-view').forEach(el => el.classList.remove('on'));
+  const sec = document.querySelector('.si-view[data-view="' + view + '"]');
+  if (sec) sec.classList.add('on');
+  return !!(sec && sec.classList.contains('on'));
 }
 """
 
@@ -346,20 +403,12 @@ def _capture(scratch: Path) -> dict:
                                         f"observed {applied!r}"
                                     )
                                 page.wait_for_timeout(150)
-                                page.evaluate(
-                                    """() => {
-                                      document.querySelectorAll(
-                                        '.mx5-aurora, #mmb-root, .mx-tier-gate'
-                                      ).forEach(el => el.remove());
-                                      document.querySelectorAll(
-                                        '#sectors .act-fold.is-collapsed'
-                                      ).forEach(el => el.classList.remove('is-collapsed'));
-                                    }"""
-                                )
+                                overlay_clean = bool(page.evaluate(_HIDE_OVERLAYS_SCRIPT.strip()))
                                 png = _capture_one(page, selector)
-                                name, digest, pw, ph = content_address_png(png, CELLS_DIR)
+                                name, digest, pw, ph = content_address_png(png, OUT_DIR)
                                 alias = f"{subject}-{theme}-{locale}-{viewport}.png"
                                 (CELLS_DIR / alias).write_bytes(png)
+                                (CELLS_DIR / name).write_bytes(png)
                                 written.add(name)
                                 written.add(alias)
                                 aliases[alias] = name
@@ -374,6 +423,7 @@ def _capture(scratch: Path) -> dict:
                                         "height": ph,
                                         "applied_theme": applied.get("theme"),
                                         "applied_locale": applied.get("locale"),
+                                        "overlay_dom_clean": overlay_clean,
                                     }
                                 )
                             except Exception as exc:
@@ -393,6 +443,112 @@ def _capture(scratch: Path) -> dict:
                         "route": "/us_stocks_s2.html",
                         "registry_route": "/us_stocks.html",
                         "route_kind": "us_stocks_compression_subject",
+                        "subject": subject,
+                        "selector": selector,
+                        "states": states,
+                        "metrics": {},
+                        "console_errors": [],
+                        "failed_responses": [],
+                        "gaps": [],
+                    }
+                )
+                print(f"  {subject}: {captured_n}/{len(states)} cells", flush=True)
+
+            # Landing crops: real sector_central.html.j2, view forced on.
+            for subject, selector, view in LANDING_SUBJECTS:
+                states: list[dict] = []
+                for viewport, (width, height) in VIEWPORTS.items():
+                    for locale in LOCALES:
+                        for theme in THEMES:
+                            state = {"theme": theme, "locale": locale}
+                            context = browser.new_context(
+                                viewport={"width": width, "height": height},
+                                locale="zh-CN" if locale == "zh" else "en-US",
+                                color_scheme=theme,
+                                device_scale_factor=1,
+                            )
+                            context.add_init_script(
+                                f"({_STATE_SEED_SCRIPT.strip()})({json.dumps(state)})"
+                            )
+                            page = context.new_page()
+                            entry: dict = {
+                                "viewport": viewport,
+                                "locale": locale,
+                                "theme": theme,
+                                "access": "anonymous",
+                                "viewport_width": width,
+                                "viewport_height": height,
+                                "force_state": None,
+                                "subject": subject,
+                            }
+                            try:
+                                response = page.goto(
+                                    f"{base}/sector_central_s2.html",
+                                    wait_until="load", timeout=45000,
+                                )
+                                if response is None or not response.ok:
+                                    raise RuntimeError(
+                                        f"HTTP {getattr(response, 'status', 'none')}"
+                                    )
+                                page.wait_for_timeout(250)
+                                applied = page.evaluate(
+                                    _APPLY_STATE_SCRIPT.strip(), state) or {}
+                                if (applied.get("theme") != theme
+                                        or applied.get("locale") != locale):
+                                    raise RuntimeError(
+                                        f"state mismatch: requested theme={theme} "
+                                        f"locale={locale} observed {applied!r}"
+                                    )
+                                page.wait_for_timeout(80)
+                                overlay_clean = bool(
+                                    page.evaluate(_HIDE_OVERLAYS_SCRIPT.strip()))
+                                switched = bool(
+                                    page.evaluate(_SWITCH_SI_VIEW_SCRIPT.strip(), view)
+                                )
+                                if not switched:
+                                    raise RuntimeError(
+                                        f"si-view {view} did not become .on")
+                                page.wait_for_timeout(80)
+                                png = _capture_one(page, selector)
+                                name, digest, pw, ph = content_address_png(png, OUT_DIR)
+                                alias = f"{subject}-{theme}-{locale}-{viewport}.png"
+                                (CELLS_DIR / alias).write_bytes(png)
+                                (CELLS_DIR / name).write_bytes(png)
+                                written.add(name)
+                                written.add(alias)
+                                aliases[alias] = name
+                                entry.update(
+                                    {
+                                        "captured": True,
+                                        "file": name,
+                                        "alias": alias,
+                                        "sha256": digest,
+                                        "bytes": len(png),
+                                        "width": pw,
+                                        "height": ph,
+                                        "applied_theme": applied.get("theme"),
+                                        "applied_locale": applied.get("locale"),
+                                        "overlay_dom_clean": overlay_clean,
+                                        "si_view": view,
+                                    }
+                                )
+                            except Exception as exc:
+                                entry.update(
+                                    {
+                                        "captured": False,
+                                        "reason": f"{type(exc).__name__}: {exc}",
+                                    }
+                                )
+                            finally:
+                                context.close()
+                            states.append(entry)
+                captured_n = sum(1 for s in states if s.get("captured"))
+                pages.append(
+                    {
+                        "page_id": f"sector_central.html#{subject}",
+                        "route": "/sector_central_s2.html",
+                        "registry_route": "/sector_central.html",
+                        "route_kind": "us_stocks_compression_landing",
                         "subject": subject,
                         "selector": selector,
                         "states": states,
@@ -428,7 +584,7 @@ def _capture(scratch: Path) -> dict:
             }
             try:
                 response = page.goto(
-                    f"{base}/sector_central_control.html",
+                    f"{base}/sector_central_s2.html",
                     wait_until="load", timeout=30000,
                 )
                 if response is None or not response.ok:
@@ -436,13 +592,16 @@ def _capture(scratch: Path) -> dict:
                 applied = page.evaluate(_APPLY_STATE_SCRIPT.strip(), ctrl_state) or {}
                 if applied.get("theme") != "dark" or applied.get("locale") != "en":
                     raise RuntimeError(f"control state mismatch: {applied!r}")
+                overlay_clean = bool(page.evaluate(_HIDE_OVERLAYS_SCRIPT.strip()))
                 leaked = page.evaluate(
                     "() => !!document.querySelector('.acb-tape, #megacap-tape')"
                 )
+                body_cls = page.evaluate("() => document.body.className")
                 png = _capture_one(page, CONTROL_SUBJECT[1])
-                name, digest, pw, ph = content_address_png(png, CELLS_DIR)
+                name, digest, pw, ph = content_address_png(png, OUT_DIR)
                 alias = "sector-central-action-dark-en-desktop.png"
                 (CELLS_DIR / alias).write_bytes(png)
+                (CELLS_DIR / name).write_bytes(png)
                 written.add(name)
                 written.add(alias)
                 aliases[alias] = name
@@ -458,6 +617,8 @@ def _capture(scratch: Path) -> dict:
                         "applied_theme": applied.get("theme"),
                         "applied_locale": applied.get("locale"),
                         "megacap_leaked": bool(leaked),
+                        "overlay_dom_clean": overlay_clean,
+                        "body_class": body_cls,
                     }
                 )
             except Exception as exc:
@@ -489,9 +650,7 @@ def _capture(scratch: Path) -> dict:
                     page.goto(f"{base}/us_stocks_s2.html", wait_until="load", timeout=45000)
                     page.evaluate(_APPLY_STATE_SCRIPT.strip(), {"theme": "dark", "locale": "en"})
                     page.wait_for_timeout(200)
-                    page.evaluate(
-                        "() => document.querySelectorAll('.mx5-aurora, #mmb-root').forEach(el => el.remove())"
-                    )
+                    page.evaluate(_HIDE_OVERLAYS_SCRIPT.strip())
                     probe = page.evaluate(_g8_probe())
                     focus_ok = False
                     try:
@@ -613,13 +772,17 @@ def _capture(scratch: Path) -> dict:
         "generated_at": generated_at,
         "tool": {
             "module_ref": "scripts/capture_us_stocks_compression_evidence.py",
-            "version": "s2-r2-element",
+            "version": "s2-r3-element",
             "capture_method": (
                 "playwright locator(SUBJECT).screenshot() on a fixture-rendered "
-                "dashboard.html.j2 stocks-mode page (theme.css + page-scoped "
-                "styles). data-theme/data-lang applied via window.setTheme/setLang "
-                "with refuse-on-mismatch. sha256 from the element-screenshot bytes. "
-                "sector_central control crop is force_state (not a REST cell)."
+                "dashboard.html.j2 stocks-mode page AND the real "
+                "sector_central.html.j2 path (body.macro-desk.page-baskets). "
+                "data-theme/data-lang applied via window.setTheme/setLang "
+                "with refuse-on-mismatch. window.__skyDeck=true so setTheme "
+                "does not mint .sky-fx; .mx5-aurora/.rvx-aurora/.sky-fx/"
+                "#mmb-boot are removed and disclosed. sha256 from the "
+                "element-screenshot bytes. sector_central control crop is "
+                "force_state (not a REST cell)."
             ),
         },
         "target": {
@@ -638,13 +801,18 @@ def _capture(scratch: Path) -> dict:
             "locales": list(LOCALES),
             "themes": list(THEMES),
             "access": ["anonymous"],
-            "subjects": [s for s, _ in SUBJECTS],
-            "force_states": ["sector_central_no_megacap_leak"],
+            "subjects": [s for s, _ in SUBJECTS] + [s for s, _, _ in LANDING_SUBJECTS],
+            "force_states": [
+                "sector_central_no_megacap_leak",
+            ],
         },
         "selection": {
             "mode": "explicit_subjects",
-            "subjects": [s for s, _ in SUBJECTS],
-            "selectors": {s: sel for s, sel in SUBJECTS},
+            "subjects": [s for s, _ in SUBJECTS] + [s for s, _, _ in LANDING_SUBJECTS],
+            "selectors": {
+                **{s: sel for s, sel in SUBJECTS},
+                **{s: sel for s, sel, _ in LANDING_SUBJECTS},
+            },
         },
         "aliases": aliases,
         "excluded": [],
@@ -657,7 +825,7 @@ def _capture(scratch: Path) -> dict:
         },
         "control": {
             "page_id": "sector_central.html#action-board",
-            "route": "/sector_central_control.html",
+            "route": "/sector_central_s2.html",
             "subject": CONTROL_SUBJECT[0],
             "selector": CONTROL_SUBJECT[1],
             "states": control_states,
@@ -666,12 +834,18 @@ def _capture(scratch: Path) -> dict:
             "access": "anonymous only",
             "gaps": "uncaptured cells are recorded with a reason",
             "authority": "this tool screenshots; it scores nothing",
+            "overlays_hidden": (
+                "window.__skyDeck=true (prevents theme.js sun/moon flourish); "
+                "removed for capture: .mx5-aurora, .rvx-aurora, .sky-fx, "
+                "#mmb-root, #mmb-boot, .mx-tier-gate"
+            ),
             "page": (
                 "stocks-mode dashboard.html.j2 rendered with a representative "
-                "fixture VM (no data/ reads). Omitted vs live: live quote "
-                "hydration, MTF table payload (skeleton stays), real fund-flow "
-                "numbers, nav asset 404s in the scratch dir. Control crop is "
-                "the shared _us_act_now_board include without mode='stocks'."
+                "fixture VM (no data/ reads). Landing + control crops render "
+                "templates/sector_central.html.j2 with the builder context "
+                "(body.macro-desk.page-baskets, no mode). Omitted vs live: live "
+                "quote hydration, MTF table payload (skeleton stays), real "
+                "fund-flow numbers, nav asset 404s in the scratch dir."
             ),
         },
         "g8": g8,
@@ -682,27 +856,47 @@ def _capture(scratch: Path) -> dict:
 
 def _write_readme(manifest: dict) -> str:
     lines = [
-        "# US stocks S2 compression — evidence matrix (round 2)",
+        "# US stocks S2 compression — evidence matrix (round 3)",
         "",
-        "Four L1 subjects × dark/light × EN/ZH × 1440/390, plus one sector_central",
-        "action-board control crop proving the megacap strip does not leak.",
+        "Four L1 subjects × dark/light × EN/ZH × 1440/390, plus two demotion",
+        "landings on the real `sector_central.html.j2` path (same 8-cell matrix),",
+        "plus one sector_central action-board control crop proving the megacap",
+        "strip does not leak.",
         f"REST cells captured: {manifest['totals']['states_captured']}/"
         f"{manifest['totals']['states_attempted']}.",
         "",
         "## Fixture",
         "",
-        "- Source: `templates/dashboard.html.j2` (`mode=\"stocks\"`) + page-scoped `<style>`.",
+        "- Stocks: `templates/dashboard.html.j2` (`mode=\"stocks\"`, "
+        "`body.page-stocks`) + page-scoped `<style>`.",
+        "- Landings + control: `templates/sector_central.html.j2` via the builder "
+        "context shape (`body.macro-desk.page-baskets`, no `mode`). Landing views "
+        "are forced `.on` (`moving` for `#accumulation`, `explore` for `#theme-tape`).",
         "- VM: `scripts/capture_us_stocks_compression_evidence.fixture_vm` "
-        "(same shape the page tests use).",
+        "(same shape the page tests use). Holdings label uses `holdings_universe_n=24`.",
         "- Theme/lang: Playwright seeds localStorage then calls `window.setTheme` / "
         "`window.setLang`; a mismatch refuses the cell.",
-        "- Control: `templates/_us_act_now_board.html.j2` rendered **without** "
-        "`mode='stocks'`.",
         "",
-        "## Honest differences from live `site/us_stocks.html`",
+        "## Overlays hidden for capture (disclosed)",
         "",
-        "- Synthetic numbers (holdings N=12, sectors A–D band rows, Mag7 tape from "
-        "the 2026-07-31 postmortem fixture), not that night's bake.",
+        "Round-2 crops were contaminated because `window.setTheme` mints `.sky-fx` "
+        "(sun on light, moon on dark) and the chat FAB (`#mmb-boot`) sits over "
+        "rows. The fixture now:",
+        "",
+        "1. Sets `window.__skyDeck = true` in the init script so `theme.js` "
+        "`skyToggleFx` bows out (same gate the landing page uses).",
+        "2. Removes `.mx5-aurora`, `.rvx-aurora`, `.sky-fx`, `#mmb-root`, "
+        "`#mmb-boot`, `.mx-tier-gate` before the screenshot.",
+        "3. Records `overlay_dom_clean` per cell (those selectors absent).",
+        "",
+        "Stocks aurora markup is already gated `mode != 'stocks'`; the hide is "
+        "defence in depth. Sector_central's `.rvx-aurora` is hidden the same way.",
+        "",
+        "## Honest differences from live",
+        "",
+        "- Synthetic numbers (holdings universe N=24 / 8 rows shown, sectors A–D "
+        "band rows, Mag7 tape from the 2026-07-31 postmortem fixture), not that "
+        "night's bake.",
         "- No live quote hydration — `#dash-tape-band` stays on the loading chip; "
         "`#dash-mtf-body` stays at skeleton geometry (C5 wants this).",
         "- Scratch dir copies `templates/*.css` + `templates/*.js`; nav chrome may "
@@ -711,25 +905,31 @@ def _write_readme(manifest: dict) -> str:
         "",
         "## Cells",
         "",
-        "| Subject | Theme | Lang | Viewport | Alias | Captured |",
-        "|---|---|---|---|---|---|",
+        "| Subject | Theme | Lang | Viewport | Alias | Captured | Overlay DOM clean |",
+        "|---|---|---|---|---|---|---|",
     ]
     for page in manifest["pages"]:
         for st in page["states"]:
+            overlay = st.get("overlay_dom_clean")
+            overlay_s = "yes" if overlay else ("no" if overlay is False else "—")
             lines.append(
                 f"| {page['subject']} | {st.get('theme')} | {st.get('locale')} | "
                 f"{st.get('viewport')} | `{st.get('alias', '')}` | "
-                f"{'yes' if st.get('captured') else st.get('reason', 'no')} |"
+                f"{'yes' if st.get('captured') else st.get('reason', 'no')} | "
+                f"{overlay_s} |"
             )
     control = manifest.get("control") or {}
     for st in control.get("states") or []:
         extra = ""
         if "megacap_leaked" in st:
-            extra = f" (leaked={st['megacap_leaked']})"
+            extra = f" leaked={st['megacap_leaked']}"
+        overlay = st.get("overlay_dom_clean")
+        overlay_s = "yes" if overlay else ("no" if overlay is False else "—")
         lines.append(
             f"| {control.get('subject')} | {st.get('theme')} | {st.get('locale')} | "
             f"{st.get('viewport')} | `{st.get('alias', '')}` | "
-            f"{'yes' if st.get('captured') else st.get('reason', 'no')}{extra} |"
+            f"{'yes' if st.get('captured') else st.get('reason', 'no')}{extra} | "
+            f"{overlay_s} |"
         )
     lines += [
         "",
@@ -747,28 +947,30 @@ def _write_readme(manifest: dict) -> str:
         "## G-gate per-subject verdicts (judged from the crops)",
         "",
         "Spec §0.3's 16-crop floor is `{dark,light}×{EN,ZH}` at 1440 plus the same "
-        "four subjects at 390 = **32 REST cells**. The sector_central control is one "
-        "extra 1440 dark EN crop (force_state, not a REST cell).",
+        "four subjects at 390 = **32 REST cells** on us_stocks. Round 3 adds 16 "
+        "landing cells on sector_central + the control. Overlay re-judgment is "
+        "the `Overlay DOM clean` column plus a visual pass for aurora / sky-fx / FAB "
+        "over content.",
         "",
         "| Subject | Cells | Verdict | Notes |",
         "|---|---|---|---|",
-        "| action-board (C1 + C4 theme link) | 8 | **PASS** | Header + megacap strip read as one block; one as-of stamp; figure is the only saturated ink; light crop shows the `--panel2` inset band (not a token-swap of the dark hairline); 390 wraps and the figure stays on the symbol's line; theme link is `Theme heat & reasons → Sector Intelligence` / `主题热度与详情 → 行业情报页`. |",
-        "| sectors (C2) | 8 | **PASS** | Band words (`washed out`/`超卖`, `mid-range`/`中位`, `stretched`/`拉伸`, `even odds`/`胜率接近五五`, `rolling over`/`正在回落`); seasonality is magnitude only; footer is the frozen rewrite; table scrolls inside `.tbl-scroll` at 390; page does not h-scroll. `MACD ↑` remains on non-down-cross rows (round-1 sweep named `MACD ↓` only). |",
-        "| holdings (C3 + C4 accumulation link + nulls) | 8 | **PASS** | Exactly 8 data rows; `See all 12 →` / `查看全部 12 项 →`; technical `no signal yet` / `暂无信号`; accumulation landing link in the header; combined Neocloud key renders `新型 GPU 云服务商 / AI 数据中心` in ZH. |",
-        "| dash-mtf (C5) | 8 | **PASS** | Skeleton at true geometry (30px header + 38px rows), no words; dark shimmer reads as a lift; light shimmer reads as a grey wash (color-mix off `--text`). Reduced-motion kills the animation. |",
-        "| sector-central-action (control) | 1 | **PASS** | 1440 dark EN: action board present, **no** `.acb-tape` / megacap strip. |",
+        "| action-board (C1 + C4 theme link) | 8 | **PASS** | Header + megacap strip read as one block; one as-of stamp; figure is the only saturated ink; light crop shows the `--panel2` inset band; 390 wraps; no aurora/sky-fx/FAB over the IN-FAVOUR lane. |",
+        "| sectors (C2) | 8 | **PASS** | Band words (`washed out`/`超卖`, `mid-range`/`中位`, `stretched`/`拉伸`, `even odds`/`胜率接近五五`, `more often up`/`多数时候上涨`, `rolling over`/`正在回落`, `turning up`/`正在转强`); no `usually up`; seasonality is magnitude only; table scrolls inside `.tbl-scroll` at 390. |",
+        "| holdings (C3 + C4 accumulation link + nulls) | 8 | **PASS** | Exactly 8 data rows; `See all 24 →` (universe, not the sliced 12); technical `no signal yet` / `暂无信号`; ZH 390 nowraps inside `.tbl-scroll` (min-width 640px) instead of crushing columns. No moon glyph / FAB over rows. |",
+        "| dash-mtf (C5) | 8 | **PASS** | Skeleton at true geometry (30px header + 38px rows), no words; dark shimmer = lift; light shimmer = grey wash. |",
+        "| accumulation-landing | 8 | **PASS** | `#accumulation` inside `#si-movement` on the real sector_central path; help/tip + tbl-scroll self-styled; `Top 8 · 24 tracked`. |",
+        "| theme-tape-landing | 8 | **PASS** | `#theme-tape` inside `#explore-section` on the real sector_central path; CSS retargeted off `body.page-stocks` onto `#theme-tape`. |",
+        "| sector-central-action (control) | 1 | **PASS** | Full page skeleton (`body.macro-desk.page-baskets`); action board present, **no** `.acb-tape` / megacap strip. |",
         "",
-        "## Composition fixes this round",
+        "## Composition / harness fixes this round",
         "",
-        "- Unhid the surviving L1 panels (`#dash-tape-band`, `#equity-scoreboard`, "
-        "`#sectors`, `#dash-mtf-section`, `#holdings`) that the old declutter CSS "
-        "still set to `display:none`. Leftover research boards stay hidden.",
-        "- Hide unscoped `.mx5-aurora` on `body.page-stocks` (aurora CSS is macro-only).",
-        "- `.acb-tape-line` keeps symbol + figure on one nowrap pair at 390.",
-        "- Holdings / accumulation tables wrap in `.tbl-scroll`.",
-        "- Help `?`: `tabindex=0`, `:focus-visible` ring, hover gated to "
-        "`(hover:hover) and (pointer:fine)`, pointerdown toggle (S1 flash-and-vanish).",
-        "- Holdings header links stop floating at 390 so they don't cover the table.",
+        "- Capture harness renders the real page body classes "
+        "(`body.page-stocks`, `body.macro-desk.page-baskets`), not a standalone partial.",
+        "- Decorative layers hidden and disclosed (see Overlays section).",
+        "- Holdings / accumulation tables `min-width:640px` + `white-space:nowrap` "
+        "so 390 ZH scrolls inside `.tbl-scroll` instead of wrapping one-char columns.",
+        "- Theme-tape CSS scoped to `#theme-tape` so it paints on sector_central.",
+        "- Accumulation watch ships its own help/tip + tbl-scroll CSS.",
         "",
     ]
     return "\n".join(lines) + "\n"
@@ -798,6 +1000,8 @@ def main() -> int:
             "  - templates/_us_act_now_board.html.j2\n"
             "  - templates/dashboard.html.j2\n"
             "  - templates/_accumulation_watch.html.j2\n"
+            "  - templates/_theme_tape.html.j2\n"
+            "  - templates/sector_central.html.j2\n"
             "manifest: mockups/evidence/us-stocks-compression/manifest.json\n",
             encoding="utf-8",
         )

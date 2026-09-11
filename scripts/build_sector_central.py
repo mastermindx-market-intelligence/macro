@@ -102,9 +102,41 @@ def _fmt_money_mn(v) -> str:
     return f"{sign}${a:.0f}M"
 
 
-def _accumulation_rows() -> list[dict]:
-    """Same shape as scripts.build_site.accumulation_rows, inlined so this
-    builder stays import-light. Fail-open to []."""
+def _sector_residual_universe_n() -> int | None:
+    """Count residual movers across sector SPDRs BEFORE the panel slice.
+
+    Cheap half of ``top_sector_residuals``: weight_decomposition only, no
+    cycle/ladder lookup. None → the template drops the number.
+    """
+    try:
+        from engine.holdings_signals import weight_decomposition
+        funds = config.load()["sponsors"]["sector_funds"]
+        n = 0
+        for fund in funds:
+            try:
+                dec = weight_decomposition(fund)
+            except Exception:  # noqa: BLE001 — one fund must not kill the count
+                continue
+            if dec is None or getattr(dec, "empty", True):
+                continue
+            for _tk, row in dec.iterrows():
+                ac = row.get("active_change")
+                try:
+                    if ac is None or float(ac) == 0.0:
+                        continue
+                    if ac != ac:  # NaN
+                        continue
+                except (TypeError, ValueError):
+                    continue
+                n += 1
+        return n
+    except Exception:  # noqa: BLE001 — additive label, never fatal
+        return None
+
+
+def _accumulation_rows() -> tuple[list[dict], int | None]:
+    """Same shape as scripts.build_site.accumulation_panel, inlined so this
+    builder stays import-light. Fail-open to ([], None)."""
     try:
         from engine.holdings_signals import top_sector_residuals
         from engine.playbook import SECTOR_NAMES
@@ -126,10 +158,10 @@ def _accumulation_rows() -> list[dict]:
                 "ladder": s["ladder"], "window": f"{s['t0']}..{s['t1']}",
                 "vol": s.get("vol"),
             })
-        return rows
+        return rows, _sector_residual_universe_n()
     except Exception as e:  # noqa: BLE001 — panel is additive
         log.warning("sector_central: accumulation rows failed (%s)", e)
-        return []
+        return [], None
 
 
 def _theme_tape_view(site: Path):
@@ -514,6 +546,7 @@ def main() -> int:
         # whose withheld rows are unreachable for everyone, paying or not.
         log.error("sector_central: payload write failed (%s) — board ungated", e)
         _sc_pgate = None
+    _acc_rows, _acc_uni = _accumulation_rows()
     try:
         html = env.get_template("sector_central.html.j2").render(
             flows_html=flows_html,
@@ -524,7 +557,8 @@ def main() -> int:
             flow=ctx.get("flow"),
             basket_member_syms=ctx.get("basket_member_syms") or [],
             action_board=_action_board,
-            accumulation=_accumulation_rows(),
+            accumulation=_acc_rows,
+            accumulation_universe_n=_acc_uni,
             theme_tape=_theme_tape_view(site),
             generated_utc=ctx.get("generated_utc") or data.get("as_of") or "")
         write_page(site / "sector_central.html", html, encoding="utf-8")
