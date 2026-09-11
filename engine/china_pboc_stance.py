@@ -189,27 +189,37 @@ def snapshot(asof: date | str | None = None) -> dict | None:
         score, stance = _classify(lpr_chg, rrr_chg_recent, fr_gap)
         lab = _STANCE_LABEL[stance]
 
-        # bilingual rationale
+        # bilingual rationale. LPR window is trailing 12 months (not calendar-year);
+        # RRR window is the ~18-month event-sum used in the classifier. FR007 vs
+        # 120d average is the labelled slice on the FR007 tile — not a second
+        # headline here (packet item 11 / M4, M5).
         bits_en, bits_zh = [], []
         if lpr_chg is not None:
-            bits_en.append(f"1Y LPR {lpr_chg*100:+.0f}bp / yr")
-            bits_zh.append(f"1年期LPR年内{lpr_chg*100:+.0f}基点")
+            bits_en.append(f"1Y LPR {lpr_chg*100:+.0f}bp over 12 months")
+            bits_zh.append(f"1年期LPR过去12个月{lpr_chg*100:+.0f}基点")
         if rrr_chg_recent is not None:
-            bits_en.append(f"RRR {rrr_chg_recent:+.2f}pp")
-            bits_zh.append(f"准备金率{rrr_chg_recent:+.2f}个百分点")
-        if fr_gap is not None:
-            bits_en.append(f"FR007 {fr_gap:+.2f} vs trend")
-            bits_zh.append(f"FR007较趋势{fr_gap:+.2f}")
+            bits_en.append(f"RRR {rrr_chg_recent:+.2f}pp over 18 months")
+            bits_zh.append(f"准备金率过去18个月{rrr_chg_recent:+.2f}个百分点")
         rationale = {
             "en": f"{lab[0]} bias — " + ", ".join(bits_en) + "." if bits_en else f"{lab[0]} bias.",
             "zh": f"{lab[1]}倾向 — " + "，".join(bits_zh) + "。" if bits_zh else f"{lab[1]}倾向。",
         }
 
+        fr007_row = {
+            "key": "fr007", "label_en": "FR007 (repo)", "label_zh": "FR007回购",
+            "value": fr007, "unit": "%",
+        }
+        if fr007 is not None and fr_gap is not None:
+            fr007_row["slice_en"] = f"vs 120d avg {fr_gap:+.2f}pp"
+            fr007_row["slice_zh"] = f"较120日均值{fr_gap:+.2f}个百分点"
+
         corridor = [
             {"key": "lpr_1y", "label_en": "1Y LPR", "label_zh": "1年期LPR", "value": lpr1, "unit": "%"},
             {"key": "lpr_5y", "label_en": "5Y LPR", "label_zh": "5年期LPR", "value": lpr5, "unit": "%"},
-            {"key": "rrr", "label_en": "RRR (big banks)", "label_zh": "存准率(大行)", "value": rrr, "unit": "%"},
-            {"key": "fr007", "label_en": "FR007 (repo)", "label_zh": "FR007回购", "value": fr007, "unit": "%"},
+            {"key": "rrr", "label_en": "RRR (big banks)", "label_zh": "存准率(大行)",
+             "value": rrr, "unit": "%",
+             "window_en": "18-month window", "window_zh": "18个月窗口"},
+            fr007_row,
             {"key": "shibor_on", "label_en": "SHIBOR O/N", "label_zh": "隔夜SHIBOR", "value": shibor_on, "unit": "%"},
             {"key": "shibor_3m", "label_en": "SHIBOR 3M", "label_zh": "3个月SHIBOR", "value": shibor_3m, "unit": "%"},
         ]

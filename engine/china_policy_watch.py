@@ -43,6 +43,84 @@ _NBS_BOARD = [
 _POLICY_THEMES = {"policy", "monetary", "fiscal", "trade", "industrial_policy", "credit"}
 
 
+_BASKET_FALLBACK_ZH = {"property": "地产"}
+_EN_GLOSS = (
+    ("信创", "IT localization (信创)"),
+    ("以旧换新", "trade-in (以旧换新)"),
+    ("中特估", "SOE revaluation (中特估)"),
+    ("双减", "double-reduction (双减)"),
+)
+SECTOR_TABLE_CAP = 8
+
+
+def _iso_day(v) -> str | None:
+    if not v:
+        return None
+    s = str(v)[:10]
+    try:
+        date.fromisoformat(s)
+        return s
+    except ValueError:
+        return None
+
+
+def _newest(*vals) -> str | None:
+    days = [d for d in (_iso_day(v) for v in vals) if d]
+    return max(days) if days else None
+
+
+def _gloss_en(s: str) -> str:
+    """EN-lane gloss for 信创 / 以旧换新 / 中特估 / 双减. Never double-wraps."""
+    out = s or ""
+    for cjk, glossed in _EN_GLOSS:
+        if cjk in out and glossed not in out:
+            out = out.replace(cjk, glossed)
+    return out
+
+
+def _basket_labels(ids: list | None) -> list[dict]:
+    """Display names from CN_BASKETS; prettified fallback never blocks render."""
+    from engine.china_news_intel import BASKET_LABEL
+    out = []
+    for bid in ids or []:
+        key = str(bid)
+        lab = BASKET_LABEL.get(key)
+        if lab:
+            en, zh = lab
+        else:
+            slug = key[3:] if key.startswith("cn_") else key
+            en = slug.replace("_", " ").title() or key
+            zh = _BASKET_FALLBACK_ZH.get(slug, en)
+        out.append({"id": key, "en": en, "zh": zh})
+    return out
+
+
+def _decorate_intel(intel: dict) -> dict:
+    """Attach basket display names + EN glosses. Does not rewrite the on-disk file."""
+    if not intel:
+        return intel
+    intel = dict(intel)
+    sectors = []
+    for raw in intel.get("sector_policy") or []:
+        row = dict(raw)
+        row["sector_en"] = _gloss_en(row.get("sector_en") or "")
+        row["note_en"] = _gloss_en(row.get("note_en") or "")
+        row["basket_labels"] = _basket_labels(row.get("baskets") or [])
+        sectors.append(row)
+    intel["sector_policy"] = sectors
+    intel["sector_policy_n"] = len(sectors)
+    npc = []
+    for raw in intel.get("npc_targets_2026") or []:
+        row = dict(raw)
+        val = row.get("value") or ""
+        row.setdefault("value_en", val)
+        row.setdefault("value_zh", val)
+        npc.append(row)
+    if npc:
+        intel["npc_targets_2026"] = npc
+    return intel
+
+
 def _latest(group: str, name: str, col: str):
     try:
         df = store.read(group, name)
@@ -56,15 +134,90 @@ def _latest(group: str, name: str, col: str):
         return None, None
 
 
+def _latest_pair(group: str, name: str, col: str):
+    """(last, prev_or_None, asof_date_or_None)."""
+    try:
+        df = store.read(group, name)
+        if df is None or df.empty or col not in df.columns:
+            return None, None, None
+        s = df[col].dropna()
+        if s.empty:
+            return None, None, None
+        last = float(s.iloc[-1])
+        prev = float(s.iloc[-2]) if len(s) >= 2 else None
+        return last, prev, str(s.index.max().date())
+    except Exception:  # noqa: BLE001
+        return None, None, None
+
+
+def _tile_direction(col: str, value: float, prev: float | None, unit: str) -> tuple[str, str]:
+    """Plain-word direction for one NBS/macro tile. Never a raw print."""
+    if col.startswith("pmi"):
+        if value < 50:
+            return "below 50 — contracting", "低于50——收缩"
+        if value > 50:
+            return "above 50 — expanding", "高于50——扩张"
+        return "at 50 — unchanged", "处于50——持平"
+    if unit == "%":
+        if value < 0:
+            return "falling", "下行"
+        if value > 0:
+            return "rising", "上行"
+        return "flat", "持平"
+    if prev is None:
+        return "monthly credit pulse", "当月信用脉冲"
+    if value > prev:
+        return "up from last month", "高于上月"
+    if value < prev:
+        return "down from last month", "低于上月"
+    return "unchanged from last month", "与上月持平"
+
+
+def _nbs_stance(rows: list[dict]) -> tuple[str, str]:
+    """One-line Law-1 stance over the NBS board. Honest, not a buy signal."""
+    by = {r.get("key"): r.get("value") for r in rows}
+    pmi = by.get("pmi_mfg")
+    cpi = by.get("cpi_yoy")
+    if pmi is not None and pmi < 50 and (cpi is None or cpi < 1.0):
+        return ("Growth is soft and prices are barely rising — watch, don't chase",
+                "增长偏弱、物价几乎不涨——观望，不要追")
+    if pmi is not None and pmi >= 50:
+        return ("Factories are expanding — let prices and credit say whether it lasts",
+                "工厂在扩张——物价与信用决定能否持续")
+    return ("Growth is mixed — watch the next prints, don't chase",
+            "增长信号混杂——等待下一轮数据，不要追")
+
+
 def _nbs_prints() -> list[dict]:
     rows = []
     for group, name, col, en, zh, unit in _NBS_BOARD:
-        v, d = _latest(group, name, col)
+        v, prev, d = _latest_pair(group, name, col)
         if v is None:
             continue
-        rows.append({"label_en": en, "label_zh": zh,
-                     "value": round(v, 2), "unit": unit, "asof": d})
+        dir_en, dir_zh = _tile_direction(col, v, prev, unit)
+        rows.append({"key": col, "label_en": en, "label_zh": zh,
+                     "value": round(v, 2), "unit": unit, "asof": d,
+                     "dir_en": dir_en, "dir_zh": dir_zh})
     return rows
+
+
+def _hero_freshness(national_team: dict | None) -> dict:
+    """Stale-chip payload for the State-Hand gauge, same 14d pattern as intel."""
+    empty = {"stale": False, "as_of": None, "age_days": None}
+    if not national_team:
+        return empty
+    hist = national_team.get("history") or []
+    last = None
+    if hist:
+        last = hist[-1].get("date") or hist[-1].get("asof")
+    last = _iso_day(last) or _iso_day(national_team.get("asof"))
+    if not last:
+        return empty
+    try:
+        age = (date.today() - date.fromisoformat(last)).days
+    except ValueError:
+        return {**empty, "as_of": last}
+    return {"stale": age > 14, "as_of": last, "age_days": age}
 
 
 def _host(url: str) -> str:
@@ -267,7 +420,7 @@ def snapshot(asof: date | str | None = None) -> dict | None:
     try:
         from engine import china_pboc_stance, policy_dates
         pboc = china_pboc_stance.snapshot(asof)
-        intel = _intel()
+        intel = _decorate_intel(_intel())
         prints = _nbs_prints()
         feed_status, feed = _policy_feed()
         if pboc is None and not prints and not intel:
@@ -283,16 +436,43 @@ def snapshot(asof: date | str | None = None) -> dict | None:
         except Exception as e:  # noqa: BLE001 — additive, never fatal
             log.error("china_policy_watch: national_team snapshot failed (%s)", e)
             national_team = None
+        hero_dates = _hero_freshness(national_team)
+        if national_team is not None:
+            national_team = dict(national_team)
+            national_team["stale"] = hero_dates["stale"]
+            national_team["asof_inputs"] = hero_dates["as_of"]
+            national_team["age_days"] = hero_dates["age_days"]
+        fx = (pboc or {}).get("fx") or {}
+        nbs_asof = _newest(*(r.get("asof") for r in prints))
+        feed_asof = _newest(*(it.get("first_seen_utc") or it.get("date") for it in (feed or [])))
+        compact = _compact(pboc, intel)
+        page_asof = (
+            _iso_day(asof)
+            or _newest(
+                compact.get("asof"),
+                nbs_asof,
+                (intel or {}).get("as_of"),
+                hero_dates.get("as_of"),
+                feed_asof,
+            )
+            or str(date.today())
+        )
+        stance_en, stance_zh = _nbs_stance(prints) if prints else ("", "")
         return {
             "schema": SCHEMA, "is_context_only": True,
-            "asof": (str(asof) if asof else (pboc or {}).get("asof") or str(date.today())),
+            "asof": page_asof,
             "built": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
             "pboc": pboc, "nbs_prints": prints,
+            "nbs_stance_en": stance_en, "nbs_stance_zh": stance_zh,
+            "nbs_asof": nbs_asof,
+            "backdrop_asof": _newest(fx.get("asof_reserves"), fx.get("asof_cny"), nbs_asof),
+            "pboc_asof": (pboc or {}).get("asof"),
             "policy_feed": feed, "policy_feed_status": feed_status,
             "intel": intel,
             "intel_dates": intel_dates,
             "national_team": national_team,
-            "latest": _compact(pboc, intel),
+            "sector_table_cap": SECTOR_TABLE_CAP,
+            "latest": compact,
         }
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("china_policy_watch.snapshot failed (%s)", e)

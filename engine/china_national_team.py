@@ -211,15 +211,20 @@ def _fmt_pct(x: float) -> str:
 
 
 def _tell(key: str, state: str, strength: float = 0.0, value_fmt: str | None = None,
-          receipt_en: str = "", receipt_zh: str = "", have_data: bool = True) -> dict:
+          receipt_en: str = "", receipt_zh: str = "", have_data: bool = True,
+          value_fmt_en: str | None = None, value_fmt_zh: str | None = None) -> dict:
     """Assemble one tell dict from the registry meta + evaluated firing state."""
     tier, weight, label_en, label_zh = _TELL_META[key]
+    v_en = value_fmt_en if value_fmt_en is not None else value_fmt
+    v_zh = value_fmt_zh if value_fmt_zh is not None else v_en
     return {
         "key": key, "tier": tier,
         "label_en": label_en, "label_zh": label_zh,
         "state": state,                       # firing | quiet | null
         "strength": round(_clamp01(strength), 4) if have_data else 0.0,
-        "value_fmt": value_fmt,
+        "value_fmt": v_en,
+        "value_fmt_en": v_en,
+        "value_fmt_zh": v_zh,
         "receipt_en": receipt_en, "receipt_zh": receipt_zh,
         "have_data": bool(have_data), "weight": weight,
     }
@@ -344,10 +349,12 @@ def _eval_market_rescue() -> tuple[dict, str | None]:
         strength, lab_en, lab_zh = 0.6, "targeted support", "定向支持"
     else:
         lab_en, lab_zh = _IMPULSE_QUIET.get(impulse, (str(impulse).replace("_", " "), "中性"))
-        return _tell("market_rescue", "quiet", strength=0.0, value_fmt=lab_en,
+        return _tell("market_rescue", "quiet", strength=0.0,
+                     value_fmt=lab_en, value_fmt_en=lab_en, value_fmt_zh=lab_zh,
                      receipt_en=f"Policy impulse: {lab_en}", receipt_zh=f"政策脉冲：{lab_zh}",
                      have_data=True), None
-    return _tell("market_rescue", "firing", strength=strength, value_fmt=lab_en,
+    return _tell("market_rescue", "firing", strength=strength,
+                 value_fmt=lab_en, value_fmt_en=lab_en, value_fmt_zh=lab_zh,
                  receipt_en=f"Policy impulse: {lab_en}", receipt_zh=f"政策脉冲：{lab_zh}",
                  have_data=True), None
 
@@ -563,7 +570,10 @@ def _eval_margin_recovery() -> tuple[dict, str | None]:
         quiet_zh = "两融余额上一交易日持平"
     rec_en, rec_zh = (fired_en, fired_zh) if fires else (quiet_en, quiet_zh)
     return _tell("margin_recovery", "firing" if fires else "quiet",
-                 strength=strength, value_fmt=f"{last_tick:+.0f}亿",
+                 strength=strength,
+                 value_fmt=f"{last_tick/10:+.1f}bn",
+                 value_fmt_en=f"{last_tick/10:+.1f}bn",
+                 value_fmt_zh=f"{last_tick:+.0f}亿",
                  receipt_en=rec_en, receipt_zh=rec_zh, have_data=True), None
 
 

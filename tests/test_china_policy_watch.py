@@ -137,6 +137,10 @@ def test_intel_json_loads_and_has_sections():
                for s in d["sector_policy"])
     assert len(d["npc_targets_2026"]) >= 3
     assert all(p.get("check_by") for p in d["predictions"])
+    for tg in d["npc_targets_2026"]:
+        assert tg.get("value_en") and tg.get("value_zh"), tg
+        assert tg["value_zh"] != "~4% of GDP"
+        assert "万亿" in tg["value_zh"] or "约" in tg["value_zh"] or "%" in tg["value_zh"]
 
 
 # ---- express-render ownership --------------------------------------------- #
@@ -444,3 +448,166 @@ def test_policy_tape_empty_state_is_designed():
     assert lens_lines, "LENS host missing"
     for ln in lens_lines:
         assert "title=" not in ln, f"LENS host must not use title=: {ln}"
+
+
+# ---- W5 r3: density, copy-tier, landings ----------------------------------- #
+def _tpl() -> str:
+    return (config.ROOT / "templates" / "china_policy_watch.html.j2").read_text()
+
+
+def test_l1_section_count_is_six():
+    """Density 9→6: first-level cnx-cards are the six KEEP modules."""
+    tpl = _tpl()
+    assert tpl.count('data-l1="') == 6
+    for key in ("hero", "thesis", "pboc", "sectors", "tape", "ledger"):
+        assert f'data-l1="{key}"' in tpl
+    # FX / NBS / NPC are not peer L1 cards
+    assert 'data-l1="fx"' not in tpl
+    assert 'data-l1="nbs"' not in tpl
+    assert 'data-l1="npc"' not in tpl
+    assert "t('FX &amp; reserves'" not in tpl
+    assert "t('NBS latest prints'" not in tpl
+    assert "t('NPC 2026 targets'" not in tpl
+
+
+def test_demotion_landings_named():
+    tpl = _tpl()
+    assert 'data-landing="china-macro-backdrop"' in tpl
+    assert 'data-landing="npc-2026"' in tpl
+    assert 'id="pw-sector-all"' in tpl
+    assert "t('China macro backdrop'" in tpl
+    assert "href=\"china.html\"" in tpl
+
+
+def test_sector_table_capped_with_counted_see_all():
+    tpl = _tpl()
+    assert "_sp_all[:_sp_cap]" in tpl
+    assert "See all {{ _sp_n }} →" in tpl
+    assert "查看全部 {{ _sp_n }} 条 →" in tpl
+    assert "s.baskets|join(' · ')" not in tpl
+    assert "s.basket_labels" in tpl
+    assert "Basket ids:" in tpl
+    assert 'class="pw-table-scroll"' in tpl
+
+
+def test_raw_slugs_prettify_and_cn_solar():
+    from engine.china_news_intel import BASKET_LABEL
+    labels = pw._basket_labels(["cn_semis", "cn_solar", "cn_property", "cn_autos"])
+    by_id = {r["id"]: r for r in labels}
+    assert by_id["cn_semis"]["en"] == BASKET_LABEL["cn_semis"][0]
+    assert by_id["cn_solar"]["en"] == "Solar & PV"
+    assert by_id["cn_solar"]["zh"] == "光伏"
+    assert by_id["cn_property"]["en"] == "Property"
+    assert by_id["cn_property"]["zh"] == "地产"
+    glossed = pw._gloss_en("Domestic semis / 信创 · 以旧换新 · 中特估 · 双减")
+    assert "IT localization (信创)" in glossed
+    assert "trade-in (以旧换新)" in glossed
+    assert "SOE revaluation (中特估)" in glossed
+    assert "double-reduction (双减)" in glossed
+    assert pw._gloss_en(glossed) == glossed  # never double-wrap
+
+
+def test_no_scheduled_ref_or_banned_footer_vocab():
+    tpl = _tpl()
+    assert "scheduled_ref" not in tpl
+    assert "display-tier intensity" not in tpl
+    assert "data/china_policy/intel.json" not in tpl
+    assert "a read on what the state is doing, not a buy signal" in tpl
+    assert "仅为国家队动向的观察，非买入信号" in tpl
+
+
+def test_subtitle_budget_and_asof_chip():
+    tpl = _tpl()
+    assert "t('Is Beijing defending the market right now?', '北京此刻是否在护盘？')" in tpl
+    assert 'class="dtp-asof"' in tpl
+    assert "t('China Policy &amp; State-Hand Watch'" in tpl  # h1 untouched
+    # as-of is no longer concatenated into the subtitle sentence
+    assert "context only · as of" not in tpl
+    assert "仅供参考 · 截至" not in tpl
+    en = "Is Beijing defending the market right now?"
+    assert len(en.split()) <= 14
+
+
+def test_page_asof_is_newest_constituent_not_lpr(monkeypatch):
+    import engine.china_pboc_stance as pboc
+    stub = {
+        "schema": pboc.SCHEMA, "stance": "neutral", "stance_en": "Neutral",
+        "stance_zh": "中性", "rationale": {"en": "flat", "zh": "平稳"},
+        "corridor": [{"key": "fr007", "label_en": "FR007 (repo)", "label_zh": "FR007回购",
+                      "value": 1.6, "unit": "%",
+                      "slice_en": "vs 120d avg +0.12pp",
+                      "slice_zh": "较120日均值+0.12个百分点"}],
+        "fx": {"reserves": 34187.76, "reserves_mom": 25.14,
+               "asof_reserves": "2026-08-01", "asof_cny": "2026-09-09"},
+        "last_moves": [], "asof": "2026-07-20",
+    }
+    monkeypatch.setattr(pw, "_intel", lambda: {
+        "as_of": "2026-06-20", "thesis": {"en": "x", "zh": "x"},
+        "sector_policy": [], "npc_targets_2026": [], "predictions": [],
+    })
+    monkeypatch.setattr(pw, "_nbs_prints", lambda: [
+        {"key": "pmi_mfg", "label_en": "Mfg PMI", "label_zh": "制造业PMI",
+         "value": 49.4, "unit": "", "asof": "2026-08-31",
+         "dir_en": "below 50 — contracting", "dir_zh": "低于50——收缩"},
+    ])
+    monkeypatch.setattr(pw, "_policy_feed", lambda: ("quiet", []))
+    monkeypatch.setattr(pboc, "snapshot", lambda asof=None: stub)
+    monkeypatch.setattr("engine.china_national_team.snapshot", lambda asof=None: None)
+    vm = pw.snapshot()
+    assert vm["asof"] == "2026-09-09"
+    assert vm["asof"] != stub["asof"]
+    assert vm["pboc_asof"] == "2026-07-20"
+    assert vm["backdrop_asof"] == "2026-09-09"
+    assert "watch, don't chase" in vm["nbs_stance_en"]
+    assert vm["pboc"]["corridor"][0]["slice_en"].startswith("vs 120d avg")
+
+
+def test_nbs_stance_and_tile_direction():
+    en, zh = pw._nbs_stance([
+        {"key": "pmi_mfg", "value": 49.2},
+        {"key": "cpi_yoy", "value": 0.3},
+    ])
+    assert "watch, don't chase" in en
+    assert "观望" in zh
+    d_en, d_zh = pw._tile_direction("pmi_mfg", 49.2, 49.5, "")
+    assert "contracting" in d_en
+    d_en, _ = pw._tile_direction("cpi_yoy", 0.4, 0.2, "%")
+    assert d_en == "rising"
+    d_en, _ = pw._tile_direction("tsf_total", 1200, 1500, "¥bn")
+    assert "down" in d_en
+
+
+def test_fr007_vs_trend_is_labelled_slice_not_second_headline():
+    """Canonical FR007 statistic is the corridor level; vs-trend is a tile slice."""
+    tpl = _tpl()
+    assert "c.slice_en" in tpl
+    assert "c.window_en" in tpl
+    src = (config.ROOT / "engine" / "china_pboc_stance.py").read_text()
+    assert "FR007 {fr_gap:+.2f} vs trend" not in src
+    assert "over 12 months" in src
+    assert "年内" not in src
+    assert "18 months" in src
+    assert "/ yr" not in src
+
+
+def test_tell_value_fmt_twins_in_template_and_producer():
+    from engine import china_national_team as nt
+    tpl = _tpl()
+    assert "tl.value_fmt_en" in tpl
+    assert "sh-tell-val" in tpl
+    row = nt._tell("market_rescue", "quiet", value_fmt="accommodative",
+                   value_fmt_en="accommodative", value_fmt_zh="宽松")
+    assert row["value_fmt_en"] == "accommodative"
+    assert row["value_fmt_zh"] == "宽松"
+
+
+def test_corridor_and_tsf_lens_use_question_hosts():
+    tpl = _tpl()
+    assert "FR007 is the 7-day repo fixing" in tpl
+    assert "SHIBOR O/N is the overnight" in tpl
+    assert "SHIBOR 3M is the 3-month" in tpl
+    assert "RRR is the reserve requirement ratio" in tpl
+    assert "TSF is total social financing" in tpl
+    assert tpl.count("class=\"lens-q\"") >= 4
+    assert "c.key in _ctips" in tpl
+    assert 'title="' not in tpl.split("{% block content %}", 1)[-1]

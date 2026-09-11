@@ -11,11 +11,11 @@
     "zh": "政策边际宽松但刻意克制——应将渐进举措（降准、LPR下调、专项债发行）解读为对通缩与地产拖累背景的风险管理，而非押注周期性再加速。"
   },
   "npc_targets_2026": [
-    {"key": "gdp", "label_en": "GDP growth target", "label_zh": "GDP增长目标", "value": "~5.0%"},
-    {"key": "cpi", "label_en": "CPI target", "label_zh": "CPI目标", "value": "~2%"},
-    {"key": "deficit", "label_en": "Fiscal deficit ratio", "label_zh": "财政赤字率", "value": "~4% of GDP"},
-    {"key": "special_bond", "label_en": "Local special-purpose bond quota", "label_zh": "地方专项债额度", "value": "¥4.4T"},
-    {"key": "ultra_long", "label_en": "Ultra-long special treasury bonds", "label_zh": "超长期特别国债", "value": "¥1.3T"}
+    {"key": "gdp", "label_en": "GDP growth target", "label_zh": "GDP增长目标", "value": "~5.0%", "value_en": "~5.0%", "value_zh": "约5.0%"},
+    {"key": "cpi", "label_en": "CPI target", "label_zh": "CPI目标", "value": "~2%", "value_en": "~2%", "value_zh": "约2%"},
+    {"key": "deficit", "label_en": "Fiscal deficit ratio", "label_zh": "财政赤字率", "value": "~4% of GDP", "value_en": "~4% of GDP", "value_zh": "约GDP的4%"},
+    {"key": "special_bond", "label_en": "Local special-purpose bond quota", "label_zh": "地方专项债额度", "value": "¥4.4T", "value_en": "¥4.4T", "value_zh": "4.4万亿元"},
+    {"key": "ultra_long", "label_en": "Ultra-long special treasury bonds", "label_zh": "超长期特别国债", "value": "¥1.3T", "value_en": "¥1.3T", "value_zh": "1.3万亿元"}
   ],
   "sector_policy": [
     {"sector_en": "Domestic semis / 信创", "sector_zh": "国产半导体／信创", "stance": "supportive", "baskets": ["cn_semis"], "note_en": "National self-reliance mandate + big-fund capital; foreign-chip substitution in gov/SOE by 2027.", "note_zh": "国家自主可控指令＋大基金资本；2027年前政府/国企国产替代。"},
