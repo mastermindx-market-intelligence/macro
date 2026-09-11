@@ -11,6 +11,8 @@ claim: >
   historical machine evidence. No vendor unprofitability, purchased entitlement,
   production defect or trained-model performance is established.
 falsifier: >
+  Re-run the exact algebra/source checks documented at
+  research/options_estate/NIGHTGLASS_HARDENING_AND_MODEL_RESEARCH_2026-09-10.md:1.
   Refute the barrier or OI identification algebra under its explicitly stated
   assumptions; establish that the cited Cboe specification/product does not contain
   the documented fields, scope and timing at the research date; or show that the
