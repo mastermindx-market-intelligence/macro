@@ -540,7 +540,10 @@ def _build_dispersion_block(data_dir: Path) -> dict:
     """COR1M/COR3M/DSPX block.  Fail-open → nulls."""
     null = {
         "cor1m": None, "cor1m_regime": None, "cor1m_1y_delta": None,
-        "cor1m_pctile_2y": None, "cor3m": None, "dspx": None, "history": [],
+        "cor1m_pctile_2y": None,
+        "cor1m_pctile_lo": _COR1M_PCTILE_LO,
+        "cor1m_pctile_hi": _COR1M_PCTILE_HI,
+        "cor3m": None, "dspx": None, "history": [],
     }
     try:
         cor1m_df = _read_parquet(data_dir / "cboe" / "cor1m.parquet")
@@ -607,6 +610,8 @@ def _build_dispersion_block(data_dir: Path) -> dict:
             "cor1m_regime":     cor1m_regime,
             "cor1m_1y_delta":   cor1m_1y_delta,
             "cor1m_pctile_2y":  round(pctile_2y, 1) if pctile_2y is not None else None,
+            "cor1m_pctile_lo":  _COR1M_PCTILE_LO,
+            "cor1m_pctile_hi":  _COR1M_PCTILE_HI,
             "cor3m":            cor3m_v,
             "dspx":             dspx_v,
             "history":          hist_rows,

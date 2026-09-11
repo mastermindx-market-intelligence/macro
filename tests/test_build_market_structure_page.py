@@ -9,6 +9,7 @@ Verifies:
 """
 from __future__ import annotations
 
+import html as html_lib
 import json
 import re
 import sys
@@ -490,8 +491,11 @@ def test_m3_null_pctile_is_missing_data_sentence_never_0th(tmp_path):
     stub.write_text(json.dumps(raw), encoding="utf-8")
     html = render(REPO, fixture=stub)
     hero = _hero_glass(html)
-    assert "0th" not in hero
-    assert "0百分位" not in hero
+    # Tightened after P8: the watching band lawfully prints "20th" / "20百分位";
+    # the defect this pins is a null GEX rank rendering as a bare 0th / 0百分位.
+    assert "0th pctile" not in hero
+    assert "(0th)" not in hero
+    assert re.search(r'(?<![0-9])0百分位', hero) is None
     assert "The percentile rank isn't available for this snapshot" in hero
     assert "本次快照没有百分位读数" in hero
 
@@ -691,3 +695,114 @@ def test_light_near_flat_and_empty_chip_have_theme_rules():
     assert 'html[data-theme="light"] .rc.cutting.near-flat' in src
     assert 'html[data-theme="light"] .sc-chip.empty{background:var(--bg)' in src
     assert "tokens already split the two art directions" not in src
+
+
+# ---------------------------------------------------------------------------
+# W10 r3 — P8 watching band + P9 §10-D mobile reduction
+# ---------------------------------------------------------------------------
+
+_BANNED_CYCLE_VOCAB = (
+    "falsifier", "Falsifier", "FALSIFIER",
+    "refuted", "refutation", "refute",
+    "证伪",
+)
+
+
+def _watch_band(html: str) -> str:
+    start = html.find('id="watch-band"')
+    assert start != -1, "watching band missing"
+    rest = html[start:]
+    # The band closes before the merged hero footnote.
+    foot = rest.find('class="sec-foot"')
+    chunk = rest if foot == -1 else rest[:foot]
+    return html_lib.unescape(chunk)
+
+
+def test_p8_watch_band_renders_producer_flip_and_thresholds():
+    """Fixture emissions reach the band — never a hardcoded 7663."""
+    html = _render_with_fixture()
+    band = _watch_band(html)
+    hero = _hero_glass(html)
+    assert 'id="watch-band"' in hero, "band must fold into the hero, not a 7th L1"
+    assert "What we're watching" in band
+    assert "我们在看什么" in band
+    assert "Windows, not certainties — re-drawn nightly." in band
+    assert "窗口，并非定论 — 每晚重算。" in band
+    # fixture: spot 7575.4 > flip 7497.0 → "above"
+    assert "7497" in band
+    assert "above 7497" in band
+    assert "标普500保持在 7497" in band
+    assert "之上" in band
+    # fixture thresholds 20 / 80
+    assert "20th percentile of the last two years" in band
+    assert "80th" in band
+    assert "近两年20百分位" in band
+    assert "80百分位" in band
+    src = (REPO / "templates" / "market_structure.html.j2").read_text(encoding="utf-8")
+    assert "gamma.gamma_flip" in src
+    assert "cor1m_pctile_lo" in src
+    assert "cor1m_pctile_hi" in src
+    assert "7663" not in src
+
+
+def test_p8_watch_band_binds_stubbed_flip_not_fixture_default(tmp_path):
+    raw = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    raw["gamma"]["gamma_flip"] = 7663.226367
+    raw["gamma"]["spot"] = 7636.3599
+    dist = (7636.3599 - 7663.226367) / 7636.3599 * 100
+    raw["gamma"]["dist_to_flip_pct"] = dist
+    raw["dispersion"]["cor1m_pctile_lo"] = 20
+    raw["dispersion"]["cor1m_pctile_hi"] = 80
+    stub = tmp_path / "watch_flip.json"
+    stub.write_text(json.dumps(raw), encoding="utf-8")
+    html = render(REPO, fixture=stub)
+    band = _watch_band(html)
+    assert "7663" in band
+    assert "below 7663" in band
+    assert "7497" not in band
+    assert "20th percentile" in band
+    assert "80th" in band
+    assert "之下" in band
+
+
+def test_p8_watch_band_banned_vocab_clean():
+    html = _render_with_fixture()
+    wrap_at = html.find('class="wrap"')
+    wrap = html[wrap_at:] if wrap_at != -1 else html
+    for term in _BANNED_CYCLE_VOCAB:
+        assert term not in wrap, f"banned cycle vocab {term!r} leaked onto the page"
+    src = (REPO / "templates" / "market_structure.html.j2").read_text(encoding="utf-8")
+    # comments may name the ban; user-visible spans must not
+    visible = re.sub(r"\{#[^#]*#\}", "", src)
+    visible = re.sub(r"/\*.*?\*/", "", visible, flags=re.S)
+    for term in ("falsifier", "证伪", "refuted", "refutation"):
+        assert term not in visible, f"banned term {term!r} in template outside comments"
+
+
+def test_p8_not_a_seventh_l1():
+    html = _render_with_fixture()
+    assert html.count('class="sec-head"') == 5
+    assert html.count('class="msp-driver"') == 5
+    assert html.count('id="watch-band"') == 1
+    assert html.count('id="msp-drivers"') == 1
+    # watching band is not its own numbered section
+    band = _watch_band(html)
+    assert 'class="eyebrow"' not in band
+    assert re.search(r'class="eyebrow">\s*7\s*<', html) is None
+
+
+def test_p9_swipe_strip_css_and_wrap_confirmation():
+    src = (REPO / "templates" / "market_structure.html.j2").read_text(encoding="utf-8")
+    assert "/* post-stack: consolidate */" in src
+    assert "scroll-snap-type:x mandatory" in src
+    assert "flex:0 0 86%" in src
+    assert "align-items:flex-start" in src
+    assert "scroll-snap-align:start" in src
+    assert ".kpi-row,.vix-row{flex-wrap:wrap}" in src
+    assert "html,body{overflow-x:hidden}" in src
+    html = _render_with_fixture()
+    assert 'id="msp-drivers"' in html
+    assert html.count('class="msp-driver"') == 5
+    # wrapping still present on the page CSS
+    assert ".kpi-row{display:flex;gap:14px 22px;flex-wrap:wrap" in src
+    assert ".vix-row{display:flex;gap:8px;flex-wrap:wrap" in src

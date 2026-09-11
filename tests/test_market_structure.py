@@ -342,6 +342,8 @@ class TestCor1mRegime:
         )
         assert result["cor1m_pctile_2y"] is not None
         assert result["cor1m_pctile_2y"] <= 20
+        assert result["cor1m_pctile_lo"] == 20
+        assert result["cor1m_pctile_hi"] == 80
 
     def test_mid_correlation_is_normal(self, tmp_path):
         """A value near the median → 'normal'."""

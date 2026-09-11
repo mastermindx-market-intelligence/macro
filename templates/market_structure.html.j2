@@ -211,8 +211,38 @@ html[data-theme="light"] .rc.cutting.near-flat{color:var(--mut);border-color:col
 .warmup{padding:40px 24px;text-align:center;color:var(--faint);font-size:14px;border:1px dashed var(--line);border-radius:14px;margin:20px 0}
 .warmup b{display:block;font-size:17px;color:var(--mut);font-weight:700;margin-bottom:8px}
 .warmup .empty-why{display:block;font-size:12px;color:var(--faint);margin:8px auto 0;font-weight:400;max-width:52ch;line-height:1.5}
+/* ── watching band (folded into the hero — not a 7th L1) ──
+   DARK: inset instrument plate, 7% blue wash on graphite, hairline, no glow.
+   LIGHT: paper plate on the canvas, cool hairline, ink shadow instead of glow.
+   Shared: kicker + two conditions; mechanics live in the `?` tip. */
+.watch-band{margin-top:14px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-card);background:color-mix(in srgb,var(--blue) 7%,transparent)}
+html[data-theme="light"] .watch-band{background:var(--bg);box-shadow:0 1px 2px color-mix(in srgb,var(--tx) 8%,transparent)}
+.watch-k{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:0 0 4px}
+html[data-lang="zh"] .watch-k{letter-spacing:0;text-transform:none}
+.watch-kicker{font-size:12px;color:var(--mut);margin:0 0 8px;line-height:1.45}
+.watch-list{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.watch-list li{font-size:13px;line-height:1.45;color:var(--tx)}
+.watch-list li b{display:block;font-size:12px;color:var(--ink);margin-bottom:2px}
 /* ── responsive ── */
 @media(max-width:760px){.hero-state{font-size:22px}.glass{padding:18px}.panel{padding:16px}}
+/* post-stack: consolidate */
+/* §10-D mobile reduction: hero + chips + first driver panel in the first
+   swipe; remaining drivers collapse to a swipe strip with next-card peek
+   (86%) and top-aligned cards. Strip scroll is the only horizontal motion;
+   the page itself must not scroll sideways in either language (§15).
+   .kpi-row / .vix-row already wrap — restated here so the reduction cannot
+   silently undo them. */
+@media(max-width:640px){
+  html,body{overflow-x:hidden}
+  .wrap{overflow-x:hidden;max-width:100%}
+  .msp-drivers{display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;gap:12px;align-items:flex-start;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;padding-bottom:10px}
+  .msp-driver{flex:0 0 86%;scroll-snap-align:start;min-width:0}
+  .msp-driver .sec-head{margin-top:8px}
+  .kpi-row,.vix-row{flex-wrap:wrap}
+  .watch-band{padding:8px 10px;margin-top:10px}
+  .watch-list li{font-size:12px}
+  html[data-theme="light"] .msp-driver .panel{box-shadow:0 1px 2px color-mix(in srgb,var(--tx) 8%,transparent)}
+}
 
 /* light: bloom off (DESIGN_DOCTRINE §5.8) — a coloured glow behind text is a jewel on graphite
      and a stain on white; dark keeps every one of these). */
@@ -362,6 +392,44 @@ html[data-theme="light"] :is(
     <span class="l-zh"><b>缓冲机制原理</b><br>当做市商净GEX（伽马敞口——吸收或放大波动的期权账簿对冲）为正（多伽马）时，他们卖出期权，通过逢低买/逢高卖对冲——抑制波动。当GEX为负（空伽马）时，对冲需要追涨杀跌——放大波动。<br><br>{% if gamma.net_gex_pctile is not none %}当前净GEX：{{ '%.1f'|format(gamma.net_gex_bn|float if gamma.net_gex_bn is not none else 0) }}B（自{{ gamma.series_start if gamma.series_start is not none else '首日' }}以来{{ (gamma.net_gex_pctile|float|round|int) }}百分位{% if _gex_n > 0 %}，共 {{ _gex_n }} 个交易日{% endif %}）。{% if _gex_n > 0 and _gex_n < 100 %} 本序列较短——该百分位是 {{ _gex_n }} 次读数中的排名，并非多年历史。{% endif %}{% else %}当前净GEX：{{ '%.1f'|format(gamma.net_gex_bn|float if gamma.net_gex_bn is not none else 0) }}B。本次快照没有百分位读数——上方敞口是最新值，尚未对照历史排名。{% endif %}<br><br><em>仅为模型估算——做市商实际账簿不可观测，由标普500指数期权链重建。</em></span>
   </span></span>
 
+  {# P8 — Archetype-D watching band, folded into the hero (L1 stays 6).
+     Bind producer emissions only: gamma.gamma_flip, disp.cor1m_pctile_lo/hi.
+     Projection-window vocabulary — never falsifier/refutation/证伪. #}
+  {% set _watch_flip = gamma.gamma_flip if gamma.gamma_flip is not none else none %}
+  {% set _watch_lo = disp.cor1m_pctile_lo if (disp is not none and disp.cor1m_pctile_lo is defined and disp.cor1m_pctile_lo is not none) else none %}
+  {% set _watch_hi = disp.cor1m_pctile_hi if (disp is not none and disp.cor1m_pctile_hi is defined and disp.cor1m_pctile_hi is not none) else none %}
+  {% if _watch_flip is not none or _watch_lo is not none %}
+  <div class="watch-band" id="watch-band">
+    <div class="watch-k">{{ t("What we're watching", '我们在看什么') }}</div>
+    <p class="watch-kicker">{{ t('Windows, not certainties — re-drawn nightly.', '窗口，并非定论 — 每晚重算。') }}</p>
+    <ul class="watch-list">
+      {% if _watch_flip is not none %}
+      <li>
+        <b>{{ t('Flip level', '翻转点') }} <span class="tnum">{{ '%.0f'|format(_watch_flip|float) }}</span></b>
+        {% if gamma.spot is not none %}
+        <span class="l-en">This shock-absorber read holds while SPX stays {% if gamma.spot|float > _watch_flip|float %}above{% else %}below{% endif %} {{ '%.0f'|format(_watch_flip|float) }}. A close through that level is the window where dealer hedging would switch.</span>
+        <span class="l-zh">标普500保持在 {{ '%.0f'|format(_watch_flip|float) }} {% if gamma.spot|float > _watch_flip|float %}之上{% else %}之下{% endif %} 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。</span>
+        {% else %}
+        <span class="l-en">Dealer hedging would switch around {{ '%.0f'|format(_watch_flip|float) }} — a window, re-drawn with the nightly snapshot.</span>
+        <span class="l-zh">做市商对冲可能在 {{ '%.0f'|format(_watch_flip|float) }} 附近切换 — 这是窗口，随夜间快照重算。</span>
+        {% endif %}
+      </li>
+      {% endif %}
+      {% if _watch_lo is not none and _watch_hi is not none %}
+      <li>
+        <b>{{ t('Stock-picker window', '选股窗口') }}</b>
+        <span class="l-en">Stock-picker conditions hold while 1-month implied correlation stays at or below the {{ _watch_lo|int }}th percentile of the last two years; the {{ _watch_hi|int }}th is the window where stocks start moving together.</span>
+        <span class="l-zh">1个月隐含相关性维持在近两年{{ _watch_lo|int }}百分位及以下时，选股行情成立；升至{{ _watch_hi|int }}百分位则个股开始同涨同跌。</span>
+      </li>
+      {% endif %}
+    </ul>
+    <span class="help">?<span class="tip">
+      <span class="l-en">The flip is the reconstructed SPX level where dealer net gamma changes sign — hedging switches from absorbing dips to amplifying them. The stock-picker windows are the two-year percentiles the producer uses to classify 1-month implied correlation (a stock-picker's market vs stocks moving together). Neither is a forecast; both re-draw when the nightly snapshot lands.</span>
+      <span class="l-zh">翻转点是重建出的标普500水平，做市商净伽马在此变号——对冲从吸收回档转为放大波动。选股窗口是生产者用来划分1个月隐含相关性的两年百分位（选股行情对比个股同涨同跌）。两者都不是预测；夜间快照到达时重算。</span>
+    </span></span>
+  </div>
+  {% endif %}
+
   {# Missing-session disclosure. The options chain we rebuild this from is a live
      snapshot — a session we did not capture that evening can never be filled in,
      so the honest thing is to name the days the read skips rather than let the
@@ -397,7 +465,9 @@ html[data-theme="light"] :is(
 </div>
 {% endif %}
 
+<div class="msp-drivers" id="msp-drivers">
 {# ────────────────────── PANEL 2 — GEX HISTORY ────────────────────── #}
+<section class="msp-driver" data-driver="gex">
 {% if gamma is not none and gamma.history is not none and gamma.history | length > 0 %}
 <div class="sec-head">
   <span class="eyebrow">2</span>
@@ -428,8 +498,10 @@ html[data-theme="light"] :is(
   </span>
 </div>
 {% endif %}
+</section>
 
 {# ────────────────────── PANEL 3 — SYSTEMATIC FLOWS ────────────────────── #}
+<section class="msp-driver" data-driver="flows">
 <div class="sec-head">
   <span class="eyebrow">3</span>
   <h2>{{ t('Machine money flows', '机器资金动向') }}</h2>
@@ -522,8 +594,10 @@ html[data-theme="light"] :is(
   </span>
 </div>
 {% endif %}
+</section>
 
 {# ────────────────────── PANEL 4 — DISPERSION ────────────────────── #}
+<section class="msp-driver" data-driver="dispersion">
 <div class="sec-head">
   <span class="eyebrow">4</span>
   <h2>{{ t('Stock-picker conditions', '选股行情') }}</h2>
@@ -595,8 +669,10 @@ html[data-theme="light"] :is(
   </span>
 </div>
 {% endif %}
+</section>
 
 {# ────────────────────── PANEL 5 — VOL WEATHER ────────────────────── #}
+<section class="msp-driver" data-driver="vol">
 <div class="sec-head">
   <span class="eyebrow">5</span>
   <h2>{{ t('Vol weather', '波动率天气') }}</h2>
@@ -666,8 +742,10 @@ html[data-theme="light"] :is(
   </span>
 </div>
 {% endif %}
+</section>
 
 {# ────────────────────── PANEL 6 — WEEK MAP ────────────────────── #}
+<section class="msp-driver" data-driver="week">
 <div class="sec-head">
   <span class="eyebrow">6</span>
   <h2>{{ t('Weekly range', '本周区间') }}</h2>
@@ -752,6 +830,8 @@ html[data-theme="light"] :is(
   </span>
 </div>
 {% endif %}
+</section>
+</div>{# /msp-drivers #}
 
 {# ── Footer ── #}
 <div style="margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--faint)">
