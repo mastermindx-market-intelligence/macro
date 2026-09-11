@@ -608,6 +608,74 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
 .rvx-minibar{height:6px;border-radius:3px;background:color-mix(in srgb,var(--text) 8%,transparent);margin-top:8px;overflow:hidden;position:relative}
 .rvx-minibar i{position:absolute;inset:0 auto 0 0;border-radius:3px}
 
+/* ── SECTOR PARTICIPATION (W1) — the per-sector 20-session breadth ladder ──
+   The market-wide gauges above answer "is the market participating?"; this
+   answers the same question one level down, per sector. It reuses the
+   internals idiom (shared-scale track + direction ink + tabular numeral) —
+   no new visual language, no new colour system, no new token root.
+
+   DARK ART DIRECTION (command center). The ladder is an instrument face:
+   tracks are grooves RECESSED into the tile (no border — luminance does the
+   separating), fills read as lit segments at full token strength against
+   graphite, and the one threshold the data actually has — half the names —
+   is an ETCHED light hairline. That hairline overhangs each track by 4px so
+   the per-row marks bridge the row gap into ONE continuous spine down the
+   column: above the spine the sector is moving as a group, below it a few
+   names are carrying it, readable with no numbers at all. Rows carry no
+   rules; air and ink weight separate them.
+   The light art direction is NOT this design re-tinted — see §light-sp below
+   (search `light-sp`), where the same ladder is printed rather than lit. */
+#sector-participation[hidden]{display:none}
+.rvx-sp{display:flex;flex-direction:column;gap:7px;margin-top:2px}
+.rvx-sp-row{display:grid;grid-template-columns:minmax(76px,1fr) minmax(110px,2.5fr) 46px;
+  gap:12px;align-items:center}
+.rvx-sp-cap{font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);
+  margin-bottom:1px}
+.rvx-sp-cap b{grid-column:2;justify-self:center;font-weight:600;transform:translateX(-1px)}
+.rvx-sp-nm{font-size:12.5px;font-weight:600;line-height:1.3}
+/* Square ends, deliberately — not the default pill. A pill reads as an app
+   progress bar; a square segment in a square groove reads as a scale on an
+   instrument face in dark and as a printed bar in a ruled cell in light, and
+   it lets the 50% spine cross the fill without a rounded end blurring exactly
+   the comparison the spine exists to make. 0 is the only non-token radius the
+   design ratchet accepts, and here it is the wanted value, not a workaround. */
+.rvx-sp-track{position:relative;height:9px;border-radius:0;box-sizing:border-box;
+  background:color-mix(in srgb,var(--text) 8%,transparent)}
+.rvx-sp-track::after{content:"";position:absolute;left:50%;top:-5px;bottom:-5px;width:1px;z-index:1;
+  background:color-mix(in srgb,var(--text) 46%,transparent)}
+.rvx-sp-row:last-child .rvx-sp-track::after{bottom:0}
+.rvx-sp-fill{position:absolute;inset:0 auto 0 0;width:0;border-radius:0}
+/* The threshold-to-ink decision is governed CSS, not a colour the renderer picks:
+   JS sets the state class and the data-dependent width, nothing else. Three rungs,
+   as on the market-wide gauges above, so the two breadth reads on this view speak
+   one language — but CENTRED ON THE SPINE (45/55, not the 200-day gauge's 40/60).
+   That gauge's midpoint is not a threshold; here it is, and a design where a green
+   bar could end left of the "half the names" line would be telling the eye and the
+   number two different stories. Amber now means exactly what the spine means: this
+   sector is sitting on the line. --up/--down are the theme tokens, so they flip
+   together under zh 红涨绿跌 and resolve to the measured inks under light. */
+.rvx-sp-fill.hi{background:var(--sp-fill-hi, var(--up))}
+.rvx-sp-fill.mid{background:var(--sp-fill-mid, var(--warn))}
+.rvx-sp-fill.lo{background:var(--sp-fill-lo, var(--down))}
+/* no reading: too few covered names. A hatched groove, never a zero-width bar —
+   an empty track and a 0% bar must not look alike. */
+.rvx-sp-track.none{background:repeating-linear-gradient(135deg,
+  color-mix(in srgb,var(--text) 11%,transparent) 0 3px,transparent 3px 7px)}
+.rvx-sp-val{font-family:var(--rvx-num);font-size:13px;font-weight:700;text-align:right;
+  font-variant-numeric:tabular-nums}
+.rvx-sp-val.none{font-size:12px;font-weight:600;color:var(--muted)}
+/* stale: the artifact is real but the calendar expects a newer one. Dark dims
+   the instrument — the segments lose luminance while keeping their meaning. */
+.rvx-sp.stale .rvx-sp-fill{opacity:.55}
+.rvx-sp.stale .rvx-sp-val{color:var(--muted)}
+.rvx-sp-chip{display:inline-flex;align-items:center;font-size:10.5px;font-weight:700;
+  letter-spacing:.02em;padding:2px 8px;border-radius:var(--r-ctl,8px);vertical-align:1px;
+  color:var(--prov-ink,var(--prov));border:1px solid color-mix(in srgb,var(--prov) 42%,transparent);
+  background:color-mix(in srgb,var(--prov) 13%,transparent)}
+.rvx-sp-chip.quiet{color:var(--muted);border-color:var(--rvx-hair);
+  background:color-mix(in srgb,var(--text) 5%,transparent)}
+.rvx-sp-foot{font-size:11px;color:var(--muted);margin:13px 0 0;max-width:80ch}
+
 @media (prefers-reduced-motion:reduce){
   .rvx-aurora b,.rvx-reveal,.rvx-brow,.rvx-hoarrow path,.rvx-rmap .lead-ring{animation:none!important}
   .rvx-reveal{opacity:1;transform:none} .rvx-hoarrow path.ln{stroke-dashoffset:0} .rvx-hoarrow path.hd{opacity:1}
@@ -617,7 +685,14 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
   .rvx-lanes{grid-template-columns:1fr 1fr} .rvx-map-wrap{grid-template-columns:1fr}
   .rvx-internals{grid-template-columns:1fr 1fr}
 }
-@media (max-width:560px){ .rvx-lanes{grid-template-columns:1fr} }
+@media (max-width:560px){ .rvx-lanes{grid-template-columns:1fr}
+  /* 390w: the ladder stays ONE line per sector — eleven two-line rows is a scroll
+     sink. The name column narrows and long EN names wrap (never truncate, doctrine
+     §3); the track keeps its width so the 50% spine survives the reflow, which is
+     the whole read. ZH names are 2–4 characters and never wrap here. */
+  .rvx-sp-row,.rvx-sp-cap{grid-template-columns:minmax(62px,1fr) minmax(92px,1.9fr) 42px;gap:9px}
+  .rvx-sp-nm{font-size:11.5px} .rvx-sp-val{font-size:12.5px} .rvx-sp{gap:8px}
+}
 </style>
 <style>
   /* ══════════════════════════════════════════════════════════════════════════
@@ -1493,6 +1568,68 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
     background:var(--panel);
     box-shadow:0 1px 2px color-mix(in srgb, var(--text) 5%, transparent),
                0 12px 32px -14px color-mix(in srgb, var(--text) 12%, transparent); }
+
+  /* ── §light-sp — SECTOR PARTICIPATION ladder, light art direction ────────
+     This is NOT the dark ladder with swapped tokens. Dark separates by
+     LUMINANCE: grooves recessed into a graphite tile, unruled rows, an etched
+     light hairline. On paper there is no depth to recess into — an 8%-of-ink
+     groove on white is a smear with no edge, and a full-strength fill inside
+     it reads as highlighter. So light separates by LINE, the mechanism the
+     doctrine's light reference already uses on this page:
+
+       · the track becomes a DRAWN BOX — white panel fill, 1px --si-edge
+         border (doctrine §5.8: "colored segment bars… add a track border"),
+         so an empty track is still a visible cell rather than nothing;
+       · every row gains a hairline BASELINE, turning the ladder into a
+         printed table — this also groups the wrapped EN sector names at 390w,
+         which dark does not need because its rows separate by ink weight;
+       · the 50% spine is INKED (42% of text) rather than etched (30% of a
+         light text over a dark groove) — same spine, opposite polarity;
+       · the withheld track drops the hatch for a DASHED empty cell: 135°
+         hatching on white is the "dirty smudge" failure the doctrine names,
+         while a ruled-but-empty cell is the printed convention for no reading;
+       · stale desaturates the ink instead of dimming luminance — a dimmed bar
+         on white just looks mis-printed, a lighter ink reads as provisional.
+
+     Direction/health inks need no work here: .si-stage already rebinds
+     --up/--warn/--down to the contrast-measured --si-ink-* rungs (and flips
+     them again under zh 红涨绿跌), so the fill colour arrives correct. That
+     rebinding is what this block is deliberately NOT relying on as a design. */
+  /* .si-stage rebinds --up/--down/--warn to the TEXT inks (--si-ink-*). That is
+     correct for glyphs and wrong for a filled bar: --warn mixed 62% into --text
+     prints a muddy brown, not amber — measured in the first light pass of this
+     panel. theme.css's own light direction tokens are already print-grade fills
+     (a deep green / brick red / ochre chosen for white), so capture them at BODY
+     scope, above the rebinding, and let the ladder's fills use those. Page-local
+     names bound to theme values — the sanctioned --pv- and --ms- pattern (design
+     system §2), not a second palette; the zh 红涨绿跌 swap happens on --up/--down
+     themselves in theme.css, so these follow it without a second rule. */
+  html[data-theme="light"] body.page-baskets {
+    --sp-fill-hi:var(--up); --sp-fill-mid:var(--warn); --sp-fill-lo:var(--down); }
+
+  html[data-theme="light"] .si-stage .rvx-sp-track {
+    background:var(--panel);
+    border:1px solid var(--si-edge, var(--line));
+    box-shadow:inset 0 1px 1px color-mix(in srgb, var(--text) 4%, transparent); }
+  html[data-theme="light"] .si-stage .rvx-sp-track::after {
+    background:color-mix(in srgb, var(--text) 42%, transparent); }
+  html[data-theme="light"] .si-stage .rvx-sp-track.none {
+    background:var(--panel); border-style:dashed;
+    border-color:color-mix(in srgb, var(--si-edge, var(--line)) 80%, transparent);
+    box-shadow:none; }
+  html[data-theme="light"] .si-stage .rvx-sp-row {
+    padding-bottom:7px;
+    border-bottom:1px solid color-mix(in srgb, var(--si-edge, var(--line)) 55%, transparent); }
+  html[data-theme="light"] .si-stage .rvx-sp-row:last-child { border-bottom:0; padding-bottom:0; }
+  html[data-theme="light"] .si-stage .rvx-sp-cap { border-bottom:0; padding-bottom:0; }
+  html[data-theme="light"] .si-stage .rvx-sp.stale .rvx-sp-fill { opacity:.72; filter:saturate(.62); }
+  /* translucent tints wash out over white — the state chips get opaque fills so
+     they stay chips and not stains. */
+  html[data-theme="light"] .si-stage .rvx-sp-chip {
+    background:color-mix(in srgb, var(--prov) 11%, var(--panel));
+    border-color:color-mix(in srgb, var(--prov) 48%, var(--panel)); }
+  html[data-theme="light"] .si-stage .rvx-sp-chip.quiet {
+    background:var(--panel2); border-color:var(--si-edge, var(--line)); }
   /* the session tape floats as a container too — its old edge-to-edge flat band was
      the worst of the gradient cutoffs */
   .ftr-tape-strip.visible, .ftr-tape-full.open .ftr-tape-band {
@@ -2406,6 +2543,30 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
         <div id="mf-vol-chip" style="margin-top:4px"></div>
       </div>
     </div>
+  </section>
+
+  {# ══ BREADTH BY SECTOR (W1) — the 20-session participation ladder ══
+     Second movement of the same question the gauges above ask. The gauges say
+     whether the MARKET is participating; this says which sectors are, so the
+     money view reads market → sector → flows without a change of idiom.
+
+     Rendered by renderSectorParticipation() in the __siDonorJs block, from
+     window.SECTOR_CENTRAL.sector_participation (build_sector_central.py
+     ::read_sector_participation_20). Starts `hidden`: if the payload itself
+     never lands the section leaves no empty shell behind, while an artifact
+     that is merely absent (the current production state) still renders — the
+     feature is disclosed, not hidden. The panel writes % widths only and
+     measures nothing, so it is safe to paint while the money view is off
+     screen (unlike the chart/map organs, which need a laid-out box). #}
+  <section class="rvx-sec rvx-reveal" id="sector-participation" style="animation-delay:.18s" hidden>
+    <div class="rvx-sec-h">
+      <h2>{{ t('Breadth by sector', '各板块的参与度') }}</h2>
+      <span class="q">{{ t('— which corners are joining in?', '— 哪些板块在跟上？') }}</span>
+      <span class="si-vocab" data-tip-en="What it measures: for each S&amp;P 500 sector, the share of its own member stocks trading above their own 20-session average price, adjusted for splits. Half the names is the line that matters — above it the sector is moving as a group, below it a few stocks are carrying it. When too few of a sector's stocks have a full 20 sessions of history (fewer than 5 names, or under 90% of the expected list), that sector shows no reading rather than a made-up one. Descriptive context: it ranks nothing, gates nothing and sizes nothing, and sectors are listed alphabetically, not by strength." data-tip-zh="衡量内容：标普500各板块中，股价站上自身20个交易日均价的成分股占比（已做拆股复权）。半数成分股是关键分界线 — 高于此线说明该板块整体在动，低于则是少数个股在带动。当某板块中拥有完整20个交易日历史的成分股过少（不足5只，或低于预期名单的90%）时，该板块显示为暂无读数，而非编造一个数值。此为背景展示：不排序、不门控、不定仓；板块按字母顺序排列，非按强弱。">?</span>
+    </div>
+    <p class="rvx-sec-sub" id="sp-read"></p>
+    <div id="sp-body"></div>
+    <p class="rvx-sp-foot" id="sp-foot"></p>
   </section>
 
   {% if flows_html %}{{ flows_html | safe }}{% endif %}
@@ -3404,12 +3565,116 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
       '<div class="gr-grid">'+(cells.join('')||'<div class="muted sm">'+L('accruing','累积中')+'</div>')+'</div>';
   }
 
+  /* ---- W1 · breadth by sector — the 20-session participation ladder ----
+     Reads D.sector_participation (build_sector_central.read_sector_participation_20).
+     Three honest states, each visually distinct:
+       · available            — the ladder, one row per sector
+       · available + stale    — the same ladder, dimmed/desaturated, "Being updated"
+       · not available        — one quiet chip + one plain line, no ghost rows
+                                (there is no roster to show, so none is invented)
+     and a fourth INSIDE the ladder: a sector whose covered-name floor withheld a
+     rate renders "—" over a hatched/dashed track, never 0%.
+     Bilingual by L() spans, so a language switch is pure CSS — this never needs a
+     re-render, and it carries no re-render cost on `langchange` either. */
+  var SP_ZH = {   /* the house GICS vocabulary, verbatim — dashboard.html.j2 SECZH */
+    "Information Technology":"信息技术","Financials":"金融","Consumer Discretionary":"可选消费",
+    "Health Care":"医疗保健","Communication Services":"通信服务","Consumer Staples":"必需消费",
+    "Industrials":"工业","Energy":"能源","Materials":"原材料","Real Estate":"房地产",
+    "Utilities":"公用事业"
+  };
+  function spName(raw){
+    var s = raw==null ? '' : String(raw);
+    /* never block a render on a name lookup (doctrine Law 2) — an unmapped sector
+       shows its own display name in both lanes rather than a blank or a slug. */
+    return L(esc(s), esc(SP_ZH[s] || s));
+  }
+  function renderSectorParticipation(){
+    var sec=document.getElementById('sector-participation'); if(!sec) return;
+    var sp=D.sector_participation; if(!sp) return;   /* payload predates W1 — stay hidden */
+    var read=document.getElementById('sp-read'),
+        body=document.getElementById('sp-body'),
+        foot=document.getElementById('sp-foot');
+    if(!read||!body||!foot) return;
+    sec.hidden=false;
+    if(!sp.available){
+      /* The producer's own note ("not yet published" / "producer reported no result" /
+         "artifact carries no usable participation rows") is an engineering string and
+         never reaches the page in any tier — it is the SAME user-facing situation in
+         all three cases: there is no reading yet. No failure/refutation wording. */
+      read.innerHTML='<span class="rvx-sp-chip quiet">'+L('Not published yet','尚未发布')+'</span> '+
+        L('This read turns on with the next data update. Nothing here to act on yet.',
+          '该读数将随下一次数据更新启用，目前无需操作。');
+      body.innerHTML=''; foot.innerHTML='';
+      return;
+    }
+    var rows=sp.sectors||[];
+    var rated=rows.filter(function(s){ return s && s.pct_above_20!=null; });
+    var broad=rated.filter(function(s){ return s.pct_above_20>50; }).length;
+    var share=rated.length ? broad/rated.length : 0;
+    /* "of the N sectors with a reading", not "of N sectors": the denominator is the
+       rated set, and saying so stops a reader counting eleven rows and finding nine. */
+    var lead = rated.length
+      ? L(broad+' of the '+rated.length+' sectors with a reading have more than half their stocks above their own 20-session average. ',
+          '有读数的'+rated.length+'个板块中，'+broad+'个板块的过半成分股站上自身20日均价。')
+      : '';
+    var stance = !rated.length
+      ? L('No sector has enough covered stocks to read yet. Nothing to act on.',
+          '目前没有板块的覆盖成分股足以给出读数，无需操作。')
+      : share>=.6 ? L('Broad — whole groups are moving, not just the leaders.',
+                      '参与面广 — 是整个板块在动，不只是龙头。')
+      : share>=.3 ? L('Mixed — be selective about which sector you buy.',
+                      '分化 — 买哪个板块需精挑细选。')
+      : L('Thin — a few stocks are carrying it. Watch, don’t chase.',
+          '参与面窄 — 少数个股在带动。观望，不要追。');
+    var chip = sp.stale ? '<span class="rvx-sp-chip">'+L('Being updated','读数更新中')+'</span> ' : '';
+    read.innerHTML = chip + lead + stance;
+    /* One caption for the spine, once — the 50% line is a constant, and a constant
+       belongs in the header, never repeated on every row (doctrine Law 4). */
+    var cap='<div class="rvx-sp-row rvx-sp-cap"><span></span><b>'+
+            L('half the names','半数成分股')+'</b><span></span></div>';
+    var ladder=rows.map(function(s){
+      var nm='<span class="rvx-sp-nm">'+spName(s&&s.sector)+'</span>';
+      var p = s ? s.pct_above_20 : null;
+      if(p==null){
+        /* The reason is a CONSTANT across every withheld sector, so it is stated
+           once in the merged footnote below, never repeated per row (Law 4). */
+        return '<div class="rvx-sp-row">'+nm+
+          '<span class="rvx-sp-track none" aria-hidden="true"></span>'+
+          '<span class="rvx-sp-val none">—</span></div>';
+      }
+      var v=Math.max(0,Math.min(100,+p));
+      var tone = v>=55 ? 'hi' : v>=45 ? 'mid' : 'lo';   /* rungs centred on the 50% spine */
+      /* 1.5% floor so a real, very low reading still draws a visible sliver — the
+         hatched/dashed "no reading" track above is what an ABSENT value looks like,
+         and the two must never be confusable. */
+      return '<div class="rvx-sp-row">'+nm+
+        '<span class="rvx-sp-track" aria-hidden="true"><i class="rvx-sp-fill '+tone+
+        '" style="width:'+Math.max(1.5,v).toFixed(1)+'%"></i></span>'+
+        '<span class="rvx-sp-val">'+Math.round(v)+'%</span></div>';
+    }).join('');
+    body.innerHTML='<div class="rvx-sp'+(sp.stale?' stale':'')+'">'+cap+ladder+'</div>';
+    /* ONE as-of and ONE footnote, merged rather than stacked (doctrine Law 4):
+       the provenance stamp, the em-dash key when any sector is withheld, and the
+       staleness sentence when the calendar expects a newer session. */
+    foot.innerHTML = L('As of '+esc(sp.as_of||'—')+' · adjusted for splits · 20 trading sessions.',
+                       '截至 '+esc(sp.as_of||'—')+' · 已做拆股复权 · 20个交易日。')
+      + (rated.length<rows.length
+          ? ' '+L('Sectors shown as “—” do not have enough covered stocks for a reading yet.',
+                  '显示为「—」的板块，其覆盖成分股尚不足以给出读数。') : '')
+      + (sp.stale ? ' '+L('Showing the last complete session — a newer one is expected.',
+                          '显示最近一个完整交易日 — 更新的数据尚未到位。') : '');
+  }
+
   function focusDelegate(e){
     var a=e.target.closest('a[data-focus]'); if(!a) return;
     var id=a.getAttribute('data-focus');
     if(window.SectorCyclesFocus && window.SectorCyclesFocus(id)) e.preventDefault();
   }
   function boot(){
+    /* first, and guarded: an unrelated failure in the three renders below must not
+       leave this section stuck `hidden` — an invisible honest state is the same
+       defect as a hidden feature. */
+    try{ renderSectorParticipation(); }catch(e){ console.warn('sector participation',e); }
     regimeBanner(); renderBoard(); renderGrader();
     var board=document.getElementById('board'); if(board){ board.addEventListener('click', focusDelegate); _initMiniCycHover(board); }
     var lanes=document.getElementById('actnow'); if(lanes){ lanes.addEventListener('click', focusDelegate); _initMiniCycHover(lanes); }

@@ -59,9 +59,19 @@ def _agg_row(ts_ms: int, close: float) -> dict:
     return {"t": ts_ms, "o": close, "h": close, "l": close, "c": close, "v": 1000}
 
 
+def _payload(ticker: str, results: list, **overrides) -> dict:
+    """A realistic /v2/aggs envelope (status/ticker/adjusted/next_url), not just a
+    bare results list — R3 requires qualifying the whole response, so the fakes
+    have to look like one."""
+    base = {"status": "OK", "ticker": ticker, "adjusted": True, "queryCount": len(results),
+            "resultsCount": len(results), "results": results}
+    base.update(overrides)
+    return base
+
+
 def test_licensed_daily_window_returns_split_adjusted_series(monkeypatch):
     days = _sessions(3)
-    payload = {"results": [_agg_row(_ts_ms(d), 100.0 + i) for i, d in enumerate(days)]}
+    payload = _payload("AAPL", [_agg_row(_ts_ms(d), 100.0 + i) for i, d in enumerate(days)])
     monkeypatch.setattr(bmod.config, "secret",
                         lambda name: "fake-key" if name == "POLYGON_API_KEY" else None)
     captured = {}
@@ -88,7 +98,7 @@ def test_licensed_daily_window_returns_split_adjusted_series(monkeypatch):
 def test_licensed_daily_window_raises_on_missing_expected_session(monkeypatch):
     days = _sessions(5)
     skip = days[2]
-    payload = {"results": [_agg_row(_ts_ms(d), 100.0) for d in days if d != skip]}
+    payload = _payload("AAPL", [_agg_row(_ts_ms(d), 100.0) for d in days if d != skip])
     monkeypatch.setattr(bmod.config, "secret",
                         lambda name: "fake-key" if name == "POLYGON_API_KEY" else None)
     monkeypatch.setattr(bmod.BreadthAdapter, "http_get",
@@ -109,7 +119,7 @@ def test_licensed_daily_window_never_uses_apikey_query_param(monkeypatch):
     """Regression pin for the documented security law (scripts/massive_entitlement_probe.py):
     the key must never appear as a query parameter, only the Authorization header."""
     days = _sessions(2)
-    payload = {"results": [_agg_row(_ts_ms(d), 100.0) for d in days]}
+    payload = _payload("AAPL", [_agg_row(_ts_ms(d), 100.0) for d in days])
     monkeypatch.setattr(bmod.config, "secret",
                         lambda name: "super-secret-key" if name == "POLYGON_API_KEY" else None)
     seen = {}
@@ -124,6 +134,89 @@ def test_licensed_daily_window_never_uses_apikey_query_param(monkeypatch):
     assert "super-secret-key" not in seen["url"]
     assert "apiKey" not in seen["params"]
     assert "super-secret-key" not in str(seen["params"])
+
+
+# --------------------------------------------------------------------------- #
+# R3 (Sol 1789096018.269229): qualify the RETURNED envelope, not just the request.
+# --------------------------------------------------------------------------- #
+
+def _fake_key(monkeypatch, key="fake-key"):
+    monkeypatch.setattr(bmod.config, "secret",
+                        lambda name: key if name == "POLYGON_API_KEY" else None)
+
+
+def test_licensed_daily_window_rejects_non_ok_status_R3(monkeypatch):
+    days = _sessions(2)
+    payload = _payload("AAPL", [_agg_row(_ts_ms(d), 100.0) for d in days], status="ERROR")
+    _fake_key(monkeypatch)
+    monkeypatch.setattr(bmod.BreadthAdapter, "http_get", lambda self, url, **kw: _FakeResponse(payload))
+    with pytest.raises(bmod.LicensedSourceError, match="status"):
+        _adapter().licensed_daily_window("AAPL", days[0], days[-1])
+
+
+def test_licensed_daily_window_rejects_ticker_identity_mismatch_R3(monkeypatch):
+    days = _sessions(2)
+    payload = _payload("MSFT", [_agg_row(_ts_ms(d), 100.0) for d in days])  # wrong ticker echoed
+    _fake_key(monkeypatch)
+    monkeypatch.setattr(bmod.BreadthAdapter, "http_get", lambda self, url, **kw: _FakeResponse(payload))
+    with pytest.raises(bmod.LicensedSourceError, match="identity mismatch"):
+        _adapter().licensed_daily_window("AAPL", days[0], days[-1])
+
+
+def test_licensed_daily_window_rejects_explicit_adjusted_false_R3(monkeypatch):
+    days = _sessions(2)
+    payload = _payload("AAPL", [_agg_row(_ts_ms(d), 100.0) for d in days], adjusted=False)
+    _fake_key(monkeypatch)
+    monkeypatch.setattr(bmod.BreadthAdapter, "http_get", lambda self, url, **kw: _FakeResponse(payload))
+    with pytest.raises(bmod.LicensedSourceError, match="adjusted=false"):
+        _adapter().licensed_daily_window("AAPL", days[0], days[-1])
+
+
+def test_licensed_daily_window_refuses_truncated_next_url_R3(monkeypatch):
+    """No pagination/retry authority: a next_url means the vendor truncated our
+    bounded request, which we must refuse rather than silently accept partial data."""
+    days = _sessions(2)
+    payload = _payload("AAPL", [_agg_row(_ts_ms(d), 100.0) for d in days],
+                       next_url="https://api.polygon.io/v2/aggs/.../next")
+    _fake_key(monkeypatch)
+    monkeypatch.setattr(bmod.BreadthAdapter, "http_get", lambda self, url, **kw: _FakeResponse(payload))
+    with pytest.raises(bmod.LicensedSourceError, match="truncated"):
+        _adapter().licensed_daily_window("AAPL", days[0], days[-1])
+
+
+def test_licensed_daily_window_rejects_duplicate_session_R3(monkeypatch):
+    days = _sessions(3)
+    rows = [_agg_row(_ts_ms(d), 100.0) for d in days]
+    rows.append(_agg_row(_ts_ms(days[1]), 999.0))  # a second, conflicting row for the same day
+    payload = _payload("AAPL", rows)
+    _fake_key(monkeypatch)
+    monkeypatch.setattr(bmod.BreadthAdapter, "http_get", lambda self, url, **kw: _FakeResponse(payload))
+    with pytest.raises(bmod.LicensedSourceError, match="duplicate"):
+        _adapter().licensed_daily_window("AAPL", days[0], days[-1])
+
+
+def test_licensed_daily_window_drops_out_of_window_rows_R3(monkeypatch):
+    days = _sessions(5)
+    in_window = days[-3:]
+    stray = days[0]  # outside the requested [start, end]
+    rows = [_agg_row(_ts_ms(stray), 1.0)] + [_agg_row(_ts_ms(d), 100.0) for d in in_window]
+    payload = _payload("AAPL", rows)
+    _fake_key(monkeypatch)
+    monkeypatch.setattr(bmod.BreadthAdapter, "http_get", lambda self, url, **kw: _FakeResponse(payload))
+    s = _adapter().licensed_daily_window("AAPL", in_window[0], in_window[-1])
+    assert len(s) == 3
+    assert stray not in [d.date() for d in s.index]
+
+
+def test_licensed_daily_window_rejects_boolean_close_R3(monkeypatch):
+    days = _sessions(2)
+    rows = [_agg_row(_ts_ms(days[0]), True), _agg_row(_ts_ms(days[1]), 100.0)]
+    payload = _payload("AAPL", rows)
+    _fake_key(monkeypatch)
+    monkeypatch.setattr(bmod.BreadthAdapter, "http_get", lambda self, url, **kw: _FakeResponse(payload))
+    # the boolean row is dropped as unusable, which leaves a real missing-session gap
+    with pytest.raises(bmod.LicensedSourceError, match="missing"):
+        _adapter().licensed_daily_window("AAPL", days[0], days[-1])
 
 
 # --------------------------------------------------------------------------- #
@@ -304,6 +397,67 @@ def test_no_sector_overlap_returns_none():
 
 
 # --------------------------------------------------------------------------- #
+# R2 (Sol 1789096018.269229): a symbol wholly missing from `closes` must still
+# count toward expected_20, and an isolated Boolean inside an object column
+# must not be coerced to 1. Both are regressions on the FIRST source pass.
+# --------------------------------------------------------------------------- #
+
+def test_missing_whole_symbol_still_counts_toward_expected_R2():
+    """The exact bug named in review: expected_n used to be len(tick) over columns
+    PRESENT in `closes`, so a symbol absent from the price matrix entirely silently
+    shrank the denominator — turning real 50% coverage into apparent 100%."""
+    days = _sessions(20)
+    present = [f"T{i}" for i in range(5)]
+    closes = _wide(present, days, lambda t, i: 100.0 + i)  # all 5 present names ABOVE
+    members = pd.DataFrame({"symbol": present + ["MISSING1", "MISSING2",
+                                                 "MISSING3", "MISSING4", "MISSING5"],
+                            "sector": ["Technology"] * 10})
+    out = _adapter().compute_sector_participation_20(closes, members)
+    last = out.iloc[-1]
+    assert last["Technology|expected_20"] == 10          # full roster, not just present-5
+    assert last["Technology|eligible_20"] == 5            # only the present 5 can be eligible
+    assert last["Technology|above_20"] == 5
+    assert np.isnan(last["Technology|pct_above_20"])      # 5/10 = 50% < 90% floor: withheld
+    # the pre-fix code would have read expected_20=5, eligible_20=5 -> a false 100%
+
+
+def test_isolated_boolean_in_object_column_rejected_R2():
+    """is_bool_dtype only ever catches a column whose DTYPE is bool. An object-dtype
+    column mixing floats and one bare Python True/False slips through pd.to_numeric,
+    which happily reads True as 1.0 and False as 0.0."""
+    days = _sessions(20)
+    syms = ["MIXED", "OK1", "OK2", "OK3", "OK4"]
+    closes = _wide(syms, days, lambda t, i: 100.0 + i)
+    closes["MIXED"] = closes["MIXED"].astype(object)
+    closes.loc[closes.index[3], "MIXED"] = True   # one bare bool inside an object column
+    members = _members(syms)
+    out = _adapter().compute_sector_participation_20(closes, members)
+    last = out.iloc[-1]
+    # MIXED's window includes the poisoned bool at position 3, so it can never
+    # accumulate 20 valid observations by the last row -> ineligible, not "above"
+    assert last["Technology|eligible_20"] == 4
+    assert last["Technology|expected_20"] == 5
+
+
+def test_conflicting_membership_dropped_from_every_sector_R2():
+    """A symbol claimed by two sectors is unresolved identity, not a guessable
+    assignment — it must be dropped from BOTH, never double-counted or picked."""
+    days = _sessions(20)
+    tech = [f"T{i}" for i in range(5)]
+    health = [f"H{i}" for i in range(5)]
+    dupe = "DUPE"
+    closes = _wide(tech + health + [dupe], days, lambda t, i: 100.0 + i)
+    members = pd.DataFrame({
+        "symbol": tech + health + [dupe, dupe],
+        "sector": ["Technology"] * 5 + ["Health Care"] * 5 + ["Technology", "Health Care"],
+    })
+    out = _adapter().compute_sector_participation_20(closes, members)
+    last = out.iloc[-1]
+    assert last["Technology|expected_20"] == 5     # DUPE excluded, not counted for Tech
+    assert last["Health Care|expected_20"] == 5    # DUPE excluded, not counted for Health either
+
+
+# --------------------------------------------------------------------------- #
 # Sibling isolation (Sol 1789095151.749809): BreadthAdapter is the parent of
 # midcap/smallcap/Russell/China/HK/Canada breadth too. The new W1 methods must
 # never be reachable from any sibling's own fetch() — inherited-but-unused is
@@ -376,7 +530,9 @@ def test_builder_read_missing_artifact_is_honest_not_a_crash(monkeypatch, tmp_pa
     assert out == {"available": False, "note": "not yet published"}
 
 
-def test_builder_read_present_artifact_reports_metadata(monkeypatch, tmp_path):
+def test_builder_read_missing_meta_sidecar_is_unavailable(monkeypatch, tmp_path):
+    """A bare parquet with no meta.json is not "available" — R4: file presence alone
+    must never stand in for the metadata contract."""
     from scripts import build_sector_central as bsc
     monkeypatch.setattr(bsc.config, "data_dir", lambda: tmp_path)
     days = _sessions(3)
@@ -386,17 +542,258 @@ def test_builder_read_present_artifact_reports_metadata(monkeypatch, tmp_path):
     bdir.mkdir(parents=True)
     part.to_parquet(bdir / "sector_participation_20.parquet")
     out = bsc.read_sector_participation_20()
+    assert out["available"] is False
+
+
+def _publish_fixture(monkeypatch, tmp_path, days, sectors=("Technology",), n_names=5, stale=False):
+    """Dogfoods BreadthAdapter.publish_sector_participation_20 to build a real
+    artifact+sidecar pair, so the builder-read tests exercise the SAME producer
+    code the collector actually uses (R1/R5: integrated path, not two isolated
+    halves each independently faked).
+
+    Pins nyse_calendar.expected_last_session() to the fixture's own last day so
+    "not stale" fixtures stay not-stale regardless of the real wall-clock date —
+    otherwise a historical-dated fixture reads as stale the moment real "today"
+    moves past it, which is exactly what happened here once real time caught up
+    to the originally-hardcoded 2024 fixture dates."""
+    monkeypatch.setattr(bmod.nyse_calendar, "expected_last_session", lambda: days[-1])
+    idx = pd.DatetimeIndex([pd.Timestamp(d) for d in days])
+    cols = {}
+    for sec in sectors:
+        cols[f"{sec}|above_20"] = [float(n_names)] * len(idx)
+        cols[f"{sec}|eligible_20"] = [float(n_names)] * len(idx)
+        cols[f"{sec}|expected_20"] = [float(n_names)] * len(idx)
+        cols[f"{sec}|pct_above_20"] = [100.0] * len(idx)
+    result = pd.DataFrame(cols, index=idx)
+    syms = [f"{sec}_{i}" for sec in sectors for i in range(n_names)]
+    members = _members(syms, sector=sectors[0]) if len(sectors) == 1 else pd.DataFrame(
+        {"symbol": syms, "sector": [s for s in sectors for _ in range(n_names)]})
+    a = _adapter()
+    path = tmp_path / "breadth" / "sector_participation_20.parquet"
+    a.publish_sector_participation_20(result, {}, members, path=path)
+    if stale:
+        import json
+        mpath = tmp_path / "breadth" / "sector_participation_20_meta.json"
+        meta = json.loads(mpath.read_text())
+        meta["expected_last_session"] = "2099-01-01"  # force a huge gap
+        mpath.write_text(json.dumps(meta))
+    return path
+
+
+def test_builder_read_present_artifact_reports_metadata(monkeypatch, tmp_path):
+    from scripts import build_sector_central as bsc
+    monkeypatch.setattr(bsc.config, "data_dir", lambda: tmp_path)
+    days = _sessions(3)
+    _publish_fixture(monkeypatch, tmp_path, days)
+    out = bsc.read_sector_participation_20()
     assert out["available"] is True
     assert out["basis"] == "split_adjusted"
     assert out["window_sessions"] == 20
-    assert out["as_of"] == idx.max().isoformat()
+    assert out["as_of"] == days[-1].isoformat()
+    assert out["sector_count"] == 1
+    assert out["stale"] is False
+
+
+def test_builder_read_present_artifact_exposes_actual_sector_rates_R1(monkeypatch, tmp_path):
+    """R1: 'read_sector_participation_20() currently returns only metadata' — the
+    consumer (the Money & Breadth UI) needs the actual derived rate per sector, not
+    just a count of how many sectors exist."""
+    from scripts import build_sector_central as bsc
+    monkeypatch.setattr(bsc.config, "data_dir", lambda: tmp_path)
+    days = _sessions(3)
+    _publish_fixture(monkeypatch, tmp_path, days, sectors=("Technology", "Energy"), n_names=5)
+    out = bsc.read_sector_participation_20()
+    assert out["available"] is True
+    assert len(out["sectors"]) == 2
+    by_name = {s["sector"]: s for s in out["sectors"]}
+    assert by_name["Technology"]["pct_above_20"] == 100.0
+    assert by_name["Technology"]["eligible_20"] == 5
+    assert by_name["Technology"]["expected_20"] == 5
+    assert by_name["Energy"]["pct_above_20"] == 100.0
+
+
+def test_builder_read_flags_stale_artifact_R4(monkeypatch, tmp_path):
+    """R4: an old artifact must not read as current merely because the file exists —
+    staleness is judged against the DECLARED expected-session clock."""
+    from scripts import build_sector_central as bsc
+    monkeypatch.setattr(bsc.config, "data_dir", lambda: tmp_path)
+    days = _sessions(3)
+    _publish_fixture(monkeypatch, tmp_path, days, stale=True)
+    out = bsc.read_sector_participation_20()
+    assert out["available"] is True   # data is real, just old
+    assert out["stale"] is True
+
+
+def test_builder_read_rejects_artifact_with_no_usable_rows_R4(monkeypatch, tmp_path):
+    """A parquet that is technically nonempty but carries only all-NaN eligible
+    columns must not read as available (the exact gap Sol flagged: "marks any
+    nonempty parquet as available even when it only contains an eligible_20 column")."""
+    from scripts import build_sector_central as bsc
+    monkeypatch.setattr(bsc.config, "data_dir", lambda: tmp_path)
+    import json
+    days = _sessions(3)
+    idx = pd.DatetimeIndex([pd.Timestamp(d) for d in days])
+    part = pd.DataFrame({"Technology|eligible_20": [np.nan, np.nan, np.nan]}, index=idx)
+    bdir = tmp_path / "breadth"
+    bdir.mkdir(parents=True)
+    part.to_parquet(bdir / "sector_participation_20.parquet")
+    (bdir / "sector_participation_20_meta.json").write_text(json.dumps({
+        "available": True, "basis": "split_adjusted",
+        "expected_last_session": days[-1].isoformat(),
+        "observed_max_session": days[-1].isoformat(),
+    }))
+    out = bsc.read_sector_participation_20()
+    assert out["available"] is False
+
+
+def test_publish_never_merges_over_a_prior_stale_result_R4(tmp_path):
+    """publish_sector_participation_20 must overwrite wholesale, never combine_first
+    a stale prior file into today's newly-unavailable cells."""
+    a = _adapter()
+    path = tmp_path / "sector_participation_20.parquet"
+    days = _sessions(3)
+    idx = pd.DatetimeIndex([pd.Timestamp(d) for d in days])
+    old = pd.DataFrame({"Technology|eligible_20": [5.0, 5.0, 5.0],
+                        "Technology|pct_above_20": [80.0, 80.0, 80.0]}, index=idx)
+    members = _members([f"T{i}" for i in range(5)])
+    a.publish_sector_participation_20(old, {}, members, path=path)
+    assert path.exists()
+    # today's run produced NO usable result — publish must remove the stale file,
+    # never leave old numbers looking current
+    a.publish_sector_participation_20(None, {"T0": "boom"}, members, path=path)
+    assert not path.exists()
+    import json
+    meta = json.loads((path.parent / "sector_participation_20_meta.json").read_text())
+    assert meta["available"] is False
 
 
 def test_builder_read_never_raises_on_corrupt_artifact(monkeypatch, tmp_path):
     from scripts import build_sector_central as bsc
     monkeypatch.setattr(bsc.config, "data_dir", lambda: tmp_path)
+    import json
     bdir = tmp_path / "breadth"
     bdir.mkdir(parents=True)
     (bdir / "sector_participation_20.parquet").write_bytes(b"not a parquet file")
+    (bdir / "sector_participation_20_meta.json").write_text(json.dumps({"available": True}))
     out = bsc.read_sector_participation_20()  # must never raise — additive, fail-soft
     assert out["available"] is False
+
+
+def test_builder_read_never_raises_on_corrupt_meta_json(monkeypatch, tmp_path):
+    from scripts import build_sector_central as bsc
+    monkeypatch.setattr(bsc.config, "data_dir", lambda: tmp_path)
+    days = _sessions(3)
+    _publish_fixture(monkeypatch, tmp_path, days)
+    (tmp_path / "breadth" / "sector_participation_20_meta.json").write_text("{not json")
+    out = bsc.read_sector_participation_20()
+    assert out["available"] is False
+
+
+# --------------------------------------------------------------------------- #
+# R1/R5 (Sol 1789096018.269229): the connected producer->consumer path, tested
+# with injected fetch stubs — never a real network call, never wired into
+# fetch(). Exercises fetch_sector_participation_20 -> compute_... -> publish...
+# -> the builder's read, end to end.
+# --------------------------------------------------------------------------- #
+
+def test_fetch_sector_participation_20_connects_producer_to_pure_calc():
+    days = _sessions(20)
+    syms = [f"T{i}" for i in range(5)]
+    members = _members(syms)
+
+    def fake_fetch_one(ticker, start, end):
+        i = int(ticker[1:])
+        s = pd.Series({pd.Timestamp(d): 100.0 + i + j for j, d in enumerate(days)})
+        s.attrs.update(basis="split_adjusted", adjusted=True)
+        return s
+
+    result, failures = _adapter().fetch_sector_participation_20(
+        members, end=days[-1], window_days=30, fetch_one=fake_fetch_one)
+    assert not failures
+    assert result is not None
+    last = result.iloc[-1]
+    assert last["Technology|eligible_20"] == 5
+    assert last["Technology|above_20"] == 5
+
+
+def test_fetch_sector_participation_20_isolates_per_ticker_failures():
+    """A per-ticker fetch failure must not sink the whole vertical — the failed
+    name simply never becomes eligible, and the failure is disclosed, not hidden."""
+    days = _sessions(20)
+    syms = [f"T{i}" for i in range(5)]
+    members = _members(syms)
+
+    def flaky_fetch_one(ticker, start, end):
+        if ticker == "T4":
+            raise bmod.LicensedSourceError("T4: simulated vendor failure")
+        s = pd.Series({pd.Timestamp(d): 100.0 + j for j, d in enumerate(days)})
+        return s
+
+    result, failures = _adapter().fetch_sector_participation_20(
+        members, end=days[-1], window_days=30, fetch_one=flaky_fetch_one)
+    assert failures == {"T4": "T4: simulated vendor failure"}
+    last = result.iloc[-1]
+    assert last["Technology|expected_20"] == 5   # full roster, T4 included
+    assert last["Technology|eligible_20"] == 4   # T4's fetch failure excludes it, not a crash
+
+
+def test_fetch_sector_participation_20_all_tickers_fail_returns_none_not_crash():
+    members = _members(["ONLY"])
+
+    def always_fails(ticker, start, end):
+        raise bmod.LicensedSourceError("no key")
+
+    result, failures = _adapter().fetch_sector_participation_20(
+        members, fetch_one=always_fails)
+    assert result is None
+    assert failures == {"ONLY": "no key"}
+
+
+def test_fetch_sector_participation_20_never_calls_network(monkeypatch):
+    """The orchestrating function must make zero real HTTP calls in this suite —
+    every path here is exercised through an injected fetch_one."""
+    def _forbidden_get(*a, **kw):
+        raise AssertionError("fetch_sector_participation_20 touched the network directly")
+    monkeypatch.setattr("requests.get", _forbidden_get)
+    members = _members(["ONLY"])
+    result, failures = _adapter().fetch_sector_participation_20(
+        members, fetch_one=lambda t, s, e: (_ for _ in ()).throw(bmod.LicensedSourceError("x")))
+    assert result is None
+
+
+def test_integrated_publish_and_builder_read_round_trip(monkeypatch, tmp_path):
+    """The full connected path: fetch -> compute -> publish -> builder read, with a
+    real (fake-HTTP) licensed_daily_window underneath — the integration R5 asks for,
+    not two halves each independently unit-tested."""
+    from scripts import build_sector_central as bsc
+    monkeypatch.setattr(bsc.config, "data_dir", lambda: tmp_path)
+    monkeypatch.setattr(bmod.config, "data_dir", lambda: tmp_path)
+    end = _sessions(1)[0]
+    window_days = 30
+    # mirror fetch_sector_participation_20's own start computation exactly, so the
+    # fake HTTP handler covers the FULL requested window — not just the last 20
+    # sessions — otherwise licensed_daily_window's missing-session check (correctly)
+    # rejects the gap between window start and the first faked session.
+    start = nyse_calendar.last_session_on_or_before(end - pd.Timedelta(days=window_days))
+    days = nyse_calendar.sessions_between(start, end)
+    monkeypatch.setattr(bmod.nyse_calendar, "expected_last_session", lambda: end)
+    syms = [f"T{i}" for i in range(5)]
+    members = _members(syms)
+    _fake_key(monkeypatch)
+
+    def fake_http_get(self, url, **kw):
+        ticker = url.split("/ticker/")[1].split("/")[0]
+        rows = [_agg_row(_ts_ms(d), 100.0 + i) for i, d in enumerate(days)]
+        return _FakeResponse(_payload(ticker, rows))
+
+    monkeypatch.setattr(bmod.BreadthAdapter, "http_get", fake_http_get)
+    a = _adapter()
+    result, failures = a.fetch_sector_participation_20(members, end=end, window_days=window_days)
+    assert not failures
+    a.publish_sector_participation_20(result, failures, members)
+
+    out = bsc.read_sector_participation_20()
+    assert out["available"] is True
+    assert out["as_of"] == days[-1].isoformat()
+    assert out["fetch_failure_count"] == 0
+    assert out["stale"] is False

@@ -40,13 +40,15 @@ class LicensedSourceError(RuntimeError):
 
 
 #: research/skylit/W1_SOURCE_IMPLEMENTATION_RULING_2026-09-11.md §2 / §"Why this is
-#: not a new data platform": the ONLY store in this repo actually covered by the
+#: not a new data platform": of the stores inspected, the ONLY one covered by the
 #: Massive entitlement (research/licenses/MASSIVE_ENTITLEMENT_RECORD.md) is
 #: collectors/massive_stock_day.py, and it is RAW — see lib/dataos/price.py
-#: KNOWN_STORE_BASES. Every *adjusted* store here (data/stocks, data/yahoo,
+#: KNOWN_STORE_BASES. Every *adjusted* store inspected (data/stocks, data/yahoo,
 #: baskets_ohlcv, baskets_extras, and this module's own _closes_cache.parquet) is
-#: yfinance-derived and therefore not entitled. W1_LICENSED_BASIS names what THIS
-#: reader actually returns, straight from the licensed vendor's own adjusted=true
+#: yfinance-derived, and no qualified licensed provenance has been established for
+#: any of them — a limitation of what was inspected, not a claim that no adjusted
+#: store anywhere could ever carry one. W1_LICENSED_BASIS names what THIS reader
+#: actually returns, straight from the licensed vendor's own adjusted=true
 #: aggregate — closing that gap directly rather than reusing either existing side.
 W1_LICENSED_BASIS = "split_adjusted"
 
@@ -292,7 +294,7 @@ def disclose_stale_constituent_columns(members_symbols, closes: pd.DataFrame,
     # frozen together, e.g. the whole download host down) is invisible to it. Disclosure
     # only, against wall-clock now — never a gate.
     if overall_tip is not None:
-        _now = pd.Timestamp.now("UTC").tz_localize(None)
+        _now = pd.Timestamp.utcnow().tz_localize(None)
         _tip_ts = pd.Timestamp(overall_tip)
         if _tip_ts.tzinfo is not None:
             _tip_ts = _tip_ts.tz_localize(None)
@@ -515,7 +517,7 @@ class BreadthAdapter(Adapter):
             if self.cache_path.exists():
                 cached = pd.read_parquet(self.cache_path)
                 # refresh tail; full re-pull if cache is stale beyond the overlap
-                age = (pd.Timestamp.now("UTC").tz_localize(None) - cached.index.max()).days
+                age = (pd.Timestamp.utcnow().tz_localize(None) - cached.index.max()).days
                 if age <= 14:
                     fresh = self._download_closes(tickers, "1mo")
                     closes = self._merge_refreshed(fresh, cached)
@@ -670,20 +672,58 @@ class BreadthAdapter(Adapter):
         r = self.http_get(url, headers={"Authorization": f"Bearer {key}"},
                           params={"adjusted": "true", "sort": "asc", "limit": 50000})
         payload = r.json()
+
+        # R3: qualify the RETURNED envelope, not merely the request we made.
+        status = payload.get("status")
+        if status not in ("OK", "DELAYED"):
+            raise LicensedSourceError(f"{ticker}: licensed response status {status!r}, not OK")
+        resp_ticker = payload.get("ticker")
+        if resp_ticker and resp_ticker.upper() != ticker.upper():
+            raise LicensedSourceError(
+                f"{ticker}: licensed response echoed ticker {resp_ticker!r} — identity mismatch")
+        if payload.get("adjusted") is False:
+            raise LicensedSourceError(f"{ticker}: licensed response explicitly reports adjusted=false")
+        if payload.get("next_url"):
+            # We asked for a single bounded window with limit=50000 (far beyond any
+            # daily-bar count for it). A next_url means the vendor truncated anyway —
+            # unexpected transport truncation, not a genuinely absent observation. We
+            # have no pagination/retry authority here, so refuse rather than silently
+            # accept a partial window (R3).
+            raise LicensedSourceError(
+                f"{ticker}: licensed response was truncated (next_url present) — "
+                "refusing a partial window rather than paginating")
+
         results = payload.get("results") or []
+        lo, hi = pd.Timestamp(start), pd.Timestamp(end)
         rows: dict[pd.Timestamp, float] = {}
+        dup_dates: set[pd.Timestamp] = set()
         for row in results:
             ts, c = row.get("t"), row.get("c")
-            if ts is None or c is None:
-                continue
+            if ts is None or c is None or isinstance(c, bool):
+                continue  # missing or non-numeric-typed close — never coerced to 0/1
+            c = float(c) if not isinstance(c, (int, float)) else c
+            if not np.isfinite(c) or c <= 0:
+                continue  # invalid close (R2's numeric contract applies to the source too)
             d = (pd.Timestamp(ts, unit="ms", tz="UTC")
                  .tz_convert("America/New_York").normalize().tz_localize(None))
+            if d < lo or d > hi:
+                continue  # out-of-window row — not part of the requested bounded range
+            if d in rows:
+                dup_dates.add(d)  # never silently overwrite a duplicate session (R3)
+                continue
             rows[d] = c
+        if dup_dates:
+            raise LicensedSourceError(
+                f"{ticker}: licensed response carried duplicate session(s) "
+                f"{sorted(dup_dates)[:3]} — refusing rather than overwriting")
         if not rows:
-            raise LicensedSourceError(f"{ticker}: empty licensed response for {start}..{end}")
-        s = pd.to_numeric(pd.Series(rows).sort_index(), errors="coerce").dropna()
+            raise LicensedSourceError(f"{ticker}: empty/unusable licensed response for {start}..{end}")
+        s = pd.Series(rows).sort_index()
         missing = nyse_calendar.missing_sessions(s.index, start, end)
         if missing:
+            # A genuinely absent expected session (a real historical hole) must stay
+            # absent here — it is NOT the same failure as transport truncation above,
+            # and re-fetching cannot manufacture data that was never printed (R3).
             raise LicensedSourceError(
                 f"{ticker}: licensed window {start}..{end} is missing "
                 f"{len(missing)} expected session(s) (e.g. {missing[:3]}); "
@@ -691,7 +731,7 @@ class BreadthAdapter(Adapter):
         s.attrs["price_source"] = "licensed_vendor"
         s.attrs["adjusted"] = True
         s.attrs["basis"] = W1_LICENSED_BASIS
-        s.attrs["vintage"] = pd.Timestamp.now("UTC").isoformat()
+        s.attrs["vintage"] = pd.Timestamp.utcnow().isoformat()
         return s
 
     def compute_sector_participation_20(self, closes: pd.DataFrame,
@@ -728,12 +768,27 @@ class BreadthAdapter(Adapter):
         start, end = closes.index.min().date(), closes.index.max().date()
         full = pd.DatetimeIndex([pd.Timestamp(d) for d in nyse_calendar.sessions_between(start, end)])
         raw = closes.reindex(full)
+        # R2: the expected reference population is EVERY member symbol, not merely
+        # whichever ones happen to have a price column. A symbol wholly absent from
+        # `closes` (a data gap, not a sector-membership fact) must still count toward
+        # expected_20 and simply never become eligible — reindexing the columns to the
+        # full member universe makes that the natural, un-special-cased outcome below,
+        # instead of silently shrinking the denominator (the exact bug: a missing
+        # symbol could turn real 50% coverage into apparent 100%).
+        universe = pd.Index(members["symbol"].dropna().unique()).union(raw.columns)
+        raw = raw.reindex(columns=universe)
         clean = pd.DataFrame(index=raw.index)
         for c in raw.columns:
             col = raw[c]
             if pd.api.types.is_bool_dtype(col):
-                clean[c] = np.nan          # A06: booleans are invalid, never 0/1
+                clean[c] = np.nan          # A06: an entirely-boolean column is invalid, never 0/1
                 continue
+            if col.dtype == object:
+                # an ISOLATED Python bool inside an otherwise-numeric object column is
+                # the same defect one level down: is_bool_dtype only ever catches a
+                # column whose dtype is bool, and pd.to_numeric happily reads a bare
+                # True/False as 1/0 if given the chance (R2).
+                col = col.map(lambda x: np.nan if isinstance(x, bool) else x)
             v = pd.to_numeric(col, errors="coerce")
             clean[c] = v.where(np.isfinite(v) & (v > 0))
         ma20 = clean.rolling(20, min_periods=20).mean()
@@ -744,9 +799,15 @@ class BreadthAdapter(Adapter):
         eligible = ma20.notna()
 
         sec_map = members.set_index("symbol")["sector"].dropna()
+        # R2: unresolved or conflicting membership (the same symbol claimed by more than
+        # one sector, or a duplicated row) must not be guessed into a sector or double-
+        # counted — drop it from every sector's roster rather than pick one arbitrarily.
+        dup_symbols = sec_map.index[sec_map.index.duplicated(keep=False)]
+        sec_map = sec_map[~sec_map.index.isin(dup_symbols)]
+
         cols = {}
         for sector, syms in sec_map.groupby(sec_map).groups.items():
-            tick = [t for t in syms if t in clean.columns]
+            tick = list(syms)          # the FULL reference roster for this sector (R2)
             expected_n = len(tick)
             if expected_n == 0:
                 continue
@@ -763,6 +824,82 @@ class BreadthAdapter(Adapter):
         out = pd.DataFrame(cols)
         keep = [c for c in out.columns if c.endswith("|eligible_20")]
         return out.dropna(subset=keep, how="all")
+
+    def fetch_sector_participation_20(self, members: pd.DataFrame, *,
+                                      end: date | None = None, window_days: int = 45,
+                                      fetch_one=None) -> tuple[pd.DataFrame | None, dict[str, str]]:
+        """R1: the connected SP500-only owning invocation — one
+        :meth:`licensed_daily_window` call per reference member, assembled into a wide
+        closes frame and reduced through :meth:`compute_sector_participation_20`.
+
+        ``fetch_one`` defaults to ``self.licensed_daily_window`` and exists so tests can
+        inject fake per-ticker responses with zero network access — this is the
+        "connected path, tested with injected responses" R1 requires. This method is
+        deliberately NOT called from :meth:`fetch`: a live 500+-ticker acquisition is a
+        separate, explicitly gated qualification step (Sol's source ruling), not
+        something merely writing and testing this connector authorizes.
+
+        Returns ``(participation_or_None, failures)`` — ``failures`` maps ticker ->
+        error string for any member whose fetch didn't qualify (R4: a partial roster is
+        disclosed, not hidden; a name absent from the assembled frame is simply never
+        eligible, per the R2 fix to :meth:`compute_sector_participation_20`)."""
+        fetch_one = fetch_one or self.licensed_daily_window
+        end = end or nyse_calendar.expected_last_session()
+        start = end - pd.Timedelta(days=window_days)
+        start = nyse_calendar.last_session_on_or_before(start)
+        cols: dict[str, pd.Series] = {}
+        failures: dict[str, str] = {}
+        for t in members["symbol"].dropna().unique():
+            try:
+                cols[str(t)] = fetch_one(t, start, end)
+            except LicensedSourceError as e:
+                failures[str(t)] = str(e)
+        if not cols:
+            return None, failures
+        closes = pd.DataFrame(cols)
+        result = self.compute_sector_participation_20(closes, members)
+        return result, failures
+
+    def publish_sector_participation_20(self, result: pd.DataFrame | None,
+                                        failures: dict[str, str], members: pd.DataFrame,
+                                        *, path=None) -> None:
+        """R1/R4: bounded derived publication. Writes the derived participation
+        product WHOLESALE — never a ``combine_first`` merge onto a prior file, so a
+        cell that is genuinely unavailable today can never be silently backfilled by a
+        stale value left over from an earlier, differently-shaped publish (R4). A
+        companion ``_meta.json`` carries the metadata a bare parquet cannot round-trip
+        through ``DataFrame.attrs`` (pandas does not serialize ``attrs``): method,
+        basis, reference-roster identity, per-fetch failures, and the SEPARATE
+        observation/expected-session clocks R4 requires — never just the returned
+        frame's own max date."""
+        import hashlib
+        import json
+        p = path or (config.data_dir() / "breadth" / "sector_participation_20.parquet")
+        p.parent.mkdir(parents=True, exist_ok=True)
+        expected_last = nyse_calendar.expected_last_session()
+        roster_sha = hashlib.sha256(
+            ",".join(sorted(members["symbol"].dropna().astype(str))).encode()).hexdigest()
+        meta = {
+            "method": "sector_participation_20",
+            "basis": W1_LICENSED_BASIS,
+            "computed_at": pd.Timestamp.utcnow().isoformat(),
+            "expected_last_session": expected_last.isoformat(),
+            "observed_max_session": (result.index.max().date().isoformat()
+                                     if result is not None and not result.empty else None),
+            "reference_roster_sha256": roster_sha,
+            "reference_roster_count": int(members["symbol"].dropna().nunique()),
+            "fetch_failure_count": len(failures),
+            "fetch_failures_sample": dict(list(failures.items())[:10]),
+        }
+        if result is None or result.empty:
+            (p.parent / "sector_participation_20_meta.json").write_text(
+                json.dumps({**meta, "available": False}, indent=2))
+            if p.exists():
+                p.unlink()  # no result this run — never leave a stale parquet claiming otherwise
+            return
+        result.to_parquet(p)  # wholesale overwrite, no merge (R4)
+        (p.parent / "sector_participation_20_meta.json").write_text(
+            json.dumps({**meta, "available": True}, indent=2))
 
     def compute(self, closes: pd.DataFrame) -> pd.DataFrame:
         w50, w200 = self.cfg["ma_windows"]
