@@ -261,6 +261,20 @@ def test_policy_feed_drops_non_china_rows():
         assert pw.row_is_china_policy(title, url, tier) is False, title
     for title, url, tier in kept:
         assert pw.row_is_china_policy(title, url, tier) is True, title
+    src = (config.ROOT / "engine" / "china_policy_watch.py").read_text()
+    assert "if int(source_tier or 0) == 1" not in src
+    assert 'df["source_tier"] == 1' not in src
+    # MJ-2 / B-1: qkernel tier 1 is a global wire, not an official-pages pass.
+    assert pw.row_is_china_policy(
+        "ECB holds rates",
+        "https://www.reuters.com/markets/ecb-holds",
+        1,
+    ) is False
+    assert pw.row_is_china_policy(
+        "Open market operations",
+        "https://www.pbc.gov.cn/en/3688006/index.html",
+        1,
+    ) is True
 
 
 def test_policy_feed_gate_adversarial_rows(monkeypatch):
@@ -312,12 +326,13 @@ def test_policy_feed_gate_adversarial_rows(monkeypatch):
         "https://policy.custom-pboc.test/en/omo-100bn.html",
         2,
     ) is True
-    # Honor source_tier==1 (official-pages fetch tag) even on an unknown host.
+    # source_tier==1 is NOT an official-pages fetch tag (qkernel wires).
+    # An unknown host with no China anchor is dropped even at tier 1.
     assert pw.row_is_china_policy(
         "Rates held",
         "https://totally-unknown.test/x",
         1,
-    ) is True
+    ) is False
 
 
 def test_select_policy_feed_rows_never_falls_back_unfiltered():
@@ -354,6 +369,15 @@ def test_select_policy_feed_rows_never_falls_back_unfiltered():
     }])
     off = pw._select_policy_feed_rows(official, top_n=12)
     assert off and off[0]["source_chip"] == "PBoC"
+
+    # B-1 mask: a Reuters ECB flash tagged source_tier=1 must not pre-admit.
+    wire_t1 = pd.DataFrame([{
+        "title": "ECB holds rates",
+        "url": "https://www.reuters.com/markets/ecb-holds",
+        "source": "reuters", "theme": "monetary", "source_tier": 1,
+        "first_seen_utc": "2026-09-10T10:00:00Z", "scheduled_ref": "",
+    }])
+    assert pw._select_policy_feed_rows(wire_t1, top_n=12) == []
 
 
 def _feed_frame(rows: list[dict]) -> pd.DataFrame:
@@ -413,9 +437,13 @@ def test_snapshot_surfaces_policy_feed_status(monkeypatch):
     monkeypatch.setattr(pboc, "snapshot", lambda asof=None: stub)
     monkeypatch.setattr("engine.china_national_team.snapshot", lambda asof=None: None)
 
-    monkeypatch.setattr(pw, "_policy_feed", lambda: ("ok", [{"title": "x", "source_chip": "PBoC"}]))
+    monkeypatch.setattr(pw, "_policy_feed", lambda: ("ok", [{
+        "title": "x", "source_chip": "PBoC",
+        "first_seen_utc": "2026-09-08T12:00:00Z",
+    }]))
     vm = pw.snapshot()
     assert vm["policy_feed_status"] == "ok" and vm["policy_feed"][0]["title"] == "x"
+    assert vm["feed_asof"] == "2026-09-08"
 
     monkeypatch.setattr(pw, "_policy_feed", lambda: ("quiet", []))
     vm = pw.snapshot()
@@ -611,3 +639,33 @@ def test_corridor_and_tsf_lens_use_question_hosts():
     assert tpl.count("class=\"lens-q\"") >= 4
     assert "c.key in _ctips" in tpl
     assert 'title="' not in tpl.split("{% block content %}", 1)[-1]
+    assert tpl.count('data-aria-zh="说明"') == tpl.count('class="lens-q"')
+    assert 'aria-label="Explain"' in tpl
+    assert "data-aria-en=" in tpl
+
+
+def test_reserves_mom_zero_renders():
+    """A genuine +0.0 MoM must not vanish (Jinja `{% if 0.0 %}` is falsy)."""
+    from jinja2 import Environment
+    tpl = _tpl()
+    assert "fx.reserves_mom is not none" in tpl
+    src = ("{% if fx.reserves_mom is not none %}"
+           "{{ '%+.1f'|format(fx.reserves_mom/10) }}{% endif %}")
+    env = Environment()
+    assert env.from_string(src).render(fx={"reserves_mom": 0.0}) == "+0.0"
+    assert env.from_string(src).render(fx={"reserves_mom": None}) == ""
+    assert env.from_string(src).render(fx={"reserves_mom": 25.14}) == "+2.5"
+
+
+def test_tape_card_carries_feed_asof_stamp():
+    tpl = _tpl()
+    assert 'data-l1="tape"' in tpl
+    assert "pw.feed_asof" in tpl
+    tape = tpl.split('data-l1="tape"', 1)[1].split("data-l1=", 1)[0]
+    assert 'class="dtp"' in tape
+
+
+def test_nbs_yen_unit_sits_before_the_number():
+    tpl = _tpl()
+    assert "¥{{ r.value }}bn" in tpl
+    assert "{{ r.value }}{{ r.unit }}" in tpl  # non-¥bn tiles keep suffix units

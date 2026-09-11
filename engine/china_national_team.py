@@ -571,8 +571,8 @@ def _eval_margin_recovery() -> tuple[dict, str | None]:
     rec_en, rec_zh = (fired_en, fired_zh) if fires else (quiet_en, quiet_zh)
     return _tell("margin_recovery", "firing" if fires else "quiet",
                  strength=strength,
-                 value_fmt=f"{last_tick/10:+.1f}bn",
-                 value_fmt_en=f"{last_tick/10:+.1f}bn",
+                 value_fmt=f"¥{last_tick/10:+.1f}bn",
+                 value_fmt_en=f"¥{last_tick/10:+.1f}bn",
                  value_fmt_zh=f"{last_tick:+.0f}亿",
                  receipt_en=rec_en, receipt_zh=rec_zh, have_data=True), None
 

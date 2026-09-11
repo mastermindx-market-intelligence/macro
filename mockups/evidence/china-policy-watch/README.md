@@ -1,15 +1,18 @@
-# China Policy Watch — W5 r3 evidence
+# China Policy Watch — W5 r4 evidence
 
 Fixture-rendered `templates/china_policy_watch.html.j2` (no live `data/` bake).
-Playwright seeds `localStorage` (`theme`, `lang`, clears `themeAuto`), calls
-`setTheme`/`setLang`, re-reads `html[data-theme]` / `html[data-lang]`, and
-refuses a cell on mismatch.
+Playwright seeds `localStorage` (`theme`, `lang`, clears `themeAuto`), sets
+`window.__skyDeck = true` (bows out of theme.js `skyToggleFx` sun/moon
+flourish), calls `setTheme`/`setLang`, re-reads `html[data-theme]` /
+`html[data-lang]`, and refuses a cell on mismatch. Any leftover `.sky-fx`
+node is removed before the shot.
 
 ## DARK TREATMENT
 
 Command center: luminance depth, instrument glass (`--mx5-glass-bg` at 55%
 with inset highlight and 32px shadow), restrained `--sh-glow` on the
-State-Hand gauge, aurora wash in the pressure accent. Backdrop is a quieter
+State-Hand gauge (SVG `shArcGlow` / needle bloom, overflow visible inside
+the dial), aurora wash in the pressure accent. Backdrop is a quieter
 inner panel (hairline + 3% white lift), not a second peer card. Chips and
 pills sit on translucent fills.
 
@@ -20,7 +23,10 @@ Research workspace: cool canvas, white material (`--mx5-glass-bg` 82% with
 dialed to 6%/4%. The nested China-macro backdrop uses a white sheet
 (`rgba(255,255,255,.72)`) plus a 6% cool drop shadow so it reads as paper
 on the desk, not a token-swapped dark panel. Stance badges keep the same
-semantic hues; light relies on fill + hairline rather than glow.
+semantic hues. The State-Hand gauge in light is fill + hairline: SVG glow
+filters off, overflow clipped to the dial, track/ticks/labels use cool ink
+on the sheet, `.sh-hero-right` sits above any leftover bloom so tell-row
+money copy stays legible. Not the dark bloom transplanted onto white.
 
 ## Intentional differences
 
@@ -29,11 +35,12 @@ semantic hues; light relies on fill + hairline rather than glow.
 | Card depth | glow + 32px shadow | hairline + 8–24px shadow |
 | Backdrop | 3% white lift | white sheet + inset hairline |
 | Aurora | 13% accent bloom | 6% / 4% wash |
+| Gauge bloom | SVG glow, overflow visible | fill + hairline, clipped, filters off |
 | Needle glow | drop-shadow on `--sh-accent` | theme.css light pointer, same accent |
 
 Token substitution alone is not the light design — the backdrop sheet, the
-inset hairline, and the shadow-not-glow stack are the light-specific
-mechanisms.
+inset hairline, the clipped no-glow gauge, and the shadow-not-glow stack
+are the light-specific mechanisms.
 
 ## L1 section count
 
@@ -75,3 +82,6 @@ row, sector-table cap, subtitle. Before = `origin/main` template.
 - `live_config.js` is absent in this sparse tree; live quote hydration omitted.
 - Shared site nav renders; some nav JS 404s are expected and do not change
   the desk cards under test.
+- Capture seeds `window.__skyDeck` and strips `.sky-fx` so the theme-toggle
+  sun/moon disc is not in the cells (live visitors still see the flourish
+  on a real toggle).

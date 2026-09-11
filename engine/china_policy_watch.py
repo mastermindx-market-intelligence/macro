@@ -305,13 +305,15 @@ def row_is_china_policy(title: str, url: str, source_tier: int = 0, *,
     """China-desk gate for the policy tape.
 
     Keep a row when (a) a China anchor lands in the title or hostname, or
-    (b) source_tier==1 (official-pages fetch tag — the docstring promise),
-    or (c) the host is in the same official-pages list the fetcher uses
-    (config `official_pages` or OFFICIAL_PAGES). A Eurozone/Fed monetary
-    flash on a global wire must not fill this card.
+    (b) the host is in the same official-pages list the fetcher uses
+    (config ``official_pages`` or OFFICIAL_PAGES).
+
+    ``source_tier`` is accepted for call-site compatibility and ignored:
+    qkernel tier 1 is global wires (reuters/apnews/bloomberg/wsj/ft), not
+    official pages. Official-pages admission is the host leg. A
+    Eurozone/Fed monetary flash on a global wire must not fill this card.
     """
-    if int(source_tier or 0) == 1:
-        return True
+    _ = source_tier  # qkernel tier 1 ≠ official pages; do not short-circuit
     host = _host(url)
     hosts = official_hosts if official_hosts is not None else _official_hosts()
     if _host_in(host, hosts):
@@ -321,13 +323,24 @@ def row_is_china_policy(title: str, url: str, source_tier: int = 0, *,
 
 
 def _select_policy_feed_rows(df, top_n: int = 12) -> list[dict]:
-    """Theme/tier slice, then the China gate. Empty list is a designed empty — never unfiltered."""
+    """Theme slice (plus official-page hosts), then the China gate.
+
+    qkernel ``source_tier==1`` is global wires and is NOT a pre-admit.
+    Empty list is a designed empty — never unfiltered.
+    """
     from engine import china_news_intel as ni
     if df is None or getattr(df, "empty", True):
         return []
-    mask = (df["source_tier"] == 1) | (df["theme"].isin(_POLICY_THEMES))
-    sub = df[mask].sort_values("first_seen_utc", ascending=False)
     official_hosts = _official_hosts()
+    theme_ok = df["theme"].isin(_POLICY_THEMES)
+    if "url" in df.columns:
+        official_ok = df["url"].map(
+            lambda u: _host_in(_host(str(u or "")), official_hosts)
+        )
+        mask = theme_ok | official_ok
+    else:
+        mask = theme_ok
+    sub = df[mask].sort_values("first_seen_utc", ascending=False)
     out = []
     for r in sub.itertuples():
         if not row_is_china_policy(getattr(r, "title", ""), getattr(r, "url", ""),
@@ -341,6 +354,7 @@ def _select_policy_feed_rows(df, top_n: int = 12) -> list[dict]:
                     "source_chip": _source_chip(url, src),
                     "theme": r.theme, "theme_en": tl[0], "theme_zh": tl[1],
                     "tier": int(r.source_tier),
+                    "first_seen_utc": getattr(r, "first_seen_utc", "") or "",
                     "scheduled_ref": getattr(r, "scheduled_ref", "") or ""})
         if len(out) >= top_n:
             break
@@ -467,6 +481,7 @@ def snapshot(asof: date | str | None = None) -> dict | None:
             "nbs_asof": nbs_asof,
             "backdrop_asof": _newest(fx.get("asof_reserves"), fx.get("asof_cny"), nbs_asof),
             "pboc_asof": (pboc or {}).get("asof"),
+            "feed_asof": feed_asof,
             "policy_feed": feed, "policy_feed_status": feed_status,
             "intel": intel,
             "intel_dates": intel_dates,
