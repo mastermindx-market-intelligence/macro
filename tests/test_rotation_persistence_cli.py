@@ -126,6 +126,7 @@ def test_cli_writes_strict_result_and_markdown(tmp_path: Path) -> None:
     assert "STRUCTURALLY_UNESTIMABLE" in report
     assert "minimum recent window: 23 sessions" in report
     assert "Long-horizon maximum matured anchors: 10→10, 15→5, 20→0" in report
+    assert all(line == line.rstrip() for line in report.splitlines())
 
 
 def test_cli_is_byte_deterministic_with_injected_clock(tmp_path: Path) -> None:
