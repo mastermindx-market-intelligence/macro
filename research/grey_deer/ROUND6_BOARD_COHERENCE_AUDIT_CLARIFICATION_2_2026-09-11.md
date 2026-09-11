@@ -33,6 +33,8 @@ Every issued row on one board must carry one non-empty `rank_by` value, and the 
 
 A finite `excess_spy` requires finite `ret` and finite `spy_ret`. Where all three are finite, `excess_spy` must equal `ret - spy_ret` to absolute tolerance `1e-10`. All finite `spy_ret` values within one board must agree to absolute tolerance `1e-12`.
 
+Per the parent registration, benchmark disagreement rejects and reports that one board while allowing other independently valid board dates to remain in the frozen audit. Malformed numeric evidence, invalid entry identity, duplicate grain, or another file-wide contract violation still aborts the audit rather than being repaired after outcome access.
+
 Return coverage and excess-return coverage remain separate. Missing `excess_spy` cannot be treated as a zero or as full benchmark-comparison coverage. A visible-top-versus-remainder excess comparison requires at least 80% excess coverage in both subsets in addition to the existing return-coverage requirements.
 
 ## 5. Price-basis sensitivity
@@ -43,6 +45,6 @@ The cleaner post-August-6 sensitivity requires every resolved row on an eligible
 
 The inference unit remains one ordered board date. Board size is disclosed but does not create additional independent observations. The visible top twelve is selected from issued rows before outcome missingness. All thresholds and missingness bounds remain exactly those in the parent registration and first clarification.
 
-The offline audit implementation is research-only and pure pandas/numpy. Before any real ledger outcome is read, its current synthetic contract suite passes 30 tests and a separate mutation run kills 19 deliberately wrong variants. These author tests establish the declared mechanics only; they are not empirical findings or independent review.
+The offline audit implementation is research-only and pure pandas/numpy. Before any real ledger outcome is read, its current synthetic contract suite passes 30 tests and a separate mutation run kills 20 deliberately wrong variants. These author tests establish the declared mechanics only; they are not empirical findings or independent review.
 
-The next permitted action is one execution against the frozen input bytes. If the file fails any contract above, the truthful result is `CONTRACT_BLOCKED` with the exact violated field; no alternative artifact or relaxed rule may be substituted after seeing the failure.
+The next permitted action is one execution against the frozen input bytes. If the file fails a file-wide contract above, the truthful result is `CONTRACT_BLOCKED` with the exact violated field; no alternative artifact or relaxed rule may be substituted after seeing the failure.
