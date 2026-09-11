@@ -85,6 +85,67 @@ For shared candidates, use paired comparisons to isolate incremental context. Se
 
 A later target or editorial selection cannot retroactively change which source originated an earlier candidate. Structure-only outcomes remain structure-only; flow context added later remains a revision with its own availability clock.
 
+## Sweep, package-association and missingness sub-study
+
+The current legacy enrichment makes three questions inseparable that this preregistration must evaluate independently:
+
+1. **single-contract urgency:** did one contract print rapidly across venues or repeatedly through the book;
+2. **cross-contract association:** do two or more contract executions belong to one package or coherent staged structure;
+3. **evidence availability:** which quote, OI, baseline and moneyness fields were actually knowable when the event/candidate was formed.
+
+The immutable component event remains one contract. `sweep_like` is an urgency observation and may not serve as the package ground truth. A derived package candidate must reference the exact component event IDs, evidence clocks and any source-supplied execution/package linkage without rewriting those events.
+
+### Package-label eligibility
+
+Positive package labels are admitted only when the entitled source semantics support the linkage for the relevant mechanism. A pair of similar-size, nearby-in-time legs without an authoritative link is a `package_candidate`, not a confirmed package. Unsupported cross-exchange, cross-mechanism or corrected cases remain unknown rather than negative.
+
+Freeze separate test populations for:
+
+- linked simple verticals;
+- linked call/put combinations and risk reversals;
+- complex-to-complex and floor mechanisms where documented;
+- legged-in or partially linked executions;
+- single-contract multi-exchange sweeps;
+- temporal/size near-misses that are not linked packages;
+- unresolved and multiply matched component events.
+
+### Baselines
+
+- **Package baseline D — current proxy:** `event.swept -> MULTI_LEG`. Measure both false package assignment on linked single-contract sweeps and missed linked packages whose legs are not individually sweep-like.
+- **Package baseline E — transparent association:** preregistered time, quantity/ratio, right, strike and expiry compatibility using only fields available at the cutoff. It returns candidate/resolved/unresolved, never beneficial-owner identity.
+- **Package baseline F — entitled linkage:** source-supported linked execution/package fields where the rights and field definitions are accepted. This is the measurement comparator, not automatically a production feature.
+
+Primary package endpoints are linked-package precision/recall over the supported domain, single-contract false-package rate, component-leg coverage, unmatched/multiply matched quantity, structure/payoff classification accuracy and correction stability. Report coverage and supported mechanisms beside every rate.
+
+### Missingness policies
+
+Compare attention-ordering behavior under three frozen missingness treatments without calling any arm a probability model:
+
+- **M0 current fallback:** retain the existing positive factors for unknown prior OI and unknown moneyness;
+- **M1 evidence-only:** unavailable components contribute zero and are carried in an explicit availability vector;
+- **M2 availability-stratified:** rank only within the same preregistered evidence-availability signature, then expose cross-stratum results separately.
+
+The 20-point event-unusualness component must remain unavailable when the producer intentionally emits `premium_z=null`; a root-day baseline may not be silently repurposed as a per-contract baseline. Any new per-contract baseline requires its own point-in-time definition, minimum-history rule, version and null state.
+
+For each missingness policy, report rank stability, top-percentile composition, missing-field concentration, coverage and any later separately admitted outcome metric. A missing-data policy that improves rank coverage is not evidence of conviction or alpha.
+
+### Required negative and metamorphic controls
+
+- a single contract across multiple venues must not become multi-leg solely from venue count;
+- an unswept linked package must remain detectable by the eligible linkage comparator;
+- dropping one leg must move a resolved package to partial/unresolved, never preserve the payoff silently;
+- reversing side or swapping call/put must change the recognized structure where economics require it;
+- shifting one candidate leg outside the frozen association window must break or downgrade the association;
+- shuffling timestamps or roots must not preserve package precision;
+- later OI confirmation must not alter the earlier package/side inputs in place;
+- null OI, moneyness, quote or baseline must remain explicit under M1/M2;
+- a per-event `premium_z=null` row must not earn unusualness points or an outlier badge;
+- duplicate event/revision inputs must not multiply package evidence or rank weight.
+
+### Acceptance boundary
+
+Research acceptance requires a supported-domain confusion/coverage ledger for urgency, association and missingness, with exact clocks and source versions. It does not require or authorize a new live package service. Any later production repair must extend existing event/campaign/candidate owners, preserve component identities and prove real single-leg, package, conflicting, null and correction states through the existing Terminal consumer on mobile and desktop.
+
 ## Dependence, uncertainty and sample planning
 
 Sides and legs belonging to a package are dependent; campaigns/sessions introduce further dependence. Use grouped evaluation and appropriate uncertainty rather than independent-binomial intervals over every leg.
@@ -116,6 +177,8 @@ Production acceptance remains separate: one real canonical measured event must r
 `NIGHTGLASS_PUBLIC_POPULATIONS_ATTRIBUTION_AND_GRADING_2026-09-11.md` records the motivating measurement failures without importing competitor data into this preregistration. Its arithmetic audit finds that public best-print, first-passage, marketing-output and weekly-level populations are non-comparable; the first three weekly focus lists are mostly explicitly structure-only; and level targets/supports use asymmetric event definitions. Those facts justify the controls above but do not become training rows, target labels or a Nightglass comparator arm.
 
 The addendum’s offline code passes34 tests and rejects10of10 deliberately wrong variants. It performs zero network fetches and zero model fits. This is validation of preregistration arithmetic and invariants, not market, model or product acceptance.
+
+`OPTIONS_FLOW_SEMANTICS_AND_PACKAGE_GAP_2026-09-11.md` supplies the current-source rationale for the new package/missingness sub-study. Its offline source-semantics audit passes22 tests and rejects10of10 deliberately wrong variants. It measures deterministic code behavior and accounting counterexamples only; it does not establish current R2 prevalence, package-label quality or return performance.
 
 ## Primary references
 
