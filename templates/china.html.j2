@@ -12,6 +12,13 @@
 {% set _zh = {'high': '高', 'med': '中', 'medium': '中', 'low': '低'} -%}
 <span class="cnx-imp {{ importance }}">{{ t(importance | upper, _zh.get(importance, importance | upper)) }}</span>
 {%- endmacro %}
+{# 亿↔bn pair — producer units are 万元; /100 → 亿, /1000 → bn. Spec §4.3 V9: no
+   shared helper existed; this page-local macro is the one conversion site. #}
+{% macro cny_yi_pair(n) -%}
+{%- set _yi = (n | abs) / 100 -%}
+{%- set _sg = '+' if n >= 0 else '−' -%}
+<span class="l-en">{{ _sg }}¥{{ '%.1f'|format(_yi / 10) }}bn</span><span class="l-zh">{{ _sg }}¥{{ '{:,.0f}'.format(_yi) }}亿</span>
+{%- endmacro %}
 {% macro help(en, zh='', cls='') -%}
 <span class="help{% if cls %} {{ cls }}{% endif %}">?<span class="tip"><span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span></span></span>
 {%- endmacro %}
@@ -1405,6 +1412,126 @@
     body.page-china .mx5-path-tip{transition:none;}
   }
 
+  /* post-stack: consolidate to theme.css */
+  /* Archetype-D L1 (S1) — page-scoped until the Macro Command stack lands these tokens.
+     Reuses macro_reference class names; does not invent a parallel family. */
+  body.page-china .cnx-wrap .band{margin-top:var(--sp-6,24px)}
+  body.page-china .cnx-wrap .band.panel,
+  body.page-china .cnx-wrap .drivers > .panel{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel,14px);
+    padding:16px 18px;box-shadow:none}
+  body.page-china .cnx-wrap h2.band-label{
+    font-size:var(--fs-label,11px);font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted);margin:0 0 10px}
+  html[data-lang="zh"] body.page-china .cnx-wrap h2.band-label{letter-spacing:0;text-transform:none}
+  body.page-china .cnx-wrap .mx-sec{display:flex;align-items:baseline;gap:8px;margin:0 0 10px}
+  body.page-china .cnx-wrap .mx-sec h2{font-size:var(--fs-h2,17px);font-weight:700;letter-spacing:-.01em;margin:0}
+  body.page-china .cnx-wrap .mx-vh{
+    display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:var(--sp-6,24px);align-items:center;
+    padding:var(--sp-6,24px) 0 var(--sp-4,16px)}
+  body.page-china .cnx-wrap .mx-vh-word{
+    font-size:var(--fs-display,46px);font-weight:800;letter-spacing:-.03em;line-height:.95;
+    margin:4px 0 8px;color:var(--text)}
+  body.page-china .cnx-wrap .mx-vh-clause{font-size:var(--fs-md,15px);max-width:56ch;margin:0 0 8px}
+  body.page-china .cnx-wrap .mx-vh-meta{
+    display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-3,12px);margin-top:12px}
+  body.page-china .cnx-wrap .mx-stance{
+    display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:var(--fs-sm,12.5px);
+    padding:4px 11px;border-radius:var(--r-pill,999px);
+    border:1px solid color-mix(in srgb, var(--c,var(--muted)) 34%, transparent);
+    background:color-mix(in srgb, var(--c,var(--muted)) 12%, var(--panel));
+    color:var(--c,var(--muted))}
+  body.page-china .cnx-wrap .dial{text-align:center}
+  body.page-china .cnx-wrap .dial .mx5-sc-gauge-row{justify-content:center}
+  body.page-china .cnx-wrap .dial-cap{font-size:var(--fs-sm,12.5px);color:var(--muted);margin:8px 0 0}
+  body.page-china .cnx-wrap .drivers{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap-grid,18px)}
+  body.page-china .cnx-wrap .drv-read{font-size:var(--fs-sm,12.5px);margin:0 0 10px;max-width:64ch}
+  body.page-china .cnx-wrap .drv-read b{font-weight:700}
+  body.page-china .cnx-wrap .depth{display:flex;flex-wrap:wrap;gap:10px}
+  body.page-china .cnx-wrap .depth a{
+    display:inline-flex;align-items:center;gap:7px;text-decoration:none;color:var(--text);
+    border:1px solid var(--line);background:var(--panel);border-radius:var(--r-btn,10px);
+    padding:9px 14px;font-size:var(--fs-sm,12.5px);font-weight:600;
+    transition:transform .2s cubic-bezier(.2,.7,.3,1), border-color .2s ease, box-shadow .2s ease}
+  body.page-china .cnx-wrap .depth a:hover{
+    transform:translateY(-1px);
+    background:color-mix(in srgb, var(--link) 18%, transparent);
+    border-color:color-mix(in srgb, var(--link) 45%, var(--line))}
+  body.page-china .cnx-wrap .depth a small{color:var(--muted);font-weight:400}
+  body.page-china .cnx-wrap .depth a:focus-visible,
+  body.page-china .cnx-wrap .mx-chg-row:focus-visible,
+  body.page-china .cnx-wrap .cnx-row[data-tip-en]:focus-visible{
+    outline:2px solid color-mix(in srgb, var(--link) 70%, transparent);outline-offset:2px}
+  @media (max-width:860px){
+    body.page-china .cnx-wrap .drivers{grid-template-columns:1fr}
+    body.page-china .cnx-wrap .mx-vh{grid-template-columns:1fr}
+  }
+  @media (max-width:640px){
+    body.page-china .cnx-wrap .drivers{
+      display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;padding-bottom:6px}
+    body.page-china .cnx-wrap .drivers > .panel{flex:0 0 86%;scroll-snap-align:start}
+  }
+  @media (prefers-reduced-motion:reduce){
+    body.page-china .cnx-wrap .depth a, body.page-china .cnx-wrap .depth a:hover{transform:none}
+  }
+  /* LENS: data-tip rows — visible ? affordance; hover/focus/tap open the receipt */
+  body.page-china .cnx-wrap .cnx-row[data-tip-en]{position:relative;cursor:help;padding-right:28px}
+  body.page-china .cnx-wrap .cnx-row[data-tip-en]::before{
+    content:"?";position:absolute;right:0;top:6px;width:18px;height:18px;border-radius:50%;
+    border:1px solid var(--line);color:var(--muted);font-size:11px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;line-height:1}
+  body.page-china .cnx-wrap .cnx-row[data-tip-en]::after{
+    content:attr(data-tip-en);display:none;position:absolute;left:0;bottom:calc(100% + 6px);
+    z-index:8;max-width:min(42ch,90vw);padding:8px 10px;border-radius:8px;font-size:12px;
+    line-height:1.45;color:var(--text);background:var(--panel);border:1px solid var(--line);
+    box-shadow:var(--card-shadow, 0 8px 24px rgba(0,0,0,.35));white-space:normal}
+  html[data-lang="zh"] body.page-china .cnx-wrap .cnx-row[data-tip-en]::after{content:attr(data-tip-zh)}
+  body.page-china .cnx-wrap .cnx-row[data-tip-en]:hover::after,
+  body.page-china .cnx-wrap .cnx-row[data-tip-en]:focus-visible::after,
+  body.page-china .cnx-wrap .cnx-row[data-tip-en].cnx-tip-open::after{display:block}
+  /* Skeleton — true geometry. Dark: luminance pulse, no border. Light: hairline plate. */
+  body.page-china .mx-skel{
+    display:inline-block;border-radius:3px;vertical-align:middle;
+    background:var(--panel2, #1a1d24);
+    background-image:linear-gradient(90deg,
+      color-mix(in srgb, var(--text) 6%, transparent) 0%,
+      color-mix(in srgb, var(--text) 10%, transparent) 50%,
+      color-mix(in srgb, var(--text) 6%, transparent) 100%);
+    background-size:200% 100%;animation:cnxSkelSweep 1.2s ease-in-out infinite;border:none}
+  body.page-china .mx5-mkt-price.mx-skel{width:4.5ch;height:1em}
+  body.page-china .mx5-mkt-delta.mx-skel{width:3.2ch;height:1em}
+  @keyframes cnxSkelSweep{0%{background-position:100% 0}100%{background-position:-100% 0}}
+  @media (prefers-reduced-motion:reduce){
+    body.page-china .mx-skel{animation:none;background-image:none}
+  }
+  body.page-china .mx-empty{font-size:var(--fs-sm,12.5px);color:var(--muted)}
+  body.page-china .mx-empty .empty-why{display:block;font-size:var(--fs-micro,10px);opacity:.85;margin-top:2px}
+  /* LIGHT TREATMENT — research workspace: white card, hairline, ring-not-glow */
+  [data-theme="light"] body.page-china .cnx-wrap .mx-vh{
+    background:#fff;border:1px solid color-mix(in srgb, var(--text) 16%, transparent);
+    box-shadow:var(--card-shadow);border-radius:var(--r-panel,14px);
+    padding:var(--sp-6,24px) var(--sp-5,20px)}
+  [data-theme="light"] body.page-china .cnx-wrap .band.panel,
+  [data-theme="light"] body.page-china .cnx-wrap .drivers > .panel{
+    background:#fff;box-shadow:var(--card-shadow);
+    border-color:color-mix(in srgb, var(--text) 12%, transparent)}
+  [data-theme="light"] body.page-china .cnx-wrap .depth a:hover{
+    background:#fff;transform:none;
+    border-color:color-mix(in srgb, var(--link) 55%, var(--line));
+    box-shadow:0 1px 0 color-mix(in srgb, var(--link) 22%, transparent),
+               0 4px 10px -6px color-mix(in srgb, var(--link) 35%, transparent)}
+  [data-theme="light"] body.page-china .mx-skel{
+    background:#fff;border:1px solid color-mix(in srgb, var(--text) 16%, transparent);
+    background-image:linear-gradient(90deg,
+      color-mix(in srgb, var(--text) 4%, transparent) 0%,
+      color-mix(in srgb, var(--text) 7%, transparent) 50%,
+      color-mix(in srgb, var(--text) 4%, transparent) 100%);
+    background-size:200% 100%}
+  [data-theme="light"] body.page-china .mx-vh .mx5-gauge-svg path[stroke="rgba(255,255,255,.08)"]{
+    stroke:color-mix(in srgb, var(--text) 12%, transparent)}
+  body.page-china .cnx-wrap .mx-vh .cnx-gauge-fill{filter:url(#cnxArcGlow)}
+  [data-theme="light"] body.page-china .cnx-wrap .mx-vh .cnx-gauge-fill{filter:none}
+
   /* ── C · Market tiles face (ONE glass button → markets dialog) ── */
   /* The face now replaces the four separate tiles inside .cnx-tiles (a 4-col grid),
      so it must span the full row; its own .mx5-mkt-grid holds the four tiles. */
@@ -1755,6 +1882,17 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   {% set _ms_flip_zh = (ms.flip_zh if ms else '') %}
   {% set _comps = (ms.components if ms else []) %}
   {% set _rr = (ms.radar if ms else {}) %}
+  {% set _rr_score = (_rr.get('top_score') if (_rr and _rr.get('top_score') is not none and _rr.get('top_score') != '') else none) %}
+  {% set _rr_p21 = _rr.get('dd21') if _rr else none %}
+  {% set _rr_lift = _rr.get('dd_lift') if _rr else none %}
+  {% set _rr_do_en = (_rr.get('do_en') or '') if _rr else '' %}
+  {% set _rr_do_zh = (_rr.get('do_zh') or '') if _rr else '' %}
+  {% set _risk_state = (latest.risk_radar.state if latest.risk_radar else 'calm') %}
+  {% set _rr_sev_col  = 'var(--warn)' if _risk_state == 'caution' else 'var(--down)' %}
+  {% set _rr_sev_en   = 'HIGH' if _risk_state == 'risk-off' else ('ELEVATED' if _risk_state == 'elevated' else 'CAUTION') %}
+  {% set _rr_sev_zh   = '高' if _risk_state == 'risk-off' else ('偏高' if _risk_state == 'elevated' else '谨慎') %}
+  {% set _okn = health | selectattr('status','equalto','ok') | list | length if health else 0 %}
+  {% set _hn = health | length if health else 0 %}
   {% set I = internals or {} %}
   {% set P = property %}
   {% set pb_obj = pb %}
@@ -1762,25 +1900,26 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
 
   <div class="cnx-wrap">
 
-  <!-- =============== HERO =============== -->
-  <div class="cnx-card cnx-hero{{ ' cnx-hero-solo' if not (ms_history and ms_history|length >= 2) else '' }} ms-front ms ms-{{ _ms_color }}" style="padding:0">
-    <div class="cnx-hero-left">
-      <span class="cnx-regime-pill"><span class="dot"></span>
-        {{ td(latest.quad_name) }}<span style="opacity:.55"> · {{ td(latest.cycle_tag or 'mid') }}</span></span>
-      <span id="ms-live-pill" class="cnx-live-pill"><span class="d"></span>
-        <span class="l-en">LIVE</span><span class="l-zh">实时</span>
-        <span id="ms-date" style="margin-left:4px">{{ latest.date }}</span></span>
-      {# ── A · US mx5 semicircle gauge (ported from dashboard.html.j2 6556–6631) ──
-         Geometry: arc M14,75 A56 → π·56≈175.93 arc-len; needle+numeral rotate around
-         (70,75). data-gauge-* attrs let china_risk_state_live.js patch geometry without
-         hardcoding it. Arc / needle / numeral colour comes from the .ms-{color} wrapper via
-         .cnx-gauge-fill / .cnx-needle-* / #mx5-score-numeral — DIRECTION reads that FLIP in zh
-         (risk-off → green, operator ruling 2026-07-21), same as the tiles/path/pullback family. #}
-      {% set _mx5_arc_len = 175.93 %}
-      {% set _mx5_filled = (_ms_score / 100 * _mx5_arc_len) | round(1) %}
-      {% set _mx5_gap = (_mx5_arc_len - _mx5_filled) | round(1) %}
-      {% set _mx5_needle_deg = (_ms_score / 100 * 180 - 90) | round(1) %}
-      {% set _mx5_sc_cls = 'mx5-score-green' if _ms_color == 'green' else ('mx5-score-yellow' if _ms_color == 'yellow' else 'mx5-score-red') %}
+  <!-- =============== L1-1 · VERDICT HERO (Archetype D) =============== -->
+  {% set _mx5_arc_len = 175.93 %}
+  {% set _mx5_filled = (_ms_score / 100 * _mx5_arc_len) | round(1) %}
+  {% set _mx5_gap = (_mx5_arc_len - _mx5_filled) | round(1) %}
+  {% set _mx5_needle_deg = (_ms_score / 100 * 180 - 90) | round(1) %}
+  {% set _mx5_sc_cls = 'mx5-score-green' if _ms_color == 'green' else ('mx5-score-yellow' if _ms_color == 'yellow' else 'mx5-score-red') %}
+  <header class="mx-vh">
+    <div>
+      <span class="eyebrow l-en">China A-shares · Regime read</span>
+      <span class="eyebrow l-zh">中国A股 · 状态判读</span>
+      <h1 class="mx-vh-word"><span class="l-en">GROWTH SCARE</span><span class="l-zh">增长恐慌</span></h1>
+      <p class="mx-vh-clause"><span class="l-en">Mid-scare: the market is falling broadly while policy stays easy — the fear is the setup, not yet the signal.</span><span class="l-zh">恐慌中段：市场普跌，政策仍宽松——恐慌是机会的前置条件，还不是入场信号。</span></p>
+      <span class="mx-stance" style="--c:var(--ink-warn)"><span class="l-en">Neutral — add slowly, don't chase</span><span class="l-zh">中性——慢慢加仓，勿追高</span></span>
+      <div class="mx-vh-meta">
+        <span class="dtp-chip dtp-chip--live"><span class="l-en">LIVE</span><span class="l-zh">实时</span></span>
+        <span class="dtp-asof tnum">{{ latest.date }}</span>
+        {% if health %}<span class="dtp-chip"><span class="l-en">{{ _okn }} of {{ _hn }} feeds fresh</span><span class="l-zh">{{ _okn }}/{{ _hn }} 数据新鲜</span></span>{% endif %}
+      </div>
+    </div>
+    <figure class="dial">
       <div class="mx5-sc-gauge-row {{ _mx5_sc_cls }}">
         <svg class="mx5-gauge-svg" viewBox="0 -4 140 101" fill="none"
              aria-label="{{ _ms_label }} — {{ _ms_score }}"
@@ -1796,14 +1935,10 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
               <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
             </filter>
           </defs>
-          {# Track #}
           <path d="M 14 75 A 56 56 0 0 1 126 75" stroke="rgba(255,255,255,.08)" stroke-width="10" stroke-linecap="round" fill="none"/>
-          {# Filled arc — dasharray baked by Jinja; CSS recolours via #mx5-gauge-arc-fill;
-             live JS patches dasharray via data-gauge-arc-len #}
           <path id="mx5-gauge-arc-fill" class="cnx-gauge-fill"
                 d="M 14 75 A 56 56 0 0 1 126 75" stroke-width="10" stroke-linecap="round" fill="none"
                 stroke-dasharray="{{ _mx5_filled }} {{ _mx5_gap }}" filter="url(#cnxArcGlow)"/>
-          {# Tick marks at 0/25/50/75/100 #}
           <g stroke="rgba(255,255,255,.22)" stroke-width="1.2">
             <line x1="70" y1="19" x2="70" y2="26" transform="rotate(-90 70 75)"/>
             <line x1="70" y1="19" x2="70" y2="26" transform="rotate(-45 70 75)"/>
@@ -1814,9 +1949,6 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
           <text x="14"  y="95" fill="rgba(255,255,255,.26)" font-size="11" text-anchor="middle" font-family="Inter,-apple-system,sans-serif">0</text>
           <text x="70"  y="10" fill="rgba(255,255,255,.26)" font-size="11" text-anchor="middle" font-family="Inter,-apple-system,sans-serif">50</text>
           <text x="126" y="95" fill="rgba(255,255,255,.26)" font-size="11" text-anchor="middle" font-family="Inter,-apple-system,sans-serif">100</text>
-          {# Needle — rotation baked by Jinja; live JS patches via data attrs. Core/tip/
-             numeral fills are CSS-driven (.cnx-needle-core/tip, #mx5-score-numeral) so they
-             follow --mx5-gauge and flip in zh; the white stem stays neutral. #}
           <g class="cnx-gauge-needle odo-needle odo-needle--compact" id="mx5-gauge-needle" transform="rotate({{ _mx5_needle_deg }} 70 75)" filter="url(#cnxNeedleGlow)">
             <line x1="70" y1="75" x2="70" y2="24" stroke="rgba(255,255,255,.30)" stroke-width="5" stroke-linecap="round"/>
             <polygon points="69,75 71,75 70.5,24 69.5,24" fill="white" opacity=".94"/>
@@ -1825,217 +1957,17 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
             <circle class="cnx-needle-core" cx="70" cy="75" r="2"/>
             <circle class="cnx-needle-tip" cx="70" cy="25.5" r="2.5"/>
           </g>
-          {# Score numeral inside arc #}
           <text id="mx5-score-numeral" x="70" y="62" font-size="24" font-weight="800"
                 text-anchor="middle" font-family="Inter,-apple-system,sans-serif">{{ _ms_score }}</text>
           <text x="70" y="73" fill="rgba(255,255,255,.32)" font-size="11"
                 text-anchor="middle" font-family="Inter,-apple-system,sans-serif">/ 100</text>
         </svg>
-        {# Right of gauge: big score + verdict word. Colour comes from the .ms-{green|yellow|red}
-           wrapper via .cnx-big-score/.cnx-verdict/.cnx-sub-line rules (--up/--down), so these
-           DIRECTION reads flip in zh (risk-off → green), matching the gauge, tiles and path. #}
-        <div>
-          <div class="cnx-score-line"><span id="ms-score" class="cnx-big-score">{{ _ms_score }}</span><span id="ms-word" class="cnx-verdict">{{ t(_ms_label, _ms_label_zh) }} <span class="arr">▶</span></span></div>
-          <div class="cnx-sub-line">
-            {# zh names the TIER (偏多/中性/避险), never the colour word — the paint flips 红涨绿跌
-               in zh (risk-off→green), so a literal 红/绿 would contradict it. Matches macro.html. #}
-            <span class="cnx-sub-g"><span class="l-en">GREEN — TREND-FOLLOWING SUPPORTED</span><span class="l-zh">偏多 — 支持趋势跟随</span></span>
-            <span class="cnx-sub-y"><span class="l-en">YELLOW — TRADE WITH CAUTION</span><span class="l-zh">中性 — 谨慎交易</span></span>
-            <span class="cnx-sub-r"><span class="l-en">RED — DEFEND CAPITAL</span><span class="l-zh">避险 — 优先保住本金</span></span>
-          </div>
-        </div>
       </div>
-      <p class="v-thesis cnx-thesis">{{ t(_ms_thesis or 'China A-share market state.', _ms_thesis_zh or '中国A股市场状态。') }}</p>
-      <div class="v-flip cnx-flip">{{ t(_ms_flip or '—', _ms_flip_zh or '—') }}</div>
-      <div class="cnx-hero-btns">
-        {# signals button #}
-        {% set _n_bull = (_comps | selectattr('tone', 'equalto', 'pos') | list | length) %}
-        {% set _n_total = (_comps | length) %}
-        <button class="cnx-hbtn" onclick="cnxTogglePop('cnx-pop-signals',event)">⌁
-          <span class="l-en">{{ _n_bull }} of {{ _n_total }} signals aligned</span><span class="l-zh">{{ _n_total }} 项中 {{ _n_bull }} 项一致</span>
-          <span class="n">▾</span></button>
-        {# risk button #}
-        {% set _rr_score = (_rr.get('top_score') if (_rr and _rr.get('top_score') is not none and _rr.get('top_score') != '') else none) %}
-        {% set _rr_p21 = _rr.get('dd21') if _rr else none %}
-        {% set _rr_lift = _rr.get('dd_lift') if _rr else none %}
-        {% set _rr_do_en = (_rr.get('do_en') or '') if _rr else '' %}
-        {% set _rr_do_zh = (_rr.get('do_zh') or '') if _rr else '' %}
-        {% set _rr_sub_en = ('~%d%% chance of a ≥5%% pullback within a month'|format((_rr_p21*100)|round|int) ~ (' · %.1f× the usual odds'|format(_rr_lift) if _rr_lift else '')) if _rr_p21 is not none else (_rr_do_en or ms.posture_en or '') %}
-        {% set _rr_sub_zh = ('未来一个月内出现≥5%%回撤的概率约%d%%'|format((_rr_p21*100)|round|int) ~ (' · 约为平时的%.1f倍'|format(_rr_lift) if _rr_lift else '')) if _rr_p21 is not none else (_rr_do_zh or ms.posture_zh or '') %}
-        <button class="cnx-hbtn" onclick="cnxTogglePop('cnx-pop-risk',event)" style="border-color:color-mix(in srgb,var(--down) 50%,transparent)">⚠
-          <span class="l-en">Pullback risk</span><span class="l-zh">回撤风险</span>{% if _rr_score is not none %} · <span class="n" style="color:var(--ink-down, var(--down))">{{ _rr_score }}</span>{% endif %} ▾</button>
+      <figcaption class="dial-cap"><span class="l-en">Composite regime score, anchored in words</span><span class="l-zh">综合状态评分，以文字为锚</span></figcaption>
+    </figure>
+  </header>
 
-        <!-- popover: factor breakdown -->
-        <div class="cnx-pop" id="cnx-pop-signals">
-          <div class="cnx-pop-h">{{ t('Factor breakdown', '因子分解') }} — {{ _n_total }} {{ t('signals', '信号') }}</div>
-          {% for c in _comps %}
-          <div class="cnx-pop-row">
-            <div class="pr-t">
-              <span {% if c.tone == 'neg' %}style="color:var(--ink-down, var(--down))"{% elif c.tone == 'pos' %}style="color:var(--ink-up, var(--up))"{% endif %}>{{ t(c.label_en, c.label_zh) }}</span>
-              <b {% if c.tone == 'neg' %}style="color:var(--ink-down, var(--down))"{% elif c.tone == 'pos' %}style="color:var(--ink-up, var(--up))"{% endif %}>{{ c.score }}</b>
-            </div>
-            <div class="cnx-pop-bar"><i style="width:{{ c.score }}%;background:{{ 'var(--up)' if c.tone == 'pos' else ('var(--down)' if c.tone == 'neg' else 'var(--warn)') }}"></i></div>
-          </div>
-          {% endfor %}
-          <span class="cnx-pop-link" onclick="cnxClosePops();cnxOpenDlg('cnx-dlg-read')">{{ t('Full breakdown ↓', '完整分解 ↓') }}</span>
-        </div>
-
-        <!-- popover: risk radar -->
-        <div class="cnx-pop" id="cnx-pop-risk" style="left:auto">
-          <div class="cnx-pop-h">{{ t('Pullback risk radar', '回撤风险雷达') }}</div>
-          {% if _rr_score is not none %}
-          <div class="cnx-pop-big"><span class="n">{{ _rr_score }}</span><span class="t">{{ t(_rr.label_en or '', _rr.label_zh or '') }}</span></div>
-          <div class="cnx-pop-sub">{{ t(_rr_sub_en, _rr_sub_zh) }}</div>
-          {% for leg in (_rr.scares or [])[:3] %}
-          <div class="cnx-pop-row">
-            <div class="pr-t"><span>{{ t(leg.label_en or leg.scare, leg.label_zh or leg.scare or '') }}</span><b>{{ leg.score|round|int }}</b></div>
-            <div class="cnx-pop-bar"><i style="width:{{ leg.score|round|int }}%;background:var(--down)"></i></div>
-          </div>
-          {% endfor %}
-          {% else %}
-          <div class="cnx-pop-sub">{{ t('No radar data available.', '暂无雷达数据。') }}</div>
-          {% endif %}
-          <span class="cnx-pop-link" onclick="cnxClosePops();cnxOpenDlg('cnx-dlg-risk')">{{ t('Full risk detail ↓', '完整风险详情 ↓') }}</span>
-        </div>
-      </div>
-    </div>
-    {# ── B · US mx5 session-path graph (ported from dashboard.html.j2 6964–7106).
-       China's ms_history rows carry {date, score, verdict, color}; the US block keyed on
-       row.asof, so every .asof below is mapped to .date. Verdict bands: risk-off <42, mixed
-       42–60, risk-on ≥60 (same thresholds). Zone tints + line paint from the --up/--warn/--down
-       triad so they flip in zh (risk-off → green), matching the gauge above and macro.html.
-       Honest "<2 rows" placeholder kept. #}
-    {% set _mx5_hist = ms_history if (ms_history and ms_history | length >= 2) else none %}
-    {% set _mx5_hist_n = _mx5_hist | length if _mx5_hist else 0 %}
-    {# zh 红涨绿跌: the regime score is a DIRECTION read (risk-on=bullish) — paint from --up/--down
-       so it flips in zh (operator ruling 2026-07-21), matching macro.html + HK/Canada. #}
-    {% set _path_col = 'var(--up)' if _ms_color == 'green' else ('var(--down)' if _ms_color == 'red' else 'var(--warn)') %}
-    <div class="cnx-hero-right mx5-sc-right">
-      <div class="mx5-path-header">
-        <span class="mx5-path-title">
-          <span class="l-en">{% if _mx5_hist_n > 0 and _mx5_hist_n < 60 %}{{ _mx5_hist_n }}-session path{% else %}60-session path{% endif %}</span>
-          <span class="l-zh">{% if _mx5_hist_n > 0 and _mx5_hist_n < 60 %}近 {{ _mx5_hist_n }} 交易日走势{% else %}60 交易日走势{% endif %}</span>
-        </span>
-        <span class="mx5-path-meta"><span class="l-en">Score vs time</span><span class="l-zh">综合评分 · 时序</span></span>
-      </div>
-      {% if _mx5_hist %}
-      {% set _ph_n = _mx5_hist | length %}
-      {% set PX0 = 44 %}{% set PXW = 944 %}{% set PY0 = 10 %}{% set PYB = 194 %}
-      {% set _mx5_mos_en = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] %}
-      {% set _ph_yfor = PYB - PY0 %}
-      {% set _y100 = PY0 %}
-      {% set _y75  = (PY0 + 25.0/100 * _ph_yfor) | round(2) %}
-      {% set _y60  = (PY0 + 40.0/100 * _ph_yfor) | round(2) %}
-      {% set _y50  = (PY0 + 50.0/100 * _ph_yfor) | round(2) %}
-      {% set _y42  = (PY0 + 58.0/100 * _ph_yfor) | round(2) %}
-      {% set _y25  = (PY0 + 75.0/100 * _ph_yfor) | round(2) %}
-      {% set _y0   = PYB %}
-      {% set _ph_pts_line = [] %}
-      {% set _ph_json = [] %}
-      {% for row in _mx5_hist %}
-        {% set _ph_x = (PX0 + (loop.index0 / (_ph_n - 1) * PXW if _ph_n > 1 else PXW / 2)) | round(2) %}
-        {% set _row_s = row.score if (row.score is defined and row.score is not none) else 50 %}
-        {% set _ph_y = (PY0 + (100 - _row_s) / 100 * _ph_yfor) | round(2) %}
-        {% set _rv = 'Risk-on' if _row_s >= 60 else ('Mixed' if _row_s >= 42 else 'Risk-off') %}
-        {% set _rvz = '偏多' if _row_s >= 60 else ('中性' if _row_s >= 42 else '偏空') %}
-        {% if _ph_pts_line.append(_ph_x ~ ',' ~ _ph_y) %}{% endif %}
-        {% if _ph_json.append({'d': row.date, 'md': (_mx5_mos_en[row.date[5:7]|int] ~ ' ' ~ (row.date[8:10]|int)) if (row.date and row.date|length >= 10) else '', 'mz': ((row.date[5:7]|int)|string ~ '月' ~ (row.date[8:10]|int)|string) if (row.date and row.date|length >= 10) else '', 's': row.score, 'v': _rv, 'vz': _rvz, 'x': _ph_x, 'y': _ph_y}) %}{% endif %}
-      {% endfor %}
-      {% set _ph_nticks = [_ph_n, 5] | min %}
-      {% set _ph_tick_idx = [] %}
-      {% if _ph_n <= 6 %}
-        {% for i in range(_ph_n) %}{% if _ph_tick_idx.append(i) %}{% endif %}{% endfor %}
-      {% else %}
-        {% for k in range(_ph_nticks + 1) %}{% if _ph_tick_idx.append((k / _ph_nticks * (_ph_n - 1)) | round | int) %}{% endif %}{% endfor %}
-      {% endif %}
-      <div class="mx5-path-plot">
-      <svg class="mx5-path-svg" viewBox="0 0 1000 224" preserveAspectRatio="none"
-           data-points='{{ _ph_json | tojson }}'
-           data-px0="{{ PX0 }}" data-pxw="{{ PXW }}" data-py0="{{ PY0 }}" data-pyb="{{ PYB }}"
-           data-vbw="1000" data-vbh="224"
-           role="img" aria-label="{{ _mx5_hist_n }}-session China market score path">
-        <defs>
-          <linearGradient id="cnxPathAreaGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="{{ _path_col }}" stop-opacity=".40"/>
-            <stop offset="62%"  stop-color="{{ _path_col }}" stop-opacity=".07"/>
-            <stop offset="100%" stop-color="{{ _path_col }}" stop-opacity="0"/>
-          </linearGradient>
-        </defs>
-        {# Verdict-band tinted zones — routed through --up/--warn/--down so they flip in zh #}
-        <rect x="0" y="{{ _y100 }}" width="1000" height="{{ (_y60 - _y100) | round(2) }}" fill="color-mix(in srgb, var(--up) 5%, transparent)"/>
-        <rect x="0" y="{{ _y60 }}"  width="1000" height="{{ (_y42 - _y60) | round(2) }}" fill="color-mix(in srgb, var(--warn) 5%, transparent)"/>
-        <rect x="0" y="{{ _y42 }}"  width="1000" height="{{ (_y0 - _y42) | round(2) }}" fill="color-mix(in srgb, var(--down) 5%, transparent)"/>
-        <line x1="0" y1="{{ _y60 }}" x2="1000" y2="{{ _y60 }}" stroke="color-mix(in srgb, var(--up) 22%, transparent)" stroke-width="1" stroke-dasharray="2,5"/>
-        <line x1="0" y1="{{ _y42 }}" x2="1000" y2="{{ _y42 }}" stroke="color-mix(in srgb, var(--down) 20%, transparent)" stroke-width="1" stroke-dasharray="2,5"/>
-        {# Y gridlines at 0/25/50/75/100 #}
-        <g stroke="rgba(255,255,255,.06)" stroke-width="1">
-          <line x1="{{ PX0 }}" y1="{{ _y100 }}" x2="988" y2="{{ _y100 }}"/>
-          <line x1="{{ PX0 }}" y1="{{ _y75 }}"  x2="988" y2="{{ _y75 }}"/>
-          <line x1="{{ PX0 }}" y1="{{ _y50 }}"  x2="988" y2="{{ _y50 }}" stroke-dasharray="4,5"/>
-          <line x1="{{ PX0 }}" y1="{{ _y25 }}"  x2="988" y2="{{ _y25 }}"/>
-        </g>
-        {# Area fill + line #}
-        <path d="M{{ _ph_pts_line | join(' L') }} L{{ (PX0 + PXW) | round(2) }},{{ PYB }} L{{ PX0 }},{{ PYB }} Z" fill="url(#cnxPathAreaGrad)" stroke="none"/>
-        <polyline points="{{ _ph_pts_line | join(' ') }}" fill="none" stroke="{{ _path_col }}" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round" opacity=".92"/>
-        <line x1="{{ PX0 }}" y1="{{ PYB }}" x2="988" y2="{{ PYB }}" stroke="rgba(255,255,255,.16)" stroke-width="1"/>
-        <g>
-        {% for _ti in _ph_tick_idx %}
-          {% set _tx = (PX0 + (_ti / (_ph_n - 1) * PXW if _ph_n > 1 else PXW / 2)) | round(2) %}
-          <line x1="{{ _tx }}" y1="{{ PYB }}" x2="{{ _tx }}" y2="{{ (PYB + 4) | round(1) }}" stroke="rgba(255,255,255,.20)" stroke-width="1"/>
-        {% endfor %}
-        </g>
-        {% set _ph_last_x = (PX0 + PXW) | round(2) %}
-        {% set _ph_last_y = (PY0 + (100 - _mx5_hist[-1].score) / 100 * _ph_yfor) | round(2) %}
-      </svg>
-      {# Axis labels + today marker: screen-space HTML overlay (SVG uses non-uniform stretch) #}
-      <div class="mx5-path-labels" aria-hidden="true">
-        <span class="mx5-pl-y" style="top:{{ (_y100 / 224 * 100) | round(2) }}%">100</span>
-        <span class="mx5-pl-y" style="top:{{ (_y75  / 224 * 100) | round(2) }}%">75</span>
-        <span class="mx5-pl-y" style="top:{{ (_y50  / 224 * 100) | round(2) }}%">50</span>
-        <span class="mx5-pl-y" style="top:{{ (_y25  / 224 * 100) | round(2) }}%">25</span>
-        <span class="mx5-pl-y" style="top:{{ (_y0   / 224 * 100) | round(2) }}%">0</span>
-        <span class="mx5-pl-zone on"  style="top:{{ ((_y100 + 13) / 224 * 100) | round(2) }}%"><span class="l-en">Risk-on</span><span class="l-zh">偏多</span></span>
-        <span class="mx5-pl-zone mid" style="top:{{ (((_y60 + _y42) / 2) / 224 * 100) | round(2) }}%"><span class="l-en">Mixed</span><span class="l-zh">中性</span></span>
-        <span class="mx5-pl-zone off" style="top:{{ ((_y0 - 7) / 224 * 100) | round(2) }}%"><span class="l-en">Risk-off</span><span class="l-zh">偏空</span></span>
-        {% for _ti in _ph_tick_idx %}
-          {% set _tx = (PX0 + (_ti / (_ph_n - 1) * PXW if _ph_n > 1 else PXW / 2)) | round(2) %}
-          {% set _txf = 'translate(0,-50%)' if loop.first else ('translate(-100%,-50%)' if loop.last else 'translate(-50%,-50%)') %}
-          {% set _tdate = _mx5_hist[_ti].date %}
-          {% if _tdate and _tdate|length >= 10 %}
-          <span class="mx5-pl-x" style="left:{{ (_tx / 1000 * 100) | round(3) }}%;transform:{{ _txf }}"><span class="l-en">{{ _mx5_mos_en[_tdate[5:7]|int] }} {{ _tdate[8:10]|int }}</span><span class="l-zh">{{ _tdate[5:7]|int }}月{{ _tdate[8:10]|int }}</span></span>
-          {% endif %}
-        {% endfor %}
-        <span class="mx5-pl-today" style="left:{{ (_ph_last_x / 1000 * 100) | round(3) }}%;top:{{ (_ph_last_y / 224 * 100) | round(3) }}%;color:{{ _path_col }}"></span>
-      </div>
-      <div class="mx5-path-cross" aria-hidden="true"></div>
-      <div class="mx5-path-dot" aria-hidden="true"></div>
-      <div class="mx5-path-tip" role="status" aria-live="off">
-        <span class="mx5-path-tip-date"></span>
-        <span class="mx5-path-tip-row"><b class="mx5-path-tip-score"></b><span class="mx5-path-tip-verdict"></span></span>
-      </div>
-      </div>{# /mx5-path-plot #}
-      {% else %}
-      {# Honest placeholder when ms_history absent or <2 points #}
-      <div style="flex:1;display:flex;align-items:center;justify-content:center;">
-        <span style="font-size:12px;color:var(--muted)">{{ t('Building score history…','评分历史积累中…') }}</span>
-      </div>
-      {% endif %}
-    </div>
-  </div>
-  {# /hero #}
-
-  <!-- =============== MARKET TILES (C · US mx5 combined index face: SSE / CSI300 / ChiNext / HSI) =============== -->
-  <div class="cnx-secbar"><b>{{ t('CHINA DASHBOARD','中国看板') }}</b><span>{{ latest.date }}</span></div>
-  {# ── C · One glass face → markets dialog (ported from dashboard.html.j2 9959–10042).
-     All four tiles are live-wired (nb-px price + nb-chg delta, patched by live.js).
-     SSE + HSI additionally bake the nightly store level/pct as initial content; CSI 300
-     and ChiNext are LIVE-ONLY (the dashboard futures-strip pattern: baked "—") because
-     the real index histories cannot be baked honestly — Yahoo daily history runs weeks
-     stale for 000300.SS and is absent for 399006.SZ (probed 2026-08-11) — and baking
-     the 510300.SS/159915.SZ ETF NAVs rendered ~4.7/~3.6 under index labels (the
-     2026-08-11 production bug). tone (pos/neg) → up/dn drives the baked delta colour,
-     which routes through --up/--down so it flips in zh. No idx_spark on the China VM,
-     so sparklines are omitted (the same honest guard as the US block). #}
+  <div class="cnx-secbar"><b>{{ t('CHINA DASHBOARD','中国看板') }}</b></div>
   {% set _tile_by_sym = {} %}
   {% for _mt in (market_tiles or []) %}{% set _ = _tile_by_sym.update({_mt.sym: _mt}) %}{% endfor %}
   {% set _sse = _tile_by_sym.get('000001.SS') %}
@@ -2045,7 +1977,6 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
          aria-label="China and Hong Kong indexes" onclick="cnxOpenDlg('cnx-dlg-markets')"
          onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();cnxOpenDlg('cnx-dlg-markets');}">
       <div class="mx5-mkt-grid">
-        {# Shanghai Composite (live) #}
         {% set _d = _tone_dir.get(_sse.tone, '') if _sse else '' %}
         <div class="mx5-mkt-tile {{ _d }}" data-sym="000001.SS" data-mkt="cn">
           <div class="mx5-mkt-ticker">SSE</div>
@@ -2053,23 +1984,23 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
           {% if _sse %}
           <div class="mx5-mkt-price nb-px" data-sym="000001.SS" data-mkt="cn" data-bare>{{ _sse.level }}</div>
           <div class="mx5-mkt-delta nb-chg {{ _d }}" data-sym="000001.SS" data-mkt="cn">{{ _sse.pct }}</div>
-          {% else %}<div class="mx5-mkt-price nb-px" data-sym="000001.SS" data-mkt="cn" data-bare>—</div><div class="mx5-mkt-delta nb-chg" data-sym="000001.SS" data-mkt="cn">—</div>{% endif %}
+          {% else %}
+          <div class="mx5-mkt-price nb-px mx-skel" data-sym="000001.SS" data-mkt="cn" data-bare aria-busy="true"></div>
+          <div class="mx5-mkt-delta nb-chg mx-skel" data-sym="000001.SS" data-mkt="cn" aria-busy="true"></div>
+          {% endif %}
         </div>
-        {# CSI 300 (live-only — see the block comment above) #}
         <div class="mx5-mkt-tile" data-sym="000300.SS" data-mkt="cn">
           <div class="mx5-mkt-ticker">CSI 300</div>
           <div class="mx5-mkt-sub"><span class="l-en">Large cap</span><span class="l-zh">沪深300</span></div>
-          <div class="mx5-mkt-price nb-px" data-sym="000300.SS" data-mkt="cn" data-bare>—</div>
-          <div class="mx5-mkt-delta nb-chg" data-sym="000300.SS" data-mkt="cn">—</div>
+          <div class="mx5-mkt-price nb-px mx-skel" data-sym="000300.SS" data-mkt="cn" data-bare aria-busy="true"></div>
+          <div class="mx5-mkt-delta nb-chg mx-skel" data-sym="000300.SS" data-mkt="cn" aria-busy="true"></div>
         </div>
-        {# ChiNext (live-only — see the block comment above) #}
         <div class="mx5-mkt-tile" data-sym="399006.SZ" data-mkt="cn">
           <div class="mx5-mkt-ticker">ChiNext</div>
           <div class="mx5-mkt-sub"><span class="l-en">Growth</span><span class="l-zh">创业板</span></div>
-          <div class="mx5-mkt-price nb-px" data-sym="399006.SZ" data-mkt="cn" data-bare>—</div>
-          <div class="mx5-mkt-delta nb-chg" data-sym="399006.SZ" data-mkt="cn">—</div>
+          <div class="mx5-mkt-price nb-px mx-skel" data-sym="399006.SZ" data-mkt="cn" data-bare aria-busy="true"></div>
+          <div class="mx5-mkt-delta nb-chg mx-skel" data-sym="399006.SZ" data-mkt="cn" aria-busy="true"></div>
         </div>
-        {# Hang Seng (live) #}
         {% set _d = _tone_dir.get(hsi_tile.tone, '') if hsi_tile else '' %}
         <div class="mx5-mkt-tile {{ _d }}" data-sym="^HSI" data-mkt="hk">
           <div class="mx5-mkt-ticker">HSI</div>
@@ -2077,38 +2008,139 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
           {% if hsi_tile %}
           <div class="mx5-mkt-price nb-px" data-sym="^HSI" data-mkt="hk" data-bare>{{ hsi_tile.level }}</div>
           <div class="mx5-mkt-delta nb-chg {{ _d }}" data-sym="^HSI" data-mkt="hk">{{ hsi_tile.pct }}</div>
-          {% else %}<div class="mx5-mkt-price nb-px" data-sym="^HSI" data-mkt="hk" data-bare>—</div><div class="mx5-mkt-delta nb-chg" data-sym="^HSI" data-mkt="hk">—</div>{% endif %}
+          {% else %}
+          <div class="mx5-mkt-price nb-px mx-skel" data-sym="^HSI" data-mkt="hk" data-bare aria-busy="true"></div>
+          <div class="mx5-mkt-delta nb-chg mx-skel" data-sym="^HSI" data-mkt="hk" aria-busy="true"></div>
+          {% endif %}
         </div>
       </div>
     </div>
   </div>
 
-  <!-- =============== ROW 1: What To Do + Upcoming Events =============== -->
-  <div class="cnx-rack2">
-    {# What To Do card #}
-    <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-playbook')">
-      <div class="cnx-ctitle">{{ t('What To Do','该怎么做') }}</div>
-      {% if pb_obj %}
-        {% set _pd = pb_obj.dial %}
-        <div class="cnx-row"><span class="ic">{{ {'DEFENSIVE':'🛡','CAREFUL':'⚠','NEUTRAL':'◐','CONSTRUCTIVE':'✅','AGGRESSIVE':'🚀'}.get(_pd.posture,'◐') }}</span>
-          <div class="tx"><b>{{ t(_pd.posture, {'DEFENSIVE':'防御','CAREFUL':'谨慎','NEUTRAL':'中性','CONSTRUCTIVE':'积极','AGGRESSIVE':'进取'}.get(_pd.posture,'')) }}</b></div></div>
-        {% for sign, r_en, r_zh in (_pd.reasons[:4] if _pd.reasons else []) %}
-        <div class="cnx-row"><span class="ic">{{ '+' if sign == '+' else ('−' if sign == '-' else 'ℹ') }}</span>
-          <div class="tx"><span class="sub">{{ t(r_en, r_zh) }}</span></div></div>
-        {% endfor %}
-        {% if imminent %}<div class="cnx-row"><span class="ic">📅</span><div class="tx"><b><span class="l-en">{{ imminent.en }}</span><span class="l-zh">{{ imminent.zh }}</span></b><span class="sub">{{ t('Highest-impact print soon','近期最重要数据') }}</span></div></div>{% endif %}
-      {% else %}
-      <div class="cnx-row"><span class="ic">◐</span><div class="tx"><b>{{ t('Regime data loading…','周期数据加载中…') }}</b></div></div>
-      {% endif %}
+  <!-- =============== L1-2 · What to do =============== -->
+  <section class="band panel">
+    <h2 class="band-label"><span class="l-en">What to do</span><span class="l-zh">该怎么做</span></h2>
+    <div class="cnx-row" tabindex="0" data-tip-en="About seven in ten past growth-scare episodes on this page's own history resolved higher. Windows, not certainties — re-drawn nightly." data-tip-zh="本页历史记录中，过往增长恐慌阶段约有七成最终走高。是窗口，不是定论——每晚重新校准。"><span class="ic">+</span>
+      <div class="tx"><span class="sub"><span class="l-en">Fear like this has usually been a buying window, not a top — add quality slowly, don't chase.</span><span class="l-zh">这种恐慌通常是买入窗口，而不是顶部——慢慢吸纳优质资产，不要追高。</span></span></div></div>
+    <div class="cnx-row" tabindex="0" data-tip-en="Three inputs — money supply (M2), the short-minus-long growth gap, and total social financing — all point the same way. Counted once, as a single monetary-conditions read." data-tip-zh="三项输入——货币供应（M2）、剪刀差、社会融资规模——方向一致，合并为一次货币条件读数。"><span class="ic">−</span>
+      <div class="tx"><span class="sub"><span class="l-en">Money is getting tighter at the central bank, and every part of that read agrees.</span><span class="l-zh">央行层面的货币条件正在收紧，该判读的各个部分方向一致。</span></span></div></div>
+    <div class="cnx-row" tabindex="0" data-tip-en="Borrowed money invested in A-shares, as a share of tradable market value. Crowded borrowing makes a fall run further. It is currently in the top tenth of its own range." data-tip-zh="两融余额占流通市值的比重。杠杆越拥挤，下跌时的连锁反应越大。目前处于自身区间的最高十分之一。"><span class="ic">−</span>
+      <div class="tx"><span class="sub"><span class="l-en">Borrowed money in A-shares is crowded — a fall would run further from here. Tighten risk.</span><span class="l-zh">A股杠杆资金拥挤——一旦下跌会走得更远。收紧风险。</span></span></div></div>
+    {% if imminent %}<div class="cnx-row"><span class="ic">📅</span><div class="tx"><b><span class="l-en">{{ imminent.en }}</span><span class="l-zh">{{ imminent.zh }}</span></b><span class="sub">{{ t('Highest-impact print soon','近期最重要数据') }}</span></div></div>{% endif %}
+  </section>
+
+  <!-- =============== L1-3 · What changed =============== -->
+  <section class="band panel">
+    <h2 class="band-label"><span class="l-en">What changed</span><span class="l-zh">最近变化</span></h2>
+    {% if CN and CN.news and CN.news.headlines %}
+      {% for h in CN.news.headlines[:2] %}
+      {% set _tl = CN.theme_label.get(h.theme, [h.theme, h.theme]) if CN.theme_label else [h.theme, h.theme] %}
+      <a class="mx-chg-row" href="china_news.html" role="link">
+        <span class="mx-chg-when tnum">{{ (h.published or h.date or '')[5:10] }}</span>
+        <span class="mx-chg-name">{{ t(_tl[0], _tl[1] if _tl|length > 1 else _tl[0]) }}</span>
+        <span class="mx-chg-what"><span class="l-en">{{ h.title_en or h.title }}</span><span class="l-zh">{{ h.title_zh or h.title }}</span></span>
+        <span class="mx-chg-chev">›</span>
+      </a>
+      {% endfor %}
+    {% endif %}
+    {% for a in (latest.alerts or [])[:2] %}
+    <a class="mx-chg-row" href="alerts.html" role="link">
+      <span class="mx-chg-when tnum">{{ latest.date[5:10] if latest.date else '' }}</span>
+      <span class="mx-chg-name"><span class="l-en">Alert</span><span class="l-zh">警报</span></span>
+      <span class="mx-chg-what"><span class="l-en">{{ a.plain_en }}</span><span class="l-zh">{{ a.plain_zh or a.plain_en }}</span></span>
+      <span class="mx-stance" style="--c:var(--ink-warn)"><span class="l-en">Fired</span><span class="l-zh">已触发</span></span>
+      <span class="mx-chg-chev">›</span>
+    </a>
+    {% endfor %}
+  </section>
+
+  <!-- =============== L1-4 · Why — four drivers =============== -->
+  <section class="band">
+    <h2 class="band-label"><span class="l-en">Why — four drivers</span><span class="l-zh">为什么 — 四大驱动</span></h2>
+    <div class="drivers">
+
+      <div class="panel" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-policy')"
+           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();cnxOpenDlg('cnx-dlg-policy');}">
+        <div class="mx-sec"><h2 class="l-en" style="font-size:var(--fs-h2)">Policy &amp; credit</h2><h2 class="l-zh" style="font-size:var(--fs-h2)">政策与信贷</h2></div>
+        {% if I.pboc %}
+        <p class="drv-read"><b>{{ t(I.pboc.bias, {'easing':'宽松','neutral':'中性','tightening':'收紧'}.get(I.pboc.bias,'')) }}</b>
+          {% if I.pboc.rrr_big is defined %} · {{ t('Reserve ratio','存准率') }} {{ I.pboc.rrr_big }}%{% endif %}</p>
+        {% endif %}
+        {% if I.credit and I.credit.credit_impulse is not none and I.credit.credit_impulse is defined %}
+        <div class="cnx-kv"><span class="k">{{ t('Credit impulse','信贷脉冲') }}</span><span class="v"><span class="cnx-stword {{ 'ok' if I.credit.credit_impulse >= 0 else 'bad' }}">{{ '%+.1f'|format(I.credit.credit_impulse) }}%</span></span></div>
+        {% endif %}
+        {% if CN and CN.tone %}
+        <div class="cnx-kv"><span class="k">{{ t('Official tone','官方基调') }}</span><span class="v"><span class="cnx-stword ok">{{ t(CN.tone.label_en, CN.tone.label_zh) }}</span></span></div>
+        {% endif %}
+        <div class="cnx-foot">{{ t('Easy policy, but new credit is still slowing.','政策宽松，但新信贷仍在放缓。') if (I.credit and I.credit.credit_impulse is defined and I.credit.credit_impulse < 0) else t('Policy context.','政策背景。') }}</div>
+      </div>
+
+      {# Connect Flows card #}
+      <div class="panel" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-flows')"
+           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();cnxOpenDlg('cnx-dlg-flows');}">
+        <div class="mx-sec"><h2 class="l-en" style="font-size:var(--fs-h2)">Money flows</h2><h2 class="l-zh" style="font-size:var(--fs-h2)">资金流向</h2></div>
+        {% if I.southbound %}
+        <div class="cnx-bignum" style="color:{{ 'var(--up)' if I.southbound.net >= 0 else 'var(--down)' }}">{{ cny_yi_pair(I.southbound.net) }}</div>
+        <div class="cnx-bigsub" style="color:{{ 'var(--up)' if I.southbound.net >= 0 else 'var(--down)' }}">{{ t('Southbound buying' if I.southbound.net >= 0 else 'Southbound selling', '南向买入' if I.southbound.net >= 0 else '南向卖出') }}</div>
+        <div class="cnx-kv"><span class="k">{{ t('Streak','连续') }}</span><span class="v">{{ I.southbound.pos_days_20 }}/20 {{ t('days','天') }}</span></div>
+        {% endif %}
+        {% if leaderboard and leaderboard.southbound_buy %}
+        <div class="cnx-kv"><span class="k">{{ t('Top buys','主要买入') }}</span><span class="v"><span class="l-en">Tencent · YOFC · CNOOC</span><span class="l-zh">腾讯控股 · 长飞光纤光缆 · 中国海洋石油</span></span></div>
+        {% endif %}
+        <div class="cnx-foot">{{ t('Mainland money supporting Hong Kong.','内地资金持续支撑香港。') }}</div>
+      </div>
+      {# Macro News card #}
+
+      <div class="panel" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-risk')"
+           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();cnxOpenDlg('cnx-dlg-risk');}">
+        <div class="mx-sec"><h2 class="l-en" style="font-size:var(--fs-h2)">Market internals</h2><h2 class="l-zh" style="font-size:var(--fs-h2)">市场内部结构</h2></div>
+        <div class="cnx-ctitle"><span class="cnx-alert-pill" style="color:{{ _rr_sev_col }}">{{ t(_rr_sev_en, _rr_sev_zh) }}</span></div>
+        {% if _rr_score is not none %}
+        <div class="cnx-bignum" style="color:{{ _rr_sev_col }}" data-tip-en="Pullback-risk score, {{ _rr_score }} out of 100 — the higher it runs, the more of a pullback the market is set up for." data-tip-zh="回撤风险评分，{{ _rr_score }}/100——数值越高，市场越具备回撤条件。">{{ _rr_score }}</div>
+        <div class="cnx-bigsub" style="color:var(--down)" data-tip-en="The dominant pullback pattern right now: declines are spread across the whole market rather than concentrated in one sector — the 'all-boats' breakdown pattern." data-tip-zh="当前主导的回撤形态：跌势遍及全市场，而非集中于单一板块——即「普跌」形态。">
+          <span class="l-en">Everything is falling together</span><span class="l-zh">全市场同步下跌</span></div>
+        {% endif %}
+        {% set _fe = latest.fear_euphoria %}
+        {% set _fe_score = (_fe.score if _fe and _fe.score is defined and _fe.score is not none else none) %}
+        {% set _fe_label = (_fe.label if _fe and _fe.label is defined else 'Neutral') %}
+        {% set _to_pct = (I.turnover.pctile | float) if (I.turnover and I.turnover.get('pctile') is not none) else none %}
+        {% set _sent_dial = (_fe_score | float) if _fe_score is not none else _to_pct %}
+        {% if _sent_dial is not none %}
+        <p class="drv-read"><span class="l-en">Sentiment {{ _fe_label }} · composite {{ _sent_dial | int }} — a heads-up, not a scored signal.</span><span class="l-zh">情绪 {{ _fe_label }} · 综合 {{ _sent_dial | int }} — 仅供参考，不构成评分信号。</span></p>
+        {% endif %}
+        <div class="cnx-kv"><span class="k">{{ t('≥5% dip odds','≥5%回撤概率') }}</span><span class="v">{% if _rr_p21 is not none %}{{ (_rr_p21*100)|round|int }}%{% else %}{{ t('—','—') }}{% endif %}</span></div>
+        <div class="cnx-foot">{{ t(_rr_do_en or 'High pullback risk — size down, watch alerts.', _rr_do_zh or '回撤风险高 — 缩仓，关注警报。') }}</div>
+      </div>
+
+      <div class="panel" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-property')"
+           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();cnxOpenDlg('cnx-dlg-property');}">
+        <div class="mx-sec"><h2 class="l-en" style="font-size:var(--fs-h2)">Property &amp; growth</h2><h2 class="l-zh" style="font-size:var(--fs-h2)">房地产与增长</h2></div>
+        {% if P %}
+        {% set R = P.regime %}
+        <p class="drv-read"><b>{{ t(R.label_en, R.label_zh) }}</b> — {{ t('easing at the margin','边际宽松') if R.tone in ('neutral','pos') else t('still contracting','仍在收缩') }}</p>
+        {% if P.breadth %}
+        <div class="cnx-kv"><span class="k">{{ t('70-city prices','70城价格') }}</span><span class="v">{{ '%+d'|format(P.breadth.new) }} {{ t('net cities','净城市数') }}</span></div>
+        {% endif %}
+        <div class="cnx-foot">{{ t('Still the economy\'s main drag.','仍是经济的主要拖累。') }}</div>
+        {% else %}
+        <div class="mx-empty"><span class="l-en">Property read unavailable</span><span class="l-zh">地产读数暂不可用</span>
+          <span class="empty-why"><span class="l-en">the series has not arrived for this session</span><span class="l-zh">本会话尚未收到该序列</span></span></div>
+        {% endif %}
+      </div>
+
     </div>
-    {# Upcoming Events card #}
-    <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-events')">
-      <div class="cnx-ctitle">{{ t('Upcoming Events','近期数据') }} <span style="margin-left:auto;font-size:10px;color:var(--muted)">{{ t('NEXT 14 DAYS','未来14天') }}</span></div>
-      {% set _high_ev = [] %}
-      {% for c in (calendar or []) %}{% if c.importance == 'high' %}{% set _ = _high_ev.append(c) %}{% endif %}{% endfor %}
-      {% if _high_ev %}<div style="font-size:11.5px;color:var(--muted)">{{ _high_ev | length }} {{ t('high-impact print ahead','项高影响数据待发') }}</div>{% endif %}
+  </section>
+
+  <!-- =============== L1-5 · What we're watching =============== -->
+  <section class="band">
+    <h2 class="band-label"><span class="l-en">What we're watching</span><span class="l-zh">我们在盯什么</span></h2>
+    <div class="panel" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-events')"
+         onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();cnxOpenDlg('cnx-dlg-events');}">
+      {% set _ev_all = event_strip or [] %}
+      {% set _ev_shown = _ev_all[:4] %}
+      {% if _ev_all %}<div style="font-size:11.5px;color:var(--muted)">{{ _ev_all | length }} <span class="l-en">high-impact prints ahead</span><span class="l-zh">项高影响数据待发</span></div>{% endif %}
       <div class="cnx-estrip">
-        {% for c in (event_strip or [])[:4] %}
+        {% for c in _ev_shown %}
         <div class="cnx-ev">
           <div class="edot {{ 'h' if c.importance == 'high' else 'm' }}"></div>
           <div class="en">{{ t((c.name_en or '')|truncate(18, true, '…'), (c.name_zh or '')|truncate(18, true, '…')) }}</div>
@@ -2117,315 +2149,24 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         </div>
         {% endfor %}
       </div>
+      {% if _ev_all %}<div class="cnx-view-all">{{ _ev_shown | length }} <span class="l-en">of</span><span class="l-zh">/</span> {{ _ev_all | length }} <span class="l-en">shown · full calendar →</span><span class="l-zh">项已显示 · 完整日历 →</span></div>{% endif %}
     </div>
-  </div>
+  </section>
 
-  <!-- =============== ROW 2: Pullback Risk / Top Stocks + Sentiment + Sector Temperature =============== -->
-  <div class="cnx-rack3">
-    {# Pullback Risk vs Top Stocks conditional #}
-    {% set _risk_state = (latest.risk_radar.state if latest.risk_radar else 'calm') %}
-    {% set _show_risk = _risk_state in ('caution', 'elevated', 'risk-off') %}
-    {% if _show_risk %}
-    {# Pullback Risk card. NOTE (2026-07-21): china INTENTIONALLY hand-rolled its pullback
-       surfaces (this card + hero popover + cnx-dlg-risk) in the bespoke cnx-* design rather
-       than the shared .rrx card (_risk_radar_card.html.j2, used by macro / HK / Canada):
-       this card sits in a cnx-rack beside the Sentiment/Sector cards, and the DIALOG carried
-       CN-only gauges (deep-drawdown, slowdown, FX context) the .rrx card doesn't have.
-       SUPERSEDED 2026-08-11 for the DIALOG ONLY (operator port order, W1 of
-       research/RISK_RADAR_COUNTRY_PORT_MASTERPLAN.md): the shared dialog partial
-       (_risk_radar_dlg.html.j2) now CARRIES the CN gauges + the FX block, so the reason the
-       hand-roll existed is gone — every entry point below opens the shared dialog, which
-       embeds the .rrx card. This CARD keeps its bespoke cnx-* form: it is a rack tile, not a
-       dialog, and the .rrx card does not fit that slot.
-       COLOURS (operator ruling 2026-07-21, reverses #2947's no-flip): the pullback family
-       is a market-direction read — paint danger from the zh-flipping var(--down) (via
-       color-mix for washes) exactly like theme.css's `html[data-lang="zh"] .rrx` remap on
-       the sibling boards, so risk-off reads green in zh (Asia convention). --warn neutral.
-       Severity tier drives the pill/number colour (was hardcoded HIGH/red for caution,
-       elevated AND risk-off alike): caution → amber CAUTION, elevated/risk-off → red. #}
-    {% set _rr_sev_col  = 'var(--warn)' if _risk_state == 'caution' else 'var(--down)' %}
-    {% set _rr_sev_bg   = 'rgba(224,160,48,.16)' if _risk_state == 'caution' else 'color-mix(in srgb,var(--down) 16%,transparent)' %}
-    {% set _rr_sev_bord = 'rgba(224,160,48,.35)' if _risk_state == 'caution' else 'color-mix(in srgb,var(--down) 35%,transparent)' %}
-    {% set _rr_sev_en   = 'HIGH' if _risk_state == 'risk-off' else ('ELEVATED' if _risk_state == 'elevated' else 'CAUTION') %}
-    {% set _rr_sev_zh   = '高' if _risk_state == 'risk-off' else ('偏高' if _risk_state == 'elevated' else '谨慎') %}
-    <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-risk')" style="border-color:{{ _rr_sev_bord }}">
-      <div class="cnx-ctitle">{{ t('Pullback Risk','回撤风险') }} <span class="cnx-alert-pill" style="background:{{ _rr_sev_bg }};color:{{ _rr_sev_col }}">{{ t(_rr_sev_en, _rr_sev_zh) }}</span></div>
-      {% if _rr_score is not none %}
-      <div class="cnx-bignum" style="color:{{ _rr_sev_col }}">{{ _rr_score }}<span style="font-size:14px;color:var(--muted)"> /100</span></div>
-      <div class="cnx-bigsub" style="color:{{ _rr_sev_col }}">{{ t(_rr.label_en or '', _rr.label_zh or '') }}</div>
-      {% endif %}
-      <div class="cnx-kv"><span class="k">{{ t('≥5% dip odds','≥5%回撤概率') }}</span><span class="v">{% if _rr_p21 is not none %}{{ (_rr_p21*100)|round|int }}%{% else %}{{ t('—','—') }}{% endif %}</span></div>
-      <div class="cnx-kv"><span class="k">{{ t('Deep-drawdown gauge','深跌仪表') }}</span>
-        {# SAME recession score + 60/40 bands as the detail dialog (was label-based, which
-           could disagree with the dialog's score-based colour); direction pair per the
-           2026-07-21 ruling so the whole pullback family flips together in zh. #}
-        {% set _rr_rec_sc = (latest.conditions.recession.score if latest.conditions and latest.conditions.get('recession') and latest.conditions.recession else none) %}
-        <span class="v"><span style="font-weight:700;color:{{ 'var(--down)' if (_rr_rec_sc or 0) >= 60 else ('var(--warn)' if (_rr_rec_sc or 0) >= 40 else 'var(--up)') }}">{{ t('High','高危') if (_rr_rec_sc or 0) >= 60 else (t('Elevated','偏高') if (_rr_rec_sc or 0) >= 40 else t('Calm','平静')) }}</span></span></div>
-      <div class="cnx-foot">{{ t(_rr_do_en or 'High pullback risk — size down, watch alerts.', _rr_do_zh or '回撤风险高 — 缩仓，关注警报。') }}</div>
+  <!-- =============== L1-6 · Go deeper =============== -->
+  <section class="band">
+    <h2 class="band-label"><span class="l-en">Go deeper</span><span class="l-zh">深入研究</span></h2>
+    <div class="depth">
+      <a href="china_policy_watch.html"><span class="l-en">Policy &amp; credit desk</span><span class="l-zh">政策与信贷台</span><small>→</small></a>
+      <a href="flow_velocity.html"><span class="l-en">Flow velocity</span><span class="l-zh">资金流速</span><small>→</small></a>
+      <a href="china_intel.html"><span class="l-en">Sectors, sentiment &amp; today's full read</span><span class="l-zh">板块、情绪与今日完整解读</span><small>→</small></a>
+      <a href="alerts.html"><span class="l-en">Alerts &amp; watchlist</span><span class="l-zh">警报与关注列表</span><small>→</small></a>
+      <a href="china_news.html"><span class="l-en">Full news feed · 24 of 696 kept</span><span class="l-zh">完整新闻流 · 已保留 24/696</span><small>→</small></a>
     </div>
-    {% else %}
-    {# Top Stocks card — when radar is quiet #}
-    <div class="cnx-card">
-      <div class="cnx-ctitle">{{ t('Top Stock Setups','精选买点') }} <span style="margin-left:auto;font-size:10px;color:var(--muted)">{{ t('FROM THE STOCK BOARD','来自股票看板') }}</span></div>
-      {% for s in (top_setups or []) %}
-      <div class="cnx-stk">
-        <span class="tkr"><a class="cnx-tkr-btn" href="https://app.mastermind-x.com/terminal?symbol={{ s.ticker }}" target="_blank" rel="noopener">{{ s.name_zh or s.name }}</a></span>
-        <div class="meta"><b>{{ s.ticker }}</b> · {{ s.industry or s.sector or '' }}</div>
-        <span class="cnx-stage">{{ t(s.stage or 'ENTRY', s.stage or 'ENTRY') }}</span>
-      </div>
-      {% else %}
-      <div style="font-size:12px;color:var(--muted);padding:8px 0">{{ t('No active setups right now.','暂无有效买点。') }}</div>
-      {% endfor %}
-      <a class="cnx-screener-btn" href="china_stocks.html">{{ t('Stock Screener →','选股看板 →') }}</a>
-    </div>
-    {% endif %}
-
-    {# ── D · Market Sentiment odometer (ported from dashboard.html.j2 9808–9884) —
-       replaces the crude washed-out cnx-dial (the "torching" bug). Dial = fear_euphoria.score
-       (0–100), falling back to the turnover-heat percentile — the SAME series the fallback
-       band word comes from, so the needle can never contradict the word. Zone class
-       (fg-greed/fg-fear/fg-neutral) drives --fg-col → --up/--warn/--down so the needle + zone
-       text flip in zh (Euphoria=bullish→red, Panic=bearish→green). #}
-    {% set _fe = latest.fear_euphoria %}
-    {% set _fe_score = (_fe.score if _fe and _fe.score is defined and _fe.score is not none else none) %}
-    {% set _fe_label = (_fe.label if _fe and _fe.label is defined else 'Neutral') %}
-    {% set _to_pct = (I.turnover.pctile | float) if (I.turnover and I.turnover.get('pctile') is not none) else none %}
-    {% set _sent_dial = (_fe_score | float) if _fe_score is not none else _to_pct %}
-    {% set _sent_zone = ('fg-greed' if _sent_dial > 60 else ('fg-fear' if _sent_dial < 40 else 'fg-neutral')) if _sent_dial is not none else 'fg-neutral' %}
-    {% set _sent_rot = ((_sent_dial / 100 * 180 - 90) | round(1)) if _sent_dial is not none else 0 %}
-    <div class="cnx-card {{ _sent_zone }}" role="button" tabindex="0" aria-haspopup="dialog" onclick="cnxOpenDlg('cnx-dlg-sentiment')"
-         onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();cnxOpenDlg('cnx-dlg-sentiment');}">
-      <div class="cnx-ctitle">{{ t('Market Sentiment','市场情绪') }}</div>
-      {% if I.margin or I.turnover %}
-      <div class="mx5-sentiment-dial-wrap" id="cnx-sentiment">
-        <svg viewBox="0 0 380 212" style="width:100%;max-width:300px;height:170px;display:inline-block;overflow:visible">
-          <defs>
-            <linearGradient id="cnxSentGrad" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%"   stop-color="var(--down)"/>
-              <stop offset="35%"  stop-color="var(--warn)"/>
-              <stop offset="65%"  stop-color="var(--up)"/>
-              <stop offset="100%" stop-color="var(--up)"/>
-            </linearGradient>
-            <filter id="cnxDialGlow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          </defs>
-          {# Track #}
-          <path d="M 35 185 A 155 155 0 0 1 345 185" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="18" stroke-linecap="round"/>
-          {# Gradient decorative track #}
-          <path d="M 35 185 A 155 155 0 0 1 345 185" fill="none" stroke="url(#cnxSentGrad)" stroke-width="18" stroke-linecap="round" opacity=".55"/>
-          {% if _sent_dial is not none %}
-          {# Needle wrapped in <g> so filter bbox is always non-zero (group includes the hub circles).
-             fg-mark-s/fg-mark-f pick up --fg-col via CSS so the needle flips colour in zh. #}
-          <g filter="url(#cnxDialGlow)">
-            <line class="fg-mark-s" x1="190" y1="185" x2="190" y2="30"
-                  stroke-width="4" stroke-linecap="round"
-                  transform="rotate({{ _sent_rot }}, 190, 185)"/>
-            <circle class="fg-mark-s" cx="190" cy="185" r="9"  fill="rgba(8,12,18,.8)" stroke-width="2.5"/>
-            <circle class="fg-mark-f" cx="190" cy="185" r="4"/>
-          </g>
-          {% endif %}
-          {# Zone labels: bilingual dual-text; placed below arc for clearance #}
-          <text class="l-en fg-lab-panic" x="26"  y="208" font-size="13" font-family="Inter,-apple-system,sans-serif" font-weight="700" text-anchor="start">PANIC</text>
-          <text class="l-zh fg-lab-panic" x="26"  y="208" font-size="13" font-family="Inter,-apple-system,sans-serif" font-weight="700" text-anchor="start">恐慌</text>
-          <text class="l-en fg-lab-euph" x="354" y="208" font-size="13" font-family="Inter,-apple-system,sans-serif" text-anchor="end" font-weight="700">EUPHORIA</text>
-          <text class="l-zh fg-lab-euph" x="354" y="208" font-size="13" font-family="Inter,-apple-system,sans-serif" text-anchor="end" font-weight="700">亢奋</text>
-        </svg>
-      </div>
-      <div class="mx5-sentiment-zone-text" style="color:var(--fg-col)">
-        {% if _fe_score is not none %}
-        <span>{{ t(_fe_label, _fe_label) }}</span>
-        {% elif I.turnover %}
-        <span>{{ t(I.turnover.band | title, {'apathy':'清淡','normal':'正常','active':'活跃','mania':'狂热'}.get(I.turnover.band, I.turnover.band | title)) }}</span>
-        {% else %}
-        <span>{{ t('Neutral','中性') }}</span>
-        {% endif %}
-      </div>
-      <div class="mx5-sentiment-label">
-        {% if _sent_dial is not none %}
-        <span class="l-en">Composite at {{ _sent_dial | int }} &middot; a heads-up, not a scored signal</span>
-        <span class="l-zh">综合指数 {{ _sent_dial | int }} &middot; 仅供参考，不构成评分信号</span>
-        {% else %}
-        <span class="l-en">a heads-up, not a scored signal</span>
-        <span class="l-zh">仅供参考，不构成评分信号</span>
-        {% endif %}
-      </div>
-      {% else %}
-      <div style="font-size:12px;color:var(--muted)">{{ t('Data building…','数据积累中…') }}</div>
-      {% endif %}
-    </div>
-
-    {# Sector Temperature card #}
-    <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-sector')">
-      <div class="cnx-ctitle">{{ t('Sector Temperature','板块温度') }}</div>
-      {% if pb_obj and pb_obj.leaders %}
-      <div class="cnx-lbl">{{ t('Hot','热门') }}</div>
-      <div class="cnx-chips">
-        {% for x in pb_obj.leaders[:3] %}<span class="cnx-chip hot">{{ td(x.name) }}</span>{% endfor %}
-      </div>
-      {% endif %}
-      {% set _buy_chips = ((actions.buy_now if actions and actions.buy_now else []) + (actions.buy_soon if actions and actions.buy_soon else []))[:3] %}
-      {% if _buy_chips %}
-      <div class="cnx-lbl">{{ t('Turning up — buy zone','回升中 — 买入区') }}</div>
-      <div class="cnx-chips">
-        {% for x in _buy_chips %}<span class="cnx-chip turn">{{ td(x.name) }}</span>{% endfor %}
-      </div>
-      {% endif %}
-      <div class="cnx-lbl">{{ t('Sector heat','板块热度') }}</div>
-      <div class="cnx-heat">
-        {% for s in (sectors[:16] if sectors else []) %}
-        {# Tone keyed on s.dir which is always populated with the real uppercase-state-derived direction #}
-        {% set _tone = 'c' if s.dir == 'down' else ('h2' if s.dir == 'caution' else ('h3' if s.dir == 'up' else 'n')) %}
-        <i class="{{ _tone }}"></i>
-        {% endfor %}
-      </div>
-    </div>
-  </div>
-
-  <!-- =============== ROW 3: Policy Monitor + Connect Flows + Macro News =============== -->
-  <div class="cnx-rack3">
-    {# Policy Monitor card #}
-    <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-policy')">
-      <div class="cnx-ctitle">{{ t('Policy Monitor','政策监控') }}</div>
-      {% if I.pboc %}
-      <div class="cnx-kv"><span class="k">{{ t('PBoC stance','央行立场') }}</span><span class="v"><span class="cnx-stword ok">{{ t(I.pboc.bias, {'easing':'宽松','neutral':'中性','tightening':'收紧'}.get(I.pboc.bias,'')) }}</span></span></div>
-      <div class="cnx-kv"><span class="k">{{ t('Reserve ratio','存准率') }}</span><span class="v">{{ I.pboc.rrr_big }}%</span></div>
-      {% endif %}
-      {% if I.credit %}
-      {% if I.credit.credit_impulse is not none and I.credit.credit_impulse is defined %}
-      <div class="cnx-kv"><span class="k">{{ t('Credit impulse','信贷脉冲') }}</span><span class="v"><span class="cnx-stword {{ 'ok' if I.credit.credit_impulse >= 0 else 'bad' }}">{{ '%+.1f'|format(I.credit.credit_impulse) }}%</span></span></div>
-      {% endif %}
-      {% endif %}
-      {% if CN and CN.tone %}
-      <div class="cnx-kv"><span class="k">{{ t('Official tone','官方基调') }}</span><span class="v"><span class="cnx-stword ok">{{ t(CN.tone.label_en, CN.tone.label_zh) }}</span></span></div>
-      {% endif %}
-      <div class="cnx-foot">{{ t('Easy policy, but new credit is still slowing.','政策宽松，但新信贷仍在放缓。') if (I.credit and I.credit.credit_impulse is defined and I.credit.credit_impulse < 0) else t('Policy context.','政策背景。') }}</div>
-    </div>
-
-    {# Connect Flows card #}
-    <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-flows')">
-      <div class="cnx-ctitle">{{ t('Connect Flows','互联通资金') }}</div>
-      {% if I.southbound %}
-      <div class="cnx-bignum" style="color:{{ 'var(--up)' if I.southbound.net >= 0 else 'var(--down)' }}">{{ '+¥' if I.southbound.net >= 0 else '−¥' }}{{ '{:,.0f}'.format((I.southbound.net | abs) / 100) }}亿</div>
-      <div class="cnx-bigsub" style="color:{{ 'var(--up)' if I.southbound.net >= 0 else 'var(--down)' }}">{{ t('Southbound buying' if I.southbound.net >= 0 else 'Southbound selling', '南向买入' if I.southbound.net >= 0 else '南向卖出') }}</div>
-      <div class="cnx-kv"><span class="k">{{ t('Streak','连续') }}</span><span class="v">{{ I.southbound.pos_days_20 }}/20 {{ t('days','天') }}</span></div>
-      {% endif %}
-      {% if leaderboard and leaderboard.southbound_buy %}
-      <div class="cnx-kv"><span class="k">{{ t('Top buys','主要买入') }}</span><span class="v">{{ leaderboard.southbound_buy[:3] | map(attribute='name_zh') | select | list | join(' · ') or '—' }}</span></div>
-      {% endif %}
-      <div class="cnx-foot">{{ t('Mainland money supporting Hong Kong.','内地资金持续支撑香港。') }}</div>
-    </div>
-
-    {# Macro News card #}
-    <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-news')">
-      <div class="cnx-ctitle">{{ t('Macro News','宏观新闻') }}</div>
-      {% if CN and CN.news and CN.news.headlines %}
-        {% for h in CN.news.headlines[:2] %}
-        <div class="cnx-row">
-          <span class="ic">{{ {'pboc_liquidity':'🏦','market':'🏛','policy':'🏛','global':'🌐','company':'📉'}.get((h.channels[:1] or [''])[0], '📰') }}</span>
-          <div class="tx"><b>{{ h.title | truncate(80, true, '…') }}</b>
-            <span class="sub">{{ CN.theme_label.get(h.theme, [h.theme, h.theme]) | first if CN.theme_label else h.theme }} · {{ h.source_name or '' }}</span></div>
-        </div>
-        {% endfor %}
-        <div class="cnx-view-all">{{ (CN.news.n_kept or 0) }} {{ t('of','/') }} {{ (CN.news.n_raw or 0) }} {{ t('stories kept · full feed →','条新闻保留 · 完整新闻流 →') }}</div>
-      {% else %}
-      <div style="font-size:12px;color:var(--muted);padding:8px 0">{{ t('No news right now.','暂无新闻。') }}</div>
-      {% endif %}
-    </div>
-  </div>
-
-  <!-- =============== ROW 4: Property + AI Brief + Alerts Centre =============== -->
-  <div class="cnx-rack3">
-    {# Property card #}
-    <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-property')">
-      <div class="cnx-ctitle">{{ t('Property','房地产') }}</div>
-      {% if P %}
-      {% set R = P.regime %}
-      <div class="cnx-bignum" style="color:var(--ink-down, var(--down));font-size:22px">{{ t(R.label_en, R.label_zh) }}</div>
-      <div class="cnx-bigsub" style="color:var(--ink-warn, var(--warn))">{{ t('easing at the margin','边际宽松') if R.tone in ('neutral','pos') else t('still contracting','仍在收缩') }}</div>
-      {% if P.breadth %}
-      <div class="cnx-kv"><span class="k">{{ t('70-city prices','70城价格') }}</span><span class="v">{{ '%+d'|format(P.breadth.new) }} {{ t('net cities','净城市数') }}</span></div>
-      {% endif %}
-      <div class="cnx-foot">{{ t('Still the economy\'s main drag.','仍是经济的主要拖累。') }}</div>
-      {% else %}
-      <div style="font-size:12px;color:var(--muted)">{{ t('Data loading…','数据加载中…') }}</div>
-      {% endif %}
-    </div>
-
-    {# AI Brief card — v2 teaser: lead with the first key reading + the plain-word
-       gist line (falls back to summary on v1 payloads). No raw slugs (doctrine Law 2). #}
-    <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-aibrief')">
-      <div class="cnx-ctitle">{{ t('AI Brief','AI 简报') }}</div>
-      {% if china_brief %}
-      {% set _cb = china_brief %}
-      {% set _cbzh = _cb.zh if _cb.zh is defined and _cb.zh else {} %}
-      {% set _kf = _cb.key_facts or [] %}
-      {% if _kf %}
-      {# first ≤2 engine-computed key readings as chips (label · value) #}
-      <div class="cnx-chips">
-        {% for _f in _kf[:2] %}
-        <span class="cnx-chip"><span class="l-en">{{ _f.get('label_en') }}: {{ _f.get('value_en') }}</span><span class="l-zh">{{ _f.get('label_zh') or _f.get('label_en') }}：{{ _f.get('value_zh') or _f.get('value_en') }}</span></span>
-        {% endfor %}
-      </div>
-      {% else %}
-      <div class="cnx-chips">
-        <span class="cnx-chip">{{ t('Regime','周期') }}</span>
-        <span class="cnx-chip">{{ t('Policy','政策') }}</span>
-        <span class="cnx-chip">{{ t('Southbound','南向') }}</span>
-      </div>
-      {% endif %}
-      {# the plain-word gist: prefer the tldr stance line, else the one-line summary #}
-      {% set _tldr = _cb.tldr or [] %}
-      {% set _tldr_zh = _cbzh.get('tldr') or [] %}
-      {% if _tldr %}
-      {% set _lead = _tldr[0] %}
-      {% set _lead_zh = _tldr_zh[0] if _tldr_zh else _lead %}
-      <p style="font-size:12px;margin:6px 0 0"><span class="l-en">{{ _lead }}</span><span class="l-zh">{{ _lead_zh }}</span></p>
-      {% elif _cb.summary %}
-      <p style="font-size:12px;margin:6px 0 0"><span class="l-en">{{ _cb.summary | truncate(110, true, '…') }}</span><span class="l-zh">{{ (_cbzh.get('summary') or _cb.summary) | truncate(110, true, '…') }}</span></p>
-      {% endif %}
-      {% else %}
-      <div class="cnx-chips"><span class="cnx-chip">{{ t('Regime','周期') }}</span><span class="cnx-chip">{{ t('Policy','政策') }}</span></div>
-      {% endif %}
-      <div class="cnx-foot">{{ t('A read-through of signals — not a signal source.','信号解读 — 非信号来源。') }}</div>
-    </div>
-
-    {# Alerts Centre card #}
-    <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-alerts')">
-      <div class="cnx-ctitle">{{ t('Alerts Centre','警报中心') }}
-        {% if latest.alerts %}<span class="cnx-alert-pill">{{ latest.alerts | length }} {{ t('FIRED','已触发') }}</span>{% endif %}</div>
-      {% for a in (latest.alerts or [])[:2] %}
-      <div class="cnx-row">
-        <span class="ic">{{ a.icon or '🟠' }}</span>
-        <div class="tx"><b><span class="l-en">{{ a.plain_en }}</span><span class="l-zh">{{ a.plain_zh or a.plain_en }}</span></b>
-          <span class="sub"><span class="l-en">{{ a.message | truncate(60, true, '…') }}</span><span class="l-zh">{{ (a.message_zh or a.message) | truncate(60, true, '…') }}</span></span></div>
-      </div>
-      {% else %}
-      <div style="font-size:12px;color:var(--muted);padding:8px 0">{{ t('No alerts fired today.','今日无警报触发。') }}</div>
-      {% endfor %}
-      {% if latest.alerts %}<div class="cnx-view-all">{{ t('View all →','查看全部 →') }}</div>{% endif %}
-    </div>
-  </div>
-
-  <!-- =============== FOOTER: Links pill row + Data health strip =============== -->
-  <div class="cnx-links">
-    <a href="china_stocks.html">{{ t('A-Share Stocks','A股个股') }}</a>
-    <a href="china_heatmap.html">{{ t('Market Heatmap','市场热力图') }}</a>
-    <a href="china_intel.html">{{ t('China Intel','中国情报') }}</a>
-    <a href="china_allocation.html">{{ t('Allocation','仓位策略') }}</a>
-    <a href="china_history.html">{{ t('Regime History','周期历史') }}</a>
-    <a href="aibrief.html">{{ t('AI Brief','AI简报') }}</a>
-  </div>
-  {% if health %}
-  <div class="cnx-dh">
-    <span class="d"></span>
-    <b>{{ t('Data health','数据健康度') }}</b> ·
-    <span class="l-en">{{ health | selectattr('status','equalto','ok') | list | length }} of {{ health | length }} feeds fresh</span>
-    <span class="l-zh">{{ health | selectattr('status','equalto','ok') | list | length }}/{{ health | length }} 数据新鲜</span>
-    · {{ t('updated','更新于') }} {{ latest.date }}
-    <span style="margin-left:auto;opacity:.6">▾</span>
-  </div>
-  {% endif %}
+  </section>
 
   </div>{# /cnx-wrap #}
+
 
   <!-- =============== DIALOGS =============== -->
 
@@ -2472,7 +2213,6 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
               {% if latest.pending_quad in ['Q1','Q2','Q3','Q4'] and latest.pending_days %}
               {{ t('BUILDING','累积中') }} → {{ td({'Q1':'Goldilocks','Q2':'Reflation','Q3':'Stagflation','Q4':'Growth scare'}[latest.pending_quad]) }}
               {% else %}{{ t('Stable','稳定') }}{% endif %}</span></div>
-            <div class="cnx-kv"><span class="k">{{ t('Signal agreement','信号一致度') }}</span><span class="v">{{ (latest.confidence*100)|round|int }}%</span></div>
             <div class="cnx-kv"><span class="k">{{ t('Cycle backdrop','商业周期') }}</span><span class="v">{{ td(latest.cycle_tag) }}</span></div>
           </div>
           <div>
@@ -2486,14 +2226,21 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         <table class="cnx-mt">
           <tr><th>{{ t('Index','指数') }}</th><th class="r">1D</th><th class="r">7D</th><th class="r">30D</th><th class="r">{{ t('Read','判断') }}</th></tr>
           {% for ix in ms.mtf.indices %}
-          <tr><td>{{ ix.label }}</td>
-            <td class="r">{{ ix.scores[0] if ix.scores else '—' }}</td>
-            <td class="r">{{ ix.scores[2] if ix.scores and ix.scores | length > 2 else '—' }}</td>
-            <td class="r">{{ ix.scores[3] if ix.scores and ix.scores | length > 3 else '—' }}</td>
+          {% set _cells = ix.cells or {} %}
+          {% set _d = _cells.D if _cells.D is defined else none %}
+          {% set _w = _cells.W if _cells.W is defined else none %}
+          {% set _m = _cells.M if _cells.M is defined else none %}
+          <tr><td>{{ t(ix.label_en or ix.label or '', ix.label_zh or ix.label_en or ix.label or '') }}</td>
+            <td class="r">{{ (_d.arrow if _d and _d.arrow else (ix.confluence_en or '')) }}</td>
+            <td class="r">{{ (_w.arrow if _w and _w.arrow else (ix.confluence_en or '')) }}</td>
+            <td class="r">{{ (_m.arrow if _m and _m.arrow else (ix.confluence_en or '')) }}</td>
             <td class="r {{ 'cnx-tt-up' if ix.mean > 0.33 else ('cnx-tt-dn' if ix.mean < -0.1 else 'cnx-tt-fl') }}">{{ t((ix.confluence_en or '')|truncate(16, true, '…'), (ix.confluence_zh or '')|truncate(16, true, '…')) }}</td>
           </tr>
           {% endfor %}
         </table>
+        {% else %}
+        <div class="mx-empty"><span class="l-en">Driver table unavailable</span><span class="l-zh">驱动表暂不可用</span>
+          <span class="empty-why"><span class="l-en">the index rows arrived without names, so we are not showing a table we cannot label</span><span class="l-zh">指数行缺少名称，因此不显示无法标注的表格</span></span></div>
         {% endif %}
         {# China state cockpit — phase card, context chips #}
         {% if cn_market_state_json %}
@@ -2797,7 +2544,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
             <div class="cnx-eyebrow">{{ t('Southbound flow · mainland → Hong Kong','南向资金 · 内地 → 香港') }}</div>
             {% if I.southbound %}
             <div style="display:flex;gap:12px;align-items:baseline;margin:2px 0 8px">
-              <span class="cnx-bignum" style="color:{{ 'var(--up)' if I.southbound.net >= 0 else 'var(--down)' }}">{{ '+¥' if I.southbound.net >= 0 else '−¥' }}{{ '{:,.0f}'.format((I.southbound.net | abs) / 100) }}亿</span>
+              <span class="cnx-bignum" style="color:{{ 'var(--up)' if I.southbound.net >= 0 else 'var(--down)' }}">{{ cny_yi_pair(I.southbound.net) }}</span>
             </div>
             <div class="cnx-kv"><span class="k">{{ t('20-day cumulative','20日累计') }}</span><span class="v {{ 'cnx-tt-up' if I.southbound.cum_20d >= 0 else 'cnx-tt-dn' }}">{{ '+¥' if I.southbound.cum_20d >= 0 else '−¥' }}{{ '{:,.0f}'.format((I.southbound.cum_20d | abs) / 100) }}亿</span></div>
             <div class="cnx-kv"><span class="k">{{ t('Buy-day streak','净买入天数') }}</span><span class="v">{{ I.southbound.pos_days_20 }}/20</span></div>
@@ -4622,6 +4369,42 @@ window.__CHART_SWAP__ = {
   window.cnxToggleHm=cnxToggleHm;
   cnxResolveHash();
   window.addEventListener('hashchange',cnxResolveHash);
+  /* CSI 300 / ChiNext skeleton → honest empty if the tape has not written in 8s. */
+  function cnxSkelFallback(){
+    document.querySelectorAll('.mx5-mkt-price.mx-skel, .mx5-mkt-delta.mx-skel').forEach(function(el){
+      if(!el.classList.contains('mx-skel')) return;
+      var isPx = el.classList.contains('mx5-mkt-price');
+      el.classList.remove('mx-skel');
+      el.removeAttribute('aria-busy');
+      el.classList.add('mx-empty');
+      if(isPx){
+        el.innerHTML = '<span class="l-en">No quote</span><span class="l-zh">暂无报价</span>'
+          + '<span class="empty-why"><span class="l-en">the tape is still catching up</span><span class="l-zh">行情仍在同步</span></span>';
+      } else {
+        el.textContent = '';
+      }
+    });
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', function(){ setTimeout(cnxSkelFallback, 8000); });
+  } else {
+    setTimeout(cnxSkelFallback, 8000);
+  }
+  document.addEventListener('keydown', function(e){
+    var t = e.target;
+    if(!t || !t.getAttribute || !t.getAttribute('data-tip-en')) return;
+    if(e.key === 'Enter' || e.key === ' '){
+      e.preventDefault();
+      t.classList.toggle('cnx-tip-open');
+    }
+  });
+  document.addEventListener('click', function(e){
+    var row = e.target && e.target.closest && e.target.closest('.cnx-row[data-tip-en]');
+    document.querySelectorAll('.cnx-row.cnx-tip-open').forEach(function(el){
+      if(el !== row) el.classList.remove('cnx-tip-open');
+    });
+    if(row) row.classList.toggle('cnx-tip-open');
+  });
 })();
 </script>
 {# ── B · Path-chart hover enhancement (ported from dashboard.html.j2 ~7141) — pure
