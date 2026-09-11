@@ -88,7 +88,7 @@ MACRO_THEMES: dict[str, list[str]] = {
 }
 # theme display labels (EN, ZH)
 THEME_LABEL: dict[str, tuple[str, str]] = {
-    "monetary": ("PBoC", "央行"), "inflation": ("Inflation", "物价"),
+    "monetary": ("Monetary policy", "货币政策"), "inflation": ("Inflation", "物价"),
     "growth": ("Growth", "增长"), "credit": ("Credit", "信用"),
     "fiscal": ("Fiscal/Trade", "财政/贸易"), "policy": ("Policy", "政策"),
     "politics": ("Politics", "政治/地缘"), "tech": ("Tech", "科技"),

@@ -169,3 +169,100 @@ def test_render_trigger_and_scope_own_policy_watch_sources():
     assert '- "scripts/build_china_policy_watch.py"' in workflow
     assert "templates/china_policy_watch.html.j2" in workflow
     assert "scripts/build_china_policy_watch.py) echo china;;" in workflow
+
+
+# ---- P0 #1: FX reserves level and MoM share one 亿美元 basis ----------------- #
+def test_fx_reserves_level_and_delta_share_yi_usd_basis():
+    """SAFE/akshare stores 国家外汇储备-数值 in 亿美元. Level/10000 → $T and
+    MoM/10 → $bn (十亿美元) are the same basis: 1 T = 1,000 bn = 10,000 亿.
+
+    The packet's first branch wrote /100; that would be another 10× error
+    (1 亿 USD = 0.1 bn, not 0.01 bn). Producer arithmetic wins.
+    """
+    yi_per_t = ps.FX_RESERVES_YI_PER_TRILLION
+    yi_per_bn = ps.FX_RESERVES_YI_PER_BILLION
+    assert ps.FX_RESERVES_UNIT == "亿美元"
+    assert yi_per_t / yi_per_bn == 1000  # 1 T = 1,000 bn
+
+    level_yi, mom_yi = 34400.0, 340.0
+    level_t = level_yi / yi_per_t
+    mom_bn = mom_yi / yi_per_bn
+    assert abs(level_t - 3.44) < 1e-9
+    assert abs(mom_bn - 34.0) < 1e-9
+    assert abs(mom_bn / (level_t * 1000) - mom_yi / level_yi) < 1e-12
+
+    tpl = (config.ROOT / "templates" / "china_policy_watch.html.j2").read_text()
+    assert "fx.reserves/10000" in tpl
+    assert "fx.reserves_mom/10" in tpl
+    assert "bn MoM" in tpl and "十亿美元环比" in tpl
+
+
+# ---- P0 #3: theme word, China-gated tape, designed empty state -------------- #
+def test_monetary_theme_label_is_theme_not_issuer():
+    from engine.china_news import THEME_LABEL
+    from engine.china_news_intel import THEME_LABEL as INTEL_THEME_LABEL
+    assert THEME_LABEL["monetary"] == ("Monetary policy", "货币政策")
+    assert INTEL_THEME_LABEL["monetary"] == ("Monetary policy", "货币政策")
+
+
+def test_policy_feed_drops_non_china_rows():
+    """ECB/Fed monetary flashes must not survive the China gate; PBoC official
+    and China-anchored wire rows must."""
+    dropped = [
+        ("ECB holds rates steady", "https://www.reuters.com/markets/ecb-holds", 2),
+        ("Fed signals pause in tightening cycle", "https://www.bloomberg.com/news/fed", 2),
+        ("Eurozone inflation cools", "https://www.ft.com/content/ez-cpi", 2),
+    ]
+    kept = [
+        ("PBoC injects 100bn yuan via 7-day reverse repos",
+         "https://www.reuters.com/markets/pboc-omo", 2),
+        ("Open market operations",
+         "https://www.pbc.gov.cn/en/3688006/index.html", 1),
+        ("中国人民银行开展逆回购操作",
+         "https://www.stats.gov.cn/english/PressRelease/x", 1),
+    ]
+    for title, url, tier in dropped:
+        assert pw.row_is_china_policy(title, url, tier) is False, title
+    for title, url, tier in kept:
+        assert pw.row_is_china_policy(title, url, tier) is True, title
+
+
+def test_select_policy_feed_rows_never_falls_back_unfiltered():
+    """A tape of only non-China monetary rows yields [] — the designed empty,
+    never the unfiltered theme slice."""
+    df = pd.DataFrame([
+        {"title": "ECB holds rates", "url": "https://www.reuters.com/ecb",
+         "source": "reuters", "theme": "monetary", "source_tier": 2,
+         "first_seen_utc": "2026-09-10T08:00:00Z", "scheduled_ref": ""},
+        {"title": "Fed holds rates", "url": "https://www.bloomberg.com/fed",
+         "source": "bloomberg", "theme": "monetary", "source_tier": 2,
+         "first_seen_utc": "2026-09-10T07:00:00Z", "scheduled_ref": ""},
+        {"title": "PBoC keeps LPR unchanged", "url": "https://www.reuters.com/pboc-lpr",
+         "source": "reuters", "theme": "monetary", "source_tier": 2,
+         "first_seen_utc": "2026-09-10T06:00:00Z", "scheduled_ref": ""},
+    ])
+    out = pw._select_policy_feed_rows(df, top_n=12)
+    titles = [r["title"] for r in out]
+    assert "ECB holds rates" not in titles
+    assert "Fed holds rates" not in titles
+    assert titles == ["PBoC keeps LPR unchanged"]
+    assert out[0]["theme_en"] == "Monetary policy"
+    assert out[0]["theme_zh"] == "货币政策"
+
+    empty = pw._select_policy_feed_rows(df.iloc[:2], top_n=12)
+    assert empty == []
+
+
+def test_policy_tape_empty_state_is_designed():
+    tpl = (config.ROOT / "templates" / "china_policy_watch.html.j2").read_text()
+    assert 'class="empty"' in tpl
+    assert 'class="empty-why"' in tpl
+    assert "No China official policy items on the tape right now." in tpl
+    assert "当前暂无中国官方政策快讯。" in tpl
+    assert "data-tip-en=" in tpl and "data-tip-zh=" in tpl
+    assert "data-tip-rc-en=" in tpl and "data-tip-rc-zh=" in tpl
+    assert 'tabindex="0"' in tpl
+    lens_lines = [ln for ln in tpl.splitlines() if "data-tip-en" in ln]
+    assert lens_lines, "LENS host missing"
+    for ln in lens_lines:
+        assert "title=" not in ln, f"LENS host must not use title=: {ln}"

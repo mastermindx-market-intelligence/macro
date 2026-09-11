@@ -18,6 +18,13 @@ log = logging.getLogger(__name__)
 
 SCHEMA = "china_pboc_stance.v1"
 
+# SAFE/akshare `macro_china_fx_gold` stores 国家外汇储备-数值 in 亿美元
+# (100 million USD). Level and MoM share that one basis.
+# Display: T USD = yi / 10_000; bn USD (十亿美元) = yi / 10.
+FX_RESERVES_UNIT = "亿美元"
+FX_RESERVES_YI_PER_TRILLION = 10_000
+FX_RESERVES_YI_PER_BILLION = 10
+
 
 def _last(group: str, name: str, col: str):
     try:

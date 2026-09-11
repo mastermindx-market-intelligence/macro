@@ -174,6 +174,8 @@
   .pw .feed .tt{font-size:13px;line-height:1.45}
   .pw .feed .tt a{color:var(--text)}.pw .feed .tt a:hover{color:var(--ink-link, var(--link))}
   .pw .disc{font-size:11px;color:var(--muted);margin-top:14px;line-height:1.55}
+  .pw .empty{margin:12px 0 0;font-size:14px;line-height:1.5;color:var(--text);font-weight:500}
+  .pw .empty-why{margin:6px 0 0;font-size:12px;line-height:1.45;color:var(--muted)}
   .pw .warming{border-radius:14px;border:1px solid var(--mx5-glass-border);background:rgba(255,255,255,.03);padding:16px 18px;font-size:13px;color:var(--muted)}
 {% endblock %}
 
@@ -337,7 +339,7 @@
   <div class="cnx-card">
     <div class="cnx-ctitle">💱 {{ t('FX &amp; reserves', '外汇与储备') }}</div>
     <div class="mgrid">
-      {% if fx.reserves %}<div class="metric"><div class="k">{{ t('FX reserves', '外汇储备') }}</div><div class="v">${{ (fx.reserves/10000)|round(2) }}T</div><div class="s">{% if fx.reserves_mom %}{{ '%+.0f'|format(fx.reserves_mom) }} {{ t('bn MoM', '亿环比') }}{% endif %} · {{ fx.asof_reserves }}</div></div>{% endif %}
+      {% if fx.reserves %}<div class="metric"><div class="k">{{ t('FX reserves', '外汇储备') }}</div><div class="v">${{ (fx.reserves/10000)|round(2) }}T</div><div class="s">{% if fx.reserves_mom %}{{ '%+.1f'|format(fx.reserves_mom/10) }} {{ t('bn MoM', '十亿美元环比') }}{% endif %} · {{ fx.asof_reserves }}</div></div>{% endif %}
       {% if fx.gold %}<div class="metric"><div class="k">{{ t('Gold reserves', '黄金储备') }}</div><div class="v">{{ fx.gold|round(0)|int }}t</div></div>{% endif %}
       {% if fx.usd_cny %}<div class="metric"><div class="k">{{ t('USD / CNY', '美元兑人民币') }}</div><div class="v">{{ '%.3f'|format(fx.usd_cny) }}</div><div class="s">{% if fx.usd_cny_chg_20d is not none %}{{ '%+.3f'|format(fx.usd_cny_chg_20d) }} {{ t('20d', '20日') }}{% endif %} · {{ fx.asof_cny }}</div></div>{% endif %}
     </div>
@@ -388,9 +390,9 @@
   {% endif %}
 
   <!-- official policy tape -->
-  {% if pw.policy_feed %}
   <div class="cnx-card">
     <div class="cnx-ctitle">📰 {{ t('Official policy tape', '官方政策快讯') }}</div>
+    {% if pw.policy_feed %}
     <ul class="feed">
       {% for it in pw.policy_feed %}
       <li>
@@ -402,8 +404,11 @@
       </li>
       {% endfor %}
     </ul>
+    {% else %}
+    <p class="empty">{{ t('No China official policy items on the tape right now.', '当前暂无中国官方政策快讯。') }}</p>
+    <p class="empty-why">{{ t('This desk only shows China-relevant official and policy rows. A quiet tape is not a missing page.', '本栏只收录与中国相关的官方与政策条目。快讯为空不等于页面缺失。') }}</p>
+    {% endif %}
   </div>
-  {% endif %}
 
   <!-- prediction ledger -->
   {% if pw.intel and pw.intel.predictions %}
@@ -420,7 +425,7 @@
   </div>
   {% endif %}
 
-  <p class="disc">{{ t('Context only — not a signal, score or trade. The National Team Radar fuses the public footprint of state intervention into a display-tier intensity read; it is not a buy signal and never gates a trade. PBoC corridor + NBS prints are point-in-time and may be revised; the sector matrix, NPC targets and prediction ledger are a hand-curated, dated intel substrate (data/china_policy/intel.json), not a model output.', '仅供参考，非信号、评分或交易。国家队雷达将国家干预的公开足迹汇成一个展示层强度读数；它不是买入信号，也从不用于交易闸口。央行利率走廊与统计局数据为特定时点快照，可能修订；行业矩阵、两会目标与预测台账为人工整理、有日期的情报底稿（data/china_policy/intel.json），并非模型输出。') }}</p>
+  <p class="disc">{{ t('Context only — not a signal, score or trade. The National Team Radar fuses the public footprint of state intervention into a display-tier intensity read; it is not a buy signal and never gates a trade. PBoC corridor + NBS prints are point-in-time and may be revised; the sector matrix, NPC targets and prediction ledger are a hand-curated, dated intel substrate (data/china_policy/intel.json), not a model output.', '仅供参考，非信号、评分或交易。国家队雷达将国家干预的公开足迹汇成一个展示层强度读数；它不是买入信号，也从不用于交易闸口。央行利率走廊与统计局数据为特定时点快照，可能修订；行业矩阵、两会目标与预测台账为人工整理、有日期的情报底稿（data/china_policy/intel.json），并非模型输出。') }} <button class="lens-q" type="button" tabindex="0" aria-label="Explain" data-tip-en="A read on what the state is doing, not a buy signal." data-tip-zh="仅为国家队动向的观察，非买入信号" data-tip-rc-en="Hand-curated, dated intel substrate — not a model output." data-tip-rc-zh="人工整理、有日期的情报底稿，并非模型输出。">?</button></p>
 {% endif %}
 </div>
 {% endblock %}

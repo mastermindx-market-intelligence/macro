@@ -67,8 +67,70 @@ def _nbs_prints() -> list[dict]:
     return rows
 
 
+def _host(url: str) -> str:
+    """Lowercased hostname with a leading www. stripped. Empty on unparseable URL."""
+    from urllib.parse import urlparse
+    try:
+        h = (urlparse(url or "").netloc or "").lower()
+    except Exception:  # noqa: BLE001
+        return ""
+    return h[4:] if h.startswith("www.") else h
+
+
+def _official_hosts() -> set[str]:
+    """Hostnames of engine.china_news.OFFICIAL_PAGES (www. stripped)."""
+    from engine.china_news import OFFICIAL_PAGES
+    return {_host(p.get("url", "")) for p in OFFICIAL_PAGES} - {""}
+
+
+def _host_in(host: str, hosts: set[str]) -> bool:
+    if not host:
+        return False
+    if host in hosts:
+        return True
+    return any(host.endswith("." + h) for h in hosts if h)
+
+
+def row_is_china_policy(title: str, url: str, source_tier: int) -> bool:
+    """China-desk gate for the official policy tape.
+
+    Keep a row when (a) a China anchor lands in the title or hostname, or
+    (b) it is source_tier==1 from the OFFICIAL_PAGES set. A Eurozone/Fed
+    monetary flash on a global wire must not fill this card.
+    """
+    host = _host(url)
+    # Official PBoC/NBS/… hosts are themselves a China domain anchor
+    # (covers source_tier==1 from OFFICIAL_PAGES, and the same hosts at any tier).
+    if _host_in(host, _official_hosts()):
+        return True
+    from engine.china_news import _is_china_anchored
+    return _is_china_anchored(title or "") or _is_china_anchored(host)
+
+
+def _select_policy_feed_rows(df, top_n: int = 12) -> list[dict]:
+    """Theme/tier slice, then the China gate. Empty list is a designed empty — never unfiltered."""
+    from engine import china_news_intel as ni
+    if df is None or getattr(df, "empty", True):
+        return []
+    mask = (df["source_tier"] == 1) | (df["theme"].isin(_POLICY_THEMES))
+    sub = df[mask].sort_values("first_seen_utc", ascending=False)
+    out = []
+    for r in sub.itertuples():
+        if not row_is_china_policy(getattr(r, "title", ""), getattr(r, "url", ""),
+                                   getattr(r, "source_tier", 0)):
+            continue
+        tl = ni.THEME_LABEL.get(r.theme, (r.theme, r.theme))
+        out.append({"title": r.title, "url": r.url, "source": r.source,
+                    "theme": r.theme, "theme_en": tl[0], "theme_zh": tl[1],
+                    "tier": int(r.source_tier),
+                    "scheduled_ref": getattr(r, "scheduled_ref", "") or ""})
+        if len(out) >= top_n:
+            break
+    return out
+
+
 def _policy_feed(top_n: int = 12) -> list[dict]:
-    """Official / policy-themed slice of the china_news_intel PIT bus (tier-1 or policy theme)."""
+    """Official / policy-themed slice of the china_news_intel PIT bus, China-gated."""
     try:
         import pandas as pd
         from engine import china_news_intel as ni
@@ -76,17 +138,7 @@ def _policy_feed(top_n: int = 12) -> list[dict]:
         if not path.exists():
             return []
         df = pd.read_parquet(path)
-        if df.empty:
-            return []
-        mask = (df["source_tier"] == 1) | (df["theme"].isin(_POLICY_THEMES))
-        sub = df[mask].sort_values("first_seen_utc", ascending=False).head(top_n)
-        out = []
-        for r in sub.itertuples():
-            tl = ni.THEME_LABEL.get(r.theme, (r.theme, r.theme))
-            out.append({"title": r.title, "url": r.url, "source": r.source,
-                        "theme": r.theme, "theme_en": tl[0], "theme_zh": tl[1],
-                        "tier": int(r.source_tier), "scheduled_ref": r.scheduled_ref})
-        return out
+        return _select_policy_feed_rows(df, top_n=top_n)
     except Exception as e:  # noqa: BLE001
         log.debug("china policy feed unavailable (%s)", e)
         return []
