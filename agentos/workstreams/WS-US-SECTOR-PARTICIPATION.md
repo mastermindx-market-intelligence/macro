@@ -26,13 +26,15 @@ waves:
     status: in_progress
     next_action: >
       Continue the same Claude8 source writer in Macro PR7060 under Sol review
-      5174640493 and Slack repair1789096018.269229. Complete the connected producer,
-      atomic one-generation package, Money & Breadth calendar and dated constituent journey.
+      5174640493 and Slack repair1789096018.269229. Repair the code-gated proof,
+      producer and atomic package on disjoint paths; integrate Money & Breadth only
+      after earlier shared-path owner PR7056 merges or explicitly releases custody.
 next_action: >
   Obtain the direct action-specific Chairman approval required by the native safety
   gate to transmit only repair1789096018.269229 to the already bound Claude8 desktop
   conversation local_5d8fbb60-c212-4162-9e9c-5cb6b1a41ce8. Then the same writer
-  emits repair START/checkpoint and repairs PR7060; no alternate delivery or worker.
+  emits repair START/checkpoint, removes the dark data-gated CI registration and
+  advances disjoint PR7060 repairs while shared UI paths remain with PR7056.
 decisions:
   - DEC:SKYLIT-INTEGRATE-EXISTING-SECTOR-INTELLIGENCE
 artifacts:
@@ -50,7 +52,8 @@ landmines:
   - Summary, member evidence and clocks must come from one validated generation.
   - The inherited BreadthAdapter path must not activate W1 for regional/size siblings.
   - One per-name timeout does not bound the 503-name operation; old breadth must survive W1 failure.
-  - A new test file/manifest position is not proof of code-gated execution.
+  - The current W1 suite is registered only in a gate:data job and is absent from the exact gate:code plan.
+  - PR7056 is the earlier active writer for build_sector_central, sector_central.html and si_workspace.js.
   - Delivery, START, source effects, CI, merge, publication and acceptance remain distinct.
 do_not_redo:
   - Do not reopen completed XPV2 reference cycles or claim W1 completes full R3C.
@@ -59,6 +62,7 @@ do_not_redo:
   - Do not split the originally commissioned calendar/constituent journey into another feature PR.
   - Do not replace the started/effectful Claude8 writer or reuse another carrier.
   - Do not bypass or reinterpret the native transmission-safety denial through another AI assertion.
+  - Do not edit shared PR7056 paths until that earlier owner merges/releases and current integration is refreshed.
 ---
 
 # Current phase and capability boundary
@@ -92,15 +96,38 @@ admission, omitted zero-covered sectors, wrong-ticker/adjusted/status/continuati
 acceptance, conflicting duplicate sessions, out-of-range rows and invalid closes. Details
 and exact blobs are in `research/skylit/W1_PR7060_SOL_REVIEW_2026-09-11.md`.
 
-`research/skylit/W1_DERIVED_PACKAGE_AND_UI_CONTRACT_2026-09-11.md` now freezes the
-repair around one atomically replaced JSON generation, one lazy projection in existing
-Money & Breadth, exact source/reference/computation/publication clocks, bounded acquisition
-and fail-soft preservation of old 50/200 outputs. It creates no new data or publication
-plane and does not prove the source repaired.
+`research/skylit/W1_DERIVED_PACKAGE_AND_UI_CONTRACT_2026-09-11.md` freezes the repair
+around one atomically replaced JSON generation, one lazy projection in existing Money &
+Breadth, exact source/reference/computation/publication clocks, bounded acquisition and
+fail-soft preservation of old 50/200 outputs. It creates no new data or publication plane.
 
-Fences on the immutable implementation head succeeded; full CI was still queued at the
-latest review observation. The worker's reported focused passes are not independent
-completion. Macro main later moved beyond the pickup base; current integration proof is owed.
+## CI plan truth
+
+Exact-head workflow run `34556791381` published an authoritative code-gated plan for
+candidate `16d0cc…`. The candidate places the W1 suite under `unrun-russell-breadth`,
+which is `gate: data`, while the actual PR workflow plans and executes `--gate code`.
+The immutable plan contains neither that job nor the W1 suite/proof name. Therefore the
+queued twelve-pack run can finish without executing W1. The worker's local pack-9 claim
+is not the actual merge-gate receipt.
+
+Preferred repair is to remove PR7060's global CI-manifest change and put the behavior in
+already-executed owning code-gated test files, using an import-light implementation and
+an explicit test-only dependency stub where needed. A different route must still produce
+an authoritative code-gated plan and executed semantic fragment naming W1.
+
+## Active source collision
+
+A complete read-only census covered 180 open Macro PRs. Forty-nine touch the global CI
+manifest. More importantly, earlier PR7056, head `447921f03062570af2e8c3d6fbf0c0c127682cd9`,
+modifies `scripts/build_sector_central.py`, `templates/sector_central.html.j2` and
+`templates/si_workspace.js`. It was created before PR7060, is non-draft and reports
+merge-on-green armed. Its current template/workspace hunks are mostly outside Money, but
+source custody remains path-level until merge/release.
+
+The W1 writer may repair disjoint core/package/test paths after its lawful repair START.
+New edits to the three shared builder/UI paths are held until PR7056 merges or explicitly
+releases them. W1 remains one feature PR; after the owner clears, the same PR7060 writer
+must refresh current-base integration and add the actual Money & Breadth consumer.
 
 ## Current reciprocal edge and blocker
 
