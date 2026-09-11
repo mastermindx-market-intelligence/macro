@@ -34,6 +34,14 @@ CANDIDATE_SPARSE_PATTERNS = (
     "!/mockups/",
     "!/verify_shots/",
 )
+INVALID_NONEMPTY_HEAD_REFS = (
+    "-" + "leading",
+    "feature." + ".bad",
+    "feature@" + "{" + "bad",
+    "feature" + "/",
+    "feature" + " " + "bad",
+    "feature" + chr(1) + "bad",
+)
 
 
 def workflow(name: str) -> dict:
@@ -252,6 +260,16 @@ def test_p3ba_refuses_untrusted_call_contexts(
     result, outputs = run_trusted_gate(tmp_path, **overrides)
     assert result.returncode != 0
     assert outputs == {}
+
+
+@pytest.mark.parametrize("invalid_ref", INVALID_NONEMPTY_HEAD_REFS)
+def test_p3ba_refuses_invalid_nonempty_event_head_refs(
+    tmp_path: Path, invalid_ref: str
+) -> None:
+    result, outputs = run_trusted_gate(tmp_path, EVENT_HEAD_REF=invalid_ref)
+    assert result.returncode != 0
+    assert outputs == {}
+    assert "event head ref is invalid" in result.stdout + result.stderr
 
 
 def test_p3ba_planner_uses_main_control_and_routes_one_or_all_exact_pr_packs() -> None:
@@ -743,6 +761,38 @@ def test_p0_event_frozen_resolver_refuses_unavailable_or_malformed_event_identit
             event_head_sha=head_sha,
             event_head_ref="feature/event-frozen",
         )
+
+
+@pytest.mark.parametrize("invalid_ref", INVALID_NONEMPTY_HEAD_REFS)
+def test_p0_event_frozen_resolver_rejects_invalid_nonempty_head_ref_before_fetch(
+    monkeypatch: pytest.MonkeyPatch, invalid_ref: str
+) -> None:
+    resolver = _resolver_module()
+    calls: list[tuple[str, ...]] = []
+
+    def fake_git(*args: str) -> str:
+        calls.append(args)
+        if args == ("check-ref-format", "--branch", invalid_ref):
+            raise resolver.ResolutionError("invalid branch")
+        raise AssertionError(f"validation did not precede {args!r}")
+
+    def fail_live_api(*args: object, **kwargs: object) -> object:
+        raise AssertionError("invalid event ref consulted the live PR API")
+
+    monkeypatch.setattr(resolver, "git", fake_git)
+    monkeypatch.setattr(resolver, "pull_request", fail_live_api)
+    with pytest.raises(resolver.ResolutionError, match="invalid branch"):
+        resolver.resolve(
+            "mastermindx-market-intelligence/macro",
+            "f" * 40,
+            6390,
+            "",
+            event_tested_sha="a" * 40,
+            event_base_sha="b" * 40,
+            event_head_sha="c" * 40,
+            event_head_ref=invalid_ref,
+        )
+    assert calls == [("check-ref-format", "--branch", invalid_ref)]
 
 
 def test_p0_direct_dispatch_retains_live_pr_resolution(
