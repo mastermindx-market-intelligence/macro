@@ -1,10 +1,10 @@
 # Mastermind AI — Bilingual Research Search R1 Design
 
-**Status:** APPROVED implementation wave under the Chairman’s live 2026-09-10 Mastermind AI upgrade directive  
-**Operation:** `mastermind-ai-r1-lexical-retrieval-20260911-sol-001`  
-**Program owner:** `macro-mastermind-ai`  
-**Product authority:** `research/MASTERMIND_SUPERINTELLIGENCE_MASTERPLAN.md`  
-**Implementation base:** `mastermindx-market-intelligence/macro@1f8eeab603fc37def47e1cfc6f7f3788c0300ad3`  
+**Status:** APPROVED implementation wave under the Chairman’s live 2026-09-10 Mastermind AI upgrade directive
+**Operation:** `mastermind-ai-r1-lexical-retrieval-20260911-sol-001`
+**Program owner:** `macro-mastermind-ai`
+**Product authority:** `research/MASTERMIND_SUPERINTELLIGENCE_MASTERPLAN.md`
+**Implementation base:** `mastermindx-market-intelligence/macro@1f8eeab603fc37def47e1cfc6f7f3788c0300ad3`
 **Protected procedure:** `mastermindx-market-intelligence/Mastermind@068dcc1533776672844b36ffcde30fad68a4317f`, Skillpack 1.0.1 / bootstrap major 1
 
 ## 0. Observable outcome
@@ -100,8 +100,8 @@ The implementation is not accepted unless all of the following hold:
 
 ## 8. Routing receipt
 
-**ROUTE:** Codex CLI on the authorized Mac, bounded build worker using an economical engineering model; independent exact-head review by a separate high-capability reviewer.  
-**WHY:** This is a specified two-file deterministic Python repair with clear tests, no architecture choice, and no cross-repository write.  
+**ROUTE:** Codex CLI on the authorized Mac, bounded build worker using an economical engineering model; independent exact-head review by a separate high-capability reviewer.
+**WHY:** This is a specified two-file deterministic Python repair with clear tests, no architecture choice, and no cross-repository write.
 **WHY NOT FABLE:** Principal capacity is unnecessary; product thesis, boundaries, and acceptance are already frozen by Sol.
 
 ## 9. Stop condition
