@@ -8937,7 +8937,7 @@ html[data-theme="light"] :is(
   .rr-track-table td{padding:2px 5px;font-variant-numeric:tabular-nums;
     border-bottom:1px solid color-mix(in srgb,var(--line) 40%,transparent)}
   .rr-empty{font-size:11.5px;color:var(--muted);font-style:italic;padding:4px 0}
-  /* A1 (#6868) truth labels: level unit, band/point notes, explicit unavailable
+  /* A1 (issue 6868) truth labels: level unit, band/point notes, explicit unavailable
      states, and the four-fact inputs list.  Neutral inks only — none of these
      is a direction, so none may inherit the ZH up/down swap. */
   .rr-unit{font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:.01em}
@@ -9189,7 +9189,7 @@ html[data-theme="light"] :is(
 
     /* ---- base helpers ---- */
     function esc(s){ return s == null ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-    /* A1 (#6868): a displayable number is a finite JS number — never a boolean
+    /* A1 (issue 6868): a displayable number is a finite JS number — never a boolean
        (true - false === 1 draws a band), a string posing as one, NaN or ±Infinity. */
     function _rrNum(v){ return (typeof v === 'number' && isFinite(v)) ? v : null; }
     function fmtNum(v, digits){
@@ -9203,7 +9203,7 @@ html[data-theme="light"] :is(
     /* claims / nfp level formatting: values in thousands */
     function fmtK(v){ return _rrNum(v) === null ? '—' : fmtNum(v, 0) + 'k'; }
 
-    /* ---- A1 (#6868): units, the selected forecast and its own band ---- */
+    /* ---- A1 (issue 6868): units, the selected forecast and its own band ---- */
     var RR_DIAG_SCHEMA = 'release_forecast.item_diagnostics.v1';
     function _rrDiag(item){
       var d = item && item.diagnostics;
