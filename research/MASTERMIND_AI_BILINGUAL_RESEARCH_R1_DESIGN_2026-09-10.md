@@ -40,7 +40,7 @@ Normalization applies identically to query and catalog text. The returned `query
 `_tokenize(query: str) -> tuple[str, ...]` returns ordered, de-duplicated strings in one of three forms:
 
 1. **Han span:** a contiguous CJK unified-ideograph run of at least two code points. It matches as a literal normalized substring so `半导体` can match `半导体行业`.
-2. **Qualified identifier:** an ASCII atom containing a dot, a digit-bearing hyphen, an uppercase ticker-like hyphen, or a short ticker-like hyphen such as lowercase `brk-b`. It matches only a complete normalized atom. `600036.SH` must not match `600036.SZ`, `1600036.SH`, or `600036.SH.A`; `BRK-B` must not match `BRK-A`.
+2. **Qualified identifier:** an ASCII atom containing a dot, or a two-segment share-class hyphen whose suffix is one letter (for example `BRK-B` or lowercase `brk-b`). It matches only a complete normalized atom. `600036.SH` must not match `600036.SZ`, `1600036.SH`, or `600036.SH.A`; `BRK-B` must not match `BRK-A`. Other hyphenated forms remain ordinary prose because numeric ranges and phrases such as `10-yr`, `risk-off`, and `AI-driven` are common in the catalog.
 3. **Plain word:** an ASCII alphanumeric word of at least two characters. It matches a complete word. `AI` must not match `paid`; `AAPL` must not match `pineapple`.
 
 A natural-language hyphen compound such as `near-term`, `long-term`, `risk-off`, or `AI-driven` is split into its ordinary word components unless it meets the qualified-identifier rule. This preserves the previous catalog-search behavior for common research prose rather than turning every hyphenated phrase into an exact identifier.

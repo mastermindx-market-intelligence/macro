@@ -185,20 +185,19 @@ def _search_normalize(text: str) -> str:
 
 def _is_qualified_identifier(raw: str) -> bool:
     """Whether a punctuated ASCII atom should remain exact instead of split."""
-    if "." in raw or any(ch.isdigit() for ch in raw):
-        return True
-    if "-" not in raw:
-        return False
-    compact = raw.replace("-", "")
-    if compact.isalpha() and compact.isupper():
+    if "." in raw:
         return True
     parts = raw.split("-")
-    return len(raw) <= 10 and all(part.isalnum() for part in parts) and any(
-        len(part) <= 2 for part in parts
+    return (
+        len(parts) == 2
+        and 1 <= len(parts[0]) <= 5
+        and len(parts[1]) == 1
+        and parts[0].isalnum()
+        and parts[1].isalpha()
     )
 ```
 
-The short-part rule preserves lowercase ticker forms such as `brk-b` without misclassifying common compounds such as `near-term`, `long-term`, `risk-off`, or `ai-driven`.
+The one-letter share-class rule preserves uppercase or lowercase forms such as `BRK-B`, `brk-b`, `BF-A`, and `bf-a` without misclassifying common compounds and numeric ranges such as `near-term`, `risk-off`, `AI-driven`, or `10-yr`.
 
 - [ ] **Step 3: Replace `_tokenize` with typed-by-construction string atoms**
 
