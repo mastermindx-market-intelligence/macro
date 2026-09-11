@@ -584,16 +584,22 @@ def _radar_to_rd(rr: dict) -> dict:
     display-only override both build on it. `amp`/`ceiling` default to off (the US override
     fills them in when the radar is loud)."""
     state = rr.get("state")
-    top = _num(rr.get("top_score"))
+    raw_top = rr.get("top_score")
+    top = None if isinstance(raw_top, (bool, np.bool_)) else _num(raw_top)
     dp = rr.get("drawdown_prob") or {}
     _mkt = rr.get("market") or "us"
     _track = _rr_scorecard_track(_mkt)
     _forward_log = rr.get("forward_log")
     _change = (_forward_log.get("publication_change")
                if isinstance(_forward_log, dict) else None)
-    _top_display = round(top, 1) if top is not None else None
-    if _top_display is not None and float(_top_display).is_integer():
-        _top_display = int(_top_display)
+    if not isinstance(_change, dict):
+        _change = None
+    elif (rr.get("asof")
+          and str(_change.get("current_asof") or "") != str(rr["asof"])):
+        _change = None
+    # Keep the established integer audit field stable. The shared card reads the exact
+    # display decimal from the publication-change read model without changing ledger output.
+    _top_audit = round(top) if top is not None else None
     # Explicit authority is emitted by current radar producers. For older artifacts, only an
     # actual loud alert may bind; a legacy caution payload is advisory by construction.
     _can_force = (bool(rr.get("can_force")) if "can_force" in rr else
@@ -612,7 +618,7 @@ def _radar_to_rd(rr: dict) -> dict:
     return {
         "state": state,
         "market": _mkt,
-        "top_score": _top_display,
+        "top_score": _top_audit,
         "label_en": rr.get("dominant_label_en") or "calm",
         "label_zh": rr.get("dominant_label_zh") or "平静",
         "state_zh": _RADAR_ZH.get(state, state or ""),

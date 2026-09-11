@@ -13,13 +13,12 @@ Covers:
 from __future__ import annotations
 
 import json
-import os
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import pandas as pd
 import pytest
-from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
+from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
 from engine import risk_radar_audit as rra
 from engine import risk_radar_scorecard as sc
@@ -583,6 +582,8 @@ def test_publication_change_uses_strictly_earlier_row_and_explains_drivers(tmp_p
     assert "75.1→65.7" in ch["summary_en"]
     assert "Defensives outperforming cleared" in ch["summary_en"]
     assert "防御股跑赢解除" in ch["summary_zh"]
+    assert "警戒→观察" in ch["summary_zh"]
+    assert "警戒→关注" not in ch["summary_zh"]
 
 
 def test_publication_change_has_typed_absence_not_fake_zero(tmp_path) -> None:
@@ -594,9 +595,11 @@ def test_publication_change_has_typed_absence_not_fake_zero(tmp_path) -> None:
     assert ch["available"] is False
     assert ch["null_reason"] == "NO_EARLIER_PUBLICATION"
     assert ch["prior_asof"] is None
+    assert ch["score"] == {
+        "current": 65.7, "prior": None, "delta": None, "direction": None
+    }
     assert ch["week"]["available"] is False
-    assert ch["history"] == [{"asof": "2026-09-09", "state": "watch",
-                              "dominant_scare": "growth", "top_score": 65.7}]
+    assert "history" not in ch
 
 
 def test_snapshot_and_grade_attaches_change_without_advancing_second_ledger(monkeypatch) -> None:
@@ -614,6 +617,7 @@ def test_radar_card_preserves_decimal_and_renders_compact_velocity(monkeypatch) 
     monkeypatch.setattr("engine.market_state._rr_scorecard_track", lambda market: None)
     change = {
         "available": True,
+        "current_asof": "2026-09-09",
         "prior_asof": "2026-09-08",
         "score": {"current": 65.7, "prior": 75.1, "delta": -9.4, "direction": "easing"},
         "week": {"available": True, "asof": "2026-09-02", "score": 70.0, "delta": -4.3},
@@ -631,11 +635,15 @@ def test_radar_card_preserves_decimal_and_renders_compact_velocity(monkeypatch) 
         "forward_log": {"n_graded": 3, "publication_change": change},
     }
     rd = _radar_to_rd(rr)
-    assert rd["top_score"] == 65.7
+    assert rd["top_score"] == 66
     assert rd["change"] == change
 
+    from engine.market_state_audit import _entry_from_snapshot as _market_state_entry
+    entry = _market_state_entry({"asof": "2026-09-09", "verdict": "Mixed", "radar": rd})
+    assert entry is not None and entry["radar_top"] == 66
+
     env = Environment(loader=FileSystemLoader(str(ROOT / "templates")),
-                      autoescape=select_autoescape(["html", "xml"]),
+                      autoescape=True,
                       undefined=StrictUndefined)
     tpl = env.from_string(
         '{% import "_risk_radar_card.html.j2" as rrc %}'
@@ -644,6 +652,10 @@ def test_radar_card_preserves_decimal_and_renders_compact_velocity(monkeypatch) 
     html = tpl.render(rd=rd)
     assert "65.7/100" in html
     assert "▼9.4" in html
+    assert '<span class="l-en">VS PREV</span>' in html
+    assert '<span class="l-en">1D</span>' not in html
+    assert '<span class="l-zh">较前值</span>' in html
+    assert '<span class="l-zh">1日</span>' not in html
     assert "Prev 75.1" in html and "1W 70.0" in html
     assert "Defensives outperforming cleared" in html
 
@@ -681,7 +693,6 @@ def test_transition_alert_names_added_and_cleared_flags() -> None:
     assert "新增：宽度/价格背离" in view["message_zh"]
 
 
-
 def test_publication_change_skips_non_object_json_rows(tmp_path) -> None:
     """Valid JSON scalars/lists are malformed ledger rows, not fatal comparisons."""
     prior = _ledger_row(
@@ -711,7 +722,7 @@ def test_publication_change_skips_non_object_json_rows(tmp_path) -> None:
     assert change["prior_asof"] == "2026-09-08"
     assert change["null_reason"] is None
     assert change["week"] == {"available": False, "null_reason": "NO_WEEK_REFERENCE"}
-    assert all(point["asof"] != "17" for point in change["history"])
+    assert "history" not in change
 
 
 @pytest.mark.parametrize(
@@ -742,6 +753,67 @@ def test_publication_change_compares_date_and_timestamp_asofs(
     assert change["null_reason"] is None
 
 
+def test_publication_change_non_mapping_snapshot_is_typed_absence(tmp_path) -> None:
+    """Malformed current input cannot raise outside the fail-soft comparison boundary."""
+    change = rra.publication_change(["not", "a", "snapshot"], root=tmp_path)
+
+    assert change["available"] is False
+    assert change["null_reason"] == "CURRENT_ASOF_MISSING"
+    assert change["current_asof"] is None
+    assert change["score"] == {
+        "current": None, "prior": None, "delta": None, "direction": None
+    }
+
+
+def test_publication_change_boolean_scores_are_typed_absence(tmp_path) -> None:
+    """JSON booleans are malformed scores, not numeric 1.0/0.0 observations."""
+    prior = _ledger_row(
+        "2026-09-08", "caution", True, True, "caution",
+        [_leg("growth_cyc_def", 0.798)],
+    )
+    _write_ledger(tmp_path, [prior])
+    current = _current_snapshot()
+    current["top_score"] = False
+
+    change = rra.publication_change(current, root=tmp_path)
+
+    assert change["available"] is True
+    assert change["score"] == {
+        "current": None, "prior": None, "delta": None, "direction": None
+    }
+
+
+def test_radar_card_boolean_score_stays_absent(monkeypatch, tmp_path) -> None:
+    """Malformed boolean scores cannot reappear as a fabricated 0/100 badge."""
+    monkeypatch.setattr("engine.market_state._rr_scorecard_track", lambda market: None)
+    prior = _ledger_row(
+        "2026-09-08", "caution", True, True, "caution",
+        [_leg("growth_cyc_def", 0.798)],
+    )
+    _write_ledger(tmp_path, [prior])
+    current = _current_snapshot()
+    current["top_score"] = False
+    change = rra.publication_change(current, root=tmp_path)
+    rr = {
+        **current,
+        "market": "us", "alert": False, "gross_factor": 1.0,
+        "drawdown_prob": {},
+        "forward_log": {"n_graded": 0, "publication_change": change},
+    }
+
+    rd = _radar_to_rd(rr)
+    env = Environment(loader=FileSystemLoader(str(ROOT / "templates")),
+                      autoescape=True, undefined=StrictUndefined)
+    tpl = env.from_string(
+        '{% import "_risk_radar_card.html.j2" as rrc %}'
+        '{{ rrc.risk_radar_card(rd, [], false) }}'
+    )
+    html = tpl.render(rd=rd)
+
+    assert rd["top_score"] is None
+    assert "0/100" not in html
+
+
 def test_publication_change_invalid_current_asof_is_typed_absence(tmp_path) -> None:
     """A malformed current publication date must not trigger a permissive parser fallback."""
     prior = _ledger_row(
@@ -757,7 +829,6 @@ def test_publication_change_invalid_current_asof_is_typed_absence(tmp_path) -> N
     assert change["available"] is False
     assert change["null_reason"] == "CURRENT_ASOF_INVALID"
     assert change["prior_asof"] is None
-
 
 
 def test_publication_change_first_writer_wins_across_same_day_asof_formats(tmp_path) -> None:
@@ -807,6 +878,7 @@ def test_radar_card_partial_change_shape_fails_soft(monkeypatch) -> None:
     monkeypatch.setattr("engine.market_state._rr_scorecard_track", lambda market: None)
     change = {
         "available": True,
+        "current_asof": "2026-09-09",
         "prior_asof": "2026-09-08",
         "score": {"current": 65.7, "prior": None, "delta": None},
         "week": {"available": True, "asof": "2026-09-02",
@@ -829,7 +901,7 @@ def test_radar_card_partial_change_shape_fails_soft(monkeypatch) -> None:
     rd = _radar_to_rd(rr)
     env = Environment(
         loader=FileSystemLoader(str(ROOT / "templates")),
-        autoescape=select_autoescape(["html", "xml"]),
+        autoescape=True,
         undefined=StrictUndefined,
     )
     tpl = env.from_string(
@@ -891,15 +963,14 @@ def test_publication_change_translates_dominant_scare_in_both_languages(tmp_path
 
     change = rra.publication_change(current, root=tmp_path)
 
-    assert "Lead Credit stress→Growth scare / defensive rotation" in change["summary_en"]
-    assert "主导 信用压力→增长恐慌/防御轮动" in change["summary_zh"]
+    assert "Lead Credit stress→Growth scare" in change["summary_en"]
+    assert "主导 信用压力→增长恐慌" in change["summary_zh"]
     assert "credit" not in change["summary_zh"]
     assert "growth" not in change["summary_zh"]
 
 
-
-def test_transition_alert_nullable_flag_count_is_typed_zero() -> None:
-    """A state transition survives absent count metadata and reports an honest zero."""
+def test_transition_alert_nullable_flag_count_is_typed_absence() -> None:
+    """A state transition survives absent count metadata without fabricating zero."""
     idx = pd.bdate_range("2026-09-08", periods=2)
     hist = pd.DataFrame({
         "quad": ["Q1", "Q1"],
@@ -913,8 +984,287 @@ def test_transition_alert_nullable_flag_count_is_typed_zero() -> None:
     alert = transition_state_change(hist, pd.DataFrame())
 
     assert alert is not None
-    assert "(0 flags active)" in alert.message
-    assert "（0 个预警激活）" in alert.message_zh
+    assert "flags active" not in alert.message
+    assert "预警激活" not in alert.message_zh
+    view = alert_view(alert.rule, alert.severity, alert.message, alert.message_zh)
+    assert view["message"].startswith("The regime's footing went from steady to weakening")
+    assert "warning flags active" not in view["message"]
+    assert view["message_zh"].startswith("周期状态由「稳定」转为「走弱」")
+    assert "预警激活" not in view["message_zh"]
+
+
+def test_publication_change_partial_prior_does_not_invent_transitions(tmp_path) -> None:
+    """Missing historical categorical fields cannot manufacture state or lead handoffs."""
+    prior = {"asof": "2026-09-08", "top_score": 75.1, "scares": {}}
+    _write_ledger(tmp_path, [prior])
+
+    change = rra.publication_change(_current_snapshot(), root=tmp_path)
+
+    assert change["available"] is True
+    assert change["state"] == {"current": "watch", "prior": None, "changed": False}
+    assert "→Watch" not in change["summary_en"]
+    assert "→观察" not in change["summary_zh"]
+    assert "Lead " not in change["summary_en"]
+    assert "主导 " not in change["summary_zh"]
+
+
+def test_publication_change_scalar_firing_legs_fail_soft(tmp_path) -> None:
+    """A malformed scalar firing_legs value is typed absence, not a whole-read failure."""
+    prior = _ledger_row(
+        "2026-09-08", "caution", 75.1, 75.1, "caution",
+        [_leg("growth_cyc_def", 0.798)],
+    )
+    prior["scares"]["growth"]["firing_legs"] = 17
+    _write_ledger(tmp_path, [prior])
+
+    change = rra.publication_change(_current_snapshot(), root=tmp_path)
+
+    assert change["available"] is True
+    assert change["null_reason"] is None
+    growth = next(row for row in change["scares"] if row["scare"] == "growth")
+    assert growth["prior"] == 75.1
+    assert growth["cleared_legs"] == []
+    assert growth["added_legs"] == ["growth_cyc_def"]
+
+
+def test_publication_change_missing_score_has_no_direction(tmp_path) -> None:
+    """A missing numeric comparison must not be labelled as a flat move."""
+    prior = _ledger_row(
+        "2026-09-08", "caution", 75.1, 75.1, "caution",
+        [_leg("growth_cyc_def", 0.798)],
+    )
+    _write_ledger(tmp_path, [prior])
+    current = _current_snapshot()
+    current["top_score"] = None
+
+    change = rra.publication_change(current, root=tmp_path)
+
+    assert change["score"] == {
+        "current": None, "prior": 75.1, "delta": None, "direction": None
+    }
+
+
+def test_publication_change_uses_current_dynamic_bubble_label(tmp_path) -> None:
+    """The current producer's bubble label outranks an alarmist frozen fallback."""
+    prior = _ledger_row(
+        "2026-09-08", "caution", 72.0, 72.0, "caution",
+        [_leg("growth_cyc_def", 0.70)],
+    )
+    prior["dominant_scare"] = "growth"
+    _write_ledger(tmp_path, [prior])
+    current = _current_snapshot()
+    current["dominant_scare"] = "bubble"
+    current["dominant_label_en"] = "Trend extension watch"
+    current["dominant_label_zh"] = "趋势延伸观察"
+    current["scares"][0] = {
+        "scare": "bubble", "label_en": "Trend extension watch",
+        "label_zh": "趋势延伸观察", "score": 65.7, "band": "watch",
+        "firing_legs": [_leg("bubble_ext", 0.81)],
+    }
+
+    change = rra.publication_change(current, root=tmp_path)
+
+    assert "Lead Growth scare / defensive rotation→Trend extension watch" in change["summary_en"]
+    assert "主导 增长恐慌/防御轮动→趋势延伸观察" in change["summary_zh"]
+    assert "blow-off unwind" not in change["summary_en"]
+    assert "见顶回吐" not in change["summary_zh"]
+
+
+def test_publication_change_unknown_prior_scare_does_not_leak_slug_to_chinese(tmp_path) -> None:
+    """Unknown future machine keys are omitted from Chinese prose until translated."""
+    prior = _ledger_row(
+        "2026-09-08", "caution", 72.0, 72.0, "caution",
+        [_leg("growth_cyc_def", 0.70)],
+    )
+    prior["dominant_scare"] = "future_scare_slug"
+    _write_ledger(tmp_path, [prior])
+
+    change = rra.publication_change(_current_snapshot(), root=tmp_path)
+
+    assert "future_scare_slug" not in change["summary_zh"]
+    assert "主导 " not in change["summary_zh"]
+
+
+@pytest.mark.parametrize(
+    ("key", "expected"),
+    [
+        ("rates_move", ("Bond-market volatility (MOVE)", "债市波动率（MOVE）")),
+        ("bubble_ext", ("S&P trend extension vs 200-day", "标普相对200日线趋势延伸")),
+        ("bubble_leadership", ("Narrow leadership (semis)", "领涨过窄（半导体）")),
+        ("vol_gex", ("Dealer gamma (GEX)", "做市商 Gamma")),
+    ],
+)
+def test_publication_change_leg_vocabulary_matches_shared_card(key, expected) -> None:
+    """The compact change explainer and the card's evidence rows use one vocabulary."""
+    assert rra._LEG_DISPLAY[key] == expected
+
+
+def test_radar_card_no_prior_still_renders_exact_current_score(monkeypatch, tmp_path) -> None:
+    """First-publication display stays decimal-exact while the audit field stays legacy-rounded."""
+    monkeypatch.setattr("engine.market_state._rr_scorecard_track", lambda market: None)
+    _write_ledger(tmp_path, [])
+    current = _current_snapshot()
+    change = rra.publication_change(current, root=tmp_path)
+    assert change["available"] is False
+    rr = {
+        **current,
+        "market": "us", "alert": False, "gross_factor": 1.0,
+        "drawdown_prob": {"h5": 0.08, "h10": 0.12, "h21": 0.20,
+                          "lift_h21": 1.1, "base_h5": 0.036,
+                          "base_h10": 0.086, "base_h21": 0.178},
+        "forward_log": {"n_graded": 0, "publication_change": change},
+    }
+    rd = _radar_to_rd(rr)
+    assert rd["top_score"] == 66
+    env = Environment(loader=FileSystemLoader(str(ROOT / "templates")),
+                      autoescape=True, undefined=StrictUndefined)
+    tpl = env.from_string(
+        '{% import "_risk_radar_card.html.j2" as rrc %}'
+        '{{ rrc.risk_radar_card(rd, [], false) }}'
+    )
+
+    html = tpl.render(rd=rd)
+
+    assert "65.7/100" in html
+    assert "Prev " not in html
+
+
+def test_radar_card_change_summary_is_autoescaped(monkeypatch) -> None:
+    """The real macro import path must not mark display-read-model text as trusted HTML."""
+    monkeypatch.setattr("engine.market_state._rr_scorecard_track", lambda market: None)
+    change = {
+        "available": True,
+        "current_asof": "2026-09-09",
+        "score": {"current": 65.7, "prior": 75.1, "delta": -9.4, "direction": "easing"},
+        "week": {"available": False, "null_reason": "NO_WEEK_REFERENCE"},
+        "summary_en": '<img src=x onerror="alert(1)">',
+        "summary_zh": '<script>alert(2)</script>',
+    }
+    rr = {
+        **_current_snapshot(), "market": "us", "alert": False, "gross_factor": 1.0,
+        "drawdown_prob": {"h5": 0.08, "h10": 0.12, "h21": 0.20,
+                          "lift_h21": 1.1, "base_h5": 0.036,
+                          "base_h10": 0.086, "base_h21": 0.178},
+        "forward_log": {"n_graded": 0, "publication_change": change},
+    }
+    rd = _radar_to_rd(rr)
+    env = Environment(loader=FileSystemLoader(str(ROOT / "templates")),
+                      autoescape=True, undefined=StrictUndefined)
+    tpl = env.from_string(
+        '{% import "_risk_radar_card.html.j2" as rrc %}'
+        '{{ rrc.risk_radar_card(rd, [], false) }}'
+    )
+
+    html = tpl.render(rd=rd)
+
+    assert "<img src=x" not in html and "<script>" not in html
+    assert "&lt;img" in html and "&lt;script&gt;" in html
+
+
+def test_transition_alert_nullable_dwell_is_not_reported_as_zero() -> None:
+    """An active ratchet with unknown remaining dwell reports mechanism, not invented duration."""
+    idx = pd.bdate_range("2026-09-08", periods=2)
+    hist = pd.DataFrame({
+        "quad": ["Q1", "Q1"],
+        "transition_state": ["STABLE", "WEAKENING"],
+        "n_flags": [1, 1],
+        "growth_confidence": [0.6, 0.6],
+        "inflation_confidence": [0.6, 0.6],
+        "flag_breadth_price": [True, True],
+        "transition_ratcheted": [False, True],
+        "transition_dwell_remaining": [pd.NA, pd.NA],
+    }, index=idx)
+
+    alert = transition_state_change(hist, pd.DataFrame())
+
+    assert alert is not None
+    assert "ratchet/floor held the headline above the raw flag count" in alert.message
+    assert "0 clean" not in alert.message
+    assert "0 个干净交易日" not in alert.message_zh
+
+
+def test_risk_radar_delta_css_has_local_radius_fallback() -> None:
+    """The chip remains rounded in isolated card-validation scopes without --r-sm."""
+    css = (ROOT / "templates" / "_risk_radar_card.css.j2").read_text()
+    assert "border-radius: var(--r-sm, 5px)" in css
+
+
+def test_radar_adapter_rejects_stale_publication_change_identity(monkeypatch) -> None:
+    """A cached comparison for another publication cannot overwrite today's badge."""
+    monkeypatch.setattr("engine.market_state._rr_scorecard_track", lambda market: None)
+    rr = {
+        **_current_snapshot(),
+        "market": "us",
+        "alert": False,
+        "gross_factor": 1.0,
+        "drawdown_prob": {},
+        "forward_log": {
+            "n_graded": 0,
+            "publication_change": {
+                "available": True,
+                "current_asof": "2026-09-08",
+                "prior_asof": "2026-09-07",
+                "score": {
+                    "current": 1.2,
+                    "prior": 2.3,
+                    "delta": -1.1,
+                    "direction": "easing",
+                },
+            },
+        },
+    }
+
+    rd = _radar_to_rd(rr)
+
+    assert rd["change"] is None
+    assert rd["top_score"] == 66
+
+
+def test_radar_adapter_rejects_identityless_publication_change(monkeypatch) -> None:
+    """A comparison with no current publication identity cannot override today's badge."""
+    monkeypatch.setattr("engine.market_state._rr_scorecard_track", lambda market: None)
+    rr = {
+        **_current_snapshot(),
+        "market": "us",
+        "alert": False,
+        "gross_factor": 1.0,
+        "drawdown_prob": {},
+        "forward_log": {
+            "n_graded": 0,
+            "publication_change": {
+                "available": True,
+                "prior_asof": "2026-09-08",
+                "score": {
+                    "current": 1.2, "prior": 2.3, "delta": -1.1,
+                    "direction": "easing",
+                },
+            },
+        },
+    }
+
+    rd = _radar_to_rd(rr)
+
+    assert rd["change"] is None
+    assert rd["top_score"] == 66
+
+
+def test_publication_change_unknown_leg_keeps_key_but_not_chinese_slug(tmp_path) -> None:
+    """Machine provenance remains exact while glance-tier Chinese stays human-readable."""
+    prior = _ledger_row(
+        "2026-09-08", "caution", 75.1, 75.1, "caution", [],
+    )
+    _write_ledger(tmp_path, [prior])
+    current = _current_snapshot()
+    current["scares"][0]["firing_legs"] = [_leg("future_signal_slug", 0.81)]
+
+    change = rra.publication_change(current, root=tmp_path)
+
+    growth = next(row for row in change["scares"] if row["scare"] == "growth")
+    assert growth["added_legs"] == ["future_signal_slug"]
+    assert growth["added_labels_zh"] == ["未分类信号"]
+    assert "future_signal_slug" not in change["summary_zh"]
+    assert "未分类信号新增" in change["summary_zh"]
+
 
 def test_transition_alert_missing_state_is_typed_absence() -> None:
     """A historical row without a transition state is absence, not an alert crash."""

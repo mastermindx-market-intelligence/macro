@@ -31,20 +31,20 @@ PRIMARY_DD = 0.05
 ALERT_STATES = ("elevated", "risk-off")            # which states count as a loud alert for precision
 
 # Display vocabulary for the publication-change read model.  The canonical ledger stores
-# stable machine keys; this map translates only the compact user-facing explanation.  Unknown
-# future legs remain visible as de-snake-cased text rather than being dropped.
+# stable machine keys; this map translates only the compact user-facing explanation. Unknown
+# future legs remain exact in machine fields, while user copy uses a neutral localized fallback.
 _LEG_DISPLAY = {
     "credit_oas_roc": ("HY credit spreads widening", "高收益利差走阔"),
     "credit_hyg_tlt": ("HY bonds lagging Treasuries", "高收益债跑输国债"),
-    "rates_move": ("Bond volatility", "债市波动"),
+    "rates_move": ("Bond-market volatility (MOVE)", "债市波动率（MOVE）"),
     "rates_realrate": ("Real yields jumping", "实际利率跳升"),
-    "bubble_ext": ("S&P trend extension", "标普趋势延伸"),
-    "bubble_leadership": ("Narrow semiconductor leadership", "半导体领涨过窄"),
+    "bubble_ext": ("S&P trend extension vs 200-day", "标普相对200日线趋势延伸"),
+    "bubble_leadership": ("Narrow leadership (semis)", "领涨过窄（半导体）"),
     "growth_defensives": ("Defensives outperforming", "防御股跑赢"),
     "growth_cyc_def": ("Cyclicals fading vs defensives", "周期股弱于防御"),
     "vol_term": ("VIX term-structure stress", "VIX 期限结构紧张"),
     "vol_putcall": ("Put/call skew", "认沽/认购偏斜"),
-    "vol_gex": ("Dealer gamma stress", "做市商 Gamma 压力"),
+    "vol_gex": ("Dealer gamma (GEX)", "做市商 Gamma"),
     "corr_floor_break": ("Stocks moving together", "个股联动上升"),
     "global_breadth": ("Global breadth breakdown", "全球广度破位"),
     "jpy_carry": ("Yen carry stress", "日元套利压力"),
@@ -53,21 +53,20 @@ _LEG_DISPLAY = {
 }
 _STATE_DISPLAY = {
     "calm": ("Calm", "平静"),
-    "watch": ("Watch", "关注"),
+    "watch": ("Watch", "观察"),
     "caution": ("Caution", "警戒"),
-    "elevated": ("Elevated", "偏高"),
+    "elevated": ("Elevated", "升高"),
     "risk-off": ("Risk-off", "避险"),
 }
 _SCARE_DISPLAY = {
     "credit": ("Credit stress", "信用压力"),
     "rates": ("Rates / inflation shock", "利率/通胀冲击"),
-    "bubble": ("Bubble / blow-off unwind", "泡沫/见顶回吐"),
+    "bubble": ("Bubble risk", "泡沫风险"),
     "growth": ("Growth scare / defensive rotation", "增长恐慌/防御轮动"),
     "vol": ("Volatility event", "波动率事件"),
     "global": ("Global breadth breakdown", "全球广度破位"),
     "internals": ("Breadth internals deterioration", "内部广度恶化"),
 }
-_CHANGE_HISTORY_POINTS = 22
 
 
 def ledger_lane_armed() -> bool:
@@ -356,6 +355,8 @@ def scorecard(root=None) -> dict:
 
 def _change_num(value) -> float | None:
     """Finite one-decimal score for display/comparison; typed absence otherwise."""
+    if isinstance(value, (bool, np.bool_)):
+        return None
     try:
         out = float(value)
     except (TypeError, ValueError):
@@ -376,8 +377,11 @@ def _scare_map(payload: dict) -> dict[str, dict]:
 
 
 def _leg_ids(scare: dict) -> list[str]:
+    rows = (scare or {}).get("firing_legs")
+    if not isinstance(rows, list):
+        return []
     out: list[str] = []
-    for row in (scare or {}).get("firing_legs") or []:
+    for row in rows:
         key = row.get("leg") if isinstance(row, dict) else None
         if key and key not in out:
             out.append(str(key))
@@ -388,16 +392,7 @@ def _leg_label(key: str, language: str) -> str:
     pair = _LEG_DISPLAY.get(key)
     if pair:
         return pair[0 if language == "en" else 1]
-    return key.replace("_", " ") if language == "en" else key
-
-
-def _history_point(payload: dict) -> dict:
-    return {
-        "asof": str((payload or {}).get("asof") or ""),
-        "state": (payload or {}).get("state"),
-        "dominant_scare": (payload or {}).get("dominant_scare"),
-        "top_score": _change_num((payload or {}).get("top_score")),
-    }
+    return key.replace("_", " ") if language == "en" else "未分类信号"
 
 
 def _publication_day(value) -> pd.Timestamp | None:
@@ -425,12 +420,14 @@ def _state_label(state, language: str) -> str:
     return key.replace("_", " ").title() if language == "en" else key
 
 
-def _scare_label(scare, language: str) -> str:
+def _scare_label(scare, language: str) -> str | None:
     key = str(scare or "")
     pair = _SCARE_DISPLAY.get(key)
     if pair:
         return pair[0 if language == "en" else 1]
-    return key.replace("_", " ").title() if language == "en" else key
+    if language == "en" and key:
+        return key.replace("_", " ").title()
+    return None
 
 
 def _compact_labels(keys: list[str], language: str, limit: int = 2) -> str:
@@ -448,18 +445,20 @@ def publication_change(snap: dict, root=None) -> dict:
     lane appends today's row before this function runs.  Selecting the ledger tail would therefore
     manufacture a zero delta on the very lane that owns the publication.
     """
-    current_asof = str((snap or {}).get("asof") or "")
+    snap = snap if isinstance(snap, dict) else {}
+    current_asof = str(snap.get("asof") or "")
+    current_score = _change_num(snap.get("top_score"))
     base = {
         "available": False,
         "basis": "prior_publication",
         "null_reason": None,
         "current_asof": current_asof or None,
         "prior_asof": None,
-        "score": None,
+        "score": {"current": current_score, "prior": None,
+                  "delta": None, "direction": None},
         "state": None,
         "scares": [],
         "week": {"available": False, "null_reason": "NO_WEEK_REFERENCE"},
-        "history": [_history_point(snap)] if current_asof else [],
         "summary_en": "",
         "summary_zh": "",
     }
@@ -487,21 +486,15 @@ def publication_change(snap: dict, root=None) -> dict:
             by_day[day_key] = (ts, row)
         ordered = sorted(by_day.values(), key=lambda item: item[0])
         earlier = [(ts, row) for ts, row in ordered if ts < current_ts]
-        history_rows = earlier[-(_CHANGE_HISTORY_POINTS - 1):]
-        base["history"] = [_history_point(row) for _, row in history_rows] + [
-            _history_point(snap)
-        ]
         if not earlier:
             return {**base, "null_reason": "NO_EARLIER_PUBLICATION"}
 
         prior_ts, prior = earlier[-1]
-        current_score = _change_num(snap.get("top_score"))
         prior_score = _change_num(prior.get("top_score"))
         delta = (round(current_score - prior_score, 1)
                  if current_score is not None and prior_score is not None else None)
-        direction = ("rising" if delta is not None and delta > 0
-                     else "easing" if delta is not None and delta < 0
-                     else "flat")
+        direction = (None if delta is None else
+                     "rising" if delta > 0 else "easing" if delta < 0 else "flat")
 
         current_state, prior_state = snap.get("state"), prior.get("state")
         current_scares, prior_scares = _scare_map(snap), _scare_map(prior)
@@ -516,8 +509,10 @@ def publication_change(snap: dict, root=None) -> dict:
             old_set, cur_set = set(old_legs), set(cur_legs)
             added = [leg for leg in cur_legs if leg not in old_set]
             cleared = [leg for leg in old_legs if leg not in cur_set]
-            label_en = cur.get("label_en") or old.get("label_en") or key.replace("_", " ").title()
-            label_zh = cur.get("label_zh") or old.get("label_zh") or key
+            label_en = (cur.get("label_en") or old.get("label_en") or
+                        _scare_label(key, "en") or "Unclassified risk")
+            label_zh = (cur.get("label_zh") or old.get("label_zh") or
+                        _scare_label(key, "zh") or "未分类风险")
             scare_changes.append({
                 "scare": key,
                 "label_en": label_en,
@@ -527,7 +522,9 @@ def publication_change(snap: dict, root=None) -> dict:
                 "delta": scare_delta,
                 "prior_band": old.get("band"),
                 "current_band": cur.get("band"),
-                "band_changed": old.get("band") != cur.get("band"),
+                "band_changed": bool(old.get("band") is not None and
+                                     cur.get("band") is not None and
+                                     old.get("band") != cur.get("band")),
                 "added_legs": added,
                 "cleared_legs": cleared,
                 "added_labels_en": [_leg_label(k, "en") for k in added],
@@ -567,18 +564,24 @@ def publication_change(snap: dict, root=None) -> dict:
         else:
             lead_en, lead_zh = "Risk Radar changed", "风险雷达发生变化"
         summary_en, summary_zh = [lead_en], [lead_zh]
-        if prior_state != current_state:
+        state_changed = bool(prior_state in _STATE_DISPLAY and
+                             current_state in _STATE_DISPLAY and
+                             prior_state != current_state)
+        if state_changed:
             summary_en.append(f"{_state_label(prior_state, 'en')}→{_state_label(current_state, 'en')}")
             summary_zh.append(f"{_state_label(prior_state, 'zh')}→{_state_label(current_state, 'zh')}")
-        if prior.get("dominant_scare") != snap.get("dominant_scare"):
-            summary_en.append(
-                f"Lead {_scare_label(prior.get('dominant_scare'), 'en')}→"
-                f"{_scare_label(snap.get('dominant_scare'), 'en')}"
-            )
-            summary_zh.append(
-                f"主导 {_scare_label(prior.get('dominant_scare'), 'zh')}→"
-                f"{_scare_label(snap.get('dominant_scare'), 'zh')}"
-            )
+        prior_dominant = prior.get("dominant_scare")
+        current_dominant = snap.get("dominant_scare")
+        if prior_dominant and current_dominant and prior_dominant != current_dominant:
+            prior_label_en = prior.get("dominant_label_en") or _scare_label(prior_dominant, "en")
+            prior_label_zh = prior.get("dominant_label_zh") or _scare_label(prior_dominant, "zh")
+            current_label_en = (snap.get("dominant_label_en") or
+                                _scare_label(current_dominant, "en"))
+            current_label_zh = (snap.get("dominant_label_zh") or
+                                _scare_label(current_dominant, "zh"))
+            if all((prior_label_en, prior_label_zh, current_label_en, current_label_zh)):
+                summary_en.append(f"Lead {prior_label_en}→{current_label_en}")
+                summary_zh.append(f"主导 {prior_label_zh}→{current_label_zh}")
         if subject:
             if subject["cleared_legs"]:
                 summary_en.append(f"{_compact_labels(subject['cleared_legs'], 'en')} cleared")
@@ -595,7 +598,7 @@ def publication_change(snap: dict, root=None) -> dict:
             "score": {"current": current_score, "prior": prior_score,
                       "delta": delta, "direction": direction},
             "state": {"current": current_state, "prior": prior_state,
-                      "changed": current_state != prior_state},
+                      "changed": state_changed},
             "scares": scare_changes,
             "week": week,
             "summary_en": " · ".join(summary_en),

@@ -98,15 +98,15 @@ def _present_value(value):
     return value
 
 
-def _int_or_zero(value) -> int:
-    """Best-effort integer for optional transition metadata."""
+def _int_or_none(value) -> int | None:
+    """Best-effort integer that preserves unavailable transition metadata."""
     value = _present_value(value)
     if value is None:
-        return 0
+        return None
     try:
         return int(value)
     except (TypeError, ValueError, OverflowError):
-        return 0
+        return None
 
 
 def _transition_mechanism_detail(prev: pd.Series, cur: pd.Series) -> tuple[str, str]:
@@ -116,11 +116,12 @@ def _transition_mechanism_detail(prev: pd.Series, cur: pd.Series) -> tuple[str, 
     if prev_quad is not None and cur_quad is not None and prev_quad != cur_quad:
         return (f"confirmed quad {prev_quad}→{cur_quad}",
                 f"确认象限 {prev_quad}→{cur_quad}")
-    pending_days = _int_or_zero(cur.get("pending_days"))
-    prior_pending = _int_or_zero(prev.get("pending_days"))
+    pending_days = _int_or_none(cur.get("pending_days"))
+    prior_pending = _int_or_none(prev.get("pending_days"))
     pending_quad = _present_value(cur.get("pending_quad"))
     if (pending_quad is not None
             and str(pending_quad) not in ("None", "nan")
+            and pending_days is not None
             and pending_days != prior_pending):
         try:
             needed = int(config.load()["engine"]["quad"]["hysteresis_days"])
@@ -139,10 +140,12 @@ def _transition_mechanism_detail(prev: pd.Series, cur: pd.Series) -> tuple[str, 
     cur_ratcheted = _flag_value(cur, "transition_ratcheted")
     prev_ratcheted = _flag_value(prev, "transition_ratcheted")
     if cur_ratcheted:
-        remain = _int_or_zero(cur.get("transition_dwell_remaining"))
-        return (f"ratchet/floor held the headline above the raw flag count"
-                f" ({remain} clean session{'s' if remain != 1 else ''} remain)",
-                f"棘轮/底线将主状态维持在原始旗标计数之上（尚需 {remain} 个干净交易日）")
+        remain = _int_or_none(cur.get("transition_dwell_remaining"))
+        remain_en = (f" ({remain} clean session{'s' if remain != 1 else ''} remain)"
+                     if remain is not None else "")
+        remain_zh = f"（尚需 {remain} 个干净交易日）" if remain is not None else ""
+        return (f"ratchet/floor held the headline above the raw flag count{remain_en}",
+                f"棘轮/底线将主状态维持在原始旗标计数之上{remain_zh}")
     if prev_ratcheted and not cur_ratcheted:
         return ("de-escalation dwell completed", "降级观察期完成")
     return ("flag set unchanged; transition hold/hysteresis moved the headline",
@@ -183,13 +186,14 @@ def transition_state_change(hist: pd.DataFrame, f: pd.DataFrame) -> Alert | None
         detail_zh.append("原因：" + cause_zh)
     suffix_en = ("; " + "; ".join(detail_en)) if detail_en else ""
     suffix_zh = ("；" + "；".join(detail_zh)) if detail_zh else ""
-    n_flags = _int_or_zero(cur.get("n_flags"))
+    n_flags = _int_or_none(cur.get("n_flags"))
+    count_en = f" ({n_flags} flags active)" if n_flags is not None else ""
+    count_zh = f"（{n_flags} 个预警激活）" if n_flags is not None else ""
     return Alert("transition_state_change", sev,
-                 f"Transition state {prev_key} -> {cur_key} "
-                 f"({n_flags} flags active){suffix_en}",
+                 f"Transition state {prev_key} -> {cur_key}{count_en}{suffix_en}",
                  message_zh=f"转换状态 {_TS_PLAIN_ZH.get(prev_key, prev_key)}"
                             f" -> {_TS_PLAIN_ZH.get(cur_key, cur_key)}"
-                            f"（{n_flags} 个预警激活）{suffix_zh}")
+                            f"{count_zh}{suffix_zh}")
 
 
 def axis_confidence_floor(hist: pd.DataFrame, f: pd.DataFrame) -> list[Alert]:
@@ -1170,7 +1174,7 @@ ALERT_CONVICTION: dict[str, dict] = {
 # the raw string (build_vector's translator matches it there); only the rendered
 # view changes. Unknown state tokens fall through lowercased, never dropped.
 _TS_MSG_RE = re.compile(
-    r"^Transition state (\w+) -> (\w+) \((\d+) flags active\)(.*)$"
+    r"^Transition state (\w+) -> (\w+)(?: \((\d+) flags active\))?(.*)$"
 )
 
 
@@ -1178,14 +1182,23 @@ def _plain_transition_msg(message: str, message_zh: str = "") -> tuple[str, str]
     m = _TS_MSG_RE.match(message)
     if not m:
         return None
-    prev, cur, n, detail_en = m.group(1), m.group(2), int(m.group(3)), m.group(4)
+    prev, cur, raw_n, detail_en = m.group(1), m.group(2), m.group(3), m.group(4)
+    n = int(raw_n) if raw_n is not None else None
+    count_en = (f" ({n} warning flag{'s' if n != 1 else ''} active)"
+                if n is not None else "")
     en = (f"The regime's footing went from "
           f"{_TS_PLAIN_EN.get(prev, prev.replace('_', ' ').lower())} to "
-          f"{_TS_PLAIN_EN.get(cur, cur.replace('_', ' ').lower())} "
-          f"({n} warning flag{'s' if n != 1 else ''} active){detail_en}")
-    detail_zh = message_zh.split("）", 1)[1] if message_zh and "）" in message_zh else ""
+          f"{_TS_PLAIN_EN.get(cur, cur.replace('_', ' ').lower())}"
+          f"{count_en}{detail_en}")
+    if message_zh and "）" in message_zh:
+        detail_zh = message_zh.split("）", 1)[1]
+    elif message_zh and "；" in message_zh:
+        detail_zh = "；" + message_zh.split("；", 1)[1]
+    else:
+        detail_zh = ""
+    count_zh = f"（{n} 个预警激活）" if n is not None else ""
     zh = (f"周期状态由「{_TS_PLAIN_ZH.get(prev, prev)}」转为"
-          f"「{_TS_PLAIN_ZH.get(cur, cur)}」（{n} 个预警激活）{detail_zh}")
+          f"「{_TS_PLAIN_ZH.get(cur, cur)}」{count_zh}{detail_zh}")
     return en, zh
 
 
