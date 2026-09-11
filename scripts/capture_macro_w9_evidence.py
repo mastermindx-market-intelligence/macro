@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
-"""S1-rig evidence matrix for macro.html W9 r3.
+"""S1-rig evidence matrix for macro.html W9 r4.
 
 Fixture-rendered templates/dashboard.html.j2 (mode=macro) with real
 `body.page-macro mx4-grid` classes. Playwright seeds window.__skyDeck, applies
 theme/lang via setTheme/setLang, refuses a cell on attribute mismatch, hides
 decorative overlays, and records a per-crop overlay column.
+
+Axis coverage is per subject family (not a uniform 8-cell REST):
+  fullpage     dark/light × EN/ZH × 1440/390
+  close/count  dark+light EN desktop + dark ZH desktop
+  degraded     dark+light × EN/ZH desktop + dark EN 390w
 
 Usage::
 
@@ -448,6 +453,29 @@ def _git_head_of_repo() -> tuple[str | None, str | None]:
     return head.sha, str(head.gitdir) if head.gitdir is not None else None
 
 
+def _family_axes(family: str) -> tuple[tuple[str, str, str], ...]:
+    """(theme, locale, viewport) per family. Existing r3 cells stay; r4 adds.
+
+    close/count: dark+light EN desktop (r3) + dark ZH desktop (r4).
+    degraded:    dark+light × EN/ZH desktop (r3) + dark EN mobile (r4).
+    """
+    if family in ("close", "count"):
+        return (
+            ("dark", "en", "desktop"),
+            ("light", "en", "desktop"),
+            ("dark", "zh", "desktop"),
+        )
+    if family == "degraded":
+        return (
+            ("dark", "en", "desktop"),
+            ("light", "en", "desktop"),
+            ("dark", "zh", "desktop"),
+            ("light", "zh", "desktop"),
+            ("dark", "en", "mobile"),
+        )
+    raise ValueError(f"unknown family {family!r}")
+
+
 def _prep_for(page_name: str, full_page: bool = False, selector: str = "") -> str | None:
     if full_page and page_name == "live.html":
         return _PAINT_QUOTES
@@ -623,39 +651,35 @@ def _capture(scratch: Path) -> dict:
 
             extra_states: list[dict] = []
             for name, sel, page_name, family in extras:
-                themes = THEMES if family != "count" else ("dark", "light")
-                locales = ("en",) if family != "degraded" else ("en", "zh")
-                if family == "close":
-                    locales = ("en",)
-                for theme in themes:
-                    for locale in locales:
-                        entry = {
-                            "viewport": "desktop",
-                            "locale": locale,
-                            "theme": theme,
-                            "access": "anonymous",
-                            "viewport_width": 1440,
-                            "viewport_height": 900,
-                            "force_state": f"{family}:{name}",
-                            "subject": name,
-                        }
-                        try:
-                            got = _capture_cell(
-                                browser, base, width=1440, height=900,
-                                locale=locale, theme=theme, selector=sel,
-                                page_name=page_name, full_page=False,
-                            )
-                            alias = f"{name}-{theme}-{locale}-desktop.png"
-                            _record(entry, got, alias, written, aliases)
-                        except Exception as exc:
-                            entry.update({
-                                "captured": False,
-                                "reason": f"{type(exc).__name__}: {exc}",
-                            })
-                        extra_states.append(entry)
-                        shown = entry.get("alias") or f"{name}-{theme}-{locale}"
-                        ok = "ok" if entry.get("captured") else entry.get("reason")
-                        print(f"  {shown}: {ok}", flush=True)
+                for theme, locale, viewport in _family_axes(family):
+                    width, height = VIEWPORTS[viewport]
+                    entry = {
+                        "viewport": viewport,
+                        "locale": locale,
+                        "theme": theme,
+                        "access": "anonymous",
+                        "viewport_width": width,
+                        "viewport_height": height,
+                        "force_state": f"{family}:{name}",
+                        "subject": name,
+                    }
+                    try:
+                        got = _capture_cell(
+                            browser, base, width=width, height=height,
+                            locale=locale, theme=theme, selector=sel,
+                            page_name=page_name, full_page=False,
+                        )
+                        alias = f"{name}-{theme}-{locale}-{viewport}.png"
+                        _record(entry, got, alias, written, aliases)
+                    except Exception as exc:
+                        entry.update({
+                            "captured": False,
+                            "reason": f"{type(exc).__name__}: {exc}",
+                        })
+                    extra_states.append(entry)
+                    shown = entry.get("alias") or f"{name}-{theme}-{locale}-{viewport}"
+                    ok = "ok" if entry.get("captured") else entry.get("reason")
+                    print(f"  {shown}: {ok}", flush=True)
             if pages:
                 pages[0]["states"].extend(extra_states)
         finally:
@@ -679,7 +703,7 @@ def _capture(scratch: Path) -> dict:
         "generated_at": generated_at,
         "tool": {
             "module_ref": "scripts/capture_macro_w9_evidence.py",
-            "version": "w9-r3-s1-rig",
+            "version": "w9-r4-s1-rig",
             "capture_method": (
                 "playwright full-page + locator.screenshot() on a fixture-rendered "
                 "templates/dashboard.html.j2 (mode=macro) with real body.page-macro "

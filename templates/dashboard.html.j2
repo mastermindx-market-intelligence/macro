@@ -5985,6 +5985,13 @@ body.page-macro.mx4-grid .mx5-wtd-dissent{
 body.page-macro.mx4-grid .mx5-events-sub{
   font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));margin-bottom:16px;
 }
+/* None-lane Events: content height, not a stretched empty plate matching WTD. */
+body.page-macro.mx4-grid #sx-events-v2:has(.mx5-ev-none-copy){
+  align-self:start;
+}
+body.page-macro.mx4-grid #sx-events-v2:has(.mx5-ev-none-copy) .sxg-face.mx5-card-face{
+  height:auto;
+}
 body.page-macro.mx4-grid .mx5-timeline{position:relative;padding-top:6px;}
 /* rail sits on the node centreline (node zone is 22px tall, centred at 12px+11px) */
 body.page-macro.mx4-grid .mx5-timeline-rail{
@@ -8768,7 +8775,9 @@ html[data-theme="light"] :is(
       </div>
       <div class="mx5-events-sub">
         {% if macro_catalysts is none %}
-        {# Unknown: no count, no empty-calendar window claim. Stance is the form. #}
+        {# Unknown: name the feed, the nightly recheck, and what still works. #}
+        <span class="l-en mx5-ev-none-copy">Events feed is reconnecting — re-checked nightly. The rest of this page is unaffected.</span>
+        <span class="l-zh mx5-ev-none-copy">事件数据源重连中——每晚重新检查。本页其余内容不受影响。</span>
         {% elif _ev_hi_cnt %}
         <span class="l-en">{{ _ev_hi_cnt }} high-impact print{{ 's' if _ev_hi_cnt != 1 }} ahead</span>
         <span class="l-zh">{{ _ev_hi_cnt }} 项高影响数据待发</span>
@@ -12410,6 +12419,7 @@ html[data-theme="light"] :is(
 
         {% if macro_catalysts is none %}
         <p class="muted"><span class="l-en">Watch — this read is being updated.</span><span class="l-zh">观望——该读数更新中。</span></p>
+        <p class="muted"><span class="l-en">Events feed is reconnecting — re-checked nightly. The rest of this page is unaffected.</span><span class="l-zh">事件数据源重连中——每晚重新检查。本页其余内容不受影响。</span></p>
         {% elif not macro_catalysts and not (prediction_markets and prediction_markets.events) %}
         <p style="font-size:12px;color:var(--ink-2,rgba(255,255,255,.6));margin-top:16px"><span class="l-en">No events data available.</span><span class="l-zh">暂无事件数据。</span></p>
         {% endif %}
@@ -14056,6 +14066,7 @@ html[data-theme="light"] :is(
           {% for a in _dlg_alv5_prio %}
           {% set _asev2 = 'warn' if a.severity in ('warn','high','critical') else 'info' %}
           {% set _atier = a.tier if (a.tier is defined and a.tier) else 'watch' %}
+          <div data-al-row>
           <div style="display:flex;gap:10px;padding:12px;background:{{ 'rgba(245,158,11,.06)' if _asev2=='warn' else 'rgba(255,255,255,.03)' }};border-radius:10px;border:1px solid {{ 'rgba(245,158,11,.18)' if _asev2=='warn' else 'rgba(255,255,255,.06)' }}">
             <div style="width:8px;height:8px;border-radius:50%;background:{{ 'var(--mx5-warn)' if _asev2=='warn' else 'var(--ink-3,rgba(255,255,255,.36))' }};flex-shrink:0;margin-top:5px"></div>
             <div style="flex:1;min-width:0">
@@ -14079,6 +14090,7 @@ html[data-theme="light"] :is(
               {% endif %}
             </div>
           </div>
+          </div>
           {% endfor %}
         </div>
         {% else %}
@@ -14091,6 +14103,7 @@ html[data-theme="light"] :is(
         <div class="isle-head"><div class="isle-head-dot"></div><span class="isle-head-label"><span class="l-en">Context</span><span class="l-zh">背景</span></span><div class="isle-head-line"></div></div>
         <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;opacity:.8">
           {% for a in _dlg_alv5_ctx %}
+          <div data-al-row>
           <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
             <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
             <div style="flex:1;min-width:0">
@@ -14106,6 +14119,7 @@ html[data-theme="light"] :is(
               <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">{{ a.what_en }}</span><span class="l-zh">{{ a.what_zh or a.what_en }}</span></div>
               {% endif %}
             </div>
+          </div>
           </div>
           {% endfor %}
         </div>

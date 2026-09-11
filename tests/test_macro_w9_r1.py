@@ -156,6 +156,11 @@ def test_alert_count_hero_n_equals_face_of_n():
 
 _CAUTIOUS_EN = "Watch — this read is being updated."
 _CAUTIOUS_ZH = "观望——该读数更新中。"
+_EV_NONE_WHY_EN = (
+    "Events feed is reconnecting — re-checked nightly. "
+    "The rest of this page is unaffected."
+)
+_EV_NONE_WHY_ZH = "事件数据源重连中——每晚重新检查。本页其余内容不受影响。"
 
 
 def test_sentiment_stance_panic():
@@ -361,6 +366,9 @@ def test_events_stance_unknown():
     ev = html[html.find('id="sx-events-v2"'):html.find('id="sx-v5-fed"') if 'id="sx-v5-fed"' in html else html.find('id="sx-v5-sentiment"')]
     assert _CAUTIOUS_EN in ev
     assert _CAUTIOUS_ZH in ev
+    assert _EV_NONE_WHY_EN in ev
+    assert _EV_NONE_WHY_ZH in ev
+    assert "mx5-ev-none-copy" in ev
     assert "Nothing scheduled that should change positioning this week." not in ev
     assert "本周暂无应改变仓位的安排。" not in ev
     assert _DENIAL_EN not in ev
@@ -374,9 +382,14 @@ def test_events_failed_fetch_vs_genuinely_empty():
     failed_ev = failed[failed.find('id="sx-events-v2"'):failed.find('id="sx-v5-sentiment"')]
     empty_ev = empty[empty.find('id="sx-events-v2"'):empty.find('id="sx-v5-sentiment"')]
     assert _CAUTIOUS_EN in failed_ev
+    assert _EV_NONE_WHY_EN in failed_ev
+    assert _EV_NONE_WHY_ZH in failed_ev
     assert "Nothing scheduled that should change positioning this week." in empty_ev
     assert "Nothing scheduled that should change positioning this week." not in failed_ev
     assert _CAUTIOUS_EN not in empty_ev
+    assert _EV_NONE_WHY_EN not in empty_ev
+    assert "mx5-ev-none-copy" in failed_ev
+    assert "mx5-ev-none-copy" not in empty_ev
     assert _DENIAL_EN not in failed_ev
     assert _DENIAL_ZH not in failed_ev
     assert _DENIAL_EN in empty_ev
@@ -558,22 +571,26 @@ def test_dlg_events_tri_state():
     empty_dlg = _slice(_render(macro_catalysts=[]), 'id="dlg-events"', 'id="dlg-markets"')
     full_dlg = _slice(_render(macro_catalysts=[_CPI]), 'id="dlg-events"', 'id="dlg-markets"')
     assert _CAUTIOUS_EN in none_dlg
+    assert _EV_NONE_WHY_EN in none_dlg
+    assert _EV_NONE_WHY_ZH in none_dlg
     assert "No events data available." not in none_dlg
     assert "暂无事件数据。" not in none_dlg
     assert _DENIAL_EN not in none_dlg
     assert "No events data available." in empty_dlg
     assert "暂无事件数据。" in empty_dlg
     assert _CAUTIOUS_EN not in empty_dlg
+    assert _EV_NONE_WHY_EN not in empty_dlg
     assert "CPI" in full_dlg
     assert "This Week" in full_dlg
 
 
-def test_stocks_week_ahead_tri_state():
-    """15335/15356: both the stocks gate and the inner loop tri-state None.
+def test_stocks_band_tristate_source_pin_unreachable_code():
+    """Source-string pin on unreachable stocks week-ahead band (not a render).
 
-    The lower-fold band sits inside the macro-only regime-radar wrapper, so a
-    stocks-mode full-page render never emits it (pre-existing). Pin the guards
-    on the fragment itself.
+    The lower-fold band sits inside the macro-only regime-radar wrapper, so no
+    stocks-mode (or macro-mode) full-page render emits it. The tri-state
+    `is not none` guards are verified by grepping the template fragment, never
+    by a rendered page.
     """
     src = (ROOT / "templates" / "dashboard.html.j2").read_text()
     start = src.find("{# Week ahead — original lower-fold band")
@@ -626,7 +643,7 @@ def test_dislocation_one_population_counts():
     assert f"共 {n} 条" in face
     assert "0 need action · of 1" in face
     dlg = _slice(html, 'id="dlg-news"', 'id="dlg-deep-context"')
-    n_dlg = dlg.count("data-al-row") + dlg.count("padding:12px;background:") + dlg.count("padding:10px 12px;background:")
+    n_dlg = dlg.count("data-al-row")
     assert n_dlg == n
     assert "Selling has turned stressed" in dlg
     assert "抛售已转为压力状态" in dlg
@@ -641,8 +658,24 @@ def test_dislocation_one_population_counts():
     face2 = _slice(html2, 'id="sx-news-v2"', 'id="sx-deep-context"')
     assert "1 need action · of 2" in face2
     dlg2 = _slice(html2, 'id="dlg-news"', 'id="dlg-deep-context"')
-    n2_dlg = dlg2.count("data-al-row") + dlg2.count("padding:12px;background:") + dlg2.count("padding:10px 12px;background:")
+    n2_dlg = dlg2.count("data-al-row")
     assert n2_dlg == n2
+
+    html3 = _render(
+        market_state=_ms(),
+        alerts=[_alert(), _alert("hy_oas_widening", "act")],
+        latest=latest,
+    )
+    hero3 = re.search(
+        r'class="ms-alerts"[\s\S]{0,400}?<span class="ct[^"]*">(\d+)</span>',
+        html3,
+    )
+    n3 = int(hero3.group(1))
+    assert n3 == 3
+    face3 = _slice(html3, 'id="sx-news-v2"', 'id="sx-deep-context"')
+    assert "2 need action · of 3" in face3
+    dlg3 = _slice(html3, 'id="dlg-news"', 'id="dlg-deep-context"')
+    assert dlg3.count("data-al-row") == n3
 
 
 def test_alert_badge_need_zero_total_positive_is_neutral():
