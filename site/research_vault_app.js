@@ -192,8 +192,7 @@
   }
   function instDisplay(name) {
     var s = canonInst(name);
-    if (!s) return 'Unknown';
-    if (s === 'Unknown') return s;
+    if (!s || s === 'Unknown') return T('Unknown', '未知');
     if (!isDeskInst(s)) return T('Institutional desk', '机构研究台');
     return s;
   }
@@ -1318,6 +1317,9 @@
   }
 
   /* ═══════════ unread count ═══════════ */
+  function savedBadgeText(n) {
+    return n > 0 ? String(n) : T('none yet', '暂无');
+  }
   function updateUnread() {
     var n = ITEMS.filter(function (x) { return !DocState.isRead(x.id); }).length;
     var unknown = CATALOG_SOURCE === 'unavailable';   // no catalog → no counts
@@ -1326,7 +1328,7 @@
     var picks = summaryNumber('highlighted');
     $('badge-picks').textContent = unknown ? '—'
       : (picks !== null ? picks : (CATALOG_PREVIEW ? '—' : ITEMS.filter(function (x) { return x.top; }).length));
-    $('badge-saved').textContent = ITEMS.filter(function (x) { return DocState.isSaved(x.id); }).length;
+    $('badge-saved').textContent = savedBadgeText(ITEMS.filter(function (x) { return DocState.isSaved(x.id); }).length);
   }
 
   /* ═══════════ hydrate + refresh ═══════════ */
@@ -1493,7 +1495,7 @@
       var save = e.target.closest('[data-act="save"]');
       if (save) {
         var on = DocState.toggleSaved(id); save.classList.toggle('on', on); save.setAttribute('aria-pressed', on ? 'true' : 'false');
-        $('badge-saved').textContent = ITEMS.filter(function (x) { return DocState.isSaved(x.id); }).length;
+        $('badge-saved').textContent = savedBadgeText(ITEMS.filter(function (x) { return DocState.isSaved(x.id); }).length);
         if (LANE === 'saved') renderFeed();
         return;
       }

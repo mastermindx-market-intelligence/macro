@@ -231,8 +231,12 @@ _TRAILING_MON_DAY_YEAR = re.compile(
 # Italic follows markdown flanking: opener not followed by space, closer not
 # preceded by space, neither delimiter intra-word. Lone/footnote/multiplication
 # asterisks (EBITDA*, 3*ATR) must survive.
+# Underline/bold via __ uses the same flanking. Intra-word runs (foo__bar)
+# and dunder identifiers (__init__) survive; leftover unmatched __ is not
+# globally deleted.
 _MD_BOLD = re.compile(r"\*\*(.+?)\*\*")
 _MD_ITALIC = re.compile(r"(?<![\w*])\*(?![\s*])(.+?)(?<![\s*])\*(?![\w*])")
+_MD_UNDER = re.compile(r"(?<!\w)__(?![\s_])(.+?)(?<![\s_])__(?!\w)")
 # Mid-clause split marker the producer actually emits. Sentence-final
 # abbreviations (U.S., etc., Inc.) are NOT continuations.
 _VS_END = re.compile(r"\bvs\.?$", re.I)
@@ -365,11 +369,20 @@ def display_title(title: str) -> str:
     return _finish_title(s) if s else s
 
 
+def _strip_under(m: re.Match[str]) -> str:
+    inner = m.group(1)
+    # Python dunders / identifier wraps (__init__, __soft__) are not markdown.
+    if inner.isidentifier():
+        return m.group(0)
+    return inner
+
+
 def _strip_markdown_markup(text: str) -> str:
     s = str(text or "")
     s = _MD_BOLD.sub(r"\1", s)
     s = _MD_ITALIC.sub(r"\1", s)
-    s = s.replace("**", "").replace("__", "")
+    s = _MD_UNDER.sub(_strip_under, s)
+    s = s.replace("**", "")
     return re.sub(r"\s+", " ", s).strip()
 
 

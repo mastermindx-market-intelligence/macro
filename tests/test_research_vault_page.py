@@ -174,6 +174,9 @@ def test_ssr_cards_baked_when_seeded(page_seeded):
     assert "Bernstein" in page_seeded
     # top-pick + needs-metadata states render
     assert "rep glass pick" in page_seeded               # highlighted card
+    assert '<span class="l-en">Highlighted</span><span class="l-zh">精选</span>' in page_seeded
+    js = (bld.ROOT / "site" / "research_vault_app.js").read_text(encoding="utf-8")
+    assert "T('Highlighted', '精选')" in js
     assert "rep glass needs" in page_seeded              # needs-metadata card
     assert "Summary pending" in page_seeded              # empty-summary fallback
     assert 'class="rep-titlelink"' not in page_seeded
@@ -450,6 +453,13 @@ def test_badge_saved_is_worded_null_not_bare_dash(page_seeded):
     assert re.search(r'id="badge-saved"[^>]*>—\s*<', page_seeded) is None
     assert "none yet" in page_seeded
     assert "暂无" in page_seeded
+    # Hydrate must keep the worded null; a bare count of 0 stomps the bake.
+    js = (bld.ROOT / "site" / "research_vault_app.js").read_text(encoding="utf-8")
+    assert "function savedBadgeText(n)" in js
+    assert "n > 0 ? String(n)" in js
+    assert "T('none yet', '暂无')" in js
+    assert js.count("$('badge-saved').textContent = savedBadgeText(") == 2
+    assert "$('badge-saved').textContent = ITEMS.filter" not in js
 
 
 def test_ssr_card_uses_display_title_not_doubled_lead(monkeypatch):
@@ -503,9 +513,14 @@ def test_ssr_card_does_not_print_folder_institution(monkeypatch):
     assert "S&T" not in feed
     assert "New folder" not in feed
     assert "Institutional desk" in feed
+    assert "机构研究台" in feed
     js = (bld.ROOT / "site" / "research_vault_app.js").read_text(encoding="utf-8")
     assert "instDisplay(x.inst)" in js
     assert "function instDisplay(" in js
+    assert "T('Institutional desk', '机构研究台')" in js
+    assert "T('Unknown', '未知')" in js
+    assert "if (!s) return 'Unknown';" not in js
+    assert "if (s === 'Unknown') return s;" not in js
 
 
 # --- bilingual + compliance -------------------------------------------------

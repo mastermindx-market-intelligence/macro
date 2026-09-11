@@ -312,6 +312,19 @@ def test_clean_summary_points_keeps_lone_and_multiplication_asterisks():
     assert pts4 == ["A soft print vs a hard one."]
 
 
+def test_clean_summary_points_keeps_lone_and_dunder_underscores():
+    pts = sidecar_mod.clean_summary_points(["The ticker is foo__bar in the tape."])
+    assert pts == ["The ticker is foo__bar in the tape."]
+    pts2 = sidecar_mod.clean_summary_points(["See `__init__` in the quoted code."])
+    assert pts2 == ["See `__init__` in the quoted code."]
+    pts3 = sidecar_mod.clean_summary_points(["Score is 3__ATR by construction."])
+    assert pts3 == ["Score is 3__ATR by construction."]
+    pts4 = sidecar_mod.clean_summary_points(["A __soft phrase__ print vs a hard one."])
+    assert pts4 == ["A soft phrase print vs a hard one."]
+    pts5 = sidecar_mod.clean_summary_points(["__Heading wrap__: the range holds."])
+    assert pts5 == ["Heading wrap: the range holds."]
+
+
 def test_normalize_cleans_summary_markdown():
     item = sidecar_mod.normalize({
         "title": "T", "institution": "GS",
@@ -343,6 +356,8 @@ def test_canon_institution_merges_spellings_and_drops_folder_names_from_facet():
     assert sidecar_mod.institution_display("New folder") == "Institutional desk"
     assert sidecar_mod.institution_display("SG Prime") == "Société Générale"
     assert sidecar_mod.institution_display("Goldman Sachs") == "Goldman Sachs"
+    assert sidecar_mod.institution_display_pair("Unknown") == ("Unknown", "未知")
+    assert sidecar_mod.institution_display_pair("") == ("Unknown", "未知")
 
 
 def test_desk_stamp_classes_emit_legacy_and_desk_type_names():

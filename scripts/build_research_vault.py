@@ -187,7 +187,11 @@ def _ssr_card(x: dict) -> str:
 
     desk_bits = f'<span class="rep-sep">·</span><span class="rep-desk">{_e(desk)}</span>' if desk else (
         '<span class="rep-sep">·</span><span class="backfill">institution to be confirmed</span>' if needs else "")
-    pin = '<span class="rep-pin"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.4-6.3-4.6L5.7 21l2.3-7.4-6-4.6h7.6z"/></svg>Highlighted</span>' if top else ""
+    pin = (
+        '<span class="rep-pin"><svg viewBox="0 0 24 24" fill="currentColor">'
+        '<path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.4-6.3-4.6L5.7 21l2.3-7.4-6-4.6h7.6z"/>'
+        '</svg><span class="l-en">Highlighted</span><span class="l-zh">精选</span></span>'
+    ) if top else ""
     if pts:
         pts_html = '<ul class="rep-points">' + "".join(f"<li>{_e(p)}</li>" for p in pts[:4]) + "</ul>"
     else:
