@@ -32,14 +32,16 @@
   .ci-stance { font-size:12px; font-weight:700; color:var(--ink-link, var(--link)); margin:0 0 8px; }
   .brief-grid { display:flex; flex-direction:column; gap:12px; margin:12px 0 6px; }
   .ci-card-title { font-size:13px; font-weight:700; margin:0 0 6px; color:var(--text); }
-  .cmdbar .regime { background:transparent; border:none; padding:0; margin:0; }
+  .ci-card-head { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin:0 0 6px; }
+  .ci-card-head .ci-card-title { margin:0; }
+  .ci-card-asof { font-size:11px; color:var(--muted); font-variant-numeric:tabular-nums; }
   /* ── command bar ── */
   .cmdbar { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 4px; }
   .cmdbar .mc { font-size:12px; font-weight:600; padding:6px 12px; border-radius:10px;
     display:inline-flex; gap:7px; align-items:center;
     background:color-mix(in srgb,var(--panel) 72%,transparent);
     border:1px solid color-mix(in srgb,var(--line) 75%,transparent); }
-  .cmdbar .mc b { color:var(--text); font-weight:700; }
+  .cmdbar .mc:not(.regime) b { color:var(--text); font-weight:700; }
   .cmdbar .mc span { color:var(--muted); }
   .cmdbar .mc.hot { border-color:color-mix(in srgb,var(--link) 50%,var(--line)); color:var(--ink-link, var(--link)); }
   .cmdbar .mc.warn { border-color:color-mix(in srgb,#e0973a 50%,var(--line)); color:var(--ink-warn, var(--warn)); }
@@ -49,18 +51,6 @@
   .stale-chip { font-size:10px; font-weight:700; padding:3px 9px; border-radius:999px;
     background:color-mix(in srgb,#e0973a 15%,transparent);
     border:1px solid color-mix(in srgb,#e0973a 35%,transparent); color:var(--ink-warn, var(--warn)); }
-  /* ── desk status board ── */
-  .desks { display:grid; gap:11px; grid-template-columns:repeat(auto-fit,minmax(145px,1fr)); margin:16px 0 6px; }
-  .desk { padding:12px 14px; border-radius:14px; text-decoration:none; display:block; transition:.16s ease;
-    background:color-mix(in srgb,var(--panel) 80%,transparent);
-    border:1px solid color-mix(in srgb,var(--line) 80%,transparent); }
-  .desk:hover { transform:translateY(-3px); border-color:color-mix(in srgb,var(--link) 45%,var(--line)); }
-  .desk .dh { display:flex; align-items:center; gap:7px; font-size:13px; font-weight:700; color:var(--text); }
-  .desk .dh .dot { width:7px; height:7px; border-radius:50%; margin-left:auto; background:var(--muted); }
-  .desk .dh .dot.on { background:var(--ok); box-shadow:0 0 8px color-mix(in srgb,var(--ok) 70%,transparent); }
-  .desk small { display:block; margin-top:4px; color:var(--muted); font-size:11px; }
-  .desk .desk-asof { font-size:10px; color:var(--muted); margin-top:3px; }
-  .desk .desk-chips { display:flex; align-items:center; gap:5px; flex-wrap:wrap; margin-top:5px; }
   /* ── qledger honesty chips ── */
   .ql-chip { display:inline-flex; align-items:center; font:700 9px/1 ui-monospace,Menlo,monospace;
     letter-spacing:.05em; text-transform:uppercase; padding:2px 7px; border-radius:6px;
@@ -193,7 +183,6 @@
   .lane-chip { font-size:9px; font-weight:700; padding:1px 6px; border-radius:5px; text-transform:uppercase; letter-spacing:.04em; background:var(--panel2); color:var(--muted); border:1px solid var(--line); }
   .exp-chip { font-size:9px; font-weight:700; padding:1px 6px; border-radius:5px; color:var(--ink-warn, var(--warn)); background:color-mix(in srgb,#e0973a 13%,transparent); border:1px solid #e0973a44; }
   .offdesk-chip { font-size:9px; font-weight:700; padding:1px 6px; border-radius:5px; color:#8b5cf6; background:color-mix(in srgb,#8b5cf6 13%,transparent); border:1px solid #8b5cf640; }
-  .disc-score-bar { height:3px; border-radius:2px; background:var(--link); margin-top:5px; }
   /* ── cycle-context regime chips (W5) ── muted/neutral only, no up/down coloring ── */
   .regime-chips { display:flex; flex-wrap:wrap; gap:4px; margin-top:4px; }
   .rg-chip { font-size:9px; font-weight:600; padding:1px 6px; border-radius:5px; background:color-mix(in srgb,var(--muted) 10%,transparent); color:var(--muted); border:1px solid color-mix(in srgb,var(--muted) 22%,transparent); letter-spacing:.03em; }
@@ -205,15 +194,6 @@
   .fan-table th { padding:4px 8px; color:var(--muted); font-weight:600; border-bottom:1px solid var(--line); }
   .fan-table td { padding:5px 8px; border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums; }
   .fan-table tr:last-child td { border-bottom:none; }
-  /* ── surface cards (spoke links) ── */
-  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(232px,1fr)); gap:14px; margin:14px 0; }
-  a.scard { display:block; background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:15px 17px; color:var(--text); transition:border-color .15s, transform .15s; text-decoration:none; }
-  a.scard:hover { border-color:var(--link); transform:translateY(-2px); }
-  a.scard .ic { font-size:20px; } a.scard .nm { font-weight:700; font-size:14.5px; margin:5px 0 2px; }
-  a.scard .v { font-size:20px; font-weight:800; margin-top:5px; }
-  a.scard .s { font-size:11.5px; color:var(--muted); margin-top:3px; }
-  a.scard .age { font-size:10px; color:var(--muted); margin-top:6px; }
-  a.scard .go { font-size:11px; color:var(--ink-link, var(--link)); margin-top:7px; }
   /* ── suite directory ── */
   .suite { margin:14px 0 20px; }
   .suite-group { margin-bottom:18px; }
@@ -224,6 +204,42 @@
   a.slink:hover { border-color:var(--link); }
   a.slink .sl-name { font-size:12.5px; font-weight:700; }
   a.slink .sl-desc { font-size:11px; color:var(--muted); margin-top:2px; line-height:1.4; }
+
+  /*
+    DARK TREATMENT: command center — graphite panels, instrument-calm chips,
+    restrained amber on the staleness/outage chip, luminance depth on dated
+    brief cards and the method band. Regime hex is a signed instrument
+    (green risk-on / red risk-off in EN; ZH flips).
+    LIGHT TREATMENT: research workspace — cool canvas, white card material,
+    hairline borders, shadow instead of glow; same IA, chip states, dates,
+    source chips, and regime hex. Warn bloom is suppressed; ink + hairline
+    carry the stale/outage state.
+    Differ on purpose: glow vs shadow; warn bloom vs ink hairline.
+    Shared: five-state B1 chip, dated-card identity (as-of + source chip),
+    method-band directory, regime colour (ZH-flipped).
+  */
+  /* post-stack: consolidate */
+  html[data-theme="light"] .pp-card,
+  html[data-theme="light"] .nd-chip,
+  html[data-theme="light"] .analogs-card,
+  html[data-theme="light"] .matters {
+    background:var(--panel);
+    border:1px solid var(--line);
+    box-shadow:0 1px 0 color-mix(in srgb, var(--text) 6%, transparent);
+  }
+  html[data-theme="light"] .cmdbar .mc.warn,
+  html[data-theme="light"] .stale-chip {
+    background:color-mix(in srgb, var(--ink-warn, var(--warn)) 8%, var(--panel));
+    border-color:color-mix(in srgb, var(--ink-warn, var(--warn)) 28%, var(--line));
+    box-shadow:none;
+  }
+  html[data-theme="light"] a.slink {
+    background:var(--panel);
+    box-shadow:0 1px 0 color-mix(in srgb, var(--text) 5%, transparent);
+  }
+  html[data-theme="light"] a.slink:hover {
+    box-shadow:0 2px 8px color-mix(in srgb, var(--text) 10%, transparent);
+  }
 {% endblock %}
 
 {% block content %}
@@ -252,7 +268,7 @@
   'DROPPED': ['Dropped phrasing','消失表述'],
   'LEAD_SHIFT': ['Lead topic shift','头版转向']
 } %}
-{% set _STANCE_WATCH = t("Watch — don't chase", "观察，勿追高") %}
+{% set _STANCE_WATCH = t("Watch — don't chase", "观望——勿追涨") %}
 
 <section class="ci-hero">
   <p class="eyebrow">{{ t('China Intelligence', '中国情报中心') }}</p>
@@ -262,15 +278,19 @@
 </section>
 
 <div class="ci-wrap">
+  {%- set _pp_asof = b.policy_phrase.asof if b.policy_phrase else none %}
+  {%- set _nd_asof = b.narrative_divergence.asof if b.narrative_divergence else none %}
+  {%- set _an_asof = b.analysis.asof if b.analysis else none %}
 
   {# ── A. DESK HEADER (cmdbar; regime merged in — C2 / D8 hex rules kept via .regime) ── #}
   <div class="cmdbar">
     {%- if b.regime %}
-      {%- set _rt = b.regime.risk_tilt %}
+      {%- set _rt = b.regime.get('risk_tilt') %}
+      {%- if _rt is none %}{% set _rt = 0 %}{% endif %}
       <span class="regime mc {{ 'hot' if _rt > 0 else 'warn' if _rt < 0 else '' }}">
         <span class="rk">{{ t('Risk appetite','风险偏好') }}</span>
         <b class="{{ 'on' if _rt > 0 else ('off' if _rt < 0 else 'neu') }}">{{ t('Risk-on','偏好风险') if _rt > 0 else (t('Risk-off','避险') if _rt < 0 else t('Neutral','中性')) }}</b>
-        {%- if b.regime.roro is not none %}
+        {%- if b.regime.get('roro') is not none %}
         <span data-tip-en="Risk-on / risk-off tilt (signed reading)." data-tip-zh="风险偏好倾斜（有符号读数）。">{{ '%+.2f'|format(b.regime.roro) }}</span>
         {%- endif %}
       </span>
@@ -285,25 +305,32 @@
     {%- if b.news and b.news.band %}
       <span class="mc"><span>{{ t('Media','媒体') }}</span> <b>{{ bl(b.news.band_label_en or (b.news.band|capitalize), b.news.band_label_zh or b.news.band) }}</b></span>
     {%- endif %}
-    {%- if b.max_staleness_days is not none and b.max_staleness_days > 2 %}
+    {%- set _st = b.staleness_state %}
+    {%- if _st and _st != 'fresh' %}
       {%- set _sk = b.max_staleness_feed %}
       {%- set _sl = SURF.get(_sk) or [_sk, _sk] %}
       {%- set _work = b.stale_working_feeds or [] %}
-      <span class="mc warn"
+      {%- set _und = b.staleness_undated or [] %}
+      {%- set _w0 = _work[0] if _work else none %}
+      {%- set _wl = SURF.get(_w0.key) if _w0 else none %}
+      {%- set _u0 = _und[0] if _und else none %}
+      {%- set _ul = SURF.get(_u0) if _u0 else none %}
+      <span class="mc warn{% if _st == 'outage' %} stale-chip{% endif %}"
             data-tip-en="Oldest dated feed on this desk. Other desks keep their own as-of stamps."
             data-tip-zh="本台最旧的有日期数据源。其余面板保留各自的截至日。">
-        <span>{{ t('Oldest feed','最旧数据源') }}</span>
-        <b>{{ b.max_staleness_days }}{{ t('d','天') }}</b>
-        {%- if _sk %}
-          · {{ t(_sl[0], _sl[1]) }}
-          {%- if b.max_staleness_feed_asof %} {{ t('as of','截至') }} {{ b.max_staleness_feed_asof }}{%- endif %}
-        {%- endif %}
-        {%- if _work %}
-          · {{ t('Still reading','仍在读取') }}
-          {%- for w in _work %}
-            {%- set _wl = SURF.get(w.key) or [w.key, w.key] %}
-            {{ t(_wl[0], _wl[1]) }}{% if not loop.last %}, {% endif %}
-          {%- endfor %}
+        {%- if _st == 'outage' %}
+          {{ t('Feed timestamps unavailable.','数据源时间不可用。') }}
+        {%- elif _st == 'undated_among' %}
+          {%- set _uname_en = (_ul or [_u0, _u0])[0] %}
+          {%- set _uname_zh = (_ul or [_u0, _u0])[1] %}
+          {{ t('Oldest dated feed · '~b.max_staleness_days~'d · '~_uname_en~': no timestamp.',
+               '最旧有时间数据源 · '~b.max_staleness_days~'天 · '~_uname_zh~'：无时间戳') }}
+        {%- elif _st == 'all_stale' %}
+          {{ t('No feed is current — oldest '~b.max_staleness_days~'d.',
+               '所有数据源均非最新——最旧 '~b.max_staleness_days~' 天。') }}
+        {%- elif _st == 'mixed' and _wl %}
+          {{ t('Oldest feed · '~b.max_staleness_days~'d — '~_wl[0]~' still current.',
+               '最旧数据源 · '~b.max_staleness_days~'天——'~_wl[1]~'仍为最新。') }}
         {%- endif %}
       </span>
     {%- endif %}
@@ -343,37 +370,83 @@
         <span class="mut" style="font-size:11px">{{ t('Standing policy calls','政策预测') }}</span>
         {% for p in b.policy.predictions %}
           {%- if p is mapping %}
-            <span class="sx">{{ bl(p.en or p.text_en, p.zh or p.text_zh or p.en or p.text_en) }}</span>
+            {%- set _pen = p.en or p.text_en %}
+            {%- set _pzh = p.zh or p.text_zh %}
+            <span class="sx" data-tip-en="{{ _pen }}" data-tip-zh="{{ _pen }}">{{ bl(_pen, _pzh or '暂无中文摘要') }}</span>
           {%- else %}
-            <span class="sx">{{ td(p) }}</span>
+            <span class="sx" data-tip-en="{{ p }}" data-tip-zh="{{ p }}">{{ bl(p, '暂无中文摘要') }}</span>
           {%- endif %}
         {% endfor %}
       </div>
       {% endif %}
       {% set _syn = b.analysis.llm_synthesis if b.analysis else none %}
-      {% set _syn_deg = b.analysis.llm_synthesis_degraded_reason if b.analysis else none %}
+      {% set _syn_why = b.llm_synthesis_degraded_why %}
       {% if _syn %}
       <div class="ci-synthesis">{{ bl(_syn.summary, _syn.summary_zh or _syn.summary) }}</div>
-      {% elif _syn_deg %}
+      {% elif _syn_why %}
       <p class="ci-syn-deg mut" style="font-size:11.5px;margin:8px 0 0">
         {{ t('AI cross-surface synthesis','AI 跨面板综合') }}
-        <span>({{ t('deterministic only — AI read unavailable','仅确定性——AI解读不可用') }})</span>
+        <span>({{ t('deterministic only — AI read unavailable','仅确定性——AI解读不可用') }}
+          · {{ bl(_syn_why.en, _syn_why.zh) }})</span>
       </p>
+      {% endif %}
+      {# Undated synthesis folds here — not a dated brief. Source-chipped, no as-of. #}
+      {% if b.conviction and not _an_asof %}
+      <div class="pp-card" style="margin-top:10px">
+        <div class="ci-card-head">
+          <div class="ci-card-title">{{ t('Cross-surface conviction','跨面板共振') }}</div>
+          <span class="surf">{{ t('Desk synthesis','综合解读') }}</span>
+        </div>
+        <p class="mut" style="font-size:11px">{{ t('No as-of on the synthesis feed — kept on the lead brief, not as a dated card.','综合解读无截至日——留在要点，不作为带日期简报。') }}</p>
+        <table class="syn"><tbody>
+        {% for c in b.conviction %}
+          <tr><td><b>{{ bl(c.sector_en, c.sector_zh) }}</b></td><td>{{ bl(c.rationale_en, c.rationale_zh) }}</td></tr>
+        {% endfor %}
+        </tbody></table>
+      </div>
+      {% endif %}
+      {% if b.flagged_tickers and not _an_asof %}
+      <div class="pp-card" style="margin-top:10px">
+        <div class="ci-card-head">
+          <div class="ci-card-title">{{ t('Flagged tickers','标记个股') }}</div>
+          <span class="surf">{{ t('Desk synthesis','综合解读') }}</span>
+        </div>
+        <p class="mut" style="font-size:11px">{{ t('No as-of on the synthesis feed — kept on the lead brief, not as a dated card.','综合解读无截至日——留在要点，不作为带日期简报。') }}</p>
+        <div class="flags">{% for f in b.flagged_tickers %}<span class="tk"><span class="nm">{{ f.name or f.ticker }}</span></span>{% endfor %}</div>
+      </div>
+      {% endif %}
+      {% if b.analysis and b.analysis.chains and not _an_asof %}
+      <div class="pp-card" style="margin-top:10px">
+        <div class="ci-card-head">
+          <div class="ci-card-title">{{ t('Transmission chains','传导链条') }}</div>
+          <span class="surf">{{ t('Desk synthesis','综合解读') }}</span>
+        </div>
+        <p class="mut" style="font-size:11px">{{ t('No as-of on the synthesis feed — kept on the lead brief, not as a dated card.','综合解读无截至日——留在要点，不作为带日期简报。') }}</p>
+        {% for ch in b.analysis.chains %}
+        <div class="chain"><div class="hd">{{ bl(ch.label_en, ch.label_zh) }}</div></div>
+        {% endfor %}
+      </div>
       {% endif %}
     </div>
   </section>
 
-  {# ── DATED BRIEF CARDS (≤6; C1/C2) ── #}
+  {# ── DATED BRIEF CARDS (≤6; C1/C2) — every card is dated + source-chipped.
+       A card whose feed has no as-of does not belong here; it folds into the
+       lead brief (the module that owns undated synthesis). ── #}
   <section data-l1="dated-cards">
     <h2 class="sec">{{ t("Today's briefs",'今日简报') }}</h2>
     <p class="ci-stance">{{ _STANCE_WATCH }}</p>
     <div class="brief-grid">
 
   {# ── C. POLICY PHRASE SHIFTS CARD (new v4) ── #}
-  {% if b.policy_phrase %}
+  {% if b.policy_phrase and _pp_asof %}
   {%- set _pp = b.policy_phrase %}
   <div class="pp-card">
-    <div class="ci-card-title">{{ t('Policy language shifts', '政策表述变化') }}{% if _pp.asof %} · {{ _pp.asof }}{% endif %}</div>
+    <div class="ci-card-head">
+      <div class="ci-card-title">{{ t('Policy language shifts', '政策表述变化') }}</div>
+      <span class="ci-card-asof">{{ _pp_asof }}</span>
+      <span class="surf">{{ t('Policy language','政策表述') }}</span>
+    </div>
     <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:8px">
       <span style="font-size:12px;color:var(--muted)">
         {{ t('Official-language new / dropped / lead-topic events, last 14d','官方文件 14 天内新增/消失/头版转向事件') }}
@@ -443,11 +516,15 @@
   {% endif %}
 
   {# ── D. NARRATIVE DIVERGENCE CHIP (new v4) ── #}
-  {% if b.narrative_divergence %}
+  {% if b.narrative_divergence and _nd_asof %}
   {%- set _nd = b.narrative_divergence %}
   <div class="nd-chip">
     <div>
-      <div class="ci-card-title">{{ t('Onshore / offshore tone', '境内/境外语气') }}</div>
+      <div class="ci-card-head">
+        <div class="ci-card-title">{{ t('Onshore / offshore tone', '境内/境外语气') }}</div>
+        <span class="ci-card-asof">{{ _nd_asof }}</span>
+        <span class="surf">{{ t('Onshore / offshore tape','境内外叙事') }}</span>
+      </div>
       <div style="font-size:10px;color:var(--muted);margin-bottom:2px">{{ t('How far domestic coverage sits from offshore','境内报道相对境外的偏离程度') }}</div>
       <div class="nd-z {{ 'risk' if _nd.risk_flag else 'ok' }}"
            data-tip-en="Standardized onshore-minus-offshore tone reading {{ '%+.2f'|format(_nd.divergence_z) }}."
@@ -465,15 +542,18 @@
     </div>
     <div style="display:flex;flex-direction:column;gap:4px">
       <span class="nd-badge">{{ t('Risk flag only','仅风险标志') }}</span>
-      <span style="font-size:10px;color:var(--muted)">{{ _nd.asof }}</span>
     </div>
   </div>
   {% endif %}
 
   {# ── F. CENTRAL SYNTHESIS (dated card) ── #}
-  {% if b.conviction %}
+  {% if b.conviction and _an_asof %}
   <div class="pp-card">
-  <div class="ci-card-title">{{ t('Cross-surface conviction','跨面板共振') }}</div>
+  <div class="ci-card-head">
+    <div class="ci-card-title">{{ t('Cross-surface conviction','跨面板共振') }}</div>
+    <span class="ci-card-asof">{{ _an_asof }}</span>
+    <span class="surf">{{ t('Desk synthesis','综合解读') }}</span>
+  </div>
   <p style="font-size:12px;color:var(--muted);margin:2px 0 6px">{{ t('Where radar, alt-data, news and policy agree — leading ideas first, already-priced ones last. Attention only, never a position size.','雷达、另类数据、新闻与政策的重合处——领先的在前、已定价的在后。仅为注意，绝非仓位。') }}</p>
   <table class="syn">
     <thead><tr><th>{{ t('Sector','板块') }}</th><th data-tip-en="0–100. Elevated ≥70, moderate 40–69, low below 40." data-tip-zh="0–100。偏高 ≥70，中等 40–69，偏低低于 40。">{{ t('Opportunity','机会度') }}</th><th>{{ t('Stage','阶段') }}</th><th>{{ t('Conviction','置信') }}</th><th data-tip-en="Share of the move that may still be ahead. Elevated ≥70%, moderate 40–69%, low below 40%." data-tip-zh="行情可能尚未走完的比例。偏高 ≥70%，中等 40–69%，偏低低于 40%。">{{ t('Room left','剩余空间') }}</th><th>{{ t('Surfaces','面板') }}</th><th>{{ t('Read','解读') }}</th></tr></thead>
@@ -511,9 +591,13 @@
   {% endif %}
 
   {# ── G. FLAGGED TICKERS (dated card) ── #}
-  {% if b.flagged_tickers %}
+  {% if b.flagged_tickers and _an_asof %}
   <div class="pp-card">
-  <div class="ci-card-title">{{ t('Flagged tickers','标记个股') }}</div>
+  <div class="ci-card-head">
+    <div class="ci-card-title">{{ t('Flagged tickers','标记个股') }}</div>
+    <span class="ci-card-asof">{{ _an_asof }}</span>
+    <span class="surf">{{ t('Desk synthesis','综合解读') }}</span>
+  </div>
   <p style="font-size:12px;color:var(--muted);margin:2px 0 4px">{{ t('Names lit by two or more desks (alt-data accumulation inside a radar-lit, news-covered theme). Context watchlist, not a recommendation.','被两个或以上面板点亮的个股（位于雷达点亮、新闻覆盖主题内的另类数据吸筹）。背景自选，非推荐。') }}</p>
   <div class="flags">
     {% for f in b.flagged_tickers %}
@@ -527,9 +611,13 @@
   {% endif %}
 
   {# ── H. CAUSAL CHAINS (dated card) ── #}
-  {% if b.analysis and b.analysis.chains %}
+  {% if b.analysis and b.analysis.chains and _an_asof %}
   <div class="pp-card">
-  <div class="ci-card-title">{{ t('Transmission chains','传导链条') }}</div>
+  <div class="ci-card-head">
+    <div class="ci-card-title">{{ t('Transmission chains','传导链条') }}</div>
+    <span class="ci-card-asof">{{ _an_asof }}</span>
+    <span class="surf">{{ t('Desk synthesis','综合解读') }}</span>
+  </div>
   {% for ch in b.analysis.chains %}
   <div class="chain">
     <div class="hd"><span class="chband ch-{{ ch.band }}">{{ t(ch.band|capitalize, ({'aligned':'一致','forming':'形成中','dormant':'休眠'}).get(ch.band, ch.band)) }}</span> {{ bl(ch.label_en, ch.label_zh) }} <span class="mut" style="font-weight:400">{{ ch.k }}/{{ ch.n }}</span></div>
@@ -591,7 +679,7 @@
         {%- set _stage_lbl = _STG.get(d.stage, [d.stage|capitalize, d.stage|capitalize]) %}
         <tr>
           <td><span class="cmd-ticker">{{ d.ticker }}</span></td>
-          <td><span class="cmd-name">{%- if d.name and d.name != d.ticker -%}<span class="l-en">{{ d.name[:18] }} · {{ d.ticker }}</span><span class="l-zh">{{ d.name[:18] }}</span>{%- else -%}{{ t('Name not on file','未录入名称') }}{%- endif -%}</span></td>
+          <td><span class="cmd-name"{% if d.name %} data-tip-en="{{ d.name }}" data-tip-zh="{{ d.name }}"{% endif %}>{%- if d.name and d.name != d.ticker -%}<span class="l-en">{{ d.name[:18] }} · {{ d.ticker }}</span><span class="l-zh">{{ d.name[:18] }}</span>{%- else -%}{{ t('Name not on file','未录入名称') }}{%- endif -%}</span></td>
           <td>
             <div class="cmd-desk-dots">
               {%- for dk, dl in [('news','N'),('altdata','A'),('radar','R'),('board','B'),('special','S')] %}
@@ -662,7 +750,7 @@
           {%- set _stage_lbl2 = _STG.get(d.stage, [d.stage|capitalize, d.stage|capitalize]) %}
           <tr>
             <td><span class="cmd-ticker">{{ d.ticker }}</span></td>
-            <td><span class="cmd-name">{{ d.name[:18] }}</span></td>
+            <td><span class="cmd-name"{% if d.name %} data-tip-en="{{ d.name }}" data-tip-zh="{{ d.name }}"{% endif %}>{{ d.name[:18] }}</span></td>
             <td>
               <div class="cmd-desk-dots">
                 {%- for dk, dl in [('news','N'),('altdata','A'),('radar','R'),('board','B'),('special','S')] %}
@@ -798,7 +886,6 @@
   {# ── L. METHOD / LINK BAND (C2: Desk Status + Intelligence Surfaces + Suite Directory) ── #}
   <section data-l1="method-band">
   <h2 class="sec">{{ t('China desks','中国面板') }}</h2>
-  <p class="ci-stance">{{ t('Ignore', '可忽略') }}</p>
   <div class="suite">
     <div class="suite-group">
       <div class="suite-group-title">{{ t('Intelligence desks','情报台') }}</div>

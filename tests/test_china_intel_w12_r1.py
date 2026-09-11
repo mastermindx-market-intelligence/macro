@@ -23,7 +23,7 @@ STANCES_EN = (
 STANCES_ZH = (
     "行动",
     "做好准备",
-    "观察，勿追高",
+    "观望——勿追涨",
     "保护利润",
     "观望",
     "可忽略",
@@ -52,6 +52,9 @@ def _b(**over):
         "max_staleness_feed": None,
         "max_staleness_feed_asof": None,
         "stale_working_feeds": [],
+        "staleness_undated": [],
+        "staleness_state": "fresh",
+        "llm_synthesis_degraded_why": None,
         "digest": "machine digest",
         "disclaimer": "Context only.", "disclaimer_zh": "仅供参考。",
     }
@@ -177,6 +180,8 @@ def test_b1_chip_names_feed_and_age_both_lanes():
         stale_working_feeds=[{"key": "news", "asof": fresh, "age": 0},
                              {"key": "policy", "asof": fresh, "age": 0},
                              {"key": "radar", "asof": fresh, "age": 0}],
+        staleness_state="mixed",
+        staleness_undated=[],
         surfaces_present=["news", "policy", "radar", "policy_phrase"],
     )
     html = _render(b, cmd_full=_cmd(3))
@@ -189,8 +194,8 @@ def test_b1_chip_names_feed_and_age_both_lanes():
     assert "Policy language" in en
     assert "政策表述" in zh
     assert old in rest
-    assert "Still reading" in en
-    assert "仍在读取" in zh
+    assert "still current" in en
+    assert "仍为最新" in zh
     assert "News" in en
     assert "新闻" in zh
     # chip does not relabel the fresh panel stamps as 70d — those stamps
@@ -339,6 +344,9 @@ def test_p2_stance_on_every_l1_panel_both_lanes():
         r'<section data-l1="([^"]+)">([\s\S]*?)</section>', rest)
     assert sections, "no data-l1 sections"
     for name, body in sections:
+        if name == "method-band":
+            assert "Ignore" not in _lane(body, "l-en")
+            continue
         en = _lane(body, "l-en")
         zh = _lane(body, "l-zh")
         assert any(s in en for s in STANCES_EN), f"{name} missing EN stance: {en[:200]}"
@@ -412,8 +420,8 @@ def test_s6_standing_policy_calls_zh_lane():
 
 def test_s6_bilingual_predictions_from_strings_keep_pair_shape():
     out = bus._bilingual_predictions(["Hold the 1-year loan rate."])
-    assert out == [{"en": "Hold the 1-year loan rate.",
-                    "zh": "Hold the 1-year loan rate."}]
+    assert out[0]["en"] == "Hold the 1-year loan rate."
+    assert out[0]["zh"] == "暂无中文摘要"
     out2 = bus._bilingual_predictions(
         [{"en": "Hold", "zh": "维持"}])
     assert out2[0]["zh"] == "维持"

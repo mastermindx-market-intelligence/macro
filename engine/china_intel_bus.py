@@ -655,26 +655,72 @@ def _analogs_block() -> dict | None:
 # --------------------------------------------------------------------------- #
 # copy helpers (plain-language rewrites at the bus; analysis.py is out of packet)
 # --------------------------------------------------------------------------- #
+_ZH_PRED_UNAVAILABLE = "暂无中文摘要"
+
+# Enum → plain-sentence WHY for the degraded-AI state (rider 4). Never leak the
+# enum; never render nothing. Unknown keys take the generic unavailable pair.
+_SYN_DEG_WHY: dict[str, tuple[str, str]] = {
+    "not_wired": (
+        "The AI cross-surface read is not connected on this desk yet.",
+        "本台跨面板 AI 解读尚未接通。",
+    ),
+    "brain_timeout": (
+        "The AI read timed out, so this desk is showing the deterministic synthesis only.",
+        "AI 解读超时，本台仅展示确定性综合。",
+    ),
+    "timeout": (
+        "The AI read timed out, so this desk is showing the deterministic synthesis only.",
+        "AI 解读超时，本台仅展示确定性综合。",
+    ),
+    "error": (
+        "The AI read failed, so this desk is showing the deterministic synthesis only.",
+        "AI 解读失败，本台仅展示确定性综合。",
+    ),
+}
+
+
+def _degraded_why(reason: str | None) -> dict | None:
+    """Map a degraded-AI enum to {en, zh} sentences. None if no reason."""
+    if not reason:
+        return None
+    key = str(reason).strip()
+    if not key:
+        return None
+    en, zh = _SYN_DEG_WHY.get(key, (
+        "The AI read is unavailable.",
+        "AI 解读不可用。",
+    ))
+    return {"en": en, "zh": zh}
+
+
 def _bilingual_predictions(raw: list) -> list[dict]:
     """Policy predictions as {en, zh} pairs (S6). latest.json currently stores
-    English-only strings; recover ZH from intel.json when present."""
+    English-only strings; recover ZH from intel.json when present.
+
+    A missing ZH never re-serves English into the ZH lane — that is the M6
+    defect. The honest unavailable form is 「暂无中文摘要」; EN stays on the
+    pair (and the row tip) so the ZH lane can still reach it.
+    """
     by_en: dict[str, str] = {}
     intel = _read_json("data/china_policy/intel.json") or {}
     if isinstance(intel, dict):
         for p in intel.get("predictions") or []:
             if isinstance(p, dict) and p.get("text_en"):
-                by_en[str(p["text_en"])] = str(p.get("text_zh") or p["text_en"])
+                recovered = str(p.get("text_zh") or "").strip()
+                if recovered:
+                    by_en[str(p["text_en"])] = recovered
     out: list[dict] = []
     for p in raw or []:
         if isinstance(p, dict):
             en = str(p.get("text_en") or p.get("en") or "").strip()
-            zh = str(p.get("text_zh") or p.get("zh") or by_en.get(en) or en).strip()
+            zh = str(p.get("text_zh") or p.get("zh") or by_en.get(en) or "").strip()
             if en:
-                out.append({"en": en, "zh": zh or en})
+                out.append({"en": en, "zh": zh or _ZH_PRED_UNAVAILABLE})
         else:
             en = str(p).strip()
             if en:
-                out.append({"en": en, "zh": by_en.get(en) or en})
+                recovered = (by_en.get(en) or "").strip()
+                out.append({"en": en, "zh": recovered or _ZH_PRED_UNAVAILABLE})
     return out
 
 
@@ -758,41 +804,58 @@ def _disambiguate_duplicate_sectors(rows: list) -> list:
 # public
 # --------------------------------------------------------------------------- #
 def _staleness(b: dict) -> tuple[dict, dict]:
-    """Per-surface as-of map plus the oldest dated feed (B1).
+    """Per-surface as-of map plus the five-state oldest-feed chip (B1).
 
-    Returns (surface_asof, rec) where rec is
-      {age: int, key: str|None, asof: str|None, working: list[{key, asof, age}]}.
-    `age` is 0 when no dated feed exists (same contract as the previous bare int).
-    The chip names `key` so its number can never be read as the age of a
-    newer visible panel stamp — the number is that feed's age, by construction.
+    `working` is feeds WITH an asof AND age ≤ 2d — never a stale fallback.
+    An undated present feed is accounted, never dropped. States:
+
+      fresh          — dated feeds exist, all age ≤ 2d, none undated (chip off)
+      mixed          — worst > 2d and working non-empty
+      all_stale      — dated feeds exist, working empty, none undated
+      outage         — no asof on any present feed (chip on; not an all-clear)
+      undated_among  — at least one present feed has no asof, and at least one does
     """
     keys = ("news", "policy", "altdata", "radar", "analysis",
             "policy_phrase", "narrative_divergence", "special_situations", "command")
     sa: dict[str, str | None] = {}
     aged: list[tuple[int, str, str]] = []  # (age, key, asof)
+    undated: list[str] = []
     today = date.today()
     for k in keys:
-        d = (b.get(k) or {}).get("asof") if isinstance(b.get(k), dict) else None
+        block = b.get(k)
+        if not isinstance(block, dict):
+            sa[k] = None
+            continue
+        d = block.get("asof")
         if not d:
             sa[k] = None
+            undated.append(k)
             continue
         asof_s = str(d)[:10]
         sa[k] = asof_s
         try:
             age = (today - date.fromisoformat(asof_s)).days
         except (ValueError, TypeError):
+            undated.append(k)
             continue
         aged.append((age, k, asof_s))
+    empty = {"age": 0, "key": None, "asof": None, "working": [], "undated": undated}
     if not aged:
-        return sa, {"age": 0, "key": None, "asof": None, "working": []}
+        return sa, {**empty, "state": "outage"}
     aged.sort(key=lambda t: t[0], reverse=True)
     worst_age, worst_key, worst_asof = aged[0]
     working = [{"key": k, "asof": a, "age": ag} for ag, k, a in aged if ag <= 2]
-    if not working:
-        newest_age, newest_key, newest_asof = min(aged, key=lambda t: t[0])
-        if newest_key != worst_key:
-            working = [{"key": newest_key, "asof": newest_asof, "age": newest_age}]
-    return sa, {"age": worst_age, "key": worst_key, "asof": worst_asof, "working": working}
+    working.sort(key=lambda w: w["age"])
+    if undated:
+        state = "undated_among"
+    elif worst_age <= 2:
+        state = "fresh"
+    elif working:
+        state = "mixed"
+    else:
+        state = "all_stale"
+    return sa, {"age": worst_age, "key": worst_key, "asof": worst_asof,
+                "working": working, "undated": undated, "state": state}
 
 
 def briefing(asof: date | str | None = None) -> dict:
@@ -839,6 +902,10 @@ def briefing(asof: date | str | None = None) -> dict:
     b["max_staleness_feed"] = rec["key"]
     b["max_staleness_feed_asof"] = rec["asof"]
     b["stale_working_feeds"] = rec["working"]
+    b["staleness_undated"] = rec["undated"]
+    b["staleness_state"] = rec["state"]
+    deg = a.get("llm_synthesis_degraded_reason")
+    b["llm_synthesis_degraded_why"] = _degraded_why(deg)
     b["digest"] = _digest_text(b)
     return b
 
