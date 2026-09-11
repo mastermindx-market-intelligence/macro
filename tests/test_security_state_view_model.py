@@ -22,6 +22,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+from html.parser import HTMLParser
 from pathlib import Path
 
 import pytest
@@ -36,6 +37,79 @@ from scripts.build_ticker_pages import build_security_state  # noqa: E402
 # ---------------------------------------------------------------------------
 # helpers
 # ---------------------------------------------------------------------------
+
+_VOID_TAGS = frozenset({
+    "area", "base", "br", "col", "embed", "hr", "img", "input",
+    "link", "meta", "param", "source", "track", "wbr",
+})
+
+
+class _HtmlNode:
+    """One element in a stdlib-parsed tree (class tokens + descendant text)."""
+
+    __slots__ = ("tag", "classes", "children", "text_parts")
+
+    def __init__(self, tag: str, classes: frozenset[str]) -> None:
+        self.tag = tag
+        self.classes = classes
+        self.children: list[_HtmlNode] = []
+        self.text_parts: list[str] = []
+
+    def get_text(self) -> str:
+        bits = list(self.text_parts)
+        for child in self.children:
+            bits.append(child.get_text())
+        return "".join(bits)
+
+    def find_class(self, name: str) -> _HtmlNode | None:
+        for child in self.children:
+            if name in child.classes:
+                return child
+            found = child.find_class(name)
+            if found is not None:
+                return found
+        return None
+
+    def find_all_class(self, name: str) -> list[_HtmlNode]:
+        out: list[_HtmlNode] = []
+        if name in self.classes:
+            out.append(self)
+        for child in self.children:
+            out.extend(child.find_all_class(name))
+        return out
+
+
+class _ClassTreeParser(HTMLParser):
+    """Minimal class-aware tree. Sealed CI has no bs4; do not import it."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.root = _HtmlNode("#root", frozenset())
+        self._stack = [self.root]
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        classes = frozenset((dict(attrs).get("class") or "").split())
+        node = _HtmlNode(tag, classes)
+        self._stack[-1].children.append(node)
+        if tag not in _VOID_TAGS:
+            self._stack.append(node)
+
+    def handle_endtag(self, tag: str) -> None:
+        for i in range(len(self._stack) - 1, 0, -1):
+            if self._stack[i].tag == tag:
+                del self._stack[i:]
+                return
+
+    def handle_data(self, data: str) -> None:
+        self._stack[-1].text_parts.append(data)
+
+
+def _parse_class_tree(html: str) -> _HtmlNode:
+    parser = _ClassTreeParser()
+    parser.feed(html)
+    parser.close()
+    return parser.root
+
 
 def _axis(view: dict, key: str) -> dict:
     for a in view["axes"]:
@@ -310,11 +384,44 @@ def test_compiled_golden_object_reaches_the_view_model() -> None:
     contract_legs = compiled["identity_proof"]["legs"]
     assert contract_legs, "the golden object carries no identity legs"
     assert len(view["identity"]["legs"]) == len(contract_legs)
+    from scripts.build_ticker_pages import (
+        _SS_ARTIFACT, _SS_LEG_DESC, _SS_LEG_HOUSE_BY_DESC, _SS_READER,
+    )
+
     for src, out in zip(contract_legs, view["identity"]["legs"]):
         assert out["check"] == src["check"]
-        assert out["desc"] == src["description"]
-        assert out["artifact"] == src["artifact"]
-        assert out["reader"] == src["reader"]
+        # h5: coded legs use (check, code); code-less legs use
+        # (check, engine description). Unmapped legs render empty strings,
+        # never engine text and never 暂不可用.
+        code = out["code"] or ""
+        desc_raw = src["description"] or ""
+        if code:
+            desc_house = _SS_LEG_DESC.get((out["check"], code))
+            art_house = _SS_ARTIFACT.get((out["check"], code))
+            rdr_house = _SS_READER.get((out["check"], code))
+        else:
+            triple = _SS_LEG_HOUSE_BY_DESC.get((out["check"], desc_raw)) or {}
+            desc_house = triple.get("desc")
+            art_house = triple.get("artifact")
+            rdr_house = triple.get("reader")
+        if desc_house:
+            assert out["desc_en"] == desc_house["en"]
+            assert out["desc_zh"] == desc_house["zh"]
+        else:
+            assert out["desc_en"] == ""
+            assert out["desc_zh"] == ""
+        if art_house:
+            assert out["artifact_en"] == art_house["en"]
+            assert out["artifact_zh"] == art_house["zh"]
+        else:
+            assert out["artifact_en"] == ""
+            assert out["artifact_zh"] == ""
+        if rdr_house:
+            assert out["reader_en"] == rdr_house["en"]
+            assert out["reader_zh"] == rdr_house["zh"]
+        else:
+            assert out["reader_en"] == ""
+            assert out["reader_zh"] == ""
         assert out["result"] == str(src["result"]).lower()
         assert len(out["reads"]) == len(src["values_read"])
         for pair, row in zip(src["values_read"], out["reads"]):
@@ -394,7 +501,7 @@ def _contract(**over) -> dict:
             },
             "opportunity_context": {
                 "prophet": {"ref": None, "state": "UNAVAILABLE",
-                            "reason": "no current Prophet US owner output for this security"},
+                            "reason": "PROPHET_OWNER_OUTPUT_ABSENT"},
                 "entry": {"state": "AVAILABLE", "available": True, "null_reason": None},
                 "market_incorporation": {"ref": None, "state": "NOT_COVERED"},
                 "dislocation": {"ref": None, "state": "NOT_COVERED"},
@@ -645,15 +752,30 @@ def test_not_applicable_leg_is_not_displayed_as_available() -> None:
 
 
 def test_identity_receipts_render_their_actual_fields() -> None:
+    from scripts.build_ticker_pages import _SS_LEG_HOUSE_BY_DESC
+
     view = build_security_state({"security_state": _contract()})
     html = _render_section(view)
     assert "R1" in html
-    assert "security_master row exists" in html
-    assert "data/reference/security_master.parquet" in html
-    assert "_read_security_state_identity_rows" in html
-    assert "row_present" in html
-    assert "true" in html
-    assert "security_state</dt>" in html and "null" in html
+    house = _SS_LEG_HOUSE_BY_DESC.get((
+        "R1", "security_master row exists, security_state/superseded_by both null",
+    ))
+    assert house, "R1 code-less leg must have a house triple"
+    assert house["desc"]["en"] in html
+    assert house["artifact"]["en"] in html
+    assert house["reader"]["en"] in html
+    assert "security_master row exists" not in html
+    assert "data/reference/security_master.parquet" not in html
+    assert "_read_security_state_identity_rows" not in html
+    assert "Master row found" in html
+    assert "row_present" not in html
+    panel_text = _identity_checks_panel(html).get_text()
+    assert "yes" in panel_text
+    assert "true" not in panel_text
+    assert "Security status" in html
+    assert "security_state</dt>" not in html
+    assert "—" in panel_text
+    assert "null" not in panel_text
 
 
 def test_provenance_copy_is_two_register_and_bilingual() -> None:
@@ -675,3 +797,1558 @@ def test_absent_block_still_costs_only_the_section() -> None:
     assert build_security_state(None) is None
     assert build_security_state({}) is None
     assert build_security_state({"security_state": {}}) is None
+
+
+# ---------------------------------------------------------------------------
+# B-F06-1 · second issuer end to end — the golden MSFT compiled object renders
+# with plain words, no raw enum codes, and both languages present
+# ---------------------------------------------------------------------------
+
+def test_view_model_renders_the_msft_state_with_plain_words() -> None:
+    import jinja2
+
+    fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_msft_expected_output.json"
+    state = json.loads(fixture.read_text(encoding="utf-8"))
+    view = build_security_state({"security_state": state})
+    assert view is not None
+    assert view["ticker_display"] == "MSFT"
+
+    env = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(str(REPO / "templates")),
+        undefined=jinja2.ChainableUndefined,
+    )
+    html = env.get_template("ticker.html.j2").render(
+        security_state=view, ticker="MSFT", name="Microsoft Corp.",
+    )
+    assert 'id="security-state"' in html
+
+    for code in (
+        "COMPILER_FAILURE", "IDENTITY_UNRESOLVED", "BLOCKED_IDENTITY_BRIDGE",
+        "NOT_COVERED", "UNAVAILABLE",
+    ):
+        assert code not in html, f"raw enum code {code!r} leaked into MSFT panel markup"
+
+    # macro#6920 round-3 MINOR #1: the allowlist above excludes every code
+    # the MSFT panel actually renders — the golden fixture's own
+    # `identity_proof.disclosures` carry these four (the
+    # `owner_read_completed=True` shared `DISCLOSURES` tuple). Those codes
+    # ARE expected to appear, but only inside their own `ss-id` receipt chip
+    # — never as the bare sentence itself (the actual MAJOR #2 failure mode).
+    for code in (
+        "CIK_LEG_OWNER_BACKED_CURRENT_ONLY", "OWNER_COMPOSED_SUBJECT_CURRENT_ONLY",
+        "ISSUERMASTER_CURRENT_IDENTITY_ONLY", "ALIAS_EPOCH_VALID_FROM",
+    ):
+        assert f'<span class="c ss-id">{code}</span>' in html, (
+            f"{code}: expected inside its ss-id receipt chip, not found"
+        )
+        assert f'<span class="l-en">{code}</span>' not in html, (
+            f"{code}: raw code leaked as the bare EN sentence"
+        )
+        assert f'<span class="l-zh">{code}</span>' not in html, (
+            f"{code}: raw code leaked as the bare ZH sentence"
+        )
+
+    import re
+    section_match = re.search(r'id="security-state".*?(?=<section )', html, re.DOTALL)
+    assert section_match is not None, "could not isolate the #security-state panel markup"
+    section_html = section_match.group(0)
+    assert '<span class="l-en">' in section_html
+    assert '<span class="l-zh">' in section_html
+
+
+def test_dfoot_c_chip_scoping_is_structural_not_a_grep_count() -> None:
+    """The `.dfoot .c{margin-left:6px;...}` CSS rule (round-3 MAJOR #1 fix)
+    applies to every `.c`-classed descendant of every `.dfoot` element on the
+    page. A prior PR body argued this could not regress any other `.dfoot`
+    usage by grepping `class="dfoot"` line counts in the `.j2` source and
+    eyeballing which lines also mentioned `class="c"` — a text coincidence
+    on the SOURCE template, not a structural check of what actually renders
+    (round-3 review MINOR-3). A `.dfoot` spanning several lines, or a `.c`
+    element nested inside conditional Jinja branches, would not show up in a
+    single-line grep at all.
+
+    This test instead parses the ACTUALLY RENDERED HTML with the standard
+    library HTML parser and asks, for every `.dfoot` element, whether it
+    has a `.c`-classed descendant — the exact question the CSS selector
+    answers in a browser — for two renders that between them exercise every
+    `.dfoot` line in the template, including both new `.c`-chip lines
+    (identity refusals and identity disclosures). Sealed CI has no bs4;
+    this assertion must stay stdlib-only.
+    """
+    import jinja2
+
+    env = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(str(REPO / "templates")),
+        undefined=jinja2.ChainableUndefined,
+    )
+    tmpl = env.get_template("ticker.html.j2")
+
+    # golden MSFT: identity.disclosures present (dfoot line ~1933), identity
+    # PROVEN so identity.refusals is empty (dfoot line ~1932 does not render
+    # at all — proving the `{% if %}` guard, not merely the CSS selector).
+    fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_msft_expected_output.json"
+    msft_state = json.loads(fixture.read_text(encoding="utf-8"))
+    msft_view = build_security_state({"security_state": msft_state})
+    assert msft_view is not None
+
+    # A BLOCKED shell with both refusals and disclosures present renders the
+    # remaining `.c`-chip dfoot line (~1932) too.
+    blocked_contract = _contract(identity_proof={
+        "state": "BLOCKED_IDENTITY_BRIDGE", "method": "owner_backed_chain.v1",
+        "legs": [], "equalities": [],
+        "refusals": ["COMPILER_FAILURE"],
+        "disclosures": ["CIK_LEG_OWNER_BACKED_CURRENT_ONLY: some technical description"],
+    })
+    blocked_view = build_security_state({"security_state": blocked_contract})
+    assert blocked_view is not None
+
+    for label, view, expect_refusals_dfoot in (
+        ("msft (disclosures only, no refusals)", msft_view, False),
+        ("blocked shell (refusals + disclosures)", blocked_view, True),
+    ):
+        html = tmpl.render(security_state=view, ticker="MSFT", name="Microsoft Corp.")
+        tree = _parse_class_tree(html)
+        dfoots = tree.find_all_class("dfoot")
+        assert len(dfoots) >= 8, f"{label}: expected at least 8 static+dynamic .dfoot blocks, found {len(dfoots)}"
+
+        carrying_ids = {id(d) for d in dfoots if d.find_class("c") is not None}
+        carrying = [d for d in dfoots if id(d) in carrying_ids]
+
+        found_refusals_dfoot = any("Held back" in d.get_text() or "暂不呈现" in d.get_text() for d in carrying)
+        found_disclosures_dfoot = any(
+            d.find_class("ss-id") is not None
+            and "Held back" not in d.get_text() and "暂不呈现" not in d.get_text()
+            for d in carrying
+        )
+        assert found_refusals_dfoot == expect_refusals_dfoot, (
+            f"{label}: refusals .dfoot .c-chip presence = {found_refusals_dfoot}, expected {expect_refusals_dfoot}"
+        )
+        assert found_disclosures_dfoot, f"{label}: disclosures .dfoot .c-chip not found"
+        # Structural scoping proof: every OTHER rendered .dfoot element (not
+        # the refusals/disclosures lines just identified) carries NO
+        # element with class "c" at all — so `.dfoot .c` cannot style them.
+        expected_carrying_count = (1 if expect_refusals_dfoot else 0) + 1  # + disclosures
+        assert len(carrying) == expected_carrying_count, (
+            f"{label}: {len(carrying)} .dfoot blocks carry a .c descendant, "
+            f"expected exactly {expected_carrying_count}: "
+            f"{[d.get_text().strip()[:60] for d in carrying]!r}"
+        )
+        for d in dfoots:
+            if id(d) not in carrying_ids:
+                assert d.find_class("c") is None, (
+                    f"{label}: an unaccounted .dfoot block unexpectedly carries a .c descendant: "
+                    f"{d.get_text().strip()[:80]!r}"
+                )
+
+
+def test_compiler_failure_gate_renders_a_plain_bilingual_sentence() -> None:
+    """A ``COMPILER_FAILURE`` failed-gate must render a real, DISTINCT EN/ZH
+    sentence — never the raw enum code duplicated into both language slots
+    (Chairman plain-language law, 2026-09-06, macro#6920 round-2 ruling).
+
+    Before the fix, ``COMPILER_FAILURE`` had no ``_SS_GATES`` house-copy
+    entry, so both ``en`` and ``zh`` fell back to ``_ss_prettify(code)`` —
+    the SAME English words in the field the page treats as Chinese. The raw
+    machine code may still appear, but only inside the receipt's own
+    ``ss-id`` chip, never as the sentence itself.
+    """
+    contract = _contract(dominant_degradation="COMPILER_FAILURE")
+    contract["legs"]["risk"]["failed_gates"] = [
+        {"code": "COMPILER_FAILURE",
+         "reason": "security_state compiler failed after owner identity was composed"},
+    ]
+    view = build_security_state({"security_state": contract})
+    assert view is not None
+
+    gate = next(g for a in view["axes"] for g in a["gates"] if g["code"] == "COMPILER_FAILURE")
+    assert gate["en"] != gate["zh"], (
+        f"ZH slot must be real Chinese, not the English fallback duplicated: {gate!r}"
+    )
+    assert gate["en"] not in ("COMPILER_FAILURE", "Compiler failure"), (
+        "must be a house plain sentence, not the raw code or its bare prettification"
+    )
+    # A real Chinese sentence contains CJK characters — a prettified English
+    # fallback never does.
+    assert re.search(r"[一-鿿]", gate["zh"]), f"zh is not Chinese: {gate['zh']!r}"
+
+    import jinja2
+    env = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(str(REPO / "templates")),
+        undefined=jinja2.ChainableUndefined,
+    )
+    html = env.get_template("ticker.html.j2").render(
+        security_state=view, ticker="AAPL", name="Apple Inc.",
+    )
+    # The plain sentence must appear as visible prose …
+    assert gate["en"] in html
+    assert gate["zh"] in html
+    # … and wherever the raw code still appears, it must be inside the
+    # receipt's machine-id chip, never as a bare bilingual prose span.
+    assert '<span class="l-en">COMPILER_FAILURE</span>' not in html
+    assert '<span class="l-zh">COMPILER_FAILURE</span>' not in html
+
+
+def test_identity_refusal_renders_a_plain_bilingual_sentence_not_the_raw_code() -> None:
+    """``identity_proof.refusals`` is the M1/M2 failure-shell path
+
+    (``engine.security_state.compile_security_state_failure``) — a DIFFERENT
+    rendering path from ``legs.risk.failed_gates`` covered by
+    ``test_compiler_failure_gate_renders_a_plain_bilingual_sentence`` above.
+    Before this fix the "Held back" line rendered the raw refusal code
+    (``COMPILER_FAILURE`` / ``IDENTITY_UNRESOLVED``) as bare, language-
+    identical text inside a plain ``<div class="dfoot">`` — no ``ss-id``
+    chip, no ``data-`` attribute — byte-identical in the EN and ZH views
+    (macro#6920 round-2 MAJOR #2: the PR body's claim that the raw code
+    "only appears inside the receipt's own ss-id machine-id chip" was false
+    for this path).
+    """
+    for code in ("COMPILER_FAILURE", "IDENTITY_UNRESOLVED"):
+        contract = _contract(identity_proof={
+            "state": "BLOCKED_IDENTITY_BRIDGE", "method": "owner_backed_chain.v1",
+            "legs": [], "equalities": [], "refusals": [code], "disclosures": [],
+        })
+        view = build_security_state({"security_state": contract})
+        assert view is not None
+
+        refusal = next(r for r in view["identity"]["refusals"] if r["code"] == code)
+        assert refusal["en"] != refusal["zh"], (
+            f"{code}: ZH slot must be real Chinese, not the English fallback duplicated: {refusal!r}"
+        )
+        assert refusal["en"] not in (code, _prettify_words(code)), (
+            f"{code}: must be a house plain sentence, not the raw code or its bare prettification"
+        )
+        assert re.search(r"[一-鿿]", refusal["zh"]), f"{code}: zh is not Chinese: {refusal['zh']!r}"
+
+        import jinja2
+        env = jinja2.Environment(
+            loader=jinja2.FileSystemLoader(str(REPO / "templates")),
+            undefined=jinja2.ChainableUndefined,
+        )
+        html = env.get_template("ticker.html.j2").render(
+            security_state=view, ticker="MSFT", name="Microsoft Corp.",
+        )  # both languages present, un-filtered
+        # The plain sentence must appear as visible prose in BOTH languages.
+        assert refusal["en"] in html, f"{code}: EN plain sentence missing from render"
+        assert refusal["zh"] in html, f"{code}: ZH plain sentence missing from render"
+
+        # The raw machine code, wherever it appears, must be inside the
+        # receipt's own ss-id chip — never as bare, bilingual-identical text
+        # sitting directly in the "Held back" line (what the PR body's round-2
+        # claim asserted but did not test).
+        m = re.search(r'Held back</span>.*?:(.*?)</div>', html, re.S)
+        assert m is not None, f"{code}: 'Held back' line not found in render"
+        held_back_html = m.group(1)
+        assert f'<span class="c ss-id">{code}</span>' in held_back_html, (
+            f"{code}: raw code must be inside the ss-id chip: {held_back_html!r}"
+        )
+        stripped = re.sub(r'<span class="c ss-id">.*?</span>', "", held_back_html)
+        assert code not in stripped, (
+            f"{code}: raw code leaked outside the ss-id chip: {stripped!r}"
+        )
+        # And explicitly: the raw code must never sit as its own bare
+        # bilingual-label span (the exact failure the round-2 PR body missed).
+        assert f'<span class="l-en">{code}</span>' not in html
+        assert f'<span class="l-zh">{code}</span>' not in html
+
+
+def test_identity_disclosure_renders_a_plain_bilingual_sentence_not_the_raw_code() -> None:
+    """``identity_proof.disclosures`` is stored engine-side as "CODE:
+    technical description" (see ``engine.security_state.DISCLOSURES`` and the
+    M1 failure shell's own local list). Before this fix
+    ``templates/ticker.html.j2`` rendered each raw string verbatim —
+    machine-code prefix and all — identically in the EN and ZH views (macro
+    #6920 round-3 MAJOR #2). The code must render only inside the receipt's
+    ``ss-id`` chip, and the sentence must be real, distinct EN/ZH prose.
+    """
+    for code in (
+        "PINNED_IDENTITY_NOT_OWNER_READ_THIS_CYCLE",
+        "IDENTITY_BRIDGE_UNRESOLVED_THIS_CYCLE",
+        "CIK_LEG_OWNER_BACKED_CURRENT_ONLY",
+    ):
+        contract = _contract(identity_proof={
+            "state": "BLOCKED_IDENTITY_BRIDGE", "method": "owner_backed_chain.v1",
+            "legs": [], "equalities": [], "refusals": [],
+            "disclosures": [f"{code}: some technical description that must never reach the page"],
+        })
+        view = build_security_state({"security_state": contract})
+        assert view is not None
+
+        disclosure = next(d for d in view["identity"]["disclosures"] if d["code"] == code)
+        assert disclosure["en"] != disclosure["zh"], (
+            f"{code}: ZH slot must be real Chinese, not the English fallback duplicated: {disclosure!r}"
+        )
+        assert re.search(r"[一-鿿]", disclosure["zh"]), f"{code}: zh is not Chinese: {disclosure['zh']!r}"
+        assert "some technical description" not in disclosure["en"], (
+            f"{code}: the raw engine description must be replaced by house copy, not passed through"
+        )
+
+        import jinja2
+        env = jinja2.Environment(
+            loader=jinja2.FileSystemLoader(str(REPO / "templates")),
+            undefined=jinja2.ChainableUndefined,
+        )
+        html = env.get_template("ticker.html.j2").render(
+            security_state=view, ticker="MSFT", name="Microsoft Corp.",
+        )
+        assert disclosure["en"] in html, f"{code}: EN plain sentence missing from render"
+        assert disclosure["zh"] in html, f"{code}: ZH plain sentence missing from render"
+        assert "some technical description" not in html, (
+            f"{code}: raw engine disclosure text leaked into rendered markup"
+        )
+
+        # The raw machine code, wherever it appears, must be inside the
+        # receipt's own ss-id chip — never as bare text sitting directly in
+        # the disclosures line, and never duplicated into the ZH view.
+        m = re.search(
+            r'<div class="dfoot">((?:(?!</div>).)*?' + re.escape(code) + r'(?:(?!</div>).)*?)</div>',
+            html, re.S,
+        )
+        assert m is not None, f"{code}: disclosure line containing the code not found in render"
+        line_html = m.group(1)
+        assert f'<span class="c ss-id">{code}</span>' in line_html, (
+            f"{code}: raw code must be inside the ss-id chip: {line_html!r}"
+        )
+        stripped = re.sub(r'<span class="c ss-id">.*?</span>', "", line_html)
+        assert code not in stripped, f"{code}: raw code leaked outside the ss-id chip: {stripped!r}"
+
+
+def test_every_compile_path_refusal_code_has_house_copy_with_no_prettify_fallback() -> None:
+    """`engine/security_state.py` emits nine distinct refusal codes on its
+    compile path (`identity_proof.refusals`, both `compile_security_state`'s
+    R1..R8 gates and `compile_security_state_failure`'s M1/M2 shells). Every
+    one of them must have a `_SS_GATES` house-copy entry carrying a REAL,
+    distinct EN/ZH sentence. The code set is extracted from the engine
+    source by regex, not hand-copied, so this test cannot go stale silently
+    if a new refusal code is added there without a matching entry here
+    (macro#6920 round-3 review MAJOR-1; heal-round h2 adds OWNER_IDENTITY_UNREAD).
+
+    Before this fix, only two of the eight then-known codes (`COMPILER_FAILURE`,
+    `IDENTITY_UNRESOLVED`) had a `_SS_GATES` entry; the other six
+    (`SECURITY_SUPERSEDED`, `ISSUER_GROUP_AMBIGUOUS`,
+    `LISTING_KEY_INCOHERENT`, `IDENTITY_CORRECTED`,
+    `SUBJECT_NATIVE_PARITY_FAILED`, `IDENTITY_BRIDGE_DISAGREEMENT`) fell
+    through to `_ss_prettify(code)` for BOTH slots — the same English words
+    duplicated into the field the page treats as Chinese. Main later added
+    `OWNER_IDENTITY_UNREAD`; without a ninth house-copy entry the same
+    prettify fallback would print English slug words in EN and ZH.
+    """
+    from scripts.build_ticker_pages import _SS_GATES, _ss_prettify
+
+    engine_src = (REPO / "engine" / "security_state.py").read_text()
+    codes = set(re.findall(r'refusals\.append\("([A-Z][A-Z0-9_]*)"\)', engine_src))
+    codes |= set(re.findall(r'"refusals":\s*\["([A-Z][A-Z0-9_]*)"\]', engine_src))
+
+    # macro#6920 round-4 review MINOR-2: the two `re.findall` calls above only
+    # recognise `refusals.append("LITERAL")` and `"refusals": ["LITERAL"]` —
+    # a future `refusals.extend([...])`, `refusals += [...]`, or an appended
+    # variable (`refusals.append(code_var)`) would add a ninth code that
+    # slips past both regexes and leaves this test's coverage claim silently
+    # stale. This walks every line mentioning `refusals` and fails loudly on
+    # any shape that is neither one of the two recognised literal forms nor
+    # one of the three known non-mutating/benign references (the `list[str]`
+    # initializer, the `if refusals:` guard, and `"refusals": refusals` final
+    # assembly) — so an unrecognised shape is a test failure, not a gap.
+    _benign = re.compile(
+        r'^\s*refusals:\s*list\[str\]\s*=\s*\[\]\s*$'
+        r'|^\s*if refusals:\s*$'
+        r'|^\s*"refusals":\s*refusals,\s*$'
+    )
+    _literal_append = re.compile(r'^\s*refusals\.append\("[A-Z][A-Z0-9_]*"\)\s*$')
+    _literal_dict = re.compile(r'^\s*"refusals":\s*\["[A-Z][A-Z0-9_]*"\],?\s*$')
+    for lineno, line in enumerate(engine_src.splitlines(), start=1):
+        if "refusals" not in line:
+            continue
+        if _benign.match(line) or _literal_append.match(line) or _literal_dict.match(line):
+            continue
+        pytest.fail(
+            f"engine/security_state.py:{lineno}: `refusals` is used in a shape this "
+            f"test's code-coverage extraction does not recognise ({line.strip()!r}) — "
+            "a `.extend(`, `+=`, or a non-literal `.append(var)` would add a code "
+            "this test's regex cannot see, going stale silently. Update the "
+            "extraction regexes above (and this allow-list) together with whatever "
+            "new code this line adds."
+        )
+
+    assert codes == {
+        "SECURITY_SUPERSEDED", "IDENTITY_UNRESOLVED", "ISSUER_GROUP_AMBIGUOUS",
+        "LISTING_KEY_INCOHERENT", "IDENTITY_CORRECTED", "SUBJECT_NATIVE_PARITY_FAILED",
+        "IDENTITY_BRIDGE_DISAGREEMENT", "COMPILER_FAILURE", "OWNER_IDENTITY_UNREAD",
+    }, (
+        f"engine/security_state.py's emitted refusal-code set changed: {sorted(codes)} — "
+        "this test's extraction regex and its house-copy coverage below must be updated together"
+    )
+
+    for code in sorted(codes):
+        assert code in _SS_GATES, f"{code}: no _SS_GATES house-copy entry — falls through to _ss_prettify"
+        entry = _SS_GATES[code]
+        assert entry.get("en") and entry.get("zh"), f"{code}: house-copy entry has an empty slot: {entry!r}"
+        assert entry["en"] != entry["zh"], (
+            f"{code}: ZH slot is not real Chinese (duplicates the EN fallback): {entry!r}"
+        )
+        assert re.search(r"[一-鿿]", entry["zh"]), f"{code}: zh is not Chinese: {entry['zh']!r}"
+        pretty = _ss_prettify(code)
+        assert entry["en"] != pretty, (
+            f"{code}: house copy is just the bare prettification of the code, not a real sentence"
+        )
+
+        # Exercise the real production mapping site
+        # (`(_SS_GATES.get(code) or {}).get("en") or _ss_prettify(code)`) end
+        # to end for every code, not just the dict — a present, non-empty
+        # `_SS_GATES` entry makes the `_ss_prettify` branch unreachable for
+        # this code, and this proves it by observing the actual output.
+        contract = _contract(identity_proof={
+            "state": "BLOCKED_IDENTITY_BRIDGE", "method": "owner_backed_chain.v1",
+            "legs": [], "equalities": [], "refusals": [code], "disclosures": [],
+        })
+        view = build_security_state({"security_state": contract})
+        assert view is not None
+        refusal = next(r for r in view["identity"]["refusals"] if r["code"] == code)
+        assert refusal["en"] == entry["en"] and refusal["zh"] == entry["zh"], (
+            f"{code}: rendered refusal does not match its _SS_GATES house copy: {refusal!r}"
+        )
+        assert refusal["en"] != pretty, f"{code}: rendered refusal fell back to the bare prettification"
+
+
+def _iter_leg_house_copy_slots():
+    """Walk every user-facing string in the identity-leg house tables."""
+    from scripts.build_ticker_pages import (
+        _SS_ARTIFACT, _SS_LEG_DESC, _SS_LEG_HOUSE_BY_DESC, _SS_READER,
+        _SS_READ_KEY_VALUE, _SS_READ_VALUE,
+    )
+    for key, entry in _SS_LEG_DESC.items():
+        for slot, text in entry.items():
+            yield f"_SS_LEG_DESC[{key!r}][{slot!r}]", str(text)
+    for key, entry in _SS_ARTIFACT.items():
+        for slot, text in entry.items():
+            yield f"_SS_ARTIFACT[{key!r}][{slot!r}]", str(text)
+    for key, entry in _SS_READER.items():
+        for slot, text in entry.items():
+            yield f"_SS_READER[{key!r}][{slot!r}]", str(text)
+    for key, triple in _SS_LEG_HOUSE_BY_DESC.items():
+        for field, entry in triple.items():
+            if not isinstance(entry, dict):
+                continue
+            for slot, text in entry.items():
+                yield (
+                    f"_SS_LEG_HOUSE_BY_DESC[{key!r}][{field!r}][{slot!r}]",
+                    str(text),
+                )
+    for key, entry in _SS_READ_VALUE.items():
+        for slot, text in entry.items():
+            yield f"_SS_READ_VALUE[{key!r}][{slot!r}]", str(text)
+    for key, entry in _SS_READ_KEY_VALUE.items():
+        for slot, text in entry.items():
+            yield f"_SS_READ_KEY_VALUE[{key!r}][{slot!r}]", str(text)
+
+
+def test_ss_gates_and_leg_desc_user_facing_copy_has_no_batch_machine_words() -> None:
+    """macro#6920 heal-round h2 R3: user-facing `_SS_GATES` / `_SS_LEG_DESC`
+    strings must not say "batch" / "批处理". Those are pipeline nouns, not
+    what the reader is looking at. RED at 3ac3bb2f because IDENTITY_UNRESOLVED
+    clear_en/clear_zh and the R8 IDENTITY_UNRESOLVED leg description used both.
+    Heal-round h5: also walk `_SS_LEG_HOUSE_BY_DESC`, `_SS_ARTIFACT`, and
+    `_SS_READER`.
+    """
+    from scripts.build_ticker_pages import _SS_GATES
+
+    banned_ascii = ("batch",)
+    banned_zh = ("批处理",)
+    for code, entry in _SS_GATES.items():
+        for slot, text in entry.items():
+            hay = str(text)
+            for word in banned_ascii:
+                assert word not in hay.lower(), (
+                    f"_SS_GATES[{code!r}][{slot!r}] contains {word!r}: {hay!r}"
+                )
+            for word in banned_zh:
+                assert word not in hay, (
+                    f"_SS_GATES[{code!r}][{slot!r}] contains {word!r}: {hay!r}"
+                )
+    for label, hay in _iter_leg_house_copy_slots():
+        for word in banned_ascii:
+            assert word not in hay.lower(), f"{label} contains {word!r}: {hay!r}"
+        for word in banned_zh:
+            assert word not in hay, f"{label} contains {word!r}: {hay!r}"
+
+
+def test_unmapped_disclosure_code_keeps_the_engine_description_not_a_prettified_slug() -> None:
+    """macro#6920 round-3 ruling MAJOR-1 (binding): "the `_ss_prettify`
+    fallback stays only as a last resort that ALSO keeps the engine's
+    description text." Round-4's `_ss_disclosure_rows` still discarded the
+    description whenever a code prefix was present but unmapped, replacing
+    it with `_ss_prettify(code)` in BOTH language slots (round-4 review
+    MAJOR-1). This is the reviewer's own literal repro command, pinned.
+    """
+    from scripts.build_ticker_pages import _ss_disclosure_rows, _ss_prettify
+
+    rows = _ss_disclosure_rows([
+        "FUTURE_UNMAPPED_CODE: alias epoch valid_from 2026-01-01, owner batch skipped",
+    ])
+    assert len(rows) == 1
+    row = rows[0]
+    assert row["code"] == "FUTURE_UNMAPPED_CODE"
+    # The engine's own description text must survive — never thrown away in
+    # favor of a slug-derived pseudo-word.
+    assert row["en"] == "alias epoch valid_from 2026-01-01, owner batch skipped"
+    assert row["zh"] == "alias epoch valid_from 2026-01-01, owner batch skipped"
+    assert row["en"] != _ss_prettify("FUTURE_UNMAPPED_CODE")
+
+    # A code with NO description text at all (defensive path) still falls
+    # back to the prettified code rather than rendering blank.
+    blank_rows = _ss_disclosure_rows(["FUTURE_UNMAPPED_CODE_NO_TEXT:   "])
+    assert blank_rows[0]["en"] == _ss_prettify("FUTURE_UNMAPPED_CODE_NO_TEXT")
+
+
+def test_m1_shell_gate_description_renders_a_real_bilingual_sentence() -> None:
+    """macro#6920 round-4 review MAJOR-2: `identity_proof.legs[].description`
+    (the gate sentence under `.ss-chk-d`, e.g. "Identity checks") was passed
+    to the template as `lg.desc` with no `t()` call — a NEW string this PR's
+    own M1 failure shell (`engine.security_state.compile_security_state_failure`,
+    `owner_read_completed=False`) added rendered in English even on the ZH
+    page, and it was the LARGEST text in that panel. The PR body had argued
+    this was "cosmetic ... not user-facing" because the disclosures line
+    next to it is bilingual — the review found the body's own committed ZH
+    screenshot proved the gate sentence itself was not. Fixed via
+    `_SS_LEG_DESC`, keyed on (check, code) so it cannot collide with the
+    OTHER "R8" leg descriptions (the normal AAPL-reachable path and the
+    owner-composed COMPILER_FAILURE shell) that are unrelated pre-existing
+    text.
+    """
+    from scripts.build_ticker_pages import _SS_LEG_DESC
+
+    contract = _contract(identity_proof={
+        "state": "BLOCKED_IDENTITY_BRIDGE", "method": "owner_backed_chain.v1",
+        "legs": [{
+            "check": "R8",
+            "description": "owner-identity batch was unavailable this cycle; subject is the "
+            "frozen pinned allowlist mapping for this ticker, never a live owner read",
+            "artifact": "SecurityStateSubject (frozen pinned allowlist config, not a producer owner receipt)",
+            "reader": "scripts/security_state_producer.py::_read_security_state_identity_rows",
+            "values_read": [{"field": "subject_ticker_display", "value": "MSFT"}],
+            "result": "fail", "code": "IDENTITY_UNRESOLVED",
+        }],
+        "equalities": [], "refusals": ["IDENTITY_UNRESOLVED"], "disclosures": [],
+    })
+    view = build_security_state({"security_state": contract})
+    assert view is not None
+    leg = view["identity"]["legs"][0]
+
+    house = _SS_LEG_DESC[("R8", "IDENTITY_UNRESOLVED")]
+    assert leg["desc_en"] == house["en"] and leg["desc_zh"] == house["zh"]
+    assert leg["desc_en"] != leg["desc_zh"], "ZH slot must be real Chinese, not the English duplicated"
+    assert re.search(r"[一-鿿]", leg["desc_zh"]), f"desc_zh is not Chinese: {leg['desc_zh']!r}"
+    # The raw engine sentence must not leak through unmapped.
+    assert "owner-identity batch was unavailable this cycle" not in leg["desc_en"] or leg["desc_en"] == house["en"]
+
+    import jinja2
+    env = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(str(REPO / "templates")),
+        undefined=jinja2.ChainableUndefined,
+    )
+    html = env.get_template("ticker.html.j2").render(
+        security_state=view, ticker="MSFT", name="Microsoft Corp.",
+    )
+    assert house["en"] in html
+    assert house["zh"] in html
+    # The raw engine-only English sentence (pre-fix behaviour) is gone.
+    assert "owner-identity batch was unavailable this cycle" not in html
+
+    # A DIFFERENT code-less "R8" leg with no house-copy entry: all six slots
+    # are empty. The EN slot never receives engine text and the ZH slot never
+    # receives 暂不可用. The proven-path R8 sentence is a mapped key and must
+    # not be used here.
+    other_contract = _contract(identity_proof={
+        "state": "PROVEN", "method": "owner_backed_chain.v1",
+        "legs": [{
+            "check": "R8",
+            "description": "some future unmapped engine sentence",
+            "artifact": "x", "reader": "y", "values_read": [], "result": "pass", "code": None,
+        }],
+        "equalities": [], "refusals": [], "disclosures": [],
+    })
+    other_view = build_security_state({"security_state": other_contract})
+    assert other_view is not None
+    other_leg = other_view["identity"]["legs"][0]
+    assert other_leg["desc_en"] == ""
+    assert other_leg["desc_zh"] == ""
+    assert other_leg["artifact_en"] == ""
+    assert other_leg["artifact_zh"] == ""
+    assert other_leg["reader_en"] == ""
+    assert other_leg["reader_zh"] == ""
+
+
+def test_unread_disclosures_have_house_copy_with_no_english_into_zh_leak() -> None:
+    """macro#6920 round-2/2 review MAJOR: engine UNREAD_DISCLOSURES
+    (CIK_LEG_OWNER_UNREAD, OWNER_COMPOSED_SUBJECT_UNREAD,
+    ISSUER_LINEAGE_UNREAD, ALIAS_EPOCH_UNREAD) had no `_SS_DISCLOSURES`
+    entries. `_ss_disclosure_rows` then duplicated the English engine
+    description — including machine field names — into both language slots.
+
+    RED at 59933d1a: OWNER_COMPOSED_SUBJECT_UNREAD rendered
+    `security_id, issuer_id, listing_key and ticker_display are the frozen
+    pinned fallback values; ...` in EN and ZH.
+    """
+    from engine.security_state import UNREAD_DISCLOSURES
+    from scripts.build_ticker_pages import _SS_DISCLOSURES, _ss_disclosure_rows, _ss_split_disclosure
+
+    rows = _ss_disclosure_rows(list(UNREAD_DISCLOSURES))
+    assert len(rows) == 4, rows
+    machine_tokens = (
+        "security_id", "issuer_id", "listing_key", "ticker_display",
+        "VendorAliasTable", "IssuerMaster",
+    )
+    for raw, row in zip(UNREAD_DISCLOSURES, rows):
+        code, _desc = _ss_split_disclosure(raw)
+        assert row["code"] == code
+        assert code in _SS_DISCLOSURES, (
+            f"{code}: no _SS_DISCLOSURES house-copy entry — EN leaks into ZH"
+        )
+        house = _SS_DISCLOSURES[code]
+        assert row["en"] == house["en"] and row["zh"] == house["zh"], (
+            f"{code}: rendered disclosure does not match house copy: {row!r}"
+        )
+        assert row["en"] != row["zh"], (
+            f"{code}: ZH slot duplicates English: {row!r}"
+        )
+        assert re.search(r"[一-鿿]", row["zh"]), f"{code}: zh is not Chinese: {row['zh']!r}"
+        hay = f"{row['en']} {row['zh']}"
+        for tok in machine_tokens:
+            assert tok not in hay, (
+                f"{code}: machine token {tok!r} in user-facing copy: {hay!r}"
+            )
+
+        contract = _contract(identity_proof={
+            "state": "BLOCKED_IDENTITY_BRIDGE", "method": "owner_backed_chain.v1",
+            "legs": [], "equalities": [], "refusals": [],
+            "disclosures": [raw],
+        })
+        view = build_security_state({"security_state": contract})
+        assert view is not None
+        rendered = next(d for d in view["identity"]["disclosures"] if d["code"] == code)
+        assert rendered["en"] == house["en"] and rendered["zh"] == house["zh"]
+
+
+def test_ss_leg_desc_identity_unresolved_is_plain_words_not_allowlist_jargon() -> None:
+    """macro#6920 round-2/2 review MINOR-1: `_SS_LEG_DESC[('R8','IDENTITY_UNRESOLVED')]`
+    still said 'frozen pinned-allowlist mapping' / '冻结准入映射' after the
+    batch/批处理 rewrite. Those are pipeline nouns, not what the reader is
+    looking at. RED at 59933d1a. Heal-round h5: also walk the by-description
+    table and the artifact/reader tables.
+    """
+    from scripts.build_ticker_pages import _SS_GATES
+
+    banned = (
+        "allowlist", "pinned-allowlist", "pinned allowlist",
+        "准入映射", "SecurityStateSubject",
+    )
+    for code, entry in _SS_GATES.items():
+        for slot, text in entry.items():
+            hay = str(text)
+            for word in banned:
+                if word.isascii():
+                    assert word.lower() not in hay.lower(), (
+                        f"_SS_GATES[{code!r}][{slot!r}] contains {word!r}: {hay!r}"
+                    )
+                else:
+                    assert word not in hay, (
+                        f"_SS_GATES[{code!r}][{slot!r}] contains {word!r}: {hay!r}"
+                    )
+    for label, hay in _iter_leg_house_copy_slots():
+        for word in banned:
+            if word.isascii():
+                assert word.lower() not in hay.lower(), (
+                    f"{label} contains {word!r}: {hay!r}"
+                )
+            else:
+                assert word not in hay, f"{label} contains {word!r}: {hay!r}"
+
+
+def test_m1_shell_artifact_and_reader_are_plain_bilingual_not_machine_paths() -> None:
+    """macro#6920 round-2/2 review MINOR-2: the M1 Identity checks panel
+    printed `artifact` and `reader` as raw English on the ZH page
+    (`SecurityStateSubject (frozen pinned allowlist config, ...)` and
+    `scripts/security_state_producer.py::_read_security_state_identity_rows`)
+    via the pass-through at build_ticker_pages.py. RED at 59933d1a.
+    """
+    from scripts.build_ticker_pages import _SS_ARTIFACT, _SS_READER
+
+    contract = _contract(identity_proof={
+        "state": "BLOCKED_IDENTITY_BRIDGE", "method": "owner_backed_chain.v1",
+        "legs": [{
+            "check": "R8",
+            "description": "owner-identity batch was unavailable this cycle; subject is the "
+            "frozen pinned allowlist mapping for this ticker, never a live owner read",
+            "artifact": "SecurityStateSubject (frozen pinned allowlist config, not a producer owner receipt)",
+            "reader": "scripts/security_state_producer.py::_read_security_state_identity_rows",
+            "values_read": [{"field": "subject_ticker_display", "value": "MSFT"}],
+            "result": "fail", "code": "IDENTITY_UNRESOLVED",
+        }],
+        "equalities": [], "refusals": ["IDENTITY_UNRESOLVED"], "disclosures": [],
+    })
+    view = build_security_state({"security_state": contract})
+    assert view is not None
+    leg = view["identity"]["legs"][0]
+
+    art = _SS_ARTIFACT[("R8", "IDENTITY_UNRESOLVED")]
+    rdr = _SS_READER[("R8", "IDENTITY_UNRESOLVED")]
+    assert leg["artifact_en"] == art["en"] and leg["artifact_zh"] == art["zh"]
+    assert leg["reader_en"] == rdr["en"] and leg["reader_zh"] == rdr["zh"]
+    assert leg["artifact_en"] != leg["artifact_zh"]
+    assert leg["reader_en"] != leg["reader_zh"]
+    assert re.search(r"[一-鿿]", leg["artifact_zh"])
+    assert re.search(r"[一-鿿]", leg["reader_zh"])
+    blob = " ".join([
+        leg["artifact_en"], leg["artifact_zh"],
+        leg["reader_en"], leg["reader_zh"],
+    ])
+    assert "SecurityStateSubject" not in blob
+    assert "scripts/" not in blob
+    assert "allowlist" not in blob.lower()
+    assert "准入映射" not in blob
+
+    import jinja2
+    env = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(str(REPO / "templates")),
+        undefined=jinja2.ChainableUndefined,
+    )
+    html = env.get_template("ticker.html.j2").render(
+        security_state=view, ticker="MSFT", name="Microsoft Corp.",
+    )
+    assert art["en"] in html and art["zh"] in html
+    assert rdr["en"] in html and rdr["zh"] in html
+    assert "SecurityStateSubject" not in html
+    assert "scripts/security_state_producer.py::_read_security_state_identity_rows" not in html
+
+
+def _prettify_words(code: str) -> str:
+    words = re.sub(r"[^0-9A-Za-z]+", " ", code).strip().lower()
+    return (words[:1].upper() + words[1:]) if words else ""
+
+
+def test_m1_subread_reason_is_house_copy_never_english_on_zh_page() -> None:
+    """REQUIRED 2: M1 public_reason is a CODE; the page maps it through
+    `_SS_REASON` and never renders the raw code or the false compiler
+    sentence. Unmapped codes render `_SS_COVERAGE_FALLBACK`, never the code.
+    """
+    from engine.security_state import MSFT_SUBJECT, compile_security_state_failure
+    from jsonschema import Draft202012Validator, FormatChecker
+    from scripts.build_ticker_pages import _SS_COVERAGE_FALLBACK, _SS_REASON
+
+    schema_path = REPO / "contracts" / "market_os" / "security_state.v1.schema.json"
+    validator = Draft202012Validator(
+        json.loads(schema_path.read_text(encoding="utf-8")),
+        format_checker=FormatChecker(),
+    )
+    state = compile_security_state_failure(
+        subject=MSFT_SUBJECT, validator=validator, now="2026-01-01T00:00:00Z",
+        prior_state=None, owner_read_completed=False,
+    )
+    view = build_security_state({"security_state": state})
+    assert view is not None
+    entry = next(s for s in _axis(view, "opportunity_context")["subreads"] if s["en"] == "Entry read")
+    house = _SS_REASON["OWNER_IDENTITY_BATCH_UNAVAILABLE"]
+    assert entry["reason_en"] == house["en"]
+    assert entry["reason_zh"] == house["zh"]
+    assert entry["reason_en"] != entry["reason_zh"]
+    assert re.search(r"[一-鿿]", entry["reason_zh"])
+
+    zh_html = _render_section(view, lang="zh")
+    assert house["zh"] in zh_html
+    assert house["en"] not in zh_html
+    # REQUIRED 3 puts this code on M1 failed_gates, so the raw identifier may
+    # appear inside an ss-id chip. It must not appear as the reason sentence.
+    stripped = re.sub(r'<span class="(?:c )?ss-id">.*?</span>', "", zh_html)
+    assert "OWNER_IDENTITY_BATCH_UNAVAILABLE" not in stripped
+    assert "compiler failed" not in zh_html
+    assert "security_state compiler" not in zh_html
+
+    unmapped = _contract(legs={
+        **_contract()["legs"],
+        "opportunity_context": {
+            "prophet": {"ref": None, "state": "UNAVAILABLE", "reason": "SOME_FUTURE_REASON_CODE"},
+            "entry": {"state": "UNAVAILABLE", "available": False, "null_reason": None},
+            "market_incorporation": {"ref": None, "state": "NOT_COVERED"},
+            "dislocation": {"ref": None, "state": "NOT_COVERED"},
+            "coverage_state": "UNAVAILABLE",
+        },
+    })
+    unmapped_view = build_security_state({"security_state": unmapped})
+    assert unmapped_view is not None
+    prophet = next(s for s in _axis(unmapped_view, "opportunity_context")["subreads"] if s["en"] == "Prophet outlook")
+    assert prophet["reason_en"] == _SS_COVERAGE_FALLBACK["en"]
+    assert prophet["reason_zh"] == _SS_COVERAGE_FALLBACK["zh"]
+    unmapped_zh = _render_section(unmapped_view, lang="zh")
+    assert "SOME_FUTURE_REASON_CODE" not in unmapped_zh
+    assert _SS_COVERAGE_FALLBACK["zh"] in unmapped_zh
+
+
+def test_pinned_identity_not_owner_read_house_copy_is_the_frozen_pair() -> None:
+    """REQUIRED 4: PINNED_IDENTITY_NOT_OWNER_READ_THIS_CYCLE is a frozen
+    EN/ZH pair at parity, not pipeline jargon.
+    """
+    from scripts.build_ticker_pages import _SS_DISCLOSURES, _ss_disclosure_rows
+
+    house = _SS_DISCLOSURES["PINNED_IDENTITY_NOT_OWNER_READ_THIS_CYCLE"]
+    assert house["en"] == (
+        "This cycle used the last known identity for this security; the identity sources were not re-read."
+    )
+    assert house["zh"] == (
+        "本周期使用该证券上次已知的身份记录；未重新读取身份来源。"
+    )
+    rows = _ss_disclosure_rows([
+        "PINNED_IDENTITY_NOT_OWNER_READ_THIS_CYCLE: frozen allowlist mapping must never reach the page",
+    ])
+    assert rows[0]["en"] == house["en"]
+    assert rows[0]["zh"] == house["zh"]
+    assert "allowlist" not in rows[0]["en"].lower()
+    assert "frozen" not in rows[0]["en"].lower()
+    assert re.search(r"[一-鿿]", rows[0]["zh"])
+
+
+def _identity_checks_panel(html: str) -> _HtmlNode:
+    """The Identity-checks `.dpanel` from a language-stripped ticker render."""
+    root = _parse_class_tree(html)
+    for panel in root.find_all_class("dpanel"):
+        for child in panel.children:
+            if child.tag == "h3" and (
+                "Identity checks" in child.get_text() or "身份核对" in child.get_text()
+            ):
+                return panel
+    raise AssertionError("Identity checks panel not found")
+
+
+def _without_ss_id(node: _HtmlNode) -> _HtmlNode:
+    """Drop ``ss-id`` / ``c ss-id`` subtrees (receipt chips and identifiers).
+
+    `_HtmlNode` has no subtree-exclusion of its own. The receipt code chip is
+    the sanctioned home for a machine code; the ALL_CAPS_SNAKE and ZH Latin-run
+    rules apply to what remains after those spans are removed.
+    """
+    clone = _HtmlNode(node.tag, node.classes)
+    clone.text_parts = list(node.text_parts)
+    for child in node.children:
+        if "ss-id" in child.classes:
+            continue
+        clone.children.append(_without_ss_id(child))
+    return clone
+
+
+def _spaced_text(node: _HtmlNode) -> str:
+    """Visible text with a gap between child elements so labels do not glue to values."""
+    bits = [part for part in node.text_parts if part.strip()]
+    for child in node.children:
+        child_text = _spaced_text(child)
+        if child_text:
+            bits.append(child_text)
+    return " ".join(bits)
+
+
+def _visible_page_text(html: str) -> str:
+    """Tag-stripped text with style/script dropped, for field-name leakage."""
+    html = re.sub(r"<script\b[^>]*>.*?</script>", " ", html, flags=re.S | re.I)
+    html = re.sub(r"<style\b[^>]*>.*?</style>", " ", html, flags=re.S | re.I)
+    return re.sub(r"<[^>]+>", " ", html)
+
+
+def test_golden_msft_proven_path_zh_page_has_no_raw_engine_english() -> None:
+    """Heal-round h5: every golden-MSFT identity leg is mapped to house copy.
+    The ZH Identity-checks panel never receives engine English and never
+    receives `_SS_COVERAGE_FALLBACK` ('暂不可用') on a passing row.
+    """
+    from scripts.build_ticker_pages import (
+        _SS_ARTIFACT, _SS_COVERAGE_FALLBACK, _SS_LEG_DESC, _SS_LEG_HOUSE_BY_DESC,
+        _SS_READER,
+    )
+
+    fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_msft_expected_output.json"
+    state = json.loads(fixture.read_text(encoding="utf-8"))
+    view = build_security_state({"security_state": state})
+    assert view is not None
+    missing_house: list[tuple[str, str]] = []
+    for src, lg in zip(state["identity_proof"]["legs"], view["identity"]["legs"]):
+        code = lg["code"] or ""
+        desc_raw = src["description"] or ""
+        if code:
+            desc_house = _SS_LEG_DESC.get((lg["check"], code))
+            art_house = _SS_ARTIFACT.get((lg["check"], code))
+            rdr_house = _SS_READER.get((lg["check"], code))
+        else:
+            triple = _SS_LEG_HOUSE_BY_DESC.get((lg["check"], desc_raw)) or {}
+            desc_house = triple.get("desc")
+            art_house = triple.get("artifact")
+            rdr_house = triple.get("reader")
+        if not (desc_house and desc_house.get("en") and desc_house.get("zh")):
+            missing_house.append((lg["check"], code))
+        else:
+            assert lg["desc_en"] == desc_house["en"]
+            assert lg["desc_zh"] == desc_house["zh"]
+            assert lg["desc_zh"] != _SS_COVERAGE_FALLBACK["zh"]
+        if art_house:
+            assert lg["artifact_en"] == art_house["en"]
+            assert lg["artifact_zh"] == art_house["zh"]
+        if rdr_house:
+            assert lg["reader_en"] == rdr_house["en"]
+            assert lg["reader_zh"] == rdr_house["zh"]
+    assert not missing_house, (
+        f"golden-MSFT identity legs missing house description: {missing_house}"
+    )
+
+    zh_html = _render_section(view, lang="zh")
+    assert "scripts/security_state_producer.py" not in zh_html
+    assert "data/reference/security_master.parquet" not in zh_html
+
+    panel_text = _identity_checks_panel(zh_html).get_text()
+    assert _SS_COVERAGE_FALLBACK["zh"] not in panel_text
+    assert "{" not in panel_text, panel_text
+    assert "}" not in panel_text, panel_text
+    assert "':" not in panel_text, panel_text
+    visible = _visible_page_text(zh_html)
+    for name in ("left_value", "right_value", "values_read", "artifact", "reader", "check"):
+        assert not re.search(rf"\b{name}\b", visible), (
+            f"{name!r} leaked as visible text on the ZH page"
+        )
+    for name in (
+        "owner_alias_reader", "security_set", "workspace_native_cik",
+        "subject_ticker_display",
+    ):
+        assert name not in panel_text, (
+            f"{name!r} leaked as visible text on the ZH Identity-checks panel"
+        )
+
+
+_PANEL_CUSTOMER_TOKENS = frozenset({
+    "ISS", "SEC", "XNAS", "XNYS", "MSFT", "AAPL", "cik", "evt", "results",
+    "CIK", "ISIN", "CUSIP", "NYSE", "NASDAQ",
+})
+_IDENTITY_CHECKS_MACHINE_TOKENS = (
+    ".parquet", "::", "scripts/", "engine/", "data/",
+    "lib.dataos", "engine.neuralweb", "parse_listing_key",
+    "load_workspace_with_disposition", "event_workspace.v1",
+    "SecurityStateSubject", "_read_security_state_identity_rows",
+    "security_master", "issuer_master", "issuer_migrations",
+    "security_migrations",
+)
+_CAMEL_RE = re.compile(r"\b[A-Z][a-z]+[A-Z][A-Za-z]+\b")
+_DOTTED_MODULE_RE = re.compile(
+    r"[A-Za-z_]+\.[A-Za-z_]+\.[A-Za-z_]+|[A-Za-z_]+\.[a-z_]+\("
+)
+_CALL_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\(")
+_ALL_CAPS_SNAKE_RE = re.compile(r"\b[A-Z]{3,}(?:_[A-Z0-9]+)*\b")
+_BARE_LITERAL_RE = re.compile(r"\b(?:true|false|null|None)\b")
+_ZH_LATIN_RUN_RE = re.compile(r"[A-Za-z]{3,}")
+# h7 REQUIRED (5): `.py` cannot join the substring tuple (consumed by
+# `if token in text`). Word-boundary regex, never the bare substring "py".
+_PY_RE = re.compile(r"\.py\b")
+
+# h7 REQUIRED (3): discovery extractor over engine/security_state.py.
+# Single-capture r'(\w*(?:state|status))\W{1,4}["\']([A-Za-z_]+)["\']' finds
+# UNAVAILABLE at :681 and DIVERGENT at the :703/:704 comparisons (addendum:
+# :691 is `= "AVAILABLE" if agrees else "DIVERGENT"` and the first literal
+# wins). Identity-row assertion (c) uses a separate assignment/== scan of
+# the four values_read keys so :691's DIVERGENT is still in the reachable set.
+_ENGINE_STATE_STATUS_ASSIGN_RE = re.compile(
+    r"""(\w*(?:state|status))\W{1,4}['"]([A-Za-z_]+)['"]"""
+)
+_QUOTED_TOKEN_RE = re.compile(r"""['"]([A-Za-z_]+)['"]""")
+_IDENTITY_ROW_STATE_STATUS_KEYS = frozenset({
+    "security_state", "issuer_state", "status", "corroboration_state",
+})
+_IDENTITY_ROW_ASSIGN_RE = re.compile(
+    r"\b(?:security_state|issuer_state|corroboration_state|status)\b\s*(?:=|==)\s*(.+)$"
+)
+
+
+def _identity_checks_machine_hits(text: str, *, lang: str) -> list[str]:
+    """Collect machine-text hits in Identity-checks visible text (ss-id stripped)."""
+    hits: list[str] = []
+    for token in _IDENTITY_CHECKS_MACHINE_TOKENS:
+        if token in text:
+            hits.append(token)
+    for m in _PY_RE.finditer(text):
+        hits.append(".py")
+    for rx, label in (
+        (_CAMEL_RE, "CamelCase"),
+        (_DOTTED_MODULE_RE, "dotted-path"),
+        (_CALL_RE, "call"),
+        (_BARE_LITERAL_RE, "literal"),
+        (_ALL_CAPS_SNAKE_RE, "ALL_CAPS"),
+    ):
+        for m in rx.finditer(text):
+            tok = m.group(0)
+            if tok in _PANEL_CUSTOMER_TOKENS:
+                continue
+            hits.append(f"{label}:{tok}")
+    if "::" in text and "::" not in hits:
+        hits.append("::")
+    if lang == "zh":
+        for m in _ZH_LATIN_RUN_RE.finditer(text):
+            tok = m.group(0)
+            if tok in _PANEL_CUSTOMER_TOKENS:
+                continue
+            hits.append(f"zh-latin:{tok}")
+    return hits
+
+
+def _extract_engine_state_status_tokens(src: str) -> set[str]:
+    """Discovery (3)(a): group-2 of every *state/*status-then-quoted pair."""
+    return {m.group(2) for m in _ENGINE_STATE_STATUS_ASSIGN_RE.finditer(src)}
+
+
+def _walk_json_state_status_values(obj: object, *, keys: frozenset[str] | None) -> set[str]:
+    """Collect string values of keys ending in state/status, optionally filtered."""
+    found: set[str] = set()
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            if isinstance(k, str) and k.endswith(("state", "status")):
+                if keys is None or k in keys:
+                    if isinstance(v, str) and v:
+                        found.add(v)
+            found |= _walk_json_state_status_values(v, keys=keys)
+    elif isinstance(obj, list):
+        for item in obj:
+            found |= _walk_json_state_status_values(item, keys=keys)
+    return found
+
+
+def _extract_engine_identity_row_tokens(src: str) -> set[str]:
+    """Quoted literals assigned to (or ``==``-compared with) the four identity keys."""
+    out: set[str] = set()
+    for line in src.splitlines():
+        m = _IDENTITY_ROW_ASSIGN_RE.search(line)
+        if not m:
+            continue
+        for qm in _QUOTED_TOKEN_RE.finditer(m.group(1)):
+            tok = qm.group(1)
+            if tok not in _IDENTITY_ROW_STATE_STATUS_KEYS:
+                out.add(tok)
+    return out
+
+
+def _identity_checks_panel_html(html: str) -> str:
+    """The Identity-checks ``<section>`` HTML, ss-id spans included."""
+    for m in re.finditer(r'<section class="dpanel">.*?</section>', html, flags=re.S):
+        blob = m.group(0)
+        if "Identity checks" in blob or "身份核对" in blob:
+            return blob
+    raise AssertionError("Identity checks panel HTML not found")
+
+
+def _inject_identity_read_values(state: dict, updates: dict[str, object]) -> dict:
+    """Copy *state* and overwrite matching ``values_read`` fields. Never writes disk."""
+    clone = json.loads(json.dumps(state))
+    remaining = dict(updates)
+    for leg in clone.get("identity_proof", {}).get("legs") or []:
+        for item in leg.get("values_read") or []:
+            if isinstance(item, dict) and item.get("field") in remaining:
+                item["value"] = remaining.pop(item["field"])
+    assert not remaining, (
+        "golden-MSFT values_read missing fields to inject: "
+        + ", ".join(sorted(str(k) for k in remaining))
+    )
+    return clone
+
+
+def test_identity_checks_panel_has_no_machine_text_on_golden_msft_and_m1() -> None:
+    """Heal-round h6 REQUIRED 2: panel-wide machine-text guard.
+
+    Renders golden-MSFT and M1 Identity-checks in EN and ZH, strips ``ss-id``
+    subtrees (receipt chips and customer identifiers), and fails on CamelCase
+    identifiers, dotted paths, parenthesised calls, ``::``, ``.parquet`` /
+    ``.py``, ``scripts/`` / ``engine/`` / ``data/``, bare ``true`` / ``false``
+    / ``null`` / ``None``, and ALL_CAPS_SNAKE of three or more letters.
+    ZH additionally fails on a Latin run of three or more letters outside
+    `_PANEL_CUSTOMER_TOKENS`. Supersedes
+    ``test_golden_msft_identity_checks_panel_has_no_machine_text``.
+    RED at b53b05b8 on reads values (VendorAliasTable.resolve(store),
+    IssuerMaster.cik_of_issuer, IssuerMaster.issuer_of_security, true, null,
+    RESOLVED, AVAILABLE, active).
+    """
+    from engine.security_state import MSFT_SUBJECT, compile_security_state_failure
+    from jsonschema import Draft202012Validator, FormatChecker
+    from scripts.build_ticker_pages import _SS_ARTIFACT, _SS_COVERAGE_FALLBACK
+
+    pages: list[tuple[str, dict]] = []
+    fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_msft_expected_output.json"
+    golden = json.loads(fixture.read_text(encoding="utf-8"))
+    golden_view = build_security_state({"security_state": golden})
+    assert golden_view is not None
+    pages.append(("golden-msft", golden_view))
+
+    schema_path = REPO / "contracts" / "market_os" / "security_state.v1.schema.json"
+    validator = Draft202012Validator(
+        json.loads(schema_path.read_text(encoding="utf-8")),
+        format_checker=FormatChecker(),
+    )
+    m1 = compile_security_state_failure(
+        subject=MSFT_SUBJECT, validator=validator, now="2026-01-01T00:00:00Z",
+        prior_state=None, owner_read_completed=False,
+    )
+    m1_view = build_security_state({"security_state": m1})
+    assert m1_view is not None
+    pages.append(("m1", m1_view))
+
+    failures: list[str] = []
+    for label, view in pages:
+        for lang in ("en", "zh"):
+            html = _render_section(view, lang=lang)
+            panel = _identity_checks_panel(html)
+            scanned = _spaced_text(_without_ss_id(panel))
+            hits = _identity_checks_machine_hits(scanned, lang=lang)
+            for hit in hits:
+                failures.append(f"{label}/{lang}: {hit}")
+            for chk in panel.find_all_class("ss-chk"):
+                chk_text = chk.get_text()
+                passed = ("passed" in chk_text) if lang == "en" else ("通过" in chk_text)
+                if passed:
+                    assert _SS_COVERAGE_FALLBACK["zh"] not in chk_text, (
+                        f"{label}/{lang} PASS row still has 暂不可用: {chk_text}"
+                    )
+    assert not failures, (
+        "Identity-checks panel still prints machine text: " + "; ".join(failures)
+    )
+
+    m1_en = _identity_checks_panel(_render_section(pages[1][1], lang="en")).get_text()
+    artifact_en = _SS_ARTIFACT[("R8", "IDENTITY_UNRESOLVED")]["en"]
+    assert "(not a live owner record)" in artifact_en
+    assert "(not a live owner record)" in m1_en, (
+        "M1 EN artifact sentence missing from Identity-checks: " + m1_en
+    )
+    # h7 REQUIRED (5): \.py\b must not false-positive on the captured panels.
+    for label, view in pages:
+        for lang in ("en", "zh"):
+            scanned = _spaced_text(_without_ss_id(
+                _identity_checks_panel(_render_section(view, lang=lang))
+            ))
+            assert _PY_RE.search(scanned) is None, (
+                f"{label}/{lang} false-positive on .py: {scanned}"
+            )
+            assert ".py" not in scanned
+
+
+def test_identity_row_state_status_tokens_have_house_pairs() -> None:
+    """h7 REQUIRED (3): every identity-row state/status token has a house pair.
+
+    Discovery walks engine/security_state.py and tests/fixtures/security_state/*.json.
+    The assertion is scoped to values reachable under the four identity
+    values_read keys ending in state/status (addendum 2026-09-10 23:05Z):
+    security_state, issuer_state, status, corroboration_state.
+    RED-first at h6 head 9990a4a9: UNAVAILABLE, DIVERGENT,
+    SUPERSEDED_DUPLICATE_MINT, NO_ISSUER_EVIDENCE missing from _SS_READ_VALUE.
+    ``inactive`` is defensive vocabulary (not in either extractor half) and is
+    guarded only by the injection test.
+    """
+    from scripts.build_ticker_pages import _SS_READ_KEY_VALUE, _SS_READ_VALUE
+
+    engine_src = (REPO / "engine" / "security_state.py").read_text(encoding="utf-8")
+    engine_tokens = _extract_engine_state_status_tokens(engine_src)
+    assert "UNAVAILABLE" in engine_tokens, (
+        "extractor missed UNAVAILABLE (expected at engine/security_state.py:681)"
+    )
+    assert "DIVERGENT" in engine_tokens, (
+        "extractor missed DIVERGENT (expected at engine/security_state.py:703/:704; "
+        "the :691 assignment yields AVAILABLE first under the single-capture regex)"
+    )
+
+    fixture_dir = REPO / "tests" / "fixtures" / "security_state"
+    fixture_tokens: set[str] = set()
+    fixture_identity: set[str] = set()
+    for path in sorted(fixture_dir.glob("*.json")):
+        blob = json.loads(path.read_text(encoding="utf-8"))
+        fixture_tokens |= _walk_json_state_status_values(blob, keys=None)
+        fixture_identity |= _walk_json_state_status_values(
+            blob, keys=_IDENTITY_ROW_STATE_STATUS_KEYS,
+        )
+
+    engine_identity = _extract_engine_identity_row_tokens(engine_src)
+    reachable = engine_identity | fixture_identity
+
+    missing = sorted(
+        tok for tok in reachable
+        if tok not in _SS_READ_VALUE and tok not in _SS_READ_KEY_VALUE
+    )
+    assert not missing, (
+        "identity-row state/status tokens missing a house pair: "
+        + ", ".join(missing)
+        + f" (discovery engine={sorted(engine_tokens)}; "
+        f"fixtures={sorted(fixture_tokens)}; reachable={sorted(reachable)})"
+    )
+
+
+def test_identity_checks_injected_unmapped_state_tokens_render_as_house_copy() -> None:
+    """h7 REQUIRED (4): inject UNAVAILABLE / SUPERSEDED_DUPLICATE_MINT / inactive
+    into golden-MSFT at render time. The whole Identity-checks panel subtree
+    (ss-id included) must show the house phrases and none of the three raw
+    tokens, and the panel-wide machine scan must stay empty.
+    RED-first at h6 head 9990a4a9: all three raw tokens printed inside ss-id.
+    """
+    # Frozen house phrases from REQUIRED (2) / addendum (6). Looked up as
+    # literals so the RED-first run on the h6 mapper fails on the raw tokens
+    # rather than KeyErroring on a table that does not yet contain them.
+    house = {
+        "UNAVAILABLE": {"en": "not available", "zh": "暂不可用"},
+        "SUPERSEDED_DUPLICATE_MINT": {
+            "en": "superseded (duplicate record)",
+            "zh": "已被取代（重复记录）",
+        },
+        "inactive": {"en": "not active", "zh": "无效"},
+    }
+
+    fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_msft_expected_output.json"
+    golden = json.loads(fixture.read_text(encoding="utf-8"))
+    injected = _inject_identity_read_values(golden, {
+        "corroboration_state": "UNAVAILABLE",
+        "security_state": "SUPERSEDED_DUPLICATE_MINT",
+        "status": "inactive",
+    })
+    view = build_security_state({"security_state": injected})
+    assert view is not None
+
+    raw_tokens = ("UNAVAILABLE", "SUPERSEDED_DUPLICATE_MINT", "inactive")
+
+    failures: list[str] = []
+    for lang in ("en", "zh"):
+        html = _render_section(view, lang=lang)
+        panel = _identity_checks_panel(html)
+        panel_html = _identity_checks_panel_html(html)
+        slot = "en" if lang == "en" else "zh"
+        for token in raw_tokens:
+            if token in panel_html or token in panel.get_text():
+                failures.append(f"{lang} still prints raw {token!r}")
+            phrase = house[token][slot]
+            if phrase not in panel_html:
+                failures.append(f"{lang} missing house phrase {phrase!r}")
+        scanned = _spaced_text(_without_ss_id(panel))
+        hits = _identity_checks_machine_hits(scanned, lang=lang)
+        for hit in hits:
+            failures.append(f"{lang} machine-hit {hit}")
+    assert not failures, (
+        "injected identity-row tokens still leak or lack house copy: "
+        + "; ".join(failures)
+    )
+    from scripts.build_ticker_pages import _SS_READ_VALUE
+    for tok, pair in house.items():
+        assert _SS_READ_VALUE[tok] == pair
+
+
+def test_ss_id_is_only_reached_through_id_shapes() -> None:
+    """h7 REQUIRED (1): ss-id only for `_SS_ID_SHAPES` (plus key-gated ticker/CUSIP).
+
+    ALL_CAPS_SNAKE and bare lowercase never receive ss-id. DIVERGENT/AVAILABLE
+    match the ungated CUSIP shape and STALE matches the ungated ticker shape;
+    the key gates must hold or HOLE A returns. A code identifier with no
+    house pair keeps the row as the dash pair.
+    """
+    from scripts.build_ticker_pages import (
+        _SS_READ_ABSENT, _ss_is_id_shape, _ss_map_identity_read_value,
+    )
+
+    assert _ss_is_id_shape("XNAS:MSFT", "") is True
+    assert _ss_is_id_shape("ISS:US-XNAS-MSFT", "") is True
+    assert _ss_is_id_shape("US-XNAS-MSFT", "") is True
+    assert _ss_is_id_shape("2026-09-04", "owner_decision_date") is True
+    assert _ss_is_id_shape("MSFT", "subject_ticker_display") is True
+    assert _ss_is_id_shape("MSFT", "status") is False
+    assert _ss_is_id_shape("DIVERGENT", "corroboration_state") is False
+    assert _ss_is_id_shape("AVAILABLE", "corroboration_state") is False
+    assert _ss_is_id_shape("STALE", "corroboration_state") is False
+    assert _ss_is_id_shape("UNAVAILABLE", "corroboration_state") is False
+    assert _ss_is_id_shape("inactive", "status") is False
+
+    for token, key in (
+        ("UNAVAILABLE", "corroboration_state"),
+        ("DIVERGENT", "corroboration_state"),
+        ("SUPERSEDED_DUPLICATE_MINT", "security_state"),
+        ("inactive", "status"),
+        ("NO_ISSUER_EVIDENCE", "issuer_state"),
+    ):
+        mapped = _ss_map_identity_read_value(key, token, True)
+        assert mapped is not None
+        assert mapped["is_id"] is False, token
+        assert mapped["en"] not in ("", "—") or token == "never", token
+
+    dropped = _ss_map_identity_read_value(
+        "unknown_reader", "VendorAliasTable.resolve(store)", True,
+    )
+    assert dropped is not None
+    assert dropped["is_id"] is False
+    assert dropped["en"] == _SS_READ_ABSENT["en"]
+
+
+def test_identity_leg_house_copy_covers_golden_msft_m1_and_compile_failed_shell() -> None:
+    """REQUIRED 1 (ii): every captured-path identity leg has a house
+    description. Walks golden-MSFT, the M1 shell, and the :1805
+    COMPILE_FAILED_AFTER_OWNER_CONFIRMED shell.
+    """
+    from engine.security_state import (
+        MSFT_CIK, MSFT_ISSUER_ID, MSFT_LISTING_KEY, MSFT_SECURITY_ID,
+        MSFT_SUBJECT, SecurityStateSubject, compile_security_state_failure,
+    )
+    from jsonschema import Draft202012Validator, FormatChecker
+    from scripts.build_ticker_pages import _SS_LEG_DESC, _SS_LEG_HOUSE_BY_DESC
+
+    def _desc_house(check: str, code: str | None, description: str):
+        code = code or ""
+        if code:
+            return _SS_LEG_DESC.get((check, code))
+        entry = _SS_LEG_HOUSE_BY_DESC.get((check, description or ""))
+        return (entry or {}).get("desc")
+
+    missing: list[tuple[str, str, str]] = []
+
+    def _walk(label: str, legs) -> None:
+        for lg in legs:
+            house = _desc_house(lg.get("check") or "", lg.get("code"), lg.get("description") or "")
+            if not (house and house.get("en") and house.get("zh")):
+                missing.append((label, lg.get("check") or "", lg.get("code") or ""))
+
+    fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_msft_expected_output.json"
+    golden = json.loads(fixture.read_text(encoding="utf-8"))
+    _walk("golden-msft", golden["identity_proof"]["legs"])
+
+    schema_path = REPO / "contracts" / "market_os" / "security_state.v1.schema.json"
+    validator = Draft202012Validator(
+        json.loads(schema_path.read_text(encoding="utf-8")),
+        format_checker=FormatChecker(),
+    )
+    m1 = compile_security_state_failure(
+        subject=MSFT_SUBJECT, validator=validator, now="2026-01-01T00:00:00Z",
+        prior_state=None, owner_read_completed=False,
+    )
+    _walk("m1", m1["identity_proof"]["legs"])
+
+    owner_subject = SecurityStateSubject(
+        security_id=MSFT_SECURITY_ID,
+        issuer_id=MSFT_ISSUER_ID,
+        listing_key=MSFT_LISTING_KEY,
+        ticker_display="MSFT",
+        issuer_cik=MSFT_CIK,
+        owner_evidence=(
+            ("decision_date", "2026-09-04"),
+            ("alias_reader", "VendorAliasTable.resolve(store)"),
+            ("issuer_reader", "IssuerMaster.issuer_of_security"),
+            ("cik_reader", "IssuerMaster.cik_of_issuer"),
+        ),
+    )
+    shell = compile_security_state_failure(
+        subject=owner_subject, validator=validator, now="2026-01-01T00:00:00Z",
+        prior_state=None, owner_read_completed=True,
+    )
+    assert shell["legs"]["opportunity_context"]["entry"]["null_reason"] == (
+        "COMPILE_FAILED_AFTER_OWNER_CONFIRMED"
+    )
+    assert any(
+        (lg.get("check") == "R8" and not lg.get("code"))
+        for lg in shell["identity_proof"]["legs"]
+    ), "expected the :1805 code-less R8 PASS shell"
+    _walk("compile-failed-after-owner-confirmed", shell["identity_proof"]["legs"])
+
+    assert not missing, f"identity legs missing house description: {missing}"
+
+
+def test_golden_msft_identity_checks_equalities_are_labeled_rows_not_dict_reprs() -> None:
+    """Heal-round h4 REQUIRED 1: equalities are view-model rows with a frozen
+    label, the two values, and a match/differ verdict — never a Python dict
+    repr. EN and ZH Identity-checks sections contain no dict-repr markers,
+    and every equality row carries a label.
+    """
+    from scripts.build_ticker_pages import _SS_EQUALITY
+
+    fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_msft_expected_output.json"
+    state = json.loads(fixture.read_text(encoding="utf-8"))
+    view = build_security_state({"security_state": state})
+    assert view is not None
+    rows = view["identity"]["equalities"]
+    assert rows, "golden MSFT carries equality receipts"
+    emitted = {e["check"] for e in state["identity_proof"]["equalities"]}
+    missing = emitted - set(_SS_EQUALITY)
+    assert not missing, f"_SS_EQUALITY missing engine checks: {sorted(missing)}"
+    for row in rows:
+        assert isinstance(row, dict), f"equality must be a row dict, got {row!r}"
+        assert row["label_en"], f"{row.get('check')!r}: missing EN label"
+        assert row["label_zh"], f"{row.get('check')!r}: missing ZH label"
+        assert re.search(r"[一-鿿]", row["label_zh"])
+        assert row["label_en"] != row["label_zh"]
+        assert row["verdict_en"] in ("match", "differ")
+        assert row["verdict_zh"] in ("一致", "不一致")
+        assert "{" not in row["label_en"] and "{" not in row["label_zh"]
+    for lang in ("en", "zh"):
+        html = _render_section(view, lang=lang)
+        panel = _identity_checks_panel(html)
+        text = panel.get_text()
+        notes = panel.find_all_class("dnotes")
+        assert notes, f"{lang} Identity-checks missing equalities list"
+        # REQUIRED 1 RED-first: the whole Identity-checks *section* (not just
+        # the equalities list) contains no dict-repr / set-repr markers.
+        # Pinning only `.dnotes` left `{SEC:…}` in the R4 description green.
+        assert "{" not in text, f"{lang} Identity-checks still has '{{': {text}"
+        assert "}" not in text, f"{lang} Identity-checks still has '}}': {text}"
+        assert "':" not in text, f"{lang} Identity-checks still has dict-repr \"'\": {text}"
+        for row in rows:
+            label = row["label_en"] if lang == "en" else row["label_zh"]
+            assert label in text, f"{lang} Identity-checks missing label {label!r}"
+
+
+def test_golden_msft_identity_checks_read_fields_are_plain_labels() -> None:
+    """Round-2 review MINOR 2: Identity-checks `values_read` keys render as
+    frozen EN/ZH labels, never as engine field names (`owner_alias_reader`,
+    `security_set`, `workspace_native_cik`, `subject_ticker_display`).
+    """
+    from scripts.build_ticker_pages import _SS_READ_FIELD
+
+    fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_msft_expected_output.json"
+    state = json.loads(fixture.read_text(encoding="utf-8"))
+    view = build_security_state({"security_state": state})
+    assert view is not None
+    emitted: set[str] = set()
+    for lg in state["identity_proof"]["legs"]:
+        for pair in lg.get("values_read") or []:
+            emitted.add(pair["field"])
+    missing = emitted - set(_SS_READ_FIELD)
+    assert not missing, f"_SS_READ_FIELD missing engine fields: {sorted(missing)}"
+    for lg in view["identity"]["legs"]:
+        for row in lg["reads"]:
+            assert row["label_en"], f"{row['k']!r}: missing EN label"
+            assert row["label_zh"], f"{row['k']!r}: missing ZH label"
+            assert re.search(r"[一-鿿]", row["label_zh"]), row["label_zh"]
+            assert row["label_en"] != row["label_zh"]
+    banned = (
+        "owner_alias_reader", "security_set", "workspace_native_cik",
+        "subject_ticker_display",
+    )
+    for lang in ("en", "zh"):
+        html = _render_section(view, lang=lang)
+        panel_text = _identity_checks_panel(html).get_text()
+        for name in banned:
+            assert name not in panel_text, (
+                f"{lang} Identity-checks still shows engine field {name!r}"
+            )
+        for lg in view["identity"]["legs"]:
+            for row in lg["reads"]:
+                label = row["label_en"] if lang == "en" else row["label_zh"]
+                assert label in panel_text, (
+                    f"{lang} Identity-checks missing field label {label!r}"
+                )
+
+
+def test_unknown_equality_check_falls_back_to_ss_id_never_a_repr() -> None:
+    """Heal-round h4 REQUIRED 1: an unknown `check` key renders inside
+    `<span class="ss-id">`, never as a Python dict repr.
+    """
+    contract = _contract()
+    contract["identity_proof"]["equalities"] = [{
+        "check": "R99",
+        "left": "left.field",
+        "left_value": "1",
+        "right": "right.field",
+        "right_value": "2",
+        "equal": False,
+    }]
+    view = build_security_state({"security_state": contract})
+    assert view is not None
+    row = view["identity"]["equalities"][0]
+    assert row["check"] == "R99"
+    assert row["label_en"] == ""
+    assert row["label_zh"] == ""
+    assert row["verdict_en"] == "differ"
+    assert row["verdict_zh"] == "不一致"
+    html = _render_section(view, lang="en")
+    assert '<span class="ss-id">R99</span>' in html
+    assert "{'check'" not in html
+    assert '"check":' not in html
+
+
+def test_m1_zh_page_reason_text_has_no_latin_letters() -> None:
+    """Heal-round h4 REQUIRED 2: M1 ZH reason slots are house copy, never
+    English prose and never a Latin-letter reason.
+    """
+    from engine.security_state import MSFT_SUBJECT, compile_security_state_failure
+    from jsonschema import Draft202012Validator, FormatChecker
+    from scripts.build_ticker_pages import _SS_REASON
+
+    schema_path = REPO / "contracts" / "market_os" / "security_state.v1.schema.json"
+    validator = Draft202012Validator(
+        json.loads(schema_path.read_text(encoding="utf-8")),
+        format_checker=FormatChecker(),
+    )
+    state = compile_security_state_failure(
+        subject=MSFT_SUBJECT, validator=validator, now="2026-01-01T00:00:00Z",
+        prior_state=None, owner_read_completed=False,
+    )
+    view = build_security_state({"security_state": state})
+    assert view is not None
+    prophet_house = _SS_REASON["PROPHET_OWNER_OUTPUT_ABSENT"]
+    owner_house = _SS_REASON["OWNER_IDENTITY_BATCH_UNAVAILABLE"]
+    for s in _axis(view, "opportunity_context")["subreads"]:
+        if s["reason_zh"]:
+            assert not re.search(r"[A-Za-z]", s["reason_zh"]), (
+                f"M1 ZH reason still has Latin letters: {s['reason_zh']!r}"
+            )
+    zh_html = _render_section(view, lang="zh")
+    assert prophet_house["zh"] in zh_html
+    assert owner_house["zh"] in zh_html
+    assert prophet_house["en"] not in zh_html
+    assert "no current Prophet US owner output" not in zh_html
+    assert "PROPHET_OWNER_OUTPUT_ABSENT" not in zh_html
+    assert "subject_ticker_display" not in _identity_checks_panel(zh_html).get_text()
+
+
+def test_ss_map_subread_reason_prose_keeps_en_and_falls_back_zh() -> None:
+    """Heal-round h4 REQUIRED 2: the mapper's last branch keeps engine prose
+    in EN and never copies it into ZH.
+    """
+    from scripts.build_ticker_pages import _SS_COVERAGE_FALLBACK, _ss_map_subread_reason
+
+    en, zh = _ss_map_subread_reason("some unmapped engine sentence")
+    assert en == "some unmapped engine sentence"
+    assert zh == _SS_COVERAGE_FALLBACK["zh"]
+    assert en != zh
+
+
+def test_m1_failed_gate_is_owner_identity_not_compiler_failure() -> None:
+    """Heal-round h4 REQUIRED 3: M1 failed_gates carries
+    OWNER_IDENTITY_BATCH_UNAVAILABLE, never COMPILER_FAILURE's
+    'Read could not be built' false cause.
+    """
+    from engine.security_state import MSFT_SUBJECT, compile_security_state_failure
+    from jsonschema import Draft202012Validator, FormatChecker
+    from scripts.build_ticker_pages import _SS_GATES
+
+    schema_path = REPO / "contracts" / "market_os" / "security_state.v1.schema.json"
+    validator = Draft202012Validator(
+        json.loads(schema_path.read_text(encoding="utf-8")),
+        format_checker=FormatChecker(),
+    )
+    state = compile_security_state_failure(
+        subject=MSFT_SUBJECT, validator=validator, now="2026-01-01T00:00:00Z",
+        prior_state=None, owner_read_completed=False,
+    )
+    gate = state["legs"]["risk"]["failed_gates"][0]
+    assert gate["code"] == "OWNER_IDENTITY_BATCH_UNAVAILABLE"
+    assert gate["reason"] == "OWNER_IDENTITY_BATCH_UNAVAILABLE"
+    house = _SS_GATES["OWNER_IDENTITY_BATCH_UNAVAILABLE"]
+    assert house["en"] == "Owner-identity read did not run"
+    assert house["zh"] == "未执行所有者身份读取"
+    view = build_security_state({"security_state": state})
+    assert view is not None
+    rendered = next(
+        g for a in view["axes"] for g in a["gates"]
+        if g["code"] == "OWNER_IDENTITY_BATCH_UNAVAILABLE"
+    )
+    assert rendered["en"] == house["en"]
+    assert rendered["zh"] == house["zh"]
+    zh_html = _render_section(view, lang="zh")
+    assert house["zh"] in zh_html
+    # Dominant degradation stays COMPILER_FAILURE (the shell still did not
+    # compile). The false-cause residue was the failed_gates CODE, which
+    # must render this house pair and not the compiler-failure sentence.
+    assert f'<span class="c ss-id">{gate["code"]}</span>' in zh_html
+    risk_panel = next(
+        (p for p in _parse_class_tree(zh_html).find_all_class("ss-gate")
+         if house["zh"] in p.get_text()),
+        None,
+    )
+    assert risk_panel is not None, "M1 failed-gate house copy missing from the gate receipt"
+    assert "读数无法生成" not in risk_panel.get_text()
+    assert "Read could not be built" not in risk_panel.get_text()
+
+
