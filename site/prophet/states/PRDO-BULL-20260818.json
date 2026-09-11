@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "PRDO-BULL-20260818",
-  "asof": "2026-09-10",
+  "asof": "2026-09-11",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 47.5,
-  "raw_confidence": 46.3,
-  "delta_vs_base": -12.5,
+  "management_confidence": 45.2,
+  "raw_confidence": 42.4,
+  "delta_vs_base": -14.8,
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 100.0,
-    "progress": 4.1,
-    "pace": 22.4,
+    "validity": 94.6,
+    "progress": 0.0,
+    "pace": 16.2,
     "retention": 50.0,
-    "overlay": 56.0
+    "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.036,
-    "dist_to_t1_r": 1.464,
-    "dist_to_t2_r": 2.964,
-    "horizon_pct_used": 44.4,
-    "p1": 0.0238,
-    "p2": 0.0119,
+    "dist_to_stop_r": 0.96,
+    "dist_to_t1_r": 1.5,
+    "dist_to_t2_r": 3.0,
+    "horizon_pct_used": 46.7,
+    "p1": -0.0267,
+    "p2": -0.0134,
     "p3": null,
-    "move_r": 0.036,
+    "move_r": -0.04,
     "mfe_r": 0.176,
-    "mae_r": -0.002
+    "mae_r": -0.04
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "",
+  "change_reason": "Moving Away from Stop",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.7900013732910125,
-  "_mae": -0.010001678466800001,
+  "_mae": -0.1799998474121125,
   "_max_p1": 0.11729790249309763,
   "_first_trigger_ts": "2026-08-21",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 20,
-  "tau": 0.4444
+  "days_elapsed": 21,
+  "tau": 0.4667
 }
