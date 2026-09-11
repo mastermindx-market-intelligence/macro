@@ -46,18 +46,23 @@ VOCAB_V2: dict[str, tuple[str, str]] = {
     "inflow cooling": ("above norm, cooling", "高于常态·降温"),
     "accelerating out": ("below norm, worsening", "低于常态·加剧"),
     "outflow easing": ("selling easing", "卖出趋缓"),
+    "buying slowing": ("buying slowing", "买入放缓"),
+    "pace easing": ("pace easing", "步伐放缓"),
     "balanced": ("near its norm", "接近常态"),
     "n/a": ("no data", "无数据"),
 }
 
 # acceleration_breadth buckets, keyed by the NEW state string (masterplan §4 shape).
+# Buyer/seller accel states carry direction-true words — never one "easing" bucket
+# for both a net buyer and a net seller (W13 r2 MAJ-2).
 _ACCEL_BUCKET: dict[str, str] = {
     "above norm, rising": "strengthening",
     "above norm, cooling": "cooling",
     "below norm, worsening": "worsening",
     "below norm, easing": "easing",
     "selling easing": "easing",
-    "buying slowing": "easing",
+    "buying slowing": "buying_slowing",
+    "pace easing": "pace_easing",
     "near its norm": NEUTRAL_OR_UNKNOWN,
     "no data": NEUTRAL_OR_UNKNOWN,
 }
@@ -78,6 +83,48 @@ _ACCEL_BUCKET: dict[str, str] = {
 # lens always passed its own module-level threshold explicitly).
 REL_THRESH = 0.5                                  # ±0.5σ velocity — southbound AND (as of
                                                    # R2) names too
+
+
+def sigma_meaning(v: float | None, host: str = "name") -> tuple[str, str]:
+    """Banded σ meaning sentence (W13 r2 B-1). ``host`` is ``name`` or ``channel``.
+
+    Bands (both lanes, same cutoffs): |σ|<1 close / 1–2 running / 2–3 well / ≥3 superlative.
+    The subject noun follows the host so a channel card is never captioned as a name.
+    Returns ``(en, zh)`` tip bodies including the σ numeral; empty strings when ``v``
+    is missing.
+    """
+    if v is None:
+        return "", ""
+    try:
+        x = float(v)
+    except (TypeError, ValueError):
+        return "", ""
+    if x != x:  # NaN
+        return "", ""
+    sig = f"{x:+.2f}"
+    av = abs(x)
+    up = x >= 0
+    noun_en = "this name's" if host == "name" else "this channel's"
+    noun_zh = "该标的" if host == "name" else "该通道"
+    dir_en = "above" if up else "below"
+    dir_zh = "高于" if up else "低于"
+    rare_zh = "高" if up else "低"
+    if av < 1:
+        en = f"{sig}σ — close to {noun_en} normal pace"
+        zh = f"{sig}σ——{noun_zh}接近自身常态"
+    elif av < 2:
+        en = f"{sig}σ — running {dir_en} {noun_en} normal pace"
+        zh = f"{sig}σ——{noun_zh}{dir_zh}自身常态"
+    elif av < 3:
+        en = f"{sig}σ — well {dir_en} {noun_en} normal pace"
+        zh = f"{sig}σ——{noun_zh}明显{dir_zh}自身常态"
+    else:
+        en = (f"{sig}σ — further {dir_en} {noun_en} own normal pace than on all "
+              f"but a handful of days this year")
+        zh = f"{sig}σ——{noun_zh}处于今年罕见的{rare_zh}位"
+    return en, zh
+
+
 THEMES_REL_THRESH = 0.75                          # themes: in the honest-neutral band, flip
                                                    # strictly improves (not a tie)
 SOUTHBOUND_REL_THRESH = REL_THRESH                # explicit alias — see comment above
@@ -197,7 +244,8 @@ def market_read(rows: list[dict[str, Any]], unscored: int = 0, *,
     denom = len(rows) + unscored
     abs_c = {"positive": 0, "negative": 0, "neutral": 0, "missing": unscored, "denominator": denom}
     rel_c = {"positive": 0, "negative": 0, "neutral": 0, "missing": unscored, "denominator": denom}
-    accel_c = {"strengthening": 0, "cooling": 0, "easing": 0, "worsening": 0,
+    accel_c = {"strengthening": 0, "cooling": 0, "easing": 0, "buying_slowing": 0,
+               "pace_easing": 0, "worsening": 0,
                NEUTRAL_OR_UNKNOWN: unscored, "denominator": denom}
     for r in rows:
         ad = direction_from_value(r.get(abs_key), abs_unit)
@@ -390,9 +438,8 @@ def _coverage_line(coverage: dict[str, Any]) -> tuple[str, str]:
     if pct is not None:
         return (f"{n_obs:,} names · {pct:g}% coverage",
                 f"{n_obs:,}只已评分 · 覆盖率{pct:g}%")
-    if n_obs == 1:
-        return "1 name", "1只"
-    return f"{n_obs:,} names", f"{n_obs:,}只"
+    noun = "name" if n_obs == 1 else "names"
+    return f"{n_obs:,} {noun}", f"{n_obs:,}只"
 
 
 def _source_leg(source_id: str, *, provider: str, market: str, effective_date: str | None,

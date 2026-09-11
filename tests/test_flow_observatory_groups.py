@@ -26,6 +26,7 @@ from jinja2 import Environment, FileSystemLoader
 from engine import i18n
 from engine.flow_observatory import groups as fo_groups
 from engine.flow_observatory.contract import (
+    sigma_meaning,
     QUADRANT_LABELS,
     STATUS_WORD,
     assign_ranks,
@@ -40,7 +41,7 @@ TMPL_DIR = TMPL
 def _render(v2, built="test"):
     env = Environment(loader=FileSystemLoader(str(TMPL_DIR)), autoescape=True)
     env.globals.update(td=i18n.td, tr=i18n.tr, quadrant_labels=QUADRANT_LABELS,
-                       status_word=STATUS_WORD)
+                       status_word=STATUS_WORD, sigma_meaning=sigma_meaning)
     return env.get_template("flow_velocity.html.j2").render(C=C, snap=v2, built=built)
 
 

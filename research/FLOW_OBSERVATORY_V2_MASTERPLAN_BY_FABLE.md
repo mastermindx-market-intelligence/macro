@@ -339,7 +339,9 @@ words for a relative measure; consumer update in the same W1 PR — §4):
 | accelerating in | above norm, rising | 高于常态·升温 |
 | inflow cooling | above norm, cooling | 高于常态·降温 |
 | accelerating out | below norm, worsening | 低于常态·加剧 |
-| outflow easing | selling easing / buying slowing | 卖出趋缓 / 买入放缓 |
+| outflow easing | selling easing | 卖出趋缓 |
+| buying slowing | buying slowing | 买入放缓 |
+| pace easing | pace easing | 步伐放缓 |
 | balanced | near its norm | 接近常态 |
 | n/a | no data | 无数据 |
 

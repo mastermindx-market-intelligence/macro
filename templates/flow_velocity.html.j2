@@ -16,14 +16,17 @@
 {% from "_icons.html.j2" import icon %}
 {# the SPINE: one velocity-bar glyph reused at 3 sizes. Centered track; fill grows from the
    midline — right=inflow (green / zh red via currentColor), left=outflow. ±3σ fills a half.
-   M-c option (i): the σ numeral lives in the tip WITH its meaning sentence; the bar
-   (width encodes magnitude) stays at rest. Never a bare σ beside a direction word. #}
-{% macro vbar(v, size='md', i=0) -%}
-{% set _sig = '%+.2f'|format(v) if v is not none else '' %}
-{% set _tip_en = (_sig ~ 'σ — main money is running further ' ~ ('above' if (v is not none and v >= 0) else 'below') ~ ' this name\'s own normal pace than on all but a handful of days this year') if v is not none else '' %}
-{% set _tip_zh = (_sig ~ 'σ——主力资金' ~ ('高于' if (v is not none and v >= 0) else '低于') ~ '该标的自身常态的程度，超过今年绝大多数交易日') if v is not none else '' %}
-<span class="vbar vbar-{{ size }}"{% if v is not none %} data-tip-en="{{ _tip_en }}" data-tip-zh="{{ _tip_zh }}" role="button" tabindex="0"{% endif %}>
+   M-c option (i): the σ numeral lives in the tip WITH its banded meaning sentence; the bar
+   (width encodes magnitude) stays at rest. Never a bare σ beside a direction word.
+   Row-hosted tips use a dedicated .lens-q ? button (pointerdown/click stop inside the
+   clickable tr.sector-row — the tabindex-on-the-bar form flash-and-vanishes at 390w).
+   ``host`` is 'name' (rows) or 'channel' (Stock-Connect cards). #}
+{% macro vbar(v, size='md', i=0, host='name') -%}
+<span class="vbar-cell">
+<span class="vbar vbar-{{ size }}">
   <span class="vbar-track">{% if v is not none %}{% set w = ((([ (v|abs)/3.0, 1.0]|min)) * 50)|round(1) %}<span class="vbar-fill {{ 'pos' if v>=0 else 'neg' }}" style="width:{{ w }}%;--i:{{ i }}"></span>{% endif %}</span>
+</span>
+{% if v is not none %}{% set _tips = sigma_meaning(v, host) %}<button type="button" class="lens-q" data-tip-en="{{ _tips[0] }}" data-tip-zh="{{ _tips[1] }}">?</button>{% endif %}
 </span>
 {%- endmacro %}
 {# The board's rate figure is the 4wk net rate RELATIVE to the series' own trailing norm — the
@@ -170,7 +173,7 @@
   <td class="tnum">{% if m.rate_4wk is defined and m.rate_4wk is not none %}<span class="chg {{ 'pos' if m.rate_4wk>=0 else 'neg' }}" style="opacity:.72">{{ '%+.1f'|format(m.rate_4wk) }}%</span>{% else %}<span class="chg na">—</span>{% endif %}</td>
   <td>{{ rate(m) }}</td>
   <td style="text-align:center">{{ vbar(m.vel, 'sm', i) }} {{ vstate(m.state, m.state_zh, m.vel) }}</td>
-  <td class="tnum" colspan="3"><span class="rk na" data-tip-en="rank is a theme-level figure — names are not ranked" data-tip-zh="排名按主题计——个股不单独排名">—</span></td>
+  <td class="tnum" colspan="3"><span class="rk na">{{ t('not ranked','不排名') }}</span><button type="button" class="lens-q" data-tip-en="rank is a theme-level figure — names are not ranked" data-tip-zh="排名按主题计——个股不单独排名">?</button></td>
 </tr>
 {%- endmacro %}
 {# W4: excluded/missing members — the drilldown's honest denominator receipt (spec
@@ -446,6 +449,8 @@ html[data-lang="zh"] .cdot.conf-buy{background:var(--red)}html[data-lang="zh"] .
 .mname-unlinked{color:inherit}
 
 /* ── the velocity-bar glyph (the spine) ── */
+.vbar-cell{display:inline-flex;align-items:center;gap:5px;vertical-align:middle}
+.vbar-cell .lens-q{flex:none}
 .vbar{display:inline-flex;flex-direction:column;align-items:center;gap:2px}
 .vbar-track{position:relative;height:6px;border-radius:999px;background:var(--grid)}
 .vbar-xl .vbar-track{width:120px;height:7px}.vbar-lg .vbar-track{width:92px}.vbar-md .vbar-track{width:64px}.vbar-sm .vbar-track{width:48px}
@@ -486,12 +491,13 @@ html[data-lang="zh"] .fv-eyebrow{letter-spacing:.04em}
   linear-gradient(180deg, color-mix(in srgb,var(--card) 60%,transparent), var(--card));
   padding:24px 26px 22px}
 .fv-hero::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),color-mix(in srgb,var(--blue) 15%,transparent));pointer-events:none}
-.fv-hero-eyebrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:var(--num);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-html[data-lang="zh"] .fv-hero-eyebrow{letter-spacing:.03em}
-.fv-hero-eyebrow h1{margin:0;font:inherit;font-size:inherit;font-weight:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;display:inline-flex;align-items:center;gap:8px}
-.fv-hero-eyebrow h1 .ic-svg{width:14px;height:14px}
+.fv-hero-eyebrow{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+html[data-lang="zh"] .fv-hero-eyebrow h1{letter-spacing:0}
+.fv-hero-eyebrow h1{margin:0;font-size:22px;font-weight:800;letter-spacing:-.02em;text-transform:none;color:var(--ink);display:inline-flex;align-items:center;gap:8px;line-height:1.15}
+.fv-hero-eyebrow h1 .ic-svg{width:18px;height:18px}
 .fv-hero-eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--blue);flex:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--blue) 22%,transparent)}
-.fv-hero-eyebrow .asof{margin-left:auto;color:var(--faint);letter-spacing:.04em;text-transform:none}
+.fv-hero-eyebrow .dot,.fv-hero-eyebrow .asof{align-self:center}
+.fv-hero-eyebrow .asof{margin-left:auto;color:var(--faint);letter-spacing:.04em;text-transform:none;font-size:11px;font-weight:700;font-family:var(--num)}
 .fv-hero-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:18px 40px;align-items:center;margin-top:14px}
 @media(max-width:900px){.fv-hero-grid{grid-template-columns:1fr;gap:20px}}
 .fv-thesis{font-size:26px;line-height:1.28;font-weight:750;color:var(--ink);letter-spacing:-.018em;margin:0}
@@ -941,8 +947,9 @@ html[data-theme="light"] .fv-conc-chip{color:color-mix(in srgb,var(--ink) 55%,va
 }
 
 /* ═══════════════ MOMENTUM shifts ═══════════════ */
-.fv-mom{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
-@media(max-width:820px){.fv-mom{grid-template-columns:1fr}}
+.fv-mom{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px}
+@media(max-width:1100px){.fv-mom{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.fv-mom{grid-template-columns:1fr}}
 .mom-col{background:var(--card);border:1px solid var(--grid);border-radius:16px;padding:14px 15px}
 .mom-col-h{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;color:var(--ink);margin-bottom:3px}
 .mom-col-h .mi{font-size:15px}
@@ -1055,6 +1062,7 @@ html[data-lang="zh"] .vcard.st-out::before{background:linear-gradient(90deg,var(
 /* ── footer ── */
 .foot{margin-top:44px;padding-top:18px;border-top:1px solid var(--grid);font-size:12px;color:var(--faint);line-height:1.7;max-width:1000px}
 .foot b{color:var(--muted)}
+.rk.na .l-en,.rk.na .l-zh{font-weight:600}
 
 /* ── reveal-on-scroll (macro smReveal idiom) ── */
 .fv-reveal{opacity:0;transform:translateY(14px)}
@@ -1065,6 +1073,42 @@ html:not(.js) .fv-reveal{opacity:1;transform:none}
   .vbar-fill,.mrow.show td,tr.flash>td,.fv-vital,.rot-card,.fv-meter .tick{animation:none!important;transition:none!important}
   .fv-reveal{opacity:1!important;transform:none!important;animation:none!important}
 }
+
+/* ── W13 r2 surfaces: dual art direction (TP-0) ───────────────────────────────────
+   DARK TREATMENT (command center): the new r1 surfaces sit on the existing luminous
+   card — hairline --grid, --card fill, --ink / --muted / --faint as instrument
+   captions. The h1 is ink at 22px (a real title, not the 11px muted eyebrow). The
+   See-all chip is a flat hairline control. .fv-caption and .empty-why are muted
+   captions. The footer is faint on a --grid rule; <b> is muted. Monoline icons
+   inherit currentColor (restrained glow lives on the hero card, not the glyph).
+   LIGHT TREATMENT (research workspace): same information architecture, different
+   material. Paper --card, hairline --line, SHORT SHADOW instead of glow on the
+   See-all chip. Caption / empty-why / footer ink is mixed toward --ink because
+   --muted/--faint wash out on white. The h1 stays 22px ink, no uppercase tracking.
+   Footer <b> is --ink (a source label on paper, not a faint caption).
+   Mechanisms that INTENTIONALLY differ: (1) See-all depth — dark = flat hairline
+   chip; light = paper chip + 1px shadow. (2) Caption contrast — dark can use
+   --muted/--faint; light deepens toward --ink. (3) Footer label weight — dark
+   muted, light ink. Shared on purpose: spacing, type scale, chip geometry, icon
+   stroke (currentColor), interaction (checkbox latch, LENS ?). */
+/* post-stack: consolidate */
+html[data-theme="light"] .fv-hero-eyebrow h1{color:var(--ink)}
+html[data-theme="light"] .fv-hero-eyebrow .asof{color:var(--muted)}
+html[data-theme="light"] .fv-caption{color:color-mix(in srgb,var(--ink) 62%,var(--muted))}
+html[data-theme="light"] .q-empty .empty-why{color:color-mix(in srgb,var(--ink) 58%,var(--muted))}
+html[data-theme="light"] .fv-see-all{
+  background:var(--card);border-color:var(--line);color:var(--ink);
+  box-shadow:0 1px 2px color-mix(in srgb,var(--ink) 8%,transparent)
+}
+html[data-theme="light"] .fv-see-all:hover{
+  border-color:color-mix(in srgb,var(--blue) 45%,var(--line));
+  box-shadow:0 2px 6px color-mix(in srgb,var(--ink) 10%,transparent)
+}
+html[data-theme="light"] .fv-board-count{color:color-mix(in srgb,var(--ink) 55%,var(--muted))}
+html[data-theme="light"] .foot{color:color-mix(in srgb,var(--ink) 48%,var(--muted));border-top-color:var(--line)}
+html[data-theme="light"] .foot b{color:var(--ink)}
+html[data-theme="light"] .ic-svg{color:inherit}
+html[data-theme="light"] .rk.na{color:color-mix(in srgb,var(--ink) 50%,var(--muted))}
 </style>
 {% include "_state_inks.html.j2" %}
 </head>
@@ -1187,7 +1231,7 @@ html:not(.js) .fv-reveal{opacity:1;transform:none}
         <span class="vs">{{ t('what\'s current, what\'s behind','各源新鲜度一览') }}</span>
       </button>
       <button class="fv-vital" data-goto-sec="changed">
-        <span class="vk">⏱ {{ t('Changed today','今日变化') }}</span>
+        <span class="vk">{{ icon('clock') }} {{ t('Changed today','今日变化') }}</span>
         <span class="vv">{% if CS and CS.material_change %}<span class="tnum">{{ all_changes|length }}</span> {{ t('moves','项变化') }}{% elif CS and CS.material_change == false %}{{ t('none','无') }}{% else %}—{% endif %}<span class="arrow">→</span></span>
         <span class="vs">{{ t('transitions &amp; rank movers','状态切换与排名变动') }}</span>
       </button>
@@ -1218,7 +1262,7 @@ html:not(.js) .fv-reveal{opacity:1;transform:none}
            data-tip-en="{{ s.tip_en }}" data-tip-zh="{{ s.tip_zh }}" role="button" tabindex="0"
            data-ev="trust_open" data-ev-id="{{ s.source_id }}">
         <span class="s-name">{{ t(s.name_en, s.name_zh) }}</span>
-        <span class="s-meta tnum">{{ s.effective_date or '—' }} · {{ t(s.coverage_line_en or s.coverage_line, s.coverage_line_zh or s.coverage_line) }}</span>
+        <span class="s-meta tnum">{{ s.effective_date or '—' }} · {{ t(s.coverage_line_en, s.coverage_line_zh) }}</span>
         <span class="s-state">{{ t(s.state_word_en, s.state_word_zh) }}</span>
       </div>
       {% else %}
@@ -1229,7 +1273,7 @@ html:not(.js) .fv-reveal{opacity:1;transform:none}
 
   {# ============================ WHAT CHANGED TODAY (spec §2.3) ============================ #}
   <section class="fv-sec fv-reveal" id="changed">
-    <div class="fv-eyebrow">⏱ {{ t('What Changed Today','今日变化') }}</div>
+    <div class="fv-eyebrow">{{ icon('clock') }} {{ t('What Changed Today','今日变化') }}</div>
     <h2>{{ t('State transitions since the last valid session','自上一有效交易日以来的状态变化') }}</h2>
     {% set _theme_names = {} %}
     {% for _r in (snap.ashare_sectors.rows if (snap.ashare_sectors and snap.ashare_sectors.rows) else []) %}{% set _ = _theme_names.update({_r.id: _r}) %}{% endfor %}
@@ -1293,16 +1337,16 @@ html:not(.js) .fv-reveal{opacity:1;transform:none}
          NEGATIVE absolute flow (the common case), so a bare "none" there is unremarkable
          and stays as-is. Pinned strings, exact. #}
       <div class="q-cell q-acc"><h3>{{ t('real inflow, above norm','真实流入·高于常态') }}</h3>
-        {% for r in q_acc %}<span class="q-chip" data-ev="quadrant_select" data-ev-lens="theme" data-ev-id="{{ r.id }}"><b>{{ t(r.name, r.name_zh) }}</b> <span class="tnum">{{ '%+.1f'|format(r.abs.value) }}% · {{ '%+.1f'|format(r.rel.value) }}σ</span></span>{% else %}<span class="q-empty">{{ t('none today — rare for this proxy; exceptional when a theme appears here','今日无——该口径下罕见，出现即为异常信号') }}</span>{% endfor %}
+        {% for r in q_acc %}{% set _qt = sigma_meaning(r.rel.value, 'name') %}<span class="q-chip" data-ev="quadrant_select" data-ev-lens="theme" data-ev-id="{{ r.id }}" data-tip-en="{{ _qt[0] }}" data-tip-zh="{{ _qt[1] }}"><b>{{ t(r.name, r.name_zh) }}</b>{% if r.abs.value is not none %} <span class="tnum">{{ '%+.1f'|format(r.abs.value) }}%</span>{% endif %}</span>{% else %}<span class="q-empty">{{ t('none today — rare for this proxy; exceptional when a theme appears here','今日无——该口径下罕见，出现即为异常信号') }}</span>{% endfor %}
       </div>
       <div class="q-cell q-imp"><h3>{{ t('still selling, pressure easing','仍净流出·压力改善') }}</h3>
-        {% for r in q_imp %}<span class="q-chip" data-ev="quadrant_select" data-ev-lens="theme" data-ev-id="{{ r.id }}"><b>{{ t(r.name, r.name_zh) }}</b> <span class="tnum">{{ '%+.1f'|format(r.abs.value) }}% · {{ '%+.1f'|format(r.rel.value) }}σ</span></span>{% else %}<span class="q-empty">{{ t('none','无') }}</span>{% endfor %}
+        {% for r in q_imp %}{% set _qt = sigma_meaning(r.rel.value, 'name') %}<span class="q-chip" data-ev="quadrant_select" data-ev-lens="theme" data-ev-id="{{ r.id }}" data-tip-en="{{ _qt[0] }}" data-tip-zh="{{ _qt[1] }}"><b>{{ t(r.name, r.name_zh) }}</b>{% if r.abs.value is not none %} <span class="tnum">{{ '%+.1f'|format(r.abs.value) }}%</span>{% endif %}</span>{% else %}<span class="q-empty">{{ t('none','无') }}</span>{% endfor %}
       </div>
       <div class="q-cell q-weak"><h3>{{ t('still buying, pace fading','仍净流入·动能转弱') }}</h3>
-        {% for r in q_weak %}<span class="q-chip" data-ev="quadrant_select" data-ev-lens="theme" data-ev-id="{{ r.id }}"><b>{{ t(r.name, r.name_zh) }}</b> <span class="tnum">{{ '%+.1f'|format(r.abs.value) }}% · {{ '%+.1f'|format(r.rel.value) }}σ</span></span>{% else %}<span class="q-empty">{{ t('none today','今日无') }}<span class="empty-why">{{ t('expected — this proxy rarely shows positive absolute flow, not a data gap','属预期——该口径很少出现绝对流入为正，并非数据缺失') }}</span></span>{% endfor %}
+        {% for r in q_weak %}{% set _qt = sigma_meaning(r.rel.value, 'name') %}<span class="q-chip" data-ev="quadrant_select" data-ev-lens="theme" data-ev-id="{{ r.id }}" data-tip-en="{{ _qt[0] }}" data-tip-zh="{{ _qt[1] }}"><b>{{ t(r.name, r.name_zh) }}</b>{% if r.abs.value is not none %} <span class="tnum">{{ '%+.1f'|format(r.abs.value) }}%</span>{% endif %}</span>{% else %}<span class="q-empty">{{ t('none today','今日无') }}<span class="empty-why">{{ t('expected — this proxy rarely shows positive absolute flow, not a data gap','属预期——该口径很少出现绝对流入为正，并非数据缺失') }}</span></span>{% endfor %}
       </div>
       <div class="q-cell q-dist"><h3>{{ t('real outflow, below norm','真实流出·低于常态') }}</h3>
-        {% for r in q_dist %}<span class="q-chip" data-ev="quadrant_select" data-ev-lens="theme" data-ev-id="{{ r.id }}"><b>{{ t(r.name, r.name_zh) }}</b> <span class="tnum">{{ '%+.1f'|format(r.abs.value) }}% · {{ '%+.1f'|format(r.rel.value) }}σ</span></span>{% else %}<span class="q-empty">{{ t('none','无') }}</span>{% endfor %}
+        {% for r in q_dist %}{% set _qt = sigma_meaning(r.rel.value, 'name') %}<span class="q-chip" data-ev="quadrant_select" data-ev-lens="theme" data-ev-id="{{ r.id }}" data-tip-en="{{ _qt[0] }}" data-tip-zh="{{ _qt[1] }}"><b>{{ t(r.name, r.name_zh) }}</b>{% if r.abs.value is not none %} <span class="tnum">{{ '%+.1f'|format(r.abs.value) }}%</span>{% endif %}</span>{% else %}<span class="q-empty">{{ t('none','无') }}</span>{% endfor %}
       </div>
     </div>
     <p class="q-neutral">{{ t('quiet — near its norm','平静·接近常态') }}: {% if q_neu %}{% for r in q_neu %}{{ t(r.name, r.name_zh) }}{% if not loop.last %}, {% endif %}{% endfor %}{% else %}{{ t('none','无') }}{% endif %}</p>
@@ -1321,7 +1365,7 @@ html:not(.js) .fv-reveal{opacity:1;transform:none}
   <section class="fv-sec fv-reveal" id="groups">
     <div class="fv-sec-head">
       <div>
-        <div class="fv-eyebrow">▤ {{ t('Theme Flow Board','主题资金板') }}</div>
+        <div class="fv-eyebrow">{{ icon('bars') }} {{ t('Theme Flow Board','主题资金板') }}</div>
         <h2>{{ t('Theme flow board — large-order pressure by theme','主题资金板 — 按主力大单压力排序') }}
           <span class="qm" data-tip-en="Velocity = standardized net-flow rate: the drift of cumulative net flow ÷ its own volatility, so ±3σ fills a half-track. Quadrant folds abs (raw 4wk flow) × rel (velocity vs the series' own norm). Confluence dots join flow direction to the Dragon-Tiger institutional-seat direction — context, never a score. Per-theme large-order pressure = equal-weight member main-money net-rate, ranked by 4-week velocity vs the theme's own trailing norm." data-tip-zh="流速＝标准化净流入率：累计净流向漂移÷自身波动，±3σ填满半轨。象限＝绝对4周流向×相对自身常态的流速。共振圆点将资金方向与龙虎榜机构席位方向相连——仅供参考，绝非分值。主题主力大单压力＝等权成分股主力净占比，按4周流速（相对主题自身常态）排序。" role="button" tabindex="0">?</span>
           <span class="sub">{{ t('curated overlapping themes — not official sectors','精选主题（可重叠），非官方行业分类') }}</span></h2>
@@ -1344,7 +1388,8 @@ html:not(.js) .fv-reveal{opacity:1;transform:none}
     {# ---- A-SHARE: theme lanes → member drill-down ---- #}
     {% if snap.ashare_sectors and snap.ashare_sectors.rows %}
     {% set s = snap.ashare_sectors %}
-    {% set _theme_n = (s.rows|length) + (1 if leaders else 0) %}
+    {% set _theme_n = s.rows|length %}
+    {% set _theme_l1 = _theme_n + (1 if leaders else 0) %}
     <div class="market-a">
       <span class="market-tag">{{ t('A-Share 沪深','A股 沪深') }}</span>
 
@@ -1360,7 +1405,7 @@ html:not(.js) .fv-reveal{opacity:1;transform:none}
       <div id="lens-curated" data-lens-panel role="tabpanel" aria-labelledby="lens-tab-curated">
       <div class="panel">
       <div class="fv-board-block">
-      {% if _theme_n > 8 %}<input type="checkbox" id="fv-cap-sectortbl" class="fv-cap-toggle" aria-hidden="true">{% endif %}
+      {% if _theme_l1 > 8 %}<input type="checkbox" id="fv-cap-sectortbl" class="fv-cap-toggle" tabindex="-1" aria-hidden="true">{% endif %}
       <div class="tbl-wrap">
         <table class="board" id="sectortbl">
           <thead><tr>
@@ -1441,7 +1486,7 @@ html:not(.js) .fv-reveal{opacity:1;transform:none}
                   {% elif r.rank_change > 0 %}<span class="rk down">▼{{ r.rank_change }}</span>
                   {% else %}<span class="rk">–</span>{% endif %}
                 {% else %}
-                <span class="rk na" data-tip-en="first tracked session" data-tip-zh="首个追踪交易日">—</span>
+                <span class="rk na">{{ t('first day','首日') }}</span><button type="button" class="lens-q" data-tip-en="first tracked session — no prior rank to compare" data-tip-zh="首个追踪交易日——暂无历史排名可比">?</button>
                 {% endif %}
               </td>
               <td>{{ spark(r.spark) }}</td>
@@ -1454,8 +1499,8 @@ html:not(.js) .fv-reveal{opacity:1;transform:none}
           </tbody>
         </table>
       </div>
-      {% if _theme_n > 8 %}
-      <label for="fv-cap-sectortbl" class="fv-see-all" data-cap-n="{{ _theme_n }}">
+      {% if _theme_l1 > 8 %}
+      <label for="fv-cap-sectortbl" class="fv-see-all" role="button" tabindex="0" aria-expanded="false" data-cap-n="{{ _theme_n }}">
         <span class="when-collapsed">{{ t('See all %d themes'|format(_theme_n), '全部%d个主题'|format(_theme_n)) }}</span>
         <span class="when-expanded">{{ t('Show fewer','收起') }}</span>
       </label>
@@ -1478,7 +1523,7 @@ html:not(.js) .fv-reveal{opacity:1;transform:none}
          basis explicitly for the numeric columns themselves. #}
       <p class="fv-stance" style="margin:0 0 10px">{{ t('current-membership basis — constituents as of %s'|format(os.seed_date or '—'), '按当前成分计算——成分截至%s'|format(os.seed_date or '—')) }}</p>
       <div class="fv-board-block">
-      {% if _off_n > 8 %}<input type="checkbox" id="fv-cap-officialtbl" class="fv-cap-toggle" aria-hidden="true">{% endif %}
+      {% if _off_n > 8 %}<input type="checkbox" id="fv-cap-officialtbl" class="fv-cap-toggle" tabindex="-1" aria-hidden="true">{% endif %}
       <div class="tbl-wrap">
         <table class="board" id="officialtbl">
           <thead><tr>
@@ -1527,7 +1572,7 @@ html:not(.js) .fv-reveal{opacity:1;transform:none}
                   {% elif r.rank_change > 0 %}<span class="rk down">▼{{ r.rank_change }}</span>
                   {% else %}<span class="rk">–</span>{% endif %}
                 {% else %}
-                <span class="rk na" data-tip-en="first tracked session" data-tip-zh="首个追踪交易日">—</span>
+                <span class="rk na">{{ t('first day','首日') }}</span><button type="button" class="lens-q" data-tip-en="first tracked session — no prior rank to compare" data-tip-zh="首个追踪交易日——暂无历史排名可比">?</button>
                 {% endif %}
               </td>
               {# N2: the official lens applies today's membership retroactively across
@@ -1547,7 +1592,7 @@ html:not(.js) .fv-reveal{opacity:1;transform:none}
         </table>
       </div>
       {% if _off_n > 8 %}
-      <label for="fv-cap-officialtbl" class="fv-see-all" data-cap-n="{{ _off_n }}">
+      <label for="fv-cap-officialtbl" class="fv-see-all" role="button" tabindex="0" aria-expanded="false" data-cap-n="{{ _off_n }}">
         <span class="when-collapsed">{{ t('See all %d sectors'|format(_off_n), '全部%d个行业'|format(_off_n)) }}</span>
         <span class="when-expanded">{{ t('Show fewer','收起') }}</span>
       </label>
@@ -1595,7 +1640,7 @@ html:not(.js) .fv-reveal{opacity:1;transform:none}
     {% if snap.momentum %}
     {% set M = snap.momentum %}
     <details class="fv-disc" id="momentum">
-      <summary>⚡ {{ t('Momentum shifts','动能变化') }} — <span class="tnum">{{ M.n_accel_in }}</span> {{ t('speeding up','加速中') }} · <span class="tnum">{{ M.n_cooling }}</span> {{ t('cooling','降温') }} · <span class="tnum">{{ M.n_easing }}</span> {{ t('outflow fading','流出转弱') }}</summary>
+      <summary>⚡ {{ t('Momentum shifts','动能变化') }} — <span class="tnum">{{ M.n_accel_in }}</span> {{ t('speeding up','加速中') }} · <span class="tnum">{{ M.n_cooling }}</span> {{ t('cooling','降温') }} · <span class="tnum">{{ M.n_easing }}</span> {{ t('selling easing','卖出趋缓') }} · <span class="tnum">{{ M.n_buying_slowing or 0 }}</span> {{ t('buying slowing','买入放缓') }}</summary>
       <div class="fv-disc-body">
         {# S4 scoping: momentum shifts are the A-share large-order velocity's own
            acceleration read — keyed to cn_large_order_proxy, matching #quadrant/#groups. #}
@@ -1620,10 +1665,18 @@ html:not(.js) .fv-reveal{opacity:1;transform:none}
           </div>
           <div class="mom-col m-ease">
             <div class="mom-accent"></div>
-            <div class="mom-col-h"><span class="mi">↙</span> {{ t('Outflow fading','流出转弱') }}{% if M.n_easing and M.n_easing > M.easing|length %}<span class="mom-n">{{ M.easing|length }} {{ t('of','/') }} {{ M.n_easing }}</span>{% endif %}</div>
+            <div class="mom-col-h"><span class="mi">↙</span> {{ t('Selling easing','卖出趋缓') }}{% if M.n_easing and M.n_easing > M.easing|length %}<span class="mom-n">{{ M.easing|length }} {{ t('of','/') }} {{ M.n_easing }}</span>{% endif %}</div>
             <div class="mom-sub">{{ t('heavy selling now slowing — possible bottoming','重度卖出放缓——或近筑底') }}</div>
             {% for m in M.easing %}
             <div class="mom-row"><span class="nm">{{ nameln(m) }}</span><span class="mv neg">{{ '%+.1f'|format(m.vel) }}σ</span></div>
+            {% else %}<div class="rot-empty">{{ t('none','暂无') }}</div>{% endfor %}
+          </div>
+          <div class="mom-col m-buy-slow">
+            <div class="mom-accent"></div>
+            <div class="mom-col-h"><span class="mi">↘</span> {{ t('Buying slowing','买入放缓') }}{% if M.n_buying_slowing and M.n_buying_slowing > (M.buying_slowing or [])|length %}<span class="mom-n">{{ (M.buying_slowing or [])|length }} {{ t('of','/') }} {{ M.n_buying_slowing }}</span>{% endif %}</div>
+            <div class="mom-sub">{{ t('net buying now fading — possible exhaustion','净买入放缓——或近衰竭') }}</div>
+            {% for m in (M.buying_slowing or []) %}
+            <div class="mom-row"><span class="nm">{{ nameln(m) }}</span><span class="mv pos">{{ '%+.1f'|format(m.vel) }}σ</span></div>
             {% else %}<div class="rot-empty">{{ t('none','暂无') }}</div>{% endfor %}
           </div>
         </div>
@@ -1739,7 +1792,7 @@ html:not(.js) .fv-reveal{opacity:1;transform:none}
         <div class="vrow">
           {% for lab in ['1w','1m','3m'] %}
           {% set _kgloss = {'1w': ('1-week pace', '一周节奏'), '1m': ('1-month pace', '一月节奏'), '3m': ('3-month pace', '三月节奏')} %}
-          <div class="vchip"><div class="k" data-tip-en="{{ _kgloss[lab][0] }}" data-tip-zh="{{ _kgloss[lab][1] }}" role="button" tabindex="0">{{ lab }}</div>{{ vbar(c.vel[lab], 'lg', loop.index) }}</div>
+          <div class="vchip"><div class="k" data-tip-en="{{ _kgloss[lab][0] }}" data-tip-zh="{{ _kgloss[lab][1] }}" role="button" tabindex="0">{{ lab }}</div>{{ vbar(c.vel[lab], 'lg', loop.index, 'channel') }}</div>
           {% endfor %}
         </div>
         <div class="vmeta">
@@ -1775,7 +1828,7 @@ html:not(.js) .fv-reveal{opacity:1;transform:none}
   document.querySelectorAll('tr.sector-row').forEach(function(row){
     if(row.classList.contains('nodrill')) return;
     row.addEventListener('click',function(e){
-      if(e.target.closest('a')) return;
+      if(e.target.closest('a, .lens-q, .qm, button')) return;
       var open=row.classList.toggle('open');
       row.setAttribute('aria-expanded',open?'true':'false');
       var id=row.getAttribute('data-sector');
@@ -1838,6 +1891,35 @@ html:not(.js) .fv-reveal{opacity:1;transform:none}
       if(t) t.scrollIntoView({behavior:'smooth',block:'start'});
     });
   });
+  // Cap reset: uncheck the latch and re-mark fv-over on the first 8 heads.
+  // Named so tests can assert the behavior, not just a string fragment.
+  function resetBoardCap(block){
+    var tog=block.querySelector('.fv-cap-toggle');
+    if(tog){
+      tog.checked=false;
+      var lab=document.querySelector('label[for="'+tog.id+'"]');
+      if(lab) lab.setAttribute('aria-expanded','false');
+    }
+    var body=block.querySelector('table.board tbody');
+    if(!body) return;
+    var heads=[];
+    Array.from(body.rows).forEach(function(rw){ if(rw.classList.contains('sector-row')) heads.push(rw); });
+    heads.forEach(function(rw,i){ rw.classList.toggle('fv-over', i>=8); });
+  }
+  document.querySelectorAll('.fv-cap-toggle').forEach(function(tog){
+    var lab=document.querySelector('label[for="'+tog.id+'"]');
+    function sync(){ if(lab) lab.setAttribute('aria-expanded', tog.checked?'true':'false'); }
+    tog.addEventListener('change', sync);
+    if(lab){
+      lab.addEventListener('keydown', function(e){
+        if(e.key==='Enter'||e.key===' '){
+          e.preventDefault();
+          tog.checked=!tog.checked;
+          tog.dispatchEvent(new Event('change',{bubbles:true}));
+        }
+      });
+    }
+  });
   // ---- column sort (keeps open sectors' members attached to their parent) ----
   document.querySelectorAll('table.board').forEach(function(tbl){
     tbl.querySelectorAll('th[data-c]').forEach(function(th){
@@ -1860,13 +1942,7 @@ html:not(.js) .fv-reveal{opacity:1;transform:none}
         tbl.querySelectorAll('th[data-c]').forEach(function(o){o.classList.remove('s-asc','s-desc');});
         th.classList.add(asc?'s-asc':'s-desc');
         var block=tbl.closest('.fv-board-block');
-        if(block){
-          var tog=block.querySelector('.fv-cap-toggle');
-          if(tog) tog.checked=false;
-          var heads=[];
-          Array.from(body.rows).forEach(function(rw){ if(rw.classList.contains('sector-row')) heads.push(rw); });
-          heads.forEach(function(rw,i){ rw.classList.toggle('fv-over', i>=8); });
-        }
+        if(block) resetBoardCap(block);
       });
     });
   });
@@ -2065,7 +2141,7 @@ html:not(.js) .fv-reveal{opacity:1;transform:none}
     document.querySelectorAll('tr.sector-row').forEach(function(row){
       if (row.classList.contains('nodrill')) return;
       row.addEventListener('click', function(e){
-        if (e.target.closest('a')) return;
+        if (e.target.closest('a, .lens-q, .qm, button')) return;
         if (row.classList.contains('open')) {
           var id = (row.getAttribute('data-sector') || '').replace(/^off-/, '');
           fire('group_drill', row.getAttribute('data-cmp-lens'), id);

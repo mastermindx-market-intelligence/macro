@@ -30,7 +30,7 @@ from jinja2 import Environment, FileSystemLoader
 from engine import flow_velocity as fv
 from engine import i18n
 from engine.flow_observatory import workflow as wf
-from engine.flow_observatory.contract import QUADRANT_LABELS, STATUS_WORD
+from engine.flow_observatory.contract import QUADRANT_LABELS, STATUS_WORD, sigma_meaning
 from scripts.build_vector import C
 from tests.test_flow_observatory_contract import ROOT, TMPL, _member, _v2, market_read
 
@@ -283,7 +283,8 @@ def _v2_with_history(**over):
 def _render(v2, built="test", known_tickers=None):
     env = Environment(loader=FileSystemLoader(str(TMPL)), autoescape=True)
     env.globals.update(td=i18n.td, tr=i18n.tr, quadrant_labels=QUADRANT_LABELS,
-                       status_word=STATUS_WORD, terminal_link=wf.terminal_link)
+                       status_word=STATUS_WORD, terminal_link=wf.terminal_link,
+                       sigma_meaning=sigma_meaning)
     return env.get_template("flow_velocity.html.j2").render(
         C=C, snap=v2, built=built, known_tickers=known_tickers)
 
@@ -542,7 +543,7 @@ def test_member_row_stays_always_linked_when_known_tickers_not_supplied():
     always-linked behavior byte-for-byte — S9 must never become a hard dependency."""
     env = Environment(loader=FileSystemLoader(str(TMPL)), autoescape=True)
     env.globals.update(td=i18n.td, tr=i18n.tr, quadrant_labels=QUADRANT_LABELS,
-                       status_word=STATUS_WORD)   # NO terminal_link global registered
+                       status_word=STATUS_WORD, sigma_meaning=sigma_meaning)   # NO terminal_link global registered
     v2 = _v2_with_history()
     rows = (v2.get("ashare_sectors") or {}).get("rows") or []
     rows[0]["members"] = [{"ticker": "ANY.TICKER", "name": "Any Co", "vel": 1.0,

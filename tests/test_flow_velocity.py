@@ -119,14 +119,33 @@ def test_vel_series_matches_slope_z_when_unfloored():
 def test_momentum_ships_true_counts_not_list_lengths():
     """The hero chip read '6 speeding up' when 116 names qualified — the list is capped at
     `top` for display, so the population total must ride along separately."""
-    kmap = {f"t{i}": {"ticker": f"t{i}", "vel": 1.5, "accel": 0.1 + i / 1000}
+    kmap = {f"t{i}": {"ticker": f"t{i}", "vel": 1.5, "accel": 0.1 + i / 1000, "rate_4wk": 1.0}
             for i in range(40)}
-    kmap.update({f"c{i}": {"ticker": f"c{i}", "vel": 1.5, "accel": -0.2} for i in range(15)})
-    kmap.update({f"e{i}": {"ticker": f"e{i}", "vel": -1.5, "accel": 0.3} for i in range(9)})
+    kmap.update({f"c{i}": {"ticker": f"c{i}", "vel": 1.5, "accel": -0.2, "rate_4wk": 1.0} for i in range(15)})
+    kmap.update({f"e{i}": {"ticker": f"e{i}", "vel": -1.5, "accel": 0.3, "rate_4wk": -1.0} for i in range(9)})
     mom = fv.momentum(kmap, top=6)
     assert len(mom["accel_in"]) == 6 and mom["n_accel_in"] == 40
     assert len(mom["cooling"]) == 6 and mom["n_cooling"] == 15
     assert len(mom["easing"]) == 6 and mom["n_easing"] == 9
+    assert mom["n_buying_slowing"] == 0
+
+
+def test_momentum_splits_easing_by_absolute_sign():
+    """A net buyer fading below-norm is buying-slowing, never outflow-easing;
+    unknown sign is in neither directional bucket."""
+    kmap = {
+        "sell": {"ticker": "sell", "vel": -1.5, "accel": 0.3, "rate_4wk": -2.0},
+        "buy": {"ticker": "buy", "vel": -1.5, "accel": 0.3, "rate_4wk": 7.1},
+        "unk": {"ticker": "unk", "vel": -1.5, "accel": 0.3},
+        "zero": {"ticker": "zero", "vel": -1.5, "accel": 0.3, "rate_4wk": 0.0},
+    }
+    mom = fv.momentum(kmap, top=6)
+    assert mom["n_easing"] == 1
+    assert mom["easing"][0]["ticker"] == "sell"
+    assert mom["n_buying_slowing"] == 1
+    assert mom["buying_slowing"][0]["ticker"] == "buy"
+    ids = {r["ticker"] for r in mom["easing"] + mom["buying_slowing"]}
+    assert "unk" not in ids and "zero" not in ids
 
 
 def test_displayed_rate_never_contradicts_velocity_sign():

@@ -16,6 +16,7 @@ numbers — so the quadrant math is pinned against the actual defect, not a toy 
 """
 from __future__ import annotations
 
+import html as html_lib
 import json
 import re
 from pathlib import Path
@@ -31,6 +32,7 @@ from engine.flow_observatory.contract import (
     QUADRANT_LABELS,
     STATUS_WORD,
     UNKNOWN,
+    VOCAB_V2,
     ContractError,
     build_sources,
     build_v2,
@@ -38,6 +40,7 @@ from engine.flow_observatory.contract import (
     market_read,
     quadrant,
     rel_direction,
+    sigma_meaning,
     validate,
 )
 from scripts.build_vector import C
@@ -145,7 +148,7 @@ def _v2(log_rows=None, market_session="2026-09-01", **over):
 def _render(v2, built="test"):
     env = Environment(loader=FileSystemLoader(str(TMPL)), autoescape=True)
     env.globals.update(td=i18n.td, tr=i18n.tr, quadrant_labels=QUADRANT_LABELS,
-                       status_word=STATUS_WORD)
+                       status_word=STATUS_WORD, sigma_meaning=sigma_meaning)
     return env.get_template("flow_velocity.html.j2").render(C=C, snap=v2, built=built)
 
 
@@ -364,6 +367,7 @@ def test_order_size_copy_carries_proxy_disclosure():
         assert bad not in out, f"banned unqualified vocabulary {bad!r} in the rendered page"
 
 
+@pytest.mark.needs_full_checkout("data")
 def test_real_build_output_carries_v2_vocabulary_and_no_old_vocab_or_banned_terms():
     """Integration proof through the REAL engine (not a synthetic fixture): builds off
     committed `data/`, so this is the test that actually EXERCISES `flow_velocity._classify`
@@ -1005,19 +1009,21 @@ def test_w13_mb_theme_categories_render_cjk_in_zh_lane():
 
 def test_w13_mc_sigma_demoted_to_tipped_meaning_sentence_both_lanes():
     """M-c option (i): no vbar-sig at rest; every valued vbar tip carries σ WITH
-    a meaning sentence in both lanes; never a bare σ beside a .vstate word."""
+    a meaning sentence in both lanes; never a bare σ beside a .vstate word.
+    Tips live on the dedicated .lens-q host (not the vbar itself)."""
     v2 = _v2()
     html = _render(v2)
     assert 'class="vbar-sig"' not in html
-    tips_en = re.findall(r'class="vbar[^"]*"[^>]*data-tip-en="([^"]+)"', html)
-    tips_zh = re.findall(r'class="vbar[^"]*"[^>]*data-tip-zh="([^"]+)"', html)
-    assert tips_en, "valued vbars must carry an EN meaning-sentence tip"
-    assert tips_zh, "valued vbars must carry a ZH meaning-sentence tip"
-    for tip in tips_en:
-        assert "σ" in tip and "normal pace" in tip, tip
+    vis = _visible_only(html)
+    assert re.search(r"class=\"vbar[^\"]*\"[^>]*>[^<]*σ", vis) is None
+    tips_en = re.findall(r'class="lens-q"[^>]*data-tip-en="([^"]+)"', html)
+    tips_zh = re.findall(r'class="lens-q"[^>]*data-tip-zh="([^"]+)"', html)
+    pace_en = [t for t in tips_en if "σ" in t and "normal pace" in t]
+    pace_zh = [t for t in tips_zh if "σ" in t and ("自身常态" in t or "罕见" in t)]
+    assert pace_en, "valued vbars must carry an EN meaning-sentence tip on .lens-q"
+    assert pace_zh, "valued vbars must carry a ZH meaning-sentence tip on .lens-q"
+    for tip in pace_en:
         assert "—" in tip or "-" in tip
-    for tip in tips_zh:
-        assert "σ" in tip and "自身常态" in tip, tip
     # no .vstate host whose own text contains σ
     for block in re.findall(r'<span class="vstate[^"]*">.*?</span>', html, re.S):
         visible = re.sub(r"<[^>]+>", "", block)
@@ -1050,19 +1056,29 @@ def test_w13_md_theme_and_official_boards_cap_at_eight_with_count_true_control()
     assert "Show fewer" in html
     assert "收起" in html
     assert "fv-cap-toggle" in html
-    assert "tog.checked=false" in html  # cap resets on sort
+    assert "function resetBoardCap" in html
+    assert "resetBoardCap(block)" in html
+    assert "tog.checked=false" in html  # cap resets on sort via resetBoardCap
 
     eight = [_theme(i, vel=1.0 + i * 0.1, rate_4wk=-0.9) for i in range(8)]
+    eight_off = [_official(i) for i in range(8)]
     v2_8 = _v2(ashare_sectors={"cadence": "daily", "as_of": "2026-09-01", "n": 8,
                                "n_unscored": 0, "primary": "4wk", "note": "n", "note_zh": "n",
-                               "rows": eight})
+                               "rows": eight},
+               official_sectors={"available": True, "rows": eight_off,
+                                 "seed_date": "2026-01-01", "n": 8})
     html8 = _render(v2_8)
     rows8 = _sector_row_classes(_table(html8, "sectortbl"))
+    off8 = _sector_row_classes(_table(html8, "officialtbl"))
     assert len(rows8) == 8
+    assert len(off8) == 8
     assert all("fv-over" not in c for c in rows8)
+    assert all("fv-over" not in c for c in off8)
     assert "See all" not in html8
     assert "8 themes" in html8
     assert "8个主题" in html8
+    assert "8 sectors" in html8
+    assert "8个行业" in html8
 
 
 def test_w13_me_board_label_and_chip_figures_carry_nouns_same_formatting():
@@ -1104,8 +1120,12 @@ def test_w13_mi_zero_untipped_bare_dash_rank_spans():
         "inflow": [_member()], "outflow": [],
     })
     html = _render(v2)
-    untipped = re.findall(r'<span class="rk na"(?! [^>]*data-tip-)[^>]*>—</span>', html)
-    assert untipped == [], f"untipped bare-dash rank spans: {untipped}"
+    vis = _visible_only(html)
+    assert re.search(r'<span class="rk na"[^>]*>—</span>', vis) is None
+    assert "not ranked" in vis
+    assert "不排名" in vis
+    assert "first day" in vis
+    assert "首日" in vis
 
 
 def test_w13_mj_net_buyer_never_renders_selling_easing():
@@ -1115,6 +1135,8 @@ def test_w13_mj_net_buyer_never_renders_selling_easing():
     assert fv._classify(-1.0, 0.1, abs_value=7.1)[1] == "买入放缓"
     assert fv._classify(-1.0, 0.1, abs_value=-2.0)[0] == "selling easing"
     assert fv._classify(-1.0, 0.1, abs_value=-2.0)[1] == "卖出趋缓"
+    assert fv._classify(-1.0, 0.1, abs_value=None) == ("pace easing", "步伐放缓")
+    assert fv._classify(-1.0, 0.1, abs_value=float("nan")) == ("pace easing", "步伐放缓")
 
     snap_over = _snap()
     for chan in snap_over["aggregate"]:
@@ -1135,3 +1157,138 @@ def test_w13_mj_net_buyer_never_renders_selling_easing():
     assert "卖出趋缓" not in card
     assert "still buying, pace fading" in card or "buying slowing" in card
     assert "仍净流入·动能转弱" in card or "买入放缓" in card
+
+
+def test_w13_r2_sigma_bands_both_lanes_and_channel_noun():
+    """B-1: band boundaries 0.9/1.0/1.9/2.0/2.9/3.0 both lanes; channel noun."""
+    cases = [
+        (0.9, "close to this name's normal pace", "该标的接近自身常态"),
+        (1.0, "running above this name's normal pace", "该标的高于自身常态"),
+        (1.9, "running above this name's normal pace", "该标的高于自身常态"),
+        (2.0, "well above this name's normal pace", "该标的明显高于自身常态"),
+        (2.9, "well above this name's normal pace", "该标的明显高于自身常态"),
+        (3.0, "further above this name's own normal pace than on all but a handful of days this year",
+         "该标的处于今年罕见的高位"),
+        (-0.9, "close to this name's normal pace", "该标的接近自身常态"),
+        (-1.0, "running below this name's normal pace", "该标的低于自身常态"),
+        (-2.0, "well below this name's normal pace", "该标的明显低于自身常态"),
+        (-3.0, "further below this name's own normal pace than on all but a handful of days this year",
+         "该标的处于今年罕见的低位"),
+    ]
+    for v, en_clause, zh_clause in cases:
+        en, zh = sigma_meaning(v, "name")
+        assert f"{v:+.2f}σ" in en and f"{v:+.2f}σ" in zh
+        assert en_clause in en, (v, en)
+        assert zh_clause in zh, (v, zh)
+        assert "this name's" in en
+    ch_en, ch_zh = sigma_meaning(0.10, "channel")
+    assert "this channel's" in ch_en
+    assert "该通道" in ch_zh
+    assert "this name's" not in ch_en
+    assert "该标的" not in ch_zh
+    ch_hi_en, ch_hi_zh = sigma_meaning(4.76, "channel")
+    assert "this channel's" in ch_hi_en
+    assert "该通道处于今年罕见的高位" in ch_hi_zh
+    rendered = html_lib.unescape(_render(_v2()))
+    assert "this channel's" in rendered
+    assert "该通道" in rendered
+
+
+def test_w13_r2_vocab_v2_and_masterplan_byte_exact():
+    """MAJ-3: VOCAB_V2 tuples match the masterplan §6 table byte-for-byte;
+    buying slowing and pace easing have their own keys."""
+    assert VOCAB_V2["outflow easing"] == ("selling easing", "卖出趋缓")
+    assert VOCAB_V2["buying slowing"] == ("buying slowing", "买入放缓")
+    assert VOCAB_V2["pace easing"] == ("pace easing", "步伐放缓")
+    mp = (ROOT / "research" / "FLOW_OBSERVATORY_V2_MASTERPLAN_BY_FABLE.md").read_text(
+        encoding="utf-8")
+    for key, (en, zh) in VOCAB_V2.items():
+        assert f"| {key} | {en} | {zh} |" in mp, (key, en, zh)
+    assert "selling easing / buying slowing" not in mp
+
+
+def test_w13_r2_quadrant_chips_demote_sigma_to_banded_tip():
+    """MAJ-1: q-chips show a word + abs % at rest; σ lives in the banded tip."""
+    acc = _theme(0, vel=2.2, rate_4wk=1.4, rate_rel=2.2,
+                 quadrant="true_accumulation",
+                 quadrant_en="real inflow, above norm",
+                 quadrant_zh="真实流入·高于常态",
+                 abs={"value": 1.4, "direction": "positive"},
+                 rel={"value": 2.2})
+    v2 = _v2(ashare_sectors={"cadence": "daily", "as_of": "2026-09-01", "n": 1,
+                             "n_unscored": 0, "primary": "4wk", "note": "n", "note_zh": "n",
+                             "rows": [acc]})
+    # build_v2 recomputes quadrant from abs/rel; pin the chip by using the computed row
+    html = _render(v2)
+    # σ must not sit at rest in a q-chip
+    for m in re.finditer(r'<span class="q-chip"[^>]*>.*?</span>', html, re.S):
+        inner = re.sub(r'data-tip-(?:en|zh)="[^"]*"', "", m.group(0))
+        visible = re.sub(r"<[^>]+>", "", inner)
+        assert "σ" not in visible, visible
+    assert "well above this name" in html
+    assert "normal pace" in html
+    assert "该标的明显高于自身常态" in html
+    assert "q-chip" in html
+
+
+def test_w13_r2_see_all_does_not_count_all_names_row_as_a_theme():
+    """MIN-1: leaders present → N is the theme count, not the __all__ aggregate."""
+    nine = [_theme(i, vel=1.0 + i * 0.1, rate_4wk=-0.9) for i in range(9)]
+    v2 = _v2(ashare_sectors={"cadence": "daily", "as_of": "2026-09-01", "n": 9,
+                             "n_unscored": 0, "primary": "4wk", "note": "n", "note_zh": "n",
+                             "rows": nine},
+             ashare_names={
+                 "cadence": "daily", "as_of": "2026-09-01", "n": 10, "n_unscored": 0,
+                 "primary": "4wk", "note": "n", "note_zh": "n",
+                 "market_read": market_read(
+                     [{"vel": 1.0, "rate_4wk": 0.5, "state": "above norm, rising"}] * 10),
+                 "inflow": [_member()], "outflow": [],
+             })
+    html = _render(v2)
+    assert "See all 9 themes" in html
+    assert "全部9个主题" in html
+    assert "See all 10 themes" not in html
+    assert 'data-sector="__all__"' in html
+
+
+def test_w13_r2_h1_is_a_real_heading_not_a_muted_eyebrow():
+    """MAJ-5: the single h1 has a real heading treatment, not font:inherit 11px."""
+    html = _render(_v2())
+    assert ".fv-hero-eyebrow h1{margin:0;font-size:22px" in html
+    assert "font:inherit" not in html.split(".fv-hero-eyebrow h1")[1][:200]
+
+
+def test_w13_r2_row_hosted_tips_use_lens_q_not_tabindex_on_vbar():
+    """MAJ-6: no tabindex host on the vbar itself; dedicated .lens-q button."""
+    html = _render(_v2())
+    vbars = re.findall(r'<span class="vbar [^"]*"[^>]*>', html)
+    for tag in vbars:
+        assert "tabindex" not in tag
+        assert "data-tip-en" not in tag
+    assert 'class="lens-q"' in html
+    assert "role=\"button\" tabindex=\"0\"" not in re.findall(
+        r'<span class="vbar [^"]*"[^>]*>', html)[0] if vbars else ""
+
+
+def test_w13_r2_cap_toggle_not_focusable_label_is_button():
+    """MIN-7: checkbox is clip-hidden AND unfocusable; label is the control."""
+    nine = [_theme(i) for i in range(9)]
+    html = _render(_v2(ashare_sectors={"cadence": "daily", "as_of": "2026-09-01", "n": 9,
+                                       "n_unscored": 0, "primary": "4wk", "note": "n",
+                                       "note_zh": "n", "rows": nine}))
+    assert 'class="fv-cap-toggle" tabindex="-1" aria-hidden="true"' in html
+    assert 'class="fv-see-all" role="button" tabindex="0" aria-expanded="false"' in html
+
+
+def test_w13_r2_light_art_direction_named_and_page_scoped():
+    """B-2: comment block names both treatments; light rules exist for r1 surfaces."""
+    src = (TMPL / "flow_velocity.html.j2").read_text(encoding="utf-8")
+    assert "DARK TREATMENT" in src
+    assert "LIGHT TREATMENT" in src
+    assert "post-stack: consolidate" in src
+    html = _render(_v2())
+    assert 'html[data-theme="light"] .fv-see-all' in html
+    assert 'html[data-theme="light"] .fv-caption' in html
+    assert 'html[data-theme="light"] .q-empty .empty-why' in html
+    assert 'html[data-theme="light"] .foot' in html
+    assert 'html[data-theme="light"] .fv-hero-eyebrow h1' in html

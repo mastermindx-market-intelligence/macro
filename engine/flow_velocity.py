@@ -277,6 +277,8 @@ def _classify(vel: float | None, accel: float, vin: float = 0.5, vout: float = -
 
     `abs_value` binds the easing word to the absolute direction (M-j): a net-buyer
     whose relative pace is fading is "buying slowing", never "selling easing".
+    Unknown sign (abs_value missing/NaN) is a sign-free "pace easing" — never a
+    direction word (W13 r2 MAJ-2 / MIN-4).
     """
     if vel is None or not np.isfinite(vel):
         return "no data", "无数据"
@@ -286,9 +288,12 @@ def _classify(vel: float | None, accel: float, vin: float = 0.5, vout: float = -
     if vel <= vout:
         if a < 0:
             return ("below norm, worsening", "低于常态·加剧")
-        if abs_value is not None and np.isfinite(abs_value) and abs_value > 0:
-            return ("buying slowing", "买入放缓")
-        return ("selling easing", "卖出趋缓")
+        if abs_value is not None and np.isfinite(abs_value):
+            if abs_value > 0:
+                return ("buying slowing", "买入放缓")
+            if abs_value < 0:
+                return ("selling easing", "卖出趋缓")
+        return ("pace easing", "步伐放缓")
     return ("near its norm", "接近常态")
 
 
@@ -778,11 +783,32 @@ def flow_breadth(kmap: dict | None, sectors: dict | None = None) -> dict:
             "tilt": int(tilt), "state": state, "state_zh": state_zh}
 
 
+def _abs_dir(r: dict) -> str | None:
+    """Absolute-flow sign for a kinetics record: 'buy' / 'sell' / None (unknown).
+
+    Prefers rate_4wk (the name-map field); falls back to abs_rate. Zero and
+    non-finite values are unknown — never a direction word.
+    """
+    v = r.get("rate_4wk")
+    if v is None:
+        v = r.get("abs_rate")
+    try:
+        x = float(v)
+    except (TypeError, ValueError):
+        return None
+    if not np.isfinite(x) or x == 0:
+        return None
+    return "buy" if x > 0 else "sell"
+
+
 def momentum(kmap: dict | None, top: int = 6) -> dict | None:
     """Where flow momentum is TURNING — the actionable name-level reads:
-      accel_in : fast money still SPEEDING UP     (vel≥NAMES_VIN & accel>0)  — strongest push
-      cooling  : strong inflow now FADING          (vel≥NAMES_VIN & accel<0)  — possible exhaustion
-      easing   : heavy outflow now EASING          (vel≤NAMES_VOUT & accel>0)  — possible bottoming
+      accel_in        : fast money still SPEEDING UP     (vel≥NAMES_VIN & accel>0)
+      cooling         : strong inflow now FADING          (vel≥NAMES_VIN & accel<0)
+      easing          : heavy SELLING now EASING          (vel≤NAMES_VOUT & accel>0 & abs sell)
+      buying_slowing  : net BUYING now SLOWING            (vel≤NAMES_VOUT & accel>0 & abs buy)
+    A net buyer is never counted as outflow fading. Unknown absolute sign is
+    omitted from both directional buckets (sign-free "pace easing" at the row).
     Descriptive, watch-family; None when nothing qualifies.
 
     Each list is truncated to `top` for display, but the TRUE population count ships alongside
@@ -795,12 +821,17 @@ def momentum(kmap: dict | None, top: int = 6) -> dict | None:
                       key=lambda r: -r["accel"])
     cooling = sorted((r for r in recs if r["vel"] >= _NAMES_VIN and r["accel"] < 0),
                      key=lambda r: r["accel"])
-    easing = sorted((r for r in recs if r["vel"] <= _NAMES_VOUT and r["accel"] > 0),
+    fade = [r for r in recs if r["vel"] <= _NAMES_VOUT and r["accel"] > 0]
+    easing = sorted((r for r in fade if _abs_dir(r) == "sell"),
                     key=lambda r: -r["accel"])
-    if not (accel_in or cooling or easing):
+    buying_slowing = sorted((r for r in fade if _abs_dir(r) == "buy"),
+                            key=lambda r: -r["accel"])
+    if not (accel_in or cooling or easing or buying_slowing):
         return None
-    return {"accel_in": accel_in[:top], "cooling": cooling[:top], "easing": easing[:top],
-            "n_accel_in": len(accel_in), "n_cooling": len(cooling), "n_easing": len(easing)}
+    return {"accel_in": accel_in[:top], "cooling": cooling[:top],
+            "easing": easing[:top], "buying_slowing": buying_slowing[:top],
+            "n_accel_in": len(accel_in), "n_cooling": len(cooling),
+            "n_easing": len(easing), "n_buying_slowing": len(buying_slowing)}
 
 
 def confluence(kmap: dict | None, seats: dict | None, top: int = 12) -> dict | None:
