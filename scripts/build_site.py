@@ -5657,8 +5657,10 @@ def main() -> int:
     env.filters["min"] = lambda seq: min(seq)
     from engine import i18n
     from lib.seo import SITE_BASE as _SITE_BASE
+    from engine.macro_news import CHANNEL_LABEL as _CHANNEL_LABEL
     env.globals.update(td=i18n.td, tr=i18n.tr, t_pctile=i18n.t_pctile, zip=zip,
-                       SITE_BASE=_SITE_BASE)  # bilingual helpers for templates
+                       SITE_BASE=_SITE_BASE,  # bilingual helpers for templates
+                       CHANNEL_LABEL=_CHANNEL_LABEL)  # ZH twins for all 21 news channels
     # P-MP1-SHELL central act: expose the b1-ruling stance projection to the
     # template so the Setups card grid (re-sourced to the plan book, below) can
     # call it per row — the SAME function scripts/build_site.py already ships
@@ -6005,7 +6007,9 @@ def main() -> int:
     # Macro news & catalysts (LEAF, additive, never fatal). Catalysts (FOMC + jobs
     # report) are keyless and always on; filtered headlines + the optional LLM brief
     # only when macro_news.enabled. News NEVER feeds any score.
-    macro_catalysts, macro_news_data, macro_brief_data = [], None, None
+    # None = fetch failed (unknown/cautious lane). [] = genuinely empty calendar.
+    # Never pre-set []: a failed fetch would then assert "nothing scheduled".
+    macro_catalysts, macro_news_data, macro_brief_data = None, None, None
     event_strip, catalyst_line = [], ""
     event_risk = {"show": False}
     macro_news_disclaimer = macro_news_disclaimer_zh = ""
@@ -6014,20 +6018,22 @@ def main() -> int:
         from engine import macro_news as _mnews
         _mncfg = config.load().get("macro_news", {}) or {}
         _horizon = _mncfg.get("catalysts_horizon_days", 14)
-        macro_catalysts = _mnews.upcoming_catalysts(horizon_days=_horizon)
+        macro_catalysts = _mnews.load_upcoming_catalysts(horizon_days=_horizon)
         # RIC W3: enrich OPEX event rows with the window level chip (display-only;
         # reads site/vol/regime.json['opex_risk'] — never blocks on absence).
-        try:
-            import json as _json
-            _site_dir = config.ROOT / config.load()["storage"]["site_dir"]
-            _vr_path = _site_dir / "vol" / "regime.json"
-            _or_snap = None
-            if _vr_path.exists():
-                _vr = _json.loads(_vr_path.read_text())
-                _or_snap = _vr.get("opex_risk")
-            macro_catalysts = _ec.enrich_opex_events(macro_catalysts, _or_snap)
-        except Exception as _e:  # noqa: BLE001
-            pass   # enrichment is additive; failure leaves catalysts unchanged
+        # Skip enrich when the fetch failed (None): leave the unknown-lane signal.
+        if macro_catalysts is not None:
+            try:
+                import json as _json
+                _site_dir = config.ROOT / config.load()["storage"]["site_dir"]
+                _vr_path = _site_dir / "vol" / "regime.json"
+                _or_snap = None
+                if _vr_path.exists():
+                    _vr = _json.loads(_vr_path.read_text())
+                    _or_snap = _vr.get("opex_risk")
+                macro_catalysts = _ec.enrich_opex_events(macro_catalysts, _or_snap)
+            except Exception as _e:  # noqa: BLE001
+                pass   # enrichment is additive; failure leaves catalysts unchanged
         # compact "US high-impact next 14 days" glance strip + the imminent-catalyst
         # text line fed to the LLM brief below (context only; never a scored input)
         event_strip = _ec.high_impact_strip(horizon_days=_horizon)

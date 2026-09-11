@@ -163,8 +163,20 @@ TIER_LABEL: dict[str, tuple[str, str]] = {
 
 
 def _slug_label(slug: str, table: dict[str, tuple[str, str]]) -> tuple[str, str]:
-    """(EN, ZH) display pair for a channel/tier slug; unmapped slugs de-underscore."""
-    return table.get(slug) or (slug.replace("_", " "), slug.replace("_", " "))
+    """(EN, ZH) display pair for a channel/tier slug.
+
+    Mapped slugs use the producer table (ZH twins for every CHANNEL_LABEL key).
+    Unmapped slugs de-underscore in both lanes — prettified, never-blocking,
+    never a blank. Unknown is not a Chinese invention; it is the honest EN
+    fallback rather than a guessed translation.
+    """
+    if not slug:
+        return ("", "")
+    hit = table.get(slug)
+    if hit:
+        return hit
+    pretty = str(slug).replace("_", " ").strip() or str(slug)
+    return (pretty, pretty)
 
 # Official/key-source feeds that carry first-party signals the broad GDELT wire can
 # miss or down-rank. Best-effort, cached, and still display-only.
@@ -1304,6 +1316,19 @@ def upcoming_catalysts(today: date | None = None, horizon_days: int = 14) -> lis
                         "impact": "med", "source": "config", "is_context_only": True})
     out.sort(key=lambda c: c["date"])
     return out
+
+
+def load_upcoming_catalysts(today: date | None = None, horizon_days: int = 14) -> list[dict] | None:
+    """Dashboard producer: None on fetch failure, list (possibly empty) on success.
+
+    An OUTAGE must never be coerced to []. That path asserts a quiet calendar
+    ("Nothing scheduled…") and violates the tri-state unknown-lane law.
+    """
+    try:
+        cats = upcoming_catalysts(today=today, horizon_days=horizon_days)
+        return [] if cats is None else list(cats)
+    except Exception:  # noqa: BLE001 — caller renders the cautious unknown lane
+        return None
 
 
 # --------------------------------------------------------------------------- #

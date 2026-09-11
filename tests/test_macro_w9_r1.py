@@ -346,3 +346,122 @@ def test_regime_tip_null_z_uses_missing_sentence():
     assert "有一项输入今日未结算，最弱支撑读数暂缺。" in html
     assert "slope z —" not in html
     assert "斜率 z —" not in html
+
+
+# --------------------------------------------------------------------------- #
+# W9 r2 — unknown events, N==0 badge, geometry, 21/21 ZH channels, nits
+# --------------------------------------------------------------------------- #
+
+def test_events_stance_unknown():
+    html = _render(macro_catalysts=None)
+    ev = html[html.find('id="sx-events-v2"'):html.find('id="sx-v5-fed"') if 'id="sx-v5-fed"' in html else html.find('id="sx-v5-sentiment"')]
+    assert _CAUTIOUS_EN in ev
+    assert _CAUTIOUS_ZH in ev
+    assert "Nothing scheduled that should change positioning this week." not in ev
+    assert "本周暂无应改变仓位的安排。" not in ev
+
+
+def test_events_failed_fetch_vs_genuinely_empty():
+    """Producer contract on the face: None = cautious; [] = quiet calendar."""
+    failed = _render(macro_catalysts=None)
+    empty = _render(macro_catalysts=[])
+    failed_ev = failed[failed.find('id="sx-events-v2"'):failed.find('id="sx-v5-sentiment"')]
+    empty_ev = empty[empty.find('id="sx-events-v2"'):empty.find('id="sx-v5-sentiment"')]
+    assert _CAUTIOUS_EN in failed_ev
+    assert "Nothing scheduled that should change positioning this week." in empty_ev
+    assert "Nothing scheduled that should change positioning this week." not in failed_ev
+    assert _CAUTIOUS_EN not in empty_ev
+
+
+def test_alert_badge_n_zero_is_neutral_not_amber():
+    html = _render(
+        alerts=[],
+        macro_news={"headlines": [
+            {"title": "Oracle prints a beat", "title_zh": "甲骨文超预期",
+             "importance": "high", "source_name": "Reuters"},
+            {"title": "Second print", "title_zh": "第二条",
+             "importance": "med", "source_name": "WSJ"},
+        ], "synthesis": {}},
+    )
+    face = html[html.find('id="sx-news-v2"'):html.find('id="sx-deep-context"')]
+    assert "No alerts today" in face
+    assert "今日无警报" in face
+    assert "of 0" not in face
+    assert "共 0 条" not in face
+    # badge is the default muted chip, not the warn/amber alarm
+    badge = re.search(r'<div class="mx5-card-badge"[^>]*>', face)
+    assert badge, "alerts badge missing"
+    assert "mx5-warn-ink" not in badge.group(0)
+    assert "mx5-warn-dim" not in badge.group(0)
+    assert "Headline" in face
+    assert "头条" in face
+
+
+def test_alert_badge_n_positive_unchanged():
+    html = _render(alerts=[_alert()], macro_news={"headlines": [], "synthesis": {}})
+    face = html[html.find('id="sx-news-v2"'):html.find('id="sx-deep-context"')]
+    assert "1 need action · of 1" in face
+    assert "1 条需处理 · 共 1 条" in face
+    assert "No alerts today" not in face
+    badge = re.search(r'<div class="mx5-card-badge"[^>]*>', face)
+    assert badge and "mx5-warn-ink" in badge.group(0)
+
+
+def test_markets_price_geometry_lives_on_the_node():
+    src = (ROOT / "templates" / "dashboard.html.j2").read_text()
+    m = re.search(r"body\.page-macro\.mx4-grid \.mx5-mkt-price\{([^}]+)\}", src)
+    assert m, ".mx5-mkt-price rule missing"
+    body = m.group(1)
+    assert "min-height:1em" in body
+    assert "min-width:8ch" in body
+    assert "display:block" in body
+    assert "min-width:4.5ch" not in src[src.find("body.page-macro.mx4-grid .mx5-mkt-price"):src.find("body.page-macro.mx4-grid .mx5-mkt-delta")]
+    tok = re.search(r"body\.page-macro\.mx4-grid \.mx5-mkt-price\.dtp-token\{([^}]+)\}", src)
+    assert tok, "dtp-token override on the price node missing"
+    assert "font-size:19px" in tok.group(1)
+    assert "text-transform:none" in tok.group(1)
+
+
+def test_sector_null_keeps_its_why():
+    html = _render(sector_heat=None)
+    sect = html[html.find('id="sx-v5-sector"'):html.find('id="sx-markets-v2"')]
+    assert _CAUTIOUS_EN in sect
+    assert "Sector data — accruing from nightly log." in sect
+    assert "板块数据 — 每晚积累中。" in sect
+
+
+def test_sentiment_greed_label_wins_over_fear_range_dial():
+    html = _render(fear_greed={"dial": 38, "label_en": "Greed", "label_zh": "贪婪"})
+    sent = html[html.find('id="sx-v5-sentiment"'):html.find('id="sx-v5-sector"')]
+    assert "Protect gains — stretched optimism cuts both ways." in sent
+    assert "Watch — don't chase weakness; extremes can snap back." not in sent
+
+
+def test_aibrief_zh_channel_twins_all_21():
+    from engine.macro_news import CHANNEL_LABEL
+    assert len(CHANNEL_LABEL) == 21
+    missing = []
+    for slug, (en, zh) in CHANNEL_LABEL.items():
+        assert any("\u4e00" <= c <= "\u9fff" for c in zh), f"{slug} ZH is not Chinese: {zh!r}"
+        html = _render(macro_news={
+            "synthesis": {
+                "high_impact_count": 2, "dominant_channel": slug, "top_tickers": [],
+            },
+            "headlines": [],
+            # no channel_label on the payload — producer table / env global must win
+        })
+        brief = html[html.find('id="sx-aibrief-v2"'):html.find('id="sx-news-v2"')]
+        if zh not in brief:
+            missing.append(f"face:{slug}")
+        if f"关注{zh}主线" not in brief:
+            missing.append(f"stance:{slug}")
+        if f"Watch the {en} thread" not in brief:
+            missing.append(f"stance-en:{slug}")
+    assert not missing, missing
+
+
+def test_build_site_catalysts_init_is_none_not_empty_list():
+    src = (ROOT / "scripts" / "build_site.py").read_text()
+    assert "macro_catalysts, macro_news_data, macro_brief_data = None, None, None" in src
+    assert "load_upcoming_catalysts" in src
+    assert "macro_catalysts, macro_news_data, macro_brief_data = [], None, None" not in src

@@ -46,7 +46,9 @@ def _env() -> jinja2.Environment:
     # a render exercising us_prophet_book.plans does not crash on an undefined
     # global the real build always provides.
     from scripts.build_site import us_stance_projection  # noqa: PLC0415
+    from engine.macro_news import CHANNEL_LABEL  # noqa: PLC0415
     env.globals["us_stance_projection"] = us_stance_projection
+    env.globals["CHANNEL_LABEL"] = CHANNEL_LABEL
     return env
 
 

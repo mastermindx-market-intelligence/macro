@@ -5763,10 +5763,17 @@ body.page-macro.mx4-grid .mx5-mkt-price{
   font-size:19px;font-weight:700;line-height:1;
   color:var(--ink-1,rgba(255,255,255,.92));margin-bottom:4px;
   font-variant-numeric:tabular-nums;
+  min-height:1em;min-width:8ch;display:block;
 }
-/* Loading skeleton at true price-line geometry (theme.css .skel; never a bare em dash). */
+/* Skeleton keeps the shimmer; geometry lives on the node so dropping .skel
+   (null/behind) cannot collapse the tile. ~8ch matches a live quote ("6,712.25"). */
 body.page-macro.mx4-grid .mx5-mkt-price.skel{
-  min-height:1em;min-width:4.5ch;display:block;
+  display:block;
+}
+/* .dtp-token is a chip in theme.css; on a Markets price node size it to the tile. */
+body.page-macro.mx4-grid .mx5-mkt-price.dtp-token{
+  display:block;font-size:19px;font-weight:700;letter-spacing:normal;
+  text-transform:none;gap:0;align-items:baseline;color:var(--muted);
 }
 body.page-macro.mx4-grid .mx5-mkt-delta.skel{
   min-height:1em;min-width:3.2ch;display:block;
@@ -8735,8 +8742,10 @@ html[data-theme="light"] :is(
   <div class="sx" id="sx-events-v2" style="--isle-color:var(--isle-events)">
     {# v5 face — UPCOMING EVENTS (week rail + impact badges; fed odds removed to Fed card) #}
     {% set _ev_hi_cnt = (macro_catalysts | selectattr('impact','equalto','high') | list | length) if macro_catalysts else 0 %}
-    {# Stance from producer n (high-impact prints ahead). Unknown → cautious lane. #}
-    {% if macro_catalysts is not defined %}
+    {# Stance from producer n (high-impact prints ahead). None = fetch failed →
+       cautious lane. [] = genuinely empty calendar. `is not defined` can never
+       fire: build_site always passes the key (None or list). #}
+    {% if macro_catalysts is not defined or macro_catalysts is none %}
       {% set _ev_stance_en = "Watch — this read is being updated." %}
       {% set _ev_stance_zh = "观望——该读数更新中。" %}
     {% elif _ev_hi_cnt > 0 %}
@@ -11304,10 +11313,18 @@ html[data-theme="light"] :is(
        dial anchors stay; this is the Law-1 sentence under them. #}
     {% if fear_greed is defined and fear_greed and fear_greed.get('dial') is not none %}
       {% set _fg_lab = (_fgv5.get('label_en') or '') | lower %}
-      {% if 'fear' in _fg_lab or _fgv5_dial < 40 %}
+      {# Label wins a label/dial disagreement (e.g. "Greed" + dial 38 is euphoria,
+         not panic). Dial bands apply only when the label names neither zone. #}
+      {% if 'fear' in _fg_lab %}
         {% set _fg_stance_en = "Watch — don't chase weakness; extremes can snap back." %}
         {% set _fg_stance_zh = "观望——不追跌，极端情绪可能快速反转。" %}
-      {% elif 'greed' in _fg_lab or _fgv5_dial > 60 %}
+      {% elif 'greed' in _fg_lab %}
+        {% set _fg_stance_en = "Protect gains — stretched optimism cuts both ways." %}
+        {% set _fg_stance_zh = "保住收益——情绪过热双向都有风险。" %}
+      {% elif _fgv5_dial < 40 %}
+        {% set _fg_stance_en = "Watch — don't chase weakness; extremes can snap back." %}
+        {% set _fg_stance_zh = "观望——不追跌，极端情绪可能快速反转。" %}
+      {% elif _fgv5_dial > 60 %}
         {% set _fg_stance_en = "Protect gains — stretched optimism cuts both ways." %}
         {% set _fg_stance_zh = "保住收益——情绪过热双向都有风险。" %}
       {% else %}
@@ -11419,6 +11436,10 @@ html[data-theme="light"] :is(
     <div class="mx5-card-stance">
       <span class="l-en">Watch — this read is being updated.</span>
       <span class="l-zh">观望——该读数更新中。</span>
+    </div>
+    <div style="font-size:12px;color:var(--ink-3);margin-top:6px">
+      <span class="l-en">Sector data — accruing from nightly log.</span>
+      <span class="l-zh">板块数据 — 每晚积累中。</span>
     </div>
     {% endif %}
   </div>
@@ -11653,34 +11674,24 @@ html[data-theme="light"] :is(
   {% if mode != 'stocks' %}
   <div class="sx" id="sx-aibrief-v2" style="--isle-color:var(--isle-brief)">
     {# MX4 face — grid view card face for AI BRIEF (S3: COPY-03/BIL-01/BIL-03/VIS-02) #}
-    {# Channel slug → plain-word translation dict (COPY-03/BIL-01) #}
-    {% set _aibf_ch = {
-      'monetary':'Fed & rates','inflation':'inflation','labor':'jobs & labor',
-      'growth':'growth','credit':'credit & rates','fiscal':'fiscal policy',
-      'earnings':'earnings','guidance':'guidance','analyst':'analyst views',
-      'deals':'deals & IPOs','capital_return':'buybacks & dividends',
-      'stocks':'individual stocks','macro':'macro','rates':'rates',
-      'stock_wire':'stock wire'
-    } %}
-    {% set _aibf_ch_zh = {
-      'monetary':'美联储与利率','inflation':'通胀','labor':'就业',
-      'growth':'增长','credit':'信贷与利率','fiscal':'财政政策',
-      'earnings':'业绩','guidance':'业绩指引','analyst':'分析师观点',
-      'deals':'并购/IPO','capital_return':'回购与分红',
-      'stocks':'个股','macro':'宏观','rates':'利率',
-      'stock_wire':'个股快讯'
-    } %}
     {% if macro_news and macro_news.synthesis %}{% set _abSyn = macro_news.synthesis %}{% else %}{% set _abSyn = {} %}{% endif %}
     {% set _abCh = _abSyn.get('dominant_channel','') %}
     {% set _abTheme = _abSyn.get('dominant_theme','') %}
     {% set _abHiCnt = _abSyn.get('high_impact_count') %}
     {# v5 face — AI BRIEF (ticker pills + structured bilingual lines + required not-a-signal note) #}
-    {# prefer the engine's bilingual CHANNEL_LABEL payload dict (doctrine Law 2 — no raw
-       slugs on glance surfaces); inline dicts remain the fallback for older payloads,
-       de-underscored in BOTH languages (the old zh fallback leaked the raw slug). #}
-    {% set _abChl = ((macro_news.channel_label or {}) if macro_news else {}).get(_abCh) %}
-    {% set _abDomCh_clean = (_abChl[0] if _abChl else _aibf_ch.get(_abCh, _abCh | replace('_',' '))) if _abCh else '' %}
-    {% set _abDomCh_clean_zh = (_abChl[1] if _abChl else _aibf_ch_zh.get(_abCh, _abCh | replace('_',' '))) if _abCh else '' %}
+    {# Producer CHANNEL_LABEL (engine/macro_news.py) is the single 21-key ZH table.
+       Payload dict wins when present; env global covers older payloads; unmapped
+       slugs de-underscore (never-blocking), never an EN slug inside a ZH sentence
+       for a mapped key. #}
+    {% set _ch_ns = namespace(map={}) %}
+    {% if macro_news and macro_news.channel_label %}
+      {% set _ch_ns.map = macro_news.channel_label %}
+    {% elif CHANNEL_LABEL is defined %}
+      {% set _ch_ns.map = CHANNEL_LABEL %}
+    {% endif %}
+    {% set _abChl = _ch_ns.map.get(_abCh) if _abCh else none %}
+    {% set _abDomCh_clean = (_abChl[0] if _abChl else (_abCh | replace('_',' '))) if _abCh else '' %}
+    {% set _abDomCh_clean_zh = (_abChl[1] if _abChl else (_abCh | replace('_',' '))) if _abCh else '' %}
     <div class="sxg-face mx5-card-face" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-aibrief')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-aibrief');}">
       <div class="mx5-card-title"><span class="l-en">AI Brief</span><span class="l-zh">AI简报</span></div>
       {# Top ticker pills (VIS-02: wraps freely, no fixed-width clip) #}
@@ -11753,33 +11764,36 @@ html[data-theme="light"] :is(
     {# Guard: if tier missing default to watch so legacy alerts are not silently dropped #}
     {% set _alv5_prio = _alv5_prio + (_alv5_all | rejectattr('tier','defined') | list) if _alv5_all else _alv5_prio %}
     {% set _alv5_ctx  = (_alv5_all | selectattr('tier','equalto','context') | rejectattr('rule','equalto','event_risk') | list) if _alv5_all else [] %}
-    {% set _alv5_total = _alv5_all | length %}
     {# Hot news headline (importance=high); guard importance field missing #}
     {% set _alv5_hot_news = ((macro_news.headlines | selectattr('importance','defined') | selectattr('importance','equalto','high') | list)[:1]) if (macro_news is defined and macro_news and macro_news.headlines) else [] %}
     {# Face list: first 2 prio, then hot headline, then pad prio to 3 rows total #}
     {% set _alv5_face_prio_2 = _alv5_prio[:2] %}
     {% set _alv5_prio_rest = _alv5_prio[2:] %}
-    {% set _alv5_total = _alv5_all | length %}
     <div class="sxg-face mx5-card-face" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-news')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-news');}">
       <div class="mx5-card-title-row">
         <div class="mx5-card-title"><span class="l-en">Alerts Centre</span><span class="l-zh">警报中心</span></div>
         {% set _al_need = _alv5_prio | length %}
+        {% if _nalerts == 0 %}
+        {# N==0 is not an amber alarm. Neutral empty form; news-fallback may sit beneath. #}
+        <div class="mx5-card-badge">
+          <span class="l-en">No alerts today</span>
+          <span class="l-zh">今日无警报</span>
+        </div>
+        {% else %}
         <div class="mx5-card-badge" style="color:var(--mx5-warn-ink);background:var(--mx5-warn-dim);border:1px solid rgba(245,158,11,.20);">
           <span class="l-en">{{ _al_need }} need action · of {{ _nalerts }}</span>
           <span class="l-zh">{{ _al_need }} 条需处理 · 共 {{ _nalerts }} 条</span>
         </div>
+        {% endif %}
       </div>
       {% if _alv5_prio or _alv5_hot_news %}
       {# Rows rendered: up to 2 prio, 1 hot news headline, then pad prio to 3 if slots remain.
-         Two counters: total rows (layout cap) vs alert rows only (footer "X of Y in feed" —
-         the news row is not part of the alert feed and must not inflate X past Y). #}
+         Footer reprints the same need-action pair as the badge (one-integer law). #}
       {% set _alv5_face_rows_rendered = namespace(count=0) %}
-      {% set _alv5_alert_rows = namespace(count=0) %}
       <div class="mx5-alerts-list">
         {% for a in _alv5_face_prio_2 %}
         {% set _asev = 'warn' if a.severity in ('warn','high','critical') else 'info' %}
         {% set _alv5_face_rows_rendered.count = _alv5_face_rows_rendered.count + 1 %}
-        {% set _alv5_alert_rows.count = _alv5_alert_rows.count + 1 %}
         <div class="mx5-alert-item {{ _asev }}">
           <div class="mx5-alert-dot {{ _asev }}"></div>
           <div class="mx5-alert-content">
@@ -11820,7 +11834,6 @@ html[data-theme="light"] :is(
         {% if _alv5_face_rows_rendered.count < 3 %}
         {% set _asev = 'warn' if a.severity in ('warn','high','critical') else 'info' %}
         {% set _alv5_face_rows_rendered.count = _alv5_face_rows_rendered.count + 1 %}
-        {% set _alv5_alert_rows.count = _alv5_alert_rows.count + 1 %}
         <div class="mx5-alert-item {{ _asev }}">
           <div class="mx5-alert-dot {{ _asev }}"></div>
           <div class="mx5-alert-content">
@@ -11852,8 +11865,13 @@ html[data-theme="light"] :is(
       </div>
       <div class="mx5-alert-footer">
         <span>
+          {% if _nalerts == 0 %}
+          <span class="l-en">No alerts today</span>
+          <span class="l-zh">今日无警报</span>
+          {% else %}
           <span class="l-en">{{ _al_need }} need action · of {{ _nalerts }}</span>
           <span class="l-zh">{{ _al_need }} 条需处理 · 共 {{ _nalerts }} 条</span>
+          {% endif %}
         </span>
         <button type="button" class="gbtn gbtn-sm gbtn-quiet" onclick="event.stopPropagation();mx5OpenDlg('dlg-news')">
           <span class="l-en">View all &#8594;</span>
@@ -11868,6 +11886,7 @@ html[data-theme="light"] :is(
           <div class="mx5-alert-dot info"></div>
           <div class="mx5-alert-content">
             <div class="mx5-alert-title">
+              <span class="mx5-alert-k"><span class="l-en">Headline</span><span class="l-zh">头条</span></span>
               <span class="l-en">{{ h.title[:55] }}{% if h.title|length > 55 %}…{% endif %}</span>
               <span class="l-zh">{{ (h.get('title_zh') or h.title)[:38] }}{% if (h.get('title_zh') or h.title)|length > 38 %}…{% endif %}</span>
             </div>
@@ -13945,15 +13964,19 @@ html[data-theme="light"] :is(
         {# Fallback teaser when master_brief is absent #}
         {% if macro_news is defined and macro_news and macro_news.synthesis and macro_news.synthesis.get('read') %}
         {% set _dlg_syn = macro_news.synthesis %}
-        {% set _dlg_ch_zh = {'monetary':'美联储与利率','inflation':'通胀','labor':'就业','growth':'增长','credit':'信贷','fiscal':'财政','fiscal_trade':'财政与贸易','earnings':'业绩','guidance':'指引','analyst':'分析师','deals':'并购','capital_return':'回购','stocks':'个股','macro':'宏观','rates':'利率','stock_wire':'个股快讯'} %}
-        {% set _dlg_ch_en = {'capital_return':'buybacks','fiscal_trade':'fiscal & trade','stock_wire':'stock wire','monetary':'Fed & rates'} %}
-        {# prefer the engine's bilingual CHANNEL_LABEL payload dict (doctrine Law 2 — no raw
-           slugs on glance surfaces); inline dicts remain the fallback for older payloads. #}
+        {# Producer CHANNEL_LABEL (21/21 ZH twins); payload wins, env global covers older payloads. #}
         {% set _dc = _dlg_syn.get('dominant_channel') %}
-        {% set _dcl = (macro_news.channel_label or {}).get(_dc) if _dc else none %}
+        {% set _dlg_ch_ns = namespace(lab=none) %}
+        {% if _dc %}
+          {% if macro_news and macro_news.channel_label %}
+            {% set _dlg_ch_ns.lab = macro_news.channel_label.get(_dc) %}
+          {% elif CHANNEL_LABEL is defined %}
+            {% set _dlg_ch_ns.lab = CHANNEL_LABEL.get(_dc) %}
+          {% endif %}
+        {% endif %}
         <div class="isle-aibrief-body">
-          <span class="l-en">{{ _dlg_syn.get('high_impact_count', 0) }} high-impact item{{ 's' if _dlg_syn.get('high_impact_count', 0) != 1 }} today{% if _dc %} · dominant: <strong>{{ _dcl[0] if _dcl else _dlg_ch_en.get(_dc, _dc|replace('_',' ')) }}</strong>{% endif %}</span>
-          <span class="l-zh">今日 {{ _dlg_syn.get('high_impact_count', 0) }} 条高影响信息{% if _dc %} · 主导：<strong>{{ _dcl[1] if _dcl else _dlg_ch_zh.get(_dc, _dc|replace('_',' ')) }}</strong>{% endif %}</span>
+          <span class="l-en">{{ _dlg_syn.get('high_impact_count', 0) }} high-impact item{{ 's' if _dlg_syn.get('high_impact_count', 0) != 1 }} today{% if _dc %} · dominant: <strong>{{ _dlg_ch_ns.lab[0] if _dlg_ch_ns.lab else (_dc|replace('_',' ')) }}</strong>{% endif %}</span>
+          <span class="l-zh">今日 {{ _dlg_syn.get('high_impact_count', 0) }} 条高影响信息{% if _dc %} · 主导：<strong>{{ _dlg_ch_ns.lab[1] if _dlg_ch_ns.lab else (_dc|replace('_',' ')) }}</strong>{% endif %}</span>
         </div>
         {% else %}
         <div class="isle-aibrief-body">{{ t('AI reads every dashboard in one place — the regime, where signals conflict, the rotation thesis and what to watch next. Research context only, never a signal.', 'AI 在一处解读每个看板 — 周期、信号冲突、轮动假设与后续关注。仅供研究参考，绝非交易信号。') }}</div>

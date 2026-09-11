@@ -204,29 +204,30 @@
   var TAPE_NULL_EN = "Quotes unavailable — the rest of this page is unaffected.";
   var TAPE_NULL_ZH = "行情暂不可用——本页其余内容不受影响。";
   function paintTapeNull(el) {
+    // Null design is Markets-only. patchSymbol walks every .nb-px[data-sym]
+    // site-wide (nav ticker included); TAPE_SYMS is that same symbol set.
+    // Pre-diff behaviour outside #sx-markets-v2 was a silent return — keep it.
+    var mount = (el.closest && el.closest("#sx-markets-v2")) || null;
+    if (!mount) return;
     el.classList.add("dtp-token", "behind");
     el.classList.remove("skel");
     el.removeAttribute("aria-busy");
     el.setAttribute("data-live", "behind");
     el.title = "";
     el.removeAttribute("title");
-    var mount = (el.closest && el.closest("#sx-markets-v2")) || null;
-    var line = mount && mount.querySelector && mount.querySelector(".mx-mkt-null");
-    if (!line) {
+    // Per-tile behind glyph so .dtp-token.behind has something to tint and the
+    // price node keeps true geometry after .skel is dropped.
+    el.textContent = "—";
+    var line = mount.querySelector && mount.querySelector(".mx-mkt-null");
+    if (!line && document.createElement) {
       var html = '<span class="l-en">' + TAPE_NULL_EN + '</span>' +
                  '<span class="l-zh">' + TAPE_NULL_ZH + '</span>';
-      if (mount && document.createElement) {
-        line = document.createElement("div");
-        line.className = "mx-empty mx-mkt-null";
-        line.setAttribute("role", "status");
-        line.innerHTML = '<p class="mx-empty-line">' + html + '</p>';
-        mount.appendChild(line);
-        el.textContent = "";
-      } else {
-        el.innerHTML = html;
-      }
-    } else {
-      el.textContent = "";
+      line = document.createElement("div");
+      line.className = "mx-empty mx-mkt-null";
+      line.setAttribute("role", "status");
+      // Packet plain line IS the why (.mx-empty-why is required alongside .mx-empty).
+      line.innerHTML = '<p class="mx-empty-line mx-empty-why">' + html + '</p>';
+      mount.appendChild(line);
     }
   }
   function clearTapeNullLine(el) {
