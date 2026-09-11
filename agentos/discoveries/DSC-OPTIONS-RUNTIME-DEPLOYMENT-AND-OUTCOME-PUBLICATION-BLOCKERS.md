@@ -11,8 +11,11 @@ claim: >
   prefix mismatches. These are distinct observed blockers, not a completed
   deployment, storage repair, full-history corruption claim or profitable model.
 falsifier: >
-  Reinspect the exact launch binding, source blob89138ed09ad9e16bc0963dcd02dc592d6ca5b231
-  and stage SHA2567fcf4764d0694680cfddc4fdb2975f58dab1f16438aa089d8a3a492ea2810ed9;
+  Re-run the pinned checks documented at
+  research/options_estate/OPTIONS_RUNTIME_ROOT_CAUSES_2026-09-10.md:1.
+  Reinspect the exact launch binding, source blob
+  89138ed09ad9e16bc0963dcd02dc592d6ca5b231 and stage SHA256
+  7fcf4764d0694680cfddc4fdb2975f58dab1f16438aa089d8a3a492ea2810ed9;
   reproduce the selected events in run34421411115/job102735434183; and recompute
   the34 source-prefix commitments at Macro6e1fb2ab35f68bbaf3695ffee5fe5ba268e46bae.
   A contradiction on those identical observations refutes the respective claim.
@@ -32,7 +35,7 @@ verified_at: 2026-09-10
 verified_by: >
   Sol read-only native binding/source/stage inspection and current GitHub/gh
   workflow evidence. Full identities and expected/observed hashes are recorded
-  in research/options_estate/OPTIONS_RUNTIME_ROOT_CAUSES_2026-09-10.md.
+  in research/options_estate/OPTIONS_RUNTIME_ROOT_CAUSES_2026-09-10.md:1 on #7027.
   Native aggregate receipt2026-09-10T23:05:09.993099Z has SHA256
   6b6496f459b93bf8f389f3fc0b7b55311f3d2991547a0703666c3381ff584d60.
   One-pass current-source prefix checks and independent direct-prefix hashing
