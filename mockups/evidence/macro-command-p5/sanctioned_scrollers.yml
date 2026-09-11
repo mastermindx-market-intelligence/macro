@@ -1,0 +1,49 @@
+# Sanctioned horizontal scrollers for Macro Command P5 evidence (E-B1).
+# Every non-empty content_overflows entry must resolve to a row here.
+# NEVER register #mq-shell / div.mq-workspace / #mq-panel-current — those
+# scrolling at 390 are layout defects fixed at the source.
+
+ul.mq-suitenav-rail:
+  kind: designed-rail
+  covering_family: chip_material
+  reason: >-
+    Suite-nav chip rail; chip_material crops photograph the scrolled-out
+    chip+pill pair after intentional scrollLeft.
+
+table.mq-table:
+  kind: table
+  covering_family: method_table_390
+  reason: >-
+    Every overflowing table.mq-table instance (including .mq-table-compact)
+    is photographed start+end at 390, keyed by element_key. On 3 of the 5
+    reporting pages the photographed overflowing table is the What-changed
+    METRIC/PRIOR/CURRENT/CHANGE grid; FC and labor also photograph the
+    method-section WEIGHT/CONTRIBUTION composition table when it overflows.
+    table_fits binds only its own element_key: a table that does not
+    overflow in a given page × theme × locale gets a table_fits:true
+    receipt cell (start only, no end PNG).
+
+ul.mc-rail-list:
+  kind: designed-rail
+  covering_family: hub_rail
+  reason: >-
+    Hub horizontal rail list on macro_monetary; hub_rail crops photograph
+    both ends of the rail (scrollLeft=0 and max) at 390 and 768. The rail
+    middle is reachable only by scrolling.
+
+"#mc-strip-h":
+  kind: designed-rail
+  covering_family: chip_material
+  observed: false
+  reason: >-
+    No capture cell reports #mc-strip-h as a scrollport; the live suite
+    chip rail is observed as ul.mq-suitenav-rail.
+
+div.mc-subtabs:
+  kind: designed-rail
+  covering_family: hub_rail
+  reason: >-
+    Hub sub-tab strip that scrolls on narrow viewports; hub_rail crops
+    photograph the money strip (aria-labelledby=money-h) at scrollLeft=0
+    and max when it overflows, or start-only with fits:true when it does
+    not.

@@ -23,6 +23,7 @@ import math
 
 from typing import Any, Mapping, Sequence
 
+from lib import macro_suite_disclosure as D
 from lib import macro_suite_labels as L
 
 # Reading orders the shell can compose. The grammar order is merged architecture
@@ -106,8 +107,10 @@ def _context(snapshot: Mapping[str, Any], page_built_at: str) -> dict[str, Any]:
             cuts.append(asof)
         required.append({
             "component_id": item.get("component_id"),
-            "label": _bilingual(item.get("label")) or _pair(L.deslug(item.get("component_id") or ""),
-                                                            L.deslug(item.get("component_id") or "")),
+            "label": (L.METRIC.get(str(item.get("component_id") or ""))
+                      or _bilingual(item.get("label"))
+                      or _pair(L.deslug(item.get("component_id") or ""),
+                               L.deslug(item.get("component_id") or ""))),
             "required": bool(item.get("required")),
             "freshness": L.label("freshness", item.get("freshness")),
             "freshness_tone": L.tone("freshness", item.get("freshness")),
@@ -168,6 +171,7 @@ def _implications(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         text = _bilingual(raw.get("text"))
         if text is None:
             continue
+        reading, _original = L.apply_plain_producer(text)
         confidence = raw.get("confidence") or {}
         bands = []
         for key, name in L.CONFIDENCE_DIMENSION.items():
@@ -180,7 +184,9 @@ def _implications(snapshot: Mapping[str, Any]) -> dict[str, Any]:
                           "absence": None if value else _absence(None)})
         items.append({
             "implication_id": raw.get("implication_id"),
-            "text": text,
+            "text": reading,
+            # Internal producer receipt — probe artifacts only, never Details.
+            "text_original": None,
             "evidence_class": raw.get("evidence_class"),
             "evidence_label": L.label("evidence_class", raw.get("evidence_class")),
             "evidence_claim": L.label("evidence_claim", raw.get("evidence_class")),
@@ -204,16 +210,20 @@ def _implications(snapshot: Mapping[str, Any]) -> dict[str, Any]:
 
 # --- headline state band ------------------------------------------------------
 
-def _axis_view(axis: Mapping[str, Any]) -> dict[str, Any]:
+def _axis_view(axis: Mapping[str, Any], *, published: str | None = None) -> dict[str, Any]:
     value = axis.get("value")
     thresholds = axis.get("thresholds") or {}
     components = []
     for component in axis.get("components") or []:
         components.append({
             "component_id": component.get("component_id"),
-            "label": _bilingual(component.get("label")),
+            "label": (L.METRIC.get(str(component.get("component_id") or ""))
+                      or _bilingual(component.get("label"))),
             "owner_field": component.get("owner_field"),
             "owner_ref": component.get("owner_ref"),
+            "owner_name": (
+                D.owner_display_pair(component.get("owner_ref"))
+                if component.get("owner_ref") else None),
             "raw": L.value_pair(component.get("raw_value")),
             "raw_absence": None if component.get("raw_value") is not None else _absence(component.get("null_reason")),
             "standardized": L.fmt_number(component.get("standardized_value")),
@@ -232,11 +242,26 @@ def _axis_view(axis: Mapping[str, Any]) -> dict[str, Any]:
             "freshness": L.label("freshness", component.get("freshness")),
             "freshness_tone": L.tone("freshness", component.get("freshness")),
         })
+    number = L.fmt_number(value)
+    unit_token = axis.get("unit")
+    unit_pair = L.label("unit", unit_token) if unit_token in L.UNIT else None
+    if number and unit_pair:
+        value_with_unit = {
+            "en": f"{number} {unit_pair['en']}",
+            "zh": f"{number} {unit_pair['zh']}",
+        }
+    elif number:
+        value_with_unit = {"en": number, "zh": number}
+    else:
+        value_with_unit = None
     return {
         "axis_id": axis.get("axis_id"),
-        "label": _bilingual(axis.get("label")),
+        "label": (L.METRIC.get(str(axis.get("axis_id") or ""))
+                  or _bilingual(axis.get("label"))),
         "direction": L.label("direction", axis.get("direction_semantics")),
-        "value": L.fmt_number(value),
+        "direction_token": axis.get("direction_semantics"),
+        "value": number,
+        "value_with_unit": value_with_unit,
         "value_raw": value if isinstance(value, (int, float)) and not isinstance(value, bool) else None,
         "absence": None if value is not None else _absence(axis.get("null_reason")),
         "freshness": L.label("freshness", axis.get("freshness")),
@@ -249,15 +274,51 @@ def _axis_view(axis: Mapping[str, Any]) -> dict[str, Any]:
         "components": components,
         "components_available": axis.get("components_available"),
         "min_components": axis.get("min_components"),
-        "coverage_floor": L.fmt_ratio_pct(axis.get("coverage_floor")),
-        "weights_law": axis.get("weights_law"),
-        "transformation": axis.get("transformation"),
-        "frequency_alignment": axis.get("frequency_alignment"),
-        "revision_behavior": axis.get("revision_behavior"),
-        "definition_version": axis.get("definition_version"),
+        "coverage_floor": D.coverage_floor_pair(axis.get("coverage_floor")),
+        "weights_law": D.composition_law_pair(
+            axis.get("axis_id"), "weights_law", axis.get("weights_law")),
+        "transformation": D.composition_law_pair(
+            axis.get("axis_id"), "transformation", axis.get("transformation")),
+        "frequency_alignment": D.composition_law_pair(
+            axis.get("axis_id"), "frequency_alignment",
+            axis.get("frequency_alignment")),
+        "revision_behavior": D.composition_law_pair(
+            axis.get("axis_id"), "revision_behavior",
+            axis.get("revision_behavior")),
+        "definition_version": D.definition_version_pair(
+            axis.get("definition_version"), published),
         "data_version": axis.get("data_version"),
-        "authority_ceiling": axis.get("authority_ceiling"),
+        "authority_ceiling": D.authority_ceiling_pair(axis.get("authority_ceiling")),
     }
+
+
+def _parse_iso_date(value: Any):
+    """Parse an ISO date (or longer timestamp) to ``datetime.date``, or None."""
+    raw = L.date_or_none(value)
+    if not raw or len(str(raw)) < 10:
+        return None
+    from datetime import date as _date  # noqa: PLC0415 — local, like labels
+    try:
+        return _date.fromisoformat(str(raw)[:10])
+    except ValueError:
+        return None
+
+
+def prior_publication_is_earlier(prior_effective_date: Any,
+                                 headline_effective_date: Any) -> bool:
+    """True only when the prior date parses and is strictly earlier than now.
+
+    Missing, unparseable, or equal dates are False. Any exception is False
+    (fail-closed: never treat a same-publication prior as movement).
+    """
+    try:
+        prior = _parse_iso_date(prior_effective_date)
+        current = _parse_iso_date(headline_effective_date)
+        if prior is None or current is None:
+            return False
+        return prior < current
+    except Exception:
+        return False
 
 
 def _sign(value: Any) -> str | None:
@@ -294,6 +355,17 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
         and vector.get("status") == "PRESENT"
         and vector.get("dx") is not None
     )
+    x_axis, y_axis = {}, {}
+    x_id = vector.get("x_axis_id")
+    y_id = vector.get("y_axis_id")
+    if x_id and y_id:
+        resolved_x, resolved_y = D.resolve_vector_axes(axes, vector)
+        x_axis, y_axis = resolved_x, resolved_y
+        x_id = x_axis.get("axis_id")
+        y_id = y_axis.get("axis_id")
+    elif vector_present:
+        raise KeyError("vector is missing required x_axis_id/y_axis_id")
+    published = L.date_or_none(headline.get("effective_date"))
     return {
         "state_id": headline.get("state_id"),
         "state_label": _bilingual(headline.get("state_label")),
@@ -301,6 +373,8 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
         "status": headline.get("status"),
         "absence": None if headline.get("state_id") else _absence(headline.get("null_reason")),
         "method_version": headline.get("method_version"),
+        "method_version_label": D.method_version_pair(
+            headline.get("method_version"), published),
         "effective_date": L.date_or_none(headline.get("effective_date")),
         "x": quadrant.get("x"),
         "y": quadrant.get("y"),
@@ -332,6 +406,11 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
             "dy": L.fmt_signed(vector.get("dy")),
             "dx_raw": vector.get("dx"),
             "dy_raw": vector.get("dy"),
+            "move": (L.vector_move_pair(vector.get("dx"), vector.get("dy"),
+                                        x_axis, y_axis)
+                     if vector_present else None),
+            "x_axis_id": x_id,
+            "y_axis_id": y_id,
             "absence": (
                 None if vector_present
                 else (_no_earlier_absence(vector.get("null_reason")) if no_earlier_move
@@ -343,7 +422,7 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
             "band": L.fmt_number(hysteresis.get("band")),
             "applied": bool(hysteresis.get("applied")),
             "held_prior": bool(hysteresis.get("held_prior")),
-            "note": hysteresis.get("note"),
+            "note": D.hysteresis_note_pair(hysteresis),
         },
     }
 
@@ -353,6 +432,13 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
 # 10 are x/y state models, so the map is shell furniture rather than a
 # liquidity-only widget. The letter grid follows the producer's classification
 # law: A = low-x/high-y, B = high-x/high-y, C = low-x/low-y, D = high-x/low-y.
+
+def resolve_vector_axes(axes: Sequence[Mapping[str, Any]],
+                        vector: Mapping[str, Any] | None
+                        ) -> tuple[Mapping[str, Any], Mapping[str, Any]]:
+    """Bind dx/dy to axes by id. Test pin: swapped list order still maps by name."""
+    return D.resolve_vector_axes(axes, vector)
+
 
 def _finite(value: Any) -> bool:
     """A plottable coordinate: numeric, not a bool, and actually a number.
@@ -448,6 +534,16 @@ def _current_unavailable_absence(null_reason: Any = None) -> dict[str, Any]:
 def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
     changes = snapshot.get("changes") or {}
     comparability = changes.get("comparability")
+    headline_date = (snapshot.get("headline") or {}).get("effective_date")
+    prior_date = changes.get("prior_effective_date")
+    # I4: a same-publication prior (previous BUILD of this print) is not
+    # movement. Fail-closed — missing/unparseable/equal → not earlier.
+    prior_is_earlier = prior_publication_is_earlier(prior_date, headline_date)
+    unit_by_metric = {
+        item.get("metric_id"): item.get("unit")
+        for item in (snapshot.get("metrics") or {}).get("items") or []
+        if item.get("metric_id")
+    }
     no_earlier = comparability == "NO_EARLIER_PUBLICATION"
     deltas = []
     for delta in changes.get("deltas") or []:
@@ -466,6 +562,7 @@ def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
             delta_raw = float(current_raw) - float(prior_raw)
             delta_present = True
         comparable_row = prior_present and current_present and delta_present
+        is_movement = bool(prior_is_earlier and comparable_row)
         row_absence = None
         if not comparable_row:
             if no_earlier or not prior_present:
@@ -482,12 +579,14 @@ def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
             "current_present": current_present,
             "delta_present": delta_present,
             "comparable": comparable_row,
+            "is_movement": is_movement,
             # A real zero keeps its "0" and its flat class; an absent value gets
             # neither a number nor a class that reads as success.
             "prior": L.fmt_number(prior_raw) if prior_present else None,
             "current": L.fmt_number(current_raw) if current_present else None,
             "delta": L.fmt_signed(delta_raw) if delta_present else None,
             "sign": _sign(delta_raw),
+            "unit": unit_by_metric.get(delta.get("metric_id")),
             "absence": row_absence,
             "note": delta.get("note"),
         })
@@ -510,6 +609,7 @@ def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         "comparability": comparability,
         "comparability_label": L.label("comparability", comparability),
         "comparable": comparable,
+        "prior_is_earlier": prior_is_earlier,
         "deltas": deltas,
         "prior_generation_id": changes.get("prior_generation_id"),
         "prior_effective_date": L.date_or_none(changes.get("prior_effective_date")),
@@ -521,7 +621,7 @@ def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
 
 # --- component metrics --------------------------------------------------------
 
-def _metrics(snapshot: Mapping[str, Any]) -> list[dict[str, Any]]:
+def _metrics(snapshot: Mapping[str, Any], *, published: str | None = None) -> list[dict[str, Any]]:
     rows = []
     for metric in (snapshot.get("metrics") or {}).get("items") or []:
         value = metric.get("value")
@@ -540,11 +640,16 @@ def _metrics(snapshot: Mapping[str, Any]) -> list[dict[str, Any]]:
             "reference_id": metric.get("reference_id"),
             "definition_id": metric.get("definition_id"),
             "definition_version": metric.get("definition_version"),
+            "definition_label": D.definition_version_pair(
+                metric.get("definition_version"),
+                metric.get("reference_period") or published),
             "owner_ref": metric.get("owner_ref"),
+            "owner_name": D.owner_display_pair(metric.get("owner_ref")),
             "model_version": metric.get("model_version"),
             "transformation": metric.get("transformation"),
             "coverage": L.fmt_ratio_pct(metric.get("coverage")),
-            "authority_ceiling": metric.get("authority_ceiling"),
+            "authority_ceiling": D.authority_ceiling_pair(
+                metric.get("authority_ceiling")),
             "clocks": _clock_rows(metric),
             "reference_period": L.date_or_none(metric.get("reference_period")),
             "source_refs": list(metric.get("source_refs") or []),
@@ -594,9 +699,13 @@ def _drivers(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) -> 
             signed = None
             if isinstance(magnitude, (int, float)) and isinstance(sign, int):
                 signed = L.fmt_signed(magnitude * sign)
+            raw_label = _bilingual(driver.get("label"))
+            label, _label_original = L.apply_plain_label(raw_label)
             rows.append({
                 "driver_id": driver.get("driver_id"),
-                "label": _bilingual(driver.get("label")),
+                "label": label,
+                # Internal producer receipt — not rendered in Details.
+                "label_original": None,
                 "owner_field": driver.get("owner_field"),
                 "value": L.value_pair(driver.get("value")),
                 "absence": None if driver.get("value") is not None else _absence(None),
@@ -664,12 +773,23 @@ def _diagnostics(snapshot: Mapping[str, Any], context: Mapping[str, Any],
             })
 
     if context.get("degraded"):
-        joined = ", ".join(str(d) for d in context["degraded"])
+        names = []
+        names_zh = []
+        for token in context["degraded"]:
+            reviewed = L.METRIC.get(str(token)) or L.lookup_plain_producer(str(token))
+            if reviewed:
+                names.append(reviewed["en"])
+                names_zh.append(reviewed["zh"])
+            else:
+                names.append(L.deslug(str(token)))
+                names_zh.append(L.deslug(str(token)))
+        joined = ", ".join(names)
+        joined_zh = "、".join(names_zh)
         out.append({
             "tone": "warn",
             "title": _pair("Optional legs degraded", "可选分项已降级"),
             "body": _pair(f"Shown separately, and excluded from the page state: {joined}.",
-                          f"单独呈现，且不计入本页状态：{joined}。"),
+                          f"单独呈现，且不计入本页状态：{joined_zh}。"),
         })
 
     if not changes.get("comparable"):
@@ -783,7 +903,20 @@ def _evidence(snapshot: Mapping[str, Any], context: Mapping[str, Any],
             "state": L.label("correction_state", corrections.get("correction_state")),
             "predecessor": corrections.get("predecessor_generation_id"),
             "changed_fingerprints": list(corrections.get("changed_fingerprints") or []),
-            "note": corrections.get("note"),
+            "changed_sources": D.changed_sources_pair(
+                corrections.get("changed_fingerprints")),
+            "note": D.lineage_note_pair(
+                corrections.get("note"),
+                effective_date=(snapshot.get("headline") or {}).get("effective_date"),
+                prior_effective_date=(
+                    ((snapshot.get("headline") or {}).get("prior_state") or {})
+                    .get("effective_date")
+                ),
+            ),
+            "predecessor_label": (
+                _pair("A prior published generation is on file.",
+                      "已有上一已发布代次存档。")
+                if corrections.get("predecessor_generation_id") else None),
         },
     }
 
@@ -1004,6 +1137,7 @@ def _glance(changes: Mapping[str, Any],
         "meaning": {
             "present": lead_implication is not None,
             "text": lead_implication.get("text") if lead_implication else None,
+            "text_original": lead_implication.get("text_original") if lead_implication else None,
             "evidence_label": lead_implication.get("evidence_label") if lead_implication else None,
             "evidence_claim": lead_implication.get("evidence_claim") if lead_implication else None,
             "remaining": max(0, len(entries) - 1) if entries else 0,
@@ -1034,11 +1168,14 @@ def build_view(snapshot: Mapping[str, Any], *, page_built_at: str,
     """
     if layout not in _LAYOUTS:
         raise ValueError(f"unknown layout {layout!r}; expected one of {sorted(_LAYOUTS)}")
-    axes = [_axis_view(a) for a in (snapshot.get("axes") or {}).get("items") or []]
+    published = L.date_or_none((snapshot.get("headline") or {}).get("effective_date"))
+    axes = [_axis_view(a, published=published)
+            for a in (snapshot.get("axes") or {}).get("items") or []]
     context = _context(snapshot, page_built_at)
     headline = _headline(snapshot, axes)
     changes = _changes(snapshot)
     series = _series(snapshot)
+    implications = _implications(snapshot)
 
     tabs = [
         {"tab_id": "current", "name": _pair("Current", "当前")},
@@ -1046,12 +1183,12 @@ def build_view(snapshot: Mapping[str, Any], *, page_built_at: str,
         {"tab_id": "history", "name": _pair("History", "历史")},
     ]
 
-    return {
+    view = {
         "ok": True,
         "layout": layout,
         "decision_first": layout == LAYOUT_DECISION_FIRST,
         "next_action": _next_action(context, headline),
-        "glance": _glance(changes, _implications(snapshot)),
+        "glance": _glance(changes, implications),
         "workspace": {
             "id": (snapshot.get("workspace") or {}).get("id"),
             "title": _bilingual((snapshot.get("workspace") or {}).get("title")),
@@ -1061,7 +1198,7 @@ def build_view(snapshot: Mapping[str, Any], *, page_built_at: str,
                                (snapshot.get("region") or {}).get("display_name"),
                                bool((snapshot.get("region") or {}).get("supported"))),
         "context": context,
-        "implications": _implications(snapshot),
+        "implications": implications,
         "headline": headline,
         "axes": axes,
         "tabs": tabs,
@@ -1069,13 +1206,14 @@ def build_view(snapshot: Mapping[str, Any], *, page_built_at: str,
         "quadrant_map": _quadrant_map(headline, axes),
         "diagnostics": _diagnostics(snapshot, context, changes, series),
         "changes": changes,
-        "metrics": _metrics(snapshot),
+        "metrics": _metrics(snapshot, published=published),
         "series": series,
         "drivers": _drivers(snapshot, axes),
         "evidence": _evidence(snapshot, context, page_built_at, artifact),
         "learning_events": list((snapshot.get("learning") or {}).get("event_names") or []),
         "page_built_at": page_built_at,
     }
+    return L.sanitize_view_pairs(view)
 
 
 def degraded_view(*, workspace_id: str, title: Mapping[str, str],
@@ -1137,6 +1275,20 @@ def degraded_view(*, workspace_id: str, title: Mapping[str, str],
 
 #: How many change lines the hub prints before it defers to the workspaces.
 HUB_CHANGE_LIMIT = 5
+
+def _rail_section_count() -> int:
+    """The customer-facing rail length — derive, never hardcode fourteen."""
+    from scripts.build_macro_suite_pages import SECTIONS  # noqa: PLC0415
+    return len(SECTIONS)
+
+
+def _deck_copy(section_count: int) -> dict[str, str]:
+    """Overview primer: the rail's section count, digits in both languages."""
+    src = L.PRIMERS["overview"]
+    return {
+        "en": src["en"].format(n=section_count),
+        "zh": src["zh"].format(n=section_count),
+    }
 
 #: Freshness tokens that mean a reader must not treat the row as settled.
 _ATTENTION_FRESHNESS = frozenset({
@@ -1202,6 +1354,7 @@ def build_hub_view(entries: Sequence[Mapping[str, Any]], *,
     """
     rows: list[dict[str, Any]] = []
     changes_pool: list[dict[str, Any]] = []
+    unmapped_metrics: list[str] = []
     attention: list[dict[str, Any]] = []
     unavailable: list[dict[str, Any]] = []
     effective_dates: list[str] = []
@@ -1269,26 +1422,42 @@ def build_hub_view(entries: Sequence[Mapping[str, Any]], *,
 
         # Changes are pooled in registry order and truncated in registry order.
         # No magnitude comparison decides what a reader sees first.
+        as_of_month = L.month_display_pair(str(headline.get("effective_date") or ""))
         for delta in changes.get("deltas") or []:
-            # A row the producer published with no prior, no current and no delta
-            # is not a change — it is a metric that could not be compared. Putting
-            # it here would spend one of the few slots saying nothing, and would
-            # print a bare em dash where the reader expects a move. The workspace's
-            # own what-changed table still carries the row and its typed reason.
-            # The typed flag, not the formatted strings: an em dash is truthy
-            # and a formatted "0" is not, so the string test both admitted
-            # unavailable rows and dropped real no-change ones.
-            if not delta.get("comparable"):
+            # I4: a same-publication prior is not a movement row. Keep the
+            # current reading when it is present so the hub still shows a
+            # number; never emit sign=flat / delta 0 from that prior.
+            is_movement = bool(changes.get("prior_is_earlier") and delta.get("comparable"))
+            if is_movement:
+                pass
+            elif delta.get("current_present"):
+                pass
+            else:
+                continue
+            metric_id = str(delta.get("metric_id") or "")
+            if metric_id not in L.METRIC:
+                # Collect every miss, then raise — a silent drop would move
+                # changes.total while the page still claimed a full pool.
+                unmapped_metrics.append(metric_id)
                 continue
             changes_pool.append({
                 "workspace_id": entry["workspace_id"],
                 "workspace_title": dict(entry["title"]),
                 "href": entry["output"],
-                "label": delta.get("label"),
-                "prior": delta.get("prior"),
+                "metric_id": metric_id,
+                "label": dict(L.METRIC[metric_id]),
+                "kind": "movement" if is_movement else "current",
+                "prior": delta.get("prior") if is_movement else None,
                 "current": delta.get("current"),
-                "delta": delta.get("delta"),
-                "sign": delta.get("sign"),
+                "delta": delta.get("delta") if is_movement else None,
+                "sign": delta.get("sign") if is_movement else None,
+                "unit": delta.get("unit"),
+                "scale": L.figure_scale(delta.get("unit")),
+                "move_words": (
+                    L.fmt_move_words(
+                        delta.get("delta_raw"), delta.get("sign"), delta.get("unit"))
+                    if is_movement else None),
+                "as_of_month": dict(as_of_month) if (not is_movement and as_of_month) else None,
             })
 
         reason = _hub_attention_reason(context, changes)
@@ -1299,15 +1468,21 @@ def build_hub_view(entries: Sequence[Mapping[str, Any]], *,
                               "reason": reason,
                               "tone": reason["tone"]})
 
-    available = [r for r in rows if r.get("available")]
+    if unmapped_metrics:
+        ids = ", ".join(sorted(set(unmapped_metrics)))
+        print(f"::error title=macro-command-unmapped-metric::{ids}", flush=True)
+        raise ValueError(
+            f"unmapped metric id(s) in hub pool: {ids}"
+        )
+
     shown = changes_pool[:HUB_CHANGE_LIMIT]
+    sections_available, sections_total = section_coverage_tally(entries)
 
     return {
         "page_built_at": page_built_at,
         "kicker": _pair("Macro & Monetary", "宏观与货币"),
         "title": _pair("Macro & Monetary", "宏观与货币"),
-        "deck": _pair("Fourteen research workspaces, one current read.",
-                      "十四个研究工作区，一个当前读数。"),
+        "deck": _deck_copy(_rail_section_count()),
         "as_of": {
             # The suite is only as current as its oldest accepted print.
             "effective_date": min(effective_dates) if effective_dates else None,
@@ -1317,11 +1492,12 @@ def build_hub_view(entries: Sequence[Mapping[str, Any]], *,
                 "The suite is dated by its oldest accepted workspace print, never its newest.",
                 "套件日期取自最旧的已接受工作区读数，而非最新读数。"),
         },
+        # Same (available, total) the DATA COVERAGE chip uses — never a
+        # second 14-workspace completeness flag (N0).
         "coverage": {
-            "available": len(available),
-            "total": len(rows),
-            "complete": len(available) == len(rows),
-            "label": _pair("Workspaces readable", "可读取工作区"),
+            "available": sections_available,
+            "total": sections_total,
+            "label": _pair("Sections with today's data", "今日有数据的板块"),
         },
         "workspaces": rows,
         "changes": {
@@ -1350,4 +1526,311 @@ def build_hub_view(entries: Sequence[Mapping[str, Any]], *,
                                 "本次构建中所有工作区均读取正常。"),
         },
         "unavailable": unavailable,
+    }
+
+
+# ==========================================================================
+# F01 Macro Command P2 — The Read + the state strip
+# ==========================================================================
+#
+# Named `build_command_header` rather than extending `build_hub_view` above:
+# that function is the PRE-Macro-Command hub view (kicker/workspaces/changes/
+# attention), already unused by the production `build_hub()` path (P1
+# superseded it with `_macro_command_sections`) and still exercised, in its
+# OLD contract, by `tests/test_macro_monetary_hub.py` — a file already red on
+# this branch against the CURRENT P1 template (5 failed / 16 errored,
+# confirmed 2026-09-06, before this packet touched anything) and owned by a
+# separate worker per this packet's own commission. Reusing the name or
+# reshaping its return contract would entangle this packet with that pending
+# rewrite for no benefit; a new name keeps the two changes independent.
+#
+# This function reads only the seven named chip workspaces plus the coverage
+# tally's representative workspaces. It never scores, ranks or fuses them
+# (G3, DNR:KILL-FUSED-COMPOSITE) — every clause and every chip is a verbatim
+# pass-through of exactly one workspace's own reviewed state.
+
+#: (chip_id, workspace_id, section_id) — the seven market chips / Read
+#: clauses, frozen spec §1.1 x design pin §6.1. `workspace_id` is the
+#: PRIMARY workspace for a subtabbed section (money/growth/credit), the same
+#: convention `scripts/build_macro_suite_pages.py`'s `SECTIONS` constant uses
+#: for a subtab's first-listed entry.
+_CHIP_WORKSPACES: tuple[tuple[str, str, str], ...] = (
+    ("money", "liquidity_regime", "money"),
+    ("policy", "monetary_policy", "policy"),
+    ("rates", "rates_curves", "rates"),
+    ("inflation", "inflation_system", "inflation"),
+    ("growth", "growth_real_economy", "growth"),
+    ("jobs", "labor_markets", "jobs"),
+    ("credit", "financial_conditions", "credit"),
+)
+
+#: Chip 8 (`coverage`, design pin §6.5): one representative workspace per
+#: SIDEBAR SECTION (frozen spec §1.1's `SECTIONS`, the PRIMARY workspace for
+#: a subtabbed section), plus the hub page itself (`overview`, always
+#: counted current — it is built fresh at `page_built_at`). 11 + 1 = 12,
+#: matching the frozen spec's own "N of 12 sections" phrasing. Kept as its
+#: own constant rather than imported from `scripts/build_macro_suite_pages.py`
+#: to avoid a lib -> script import; `tests/test_macro_command_read_strip.py`
+#: pins this list against that module's `SECTIONS`.
+_COVERAGE_WORKSPACES: tuple[str, ...] = (
+    "liquidity_regime", "monetary_policy", "rates_curves", "inflation_system",
+    "growth_real_economy", "labor_markets", "housing_real_estate",
+    "consumer_payments", "financial_conditions", "national_debt_liabilities",
+    "trade_flows",
+)
+
+
+def section_coverage_tally(
+        entries: Sequence[Mapping[str, Any]]) -> tuple[int, int]:
+    """The DATA COVERAGE chip's (available, total) — the page's one completeness.
+
+    Overview is always counted current (it is built at ``page_built_at``).
+    Each of the eleven representative section workspaces counts only when
+    its snapshot is readable and ``availability.state == CURRENT``.
+    """
+    by_workspace = {e["workspace_id"]: e for e in entries}
+    available = 1
+    for workspace_id in _COVERAGE_WORKSPACES:
+        entry = by_workspace.get(workspace_id)
+        if entry and entry.get("snapshot") and _freshness_state(entry["snapshot"]) == "CURRENT":
+            available += 1
+    return available, len(_COVERAGE_WORKSPACES) + 1
+
+
+def _freshness_state(snapshot: Mapping[str, Any] | None) -> str | None:
+    if not snapshot:
+        return None
+    return (snapshot.get("availability") or {}).get("state")
+
+
+def _snapshot_figure_populated(snapshot: Mapping[str, Any] | None) -> bool:
+    """True when P3 would render movement rows, not an E2/E3 empty slot.
+
+    SOURCE_FAILED / STALE_SOURCE force E2 even when deltas exist. Comparable
+    rows are what make a NOT_APPLICABLE section a real figure (M6).
+    """
+    if not snapshot:
+        return False
+    freshness = _freshness_state(snapshot)
+    if freshness in ("SOURCE_FAILED", "STALE_SOURCE"):
+        return False
+    changes = snapshot.get("changes") or {}
+    if changes.get("comparability") != "COMPARABLE":
+        return False
+    for delta in changes.get("deltas") or []:
+        if (_finite(delta.get("prior_value")) and _finite(delta.get("current_value"))
+                and _finite(delta.get("delta"))):
+            return True
+    return False
+
+
+def _chip_null_cause(entry: Mapping[str, Any] | None, null_reason: Any) -> str:
+    """The one typed cause a null chip's note is selected from (design pin
+    §6.8). Checked in this order: a workspace this build could not even
+    read; a source that has not published yet; a source that is late, stale
+    or failed today; a rights/coverage gate; and only then the structural
+    absence of a state_id at all (`status=ABSENT`, `null_reason=
+    NOT_APPLICABLE` — a workspace that publishes numbers, not a state).
+
+    Freshness trouble is checked BEFORE the structural cause because it is
+    the more urgent, more actionable fact: `rates_curves` publishes no axes
+    (structurally state-less, same as `monetary_policy`) AND its source
+    failed to arrive today — a reader needs "today's reading hasn't
+    arrived", not "this section never has a one-word read". Measured against
+    the live artifact in the design pin §11.2's frame observations.
+    """
+    if entry is None or not entry.get("snapshot"):
+        return "no_snapshot"
+    freshness = _freshness_state(entry["snapshot"])
+    if freshness == "NOT_YET_RELEASED":
+        return "not_released"
+    if freshness in ("LATE_WITHIN_TOLERANCE", "STALE_SOURCE", "SOURCE_FAILED"):
+        return "late"
+    if freshness == "RIGHTS_BLOCKED" or null_reason in ("RIGHTS_BLOCKED", "NOT_COVERED"):
+        return "rights"
+    return "no_state"
+
+
+def _chip_and_clause(chip_id: str, workspace_id: str, section_id: str,
+                     entry: Mapping[str, Any] | None,
+                     ) -> tuple[dict[str, Any], dict[str, Any] | None]:
+    """One chip (always) plus its Read clause (only when the state is known
+    and reviewed) for a single market workspace (design pin §4.3)."""
+    label = dict(L.CHIP_LABEL[chip_id])
+    meaning = dict(L.CHIP_MEANING[chip_id])
+    snapshot = entry.get("snapshot") if entry else None
+    headline = (snapshot.get("headline") or {}) if snapshot else {}
+    state_id = headline.get("state_id")
+    freshness = _freshness_state(snapshot)
+    effective_date = L.date_or_none(headline.get("effective_date"))
+    if effective_date:
+        effective_date = effective_date[:10]
+    freshness_note = (None if freshness in (None, "CURRENT")
+                      else L.FRESHNESS_NOTE.get(str(freshness)))
+
+    if state_id is None:
+        if (headline.get("null_reason") == "NOT_APPLICABLE"
+                and _snapshot_figure_populated(snapshot)):
+            cause = "see_curve"
+            chip = {
+                "id": chip_id, "section": section_id, "label": label,
+                "value": None, "tone": "neutral", "null": True,
+                "cause": cause,
+                "as_of": effective_date,
+                "as_of_display": (
+                    L.date_display_pair(effective_date) if effective_date else None),
+                "as_of_omitted": False,
+                "note": None,
+                "meaning": meaning,
+            }
+            return chip, None
+        cause = _chip_null_cause(entry, headline.get("null_reason"))
+        chip = {
+            "id": chip_id, "section": section_id, "label": label,
+            "value": None, "tone": "neutral", "null": True,
+            "cause": cause,
+            "as_of": None, "as_of_display": None, "as_of_omitted": False,
+            "note": dict(L.CHIP_NULL_NOTE[cause]),
+            "meaning": meaning,
+        }
+        return chip, None
+
+    key = str(state_id)
+    word_table = L.STATE_WORD.get(workspace_id) or {}
+    predicate_table = L.PREDICATE_FORM.get(workspace_id) or {}
+    tone_table = L.STATE_TONE.get(workspace_id) or {}
+
+    if key not in word_table or key not in predicate_table or key not in tone_table:
+        # Frozen spec §3.3 step 3 (red-team F4 — supersedes the design pin's
+        # own §4.3 rule 1 "raises" language; this packet's commission rules
+        # the frozen spec wins on this point): an unrecognised
+        # (workspace_id, state_id) NEVER blocks the build. It is recorded, the
+        # clause is omitted, and the chip shows the producer's OWN bilingual
+        # label rather than "Not available yet" — there IS a reading, it
+        # simply has no reviewed word yet.
+        L.record_unknown(f"macro_command_state:{workspace_id}:{key}")
+        print(
+            f"::warning title=macro-command-unknown-state::{workspace_id}:{key} has no "
+            "reviewed STATE_WORD/PREDICATE_FORM/STATE_TONE entry",
+            flush=True,
+        )
+        producer_label = _bilingual(headline.get("state_label")) or _pair(key, key)
+        chip = {
+            "id": chip_id, "section": section_id, "label": label,
+            "value": producer_label, "tone": "neutral", "null": False,
+            "cause": None,
+            "as_of": effective_date,
+            "as_of_display": L.date_display_pair(effective_date) if effective_date else None,
+            "as_of_omitted": False,
+            "note": freshness_note,
+            "meaning": meaning,
+        }
+        return chip, None
+
+    chip = {
+        "id": chip_id, "section": section_id, "label": label,
+        "value": dict(word_table[key]), "tone": tone_table[key], "null": False,
+        "cause": None,
+        "as_of": effective_date,
+        "as_of_display": L.date_display_pair(effective_date) if effective_date else None,
+        "as_of_omitted": False,
+        "note": freshness_note,
+        "meaning": meaning,
+    }
+    clause = {
+        "id": chip_id, "section": section_id, "tone": tone_table[key],
+        "topic": dict(label), "predicate": dict(predicate_table[key]),
+        "_effective_date": effective_date,
+    }
+    return chip, clause
+
+
+def _as_of_meaning(n_dated: int, *, all_same: bool) -> dict[str, str] | None:
+    """Plain-word meaning for the header date. Derived from the dated-chip
+    count — never a hardcoded workspace total. n==0 emits no line (and the
+    caller emits no as-of, so the eyebrow stays off)."""
+    if n_dated == 0:
+        return None
+    n = str(n_dated)
+    if all_same:
+        return {
+            "en": f"All {n} dated readings in the strip below share this date.",
+            "zh": f"下方 {n} 项有日期读数均为此日期。",
+        }
+    return {
+        "en": (f"Oldest date among the {n} dated readings in the strip below; "
+               "each reading shows its own date."),
+        "zh": f"取下方 {n} 项有日期读数中最早的一项；各读数标注各自日期。",
+    }
+
+
+def _coverage_chip(available: int, total: int) -> dict[str, Any]:
+    complete = available == total
+    value = L.COVERAGE_WORD["complete" if complete else "partial"]
+    note = _pair(f"{available} of {total} sections have today's data",
+                f"{total} 个板块中 {available} 个已有今日数据")
+    return {
+        "id": "coverage", "section": "overview", "label": dict(L.CHIP_LABEL["coverage"]),
+        "value": dict(value), "tone": "ok" if complete else "warn", "null": False,
+        "cause": None,
+        "as_of": None, "as_of_display": None, "as_of_omitted": True,
+        "note": note,
+        "meaning": dict(L.CHIP_MEANING["coverage"]),
+    }
+
+
+def build_command_header(entries: Sequence[Mapping[str, Any]], *,
+                         page_built_at: str) -> dict[str, Any]:
+    """`read` + `strip` for the Macro Command header (design pin §4.3).
+
+    ``entries`` is the SAME list `build_hub` receives: one dict per
+    registered workspace, in registry order, each ``{"workspace_id",
+    "region", "output", "title", "subtitle", "snapshot" | None, "failure" |
+    None}``. Reads only the seven chip workspaces plus the coverage tally's
+    eleven representative workspaces; originates no score, rank or fusion.
+    """
+    by_workspace = {e["workspace_id"]: e for e in entries}
+
+    chips: list[dict[str, Any]] = []
+    clauses: list[dict[str, Any]] = []
+    for chip_id, workspace_id, section_id in _CHIP_WORKSPACES:
+        chip, clause = _chip_and_clause(chip_id, workspace_id, section_id,
+                                        by_workspace.get(workspace_id))
+        chips.append(chip)
+        if clause is not None:
+            clauses.append(clause)
+
+    n = len(clauses)
+    for index, clause in enumerate(clauses):
+        if index == n - 1:
+            punct_key = "last"
+        elif index == n - 2:
+            punct_key = "penultimate"
+        else:
+            punct_key = "mid"
+        clause["punct"] = dict(L.READ_PUNCT[punct_key])
+
+    for clause in clauses:
+        del clause["_effective_date"]
+
+    # Coverage tally: the same (available, total) the Overview stance uses.
+    sections_available, sections_total = section_coverage_tally(entries)
+    chips.append(_coverage_chip(sections_available, sections_total))
+
+    # Header date + meaning are derived from the SAME set: strip chips that
+    # carry a date. Coverage is as_of_omitted by design and never joins.
+    dated = [c["as_of"] for c in chips if c.get("as_of")]
+    n_dated = len(dated)
+    read_as_of = min(dated) if dated else None
+    as_of_meaning = _as_of_meaning(n_dated, all_same=bool(dated) and min(dated) == max(dated))
+    return {
+        "read": {
+            "as_of": read_as_of,
+            "as_of_display": L.date_display_pair(read_as_of) if read_as_of else None,
+            "as_of_meaning": as_of_meaning,
+            "clauses": clauses,
+            "omitted": len(clauses) < len(_CHIP_WORKSPACES),
+        },
+        "strip": chips,
+        "coverage": {"available": sections_available, "total": sections_total},
     }

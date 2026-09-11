@@ -52,13 +52,12 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<script src="macro_suite_boot.js?v=768a4342" defer></script>
-<link rel="stylesheet" href="theme.css?v=63df1679">
-<link rel="stylesheet" href="macro_suite.css?v=ae0ccd5f">
-<link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
-<link rel="preload" as="style" href="navigation-refresh.css?v=c299c324">
+<script src="macro_suite_boot.js"></script>
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="macro_suite.css">
+<link rel="stylesheet" href="macro_command.css">
 </head>
-<body class="mq-page" data-mq-workspace="growth_real_economy" data-mq-region="US">
+<body class="mq-page mc-page mq-suite-page" data-mq-workspace="growth_real_economy" data-mq-region="US">
 
 
 
@@ -67,7 +66,7 @@
 
 
 
-    <link rel="stylesheet" href="navigation-refresh.css?v=c299c324">
+    <link rel="stylesheet" href="navigation-refresh.css">
     <div class="nav-links">
 
     <a class="nav-brand" href="start.html" aria-label="MASTERMINDX — Home">
@@ -188,7 +187,6 @@
         </div>
         <a href="intl_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet cross-market · sectors</span><span class="l-zh">Prophet 跨市场 · 板块</span></span></a>
         <a href="baskets_intl.html"><span class="submenu-icon submenu-icon-baskets" aria-hidden="true"></span><span class="l-en">Thematic Baskets</span><span class="l-zh">主题篮子</span><span class="d"><span class="l-en">Cross-country theme baskets · ex-US</span><span class="l-zh">跨国主题篮子 · 除美</span></span></a>
-        <a href="sanctions_map.html"><span class="submenu-icon submenu-icon-policy" aria-hidden="true"></span><span class="l-en">Sanctions Map</span><span class="l-zh">制裁地图</span><span class="d"><span class="l-en">Where US sanctions point · OFAC public list</span><span class="l-zh">美国制裁指向何处 · OFAC 公开名单</span></span></a>
       </div>
     </div>
     <div class="nav-dd">
@@ -281,10 +279,10 @@
     </div>
   </div>
 
-  <script src="logo_config.js?v=b37d33d3" defer></script>
-  <script src="stock-logos.js?v=cc29be53" defer></script>
-  <script src="live_config.js?v=52943e92" defer></script>
-  <script src="live.js?v=f7bdf7cc" defer></script>
+  <script src="logo_config.js"></script>
+  <script src="stock-logos.js"></script>
+  <script src="live_config.js"></script>
+  <script src="live.js"></script>
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
@@ -383,6 +381,13 @@
          href="macro_trade_flows.html"
          data-mq-workspace="trade_flows"><span class="l-en">Trade Flows</span><span class="l-zh">贸易流动</span></a>
     </li>
+    <li class="mq-suitenav-analyst">
+
+      <a class="mq-suitenav-pill mc-analyst" href="chat.html" data-mc-analyst
+              data-mc-analyst-label-en="this workspace" data-mc-analyst-label-zh="本工作区">
+        <span class="mc-analyst-text"><span class="l-en">Ask the analyst</span><span class="l-zh">问分析师</span></span>
+      </a>
+    </li>
   </ul>
 </nav>
 <main class="mq-shell" id="mq-shell">
@@ -393,31 +398,46 @@
     <p class="mq-deck"><span class="l-en">Growth momentum x level/breadth</span><span class="l-zh">增长动能 × 水平/广度</span></p>
     <div class="mq-idchips">
       <span class="mq-chip mq-chip-key"><span class="l-en">Region</span><span class="l-zh">地区</span> · <span class="l-en">United States</span><span class="l-zh">美国</span></span>
-      <span class="mq-chip mq-chip-key"><span class="l-en">Frequency</span><span class="l-zh">频率</span> · <span class="l-en">Owner cadence, daily republish</span><span class="l-zh">按所有者节奏，每日重新发布</span></span>
-      <span class="mq-chip mq-chip-key"><span class="l-en">Window</span><span class="l-zh">窗口</span> · <span class="l-en">Latest accepted print</span><span class="l-zh">最新已接受读数</span></span>
+      <span class="mq-chip mq-chip-key"><span class="l-en">Frequency</span><span class="l-zh">频率</span> · <span class="l-en">Updates when the source updates</span><span class="l-zh">数据源更新时同步更新</span></span>
+      <span class="mq-chip mq-chip-key"><span class="l-en">Window</span><span class="l-zh">窗口</span> · <span class="l-en">Latest reading</span><span class="l-zh">最新读数</span></span>
     </div>
   </div>
 
   <div class="mq-context-state">
     <div class="mq-avail">
-      <span class="mq-avail-label"><span class="l-en">Required-source availability</span><span class="l-zh">必需数据源可用性</span></span>
+      <span class="mq-avail-label"><span class="l-en">Data we need today</span><span class="l-zh">今天需要的数据</span></span>
       <strong class="mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></strong>
-      <span class="mq-avail-note"><span class="l-en">Conservative over the required set — a degraded optional leg cannot turn this green.</span><span class="l-zh">在必需分项集合上取最保守值 — 可选分项降级不会让此处转绿。</span></span>
     </div>
     <dl class="mq-context-meta">
-      <div><dt><span class="l-en">Coverage</span><span class="l-zh">覆盖率</span></dt><dd>100%</dd></div>
-      <div><dt><span class="l-en">Last accepted source cut</span><span class="l-zh">最近已接受数据截止</span></dt>
-           <dd><time>2026-09-30</time></dd></div>
-      <div><dt><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></dt>
-           <dd><time>2026-09-09</time></dd></div>
-      <div class="mq-nonclock"><dt><span class="l-en">Page built</span><span class="l-zh">页面生成</span></dt>
-           <dd><time>2026-09-10T22:57:15Z</time></dd></div>
+      <div><dt><span class="l-en">Coverage</span><span class="l-zh">覆盖率</span></dt><dd>100.0%</dd></div>
     </dl>
-    <p class="mq-context-caveat"><span class="l-en">Page build time is not an economic clock and never makes a source fresh. This page is a static publication — it does not poll for live data.</span><span class="l-zh">页面生成时间并非经济时钟，不会使数据源变新。本页为静态发布 — 不会实时轮询数据。</span></p>
+    <p class="mq-context-caveat"><span class="l-en">Updated once a night — not live.</span><span class="l-zh">每晚更新一次 — 非实时。</span></p>
+    <details class="mc-details">
+  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
+  <div class="mc-details-body">
+  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
+
+      <p><span class="l-en">Conservative over the required set — a degraded optional leg cannot turn this green.</span><span class="l-zh">在必需分项集合上取最保守值 — 可选分项降级不会让此处转绿。</span></p>
+      <p><span class="l-en">Owner cadence, daily republish</span><span class="l-zh">按所有者节奏，每日重新发布</span> · <span class="l-en">Latest accepted print</span><span class="l-zh">最新已接受读数</span></p>
+      <p><span class="l-en">Required-source availability</span><span class="l-zh">必需数据源可用性</span></p>
+      <p><span class="l-en">Page build time is not an economic clock and never makes a source fresh. This page is a static publication — it does not poll for live data.</span><span class="l-zh">页面生成时间并非经济时钟，不会使数据源变新。本页为静态发布 — 不会实时轮询数据。</span></p>
+      <dl class="mq-context-meta">
+        <div><dt><span class="l-en">Last accepted source cut</span><span class="l-zh">最近已接受数据截止</span></dt>
+             <dd><time>2026-09-30</time></dd></div>
+        <div><dt><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></dt>
+             <dd><time>2026-09-04</time></dd></div>
+        <div class="mq-nonclock"><dt><span class="l-en">Page built</span><span class="l-zh">页面生成</span></dt>
+             <dd><time>2026-09-09T15:47:30Z</time></dd></div>
+      </dl>
+
+  </div>
+</details>
   </div>
 
-  <details class="mq-sourcerow">
-    <summary><span class="l-en">Required components and their source clocks</span><span class="l-zh">必需分项及其数据源时钟</span></summary>
+  <details class="mc-details">
+    <summary><span class="l-en">Where these numbers come from</span><span class="l-zh">这些数字的来源</span></summary>
+    <div class="mc-details-body mq-sourcerow">
+    <p><span class="l-en">Required components and their source clocks</span><span class="l-zh">必需分项及其数据源时钟</span></p>
     <table class="mq-table mq-table-compact">
       <thead><tr>
         <th scope="col"><span class="l-en">Component</span><span class="l-zh">分项</span></th>
@@ -430,13 +450,13 @@
           <th scope="row"><span class="l-en">GDPNow growth nowcast</span><span class="l-zh">GDPNow 实时增长预估</span></th>
           <td><span class="mq-chip mq-tone-ok"><span class="l-en">Present</span><span class="l-zh">已具备</span></span></td>
           <td><span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span></td>
-          <td><time>2026-09-09</time></td>
+          <td><time>2026-09-04</time></td>
         </tr>
         <tr>
           <th scope="row"><span class="l-en">Weekly Economic Index growth</span><span class="l-zh">每周经济指数增长</span></th>
           <td><span class="mq-chip mq-tone-ok"><span class="l-en">Present</span><span class="l-zh">已具备</span></span></td>
           <td><span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span></td>
-          <td><time>2026-09-09</time></td>
+          <td><time>2026-09-04</time></td>
         </tr>
         <tr>
           <th scope="row"><span class="l-en">Leading tier diffusion (breadth)</span><span class="l-zh">领先层扩散度（广度）</span></th>
@@ -452,22 +472,35 @@
         </tr>
       </tbody>
     </table>
+    </div>
   </details>
 </header>
   <section class="mq-ribbon" aria-labelledby="mq-ribbon-title">
   <div class="mq-section-head">
-    <h2 id="mq-ribbon-title"><span class="l-en">What this state implies</span><span class="l-zh">该状态意味着什么</span></h2>
-    <span class="mq-section-note"><span class="l-en">Deterministic text from the accepted snapshot. No language model writes here.</span><span class="l-zh">文本由已接受快照确定性生成，此处不由语言模型撰写。</span></span>
+    <h2 id="mq-ribbon-title"><span class="l-en">What this means for you</span><span class="l-zh">这对你意味着什么</span></h2>
+    <details class="mc-details">
+  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
+  <div class="mc-details-body">
+  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
+
+      <p><span class="l-en">What this state implies</span><span class="l-zh">该状态意味着什么</span></p>
+      <p><span class="l-en">Deterministic text from the accepted snapshot. No language model writes here.</span><span class="l-zh">文本由已接受快照确定性生成，此处不由语言模型撰写。</span></p>
+
+  </div>
+</details>
   </div>
   <ul class="mq-ribbon-list">
     <li class="mq-implication">
       <div class="mq-implication-badges">
-        <span class="mq-chip mq-chip-evidence"><span class="l-en">Descriptive</span><span class="l-zh">描述性</span></span><span class="mq-chip"><span class="l-en">Horizon</span><span class="l-zh">时间跨度</span> · <span class="l-en">Current reading</span><span class="l-zh">当前读数</span></span><span class="mq-chip mq-chip-channel"><span class="l-en">Output</span><span class="l-zh">Output</span></span><span class="mq-chip mq-chip-channel"><span class="l-en">Employment</span><span class="l-zh">Employment</span></span><span class="mq-chip mq-chip-channel"><span class="l-en">Production</span><span class="l-zh">Production</span></span><span class="mq-chip mq-chip-channel"><span class="l-en">Orders</span><span class="l-zh">Orders</span></span>
+        <span class="mq-chip mq-chip-evidence"><span class="l-en">Descriptive</span><span class="l-zh">描述性</span></span><span class="mq-chip"><span class="l-en">Horizon</span><span class="l-zh">时间跨度</span> · <span class="l-en">Current reading</span><span class="l-zh">当前读数</span></span><span class="mq-chip mq-chip-channel"><span class="l-en">Output</span><span class="l-zh">产出</span></span><span class="mq-chip mq-chip-channel"><span class="l-en">Employment</span><span class="l-zh">就业</span></span><span class="mq-chip mq-chip-channel"><span class="l-en">Production</span><span class="l-zh">生产</span></span><span class="mq-chip mq-chip-channel"><span class="l-en">Orders</span><span class="l-zh">订单</span></span>
       </div>
-      <p class="mq-implication-text"><span class="l-en">US growth regime reads B - Accelerating momentum, broad strength (growth momentum x=70.46, growth level/breadth y=69.42, boundary 50).</span><span class="l-zh">美国增长体制读数为 B - 动能加速，广度强劲（增长动能 x=70.46，增长水平/广度 y=69.42，分界 50）。</span></p>
+      <p class="mq-implication-text"><span class="l-en">US growth regime reads B - Accelerating momentum, broad strength (growth momentum 70.6, growth level/breadth 65.4%, boundary 50).</span><span class="l-zh">美国增长体制读数为 B - 动能加速，广度强劲（增长动能 70.6，增长水平/广度 65.4%，分界 50）。</span></p>
+
       <p class="mq-implication-claim"><span class="l-en">States what the accepted data shows.</span><span class="l-zh">陈述已接受数据所显示的事实。</span></p>
-      <details class="mq-confidence">
-        <summary><span class="l-en">Confidence basis</span><span class="l-zh">置信度依据</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">How sure we are</span><span class="l-zh">把握程度</span></summary>
+        <div class="mc-details-body mq-confidence">
+        <p><span class="l-en">Confidence basis</span><span class="l-zh">置信度依据</span></p>
         <dl class="mq-confidence-grid">
           <div><dt><span class="l-en">Data coverage</span><span class="l-zh">数据覆盖</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
           <div><dt><span class="l-en">Source health</span><span class="l-zh">数据源健康度</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
@@ -476,19 +509,22 @@
           <div><dt><span class="l-en">Evidence breadth</span><span class="l-zh">证据广度</span></dt><dd><span class="l-en">Medium</span><span class="l-zh">中</span></dd></div>
           <div><dt><span class="l-en">Contradiction</span><span class="l-zh">矛盾状态</span></dt><dd><span class="l-en">Present</span><span class="l-zh">已具备</span></dd></div>
         </dl>
-        <p class="mq-implication-contra"><span class="l-en">Contradictions</span><span class="l-zh">矛盾之处</span>: nowcast_vs_hard_data</p>
-        <p class="mq-trace"><span class="mq-trace-label"><span class="l-en">Trace</span><span class="l-zh">溯源</span></span><code>data/regime/latest.json#business_cycle</code>
+        <p class="mq-trace"><span class="mq-trace-label"><span class="l-en">Trace</span><span class="l-zh">溯源</span></span>
           <button type="button" class="mq-linkish" data-mq-open-evidence><span class="l-en">Open evidence</span><span class="l-zh">打开证据</span></button></p>
+        </div>
       </details>
     </li>
     <li class="mq-implication">
       <div class="mq-implication-badges">
-        <span class="mq-chip mq-chip-evidence"><span class="l-en">Descriptive</span><span class="l-zh">描述性</span></span><span class="mq-chip"><span class="l-en">Horizon</span><span class="l-zh">时间跨度</span> · <span class="l-en">Current reading</span><span class="l-zh">当前读数</span></span><span class="mq-chip mq-chip-channel"><span class="l-en">Output</span><span class="l-zh">Output</span></span><span class="mq-chip mq-chip-channel"><span class="l-en">Employment</span><span class="l-zh">Employment</span></span><span class="mq-chip mq-chip-channel"><span class="l-en">Production</span><span class="l-zh">Production</span></span>
+        <span class="mq-chip mq-chip-evidence"><span class="l-en">Descriptive</span><span class="l-zh">描述性</span></span><span class="mq-chip"><span class="l-en">Horizon</span><span class="l-zh">时间跨度</span> · <span class="l-en">Current reading</span><span class="l-zh">当前读数</span></span><span class="mq-chip mq-chip-channel"><span class="l-en">Output</span><span class="l-zh">产出</span></span><span class="mq-chip mq-chip-channel"><span class="l-en">Employment</span><span class="l-zh">就业</span></span><span class="mq-chip mq-chip-channel"><span class="l-en">Production</span><span class="l-zh">生产</span></span>
       </div>
       <p class="mq-implication-text"><span class="l-en">The GDPNow / high-frequency growth nowcast reads strongly accelerating, but the coincident hard-data tier (payrolls, real income, manufacturing/trade sales, industrial production) is still trending down (direction=falling) - the nowcast acceleration is not yet confirmed by hard data.</span><span class="l-zh">GDPNow/高频增长实时预估读数显示强劲加速，但同步硬数据层（薪资、实际收入、制造/贸易销售、工业生产）方向仍为下行（falling）——加速信号尚未获得硬数据确认。</span></p>
+
       <p class="mq-implication-claim"><span class="l-en">States what the accepted data shows.</span><span class="l-zh">陈述已接受数据所显示的事实。</span></p>
-      <details class="mq-confidence">
-        <summary><span class="l-en">Confidence basis</span><span class="l-zh">置信度依据</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">How sure we are</span><span class="l-zh">把握程度</span></summary>
+        <div class="mc-details-body mq-confidence">
+        <p><span class="l-en">Confidence basis</span><span class="l-zh">置信度依据</span></p>
         <dl class="mq-confidence-grid">
           <div><dt><span class="l-en">Data coverage</span><span class="l-zh">数据覆盖</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
           <div><dt><span class="l-en">Source health</span><span class="l-zh">数据源健康度</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
@@ -497,9 +533,9 @@
           <div><dt><span class="l-en">Evidence breadth</span><span class="l-zh">证据广度</span></dt><dd><span class="l-en">Medium</span><span class="l-zh">中</span></dd></div>
           <div><dt><span class="l-en">Contradiction</span><span class="l-zh">矛盾状态</span></dt><dd><span class="l-en">Present</span><span class="l-zh">已具备</span></dd></div>
         </dl>
-        <p class="mq-implication-contra"><span class="l-en">Contradictions</span><span class="l-zh">矛盾之处</span>: nowcast_vs_hard_data</p>
-        <p class="mq-trace"><span class="mq-trace-label"><span class="l-en">Trace</span><span class="l-zh">溯源</span></span><code>data/regime/latest.json#business_cycle</code>
+        <p class="mq-trace"><span class="mq-trace-label"><span class="l-en">Trace</span><span class="l-zh">溯源</span></span>
           <button type="button" class="mq-linkish" data-mq-open-evidence><span class="l-en">Open evidence</span><span class="l-zh">打开证据</span></button></p>
+        </div>
       </details>
     </li>
   </ul>
@@ -510,37 +546,63 @@
     <h2 id="mq-headline-title"><span class="mq-state-letter" aria-hidden="true">B</span><span class="l-en">Accelerating momentum, broad strength</span><span class="l-zh">动能加速，广度强劲</span></h2>
     <dl class="mq-headline-meta">
       <div><dt><span class="l-en">Effective date</span><span class="l-zh">生效日期</span></dt>
-           <dd><time>2026-09-09</time></dd></div>
-      <div><dt><span class="l-en">Method version</span><span class="l-zh">方法版本</span></dt><dd><code>growth_real_economy.compose.v1</code></dd></div>
-      <div><dt><span class="l-en">Prior accepted print</span><span class="l-zh">上一已接受读数</span></dt>
-           <dd><strong>B</strong> <time>2026-09-08</time></dd></div>
+           <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd></div>
+      <div><dt><span class="l-en">Last reading</span><span class="l-zh">上次读数</span></dt>
+           <dd><strong>B</strong> <time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd></div>
     </dl>
+    <details class="mc-details">
+  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
+  <div class="mc-details-body">
+  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
+
+      <dl class="mq-headline-meta">
+        <div><dt><span class="l-en">Method version</span><span class="l-zh">方法版本</span></dt>
+             <dd><span class="l-en">Growth method v1, published 4 Sep 2026</span><span class="l-zh">增长方法第1版，发布于2026年9月4日</span></dd></div>
+        <div><dt><span class="l-en">Prior accepted print</span><span class="l-zh">上一已接受读数</span></dt>
+             <dd><strong>B</strong> <time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd></div>
+      </dl>
+      <p><span class="l-en">1-month vector</span><span class="l-zh">一个月位移向量</span></p>
+      <p><span class="l-en">Nearest boundary</span><span class="l-zh">最近分界</span> / <span class="l-en">Score points to</span><span class="l-zh">距下列坐标轴分界</span></p>
+      <p><span class="l-en">Movement since the prior accepted print</span><span class="l-zh">相对上一已接受读数的位移</span></p>
+      <p><span class="l-en">No vector is drawn: there is no method-comparable prior print to move from.</span><span class="l-zh">不绘制向量：不存在方法可比的历史读数作为起点。</span></p>
+
+  </div>
+</details>
   </div>
 
   <div class="mq-axis-cells">
     <div class="mq-axis-cell">
-      <span class="mq-axis-name"><span class="l-en">Growth momentum</span><span class="l-zh">增长动能</span></span>
-      <strong class="mq-axis-value">70.46</strong>
-      <span class="mq-axis-direction"><span class="l-en">Deteriorating to accelerating</span><span class="l-zh">Deteriorating to accelerating</span></span>
+      <span class="mq-axis-name"><span class="l-en">Growth momentum (6-month)</span><span class="l-zh">增长动能（6个月）</span></span>
+      <strong class="mq-axis-value">70.61</strong>
+      <span class="mq-axis-direction"><span class="l-en">Deteriorating to accelerating</span><span class="l-zh">从恶化到加速</span></span>
       <span class="mq-axis-clocks"><span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span></span>
     </div>
     <div class="mq-axis-cell">
-      <span class="mq-axis-name"><span class="l-en">Growth level/breadth</span><span class="l-zh">增长水平/广度</span></span>
-      <strong class="mq-axis-value">69.42</strong>
-      <span class="mq-axis-direction"><span class="l-en">Weak to strong</span><span class="l-zh">Weak to strong</span></span>
+      <span class="mq-axis-name"><span class="l-en">Strength and breadth of growth</span><span class="l-zh">增长的强度与广度</span></span>
+      <strong class="mq-axis-value">65.42</strong>
+      <span class="mq-axis-direction"><span class="l-en">Weak to strong</span><span class="l-zh">从弱到强</span></span>
       <span class="mq-axis-clocks"><span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span></span>
     </div>
 
     <div class="mq-axis-cell mq-axis-cell-vector">
-      <span class="mq-axis-name"><span class="l-en">1-month vector</span><span class="l-zh">一个月位移向量</span></span>
-      <strong class="mq-axis-value">Δx -0.04 · Δy +3.00</strong>
-      <span class="mq-axis-direction"><span class="l-en">Movement since the prior accepted print</span><span class="l-zh">相对上一已接受读数的位移</span></span>
+      <span class="mq-axis-name"><span class="l-en">Where it moved this month</span><span class="l-zh">本月的变化方向</span></span>
+      <strong class="mq-axis-value"><span class="l-en">No change on either axis this month.</span><span class="l-zh">本月两轴均无变化。</span></strong>
+      <span class="mq-axis-direction"><span class="l-en">Change since the last reading</span><span class="l-zh">相对上次读数的变化</span></span>
+      <details class="mc-details">
+  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
+  <div class="mc-details-body">
+  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
+
+        <p><span class="l-en">Numeric move since the last reading:</span><span class="l-zh">相对上次读数的数值位移：</span> Δx 0 · Δy 0</p>
+
+  </div>
+</details>
     </div>
 
     <div class="mq-axis-cell">
-      <span class="mq-axis-name"><span class="l-en">Nearest boundary</span><span class="l-zh">最近分界</span></span>
-      <strong class="mq-axis-value">19.42</strong>
-      <span class="mq-axis-direction"><span class="l-en">Score points to</span><span class="l-zh">距下列坐标轴分界</span> <span class="l-en">Growth level/breadth</span><span class="l-zh">增长水平/广度</span></span>
+      <span class="mq-axis-name"><span class="l-en">How close to a different reading</span><span class="l-zh">距离另一种读数还有多远</span></span>
+      <strong class="mq-axis-value">15.42</strong>
+      <span class="mq-axis-direction"><span class="l-en">Strength and breadth of growth</span><span class="l-zh">增长的强度与广度</span></span>
     </div>
   </div>
 </section>
@@ -568,8 +630,8 @@
              aria-labelledby="mq-tab-current" data-mq-panel="current" tabindex="0">
       <figure class="mq-map" aria-labelledby="mq-map-title">
   <figcaption id="mq-map-title" class="mq-section-head">
-    <h3><span class="l-en">Regime map</span><span class="l-zh">体制地图</span></h3>
-    <span class="mq-section-note"><span class="l-en">Two disclosed descriptive axes. The grid is a description of the current reading, not a forecast.</span><span class="l-zh">两条已披露的描述性坐标轴。此网格描述当前读数，并非预测。</span></span>
+    <h3><span class="l-en">Where today sits</span><span class="l-zh">今天落在哪里</span></h3>
+    <span class="mq-section-note"><span class="l-en">This describes today. It is not a forecast.</span><span class="l-zh">这是对今天的描述，不是预测。</span></span>
   </figcaption>
 
   <svg class="mq-map-svg" viewBox="0 0 144 134" role="img"
@@ -605,35 +667,62 @@
         <text class="mq-map-cell-label l-zh" x="75" y="78" text-anchor="middle">加速</text>
         <text class="mq-map-cell-label l-zh" x="75" y="83" text-anchor="middle">疲弱</text>
       </g>
-      <circle class="mq-map-halo" cx="70.46" cy="30.58" r="6"></circle>
-      <circle class="mq-map-point" cx="70.46" cy="30.58" r="2.6"></circle>
+      <circle class="mq-map-halo" cx="70.61" cy="34.58" r="6"></circle>
+      <circle class="mq-map-point" cx="70.61" cy="34.58" r="2.6"></circle>
     </g><text class="mq-map-axis-label l-en" x="38" y="114" text-anchor="start">Decelerating</text>
     <text class="mq-map-axis-label l-zh" x="38" y="114" text-anchor="start">减速</text>
     <text class="mq-map-axis-label l-en" x="138" y="114" text-anchor="end">Accelerating</text>
     <text class="mq-map-axis-label l-zh" x="138" y="114" text-anchor="end">加速</text>
-    <text class="mq-map-axis-name l-en" x="88" y="124" text-anchor="middle">Growth momentum</text>
-    <text class="mq-map-axis-name l-zh" x="88" y="124" text-anchor="middle">增长动能</text>
+    <text class="mq-map-axis-name l-en" x="88" y="124" text-anchor="middle">Growth momentum (6-month)</text>
+    <text class="mq-map-axis-name l-zh" x="88" y="124" text-anchor="middle">增长动能（6个月）</text>
 
     <text class="mq-map-axis-label l-en" text-anchor="start" transform="translate(32,104) rotate(-90)">Weak</text>
     <text class="mq-map-axis-label l-zh" text-anchor="start" transform="translate(32,104) rotate(-90)">疲弱</text>
     <text class="mq-map-axis-label l-en" text-anchor="end" transform="translate(32,8) rotate(-90)">Strong</text>
     <text class="mq-map-axis-label l-zh" text-anchor="end" transform="translate(32,8) rotate(-90)">强劲</text>
-    <text class="mq-map-axis-name l-en" text-anchor="middle" transform="translate(10,56) rotate(-90)">Growth level/breadth</text>
-    <text class="mq-map-axis-name l-zh" text-anchor="middle" transform="translate(10,56) rotate(-90)">增长水平/广度</text>
+    <text class="mq-map-axis-name l-en" text-anchor="middle" transform="translate(10,56) rotate(-90)">Strength and breadth of growth</text>
+    <text class="mq-map-axis-name l-zh" text-anchor="middle" transform="translate(10,56) rotate(-90)">增长的强度与广度</text>
   </svg>
 
   <div class="mq-map-readout">
-    <div><span><span class="l-en">Growth momentum</span><span class="l-zh">增长动能</span></span><strong>70.46</strong><em><span class="l-en">Deteriorating to accelerating</span><span class="l-zh">Deteriorating to accelerating</span></em></div>
-    <div><span><span class="l-en">Growth level/breadth</span><span class="l-zh">增长水平/广度</span></span><strong>69.42</strong><em><span class="l-en">Weak to strong</span><span class="l-zh">Weak to strong</span></em></div>
-    <div><span><span class="l-en">Boundary</span><span class="l-zh">分界</span></span><strong>50.00 / 50.00</strong><em><span class="l-en">Fixed, disclosed threshold on each axis</span><span class="l-zh">每条坐标轴上固定且已披露的阈值</span></em></div>
-    <div><span><span class="l-en">Hysteresis band</span><span class="l-zh">滞回带</span></span><strong>±5.00</strong>
-         <em><span class="l-en">Applied against the prior print</span><span class="l-zh">已对照上一读数应用</span></em></div>
+    <div><span><span class="l-en">Growth momentum (6-month)</span><span class="l-zh">增长动能（6个月）</span></span><strong>70.61</strong><em><span class="l-en">Deteriorating to accelerating</span><span class="l-zh">从恶化到加速</span></em></div>
+    <div><span><span class="l-en">Strength and breadth of growth</span><span class="l-zh">增长的强度与广度</span></span><strong>65.42</strong><em><span class="l-en">Weak to strong</span><span class="l-zh">从弱到强</span></em></div>
+    <div><span><span class="l-en">Boundary</span><span class="l-zh">分界</span></span><strong>50.00 / 50.00</strong></div>
   </div>
+  <details class="mc-details">
+  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
+  <div class="mc-details-body">
+  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
+
+    <div>
+      <span><span class="l-en">Hysteresis band</span><span class="l-zh">滞回带</span></span>
+      <strong>±5.00</strong>
+      <em><span class="l-en">Applied against the prior print</span><span class="l-zh">已对照上一读数应用</span></em>
+    </div>
+    <p><span class="l-en">Regime map</span><span class="l-zh">体制地图</span></p>
+    <p><span class="l-en">Two disclosed descriptive axes. The grid is a description of the current reading, not a forecast.</span><span class="l-zh">两条已披露的描述性坐标轴。此网格描述当前读数，并非预测。</span></p>
+    <p><span class="l-en">Fixed, disclosed threshold on each axis</span><span class="l-zh">每条坐标轴上固定且已披露的阈值</span></p>
+    <p><span class="l-en">1-month vector</span><span class="l-zh">一个月位移向量</span></p>
+    <p><span class="l-en">Nearest boundary</span><span class="l-zh">最近分界</span> / <span class="l-en">Score points to</span><span class="l-zh">距下列坐标轴分界</span></p>
+    <p><span class="l-en">Movement since the prior accepted print</span><span class="l-zh">相对上一已接受读数的位移</span></p>
+    <p><span class="l-en">No vector is drawn: there is no method-comparable prior print to move from.</span><span class="l-zh">不绘制向量：不存在方法可比的历史读数作为起点。</span></p>
+
+  </div>
+</details>
 </figure>
       <section class="mq-diagnostics" aria-labelledby="mq-diagnostics-title">
   <div class="mq-section-head">
-    <h3 id="mq-diagnostics-title"><span class="l-en">Diagnostics</span><span class="l-zh">诊断</span></h3>
-    <span class="mq-section-note"><span class="l-en">Constraints, missing components, source issues and method warnings.</span><span class="l-zh">约束、缺失分项、数据源问题与方法警示。</span></span>
+    <h3 id="mq-diagnostics-title"><span class="l-en">Data problems</span><span class="l-zh">数据问题</span></h3>
+    <details class="mc-details">
+  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
+  <div class="mc-details-body">
+  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
+
+      <p><span class="l-en">Diagnostics</span><span class="l-zh">诊断</span></p>
+      <p><span class="l-en">Constraints, missing components, source issues and method warnings.</span><span class="l-zh">约束、缺失分项、数据源问题与方法警示。</span></p>
+
+  </div>
+</details>
   </div>
   <ul class="mq-diag-list">
     <li class="mq-diag mq-tone-bad">
@@ -657,9 +746,19 @@
       <section class="mq-changed" aria-labelledby="mq-changed-title">
   <div class="mq-section-head">
     <h3 id="mq-changed-title"><span class="l-en">What changed</span><span class="l-zh">发生了什么变化</span></h3>
-    <span class="mq-section-note"><span class="l-en">Current accepted snapshot against the prior accepted snapshot, under the same method version.</span><span class="l-zh">在相同方法版本下，将当前已接受快照与上一已接受快照对比。</span></span>
+    <span class="mq-section-note"><span class="l-en">Today against last time, measured the same way.</span><span class="l-zh">以相同方法将今天与上次对比。</span></span>
   </div>
-  <p class="mq-changed-verdict mq-tone-ok"><span class="l-en">Comparable with the prior accepted print</span><span class="l-zh">与上一已接受读数可比</span></p>
+  <details class="mc-details">
+  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
+  <div class="mc-details-body">
+  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
+
+    <p><span class="l-en">Current accepted snapshot against the prior accepted snapshot, under the same method version.</span><span class="l-zh">在相同方法版本下，将当前已接受快照与上一已接受快照对比。</span></p>
+    <p><span class="l-en">No numeric comparison is shown. A change table would have to invent a baseline that does not exist, and a method-version change is reported as a method change — never as a delta.</span><span class="l-zh">此处不展示任何数值对比。展示变化表将不得不虚构一个并不存在的基准；方法版本变更只按方法变更呈现，绝不伪装成数值变化。</span></p>
+
+  </div>
+</details>
+  <p class="mq-changed-verdict mq-tone-ok"><span class="l-en">Comparable with the last reading</span><span class="l-zh">与上次读数可比</span></p>
   <table class="mq-table">
     <thead><tr>
       <th scope="col"><span class="l-en">Metric</span><span class="l-zh">指标</span></th>
@@ -669,14 +768,14 @@
     </tr></thead>
     <tbody>
       <tr>
-        <th scope="row"><span class="l-en">Growth momentum</span><span class="l-zh">Growth momentum</span></th>
-        <td>70.50</td>
-        <td>70.46</td><td class="mq-delta mq-delta-down">-0.04</td>
+        <th scope="row"><span class="l-en">Growth momentum (6-month)</span><span class="l-zh">增长动能（6个月）</span></th>
+        <td>70.61</td>
+        <td>70.61</td><td class="mq-delta mq-delta-flat">0</td>
       </tr>
       <tr>
-        <th scope="row"><span class="l-en">Growth level breadth</span><span class="l-zh">Growth level breadth</span></th>
-        <td>66.42</td>
-        <td>69.42</td><td class="mq-delta mq-delta-up">+3.00</td>
+        <th scope="row"><span class="l-en">Strength and breadth of growth</span><span class="l-zh">增长的强度与广度</span></th>
+        <td>65.42</td>
+        <td>65.42</td><td class="mq-delta mq-delta-flat">0</td>
       </tr>
     </tbody>
   </table>
@@ -689,27 +788,30 @@
   <div class="mq-metric-grid">
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Growth momentum</span><span class="l-zh">Growth momentum</span></span>
+        <span class="mq-metric-name"><span class="l-en">Growth momentum (6-month)</span><span class="l-zh">增长动能（6个月）</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">70.46</span><span class="l-zh">70.46</span><span class="mq-metric-unit"><span class="l-en">score (0-100)</span><span class="l-zh">评分（0–100）</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Deteriorating to accelerating</span><span class="l-zh">Deteriorating to accelerating</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-09-09</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Composite, prior-only inputs</span><span class="l-zh">复合指标（仅使用先验输入）</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>growth_momentum_composite</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <strong class="mq-metric-value"><span class="l-en">70.61</span><span class="l-zh">70.61</span><span class="mq-metric-unit"><span class="l-en">score (0-100)</span><span class="l-zh">评分（0–100）</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Deteriorating to accelerating</span><span class="l-zh">从恶化到加速</span></p>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-09-04</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Composite, prior-only inputs</span><span class="l-zh">复合指标（仅使用先验输入）</span></dd></div>
+          <div><dt><span class="l-en">Definition version</span><span class="l-zh">定义版本</span></dt>
+               <dd><span class="l-en">Definition v1, published 4 Sep 2026</span><span class="l-zh">定义第1版，发布于2026年9月4日</span></dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -728,37 +830,43 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.market_os.macro_workspaces.growth</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span>
+          <span class="l-en">Growth workspace</span><span class="l-zh">增长工作区</span></p>
+        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span>
+          <span class="l-en">Descriptive reading — this page cannot rank, size or trigger a trade</span><span class="l-zh">描述性读数 — 本页不能排名、定仓或触发交易</span></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Growth level breadth</span><span class="l-zh">Growth level breadth</span></span>
+        <span class="mq-metric-name"><span class="l-en">Strength and breadth of growth</span><span class="l-zh">增长的强度与广度</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">69.42</span><span class="l-zh">69.42</span><span class="mq-metric-unit"><span class="l-en">score (0-100)</span><span class="l-zh">评分（0–100）</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Weak to strong</span><span class="l-zh">Weak to strong</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-09-09</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Composite, prior-only inputs</span><span class="l-zh">复合指标（仅使用先验输入）</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>growth_level_breadth_composite</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <strong class="mq-metric-value"><span class="l-en">65.42</span><span class="l-zh">65.42</span><span class="mq-metric-unit"><span class="l-en">score (0-100)</span><span class="l-zh">评分（0–100）</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Weak to strong</span><span class="l-zh">从弱到强</span></p>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-09-04</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Composite, prior-only inputs</span><span class="l-zh">复合指标（仅使用先验输入）</span></dd></div>
+          <div><dt><span class="l-en">Definition version</span><span class="l-zh">定义版本</span></dt>
+               <dd><span class="l-en">Definition v1, published 4 Sep 2026</span><span class="l-zh">定义第1版，发布于2026年9月4日</span></dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -777,37 +885,43 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.market_os.macro_workspaces.growth</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span>
+          <span class="l-en">Growth workspace</span><span class="l-zh">增长工作区</span></p>
+        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span>
+          <span class="l-en">Descriptive reading — this page cannot rank, size or trigger a trade</span><span class="l-zh">描述性读数 — 本页不能排名、定仓或触发交易</span></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Gdpnow growth</span><span class="l-zh">Gdpnow growth</span></span>
+        <span class="mq-metric-name"><span class="l-en">Gdpnow growth</span><span class="l-zh">GDPNow 增长</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">4.75</span><span class="l-zh">4.75</span><span class="mq-metric-unit"><span class="l-en">Pct saar</span><span class="l-zh">Pct saar</span></span></strong>
+      <strong class="mq-metric-value"><span class="l-en">4.75</span><span class="l-zh">4.75</span><span class="mq-metric-unit"><span class="l-en">Pct saar</span><span class="l-zh">年化百分比</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher = stronger support</span><span class="l-zh">数值越高＝支持越强</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-09-09</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>conditions.growth_nowcast.gdpnow</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-09-04</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
+          <div><dt><span class="l-en">Definition version</span><span class="l-zh">定义版本</span></dt>
+               <dd><span class="l-en">Definition v1, published 4 Sep 2026</span><span class="l-zh">定义第1版，发布于2026年9月4日</span></dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -826,37 +940,43 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.conditions.growth_nowcast</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span>
+          <span class="l-en">Growth-nowcast desk</span><span class="l-zh">增长即时预测小组</span></p>
+        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span>
+          <span class="l-en">Descriptive reading — this page cannot rank, size or trigger a trade</span><span class="l-zh">描述性读数 — 本页不能排名、定仓或触发交易</span></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Wei growth</span><span class="l-zh">Wei growth</span></span>
+        <span class="mq-metric-name"><span class="l-en">Wei growth</span><span class="l-zh">周度经济指数增长</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">3.06</span><span class="l-zh">3.06</span><span class="mq-metric-unit"><span class="l-en">Pct annualized equiv</span><span class="l-zh">Pct annualized equiv</span></span></strong>
+      <strong class="mq-metric-value"><span class="l-en">3.06</span><span class="l-zh">3.06</span><span class="mq-metric-unit"><span class="l-en">Pct annualized equiv</span><span class="l-zh">年化等值百分比</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher = stronger support</span><span class="l-zh">数值越高＝支持越强</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-09-09</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>conditions.growth_nowcast.wei</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-09-04</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
+          <div><dt><span class="l-en">Definition version</span><span class="l-zh">定义版本</span></dt>
+               <dd><span class="l-en">Definition v1, published 4 Sep 2026</span><span class="l-zh">定义第1版，发布于2026年9月4日</span></dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -875,37 +995,43 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.conditions.growth_nowcast</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span>
+          <span class="l-en">Growth-nowcast desk</span><span class="l-zh">增长即时预测小组</span></p>
+        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span>
+          <span class="l-en">Descriptive reading — this page cannot rank, size or trigger a trade</span><span class="l-zh">描述性读数 — 本页不能排名、定仓或触发交易</span></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Leading tier momentum</span><span class="l-zh">Leading tier momentum</span></span>
+        <span class="mq-metric-name"><span class="l-en">Leading tier momentum</span><span class="l-zh">领先层动能</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">0.6787</span><span class="l-zh">0.6787</span><span class="mq-metric-unit"><span class="l-en">Index pts mom6</span><span class="l-zh">Index pts mom6</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher accelerating</span><span class="l-zh">Higher accelerating</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-09-30</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Six month momentum</span><span class="l-zh">Six month momentum</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.leading.mom6</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <strong class="mq-metric-value"><span class="l-en">0.71</span><span class="l-zh">0.71</span><span class="mq-metric-unit"><span class="l-en">Index pts mom6</span><span class="l-zh">指数点（6个月变化）</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher accelerating</span><span class="l-zh">数值越高＝加速越快</span></p>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-09-30</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Six month momentum</span><span class="l-zh">6个月动能</span></dd></div>
+          <div><dt><span class="l-en">Definition version</span><span class="l-zh">定义版本</span></dt>
+               <dd><span class="l-en">Definition v1, published 30 Sep 2026</span><span class="l-zh">定义第1版，发布于2026年9月30日</span></dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -924,37 +1050,43 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.business_cycle</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span>
+          <span class="l-en">Business-cycle desk</span><span class="l-zh">商业周期小组</span></p>
+        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span>
+          <span class="l-en">Descriptive reading — this page cannot rank, size or trigger a trade</span><span class="l-zh">描述性读数 — 本页不能排名、定仓或触发交易</span></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Coincident tier momentum</span><span class="l-zh">Coincident tier momentum</span></span>
+        <span class="mq-metric-name"><span class="l-en">Coincident tier momentum</span><span class="l-zh">同步层动能</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">-0.216</span><span class="l-zh">-0.216</span><span class="mq-metric-unit"><span class="l-en">Index pts mom6</span><span class="l-zh">Index pts mom6</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher accelerating</span><span class="l-zh">Higher accelerating</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-09-30</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Six month momentum</span><span class="l-zh">Six month momentum</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.coincident.mom6</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <strong class="mq-metric-value"><span class="l-en">−0.22</span><span class="l-zh">−0.22</span><span class="mq-metric-unit"><span class="l-en">Index pts mom6</span><span class="l-zh">指数点（6个月变化）</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher accelerating</span><span class="l-zh">数值越高＝加速越快</span></p>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-09-30</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Six month momentum</span><span class="l-zh">6个月动能</span></dd></div>
+          <div><dt><span class="l-en">Definition version</span><span class="l-zh">定义版本</span></dt>
+               <dd><span class="l-en">Definition v1, published 30 Sep 2026</span><span class="l-zh">定义第1版，发布于2026年9月30日</span></dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -973,37 +1105,43 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.business_cycle</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span>
+          <span class="l-en">Business-cycle desk</span><span class="l-zh">商业周期小组</span></p>
+        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span>
+          <span class="l-en">Descriptive reading — this page cannot rank, size or trigger a trade</span><span class="l-zh">描述性读数 — 本页不能排名、定仓或触发交易</span></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Leading diffusion</span><span class="l-zh">Leading diffusion</span></span>
+        <span class="mq-metric-name"><span class="l-en">Leading diffusion</span><span class="l-zh">领先扩散</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">100.00</span><span class="l-zh">100.00</span><span class="mq-metric-unit"><span class="l-en">Pct legs positive</span><span class="l-zh">Pct legs positive</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher broader</span><span class="l-zh">Higher broader</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-09-30</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.leading.diffusion</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <strong class="mq-metric-value"><span class="l-en">100.00</span><span class="l-zh">100.00</span><span class="mq-metric-unit"><span class="l-en">Pct legs positive</span><span class="l-zh">上升分项占比</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher broader</span><span class="l-zh">数值越高＝覆盖越广</span></p>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-09-30</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
+          <div><dt><span class="l-en">Definition version</span><span class="l-zh">定义版本</span></dt>
+               <dd><span class="l-en">Definition v1, published 30 Sep 2026</span><span class="l-zh">定义第1版，发布于2026年9月30日</span></dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -1022,37 +1160,43 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.business_cycle</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span>
+          <span class="l-en">Business-cycle desk</span><span class="l-zh">商业周期小组</span></p>
+        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span>
+          <span class="l-en">Descriptive reading — this page cannot rank, size or trigger a trade</span><span class="l-zh">描述性读数 — 本页不能排名、定仓或触发交易</span></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Coincident diffusion</span><span class="l-zh">Coincident diffusion</span></span>
+        <span class="mq-metric-name"><span class="l-en">Coincident diffusion</span><span class="l-zh">同步扩散</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">66.67</span><span class="l-zh">66.67</span><span class="mq-metric-unit"><span class="l-en">Pct legs positive</span><span class="l-zh">Pct legs positive</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher broader</span><span class="l-zh">Higher broader</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-09-30</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.coincident.diffusion</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <strong class="mq-metric-value"><span class="l-en">66.67</span><span class="l-zh">66.67</span><span class="mq-metric-unit"><span class="l-en">Pct legs positive</span><span class="l-zh">上升分项占比</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher broader</span><span class="l-zh">数值越高＝覆盖越广</span></p>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-09-30</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
+          <div><dt><span class="l-en">Definition version</span><span class="l-zh">定义版本</span></dt>
+               <dd><span class="l-en">Definition v1, published 30 Sep 2026</span><span class="l-zh">定义第1版，发布于2026年9月30日</span></dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -1071,37 +1215,43 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.business_cycle</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span>
+          <span class="l-en">Business-cycle desk</span><span class="l-zh">商业周期小组</span></p>
+        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span>
+          <span class="l-en">Descriptive reading — this page cannot rank, size or trigger a trade</span><span class="l-zh">描述性读数 — 本页不能排名、定仓或触发交易</span></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Coincident index level</span><span class="l-zh">Coincident index level</span></span>
+        <span class="mq-metric-name"><span class="l-en">Coincident index level</span><span class="l-zh">同步指数水平</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">35.43</span><span class="l-zh">35.43</span><span class="mq-metric-unit"><span class="l-en">Index 0 100</span><span class="l-zh">Index 0 100</span></span></strong>
+      <strong class="mq-metric-value"><span class="l-en">35.43</span><span class="l-zh">35.43</span><span class="mq-metric-unit"><span class="l-en">Index 0 100</span><span class="l-zh">指数（0–100）</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher = stronger support</span><span class="l-zh">数值越高＝支持越强</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-09-30</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.coincident.index</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-09-30</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
+          <div><dt><span class="l-en">Definition version</span><span class="l-zh">定义版本</span></dt>
+               <dd><span class="l-en">Definition v1, published 30 Sep 2026</span><span class="l-zh">定义第1版，发布于2026年9月30日</span></dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -1120,37 +1270,43 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.business_cycle</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span>
+          <span class="l-en">Business-cycle desk</span><span class="l-zh">商业周期小组</span></p>
+        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span>
+          <span class="l-en">Descriptive reading — this page cannot rank, size or trigger a trade</span><span class="l-zh">描述性读数 — 本页不能排名、定仓或触发交易</span></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Growth axis score</span><span class="l-zh">Growth axis score</span></span>
+        <span class="mq-metric-name"><span class="l-en">Growth score</span><span class="l-zh">增长评分</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">0.2</span><span class="l-zh">0.2</span><span class="mq-metric-unit"><span class="l-en">Z</span><span class="l-zh">Z</span></span></strong>
+      <strong class="mq-metric-value"><span class="l-en">−0.33</span><span class="l-zh">−0.33</span><span class="mq-metric-unit"><span class="l-en">Z</span><span class="l-zh">z 值</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher = stronger support</span><span class="l-zh">数值越高＝支持越强</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-09-09</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>growth_score</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-09-04</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
+          <div><dt><span class="l-en">Definition version</span><span class="l-zh">定义版本</span></dt>
+               <dd><span class="l-en">Definition v1, published 4 Sep 2026</span><span class="l-zh">定义第1版，发布于2026年9月4日</span></dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -1169,37 +1325,43 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.axes</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span>
+          <span class="l-en">Growth-score desk</span><span class="l-zh">增长评分小组</span></p>
+        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span>
+          <span class="l-en">Descriptive reading — this page cannot rank, size or trigger a trade</span><span class="l-zh">描述性读数 — 本页不能排名、定仓或触发交易</span></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Leading tier index</span><span class="l-zh">Leading tier index</span></span>
+        <span class="mq-metric-name"><span class="l-en">Leading tier index</span><span class="l-zh">领先层指数</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">95.18</span><span class="l-zh">95.18</span><span class="mq-metric-unit"><span class="l-en">Index 0 100</span><span class="l-zh">Index 0 100</span></span></strong>
+      <strong class="mq-metric-value"><span class="l-en">95.21</span><span class="l-zh">95.21</span><span class="mq-metric-unit"><span class="l-en">Index 0 100</span><span class="l-zh">指数（0–100）</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher = stronger support</span><span class="l-zh">数值越高＝支持越强</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-09-30</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.leading.index</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-09-30</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
+          <div><dt><span class="l-en">Definition version</span><span class="l-zh">定义版本</span></dt>
+               <dd><span class="l-en">Definition v1, published 30 Sep 2026</span><span class="l-zh">定义第1版，发布于2026年9月30日</span></dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -1218,37 +1380,43 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.business_cycle</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span>
+          <span class="l-en">Business-cycle desk</span><span class="l-zh">商业周期小组</span></p>
+        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span>
+          <span class="l-en">Descriptive reading — this page cannot rank, size or trigger a trade</span><span class="l-zh">描述性读数 — 本页不能排名、定仓或触发交易</span></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Lagging tier index</span><span class="l-zh">Lagging tier index</span></span>
+        <span class="mq-metric-name"><span class="l-en">Lagging tier index</span><span class="l-zh">滞后层指数</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">92.90</span><span class="l-zh">92.90</span><span class="mq-metric-unit"><span class="l-en">Index 0 100</span><span class="l-zh">Index 0 100</span></span></strong>
+      <strong class="mq-metric-value"><span class="l-en">92.90</span><span class="l-zh">92.90</span><span class="mq-metric-unit"><span class="l-en">Index 0 100</span><span class="l-zh">指数（0–100）</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher = stronger support</span><span class="l-zh">数值越高＝支持越强</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-09-30</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.lagging.index</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-09-30</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
+          <div><dt><span class="l-en">Definition version</span><span class="l-zh">定义版本</span></dt>
+               <dd><span class="l-en">Definition v1, published 30 Sep 2026</span><span class="l-zh">定义第1版，发布于2026年9月30日</span></dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -1267,37 +1435,43 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.business_cycle</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span>
+          <span class="l-en">Business-cycle desk</span><span class="l-zh">商业周期小组</span></p>
+        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span>
+          <span class="l-en">Descriptive reading — this page cannot rank, size or trigger a trade</span><span class="l-zh">描述性读数 — 本页不能排名、定仓或触发交易</span></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Lagging tier diffusion</span><span class="l-zh">Lagging tier diffusion</span></span>
+        <span class="mq-metric-name"><span class="l-en">Lagging tier diffusion</span><span class="l-zh">滞后层扩散</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">0</span><span class="l-zh">0</span><span class="mq-metric-unit"><span class="l-en">Pct legs positive</span><span class="l-zh">Pct legs positive</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher broader</span><span class="l-zh">Higher broader</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-09-30</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.lagging.diffusion</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <strong class="mq-metric-value"><span class="l-en">0</span><span class="l-zh">0</span><span class="mq-metric-unit"><span class="l-en">Pct legs positive</span><span class="l-zh">上升分项占比</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher broader</span><span class="l-zh">数值越高＝覆盖越广</span></p>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-09-30</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
+          <div><dt><span class="l-en">Definition version</span><span class="l-zh">定义版本</span></dt>
+               <dd><span class="l-en">Definition v1, published 30 Sep 2026</span><span class="l-zh">定义第1版，发布于2026年9月30日</span></dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -1316,37 +1490,43 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.business_cycle</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span>
+          <span class="l-en">Business-cycle desk</span><span class="l-zh">商业周期小组</span></p>
+        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span>
+          <span class="l-en">Descriptive reading — this page cannot rank, size or trigger a trade</span><span class="l-zh">描述性读数 — 本页不能排名、定仓或触发交易</span></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Lagging tier momentum</span><span class="l-zh">Lagging tier momentum</span></span>
+        <span class="mq-metric-name"><span class="l-en">Lagging tier momentum</span><span class="l-zh">滞后层动能</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">0.3673</span><span class="l-zh">0.3673</span><span class="mq-metric-unit"><span class="l-en">Index pts mom6</span><span class="l-zh">Index pts mom6</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher accelerating</span><span class="l-zh">Higher accelerating</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-09-30</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Six month momentum</span><span class="l-zh">Six month momentum</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>business_cycle.tiers.lagging.mom6</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <strong class="mq-metric-value"><span class="l-en">0.37</span><span class="l-zh">0.37</span><span class="mq-metric-unit"><span class="l-en">Index pts mom6</span><span class="l-zh">指数点（6个月变化）</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher accelerating</span><span class="l-zh">数值越高＝加速越快</span></p>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-09-30</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Six month momentum</span><span class="l-zh">6个月动能</span></dd></div>
+          <div><dt><span class="l-en">Definition version</span><span class="l-zh">定义版本</span></dt>
+               <dd><span class="l-en">Definition v1, published 30 Sep 2026</span><span class="l-zh">定义第1版，发布于2026年9月30日</span></dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -1365,37 +1545,43 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.business_cycle</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span>
+          <span class="l-en">Business-cycle desk</span><span class="l-zh">商业周期小组</span></p>
+        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span>
+          <span class="l-en">Descriptive reading — this page cannot rank, size or trigger a trade</span><span class="l-zh">描述性读数 — 本页不能排名、定仓或触发交易</span></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Recession risk score</span><span class="l-zh">Recession risk score</span></span>
+        <span class="mq-metric-name"><span class="l-en">Recession risk score</span><span class="l-zh">衰退风险评分</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">0.2171</span><span class="l-zh">0.2171</span><span class="mq-metric-unit"><span class="l-en">Probability 0 1</span><span class="l-zh">Probability 0 1</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher more risk</span><span class="l-zh">Higher more risk</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-09-09</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>conditions.recession.score</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <strong class="mq-metric-value"><span class="l-en">0.22</span><span class="l-zh">0.22</span><span class="mq-metric-unit"><span class="l-en">Probability 0 1</span><span class="l-zh">概率（0–1）</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher more risk</span><span class="l-zh">数值越高＝风险越大</span></p>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-09-04</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
+          <div><dt><span class="l-en">Definition version</span><span class="l-zh">定义版本</span></dt>
+               <dd><span class="l-en">Definition v1, published 4 Sep 2026</span><span class="l-zh">定义第1版，发布于2026年9月4日</span></dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -1414,37 +1600,43 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.conditions.recession</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span>
+          <span class="l-en">Recession-nowcast desk</span><span class="l-zh">衰退即时预测小组</span></p>
+        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span>
+          <span class="l-en">Descriptive reading — this page cannot rank, size or trigger a trade</span><span class="l-zh">描述性读数 — 本页不能排名、定仓或触发交易</span></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Sahm rule value</span><span class="l-zh">Sahm rule value</span></span>
+        <span class="mq-metric-name"><span class="l-en">Sahm rule value</span><span class="l-zh">萨姆规则读数</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">-0.07</span><span class="l-zh">-0.07</span><span class="mq-metric-unit"><span class="l-en">Pp</span><span class="l-zh">Pp</span></span></strong>
-      <p class="mq-metric-direction"><span class="l-en">Higher more risk</span><span class="l-zh">Higher more risk</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-09-09</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>conditions.recession.sahm</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <strong class="mq-metric-value"><span class="l-en">−0.07</span><span class="l-zh">−0.07</span><span class="mq-metric-unit"><span class="l-en">Pp</span><span class="l-zh">百分点</span></span></strong>
+      <p class="mq-metric-direction"><span class="l-en">Higher more risk</span><span class="l-zh">数值越高＝风险越大</span></p>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-09-04</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
+          <div><dt><span class="l-en">Definition version</span><span class="l-zh">定义版本</span></dt>
+               <dd><span class="l-en">Definition v1, published 4 Sep 2026</span><span class="l-zh">定义第1版，发布于2026年9月4日</span></dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -1463,37 +1655,43 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.conditions.recession</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span>
+          <span class="l-en">Recession-nowcast desk</span><span class="l-zh">衰退即时预测小组</span></p>
+        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span>
+          <span class="l-en">Descriptive reading — this page cannot rank, size or trigger a trade</span><span class="l-zh">描述性读数 — 本页不能排名、定仓或触发交易</span></p>
+        </div>
       </details>
     </article>
     <article class="mq-metric">
       <header>
-        <span class="mq-metric-name"><span class="l-en">Real income proxy yoy</span><span class="l-zh">Real income proxy yoy</span></span>
+        <span class="mq-metric-name"><span class="l-en">Real income proxy yoy</span><span class="l-zh">实际收入代理同比</span></span>
         <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
-      <strong class="mq-metric-value"><span class="l-en">2.40</span><span class="l-zh">2.40</span><span class="mq-metric-unit"><span class="l-en">Pct yoy</span><span class="l-zh">Pct yoy</span></span></strong>
+      <strong class="mq-metric-value"><span class="l-en">2.01</span><span class="l-zh">2.01</span><span class="mq-metric-unit"><span class="l-en">Pct yoy</span><span class="l-zh">同比百分比</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher = stronger support</span><span class="l-zh">数值越高＝支持越强</span></p>
-      <dl class="mq-metric-meta">
-        <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
-             <dd><time>2026-09-09</time></dd></div>
-        <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
-        <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><code>conditions.labor_nowcast.withheld_tax_yoy_pct</code> · v1.0.0</dd></div>
-      </dl>
-      <details class="mq-metric-clocks">
-        <summary><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></summary>
+      <details class="mc-details">
+        <summary><span class="l-en">Details</span><span class="l-zh">详情</span></summary>
+        <div class="mc-details-body mq-metric-clocks">
+        <dl class="mq-metric-meta">
+          <div><dt><span class="l-en">Reference period</span><span class="l-zh">参考期</span></dt>
+               <dd><time>2026-09-04</time></dd></div>
+          <div><dt><span class="l-en">Basis</span><span class="l-zh">基准</span></dt><dd><span class="l-en">Level</span><span class="l-zh">水平值</span></dd></div>
+          <div><dt><span class="l-en">Definition version</span><span class="l-zh">定义版本</span></dt>
+               <dd><span class="l-en">Definition v1, published 4 Sep 2026</span><span class="l-zh">定义第1版，发布于2026年9月4日</span></dd></div>
+        </dl>
+        <p><span class="l-en">Clocks and owner</span><span class="l-zh">时钟与所有者</span></p>
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -1512,12 +1710,15 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
 </dl>
-        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span><code>engine.conditions.labor_nowcast</code></p>
-        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span><code>DESCRIPTIVE</code></p>
+        <p class="mq-owner"><span><span class="l-en">Owner</span><span class="l-zh">所有者</span></span>
+          <span class="l-en">Labor-nowcast desk</span><span class="l-zh">劳动力即时预测小组</span></p>
+        <p class="mq-owner"><span><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></span>
+          <span class="l-en">Descriptive reading — this page cannot rank, size or trigger a trade</span><span class="l-zh">描述性读数 — 本页不能排名、定仓或触发交易</span></p>
+        </div>
       </details>
     </article>
   </div>
@@ -1528,11 +1729,21 @@
              aria-labelledby="mq-tab-drivers" data-mq-panel="drivers" tabindex="0">
       <section class="mq-drivers" aria-labelledby="mq-drivers-title">
   <div class="mq-section-head">
-    <h3 id="mq-drivers-title"><span class="l-en">Drivers</span><span class="l-zh">驱动因子</span></h3>
-    <span class="mq-section-note"><span class="l-en">Signed push toward each axis high side. A driver is a disclosed contribution, not a cause.</span><span class="l-zh">各分项推向坐标轴高值一侧的有符号推力。驱动因子是已披露的贡献，而非因果。</span></span>
+    <h3 id="mq-drivers-title"><span class="l-en">What&#39;s pushing it</span><span class="l-zh">推动因素</span></h3>
+    <details class="mc-details">
+  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
+  <div class="mc-details-body">
+  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
+
+      <p><span class="l-en">Drivers</span><span class="l-zh">驱动因子</span></p>
+      <p><span class="l-en">Signed push toward each axis high side. A driver is a disclosed contribution, not a cause.</span><span class="l-zh">各分项推向坐标轴高值一侧的有符号推力。驱动因子是已披露的贡献，而非因果。</span></p>
+      <p><span class="l-en">Push</span><span class="l-zh">推力</span></p>
+
+  </div>
+</details>
   </div>
   <div class="mq-driver-group">
-    <h4><span class="l-en">Growth momentum</span><span class="l-zh">增长动能</span></h4>
+    <h4><span class="l-en">Growth momentum (6-month)</span><span class="l-zh">增长动能（6个月）</span></h4>
     <table class="mq-table">
       <thead><tr>
         <th scope="col"><span class="l-en">Driver</span><span class="l-zh">驱动因子</span></th>
@@ -1543,38 +1754,38 @@
       </tr></thead>
       <tbody>
         <tr>
-          <th scope="row"><span class="l-en">GDPNow growth nowcast</span><span class="l-zh">GDPNow 实时增长预估</span><span class="mq-owner-field"><code>conditions.growth_nowcast.gdpnow</code></span></th>
+          <th scope="row"><span class="l-en">GDPNow growth nowcast</span><span class="l-zh">GDPNow 实时增长预估</span></th>
           <td><span class="l-en">4.75</span><span class="l-zh">4.75</span></td>
           <td><span class="l-en">%</span><span class="l-zh">%</span></td>
           <td class="mq-delta mq-delta-up">+12.03</td>
           <td><span class="mq-chip mq-tone-bad"><span class="l-en">Disagreement</span><span class="l-zh">存在分歧</span></span></td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">Weekly Economic Index growth</span><span class="l-zh">每周经济指数增长</span><span class="mq-owner-field"><code>conditions.growth_nowcast.wei</code></span></th>
+          <th scope="row"><span class="l-en">Weekly Economic Index growth</span><span class="l-zh">每周经济指数增长</span></th>
           <td><span class="l-en">3.06</span><span class="l-zh">3.06</span></td>
           <td><span class="l-en">%</span><span class="l-zh">%</span></td>
           <td class="mq-delta mq-delta-up">+5.85</td>
           <td><span class="mq-chip mq-tone-ok"><span class="l-en">Present</span><span class="l-zh">已具备</span></span></td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">Leading tier 6M momentum</span><span class="l-zh">领先层六个月动能</span><span class="mq-owner-field"><code>business_cycle.tiers.leading.mom6</code></span></th>
-          <td><span class="l-en">0.6787</span><span class="l-zh">0.6787</span></td>
-          <td><span class="l-en">Index pts</span><span class="l-zh">Index pts</span></td>
-          <td class="mq-delta mq-delta-up">+3.39</td>
+          <th scope="row"><span class="l-en">Leading tier 6M momentum</span><span class="l-zh">领先层六个月动能</span></th>
+          <td><span class="l-en">0.71</span><span class="l-zh">0.71</span></td>
+          <td><span class="l-en">Index pts</span><span class="l-zh">指数点</span></td>
+          <td class="mq-delta mq-delta-up">+3.54</td>
           <td><span class="mq-chip mq-tone-ok"><span class="l-en">Present</span><span class="l-zh">已具备</span></span></td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">Coincident tier 6M momentum</span><span class="l-zh">同步层六个月动能</span><span class="mq-owner-field"><code>business_cycle.tiers.coincident.mom6</code></span></th>
-          <td><span class="l-en">-0.216</span><span class="l-zh">-0.216</span></td>
-          <td><span class="l-en">Index pts</span><span class="l-zh">Index pts</span></td>
-          <td class="mq-delta mq-delta-down">-0.81</td>
+          <th scope="row"><span class="l-en">Coincident tier 6M momentum</span><span class="l-zh">同步层六个月动能</span></th>
+          <td><span class="l-en">−0.22</span><span class="l-zh">−0.22</span></td>
+          <td><span class="l-en">Index pts</span><span class="l-zh">指数点</span></td>
+          <td class="mq-delta mq-delta-down">−0.81</td>
           <td><span class="mq-chip mq-tone-bad"><span class="l-en">Disagreement</span><span class="l-zh">存在分歧</span></span></td>
         </tr>
       </tbody>
     </table>
   </div>
   <div class="mq-driver-group">
-    <h4><span class="l-en">Growth level/breadth</span><span class="l-zh">增长水平/广度</span></h4>
+    <h4><span class="l-en">Strength and breadth of growth</span><span class="l-zh">增长的强度与广度</span></h4>
     <table class="mq-table">
       <thead><tr>
         <th scope="col"><span class="l-en">Driver</span><span class="l-zh">驱动因子</span></th>
@@ -1585,31 +1796,31 @@
       </tr></thead>
       <tbody>
         <tr>
-          <th scope="row"><span class="l-en">Leading tier diffusion (breadth)</span><span class="l-zh">领先层扩散度（广度）</span><span class="mq-owner-field"><code>business_cycle.tiers.leading.diffusion</code></span></th>
+          <th scope="row"><span class="l-en">Leading tier diffusion (breadth)</span><span class="l-zh">领先层扩散度（广度）</span></th>
           <td><span class="l-en">100.00</span><span class="l-zh">100.00</span></td>
           <td><span class="l-en">%</span><span class="l-zh">%</span></td>
           <td class="mq-delta mq-delta-up">+15.00</td>
           <td><span class="mq-chip mq-tone-ok"><span class="l-en">Present</span><span class="l-zh">已具备</span></span></td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">Coincident tier diffusion (breadth)</span><span class="l-zh">同步层扩散度（广度）</span><span class="mq-owner-field"><code>business_cycle.tiers.coincident.diffusion</code></span></th>
+          <th scope="row"><span class="l-en">Coincident tier diffusion (breadth)</span><span class="l-zh">同步层扩散度（广度）</span></th>
           <td><span class="l-en">66.67</span><span class="l-zh">66.67</span></td>
           <td><span class="l-en">%</span><span class="l-zh">%</span></td>
           <td class="mq-delta mq-delta-up">+5.83</td>
           <td><span class="mq-chip mq-tone-ok"><span class="l-en">Present</span><span class="l-zh">已具备</span></span></td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">Coincident tier index level</span><span class="l-zh">同步层指数水平</span><span class="mq-owner-field"><code>business_cycle.tiers.coincident.index</code></span></th>
+          <th scope="row"><span class="l-en">Coincident tier index level</span><span class="l-zh">同步层指数水平</span></th>
           <td><span class="l-en">35.43</span><span class="l-zh">35.43</span></td>
           <td><span class="l-en">index</span><span class="l-zh">指数</span></td>
-          <td class="mq-delta mq-delta-down">-2.91</td>
+          <td class="mq-delta mq-delta-down">−2.91</td>
           <td><span class="mq-chip mq-tone-ok"><span class="l-en">Present</span><span class="l-zh">已具备</span></span></td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">Growth axis composite (engine/axes.py)</span><span class="l-zh">增长轴综合评分（engine/axes.py）</span><span class="mq-owner-field"><code>growth_score</code></span></th>
-          <td><span class="l-en">0.2</span><span class="l-zh">0.2</span></td>
+          <th scope="row"><span class="l-en">Growth score</span><span class="l-zh">增长评分</span></th>
+          <td><span class="l-en">−0.33</span><span class="l-zh">−0.33</span></td>
           <td><span class="l-en">z-score</span><span class="l-zh">z 值</span></td>
-          <td class="mq-delta mq-delta-up">+1.50</td>
+          <td class="mq-delta mq-delta-down">−2.50</td>
           <td><span class="mq-chip mq-tone-ok"><span class="l-en">Present</span><span class="l-zh">已具备</span></span></td>
         </tr>
       </tbody>
@@ -1618,21 +1829,23 @@
 </section>
       <section class="mq-method" aria-labelledby="mq-method-title">
   <div class="mq-section-head">
-    <h3 id="mq-method-title"><span class="l-en">Axis method receipts</span><span class="l-zh">坐标轴方法凭据</span></h3>
-    <span class="mq-section-note"><span class="l-en">A composite may only be shown when its full composition law is disclosed.</span><span class="l-zh">只有在完整披露构成法则的前提下，复合指标才可展示。</span></span>
+    <h3 id="mq-method-title"><span class="l-en">How this is calculated</span><span class="l-zh">计算方法</span></h3>
   </div>
-  <details class="mq-axis-method">
-    <summary><span><span class="l-en">Growth momentum</span><span class="l-zh">增长动能</span></span><span class="mq-axis-method-value">70.46</span></summary>
+  <details class="mc-details">
+    <summary><span><span class="l-en">Growth momentum (6-month)</span><span class="l-zh">增长动能（6个月）</span></span><span class="mq-axis-method-value"><span class="l-en">70.61</span><span class="l-zh">70.61</span></span></summary>
+    <div class="mc-details-body mq-axis-method">
+    <p><span class="l-en">Axis method receipts</span><span class="l-zh">坐标轴方法凭据</span></p>
+    <p><span class="l-en">A composite may only be shown when its full composition law is disclosed.</span><span class="l-zh">只有在完整披露构成法则的前提下，复合指标才可展示。</span></p>
     <dl class="mq-method-grid">
-      <div><dt><span class="l-en">Direction</span><span class="l-zh">方向</span></dt><dd><span class="l-en">Deteriorating to accelerating</span><span class="l-zh">Deteriorating to accelerating</span></dd></div>
-      <div><dt><span class="l-en">Weights law</span><span class="l-zh">权重法则</span></dt><dd>weighted mean of standardized components, weights renormalized over present components; gdpnow_growth 0.35, wei_growth 0.30, leading_tier_momentum 0.20, coincident_tier_momentum 0.15</dd></div>
-      <div><dt><span class="l-en">Transformation</span><span class="l-zh">变换</span></dt><dd>gdpnow/wei mapped via center+scale: 50+clamp((v-center)/scale,-1,1)*50 (gdpnow center=2.0pct SAAR, scale=4.0pct; wei center=1.5pct, scale=4.0pct); leading/coincident tier mom6 mapped with center=0, scale=2.0 index-pts; prior-only owner reads, no in-composer estimation</dd></div>
-      <div><dt><span class="l-en">Frequency alignment</span><span class="l-zh">频率对齐</span></dt><dd>mixed: GDPNow near-daily intra-quarter nowcast, WEI weekly (Fri), leading/coincident tier mom6 monthly with per-leg publication lag (see business_cycle.calibration_resolution / sources[business_cycle_leading])</dd></div>
-      <div><dt><span class="l-en">Revision behaviour</span><span class="l-zh">修订行为</span></dt><dd>recomputed each owner cadence from prior-only owner reads; a method-version change breaks comparability and is reported as such, never as a numeric delta</dd></div>
+      <div><dt><span class="l-en">Direction</span><span class="l-zh">方向</span></dt><dd><span class="l-en">Deteriorating to accelerating</span><span class="l-zh">从恶化到加速</span></dd></div>
+      <div><dt><span class="l-en">Weights law</span><span class="l-zh">权重法则</span></dt><dd><span class="l-en">Weighted average of the parts that are present: Atlanta Fed nowcast 35%, weekly economic index 30%, leading-tier momentum 20%, current-activity momentum 15%.</span><span class="l-zh">按到位分项的加权平均：亚特兰大联储即时预测 35%、周度经济指数 30%、领先动能 20%、当前活动动能 15%。</span></dd></div>
+      <div><dt><span class="l-en">Transformation</span><span class="l-zh">变换</span></dt><dd><span class="l-en">Nowcast and weekly index are centred (2.0% and 1.5% annualised) and scaled so a 4-point swing fills half the scale. Leading and current-activity momentum are centred at zero with a 2-point half-swing. Only prior published readings are used.</span><span class="l-zh">即时预测与周度指数以年化 2.0% 与 1.5% 为中心，4 个点对应半幅刻度。领先与当前活动动能以 0 为中心、2 个点为半幅。只使用已发布的先验读数。</span></dd></div>
+      <div><dt><span class="l-en">Frequency alignment</span><span class="l-zh">频率对齐</span></dt><dd><span class="l-en">Mixed clocks: the nowcast updates near-daily inside the quarter, the weekly index on Fridays, and the activity tiers monthly with each leg&#39;s own publication lag.</span><span class="l-zh">时钟不一：季内即时预测接近日更，周度指数周五发布，活动分层为月度并带各分项自身的发布滞后。</span></dd></div>
+      <div><dt><span class="l-en">Revision behaviour</span><span class="l-zh">修订行为</span></dt><dd><span class="l-en">Recomputed each time the source publishes, using only readings that were already known then. A method change is reported as a break in comparability, never as a numeric move.</span><span class="l-zh">每次数据源发布时用当时已知的读数重算。方法变更会标明为不可比，而不会写成数字位移。</span></dd></div>
       <div><dt><span class="l-en">Components present</span><span class="l-zh">已具备分项</span></dt><dd>4 / <span class="l-en">minimum</span><span class="l-zh">最少</span> 2</dd></div>
-      <div><dt><span class="l-en">Coverage floor</span><span class="l-zh">覆盖下限</span></dt><dd>50%</dd></div>
-      <div><dt><span class="l-en">Definition version</span><span class="l-zh">定义版本</span></dt><dd><code>1.0.0</code></dd></div>
-      <div><dt><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></dt><dd><code>DESCRIPTIVE</code></dd></div>
+      <div><dt><span class="l-en">Coverage floor</span><span class="l-zh">覆盖下限</span></dt><dd><span class="l-en">At least 50% of the parts must be present</span><span class="l-zh">至少 50% 的分项必须到位</span></dd></div>
+      <div><dt><span class="l-en">Definition version</span><span class="l-zh">定义版本</span></dt><dd><span class="l-en">Definition v1, published 4 Sep 2026</span><span class="l-zh">定义第1版，发布于2026年9月4日</span></dd></div>
+      <div><dt><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></dt><dd><span class="l-en">Descriptive reading — this page cannot rank, size or trigger a trade</span><span class="l-zh">描述性读数 — 本页不能排名、定仓或触发交易</span></dd></div>
     </dl>
     <table class="mq-table mq-table-compact">
       <thead><tr>
@@ -1644,48 +1857,52 @@
       </tr></thead>
       <tbody>
         <tr>
-          <th scope="row"><span class="l-en">GDPNow growth nowcast</span><span class="l-zh">GDPNow 实时增长预估</span><span class="mq-owner-field"><code>conditions.growth_nowcast.gdpnow</code></span></th>
+          <th scope="row"><span class="l-en">GDPNow growth nowcast</span><span class="l-zh">GDPNow 实时增长预估</span><span class="mq-owner-field"><span class="l-en">Growth-nowcast desk</span><span class="l-zh">增长即时预测小组</span></span></th>
           <td><span class="l-en">4.75</span><span class="l-zh">4.75</span></td>
           <td>84.36</td>
           <td>0.35</td>
           <td class="mq-delta mq-delta-up">+12.03</td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">Weekly Economic Index growth</span><span class="l-zh">每周经济指数增长</span><span class="mq-owner-field"><code>conditions.growth_nowcast.wei</code></span></th>
+          <th scope="row"><span class="l-en">Weekly Economic Index growth</span><span class="l-zh">每周经济指数增长</span><span class="mq-owner-field"><span class="l-en">Growth-nowcast desk</span><span class="l-zh">增长即时预测小组</span></span></th>
           <td><span class="l-en">3.06</span><span class="l-zh">3.06</span></td>
           <td>69.50</td>
-          <td>0.3</td>
+          <td>0.30</td>
           <td class="mq-delta mq-delta-up">+5.85</td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">Leading tier 6M momentum</span><span class="l-zh">领先层六个月动能</span><span class="mq-owner-field"><code>business_cycle.tiers.leading.mom6</code></span></th>
-          <td><span class="l-en">0.6787</span><span class="l-zh">0.6787</span></td>
-          <td>66.97</td>
-          <td>0.2</td>
-          <td class="mq-delta mq-delta-up">+3.39</td>
+          <th scope="row"><span class="l-en">Leading tier 6M momentum</span><span class="l-zh">领先层六个月动能</span><span class="mq-owner-field"><span class="l-en">Business-cycle desk</span><span class="l-zh">商业周期小组</span></span></th>
+          <td><span class="l-en">0.71</span><span class="l-zh">0.71</span></td>
+          <td>67.71</td>
+          <td>0.20</td>
+          <td class="mq-delta mq-delta-up">+3.54</td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">Coincident tier 6M momentum</span><span class="l-zh">同步层六个月动能</span><span class="mq-owner-field"><code>business_cycle.tiers.coincident.mom6</code></span></th>
-          <td><span class="l-en">-0.216</span><span class="l-zh">-0.216</span></td>
+          <th scope="row"><span class="l-en">Coincident tier 6M momentum</span><span class="l-zh">同步层六个月动能</span><span class="mq-owner-field"><span class="l-en">Business-cycle desk</span><span class="l-zh">商业周期小组</span></span></th>
+          <td><span class="l-en">−0.22</span><span class="l-zh">−0.22</span></td>
           <td>44.60</td>
           <td>0.15</td>
-          <td class="mq-delta mq-delta-down">-0.81</td>
+          <td class="mq-delta mq-delta-down">−0.81</td>
         </tr>
       </tbody>
     </table>
+    </div>
   </details>
-  <details class="mq-axis-method">
-    <summary><span><span class="l-en">Growth level/breadth</span><span class="l-zh">增长水平/广度</span></span><span class="mq-axis-method-value">69.42</span></summary>
+  <details class="mc-details">
+    <summary><span><span class="l-en">Strength and breadth of growth</span><span class="l-zh">增长的强度与广度</span></span><span class="mq-axis-method-value"><span class="l-en">65.42</span><span class="l-zh">65.42</span></span></summary>
+    <div class="mc-details-body mq-axis-method">
+    <p><span class="l-en">Axis method receipts</span><span class="l-zh">坐标轴方法凭据</span></p>
+    <p><span class="l-en">A composite may only be shown when its full composition law is disclosed.</span><span class="l-zh">只有在完整披露构成法则的前提下，复合指标才可展示。</span></p>
     <dl class="mq-method-grid">
-      <div><dt><span class="l-en">Direction</span><span class="l-zh">方向</span></dt><dd><span class="l-en">Weak to strong</span><span class="l-zh">Weak to strong</span></dd></div>
-      <div><dt><span class="l-en">Weights law</span><span class="l-zh">权重法则</span></dt><dd>weighted mean of standardized components, weights renormalized over present components; leading_diffusion 0.30, coincident_diffusion 0.35, coincident_index_level 0.20, growth_axis_score 0.15</dd></div>
-      <div><dt><span class="l-en">Transformation</span><span class="l-zh">变换</span></dt><dd>leading_diffusion/coincident_diffusion/coincident_index_level are direct 0-100 passthroughs (already percent-of-legs-positive / normalized index readings); growth_axis_score (engine/axes.py) mapped via center=0, scale=1.0; lagging tier is INTENTIONALLY EXCLUDED (published separately as confirmation-only context: metrics[lagging_tier_index]/[lagging_tier_diffusion]/[lagging_tier_momentum]), consistent with its trailing definition</dd></div>
-      <div><dt><span class="l-en">Frequency alignment</span><span class="l-zh">频率对齐</span></dt><dd>leading/coincident tier diffusion and index monthly with per-leg publication lag; growth_axis_score (engine/axes.py) shares the same build cadence as the regime read</dd></div>
-      <div><dt><span class="l-en">Revision behaviour</span><span class="l-zh">修订行为</span></dt><dd>recomputed each owner cadence from prior-only owner reads; a method-version change breaks comparability and is reported as such, never as a numeric delta</dd></div>
+      <div><dt><span class="l-en">Direction</span><span class="l-zh">方向</span></dt><dd><span class="l-en">Weak to strong</span><span class="l-zh">从弱到强</span></dd></div>
+      <div><dt><span class="l-en">Weights law</span><span class="l-zh">权重法则</span></dt><dd><span class="l-en">Weighted average of the parts that are present: leading diffusion 30%, current-activity diffusion 35%, current-activity index level 20%, growth score 15%. The lagging tier is left out on purpose and published separately as confirmation.</span><span class="l-zh">按到位分项的加权平均：领先扩散 30%、当前活动扩散 35%、当前活动指数水平 20%、增长评分 15%。滞后层有意排除，另行作为确认项发布。</span></dd></div>
+      <div><dt><span class="l-en">Transformation</span><span class="l-zh">变换</span></dt><dd><span class="l-en">Diffusion and the current-activity index are already 0–100 and pass through. The growth score is centred at zero with a 1-point half-swing.</span><span class="l-zh">扩散与当前活动指数已是 0–100，直接采用。增长评分以 0 为中心、1 个点为半幅。</span></dd></div>
+      <div><dt><span class="l-en">Frequency alignment</span><span class="l-zh">频率对齐</span></dt><dd><span class="l-en">Monthly activity-tier clocks with each leg&#39;s publication lag. The growth score shares the regime-read cadence.</span><span class="l-zh">活动分层为月度，并带各分项发布滞后。增长评分与体制读数同一节奏。</span></dd></div>
+      <div><dt><span class="l-en">Revision behaviour</span><span class="l-zh">修订行为</span></dt><dd><span class="l-en">Recomputed each time the source publishes, using only readings that were already known then. A method change is reported as a break in comparability, never as a numeric move.</span><span class="l-zh">每次数据源发布时用当时已知的读数重算。方法变更会标明为不可比，而不会写成数字位移。</span></dd></div>
       <div><dt><span class="l-en">Components present</span><span class="l-zh">已具备分项</span></dt><dd>4 / <span class="l-en">minimum</span><span class="l-zh">最少</span> 2</dd></div>
-      <div><dt><span class="l-en">Coverage floor</span><span class="l-zh">覆盖下限</span></dt><dd>50%</dd></div>
-      <div><dt><span class="l-en">Definition version</span><span class="l-zh">定义版本</span></dt><dd><code>1.0.0</code></dd></div>
-      <div><dt><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></dt><dd><code>DESCRIPTIVE</code></dd></div>
+      <div><dt><span class="l-en">Coverage floor</span><span class="l-zh">覆盖下限</span></dt><dd><span class="l-en">At least 50% of the parts must be present</span><span class="l-zh">至少 50% 的分项必须到位</span></dd></div>
+      <div><dt><span class="l-en">Definition version</span><span class="l-zh">定义版本</span></dt><dd><span class="l-en">Definition v1, published 4 Sep 2026</span><span class="l-zh">定义第1版，发布于2026年9月4日</span></dd></div>
+      <div><dt><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></dt><dd><span class="l-en">Descriptive reading — this page cannot rank, size or trigger a trade</span><span class="l-zh">描述性读数 — 本页不能排名、定仓或触发交易</span></dd></div>
     </dl>
     <table class="mq-table mq-table-compact">
       <thead><tr>
@@ -1697,35 +1914,36 @@
       </tr></thead>
       <tbody>
         <tr>
-          <th scope="row"><span class="l-en">Leading tier diffusion (breadth)</span><span class="l-zh">领先层扩散度（广度）</span><span class="mq-owner-field"><code>business_cycle.tiers.leading.diffusion</code></span></th>
+          <th scope="row"><span class="l-en">Leading tier diffusion (breadth)</span><span class="l-zh">领先层扩散度（广度）</span><span class="mq-owner-field"><span class="l-en">Business-cycle desk</span><span class="l-zh">商业周期小组</span></span></th>
           <td><span class="l-en">100.00</span><span class="l-zh">100.00</span></td>
           <td>100.00</td>
-          <td>0.3</td>
+          <td>0.30</td>
           <td class="mq-delta mq-delta-up">+15.00</td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">Coincident tier diffusion (breadth)</span><span class="l-zh">同步层扩散度（广度）</span><span class="mq-owner-field"><code>business_cycle.tiers.coincident.diffusion</code></span></th>
+          <th scope="row"><span class="l-en">Coincident tier diffusion (breadth)</span><span class="l-zh">同步层扩散度（广度）</span><span class="mq-owner-field"><span class="l-en">Business-cycle desk</span><span class="l-zh">商业周期小组</span></span></th>
           <td><span class="l-en">66.67</span><span class="l-zh">66.67</span></td>
           <td>66.67</td>
           <td>0.35</td>
           <td class="mq-delta mq-delta-up">+5.83</td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">Coincident tier index level</span><span class="l-zh">同步层指数水平</span><span class="mq-owner-field"><code>business_cycle.tiers.coincident.index</code></span></th>
+          <th scope="row"><span class="l-en">Coincident tier index level</span><span class="l-zh">同步层指数水平</span><span class="mq-owner-field"><span class="l-en">Business-cycle desk</span><span class="l-zh">商业周期小组</span></span></th>
           <td><span class="l-en">35.43</span><span class="l-zh">35.43</span></td>
           <td>35.43</td>
-          <td>0.2</td>
-          <td class="mq-delta mq-delta-down">-2.91</td>
+          <td>0.20</td>
+          <td class="mq-delta mq-delta-down">−2.91</td>
         </tr>
         <tr>
-          <th scope="row"><span class="l-en">Growth axis composite (engine/axes.py)</span><span class="l-zh">增长轴综合评分（engine/axes.py）</span><span class="mq-owner-field"><code>growth_score</code></span></th>
-          <td><span class="l-en">0.2</span><span class="l-zh">0.2</span></td>
-          <td>60.00</td>
+          <th scope="row"><span class="l-en">Growth score</span><span class="l-zh">增长评分</span><span class="mq-owner-field"><span class="l-en">Growth-score desk</span><span class="l-zh">增长评分小组</span></span></th>
+          <td><span class="l-en">−0.33</span><span class="l-zh">−0.33</span></td>
+          <td>33.35</td>
           <td>0.15</td>
-          <td class="mq-delta mq-delta-up">+1.50</td>
+          <td class="mq-delta mq-delta-down">−2.50</td>
         </tr>
       </tbody>
     </table>
+    </div>
   </details>
 </section>
     </section>
@@ -1739,22 +1957,40 @@
   </div>
   <div class="mq-changed-empty">
     <span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">Insufficient history</span><span class="l-zh">历史数据不足</span></span></span>
-    <p><span class="l-en">This snapshot publishes no chart-ready history. An empty chart frame would read as a flat line at zero, so none is drawn.</span><span class="l-zh">本快照未发布可绘图的历史序列。空白图框会被误读为零值水平线，因此不予绘制。</span></p>
+    <p><span class="l-en">No chart yet — we don&#39;t have enough history for this one.</span><span class="l-zh">暂无图表 — 该项历史数据不足。</span></p>
+    <details class="mc-details">
+  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
+  <div class="mc-details-body">
+  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
+
+      <p><span class="l-en">This snapshot publishes no chart-ready history. An empty chart frame would read as a flat line at zero, so none is drawn.</span><span class="l-zh">本快照未发布可绘图的历史序列。空白图框会被误读为零值水平线，因此不予绘制。</span></p>
+      <p><span class="l-en">Freshness</span><span class="l-zh">新鲜度</span></p>
+
+  </div>
+</details>
   </div>
 </section>
       <section class="mq-lineage" aria-labelledby="mq-lineage-title">
-  <div class="mq-section-head">
-    <h3 id="mq-lineage-title"><span class="l-en">Correction and method lineage</span><span class="l-zh">更正与方法沿革</span></h3>
-  </div>
+  <h3 id="mq-lineage-title"><span class="l-en">How this reading was revised</span><span class="l-zh">本读数如何被修订</span></h3>
+  <details class="mc-details">
+  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
+  <div class="mc-details-body">
+  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
+
+  <p><span class="l-en">Correction and method lineage</span><span class="l-zh">更正与方法沿革</span></p>
   <dl class="mq-method-grid">
     <div><dt><span class="l-en">Correction state</span><span class="l-zh">更正状态</span></dt><dd><span class="l-en">No correction recorded</span><span class="l-zh">无更正记录</span></dd></div>
     <div><dt><span class="l-en">Predecessor generation</span><span class="l-zh">前一代产物</span></dt>
-         <dd><code>growth_real_economy-US-333cb0f664408d65</code></dd></div>
+         <dd><span class="l-en">A prior published generation is on file.</span><span class="l-zh">已有上一已发布代次存档。</span></dd></div>
     <div><dt><span class="l-en">Changed fingerprints</span><span class="l-zh">已变更指纹</span></dt>
          <dd><span class="mq-dash">—</span></dd></div>
-    <div><dt><span class="l-en">Hysteresis</span><span class="l-zh">滞回</span></dt><dd>raw classification already matches the prior print; no boundary crossing, hysteresis not engaged</dd></div>
+    <div><dt><span class="l-en">Hysteresis</span><span class="l-zh">滞回</span></dt>
+         <dd><span class="l-en">A 5-point hold-back band is configured but was not needed this reading.</span><span class="l-zh">已配置 5 点滞回带，但本读数未用到。</span></dd></div>
   </dl>
-  <p class="mq-lineage-note">Reference period differs from the predecessor print (a new observation, not a revision of the same period); no correction asserted.</p>
+  <p class="mq-lineage-note"><span class="l-en">Same reference period as the predecessor print; no source value changed (no-change republication). Both as of 4 Sep 2026.</span><span class="l-zh">与上一期读数同一参考期；源值未变（无变更再发布）。两期均截至2026年9月4日。</span></p>
+
+  </div>
+</details>
 </section>
     </section>
   </div>
@@ -1762,8 +1998,17 @@
 
 <section class="mq-withheld" aria-labelledby="mq-withheld-title">
   <div class="mq-section-head">
-    <h3 id="mq-withheld-title"><span class="l-en">Declared but not offered</span><span class="l-zh">已声明但尚未开放</span></h3>
-    <span class="mq-section-note"><span class="l-en">These are named here rather than shown as tabs. A tab that cannot do its job is a dead destination.</span><span class="l-zh">这些能力在此列出，而非以标签页形式呈现。无法履行职责的标签页就是一个死入口。</span></span>
+    <h3 id="mq-withheld-title"><span class="l-en">Not open yet</span><span class="l-zh">尚未开放</span></h3>
+    <details class="mc-details">
+  <summary><span class="l-en">Technical notes</span><span class="l-zh">技术说明</span></summary>
+  <div class="mc-details-body">
+  <p class="mc-details-tier"><span class="l-en">Technical receipt for operators — series names, timestamps and file paths. Not the customer reading.</span><span class="l-zh">给操作员的技术凭据 — 序列名、时间戳与文件路径。不是给客户看的读数。</span></p>
+
+      <p><span class="l-en">Declared but not offered</span><span class="l-zh">已声明但尚未开放</span></p>
+      <p><span class="l-en">These are named here rather than shown as tabs. A tab that cannot do its job is a dead destination.</span><span class="l-zh">这些能力在此列出，而非以标签页形式呈现。无法履行职责的标签页就是一个死入口。</span></p>
+
+  </div>
+</details>
   </div>
   <div class="mq-withheld-grid">
     <article class="mq-withheld-card">
@@ -1772,11 +2017,11 @@
       <details>
         <summary><span class="l-en">Assumption vocabulary declared (not executable)</span><span class="l-zh">已声明的假设变量词表（尚不可执行）</span></summary>
         <ul class="mq-withheld-list">
-          <li><span class="l-en">GDPNow growth</span><span class="l-zh">GDPNow 增长</span> <span class="mq-chip"><span class="l-en">Pct saar</span><span class="l-zh">Pct saar</span></span> <span class="mq-withheld-range">-6.00 … 10.00 · <span class="l-en">step</span><span class="l-zh">步长</span> 0.25</span></li>
+          <li><span class="l-en">GDPNow growth</span><span class="l-zh">GDPNow 增长</span> <span class="mq-chip"><span class="l-en">Pct saar</span><span class="l-zh">年化百分比</span></span> <span class="mq-withheld-range">−6.00 … 10.00 · <span class="l-en">step</span><span class="l-zh">步长</span> 0.25</span></li>
           <li><span class="l-en">Initial claims (4wk avg)</span><span class="l-zh">初次申请（4周均值）</span> <span class="mq-chip"><span class="l-en">count</span><span class="l-zh">数量</span></span> <span class="mq-withheld-range">150,000.0 … 500,000.0 · <span class="l-en">step</span><span class="l-zh">步长</span> 5,000.0</span></li>
-          <li><span class="l-en">Industrial production YoY</span><span class="l-zh">工业生产同比</span> <span class="mq-chip"><span class="l-en">Pct yoy</span><span class="l-zh">Pct yoy</span></span> <span class="mq-withheld-range">-10.00 … 10.00 · <span class="l-en">step</span><span class="l-zh">步长</span> 0.25</span></li>
-          <li><span class="l-en">Real income growth</span><span class="l-zh">实际收入增长</span> <span class="mq-chip"><span class="l-en">Pct yoy</span><span class="l-zh">Pct yoy</span></span> <span class="mq-withheld-range">-10.00 … 10.00 · <span class="l-en">step</span><span class="l-zh">步长</span> 0.25</span></li>
-          <li><span class="l-en">Financial conditions shock</span><span class="l-zh">金融条件冲击</span> <span class="mq-chip"><span class="l-en">index</span><span class="l-zh">指数</span></span> <span class="mq-withheld-range">-3.00 … 3.00 · <span class="l-en">step</span><span class="l-zh">步长</span> 0.1</span></li>
+          <li><span class="l-en">Industrial production YoY</span><span class="l-zh">工业生产同比</span> <span class="mq-chip"><span class="l-en">Pct yoy</span><span class="l-zh">同比百分比</span></span> <span class="mq-withheld-range">−10.00 … 10.00 · <span class="l-en">step</span><span class="l-zh">步长</span> 0.25</span></li>
+          <li><span class="l-en">Real income growth</span><span class="l-zh">实际收入增长</span> <span class="mq-chip"><span class="l-en">Pct yoy</span><span class="l-zh">同比百分比</span></span> <span class="mq-withheld-range">−10.00 … 10.00 · <span class="l-en">step</span><span class="l-zh">步长</span> 0.25</span></li>
+          <li><span class="l-en">Financial conditions shock</span><span class="l-zh">金融条件冲击</span> <span class="mq-chip"><span class="l-en">index</span><span class="l-zh">指数</span></span> <span class="mq-withheld-range">−3.00 … 3.00 · <span class="l-en">step</span><span class="l-zh">步长</span> 0.10</span></li>
         </ul>
       </details>
     </article>
@@ -1787,7 +2032,7 @@
         <summary><span class="l-en">Eligible conditions declared (not offered)</span><span class="l-zh">已声明的可用条件（尚未开放）</span></summary>
         <ul class="mq-withheld-list">
           <li><span class="l-en">Quadrant change</span><span class="l-zh">象限变化</span> <span class="mq-chip"><span class="l-en">Named state transition</span><span class="l-zh">状态切换</span></span></li>
-          <li><span class="l-en">Broad leading rollover</span><span class="l-zh">领先指标广泛转向</span> <span class="mq-chip"><span class="l-en">Axis boundary approach</span><span class="l-zh">接近坐标轴分界</span></span></li>
+          <li><span class="l-en">Broad leading rollover</span><span class="l-zh">领先指标广泛转向</span> <span class="mq-chip"><span class="l-en">Boundary approach</span><span class="l-zh">接近分界</span></span></li>
           <li><span class="l-en">Coincident confirmation</span><span class="l-zh">同步指标确认</span> <span class="mq-chip"><span class="l-en">Component shock</span><span class="l-zh">分项冲击</span></span></li>
           <li><span class="l-en">Source stale or failed</span><span class="l-zh">数据源过期或失败</span> <span class="mq-chip"><span class="l-en">Source stale or failed</span><span class="l-zh">数据源过期或失败</span></span></li>
           <li><span class="l-en">Material source revision</span><span class="l-zh">数据源重大修订</span> <span class="mq-chip"><span class="l-en">Material source revision</span><span class="l-zh">数据源重大修订</span></span></li>
@@ -1810,7 +2055,9 @@
             aria-label="Close evidence drawer">×</button>
   </header>
   <div class="mq-drawer-body">
-
+  <details class="mc-details" open>
+    <summary><span class="l-en">Technical receipt</span><span class="l-zh">技术凭据</span></summary>
+    <div class="mc-details-body">
     <section class="mq-drawer-section">
       <h3><span class="l-en">Authority ceiling</span><span class="l-zh">权限上限</span></h3>
       <p class="mq-authority-statement"><span class="l-en">Display-only context. This page cannot rank, gate, size, originate a signal, or execute anything.</span><span class="l-zh">仅供展示的背景信息。本页不能排名、设闸、定仓位、产生信号或执行任何交易。</span></p>
@@ -1844,11 +2091,11 @@
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -1867,7 +2114,7 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock is-absent">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
 </dl>
@@ -1890,11 +2137,11 @@
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -1913,7 +2160,7 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock is-absent">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
 </dl>
@@ -1936,11 +2183,11 @@
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -1959,7 +2206,7 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock is-absent">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
 </dl>
@@ -1982,11 +2229,11 @@
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -2005,7 +2252,7 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock is-absent">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
 </dl>
@@ -2028,11 +2275,11 @@
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-30</time></dd>
+    <dd><time datetime="2026-09-30"><span class="l-en">30 Sep 2026</span><span class="l-zh">2026年9月30日</span></time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -2051,7 +2298,7 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock is-absent">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
 </dl>
@@ -2074,11 +2321,11 @@
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -2097,7 +2344,7 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock is-absent">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
 </dl>
@@ -2120,11 +2367,11 @@
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -2143,7 +2390,7 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock is-absent">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
 </dl>
@@ -2166,11 +2413,11 @@
         <dl class="mq-clocks">
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Reference period</span><span class="l-zh">参考期</span></span><span class="mq-clock-meaning"><span class="l-en">The period the economic value describes.</span><span class="l-zh">该经济数值所描述的期间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock">
     <dt><span class="mq-clock-name"><span class="l-en">Observed</span><span class="l-zh">观察时间</span></span><span class="mq-clock-meaning"><span class="l-en">Native economic or market observation time.</span><span class="l-zh">原生经济或市场观察时间。</span></span></dt>
-    <dd><time>2026-09-09</time></dd>
+    <dd><time datetime="2026-09-04"><span class="l-en">4 Sep 2026</span><span class="l-zh">2026年9月4日</span></time></dd>
   </div>
   <div class="mq-clock is-absent">
     <dt><span class="mq-clock-name"><span class="l-en">Released</span><span class="l-zh">发布时间</span></span><span class="mq-clock-meaning"><span class="l-en">Provider publication time.</span><span class="l-zh">数据提供方的发布时间。</span></span></dt>
@@ -2189,7 +2436,7 @@
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
   <div class="mq-clock is-absent">
-    <dt><span class="mq-clock-name"><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
+    <dt><span class="mq-clock-name"><span class="l-en">Worked out on</span><span class="l-zh">计算日期</span></span><span class="mq-clock-meaning"><span class="l-en">Cut-off used for the derived result.</span><span class="l-zh">推导结果所使用的数据截止点。</span></span></dt>
     <dd><span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr"><span class="l-en">not carried by this source</span><span class="l-zh">该数据源未提供</span></span></dd>
   </div>
 </dl>
@@ -2200,12 +2447,12 @@
       <h3><span class="l-en">Non-economic clocks</span><span class="l-zh">非经济时钟</span></h3>
       <dl class="mq-clocks">
         <div class="mq-clock">
-          <dt><span class="mq-clock-name"><span class="l-en">Artifact built</span><span class="l-zh">产物生成</span></span><span class="mq-clock-meaning"><span class="l-en">Producer generation time. Not an economic clock.</span><span class="l-zh">生产端生成时间，并非经济时钟。</span></span></dt>
-          <dd><time>2026-09-10T07:27:52Z</time></dd>
+          <dt><span class="mq-clock-name"><span class="l-en">Build stamp</span><span class="l-zh">生成时间</span></span><span class="mq-clock-meaning"><span class="l-en">Producer generation time. Not an economic clock.</span><span class="l-zh">生产端生成时间，并非经济时钟。</span></span></dt>
+          <dd><time>2026-09-06T21:23:24Z</time></dd>
         </div>
         <div class="mq-clock">
-          <dt><span class="mq-clock-name"><span class="l-en">Page built</span><span class="l-zh">页面生成</span></span><span class="mq-clock-meaning"><span class="l-en">Static page render time. Not an economic clock.</span><span class="l-zh">静态页面渲染时间，并非经济时钟。</span></span></dt>
-          <dd><time>2026-09-10T22:57:15Z</time></dd>
+          <dt><span class="mq-clock-name"><span class="l-en">Page refreshed</span><span class="l-zh">页面更新于</span></span><span class="mq-clock-meaning"><span class="l-en">Static page render time. Not an economic clock.</span><span class="l-zh">静态页面渲染时间，并非经济时钟。</span></span></dt>
+          <dd><time>2026-09-09T15:47:30Z</time></dd>
         </div>
       </dl>
     </section>
@@ -2215,20 +2462,23 @@
       <dl class="mq-method-grid">
         <div><dt><span class="l-en">Artifact path</span><span class="l-zh">产物路径</span></dt><dd><code>macrodata/workspaces/growth_real_economy/US/latest.json</code></dd></div>
         <div><dt><span class="l-en">Manifest path</span><span class="l-zh">清单路径</span></dt><dd><code>macrodata/workspaces/manifest.json</code></dd></div>
-        <div><dt><span class="l-en">Content hash</span><span class="l-zh">内容哈希</span></dt><dd><code class="mq-hash">cb81d8d804c8409123011245106435415ef84123bcc8976ac85f1690d94599b9</code></dd></div>
-        <div><dt><span class="l-en">Bytes</span><span class="l-zh">字节数</span></dt><dd>57260</dd></div>
-        <div><dt><span class="l-en">Generation id</span><span class="l-zh">产物代号</span></dt><dd><code>growth_real_economy-US-cb81d8d804c84091</code></dd></div>
+        <div><dt><span class="l-en">Content hash</span><span class="l-zh">内容哈希</span></dt><dd><code class="mq-hash">d328560735ec7d78def21065d250e2952e7f8a8bd99d5757dad0f4cdc16077ee</code></dd></div>
+        <div><dt><span class="l-en">Bytes</span><span class="l-zh">字节数</span></dt><dd>57316</dd></div>
+        <div><dt><span class="l-en">Generation id</span><span class="l-zh">产物代号</span></dt><dd><code>growth_real_economy-US-d328560735ec7d78</code></dd></div>
         <div><dt><span class="l-en">Producer</span><span class="l-zh">生产者</span></dt><dd><code>engine.market_os.macro_workspaces.growth</code></dd></div>
-        <div><dt><span class="l-en">Producer code version</span><span class="l-zh">生产端代码版本</span></dt><dd><code>2c9a2d35ba0dd38618f59a2fadc80b6815ec5281</code></dd></div>
+        <div><dt><span class="l-en">Producer code version</span><span class="l-zh">生产端代码版本</span></dt><dd><code>41929a0479ef0e5e4a8ac34086668c738c1e480f</code></dd></div>
         <div><dt><span class="l-en">Client contract</span><span class="l-zh">客户端契约</span></dt><dd><code>mastermind.macro_workspace_snapshot.v1@1.0.0</code></dd></div>
       </dl>
       <p class="mq-lineage-note"><span class="l-en">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mismatch renders a refusal page instead of a state.</span><span class="l-zh">本页在渲染前已按封闭 schema 校验该产物并重新计算其内容哈希。若不匹配，将呈现拒绝页面而非任何状态读数。</span></p>
     </section>
+    </div>
+  </details>
   </div>
 </aside>
 <div class="mq-scrim" id="mq-scrim" hidden></div>
 
-<script src="theme.js?v=53939d13" defer></script>
-<script src="macro_suite.js?v=e202c862" defer></script>
+<script src="theme.js" defer></script>
+<script src="macro_suite.js" defer></script>
+<script src="macro_command.js" defer></script>
 </body>
 </html>

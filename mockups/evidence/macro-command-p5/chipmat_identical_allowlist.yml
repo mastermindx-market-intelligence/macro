@@ -1,0 +1,33 @@
+# Cross-page identical PNG bytes are permitted only when cropDomSha256, theme,
+# locale, and width match AND the pair is listed here with a reason (≥12 chars)
+# and an explicit kind (chipmat | trace). Allowlist entries must be OBSERVED
+# identical groups only — stale pairs whose bytes differ fail the suite.
+# business_activity and financial_conditions share the same suite-nav chip strip
+# markup in ZH (identical rail inner HTML after current-marker stripping).
+# Trace FC/MP pairs are NOT listed: after the v17 recapture their Trace crops
+# diverge (container-padded ribbon crop + locale value parity).
+pairs:
+  - slugs: [macro_business_activity, macro_financial_conditions]
+    kind: chipmat
+    theme: dark
+    locale: zh
+    width: "390"
+    reason: shared suite-nav chip row by design (ZH rail identity)
+  - slugs: [macro_business_activity, macro_financial_conditions]
+    kind: chipmat
+    theme: light
+    locale: zh
+    width: "390"
+    reason: shared suite-nav chip row by design (ZH rail identity)
+  - slugs: [macro_business_activity, macro_financial_conditions]
+    kind: chipmat
+    theme: dark
+    locale: zh
+    width: "768"
+    reason: shared suite-nav chip row by design (ZH rail identity)
+  - slugs: [macro_business_activity, macro_financial_conditions]
+    kind: chipmat
+    theme: light
+    locale: zh
+    width: "768"
+    reason: shared suite-nav chip row by design (ZH rail identity)

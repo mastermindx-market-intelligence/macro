@@ -3564,8 +3564,10 @@ jobs:
       - "lib/hk_calendar.py"
       # F01 R1B closure widening 2026-09-04 (contract-delta): via build_site's
       # macro-suite hook — see the contracts/market_os entry above.
+      - "lib/macro_suite_disclosure.py"
       - "lib/macro_suite_labels.py"
       - "lib/macro_suite_view.py"
+      - "lib/macro_suite_zh_parity.py"
       - "lib/nyse_calendar.py"
       - "lib/options_context.py"
       - "lib/pages.py"
@@ -14073,13 +14075,60 @@ jobs:
       - "templates/macro_suite_boot.js"
       - "lib/__init__.py"
       - "lib/config.py"
+      - "lib/macro_suite_disclosure.py"
       - "lib/macro_suite_labels.py"
       - "lib/macro_suite_view.py"
+      - "lib/macro_suite_zh_parity.py"
       - "lib/pages.py"
       - "scripts/__init__.py"
       - "scripts/build_macro_suite_pages.py"
       - "site/macrodata/workspaces/**"
       - "tests/test_macro_suite_pages.py"
+      # F01 Macro Command P1 (2026-09-06): the hub's new shell/rail/routing —
+      # same job as the pages above, since scripts/build_macro_suite_pages.py
+      # (already in scope) imports/copies these and macro_monetary.html.j2
+      # (already in scope) imports the new macros file. Widening per this
+      # job's own header note: a new import gets added here, not inferred.
+      - "templates/_macro_command_macros.html.j2"
+      - "templates/_macro_command_figures.html.j2"
+      - "templates/_macro_command_fragment.html.j2"
+      - "templates/macro_command.css"
+      - "templates/macro_command.js"
+      - "scripts/check_macro_command_copy.py"
+      # r10-M1: test_macro_command_panels.py imports the capture script
+      # to feed a fake dirty `git status --short` and assert it refuses.
+      - "scripts/capture_macro_command_p3.py"
+      # r5 MAJ-A: test_macro_command_p4_copy.py imports the P4 capture
+      # helpers to pin generated gaps = declared − captured.
+      - "scripts/capture_macro_command_p4.py"
+      # v16: pure capture-guard helpers imported by capture_macro_command_p5
+      # and tests/test_macro_command_capture_guards.py.
+      - "scripts/macro_command_capture_guards.py"
+      - "scripts/capture_macro_command_p5.py"
+      - "scripts/count_macro_command_machine_text.py"
+      - "tests/test_macro_command_shell.py"
+      - "tests/test_macro_command_copy_law.py"
+      - "tests/test_macro_command_capture_guards.py"
+      - "tests/test_macro_command_read_strip.py"
+      - "tests/test_macro_command_panels.py"
+      # P5 v13: rendered-page gates read these committed site copies directly.
+      - "site/macro_financial_conditions.html"
+      - "site/macro_monetary_policy.html"
+      - "tests/test_macro_command_empty_states.py"
+      - "tests/test_macro_command_p4_copy.py"
+      - "scripts/capture_macro_command_p4.py"
+      - "scripts/capture_macro_command_p5.py"
+      - "site/macro_rates_curves.html"
+      # scripts/check_contract_delta.py's import-closure audit: Macro Command
+      # is the first page in this job to render the built artifact itself
+      # (test_macro_command_shell.py reads `site/macro_monetary.html` for
+      # G7's byte-unchanged proof) and to link `theme.css` directly
+      # (`templates/macro_monetary.html.j2`'s `<link rel="stylesheet"
+      # href="theme.css">`) rather than only inheriting it transitively
+      # through `_site_nav.html.j2`.
+      - "site/macro_monetary.html"
+      - "templates/_site_nav.html.j2"
+      - "templates/theme.css"
       - "tests/test_macro_workspace_prior_publication.py"
       # F01 R1 2026-09-05: the suite hub + shared in-suite navigation. Same job as
       # the workspace pages because it is the same subject: one builder, one shell,
@@ -14098,6 +14147,6 @@ jobs:
       - name: install suite-page test dependencies
         run: pip install pytest jinja2 pyyaml jsonschema==4.26.0
       - name: Market OS macro suite pages — shell, labels, view model, builder
-        run: python -m pytest tests/test_macro_suite_pages.py tests/test_macro_workspace_prior_publication.py -q
+        run: python -m pytest tests/test_macro_suite_pages.py tests/test_macro_workspace_prior_publication.py tests/test_macro_command_shell.py tests/test_macro_command_copy_law.py tests/test_macro_command_read_strip.py tests/test_macro_command_panels.py tests/test_macro_command_empty_states.py tests/test_macro_command_p4_copy.py tests/test_macro_command_capture_guards.py -q
       - name: Market OS macro suite hub — discoverability, ordering, honest absence
         run: python -m pytest tests/test_macro_monetary_hub.py -q

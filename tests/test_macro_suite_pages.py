@@ -39,6 +39,9 @@ BUILT_AT = "2026-09-04T12:00:00Z"
 
 _TEMPLATE_NAMES = (
     "macro_monetary.html.j2",
+    "_macro_command_macros.html.j2",
+    "_macro_command_figures.html.j2",
+    "_macro_command_fragment.html.j2",
     "_macro_suite_nav.html.j2",
     "macro_liquidity_regime.html.j2",
     "macro_growth_real_economy.html.j2",
@@ -61,6 +64,13 @@ _TEMPLATE_NAMES = (
     "macro_suite_boot.js",
     "macro_suite.css",
     "macro_suite.js",
+    # F01 Macro Command P1: SHARED_ASSETS now also carries the page-level
+    # macro_command.css/.js (scripts/build_macro_suite_pages.py:52) — the
+    # isolated fixture root must carry both or `builder.render()`'s
+    # end-of-run `_atomic_copy` over every SHARED_ASSETS entry raises
+    # FileNotFoundError.
+    "macro_command.css",
+    "macro_command.js",
 )
 
 
@@ -324,8 +334,9 @@ def test_every_published_metric_id_has_a_reviewed_public_name() -> None:
 def test_a_percentile_is_never_silently_rescaled() -> None:
     """0.046 is a percentile on a 0-1 basis. Printing 4.6% would be a
     transformation the contract never declared."""
-    assert labels.fmt_number(0.046031746031746035) == "0.04603"
-    assert labels.fmt_ratio_pct(1.0) == "100%"
+    assert labels.fmt_number(0.046031746031746035) == "0.05"
+    assert "4.6%" not in (labels.fmt_number(0.046031746031746035) or "")
+    assert labels.fmt_ratio_pct(1.0) == "100.0%"
 
 
 # --------------------------------------------------------------------------

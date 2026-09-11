@@ -1,0 +1,143 @@
+{#
+  Macro Command — shared null macro (F01 / Macro Command P1).
+
+  `nulled(en, zh)` is the ONE place this page emits a bare em dash. Every
+  invocation carries an `.mq-sr` sentence explaining the absence, so no dash
+  on this page is ever the only content of a cell, chip or panel (G4).
+  Grafted verbatim from the COMMAND draft §2.2 / frozen spec §2.7.
+
+  `t`/`bl` are defined locally here (never imported cross-file) because Jinja
+  macros are not visible across an `{% import %}` boundary without `with
+  context`, and this repo's established idiom — see
+  `_macro_suite_shell.html.j2:35-40` — is a local copy per macro-library file,
+  not a shared-context import.
+#}
+{%- macro t(en, zh='') -%}
+<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
+{%- endmacro %}
+
+{% macro nulled(en, zh) -%}
+<span class="mq-dash" aria-hidden="true">—</span><span class="mq-sr">{{ t(en, zh) }}</span>
+{%- endmacro %}
+
+{%- macro bl(node) -%}
+{%- if node %}{{ t(node.en, node.zh) }}{% endif -%}
+{%- endmacro %}
+
+{#
+  D3 — one plain sentence per workspace: what that workspace answers.
+
+  Keyed on the workspace's own deep-link href, because that is the only
+  identifier the Overview loop variable carries: `_detail_link()` publishes
+  `{"title": {...}, "href": ...}` and nothing else
+  (scripts/build_macro_suite_pages.py:591-593). Reviewed copy, <=12 words each,
+  full EN/ZH parity, no stat names, no slugs, no internal state names (G2/G6),
+  and no string on the copy guard's banned list.
+
+  Fail-soft on purpose: an href with no entry renders NOTHING, so a future
+  fifteenth workspace degrades to title + arrow and can never print an English
+  fallback inside the `.l-zh` span.
+#}
+{% set ANSWERS = {
+  "macro_liquidity_regime.html":        {"en": "Whether cash in the system is getting easier or tighter.", "zh": "系统里的资金是在变宽松还是变紧。"},
+  "macro_liquidity_central_banks.html": {"en": "What central banks are adding to or draining from markets.", "zh": "央行正在向市场投放还是回收资金。"},
+  "macro_monetary_policy.html":         {"en": "Where the policy rate sits and where it is heading.", "zh": "政策利率处在什么位置，又将走向何方。"},
+  "macro_rates_curves.html":            {"en": "What bond yields say about growth and rate expectations.", "zh": "债券收益率对增长与利率预期的说法。"},
+  "macro_inflation_system.html":        {"en": "How fast prices are rising, and how broadly.", "zh": "物价上涨得有多快，涨势又有多普遍。"},
+  "macro_growth_real_economy.html":     {"en": "Whether the economy is speeding up or slowing down.", "zh": "经济是在加速还是在放缓。"},
+  "macro_business_activity.html":       {"en": "What companies are making, ordering and investing.", "zh": "企业在生产、下单和投资上的动向。"},
+  "macro_labor_markets.html":           {"en": "How hard it is to hire, and what pay is doing.", "zh": "招人有多难，工资又在怎么变。"},
+  "macro_housing_real_estate.html":     {"en": "What homes cost to buy, build and borrow against.", "zh": "买房、建房与房贷成本的变化。"},
+  "macro_consumer_payments.html":       {"en": "What households are spending, and how they pay.", "zh": "家庭花了多少钱，又用什么方式支付。"},
+  "macro_financial_conditions.html":    {"en": "How easy money is to raise across markets right now.", "zh": "当前在各市场融资的难易程度。"},
+  "macro_capital_structure.html":       {"en": "Who is borrowing, on what terms, at what risk.", "zh": "谁在借钱、条件如何、风险有多大。"},
+  "macro_national_debt_liabilities.html": {"en": "What governments owe and what servicing it costs.", "zh": "政府欠了多少，偿债成本有多高。"},
+  "macro_trade_flows.html":             {"en": "What is moving between countries, and on what terms.", "zh": "国与国之间的货物流向与贸易条件。"}
+} %}
+
+{% macro answers(href) -%}
+{%- set node = ANSWERS.get(href) -%}
+{%- if node %}<span class="mc-dest-answers">{{ t(node.en, node.zh) }}</span>{% endif -%}
+{%- endmacro %}
+
+{#
+  THE READ (F01 Macro Command P2, frozen spec §2.1/§3.3).
+
+  One sentence. Every clause is a verbatim pass-through of ONE workspace's own
+  reviewed state, joined by fixed connectives (G3). `clause.punct` is a
+  BILINGUAL pair: EN joins with ", " / ", and " / "."; ZH joins with "；" and
+  ends "。" and never carries a coordinating word (a calqued "，和" is not
+  Chinese). Fewer than two clauses suppresses the sentence entirely
+  (R6-M3: after the populated-only filter the live Read has two
+  clauses; a three-clause floor would hide a true sentence).
+
+  EN's one word space is the explicit <span class="l-en"> </span> after the
+  topic; ZH emits no space character. Do not also add a CSS margin on EN —
+  that read as a double space after every colour token (M-E12). Inter-clause
+  separation is `punct` alone.
+#}
+{% macro read_block(read) -%}
+{%- if read.clauses|length >= 2 %}
+<p class="mc-read" data-mc-read>
+{%- for clause in read.clauses -%}
+<span class="mc-read-clause"><a class="mc-read-topic mq-tone-{{ clause.tone }}" href="#{{ clause.href_section or clause.section }}" data-mc-topic="{{ clause.id }}">{{ bl(clause.topic) }}</a><span class="l-en"> </span><span class="l-zh"></span><span class="mc-read-state">{{ bl(clause.predicate) }}</span>{{ bl(clause.punct) }}</span>
+{%- endfor -%}
+</p>
+{%- if read.omitted %}
+<p class="mc-read-omitted">{{ t('Some readings are not available today — see the states below.',
+                                '部分读数今日不可用，具体见下方状态条。') }}</p>
+{%- endif %}
+{%- else %}
+<p class="mc-read-fallback">{{ t("See each workspace below for its own dated read.",
+                                 '各工作区下方各自展示其带日期的读数。') }}</p>
+{%- endif %}
+{%- endmacro %}
+
+{#
+  THE STATE STRIP (frozen spec §3). Eight cells, fixed order, one workspace each.
+  Two lines: [topic ......... Data to <date>] over [state word]. A third line
+  appears only when a freshness note or a coverage count exists.
+
+  `chip.meaning` renders in every state, null included, and is bound to the link
+  with aria-describedby so it is ANNOUNCED, never merely hoverable (D13). It is
+  never a `title=` attribute (no CJK in title=, G6).
+#}
+{% macro state_strip(strip) -%}
+<h2 class="mq-sr" id="mc-strip-h">{{ t("Today's state, one line per section",
+                                       '今日状态，每个板块一行') }}</h2>
+<ul class="mc-strip" data-mc-strip aria-labelledby="mc-strip-h">
+  {%- for chip in strip %}
+  <li class="mc-chip{{ ' is-null' if chip.null else '' }}" data-mc-topic="{{ chip.id }}">
+    <a class="mc-chip-link" href="#{{ chip.href_section or chip.section }}" aria-describedby="{{ chip.id }}-help">
+      <span class="mc-chip-top">
+        <span class="mc-chip-label">{{ bl(chip.label) }}</span>
+        {#- F-12 / MJ-2: a fully null chip renders NO as-of. A coverage
+            counter is a build-hygiene readout with no date by design —
+            `as_of_omitted` suppresses the cell so it never borrows
+            `nulled()`'s "no dated reading for this topic" sentence.
+            `nulled()` still fires for a market chip that HAS a value but
+            no date. -#}
+        {%- if chip.as_of %}
+        <span class="mc-chip-asof">
+          <span class="mc-asof-word">{{ t('Data to', '数据截至') }}</span>
+          <time datetime="{{ chip.as_of }}">{{ bl(chip.as_of_display) }}</time>
+        </span>
+        {%- elif chip.as_of_omitted %}
+        {%- elif not chip.null %}
+        <span class="mc-chip-asof">{{ nulled('no dated reading for this topic', '该主题没有带日期的读数') }}</span>
+        {%- endif %}
+      </span>
+      <strong class="mc-chip-value mq-tone-{{ chip.tone }}">
+        {%- if chip.null and chip.cause == 'see_curve' %}{{ t('See the curve below', '见下方曲线') }}
+        {%- elif chip.null %}{{ t('Not available yet', '暂不可用') }}
+        {%- else %}{{ bl(chip.value) }}{% endif -%}
+      </strong>
+      {%- if chip.note %}
+      <span class="mc-chip-fresh">{{ bl(chip.note) }}</span>
+      {%- endif %}
+    </a>
+    <span class="mc-chip-help" id="{{ chip.id }}-help" role="note">{{ bl(chip.meaning) }}</span>
+  </li>
+  {%- endfor %}
+</ul>
+{%- endmacro %}

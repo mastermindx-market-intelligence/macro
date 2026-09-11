@@ -87,6 +87,8 @@ def summarize(snapshot: Any, *, allow_stale: bool = False) -> dict:
             "dx": headline["one_month_vector"]["dx"],
             "dy": headline["one_month_vector"]["dy"],
             "status": headline["one_month_vector"]["status"],
+            "x_axis_id": headline["one_month_vector"].get("x_axis_id"),
+            "y_axis_id": headline["one_month_vector"].get("y_axis_id"),
         },
         "effective_date": headline["effective_date"],
         "freshness": fresh,

@@ -1,0 +1,838 @@
+/* macro_command.css — Macro Command. Extends theme.css and macro_suite.css.
+   No palette literal below this token block. Two art directions, one system.
+
+   DS header (§12 items 2-3, orchestrator rulings R1/R2, F01 Macro Command P1):
+   - Archetype: `command_center` ("Command Center"),
+     research/MASTER_PRODUCT_DESIGN_SYSTEM_V1.md §10 row A, copied verbatim.
+   - `.mc-panel` SUPERSEDES `.mq-card` on this page: no `.mq-card` is rendered
+     inside site/macro_monetary.html (the 14 deep-link pages, which keep their
+     own `.mq-card` system, are untouched).
+   - Tone ink is inherited from `macro_suite.css:88-91` (`.mq-tone-*`); no
+     `.mc-tone-*` class is minted here (G10, D5). */
+
+/* Scoped under the hub body class — never a parallel :root palette (R1).
+   Surviving --mc-* values are token derivations only (is_derived_value).
+   Geometry, timing, borders, shadows, and color-mix tints are inlined at
+   the use site: a px/ms/`color-mix` custom property is a ratchet literal. */
+body.mc-page {
+  /* DARK art direction: light, not lines */
+  /* P3 M5: opaque raised well. `--mq-surface` is `--panel` at 90% so the
+     page bloom showed through the reading path. `--panel` is the same
+     colour at 100% — derived, ratchet-legal. */
+  --mc-panel-bg: var(--panel);
+  --mc-chip-bg: transparent;
+  --mc-rail-active-shadow: none;
+  --mc-stance-wash: 0%;     /* D3: a PERCENTAGE, never `transparent` — see the note below */
+  --mc-halo: 0.12;          /* radial wash behind a Read topic word — dark only */
+  --mc-read-lh: 1.42;
+  --mc-focus-inner: 0 0 0 0 transparent;
+  --mc-underline: 0;
+  --mc-read-weight: 440;
+  --mc-strip-bg: transparent;
+  --mc-strip-border: none;
+  --mc-strip-shadow: none;
+  --mc-lit-halo: .22;
+  --mc-lit-underline: 0;
+  /* P3 A12: figure recess is one luminance step BELOW the panel. */
+  --mc-plot-bg: var(--bg);
+}
+
+html[data-theme="light"] body.mc-page {
+  /* LIGHT art direction: edge and elevation, never glow */
+  --mc-panel-bg: var(--panel);
+  --mc-chip-bg: var(--panel);
+  --mc-stance-wash: 6%;
+  --mc-halo: 0;
+  --mc-underline: 0;
+  --mc-read-weight: 460;
+  /* P3 R7-M2: strip container must not paint. A --mq-line fill here is
+     what rendered the three-cell grey void after the chip count dropped. */
+  --mc-strip-bg: transparent;
+  --mc-strip-border: none;
+  --mc-strip-shadow: none;
+  --mc-lit-halo: 0;
+  --mc-lit-underline: 0;
+  --mc-plot-bg: var(--panel);
+}
+
+/* ── shell ───────────────────────────────────────────────────────────────── */
+.mc-shell {
+  display: grid;
+  grid-template-columns: 232px minmax(0, 1fr);
+  gap: 28px;
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 28px 32px 96px;
+  align-items: start;
+  /* D1: `min-height` below + the DEFAULT `align-content: normal` (= stretch)
+     splits the free height EQUALLY across the auto rows. At <=768px the shell
+     is one column / two rows (rail, content), so half of it landed ABOVE the
+     header — the ~375px above-fold void in 09-dark-zh-390.png. `align-items`
+     cannot prevent it: it aligns the item inside an already-stretched row. */
+  align-content: start;
+  min-height: calc(100vh - 84px);
+}
+.mc-content { max-width: 1008px; min-width: 0; }
+.mc-panels { min-width: 0; }
+.mc-skip { position: absolute; left: -9999px; }
+.mc-skip:focus { position: static; display: inline-block; margin: 8px 0; }
+
+/* ── left rail ───────────────────────────────────────────────────────────── */
+.mc-rail { position: sticky; top: 84px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.mc-rail-label {
+  margin: 0 0 8px 10px; font-size: 11px;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--mq-muted);
+}
+.mc-rail-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+/* r10-m4: desktop .mc-rail-link / :hover exclude .mc-analyst so the
+   ≥769 boxed chip (border, chip-bg, accent hover) stays unchanged.
+   ≤768 .mc-rail-link (including .mc-analyst) shares pill material. */
+.mc-rail-link:not(.mc-analyst) {
+  position: relative; display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px 9px 14px; border-radius: var(--r-ctl, 8px);
+  color: var(--mq-muted); text-decoration: none; font-size: 13.5px; line-height: 1.3;
+  transition: background 160ms ease, color 160ms ease;
+}
+.mc-rail-link:not(.mc-analyst):hover { color: var(--mq-ink); background: color-mix(in srgb, var(--mq-ink) 5%, transparent); }
+.mc-rail-link.is-current {
+  color: var(--mq-ink); font-weight: 600;
+  background: color-mix(in srgb, var(--mq-ink) 7%, transparent);
+  border: 1px solid transparent;
+  box-shadow: var(--mc-rail-active-shadow);
+}
+html[data-theme="light"] .mc-rail-link.is-current {
+  background: var(--panel);
+  border: 1px solid var(--mq-line);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 9%, transparent);
+}
+.mc-rail-bar, .mc-arrival-bar {
+  position: absolute; left: 0; top: 8px; bottom: 8px; width: 2px; border-radius: 0; background: transparent;
+}
+.mc-rail-link.is-current .mc-rail-bar { background: var(--mq-accent); }
+.mc-rail-dot { width: 6px; height: 6px; border-radius: var(--r-pill, 999px); margin-left: auto; background: currentColor; }
+.mc-rail-full { display: inline; }
+.mc-rail-short { display: none; }
+
+/* Hub-only desktop chip. Workspace pages carry body.mq-suite-page and
+   the chip is a suite-nav pill there — these rules must not reach it. */
+body:not(.mq-suite-page) .mc-analyst {
+  font: inherit; font-size: 13px; text-align: left; cursor: pointer;
+  margin-top: 18px; display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; border-radius: var(--r-ctl, 8px);
+  border: 1px solid var(--mq-line-strong); color: var(--mq-ink);
+  text-decoration: none; background: var(--mc-chip-bg);
+}
+body:not(.mq-suite-page) .mc-analyst:hover { border-color: var(--mq-accent); color: var(--mq-accent); }
+
+/* ── command header + THE READ ───────────────────────────────────────────── */
+.mc-asof-meaning {
+  /* One caption register: the header's date-meaning line and every panel
+     `.mc-caption` do the same job and must not sit 0.5px apart. */
+  margin: -14px 0 18px; font-size: 13px; font-weight: 400;
+  line-height: 1.55; color: var(--mq-muted); max-width: 62ch;
+}
+.mc-eyebrow {  margin: 0 0 6px; font-size: 11px; font-weight: 500;
+  letter-spacing: .08em; color: var(--mq-muted);
+}
+/* F-7: the UI face with tabular figures, never mono — "4 Sep 2026" contains a
+   word, and mono is reserved for figures, tickers, code and axis ticks. */
+.mc-eyebrow time { font-variant-numeric: tabular-nums; }
+.mc-asof-word { letter-spacing: 0; }
+.mc-title {
+  /* D2: NOT `--fs-h2` — theme.css:56 sets it to 17px for panel titles, so the
+     22px fallback never applied and the H1 rendered smaller than the 16px lede
+     beneath it. The page title is pinned here. */
+  margin: 0 0 14px; font-size: 28px; line-height: 1.15; font-weight: 650;
+  letter-spacing: -.02em; color: var(--mq-ink);
+}
+.mc-read {
+  margin: 0 0 22px; max-width: 62ch;
+  font-size: clamp(23px, 1.05rem + 1vw, 34px); line-height: var(--mc-read-lh);
+  font-weight: var(--mc-read-weight); letter-spacing: -.012em; color: var(--mq-ink);
+  text-wrap: pretty;
+}
+.mc-read-clause { white-space: normal; }
+/* F-1: no `color` declaration here. `.mq-tone-*` (macro_suite.css:88-91) is
+   the same specificity and loads FIRST, so a color set here would silently
+   kill the frozen tone mechanism and turn the wash into an ink-grey smudge. */
+.mc-read-topic {
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0 .08em 1px;
+  border-bottom: 0 solid currentColor;
+  /* D4: the halo is painted ON the element. A z-index:-1 pseudo would paint behind the page canvas. */
+  background-image: radial-gradient(closest-side,
+    color-mix(in srgb, currentColor calc(var(--mc-halo) * 100%), transparent), transparent);
+  background-size: 100% 160%;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: border-bottom-width 160ms ease, background-image 160ms ease;
+}
+html[data-theme="light"] .mc-read-topic { border-bottom-width: 2px; }
+.mc-read-topic.mq-tone-neutral { color: var(--mq-ink); }
+/* F-10: the gap between a topic word and its predicate is CSS, never
+   template whitespace. EN needs a word space; ZH must not have one. */
+.mc-read-topic { margin-inline-end: 0; }
+html[data-lang="zh"] .mc-read-topic { margin-inline-end: .06em; }
+.mc-read-state { color: var(--mq-ink); }
+.mc-read-omitted, .mc-read-fallback {
+  margin: 0 0 22px; font-size: var(--fs-sm, 13px); line-height: 1.5; color: var(--mq-muted); max-width: 62ch;
+}
+.mc-read-fallback { font-size: 15px; line-height: 1.55; font-weight: 450; color: var(--mq-ink); }
+
+/* ── THE STATE STRIP ──────────────────────────────────────────────────────── */
+.mc-strip {
+  list-style: none;
+  margin: 0 0 32px;
+  padding: 0;
+  /* R7-M2: flex, not a fixed 4-column grid. auto-fit still keeps every
+     column track alive once row 1 fills it, so a fifth chip left a
+     three-cell canvas hole — grey on light even with a transparent
+     container. Flex-grow lets the leftover chip fill the row. */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  background: var(--mc-strip-bg);
+  border: var(--mc-strip-border);
+  border-radius: 0;
+  box-shadow: var(--mc-strip-shadow);
+}
+html[data-theme="light"] .mc-strip { gap: 8px; }
+/* D6: a `display` value on `.mc-strip` (flex now; grid before) beats the
+   UA `[hidden]{display:none}` rule, so an empty strip kept reserving
+   height above the fold. The explicit none restores the hide. */
+.mc-strip[hidden] { display: none; }
+.mc-chip {
+  position: relative;
+  min-width: 0;
+  flex: 1 1 calc((100% - 24px) / 4);
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--mq-ink) 18%, transparent);
+  border-radius: var(--r-ctl, 8px);
+  background: var(--mc-chip-bg);
+  transition: box-shadow 160ms ease;
+}
+html[data-theme="light"] .mc-chip {
+  padding: 11px 13px;
+  /* R7-M2: hairline + shadow live on the chip. The container no longer
+     paints a ledger ground, so a 0-width border would leave white cards
+     floating with no edge. */
+  border-width: 1px;
+  border-radius: 0;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 9%, transparent);
+}
+.mc-chip-link {
+  display: grid;
+  gap: 3px;
+  text-decoration: none;
+  color: inherit;
+}
+.mc-chip-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+.mc-chip-label {
+  font-size: var(--fs-label, var(--fs-micro, 11px));
+  font-weight: 600;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--mq-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mc-chip-asof {
+  font-size: var(--fs-micro, 11px);
+  color: var(--mq-muted);
+  white-space: nowrap;
+  flex: none;
+}
+/* F-7: the UI face with tabular figures, never mono. */
+.mc-chip-asof time { font-variant-numeric: tabular-nums; }
+html[data-lang="zh"] .mc-chip-label { letter-spacing: 0; text-transform: none; }
+.mc-chip-value {
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.25;
+  letter-spacing: -.005em;
+  overflow-wrap: anywhere;
+}
+.mc-chip.is-null .mc-chip-value { color: var(--mq-muted); font-weight: 500; }
+.mc-chip-fresh { font-size: var(--fs-micro, 11px); line-height: 1.35; color: var(--mq-muted); }
+/* F-2: hidden by CLIP, not by visibility — an aria-describedby target must
+   stay in the accessibility tree in every AT. */
+.mc-chip-help {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 6px);
+  z-index: 5;
+  width: max(230px, 100%);
+  padding: 9px 11px;
+  border-radius: var(--r-ctl, 8px);
+  border: 1px solid transparent;
+  background: var(--mc-panel-bg);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 6%, transparent);
+  font-size: var(--fs-sm, 13px);
+  line-height: 1.45;
+  color: var(--mq-muted);
+  opacity: 0;
+  clip-path: inset(50%);
+  transition: opacity 160ms ease;
+}
+.mc-chip:hover .mc-chip-help,
+.mc-chip:focus-within .mc-chip-help { opacity: 1; clip-path: none; }
+html[data-theme="light"] .mc-subtab:not([aria-selected="true"]) {
+  border-color: color-mix(in srgb, var(--mq-ink) 14%, transparent);
+}
+html[data-theme="light"] .mc-chip-help {
+  border: 1px solid var(--mq-line);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 10%, transparent),
+              0 8px 24px -18px color-mix(in srgb, var(--text) 22%, transparent);
+}
+html[data-theme="light"] .mc-chip:hover,
+html[data-theme="light"] .mc-chip:focus-within {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--mq-accent) 34%, transparent);
+}
+
+/* SIGNATURE — hovering or focusing either register raises the other. */
+.mc-command:has(.mc-chip[data-mc-topic="money"]:hover) .mc-read-topic[data-mc-topic="money"],
+.mc-command:has(.mc-chip[data-mc-topic="money"]:focus-within) .mc-read-topic[data-mc-topic="money"],
+.mc-command:has(.mc-read-topic[data-mc-topic="money"]:hover) .mc-chip[data-mc-topic="money"],
+.mc-command:has(.mc-read-topic[data-mc-topic="money"]:focus-within) .mc-chip[data-mc-topic="money"]
+  { --mc-halo: var(--mc-lit-halo); --mc-underline: var(--mc-lit-underline); }
+.mc-command:has(.mc-chip[data-mc-topic="policy"]:hover) .mc-read-topic[data-mc-topic="policy"],
+.mc-command:has(.mc-chip[data-mc-topic="policy"]:focus-within) .mc-read-topic[data-mc-topic="policy"],
+.mc-command:has(.mc-read-topic[data-mc-topic="policy"]:hover) .mc-chip[data-mc-topic="policy"],
+.mc-command:has(.mc-read-topic[data-mc-topic="policy"]:focus-within) .mc-chip[data-mc-topic="policy"]
+  { --mc-halo: var(--mc-lit-halo); --mc-underline: var(--mc-lit-underline); }
+.mc-command:has(.mc-chip[data-mc-topic="rates"]:hover) .mc-read-topic[data-mc-topic="rates"],
+.mc-command:has(.mc-chip[data-mc-topic="rates"]:focus-within) .mc-read-topic[data-mc-topic="rates"],
+.mc-command:has(.mc-read-topic[data-mc-topic="rates"]:hover) .mc-chip[data-mc-topic="rates"],
+.mc-command:has(.mc-read-topic[data-mc-topic="rates"]:focus-within) .mc-chip[data-mc-topic="rates"]
+  { --mc-halo: var(--mc-lit-halo); --mc-underline: var(--mc-lit-underline); }
+.mc-command:has(.mc-chip[data-mc-topic="inflation"]:hover) .mc-read-topic[data-mc-topic="inflation"],
+.mc-command:has(.mc-chip[data-mc-topic="inflation"]:focus-within) .mc-read-topic[data-mc-topic="inflation"],
+.mc-command:has(.mc-read-topic[data-mc-topic="inflation"]:hover) .mc-chip[data-mc-topic="inflation"],
+.mc-command:has(.mc-read-topic[data-mc-topic="inflation"]:focus-within) .mc-chip[data-mc-topic="inflation"]
+  { --mc-halo: var(--mc-lit-halo); --mc-underline: var(--mc-lit-underline); }
+.mc-command:has(.mc-chip[data-mc-topic="growth"]:hover) .mc-read-topic[data-mc-topic="growth"],
+.mc-command:has(.mc-chip[data-mc-topic="growth"]:focus-within) .mc-read-topic[data-mc-topic="growth"],
+.mc-command:has(.mc-read-topic[data-mc-topic="growth"]:hover) .mc-chip[data-mc-topic="growth"],
+.mc-command:has(.mc-read-topic[data-mc-topic="growth"]:focus-within) .mc-chip[data-mc-topic="growth"]
+  { --mc-halo: var(--mc-lit-halo); --mc-underline: var(--mc-lit-underline); }
+.mc-command:has(.mc-chip[data-mc-topic="jobs"]:hover) .mc-read-topic[data-mc-topic="jobs"],
+.mc-command:has(.mc-chip[data-mc-topic="jobs"]:focus-within) .mc-read-topic[data-mc-topic="jobs"],
+.mc-command:has(.mc-read-topic[data-mc-topic="jobs"]:hover) .mc-chip[data-mc-topic="jobs"],
+.mc-command:has(.mc-read-topic[data-mc-topic="jobs"]:focus-within) .mc-chip[data-mc-topic="jobs"]
+  { --mc-halo: var(--mc-lit-halo); --mc-underline: var(--mc-lit-underline); }
+.mc-command:has(.mc-chip[data-mc-topic="credit"]:hover) .mc-read-topic[data-mc-topic="credit"],
+.mc-command:has(.mc-chip[data-mc-topic="credit"]:focus-within) .mc-read-topic[data-mc-topic="credit"],
+.mc-command:has(.mc-read-topic[data-mc-topic="credit"]:hover) .mc-chip[data-mc-topic="credit"],
+.mc-command:has(.mc-read-topic[data-mc-topic="credit"]:focus-within) .mc-chip[data-mc-topic="credit"]
+  { --mc-halo: var(--mc-lit-halo); --mc-underline: var(--mc-lit-underline); }
+
+/* ── panel ───────────────────────────────────────────────────────────────── */
+.mc-panel {
+  background: var(--mc-panel-bg);
+  border: 1px solid transparent;
+  border-radius: var(--r-card, 12px);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 6%, transparent);
+  padding: 24px;
+  margin: 0 0 20px;
+  scroll-margin-top: 88px;
+  min-width: 0;
+}
+html[data-theme="light"] .mc-panel {
+  border: 1px solid var(--mq-line);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 10%, transparent),
+              0 8px 24px -18px color-mix(in srgb, var(--text) 22%, transparent);
+}
+/* D4: the panel is no longer the focus target — `activateSection` focuses the
+   panel's own <h2> (macro_command.js:86). A 2px accent ring around a
+   1010px-wide section read as a validation box on the light canvas, which is
+   the opposite of this direction's hairline discipline. */
+.mc-panel:focus { outline: none; }
+.mc-panel-title[tabindex] { scroll-margin-top: 88px; }
+.mc-panel-title[tabindex]:focus { outline: none; }
+.mc-panel-title[tabindex]:focus-visible {
+  /* Beats the `.mc-shell :focus-visible` floor (0,3,0 > 0,2,0) on purpose:
+     that floor is right for controls and wrong for a heading. */
+  outline: none; box-shadow: none;
+  padding: 1px .22em 2px; margin-left: -.22em;
+  /* accessibility floor, IDENTICAL in both themes */
+  border-bottom: 2px solid var(--mq-accent);
+  /* art direction: dark blooms at 22%; light stays hairline-only.
+     A percentage custom-property for the wash is enforce-added-illegal,
+     so the wash is authored here and cancelled in light. */
+  background-image: radial-gradient(closest-side,
+    color-mix(in srgb, var(--mq-accent) 22%, transparent), transparent);
+  background-size: 100% 165%; background-position: center; background-repeat: no-repeat;
+}
+html[data-theme="light"] .mc-panel-title[tabindex]:focus-visible {
+  background-image: none;
+}
+.mc-panel-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.mc-panel-title { margin: 0; font-size: 18px; line-height: 1.3; font-weight: 600; letter-spacing: -.005em; color: var(--mq-ink); }
+.mc-panel-question { margin: 0; font-size: var(--fs-sm, 13px); color: var(--mq-muted); }
+
+.mc-stance {
+  position: relative; margin: 0 0 14px; padding: 12px 14px 12px 18px;
+  border-radius: var(--r-ctl, 8px);
+  background: color-mix(in srgb, currentColor var(--mc-stance-wash), transparent);
+  font-size: 15px; line-height: 1.5;
+}
+.mc-stance-bar { position: absolute; left: 0; top: 8px; bottom: 8px; width: 3px; border-radius: 0; background: currentColor; }
+.mc-stance-text { color: var(--mq-ink); }
+
+.mc-primer { margin: 0 0 16px; }
+.mc-primer > summary {
+  cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12.5px; color: var(--mq-accent);
+  border-bottom: 1px dotted currentColor; padding-bottom: 1px;
+}
+.mc-primer > summary::-webkit-details-marker { display: none; }
+.mc-primer-body { margin-top: 10px; max-width: 58ch; font-size: 14px; line-height: 1.6; color: var(--mq-muted); }
+
+.mc-subtabs { display: flex; gap: 6px; margin: 0 0 14px; flex-wrap: wrap; }
+.mc-subtab {
+  font: inherit; font-size: 12.5px; cursor: pointer;
+  padding: 6px 12px; border-radius: var(--r-pill, 999px);
+  border: 1px solid color-mix(in srgb, var(--mq-ink) 18%, transparent); background: var(--mc-chip-bg); color: var(--mq-muted);
+}
+.mc-subtab[aria-selected="true"] { color: var(--mq-ink); border-color: var(--mq-accent); font-weight: 600; }
+
+.mc-figure { background: var(--mc-plot-bg); border-radius: var(--r-ctl, 8px); padding: 14px; overflow-x: auto; }
+/* LIGHT — no recess: a grey well on paper reads as a disabled control, so the
+   row block is fenced the way a printed research note fences a table. Dark
+   needs no extra rule: its edge IS the luminance step. Authored here, not as
+   a `--mc-plot-rule` token (a 0px/1px custom property is a ratchet literal). */
+html[data-theme="light"] .mc-figure {
+  border-top: 1px solid color-mix(in srgb, var(--mq-ink) 12%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--mq-ink) 12%, transparent);
+  border-radius: 0;
+  padding: 14px 0;
+}
+.mc-figure table { width: 100%; }
+.mc-figure .mq-grid line,
+.mc-figure svg .mc-gridline { stroke: color-mix(in srgb, var(--mq-ink) 8%, transparent); stroke-width: 1; }
+html[data-theme="light"] .mc-figure .mq-grid line,
+html[data-theme="light"] .mc-figure svg .mc-gridline { stroke: color-mix(in srgb, var(--mq-ink) 10%, transparent); }
+.mc-figure-pending { margin: 0; color: var(--mq-muted); font-size: 13px; }
+.mc-figure-offer { margin: 0; font-size: 13.5px; line-height: 1.5; }
+.mc-figure-offer a { color: var(--mq-accent); }
+.mc-figure-tabbody + .mc-figure-tabbody { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--mq-line); }
+/* M2: light already fences the figure with top/bottom rules. The sibling
+   hairline doubles that fence on a deep-linked second tab (the first body
+   stays in the tree, so `+` still matches). */
+html[data-theme="light"] .mc-figure .mc-figure-tabbody + .mc-figure-tabbody {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+.mc-figure-tabbody[hidden] { display: none; }
+.mc-caption { margin: 10px 0 18px; font-size: 13px; line-height: 1.55; color: var(--mq-muted); max-width: 62ch; }
+
+/* ── movement rows: the page's ONE data device (P3) ───────────────────────────
+   The row itself is the canonical DecisionRow `.mx-chg-row` (theme.css:1969-1981,
+   MPDS §10 row A). Nothing here redefines it; every rule is a descendant or an
+   `.mc-move-*` geometry class. Tone ink is inherited from `.mq-delta-*`
+   (macro_suite.css:148-155) and is never re-minted. */
+.mc-move-list { list-style: none; margin: 0; padding: 0; }
+.mc-move-row.mx-chg-row {
+  /* DARK: 8% — decorative. The recess already groups the rows, so the line
+     only paces them. LIGHT: 10% — load-bearing, because with no recess it is
+     the only thing grouping them. Same hairline, different job. */
+  border-bottom: 1px solid color-mix(in srgb, var(--mq-ink) 8%, transparent);
+  gap: 8px 14px;
+  padding: 9px 2px;
+}
+html[data-theme="light"] .mc-move-row.mx-chg-row {
+  border-bottom-color: color-mix(in srgb, var(--mq-ink) 10%, transparent);
+}
+.mc-move-row.mx-chg-row:last-child { border-bottom: 0; }
+.mc-move-name {
+  font-size: 13.5px; font-weight: 600; color: var(--mq-ink);
+  text-decoration: none; flex: 1 1 auto; min-width: 0;
+}
+a.mc-move-name:hover { color: var(--mq-accent); text-decoration: underline; }
+.mc-move-source { flex: none; font-size: 11px; color: var(--mq-muted); }
+.mc-move-what {
+  flex: none; display: inline-flex; flex-direction: column; align-items: flex-end; gap: 2px;
+  font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 12.5px;
+}
+.mc-move-prior { color: var(--mq-muted); }
+.mc-move-arrow { color: var(--mq-muted); }
+/* The emphasis mechanism, stated once: `current` is the value furthest in
+   luminance from the figure ground — brightest on the dark recess, darkest on
+   the light worksheet. One declaration, two art directions, because the ground
+   swaps and --mq-ink swaps with it. */
+.mc-move-current { color: var(--mq-ink); font-weight: 700; font-size: 14px; }
+.mc-move-delta { min-width: 5ch; text-align: right; }
+.mc-move-count { margin: 10px 0 0; font-size: 11.5px; line-height: 1.5; color: var(--mq-muted); }
+.mc-move-state { margin: 0 0 10px; font-size: 12.5px; line-height: 1.5; color: var(--mq-muted); }
+.mc-move-asof { font-size: 11.5px; color: var(--mq-muted); font-variant-numeric: normal; }
+.mc-move-words {
+  display: block; font-size: 12px; font-weight: 400;
+  line-height: 1.4; color: var(--mq-muted); font-variant-numeric: tabular-nums;
+  text-align: right; max-width: 28ch;
+}
+html[data-lang="zh"] .mc-move-name { letter-spacing: 0; }
+
+/* ── deep-link arrival line (P3 D12) ──────────────────────────────────────────
+   Dark = a tinted bar, no border, no shadow — light, not lines.
+   Light = white material, hairline + low shadow. Borders and shadows are
+   inlined (a 1px/`color-mix` custom property is a ratchet literal). */
+.mc-arrival {
+  position: relative; display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px;
+  margin: 0 0 14px; padding: 9px 14px 9px 16px;
+  border: 1px solid transparent; border-radius: var(--r-btn, 10px);
+  background: color-mix(in srgb, var(--mq-accent) 10%, transparent);
+  box-shadow: var(--mc-rail-active-shadow);
+  font-size: 12.5px; line-height: 1.5; color: var(--mq-muted);
+}
+html[data-theme="light"] .mc-arrival {
+  background: var(--panel);
+  border: 1px solid var(--mq-line);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 9%, transparent);
+}
+.mc-arrival-bar { background: var(--mq-accent); }
+.mc-arrival-text b { color: var(--mq-ink); font-weight: 600; }
+.mc-arrival-link { color: var(--mq-accent); text-decoration: none; white-space: nowrap; }
+.mc-arrival-link:hover { text-decoration: underline; }
+/* ── panel foot: instrument note, never a market tone (D7) ─────────────────── */
+.mc-foot { margin: 0 0 14px; font-size: 12px; line-height: 1.5; color: var(--mq-muted); }
+
+/* ── overview destination directory (D3) ─────────────────────────────────────
+   NOT a rival card system: this is MPDS §11's E1 (resting) → E2 (raised)
+   clickable-container pattern expressed through this page's own `--mc-*`
+   tokens, one level nested inside `.mc-panel`. Zero raw hex, zero new palette
+   root, zero tone classes (G10). Dark lifts by light; light fences by hairline
+   and elevates only under the pointer — see the spec §3 difference table. */
+.mc-dests-block { margin: 0 0 4px; }
+.mc-dests-title {
+  margin: 0; font-size: 11px; font-weight: 500; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--mq-muted);
+}
+html[data-lang="zh"] .mc-dests-title { letter-spacing: 0; text-transform: none; }
+.mc-figure-dests { background: transparent; padding: 0; }
+.mc-dests {
+  list-style: none; margin: 14px 0 0; padding: 0;
+  display: grid; gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(212px, 1fr));
+}
+.mc-dests > li { display: flex; min-width: 0; }
+.mc-dest {
+  position: relative; flex: 1 1 auto;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  align-content: start; gap: 3px 10px;
+  padding: 12px 12px 12px 15px;
+  border-radius: var(--r-btn, 10px);
+  background: color-mix(in srgb, var(--mq-ink) 5%, transparent);
+  border: 1px solid transparent;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 6%, transparent);
+  color: inherit; text-decoration: none;
+  transition: background 160ms ease, box-shadow 160ms ease,
+              border-color 160ms ease;
+}
+html[data-theme="light"] .mc-dest {
+  background: var(--panel);
+  border: 1px solid var(--mq-line);
+  box-shadow: none;
+}
+.mc-dest-bar {
+  position: absolute; left: 0; top: 10px; bottom: 10px; width: 2px;
+  border-radius: 0;
+  background: color-mix(in srgb, var(--mq-ink) 14%, transparent);
+  transition: background 160ms ease;
+}
+html[data-theme="light"] .mc-dest-bar { background: var(--mq-line); }
+.mc-dest-title {
+  grid-column: 1; font-size: 14.5px; line-height: 1.35; font-weight: 600;
+  letter-spacing: 0; color: var(--mq-ink); overflow-wrap: anywhere;
+}
+.mc-dest-answers { grid-column: 1; font-size: 12.5px; line-height: 1.45; color: var(--mq-muted); }
+.mc-dest-meta { grid-column: 1; margin-top: 2px; font-size: 11px; line-height: 1.4; color: var(--mq-muted); }
+.mc-dest-meta time { font-family: var(--font-mono); }
+.mc-dest-go {
+  grid-column: 2; grid-row: 1 / -1; align-self: center;
+  font-size: 13px; line-height: 1; color: var(--mq-muted);
+  transition: transform 160ms ease, color 160ms ease;
+}
+.mc-dest:hover {
+  background: color-mix(in srgb, var(--mq-ink) 9%, transparent);
+  border: 1px solid transparent;
+  /* m2: rest shadow was a 6% inner highlight, so dark hover never
+     brightened. 6% → 10%, authored here (a literal in the token block
+     is enforce-added-illegal). */
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--mq-ink) 10%, transparent);
+}
+html[data-theme="light"] .mc-dest:hover {
+  background: var(--panel);
+  border: 1px solid color-mix(in srgb, var(--mq-accent) 38%, var(--mq-line));
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 10%, transparent),
+              0 8px 24px -18px color-mix(in srgb, var(--text) 22%, transparent);
+}
+.mc-dest:focus-visible { background: color-mix(in srgb, var(--mq-ink) 9%, transparent); }
+html[data-theme="light"] .mc-dest:focus-visible { background: var(--panel); }
+.mc-dest:hover .mc-dest-bar,
+.mc-dest:focus-visible .mc-dest-bar { background: var(--mq-accent); }
+.mc-dest:hover .mc-dest-go,
+.mc-dest:focus-visible .mc-dest-go { color: var(--mq-accent); transform: translateX(2px); }
+
+.mc-watch { margin: 0 0 14px; }
+.mc-watch-title { margin: 0 0 6px; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--mq-muted); }
+/* M3: when caption is dropped, the figure sits next to watching. Apply
+   the caption's former trailing margin so the gap does not collapse. */
+.mc-figure + .mc-watch .mc-watch-title { margin-top: 18px; }
+.mc-watch-list { margin: 0; padding-left: 18px; display: grid; gap: 5px; font-size: 14px; line-height: 1.5; color: var(--mq-ink); max-width: 62ch; }
+
+.mc-details > summary { cursor: pointer; font-size: 12.5px; color: var(--mq-muted); }
+.mc-details[open] > summary { color: var(--mq-ink); margin-bottom: 10px; }
+.mc-details-body { border-top: 1px solid var(--mq-line); padding-top: 12px; overflow-x: auto; }
+.mc-details-tier { margin: 0 0 10px; font-size: 12.5px; color: var(--mq-muted); }
+.mc-details-state, .mc-details-asof { margin: 0 0 8px; font-size: 12.5px; color: var(--mq-muted); }
+/* 11px literal, NOT `--fs-micro`: theme.css sets it to 10px, which is below
+   the reading-path floor P1 §4 pinned for this page. */
+.mc-details-key { text-transform: uppercase; letter-spacing: .08em; font-size: 11px; }
+.mc-details-val { color: var(--mq-ink); }
+.mc-details-asof time { font-variant-numeric: tabular-nums; }
+.mc-details-links { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 13px; }
+html[data-lang="zh"] .mc-details-key { letter-spacing: 0; text-transform: none; }
+
+/* honest empty state */
+.mc-empty { display: grid; gap: 8px; padding: 22px; border: 1px dashed var(--mq-line-strong); border-radius: var(--r-ctl, 8px); }
+/* DARK keeps the dashed hairline with NO fill — an unlit slot in the
+   instrument; a fill on near-black is mud. LIGHT softens the dash and adds a
+   2% tint, the way a paper form shades a field nobody has filled in. */
+html[data-theme="light"] .mc-empty {
+  border-color: var(--mq-line);
+  background: color-mix(in srgb, var(--mq-ink) 2%, transparent);
+}
+.mc-empty-title { margin: 0; font-size: 15px; font-weight: 600; color: var(--mq-ink); }
+.mc-empty-why, .mc-empty-unlock, .mc-empty-next { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--mq-muted); max-width: 58ch; }
+.mc-empty-cta {
+  justify-self: start; margin-top: 4px;
+  display: inline-block; padding: 7px 14px; border-radius: var(--r-ctl, 8px);
+  border: 1px solid var(--mq-accent); color: var(--mq-accent); text-decoration: none; font-size: 13px;
+}
+.mc-empty-cta:hover { background: color-mix(in srgb, var(--mq-accent) 12%, transparent); }
+
+/* focus floor — light needs the inner ring against white material */
+.mc-shell :focus-visible { outline: 2px solid var(--mq-accent); outline-offset: 2px; box-shadow: var(--mc-focus-inner); }
+html[data-theme="light"] .mc-shell :focus-visible { box-shadow: 0 0 0 1px var(--panel); }
+
+/* ── responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 1439px) {
+  .mc-shell { max-width: 1120px; padding: 24px 24px 80px; grid-template-columns: 208px minmax(0, 1fr); }
+}
+@media (max-width: 1023px) {
+  .mc-chip { flex-basis: calc((100% - 8px) / 2); }
+}
+@media (min-width: 769px) {
+  /* MAJOR-E1 / P5 R1(c): the FAB (#mmb-boot) lives in a reserved right
+     gutter so it never intersects panel/figure/workspace text. Gutter
+     ≥ FAB width + 24px. Geometry is inlined (a px custom property is a
+     ratchet literal): desktop rail 232 + gap 28 = 260; mid desktop
+     rail 208 + 28 = 236. Workspace pages share body.mc-page but paint
+     through .mq-shell, not .mc-panels — both get the gutter. */
+  body.mc-page .mc-panels,
+  body.mc-page .mq-shell {
+    padding-right: calc(232px + 28px);
+  }
+}
+@media (min-width: 769px) and (max-width: 1439px) {
+  body.mc-page .mc-panels,
+  body.mc-page .mq-shell {
+    padding-right: calc(208px + 28px);
+  }
+}
+@media (max-width: 768px) {
+  /* N-B1: the reserved band lives on `.mc-panels`, not on the shell.
+     M4: `min-height: calc(100vh - 84px)` + two auto rows stretched the
+     rail track. Kill the viewport min-height, pack rows, and hoist the
+     command header above the rail via `display: contents`. */
+  .mc-shell {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    align-content: start;
+    min-height: 0;
+    gap: 12px;
+    /* 8px + the site-nav's inherited 16px margin-bottom = 24px nav→eyebrow
+       (M4 ≤ 24). `.mc-command`/`.mc-panel` are grid items under
+       `display: contents` so they need `min-width: 0` or the Read strip's
+       min-content widens `documentElement.scrollWidth` at 390 (P-19). */
+    padding: 8px 18px 8px;
+    /* B1: one flat material with the sticky rail. The page body still
+       paints radial washes over --bg; at ≤768 the shell canvas is the
+       same opaque --bg as the rail so nothing reads through the chips. */
+    background: var(--bg);
+    background-image: none;
+  }
+  .mc-content { display: contents; }
+  .mc-command, .mc-panels, .mc-rail { min-width: 0; }
+  .mc-command { order: 1; overflow-x: clip; }
+  /* I1: chip-help is position:absolute and 230px wide. On a 2-col
+     strip at 390 the right-hand cell's help box sat at x=430 and
+     widened documentElement.scrollWidth. Keep it inside the chip. */
+  .mc-chip-help {
+    left: auto; right: 0; width: auto;
+    max-width: min(230px, calc(100vw - 32px));
+  }
+  .mc-rail { order: 2; }
+  /* R9-M2 / R9-M3 / P5 M3: at ≤768 the in-page analyst chip IS the chat
+     entry. The global FAB is redundant on every page that carries
+     body.mc-page (hub + workspace family). ≥769 is untouched. */
+  body.mc-page #mmb-boot { display: none; }
+  /* No bottom-fixed overlay remains (FAB display:none; the rail is
+     sticky at the top). Reserve only the home-indicator inset. */
+  .mc-panels {
+    order: 3;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .mc-rail {
+    position: sticky; top: 60px; z-index: 4;
+    flex-direction: row; align-items: center; gap: 8px;
+    align-self: start;
+    height: auto;
+    margin: 0 -18px; padding: 8px 18px;
+    /* B1: sticky + z-index 4 must stay OPAQUE. The ≤768 shell is the
+       same flat --bg, so this is one material, not a tonal seam. */
+    background: var(--bg); border-bottom: 1px solid var(--mq-line);
+  }
+  /* R8-m4 / carried m5-ii: hash-arrival headings clear the sticky
+     site-nav (60px) plus this rail (~48px: 8+32+8). 88px was the
+     desktop law and clipped the arrival H2 at 390. */
+  .mc-panel,
+  .mc-panel-title[tabindex] { scroll-margin-top: 112px; }
+  .mc-rail-label { display: none; }
+  /* I1: the chip row scrolls INSIDE the rail box. Without min-width:0 /
+     contain the nowrap labels expand documentElement.scrollWidth at 390. */
+  .mc-rail-list {
+    flex: 1 1 0; min-width: 0; max-width: none;
+    flex-direction: row; overflow-x: auto; scrollbar-width: none; gap: 6px;
+    contain: inline-size;
+    /* R9-m3: the overflow mask finishes ≥24px before the analyst chip
+       so a mid-word clip never sits flush against it. padding-right
+       lets the last chip scroll fully out of the fade band. */
+    margin-right: 24px;
+    padding-right: 24px;
+  }
+  .mc-rail-list::-webkit-scrollbar { display: none; }
+  /* the rail scrolls; without an affordance the fourth label just looked
+     clipped ("利率与收:"). A mask is alpha-only, so it is theme-neutral. */
+  .mc-rail-list { mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
+                  -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent); }
+  /* E-m11 / r12-M1: every rail chip — including .mc-analyst — shares
+     one pill. The list scrolls; the chip box is sized to its nowrap
+     text. overflow:hidden is forbidden here. */
+  .mc-rail .mc-rail-link {
+    flex: none;
+    white-space: nowrap;
+    overflow: visible;
+    padding: 7px 10px;
+    border: none;
+    border-radius: var(--r-pill, 999px);
+    font-size: 13.5px;
+    line-height: 1.3;
+  }
+  .mc-rail-full { display: inline; }
+  .mc-rail-short { display: none; }
+  /* same overflow + edge mask as the rail — a hard-clipped tab row
+     ("利率与收:") has no scroll affordance without it. */
+  .mc-subtabs {
+    flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
+    mask-image: linear-gradient(to right, black calc(100% - 26px), transparent);
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 26px), transparent);
+  }
+  .mc-subtabs::-webkit-scrollbar { display: none; }
+  .mc-subtab { white-space: nowrap; flex: none; }
+  .mc-title { font-size: 26px; line-height: 1.18; }
+  .mc-dests { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+  .mc-rail-bar { display: none; }
+  .mc-rail-link.is-current { border: 1px solid var(--mq-accent); }
+  /* R9-M2 / r9-M2: no floating pill at ≤768. The analyst reuses
+     `.mc-rail-link` (999px, no extra border, same padding/type/state
+     colours). Do not redeclare radius here — enforce-added blocked a
+     token-only radius line on the prior pass. ≥769 analyst look is
+     unchanged: desktop `.mc-rail-link` / `:hover` are `:not(.mc-analyst)`.
+     Hub-only desktop chip chrome is scoped off workspace pages (MA2). */
+  body:not(.mq-suite-page) .mc-analyst {
+    position: static;
+    flex: 0 0 auto;
+    margin: 0;
+    background: transparent;
+    box-shadow: none;
+    max-width: none;
+    z-index: auto;
+    color: var(--mq-muted);
+  }
+  body:not(.mq-suite-page) .mc-analyst:hover {
+    border: none;
+    color: var(--mq-ink);
+    background: color-mix(in srgb, var(--mq-ink) 5%, transparent);
+  }
+  body:not(.mq-suite-page) .mc-analyst-mark { display: none; }
+}
+@media (max-width: 480px) {
+  .mc-rail-full { display: none; }
+  .mc-rail-short { display: inline; }
+  .mc-rail-list { flex: 1 1 100%; }
+  .mc-read { font-size: var(--fs-h2, 21px); line-height: 1.36; }
+  /* D2: `--fs-h3` is 14px in theme.css:59 — this rule is what made the H1
+     smaller than the 16px body sentence in 09-dark-zh-390.png. */
+  .mc-title { font-size: 24px; line-height: 1.2; }
+  .mc-panel-title { font-size: 17px; }
+  .mc-panel { padding: 16px; border-radius: var(--r-card, 12px); }
+  .mc-strip { margin-bottom: 24px; }
+  .mc-chip { flex-basis: calc((100% - 8px) / 2); }
+  .mc-chip-top { flex-direction: column; align-items: flex-start; gap: 1px; }
+  .mc-chip-value { font-size: 14px; }
+  .mc-figure { padding: 8px 8px 8px; margin: 0 -8px; }
+  .mc-move-count { margin-bottom: 12px; }
+  /* .mx-chg-row already wraps at 640px (theme.css:1978-1981); the numeric group
+     then needs its own line, right-aligned, never orphaned mid-row. */
+  .mc-move-name { flex-basis: 100%; }
+  .mc-move-what { width: 100%; justify-content: flex-end; }
+  .mc-arrival { padding: 8px 12px 8px 14px; }
+  .mc-dest-title { font-size: 15px; }
+  .mc-dest-answers { font-size: 13px; }
+
+  /* Touch has no hover and tapping the cell navigates. A NULL chip's
+     reason is already printed on `.mc-chip-fresh`. The definition
+     (`.mc-chip-help`) stays clipped-but-announced so null cells do not
+     grow several times the height of populated ones (MJ-4 / MN-4). */
+}
+html[data-lang="zh"] .mc-read { letter-spacing: 0; line-height: 1.55; font-size: calc(clamp(23px, 1.05rem + 1vw, 34px) * .92); }
+html[data-lang="zh"] .mc-title { letter-spacing: 0; }
+html[data-lang="zh"] .mc-dest-title,
+html[data-lang="zh"] .mc-dest-answers { letter-spacing: 0; line-height: 1.5; }
+@media (prefers-reduced-motion: reduce) {
+  .mc-rail-link, .mc-read-topic, .mc-chip, .mc-chip-help, .mc-dest, .mc-dest-bar, .mc-dest-go { transition: none; }
+  .mc-dest:hover .mc-dest-go, .mc-dest:focus-visible .mc-dest-go { transform: none; }
+}
+
+/* Notes the builder must not "clean up":
+   - `--mc-stance-wash` is a percentage in both themes (`0%` dark, `6%` light).
+     Writing `transparent` there makes the `color-mix(...)` declaration invalid
+     at computed-value time and drops the whole rule (D3).
+   - The Read's halo is a `background-image` on the anchor itself, not a
+     `z-index:-1` pseudo-element (D4).
+   - `--mc-halo` stays a derived token (unitless). The Read underline width
+     is inlined (`0` dark / `2px` light) because a px custom property is a
+     ratchet literal. Both still live in CSS, never a JS branch (G9).
+   - `.mc-figure`, `.mc-details-body` and `.mc-content` keep `overflow-x:auto`
+     / `min-width:0` at every width: the workspace tables are wide and the
+     page body must never scroll horizontally (G12).
+   - The panel-title focus wash is authored on the rule (22% dark, none in
+     light) — a percentage custom-property for that wash is a ratchet literal,
+     the same trap `--mc-stance-wash` documents.
+   - Radius scale after P1 heal (10→8/12): former 10px small-control sites
+     (rail-link, analyst, stance, figure, empty, empty-cta, chip) now read
+     `var(--r-ctl, 8px)`. Panels stay `var(--r-card, 12px)`. Pills
+     (≤768 `.mc-rail-link` including `.mc-analyst`, subtabs, rail-dot) stay
+     `var(--r-pill, 999px)`. Dest/arrival stay `var(--r-btn, 10px)`.
+     Rail-bar / stance-bar keep `0` (P1 RADIUS_INERT), not 2px/3px. */
