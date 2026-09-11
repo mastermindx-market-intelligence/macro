@@ -1,0 +1,452 @@
+"""W16 r1 — sector_central heal: honest nulls, lane-true actions, plain vocab, count truth.
+
+Scratch-render only (SEAT RULING 4). Both language legs ride the page/board t()
+macros as l-en/l-zh twins, so one render covers EN and ZH.
+"""
+from __future__ import annotations
+
+import re
+from pathlib import Path
+
+import pytest
+
+ROOT = Path(__file__).resolve().parents[1]
+TEMPLATES = ROOT / "templates"
+PAGE_TPL = TEMPLATES / "sector_central.html.j2"
+BOARD_TPL = TEMPLATES / "_us_act_now_board.html.j2"
+
+pytest.importorskip("jinja2")
+import jinja2  # noqa: E402
+
+from scripts.build_sector_central import (  # noqa: E402
+    _SECTOR_ZH,
+    _flow_cell_html,
+    _fmt_money_mn,
+)
+
+
+OPEN_VERBS_EN = (
+    "ENTER",
+    "ACCUMULATE",
+    "Add on pullbacks",
+)
+OPEN_VERBS_ZH = (
+    "建仓",
+    "加仓",
+    "回调时加仓",
+    "回调加仓",
+)
+WAIT_LANES = ("buy_soon", "on_the_run")
+ALL_LANES = ("buy_now", "buy_soon", "on_the_run", "take_profits", "hold", "avoid")
+THEME_STATES = ("enter", "accumulate", "trim", "avoid", "")
+SECTOR_STATES = (
+    "BOTTOMING",
+    "UPTREND",
+    "ROLLING OVER",
+    "FRESH BUY",
+    "RALLY ON",
+    "WAIT",
+)
+
+
+def hit_in_10(rate: float) -> int:
+    """SEAT RULING 5 — x-in-10 is the HIT count. Must match the page's hitIn10()."""
+    n = int(round(float(rate) * 10))
+    if n < 0:
+        n = 0
+    if n > 10:
+        n = 10
+    return n
+
+
+def _env() -> jinja2.Environment:
+    env = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(str(TEMPLATES)), autoescape=True)
+    env.globals.update(td=lambda en: en, tr=lambda en: en,
+                       t=lambda en, zh="": en)
+    return env
+
+
+def _empty_board() -> dict:
+    return {k: [] for k in ALL_LANES} | {"total": 0, "more": {}}
+
+
+def _theme(reco: str = "accumulate", **over) -> dict:
+    row = {
+        "kind": "theme",
+        "name": f"Theme {reco or 'plain'}",
+        "name_zh": f"主题{reco or 'plain'}",
+        "slug": f"theme-{reco or 'plain'}",
+        "href": f"basket/theme_{reco or 'plain'}.html",
+        "reco": reco,
+        "label": reco.upper() if reco else "HOLD",
+        "label_zh": {"enter": "建仓", "accumulate": "加仓", "trim": "减仓",
+                     "avoid": "回避"}.get(reco, "持有"),
+        "score": 72,
+        "perf_20d_rel": 0.01,
+        "validated": False,
+    }
+    row.update(over)
+    return row
+
+
+def _sector(label: str = "BOTTOMING", **over) -> dict:
+    row = {
+        "kind": "sector",
+        "name": "Financials",
+        "ticker": "XLF",
+        "href": "basket/us_sector_financials.html",
+        "label": label,
+        "stat_en": "clean entry",
+        "stat_zh": "入场干净",
+    }
+    row.update(over)
+    return row
+
+
+def _render_board(board: dict, *, host: str | None = None, pgate=None,
+                  locked=None, bottoming=None) -> str:
+    kw = {"action_board": board}
+    if host is not None:
+        kw["ab_host"] = host
+    if pgate is not None:
+        kw["pgate"] = pgate
+    if locked is not None:
+        kw["ab_locked"] = locked
+    if bottoming is not None:
+        kw["bottoming"] = bottoming
+    return _env().get_template(BOARD_TPL.name).render(**kw)
+
+
+def _render_page(board: dict | None = None, **over) -> str:
+    kw = dict(flows_html=None, bottoming=None, theme_context=None,
+              factor_season=None, flow=None, basket_member_syms=[],
+              action_board=board if board is not None else _empty_board(),
+              generated_utc="2026-09-11T00:00:00Z")
+    kw.update(over)
+    return _env().get_template(PAGE_TPL.name).render(**kw)
+
+
+def _visible_pop(html: str) -> str:
+    """Popover source is hidden; still the action-verb home. Strip receipt tips."""
+    html = re.sub(r'data-tip-rc-(?:en|zh)="[^"]*"', "", html)
+    html = re.sub(r'data-tip-(?:en|zh)="[^"]*"', "", html)
+    return html
+
+
+# ── B1 ──────────────────────────────────────────────────────────────────────
+
+def test_b1_missing_verdict_never_prints_mixed_en_or_zh():
+    html = _render_page()
+    src = html[html.index("function renderInternals"):html.index("function boot()")]
+    assert "||vmap.mixed" not in src.replace(" ", "")
+    assert "lanes above are unaffected" in html
+    assert "广度不在今晚的构建中" in html
+    assert "mx-empty" in src
+    assert "empty-why" in src
+    internals = html[html.index('id="internals-section"'):html.index('id="sc-heatmap"')]
+    assert ">Mixed<" not in internals
+    assert "No strong consensus" not in internals
+
+
+def test_b1_alien_verdict_branches_to_empty_why():
+    src = PAGE_TPL.read_text(encoding="utf-8")
+    assert "mc.verdict==='narrow'" in src and "mc.verdict==='broad'" in src and "mc.verdict==='mixed'" in src
+    assert "lanes above are unaffected" in src
+    assert "广度不在今晚的构建中" in src
+    assert "||vmap.mixed" not in src.replace(" ", "")
+
+
+# ── B2 ──────────────────────────────────────────────────────────────────────
+
+def test_b2_lane_state_sweep_no_open_verb_in_wait_lanes():
+    rows = []
+    for reco in THEME_STATES:
+        rows.append(("theme", reco, _theme(reco)))
+    for label in SECTOR_STATES:
+        rows.append(("sector", label, _sector(label)))
+
+    table = []
+    for lane in ALL_LANES:
+        for kind, state, row in rows:
+            board = _empty_board()
+            board[lane] = [row]
+            html = _visible_pop(_render_board(board, host="sector_central"))
+            hits = []
+            if lane in WAIT_LANES:
+                for v in OPEN_VERBS_EN + OPEN_VERBS_ZH:
+                    if v in html:
+                        hits.append(v)
+            table.append((lane, kind, state, hits))
+            if lane in WAIT_LANES:
+                assert hits == [], f"{lane} × {kind}/{state} carried open verbs {hits}"
+    # Stand-aside HOLD rows may keep HOLD (X8) — not in OPEN_VERBS.
+    hold_html = _visible_pop(_render_board(
+        {**_empty_board(), "hold": [_theme("accumulate", label="HOLD", label_zh="持有")]},
+        host="sector_central"))
+    assert "HOLD" in hold_html or "持有" in hold_html
+
+
+def test_b2_buy_now_may_still_open():
+    html = _visible_pop(_render_board(
+        {**_empty_board(), "buy_now": [_theme("enter", label="ENTER", label_zh="建仓")]},
+        host="sector_central"))
+    assert "ENTER" in html
+    assert "建仓" in html
+
+
+# ── P1 ──────────────────────────────────────────────────────────────────────
+
+def test_p1_1_no_n_or_rank_ic_at_rest_x_in_10_form():
+    html = _render_page()
+    grader = html[html.index("function renderGrader"):html.index("function focusDelegate")]
+    assert "cross-sectional rank-IC" not in grader
+    assert grader.count("rank-IC") == 1  # receipt line only
+    assert "data-tip-rc-en" in grader and "data-tip-rc-zh" in grader
+    assert "about '" in grader and " in 10" in grader
+    assert "约10次中有" in grader
+    assert " · n=" not in grader
+    assert hit_in_10(0.55) == 6
+    assert hit_in_10(0.54) == 5
+    assert "Math.round(Number(rate)*10)" in html.replace(" ", "")
+
+
+def test_p1_2_no_bare_las_pctile_slug_at_rest():
+    src = PAGE_TPL.read_text(encoding="utf-8")
+    lead = src[src.index("function leadershipStrip"):src.index("fetch('marketdata/index_leadership.json'")]
+    rest = re.sub(r'data-tip-(?:en|zh)="[^"]*"', "", lead)
+    assert ">LAS<" not in rest and "'LAS " not in rest and '"LAS ' not in rest
+    assert "pctile" not in rest
+    assert "分位" not in rest
+    assert "RS level" not in rest
+    assert "RS mom" not in rest
+    assert "RS水平" not in rest
+    assert "highest RS level" not in rest
+    assert "coil✓" not in rest
+    assert "coil calls held back" not in rest
+    assert "蓄势信号已收敛" not in rest
+    assert "Lead pace" in lead
+    assert "领先节奏" in lead
+    assert "Relative strength" in lead
+    assert "相对强度" in lead
+    assert "STAGE_WORD" in src
+
+
+def test_p1_4_display_only_family_gone_at_four_sites():
+    page = PAGE_TPL.read_text(encoding="utf-8")
+    build = (ROOT / "scripts" / "build_sector_central.py").read_text(encoding="utf-8")
+    assert "display only" not in page.split("Cards are ordered by the fast rotation lens")[1][:400].lower()
+    assert "display-only" not in page.split("269 subsectors")[1][:200].lower()
+    heat = page[page.index("Market heat"):page.index("Coincident color") + 180]
+    assert "display context" not in heat
+    assert "Display-only." not in build
+    assert "仅作展示" not in build
+    assert "a heads-up, not a buy signal" in page
+    assert "仅为提示，非买入信号" in page
+    assert "A heads-up, not a buy signal." in build
+
+
+def test_p1_3_zh_zscore_matches_plain_en():
+    src = PAGE_TPL.read_text(encoding="utf-8")
+    assert "篮子自身 z 分数" not in src
+    assert "篮子相对自身历史的异常程度" in src
+
+
+def test_p1_5_confluence_jargon_gone_from_three_sites():
+    src = PAGE_TPL.read_text(encoding="utf-8")
+    assert '<span class="l-en">Sub-industries</span>' in src
+    assert "子行业汇聚" in src
+    assert "Sub-industry map" in src
+    assert "the confluence cross" not in src
+    assert "(T1 freshest)" in src
+    html = _render_page()
+    rail = html[html.index('href="#confluence"'):html.index('id="si-side-asof"')]
+    assert "Sub-industries" in rail
+    assert ">Confluence<" not in rail
+
+
+def test_p1_6_no_gate_architecture_at_rest():
+    html = _render_page()
+    assert "One gated read per sector" not in html
+    assert "gated, graded calls" not in html
+    assert "One scored read per sector" in html
+    assert "Lanes are the only scored calls" in html
+
+
+def test_p1_7_backtested_gate_promoted_to_plain_stat():
+    html = _render_board(
+        {**_empty_board(), "take_profits": [
+            _sector("ROLLING OVER", stat_en="backtested gate: trim",
+                    stat_zh="回测门槛：减仓", gate_override=True)]},
+        host="sector_central")
+    assert "backtested gate: trim" not in html
+    assert "回测门槛：减仓" not in html
+    assert "risk check: trim" in html
+    assert "风险检查：减仓" in html
+
+
+# ── P2 ──────────────────────────────────────────────────────────────────────
+
+def test_p2_1_sp500_renders_clean():
+    html = _render_page()
+    assert "S&amp;amp;P 500" not in html
+    # autoescape of 'S&P 500' is the clean form
+    assert "S&amp;P 500" in html or "S&P 500" in html
+    src = PAGE_TPL.read_text(encoding="utf-8")
+    assert "t('S&P 500'" in src
+    assert "t('S&amp;P 500'" not in src
+
+
+def test_p2_2_eleven_zh_sector_names():
+    assert len(_SECTOR_ZH) == 11
+    for zh in _SECTOR_ZH.values():
+        assert any("\u4e00" <= c <= "\u9fff" for c in zh)
+    assert _SECTOR_ZH["XLV"] == "医疗保健"
+    assert _SECTOR_ZH["XLY"] == "非必需消费"
+
+
+def test_p2_2_flow_table_emits_cjk(monkeypatch):
+    from scripts import build_sector_central as B
+
+    def fake_t(en, zh=None):
+        return f"{en}|{zh if zh is not None else en}"
+
+    monkeypatch.setattr("engine.i18n.t", fake_t)
+    monkeypatch.setattr(
+        "collectors.sponsors.sector_flow_periods",
+        lambda: {
+            "labels": ["1D"],
+            "asof": "2026-09-10",
+            "depth": 20,
+            "net": {"1D": -5100.0},
+            "rows": [
+                {"ticker": t, "vals": {"1D": -100.0}}
+                for t in _SECTOR_ZH
+            ],
+        },
+    )
+    html = B._flows_section_html()
+    assert html is not None
+    for zh in _SECTOR_ZH.values():
+        assert zh in html, f"missing ZH name {zh!r}"
+
+
+def test_p2_3_host_flag_sector_central_has_no_self_cta():
+    board = {**_empty_board(), "buy_now": [_theme("enter")],
+             "more": {"buy_now": 5}}
+    html = _render_board(board, host="sector_central")
+    assert "Theme reasons → Sector Intelligence" not in html
+    assert "full list on Sector Intelligence" not in html
+    assert "+5 more" not in html
+    page = _render_page(board)
+    assert "Theme reasons → Sector Intelligence" not in page
+    assert "full list on Sector Intelligence" not in page
+
+
+def test_p2_3_host_flag_us_stocks_unchanged():
+    board = {**_empty_board(), "buy_now": [_theme("enter")],
+             "more": {"buy_now": 5}}
+    html = _render_board(board)  # default host = us_stocks
+    assert "Theme reasons → Sector Intelligence" in html
+    assert "full list on Sector Intelligence" in html
+    assert 'class="pg-more' in html
+    assert "+5 more" in html
+
+
+def test_p2_4_watch_strip_separated_counts_untouched():
+    src = BOARD_TPL.read_text(encoding="utf-8")
+    assert "act-watch-strip" in src
+    assert "action_board.total" in src
+    assert "acth-count" in src
+    # Do not change either authored integer — the composition is the fix.
+    html = _render_board(
+        {**_empty_board(), "total": 44, "buy_now": [_theme("enter")] * 2},
+        host="sector_central",
+        bottoming={"bottoming_watch": [
+            {"id": "b-gold_miners", "cid": "gold_miners", "kind": "BASKET",
+             "name": "Gold Miners", "name_zh": "黄金矿业", "href": "basket/x.html",
+             "osc_slope": 1.3, "pos": 2.0, "cycle_signal": True,
+             "gate_conflict": False}],
+            "dual_read_ids": [], "recovering_ids": [],
+            "bottoming_authority": {}},
+    )
+    assert "44" in html
+    assert 'class="act-watch-strip"' in html
+    assert "Bottoming watch" in html
+    assert html.index("actiongrid") < html.index("act-watch-strip")
+    assert "Gold Miners" in html
+
+
+def test_p2_5_breadth_tiles_have_null_sentences_not_dashes():
+    html = _render_page()
+    chunk = html[html.index('id="internals-section"'):html.index('id="sc-heatmap"')]
+    assert 'id="mkt-breadth">—<' not in chunk.replace(" ", "")
+    assert "Not in tonight" in chunk
+    assert "不在今晚的构建中" in chunk
+    assert "lanes above are unaffected" in chunk or "上方操作清单不受影响" in chunk
+
+
+def test_p2_6_as_of_unknown_not_dash():
+    html = _render_page()
+    src = PAGE_TPL.read_text(encoding="utf-8")
+    assert "BASKETS.as_of||'—'" not in src.replace(" ", "")
+    assert "date unknown" in html
+    assert "日期未知" in html
+    assert "asof-unknown" in html
+
+
+def test_p2_7_geometry_true_skeleton_not_empty_loading():
+    html = _render_page()
+    app = html[html.index('id="sc-app"'):html.index('id="sc-app"') + 600]
+    assert "Loading…" not in app
+    assert "加载中…" not in app
+    assert 'class="empty"' not in app
+    assert "sc-skel" in app
+    assert "skel" in app
+
+
+# ── P3 / D1 ─────────────────────────────────────────────────────────────────
+
+def test_p3_1_exactly_one_h1():
+    html = _render_page()
+    assert html.lower().count("<h1") == 1
+    assert "US Sector Intelligence" in html
+    assert "美国行业情报" in html
+    populated = _render_page(theme_context={
+        "leadership": {
+            "trailing_leader": {"name": "Tech", "name_zh": "科技", "id": "xlk"},
+            "state": "steady", "stance_en": "Stay with leaders",
+            "stance_zh": "跟随领涨", "days_in_state": 3,
+            "strength": [{"name": "Health", "name_zh": "医疗", "id": "xlv"}],
+        }})
+    assert populated.lower().count("<h1") == 1
+
+
+def test_p3_2_score_demoted_from_rest():
+    html = _render_board(
+        {**_empty_board(), "buy_now": [_theme("accumulate", score=72)]},
+        host="sector_central")
+    assert 'class="act-row-score' not in html
+    assert "row-pop-score" in html
+    assert ">72<" in html or ">72</strong>" in html
+
+
+def test_p3_3_emoji_replaced_with_monoline():
+    src = PAGE_TPL.read_text(encoding="utf-8")
+    for ch in ("🧭", "🧺", "📊", "⭐", "🌐", "🔴", "🟡", "🟢", "⚪"):
+        assert ch not in src, f"emoji {ch} still in producer"
+    html = _render_page()
+    assert "sc-icon-bank" in html
+    assert 'data-ic="star"' in html
+    assert "mac-dot" in html
+
+
+def test_d1_xlf_tinted_net_untinted():
+    xlf = _flow_cell_html(-4100.0, 4100.0, tint=True)
+    net = _flow_cell_html(-5100.0, 4100.0, tint=False)
+    assert "background:color-mix" in xlf
+    assert _fmt_money_mn(-4100.0) in xlf
+    assert "background" not in net
+    assert _fmt_money_mn(-5100.0) in net
+    assert _fmt_money_mn(-4100.0) == "−$4.1B"
+    assert _fmt_money_mn(-5100.0) == "−$5.1B"

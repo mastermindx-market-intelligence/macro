@@ -65,8 +65,8 @@ def _theme() -> dict:
 def _render() -> str:
     vm = _base_vm()
     vm["action_board"] = {
-        "buy_now": [_sector()],
-        "buy_soon": [_theme()],
+        "buy_now": [_sector(), _theme()],
+        "buy_soon": [],
         "on_the_run": [],
         "take_profits": [],
         "hold": [],
